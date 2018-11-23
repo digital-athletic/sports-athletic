@@ -20,8 +20,12 @@
 
 * Configure File Watcher for prettier in IDE
     * This is important to prevent git formatting issues!
+    * Install Jetbrains IDE prettier plugin
     * See https://prettier.io/docs/en/webstorm.html#running-prettier-on-save-using-file-watcher
     * Use this "Arguments": --write $FilePathRelativeToProjectRoot$ --tab-width 4
+    * Set Scope to "Open Files"
+    
+* check for flow errors with "npm run flow"
 
 ### Android build ###
 

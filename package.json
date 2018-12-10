@@ -9,8 +9,10 @@
     "prettier": "prettier 'js/**/*.js' --write --tab-width 4"
   },
   "dependencies": {
+    "crypto-js": "3.1.9-1",
     "react": "16.6.1",
     "react-native": "0.57.5",
+    "react-native-fbsdk": "0.8.0",
     "react-native-firebase": "5.1.0",
     "react-native-i18n": "2.0.15",
     "react-navigation": "2.18.1",

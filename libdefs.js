@@ -16,3 +16,9 @@ declare module "react-native-i18n" {
 declare module "react-native/Libraries/vendor/emitter/EventEmitter" {
     declare module.exports: any;
 }
+declare module "crypto-js" {
+    declare module.exports: any;
+}
+declare module "react-native-fbsdk" {
+    declare module.exports: any;
+}

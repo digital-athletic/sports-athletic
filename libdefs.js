@@ -13,7 +13,6 @@ declare module "react-native" {
 declare module "react-native-i18n" {
     declare module.exports: any;
 }
-
-declare module "react-native-firebase" {
+declare module "react-native/Libraries/vendor/emitter/EventEmitter" {
     declare module.exports: any;
 }

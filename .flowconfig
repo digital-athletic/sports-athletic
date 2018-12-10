@@ -9,7 +9,7 @@
 .*/node_modules/.*/node_modules/fbjs/.*
 
 ; Ignore generated folders
-.*/node_modules/.*
+.*/node_modules/react-native/.*
 .*/android/.*
 .*/ios/.*
 

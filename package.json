@@ -9,6 +9,7 @@
     "prettier": "prettier 'js/**/*.js' --write --tab-width 4"
   },
   "dependencies": {
+    "bugsnag-react-native": "2.12.6",
     "react": "16.6.1",
     "react-native": "0.57.5",
     "react-native-amplitude-analytics": "0.2.6",

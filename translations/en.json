@@ -5,5 +5,7 @@
   "TAKE_YOU_TO_THE_NEXT_LEVEL": "Take yourself to the next level",
   "LOADING_THREE_DOTS": "Loading... ",
   "E-MAIL": "Email Address",
-  "INVALID_E-MAIL": "Please enter a valid e-mail-address!"
+  "PASSWORD": "Password",
+  "INVALID_E-MAIL": "Please enter a valid e-mail-address!",
+  "INVALID_PASSWORD": "The entered password is invalid!"
 }

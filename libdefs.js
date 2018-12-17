@@ -13,6 +13,6 @@ declare module "react-native" {
 declare module "react-native-i18n" {
     declare module.exports: any;
 }
-declare module "react-native-vector-icons" {
+declare module "react-native-vector-icons/Ionicons" {
     declare module.exports: any;
 }

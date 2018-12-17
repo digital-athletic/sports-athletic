@@ -4,5 +4,6 @@
   "START_NOW": "Start now",
   "TAKE_YOU_TO_THE_NEXT_LEVEL": "Take yourself to the next level",
   "LOADING_THREE_DOTS": "Loading... ",
-  "E-Mail": "Email Address"
+  "E-MAIL": "Email Address",
+  "INVALID_E-MAIL": "Your email address is invalid. Please enter a valid address!"
 }

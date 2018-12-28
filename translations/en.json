@@ -7,5 +7,6 @@
   "E-MAIL": "Email Address",
   "PASSWORD": "Password",
   "INVALID_E-MAIL": "Please enter a valid e-mail-address!",
-  "INVALID_PASSWORD": "The entered password is invalid!"
+  "INVALID_PASSWORD": "The entered password is invalid!",
+  "OK": "Ok"
 }

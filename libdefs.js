@@ -22,3 +22,6 @@ declare module "react-native-vector-icons/Ionicons" {
 declare module "react-native-vector-icons/FontAwesome" {
     declare module.exports: any;
 }
+declare module "react-native/Libraries/vendor/emitter/EventEmitter" {
+    declare module.exports: any;
+}

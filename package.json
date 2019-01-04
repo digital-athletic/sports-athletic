@@ -15,6 +15,8 @@
     "react-native-amplitude-analytics": "0.2.6",
     "react-native-firebase": "5.1.0",
     "react-native-i18n": "2.0.15",
+    "react-native-iphone-x-helper": "1.2.0",
+    "react-native-vector-icons": "^6.1.0",
     "react-navigation": "2.18.1",
     "react-redux": "5.1.1",
     "redux": "4.0.1",

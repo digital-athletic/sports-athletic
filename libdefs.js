@@ -25,3 +25,6 @@ declare module "react-native-vector-icons/FontAwesome" {
 declare module "react-native/Libraries/vendor/emitter/EventEmitter" {
     declare module.exports: any;
 }
+declare module "react-native-fbsdk" {
+    declare module.exports: any;
+}

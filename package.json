@@ -12,6 +12,7 @@
     "bugsnag-react-native": "2.12.6",
     "react": "16.6.1",
     "react-native": "0.57.5",
+    "react-native-fbsdk": "0.8.0",
     "react-native-amplitude-analytics": "0.2.6",
     "react-native-firebase": "5.1.0",
     "react-native-i18n": "2.0.15",

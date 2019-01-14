@@ -8,5 +8,6 @@
   "PASSWORD": "Password",
   "INVALID_E-MAIL": "Please enter a valid e-mail-address!",
   "INVALID_PASSWORD": "The entered password is invalid!",
-  "OK": "Ok"
+  "OK": "Ok",
+  "CANCEL": "Cancel"
 }

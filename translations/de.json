@@ -3,5 +3,12 @@
   "LOGIN": "Login",
   "START_NOW": "Jetzt starten",
   "TAKE_YOU_TO_THE_NEXT_LEVEL": "Bringe dich aufs nächste Level",
-  "LOADING_THREE_DOTS": "Lade... "
+  "LOADING_THREE_DOTS": "Lade... ",
+  "HOME": "Home",
+  "TEAM": "Team",
+  "TRAINING": "Training",
+  "MORE": "Mehr",
+  "NO_SECTIONS_MESSAGE": "Du hast derzeit keine Trainingsphasen",
+  "START_TRAINING": "Training starten",
+  "HELLO_X": "Hallo {{name}}"
 }

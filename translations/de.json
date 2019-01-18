@@ -9,5 +9,6 @@
   "INVALID_E-MAIL": "Bitte gebe eine gültige E-Mail-Adresse ein!",
   "INVALID_PASSWORD": "Das eingegebene Passwort ist ungültig!",
   "OK": "Ok",
-  "CANCEL": "Abbrechen"
+  "CANCEL": "Abbrechen",
+  "CHOOSE": "Wähle bitte etwas aus..."
 }

@@ -26,5 +26,8 @@
   "MINUTES": "Minutes",
   "MINUTE": "Minute",
   "LAST_WEEK": "Last Week",
-  "TOTAL": "Total"
+  "TOTAL": "Total",
+  "LOGIN_WITH_SPACE": "Login with ",
+  "OR": "or",
+  "LOGGING_IN": "Logging in"
 }

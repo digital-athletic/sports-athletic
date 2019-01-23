@@ -10,5 +10,7 @@
   "MORE": "Mehr",
   "NO_SECTIONS_MESSAGE": "Du hast derzeit keine Trainingsphasen",
   "START_TRAINING": "Training starten",
-  "HELLO_X": "Hallo {{name}}"
+  "HELLO_X": "Hallo {{name}}",
+  "LOGIN_WITH_SPACE": "Anmelden mit ",
+  "OR": "oder"
 }

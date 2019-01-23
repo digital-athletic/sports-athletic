@@ -12,5 +12,6 @@
   "START_TRAINING": "Start training",
   "HELLO_X": "Hello {{name}}",
   "LOGIN_WITH_SPACE": "Login with ",
-  "OR": "or"
+  "OR": "or",
+  "LOGGING_IN": "Logging in"
 }

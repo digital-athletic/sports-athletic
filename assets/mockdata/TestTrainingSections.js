@@ -6485,30 +6485,78 @@ const TestTrainingSections = {
                     ]
                 },
                 advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 2,
-                            repeat: 0
-                        },
-                        {
-                            type: "SWR2",
-                            length: 2,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
+                    field: {
+                        studio: [
+                            {
+                                type: "SWR1",
+                                length: 3,
+                                repeat: 0
+                            },
+                            {
+                                type: "SWR2",
+                                length: 3,
+                                repeat: 0
+                            },
+                            {
+                                type: "MAX",
+                                length: 3,
+                                repeat: 0
+                            },
+                            {
+                                type: "SA",
+                                length: 1,
+                                repeat: 0
+                            }
+                        ],
+                        home: [
+                            {
+                                type: "SWR1KG",
+                                length: 3,
+                                repeat: 0
+                            },
+                            {
+                                type: "SWR2KG",
+                                length: 3,
+                                repeat: 0
+                            },
+                            {
+                                type: "MAX",
+                                length: 3,
+                                repeat: 0
+                            },
+                            {
+                                type: "SA",
+                                length: 1,
+                                repeat: 0
+                            }
+                        ]
+                    },
+                    goal: {
+                        studio: [
+                            {
+                                type: "SWR1",
+                                length: 0,
+                                repeat: 0
+                            },
+                            {
+                                type: "",
+                                length: 0,
+                                repeat: 0
+                            }
+                        ],
+                        home: [
+                            {
+                                type: "SWR1KG",
+                                length: 0,
+                                repeat: 0
+                            },
+                            {
+                                type: "",
+                                length: 0,
+                                repeat: 0
+                            }
+                        ]
+                    }
                 },
                 professional: {
                     field: [

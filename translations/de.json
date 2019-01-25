@@ -29,5 +29,10 @@
   "TOTAL": "Gesamt",
   "LOGIN_WITH_SPACE": "Anmelden mit ",
   "OR": "oder",
-  "LOGGING_IN": "Melde an"
+  "LOGGING_IN": "Melde an",
+  "SK": "Schnellkraft",
+  "MAX": "Maximalkraft",
+  "SWR": "Sprung-, Wurf-, Rumpfkraft",
+  "SA": "Schnelligkeitsausdauer",
+  "CARDIO": "Konsition"
 }

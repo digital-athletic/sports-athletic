@@ -29,5 +29,10 @@
   "TOTAL": "Total",
   "LOGIN_WITH_SPACE": "Login with ",
   "OR": "or",
-  "LOGGING_IN": "Logging in"
+  "LOGGING_IN": "Logging in",
+  "SK": "Explosive power",
+  "MAX": "Maximum power",
+  "SWR": "Jump, throw, torso power",
+  "SA": "Speed perseverance",
+  "CARDIO": "Stamina"
 }

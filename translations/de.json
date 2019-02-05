@@ -36,5 +36,7 @@
   "TOTAL": "Gesamt",
   "LOGIN_WITH_SPACE": "Anmelden mit ",
   "OR": "oder",
-  "LOGGING_IN": "Melde an"
+  "LOGGING_IN": "Melde an",
+  "SELECTED_ONE": "Element gewählt",
+  "SELECTED_MULTIPLE": "Elemente gewählt"
 }

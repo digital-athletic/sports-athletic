@@ -36,5 +36,7 @@
   "TOTAL": "Total",
   "LOGIN_WITH_SPACE": "Login with ",
   "OR": "or",
-  "LOGGING_IN": "Logging in"
+  "LOGGING_IN": "Logging in",
+  "SELECTED_ONE": "Element selected",
+  "SELECTED_MULTIPLE": "Elements selected"
 }

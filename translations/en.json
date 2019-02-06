@@ -36,5 +36,15 @@
   "TOTAL": "Total",
   "LOGIN_WITH_SPACE": "Login with ",
   "OR": "or",
-  "LOGGING_IN": "Logging in"
+  "LOGGING_IN": "Logging in",
+  "MALE": "Male",
+  "FEMALE": "Female",
+  "MIXED": "Divers",
+  "REGISTER": "Register",
+  "REGISTERING": "Registering",
+  "REGISTRATION": "Registration",
+  "REGISTER_WITH_SPACE": "Register with ",
+  "BACK": "Back",
+  "GO_ON": "Go on",
+  "FINISH": "Finish"
 }

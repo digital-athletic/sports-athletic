@@ -10,7 +10,19 @@ declare module "react-redux" {
 declare module "react-native" {
     declare module.exports: any;
 }
+declare module "react-native-firebase" {
+    declare module.exports: any;
+}
 declare module "react-native-i18n" {
+    declare module.exports: any;
+}
+declare module "react-native-iphone-x-helper" {
+    declare module.exports: any;
+}
+declare module "react-native-vector-icons/Ionicons" {
+    declare module.exports: any;
+}
+declare module "react-native-vector-icons/FontAwesome" {
     declare module.exports: any;
 }
 declare module "react-native/Libraries/vendor/emitter/EventEmitter" {

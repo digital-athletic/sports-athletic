@@ -1,5 +1,25 @@
 const TestTagsByDurationForSkill = {
     PREV: {},
+    PREVSHOULDER: {
+        default: {
+            5: { oberkoerper: 2 }
+        }
+    },
+    BAS: {
+        default: {
+            5: {
+                unterkoerper: 2
+            }
+        }
+    },
+    BR: {
+        default: {
+            5: {
+                unterkoerper: 4,
+                oberkoerper: 2
+            }
+        }
+    },
     MAX: {
         default: {
             5: {
@@ -35,8 +55,11 @@ const TestTagsByDurationForSkill = {
     },
     SWR1KG: {
         default: {
-            15: {},
-            20: {},
+            20: {
+                oberkoerper: 2,
+                unterkoerper: 2,
+                rumpf: 2
+            },
             25: {},
             30: {}
         }

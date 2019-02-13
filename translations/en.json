@@ -29,5 +29,10 @@
   "TOTAL": "Total",
   "LOGIN_WITH_SPACE": "Login with ",
   "OR": "or",
-  "LOGGING_IN": "Logging in"
+  "LOGGING_IN": "Logging in",
+  "LATEST_MESSAGES": "Latest messages",
+  "LATEST_WORKOUTS": "Latest workouts",
+  "POINTS_COLON": "Points:",
+  "MESSAGES": "Messages",
+  "WORKOUTS": "Workouts"
 }

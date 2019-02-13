@@ -18,9 +18,11 @@
     "react-native-firebase": "5.1.0",
     "react-native-i18n": "2.0.15",
     "react-native-iphone-x-helper": "1.2.0",
+    "react-native-vector-icons": "6.1.0",
+    "react-native-fs": "^2.13.3",
+    "react-native-zip-archive": "3.0.1",
     "react-navigation": "2.18.1",
     "react-native-sectioned-multi-select": "0.6.4",
-    "react-native-vector-icons": "6.1.0",
     "react-native-video": "2.0.0",
     "react-native-snap-slider": "0.3.0",
     "react-redux": "5.1.1",
@@ -37,6 +39,9 @@
     "redux-devtools": "3.4.2"
   },
   "jest": {
-    "preset": "react-native"
+    "preset": "react-native",
+    "transform": {
+      "^.+\\.js$": "<rootDir>/node_modules/react-native/jest/preprocessor.js"
+    }
   }
 }

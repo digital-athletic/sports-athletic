@@ -81,86 +81,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -323,86 +244,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -565,86 +407,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -807,86 +570,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -1049,86 +733,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -1291,86 +896,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -1533,86 +1059,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -1775,86 +1222,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -2017,86 +1385,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -2261,86 +1550,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -2503,86 +1713,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -2745,86 +1876,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -2987,86 +2039,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -3229,86 +2202,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -3471,86 +2365,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -3713,86 +2528,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -3955,86 +2691,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -4197,86 +2854,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -4441,86 +3019,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -4549,18 +3048,32 @@ const TestTrainingSections = {
                     ]
                 },
                 advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
+                    field: {
+                        studio: [
+                            {
+                                type: "SWR1",
+                                length: 2,
+                                repeat: 0
+                            }
+                        ],
+                        home: [
+                            {
+                                type: "SWR1KG",
+                                length: 2,
+                                repeat: 0
+                            }
+                        ],
+                        cardio: [
+                            {
+                                type: "CARDIO2",
+                                length: 1
+                            },
+                            {
+                                type: "CARDIO1S",
+                                length: 1
+                            }
+                        ]
+                    },
                     goal: [
                         {
                             type: "SWR1",
@@ -4683,86 +3196,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -4925,86 +3359,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -5167,86 +3522,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -5409,86 +3685,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -5651,86 +3848,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -5893,86 +4011,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -6135,86 +4174,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -6377,86 +4337,7 @@ const TestTrainingSections = {
                     ]
                 }
             },
-            adolescent: {
-                beginner: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                advanced: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                },
-                professional: {
-                    field: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ],
-                    goal: [
-                        {
-                            type: "SWR1",
-                            length: 0,
-                            repeat: 0
-                        },
-                        {
-                            type: "",
-                            length: 0,
-                            repeat: 0
-                        }
-                    ]
-                }
-            },
+
             adult: {
                 beginner: {
                     field: [
@@ -6527,6 +4408,28 @@ const TestTrainingSections = {
                             {
                                 type: "SA",
                                 length: 1,
+                                repeat: 0
+                            }
+                        ],
+                        cardio: [
+                            {
+                                type: "CARDIO2",
+                                length: 3,
+                                repeat: 0
+                            },
+                            {
+                                type: "CARDIO1S",
+                                length: 3,
+                                repeat: 0
+                            },
+                            {
+                                type: "CARDIO2",
+                                length: 2,
+                                repeat: 0
+                            },
+                            {
+                                type: "CARDIO1",
+                                length: 2,
                                 repeat: 0
                             }
                         ]

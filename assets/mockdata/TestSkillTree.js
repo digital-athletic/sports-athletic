@@ -34,7 +34,19 @@ const TestSkillTree = {
             levels: {}
         }
     },
-    HBCARDIO: {
+    CARDIO2: {
+        1: {
+            tags: [],
+            levels: {}
+        }
+    },
+    CARDIO1S: {
+        1: {
+            tags: [],
+            levels: {}
+        }
+    },
+    CARDIO1: {
         1: {
             tags: [],
             levels: {}
@@ -71,6 +83,12 @@ const TestSkillTree = {
         }
     },
     SA: {
+        1: {
+            tags: [],
+            levels: {}
+        }
+    },
+    WU: {
         1: {
             tags: [],
             levels: {}

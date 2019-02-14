@@ -1,8 +1,17 @@
 const TestTagsByDurationForSkill = {
-    PREV: {},
+    WU: {
+        default: {
+            5: {
+                oberkoerper: 3,
+                unterkoerper: 1,
+                ganzkoerper: 1
+            }
+        }
+    },
     PREVSHOULDER: {
         default: {
-            5: { oberkoerper: 2 }
+            5: { oberkoerper: 2 },
+            15: { oberkoerper: 6 }
         }
     },
     BAS: {
@@ -24,6 +33,10 @@ const TestTagsByDurationForSkill = {
         default: {
             5: {
                 oberkoerper: 5
+            },
+            //TODO Sonderlösung Array of Tags für Reihenfolge und feste Übungen (Array or), support (für vorherige
+            20: {
+                oberkoerper: 5
             }
         }
     },
@@ -31,6 +44,10 @@ const TestTagsByDurationForSkill = {
         default: {
             5: {
                 unterkoerper: 5
+            },
+            20: {
+                oberkoerper: 2,
+                unterkoerper: 2
             }
         }
     },
@@ -46,10 +63,33 @@ const TestTagsByDurationForSkill = {
             }
         }
     },
-    HBCARDIO: {
+    CARDIO2: {
         default: {
             15: {
-                cardio: 3
+                cardio2: 3
+            },
+            30: {
+                cardio2: 3
+            }
+        }
+    },
+    CARDIO1S: {
+        default: {
+            15: {
+                cardio1s: 3
+            },
+            30: {
+                cardio1s: 3
+            }
+        }
+    },
+    CARDIO1: {
+        default: {
+            15: {
+                cardio1: 3
+            },
+            30: {
+                cardio1: 3
             }
         }
     },
@@ -95,7 +135,7 @@ const TestTagsByDurationForSkill = {
     SWR2: {
         default: {
             20: {
-                firstPair1: 1,
+                squat: 1,
                 firstPair2: 1,
                 secondPair1: 1,
                 secondPair2: 1,

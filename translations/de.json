@@ -38,5 +38,10 @@
   "OR": "oder",
   "LOGGING_IN": "Melde an",
   "SELECTED_ONE": "Element gewählt",
-  "SELECTED_MULTIPLE": "Elemente gewählt"
+  "SELECTED_MULTIPLE": "Elemente gewählt",
+  "LATEST_MESSAGES": "Letzte Nachrichten",
+  "LATEST_WORKOUTS": "Letzte Workouts",
+  "POINTS_COLON": "Punkte:",
+  "MESSAGES": "Nachrichten",
+  "WORKOUTS": "Workouts"
 }

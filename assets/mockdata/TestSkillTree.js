@@ -64,6 +64,12 @@ const TestSkillTree = {
             levels: {}
         }
     },
+    PREVKNEE: {
+        1: {
+            tags: [],
+            levels: {}
+        }
+    },
     BAS: {
         1: {
             tags: [],
@@ -89,6 +95,12 @@ const TestSkillTree = {
         }
     },
     WU: {
+        1: {
+            tags: [],
+            levels: {}
+        }
+    },
+    CD: {
         1: {
             tags: [],
             levels: {}

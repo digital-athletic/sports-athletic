@@ -14,10 +14,25 @@ const TestTagsByDurationForSkill = {
             15: { oberkoerper: 6 }
         }
     },
+    PREVKNEE: {
+        default: {
+            5: { unterkoerper: 2 },
+            10: { unterkoerper: 4 },
+            15: { unterkoerper: 6 }
+        }
+    },
     BAS: {
         default: {
             5: {
                 unterkoerper: 2
+            }
+        }
+    },
+    CD: {
+        default: {
+            5: {
+                oberkoerper: 3,
+                unterkoerper: 3
             }
         }
     },

@@ -3066,11 +3066,7 @@ const TestTrainingSections = {
                         cardio: [
                             {
                                 type: "CARDIO2",
-                                length: 1
-                            },
-                            {
-                                type: "CARDIO1S",
-                                length: 1
+                                length: 2
                             }
                         ]
                     },

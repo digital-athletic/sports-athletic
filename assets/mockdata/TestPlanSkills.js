@@ -4,26 +4,25 @@ const TestPlanSkills = {
             numberOfPlansPrios: {
                 1: [
                     {
-                        0: ["PHASE", "PREV", "MOB"],
-                        30: ["HBCARDIO"],
-                        45: ["WU"],
-                        60: ["CD"]
-                    }
-                ],
-                2: [
-                    {
                         //TEST
                         0: ["PHASE", "SWR1KG", "MOB"],
                         30: ["HBCARDIO"],
                         //TEST
                         45: ["SWR2"],
                         60: ["CD"]
+                    }
+                ],
+                2: [
+                    {
+                        0: ["PHASE", "PREV", "MOB"],
+                        30: ["WU"],
+                        //TEST
+                        45: ["CD"],
+                        60: ["BR"]
                     },
                     {
-                        //TEST
                         0: ["HBCARDIO", "PREV2", "MOB"],
                         30: ["BAS"],
-                        //TEST
                         45: ["BR"],
                         60: ["CD"]
                     }

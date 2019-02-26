@@ -43,5 +43,9 @@
   "LATEST_WORKOUTS": "Latest workouts",
   "POINTS_COLON": "Points:",
   "MESSAGES": "Messages",
-  "WORKOUTS": "Workouts"
+  "WORKOUTS": "Workouts",
+  "ABORT_TRAINING_QUESTIONMARK": "Abort training?",
+  "ABORT_TRAINING_EXPLANATION": "Do you really want to stop? Better pull yourself together.  You almost finished!",
+  "CONTINUE": "Continue",
+  "ABORT": "Abort"
 }

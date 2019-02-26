@@ -43,5 +43,9 @@
   "LATEST_WORKOUTS": "Letzte Workouts",
   "POINTS_COLON": "Punkte:",
   "MESSAGES": "Nachrichten",
-  "WORKOUTS": "Workouts"
+  "WORKOUTS": "Workouts",
+  "ABORT_TRAINING_QUESTIONMARK": "Training abbrechen?",
+  "ABORT_TRAINING_EXPLANATION": "Willst du das Training wirklich abbrechen? Gib dir lieber einen Ruck und mach weiter. Du hast es bald geschafft!",
+  "CONTINUE": "Fortsetzen",
+  "ABORT": "Abbrechen"
 }

@@ -102,12 +102,40 @@ const TestSkillTree = {
         }
     },
     SWR1KG: {
-        1: {
-            tags: [],
-            levels: {}
+        181: {
+            tags: ["unterkoerper"],
+            levels: { 1: { name: "Kniebeugen Serie" } }
+        },
+        182: {
+            tags: ["unterkoerper"],
+            levels: { 1: { name: "Kniebeugen Serie" } }
+        },
+        183: {
+            tags: ["unterkoerper"],
+            levels: { 1: { name: "Kniebeugen Serie" } }
+        },
+        184: {
+            tags: ["oberkoerper"],
+            levels: { 1: { name: "Kniebeugen Serie" } }
+        },
+        185: {
+            tags: ["oberkoerper"],
+            levels: { 1: { name: "Kniebeugen Serie" } }
+        },
+        186: {
+            tags: ["oberkoerper"],
+            levels: { 1: { name: "Kniebeugen Serie" } }
+        },
+        187: {
+            tags: ["rumpf"],
+            levels: { 1: { name: "Kniebeugen Serie" } }
+        },
+        188: {
+            tags: ["rumpf"],
+            levels: { 1: { name: "Kniebeugen Serie" } }
         }
     },
-    CARDIO2: {
+    ZONE_2: {
         138: {
             tags: ["cardio2"],
             levels: {
@@ -131,13 +159,13 @@ const TestSkillTree = {
             }
         }
     },
-    CARDIO1S: {
+    ZONE_1: {
         1: {
             tags: [],
             levels: {}
         }
     },
-    CARDIO1: {
+    ZONE_1_LAKTAT: {
         1: {
             tags: ["cardio1"],
             levels: {

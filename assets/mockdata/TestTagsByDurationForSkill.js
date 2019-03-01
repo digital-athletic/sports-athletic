@@ -78,7 +78,7 @@ const TestTagsByDurationForSkill = {
             }
         }
     },
-    CARDIO2: {
+    ZONE_2: {
         default: {
             15: {
                 cardio2: 3
@@ -88,7 +88,7 @@ const TestTagsByDurationForSkill = {
             }
         }
     },
-    CARDIO1S: {
+    ZONE_1: {
         default: {
             15: {
                 cardio1s: 3
@@ -98,7 +98,7 @@ const TestTagsByDurationForSkill = {
             }
         }
     },
-    CARDIO1: {
+    ZONE_1_LAKTAT: {
         default: {
             15: {
                 cardio1: 3
@@ -116,11 +116,17 @@ const TestTagsByDurationForSkill = {
                 rumpf: 2
             },
             25: {},
-            30: {}
+            30: {
+                oberkoerper: 3,
+                unterkoerper: 3,
+                rumpf: 2
+            }
         }
     },
     SWR2KG: {
-        default: {}
+        default: {
+            20: {}
+        }
     },
     SWR1: {
         default: {

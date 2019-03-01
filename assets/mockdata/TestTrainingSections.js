@@ -3048,14 +3048,17 @@ const TestTrainingSections = {
                     ]
                 },
                 advanced: {
-                    field: {
-                        studio: [
+                    field:
+                        //{ studio:
+                        [
                             {
                                 type: "SWR1",
                                 length: 2,
+                                cardioType: "ZONE_2",
                                 repeat: 0
                             }
                         ],
+                    /*,
                         home: [
                             {
                                 type: "SWR1KG",
@@ -3069,8 +3072,7 @@ const TestTrainingSections = {
                                 length: 2
                             }
                         ]
-                    },
-                    goal: [
+                    }*/ goal: [
                         {
                             type: "SWR1",
                             length: 0,
@@ -4362,30 +4364,35 @@ const TestTrainingSections = {
                     ]
                 },
                 advanced: {
-                    field: {
-                        studio: [
+                    field:
+                        //{ studio:
+                        [
                             {
                                 type: "SWR1",
                                 length: 3,
-                                repeat: 0
+                                repeat: 0,
+                                cardioType: "ZONE_2"
                             },
                             {
                                 type: "SWR2",
                                 length: 3,
-                                repeat: 0
+                                repeat: 0,
+                                cardioType: "ZONE_1"
                             },
                             {
                                 type: "MAX",
                                 length: 3,
-                                repeat: 0
+                                repeat: 0,
+                                cardioType: "ZONE_2"
                             },
                             {
                                 type: "SA",
                                 length: 1,
-                                repeat: 0
+                                repeat: 0,
+                                cardioType: "ZONE_1_LAKTAT"
                             }
                         ],
-                        home: [
+                    /*home: [
                             {
                                 type: "SWR1KG",
                                 length: 3,
@@ -4429,7 +4436,7 @@ const TestTrainingSections = {
                                 repeat: 0
                             }
                         ]
-                    },
+                    },*/
                     goal: {
                         studio: [
                             {

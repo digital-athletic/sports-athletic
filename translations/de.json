@@ -96,5 +96,7 @@
   "ERROR_TOO_MANY_REQUESTS_TITLE": "Zu viele Versuche",
   "ERROR_TOO_MANY_REQUESTS_MSG": "Du hast zu viele Loginversuche. Bitte versuche es später nochmal.",
   "SEASON_PHASE": "Saisonphase",
-  "END_OF_SEASON_PHASE": "Ende der Saisonphase"
+  "END_OF_SEASON_PHASE": "Ende der Saisonphase",
+  "SELECTED_ONE": "Element gewählt",
+  "SELECTED_MULTIPLE": "Elemente gewählt"
 }

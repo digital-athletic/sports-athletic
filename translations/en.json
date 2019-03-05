@@ -96,5 +96,7 @@
   "ERROR_TOO_MANY_REQUESTS_TITLE": "Too many attempts",
   "ERROR_TOO_MANY_REQUESTS_MSG": "Too many failed login attempts. Please try again later.",
   "SEASON_PHASE": "Season phase",
-  "END_OF_SEASON_PHASE": "End of season phase"
+  "END_OF_SEASON_PHASE": "End of season phase",
+  "SELECTED_ONE": "Element selected",
+  "SELECTED_MULTIPLE": "Elements selected"
 }

@@ -1,5 +1,4 @@
 {
-  "INITIALIZING": "Orient verstecken",
   "WELCOME": "Willkommen",
   "LOGIN": "Login",
   "START_NOW": "Jetzt starten",
@@ -18,7 +17,6 @@
   "MORE": "Mehr",
   "NO_SECTIONS_MESSAGE": "Du hast derzeit keine Trainingsphasen",
   "START_TRAINING": "Training starten",
-  "START_ANAMNESIS": "Anamnese starten",
   "HELLO_X": "Hallo {{name}}",
   "PROFILE": "Profil",
   "SETTINGS": "Einstellungen",
@@ -98,5 +96,19 @@
   "SEASON_PHASE": "Saisonphase",
   "END_OF_SEASON_PHASE": "Ende der Saisonphase",
   "SELECTED_ONE": "Element gewählt",
-  "SELECTED_MULTIPLE": "Elemente gewählt"
+  "SELECTED_MULTIPLE": "Elemente gewählt",
+  "ABORT_TRAINING_QUESTIONMARK": "Training abbrechen?",
+  "ABORT_TRAINING_EXPLANATION": "Willst du das Training wirklich abbrechen? Gib dir lieber einen Ruck und mach weiter. Du hast es bald geschafft!",
+  "CONTINUE": "Fortsetzen",
+  "ABORT": "Abbrechen",
+  "NEXT_EXERCISE": "Danach: ",
+  "OF": " von ",
+  "SETS": "Sätze",
+  "WEIGHT_IN": "Gewicht in kg",
+  "TOO_EASY": "zu leicht",
+  "TOO_HARD": "zu schwer",
+  "NEXT": "Weiter",
+  "SKIP": "skip",
+  "DURATION_IN_SEC": "Dauer in Sekunden",
+  "NO_WEIGHTS": "Keine Gewichte"
 }

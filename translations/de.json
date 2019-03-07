@@ -1,4 +1,5 @@
 {
+  "INITIALIZING": "Orient verstecken",
   "WELCOME": "Willkommen",
   "LOGIN": "Login",
   "START_NOW": "Jetzt starten",
@@ -17,6 +18,7 @@
   "MORE": "Mehr",
   "NO_SECTIONS_MESSAGE": "Du hast derzeit keine Trainingsphasen",
   "START_TRAINING": "Training starten",
+  "START_ANAMNESIS": "Anamnese starten",
   "HELLO_X": "Hallo {{name}}",
   "PROFILE": "Profil",
   "SETTINGS": "Einstellungen",
@@ -110,5 +112,10 @@
   "NEXT": "Weiter",
   "SKIP": "skip",
   "DURATION_IN_SEC": "Dauer in Sekunden",
-  "NO_WEIGHTS": "Keine Gewichte"
+  "NO_WEIGHTS": "Keine Gewichte",
+  "SELECTED_MULTIPLE": "Elemente gewählt",
+  "LOGIN_OR_REGISTER_FOR_FREE": "Anmelden oder kostenlos registrieren",
+  "LOGIN_WITH_FACEBOOK": "Mit Facebook anmelden",
+  "LOGIN_WITH_GOOGLE": "Mit Google anmelden",
+  "PRIVACY_INFORMATION": "Mit der Anmeldung erkläre ich mich mit den allgemeinen Geschäftsbedingungen und Datenschutzbestimmungen von Sports Atheletic einverstande."
 }

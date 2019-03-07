@@ -98,5 +98,9 @@
   "SEASON_PHASE": "Saisonphase",
   "END_OF_SEASON_PHASE": "Ende der Saisonphase",
   "SELECTED_ONE": "Element gewählt",
-  "SELECTED_MULTIPLE": "Elemente gewählt"
+  "SELECTED_MULTIPLE": "Elemente gewählt",
+  "LOGIN_OR_REGISTER_FOR_FREE": "Anmelden oder kostenlos registrieren",
+  "LOGIN_WITH_FACEBOOK": "Mit Facebook anmelden",
+  "LOGIN_WITH_GOOGLE": "Mit Google anmelden",
+  "PRIVACY_INFORMATION": "Mit der Anmeldung erkläre ich mich mit den allgemeinen Geschäftsbedingungen und Datenschutzbestimmungen von Sports Atheletic einverstande."
 }

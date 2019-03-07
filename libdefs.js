@@ -31,3 +31,6 @@ declare module "react-native/Libraries/vendor/emitter/EventEmitter" {
 declare module "react-native-fbsdk" {
     declare module.exports: any;
 }
+declare module "react-native-datepicker" {
+    declare module.exports: any;
+}

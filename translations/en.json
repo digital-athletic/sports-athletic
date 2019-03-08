@@ -102,5 +102,7 @@
   "LOGIN_OR_REGISTER_FOR_FREE": "Login or register for free",
   "LOGIN_WITH_FACEBOOK": "Login with Facebook",
   "LOGIN_WITH_GOOGLE": "Login with Google",
-  "PRIVACY_INFORMATION": "On my registration I accept the terms and conditions of Sports Atheletic."
+  "PRIVACY_INFORMATION": "On my registration I accept the terms and conditions of Sports Atheletic.",
+  "ERROR_AUTH_FAILED_TITLE": "Authentication failed",
+  "ERROR_AUTH_FAILED_MSG": "Loggin in with {{type}} failed or was aborted. Please try again later."
 }

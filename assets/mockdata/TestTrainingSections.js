@@ -3068,7 +3068,7 @@ const TestTrainingSections = {
                         ],
                         cardio: [
                             {
-                                type: "CARDIO2",
+                                type: "ZONE_2",
                                 length: 2
                             }
                         ]
@@ -3389,12 +3389,14 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            length: 2,
+                            cardioType: "ZONE_2",
                             repeat: 0
                         },
                         {
-                            type: "",
-                            length: 0,
+                            type: "SWR1",
+                            length: 2,
+                            cardioType: "ZONE_1",
                             repeat: 0
                         }
                     ],
@@ -4416,22 +4418,22 @@ const TestTrainingSections = {
                         ],
                         cardio: [
                             {
-                                type: "CARDIO2",
+                                type: "ZONE_2",
                                 length: 3,
                                 repeat: 0
                             },
                             {
-                                type: "CARDIO1S",
+                                type: "ZONE_1",
                                 length: 3,
                                 repeat: 0
                             },
                             {
-                                type: "CARDIO2",
+                                type: "ZONE_2",
                                 length: 2,
                                 repeat: 0
                             },
                             {
-                                type: "CARDIO1",
+                                type: "ZONE_1_LAKTAT",
                                 length: 2,
                                 repeat: 0
                             }

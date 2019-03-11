@@ -34,3 +34,9 @@ declare module "react-native-fbsdk" {
 declare module "react-native-datepicker" {
     declare module.exports: any;
 }
+declare module "react-native-device-info" {
+    declare module.exports: any;
+}
+declare module "react-native-gesture-handler" {
+    declare module.exports: any;
+}

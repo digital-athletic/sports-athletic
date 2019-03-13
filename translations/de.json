@@ -95,6 +95,10 @@
   "ERROR_USER_NOT_FOUND_MSG": "Zur angegebenen E-Mail Adresse konnten wir keinen Nutzer finden",
   "ERROR_TOO_MANY_REQUESTS_TITLE": "Zu viele Versuche",
   "ERROR_TOO_MANY_REQUESTS_MSG": "Du hast zu viele Loginversuche. Bitte versuche es später nochmal.",
+  "ERROR_INVALID_INPUT_TEAM": "Eingabe überprüfen",
+  "ERROR_INVALID_INPUT_TEAM_MSG": "Deine Eingabe ist nicht valide. Dein Teamname muss mindestens 3 Zeichen lang sein und du musst eine Dauer sowie mindestens ein Ziel gesetzt haben.",
+  "ERROR_BAD_TEAM_NAME": "Verbotener Teamname",
+  "ERROR_BAD_TEAM_NAME_MSG": "Dein neu gewählter Teamname ist nicht erlaubt!",
   "SEASON_PHASE": "Saisonphase",
   "END_OF_SEASON_PHASE": "Ende der Saisonphase",
   "SELECTED_ONE": "Element gewählt",
@@ -104,5 +108,14 @@
   "LOGIN_WITH_GOOGLE": "Mit Google anmelden",
   "PRIVACY_INFORMATION": "Mit der Anmeldung erkläre ich mich mit den allgemeinen Geschäftsbedingungen und Datenschutzbestimmungen von Sports Atheletic einverstande.",
   "ERROR_AUTH_FAILED_TITLE": "Authentifizierung fehlgeschlagen",
-  "ERROR_AUTH_FAILED_MSG": "Die Anmeldung mit {{type}} schlug fehl, oder wurde abgebrochen. Bitte versuche es später nochmal."
+  "ERROR_AUTH_FAILED_MSG": "Die Anmeldung mit {{type}} schlug fehl, oder wurde abgebrochen. Bitte versuche es später nochmal.",
+  "TEAM_NAME": "Teamname",
+  "START_TEAM": "Team gründen",
+  "JOIN_TEAM": "Team beitreten",
+  "TEAM_CODE": "Team-Code",
+  "CHOOSE_NAME_FOR_YOUR_TEAM": "Wie soll deine Mannschaft heißen?",
+  "JOIN": "Beitreten",
+  "START_NEW_TEAM": "Neues Team gründen",
+  "TEAM_CODE_DESC": "Gib hier deinen 6-stelligen Team-Code ein. ",
+  "CREATE_TEAM_DESC": "Möchtest du ein neues Team gründen und als Team Leader Trainingsziele und Challenges für dein Team setzen?"
 }

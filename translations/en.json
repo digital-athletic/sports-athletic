@@ -95,6 +95,10 @@
   "ERROR_USER_NOT_FOUND_MSG": "No user exists for the entered e-mail address.",
   "ERROR_TOO_MANY_REQUESTS_TITLE": "Too many attempts",
   "ERROR_TOO_MANY_REQUESTS_MSG": "Too many failed login attempts. Please try again later.",
+  "ERROR_INVALID_INPUT_TEAM": "Check input",
+  "ERROR_INVALID_INPUT_TEAM_MSG": "Your input is not valid. Your team name must be at least 3 characters long and you must have set a duration and at least one goal.",
+  "ERROR_BAD_TEAM_NAME": "Forbidden team name",
+  "ERROR_BAD_TEAM_NAME_MSG": "Your newly chosen team name is not allowed!",
   "SEASON_PHASE": "Season phase",
   "END_OF_SEASON_PHASE": "End of season phase",
   "SELECTED_ONE": "Element selected",
@@ -104,5 +108,12 @@
   "LOGIN_WITH_GOOGLE": "Login with Google",
   "PRIVACY_INFORMATION": "On my registration I accept the terms and conditions of Sports Atheletic.",
   "ERROR_AUTH_FAILED_TITLE": "Authentication failed",
-  "ERROR_AUTH_FAILED_MSG": "Loggin in with {{type}} failed or was aborted. Please try again later."
+  "ERROR_AUTH_FAILED_MSG": "Loggin in with {{type}} failed or was aborted. Please try again later.",
+  "TEAM_NAME": "Teamname",
+  "START_TEAM": "Create team",
+  "JOIN_TEAM": "Join team",
+  "TEAM_CODE": "Team-Code",
+  "CHOOSE_NAME_FOR_YOUR_TEAM": "What's the name of your team?",
+  "JOIN": "Join",
+  "START_NEW_TEAM": "Start new team"
 }

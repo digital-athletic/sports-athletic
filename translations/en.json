@@ -119,5 +119,18 @@
   "TEAM_CODE": "Team-Code",
   "CHOOSE_NAME_FOR_YOUR_TEAM": "What's the name of your team?",
   "JOIN": "Join",
-  "START_NEW_TEAM": "Start new team"
+  "START_NEW_TEAM": "Start new team",
+  "QUICKSTART": "Quickstart",
+  "QUICKSTART_PREVENTION": "Prevention",
+  "QUICKSTART_PREVENTION_DESC": "Short Workout to lower injury risk",
+  "QUICKSTART_MOBILITY": "Mobility",
+  "QUICKSTART_MOBILITY_DESC": "Prevent injuries and increase your mobility",
+  "QUICKSTART_WARM_UP": "Warm-Up",
+  "QUICKSTART_WARM_UP_DESC": "Prepare for peak performance",
+  "QUICKSTART_COOL_DOWN": "Cool-Down",
+  "QUICKSTART_COOL_DOWN_DESC": "Lay the best foundation for your recovery",
+  "QUICKSTART_BLACK_ROLL": "Black-Roll",
+  "QUICKSTART_BLACK_ROLL_DESC": "Improve your muscles tensile strength and smoothness",
+  "WORKOUT_WITH_OWN_PLAN": "Use your individual workout plan",
+  "INCOMPLETE_ANAMNESIS_MESSAGE": "Complete the anamnesis to start with your individual workout plan"
 }

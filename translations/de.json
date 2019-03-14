@@ -117,5 +117,9 @@
   "JOIN": "Beitreten",
   "START_NEW_TEAM": "Neues Team gründen",
   "TEAM_CODE_DESC": "Gib hier deinen 6-stelligen Team-Code ein. ",
-  "CREATE_TEAM_DESC": "Möchtest du ein neues Team gründen und als Team Leader Trainingsziele und Challenges für dein Team setzen?"
+  "CREATE_TEAM_DESC": "Möchtest du ein neues Team gründen und als Team Leader Trainingsziele und Challenges für dein Team setzen?",
+  "TABS_TITLE_TRAINING": "Training",
+  "TABS_TITLE_TEAM": "Team",
+  "TABS_TITLE_STATISTICS": "Auswertung",
+  "TABS_TITLE_MORE": "Einstellungen"
 }

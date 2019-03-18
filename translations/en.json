@@ -44,6 +44,7 @@
   "SWR": "Jump, throw, torso power",
   "SA": "Speed perseverance",
   "CARDIO": "Stamina",
+  "NEWS": "News",
   "LATEST_MESSAGES": "Latest messages",
   "LATEST_WORKOUTS": "Latest workouts",
   "POINTS_COLON": "Points:",
@@ -114,6 +115,8 @@
   "TABS_TITLE_STATISTICS": "Statistics",
   "TABS_TITLE_MORE": "Settings",
   "TEAM_NAME": "Teamname",
+  "MY_TEAM": "My Team",
+  "JOIN_TEAM_DESC": "Join my Team.",
   "START_TEAM": "Create team",
   "JOIN_TEAM": "Join team",
   "TEAM_CODE": "Team-Code",
@@ -132,5 +135,10 @@
   "QUICKSTART_BLACK_ROLL": "Black-Roll",
   "QUICKSTART_BLACK_ROLL_DESC": "Improve your muscles tensile strength and smoothness",
   "WORKOUT_WITH_OWN_PLAN": "Use your individual workout plan",
-  "INCOMPLETE_ANAMNESIS_MESSAGE": "Complete the anamnesis to start with your individual workout plan"
+  "INCOMPLETE_ANAMNESIS_MESSAGE": "Complete the anamnesis to start with your individual workout plan",
+  "INVITE_LINK": "Share invite link",
+  "COPIED_TO_CLIPBOARD": "Copied code to clipboard",
+  "SHARE_CODE_DESC": "Invite your friends by giving them this code... ",
+  "SHARE_BUTTON_DESC": "... or share your invite link by clicking this button. ",
+  "INVITE_FRIENDS": "Invite friends"
 }

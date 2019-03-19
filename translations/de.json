@@ -150,5 +150,8 @@
   "SHARE_CODE_DESC": "Lade deine Freunde mit diesem Code ein, damit sie deinem Team beitreten können... ",
   "SHARE_BUTTON_DESC": "...oder Teile einfach den Einladungslink über diesen Button. ",
   "INVITE_LINK": "Teile Einladungslink",
-  "INVITE_FRIENDS": "Freunde einladen"
+  "INVITE_FRIENDS": "Freunde einladen",
+  "POSITION": "Platz",
+  "NAME": "Name",
+  "EXPERIENCE": "Erfahrung"
 }

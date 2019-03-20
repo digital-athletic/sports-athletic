@@ -1,0 +1,11 @@
+{
+  "anamnesisQuestions": [],
+  "anamnesisValues": [],
+  "anamnesisTags": {
+    "PAIN": [
+      "LEFT_SHOULDER",
+      "RIGHT_ANKLE"
+    ]
+  },
+  "originPath": "MainStack"
+}

@@ -102,7 +102,7 @@
   "ABORT_TRAINING_EXPLANATION": "Willst du das Training wirklich abbrechen? Gib dir lieber einen Ruck und mach weiter. Du hast es bald geschafft!",
   "CONTINUE": "Fortsetzen",
   "ABORT": "Abbrechen",
-  "NEXT_EXERCISE": "Danach: ",
+  "NEXT_EXERCISE_X": "Danach: {{name}}",
   "OF": " von ",
   "SETS": "Sätze",
   "WEIGHT_IN": "Gewicht in kg",
@@ -149,5 +149,7 @@
   "STUDIO": "Fitnessstudio",
   "HALL": "in der Halle",
   "OUTSIDE": "Draußen",
-  "COACH_SPORT_PROHIBITION_MSG": "Kein Training bei ärtztlichem Sportverbot!"
+  "COACH_SPORT_PROHIBITION_MSG": "Kein Training bei ärtztlichem Sportverbot!",
+  "FINISHED": "Training geschafft",
+  "SUCCESS": "Erfolg"
 }

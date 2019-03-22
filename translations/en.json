@@ -155,5 +155,12 @@
   "COPIED_TO_CLIPBOARD": "Copied code to clipboard",
   "SHARE_CODE_DESC": "Invite your friends by giving them this code... ",
   "SHARE_BUTTON_DESC": "... or share your invite link by clicking this button. ",
-  "INVITE_FRIENDS": "Invite friends"
+  "INVITE_FRIENDS": "Invite friends",
+  "EXPERIENCE": "Experience",
+  "MESSAGE": "What do you want to tell, {{user}}?",
+  "NEW_MESSAGE": "New Message",
+  "NEW_TEAM_MESSAGE": "{{user}} to {{team}}",
+  "SENDS_TO": "sends to {{team}}",
+  "MESSAGE_PLACEHOLDER": "Write your'e message...",
+  "SEND": "Send"
 }

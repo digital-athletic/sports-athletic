@@ -168,5 +168,13 @@
   "INVITE_FRIENDS": "Freunde einladen",
   "POSITION": "Platz",
   "NAME": "Name",
-  "EXPERIENCE": "Erfahrung"
+  "EXPERIENCE": "Erfahrung",
+  "MESSAGE": "Was möchtest du deinem Team mitteilen, {{user}}?",
+  "NEW_MESSAGE": "Neue Nachricht",
+  "NEW_TEAM_MESSAGE": "{{user}} an {{team}}",
+  "SENDS_TO": "schickt an {{team}}",
+  "MESSAGE_PLACEHOLDER": "Schreibe deine Nachricht...",
+  "SEND": "Absenden",
+  "ERROR_SEND_MSG_TITLE": "Fehler",
+  "ERROR_SEND_MSG_DESC": "Es kann keine Nachricht gepostet werden, die keinen Inhalt hat !"
 }

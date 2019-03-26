@@ -1,7 +1,7 @@
 const muscleMBack = [
     {
         name: "WADE_RECHTS",
-        width: 0.11,
+        width: 0.13,
         height: 0.2,
         top: 0.69,
         right: 0.28,
@@ -11,7 +11,7 @@ const muscleMBack = [
     },
     {
         name: "WADE_LINKS",
-        width: 0.11,
+        width: 0.13,
         height: 0.2,
         top: 0.69,
         left: 0.32,
@@ -20,20 +20,20 @@ const muscleMBack = [
     },
     {
         name: "OBERSCHENKEL_HINTEN_RECHTS",
-        width: 0.1,
+        width: 0.11,
         height: 0.15,
         top: 0.54,
-        right: 0.35,
-        transform: [{ rotate: "-19deg" }],
+        right: 0.367,
+        transform: [{ rotate: "-16deg" }],
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_m_back/oberschenkel_re.png")
     },
     {
         name: "OBERSCHENKEL_HINTEN_LINKS",
-        width: 0.07,
+        width: 0.09,
         height: 0.15,
         top: 0.53,
-        left: 0.33,
+        left: 0.31,
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_m_back/oberschenkel_li.png")
     },
@@ -49,10 +49,10 @@ const muscleMBack = [
     },
     {
         name: "AEUSSERER_OBERSCHENKEL_HINTEN_RECHTS",
-        width: 0.03,
+        width: 0.06,
         height: 0.19,
         top: 0.44,
-        right: 0.36,
+        right: 0.33,
         transform: [{ rotate: "-15deg" }],
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_m_back/aeußererOberschenkel_hinten_re.png")
@@ -62,7 +62,7 @@ const muscleMBack = [
         width: 0.21,
         height: 0.09,
         top: 0.44,
-        left: 0.36,
+        left: 0.357,
         transform: [{ rotate: "12deg" }],
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_m_back/gesaeß.png")
@@ -90,30 +90,40 @@ const muscleMBack = [
     },
     {
         name: "GROSSER_RUECKENMUSKEL_LAT_RECHTS",
-        width: 0.07,
+        width: 0.075,
         height: 0.07,
         top: 0.277,
-        right: 0.4,
-        transform: [{ rotate: "20deg" }],
+        right: 0.392,
+        transform: [{ rotate: "30deg" }],
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_m_back/großerRueckenmuskel_lat.png")
     },
     {
         name: "OBERER_RUECKEN",
         width: 0.197,
-        height: 0.07,
-        top: 0.205,
+        height: 0.075,
+        top: 0.203,
         left: 0.384,
         transform: [{ rotate: "-5deg" }],
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_m_back/obererRuecken.png")
     },
     {
-        name: "NACKEN",
-        width: 0.17,
+        name: "OBERER_RUECKEN_UNTERER_TEIL",
+        width: 0.079,
         height: 0.04,
-        top: 0.15,
-        left: 0.384,
+        top: 0.275,
+        left: 0.45,
+        transform: [{ rotate: "-3deg" }],
+        backgroundColor: "rgba(0,0,0,0)",
+        image: require("../../img/bodyparts/muscle_m_back/obererRuecken.png")
+    },
+    {
+        name: "NACKEN",
+        width: 0.15,
+        height: 0.08,
+        top: 0.12,
+        left: 0.388,
         transform: [{ rotate: "-5deg" }],
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_m_back/nacken.png")

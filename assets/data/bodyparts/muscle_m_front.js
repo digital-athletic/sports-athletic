@@ -20,20 +20,20 @@ const muscleMFront = [
     },
     {
         name: "WADEN",
-        width: 0.06,
+        width: 0.13,
         height: 0.2,
         top: 0.67,
-        right: 0.39,
+        right: 0.35,
         transform: [{ rotate: "-18deg" }],
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_m_front/waden.png")
     },
     {
         name: "SCHIENBEIN",
-        width: 0.06,
+        width: 0.12,
         height: 0.17,
         top: 0.684,
-        left: 0.26,
+        left: 0.24,
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_m_front/schienbein.png")
     },
@@ -49,30 +49,30 @@ const muscleMFront = [
     },
     {
         name: "AEUSSERE_OBERSCHENKELMUSKULATUR_RECHTS",
-        width: 0.03,
+        width: 0.06,
         height: 0.175,
         top: 0.441,
-        left: 0.31,
+        left: 0.28,
         transform: [{ rotate: "10deg" }],
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_m_front/aeussereOberschenkelmuskulatur_re.png")
     },
     {
         name: "INNERE_OBERSCHENKELMUSKULATUR",
-        width: 0.06,
+        width: 0.09,
         height: 0.14,
         top: 0.475,
-        right: 0.46,
+        right: 0.446,
         transform: [{ rotate: "3deg" }],
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_m_front/innereOberschenkelmuskulatur.png")
     },
     {
         name: "OBERSCHENKELVORDERSEITE_LINKS",
-        width: 0.049,
+        width: 0.055,
         height: 0.19,
         top: 0.433,
-        right: 0.4,
+        right: 0.38,
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_m_front/oberschenkelvorderseite_li.png")
     },
@@ -107,10 +107,10 @@ const muscleMFront = [
     },
     {
         name: "NACKEN",
-        width: 0.06,
-        height: 0.05,
-        top: 0.14,
-        left: 0.348,
+        width: 0.1,
+        height: 0.07,
+        top: 0.123,
+        left: 0.343,
         transform: [{ rotate: "-9deg" }],
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_m_front/nacken.png")

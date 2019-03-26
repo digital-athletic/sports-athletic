@@ -19,22 +19,13 @@ const muscleWFront = [
     },
     {
         name: "WADEN",
-        width: 0.05,
+        width: 0.08,
         height: 0.18,
         top: 0.7,
-        left: 0.42,
+        left: 0.41,
         transform: [{ rotate: "18deg" }],
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_w_front/waden.png")
-    },
-    {
-        name: "SCHIENBEIN",
-        width: 0.07,
-        height: 0.17,
-        top: 0.73,
-        right: 0.36,
-        backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/schienbein.png")
     },
     {
         name: "OBERSCHENKELVORDERSEITE_RECHTS",
@@ -68,10 +59,10 @@ const muscleWFront = [
     },
     {
         name: "AEUSSERE_OBERSCHENKELMUSKULATUR",
-        width: 0.04,
+        width: 0.06,
         height: 0.18,
-        top: 0.45,
-        right: 0.328,
+        top: 0.458,
+        right: 0.317,
         transform: [{ rotate: "-8deg" }],
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_w_front/aeussereOberschenkelmuskulatur.png")
@@ -79,8 +70,8 @@ const muscleWFront = [
     {
         name: "GERADE_BAUCHMUSKELN",
         width: 0.08,
-        height: 0.145,
-        top: 0.345,
+        height: 0.17,
+        top: 0.33,
         left: 0.513,
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_w_front/geradeBauchmuskeln.png")
@@ -108,7 +99,7 @@ const muscleWFront = [
     {
         name: "BRUST",
         width: 0.16,
-        height: 0.06,
+        height: 0.08,
         top: 0.24,
         right: 0.35,
         backgroundColor: "rgba(0,0,0,0)",
@@ -117,48 +108,48 @@ const muscleWFront = [
     {
         name: "NACKEN",
         width: 0.1,
-        height: 0.04,
-        top: 0.183,
+        height: 0.07,
+        top: 0.16,
         left: 0.534,
-        backgroundColor: "rgba(0,0,0,0",
+        backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_w_front/nacken.png")
     },
     {
         name: "SCHULTER_RECHTS",
-        width: 0.03,
+        width: 0.05,
         height: 0.07,
-        top: 0.198,
-        left: 0.46,
+        top: 0.19,
+        left: 0.445,
         transform: [{ rotate: "53deg" }],
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_w_front/schulter_re.png")
     },
     {
         name: "SCHULTER_LINKS",
-        width: 0.03,
+        width: 0.05,
         height: 0.07,
-        top: 0.215,
-        right: 0.28,
+        top: 0.21,
+        right: 0.275,
         transform: [{ rotate: "-53deg" }],
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_w_front/schulter_li.png")
     },
     {
         name: "BIZEPS_RECHTS",
-        width: 0.03,
+        width: 0.05,
         height: 0.07,
         top: 0.277,
-        left: 0.42,
+        left: 0.412,
         transform: [{ rotate: "20deg" }],
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_w_front/bizeps_re.png")
     },
     {
         name: "BIZEPS_LINKS",
-        width: 0.05,
+        width: 0.07,
         height: 0.09,
         top: 0.277,
-        right: 0.272,
+        right: 0.26,
         transform: [{ rotate: "-5deg" }],
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_w_front/bizeps_li.png")

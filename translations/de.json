@@ -151,5 +151,9 @@
   "OUTSIDE": "Draußen",
   "COACH_SPORT_PROHIBITION_MSG": "Kein Training bei ärtztlichem Sportverbot!",
   "FINISHED": "Training geschafft",
-  "SUCCESS": "Erfolg"
+  "SUCCESS": "Erfolg",
+  "SUMMARY_TITLE_DURATION": "Dauer",
+  "SUMMARY_TITLE_COUNT": "Übungszahl",
+  "SUMMARY_TITLE_POINTS": "Punkte",
+  "SUMMARY_TITLE_WEIGHT": "Bewegtes Gewicht"
 }

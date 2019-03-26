@@ -151,5 +151,9 @@
   "OUTSIDE": "outside",
   "COACH_SPORT_PROHIBITION_MSG": "Do not work out when you are medically prohibited to do sports!",
   "FINISHED": "Training completed",
-  "SUCCESS": "Success"
+  "SUCCESS": "Success",
+  "SUMMARY_TITLE_DURATION": "Duration",
+  "SUMMARY_TITLE_COUNT": "Exercise count",
+  "SUMMARY_TITLE_POINTS": "Points",
+  "SUMMARY_TITLE_WEIGHT": "Moved weight"
 }

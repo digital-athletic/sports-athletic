@@ -10,7 +10,7 @@ export const DEFAULT_EXERCISES_DATA = {
         startValue: 10, // value can be reps, weight, duration, ...
         targetValue: 18, // TODO check if we could have multiple targets
         //TODO remove?
-        tags: ["SWR", "LEVEL_BEGINNER"]
+        tags: ["PREVENTION", "LEVEL_BEGINNER"]
     },
     1: {
         exerciseId: 1,
@@ -23,7 +23,7 @@ export const DEFAULT_EXERCISES_DATA = {
         startValue: 10, // value can be reps, weight, duration, ...
         targetValue: 18, // TODO check if we could have multiple targets
         //TODO remove?
-        tags: ["SWR", "LEVEL_BEGINNER"]
+        tags: ["WARMUP", "CARDIO", "LEVEL_BEGINNER"]
     },
     2: {
         exerciseId: 2,
@@ -62,6 +62,6 @@ export const DEFAULT_EXERCISES_DATA = {
         startValue: 10, // value can be reps, weight, duration, ...
         targetValue: 18, // TODO check if we could have multiple targets
         //TODO remove?
-        tags: ["SWR", "LEVEL_BEGINNER"]
+        tags: ["COOLDOWN", "MOBILITY", "LEVEL_BEGINNER"]
     }
 };

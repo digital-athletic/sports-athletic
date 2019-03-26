@@ -155,5 +155,6 @@
   "SUMMARY_TITLE_DURATION": "Duration",
   "SUMMARY_TITLE_COUNT": "Exercise count",
   "SUMMARY_TITLE_POINTS": "Points",
-  "SUMMARY_TITLE_WEIGHT": "Moved weight"
+  "SUMMARY_TITLE_WEIGHT": "Moved weight",
+  "MUSCLE_SORENESS": "Muscle soreness"
 }

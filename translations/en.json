@@ -175,5 +175,13 @@
   "MESSAGE_PLACEHOLDER": "Write your'e message...",
   "SEND": "Send",
   "ERROR_SEND_MSG_TITLE": "Error",
-  "ERROR_SEND_MSG_DESC": "No message can be posted that has no content !"
+  "ERROR_SEND_MSG_DESC": "No message can be posted that has no content !",
+  "NO_MESSAGES_DESC": "There are no activities on your team yet. Once a message has been written, you can see it here.",
+  "NO_WORKOUT_DESC": "There are no activities on your team yet. Once a workout has been completed, you can see it here.",
+  "POINTS": "Points",
+  "TEAM_NEWS_WORKOUT_TEXT_1": "has finished a workout with",
+  "TEAM_NEWS_WORKOUT_TEXT_2": "and a duration of ",
+  "TEAM_NEWS_WORKOUT_TEXT_3": "and gained",
+  "TEAM_NEWS_WORKOUT_TEXT_4": ".",
+  "WORKOUT_DETAILS": "Workout details"
 }

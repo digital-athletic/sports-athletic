@@ -178,5 +178,13 @@
   "MESSAGE_PLACEHOLDER": "Schreibe deine Nachricht...",
   "SEND": "Absenden",
   "ERROR_SEND_MSG_TITLE": "Fehler",
-  "ERROR_SEND_MSG_DESC": "Es kann keine Nachricht gepostet werden, die keinen Inhalt hat !"
+  "ERROR_SEND_MSG_DESC": "Es kann keine Nachricht gepostet werden, die keinen Inhalt hat !",
+  "NO_MESSAGES_DESC": "Es gibt noch keine Aktivitäten in deinem Team. Sobald eine Nachricht geschrieben wurde, kannst du es hier sehen.",
+  "NO_WORKOUT_DESC": "Es gibt noch keine Aktivitäten in deinem Team. Sobald ein Workout absolviert wurde, kannst du es hier sehen.",
+  "POINTS": "Punkte",
+  "TEAM_NEWS_WORKOUT_TEXT_1": "hat ein Workout mit",
+  "TEAM_NEWS_WORKOUT_TEXT_2": "und einer Dauer von ",
+  "TEAM_NEWS_WORKOUT_TEXT_3": "absolviert und dafür",
+  "TEAM_NEWS_WORKOUT_TEXT_4": "erhalten.",
+  "WORKOUT_DETAILS": "Workout Details"
 }

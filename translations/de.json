@@ -186,5 +186,6 @@
   "TEAM_NEWS_WORKOUT_TEXT_2": "und einer Dauer von ",
   "TEAM_NEWS_WORKOUT_TEXT_3": "absolviert und dafür",
   "TEAM_NEWS_WORKOUT_TEXT_4": "erhalten.",
-  "WORKOUT_DETAILS": "Workout Details"
+  "WORKOUT_DETAILS": "Workout Details",
+  "NO_NEWS_DESC": "Es gibt noch keine Neuigkeiten in deinem Team..."
 }

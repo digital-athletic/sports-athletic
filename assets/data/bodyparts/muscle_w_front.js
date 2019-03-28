@@ -77,7 +77,7 @@ const muscleWFront = [
         image: require("../../img/bodyparts/muscle_w_front/geradeBauchmuskeln.png")
     },
     {
-        name: "SEITLICHE_BAUCHMUSKELN_LINKS",
+        name: "SEITLICHE_BAUCHMUSKELN",
         width: 0.045,
         height: 0.12,
         top: 0.339,
@@ -87,14 +87,13 @@ const muscleWFront = [
         image: require("../../img/bodyparts/muscle_w_front/seitlicheBauchmuskeln.png")
     },
     {
-        name: "SEITLICHE_BAUCHMUSKELN_RECHTS",
+        name: "SEITLICHE_BAUCHMUSKELN",
         width: 0.041,
         height: 0.143,
         top: 0.332,
         left: 0.461,
         transform: [{ rotate: "-3deg" }],
-        backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/seitlicheBauchmuskeln.png")
+        backgroundColor: "rgba(0,0,0,0)"
     },
     {
         name: "BRUST",

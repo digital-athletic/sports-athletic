@@ -109,14 +109,13 @@ const muscleMBack = [
         image: require("../../img/bodyparts/muscle_m_back/obererRuecken.png")
     },
     {
-        name: "OBERER_RUECKEN_UNTERER_TEIL",
+        name: "OBERER_RUECKEN",
         width: 0.079,
         height: 0.04,
         top: 0.275,
         left: 0.45,
         transform: [{ rotate: "-3deg" }],
-        backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/obererRuecken.png")
+        backgroundColor: "rgba(0,0,0,0)"
     },
     {
         name: "NACKEN",

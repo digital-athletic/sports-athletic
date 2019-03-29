@@ -102,7 +102,7 @@
   "ABORT_TRAINING_EXPLANATION": "Willst du das Training wirklich abbrechen? Gib dir lieber einen Ruck und mach weiter. Du hast es bald geschafft!",
   "CONTINUE": "Fortsetzen",
   "ABORT": "Abbrechen",
-  "NEXT_EXERCISE_X": "Danach: {{name}}",
+  "NEXT_EXERCISE_COLON_SPACE": "Danach: ",
   "OF": " von ",
   "SETS": "Sätze",
   "WEIGHT_IN": "Gewicht in kg",

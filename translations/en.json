@@ -102,7 +102,7 @@
   "ABORT_TRAINING_EXPLANATION": "Do you really want to stop? Better pull yourself together.  You almost finished!",
   "CONTINUE": "Continue",
   "ABORT": "Abort",
-  "NEXT_EXERCISE_X": "Next: {{name}}",
+  "NEXT_EXERCISE_COLON_SPACE": "Next: ",
   "OF": " of ",
   "SETS": "Sets",
   "WEIGHT_IN": "Weight in kg",

@@ -15,6 +15,7 @@
     "react-native-amplitude-analytics": "0.2.6",
     "react-native-datepicker": "1.7.2",
     "react-native-device-info": "0.26.4",
+    "react-native-email": "1.0.2",
     "react-native-fbsdk": "0.8.0",
     "react-native-firebase": "5.1.0",
     "react-native-gesture-handler": "1.1.0",

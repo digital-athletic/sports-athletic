@@ -23,7 +23,7 @@
   "SETTINGS": "Einstellungen",
   "EVALUATION": "Auswertung",
   "EXERCISES": "Übungen",
-  "TUTORIALS": "Tutorials",
+  "TECHNICAL_VIDEOS": "Technikvideos",
   "REPS": "Wiederholungen",
   "WEIGHT": "Gewicht",
   "TIME": "Zeit",
@@ -159,5 +159,17 @@
   "MUSCLE_SORENESS": "Muskelkater",
   "ANAMNESIS": "Anamnese",
   "LOGOUT": "Ausloggen",
-  "WORKOUT_NOW_MSG": "Denke beim Trainieren immer an ausreichend Flüssigkeit. Am Besten trinkst du Fruchtsaftschorlen oder ähnliche Getränke mit Kolehydraten und Mineralien."
+  "WORKOUT_NOW_MSG": "Denke beim Trainieren immer an ausreichend Flüssigkeit. Am Besten trinkst du Fruchtsaftschorlen oder ähnliche Getränke mit Kolehydraten und Mineralien.",
+  "ACCOUNT": "Konto",
+  "LEGAL": "Rechtliches",
+  "IMPRINT": "Impressum",
+  "PRIVACY": "Datenschutz",
+  "AGB": "AGB's",
+  "CONTACT": "Kontakt",
+  "MESSAGE_TO": "Nachricht verfassen",
+  "MESSAGE_TO_DESC": "Deine Nachricht an uns ...",
+  "MSG_SEND": "Nachricht abschicken",
+  "ERROR_SEND_MESSAGE": "Fehler",
+  "ERROR_SEND_MESSAGE_DESC": "Deine Nachricht ist zu kurz und kann deshalb nicht an {{address}} versendet werden.",
+  "PHONE": "Telefon:"
 }

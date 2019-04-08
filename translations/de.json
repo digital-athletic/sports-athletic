@@ -171,5 +171,8 @@
   "MSG_SEND": "Nachricht abschicken",
   "ERROR_SEND_MESSAGE": "Fehler",
   "ERROR_SEND_MESSAGE_DESC": "Deine Nachricht ist zu kurz und kann deshalb nicht an {{address}} versendet werden.",
-  "PHONE": "Telefon:"
+  "PHONE": "Telefon:",
+  "ADDRESS": "Adresse",
+  "LEGALDOMICILE": "Gerichtsstand",
+  "DIRECTOR": "Geschäftsführer"
 }

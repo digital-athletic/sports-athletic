@@ -171,5 +171,8 @@
   "MSG_SEND": "Message send",
   "ERROR_SEND_MESSAGE": "Error",
   "ERROR_SEND_MESSAGE_DESC": "Your message is too short and therefore cannot be sent to {address}}.",
-  "PHONE": "Phone:"
+  "PHONE": "Phone:",
+  "ADDRESS": "Address",
+  "LEGALDOMICILE": "Legal domicile",
+  "DIRECTOR": "Managing Director"
 }

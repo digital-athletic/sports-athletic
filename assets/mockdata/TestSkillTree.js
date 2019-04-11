@@ -1,70 +1,166 @@
 const TestSkillTree = {
     SWR1: {
         105: {
-            tags: ["oberkoerper", "noEQ"],
+            tags: [
+                "oberkoerper",
+                "horizontal drückend",
+                "chest",
+                "CAT_OBERKOERPER",
+                "triceps",
+                "shoulder"
+            ],
             levels: {
-                0: {
-                    id: 1,
-                    name: "einfache Liegestütz"
+                2: {
+                    id: 280,
+                    name: "Liegestütz normal runter und auf Knien hoch"
                 },
-                1: {
-                    id: 1,
-                    name: "einarmige Liegestütz"
+                4: {
+                    id: 284,
+                    name: "Liegestütz normal"
                 },
-                3: {
-                    id: 1,
-                    name: "gesprungene Liegstütz"
+                5: {
+                    id: 287,
+                    name: "Liegstütz Beine erhöht"
                 }
             }
         },
         106: {
-            tags: ["oberkoerper"],
+            tags: [
+                "oberkoerper",
+                "CAT_OBERKOERPER",
+                "triceps",
+                "shoulder",
+                "dumbbells",
+                "height adjustable bench"
+            ],
+            levels: {
+                2: {
+                    id: 12,
+                    name: "KH Schulterdrücken mit Rotation sitzend SWR"
+                }
+            }
+        },
+        99: {
+            tags: [
+                "oberkoerper",
+                "shoulder",
+                "chest",
+                "CAT_OBERKOERPER",
+                "dumbbells",
+                "flat bench",
+                "height adjustable bench"
+            ],
             levels: {
                 1: {
-                    id: 1,
-                    name: "KH Schulterdrücken mit Rotation sitzend SWR1"
+                    id: 23,
+                    name: "einarmiger Butterfly mit KH li und re"
                 },
-                2: {}
+                2: {
+                    id: 22,
+                    name:
+                        "einarmiger Butterfly mit KH (Po in der Luft) li und re"
+                }
             }
         },
         107: {
-            tags: ["oberkoerper"],
-            levels: { 1: { id: 1, name: "Frontheben mit KH (Druck)" } }
+            tags: [
+                "oberkoerper",
+                "shoulder",
+                "chest",
+                "CAT_OBERKOERPER",
+                "dumbbells"
+            ],
+            levels: { 1: { id: 26, name: "Frontheben mit KH (Druck)" } }
         },
-
+        98: {
+            tags: [
+                "oberkoerper",
+                "CAT_OBERKOERPER",
+                "lat",
+                "upper back",
+                "biceps",
+                "shoulder",
+                "dumbbells",
+                "height adjustable bench"
+            ],
+            levels: { 1: { id: 100, name: "Rudern mit 2 KH auf Schrägbank" } }
+        },
         108: {
-            tags: ["oberkoerper"],
-            levels: { 1: { id: 1, name: "LH Bankdrücken" } }
+            tags: [
+                "oberkoerper",
+                "shoulder",
+                "triceps",
+                "chest",
+                "CAT_OBERKOERPER",
+                "barbell",
+                "barbell flat bench"
+            ],
+            levels: { 1: { id: 350, name: "LH Bankdrücken" } }
         },
         101: {
-            tags: ["unterkoerper"],
+            tags: [
+                "unterkoerper",
+                "CAT_UNTERKOERPER",
+                "barbell",
+                "thigh",
+                "buttock"
+            ],
             levels: {
-                1: { id: 1, name: "Ausfallschritt mit LH statisch li und re" }
+                1: { id: 80, name: "Ausfallschritt mit LH statisch li und re" }
             }
         },
         102: {
-            tags: ["unterkoerper"],
-            levels: { 1: { id: 1, name: "Kniebeuge mit 2 KH" } }
+            tags: [
+                "unterkoerper",
+                "CAT_UNTERKOERPER",
+                "dumbbells",
+                "thigh",
+                "buttock",
+                "barbell squat rack"
+            ],
+            levels: { 1: { id: 259, name: "Kniebeuge mit 2 KH" } }
+        },
+        97: {
+            tags: ["CAT_UNTERKOERPER", "thigh", "buttock", "lower back"],
+            levels: {
+                1: {
+                    id: 270,
+                    name:
+                        "seitlicher Ausfallschritt statisch mit 2 KH li und re"
+                }
+            }
+        },
+        96: {
+            tags: [
+                "CAT_OBERKOERPER",
+                "shoulder",
+                "biceps",
+                "upper back",
+                "lower back",
+                "lat",
+                "dumbbells"
+            ],
+            levels: { 1: { id: 96, name: "Rudern mit 2 KH vorgebeugt" } }
         },
         103: {
-            tags: ["unterkoerper"],
+            tags: ["unterkoerper", "dumbbells", "calves", "CAT_UNTERKOERPER"],
             levels: {
-                1: { id: 1, name: "Wadenheben mit 2 KH auf Gewichtsscheibe" }
+                1: { id: 340, name: "Wadenheben mit 2 KH auf Gewichtsscheibe" }
             }
         },
         100: {
             tags: ["rumpf"],
             levels: {
-                1: { id: 1, name: "Kreuzheben mit LH (gestreckte Beine)" }
+                1: { id: 39, name: "Kreuzheben mit LH (gestreckte Beine)" }
             }
         },
         104: {
             tags: ["rumpf"],
-            levels: { 1: { id: 1, name: "Rumpfrotation am Boden mit KH" } }
+            levels: { 1: { id: 601, name: "Rumpfrotation am Boden mit KH" } }
         },
         109: {
             tags: ["rumpf"],
-            levels: { 1: { id: 1, name: "Rumpfseitneigen mit KH li und re" } }
+            levels: { 1: { id: 103, name: "Rumpfseitneigen mit KH li und re" } }
         }
     },
     MOB: {

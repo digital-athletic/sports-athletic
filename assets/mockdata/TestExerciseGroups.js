@@ -28,7 +28,7 @@ const TestTrainingSections = {
         "SWU"
     ],
     SWR1: [
-        "MAX"
+        "MAX",
         "BAS",
         "GKS",
         "ÜG",
@@ -67,7 +67,7 @@ const TestTrainingSections = {
         "BAS",
         "GKS",
         "ÜG",
-        "PRKG"
+        "PRKG",
         "PR",
         "A1",
         "A4",
@@ -85,7 +85,7 @@ const TestTrainingSections = {
         "PLYH",
         "BAS",
         "GKS",
-        "ÜG"
+        "ÜG",
         "KG",
         "PRKG",
         "PR",

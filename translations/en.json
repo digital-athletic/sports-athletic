@@ -159,5 +159,15 @@
   "MUSCLE_SORENESS": "Muscle soreness",
   "ANAMNESIS": "Anamnese",
   "LOGOUT": "Ausloggen",
-  "WORKOUT_NOW_MSG": "Remember to rehydrate when working out. Juice spritzers or similar drinks with carbohydrates and minerals support your performance."
+  "WORKOUT_NOW_MSG": "Remember to rehydrate when working out. Juice spritzers or similar drinks with carbohydrates and minerals support your performance.",
+  "SECTIONS": "Specialization",
+  "SWR_SECTION_TITLE": "Jump, throw, body strength",
+  "SK_SECTION_TITLE": "High-speed strength",
+  "SA_SECTION_TITLE": "Speed perseverance",
+  "MAX_KRAFT_SECTION_TITLE": "Maximum force",
+  "TARGET": "Target",
+  "SWR_SECTION_CAPTION": "Focus on correct execution",
+  "SK_SECTION_CAPTION": "IMPORTANT!\nTechnique before speed!",
+  "SA_SECTION_CAPTION": "Keep the speed up until the end",
+  "MAX_KRAFT_SECTION_CAPTION": "Always watch your technique!"
 }

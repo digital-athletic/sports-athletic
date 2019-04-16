@@ -159,5 +159,15 @@
   "MUSCLE_SORENESS": "Muskelkater",
   "ANAMNESIS": "Anamnese",
   "LOGOUT": "Ausloggen",
-  "WORKOUT_NOW_MSG": "Denke beim Trainieren immer an ausreichend Flüssigkeit. Am Besten trinkst du Fruchtsaftschorlen oder ähnliche Getränke mit Kolehydraten und Mineralien."
+  "WORKOUT_NOW_MSG": "Denke beim Trainieren immer an ausreichend Flüssigkeit. Am Besten trinkst du Fruchtsaftschorlen oder ähnliche Getränke mit Kolehydraten und Mineralien.",
+  "SECTIONS": "Schwerpunkte",
+  "SWR_SECTION_TITLE": "Sprung-, Wurf-, Rumpfkraft",
+  "SK_SECTION_TITLE": "Schnellkraft",
+  "SA_SECTION_TITLE": "Schnelligkeitsausdauer",
+  "MAX_KRAFT_SECTION_TITLE": "Maximalkraft",
+  "TARGET": "Ziel",
+  "SWR_SECTION_CAPTION": "Achte auf eine saubere Ausführung",
+  "SK_SECTION_CAPTION": "WICHTIG!\nTechnik vor Tempo!",
+  "SA_SECTION_CAPTION": "Halte das Tempo bis zum Ende hoch",
+  "MAX_KRAFT_SECTION_CAPTION": "Achte immer auf korrekte Technik!"
 }

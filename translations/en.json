@@ -176,5 +176,6 @@
   "PHONE": "Phone:",
   "ADDRESS": "Address",
   "LEGALDOMICILE": "Legal domicile",
-  "DIRECTOR": "Managing Director"
+  "DIRECTOR": "Managing Director",
+  "SECOND_SHORT": "sec."
 }

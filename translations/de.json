@@ -176,5 +176,6 @@
   "PHONE": "Telefon:",
   "ADDRESS": "Adresse",
   "LEGALDOMICILE": "Gerichtsstand",
-  "DIRECTOR": "Geschäftsführer"
+  "DIRECTOR": "Geschäftsführer",
+  "SECOND_SHORT": "Sek."
 }

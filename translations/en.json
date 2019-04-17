@@ -159,5 +159,8 @@
   "MUSCLE_SORENESS": "Muscle soreness",
   "ANAMNESIS": "Anamnese",
   "LOGOUT": "Ausloggen",
-  "WORKOUT_NOW_MSG": "Remember to rehydrate when working out. Juice spritzers or similar drinks with carbohydrates and minerals support your performance."
+  "WORKOUT_NOW_MSG": "Remember to rehydrate when working out. Juice spritzers or similar drinks with carbohydrates and minerals support your performance.",
+  "EXERCISE_HINTS": "Exercise hints",
+  "EQUIPMENT": "Equipment",
+  "MUSCLES_TRAINED": "Muscles trained"
 }

@@ -9,7 +9,7 @@
     "prettier": "prettier 'js/**/*.js' --write --tab-width 4"
   },
   "dependencies": {
-    "bugsnag-react-native": "2.12.6",
+    "bugsnag-react-native": "2.17.0",
     "react": "16.6.1",
     "react-native": "0.57.5",
     "react-native-amplitude-analytics": "0.2.6",
@@ -24,7 +24,7 @@
     "react-native-iphone-x-helper": "1.2.0",
     "react-native-orientation-locker": "1.1.5",
     "react-native-fs": "2.13.3",
-    "react-native-zip-archive": "3.0.1",
+    "react-native-zip-archive": "4.0.0",
     "react-native-sectioned-multi-select": "0.6.5",
     "react-native-video": "4.4.1",
     "react-native-snap-slider": "0.3.0",

@@ -14,13 +14,20 @@ export const DEFAULT_EXERCISES_DATA = {
         exerciseId: 0,
         level: 1,
         name: "seitlicher Ausfallschritt statisch", // row 399
-        description: "",
+        description: { default: ["Mach das richtig!"], en: ["Do it right!"] },
         picture: "0000seitlicher_Ausfallschritt_statisch_li_re_Warm_Up.png",
         video: "0000seitlicher_Ausfallschritt_statisch_li_re_Warm_Up.mp4",
         startValue: 20, // value can be reps, weight, duration, ...
         targetValue: 30, // TODO check if we could have multiple targets
         //TODO remove?
-        tags: ["WARMUP", "PREVENTION", "LEVEL_BEGINNER"]
+        tags: [
+            "WARMUP",
+            "PREVENTION",
+            "LEVEL_BEGINNER",
+            "MUSCLE_BRUST",
+            "MUSCLE_NACKEN",
+            "EQUIPMENT_BOX"
+        ]
     },
     1: {
         exerciseId: 1,

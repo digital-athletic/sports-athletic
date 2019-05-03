@@ -163,98 +163,100 @@ const TestSkillTree = {
     MOB: {
         120: {
             tags: ["REGION_OBERKOERPER"],
-            levels: { 1: { id: 1, name: "Wirbelsäulen-Rotation" } }
+            levels: { 1: { id: 9, name: "Wirbelsäulen-Rotation" } }
         },
         121: {
             tags: ["REGION_OBERKOERPER"],
-            levels: { 1: { id: 1, name: "Schulter-Brücke" } }
+            levels: { 1: { id: 10, name: "Schulter-Brücke" } }
         },
         122: {
             tags: ["REGION_OBERKOERPER"],
-            levels: { 1: { id: 1, name: "Schulterwischen am Boden li und re" } }
+            levels: {
+                1: { id: 11, name: "Schulterwischen am Boden li und re" }
+            }
         },
         123: {
             tags: ["REGION_OBERKOERPER"],
-            levels: { 1: { id: 1, name: "Schulterpendel an Wand li/re" } }
+            levels: { 1: { id: 12, name: "Schulterpendel an Wand li/re" } }
         },
         124: {
             tags: ["REGION_OBERKOERPER"],
-            levels: { 1: { id: 1, name: "Schwertziehen li/re" } }
+            levels: { 1: { id: 13, name: "Schwertziehen li/re" } }
         },
         125: {
             tags: ["REGION_UNTERKOERPER"],
             levels: {
-                1: { id: 1, name: "Sprunggelenksmobilität an Wand li und re" }
+                1: { id: 14, name: "Sprunggelenksmobilität an Wand li und re" }
             }
         },
         126: {
             tags: ["REGION_UNTERKOERPER"],
-            levels: { 1: { id: 1, name: "GoGo Squat" } }
+            levels: { 1: { id: 15, name: "GoGo Squat" } }
         },
         127: {
             tags: ["REGION_UNTERKOERPER"],
-            levels: { 1: { id: 1, name: "Hüftrotation im Stehen li/re" } }
+            levels: { 1: { id: 16, name: "Hüftrotation im Stehen li/re" } }
         },
         128: {
             tags: ["REGION_UNTERKOERPER"],
             levels: {
                 1: {
-                    id: 1,
+                    id: 17,
                     name: "tiefe Kniebeuge mit Ball und Armen über Kopf"
                 }
             }
         },
         129: {
             tags: ["REGION_UNTERKOERPER"],
-            levels: { 1: { id: 1, name: "Kniebeugen Serie" } }
+            levels: { 1: { id: 18, name: "Kniebeugen Serie" } }
         }
     },
     SWR1KG: {
         181: {
             tags: ["REGION_UNTERKOERPER"],
-            levels: { 1: { id: 1, name: "Kniebeugen Serie" } }
+            levels: { 1: { id: 19, name: "Kniebeugen Serie" } }
         },
         182: {
             tags: ["REGION_UNTERKOERPER"],
-            levels: { 1: { id: 1, name: "Kniebeugen Serie" } }
+            levels: { 1: { id: 20, name: "Kniebeugen Serie" } }
         },
         183: {
             tags: ["REGION_UNTERKOERPER"],
-            levels: { 1: { id: 1, name: "Kniebeugen Serie" } }
+            levels: { 1: { id: 21, name: "Kniebeugen Serie" } }
         },
         184: {
             tags: ["REGION_OBERKOERPER"],
-            levels: { 1: { id: 1, name: "Kniebeugen Serie" } }
+            levels: { 1: { id: 22, name: "Kniebeugen Serie" } }
         },
         185: {
             tags: ["REGION_OBERKOERPER"],
-            levels: { 1: { id: 1, name: "Kniebeugen Serie" } }
+            levels: { 1: { id: 23, name: "Kniebeugen Serie" } }
         },
         186: {
             tags: ["REGION_OBERKOERPER"],
-            levels: { 1: { id: 1, name: "Kniebeugen Serie" } }
+            levels: { 1: { id: 24, name: "Kniebeugen Serie" } }
         },
         187: {
             tags: ["REGION_RUMPF"],
-            levels: { 1: { id: 1, name: "Kniebeugen Serie" } }
+            levels: { 1: { id: 25, name: "Kniebeugen Serie" } }
         },
         188: {
             tags: ["REGION_RUMPF"],
-            levels: { 1: { id: 1, name: "Kniebeugen Serie" } }
+            levels: { 1: { id: 26, name: "Kniebeugen Serie" } }
         }
     },
     ZONE_2: {
         138: {
             tags: ["cardio2"],
             levels: {
-                1: { id: 1, name: "Laufband (schnelles Laufen)" }
+                1: { id: 27, name: "Laufband (schnelles Laufen)" }
             }
         },
         139: {
             tags: ["cardio2"],
             levels: {
                 1: {
-                    id: 1,
+                    id: 28,
                     name: "Rechteck-Lauf"
                 }
             }
@@ -263,7 +265,7 @@ const TestSkillTree = {
             tags: ["cardio2"],
             levels: {
                 1: {
-                    id: 1,
+                    id: 29,
                     name: "20 m Linienläufe"
                 }
             }
@@ -279,7 +281,7 @@ const TestSkillTree = {
         1: {
             tags: ["cardio1"],
             levels: {
-                1: { id: 1, name: "Laufband (sehr schnelles Laufen)" }
+                1: { id: 30, name: "Laufband (sehr schnelles Laufen)" }
             }
         }
     },
@@ -292,17 +294,19 @@ const TestSkillTree = {
     PREVSHOULDER: {
         160: {
             tags: ["REGION_OBERKOERPER"],
-            levels: { 1: { id: 1, name: "Schulterwischen am Boden li und re" } }
+            levels: {
+                1: { id: 31, name: "Schulterwischen am Boden li und re" }
+            }
         },
         162: {
             tags: ["REGION_OBERKOERPER"],
-            levels: { 1: { id: 1, name: "Schulterpendel an Wand li und re" } }
+            levels: { 1: { id: 32, name: "Schulterpendel an Wand li und re" } }
         },
         164: {
             tags: ["REGION_OBERKOERPER"],
             levels: {
                 1: {
-                    id: 1,
+                    id: 33,
                     name: "Schulterblattaktivierung im Unterarmstütz Level 1"
                 }
             }
@@ -311,52 +315,57 @@ const TestSkillTree = {
             tags: ["REGION_OBERKOERPER"],
             levels: {
                 1: {
-                    id: 1,
+                    id: 34,
                     name: "Seitstütz mit Oberkörperrotation Level 1 li und re"
                 }
             }
         },
         167: {
             tags: ["REGION_OBERKOERPER"],
-            levels: { 1: { id: 1, name: "Unterarmstütz" } }
+            levels: { 1: { id: 35, name: "Unterarmstütz" } }
         },
         168: {
             tags: ["REGION_OBERKOERPER"],
             levels: {
-                1: { id: 1, name: "Mobilität Schulter in Rückenlage li und re" }
+                1: {
+                    id: 36,
+                    name: "Mobilität Schulter in Rückenlage li und re"
+                }
             }
         }
     },
     PREVKNEE: {
         111: {
             tags: ["REGION_UNTERKOERPER"],
-            levels: { 1: { id: 1, name: "tiefe Kniebeuge" } }
+            levels: { 1: { id: 37, name: "tiefe Kniebeuge" } }
         },
         113: {
             tags: ["REGION_UNTERKOERPER"],
-            levels: { 1: { id: 1, name: "Wadenheben mit KG" } }
+            levels: { 1: { id: 38, name: "Wadenheben mit KG" } }
         },
         114: {
             tags: ["REGION_UNTERKOERPER"],
             levels: {
-                1: { id: 1, name: "Wadenheben aufgestützt (volle Bewegung)" }
+                1: { id: 39, name: "Wadenheben aufgestützt (volle Bewegung)" }
             }
         },
         116: {
             tags: ["REGION_UNTERKOERPER"],
-            levels: { 1: { id: 1, name: "exzentrische Kniebeuge (li und re)" } }
+            levels: {
+                1: { id: 40, name: "exzentrische Kniebeuge (li und re)" }
+            }
         },
         119: {
             tags: ["REGION_UNTERKOERPER"],
             levels: {
-                1: { id: 1, name: "halbe einbeinige Kniebeuge li und re" }
+                1: { id: 41, name: "halbe einbeinige Kniebeuge li und re" }
             }
         },
         118: {
             tags: ["REGION_UNTERKOERPER"],
             levels: {
                 1: {
-                    id: 1,
+                    id: 42,
                     name: "GoGo Squat bzw. Tiefkniebeuge mit festhalten an Bank"
                 }
             }
@@ -365,13 +374,13 @@ const TestSkillTree = {
     BAS: {
         131: {
             tags: ["REGION_UNTERKOERPER"],
-            levels: { 1: { id: 1, name: "seitliche Sprünge beidbeinig" } }
+            levels: { 1: { id: 43, name: "seitliche Sprünge beidbeinig" } }
         },
         133: {
             tags: ["REGION_UNTERKOERPER"],
             levels: {
                 1: {
-                    id: 1,
+                    id: 44,
                     name:
                         "Einbeinstand mit Handballwurf gegen Wand und Beinwechsel li/re"
                 }
@@ -381,27 +390,29 @@ const TestSkillTree = {
     BR: {
         142: {
             tags: ["REGION_UNTERKOERPER"],
-            levels: { 1: { id: 1, name: "Po mit Rolle li und re" } }
+            levels: { 1: { id: 45, name: "Po mit Rolle li und re" } }
         },
         143: {
             tags: ["REGION_UNTERKOERPER"],
-            levels: { 1: { id: 1, name: "Beininnenseite mit Rolle li und re" } }
+            levels: {
+                1: { id: 46, name: "Beininnenseite mit Rolle li und re" }
+            }
         },
         144: {
             tags: ["REGION_UNTERKOERPER"],
-            levels: { 1: { id: 1, name: "Wade mit Rolle li und re" } }
+            levels: { 1: { id: 47, name: "Wade mit Rolle li und re" } }
         },
         145: {
             tags: ["REGION_UNTERKOERPER"],
-            levels: { 1: { id: 1, name: "Schienbein mit Rolle li und re" } }
+            levels: { 1: { id: 48, name: "Schienbein mit Rolle li und re" } }
         },
         148: {
             tags: ["REGION_OBERKOERPER"],
-            levels: { 1: { id: 1, name: "Schulterblatt mit Ball li und re" } }
+            levels: { 1: { id: 49, name: "Schulterblatt mit Ball li und re" } }
         },
         149: {
             tags: ["REGION_OBERKOERPER"],
-            levels: { 1: { id: 1, name: "Brust mit Ball li und re" } }
+            levels: { 1: { id: 50, name: "Brust mit Ball li und re" } }
         }
     },
     MAX: {
@@ -421,7 +432,7 @@ const TestSkillTree = {
             tags: ["ganzkoerper"],
             levels: {
                 1: {
-                    id: 1,
+                    id: 51,
                     name:
                         "Rumpfrotation im Ausfallschritt mit Ellenbogen zum Boden li und re"
                 }
@@ -429,25 +440,25 @@ const TestSkillTree = {
         },
         171: {
             tags: ["REGION_OBERKOERPER"],
-            levels: { 1: { id: 1, name: "Schulter-Brücke" } }
+            levels: { 1: { id: 52, name: "Schulter-Brücke" } }
         },
         172: {
             tags: ["REGION_OBERKOERPER"],
             levels: {
                 1: {
-                    id: 1,
+                    id: 53,
                     name: "Schulterblattaktivierung im Unterarmstütz Level 1"
                 }
             }
         },
         173: {
             tags: ["REGION_OBERKOERPER"],
-            levels: { 1: { id: 1, name: "Wallslide an Wand sitzend" } }
+            levels: { 1: { id: 54, name: "Wallslide an Wand sitzend" } }
         },
         174: {
             tags: ["REGION_UNTERKOERPER"],
             levels: {
-                1: { id: 1, name: "seitlicher Ausfallschritt statisch li/re" }
+                1: { id: 2, name: "seitlicher Ausfallschritt statisch li/re" }
             }
         }
     },
@@ -455,33 +466,33 @@ const TestSkillTree = {
         151: {
             tags: ["REGION_UNTERKOERPER"],
             levels: {
-                1: { id: 1, name: "Dehnung Schienbeinvorderseite li und re" }
+                1: { id: 3, name: "Dehnung Schienbeinvorderseite li und re" }
             }
         },
         155: {
             tags: ["REGION_UNTERKOERPER"],
-            levels: { 1: { id: 1, name: "weltbeste Übung li/re" } }
+            levels: { 1: { id: 4, name: "weltbeste Übung li/re" } }
         },
         156: {
             tags: ["REGION_UNTERKOERPER"],
-            levels: { 1: { id: 1, name: "Adduktoren (1) li und re" } }
+            levels: { 1: { id: 5, name: "Adduktoren (1) li und re" } }
         },
         153: {
             tags: ["REGION_OBERKOERPER"],
-            levels: { 1: { id: 1, name: "Der Bogen li und re" } }
+            levels: { 1: { id: 6, name: "Der Bogen li und re" } }
         },
         159: {
             tags: ["REGION_OBERKOERPER"],
             levels: {
                 1: {
-                    id: 1,
+                    id: 7,
                     name: "Dehnung/Mobilisation der Schulterinnenrotation"
                 }
             }
         },
         158: {
             tags: ["REGION_OBERKOERPER"],
-            levels: { 1: { id: 1, name: "Pferderücken und Katzenbuckel" } }
+            levels: { 1: { id: 8, name: "Pferderücken und Katzenbuckel" } }
         }
     }
 };

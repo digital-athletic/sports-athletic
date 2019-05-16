@@ -1,7 +1,7 @@
 const Exercises = [
     {
         id: 1,
-        name: "KH Schulterfrontdr�cken in R�cklage Level 1 GStabi",
+        name: "KH Schulterfrontdrücken in Rücklage Level 1 GStabi",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -28,7 +28,7 @@ const Exercises = [
         isAdvanceByDuration: false,
         isJump: false,
         description:
-            "- K�rper mit leicht rundem Oberk�rper so weit nach hinten lehnen wie du stabil bist\n- Ellenbogen zum K�rper eindrehen und dort fixieren",
+            "- Kürper mit leicht rundem Oberkürper so weit nach hinten lehnen wie du stabil bist\n- Ellenbogen zum Kürper eindrehen und dort fixieren",
         video: null,
         values: {
             repetition: {
@@ -62,7 +62,7 @@ const Exercises = [
     },
     {
         id: 2,
-        name: "KH Schulterfrontdr�cken in R�cklage Level 2 GStabi",
+        name: "KH Schulterfrontdrücken in Rücklage Level 2 GStabi",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -123,7 +123,7 @@ const Exercises = [
     },
     {
         id: 3,
-        name: "KH Schulterfrontdr�cken in R�cklage Level 3 GStabi",
+        name: "KH Schulterfrontdrücken in Rücklage Level 3 GStabi",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -184,7 +184,7 @@ const Exercises = [
     },
     {
         id: 4,
-        name: "KH Schulterdr�cken mit Rotation sitzend SWR",
+        name: "KH Schulterdrücken mit Rotation sitzend SWR",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SWR",
@@ -242,7 +242,7 @@ const Exercises = [
     {
         id: 5,
         name:
-            "Arnie Press (=2 KH Schulterdr�cken mit 180� Rotation) sitzend 2 evtl ganz weglassen!",
+            "Arnie Press (=2 KH Schulterdrücken mit 180ü Rotation) sitzend 2 evtl ganz weglassen!",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -271,7 +271,7 @@ const Exercises = [
     },
     {
         id: 6,
-        name: "Arnie Press (=2 KH Schulterdr�cken mit 180� Rotation) stehend",
+        name: "Arnie Press (=2 KH Schulterdrücken mit 180ü Rotation) stehend",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -300,7 +300,7 @@ const Exercises = [
     },
     {
         id: 7,
-        name: "Bankdr�cken mit 2 KH SWR",
+        name: "Bankdrücken mit 2 KH SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_MAX_KRAFT_TEST",
@@ -359,7 +359,7 @@ const Exercises = [
     },
     {
         id: 8,
-        name: "Bankdr�cken mit 2 KH Max-K",
+        name: "Bankdrücken mit 2 KH Max-K",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_MAX_KRAFT",
@@ -409,7 +409,7 @@ const Exercises = [
     },
     {
         id: 9,
-        name: "Bankdr�cken mit 2 Kh SA",
+        name: "Bankdrücken mit 2 Kh SA",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -459,7 +459,7 @@ const Exercises = [
     },
     {
         id: 10,
-        name: "Bankdr�cken mit 2 KH SK",
+        name: "Bankdrücken mit 2 KH SK",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -508,7 +508,7 @@ const Exercises = [
     },
     {
         id: 11,
-        name: "einarmiges KH Bankdr�cken li und re GStabi",
+        name: "einarmiges KH Bankdrücken li und re GStabi",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -569,7 +569,7 @@ const Exercises = [
     },
     {
         id: 12,
-        name: "einarmiges KH Bankdr�cken li und re (Po in der Luft) GStabi",
+        name: "einarmiges KH Bankdrücken li und re (Po in der Luft) GStabi",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -634,7 +634,7 @@ const Exercises = [
     {
         id: 13,
         name:
-            "einarmiges KH Bankdr�cken eng li und re Stabi + Pr�v (Version statt normal bei GStabi)",
+            "einarmiges KH Bankdrücken eng li und re Stabi + Präv (Version statt normal bei GStabi)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -885,7 +885,7 @@ const Exercises = [
     {
         id: 17,
         name:
-            "einbeiniges Kreuzheben mit 1 KH li Fu� re KH (habe ich an anderer Stelle)",
+            "einbeiniges Kreuzheben mit 1 KH li Fuü re KH (habe ich an anderer Stelle)",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -1081,7 +1081,7 @@ const Exercises = [
     },
     {
         id: 21,
-        name: "H�ftrotation mit KH li und re Level 1 SK",
+        name: "Hüftrotation mit KH li und re Level 1 SK",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -1155,7 +1155,7 @@ const Exercises = [
     },
     {
         id: 22,
-        name: "H�ftrotation mit KH li/re Level 2 SK",
+        name: "Hüftrotation mit KH li/re Level 2 SK",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -1226,7 +1226,7 @@ const Exercises = [
     },
     {
         id: 23,
-        name: "LH Rudern in Standwaage (aufgest�tzt) li und re GStabi",
+        name: "LH Rudern in Standwaage (aufgestützt) li und re GStabi",
         level: { m: 2, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -1923,7 +1923,7 @@ const Exercises = [
     },
     {
         id: 35,
-        name: "Kreuzheben mit 2 KH (gestreckte Beine) Max-K (�berlegen)",
+        name: "Kreuzheben mit 2 KH (gestreckte Beine) Max-K (überlegen)",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -3171,7 +3171,7 @@ const Exercises = [
     },
     {
         id: 54,
-        name: "LH Schulterfrontdr�cken SWR",
+        name: "LH Schulterfrontdrücken SWR",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_MAX_KRAFT_TEST",
@@ -3232,7 +3232,7 @@ const Exercises = [
     },
     {
         id: 55,
-        name: "LH Schulterfrontdr�cken Max-K",
+        name: "LH Schulterfrontdrücken Max-K",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_MAX_KRAFT",
@@ -3284,7 +3284,7 @@ const Exercises = [
     },
     {
         id: 56,
-        name: "LH Schulterfrontdr�cken SK",
+        name: "LH Schulterfrontdrücken SK",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -3335,7 +3335,7 @@ const Exercises = [
     },
     {
         id: 57,
-        name: "LH Schulterfrontdr�cken SA",
+        name: "LH Schulterfrontdrücken SA",
         level: { m: 2, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -3387,7 +3387,7 @@ const Exercises = [
     },
     {
         id: 58,
-        name: "L-�bung mit 2 KH Pr�v",
+        name: "L-übung mit 2 KH Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -3450,7 +3450,7 @@ const Exercises = [
     },
     {
         id: 59,
-        name: "L-�bung mit 2 KH U",
+        name: "L-übung mit 2 KH U",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SUPPORT",
@@ -3507,7 +3507,7 @@ const Exercises = [
     },
     {
         id: 60,
-        name: "alternierendes Flaschen heben vorgebeugt Pr�v (Schulter)",
+        name: "alternierendes Flaschen heben vorgebeugt Präv (Schulter)",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -3536,7 +3536,7 @@ const Exercises = [
     },
     {
         id: 61,
-        name: "alternierendes KH heben vorgebeugt Pr�v (Schulter)",
+        name: "alternierendes KH heben vorgebeugt Präv (Schulter)",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -3565,7 +3565,7 @@ const Exercises = [
     },
     {
         id: 62,
-        name: "Finger St�tz auf 1 Arm (Level 3/4) U",
+        name: "Finger Stütz auf 1 Arm (Level 3/4) U",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -3594,7 +3594,7 @@ const Exercises = [
     },
     {
         id: 63,
-        name: "Ausfallschritt mit 2 KH statisch li und re SWR + Pr�v",
+        name: "Ausfallschritt mit 2 KH statisch li und re SWR + Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_KNIE_HUEFTE",
@@ -3754,7 +3754,7 @@ const Exercises = [
     },
     {
         id: 66,
-        name: "Ausfallschritte marschierend mit 2 KH �ber Kopf li/re (GStabi)",
+        name: "Ausfallschritte marschierend mit 2 KH über Kopf li/re (GStabi)",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -4458,7 +4458,7 @@ const Exercises = [
     },
     {
         id: 79,
-        name: "Knieheben mit 2 KH �ber Kopf Level 1 GStabi",
+        name: "Knieheben mit 2 KH über Kopf Level 1 GStabi",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -4527,7 +4527,7 @@ const Exercises = [
     },
     {
         id: 80,
-        name: "Rei�kniebeuge mit LH GStabi",
+        name: "Reiükniebeuge mit LH GStabi",
         level: { m: 3, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -4812,7 +4812,7 @@ const Exercises = [
     },
     {
         id: 84,
-        name: "Rudern in Liegest�tz mit 2 KH und Liegest�tz  Level 3 Gstabi",
+        name: "Rudern in Liegestütz mit 2 KH und Liegestütz  Level 3 Gstabi",
         level: { m: 3, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -4879,7 +4879,7 @@ const Exercises = [
     },
     {
         id: 85,
-        name: "Rudern in Liegest�tz auf Knien mit 1 KH (Level 1) GStabi",
+        name: "Rudern in Liegestütz auf Knien mit 1 KH (Level 1) GStabi",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -4952,7 +4952,7 @@ const Exercises = [
     },
     {
         id: 86,
-        name: "Rudern in Liegest�tz mit 1 KH (Level 2) GStabi",
+        name: "Rudern in Liegestütz mit 1 KH (Level 2) GStabi",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -5026,7 +5026,7 @@ const Exercises = [
     {
         id: 87,
         name:
-            "Rudern mit KH in Liegest�tz mit 1 Arm auf Bank li und re Level 3 Gstabi",
+            "Rudern mit KH in Liegestütz mit 1 Arm auf Bank li und re Level 3 Gstabi",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -5308,7 +5308,7 @@ const Exercises = [
     },
     {
         id: 92,
-        name: "Rudern mit 2 KH auf Schr�gbank (Level 1) SWR",
+        name: "Rudern mit 2 KH auf Schrügbank (Level 1) SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -5366,7 +5366,7 @@ const Exercises = [
     },
     {
         id: 93,
-        name: "Rudern mit 2 KH auf Schr�gbank (Level 1) SK",
+        name: "Rudern mit 2 KH auf Schrügbank (Level 1) SK",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -5415,7 +5415,7 @@ const Exercises = [
     },
     {
         id: 94,
-        name: "Rudern mit 2 KH auf Schr�gbank (Level 1) SA",
+        name: "Rudern mit 2 KH auf Schrügbank (Level 1) SA",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -5465,7 +5465,7 @@ const Exercises = [
     {
         id: 95,
         name:
-            "Rumpfseitneigen mit KH, Fu� auf Bank li und re (Level 2) SWR + U",
+            "Rumpfseitneigen mit KH, Fuü auf Bank li und re (Level 2) SWR + U",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SUPPORT",
@@ -6065,7 +6065,7 @@ const Exercises = [
     },
     {
         id: 104,
-        name: "T-�bung mit 2 KH Pr�v + U",
+        name: "T-übung mit 2 KH Präv + U",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -6350,7 +6350,7 @@ const Exercises = [
     },
     {
         id: 109,
-        name: "Aussenseite Fu�gelenksmuskulatur mit Hand li und re Pr�v",
+        name: "Aussenseite Fuügelenksmuskulatur mit Hand li und re Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SPRUNGGELENK",
@@ -6395,7 +6395,7 @@ const Exercises = [
     },
     {
         id: 110,
-        name: "einbeiniges H�ftheben li und re Level 2 SWR + Pr�v",
+        name: "einbeiniges Hüftheben li und re Level 2 SWR + Präv",
         level: { m: 2, w: 2 },
         tags: [
             "PREVENTION_KNIE_HUEFTE",
@@ -6446,7 +6446,7 @@ const Exercises = [
     },
     {
         id: 111,
-        name: "einbeiniges H�ftheben auf Ball li und re Level 4 SWR",
+        name: "einbeiniges Hüftheben auf Ball li und re Level 4 SWR",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_SWR",
@@ -6498,7 +6498,7 @@ const Exercises = [
     },
     {
         id: 112,
-        name: "exzentrische Liegest�tzte auf Knie Level 1 Pr�v",
+        name: "exzentrische Liegestützte auf Knie Level 1 Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -6563,7 +6563,7 @@ const Exercises = [
     },
     {
         id: 113,
-        name: "exzentrische Liegest�tzte Level 2 Pr�v",
+        name: "exzentrische Liegestützte Level 2 Präv",
         level: { m: 2, w: 2 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -6628,7 +6628,7 @@ const Exercises = [
     },
     {
         id: 114,
-        name: "exzentrische Liegest�tzte auf Knie und Faust Level 1  Pr�v",
+        name: "exzentrische Liegestützte auf Knie und Faust Level 1  Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -6695,7 +6695,7 @@ const Exercises = [
     },
     {
         id: 115,
-        name: "exzentrische Liegest�tzte auf Faust Level 2  Pr�v",
+        name: "exzentrische Liegestützte auf Faust Level 2  Präv",
         level: { m: 2, w: 2 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -6763,7 +6763,7 @@ const Exercises = [
     {
         id: 116,
         name:
-            "exzentrisches Wadentraining stehend auf Step/Bank li und re Pr�v",
+            "exzentrisches Wadentraining stehend auf Step/Bank li und re Präv",
         level: { m: 2, w: 2 },
         tags: [
             "PREVENTION_SPRUNGGELENK",
@@ -6821,7 +6821,7 @@ const Exercises = [
     },
     {
         id: 117,
-        name: "Zehen-Ziehen mit Handtuch li und re Pr�v",
+        name: "Zehen-Ziehen mit Handtuch li und re Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SPRUNGGELENK",
@@ -7063,7 +7063,7 @@ const Exercises = [
     },
     {
         id: 121,
-        name: "Innenseite Fu�gelenkmuskulatur mit Hand li und re Pr�v",
+        name: "Innenseite Fuügelenkmuskulatur mit Hand li und re Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SPRUNGGELENK",
@@ -7108,7 +7108,7 @@ const Exercises = [
     },
     {
         id: 122,
-        name: "L-�bung mit 2 Flaschen Pr�v",
+        name: "L-übung mit 2 Flaschen Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -7156,7 +7156,7 @@ const Exercises = [
     {
         id: 123,
         name:
-            "H�ftdrehung auf Handtuch li und re Mobi + Pr�v (bei H�fte, WS, Knie)",
+            "Hüftdrehung auf Handtuch li und re Mobi + Präv (bei Hüfte, WS, Knie)",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_KNIE_HUEFTE",
@@ -7222,7 +7222,7 @@ const Exercises = [
     {
         id: 124,
         name:
-            "H�ftpendel an Wand li/re Mobi + Warm-Up(bei H�fte, Knie,Sprunggelenk) + spez. Warm-Up",
+            "Hüftpendel an Wand li/re Mobi + Warm-Up(bei Hüfte, Knie,Sprunggelenk) + spez. Warm-Up",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -7287,7 +7287,7 @@ const Exercises = [
     },
     {
         id: 125,
-        name: "Schulter(pendel) an Wand li und re + Pr�v + Mobi (bei Schulter)",
+        name: "Schulter(pendel) an Wand li und re + Präv + Mobi (bei Schulter)",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -7352,7 +7352,7 @@ const Exercises = [
     {
         id: 126,
         name:
-            "Schulterwischen am Boden li und re Mobi + Cool-Down + Pr�v (bei Schulter)",
+            "Schulterwischen am Boden li und re Mobi + Cool-Down + Präv (bei Schulter)",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -7416,7 +7416,7 @@ const Exercises = [
     },
     {
         id: 127,
-        name: "Sprunggelenksmobilit�t an Wand li und re Mobility",
+        name: "Sprunggelenksmobilitüt an Wand li und re Mobility",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_MOBILITY",
@@ -7475,7 +7475,7 @@ const Exercises = [
     {
         id: 128,
         name:
-            "Sprunggelenksmobilit�t an Wand li und re spez. Warm-Up (bei Sprunggelenk)",
+            "Sprunggelenksmobilitüt an Wand li und re spez. Warm-Up (bei Sprunggelenk)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -7533,7 +7533,7 @@ const Exercises = [
     },
     {
         id: 129,
-        name: "Rudern mit LH im Untergriff (Bein) aufgest�zt re Level 3",
+        name: "Rudern mit LH im Untergriff (Bein) aufgestüzt re Level 3",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -7562,7 +7562,7 @@ const Exercises = [
     },
     {
         id: 130,
-        name: "Rudern mit LH im Untergriff (Bein) aufgest�zt li Level 3",
+        name: "Rudern mit LH im Untergriff (Bein) aufgestüzt li Level 3",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -7649,7 +7649,7 @@ const Exercises = [
     },
     {
         id: 133,
-        name: "Schienbeinmuskulatur mit Widerstand Fu� li und re Pr�v",
+        name: "Schienbeinmuskulatur mit Widerstand Fuü li und re Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SPRUNGGELENK",
@@ -7694,7 +7694,7 @@ const Exercises = [
     },
     {
         id: 134,
-        name: "schnelle F��e linear",
+        name: "schnelle Füüe linear",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -7723,7 +7723,7 @@ const Exercises = [
     },
     {
         id: 135,
-        name: "schnelle F��e seitlich li und re",
+        name: "schnelle Füüe seitlich li und re",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -7753,7 +7753,7 @@ const Exercises = [
     {
         id: 136,
         name:
-            "Schulterblattaktivierung im Unterarmst�tz Level 1 Pr�v (bei Schulter) + SWR",
+            "Schulterblattaktivierung im Unterarmstütz Level 1 Präv (bei Schulter) + SWR",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -7816,7 +7816,7 @@ const Exercises = [
     },
     {
         id: 137,
-        name: "Schulterblattaktivierung im Unterarmst�tz Level 2 Pr�v + SWR",
+        name: "Schulterblattaktivierung im Unterarmstütz Level 2 Präv + SWR",
         level: { m: 2, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -7879,7 +7879,7 @@ const Exercises = [
     },
     {
         id: 138,
-        name: "Schulterblattaktivierung im Unterarmst�tz Level 2  U",
+        name: "Schulterblattaktivierung im Unterarmstütz Level 2  U",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SUPPORT",
@@ -7919,7 +7919,7 @@ const Exercises = [
             duration: {
                 startValue: {
                     default: {},
-                    m: { default: "30 bei Unterst�tzung" },
+                    m: { default: "30 bei Unterstützung" },
                     w: {},
                     k: {}
                 },
@@ -8174,7 +8174,7 @@ const Exercises = [
     },
     {
         id: 143,
-        name: "seitlicher Ausfallschritt auf Handtuch li und re SWR+Pr�v",
+        name: "seitlicher Ausfallschritt auf Handtuch li und re SWR+Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_KNIE_HUEFTE",
@@ -8231,7 +8231,7 @@ const Exercises = [
     },
     {
         id: 144,
-        name: "Seitst�tz mit Oberk�rperrotation li und re Level 1 SWR+Pr�v",
+        name: "Seitstütz mit Oberkürperrotation li und re Level 1 SWR+Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -8292,7 +8292,7 @@ const Exercises = [
     },
     {
         id: 145,
-        name: "Beininnenseite auf Black Roll li und re BR (bei Knie, H�fte)",
+        name: "Beininnenseite auf Black Roll li und re BR (bei Knie, Hüfte)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_BLACK_ROLL",
@@ -8349,7 +8349,7 @@ const Exercises = [
     },
     {
         id: 146,
-        name: "Beinaussenseite auf Black Roll li und re  BR (bei Knie, H�fte)",
+        name: "Beinaussenseite auf Black Roll li und re  BR (bei Knie, Hüfte)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_BLACK_ROLL",
@@ -8409,7 +8409,7 @@ const Exercises = [
     {
         id: 147,
         name:
-            "Oberschenkelvorderseite auf Black Roll li und re BR (bei Knie und H�fte)",
+            "Oberschenkelvorderseite auf Black Roll li und re BR (bei Knie und Hüfte)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_BLACK_ROLL",
@@ -8612,7 +8612,7 @@ const Exercises = [
     },
     {
         id: 151,
-        name: "Wadenheben aufgest�tzt volles ROM Pr�v",
+        name: "Wadenheben aufgestützt volles ROM Präv",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -8762,7 +8762,7 @@ const Exercises = [
     {
         id: 154,
         name:
-            "Kissing Bizeps mit vorgebeugtem Oberk�rper spez. Warm-Up (bei Schulter)",
+            "Kissing Bizeps mit vorgebeugtem Oberkürper spez. Warm-Up (bei Schulter)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -8820,7 +8820,7 @@ const Exercises = [
     },
     {
         id: 155,
-        name: "Y-�bung mit 2 Flaschen Pr�v",
+        name: "Y-übung mit 2 Flaschen Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -8870,7 +8870,7 @@ const Exercises = [
     },
     {
         id: 156,
-        name: "Beinbeuger Handt�chern  SAS",
+        name: "Beinbeuger Handtüchern  SAS",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -8919,19 +8919,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich 4x10 sek, Kinder und Anf�nger 3x10 Sek"
+                            "münnlich und weiblich 4x10 sek, Kinder und Anfünger 3x10 Sek"
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich 4x10 sek, Kinder und Anf�nger 3x10 Sek"
+                            "münnlich und weiblich 4x10 sek, Kinder und Anfünger 3x10 Sek"
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich 4x10 sek, Kinder und Anf�nger 3x10 Sek"
+                            "münnlich und weiblich 4x10 sek, Kinder und Anfünger 3x10 Sek"
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich 4x10 sek, Kinder und Anf�nger 3x10 Sek"
+                            "münnlich und weiblich 4x10 sek, Kinder und Anfünger 3x10 Sek"
                     },
                     type: { type: "Unknown" }
                 }
@@ -8944,7 +8944,7 @@ const Exercises = [
     },
     {
         id: 157,
-        name: "Beinbeuger Handtuch Level 1 SWR+Pr�v",
+        name: "Beinbeuger Handtuch Level 1 SWR+Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_KNIE_HUEFTE",
@@ -9010,7 +9010,7 @@ const Exercises = [
     },
     {
         id: 158,
-        name: "Beinbeuger Handtuch Level 2 SWR+ Pr�v",
+        name: "Beinbeuger Handtuch Level 2 SWR+ Präv",
         level: { m: 2, w: 2 },
         tags: [
             "PREVENTION_KNIE_HUEFTE",
@@ -9172,7 +9172,7 @@ const Exercises = [
     },
     {
         id: 161,
-        name: "Liegest�tz auf Faust Level 1 SK(Pr�v)",
+        name: "Liegestütz auf Faust Level 1 SK(Präv)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -9226,7 +9226,7 @@ const Exercises = [
     },
     {
         id: 162,
-        name: "Liegest�tz auf Faust Level 2 SK(Pr�v)",
+        name: "Liegestütz auf Faust Level 2 SK(Präv)",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -9280,7 +9280,7 @@ const Exercises = [
     },
     {
         id: 163,
-        name: "Liegest�tz auf Faust Level 3 SK(Pr�v)",
+        name: "Liegestütz auf Faust Level 3 SK(Präv)",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -9342,7 +9342,7 @@ const Exercises = [
     },
     {
         id: 164,
-        name: "Liegest�tz auf Faust Level 1 SWR(Pr�v)",
+        name: "Liegestütz auf Faust Level 1 SWR(Präv)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -9401,7 +9401,7 @@ const Exercises = [
     },
     {
         id: 165,
-        name: "Liegest�tz auf Faust Level 2 SWR(Pr�v)",
+        name: "Liegestütz auf Faust Level 2 SWR(Präv)",
         level: { m: 1, w: 4 },
         tags: [
             "SKILL_SWR",
@@ -9460,7 +9460,7 @@ const Exercises = [
     },
     {
         id: 166,
-        name: "Liegest�tz auf Faust Level 3 SWR(Pr�v)",
+        name: "Liegestütz auf Faust Level 3 SWR(Präv)",
         level: { m: 1, w: 5 },
         tags: [
             "SKILL_SWR",
@@ -9527,7 +9527,7 @@ const Exercises = [
     },
     {
         id: 167,
-        name: "Liegest�tz auf Faust Level 1 SA(Pr�v)",
+        name: "Liegestütz auf Faust Level 1 SA(Präv)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -9582,7 +9582,7 @@ const Exercises = [
     },
     {
         id: 168,
-        name: "Liegest�tz auf Faust Level 2 SA(Pr�v)",
+        name: "Liegestütz auf Faust Level 2 SA(Präv)",
         level: { m: 3, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -9638,7 +9638,7 @@ const Exercises = [
     },
     {
         id: 169,
-        name: "Liegest�tz mit erh�hten Beinen auf Faust Level 3 SA(Pr�v)",
+        name: "Liegestütz mit erhühten Beinen auf Faust Level 3 SA(Präv)",
         level: { m: 4, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -9703,7 +9703,7 @@ const Exercises = [
     },
     {
         id: 170,
-        name: "Bauch: Beinheben statisch Level 1 SWR+Pr�v",
+        name: "Bauch: Beinheben statisch Level 1 SWR+Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_WIRBELSAULE",
@@ -9859,7 +9859,7 @@ const Exercises = [
     },
     {
         id: 173,
-        name: "Bauch: Beinheben statisch Level 3 Pr�v (nicht f�r Kinder)",
+        name: "Bauch: Beinheben statisch Level 3 Präv (nicht für Kinder)",
         level: { m: 3, w: 3 },
         tags: [
             "PREVENTION_WIRBELSAULE",
@@ -10041,7 +10041,7 @@ const Exercises = [
     },
     {
         id: 176,
-        name: "Bauch: Beinheben statisch mit KH Level 3 (nur m�nnlich) SWR+U",
+        name: "Bauch: Beinheben statisch mit KH Level 3 (nur münnlich) SWR+U",
         level: { m: 3, w: 1 },
         tags: [
             "SKILL_SUPPORT",
@@ -10562,7 +10562,7 @@ const Exercises = [
     },
     {
         id: 185,
-        name: "einbeinige Bankspr�nge li und re SK Level 2",
+        name: "einbeinige Banksprünge li und re SK Level 2",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -10637,7 +10637,7 @@ const Exercises = [
     },
     {
         id: 186,
-        name: "Fingerst�tz Level 1 Pr�v + U",
+        name: "Fingerstütz Level 1 Präv + U",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_HANDGELENK_ELLENBOGEN",
@@ -10703,7 +10703,7 @@ const Exercises = [
     },
     {
         id: 187,
-        name: "Fingerst�tz Level 2 Pr�v+ U",
+        name: "Fingerstütz Level 2 Präv+ U",
         level: { m: 2, w: 2 },
         tags: [
             "PREVENTION_HANDGELENK_ELLENBOGEN",
@@ -10771,7 +10771,7 @@ const Exercises = [
     },
     {
         id: 188,
-        name: "Froschspr�nge reaktiv Level 2 Plyo",
+        name: "Froschsprünge reaktiv Level 2 Plyo",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_PLYO_LOW",
@@ -10831,7 +10831,7 @@ const Exercises = [
     },
     {
         id: 189,
-        name: "Froschspr�nge einbeinig reaktiv li/re Level 2 Plyo",
+        name: "Froschsprünge einbeinig reaktiv li/re Level 2 Plyo",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_PLYO_LOW",
@@ -10891,7 +10891,7 @@ const Exercises = [
     },
     {
         id: 190,
-        name: "Froschspr�nge SA",
+        name: "Froschsprünge SA",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -10954,7 +10954,7 @@ const Exercises = [
     },
     {
         id: 191,
-        name: "Froschspr�nge aus Hocke Level 1 Plyo",
+        name: "Froschsprünge aus Hocke Level 1 Plyo",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_PLYO_LOW",
@@ -11014,7 +11014,7 @@ const Exercises = [
     },
     {
         id: 192,
-        name: "Froschspr�nge aus Hocke einbeinig li/re Level 1 Plyo",
+        name: "Froschsprünge aus Hocke einbeinig li/re Level 1 Plyo",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_PLYO_LOW",
@@ -11406,7 +11406,7 @@ const Exercises = [
     },
     {
         id: 199,
-        name: "seitliche Spr�nge Level 1 li/re Stabi",
+        name: "seitliche Sprünge Level 1 li/re Stabi",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_STABILITY_LEG",
@@ -11459,7 +11459,7 @@ const Exercises = [
     },
     {
         id: 200,
-        name: "seitliche Spr�nge Level 2 li/re Stabi",
+        name: "seitliche Sprünge Level 2 li/re Stabi",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_STABILITY_LEG",
@@ -11513,7 +11513,7 @@ const Exercises = [
     },
     {
         id: 201,
-        name: "seitliche Spr�nge mit Rotation li/re Level 3 Stabi",
+        name: "seitliche Sprünge mit Rotation li/re Level 3 Stabi",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_STABILITY_LEG",
@@ -11567,7 +11567,7 @@ const Exercises = [
     },
     {
         id: 202,
-        name: "gerade Spr�nge Stabi level 1 li/re Stabi",
+        name: "gerade Sprünge Stabi level 1 li/re Stabi",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_STABILITY_LEG",
@@ -11620,7 +11620,7 @@ const Exercises = [
     },
     {
         id: 203,
-        name: "diagonale Spr�nge Stabi Level 2 li/re  Stabi",
+        name: "diagonale Sprünge Stabi Level 2 li/re  Stabi",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_STABILITY_LEG",
@@ -11674,7 +11674,7 @@ const Exercises = [
     },
     {
         id: 204,
-        name: "gerade Spr�nge Stabi Level 3 (li/re) Stabi",
+        name: "gerade Sprünge Stabi Level 3 (li/re) Stabi",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_STABILITY_LEG",
@@ -11729,7 +11729,7 @@ const Exercises = [
     {
         id: 205,
         name:
-            "schnelles Laufen (Zone 2) noch drehen ; gilt f�r Z 2+3!!!!! Mit ovalem Laufen (nicht linear um nicht komplett zu bremsen!)",
+            "schnelles Laufen (Zone 2) noch drehen ; gilt für Z 2+3!!!!! Mit ovalem Laufen (nicht linear um nicht komplett zu bremsen!)",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -11904,7 +11904,7 @@ const Exercises = [
     },
     {
         id: 210,
-        name: "Military Press Level 1 M�nner und Level 2 Frauen/Kinder SWR",
+        name: "Military Press Level 1 Münner und Level 2 Frauen/Kinder SWR",
         level: { m: 1, w: 2 },
         tags: [
             "SKILL_SWR",
@@ -11955,7 +11955,7 @@ const Exercises = [
     },
     {
         id: 211,
-        name: "Military Press Level 2 M�nner und Level 3 Frauen/Kinder SWR",
+        name: "Military Press Level 2 Münner und Level 3 Frauen/Kinder SWR",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SWR",
@@ -12017,7 +12017,7 @@ const Exercises = [
     },
     {
         id: 212,
-        name: "Military Press Level 3 M�nner und Level 4 Frauen/Kinder SWR",
+        name: "Military Press Level 3 Münner und Level 4 Frauen/Kinder SWR",
         level: { m: 3, w: 4 },
         tags: [
             "SKILL_SWR",
@@ -12070,7 +12070,7 @@ const Exercises = [
     },
     {
         id: 213,
-        name: "Rotatoren mit 2 Flaschen (Bauchh�he)  SWR + Gstabi",
+        name: "Rotatoren mit 2 Flaschen (Bauchhühe)  SWR + Gstabi",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -12137,7 +12137,7 @@ const Exercises = [
     {
         id: 214,
         name:
-            "Rumpf st�tz Level 1 (Arm langsam anheben, abwechselnd) SWR + Pr�v",
+            "Rumpf stütz Level 1 (Arm langsam anheben, abwechselnd) SWR + Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -12198,7 +12198,7 @@ const Exercises = [
     },
     {
         id: 215,
-        name: "Rumpf st�tz Level 2 SWR + Pr�v + U",
+        name: "Rumpf stütz Level 2 SWR + Präv + U",
         level: { m: 2, w: 2 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -12261,7 +12261,7 @@ const Exercises = [
     },
     {
         id: 216,
-        name: "Rumpf st�tz Level 3 SWR + U",
+        name: "Rumpf stütz Level 3 SWR + U",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_SUPPORT",
@@ -12322,7 +12322,7 @@ const Exercises = [
     {
         id: 217,
         name:
-            "Rumpf st�tz Level 1 (Arm langsam anheben)auf F�usten SWR (Pr�v) + Pr�v",
+            "Rumpf stütz Level 1 (Arm langsam anheben)auf Füusten SWR (Präv) + Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -12386,7 +12386,7 @@ const Exercises = [
     {
         id: 218,
         name:
-            "Rumpf st�tz Level 2 (Arm langsam anheben)auf F�usten SWR (Pr�v) + Pr�v",
+            "Rumpf stütz Level 2 (Arm langsam anheben)auf Füusten SWR (Präv) + Präv",
         level: { m: 2, w: 2 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -12450,7 +12450,7 @@ const Exercises = [
     },
     {
         id: 219,
-        name: "Rumpf st�tz Level 3 (Arm langsam anheben)auf F�usten SWR (Pr�v)",
+        name: "Rumpf stütz Level 3 (Arm langsam anheben)auf Füusten SWR (Präv)",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_SWR",
@@ -12510,7 +12510,7 @@ const Exercises = [
     },
     {
         id: 220,
-        name: "Seitst�tz Add Level 1 li und re SWR",
+        name: "Seitstütz Add Level 1 li und re SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -12565,7 +12565,7 @@ const Exercises = [
     },
     {
         id: 221,
-        name: "Seitst�tz Add Level 2 li und re SWR + U",
+        name: "Seitstütz Add Level 2 li und re SWR + U",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SUPPORT",
@@ -12624,7 +12624,7 @@ const Exercises = [
     },
     {
         id: 222,
-        name: "Seitst�tz Add auf Hand li und re (Level 2, Gstabi)",
+        name: "Seitstütz Add auf Hand li und re (Level 2, Gstabi)",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -12680,7 +12680,7 @@ const Exercises = [
     },
     {
         id: 223,
-        name: "Seitst�tz Abd Level 1 li und re SWR",
+        name: "Seitstütz Abd Level 1 li und re SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -12735,7 +12735,7 @@ const Exercises = [
     },
     {
         id: 224,
-        name: "Seitst�tz Abd Level 2 li und re SWR + U",
+        name: "Seitstütz Abd Level 2 li und re SWR + U",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SUPPORT",
@@ -12794,7 +12794,7 @@ const Exercises = [
     },
     {
         id: 225,
-        name: "Seitst�tz Abd auf Hand li und re (Level 2, Gstabi)",
+        name: "Seitstütz Abd auf Hand li und re (Level 2, Gstabi)",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -12850,7 +12850,7 @@ const Exercises = [
     },
     {
         id: 226,
-        name: "Seitst�tz+Add auf Faust li und re (Level 3, Gstabi)",
+        name: "Seitstütz+Add auf Faust li und re (Level 3, Gstabi)",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -12909,7 +12909,7 @@ const Exercises = [
     },
     {
         id: 227,
-        name: "Seitst�tz+Abd auf Faust li und re (Level 3, Gstabi)",
+        name: "Seitstütz+Abd auf Faust li und re (Level 3, Gstabi)",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -12968,7 +12968,7 @@ const Exercises = [
     },
     {
         id: 228,
-        name: "Seitst�tz mit Flasche li und re Level 1 Gstabi",
+        name: "Seitstütz mit Flasche li und re Level 1 Gstabi",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -13030,7 +13030,7 @@ const Exercises = [
     },
     {
         id: 229,
-        name: "Seitst�tz mit Flasche li und re Level 2 Gstabi",
+        name: "Seitstütz mit Flasche li und re Level 2 Gstabi",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -13095,7 +13095,7 @@ const Exercises = [
     },
     {
         id: 230,
-        name: "Seitst�tz mit Flasche li und re Level 3 Gstabi",
+        name: "Seitstütz mit Flasche li und re Level 3 Gstabi",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -13163,7 +13163,7 @@ const Exercises = [
     },
     {
         id: 231,
-        name: "Skaterspr�nge Level 1 SAS",
+        name: "Skatersprünge Level 1 SAS",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -13212,19 +13212,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -13237,7 +13237,7 @@ const Exercises = [
     },
     {
         id: 232,
-        name: "Skaterspr�nge Level 2 SAS",
+        name: "Skatersprünge Level 2 SAS",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -13292,19 +13292,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -13317,7 +13317,7 @@ const Exercises = [
     },
     {
         id: 233,
-        name: "Skaterspr�nge Level 3 SAS",
+        name: "Skatersprünge Level 3 SAS",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -13372,10 +13372,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "m�nnlich und weiblich:4x15 Sek" },
-                    m: { default: "m�nnlich und weiblich:4x15 Sek" },
-                    w: { default: "m�nnlich und weiblich:4x15 Sek" },
-                    k: { default: "m�nnlich und weiblich:4x15 Sek" },
+                    default: { default: "münnlich und weiblich:4x15 Sek" },
+                    m: { default: "münnlich und weiblich:4x15 Sek" },
+                    w: { default: "münnlich und weiblich:4x15 Sek" },
+                    k: { default: "münnlich und weiblich:4x15 Sek" },
                     type: { type: "Unknown" }
                 }
             },
@@ -13603,7 +13603,7 @@ const Exercises = [
     },
     {
         id: 237,
-        name: "Einbeinstand mit 1 Flasche sch�tteln li und re GStabi",
+        name: "Einbeinstand mit 1 Flasche schütteln li und re GStabi",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -14174,7 +14174,7 @@ const Exercises = [
     },
     {
         id: 247,
-        name: "einarmiger Unterarmst�tz Level 1 li und re SWR + Pr�v",
+        name: "einarmiger Unterarmstütz Level 1 li und re SWR + Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -14233,7 +14233,7 @@ const Exercises = [
     },
     {
         id: 248,
-        name: "einarmiger Unterarmst�tz Level 2 li und re SWR+Pr�v + U",
+        name: "einarmiger Unterarmstütz Level 2 li und re SWR+Präv + U",
         level: { m: 2, w: 2 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -14294,7 +14294,7 @@ const Exercises = [
     },
     {
         id: 249,
-        name: "einarmiger Unterarmst�tz Level 3 li und re SWR + U",
+        name: "einarmiger Unterarmstütz Level 3 li und re SWR + U",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_SUPPORT",
@@ -14355,7 +14355,7 @@ const Exercises = [
     },
     {
         id: 250,
-        name: "St�tz einarmig auf Faust li und re SWR (Pr�v)",
+        name: "Stütz einarmig auf Faust li und re SWR (Präv)",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_SWR",
@@ -14644,7 +14644,7 @@ const Exercises = [
     {
         id: 255,
         name:
-            "Lunge statisch mit 1 KH unilat �ber kopf haltend li; f�r sp�ter wenn Beinachsenstabi",
+            "Lunge statisch mit 1 KH unilat über kopf haltend li; für spüter wenn Beinachsenstabi",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -14674,7 +14674,7 @@ const Exercises = [
     {
         id: 256,
         name:
-            "Lunge statisch mit 1 KH unilat �ber kopf haltend re; f�r sp�ter wenn Beinachsenstabi",
+            "Lunge statisch mit 1 KH unilat über kopf haltend re; für spüter wenn Beinachsenstabi",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -14704,7 +14704,7 @@ const Exercises = [
     {
         id: 257,
         name:
-            "Lunge vor zur�ck gleiches Bein mit 1 KH unilat �ber kopf haltend li; f�r sp�ter wenn Beinachsenstabi",
+            "Lunge vor zurück gleiches Bein mit 1 KH unilat über kopf haltend li; für spüter wenn Beinachsenstabi",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -14734,7 +14734,7 @@ const Exercises = [
     {
         id: 258,
         name:
-            "Lunge vor zur�ck gleiches Bein mit 1 KH unilat �ber kopf haltend re; f�r sp�ter wenn Beinachsenstabi",
+            "Lunge vor zurück gleiches Bein mit 1 KH unilat über kopf haltend re; für spüter wenn Beinachsenstabi",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -14763,7 +14763,7 @@ const Exercises = [
     },
     {
         id: 259,
-        name: "H�ftheben in R�ckenlage  SWR + Pr�v",
+        name: "Hüftheben in Rückenlage  SWR + Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_KNIE_HUEFTE",
@@ -14814,7 +14814,7 @@ const Exercises = [
     },
     {
         id: 260,
-        name: "einbeiniges H�ftheben auf Bank (li und re) SWR + Pr�v",
+        name: "einbeiniges Hüftheben auf Bank (li und re) SWR + Präv",
         level: { m: 3, w: 3 },
         tags: [
             "PREVENTION_KNIE_HUEFTE",
@@ -14934,10 +14934,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "m�nnlich/weiblich 50" },
-                    m: { default: "m�nnlich/weiblich 50" },
-                    w: { default: "m�nnlich/weiblich 50" },
-                    k: { default: "m�nnlich/weiblich 50" },
+                    default: { default: "münnlich/weiblich 50" },
+                    m: { default: "münnlich/weiblich 50" },
+                    w: { default: "münnlich/weiblich 50" },
+                    k: { default: "münnlich/weiblich 50" },
                     type: { type: "weightFMax" }
                 }
             },
@@ -15117,7 +15117,7 @@ const Exercises = [
     {
         id: 264,
         name:
-            "Seitst�tz mit oberk�rperrotation Level 2 li und re SWR + Pr�v + U",
+            "Seitstütz mit oberkürperrotation Level 2 li und re SWR + Präv + U",
         level: { m: 2, w: 2 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -15181,7 +15181,7 @@ const Exercises = [
     {
         id: 265,
         name:
-            "Seitst�tz mit oberk�rperrotation und oberem Bein 90� li und re (Level 3) SWR",
+            "Seitstütz mit oberkürperrotation und oberem Bein 90ü li und re (Level 3) SWR",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_SWR",
@@ -15252,7 +15252,7 @@ const Exercises = [
     {
         id: 266,
         name:
-            "Seitst�tz mit oberk�rperrotation und oberem Bein 90� li und re (Level 3) Unterst�tzung",
+            "Seitstütz mit oberkürperrotation und oberem Bein 90ü li und re (Level 3) Unterstützung",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_SUPPORT",
@@ -15312,7 +15312,7 @@ const Exercises = [
     {
         id: 267,
         name:
-            "Seitst�tz auf Knie mit Oberk�rperrotation mit KH li und re (Level 1) SWR",
+            "Seitstütz auf Knie mit Oberkürperrotation mit KH li und re (Level 1) SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -15394,7 +15394,7 @@ const Exercises = [
     {
         id: 268,
         name:
-            "Seitst�tz mit Oberk�rperrotation mit KH li und re (Level 2) SWR + U",
+            "Seitstütz mit Oberkürperrotation mit KH li und re (Level 2) SWR + U",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SUPPORT",
@@ -15476,7 +15476,7 @@ const Exercises = [
     },
     {
         id: 269,
-        name: "Liegest�tz auf Knie Level 1 SWR",
+        name: "Liegestütz auf Knie Level 1 SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -15534,7 +15534,7 @@ const Exercises = [
     },
     {
         id: 270,
-        name: "Liegest�tz auf Knie SK",
+        name: "Liegestütz auf Knie SK",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -15587,7 +15587,7 @@ const Exercises = [
     },
     {
         id: 271,
-        name: "Liegest�tz auf Knie Level 1 SA",
+        name: "Liegestütz auf Knie Level 1 SA",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -15640,7 +15640,7 @@ const Exercises = [
     },
     {
         id: 272,
-        name: "Liegest�tz Level 2 (normal runter und auf Knien hoch) SWR",
+        name: "Liegestütz Level 2 (normal runter und auf Knien hoch) SWR",
         level: { m: 1, w: 2 },
         tags: [
             "SKILL_SWR",
@@ -15698,7 +15698,7 @@ const Exercises = [
     },
     {
         id: 273,
-        name: "Liegest�tz auf Bank erh�ht Level 3 SWR",
+        name: "Liegestütz auf Bank erhüht Level 3 SWR",
         level: { m: 1, w: 3 },
         tags: [
             "SKILL_SWR",
@@ -15763,7 +15763,7 @@ const Exercises = [
     },
     {
         id: 274,
-        name: "Liegest�tz auf Bank erh�ht SK",
+        name: "Liegestütz auf Bank erhüht SK",
         level: { m: 1, w: 2 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -15823,7 +15823,7 @@ const Exercises = [
     },
     {
         id: 275,
-        name: "Liegest�tz auf Bank erh�ht SA",
+        name: "Liegestütz auf Bank erhüht SA",
         level: { m: 2, w: 4 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -15884,7 +15884,7 @@ const Exercises = [
     },
     {
         id: 276,
-        name: "Liegest�tz normal Level 4 SWR",
+        name: "Liegestütz normal Level 4 SWR",
         level: { m: 2, w: 4 },
         tags: [
             "SKILL_SWR",
@@ -15942,7 +15942,7 @@ const Exercises = [
     },
     {
         id: 277,
-        name: "Liegest�tz SK",
+        name: "Liegestütz SK",
         level: { m: 2, w: 4 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -15995,7 +15995,7 @@ const Exercises = [
     },
     {
         id: 278,
-        name: "Liegest�tz Level 3 SA",
+        name: "Liegestütz Level 3 SA",
         level: { m: 3, w: 5 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -16050,7 +16050,7 @@ const Exercises = [
     },
     {
         id: 279,
-        name: "Liegest�tz Beine erh�ht Level 5 SWR",
+        name: "Liegestütz Beine erhüht Level 5 SWR",
         level: { m: 4, w: 5 },
         tags: [
             "SKILL_SWR",
@@ -16117,7 +16117,7 @@ const Exercises = [
     },
     {
         id: 280,
-        name: "Liegest�tz Beine erh�ht SK",
+        name: "Liegestütz Beine erhüht SK",
         level: { m: 4, w: 1 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -16179,7 +16179,7 @@ const Exercises = [
     },
     {
         id: 281,
-        name: "Liegest�tz Beine erh�ht Level 4 SA",
+        name: "Liegestütz Beine erhüht Level 4 SA",
         level: { m: 4, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -16242,7 +16242,7 @@ const Exercises = [
     },
     {
         id: 282,
-        name: "Liegest�tz exzentrisch einarmig li und re Level 6  SWR",
+        name: "Liegestütz exzentrisch einarmig li und re Level 6  SWR",
         level: { m: 5, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -16304,7 +16304,7 @@ const Exercises = [
     },
     {
         id: 283,
-        name: "ballistische Liegest�tz auf Bank SK",
+        name: "ballistische Liegestütz auf Bank SK",
         level: { m: 5, w: 1 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -16369,7 +16369,7 @@ const Exercises = [
     },
     {
         id: 284,
-        name: "ballistische Liegest�tz auf Bank SA",
+        name: "ballistische Liegestütz auf Bank SA",
         level: { m: 5, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -16434,7 +16434,7 @@ const Exercises = [
     },
     {
         id: 285,
-        name: "ballistische Liegest�tz SK",
+        name: "ballistische Liegestütz SK",
         level: { m: 6, w: 1 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -16492,7 +16492,7 @@ const Exercises = [
     },
     {
         id: 286,
-        name: "ballistische Liegest�tz SA",
+        name: "ballistische Liegestütz SA",
         level: { m: 6, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -16550,7 +16550,7 @@ const Exercises = [
     },
     {
         id: 287,
-        name: "einbeinige Bankspr�nge (seitlich �ber Bank li und re) SK",
+        name: "einbeinige Banksprünge (seitlich über Bank li und re) SK",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -16627,7 +16627,7 @@ const Exercises = [
     },
     {
         id: 288,
-        name: "seitliche Wechselspr�nge �ber Bank (li/re) SAS",
+        name: "seitliche Wechselsprünge über Bank (li/re) SAS",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -17457,7 +17457,7 @@ const Exercises = [
     {
         id: 301,
         name:
-            "LH Rudern in Standwaage (Untergriff, Bein auf Bank) li und re Gstabi Pr�v)",
+            "LH Rudern in Standwaage (Untergriff, Bein auf Bank) li und re Gstabi Präv)",
         level: { m: 2, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -17526,7 +17526,7 @@ const Exercises = [
     },
     {
         id: 302,
-        name: "LH Rudern in Standwaage (Untergriff) li und re Gstabi (Pr�v)",
+        name: "LH Rudern in Standwaage (Untergriff) li und re Gstabi (Präv)",
         level: { m: 3, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -17727,7 +17727,7 @@ const Exercises = [
     },
     {
         id: 305,
-        name: "K�rper �ber Bank ziehen Level 1 SK",
+        name: "Kürper über Bank ziehen Level 1 SK",
         level: { m: 1, w: 2 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -17783,7 +17783,7 @@ const Exercises = [
     },
     {
         id: 306,
-        name: "K�rper �ber Bank ziehen Level 2 SK",
+        name: "Kürper über Bank ziehen Level 2 SK",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -17813,10 +17813,10 @@ const Exercises = [
             repetition: {
                 startValue: { default: {}, m: {}, w: {}, k: {} },
                 targetValue: {
-                    default: { default: "m�nnlich 8, weiblich und Kinder 6" },
-                    m: { default: "m�nnlich 8, weiblich und Kinder 6" },
-                    w: { default: "m�nnlich 8, weiblich und Kinder 6" },
-                    k: { default: "m�nnlich 8, weiblich und Kinder 6" },
+                    default: { default: "münnlich 8, weiblich und Kinder 6" },
+                    m: { default: "münnlich 8, weiblich und Kinder 6" },
+                    w: { default: "münnlich 8, weiblich und Kinder 6" },
+                    k: { default: "münnlich 8, weiblich und Kinder 6" },
                     type: { type: "Unknown" }
                 }
             },
@@ -17895,7 +17895,7 @@ const Exercises = [
     },
     {
         id: 309,
-        name: "Technikvideo Bankdr�cken mit LH",
+        name: "Technikvideo Bankdrücken mit LH",
         level: { m: 1, w: 1 },
         tags: [
             "EQ_weightS",
@@ -17994,7 +17994,7 @@ const Exercises = [
     },
     {
         id: 311,
-        name: "Technikvideo Schulterfrontdr�cken mit LH",
+        name: "Technikvideo Schulterfrontdrücken mit LH",
         level: { m: 1, w: 1 },
         tags: [
             "EQ_weightS",
@@ -18045,7 +18045,7 @@ const Exercises = [
     },
     {
         id: 312,
-        name: "Anheben und Absetzen bei KH Schulterdr�cken im Sitzen",
+        name: "Anheben und Absetzen bei KH Schulterdrücken im Sitzen",
         level: { m: 1, w: 1 },
         tags: [
             "EQ_weightS",
@@ -18089,7 +18089,7 @@ const Exercises = [
     },
     {
         id: 313,
-        name: "Anheben und Absetzen bei KH Bankdr�cken",
+        name: "Anheben und Absetzen bei KH Bankdrücken",
         level: { m: 1, w: 1 },
         tags: [
             "EQ_weightS",
@@ -18134,7 +18134,7 @@ const Exercises = [
     },
     {
         id: 314,
-        name: "Anheben und Absetzen bei KH Schulterdr�cken im Stehen",
+        name: "Anheben und Absetzen bei KH Schulterdrücken im Stehen",
         level: { m: 1, w: 1 },
         tags: [
             "EQ_weightS",
@@ -18178,7 +18178,7 @@ const Exercises = [
     {
         id: 315,
         name:
-            "KH Schulterdr�cken eng sitzend SWR(Pr�v) + Pr�v + Testeinheit (Pr�v)",
+            "KH Schulterdrücken eng sitzend SWR(Präv) + Präv + Testeinheit (Präv)",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -18237,7 +18237,7 @@ const Exercises = [
     },
     {
         id: 316,
-        name: "KH Schulterdr�cken eng stehend SWR(Pr�v)",
+        name: "KH Schulterdrücken eng stehend SWR(Präv)",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SWR",
@@ -18296,7 +18296,7 @@ const Exercises = [
     },
     {
         id: 317,
-        name: "KH Schulterdr�cken (sitzend) SWR + Testeinheit",
+        name: "KH Schulterdrücken (sitzend) SWR + Testeinheit",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_MAX_KRAFT_TEST",
@@ -18354,7 +18354,7 @@ const Exercises = [
     },
     {
         id: 318,
-        name: "KH Schulterdr�cken (sitzend) Max-K",
+        name: "KH Schulterdrücken (sitzend) Max-K",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_MAX_KRAFT",
@@ -18403,7 +18403,7 @@ const Exercises = [
     },
     {
         id: 319,
-        name: "KH Schulterdr�cken (sitzend) SK",
+        name: "KH Schulterdrücken (sitzend) SK",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -18451,7 +18451,7 @@ const Exercises = [
     },
     {
         id: 320,
-        name: "KH Schulterdr�cken (sitzend) SA",
+        name: "KH Schulterdrücken (sitzend) SA",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -18500,7 +18500,7 @@ const Exercises = [
     },
     {
         id: 321,
-        name: "KH Schulterdr�cken (stehend) SWR",
+        name: "KH Schulterdrücken (stehend) SWR",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SWR",
@@ -18559,7 +18559,7 @@ const Exercises = [
     },
     {
         id: 322,
-        name: "KH Schulterdr�cken (stehend) Max-K (nicht verwenden!!!!!)",
+        name: "KH Schulterdrücken (stehend) Max-K (nicht verwenden!!!!!)",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -18588,7 +18588,7 @@ const Exercises = [
     },
     {
         id: 323,
-        name: "KH Schulterdr�cken (stehend) SK",
+        name: "KH Schulterdrücken (stehend) SK",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -18638,7 +18638,7 @@ const Exercises = [
     },
     {
         id: 324,
-        name: "KH Schulterdr�cken (stehend) SA",
+        name: "KH Schulterdrücken (stehend) SA",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -18736,7 +18736,7 @@ const Exercises = [
     },
     {
         id: 326,
-        name: "Wadenheben KG Pr�v",
+        name: "Wadenheben KG Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SPRUNGGELENK",
@@ -18913,7 +18913,7 @@ const Exercises = [
     },
     {
         id: 330,
-        name: "Wadenheben einbeinig li und re KG Pr�v",
+        name: "Wadenheben einbeinig li und re KG Präv",
         level: { m: 3, w: 3 },
         tags: [
             "PREVENTION_SPRUNGGELENK",
@@ -18958,7 +18958,7 @@ const Exercises = [
     },
     {
         id: 331,
-        name: "Wadenheben aufgest�zt (volle Bewegung) Pr�v",
+        name: "Wadenheben aufgestüzt (volle Bewegung) Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SPRUNGGELENK",
@@ -19306,7 +19306,7 @@ const Exercises = [
     },
     {
         id: 337,
-        name: "Butterfly reverse auf Schr�gbank mit 2 KH SWR",
+        name: "Butterfly reverse auf Schrügbank mit 2 KH SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -19367,7 +19367,7 @@ const Exercises = [
                     default: {},
                     m: {},
                     w: {},
-                    k: { default: "(m�nnlich)" },
+                    k: { default: "(münnlich)" },
                     type: { type: "weightAbsolute" }
                 }
             },
@@ -19383,7 +19383,7 @@ const Exercises = [
     },
     {
         id: 338,
-        name: "Butterfly reverse mit 2 KH SWR+Pr�v",
+        name: "Butterfly reverse mit 2 KH SWR+Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -19444,7 +19444,7 @@ const Exercises = [
                     default: {},
                     m: {},
                     w: {},
-                    k: { default: "(m�nnlich)" },
+                    k: { default: "(münnlich)" },
                     type: { type: "weightAbsolute" }
                 }
             },
@@ -19506,7 +19506,7 @@ const Exercises = [
                     default: {},
                     m: {},
                     w: {},
-                    k: { default: "(m�nnlich)" },
+                    k: { default: "(münnlich)" },
                     type: { type: "weightAbsolute" }
                 }
             },
@@ -19522,7 +19522,7 @@ const Exercises = [
     },
     {
         id: 340,
-        name: "Knieheben mit KH li und re  SWR+ Pr�v",
+        name: "Knieheben mit KH li und re  SWR+ Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_KNIE_HUEFTE",
@@ -19579,7 +19579,7 @@ const Exercises = [
                     default: {},
                     m: {},
                     w: {},
-                    k: { default: "(m�nnlich)" },
+                    k: { default: "(münnlich)" },
                     type: { type: "weightAbsolute" }
                 }
             },
@@ -19634,7 +19634,7 @@ const Exercises = [
                     default: {},
                     m: {},
                     w: {},
-                    k: { default: "(m�nnlich)" },
+                    k: { default: "(münnlich)" },
                     type: { type: "weightAbsolute" }
                 }
             },
@@ -19650,7 +19650,7 @@ const Exercises = [
     },
     {
         id: 342,
-        name: "LH Bankdr�cken SWR + Testeinheit",
+        name: "LH Bankdrücken SWR + Testeinheit",
         level: { m: 1, w: 2 },
         tags: [
             "SKILL_MAX_KRAFT_TEST",
@@ -19710,7 +19710,7 @@ const Exercises = [
     },
     {
         id: 343,
-        name: "LH Bankdr�cken Max-K",
+        name: "LH Bankdrücken Max-K",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_MAX_KRAFT",
@@ -19759,7 +19759,7 @@ const Exercises = [
     },
     {
         id: 344,
-        name: "LH Bankdr�cken SK",
+        name: "LH Bankdrücken SK",
         level: { m: 1, w: 2 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -19808,7 +19808,7 @@ const Exercises = [
     },
     {
         id: 345,
-        name: "LH Bankdr�cken SA",
+        name: "LH Bankdrücken SA",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -19858,7 +19858,7 @@ const Exercises = [
     },
     {
         id: 346,
-        name: "LH Schr�gbankdr�cken SWR",
+        name: "LH Schrügbankdrücken SWR",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SWR",
@@ -19917,7 +19917,7 @@ const Exercises = [
     },
     {
         id: 347,
-        name: "LH Schr�gbankdr�cken Max-K",
+        name: "LH Schrügbankdrücken Max-K",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_MAX_KRAFT",
@@ -19966,7 +19966,7 @@ const Exercises = [
     },
     {
         id: 348,
-        name: "LH Schr�gbankdr�cken SK",
+        name: "LH Schrügbankdrücken SK",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -20015,7 +20015,7 @@ const Exercises = [
     },
     {
         id: 349,
-        name: "LH Schr�gbankdr�cken SA",
+        name: "LH Schrügbankdrücken SA",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -20065,7 +20065,7 @@ const Exercises = [
     },
     {
         id: 350,
-        name: "KH Schr�gbankdr�cken SWR",
+        name: "KH Schrügbankdrücken SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -20119,7 +20119,7 @@ const Exercises = [
     },
     {
         id: 351,
-        name: "KH Schr�gbankdr�cken Max-K",
+        name: "KH Schrügbankdrücken Max-K",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_MAX_KRAFT",
@@ -20169,7 +20169,7 @@ const Exercises = [
     },
     {
         id: 352,
-        name: "KH Schr�gbankdr�cken SK",
+        name: "KH Schrügbankdrücken SK",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -20218,7 +20218,7 @@ const Exercises = [
     },
     {
         id: 353,
-        name: "KH Schr�gbankdr�cken SA",
+        name: "KH Schrügbankdrücken SA",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -20268,7 +20268,7 @@ const Exercises = [
     },
     {
         id: 354,
-        name: "KH Schr�gbankdr�cken eng SWR (Pr�v)+Pr�v",
+        name: "KH Schrügbankdrücken eng SWR (Präv)+Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -20327,7 +20327,7 @@ const Exercises = [
     },
     {
         id: 355,
-        name: "KH Bankdr�cken eng  SWR(Pr�v) + Pr�v + Testeinheit",
+        name: "KH Bankdrücken eng  SWR(Präv) + Präv + Testeinheit",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -20441,7 +20441,7 @@ const Exercises = [
     },
     {
         id: 357,
-        name: "Rotationsseitst�tz auf Unterarmen li/re SWR",
+        name: "Rotationsseitstütz auf Unterarmen li/re SWR",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SWR",
@@ -20931,7 +20931,7 @@ const Exercises = [
     },
     {
         id: 365,
-        name: "Exzentrische Kniebeuge Li und re Pr�v",
+        name: "Exzentrische Kniebeuge Li und re Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_KNIE_HUEFTE",
@@ -20994,7 +20994,7 @@ const Exercises = [
     },
     {
         id: 366,
-        name: "halbe einbeinige Kniebeuge li und re Pr�v",
+        name: "halbe einbeinige Kniebeuge li und re Präv",
         level: { m: 2, w: 2 },
         tags: [
             "PREVENTION_KNIE_HUEFTE",
@@ -21046,7 +21046,7 @@ const Exercises = [
     },
     {
         id: 367,
-        name: "Rotatoren mit Flaschen auf Schulterh�he Gstabi und SWR",
+        name: "Rotatoren mit Flaschen auf Schulterhühe Gstabi und SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -21373,7 +21373,7 @@ const Exercises = [
     {
         id: 372,
         name:
-            "enges Schulterdr�cken mit 1 KH auf einem Bein li und re Gstabi (Pr�v)",
+            "enges Schulterdrücken mit 1 KH auf einem Bein li und re Gstabi (Präv)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -21442,7 +21442,7 @@ const Exercises = [
     },
     {
         id: 373,
-        name: "KH Schulterdr�cken auf einem Bein li und re Gstabi",
+        name: "KH Schulterdrücken auf einem Bein li und re Gstabi",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -21512,7 +21512,7 @@ const Exercises = [
     },
     {
         id: 374,
-        name: "LH Schulterdr�cken auf einem Bein li und re Gstabi",
+        name: "LH Schulterdrücken auf einem Bein li und re Gstabi",
         level: { m: 3, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -21583,7 +21583,7 @@ const Exercises = [
     },
     {
         id: 375,
-        name: "Ausfallschritte r�ckw�rts mit LH �ber Kopf (li/re) Gstabi",
+        name: "Ausfallschritte rückwürts mit LH über Kopf (li/re) Gstabi",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -21653,7 +21653,7 @@ const Exercises = [
     },
     {
         id: 376,
-        name: "Ausfallschritte marschierend mit LH �ber Kopf li/re Gstabi",
+        name: "Ausfallschritte marschierend mit LH über Kopf li/re Gstabi",
         level: { m: 3, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -21720,7 +21720,7 @@ const Exercises = [
     },
     {
         id: 377,
-        name: "Ausfallschritte r�ckw�rts mit 2 KH �ber Kopf (li/re)  Gstabi",
+        name: "Ausfallschritte rückwürts mit 2 KH über Kopf (li/re)  Gstabi",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -21859,7 +21859,7 @@ const Exercises = [
     },
     {
         id: 379,
-        name: "Rumpf-Seitneigen mit KH li und re (Level 1) Pr�v",
+        name: "Rumpf-Seitneigen mit KH li und re (Level 1) Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_WIRBELSAULE",
@@ -21927,7 +21927,7 @@ const Exercises = [
     },
     {
         id: 380,
-        name: "Unterarmst�tz in R�ckenlage auf Bank Gstabi",
+        name: "Unterarmstütz in Rückenlage auf Bank Gstabi",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -21993,7 +21993,7 @@ const Exercises = [
     },
     {
         id: 381,
-        name: "�berz�ge mit KH auf Bank SWR",
+        name: "überzüge mit KH auf Bank SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -22069,7 +22069,7 @@ const Exercises = [
     },
     {
         id: 382,
-        name: "KH Butterfly auf Schr�gbank SWR",
+        name: "KH Butterfly auf Schrügbank SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -22205,7 +22205,7 @@ const Exercises = [
     {
         id: 384,
         name:
-            "Mountain Climber (langsam) li/re (mit Fokus WS) Pr�v (bei WS, H�fte)",
+            "Mountain Climber (langsam) li/re (mit Fokus WS) Präv (bei WS, Hüfte)",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_KNIE_HUEFTE",
@@ -22328,7 +22328,7 @@ const Exercises = [
     {
         id: 386,
         name:
-            "Schulter-br�cke (Po anheben, bis Ober- und Unterk�rper eine Linie bilden) Mobi+Warm-Up",
+            "Schulter-brücke (Po anheben, bis Ober- und Unterkürper eine Linie bilden) Mobi+Warm-Up",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_WARM_UP",
@@ -22520,7 +22520,7 @@ const Exercises = [
     },
     {
         id: 389,
-        name: "Standwaage (li/re) Warm-Up (bei Knie, H�fte) + spez. Warm-Up",
+        name: "Standwaage (li/re) Warm-Up (bei Knie, Hüfte) + spez. Warm-Up",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -22584,7 +22584,7 @@ const Exercises = [
     {
         id: 390,
         name:
-            "seitlicher Ausfallschritt statisch (li/re)Warm-Up+Mobi (bei H�fte/Knie)",
+            "seitlicher Ausfallschritt statisch (li/re)Warm-Up+Mobi (bei Hüfte/Knie)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -22647,7 +22647,7 @@ const Exercises = [
     {
         id: 391,
         name:
-            "seitlicher Ausfallschritt dynamisch (li/re) Warm-Up+Mobi (bei H�fte,Knie) +U",
+            "seitlicher Ausfallschritt dynamisch (li/re) Warm-Up+Mobi (bei Hüfte,Knie) +U",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SUPPORT",
@@ -22691,15 +22691,15 @@ const Exercises = [
             duration: {
                 startValue: {
                     default: {},
-                    m: { default: "60; 30 bei Unterst�tzung" },
-                    w: { default: "60; 30 bei Unterst�tzung" },
+                    m: { default: "60; 30 bei Unterstützung" },
+                    w: { default: "60; 30 bei Unterstützung" },
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "60; 30 bei Unterst�tzung" },
-                    m: { default: "60; 30 bei Unterst�tzung" },
-                    w: { default: "60; 30 bei Unterst�tzung" },
-                    k: { default: "60; 30 bei Unterst�tzung" },
+                    default: { default: "60; 30 bei Unterstützung" },
+                    m: { default: "60; 30 bei Unterstützung" },
+                    w: { default: "60; 30 bei Unterstützung" },
+                    k: { default: "60; 30 bei Unterstützung" },
                     type: { type: "Unknown" }
                 }
             },
@@ -22756,15 +22756,15 @@ const Exercises = [
             duration: {
                 startValue: {
                     default: {},
-                    m: { default: "60; 30 bei Unterst�tzung" },
-                    w: { default: "60; 30 bei Unterst�tzung" },
+                    m: { default: "60; 30 bei Unterstützung" },
+                    w: { default: "60; 30 bei Unterstützung" },
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "60; 30 bei Unterst�tzung" },
-                    m: { default: "60; 30 bei Unterst�tzung" },
-                    w: { default: "60; 30 bei Unterst�tzung" },
-                    k: { default: "60; 30 bei Unterst�tzung" },
+                    default: { default: "60; 30 bei Unterstützung" },
+                    m: { default: "60; 30 bei Unterstützung" },
+                    w: { default: "60; 30 bei Unterstützung" },
+                    k: { default: "60; 30 bei Unterstützung" },
                     type: { type: "Unknown" }
                 }
             },
@@ -22776,7 +22776,7 @@ const Exercises = [
     },
     {
         id: 393,
-        name: "KH Schr�gbankdr�cken eng Pr�v  SK",
+        name: "KH Schrügbankdrücken eng Präv  SK",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -22824,7 +22824,7 @@ const Exercises = [
     },
     {
         id: 394,
-        name: "KH Schr�gbankdr�cken eng Pr�v SA",
+        name: "KH Schrügbankdrücken eng Präv SA",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -22873,7 +22873,7 @@ const Exercises = [
     },
     {
         id: 395,
-        name: "KH Schulterdr�cken eng (sitzend) Pr�v SK",
+        name: "KH Schulterdrücken eng (sitzend) Präv SK",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -22920,7 +22920,7 @@ const Exercises = [
     },
     {
         id: 396,
-        name: "KH Schulterdr�cken eng (sitzend) Pr�v SA",
+        name: "KH Schulterdrücken eng (sitzend) Präv SA",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -22968,7 +22968,7 @@ const Exercises = [
     },
     {
         id: 397,
-        name: "Bankdr�cken mit 2 Kh SA",
+        name: "Bankdrücken mit 2 Kh SA",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -23017,7 +23017,7 @@ const Exercises = [
     },
     {
         id: 398,
-        name: "Bankdr�cken mit 2 KH SK",
+        name: "Bankdrücken mit 2 KH SK",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -23253,7 +23253,7 @@ const Exercises = [
     },
     {
         id: 402,
-        name: "Kniehub mit Au�enrotation (li/re) Warm-Up",
+        name: "Kniehub mit Auüenrotation (li/re) Warm-Up",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -23308,7 +23308,7 @@ const Exercises = [
     },
     {
         id: 403,
-        name: "Marschieren mit K�rperspannung",
+        name: "Marschieren mit Kürperspannung",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -23337,7 +23337,7 @@ const Exercises = [
     },
     {
         id: 404,
-        name: "seitliches Marschieren mit K�rperspannung",
+        name: "seitliches Marschieren mit Kürperspannung",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -23430,7 +23430,7 @@ const Exercises = [
     },
     {
         id: 406,
-        name: "weltbeste �bung (li/re) Warm-Up+Mobi+Cool Down",
+        name: "weltbeste übung (li/re) Warm-Up+Mobi+Cool Down",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_WARM_UP",
@@ -23555,7 +23555,7 @@ const Exercises = [
     },
     {
         id: 408,
-        name: "Wallslide an Wand sitzend Warm-Up+Mobi+Pr�v",
+        name: "Wallslide an Wand sitzend Warm-Up+Mobi+Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -23675,7 +23675,7 @@ const Exercises = [
     },
     {
         id: 410,
-        name: "H�ftmobilit�t 90/90 Version 1 Mobi+Warm-Up",
+        name: "Hüftmobilitüt 90/90 Version 1 Mobi+Warm-Up",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -23736,7 +23736,7 @@ const Exercises = [
     },
     {
         id: 411,
-        name: "H�ftmobilit�t 90/90 Version 2 Mobi+Warm-Up",
+        name: "Hüftmobilitüt 90/90 Version 2 Mobi+Warm-Up",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_WARM_UP",
@@ -23798,7 +23798,7 @@ const Exercises = [
     },
     {
         id: 412,
-        name: "Wirbels�ulen-Rotation (Mobi)+ Spez. Warm-Up",
+        name: "Wirbelsüulen-Rotation (Mobi)+ Spez. Warm-Up",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -23857,7 +23857,7 @@ const Exercises = [
     },
     {
         id: 413,
-        name: "Wirbels�ulen-Seitneigung (Mobi)+ Spez. Warm-Up",
+        name: "Wirbelsüulen-Seitneigung (Mobi)+ Spez. Warm-Up",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -23917,7 +23917,7 @@ const Exercises = [
     {
         id: 414,
         name:
-            "Wirbels�ulen-Aufrollen (mit Armunterst�tzung) Mobi + Spez. Warm-Up",
+            "Wirbelsüulen-Aufrollen (mit Armunterstützung) Mobi + Spez. Warm-Up",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -23976,7 +23976,7 @@ const Exercises = [
     },
     {
         id: 415,
-        name: "Wirbels�ule Aufrollen SWR+ Pr�v",
+        name: "Wirbelsüule Aufrollen SWR+ Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_WIRBELSAULE",
@@ -24024,10 +24024,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "80 bei SWR, 60 bei Pr�v" },
-                    m: { default: "80 bei SWR, 60 bei Pr�v" },
-                    w: { default: "80 bei SWR, 60 bei Pr�v" },
-                    k: { default: "80 bei SWR, 60 bei Pr�v" },
+                    default: { default: "80 bei SWR, 60 bei Präv" },
+                    m: { default: "80 bei SWR, 60 bei Präv" },
+                    w: { default: "80 bei SWR, 60 bei Präv" },
+                    k: { default: "80 bei SWR, 60 bei Präv" },
                     type: { type: "Unknown" }
                 }
             },
@@ -24039,7 +24039,7 @@ const Exercises = [
     },
     {
         id: 416,
-        name: "R�cken Aufrollen mit KH (als Kraft�bung)! Gottlob SWR + U",
+        name: "Rücken Aufrollen mit KH (als Kraftübung)! Gottlob SWR + U",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -24069,7 +24069,7 @@ const Exercises = [
     {
         id: 417,
         name:
-            "R�cken Aufrollen mit Rotation li und re(als Kraft�bung)! Gottlob SWR+ Pr�v + U",
+            "Rücken Aufrollen mit Rotation li und re(als Kraftübung)! Gottlob SWR+ Präv + U",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -24099,7 +24099,7 @@ const Exercises = [
     {
         id: 418,
         name:
-            "R�cken Aufrollen mit Rotation li und re mit KH (als Kraft�bung)! Gottlob SWR + U",
+            "Rücken Aufrollen mit Rotation li und re mit KH (als Kraftübung)! Gottlob SWR + U",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -24129,7 +24129,7 @@ const Exercises = [
     {
         id: 419,
         name:
-            "Ausfallschritt r�ckw�rts mit Fersenkontakt (li/re)  Warm-Up Level 2",
+            "Ausfallschritt rückwürts mit Fersenkontakt (li/re)  Warm-Up Level 2",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_WARM_UP",
@@ -24192,7 +24192,7 @@ const Exercises = [
     {
         id: 420,
         name:
-            "WS-Rotation auf Rolle (Arm rollt auf BR nach au�en, Schulter zum Boden) li und re Mobi (bei WS)",
+            "WS-Rotation auf Rolle (Arm rollt auf BR nach auüen, Schulter zum Boden) li und re Mobi (bei WS)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_MOBILITY",
@@ -24308,7 +24308,7 @@ const Exercises = [
     },
     {
         id: 422,
-        name: "H�ftrotation im Stehen  (li/re) Warm-Up+ Mobi + spez. Warm-Up",
+        name: "Hüftrotation im Stehen  (li/re) Warm-Up+ Mobi + spez. Warm-Up",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -24370,7 +24370,7 @@ const Exercises = [
     {
         id: 423,
         name:
-            "Armheben auf Bank (Schultermobilit�t vor Bank knieend li/re Mobi (bei Schulter)",
+            "Armheben auf Bank (Schultermobilitüt vor Bank knieend li/re Mobi (bei Schulter)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_MOBILITY",
@@ -24433,7 +24433,7 @@ const Exercises = [
     {
         id: 424,
         name:
-            "Wirbels�ulen- und Schultermobilisierung auf Rolle, Mobi (bei WS, Schulter)",
+            "Wirbelsüulen- und Schultermobilisierung auf Rolle, Mobi (bei WS, Schulter)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_MOBILITY",
@@ -24495,7 +24495,7 @@ const Exercises = [
     },
     {
         id: 425,
-        name: "Skipping langsam spez. Warm-Up (bei Knie, H�fte)",
+        name: "Skipping langsam spez. Warm-Up (bei Knie, Hüfte)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -24554,7 +24554,7 @@ const Exercises = [
     {
         id: 426,
         name:
-            "Kniebeuge mit Wadenheben (spez. Warm-Up) bei Sprunggelenk, Knie, H�fte) + Warm-Up",
+            "Kniebeuge mit Wadenheben (spez. Warm-Up) bei Sprunggelenk, Knie, Hüfte) + Warm-Up",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_WARM_UP",
@@ -24619,7 +24619,7 @@ const Exercises = [
     {
         id: 427,
         name:
-            "Kissing Bizeps mit 2 KH und Kniehub (marschieren auf der Stelle) und ohne Gewicht spez. Warm-Up (bei Schulter, H�fte und Knie) (erstmal nicht verwenden!)",
+            "Kissing Bizeps mit 2 KH und Kniehub (marschieren auf der Stelle) und ohne Gewicht spez. Warm-Up (bei Schulter, Hüfte und Knie) (erstmal nicht verwenden!)",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -24649,7 +24649,7 @@ const Exercises = [
     {
         id: 428,
         name:
-            "Kissing Bizeps mit Armen und Kniehub (marschieren auf der Stelle) spez. Warm-Up (bei Schulter, H�fte und Knie) (erstmal nicht verwenden!)",
+            "Kissing Bizeps mit Armen und Kniehub (marschieren auf der Stelle) spez. Warm-Up (bei Schulter, Hüfte und Knie) (erstmal nicht verwenden!)",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -24678,7 +24678,7 @@ const Exercises = [
     },
     {
         id: 429,
-        name: "Rumpf-St�tz Level 1 (li/re) Warm-Up",
+        name: "Rumpf-Stütz Level 1 (li/re) Warm-Up",
         level: { m: 2, w: 2 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -24748,7 +24748,7 @@ const Exercises = [
     },
     {
         id: 430,
-        name: "in St�tz Arm anheben (li/re) Warm-Up SK/SA",
+        name: "in Stütz Arm anheben (li/re) Warm-Up SK/SA",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -24778,7 +24778,7 @@ const Exercises = [
     {
         id: 431,
         name:
-            "halbe Kniebeuge Warm-Up + spez. Warm-Up + Warm Up SK/SA (bei Knie, H�fte)",
+            "halbe Kniebeuge Warm-Up + spez. Warm-Up + Warm Up SK/SA (bei Knie, Hüfte)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -24842,7 +24842,7 @@ const Exercises = [
     {
         id: 432,
         name:
-            "Kniebeuge Warm-Up + spez. Warm-Up (bei Sprunggelenk, Knie, H�fte) + Warm Up SK/SA",
+            "Kniebeuge Warm-Up + spez. Warm-Up (bei Sprunggelenk, Knie, Hüfte) + Warm Up SK/SA",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_WARM_UP",
@@ -24907,7 +24907,7 @@ const Exercises = [
     },
     {
         id: 433,
-        name: "schnelle Liegest�tz auf Knien Warm-Up SK/SA",
+        name: "schnelle Liegestütz auf Knien Warm-Up SK/SA",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -24970,7 +24970,7 @@ const Exercises = [
     },
     {
         id: 434,
-        name: "schnelle Liegest�tz Warm-Up SK/SA",
+        name: "schnelle Liegestütz Warm-Up SK/SA",
         level: { m: 3, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -25030,7 +25030,7 @@ const Exercises = [
     },
     {
         id: 435,
-        name: "Schwert ziehen li/re Mobi+Pr�v",
+        name: "Schwert ziehen li/re Mobi+Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -25088,7 +25088,7 @@ const Exercises = [
     },
     {
         id: 436,
-        name: "H�ftbeuger Dehnung li und re Cool-Down",
+        name: "Hüftbeuger Dehnung li und re Cool-Down",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_COOL_DOWN",
@@ -25204,7 +25204,7 @@ const Exercises = [
     {
         id: 438,
         name:
-            "Adduktoren Dehnung (2) (Knieend mit Fu� zur Seite und r�berlehnen und Arm �ber Kopf) li und re Cool-Down",
+            "Adduktoren Dehnung (2) (Knieend mit Fuü zur Seite und rüberlehnen und Arm über Kopf) li und re Cool-Down",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_COOL_DOWN",
@@ -25261,7 +25261,7 @@ const Exercises = [
     },
     {
         id: 439,
-        name: "Dehnung Beinr�ckseite (mit Handtuch) li und re Cool Down",
+        name: "Dehnung Beinrückseite (mit Handtuch) li und re Cool Down",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_COOL_DOWN",
@@ -25439,7 +25439,7 @@ const Exercises = [
     },
     {
         id: 442,
-        name: "Brustdehnung an Wand (Arm 90�) li und re Cool-Down",
+        name: "Brustdehnung an Wand (Arm 90ü) li und re Cool-Down",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_COOL_DOWN",
@@ -25560,7 +25560,7 @@ const Exercises = [
     {
         id: 444,
         name:
-            "Brustwirbels�ulenmobilisierung im Liegen 90/90� li und re Mobi+Cool-Down",
+            "Brustwirbelsüulenmobilisierung im Liegen 90/90ü li und re Mobi+Cool-Down",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_COOL_DOWN",
@@ -25621,7 +25621,7 @@ const Exercises = [
     },
     {
         id: 445,
-        name: "Pferder�cken und Katzenbuckel Cool-Down",
+        name: "Pferderücken und Katzenbuckel Cool-Down",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_COOL_DOWN",
@@ -25681,7 +25681,7 @@ const Exercises = [
     {
         id: 446,
         name:
-            "Fu�sohle mit Ball triggern li und re BR (Sprunggelenk, Knie,H�fte, WS, Schulter)",
+            "Fuüsohle mit Ball triggern li und re BR (Sprunggelenk, Knie,Hüfte, WS, Schulter)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_BLACK_ROLL",
@@ -25749,7 +25749,7 @@ const Exercises = [
     },
     {
         id: 447,
-        name: "weitere gute �bungen:",
+        name: "weitere gute übungen:",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -25908,7 +25908,7 @@ const Exercises = [
     },
     {
         id: 451,
-        name: "Shrugs (1) mit 2 KH (stehend) Pr�v.",
+        name: "Shrugs (1) mit 2 KH (stehend) Präv.",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -25974,7 +25974,7 @@ const Exercises = [
     },
     {
         id: 452,
-        name: "Shrugs (2) mit 2 KH (70� vorgebeugt stehend) SWR+U",
+        name: "Shrugs (2) mit 2 KH (70ü vorgebeugt stehend) SWR+U",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SUPPORT",
@@ -26048,7 +26048,7 @@ const Exercises = [
     },
     {
         id: 453,
-        name: "Shrugs (2) mit 2 KH (70� vorgebeugt stehend) Pr�v",
+        name: "Shrugs (2) mit 2 KH (70ü vorgebeugt stehend) Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -26116,7 +26116,7 @@ const Exercises = [
     },
     {
         id: 454,
-        name: "Rotatorenmanschette(hinten)  mit KH in Seitst�tz li und re Pr�v",
+        name: "Rotatorenmanschette(hinten)  mit KH in Seitstütz li und re Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -26186,7 +26186,7 @@ const Exercises = [
     },
     {
         id: 455,
-        name: "Rotatorenmanschette(hinten)  mit KH in Seitst�tz li und re U",
+        name: "Rotatorenmanschette(hinten)  mit KH in Seitstütz li und re U",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SUPPORT",
@@ -26257,7 +26257,7 @@ const Exercises = [
     {
         id: 456,
         name:
-            "Rotatorenmanschette (vorne) mit KH auf Schr�gbank li und re Pr�v",
+            "Rotatorenmanschette (vorne) mit KH auf Schrügbank li und re Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -26330,7 +26330,7 @@ const Exercises = [
     },
     {
         id: 457,
-        name: "Rotatorenmanschette (vorne) mit KH auf Schr�gbank li und re U",
+        name: "Rotatorenmanschette (vorne) mit KH auf Schrügbank li und re U",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SUPPORT",
@@ -26402,7 +26402,7 @@ const Exercises = [
     },
     {
         id: 458,
-        name: "Rotatorenmanschette (vorne) mit 2 KH am Boden liegend Pr�v",
+        name: "Rotatorenmanschette (vorne) mit 2 KH am Boden liegend Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -26536,7 +26536,7 @@ const Exercises = [
     },
     {
         id: 460,
-        name: "Y-�bung mit 2 KH Pr�v.",
+        name: "Y-übung mit 2 KH Präv.",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -26593,7 +26593,7 @@ const Exercises = [
     },
     {
         id: 461,
-        name: "Y-�bung mit 2 KH U",
+        name: "Y-übung mit 2 KH U",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SUPPORT",
@@ -26661,7 +26661,7 @@ const Exercises = [
     },
     {
         id: 462,
-        name: "stehendes Schulterblattheben mit 2 KH �ber Kopf Pr�v",
+        name: "stehendes Schulterblattheben mit 2 KH über Kopf Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -26729,7 +26729,7 @@ const Exercises = [
     },
     {
         id: 463,
-        name: "stehendes Schulterblattheben mit 2 KH �ber Kopf U",
+        name: "stehendes Schulterblattheben mit 2 KH über Kopf U",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SUPPORT",
@@ -26797,7 +26797,7 @@ const Exercises = [
     },
     {
         id: 464,
-        name: "vorgebeugtes Schulterblattheben mit 2 KH Pr�v",
+        name: "vorgebeugtes Schulterblattheben mit 2 KH Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -26935,7 +26935,7 @@ const Exercises = [
     },
     {
         id: 466,
-        name: "Ausfallschritt statisch KG li und re SWR+Pr�v",
+        name: "Ausfallschritt statisch KG li und re SWR+Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_KNIE_HUEFTE",
@@ -27245,7 +27245,7 @@ const Exercises = [
     },
     {
         id: 472,
-        name: "tiefe Kniebeuge Pr�v (Knie und Sprunggelenk)",
+        name: "tiefe Kniebeuge Präv (Knie und Sprunggelenk)",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_KNIE_HUEFTE",
@@ -28056,7 +28056,7 @@ const Exercises = [
     },
     {
         id: 485,
-        name: "KH Schwungdr�cken SWR",
+        name: "KH Schwungdrücken SWR",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SWR",
@@ -28133,7 +28133,7 @@ const Exercises = [
     },
     {
         id: 486,
-        name: "KH Schwungdr�cken SK",
+        name: "KH Schwungdrücken SK",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -28173,11 +28173,11 @@ const Exercises = [
                 startValue: { default: {}, m: {}, w: {}, k: {} },
                 targetValue: {
                     default: {
-                        default: "verwendet f�r die Berechnung die 100"
+                        default: "verwendet für die Berechnung die 100"
                     },
-                    m: { default: "verwendet f�r die Berechnung die 100" },
-                    w: { default: "verwendet f�r die Berechnung die 100" },
-                    k: { default: "verwendet f�r die Berechnung die 100" },
+                    m: { default: "verwendet für die Berechnung die 100" },
+                    w: { default: "verwendet für die Berechnung die 100" },
+                    k: { default: "verwendet für die Berechnung die 100" },
                     type: { type: "weightFMax" }
                 }
             },
@@ -28193,7 +28193,7 @@ const Exercises = [
     },
     {
         id: 487,
-        name: "KH Schwungdr�cken SA",
+        name: "KH Schwungdrücken SA",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -28234,11 +28234,11 @@ const Exercises = [
                 startValue: { default: {}, m: {}, w: {}, k: {} },
                 targetValue: {
                     default: {
-                        default: "verwendet f�r die Berechnung die 100"
+                        default: "verwendet für die Berechnung die 100"
                     },
-                    m: { default: "verwendet f�r die Berechnung die 100" },
-                    w: { default: "verwendet f�r die Berechnung die 100" },
-                    k: { default: "verwendet f�r die Berechnung die 100" },
+                    m: { default: "verwendet für die Berechnung die 100" },
+                    w: { default: "verwendet für die Berechnung die 100" },
+                    k: { default: "verwendet für die Berechnung die 100" },
                     type: { type: "weightFMax" }
                 }
             },
@@ -28254,7 +28254,7 @@ const Exercises = [
     },
     {
         id: 488,
-        name: "LH Schwungdr�cken SK",
+        name: "LH Schwungdrücken SK",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -28295,10 +28295,10 @@ const Exercises = [
             weight: {
                 startValue: { default: {}, m: {}, w: {}, k: {} },
                 targetValue: {
-                    default: { default: "F (m�nnlich) 75" },
-                    m: { default: "F (m�nnlich) 75" },
-                    w: { default: "F (m�nnlich) 75" },
-                    k: { default: "F (m�nnlich) 75" },
+                    default: { default: "F (münnlich) 75" },
+                    m: { default: "F (münnlich) 75" },
+                    w: { default: "F (münnlich) 75" },
+                    k: { default: "F (münnlich) 75" },
                     type: { type: "weightFMax" }
                 }
             },
@@ -28314,7 +28314,7 @@ const Exercises = [
     },
     {
         id: 489,
-        name: "tiefe Kniebeuge mit KH und Armen �ber kopf  Mobi",
+        name: "tiefe Kniebeuge mit KH und Armen über kopf  Mobi",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_MOBILITY",
@@ -28393,7 +28393,7 @@ const Exercises = [
     },
     {
         id: 490,
-        name: "tiefe Kniebeuge mit KH und Armen �ber kopf  Pr�v",
+        name: "tiefe Kniebeuge mit KH und Armen über kopf  Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -28475,7 +28475,7 @@ const Exercises = [
     },
     {
         id: 491,
-        name: "tiefe Kniebeuge mit KH und Armen �ber kopf  Warm-Up",
+        name: "tiefe Kniebeuge mit KH und Armen über kopf  Warm-Up",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_WARM_UP",
@@ -28554,7 +28554,7 @@ const Exercises = [
     },
     {
         id: 492,
-        name: "tiefe Kniebeuge mit Ball und Armen �ber kopf Mobi",
+        name: "tiefe Kniebeuge mit Ball und Armen über kopf Mobi",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -28625,7 +28625,7 @@ const Exercises = [
     },
     {
         id: 493,
-        name: "tiefe Kniebeuge mit Ball und Armen �ber kopf Warm-Up",
+        name: "tiefe Kniebeuge mit Ball und Armen über kopf Warm-Up",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_WARM_UP",
@@ -28770,7 +28770,7 @@ const Exercises = [
     {
         id: 495,
         name:
-            "KH-Heben zum Kinn (High Pulls) Level 1 f�r weiblich und m�nnlich und Anf�nger SWR",
+            "KH-Heben zum Kinn (High Pulls) Level 1 für weiblich und münnlich und Anfünger SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -28852,7 +28852,7 @@ const Exercises = [
     },
     {
         id: 496,
-        name: "unterarmst�tz Level 1 SWR",
+        name: "unterarmstütz Level 1 SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -28904,7 +28904,7 @@ const Exercises = [
     },
     {
         id: 497,
-        name: "unterarmst�tz Level 1 Pr�v",
+        name: "unterarmstütz Level 1 Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -28957,7 +28957,7 @@ const Exercises = [
     },
     {
         id: 498,
-        name: "unterarmst�tz Level 2 SWR",
+        name: "unterarmstütz Level 2 SWR",
         level: { m: 1, w: 2 },
         tags: [
             "SKILL_SWR",
@@ -29012,7 +29012,7 @@ const Exercises = [
     },
     {
         id: 499,
-        name: "unterarmst�tz Level 2 Pr�v",
+        name: "unterarmstütz Level 2 Präv",
         level: { m: 1, w: 2 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -29071,7 +29071,7 @@ const Exercises = [
     },
     {
         id: 500,
-        name: "unterarmst�tz Level 3 SWR + U",
+        name: "unterarmstütz Level 3 SWR + U",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SUPPORT",
@@ -29126,7 +29126,7 @@ const Exercises = [
     },
     {
         id: 501,
-        name: "unterarmst�tz Level 3 Pr�v",
+        name: "unterarmstütz Level 3 Präv",
         level: { m: 2, w: 3 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -29179,7 +29179,7 @@ const Exercises = [
     },
     {
         id: 502,
-        name: "unterarmst�tz Level 4 SWR + U",
+        name: "unterarmstütz Level 4 SWR + U",
         level: { m: 3, w: 4 },
         tags: [
             "SKILL_SUPPORT",
@@ -29235,7 +29235,7 @@ const Exercises = [
     },
     {
         id: 503,
-        name: "unterarmst�tz Level 4 Pr�v",
+        name: "unterarmstütz Level 4 Präv",
         level: { m: 3, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -29290,7 +29290,7 @@ const Exercises = [
     },
     {
         id: 504,
-        name: "unterarmst�tz Level 5 SWR + U",
+        name: "unterarmstütz Level 5 SWR + U",
         level: { m: 4, w: 5 },
         tags: [
             "SKILL_SUPPORT",
@@ -29347,7 +29347,7 @@ const Exercises = [
     },
     {
         id: 505,
-        name: "Unterarmst�tz Level 6 SWR + U",
+        name: "Unterarmstütz Level 6 SWR + U",
         level: { m: 5, w: 6 },
         tags: [
             "SKILL_SUPPORT",
@@ -29899,7 +29899,7 @@ const Exercises = [
     },
     {
         id: 514,
-        name: "GoGo Squat Pr�v+ Mobi",
+        name: "GoGo Squat Präv+ Mobi",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_KNIE_HUEFTE",
@@ -30084,7 +30084,7 @@ const Exercises = [
     },
     {
         id: 517,
-        name: "gro�er R�ckenmuskel mit Rolle li und re BR bei Schulter",
+        name: "groüer Rückenmuskel mit Rolle li und re BR bei Schulter",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_BLACK_ROLL",
@@ -30198,7 +30198,7 @@ const Exercises = [
     },
     {
         id: 519,
-        name: "unterer/oberer R�cken auf Rolle (1) BR (bei WS, Schulter)",
+        name: "unterer/oberer Rücken auf Rolle (1) BR (bei WS, Schulter)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_BLACK_ROLL",
@@ -30259,7 +30259,7 @@ const Exercises = [
     {
         id: 520,
         name:
-            "unterer/oberer R�cken auf Rolle (2) (mit gestreckten Armen BR  (bei WS, Schulter)",
+            "unterer/oberer Rücken auf Rolle (2) (mit gestreckten Armen BR  (bei WS, Schulter)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_BLACK_ROLL",
@@ -30320,7 +30320,7 @@ const Exercises = [
     {
         id: 521,
         name:
-            "unterer/oberer R�cken mit Crunch auf Rolle (3) (bei WS, Schulter) BR",
+            "unterer/oberer Rücken mit Crunch auf Rolle (3) (bei WS, Schulter) BR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_BLACK_ROLL",
@@ -30381,7 +30381,7 @@ const Exercises = [
     {
         id: 522,
         name:
-            "unterer/oberer R�cken mit Rotation auf Rolle (4) (bei WS, Schulter) BR",
+            "unterer/oberer Rücken mit Rotation auf Rolle (4) (bei WS, Schulter) BR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_BLACK_ROLL",
@@ -30441,7 +30441,7 @@ const Exercises = [
     },
     {
         id: 523,
-        name: "Po mit Ball li und re BR (bei H�fte)",
+        name: "Po mit Ball li und re BR (bei Hüfte)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_BLACK_ROLL",
@@ -30498,7 +30498,7 @@ const Exercises = [
     },
     {
         id: 524,
-        name: "Po mit Rolle li und re BR (bei H�fte)",
+        name: "Po mit Rolle li und re BR (bei Hüfte)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_BLACK_ROLL",
@@ -30555,7 +30555,7 @@ const Exercises = [
     },
     {
         id: 525,
-        name: "Beinr�ckseite mit Rolle li und re BR (bei Knie/H�fte)",
+        name: "Beinrückseite mit Rolle li und re BR (bei Knie/Hüfte)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_BLACK_ROLL",
@@ -30612,7 +30612,7 @@ const Exercises = [
     },
     {
         id: 526,
-        name: "Beinr�ckseite mit Ball li und re, BR (bei Knie/H�fte)",
+        name: "Beinrückseite mit Ball li und re, BR (bei Knie/Hüfte)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_BLACK_ROLL",
@@ -30675,7 +30675,7 @@ const Exercises = [
     },
     {
         id: 527,
-        name: "H�ftbeuger mit Ball li und re BR (bei WS, H�fte, Knie)",
+        name: "Hüftbeuger mit Ball li und re BR (bei WS, Hüfte, Knie)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_BLACK_ROLL",
@@ -30795,7 +30795,7 @@ const Exercises = [
     },
     {
         id: 529,
-        name: "seitliche Spr�nge beidbeinig li/re Stabi",
+        name: "seitliche Sprünge beidbeinig li/re Stabi",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_STABILITY_LEG",
@@ -30848,7 +30848,7 @@ const Exercises = [
     {
         id: 530,
         name:
-            "Spr�nge beidbeinig mit 90� Drehung und seitlicher Landung li/re Stabi",
+            "Sprünge beidbeinig mit 90ü Drehung und seitlicher Landung li/re Stabi",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_STABILITY_LEG",
@@ -30900,7 +30900,7 @@ const Exercises = [
     },
     {
         id: 531,
-        name: "seitliche Spr�nge mit 180� Drehung li/re Stabi",
+        name: "seitliche Sprünge mit 180ü Drehung li/re Stabi",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_STABILITY_LEG",
@@ -30955,7 +30955,7 @@ const Exercises = [
     },
     {
         id: 532,
-        name: "beidbeinige gerade Spr�nge (Fokus Landung) Stabi",
+        name: "beidbeinige gerade Sprünge (Fokus Landung) Stabi",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_STABILITY_LEG",
@@ -31008,7 +31008,7 @@ const Exercises = [
     {
         id: 533,
         name:
-            "Sprung beidbeinig seitlich  mit 90� Drehung und gerader Landung (li/re) Stabi",
+            "Sprung beidbeinig seitlich  mit 90ü Drehung und gerader Landung (li/re) Stabi",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_STABILITY_LEG",
@@ -31060,7 +31060,7 @@ const Exercises = [
     },
     {
         id: 534,
-        name: "Sprung beidbeinig mit 180� Drehung li/re Stabi",
+        name: "Sprung beidbeinig mit 180ü Drehung li/re Stabi",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_STABILITY_LEG",
@@ -31115,7 +31115,7 @@ const Exercises = [
     },
     {
         id: 535,
-        name: "Standwaage und Schulterdr�cken mit Med-Ball li und re Gstabi",
+        name: "Standwaage und Schulterdrücken mit Med-Ball li und re Gstabi",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -31336,7 +31336,7 @@ const Exercises = [
     },
     {
         id: 538,
-        name: "Seitliche Med-Ballw�rfe im Ausfallschritt li und re Gstabi",
+        name: "Seitliche Med-Ballwürfe im Ausfallschritt li und re Gstabi",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -31407,7 +31407,7 @@ const Exercises = [
     },
     {
         id: 539,
-        name: "Seitst�tz li und re Level 1  SWR",
+        name: "Seitstütz li und re Level 1  SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -31460,7 +31460,7 @@ const Exercises = [
     },
     {
         id: 540,
-        name: "Seitst�tz li und re Level 1  Pr�v",
+        name: "Seitstütz li und re Level 1  Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -31512,7 +31512,7 @@ const Exercises = [
     },
     {
         id: 541,
-        name: "Seitst�tz li und re Level 2  SWR",
+        name: "Seitstütz li und re Level 2  SWR",
         level: { m: 1, w: 2 },
         tags: [
             "SKILL_SWR",
@@ -31565,7 +31565,7 @@ const Exercises = [
     },
     {
         id: 542,
-        name: "Seitst�tz li und re Level 2  Pr�v",
+        name: "Seitstütz li und re Level 2  Präv",
         level: { m: 2, w: 2 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -31617,7 +31617,7 @@ const Exercises = [
     },
     {
         id: 543,
-        name: "Seitst�tz li und re Level 3 SWR + U",
+        name: "Seitstütz li und re Level 3 SWR + U",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SUPPORT",
@@ -31673,7 +31673,7 @@ const Exercises = [
     },
     {
         id: 544,
-        name: "Seitst�tz mit Beckenheben und KH li und re SWR",
+        name: "Seitstütz mit Beckenheben und KH li und re SWR",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_SWR",
@@ -31745,7 +31745,7 @@ const Exercises = [
     },
     {
         id: 545,
-        name: "Seitst�tz mit Beckenheben und KH li und re U",
+        name: "Seitstütz mit Beckenheben und KH li und re U",
         level: { m: 3, w: 4 },
         tags: [
             "SKILL_SUPPORT",
@@ -31809,7 +31809,7 @@ const Exercises = [
     },
     {
         id: 546,
-        name: "4 F��lerstand (diagonal Arm/Bein anheben)li und re Level 1 SWR",
+        name: "4 Füülerstand (diagonal Arm/Bein anheben)li und re Level 1 SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -31873,7 +31873,7 @@ const Exercises = [
     {
         id: 547,
         name:
-            "4 F��lerstand (diagonal abwechselnd Arm/Bein leicht anheben) Level 2 SWR",
+            "4 Füülerstand (diagonal abwechselnd Arm/Bein leicht anheben) Level 2 SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -31937,7 +31937,7 @@ const Exercises = [
     {
         id: 548,
         name:
-            "4 F��lerstand (ein Arm/Bein der gleichen Seite anheben)li und re Level 3 SWR + U",
+            "4 Füülerstand (ein Arm/Bein der gleichen Seite anheben)li und re Level 3 SWR + U",
         level: { m: 3, w: 1 },
         tags: [
             "SKILL_SUPPORT",
@@ -32003,7 +32003,7 @@ const Exercises = [
     },
     {
         id: 549,
-        name: "Bauchpresse diagonal mit Druck H�nde li und re SWR + U",
+        name: "Bauchpresse diagonal mit Druck Hünde li und re SWR + U",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SUPPORT",
@@ -32110,7 +32110,7 @@ const Exercises = [
     },
     {
         id: 551,
-        name: "Beinstabi und Unterst�tzung:",
+        name: "Beinstabi und Unterstützung:",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -32257,7 +32257,7 @@ const Exercises = [
     {
         id: 556,
         name:
-            "Zehen-an-Ferse Stand (geschlossene Augen und H�nde in die H�fte) Stabi+ U",
+            "Zehen-an-Ferse Stand (geschlossene Augen und Hünde in die Hüfte) Stabi+ U",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -32287,7 +32287,7 @@ const Exercises = [
     {
         id: 557,
         name:
-            "Zehen-an-Ferse Stand (Kopf in den Nacken, geschlossene Augen und H�nde in die H�fte) Stabi + U",
+            "Zehen-an-Ferse Stand (Kopf in den Nacken, geschlossene Augen und Hünde in die Hüfte) Stabi + U",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -32316,7 +32316,7 @@ const Exercises = [
     },
     {
         id: 558,
-        name: "aus Unterarmst�tz in Liegest�tz und zur�ck",
+        name: "aus Unterarmstütz in Liegestütz und zurück",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -32345,7 +32345,7 @@ const Exercises = [
     },
     {
         id: 559,
-        name: "evtl: Liegest�tz mit Knie ranziehen li/re abwechselnd",
+        name: "evtl: Liegestütz mit Knie ranziehen li/re abwechselnd",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -32374,7 +32374,7 @@ const Exercises = [
     },
     {
         id: 560,
-        name: "Wandfu�lauf SWR",
+        name: "Wandfuülauf SWR",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SWR",
@@ -32440,7 +32440,7 @@ const Exercises = [
     {
         id: 561,
         name:
-            "Kombi auf Handtuch: Ausfallschritt vorw�rts/seitlich/r�ckw�rts (li und re) SWR",
+            "Kombi auf Handtuch: Ausfallschritt vorwürts/seitlich/rückwürts (li und re) SWR",
         level: { m: 5, w: 5 },
         tags: [
             "SIDE_ONE",
@@ -32503,7 +32503,7 @@ const Exercises = [
     },
     {
         id: 562,
-        name: "Ausfallschritt vorw�rts auf Handtuch li und re  SWR",
+        name: "Ausfallschritt vorwürts auf Handtuch li und re  SWR",
         level: { m: 4, w: 4 },
         tags: [
             "SIDE_ONE",
@@ -32674,19 +32674,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich: 40% von F Max Unterk�rper kniedominat (Kniebeuge)"
+                            "münnlich und weiblich: 40% von F Max Unterkürper kniedominat (Kniebeuge)"
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich: 40% von F Max Unterk�rper kniedominat (Kniebeuge)"
+                            "münnlich und weiblich: 40% von F Max Unterkürper kniedominat (Kniebeuge)"
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich: 40% von F Max Unterk�rper kniedominat (Kniebeuge)"
+                            "münnlich und weiblich: 40% von F Max Unterkürper kniedominat (Kniebeuge)"
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich: 40% von F Max Unterk�rper kniedominat (Kniebeuge)"
+                            "münnlich und weiblich: 40% von F Max Unterkürper kniedominat (Kniebeuge)"
                     },
                     type: { type: "Unknown" }
                 }
@@ -33150,7 +33150,7 @@ const Exercises = [
     },
     {
         id: 572,
-        name: "In Liegest�tz Arme anheben auf Med-Ball (Level 1) SWR",
+        name: "In Liegestütz Arme anheben auf Med-Ball (Level 1) SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -33216,7 +33216,7 @@ const Exercises = [
     },
     {
         id: 573,
-        name: "In Liegest�tz Arme anheben auf Med-Ball (Level 2) SWR",
+        name: "In Liegestütz Arme anheben auf Med-Ball (Level 2) SWR",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SWR",
@@ -33284,7 +33284,7 @@ const Exercises = [
     },
     {
         id: 574,
-        name: "In Liegest�tz Arme anheben auf Med-Ball (Level 3) SWR",
+        name: "In Liegestütz Arme anheben auf Med-Ball (Level 3) SWR",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_SWR",
@@ -33353,7 +33353,7 @@ const Exercises = [
     },
     {
         id: 575,
-        name: "Handtuch Oberk�rper (Gym)",
+        name: "Handtuch Oberkürper (Gym)",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -33382,7 +33382,7 @@ const Exercises = [
     },
     {
         id: 576,
-        name: "Butterfly auf 2 Handt�chern SWR",
+        name: "Butterfly auf 2 Handtüchern SWR",
         level: { m: 2, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -33454,7 +33454,7 @@ const Exercises = [
     {
         id: 577,
         name:
-            "Liegest�tz (1 Handtuch (1x Arm) eng starten und mit Bein und Arm breit gehen",
+            "Liegestütz (1 Handtuch (1x Arm) eng starten und mit Bein und Arm breit gehen",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -33483,7 +33483,7 @@ const Exercises = [
     },
     {
         id: 578,
-        name: "in Liegest�tz mit Handtuch �ber den Boden ziehen SWR",
+        name: "in Liegestütz mit Handtuch über den Boden ziehen SWR",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SWR",
@@ -33592,7 +33592,7 @@ const Exercises = [
     },
     {
         id: 580,
-        name: "F��e auf Handtuch: in Unterarmst�tz vor und zur�ck",
+        name: "Füüe auf Handtuch: in Unterarmstütz vor und zurück",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -33621,7 +33621,7 @@ const Exercises = [
     },
     {
         id: 581,
-        name: "in Liegest�tz auf Handtuch: Knie ranziehen SWR",
+        name: "in Liegestütz auf Handtuch: Knie ranziehen SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -33688,7 +33688,7 @@ const Exercises = [
     },
     {
         id: 582,
-        name: "in Liegest�tz auf Handtuch: Po zur Decke  SWR",
+        name: "in Liegestütz auf Handtuch: Po zur Decke  SWR",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SWR",
@@ -33757,7 +33757,7 @@ const Exercises = [
     },
     {
         id: 583,
-        name: "In Liegest�tz auf Handtuch: Po einbeinig zur Decke li/re SWR",
+        name: "In Liegestütz auf Handtuch: Po einbeinig zur Decke li/re SWR",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_SWR",
@@ -33825,7 +33825,7 @@ const Exercises = [
     },
     {
         id: 584,
-        name: "Seitst�tz auf Handtuch li und re Level 1 SWR",
+        name: "Seitstütz auf Handtuch li und re Level 1 SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -33884,7 +33884,7 @@ const Exercises = [
     },
     {
         id: 585,
-        name: "Seitst�tz auf Handtuch li und re Level 2 (= Level 3) SWR",
+        name: "Seitstütz auf Handtuch li und re Level 2 (= Level 3) SWR",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_SWR",
@@ -34124,7 +34124,7 @@ const Exercises = [
     },
     {
         id: 589,
-        name: "St�tz auf LH SWR",
+        name: "Stütz auf LH SWR",
         level: { m: 3, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -34194,7 +34194,7 @@ const Exercises = [
     {
         id: 590,
         name:
-            "auf Flachbank: seitlich statisch halten li (Arme vor Brust verschr�nkt) Level 1",
+            "auf Flachbank: seitlich statisch halten li (Arme vor Brust verschrünkt) Level 1",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -34224,7 +34224,7 @@ const Exercises = [
     {
         id: 591,
         name:
-            "auf Flachbank: seitlich statisch halten re (Arme vor Brust verschr�nkt) Level 1",
+            "auf Flachbank: seitlich statisch halten re (Arme vor Brust verschrünkt) Level 1",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -34415,7 +34415,7 @@ const Exercises = [
     },
     {
         id: 595,
-        name: "Klimmzug in Hanglage (Level 1) SK (an Kniebeugenst�nder)",
+        name: "Klimmzug in Hanglage (Level 1) SK (an Kniebeugenstünder)",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -34813,7 +34813,7 @@ const Exercises = [
     },
     {
         id: 603,
-        name: "Unterarmstrecken mit 2 KH Pr�v",
+        name: "Unterarmstrecken mit 2 KH Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_HANDGELENK_ELLENBOGEN",
@@ -34871,7 +34871,7 @@ const Exercises = [
     },
     {
         id: 604,
-        name: "Unterarmbeugen mit 2 KH Pr�v",
+        name: "Unterarmbeugen mit 2 KH Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_HANDGELENK_ELLENBOGEN",
@@ -34929,7 +34929,7 @@ const Exercises = [
     },
     {
         id: 605,
-        name: "Unterarmrotation mit 2 KH Pr�v",
+        name: "Unterarmrotation mit 2 KH Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_HANDGELENK_ELLENBOGEN",
@@ -34989,7 +34989,7 @@ const Exercises = [
     },
     {
         id: 606,
-        name: "Unterarmseitbeugung mit 2 Kh (nach oben) Pr�v",
+        name: "Unterarmseitbeugung mit 2 Kh (nach oben) Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_HANDGELENK_ELLENBOGEN",
@@ -35044,7 +35044,7 @@ const Exercises = [
     },
     {
         id: 607,
-        name: "Unterarmseitstreckung mit 2 KH (nach unten) Pr�v",
+        name: "Unterarmseitstreckung mit 2 KH (nach unten) Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_HANDGELENK_ELLENBOGEN",
@@ -35099,7 +35099,7 @@ const Exercises = [
     },
     {
         id: 608,
-        name: "Knie und H�fte: Pr�vention: Gym",
+        name: "Knie und Hüfte: Prävention: Gym",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -35128,7 +35128,7 @@ const Exercises = [
     },
     {
         id: 609,
-        name: "Ausfallschritt statisch mit KH-�bergabe li und re Pr�v",
+        name: "Ausfallschritt statisch mit KH-übergabe li und re Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_KNIE_HUEFTE",
@@ -35187,7 +35187,7 @@ const Exercises = [
     },
     {
         id: 610,
-        name: "Ausfallschritt dynamisch mit KH-�bergabe li und re Pr�v",
+        name: "Ausfallschritt dynamisch mit KH-übergabe li und re Präv",
         level: { m: 2, w: 2 },
         tags: [
             "PREVENTION_KNIE_HUEFTE",
@@ -35252,7 +35252,7 @@ const Exercises = [
     {
         id: 611,
         name:
-            "Videos zur Erkl�rung (max 40 sek) wichtige Inhalte f�r: (Studio)",
+            "Videos zur Erklürung (max 40 sek) wichtige Inhalte für: (Studio)",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -35281,7 +35281,7 @@ const Exercises = [
     },
     {
         id: 612,
-        name: "Erkl�rvideo SWR",
+        name: "Erklürvideo SWR",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -35310,7 +35310,7 @@ const Exercises = [
     },
     {
         id: 613,
-        name: "Erkl�rvideo Max-Kraft",
+        name: "Erklürvideo Max-Kraft",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -35339,7 +35339,7 @@ const Exercises = [
     },
     {
         id: 614,
-        name: "Erkl�rvideo Schnellkraft",
+        name: "Erklürvideo Schnellkraft",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -35368,7 +35368,7 @@ const Exercises = [
     },
     {
         id: 615,
-        name: "Erkl�rvideo Schnelligkeitsausdauer",
+        name: "Erklürvideo Schnelligkeitsausdauer",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -35426,7 +35426,7 @@ const Exercises = [
     },
     {
         id: 617,
-        name: "Schulter Bankdr�cken aus Kniebeuge Level 1 SWR",
+        name: "Schulter Bankdrücken aus Kniebeuge Level 1 SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -35484,7 +35484,7 @@ const Exercises = [
     },
     {
         id: 618,
-        name: "Schulter Bankdr�cken sitzend Level 2 SWR",
+        name: "Schulter Bankdrücken sitzend Level 2 SWR",
         level: { m: 1, w: 2 },
         tags: [
             "SKILL_SWR",
@@ -35537,7 +35537,7 @@ const Exercises = [
     {
         id: 619,
         name:
-            "Schulterbankdr�cken einarmig aus Kniebeuge li und re Level 3 SWR",
+            "Schulterbankdrücken einarmig aus Kniebeuge li und re Level 3 SWR",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SWR",
@@ -35595,7 +35595,7 @@ const Exercises = [
     },
     {
         id: 620,
-        name: "Schulterbankdr�cken einarmig sitzend li und re Level 4  SWR",
+        name: "Schulterbankdrücken einarmig sitzend li und re Level 4  SWR",
         level: { m: 3, w: 4 },
         tags: [
             "SKILL_SWR",
@@ -35649,7 +35649,7 @@ const Exercises = [
     },
     {
         id: 621,
-        name: "Schulterbankdr�cken aus Kniebeuge Level 1 SK",
+        name: "Schulterbankdrücken aus Kniebeuge Level 1 SK",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -35701,7 +35701,7 @@ const Exercises = [
     },
     {
         id: 622,
-        name: "Schulterbankdr�cken aus Kniebeuge Level 1 SA",
+        name: "Schulterbankdrücken aus Kniebeuge Level 1 SA",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -35754,7 +35754,7 @@ const Exercises = [
     },
     {
         id: 623,
-        name: "Schulterbankdr�cken sitzend Level 2 SK",
+        name: "Schulterbankdrücken sitzend Level 2 SK",
         level: { m: 1, w: 2 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -35801,7 +35801,7 @@ const Exercises = [
     },
     {
         id: 624,
-        name: "Schulterbankdr�cken sitzend Level 2 SA",
+        name: "Schulterbankdrücken sitzend Level 2 SA",
         level: { m: 3, w: 4 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -35851,7 +35851,7 @@ const Exercises = [
     {
         id: 625,
         name:
-            "einarmiges Schulterbankdr�cken aus Kniebeuge li und re Level 3 SK",
+            "einarmiges Schulterbankdrücken aus Kniebeuge li und re Level 3 SK",
         level: { m: 2, w: 4 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -35905,7 +35905,7 @@ const Exercises = [
     {
         id: 626,
         name:
-            "einarmiges Schulterbankdr�cken aus Kniebeuge li und re Level 3 SA",
+            "einarmiges Schulterbankdrücken aus Kniebeuge li und re Level 3 SA",
         level: { m: 4, w: 5 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -35960,7 +35960,7 @@ const Exercises = [
     },
     {
         id: 627,
-        name: "einarmiges Schulterbankdr�cken sitzend li und re Level 4  SK",
+        name: "einarmiges Schulterbankdrücken sitzend li und re Level 4  SK",
         level: { m: 3, w: 5 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -36010,7 +36010,7 @@ const Exercises = [
     },
     {
         id: 628,
-        name: "einarmiges Schulterbankdr�cken sitzend li und re Level 4  SA",
+        name: "einarmiges Schulterbankdrücken sitzend li und re Level 4  SA",
         level: { m: 5, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -36374,7 +36374,7 @@ const Exercises = [
     },
     {
         id: 635,
-        name: "explosives Brustdr�cken  Warm-Up SK/SA",
+        name: "explosives Brustdrücken  Warm-Up SK/SA",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -36561,7 +36561,7 @@ const Exercises = [
     },
     {
         id: 638,
-        name: "�bung MED-BALL in Halle (SK/SA/SAS/Plyo)",
+        name: "übung MED-BALL in Halle (SK/SA/SAS/Plyo)",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -36636,10 +36636,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "m�nnlich 6, weiblich und Kinder 5" },
-                    m: { default: "m�nnlich 6, weiblich und Kinder 5" },
-                    w: { default: "m�nnlich 6, weiblich und Kinder 5" },
-                    k: { default: "m�nnlich 6, weiblich und Kinder 5" },
+                    default: { default: "münnlich 6, weiblich und Kinder 5" },
+                    m: { default: "münnlich 6, weiblich und Kinder 5" },
+                    w: { default: "münnlich 6, weiblich und Kinder 5" },
+                    k: { default: "münnlich 6, weiblich und Kinder 5" },
                     type: { type: "Unknown" }
                 }
             },
@@ -36648,11 +36648,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -36676,7 +36676,7 @@ const Exercises = [
     },
     {
         id: 640,
-        name: "Brustw�rfe gegen Wand SAS",
+        name: "Brustwürfe gegen Wand SAS",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -36716,11 +36716,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
                     },
                     k: {}
                 },
@@ -36750,7 +36750,7 @@ const Exercises = [
     },
     {
         id: 641,
-        name: "Brustw�rfe gegen Wand SA",
+        name: "Brustwürfe gegen Wand SA",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -36800,11 +36800,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
                     },
                     k: {}
                 },
@@ -36877,11 +36877,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -36954,11 +36954,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -37033,11 +37033,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -37061,7 +37061,7 @@ const Exercises = [
     },
     {
         id: 645,
-        name: "Einarmige Wandw�rfe aus Drehung li und re SK",
+        name: "Einarmige Wandwürfe aus Drehung li und re SK",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -37117,11 +37117,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -37145,7 +37145,7 @@ const Exercises = [
     },
     {
         id: 646,
-        name: "Einarmige Wandw�rfe (frontal) li und re SA",
+        name: "Einarmige Wandwürfe (frontal) li und re SA",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -37189,11 +37189,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
                     },
                     k: {}
                 },
@@ -37266,11 +37266,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -37312,11 +37312,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -37393,11 +37393,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -37729,7 +37729,7 @@ const Exercises = [
     },
     {
         id: 654,
-        name: "�ber Kopf-Wandw�rfe SK",
+        name: "über Kopf-Wandwürfe SK",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -37780,11 +37780,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -37808,7 +37808,7 @@ const Exercises = [
     },
     {
         id: 655,
-        name: "�ber Kopf-Wandw�rfe Level SA",
+        name: "über Kopf-Wandwürfe Level SA",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -37854,11 +37854,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
                     },
                     k: {}
                 },
@@ -37882,7 +37882,7 @@ const Exercises = [
     },
     {
         id: 656,
-        name: "beidarmige Wandw�rfe aus H�ftdrehung li und re SK",
+        name: "beidarmige Wandwürfe aus Hüftdrehung li und re SK",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -37935,11 +37935,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -37963,7 +37963,7 @@ const Exercises = [
     },
     {
         id: 657,
-        name: "beidarmige Wandw�rfe aus H�ftdrehung li und re SA",
+        name: "beidarmige Wandwürfe aus Hüftdrehung li und re SA",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -38011,11 +38011,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
                     },
                     k: {}
                 },
@@ -38039,7 +38039,7 @@ const Exercises = [
     },
     {
         id: 658,
-        name: "seitliche Wandw�rfe mit Sprung li und re SK",
+        name: "seitliche Wandwürfe mit Sprung li und re SK",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -38095,11 +38095,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -38750,7 +38750,7 @@ const Exercises = [
     {
         id: 670,
         name:
-            "Seitst�tz auf Bank mit Oberk�rperrotation li und re SWR (Level 2+3",
+            "Seitstütz auf Bank mit Oberkürperrotation li und re SWR (Level 2+3",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SWR",
@@ -38815,7 +38815,7 @@ const Exercises = [
     {
         id: 671,
         name:
-            "Seitst�tz auf Bank mit Oberk�rperrotation und KH li und re SWR Level 4",
+            "Seitstütz auf Bank mit Oberkürperrotation und KH li und re SWR Level 4",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_SWR",
@@ -38890,7 +38890,7 @@ const Exercises = [
     },
     {
         id: 672,
-        name: "Seitst�tz auf Bank mit KH (statisch) li und re SWR Level 2+3)",
+        name: "Seitstütz auf Bank mit KH (statisch) li und re SWR Level 2+3)",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SWR",
@@ -38970,7 +38970,7 @@ const Exercises = [
     {
         id: 673,
         name:
-            "Seitst�tz auf Bank mit KH (statisch) und Oberk�rperrotaion li und re SWR Level 3",
+            "Seitstütz auf Bank mit KH (statisch) und Oberkürperrotaion li und re SWR Level 3",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_SWR",
@@ -39078,7 +39078,7 @@ const Exercises = [
     {
         id: 675,
         name:
-            "H�rdenspr�nge beidbeinig gerade plyometrisch und Sprint 15 m Level 2 Plyo",
+            "Hürdensprünge beidbeinig gerade plyometrisch und Sprint 15 m Level 2 Plyo",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -39107,7 +39107,7 @@ const Exercises = [
     },
     {
         id: 676,
-        name: "H�rdenspr�nge beidbeinig gerade Fokus auf Landung Level 1 Plyo",
+        name: "Hürdensprünge beidbeinig gerade Fokus auf Landung Level 1 Plyo",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -39137,7 +39137,7 @@ const Exercises = [
     {
         id: 677,
         name:
-            "H�rdenspr�nge einbeinig gerade plyometrisch li/re abwechselnd Level 2",
+            "Hürdensprünge einbeinig gerade plyometrisch li/re abwechselnd Level 2",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -39167,7 +39167,7 @@ const Exercises = [
     {
         id: 678,
         name:
-            "H�rdenspr�nge einbeinig gerade Fokus Landung li/re abwechselnd Level 1",
+            "Hürdensprünge einbeinig gerade Fokus Landung li/re abwechselnd Level 1",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -39197,7 +39197,7 @@ const Exercises = [
     {
         id: 679,
         name:
-            "H�rdenspr�nge einbeinig gerade mit Sprungbein 90� anziehen, Fokus Landung, li/re hintereinander Level 3",
+            "Hürdensprünge einbeinig gerade mit Sprungbein 90ü anziehen, Fokus Landung, li/re hintereinander Level 3",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -39227,7 +39227,7 @@ const Exercises = [
     {
         id: 680,
         name:
-            "H�rdenspr�nge einbeinig gerade mit Sprungbein 90� anziehen, kurzer Kontakt li/re hintereinander Level 4",
+            "Hürdensprünge einbeinig gerade mit Sprungbein 90ü anziehen, kurzer Kontakt li/re hintereinander Level 4",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -39257,7 +39257,7 @@ const Exercises = [
     {
         id: 681,
         name:
-            "H�rdenspr�nge einbeinig seitlich mit Sprungbein 90� anziehen, Fokus Landung, li/re hintereinander Level 3",
+            "Hürdensprünge einbeinig seitlich mit Sprungbein 90ü anziehen, Fokus Landung, li/re hintereinander Level 3",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -39287,7 +39287,7 @@ const Exercises = [
     {
         id: 682,
         name:
-            "H�rdenspr�nge einbeinig seitlich mit Sprungbein 90� anziehen, kurzer Kontakt, li/re hintereinander Level 4",
+            "Hürdensprünge einbeinig seitlich mit Sprungbein 90ü anziehen, kurzer Kontakt, li/re hintereinander Level 4",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -39317,7 +39317,7 @@ const Exercises = [
     {
         id: 683,
         name:
-            "nach dem Gespr�ch mit Konsti noch die Logik anpassen wegen automatischen runterz�hlen bei Plyo-Lauf�bungen (15-30 Sek) damit der Athlet nicht selbst auf weiter klicken muss, sondern die Pause von alleine startet! (siehe Word Blatt; f�r alle Plyo-�bungen) ab hier!) wie kann das am besten gemacht werden?? Ebenfalls nochmal die richtigen Namen der �bungen mit den Skillb�umen vergleichen!!!  wenn auf Zeit, dann muss ich dass noch hier �ndern und auch noch die Namen der �bungen nur auf den Inhalt k�rzen!!! (ab hier nochmal Namen anschauen!!!!",
+            "nach dem Gesprüch mit Konsti noch die Logik anpassen wegen automatischen runterzühlen bei Plyo-Laufübungen (15-30 Sek) damit der Athlet nicht selbst auf weiter klicken muss, sondern die Pause von alleine startet! (siehe Word Blatt; für alle Plyo-übungen) ab hier!) wie kann das am besten gemacht werden?? Ebenfalls nochmal die richtigen Namen der übungen mit den Skillbüumen vergleichen!!!  wenn auf Zeit, dann muss ich dass noch hier ündern und auch noch die Namen der übungen nur auf den Inhalt kürzen!!! (ab hier nochmal Namen anschauen!!!!",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -39346,7 +39346,7 @@ const Exercises = [
     },
     {
         id: 684,
-        name: "einbeinige Spr�nge mit Kniehub Level 3 li/re Plyo",
+        name: "einbeinige Sprünge mit Kniehub Level 3 li/re Plyo",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_PLYO_HIGH",
@@ -39414,7 +39414,7 @@ const Exercises = [
     },
     {
         id: 685,
-        name: "einbeinige Spr�nge mit Kniehub Level 4 li/re Plyo",
+        name: "einbeinige Sprünge mit Kniehub Level 4 li/re Plyo",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_PLYO_HIGH",
@@ -39484,7 +39484,7 @@ const Exercises = [
     },
     {
         id: 686,
-        name: "einbeinige Spr�nge seitlich mit Kniehub Level 3 li/re Plyo",
+        name: "einbeinige Sprünge seitlich mit Kniehub Level 3 li/re Plyo",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_PLYO_HIGH",
@@ -39552,7 +39552,7 @@ const Exercises = [
     },
     {
         id: 687,
-        name: "einbeinige Spr�nge seitlich mit Kniehub Level 4 li/re Plyo",
+        name: "einbeinige Sprünge seitlich mit Kniehub Level 4 li/re Plyo",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_PLYO_HIGH",
@@ -39622,7 +39622,7 @@ const Exercises = [
     },
     {
         id: 688,
-        name: "Steigespr�nge re/li  Plyo",
+        name: "Steigesprünge re/li  Plyo",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_PLYO_LOW",
@@ -39919,7 +39919,7 @@ const Exercises = [
     },
     {
         id: 692,
-        name: "Ballenspr�nge mit Knieanziehen Plyo",
+        name: "Ballensprünge mit Knieanziehen Plyo",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_PLYO_HIGH",
@@ -39988,7 +39988,7 @@ const Exercises = [
     },
     {
         id: 693,
-        name: "Bounds (Prellspr�nge) Plyo",
+        name: "Bounds (Prellsprünge) Plyo",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_PLYO_LOW",
@@ -40100,10 +40100,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "2x 40 m, Kinder und Anf�nger 2x30 m" },
-                    m: { default: "2x 40 m, Kinder und Anf�nger 2x30 m" },
-                    w: { default: "2x 40 m, Kinder und Anf�nger 2x30 m" },
-                    k: { default: "2x 40 m, Kinder und Anf�nger 2x30 m" },
+                    default: { default: "2x 40 m, Kinder und Anfünger 2x30 m" },
+                    m: { default: "2x 40 m, Kinder und Anfünger 2x30 m" },
+                    w: { default: "2x 40 m, Kinder und Anfünger 2x30 m" },
+                    k: { default: "2x 40 m, Kinder und Anfünger 2x30 m" },
                     type: { type: "Unknown" }
                 }
             },
@@ -40123,7 +40123,7 @@ const Exercises = [
     },
     {
         id: 695,
-        name: "Sprunggelenksspr�nge mit Armschwung Plyo",
+        name: "Sprunggelenkssprünge mit Armschwung Plyo",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_PLYO_LOW",
@@ -40169,10 +40169,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "30m, Kinder und Anf�nger 20 m" },
-                    m: { default: "30m, Kinder und Anf�nger 20 m" },
-                    w: { default: "30m, Kinder und Anf�nger 20 m" },
-                    k: { default: "30m, Kinder und Anf�nger 20 m" },
+                    default: { default: "30m, Kinder und Anfünger 20 m" },
+                    m: { default: "30m, Kinder und Anfünger 20 m" },
+                    w: { default: "30m, Kinder und Anfünger 20 m" },
+                    k: { default: "30m, Kinder und Anfünger 20 m" },
                     type: { type: "Unknown" }
                 }
             },
@@ -40192,7 +40192,7 @@ const Exercises = [
     },
     {
         id: 696,
-        name: "diagonale Seitw�rtsspr�nge (beidbeinig) Plyo",
+        name: "diagonale Seitwürtssprünge (beidbeinig) Plyo",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_PLYO_LOW",
@@ -40244,10 +40244,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "30 m, Kinder und Anf�nger 20 m" },
-                    m: { default: "30 m, Kinder und Anf�nger 20 m" },
-                    w: { default: "30 m, Kinder und Anf�nger 20 m" },
-                    k: { default: "30 m, Kinder und Anf�nger 20 m" },
+                    default: { default: "30 m, Kinder und Anfünger 20 m" },
+                    m: { default: "30 m, Kinder und Anfünger 20 m" },
+                    w: { default: "30 m, Kinder und Anfünger 20 m" },
+                    k: { default: "30 m, Kinder und Anfünger 20 m" },
                     type: { type: "Unknown" }
                 }
             },
@@ -40267,7 +40267,7 @@ const Exercises = [
     },
     {
         id: 697,
-        name: "Vorw�rts-/R�ckw�rtsspr�nge Plyo",
+        name: "Vorwürts-/Rückwürtssprünge Plyo",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_PLYO_LOW",
@@ -40319,10 +40319,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "30 m, Kinder und Anf�nger 20 m" },
-                    m: { default: "30 m, Kinder und Anf�nger 20 m" },
-                    w: { default: "30 m, Kinder und Anf�nger 20 m" },
-                    k: { default: "30 m, Kinder und Anf�nger 20 m" },
+                    default: { default: "30 m, Kinder und Anfünger 20 m" },
+                    m: { default: "30 m, Kinder und Anfünger 20 m" },
+                    w: { default: "30 m, Kinder und Anfünger 20 m" },
+                    k: { default: "30 m, Kinder und Anfünger 20 m" },
                     type: { type: "Unknown" }
                 }
             },
@@ -40395,10 +40395,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "30 m, Kinder und Anf�nger 20 m" },
-                    m: { default: "30 m, Kinder und Anf�nger 20 m" },
-                    w: { default: "30 m, Kinder und Anf�nger 20 m" },
-                    k: { default: "30 m, Kinder und Anf�nger 20 m" },
+                    default: { default: "30 m, Kinder und Anfünger 20 m" },
+                    m: { default: "30 m, Kinder und Anfünger 20 m" },
+                    w: { default: "30 m, Kinder und Anfünger 20 m" },
+                    k: { default: "30 m, Kinder und Anfünger 20 m" },
                     type: { type: "Unknown" }
                 }
             },
@@ -40509,7 +40509,7 @@ const Exercises = [
     },
     {
         id: 700,
-        name: "einbeinige Dreifach-Spr�nge li/re Plyo",
+        name: "einbeinige Dreifach-Sprünge li/re Plyo",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_PLYO_HIGH",
@@ -40685,10 +40685,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "2x 40 m, Kinder und Anf�nger 2x30 m" },
-                    m: { default: "2x 40 m, Kinder und Anf�nger 2x30 m" },
-                    w: { default: "2x 40 m, Kinder und Anf�nger 2x30 m" },
-                    k: { default: "2x 40 m, Kinder und Anf�nger 2x30 m" },
+                    default: { default: "2x 40 m, Kinder und Anfünger 2x30 m" },
+                    m: { default: "2x 40 m, Kinder und Anfünger 2x30 m" },
+                    w: { default: "2x 40 m, Kinder und Anfünger 2x30 m" },
+                    k: { default: "2x 40 m, Kinder und Anfünger 2x30 m" },
                     type: { type: "Unknown" }
                 }
             },
@@ -40708,7 +40708,7 @@ const Exercises = [
     },
     {
         id: 703,
-        name: "Wechselspr�nge aus Ausfallschritt Plyo",
+        name: "Wechselsprünge aus Ausfallschritt Plyo",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_PLYO_HIGH",
@@ -40853,7 +40853,7 @@ const Exercises = [
     },
     {
         id: 705,
-        name: "diagonale einbeinige Seitw�rtsspr�nge li/re Plyo",
+        name: "diagonale einbeinige Seitwürtssprünge li/re Plyo",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_PLYO_LOW",
@@ -40901,19 +40901,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich 30 m, kinder und Anf�nger 25 m"
+                            "münnlich und weiblich 30 m, kinder und Anfünger 25 m"
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich 30 m, kinder und Anf�nger 25 m"
+                            "münnlich und weiblich 30 m, kinder und Anfünger 25 m"
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich 30 m, kinder und Anf�nger 25 m"
+                            "münnlich und weiblich 30 m, kinder und Anfünger 25 m"
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich 30 m, kinder und Anf�nger 25 m"
+                            "münnlich und weiblich 30 m, kinder und Anfünger 25 m"
                     },
                     type: { type: "Unknown" }
                 }
@@ -40978,19 +40978,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich 30 m, kinder und Anf�nger 25 m"
+                            "münnlich und weiblich 30 m, kinder und Anfünger 25 m"
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich 30 m, kinder und Anf�nger 25 m"
+                            "münnlich und weiblich 30 m, kinder und Anfünger 25 m"
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich 30 m, kinder und Anf�nger 25 m"
+                            "münnlich und weiblich 30 m, kinder und Anfünger 25 m"
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich 30 m, kinder und Anf�nger 25 m"
+                            "münnlich und weiblich 30 m, kinder und Anfünger 25 m"
                     },
                     type: { type: "Unknown" }
                 }
@@ -41011,7 +41011,7 @@ const Exercises = [
     },
     {
         id: 707,
-        name: "einbeinige Linienspr�nge li/re Plyo",
+        name: "einbeinige Liniensprünge li/re Plyo",
         level: { m: 6, w: 1 },
         tags: [
             "SKILL_PLYO_LOW",
@@ -41057,19 +41057,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich 25 m, kinder und Anf�nger 20 m"
+                            "münnlich und weiblich 25 m, kinder und Anfünger 20 m"
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich 25 m, kinder und Anf�nger 20 m"
+                            "münnlich und weiblich 25 m, kinder und Anfünger 20 m"
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich 25 m, kinder und Anf�nger 20 m"
+                            "münnlich und weiblich 25 m, kinder und Anfünger 20 m"
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich 25 m, kinder und Anf�nger 20 m"
+                            "münnlich und weiblich 25 m, kinder und Anfünger 20 m"
                     },
                     type: { type: "Unknown" }
                 }
@@ -41343,10 +41343,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "m�nnlich 8, weiblich und Kinder 6" },
-                    m: { default: "m�nnlich 8, weiblich und Kinder 6" },
-                    w: { default: "m�nnlich 8, weiblich und Kinder 6" },
-                    k: { default: "m�nnlich 8, weiblich und Kinder 6" },
+                    default: { default: "münnlich 8, weiblich und Kinder 6" },
+                    m: { default: "münnlich 8, weiblich und Kinder 6" },
+                    w: { default: "münnlich 8, weiblich und Kinder 6" },
+                    k: { default: "münnlich 8, weiblich und Kinder 6" },
                     type: { type: "Unknown" }
                 }
             },
@@ -41354,16 +41354,16 @@ const Exercises = [
                 startValue: { default: {}, m: {}, w: {}, k: {} },
                 targetValue: {
                     default: {
-                        default: "m�nnlich und weiblich: 45 cm, Kinder 35 cm"
+                        default: "münnlich und weiblich: 45 cm, Kinder 35 cm"
                     },
                     m: {
-                        default: "m�nnlich und weiblich: 45 cm, Kinder 35 cm"
+                        default: "münnlich und weiblich: 45 cm, Kinder 35 cm"
                     },
                     w: {
-                        default: "m�nnlich und weiblich: 45 cm, Kinder 35 cm"
+                        default: "münnlich und weiblich: 45 cm, Kinder 35 cm"
                     },
                     k: {
-                        default: "m�nnlich und weiblich: 45 cm, Kinder 35 cm"
+                        default: "münnlich und weiblich: 45 cm, Kinder 35 cm"
                     },
                     type: { type: "Unknown" }
                 }
@@ -41439,10 +41439,10 @@ const Exercises = [
             weight: {
                 startValue: { default: {}, m: {}, w: {}, k: {} },
                 targetValue: {
-                    default: { default: "m�nnlich und weiblich: 70 cm" },
-                    m: { default: "m�nnlich und weiblich: 70 cm" },
-                    w: { default: "m�nnlich und weiblich: 70 cm" },
-                    k: { default: "m�nnlich und weiblich: 70 cm" },
+                    default: { default: "münnlich und weiblich: 70 cm" },
+                    m: { default: "münnlich und weiblich: 70 cm" },
+                    w: { default: "münnlich und weiblich: 70 cm" },
+                    k: { default: "münnlich und weiblich: 70 cm" },
                     type: { type: "Unknown" }
                 }
             },
@@ -41677,10 +41677,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "m�nnlich 8, weiblich und Kinder 6" },
-                    m: { default: "m�nnlich 8, weiblich und Kinder 6" },
-                    w: { default: "m�nnlich 8, weiblich und Kinder 6" },
-                    k: { default: "m�nnlich 8, weiblich und Kinder 6" },
+                    default: { default: "münnlich 8, weiblich und Kinder 6" },
+                    m: { default: "münnlich 8, weiblich und Kinder 6" },
+                    w: { default: "münnlich 8, weiblich und Kinder 6" },
+                    k: { default: "münnlich 8, weiblich und Kinder 6" },
                     type: { type: "Unknown" }
                 }
             },
@@ -41688,16 +41688,16 @@ const Exercises = [
                 startValue: { default: {}, m: {}, w: {}, k: {} },
                 targetValue: {
                     default: {
-                        default: "m�nnlich und weiblich: 45 cm, Kinder 30 cm"
+                        default: "münnlich und weiblich: 45 cm, Kinder 30 cm"
                     },
                     m: {
-                        default: "m�nnlich und weiblich: 45 cm, Kinder 30 cm"
+                        default: "münnlich und weiblich: 45 cm, Kinder 30 cm"
                     },
                     w: {
-                        default: "m�nnlich und weiblich: 45 cm, Kinder 30 cm"
+                        default: "münnlich und weiblich: 45 cm, Kinder 30 cm"
                     },
                     k: {
-                        default: "m�nnlich und weiblich: 45 cm, Kinder 30 cm"
+                        default: "münnlich und weiblich: 45 cm, Kinder 30 cm"
                     },
                     type: { type: "Unknown" }
                 }
@@ -41918,7 +41918,7 @@ const Exercises = [
     },
     {
         id: 719,
-        name: "Mountain Climber mit 2 Handt�chern SAS",
+        name: "Mountain Climber mit 2 Handtüchern SAS",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -41975,19 +41975,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -42000,7 +42000,7 @@ const Exercises = [
     },
     {
         id: 720,
-        name: "Unterk�rper SAS Speedleiter",
+        name: "Unterkürper SAS Speedleiter",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -42029,7 +42029,7 @@ const Exercises = [
     },
     {
         id: 721,
-        name: "Schnelle F��e 1 (Leiter) li/re  SAS",
+        name: "Schnelle Füüe 1 (Leiter) li/re  SAS",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -42081,19 +42081,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -42162,19 +42162,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -42243,19 +42243,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -42320,19 +42320,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -42397,19 +42397,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -42422,7 +42422,7 @@ const Exercises = [
     },
     {
         id: 726,
-        name: "schnelle F��e 2 (Leiter) li/re SAS",
+        name: "schnelle Füüe 2 (Leiter) li/re SAS",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -42474,19 +42474,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -42553,19 +42553,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -42578,7 +42578,7 @@ const Exercises = [
     },
     {
         id: 728,
-        name: "schnelle H�nde Level 1 SAS",
+        name: "schnelle Hünde Level 1 SAS",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -42645,7 +42645,7 @@ const Exercises = [
     },
     {
         id: 729,
-        name: "schnelle H�nde Level 2 SAS",
+        name: "schnelle Hünde Level 2 SAS",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -42715,7 +42715,7 @@ const Exercises = [
     },
     {
         id: 730,
-        name: "schnelle H�nde seitlich Level 1 SAS",
+        name: "schnelle Hünde seitlich Level 1 SAS",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -42782,7 +42782,7 @@ const Exercises = [
     },
     {
         id: 731,
-        name: "schnelle H�nde seitlich Level 2 SAS",
+        name: "schnelle Hünde seitlich Level 2 SAS",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -42909,19 +42909,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -42934,7 +42934,7 @@ const Exercises = [
     },
     {
         id: 733,
-        name: "schnelle Seitspr�nge SAS",
+        name: "schnelle Seitsprünge SAS",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -42987,16 +42987,16 @@ const Exercises = [
                 },
                 targetValue: {
                     default: {
-                        default: "m�nnlich und weiblich 4x10 sek, Kinder 3x10"
+                        default: "münnlich und weiblich 4x10 sek, Kinder 3x10"
                     },
                     m: {
-                        default: "m�nnlich und weiblich 4x10 sek, Kinder 3x10"
+                        default: "münnlich und weiblich 4x10 sek, Kinder 3x10"
                     },
                     w: {
-                        default: "m�nnlich und weiblich 4x10 sek, Kinder 3x10"
+                        default: "münnlich und weiblich 4x10 sek, Kinder 3x10"
                     },
                     k: {
-                        default: "m�nnlich und weiblich 4x10 sek, Kinder 3x10"
+                        default: "münnlich und weiblich 4x10 sek, Kinder 3x10"
                     },
                     type: { type: "Unknown" }
                 }
@@ -43009,7 +43009,7 @@ const Exercises = [
     },
     {
         id: 734,
-        name: "schnelle Vor-/Zur�ckspr�nge SAS",
+        name: "schnelle Vor-/Zurücksprünge SAS",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -43061,16 +43061,16 @@ const Exercises = [
                 },
                 targetValue: {
                     default: {
-                        default: "m�nnlich und weiblich 4x10 sek, Kinder 3x10"
+                        default: "münnlich und weiblich 4x10 sek, Kinder 3x10"
                     },
                     m: {
-                        default: "m�nnlich und weiblich 4x10 sek, Kinder 3x10"
+                        default: "münnlich und weiblich 4x10 sek, Kinder 3x10"
                     },
                     w: {
-                        default: "m�nnlich und weiblich 4x10 sek, Kinder 3x10"
+                        default: "münnlich und weiblich 4x10 sek, Kinder 3x10"
                     },
                     k: {
-                        default: "m�nnlich und weiblich 4x10 sek, Kinder 3x10"
+                        default: "münnlich und weiblich 4x10 sek, Kinder 3x10"
                     },
                     type: { type: "Unknown" }
                 }
@@ -43130,30 +43130,30 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
                     },
                     k: {}
                 },
                 targetValue: {
                     default: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
                     },
                     m: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
                     },
                     k: {
                         default:
-                            'siehe Excel-Blatt "K�rpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
                     },
                     type: { type: "Unknown" }
                 }
@@ -43168,19 +43168,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich 4x10 sek, weiblich und Kinder und Anf�nger 3x10"
+                            "münnlich 4x10 sek, weiblich und Kinder und Anfünger 3x10"
                     },
                     m: {
                         default:
-                            "m�nnlich 4x10 sek, weiblich und Kinder und Anf�nger 3x10"
+                            "münnlich 4x10 sek, weiblich und Kinder und Anfünger 3x10"
                     },
                     w: {
                         default:
-                            "m�nnlich 4x10 sek, weiblich und Kinder und Anf�nger 3x10"
+                            "münnlich 4x10 sek, weiblich und Kinder und Anfünger 3x10"
                     },
                     k: {
                         default:
-                            "m�nnlich 4x10 sek, weiblich und Kinder und Anf�nger 3x10"
+                            "münnlich 4x10 sek, weiblich und Kinder und Anfünger 3x10"
                     },
                     type: { type: "Unknown" }
                 }
@@ -43193,7 +43193,7 @@ const Exercises = [
     },
     {
         id: 736,
-        name: "schnelle F��e auf Bank SAS",
+        name: "schnelle Füüe auf Bank SAS",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -43248,19 +43248,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich:4x15 Sek; Kinder und Anf�nger: 4x10 Sek."
+                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -43364,19 +43364,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich 4x15 Sek, Kinder und Anf�nger 4x10 Sek"
+                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek"
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich 4x15 Sek, Kinder und Anf�nger 4x10 Sek"
+                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek"
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich 4x15 Sek, Kinder und Anf�nger 4x10 Sek"
+                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek"
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich 4x15 Sek, Kinder und Anf�nger 4x10 Sek"
+                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek"
                     },
                     type: { type: "Unknown" }
                 }
@@ -43526,19 +43526,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich 4x15 Sek, Kinder und Anf�nger 4x10 Sek."
+                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek."
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich 4x15 Sek, Kinder und Anf�nger 4x10 Sek."
+                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek."
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich 4x15 Sek, Kinder und Anf�nger 4x10 Sek."
+                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek."
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich 4x15 Sek, Kinder und Anf�nger 4x10 Sek."
+                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -43686,19 +43686,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich 4x10 Sek, Kinder und Anf�nger 3x10 Sek."
+                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich 4x10 Sek, Kinder und Anf�nger 3x10 Sek."
+                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich 4x10 Sek, Kinder und Anf�nger 3x10 Sek."
+                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich 4x10 Sek, Kinder und Anf�nger 3x10 Sek."
+                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -43785,7 +43785,7 @@ const Exercises = [
     },
     {
         id: 744,
-        name: "20 m Linienl�ufe Z 2",
+        name: "20 m Linienlüufe Z 2",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_CARDIO",
@@ -43931,7 +43931,7 @@ const Exercises = [
     },
     {
         id: 746,
-        name: "10 m Linienl�ufe SAS",
+        name: "10 m Linienlüufe SAS",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -43990,19 +43990,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich 4x15 Sek, Kinder und Anf�nger 4x10 Sek."
+                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek."
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich 4x15 Sek, Kinder und Anf�nger 4x10 Sek."
+                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek."
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich 4x15 Sek, Kinder und Anf�nger 4x10 Sek."
+                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek."
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich 4x15 Sek, Kinder und Anf�nger 4x10 Sek."
+                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -44015,7 +44015,7 @@ const Exercises = [
     },
     {
         id: 747,
-        name: "10 m Linienl�ufe Z 1L",
+        name: "10 m Linienlüufe Z 1L",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_CARDIO",
@@ -44090,7 +44090,7 @@ const Exercises = [
     },
     {
         id: 748,
-        name: "10 m Linienl�ufe Z 2",
+        name: "10 m Linienlüufe Z 2",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_CARDIO",
@@ -44298,19 +44298,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich 4x10 Sek, Kinder und Anf�nger 3x10 Sek."
+                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich 4x10 Sek, Kinder und Anf�nger 3x10 Sek."
+                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich 4x10 Sek, Kinder und Anf�nger 3x10 Sek."
+                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich 4x10 Sek, Kinder und Anf�nger 3x10 Sek."
+                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -44680,19 +44680,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "m�nnlich und weiblich 4x10 Sek, Kinder und Anf�nger 3x10 Sek."
+                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
                     },
                     m: {
                         default:
-                            "m�nnlich und weiblich 4x10 Sek, Kinder und Anf�nger 3x10 Sek."
+                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
                     },
                     w: {
                         default:
-                            "m�nnlich und weiblich 4x10 Sek, Kinder und Anf�nger 3x10 Sek."
+                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
                     },
                     k: {
                         default:
-                            "m�nnlich und weiblich 4x10 Sek, Kinder und Anf�nger 3x10 Sek."
+                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -45155,7 +45155,7 @@ const Exercises = [
     {
         id: 762,
         name:
-            "Rechteck-Lauf (10 m vor/zur�ck und 5 m seitlich; wiederkehrend) Z 1L",
+            "Rechteck-Lauf (10 m vor/zurück und 5 m seitlich; wiederkehrend) Z 1L",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_CARDIO",
@@ -45230,7 +45230,7 @@ const Exercises = [
     {
         id: 763,
         name:
-            "Rechteck-Lauf (10 m vor/zur�ck und 5 m seitlich; wiederkehrend) Z 2",
+            "Rechteck-Lauf (10 m vor/zurück und 5 m seitlich; wiederkehrend) Z 2",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_CARDIO",
@@ -45304,7 +45304,7 @@ const Exercises = [
     {
         id: 764,
         name:
-            "Linienl�ufe (2) Sprint und langsamer r�ckw�rts (5m-5m-10m-10m; wiederholen) Z 2",
+            "Linienlüufe (2) Sprint und langsamer rückwürts (5m-5m-10m-10m; wiederholen) Z 2",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_CARDIO",
@@ -45777,7 +45777,7 @@ const Exercises = [
     },
     {
         id: 772,
-        name: "seitlicher H�ft�ffner li und re Cool-Down",
+        name: "seitlicher Hüftüffner li und re Cool-Down",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_COOL_DOWN",
@@ -45953,7 +45953,7 @@ const Exercises = [
     },
     {
         id: 775,
-        name: "H�ftinnenrotation an Wand li und re Cool-Down",
+        name: "Hüftinnenrotation an Wand li und re Cool-Down",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_COOL_DOWN",
@@ -46009,7 +46009,7 @@ const Exercises = [
     },
     {
         id: 776,
-        name: "H�ftau�enrotation an Wand li und re Cool-Down",
+        name: "Hüftauüenrotation an Wand li und re Cool-Down",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_COOL_DOWN",
@@ -46180,7 +46180,7 @@ const Exercises = [
     {
         id: 779,
         name:
-            "H�ftdehnung/-mobilisierung am Boden li und re  Mobi, Cool-Down und Pr�v",
+            "Hüftdehnung/-mobilisierung am Boden li und re  Mobi, Cool-Down und Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_KNIE_HUEFTE",
@@ -46240,7 +46240,7 @@ const Exercises = [
     },
     {
         id: 780,
-        name: "Schulterr�ckseite mit Ball li und re BR",
+        name: "Schulterrückseite mit Ball li und re BR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_BLACK_ROLL",

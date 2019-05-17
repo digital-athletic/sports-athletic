@@ -1,5 +1,16 @@
 const Exercises = [
     {
+        id: 999999,
+        level: 1,
+        name: "Pause", // row 399
+        description: "",
+        picture: "999999Pause.png",
+        startValue: 0, // value can be reps, weight, duration, ...
+        targetValue: 0, // TODO check if we could have multiple targets
+        //TODO remove?
+        tags: ["PAUSE"]
+    },
+    {
         id: 1,
         name: "KH Schulterfrontdrücken in Rücklage Level 1 GStabi",
         level: { m: 1, w: 1 },

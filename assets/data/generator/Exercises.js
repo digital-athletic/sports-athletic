@@ -39,7 +39,7 @@ const Exercises = [
         isAdvanceByDuration: false,
         isJump: false,
         description:
-            "- Kürper mit leicht rundem Oberkürper so weit nach hinten lehnen wie du stabil bist\n- Ellenbogen zum Kürper eindrehen und dort fixieren",
+            "- Körper mit leicht rundem Oberkörper so weit nach hinten lehnen wie du stabil bist\n- Ellenbogen zum Körper eindrehen und dort fixieren",
         video: null,
         values: {
             repetition: {
@@ -253,7 +253,7 @@ const Exercises = [
     {
         id: 5,
         name:
-            "Arnie Press (=2 KH Schulterdrücken mit 180ü Rotation) sitzend 2 evtl ganz weglassen!",
+            "Arnie Press (=2 KH Schulterdrücken mit 180° Rotation) sitzend 2 evtl ganz weglassen!",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -282,7 +282,7 @@ const Exercises = [
     },
     {
         id: 6,
-        name: "Arnie Press (=2 KH Schulterdrücken mit 180ü Rotation) stehend",
+        name: "Arnie Press (=2 KH Schulterdrücken mit 180° Rotation) stehend",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -896,7 +896,7 @@ const Exercises = [
     {
         id: 17,
         name:
-            "einbeiniges Kreuzheben mit 1 KH li Fuü re KH (habe ich an anderer Stelle)",
+            "einbeiniges Kreuzheben mit 1 KH li Fuß re KH (habe ich an anderer Stelle)",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -4538,7 +4538,7 @@ const Exercises = [
     },
     {
         id: 80,
-        name: "Reiükniebeuge mit LH GStabi",
+        name: "Reißkniebeuge mit LH GStabi",
         level: { m: 3, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -5319,7 +5319,7 @@ const Exercises = [
     },
     {
         id: 92,
-        name: "Rudern mit 2 KH auf Schrügbank (Level 1) SWR",
+        name: "Rudern mit 2 KH auf Schrägbank (Level 1) SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -5377,7 +5377,7 @@ const Exercises = [
     },
     {
         id: 93,
-        name: "Rudern mit 2 KH auf Schrügbank (Level 1) SK",
+        name: "Rudern mit 2 KH auf Schrägbank (Level 1) SK",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -5426,7 +5426,7 @@ const Exercises = [
     },
     {
         id: 94,
-        name: "Rudern mit 2 KH auf Schrügbank (Level 1) SA",
+        name: "Rudern mit 2 KH auf Schrägbank (Level 1) SA",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -5476,7 +5476,7 @@ const Exercises = [
     {
         id: 95,
         name:
-            "Rumpfseitneigen mit KH, Fuü auf Bank li und re (Level 2) SWR + U",
+            "Rumpfseitneigen mit KH, Fuß auf Bank li und re (Level 2) SWR + U",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SUPPORT",
@@ -6361,7 +6361,7 @@ const Exercises = [
     },
     {
         id: 109,
-        name: "Aussenseite Fuügelenksmuskulatur mit Hand li und re Präv",
+        name: "Aussenseite Fußgelenksmuskulatur mit Hand li und re Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SPRUNGGELENK",
@@ -7074,7 +7074,7 @@ const Exercises = [
     },
     {
         id: 121,
-        name: "Innenseite Fuügelenkmuskulatur mit Hand li und re Präv",
+        name: "Innenseite Fußgelenkmuskulatur mit Hand li und re Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SPRUNGGELENK",
@@ -7427,7 +7427,7 @@ const Exercises = [
     },
     {
         id: 127,
-        name: "Sprunggelenksmobilitüt an Wand li und re Mobility",
+        name: "Sprunggelenksmobilität an Wand li und re Mobility",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_MOBILITY",
@@ -7486,7 +7486,7 @@ const Exercises = [
     {
         id: 128,
         name:
-            "Sprunggelenksmobilitüt an Wand li und re spez. Warm-Up (bei Sprunggelenk)",
+            "Sprunggelenksmobilität an Wand li und re spez. Warm-Up (bei Sprunggelenk)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -7660,7 +7660,7 @@ const Exercises = [
     },
     {
         id: 133,
-        name: "Schienbeinmuskulatur mit Widerstand Fuü li und re Präv",
+        name: "Schienbeinmuskulatur mit Widerstand Fuß li und re Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SPRUNGGELENK",
@@ -7705,7 +7705,7 @@ const Exercises = [
     },
     {
         id: 134,
-        name: "schnelle Füüe linear",
+        name: "schnelle Füße linear",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -7734,7 +7734,7 @@ const Exercises = [
     },
     {
         id: 135,
-        name: "schnelle Füüe seitlich li und re",
+        name: "schnelle Füße seitlich li und re",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -8242,7 +8242,7 @@ const Exercises = [
     },
     {
         id: 144,
-        name: "Seitstütz mit Oberkürperrotation li und re Level 1 SWR+Präv",
+        name: "Seitstütz mit Oberkörperrotation li und re Level 1 SWR+Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -8773,7 +8773,7 @@ const Exercises = [
     {
         id: 154,
         name:
-            "Kissing Bizeps mit vorgebeugtem Oberkürper spez. Warm-Up (bei Schulter)",
+            "Kissing Bizeps mit vorgebeugtem Oberkörper spez. Warm-Up (bei Schulter)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -8930,19 +8930,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich 4x10 sek, Kinder und Anfünger 3x10 Sek"
+                            "männlich und weiblich 4x10 sek, Kinder und Anfänger 3x10 Sek"
                     },
                     m: {
                         default:
-                            "münnlich und weiblich 4x10 sek, Kinder und Anfünger 3x10 Sek"
+                            "männlich und weiblich 4x10 sek, Kinder und Anfänger 3x10 Sek"
                     },
                     w: {
                         default:
-                            "münnlich und weiblich 4x10 sek, Kinder und Anfünger 3x10 Sek"
+                            "männlich und weiblich 4x10 sek, Kinder und Anfänger 3x10 Sek"
                     },
                     k: {
                         default:
-                            "münnlich und weiblich 4x10 sek, Kinder und Anfünger 3x10 Sek"
+                            "männlich und weiblich 4x10 sek, Kinder und Anfänger 3x10 Sek"
                     },
                     type: { type: "Unknown" }
                 }
@@ -9649,7 +9649,7 @@ const Exercises = [
     },
     {
         id: 169,
-        name: "Liegestütz mit erhühten Beinen auf Faust Level 3 SA(Präv)",
+        name: "Liegestütz mit erhöhten Beinen auf Faust Level 3 SA(Präv)",
         level: { m: 4, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -10052,7 +10052,7 @@ const Exercises = [
     },
     {
         id: 176,
-        name: "Bauch: Beinheben statisch mit KH Level 3 (nur münnlich) SWR+U",
+        name: "Bauch: Beinheben statisch mit KH Level 3 (nur männlich) SWR+U",
         level: { m: 3, w: 1 },
         tags: [
             "SKILL_SUPPORT",
@@ -11915,7 +11915,7 @@ const Exercises = [
     },
     {
         id: 210,
-        name: "Military Press Level 1 Münner und Level 2 Frauen/Kinder SWR",
+        name: "Military Press Level 1 Männer und Level 2 Frauen/Kinder SWR",
         level: { m: 1, w: 2 },
         tags: [
             "SKILL_SWR",
@@ -11966,7 +11966,7 @@ const Exercises = [
     },
     {
         id: 211,
-        name: "Military Press Level 2 Münner und Level 3 Frauen/Kinder SWR",
+        name: "Military Press Level 2 Männer und Level 3 Frauen/Kinder SWR",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SWR",
@@ -12028,7 +12028,7 @@ const Exercises = [
     },
     {
         id: 212,
-        name: "Military Press Level 3 Münner und Level 4 Frauen/Kinder SWR",
+        name: "Military Press Level 3 Männer und Level 4 Frauen/Kinder SWR",
         level: { m: 3, w: 4 },
         tags: [
             "SKILL_SWR",
@@ -12081,7 +12081,7 @@ const Exercises = [
     },
     {
         id: 213,
-        name: "Rotatoren mit 2 Flaschen (Bauchhühe)  SWR + Gstabi",
+        name: "Rotatoren mit 2 Flaschen (Bauchhöhe)  SWR + Gstabi",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -12333,7 +12333,7 @@ const Exercises = [
     {
         id: 217,
         name:
-            "Rumpf stütz Level 1 (Arm langsam anheben)auf Füusten SWR (Präv) + Präv",
+            "Rumpf stütz Level 1 (Arm langsam anheben)auf Fäusten SWR (Präv) + Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -12397,7 +12397,7 @@ const Exercises = [
     {
         id: 218,
         name:
-            "Rumpf stütz Level 2 (Arm langsam anheben)auf Füusten SWR (Präv) + Präv",
+            "Rumpf stütz Level 2 (Arm langsam anheben)auf Fäusten SWR (Präv) + Präv",
         level: { m: 2, w: 2 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -12461,7 +12461,7 @@ const Exercises = [
     },
     {
         id: 219,
-        name: "Rumpf stütz Level 3 (Arm langsam anheben)auf Füusten SWR (Präv)",
+        name: "Rumpf stütz Level 3 (Arm langsam anheben)auf Fäusten SWR (Präv)",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_SWR",
@@ -13223,19 +13223,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -13303,19 +13303,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -13383,10 +13383,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "münnlich und weiblich:4x15 Sek" },
-                    m: { default: "münnlich und weiblich:4x15 Sek" },
-                    w: { default: "münnlich und weiblich:4x15 Sek" },
-                    k: { default: "münnlich und weiblich:4x15 Sek" },
+                    default: { default: "männlich und weiblich:4x15 Sek" },
+                    m: { default: "männlich und weiblich:4x15 Sek" },
+                    w: { default: "männlich und weiblich:4x15 Sek" },
+                    k: { default: "männlich und weiblich:4x15 Sek" },
                     type: { type: "Unknown" }
                 }
             },
@@ -14655,7 +14655,7 @@ const Exercises = [
     {
         id: 255,
         name:
-            "Lunge statisch mit 1 KH unilat über kopf haltend li; für spüter wenn Beinachsenstabi",
+            "Lunge statisch mit 1 KH unilat über kopf haltend li; für später wenn Beinachsenstabi",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -14685,7 +14685,7 @@ const Exercises = [
     {
         id: 256,
         name:
-            "Lunge statisch mit 1 KH unilat über kopf haltend re; für spüter wenn Beinachsenstabi",
+            "Lunge statisch mit 1 KH unilat über kopf haltend re; für später wenn Beinachsenstabi",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -14715,7 +14715,7 @@ const Exercises = [
     {
         id: 257,
         name:
-            "Lunge vor zurück gleiches Bein mit 1 KH unilat über kopf haltend li; für spüter wenn Beinachsenstabi",
+            "Lunge vor zurück gleiches Bein mit 1 KH unilat über kopf haltend li; für später wenn Beinachsenstabi",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -14745,7 +14745,7 @@ const Exercises = [
     {
         id: 258,
         name:
-            "Lunge vor zurück gleiches Bein mit 1 KH unilat über kopf haltend re; für spüter wenn Beinachsenstabi",
+            "Lunge vor zurück gleiches Bein mit 1 KH unilat über kopf haltend re; für später wenn Beinachsenstabi",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -14945,10 +14945,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "münnlich/weiblich 50" },
-                    m: { default: "münnlich/weiblich 50" },
-                    w: { default: "münnlich/weiblich 50" },
-                    k: { default: "münnlich/weiblich 50" },
+                    default: { default: "männlich/weiblich 50" },
+                    m: { default: "männlich/weiblich 50" },
+                    w: { default: "männlich/weiblich 50" },
+                    k: { default: "männlich/weiblich 50" },
                     type: { type: "weightFMax" }
                 }
             },
@@ -15128,7 +15128,7 @@ const Exercises = [
     {
         id: 264,
         name:
-            "Seitstütz mit oberkürperrotation Level 2 li und re SWR + Präv + U",
+            "Seitstütz mit oberkörperrotation Level 2 li und re SWR + Präv + U",
         level: { m: 2, w: 2 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -15192,7 +15192,7 @@ const Exercises = [
     {
         id: 265,
         name:
-            "Seitstütz mit oberkürperrotation und oberem Bein 90ü li und re (Level 3) SWR",
+            "Seitstütz mit oberkörperrotation und oberem Bein 90° li und re (Level 3) SWR",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_SWR",
@@ -15263,7 +15263,7 @@ const Exercises = [
     {
         id: 266,
         name:
-            "Seitstütz mit oberkürperrotation und oberem Bein 90ü li und re (Level 3) Unterstützung",
+            "Seitstütz mit oberkörperrotation und oberem Bein 90° li und re (Level 3) Unterstützung",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_SUPPORT",
@@ -15323,7 +15323,7 @@ const Exercises = [
     {
         id: 267,
         name:
-            "Seitstütz auf Knie mit Oberkürperrotation mit KH li und re (Level 1) SWR",
+            "Seitstütz auf Knie mit Oberkörperrotation mit KH li und re (Level 1) SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -15405,7 +15405,7 @@ const Exercises = [
     {
         id: 268,
         name:
-            "Seitstütz mit Oberkürperrotation mit KH li und re (Level 2) SWR + U",
+            "Seitstütz mit Oberkörperrotation mit KH li und re (Level 2) SWR + U",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SUPPORT",
@@ -15709,7 +15709,7 @@ const Exercises = [
     },
     {
         id: 273,
-        name: "Liegestütz auf Bank erhüht Level 3 SWR",
+        name: "Liegestütz auf Bank erhöht Level 3 SWR",
         level: { m: 1, w: 3 },
         tags: [
             "SKILL_SWR",
@@ -15774,7 +15774,7 @@ const Exercises = [
     },
     {
         id: 274,
-        name: "Liegestütz auf Bank erhüht SK",
+        name: "Liegestütz auf Bank erhöht SK",
         level: { m: 1, w: 2 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -15834,7 +15834,7 @@ const Exercises = [
     },
     {
         id: 275,
-        name: "Liegestütz auf Bank erhüht SA",
+        name: "Liegestütz auf Bank erhöht SA",
         level: { m: 2, w: 4 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -16061,7 +16061,7 @@ const Exercises = [
     },
     {
         id: 279,
-        name: "Liegestütz Beine erhüht Level 5 SWR",
+        name: "Liegestütz Beine erhöht Level 5 SWR",
         level: { m: 4, w: 5 },
         tags: [
             "SKILL_SWR",
@@ -16128,7 +16128,7 @@ const Exercises = [
     },
     {
         id: 280,
-        name: "Liegestütz Beine erhüht SK",
+        name: "Liegestütz Beine erhöht SK",
         level: { m: 4, w: 1 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -16190,7 +16190,7 @@ const Exercises = [
     },
     {
         id: 281,
-        name: "Liegestütz Beine erhüht Level 4 SA",
+        name: "Liegestütz Beine erhöht Level 4 SA",
         level: { m: 4, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -17738,7 +17738,7 @@ const Exercises = [
     },
     {
         id: 305,
-        name: "Kürper über Bank ziehen Level 1 SK",
+        name: "Körper über Bank ziehen Level 1 SK",
         level: { m: 1, w: 2 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -17794,7 +17794,7 @@ const Exercises = [
     },
     {
         id: 306,
-        name: "Kürper über Bank ziehen Level 2 SK",
+        name: "Körper über Bank ziehen Level 2 SK",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -17824,10 +17824,10 @@ const Exercises = [
             repetition: {
                 startValue: { default: {}, m: {}, w: {}, k: {} },
                 targetValue: {
-                    default: { default: "münnlich 8, weiblich und Kinder 6" },
-                    m: { default: "münnlich 8, weiblich und Kinder 6" },
-                    w: { default: "münnlich 8, weiblich und Kinder 6" },
-                    k: { default: "münnlich 8, weiblich und Kinder 6" },
+                    default: { default: "männlich 8, weiblich und Kinder 6" },
+                    m: { default: "männlich 8, weiblich und Kinder 6" },
+                    w: { default: "männlich 8, weiblich und Kinder 6" },
+                    k: { default: "männlich 8, weiblich und Kinder 6" },
                     type: { type: "Unknown" }
                 }
             },
@@ -19317,7 +19317,7 @@ const Exercises = [
     },
     {
         id: 337,
-        name: "Butterfly reverse auf Schrügbank mit 2 KH SWR",
+        name: "Butterfly reverse auf Schrägbank mit 2 KH SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -19378,7 +19378,7 @@ const Exercises = [
                     default: {},
                     m: {},
                     w: {},
-                    k: { default: "(münnlich)" },
+                    k: { default: "(männlich)" },
                     type: { type: "weightAbsolute" }
                 }
             },
@@ -19455,7 +19455,7 @@ const Exercises = [
                     default: {},
                     m: {},
                     w: {},
-                    k: { default: "(münnlich)" },
+                    k: { default: "(männlich)" },
                     type: { type: "weightAbsolute" }
                 }
             },
@@ -19517,7 +19517,7 @@ const Exercises = [
                     default: {},
                     m: {},
                     w: {},
-                    k: { default: "(münnlich)" },
+                    k: { default: "(männlich)" },
                     type: { type: "weightAbsolute" }
                 }
             },
@@ -19590,7 +19590,7 @@ const Exercises = [
                     default: {},
                     m: {},
                     w: {},
-                    k: { default: "(münnlich)" },
+                    k: { default: "(männlich)" },
                     type: { type: "weightAbsolute" }
                 }
             },
@@ -19645,7 +19645,7 @@ const Exercises = [
                     default: {},
                     m: {},
                     w: {},
-                    k: { default: "(münnlich)" },
+                    k: { default: "(männlich)" },
                     type: { type: "weightAbsolute" }
                 }
             },
@@ -19869,7 +19869,7 @@ const Exercises = [
     },
     {
         id: 346,
-        name: "LH Schrügbankdrücken SWR",
+        name: "LH Schrägbankdrücken SWR",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SWR",
@@ -19928,7 +19928,7 @@ const Exercises = [
     },
     {
         id: 347,
-        name: "LH Schrügbankdrücken Max-K",
+        name: "LH Schrägbankdrücken Max-K",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_MAX_KRAFT",
@@ -19977,7 +19977,7 @@ const Exercises = [
     },
     {
         id: 348,
-        name: "LH Schrügbankdrücken SK",
+        name: "LH Schrägbankdrücken SK",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -20026,7 +20026,7 @@ const Exercises = [
     },
     {
         id: 349,
-        name: "LH Schrügbankdrücken SA",
+        name: "LH Schrägbankdrücken SA",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -20076,7 +20076,7 @@ const Exercises = [
     },
     {
         id: 350,
-        name: "KH Schrügbankdrücken SWR",
+        name: "KH Schrägbankdrücken SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -20130,7 +20130,7 @@ const Exercises = [
     },
     {
         id: 351,
-        name: "KH Schrügbankdrücken Max-K",
+        name: "KH Schrägbankdrücken Max-K",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_MAX_KRAFT",
@@ -20180,7 +20180,7 @@ const Exercises = [
     },
     {
         id: 352,
-        name: "KH Schrügbankdrücken SK",
+        name: "KH Schrägbankdrücken SK",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -20229,7 +20229,7 @@ const Exercises = [
     },
     {
         id: 353,
-        name: "KH Schrügbankdrücken SA",
+        name: "KH Schrägbankdrücken SA",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -20279,7 +20279,7 @@ const Exercises = [
     },
     {
         id: 354,
-        name: "KH Schrügbankdrücken eng SWR (Präv)+Präv",
+        name: "KH Schrägbankdrücken eng SWR (Präv)+Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -21057,7 +21057,7 @@ const Exercises = [
     },
     {
         id: 367,
-        name: "Rotatoren mit Flaschen auf Schulterhühe Gstabi und SWR",
+        name: "Rotatoren mit Flaschen auf Schulterhöhe Gstabi und SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -21594,7 +21594,7 @@ const Exercises = [
     },
     {
         id: 375,
-        name: "Ausfallschritte rückwürts mit LH über Kopf (li/re) Gstabi",
+        name: "Ausfallschritte rückwärts mit LH über Kopf (li/re) Gstabi",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -21731,7 +21731,7 @@ const Exercises = [
     },
     {
         id: 377,
-        name: "Ausfallschritte rückwürts mit 2 KH über Kopf (li/re)  Gstabi",
+        name: "Ausfallschritte rückwärts mit 2 KH über Kopf (li/re)  Gstabi",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_STABILITY_BODY",
@@ -22080,7 +22080,7 @@ const Exercises = [
     },
     {
         id: 382,
-        name: "KH Butterfly auf Schrügbank SWR",
+        name: "KH Butterfly auf Schrägbank SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -22339,7 +22339,7 @@ const Exercises = [
     {
         id: 386,
         name:
-            "Schulter-brücke (Po anheben, bis Ober- und Unterkürper eine Linie bilden) Mobi+Warm-Up",
+            "Schulter-brücke (Po anheben, bis Ober- und Unterkörper eine Linie bilden) Mobi+Warm-Up",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_WARM_UP",
@@ -22787,7 +22787,7 @@ const Exercises = [
     },
     {
         id: 393,
-        name: "KH Schrügbankdrücken eng Präv  SK",
+        name: "KH Schrägbankdrücken eng Präv  SK",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLKRAFT",
@@ -22835,7 +22835,7 @@ const Exercises = [
     },
     {
         id: 394,
-        name: "KH Schrügbankdrücken eng Präv SA",
+        name: "KH Schrägbankdrücken eng Präv SA",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -23264,7 +23264,7 @@ const Exercises = [
     },
     {
         id: 402,
-        name: "Kniehub mit Auüenrotation (li/re) Warm-Up",
+        name: "Kniehub mit Außenrotation (li/re) Warm-Up",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -23319,7 +23319,7 @@ const Exercises = [
     },
     {
         id: 403,
-        name: "Marschieren mit Kürperspannung",
+        name: "Marschieren mit Körperspannung",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -23348,7 +23348,7 @@ const Exercises = [
     },
     {
         id: 404,
-        name: "seitliches Marschieren mit Kürperspannung",
+        name: "seitliches Marschieren mit Körperspannung",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -23686,7 +23686,7 @@ const Exercises = [
     },
     {
         id: 410,
-        name: "Hüftmobilitüt 90/90 Version 1 Mobi+Warm-Up",
+        name: "Hüftmobilität 90/90 Version 1 Mobi+Warm-Up",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -23747,7 +23747,7 @@ const Exercises = [
     },
     {
         id: 411,
-        name: "Hüftmobilitüt 90/90 Version 2 Mobi+Warm-Up",
+        name: "Hüftmobilität 90/90 Version 2 Mobi+Warm-Up",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_WARM_UP",
@@ -23809,7 +23809,7 @@ const Exercises = [
     },
     {
         id: 412,
-        name: "Wirbelsüulen-Rotation (Mobi)+ Spez. Warm-Up",
+        name: "Wirbelsäulen-Rotation (Mobi)+ Spez. Warm-Up",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -23868,7 +23868,7 @@ const Exercises = [
     },
     {
         id: 413,
-        name: "Wirbelsüulen-Seitneigung (Mobi)+ Spez. Warm-Up",
+        name: "Wirbelsäulen-Seitneigung (Mobi)+ Spez. Warm-Up",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -23928,7 +23928,7 @@ const Exercises = [
     {
         id: 414,
         name:
-            "Wirbelsüulen-Aufrollen (mit Armunterstützung) Mobi + Spez. Warm-Up",
+            "Wirbelsäulen-Aufrollen (mit Armunterstützung) Mobi + Spez. Warm-Up",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_WARM_UP",
@@ -23987,7 +23987,7 @@ const Exercises = [
     },
     {
         id: 415,
-        name: "Wirbelsüule Aufrollen SWR+ Präv",
+        name: "Wirbelsäule Aufrollen SWR+ Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_WIRBELSAULE",
@@ -24140,7 +24140,7 @@ const Exercises = [
     {
         id: 419,
         name:
-            "Ausfallschritt rückwürts mit Fersenkontakt (li/re)  Warm-Up Level 2",
+            "Ausfallschritt rückwärts mit Fersenkontakt (li/re)  Warm-Up Level 2",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_WARM_UP",
@@ -24203,7 +24203,7 @@ const Exercises = [
     {
         id: 420,
         name:
-            "WS-Rotation auf Rolle (Arm rollt auf BR nach auüen, Schulter zum Boden) li und re Mobi (bei WS)",
+            "WS-Rotation auf Rolle (Arm rollt auf BR nach außen, Schulter zum Boden) li und re Mobi (bei WS)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_MOBILITY",
@@ -24381,7 +24381,7 @@ const Exercises = [
     {
         id: 423,
         name:
-            "Armheben auf Bank (Schultermobilitüt vor Bank knieend li/re Mobi (bei Schulter)",
+            "Armheben auf Bank (Schultermobilität vor Bank knieend li/re Mobi (bei Schulter)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_MOBILITY",
@@ -24444,7 +24444,7 @@ const Exercises = [
     {
         id: 424,
         name:
-            "Wirbelsüulen- und Schultermobilisierung auf Rolle, Mobi (bei WS, Schulter)",
+            "Wirbelsäulen- und Schultermobilisierung auf Rolle, Mobi (bei WS, Schulter)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_MOBILITY",
@@ -25215,7 +25215,7 @@ const Exercises = [
     {
         id: 438,
         name:
-            "Adduktoren Dehnung (2) (Knieend mit Fuü zur Seite und rüberlehnen und Arm über Kopf) li und re Cool-Down",
+            "Adduktoren Dehnung (2) (Knieend mit Fuß zur Seite und rüberlehnen und Arm über Kopf) li und re Cool-Down",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_COOL_DOWN",
@@ -25450,7 +25450,7 @@ const Exercises = [
     },
     {
         id: 442,
-        name: "Brustdehnung an Wand (Arm 90ü) li und re Cool-Down",
+        name: "Brustdehnung an Wand (Arm 90°) li und re Cool-Down",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_COOL_DOWN",
@@ -25571,7 +25571,7 @@ const Exercises = [
     {
         id: 444,
         name:
-            "Brustwirbelsüulenmobilisierung im Liegen 90/90ü li und re Mobi+Cool-Down",
+            "Brustwirbelsäulenmobilisierung im Liegen 90/90° li und re Mobi+Cool-Down",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_COOL_DOWN",
@@ -25692,7 +25692,7 @@ const Exercises = [
     {
         id: 446,
         name:
-            "Fuüsohle mit Ball triggern li und re BR (Sprunggelenk, Knie,Hüfte, WS, Schulter)",
+            "Fußsohle mit Ball triggern li und re BR (Sprunggelenk, Knie,Hüfte, WS, Schulter)",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_BLACK_ROLL",
@@ -25985,7 +25985,7 @@ const Exercises = [
     },
     {
         id: 452,
-        name: "Shrugs (2) mit 2 KH (70ü vorgebeugt stehend) SWR+U",
+        name: "Shrugs (2) mit 2 KH (70° vorgebeugt stehend) SWR+U",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SUPPORT",
@@ -26059,7 +26059,7 @@ const Exercises = [
     },
     {
         id: 453,
-        name: "Shrugs (2) mit 2 KH (70ü vorgebeugt stehend) Präv",
+        name: "Shrugs (2) mit 2 KH (70° vorgebeugt stehend) Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -26268,7 +26268,7 @@ const Exercises = [
     {
         id: 456,
         name:
-            "Rotatorenmanschette (vorne) mit KH auf Schrügbank li und re Präv",
+            "Rotatorenmanschette (vorne) mit KH auf Schrägbank li und re Präv",
         level: { m: 1, w: 1 },
         tags: [
             "PREVENTION_SCHULTER",
@@ -26341,7 +26341,7 @@ const Exercises = [
     },
     {
         id: 457,
-        name: "Rotatorenmanschette (vorne) mit KH auf Schrügbank li und re U",
+        name: "Rotatorenmanschette (vorne) mit KH auf Schrägbank li und re U",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SUPPORT",
@@ -28306,10 +28306,10 @@ const Exercises = [
             weight: {
                 startValue: { default: {}, m: {}, w: {}, k: {} },
                 targetValue: {
-                    default: { default: "F (münnlich) 75" },
-                    m: { default: "F (münnlich) 75" },
-                    w: { default: "F (münnlich) 75" },
-                    k: { default: "F (münnlich) 75" },
+                    default: { default: "F (männlich) 75" },
+                    m: { default: "F (männlich) 75" },
+                    w: { default: "F (männlich) 75" },
+                    k: { default: "F (männlich) 75" },
                     type: { type: "weightFMax" }
                 }
             },
@@ -28781,7 +28781,7 @@ const Exercises = [
     {
         id: 495,
         name:
-            "KH-Heben zum Kinn (High Pulls) Level 1 für weiblich und münnlich und Anfünger SWR",
+            "KH-Heben zum Kinn (High Pulls) Level 1 für weiblich und männlich und Anfänger SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -30859,7 +30859,7 @@ const Exercises = [
     {
         id: 530,
         name:
-            "Sprünge beidbeinig mit 90ü Drehung und seitlicher Landung li/re Stabi",
+            "Sprünge beidbeinig mit 90° Drehung und seitlicher Landung li/re Stabi",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_STABILITY_LEG",
@@ -30911,7 +30911,7 @@ const Exercises = [
     },
     {
         id: 531,
-        name: "seitliche Sprünge mit 180ü Drehung li/re Stabi",
+        name: "seitliche Sprünge mit 180° Drehung li/re Stabi",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_STABILITY_LEG",
@@ -31019,7 +31019,7 @@ const Exercises = [
     {
         id: 533,
         name:
-            "Sprung beidbeinig seitlich  mit 90ü Drehung und gerader Landung (li/re) Stabi",
+            "Sprung beidbeinig seitlich  mit 90° Drehung und gerader Landung (li/re) Stabi",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_STABILITY_LEG",
@@ -31071,7 +31071,7 @@ const Exercises = [
     },
     {
         id: 534,
-        name: "Sprung beidbeinig mit 180ü Drehung li/re Stabi",
+        name: "Sprung beidbeinig mit 180° Drehung li/re Stabi",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_STABILITY_LEG",
@@ -31820,7 +31820,7 @@ const Exercises = [
     },
     {
         id: 546,
-        name: "4 Füülerstand (diagonal Arm/Bein anheben)li und re Level 1 SWR",
+        name: "4 Füßlerstand (diagonal Arm/Bein anheben)li und re Level 1 SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -31884,7 +31884,7 @@ const Exercises = [
     {
         id: 547,
         name:
-            "4 Füülerstand (diagonal abwechselnd Arm/Bein leicht anheben) Level 2 SWR",
+            "4 Füßlerstand (diagonal abwechselnd Arm/Bein leicht anheben) Level 2 SWR",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SWR",
@@ -31948,7 +31948,7 @@ const Exercises = [
     {
         id: 548,
         name:
-            "4 Füülerstand (ein Arm/Bein der gleichen Seite anheben)li und re Level 3 SWR + U",
+            "4 Füßlerstand (ein Arm/Bein der gleichen Seite anheben)li und re Level 3 SWR + U",
         level: { m: 3, w: 1 },
         tags: [
             "SKILL_SUPPORT",
@@ -32014,7 +32014,7 @@ const Exercises = [
     },
     {
         id: 549,
-        name: "Bauchpresse diagonal mit Druck Hünde li und re SWR + U",
+        name: "Bauchpresse diagonal mit Druck Hände li und re SWR + U",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SUPPORT",
@@ -32268,7 +32268,7 @@ const Exercises = [
     {
         id: 556,
         name:
-            "Zehen-an-Ferse Stand (geschlossene Augen und Hünde in die Hüfte) Stabi+ U",
+            "Zehen-an-Ferse Stand (geschlossene Augen und Hände in die Hüfte) Stabi+ U",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -32298,7 +32298,7 @@ const Exercises = [
     {
         id: 557,
         name:
-            "Zehen-an-Ferse Stand (Kopf in den Nacken, geschlossene Augen und Hünde in die Hüfte) Stabi + U",
+            "Zehen-an-Ferse Stand (Kopf in den Nacken, geschlossene Augen und Hände in die Hüfte) Stabi + U",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -32385,7 +32385,7 @@ const Exercises = [
     },
     {
         id: 560,
-        name: "Wandfuülauf SWR",
+        name: "Wandfußlauf SWR",
         level: { m: 2, w: 3 },
         tags: [
             "SKILL_SWR",
@@ -32451,7 +32451,7 @@ const Exercises = [
     {
         id: 561,
         name:
-            "Kombi auf Handtuch: Ausfallschritt vorwürts/seitlich/rückwürts (li und re) SWR",
+            "Kombi auf Handtuch: Ausfallschritt vorwärts/seitlich/rückwärts (li und re) SWR",
         level: { m: 5, w: 5 },
         tags: [
             "SIDE_ONE",
@@ -32514,7 +32514,7 @@ const Exercises = [
     },
     {
         id: 562,
-        name: "Ausfallschritt vorwürts auf Handtuch li und re  SWR",
+        name: "Ausfallschritt vorwärts auf Handtuch li und re  SWR",
         level: { m: 4, w: 4 },
         tags: [
             "SIDE_ONE",
@@ -32685,19 +32685,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich: 40% von F Max Unterkürper kniedominat (Kniebeuge)"
+                            "männlich und weiblich: 40% von F Max Unterkörper kniedominat (Kniebeuge)"
                     },
                     m: {
                         default:
-                            "münnlich und weiblich: 40% von F Max Unterkürper kniedominat (Kniebeuge)"
+                            "männlich und weiblich: 40% von F Max Unterkörper kniedominat (Kniebeuge)"
                     },
                     w: {
                         default:
-                            "münnlich und weiblich: 40% von F Max Unterkürper kniedominat (Kniebeuge)"
+                            "männlich und weiblich: 40% von F Max Unterkörper kniedominat (Kniebeuge)"
                     },
                     k: {
                         default:
-                            "münnlich und weiblich: 40% von F Max Unterkürper kniedominat (Kniebeuge)"
+                            "männlich und weiblich: 40% von F Max Unterkörper kniedominat (Kniebeuge)"
                     },
                     type: { type: "Unknown" }
                 }
@@ -33364,7 +33364,7 @@ const Exercises = [
     },
     {
         id: 575,
-        name: "Handtuch Oberkürper (Gym)",
+        name: "Handtuch Oberkörper (Gym)",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -33603,7 +33603,7 @@ const Exercises = [
     },
     {
         id: 580,
-        name: "Füüe auf Handtuch: in Unterarmstütz vor und zurück",
+        name: "Füße auf Handtuch: in Unterarmstütz vor und zurück",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -34205,7 +34205,7 @@ const Exercises = [
     {
         id: 590,
         name:
-            "auf Flachbank: seitlich statisch halten li (Arme vor Brust verschrünkt) Level 1",
+            "auf Flachbank: seitlich statisch halten li (Arme vor Brust verschränkt) Level 1",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -34235,7 +34235,7 @@ const Exercises = [
     {
         id: 591,
         name:
-            "auf Flachbank: seitlich statisch halten re (Arme vor Brust verschrünkt) Level 1",
+            "auf Flachbank: seitlich statisch halten re (Arme vor Brust verschränkt) Level 1",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -34426,7 +34426,7 @@ const Exercises = [
     },
     {
         id: 595,
-        name: "Klimmzug in Hanglage (Level 1) SK (an Kniebeugenstünder)",
+        name: "Klimmzug in Hanglage (Level 1) SK (an Kniebeugenständer)",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -35263,7 +35263,7 @@ const Exercises = [
     {
         id: 611,
         name:
-            "Videos zur Erklürung (max 40 sek) wichtige Inhalte für: (Studio)",
+            "Videos zur Erklärung (max 40 sek) wichtige Inhalte für: (Studio)",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -35292,7 +35292,7 @@ const Exercises = [
     },
     {
         id: 612,
-        name: "Erklürvideo SWR",
+        name: "Erklärvideo SWR",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -35321,7 +35321,7 @@ const Exercises = [
     },
     {
         id: 613,
-        name: "Erklürvideo Max-Kraft",
+        name: "Erklärvideo Max-Kraft",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -35350,7 +35350,7 @@ const Exercises = [
     },
     {
         id: 614,
-        name: "Erklürvideo Schnellkraft",
+        name: "Erklärvideo Schnellkraft",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -35379,7 +35379,7 @@ const Exercises = [
     },
     {
         id: 615,
-        name: "Erklürvideo Schnelligkeitsausdauer",
+        name: "Erklärvideo Schnelligkeitsausdauer",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -36647,10 +36647,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "münnlich 6, weiblich und Kinder 5" },
-                    m: { default: "münnlich 6, weiblich und Kinder 5" },
-                    w: { default: "münnlich 6, weiblich und Kinder 5" },
-                    k: { default: "münnlich 6, weiblich und Kinder 5" },
+                    default: { default: "männlich 6, weiblich und Kinder 5" },
+                    m: { default: "männlich 6, weiblich und Kinder 5" },
+                    w: { default: "männlich 6, weiblich und Kinder 5" },
+                    k: { default: "männlich 6, weiblich und Kinder 5" },
                     type: { type: "Unknown" }
                 }
             },
@@ -36659,11 +36659,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -36727,11 +36727,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 1"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 1"'
                     },
                     k: {}
                 },
@@ -36811,11 +36811,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 1"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 1"'
                     },
                     k: {}
                 },
@@ -36888,11 +36888,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -36965,11 +36965,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -37044,11 +37044,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -37128,11 +37128,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -37200,11 +37200,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 1"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 1"'
                     },
                     k: {}
                 },
@@ -37277,11 +37277,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -37323,11 +37323,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -37404,11 +37404,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -37791,11 +37791,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -37865,11 +37865,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 1"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 1"'
                     },
                     k: {}
                 },
@@ -37946,11 +37946,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -38022,11 +38022,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 1"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 1"'
                     },
                     k: {}
                 },
@@ -38106,11 +38106,11 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 2"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 2"'
                     },
                     k: {}
                 },
@@ -38761,7 +38761,7 @@ const Exercises = [
     {
         id: 670,
         name:
-            "Seitstütz auf Bank mit Oberkürperrotation li und re SWR (Level 2+3",
+            "Seitstütz auf Bank mit Oberkörperrotation li und re SWR (Level 2+3",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SWR",
@@ -38826,7 +38826,7 @@ const Exercises = [
     {
         id: 671,
         name:
-            "Seitstütz auf Bank mit Oberkürperrotation und KH li und re SWR Level 4",
+            "Seitstütz auf Bank mit Oberkörperrotation und KH li und re SWR Level 4",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_SWR",
@@ -38981,7 +38981,7 @@ const Exercises = [
     {
         id: 673,
         name:
-            "Seitstütz auf Bank mit KH (statisch) und Oberkürperrotaion li und re SWR Level 3",
+            "Seitstütz auf Bank mit KH (statisch) und Oberkörperrotaion li und re SWR Level 3",
         level: { m: 3, w: 3 },
         tags: [
             "SKILL_SWR",
@@ -39208,7 +39208,7 @@ const Exercises = [
     {
         id: 679,
         name:
-            "Hürdensprünge einbeinig gerade mit Sprungbein 90ü anziehen, Fokus Landung, li/re hintereinander Level 3",
+            "Hürdensprünge einbeinig gerade mit Sprungbein 90° anziehen, Fokus Landung, li/re hintereinander Level 3",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -39238,7 +39238,7 @@ const Exercises = [
     {
         id: 680,
         name:
-            "Hürdensprünge einbeinig gerade mit Sprungbein 90ü anziehen, kurzer Kontakt li/re hintereinander Level 4",
+            "Hürdensprünge einbeinig gerade mit Sprungbein 90° anziehen, kurzer Kontakt li/re hintereinander Level 4",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -39268,7 +39268,7 @@ const Exercises = [
     {
         id: 681,
         name:
-            "Hürdensprünge einbeinig seitlich mit Sprungbein 90ü anziehen, Fokus Landung, li/re hintereinander Level 3",
+            "Hürdensprünge einbeinig seitlich mit Sprungbein 90° anziehen, Fokus Landung, li/re hintereinander Level 3",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -39298,7 +39298,7 @@ const Exercises = [
     {
         id: 682,
         name:
-            "Hürdensprünge einbeinig seitlich mit Sprungbein 90ü anziehen, kurzer Kontakt, li/re hintereinander Level 4",
+            "Hürdensprünge einbeinig seitlich mit Sprungbein 90° anziehen, kurzer Kontakt, li/re hintereinander Level 4",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -39325,10 +39325,10 @@ const Exercises = [
             }
         }
     },
+    // TODO nach dem Gespräch mit Konsti noch die Logik anpassen wegen automatischen runterzühlen bei Plyo-Laufübungen (15-30 Sek) damit der Athlet nicht selbst auf weiter klicken muss, sondern die Pause von alleine startet! (siehe Word Blatt; für alle Plyo-übungen) ab hier!) wie kann das am besten gemacht werden?? Ebenfalls nochmal die richtigen Namen der übungen mit den Skillbäumen vergleichen!!!  wenn auf Zeit, dann muss ich dass noch hier ündern und auch noch die Namen der übungen nur auf den Inhalt kürzen!!! (ab hier nochmal Namen anschauen!!!!
     {
         id: 683,
-        name:
-            "nach dem Gesprüch mit Konsti noch die Logik anpassen wegen automatischen runterzühlen bei Plyo-Laufübungen (15-30 Sek) damit der Athlet nicht selbst auf weiter klicken muss, sondern die Pause von alleine startet! (siehe Word Blatt; für alle Plyo-übungen) ab hier!) wie kann das am besten gemacht werden?? Ebenfalls nochmal die richtigen Namen der übungen mit den Skillbüumen vergleichen!!!  wenn auf Zeit, dann muss ich dass noch hier ündern und auch noch die Namen der übungen nur auf den Inhalt kürzen!!! (ab hier nochmal Namen anschauen!!!!",
+        name: "",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -40111,10 +40111,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "2x 40 m, Kinder und Anfünger 2x30 m" },
-                    m: { default: "2x 40 m, Kinder und Anfünger 2x30 m" },
-                    w: { default: "2x 40 m, Kinder und Anfünger 2x30 m" },
-                    k: { default: "2x 40 m, Kinder und Anfünger 2x30 m" },
+                    default: { default: "2x 40 m, Kinder und Anfänger 2x30 m" },
+                    m: { default: "2x 40 m, Kinder und Anfänger 2x30 m" },
+                    w: { default: "2x 40 m, Kinder und Anfänger 2x30 m" },
+                    k: { default: "2x 40 m, Kinder und Anfänger 2x30 m" },
                     type: { type: "Unknown" }
                 }
             },
@@ -40180,10 +40180,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "30m, Kinder und Anfünger 20 m" },
-                    m: { default: "30m, Kinder und Anfünger 20 m" },
-                    w: { default: "30m, Kinder und Anfünger 20 m" },
-                    k: { default: "30m, Kinder und Anfünger 20 m" },
+                    default: { default: "30m, Kinder und Anfänger 20 m" },
+                    m: { default: "30m, Kinder und Anfänger 20 m" },
+                    w: { default: "30m, Kinder und Anfänger 20 m" },
+                    k: { default: "30m, Kinder und Anfänger 20 m" },
                     type: { type: "Unknown" }
                 }
             },
@@ -40203,7 +40203,7 @@ const Exercises = [
     },
     {
         id: 696,
-        name: "diagonale Seitwürtssprünge (beidbeinig) Plyo",
+        name: "diagonale Seitwärtssprünge (beidbeinig) Plyo",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_PLYO_LOW",
@@ -40255,10 +40255,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "30 m, Kinder und Anfünger 20 m" },
-                    m: { default: "30 m, Kinder und Anfünger 20 m" },
-                    w: { default: "30 m, Kinder und Anfünger 20 m" },
-                    k: { default: "30 m, Kinder und Anfünger 20 m" },
+                    default: { default: "30 m, Kinder und Anfänger 20 m" },
+                    m: { default: "30 m, Kinder und Anfänger 20 m" },
+                    w: { default: "30 m, Kinder und Anfänger 20 m" },
+                    k: { default: "30 m, Kinder und Anfänger 20 m" },
                     type: { type: "Unknown" }
                 }
             },
@@ -40278,7 +40278,7 @@ const Exercises = [
     },
     {
         id: 697,
-        name: "Vorwürts-/Rückwürtssprünge Plyo",
+        name: "Vorwärts-/Rückwärtssprünge Plyo",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_PLYO_LOW",
@@ -40330,10 +40330,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "30 m, Kinder und Anfünger 20 m" },
-                    m: { default: "30 m, Kinder und Anfünger 20 m" },
-                    w: { default: "30 m, Kinder und Anfünger 20 m" },
-                    k: { default: "30 m, Kinder und Anfünger 20 m" },
+                    default: { default: "30 m, Kinder und Anfänger 20 m" },
+                    m: { default: "30 m, Kinder und Anfänger 20 m" },
+                    w: { default: "30 m, Kinder und Anfänger 20 m" },
+                    k: { default: "30 m, Kinder und Anfänger 20 m" },
                     type: { type: "Unknown" }
                 }
             },
@@ -40406,10 +40406,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "30 m, Kinder und Anfünger 20 m" },
-                    m: { default: "30 m, Kinder und Anfünger 20 m" },
-                    w: { default: "30 m, Kinder und Anfünger 20 m" },
-                    k: { default: "30 m, Kinder und Anfünger 20 m" },
+                    default: { default: "30 m, Kinder und Anfänger 20 m" },
+                    m: { default: "30 m, Kinder und Anfänger 20 m" },
+                    w: { default: "30 m, Kinder und Anfänger 20 m" },
+                    k: { default: "30 m, Kinder und Anfänger 20 m" },
                     type: { type: "Unknown" }
                 }
             },
@@ -40696,10 +40696,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "2x 40 m, Kinder und Anfünger 2x30 m" },
-                    m: { default: "2x 40 m, Kinder und Anfünger 2x30 m" },
-                    w: { default: "2x 40 m, Kinder und Anfünger 2x30 m" },
-                    k: { default: "2x 40 m, Kinder und Anfünger 2x30 m" },
+                    default: { default: "2x 40 m, Kinder und Anfänger 2x30 m" },
+                    m: { default: "2x 40 m, Kinder und Anfänger 2x30 m" },
+                    w: { default: "2x 40 m, Kinder und Anfänger 2x30 m" },
+                    k: { default: "2x 40 m, Kinder und Anfänger 2x30 m" },
                     type: { type: "Unknown" }
                 }
             },
@@ -40864,7 +40864,7 @@ const Exercises = [
     },
     {
         id: 705,
-        name: "diagonale einbeinige Seitwürtssprünge li/re Plyo",
+        name: "diagonale einbeinige Seitwärtssprünge li/re Plyo",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_PLYO_LOW",
@@ -40912,19 +40912,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich 30 m, kinder und Anfünger 25 m"
+                            "männlich und weiblich 30 m, kinder und Anfänger 25 m"
                     },
                     m: {
                         default:
-                            "münnlich und weiblich 30 m, kinder und Anfünger 25 m"
+                            "männlich und weiblich 30 m, kinder und Anfänger 25 m"
                     },
                     w: {
                         default:
-                            "münnlich und weiblich 30 m, kinder und Anfünger 25 m"
+                            "männlich und weiblich 30 m, kinder und Anfänger 25 m"
                     },
                     k: {
                         default:
-                            "münnlich und weiblich 30 m, kinder und Anfünger 25 m"
+                            "männlich und weiblich 30 m, kinder und Anfänger 25 m"
                     },
                     type: { type: "Unknown" }
                 }
@@ -40989,19 +40989,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich 30 m, kinder und Anfünger 25 m"
+                            "männlich und weiblich 30 m, kinder und Anfänger 25 m"
                     },
                     m: {
                         default:
-                            "münnlich und weiblich 30 m, kinder und Anfünger 25 m"
+                            "männlich und weiblich 30 m, kinder und Anfänger 25 m"
                     },
                     w: {
                         default:
-                            "münnlich und weiblich 30 m, kinder und Anfünger 25 m"
+                            "männlich und weiblich 30 m, kinder und Anfänger 25 m"
                     },
                     k: {
                         default:
-                            "münnlich und weiblich 30 m, kinder und Anfünger 25 m"
+                            "männlich und weiblich 30 m, kinder und Anfänger 25 m"
                     },
                     type: { type: "Unknown" }
                 }
@@ -41068,19 +41068,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich 25 m, kinder und Anfünger 20 m"
+                            "männlich und weiblich 25 m, kinder und Anfänger 20 m"
                     },
                     m: {
                         default:
-                            "münnlich und weiblich 25 m, kinder und Anfünger 20 m"
+                            "männlich und weiblich 25 m, kinder und Anfänger 20 m"
                     },
                     w: {
                         default:
-                            "münnlich und weiblich 25 m, kinder und Anfünger 20 m"
+                            "männlich und weiblich 25 m, kinder und Anfänger 20 m"
                     },
                     k: {
                         default:
-                            "münnlich und weiblich 25 m, kinder und Anfünger 20 m"
+                            "männlich und weiblich 25 m, kinder und Anfänger 20 m"
                     },
                     type: { type: "Unknown" }
                 }
@@ -41354,10 +41354,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "münnlich 8, weiblich und Kinder 6" },
-                    m: { default: "münnlich 8, weiblich und Kinder 6" },
-                    w: { default: "münnlich 8, weiblich und Kinder 6" },
-                    k: { default: "münnlich 8, weiblich und Kinder 6" },
+                    default: { default: "männlich 8, weiblich und Kinder 6" },
+                    m: { default: "männlich 8, weiblich und Kinder 6" },
+                    w: { default: "männlich 8, weiblich und Kinder 6" },
+                    k: { default: "männlich 8, weiblich und Kinder 6" },
                     type: { type: "Unknown" }
                 }
             },
@@ -41365,16 +41365,16 @@ const Exercises = [
                 startValue: { default: {}, m: {}, w: {}, k: {} },
                 targetValue: {
                     default: {
-                        default: "münnlich und weiblich: 45 cm, Kinder 35 cm"
+                        default: "männlich und weiblich: 45 cm, Kinder 35 cm"
                     },
                     m: {
-                        default: "münnlich und weiblich: 45 cm, Kinder 35 cm"
+                        default: "männlich und weiblich: 45 cm, Kinder 35 cm"
                     },
                     w: {
-                        default: "münnlich und weiblich: 45 cm, Kinder 35 cm"
+                        default: "männlich und weiblich: 45 cm, Kinder 35 cm"
                     },
                     k: {
-                        default: "münnlich und weiblich: 45 cm, Kinder 35 cm"
+                        default: "männlich und weiblich: 45 cm, Kinder 35 cm"
                     },
                     type: { type: "Unknown" }
                 }
@@ -41450,10 +41450,10 @@ const Exercises = [
             weight: {
                 startValue: { default: {}, m: {}, w: {}, k: {} },
                 targetValue: {
-                    default: { default: "münnlich und weiblich: 70 cm" },
-                    m: { default: "münnlich und weiblich: 70 cm" },
-                    w: { default: "münnlich und weiblich: 70 cm" },
-                    k: { default: "münnlich und weiblich: 70 cm" },
+                    default: { default: "männlich und weiblich: 70 cm" },
+                    m: { default: "männlich und weiblich: 70 cm" },
+                    w: { default: "männlich und weiblich: 70 cm" },
+                    k: { default: "männlich und weiblich: 70 cm" },
                     type: { type: "Unknown" }
                 }
             },
@@ -41688,10 +41688,10 @@ const Exercises = [
                     k: {}
                 },
                 targetValue: {
-                    default: { default: "münnlich 8, weiblich und Kinder 6" },
-                    m: { default: "münnlich 8, weiblich und Kinder 6" },
-                    w: { default: "münnlich 8, weiblich und Kinder 6" },
-                    k: { default: "münnlich 8, weiblich und Kinder 6" },
+                    default: { default: "männlich 8, weiblich und Kinder 6" },
+                    m: { default: "männlich 8, weiblich und Kinder 6" },
+                    w: { default: "männlich 8, weiblich und Kinder 6" },
+                    k: { default: "männlich 8, weiblich und Kinder 6" },
                     type: { type: "Unknown" }
                 }
             },
@@ -41699,16 +41699,16 @@ const Exercises = [
                 startValue: { default: {}, m: {}, w: {}, k: {} },
                 targetValue: {
                     default: {
-                        default: "münnlich und weiblich: 45 cm, Kinder 30 cm"
+                        default: "männlich und weiblich: 45 cm, Kinder 30 cm"
                     },
                     m: {
-                        default: "münnlich und weiblich: 45 cm, Kinder 30 cm"
+                        default: "männlich und weiblich: 45 cm, Kinder 30 cm"
                     },
                     w: {
-                        default: "münnlich und weiblich: 45 cm, Kinder 30 cm"
+                        default: "männlich und weiblich: 45 cm, Kinder 30 cm"
                     },
                     k: {
-                        default: "münnlich und weiblich: 45 cm, Kinder 30 cm"
+                        default: "männlich und weiblich: 45 cm, Kinder 30 cm"
                     },
                     type: { type: "Unknown" }
                 }
@@ -41986,19 +41986,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -42011,7 +42011,7 @@ const Exercises = [
     },
     {
         id: 720,
-        name: "Unterkürper SAS Speedleiter",
+        name: "Unterkörper SAS Speedleiter",
         level: { m: 1, w: 1 },
         tags: [],
         isAdvanceByReps: false,
@@ -42040,7 +42040,7 @@ const Exercises = [
     },
     {
         id: 721,
-        name: "Schnelle Füüe 1 (Leiter) li/re  SAS",
+        name: "Schnelle Füße 1 (Leiter) li/re  SAS",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -42092,19 +42092,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -42173,19 +42173,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -42254,19 +42254,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -42331,19 +42331,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -42408,19 +42408,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -42433,7 +42433,7 @@ const Exercises = [
     },
     {
         id: 726,
-        name: "schnelle Füüe 2 (Leiter) li/re SAS",
+        name: "schnelle Füße 2 (Leiter) li/re SAS",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -42485,19 +42485,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -42564,19 +42564,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -42589,7 +42589,7 @@ const Exercises = [
     },
     {
         id: 728,
-        name: "schnelle Hünde Level 1 SAS",
+        name: "schnelle Hände Level 1 SAS",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -42656,7 +42656,7 @@ const Exercises = [
     },
     {
         id: 729,
-        name: "schnelle Hünde Level 2 SAS",
+        name: "schnelle Hände Level 2 SAS",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -42726,7 +42726,7 @@ const Exercises = [
     },
     {
         id: 730,
-        name: "schnelle Hünde seitlich Level 1 SAS",
+        name: "schnelle Hände seitlich Level 1 SAS",
         level: { m: 2, w: 2 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -42793,7 +42793,7 @@ const Exercises = [
     },
     {
         id: 731,
-        name: "schnelle Hünde seitlich Level 2 SAS",
+        name: "schnelle Hände seitlich Level 2 SAS",
         level: { m: 4, w: 4 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -42920,19 +42920,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -42998,16 +42998,16 @@ const Exercises = [
                 },
                 targetValue: {
                     default: {
-                        default: "münnlich und weiblich 4x10 sek, Kinder 3x10"
+                        default: "männlich und weiblich 4x10 sek, Kinder 3x10"
                     },
                     m: {
-                        default: "münnlich und weiblich 4x10 sek, Kinder 3x10"
+                        default: "männlich und weiblich 4x10 sek, Kinder 3x10"
                     },
                     w: {
-                        default: "münnlich und weiblich 4x10 sek, Kinder 3x10"
+                        default: "männlich und weiblich 4x10 sek, Kinder 3x10"
                     },
                     k: {
-                        default: "münnlich und weiblich 4x10 sek, Kinder 3x10"
+                        default: "männlich und weiblich 4x10 sek, Kinder 3x10"
                     },
                     type: { type: "Unknown" }
                 }
@@ -43072,16 +43072,16 @@ const Exercises = [
                 },
                 targetValue: {
                     default: {
-                        default: "münnlich und weiblich 4x10 sek, Kinder 3x10"
+                        default: "männlich und weiblich 4x10 sek, Kinder 3x10"
                     },
                     m: {
-                        default: "münnlich und weiblich 4x10 sek, Kinder 3x10"
+                        default: "männlich und weiblich 4x10 sek, Kinder 3x10"
                     },
                     w: {
-                        default: "münnlich und weiblich 4x10 sek, Kinder 3x10"
+                        default: "männlich und weiblich 4x10 sek, Kinder 3x10"
                     },
                     k: {
-                        default: "münnlich und weiblich 4x10 sek, Kinder 3x10"
+                        default: "männlich und weiblich 4x10 sek, Kinder 3x10"
                     },
                     type: { type: "Unknown" }
                 }
@@ -43141,30 +43141,30 @@ const Exercises = [
                     default: {},
                     m: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 1"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 1"'
                     },
                     k: {}
                 },
                 targetValue: {
                     default: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 1"'
                     },
                     m: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 1"'
                     },
                     w: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 1"'
                     },
                     k: {
                         default:
-                            'siehe Excel-Blatt "Kürpergewicht und Einfluss Nr. 1"'
+                            'siehe Excel-Blatt "Körpergewicht und Einfluss Nr. 1"'
                     },
                     type: { type: "Unknown" }
                 }
@@ -43179,19 +43179,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich 4x10 sek, weiblich und Kinder und Anfünger 3x10"
+                            "männlich 4x10 sek, weiblich und Kinder und Anfänger 3x10"
                     },
                     m: {
                         default:
-                            "münnlich 4x10 sek, weiblich und Kinder und Anfünger 3x10"
+                            "männlich 4x10 sek, weiblich und Kinder und Anfänger 3x10"
                     },
                     w: {
                         default:
-                            "münnlich 4x10 sek, weiblich und Kinder und Anfünger 3x10"
+                            "männlich 4x10 sek, weiblich und Kinder und Anfänger 3x10"
                     },
                     k: {
                         default:
-                            "münnlich 4x10 sek, weiblich und Kinder und Anfünger 3x10"
+                            "männlich 4x10 sek, weiblich und Kinder und Anfänger 3x10"
                     },
                     type: { type: "Unknown" }
                 }
@@ -43204,7 +43204,7 @@ const Exercises = [
     },
     {
         id: 736,
-        name: "schnelle Füüe auf Bank SAS",
+        name: "schnelle Füße auf Bank SAS",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -43259,19 +43259,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     m: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     w: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     k: {
                         default:
-                            "münnlich und weiblich:4x15 Sek; Kinder und Anfünger: 4x10 Sek."
+                            "männlich und weiblich:4x15 Sek; Kinder und Anfänger: 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -43375,19 +43375,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek"
+                            "männlich und weiblich 4x15 Sek, Kinder und Anfänger 4x10 Sek"
                     },
                     m: {
                         default:
-                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek"
+                            "männlich und weiblich 4x15 Sek, Kinder und Anfänger 4x10 Sek"
                     },
                     w: {
                         default:
-                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek"
+                            "männlich und weiblich 4x15 Sek, Kinder und Anfänger 4x10 Sek"
                     },
                     k: {
                         default:
-                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek"
+                            "männlich und weiblich 4x15 Sek, Kinder und Anfänger 4x10 Sek"
                     },
                     type: { type: "Unknown" }
                 }
@@ -43537,19 +43537,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek."
+                            "männlich und weiblich 4x15 Sek, Kinder und Anfänger 4x10 Sek."
                     },
                     m: {
                         default:
-                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek."
+                            "männlich und weiblich 4x15 Sek, Kinder und Anfänger 4x10 Sek."
                     },
                     w: {
                         default:
-                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek."
+                            "männlich und weiblich 4x15 Sek, Kinder und Anfänger 4x10 Sek."
                     },
                     k: {
                         default:
-                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek."
+                            "männlich und weiblich 4x15 Sek, Kinder und Anfänger 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -43697,19 +43697,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
+                            "männlich und weiblich 4x10 Sek, Kinder und Anfänger 3x10 Sek."
                     },
                     m: {
                         default:
-                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
+                            "männlich und weiblich 4x10 Sek, Kinder und Anfänger 3x10 Sek."
                     },
                     w: {
                         default:
-                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
+                            "männlich und weiblich 4x10 Sek, Kinder und Anfänger 3x10 Sek."
                     },
                     k: {
                         default:
-                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
+                            "männlich und weiblich 4x10 Sek, Kinder und Anfänger 3x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -43796,7 +43796,7 @@ const Exercises = [
     },
     {
         id: 744,
-        name: "20 m Linienlüufe Z 2",
+        name: "20 m Linienläufe Z 2",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_CARDIO",
@@ -43942,7 +43942,7 @@ const Exercises = [
     },
     {
         id: 746,
-        name: "10 m Linienlüufe SAS",
+        name: "10 m Linienläufe SAS",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
@@ -44001,19 +44001,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek."
+                            "männlich und weiblich 4x15 Sek, Kinder und Anfänger 4x10 Sek."
                     },
                     m: {
                         default:
-                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek."
+                            "männlich und weiblich 4x15 Sek, Kinder und Anfänger 4x10 Sek."
                     },
                     w: {
                         default:
-                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek."
+                            "männlich und weiblich 4x15 Sek, Kinder und Anfänger 4x10 Sek."
                     },
                     k: {
                         default:
-                            "münnlich und weiblich 4x15 Sek, Kinder und Anfünger 4x10 Sek."
+                            "männlich und weiblich 4x15 Sek, Kinder und Anfänger 4x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -44026,7 +44026,7 @@ const Exercises = [
     },
     {
         id: 747,
-        name: "10 m Linienlüufe Z 1L",
+        name: "10 m Linienläufe Z 1L",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_CARDIO",
@@ -44101,7 +44101,7 @@ const Exercises = [
     },
     {
         id: 748,
-        name: "10 m Linienlüufe Z 2",
+        name: "10 m Linienläufe Z 2",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_CARDIO",
@@ -44309,19 +44309,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
+                            "männlich und weiblich 4x10 Sek, Kinder und Anfänger 3x10 Sek."
                     },
                     m: {
                         default:
-                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
+                            "männlich und weiblich 4x10 Sek, Kinder und Anfänger 3x10 Sek."
                     },
                     w: {
                         default:
-                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
+                            "männlich und weiblich 4x10 Sek, Kinder und Anfänger 3x10 Sek."
                     },
                     k: {
                         default:
-                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
+                            "männlich und weiblich 4x10 Sek, Kinder und Anfänger 3x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -44691,19 +44691,19 @@ const Exercises = [
                 targetValue: {
                     default: {
                         default:
-                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
+                            "männlich und weiblich 4x10 Sek, Kinder und Anfänger 3x10 Sek."
                     },
                     m: {
                         default:
-                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
+                            "männlich und weiblich 4x10 Sek, Kinder und Anfänger 3x10 Sek."
                     },
                     w: {
                         default:
-                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
+                            "männlich und weiblich 4x10 Sek, Kinder und Anfänger 3x10 Sek."
                     },
                     k: {
                         default:
-                            "münnlich und weiblich 4x10 Sek, Kinder und Anfünger 3x10 Sek."
+                            "männlich und weiblich 4x10 Sek, Kinder und Anfänger 3x10 Sek."
                     },
                     type: { type: "Unknown" }
                 }
@@ -45315,7 +45315,7 @@ const Exercises = [
     {
         id: 764,
         name:
-            "Linienlüufe (2) Sprint und langsamer rückwürts (5m-5m-10m-10m; wiederholen) Z 2",
+            "Linienläufe (2) Sprint und langsamer rückwärts (5m-5m-10m-10m; wiederholen) Z 2",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_CARDIO",
@@ -45788,7 +45788,7 @@ const Exercises = [
     },
     {
         id: 772,
-        name: "seitlicher Hüftüffner li und re Cool-Down",
+        name: "seitlicher Hüftöffner li und re Cool-Down",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_COOL_DOWN",
@@ -46020,7 +46020,7 @@ const Exercises = [
     },
     {
         id: 776,
-        name: "Hüftauüenrotation an Wand li und re Cool-Down",
+        name: "Hüftaußenrotation an Wand li und re Cool-Down",
         level: { m: 1, w: 1 },
         tags: [
             "SKILL_COOL_DOWN",

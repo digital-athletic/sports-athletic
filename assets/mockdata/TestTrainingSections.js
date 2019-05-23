@@ -6,24 +6,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -32,24 +32,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -58,24 +58,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -87,24 +87,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -113,24 +113,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -139,24 +139,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -169,24 +169,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -195,24 +195,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -221,24 +221,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -250,24 +250,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -276,24 +276,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -302,24 +302,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -332,24 +332,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -358,24 +358,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -384,24 +384,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -413,24 +413,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -439,24 +439,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -465,24 +465,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -495,24 +495,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -521,24 +521,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -547,24 +547,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -576,24 +576,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -602,24 +602,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -628,24 +628,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -658,24 +658,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -684,24 +684,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -710,24 +710,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -739,24 +739,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -765,24 +765,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -791,24 +791,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -821,24 +821,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -847,24 +847,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -873,24 +873,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -902,24 +902,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -928,24 +928,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -954,24 +954,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -984,24 +984,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1010,24 +1010,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1036,24 +1036,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1065,24 +1065,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1091,24 +1091,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1117,24 +1117,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1147,24 +1147,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1173,24 +1173,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1199,24 +1199,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1228,24 +1228,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1254,24 +1254,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1280,24 +1280,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1310,24 +1310,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1336,24 +1336,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1362,24 +1362,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1391,24 +1391,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1417,24 +1417,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1443,24 +1443,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1475,24 +1475,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1501,24 +1501,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1527,24 +1527,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1556,24 +1556,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1582,24 +1582,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1608,24 +1608,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1638,24 +1638,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1664,24 +1664,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1690,24 +1690,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1719,24 +1719,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1745,24 +1745,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1771,24 +1771,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1801,24 +1801,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1827,24 +1827,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1853,24 +1853,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1882,24 +1882,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1908,24 +1908,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1934,24 +1934,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1964,24 +1964,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -1990,24 +1990,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2016,24 +2016,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2045,24 +2045,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2071,24 +2071,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2097,24 +2097,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2127,24 +2127,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2153,24 +2153,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2179,24 +2179,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2208,24 +2208,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2234,24 +2234,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2260,24 +2260,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2290,24 +2290,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2316,24 +2316,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2342,24 +2342,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2371,24 +2371,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2397,24 +2397,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2423,24 +2423,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2453,24 +2453,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2479,24 +2479,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2505,24 +2505,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2534,24 +2534,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2560,24 +2560,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2586,24 +2586,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2616,24 +2616,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2642,24 +2642,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2668,24 +2668,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2697,24 +2697,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2723,24 +2723,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2749,24 +2749,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2779,24 +2779,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2805,24 +2805,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2831,24 +2831,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2860,24 +2860,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2886,24 +2886,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2912,24 +2912,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2944,24 +2944,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2970,24 +2970,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -2996,24 +2996,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3025,24 +3025,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3053,7 +3053,7 @@ const TestTrainingSections = {
                         [
                             {
                                 type: "SWR1",
-                                length: 2,
+                                numOfWeeks: 2,
                                 cardioType: "ZONE_2",
                                 repeat: 0
                             }
@@ -3062,25 +3062,25 @@ const TestTrainingSections = {
                         home: [
                             {
                                 type: "SWR1KG",
-                                length: 2,
+                                numOfWeeks: 2,
                                 repeat: 0
                             }
                         ],
                         cardio: [
                             {
                                 type: "ZONE_2",
-                                length: 2
+                                numOfWeeks: 2
                             }
                         ]
                     }*/ goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3089,24 +3089,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3119,24 +3119,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3145,24 +3145,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3171,24 +3171,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3200,24 +3200,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3226,24 +3226,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3252,24 +3252,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3282,24 +3282,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3308,24 +3308,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3334,24 +3334,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3363,24 +3363,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3389,13 +3389,13 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 2,
+                            numOfWeeks: 2,
                             cardioType: "ZONE_2",
                             repeat: 0
                         },
                         {
                             type: "SWR1",
-                            length: 2,
+                            numOfWeeks: 2,
                             cardioType: "ZONE_1",
                             repeat: 0
                         }
@@ -3403,12 +3403,12 @@ const TestTrainingSections = {
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3417,24 +3417,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3447,24 +3447,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3473,24 +3473,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3499,24 +3499,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3528,24 +3528,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3554,24 +3554,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3580,24 +3580,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3610,24 +3610,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3636,24 +3636,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3662,24 +3662,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3691,24 +3691,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3717,24 +3717,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3743,24 +3743,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3773,24 +3773,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3799,24 +3799,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3825,24 +3825,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3854,24 +3854,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3880,24 +3880,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3906,24 +3906,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3936,24 +3936,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3962,24 +3962,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -3988,24 +3988,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -4017,24 +4017,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -4043,24 +4043,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -4069,24 +4069,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -4099,24 +4099,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -4125,24 +4125,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -4151,24 +4151,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -4180,24 +4180,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -4206,24 +4206,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -4232,24 +4232,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -4262,24 +4262,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -4288,24 +4288,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -4314,24 +4314,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -4343,24 +4343,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]
@@ -4371,25 +4371,25 @@ const TestTrainingSections = {
                         [
                             {
                                 type: "SWR1",
-                                length: 3,
+                                numOfWeeks: 3,
                                 repeat: 0,
                                 cardioType: "ZONE_2"
                             },
                             {
                                 type: "SWR2",
-                                length: 3,
+                                numOfWeeks: 3,
                                 repeat: 0,
                                 cardioType: "ZONE_1"
                             },
                             {
                                 type: "MAX",
-                                length: 3,
+                                numOfWeeks: 3,
                                 repeat: 0,
                                 cardioType: "ZONE_2"
                             },
                             {
                                 type: "SA",
-                                length: 1,
+                                numOfWeeks: 1,
                                 repeat: 0,
                                 cardioType: "ZONE_1_LAKTAT"
                             }
@@ -4397,44 +4397,44 @@ const TestTrainingSections = {
                     /*home: [
                             {
                                 type: "SWR1KG",
-                                length: 3,
+                                numOfWeeks: 3,
                                 repeat: 0
                             },
                             {
                                 type: "SWR2KG",
-                                length: 3,
+                                numOfWeeks: 3,
                                 repeat: 0
                             },
                             {
                                 type: "MAX",
-                                length: 3,
+                                numOfWeeks: 3,
                                 repeat: 0
                             },
                             {
                                 type: "SA",
-                                length: 1,
+                                numOfWeeks: 1,
                                 repeat: 0
                             }
                         ],
                         cardio: [
                             {
                                 type: "ZONE_2",
-                                length: 3,
+                                numOfWeeks: 3,
                                 repeat: 0
                             },
                             {
                                 type: "ZONE_1",
-                                length: 3,
+                                numOfWeeks: 3,
                                 repeat: 0
                             },
                             {
                                 type: "ZONE_2",
-                                length: 2,
+                                numOfWeeks: 2,
                                 repeat: 0
                             },
                             {
                                 type: "ZONE_1_LAKTAT",
-                                length: 2,
+                                numOfWeeks: 2,
                                 repeat: 0
                             }
                         ]
@@ -4443,24 +4443,24 @@ const TestTrainingSections = {
                         studio: [
                             {
                                 type: "SWR1",
-                                length: 0,
+                                numOfWeeks: 0,
                                 repeat: 0
                             },
                             {
                                 type: "",
-                                length: 0,
+                                numOfWeeks: 0,
                                 repeat: 0
                             }
                         ],
                         home: [
                             {
                                 type: "SWR1KG",
-                                length: 0,
+                                numOfWeeks: 0,
                                 repeat: 0
                             },
                             {
                                 type: "",
-                                length: 0,
+                                numOfWeeks: 0,
                                 repeat: 0
                             }
                         ]
@@ -4470,24 +4470,24 @@ const TestTrainingSections = {
                     field: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ],
                     goal: [
                         {
                             type: "SWR1",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         },
                         {
                             type: "",
-                            length: 0,
+                            numOfWeeks: 0,
                             repeat: 0
                         }
                     ]

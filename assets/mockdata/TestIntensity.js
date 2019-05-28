@@ -1,4 +1,4 @@
-TestIntensity = {
+const TestIntensity = {
     SWR1: {
         weight: {
             startValue: {
@@ -232,3 +232,5 @@ TestIntensity = {
         }
     }
 };
+
+export default TestIntensity;

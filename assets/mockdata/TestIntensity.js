@@ -72,7 +72,6 @@ const TestIntensity = {
             }
         }
     },
-    //TODO == SWR2KG  !?
     SWR1KG: {
         weight: {
             startValue: {
@@ -226,6 +225,84 @@ const TestIntensity = {
                         TOO_EASY: 15,
                         SUCCEEDED: 10,
                         TOO_HARD: -10
+                    }
+                }
+            }
+        }
+    },
+    SWR2KG: {
+        weight: {
+            startValue: {
+                default: {}
+            },
+            targetValue: {
+                default: {}
+            }
+        },
+        repetition: {
+            startValue: {
+                default: 6
+            },
+            targetValue: {
+                default: 20
+            },
+            adjustment: {
+                default: {
+                    beginner: {
+                        TOO_EASY: 2,
+                        SUCCEEDED: 1,
+                        TOO_HARD: -2
+                    },
+                    advanced: {
+                        TOO_EASY: 3,
+                        SUCCEEDED: 2,
+                        TOO_HARD: -2
+                    },
+                    professional: {
+                        TOO_EASY: 4,
+                        SUCCEEDED: 2,
+                        TOO_HARD: -2
+                    }
+                },
+                k: {
+                    default: {
+                        TOO_EASY: 2,
+                        SUCCEEDED: 1,
+                        TOO_HARD: -3
+                    }
+                }
+            }
+        },
+        duration: {
+            startValue: {
+                default: 25
+            },
+            targetValue: {
+                default: 80
+            },
+            adjustment: {
+                default: {
+                    beginner: {
+                        TOO_EASY: 10,
+                        SUCCEEDED: 10,
+                        TOO_HARD: -10
+                    },
+                    advanced: {
+                        TOO_EASY: 15,
+                        SUCCEEDED: 10,
+                        TOO_HARD: -10
+                    },
+                    professional: {
+                        TOO_EASY: 20,
+                        SUCCEEDED: 10,
+                        TOO_HARD: -10
+                    }
+                },
+                k: {
+                    default: {
+                        TOO_EASY: 10,
+                        SUCCEEDED: 5,
+                        TOO_HARD: -15
                     }
                 }
             }

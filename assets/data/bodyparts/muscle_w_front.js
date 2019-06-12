@@ -6,7 +6,8 @@ const muscleWFront = [
         top: 0.7,
         right: 0.35,
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/schienbein_li.png")
+        image: require("../../img/bodyparts/muscle_w_front/schienbein_li.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/schienbein_li.png")
     },
     {
         name: "HERZ",
@@ -15,7 +16,8 @@ const muscleWFront = [
         top: 0.21,
         left: 0.15,
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/herz.png")
+        image: require("../../img/bodyparts/muscle_w_front/herz.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/herz.png")
     },
     {
         name: "WADEN",
@@ -25,7 +27,8 @@ const muscleWFront = [
         left: 0.41,
         transform: [{ rotate: "18deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/waden.png")
+        image: require("../../img/bodyparts/muscle_w_front/waden.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/waden.png")
     },
     {
         name: "OBERSCHENKELVORDERSEITE_RECHTS",
@@ -35,7 +38,8 @@ const muscleWFront = [
         left: 0.41,
         transform: [{ rotate: "10deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/oberschenkelvorderseite_re.png")
+        image: require("../../img/bodyparts/muscle_w_front/oberschenkelvorderseite_re.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/oberschenkelvorderseite_re.png")
     },
     {
         name: "INNERE_OBERSCHENKELMUSKULATUR",
@@ -45,7 +49,8 @@ const muscleWFront = [
         right: 0.47,
         transform: [{ rotate: "6deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/innereOberschenkelmuskulatur.png")
+        image: require("../../img/bodyparts/muscle_w_front/innereOberschenkelmuskulatur.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/innereOberschenkelmuskulatur.png")
     },
     {
         name: "OBERSCHENKELVORDERSEITE_LINKS",
@@ -55,7 +60,8 @@ const muscleWFront = [
         right: 0.37,
         transform: [{ rotate: "-8deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/oberschenkelvorderseite_li.png")
+        image: require("../../img/bodyparts/muscle_w_front/oberschenkelvorderseite_li.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/oberschenkelvorderseite_li.png")
     },
     {
         name: "AEUSSERE_OBERSCHENKELMUSKULATUR",
@@ -65,7 +71,8 @@ const muscleWFront = [
         right: 0.317,
         transform: [{ rotate: "-8deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/aeussereOberschenkelmuskulatur.png")
+        image: require("../../img/bodyparts/muscle_w_front/aeussereOberschenkelmuskulatur.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/aeussereOberschenkelmuskulatur.png")
     },
     {
         name: "GERADE_BAUCHMUSKELN",
@@ -74,7 +81,8 @@ const muscleWFront = [
         top: 0.33,
         left: 0.513,
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/geradeBauchmuskeln.png")
+        image: require("../../img/bodyparts/muscle_w_front/geradeBauchmuskeln.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/geradeBauchmuskeln.png")
     },
     {
         name: "SEITLICHE_BAUCHMUSKELN",
@@ -84,7 +92,8 @@ const muscleWFront = [
         right: 0.352,
         backgroundColor: "rgba(0,0,0,0)",
         transform: [{ rotate: "10deg" }],
-        image: require("../../img/bodyparts/muscle_w_front/seitlicheBauchmuskeln.png")
+        image: require("../../img/bodyparts/muscle_w_front/seitlicheBauchmuskeln.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/seitlicheBauchmuskeln.png")
     },
     {
         name: "SEITLICHE_BAUCHMUSKELN",
@@ -102,7 +111,8 @@ const muscleWFront = [
         top: 0.24,
         right: 0.35,
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/brust.png")
+        image: require("../../img/bodyparts/muscle_w_front/brust.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/brust.png")
     },
     {
         name: "NACKEN",
@@ -111,7 +121,8 @@ const muscleWFront = [
         top: 0.16,
         left: 0.534,
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/nacken.png")
+        image: require("../../img/bodyparts/muscle_w_front/nacken.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/nacken.png")
     },
     {
         name: "SCHULTER_RECHTS",
@@ -121,7 +132,8 @@ const muscleWFront = [
         left: 0.445,
         transform: [{ rotate: "53deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/schulter_re.png")
+        image: require("../../img/bodyparts/muscle_w_front/schulter_re.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/schulter_re.png")
     },
     {
         name: "SCHULTER_LINKS",
@@ -131,7 +143,8 @@ const muscleWFront = [
         right: 0.275,
         transform: [{ rotate: "-53deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/schulter_li.png")
+        image: require("../../img/bodyparts/muscle_w_front/schulter_li.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/schulter_li.png")
     },
     {
         name: "BIZEPS_RECHTS",
@@ -141,7 +154,8 @@ const muscleWFront = [
         left: 0.412,
         transform: [{ rotate: "20deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/bizeps_re.png")
+        image: require("../../img/bodyparts/muscle_w_front/bizeps_re.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/bizeps_re.png")
     },
     {
         name: "BIZEPS_LINKS",
@@ -151,7 +165,8 @@ const muscleWFront = [
         right: 0.26,
         transform: [{ rotate: "-5deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/bizeps_li.png")
+        image: require("../../img/bodyparts/muscle_w_front/bizeps_li.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/bizeps_li.png")
     },
     {
         name: "HANDGELENKSBEUGER_RECHTS",
@@ -161,7 +176,8 @@ const muscleWFront = [
         left: 0.371,
         transform: [{ rotate: "20deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/handgelenksbeuger_re.png")
+        image: require("../../img/bodyparts/muscle_w_front/handgelenksbeuger_re.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/handgelenksbeuger_re.png")
     },
     {
         name: "HANDGELENKSBEUGER_LINKS",
@@ -171,7 +187,8 @@ const muscleWFront = [
         right: 0.248,
         transform: [{ rotate: "-10deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/handgelenksbeuger_li.png")
+        image: require("../../img/bodyparts/muscle_w_front/handgelenksbeuger_li.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/handgelenksbeuger_li.png")
     },
     {
         name: "FINGER_HANDGELENKSMUSKULATUR_RECHTS",
@@ -181,7 +198,8 @@ const muscleWFront = [
         left: 0.305,
         transform: [{ rotate: "25deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/fingerHandgelenksmuskulatur_re.png")
+        image: require("../../img/bodyparts/muscle_w_front/fingerHandgelenksmuskulatur_re.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/fingerHandgelenksmuskulatur_re.png")
     },
     {
         name: "FINGER_HANDGELENKSMUSKULATUR_LINKS",
@@ -191,7 +209,8 @@ const muscleWFront = [
         right: 0.2,
         transform: [{ rotate: "-25deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/fingerHandgelenksmuskulatur_li.png")
+        image: require("../../img/bodyparts/muscle_w_front/fingerHandgelenksmuskulatur_li.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_w_front/fingerHandgelenksmuskulatur_li.png")
     }
 ];
 export { muscleWFront };

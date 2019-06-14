@@ -282,8 +282,16 @@
   "BLACK_ROLL": "black roll",
   "BLACK_ROLL_BALL": "black roll ball",
   "BLACK_BALL": "black roll ball",
+  "MEDICINE_BALL_JUMPING": "jumping medicine ball",
   "MEDICINE_BALL": "medicine ball",
   "MED_BALL": "medicine ball",
   "BARBELL": "barbell",
-  "DUMBBELL": "dumbbell"
+  "DUMBBELL": "dumbbell",
+  "BARBELL_BENCH": "barbell bench",
+  "ADJUSTABLE_BENCH": "adjustable bench",
+  "CHAIR":  "chair",
+  "EXERCISING_BENCH": "exercising bench",
+  "PARK_BENCH": "park bench",
+  "BOX_LOW": "low box",
+  "HANDBALL": "handball"
 }

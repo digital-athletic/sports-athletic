@@ -282,8 +282,16 @@
   "BLACK_ROLL": "Black Roll",
   "BLACK_ROLL_BALL": "Black Roll Ball",
   "BLACK_BALL": "Black Roll Ball",
+  "MEDICINE_BALL_JUMPING": "springender Medizinball",
   "MEDICINE_BALL": "Medizinball",
   "MED_BALL": "Medizinball",
   "BARBELL": "Langhantel",
-  "DUMBBELL": "Kurzhantel"
+  "DUMBBELL": "Kurzhantel",
+  "BARBELL_BENCH": "Langhantelbank",
+  "ADJUSTABLE_BENCH": "Verstellbare Bank",
+  "CHAIR":  "Stuhl",
+  "EXERCISING_BENCH": "Trainingsbank",
+  "PARK_BENCH": "Parkbank",
+  "BOX_LOW": "Niedriger Kasten",
+  "HANDBALL": "Handball"
 }

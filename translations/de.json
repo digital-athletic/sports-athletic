@@ -1,5 +1,6 @@
 {
-  "INITIALIZING": "Orient verstecken",
+  "INITIALIZING": "Initialisieren",
+  "WHY_NOT_ORIENT": "Der Orient ist bereits versteckt",
   "WELCOME": "Willkommen",
   "LOGIN": "Login",
   "START_NOW": "Jetzt starten",

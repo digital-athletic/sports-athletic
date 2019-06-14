@@ -310,5 +310,7 @@
   "EXERCISING_BENCH": "Trainingsbank",
   "PARK_BENCH": "Parkbank",
   "BOX_LOW": "Niedriger Kasten",
-  "HANDBALL": "Handball"
+  "HANDBALL": "Handball",
+  "PREPARING_TRAINING": "Training wird vorbereitet",
+  "BREAK": "Pause"
 }

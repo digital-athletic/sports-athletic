@@ -310,5 +310,7 @@
   "EXERCISING_BENCH": "exercising bench",
   "PARK_BENCH": "park bench",
   "BOX_LOW": "low box",
-  "HANDBALL": "handball"
+  "HANDBALL": "handball",
+  "PREPARING_TRAINING": "preparing training",
+  "BREAK": "Break"
 }

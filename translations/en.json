@@ -315,5 +315,7 @@
   "PREPARING_TRAINING": "preparing training",
   "BREAK": "Break",
   "ERROR_TITLE_WRONG_OR_NO_PASSWORT": "Wrong password",
-  "ERROR_MESSAGE_WRONG_OR_NO_PASSWORT": "You entered a wrong password. Please try again or login with Google/Facebook."
+  "ERROR_MESSAGE_WRONG_OR_NO_PASSWORT": "You entered a wrong password. Please try again or login with Google/Facebook.",
+  "ERROR_TITLE_EMAIL_IN_USE": "E-Mail address in use",
+  "ERROR_MESSAGE_EMAIL_IN_USE": "Unfortunately, there is already a user with this e-mail address. Would you like to log in instead?"
 }

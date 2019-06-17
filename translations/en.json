@@ -313,5 +313,7 @@
   "BOX_LOW": "low box",
   "HANDBALL": "handball",
   "PREPARING_TRAINING": "preparing training",
-  "BREAK": "Break"
+  "BREAK": "Break",
+  "ERROR_TITLE_WRONG_OR_NO_PASSWORT": "Wrong password",
+  "ERROR_MESSAGE_WRONG_OR_NO_PASSWORT": "You entered a wrong password. Please try again or login with Google/Facebook."
 }

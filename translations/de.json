@@ -313,5 +313,9 @@
   "BOX_LOW": "Niedriger Kasten",
   "HANDBALL": "Handball",
   "PREPARING_TRAINING": "Training wird vorbereitet",
-  "BREAK": "Pause"
+  "BREAK": "Pause",
+  "ERROR_TITLE_WRONG_OR_NO_PASSWORT": "Falsches Passwort",
+  "ERROR_MESSAGE_WRONG_OR_NO_PASSWORT": "Das Passwort ist leider nicht korrekt. Entweder du hast ein falsches Passwort eingegeben oder du hast dich per Google/Facebook registriert?",
+  "ERROR_TITLE_EMAIL_IN_USE": "E-Mail Adresse vergeben",
+  "ERROR_MESSAGE_EMAIL_IN_USE": "Leider existiert schon ein Nutzer mit dieser E-Mail Adresse. Möchtest du dich statt dessen einloggen?"
 }

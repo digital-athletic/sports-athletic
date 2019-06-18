@@ -7,7 +7,8 @@ const muscleMBack = [
         right: 0.28,
         transform: [{ rotate: "-10deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/wade_re.png")
+        image: require("../../img/bodyparts/muscle_m_back/wade_re.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/wade_re.png")
     },
     {
         name: "WADE_LINKS",
@@ -16,7 +17,8 @@ const muscleMBack = [
         top: 0.69,
         left: 0.32,
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/wade_li.png")
+        image: require("../../img/bodyparts/muscle_m_back/wade_li.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/wade_li.png")
     },
     {
         name: "OBERSCHENKEL_HINTEN_RECHTS",
@@ -26,7 +28,8 @@ const muscleMBack = [
         right: 0.367,
         transform: [{ rotate: "-16deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/oberschenkel_re.png")
+        image: require("../../img/bodyparts/muscle_m_back/oberschenkel_re.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/oberschenkel_re.png")
     },
     {
         name: "OBERSCHENKEL_HINTEN_LINKS",
@@ -35,7 +38,8 @@ const muscleMBack = [
         top: 0.53,
         left: 0.31,
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/oberschenkel_li.png")
+        image: require("../../img/bodyparts/muscle_m_back/oberschenkel_li.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/oberschenkel_li.png")
     },
     {
         name: "INNERER_OBERSCHENKEL_HINTEN_LINKS",
@@ -45,7 +49,8 @@ const muscleMBack = [
         right: 0.54,
         transform: [{ rotate: "6deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/innererOberschenkel_hinten_li.png")
+        image: require("../../img/bodyparts/muscle_m_back/innererOberschenkel_hinten_li.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/innererOberschenkel_hinten_li.png")
     },
     {
         name: "AEUSSERER_OBERSCHENKEL_HINTEN_RECHTS",
@@ -55,7 +60,8 @@ const muscleMBack = [
         right: 0.33,
         transform: [{ rotate: "-15deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/aeußererOberschenkel_hinten_re.png")
+        image: require("../../img/bodyparts/muscle_m_back/aeußererOberschenkel_hinten_re.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/aeußererOberschenkel_hinten_re.png")
     },
     {
         name: "GESAESS",
@@ -65,7 +71,8 @@ const muscleMBack = [
         left: 0.357,
         transform: [{ rotate: "12deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/gesaeß.png")
+        image: require("../../img/bodyparts/muscle_m_back/gesaeß.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/gesaeß.png")
     },
     {
         name: "UNTERER_RUECKEN",
@@ -76,7 +83,8 @@ const muscleMBack = [
         left: 0.43,
         transform: [{ rotate: "109deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/untererRuecken.png")
+        image: require("../../img/bodyparts/muscle_m_back/untererRuecken.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/untererRuecken.png")
     },
     {
         name: "GROSSER_RUECKENMUSKEL_LAT_LINKS",
@@ -86,7 +94,8 @@ const muscleMBack = [
         left: 0.36,
         transform: [{ rotate: "-10deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/großerRueckenmuskel_lat.png")
+        image: require("../../img/bodyparts/muscle_m_back/großerRueckenmuskel_lat.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/großerRueckenmuskel_lat.png")
     },
     {
         name: "GROSSER_RUECKENMUSKEL_LAT_RECHTS",
@@ -96,7 +105,8 @@ const muscleMBack = [
         right: 0.392,
         transform: [{ rotate: "30deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/großerRueckenmuskel_lat.png")
+        image: require("../../img/bodyparts/muscle_m_back/großerRueckenmuskel_lat.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/großerRueckenmuskel_lat.png")
     },
     {
         name: "OBERER_RUECKEN",
@@ -106,7 +116,8 @@ const muscleMBack = [
         left: 0.384,
         transform: [{ rotate: "-5deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/obererRuecken.png")
+        image: require("../../img/bodyparts/muscle_m_back/obererRuecken.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/obererRuecken.png")
     },
     {
         name: "OBERER_RUECKEN",
@@ -125,7 +136,8 @@ const muscleMBack = [
         left: 0.388,
         transform: [{ rotate: "-5deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/nacken.png")
+        image: require("../../img/bodyparts/muscle_m_back/nacken.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/nacken.png")
     },
     {
         name: "SCHULTER_LINKS",
@@ -135,7 +147,8 @@ const muscleMBack = [
         left: 0.28,
         transform: [{ rotate: "-38deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/schulter_li.png")
+        image: require("../../img/bodyparts/muscle_m_back/schulter_li.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/schulter_li.png")
     },
     {
         name: "SCHULTER_RECHTS",
@@ -145,7 +158,8 @@ const muscleMBack = [
         right: 0.31,
         transform: [{ rotate: "38deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/schulter_re.png")
+        image: require("../../img/bodyparts/muscle_m_back/schulter_re.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/schulter_re.png")
     },
     {
         name: "ARMSTRECKER_LINKS",
@@ -155,7 +169,8 @@ const muscleMBack = [
         left: 0.25,
         transform: [{ rotate: "20deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/armstrecker_li.png")
+        image: require("../../img/bodyparts/muscle_m_back/armstrecker_li.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/armstrecker_li.png")
     },
     {
         name: "ARMSTRECKER_RECHTS",
@@ -165,7 +180,8 @@ const muscleMBack = [
         right: 0.28,
         transform: [{ rotate: "-20deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/armstrecker_re.png")
+        image: require("../../img/bodyparts/muscle_m_back/armstrecker_re.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/armstrecker_re.png")
     },
     {
         name: "HANDGELENKSSTRECKER_LINKS",
@@ -175,7 +191,8 @@ const muscleMBack = [
         left: 0.19,
         transform: [{ rotate: "20deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/handgelenksstrecker_li.png")
+        image: require("../../img/bodyparts/muscle_m_back/handgelenksstrecker_li.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/handgelenksstrecker_li.png")
     },
     {
         name: "HANDGELENKSSTRECKER_RECHTS",
@@ -185,7 +202,8 @@ const muscleMBack = [
         right: 0.25,
         transform: [{ rotate: "-20deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/handgelenksstrecker_re.png")
+        image: require("../../img/bodyparts/muscle_m_back/handgelenksstrecker_re.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/handgelenksstrecker_re.png")
     },
     {
         name: "FINGER_HANDGELENKSMUSKULATUR_LINKS",
@@ -195,7 +213,8 @@ const muscleMBack = [
         left: 0.15,
         transform: [{ rotate: "20deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/finger_handgelenksmuskulatur_li.png")
+        image: require("../../img/bodyparts/muscle_m_back/finger_handgelenksmuskulatur_li.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/finger_handgelenksmuskulatur_li.png")
     },
     {
         name: "FINGER_HANDGELENKSMUSKULATUR_RECHTS",
@@ -205,7 +224,8 @@ const muscleMBack = [
         right: 0.23,
         transform: [{ rotate: "-20deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/finger_handgelenksmuskulatur_re.png")
+        image: require("../../img/bodyparts/muscle_m_back/finger_handgelenksmuskulatur_re.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/finger_handgelenksmuskulatur_re.png")
     }
 ];
 export { muscleMBack };

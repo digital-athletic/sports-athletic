@@ -28,6 +28,13 @@ const TestTagsByDurationForSkill = {
             }
         }
     },
+    GKS: {
+        default: {
+            5: {
+                unterkoerper: 2
+            }
+        }
+    },
     CD: {
         default: {
             5: {
@@ -78,6 +85,26 @@ const TestTagsByDurationForSkill = {
             }
         }
     },
+    ZONE_4: {
+        default: {
+            15: {
+                cardio4: 3
+            },
+            30: {
+                cardio4: 3
+            }
+        }
+    },
+    ZONE_3: {
+        default: {
+            15: {
+                cardio3: 3
+            },
+            30: {
+                cardio3: 3
+            }
+        }
+    },
     ZONE_2: {
         default: {
             15: {
@@ -98,7 +125,17 @@ const TestTagsByDurationForSkill = {
             }
         }
     },
-    ZONE_1_LAKTAT: {
+    ZONE_1L: {
+        default: {
+            15: {
+                cardio1: 3
+            },
+            30: {
+                cardio1: 3
+            }
+        }
+    },
+    ZONE_1K: {
         default: {
             15: {
                 cardio1: 3

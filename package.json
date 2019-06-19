@@ -15,6 +15,7 @@
     "react": "16.6.1",
     "react-native": "0.57.5",
     "react-native-amplitude-analytics": "0.2.6",
+    "react-native-branch": "2.3.5",
     "react-native-datepicker": "1.7.2",
     "react-native-device-info": "2.0.0",
     "react-native-email": "1.0.2",

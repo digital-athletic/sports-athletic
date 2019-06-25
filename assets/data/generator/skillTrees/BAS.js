@@ -1,11 +1,11 @@
 const BAS = {
-    548: {
+    "548": {
         tags: [
             "SKILL_STABILITY_LEG",
-            "EQ_KG",
+            "EQTYPE_KG",
             "SIDE_BOTH",
             "MUSCLEINVOLVEMENT_COMPLEX",
-            "REGION_UNTERKOERPER",
+            "REGION_UNTERRKOERPER",
             "EXERCISEDIRECTION_KNEE",
             "SEASONPHASE_PREPATORY",
             "SEASONPHASE_COMPETITION",
@@ -14,25 +14,28 @@ const BAS = {
             "PLACE_STUDIO",
             "PLACE_HOME",
             "PLACE_OUTSIDE",
-            "MUSCLE_HUEFT_AUSSEN_ROTATOR",
             "MUSCLE_OBERSCHENKELVORDERSEITE",
             "MUSCLE_GESAESS",
+            "MUSCLE_HINTERER_OBERSCHENKEL",
             "MUSCLE_INNERER_OBERSCHENKEL",
             "MUSCLE_AEUSSERER_OBERSCHENKEL",
             "MUSCLE_WADE",
+            "MUSCLESECONDARY_UNTERER_RUECKEN",
+            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
             "BLOCK_KNIE",
             "BLOCK_SPRUNGGELENK",
             "BLOCK_HUEFTE"
         ],
         levels: { "1": { id: 529 }, "2": { id: 530 }, "3": { id: 531 } }
     },
-    549: {
+    "549": {
         tags: [
             "SKILL_STABILITY_LEG",
-            "EQ_KG",
+            "EQTYPE_KG",
             "SIDE_BOTH",
             "MUSCLEINVOLVEMENT_COMPLEX",
-            "REGION_UNTERKOERPER",
+            "REGION_UNTERRKOERPER",
             "EXERCISEDIRECTION_KNEE",
             "SEASONPHASE_PREPATORY",
             "SEASONPHASE_COMPETITION",
@@ -41,35 +44,28 @@ const BAS = {
             "PLACE_STUDIO",
             "PLACE_HOME",
             "PLACE_OUTSIDE",
-            "MUSCLE_HUEFT_AUSSEN_ROTATOR",
             "MUSCLE_OBERSCHENKELVORDERSEITE",
             "MUSCLE_GESAESS",
+            "MUSCLE_HINTERER_OBERSCHENKEL",
             "MUSCLE_INNERER_OBERSCHENKEL",
             "MUSCLE_AEUSSERER_OBERSCHENKEL",
             "MUSCLE_WADE",
+            "MUSCLESECONDARY_UNTERER_RUECKEN",
+            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
             "BLOCK_KNIE",
             "BLOCK_SPRUNGGELENK",
-            "BLOCK_HUEFTE",
-            "SKILL_STABILITY_BODY",
-            "EQ_MED_BALL",
-            "SIDE_ONE",
-            "REGION_GANZKOERPER",
-            "EQ_MEDICINE_BALL",
-            "EQ_MEDICINE_BALL_JUMPING",
-            "MUSCLE_SPRUNGGELENK",
-            "PAIN_WIRBELSAEULE",
-            "PAIN_HIP",
-            "PAIN_SPRUNGGELENK"
+            "BLOCK_HUEFTE"
         ],
         levels: { "1": { id: 532 }, "2": { id: 533 }, "3": { id: 534 } }
     },
-    550: {
+    "550": {
         tags: [
             "SKILL_STABILITY_LEG",
-            "EQ_MED_BALL",
+            "EQTYPE_EQUIPMENT",
             "SIDE_ONE",
             "MUSCLEINVOLVEMENT_COMPLEX",
-            "REGION_UNTERKOERPER",
+            "REGION_UNTERRKOERPER",
             "SEASONPHASE_PREPATORY",
             "SEASONPHASE_COMPETITION",
             "SEASONPHASE_PAUSE",
@@ -77,24 +73,30 @@ const BAS = {
             "PLACE_HOME",
             "PLACE_OUTSIDE",
             "EQ_HANDBALL",
-            "MUSCLE_HUEFT_BEUGER",
             "MUSCLE_HUEFT_INNEN_ROTATOR",
-            "MUSCLE_OBERSCHENKELVORDERSEITE",
+            "MUSCLE_HUEFT_AUSSEN_ROTATOR",
+            "MUSCLE_GESAESS",
             "MUSCLE_SPRUNGGELENK",
-            "SKILL_STABILITY_BODY",
-            "REGION_GANZKOERPER",
-            "EQ_BOTTLE",
-            "MUSCLE_SCHULTER"
+            "MUSCLESECONDARY_SCHULTER_VORNE",
+            "MUSCLESECONDARY_ARMSTRECKER",
+            "MUSCLESECONDARY_BRUST",
+            "MUSCLESECONDARY_SCHULTERBLATT_FIXIEREND_HINTEN",
+            "MUSCLESECONDARY_SCHULTERBLATT_FIXIEREND_FRONT",
+            "MUSCLESECONDARY_UNTERER_RUECKEN",
+            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
+            "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL"
         ],
         levels: { "1": { id: 238 }, "2": { id: 239 }, "3": { id: 240 } }
     },
-    551: {
+    "551": {
         tags: [
             "SKILL_STABILITY_LEG",
-            "EQ_MED_BALL",
+            "EQTYPE_EQUIPMENT",
             "SIDE_ONE",
             "MUSCLEINVOLVEMENT_COMPLEX",
-            "REGION_UNTERKOERPER",
+            "REGION_UNTERRKOERPER",
             "EXERCISEDIRECTION_HIP",
             "SEASONPHASE_PREPATORY",
             "SEASONPHASE_COMPETITION",
@@ -103,42 +105,51 @@ const BAS = {
             "PLACE_HOME",
             "PLACE_OUTSIDE",
             "EQ_HANDBALL",
-            "MUSCLE_OBERSCHENKELVORDERSEITE",
+            "MUSCLE_GESAESS",
+            "MUSCLESECONDARY_UNTERER_RUECKEN",
+            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_HUEFT_BEUGER",
+            "MUSCLESECONDARY_HINTERER_OBERSCHENKEL",
+            "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
+            "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL",
+            "MUSCLESECONDARY_SCHIENBEIN",
             "MUSCLE_WADE"
         ],
         levels: { "1": { id: 243 }, "2": { id: 244 }, "3": { id: 245 } }
     },
-    552: {
+    "552": {
         tags: [
             "SKILL_STABILITY_LEG",
-            "EQ_KG",
+            "EQTYPE_KG",
             "SIDE_BOTH",
             "MUSCLEINVOLVEMENT_COMPLEX",
-            "REGION_UNTERKOERPER",
+            "REGION_UNTERRKOERPER",
             "EXERCISEDIRECTION_KNEE",
             "SEASONPHASE_PREPATORY",
             "SEASONPHASE_COMPETITION",
             "SEASONPHASE_PAUSE",
             "PLACE_HALL",
-            "PLACE_STUDIO",
-            "PLACE_HOME",
-            "PLACE_OUTSIDE",
-            "MUSCLE_HUEFT_AUSSEN_ROTATOR",
+            "EQ_HANDBALL",
             "MUSCLE_OBERSCHENKELVORDERSEITE",
             "MUSCLE_GESAESS",
+            "MUSCLE_HINTERER_OBERSCHENKEL",
             "MUSCLE_INNERER_OBERSCHENKEL",
             "MUSCLE_AEUSSERER_OBERSCHENKEL",
-            "MUSCLE_WADE"
+            "MUSCLE_WADE",
+            "MUSCLESECONDARY_UNTERER_RUECKEN",
+            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN"
         ],
         levels: { "1": { id: 528 } }
     },
-    553: {
+    "553": {
         tags: [
             "SKILL_STABILITY_LEG",
-            "EQ_KG",
+            "EQTYPE_KG",
             "SIDE_BOTH",
             "MUSCLEINVOLVEMENT_COMPLEX",
-            "REGION_UNTERKOERPER",
+            "REGION_UNTERRKOERPER",
             "EXERCISEDIRECTION_KNEE",
             "SEASONPHASE_PREPATORY",
             "SEASONPHASE_COMPETITION",
@@ -147,17 +158,27 @@ const BAS = {
             "PLACE_STUDIO",
             "PLACE_HOME",
             "PLACE_OUTSIDE",
-            "MUSCLE_SPRUNGGELENK"
+            "MUSCLE_SPRUNGGELENK",
+            "MUSCLESECONDARY_UNTERER_RUECKEN",
+            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_OBERSCHENKELVORDERSEITE",
+            "MUSCLESECONDARY_GESAESS",
+            "MUSCLESECONDARY_HINTERER_OBERSCHENKEL",
+            "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
+            "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL",
+            "MUSCLESECONDARY_WADE",
+            "MUSCLESECONDARY_HUEFT_BEUGER"
         ],
         levels: { "1": { id: 199 }, "2": { id: 200 }, "3": { id: 201 } }
     },
-    554: {
+    "554": {
         tags: [
             "SKILL_STABILITY_LEG",
-            "EQ_KG",
+            "EQTYPE_KG",
             "SIDE_BOTH",
             "MUSCLEINVOLVEMENT_COMPLEX",
-            "REGION_UNTERKOERPER",
+            "REGION_UNTERRKOERPER",
             "EXERCISEDIRECTION_KNEE",
             "SEASONPHASE_PREPATORY",
             "SEASONPHASE_COMPETITION",
@@ -166,7 +187,17 @@ const BAS = {
             "PLACE_STUDIO",
             "PLACE_HOME",
             "PLACE_OUTSIDE",
-            "MUSCLE_SPRUNGGELENK"
+            "MUSCLE_SPRUNGGELENK",
+            "MUSCLESECONDARY_UNTERER_RUECKEN",
+            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_OBERSCHENKELVORDERSEITE",
+            "MUSCLESECONDARY_GESAESS",
+            "MUSCLESECONDARY_HINTERER_OBERSCHENKEL",
+            "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
+            "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL",
+            "MUSCLESECONDARY_WADE",
+            "MUSCLESECONDARY_HUEFT_BEUGER"
         ],
         levels: { "1": { id: 202 }, "2": { id: 203 }, "3": { id: 204 } }
     }

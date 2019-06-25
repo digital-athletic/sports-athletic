@@ -1,11 +1,13 @@
 const CD = {
     "489": {
         tags: [
+            "PREVENTION_SCHULTER",
+            "SKILL_COOL_DOWN",
             "SKILL_MOBILITY",
-            "EQ_KG",
+            "EQTYPE_KG",
             "SIDE_ONE",
             "MUSCLEINVOLVEMENT_ISOLATED",
-            "REGION_UNTERKOERPER",
+            "REGION_OBERKOERPER",
             "EXERCISEDIRECTION_UNTERKOERPER",
             "SEASONPHASE_PREPATORY",
             "SEASONPHASE_COMPETITION",
@@ -14,10 +16,14 @@ const CD = {
             "PLACE_STUDIO",
             "PLACE_HOME",
             "PLACE_OUTSIDE",
-            "MUSCLE_WADE",
-            "MUSCLE_SPRUNGGELENK",
-            "MUSCLE_SCHIENBEIN",
-            "PAIN_SPRUNGGELENK"
+            "MUSCLE_SCHULTER",
+            "MUSCLE_SCHULTERBLATT_FIXIEREND_HINTEN",
+            "MUSCLESECONDARY_SCHULTERBLATT_FIXIEREND_FRONT",
+            "MUSCLESECONDARY_UNTERER_RUECKEN",
+            "MUSCLESECONDARY_GESAESS",
+            "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL",
+            "PAIN_SCHULTER",
+            "PAIN_WIRBELSAEULE"
         ],
         levels: { "1": { id: 126 } }
     },
@@ -26,35 +32,7 @@ const CD = {
             "SKILL_WARM_UP",
             "SKILL_COOL_DOWN",
             "SKILL_MOBILITY",
-            "EQ_KG",
-            "SIDE_BOTH",
-            "MUSCLEINVOLVEMENT_COMPLEX",
-            "REGION_GANZKOERPER",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "SEASONPHASE_PAUSE",
-            "PLACE_HALL",
-            "PLACE_STUDIO",
-            "PLACE_HOME",
-            "PLACE_OUTSIDE",
-            "MUSCLE_FINGER_HANDGELENKSMUSKULATUR",
-            "MUSCLE_SCHULTERBLATT_FIXIEREND_FRONT",
-            "MUSCLE_GERADE_BAUCHMUSKELN",
-            "MUSCLE_SEITLICHE_BAUCHMUSKELN",
-            "MUSCLE_HUEFT_AUSSEN_ROTATOR",
-            "MUSCLE_OBERSCHENKELVORDERSEITE",
-            "MUSCLE_GESAESS",
-            "MUSCLE_INNERER_OBERSCHENKEL",
-            "MUSCLE_WADE",
-            "PAIN_WIRBELSAEULE",
-            "PAIN_HIP"
-        ],
-        levels: { "1": { id: 405 } }
-    },
-    "491": {
-        tags: [
-            "SKILL_BLACK_ROLL",
-            "EQ_MED_BALL",
+            "EQTYPE_KG",
             "SIDE_ONE",
             "MUSCLEINVOLVEMENT_ISOLATED",
             "REGION_OBERKOERPER",
@@ -66,8 +44,34 @@ const CD = {
             "PLACE_STUDIO",
             "PLACE_HOME",
             "PLACE_OUTSIDE",
-            "EQ_BLACK_BALL",
-            "MUSCLE_FINGER_HANDGELENKSMUSKULATUR",
+            "MUSCLE_BRUST",
+            "MUSCLE_UNTERER_RUECKEN",
+            "MUSCLE_SEITLICHE_BAUCHMUSKELN",
+            "MUSCLE_HUEFT_BEUGER",
+            "MUSCLE_INNERER_OBERSCHENKEL",
+            "PAIN_WIRBELSAEULE",
+            "PAIN_HUEFTE",
+            "PAIN_KNIE"
+        ],
+        levels: { "1": { id: 405 } }
+    },
+    "491": {
+        tags: [
+            "SKILL_COOL_DOWN",
+            "SKILL_MOBILITY",
+            "EQTYPE_KG",
+            "SIDE_BOTH",
+            "MUSCLEINVOLVEMENT_ISOLATED",
+            "REGION_OBERKOERPER",
+            "EXERCISEDIRECTION_UNTERKOERPER",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "SEASONPHASE_PAUSE",
+            "PLACE_HALL",
+            "PLACE_STUDIO",
+            "PLACE_HOME",
+            "PLACE_OUTSIDE",
+            "MUSCLE_SCHULTER_VORNE",
             "PAIN_SCHULTER"
         ],
         levels: { "1": { id: 773 } }
@@ -75,12 +79,11 @@ const CD = {
     "492": {
         tags: [
             "SKILL_COOL_DOWN",
-            "SKILL_MOBILITY",
-            "EQ_KG",
-            "SIDE_BOTH",
+            "EQTYPE_KG",
+            "SIDE_ONE",
             "MUSCLEINVOLVEMENT_ISOLATED",
-            "REGION_OBERKOERPER",
-            "EXERCISEDIRECTION_UNTERKOERPER",
+            "REGION_UNTERRKOERPER",
+            "EXERCISEDIRECTION_HIP",
             "SEASONPHASE_PREPATORY",
             "SEASONPHASE_COMPETITION",
             "SEASONPHASE_PAUSE",
@@ -88,18 +91,25 @@ const CD = {
             "PLACE_STUDIO",
             "PLACE_HOME",
             "PLACE_OUTSIDE",
-            "MUSCLE_SCHULTER_VORNE",
-            "PAIN_SCHULTER"
+            "MUSCLE_GROSSER_RUECKENMUSKEL_LAT",
+            "MUSCLE_UNTERER_RUECKEN",
+            "MUSCLE_GERADE_BAUCHMUSKELN",
+            "MUSCLE_SEITLICHE_BAUCHMUSKELN",
+            "MUSCLE_HUEFT_INNEN_ROTATOR",
+            "MUSCLE_HUEFT_AUSSEN_ROTATOR",
+            "PAIN_WIRBELSAEULE",
+            "PAIN_HUEFTE",
+            "PAIN_KNIE"
         ],
         levels: { "1": { id: 772 } }
     },
     "493": {
         tags: [
             "SKILL_COOL_DOWN",
-            "EQ_KG",
+            "EQTYPE_KG",
             "SIDE_ONE",
             "MUSCLEINVOLVEMENT_ISOLATED",
-            "REGION_UNTERKOERPER",
+            "REGION_UNTERRKOERPER",
             "EXERCISEDIRECTION_HIP",
             "SEASONPHASE_PREPATORY",
             "SEASONPHASE_COMPETITION",
@@ -109,41 +119,18 @@ const CD = {
             "PLACE_HOME",
             "PLACE_OUTSIDE",
             "MUSCLE_HUEFT_INNEN_ROTATOR",
-            "PAIN_HIP"
+            "PAIN_HUEFTE",
+            "PAIN_KNIE"
         ],
         levels: { "1": { id: 775 } }
     },
     "494": {
         tags: [
-            "SKILL_BLACK_ROLL",
-            "EQ_MED_BALL",
-            "SIDE_ONE",
-            "MUSCLEINVOLVEMENT_ISOLATED",
-            "REGION_UNTERKOERPER",
-            "EXERCISEDIRECTION_UNTERKOERPER",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "SEASONPHASE_PAUSE",
-            "PLACE_HALL",
-            "PLACE_STUDIO",
-            "PLACE_HOME",
-            "PLACE_OUTSIDE",
-            "EQ_TOWEL",
-            "MUSCLE_GESAESS",
-            "MUSCLE_WADE",
-            "PAIN_HIP"
-        ],
-        levels: { "1": { id: 776 } }
-    },
-    "495": {
-        tags: [
-            "PREVENTION_KNIE_HUEFTE",
             "SKILL_COOL_DOWN",
-            "SKILL_MOBILITY",
-            "EQ_KG",
+            "EQTYPE_KG",
             "SIDE_ONE",
             "MUSCLEINVOLVEMENT_ISOLATED",
-            "REGION_UNTERKOERPER",
+            "REGION_UNTERRKOERPER",
             "EXERCISEDIRECTION_HIP",
             "SEASONPHASE_PREPATORY",
             "SEASONPHASE_COMPETITION",
@@ -152,20 +139,19 @@ const CD = {
             "PLACE_STUDIO",
             "PLACE_HOME",
             "PLACE_OUTSIDE",
-            "MUSCLE_HUEFT_BEUGER",
-            "MUSCLE_HUEFT_INNEN_ROTATOR",
-            "MUSCLE_OBERSCHENKELVORDERSEITE",
-            "PAIN_HIP"
+            "MUSCLE_HUEFT_AUSSEN_ROTATOR",
+            "PAIN_HUEFTE",
+            "PAIN_KNIE"
         ],
-        levels: { "1": { id: 778 } }
+        levels: { "1": { id: 776 } }
     },
-    "496": {
+    "495": {
         tags: [
-            "SKILL_BLACK_ROLL",
-            "EQ_MED_BALL",
+            "SKILL_COOL_DOWN",
+            "EQTYPE_KG",
             "SIDE_ONE",
             "MUSCLEINVOLVEMENT_ISOLATED",
-            "REGION_OBERKOERPER",
+            "REGION_UNTERRKOERPER",
             "EXERCISEDIRECTION_UNTERKOERPER",
             "SEASONPHASE_PREPATORY",
             "SEASONPHASE_COMPETITION",
@@ -174,43 +160,44 @@ const CD = {
             "PLACE_STUDIO",
             "PLACE_HOME",
             "PLACE_OUTSIDE",
-            "EQ_BLACK_BALL",
-            "MUSCLE_SCHULTER_HINTEN",
-            "MUSCLE_NACKEN",
-            "PAIN_SCHULTER"
+            "MUSCLE_SCHIENBEIN",
+            "PAIN_SPRUNGGELENK"
+        ],
+        levels: { "1": { id: 778 } }
+    },
+    "496": {
+        tags: [
+            "PREVENTION_KNIE_HUEFTE",
+            "SKILL_COOL_DOWN",
+            "SKILL_MOBILITY",
+            "EQTYPE_KG",
+            "SIDE_ONE",
+            "MUSCLEINVOLVEMENT_ISOLATED",
+            "REGION_UNTERRKOERPER",
+            "EXERCISEDIRECTION_HIP",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "SEASONPHASE_PAUSE",
+            "PLACE_HALL",
+            "PLACE_STUDIO",
+            "PLACE_HOME",
+            "PLACE_OUTSIDE",
+            "MUSCLE_HUEFT_INNEN_ROTATOR",
+            "MUSCLE_HUEFT_AUSSEN_ROTATOR",
+            "MUSCLE_GESAESS",
+            "PAIN_HUEFTE",
+            "PAIN_KNIE"
         ],
         levels: { "1": { id: 779 } }
     },
     "497": {
         tags: [
             "SKILL_WARM_UP",
-            "EQ_KG",
+            "SKILL_COOL_DOWN",
+            "SKILL_MOBILITY",
+            "EQTYPE_KG",
             "SIDE_BOTH",
             "MUSCLEINVOLVEMENT_COMPLEX",
-            "REGION_UNTERKOERPER",
-            "EXERCISEDIRECTION_KNEE",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "SEASONPHASE_PAUSE",
-            "PLACE_HALL",
-            "PLACE_STUDIO",
-            "PLACE_HOME",
-            "PLACE_OUTSIDE",
-            "MUSCLE_HUEFT_AUSSEN_ROTATOR",
-            "MUSCLE_OBERSCHENKELVORDERSEITE",
-            "MUSCLE_GESAESS",
-            "MUSCLE_INNERER_OBERSCHENKEL",
-            "MUSCLE_AEUSSERER_OBERSCHENKEL"
-        ],
-        levels: { "1": { id: 406 } }
-    },
-    "498": {
-        tags: [
-            "SKILL_WARM_UP",
-            "SKILL_MOBILITY",
-            "EQ_KG",
-            "SIDE_BOTH",
-            "MUSCLEINVOLVEMENT_ISOLATED",
             "REGION_GANZKOERPER",
             "SEASONPHASE_PREPATORY",
             "SEASONPHASE_COMPETITION",
@@ -219,90 +206,52 @@ const CD = {
             "PLACE_STUDIO",
             "PLACE_HOME",
             "PLACE_OUTSIDE",
-            "MUSCLE_OBERER_RUECKEN",
-            "MUSCLE_SCHULTERBLATT_FIXIEREND_FRONT",
-            "MUSCLE_GERADE_BAUCHMUSKELN",
+            "MUSCLE_BRUST",
+            "MUSCLE_UNTERER_RUECKEN",
+            "MUSCLE_SEITLICHE_BAUCHMUSKELN",
             "MUSCLE_HUEFT_BEUGER",
-            "MUSCLE_HUEFT_INNEN_ROTATOR",
+            "MUSCLE_OBERSCHENKELVORDERSEITE",
+            "MUSCLE_GESAESS",
+            "MUSCLE_HINTERER_OBERSCHENKEL",
+            "MUSCLE_INNERER_OBERSCHENKEL",
+            "MUSCLE_WADE",
             "PAIN_WIRBELSAEULE",
-            "PAIN_HIP"
+            "PAIN_HUEFTE",
+            "PAIN_KNIE"
+        ],
+        levels: { "1": { id: 406 } }
+    },
+    "498": {
+        tags: [
+            "SKILL_COOL_DOWN",
+            "EQTYPE_KG",
+            "SIDE_ONE",
+            "MUSCLEINVOLVEMENT_COMPLEX",
+            "REGION_GANZKOERPER",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "SEASONPHASE_PAUSE",
+            "PLACE_HALL",
+            "PLACE_STUDIO",
+            "PLACE_HOME",
+            "PLACE_OUTSIDE",
+            "MUSCLE_GROSSER_RUECKENMUSKEL_LAT",
+            "MUSCLE_UNTERER_RUECKEN",
+            "MUSCLE_SEITLICHE_BAUCHMUSKELN",
+            "MUSCLE_GESAESS",
+            "PAIN_WIRBELSAEULE",
+            "PAIN_HUEFTE",
+            "PAIN_KNIE"
         ],
         levels: { "1": { id: 409 } }
     },
     "499": {
         tags: [
             "SKILL_COOL_DOWN",
-            "EQ_KG",
-            "SIDE_ONE",
-            "MUSCLEINVOLVEMENT_ISOLATED",
-            "REGION_UNTERKOERPER",
-            "EXERCISEDIRECTION_UNTERKOERPER",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "SEASONPHASE_PAUSE",
-            "PLACE_HALL",
-            "PLACE_STUDIO",
-            "PLACE_HOME",
-            "PLACE_OUTSIDE",
-            "MUSCLE_INNERER_OBERSCHENKEL",
-            "PAIN_HIP"
-        ],
-        levels: { "1": { id: 436 } }
-    },
-    "500": {
-        tags: [
-            "SKILL_COOL_DOWN",
-            "EQ_KG",
-            "SIDE_ONE",
-            "MUSCLEINVOLVEMENT_ISOLATED",
-            "REGION_UNTERKOERPER",
-            "EXERCISEDIRECTION_HIP",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "SEASONPHASE_PAUSE",
-            "PLACE_HALL",
-            "PLACE_STUDIO",
-            "PLACE_HOME",
-            "PLACE_OUTSIDE",
-            "MUSCLE_OBERER_RUECKEN",
-            "MUSCLE_SCHULTERBLATT_FIXIEREND_FRONT",
-            "MUSCLE_UNTERER_RUECKEN",
-            "MUSCLE_GERADE_BAUCHMUSKELN",
-            "MUSCLE_HUEFT_BEUGER",
-            "MUSCLE_HUEFT_INNEN_ROTATOR",
-            "PAIN_WIRBELSAEULE",
-            "PAIN_HIP"
-        ],
-        levels: { "1": { id: 771 } }
-    },
-    "501": {
-        tags: [
-            "SKILL_COOL_DOWN",
-            "EQ_KG",
+            "EQTYPE_KG",
             "SIDE_ONE",
             "MUSCLEINVOLVEMENT_COMPLEX",
-            "REGION_UNTERKOERPER",
-            "EXERCISEDIRECTION_UNTERKOERPER",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "SEASONPHASE_PAUSE",
-            "PLACE_HALL",
-            "PLACE_STUDIO",
-            "PLACE_HOME",
-            "PLACE_OUTSIDE",
-            "MUSCLE_OBERER_RUECKEN",
-            "MUSCLE_INNERER_OBERSCHENKEL",
-            "PAIN_HIP"
-        ],
-        levels: { "1": { id: 437 } }
-    },
-    "502": {
-        tags: [
-            "SKILL_COOL_DOWN",
-            "EQ_KG",
-            "SIDE_ONE",
-            "MUSCLEINVOLVEMENT_ISOLATED",
-            "REGION_UNTERKOERPER",
+            "REGION_UNTERRKOERPER",
             "EXERCISEDIRECTION_UNTERKOERPER",
             "SEASONPHASE_PREPATORY",
             "SEASONPHASE_COMPETITION",
@@ -312,16 +261,109 @@ const CD = {
             "PLACE_HOME",
             "PLACE_OUTSIDE",
             "EQ_TOWEL",
-            "MUSCLE_GESAESS",
+            "MUSCLE_HUEFT_BEUGER",
+            "MUSCLE_OBERSCHENKELVORDERSEITE",
             "PAIN_WIRBELSAEULE",
-            "PAIN_HIP"
+            "PAIN_HUEFTE",
+            "PAIN_KNIE"
+        ],
+        levels: { "1": { id: 436 } }
+    },
+    "500": {
+        tags: [
+            "SKILL_COOL_DOWN",
+            "EQTYPE_KG",
+            "SIDE_ONE",
+            "MUSCLEINVOLVEMENT_ISOLATED",
+            "REGION_UNTERRKOERPER",
+            "EXERCISEDIRECTION_HIP",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "SEASONPHASE_PAUSE",
+            "PLACE_HALL",
+            "PLACE_STUDIO",
+            "PLACE_HOME",
+            "PLACE_OUTSIDE",
+            "MUSCLE_HUEFT_BEUGER",
+            "MUSCLE_OBERSCHENKELVORDERSEITE",
+            "MUSCLESECONDARY_SCHIENBEIN",
+            "PAIN_WIRBELSAEULE",
+            "PAIN_HUEFTE",
+            "PAIN_KNIE"
+        ],
+        levels: { "1": { id: 771 } }
+    },
+    "501": {
+        tags: [
+            "SKILL_COOL_DOWN",
+            "EQTYPE_KG",
+            "SIDE_ONE",
+            "MUSCLEINVOLVEMENT_ISOLATED",
+            "REGION_UNTERRKOERPER",
+            "EXERCISEDIRECTION_UNTERKOERPER",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "SEASONPHASE_PAUSE",
+            "PLACE_HALL",
+            "PLACE_STUDIO",
+            "PLACE_HOME",
+            "PLACE_OUTSIDE",
+            "MUSCLE_INNERER_OBERSCHENKEL",
+            "PAIN_HUEFTE",
+            "PAIN_KNIE"
+        ],
+        levels: { "1": { id: 437 } }
+    },
+    "502": {
+        tags: [
+            "SKILL_COOL_DOWN",
+            "EQTYPE_KG",
+            "SIDE_ONE",
+            "MUSCLEINVOLVEMENT_COMPLEX",
+            "REGION_UNTERRKOERPER",
+            "EXERCISEDIRECTION_UNTERKOERPER",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "SEASONPHASE_PAUSE",
+            "PLACE_HALL",
+            "PLACE_STUDIO",
+            "PLACE_HOME",
+            "PLACE_OUTSIDE",
+            "MUSCLE_GROSSER_RUECKENMUSKEL_LAT",
+            "MUSCLE_INNERER_OBERSCHENKEL",
+            "PAIN_HUEFTE",
+            "PAIN_KNIE"
         ],
         levels: { "1": { id: 438 } }
     },
     "503": {
         tags: [
             "SKILL_COOL_DOWN",
-            "EQ_KG",
+            "EQTYPE_KG",
+            "SIDE_ONE",
+            "MUSCLEINVOLVEMENT_ISOLATED",
+            "REGION_UNTERRKOERPER",
+            "EXERCISEDIRECTION_UNTERKOERPER",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "SEASONPHASE_PAUSE",
+            "PLACE_HALL",
+            "PLACE_STUDIO",
+            "PLACE_HOME",
+            "PLACE_OUTSIDE",
+            "EQ_TOWEL",
+            "MUSCLE_HINTERER_OBERSCHENKEL",
+            "MUSCLESECONDARY_WADE",
+            "PAIN_WIRBELSAEULE",
+            "PAIN_HUEFTE",
+            "PAIN_KNIE"
+        ],
+        levels: { "1": { id: 439 } }
+    },
+    "504": {
+        tags: [
+            "SKILL_COOL_DOWN",
+            "EQTYPE_KG",
             "SIDE_ONE",
             "MUSCLEINVOLVEMENT_COMPLEX",
             "REGION_GANZKOERPER",
@@ -332,21 +374,26 @@ const CD = {
             "PLACE_STUDIO",
             "PLACE_HOME",
             "PLACE_OUTSIDE",
-            "MUSCLE_NACKEN",
-            "MUSCLE_HUEFT_AUSSEN_ROTATOR",
+            "MUSCLE_OBERER_RUECKEN",
             "MUSCLE_OBERSCHENKELVORDERSEITE",
+            "MUSCLE_GESAESS",
+            "MUSCLESECONDARY_UNTERER_RUECKEN",
+            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL",
             "PAIN_WIRBELSAEULE",
-            "PAIN_HIP"
+            "PAIN_HUEFTE",
+            "PAIN_KNIE"
         ],
-        levels: { "1": { id: 439 } }
+        levels: { "1": { id: 440 } }
     },
-    "504": {
+    "505": {
         tags: [
             "SKILL_COOL_DOWN",
-            "EQ_KG",
+            "EQTYPE_KG",
             "SIDE_ONE",
             "MUSCLEINVOLVEMENT_ISOLATED",
-            "REGION_UNTERKOERPER",
+            "REGION_UNTERRKOERPER",
             "EXERCISEDIRECTION_UNTERKOERPER",
             "SEASONPHASE_PREPATORY",
             "SEASONPHASE_COMPETITION",
@@ -356,15 +403,16 @@ const CD = {
             "PLACE_HOME",
             "PLACE_OUTSIDE",
             "MUSCLE_WADE",
-            "PAIN_HIP",
+            "PAIN_HUEFTE",
+            "PAIN_KNIE",
             "PAIN_SPRUNGGELENK"
         ],
-        levels: { "1": { id: 440 } }
+        levels: { "1": { id: 441 } }
     },
-    "505": {
+    "506": {
         tags: [
             "SKILL_COOL_DOWN",
-            "EQ_KG",
+            "EQTYPE_KG",
             "SIDE_ONE",
             "MUSCLEINVOLVEMENT_ISOLATED",
             "REGION_OBERKOERPER",
@@ -377,15 +425,15 @@ const CD = {
             "PLACE_HOME",
             "PLACE_OUTSIDE",
             "MUSCLE_SCHULTER_VORNE",
-            "MUSCLE_FINGER_HANDGELENKSMUSKULATUR",
+            "MUSCLE_BRUST",
             "PAIN_SCHULTER"
         ],
-        levels: { "1": { id: 441 } }
+        levels: { "1": { id: 442 } }
     },
-    "506": {
+    "507": {
         tags: [
             "SKILL_COOL_DOWN",
-            "EQ_KG",
+            "EQTYPE_KG",
             "SIDE_BOTH",
             "MUSCLEINVOLVEMENT_ISOLATED",
             "REGION_OBERKOERPER",
@@ -402,18 +450,18 @@ const CD = {
             "EQ_ADJUSTABLE_BENCH",
             "EQ_CHAIR",
             "EQ_EXERCISING_BENCH",
-            "MUSCLE_OBERER_RUECKEN",
-            "MUSCLE_SCHULTERBLATT_FIXIEREND_FRONT",
+            "MUSCLE_GROSSER_RUECKENMUSKEL_LAT",
+            "MUSCLE_UNTERER_RUECKEN",
             "PAIN_SCHULTER",
             "PAIN_WIRBELSAEULE"
         ],
-        levels: { "1": { id: 442 } }
+        levels: { "1": { id: 443 } }
     },
-    "507": {
+    "508": {
         tags: [
             "SKILL_COOL_DOWN",
             "SKILL_MOBILITY",
-            "EQ_KG",
+            "EQTYPE_KG",
             "SIDE_ONE",
             "MUSCLEINVOLVEMENT_ISOLATED",
             "REGION_GANZKOERPER",
@@ -424,16 +472,20 @@ const CD = {
             "PLACE_STUDIO",
             "PLACE_HOME",
             "PLACE_OUTSIDE",
-            "MUSCLE_NACKEN",
-            "MUSCLE_OBERSCHENKELVORDERSEITE",
+            "MUSCLE_OBERER_RUECKEN",
+            "MUSCLE_GESAESS",
+            "MUSCLESECONDARY_UNTERER_RUECKEN",
+            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL",
             "PAIN_WIRBELSAEULE"
         ],
-        levels: { "1": { id: 443 } }
+        levels: { "1": { id: 444 } }
     },
-    "508": {
+    "509": {
         tags: [
             "SKILL_COOL_DOWN",
-            "EQ_KG",
+            "EQTYPE_KG",
             "SIDE_BOTH",
             "MUSCLEINVOLVEMENT_ISOLATED",
             "REGION_OBERKOERPER",
@@ -445,32 +497,11 @@ const CD = {
             "PLACE_STUDIO",
             "PLACE_HOME",
             "PLACE_OUTSIDE",
-            "MUSCLE_SCHULTERBLATT_FIXIEREND_FRONT",
-            "MUSCLE_OBERSCHENKELVORDERSEITE",
+            "MUSCLE_UNTERER_RUECKEN",
+            "MUSCLE_GESAESS",
+            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
             "PAIN_WIRBELSAEULE"
-        ],
-        levels: { "1": { id: 444 } }
-    },
-    "509": {
-        tags: [
-            "SKILL_BLACK_ROLL",
-            "EQ_KG",
-            "SIDE_ONE",
-            "MUSCLEINVOLVEMENT_ISOLATED",
-            "REGION_UNTERKOERPER",
-            "EXERCISEDIRECTION_UNTERKOERPER",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "SEASONPHASE_PAUSE",
-            "PLACE_HALL",
-            "PLACE_STUDIO",
-            "PLACE_HOME",
-            "EQ_BLACK_BALL",
-            "MUSCLE_SPRUNGGELENK",
-            "PAIN_SCHULTER",
-            "PAIN_WIRBELSAEULE",
-            "PAIN_HIP",
-            "PAIN_SPRUNGGELENK"
         ],
         levels: { "1": { id: 445 } }
     }

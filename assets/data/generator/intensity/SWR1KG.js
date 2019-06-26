@@ -36,9 +36,9 @@ const SWR1KG = {
             default: {
                 default: {
                     // TODO
-                    TOO_EASY: 5,
+                    TOO_EASY: 10,
                     SUCCEEDED: 5,
-                    TOO_HARD: 5
+                    TOO_HARD: -5
                 }
             }
         },
@@ -77,9 +77,9 @@ const SWR1KG = {
             default: {
                 default: {
                     // TODO
-                    TOO_EASY: 5,
+                    TOO_EASY: 10,
                     SUCCEEDED: 5,
-                    TOO_HARD: 5
+                    TOO_HARD: -5
                 }
             }
         }

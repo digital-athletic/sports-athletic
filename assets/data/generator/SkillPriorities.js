@@ -36,7 +36,7 @@ const SkillPriorities = {
                 60: ["WU"]
             },
             {
-                0: ["PREV", "GKS", "BAS", "MOB"],
+                0: ["PREV1", "GKS", "BAS", "MOB"],
                 30: ["WU"],
                 45: ["CD"],
                 60: ["BR"]

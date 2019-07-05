@@ -418,5 +418,8 @@
   "TEAM_NEWS_WORKOUT_TEXT_4": "erhalten.",
   "WORKOUT_DETAILS": "Workout Details",
   "NO_NEWS_DESC": "Es gibt noch keine Neuigkeiten in deinem Team...",
-  "RECENT_WORKOUTS": "Letzte Workouts"
+  "RECENT_WORKOUTS": "Letzte Workouts",
+  "LEVEL_X": "Level {{level}}",
+  "CONGRATULATIONS": "Glückwunsch!",
+  "CALCULATING": "Ergebnis wird berechnet"
 }

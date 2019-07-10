@@ -421,5 +421,13 @@
   "RECENT_WORKOUTS": "Letzte Workouts",
   "LEVEL_X": "Level {{level}}",
   "CONGRATULATIONS": "Glückwunsch!",
-  "CALCULATING": "Ergebnis wird berechnet"
+  "CALCULATING": "Ergebnis wird berechnet",
+  "TRAINING_OVERVIEW": "Trainingsübersicht",
+  "EQUIPMENT_NEEDED": "Benötigtes Equipment",
+  "EXERCISE_LIST": "Übungsliste",
+  "GROUP_X": "Gruppe {{number}}",
+  "SET_COUNT_X": "{{length}} Sätze",
+  "X_SECONDS": "{{seconds}} Sekunden",
+  "X_REPETITIONS": "{{repetition}} Wiederholungen",
+  "X_KILOS": "{{weight}} Kilogramm"
 }

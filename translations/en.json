@@ -427,5 +427,16 @@
   "SET_COUNT_X": "{{length}} sets",
   "X_SECONDS": "{{seconds}} seconds",
   "X_REPETITIONS": "{{repetition}} repetitions",
-  "X_KILOS": "{{weight}} Kilogramm"
+  "X_KILOS": "{{weight}} Kilogramm",
+  "ELLBOGEN_LINKS": "left ellbow",
+  "ELLBOGEN_RECHTS": "right ellbow",
+  "HANDGELENK_LINKS": "left wrist",
+  "HANDGELENK_RECHTS": "right wrist",
+  "WIRBELSAEULE": "spine",
+  "HUEFTE_LINKS": "left hip",
+  "HUEFTE_RECHTS": "right hip",
+  "KNIE_LINKS": "left knee",
+  "KNIE_RECHTS": "right knee",
+  "SPRUNGGELENK_LINKS": "left ankle",
+  "SPRUNGGELENK_RECHTS": "right ankle"
 }

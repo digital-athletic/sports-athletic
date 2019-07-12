@@ -73,8 +73,8 @@ const wBack = [
         name: "HUEFTE_LINKS",
         width: 0.13,
         height: 0.1,
-        top: 0.41,
-        left: 0.41,
+        top: 0.48,
+        left: 0.34,
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/pain_w_back/huefte_li.png"),
         secondaryImage: require("../../img/bodyparts/pain_w_back/huefte_li.png")
@@ -83,8 +83,8 @@ const wBack = [
         name: "HUEFTE_RECHTS",
         width: 0.13,
         height: 0.1,
-        top: 0.41,
-        left: 0.41,
+        top: 0.47,
+        right: 0.39,
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/pain_w_back/huefte_re.png"),
         secondaryImage: require("../../img/bodyparts/pain_w_back/huefte_re.png")

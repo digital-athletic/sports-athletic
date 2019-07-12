@@ -70,14 +70,24 @@ const mBack = [
         secondaryImage: require("../../img/bodyparts/pain_m_back/wirbelsaeule.png")
     },
     {
-        name: "HUEFTE",
+        name: "HUEFTE_LINKS",
         width: 0.13,
         height: 0.1,
-        top: 0.38,
-        left: 0.4,
+        top: 0.42,
+        left: 0.34,
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/pain_m_back/huefte.png"),
-        secondaryImage: require("../../img/bodyparts/pain_m_back/huefte.png")
+        image: require("../../img/bodyparts/pain_m_back/huefte_li.png"),
+        secondaryImage: require("../../img/bodyparts/pain_m_back/huefte_li.png")
+    },
+    {
+        name: "HUEFTE_RECHTS",
+        width: 0.13,
+        height: 0.1,
+        top: 0.42,
+        right: 0.39,
+        backgroundColor: "rgba(0,0,0,0)",
+        image: require("../../img/bodyparts/pain_m_back/huefte_re.png"),
+        secondaryImage: require("../../img/bodyparts/pain_m_back/huefte_re.png")
     },
     {
         name: "KNIE_LINKS",

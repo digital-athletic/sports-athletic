@@ -374,9 +374,6 @@
   "MINIBANDS_NORMAL":"Minibänder mittel",
   "MINIBANDS_STRONG":"Minibänder stark",
   "MINIBANDS_SUPER":"Minibänder extrem",
-
-
-
   "PREPARING_TRAINING": "Training wird vorbereitet",
   "BREAK": "Pause",
   "ERROR_TITLE_WRONG_OR_NO_PASSWORT": "Falsches Passwort",
@@ -429,5 +426,16 @@
   "SET_COUNT_X": "{{length}} Sätze",
   "X_SECONDS": "{{seconds}} Sekunden",
   "X_REPETITIONS": "{{repetition}} Wiederholungen",
-  "X_KILOS": "{{weight}} Kilogramm"
+  "X_KILOS": "{{weight}} Kilogramm",
+  "ELLBOGEN_LINKS": "linker Ellbogen",
+  "ELLBOGEN_RECHTS": "rechter Ellbogen",
+  "HANDGELENK_LINKS": "linkes Handgelenk",
+  "HANDGELENK_RECHTS": "rechtes Handgelenk",
+  "WIRBELSAEULE": "Wirbelsäule",
+  "HUEFTE_LINKS": "linke Hüfte",
+  "HUEFTE_RECHTS": "rechte Hüfte",
+  "KNIE_LINKS": "linkes Knie",
+  "KNIE_RECHTS": "rechtes Knie",
+  "SPRUNGGELENK_LINKS": "linkes Sprunggelenk",
+  "SPRUNGGELENK_RECHTS": "rechtes Sprunggelenk"
 }

@@ -180,6 +180,7 @@
   "STUDIO": "Fitnessstudio",
   "HALL": "in der Halle",
   "OUTSIDE": "Draußen",
+  "NO_PLACE": "kein Equipment",
   "COACH_SPORT_PROHIBITION_MSG": "Kein Training bei ärtztlichem Sportverbot!",
   "COACH_SPORT_PREVENTION_MSG": "Beende das Training, sobald du Schmerz verspürst!",
   "COACH_SPORT_STABILITY_MSG": "Beende die Übung, wenn du das Gewicht nicht mehr kontrollieren kannst!",
@@ -437,5 +438,6 @@
   "KNIE_LINKS": "linkes Knie",
   "KNIE_RECHTS": "rechtes Knie",
   "SPRUNGGELENK_LINKS": "linkes Sprunggelenk",
-  "SPRUNGGELENK_RECHTS": "rechtes Sprunggelenk"
+  "SPRUNGGELENK_RECHTS": "rechtes Sprunggelenk",
+  "TRAINING_LOCATION": "Trainingsort",
 }

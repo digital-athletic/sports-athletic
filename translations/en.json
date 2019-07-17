@@ -181,6 +181,7 @@
   "STUDIO": "fitness studio",
   "HALL": "gym hall",
   "OUTSIDE": "outside",
+  "NO_PLACE": "no equipment",
   "COACH_SPORT_PROHIBITION_MSG": "Do not work out when you are medically prohibited to do sports!",
   "COACH_SPORT_PREVENTION_MSG": "Stop the activity when you feel pain!",
   "COACH_SPORT_STABILITY_MSG": "Stop if you can't handle the weight!",
@@ -438,5 +439,6 @@
   "KNIE_LINKS": "left knee",
   "KNIE_RECHTS": "right knee",
   "SPRUNGGELENK_LINKS": "left ankle",
-  "SPRUNGGELENK_RECHTS": "right ankle"
+  "SPRUNGGELENK_RECHTS": "right ankle",
+  "TRAINING_LOCATION": "Location"
 }

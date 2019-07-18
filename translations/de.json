@@ -440,4 +440,8 @@
   "SPRUNGGELENK_LINKS": "linkes Sprunggelenk",
   "SPRUNGGELENK_RECHTS": "rechtes Sprunggelenk",
   "TRAINING_LOCATION": "Trainingsort",
+  "NO_ACTIVE_EQUIPMENT": "Kein Equipment ausgewählt",
+  "NO_INACTIVE_EQUIPMENT": "Gesamtes Equipment ausgewählt",
+  "ACTIVE_EQUIPMENT_TITLE": "Ausgewähltes Equipment",
+  "INACTIVE_EQUIPMENT_TITLE": "Zusätzliches Equipment"
 }

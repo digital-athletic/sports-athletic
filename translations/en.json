@@ -444,5 +444,6 @@
   "NO_ACTIVE_EQUIPMENT": "No equipment selected",
   "NO_INACTIVE_EQUIPMENT": "All equipment selected",
   "ACTIVE_EQUIPMENT_TITLE": "Available equipment",
-  "INACTIVE_EQUIPMENT_TITLE": "Additional Equipment"
+  "INACTIVE_EQUIPMENT_TITLE": "Additional Equipment",
+  "SAVING_THREE_DOTS": "Saving ..."
 }

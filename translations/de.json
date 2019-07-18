@@ -443,5 +443,6 @@
   "NO_ACTIVE_EQUIPMENT": "Kein Equipment ausgewählt",
   "NO_INACTIVE_EQUIPMENT": "Gesamtes Equipment ausgewählt",
   "ACTIVE_EQUIPMENT_TITLE": "Ausgewähltes Equipment",
-  "INACTIVE_EQUIPMENT_TITLE": "Zusätzliches Equipment"
+  "INACTIVE_EQUIPMENT_TITLE": "Zusätzliches Equipment",
+  "SAVING_THREE_DOTS": "Speichern ..."
 }

@@ -103,23 +103,19 @@ export const SECTIONS_DATA = {
 
 export const SECTIONS_VIDEOS = {
     SWR: {
-        picture: undefined,
-        video: undefined
-    },
-    MAX_KRAFT: {
-        picture: undefined,
-        video: undefined
+        picture: "exercisePictures/612-picture-636954136346587283.jpg",
+        video: "exerciseVideos/612-video-636954136943686509.mp4"
     },
     MAX: {
-        picture: undefined,
-        video: undefined
-    },
-    SA: {
-        picture: undefined,
-        video: undefined
+        picture: "exercisePictures/613-picture-636954258389897939.jpg",
+        video: "exerciseVideos/613-video-636954259059937815.mp4"
     },
     SK: {
-        picture: undefined,
-        video: undefined
+        picture: "exercisePictures/614-picture-636954258519095719.jpg",
+        video: "exerciseVideos/614-video-636954259385492756.mp4"
+    },
+    SA: {
+        picture: "exercisePictures/615-picture-636954258656100128.jpg",
+        video: "exerciseVideos/615-video-636954259738269668.mp4"
     }
 };

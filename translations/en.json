@@ -167,6 +167,7 @@
   "STABILITY_TILE_GKS": "Full body",
   "WORKOUT_WITH_OWN_PLAN": "Use your individual workout plan",
   "INCOMPLETE_ANAMNESIS_MESSAGE": "Complete the anamnesis to start with your individual workout plan",
+  "PHASE_ENDED_MESSAGE": "Your training phase has ended. Start a new one to continue your training.",
   "HOW_MANY_MINUTES_DO_YOU_WORK_OUT_QUESTIONMARK": "How many minutes do you work out?",
   "TRAINING_DAY": "Training day",
   "MONDAY_TRAINING": "Monday training",

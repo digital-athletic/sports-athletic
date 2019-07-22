@@ -166,6 +166,7 @@
   "STABILITY_TILE_GKS": "Ganzkörper",
   "WORKOUT_WITH_OWN_PLAN": "Trainiere mit deinem individuellen Trainingplan",
   "INCOMPLETE_ANAMNESIS_MESSAGE": "Absolviere die Anamnese, um deinen individuellen Trainingsplan zu bekommen",
+  "PHASE_ENDED_MESSAGE": "Deine Trainingsphase ist abgeschlossen. Starte jetzt eine neue Phase und setzte dein Training fort.",
   "HOW_MANY_MINUTES_DO_YOU_WORK_OUT_QUESTIONMARK": "Wieviele Minuten dauert dein Training?",
   "TRAINING_DAY": "Trainingstag",
   "MONDAY_TRAINING": "Montagstraining",

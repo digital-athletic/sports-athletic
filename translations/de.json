@@ -68,6 +68,7 @@
   "USERDATA": "Nutzerdaten",
   "USERNAME": "Username",
   "USERNAME_PLACEHOLDER": "Username",
+  "REPETITIONS_PLACEHOLDER": "Wiederholungen",
   "GENDER": "Geschlecht",
   "BIRTHDAY": "Geburtstag",
   "A0_SHORT": "Mo",
@@ -445,5 +446,7 @@
   "NO_INACTIVE_EQUIPMENT": "Gesamtes Equipment ausgewählt",
   "ACTIVE_EQUIPMENT_TITLE": "Ausgewähltes Equipment",
   "INACTIVE_EQUIPMENT_TITLE": "Zusätzliches Equipment",
-  "SAVING_THREE_DOTS": "Speichern ..."
+  "SAVING_THREE_DOTS": "Speichern ...",
+  "SAVE": "Speichern",
+  "DO_MAX_REPS": "max"
 }

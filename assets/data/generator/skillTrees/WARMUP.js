@@ -623,7 +623,40 @@ const WARMUP = {
         ],
         levels: { "1": { id: 422 }, "2": { id: 422 }, "3": { id: 422 } }
     },
-    "429": { tags: [], levels: { "2": { id: 430 }, "3": { id: 430 } } },
+    "429": {
+        tags: [
+            "PREVENTION_SCHULTER",
+            "PREVENTION_HANDGELENK_ELLENBOGEN",
+            "PREVENTION_WIRBELSAULE",
+            "SKILL_WARM_UP",
+            "EQTYPE_KG",
+            "SIDE_BOTH",
+            "MUSCLEINVOLVEMENT_ISOLATED",
+            "REGION_OBERKOERPER",
+            "EXERCISEDIRECTION_UNTERKOERPER",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "SEASONPHASE_PAUSE",
+            "PLACE_HALL",
+            "PLACE_STUDIO",
+            "PLACE_HOME",
+            "PLACE_OUTSIDE",
+            "MUSCLE_SCHULTER_VORNE",
+            "MUSCLE_FINGER_HANDGELENKSMUSKULATUR",
+            "MUSCLE_GERADE_BAUCHMUSKELN",
+            "MUSCLE_SEITLICHE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_ARMSTRECKER",
+            "MUSCLESECONDARY_BRUST",
+            "MUSCLESECONDARY_SCHULTERBLATT_FIXIEREND_FRONT",
+            "MUSCLESECONDARY_UNTERER_RUECKEN",
+            "MUSCLESECONDARY_GESAESS",
+            "MUSCLESECONDARY_HINTERER_OBERSCHENKEL",
+            "BLOCK_HANDGELENK",
+            "PAIN_SCHULTER",
+            "PAIN_WIRBELSAEULE"
+        ],
+        levels: { "2": { id: 429 }, "3": { id: 429 } }
+    },
     "430": {
         tags: [
             "SKILL_WARM_UP",

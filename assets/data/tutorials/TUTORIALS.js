@@ -13,6 +13,51 @@ const TUTORIALS = [
         },
         picture: "tutorialPictures/Beinachse.jpg",
         video: "tutorialVideos/Beinachse.mp4"
+    },
+    {
+        ordering: 2,
+        title: {
+            default: "Bankdrücken",
+            en: "Bench press"
+        },
+        picture: "tutorialPictures/Bankdruecken.jpg",
+        video: "tutorialVideos/Bankdruecken.mp4"
+    },
+    {
+        ordering: 3,
+        title: {
+            default: "Vorgebeugtes Rudern",
+            en: "Bent over rowing"
+        },
+        picture: "tutorialPictures/VorgebeugtesRudern.jpg",
+        video: "tutorialVideos/VorgebeugtesRudern.mp4"
+    },
+    {
+        ordering: 4,
+        title: {
+            default: "Schulterfrontdrücken",
+            en: "Shoulder front press"
+        },
+        picture: "tutorialPictures/Schulterfrontdruecken.jpg",
+        video: "tutorialVideos/Schulterfrontdruecken.mp4"
+    },
+    {
+        ordering: 5,
+        title: {
+            default: "Kreuzheben",
+            en: "Deadlift"
+        },
+        picture: "tutorialPictures/Kreuzheben.jpg",
+        video: "tutorialVideos/Kreuzheben.mp4"
+    },
+    {
+        ordering: 6,
+        title: {
+            default: "Kniebeuge",
+            en: "Squad"
+        },
+        picture: "tutorialPictures/Kniebeuge.jpg",
+        video: "tutorialVideos/Kniebeuge.mp4"
     }
 ];
 export default TUTORIALS;

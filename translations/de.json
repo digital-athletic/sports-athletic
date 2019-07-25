@@ -448,5 +448,7 @@
   "INACTIVE_EQUIPMENT_TITLE": "Zusätzliches Equipment",
   "SAVING_THREE_DOTS": "Speichern ...",
   "SAVE": "Speichern",
-  "DO_MAX_REPS": "max"
+  "DO_MAX_REPS": "max",
+  "NO_WORKOUT_YET": "Keine Trainings bisher",
+  "TEST_WORKOUT": "Testtraining"
 }

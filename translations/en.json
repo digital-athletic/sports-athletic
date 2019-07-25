@@ -449,5 +449,7 @@
   "INACTIVE_EQUIPMENT_TITLE": "Additional Equipment",
   "SAVING_THREE_DOTS": "Saving ...",
   "SAVE": "Speichern",
-  "DO_MAX_REPS": "max"
+  "DO_MAX_REPS": "max",
+  "NO_WORKOUT_YET": "No trainings yet",
+  "TEST_WORKOUT": "Test workout"
 }

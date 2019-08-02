@@ -467,5 +467,9 @@
   "SAVE": "Speichern",
   "DO_MAX_REPS": "max",
   "NO_WORKOUT_YET": "No trainings yet",
-  "TEST_WORKOUT": "Test workout"
+  "TEST_WORKOUT": "Test workout",
+  "ERROR_TITLE_GENERATOR": "No workout could be generated",
+  "ERROR_TITLE_NO_EXERCISES_SUBTYPE_X": "No exercises can be used because of the following reasons: {{subtype}}",
+  "ERROR_TITLE_NO_EXERCISES_PARAMS_X": "The following problems occurred: {{params}}",
+  "ERROR_MSG_OTHER": "An unexpected error occurred."
 }

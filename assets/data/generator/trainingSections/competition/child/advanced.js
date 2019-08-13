@@ -367,16 +367,21 @@ const advanced = {
         },
         {
             type: "SWR1",
-            numOfWeeks: 3,
+            numOfWeeks: 4,
             cardioType: "CARDIO_2"
         },
         {
             type: "SK",
-            numOfWeeks: 3,
+            numOfWeeks: 2,
             cardioType: "CARDIO_1_SHORT"
         }
     ],
     repeat: [
+        {
+            type: "SK",
+            numOfWeeks: 1,
+            cardioType: "CARDIO_1_SHORT"
+        },
         {
             type: "SWR1",
             numOfWeeks: 4,
@@ -394,7 +399,7 @@ const advanced = {
         },
         {
             type: "SK",
-            numOfWeeks: 3,
+            numOfWeeks: 2,
             cardioType: "CARDIO_1_SHORT"
         }
     ]

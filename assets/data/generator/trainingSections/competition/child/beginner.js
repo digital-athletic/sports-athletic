@@ -416,6 +416,11 @@ const beginner = {
     ],
     repeat: [
         {
+            type: "SK",
+            numOfWeeks: 1,
+            cardioType: "CARDIO_2"
+        },
+        {
             type: "SWR1",
             numOfWeeks: 4,
             cardioType: "CARDIO_3"
@@ -432,7 +437,7 @@ const beginner = {
         },
         {
             type: "SK",
-            numOfWeeks: 3,
+            numOfWeeks: 2,
             cardioType: "CARDIO_2"
         }
     ]

@@ -486,5 +486,8 @@
   "KNIE_HUEFTE": "knee/hip",
   "HANDGELENK_ELLENBOGEN": "wrist/elbow",
   "SPRUNGGELENK": "ankle",
-  "WIRBELSAULE": "spine"
+  "WIRBELSAULE": "spine",
+  "TRAINING_DAY_SELECTION_NOT_POSSIBLE_TITLE": "Day can not be selected",
+  "TRAINING_DAY_SELECTION_NOT_POSSIBLE_MSG_CHILD": "Regeneration is important!\nYou have to give your body a day of rest after training.",
+  "TRAINING_DAY_SELECTION_NOT_POSSIBLE_MSG_ADULT": "Regeneration is important!\nDo not workout on more than three consecutive days."
 }

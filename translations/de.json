@@ -485,5 +485,8 @@
   "KNIE_HUEFTE": "Knie/Hüfte",
   "HANDGELENK_ELLENBOGEN": "Handgelenk/Ellbogen",
   "SPRUNGGELENK": "Sprunggelenk",
-  "WIRBELSAULE": "Wirbelsäule"
+  "WIRBELSAULE": "Wirbelsäule",
+  "TRAINING_DAY_SELECTION_NOT_POSSIBLE_TITLE": "Du kannst diesen Tag nicht wählen",
+  "TRAINING_DAY_SELECTION_NOT_POSSIBLE_MSG_CHILD": "Regeneration ist wichtig!\nDu musst deinem Körper immer einen Tag Ruhe gönnen.",
+  "TRAINING_DAY_SELECTION_NOT_POSSIBLE_MSG_ADULT": "Regeneration ist wichtig!\nTrainiere maximal drei Tage hintereinander."
 }

@@ -11,9 +11,9 @@
     "prettier": "prettier 'js/**/*.js' --write --tab-width 4"
   },
   "dependencies": {
-    "bugsnag-react-native": "2.17.0",
-    "react": "16.6.3",
-    "react-native": "0.58.6",
+    "bugsnag-react-native": "2.22.4",
+    "react": "16.8.3",
+    "react-native": "0.59.10",
     "react-native-amplitude-analytics": "0.2.6",
     "react-native-branch": "3.0.0",
     "react-native-datepicker": "1.7.2",
@@ -42,12 +42,12 @@
     "victory-native": "31.0.0"
   },
   "devDependencies": {
-    "babel-jest": "23.6.0",
+    "babel-jest": "24.8.0",
     "flow-bin": "0.86.0",
-    "jest": "23.6.0",
-    "metro-react-native-babel-preset": "0.49.2",
+    "jest": "24.8.0",
+    "metro-react-native-babel-preset": "0.54.1",
     "prettier": "1.15.2",
-    "react-test-renderer": "16.6.3",
+    "react-test-renderer": "16.8.3",
     "redux-devtools": "3.4.2"
   },
   "jest": {

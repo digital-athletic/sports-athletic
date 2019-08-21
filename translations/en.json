@@ -489,5 +489,10 @@
   "WIRBELSAULE": "spine",
   "TRAINING_DAY_SELECTION_NOT_POSSIBLE_TITLE": "Day can not be selected",
   "TRAINING_DAY_SELECTION_NOT_POSSIBLE_MSG_CHILD": "Regeneration is important!\nYou have to give your body a day of rest after training.",
-  "TRAINING_DAY_SELECTION_NOT_POSSIBLE_MSG_ADULT": "Regeneration is important!\nDo not workout on more than three consecutive days."
+  "TRAINING_DAY_SELECTION_NOT_POSSIBLE_MSG_ADULT": "Regeneration is important!\nDo not workout on more than three consecutive days.",
+  "TRAINING_DAYS_TITLE_MSG": "On what days do you want to workout?",
+  "TRAINING_DAY_TOOLTIP":"We recommend {{days}} days with {{minutes}} minutes each for your {{phase}}.",
+  "PAUSE_PHASE": "non training phase",
+  "PREPATORY_PHASE": "prepatory phase",
+  "COMPETITION_PHASE": "competition phase"
 }

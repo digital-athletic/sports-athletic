@@ -488,5 +488,10 @@
   "WIRBELSAULE": "Wirbelsäule",
   "TRAINING_DAY_SELECTION_NOT_POSSIBLE_TITLE": "Du kannst diesen Tag nicht wählen",
   "TRAINING_DAY_SELECTION_NOT_POSSIBLE_MSG_CHILD": "Regeneration ist wichtig!\nDu musst deinem Körper immer einen Tag Ruhe gönnen.",
-  "TRAINING_DAY_SELECTION_NOT_POSSIBLE_MSG_ADULT": "Regeneration ist wichtig!\nTrainiere maximal drei Tage hintereinander."
+  "TRAINING_DAY_SELECTION_NOT_POSSIBLE_MSG_ADULT": "Regeneration ist wichtig!\nTrainiere maximal drei Tage hintereinander.",
+  "TRAINING_DAYS_TITLE_MSG": "An welchen Tagen willst du trainieren?",
+  "TRAINING_DAY_TOOLTIP":"Wir empfehlen wir {{days}} Trainingstage zu je {{minutes}} Minuten für die {{phase}}",
+  "PAUSE_PHASE": "trainingsfreie Zeit",
+  "PREPATORY_PHASE": "Vorbereitungsphase",
+  "COMPETITION_PHASE": "Wettkampfphase"
 }

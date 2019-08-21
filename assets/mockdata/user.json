@@ -2,39 +2,38 @@
   "Level" : "ADVANCED",
   "TrainingDays" : [ {
     "active" : false,
-    "endTime" : "17:30",
+    "duration" : 30,
     "place" : "HOME",
-    "startTime" : "16:00"
+    
   }, {
     "active" : true,
-    "endTime" : "17:30",
+    "duration" : 30,
     "place" : "HOME",
-    "startTime" : "16:00"
+    
   }, {
     "active" : false,
-    "endTime" : "17:30",
+    "duration" : 30,
     "place" : "HOME",
-    "startTime" : "16:00"
+    
   }, {
     "active" : false,
-    "endTime" : "17:30",
+    "duration" : 30,
     "place" : "HOME",
-    "startTime" : "16:00"
+    
   }, {
     "active" : true,
-    "endTime" : "21:00",
+    "duration" : 30,
     "place" : "STUDIO",
-    "startTime" : "19:45"
   }, {
     "active" : false,
-    "endTime" : "17:30",
+    "duration" : 30,
     "place" : "HOME",
-    "startTime" : "16:00"
+    
   }, {
     "active" : false,
-    "endTime" : "17:30",
+    "duration" : 30,
     "place" : "HOME",
-    "startTime" : "16:00"
+    
   } ],
   "dateOfBirth" : "2001-11-21",
   "gender" : "w",

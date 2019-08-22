@@ -117,23 +117,18 @@ const beginner = {
     10: [
         {
             type: "SWR2",
-            numOfWeeks: 3,
+            numOfWeeks: 4,
             cardioType: "CARDIO_2"
         },
         {
             type: "SK",
-            numOfWeeks: 2,
+            numOfWeeks: 3,
             cardioType: "CARDIO_1_SHORT"
         },
         {
             type: "SWR2",
             numOfWeeks: 3,
             cardioType: "CARDIO_2"
-        },
-        {
-            type: "SA",
-            numOfWeeks: 2,
-            cardioType: "CARDIO_1_LAKTAT"
         }
     ],
     11: [
@@ -193,12 +188,12 @@ const beginner = {
         },
         {
             type: "SWR2",
-            numOfWeeks: 3,
+            numOfWeeks: 4,
             cardioType: "CARDIO_2"
         },
         {
             type: "SA",
-            numOfWeeks: 3,
+            numOfWeeks: 2,
             cardioType: "CARDIO_1_LAKTAT"
         }
     ],

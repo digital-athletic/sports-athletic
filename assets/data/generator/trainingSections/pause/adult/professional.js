@@ -83,7 +83,7 @@ const professional = {
     9: [
         {
             type: "SWR1",
-            numOfWeeks: 4,
+            numOfWeeks: 3,
             cardioType: "CARDIO_4"
         },
         {
@@ -93,7 +93,7 @@ const professional = {
         },
         {
             type: "SWR1",
-            numOfWeeks: 2,
+            numOfWeeks: 3,
             cardioType: "CARDIO_4"
         }
     ],

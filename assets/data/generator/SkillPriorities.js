@@ -22,13 +22,23 @@ const SkillPriorities = {
         }
     },
     ADULT: {
-        pain: {
+        combined: {
             1: [
                 {
                     0: ["PHASE", "PREV1", "MOB"],
                     30: ["HBCARDIO"],
                     45: ["WU"],
                     60: ["CD"]
+                }
+            ]
+        },
+        pain: {
+            1: [
+                {
+                    0: ["PHASE", "PREV1", "MOB"],
+                    30: ["WU"],
+                    45: ["CD"],
+                    60: ["BR"]
                 }
             ],
             2: [

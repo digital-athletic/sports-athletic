@@ -5,7 +5,7 @@ const SKKG = {
             { tags: ["REGION_UNTERKOERPER"], count: 1 },
             {
                 tags: ["EXERCISENAME_PLYO_HIGH", "EXERCISENAME_PLYO_MEDIUM"],
-                count: 1
+                count: 2
             }
         ],
         20: [
@@ -13,7 +13,7 @@ const SKKG = {
             { tags: ["REGION_UNTERKOERPER"], count: 2 },
             {
                 tags: ["EXERCISENAME_PLYO_HIGH", "EXERCISENAME_PLYO_MEDIUM"],
-                count: 1
+                count: 2
             }
         ],
         25: [

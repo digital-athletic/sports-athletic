@@ -3,10 +3,10 @@ const SkillPriorities = {
         pain: {
             1: [
                 {
-                    0: ["PHASE", "PREV1"],
-                    30: ["PREV2", "BAS"],
-                    45: ["PREV3", "GKS"],
-                    60: ["WU"]
+                    0: ["PHASE", "PREV1", "WUSPEZIAL"],
+                    20: ["PREV2"],
+                    30: ["PREV3"],
+                    40: ["WU"]
                 }
             ]
         },
@@ -14,9 +14,9 @@ const SkillPriorities = {
             1: [
                 {
                     0: ["PHASE", "WU"],
-                    30: ["BAS"],
-                    45: ["GKS"],
-                    60: ["CD"]
+                    20: ["BAS"],
+                    25: ["GKS"],
+                    40: ["CD"]
                 }
             ]
         }

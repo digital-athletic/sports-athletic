@@ -1,21 +1,21 @@
 const advanced = {
     1: [
         {
-            type: "SWR1",
+            type: "SWR2",
             numOfWeeks: 1,
             cardioType: "CARDIO_3"
         }
     ],
     2: [
         {
-            type: "SWR1",
+            type: "SWR2",
             numOfWeeks: 2,
             cardioType: "CARDIO_3"
         }
     ],
     3: [
         {
-            type: "SWR1",
+            type: "SWR2",
             numOfWeeks: 3,
             cardioType: "CARDIO_3"
         }
@@ -23,82 +23,72 @@ const advanced = {
 
     4: [
         {
-            type: "SWR1",
-            numOfWeeks: 2,
-            cardioType: "CARDIO_3"
-        },
-        {
             type: "SWR2",
             numOfWeeks: 2,
             cardioType: "CARDIO_2"
+        },
+        {
+            type: "MAX",
+            numOfWeeks: 2,
+            cardioType: "CARDIO_1_SHORT"
         }
     ],
 
     5: [
         {
-            type: "SWR1",
+            type: "SWR2",
             numOfWeeks: 3,
-            cardioType: "CARDIO_3"
-        },
-        {
-            type: "SWR2",
-            numOfWeeks: 2,
-            cardioType: "CARDIO_2"
-        }
-    ],
-    6: [
-        {
-            type: "SWR1",
-            numOfWeeks: 4,
-            cardioType: "CARDIO_3"
-        },
-        {
-            type: "SWR2",
-            numOfWeeks: 2,
-            cardioType: "CARDIO_2"
-        }
-    ],
-    7: [
-        {
-            type: "SWR1",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_3"
-        },
-        {
-            type: "SWR2",
-            numOfWeeks: 2,
             cardioType: "CARDIO_2"
         },
         {
             type: "MAX",
             numOfWeeks: 2,
+            cardioType: "CARDIO_1_SHORT"
+        }
+    ],
+    6: [
+        {
+            type: "SWR2",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_2"
+        },
+        {
+            type: "MAX",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_1_SHORT"
+        }
+    ],
+    7: [
+        {
+            type: "SWR2",
+            numOfWeeks: 4,
+            cardioType: "CARDIO_2"
+        },
+        {
+            type: "MAX",
+            numOfWeeks: 3,
             cardioType: "CARDIO_1_SHORT"
         }
     ],
     8: [
         {
-            type: "SWR1",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_3"
-        },
-        {
             type: "SWR2",
             numOfWeeks: 3,
             cardioType: "CARDIO_2"
         },
         {
             type: "MAX",
-            numOfWeeks: 2,
+            numOfWeeks: 3,
             cardioType: "CARDIO_1_SHORT"
+        },
+        {
+            type: "SK",
+            numOfWeeks: 2,
+            cardioType: "CARDIO_2"
         }
     ],
     9: [
         {
-            type: "SWR1",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_3"
-        },
-        {
             type: "SWR2",
             numOfWeeks: 3,
             cardioType: "CARDIO_2"
@@ -107,14 +97,31 @@ const advanced = {
             type: "MAX",
             numOfWeeks: 3,
             cardioType: "CARDIO_1_SHORT"
+        },
+        {
+            type: "SK",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_2"
         }
     ],
     10: [
         {
-            type: "SWR1",
+            type: "SWR2",
             numOfWeeks: 4,
-            cardioType: "CARDIO_3"
+            cardioType: "CARDIO_2"
         },
+        {
+            type: "MAX",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_1_SHORT"
+        },
+        {
+            type: "SK",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_2"
+        }
+    ],
+    11: [
         {
             type: "SWR2",
             numOfWeeks: 3,
@@ -124,16 +131,75 @@ const advanced = {
             type: "MAX",
             numOfWeeks: 3,
             cardioType: "CARDIO_1_SHORT"
-        }
-    ],
-    11: [
-        {
-            type: "SWR1",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_3"
         },
         {
+            type: "SK",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_2"
+        },
+        {
+            type: "MAX",
+            numOfWeeks: 2,
+            cardioType: "CARDIO_1_LAKTAT"
+        }
+    ],
+    12: [
+        {
             type: "SWR2",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_2"
+        },
+        {
+            type: "MAX",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_1_SHORT"
+        },
+        {
+            type: "SK",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_2"
+        },
+        {
+            type: "MAX",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_1_LAKTAT"
+        }
+    ],
+    13: [
+        {
+            type: "SWR2",
+            numOfWeeks: 4,
+            cardioType: "CARDIO_2"
+        },
+        {
+            type: "MAX",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_1_SHORT"
+        },
+        {
+            type: "SK",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_2"
+        },
+        {
+            type: "MAX",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_1_LAKTAT"
+        }
+    ],
+    14: [
+        {
+            type: "SWR2",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_2"
+        },
+        {
+            type: "MAX",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_1_SHORT"
+        },
+        {
+            type: "SK",
             numOfWeeks: 3,
             cardioType: "CARDIO_2"
         },
@@ -145,83 +211,22 @@ const advanced = {
         {
             type: "SA",
             numOfWeeks: 2,
-            cardioType: "CARDIO_1_SHORT"
-        }
-    ],
-    12: [
-        {
-            type: "SWR1",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_3"
-        },
-        {
-            type: "SWR2",
-            numOfWeeks: 3,
             cardioType: "CARDIO_2"
-        },
-        {
-            type: "MAX",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_1_LAKTAT"
-        },
-        {
-            type: "SA",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_1_SHORT"
-        }
-    ],
-    13: [
-        {
-            type: "SWR1",
-            numOfWeeks: 4,
-            cardioType: "CARDIO_3"
-        },
-        {
-            type: "SWR2",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_2"
-        },
-        {
-            type: "MAX",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_1_LAKTAT"
-        },
-        {
-            type: "SA",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_1_SHORT"
-        }
-    ],
-    14: [
-        {
-            type: "SWR1",
-            numOfWeeks: 4,
-            cardioType: "CARDIO_3"
-        },
-        {
-            type: "SWR2",
-            numOfWeeks: 4,
-            cardioType: "CARDIO_2"
-        },
-        {
-            type: "MAX",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_2"
-        },
-        {
-            type: "SA",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_1_SHORT"
         }
     ],
     15: [
         {
-            type: "SWR1",
+            type: "SWR2",
             numOfWeeks: 3,
-            cardioType: "CARDIO_3"
+            cardioType: "CARDIO_2"
         },
         {
-            type: "SWR2",
+            type: "MAX",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_1_SHORT"
+        },
+        {
+            type: "SK",
             numOfWeeks: 3,
             cardioType: "CARDIO_2"
         },
@@ -231,24 +236,24 @@ const advanced = {
             cardioType: "CARDIO_1_LAKTAT"
         },
         {
-            type: "SWR2",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_2"
-        },
-        {
             type: "SA",
             numOfWeeks: 3,
-            cardioType: "CARDIO_1_SHORT"
+            cardioType: "CARDIO_2"
         }
     ],
     16: [
         {
-            type: "SWR1",
+            type: "SWR2",
             numOfWeeks: 4,
-            cardioType: "CARDIO_3"
+            cardioType: "CARDIO_2"
         },
         {
-            type: "SWR2",
+            type: "MAX",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_1_SHORT"
+        },
+        {
+            type: "SK",
             numOfWeeks: 3,
             cardioType: "CARDIO_2"
         },
@@ -258,24 +263,24 @@ const advanced = {
             cardioType: "CARDIO_1_LAKTAT"
         },
         {
-            type: "SWR2",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_2"
-        },
-        {
             type: "SA",
             numOfWeeks: 3,
-            cardioType: "CARDIO_1_SHORT"
+            cardioType: "CARDIO_2"
         }
     ],
     17: [
         {
-            type: "SWR1",
-            numOfWeeks: 4,
-            cardioType: "CARDIO_3"
+            type: "SWR2",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_2"
         },
         {
-            type: "SWR2",
+            type: "MAX",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_1_SHORT"
+        },
+        {
+            type: "SK",
             numOfWeeks: 3,
             cardioType: "CARDIO_2"
         },
@@ -285,25 +290,30 @@ const advanced = {
             cardioType: "CARDIO_1_LAKTAT"
         },
         {
-            type: "SWR2",
-            numOfWeeks: 4,
+            type: "SA",
+            numOfWeeks: 3,
             cardioType: "CARDIO_2"
         },
         {
-            type: "SA",
-            numOfWeeks: 3,
+            type: "MAX",
+            numOfWeeks: 2,
             cardioType: "CARDIO_1_SHORT"
         }
     ],
     18: [
         {
-            type: "SWR1",
-            numOfWeeks: 4,
-            cardioType: "CARDIO_3"
+            type: "SWR2",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_2"
         },
         {
-            type: "SWR2",
-            numOfWeeks: 4,
+            type: "MAX",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_1_SHORT"
+        },
+        {
+            type: "SK",
+            numOfWeeks: 3,
             cardioType: "CARDIO_2"
         },
         {
@@ -312,25 +322,30 @@ const advanced = {
             cardioType: "CARDIO_1_LAKTAT"
         },
         {
-            type: "SWR2",
-            numOfWeeks: 4,
+            type: "SA",
+            numOfWeeks: 3,
             cardioType: "CARDIO_2"
         },
         {
-            type: "SA",
+            type: "MAX",
             numOfWeeks: 3,
             cardioType: "CARDIO_1_SHORT"
         }
     ],
     19: [
         {
-            type: "SWR1",
-            numOfWeeks: 4,
-            cardioType: "CARDIO_3"
-        },
-        {
             type: "SWR2",
             numOfWeeks: 4,
+            cardioType: "CARDIO_2"
+        },
+        {
+            type: "MAX",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_1_SHORT"
+        },
+        {
+            type: "SK",
+            numOfWeeks: 3,
             cardioType: "CARDIO_2"
         },
         {
@@ -339,78 +354,78 @@ const advanced = {
             cardioType: "CARDIO_1_LAKTAT"
         },
         {
-            type: "SWR2",
+            type: "SA",
             numOfWeeks: 3,
             cardioType: "CARDIO_2"
         },
         {
-            type: "SA",
+            type: "MAX",
             numOfWeeks: 3,
             cardioType: "CARDIO_1_SHORT"
-        },
-        {
-            type: "SWR2",
-            numOfWeeks: 2,
-            cardioType: "CARDIO_1_LAKTAT"
         }
     ],
     20: [
         {
-            type: "SWR1",
-            numOfWeeks: 4,
-            cardioType: "CARDIO_3"
-        },
-        {
             type: "SWR2",
             numOfWeeks: 3,
             cardioType: "CARDIO_2"
         },
         {
             type: "MAX",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_1_LAKTAT"
-        },
-        {
-            type: "SWR2",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_2"
-        },
-        {
-            type: "SA",
             numOfWeeks: 3,
             cardioType: "CARDIO_1_SHORT"
         },
         {
-            type: "SWR2",
-            numOfWeeks: 2,
+            type: "SK",
+            numOfWeeks: 3,
             cardioType: "CARDIO_2"
         },
         {
             type: "MAX",
-            numOfWeeks: 2,
+            numOfWeeks: 3,
             cardioType: "CARDIO_1_LAKTAT"
+        },
+        {
+            type: "SA",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_2"
+        },
+        {
+            type: "MAX",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_1_SHORT"
+        },
+        {
+            type: "SK",
+            numOfWeeks: 2,
+            cardioType: "CARDIO_2"
         }
     ],
     repeat: [
         {
-            type: "SWR2",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_2"
-        },
-        {
-            type: "SA",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_1_SHORT"
-        },
-        {
-            type: "SWR2",
-            numOfWeeks: 3,
+            type: "SK",
+            numOfWeeks: 1,
             cardioType: "CARDIO_2"
         },
         {
             type: "MAX",
             numOfWeeks: 3,
             cardioType: "CARDIO_1_LAKTAT"
+        },
+        {
+            type: "SA",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_2"
+        },
+        {
+            type: "MAX",
+            numOfWeeks: 3,
+            cardioType: "CARDIO_1_SHORT"
+        },
+        {
+            type: "SK",
+            numOfWeeks: 2,
+            cardioType: "CARDIO_2"
         }
     ]
 };

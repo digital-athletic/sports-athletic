@@ -99,12 +99,12 @@ const p = {
             {
                 type: "MAX",
                 numOfWeeks: 3,
-                cardioType: "CARDIO_1_SHORT"
+                cardioType: "CARDIO_1_LAKTAT"
             },
             {
                 type: "SA",
                 numOfWeeks: 3,
-                cardioType: "CARDIO_1_LAKTAT"
+                cardioType: "CARDIO_1_SHORT"
             }
         ],
         expectedTrainingFocus: [
@@ -141,11 +141,9 @@ const p = {
                 focus: "PHASE",
                 content: {
                     WU: 5,
-                    WUSPEZIAL: 3,
-                    MOB: 5,
-                    PREVSHOULDER: 5,
-                    SWR1: 20,
-                    CARDIO: 20
+                    CD: 5,
+                    MOB: 10,
+                    SWR1KG: 40
                 }
             }
         ]

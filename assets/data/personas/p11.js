@@ -3,6 +3,14 @@ import HALL from "../generator/places/HALL";
 import OUTSIDE from "../../../assets/data/generator/places/OUTSIDE";
 import STUDIO from "../../../assets/data/generator/places/STUDIO";
 
+/**
+ * Warum Audauer am DO? Einzelne Tage starten immer mit PHASE
+ *
+ * Ergebnis des Generators:
+ * Mo - KRAFT, nicht COMBINED da HOME
+ * Mi - COMBINED, da länger als 45 & nicht HOME
+ * FR - KRAFT nicht COMBINED da 35
+ */
 const p = {
     displayName: { default: "Persona 11" },
     value: {
@@ -122,7 +130,7 @@ const p = {
                     WU: 5,
                     WUSPEZIAL: 3,
                     PREVSPINE: 5,
-                    SWR1: 25
+                    SWR2KG: 25
                 }
             },
             {

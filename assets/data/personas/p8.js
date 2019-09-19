@@ -132,7 +132,7 @@ const p = {
                 content: {
                     WU: 5,
                     MOB: 5,
-                    SWR1: 35
+                    SWR1KG: 35
                 }
             }
         ]

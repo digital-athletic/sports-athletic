@@ -3,6 +3,9 @@ import HALL from "../generator/places/HALL";
 import OUTSIDE from "../../../assets/data/generator/places/OUTSIDE";
 import STUDIO from "../../../assets/data/generator/places/STUDIO";
 
+/**
+ * Sonderfall für Torhüter mit 5 statt 4 Sections?!?
+ */
 const p = {
     displayName: { default: "Persona 6" },
     value: {

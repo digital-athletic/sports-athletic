@@ -121,9 +121,9 @@ const p = {
                 weekday: 1,
                 focus: "PHASE",
                 content: {
-                    MOB: 3,
+                    MOB: 5,
                     WU: 5,
-                    SWR1: 35
+                    SWR1KG: 30 // adjusted to match 40min training, given 35
                 }
             },
             {

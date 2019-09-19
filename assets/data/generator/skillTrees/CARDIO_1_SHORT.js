@@ -3,7 +3,6 @@ const CARDIO_1_SHORT = {
         tags: [
             "SKILL_CARDIO",
             "SKILL_CARDIO_1_SHORT",
-            "AGE_ADULT",
             "PAUSE_CARDIO_5",
             "REGION_UNTERKOERPER",
             "SEASONPHASE_PREPATORY",
@@ -30,7 +29,6 @@ const CARDIO_1_SHORT = {
         tags: [
             "SKILL_CARDIO",
             "SKILL_CARDIO_1_SHORT",
-            "AGE_ADULT",
             "PAUSE_CARDIO_5",
             "REGION_UNTERKOERPER",
             "SEASONPHASE_PREPATORY",

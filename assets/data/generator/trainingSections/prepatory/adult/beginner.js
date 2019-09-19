@@ -167,12 +167,12 @@ const beginner = {
         {
             type: "SK",
             numOfWeeks: 2,
-            cardioType: "CARDIO_1_LAKTAT"
+            cardioType: "CARDIO_1_SHORT"
         },
         {
             type: "SA",
             numOfWeeks: 2,
-            cardioType: "CARDIO_1_SHORT"
+            cardioType: "CARDIO_1_LAKTAT"
         }
     ],
     13: [

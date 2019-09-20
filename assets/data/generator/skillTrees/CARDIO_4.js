@@ -3,7 +3,6 @@ const CARDIO_4 = {
         tags: [
             "SKILL_CARDIO",
             "SKILL_CARDIO_4",
-            "AGE_ADULT",
             "REGION_UNTERKOERPER",
             "SEASONPHASE_PREPATORY",
             "SEASONPHASE_COMPETITION",
@@ -32,7 +31,6 @@ const CARDIO_4 = {
         tags: [
             "SKILL_CARDIO",
             "SKILL_CARDIO_4",
-            "AGE_ADULT",
             "REGION_UNTERKOERPER",
             "SEASONPHASE_PREPATORY",
             "SEASONPHASE_COMPETITION",

@@ -1,7 +1,7 @@
 const WUSPEZIAL = {
-    BEGINNER: 4,
-    ADVANCED: 4,
-    PROFESSIONAL: 4
+    BEGINNER: 3,
+    ADVANCED: 3,
+    PROFESSIONAL: 3
 };
 
 export default WUSPEZIAL;

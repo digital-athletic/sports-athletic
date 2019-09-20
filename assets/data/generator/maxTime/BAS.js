@@ -1,7 +1,7 @@
 const BAS = {
-    BEGINNER: 5,
-    ADVANCED: 5,
-    PROFESSIONAL: 5
+    BEGINNER: 10,
+    ADVANCED: 10,
+    PROFESSIONAL: 10
 };
 
 export default BAS;

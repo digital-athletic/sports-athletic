@@ -3,6 +3,9 @@ import HALL from "../generator/places/HALL";
 import OUTSIDE from "../../../assets/data/generator/places/OUTSIDE";
 import STUDIO from "../../../assets/data/generator/places/STUDIO";
 
+/**
+ *
+ */
 const p = {
     displayName: { default: "Persona 14" },
     value: {

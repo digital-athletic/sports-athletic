@@ -106,8 +106,8 @@ const p = {
                     MOB: 5,
                     WU: 5,
                     WUSPEZIAL: 3,
-                    PREVWRIST: 5,
-                    SWR: 20,
+                    PREVSHOULDER: 5,
+                    SWR1: 20,
                     CARDIO: 20
                 }
             }

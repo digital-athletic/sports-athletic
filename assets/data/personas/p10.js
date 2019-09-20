@@ -114,7 +114,7 @@ const p = {
                 content: {
                     MOB: 5,
                     WU: 5,
-                    CARDIO: 30
+                    SWR1: 30
                 }
             },
             {
@@ -133,7 +133,7 @@ const p = {
                 content: {
                     MOB: 5,
                     WU: 5,
-                    CARDIO: 30
+                    SWR1: 30
                 }
             }
         ]

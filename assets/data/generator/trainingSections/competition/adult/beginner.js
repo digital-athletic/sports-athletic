@@ -87,9 +87,9 @@ const beginner = {
             cardioType: "CARDIO_2"
         },
         {
-            type: "SA",
+            type: "SK",
             numOfWeeks: 2,
-            cardioType: "CARDIO_1_LAKTAT"
+            cardioType: "CARDIO_1_SHORT"
         }
     ],
     9: [
@@ -109,9 +109,9 @@ const beginner = {
             cardioType: "CARDIO_2"
         },
         {
-            type: "SA",
+            type: "SK",
             numOfWeeks: 2,
-            cardioType: "CARDIO_1_LAKTAT"
+            cardioType: "CARDIO_1_SHORT"
         }
     ],
     10: [
@@ -148,9 +148,9 @@ const beginner = {
             cardioType: "CARDIO_2"
         },
         {
-            type: "SA",
+            type: "SK",
             numOfWeeks: 2,
-            cardioType: "CARDIO_1_LAKTAT"
+            cardioType: "CARDIO_1_SHORT"
         }
     ],
     12: [
@@ -170,9 +170,9 @@ const beginner = {
             cardioType: "CARDIO_2"
         },
         {
-            type: "SA",
+            type: "SK",
             numOfWeeks: 3,
-            cardioType: "CARDIO_1_LAKTAT"
+            cardioType: "CARDIO_1_SHORT"
         }
     ],
     13: [
@@ -192,9 +192,9 @@ const beginner = {
             cardioType: "CARDIO_2"
         },
         {
-            type: "SA",
+            type: "SK",
             numOfWeeks: 2,
-            cardioType: "CARDIO_1_LAKTAT"
+            cardioType: "CARDIO_1_SHORT"
         }
     ],
     14: [
@@ -214,9 +214,9 @@ const beginner = {
             cardioType: "CARDIO_2"
         },
         {
-            type: "SA",
+            type: "SK",
             numOfWeeks: 3,
-            cardioType: "CARDIO_1_LAKTAT"
+            cardioType: "CARDIO_1_SHORT"
         }
     ],
     15: [
@@ -236,9 +236,9 @@ const beginner = {
             cardioType: "CARDIO_2"
         },
         {
-            type: "SA",
+            type: "SK",
             numOfWeeks: 2,
-            cardioType: "CARDIO_1_LAKTAT"
+            cardioType: "CARDIO_1_SHORT"
         },
         {
             type: "SWR2",
@@ -268,9 +268,9 @@ const beginner = {
             cardioType: "CARDIO_2"
         },
         {
-            type: "SA",
+            type: "SK",
             numOfWeeks: 2,
-            cardioType: "CARDIO_1_LAKTAT"
+            cardioType: "CARDIO_1_SHORT"
         },
         {
             type: "SWR2",
@@ -300,9 +300,9 @@ const beginner = {
             cardioType: "CARDIO_2"
         },
         {
-            type: "SA",
+            type: "SK",
             numOfWeeks: 2,
-            cardioType: "CARDIO_1_LAKTAT"
+            cardioType: "CARDIO_1_SHORT"
         },
         {
             type: "SWR2",
@@ -332,9 +332,9 @@ const beginner = {
             cardioType: "CARDIO_2"
         },
         {
-            type: "SA",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_1_LAKTAT"
+            type: "SK",
+            numOfWeeks: 2,
+            cardioType: "CARDIO_1_SHORT"
         },
         {
             type: "SWR2",
@@ -364,9 +364,9 @@ const beginner = {
             cardioType: "CARDIO_2"
         },
         {
-            type: "SA",
+            type: "SK",
             numOfWeeks: 3,
-            cardioType: "CARDIO_1_LAKTAT"
+            cardioType: "CARDIO_1_SHORT"
         },
         {
             type: "SWR2",
@@ -396,9 +396,9 @@ const beginner = {
             cardioType: "CARDIO_2"
         },
         {
-            type: "SA",
+            type: "SK",
             numOfWeeks: 3,
-            cardioType: "CARDIO_1_LAKTAT"
+            cardioType: "CARDIO_1_SHORT"
         },
         {
             type: "SWR2",
@@ -408,19 +408,14 @@ const beginner = {
         {
             type: "SK",
             numOfWeeks: 2,
-            cardioType: "CARDIO_1_LAKTAT"
+            cardioType: "CARDIO_1_SHORT"
         }
     ],
     repeat: [
         {
-            type: "SWR2",
-            numOfWeeks: 4,
-            cardioType: "CARDIO_2"
-        },
-        {
-            type: "SA",
-            numOfWeeks: 3,
-            cardioType: "CARDIO_1_LAKTAT"
+            type: "SK",
+            numOfWeeks: 1,
+            cardioType: "CARDIO_1_SHORT"
         },
         {
             type: "SWR2",
@@ -429,7 +424,7 @@ const beginner = {
         },
         {
             type: "SK",
-            numOfWeeks: 3,
+            numOfWeeks: 2,
             cardioType: "CARDIO_1_SHORT"
         }
     ]

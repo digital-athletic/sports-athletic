@@ -25,8 +25,8 @@ const SkillPriorities = {
         combined: {
             1: [
                 {
-                    0: ["PHASE", "PREV1", "MOB"],
-                    30: ["HBCARDIO"],
+                    0: ["PHASE", "HBCARDIO", "PREV1", "WUSPEZIAL"],
+                    30: ["MOB"],
                     45: ["WU"],
                     60: ["CD"]
                 }
@@ -35,7 +35,7 @@ const SkillPriorities = {
         pain: {
             1: [
                 {
-                    0: ["PHASE", "PREV1", "MOB"],
+                    0: ["PHASE", "PREV1", "WUSPEZIAL", "MOB"],
                     30: ["WU"],
                     45: ["CD"],
                     60: ["BR"]
@@ -43,13 +43,13 @@ const SkillPriorities = {
             ],
             2: [
                 {
-                    0: ["PHASE", "PREV1", "MOB"],
+                    0: ["PHASE", "PREV1", "WUSPEZIAL", "MOB"],
                     30: ["WU"],
                     45: ["CD"],
                     60: ["BR"]
                 },
                 {
-                    0: ["HBCARDIO", "PREV2", "MOB"],
+                    0: ["HBCARDIO", "PREV2", "WUSPEZIAL", "MOB"],
                     30: ["BAS"],
                     45: ["BR"],
                     60: ["CD"]
@@ -57,19 +57,19 @@ const SkillPriorities = {
             ],
             3: [
                 {
-                    0: ["PHASE", "PREV3", "MOB"],
+                    0: ["PHASE", "PREV3", "WUSPEZIAL", "MOB"],
                     30: ["WU"],
                     45: ["CD"],
                     60: ["BR"]
                 },
                 {
-                    0: ["HBCARDIO", "PREV2", "MOB"],
+                    0: ["HBCARDIO", "PREV2", "WUSPEZIAL", "MOB"],
                     30: ["BR"],
                     45: ["CD"],
                     60: ["WU"]
                 },
                 {
-                    0: ["PREV1", "GKS", "BAS", "MOB"],
+                    0: ["PREV1", "WUSPEZIAL", "GKS", "BAS", "MOB"],
                     30: ["WU"],
                     45: ["CD"],
                     60: ["BR"]
@@ -79,10 +79,10 @@ const SkillPriorities = {
         noPain: {
             1: [
                 {
-                    0: ["PHASE", "HBCARDIO"],
-                    30: ["MOB"],
-                    45: ["WU"],
-                    60: ["CD", "BR"]
+                    0: ["PHASE", "MOB"],
+                    30: ["WU"],
+                    45: ["CD"],
+                    60: ["BR"]
                 }
             ],
             2: [
@@ -93,7 +93,7 @@ const SkillPriorities = {
                     60: ["BR"]
                 },
                 {
-                    0: ["HBCARDIO", "BAS", "GKS"],
+                    0: ["HBCARDIO", "BAS"],
                     30: ["MOB"],
                     45: ["BR"],
                     60: ["CD", "WU"]

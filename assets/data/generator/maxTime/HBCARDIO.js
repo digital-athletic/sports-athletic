@@ -1,7 +1,7 @@
 const HBCARDIO = {
     BEGINNER: 30,
-    ADVANCED: 30,
-    PROFESSIONAL: 30
+    ADVANCED: 40,
+    PROFESSIONAL: 45
 };
 
 export default HBCARDIO;

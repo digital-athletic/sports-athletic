@@ -494,6 +494,8 @@
   "TRAINING_DAY_SELECTION_NOT_POSSIBLE_MSG_ADULT": "Regeneration ist wichtig!\nTrainiere maximal drei Tage hintereinander.",
   "TRAINING_DAYS_TITLE_MSG": "An welchen Tagen willst du trainieren?",
   "TRAINING_DAY_TOOLTIP":"Wir empfehlen wir {{days}} Trainingstage zu je {{minutes}} Minuten für die {{phase}}",
+  "NO_TRAINING_DAY_TITLE":"Kein Trainingstag gewählt",
+  "NO_TRAINING_DAY_MSG":"Dein Plan kann nur erstellt werden, wenn du mindestens einen Trainingstag gewählt hast.",
   "PAUSE_PHASE": "trainingsfreie Zeit",
   "PREPATORY_PHASE": "Vorbereitungsphase",
   "COMPETITION_PHASE": "Wettkampfphase"

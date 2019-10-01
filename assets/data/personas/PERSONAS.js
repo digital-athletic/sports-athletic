@@ -15,6 +15,22 @@ import p14 from "./p14";
 import p15 from "./p15";
 import p16 from "./p16";
 import p17 from "./p17";
+import p18 from "./p18";
+import p19 from "./p19";
+import p20 from "./p20";
+import p21 from "./p21";
+import p22 from "./p22";
+import p23 from "./p23";
+import p24 from "./p24";
+import p25 from "./p25";
+import p26 from "./p26";
+import p27 from "./p27";
+import p28 from "./p28";
+import p29 from "./p29";
+import p30 from "./p30";
+import p31 from "./p31";
+import p32 from "./p32";
+import p33 from "./p33";
 
 const PERSONAS = [
     p1,
@@ -33,7 +49,23 @@ const PERSONAS = [
     p14,
     p15,
     p16,
-    p17
+    p17,
+    p18,
+    p19,
+    p20,
+    p21,
+    p22,
+    p23,
+    p24,
+    p25,
+    p26,
+    p27,
+    p28,
+    p29,
+    p30,
+    p31,
+    p32,
+    p33
 ];
 
 export default PERSONAS;

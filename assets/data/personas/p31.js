@@ -19,7 +19,7 @@ const p = {
                 // LEVEL
                 "LEVEL_ADVANCED",
                 // PAINS
-                "PAINS_HANDGELENK_RECHTS"
+                "PAIN_HANDGELENK_RECHTS"
             ],
             seasonPhase: {
                 type: "PREPATORY",

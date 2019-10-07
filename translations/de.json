@@ -499,5 +499,6 @@
   "NO_TRAINING_DAY_MSG":"Dein Plan kann nur erstellt werden, wenn du mindestens einen Trainingstag gewählt hast.",
   "PAUSE_PHASE": "trainingsfreie Zeit",
   "PREPATORY_PHASE": "Vorbereitungsphase",
-  "COMPETITION_PHASE": "Wettkampfphase"
+  "COMPETITION_PHASE": "Wettkampfphase",
+  "HEART_RATE_INTERVAL": "Pulsbereich"
 }

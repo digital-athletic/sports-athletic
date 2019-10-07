@@ -500,5 +500,6 @@
   "NO_TRAINING_DAY_MSG":"Select at least one day to generate your training plan.",
   "PAUSE_PHASE": "non training phase",
   "PREPATORY_PHASE": "prepatory phase",
-  "COMPETITION_PHASE": "competition phase"
+  "COMPETITION_PHASE": "competition phase",
+  "HEART_RATE_INTERVAL": "Heart rate interval"
 }

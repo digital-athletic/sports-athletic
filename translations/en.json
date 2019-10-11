@@ -482,6 +482,7 @@
   "ERROR_TITLE_NO_EXERCISES_PARAMS_X": "The following problems occurred: {{params}}",
   "ERROR_TITLE_TOO_MUCH_SORENESS_SUBTYPE_X": "You should not stress your body right now: {{subtype}}",
   "ERROR_TITLE_TOO_MUCH_SORENESS_PARAMS_X": "Some areas need more regeneration: {{params}}\nTry a regenerative workout instead.",
+  "ERROR_TITLE_NO_ANAMNESIS_PARAMS_X": "No anamnesis data: {{params}}",
   "MULTIPLE_REGIONS": "Muscles soreness in multiple regions",
   "OBERKOERPER": "Upper body",
   "RUMPF": "Core",

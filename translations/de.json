@@ -481,6 +481,7 @@
   "ERROR_TITLE_NO_EXERCISES_PARAMS_X": "Folgende Probleme traten auf: {{params}}",
   "ERROR_TITLE_TOO_MUCH_SORENESS_SUBTYPE_X": "Momentan solltest du deinen Körper nicht belasten: {{subtype}}",
   "ERROR_TITLE_TOO_MUCH_SORENESS_PARAMS_X": "Folgende Bereiche benötigen noch Regeneration: {{params}}\nDu kannst stattdessen ein regeneratives Training machen.",
+  "ERROR_TITLE_NO_ANAMNESIS_PARAMS_X": "Keine Anamnesedaten: {{params}}",
   "MULTIPLE_REGIONS": "Muskelkater in mehreren Region",
   "OBERKOERPER": "Oberkörper",
   "RUMPF": "Rumpf",

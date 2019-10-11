@@ -451,6 +451,7 @@
   "EQUIPMENT_NEEDED": "Benötigtes Equipment",
   "EXERCISE_LIST": "Übungsliste",
   "GROUP_X": "Gruppe {{number}}",
+  "ONE_SET": "1 Satz",
   "SET_COUNT_X": "{{length}} Sätze",
   "X_SECONDS": "{{seconds}} Sekunden",
   "X_REPETITIONS": "{{repetition}} Wiederholungen",

@@ -30,37 +30,6 @@ const GKS = {
         ],
         levels: { "1": { id: 102 }, "2": { id: 102 }, "3": { id: 102 } }
     },
-    "511": {
-        tags: [
-            "SKILL_SUPPORT",
-            "SKILL_STABILITY_BODY",
-            "EQTYPE_WEIGHTS",
-            "AGE_ADULT",
-            "SIDE_ONE",
-            "MUSCLEINVOLVEMENT_COMPLEX",
-            "REGION_GANZKOERPER",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "SEASONPHASE_PAUSE",
-            "PLACE_STUDIO",
-            "EQ_DUMBBELL",
-            "MUSCLE_HUEFT_INNEN_ROTATOR",
-            "MUSCLE_HUEFT_AUSSEN_ROTATOR",
-            "MUSCLE_GESAESS",
-            "MUSCLE_INNERER_OBERSCHENKEL",
-            "MUSCLE_AEUSSERER_OBERSCHENKEL",
-            "MUSCLE_SPRUNGGELENK",
-            "MUSCLESECONDARY_SCHULTER_VORNE",
-            "MUSCLESECONDARY_SCHULTER_HINTEN",
-            "MUSCLESECONDARY_BRUST",
-            "MUSCLESECONDARY_SCHULTERBLATT_FIXIEREND_HINTEN",
-            "MUSCLESECONDARY_SCHULTERBLATT_FIXIEREND_FRONT",
-            "MUSCLESECONDARY_UNTERER_RUECKEN",
-            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
-            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN"
-        ],
-        levels: { "1": { id: 100 } }
-    },
     "512": {
         tags: [
             "SKILL_SUPPORT",
@@ -90,7 +59,7 @@ const GKS = {
             "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
             "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN"
         ],
-        levels: { "2": { id: 101 }, "3": { id: 101 } }
+        levels: { "1": { id: 100 }, "2": { id: 101 }, "3": { id: 101 } }
     },
     "513": {
         tags: [

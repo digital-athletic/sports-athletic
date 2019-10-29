@@ -1706,6 +1706,70 @@ const SWR1 = {
             "BLOCK_HIGH_BMI"
         ],
         levels: { "3": { id: 589 } }
+    },
+    "663": {
+        tags: [
+            "SKILL_SWR",
+            "EQTYPE_WEIGHTS",
+            "AGE_ADULT",
+            "SIDE_BOTH",
+            "MUSCLEINVOLVEMENT_COMPLEX",
+            "REGION_UNTERKOERPER",
+            "EXERCISEDIRECTION_HIP",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "SEASONPHASE_PAUSE",
+            "SKILL_SWR_1_M",
+            "SKILL_SWR_2_M",
+            "SKILL_SWR_1_W",
+            "SKILL_SWR_2_W",
+            "PLACE_STUDIO",
+            "EQ_BARBELL",
+            "MUSCLE_OBERER_RUECKEN",
+            "MUSCLE_UNTERER_RUECKEN",
+            "MUSCLE_OBERSCHENKELVORDERSEITE",
+            "MUSCLE_GESAESS",
+            "MUSCLE_HINTERER_OBERSCHENKEL",
+            "MUSCLESECONDARY_FINGER_HANDGELENKSMUSKULATUR",
+            "MUSCLESECONDARY_GROSSER_RUECKENMUSKEL_LAT",
+            "MUSCLESECONDARY_SCHULTERBLATT_FIXIEREND_HINTEN",
+            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
+            "MUSCLESECONDARY_WADE"
+        ],
+        levels: { "2": { id: 50 }, "3": { id: 50 } }
+    },
+    "664": {
+        tags: [
+            "SKILL_MAX_KRAFT_TEST",
+            "SKILL_SWR",
+            "EQTYPE_WEIGHTS",
+            "AGE_ADULT",
+            "SIDE_BOTH",
+            "MUSCLEINVOLVEMENT_COMPLEX",
+            "REGION_OBERKOERPER",
+            "EXERCISEDIRECTION_HORIZONTAL_PULL",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "SEASONPHASE_PAUSE",
+            "SKILL_SWR_1_M",
+            "SKILL_SWR_2_M",
+            "SKILL_SWR_1_W",
+            "SKILL_SWR_2_W",
+            "PLACE_STUDIO",
+            "EQ_BARBELL",
+            "MUSCLE_SCHULTER_HINTEN",
+            "MUSCLE_BIZEPS",
+            "MUSCLE_NACKEN",
+            "MUSCLE_OBERER_RUECKEN",
+            "MUSCLE_GROSSER_RUECKENMUSKEL_LAT",
+            "MUSCLE_UNTERER_RUECKEN",
+            "MUSCLESECONDARY_SCHULTERBLATT_FIXIEREND_HINTEN",
+            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN"
+        ],
+        levels: { "2": { id: 297 }, "3": { id: 297 } }
     }
 };
 

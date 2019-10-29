@@ -458,6 +458,88 @@ const SK = {
             "BLOCK_HUEFTE"
         ],
         levels: { "1": { id: 73 }, "2": { id: 76 }, "3": { id: 71 } }
+    },
+    "661": {
+        tags: [
+            "SKILL_SCHNELLKRAFT",
+            "EQTYPE_WEIGHTS",
+            "AGE_ADULT",
+            "SIDE_BOTH",
+            "MUSCLEINVOLVEMENT_COMPLEX",
+            "REGION_UNTERKOERPER",
+            "EXERCISEDIRECTION_HIP",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "PLACE_STUDIO",
+            "EQ_BARBELL",
+            "MUSCLE_OBERER_RUECKEN",
+            "MUSCLE_UNTERER_RUECKEN",
+            "MUSCLE_OBERSCHENKELVORDERSEITE",
+            "MUSCLE_GESAESS",
+            "MUSCLE_HINTERER_OBERSCHENKEL",
+            "MUSCLESECONDARY_FINGER_HANDGELENKSMUSKULATUR",
+            "MUSCLESECONDARY_GROSSER_RUECKENMUSKEL_LAT",
+            "MUSCLESECONDARY_SCHULTERBLATT_FIXIEREND_HINTEN",
+            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
+            "MUSCLESECONDARY_WADE",
+            "BLOCK_KNIE",
+            "BLOCK_WIRBELSAEULE",
+            "BLOCK_HUEFTE"
+        ],
+        levels: { "2": { id: 52 }, "3": { id: 52 } }
+    },
+    "665": {
+        tags: [
+            "SKILL_SCHNELLKRAFT",
+            "EQTYPE_WEIGHTS",
+            "AGE_ADULT",
+            "SIDE_BOTH",
+            "MUSCLEINVOLVEMENT_COMPLEX",
+            "REGION_OBERKOERPER",
+            "EXERCISEDIRECTION_HORIZONTAL_PULL",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "PLACE_STUDIO",
+            "EQ_BARBELL",
+            "MUSCLE_SCHULTER_HINTEN",
+            "MUSCLE_BIZEPS",
+            "MUSCLE_NACKEN",
+            "MUSCLE_OBERER_RUECKEN",
+            "MUSCLE_GROSSER_RUECKENMUSKEL_LAT",
+            "MUSCLE_UNTERER_RUECKEN",
+            "MUSCLESECONDARY_SCHULTERBLATT_FIXIEREND_HINTEN",
+            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
+            "BLOCK_SCHULTER",
+            "BLOCK_ELLENBOGEN",
+            "BLOCK_WIRBELSAEULE"
+        ],
+        levels: { "2": { id: 299 }, "3": { id: 299 } }
+    },
+    "667": {
+        tags: [
+            "SKILL_SCHNELLKRAFT",
+            "EQTYPE_WEIGHTS",
+            "AGE_ADULT",
+            "SIDE_BOTH",
+            "MUSCLEINVOLVEMENT_COMPLEX",
+            "REGION_OBERKOERPER",
+            "EXERCISEDIRECTION_VERTICAL_PUSH",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "PLACE_STUDIO",
+            "EQ_DUMBBELL",
+            "EQ_ADJUSTABLE_BENCH",
+            "MUSCLE_SCHULTER_VORNE",
+            "MUSCLE_ARMSTRECKER",
+            "MUSCLESECONDARY_NACKEN",
+            "MUSCLESECONDARY_SCHULTERBLATT_FIXIEREND_FRONT",
+            "BLOCK_SCHULTER",
+            "BLOCK_ELLENBOGEN"
+        ],
+        levels: { "2": { id: 319 }, "3": { id: 319 } }
     }
 };
 export default SK;

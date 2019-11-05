@@ -513,5 +513,7 @@
   "PREPATORY_PHASE": "prepatory phase",
   "COMPETITION_PHASE": "competition phase",
   "HEART_RATE_INTERVAL": "Heart rate interval",
-  "SUPPORT_EXERCISES": "Support exercises"
+  "SUPPORT_EXERCISES": "Support exercises",
+  "TRAINING_CLICK_FOR_PAUSE": "Click here to pause",
+  "TRAINING_GO_ON": "Go on"
 }

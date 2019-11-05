@@ -512,5 +512,7 @@
   "PREPATORY_PHASE": "Vorbereitungsphase",
   "COMPETITION_PHASE": "Wettkampfphase",
   "HEART_RATE_INTERVAL": "Pulsbereich",
-  "SUPPORT_EXERCISES": "Unterstützungsübungen"
+  "SUPPORT_EXERCISES": "Unterstützungsübungen",
+  "TRAINING_CLICK_FOR_PAUSE": "Hier tippen zum pausieren",
+  "TRAINING_GO_ON": "Weiter"
 }

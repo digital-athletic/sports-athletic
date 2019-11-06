@@ -203,6 +203,7 @@
   "SUMMARY_TITLE_WEIGHT": "Moved weight",
   "MUSCLE_SORENESS": "Muscle soreness",
   "ANAMNESIS": "Anamnese",
+  "PERSONAL_DATA": "Personal data",
   "LOGOUT": "Ausloggen",
   "ACCOUNT": "Account",
   "LEGAL": "Legal",
@@ -515,5 +516,13 @@
   "HEART_RATE_INTERVAL": "Heart rate interval",
   "SUPPORT_EXERCISES": "Support exercises",
   "TRAINING_CLICK_FOR_PAUSE": "Click here to pause",
-  "TRAINING_GO_ON": "Go on"
+  "TRAINING_GO_ON": "Go on",
+  "WELCOME_LETS_GO": "Let's go",
+  "SEASONPHASE": "Season phase",
+  "TRAINING_PLAN_ERROR_TITLE": "An error occured",
+  "TRAINING_PLAN_ERROR_MSG": "We could not generate a training plan for your data. Our developers got noticed.",
+  "GENERATOR_MSG_1": "Partitioning training phases...",
+  "GENERATOR_MSG_2": "Generating training days...",
+  "GENERATOR_MSG_3": "Allocating 18 training focuses...",
+  "GENERATOR_MSG_4": "Selecting from 900 training videos..."
 }

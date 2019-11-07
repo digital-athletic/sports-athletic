@@ -46,3 +46,6 @@ declare module "react-native-gesture-handler" {
 declare module "rn-fetch-blob" {
     declare module.exports: any;
 }
+declare module "react-native-sound" {
+    declare module.exports: any;
+}

@@ -523,5 +523,7 @@
   "GENERATOR_MSG_1": "Einteilung in Trainingsphasen...",
   "GENERATOR_MSG_2": "Trainingstage werden generiert...",
   "GENERATOR_MSG_3": "Verteilung von 18 Trainingsschwerpunkten...",
-  "GENERATOR_MSG_4": "Übungsauwahl aus 900 Trainingsvideos..."
+  "GENERATOR_MSG_4": "Übungsauwahl aus 900 Trainingsvideos...",
+  "X_PIECES": "{{count}} Geräte",
+  "PLACE_AND_EQUIPMENT": "Trainingsort & Ausrüstung"
 }

@@ -113,7 +113,7 @@
   "ERROR_BAD_TEAM_NAME": "Verbotener Teamname",
   "ERROR_BAD_TEAM_NAME_MSG": "Dein neu gewählter Teamname ist nicht erlaubt!",
   "SEASON_PHASE": "Saisonphase",
-  "SEASON_PHASE_DESC": "In welcher Saisonphase befindest du dich gerade mit deinem Team?",
+  "SEASON_PHASE_DESC": "In welcher Saisonphase befindest du dich gerade?",
   "END_OF_SEASON_PHASE": "Ende der Saisonphase",
   "END_OF_SEASON_PHASE_DESC": "Wann endet diese Saisonphase?",
   "SELECTED_ONE": "Element gewählt",

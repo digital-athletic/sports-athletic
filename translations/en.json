@@ -526,5 +526,8 @@
   "GENERATOR_MSG_3": "Allocating 18 training focuses...",
   "GENERATOR_MSG_4": "Selecting from 900 training videos...",
   "X_PIECES": "{{count}} pieces",
-  "PLACE_AND_EQUIPMENT": "Place & Equipment"
+  "PLACE_AND_EQUIPMENT": "Place & Equipment",
+  "TEST": "Test",
+  "NUMBER_MAX": "max.",
+  "2X": "2x"
 }

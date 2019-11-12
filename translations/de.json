@@ -525,5 +525,8 @@
   "GENERATOR_MSG_3": "Verteilung von 18 Trainingsschwerpunkten...",
   "GENERATOR_MSG_4": "Übungsauwahl aus 900 Trainingsvideos...",
   "X_PIECES": "{{count}} Geräte",
-  "PLACE_AND_EQUIPMENT": "Trainingsort & Ausrüstung"
+  "PLACE_AND_EQUIPMENT": "Trainingsort & Ausrüstung",
+  "TEST": "Test",
+  "NUMBER_MAX": "max.",
+  "2X": "2x"
 }

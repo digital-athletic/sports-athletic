@@ -19,14 +19,14 @@
  */
 const TEST_WORKOUTS = {
     BEGINNER: {
-        default: [88, 7, 251, 317]
+        default: [251, 7, 88, 317]
     },
     ADVANCED: {
-        default: [297, 7, 25, 317],
-        m: [297, 342, 25, 54]
+        default: [25, 7, 297, 317],
+        m: [25, 342, 297, 54]
     },
     PROFESSIONAL: {
-        default: [297, 342, 25, 54]
+        default: [25, 342, 297, 54]
     }
 };
 

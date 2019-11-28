@@ -271,7 +271,9 @@ const WARMUPSPEZIAL = {
             "MUSCLE_OBERSCHENKELVORDERSEITE",
             "MUSCLE_GESAESS",
             "PAIN_HUEFTE",
-            "PAIN_KNIE"
+            "PAIN_KNIE",
+            "PAIN_ELLBOGEN",
+            "PAIN_HANDGELENK"
         ],
         levels: { "1": { id: 425 }, "2": { id: 425 }, "3": { id: 425 } }
     },
@@ -336,6 +338,79 @@ const WARMUPSPEZIAL = {
             "PAIN_SPRUNGGELENK"
         ],
         levels: { "1": { id: 431 }, "2": { id: 432 }, "3": { id: 432 } }
+    },
+    "669": {
+        tags: [
+            "SKILL_WARM_UP",
+            "EQTYPE_WEIGHTS",
+            "AGE_ADULT",
+            "SIDE_BOTH",
+            "MUSCLEINVOLVEMENT_ISOLATED",
+            "REGION_OBERKOERPER",
+            "EXERCISEDIRECTION_UNTERKOERPER",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "SEASONPHASE_PAUSE",
+            "PLACE_STUDIO",
+            "EQ_DUMBBELL",
+            "MUSCLE_BIZEPS",
+            "PAIN_HANDGELENK",
+            "PAIN_ELLENBOGEN"
+        ],
+        levels: { "1": { id: 139 }, "2": { id: 139 }, "3": { id: 139 } }
+    },
+    "670": {
+        tags: [
+            "SKILL_WARM_UP",
+            "EQTYPE_KG",
+            "SIDE_BOTH",
+            "MUSCLEINVOLVEMENT_ISOLATED",
+            "REGION_OBERKOERPER",
+            "EXERCISEDIRECTION_UNTERKOERPER",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "SEASONPHASE_PAUSE",
+            "PLACE_HALL",
+            "PLACE_STUDIO",
+            "PLACE_HOME",
+            "PLACE_OUTSIDE",
+            "MUSCLE_BIZEPS",
+            "PAIN_HANDGELENK",
+            "PAIN_ELLENBOGEN"
+        ],
+        levels: { "1": { id: 140 }, "2": { id: 140 }, "3": { id: 140 } }
+    },
+    "671": {
+        tags: [
+            "SKILL_WARM_UP",
+            "SKILL_WARM_UP",
+            "SKILL_WARM_UP",
+            "EQTYPE_KG",
+            "SIDE_BOTH",
+            "MUSCLEINVOLVEMENT_COMPLEX",
+            "REGION_OBERKOERPER",
+            "EXERCISEDIRECTION_HORIZONTAL_PUSH",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "PLACE_HALL",
+            "PLACE_STUDIO",
+            "PLACE_HOME",
+            "PLACE_OUTSIDE",
+            "MUSCLE_SCHULTER",
+            "MUSCLE_BIZEPS",
+            "MUSCLE_ARMSTRECKER",
+            "MUSCLE_BRUST",
+            "MUSCLE_OBERER_RUECKEN",
+            "MUSCLE_GROSSER_RUECKENMUSKEL_LAT",
+            "MUSCLESECONDARY_UNTERER_RUECKEN",
+            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_CARDIO",
+            "PAIN_HANDGELENK",
+            "PAIN_ELLENBOGEN",
+            "PAIN_SCHULTER"
+        ],
+        levels: { "1": { id: 633 }, "2": { id: 633 }, "3": { id: 633 } }
     }
 };
 export default WARMUPSPEZIAL;

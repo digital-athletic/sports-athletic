@@ -25,34 +25,6 @@ const CARDIO_2 = {
         ],
         levels: { "1": { id: 42 } }
     },
-    "583": {
-        tags: [
-            "SKILL_CARDIO",
-            "SKILL_CARDIO_2",
-            "PAUSE_CARDIO_5",
-            "REGION_UNTERKOERPER",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "PLACE_HALL",
-            "PLACE_OUTSIDE",
-            "EQ_TRACK_20",
-            "EQ_TRACK_LONG",
-            "MUSCLE_HUEFT_BEUGER",
-            "MUSCLE_OBERSCHENKELVORDERSEITE",
-            "MUSCLE_GESAESS",
-            "MUSCLE_HINTERER_OBERSCHENKEL",
-            "MUSCLE_WADE",
-            "MUSCLE_SPRUNGGELENK",
-            "MUSCLE_SCHIENBEIN",
-            "MUSCLE_CARDIO",
-            "MUSCLESECONDARY_UNTERER_RUECKEN",
-            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
-            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
-            "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
-            "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL"
-        ],
-        levels: { "1": { id: 48 } }
-    },
     "584": {
         tags: [
             "SKILL_CARDIO",
@@ -287,6 +259,36 @@ const CARDIO_2 = {
             "BLOCK_HUEFTE"
         ],
         levels: { "1": { id: 764 } }
+    }
+};
+const CURRENTLY_UNUSED = {
+    "583": {
+        tags: [
+            "SKILL_CARDIO",
+            "SKILL_CARDIO_2",
+            "PAUSE_CARDIO_5",
+            "REGION_UNTERKOERPER",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "PLACE_HALL",
+            "PLACE_OUTSIDE",
+            "EQ_TRACK_20",
+            "EQ_TRACK_LONG",
+            "MUSCLE_HUEFT_BEUGER",
+            "MUSCLE_OBERSCHENKELVORDERSEITE",
+            "MUSCLE_GESAESS",
+            "MUSCLE_HINTERER_OBERSCHENKEL",
+            "MUSCLE_WADE",
+            "MUSCLE_SPRUNGGELENK",
+            "MUSCLE_SCHIENBEIN",
+            "MUSCLE_CARDIO",
+            "MUSCLESECONDARY_UNTERER_RUECKEN",
+            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
+            "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL"
+        ],
+        levels: { "1": { id: 48 } }
     }
 };
 export default CARDIO_2;

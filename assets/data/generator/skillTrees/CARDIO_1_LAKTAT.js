@@ -26,35 +26,6 @@ const CARDIO_1_LAKTAT = {
         ],
         levels: { "1": { id: 41 } }
     },
-    "604": {
-        tags: [
-            "SKILL_CARDIO",
-            "SKILL_CARDIO_1_LAKTAT",
-            "POSITION_FIELD",
-            "PAUSE_CARDIO_5",
-            "REGION_UNTERKOERPER",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "PLACE_HALL",
-            "PLACE_OUTSIDE",
-            "EQ_TRACK_20",
-            "EQ_TRACK_LONG",
-            "MUSCLE_HUEFT_BEUGER",
-            "MUSCLE_OBERSCHENKELVORDERSEITE",
-            "MUSCLE_GESAESS",
-            "MUSCLE_HINTERER_OBERSCHENKEL",
-            "MUSCLE_WADE",
-            "MUSCLE_SPRUNGGELENK",
-            "MUSCLE_SCHIENBEIN",
-            "MUSCLE_CARDIO",
-            "MUSCLESECONDARY_UNTERER_RUECKEN",
-            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
-            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
-            "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
-            "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL"
-        ],
-        levels: { "1": { id: 47 } }
-    },
     "605": {
         tags: [
             "SKILL_CARDIO",
@@ -334,6 +305,37 @@ const CARDIO_1_LAKTAT = {
             "BLOCK_HUEFTE"
         ],
         levels: { "1": { id: 762 } }
+    }
+};
+const CURRENTLY_UNUSED = {
+    "604": {
+        tags: [
+            "SKILL_CARDIO",
+            "SKILL_CARDIO_1_LAKTAT",
+            "POSITION_FIELD",
+            "PAUSE_CARDIO_5",
+            "REGION_UNTERKOERPER",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "PLACE_HALL",
+            "PLACE_OUTSIDE",
+            "EQ_TRACK_20",
+            "EQ_TRACK_LONG",
+            "MUSCLE_HUEFT_BEUGER",
+            "MUSCLE_OBERSCHENKELVORDERSEITE",
+            "MUSCLE_GESAESS",
+            "MUSCLE_HINTERER_OBERSCHENKEL",
+            "MUSCLE_WADE",
+            "MUSCLE_SPRUNGGELENK",
+            "MUSCLE_SCHIENBEIN",
+            "MUSCLE_CARDIO",
+            "MUSCLESECONDARY_UNTERER_RUECKEN",
+            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
+            "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL"
+        ],
+        levels: { "1": { id: 47 } }
     }
 };
 export default CARDIO_1_LAKTAT;

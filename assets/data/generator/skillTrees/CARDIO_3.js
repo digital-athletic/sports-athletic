@@ -24,7 +24,9 @@ const CARDIO_3 = {
             "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL"
         ],
         levels: { "1": { id: 43 } }
-    },
+    }
+};
+const CURRENTLY_UNUSED = {
     "581": {
         tags: [
             "SKILL_CARDIO",

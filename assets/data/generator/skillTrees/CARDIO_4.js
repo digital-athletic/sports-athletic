@@ -1,4 +1,32 @@
 const CARDIO_4 = {
+    "579": {
+        tags: [
+            "SKILL_CARDIO",
+            "SKILL_CARDIO_4",
+            "REGION_UNTERKOERPER",
+            "SEASONPHASE_PREPATORY",
+            "SEASONPHASE_COMPETITION",
+            "SEASONPHASE_PAUSE",
+            "PLACE_STUDIO",
+            "EQ_TREADMILL",
+            "MUSCLE_HUEFT_BEUGER",
+            "MUSCLE_OBERSCHENKELVORDERSEITE",
+            "MUSCLE_GESAESS",
+            "MUSCLE_HINTERER_OBERSCHENKEL",
+            "MUSCLE_WADE",
+            "MUSCLE_SPRUNGGELENK",
+            "MUSCLE_SCHIENBEIN",
+            "MUSCLE_CARDIO",
+            "MUSCLESECONDARY_UNTERER_RUECKEN",
+            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
+            "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
+            "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL"
+        ],
+        levels: { "1": { id: 38 } }
+    }
+};
+const CURRENTLY_UNUSED = {
     "578": {
         tags: [
             "SKILL_CARDIO",
@@ -26,32 +54,6 @@ const CARDIO_4 = {
             "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL"
         ],
         levels: { "1": { id: 44 } }
-    },
-    "579": {
-        tags: [
-            "SKILL_CARDIO",
-            "SKILL_CARDIO_4",
-            "REGION_UNTERKOERPER",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "SEASONPHASE_PAUSE",
-            "PLACE_STUDIO",
-            "EQ_TREADMILL",
-            "MUSCLE_HUEFT_BEUGER",
-            "MUSCLE_OBERSCHENKELVORDERSEITE",
-            "MUSCLE_GESAESS",
-            "MUSCLE_HINTERER_OBERSCHENKEL",
-            "MUSCLE_WADE",
-            "MUSCLE_SPRUNGGELENK",
-            "MUSCLE_SCHIENBEIN",
-            "MUSCLE_CARDIO",
-            "MUSCLESECONDARY_UNTERER_RUECKEN",
-            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
-            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
-            "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
-            "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL"
-        ],
-        levels: { "1": { id: 38 } }
     }
 };
 export default CARDIO_4;

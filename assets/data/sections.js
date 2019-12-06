@@ -3,15 +3,23 @@ export const SECTIONS_DATA = {
         target: {
             default: {
                 normal: [
-                    "Verbessere die ",
-                    " Fähigkeiten eines Handballers um ",
-                    " zu verbessern."
+                    "",
+                    " des Körpers als notwendige Voraussetzung für die nachfolgenden Trainings-Schwerpunkte."
                 ],
-                highlight: ["grundlegenden", "dein Spiel"]
+                highlight: ["Erhöhung der Belastbarkeit", ""]
             },
             en: {
                 normal: ["Improve the ", " of handball to ", "."],
                 highlight: ["basic skills", "play better"]
+            }
+        },
+        speed: {
+            values: {
+                default: ["3 Sek.", "0 Sek.", "1 Sek."],
+                en: ["3 sec", "0 sec", "1 sec"]
+            },
+            description: {
+                default: ""
             }
         }
     },
@@ -19,12 +27,10 @@ export const SECTIONS_DATA = {
         target: {
             default: {
                 normal: [
-                    "Erhöhe dein ",
-                    " um in allen athletischen Bereichen ",
-                    " und ",
-                    " zu werden."
+                    "",
+                    " als entscheidende Basis für Schnellkraft und Schnelligkeitsausdauer."
                 ],
-                highlight: ["Kraftpotential", "schneller", "stärker"]
+                highlight: ["Kraftaufbau", ""]
             },
             en: {
                 normal: [
@@ -35,18 +41,25 @@ export const SECTIONS_DATA = {
                 ],
                 highlight: ["power potential", "faster", "stronger"]
             }
+        },
+        speed: {
+            values: {
+                default: ["4 Sek.", "0 Sek.", "explosiv"],
+                en: ["4 sec", "0 sec", "explosive"]
+            },
+            description: {
+                default: ""
+            }
         }
     },
     MAX: {
         target: {
             default: {
                 normal: [
-                    "Erhöhe dein ",
-                    " um in allen athletischen Bereichen ",
-                    " und ",
-                    " zu werden."
+                    "",
+                    " als entscheidende Basis für Schnellkraft und Schnelligkeitsausdauer."
                 ],
-                highlight: ["Kraftpotential", "schneller", "stärker"]
+                highlight: ["Kraftaufbau", ""]
             },
             en: {
                 normal: [
@@ -56,6 +69,15 @@ export const SECTIONS_DATA = {
                     " in all athletic challenges."
                 ],
                 highlight: ["power potential", "faster", "stronger"]
+            }
+        },
+        speed: {
+            values: {
+                default: ["4 Sek.", "0 Sek.", "explosiv"],
+                en: ["4 sec", "0 sec", "explosive"]
+            },
+            description: {
+                default: ""
             }
         }
     },
@@ -64,14 +86,29 @@ export const SECTIONS_DATA = {
             default: {
                 normal: [
                     "",
-                    " die Zeit in der du deine ",
-                    " aufrecht erhalten kannst."
+                    " bei wiederkehrenden Belastungen wie ",
+                    ", Bewegungen in der ",
+                    " oder "
                 ],
-                highlight: ["Verlängere", "maximale Geschwindigkeit"]
+                highlight: [
+                    "Konstante Leistungsfähigkeit",
+                    "Sprints",
+                    "Abwehr",
+                    "Würfen."
+                ]
             },
             en: {
                 normal: ["", " the time you can hold up your ", "."],
                 highlight: ["Increase", "maximum speed"]
+            }
+        },
+        speed: {
+            values: {
+                default: ["explosiv", "0 Sek.", "explosiv"],
+                en: ["explosive", "0 sec", "explosive"]
+            },
+            description: {
+                default: ""
             }
         }
     },
@@ -79,14 +116,14 @@ export const SECTIONS_DATA = {
         target: {
             default: {
                 normal: [
-                    "Erreichung eines möglichst hohen Kraftausstoßes in kürzester Zeit für einen ",
-                    " einen ",
-                    " oder einen "
+                    "Erreichung eines möglichst hohen Kraftausstoßes in kürzester Zeit für ",
+                    ", ",
+                    " und "
                 ],
                 highlight: [
-                    "härteren Wurf",
-                    "schneleren Antritt",
-                    "höheren Sprung"
+                    "härtere Würfe",
+                    "schnellere Antritte",
+                    "höhere Sprünge."
                 ]
             },
             en: {
@@ -96,6 +133,16 @@ export const SECTIONS_DATA = {
                     " or "
                 ],
                 highlight: ["throw harder", "release faster", "jump higher"]
+            }
+        },
+        speed: {
+            values: {
+                default: ["1-2 Sek.", "2 Sek.", "explosiv"],
+                en: ["1-2 sec", "2 sec", "explosive"]
+            },
+            description: {
+                default: "Kurze Pause zwischen den Wh.",
+                en: "Short breaks between reps"
             }
         }
     }

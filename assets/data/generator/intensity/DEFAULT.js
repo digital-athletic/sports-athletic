@@ -32,9 +32,12 @@ const DEFAULT = {
             default: {
                 default: {
                     TOO_EASY: 5,
-                    SUCCEEDED: 2,
-                    TOO_HARD: -2
+                    SUCCEEDED: 2.5,
+                    TOO_HARD: -2.5
                 }
+            },
+            type: {
+                type: "weightFMax"
             }
         }
     },
@@ -56,7 +59,7 @@ const DEFAULT = {
         },
         weight: {
             default: {
-                default: 10
+                default: 40
             }
         }
     },
@@ -78,7 +81,7 @@ const DEFAULT = {
         },
         weight: {
             default: {
-                default: 20
+                default: 60
             }
         }
     }

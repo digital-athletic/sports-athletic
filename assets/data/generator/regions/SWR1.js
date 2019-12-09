@@ -1,3 +1,4 @@
+// TODO Unterscheidung Anf/Fortg und Profis (weniger Übungen, da mehr Sätze)
 const SWR1 = {
     default: {
         20: [

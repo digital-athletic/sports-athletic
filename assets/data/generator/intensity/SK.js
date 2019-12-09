@@ -4,10 +4,13 @@ const SK = {
         weight: {
             default: {
                 default: {
-                    TOO_EASY: 2.5,
-                    SUCCEEDED: 1.25,
+                    TOO_EASY: 5,
+                    SUCCEEDED: 2.5,
                     TOO_HARD: -2.5
                 }
+            },
+            type: {
+                type: "weightFMax"
             }
         }
     },

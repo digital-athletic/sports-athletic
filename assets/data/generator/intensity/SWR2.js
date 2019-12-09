@@ -68,11 +68,13 @@ const SWR2 = {
         weight: {
             default: {
                 default: {
-                    // TODO
                     TOO_EASY: 5,
-                    SUCCEEDED: 5,
-                    TOO_HARD: 5
+                    SUCCEEDED: 2.5,
+                    TOO_HARD: -2.5
                 }
+            },
+            type: {
+                type: "weightFMax"
             }
         }
     },

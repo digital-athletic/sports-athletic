@@ -285,6 +285,7 @@ const SWR1KG = {
     },
     "71": {
         tags: [
+            "AGE_CHILD",
             "SKILL_SWR",
             "EQTYPE_KG",
             "SIDE_ONE",
@@ -322,6 +323,8 @@ const SWR1KG = {
     },
     "72": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_FEMALE",
             "SKILL_SWR",
             "EQTYPE_KG",
             "SIDE_ONE",
@@ -359,6 +362,8 @@ const SWR1KG = {
     },
     "73": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_MALE",
             "SKILL_SWR",
             "EQTYPE_KG",
             "SIDE_ONE",
@@ -1338,6 +1343,7 @@ const SWR1KG = {
     },
     "99": {
         tags: [
+            "AGE_CHILD",
             "PREVENTION_SCHULTER",
             "PREVENTION_HANDGELENK_ELLENBOGEN",
             "PREVENTION_WIRBELSAULE",
@@ -1378,6 +1384,8 @@ const SWR1KG = {
     },
     "100": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_FEMALE",
             "PREVENTION_SCHULTER",
             "PREVENTION_HANDGELENK_ELLENBOGEN",
             "PREVENTION_WIRBELSAULE",
@@ -1418,6 +1426,8 @@ const SWR1KG = {
     },
     "101": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_MALE",
             "PREVENTION_SCHULTER",
             "PREVENTION_HANDGELENK_ELLENBOGEN",
             "PREVENTION_WIRBELSAULE",

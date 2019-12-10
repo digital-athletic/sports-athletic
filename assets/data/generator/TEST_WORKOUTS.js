@@ -19,7 +19,7 @@
  */
 const TEST_WORKOUTS = {
     BEGINNER: {
-        default: [251, 7, 88, 317]
+        default: [25, 7, 88, 317]
     },
     ADVANCED: {
         default: [25, 7, 297, 317],

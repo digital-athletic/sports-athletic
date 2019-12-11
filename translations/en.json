@@ -495,7 +495,8 @@
   "SAVE": "Speichern",
   "DO_MAX_REPS": "max",
   "NO_WORKOUT_YET": "No trainings yet",
-  "TEST_WORKOUT": "Test workout",
+  "TEST_WORKOUT": "Power test",
+  "TEST_WORKOUT_MENU_TITLE": "Start new power test",
   "ERROR_TITLE_GENERATOR": "No workout could be generated",
   "ERROR_TITLE_NO_EXERCISES_SUBTYPE_X": "No exercises can be used because of the following reasons: {{subtype}}",
   "ERROR_TITLE_NO_EXERCISES_PARAMS_X": "The following problems occurred: {{params}}",
@@ -539,5 +540,10 @@
   "PLACE_AND_EQUIPMENT": "Place & Equipment",
   "TEST": "Test",
   "NUMBER_MAX": "max.",
-  "2X": "each "
+  "2X": "each ",
+  "SPEED": "Execution speed",
+  "SWR_SPEED_DESCRIPTION": "Execution speed",
+  "START_POWER_TEST": "Krafttest starten",
+  "SKIP_POWER_TEST": "Test überspringen und ohne Gewichte trainieren",
+  "POWER_TEST": "Power test"
 }

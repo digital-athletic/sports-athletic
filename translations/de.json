@@ -493,7 +493,8 @@
   "SAVE": "Speichern",
   "DO_MAX_REPS": "max",
   "NO_WORKOUT_YET": "Keine Trainings bisher",
-  "TEST_WORKOUT": "Testtraining",
+  "TEST_WORKOUT": "Krafttest",
+  "TEST_WORKOUT_MENU_TITLE": "Neuen Krafttest starten",
   "ERROR_TITLE_GENERATOR": "Es konnte kein Training erstellt werden",
   "ERROR_TITLE_NO_EXERCISES_SUBTYPE_X": "Aus folgendem Grund konnten keinen Übungen gefunden werden: {{subtype}}",
   "ERROR_TITLE_NO_EXERCISES_PARAMS_X": "Folgende Probleme traten auf: {{params}}",
@@ -539,5 +540,8 @@
   "NUMBER_MAX": "max.",
   "2X": "je ",
   "SPEED": "Takt der Ausführung",
-  "SWR_SPEED_DESCRIPTION": "Takt der Ausführung"
+  "SWR_SPEED_DESCRIPTION": "Takt der Ausführung",
+  "START_POWER_TEST": "Krafttest starten",
+  "SKIP_POWER_TEST": "Test überspringen und ohne Gewichte trainieren",
+  "POWER_TEST": "Krafttest"
 }

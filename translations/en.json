@@ -520,6 +520,8 @@
   "TRAINING_DAY_TOOLTIP":"We recommend {{days}} days with {{minutes}} minutes each for your {{phase}}.",
   "NO_TRAINING_DAY_TITLE":"No training day chosen",
   "NO_TRAINING_DAY_MSG":"Select at least one day to generate your training plan.",
+  "NO_SEASON_PHASE_TYPE_TITLE":"No season phase chosen",
+  "NO_SEASON_PHASE_TYPE_MSG":"Please select a season phase so I can create your training plan.",
   "PAUSE_PHASE": "non training phase",
   "PREPATORY_PHASE": "prepatory phase",
   "COMPETITION_PHASE": "competition phase",

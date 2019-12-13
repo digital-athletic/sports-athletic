@@ -60,6 +60,9 @@ const DEFAULT = {
         weight: {
             default: {
                 default: 40
+            },
+            type: {
+                type: "weightFMax"
             }
         }
     },
@@ -82,6 +85,9 @@ const DEFAULT = {
         weight: {
             default: {
                 default: 60
+            },
+            type: {
+                type: "weightFMax"
             }
         }
     }

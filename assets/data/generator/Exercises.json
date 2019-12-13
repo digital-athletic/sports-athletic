@@ -15424,7 +15424,7 @@
   },
   {
     "Id": 241,
-    "Name": "Einbeinstand mit 2 Flaschen li und re Gstabi",
+    "Name": "Einbeinstand mit Flaschen (li)",
     "DisplayName": "Einbeinstand mit Flaschen (1x li, 1x re)",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
@@ -15460,9 +15460,9 @@
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
     "IsJump": false,
-    "Description": "Flaschen zu 2/3 füllen\r\nSchultern von den Ohren wegziehen und fixieren\r\nStandbein leicht beugen\r\nDie Bewegung findet aus den Schultern mit leicht gebeugten Ellenbogen statt\r\nIm 5-Sek.-Rhythmus von schnellen und kraftvollen zu langsamen und lockeren Armbewegungen wechseln\r\nBeim nächsten Satz das Standbein wechseln",
-    "Video": "exerciseVideos/241-video-636952567773456768.mp4",
-    "Picture": "exercisePictures/241-picture-636952568082422795.jpg",
+    "Description": "Flaschen zu 2/3 füllen\r\nSchultern von den Ohren wegziehen und fixieren\r\nStandbein leicht beugen\r\nDie Bewegung findet aus den Schultern mit leicht gebeugten Ellenbogen statt\r\nIm 5-Sek.-Rhythmus von schnellen und kraftvollen zu langsamen und lockeren Armbewegungen wechseln",
+    "Video": "exerciseVideos/241-video-637117740893650311.mp4",
+    "Picture": "exercisePictures/241-picture-637117740091878938.jpg",
     "OtherSideExerciseId": 861,
     "Values": {
       "repetition": {
@@ -15476,15 +15476,15 @@
       "duration": {
         "startValue": {
           "default": { "default": "30" },
-          "m": {},
-          "w": {},
-          "k": {}
+          "m": { "default": "30" },
+          "w": { "default": "30" },
+          "k": { "default": "30" }
         },
         "targetValue": {
           "default": { "default": "45" },
-          "m": {},
-          "w": {},
-          "k": {}
+          "m": { "default": "45" },
+          "w": { "default": "45" },
+          "k": { "default": "45" }
         }
       },
       "height": {
@@ -15495,7 +15495,7 @@
   },
   {
     "Id": 242,
-    "Name": "Stabi mit Schuh (aufstehen) li und re Gstabi",
+    "Name": "Schuh-Balance li",
     "DisplayName": "Schuh-Balance (1x li, 1x re)",
     "Level": { "m": 2, "w": 2 },
     "Tags": [
@@ -15531,9 +15531,9 @@
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
     "IsJump": false,
-    "Description": "Auf den Rücken legen und einen Schuh auf der Faust des linken Arms platzieren; Nur die 4 Finger, nicht den Daumen zur Stabilisierung nutzen; Ziel ist, dass der Schuh nicht runterfällt\r\nLinkes Bein anwinkeln, mit dem rechten Arm abstützen und den Oberkörper aufrichten\r\nDas Becken über die linke Ferse vom Boden wegdrücken und das rechte Knie unter den Körperschwerpunkt ziehen\r\nDann das Gewicht auf die Ferse und Zehen des vorderen Fußes verlagern und aufstehen; Dann das Knie nach vorn anheben\r\nNun das Ganze rückwärts ausführen, bis du wieder auf dem Rücken liegst\r\nDen Schuh im nächsten Satz auf der Faust des anderen Arms platzieren\r\nFür mehr Herausforderung: Augen schließen",
-    "Video": "exerciseVideos/242-video-636954072963255779.mp4",
-    "Picture": "exercisePictures/242-picture-636954073247846834.jpg",
+    "Description": "Leg dich auf den Rücken und platziere einen Schuh auf der Faust ohne den Daumen zur Stabilisierung zu verwenden\r\nZiel der Übung ist es aufzustehen und wieder in eine liegende Position zu gelangen, ohne dass der Schuh herunterfällt\r\nZusätzliche Herausforderung: schließ die Augen",
+    "Video": "exerciseVideos/242-video-637117883721406727.mp4",
+    "Picture": "exercisePictures/242-picture-637117882650202782.jpg",
     "OtherSideExerciseId": 862,
     "Values": {
       "repetition": {
@@ -42651,7 +42651,7 @@
     "Values": {
       "repetition": {
         "startValue": {
-          "default": { "default": "" },
+          "default": { "default": "5" },
           "m": { "default": "5" },
           "w": {
             "default": "5",
@@ -42667,10 +42667,10 @@
           }
         },
         "targetValue": {
-          "default": { "default": "6" },
-          "m": { "default": "6" },
-          "w": { "default": "6" },
-          "k": { "default": "6" },
+          "default": { "default": "8" },
+          "m": { "default": "8" },
+          "w": { "default": "8" },
+          "k": { "default": "8" },
           "type": { "type": "Unknown" }
         }
       },
@@ -42751,7 +42751,7 @@
     "IsAdvanceByReps": true,
     "IsAdvanceByDuration": false,
     "IsJump": false,
-    "Description": "Mittig ins Tor stellen und deine normale Abwehrhaltung einnehmen\r\nPosition 2 Sek. halten und dann mit der Armbewegung zum oberen Eck springen\r\nGewicht schnell auf das vom jeweiligen Toreck aus gesehen diagonale Bein verlagern, also rechtes Bein bei linkem Eck und umgekehrt\r\nKnie etwas beugen und dich explosiv vom Boden zur Torecke abdrücken",
+    "Description": "Mittig ins Tor stellen und deine normale Abwehrhaltung einnehmen mit leicht gebeugten Knien\r\nPosition 2 Sek. halten und dann zusammen mit deiner Torwart-Armbewegung zum oberen linken Eck springen\r\nDrück dich mit dabei mit dem rechten Bein so kraftvoll wie möglich vom Boden ab",
     "Video": "exerciseVideos/661-video-636954217033749689.mp4",
     "Picture": "exercisePictures/661-picture-636954216212458221.jpg",
     "OtherSideExerciseId": 989,
@@ -42816,7 +42816,7 @@
     "IsAdvanceByReps": true,
     "IsAdvanceByDuration": false,
     "IsJump": false,
-    "Description": "Mittig ins Tor stellen und deine normale Abwehrhaltung einnehmen\r\nPosition 2 Sek. halten und dann mit der Armbewegung zum unteren Eck springen\r\nGewicht schnell auf das vom jeweiligen Toreck aus gesehen diagonale Bein verlagern, also rechtes Bein bei linkem Eck und umgekehrt\r\nKnie etwas beugen und dich explosiv vom Boden zur Torecke abdrücken",
+    "Description": "Mittig ins Tor stellen und deine normale Abwehrhaltung einnehmen mit leicht gebeugten Knien\r\nPosition 2 Sek. halten und dann zusammen mit deiner Torwart-Armbewegung zum unteren linken Eck springen\r\nDrück dich mit dabei mit dem rechten Bein so kraftvoll wie möglich vom Boden ab",
     "Video": "exerciseVideos/662-video-636954217320168823.mp4",
     "Picture": "exercisePictures/662-picture-636954216496007539.jpg",
     "OtherSideExerciseId": 990,
@@ -43281,14 +43281,14 @@
     "Values": {
       "repetition": {
         "startValue": {
-          "default": { "default": "3" },
-          "m": { "default": "3" },
+          "default": { "default": "", "professional": "3" },
+          "m": { "default": "", "professional": "3" },
           "w": { "default": "" },
           "k": {}
         },
         "targetValue": {
-          "default": { "default": "5" },
-          "m": { "default": "5" },
+          "default": { "default": "", "professional": "4" },
+          "m": { "default": "", "professional": "4" },
           "w": { "default": "" },
           "k": { "default": "" },
           "type": { "type": "Unknown" }
@@ -44052,8 +44052,8 @@
     "IsAdvanceByReps": true,
     "IsAdvanceByDuration": false,
     "IsJump": true,
-    "Description": "Mehrmals hintereinander mit nur kurzem Bodenkontakt mit dem gleichen Bein springen und dann 10 m sprinten\r\nMit dem Standbein in die Luft springen, dessen Knie zur Brust ziehen und wieder auf ihm landen\r\nAuf den Zehenspitzen mit leicht gebeugtem Knie landen, um die auftretenden Kräfte für das Bein gut abzufedern\r\nDas Sprungbein nur so hoch ziehen, wie du sauber auf ihm landen kannst\r\n1 Durchgang pro Bein",
-    "Video": "exerciseVideos/685-video-636954214241411956.mp4",
+    "Description": "Springe mit dem gleichen Bein 5x in Folge nach vorne und sprinte anschließend für ca. 10 m\r\nZieh das Knie dabei zur Brust und achte auf einen kurzen Bodenkontakt mit dabei leicht gebeugtem Knie bei jeder Landung\r\nWiederhole das Ganze dann auf dem anderen Bein\r\nEin Durchgang pro Bein zählt als eine Wiederholung",
+    "Video": "exerciseVideos/685-video-637117885443944822.mp4",
     "Picture": "exercisePictures/685-picture-636954212807322821.jpg",
     "OtherSideExerciseId": null,
     "Values": {
@@ -44196,8 +44196,8 @@
     "IsAdvanceByReps": true,
     "IsAdvanceByDuration": false,
     "IsJump": true,
-    "Description": "Mit dem gleichen Bein mehrmals mit nur kurzem Bodenkontakt seitwärts springen und dann 10 m sprinten\r\nSeitlich bis diagonal nach vorn springen, das Knie zur Brust ziehen und wieder auf dem gleichen Bein landen\r\nAuf den Zehenspitzen mit leicht gebeugtem Knie landen, um die auftretenden Kräfte für das Bein gut abzufedern\r\nDas Sprungbein nur so hoch ziehen, wie du sauber auf ihm landen kannst\r\n1 Durchgang pro Bein",
-    "Video": "exerciseVideos/687-video-636954215196882170.mp4",
+    "Description": "Springe mit dem gleichen Bein 5x in Folge seitlich bis diagonal nach vorne und sprinte anschließend für ca. 10 m\r\nZieh das Knie dabei zur Brust und achte auf einen kurzen Bodenkontakt mit dabei leicht gebeugtem Knie bei jeder Landung\r\nWiederhole das Ganze dann auf dem anderen Bein\r\nEin Durchgang pro Bein zählt als eine Wiederholung",
+    "Video": "exerciseVideos/687-video-637117887071971629.mp4",
     "Picture": "exercisePictures/687-picture-636954213176845652.jpg",
     "OtherSideExerciseId": null,
     "Values": {
@@ -49706,7 +49706,7 @@
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
     "IsJump": false,
-    "Description": "Start mit Blickrichtung zur mittleren Pylone, danach in Laufrichtung drehen\r\nBoden bei jedem Richtungswechsel berühren",
+    "Description": "Start mit Blickrichtung zur mittleren Pylone, danach in Laufrichtung nach links drehen\r\nBoden bei jedem Richtungswechsel berühren",
     "Video": "exerciseVideos/757-video-636953607518319988.mp4",
     "Picture": "exercisePictures/757-picture-636953607065937696.jpg",
     "OtherSideExerciseId": 995,
@@ -50408,7 +50408,7 @@
   },
   {
     "Id": 767,
-    "Name": "Seitschritte im Tor (Torwart) Zone 1 K",
+    "Name": "schnelle Seitschritte im Tor (li)",
     "DisplayName": "schnelle Seitschritte im Tor li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
@@ -56535,7 +56535,7 @@
   },
   {
     "Id": 861,
-    "Name": "Einbeinstand mit 2 Flaschen li und re Gstabi",
+    "Name": "Einbeinstand mit Flaschen (re)",
     "DisplayName": "Einbeinstand mit Flaschen (1x li, 1x re)",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
@@ -56571,9 +56571,9 @@
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
     "IsJump": false,
-    "Description": "Flaschen zu 2/3 füllen\r\nSchultern von den Ohren wegziehen und fixieren\r\nStandbein leicht beugen\r\nDie Bewegung findet aus den Schultern mit leicht gebeugten Ellenbogen statt\r\nIm 5-Sek.-Rhythmus von schnellen und kraftvollen zu langsamen und lockeren Armbewegungen wechseln\r\nBeim nächsten Satz das Standbein wechseln",
-    "Video": "exerciseVideos/241-video-636952567773456768.mp4",
-    "Picture": "exercisePictures/241-picture-636952568082422795.jpg",
+    "Description": "Flaschen zu 2/3 füllen\r\nSchultern von den Ohren wegziehen und fixieren\r\nStandbein leicht beugen\r\nDie Bewegung findet aus den Schultern mit leicht gebeugten Ellenbogen statt\r\nIm 5-Sek.-Rhythmus von schnellen und kraftvollen zu langsamen und lockeren Armbewegungen wechseln",
+    "Video": "exerciseVideos/861-video-637117741285324226.mp4",
+    "Picture": "exercisePictures/861-picture-637117740308728825.jpg",
     "OtherSideExerciseId": 241,
     "Values": {
       "repetition": {
@@ -56585,12 +56585,17 @@
         "targetValue": { "default": {}, "m": {}, "w": {}, "k": {} }
       },
       "duration": {
-        "startValue": { "default": {}, "m": {}, "w": {}, "k": {} },
+        "startValue": {
+          "default": { "default": "30" },
+          "m": { "default": "30" },
+          "w": { "default": "30" },
+          "k": { "default": "30" }
+        },
         "targetValue": {
           "default": { "default": "45" },
-          "m": {},
-          "w": {},
-          "k": {}
+          "m": { "default": "45" },
+          "w": { "default": "45" },
+          "k": { "default": "45" }
         }
       },
       "height": {
@@ -56601,7 +56606,7 @@
   },
   {
     "Id": 862,
-    "Name": "Stabi mit Schuh (aufstehen) li und re Gstabi",
+    "Name": "Schuh-Balance re",
     "DisplayName": "Schuh-Balance (1x li, 1x re)",
     "Level": { "m": 2, "w": 2 },
     "Tags": [
@@ -56637,9 +56642,9 @@
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
     "IsJump": false,
-    "Description": "Auf den Rücken legen und einen Schuh auf der Faust des linken Arms platzieren; Nur die 4 Finger, nicht den Daumen zur Stabilisierung nutzen; Ziel ist, dass der Schuh nicht runterfällt\r\nLinkes Bein anwinkeln, mit dem rechten Arm abstützen und den Oberkörper aufrichten\r\nDas Becken über die linke Ferse vom Boden wegdrücken und das rechte Knie unter den Körperschwerpunkt ziehen\r\nDann das Gewicht auf die Ferse und Zehen des vorderen Fußes verlagern und aufstehen; Dann das Knie nach vorn anheben\r\nNun das Ganze rückwärts ausführen, bis du wieder auf dem Rücken liegst\r\nDen Schuh im nächsten Satz auf der Faust des anderen Arms platzieren\r\nFür mehr Herausforderung: Augen schließen",
-    "Video": "exerciseVideos/242-video-636954072963255779.mp4",
-    "Picture": "exercisePictures/242-picture-636954073247846834.jpg",
+    "Description": "Leg dich auf den Rücken und platziere einen Schuh auf der Faust ohne den Daumen zur Stabilisierung zu verwenden\r\nZiel der Übung ist es aufzustehen und wieder in eine liegende Position zu gelangen, ohne dass der Schuh herunterfällt\r\nZusätzliche Herausforderung: schließ die Augen",
+    "Video": "exerciseVideos/862-video-637117884057953276.mp4",
+    "Picture": "exercisePictures/862-picture-637117882880480046.jpg",
     "OtherSideExerciseId": 242,
     "Values": {
       "repetition": {
@@ -65275,21 +65280,21 @@
     "IsAdvanceByReps": true,
     "IsAdvanceByDuration": false,
     "IsJump": true,
-    "Description": "Hinknien und mit den Armen und der Hüfte Schwung holen um aufzuspringen\r\nDie Füße schnell unter dich ziehen und auf dem linken Bein landen\r\nDrück dich sofort von der Innenkante des Fußes nach rechts ab und spring so weit wie möglich\r\nWichtig: Die Beine landen hüft- bis schulterbreit und die Knie und Zehen zeigen in die gleiche Richtung\r\nDie Übung ist sehr schwer, mach sie nur, wenn du sie dir auch zutraust",
-    "Video": "exerciseVideos/669-video-636954390109121790.mp4",
-    "Picture": "exercisePictures/669-picture-636954387891227844.jpg",
+    "Description": "Hinknien und mit den Armen und der Hüfte Schwung holen um aufzuspringen\r\nDie Füße schnell unter dich ziehen und auf dem rechten Bein landen\r\nDrück dich sofort von der Innenkante des Fußes nach links ab und spring so weit wie möglich\r\nWichtig: Die Beine landen hüft- bis schulterbreit und die Knie und Zehen zeigen in die gleiche Richtung\r\nDie Übung ist sehr schwer, mach sie nur, wenn du sie dir auch zutraust",
+    "Video": "exerciseVideos/987-video-637117531867372840.mp4",
+    "Picture": "exercisePictures/987-picture-637117532191443166.jpg",
     "OtherSideExerciseId": 669,
     "Values": {
       "repetition": {
         "startValue": {
-          "default": { "default": "3" },
-          "m": { "default": "3" },
+          "default": { "default": "", "professional": "3" },
+          "m": { "default": "", "professional": "3" },
           "w": { "default": "" },
           "k": {}
         },
         "targetValue": {
-          "default": { "default": "5" },
-          "m": { "default": "5" },
+          "default": { "default": "", "professional": "4" },
+          "m": { "default": "", "professional": "4" },
           "w": { "default": "" },
           "k": { "default": "" },
           "type": { "type": "Unknown" }
@@ -65346,8 +65351,8 @@
     "IsAdvanceByDuration": false,
     "IsJump": true,
     "Description": "Auf ein Bein stellen und einen kleinen Seithopser auf das andere Bein machen\r\nDabei mit gebeugtem Knie und Oberkörper auf dem Innen- bis Mittelfuß landen und dich dann explosiv zur Gegenrichtung abdrücken\r\nWichtig: Knie und Zehen zeigen bei beiden Landungen in die gleiche Richtung\r\nExplosivität und Sprungweite erst steigern, wenn du die Bewegung beherrschst",
-    "Video": "exerciseVideos/664-video-636954401396404803.mp4",
-    "Picture": "exercisePictures/664-picture-636954400910220913.jpg",
+    "Video": "exerciseVideos/988-video-637117535232918730.mp4",
+    "Picture": "exercisePictures/988-picture-637117534446574163.jpg",
     "OtherSideExerciseId": 664,
     "Values": {
       "repetition": {
@@ -65410,9 +65415,9 @@
     "IsAdvanceByReps": true,
     "IsAdvanceByDuration": false,
     "IsJump": false,
-    "Description": "Mittig ins Tor stellen und deine normale Abwehrhaltung einnehmen\r\nPosition 2 Sek. halten und dann mit der Armbewegung zum oberen Eck springen\r\nGewicht schnell auf das vom jeweiligen Toreck aus gesehen diagonale Bein verlagern, also rechtes Bein bei linkem Eck und umgekehrt\r\nKnie etwas beugen und dich explosiv vom Boden zur Torecke abdrücken",
-    "Video": "exerciseVideos/661-video-636954217033749689.mp4",
-    "Picture": "exercisePictures/661-picture-636954216212458221.jpg",
+    "Description": "Mittig ins Tor stellen und deine normale Abwehrhaltung einnehmen mit leicht gebeugten Knien\r\nPosition 2 Sek. halten und dann zusammen mit deiner Torwart-Armbewegung zum oberen rechten Eck springen\r\nDrück dich mit dabei mit dem linken Bein so kraftvoll wie möglich vom Boden ab",
+    "Video": "exerciseVideos/989-video-637117540068991050.mp4",
+    "Picture": "exercisePictures/989-picture-637117540355319964.jpg",
     "OtherSideExerciseId": 661,
     "Values": {
       "repetition": {
@@ -65475,9 +65480,9 @@
     "IsAdvanceByReps": true,
     "IsAdvanceByDuration": false,
     "IsJump": false,
-    "Description": "Mittig ins Tor stellen und deine normale Abwehrhaltung einnehmen\r\nPosition 2 Sek. halten und dann mit der Armbewegung zum unteren Eck springen\r\nGewicht schnell auf das vom jeweiligen Toreck aus gesehen diagonale Bein verlagern, also rechtes Bein bei linkem Eck und umgekehrt\r\nKnie etwas beugen und dich explosiv vom Boden zur Torecke abdrücken",
-    "Video": "exerciseVideos/662-video-636954217320168823.mp4",
-    "Picture": "exercisePictures/662-picture-636954216496007539.jpg",
+    "Description": "Mittig ins Tor stellen und deine normale Abwehrhaltung einnehmen mit leicht gebeugten Knien\r\nPosition 2 Sek. halten und dann zusammen mit deiner Torwart-Armbewegung zum unteren rechten Eck springen\r\nDrück dich mit dabei mit dem linken Bein so kraftvoll wie möglich vom Boden ab",
+    "Video": "exerciseVideos/990-video-637117548547171420.mp4",
+    "Picture": "exercisePictures/990-picture-637117547969773467.jpg",
     "OtherSideExerciseId": 662,
     "Values": {
       "repetition": {
@@ -65541,14 +65546,14 @@
     "IsAdvanceByReps": true,
     "IsAdvanceByDuration": false,
     "IsJump": false,
-    "Description": "Beine schulterbreit mit parallelen Füßen platzieren, Knie und Hüfte auf 90°-Winkel beugen\r\n2 Sek. halten und den Körper dann kraftvoll mit dem linken Bein vom Boden weg und zur Seite abstoßen\r\nSchwung des linken Armes für noch mehr Dynamik nutzen",
-    "Video": "exerciseVideos/659-video-636953645589951629.mp4",
-    "Picture": "exercisePictures/659-picture-636953645910465909.jpg",
+    "Description": "Beine schulterbreit mit parallelen Füßen platzieren, Knie und Hüfte auf 90°-Winkel beugen\r\n2 Sek. halten und den Körper dann kraftvoll mit dem rechten Bein vom Boden weg und zur Seite abstoßen\r\nSchwung des rechten Armes für noch mehr Dynamik nutzen",
+    "Video": "exerciseVideos/991-video-637117552883334072.mp4",
+    "Picture": "exercisePictures/991-picture-637117553300240748.jpg",
     "OtherSideExerciseId": 659,
     "Values": {
       "repetition": {
         "startValue": {
-          "default": { "default": "" },
+          "default": { "default": "5" },
           "m": { "default": "5" },
           "w": {
             "default": "5",
@@ -65564,10 +65569,10 @@
           }
         },
         "targetValue": {
-          "default": { "default": "6" },
-          "m": { "default": "6" },
-          "w": { "default": "6" },
-          "k": { "default": "6" },
+          "default": { "default": "8" },
+          "m": { "default": "8" },
+          "w": { "default": "8" },
+          "k": { "default": "8" },
           "type": { "type": "Unknown" }
         }
       },
@@ -65623,9 +65628,9 @@
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
     "IsJump": false,
-    "Description": "Start in der Mitte des Tors, Sprint nach links zur Pylone, Boden berühren, Sprint zurück vors Tor\r\nDann abwechselnd die beiden oberen und dann unteren Ecken berühren, hierbei nur Seitschritte machen",
-    "Video": "exerciseVideos/769-video-636954226581418452.mp4",
-    "Picture": "exercisePictures/769-picture-636954226074178924.jpg",
+    "Description": "Start in der Mitte des Tors, Sprint nach rechts zur Pylone, Boden berühren, Sprint zurück vors Tor\r\nDann abwechselnd die beiden oberen und dann unteren Ecken berühren, hierbei nur Seitschritte machen",
+    "Video": "exerciseVideos/992-video-637117555166552340.mp4",
+    "Picture": "exercisePictures/992-picture-637117555408237397.jpg",
     "OtherSideExerciseId": 769,
     "Values": {
       "repetition": {
@@ -65669,7 +65674,7 @@
   },
   {
     "Id": 993,
-    "Name": "Seitschritte im Tor (Torwart) Zone 1 K",
+    "Name": "schnelle Seitschritte im Tor (re)",
     "DisplayName": "schnelle Seitschritte im Tor re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
@@ -65705,8 +65710,8 @@
     "IsAdvanceByDuration": true,
     "IsJump": false,
     "Description": "Übung nur mit schnellen Seitschritten\r\nStart neben dem Pfosten, Pfosten jedes Mal berühren (erst die beiden oberen, dann die unteren Ecken)\r\nZwei Durchgänge",
-    "Video": "exerciseVideos/767-video-636954231122956049.mp4",
-    "Picture": "exercisePictures/767-picture-636954230606185295.jpg",
+    "Video": "exerciseVideos/993-video-637117557635489357.mp4",
+    "Picture": "exercisePictures/993-picture-637117558056945494.jpg",
     "OtherSideExerciseId": 767,
     "Values": {
       "repetition": {
@@ -65782,8 +65787,8 @@
     "IsAdvanceByDuration": true,
     "IsJump": false,
     "Description": "Sprint von der Tormitte zum 6 m Kreis, Rückwärtslauf zum Tor\r\nIm Tor nur Seitschritte machen und abwechselnd erst die oberen, dann die unteren Pfostenecken berühren",
-    "Video": "exerciseVideos/768-video-636954231439672554.mp4",
-    "Picture": "exercisePictures/768-picture-636954230779607032.jpg",
+    "Video": "exerciseVideos/994-video-637117559355654061.mp4",
+    "Picture": "exercisePictures/994-picture-637117558918443598.jpg",
     "OtherSideExerciseId": 768,
     "Values": {
       "repetition": {
@@ -65862,9 +65867,9 @@
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
     "IsJump": false,
-    "Description": "Start mit Blickrichtung zur mittleren Pylone, danach in Laufrichtung drehen\r\nBoden bei jedem Richtungswechsel berühren",
-    "Video": "exerciseVideos/757-video-636953607518319988.mp4",
-    "Picture": "exercisePictures/757-picture-636953607065937696.jpg",
+    "Description": "Start mit Blickrichtung zur mittleren Pylone, danach in Laufrichtung nach rechts drehen\r\nBoden bei jedem Richtungswechsel berühren",
+    "Video": "exerciseVideos/995-video-637117724531622766.mp4",
+    "Picture": "exercisePictures/995-picture-637117724851111540.jpg",
     "OtherSideExerciseId": 757,
     "Values": {
       "repetition": {
@@ -65943,8 +65948,8 @@
     "IsAdvanceByDuration": true,
     "IsJump": false,
     "Description": "Geraden mit kurzem Antritt laufen, zwischen den Pylonen nur Seitschritte machen\r\nEng um die Pylonen laufen und rechtzeitig bremsen",
-    "Video": "exerciseVideos/758-video-636953619235271006.mp4",
-    "Picture": "exercisePictures/758-picture-636953619581622771.jpg",
+    "Video": "exerciseVideos/996-video-637117727896463962.mp4",
+    "Picture": "exercisePictures/996-picture-637117727209951997.jpg",
     "OtherSideExerciseId": 758,
     "Values": {
       "repetition": {
@@ -66021,9 +66026,9 @@
     "IsAdvanceByReps": true,
     "IsAdvanceByDuration": false,
     "IsJump": false,
-    "Description": "Beine schulterbreit, Füße parallel, Knie und Hüfte im 90°-Winkel gebeugt\r\nKraftvoll mit dem linken Bein vom Boden wegdrücken, Armschwung links für mehr Dynamik nutzen\r\nJe kraftvoller und explosiver der erste Druck in den Boden, desto schneller die weiteren Seitschritte",
-    "Video": "exerciseVideos/665-video-636953645243071349.mp4",
-    "Picture": "exercisePictures/665-picture-636953646083209148.jpg",
+    "Description": "Beine schulterbreit, Füße parallel, Knie und Hüfte im 90°-Winkel gebeugt\r\nKraftvoll mit dem rechten Bein vom Boden wegdrücken, Armschwung rechts für mehr Dynamik nutzen\r\nJe kraftvoller und explosiver der erste Druck in den Boden, desto schneller die weiteren Seitschritte",
+    "Video": "exerciseVideos/997-video-637117729232603269.mp4",
+    "Picture": "exercisePictures/997-picture-637117729547072676.jpg",
     "OtherSideExerciseId": 665,
     "Values": {
       "repetition": {
@@ -66087,8 +66092,8 @@
     "IsAdvanceByDuration": true,
     "IsJump": false,
     "Description": "Bei den ersten beiden Richtungswechseln den Boden berühren\r\nSprint eng um die Pylonen",
-    "Video": "exerciseVideos/754-video-636954237126722606.mp4",
-    "Picture": "exercisePictures/754-picture-636954238082495315.jpg",
+    "Video": "exerciseVideos/998-video-637117730783176064.mp4",
+    "Picture": "exercisePictures/998-picture-637117730119620982.jpg",
     "OtherSideExerciseId": 754,
     "Values": {
       "repetition": {
@@ -66170,8 +66175,8 @@
     "IsAdvanceByDuration": true,
     "IsJump": false,
     "Description": "An der 1. und 2. Pylone jedes mal den Boden berühren, wenn du die Richtung um 180° änderst.\r\nMit hohem Tempo eng um die Pylonen laufen\r\nTempo so hoch wie möglich halten\r\nNach der kurzen Pause wieder am Startpunkt beginnen",
-    "Video": "exerciseVideos/755-video-636954237428851374.mp4",
-    "Picture": "exercisePictures/755-picture-636954238192587473.jpg",
+    "Video": "exerciseVideos/999-video-637117731731885896.mp4",
+    "Picture": "exercisePictures/999-picture-637117732107234712.jpg",
     "OtherSideExerciseId": 755,
     "Values": {
       "repetition": {
@@ -66255,8 +66260,8 @@
     "IsAdvanceByDuration": true,
     "IsJump": false,
     "Description": "An der 1. und 2. Pylone jedes mal den Boden berühren, wenn du die Richtung um 180° änderst.\r\nMit hohem Tempo eng um die Pylonen laufen\r\nTempo so hoch wie möglich halten",
-    "Video": "exerciseVideos/756-video-636954237822376514.mp4",
-    "Picture": "exercisePictures/756-picture-636954238477403137.jpg",
+    "Video": "exerciseVideos/1000-video-637117733247764597.mp4",
+    "Picture": "exercisePictures/1000-picture-637117732522675624.jpg",
     "OtherSideExerciseId": 756,
     "Values": {
       "repetition": {

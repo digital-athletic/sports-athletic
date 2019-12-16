@@ -96,6 +96,7 @@
   "X_MINUTES_SHORT": "{{minutes}} min",
   "START": "Start",
   "END": "End",
+  "ERROR": "Fehler",
   "ERROR_INVALID_MAIL_ADRESS_TITLE": "Invalid E-Mail",
   "ERROR_INVALID_MAIL_ADRESS_MSG": "Please use a valid E-mail address.",
   "ERROR_INVALID_PASSWORD_TITLE": "Invalid Passwort",
@@ -546,7 +547,8 @@
   "2X": "each ",
   "SPEED": "Execution speed",
   "SWR_SPEED_DESCRIPTION": "Execution speed",
-  "START_POWER_TEST": "Krafttest starten",
-  "SKIP_POWER_TEST": "Test überspringen und ohne Gewichte trainieren",
-  "POWER_TEST": "Power test"
+  "START_POWER_TEST": "Start test",
+  "SKIP_POWER_TEST": "Skip test and workout without weights",
+  "POWER_TEST": "Power test",
+  "POWER_TEST_REP_INPUT_DESC": "Do as many repetitions as you can do with good technique."
 }

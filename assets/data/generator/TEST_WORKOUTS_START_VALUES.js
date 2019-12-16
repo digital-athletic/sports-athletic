@@ -71,26 +71,26 @@ const START_VALUES = {
     },
     "315": {
         w: {
-            beginner: 4,
-            advanced: 5,
-            professional: 6
+            beginner: 5,
+            advanced: 7,
+            professional: 8
         },
         m: {
-            beginner: 6,
-            advanced: 8,
-            professional: 10
+            beginner: 9,
+            advanced: 12.5,
+            professional: 15
         }
     },
     "317": {
         w: {
-            beginner: 4,
-            advanced: 5,
-            professional: 6
+            beginner: 5,
+            advanced: 7,
+            professional: 8
         },
         m: {
-            beginner: 6,
-            advanced: 8,
-            professional: 10
+            beginner: 9,
+            advanced: 12.5,
+            professional: 15
         }
     },
     "342": {

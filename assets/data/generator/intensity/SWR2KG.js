@@ -1,5 +1,4 @@
 // @format
-// TODO complete
 const SWR2KG = {
     adjustment: {
         duration: {
@@ -36,10 +35,9 @@ const SWR2KG = {
         height: {
             default: {
                 default: {
-                    // TODO
-                    TOO_EASY: 5,
+                    TOO_EASY: 10,
                     SUCCEEDED: 5,
-                    TOO_HARD: 5
+                    TOO_HARD: -5
                 }
             }
         },
@@ -77,10 +75,9 @@ const SWR2KG = {
         weight: {
             default: {
                 default: {
-                    // TODO
-                    TOO_EASY: 5,
+                    TOO_EASY: 10,
                     SUCCEEDED: 5,
-                    TOO_HARD: 5
+                    TOO_HARD: -5
                 }
             }
         }
@@ -88,23 +85,44 @@ const SWR2KG = {
     startValue: {
         duration: {
             default: {
-                default: 25
+                default: 30
+            },
+            k: {
+                default: 30
+            },
+            m: {
+                default: 40,
+                advanced: 45,
+                professional: 45
+            },
+            w: {
+                default: 30
             }
         },
         height: {
             default: {
-                // TODO
                 default: 20
             }
         },
         repetition: {
             default: {
-                default: 6
+                default: 7
+            },
+            k: {
+                default: 7
+            },
+            m: {
+                default: 10,
+                advanced: 12,
+                professional: 12
+            },
+            w: {
+                default: 7,
+                professional: 8
             }
         },
         weight: {
             default: {
-                // TODO
                 default: 65
             }
         }
@@ -117,7 +135,6 @@ const SWR2KG = {
         },
         height: {
             default: {
-                // TODO
                 default: 40
             }
         },
@@ -128,7 +145,6 @@ const SWR2KG = {
         },
         weight: {
             default: {
-                // TODO
                 default: 75,
                 beginner: 75,
                 advanced: 80,

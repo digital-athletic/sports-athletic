@@ -495,7 +495,7 @@
   "DO_MAX_REPS": "max",
   "NO_WORKOUT_YET": "Keine Trainings bisher",
   "TEST_WORKOUT": "Krafttest",
-  "TEST_WORKOUT_MENU_TITLE": "Neuen Krafttest starten",
+  "START_NEW_TEST_WORKOUT": "Neuen Krafttest starten",
   "ERROR_TITLE_GENERATOR": "Es konnte kein Training erstellt werden",
   "ERROR_TITLE_NO_EXERCISES_SUBTYPE_X": "Aus folgendem Grund konnten keinen Übungen gefunden werden: {{subtype}}",
   "ERROR_TITLE_NO_EXERCISES_PARAMS_X": "Folgende Probleme traten auf: {{params}}",
@@ -548,5 +548,16 @@
   "START_POWER_TEST": "Krafttest starten",
   "SKIP_POWER_TEST": "Test überspringen und ohne Gewichte trainieren",
   "POWER_TEST": "Krafttest",
-  "POWER_TEST_REP_INPUT_DESC": "Mach so viele Wiederholungen, wie du mit sauberer Technik schaffst."
+  "POWER_TEST_REP_INPUT_DESC": "Mach so viele Wiederholungen, wie du mit sauberer Technik schaffst.",
+  "TEST_AXIS_DATE": "Tag",
+  "TEST_AXIS_WEIGHT": "Gewicht (in kg)",
+  "STATISTIC_LEGEND_SQUAD": "Kniebeuge",
+  "STATISTIC_LEGEND_BENCH_PRESS": "Bankdrücken",
+  "STATISTIC_LEGEND_ROWING": "Rudern",
+  "YOUR_TEST_RESULTS": "Deine Krafttests",
+  "SQUAD": "Kniebeuge",
+  "BENCH_PRESS": "Bankdrücken",
+  "ROWING": "Rudern",
+  "WORKOUT_STATISTIC_TITLE": "Training",
+  "TEST_STATISTIC_TITLE": "Krafttest"
 }

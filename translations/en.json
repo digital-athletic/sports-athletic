@@ -556,12 +556,15 @@
   "STATISTIC_LEGEND_SQUAD": "Squad",
   "STATISTIC_LEGEND_BENCH_PRESS": "Bench press",
   "STATISTIC_LEGEND_ROWING": "Rowing",
+  "STATISTIC_LEGEND_SHOULDER_PRESS": "Shoulder press",
   "YOUR_TEST_RESULTS": "Your test results",
   "SQUAD": "Squad",
   "BENCH_PRESS": "Bench press",
   "ROWING": "Rowing",
+  "SHOULDER_PRESS": "Shoulder press",
   "WORKOUT_STATISTIC_TITLE": "Training",
-  "TEST_STATISTIC_TITLE": "Krafttest",
+  "TEST_STATISTIC_TITLE": "Power test",
+  "NO_POWER_TEST_YET": "Your results will be listed here as soon as you have completed your first test.",
   "WEEK": "Week",
   "INTENSITY": "Intensity"
 }

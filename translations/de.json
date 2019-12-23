@@ -554,12 +554,15 @@
   "STATISTIC_LEGEND_SQUAD": "Kniebeuge",
   "STATISTIC_LEGEND_BENCH_PRESS": "Bankdrücken",
   "STATISTIC_LEGEND_ROWING": "Rudern",
+  "STATISTIC_LEGEND_SHOULDER_PRESS": "Schulterdrücken",
   "YOUR_TEST_RESULTS": "Deine Krafttests",
   "SQUAD": "Kniebeuge",
   "BENCH_PRESS": "Bankdrücken",
   "ROWING": "Rudern",
+  "SHOULDER_PRESS": "Schulterdrücken",
   "WORKOUT_STATISTIC_TITLE": "Training",
   "TEST_STATISTIC_TITLE": "Krafttest",
+  "NO_POWER_TEST_YET": "Hier werden deine Ergebnisse aufgelistet, sobald du einen Krafttest gemacht hast.",
   "WEEK": "Woche",
   "INTENSITY": "Intensität"
 }

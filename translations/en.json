@@ -552,7 +552,7 @@
   "POWER_TEST": "Power test",
   "POWER_TEST_REP_INPUT_DESC": "Do as many repetitions as you can do with good technique.",
   "TEST_AXIS_DATE": "Day",
-  "TEST_AXIS_WEIGHT": "Weight",
+  "TEST_AXIS_WEIGHT": "kg",
   "STATISTIC_LEGEND_SQUAD": "Squad",
   "STATISTIC_LEGEND_BENCH_PRESS": "Bench press",
   "STATISTIC_LEGEND_ROWING": "Rowing",

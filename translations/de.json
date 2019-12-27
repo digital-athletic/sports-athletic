@@ -550,7 +550,7 @@
   "POWER_TEST": "Krafttest",
   "POWER_TEST_REP_INPUT_DESC": "Mach so viele Wiederholungen, wie du mit sauberer Technik schaffst.",
   "TEST_AXIS_DATE": "Tag",
-  "TEST_AXIS_WEIGHT": "Gewicht (in kg)",
+  "TEST_AXIS_WEIGHT": "kg",
   "STATISTIC_LEGEND_SQUAD": "Kniebeuge",
   "STATISTIC_LEGEND_BENCH_PRESS": "Bankdrücken",
   "STATISTIC_LEGEND_ROWING": "Rudern",

@@ -3,9 +3,9 @@ const SkillPriorities = {
         pain: {
             phase: {
                 0: ["PHASE", "PREV1", "WUSPEZIAL"],
-                20: ["PREV2"],
-                30: ["PREV3"],
-                40: ["WU"]
+                20: ["WU"],
+                30: ["BAS"],
+                40: ["GKS"]
             }
         },
         noPain: {
@@ -20,8 +20,8 @@ const SkillPriorities = {
     ADULT: {
         pain: {
             combined: {
-                0: ["PHASE", "HBCARDIO", "PREV1", "WUSPEZIAL"],
-                30: ["MOB"],
+                0: ["PHASE", "PREV1", "WUSPEZIAL", "MOB"],
+                30: ["HBCARDIO"],
                 45: ["WU"],
                 60: ["CD"]
             },
@@ -49,7 +49,7 @@ const SkillPriorities = {
                 0: ["PHASE", "HBCARDIO"],
                 30: ["MOB"],
                 45: ["WU"],
-                60: ["CD"]
+                60: ["CD", "BR"]
             },
             phase: {
                 0: ["PHASE", "MOB"],

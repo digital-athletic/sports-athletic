@@ -1,65 +1,11 @@
 const PREV = {
     "637": {
-        tags: [
-            "AGE_ADULT",
-            "PREVENTION_SCHULTER",
-            "SKILL_MAX_KRAFT_TEST",
-            "SKILL_SWR",
-            "EQTYPE_WEIGHTS",
-            "AGE_ADULT",
-            "SIDE_BOTH",
-            "MUSCLEINVOLVEMENT_COMPLEX",
-            "REGION_OBERKOERPER",
-            "EXERCISEDIRECTION_HORIZONTAL_PUSH",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "SEASONPHASE_PAUSE",
-            "SKILL_SWR_1_M",
-            "SKILL_SWR_2_M",
-            "SKILL_SWR_1_W",
-            "SKILL_SWR_2_W",
-            "PLACE_STUDIO",
-            "EQ_DUMBBELL",
-            "EQ_BENCH",
-            "EQ_BARBELL_BENCH",
-            "EQ_ADJUSTABLE_BENCH",
-            "MUSCLE_SCHULTER_VORNE",
-            "MUSCLE_ARMSTRECKER",
-            "MUSCLE_BRUST",
-            "MUSCLESECONDARY_SCHULTERBLATT_FIXIEREND_FRONT",
-            "PAIN_SCHULTER"
-        ],
-        levels: { "1": { id: 355 } }
+        tags: [],
+        levels: { "1": { id: -1 } }
     },
     "638": {
-        tags: [
-            "AGE_ADULT",
-            "PREVENTION_SCHULTER",
-            "SKILL_SWR",
-            "EQTYPE_WEIGHTS",
-            "AGE_ADULT",
-            "SIDE_BOTH",
-            "MUSCLEINVOLVEMENT_COMPLEX",
-            "REGION_OBERKOERPER",
-            "EXERCISEDIRECTION_HORIZONTAL_PUSH",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "SEASONPHASE_PAUSE",
-            "SKILL_SWR_1_M",
-            "SKILL_SWR_2_M",
-            "SKILL_SWR_1_W",
-            "SKILL_SWR_2_W",
-            "PLACE_STUDIO",
-            "EQ_DUMBBELL",
-            "EQ_INCLINE_BENCH",
-            "EQ_ADJUSTABLE_BENCH",
-            "MUSCLE_SCHULTER_VORNE",
-            "MUSCLE_ARMSTRECKER",
-            "MUSCLE_BRUST",
-            "MUSCLESECONDARY_SCHULTERBLATT_FIXIEREND_FRONT",
-            "PAIN_SCHULTER"
-        ],
-        levels: { "1": { id: 354 } }
+        tags: [],
+        levels: { "1": { id: -1 } }
     },
     "639": {
         tags: [

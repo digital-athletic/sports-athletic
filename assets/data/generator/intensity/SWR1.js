@@ -53,16 +53,22 @@ const SWR1 = {
                 }
             }
         },
-        weight: {
+        weightFMax: {
             default: {
                 default: {
                     TOO_EASY: 5,
                     SUCCEEDED: 2.5,
                     TOO_HARD: -2.5
                 }
-            },
-            type: {
-                type: "weightFMax"
+            }
+        },
+        weightAbsolute: {
+            default: {
+                default: {
+                    TOO_EASY: 2,
+                    SUCCEEDED: 1,
+                    TOO_HARD: -1
+                }
             }
         }
     },

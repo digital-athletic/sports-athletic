@@ -72,12 +72,21 @@ const SWR1KG = {
                 }
             }
         },
-        weight: {
+        weightFMax: {
             default: {
                 default: {
-                    TOO_EASY: 10,
-                    SUCCEEDED: 5,
-                    TOO_HARD: -5
+                    TOO_EASY: 5,
+                    SUCCEEDED: 2.5,
+                    TOO_HARD: -2.5
+                }
+            }
+        },
+        weightAbsolute: {
+            default: {
+                default: {
+                    TOO_EASY: 2,
+                    SUCCEEDED: 1,
+                    TOO_HARD: -1
                 }
             }
         }

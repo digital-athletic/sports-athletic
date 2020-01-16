@@ -15,7 +15,16 @@ const SAKG = {
                 }
             }
         },
-        weight: {
+        weightFMax: {
+            default: {
+                default: {
+                    TOO_EASY: 5,
+                    SUCCEEDED: 2.5,
+                    TOO_HARD: -2.5
+                }
+            }
+        },
+        weightAbsolute: {
             default: {
                 default: {
                     TOO_EASY: 1,

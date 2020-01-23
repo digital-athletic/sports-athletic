@@ -564,5 +564,7 @@
   "TEST_STATISTIC_TITLE": "Krafttest",
   "NO_POWER_TEST_YET": "Hier werden deine Ergebnisse aufgelistet, sobald du einen Krafttest gemacht hast.",
   "WEEK": "Woche",
-  "INTENSITY": "Intensität"
+  "INTENSITY": "Intensität",
+  "ERROR_SAVING_VALUE_TITLE": "Fehler",
+  "ERROR_SAVING_VALUE_MSG": "Der eingegebene Wert konnte leider nicht gespeichert werden."
 }

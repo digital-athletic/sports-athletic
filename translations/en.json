@@ -566,5 +566,7 @@
   "TEST_STATISTIC_TITLE": "Power test",
   "NO_POWER_TEST_YET": "Your results will be listed here as soon as you have completed your first test.",
   "WEEK": "Week",
-  "INTENSITY": "Intensity"
+  "INTENSITY": "Intensity",
+  "ERROR_SAVING_VALUE_TITLE": "Error",
+  "ERROR_SAVING_VALUE_MSG": "We are sorry. The entered value could not be saved."
 }

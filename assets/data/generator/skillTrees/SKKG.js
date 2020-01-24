@@ -43,6 +43,7 @@ const SKKG = {
     },
     "255": {
         tags: [
+            "AGE_CHILD",
             "SKILL_SCHNELLKRAFT",
             "EQTYPE_KG",
             "SIDE_BOTH",
@@ -84,6 +85,8 @@ const SKKG = {
     },
     "256": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_FEMALE",
             "SKILL_SCHNELLKRAFT",
             "EQTYPE_KG",
             "SIDE_BOTH",
@@ -115,7 +118,6 @@ const SKKG = {
             "EQ_PARK_BENCH",
             "EQ_BOX_LOW",
             "MUSCLESECONDARY_OBERSCHENKELVORDERSEITE",
-            "AGE_ADULT",
             "BLOCK_SCHULTER",
             "BLOCK_ELLENBOGEN",
             "BLOCK_WIRBELSAEULE",
@@ -131,6 +133,8 @@ const SKKG = {
     },
     "257": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_MALE",
             "SKILL_SCHNELLKRAFT",
             "EQTYPE_KG",
             "SIDE_BOTH",
@@ -161,7 +165,6 @@ const SKKG = {
             "MUSCLESECONDARY_GESAESS",
             "MUSCLESECONDARY_HINTERER_OBERSCHENKEL",
             "BLOCK_HANDGELENK",
-            "AGE_ADULT",
             "BLOCK_SCHULTER",
             "BLOCK_ELLENBOGEN",
             "BLOCK_WIRBELSAEULE",
@@ -178,6 +181,7 @@ const SKKG = {
     },
     "258": {
         tags: [
+            "AGE_CHILD",
             "SKILL_SCHNELLKRAFT",
             "EQTYPE_KG",
             "SIDE_BOTH",
@@ -200,6 +204,8 @@ const SKKG = {
     },
     "259": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_FEMALE",
             "SKILL_SCHNELLKRAFT",
             "EQTYPE_KG",
             "SIDE_BOTH",
@@ -225,6 +231,8 @@ const SKKG = {
     },
     "260": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_MALE",
             "SKILL_SCHNELLKRAFT",
             "EQTYPE_KG",
             "SIDE_BOTH",
@@ -250,6 +258,7 @@ const SKKG = {
     },
     "261": {
         tags: [
+            "AGE_CHILD",
             "SKILL_SCHNELLKRAFT",
             "EQTYPE_KG",
             "SIDE_BOTH",
@@ -285,6 +294,8 @@ const SKKG = {
     },
     "262": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_FEMALE",
             "SKILL_SCHNELLKRAFT",
             "EQTYPE_KG",
             "SIDE_BOTH",
@@ -320,6 +331,8 @@ const SKKG = {
     },
     "263": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_MALE",
             "SKILL_SCHNELLKRAFT",
             "EQTYPE_KG",
             "SIDE_BOTH",
@@ -366,6 +379,7 @@ const SKKG = {
             "SKILL_SCHNELLKRAFT",
             "EQTYPE_KG",
             "AGE_ADULT",
+            "GENDER_FEMALE",
             "SIDE_BOTH",
             "MUSCLEINVOLVEMENT_COMPLEX",
             "REGION_OBERKOERPER",
@@ -396,6 +410,7 @@ const SKKG = {
             "SKILL_SCHNELLKRAFT",
             "EQTYPE_KG",
             "AGE_ADULT",
+            "GENDER_MALE",
             "SIDE_BOTH",
             "MUSCLEINVOLVEMENT_COMPLEX",
             "REGION_OBERKOERPER",

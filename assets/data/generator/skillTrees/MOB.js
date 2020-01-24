@@ -156,34 +156,6 @@ const MOB = {
         ],
         levels: { "1": { id: 492 }, "2": { id: 492 }, "3": { id: 492 } }
     },
-    "465": {
-        tags: [
-            "SKILL_WARM_UP",
-            "SKILL_MOBILITY",
-            "EQTYPE_KG",
-            "SIDE_BOTH",
-            "MUSCLEINVOLVEMENT_ISOLATED",
-            "REGION_UNTERKOERPER",
-            "EXERCISEDIRECTION_UNTERKOERPER",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "SEASONPHASE_PAUSE",
-            "PLACE_HALL",
-            "PLACE_STUDIO",
-            "PLACE_HOME",
-            "PLACE_OUTSIDE",
-            "MUSCLE_HUEFT_INNEN_ROTATOR",
-            "MUSCLE_HUEFT_AUSSEN_ROTATOR",
-            "MUSCLE_GESAESS",
-            "MUSCLE_INNERER_OBERSCHENKEL",
-            "MUSCLE_AEUSSERER_OBERSCHENKEL",
-            "MUSCLE_SPRUNGGELENK",
-            "PAIN_HUEFTE",
-            "PAIN_KNIE",
-            "PAIN_SPRUNGGELENK"
-        ],
-        levels: { "1": { id: 124 }, "2": { id: 124 }, "3": { id: 124 } }
-    },
     "466": {
         tags: [
             "PREVENTION_SCHULTER",

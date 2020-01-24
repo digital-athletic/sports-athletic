@@ -1,6 +1,7 @@
 const GKSKG = {
     "529": {
         tags: [
+            "AGE_CHILD",
             "SKILL_STABILITY_BODY",
             "EQTYPE_EQUIPMENT",
             "SIDE_ONE",
@@ -426,6 +427,7 @@ const GKSKG = {
             "SKILL_STABILITY_BODY",
             "EQTYPE_KG",
             "SIDE_ONE",
+            "AGE_CHILD",
             "MUSCLEINVOLVEMENT_ISOLATED",
             "REGION_GANZKOERPER",
             "EXERCISEDIRECTION_SIDE",
@@ -493,6 +495,7 @@ const GKSKG = {
             "SKILL_STABILITY_BODY",
             "EQTYPE_KG",
             "SIDE_ONE",
+            "AGE_CHILD",
             "MUSCLEINVOLVEMENT_ISOLATED",
             "REGION_GANZKOERPER",
             "EXERCISEDIRECTION_SIDE",

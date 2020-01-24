@@ -1,6 +1,7 @@
 const SAKG = {
     "348": {
         tags: [
+            "AGE_CHILD",
             "SKILL_SCHNELLIGKEITSAUSDAUER",
             "EQTYPE_KG",
             "POSITION_FIELD",
@@ -72,57 +73,9 @@ const SAKG = {
             "5": { id: 99 }
         }
     },
-    "350": {
-        tags: [
-            "SKILL_SCHNELLIGKEITSAUSDAUER",
-            "EQTYPE_KG",
-            "POSITION_FIELD",
-            "AGE_ADULT",
-            "SIDE_ONE",
-            "MUSCLEINVOLVEMENT_COMPLEX",
-            "REGION_UNTERKOERPER",
-            "EXERCISEDIRECTION_KNEE",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "PLACE_HALL",
-            "PLACE_STUDIO",
-            "PLACE_HOME",
-            "PLACE_OUTSIDE",
-            "MUSCLE_OBERSCHENKELVORDERSEITE",
-            "MUSCLE_GESAESS",
-            "MUSCLE_WADE",
-            "MUSCLESECONDARY_SCHULTER_VORNE",
-            "MUSCLESECONDARY_BRUST",
-            "MUSCLESECONDARY_GROSSER_RUECKENMUSKEL_LAT",
-            "MUSCLESECONDARY_SCHULTERBLATT_FIXIEREND_HINTEN",
-            "MUSCLESECONDARY_SCHULTERBLATT_FIXIEREND_FRONT",
-            "MUSCLESECONDARY_UNTERER_RUECKEN",
-            "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
-            "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
-            "MUSCLESECONDARY_HINTERER_OBERSCHENKEL",
-            "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
-            "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL",
-            "BLOCK_KNIE",
-            "BLOCK_SPRUNGGELENK",
-            "BLOCK_WIRBELSAEULE",
-            "BLOCK_HUEFTE",
-            "BLOCK_HIGH_BMI",
-            "MUSCLE_HUEFT_BEUGER",
-            "MUSCLESECONDARY_SCHULTER",
-            "MUSCLESECONDARY_HUEFT_BEUGER",
-            "EQ_CHAIR",
-            "EQ_EXERCISING_BENCH"
-        ],
-        levels: {
-            "1": { id: 468 },
-            "2": { id: 468 },
-            "3": { id: 471 },
-            "4": { id: 97 },
-            "5": { id: 99 }
-        }
-    },
     "351": {
         tags: [
+            "AGE_CHILD",
             "SKILL_SCHNELLIGKEITSAUSDAUER",
             "EQTYPE_KG",
             "POSITION_FIELD",
@@ -154,6 +107,8 @@ const SAKG = {
     },
     "352": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_FEMALE",
             "SKILL_SCHNELLIGKEITSAUSDAUER",
             "EQTYPE_KG",
             "POSITION_FIELD",
@@ -185,6 +140,8 @@ const SAKG = {
     },
     "353": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_MALE",
             "SKILL_SCHNELLIGKEITSAUSDAUER",
             "EQTYPE_KG",
             "POSITION_FIELD",
@@ -211,7 +168,6 @@ const SAKG = {
             "PAIN_HANDGELENK",
             "PAIN_ELLENBOGEN",
             "PAIN_SCHULTER",
-            "AGE_ADULT",
             "SEASONPHASE_PAUSE",
             "SKILL_SWR_1_M",
             "EQ_BENCH",
@@ -231,6 +187,7 @@ const SAKG = {
     },
     "354": {
         tags: [
+            "AGE_CHILD",
             "SKILL_SCHNELLIGKEITSAUSDAUER",
             "EQTYPE_KG",
             "POSITION_FIELD",
@@ -303,7 +260,8 @@ const SAKG = {
             "EQ_PARK_BENCH",
             "EQ_BOX_LOW",
             "MUSCLESECONDARY_OBERSCHENKELVORDERSEITE",
-            "AGE_ADULT"
+            "AGE_ADULT",
+            "GENDER_FEMALE"
         ],
         levels: {
             "1": { id: 271 },
@@ -315,6 +273,8 @@ const SAKG = {
     },
     "356": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_MALE",
             "SKILL_SCHNELLIGKEITSAUSDAUER",
             "EQTYPE_KG",
             "POSITION_FIELD",
@@ -346,7 +306,6 @@ const SAKG = {
             "EQ_PARK_BENCH",
             "EQ_BOX_LOW",
             "MUSCLESECONDARY_OBERSCHENKELVORDERSEITE",
-            "AGE_ADULT",
             "BLOCK_SCHULTER",
             "BLOCK_ELLENBOGEN",
             "BLOCK_WIRBELSAEULE",
@@ -361,76 +320,6 @@ const SAKG = {
         }
     },
     "357": {
-        tags: [
-            "SKILL_SCHNELLIGKEITSAUSDAUER",
-            "EQTYPE_KG",
-            "POSITION_FIELD",
-            "SIDE_ONE",
-            "MUSCLEINVOLVEMENT_COMPLEX",
-            "REGION_UNTERKOERPER",
-            "EXERCISEDIRECTION_KNEE",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "PLACE_HALL",
-            "PLACE_STUDIO",
-            "PLACE_HOME",
-            "PLACE_OUTSIDE",
-            "MUSCLE_OBERSCHENKELVORDERSEITE",
-            "MUSCLE_GESAESS",
-            "MUSCLESECONDARY_UNTERER_RUECKEN",
-            "MUSCLESECONDARY_HUEFT_BEUGER",
-            "MUSCLESECONDARY_HINTERER_OBERSCHENKEL",
-            "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
-            "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL",
-            "BLOCK_KNIE",
-            "BLOCK_HUEFTE",
-            "AGE_ADULT",
-            "EQ_BENCH",
-            "EQ_BARBELL_BENCH",
-            "EQ_ADJUSTABLE_BENCH",
-            "EQ_CHAIR",
-            "EQ_EXERCISING_BENCH",
-            "EQ_PARK_BENCH",
-            "EQ_BOX_LOW"
-        ],
-        levels: { "2": { id: 179 }, "3": { id: 179 }, "4": { id: 182 } }
-    },
-    "358": {
-        tags: [
-            "SKILL_SCHNELLIGKEITSAUSDAUER",
-            "EQTYPE_KG",
-            "POSITION_FIELD",
-            "SIDE_ONE",
-            "MUSCLEINVOLVEMENT_COMPLEX",
-            "REGION_UNTERKOERPER",
-            "EXERCISEDIRECTION_KNEE",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "PLACE_HALL",
-            "PLACE_STUDIO",
-            "PLACE_HOME",
-            "PLACE_OUTSIDE",
-            "MUSCLE_OBERSCHENKELVORDERSEITE",
-            "MUSCLE_GESAESS",
-            "MUSCLESECONDARY_UNTERER_RUECKEN",
-            "MUSCLESECONDARY_HUEFT_BEUGER",
-            "MUSCLESECONDARY_HINTERER_OBERSCHENKEL",
-            "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
-            "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL",
-            "BLOCK_KNIE",
-            "BLOCK_HUEFTE",
-            "AGE_ADULT",
-            "EQ_BENCH",
-            "EQ_BARBELL_BENCH",
-            "EQ_ADJUSTABLE_BENCH",
-            "EQ_CHAIR",
-            "EQ_EXERCISING_BENCH",
-            "EQ_PARK_BENCH",
-            "EQ_BOX_LOW"
-        ],
-        levels: { "2": { id: 179 }, "3": { id: 179 }, "4": { id: 182 } }
-    },
-    "359": {
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
             "EQTYPE_KG",
@@ -505,6 +394,7 @@ const SAKG = {
     },
     "361": {
         tags: [
+            "AGE_CHILD",
             "SKILL_SCHNELLIGKEITSAUSDAUER",
             "EQTYPE_KG",
             "POSITION_FIELD",
@@ -542,6 +432,8 @@ const SAKG = {
     },
     "362": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_FEMALE",
             "SKILL_SCHNELLIGKEITSAUSDAUER",
             "EQTYPE_KG",
             "POSITION_FIELD",
@@ -579,6 +471,8 @@ const SAKG = {
     },
     "363": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_MALE",
             "SKILL_SCHNELLIGKEITSAUSDAUER",
             "EQTYPE_KG",
             "POSITION_FIELD",
@@ -616,6 +510,7 @@ const SAKG = {
     },
     "364": {
         tags: [
+            "AGE_CHILD",
             "SKILL_SCHNELLIGKEITSAUSDAUER",
             "EQTYPE_KG",
             "POSITION_FIELD",
@@ -640,6 +535,8 @@ const SAKG = {
     },
     "365": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_FEMALE",
             "SKILL_SCHNELLIGKEITSAUSDAUER",
             "EQTYPE_KG",
             "POSITION_FIELD",
@@ -664,6 +561,8 @@ const SAKG = {
     },
     "366": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_MALE",
             "SKILL_SCHNELLIGKEITSAUSDAUER",
             "EQTYPE_KG",
             "POSITION_FIELD",
@@ -686,8 +585,10 @@ const SAKG = {
         ],
         levels: { "1": { id: 512 }, "2": { id: 512 }, "3": { id: 512 } }
     },
+    /*
     "367": { tags: [], levels: { "3": { id: 596 } } },
     "368": { tags: [], levels: { "2": { id: 596 }, "3": { id: 596 } } },
+    */
     "369": {
         tags: [
             "SKILL_SCHNELLIGKEITSAUSDAUER",
@@ -740,6 +641,7 @@ const SAKG = {
     },
     "371": {
         tags: [
+            "AGE_CHILD",
             "SKILL_SCHNELLIGKEITSAUSDAUER",
             "EQTYPE_EQUIPMENT",
             "POSITION_FIELD",
@@ -767,6 +669,8 @@ const SAKG = {
     },
     "372": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_FEMALE",
             "SKILL_SCHNELLIGKEITSAUSDAUER",
             "EQTYPE_EQUIPMENT",
             "POSITION_FIELD",
@@ -794,6 +698,8 @@ const SAKG = {
     },
     "373": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_MALE",
             "SKILL_SCHNELLIGKEITSAUSDAUER",
             "EQTYPE_EQUIPMENT",
             "POSITION_FIELD",
@@ -878,6 +784,7 @@ const SAKG = {
     },
     "376": {
         tags: [
+            "AGE_CHILD",
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
             "EQTYPE_EQUIPMENT",
             "POSITION_FIELD",
@@ -906,6 +813,8 @@ const SAKG = {
     },
     "377": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_FEMALE",
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
             "EQTYPE_EQUIPMENT",
             "POSITION_FIELD",
@@ -929,7 +838,6 @@ const SAKG = {
             "MUSCLESECONDARY_HINTERER_OBERSCHENKEL",
             "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
             "MUSCLESECONDARY_WADE",
-            "AGE_ADULT",
             "SIDE_ONE",
             "BLOCK_HANDGELENK"
         ],
@@ -942,6 +850,8 @@ const SAKG = {
     },
     "378": {
         tags: [
+            "AGE_ADULT",
+            "GENDER_MALE",
             "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL",
             "EQTYPE_EQUIPMENT",
             "POSITION_FIELD",
@@ -965,7 +875,6 @@ const SAKG = {
             "MUSCLESECONDARY_HINTERER_OBERSCHENKEL",
             "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
             "MUSCLESECONDARY_WADE",
-            "AGE_ADULT",
             "SIDE_ONE",
             "BLOCK_HANDGELENK",
             "BLOCK_SCHULTER"

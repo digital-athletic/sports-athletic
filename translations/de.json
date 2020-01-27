@@ -566,5 +566,6 @@
   "WEEK": "Woche",
   "INTENSITY": "Intensität",
   "ERROR_SAVING_VALUE_TITLE": "Fehler",
-  "ERROR_SAVING_VALUE_MSG": "Der eingegebene Wert konnte leider nicht gespeichert werden."
+  "ERROR_SAVING_VALUE_MSG": "Der eingegebene Wert konnte leider nicht gespeichert werden.",
+  "PAUSE": "Pause"
 }

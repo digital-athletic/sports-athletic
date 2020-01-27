@@ -568,5 +568,6 @@
   "WEEK": "Week",
   "INTENSITY": "Intensity",
   "ERROR_SAVING_VALUE_TITLE": "Error",
-  "ERROR_SAVING_VALUE_MSG": "We are sorry. The entered value could not be saved."
+  "ERROR_SAVING_VALUE_MSG": "We are sorry. The entered value could not be saved.",
+  "PAUSE": "Pause"
 }

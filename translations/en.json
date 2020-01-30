@@ -568,5 +568,12 @@
   "WEEK": "Week",
   "INTENSITY": "Intensity",
   "ERROR_SAVING_VALUE_TITLE": "Error",
-  "ERROR_SAVING_VALUE_MSG": "We are sorry. The entered value could not be saved."
+  "ERROR_SAVING_VALUE_MSG": "We are sorry. The entered value could not be saved.",
+  "STATISTIC_POWER_TEST_IN_GYM": "The power test will only take place in the gym.",
+  "BODY_PARTS_WHERE_ARE_THE_ACHING_MUSCLES": "Tell me where your aching muscles are. Than I can adjust your workout for today.",
+  "BODY_PARTS_SELECT_HURTING_PARTS": "Select the parts where you feel pain while working out. Then I can take care of them.",
+  "TRAINING_DAYS_TRAINING_ON_TRAININGDAYS": "If you have a good fitnesslevel you can also train on days with handball training. But please leave a day out before and after gamedays",
+  "GENERATING_THANKS_FOR_INFORMATION": "Thank you for your information. Now I will prepare your workouts.",
+  "WELCOME_HEY_I_AM_INGEMAR": "Hi!\nI am Ingemar, I am your personal athletics coach and handball player for 28 years. Let's start generating your personal workout plan.",
+  "SELECT_TRAINING_TODAY_IS_YOUR_POWER_TEST": "Today is your power test, with whom I will determine your weights for the training. Please make as much clean repetitions as you can in the third set of every exercise."
 }

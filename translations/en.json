@@ -251,10 +251,10 @@
   "SA_SECTION_CAPTION": "Keep the speed up until the end",
   "MAX_KRAFT_SECTION_CAPTION": "Always watch your technique!",
   "MAX_SECTION_CAPTION": "Always watch your technique!",
-  "SWR1": "Jump, throw and body strength 1",
-  "SWR1KG": "Jump, throw and body strength 1",
-  "SWR2": "Jump, throw and body strength 2",
-  "SWR2KG": "Jump, throw and body strength 2",
+  "SWR1": "Muscle development 1",
+  "SWR1KG": "Muscle development 1",
+  "SWR2": "Muscle development 2",
+  "SWR2KG": "Muscle development 2",
   "MAX": "Maximum power",
   "MAX_KRAFT": "Maximum power",
   "SK": "Explosive power",
@@ -561,5 +561,7 @@
   "BENCH_PRESS": "Bench press",
   "ROWING": "Rowing",
   "WORKOUT_STATISTIC_TITLE": "Training",
-  "TEST_STATISTIC_TITLE": "Krafttest"
+  "TEST_STATISTIC_TITLE": "Krafttest",
+  "WEEK": "Week",
+  "INTENSITY": "Intesity"
 }

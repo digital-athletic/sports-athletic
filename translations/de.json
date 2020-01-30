@@ -249,10 +249,10 @@
   "SA_SECTION_CAPTION": "WICHTIG!\nKonzentrier dich zuerst auf Technik und Dynamik, bevor du das Tempo erhöhst!",
   "MAX_KRAFT_SECTION_CAPTION": "WICHTIG!\nHör auf, wenn du dir keine weitere saubere Wh. zutraust!",
   "MAX_SECTION_CAPTION": "WICHTIG!\nHör auf, wenn du dir keine weitere saubere Wh. zutraust!",
-  "SWR1": "Sprung-, Wurf-, Rumpfkraft 1",
-  "SWR1KG": "Sprung-, Wurf-, Rumpfkraft 1",
-  "SWR2": "Sprung-, Wurf-, Rumpfkraft 2",
-  "SWR2KG": "Sprung-, Wurf-, Rumpfkraft 2",
+  "SWR1": "Muskelaufbau 1",
+  "SWR1KG": "Muskelaufbau 1",
+  "SWR2": "Muskelaufbau 2",
+  "SWR2KG": "Muskelaufbau 2",
   "MAX": "Maximalkraft",
   "MAX_KRAFT": "Maximalkraft",
   "SK": "Schnellkraft",
@@ -559,5 +559,7 @@
   "BENCH_PRESS": "Bankdrücken",
   "ROWING": "Rudern",
   "WORKOUT_STATISTIC_TITLE": "Training",
-  "TEST_STATISTIC_TITLE": "Krafttest"
+  "TEST_STATISTIC_TITLE": "Krafttest",
+  "WEEK": "Woche",
+  "INTENSITY": "Intesität"
 }

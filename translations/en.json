@@ -179,8 +179,10 @@
   "PREVENTION_TILE_SPINE": "Spine",
   "PREVENTION_TILE_SHOULDER": "Shoulder",
   "PREVENTION_TILE_WRIST": "Wrist and elbow",
-  "STABILITY_TILE_BAS": "Leg mechanical axes",
-  "STABILITY_TILE_GKS": "Full body",
+  "STABILITY_TILE_BAS": "Stability - Leg mechanical axes",
+  "STABILITY_TILE_GKS": "Stability - Full body",
+  "QUICKSTART_BAS_DESC": "Improve joint stability to prevent injuries",
+  "QUICKSTART_GKS_DESC": "Improve joint stability to prevent injuries",
   "WORKOUT_WITH_OWN_PLAN": "Use your periodised workout plan",
   "INCOMPLETE_ANAMNESIS_MESSAGE": "Enter your personal data to start with your individual workout plans.",
   "PHASE_ENDED_MESSAGE": "Your training phase has ended. Start a new one to continue your training.",
@@ -568,5 +570,9 @@
   "WEEK": "Week",
   "INTENSITY": "Intensity",
   "ERROR_SAVING_VALUE_TITLE": "Error",
-  "ERROR_SAVING_VALUE_MSG": "We are sorry. The entered value could not be saved."
+  "ERROR_SAVING_VALUE_MSG": "We are sorry. The entered value could not be saved.",
+  "FOCUS_TRAINING_TITLE": "Focus-Trainings",
+  "FOCUS_TRAINING_SUBTITLE": "10-20 minutes topic specific training",
+  "PREVENTION_TRAINING_TITLE": "Imminent Pains",
+  "PREVENTION_TRAINING_SUBTITLE": "Specifically improve imminent pains"
 }

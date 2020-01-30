@@ -177,8 +177,10 @@
   "PREVENTION_TILE_SPINE": "Wirbelsäule",
   "PREVENTION_TILE_SHOULDER": "Schulter",
   "PREVENTION_TILE_WRIST": "Handgelenk und Ellbogen",
-  "STABILITY_TILE_BAS": "Beinachsen",
-  "STABILITY_TILE_GKS": "Ganzkörper",
+  "STABILITY_TILE_BAS": "Stabilität - Beinachsen",
+  "QUICKSTART_BAS_DESC": "Gelenkstabilität zur Verletzungsvorbeugung erhöhen",
+  "STABILITY_TILE_GKS": "Stabilität - Ganzkörper",
+  "QUICKSTART_GKS_DESC": "Gelenkstabilität zur Verletzungsvorbeugung erhöhen",
   "WORKOUT_WITH_OWN_PLAN": "Dein Trainingszyklus",
   "INCOMPLETE_ANAMNESIS_MESSAGE": "Gib deine persönlichen Daten ein, um deine individuellen Trainingspläne zu bekommen.",
   "PHASE_ENDED_MESSAGE": "Deine Trainingsphase ist abgeschlossen. Starte jetzt eine neue Phase und setzte dein Training fort.",
@@ -566,5 +568,9 @@
   "WEEK": "Woche",
   "INTENSITY": "Intensität",
   "ERROR_SAVING_VALUE_TITLE": "Fehler",
-  "ERROR_SAVING_VALUE_MSG": "Der eingegebene Wert konnte leider nicht gespeichert werden."
+  "ERROR_SAVING_VALUE_MSG": "Der eingegebene Wert konnte leider nicht gespeichert werden.",
+  "FOCUS_TRAINING_TITLE": "Fokus-Trainings",
+  "FOCUS_TRAINING_SUBTITLE": "10-20 minütige Trainings für ausgewählte Schwerpunkte",
+  "PREVENTION_TRAINING_TITLE": "Spezifische Beschwerden",
+  "PREVENTION_TRAINING_SUBTITLE": "Akute Beschwerden, gezielt verbessern"
 }

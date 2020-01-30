@@ -179,8 +179,10 @@
   "PREVENTION_TILE_SPINE": "Spine",
   "PREVENTION_TILE_SHOULDER": "Shoulder",
   "PREVENTION_TILE_WRIST": "Wrist and elbow",
-  "STABILITY_TILE_BAS": "Leg mechanical axes",
-  "STABILITY_TILE_GKS": "Full body",
+  "STABILITY_TILE_BAS": "Stability - Leg mechanical axes",
+  "STABILITY_TILE_GKS": "Stability - Full body",
+  "QUICKSTART_BAS_DESC": "Improve joint stability to prevent injuries",
+  "QUICKSTART_GKS_DESC": "Improve joint stability to prevent injuries",
   "WORKOUT_WITH_OWN_PLAN": "Use your periodised workout plan",
   "INCOMPLETE_ANAMNESIS_MESSAGE": "Enter your personal data to start with your individual workout plans.",
   "PHASE_ENDED_MESSAGE": "Your training phase has ended. Start a new one to continue your training.",
@@ -575,5 +577,9 @@
   "TRAINING_DAYS_TRAINING_ON_TRAININGDAYS": "If you have a good fitnesslevel you can also train on days with handball training. But please leave a day out before and after gamedays",
   "GENERATING_THANKS_FOR_INFORMATION": "Thank you for your information. Now I will prepare your workouts.",
   "WELCOME_HEY_I_AM_INGEMAR": "Hi!\nI am Ingemar, I am your personal athletics coach and handball player for 28 years. Let's start generating your personal workout plan.",
-  "SELECT_TRAINING_TODAY_IS_YOUR_POWER_TEST": "Today is your power test, with whom I will determine your weights for the training. Please make as much clean repetitions as you can in the third set of every exercise."
+  "SELECT_TRAINING_TODAY_IS_YOUR_POWER_TEST": "Today is your power test, with whom I will determine your weights for the training. Please make as much clean repetitions as you can in the third set of every exercise.",
+  "FOCUS_TRAINING_TITLE": "Focus-Trainings",
+  "FOCUS_TRAINING_SUBTITLE": "10-20 minutes topic specific training",
+  "PREVENTION_TRAINING_TITLE": "Imminent Pains",
+  "PREVENTION_TRAINING_SUBTITLE": "Specifically improve imminent pains"
 }

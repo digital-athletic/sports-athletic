@@ -1,4 +1,4 @@
-const muscleWFront = [
+const kineticMuscles = [
     {
         name: "SCHIENBEIN_LI",
         width: 0.1,
@@ -8,16 +8,6 @@ const muscleWFront = [
         backgroundColor: "rgba(0,0,0,0)",
         image: require("../../img/bodyparts/muscle_w_front/schienbein_li.png"),
         secondaryImage: require("../../img/bodyparts/muscle_w_front/schienbein_li.png")
-    },
-    {
-        name: "HERZ",
-        width: 0.15,
-        height: 0.08,
-        top: 0.21,
-        left: 0.15,
-        backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_w_front/herz.png"),
-        secondaryImage: require("../../img/bodyparts/muscle_w_front/herz.png")
     },
     {
         name: "WADEN",
@@ -213,4 +203,19 @@ const muscleWFront = [
         secondaryImage: require("../../img/bodyparts/muscle_w_front/fingerHandgelenksmuskulatur_li.png")
     }
 ];
-export { muscleWFront };
+
+const muscleWFrontSoreness = kineticMuscles;
+const muscleWFront = [
+    {
+        name: "CARDIO",
+        width: 0.15,
+        height: 0.08,
+        top: 0.21,
+        right: 0.1,
+        backgroundColor: "rgba(0,0,0,0)",
+        image: require("../../img/bodyparts/muscle_m_front/herz.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_front/herz.png")
+    }
+].concat(kineticMuscles);
+
+export { muscleWFront, muscleWFrontSoreness };

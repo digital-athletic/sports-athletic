@@ -10,7 +10,8 @@ Home.EQUIPMENT = [
     "BLACK_ROLL",
     "CHAIR",
     "WALL",
-    "CEILING"
+    "CEILING",
+    "TOWEL"
 ];
 
 export default Home;

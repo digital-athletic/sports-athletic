@@ -144,7 +144,7 @@ const WARMUP = {
             "PAIN_KNIE",
             "PAIN_SPRUNGGELENK"
         ],
-        levels: { "1": { id: 431 }, "2": { id: 432 }, "3": { id: 432 } }
+        levels: { "1": { id: 431 }}
     },
     "411": {
         tags: [
@@ -656,33 +656,6 @@ const WARMUP = {
             "PAIN_WIRBELSAEULE"
         ],
         levels: { "2": { id: 429 }, "3": { id: 429 } }
-    },
-    "430": {
-        tags: [
-            "SKILL_WARM_UP",
-            "EQTYPE_KG",
-            "SIDE_BOTH",
-            "MUSCLEINVOLVEMENT_COMPLEX",
-            "REGION_UNTERKOERPER",
-            "EXERCISEDIRECTION_KNEE",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "SEASONPHASE_PAUSE",
-            "PLACE_HALL",
-            "PLACE_STUDIO",
-            "PLACE_HOME",
-            "PLACE_OUTSIDE",
-            "MUSCLE_OBERSCHENKELVORDERSEITE",
-            "MUSCLE_GESAESS",
-            "MUSCLE_WADE",
-            "MUSCLESECONDARY_UNTERER_RUECKEN",
-            "MUSCLESECONDARY_HINTERER_OBERSCHENKEL",
-            "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
-            "PAIN_HUEFTE",
-            "PAIN_KNIE",
-            "PAIN_SPRUNGGELENK"
-        ],
-        levels: { "1": { id: 426 }, "2": { id: 426 }, "3": { id: 426 } }
     },
     "431": {
         tags: [

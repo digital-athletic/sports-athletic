@@ -249,42 +249,6 @@ const PREV = {
         ],
         levels: { "1": { id: 458 } }
     },
-    "649": {
-        tags: [
-            "PREVENTION_SCHULTER",
-            "PREVENTION_KNIE_HUEFTE",
-            "PREVENTION_SPRUNGGELENK",
-            "PREVENTION_WIRBELSAULE",
-            "EQTYPE_WEIGHTS",
-            "AGE_ADULT",
-            "SIDE_BOTH",
-            "SIDE_BOTH",
-            "MUSCLEINVOLVEMENT_COMPLEX",
-            "REGION_GANZKOERPER",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "SEASONPHASE_PAUSE",
-            "PLACE_STUDIO",
-            "EQ_DUMBBELL",
-            "EQ_MEDICINE_BALL",
-            "EQ_MEDICINE_BALL_JUMPING",
-            "MUSCLE_SCHULTER_VORNE",
-            "MUSCLE_OBERER_RUECKEN",
-            "MUSCLE_UNTERER_RUECKEN",
-            "MUSCLE_OBERSCHENKELVORDERSEITE",
-            "MUSCLE_GESAESS",
-            "MUSCLE_INNERER_OBERSCHENKEL",
-            "MUSCLESECONDARY_NACKEN",
-            "MUSCLESECONDARY_HINTERER_OBERSCHENKEL",
-            "MUSCLESECONDARY_WADE",
-            "PAIN_SCHULTER",
-            "PAIN_WIRBELSAEULE",
-            "PAIN_HUEFTE",
-            "PAIN_KNIE",
-            "PAIN_SPRUNGGELENK"
-        ],
-        levels: { "1": { id: 490 } }
-    },
     "650": {
         tags: [
             "AGE_ADULT",

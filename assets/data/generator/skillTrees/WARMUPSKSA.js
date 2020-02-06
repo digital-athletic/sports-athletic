@@ -24,7 +24,7 @@ const WARMUPSKSA = {
             "PAIN_KNIE",
             "PAIN_SPRUNGGELENK"
         ],
-        levels: { "1": { id: 431 }, "2": { id: 432 }, "3": { id: 432 } }
+        levels: { "1": { id: 431 }}
     },
     "435": {
         tags: [

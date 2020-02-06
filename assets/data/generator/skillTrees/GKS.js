@@ -229,33 +229,6 @@ const GKS = {
         ],
         levels: { "3": { id: 335 } }
     },
-    "519": {
-        tags: [
-            "SKILL_STABILITY_BODY",
-            "EQTYPE_WEIGHTS",
-            "AGE_ADULT",
-            "SIDE_ONE",
-            "MUSCLEINVOLVEMENT_ISOLATED",
-            "REGION_OBERKOERPER",
-            "EXERCISEDIRECTION_VERTICAL_PUSH",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "SEASONPHASE_PAUSE",
-            "PLACE_STUDIO",
-            "EQ_DUMBBELL",
-            "EQ_TUBE_MEDIUM",
-            "EQ_TUBE_STRONG_MULTIPLE",
-            "EQ_TUBE_EXTREME_MULTIPLE",
-            "MUSCLE_SCHULTER_VORNE",
-            "MUSCLE_BRUST",
-            "MUSCLESECONDARY_BIZEPS",
-            "MUSCLESECONDARY_NACKEN",
-            "MUSCLESECONDARY_SCHULTERBLATT_FIXIEREND_FRONT",
-            "MUSCLESECONDARY_INNERER_OBERSCHENKEL",
-            "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL"
-        ],
-        levels: { "1": { id: 20 }, "2": { id: 20 }, "3": { id: 20 } }
-    },
     "520": {
         tags: [
             "SKILL_STABILITY_BODY",

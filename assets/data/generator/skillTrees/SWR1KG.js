@@ -1639,33 +1639,6 @@ const SWR1KG = {
             "4": { id: 169 }
         }
     },
-    "105": {
-        tags: [
-            "PREVENTION_WIRBELSAULE",
-            "SKILL_SWR",
-            "EQTYPE_KG",
-            "SIDE_BOTH",
-            "MUSCLEINVOLVEMENT_ISOLATED",
-            "REGION_CORE",
-            "EXERCISEDIRECTION_BACK",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "SEASONPHASE_PAUSE",
-            "SKILL_SWR_1_M",
-            "SKILL_SWR_2_M",
-            "SKILL_SWR_1_W",
-            "SKILL_SWR_2_W",
-            "PLACE_HALL",
-            "PLACE_STUDIO",
-            "PLACE_HOME",
-            "PLACE_OUTSIDE",
-            "MUSCLE_UNTERER_RUECKEN",
-            "MUSCLE_GERADE_BAUCHMUSKELN",
-            "MUSCLE_SEITLICHE_BAUCHMUSKELN",
-            "PAIN_WIRBELSAEULE"
-        ],
-        levels: { "1": { id: 415 }, "2": { id: 415 }, "3": { id: 415 } }
-    },
     "106": {
         tags: [
             "AGE_CHILD",

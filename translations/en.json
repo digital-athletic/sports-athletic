@@ -510,6 +510,7 @@
   "MULTIPLE_REGIONS": "Muscles soreness in multiple regions",
   "OBERKOERPER": "Upper body",
   "RUMPF": "Core",
+  "CORE": "Core",
   "UNTERKOERPER": "Lower body",
   "ERROR_MSG_OTHER": "An unexpected error occurred.",
   "SCHULTER": "shoulder",

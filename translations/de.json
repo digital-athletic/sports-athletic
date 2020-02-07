@@ -506,7 +506,7 @@
   "ERROR_TITLE_TOO_MUCH_SORENESS_PARAMS_X": "Folgende Bereiche benötigen noch Regeneration: {{params}}\nDu kannst stattdessen ein regeneratives Training machen.",
   "ERROR_TITLE_NO_ANAMNESIS_PARAMS_X": "Keine Anamnesedaten: {{params}}",
   "ERROR_TITLE_TOO_MUCH_SORENESS_TEST_WORKOUT": "Mit Muskelkater kannst du den Krafttest nicht machen. Absolviere stattdessen einen regenerativen Lauf oder ein Fokus-Training.",
-  "MULTIPLE_REGIONS": "Muskelkater in mehreren Region",
+  "MULTIPLE_REGIONS": "Muskelkater in mehreren Regionen",
   "OBERKOERPER": "Oberkörper",
   "RUMPF": "Rumpf",
   "CORE": "Rumpf",

@@ -1,32 +1,4 @@
 const WARMUPSPEZIAL = {
-    "444": {
-        tags: [
-            "SKILL_WARM_UP",
-            "SKILL_MOBILITY",
-            "EQTYPE_KG",
-            "SIDE_BOTH",
-            "MUSCLEINVOLVEMENT_ISOLATED",
-            "REGION_UNTERKOERPER",
-            "EXERCISEDIRECTION_UNTERKOERPER",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "SEASONPHASE_PAUSE",
-            "PLACE_HALL",
-            "PLACE_STUDIO",
-            "PLACE_HOME",
-            "PLACE_OUTSIDE",
-            "MUSCLE_HUEFT_INNEN_ROTATOR",
-            "MUSCLE_HUEFT_AUSSEN_ROTATOR",
-            "MUSCLE_GESAESS",
-            "MUSCLE_INNERER_OBERSCHENKEL",
-            "MUSCLE_AEUSSERER_OBERSCHENKEL",
-            "MUSCLE_SPRUNGGELENK",
-            "PAIN_HUEFTE",
-            "PAIN_KNIE",
-            "PAIN_SPRUNGGELENK"
-        ],
-        levels: { "1": { id: 124 }, "2": { id: 124 }, "3": { id: 124 } }
-    },
     "445": {
         tags: [
             "SKILL_WARM_UP",
@@ -183,31 +155,6 @@ const WARMUPSPEZIAL = {
             "PAIN_WIRBELSAEULE"
         ],
         levels: { "1": { id: 414 }, "2": { id: 414 }, "3": { id: 414 } }
-    },
-    "452": {
-        tags: [
-            "SKILL_WARM_UP",
-            "SKILL_MOBILITY",
-            "EQTYPE_KG",
-            "SIDE_BOTH",
-            "MUSCLEINVOLVEMENT_ISOLATED",
-            "REGION_UNTERKOERPER",
-            "EXERCISEDIRECTION_HIP",
-            "SEASONPHASE_PREPATORY",
-            "SEASONPHASE_COMPETITION",
-            "SEASONPHASE_PAUSE",
-            "PLACE_HALL",
-            "PLACE_STUDIO",
-            "PLACE_HOME",
-            "PLACE_OUTSIDE",
-            "MUSCLE_HUEFT_BEUGER",
-            "MUSCLE_HUEFT_INNEN_ROTATOR",
-            "MUSCLE_HUEFT_AUSSEN_ROTATOR",
-            "PAIN_WIRBELSAEULE",
-            "PAIN_HUEFTE",
-            "PAIN_KNIE"
-        ],
-        levels: { "1": { id: 422 }, "2": { id: 422 }, "3": { id: 422 } }
     },
     "453": {
         tags: [

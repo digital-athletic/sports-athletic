@@ -120,7 +120,7 @@
   "SELECTED_ONE": "Element selected",
   "SELECTED_MULTIPLE": "Elements selected",
   "ABORT_TRAINING_QUESTIONMARK": "Abort training?",
-  "ABORT_TRAINING_EXPLANATION": "Do you really want to stop? Better pull yourself together.  You almost finished!",
+  "ABORT_TRAINING_EXPLANATION": "Better pull yourself together. You almost finished! Do you really want to stop?",
   "CONTINUE": "Continue",
   "ABORT": "Abort",
   "NEXT_EXERCISE_COLON_SPACE": "Next: ",
@@ -589,5 +589,7 @@
   "BUTTON_REGISTER": "Register",
   "ERROR_TITLE_ACCEPT_PRIVACY_INFO":  "Accept terms and conditions",
   "ERROR_MESSAGE_ACCEPT_PRIVACY_INFO": "Please accept our terms and conditions and privacy regulations.",
-  "ERROR_MESSAGE_WEAK_PASSWORD": "The entered password is not strong enough."
+  "ERROR_MESSAGE_WEAK_PASSWORD": "The entered password is not strong enough.",
+  "YES_CAPS": "YES",
+  "NO_CAPS": "NO"
 }

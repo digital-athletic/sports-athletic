@@ -120,7 +120,7 @@
   "SELECTED_ONE": "Element gewählt",
   "SELECTED_MULTIPLE": "Elemente gewählt",
   "ABORT_TRAINING_QUESTIONMARK": "Training abbrechen?",
-  "ABORT_TRAINING_EXPLANATION": "Willst du das Training wirklich abbrechen? Gib dir lieber einen Ruck und mach weiter. Du hast es bald geschafft!",
+  "ABORT_TRAINING_EXPLANATION": "Gib dir einen Ruck und mach weiter. Du hast es bald geschafft! Willst du das Training wirklich abbrechen?",
   "CONTINUE": "Fortsetzen",
   "ABORT": "Abbrechen",
   "NEXT_EXERCISE_COLON_SPACE": "Danach: ",
@@ -587,5 +587,7 @@
   "BUTTON_REGISTER": "Registrieren",
   "ERROR_TITLE_ACCEPT_PRIVACY_INFO":  "AGBs akzeptieren",
   "ERROR_MESSAGE_ACCEPT_PRIVACY_INFO": "Bitte akzeptiere unsere Allgemeinen Geschäftsbedingungen und Datenschutzbestimmungen.",
-  "ERROR_MESSAGE_WEAK_PASSWORD": "Das eingegebenen Passwort ist nicht sicher genug."
+  "ERROR_MESSAGE_WEAK_PASSWORD": "Das eingegebenen Passwort ist nicht sicher genug.",
+  "YES_CAPS": "JA",
+  "NO_CAPS": "NEIN"
 }

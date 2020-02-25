@@ -57,6 +57,19 @@ const DEFAULT = {
             default: {
                 default: 5
             }
+        },
+        height: {
+            default: {
+                default: 20
+            }
+        },
+        weight: {
+            default: {
+                default: 40
+            },
+            type: {
+                type: "weighFMax"
+            }
         }
     },
     targetValue: {
@@ -68,6 +81,19 @@ const DEFAULT = {
         repetition: {
             default: {
                 default: 8
+            }
+        },
+        height: {
+            default: {
+                default: 40
+            }
+        },
+        weight: {
+            default: {
+                default: 60
+            },
+            type: {
+                type: "weighFMax"
             }
         }
     }

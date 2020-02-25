@@ -19,6 +19,15 @@ const DEFAULT = {
                 }
             }
         },
+        height: {
+            default: {
+                default: {
+                    TOO_EASY: 10,
+                    SUCCEEDED: 5,
+                    TOO_HARD: -5
+                }
+            }
+        },
         weightFMax: {
             default: {
                 default: {

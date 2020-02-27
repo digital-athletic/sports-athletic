@@ -591,5 +591,14 @@
   "ERROR_MESSAGE_ACCEPT_PRIVACY_INFO": "Please accept our terms and conditions and privacy regulations.",
   "ERROR_MESSAGE_WEAK_PASSWORD": "The entered password is not strong enough.",
   "YES_CAPS": "YES",
-  "NO_CAPS": "NO"
+  "NO_CAPS": "NO",
+  "RESET_PASSWORD": "Reset password",
+  "LOGIN_SURE_TO_RESET_PASSWORD_TITLE": "Are you sure?",
+  "LOGIN_SURE_TO_RESET_PASSWORD_MESSAGE": "Are you sure you want to reset the password for the entered Email-Adress {{email}}?",
+  "ONBOARDING_LOGIN_SENT_LINK_TITLE": "Link sent",
+  "ONBOARDING_LOGIN_SENT_LINK_MESSAGE": "An email with a reset link was send to your Email-Adress {{email}}.",
+  "ALERT_ERROR_TITLE": "Error",
+  "ALERT_AN_ERROR_OCCURED_TITLE": "An error has occured.",
+  "ALERT_ERROR_USER_NOT_FOUND_TITLE": "User not found",
+  "ALERT_ERROR_USER_NOT_FOUND_MESSAGE": "The user with the email {{email}} could not be found."
 }

@@ -589,5 +589,14 @@
   "ERROR_MESSAGE_ACCEPT_PRIVACY_INFO": "Bitte akzeptiere unsere Allgemeinen Geschäftsbedingungen und Datenschutzbestimmungen.",
   "ERROR_MESSAGE_WEAK_PASSWORD": "Das eingegebenen Passwort ist nicht sicher genug.",
   "YES_CAPS": "JA",
-  "NO_CAPS": "NEIN"
+  "NO_CAPS": "NEIN",
+  "RESET_PASSWORD": "Passwort zurücksetzen",
+  "LOGIN_SURE_TO_RESET_PASSWORD_TITLE": "Bist du sicher?",
+  "LOGIN_SURE_TO_RESET_PASSWORD_MESSAGE": "Bist du sicher, dass du das Password für die eingegebene Email-Adresse {{email}} zurücksetzen möchtest?",
+  "ONBOARDING_LOGIN_SENT_LINK_TITLE": "Link gesendet",
+  "ONBOARDING_LOGIN_SENT_LINK_MESSAGE": "Eine Email mit einem Wiederherstellungslink wurde an ihre Email {{email}} versendet.",
+  "ALERT_ERROR_TITLE": "Error",
+  "ALERT_AN_ERROR_OCCURED_TITLE": "Ein Fehler ist aufgetreten.",
+  "ALERT_ERROR_USER_NOT_FOUND_TITLE": "Benutzer nicht gefunden",
+  "ALERT_ERROR_USER_NOT_FOUND_MESSAGE": "Der Nutzer mit der Email-Adresse {{email}} konnte nicht gefunden werden."
 }

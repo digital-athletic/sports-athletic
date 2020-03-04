@@ -598,5 +598,7 @@
   "ALERT_ERROR_TITLE": "Error",
   "ALERT_AN_ERROR_OCCURED_TITLE": "Ein Fehler ist aufgetreten.",
   "ALERT_ERROR_USER_NOT_FOUND_TITLE": "Benutzer nicht gefunden",
-  "ALERT_ERROR_USER_NOT_FOUND_MESSAGE": "Der Nutzer mit der Email-Adresse {{email}} konnte nicht gefunden werden."
+  "ALERT_ERROR_USER_NOT_FOUND_MESSAGE": "Der Nutzer mit der Email-Adresse {{email}} konnte nicht gefunden werden.",
+  "ALERT_WEIGHT_CALCULATION_TITLE" : "Gewichtsangaben",
+  "ALERT_WEIGHT_CALCULATION_MESSAGE" : "Das angegebene Langhantel-Gewicht ist immer Hantelstange + Zusatzgewicht."
 }

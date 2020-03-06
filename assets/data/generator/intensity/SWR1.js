@@ -91,6 +91,9 @@ const SWR1 = {
         weight: {
             default: {
                 default: 65
+            },
+            type: {
+                type: "weightFMax"
             }
         }
     },
@@ -116,6 +119,9 @@ const SWR1 = {
                 beginner: 75,
                 advanced: 80,
                 professional: 90
+            },
+            type: {
+                type: "weightFMax"
             }
         }
     }

@@ -29,6 +29,9 @@ const SK = {
         weight: {
             default: {
                 default: 40
+            },
+            type: {
+                type: "weightFMax"
             }
         }
     },
@@ -41,6 +44,9 @@ const SK = {
         weight: {
             default: {
                 default: 70
+            },
+            type: {
+                type: "weightFMax"
             }
         }
     }

@@ -29,6 +29,9 @@ const SA = {
         weight: {
             default: {
                 default: 20
+            },
+            type: {
+                type: "weightFMax"
             }
         }
     },
@@ -41,6 +44,9 @@ const SA = {
         weight: {
             default: {
                 default: 50
+            },
+            type: {
+                type: "weightFMax"
             }
         }
     }

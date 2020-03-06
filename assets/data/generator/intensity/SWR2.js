@@ -92,7 +92,6 @@ const SWR2 = {
         },
         height: {
             default: {
-                // TODO
                 default: 20
             }
         },
@@ -104,6 +103,9 @@ const SWR2 = {
         weight: {
             default: {
                 default: 70
+            },
+            type: {
+                type: "weightFMax"
             }
         }
     },
@@ -115,7 +117,6 @@ const SWR2 = {
         },
         height: {
             default: {
-                // TODO
                 default: 40
             }
         },
@@ -130,6 +131,9 @@ const SWR2 = {
                 beginner: 75,
                 advanced: 80,
                 professional: 90
+            },
+            type: {
+                type: "weightFMax"
             }
         }
     }

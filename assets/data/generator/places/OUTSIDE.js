@@ -1,14 +1,14 @@
 class Outside {}
 
 Outside.EQUIPMENT = [
+    "PARK_BENCH",
+    "TRACK_5",
     "TRACK_20",
     "TRACK_LONG",
-    "BOTTLE",
-    "PARK_BENCH",
+    "AREA_5",
     "AREA_10",
     "AREA_20",
-    "TRACK_5",
-    "AREA_5"
+    "MARKERS"
 ];
 
 export default Outside;

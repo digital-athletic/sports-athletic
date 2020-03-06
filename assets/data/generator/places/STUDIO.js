@@ -1,31 +1,25 @@
 class Studio {}
 
 Studio.EQUIPMENT = [
-    "DUMBBELL",
-    "ADJUSTABLE_BENCH",
-    "BARBELL_BENCH",
-    "BARBELL",
-    "TUBE_MEDIUM",
-    "TUBE_STRONG_MULTIPLE",
-    "TUBE_EXTREME_MULTIPLE",
     "BENCH",
-    "POWER_RACK",
-    "TREADMILL",
-    "BLACK_BALL",
-    "MEDICINE_BALL",
-    "MEDICINE_BALL_JUMPING",
-    "EXERCISING_BENCH",
-    "TOWEL",
-    "TUBE_WEAK",
-    "BOTTLE",
     "BLACK_ROLL",
-    "INCLINE_BENCH",
-    "WALL_BAR",
-    "WALL",
+    "BLACK_BALL",
+    "TOWEL",
     "CROSS_BAR",
+    "POWER_RACK",
+    "BARBELL",
+    "DUMBBELL",
+    "BARBELL_BENCH",
+    "TREADMILL",
     "TRACK_5",
-    "AREA_5",
-    "CEILING"
+    "MEDICINE_BALL",
+    "EXERCISING_BENCH",
+    "ADJUSTABLE_BENCH",
+    "WALL",
+    "INCLINE_BENCH",
+    "MEDICINE_BALL_JUMPING",
+    "BOX_HIGH",
+    "MARKERS"
 ];
 
 export default Studio;

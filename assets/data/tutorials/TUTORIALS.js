@@ -58,6 +58,33 @@ const TUTORIALS = [
         },
         picture: "tutorialPictures/Kniebeuge.jpg",
         video: "tutorialVideos/Kniebeuge.mp4"
-    }
+    },
+    {
+        ordering: 7,
+        title: {
+            default: "Sauberes KH-Anheben im sitzen",
+            en: "Lifting dumbells clean - sitting"
+        },
+        picture: "tutorialPictures/KH-Anheben_sitzen.jpg",
+        video: "tutorialVideos/KH-Anheben_sitzen.mp4"
+    },
+    {
+        ordering: 8,
+        title: {
+            default: "Sauberes KH-Anheben im liegen",
+            en: "Lifting dumbells clean - lying"
+        },
+        picture: "tutorialPictures/KH-Anheben_liegen.jpg",
+        video: "tutorialVideos/KH-Anheben_liegen.mp4"
+    },
+    {
+        ordering: 9,
+        title: {
+            default: "Sauberes KH-Anheben im stehen",
+            en: "Lifting dumbells clean - standing"
+        },
+        picture: "tutorialPictures/KH-Anheben_stehen.jpg",
+        video: "tutorialVideos/KH-Anheben_stehen.mp4"
+    },
 ];
 export default TUTORIALS;

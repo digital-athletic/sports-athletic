@@ -1,6 +1,15 @@
 // @format
 const SK = {
     adjustment: {
+        repetition: {
+            default: {
+                default: {
+                    TOO_EASY: 1,
+                    SUCCEEDED: 1,
+                    TOO_HARD: -2
+                }
+            }
+        },
         weightFMax: {
             default: {
                 default: {

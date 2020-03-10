@@ -51,6 +51,9 @@ const SKKG = {
                 default: 1,
                 m: 2
             }
+        },
+        type: {
+            type: "weightAbsolute"
         }
     },
     targetValue: {
@@ -65,6 +68,9 @@ const SKKG = {
                 default: 3,
                 m: 5
             }
+        },
+        type: {
+            type: "weightAbsolute"
         }
     }
 };

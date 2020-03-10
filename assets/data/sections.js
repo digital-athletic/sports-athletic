@@ -23,35 +23,6 @@ export const SECTIONS_DATA = {
             }
         }
     },
-    MAX_KRAFT: {
-        target: {
-            default: {
-                normal: [
-                    "",
-                    " als entscheidende Basis für Schnellkraft und Schnelligkeitsausdauer."
-                ],
-                highlight: ["Kraftaufbau", ""]
-            },
-            en: {
-                normal: [
-                    "Increase your basic ",
-                    " to be ",
-                    " and ",
-                    " in all athletic challenges."
-                ],
-                highlight: ["power potential", "faster", "stronger"]
-            }
-        },
-        speed: {
-            values: {
-                default: ["4 Sek.", "0 Sek.", "explosiv"],
-                en: ["4 sec", "0 sec", "explosive"]
-            },
-            description: {
-                default: ""
-            }
-        }
-    },
     MAX: {
         target: {
             default: {
@@ -150,19 +121,23 @@ export const SECTIONS_DATA = {
 
 export const SECTIONS_VIDEOS = {
     SWR: {
-        picture: "exercisePictures/612-picture-636954136346587283.jpg",
-        video: "exerciseVideos/612-video-636954136943686509.mp4"
+        picture: "tutorialPictures/ErklaerungSWR2.jpg",
+        video: "tutorialVideos/ErklaerungSWR2.mp4",
+        title: "INFO_FOR_MUSCLE_BUILDUP"
     },
     MAX: {
-        picture: "exercisePictures/613-picture-636954258389897939.jpg",
-        video: "exerciseVideos/613-video-636954259059937815.mp4"
+        picture: "tutorialPictures/ErklaerungMaxKraft.jpg",
+        video: "tutorialVideos/ErklaerungMaxKraft.mp4",
+        title: "INFO_FOR_MAX_FORCE"
     },
     SK: {
-        picture: "exercisePictures/614-picture-636954258519095719.jpg",
-        video: "exerciseVideos/614-video-636954259385492756.mp4"
+        picture: "tutorialPictures/ErklaerungSK.jpg",
+        video: "tutorialVideos/ErklaerungSK.mp4",
+        title: "INFO_FOR_EXPLOSIVE_POWER"
     },
     SA: {
-        picture: "exercisePictures/615-picture-636954258656100128.jpg",
-        video: "exerciseVideos/615-video-636954259738269668.mp4"
+        picture: "tutorialPictures/ErklaerungSA.jpg",
+        video: "tutorialVideos/ErklaerungSA.mp4",
+        title: "INFO_FOR_SPEED_ENDURANCE"
     }
 };

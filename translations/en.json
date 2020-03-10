@@ -602,5 +602,9 @@
   "ALERT_ERROR_USER_NOT_FOUND_TITLE": "User not found",
   "ALERT_ERROR_USER_NOT_FOUND_MESSAGE": "The user with the email {{email}} could not be found.",
   "ALERT_WEIGHT_CALCULATION_TITLE" : "Weight Indication",
-  "ALERT_WEIGHT_CALCULATION_MESSAGE" : "The weight indication for the barbell always includes barbell + weight plates."
+  "ALERT_WEIGHT_CALCULATION_MESSAGE" : "The weight indication for the barbell always includes barbell + weight plates.",
+  "INFO_FOR_MUSCLE_BUILDUP": "Information for muscle buildup",
+  "INFO_FOR_MAX_FORCE": "Information for maximum force",
+  "INFO_FOR_EXPLOSIVE_POWER": "Information for explosive power",
+  "INFO_FOR_SPEED_ENDURANCE": "Information for speed endurance"
 }

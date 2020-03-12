@@ -604,5 +604,7 @@
   "INFO_FOR_MUSCLE_BUILDUP":  "Infos zum Muskelaufbau",
   "INFO_FOR_MAX_POWER": "Infos zur Maximalkraft",
   "INFO_FOR_EXPLOSIVE_POWER": "Info zu Schnellkraft",
-  "INFO_FOR_SPEED_ENDURANCE": "Info zu Schnelligkeitsausdauer"
+  "INFO_FOR_SPEED_ENDURANCE": "Info zu Schnelligkeitsausdauer",
+  "LOGOUT_QUESTION_TITLE": "Ausloggen",
+  "LOGOUT_QUESTION_MESSAGE": "Willst du dich wirklich ausloggen?"
 }

@@ -610,5 +610,7 @@
   "LOGOUT_QUESTION_TITLE": "Logout",
   "LOGOUT_QUESTION_MESSAGE": "Do you really want to logout?",
   "LEGEND_ACTIVE_MUSCLES": "active working muscles",
-  "LEGEND_SUPPORTING_MUSCLES": "supportive working muscles"
+  "LEGEND_SUPPORTING_MUSCLES": "supportive working muscles",
+  "CM_HIGH": "cm high",
+  "X_CM_HIGH": "{{height}} cm high"
 }

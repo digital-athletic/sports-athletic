@@ -608,5 +608,7 @@
   "LOGOUT_QUESTION_TITLE": "Ausloggen",
   "LOGOUT_QUESTION_MESSAGE": "Willst du dich wirklich ausloggen?",
   "LEGEND_ACTIVE_MUSCLES": "aktiv arbeitende Muskeln",
-  "LEGEND_SUPPORTING_MUSCLES": "unterstützend arbeitende Muskeln"
+  "LEGEND_SUPPORTING_MUSCLES": "unterstützend arbeitende Muskeln",
+  "CM_HIGH": "cm hoch",
+  "X_CM_HIGH": "{{height}} cm hoch"
 }

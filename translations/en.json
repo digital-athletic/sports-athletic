@@ -608,5 +608,7 @@
   "INFO_FOR_EXPLOSIVE_POWER": "Information for explosive power",
   "INFO_FOR_SPEED_ENDURANCE": "Information for speed endurance",
   "LOGOUT_QUESTION_TITLE": "Logout",
-  "LOGOUT_QUESTION_MESSAGE": "Do you really want to logout?"
+  "LOGOUT_QUESTION_MESSAGE": "Do you really want to logout?",
+  "LEGEND_ACTIVE_MUSCLES": "active working muscles",
+  "LEGEND_SUPPORTING_MUSCLES": "supportive working muscles"
 }

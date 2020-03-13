@@ -606,5 +606,7 @@
   "INFO_FOR_EXPLOSIVE_POWER": "Info zu Schnellkraft",
   "INFO_FOR_SPEED_ENDURANCE": "Info zu Schnelligkeitsausdauer",
   "LOGOUT_QUESTION_TITLE": "Ausloggen",
-  "LOGOUT_QUESTION_MESSAGE": "Willst du dich wirklich ausloggen?"
+  "LOGOUT_QUESTION_MESSAGE": "Willst du dich wirklich ausloggen?",
+  "LEGEND_ACTIVE_MUSCLES": "aktiv arbeitende Muskeln",
+  "LEGEND_SUPPORTING_MUSCLES": "unterstützend arbeitende Muskeln"
 }

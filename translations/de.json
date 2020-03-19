@@ -602,7 +602,7 @@
   "ALERT_WEIGHT_CALCULATION_TITLE" : "Gewichtsangaben",
   "ALERT_WEIGHT_CALCULATION_MESSAGE" : "Das angegebene Langhantel-Gewicht ist immer Hantelstange + Zusatzgewicht.",
   "INFO_FOR_MUSCLE_BUILDUP":  "Infos zum Muskelaufbau",
-  "INFO_FOR_MAX_POWER": "Infos zu Maximalkraft",
+  "INFO_FOR_MAX_FORCE": "Infos zu Maximalkraft",
   "INFO_FOR_EXPLOSIVE_POWER": "Infos zu Schnellkraft",
   "INFO_FOR_SPEED_ENDURANCE": "Infos zu Schnelligkeitsausdauer",
   "LOGOUT_QUESTION_TITLE": "Ausloggen",

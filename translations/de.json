@@ -610,5 +610,11 @@
   "LEGEND_ACTIVE_MUSCLES": "aktiv arbeitende Muskeln",
   "LEGEND_SUPPORTING_MUSCLES": "unterstützend arbeitende Muskeln",
   "CM_HIGH": "cm hoch",
-  "X_CM_HIGH": "{{height}} cm hoch"
+  "X_CM_HIGH": "{{height}} cm hoch",
+  "EQUIPMENT_TELL_ME_ABOUT_YOUR_EQUIPMENT": "Verrate mir, welche Trainingsgeräte du zur Verfügung hast, damit ich deine Übungen entsprechend auswählen kann.",
+  "EQUIPMENT_AT_HOME": "Ausrüstung zu Hause",
+  "EQUIPMENT_AT_STUDIO": "Ausrüstung im Fitnessstudio",
+  "EQUIPMENT_AT_HALL": "Ausrüstung in der Halle",
+  "EQUIPMENT_AT_OUTSIDE": "Ausrüstung draußen",
+  "X_EQUIPMENT_PIECES_SELECTED": "({{count}} Geräte ausgewählt)"
 }

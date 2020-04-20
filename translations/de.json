@@ -616,5 +616,7 @@
   "EQUIPMENT_AT_STUDIO": "Ausrüstung im Fitnessstudio",
   "EQUIPMENT_AT_HALL": "Ausrüstung in der Halle",
   "EQUIPMENT_AT_OUTSIDE": "Ausrüstung draußen",
-  "X_EQUIPMENT_PIECES_SELECTED": "({{count}} Geräte ausgewählt)"
+  "X_EQUIPMENT_PIECES_SELECTED": "({{count}} Geräte ausgewählt)",
+  "ERROR_TITLE_COULD_NOT_LOAD_USER_DATA": "Benutzerdaten nicht geladen",
+  "ERROR_MESSAGE_COULD_NOT_LOAD_USER_DATA": "Es gab ein Fehler beim Laden der Benutzerdaten, bitte versuchen sie es erneut."
 }

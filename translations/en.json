@@ -618,5 +618,7 @@
   "EQUIPMENT_AT_STUDIO": "Equipment at the fitness studio",
   "EQUIPMENT_AT_HALL": "Equipment at the gym hall",
   "EQUIPMENT_AT_OUTSIDE": "Equipment for outside",
-  "X_EQUIPMENT_PIECES_SELECTED": "({{count}} pieces selected)"
+  "X_EQUIPMENT_PIECES_SELECTED": "({{count}} pieces selected)",
+  "ERROR_TITLE_COULD_NOT_LOAD_USER_DATA": "Could not load user",
+  "ERROR_MESSAGE_COULD_NOT_LOAD_USER_DATA": "There was an error loading the user data, please try again."
 }

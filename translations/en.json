@@ -102,7 +102,7 @@
   "ERROR_INVALID_PASSWORD_TITLE": "Invalid Passwort",
   "ERROR_INVALID_PASSWORD_MSG": "Please choose a passwort with at least 6 characters.",
   "ERROR_UNKNOWN_TITLE": "Error",
-  "ERROR_UNKNOWN_MSG": "Sorry, an unknown error occurred.",
+  "ERROR_UNKNOWN_MSG_RETRY": "Please try again or contact us under service@sports-athletic.com. But often the solution is just to reinstall the app.\n\nThank you",
   "ERROR_WRONG_PASSWORD_TITLE": "Wrong password",
   "ERROR_WRONG_PASSWORD_MSG": "The password you entered is not correct.",
   "ERROR_USER_NOT_FOUND_TITLE": "User not found",

@@ -28,6 +28,7 @@
     "react-native-iphone-x-helper": "git+https://github.com/alexkuttig/react-native-iphone-x-helper.git",
     "react-native-keep-awake": "^4.0.0",
     "react-native-orientation-locker": "1.1.5",
+    "react-native-purchases": "^3.2.0",
     "react-native-sectioned-multi-select": "0.6.5",
     "react-native-shake": "3.3.1",
     "react-native-snap-slider": "0.3.0",

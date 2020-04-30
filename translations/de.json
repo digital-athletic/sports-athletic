@@ -640,5 +640,6 @@
   "FINE_PRINT_SUBSCRIPTION": "Dein Training verlängert sich automatisch um die ausgewählte Laufzeit, wenn du es nicht mind. 24 Std. vor Ablauf deiner gebuchten Trainingszeit kündigst. Durch den Kauf stimmst du unseren @link@Datenschutzbestimmungen@link@ und @link@AGB@link@ zu.",
   "FLAG_TEXT_BEST_DEAL": "Bester Deal",
   "ERROR_TITLE_COULD_NOT_LOAD_USER_DATA": "Benutzerdaten nicht geladen",
-  "ERROR_MESSAGE_COULD_NOT_LOAD_USER_DATA": "Es gab ein Fehler beim Laden der Benutzerdaten, bitte versuchen sie es erneut."
+  "ERROR_MESSAGE_COULD_NOT_LOAD_USER_DATA": "Es gab ein Fehler beim Laden der Benutzerdaten, bitte versuchen sie es erneut.",
+  "ERROR_MESSAGE_NO_INTERNET_CONNECTION": "Um dich zu registrieren benötigst du eine stabile internet Verbindung.\n\nVersuche es bitte mit einer guten Verbindung erneut."
 }

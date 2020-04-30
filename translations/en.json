@@ -642,5 +642,6 @@
   "FINE_PRINT_SUBSCRIPTION": "Your training will extend automatically for the chosen term if you don't terminate it more than 24 hours before the end of your booked training period. By buying you agree to our @link@privacy policy@link@ and our @link@terms and conditions@link@.",
   "FLAG_TEXT_BEST_DEAL": "Best Deal",
   "ERROR_TITLE_COULD_NOT_LOAD_USER_DATA": "Could not load user",
-  "ERROR_MESSAGE_COULD_NOT_LOAD_USER_DATA": "There was an error loading the user data, please try again."
+  "ERROR_MESSAGE_COULD_NOT_LOAD_USER_DATA": "There was an error loading the user data, please try again.",
+  "ERROR_MESSAGE_NO_INTERNET_CONNECTION": "You need a stable internet connection for the registration.\n\nPlease try again when your connection is stable."
 }

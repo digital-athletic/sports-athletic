@@ -196,7 +196,7 @@
   "FRIDAY_TRAINING": "Friday training",
   "SATURDAY_TRAINING": "Saturday training",
   "SUNDAY_TRAINING": "Sunday training",
-  "TRAINING_DAY_DESC_TIME_AND_PLACE": "{{time}} minutes, {{place}}\n{{focus}}",
+  "TRAINING_DAY_DESC_TIME_AND_PLACE": "{{focus}}, {{time}} minutes",
   "HOME": "at home",
   "STUDIO": "fitness studio",
   "HALL": "gym hall",

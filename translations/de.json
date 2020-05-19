@@ -576,7 +576,7 @@
   "ERROR_SAVING_VALUE_MSG": "Der eingegebene Wert konnte leider nicht gespeichert werden.",
   "STATISTIC_POWER_TEST_IN_GYM": "Der Krafttest findet nur im Fitnessstudio statt.",
   "BODY_PARTS_WHERE_ARE_THE_ACHING_MUSCLES": "Gib an, wo du Muskelkater hast, damit ich dein Training für heute darauf anpassen kann.",
-  "BODY_PARTS_SELECT_HURTING_PARTS": "Markiere die Bereiche, bei denen du im Training immer wieder Beschwerden hast. Dann werde ich sie speziell berücksichtigen.",
+  "BODY_PARTS_SELECT_HURTING_PARTS": "Markiere die Bereiche, bei denen du im Training AKTUELL Einschränkungen hast. Dann werde ich sie speziell berücksichtigen.",
   "TRAINING_DAYS_TRAINING_ON_TRAININGDAYS": "Bei gutem Fitnesslevel kannst du auch an Handballtrainingstagen trainieren. Lass aber vor und nach einem Handballspiel einen Tag Pause.",
   "GENERATING_THANKS_FOR_INFORMATION": "Danke für deine Informationen. Jetzt erstelle ich deine persönlichen Trainingspläne.",
   "WELCOME_HEY_I_AM_INGEMAR": "Hi!\nIch bin Ingemar, dein persönlicher Athletiktrainer und habe selbst 28 Jahre Handball gespielt. Lass uns direkt damit beginnen, deinen persönlichen Trainingsplan zu erstellen.",

@@ -139,7 +139,8 @@
   "LOGIN_WITH_GOOGLE": "Mit Google anmelden",
   "PRIVACY_INFORMATION_1": "Mit der Anmeldung erkläre ich mich mit den ",
   "PRIVACY_INFORMATION_2": " und ",
-  "PRIVACY_INFORMATION_3": " von Sports Athletic einverstanden.",
+  "PRIVACY_INFORMATION_3": " von Sports Athletic einverstanden. Ich bin damit einverstanden, dass für die Erstellung persönlicher Trainingspläne meine Gesundheitsdaten verarbeitet werden. ",
+  "MORE_INFORMATION": "Weitere Informationen",
   "PRIVACY_LINK": "Datenschutzbestimmungen",
   "AGB_LINK": "allgemeinen Geschäftsbedingungen",
   "ERROR_AUTH_FAILED_TITLE": "Authentifizierung fehlgeschlagen",
@@ -641,5 +642,7 @@
   "FLAG_TEXT_BEST_DEAL": "Bester Deal",
   "ERROR_TITLE_COULD_NOT_LOAD_USER_DATA": "Benutzerdaten nicht geladen",
   "ERROR_MESSAGE_COULD_NOT_LOAD_USER_DATA": "Es gab ein Fehler beim Laden der Benutzerdaten, bitte versuchen sie es erneut.",
-  "ERROR_MESSAGE_NO_INTERNET_CONNECTION": "Um dich zu registrieren benötigst du eine stabile internet Verbindung.\n\nVersuche es bitte mit einer guten Verbindung erneut."
+  "ERROR_MESSAGE_NO_INTERNET_CONNECTION": "Um dich zu registrieren benötigst du eine stabile internet Verbindung.\n\nVersuche es bitte mit einer guten Verbindung erneut.",
+  "ANONYMISED_DATA_USE": "Ich bin damit einverstanden, dass zur Verbesserung der App meine Daten ANONYMISIERT verarbeitet werden.",
+  "ONBOARDING_USE_OF_EMAIL": "Wir verwenden deine E-Mail-Adresse für Direktwerbung für eigene und ähnliche Angebote. Hiergegen kannst du jederzeit ohne Zusatzkosten widersprechen."
 }

@@ -140,7 +140,8 @@
   "PRIVACY_INFORMATION": "On my registration I accept the terms and conditions of Sports Atheletic.",
   "PRIVACY_INFORMATION_1": "On my registration I accept the ",
   "PRIVACY_INFORMATION_2": " and ",
-  "PRIVACY_INFORMATION_3": " of Sports Atheletic.",
+  "PRIVACY_INFORMATION_3": " of Sports Atheletic. I accept that to create personalized training plans for me, my health data gets processed. ",
+  "MORE_INFORMATION": "More information",
   "PRIVACY_LINK": "privacy regulations",
   "AGB_LINK": "terms and conditions",
   "ERROR_AUTH_FAILED_TITLE": "Authentication failed",
@@ -643,5 +644,7 @@
   "FLAG_TEXT_BEST_DEAL": "Best Deal",
   "ERROR_TITLE_COULD_NOT_LOAD_USER_DATA": "Could not load user",
   "ERROR_MESSAGE_COULD_NOT_LOAD_USER_DATA": "There was an error loading the user data, please try again.",
-  "ERROR_MESSAGE_NO_INTERNET_CONNECTION": "You need a stable internet connection for the registration.\n\nPlease try again when your connection is stable."
+  "ERROR_MESSAGE_NO_INTERNET_CONNECTION": "You need a stable internet connection for the registration.\n\nPlease try again when your connection is stable.",
+  "ANONYMISED_DATA_USE": "I agree to improve the App performance by using my data ANONYMISED.",
+  "ONBOARDING_USE_OF_EMAIL": "We use your E-mail adress for own and related advertisement. You can always contradict to this use."
 }

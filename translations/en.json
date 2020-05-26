@@ -644,7 +644,11 @@
   "FLAG_TEXT_BEST_DEAL": "Best Deal",
   "ERROR_TITLE_COULD_NOT_LOAD_USER_DATA": "Could not load user",
   "ERROR_MESSAGE_COULD_NOT_LOAD_USER_DATA": "There was an error loading the user data, please try again.",
-  "ERROR_MESSAGE_NO_INTERNET_CONNECTION": "You need a stable internet connection for the registration.\n\nPlease try again when your connection is stable.",
   "ANONYMISED_DATA_USE": "I agree to improve the App performance by using my data ANONYMISED.",
-  "ONBOARDING_USE_OF_EMAIL": "We use your E-mail adress for own and related advertisement. You can always contradict to this use."
+  "ONBOARDING_USE_OF_EMAIL": "We use your E-mail adress for own and related advertisement. You can always contradict to this use.",
+  "ERROR_MESSAGE_NO_INTERNET_CONNECTION": "You need a stable internet connection for the registration.\n\nPlease try again when your connection is stable.",
+  "PRIVACY_POLICY_TITLE": "Privacy policy",
+  "PRIVACY_POLICY_TEXT": "You can find all details about the use of your data in our @link@privacy policy@link@.",
+  "GOOGLE_FIREBASE_POLICY_TITLE": "Google Firebase",
+  "GOOGLE_FIREBASE_POLICY_TEXT": "I agree to improve the App performance by using my data ANONYMISED."
 }

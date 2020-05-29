@@ -590,7 +590,7 @@
   "HOME_FLAG_SOON": "Demnächst",
   "BUTTON_REGISTER": "Registrieren",
   "ERROR_TITLE_ACCEPT_PRIVACY_INFO":  "AGBs akzeptieren",
-  "ERROR_MESSAGE_ACCEPT_PRIVACY_INFO": "Bitte akzeptiere unsere allgemeinen Geschäftsbedingungen und Datenschutzbestimmungen.",
+  "ERROR_MESSAGE_ACCEPT_PRIVACY_INFO": "Bitte akzeptiere unsere allgemeinen Geschäftsbedingungen und Datenschutzbestimmungen und erlaube uns die Verarbeitung deiner Gesundheitsdaten.",
   "ERROR_MESSAGE_WEAK_PASSWORD": "Das eingegebenen Passwort ist nicht sicher genug.",
   "YES_CAPS": "JA",
   "NO_CAPS": "NEIN",

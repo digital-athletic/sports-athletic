@@ -592,7 +592,7 @@
   "HOME_FLAG_SOON": "Soon",
   "BUTTON_REGISTER": "Register",
   "ERROR_TITLE_ACCEPT_PRIVACY_INFO":  "Accept terms and conditions",
-  "ERROR_MESSAGE_ACCEPT_PRIVACY_INFO": "Please accept our terms and conditions and privacy regulations.",
+  "ERROR_MESSAGE_ACCEPT_PRIVACY_INFO": "Please accept our terms and conditions and privacy regulations and allow us to process your health data.",
   "ERROR_MESSAGE_WEAK_PASSWORD": "The entered password is not strong enough.",
   "YES_CAPS": "YES",
   "NO_CAPS": "NO",

@@ -652,5 +652,6 @@
   "SUBSCRTION_STATUS_IOS_TITLE": "Auf einem iPhone",
   "SUBSCRTION_STATUS_IOS_TEXT": "Um dein Abo einzusehen und bestehende Abonnements zu kündigen:\n\n1. Öffne die „App Store“ App auf deinem iPhone.\n2. Tippe auf dein Profilbild um in die Account Einstellungen zu gelangen\n3. Tippe auf „Abonnements“ um zu einer Übersicht aller Abos zu kommen. Hier kannst du die Laufzeit deines Abos einsehen oder das Abo kündigen.",
   "SUBSCRTION_STATUS_ANDROID_TITLE": "Auf einem Android Smartphone",
-  "SUBSCRTION_STATUS_ANDROID_TEXT": "Um dein Abo einzusehen und bestehende Abonemments zu kündigen:\n\n1. Öffne die „Google Play Store“ App auf deinem Android Smartphone.\n2. Prüfe, ob du. mit dem richtigen Google-Konto angemeldet bist.\n3. Tippe auf das Dreistrich-Menü Abos.\n4. Wähle das Abo aus, das du kündigen möchtest.\n5. Tippe auf „Abo kündigen“."
+  "SUBSCRTION_STATUS_ANDROID_TEXT": "Um dein Abo einzusehen und bestehende Abonemments zu kündigen:\n\n1. Öffne die „Google Play Store“ App auf deinem Android Smartphone.\n2. Prüfe, ob du. mit dem richtigen Google-Konto angemeldet bist.\n3. Tippe auf das Dreistrich-Menü Abos.\n4. Wähle das Abo aus, das du kündigen möchtest.\n5. Tippe auf „Abo kündigen“.",
+  "ERROR_MESSAGE_NO_PASSWORD": "Du hast kein Passwort eingegeben."
 }

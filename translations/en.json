@@ -654,5 +654,6 @@
   "SUBSCRTION_STATUS_IOS_TITLE": "With an iPhone",
   "SUBSCRTION_STATUS_IOS_TEXT": "To see your subscription status and cancel subscription:\n\n1. Open the „App Store“ on your iPhone.\n2. Tap on your profile picture to get to your account settings.\n3. Tap on „Subscriptions“ to see your subscription overview. There you can see the duration of your subscription and cancel it if needed.",
   "SUBSCRTION_STATUS_ANDROID_TITLE": "With an Android smartphone",
-  "SUBSCRTION_STATUS_ANDROID_TEXT": "To see your subscription status and cancel subscription:\n\n1. Open the „Google Play Store“ on your Android Smartphone.\n2. Check if you are signed in with the correct Google-Account.\n3. Tap on the menu logo subscriptions.\n4. Choose the subscription you want to cancel.\n5. Tap on „cancel subscription“."
+  "SUBSCRTION_STATUS_ANDROID_TEXT": "To see your subscription status and cancel subscription:\n\n1. Open the „Google Play Store“ on your Android Smartphone.\n2. Check if you are signed in with the correct Google-Account.\n3. Tap on the menu logo subscriptions.\n4. Choose the subscription you want to cancel.\n5. Tap on „cancel subscription“.",
+  "ERROR_MESSAGE_NO_PASSWORD": "You've forgotten to enter a password."
 }

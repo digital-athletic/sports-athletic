@@ -37,10 +37,10 @@ const SK = {
         },
         weight: {
             default: {
-                default: 40,
-                beginner: 40,
-                advanced: 50,
-                professional: 50
+                default: 50,
+                beginner: 50,
+                advanced: 55,
+                professional: 55
             },
             type: {
                 type: "weightFMax"
@@ -55,8 +55,8 @@ const SK = {
         },
         weight: {
             default: {
-                default: 55,
-                beginner: 55,
+                default: 65,
+                beginner: 65,
                 advanced: 65,
                 professional: 70
             },

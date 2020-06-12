@@ -32,7 +32,8 @@ const SK = {
     startValue: {
         repetition: {
             default: {
-                default: 6
+                default: 3,
+                m: 5
             }
         },
         weight: {
@@ -50,7 +51,8 @@ const SK = {
     targetValue: {
         repetition: {
             default: {
-                default: 6
+                default: 6,
+                m: 8
             }
         },
         weight: {

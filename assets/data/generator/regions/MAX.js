@@ -1,5 +1,5 @@
 // "tags" are or, not and
-const SWR2 = {
+const MAX = {
     default: {
         10: [
             {
@@ -141,4 +141,4 @@ const SWR2 = {
     }
 };
 
-export default SWR2;
+export default MAX;

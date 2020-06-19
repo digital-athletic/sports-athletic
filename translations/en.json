@@ -670,5 +670,8 @@
   "SUBSCRIPTION_EXPIRED": "Subscription expired",
   "CHOOSE_A_SUBSCRIPTION_TO_START_YOUR_TRAINING": "Choose a subscription to start your training.",
   "X_DAYS_TEST_PERIOD_REMAINING": "{{days}} days test period left",
-  "ONE_DAY_TEST_PERIOD_REMAINING": "1 day test period left"
+  "ONE_DAY_TEST_PERIOD_REMAINING": "1 day test period left",
+  "LOGGING_OUT": "Logging out",
+  "POWER_TEST_NOT_POSSIBLE": "Power test not possible",
+  "ANAMNESIS_DATA_NEEDED": "We first need your anamnesis data before you can conduct the test."
 }

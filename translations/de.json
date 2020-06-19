@@ -668,5 +668,8 @@
   "SUBSCRIPTION_EXPIRED": "Abonnement abgelaufen",
   "CHOOSE_A_SUBSCRIPTION_TO_START_YOUR_TRAINING": "Schließe ein Abonnement ab um dein Training zu starten.",
   "X_DAYS_TEST_PERIOD_REMAINING": "Noch {{days}} Tage kostenlos testen",
-  "ONE_DAY_TEST_PERIOD_REMAINING": "Noch 1 Tag kostenlos testen"
+  "ONE_DAY_TEST_PERIOD_REMAINING": "Noch 1 Tag kostenlos testen",
+  "LOGGING_OUT": "Ausloggen",
+  "POWER_TEST_NOT_POSSIBLE": "Krafttest nicht möglich",
+  "ANAMNESIS_DATA_NEEDED": "Um deinen Krafttest durchzuführen, benötigen wir zuerst deine Anamnesedaten."
 }

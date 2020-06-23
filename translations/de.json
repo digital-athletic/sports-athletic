@@ -633,6 +633,7 @@
   "12_MONTHS": "12 Monate",
   "1_MONTH": "1 Monat",
   "PRICE_PER_MONTH": "{{price}} € pro Monat",
+  "PRICE_PER_YEAR": "{{price}} € pro Jahr",
   "SUBTEXT_12_MONTHS": "3 von 12 Monaten geschenkt bei einer Zahlung von {{value}} € pro Jahr",
   "SUBTEXT_1_MONTH": "Maximale Flexibilität: monatliche Abbuchung, monatlich kündbar.",
   "TEXT_TITLE_SUBSCRIPTION": "Sports Athletic Training",

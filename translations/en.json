@@ -674,5 +674,7 @@
   "ONE_DAY_TEST_PERIOD_REMAINING": "1 day test period left",
   "LOGGING_OUT": "Logging out",
   "POWER_TEST_NOT_POSSIBLE": "Power test not possible",
-  "ANAMNESIS_DATA_NEEDED": "We first need your anamnesis data before you can conduct the test."
+  "ANAMNESIS_DATA_NEEDED": "We first need your anamnesis data before you can conduct the test.",
+  "IOS_SUBSCRIPTION_NOT_YET_AVAILABLE": "Subscription will be available for iOS soon. Please try again later.",
+  "LOGOUT_FAILED": "An error occurred during logout. Please inform us via the contact form in the profile tab if this happens again."
 }

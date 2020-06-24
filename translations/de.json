@@ -672,5 +672,7 @@
   "ONE_DAY_TEST_PERIOD_REMAINING": "Noch 1 Tag kostenlos testen",
   "LOGGING_OUT": "Ausloggen",
   "POWER_TEST_NOT_POSSIBLE": "Krafttest nicht möglich",
-  "ANAMNESIS_DATA_NEEDED": "Um deinen Krafttest durchzuführen, benötigen wir zuerst deine Anamnesedaten."
+  "ANAMNESIS_DATA_NEEDED": "Um deinen Krafttest durchzuführen, benötigen wir zuerst deine Anamnesedaten.",
+  "IOS_SUBSCRIPTION_NOT_YET_AVAILABLE": "Abonnements sind für iOS demnächst verfügbar. Bitte versuche es später nochmal.",
+  "LOGOUT_FAILED": "Beim Ausloggen ist ein Fehler aufgetreten. Sollte das wieder passieren melde dich bitte über das Kontaktformular unter Profil."
 }

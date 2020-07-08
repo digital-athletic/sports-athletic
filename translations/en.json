@@ -678,5 +678,14 @@
   "POWER_TEST_NOT_POSSIBLE": "Power test not possible",
   "ANAMNESIS_DATA_NEEDED": "We first need your anamnesis data before you can conduct the test.",
   "IOS_SUBSCRIPTION_NOT_YET_AVAILABLE": "Subscription will be available for iOS soon. Please try again later.",
-  "LOGOUT_FAILED": "An error occurred during logout. Please inform us via the contact form in the profile tab if this happens again."
+  "LOGOUT_FAILED": "An error occurred during logout. Please inform us via the contact form in the profile tab if this happens again.",
+  "X_UNIT_FOR_FREE_AFTERWARDS_COLON": "{{value}} {{unit}} free trial. Afterwards:",
+  "UNIT_DAY": "days",
+  "UNIT_WEEK": "weeks",
+  "UNIT_MONTH": "months",
+  "UNIT_YEAR": "years",
+  "UNIT_ONE_DAY": "day",
+  "UNIT_ONE_WEEK": "week",
+  "UNIT_ONE_MONTH": "month",
+  "UNIT_ONE_YEAR": "year"
 }

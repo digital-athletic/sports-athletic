@@ -686,7 +686,7 @@
   "FAILED_TO_LOAD_SKILL_TREES": "Laden der Übungsbäume fehlgeschlagen",
   "FAILED_TO_LOAD_EXERCISE_LIST": "Laden der Übungsliste fehlgeschlagen",
   "FAILED_TO_INITIALIZE_CONNECTION": "Verbindung zum SportsAthletic Server fehlgeschlagen",
-  "REQUESTED_SUBSCRIPTION_NOT_FOUND": "Das gewählte Abo konnte nicht gefunden werden.",
+  "REQUESTED_SUBSCRIPTION_NOT_FOUND": "Das gewählte Abo ist nicht verfügbar.",
   "SUBSCRIPTION_EXPIRED": "Abonnement abgelaufen",
   "CHOOSE_A_SUBSCRIPTION_TO_START_YOUR_TRAINING": "Schließe ein Abonnement ab um dein Training zu starten.",
   "X_DAYS_TEST_PERIOD_REMAINING": "Noch {{days}} Tage Trainings testen",

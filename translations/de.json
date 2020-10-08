@@ -682,6 +682,7 @@
 
   "INITIALIZATION_FAILED": "Initialisierung fehlgeschlagen",
   "FAILED_TO_RESET_REGISTRATION": "Zurücksetzen der Registrierung fehlgeschlagen",
+  "FAILED_TO_LOAD_USER_DATA": "Synchronisierung der Benutzerdaten fehlgeschlagen",
   "FAILED_TO_CHECK_SUBSCRIPTIONS": "Überprüfung des Abos fehlgeschlagen",
   "FAILED_TO_LOAD_SKILL_TREES": "Laden der Übungsbäume fehlgeschlagen",
   "FAILED_TO_LOAD_EXERCISE_LIST": "Laden der Übungsliste fehlgeschlagen",

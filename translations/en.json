@@ -684,6 +684,7 @@
 
   "INITIALIZATION_FAILED": "Initialization failed",
   "FAILED_TO_RESET_REGISTRATION": "Failed to reset registration",
+  "FAILED_TO_LOAD_USER_DATA": "Failed to synchronize user data",
   "FAILED_TO_CHECK_SUBSCRIPTIONS": "Failed to check subscriptions",
   "FAILED_TO_LOAD_SKILL_TREES": "Loading skill trees failed",
   "FAILED_TO_LOAD_EXERCISE_LIST": "Loading exercise list failed",

@@ -533,7 +533,7 @@
   "NO_SEASON_PHASE_TYPE_MSG":"Please select a season phase so I can create your training plan.",
   "ANAMNESIS_INCOMPLETE_TITLE": "Plan needs more Data",
   "ANAMNESIS_INCOMPLETE_MSG": "Please complete your data in 'My profile' to generate your workouts.",
-  "ANAMNESIS_INCOMPLETE_NO_TRAINING_DAYS_MSG": "Please complete your data in 'My training data' to generate your workouts.",
+  "ANAMNESIS_INCOMPLETE_MY_TRAINING_DATA": "Please complete your data in 'My training data' to generate your workouts.",
   "PAUSE_PHASE": "non training phase",
   "PREPATORY_PHASE": "prepatory phase",
   "COMPETITION_PHASE": "competition phase",

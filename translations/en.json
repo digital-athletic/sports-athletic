@@ -708,5 +708,12 @@
   "UNIT_ONE_DAY": "day",
   "UNIT_ONE_WEEK": "week",
   "UNIT_ONE_MONTH": "month",
-  "UNIT_ONE_YEAR": "year"
+  "UNIT_ONE_YEAR": "year",
+  "ABORT_ANAMNESIS_QUESTIONMARK": "Abort profile questions?",
+  "ABORT_ANAMNESIS_EXPLANATION": "The profile is incomplete. Do you really want to skip without saving your data?",
+  "ABORT_TRAINING_DATA_QUESTIONMARK": "Abort training data questions?",
+  "ABORT_TRAINING_DATA_EXPLANATION": "The training data is incomplete. Do you really want to skip without saving your data?",
+  "SYNCINDICATOR_SYNCHRONIZING": "synchronizing...",
+  "SYNCINDICATOR_SYNCHRONIZED": "synchronized",
+  "SYNCINDICATOR_FAILED": "failed"
 }

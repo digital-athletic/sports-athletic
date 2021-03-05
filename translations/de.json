@@ -706,5 +706,12 @@
   "UNIT_ONE_DAY": "Tag",
   "UNIT_ONE_WEEK": "Woche",
   "UNIT_ONE_MONTH": "Monat",
-  "UNIT_ONE_YEAR": "Jahr"
+  "UNIT_ONE_YEAR": "Jahr",
+  "ABORT_ANAMNESIS_QUESTIONMARK": "Profil Eingabe überspringen?",
+  "ABORT_ANAMNESIS_EXPLANATION": "Das Profil ist noch nicht vollständig. Möchtest du wirklich ohne die Daten zu speichern fortfahren?",
+  "ABORT_TRAINING_DATA_QUESTIONMARK": "Trainingsdaten Eingabe überspringen?",
+  "ABORT_TRAINING_DATA_EXPLANATION": "Deine Trainingsdaten sind noch nicht vollständig. Möchtest du wirklich ohne die Daten zu speichern fortfahren?",
+  "SYNCINDICATOR_SYNCHRONIZING": "synchronisiere...",
+  "SYNCINDICATOR_SYNCHRONIZED": "synchronisiert",
+  "SYNCINDICATOR_FAILED": "fehlgeschlagen"
 }

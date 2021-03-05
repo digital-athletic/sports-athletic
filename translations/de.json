@@ -713,5 +713,8 @@
   "ABORT_TRAINING_DATA_EXPLANATION": "Deine Trainingsdaten sind noch nicht vollständig. Möchtest du wirklich ohne die Daten zu speichern fortfahren?",
   "SYNCINDICATOR_SYNCHRONIZING": "synchronisiere...",
   "SYNCINDICATOR_SYNCHRONIZED": "synchronisiert",
-  "SYNCINDICATOR_FAILED": "fehlgeschlagen"
+  "SYNCINDICATOR_FAILED": "fehlgeschlagen",
+  "GO_TO_USERPROFILE": "Profil Daten angeben",
+  "NO_WORKOUT_DATA_TITLE": "Nicht genügend Profildaten",
+  "NO_WORKOUT_DATA_MSG": "Damit wir deine Trainingsdaten komplettieren können, brauchen wir zuerst dein restliches Profil. Gehe bitte zur Profil Eingabe."
 }

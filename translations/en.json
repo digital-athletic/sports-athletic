@@ -715,5 +715,8 @@
   "ABORT_TRAINING_DATA_EXPLANATION": "The training data is incomplete. Do you really want to skip without saving your data?",
   "SYNCINDICATOR_SYNCHRONIZING": "synchronizing...",
   "SYNCINDICATOR_SYNCHRONIZED": "synchronized",
-  "SYNCINDICATOR_FAILED": "failed"
+  "SYNCINDICATOR_FAILED": "failed",
+  "GO_TO_USERPROFILE": "Go to profile",
+  "NO_WORKOUT_DATA_TITLE": "Missing profile data",
+  "NO_WORKOUT_DATA_MSG": "To finish your training data, we need you to complete your profile."
 }

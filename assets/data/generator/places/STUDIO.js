@@ -13,7 +13,6 @@ Studio.EQUIPMENT = [
     "TREADMILL",
     "TRACK_5",
     "MEDICINE_BALL",
-    "EXERCISING_BENCH",
     "ADJUSTABLE_BENCH",
     "WALL",
     "INCLINE_BENCH",

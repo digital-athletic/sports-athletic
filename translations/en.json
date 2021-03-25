@@ -499,7 +499,7 @@
   "ACTIVE_EQUIPMENT_TITLE": "Available equipment",
   "INACTIVE_EQUIPMENT_TITLE": "Additional Equipment",
   "SAVING_THREE_DOTS": "Saving ...",
-  "SAVE": "Speichern",
+  "SAVE": "Save",
   "DO_MAX_REPS": "max",
   "NO_WORKOUT_YET": "No trainings yet",
   "TEST_WORKOUT": "Power test",
@@ -723,5 +723,9 @@
   "SYNCINDICATOR_FAILED": "failed",
   "GO_TO_USERPROFILE": "Go to profile",
   "NO_WORKOUT_DATA_TITLE": "Missing profile data",
-  "NO_WORKOUT_DATA_MSG": "To finish your training data, we need you to complete your profile."
+  "NO_WORKOUT_DATA_MSG": "To finish your training data, we need you to complete your profile.",
+  "YOUR_PLAN_WILL_BE_UPDATED": "Your plan will be updated",
+  "LEAVE_PAGE_QUESTIONMARK": "Leave page?",
+  "LEAVE": "Leave",
+  "YOUR_CHANGES_WILL_BE_LOST": "Your unsaved changes will be lost"
 }

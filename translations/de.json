@@ -721,5 +721,9 @@
   "SYNCINDICATOR_FAILED": "fehlgeschlagen",
   "GO_TO_USERPROFILE": "Profil Daten angeben",
   "NO_WORKOUT_DATA_TITLE": "Nicht genügend Profildaten",
-  "NO_WORKOUT_DATA_MSG": "Damit wir deine Trainingsdaten komplettieren können, brauchen wir zuerst dein restliches Profil. Gehe bitte zur Profil Eingabe."
+  "NO_WORKOUT_DATA_MSG": "Damit wir deine Trainingsdaten komplettieren können, brauchen wir zuerst dein restliches Profil. Gehe bitte zur Profil Eingabe.",
+  "YOUR_PLAN_WILL_BE_UPDATED": "Dein Plan wird aktualisiert",
+  "LEAVE_PAGE_QUESTIONMARK": "Seite verlassen?",
+  "LEAVE": "Verlassen",
+  "YOUR_CHANGES_WILL_BE_LOST": "Deine ungespeicherten Änderungen gehen verloren"
 }

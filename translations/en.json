@@ -728,5 +728,8 @@
   "LEAVE_PAGE_QUESTIONMARK": "Leave page?",
   "LEAVE": "Leave",
   "YOUR_CHANGES_WILL_BE_LOST": "Your unsaved changes will be lost",
-  "TRAINING_DATA_MISSING": "We could not save your training data. Our developers have been informed.\n\nIf the problem persists please contact us via \"Contact\" in \"Profile\"."
+  "TRAINING_DATA_MISSING": "We could not save your training data. Our developers have been informed.\n\nIf the problem persists please contact us via \"Contact\" in \"Profile\".",
+  "LOAD_AND_USE_STAGING_EXERCISES": "Use staging exercises",
+  "UPDATE_STAGING_EXERCISES": "Update staging exercises",
+  "USE_LIVE_EXERCISES": "Use live exercises"
 }

@@ -727,5 +727,6 @@
   "LEAVE_PAGE_QUESTIONMARK": "Leave page?",
   "LEAVE": "Leave",
   "YOUR_CHANGES_WILL_BE_LOST": "Your unsaved changes will be lost",
+  "PREV_SHORT_TRAINING_SORENESS": "No prevention training with muscle soreness in this area.",
   "TRAINING_DATA_MISSING": "We could not save your training data. Our developers have been informed.\n\nIf the problem persists please contact us via \"Contact\" in \"Profile\"."
 }

@@ -725,5 +725,6 @@
   "LEAVE_PAGE_QUESTIONMARK": "Seite verlassen?",
   "LEAVE": "Verlassen",
   "YOUR_CHANGES_WILL_BE_LOST": "Deine ungespeicherten Änderungen gehen verloren",
-  "TRAINING_DATA_MISSING": "Deine Trainingsdaten konnten leider nicht korrekt erfasst werden. Unsere Entwickler wurden darüber informiert.\n\nSollte der Fehler weiterhin auftreten, melde dich bitte über den Punkt \"Kontakt\" im \"Profil\" Bereich bei uns."
+  "TRAINING_DATA_MISSING": "Deine Trainingsdaten konnten leider nicht korrekt erfasst werden. Unsere Entwickler wurden darüber informiert.\n\nSollte der Fehler weiterhin auftreten, melde dich bitte über den Punkt \"Kontakt\" im \"Profil\" Bereich bei uns.",
+  "PREV_SHORT_TRAINING_SORENESS": "Kein Präventions-Training mit Muskelkater in dieser Region möglich."
 }

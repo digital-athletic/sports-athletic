@@ -37,6 +37,13 @@
 * Open ios/sportsAthleticAppClient.xcworkspace
 * Run project
 
+For showing images with react-native 63.2 and Xcode12 we need to add a case to the Image Component:
+
+node_modules/react-native/Libraries/Image/RCTUIImageViewAnimated.m - Line 278:
+`else {
+  [super displayLayer:layer];
+}`
+
 ### Release App ###
 
 Releases are created automatically via Bitrise Continuous Integration. Just Push in the release branch :-)

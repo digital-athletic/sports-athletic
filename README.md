@@ -43,7 +43,3 @@ node_modules/react-native/Libraries/Image/RCTUIImageViewAnimated.m - Line 278:
 `else {
   [super displayLayer:layer];
 }`
-
-### Release App ###
-
-Releases are created automatically via Bitrise Continuous Integration. Just Push in the release branch :-)

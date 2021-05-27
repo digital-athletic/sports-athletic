@@ -730,5 +730,14 @@
   "PREV_SHORT_TRAINING_SORENESS": "Kein Präventions-Training mit Muskelkater in dieser Region möglich.",
   "LOAD_AND_USE_STAGING_EXERCISES": "In-Arbeit Übungsliste verwenden",
   "UPDATE_STAGING_EXERCISES": "In-Arbeit Übungsliste aktualisieren",
-  "USE_LIVE_EXERCISES": "Live Übungsliste verwenden"
+  "USE_LIVE_EXERCISES": "Live Übungsliste verwenden",
+  "DID_YOU_LIKE_YOUR_TRAINING_TITLE": "Hat dir dein Training gefallen?",
+  "DID_YOU_LIKE_YOUR_TRAINING_MESSAGE": "Bitte gib uns feedback.",
+  "DONT_SHOW_AGAIN_CAPS": "Nicht mehr anzeigen",
+  "EVALUATION_TITLE": "Toll, das freut uns!",
+  "EVALUATION_MESSAGE": "Es, wäre für uns super hilfreich, wenn du eine Bewertung oder Rezension im App Store / Play Store zu Sports Athletic abgibst.\nVielen Dank für deine Unterstützung!",
+  "NO_EVALUATION_TITLE": "Schade!",
+  "NO_EVALUATION_MESSAGE": "Es tut uns leid, dass dir das letzte Training nicht gefallen hat. Wir würden uns sehr freuen, wenn du uns Feedback gibst, was wir verbessern können.\nVielen Dank!",
+  "GIVE_FEEDBACK": "Feedback geben",
+  "EVALUATE_CAPS": "BEWERTEN"
 }

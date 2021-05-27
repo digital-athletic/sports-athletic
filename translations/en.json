@@ -732,5 +732,14 @@
   "PREV_SHORT_TRAINING_SORENESS": "No prevention training with muscle soreness in this area.",
   "LOAD_AND_USE_STAGING_EXERCISES": "Use staging exercises",
   "UPDATE_STAGING_EXERCISES": "Update staging exercises",
-  "USE_LIVE_EXERCISES": "Use live exercises"
+  "USE_LIVE_EXERCISES": "Use live exercises",
+  "DID_YOU_LIKE_YOUR_TRAINING_TITLE": "Did you like your training?",
+  "DID_YOU_LIKE_YOUR_TRAINING_MESSAGE": "Please give us feedback.",
+  "DONT_SHOW_AGAIN_CAPS": "Don't show again",
+  "EVALUATION_TITLE": "We appreciate that!",
+  "EVALUATION_MESSAGE": "It would be nice if you could evaluate our app in the App Store / Play Store.\nThanks for your support!",
+  "NO_EVALUATION_TITLE": "What a pity!",
+  "NO_EVALUATION_MESSAGE": "We are sorry that you didn't like your last training. It would be nice if you may give us Feedback on your experience with our app.\nThank you!",
+  "GIVE_FEEDBACK": "Give Feedback",
+  "EVALUATE_CAPS": "EVALUATE"
 }

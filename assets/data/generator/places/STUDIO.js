@@ -11,7 +11,6 @@ Studio.EQUIPMENT = [
     "DUMBBELL",
     "BARBELL_BENCH",
     "TREADMILL",
-    "TRACK_5",
     "MEDICINE_BALL",
     "ADJUSTABLE_BENCH",
     "WALL",

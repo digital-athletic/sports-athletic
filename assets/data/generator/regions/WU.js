@@ -6,7 +6,7 @@ const WU = {
         ],
         10: [
             { tags: ["REGION_OBERKOERPER"], count: 2 },
-            { tags: ["REGION_UNTERKOERPER"], count: 6 },
+            { tags: ["REGION_UNTERKOERPER"], count: 5 },
             { tags: ["REGION_GANZKOERPER"], count: 1 }
         ]
     }

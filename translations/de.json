@@ -740,5 +740,18 @@
   "NO_EVALUATION_TITLE": "Schade!",
   "NO_EVALUATION_MESSAGE": "Es tut uns leid, dass dir das letzte Training nicht gefallen hat. Wir würden uns sehr freuen, wenn du uns Feedback gibst, was wir verbessern können.\nVielen Dank!",
   "GIVE_FEEDBACK": "Feedback geben",
-  "EVALUATE_CAPS": "BEWERTEN"
+  "EVALUATE_CAPS": "BEWERTEN",
+  "NOTIFICATIONS_SETTINGS": "Nachrichten-Einstellungen",
+  "NOTIFICATIONS_SETTINGS_TITLE": "Erhalte Benachrichtigungen",
+  "NOTIFICATIONS_SETTINGS_TEXT": "Damit ich kein Training verpasse, möchte ich an meinen Trainingstagen mit einer Nachricht daran erinnert werden.",
+  "NOTIFICATIONS_SYSTEM_SETTINGS_TITLE": "Berechtigungen für Notifications nicht vorhanden",
+  "NOTIFICATIONS_SYSTEM_SETTINGS_BUTTON_TEXT": "Zu den Systemeinstellungen",
+  "NOTIFICATIONS_SYSTEM_SETTINGS_TEXT":"Ändere deine Notification-Preferenzen in den Systemeinstellungen",
+  "NOTIFICATIONS_PERMISSIONS_ALERT_TITLE": "Berechtigungen erforderlich",
+  "NOTIFICATIONS_PERMISSIONS_ALERT_TEXT": "An deinen Trainingstagen möchten wir dich mit einer Nachricht an dein Training erinnern. So verpasst du kein Training und kannst dich schon mental drauf vorbereiten.",
+  "NOTIFICATIONS_PERMISSIONS_ALERT_BUTTON_NO": "Nein",
+  "NOTIFICATIONS_PERMISSIONS_ALERT_BUTTON_SETTINGS": "Ja, zeige Trainingserinnerungen",
+  "NOTIFICATIONS_WORKOUT_REMINDER_BACKUP_TEXT": "Heute steht wieder dein Training auf dem Plan. Wir wünschen dir viel Spaß!",
+  "NOTIFICATIONS_WORKOUT_REMINDER_TITLE": "Trainingserinnerung",
+  "NOTIFICATIONS_WORKOUT_REMINDER_CHANNEL_NAME": "Trainingserinnerungen"
 }

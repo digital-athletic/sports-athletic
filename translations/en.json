@@ -742,5 +742,18 @@
   "NO_EVALUATION_TITLE": "What a pity!",
   "NO_EVALUATION_MESSAGE": "We are sorry that you didn't like your last training. It would be nice if you may give us Feedback on your experience with our app.\nThank you!",
   "GIVE_FEEDBACK": "Give Feedback",
-  "EVALUATE_CAPS": "EVALUATE"
+  "EVALUATE_CAPS": "EVALUATE",
+  "NOTIFICATIONS_SETTINGS": "Notification settings",
+  "NOTIFICATIONS_SETTINGS_TITLE": "Turn on notifications",
+  "NOTIFICATIONS_SETTINGS_TEXT": "I want to receive notifications as reminders to Workout on my selected training days.",
+  "NOTIFICATIONS_SYSTEM_SETTINGS_TITLE": "Notifications currently not allowed",
+  "NOTIFICATIONS_SYSTEM_SETTINGS_BUTTON_TEXT": "Go to device settings",
+  "NOTIFICATIONS_SYSTEM_SETTINGS_TEXT":"Please change your notification preferences in the device settings",
+  "NOTIFICATIONS_PERMISSIONS_ALERT_TITLE": "Permissions required",
+  "NOTIFICATIONS_PERMISSIONS_ALERT_TEXT": "we would like to send you reminders to work out on your selected training days",
+  "NOTIFICATIONS_PERMISSIONS_ALERT_BUTTON_NO": "No",
+  "NOTIFICATIONS_PERMISSIONS_ALERT_BUTTON_SETTINGS": "Yes, show workout reminders",
+  "NOTIFICATIONS_WORKOUT_REMINDER_BACKUP_TEXT": "Remember to work out today!",
+  "NOTIFICATIONS_WORKOUT_REMINDER_TITLE": "Workout reminder",
+  "NOTIFICATIONS_WORKOUT_REMINDER_CHANNEL_NAME": "Workout reminders"
 }

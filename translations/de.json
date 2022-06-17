@@ -614,6 +614,8 @@
   "INFO_FOR_SPEED_ENDURANCE": "Infos zu Schnelligkeitsausdauer",
   "LOGOUT_QUESTION_TITLE": "Ausloggen",
   "LOGOUT_QUESTION_MESSAGE": "Willst du dich wirklich ausloggen?",
+  "DELETE_QUESTION_TITLE": "User endgültig löschen",
+  "DELETE_QUESTION_MESSAGE": "Dein Profil und alle deine Daten werden dauerhaft gelöscht. Abgeschlossene Abonnements werden nicht automatisch beendet.\nDIESER VORGANG KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN!",
   "LEGEND_ACTIVE_MUSCLES": "aktiv arbeitende Muskeln",
   "LEGEND_SUPPORTING_MUSCLES": "unterstützend arbeitende Muskeln",
   "CM_HIGH": "cm hoch",
@@ -698,7 +700,8 @@
   "POWER_TEST_NOT_POSSIBLE": "Krafttest nicht möglich",
   "ANAMNESIS_DATA_NEEDED": "Um deinen Krafttest durchzuführen, benötigen wir zuerst deine Anamnesedaten.",
   "IOS_SUBSCRIPTION_NOT_YET_AVAILABLE": "Abonnements sind für iOS demnächst verfügbar. Bitte versuche es später nochmal.",
-  "LOGOUT_FAILED": "Beim Ausloggen ist ein Fehler aufgetreten. Sollte das wieder passieren melde dich bitte über das Kontaktformular unter Profil.",
+  "DELETE_FAILED": "Beim Löschen ist ein Fehler aufgetreten. Sollte das wieder passieren, melde dich bitte über das Kontaktformular unter Profil.",
+  "LOGOUT_FAILED": "Beim Ausloggen ist ein Fehler aufgetreten. Sollte das wieder passieren, melde dich bitte über das Kontaktformular unter Profil.",
   "X_UNIT_FOR_FREE_AFTERWARDS_COLON": "{{value}} {{unit}} kostenlos testen, danach:",
   "UNIT_DAY": "Tage",
   "UNIT_WEEK": "Wochen",
@@ -753,5 +756,6 @@
   "NOTIFICATIONS_PERMISSIONS_ALERT_BUTTON_SETTINGS": "Ja, zeige Trainingserinnerungen",
   "NOTIFICATIONS_WORKOUT_REMINDER_BACKUP_TEXT": "Heute steht wieder dein Training auf dem Plan. Wir wünschen dir viel Spaß!",
   "NOTIFICATIONS_WORKOUT_REMINDER_TITLE": "Trainingserinnerung",
-  "NOTIFICATIONS_WORKOUT_REMINDER_CHANNEL_NAME": "Trainingserinnerungen"
+  "NOTIFICATIONS_WORKOUT_REMINDER_CHANNEL_NAME": "Trainingserinnerungen",
+  "DELETE_USER": "Meinen Nutzer löschen"
 }

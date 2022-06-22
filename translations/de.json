@@ -388,7 +388,6 @@
   "EXERCISING_BENCH": "Bank (Halle)",
   "PARK_BENCH": "Parkbank",
   "BOX_LOW": "Niedrige Box (bis 45cm)",
-  "HANDBALL": "Handball",
   "TUBE_MEDIUM": "Tube mittel",
   "TUBE_STRONG": "Tube stark",
   "TUBE_EXTREME": "Tube extrem",
@@ -757,5 +756,17 @@
   "NOTIFICATIONS_WORKOUT_REMINDER_BACKUP_TEXT": "Heute steht wieder dein Training auf dem Plan. Wir wünschen dir viel Spaß!",
   "NOTIFICATIONS_WORKOUT_REMINDER_TITLE": "Trainingserinnerung",
   "NOTIFICATIONS_WORKOUT_REMINDER_CHANNEL_NAME": "Trainingserinnerungen",
-  "DELETE_USER": "Meinen Nutzer löschen"
+  "DELETE_USER": "Meinen Nutzer löschen",
+  "SPORT": "Sportart",
+  "MY_SPORT": "Meine Sportart",
+  "HANDBALL": "Handball",
+  "FOOTBALL": "Fußball",
+  "VOLLEYBALL": "Volleyball",
+  "BASKETBALL": "Basketball",
+  "ICE_HOCKEY": "Eishockey",
+  "HOCKEY": "Hockey",
+  "AMERICAN_FOOTBALL": "American Football",
+  "RUGBY": "Rugby",
+  "OTHER_SPORT": "Sonstige",
+  "SPORT_SELECTED": "ausgewählt"
 }

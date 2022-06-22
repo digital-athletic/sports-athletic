@@ -390,7 +390,6 @@
   "EXERCISING_BENCH": "bench (court)",
   "PARK_BENCH": "park bench",
   "BOX_LOW": "low box (up to 45cm)",
-  "HANDBALL": "handball",
   "TUBE_MEDIUM": "tube middle",
   "TUBE_STRONG": "tube strong",
   "TUBE_EXTREME": "tube extreme",
@@ -759,5 +758,17 @@
   "NOTIFICATIONS_WORKOUT_REMINDER_BACKUP_TEXT": "Remember to work out today!",
   "NOTIFICATIONS_WORKOUT_REMINDER_TITLE": "Workout reminder",
   "NOTIFICATIONS_WORKOUT_REMINDER_CHANNEL_NAME": "Workout reminders",
-  "DELETE_USER": "Delete my user"
+  "DELETE_USER": "Delete my user",
+  "SPORT": "Your sport",
+  "MY_SPORT": "My sport",
+  "HANDBALL": "Handball",
+  "FOOTBALL": "Football/Soccer",
+  "VOLLEYBALL": "Volleyball",
+  "BASKETBALL": "Basketball",
+  "ICE_HOCKEY": "Ice Hockey",
+  "HOCKEY": "Field Hockey",
+  "AMERICAN_FOOTBALL": "American Football",
+  "RUGBY": "Rugby",
+  "OTHER_SPORT": "Other",
+  "SPORT_SELECTED": "selected"
 }

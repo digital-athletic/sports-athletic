@@ -693,7 +693,7 @@
   "FAILED_TO_INITIALIZE_CONNECTION": "Verbindung zum SportsAthletic Server fehlgeschlagen",
   "REQUESTED_SUBSCRIPTION_NOT_FOUND": "Das gewählte Abo ist nicht verfügbar.",
   "SUBSCRIPTION_EXPIRED": "Training freischalten",
-  "CHOOSE_A_SUBSCRIPTION_TO_START_YOUR_TRAINING": "Um 1 Monat kostenfrei zu trainieren, schließ bitte ein Abo ab.",
+  "CHOOSE_A_SUBSCRIPTION_TO_START_YOUR_TRAINING": "Um 2 Wochen kostenfrei zu trainieren, schließ bitte ein Abo ab.",
   "X_DAYS_TEST_PERIOD_REMAINING": "Noch {{days}} Tage Trainings testen",
   "ONE_DAY_TEST_PERIOD_REMAINING": "Noch 1 Tag Trainings testen",
   "LOGGING_OUT": "Ausloggen",

@@ -1,6 +1,6 @@
 ---
 name: Feature Proposal
-about: Propose a new feature for the sports-athletic app
+about: Propose a new feature
 title: ''
 labels: 'feature'
 assignees: ''

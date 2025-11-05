@@ -6,7 +6,7 @@
 
 <!-- Link related issues below. Use "Closes #123" to automatically close issues when PR is merged -->
 
-Closes #
+<!-- Closes #  -->
 
 ## Screenshots (if relevant)
 

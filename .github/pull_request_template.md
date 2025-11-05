@@ -4,11 +4,7 @@
 
 ## Related issues
 
-<!-- Link related issues below. -->
-
-## What are the relevant issue numbers?
-
-<!-- Please link to issues that this PR addresses or closes -->
+<!-- Link related issues below. Use "Closes #123" to automatically close issues when PR is merged -->
 
 Closes #
 

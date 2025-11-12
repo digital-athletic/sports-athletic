@@ -1,10 +1,14 @@
 {
-  "typescript.tsdk": "node_modules/typescript/lib",
+  "chat.useAgentsMdFile": true,
+  "chat.modeFilesLocations": {
+    ".github/chatmodes": true
+  },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
-  }
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

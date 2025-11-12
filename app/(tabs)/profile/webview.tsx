@@ -31,12 +31,4 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 40,
   },
-  button: {
-    backgroundColor: "#007AFF",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    minWidth: 200,
-  },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
 });

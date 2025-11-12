@@ -1,3 +1,4 @@
+import { PrimaryButton } from "@/components/PrimaryButton";
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -8,11 +9,11 @@ export default function ExercisesScreen() {
       <Text style={styles.description}>
         Exercise library - Legacy: views/more/pages/Exercises
       </Text>
-      <Link href="/profile/exercise-information" style={styles.button}>
-        <Text style={styles.buttonText}>View Exercise Info</Text>
+      <Link href="/profile/exercise-information">
+        <PrimaryButton>View Exercise Info</PrimaryButton>
       </Link>
-      <Link href="../" style={styles.button}>
-        <Text style={styles.buttonText}>Back</Text>
+      <Link href="../">
+        <PrimaryButton>Back</PrimaryButton>
       </Link>
     </View>
   );
@@ -33,13 +34,4 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 40,
   },
-  button: {
-    backgroundColor: "#007AFF",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    minWidth: 200,
-    marginTop: 10,
-  },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
 });

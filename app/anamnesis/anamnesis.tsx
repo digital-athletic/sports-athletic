@@ -1,3 +1,4 @@
+import { PrimaryButton } from "@/components/PrimaryButton";
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -15,8 +16,8 @@ export default function AnamnesisScreen() {
         Answer questions about your health and fitness
       </Text>
 
-      <Link href="/anamnesis/training-days" style={styles.button}>
-        <Text style={styles.buttonText}>Continue to Training Days</Text>
+      <Link href="/anamnesis/training-days">
+        <PrimaryButton>Continue to Training Days</PrimaryButton>
       </Link>
     </View>
   );
@@ -40,17 +41,5 @@ const styles = StyleSheet.create({
     color: "#666",
     textAlign: "center",
     marginBottom: 40,
-  },
-  button: {
-    backgroundColor: "#007AFF",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    minWidth: 200,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
   },
 });

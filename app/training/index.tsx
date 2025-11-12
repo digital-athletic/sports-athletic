@@ -1,3 +1,4 @@
+import { PrimaryButton } from "@/components/PrimaryButton";
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -14,8 +15,8 @@ export default function SelectTrainingScreen() {
       <Text style={styles.description}>Choose your training session</Text>
 
       <View style={styles.buttonContainer}>
-        <Link style={styles.primaryButton} href="/training/muscle-soreness">
-          <Text style={styles.buttonText}>Start Training Session</Text>
+        <Link href="/training/muscle-soreness">
+          <PrimaryButton>Start Training Session</PrimaryButton>
         </Link>
 
         <Link style={styles.secondaryButton} href="../">
@@ -49,12 +50,6 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 15,
   },
-  primaryButton: {
-    backgroundColor: "#007AFF",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-  },
   secondaryButton: {
     backgroundColor: "#fff",
     padding: 15,
@@ -62,12 +57,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#007AFF",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-    textAlign: "center",
   },
   secondaryButtonText: {
     color: "#007AFF",

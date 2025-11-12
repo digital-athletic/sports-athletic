@@ -1,3 +1,4 @@
+import { PrimaryButton } from "@/components/PrimaryButton";
 import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
@@ -40,8 +41,8 @@ export default function ContactScreen() {
       </View>
 
       <View style={styles.buttonContainer}>
-        <Link href="../" style={styles.primaryButton}>
-          <Text style={styles.buttonText}>Send Message</Text>
+        <Link href="../">
+          <PrimaryButton>Send Message</PrimaryButton>
         </Link>
 
         <Link href="../" style={styles.secondaryButton}>
@@ -94,12 +95,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     gap: 15,
   },
-  primaryButton: {
-    backgroundColor: "#007AFF",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-  },
   secondaryButton: {
     backgroundColor: "#fff",
     padding: 15,
@@ -107,11 +102,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#007AFF",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
   },
   secondaryButtonText: {
     color: "#007AFF",

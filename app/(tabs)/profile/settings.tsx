@@ -1,3 +1,4 @@
+import { PrimaryButton } from "@/components/PrimaryButton";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
@@ -39,8 +40,8 @@ export default function SettingsScreen() {
         </View>
       </View>
 
-      <Link href="../" style={styles.button}>
-        <Text style={styles.buttonText}>Back</Text>
+      <Link href="../">
+        <PrimaryButton>Back</PrimaryButton>
       </Link>
     </ScrollView>
   );
@@ -85,16 +86,5 @@ const styles = StyleSheet.create({
   settingLabel: {
     fontSize: 16,
     color: "#333",
-  },
-  button: {
-    backgroundColor: "#007AFF",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
   },
 });

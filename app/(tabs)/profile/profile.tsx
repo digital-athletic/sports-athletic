@@ -1,3 +1,4 @@
+import { PrimaryButton } from "@/components/PrimaryButton";
 import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -29,8 +30,8 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      <Link href="../" style={styles.button}>
-        <Text style={styles.buttonText}>Back</Text>
+      <Link href="../">
+        <PrimaryButton>Back</PrimaryButton>
       </Link>
     </ScrollView>
   );
@@ -79,16 +80,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#333",
-  },
-  button: {
-    backgroundColor: "#007AFF",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
   },
 });

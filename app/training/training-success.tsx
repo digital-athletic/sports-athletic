@@ -1,3 +1,4 @@
+import { PrimaryButton } from "@/components/PrimaryButton";
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -21,8 +22,8 @@ export default function TrainingSuccessScreen() {
       </Text>
 
       <View style={styles.buttonContainer}>
-        <Link href="/(tabs)" replace style={styles.primaryButton}>
-          <Text style={styles.buttonText}>Return to Home</Text>
+        <Link href="/(tabs)" replace>
+          <PrimaryButton color="#28a745">Return to Home</PrimaryButton>
         </Link>
       </View>
     </View>
@@ -61,16 +62,5 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: "100%",
     gap: 15,
-  },
-  primaryButton: {
-    backgroundColor: "#28a745",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
   },
 });

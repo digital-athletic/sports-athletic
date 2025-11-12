@@ -1,3 +1,4 @@
+import { PrimaryButton } from "@/components/PrimaryButton";
 import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -17,16 +18,16 @@ export default function HomeScreen() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Today&apos;s Training</Text>
           <Text style={styles.cardDescription}>Start your daily workout</Text>
-          <Link href="/training" style={styles.cardButton}>
-            <Text style={styles.cardButtonText}>Start Training</Text>
+          <Link href="/training">
+            <PrimaryButton>Start Training</PrimaryButton>
           </Link>
         </View>
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Training Sections</Text>
           <Text style={styles.cardDescription}>Browse training categories</Text>
-          <Link href="/home/section-details" style={styles.cardButton}>
-            <Text style={styles.cardButtonText}>View Sections</Text>
+          <Link href="/home/section-details">
+            <PrimaryButton>View Sections</PrimaryButton>
           </Link>
         </View>
 
@@ -88,17 +89,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
     marginBottom: 15,
-  },
-  cardButton: {
-    backgroundColor: "#007AFF",
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  cardButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
   },
   quickActions: {
     flexDirection: "row",

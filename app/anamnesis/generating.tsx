@@ -1,3 +1,4 @@
+import { PrimaryButton } from "@/components/PrimaryButton";
 import { Link } from "expo-router";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
@@ -16,8 +17,8 @@ export default function GeneratingScreen() {
         Creating your personalized training plan...
       </Text>
 
-      <Link href="/(tabs)" replace style={styles.button}>
-        <Text style={styles.buttonText}>Complete Setup</Text>
+      <Link href="/(tabs)" replace>
+        <PrimaryButton>Complete Setup</PrimaryButton>
       </Link>
     </View>
   );
@@ -42,17 +43,5 @@ const styles = StyleSheet.create({
     color: "#666",
     textAlign: "center",
     marginBottom: 40,
-  },
-  button: {
-    backgroundColor: "#007AFF",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    minWidth: 200,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
   },
 });

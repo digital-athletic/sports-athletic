@@ -1,3 +1,4 @@
+import { PrimaryButton } from "@/components/PrimaryButton";
 import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -24,8 +25,8 @@ export default function IndexScreen() {
             Navigate to the main tab-based interface with Home, Statistics, and
             Profile tabs.
           </Text>
-          <Link href="/(tabs)" style={styles.button}>
-            <Text style={styles.buttonText}>Go to Main App</Text>
+          <Link href="/(tabs)">
+            <PrimaryButton>Go to Main App</PrimaryButton>
           </Link>
         </View>
 
@@ -34,8 +35,8 @@ export default function IndexScreen() {
           <Text style={styles.cardDescription}>
             First-time user experience and app introduction.
           </Text>
-          <Link href="/onboarding" style={styles.button}>
-            <Text style={styles.buttonText}>Start Onboarding</Text>
+          <Link href="/onboarding">
+            <PrimaryButton>Start Onboarding</PrimaryButton>
           </Link>
         </View>
 
@@ -44,8 +45,8 @@ export default function IndexScreen() {
           <Text style={styles.cardDescription}>
             User profile setup and health questionnaire.
           </Text>
-          <Link href="/anamnesis" style={styles.button}>
-            <Text style={styles.buttonText}>Start Anamnesis</Text>
+          <Link href="/anamnesis">
+            <PrimaryButton>Start Anamnesis</PrimaryButton>
           </Link>
         </View>
 
@@ -55,8 +56,8 @@ export default function IndexScreen() {
             Active training session with navigation buttons (Select → Soreness →
             Overview → Training → Success).
           </Text>
-          <Link href="/training" style={styles.button}>
-            <Text style={styles.buttonText}>Start Training</Text>
+          <Link href="/training">
+            <PrimaryButton>Start Training</PrimaryButton>
           </Link>
         </View>
 
@@ -135,17 +136,6 @@ const styles = StyleSheet.create({
     color: "#666",
     marginBottom: 15,
     lineHeight: 20,
-  },
-  button: {
-    backgroundColor: "#007AFF",
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
   },
   quickActions: {
     flexDirection: "row",

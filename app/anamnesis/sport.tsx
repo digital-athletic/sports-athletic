@@ -1,3 +1,4 @@
+import { PrimaryButton } from "@/components/PrimaryButton";
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -13,8 +14,8 @@ export default function SportScreen() {
       <Text style={styles.title}>Select Sport</Text>
       <Text style={styles.description}>Choose your primary sport</Text>
 
-      <Link href="/anamnesis/userprofile" style={styles.button}>
-        <Text style={styles.buttonText}>Continue to Profile</Text>
+      <Link href="/anamnesis/userprofile">
+        <PrimaryButton>Continue to Profile</PrimaryButton>
       </Link>
     </View>
   );
@@ -38,17 +39,5 @@ const styles = StyleSheet.create({
     color: "#666",
     textAlign: "center",
     marginBottom: 40,
-  },
-  button: {
-    backgroundColor: "#007AFF",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    minWidth: 200,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
   },
 });

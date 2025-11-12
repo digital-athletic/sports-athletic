@@ -1,3 +1,4 @@
+import { PrimaryButton } from "@/components/PrimaryButton";
 import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -26,8 +27,8 @@ export default function ExerciseInformationScreen() {
       </View>
 
       <View style={styles.buttonContainer}>
-        <Link href="../" style={styles.button}>
-          <Text style={styles.buttonText}>Back to Training</Text>
+        <Link href="../">
+          <PrimaryButton>Back to Training</PrimaryButton>
         </Link>
       </View>
     </ScrollView>
@@ -69,16 +70,5 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     gap: 15,
-  },
-  button: {
-    backgroundColor: "#007AFF",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
   },
 });

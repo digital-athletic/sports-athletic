@@ -1,3 +1,4 @@
+import { PrimaryButton } from "@/components/PrimaryButton";
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -8,8 +9,8 @@ export default function NotificationsScreen() {
       <Text style={styles.description}>
         Notification settings - Legacy: views/more/pages/Notifications
       </Text>
-      <Link href="../" style={styles.button}>
-        <Text style={styles.buttonText}>Back</Text>
+      <Link href="../">
+        <PrimaryButton>Back</PrimaryButton>
       </Link>
     </View>
   );
@@ -30,12 +31,4 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 40,
   },
-  button: {
-    backgroundColor: "#007AFF",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    minWidth: 200,
-  },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
 });

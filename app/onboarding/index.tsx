@@ -1,3 +1,4 @@
+import { PrimaryButton } from "@/components/PrimaryButton";
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -16,12 +17,12 @@ export default function OnboardingScreen() {
       </Text>
 
       <View style={styles.buttonContainer}>
-        <Link href="/onboarding/webview" style={styles.button}>
-          <Text style={styles.buttonText}>View Web Content</Text>
+        <Link href="/onboarding/webview">
+          <PrimaryButton>View Web Content</PrimaryButton>
         </Link>
 
-        <Link href="/anamnesis" style={styles.button}>
-          <Text style={styles.buttonText}>Continue to Anamnesis</Text>
+        <Link href="/anamnesis">
+          <PrimaryButton>Continue to Anamnesis</PrimaryButton>
         </Link>
       </View>
     </View>
@@ -50,16 +51,5 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: "100%",
     gap: 15,
-  },
-  button: {
-    backgroundColor: "#007AFF",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
   },
 });

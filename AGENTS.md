@@ -60,3 +60,9 @@ This file provides guidance to AI Agents for building high-quality React Native 
 - Test component behavior, not implementation details
 - Mock external dependencies and API calls appropriately
 - Ensure accessibility features are included in testing specs
+
+## File & Directory Rules
+- The `/legacy` directory is **read-only**.  
+  - It should only be **referenced** for understanding existing logic or data structures.
+  - The AI **must not modify, move, or create files** in `/legacy`.
+- All **new code** (components, screens, hooks, utils, etc.) should be created inside the `/app` directory.

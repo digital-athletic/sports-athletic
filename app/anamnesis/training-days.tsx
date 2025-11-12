@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
 /**
  * Training Days Screen
@@ -8,8 +8,6 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
  * Legacy: views/data/TrainingDays
  */
 export default function TrainingDaysScreen() {
-  const router = useRouter();
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Training Days</Text>
@@ -17,12 +15,9 @@ export default function TrainingDaysScreen() {
         Select your available training days
       </Text>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push("./season-phase")}
-      >
+      <Link href="/anamnesis/season-phase" style={styles.button}>
         <Text style={styles.buttonText}>Continue to Season Phase</Text>
-      </TouchableOpacity>
+      </Link>
     </View>
   );
 }

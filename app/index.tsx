@@ -1,11 +1,5 @@
-import { useRouter } from "expo-router";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Link } from "expo-router";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 /**
  * Root Index Screen
@@ -15,8 +9,6 @@ import {
  * and automatically route to the appropriate flow.
  */
 export default function IndexScreen() {
-  const router = useRouter();
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Sports Athletic</Text>
@@ -32,12 +24,9 @@ export default function IndexScreen() {
             Navigate to the main tab-based interface with Home, Statistics, and
             Profile tabs.
           </Text>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/(tabs)")}
-          >
+          <Link href="/(tabs)" style={styles.button}>
             <Text style={styles.buttonText}>Go to Main App</Text>
-          </TouchableOpacity>
+          </Link>
         </View>
 
         <View style={styles.card}>
@@ -45,12 +34,9 @@ export default function IndexScreen() {
           <Text style={styles.cardDescription}>
             First-time user experience and app introduction.
           </Text>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/onboarding")}
-          >
+          <Link href="/onboarding" style={styles.button}>
             <Text style={styles.buttonText}>Start Onboarding</Text>
-          </TouchableOpacity>
+          </Link>
         </View>
 
         <View style={styles.card}>
@@ -58,12 +44,9 @@ export default function IndexScreen() {
           <Text style={styles.cardDescription}>
             User profile setup and health questionnaire.
           </Text>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/anamnesis")}
-          >
+          <Link href="/anamnesis" style={styles.button}>
             <Text style={styles.buttonText}>Start Anamnesis</Text>
-          </TouchableOpacity>
+          </Link>
         </View>
 
         <View style={styles.card}>
@@ -72,12 +55,9 @@ export default function IndexScreen() {
             Active training session with navigation buttons (Select → Soreness →
             Overview → Training → Success).
           </Text>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/training")}
-          >
+          <Link href="/training" style={styles.button}>
             <Text style={styles.buttonText}>Start Training</Text>
-          </TouchableOpacity>
+          </Link>
         </View>
 
         <View style={styles.card}>
@@ -86,30 +66,18 @@ export default function IndexScreen() {
             Access test screens, web view, video player, and contact modal.
           </Text>
           <View style={styles.quickActions}>
-            <TouchableOpacity
-              style={styles.quickButton}
-              onPress={() => router.push("/test")}
-            >
+            <Link href="/test" style={styles.quickButton}>
               <Text style={styles.quickButtonText}>Test</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.quickButton}
-              onPress={() => router.push("/webview")}
-            >
+            </Link>
+            <Link href="/webview" style={styles.quickButton}>
               <Text style={styles.quickButtonText}>WebView</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.quickButton}
-              onPress={() => router.push("/video-player")}
-            >
+            </Link>
+            <Link href="/video-player" style={styles.quickButton}>
               <Text style={styles.quickButtonText}>Video</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.quickButton}
-              onPress={() => router.push("/contact")}
-            >
+            </Link>
+            <Link href="/contact" style={styles.quickButton}>
               <Text style={styles.quickButtonText}>Contact</Text>
-            </TouchableOpacity>
+            </Link>
           </View>
         </View>
       </View>

@@ -1,11 +1,5 @@
-import { useRouter } from "expo-router";
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Link } from "expo-router";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
 /**
  * Generating Screen
@@ -14,8 +8,6 @@ import {
  * Legacy: views/data/Generating
  */
 export default function GeneratingScreen() {
-  const router = useRouter();
-
   return (
     <View style={styles.container}>
       <ActivityIndicator size="large" color="#007AFF" />
@@ -24,12 +16,9 @@ export default function GeneratingScreen() {
         Creating your personalized training plan...
       </Text>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.replace("/(tabs)")}
-      >
+      <Link href="/(tabs)" replace style={styles.button}>
         <Text style={styles.buttonText}>Complete Setup</Text>
-      </TouchableOpacity>
+      </Link>
     </View>
   );
 }

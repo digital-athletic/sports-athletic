@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
 /**
  * Welcome Screen
@@ -8,8 +8,6 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
  * Legacy: views/data/Welcome
  */
 export default function WelcomeScreen() {
-  const router = useRouter();
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome</Text>
@@ -17,12 +15,9 @@ export default function WelcomeScreen() {
         Let&apos;s set up your profile and training plan
       </Text>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push("./sport")}
-      >
+      <Link href="/anamnesis/sport" style={styles.button}>
         <Text style={styles.buttonText}>Get Started</Text>
-      </TouchableOpacity>
+      </Link>
     </View>
   );
 }

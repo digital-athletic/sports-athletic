@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
 /**
  * Sport Selection Screen
@@ -8,19 +8,14 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
  * Legacy: views/data/Sport (initial route in AnamnesisStack)
  */
 export default function SportScreen() {
-  const router = useRouter();
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Select Sport</Text>
       <Text style={styles.description}>Choose your primary sport</Text>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push("./userprofile")}
-      >
+      <Link href="/anamnesis/userprofile" style={styles.button}>
         <Text style={styles.buttonText}>Continue to Profile</Text>
-      </TouchableOpacity>
+      </Link>
     </View>
   );
 }

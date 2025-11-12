@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
 /**
  * User Profile Screen
@@ -8,19 +8,14 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
  * Legacy: views/data/Userprofile
  */
 export default function UserprofileScreen() {
-  const router = useRouter();
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>User Profile</Text>
       <Text style={styles.description}>Enter your profile information</Text>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push("./anamnesis")}
-      >
+      <Link href="/anamnesis/anamnesis" style={styles.button}>
         <Text style={styles.buttonText}>Continue to Anamnesis</Text>
-      </TouchableOpacity>
+      </Link>
     </View>
   );
 }

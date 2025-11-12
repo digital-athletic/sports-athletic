@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
 /**
  * Muscle Soreness Screen
@@ -8,8 +8,6 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
  * Legacy: views/training/MuscleSoreness
  */
 export default function MuscleSorenessScreen() {
-  const router = useRouter();
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Muscle Soreness</Text>
@@ -18,19 +16,13 @@ export default function MuscleSorenessScreen() {
       </Text>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.primaryButton}
-          onPress={() => router.push("./training-overview")}
-        >
+        <Link href="/training/training-overview" style={styles.primaryButton}>
           <Text style={styles.buttonText}>Continue to Overview</Text>
-        </TouchableOpacity>
+        </Link>
 
-        <TouchableOpacity
-          style={styles.secondaryButton}
-          onPress={() => router.back()}
-        >
+        <Link href="../" style={styles.secondaryButton}>
           <Text style={styles.secondaryButtonText}>Back</Text>
-        </TouchableOpacity>
+        </Link>
       </View>
     </View>
   );

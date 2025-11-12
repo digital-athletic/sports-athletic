@@ -1,11 +1,5 @@
-import { useRouter } from "expo-router";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Link } from "expo-router";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 /**
  * Section Details Screen
@@ -14,8 +8,6 @@ import {
  * Legacy: views/home/pages/SectionDetails
  */
 export default function SectionDetailsScreen() {
-  const router = useRouter();
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Section Details</Text>
@@ -33,19 +25,13 @@ export default function SectionDetailsScreen() {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.primaryButton}
-          onPress={() => router.push("/training")}
-        >
+        <Link href="/training" style={styles.primaryButton}>
           <Text style={styles.buttonText}>Start This Section</Text>
-        </TouchableOpacity>
+        </Link>
 
-        <TouchableOpacity
-          style={styles.secondaryButton}
-          onPress={() => router.back()}
-        >
+        <Link href="../" style={styles.secondaryButton}>
           <Text style={styles.secondaryButtonText}>Back to Home</Text>
-        </TouchableOpacity>
+        </Link>
       </View>
     </ScrollView>
   );

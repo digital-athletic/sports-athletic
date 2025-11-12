@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
 /**
  * Training Screen
@@ -9,8 +9,6 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
  * Legacy: views/training/Training
  */
 export default function TrainingScreen() {
-  const router = useRouter();
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Training in Progress</Text>
@@ -20,19 +18,13 @@ export default function TrainingScreen() {
       </Text>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.primaryButton}
-          onPress={() => router.push("./training-success")}
-        >
+        <Link href="/training/training-success" style={styles.primaryButton}>
           <Text style={styles.buttonText}>Complete Training</Text>
-        </TouchableOpacity>
+        </Link>
 
-        <TouchableOpacity
-          style={styles.linkButton}
-          onPress={() => router.push("./exercise-information")}
-        >
+        <Link href="/training/exercise-information" style={styles.linkButton}>
           <Text style={styles.linkButtonText}>Exercise Information</Text>
-        </TouchableOpacity>
+        </Link>
       </View>
     </View>
   );

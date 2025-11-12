@@ -1,23 +1,19 @@
-import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function SubscribeScreen() {
-  const router = useRouter();
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Subscribe</Text>
       <Text style={styles.description}>
         Subscription purchase flow - Legacy: views/more/pages/Subscribe
       </Text>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push("./subscription-status")}
-      >
+      <Link href="/profile/subscription-status" style={styles.button}>
         <Text style={styles.buttonText}>View Subscription Status</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+      </Link>
+      <Link href="../" style={styles.button}>
         <Text style={styles.buttonText}>Back</Text>
-      </TouchableOpacity>
+      </Link>
     </View>
   );
 }

@@ -1,11 +1,5 @@
-import { useRouter } from "expo-router";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Link } from "expo-router";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 /**
  * Exercise Information Screen
@@ -15,8 +9,6 @@ import {
  * Legacy: views/training/ExerciseInformation
  */
 export default function ExerciseInformationScreen() {
-  const router = useRouter();
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Exercise Information</Text>
@@ -34,9 +26,9 @@ export default function ExerciseInformationScreen() {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+        <Link href="../" style={styles.button}>
           <Text style={styles.buttonText}>Back to Training</Text>
-        </TouchableOpacity>
+        </Link>
       </View>
     </ScrollView>
   );

@@ -1,11 +1,5 @@
-import { useRouter } from "expo-router";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Link } from "expo-router";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 /**
  * Home Screen (Training Tab)
@@ -14,8 +8,6 @@ import {
  * Legacy: views/home/Home (HomeStack initial route)
  */
 export default function HomeScreen() {
-  const router = useRouter();
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Training Home</Text>
@@ -25,46 +17,31 @@ export default function HomeScreen() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Today&apos;s Training</Text>
           <Text style={styles.cardDescription}>Start your daily workout</Text>
-          <TouchableOpacity
-            style={styles.cardButton}
-            onPress={() => router.push("/training")}
-          >
+          <Link href="/training" style={styles.cardButton}>
             <Text style={styles.cardButtonText}>Start Training</Text>
-          </TouchableOpacity>
+          </Link>
         </View>
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Training Sections</Text>
           <Text style={styles.cardDescription}>Browse training categories</Text>
-          <TouchableOpacity
-            style={styles.cardButton}
-            onPress={() => router.push("./home/section-details")}
-          >
+          <Link href="/home/section-details" style={styles.cardButton}>
             <Text style={styles.cardButtonText}>View Sections</Text>
-          </TouchableOpacity>
+          </Link>
         </View>
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Quick Actions</Text>
           <View style={styles.quickActions}>
-            <TouchableOpacity
-              style={styles.quickActionButton}
-              onPress={() => router.push("/webview")}
-            >
+            <Link href="/webview" style={styles.quickActionButton}>
               <Text style={styles.quickActionText}>Web View</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.quickActionButton}
-              onPress={() => router.push("/video-player")}
-            >
+            </Link>
+            <Link href="/video-player" style={styles.quickActionButton}>
               <Text style={styles.quickActionText}>Video Player</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.quickActionButton}
-              onPress={() => router.push("/contact")}
-            >
+            </Link>
+            <Link href="/contact" style={styles.quickActionButton}>
               <Text style={styles.quickActionText}>Contact</Text>
-            </TouchableOpacity>
+            </Link>
           </View>
         </View>
       </View>

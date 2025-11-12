@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
 /**
  * Video Player Screen (Full-Screen Modal)
@@ -8,17 +8,12 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
  * Legacy: VideoPlayerViewStack > VideoPlayerView
  */
 export default function VideoPlayerScreen() {
-  const router = useRouter();
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.closeButton}
-          onPress={() => router.back()}
-        >
+        <Link href="../" style={styles.closeButton}>
           <Text style={styles.closeButtonText}>✕ Close</Text>
-        </TouchableOpacity>
+        </Link>
       </View>
 
       <View style={styles.content}>

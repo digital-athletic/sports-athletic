@@ -1,12 +1,5 @@
-import { useRouter } from "expo-router";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Link } from "expo-router";
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 /**
  * Contact Screen (Modal)
@@ -15,8 +8,6 @@ import {
  * Legacy: Contact (modal route in root navigator)
  */
 export default function ContactScreen() {
-  const router = useRouter();
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Contact Support</Text>
@@ -49,19 +40,13 @@ export default function ContactScreen() {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.primaryButton}
-          onPress={() => router.back()}
-        >
+        <Link href="../" style={styles.primaryButton}>
           <Text style={styles.buttonText}>Send Message</Text>
-        </TouchableOpacity>
+        </Link>
 
-        <TouchableOpacity
-          style={styles.secondaryButton}
-          onPress={() => router.back()}
-        >
+        <Link href="../" style={styles.secondaryButton}>
           <Text style={styles.secondaryButtonText}>Cancel</Text>
-        </TouchableOpacity>
+        </Link>
       </View>
     </ScrollView>
   );

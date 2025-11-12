@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
 /**
  * Onboarding Screen
@@ -8,8 +8,6 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
  * Legacy: views/onboarding/Onboarding
  */
 export default function OnboardingScreen() {
-  const router = useRouter();
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Onboarding</Text>
@@ -18,19 +16,13 @@ export default function OnboardingScreen() {
       </Text>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.push("/onboarding/webview")}
-        >
+        <Link href="/onboarding/webview" style={styles.button}>
           <Text style={styles.buttonText}>View Web Content</Text>
-        </TouchableOpacity>
+        </Link>
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.push("/anamnesis")}
-        >
+        <Link href="/anamnesis" style={styles.button}>
           <Text style={styles.buttonText}>Continue to Anamnesis</Text>
-        </TouchableOpacity>
+        </Link>
       </View>
     </View>
   );

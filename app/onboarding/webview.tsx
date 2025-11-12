@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
 /**
  * Onboarding WebView Screen
@@ -8,16 +8,14 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
  * Legacy: views/webview/WebViewContainer (in OnboardingStack)
  */
 export default function OnboardingWebViewScreen() {
-  const router = useRouter();
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Onboarding WebView</Text>
       <Text style={styles.description}>Web content during onboarding flow</Text>
 
-      <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+      <Link href="../" style={styles.button}>
         <Text style={styles.buttonText}>Go Back</Text>
-      </TouchableOpacity>
+      </Link>
     </View>
   );
 }

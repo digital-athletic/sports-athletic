@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
 /**
  * Select Training Screen
@@ -8,27 +8,19 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
  * Legacy: views/training/SelectTraining (initial route)
  */
 export default function SelectTrainingScreen() {
-  const router = useRouter();
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Select Training</Text>
       <Text style={styles.description}>Choose your training session</Text>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.primaryButton}
-          onPress={() => router.push("./muscle-soreness")}
-        >
+        <Link style={styles.primaryButton} href="/training/muscle-soreness">
           <Text style={styles.buttonText}>Start Training Session</Text>
-        </TouchableOpacity>
+        </Link>
 
-        <TouchableOpacity
-          style={styles.secondaryButton}
-          onPress={() => router.back()}
-        >
+        <Link style={styles.secondaryButton} href="../">
           <Text style={styles.secondaryButtonText}>Back to Home</Text>
-        </TouchableOpacity>
+        </Link>
       </View>
     </View>
   );
@@ -75,6 +67,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
+    textAlign: "center",
   },
   secondaryButtonText: {
     color: "#007AFF",

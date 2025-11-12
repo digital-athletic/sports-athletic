@@ -1,11 +1,5 @@
-import { useRouter } from "expo-router";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Link } from "expo-router";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 /**
  * Profile Screen
@@ -14,8 +8,6 @@ import {
  * Legacy: views/more/pages/Profile
  */
 export default function ProfileScreen() {
-  const router = useRouter();
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Profile</Text>
@@ -37,9 +29,9 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+      <Link href="../" style={styles.button}>
         <Text style={styles.buttonText}>Back</Text>
-      </TouchableOpacity>
+      </Link>
     </ScrollView>
   );
 }

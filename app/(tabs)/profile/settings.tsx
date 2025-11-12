@@ -1,13 +1,6 @@
-import { useRouter } from "expo-router";
+import { Link } from "expo-router";
 import { useState } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Switch,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 
 /**
  * Settings Screen
@@ -16,7 +9,6 @@ import {
  * Legacy: views/more/pages/Settings
  */
 export default function SettingsScreen() {
-  const router = useRouter();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
 
@@ -47,9 +39,9 @@ export default function SettingsScreen() {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+      <Link href="../" style={styles.button}>
         <Text style={styles.buttonText}>Back</Text>
-      </TouchableOpacity>
+      </Link>
     </ScrollView>
   );
 }

@@ -1,12 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useRouter } from "expo-router";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Link } from "expo-router";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 /**
  * More/Profile Menu Screen
@@ -15,30 +9,44 @@ import {
  * Legacy: views/more/More
  */
 export default function MoreScreen() {
-  const router = useRouter();
-
   const menuItems = [
-    { title: "Profile", icon: "person-outline", route: "./profile" },
-    { title: "Settings", icon: "settings-outline", route: "./settings" },
-    { title: "Exercises", icon: "barbell-outline", route: "./exercises" },
-    { title: "Tutorials", icon: "school-outline", route: "./tutorials" },
-    { title: "Equipment", icon: "fitness-outline", route: "./equipment" },
+    { title: "Profile", icon: "person-outline", route: "/profile/profile" },
+    { title: "Settings", icon: "settings-outline", route: "/profile/settings" },
+    {
+      title: "Exercises",
+      icon: "barbell-outline",
+      route: "/profile/exercises",
+    },
+    {
+      title: "Tutorials",
+      icon: "school-outline",
+      route: "/profile/tutorials",
+    },
+    {
+      title: "Equipment",
+      icon: "fitness-outline",
+      route: "/profile/equipment",
+    },
     {
       title: "Notifications",
       icon: "notifications-outline",
-      route: "./notifications",
+      route: "/profile/notifications",
     },
-    { title: "Subscribe", icon: "card-outline", route: "./subscribe" },
+    { title: "Subscribe", icon: "card-outline", route: "/profile/subscribe" },
     {
       title: "Subscription Status",
       icon: "checkmark-circle-outline",
-      route: "./subscription-status",
+      route: "/profile/subscription-status",
     },
-    { title: "Privacy Policy", icon: "shield-outline", route: "./privacy" },
+    {
+      title: "Privacy Policy",
+      icon: "shield-outline",
+      route: "/profile/privacy",
+    },
     {
       title: "Imprint",
       icon: "information-circle-outline",
-      route: "./imprint",
+      route: "/profile/imprint",
     },
   ];
 
@@ -51,17 +59,13 @@ export default function MoreScreen() {
 
       <View style={styles.menuContainer}>
         {menuItems.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.menuItem}
-            onPress={() => router.push(item.route as any)}
-          >
+          <Link key={index} href={item.route as any} style={styles.menuItem}>
             <View style={styles.menuItemContent}>
               <Ionicons name={item.icon as any} size={24} color="#007AFF" />
               <Text style={styles.menuItemText}>{item.title}</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#999" />
-          </TouchableOpacity>
+          </Link>
         ))}
       </View>
     </ScrollView>

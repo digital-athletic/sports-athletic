@@ -1,23 +1,19 @@
-import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function TestScreen() {
-  const router = useRouter();
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Test Menu</Text>
       <Text style={styles.description}>
         Development and testing screens - Legacy: views/test/Test
       </Text>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push("./test-training")}
-      >
+      <Link href="/test/test-training" style={styles.button}>
         <Text style={styles.buttonText}>Test Training</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+      </Link>
+      <Link href="../" style={styles.button}>
         <Text style={styles.buttonText}>Back</Text>
-      </TouchableOpacity>
+      </Link>
     </View>
   );
 }

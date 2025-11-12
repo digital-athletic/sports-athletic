@@ -1,23 +1,19 @@
-import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function ExercisesScreen() {
-  const router = useRouter();
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Exercises</Text>
       <Text style={styles.description}>
         Exercise library - Legacy: views/more/pages/Exercises
       </Text>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push("./exercise-information")}
-      >
+      <Link href="/profile/exercise-information" style={styles.button}>
         <Text style={styles.buttonText}>View Exercise Info</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+      </Link>
+      <Link href="../" style={styles.button}>
         <Text style={styles.buttonText}>Back</Text>
-      </TouchableOpacity>
+      </Link>
     </View>
   );
 }

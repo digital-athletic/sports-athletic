@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
 /**
  * Anamnesis Screen
@@ -8,8 +8,6 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
  * Legacy: views/data/Anamnesis
  */
 export default function AnamnesisScreen() {
-  const router = useRouter();
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Health Questionnaire</Text>
@@ -17,12 +15,9 @@ export default function AnamnesisScreen() {
         Answer questions about your health and fitness
       </Text>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push("./training-days")}
-      >
+      <Link href="/anamnesis/training-days" style={styles.button}>
         <Text style={styles.buttonText}>Continue to Training Days</Text>
-      </TouchableOpacity>
+      </Link>
     </View>
   );
 }

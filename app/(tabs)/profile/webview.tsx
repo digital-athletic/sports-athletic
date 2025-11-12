@@ -1,8 +1,7 @@
-import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function WebViewScreen() {
-  const router = useRouter();
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Web View</Text>
@@ -10,9 +9,9 @@ export default function WebViewScreen() {
         In-app web browser - Legacy: views/webview/WebViewContainer (in
         MoreStack)
       </Text>
-      <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+      <Link href="../" style={styles.button}>
         <Text style={styles.buttonText}>Back</Text>
-      </TouchableOpacity>
+      </Link>
     </View>
   );
 }

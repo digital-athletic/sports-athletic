@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
 /**
  * Season Phase Screen
@@ -8,19 +8,14 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
  * Legacy: views/data/SeasonPhase
  */
 export default function SeasonPhaseScreen() {
-  const router = useRouter();
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Season Phase</Text>
       <Text style={styles.description}>Select your current season phase</Text>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push("./generating")}
-      >
+      <Link href="/anamnesis/generating" style={styles.button}>
         <Text style={styles.buttonText}>Generate Training Plan</Text>
-      </TouchableOpacity>
+      </Link>
     </View>
   );
 }

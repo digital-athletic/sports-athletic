@@ -1,4 +1,0 @@
-const stub = {
-    type: 'json'
-};
-module.exports = stub;

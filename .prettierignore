@@ -1,0 +1,15 @@
+# GitHub
+.github/*
+
+# pnpm
+pnpm-lock.yaml
+
+# Markdown
+**/*.md
+
+#Assets
+assets/*
+
+# Legacy code
+legacy/*
+flow/*

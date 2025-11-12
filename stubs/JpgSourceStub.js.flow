@@ -1,4 +1,0 @@
-const stub = {
-    uri: 'stub.jpg'
-};
-module.exports = stub;

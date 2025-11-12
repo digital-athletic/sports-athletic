@@ -1,14 +1,27 @@
 # README #
 
-### Requirements ###
+## Dev Environment Requirements
+> 💡 We recommend [asdf](https://asdf-vm.com/) for managing build tool versions
 
-* Node
-* npm 
-* react-native cli
-* Jetbrains IDE
-* Android Studio (for Android Builds)
-* XCode (for iOS Builds)
-* Cocoapods (for iOS Builds)
+* Node.js v20
+* pnpm v10.16.1
+* [watchman](https://facebook.github.io/watchman/docs/install)
+
+### Android
+* Azul Zulu JDK 17.58.21 (OpenJDK 17.0.15)
+* [Android Studio](https://developer.android.com/studio)
+  * Android SDK Platform 35 (`VanillaIceCream`)
+  * Sources for Android 35
+  * Android SDK Build-Tools
+  * NDK `27.1.12297006`
+
+
+### iOS
+* ruby v3.2
+* CocoaPods v1.16.2
+* Xcode 26.0 (17A324)
+
+See: [.tool-versions](./.tool-versions)
 
 
 ### How to start ###

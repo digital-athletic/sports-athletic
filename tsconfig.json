@@ -3,5 +3,14 @@
   "compilerOptions": {
     "strict": true
   },
-  "exclude": ["legacy/**/*", "flow/**/*"]
+  "exclude": [
+    "legacy/**/*",
+    "flow/**/*"
+  ],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ]
 }

@@ -1,5 +1,6 @@
 import { Box, Button, Card, Text } from "@/components";
 import { Link } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
 
 /**
@@ -10,6 +11,7 @@ import { ScrollView } from "react-native";
  * and automatically route to the appropriate flow.
  */
 export default function IndexScreen() {
+  const { t } = useTranslation();
   return (
     <ScrollView>
       <Box flexGrow={1} padding="l" backgroundColor="lightGrey1">
@@ -23,10 +25,10 @@ export default function IndexScreen() {
           Sports Athletic
         </Text>
         <Text variant="subtitle" textAlign="center" marginBottom="s">
-          Navigation Demo
+          {t("screens.start.title")}
         </Text>
         <Text variant="description" textAlign="center" marginBottom="xl">
-          Select a flow to explore the navigation hierarchy
+          {t("screens.start.description")}
         </Text>
 
         <Box gap="l">

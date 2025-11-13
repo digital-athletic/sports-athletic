@@ -1,5 +1,6 @@
 import { Box, Button, Card, Text } from "@/components";
 import { Link } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
 
 /**
@@ -9,14 +10,15 @@ import { ScrollView } from "react-native";
  * Legacy: views/home/Home (HomeStack initial route)
  */
 export default function HomeScreen() {
+  const { t } = useTranslation();
   return (
     <ScrollView>
       <Box flexGrow={1} padding="l" backgroundColor="lightGrey1">
         <Text variant="title" marginTop="l" marginBottom="xs">
-          Training Home
+          {t("screens.home.title")}
         </Text>
         <Text variant="subtitle" marginBottom="xl">
-          Your personalized training dashboard
+          {t("screens.home.description")}
         </Text>
 
         <Box gap="l">

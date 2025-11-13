@@ -1,0 +1,12 @@
+{
+  "screens": {
+    "start": {
+      "title": "Navigationsdemo",
+      "description": "Wähle einen Ablauf, um die Navigationshierarchie zu erkunden"
+    },
+    "home": {
+      "title": "Trainings-Startseite",
+      "description": "Dein personalisiertes Trainings-Dashboard"
+    }
+  }
+}

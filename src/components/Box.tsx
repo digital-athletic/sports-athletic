@@ -8,7 +8,7 @@ import { Theme } from "../theme";
  * Use this as a building block for layouts instead of plain View components.
  *
  * @example
- * <Box padding="l" backgroundColor="cardBackground" borderRadius={8}>
+ * <Box padding="l" backgroundColor="white" borderRadius={8}>
  *   <Text>Content</Text>
  * </Box>
  */

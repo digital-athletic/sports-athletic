@@ -1,4 +1,5 @@
 import { Box, Button, Card, Text } from "@/components";
+import { useAppTheme } from "@/theme";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Switch } from "react-native";
@@ -10,12 +11,13 @@ import { ScrollView, Switch } from "react-native";
  * Legacy: views/more/pages/Settings
  */
 export default function SettingsScreen() {
+  const { colors } = useAppTheme();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
 
   return (
     <ScrollView>
-      <Box flexGrow={1} padding="l" backgroundColor="mainBackground">
+      <Box flexGrow={1} padding="l" backgroundColor="white">
         <Text variant="title" marginTop="xxl" marginBottom="s">
           Settings
         </Text>
@@ -32,13 +34,13 @@ export default function SettingsScreen() {
             alignItems="center"
             paddingVertical="s"
             borderBottomWidth={1}
-            borderBottomColor="border"
+            borderBottomColor="lightGrey2"
           >
             <Text variant="body">Notifications</Text>
             <Switch
               value={notificationsEnabled}
               onValueChange={setNotificationsEnabled}
-              trackColor={{ false: "#ccc", true: "#007AFF" }}
+              trackColor={{ false: colors.lightGrey2, true: colors.primary }}
             />
           </Box>
 
@@ -48,13 +50,13 @@ export default function SettingsScreen() {
             alignItems="center"
             paddingVertical="s"
             borderBottomWidth={1}
-            borderBottomColor="border"
+            borderBottomColor="lightGrey2"
           >
             <Text variant="body">Dark Mode</Text>
             <Switch
               value={darkModeEnabled}
               onValueChange={setDarkModeEnabled}
-              trackColor={{ false: "#ccc", true: "#007AFF" }}
+              trackColor={{ false: colors.lightGrey2, true: colors.primary }}
             />
           </Box>
         </Card>

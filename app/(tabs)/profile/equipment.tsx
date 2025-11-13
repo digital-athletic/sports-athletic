@@ -8,7 +8,7 @@ export default function EquipmentScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Equipment</Text>
       <Text variant="description">

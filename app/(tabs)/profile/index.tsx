@@ -1,4 +1,5 @@
 import { Box, Text } from "@/components";
+import { useAppTheme } from "@/theme";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Link } from "expo-router";
 import { ScrollView } from "react-native";
@@ -10,6 +11,7 @@ import { ScrollView } from "react-native";
  * Legacy: views/more/More
  */
 export default function MoreScreen() {
+  const { colors } = useAppTheme();
   const menuItems = [
     { title: "Profile", icon: "person-outline", route: "/profile/profile" },
     { title: "Settings", icon: "settings-outline", route: "/profile/settings" },
@@ -53,11 +55,11 @@ export default function MoreScreen() {
 
   return (
     <ScrollView>
-      <Box flexGrow={1} backgroundColor="secondaryBackground">
+      <Box flexGrow={1} backgroundColor="lightGrey1">
         <Box
           padding="l"
           paddingTop="xxl"
-          backgroundColor="mainBackground"
+          backgroundColor="white"
           marginBottom="l"
         >
           <Text variant="title" marginBottom="xs">
@@ -67,10 +69,10 @@ export default function MoreScreen() {
         </Box>
 
         <Box
-          backgroundColor="mainBackground"
+          backgroundColor="white"
           borderTopWidth={1}
           borderBottomWidth={1}
-          borderColor="border"
+          borderColor="lightGrey2"
         >
           {menuItems.map((item, index) => (
             <Link key={index} href={item.route as any}>
@@ -80,13 +82,21 @@ export default function MoreScreen() {
                 justifyContent="space-between"
                 padding="m"
                 borderBottomWidth={1}
-                borderBottomColor="inputBackground"
+                borderBottomColor="lightGrey2"
               >
                 <Box flexDirection="row" alignItems="center" gap="m">
-                  <Ionicons name={item.icon as any} size={24} color="#007AFF" />
+                  <Ionicons
+                    name={item.icon as any}
+                    size={24}
+                    color={colors.primary}
+                  />
                   <Text variant="body">{item.title}</Text>
                 </Box>
-                <Ionicons name="chevron-forward" size={20} color="#999" />
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color={colors.darkGrey2}
+                />
               </Box>
             </Link>
           ))}

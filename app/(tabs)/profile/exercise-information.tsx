@@ -8,7 +8,7 @@ export default function ExerciseInformationScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Exercise Information</Text>
       <Text variant="description">

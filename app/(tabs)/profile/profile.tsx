@@ -11,7 +11,7 @@ import { ScrollView } from "react-native";
 export default function ProfileScreen() {
   return (
     <ScrollView>
-      <Box flexGrow={1} padding="l" backgroundColor="mainBackground">
+      <Box flexGrow={1} padding="l" backgroundColor="white">
         <Text variant="title" marginTop="xxl" marginBottom="s">
           Profile
         </Text>
@@ -26,9 +26,9 @@ export default function ProfileScreen() {
             justifyContent="space-between"
             paddingVertical="s"
             borderBottomWidth={1}
-            borderBottomColor="border"
+            borderBottomColor="lightGrey2"
           >
-            <Text variant="body" color="textSecondary">
+            <Text variant="body" color="darkGrey2">
               Name
             </Text>
             <Text variant="body" fontWeight="600">
@@ -40,9 +40,9 @@ export default function ProfileScreen() {
             justifyContent="space-between"
             paddingVertical="s"
             borderBottomWidth={1}
-            borderBottomColor="border"
+            borderBottomColor="lightGrey2"
           >
-            <Text variant="body" color="textSecondary">
+            <Text variant="body" color="darkGrey2">
               Email
             </Text>
             <Text variant="body" fontWeight="600">
@@ -54,9 +54,9 @@ export default function ProfileScreen() {
             justifyContent="space-between"
             paddingVertical="s"
             borderBottomWidth={1}
-            borderBottomColor="border"
+            borderBottomColor="lightGrey2"
           >
-            <Text variant="body" color="textSecondary">
+            <Text variant="body" color="darkGrey2">
               Sport
             </Text>
             <Text variant="body" fontWeight="600">

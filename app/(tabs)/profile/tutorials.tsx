@@ -8,7 +8,7 @@ export default function TutorialsScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Tutorials</Text>
       <Text variant="description">

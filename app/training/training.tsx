@@ -15,13 +15,13 @@ export default function TrainingScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Training in Progress</Text>
       <Text variant="subtitle" marginBottom="xs">
         Execute your training exercises
       </Text>
-      <Text variant="small" color="textTertiary" marginBottom="xl">
+      <Text variant="small" color="darkGrey1" marginBottom="xl">
         ⚠️ Gestures disabled - use buttons to navigate
       </Text>
 

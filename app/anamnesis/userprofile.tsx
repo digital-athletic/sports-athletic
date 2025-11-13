@@ -14,7 +14,7 @@ export default function UserProfileScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Your Profile</Text>
       <Text variant="description">Enter your basic information</Text>

@@ -14,7 +14,7 @@ export default function SportScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Select Your Sport</Text>
       <Text variant="description">Choose your primary sport activity</Text>

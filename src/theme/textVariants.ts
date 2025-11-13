@@ -1,14 +1,14 @@
 export const textVariants = {
   defaults: {
     fontSize: 16,
-    color: "textPrimary",
+    color: "darkGrey3",
   },
 
   // Page titles
   title: {
     fontSize: 32,
     fontWeight: "bold",
-    color: "textPrimary",
+    color: "darkGrey3",
     marginBottom: "s",
   },
 
@@ -16,7 +16,7 @@ export const textVariants = {
   sectionTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "textPrimary",
+    color: "darkGrey3",
     marginBottom: "s",
   },
 
@@ -24,25 +24,25 @@ export const textVariants = {
   cardTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "textPrimary",
+    color: "darkGrey3",
     marginBottom: "s",
   },
 
   // Body text
   body: {
     fontSize: 16,
-    color: "textPrimary",
+    color: "darkGrey3",
   },
 
   // Subtitle/Description
   subtitle: {
     fontSize: 16,
-    color: "textSecondary",
+    color: "darkGrey2",
   },
 
   description: {
     fontSize: 16,
-    color: "textSecondary",
+    color: "darkGrey2",
     textAlign: "center",
     marginBottom: "xl",
   },
@@ -50,7 +50,7 @@ export const textVariants = {
   // Card description
   cardDescription: {
     fontSize: 14,
-    color: "textSecondary",
+    color: "darkGrey2",
     marginBottom: "m",
   },
 
@@ -58,25 +58,25 @@ export const textVariants = {
   button: {
     fontSize: 16,
     fontWeight: "600",
-    color: "textOnPrimary",
+    color: "white",
   },
 
   buttonSecondary: {
     fontSize: 16,
     fontWeight: "600",
-    color: "textLink",
+    color: "primary",
   },
 
   // Labels
   label: {
     fontSize: 16,
-    color: "textSecondary",
+    color: "darkGrey2",
   },
 
   // Small text
   small: {
     fontSize: 14,
-    color: "textSecondary",
+    color: "darkGrey2",
   },
 
   // Tab labels
@@ -88,13 +88,13 @@ export const textVariants = {
   quickAction: {
     fontSize: 14,
     fontWeight: "600",
-    color: "textLink",
+    color: "primary",
   },
 
   // Link text
   link: {
     fontSize: 14,
     fontWeight: "600",
-    color: "textLink",
+    color: "primary",
   },
 } as const;

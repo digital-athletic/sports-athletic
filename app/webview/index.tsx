@@ -9,13 +9,13 @@ import { Link } from "expo-router";
  */
 export default function WebViewScreen() {
   return (
-    <Box flex={1} backgroundColor="mainBackground">
+    <Box flex={1} backgroundColor="white">
       <Box
         paddingTop="xxl"
         paddingHorizontal="l"
         paddingBottom="s"
         borderBottomWidth={1}
-        borderBottomColor="border"
+        borderBottomColor="lightGrey2"
       >
         <Link href="../">
           <Box alignSelf="flex-end">

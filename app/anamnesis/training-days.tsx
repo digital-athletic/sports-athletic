@@ -14,7 +14,7 @@ export default function TrainingDaysScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Training Days</Text>
       <Text variant="description">Select your available training days</Text>

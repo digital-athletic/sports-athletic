@@ -14,7 +14,7 @@ export default function MuscleSorenessScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Muscle Soreness</Text>
       <Text variant="description">

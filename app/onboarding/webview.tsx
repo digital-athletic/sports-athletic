@@ -14,7 +14,7 @@ export default function OnboardingWebViewScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Onboarding WebView</Text>
       <Text variant="description">Web content during onboarding flow</Text>

@@ -9,11 +9,11 @@ import { Link } from "expo-router";
  */
 export default function VideoPlayerScreen() {
   return (
-    <Box flex={1} backgroundColor="darkBackground">
+    <Box flex={1} backgroundColor="black">
       <Box paddingTop="xxl" paddingHorizontal="l" paddingBottom="s">
         <Link href="../">
           <Box alignSelf="flex-end">
-            <Text color="textPrimary" fontSize={18} fontWeight="600">
+            <Text color="darkGrey3" fontSize={18} fontWeight="600">
               ✕ Close
             </Text>
           </Box>
@@ -21,10 +21,10 @@ export default function VideoPlayerScreen() {
       </Box>
 
       <Box flex={1} justifyContent="center" alignItems="center" padding="l">
-        <Text variant="title" color="textPrimary" marginBottom="s">
+        <Text variant="title" color="darkGrey3" marginBottom="s">
           Video Player
         </Text>
-        <Text variant="description" color="textDisabled" marginBottom="xl">
+        <Text variant="description" color="lightGrey2" marginBottom="xl">
           Full-screen video playback interface. This would typically display a
           video player component.
         </Text>

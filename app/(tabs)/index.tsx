@@ -11,7 +11,7 @@ import { ScrollView } from "react-native";
 export default function HomeScreen() {
   return (
     <ScrollView>
-      <Box flexGrow={1} padding="l" backgroundColor="secondaryBackground">
+      <Box flexGrow={1} padding="l" backgroundColor="lightGrey1">
         <Text variant="title" marginTop="l" marginBottom="xs">
           Training Home
         </Text>
@@ -45,7 +45,7 @@ export default function HomeScreen() {
             <Box flexDirection="row" flexWrap="wrap" gap="s" marginTop="s">
               <Link href="/webview">
                 <Box
-                  backgroundColor="inputBackground"
+                  backgroundColor="lightGrey2"
                   padding="s"
                   borderRadius="m"
                   minWidth={100}
@@ -56,7 +56,7 @@ export default function HomeScreen() {
               </Link>
               <Link href="/video-player">
                 <Box
-                  backgroundColor="inputBackground"
+                  backgroundColor="lightGrey2"
                   padding="s"
                   borderRadius="m"
                   minWidth={100}
@@ -67,7 +67,7 @@ export default function HomeScreen() {
               </Link>
               <Link href="/contact">
                 <Box
-                  backgroundColor="inputBackground"
+                  backgroundColor="lightGrey2"
                   padding="s"
                   borderRadius="m"
                   minWidth={100}

@@ -8,7 +8,7 @@ export default function NotificationsScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Notifications</Text>
       <Text variant="description">

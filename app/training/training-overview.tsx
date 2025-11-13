@@ -14,7 +14,7 @@ export default function TrainingOverviewScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Training Overview</Text>
       <Text variant="description">Review your training plan</Text>

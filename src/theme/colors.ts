@@ -2,33 +2,30 @@ import { KnownBaseTheme } from "@shopify/restyle";
 
 export const colors: KnownBaseTheme["colors"] = {
   // Primary colors
-  primary: "#007AFF",
-  primaryLight: "#4A9EFF",
-  primaryDark: "#0051D5",
+  primary: "#C71B1B",
+  secondary: "#2ebcb8",
 
-  // Background colors
-  mainBackground: "#fff",
-  secondaryBackground: "#f5f5f5",
-  cardBackground: "#fff",
-  inputBackground: "#f9f9f9",
-  buttonSecondaryBackground: "#f0f0f0",
-  darkBackground: "#000",
+  // Neutral colors
+  white: "#FFF",
+  black: "#000",
+  lightGrey1: "#FAFAFA",
+  lightGrey2: "#E8E8E8",
+  lightGrey3: "#AAAAAA",
+  darkGrey1: "#777777",
+  darkGrey2: "#555555",
+  darkGrey3: "#333333",
+  iosTitleBorder: "#EFEFF4",
 
-  // Text colors
-  textPrimary: "#333",
-  textSecondary: "#666",
-  textTertiary: "#999",
-  textOnPrimary: "#fff",
-  textDisabled: "#ccc",
-  textLink: "#007AFF",
+  // Social colors
+  facebookBlue: "#3B5998",
+  googleRed: "#CF472E",
+  settingsSwitchGreen: "#34C759",
 
-  // Border colors
-  border: "#e0e0e0",
-  borderPrimary: "#007AFF",
-  borderFocus: "#007AFF",
-
-  // Shadow colors
-  shadow: "#000",
+  // Test colors
+  squad: "#000000",
+  benchPress: "#6DC33F",
+  rowing: "#4791DE",
+  shoulderPress: "#F46E70",
 
   // Status colors
   success: "#34C759",

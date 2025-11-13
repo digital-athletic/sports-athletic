@@ -8,7 +8,7 @@ export default function SubscriptionStatusScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Subscription Status</Text>
       <Text variant="description">

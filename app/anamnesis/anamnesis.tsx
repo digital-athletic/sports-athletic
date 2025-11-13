@@ -14,7 +14,7 @@ export default function AnamnesisScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Health Questionnaire</Text>
       <Text variant="description">

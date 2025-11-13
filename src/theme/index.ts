@@ -1,4 +1,4 @@
-import { createTheme } from "@shopify/restyle";
+import { createTheme, useTheme } from "@shopify/restyle";
 import { colors } from "./colors";
 import { textVariants } from "./textVariants";
 
@@ -33,10 +33,10 @@ export const theme = createTheme({
 
   cardVariants: {
     defaults: {
-      backgroundColor: "cardBackground",
+      backgroundColor: "white",
       padding: "l",
       borderRadius: "l",
-      shadowColor: "shadow",
+      shadowColor: "darkGrey3",
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 4,
@@ -44,10 +44,10 @@ export const theme = createTheme({
     },
 
     elevated: {
-      backgroundColor: "cardBackground",
+      backgroundColor: "white",
       padding: "l",
       borderRadius: "l",
-      shadowColor: "shadow",
+      shadowColor: "darkGrey3",
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.15,
       shadowRadius: 8,
@@ -55,7 +55,7 @@ export const theme = createTheme({
     },
 
     flat: {
-      backgroundColor: "cardBackground",
+      backgroundColor: "white",
       padding: "l",
       borderRadius: "m",
     },
@@ -70,12 +70,12 @@ export const theme = createTheme({
     },
 
     secondary: {
-      backgroundColor: "mainBackground",
+      backgroundColor: "white",
       padding: "m",
       borderRadius: "m",
       alignItems: "center",
       borderWidth: 1,
-      borderColor: "borderPrimary",
+      borderColor: "primary",
     },
 
     success: {
@@ -86,7 +86,7 @@ export const theme = createTheme({
     },
 
     quickAction: {
-      backgroundColor: "buttonSecondaryBackground",
+      backgroundColor: "lightGrey1",
       padding: "s",
       borderRadius: "m",
       minWidth: 100,
@@ -96,25 +96,27 @@ export const theme = createTheme({
 
   inputVariants: {
     defaults: {
-      backgroundColor: "inputBackground",
+      backgroundColor: "lightGrey2",
       borderWidth: 1,
-      borderColor: "border",
+      borderColor: "lightGrey2",
       borderRadius: "m",
       padding: "m",
       fontSize: 16,
-      color: "textPrimary",
+      color: "darkGrey3",
     },
 
     focused: {
-      backgroundColor: "inputBackground",
+      backgroundColor: "lightGrey2",
       borderWidth: 1,
-      borderColor: "borderFocus",
+      borderColor: "primary",
       borderRadius: "m",
       padding: "m",
       fontSize: 16,
-      color: "textPrimary",
+      color: "darkGrey3",
     },
   },
 });
 
 export type Theme = typeof theme;
+
+export const useAppTheme = useTheme<Theme>;

@@ -14,7 +14,7 @@ export default function SeasonPhaseScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Season Phase</Text>
       <Text variant="description">Select your current season phase</Text>

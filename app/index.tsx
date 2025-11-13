@@ -12,7 +12,7 @@ import { ScrollView } from "react-native";
 export default function IndexScreen() {
   return (
     <ScrollView>
-      <Box flexGrow={1} padding="l" backgroundColor="secondaryBackground">
+      <Box flexGrow={1} padding="l" backgroundColor="lightGrey1">
         <Text
           variant="title"
           textAlign="center"
@@ -80,7 +80,7 @@ export default function IndexScreen() {
             <Box flexDirection="row" flexWrap="wrap" gap="s">
               <Link href="/test">
                 <Box
-                  backgroundColor="inputBackground"
+                  backgroundColor="lightGrey2"
                   padding="s"
                   borderRadius="m"
                   minWidth={80}
@@ -91,7 +91,7 @@ export default function IndexScreen() {
               </Link>
               <Link href="/webview">
                 <Box
-                  backgroundColor="inputBackground"
+                  backgroundColor="lightGrey2"
                   padding="s"
                   borderRadius="m"
                   minWidth={80}
@@ -102,7 +102,7 @@ export default function IndexScreen() {
               </Link>
               <Link href="/video-player">
                 <Box
-                  backgroundColor="inputBackground"
+                  backgroundColor="lightGrey2"
                   padding="s"
                   borderRadius="m"
                   minWidth={80}
@@ -113,7 +113,7 @@ export default function IndexScreen() {
               </Link>
               <Link href="/contact">
                 <Box
-                  backgroundColor="inputBackground"
+                  backgroundColor="lightGrey2"
                   padding="s"
                   borderRadius="m"
                   minWidth={80}

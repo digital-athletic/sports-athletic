@@ -8,7 +8,7 @@ export default function WebViewScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Web View</Text>
       <Text variant="description">

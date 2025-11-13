@@ -15,7 +15,7 @@ export default function TrainingSuccessScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text fontSize={64} marginBottom="l">
         🎉
@@ -24,7 +24,7 @@ export default function TrainingSuccessScreen() {
       <Text variant="subtitle" marginBottom="xs">
         Great job completing your training session
       </Text>
-      <Text variant="small" color="textTertiary" marginBottom="xl">
+      <Text variant="small" color="darkGrey1" marginBottom="xl">
         ⚠️ Gestures disabled - use buttons to navigate
       </Text>
 

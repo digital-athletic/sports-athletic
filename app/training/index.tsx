@@ -14,7 +14,7 @@ export default function SelectTrainingScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Select Training</Text>
       <Text variant="description">Choose your training session</Text>

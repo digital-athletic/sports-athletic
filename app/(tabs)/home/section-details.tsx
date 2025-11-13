@@ -11,7 +11,7 @@ import { ScrollView } from "react-native";
 export default function SectionDetailsScreen() {
   return (
     <ScrollView>
-      <Box flexGrow={1} padding="l" backgroundColor="mainBackground">
+      <Box flexGrow={1} padding="l" backgroundColor="white">
         <Text variant="title" marginTop="xxl" marginBottom="s">
           Section Details
         </Text>

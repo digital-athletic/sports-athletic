@@ -8,7 +8,7 @@ export default function PrivacyScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Privacy Policy</Text>
       <Text variant="description">

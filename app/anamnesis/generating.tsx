@@ -1,4 +1,5 @@
 import { Box, Button, Text } from "@/components";
+import { useAppTheme } from "@/theme";
 import { Link } from "expo-router";
 import { ActivityIndicator } from "react-native";
 
@@ -9,15 +10,16 @@ import { ActivityIndicator } from "react-native";
  * Legacy: views/data/Generating
  */
 export default function GeneratingScreen() {
+  const { colors } = useAppTheme();
   return (
     <Box
       flex={1}
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
-      <ActivityIndicator size="large" color="#007AFF" />
+      <ActivityIndicator size="large" color={colors.primary} />
       <Text variant="title" marginTop="l">
         Generating Training Plan
       </Text>

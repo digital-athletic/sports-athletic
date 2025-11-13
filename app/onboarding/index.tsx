@@ -14,7 +14,7 @@ export default function OnboardingScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Onboarding</Text>
       <Text variant="description">

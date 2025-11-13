@@ -8,7 +8,7 @@ export default function TestScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="mainBackground"
+      backgroundColor="white"
     >
       <Text variant="title">Test Menu</Text>
       <Text variant="description">

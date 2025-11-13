@@ -12,7 +12,7 @@ import { ScrollView } from "react-native";
 export default function ExerciseInformationScreen() {
   return (
     <ScrollView>
-      <Box flexGrow={1} padding="l" backgroundColor="mainBackground">
+      <Box flexGrow={1} padding="l" backgroundColor="white">
         <Text variant="title" marginTop="xxl" marginBottom="s">
           Exercise Information
         </Text>

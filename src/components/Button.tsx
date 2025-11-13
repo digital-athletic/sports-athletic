@@ -1,58 +1,14 @@
 import {
-  backgroundColor,
-  BackgroundColorProps,
-  border,
-  BorderProps,
-  composeRestyleFunctions,
   createRestyleComponent,
   createVariant,
   spacing,
   SpacingProps,
-  useRestyle,
   VariantProps,
 } from "@shopify/restyle";
 import { FC, PropsWithChildren } from "react";
-import {
-  Pressable,
-  PressableProps,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Pressable, PressableProps } from "react-native";
 import { Theme } from "../theme";
 import { Text } from "./Text";
-
-type RestyleProps = SpacingProps<Theme> &
-  BorderProps<Theme> &
-  BackgroundColorProps<Theme>;
-
-const restyleFunctions = composeRestyleFunctions<Theme, RestyleProps>([
-  spacing,
-  border,
-  backgroundColor,
-]);
-
-type Button2Props = RestyleProps & {
-  onPress: () => void;
-  label: string;
-};
-
-export const Button2 = ({ onPress, label, ...rest }: Button2Props) => {
-  const props = useRestyle(restyleFunctions, rest);
-
-  const a = rest.backgroundColor;
-
-  return (
-    <TouchableOpacity onPress={onPress}>
-      <View {...props}>
-        <Text variant="body">{label}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-};
-
-const M = () => {
-  return <Button2 onPress={() => {}} label="Hello" padding="m" />;
-};
 
 const ButtonContainer = createRestyleComponent<
   VariantProps<Theme, "buttonVariants"> &

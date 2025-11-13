@@ -38,5 +38,5 @@ export const Card = createRestyleComponent<CardProps, Theme>(
     backgroundColor,
     layout,
   ],
-  View
+  View,
 );

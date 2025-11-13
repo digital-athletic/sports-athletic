@@ -6,7 +6,7 @@ import { AppThemeProvider } from "../theme/AppThemeProvider";
 
 const customRender = <T>(
   component: React.ReactElement<T>,
-  options?: RenderOptions
+  options?: RenderOptions,
 ) => {
   return rnRender(component, { wrapper: AppThemeProvider, ...options });
 };

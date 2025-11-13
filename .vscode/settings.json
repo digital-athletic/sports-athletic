@@ -1,8 +1,5 @@
 {
   "chat.useAgentsMdFile": true,
-  "chat.modeFilesLocations": {
-    ".github/chatmodes": true
-  },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {

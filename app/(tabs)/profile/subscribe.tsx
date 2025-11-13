@@ -1,37 +1,27 @@
-import { PrimaryButton } from "@/components/PrimaryButton";
+import { Box, Button, Text } from "@/components";
 import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
 
 export default function SubscribeScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Subscribe</Text>
-      <Text style={styles.description}>
+    <Box
+      flex={1}
+      justifyContent="center"
+      alignItems="center"
+      padding="l"
+      backgroundColor="mainBackground"
+    >
+      <Text variant="title">Subscribe</Text>
+      <Text variant="description">
         Subscription purchase flow - Legacy: views/more/pages/Subscribe
       </Text>
-      <Link href="/profile/subscription-status">
-        <PrimaryButton>View Subscription Status</PrimaryButton>
-      </Link>
-      <Link href="../">
-        <PrimaryButton>Back</PrimaryButton>
-      </Link>
-    </View>
+      <Box gap="m">
+        <Link href="/profile/subscription-status" asChild>
+          <Button>View Subscription Status</Button>
+        </Link>
+        <Link href="../" asChild>
+          <Button variant="secondary">Back</Button>
+        </Link>
+      </Box>
+    </Box>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  title: { fontSize: 32, fontWeight: "bold", marginBottom: 10 },
-  description: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-    marginBottom: 40,
-  },
-});

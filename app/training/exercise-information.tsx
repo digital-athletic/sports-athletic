@@ -1,6 +1,6 @@
-import { PrimaryButton } from "@/components/PrimaryButton";
+import { Box, Button, Card, Text } from "@/components";
 import { Link } from "expo-router";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView } from "react-native";
 
 /**
  * Exercise Information Screen
@@ -11,64 +11,28 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
  */
 export default function ExerciseInformationScreen() {
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Exercise Information</Text>
-      <Text style={styles.description}>
-        Detailed instructions and tips for exercises
-      </Text>
-
-      <View style={styles.infoBox}>
-        <Text style={styles.infoTitle}>Exercise Details</Text>
-        <Text style={styles.infoText}>
-          This screen would display detailed information about the selected
-          exercise, including proper form, common mistakes, and video
-          demonstrations.
+    <ScrollView>
+      <Box flexGrow={1} padding="l" backgroundColor="mainBackground">
+        <Text variant="title" marginTop="xxl" marginBottom="s">
+          Exercise Information
         </Text>
-      </View>
+        <Text variant="description">
+          Detailed instructions and tips for exercises
+        </Text>
 
-      <View style={styles.buttonContainer}>
-        <Link href="../">
-          <PrimaryButton>Back to Training</PrimaryButton>
+        <Card variant="flat" marginBottom="xl">
+          <Text variant="cardTitle">Exercise Details</Text>
+          <Text variant="body" lineHeight={20}>
+            This screen would display detailed information about the selected
+            exercise, including proper form, common mistakes, and video
+            demonstrations.
+          </Text>
+        </Card>
+
+        <Link href="../" asChild>
+          <Button>Back to Training</Button>
         </Link>
-      </View>
+      </Box>
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    marginBottom: 10,
-    marginTop: 40,
-  },
-  description: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 30,
-  },
-  infoBox: {
-    backgroundColor: "#f5f5f5",
-    padding: 20,
-    borderRadius: 8,
-    marginBottom: 30,
-  },
-  infoTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  infoText: {
-    fontSize: 14,
-    color: "#666",
-    lineHeight: 20,
-  },
-  buttonContainer: {
-    gap: 15,
-  },
-});

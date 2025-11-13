@@ -1,7 +1,7 @@
-import { PrimaryButton } from "@/components/PrimaryButton";
+import { Box, Button, Card, Text } from "@/components";
 import { Link } from "expo-router";
 import { useState } from "react";
-import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
+import { ScrollView, Switch } from "react-native";
 
 /**
  * Settings Screen
@@ -14,77 +14,55 @@ export default function SettingsScreen() {
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Settings</Text>
-      <Text style={styles.description}>Configure your app preferences</Text>
+    <ScrollView>
+      <Box flexGrow={1} padding="l" backgroundColor="mainBackground">
+        <Text variant="title" marginTop="xxl" marginBottom="s">
+          Settings
+        </Text>
+        <Text variant="description">Configure your app preferences</Text>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>General</Text>
+        <Card variant="flat" marginBottom="xl">
+          <Text variant="cardTitle" marginBottom="m">
+            General
+          </Text>
 
-        <View style={styles.settingRow}>
-          <Text style={styles.settingLabel}>Notifications</Text>
-          <Switch
-            value={notificationsEnabled}
-            onValueChange={setNotificationsEnabled}
-            trackColor={{ false: "#ccc", true: "#007AFF" }}
-          />
-        </View>
+          <Box
+            flexDirection="row"
+            justifyContent="space-between"
+            alignItems="center"
+            paddingVertical="s"
+            borderBottomWidth={1}
+            borderBottomColor="border"
+          >
+            <Text variant="body">Notifications</Text>
+            <Switch
+              value={notificationsEnabled}
+              onValueChange={setNotificationsEnabled}
+              trackColor={{ false: "#ccc", true: "#007AFF" }}
+            />
+          </Box>
 
-        <View style={styles.settingRow}>
-          <Text style={styles.settingLabel}>Dark Mode</Text>
-          <Switch
-            value={darkModeEnabled}
-            onValueChange={setDarkModeEnabled}
-            trackColor={{ false: "#ccc", true: "#007AFF" }}
-          />
-        </View>
-      </View>
+          <Box
+            flexDirection="row"
+            justifyContent="space-between"
+            alignItems="center"
+            paddingVertical="s"
+            borderBottomWidth={1}
+            borderBottomColor="border"
+          >
+            <Text variant="body">Dark Mode</Text>
+            <Switch
+              value={darkModeEnabled}
+              onValueChange={setDarkModeEnabled}
+              trackColor={{ false: "#ccc", true: "#007AFF" }}
+            />
+          </Box>
+        </Card>
 
-      <Link href="../">
-        <PrimaryButton>Back</PrimaryButton>
-      </Link>
+        <Link href="../" asChild>
+          <Button variant="secondary">Back</Button>
+        </Link>
+      </Box>
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    marginTop: 40,
-    marginBottom: 10,
-  },
-  description: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 30,
-  },
-  section: {
-    backgroundColor: "#f5f5f5",
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 30,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 15,
-  },
-  settingRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
-  },
-  settingLabel: {
-    fontSize: 16,
-    color: "#333",
-  },
-});

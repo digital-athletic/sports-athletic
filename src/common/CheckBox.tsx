@@ -14,11 +14,6 @@ export const CheckBox: FC<CheckBoxProps> = ({ checked, changed }) => {
   const theme = useTheme();
   const iconSize = useResponsiveProp({ phone: 36, tablet: 54 });
 
-  const borderColor = checked ? theme.colors.primary : theme.colors.lightGrey3;
-  const backgroundColor = checked
-    ? theme.colors.primary
-    : theme.colors.lightGrey2;
-
   const handlePress = () => {
     changed(!checked);
   };
@@ -36,8 +31,8 @@ export const CheckBox: FC<CheckBoxProps> = ({ checked, changed }) => {
         height={iconSize}
         borderRadius="s"
         borderWidth={1}
-        borderColor={borderColor}
-        backgroundColor={backgroundColor}
+        borderColor={checked ? "primary" : "lightGrey3"}
+        backgroundColor={checked ? "primary" : "lightGrey2"}
         justifyContent="center"
         alignItems="center"
       >

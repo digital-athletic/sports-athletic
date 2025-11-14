@@ -42,9 +42,14 @@ This file provides guidance to AI Agents for building high-quality React Native 
 - Use `useRef` for accessing DOM elements and storing mutable values
 
 ### Styling & Theming
-- Use `@shopify/restyle` to manage themes, colors and spacing
-- Implement responsive design with mobile-first approach
-- Use Mobile, Tablet and Desktop breakpoints to manage layout on different device classes
+- This project uses [@shopify/restyle](https://github.com/Shopify/restyle) for a type-safe, consistent theming approach throughout the application.
+- Components should be responsive with a mobile-first approach
+- Breakpoints should be used to manage layout across different devices
+
+### Internationalization (i18n)
+- This project uses [react-i18next](https://react.i18next.com/) for type-safe translations throughout the application
+- Components should access the translations via the `useTranslation` hook and all text content should be located in the `src/i18n/locales` translation files
+- When migrating components from the `/legacy` folder any text must be added to the translation files
 
 ### Accessibility
 - Leverage the react native accessibility APIs (https://reactnative.dev/docs/accessibility) to support assitive technologies

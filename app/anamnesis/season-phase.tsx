@@ -1,6 +1,5 @@
-import { PrimaryButton } from "@/components/PrimaryButton";
+import { Box, Button, Text } from "@/components";
 import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
 
 /**
  * Season Phase Screen
@@ -10,34 +9,19 @@ import { StyleSheet, Text, View } from "react-native";
  */
 export default function SeasonPhaseScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Season Phase</Text>
-      <Text style={styles.description}>Select your current season phase</Text>
+    <Box
+      flex={1}
+      justifyContent="center"
+      alignItems="center"
+      padding="l"
+      backgroundColor="white"
+    >
+      <Text variant="title">Season Phase</Text>
+      <Text variant="description">Select your current season phase</Text>
 
-      <Link href="/anamnesis/generating">
-        <PrimaryButton>Generate Training Plan</PrimaryButton>
+      <Link href="/anamnesis/generating" asChild>
+        <Button>Generate Training Plan</Button>
       </Link>
-    </View>
+    </Box>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  description: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-    marginBottom: 40,
-  },
-});

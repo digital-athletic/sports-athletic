@@ -1,3 +1,4 @@
+import { useAppTheme } from "@/theme";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
 import { Platform } from "react-native";
@@ -11,14 +12,15 @@ import { Platform } from "react-native";
  * Note: TeamStack is disabled in legacy app
  */
 export default function TabLayout() {
+  const { colors } = useAppTheme();
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#007AFF", // PRIMARY color from legacy
-        tabBarInactiveTintColor: "#999999",
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.darkGrey1,
         tabBarStyle: {
-          backgroundColor: "#fff",
+          backgroundColor: colors.white,
         },
         tabBarLabelStyle: {
           fontSize: 11,

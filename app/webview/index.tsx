@@ -1,5 +1,5 @@
+import { Box, Text } from "@/components";
 import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
 
 /**
  * WebView Screen (Full-Screen Modal)
@@ -9,58 +9,30 @@ import { StyleSheet, Text, View } from "react-native";
  */
 export default function WebViewScreen() {
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Link href="../" style={styles.closeButton}>
-          <Text style={styles.closeButtonText}>✕ Close</Text>
+    <Box flex={1} backgroundColor="white">
+      <Box
+        paddingTop="xxl"
+        paddingHorizontal="l"
+        paddingBottom="s"
+        borderBottomWidth={1}
+        borderBottomColor="lightGrey2"
+      >
+        <Link href="../">
+          <Box alignSelf="flex-end">
+            <Text variant="link" fontSize={18}>
+              ✕ Close
+            </Text>
+          </Box>
         </Link>
-      </View>
+      </Box>
 
-      <View style={styles.content}>
-        <Text style={styles.title}>Web View (Full Screen)</Text>
-        <Text style={styles.description}>
+      <Box flex={1} justifyContent="center" alignItems="center" padding="l">
+        <Text variant="title">Web View (Full Screen)</Text>
+        <Text variant="description">
           Full-screen web content viewing modal. This would typically display a
           WebView component.
         </Text>
-      </View>
-    </View>
+      </Box>
+    </Box>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  header: {
-    paddingTop: 50,
-    paddingHorizontal: 20,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
-  },
-  closeButton: {
-    alignSelf: "flex-end",
-  },
-  closeButtonText: {
-    fontSize: 18,
-    color: "#007AFF",
-    fontWeight: "600",
-  },
-  content: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  description: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-  },
-});

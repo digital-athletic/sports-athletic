@@ -1,0 +1,12 @@
+{
+  "screens": {
+    "start": {
+      "title": "Navigation Demo",
+      "description": "Select a flow to explore the navigation hierarchy"
+    },
+    "home": {
+      "title": "Training Home",
+      "description": "Your personalized traning dashboard"
+    }
+  }
+}

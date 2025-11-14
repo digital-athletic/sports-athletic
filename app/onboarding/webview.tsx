@@ -1,6 +1,5 @@
-import { PrimaryButton } from "@/components/PrimaryButton";
+import { Box, Button, Text } from "@/components";
 import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
 
 /**
  * Onboarding WebView Screen
@@ -10,34 +9,19 @@ import { StyleSheet, Text, View } from "react-native";
  */
 export default function OnboardingWebViewScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Onboarding WebView</Text>
-      <Text style={styles.description}>Web content during onboarding flow</Text>
+    <Box
+      flex={1}
+      justifyContent="center"
+      alignItems="center"
+      padding="l"
+      backgroundColor="white"
+    >
+      <Text variant="title">Onboarding WebView</Text>
+      <Text variant="description">Web content during onboarding flow</Text>
 
-      <Link href="../">
-        <PrimaryButton>Go Back</PrimaryButton>
+      <Link href="../" asChild>
+        <Button variant="secondary">Go Back</Button>
       </Link>
-    </View>
+    </Box>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  description: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-    marginBottom: 40,
-  },
-});

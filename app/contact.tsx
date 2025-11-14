@@ -1,6 +1,7 @@
-import { PrimaryButton } from "@/components/PrimaryButton";
+import { Box, Button, Text } from "@/components";
+import { useAppTheme } from "@/theme";
 import { Link } from "expo-router";
-import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { ScrollView, TextInput } from "react-native";
 
 /**
  * Contact Screen (Modal)
@@ -9,103 +10,83 @@ import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
  * Legacy: Contact (modal route in root navigator)
  */
 export default function ContactScreen() {
+  const { colors } = useAppTheme();
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Contact Support</Text>
-      <Text style={styles.description}>Get in touch with our support team</Text>
+    <ScrollView>
+      <Box flexGrow={1} padding="l" backgroundColor="white">
+        <Text variant="title" marginTop="l" marginBottom="s">
+          Contact Support
+        </Text>
+        <Text variant="description">Get in touch with our support team</Text>
 
-      <View style={styles.form}>
-        <Text style={styles.label}>Name</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Your name"
-          placeholderTextColor="#999"
-        />
+        <Box marginBottom="xl">
+          <Text variant="label" marginBottom="xs">
+            Name
+          </Text>
+          <TextInput
+            style={{
+              borderWidth: 1,
+              borderColor: colors.lightGrey2,
+              borderRadius: 8,
+              padding: 12,
+              fontSize: 16,
+              marginBottom: 20,
+              backgroundColor: colors.lightGrey1,
+            }}
+            placeholder="Your name"
+            placeholderTextColor={colors.darkGrey2}
+          />
 
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="your.email@example.com"
-          placeholderTextColor="#999"
-          keyboardType="email-address"
-        />
+          <Text variant="label" marginBottom="xs">
+            Email
+          </Text>
+          <TextInput
+            style={{
+              borderWidth: 1,
+              borderColor: colors.lightGrey2,
+              borderRadius: 8,
+              padding: 12,
+              fontSize: 16,
+              marginBottom: 20,
+              backgroundColor: colors.lightGrey1,
+            }}
+            placeholder="your.email@example.com"
+            placeholderTextColor={colors.darkGrey2}
+            keyboardType="email-address"
+          />
 
-        <Text style={styles.label}>Message</Text>
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          placeholder="How can we help you?"
-          placeholderTextColor="#999"
-          multiline
-          numberOfLines={6}
-        />
-      </View>
+          <Text variant="label" marginBottom="xs">
+            Message
+          </Text>
+          <TextInput
+            style={{
+              borderWidth: 1,
+              borderColor: colors.lightGrey2,
+              borderRadius: 8,
+              padding: 12,
+              fontSize: 16,
+              marginBottom: 20,
+              backgroundColor: colors.lightGrey1,
+              height: 120,
+              textAlignVertical: "top",
+            }}
+            placeholder="How can we help you?"
+            placeholderTextColor={colors.darkGrey2}
+            multiline
+            numberOfLines={6}
+          />
+        </Box>
 
-      <View style={styles.buttonContainer}>
-        <Link href="../">
-          <PrimaryButton>Send Message</PrimaryButton>
-        </Link>
+        <Box gap="m">
+          <Link href="../" asChild>
+            <Button>Send Message</Button>
+          </Link>
 
-        <Link href="../" style={styles.secondaryButton}>
-          <Text style={styles.secondaryButtonText}>Cancel</Text>
-        </Link>
-      </View>
+          <Link href="../" asChild>
+            <Button variant="secondary">Cancel</Button>
+          </Link>
+        </Box>
+      </Box>
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  description: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 30,
-  },
-  form: {
-    marginBottom: 30,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 8,
-    color: "#333",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 20,
-    backgroundColor: "#f9f9f9",
-  },
-  textArea: {
-    height: 120,
-    textAlignVertical: "top",
-  },
-  buttonContainer: {
-    gap: 15,
-  },
-  secondaryButton: {
-    backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#007AFF",
-  },
-  secondaryButtonText: {
-    color: "#007AFF",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-});

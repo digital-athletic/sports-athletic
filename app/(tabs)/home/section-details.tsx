@@ -1,6 +1,6 @@
-import { PrimaryButton } from "@/components/PrimaryButton";
+import { Box, Button, Card, Text } from "@/components";
 import { Link } from "expo-router";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView } from "react-native";
 
 /**
  * Section Details Screen
@@ -10,81 +10,36 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
  */
 export default function SectionDetailsScreen() {
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Section Details</Text>
-      <Text style={styles.description}>
-        Detailed view of training sections with exercises and instructions
-      </Text>
-
-      <View style={styles.sectionBox}>
-        <Text style={styles.sectionTitle}>Training Section Information</Text>
-        <Text style={styles.sectionText}>
-          This screen would display detailed information about a specific
-          training section, including exercises, duration, difficulty, and
-          instructions.
+    <ScrollView>
+      <Box flexGrow={1} padding="l" backgroundColor="white">
+        <Text variant="title" marginTop="xxl" marginBottom="s">
+          Section Details
         </Text>
-      </View>
+        <Text variant="description" marginBottom="xl">
+          Detailed view of training sections with exercises and instructions
+        </Text>
 
-      <View style={styles.buttonContainer}>
-        <Link href="/training">
-          <PrimaryButton>Start This Section</PrimaryButton>
-        </Link>
+        <Card variant="flat" marginBottom="xl">
+          <Text variant="cardTitle" marginBottom="s">
+            Training Section Information
+          </Text>
+          <Text variant="body" lineHeight={20}>
+            This screen would display detailed information about a specific
+            training section, including exercises, duration, difficulty, and
+            instructions.
+          </Text>
+        </Card>
 
-        <Link href="../" style={styles.secondaryButton}>
-          <Text style={styles.secondaryButtonText}>Back to Home</Text>
-        </Link>
-      </View>
+        <Box gap="m">
+          <Link href="/training" asChild>
+            <Button>Start This Section</Button>
+          </Link>
+
+          <Link href="../" asChild>
+            <Button variant="secondary">Back to Home</Button>
+          </Link>
+        </Box>
+      </Box>
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    marginTop: 40,
-    marginBottom: 10,
-  },
-  description: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 30,
-  },
-  sectionBox: {
-    backgroundColor: "#f5f5f5",
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 30,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  sectionText: {
-    fontSize: 14,
-    color: "#666",
-    lineHeight: 20,
-  },
-  buttonContainer: {
-    gap: 15,
-  },
-  secondaryButton: {
-    backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#007AFF",
-  },
-  secondaryButtonText: {
-    color: "#007AFF",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-});

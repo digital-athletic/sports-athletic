@@ -1,6 +1,5 @@
-import { PrimaryButton } from "@/components/PrimaryButton";
+import { Box, Button, Text } from "@/components";
 import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
 
 /**
  * Onboarding Screen
@@ -10,46 +9,27 @@ import { StyleSheet, Text, View } from "react-native";
  */
 export default function OnboardingScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Onboarding</Text>
-      <Text style={styles.description}>
+    <Box
+      flex={1}
+      justifyContent="center"
+      alignItems="center"
+      padding="l"
+      backgroundColor="white"
+    >
+      <Text variant="title">Onboarding</Text>
+      <Text variant="description">
         First-time user experience and app introduction
       </Text>
 
-      <View style={styles.buttonContainer}>
-        <Link href="/onboarding/webview">
-          <PrimaryButton>View Web Content</PrimaryButton>
+      <Box width="100%" gap="m" marginTop="l">
+        <Link href="/onboarding/webview" asChild>
+          <Button>View Web Content</Button>
         </Link>
 
-        <Link href="/anamnesis">
-          <PrimaryButton>Continue to Anamnesis</PrimaryButton>
+        <Link href="/anamnesis" asChild>
+          <Button>Continue to Anamnesis</Button>
         </Link>
-      </View>
-    </View>
+      </Box>
+    </Box>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  description: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-    marginBottom: 40,
-  },
-  buttonContainer: {
-    width: "100%",
-    gap: 15,
-  },
-});

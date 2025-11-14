@@ -1,6 +1,6 @@
-import { PrimaryButton } from "@/components/PrimaryButton";
+import { Box, Button, Card, Text } from "@/components";
 import { Link } from "expo-router";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView } from "react-native";
 
 /**
  * Profile Screen
@@ -10,75 +10,65 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
  */
 export default function ProfileScreen() {
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Profile</Text>
-      <Text style={styles.description}>Manage your personal information</Text>
+    <ScrollView>
+      <Box flexGrow={1} padding="l" backgroundColor="white">
+        <Text variant="title" marginTop="xxl" marginBottom="s">
+          Profile
+        </Text>
+        <Text variant="description">Manage your personal information</Text>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Personal Information</Text>
-        <View style={styles.infoRow}>
-          <Text style={styles.label}>Name</Text>
-          <Text style={styles.value}>User Name</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.label}>Email</Text>
-          <Text style={styles.value}>user@example.com</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.label}>Sport</Text>
-          <Text style={styles.value}>Not Set</Text>
-        </View>
-      </View>
+        <Card variant="flat" marginBottom="xl">
+          <Text variant="cardTitle" marginBottom="m">
+            Personal Information
+          </Text>
+          <Box
+            flexDirection="row"
+            justifyContent="space-between"
+            paddingVertical="s"
+            borderBottomWidth={1}
+            borderBottomColor="lightGrey2"
+          >
+            <Text variant="body" color="darkGrey2">
+              Name
+            </Text>
+            <Text variant="body" fontWeight="600">
+              User Name
+            </Text>
+          </Box>
+          <Box
+            flexDirection="row"
+            justifyContent="space-between"
+            paddingVertical="s"
+            borderBottomWidth={1}
+            borderBottomColor="lightGrey2"
+          >
+            <Text variant="body" color="darkGrey2">
+              Email
+            </Text>
+            <Text variant="body" fontWeight="600">
+              user@example.com
+            </Text>
+          </Box>
+          <Box
+            flexDirection="row"
+            justifyContent="space-between"
+            paddingVertical="s"
+            borderBottomWidth={1}
+            borderBottomColor="lightGrey2"
+          >
+            <Text variant="body" color="darkGrey2">
+              Sport
+            </Text>
+            <Text variant="body" fontWeight="600">
+              Not Set
+            </Text>
+          </Box>
+        </Card>
 
-      <Link href="../">
-        <PrimaryButton>Back</PrimaryButton>
-      </Link>
+        <Link href="../" asChild>
+          <Button variant="secondary">Back</Button>
+        </Link>
+      </Box>
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    marginTop: 40,
-    marginBottom: 10,
-  },
-  description: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 30,
-  },
-  section: {
-    backgroundColor: "#f5f5f5",
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 30,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 15,
-  },
-  infoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
-  },
-  label: {
-    fontSize: 16,
-    color: "#666",
-  },
-  value: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
-  },
-});

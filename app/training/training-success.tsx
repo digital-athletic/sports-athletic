@@ -1,6 +1,5 @@
-import { PrimaryButton } from "@/components/PrimaryButton";
+import { Box, Button, Text } from "@/components";
 import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
 
 /**
  * Training Success Screen
@@ -11,56 +10,29 @@ import { StyleSheet, Text, View } from "react-native";
  */
 export default function TrainingSuccessScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.emoji}>🎉</Text>
-      <Text style={styles.title}>Training Complete!</Text>
-      <Text style={styles.description}>
+    <Box
+      flex={1}
+      justifyContent="center"
+      alignItems="center"
+      padding="l"
+      backgroundColor="white"
+    >
+      <Text fontSize={64} marginBottom="l">
+        🎉
+      </Text>
+      <Text variant="title">Training Complete!</Text>
+      <Text variant="subtitle" marginBottom="xs">
         Great job completing your training session
       </Text>
-      <Text style={styles.note}>
+      <Text variant="small" color="darkGrey1" marginBottom="xl">
         ⚠️ Gestures disabled - use buttons to navigate
       </Text>
 
-      <View style={styles.buttonContainer}>
-        <Link href="/(tabs)" replace>
-          <PrimaryButton color="#28a745">Return to Home</PrimaryButton>
+      <Box width="100%" gap="m">
+        <Link href="/(tabs)" replace asChild>
+          <Button variant="success">Back to Home</Button>
         </Link>
-      </View>
-    </View>
+      </Box>
+    </Box>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  emoji: {
-    fontSize: 64,
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  description: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  note: {
-    fontSize: 12,
-    color: "#999",
-    textAlign: "center",
-    marginBottom: 30,
-  },
-  buttonContainer: {
-    width: "100%",
-    gap: 15,
-  },
-});

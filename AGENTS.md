@@ -19,6 +19,9 @@ This file provides guidance to AI Agents for building high-quality React Native 
 - Use custom hooks for reusable stateful logic
 - Implement proper component hierarchies with clear data flow
 
+### Imports and exports
+- There should not be index files that only serve the purpose of reexporting other modules of the folder or its sub folders
+
 ### TypeScript Integration
 - Use TypeScript interfaces for props, state, and component definitions
 - Leverage React and React-Native's built-in types (`FC`, `PropsWithChildren`, etc.) where possible

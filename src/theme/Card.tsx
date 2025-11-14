@@ -10,7 +10,7 @@ import {
   VariantProps,
 } from "@shopify/restyle";
 import { View, ViewProps } from "react-native";
-import { Theme } from "../theme";
+import { Theme } from "./theme";
 
 type RestyleProps = SpacingProps<Theme> &
   BackgroundColorProps<Theme> &
@@ -38,5 +38,5 @@ export const Card = createRestyleComponent<CardProps, Theme>(
     backgroundColor,
     layout,
   ],
-  View,
+  View
 );

@@ -7,8 +7,8 @@ import {
 } from "@shopify/restyle";
 import { FC, PropsWithChildren } from "react";
 import { Pressable, PressableProps } from "react-native";
-import { Theme } from "../theme";
 import { Text } from "./Text";
+import { Theme } from "./theme";
 
 const ButtonContainer = createRestyleComponent<
   VariantProps<Theme, "buttonVariants"> &

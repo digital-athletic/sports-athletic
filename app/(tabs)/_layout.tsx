@@ -1,4 +1,4 @@
-import { useAppTheme } from "@/theme";
+import { useAppTheme } from "@/theme/theme";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
 import { Platform } from "react-native";

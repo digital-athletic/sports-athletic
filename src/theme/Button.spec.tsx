@@ -1,5 +1,5 @@
+import { Button } from "../theme/Button";
 import { render } from "../utils/testUtils";
-import { Button } from "./Button";
 
 describe("<Button />", () => {
   it("renders children as text", () => {

@@ -1,4 +1,6 @@
-import { Box, Button, Text } from "@/components";
+import { Box } from "@/theme/Box";
+import { Button } from "@/theme/Button";
+import { Text } from "@/theme/Text";
 import { Link } from "expo-router";
 
 export default function SubscribeScreen() {

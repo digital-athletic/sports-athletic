@@ -21,10 +21,13 @@ This file provides guidance to AI Agents for building high-quality React Native 
 
 ### Imports and exports
 - There should not be index files that only serve the purpose of reexporting other modules of the folder or its sub folders
+- Prefer named imports over namespaces (e.g. `import { useState } from "react"` instead of using `React.useState`)
+- Import React types directly (e.g. `import { type FC } from "react"`) instead of using the namespace prefix (avoid `React.FC`)
 
 ### TypeScript Integration
 - Use TypeScript interfaces for props, state, and component definitions
-- Leverage React and React-Native's built-in types (`FC`, `PropsWithChildren`, etc.) where possible
+- Leverage React and React-Native's built-in types (`FC`, `PropsWithChildren`, etc.) by importing them directly
+- Use `type` imports for types when possible (e.g. `import { type FC } from "react"`)
 
 ### Component Design
 - Keep components small and focused on a single concern

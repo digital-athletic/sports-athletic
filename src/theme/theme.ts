@@ -1,4 +1,4 @@
-import { createTheme, useTheme } from "@shopify/restyle";
+import { createTheme, useTheme as useRestyleTheme } from "@shopify/restyle";
 import { colors } from "./colors";
 import { textVariants } from "./textVariants";
 
@@ -119,4 +119,4 @@ export const theme = createTheme({
 
 export type Theme = typeof theme;
 
-export const useAppTheme = useTheme<Theme>;
+export const useTheme = useRestyleTheme<Theme>;

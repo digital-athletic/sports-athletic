@@ -8,5 +8,8 @@
       "title": "Training Home",
       "description": "Your personalized traning dashboard"
     }
+  },
+  "common": {
+    "cancel": "Cancel"
   }
 }

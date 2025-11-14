@@ -1,6 +1,6 @@
-import { AppThemeProvider } from "@/theme/AppThemeProvider";
+import { theme } from "@/theme/theme";
+import { ThemeProvider } from "@shopify/restyle";
 import { Stack } from "expo-router";
-import { SafeAreaView } from "react-native";
 
 /**
  * Root Layout Component
@@ -13,33 +13,31 @@ import { SafeAreaView } from "react-native";
  */
 export default function RootLayout() {
   return (
-    <AppThemeProvider>
-      <SafeAreaView style={{ flex: 1 }}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-          <Stack.Screen name="anamnesis" options={{ headerShown: false }} />
-          <Stack.Screen name="training" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="webview"
-            options={{ headerShown: false, presentation: "fullScreenModal" }}
-          />
-          <Stack.Screen
-            name="video-player"
-            options={{ headerShown: false, presentation: "fullScreenModal" }}
-          />
-          <Stack.Screen name="test" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="contact"
-            options={{
-              headerShown: true,
-              presentation: "modal",
-              title: "Contact",
-            }}
-          />
-        </Stack>
-      </SafeAreaView>
-    </AppThemeProvider>
+    <ThemeProvider theme={theme}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+        <Stack.Screen name="anamnesis" options={{ headerShown: false }} />
+        <Stack.Screen name="training" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="webview"
+          options={{ headerShown: false, presentation: "fullScreenModal" }}
+        />
+        <Stack.Screen
+          name="video-player"
+          options={{ headerShown: false, presentation: "fullScreenModal" }}
+        />
+        <Stack.Screen name="test" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="contact"
+          options={{
+            headerShown: true,
+            presentation: "modal",
+            title: "Contact",
+          }}
+        />
+      </Stack>
+    </ThemeProvider>
   );
 }

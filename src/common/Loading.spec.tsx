@@ -17,11 +17,11 @@ describe("<Loading />", () => {
     const { getByText } = render(
       <Loading show={true} text="Loading..." onClose={onClose} />
     );
-    expect(getByText("common.cancel")).toBeTruthy();
+    expect(getByText("Cancel")).toBeTruthy();
   });
 
   it("should not render cancel button when onClose is not provided", () => {
     const { queryByText } = render(<Loading show={true} text="Loading..." />);
-    expect(queryByText("common.cancel")).toBeNull();
+    expect(queryByText("Cancel")).toBeNull();
   });
 });

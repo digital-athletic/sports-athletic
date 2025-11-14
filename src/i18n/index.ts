@@ -23,7 +23,8 @@ i18n
   .use(initReactI18next) // Pass i18n instance to react-i18next
   .init({
     fallbackLng: DEFAULT_LANGUAGE_CODE, // Default language
-    debug: __DEV__, // Enable debug mode in development
+    // Uncomment to enable debug mode in development
+    // debug: __DEV__,
     resources,
     ns: ["translations"], // List of namespaces
     defaultNS: "translations", // Default namespace

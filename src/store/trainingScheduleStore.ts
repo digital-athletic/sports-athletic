@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
 
 export interface TrainingDayType {
@@ -56,33 +57,42 @@ const DEFAULT_TRAINING_DAYS: TrainingDayType[] = [
  */
 export const useTrainingScheduleStore = create<TrainingScheduleState>()(
   persist(
-    (set, get) => ({
+    immer((set, get) => ({
       trainingDays: DEFAULT_TRAINING_DAYS,
 
-      setTrainingDays: (days) => set({ trainingDays: days }),
+      setTrainingDays: (days) =>
+        set((state) => {
+          state.trainingDays = days;
+        }),
 
       toggleDay: (weekday) =>
-        set((state) => ({
-          trainingDays: state.trainingDays.map((day) =>
-            day.weekday === weekday ? { ...day, active: !day.active } : day
-          ),
-        })),
+        set((state) => {
+          const day = state.trainingDays.find((d) => d.weekday === weekday);
+          if (day) {
+            day.active = !day.active;
+          }
+        }),
 
       setDayLocation: (weekday, placeId) =>
-        set((state) => ({
-          trainingDays: state.trainingDays.map((day) =>
-            day.weekday === weekday ? { ...day, place: placeId } : day
-          ),
-        })),
+        set((state) => {
+          const day = state.trainingDays.find((d) => d.weekday === weekday);
+          if (day) {
+            day.place = placeId;
+          }
+        }),
 
       setDayDuration: (weekday, duration) =>
-        set((state) => ({
-          trainingDays: state.trainingDays.map((day) =>
-            day.weekday === weekday ? { ...day, duration } : day
-          ),
-        })),
+        set((state) => {
+          const day = state.trainingDays.find((d) => d.weekday === weekday);
+          if (day) {
+            day.duration = duration;
+          }
+        }),
 
-      resetToDefaults: () => set({ trainingDays: DEFAULT_TRAINING_DAYS }),
+      resetToDefaults: () =>
+        set((state) => {
+          state.trainingDays = DEFAULT_TRAINING_DAYS;
+        }),
 
       getActiveTrainingDays: () =>
         get().trainingDays.filter((day) => day.active),
@@ -97,7 +107,7 @@ export const useTrainingScheduleStore = create<TrainingScheduleState>()(
           return total + hours + minutes / 60;
         }, 0);
       },
-    }),
+    })),
     {
       name: "training-schedule-storage",
       storage: asyncStorage,

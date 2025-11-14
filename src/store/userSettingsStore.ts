@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
 
 export interface ReviewStatusType {
@@ -49,16 +50,27 @@ const DEFAULT_REVIEW_STATUS: ReviewStatusType = {
  */
 export const useUserSettingsStore = create<UserSettingsState>()(
   persist(
-    (set) => ({
+    immer((set) => ({
       reviewStatus: DEFAULT_REVIEW_STATUS,
       anonymisedDataUse: false,
 
-      setSettings: (settings) => set(settings),
+      setSettings: (settings) =>
+        set((state) => {
+          state.reviewStatus = settings.reviewStatus ?? state.reviewStatus;
+          state.anonymisedDataUse =
+            settings.anonymisedDataUse ?? state.anonymisedDataUse;
+        }),
 
-      setReviewStatus: (status) => set({ reviewStatus: status }),
+      setReviewStatus: (status) =>
+        set((state) => {
+          state.reviewStatus = status;
+        }),
 
-      setAnonymisedDataUse: (enabled) => set({ anonymisedDataUse: enabled }),
-    }),
+      setAnonymisedDataUse: (enabled) =>
+        set((state) => {
+          state.anonymisedDataUse = enabled;
+        }),
+    })),
     {
       name: "user-settings-storage",
       storage: asyncStorage,

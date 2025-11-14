@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
 import type { MaxValuesType } from "./userWorkoutStore";
 
@@ -77,57 +78,59 @@ export interface ExerciseProgressState {
  */
 export const useExerciseProgressStore = create<ExerciseProgressState>()(
   persist(
-    (set, get) => ({
+    immer((set, get) => ({
       exerciseData: {},
       branchData: {},
       xp: 0,
       level: 1,
       testHistory: [],
 
-      setExerciseData: (data) => set({ exerciseData: data }),
+      setExerciseData: (data) =>
+        set((state) => {
+          state.exerciseData = data;
+        }),
 
       updateExercise: (exerciseId, data) =>
-        set((state) => ({
-          exerciseData: {
-            ...state.exerciseData,
-            [exerciseId]: {
+        set((state) => {
+          if (!state.exerciseData[exerciseId]) {
+            state.exerciseData[exerciseId] = { exerciseId, ...data };
+          } else {
+            // Direct property assignment - immer handles immutability
+            state.exerciseData[exerciseId] = {
               ...state.exerciseData[exerciseId],
-              exerciseId,
               ...data,
-            },
-          },
-        })),
+            };
+          }
+        }),
 
       setBranchLevel: (branchId, level) =>
-        set((state) => ({
-          branchData: {
-            ...state.branchData,
-            [branchId]: { branchId, level },
-          },
-        })),
+        set((state) => {
+          state.branchData[branchId] = { branchId, level };
+        }),
 
       addXP: (amount) =>
         set((state) => {
-          const newXP = state.xp + amount;
-          // Simple level calculation: level = floor(xp / 1000) + 1
-          const newLevel = Math.floor(newXP / 1000) + 1;
-          return { xp: newXP, level: newLevel };
+          state.xp += amount;
+          state.level = Math.floor(state.xp / 1000) + 1;
         }),
 
-      setLevel: (level) => set({ level }),
+      setLevel: (level) =>
+        set((state) => {
+          state.level = level;
+        }),
 
       addTestResult: (result) =>
-        set((state) => ({
-          testHistory: [...state.testHistory, result],
-        })),
+        set((state) => {
+          state.testHistory.push(result);
+        }),
 
       clearProgress: () =>
-        set({
-          exerciseData: {},
-          branchData: {},
-          xp: 0,
-          level: 1,
-          testHistory: [],
+        set((state) => {
+          state.exerciseData = {};
+          state.branchData = {};
+          state.xp = 0;
+          state.level = 1;
+          state.testHistory = [];
         }),
 
       getExerciseData: (exerciseId) => {
@@ -144,7 +147,7 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
         const { testHistory } = get();
         return testHistory[testHistory.length - 1];
       },
-    }),
+    })),
     {
       name: "exercise-progress-storage",
       storage: asyncStorage,

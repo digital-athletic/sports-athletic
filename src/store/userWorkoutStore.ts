@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
 
 // Type definitions based on legacy models
@@ -89,41 +90,44 @@ const DEFAULT_WORKOUT_DATA: UserWorkoutDataType = {
  */
 export const useUserWorkoutStore = create<UserWorkoutState>()(
   persist(
-    (set, get) => ({
+    immer((set, get) => ({
       workoutData: DEFAULT_WORKOUT_DATA,
       trainingPlan: null,
 
       setWorkoutData: (data) =>
-        set((state) => ({
-          workoutData: { ...state.workoutData, ...data },
-        })),
+        set((state) => {
+          state.workoutData = { ...state.workoutData, ...data };
+        }),
 
       setSport: (sport) =>
-        set((state) => ({
-          workoutData: { ...state.workoutData, sport },
-        })),
+        set((state) => {
+          state.workoutData.sport = sport;
+        }),
 
       setSeasonPhase: (phase) =>
-        set((state) => ({
-          workoutData: { ...state.workoutData, seasonPhase: phase },
-        })),
+        set((state) => {
+          state.workoutData.seasonPhase = phase;
+        }),
 
       setEquipment: (equipment) =>
-        set((state) => ({
-          workoutData: { ...state.workoutData, equipment },
-        })),
+        set((state) => {
+          state.workoutData.equipment = equipment;
+        }),
 
       setTags: (tags) =>
-        set((state) => ({
-          workoutData: { ...state.workoutData, tags },
-        })),
+        set((state) => {
+          state.workoutData.tags = tags;
+        }),
 
-      setTrainingPlan: (plan) => set({ trainingPlan: plan }),
+      setTrainingPlan: (plan) =>
+        set((state) => {
+          state.trainingPlan = plan;
+        }),
 
       saveMaxValues: (maxValues) =>
-        set((state) => ({
-          workoutData: { ...state.workoutData, maxValues },
-        })),
+        set((state) => {
+          state.workoutData.maxValues = maxValues;
+        }),
 
       /**
        * Replace a branch in the training plan
@@ -138,34 +142,28 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
         branchesToFillIn
       ) =>
         set((state) => {
-          const { trainingPlan } = state;
-          if (!trainingPlan?.sections) return state;
-
-          // Deep clone the training plan to avoid mutation
-          const newPlan = JSON.parse(
-            JSON.stringify(trainingPlan)
-          ) as TrainingPlanType;
+          if (!state.trainingPlan?.sections) return;
 
           // Find the section for the given weekday
-          const section = newPlan.sections.find((s) => s.weekday === weekday);
-          if (!section?.trainings) return state;
+          const section = state.trainingPlan.sections.find(
+            (s) => s.weekday === weekday
+          );
+          if (!section?.trainings) return;
 
           // Find the training for the given skill
           const training = section.trainings[sectionIndex];
-          if (!training || training.skill !== skillId) return state;
+          if (!training || training.skill !== skillId) return;
 
           // Find the branch to replace
           const branchIndex = training.branches.findIndex(
             (b) => b.id === branchIdToReplace
           );
-          if (branchIndex === -1) return state;
+          if (branchIndex === -1) return;
 
-          // Replace the branch with new branches
+          // Replace the branch with new branches (immer handles immutability)
           training.branches.splice(branchIndex, 1, ...branchesToFillIn);
-
-          return { trainingPlan: newPlan };
         }),
-    }),
+    })),
     {
       name: "user-workout-storage",
       storage: asyncStorage,

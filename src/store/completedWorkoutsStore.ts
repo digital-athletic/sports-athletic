@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 import type { UserExerciseDataType } from "./exerciseProgressStore";
 import { asyncStorage } from "./middleware";
 import type { TrainingPlanType } from "./userWorkoutStore";
@@ -68,43 +69,46 @@ export interface CompletedWorkoutsState {
  */
 export const useCompletedWorkoutsStore = create<CompletedWorkoutsState>()(
   persist(
-    (set, get) => ({
+    immer((set, get) => ({
       workouts: {},
       workoutsList: [],
       trainingPlans: [],
 
       addCompletedWorkout: (workout) =>
-        set((state) => ({
-          workouts: {
-            ...state.workouts,
-            [workout.id]: workout,
-          },
-          workoutsList: [
-            ...state.workoutsList,
-            {
-              id: workout.id,
-              timestamp: workout.timestamp,
-              summary: `Workout completed in ${Math.floor(workout.duration / 60)} minutes`,
-            },
-          ],
-        })),
+        set((state) => {
+          state.workouts[workout.id] = workout;
+          state.workoutsList.push({
+            id: workout.id,
+            timestamp: workout.timestamp,
+            summary: `Workout completed in ${Math.floor(workout.duration / 60)} minutes`,
+          });
+        }),
 
-      setCompletedWorkouts: (workouts) => set({ workouts }),
+      setCompletedWorkouts: (workouts) =>
+        set((state) => {
+          state.workouts = workouts;
+        }),
 
-      setWorkoutsList: (list) => set({ workoutsList: list }),
+      setWorkoutsList: (list) =>
+        set((state) => {
+          state.workoutsList = list;
+        }),
 
       addCompletedTrainingPlan: (plan) =>
-        set((state) => ({
-          trainingPlans: [...state.trainingPlans, plan],
-        })),
+        set((state) => {
+          state.trainingPlans.push(plan);
+        }),
 
-      setCompletedTrainingPlans: (plans) => set({ trainingPlans: plans }),
+      setCompletedTrainingPlans: (plans) =>
+        set((state) => {
+          state.trainingPlans = plans;
+        }),
 
       clearHistory: () =>
-        set({
-          workouts: {},
-          workoutsList: [],
-          trainingPlans: [],
+        set((state) => {
+          state.workouts = {};
+          state.workoutsList = [];
+          state.trainingPlans = [];
         }),
 
       getWorkoutById: (id) => {
@@ -137,7 +141,7 @@ export const useCompletedWorkoutsStore = create<CompletedWorkoutsState>()(
           0
         );
       },
-    }),
+    })),
     {
       name: "completed-workouts-storage",
       storage: asyncStorage,

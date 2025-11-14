@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
 
 export interface UserPersonalDataType {
@@ -60,56 +61,66 @@ const DEFAULT_PERSONAL_DATA: UserPersonalDataType = {
  */
 export const useUserProfileStore = create<UserProfileState>()(
   persist(
-    (set, get) => ({
+    immer((set, get) => ({
       userId: null,
       personalData: DEFAULT_PERSONAL_DATA,
       isInInitialAnamnesis: false,
       anamnesisCompleted: false,
       teamId: null,
 
-      setUserId: (userId) => set({ userId }),
+      setUserId: (userId) =>
+        set((state) => {
+          state.userId = userId;
+        }),
 
       setUsername: (username) =>
-        set((state) => ({
-          personalData: { ...state.personalData, username },
-        })),
+        set((state) => {
+          state.personalData.username = username;
+        }),
 
       setGender: (gender) =>
-        set((state) => ({
-          personalData: { ...state.personalData, gender },
-        })),
+        set((state) => {
+          state.personalData.gender = gender;
+        }),
 
       setBirthday: (birthday) =>
-        set((state) => ({
-          personalData: { ...state.personalData, birthday },
-        })),
+        set((state) => {
+          state.personalData.birthday = birthday;
+        }),
 
       setPersonalData: (data) =>
-        set((state) => ({
-          personalData: { ...state.personalData, ...data },
-        })),
+        set((state) => {
+          state.personalData = { ...state.personalData, ...data };
+        }),
 
-      setIsInInitialAnamnesis: (value) => set({ isInInitialAnamnesis: value }),
+      setIsInInitialAnamnesis: (value) =>
+        set((state) => {
+          state.isInInitialAnamnesis = value;
+        }),
 
       setAnamnesisCompleted: (completed) =>
-        set({ anamnesisCompleted: completed }),
+        set((state) => {
+          state.anamnesisCompleted = completed;
+        }),
 
-      setTeamId: (teamId) => set({ teamId }),
+      setTeamId: (teamId) =>
+        set((state) => {
+          state.teamId = teamId;
+        }),
 
       clearProfile: () =>
-        set({
-          userId: null,
-          personalData: DEFAULT_PERSONAL_DATA,
-          isInInitialAnamnesis: false,
-          anamnesisCompleted: false,
-          teamId: null,
+        set((state) => {
+          state.userId = null;
+          state.personalData = DEFAULT_PERSONAL_DATA;
+          state.isInInitialAnamnesis = false;
+          state.anamnesisCompleted = false;
+          state.teamId = null;
         }),
 
       getAge: () => {
         const { birthday } = get().personalData;
         if (!birthday) return null;
 
-        // Parse DD-MM-YYYY format
         const [day, month, year] = birthday.split("-").map(Number);
         if (!day || !month || !year) return null;
 
@@ -127,7 +138,7 @@ export const useUserProfileStore = create<UserProfileState>()(
 
         return age;
       },
-    }),
+    })),
     {
       name: "user-profile-storage",
       storage: asyncStorage,

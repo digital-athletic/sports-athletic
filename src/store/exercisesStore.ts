@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
 
 export type SkillType =
@@ -61,12 +62,18 @@ export interface ExercisesState {
  */
 export const useExercisesStore = create<ExercisesState>()(
   persist(
-    (set, get) => ({
+    immer((set, get) => ({
       exercises: null,
 
-      setExercises: (exercises) => set({ exercises }),
+      setExercises: (exercises) =>
+        set((state) => {
+          state.exercises = exercises;
+        }),
 
-      clearExercises: () => set({ exercises: null }),
+      clearExercises: () =>
+        set((state) => {
+          state.exercises = null;
+        }),
 
       getExerciseById: (id) => {
         const { exercises } = get();
@@ -93,7 +100,7 @@ export const useExercisesStore = create<ExercisesState>()(
           exercise.equipment.every((eq) => equipment.includes(eq))
         );
       },
-    }),
+    })),
     {
       name: "exercises-storage",
       storage: asyncStorage,

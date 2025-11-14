@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
 
 /**
@@ -46,15 +47,21 @@ export interface AuthState {
  */
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    immer((set, get) => ({
       auth: null,
 
-      setAuth: (auth) => set({ auth }),
+      setAuth: (auth) =>
+        set((state) => {
+          state.auth = auth;
+        }),
 
-      clearAuth: () => set({ auth: null }),
+      clearAuth: () =>
+        set((state) => {
+          state.auth = null;
+        }),
 
       isAuthenticated: () => get().auth !== null,
-    }),
+    })),
     {
       name: "auth-storage",
       storage: asyncStorage,

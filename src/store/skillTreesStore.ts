@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
 import type { ExerciseBranchType } from "./userWorkoutStore";
 
@@ -54,20 +55,23 @@ export interface SkillTreesState {
  */
 export const useSkillTreesStore = create<SkillTreesState>()(
   persist(
-    (set, get) => ({
+    immer((set, get) => ({
       skillTrees: {},
 
       setSkillTree: (skillName, tree) =>
-        set((state) => ({
-          skillTrees: {
-            ...state.skillTrees,
-            [skillName]: tree,
-          },
-        })),
+        set((state) => {
+          state.skillTrees[skillName] = tree;
+        }),
 
-      setAllSkillTrees: (trees) => set({ skillTrees: trees }),
+      setAllSkillTrees: (trees) =>
+        set((state) => {
+          state.skillTrees = trees;
+        }),
 
-      clearSkillTrees: () => set({ skillTrees: {} }),
+      clearSkillTrees: () =>
+        set((state) => {
+          state.skillTrees = {};
+        }),
 
       getSkillTree: (skillName) => {
         const { skillTrees } = get();
@@ -83,7 +87,7 @@ export const useSkillTreesStore = create<SkillTreesState>()(
         const tree = get().getSkillTree(skillName);
         return tree?.branches.filter((branch) => branch.level === level) ?? [];
       },
-    }),
+    })),
     {
       name: "skill-trees-storage",
       storage: asyncStorage,

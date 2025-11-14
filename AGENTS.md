@@ -55,7 +55,6 @@ This file provides guidance to AI Agents for building high-quality React Native 
 ### Internationalization (i18n)
 - This project uses [react-i18next](https://react.i18next.com/) for type-safe translations throughout the application
 - Components should access the translations via the `useTranslation` hook and all text content should be located in the `src/i18n/locales` translation files
-- When migrating components from the `/legacy` folder any text must be added to the translation files
 
 ### Accessibility
 - Leverage the react native accessibility APIs (https://reactnative.dev/docs/accessibility) to support assitive technologies

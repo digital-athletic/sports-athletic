@@ -34,7 +34,7 @@ export const CheckBox: FC<CheckBoxProps> = ({ checked, changed }) => {
       <Box
         width={iconSize}
         height={iconSize}
-        style={{ borderRadius: 3 }}
+        borderRadius="s"
         borderWidth={1}
         borderColor={borderColor}
         backgroundColor={backgroundColor}

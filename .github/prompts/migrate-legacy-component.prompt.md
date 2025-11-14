@@ -14,6 +14,7 @@ Requirements:
 
 Migration Guidelines:
 - Any static text must be added to the translation files
+- Images should include accessibility labels and the text added to the translation files
 - Any colors must be imported from the theme via the `useTheme` hook from `@src/theme/theme`
 - Use the `<Box />` component from `@src/theme/Box` instead of `<View />` for layout containers
 - Use `useResponsiveProp` from `@shopify/restyle` for responsive sizing based on screen size (phone/tablet/desktop breakpoints)

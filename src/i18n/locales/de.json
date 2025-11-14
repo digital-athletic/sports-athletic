@@ -10,6 +10,9 @@
     }
   },
   "common": {
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "altText": {
+      "coachFace": "Gesicht des Coaches"
+    }
   }
 }

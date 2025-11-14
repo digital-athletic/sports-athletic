@@ -6,10 +6,13 @@
     },
     "home": {
       "title": "Training Home",
-      "description": "Your personalized traning dashboard"
+      "description": "Your personalized training dashboard"
     }
   },
   "common": {
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "altText": {
+      "coachFace": "Coach face"
+    }
   }
 }

@@ -7,6 +7,9 @@ argument-hint: Provide the legacy component code to be migrated.
 
 Goal: Migrate a legacy React class component written in Flow / JS to a new functional component written in TypeScript (version 5.9.2) with hooks.
 
+Stop If Unreferenced:
+- Before making any changes, search the repository for references to the component name (imports and JSX usage) in `legacy/**/*.{js,jsx,ts,tsx}`. If zero references are found, immediately stop and return exactly: "Component not found in legacy code. Exiting." **Do not** create, edit, or delete any files in this case.
+
 Requirements:
 - The new component must use React hooks instead of class lifecycle methods.
 - Reusable logic should be extracted into custom hooks where appropriate.

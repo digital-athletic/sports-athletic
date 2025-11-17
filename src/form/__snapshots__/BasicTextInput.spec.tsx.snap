@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<BasicTextInput /> renders correctly 1`] = `
+<TextInput
+  onChangeText={[MockFunction]}
+  style={
+    [
+      {
+        "flex": 1,
+        "fontSize": 16,
+      },
+      {
+        "color": "#333333",
+        "paddingHorizontal": 15,
+      },
+      undefined,
+    ]
+  }
+  value="test value"
+/>
+`;

@@ -11,6 +11,12 @@
   },
   "common": {
     "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "choose": "Auswählen",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "selectedOne": "ausgewählt",
+    "selectedMultiple": "ausgewählt",
     "altText": {
       "coachFace": "Gesicht des Coaches"
     }

@@ -12,3 +12,4 @@ jest.mock("@react-native-async-storage/async-storage", () =>
 
 // Mock @expo/vector-icons to avoid async state updates in tests
 jest.mock("@expo/vector-icons/Ionicons", () => "Ionicons");
+jest.mock("@expo/vector-icons/FontAwesome", () => "FontAwesome");

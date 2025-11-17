@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Ionicon /> renders with all props 1`] = `
+<Ionicons
+  accessibilityLabel="search"
+  color="#00FF00"
+  name="search"
+  size={48}
+/>
+`;
+
+exports[`<Ionicon /> renders with custom color 1`] = `
+<Ionicons
+  accessibilityLabel="star"
+  color="#FF0000"
+  name="star"
+/>
+`;
+
+exports[`<Ionicon /> renders with custom size 1`] = `
+<Ionicons
+  accessibilityLabel="home"
+  name="home"
+  size={32}
+/>
+`;

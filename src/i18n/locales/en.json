@@ -11,6 +11,12 @@
   },
   "common": {
     "cancel": "Cancel",
+    "confirm": "Confirm",
+    "choose": "Choose",
+    "email": "E-Mail",
+    "password": "Password",
+    "selectedOne": "selected",
+    "selectedMultiple": "selected",
     "altText": {
       "coachFace": "Coach face"
     }

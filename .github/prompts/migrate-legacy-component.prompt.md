@@ -11,9 +11,7 @@ Requirements:
 - The new component must use React hooks instead of class lifecycle methods.
 - Reusable logic should be extracted into custom hooks where appropriate.
 - The new component must be fully typed with TypeScript, including props and state.
-
-Migration Guidelines:
-- Any static text must be added to the translation files
+- Any static text and missing translations must be added to the translation files
 - Images should include accessibility labels and the text added to the translation files
 - Any colors must be imported from the theme via the `useTheme` hook from `@src/theme/theme`
 - Use the `<Box />` component from `@src/theme/Box` instead of `<View />` for layout containers

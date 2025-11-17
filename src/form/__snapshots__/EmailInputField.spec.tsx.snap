@@ -1,0 +1,60 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<EmailInputField /> renders correctly 1`] = `
+<View
+  style={
+    [
+      {
+        "alignItems": "center",
+        "backgroundColor": "#E8E8E8",
+        "borderRadius": 8,
+        "flexDirection": "row",
+        "height": 56,
+      },
+    ]
+  }
+>
+  <View
+    style={
+      [
+        {
+          "alignItems": "center",
+          "backgroundColor": "#FAFAFA",
+          "borderBottomLeftRadius": 8,
+          "borderTopLeftRadius": 8,
+          "height": 56,
+          "justifyContent": "center",
+          "width": 56,
+        },
+      ]
+    }
+  >
+    <Ionicons
+      accessibilityLabel="email-icon"
+      color="#AAAAAA"
+      name="mail"
+      size={24}
+    />
+  </View>
+  <TextInput
+    autoCapitalize="none"
+    keyboardType="email-address"
+    onChangeText={[MockFunction]}
+    placeholder="E-Mail"
+    style={
+      [
+        {
+          "flex": 1,
+          "fontSize": 16,
+        },
+        {
+          "color": "#333333",
+          "paddingHorizontal": 15,
+        },
+        undefined,
+      ]
+    }
+    value=""
+  />
+</View>
+`;

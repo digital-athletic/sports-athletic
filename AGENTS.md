@@ -20,7 +20,7 @@ This file provides guidance to AI Agents for building high-quality React Native 
 - Implement proper component hierarchies with clear data flow
 
 ### Imports and exports
-- There should not be index files that only serve the purpose of reexporting other modules of the folder or its sub folders
+- There must not be index files that only serve the purpose of reexporting other modules of the folder or its sub folders
 - Prefer named imports over namespaces (e.g. `import { useState } from "react"` instead of using `React.useState`)
 - Import React types directly (e.g. `import { type FC } from "react"`) instead of using the namespace prefix (avoid `React.FC`)
 

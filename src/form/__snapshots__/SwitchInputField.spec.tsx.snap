@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<SwitchInputField /> renders correctly 1`] = `
+<View
+  style={
+    [
+      {
+        "padding": 20,
+      },
+    ]
+  }
+>
+  <View
+    style={
+      [
+        {
+          "alignItems": "center",
+          "flexDirection": "row",
+          "justifyContent": "flex-start",
+        },
+      ]
+    }
+  >
+    <RCTSwitch
+      accessibilityLabel="switch-input"
+      accessibilityRole="switch"
+      onChange={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      onTintColor="#C71B1B"
+      style={
+        {
+          "alignSelf": "flex-start",
+        }
+      }
+      thumbTintColor="#AAAAAA"
+      tintColor="#777777"
+      value={false}
+    />
+    <View
+      style={
+        [
+          {
+            "flex": 1,
+            "marginLeft": 15,
+          },
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#333333",
+              "fontSize": 16,
+            },
+          ]
+        }
+      >
+        Enable notifications
+      </Text>
+    </View>
+  </View>
+</View>
+`;

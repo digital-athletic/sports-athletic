@@ -1,9 +1,9 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { useResponsiveProp } from "@shopify/restyle";
 import { type FC } from "react";
 import { TouchableOpacity } from "react-native";
 import { Box } from "../theme/Box";
 import { useTheme } from "../theme/theme";
+import { Ionicon } from "./Ionicon";
 
 export type CheckBoxProps = {
   checked: boolean;
@@ -37,7 +37,7 @@ export const CheckBox: FC<CheckBoxProps> = ({ checked, changed }) => {
         alignItems="center"
       >
         {checked && (
-          <Ionicons
+          <Ionicon
             name="checkmark"
             size={iconSize}
             color={theme.colors.white}

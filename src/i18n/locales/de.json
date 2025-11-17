@@ -10,15 +10,15 @@
     }
   },
   "common": {
-    "cancel": "Abbrechen",
-    "confirm": "Bestätigen",
-    "choose": "Auswählen",
-    "email": "E-Mail",
-    "password": "Passwort",
-    "selectedOne": "ausgewählt",
-    "selectedMultiple": "ausgewählt",
     "altText": {
       "coachFace": "Gesicht des Coaches"
-    }
+    },
+    "cancel": "Abbrechen",
+    "choose": "Auswählen",
+    "confirm": "Bestätigen",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "selected": "{{count}} ausgewählt",
+    "ok": "OK"
   }
 }

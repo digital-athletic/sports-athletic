@@ -10,15 +10,15 @@
     }
   },
   "common": {
-    "cancel": "Cancel",
-    "confirm": "Confirm",
-    "choose": "Choose",
-    "email": "E-Mail",
-    "password": "Password",
-    "selectedOne": "selected",
-    "selectedMultiple": "selected",
     "altText": {
       "coachFace": "Coach face"
-    }
+    },
+    "cancel": "Cancel",
+    "choose": "Choose",
+    "confirm": "Confirm",
+    "email": "E-Mail",
+    "ok": "OK",
+    "password": "Password",
+    "selected": "{{count}} selected"
   }
 }

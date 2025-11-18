@@ -1005,7 +1005,7 @@ const SPORTS_SORTED = [
   "AMERICAN_FOOTBALL_SPORT",
   "RUGBY_SPORT",
   "OTHER_SPORT",
-];
+] as const;
 
 const SPORTS = {
   HANDBALL_SPORT: "HANDBALL_SPORT",
@@ -1017,7 +1017,7 @@ const SPORTS = {
   AMERICAN_FOOTBALL_SPORT: "AMERICAN_FOOTBALL_SPORT",
   RUGBY_SPORT: "RUGBY_SPORT",
   OTHER_SPORT: "OTHER_SPORT",
-};
+} as const;
 
 const SPORTS_IMAGES = {
   HANDBALL_SPORT: require("../../assets/img/sports/Handball.png"),

@@ -18,6 +18,16 @@
       "yes": "YES",
       "no": "NO",
       "coachImageAlt": "Coach Ingemar"
+    },
+    "sport": {
+      "title": "Sport",
+      "goOn": "Go On",
+      "sportSelected": "Selected",
+      "abortAnamnesisQuestion": "Abort questionnaire?",
+      "abortAnamnesisIncomplete": "Your profile is incomplete.",
+      "abortAnamnesisExplanation": "All your changes will be lost.",
+      "yes": "YES",
+      "no": "NO"
     }
   },
   "common": {
@@ -57,6 +67,17 @@
       "description": "Do as many repetitions as you can do with good technique.",
       "placeholder": "Repetitions"
     }
+  },
+  "sports": {
+    "HANDBALL_SPORT": "Handball",
+    "FOOTBALL_SPORT": "Football/Soccer",
+    "VOLLEYBALL_SPORT": "Volleyball",
+    "BASKETBALL_SPORT": "Basketball",
+    "ICE_HOCKEY_SPORT": "Ice Hockey",
+    "HOCKEY_SPORT": "Hockey",
+    "AMERICAN_FOOTBALL_SPORT": "American Football",
+    "RUGBY_SPORT": "Rugby",
+    "OTHER_SPORT": "Other Sports"
   },
   "muscles": {
     "AEUSSERE_OBERSCHENKELMUSKULATUR_LINKS": "left outer thigh",

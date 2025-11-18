@@ -18,6 +18,16 @@
       "yes": "JA",
       "no": "NEIN",
       "coachImageAlt": "Trainer Ingemar"
+    },
+    "sport": {
+      "title": "Sportart",
+      "goOn": "Weiter",
+      "sportSelected": "Ausgewählt",
+      "abortAnamnesisQuestion": "Fragebogen abbrechen?",
+      "abortAnamnesisIncomplete": "Dein Profil ist noch nicht vollständig.",
+      "abortAnamnesisExplanation": "Alle deine Änderungen gehen verloren.",
+      "yes": "JA",
+      "no": "NEIN"
     }
   },
   "common": {
@@ -57,6 +67,17 @@
       "description": "Mach so viele Wiederholungen, wie du mit sauberer Technik schaffst.",
       "placeholder": "Wiederholungen"
     }
+  },
+  "sports": {
+    "HANDBALL_SPORT": "Handball",
+    "FOOTBALL_SPORT": "Fußball",
+    "VOLLEYBALL_SPORT": "Volleyball",
+    "BASKETBALL_SPORT": "Basketball",
+    "ICE_HOCKEY_SPORT": "Eishockey",
+    "HOCKEY_SPORT": "Hockey",
+    "AMERICAN_FOOTBALL_SPORT": "American Football",
+    "RUGBY_SPORT": "Rugby",
+    "OTHER_SPORT": "Sonstige Sportarten"
   },
   "muscles": {
     "AEUSSERE_OBERSCHENKELMUSKULATUR_LINKS": "linker äußerer Oberschenkel",

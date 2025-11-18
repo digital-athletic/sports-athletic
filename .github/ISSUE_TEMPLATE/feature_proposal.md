@@ -22,8 +22,10 @@ assignees: ''
 
 ### Checklist
 
-<!-- List the tasks and action items necessary to complete this issue. -->
+<!-- 
+List the tasks and action items necessary to complete this issue.
 
 - [ ] Task 1
 - [ ] Task 2
 - [ ] ...
+-->

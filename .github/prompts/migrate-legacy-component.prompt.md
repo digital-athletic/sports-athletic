@@ -21,4 +21,5 @@ Requirements:
 - Use `useResponsiveProp` from `@shopify/restyle` for responsive sizing based on screen size (phone/tablet/desktop breakpoints)
 - Only expose props the original component had
 - Keep the component API minimal and match the original prop signature
+- Icons should be implemented using the existing <AwesomeIcon /> or <Ionicon /> components
 - Changes **must** adhere to the project's development standards as outlined in the AGENTS.md file

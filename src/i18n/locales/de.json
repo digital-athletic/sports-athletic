@@ -13,12 +13,14 @@
     "altText": {
       "coachFace": "Gesicht des Coaches"
     },
+    "back": "Zurück",
     "cancel": "Abbrechen",
     "choose": "Auswählen",
     "confirm": "Bestätigen",
     "email": "E-Mail",
     "password": "Passwort",
     "selected": "{{count}} ausgewählt",
-    "ok": "OK"
+    "ok": "OK",
+    "skip": "Überspringen"
   }
 }

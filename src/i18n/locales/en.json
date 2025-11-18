@@ -13,12 +13,14 @@
     "altText": {
       "coachFace": "Coach face"
     },
+    "back": "Back",
     "cancel": "Cancel",
     "choose": "Choose",
     "confirm": "Confirm",
     "email": "E-Mail",
     "ok": "OK",
     "password": "Password",
-    "selected": "{{count}} selected"
+    "selected": "{{count}} selected",
+    "skip": "skip"
   }
 }

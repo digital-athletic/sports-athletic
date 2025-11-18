@@ -13,7 +13,8 @@
     "altText": {
       "coachFace": "Coach face",
       "primaryMuscle": "Primary muscle: {{muscleName}}",
-      "secondaryMuscle": "Secondary muscle: {{muscleName}}"
+      "secondaryMuscle": "Secondary muscle: {{muscleName}}",
+      "muscleLink": "Select {{muscleName}} muscle"
     },
     "back": "Back",
     "cancel": "Cancel",

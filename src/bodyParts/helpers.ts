@@ -1,13 +1,16 @@
-import { BodyPartData, BodyPartStyle } from "./types";
+import { ViewStyle } from "react-native";
+import { BodyPartData } from "./types";
 
 export const linkDataToStyle = (
   linkData: BodyPartData,
   width: number,
   height: number
-): BodyPartStyle => {
-  let styleObject: BodyPartStyle = {
+) => {
+  let styleObject: ViewStyle = {
+    position: "absolute",
     width: linkData.width * width,
     height: linkData.height * height,
+    backgroundColor: "transparent",
   };
   if (linkData.left) {
     styleObject.left = linkData.left * width;

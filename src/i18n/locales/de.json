@@ -13,7 +13,8 @@
     "altText": {
       "coachFace": "Gesicht des Coaches",
       "primaryMuscle": "Primärer Muskel: {{muscleName}}",
-      "secondaryMuscle": "Sekundärer Muskel: {{muscleName}}"
+      "secondaryMuscle": "Sekundärer Muskel: {{muscleName}}",
+      "muscleLink": "{{muscleName}} Muskel auswählen"
     },
     "back": "Zurück",
     "cancel": "Abbrechen",

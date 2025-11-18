@@ -84,14 +84,14 @@ exports[`<DateInputField /> renders correctly for date type 1`] = `
           ]
         }
       >
-        Choose
+        01-01-1999
       </Text>
     </View>
   </View>,
   <DatePicker
     cancelText="Cancel"
     confirmText="Confirm"
-    date={2025-11-17T13:07:26.860Z}
+    date={1999-01-01T00:00:00.000Z}
     is24hourSource="locale"
     modal={true}
     mode="date"
@@ -186,14 +186,14 @@ exports[`<DateInputField /> renders correctly for time type 1`] = `
           ]
         }
       >
-        Choose
+        12:00
       </Text>
     </View>
   </View>,
   <DatePicker
     cancelText="Cancel"
     confirmText="Confirm"
-    date={2025-11-17T13:07:26.875Z}
+    date={2025-11-18T11:00:00.000Z}
     is24hourSource="locale"
     locale="de"
     modal={true}

@@ -15,12 +15,16 @@ describe("<DateInputField />", () => {
   });
 
   it("renders correctly for date type", () => {
-    const { toJSON } = render(<DateInputField {...defaultProps} />);
+    const { toJSON } = render(
+      <DateInputField {...defaultProps} dateTime="01-01-1999" />
+    );
     expect(toJSON()).toMatchSnapshot();
   });
 
   it("renders correctly for time type", () => {
-    const { toJSON } = render(<DateInputField {...defaultProps} type="time" />);
+    const { toJSON } = render(
+      <DateInputField {...defaultProps} dateTime="12:00" type="time" />
+    );
     expect(toJSON()).toMatchSnapshot();
   });
 
@@ -37,7 +41,9 @@ describe("<DateInputField />", () => {
   });
 
   it("displays choose text when no dateTime is provided", () => {
-    const { getByText } = render(<DateInputField {...defaultProps} />);
+    const { getByText } = render(
+      <DateInputField {...defaultProps} dateTime={undefined} />
+    );
     expect(getByText("Choose")).toBeTruthy();
   });
 
@@ -53,6 +59,13 @@ describe("<DateInputField />", () => {
       <DateInputField {...defaultProps} type="time" dateTime="14:30" />
     );
     expect(getByText("14:30")).toBeTruthy();
+  });
+
+  it("displays the provided time value", () => {
+    const { getByText } = render(
+      <DateInputField {...defaultProps} type="time" dateTime="12:00" />
+    );
+    expect(getByText("12:00")).toBeTruthy();
   });
 
   it("renders with empty value initially", () => {

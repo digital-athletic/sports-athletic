@@ -38,6 +38,8 @@ export const dateToHHMM = (date: Date): string => {
 export const HHMMToDate = (time: string): Date => {
   const date = new Date();
   const splitTime = time.split(":");
+  date.setMilliseconds(0);
+  date.setSeconds(0);
   date.setHours(parseInt(splitTime[0], 10), parseInt(splitTime[1], 10));
   return date;
 };

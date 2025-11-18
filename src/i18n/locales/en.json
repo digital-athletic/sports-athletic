@@ -7,6 +7,17 @@
     "home": {
       "title": "Training Home",
       "description": "Your personalized training dashboard"
+    },
+    "welcome": {
+      "title": "Personal data",
+      "greeting": "Hi!\nI am Ingemar. I am your personal athletics coach. Let's get started generating your personal workout plan right away.",
+      "letsGo": "Let's go",
+      "abortQuestion": "Abort editing profile?",
+      "abortIncomplete": "Your profile is incomplete.",
+      "abortExplanation": "All your changes will be lost.",
+      "yes": "YES",
+      "no": "NO",
+      "coachImageAlt": "Coach Ingemar"
     }
   },
   "common": {

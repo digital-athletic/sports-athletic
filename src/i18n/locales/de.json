@@ -7,6 +7,17 @@
     "home": {
       "title": "Trainings-Startseite",
       "description": "Dein personalisiertes Trainings-Dashboard"
+    },
+    "welcome": {
+      "title": "Persönliche Daten",
+      "greeting": "Hi!\nIch bin Ingemar, dein persönlicher Athletiktrainer. Lass uns gleich starten und deinen persönlichen Trainingsplan erstellen.",
+      "letsGo": "Los geht's",
+      "abortQuestion": "Bearbeitung abbrechen?",
+      "abortIncomplete": "Das Profil ist noch nicht vollständig.",
+      "abortExplanation": "Deine bisherigen Änderungen gehen verloren.",
+      "yes": "JA",
+      "no": "NEIN",
+      "coachImageAlt": "Trainer Ingemar"
     }
   },
   "common": {

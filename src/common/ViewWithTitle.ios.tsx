@@ -11,6 +11,7 @@ import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Box } from "../theme/Box";
 import { ThemeColor, useTheme } from "../theme/theme";
 import { Ionicon } from "./Ionicon";
@@ -66,84 +67,90 @@ export const ViewWithTitle: FC<PropsWithChildren<Props>> = ({
   const headerHeight = hideTitle ? 0 : HEADER_HEIGHT;
 
   return (
-    <Box
-      flex={1}
-      alignItems="stretch"
-      backgroundColor={containerBackgroundColor}
-    >
-      <StatusBar
-        barStyle="dark-content"
-        backgroundColor={theme.colors.lightGrey1}
-        translucent={false}
-      />
-      <Box flexDirection="row" height={headerHeight}>
-        <Animated.View
-          style={[
-            styles.titleContainer,
-            {
-              height: headerHeight,
-              borderBottomColor,
-            },
-          ]}
-        >
+    <SafeAreaView style={styles.safeArea}>
+      <Box
+        flex={1}
+        alignItems="stretch"
+        backgroundColor={containerBackgroundColor}
+      >
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor={theme.colors.lightGrey1}
+          translucent={false}
+        />
+        <Box flexDirection="row" height={headerHeight}>
           <Animated.View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              height: headerHeight,
-            }}
+            style={[
+              styles.titleContainer,
+              {
+                height: headerHeight,
+                borderBottomColor,
+              },
+            ]}
           >
-            <Text
-              style={[
-                styles.title,
-                {
-                  color: theme.colors.darkGrey3,
-                },
-              ]}
+            <Animated.View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                height: headerHeight,
+              }}
             >
-              {titleText}
-            </Text>
+              <Text
+                style={[
+                  styles.title,
+                  {
+                    color: theme.colors.darkGrey3,
+                  },
+                ]}
+              >
+                {titleText}
+              </Text>
+            </Animated.View>
           </Animated.View>
-        </Animated.View>
-        <TouchableOpacity
-          style={styles.backContainer}
-          onPress={onBack}
-          accessibilityRole="button"
-          accessibilityLabel={t("common.back")}
-        >
-          <Ionicon name="arrow-back" size={30} color={theme.colors.black} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.closeContainer}
-          onPress={onClose}
-          accessibilityRole="button"
-          accessibilityLabel={t("common.skip")}
-        >
-          <Text
-            style={{
-              ...styles.skip,
-              marginLeft: theme.spacing.m,
-              color: theme.colors.darkGrey1,
-            }}
-          >
-            {t("common.skip")}
-          </Text>
-        </TouchableOpacity>
+          {!!onBack && (
+            <TouchableOpacity
+              style={styles.backContainer}
+              onPress={onBack}
+              accessibilityRole="button"
+              accessibilityLabel={t("common.back")}
+            >
+              <Ionicon name="arrow-back" size={30} color={theme.colors.black} />
+            </TouchableOpacity>
+          )}
+          {!!onClose && (
+            <TouchableOpacity
+              style={styles.closeContainer}
+              onPress={onClose}
+              accessibilityRole="button"
+              accessibilityLabel={t("common.skip")}
+            >
+              <Text
+                style={{
+                  ...styles.skip,
+                  marginLeft: theme.spacing.m,
+                  color: theme.colors.darkGrey1,
+                }}
+              >
+                {t("common.skip")}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </Box>
+        <Box flex={1} backgroundColor={contentAreaBackgroundColor}>
+          {fixed ? (
+            children
+          ) : (
+            <Animated.ScrollView
+              showsVerticalScrollIndicator={false}
+              scrollEventThrottle={16}
+              onScroll={scrollHandler}
+            >
+              <Box flex={1}>{children}</Box>
+            </Animated.ScrollView>
+          )}
+        </Box>
       </Box>
-      <Box flex={1} backgroundColor={contentAreaBackgroundColor}>
-        {fixed ? (
-          children
-        ) : (
-          <Animated.ScrollView
-            showsVerticalScrollIndicator={false}
-            scrollEventThrottle={16}
-            onScroll={scrollHandler}
-          >
-            <Box flex={1}>{children}</Box>
-          </Animated.ScrollView>
-        )}
-      </Box>
-    </Box>
+    </SafeAreaView>
   );
 };
 
@@ -159,24 +166,26 @@ const styles = StyleSheet.create({
   backContainer: {
     ...baseButton,
     left: 0,
-    height: 44,
+    height: "100%",
     width: 54,
     overflow: "hidden",
   },
   closeContainer: {
     ...baseButton,
     right: 16,
-    height: 54,
-    justifyContent: "flex-end",
+    height: "100%",
+    justifyContent: "center",
     alignItems: "flex-start",
     overflow: "hidden",
+  },
+  safeArea: {
+    flex: 1,
   },
   skip: {
     fontWeight: "600",
     fontFamily: "System",
     fontSize: 15,
     lineHeight: 24,
-    marginBottom: 3,
   },
   titleContainer: {
     flex: 1,

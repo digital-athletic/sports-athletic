@@ -11,7 +11,9 @@
   },
   "common": {
     "altText": {
-      "coachFace": "Gesicht des Coaches"
+      "coachFace": "Gesicht des Coaches",
+      "primaryMuscle": "Primärer Muskel: {{muscleName}}",
+      "secondaryMuscle": "Sekundärer Muskel: {{muscleName}}"
     },
     "back": "Zurück",
     "cancel": "Abbrechen",

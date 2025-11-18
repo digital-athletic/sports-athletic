@@ -1,12 +1,12 @@
 import { createKey, linkDataToStyle } from "@/bodyParts/helpers";
-import { type BodyPartData } from "@/bodyParts/types";
+import { MuscleType, type BodyPartData } from "@/bodyParts/types";
 import { Box } from "@/theme/Box";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, TouchableWithoutFeedback } from "react-native";
 
 export type TagLinksProps = {
-  onMuscleLinkClick: (muscleName: string) => void;
+  onMuscleLinkClick: (muscleName: MuscleType) => void;
   width: number;
   height: number;
   availableTags: BodyPartData[];

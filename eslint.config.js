@@ -8,5 +8,8 @@ module.exports = defineConfig([
   eslintConfigPrettier,
   {
     ignores: ["dist/*", "flow/*", "legacy/*"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
   },
 ]);

@@ -7,13 +7,13 @@ import { Image, StyleSheet } from "react-native";
 
 const SECONDARY_MUSCLE_OPACITY = 0.4;
 
-interface ActiveTagsProps {
+export type ActiveTagsProps = {
   tags: string[];
   secondaryTags: string[];
   width: number;
   height: number;
   availableTags: BodyPartData[];
-}
+};
 
 export const ActiveTags: FC<ActiveTagsProps> = ({
   tags,

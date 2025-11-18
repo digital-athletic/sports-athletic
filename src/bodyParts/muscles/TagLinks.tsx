@@ -5,14 +5,14 @@ import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, TouchableWithoutFeedback } from "react-native";
 
-type Props = {
+export type TagLinksProps = {
   onMuscleLinkClick: (muscleName: string) => void;
   width: number;
   height: number;
   availableTags: BodyPartData[];
 };
 
-export const TagLinks: FC<Props> = ({
+export const TagLinks: FC<TagLinksProps> = ({
   onMuscleLinkClick,
   width,
   height,

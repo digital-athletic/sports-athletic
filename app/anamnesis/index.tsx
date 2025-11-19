@@ -1,3 +1,4 @@
+import { SkipHeader } from "@/common/SkipHeader";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { useTheme } from "@/theme/theme";
@@ -6,7 +7,6 @@ import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, BackHandler, Image, StyleSheet } from "react-native";
 import { SpeechBubble } from "../../src/common/SpeechBubble";
-import { ViewWithTitle } from "../../src/common/ViewWithTitle";
 import { useUserProfileStore } from "../../src/store/userProfileStore";
 
 export default function WelcomeScreen() {
@@ -24,7 +24,7 @@ export default function WelcomeScreen() {
     return () => backHandler.remove();
   }, []);
 
-  const handleClose = useCallback(() => {
+  const onSkip = useCallback(() => {
     const message = anamnesisCompleted
       ? t("screens.welcome.abortExplanation")
       : t("screens.welcome.abortIncomplete");
@@ -53,40 +53,33 @@ export default function WelcomeScreen() {
 
   return (
     <>
-      <Stack.Screen />
-      <ViewWithTitle
-        title={t("screens.welcome.title")}
-        fixed
-        onClose={handleClose}
-        backgroundColor="lightGrey1"
+      <Stack.Screen
+        options={{
+          title: t("screens.welcome.title"),
+          headerRight: () => <SkipHeader onSkip={onSkip} />,
+        }}
+      />
+      <Box flex={1} padding="l">
+        <SpeechBubble text={t("screens.welcome.greeting")} centered />
+        <Box flex={3} width="100%" justifyContent="center" alignItems="center">
+          <Image
+            source={require("../../assets/img/coach/welcome/trainer.png")}
+            resizeMode="contain"
+            style={styles.trainer}
+            accessibilityLabel={t("screens.welcome.coachImageAlt")}
+          />
+        </Box>
+      </Box>
+      <Box
+        position="absolute"
+        bottom={spacing.l}
+        left={spacing.l}
+        right={spacing.l}
       >
-        <Box flex={1} padding="l">
-          <SpeechBubble text={t("screens.welcome.greeting")} centered />
-          <Box
-            flex={3}
-            width="100%"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Image
-              source={require("../../assets/img/coach/welcome/trainer.png")}
-              resizeMode="contain"
-              style={styles.trainer}
-              accessibilityLabel={t("screens.welcome.coachImageAlt")}
-            />
-          </Box>
-        </Box>
-        <Box
-          position="absolute"
-          bottom={spacing.l}
-          left={spacing.l}
-          right={spacing.l}
-        >
-          <Button onPress={handleStartAnamnesis}>
-            {t("screens.welcome.letsGo")}
-          </Button>
-        </Box>
-      </ViewWithTitle>
+        <Button onPress={handleStartAnamnesis}>
+          {t("screens.welcome.letsGo")}
+        </Button>
+      </Box>
     </>
   );
 }

@@ -28,6 +28,24 @@
       "abortAnamnesisExplanation": "All your changes will be lost.",
       "yes": "YES",
       "no": "NO"
+    },
+    "userProfile": {
+      "title": "Personal Data",
+      "goOn": "Go On",
+      "abortAnamnesisQuestion": "Abort questionnaire?",
+      "abortAnamnesisIncomplete": "Your profile is incomplete.",
+      "abortAnamnesisExplanation": "All your changes will be lost.",
+      "yes": "YES",
+      "no": "NO",
+      "usernameTitle": "Name",
+      "usernameDescription": "How should we call you?",
+      "usernamePlaceholder": "Enter your name",
+      "genderTitle": "Gender",
+      "genderDescription": "Please select your gender",
+      "male": "Male",
+      "female": "Female",
+      "birthdayTitle": "Birthday",
+      "birthdayDescription": "When were you born?"
     }
   },
   "common": {

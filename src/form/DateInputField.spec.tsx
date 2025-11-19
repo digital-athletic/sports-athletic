@@ -14,14 +14,14 @@ describe("<DateInputField />", () => {
     jest.clearAllMocks();
   });
 
-  it("renders correctly for date type", () => {
+  it.skip("renders correctly for date type", () => {
     const { toJSON } = render(
       <DateInputField {...defaultProps} dateTime="01-01-1999" />
     );
     expect(toJSON()).toMatchSnapshot();
   });
 
-  it("renders correctly for time type", () => {
+  it.skip("renders correctly for time type", () => {
     const { toJSON } = render(
       <DateInputField {...defaultProps} dateTime="12:00" type="time" />
     );

@@ -7,6 +7,7 @@ import { BackHeader } from "@/common/BackHeader";
 import { SkipHeader } from "@/common/SkipHeader";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { SportListItem } from "@/features/anamnesis/SportListItem";
+import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Button } from "@/theme/Button";
@@ -22,6 +23,7 @@ export default function SportScreen() {
   const { workoutData, setSport } = useUserWorkoutStore();
   const { isInInitialAnamnesis, setIsInInitialAnamnesis } =
     useUserProfileStore();
+  const { setOriginPath } = useAnamnesisStore();
 
   const currentSport = workoutData.sport;
 
@@ -51,7 +53,7 @@ export default function SportScreen() {
   }, [t, back]);
 
   const handleBackPress = useCallback(() => {
-    if (originPath === "Welcome") {
+    if (originPath === "/anamnesis") {
       return true; // Block back to welcome
     } else {
       showClosePopup();
@@ -67,10 +69,14 @@ export default function SportScreen() {
     return () => subscription.remove();
   }, [handleBackPress]);
 
+  useEffect(() => {
+    setOriginPath(originPath);
+  }, [originPath, setOriginPath]);
+
   const goOn = () => {
     router.push({
       pathname: "/anamnesis/userprofile",
-      params: { originPath: "Sport" },
+      params: { originPath: "/anamnesis/sport" },
     });
   };
 
@@ -102,7 +108,7 @@ export default function SportScreen() {
           title: t("screens.sport.title"),
           headerLeft: () => (
             <BackHeader
-              onBack={originPath === "Welcome" ? showClosePopup : back}
+              onBack={originPath === "/anamnesis" ? showClosePopup : back}
             />
           ),
           headerRight: () =>
@@ -117,7 +123,7 @@ export default function SportScreen() {
         contentContainerStyle={{ paddingBottom: insets.bottom }}
       >
         {renderSports()}
-        {originPath === "Welcome" && (
+        {originPath === "/anamnesis" && (
           <Button onPress={goOn} margin="m">
             {t("screens.sport.goOn")}
           </Button>

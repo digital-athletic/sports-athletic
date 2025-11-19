@@ -52,7 +52,7 @@ export default function WelcomeScreen() {
   const handleStartAnamnesis = useCallback(() => {
     router.push({
       pathname: "/anamnesis/sport",
-      params: { originPath: "Welcome" },
+      params: { originPath: "/anamnesis" },
     });
   }, []);
 

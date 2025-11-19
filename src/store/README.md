@@ -124,14 +124,17 @@ The application uses **9 Zustand stores** to manage global state, replacing the 
 3. **userWorkoutStore** - Workout configuration and training plans
 4. **userSettingsStore** - App preferences and review state
 
+#### Anamnesis
+5. **anamnesisStore** - Anamnesis questionnaire state, answers, and progress tracking
+
 #### Training & Exercises
-5. **trainingScheduleStore** - Weekly training schedule management
-6. **exercisesStore** - Exercise database with selectors
-7. **skillTreesStore** - Skill progression trees
+6. **trainingScheduleStore** - Weekly training schedule management
+7. **exercisesStore** - Exercise database with selectors
+8. **skillTreesStore** - Skill progression trees
 
 #### Progress & History
-8. **exerciseProgressStore** - User progress, XP, and exercise performance data
-9. **completedWorkoutsStore** - Workout history and statistics
+9. **exerciseProgressStore** - User progress, XP, and exercise performance data
+10. **completedWorkoutsStore** - Workout history and statistics
 
 ## Usage Examples
 
@@ -238,6 +241,19 @@ Workout configuration and training plans.
 App preferences and settings.
 - `reviewStatus: ReviewStatusType`
 - `anonymisedDataUse: boolean`
+
+### anamnesisStore
+Anamnesis questionnaire state and answers.
+- `questions: AnamnesisQuestionGroupType[]` - Question groups with ordering
+- `values: { [path: string]: any }` - User answers by data field path
+- `tags: { [tag: string]: string[] }` - Tag-based answers
+- `originPath: string | null` - Navigation origin tracking
+- `isLoading: boolean` - Questions loading state
+- `loadQuestions()` - Load anamnesis questions from service
+- `setValue(path, value)` - Save single answer
+- `setTag(tag, values)` - Save tag-based answer
+- `fillAnamnesisData(tags, workoutData)` - Pre-fill from existing data
+- `resetAnamnesis()` - Clear all data
 
 ### trainingScheduleStore
 Weekly training schedule.

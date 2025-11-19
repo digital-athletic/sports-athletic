@@ -28,6 +28,24 @@
       "abortAnamnesisExplanation": "Alle deine Änderungen gehen verloren.",
       "yes": "JA",
       "no": "NEIN"
+    },
+    "userProfile": {
+      "title": "Persönliche Daten",
+      "goOn": "Weiter",
+      "abortAnamnesisQuestion": "Fragebogen abbrechen?",
+      "abortAnamnesisIncomplete": "Dein Profil ist noch nicht vollständig.",
+      "abortAnamnesisExplanation": "Alle deine Änderungen gehen verloren.",
+      "yes": "JA",
+      "no": "NEIN",
+      "usernameTitle": "Name",
+      "usernameDescription": "Wie sollen wir dich nennen?",
+      "usernamePlaceholder": "Gib deinen Namen ein",
+      "genderTitle": "Geschlecht",
+      "genderDescription": "Bitte wähle dein Geschlecht",
+      "male": "Mann",
+      "female": "Frau",
+      "birthdayTitle": "Geburtstag",
+      "birthdayDescription": "Wann wurdest du geboren?"
     }
   },
   "common": {

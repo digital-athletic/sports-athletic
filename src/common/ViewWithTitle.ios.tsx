@@ -12,7 +12,7 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import { Box } from "../theme/Box";
-import { useTheme } from "../theme/theme";
+import { ThemeColor, useTheme } from "../theme/theme";
 import { Ionicon } from "./Ionicon";
 
 const HEADER_HEIGHT = 44;
@@ -27,11 +27,11 @@ const truncateTitle = (text: string, maxLength: number): string => {
 type Props = {
   title: string;
   fixed: boolean;
-  backgroundColor?: string;
+  backgroundColor?: ThemeColor;
   onBack?: () => void;
   onClose?: () => void;
   hideTitle?: boolean;
-  innerBackgroundColor?: string;
+  innerBackgroundColor?: ThemeColor;
 };
 
 /**

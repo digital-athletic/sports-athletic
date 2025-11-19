@@ -1,5 +1,6 @@
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
+import { ThemeColor } from "@/theme/theme";
 import React, { type FC } from "react";
 
 export type SectionWeekBarsProps = {
@@ -27,7 +28,7 @@ export const SectionWeekBars: FC<SectionWeekBarsProps> = ({
     activeWeek: number,
     sectionIndex: number,
     sectionWeeksCount: number
-  ): string => {
+  ): ThemeColor => {
     // Active week
     if (weekIndex === activeWeek) {
       return "primary";

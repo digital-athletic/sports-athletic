@@ -1,6 +1,4 @@
-import { KnownBaseTheme } from "@shopify/restyle";
-
-export const colors: KnownBaseTheme["colors"] = {
+export const colors = {
   // Primary colors
   primary: "#C71B1B",
   secondary: "#2ebcb8",

@@ -3,18 +3,21 @@ import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, BackHandler } from "react-native";
 
+import { BackHeader } from "@/common/BackHeader";
+import { SkipHeader } from "@/common/SkipHeader";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { SportListItem } from "@/features/anamnesis/SportListItem";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
-import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
-import { ViewWithTitle } from "../../src/common/ViewWithTitle";
+import { ScrollBox } from "@/theme/ScrollBox";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function SportScreen() {
   const { t } = useTranslation();
   const params = useLocalSearchParams<{ originPath?: string }>();
   const originPath = params.originPath;
+  const insets = useSafeAreaInsets();
 
   const { workoutData, setSport } = useUserWorkoutStore();
   const { isInInitialAnamnesis, setIsInInitialAnamnesis } =
@@ -94,22 +97,32 @@ export default function SportScreen() {
 
   return (
     <>
-      <Stack.Screen />
-      <Box flex={1} backgroundColor="lightGrey1">
-        <Box flex={10}>
-          <ViewWithTitle
-            title={t("screens.sport.title")}
-            fixed={false}
-            onBack={originPath === "Welcome" ? showClosePopup : back}
-            onClose={originPath === "Welcome" ? showClosePopup : undefined}
-          >
-            <Box>{renderSports()}</Box>
-          </ViewWithTitle>
-        </Box>
+      <Stack.Screen
+        options={{
+          title: t("screens.sport.title"),
+          headerLeft: () => (
+            <BackHeader
+              onBack={originPath === "Welcome" ? showClosePopup : back}
+            />
+          ),
+          headerRight: () =>
+            originPath === "Welcome" ? (
+              <SkipHeader onSkip={showClosePopup} />
+            ) : null,
+        }}
+      />
+      <ScrollBox
+        flex={1}
+        backgroundColor="lightGrey1"
+        contentContainerStyle={{ paddingBottom: insets.bottom }}
+      >
+        {renderSports()}
         {originPath === "Welcome" && (
-          <Button onPress={goOn}>{t("screens.sport.goOn")}</Button>
+          <Button onPress={goOn} margin="m">
+            {t("screens.sport.goOn")}
+          </Button>
         )}
-      </Box>
+      </ScrollBox>
     </>
   );
 }

@@ -3,6 +3,7 @@ import { Ionicon, type IoniconName } from "@/common/Ionicon";
 import { Box } from "@/theme/Box";
 import { Button, ButtonProps } from "@/theme/Button";
 import { Text } from "@/theme/Text";
+import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, type ImageSourcePropType } from "react-native";
@@ -31,6 +32,7 @@ export const ListItem: FC<ListItemProps> = ({
   onPress,
 }) => {
   const { t } = useTranslation();
+  const { colors } = useTheme();
 
   const renderIcon = () => {
     if (iconName) {
@@ -46,7 +48,7 @@ export const ListItem: FC<ListItemProps> = ({
           <Ionicon
             name={iconName}
             size={24}
-            color="#fff"
+            color={colors.white}
             accessibilityLabel={t("common.altText.icon", { title })}
           />
         </Box>
@@ -73,7 +75,7 @@ export const ListItem: FC<ListItemProps> = ({
           <AwesomeIcon
             name={awesomeIconName || "home"}
             size={24}
-            color="#fff"
+            color={colors.white}
             accessibilityLabel={t("common.altText.icon", { title })}
           />
         </Box>

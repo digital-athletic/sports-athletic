@@ -28,7 +28,15 @@
     "password": "Passwort",
     "selected": "{{count}} ausgewählt",
     "ok": "OK",
-    "skip": "Überspringen"
+    "skip": "Überspringen",
+    "save": "Speichern"
+  },
+  "training": {
+    "powerTest": {
+      "title": "Krafttest",
+      "description": "Mach so viele Wiederholungen, wie du mit sauberer Technik schaffst.",
+      "placeholder": "Wiederholungen"
+    }
   },
   "muscles": {
     "AEUSSERE_OBERSCHENKELMUSKULATUR_LINKS": "linker äußerer Oberschenkel",

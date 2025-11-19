@@ -43,7 +43,7 @@ export const Button: FC<ButtonProps> = ({
   const textVariant = variant === "secondary" ? "buttonSecondary" : "button";
 
   return (
-    <ButtonContainer variant={variant} {...props}>
+    <ButtonContainer variant={variant} role="button" {...props}>
       <Text variant={textVariant} textAlign="center">
         {children}
       </Text>

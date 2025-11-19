@@ -27,8 +27,16 @@
     "email": "E-Mail",
     "ok": "OK",
     "password": "Password",
+    "save": "Save",
     "selected": "{{count}} selected",
     "skip": "skip"
+  },
+  "training": {
+    "powerTest": {
+      "title": "Power test",
+      "description": "Do as many repetitions as you can do with good technique.",
+      "placeholder": "Repetitions"
+    }
   },
   "muscles": {
     "AEUSSERE_OBERSCHENKELMUSKULATUR_LINKS": "left outer thigh",

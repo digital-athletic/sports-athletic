@@ -9,13 +9,13 @@ import { Stack } from "expo-router";
 export default function AnamnesisLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" />
-      <Stack.Screen name="sport" />
+      {/* <Stack.Screen name="index" /> */}
+      {/* <Stack.Screen name="sport" />
       <Stack.Screen name="userprofile" />
       <Stack.Screen name="anamnesis" />
       <Stack.Screen name="training-days" />
       <Stack.Screen name="season-phase" />
-      <Stack.Screen name="generating" />
+      <Stack.Screen name="generating" /> */}
     </Stack>
   );
 }

@@ -4,8 +4,9 @@ import { ListItem, ListItemProps } from "./ListItem";
 
 describe("<ListItem />", () => {
   const defaultProps: ListItemProps = {
-    title: "Test personas",
-    iconName: "help-circle",
+    title: "My Equipment",
+    navPath: "/anamnesis/sport",
+    iconName: "fitness",
     iconBackground: "primary",
   };
 
@@ -20,7 +21,7 @@ describe("<ListItem />", () => {
 
   it("renders with Ionicon when iconName provided", () => {
     const { getByLabelText } = render(<ListItem {...defaultProps} />);
-    const icon = getByLabelText("Test personas icon");
+    const icon = getByLabelText("My Equipment icon");
     expect(icon).toBeTruthy();
   });
 
@@ -32,7 +33,7 @@ describe("<ListItem />", () => {
         awesomeIconName="id-card"
       />
     );
-    const icon = getByLabelText("Test personas icon");
+    const icon = getByLabelText("My Equipment icon");
     expect(icon).toBeTruthy();
   });
 
@@ -44,7 +45,7 @@ describe("<ListItem />", () => {
         picPath={{ uri: "https://example.com/image.png" }}
       />
     );
-    const image = getByLabelText("Test personas image");
+    const image = getByLabelText("My Equipment image");
     expect(image).toBeTruthy();
   });
 });

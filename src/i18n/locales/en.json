@@ -13,6 +13,8 @@
     "altText": {
       "coachFace": "Coach face",
       "hintIcon": "Hint icon",
+      "icon": "{{title}} icon",
+      "image": "{{title}} image",
       "muscleLink": "Select {{muscleName}} muscle",
       "primaryMuscle": "Primary muscle: {{muscleName}}",
       "secondaryMuscle": "Secondary muscle: {{muscleName}}",
@@ -33,6 +35,10 @@
     "save": "Save",
     "selected": "{{count}} selected",
     "skip": "skip"
+  },
+  "subscription": {
+    "expired": "Subscription expired",
+    "chooseSubscriptionToStart": "Choose a subscription to start your training"
   },
   "training": {
     "powerTest": {

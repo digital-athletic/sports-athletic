@@ -17,7 +17,7 @@ const ButtonContainer = createRestyleComponent<
   Theme
 >([createVariant({ themeKey: "buttonVariants" }), spacing], Pressable);
 
-type ButtonProps = PropsWithChildren<{
+export type ButtonProps = PropsWithChildren<{
   variant?: "primary" | "secondary" | "success" | "quickAction";
 }> &
   SpacingProps<Theme> &

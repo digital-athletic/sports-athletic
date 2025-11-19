@@ -6,6 +6,7 @@ import { router, Stack } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, BackHandler, Image, StyleSheet } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SpeechBubble } from "../../src/common/SpeechBubble";
 import { useUserProfileStore } from "../../src/store/userProfileStore";
 
@@ -14,6 +15,7 @@ export default function WelcomeScreen() {
   const { spacing } = useTheme();
   const { isInInitialAnamnesis, anamnesisCompleted, setIsInInitialAnamnesis } =
     useUserProfileStore();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -59,7 +61,7 @@ export default function WelcomeScreen() {
           headerRight: () => <SkipHeader onSkip={onSkip} />,
         }}
       />
-      <Box flex={1} padding="l">
+      <Box flex={1} padding="l" style={{ paddingBottom: insets.bottom }}>
         <SpeechBubble text={t("screens.welcome.greeting")} centered />
         <Box flex={3} width="100%" justifyContent="center" alignItems="center">
           <Image
@@ -75,6 +77,7 @@ export default function WelcomeScreen() {
         bottom={spacing.l}
         left={spacing.l}
         right={spacing.l}
+        style={{ paddingBottom: insets.bottom }}
       >
         <Button onPress={handleStartAnamnesis}>
           {t("screens.welcome.letsGo")}

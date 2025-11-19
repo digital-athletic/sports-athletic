@@ -50,7 +50,10 @@ export default function WelcomeScreen() {
   }, [anamnesisCompleted, isInInitialAnamnesis, setIsInInitialAnamnesis, t]);
 
   const handleStartAnamnesis = useCallback(() => {
-    router.push("/anamnesis/sport");
+    router.push({
+      pathname: "/anamnesis/sport",
+      params: { originPath: "Welcome" },
+    });
   }, []);
 
   return (

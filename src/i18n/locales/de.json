@@ -12,9 +12,11 @@
   "common": {
     "altText": {
       "coachFace": "Gesicht des Coaches",
+      "hintIcon": "Hinweis-Symbol",
+      "muscleLink": "{{muscleName}} Muskel auswählen",
       "primaryMuscle": "Primärer Muskel: {{muscleName}}",
       "secondaryMuscle": "Sekundärer Muskel: {{muscleName}}",
-      "muscleLink": "{{muscleName}} Muskel auswählen"
+      "warningIcon": "Warnsymbol"
     },
     "back": "Zurück",
     "bodyParts": {

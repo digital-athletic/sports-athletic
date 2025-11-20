@@ -9,7 +9,10 @@ interface EmailInputFieldProps {
   email: string;
   onChange: (value: string) => void;
   onFocus?: () => void;
+  onSubmitEditing?: () => void;
 }
+
+const HEIGHT = 56;
 
 /**
  * Email input field with mail icon
@@ -18,6 +21,7 @@ export const EmailInputField: FC<EmailInputFieldProps> = ({
   email,
   onChange,
   onFocus,
+  onSubmitEditing,
 }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -28,11 +32,11 @@ export const EmailInputField: FC<EmailInputFieldProps> = ({
       alignItems="center"
       backgroundColor="lightGrey2"
       borderRadius="m"
-      height={56}
+      height={HEIGHT}
     >
       <Box
-        width={56}
-        height={56}
+        width={HEIGHT}
+        height={HEIGHT}
         justifyContent="center"
         alignItems="center"
         backgroundColor="lightGrey1"
@@ -53,6 +57,8 @@ export const EmailInputField: FC<EmailInputFieldProps> = ({
         autoCapitalize="none"
         value={email}
         onFocus={onFocus}
+        onSubmitEditing={onSubmitEditing}
+        style={{ height: HEIGHT }}
       />
     </Box>
   );

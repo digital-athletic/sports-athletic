@@ -1,9 +1,11 @@
+import { useAuthStore } from "@/store/authStore";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Link } from "expo-router";
-import { ScrollView } from "react-native";
+import { Link, useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
+import { Alert, ScrollView, TouchableOpacity } from "react-native";
 
 /**
  * More/Profile Menu Screen
@@ -13,6 +15,29 @@ import { ScrollView } from "react-native";
  */
 export default function MoreScreen() {
   const { colors } = useTheme();
+  const { clearAuth } = useAuthStore();
+  const router = useRouter();
+  const { t } = useTranslation();
+
+  const handleLogout = () => {
+    Alert.alert(
+      t("onboarding.logoutQuestionTitle"),
+      t("onboarding.logoutQuestionMessage"),
+      [
+        {
+          text: t("onboarding.yesCaps"),
+          onPress: () => {
+            clearAuth();
+            router.replace("/onboarding");
+          },
+        },
+        {
+          text: t("onboarding.noCaps"),
+        },
+      ]
+    );
+  };
+
   const menuItems = [
     { title: "Profile", icon: "person-outline", route: "/profile/profile" },
     { title: "Settings", icon: "settings-outline", route: "/profile/settings" },
@@ -101,6 +126,41 @@ export default function MoreScreen() {
               </Box>
             </Link>
           ))}
+        </Box>
+
+        <Box
+          backgroundColor="white"
+          marginTop="l"
+          borderTopWidth={1}
+          borderBottomWidth={1}
+          borderColor="lightGrey2"
+        >
+          <TouchableOpacity onPress={handleLogout}>
+            <Box
+              flexDirection="row"
+              alignItems="center"
+              justifyContent="center"
+              padding="m"
+              style={{ height: 64 }}
+            >
+              <Box
+                alignItems="center"
+                justifyContent="center"
+                marginRight="m"
+                style={{
+                  height: 40,
+                  width: 40,
+                  borderRadius: 20,
+                  backgroundColor: colors.darkGrey1,
+                }}
+              >
+                <Ionicons name="exit-outline" size={24} color="#fff" />
+              </Box>
+              <Text variant="body" style={{ fontSize: 18 }}>
+                {t("onboarding.logoutButton")}
+              </Text>
+            </Box>
+          </TouchableOpacity>
         </Box>
       </Box>
     </ScrollView>

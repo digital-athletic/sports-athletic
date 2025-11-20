@@ -1,4 +1,37 @@
 {
+  "common": {
+    "altText": {
+      "coachFace": "Gesicht des Coaches",
+      "primaryMuscle": "Primärer Muskel: {{muscleName}}",
+      "secondaryMuscle": "Sekundärer Muskel: {{muscleName}}",
+      "muscleLink": "{{muscleName}} Muskel auswählen",
+      "hintIcon": "Hinweis-Symbol",
+      "icon": "{{title}}-Symbol",
+      "image": "{{title}}-Bild",
+      "warningIcon": "Warnsymbol"
+    },
+    "back": "Zurück",
+    "bodyParts": {
+      "selectHurtingParts": "Bitte wählen Sie die Bereiche, die Ihnen weh tun",
+      "whereAreAchingMuscles": "Wo sind die schmerzenden Muskeln?"
+    },
+    "cancel": "Abbrechen",
+    "choose": "Auswählen",
+    "close": "Schließen",
+    "comingSoon": "Demnächst verfügbar",
+    "confirm": "Bestätigen",
+    "email": "E-Mail",
+    "goOn": "Weiter",
+    "next": "Weiter",
+    "no": "NEIN",
+    "ok": "OK",
+    "password": "Passwort",
+    "save": "Speichern",
+    "saving": "Speichern ...",
+    "selected": "{{count}} ausgewählt",
+    "skip": "Überspringen",
+    "yes": "JA"
+  },
   "screens": {
     "start": {
       "title": "Navigationsdemo",
@@ -41,39 +74,19 @@
       "usernameDescription": "Wie sollen wir dich nennen?",
       "usernamePlaceholder": "Gib deinen Namen ein",
       "genderTitle": "Geschlecht",
-      "genderDescription": "Bitte wähle dein Geschlecht",
-      "male": "Mann",
-      "female": "Frau",
+      "genderDescription": "Bitte wähle dein Geschlecht aus",
+      "male": "Männlich",
+      "female": "Weiblich",
       "birthdayTitle": "Geburtstag",
       "birthdayDescription": "Wann wurdest du geboren?"
+    },
+    "anamnesis": {
+      "abortQuestion": "Bearbeitung abbrechen?",
+      "abortIncomplete": "Das Profil ist noch nicht vollständig.",
+      "abortExplanation": "Deine bisherigen Änderungen gehen verloren.",
+      "incompleteTitle": "Fragebogen unvollständig",
+      "incompleteTrainingData": "Bitte vervollständige deine Trainingsdaten, um einen personalisierten Plan zu erstellen."
     }
-  },
-  "common": {
-    "altText": {
-      "coachFace": "Gesicht des Coaches",
-      "hintIcon": "Hinweis-Symbol",
-      "icon": "{{title}}-Symbol",
-      "image": "{{title}}-Bild",
-      "muscleLink": "{{muscleName}} Muskel auswählen",
-      "primaryMuscle": "Primärer Muskel: {{muscleName}}",
-      "secondaryMuscle": "Sekundärer Muskel: {{muscleName}}",
-      "warningIcon": "Warnsymbol"
-    },
-    "back": "Zurück",
-    "bodyParts": {
-      "selectHurtingParts": "Bitte wählen Sie die Bereiche, die Ihnen weh tun",
-      "whereAreAchingMuscles": "Wo sind die schmerzenden Muskeln?"
-    },
-    "cancel": "Abbrechen",
-    "choose": "Auswählen",
-    "comingSoon": "Demnächst verfügbar",
-    "confirm": "Bestätigen",
-    "email": "E-Mail",
-    "password": "Passwort",
-    "selected": "{{count}} ausgewählt",
-    "ok": "OK",
-    "skip": "Überspringen",
-    "save": "Speichern"
   },
   "subscription": {
     "expired": "Abonnement abgelaufen",

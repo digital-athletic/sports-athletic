@@ -1,10 +1,8 @@
+import type { LocalizedText } from "@/store/anamnesisStore";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import React, { type FC, type PropsWithChildren } from "react";
 import { useTranslation } from "react-i18next";
-import { AnamnesisQuestionType } from "./types";
-
-type LocalizedText = AnamnesisQuestionType["title"];
 
 type Props = {
   title: LocalizedText;

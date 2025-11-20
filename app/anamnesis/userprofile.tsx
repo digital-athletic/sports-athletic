@@ -1,4 +1,4 @@
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { Route, router, Stack, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, BackHandler } from "react-native";
@@ -24,7 +24,7 @@ import { ScrollBox } from "@/theme/ScrollBox";
  */
 export default function UserProfileScreen() {
   const { t } = useTranslation();
-  const params = useLocalSearchParams<{ originPath?: string }>();
+  const params = useLocalSearchParams<{ originPath?: Route }>();
   const originPath = params.originPath;
 
   const {
@@ -50,7 +50,7 @@ export default function UserProfileScreen() {
   }, [loadQuestions]);
 
   const onBack = useCallback(() => {
-    if (originPath === "/anamnesis/sport") {
+    if (originPath === ("/anamnesis/sport" satisfies Route)) {
       router.back();
     } else {
       router.replace("/(tabs)/profile");
@@ -94,8 +94,8 @@ export default function UserProfileScreen() {
 
   const goOn = () => {
     router.push({
-      pathname: "/anamnesis/anamnesis",
-      params: { originPath: "/anamnesis/userprofile" },
+      pathname: "/anamnesis/anamnesis-questions",
+      params: { originPath: "/anamnesis/userprofile" satisfies Route },
     });
   };
 

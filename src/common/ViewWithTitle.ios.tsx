@@ -60,19 +60,13 @@ export const ViewWithTitle: FC<PropsWithChildren<Props>> = ({
     },
   });
 
-  const containerBackgroundColor = backgroundColor || "white";
   const titleText = truncateTitle(title ?? "", 34);
-  const contentAreaBackgroundColor = innerBackgroundColor || "white";
   const borderBottomColor = theme.colors.iosTitleBorder;
   const headerHeight = hideTitle ? 0 : HEADER_HEIGHT;
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Box
-        flex={1}
-        alignItems="stretch"
-        backgroundColor={containerBackgroundColor}
-      >
+      <Box flex={1} alignItems="stretch" backgroundColor="lightGrey1">
         <StatusBar
           barStyle="dark-content"
           backgroundColor={theme.colors.lightGrey1}
@@ -136,7 +130,7 @@ export const ViewWithTitle: FC<PropsWithChildren<Props>> = ({
             </TouchableOpacity>
           )}
         </Box>
-        <Box flex={1} backgroundColor={contentAreaBackgroundColor}>
+        <Box flex={1} backgroundColor="darkGrey1">
           {fixed ? (
             children
           ) : (

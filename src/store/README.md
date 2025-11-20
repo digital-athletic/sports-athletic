@@ -247,7 +247,7 @@ Anamnesis questionnaire state and answers.
 - `questions: AnamnesisQuestionGroupType[]` - Question groups with ordering
 - `values: { [path: string]: any }` - User answers by data field path
 - `tags: { [tag: string]: string[] }` - Tag-based answers
-- `originPath: string | null` - Navigation origin tracking
+- `originPath: Route | undefined` - Navigation origin tracking
 - `isLoading: boolean` - Questions loading state
 - `loadQuestions()` - Load anamnesis questions from service
 - `setValue(path, value)` - Save single answer

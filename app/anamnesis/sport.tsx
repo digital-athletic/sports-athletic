@@ -1,4 +1,4 @@
-import { Stack, router, useLocalSearchParams } from "expo-router";
+import { Route, Stack, router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, BackHandler } from "react-native";
@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function SportScreen() {
   const { t } = useTranslation();
-  const params = useLocalSearchParams<{ originPath?: string }>();
+  const params = useLocalSearchParams<{ originPath?: Route }>();
   const originPath = params.originPath;
   const insets = useSafeAreaInsets();
 
@@ -76,7 +76,7 @@ export default function SportScreen() {
   const goOn = () => {
     router.push({
       pathname: "/anamnesis/userprofile",
-      params: { originPath: "/anamnesis/sport" },
+      params: { originPath: "/anamnesis/sport" satisfies Route },
     });
   };
 
@@ -112,7 +112,7 @@ export default function SportScreen() {
             />
           ),
           headerRight: () =>
-            originPath === "Welcome" ? (
+            originPath === "/anamnesis" ? (
               <SkipHeader onSkip={showClosePopup} />
             ) : null,
         }}

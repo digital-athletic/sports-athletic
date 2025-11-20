@@ -8,7 +8,7 @@ describe("anamnesisStore", () => {
     // Reset store state before each test
     const { result } = renderHook(() => useAnamnesisStore());
     act(() => {
-      result.current.resetAnamnesis();
+      result.current.resetData();
     });
   });
 
@@ -28,7 +28,7 @@ describe("anamnesisStore", () => {
       expect(result.current.tags).toEqual({});
     });
 
-    it("should have null originPath", () => {
+    it("should have undefined originPath", () => {
       const { result } = renderHook(() => useAnamnesisStore());
       expect(result.current.originPath).toBeUndefined();
     });
@@ -154,7 +154,7 @@ describe("anamnesisStore", () => {
       expect(result.current.originPath).toBe("/anamnesis/sport");
     });
 
-    it("should allow null origin path", () => {
+    it("should allow undefined origin path", () => {
       const { result } = renderHook(() => useAnamnesisStore());
 
       act(() => {
@@ -166,45 +166,8 @@ describe("anamnesisStore", () => {
     });
   });
 
-  describe("clearValues", () => {
-    it("should clear values and tags", () => {
-      const { result } = renderHook(() => useAnamnesisStore());
-
-      act(() => {
-        result.current.setValue("user.height", 180);
-        result.current.setTag("injury", ["knee"]);
-        result.current.clearValues();
-      });
-
-      expect(result.current.values).toEqual({});
-      expect(result.current.tags).toEqual({});
-    });
-
-    it("should not clear questions or originPath", () => {
-      const { result } = renderHook(() => useAnamnesisStore());
-
-      const mockQuestions: AnamnesisQuestionGroupType[] = [
-        {
-          groupTitle: "Test",
-          ordering: 1,
-          questions: [],
-        },
-      ];
-
-      act(() => {
-        result.current.setQuestions(mockQuestions);
-        result.current.setOriginPath("/test");
-        result.current.setValue("user.name", "John");
-        result.current.clearValues();
-      });
-
-      expect(result.current.questions).toEqual(mockQuestions);
-      expect(result.current.originPath).toBe("/test");
-    });
-  });
-
-  describe("resetAnamnesis", () => {
-    it("should reset all state to defaults", () => {
+  describe("resetData", () => {
+    it("should reset all state except originPath", () => {
       const { result } = renderHook(() => useAnamnesisStore());
 
       const mockQuestions: AnamnesisQuestionGroupType[] = [
@@ -220,18 +183,18 @@ describe("anamnesisStore", () => {
         result.current.setValue("user.height", 180);
         result.current.setTag("injury", ["knee"]);
         result.current.setOriginPath("/test");
-        result.current.resetAnamnesis();
+        result.current.resetData();
       });
 
       expect(result.current.questions).toEqual([]);
       expect(result.current.values).toEqual({});
       expect(result.current.tags).toEqual({});
-      expect(result.current.originPath).toBeUndefined();
+      expect(result.current.originPath).toBe("/test"); // Should be preserved
       expect(result.current.isLoading).toBe(false);
     });
   });
 
-  describe("fillAnamnesisData", () => {
+  describe("fillData", () => {
     it("should fill values from workoutData", () => {
       const { result } = renderHook(() => useAnamnesisStore());
 
@@ -258,7 +221,7 @@ describe("anamnesisStore", () => {
 
       act(() => {
         result.current.setQuestions(mockQuestions);
-        result.current.fillAnamnesisData([], {
+        result.current.fillData([], {
           height: 180,
           weight: 70,
         });
@@ -290,7 +253,7 @@ describe("anamnesisStore", () => {
 
       act(() => {
         result.current.setQuestions(mockQuestions);
-        result.current.fillAnamnesisData(
+        result.current.fillData(
           ["injury_knee", "injury_ankle", "equipment_dumbbells"],
           {}
         );
@@ -328,7 +291,7 @@ describe("anamnesisStore", () => {
 
       act(() => {
         result.current.setQuestions(mockQuestions);
-        result.current.fillAnamnesisData(["injury_knee"], { height: 180 });
+        result.current.fillData(["injury_knee"], { height: 180 });
       });
 
       expect(result.current.values).toEqual({ height: 180 });

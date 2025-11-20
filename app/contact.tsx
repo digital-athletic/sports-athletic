@@ -1,5 +1,7 @@
-import { Box, Button, Text } from "@/components";
-import { useAppTheme } from "@/theme";
+import { Box } from "@/theme/Box";
+import { Button } from "@/theme/Button";
+import { Text } from "@/theme/Text";
+import { useTheme } from "@/theme/theme";
 import { Link } from "expo-router";
 import { ScrollView, TextInput } from "react-native";
 
@@ -10,7 +12,7 @@ import { ScrollView, TextInput } from "react-native";
  * Legacy: Contact (modal route in root navigator)
  */
 export default function ContactScreen() {
-  const { colors } = useAppTheme();
+  const { colors } = useTheme();
   return (
     <ScrollView>
       <Box flexGrow={1} padding="l" backgroundColor="white">

@@ -20,11 +20,14 @@ This file provides guidance to AI Agents for building high-quality React Native 
 - Implement proper component hierarchies with clear data flow
 
 ### Imports and exports
-- There should not be index files that only serve the purpose of reexporting other modules of the folder or its sub folders
+- There must not be index files that only serve the purpose of reexporting other modules of the folder or its sub folders
+- Prefer named imports over namespaces (e.g. `import { useState } from "react"` instead of using `React.useState`)
+- Import React types directly (e.g. `import { type FC } from "react"`) instead of using the namespace prefix (avoid `React.FC`)
 
 ### TypeScript Integration
 - Use TypeScript interfaces for props, state, and component definitions
-- Leverage React and React-Native's built-in types (`FC`, `PropsWithChildren`, etc.) where possible
+- Leverage React and React-Native's built-in types (`FC`, `PropsWithChildren`, etc.) by importing them directly
+- Use `type` imports for types when possible (e.g. `import { type FC } from "react"`)
 
 ### Component Design
 - Keep components small and focused on a single concern
@@ -52,7 +55,6 @@ This file provides guidance to AI Agents for building high-quality React Native 
 ### Internationalization (i18n)
 - This project uses [react-i18next](https://react.i18next.com/) for type-safe translations throughout the application
 - Components should access the translations via the `useTranslation` hook and all text content should be located in the `src/i18n/locales` translation files
-- When migrating components from the `/legacy` folder any text must be added to the translation files
 
 ### Accessibility
 - Leverage the react native accessibility APIs (https://reactnative.dev/docs/accessibility) to support assitive technologies

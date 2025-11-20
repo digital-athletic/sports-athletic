@@ -1,5 +1,6 @@
-import { Box, Text } from "@/components";
-import { useAppTheme } from "@/theme";
+import { Box } from "@/theme/Box";
+import { Text } from "@/theme/Text";
+import { useTheme } from "@/theme/theme";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Link } from "expo-router";
 import { ScrollView } from "react-native";
@@ -11,7 +12,7 @@ import { ScrollView } from "react-native";
  * Legacy: views/more/More
  */
 export default function MoreScreen() {
-  const { colors } = useAppTheme();
+  const { colors } = useTheme();
   const menuItems = [
     { title: "Profile", icon: "person-outline", route: "/profile/profile" },
     { title: "Settings", icon: "settings-outline", route: "/profile/settings" },

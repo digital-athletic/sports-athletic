@@ -1,5 +1,8 @@
-import { Box, Button, Card, Text } from "@/components";
-import { useAppTheme } from "@/theme";
+import { Box } from "@/theme/Box";
+import { Button } from "@/theme/Button";
+import { Card } from "@/theme/Card";
+import { Text } from "@/theme/Text";
+import { useTheme } from "@/theme/theme";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Switch } from "react-native";
@@ -11,7 +14,7 @@ import { ScrollView, Switch } from "react-native";
  * Legacy: views/more/pages/Settings
  */
 export default function SettingsScreen() {
-  const { colors } = useAppTheme();
+  const { colors } = useTheme();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
 

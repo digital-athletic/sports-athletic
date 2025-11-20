@@ -1,4 +1,5 @@
-import { Box, Text } from "@/components";
+import { Box } from "@/theme/Box";
+import { Text } from "@/theme/Text";
 import { Link } from "expo-router";
 
 /**

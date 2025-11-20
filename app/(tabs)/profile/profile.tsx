@@ -1,4 +1,7 @@
-import { Box, Button, Card, Text } from "@/components";
+import { Box } from "@/theme/Box";
+import { Button } from "@/theme/Button";
+import { Card } from "@/theme/Card";
+import { Text } from "@/theme/Text";
 import { Link } from "expo-router";
 import { ScrollView } from "react-native";
 

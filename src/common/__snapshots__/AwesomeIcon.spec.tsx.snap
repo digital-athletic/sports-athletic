@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<AwesomeIcon /> renders with all props 1`] = `
+<FontAwesome
+  accessibilityLabel="home"
+  color="#00FF00"
+  name="home"
+  size={48}
+/>
+`;
+
+exports[`<AwesomeIcon /> renders with custom color 1`] = `
+<FontAwesome
+  accessibilityLabel="star"
+  color="#FF0000"
+  name="star"
+/>
+`;
+
+exports[`<AwesomeIcon /> renders with custom size 1`] = `
+<FontAwesome
+  accessibilityLabel="user"
+  name="user"
+  size={32}
+/>
+`;

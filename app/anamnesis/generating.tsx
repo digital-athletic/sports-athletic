@@ -1,5 +1,7 @@
-import { Box, Button, Text } from "@/components";
-import { useAppTheme } from "@/theme";
+import { Box } from "@/theme/Box";
+import { Button } from "@/theme/Button";
+import { Text } from "@/theme/Text";
+import { useTheme } from "@/theme/theme";
 import { Link } from "expo-router";
 import { ActivityIndicator } from "react-native";
 
@@ -10,7 +12,7 @@ import { ActivityIndicator } from "react-native";
  * Legacy: views/data/Generating
  */
 export default function GeneratingScreen() {
-  const { colors } = useAppTheme();
+  const { colors } = useTheme();
   return (
     <Box
       flex={1}

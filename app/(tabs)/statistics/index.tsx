@@ -1,4 +1,6 @@
-import { Box, Card, Text } from "@/components";
+import { Box } from "@/theme/Box";
+import { Card } from "@/theme/Card";
+import { Text } from "@/theme/Text";
 import { ScrollView } from "react-native";
 
 /**

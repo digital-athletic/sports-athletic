@@ -7,8 +7,8 @@ import {
 } from "@shopify/restyle";
 import { FC, PropsWithChildren } from "react";
 import { Pressable, PressableProps } from "react-native";
-import { Theme } from "../theme";
 import { Text } from "./Text";
+import { Theme } from "./theme";
 
 const ButtonContainer = createRestyleComponent<
   VariantProps<Theme, "buttonVariants"> &
@@ -17,7 +17,7 @@ const ButtonContainer = createRestyleComponent<
   Theme
 >([createVariant({ themeKey: "buttonVariants" }), spacing], Pressable);
 
-type ButtonProps = PropsWithChildren<{
+export type ButtonProps = PropsWithChildren<{
   variant?: "primary" | "secondary" | "success" | "quickAction";
 }> &
   SpacingProps<Theme> &
@@ -43,7 +43,7 @@ export const Button: FC<ButtonProps> = ({
   const textVariant = variant === "secondary" ? "buttonSecondary" : "button";
 
   return (
-    <ButtonContainer variant={variant} {...props}>
+    <ButtonContainer variant={variant} role="button" {...props}>
       <Text variant={textVariant} textAlign="center">
         {children}
       </Text>

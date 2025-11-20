@@ -70,7 +70,6 @@ export const SelectionInputField: FC<Props> = ({
         <Box
           flexDirection="row"
           alignItems="center"
-          // padding="m"
           borderRadius="m"
           borderWidth={1}
           borderColor="lightGrey2"

@@ -1,3 +1,4 @@
+import { TagGroups } from "@/constants/tagGroups";
 import { Route } from "expo-router";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -24,7 +25,7 @@ export interface AnamnesisQuestionType {
     | "date"
     | "time"
     | "bodyParts";
-  tag?: string;
+  tag?: TagGroups;
   values?: string[];
   dataField?: string;
   dataType?: "single" | "multiple" | "tag";
@@ -113,7 +114,8 @@ const MOCKED_STATE: AnamnesisQuestionGroupType[] = [
           "Yoga Mat",
           "Kettlebell",
         ],
-        tag: "equipment",
+        tag: TagGroups.EQUIPMENT,
+        dataField: "equipment",
       },
       {
         title: { default: "Training experience level" },
@@ -121,7 +123,7 @@ const MOCKED_STATE: AnamnesisQuestionGroupType[] = [
         placeholder: { default: "Select your level" },
         type: "snap",
         values: ["Beginner", "Intermediate", "Advanced", "Expert"],
-        tag: "LEVEL",
+        tag: TagGroups.LEVEL,
       },
     ],
   },
@@ -135,7 +137,9 @@ const MOCKED_STATE: AnamnesisQuestionGroupType[] = [
         placeholder: { default: "Select affected areas" },
         type: "bodyParts",
         bodyPartType: "PAIN",
-        tag: "PAIN",
+        tag: TagGroups.PAIN,
+        dataType: "tag",
+        dataField: "pain",
       },
       {
         title: { default: "Previous injuries" },
@@ -143,7 +147,9 @@ const MOCKED_STATE: AnamnesisQuestionGroupType[] = [
         placeholder: { default: "Select body parts" },
         type: "bodyParts",
         bodyPartType: "MUSCLE",
-        tag: "PREVIOUS_INJURIES",
+        tag: TagGroups.MUSCLE,
+        dataType: "tag",
+        dataField: "injuries",
       },
       {
         title: { default: "Do you have access to a gym?" },

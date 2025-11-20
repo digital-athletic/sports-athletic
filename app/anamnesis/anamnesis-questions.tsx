@@ -5,6 +5,7 @@ import { BackHeader } from "@/common/BackHeader";
 import { Loading } from "@/common/Loading";
 import { ProgressBar } from "@/common/ProgressBar";
 import { SkipHeader } from "@/common/SkipHeader";
+import { TagGroups } from "@/constants/tagGroups";
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
 import { DateInputField } from "@/form/DateInputField";
 import { EmailInputField } from "@/form/EmailInputField";
@@ -115,8 +116,8 @@ export default function AnamnesisQuestions() {
     setLoading(true);
     try {
       // Track prevention tag
-      if (tags["PAIN"] && tags["PAIN"].length !== 0) {
-        console.log("Anamnesis pains added:", tags["PAIN"]);
+      if (tags[TagGroups.PAIN] && tags[TagGroups.PAIN].length !== 0) {
+        console.log("Anamnesis pains added:", tags[TagGroups.PAIN]);
       }
 
       await setCompleted();
@@ -184,12 +185,12 @@ export default function AnamnesisQuestions() {
     async (value: unknown, question: AnamnesisQuestionType) => {
       if (question.dataType === "tag" && question.tag) {
         // Reset training days if level changed
-        if (question.tag === "LEVEL") {
-          await resetToDefaults();
+        if (question.tag === TagGroups.LEVEL) {
+          resetToDefaults();
         }
-        await setTag(question.tag, value as string[]);
+        setTag(question.tag, value as string[]);
       } else if (question.dataField) {
-        await setValue(question.dataField, value);
+        setValue(question.dataField, value);
       }
     },
     [setTag, setValue, resetToDefaults]

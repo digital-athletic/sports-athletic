@@ -7,17 +7,19 @@ import { Ionicon } from "../common/Ionicon";
 import { BasicTextInput } from "./BasicTextInput";
 
 interface PasswordInputFieldProps {
-  onChange: (value: string) => void;
   password: string;
   showError?: boolean;
+  onChange: (value: string) => void;
+  onSubmitEditing?: () => void;
 }
 
 /**
  * Password input field with visibility toggle
  */
 export const PasswordInputField: FC<PasswordInputFieldProps> = ({
-  onChange,
   password,
+  onChange,
+  onSubmitEditing,
 }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -52,6 +54,7 @@ export const PasswordInputField: FC<PasswordInputFieldProps> = ({
         keyboardType="default"
         value={password}
         secureTextEntry={!showPw}
+        onSubmitEditing={onSubmitEditing}
       />
       <TouchableOpacity
         style={styles.showButton}

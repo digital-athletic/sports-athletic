@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/store/authStore";
 import { theme } from "@/theme/theme";
 import { ThemeProvider } from "@shopify/restyle";
 import { Stack } from "expo-router";
@@ -12,20 +13,24 @@ import { Stack } from "expo-router";
  * Expo Router uses conditional rendering and layout groups instead of Switch Navigator.
  */
 export default function RootLayout() {
+  const { auth } = useAuthStore();
   return (
     <ThemeProvider theme={theme}>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Protected guard={auth != null}>
+          <Stack.Screen name="anamnesis" options={{ headerShown: false }} />
+          <Stack.Screen name="training" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="video-player"
+            options={{ headerShown: false, presentation: "fullScreenModal" }}
+          />
+        </Stack.Protected>
+
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-        <Stack.Screen name="anamnesis" options={{ headerShown: false }} />
-        <Stack.Screen name="training" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
         <Stack.Screen
           name="webview"
-          options={{ headerShown: false, presentation: "fullScreenModal" }}
-        />
-        <Stack.Screen
-          name="video-player"
           options={{ headerShown: false, presentation: "fullScreenModal" }}
         />
         <Stack.Screen name="test" options={{ headerShown: false }} />

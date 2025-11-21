@@ -1,29 +1,31 @@
-import { Box } from "@/theme/Box";
-import { Button } from "@/theme/Button";
-import { Text } from "@/theme/Text";
-import { Link } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
+import { WebView } from "react-native-webview";
+import { ViewWithTitle } from "../../src/common/ViewWithTitle";
 
 /**
  * Onboarding WebView Screen
  *
- * Displays web content during onboarding.
- * Legacy: views/webview/WebViewContainer (in OnboardingStack)
+ * Displays web content (AGB/Privacy Policy) during onboarding
+ * Migrated from legacy OnboardingWebView
  */
 export default function OnboardingWebViewScreen() {
+  const { url } = useLocalSearchParams<{ url: string }>();
+  const router = useRouter();
+  const { t } = useTranslation();
+
+  const handleBack = () => {
+    router.back();
+  };
+
   return (
-    <Box
-      flex={1}
-      justifyContent="center"
-      alignItems="center"
-      padding="l"
+    <ViewWithTitle
+      title={t("onboarding.webContent")}
+      fixed={true}
+      onBack={handleBack}
       backgroundColor="white"
     >
-      <Text variant="title">Onboarding WebView</Text>
-      <Text variant="description">Web content during onboarding flow</Text>
-
-      <Link href="../" asChild>
-        <Button variant="secondary">Go Back</Button>
-      </Link>
-    </Box>
+      {url && <WebView source={{ uri: url }} />}
+    </ViewWithTitle>
   );
 }

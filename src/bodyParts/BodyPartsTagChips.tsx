@@ -1,5 +1,6 @@
 import { Ionicon } from "@/common/Ionicon";
 import { Box } from "@/theme/Box";
+import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
@@ -34,7 +35,9 @@ export const BodyPartsTagChips: FC<BodyPartsTagChipsProps> = ({
         borderRadius="l"
         backgroundColor="lightGrey2"
       >
-        <Box flex={1}>{t(`muscles.${tag}`)}</Box>
+        <Box>
+          <Text variant="body">{t(`muscles.${tag}`)}</Text>
+        </Box>
         {onClick && (
           <Box
             marginLeft="l"

@@ -1,23 +1,13 @@
 {
-  "screens": {
-    "start": {
-      "title": "Navigation Demo",
-      "description": "Select a flow to explore the navigation hierarchy"
-    },
-    "home": {
-      "title": "Training Home",
-      "description": "Your personalized training dashboard"
-    }
-  },
   "common": {
     "altText": {
       "coachFace": "Coach face",
+      "primaryMuscle": "Primary muscle: {{muscleName}}",
+      "secondaryMuscle": "Secondary muscle: {{muscleName}}",
+      "muscleLink": "Select {{muscleName}} muscle",
       "hintIcon": "Hint icon",
       "icon": "{{title}} icon",
       "image": "{{title}} image",
-      "muscleLink": "Select {{muscleName}} muscle",
-      "primaryMuscle": "Primary muscle: {{muscleName}}",
-      "secondaryMuscle": "Secondary muscle: {{muscleName}}",
       "warningIcon": "Warning icon"
     },
     "back": "Back",
@@ -27,14 +17,76 @@
     },
     "cancel": "Cancel",
     "choose": "Choose",
+    "close": "Close",
     "comingSoon": "Coming soon",
     "confirm": "Confirm",
     "email": "E-Mail",
+    "goOn": "Go on",
+    "next": "Next",
+    "no": "NO",
     "ok": "OK",
     "password": "Password",
     "save": "Save",
+    "saving": "Saving ...",
     "selected": "{{count}} selected",
-    "skip": "skip"
+    "skip": "skip",
+    "yes": "YES"
+  },
+  "screens": {
+    "start": {
+      "title": "Navigation Demo",
+      "description": "Select a flow to explore the navigation hierarchy"
+    },
+    "home": {
+      "title": "Training Home",
+      "description": "Your personalized training dashboard"
+    },
+    "welcome": {
+      "title": "Personal data",
+      "greeting": "Hi!\nI am Ingemar. I am your personal athletics coach. Let's get started generating your personal workout plan right away.",
+      "letsGo": "Let's go",
+      "abortQuestion": "Abort editing profile?",
+      "abortIncomplete": "Your profile is incomplete.",
+      "abortExplanation": "All your changes will be lost.",
+      "yes": "YES",
+      "no": "NO",
+      "coachImageAlt": "Coach Ingemar"
+    },
+    "sport": {
+      "title": "Sport",
+      "goOn": "Go On",
+      "sportSelected": "Selected",
+      "abortAnamnesisQuestion": "Abort questionnaire?",
+      "abortAnamnesisIncomplete": "Your profile is incomplete.",
+      "abortAnamnesisExplanation": "All your changes will be lost.",
+      "yes": "YES",
+      "no": "NO"
+    },
+    "userProfile": {
+      "title": "Personal Data",
+      "goOn": "Go On",
+      "abortAnamnesisQuestion": "Abort questionnaire?",
+      "abortAnamnesisIncomplete": "Your profile is incomplete.",
+      "abortAnamnesisExplanation": "All your changes will be lost.",
+      "yes": "YES",
+      "no": "NO",
+      "usernameTitle": "Name",
+      "usernameDescription": "How should we call you?",
+      "usernamePlaceholder": "Enter your name",
+      "genderTitle": "Gender",
+      "genderDescription": "Please select your gender",
+      "male": "Male",
+      "female": "Female",
+      "birthdayTitle": "Birthday",
+      "birthdayDescription": "When were you born?"
+    },
+    "anamnesis": {
+      "abortQuestion": "Abort editing profile?",
+      "abortIncomplete": "Your profile is incomplete.",
+      "abortExplanation": "All your changes will be lost.",
+      "incompleteTitle": "Questionnaire Incomplete",
+      "incompleteTrainingData": "Please complete your training data to generate a personalized plan."
+    }
   },
   "subscription": {
     "expired": "Subscription expired",
@@ -46,6 +98,17 @@
       "description": "Do as many repetitions as you can do with good technique.",
       "placeholder": "Repetitions"
     }
+  },
+  "sports": {
+    "HANDBALL_SPORT": "Handball",
+    "FOOTBALL_SPORT": "Football/Soccer",
+    "VOLLEYBALL_SPORT": "Volleyball",
+    "BASKETBALL_SPORT": "Basketball",
+    "ICE_HOCKEY_SPORT": "Ice Hockey",
+    "HOCKEY_SPORT": "Hockey",
+    "AMERICAN_FOOTBALL_SPORT": "American Football",
+    "RUGBY_SPORT": "Rugby",
+    "OTHER_SPORT": "Other Sports"
   },
   "muscles": {
     "AEUSSERE_OBERSCHENKELMUSKULATUR_LINKS": "left outer thigh",

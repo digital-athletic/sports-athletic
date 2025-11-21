@@ -1,23 +1,13 @@
 {
-  "screens": {
-    "start": {
-      "title": "Navigationsdemo",
-      "description": "Wähle einen Ablauf, um die Navigationshierarchie zu erkunden"
-    },
-    "home": {
-      "title": "Trainings-Startseite",
-      "description": "Dein personalisiertes Trainings-Dashboard"
-    }
-  },
   "common": {
     "altText": {
       "coachFace": "Gesicht des Coaches",
+      "primaryMuscle": "Primärer Muskel: {{muscleName}}",
+      "secondaryMuscle": "Sekundärer Muskel: {{muscleName}}",
+      "muscleLink": "{{muscleName}} Muskel auswählen",
       "hintIcon": "Hinweis-Symbol",
       "icon": "{{title}}-Symbol",
       "image": "{{title}}-Bild",
-      "muscleLink": "{{muscleName}} Muskel auswählen",
-      "primaryMuscle": "Primärer Muskel: {{muscleName}}",
-      "secondaryMuscle": "Sekundärer Muskel: {{muscleName}}",
       "warningIcon": "Warnsymbol"
     },
     "back": "Zurück",
@@ -27,14 +17,76 @@
     },
     "cancel": "Abbrechen",
     "choose": "Auswählen",
+    "close": "Schließen",
     "comingSoon": "Demnächst verfügbar",
     "confirm": "Bestätigen",
     "email": "E-Mail",
-    "password": "Passwort",
-    "selected": "{{count}} ausgewählt",
+    "goOn": "Weiter",
+    "next": "Weiter",
+    "no": "NEIN",
     "ok": "OK",
+    "password": "Passwort",
+    "save": "Speichern",
+    "saving": "Speichern ...",
+    "selected": "{{count}} ausgewählt",
     "skip": "Überspringen",
-    "save": "Speichern"
+    "yes": "JA"
+  },
+  "screens": {
+    "start": {
+      "title": "Navigationsdemo",
+      "description": "Wähle einen Ablauf, um die Navigationshierarchie zu erkunden"
+    },
+    "home": {
+      "title": "Trainings-Startseite",
+      "description": "Dein personalisiertes Trainings-Dashboard"
+    },
+    "welcome": {
+      "title": "Persönliche Daten",
+      "greeting": "Hi!\nIch bin Ingemar, dein persönlicher Athletiktrainer. Lass uns gleich starten und deinen persönlichen Trainingsplan erstellen.",
+      "letsGo": "Los geht's",
+      "abortQuestion": "Bearbeitung abbrechen?",
+      "abortIncomplete": "Das Profil ist noch nicht vollständig.",
+      "abortExplanation": "Deine bisherigen Änderungen gehen verloren.",
+      "yes": "JA",
+      "no": "NEIN",
+      "coachImageAlt": "Trainer Ingemar"
+    },
+    "sport": {
+      "title": "Sportart",
+      "goOn": "Weiter",
+      "sportSelected": "Ausgewählt",
+      "abortAnamnesisQuestion": "Fragebogen abbrechen?",
+      "abortAnamnesisIncomplete": "Dein Profil ist noch nicht vollständig.",
+      "abortAnamnesisExplanation": "Alle deine Änderungen gehen verloren.",
+      "yes": "JA",
+      "no": "NEIN"
+    },
+    "userProfile": {
+      "title": "Persönliche Daten",
+      "goOn": "Weiter",
+      "abortAnamnesisQuestion": "Fragebogen abbrechen?",
+      "abortAnamnesisIncomplete": "Dein Profil ist noch nicht vollständig.",
+      "abortAnamnesisExplanation": "Alle deine Änderungen gehen verloren.",
+      "yes": "JA",
+      "no": "NEIN",
+      "usernameTitle": "Name",
+      "usernameDescription": "Wie sollen wir dich nennen?",
+      "usernamePlaceholder": "Gib deinen Namen ein",
+      "genderTitle": "Geschlecht",
+      "genderDescription": "Bitte wähle dein Geschlecht aus",
+      "male": "Männlich",
+      "female": "Weiblich",
+      "birthdayTitle": "Geburtstag",
+      "birthdayDescription": "Wann wurdest du geboren?"
+    },
+    "anamnesis": {
+      "abortQuestion": "Bearbeitung abbrechen?",
+      "abortIncomplete": "Das Profil ist noch nicht vollständig.",
+      "abortExplanation": "Deine bisherigen Änderungen gehen verloren.",
+      "incompleteTitle": "Fragebogen unvollständig",
+      "incompleteTrainingData": "Bitte vervollständige deine Trainingsdaten, um einen personalisierten Plan zu erstellen."
+    }
   },
   "subscription": {
     "expired": "Abonnement abgelaufen",
@@ -46,6 +98,17 @@
       "description": "Mach so viele Wiederholungen, wie du mit sauberer Technik schaffst.",
       "placeholder": "Wiederholungen"
     }
+  },
+  "sports": {
+    "HANDBALL_SPORT": "Handball",
+    "FOOTBALL_SPORT": "Fußball",
+    "VOLLEYBALL_SPORT": "Volleyball",
+    "BASKETBALL_SPORT": "Basketball",
+    "ICE_HOCKEY_SPORT": "Eishockey",
+    "HOCKEY_SPORT": "Hockey",
+    "AMERICAN_FOOTBALL_SPORT": "American Football",
+    "RUGBY_SPORT": "Rugby",
+    "OTHER_SPORT": "Sonstige Sportarten"
   },
   "muscles": {
     "AEUSSERE_OBERSCHENKELMUSKULATUR_LINKS": "linker äußerer Oberschenkel",

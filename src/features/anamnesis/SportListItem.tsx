@@ -1,0 +1,77 @@
+import { type FC } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  type ImageSourcePropType,
+} from "react-native";
+
+import { WorkoutConstants } from "@/constants/workoutConstants";
+import { Box } from "@/theme/Box";
+import { Text } from "@/theme/Text";
+
+interface SportListItemProps {
+  sportKey: keyof typeof WorkoutConstants.SPORTS;
+  isSelected: boolean;
+  onPress: () => void;
+}
+
+export const SportListItem: FC<SportListItemProps> = ({
+  sportKey,
+  isSelected,
+  onPress,
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={styles.listItem}
+      accessibilityLabel={`sport-item-${sportKey}`}
+      accessibilityRole="button"
+    >
+      <Image
+        source={
+          WorkoutConstants.SPORTS_IMAGES[
+            sportKey as keyof typeof WorkoutConstants.SPORTS_IMAGES
+          ] as ImageSourcePropType
+        }
+        style={styles.listImage}
+        resizeMode="cover"
+        accessibilityLabel={t(`sports.${sportKey}`)}
+      />
+      <Box style={styles.listContent}>
+        <Text variant="cardTitle" color="darkGrey3">
+          {t(`sports.${sportKey}`)}
+        </Text>
+        {isSelected && (
+          <Text variant="body" color="primary" paddingTop="xs">
+            {t("screens.sport.sportSelected")}
+          </Text>
+        )}
+      </Box>
+    </TouchableOpacity>
+  );
+};
+
+const styles = StyleSheet.create({
+  listItem: {
+    position: "relative",
+    width: "100%",
+    height: 100,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E0E0E0",
+  },
+  listImage: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    height: 100,
+    width: 100,
+  },
+  listContent: {
+    marginLeft: 100,
+    padding: 15,
+  },
+});

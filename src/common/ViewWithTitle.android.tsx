@@ -12,6 +12,7 @@ import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Box } from "../theme/Box";
 import { ThemeColor, useTheme } from "../theme/theme";
 import { Ionicon } from "./Ionicon";
@@ -67,78 +68,84 @@ export const ViewWithTitle: FC<ViewWithTitleProps> = ({
   const headerHeight = hideTitle ? 0 : HEADER_HEIGHT;
 
   return (
-    <Box
-      flex={1}
-      alignItems="stretch"
-      backgroundColor={containerBackgroundColor}
-    >
-      <StatusBar
-        barStyle="dark-content"
-        backgroundColor={theme.colors.lightGrey1}
-        translucent={false}
-      />
-      <Box flexDirection="row" height={headerHeight}>
-        <View
-          style={[
-            styles.titleContainer,
-            {
-              height: HEADER_HEIGHT,
-              borderBottomColor,
-            },
-          ]}
-        >
+    <SafeAreaView style={styles.safeArea}>
+      <Box
+        flex={1}
+        alignItems="stretch"
+        backgroundColor={containerBackgroundColor}
+      >
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor={theme.colors.lightGrey1}
+          translucent={false}
+        />
+        <Box flexDirection="row" height={headerHeight}>
           <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              height: HEADER_HEIGHT,
-            }}
+            style={[
+              styles.titleContainer,
+              {
+                height: HEADER_HEIGHT,
+                borderBottomColor,
+              },
+            ]}
           >
-            <Text
-              style={[
-                styles.title,
-                {
-                  color: theme.colors.darkGrey3,
-                },
-              ]}
+            <View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                height: HEADER_HEIGHT,
+              }}
             >
-              {displayTitle}
-            </Text>
+              <Text
+                style={[
+                  styles.title,
+                  {
+                    color: theme.colors.darkGrey3,
+                  },
+                ]}
+              >
+                {displayTitle}
+              </Text>
+            </View>
           </View>
-        </View>
-        <TouchableOpacity
-          style={styles.backContainer}
-          onPress={onBack}
-          accessibilityRole="button"
-          accessibilityLabel={t("common.back")}
-        >
-          <Ionicon name="arrow-back" size={24} color={theme.colors.black} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.closeContainer}
-          onPress={onClose}
-          accessibilityRole="button"
-          accessibilityLabel={t("common.skip")}
-        >
-          <Text style={{ ...styles.skip, color: theme.colors.darkGrey1 }}>
-            {t("common.skip")}
-          </Text>
-        </TouchableOpacity>
+          {!!onBack && (
+            <TouchableOpacity
+              style={styles.backContainer}
+              onPress={onBack}
+              accessibilityRole="button"
+              accessibilityLabel={t("common.back")}
+            >
+              <Ionicon name="arrow-back" size={24} color={theme.colors.black} />
+            </TouchableOpacity>
+          )}
+          {!!onClose && (
+            <TouchableOpacity
+              style={styles.closeContainer}
+              onPress={onClose}
+              accessibilityRole="button"
+              accessibilityLabel={t("common.skip")}
+            >
+              <Text style={{ ...styles.skip, color: theme.colors.darkGrey1 }}>
+                {t("common.skip")}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </Box>
+        <Box flex={1} backgroundColor={contentAreaBackgroundColor}>
+          {fixed ? (
+            children
+          ) : (
+            <Animated.ScrollView
+              showsVerticalScrollIndicator={false}
+              scrollEventThrottle={16}
+              onScroll={scrollHandler}
+            >
+              <Box flex={1}>{children}</Box>
+            </Animated.ScrollView>
+          )}
+        </Box>
       </Box>
-      <Box flex={1} backgroundColor={contentAreaBackgroundColor}>
-        {fixed ? (
-          children
-        ) : (
-          <Animated.ScrollView
-            showsVerticalScrollIndicator={false}
-            scrollEventThrottle={16}
-            onScroll={scrollHandler}
-          >
-            <Box flex={1}>{children}</Box>
-          </Animated.ScrollView>
-        )}
-      </Box>
-    </Box>
+    </SafeAreaView>
   );
 };
 
@@ -162,6 +169,9 @@ const styles = StyleSheet.create({
     right: 0,
     height: 54,
     width: 154,
+  },
+  safeArea: {
+    flex: 1,
   },
   skip: {
     fontFamily: "System",

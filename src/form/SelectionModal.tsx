@@ -68,12 +68,15 @@ export const SelectionModal: FC<Props> = ({
       onRequestClose={handleCancel}
     >
       <Box
-        flex={1}
+        position="absolute"
         backgroundColor="black"
         opacity={0.5}
-        justifyContent="center"
-        padding="l"
-      >
+        top={0}
+        bottom={0}
+        left={0}
+        right={0}
+      />
+      <Box flex={1} justifyContent="center" padding="l">
         <Box
           backgroundColor="white"
           borderRadius="l"

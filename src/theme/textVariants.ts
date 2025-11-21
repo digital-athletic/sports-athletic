@@ -97,4 +97,12 @@ export const textVariants = {
     fontWeight: "600",
     color: "primary",
   },
+
+  skip: {
+    fontWeight: "600",
+    fontFamily: "System",
+    fontSize: 15,
+    lineHeight: 24,
+    color: "darkGrey1",
+  },
 } as const;

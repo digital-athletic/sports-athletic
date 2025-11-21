@@ -14,7 +14,6 @@ import { Stack } from "expo-router";
  */
 export default function RootLayout() {
   const { auth } = useAuthStore();
-  console.log("🚀 ~ RootLayout ~ auth:", auth);
   return (
     <ThemeProvider theme={theme}>
       <Stack screenOptions={{ headerShown: false }}>

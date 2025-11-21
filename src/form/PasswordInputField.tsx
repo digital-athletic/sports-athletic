@@ -10,7 +10,7 @@ interface PasswordInputFieldProps {
   password: string;
   showError?: boolean;
   onChange: (value: string) => void;
-  onSubmitEditing: () => void;
+  onSubmitEditing?: () => void;
 }
 
 /**

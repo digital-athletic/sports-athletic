@@ -1,11 +1,33 @@
 # README #
 
-## Dev Environment Requirements
+## Get started
+
+### Option 1: Local Setup
 > 💡 We recommend [asdf](https://asdf-vm.com/) for managing build tool versions
 
 * Node.js v20
 * pnpm v10.16.1
 * [watchman](https://facebook.github.io/watchman/docs/install)
+
+**How to start:**
+* Checkout the repository
+* Run `pnpm install`
+
+### Option 2: Docker (Recommended for Quick Start)
+> 💡 Simplest way to get started with a consistent development environment
+
+* [Docker](https://www.docker.com/get-started) and Docker Compose
+
+**How to start:**
+* Run: `docker compose up`
+* The Expo development server will start automatically
+* Access the server at http://localhost:8081
+* To run commands inside the container: `docker compose exec app sh`
+* To stop: `docker compose down`
+
+If you are running inside the container (e.g. using Dev Containers), you should start with:
+1. `pnpm install`
+2. `pnpm start`
 
 ### Android
 * Azul Zulu JDK 17.58.21 (OpenJDK 17.0.15)
@@ -22,12 +44,6 @@
 * Xcode 26.0 (17A324)
 
 See: [.tool-versions](./.tool-versions)
-
-
-### How to start ###
-
-* Checkout
-* run npm install
 
 ### For developement ###
 

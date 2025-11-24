@@ -1,7 +1,8 @@
 import { act, renderHook } from "@testing-library/react-native";
 
+import { TagGroups } from "@/constants/tagGroups";
 import type { AnamnesisQuestionGroupType } from "../anamnesisStore";
-import { useAnamnesisStore } from "../anamnesisStore";
+import { MOCKED_STATE, useAnamnesisStore } from "../anamnesisStore";
 
 describe("anamnesisStore", () => {
   beforeEach(() => {
@@ -245,7 +246,7 @@ describe("anamnesisStore", () => {
               title: { default: "Injuries" },
               placeholder: { default: "Select injuries" },
               type: "selectMultiple",
-              tag: "injury",
+              tag: TagGroups.PAIN,
             },
           ],
         },
@@ -254,14 +255,14 @@ describe("anamnesisStore", () => {
       act(() => {
         result.current.setQuestions(mockQuestions);
         result.current.fillData(
-          ["injury_knee", "injury_ankle", "equipment_dumbbells"],
+          ["PAIN_knee", "PAIN_ankle", "equipment_dumbbells"],
           {}
         );
       });
 
-      expect(result.current.tags.injury).toEqual([
-        "injury_knee",
-        "injury_ankle",
+      expect(result.current.tags[TagGroups.PAIN]).toEqual([
+        "PAIN_knee",
+        "PAIN_ankle",
       ]);
     });
 
@@ -283,7 +284,7 @@ describe("anamnesisStore", () => {
               title: { default: "Injuries" },
               placeholder: { default: "Select injuries" },
               type: "selectMultiple",
-              tag: "injury",
+              tag: TagGroups.PAIN,
             },
           ],
         },
@@ -291,11 +292,11 @@ describe("anamnesisStore", () => {
 
       act(() => {
         result.current.setQuestions(mockQuestions);
-        result.current.fillData(["injury_knee"], { height: 180 });
+        result.current.fillData(["PAIN_knee"], { height: 180 });
       });
 
       expect(result.current.values).toEqual({ height: 180 });
-      expect(result.current.tags).toEqual({ injury: ["injury_knee"] });
+      expect(result.current.tags).toEqual({ [TagGroups.PAIN]: ["PAIN_knee"] });
     });
   });
 
@@ -308,7 +309,7 @@ describe("anamnesisStore", () => {
       });
 
       // Current stub implementation returns empty array
-      expect(result.current.questions).toEqual([]);
+      expect(result.current.questions).toEqual(MOCKED_STATE);
       expect(result.current.isLoading).toBe(false);
     });
 

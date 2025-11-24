@@ -62,7 +62,7 @@ type WithoutFunctions<T> = {
   [K in keyof T as T[K] extends (...args: any[]) => any ? never : K]: T[K];
 };
 
-const MOCKED_STATE: AnamnesisQuestionGroupType[] = [
+export const MOCKED_STATE: AnamnesisQuestionGroupType[] = [
   {
     groupTitle: "Personal Information",
     ordering: 0,

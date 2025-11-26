@@ -1,37 +1,202 @@
+import { Loading } from "@/common/Loading";
+import { SpeechBubble } from "@/common/SpeechBubble";
+import { useAnamnesisStore } from "@/store/anamnesisStore";
+import { useUserProfileStore } from "@/store/userProfileStore";
+import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
-import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
-import { useTheme } from "@/theme/theme";
-import { Link } from "expo-router";
-import { ActivityIndicator } from "react-native";
+import { Route, Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Alert, Image, StyleSheet } from "react-native";
 
-/**
- * Generating Screen
- *
- * Training plan generation loading screen.
- * Legacy: views/data/Generating
- */
-export default function GeneratingScreen() {
-  const { colors } = useTheme();
+const TIME_PER_STAGE = 1000; // 1 second per stage
+
+export default function Generating() {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const params = useLocalSearchParams<{ originPath?: Route }>();
+  const originPath = params.originPath;
+
+  const [stage, setStage] = useState(0);
+  const [stagesEnded, setStagesEnded] = useState(false);
+  const [generatingEnded, setGeneratingEnded] = useState(false);
+  const intervalRef = useRef<number>(undefined);
+
+  const {
+    originPath: storedOriginPath,
+    seasonPhase,
+    setSeasonPhase: setAnamnesisSeasonPhase,
+  } = useAnamnesisStore();
+  const {
+    workoutData,
+    setSeasonPhase: saveSeasonPhaseToWorkoutData,
+    trainingPlan,
+  } = useUserWorkoutStore();
+  const { isInInitialAnamnesis, setIsInInitialAnamnesis } =
+    useUserProfileStore();
+
+  const createTrainingPlan = async () => {
+    try {
+      const shouldUpdateExisting =
+        trainingPlan &&
+        seasonPhase &&
+        workoutData.seasonPhase &&
+        workoutData.seasonPhase.type === seasonPhase.type;
+      if (trainingPlan && !shouldUpdateExisting) {
+        // Only create new if season phase type was changed
+        // await archiveTrainingPlan();
+      }
+
+      // Save season phase to workoutData (matches legacy behavior)
+      if (seasonPhase) {
+        saveSeasonPhaseToWorkoutData(seasonPhase);
+      }
+
+      // TODO: Implement actual plan generation logic
+      if (shouldUpdateExisting) {
+        // await updateUserTrainingPlan();
+      } else {
+        // Archive existing plan (would call API)
+        // await createUserTrainingPlan(seasonPhase);
+      }
+
+      // Clean up anamnesis seasonPhase (matches legacy behavior)
+      setAnamnesisSeasonPhase(null);
+
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      setGeneratingEnded(true);
+    } catch (error) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      console.error("Error generating plan:", error);
+
+      const origin = originPath ?? storedOriginPath;
+
+      Alert.alert(
+        t("screens.generating.errorTitle"),
+        t("screens.generating.errorMessage"),
+        [
+          {
+            text: t("common.ok"),
+            onPress: () => {
+              if (origin === "/profile") {
+                router.navigate("/profile");
+              } else {
+                router.navigate("/(tabs)");
+              }
+            },
+          },
+        ]
+      );
+    }
+  };
+
+  useEffect(() => {
+    // Start the stage animation
+    intervalRef.current = setInterval(() => {
+      setStage((prev) => {
+        if (prev < 3) {
+          return prev + 1;
+        } else {
+          setStagesEnded(true);
+          return prev;
+        }
+      });
+    }, TIME_PER_STAGE);
+
+    // Start creating the training plan
+    createTrainingPlan();
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+
+    // we only want this effect to run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const goOn = () => {
+      // TODO: Setup push notifications for training reminders
+      // const pushNotificationService = new PushNotificationService();
+      // pushNotificationService.checkPermissionsAndCreateNotifications(userId, trainingPlan);
+
+      if (isInInitialAnamnesis) {
+        router.navigate({
+          pathname: "/profile/subscribe",
+          params: { goOn: "/(tabs)" satisfies Route },
+        });
+        setIsInInitialAnamnesis(false);
+      } else {
+        router.replace("/(tabs)");
+      }
+    };
+
+    // When both stages and generation are complete, navigate away
+    if (stagesEnded && generatingEnded) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      goOn();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stagesEnded, generatingEnded]);
+
+  const getStageText = () => {
+    switch (stage) {
+      case 0:
+        return t("screens.generating.stage1");
+      case 1:
+        return t("screens.generating.stage2");
+      case 2:
+        return t("screens.generating.stage3");
+      case 3:
+        return t("screens.generating.stage4");
+      default:
+        return t("screens.generating.stage1");
+    }
+  };
+
   return (
-    <Box
-      flex={1}
-      justifyContent="center"
-      alignItems="center"
-      padding="l"
-      backgroundColor="white"
-    >
-      <ActivityIndicator size="large" color={colors.primary} />
-      <Text variant="title" marginTop="l">
-        Generating Training Plan
-      </Text>
-      <Text variant="description">
-        Creating your personalized training plan...
-      </Text>
+    <>
+      <Stack.Screen
+        options={{
+          title: t("screens.generating.title"),
+          headerShown: false,
+        }}
+      />
+      <Box flex={1} backgroundColor="lightGrey1" padding="m">
+        <Box flex={1} justifyContent="center" alignItems="center">
+          <SpeechBubble text={t("screens.generating.thanksMessage")} centered />
 
-      <Link href="/(tabs)" replace asChild>
-        <Button>Complete Setup</Button>
-      </Link>
-    </Box>
+          <Image
+            style={styles.coach}
+            source={require("../../assets/img/coach/face.png")}
+            resizeMode="contain"
+            accessibilityLabel={t("screens.welcome.coachImageAlt")}
+          />
+
+          <Text variant="body" marginTop="m" textAlign="center">
+            {getStageText()}
+          </Text>
+        </Box>
+
+        <Loading show text={t("common.generatingTrainingPlan")} />
+      </Box>
+    </>
   );
 }
+
+const styles = StyleSheet.create({
+  coach: {
+    width: 80,
+    height: 80,
+    marginTop: 20,
+  },
+});

@@ -30,7 +30,18 @@
     "saving": "Speichern ...",
     "selected": "{{count}} ausgewählt",
     "skip": "Überspringen",
-    "yes": "JA"
+    "yes": "JA",
+    "loading": "Laden",
+    "days": {
+      "monday": "Mo",
+      "tuesday": "Di",
+      "wednesday": "Mi",
+      "thursday": "Do",
+      "friday": "Fr",
+      "saturday": "Sa",
+      "sunday": "So"
+    },
+    "generatingTrainingPlan": "Generiere Trainingsplan..."
   },
   "screens": {
     "start": {
@@ -86,6 +97,61 @@
       "abortExplanation": "Deine bisherigen Änderungen gehen verloren.",
       "incompleteTitle": "Fragebogen unvollständig",
       "incompleteTrainingData": "Bitte vervollständige deine Trainingsdaten, um einen personalisierten Plan zu erstellen."
+    },
+    "seasonPhase": {
+      "title": "Saisonphase",
+      "seasonPhaseLabel": "Saisonphase",
+      "seasonPhaseDescription": "In welcher Saisonphase befindest du dich gerade?",
+      "endOfSeasonPhaseLabel": "Ende der Saisonphase",
+      "endOfSeasonPhaseDescription": "Wann endet diese Saisonphase ungefähr?",
+      "abortQuestion": "Bearbeitung abbrechen?",
+      "abortIncomplete": "Deine Trainingsdaten sind nicht vollständig.",
+      "abortExplanation": "Deine bisherigen Änderungen gehen verloren.",
+      "noPhaseSelectedTitle": "Keine Saisonphase ausgewählt",
+      "noPhaseSelectedMessage": "Bitte wähle eine Saisonphase aus, damit ich deinen Trainingsplan erstellen kann.",
+      "noWorkoutDataTitle": "Nicht genügend Profildaten",
+      "noWorkoutDataMessage": "Damit wir deine Trainingsdaten komplettieren können, brauchen wir zuerst dein restliches Profil.",
+      "goToProfile": "Profil Daten angeben",
+      "phases": {
+        "PAUSE": "Trainingsfrei",
+        "PREPATORY": "Vorbereitung",
+        "COMPETITION": "Spielsaison"
+      }
+    },
+    "trainingDays": {
+      "title": "Trainingstage",
+      "subtitle": "An welchen Tagen willst du mit der App trainieren?",
+      "abortQuestion": "Bearbeitung abbrechen?",
+      "abortIncomplete": "Ohne Trainingstage können wir keinen neuen Plan für dich erstellen.",
+      "abortExplanation": "Es wird kein neuer Trainingsplan erstellt.",
+      "noDaySelectedTitle": "Kein Trainingstag gewählt",
+      "noDaySelectedMessage": "Dein Plan kann nur erstellt werden, wenn du mindestens einen Trainingstag gewählt hast.",
+      "anamnesisIncompleteTitle": "Plan benötigt weitere Daten",
+      "anamnesisIncompleteMessage": "Bitte schließe die Angaben unter 'Mein Profil' ab, um den Trainingsplan zu generieren.",
+      "daySelectionNotPossibleTitle": "Du kannst diesen Tag nicht wählen",
+      "daySelectionNotPossibleChild": "Regeneration ist wichtig!\nDu musst deinem Körper immer einen Tag Ruhe gönnen.",
+      "daySelectionNotPossibleAdult": "Regeneration ist wichtig!\nTrainiere maximal drei Tage hintereinander.",
+      "tooltipRecommendation": "Ich empfehle dir {{days}} Trainingstage zu je {{minutes}} Minuten für die {{phase}}.",
+      "coachingMessage": "Bei gutem Fitnesslevel kannst du auch an Mannschaftstrainingstagen trainieren. Lass aber vor und nach einem Spieltag einen Tag Pause.",
+      "mondayTraining": "Montagstraining",
+      "tuesdayTraining": "Dienstagstraining",
+      "wednesdayTraining": "Mittwochstraining",
+      "thursdayTraining": "Donnerstagstraining",
+      "fridayTraining": "Freitagstraining",
+      "saturdayTraining": "Samstagstraining",
+      "sundayTraining": "Sonntagstraining",
+      "whereDoYouWorkOut": "Wo trainierst du?",
+      "howManyMinutes": "Wie viele Minuten trainierst du?"
+    },
+    "generating": {
+      "title": "Plan erstellen",
+      "thanksMessage": "Danke für deine Informationen. Jetzt erstelle ich deine persönlichen Trainingspläne.",
+      "errorTitle": "Ein Fehler ist aufgetreten",
+      "errorMessage": "Mit diesen Daten konnten wir leider keinen passenden Trainingsplan erzeugen. Unsere Entwickler wurden informiert.",
+      "stage1": "Einteilung in Trainingsphasen...",
+      "stage2": "Trainingstage werden generiert...",
+      "stage3": "Verteilung von 18 Trainingsschwerpunkten...",
+      "stage4": "Übungsauwahl aus 900 Trainingsvideos..."
     }
   },
   "subscription": {

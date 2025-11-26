@@ -25,7 +25,7 @@ type Props = {
   onToggle?: (opened: boolean) => void;
   iconName?: IoniconName;
   awesomeIconName?: FontAwesomeIconName;
-  items: Item[];
+  items: readonly Item[];
   selectedItems: string[];
 };
 

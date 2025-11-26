@@ -4,13 +4,13 @@ const AGE_GROUPS = {
   CHILD: "CHILD",
   ADOLESCENT: "ADOLESCENT",
   ADULT: "ADULT",
-};
+} as const;
 
 const LEVELS = {
   BEGINNER: "BEGINNER",
   ADVANCED: "ADVANCED",
   PROFESSIONAL: "PROFESSIONAL",
-};
+} as const;
 
 const AGE_GROUPS_MAX_AGE = {
   CHILD: 16,
@@ -660,6 +660,11 @@ const RECOMMENDATIONS_TRAINING_DAYS = {
       PREPATORY: 2,
       COMPETITION: 2,
     },
+    ADOLESCENT: {
+      PAUSE: 2,
+      PREPATORY: 3,
+      COMPETITION: 2,
+    },
     ADULT: {
       PAUSE: 2,
       PREPATORY: 3,
@@ -671,6 +676,11 @@ const RECOMMENDATIONS_TRAINING_DAYS = {
       PAUSE: 2,
       PREPATORY: 3,
       COMPETITION: 2,
+    },
+    ADOLESCENT: {
+      PAUSE: 3,
+      PREPATORY: 3,
+      COMPETITION: 3,
     },
     ADULT: {
       PAUSE: 3,
@@ -684,13 +694,18 @@ const RECOMMENDATIONS_TRAINING_DAYS = {
       PREPATORY: 3,
       COMPETITION: 2,
     },
+    ADOLESCENT: {
+      PAUSE: 4,
+      PREPATORY: 4,
+      COMPETITION: 3,
+    },
     ADULT: {
       PAUSE: 4,
       PREPATORY: 4,
       COMPETITION: 3,
     },
   },
-};
+} as const;
 
 const RECOMMENDATIONS_TRAINING_MINUTES = {
   BEGINNER: {
@@ -698,6 +713,11 @@ const RECOMMENDATIONS_TRAINING_MINUTES = {
       PAUSE: 35,
       PREPATORY: 35,
       COMPETITION: 35,
+    },
+    ADOLESCENT: {
+      PAUSE: 45,
+      PREPATORY: 45,
+      COMPETITION: 40,
     },
     ADULT: {
       PAUSE: 45,
@@ -711,6 +731,11 @@ const RECOMMENDATIONS_TRAINING_MINUTES = {
       PREPATORY: 45,
       COMPETITION: 40,
     },
+    ADOLESCENT: {
+      PAUSE: 50,
+      PREPATORY: 50,
+      COMPETITION: 45,
+    },
     ADULT: {
       PAUSE: 50,
       PREPATORY: 50,
@@ -723,13 +748,40 @@ const RECOMMENDATIONS_TRAINING_MINUTES = {
       PREPATORY: 45,
       COMPETITION: 40,
     },
+    ADOLESCENT: {
+      PAUSE: 60,
+      PREPATORY: 60,
+      COMPETITION: 50,
+    },
     ADULT: {
       PAUSE: 60,
       PREPATORY: 60,
       COMPETITION: 50,
     },
   },
-};
+} as const;
+
+const TRAINING_PLACES = [
+  {
+    displayName: { default: "zu Hause", en: "Home" },
+    value: "HOME",
+  },
+  {
+    displayName: { default: "Fitnessstudio", en: "Gym" },
+    value: "STUDIO",
+  },
+  {
+    displayName: { default: "in der Halle", en: "Hall" },
+    value: "HALL",
+  },
+  {
+    displayName: {
+      default: "Draußen/Trainingsplatz",
+      en: "Outside/Training ground",
+    },
+    value: "OUTSIDE",
+  },
+] as const;
 
 const TRAINING_PLACES_IMAGES = {
   HOME: require("../../assets/img/sportsAthletic.png"),
@@ -1068,6 +1120,7 @@ export const WorkoutConstants = {
   TEST_EXERCISES_REPETITIONS_PERCENTAGE,
   TRAINING_DAYS_TITLE,
   TRAINING_FOCUS_IMAGES,
+  TRAINING_PLACES,
   TRAINING_PLACES_IMAGES,
   VALUE_TYPE_NAMES,
 };

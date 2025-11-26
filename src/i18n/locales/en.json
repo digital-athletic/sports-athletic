@@ -30,7 +30,18 @@
     "saving": "Saving ...",
     "selected": "{{count}} selected",
     "skip": "skip",
-    "yes": "YES"
+    "yes": "YES",
+    "loading": "Loading",
+    "days": {
+      "monday": "Mo",
+      "tuesday": "Tu",
+      "wednesday": "We",
+      "thursday": "Th",
+      "friday": "Fr",
+      "saturday": "Sa",
+      "sunday": "Su"
+    },
+    "generatingTrainingPlan": "Generating training plan..."
   },
   "screens": {
     "start": {
@@ -86,6 +97,61 @@
       "abortExplanation": "All your changes will be lost.",
       "incompleteTitle": "Questionnaire Incomplete",
       "incompleteTrainingData": "Please complete your training data to generate a personalized plan."
+    },
+    "seasonPhase": {
+      "title": "Season phase",
+      "seasonPhaseLabel": "Season phase",
+      "seasonPhaseDescription": "Which season phase are you in with your team?",
+      "endOfSeasonPhaseLabel": "End of season phase",
+      "endOfSeasonPhaseDescription": "When does this phase end?",
+      "abortQuestion": "Abort editing season phase?",
+      "abortIncomplete": "Your training data is incomplete.",
+      "abortExplanation": "All your changes will be lost.",
+      "noPhaseSelectedTitle": "No season phase chosen",
+      "noPhaseSelectedMessage": "Please select a season phase so I can create your training plan.",
+      "noWorkoutDataTitle": "Missing profile data",
+      "noWorkoutDataMessage": "To finish your training data, we need you to complete your profile.",
+      "goToProfile": "Go to profile",
+      "phases": {
+        "PAUSE": "Transition",
+        "PREPATORY": "Prepatory",
+        "COMPETITION": "Competitive"
+      }
+    },
+    "trainingDays": {
+      "title": "Training days",
+      "subtitle": "On what days do you want to workout?",
+      "abortQuestion": "Abort editing training data?",
+      "abortIncomplete": "Without training days we can not create a plan for you.",
+      "abortExplanation": "We will not create a new plan for you.",
+      "noDaySelectedTitle": "No training day chosen",
+      "noDaySelectedMessage": "Select at least one day to generate your training plan.",
+      "anamnesisIncompleteTitle": "Plan needs more Data",
+      "anamnesisIncompleteMessage": "Please complete your data in 'My profile' to generate your workouts.",
+      "daySelectionNotPossibleTitle": "Day can not be selected",
+      "daySelectionNotPossibleChild": "Regeneration is important!\nYou have to give your body a day of rest after training.",
+      "daySelectionNotPossibleAdult": "Regeneration is important!\nDo not workout on more than three consecutive days.",
+      "tooltipRecommendation": "I recommend {{days}} days with {{minutes}} minutes each for your {{phase}}.",
+      "coachingMessage": "If you have a good fitness level you can also train on days with team training. But please leave a day out before and after game days.",
+      "mondayTraining": "Monday workout",
+      "tuesdayTraining": "Tuesday workout",
+      "wednesdayTraining": "Wednesday workout",
+      "thursdayTraining": "Thursday workout",
+      "fridayTraining": "Friday workout",
+      "saturdayTraining": "Saturday workout",
+      "sundayTraining": "Sunday workout",
+      "whereDoYouWorkOut": "Where do you work out?",
+      "howManyMinutes": "How many minutes do you work out?"
+    },
+    "generating": {
+      "title": "Generating Plan",
+      "thanksMessage": "Thank you for your information. Now I will prepare your workouts.",
+      "errorTitle": "An error occured",
+      "errorMessage": "We could not generate a training plan for your data. Our developers got noticed.",
+      "stage1": "Partitioning training phases...",
+      "stage2": "Generating training days...",
+      "stage3": "Allocating 18 training focuses...",
+      "stage4": "Selecting from 900 training videos..."
     }
   },
   "subscription": {

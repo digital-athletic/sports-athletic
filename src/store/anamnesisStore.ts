@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
+import { type SeasonPhaseType } from "./userWorkoutStore";
 
 export type LocalizedText = {
   [language: string]: string;
@@ -45,6 +46,7 @@ export interface AnamnesisState {
   tags: { [tag: string]: string[] };
   originPath?: Route;
   isLoading: boolean;
+  seasonPhase: SeasonPhaseType | null;
 
   // Actions
   setQuestions: (questions: AnamnesisQuestionGroupType[]) => void;
@@ -52,6 +54,7 @@ export interface AnamnesisState {
   setValue: (path: string, value: any) => void;
   setTag: (tag: string, values: string[]) => void;
   setOriginPath: (path?: Route) => void;
+  setSeasonPhase: (phase: SeasonPhaseType | null) => void;
   resetData: () => void;
   setCompleted: () => Promise<void>;
   saveData: () => Promise<void>;
@@ -196,6 +199,7 @@ const DEFAULT_STATE: WithoutFunctions<AnamnesisState> = {
   tags: {},
   originPath: undefined,
   isLoading: false,
+  seasonPhase: null,
 };
 
 /**
@@ -273,6 +277,12 @@ export const useAnamnesisStore = create<AnamnesisState>()(
         });
       },
 
+      setSeasonPhase: (phase) => {
+        set((state) => {
+          state.seasonPhase = phase;
+        });
+      },
+
       resetData: () => {
         const currentOriginPath = get().originPath;
         set((state) => {
@@ -281,6 +291,7 @@ export const useAnamnesisStore = create<AnamnesisState>()(
           state.tags = {};
           state.originPath = currentOriginPath; // Preserve origin path like legacy
           state.isLoading = false;
+          state.seasonPhase = null;
         });
       },
 

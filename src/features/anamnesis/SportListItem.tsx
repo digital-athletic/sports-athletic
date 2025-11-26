@@ -1,11 +1,6 @@
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  type ImageSourcePropType,
-} from "react-native";
+import { Image, StyleSheet, TouchableOpacity } from "react-native";
 
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { Box } from "@/theme/Box";
@@ -32,11 +27,7 @@ export const SportListItem: FC<SportListItemProps> = ({
       accessibilityRole="button"
     >
       <Image
-        source={
-          WorkoutConstants.SPORTS_IMAGES[
-            sportKey as keyof typeof WorkoutConstants.SPORTS_IMAGES
-          ] as ImageSourcePropType
-        }
+        source={WorkoutConstants.SPORTS_IMAGES[sportKey]}
         style={styles.listImage}
         resizeMode="cover"
         accessibilityLabel={t(`sports.${sportKey}`)}

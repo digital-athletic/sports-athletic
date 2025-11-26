@@ -77,7 +77,7 @@ export default function MoreScreen() {
       icon: "information-circle-outline",
       route: "/profile/imprint",
     },
-  ];
+  ] as const;
 
   return (
     <ScrollView>
@@ -101,7 +101,7 @@ export default function MoreScreen() {
           borderColor="lightGrey2"
         >
           {menuItems.map((item, index) => (
-            <Link key={index} href={item.route as any}>
+            <Link key={index} href={item.route}>
               <Box
                 flexDirection="row"
                 alignItems="center"
@@ -111,11 +111,7 @@ export default function MoreScreen() {
                 borderBottomColor="lightGrey2"
               >
                 <Box flexDirection="row" alignItems="center" gap="m">
-                  <Ionicons
-                    name={item.icon as any}
-                    size={24}
-                    color={colors.primary}
-                  />
+                  <Ionicons name={item.icon} size={24} color={colors.primary} />
                   <Text variant="body">{item.title}</Text>
                 </Box>
                 <Ionicons

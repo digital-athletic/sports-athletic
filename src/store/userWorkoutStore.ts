@@ -1,14 +1,18 @@
+import { type SeasonPhase } from "@/constants/seasonPhase";
+import { WorkoutConstants } from "@/constants/workoutConstants";
+import { dateToDDMMYYYY } from "@/utils/date";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
 
 // Type definitions based on legacy models
-export type Sport = string; // e.g., 'SOCCER', 'BASKETBALL', etc.
+export type Sport = keyof typeof WorkoutConstants.SPORTS; // e.g., 'SOCCER', 'BASKETBALL', etc.
 
 export interface SeasonPhaseType {
-  type: string;
-  endDate?: string;
+  type: SeasonPhase | null;
+  endDate: string; // DD-MM-YYYY format
+  numOfWeeks?: number;
 }
 
 export interface MaxValuesType {
@@ -23,6 +27,8 @@ export interface ExerciseBranchType {
 
 export interface TrainingPlanType {
   sections: {
+    start: string; // DD-MM-YYYY
+    numOfWeeks: number;
     weekday: number;
     trainings: {
       skill: string;
@@ -32,7 +38,7 @@ export interface TrainingPlanType {
 }
 
 export interface UserWorkoutDataType {
-  sport: Sport;
+  sport: Sport | null;
   seasonPhase: SeasonPhaseType;
   equipment: string[];
   maxValues: MaxValuesType;
@@ -61,8 +67,11 @@ export interface UserWorkoutState {
 }
 
 const DEFAULT_WORKOUT_DATA: UserWorkoutDataType = {
-  sport: "",
-  seasonPhase: { type: "" },
+  sport: null,
+  seasonPhase: {
+    type: null,
+    endDate: dateToDDMMYYYY(new Date()),
+  },
   equipment: [],
   maxValues: {},
   tags: [],

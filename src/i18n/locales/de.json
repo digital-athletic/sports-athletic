@@ -152,6 +152,9 @@
       "stage2": "Trainingstage werden generiert...",
       "stage3": "Verteilung von 18 Trainingsschwerpunkten...",
       "stage4": "Übungsauwahl aus 900 Trainingsvideos..."
+    },
+    "more": {
+      "title": "Profil"
     }
   },
   "subscription": {
@@ -220,6 +223,40 @@
     "AMERICAN_FOOTBALL_SPORT": "American Football",
     "RUGBY_SPORT": "Rugby",
     "OTHER_SPORT": "Sonstige Sportarten"
+  },
+  "more": {
+    "title": "Profil",
+    "myProfile": "Mein Profil",
+    "mySport": "Meine Sportart",
+    "myEquipment": "Meine Ausrüstung",
+    "myTrainingData": "Meine Trainingsdaten",
+    "startNewTestWorkout": "Neues Test-Workout starten",
+    "technicalVideos": "Technikvideos",
+    "agb": "AGB",
+    "privacy": "Datenschutz",
+    "notificationsSettings": "Benachrichtigungseinstellungen",
+    "subscriptionStatus": "Abonnementstatus",
+    "contact": "Kontakt",
+    "imprint": "Impressum",
+    "deleteUser": "Nutzer löschen",
+    "logout": "Abmelden",
+    "testPersonas": "Test Personas",
+    "trainingPlans": "Trainingspläne",
+    "exercises": "Übungen",
+    "showSubscriptionOptions": "Abonnementoptionen anzeigen",
+    "testPeriodExpired": "Testzeitraum abgelaufen",
+    "stillXDaysForFree": "Noch {{count}} Tage kostenlos",
+    "deleteQuestionTitle": "Nutzer löschen?",
+    "deleteQuestionMessage": "Bist du sicher, dass du deinen Account unwiderruflich löschen möchtest?",
+    "logoutQuestionTitle": "Abmelden?",
+    "logoutQuestionMessage": "Bist du sicher, dass du dich abmelden möchtest?",
+    "deleteFailed": "Löschen fehlgeschlagen",
+    "logoutFailed": "Abmelden fehlgeschlagen",
+    "loggingOut": "Melde ab...",
+    "imageAlt": {
+      "trainingData": "Meine Trainingsdaten Icon",
+      "powerTest": "Krafttest Icon"
+    }
   },
   "muscles": {
     "AEUSSERE_OBERSCHENKELMUSKULATUR_LINKS": "linker äußerer Oberschenkel",

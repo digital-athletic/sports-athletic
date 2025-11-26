@@ -152,6 +152,9 @@
       "stage2": "Generating training days...",
       "stage3": "Allocating 18 training focuses...",
       "stage4": "Selecting from 900 training videos..."
+    },
+    "more": {
+      "title": "Profile"
     }
   },
   "subscription": {
@@ -220,6 +223,40 @@
     "AMERICAN_FOOTBALL_SPORT": "American Football",
     "RUGBY_SPORT": "Rugby",
     "OTHER_SPORT": "Other Sports"
+  },
+  "more": {
+    "title": "Profile",
+    "myProfile": "My Profile",
+    "mySport": "My Sport",
+    "myEquipment": "My Equipment",
+    "myTrainingData": "My Training Data",
+    "startNewTestWorkout": "Start New Test Workout",
+    "technicalVideos": "Technical Videos",
+    "agb": "Terms and Conditions",
+    "privacy": "Privacy",
+    "notificationsSettings": "Notification Settings",
+    "subscriptionStatus": "Subscription Status",
+    "contact": "Contact",
+    "imprint": "Imprint",
+    "deleteUser": "Delete User",
+    "logout": "Logout",
+    "testPersonas": "Test Personas",
+    "trainingPlans": "Training Plans",
+    "exercises": "Exercises",
+    "showSubscriptionOptions": "Show Subscription Options",
+    "testPeriodExpired": "Test period expired",
+    "stillXDaysForFree": "Still {{count}} days for free",
+    "deleteQuestionTitle": "Delete User?",
+    "deleteQuestionMessage": "Are you sure you want to permanently delete your account?",
+    "logoutQuestionTitle": "Logout?",
+    "logoutQuestionMessage": "Are you sure you want to logout?",
+    "deleteFailed": "Deletion failed",
+    "logoutFailed": "Logout failed",
+    "loggingOut": "Logging out...",
+    "imageAlt": {
+      "trainingData": "My Training Data Icon",
+      "powerTest": "Power Test Icon"
+    }
   },
   "muscles": {
     "AEUSSERE_OBERSCHENKELMUSKULATUR_LINKS": "left outer thigh",

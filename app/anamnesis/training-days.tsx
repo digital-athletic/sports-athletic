@@ -78,7 +78,7 @@ export default function TrainingDays() {
         onPress: () => {
           if (isInInitialAnamnesis) {
             router.navigate({
-              pathname: "/profile/subscribe",
+              pathname: "/more/subscribe",
               params: { goOn: origin satisfies Route | undefined },
             });
             setIsInInitialAnamnesis(false);
@@ -120,8 +120,8 @@ export default function TrainingDays() {
           {
             text: t("common.ok"),
             onPress: () => {
-              if (originPath === "/profile") {
-                router.navigate("/profile");
+              if (originPath === "/more") {
+                router.navigate("/more");
               } else {
                 router.navigate("/(tabs)");
               }
@@ -376,10 +376,8 @@ export default function TrainingDays() {
     seasonPhase?.type === SeasonPhase.COMPETITION;
 
   // Calculate progress for progress bar
-  const maxSteps =
-    originPath === "/profile" ? 2 : 3 + anamnesisQuestions.length;
-  const progress =
-    originPath === "/profile" ? 2 : 3 + anamnesisQuestions.length;
+  const maxSteps = originPath === "/more" ? 2 : 3 + anamnesisQuestions.length;
+  const progress = originPath === "/more" ? 2 : 3 + anamnesisQuestions.length;
 
   const insets = useSafeAreaInsets();
 

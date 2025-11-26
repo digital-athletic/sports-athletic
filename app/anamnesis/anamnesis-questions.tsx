@@ -88,7 +88,7 @@ export default function AnamnesisQuestions() {
         onPress: async () => {
           if (isInInitialAnamnesis) {
             router.navigate({
-              pathname: "/(tabs)/profile/subscribe",
+              pathname: "/(tabs)/more/subscribe",
               params: { goOn: "/(tabs)" satisfies Route },
             });
             setIsInInitialAnamnesis(false);
@@ -139,7 +139,7 @@ export default function AnamnesisQuestions() {
         setSeasonPhase(workoutData.seasonPhase);
         router.navigate("/anamnesis/generating");
       } else {
-        if (originPath === "/(tabs)/profile") {
+        if (originPath === "/(tabs)/more") {
           Alert.alert(
             t("screens.anamnesis.incompleteTitle"),
             t("screens.anamnesis.incompleteTrainingData"),

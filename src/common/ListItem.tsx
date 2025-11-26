@@ -61,7 +61,7 @@ export const ListItem: FC<ListItemProps> = ({
               text: t("common.ok"),
               onPress: () => {
                 router.navigate({
-                  pathname: "/(tabs)/profile/subscribe",
+                  pathname: "/(tabs)/more/subscribe",
                   params: { backPath: "PowerTest" },
                 });
               },

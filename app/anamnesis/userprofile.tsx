@@ -53,7 +53,7 @@ export default function UserProfileScreen() {
     if (originPath === ("/anamnesis/sport" satisfies Route)) {
       router.back();
     } else {
-      router.replace("/(tabs)/profile");
+      router.replace("/(tabs)/more");
     }
   }, [originPath]);
 

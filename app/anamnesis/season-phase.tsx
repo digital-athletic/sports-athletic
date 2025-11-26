@@ -83,7 +83,7 @@ export default function SeasonPhase() {
         onPress: () => {
           if (isInInitialAnamnesis) {
             router.navigate({
-              pathname: "/profile/subscribe",
+              pathname: "/more/subscribe",
               params: { goOn: origin satisfies Route | undefined },
             });
             setIsInInitialAnamnesis(false);
@@ -120,7 +120,7 @@ export default function SeasonPhase() {
               router.navigate({
                 pathname: "/anamnesis/userprofile",
                 params: {
-                  backPath: "/profile" satisfies Route,
+                  backPath: "/more" satisfies Route,
                 },
               });
             },
@@ -137,7 +137,7 @@ export default function SeasonPhase() {
 
     // Check if user has workout data (would need to be added to store)
     // For now, proceed to training days
-    if (originPath === ("/profile" satisfies Route)) {
+    if (originPath === ("/more" satisfies Route)) {
       router.navigate({
         pathname: "/anamnesis/training-days",
         params: { originPath },
@@ -195,10 +195,8 @@ export default function SeasonPhase() {
   ];
 
   // Calculate progress for progress bar
-  const maxSteps =
-    (originPath === "/profile" ? 2 : 3) + anamnesisQuestions.length;
-  const progress =
-    (originPath === "/profile" ? 1 : 2) + anamnesisQuestions.length;
+  const maxSteps = (originPath === "/more" ? 2 : 3) + anamnesisQuestions.length;
+  const progress = (originPath === "/more" ? 1 : 2) + anamnesisQuestions.length;
 
   const insets = useSafeAreaInsets();
 

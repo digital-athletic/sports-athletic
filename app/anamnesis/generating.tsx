@@ -83,8 +83,8 @@ export default function Generating() {
           {
             text: t("common.ok"),
             onPress: () => {
-              if (origin === "/profile") {
-                router.navigate("/profile");
+              if (origin === "/more") {
+                router.navigate("/more");
               } else {
                 router.navigate("/(tabs)");
               }
@@ -129,7 +129,7 @@ export default function Generating() {
 
       if (isInInitialAnamnesis) {
         router.navigate({
-          pathname: "/profile/subscribe",
+          pathname: "/more/subscribe",
           params: { goOn: "/(tabs)" satisfies Route },
         });
         setIsInInitialAnamnesis(false);

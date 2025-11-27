@@ -2,12 +2,13 @@
   "common": {
     "altText": {
       "coachFace": "Coach face",
-      "primaryMuscle": "Primary muscle: {{muscleName}}",
-      "secondaryMuscle": "Secondary muscle: {{muscleName}}",
-      "muscleLink": "Select {{muscleName}} muscle",
       "hintIcon": "Hint icon",
       "icon": "{{title}} icon",
       "image": "{{title}} image",
+      "listItem": "Exercise",
+      "muscleLink": "Select {{muscleName}} muscle",
+      "primaryMuscle": "Primary muscle: {{muscleName}}",
+      "secondaryMuscle": "Secondary muscle: {{muscleName}}",
       "warningIcon": "Warning icon"
     },
     "back": "Back",
@@ -162,10 +163,56 @@
     "chooseSubscriptionToStart": "Choose a subscription to start your training"
   },
   "training": {
+    "focus": {
+      "CARDIO": "Stamina",
+      "COMBINED": "Power & Stamina",
+      "PHASE": "Power",
+      "STABILITY": "Stability"
+    },
+    "place": {
+      "HOME": "at home",
+      "STUDIO": "fitness studio",
+      "HALL": "gym hall",
+      "OUTSIDE": "outside/training ground",
+      "NO_PLACE": "no equipment"
+    },
+    "quickstart": {
+      "STABILITY_TILE_BAS": "Leg Axis Stability",
+      "QUICKSTART_BAS_DESC": "Build stability in your lower body",
+      "STABILITY_TILE_GKS": "Full Body Stability",
+      "QUICKSTART_GKS_DESC": "Strengthen your entire body",
+      "QUICKSTART_MOBILITY": "Mobility",
+      "QUICKSTART_MOBILITY_DESC": "Improve your range of motion",
+      "QUICKSTART_BLACK_ROLL": "Black Roll",
+      "QUICKSTART_BLACK_ROLL_DESC": "Self-massage and foam rolling",
+      "QUICKSTART_WARM_UP": "Warm-up",
+      "QUICKSTART_WARM_UP_DESC": "Prepare your body for training",
+      "QUICKSTART_COOL_DOWN": "Cool Down",
+      "QUICKSTART_COOL_DOWN_DESC": "Recovery and stretching"
+    },
+    "prevention": {
+      "PREVENTION_TILE_ANKLE": "Ankle",
+      "PREVENTION_TILE_KNEE": "Knee",
+      "PREVENTION_TILE_SPINE": "Spine",
+      "PREVENTION_TILE_SHOULDER": "Shoulder",
+      "PREVENTION_TILE_WRIST": "Wrist"
+    },
+    "selectTraining": {
+      "title": "Start training",
+      "workoutNowMsg": "Start your workout now!",
+      "workoutNowSpeedMsg": "Get ready for a powerful training session!",
+      "coachSportProhibitionMsg": "Make sure you're not injured before starting!",
+      "coachSportPreventionMsg": "Prevention exercises help you stay injury-free.",
+      "coachSportStabilityMsg": "Build a strong foundation with stability exercises.",
+      "timeAndPlace": "{{focus}}, {{time}} minutes"
+    },
     "powerTest": {
       "title": "Power test",
       "description": "Do as many repetitions as you can do with good technique.",
-      "placeholder": "Repetitions"
+      "placeholder": "Repetitions",
+      "todayIsPowerTest": "Today is your power test! Let's see how strong you are.",
+      "startPowerTest": "Start power test",
+      "skipPowerTest": "Skip power test"
     }
   },
   "onboarding": {

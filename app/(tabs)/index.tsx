@@ -1,8 +1,9 @@
+import { useTrainingStore } from "@/features/training/trainingStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { Card } from "@/theme/Card";
 import { Text } from "@/theme/Text";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
 
@@ -14,6 +15,14 @@ import { ScrollView } from "react-native";
  */
 export default function HomeScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { setTrainingSelection } = useTrainingStore();
+
+  const handleTrainingPress = () => {
+    setTrainingSelection("QUICK");
+    router.push("/training");
+  };
+
   return (
     <ScrollView>
       <Box flexGrow={1} padding="l" backgroundColor="lightGrey1">
@@ -30,9 +39,7 @@ export default function HomeScreen() {
             <Text variant="body" marginBottom="m">
               Start your daily workout
             </Text>
-            <Link href="/training" asChild>
-              <Button>Start Training</Button>
-            </Link>
+            <Button onPress={handleTrainingPress}>Start Training</Button>
           </Card>
 
           <Card variant="elevated">

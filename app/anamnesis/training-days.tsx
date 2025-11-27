@@ -3,9 +3,9 @@ import { Coaching } from "@/common/Coaching";
 import { Loading } from "@/common/Loading";
 import { ProgressBar } from "@/common/ProgressBar";
 import { SkipHeader } from "@/common/SkipHeader";
-import { SeasonPhase } from "@/constants/seasonPhase";
-import { WorkoutConstants } from "@/constants/workoutConstants";
+import { isPlaceType, WorkoutConstants } from "@/constants/workoutConstants";
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
+import { SeasonPhase } from "@/features/training/models/SeasonPhase";
 import { SelectionInputField } from "@/form/SelectionInputField";
 import { SnapSliderInputField } from "@/form/SnapSliderInputField";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
@@ -256,12 +256,15 @@ export default function TrainingDays() {
 
   const handleChangeLocation = (weekday: number, selectedValues: string[]) => {
     if (selectedValues.length > 0) {
-      setDayLocation(weekday, selectedValues[0]);
+      const location = selectedValues[0];
+      if (isPlaceType(location)) {
+        setDayLocation(weekday, location);
+      }
     }
   };
 
   const handleChangeDuration = (weekday: number, durationMinutes: number) => {
-    setDayDuration(weekday, durationMinutes.toString());
+    setDayDuration(weekday, durationMinutes);
   };
 
   const renderDayDetails = (weekday: number) => {
@@ -295,7 +298,7 @@ export default function TrainingDays() {
     }));
 
     // Find current duration index
-    const currentDuration = day.duration ? parseInt(day.duration, 10) : null;
+    const currentDuration = day.duration ? day.duration : null;
     const currentIndex = currentDuration
       ? durationOptions.findIndex((opt) => opt.value === currentDuration)
       : 0;

@@ -1,3 +1,6 @@
+import { I18nKey } from "@/i18n";
+import { Route } from "expo-router";
+import { ImageSourcePropType } from "react-native";
 import { SharedConstants } from "./sharedConstants";
 
 const AGE_GROUPS = {
@@ -44,7 +47,9 @@ const SKILL_TREES = [
   "WU",
   "WUSKSA",
   "WUSPEZIAL",
-];
+] as const;
+
+export type SkillTree = (typeof SKILL_TREES)[number];
 
 const SECTION_ORDER = [
   "BR",
@@ -252,159 +257,148 @@ export type SectionTypes =
   | "SAKG"
   | "SA";
 
-export type SkillTypes =
-  | "SWR1"
-  | "SWR1KG"
-  | "SWR2"
-  | "SWR2KG"
-  | "MAX_KRAFT"
-  | "SK"
-  | "SKKG"
-  | "SA"
-  | "SAKG"
-  | "BAS"
-  | "BR"
-  | "CD"
-  | "GKS"
-  | "HBCARDIO"
-  | "MOB"
-  | "PREVSHOULDER"
-  | "PREVKNEE"
-  | "PREVWRIST"
-  | "PREVANKLE"
-  | "PREVSPINE"
-  | "WU";
+export const skillTypeValues = [
+  "SWR1",
+  "SWR1KG",
+  "SWR2",
+  "SWR2KG",
+  "MAX_KRAFT",
+  "SK",
+  "SKKG",
+  "SA",
+  "SAKG",
+  "BAS",
+  "BR",
+  "CD",
+  "GKS",
+  "HBCARDIO",
+  "MOB",
+  "PREVSHOULDER",
+  "PREVKNEE",
+  "PREVWRIST",
+  "PREVANKLE",
+  "PREVSPINE",
+  "WU",
+] as const;
 
-const QUICKSTART_TILES = [
+export type SkillTypes = (typeof skillTypeValues)[number];
+
+export const isSkillTypes = (value: unknown): value is SkillTypes =>
+  typeof value === "string" && skillTypeValues.includes(value as SkillTypes);
+
+const placeTypeValues = ["HOME", "OUTSIDE", "HALL", "STUDIO"] as const;
+
+export type PlaceType = (typeof placeTypeValues)[number];
+
+export const isPlaceType = (value: unknown): value is PlaceType =>
+  typeof value === "string" && placeTypeValues.includes(value as PlaceType);
+
+export type FocusType = "PHASE" | "CARDIO" | "STABILITY" | "COMBINED";
+
+export type TileData = {
+  picture: ImageSourcePropType;
+  title: I18nKey;
+  description?: {
+    text: I18nKey;
+    params?: {
+      time?: number; // in minutes
+      place?: string;
+      focus?: string;
+    };
+  };
+  navigate: {
+    key: Route;
+    params?: {
+      type: SkillTypes | "PLAN" | "TEST_WORKOUT";
+      weekday?: number;
+      sectionIndex?: number;
+      origin?: string;
+      sectionType?: SectionTypes;
+      sectionCardioType?: CardioTypes;
+      trainingFocus?: FocusType;
+    };
+  };
+};
+
+export const QUICKSTART_TILES: TileData[] = [
   {
     picture: require("../../assets/img/shortTrainings/beinachsenstabilitaet.jpg"),
-    title: "STABILITY_TILE_BAS",
-    description: { text: "QUICKSTART_BAS_DESC" },
-    navigate: [
-      { key: "TrainingStack" },
-      {
-        key: "MuscleSoreness",
-        params: { type: "BAS" },
-      },
-    ],
+    title: "training.quickstart.STABILITY_TILE_BAS",
+    description: { text: "training.quickstart.QUICKSTART_BAS_DESC" },
+    navigate: { key: "/training/muscle-soreness", params: { type: "BAS" } },
   },
   {
     picture: require("../../assets/img/shortTrainings/ganzkoerperstabilitaet.jpg"),
-    title: "STABILITY_TILE_GKS",
-    description: { text: "QUICKSTART_GKS_DESC" },
-    navigate: [
-      { key: "TrainingStack" },
-      {
-        key: "MuscleSoreness",
-        params: { type: "GKS" },
-      },
-    ],
+    title: "training.quickstart.STABILITY_TILE_GKS",
+    description: { text: "training.quickstart.QUICKSTART_GKS_DESC" },
+    navigate: { key: "/training/muscle-soreness", params: { type: "GKS" } },
   },
   {
     picture: require("../../assets/img/shortTrainings/mobility.jpg"),
-    title: "QUICKSTART_MOBILITY",
-    description: { text: "QUICKSTART_MOBILITY_DESC" },
-    navigate: [
-      { key: "TrainingStack" },
-      {
-        key: "MuscleSoreness",
-        params: { type: "MOB" },
-      },
-    ],
+    title: "training.quickstart.QUICKSTART_MOBILITY",
+    description: { text: "training.quickstart.QUICKSTART_MOBILITY_DESC" },
+    navigate: { key: "/training/muscle-soreness", params: { type: "MOB" } },
   },
   {
     picture: require("../../assets/img/shortTrainings/black_roll.png"),
-    title: "QUICKSTART_BLACK_ROLL",
-    description: { text: "QUICKSTART_BLACK_ROLL_DESC" },
-    navigate: [
-      { key: "TrainingStack" },
-      {
-        key: "MuscleSoreness",
-        params: { type: "BR" },
-      },
-    ],
+    title: "training.quickstart.QUICKSTART_BLACK_ROLL",
+    description: { text: "training.quickstart.QUICKSTART_BLACK_ROLL_DESC" },
+    navigate: { key: "/training/muscle-soreness", params: { type: "BR" } },
   },
   {
     picture: require("../../assets/img/shortTrainings/warm_up.jpg"),
-    title: "QUICKSTART_WARM_UP",
-    description: { text: "QUICKSTART_WARM_UP_DESC" },
-    navigate: [
-      { key: "TrainingStack" },
-      {
-        key: "MuscleSoreness",
-        params: { type: "WU" },
-      },
-    ],
+    title: "training.quickstart.QUICKSTART_WARM_UP",
+    description: { text: "training.quickstart.QUICKSTART_WARM_UP_DESC" },
+    navigate: { key: "/training/muscle-soreness", params: { type: "WU" } },
   },
   {
     picture: require("../../assets/img/shortTrainings/cool_down.jpg"),
-    title: "QUICKSTART_COOL_DOWN",
-    description: { text: "QUICKSTART_COOL_DOWN_DESC" },
-    navigate: [
-      { key: "TrainingStack" },
-      {
-        key: "MuscleSoreness",
-        params: { type: "CD" },
-      },
-    ],
+    title: "training.quickstart.QUICKSTART_COOL_DOWN",
+    description: { text: "training.quickstart.QUICKSTART_COOL_DOWN_DESC" },
+    navigate: { key: "/training/muscle-soreness", params: { type: "CD" } },
   },
 ];
 
-const PREVENTION_TILES = [
+export const PREVENTION_TILES: TileData[] = [
   {
     picture: require("../../assets/img/prevention/prevention_ankle_4to3.png"),
-    title: "PREVENTION_TILE_ANKLE",
-    navigate: [
-      { key: "TrainingStack" },
-      {
-        key: "MuscleSoreness",
-        params: { type: "PREVANKLE" },
-      },
-    ],
+    title: "training.prevention.PREVENTION_TILE_ANKLE",
+    navigate: {
+      key: "/training/muscle-soreness",
+      params: { type: "PREVANKLE" },
+    },
   },
   {
     picture: require("../../assets/img/prevention/prevention_hip_4to3.png"),
-    title: "PREVENTION_TILE_KNEE",
-    navigate: [
-      { key: "TrainingStack" },
-      {
-        key: "MuscleSoreness",
-        params: { type: "PREVKNEE" },
-      },
-    ],
+    title: "training.prevention.PREVENTION_TILE_KNEE",
+    navigate: {
+      key: "/training/muscle-soreness",
+      params: { type: "PREVKNEE" },
+    },
   },
   {
     picture: require("../../assets/img/prevention/prevention_spine_4to3.png"),
-    title: "PREVENTION_TILE_SPINE",
-    navigate: [
-      { key: "TrainingStack" },
-      {
-        key: "MuscleSoreness",
-        params: { type: "PREVSPINE" },
-      },
-    ],
+    title: "training.prevention.PREVENTION_TILE_SPINE",
+    navigate: {
+      key: "/training/muscle-soreness",
+      params: { type: "PREVSPINE" },
+    },
   },
   {
     picture: require("../../assets/img/prevention/prevention_shoulder_4to3.png"),
-    title: "PREVENTION_TILE_SHOULDER",
-    navigate: [
-      { key: "TrainingStack" },
-      {
-        key: "MuscleSoreness",
-        params: { type: "PREVSHOULDER" },
-      },
-    ],
+    title: "training.prevention.PREVENTION_TILE_SHOULDER",
+    navigate: {
+      key: "/training/muscle-soreness",
+      params: { type: "PREVSHOULDER" },
+    },
   },
   {
     picture: require("../../assets/img/prevention/prevention_wrist_4to3.png"),
-    title: "PREVENTION_TILE_WRIST",
-    navigate: [
-      { key: "TrainingStack" },
-      {
-        key: "MuscleSoreness",
-        params: { type: "PREVWRIST" },
-      },
-    ],
+    title: "training.prevention.PREVENTION_TILE_WRIST",
+    navigate: {
+      key: "/training/muscle-soreness",
+      params: { type: "PREVWRIST" },
+    },
   },
 ];
 
@@ -783,14 +777,14 @@ const TRAINING_PLACES = [
   },
 ] as const;
 
-const TRAINING_PLACES_IMAGES = {
+const TRAINING_PLACES_IMAGES: Record<PlaceType, ImageSourcePropType> = {
   HOME: require("../../assets/img/sportsAthletic.png"),
   OUTSIDE: require("../../assets/img/sportsAthletic.png"),
   HALL: require("../../assets/img/sportsAthletic.png"),
   STUDIO: require("../../assets/img/sportsAthletic.png"),
 };
 
-const TRAINING_FOCUS_IMAGES = {
+const TRAINING_FOCUS_IMAGES: Record<FocusType, ImageSourcePropType> = {
   PHASE: require("../../assets/img/shortTrainings/kraft.png"),
   COMBINED: require("../../assets/img/shortTrainings/kraftausdauer.jpg"),
   CARDIO: require("../../assets/img/shortTrainings/ausdauer.png"),
@@ -807,7 +801,11 @@ const TRAINING_DAYS_TITLE = [
   "SUNDAY_TRAINING",
 ];
 
-export type ExcerciseDifficulty = null | "TOO_HARD" | "TOO_EASY" | "SUCCEEDED";
+export type ExerciseDifficultyType =
+  | null
+  | "TOO_HARD"
+  | "TOO_EASY"
+  | "SUCCEEDED";
 
 const EXERCISE_DIRECTIONS = {
   VERTICAL_PUSH: "VERTICAL_PUSH",
@@ -1123,4 +1121,4 @@ export const WorkoutConstants = {
   TRAINING_PLACES,
   TRAINING_PLACES_IMAGES,
   VALUE_TYPE_NAMES,
-};
+} as const;

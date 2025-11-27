@@ -1,10 +1,10 @@
 import { TagGroups } from "@/constants/tagGroups";
+import { SeasonPhaseType } from "@/features/training/models/SeasonPhase";
 import { Route } from "expo-router";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
-import { type SeasonPhaseType } from "./userWorkoutStore";
 
 export type LocalizedText = {
   [language: string]: string;

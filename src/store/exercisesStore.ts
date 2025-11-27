@@ -1,28 +1,8 @@
+import { ExerciseType } from "@/features/training/models/Exercise";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
-
-export type SkillType =
-  | "PREVENTION"
-  | "MOBILITY"
-  | "SWR"
-  | "WARMUP"
-  | "STABILITY"
-  | "CARDIO";
-
-export interface ExerciseType {
-  id: number;
-  name: string;
-  description: string;
-  videoUrl?: string;
-  thumbnailUrl?: string;
-  difficulty: number;
-  equipment: string[];
-  muscleGroups: string[];
-  tags: string[];
-  skill: SkillType;
-}
 
 export interface ExercisesState {
   exercises: ExerciseType[] | null;
@@ -33,9 +13,7 @@ export interface ExercisesState {
 
   // Selectors
   getExerciseById: (id: number) => ExerciseType | undefined;
-  getExercisesBySkill: (skill: SkillType) => ExerciseType[];
   getExercisesByTag: (tag: string) => ExerciseType[];
-  getExercisesByEquipment: (equipment: string[]) => ExerciseType[];
 }
 
 /**
@@ -48,16 +26,11 @@ export interface ExercisesState {
  *
  * @example
  * ```tsx
- * const { exercises, getExerciseById, getExercisesBySkill } = useExercisesStore();
+ * const { exercises, getExerciseById } = useExercisesStore();
  *
  * // Get a specific exercise
  * const exercise = getExerciseById(42);
  *
- * // Get all prevention exercises
- * const preventionExercises = getExercisesBySkill('PREVENTION');
- *
- * // Filter by available equipment
- * const homeExercises = getExercisesByEquipment(['BODYWEIGHT', 'MAT']);
  * ```
  */
 export const useExercisesStore = create<ExercisesState>()(
@@ -80,24 +53,10 @@ export const useExercisesStore = create<ExercisesState>()(
         return exercises?.find((exercise) => exercise.id === id);
       },
 
-      getExercisesBySkill: (skill) => {
-        const { exercises } = get();
-        return exercises?.filter((exercise) => exercise.skill === skill) ?? [];
-      },
-
       getExercisesByTag: (tag) => {
         const { exercises } = get();
         return (
           exercises?.filter((exercise) => exercise.tags.includes(tag)) ?? []
-        );
-      },
-
-      getExercisesByEquipment: (equipment) => {
-        const { exercises } = get();
-        if (!exercises) return [];
-
-        return exercises.filter((exercise) =>
-          exercise.equipment.every((eq) => equipment.includes(eq))
         );
       },
     })),

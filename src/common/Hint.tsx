@@ -2,6 +2,7 @@ import { AwesomeIcon } from "@/common/AwesomeIcon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
+import { useResponsiveProp } from "@shopify/restyle";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -20,8 +21,13 @@ export const Hint: FC<HintProps> = ({ type, message }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
+  const iconSize = useResponsiveProp({
+    phone: 120,
+    tablet: 180,
+  });
+
   const isWarning = type === "WARNING";
-  const iconName = isWarning ? "exclamation-circle" : "info-circle";
+  const iconName = isWarning ? "warning" : "info-circle";
   const textColor = isWarning ? "primary" : "darkGrey1";
   const accessibilityLabel = isWarning
     ? t("common.altText.warningIcon")
@@ -29,29 +35,21 @@ export const Hint: FC<HintProps> = ({ type, message }) => {
 
   return (
     <Box
-      height={112}
       borderRadius="m"
       justifyContent="center"
       alignItems="stretch"
       alignSelf="stretch"
       flexDirection="row"
       backgroundColor="lightGrey1"
-      overflow="hidden"
+      paddingHorizontal="m"
+      paddingVertical="xs"
     >
       {/* Icon area */}
-      <Box flex={1} position="relative">
-        <Box
-          position="absolute"
-          bottom={0}
-          left={-16}
-          width={40}
-          height={40}
-          justifyContent="center"
-          alignItems="center"
-        >
+      <Box justifyContent="center">
+        <Box justifyContent="center" alignItems="center">
           <AwesomeIcon
             name={iconName}
-            size={40}
+            size={iconSize}
             color={colors.lightGrey2}
             accessibilityLabel={accessibilityLabel}
           />
@@ -60,7 +58,7 @@ export const Hint: FC<HintProps> = ({ type, message }) => {
 
       {/* Message area */}
       <Box
-        flex={2}
+        flex={1}
         justifyContent="center"
         alignItems="center"
         paddingHorizontal="m"

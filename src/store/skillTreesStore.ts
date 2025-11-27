@@ -1,8 +1,8 @@
+import { ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
-import type { ExerciseBranchType } from "./userWorkoutStore";
 
 export interface SkillTreeType {
   name: string;
@@ -80,12 +80,14 @@ export const useSkillTreesStore = create<SkillTreesState>()(
 
       getBranchById: (skillName, branchId) => {
         const tree = get().getSkillTree(skillName);
-        return tree?.branches.find((branch) => branch.id === branchId);
+        return tree?.branches.find(
+          (branch) => branch.exerciseBranchId === branchId
+        );
       },
 
       getAvailableBranchesForLevel: (skillName, level) => {
         const tree = get().getSkillTree(skillName);
-        return tree?.branches.filter((branch) => branch.level === level) ?? [];
+        return tree?.branches.filter((branch) => branch.exercises[level]) ?? [];
       },
     })),
     {

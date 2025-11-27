@@ -1,3 +1,4 @@
+import { useTheme } from "@/theme/theme";
 import { Stack } from "expo-router";
 
 /**
@@ -8,20 +9,12 @@ import { Stack } from "expo-router";
  * Legacy: TrainingStack (Stack Navigator)
  */
 export default function TrainingLayout() {
+  const theme = useTheme();
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" />
-      <Stack.Screen name="muscle-soreness" />
-      <Stack.Screen
-        name="training-overview"
-        options={{ gestureEnabled: false }}
-      />
-      <Stack.Screen name="training" options={{ gestureEnabled: false }} />
-      <Stack.Screen
-        name="training-success"
-        options={{ gestureEnabled: false }}
-      />
-      <Stack.Screen name="exercise-information" />
-    </Stack>
+    <Stack
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.colors.lightGrey1 },
+      }}
+    />
   );
 }

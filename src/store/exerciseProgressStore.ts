@@ -1,8 +1,8 @@
+import { MaxValuesType } from "@/features/training/models/MaxValues";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
-import type { MaxValuesType } from "./userWorkoutStore";
 
 export type ExerciseFeedback = "EASY" | "NORMAL" | "HARD";
 

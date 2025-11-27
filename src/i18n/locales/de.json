@@ -2,12 +2,13 @@
   "common": {
     "altText": {
       "coachFace": "Gesicht des Coaches",
-      "primaryMuscle": "Primärer Muskel: {{muscleName}}",
-      "secondaryMuscle": "Sekundärer Muskel: {{muscleName}}",
-      "muscleLink": "{{muscleName}} Muskel auswählen",
       "hintIcon": "Hinweis-Symbol",
       "icon": "{{title}}-Symbol",
       "image": "{{title}}-Bild",
+      "listItem": "Übung",
+      "muscleLink": "{{muscleName}} Muskel auswählen",
+      "primaryMuscle": "Primärer Muskel: {{muscleName}}",
+      "secondaryMuscle": "Sekundärer Muskel: {{muscleName}}",
       "warningIcon": "Warnsymbol"
     },
     "back": "Zurück",
@@ -162,10 +163,56 @@
     "chooseSubscriptionToStart": "Wähle ein Abonnement, um dein Training zu starten"
   },
   "training": {
+    "focus": {
+      "CARDIO": "Ausdauer",
+      "COMBINED": "Kraft & Cardio",
+      "PHASE": "Kraft/Prävention",
+      "STABILITY": "Stabilität"
+    },
+    "place": {
+      "HOME": "zu Hause",
+      "STUDIO": "Fitnessstudio",
+      "HALL": "in der Halle",
+      "OUTSIDE": "Draußen/Trainingsplatz",
+      "NO_PLACE": "keine Ausrüstung"
+    },
+    "quickstart": {
+      "STABILITY_TILE_BAS": "Beinachsenstabilität",
+      "QUICKSTART_BAS_DESC": "Baue Stabilität in deinem Unterkörper auf",
+      "STABILITY_TILE_GKS": "Ganzkörperstabilität",
+      "QUICKSTART_GKS_DESC": "Stärke deinen ganzen Körper",
+      "QUICKSTART_MOBILITY": "Mobilität",
+      "QUICKSTART_MOBILITY_DESC": "Verbessere deinen Bewegungsumfang",
+      "QUICKSTART_BLACK_ROLL": "Black Roll",
+      "QUICKSTART_BLACK_ROLL_DESC": "Selbstmassage und Schaumstoffrolle",
+      "QUICKSTART_WARM_UP": "Aufwärmphase",
+      "QUICKSTART_WARM_UP_DESC": "Bereite deinen Körper auf das Training vor",
+      "QUICKSTART_COOL_DOWN": "Abkühlphase",
+      "QUICKSTART_COOL_DOWN_DESC": "Erholung und Dehnung"
+    },
+    "prevention": {
+      "PREVENTION_TILE_ANKLE": "Knöchel",
+      "PREVENTION_TILE_KNEE": "Knie",
+      "PREVENTION_TILE_SPINE": "Wirbelsäule",
+      "PREVENTION_TILE_SHOULDER": "Schulter",
+      "PREVENTION_TILE_WRIST": "Handgelenk"
+    },
+    "selectTraining": {
+      "title": "Dein Training starten",
+      "workoutNowMsg": "Starte jetzt dein Training!",
+      "workoutNowSpeedMsg": "Mach dich bereit für eine kraftvolle Trainingseinheit!",
+      "coachSportProhibitionMsg": "Achte darauf, dass du nicht verletzt bist, bevor du startest!",
+      "coachSportPreventionMsg": "Präventionsübungen helfen dir, verletzungsfrei zu bleiben.",
+      "coachSportStabilityMsg": "Baue eine starke Grundlage mit Stabilitätsübungen.",
+      "timeAndPlace": "{{focus}}, {{time}} Minuten"
+    },
     "powerTest": {
       "title": "Krafttest",
       "description": "Mach so viele Wiederholungen, wie du mit sauberer Technik schaffst.",
-      "placeholder": "Wiederholungen"
+      "placeholder": "Wiederholungen",
+      "todayIsPowerTest": "Heute ist dein Krafttest! Lass uns sehen, wie stark du bist.",
+      "startPowerTest": "Krafttest starten",
+      "skipPowerTest": "Krafttest überspringen"
     }
   },
   "onboarding": {

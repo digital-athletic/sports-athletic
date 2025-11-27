@@ -1,49 +1,20 @@
-import { type SeasonPhase } from "@/constants/seasonPhase";
-import { WorkoutConstants } from "@/constants/workoutConstants";
+import { SkillTypes } from "@/constants/workoutConstants";
+import { ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
+import {
+  DEFAULT_MAX_VALUES,
+  MaxValuesType,
+} from "@/features/training/models/MaxValues";
+import { SeasonPhaseType } from "@/features/training/models/SeasonPhase";
+import { TrainingPlanType } from "@/features/training/models/TrainingPlan";
+import {
+  Sport,
+  UserWorkoutDataType,
+} from "@/features/training/models/UserWorkoutData";
 import { dateToDDMMYYYY } from "@/utils/date";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
-
-// Type definitions based on legacy models
-export type Sport = keyof typeof WorkoutConstants.SPORTS; // e.g., 'SOCCER', 'BASKETBALL', etc.
-
-export interface SeasonPhaseType {
-  type: SeasonPhase | null;
-  endDate: string; // DD-MM-YYYY format
-  numOfWeeks?: number;
-}
-
-export interface MaxValuesType {
-  [key: string]: number;
-}
-
-export interface ExerciseBranchType {
-  id: number;
-  exercises: number[];
-  level: number;
-}
-
-export interface TrainingPlanType {
-  sections: {
-    start: string; // DD-MM-YYYY
-    numOfWeeks: number;
-    weekday: number;
-    trainings: {
-      skill: string;
-      branches: ExerciseBranchType[];
-    }[];
-  }[];
-}
-
-export interface UserWorkoutDataType {
-  sport: Sport | null;
-  seasonPhase: SeasonPhaseType;
-  equipment: string[];
-  maxValues: MaxValuesType;
-  tags: string[];
-}
 
 export interface UserWorkoutState {
   workoutData: UserWorkoutDataType;
@@ -53,13 +24,12 @@ export interface UserWorkoutState {
   setWorkoutData: (data: Partial<UserWorkoutDataType>) => void;
   setSport: (sport: Sport) => void;
   setSeasonPhase: (phase: SeasonPhaseType) => void;
-  setEquipment: (equipment: string[]) => void;
   setTags: (tags: string[]) => void;
   setTrainingPlan: (plan: TrainingPlanType | null) => void;
   replaceBranchInTrainingPlan: (
     sectionIndex: number,
     weekday: number,
-    skillId: string,
+    skillId: SkillTypes,
     branchIdToReplace: number,
     branchesToFillIn: ExerciseBranchType[]
   ) => void;
@@ -67,14 +37,18 @@ export interface UserWorkoutState {
 }
 
 const DEFAULT_WORKOUT_DATA: UserWorkoutDataType = {
-  sport: null,
+  anamnesisCompleted: false,
+  gender: "MALE",
+  birthday: "01-01-2000",
+  weight: 65,
+  height: 175,
+  sport: "OTHER_SPORT",
+  tags: ["POSITION_FIELD", "LEVEL_BEGINNER"],
   seasonPhase: {
     type: null,
     endDate: dateToDDMMYYYY(new Date()),
   },
-  equipment: [],
-  maxValues: {},
-  tags: [],
+  maxValues: DEFAULT_MAX_VALUES,
 };
 
 /**
@@ -118,11 +92,6 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
           state.workoutData.seasonPhase = phase;
         }),
 
-      setEquipment: (equipment) =>
-        set((state) => {
-          state.workoutData.equipment = equipment;
-        }),
-
       setTags: (tags) =>
         set((state) => {
           state.workoutData.tags = tags;
@@ -151,26 +120,32 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
         branchesToFillIn
       ) =>
         set((state) => {
-          if (!state.trainingPlan?.sections) return;
+          let plan = state.trainingPlan;
+
+          if (!plan) return;
+
+          const sections = plan.sections;
+          if (sectionIndex > sections.length - 1) return;
 
           // Find the section for the given weekday
-          const section = state.trainingPlan.sections.find(
-            (s) => s.weekday === weekday
-          );
-          if (!section?.trainings) return;
+          let trainings = sections[sectionIndex]?.trainings;
 
-          // Find the training for the given skill
-          const training = section.trainings[sectionIndex];
-          if (!training || training.skill !== skillId) return;
+          if (!trainings) return;
+
+          const training = trainings.find((t) => t.weekday === weekday);
 
           // Find the branch to replace
-          const branchIndex = training.branches.findIndex(
-            (b) => b.id === branchIdToReplace
+          const skillBranches = training?.skills[skillId];
+          const branchIndex = skillBranches?.findIndex(
+            (branch) => branch.exerciseBranchId === branchIdToReplace
           );
-          if (branchIndex === -1) return;
+
+          // Find the training for the given skill
+          if (!training || !skillBranches || !branchIndex || branchIndex === -1)
+            return;
 
           // Replace the branch with new branches (immer handles immutability)
-          training.branches.splice(branchIndex, 1, ...branchesToFillIn);
+          skillBranches.splice(branchIndex, 1, ...branchesToFillIn);
         }),
     })),
     {

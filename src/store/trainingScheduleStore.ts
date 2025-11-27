@@ -1,14 +1,9 @@
+import { PlaceType } from "@/constants/workoutConstants";
+import { TrainingDayType } from "@/features/training/models/TrainingDay";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
-
-export interface TrainingDayType {
-  weekday: number; // 0-6 (Monday-Sunday)
-  active: boolean;
-  place?: string; // Location ID
-  duration?: string; // "hh:mm" format
-}
 
 export interface TrainingScheduleState {
   trainingDays: TrainingDayType[];
@@ -16,8 +11,8 @@ export interface TrainingScheduleState {
   // Actions
   setTrainingDays: (days: TrainingDayType[]) => void;
   toggleDay: (weekday: number) => void;
-  setDayLocation: (weekday: number, placeId: string) => void;
-  setDayDuration: (weekday: number, duration: string) => void;
+  setDayLocation: (weekday: number, placeId: PlaceType) => void;
+  setDayDuration: (weekday: number, duration: number) => void;
   resetToDefaults: () => void;
 
   // Selectors
@@ -26,13 +21,48 @@ export interface TrainingScheduleState {
 }
 
 const DEFAULT_TRAINING_DAYS: TrainingDayType[] = [
-  { weekday: 0, active: false }, // Monday
-  { weekday: 1, active: false }, // Tuesday
-  { weekday: 2, active: false }, // Wednesday
-  { weekday: 3, active: false }, // Thursday
-  { weekday: 4, active: false }, // Friday
-  { weekday: 5, active: false }, // Saturday
-  { weekday: 6, active: false }, // Sunday
+  {
+    active: false,
+    weekday: 0, // Monday
+    duration: 30,
+    place: "STUDIO",
+  },
+  {
+    active: false,
+    weekday: 1, // Tuesday
+    duration: 30,
+    place: "STUDIO",
+  },
+  {
+    active: false,
+    weekday: 2, // Wednesday
+    duration: 30,
+    place: "STUDIO",
+  },
+  {
+    active: false,
+    weekday: 3, // Thursday
+    duration: 30,
+    place: "STUDIO",
+  },
+  {
+    active: false,
+    weekday: 4, // Friday
+    duration: 30,
+    place: "STUDIO",
+  },
+  {
+    active: false,
+    weekday: 5, // Saturday
+    duration: 30,
+    place: "STUDIO",
+  },
+  {
+    active: false,
+    weekday: 6, // Sunday
+    duration: 30,
+    place: "STUDIO",
+  },
 ];
 
 /**
@@ -49,7 +79,7 @@ const DEFAULT_TRAINING_DAYS: TrainingDayType[] = [
  * toggleDay(0);
  *
  * // Set training duration for Tuesday
- * setDayDuration(1, '01:30');
+ * setDayDuration(1, 90);
  *
  * // Get only active days
  * const activeDays = getActiveTrainingDays();
@@ -103,8 +133,7 @@ export const useTrainingScheduleStore = create<TrainingScheduleState>()(
         );
         return activeDays.reduce((total, day) => {
           if (!day.duration) return total;
-          const [hours, minutes] = day.duration.split(":").map(Number);
-          return total + hours + minutes / 60;
+          return total + day.duration / 60;
         }, 0);
       },
     })),

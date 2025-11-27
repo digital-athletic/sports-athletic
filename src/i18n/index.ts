@@ -8,6 +8,8 @@ import {
 import deTranslations from "./locales/de.json";
 import enTranslations from "./locales/en.json";
 
+export type I18nKey = i18n.ParseKeys;
+
 const resources = {
   de: {
     translations: deTranslations,

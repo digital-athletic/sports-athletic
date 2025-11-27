@@ -5,6 +5,7 @@ import { SkipHeader } from "@/common/SkipHeader";
 import { SharedConstants } from "@/constants/sharedConstants";
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
 import { SeasonPhase as SeasonPhaseEnum } from "@/features/training/models/SeasonPhase";
+import { DateInputField } from "@/form/DateInputField";
 import { SelectionInputField } from "@/form/SelectionInputField";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
@@ -159,7 +160,6 @@ export default function SeasonPhase() {
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handlePhaseEndChange = (value: string) => {
     setSeasonPhase({
       type: seasonPhase?.type ?? null,
@@ -242,13 +242,11 @@ export default function SeasonPhase() {
                 default: t("screens.seasonPhase.endOfSeasonPhaseDescription"),
               }}
             >
-              {/*
-              needs expo prebuild setup
               <DateInputField
-            type="date"
-            dateTime={seasonPhase.endDate}
-            onChange={handlePhaseEndChange}
-          /> */}
+                type="date"
+                dateTime={seasonPhase?.endDate}
+                onChange={handlePhaseEndChange}
+              />
             </AnamnesisQuestionContainer>
           </ScrollBox>
           <Button onPress={handleGoOn} margin="m">

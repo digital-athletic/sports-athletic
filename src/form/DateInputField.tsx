@@ -7,10 +7,13 @@ import {
   DDMMYYYYToDate,
   HHMMToDate,
 } from "@/utils/date";
-import { type FC, useState } from "react";
+import DateTimePicker, {
+  DateTimePickerAndroid,
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
+import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, TouchableOpacity } from "react-native";
-import DatePicker from "react-native-date-picker";
+import { Platform, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicon } from "../common/Ionicon";
 
 interface DateInputFieldProps {
@@ -29,7 +32,6 @@ export const DateInputField: FC<DateInputFieldProps> = ({
 }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const [isOpen, setIsOpen] = useState(false);
 
   const iconName = type === "date" ? "calendar" : "time";
 
@@ -43,73 +45,77 @@ export const DateInputField: FC<DateInputFieldProps> = ({
     return HHMMToDate(dateTime);
   };
 
-  const handleConfirm = (date: Date) => {
-    setIsOpen(false);
-    if (type === "date") {
-      onChange(dateToDDMMYYYY(date));
-    } else {
-      onChange(dateToHHMM(date));
+  const handleChange = (_: DateTimePickerEvent, selectedDate?: Date) => {
+    if (selectedDate) {
+      if (type === "date") {
+        onChange(dateToDDMMYYYY(selectedDate));
+      } else {
+        onChange(dateToHHMM(selectedDate));
+      }
     }
   };
 
-  const handleCancel = () => {
-    setIsOpen(false);
+  const openAndroidPicker = () => {
+    DateTimePickerAndroid.open({
+      value: getCurrentDate(),
+      onChange: handleChange,
+      mode: type,
+    });
   };
 
   return (
-    <>
+    <Box flexDirection="row" alignItems="center" borderRadius="m">
       <Box
-        flexDirection="row"
-        alignItems="center"
-        backgroundColor="lightGrey2"
-        borderRadius="m"
+        width={56}
         height={56}
+        justifyContent="center"
+        alignItems="center"
+        backgroundColor="lightGrey1"
+        borderTopLeftRadius="m"
+        borderBottomLeftRadius="m"
       >
-        <Box
-          width={56}
-          height={56}
-          justifyContent="center"
-          alignItems="center"
-          backgroundColor="lightGrey1"
-          borderTopLeftRadius="m"
-          borderBottomLeftRadius="m"
-        >
-          <Ionicon
-            name={iconName}
-            size={24}
-            color={colors.lightGrey3}
-            accessibilityLabel={`${type}-icon`}
-          />
-        </Box>
-        <TouchableOpacity
-          style={styles.datePicker}
-          onPress={() => setIsOpen(true)}
-        >
-          <Text variant="body" color="darkGrey3" marginLeft="s">
-            {dateTime || t("common.choose")}
-          </Text>
-        </TouchableOpacity>
+        <Ionicon
+          name={iconName}
+          size={24}
+          color={colors.lightGrey3}
+          accessibilityLabel={`${type}-icon`}
+        />
       </Box>
 
-      <DatePicker
-        modal
-        open={isOpen}
-        date={getCurrentDate()}
-        mode={type}
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
-        cancelText={t("common.cancel")}
-        confirmText={t("common.confirm")}
-        locale={type === "time" ? "de" : undefined}
-        is24hourSource="locale"
-      />
-    </>
+      {Platform.select({
+        ios: (
+          <DateTimePicker
+            accentColor={colors.primary}
+            value={getCurrentDate()}
+            mode={type}
+            onChange={handleChange}
+            locale={type === "time" ? "de" : undefined}
+          />
+        ),
+        android: (
+          <Box
+            backgroundColor="lightGrey2"
+            paddingHorizontal="s"
+            paddingVertical="xs"
+            borderRadius="m"
+          >
+            <TouchableOpacity
+              style={styles.datePicker}
+              onPress={openAndroidPicker}
+            >
+              <Text variant="body" color="darkGrey3">
+                {dateTime || t("common.choose")}
+              </Text>
+            </TouchableOpacity>
+          </Box>
+        ),
+      })}
+    </Box>
   );
 };
 
 const styles = StyleSheet.create({
   datePicker: {
-    flex: 1,
     justifyContent: "center",
   },
 });

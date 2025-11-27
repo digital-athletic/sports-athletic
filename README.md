@@ -1,74 +1,104 @@
-# README #
+# Sports Athletic App
 
-## Get started
+A fitness training application built with React Native, Expo & TypeScript.
 
-### Option 1: Local Setup
-> 💡 We recommend [asdf](https://asdf-vm.com/) for managing build tool versions
+## Getting Started
 
-* Node.js v20
-* pnpm v10.16.1
-* [watchman](https://facebook.github.io/watchman/docs/install)
+### 🐳 Option 1: Docker (Recommended for Quick Start)
+Simplest way to get started with a consistent development environment
 
-**How to start:**
-* Checkout the repository
-* Run `pnpm install`
-
-### Option 2: Docker (Recommended for Quick Start)
-> 💡 Simplest way to get started with a consistent development environment
-
+**Prerequisites:**
 * [Docker](https://www.docker.com/get-started) and Docker Compose
 
-**How to start:**
-* Run: `docker compose up`
-* The Expo development server will start automatically
-* Access the server at http://localhost:8081
-* To run commands inside the container: `docker compose exec app sh`
-* To stop: `docker compose down`
+**Steps:**
+1. Run `docker compose up` - the development server (Metro) starts automatically
+2. Access the server at http://localhost:8081
+3. To run commands inside the container: `docker compose exec app sh`
+4. Stop with `docker compose down`
 
 If you are running inside the container (e.g. using Dev Containers), you should start with:
-1. `pnpm install`
-2. `pnpm start`
+1. `pnpm install` to download project dependencies
+2. `pnpm start` to start the development server (Metro)
+
+### 💻 Option 2: Local Setup
+For more control of individual tool versions or if you prefer developing without Docker.
+
+**Prerequisites:**
+- [Node.js](https://nodejs.org/en/download) - v20+
+- [pnpm](https://pnpm.io/installation) - for managing third-party node modules
+- [watchman](https://facebook.github.io/watchman/docs/install) - file watcher to support development server hot reloads
+
+> 💡 **Pro tip:** Use [asdf](https://asdf-vm.com/) to manage tool versions automatically. Check [.tool-versions](.tool-versions) for required versions.
+
+**Steps:**
+1. Run `pnpm install` to download project dependencies
+2. Run `pnpm start` to start the development server (Metro)
+
+## Building a Native Development Client
+
+### What is a development client?
+The Expo development server lets you preview changes to TypeScript components immediately on your simulator / device. However, in order to install the app and test, you must first generate, build and run the native iOS/Android projects.
 
 ### Android
-* Azul Zulu JDK 17.58.21 (OpenJDK 17.0.15)
-* [Android Studio](https://developer.android.com/studio)
-  * Android SDK Platform 35 (`VanillaIceCream`)
-  * Sources for Android 35
-  * Android SDK Build-Tools
-  * NDK `27.1.12297006`
 
+**Requirements:**
+- Azul Zulu JDK 17.58.21 (OpenJDK 17.0.15) - Java Development Kit required to compile Java & Kotlin source files
+- [Android Studio](https://developer.android.com/studio) with:
+  - Android SDK Platform 35 (`VanillaIceCream`)
+  - Android SDK Build-Tools
+  - NDK `27.1.12297006`
+
+**Generate, Build & Run:**
+```bash
+pnpm android
+```
+This generates the native Android project files, builds the app with gradle and installs the generated build on your emulator.
 
 ### iOS
-* ruby v3.2
-* CocoaPods v1.16.2
-* Xcode 26.0 (17A324)
 
-See: [.tool-versions](./.tool-versions)
+**Requirements:**
+- macOS with [Xcode 26.0+](https://developer.apple.com/documentation/safari-developer-tools/installing-xcode-and-simulators)
+- ruby v3.2
+- CocoaPods v1.16.2 (iOS dependency manager)
 
-### For developement ###
+**Generate, Build & Run:**
+```bash
+pnpm ios
+```
+This generates the native iOS project files, builds the app with Xcode and installs the generated build on your simulator.
 
-* Configure File Watcher for prettier in IDE
-    * This is important to prevent git formatting issues!
-    * Install Jetbrains IDE prettier plugin
-    * See https://prettier.io/docs/en/webstorm.html#running-prettier-on-save-using-file-watcher
-    * Use this "Arguments": --write $FilePathRelativeToProjectRoot$ --tab-width 4
-    * Set Scope to "Open Files"
-    
-* check for flow errors with "npm run flow"
+## 🧰 Useful Commands
 
-### Android build ###
+```bash
+# Start development server
+pnpm start
 
-* react-native run-android
+# Build iOS development client
+pnpm ios
 
-### iOS build ###
+# Build Android development client
+pnpm android
 
-* install Pods with "cd ios && pod install"
-* Open ios/sportsAthleticAppClient.xcworkspace
-* Run project
+# Re-generates the native project files - useful when installing new modules with native dependencies
+pnpm clean
 
-For showing images with react-native 63.2 and Xcode12 we need to add a case to the Image Component:
+# Compile TypeScript files  
+pnpm type-check
 
-node_modules/react-native/Libraries/Image/RCTUIImageViewAnimated.m - Line 278:
-`else {
-  [super displayLayer:layer];
-}`
+# Run unit tests
+pnpm test
+
+# Lint code
+pnpm lint
+
+# Format code
+pnpm format-check
+pnpm format-fix
+```
+
+## Helpful Resources
+
+- [React Documentation](https://react.dev) - Core React concepts
+- [React Native Docs](https://reactnative.dev) - Mobile-specific APIs
+- [Expo Documentation](https://docs.expo.dev) - Development and deployment
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/) - Type safety

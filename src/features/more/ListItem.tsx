@@ -85,7 +85,10 @@ export const ListItem: FC<ListItemProps> = ({
 
     // @ts-expect-error Suppress ts(2345) Types of property 'pathname' are incompatible.
     // It has been verified that the allowed values are restricted to valid paths as expected.
-    router.navigate({ pathname: navPath });
+    router.navigate({
+      pathname: navPath,
+      params: { originPath: "/(tabs)/more" as Route },
+    });
   };
 
   return (

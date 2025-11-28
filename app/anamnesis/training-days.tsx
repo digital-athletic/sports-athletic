@@ -120,8 +120,8 @@ export default function TrainingDays() {
           {
             text: t("common.ok"),
             onPress: () => {
-              if (originPath === "/more") {
-                router.navigate("/more");
+              if (originPath === "/(tabs)/more") {
+                router.navigate("/(tabs)/more");
               } else {
                 router.navigate("/(tabs)");
               }

@@ -138,7 +138,7 @@ export default function SeasonPhase() {
 
     // Check if user has workout data (would need to be added to store)
     // For now, proceed to training days
-    if (originPath === ("/more" satisfies Route)) {
+    if (originPath === ("/(tabs)/more" satisfies Route)) {
       router.navigate({
         pathname: "/anamnesis/training-days",
         params: { originPath },

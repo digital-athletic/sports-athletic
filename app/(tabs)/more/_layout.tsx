@@ -22,7 +22,6 @@ export default function ProfileStackLayout() {
       <Stack.Screen name="settings" />
       <Stack.Screen name="exercises" />
       <Stack.Screen name="exercise-information" />
-      <Stack.Screen name="tutorials" />
       <Stack.Screen name="equipment" />
       <Stack.Screen name="imprint" />
       <Stack.Screen name="privacy" />

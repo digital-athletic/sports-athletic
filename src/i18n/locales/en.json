@@ -300,6 +300,8 @@
     "deleteFailed": "Deletion failed",
     "logoutFailed": "Logout failed",
     "loggingOut": "Logging out...",
+    "loadingTutorials": "Loading tutorials...",
+    "tutorialVideoAlt": "{{title}} technical video",
     "imageAlt": {
       "trainingData": "My Training Data Icon",
       "powerTest": "Power Test Icon"

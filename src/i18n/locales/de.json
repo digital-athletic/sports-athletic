@@ -300,6 +300,8 @@
     "deleteFailed": "Löschen fehlgeschlagen",
     "logoutFailed": "Abmelden fehlgeschlagen",
     "loggingOut": "Melde ab...",
+    "loadingTutorials": "Lade Technikvideos...",
+    "tutorialVideoAlt": "{{title}} Technikvideo",
     "imageAlt": {
       "trainingData": "Meine Trainingsdaten Icon",
       "powerTest": "Krafttest Icon"

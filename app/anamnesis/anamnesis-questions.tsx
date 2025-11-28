@@ -139,23 +139,25 @@ export default function AnamnesisQuestions() {
         setSeasonPhase(workoutData.seasonPhase);
         router.navigate("/anamnesis/generating");
       } else {
-        if (originPath === "/(tabs)/more") {
-          Alert.alert(
-            t("screens.anamnesis.incompleteTitle"),
-            t("screens.anamnesis.incompleteTrainingData"),
-            [
-              {
-                text: t("common.ok"),
-                onPress: () => {
-                  setLoading(false);
-                  router.navigate(originPath);
-                },
-              },
-            ],
-          );
-        } else {
-          router.navigate("/anamnesis/season-phase");
-        }
+        // TODO: When coming from the more menu the originPath is not set here, so this doesn't trigger. This is as it was in the legacy flow.
+        // if (originPath === "/(tabs)/more") {
+        //   Alert.alert(
+        //     t("screens.anamnesis.incompleteTitle"),
+        //     t("screens.anamnesis.incompleteTrainingData"),
+        //     [
+        //       {
+        //         text: t("common.ok"),
+        //         onPress: () => {
+        //           setLoading(false);
+        //           router.navigate(originPath);
+        //         },
+        //       },
+        //     ]
+        //   );
+        // } else {
+        //   router.navigate("/anamnesis/season-phase");
+        // }
+        router.navigate("/anamnesis/season-phase");
       }
     } catch (e) {
       console.error("finish anamnesis error", e);
@@ -169,8 +171,6 @@ export default function AnamnesisQuestions() {
     workoutData,
     setSeasonPhase,
     router,
-    originPath,
-    t,
   ]);
 
   const goOn = useCallback(async () => {

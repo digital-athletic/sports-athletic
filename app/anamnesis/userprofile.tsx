@@ -50,12 +50,8 @@ export default function UserProfileScreen() {
   }, [loadQuestions]);
 
   const onBack = useCallback(() => {
-    if (originPath === ("/anamnesis/sport" satisfies Route)) {
-      router.back();
-    } else {
-      router.replace("/(tabs)/more");
-    }
-  }, [originPath]);
+    router.back();
+  }, []);
 
   const showClosePopup = useCallback(() => {
     const message = anamnesisCompleted

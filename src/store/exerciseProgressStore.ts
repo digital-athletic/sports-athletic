@@ -37,7 +37,7 @@ export interface ExerciseProgressState {
   setExerciseData: (data: Record<number, UserExerciseDataType>) => void;
   updateExercise: (
     exerciseId: number,
-    data: Partial<UserExerciseDataType>
+    data: Partial<UserExerciseDataType>,
   ) => void;
   setBranchLevel: (branchId: number, level: number) => void;
 
@@ -151,6 +151,6 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
     {
       name: "exercise-progress-storage",
       storage: asyncStorage,
-    }
-  )
+    },
+  ),
 );

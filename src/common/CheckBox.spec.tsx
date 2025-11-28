@@ -5,7 +5,7 @@ describe("<CheckBox />", () => {
   it("renders in unchecked state", () => {
     const mockChanged = jest.fn();
     const { getByRole } = render(
-      <CheckBox checked={false} changed={mockChanged} />
+      <CheckBox checked={false} changed={mockChanged} />,
     );
     const checkbox = getByRole("checkbox");
     expect(checkbox).toBeTruthy();
@@ -15,7 +15,7 @@ describe("<CheckBox />", () => {
   it("renders in checked state", () => {
     const mockChanged = jest.fn();
     const { getByRole } = render(
-      <CheckBox checked={true} changed={mockChanged} />
+      <CheckBox checked={true} changed={mockChanged} />,
     );
     const checkbox = getByRole("checkbox");
     expect(checkbox).toBeTruthy();
@@ -25,7 +25,7 @@ describe("<CheckBox />", () => {
   it("calls changed callback with true when unchecked box is pressed", () => {
     const mockChanged = jest.fn();
     const { getByRole } = render(
-      <CheckBox checked={false} changed={mockChanged} />
+      <CheckBox checked={false} changed={mockChanged} />,
     );
     const checkbox = getByRole("checkbox");
     fireEvent.press(checkbox);
@@ -36,7 +36,7 @@ describe("<CheckBox />", () => {
   it("calls changed callback with false when checked box is pressed", () => {
     const mockChanged = jest.fn();
     const { getByRole } = render(
-      <CheckBox checked={true} changed={mockChanged} />
+      <CheckBox checked={true} changed={mockChanged} />,
     );
     const checkbox = getByRole("checkbox");
     fireEvent.press(checkbox);
@@ -47,7 +47,7 @@ describe("<CheckBox />", () => {
   it("toggles state correctly on multiple presses", () => {
     const mockChanged = jest.fn();
     const { getByRole } = render(
-      <CheckBox checked={false} changed={mockChanged} />
+      <CheckBox checked={false} changed={mockChanged} />,
     );
     const checkbox = getByRole("checkbox");
 

@@ -56,7 +56,7 @@ export default function SelectTraining() {
   useEffect(() => {
     const handler = BackHandler.addEventListener(
       "hardwareBackPress",
-      handleBack
+      handleBack,
     );
     return () => handler.remove();
   }, [handleBack]);
@@ -65,7 +65,7 @@ export default function SelectTraining() {
   const title = t(
     screenState === "TEST"
       ? "training.powerTest.title"
-      : "training.selectTraining.title"
+      : "training.selectTraining.title",
   );
 
   const getTrainingDays = useCallback((): TileData[] => {
@@ -113,11 +113,11 @@ export default function SelectTraining() {
               }
               return acc2.concat(additionalIds);
             },
-            []
+            [],
           );
           return acc.concat(dayExerciseIds);
         },
-        []
+        [],
       );
 
       for (let id of exerciseIds) {
@@ -142,7 +142,7 @@ export default function SelectTraining() {
 
     for (const userTrainingDay of userTrainingDays) {
       const sectionTraining = sectionTrainings.find(
-        (training) => training.weekday === userTrainingDay.weekday
+        (training) => training.weekday === userTrainingDay.weekday,
       );
 
       if (sectionTraining) {
@@ -232,7 +232,7 @@ export default function SelectTraining() {
               });
             },
           },
-        ]
+        ],
       );
     }
   }, [setTrainingSelection, subscription, t]);

@@ -29,7 +29,7 @@ describe("SelectionInputField", () => {
         items={mockItems}
         selectedItems={[]}
         onChange={jest.fn()}
-      />
+      />,
     );
 
     expect(getByText("Choose")).toBeTruthy();
@@ -42,7 +42,7 @@ describe("SelectionInputField", () => {
         selectedItems={["sport1"]}
         onChange={jest.fn()}
         singleSelection={true}
-      />
+      />,
     );
 
     expect(getByText("sport1")).toBeTruthy();
@@ -55,7 +55,7 @@ describe("SelectionInputField", () => {
         selectedItems={["sport1"]}
         onChange={jest.fn()}
         singleSelection={false}
-      />
+      />,
     );
 
     expect(getByText("1 selected")).toBeTruthy();
@@ -68,7 +68,7 @@ describe("SelectionInputField", () => {
         selectedItems={["sport1", "sport2"]}
         onChange={jest.fn()}
         singleSelection={false}
-      />
+      />,
     );
 
     expect(getByText("2 selected")).toBeTruthy();
@@ -80,7 +80,7 @@ describe("SelectionInputField", () => {
         items={mockItems}
         selectedItems={[]}
         onChange={jest.fn()}
-      />
+      />,
     );
 
     const selectButton = getByText("Choose").parent?.parent;
@@ -99,7 +99,7 @@ describe("SelectionInputField", () => {
         items={mockItems}
         selectedItems={[]}
         onChange={onChange}
-      />
+      />,
     );
 
     // Open modal
@@ -125,7 +125,7 @@ describe("SelectionInputField", () => {
         selectedItems={[]}
         onChange={jest.fn()}
         onToggle={onToggle}
-      />
+      />,
     );
 
     // Open modal
@@ -147,7 +147,7 @@ describe("SelectionInputField", () => {
         selectedItems={[]}
         onChange={onChange}
         singleSelection={true}
-      />
+      />,
     );
 
     // Open modal
@@ -173,7 +173,7 @@ describe("SelectionInputField", () => {
         selectedItems={[]}
         onChange={onChange}
         singleSelection={false}
-      />
+      />,
     );
 
     // Open modal
@@ -199,7 +199,7 @@ describe("SelectionInputField", () => {
         items={mockItems}
         selectedItems={[]}
         onChange={jest.fn()}
-      />
+      />,
     );
 
     // Open modal

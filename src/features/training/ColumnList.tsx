@@ -53,7 +53,7 @@ export const ColumnList: FC<ColumnListProps> = ({
               });
             },
           },
-        ]
+        ],
       );
     }
   };

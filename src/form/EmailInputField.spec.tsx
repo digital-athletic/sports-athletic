@@ -23,14 +23,14 @@ describe("<EmailInputField />", () => {
 
   it("displays email placeholder", () => {
     const { getByPlaceholderText } = render(
-      <EmailInputField {...defaultProps} />
+      <EmailInputField {...defaultProps} />,
     );
     expect(getByPlaceholderText("E-Mail")).toBeTruthy();
   });
 
   it("displays the provided email value", () => {
     const { getByDisplayValue } = render(
-      <EmailInputField {...defaultProps} email="test@example.com" />
+      <EmailInputField {...defaultProps} email="test@example.com" />,
     );
     expect(getByDisplayValue("test@example.com")).toBeTruthy();
   });
@@ -38,7 +38,7 @@ describe("<EmailInputField />", () => {
   it("calls onChange when email input changes", () => {
     const onChange = jest.fn();
     const { getByPlaceholderText } = render(
-      <EmailInputField {...defaultProps} onChange={onChange} />
+      <EmailInputField {...defaultProps} onChange={onChange} />,
     );
 
     fireEvent.changeText(getByPlaceholderText("E-Mail"), "new@example.com");
@@ -49,7 +49,7 @@ describe("<EmailInputField />", () => {
 
   it("has email-address keyboard type", () => {
     const { getByPlaceholderText } = render(
-      <EmailInputField {...defaultProps} />
+      <EmailInputField {...defaultProps} />,
     );
     const input = getByPlaceholderText("E-Mail");
     expect(input.props.keyboardType).toBe("email-address");
@@ -57,7 +57,7 @@ describe("<EmailInputField />", () => {
 
   it("has autoCapitalize set to none", () => {
     const { getByPlaceholderText } = render(
-      <EmailInputField {...defaultProps} />
+      <EmailInputField {...defaultProps} />,
     );
     const input = getByPlaceholderText("E-Mail");
     expect(input.props.autoCapitalize).toBe("none");
@@ -66,7 +66,7 @@ describe("<EmailInputField />", () => {
   it("calls onFocus when input is focused", () => {
     const onFocus = jest.fn();
     const { getByPlaceholderText } = render(
-      <EmailInputField {...defaultProps} onFocus={onFocus} />
+      <EmailInputField {...defaultProps} onFocus={onFocus} />,
     );
 
     fireEvent(getByPlaceholderText("E-Mail"), "focus");

@@ -256,7 +256,7 @@ describe("anamnesisStore", () => {
         result.current.setQuestions(mockQuestions);
         result.current.fillData(
           ["PAIN_knee", "PAIN_ankle", "equipment_dumbbells"],
-          {}
+          {},
         );
       });
 

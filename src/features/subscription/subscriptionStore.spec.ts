@@ -521,7 +521,7 @@ describe("useSubscriptionStore", () => {
       });
 
       expect(result.current.subscription.firstRegistration).toBe(
-        largeTimestamp
+        largeTimestamp,
       );
     });
 

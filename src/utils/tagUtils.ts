@@ -45,7 +45,7 @@ export function getTagValues(tags: string[], tagGroup: string): string[] {
  */
 export function getTagValue(
   tags: string[],
-  tagGroup: string
+  tagGroup: string,
 ): string | undefined {
   const values = getTagValues(tags, tagGroup);
   return values[0];

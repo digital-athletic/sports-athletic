@@ -20,7 +20,7 @@ export interface UserSettingsState {
         UserSettingsState,
         "setSettings" | "setReviewStatus" | "setAnonymisedDataUse"
       >
-    >
+    >,
   ) => void;
   setReviewStatus: (status: ReviewStatusType) => void;
   setAnonymisedDataUse: (enabled: boolean) => void;
@@ -74,6 +74,6 @@ export const useUserSettingsStore = create<UserSettingsState>()(
     {
       name: "user-settings-storage",
       storage: asyncStorage,
-    }
-  )
+    },
+  ),
 );

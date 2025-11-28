@@ -31,7 +31,7 @@ export const checkEmailExists = async (email: string): Promise<boolean> => {
  */
 export const signInWithEmail = async (
   email: string,
-  password: string
+  password: string,
 ): Promise<AuthType> => {
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 800));
@@ -65,7 +65,7 @@ export const signInWithEmail = async (
 export const registerWithEmail = async (
   email: string,
   password: string,
-  anonymisedDataUse: boolean
+  anonymisedDataUse: boolean,
 ): Promise<AuthType> => {
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 1000));

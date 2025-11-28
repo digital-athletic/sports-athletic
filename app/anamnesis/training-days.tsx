@@ -101,7 +101,7 @@ export default function TrainingDays() {
     if (!hasActiveDay) {
       Alert.alert(
         t("screens.trainingDays.noDaySelectedTitle"),
-        t("screens.trainingDays.noDaySelectedMessage")
+        t("screens.trainingDays.noDaySelectedMessage"),
       );
       setIsLoading(false);
       return;
@@ -127,7 +127,7 @@ export default function TrainingDays() {
               }
             },
           },
-        ]
+        ],
       );
     }
 
@@ -153,7 +153,7 @@ export default function TrainingDays() {
       if (prevDay.active || nextDay.active) {
         Alert.alert(
           t("screens.trainingDays.daySelectionNotPossibleTitle"),
-          t("screens.trainingDays.daySelectionNotPossibleChild")
+          t("screens.trainingDays.daySelectionNotPossibleChild"),
         );
         return;
       }
@@ -185,7 +185,7 @@ export default function TrainingDays() {
       if (totalConsecutive > 3) {
         Alert.alert(
           t("screens.trainingDays.daySelectionNotPossibleTitle"),
-          t("screens.trainingDays.daySelectionNotPossibleAdult")
+          t("screens.trainingDays.daySelectionNotPossibleAdult"),
         );
         return;
       }
@@ -198,7 +198,7 @@ export default function TrainingDays() {
     if (!personalData.birthday) return WorkoutConstants.AGE_GROUPS.ADULT;
 
     const birthDate = new Date(
-      personalData.birthday.split("-").reverse().join("-")
+      personalData.birthday.split("-").reverse().join("-"),
     );
     const today = new Date();
     const age = today.getFullYear() - birthDate.getFullYear();

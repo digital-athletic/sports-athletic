@@ -21,11 +21,11 @@ export interface SkillTreesState {
   getSkillTree: (skillName: string) => SkillTreeType | undefined;
   getBranchById: (
     skillName: string,
-    branchId: number
+    branchId: number,
   ) => ExerciseBranchType | undefined;
   getAvailableBranchesForLevel: (
     skillName: string,
-    level: number
+    level: number,
   ) => ExerciseBranchType[];
 }
 
@@ -81,7 +81,7 @@ export const useSkillTreesStore = create<SkillTreesState>()(
       getBranchById: (skillName, branchId) => {
         const tree = get().getSkillTree(skillName);
         return tree?.branches.find(
-          (branch) => branch.exerciseBranchId === branchId
+          (branch) => branch.exerciseBranchId === branchId,
         );
       },
 
@@ -93,6 +93,6 @@ export const useSkillTreesStore = create<SkillTreesState>()(
     {
       name: "skill-trees-storage",
       storage: asyncStorage,
-    }
-  )
+    },
+  ),
 );

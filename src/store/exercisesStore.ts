@@ -63,6 +63,6 @@ export const useExercisesStore = create<ExercisesState>()(
     {
       name: "exercises-storage",
       storage: asyncStorage,
-    }
-  )
+    },
+  ),
 );

@@ -30,13 +30,13 @@ describe("<TrainingRepetitionInput />", () => {
   it("renders the power test description", () => {
     const { getByText } = render(<TrainingRepetitionInput {...mockProps} />);
     expect(
-      getByText("Do as many repetitions as you can do with good technique.")
+      getByText("Do as many repetitions as you can do with good technique."),
     ).toBeTruthy();
   });
 
   it("renders the input field with correct value", () => {
     const { getByDisplayValue } = render(
-      <TrainingRepetitionInput {...mockProps} />
+      <TrainingRepetitionInput {...mockProps} />,
     );
     expect(getByDisplayValue("10")).toBeTruthy();
   });
@@ -49,7 +49,7 @@ describe("<TrainingRepetitionInput />", () => {
   it("calls changeReps when input value changes", () => {
     const mockChangeReps = jest.fn();
     const { getByDisplayValue } = render(
-      <TrainingRepetitionInput {...mockProps} changeReps={mockChangeReps} />
+      <TrainingRepetitionInput {...mockProps} changeReps={mockChangeReps} />,
     );
 
     const input = getByDisplayValue("10");
@@ -64,7 +64,7 @@ describe("<TrainingRepetitionInput />", () => {
       <TrainingRepetitionInput
         {...mockProps}
         saveRepsInput={mockSaveRepsInput}
-      />
+      />,
     );
 
     const saveButton = getByRole("button", { name: "Save" });
@@ -74,21 +74,21 @@ describe("<TrainingRepetitionInput />", () => {
 
   it("handles zero repetitions value", () => {
     const { getByDisplayValue } = render(
-      <TrainingRepetitionInput {...mockProps} repsValue={0} />
+      <TrainingRepetitionInput {...mockProps} repsValue={0} />,
     );
     expect(getByDisplayValue("0")).toBeTruthy();
   });
 
   it("handles large repetitions value", () => {
     const { getByDisplayValue } = render(
-      <TrainingRepetitionInput {...mockProps} repsValue={100} />
+      <TrainingRepetitionInput {...mockProps} repsValue={100} />,
     );
     expect(getByDisplayValue("100")).toBeTruthy();
   });
 
   it("renders with hashtag icon for repetitions input", () => {
     const { getByLabelText } = render(
-      <TrainingRepetitionInput {...mockProps} />
+      <TrainingRepetitionInput {...mockProps} />,
     );
     // The hashtag icon should have accessibility label
     const icon = getByLabelText("input-icon");
@@ -97,7 +97,7 @@ describe("<TrainingRepetitionInput />", () => {
 
   it("uses keyboard type number-pad for input", () => {
     const { getByDisplayValue } = render(
-      <TrainingRepetitionInput {...mockProps} />
+      <TrainingRepetitionInput {...mockProps} />,
     );
     const input = getByDisplayValue("10");
     expect(input.props.keyboardType).toBe("number-pad");
@@ -105,7 +105,7 @@ describe("<TrainingRepetitionInput />", () => {
 
   it("updates when repsValue prop changes", () => {
     const { rerender, getByDisplayValue } = render(
-      <TrainingRepetitionInput {...mockProps} repsValue={10} />
+      <TrainingRepetitionInput {...mockProps} repsValue={10} />,
     );
     expect(getByDisplayValue("10")).toBeTruthy();
 

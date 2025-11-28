@@ -6,7 +6,7 @@
 // Mock AsyncStorage for testing
 jest.mock("@react-native-async-storage/async-storage", () =>
   // CommonJS require is needed for Jest mocks
-  require("@react-native-async-storage/async-storage/jest/async-storage-mock")
+  require("@react-native-async-storage/async-storage/jest/async-storage-mock"),
 );
 
 // Mock @expo/vector-icons to avoid async state updates in tests

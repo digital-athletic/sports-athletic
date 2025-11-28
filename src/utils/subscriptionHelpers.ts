@@ -8,7 +8,7 @@ const DAY_IN_MS = 24 * 60 * 60 * 1000;
  * Calculate how many days are left in the test period
  */
 export const getTestPeriodDaysLeft = (
-  firstRegistrationTimestamp: number
+  firstRegistrationTimestamp: number,
 ): number => {
   const startTimestamp =
     SUBSCRIPTION_KICKOFF_TIMESTAMP > firstRegistrationTimestamp
@@ -26,7 +26,7 @@ export const getTestPeriodDaysLeft = (
  */
 export const isAllowedForTraining = (
   isSubscribed: boolean,
-  firstRegistration: number
+  firstRegistration: number,
 ): boolean => {
   let isInTrialPeriod = false;
 

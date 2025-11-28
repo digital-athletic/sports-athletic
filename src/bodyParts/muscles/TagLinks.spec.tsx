@@ -63,7 +63,7 @@ describe("<TagLinks />", () => {
   it("calls onMuscleLinkClick with muscle name when link is pressed", () => {
     const mockClick = jest.fn();
     const { getByLabelText } = render(
-      <TagLinks {...props} onMuscleLinkClick={mockClick} />
+      <TagLinks {...props} onMuscleLinkClick={mockClick} />,
     );
 
     const calfRightLink = getByLabelText("Select WADE_RECHTS muscle");
@@ -76,7 +76,7 @@ describe("<TagLinks />", () => {
   it("calls onMuscleLinkClick with correct muscle name for each link", () => {
     const mockClick = jest.fn();
     const { getByLabelText } = render(
-      <TagLinks {...props} onMuscleLinkClick={mockClick} />
+      <TagLinks {...props} onMuscleLinkClick={mockClick} />,
     );
 
     fireEvent.press(getByLabelText("Select WADE_RECHTS muscle"));
@@ -101,7 +101,7 @@ describe("<TagLinks />", () => {
 
   it("handles empty availableTags array", () => {
     const { toJSON, queryByRole } = render(
-      <TagLinks {...props} availableTags={[]} />
+      <TagLinks {...props} availableTags={[]} />,
     );
 
     expect(toJSON()).toBeTruthy();
@@ -111,7 +111,7 @@ describe("<TagLinks />", () => {
   it("handles single tag", () => {
     const singleTag = [mockBodyParts[0]];
     const { getAllByRole } = render(
-      <TagLinks {...props} availableTags={singleTag} />
+      <TagLinks {...props} availableTags={singleTag} />,
     );
 
     const buttons = getAllByRole("button");
@@ -128,7 +128,7 @@ describe("<TagLinks />", () => {
   it("allows multiple presses on the same link", () => {
     const mockClick = jest.fn();
     const { getByLabelText } = render(
-      <TagLinks {...props} onMuscleLinkClick={mockClick} />
+      <TagLinks {...props} onMuscleLinkClick={mockClick} />,
     );
 
     const rightCalfLink = getByLabelText("Select WADE_RECHTS muscle");

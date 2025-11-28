@@ -7,6 +7,7 @@ import { BackHeader } from "@/common/BackHeader";
 import { ProgressBar } from "@/common/ProgressBar";
 import { SkipHeader } from "@/common/SkipHeader";
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
+import { DateInputField } from "@/form/DateInputField";
 import { SelectionInputField } from "@/form/SelectionInputField";
 import { TextInputField } from "@/form/TextInputField";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
@@ -39,7 +40,6 @@ export default function UserProfileScreen() {
 
   const username = personalData.username;
   const gender = personalData.gender;
-  // react-native-date-picker requires expo prebuild setup
   const birthday = personalData.birthday;
 
   const hasActiveTrainingDay = getActiveTrainingDays().length > 0;
@@ -87,7 +87,7 @@ export default function UserProfileScreen() {
   useEffect(() => {
     const subscription = BackHandler.addEventListener(
       "hardwareBackPress",
-      handleBackPress
+      handleBackPress,
     );
     return () => subscription.remove();
   }, [handleBackPress]);
@@ -182,7 +182,7 @@ export default function UserProfileScreen() {
           />
         </AnamnesisQuestionContainer>
 
-        {/* <AnamnesisQuestionContainer
+        <AnamnesisQuestionContainer
           title={{
             default: t("screens.userProfile.birthdayTitle"),
           }}
@@ -195,7 +195,7 @@ export default function UserProfileScreen() {
             dateTime={birthday}
             onChange={handleBirthdayChange}
           />
-        </AnamnesisQuestionContainer> */}
+        </AnamnesisQuestionContainer>
 
         <Button onPress={goOn} margin="m">
           {t("screens.userProfile.goOn")}

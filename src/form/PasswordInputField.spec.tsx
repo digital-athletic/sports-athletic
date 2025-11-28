@@ -30,14 +30,14 @@ describe("<PasswordInputField />", () => {
 
   it("displays password placeholder", () => {
     const { getByPlaceholderText } = render(
-      <PasswordInputField {...defaultProps} />
+      <PasswordInputField {...defaultProps} />,
     );
     expect(getByPlaceholderText("Password")).toBeTruthy();
   });
 
   it("displays the provided password value", () => {
     const { getByDisplayValue } = render(
-      <PasswordInputField {...defaultProps} password="secretpass" />
+      <PasswordInputField {...defaultProps} password="secretpass" />,
     );
     expect(getByDisplayValue("secretpass")).toBeTruthy();
   });
@@ -45,7 +45,7 @@ describe("<PasswordInputField />", () => {
   it("calls onChange when password input changes", () => {
     const onChange = jest.fn();
     const { getByPlaceholderText } = render(
-      <PasswordInputField {...defaultProps} onChange={onChange} />
+      <PasswordInputField {...defaultProps} onChange={onChange} />,
     );
 
     fireEvent.changeText(getByPlaceholderText("Password"), "newpassword");
@@ -56,7 +56,7 @@ describe("<PasswordInputField />", () => {
 
   it("has secureTextEntry enabled by default", () => {
     const { getByPlaceholderText } = render(
-      <PasswordInputField {...defaultProps} />
+      <PasswordInputField {...defaultProps} />,
     );
     const input = getByPlaceholderText("Password");
     expect(input.props.secureTextEntry).toBe(true);
@@ -64,7 +64,7 @@ describe("<PasswordInputField />", () => {
 
   it("toggles password visibility on eye icon press", () => {
     const { getByPlaceholderText, getByLabelText } = render(
-      <PasswordInputField {...defaultProps} />
+      <PasswordInputField {...defaultProps} />,
     );
     const input = getByPlaceholderText("Password");
     const eyeIcon = getByLabelText("eye");
@@ -83,7 +83,7 @@ describe("<PasswordInputField />", () => {
 
   it("maintains toggle state through multiple presses", () => {
     const { getByPlaceholderText, getByLabelText } = render(
-      <PasswordInputField {...defaultProps} />
+      <PasswordInputField {...defaultProps} />,
     );
     const input = getByPlaceholderText("Password");
     const eyeIcon = getByLabelText("eye");

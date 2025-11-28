@@ -4,7 +4,7 @@ import { BodyPartData } from "./types";
 export const linkDataToStyle = (
   linkData: BodyPartData,
   width: number,
-  height: number
+  height: number,
 ) => {
   let styleObject: ViewStyle = {
     position: "absolute",

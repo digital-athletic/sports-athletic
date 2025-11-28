@@ -15,7 +15,7 @@ describe("<Loading />", () => {
   it("should render cancel button when onClose is provided", () => {
     const onClose = jest.fn();
     const { getByText } = render(
-      <Loading show={true} text="Loading..." onClose={onClose} />
+      <Loading show={true} text="Loading..." onClose={onClose} />,
     );
     expect(getByText("Cancel")).toBeTruthy();
   });

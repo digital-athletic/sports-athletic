@@ -40,7 +40,7 @@ export function useLogout() {
         {
           text: t("common.no"),
         },
-      ]
+      ],
     );
   };
 
@@ -76,7 +76,7 @@ export function useDeleteAccount() {
         {
           text: t("common.no"),
         },
-      ]
+      ],
     );
   };
 

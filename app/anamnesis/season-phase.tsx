@@ -104,7 +104,7 @@ export default function SeasonPhase() {
     if (!seasonPhase?.type) {
       Alert.alert(
         t("screens.seasonPhase.noPhaseSelectedTitle"),
-        t("screens.seasonPhase.noPhaseSelectedMessage")
+        t("screens.seasonPhase.noPhaseSelectedMessage"),
       );
       return;
     }
@@ -132,7 +132,7 @@ export default function SeasonPhase() {
               router.navigate("/(tabs)");
             },
           },
-        ]
+        ],
       );
     }
 

@@ -24,7 +24,7 @@ describe("<Ionicon />", () => {
 
   it("renders with all props", () => {
     const { toJSON } = render(
-      <Ionicon name="search" size={48} color="#00FF00" />
+      <Ionicon name="search" size={48} color="#00FF00" />,
     );
     const tree = toJSON();
     expect(tree).toBeTruthy();

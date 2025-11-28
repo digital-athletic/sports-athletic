@@ -46,7 +46,7 @@ export const SelectionModal: FC<Props> = ({
       setSelected((prev) =>
         prev.includes(value)
           ? prev.filter((v) => v !== value)
-          : [...prev, value]
+          : [...prev, value],
       );
     }
   };

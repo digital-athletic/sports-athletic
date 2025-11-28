@@ -20,7 +20,7 @@ export default function WelcomeScreen() {
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
-      () => true // Prevent back navigation
+      () => true, // Prevent back navigation
     );
 
     return () => backHandler.remove();

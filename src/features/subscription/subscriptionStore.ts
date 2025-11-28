@@ -60,6 +60,6 @@ export const useSubscriptionStore = create<SubscriptionState>()(
     {
       name: "subscription-store",
       storage: asyncStorage,
-    }
-  )
+    },
+  ),
 );

@@ -100,7 +100,7 @@ export const BodyParts: FC<BodyPartsProps> = ({
 
   const [side, setSide] = useState<Side>(propSide || "FRONT");
   const [availableTags, setAvailableTags] = useState<BodyPartData[]>(
-    MUSCLES.W.FRONT
+    MUSCLES.W.FRONT,
   );
 
   // Update available tags based on props
@@ -126,7 +126,7 @@ export const BodyParts: FC<BodyPartsProps> = ({
 
       return availableTags;
     },
-    [showsSoreness]
+    [showsSoreness],
   );
 
   useEffect(() => {

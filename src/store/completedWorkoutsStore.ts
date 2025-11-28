@@ -119,13 +119,13 @@ export const useCompletedWorkoutsStore = create<CompletedWorkoutsState>()(
       getRecentWorkouts: (limit) => {
         const { workoutsList, workouts } = get();
         const sorted = [...workoutsList].sort(
-          (a, b) => b.timestamp - a.timestamp
+          (a, b) => b.timestamp - a.timestamp,
         );
         const recent = sorted.slice(0, limit);
         return recent
           .map((entry) => workouts[entry.id])
           .filter(
-            (workout): workout is CompleteWorkoutType => workout !== undefined
+            (workout): workout is CompleteWorkoutType => workout !== undefined,
           );
       },
 
@@ -138,13 +138,13 @@ export const useCompletedWorkoutsStore = create<CompletedWorkoutsState>()(
         const { workouts } = get();
         return Object.values(workouts).reduce(
           (total, workout) => total + workout.duration,
-          0
+          0,
         );
       },
     })),
     {
       name: "completed-workouts-storage",
       storage: asyncStorage,
-    }
-  )
+    },
+  ),
 );

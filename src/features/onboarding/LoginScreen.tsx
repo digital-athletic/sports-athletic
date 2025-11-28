@@ -51,7 +51,7 @@ export const LoginScreen: FC<Props> = ({
         {
           text: t("onboarding.noCaps"),
         },
-      ]
+      ],
     );
   };
 

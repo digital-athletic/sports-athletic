@@ -31,7 +31,7 @@ export interface UserWorkoutState {
     weekday: number,
     skillId: SkillTypes,
     branchIdToReplace: number,
-    branchesToFillIn: ExerciseBranchType[]
+    branchesToFillIn: ExerciseBranchType[],
   ) => void;
   saveMaxValues: (maxValues: MaxValuesType) => void;
 }
@@ -117,7 +117,7 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
         weekday,
         skillId,
         branchIdToReplace,
-        branchesToFillIn
+        branchesToFillIn,
       ) =>
         set((state) => {
           let plan = state.trainingPlan;
@@ -137,7 +137,7 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
           // Find the branch to replace
           const skillBranches = training?.skills[skillId];
           const branchIndex = skillBranches?.findIndex(
-            (branch) => branch.exerciseBranchId === branchIdToReplace
+            (branch) => branch.exerciseBranchId === branchIdToReplace,
           );
 
           // Find the training for the given skill
@@ -151,6 +151,6 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
     {
       name: "user-workout-storage",
       storage: asyncStorage,
-    }
-  )
+    },
+  ),
 );

@@ -37,7 +37,7 @@ export const ProgressBar: FC<Props> = ({
           borderRightColor="lightGrey2"
         />
       )),
-    [progress, barHeight]
+    [progress, barHeight],
   );
 
   const emptyBars = useMemo(
@@ -52,7 +52,7 @@ export const ProgressBar: FC<Props> = ({
           borderRightColor="lightGrey2"
         />
       )),
-    [progress, maximum, barHeight]
+    [progress, maximum, barHeight],
   );
 
   return toHide ? (

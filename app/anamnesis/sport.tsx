@@ -64,7 +64,7 @@ export default function SportScreen() {
   useEffect(() => {
     const subscription = BackHandler.addEventListener(
       "hardwareBackPress",
-      handleBackPress
+      handleBackPress,
     );
     return () => subscription.remove();
   }, [handleBackPress]);

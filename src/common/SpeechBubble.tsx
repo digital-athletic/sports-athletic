@@ -16,7 +16,7 @@ export const SpeechBubble: FC<SpeechBubbleProps> = ({ text, centered }) => {
   const triangleHeight = Math.floor((triangleWidth * 3) / 4);
 
   const fontSize = useResponsiveProp(
-    centered ? { phone: 20, tablet: 32 } : { phone: 16, tablet: 28 }
+    centered ? { phone: 20, tablet: 32 } : { phone: 16, tablet: 28 },
   );
 
   const triangleStyle = centered

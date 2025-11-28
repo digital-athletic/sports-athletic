@@ -24,7 +24,7 @@ describe("<SwitchInputField />", () => {
 
   it("renders switch with correct initial value", () => {
     const { getByLabelText } = render(
-      <SwitchInputField {...defaultProps} value={true} />
+      <SwitchInputField {...defaultProps} value={true} />,
     );
     const switchComponent = getByLabelText("switch-input");
     expect(switchComponent.props.value).toBe(true);
@@ -33,7 +33,7 @@ describe("<SwitchInputField />", () => {
   it("calls onChange when switch is toggled", () => {
     const onChange = jest.fn();
     const { getByLabelText } = render(
-      <SwitchInputField {...defaultProps} onChange={onChange} />
+      <SwitchInputField {...defaultProps} onChange={onChange} />,
     );
     const switchComponent = getByLabelText("switch-input");
 
@@ -46,7 +46,7 @@ describe("<SwitchInputField />", () => {
   it("toggles between true and false", () => {
     const onChange = jest.fn();
     const { getByLabelText } = render(
-      <SwitchInputField {...defaultProps} onChange={onChange} />
+      <SwitchInputField {...defaultProps} onChange={onChange} />,
     );
     const switchComponent = getByLabelText("switch-input");
 
@@ -68,21 +68,21 @@ describe("<SwitchInputField />", () => {
 
   it("applies small size styling when size is small", () => {
     const { getByLabelText } = render(
-      <SwitchInputField {...defaultProps} size="small" />
+      <SwitchInputField {...defaultProps} size="small" />,
     );
     const switchComponent = getByLabelText("switch-input");
     // Check that transform is in the style array
     const hasTransform =
       Array.isArray(switchComponent.props.style) &&
       switchComponent.props.style.some(
-        (s: any) => s.transform && Array.isArray(s.transform)
+        (s: any) => s.transform && Array.isArray(s.transform),
       );
     expect(hasTransform).toBe(true);
   });
 
   it("uses custom color when provided", () => {
     const { getByLabelText } = render(
-      <SwitchInputField {...defaultProps} color="#FF0000" />
+      <SwitchInputField {...defaultProps} color="#FF0000" />,
     );
     const switchComponent = getByLabelText("switch-input");
     // trackColor is set via onTintColor prop on native switch
@@ -91,7 +91,7 @@ describe("<SwitchInputField />", () => {
 
   it("uses custom thumbColor when provided", () => {
     const { getByLabelText } = render(
-      <SwitchInputField {...defaultProps} thumbColor="#00FF00" />
+      <SwitchInputField {...defaultProps} thumbColor="#00FF00" />,
     );
     const switchComponent = getByLabelText("switch-input");
     // thumbColor is set via thumbTintColor prop on native switch
@@ -102,7 +102,7 @@ describe("<SwitchInputField />", () => {
     const longText =
       "This is a very long description text that explains what this switch does in detail";
     const { getByText } = render(
-      <SwitchInputField {...defaultProps} descriptionText={longText} />
+      <SwitchInputField {...defaultProps} descriptionText={longText} />,
     );
     expect(getByText(longText)).toBeTruthy();
   });

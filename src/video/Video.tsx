@@ -15,7 +15,7 @@ type Props = {
   changeVideoProperties: (
     screen: ScreenMetadata,
     videoIsPlaying: boolean,
-    startPosition: number
+    startPosition: number,
   ) => void;
   fullScreenDisabled?: boolean;
   playButtonDisabled?: boolean;

@@ -58,7 +58,7 @@ describe("<ActiveTags />", () => {
 
   it("renders primary muscle images for matching tags", () => {
     const { getAllByLabelText } = render(
-      <ActiveTags {...props} tags={["WADE_RECHTS", "WADE_LINKS"]} />
+      <ActiveTags {...props} tags={["WADE_RECHTS", "WADE_LINKS"]} />,
     );
 
     const primaryMuscles = getAllByLabelText("Primary muscle:", {
@@ -69,7 +69,7 @@ describe("<ActiveTags />", () => {
 
   it("renders secondary muscle images for matching secondaryTags", () => {
     const { getAllByLabelText } = render(
-      <ActiveTags {...props} secondaryTags={["WADE_RECHTS"]} />
+      <ActiveTags {...props} secondaryTags={["WADE_RECHTS"]} />,
     );
 
     const secondaryMuscles = getAllByLabelText("Secondary muscle:", {
@@ -84,7 +84,7 @@ describe("<ActiveTags />", () => {
         {...props}
         tags={["WADE_RECHTS"]}
         secondaryTags={["WADE_LINKS", "OBERSCHENKEL_HINTEN_RECHTS"]}
-      />
+      />,
     );
 
     const primaryMuscles = getAllByLabelText("Primary muscle:", {
@@ -100,7 +100,7 @@ describe("<ActiveTags />", () => {
 
   it("does not render any images when no tags match", () => {
     const { queryByLabelText } = render(
-      <ActiveTags {...props} tags={["nonexistent"]} />
+      <ActiveTags {...props} tags={["nonexistent"]} />,
     );
 
     expect(queryByLabelText("Primary muscle:", { exact: false })).toBeNull();
@@ -112,7 +112,7 @@ describe("<ActiveTags />", () => {
         {...props}
         tags={["WADE_RECHTS"]}
         secondaryTags={["WADE_RECHTS"]}
-      />
+      />,
     );
 
     // Should render both primary and secondary images for biceps
@@ -125,7 +125,7 @@ describe("<ActiveTags />", () => {
 
   it("handles empty availableTags array", () => {
     const { toJSON } = render(
-      <ActiveTags {...props} availableTags={[]} tags={["WADE_RECHTS"]} />
+      <ActiveTags {...props} availableTags={[]} tags={["WADE_RECHTS"]} />,
     );
 
     expect(toJSON()).toBeTruthy();
@@ -133,7 +133,7 @@ describe("<ActiveTags />", () => {
 
   it("handles empty tags and secondaryTags arrays", () => {
     const { queryByLabelText } = render(
-      <ActiveTags {...props} tags={[]} secondaryTags={[]} />
+      <ActiveTags {...props} tags={[]} secondaryTags={[]} />,
     );
 
     expect(queryByLabelText("Primary muscle:", { exact: false })).toBeNull();
@@ -145,7 +145,7 @@ describe("<ActiveTags />", () => {
       <ActiveTags
         {...props}
         tags={["WADE_RECHTS", "WADE_LINKS", "OBERSCHENKEL_HINTEN_RECHTS"]}
-      />
+      />,
     );
 
     const primaryMuscles = getAllByLabelText("Primary muscle:", {

@@ -129,7 +129,7 @@ export const useTrainingScheduleStore = create<TrainingScheduleState>()(
 
       getTotalActiveHours: () => {
         const activeDays = get().trainingDays.filter(
-          (day) => day.active && day.duration
+          (day) => day.active && day.duration,
         );
         return activeDays.reduce((total, day) => {
           if (!day.duration) return total;
@@ -140,6 +140,6 @@ export const useTrainingScheduleStore = create<TrainingScheduleState>()(
     {
       name: "training-schedule-storage",
       storage: asyncStorage,
-    }
-  )
+    },
+  ),
 );

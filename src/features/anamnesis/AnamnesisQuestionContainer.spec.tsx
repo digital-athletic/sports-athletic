@@ -18,7 +18,7 @@ describe("<AnamnesisQuestionContainer />", () => {
 
   it("renders the title in the current language", () => {
     const { getByText } = render(
-      <AnamnesisQuestionContainer title={mockTitle} />
+      <AnamnesisQuestionContainer title={mockTitle} />,
     );
     expect(getByText("What is your sport?")).toBeTruthy();
   });
@@ -28,14 +28,14 @@ describe("<AnamnesisQuestionContainer />", () => {
       <AnamnesisQuestionContainer
         title={mockTitle}
         description={mockDescription}
-      />
+      />,
     );
     expect(getByText("Please select your primary sport")).toBeTruthy();
   });
 
   it("does not render description when not provided", () => {
     const { queryByText } = render(
-      <AnamnesisQuestionContainer title={mockTitle} />
+      <AnamnesisQuestionContainer title={mockTitle} />,
     );
     expect(queryByText("Please select your primary sport")).toBeFalsy();
   });
@@ -44,7 +44,7 @@ describe("<AnamnesisQuestionContainer />", () => {
     const { getByText } = render(
       <AnamnesisQuestionContainer title={mockTitle}>
         <Text>Test Child Content</Text>
-      </AnamnesisQuestionContainer>
+      </AnamnesisQuestionContainer>,
     );
     expect(getByText("Test Child Content")).toBeTruthy();
   });
@@ -53,7 +53,7 @@ describe("<AnamnesisQuestionContainer />", () => {
     const { getByText } = render(
       <AnamnesisQuestionContainer title={mockTitle}>
         <Text>Input Field</Text>
-      </AnamnesisQuestionContainer>
+      </AnamnesisQuestionContainer>,
     );
     expect(getByText("What is your sport?")).toBeTruthy();
     expect(getByText("Input Field")).toBeTruthy();
@@ -66,7 +66,7 @@ describe("<AnamnesisQuestionContainer />", () => {
         description={mockDescription}
       >
         <Text>Form Input</Text>
-      </AnamnesisQuestionContainer>
+      </AnamnesisQuestionContainer>,
     );
     expect(getByText("What is your sport?")).toBeTruthy();
     expect(getByText("Please select your primary sport")).toBeTruthy();
@@ -78,7 +78,7 @@ describe("<AnamnesisQuestionContainer />", () => {
       default: "Default Title",
     };
     const { getByText } = render(
-      <AnamnesisQuestionContainer title={titleWithoutCurrent} />
+      <AnamnesisQuestionContainer title={titleWithoutCurrent} />,
     );
     expect(getByText("Default Title")).toBeTruthy();
   });
@@ -87,7 +87,7 @@ describe("<AnamnesisQuestionContainer />", () => {
     const { getByText } = render(
       <AnamnesisQuestionContainer title={mockTitle}>
         {undefined}
-      </AnamnesisQuestionContainer>
+      </AnamnesisQuestionContainer>,
     );
     expect(getByText("What is your sport?")).toBeTruthy();
   });
@@ -98,7 +98,7 @@ describe("<AnamnesisQuestionContainer />", () => {
         <Text>First Child</Text>
         <Text>Second Child</Text>
         <Text>Third Child</Text>
-      </AnamnesisQuestionContainer>
+      </AnamnesisQuestionContainer>,
     );
     expect(getByText("First Child")).toBeTruthy();
     expect(getByText("Second Child")).toBeTruthy();
@@ -110,7 +110,7 @@ describe("<AnamnesisQuestionContainer />", () => {
       default: "Required Question",
     };
     const { getByText } = render(
-      <AnamnesisQuestionContainer title={minimalTitle} />
+      <AnamnesisQuestionContainer title={minimalTitle} />,
     );
     expect(getByText("Required Question")).toBeTruthy();
   });
@@ -123,7 +123,7 @@ describe("<AnamnesisQuestionContainer />", () => {
       <AnamnesisQuestionContainer
         title={mockTitle}
         description={minimalDescription}
-      />
+      />,
     );
     expect(getByText("Supporting text")).toBeTruthy();
   });

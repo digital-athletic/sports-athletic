@@ -18,7 +18,7 @@ describe("SelectionModal", () => {
         visible={true}
         onConfirm={jest.fn()}
         onCancel={jest.fn()}
-      />
+      />,
     );
 
     expect(getByText("Item One")).toBeTruthy();
@@ -35,7 +35,7 @@ describe("SelectionModal", () => {
         selectText="Choose an option"
         onConfirm={jest.fn()}
         onCancel={jest.fn()}
-      />
+      />,
     );
 
     expect(getByText("Choose an option")).toBeTruthy();
@@ -51,7 +51,7 @@ describe("SelectionModal", () => {
         onConfirm={onConfirm}
         onCancel={jest.fn()}
         confirmText="OK"
-      />
+      />,
     );
 
     const item1 = getByText("Item One").parent;
@@ -74,7 +74,7 @@ describe("SelectionModal", () => {
         onConfirm={onConfirm}
         onCancel={jest.fn()}
         confirmText="OK"
-      />
+      />,
     );
 
     const item1 = getByText("Item One").parent;
@@ -101,7 +101,7 @@ describe("SelectionModal", () => {
         onConfirm={onConfirm}
         onCancel={jest.fn()}
         confirmText="OK"
-      />
+      />,
     );
 
     const item1 = getByText("Item One").parent;
@@ -125,7 +125,7 @@ describe("SelectionModal", () => {
         visible={true}
         onConfirm={jest.fn()}
         onCancel={onCancel}
-      />
+      />,
     );
 
     const closeButton = getByLabelText("close");
@@ -144,7 +144,7 @@ describe("SelectionModal", () => {
         visible={true}
         onConfirm={onConfirm}
         onCancel={onCancel}
-      />
+      />,
     );
 
     // Select item2
@@ -168,7 +168,7 @@ describe("SelectionModal", () => {
         confirmText="Save"
         onConfirm={jest.fn()}
         onCancel={jest.fn()}
-      />
+      />,
     );
 
     expect(getByText("Save")).toBeTruthy();

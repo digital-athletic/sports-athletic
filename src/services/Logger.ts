@@ -17,7 +17,7 @@ export class Logger {
     params: {
       type: string;
       currency: string;
-    }
+    },
   ) => {
     if (__DEV__)
       console.log("Purchase log: ", eventName, price, JSON.stringify(params));

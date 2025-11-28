@@ -24,77 +24,77 @@ describe("<SectionWeekBars />", () => {
         intensity={4}
         sectionIndex={1}
         activeWeek={1}
-      />
+      />,
     );
     expect(toJSON()).toBeTruthy();
   });
 
   it("handles activeWeek 0 (first active week)", () => {
     const { toJSON } = render(
-      <SectionWeekBars {...defaultProps} activeWeek={0} />
+      <SectionWeekBars {...defaultProps} activeWeek={0} />,
     );
     expect(toJSON()).toBeTruthy();
   });
 
   it("handles activeWeek -1 (before training starts)", () => {
     const { toJSON } = render(
-      <SectionWeekBars {...defaultProps} activeWeek={-1} />
+      <SectionWeekBars {...defaultProps} activeWeek={-1} />,
     );
     expect(toJSON()).toBeTruthy();
   });
 
   it("handles middle active week", () => {
     const { toJSON } = render(
-      <SectionWeekBars {...defaultProps} activeWeek={2} />
+      <SectionWeekBars {...defaultProps} activeWeek={2} />,
     );
     expect(toJSON()).toBeTruthy();
   });
 
   it("handles single week section", () => {
     const { toJSON } = render(
-      <SectionWeekBars {...defaultProps} sectionWeeksCount={1} />
+      <SectionWeekBars {...defaultProps} sectionWeeksCount={1} />,
     );
     expect(toJSON()).toBeTruthy();
   });
 
   it("handles large week count", () => {
     const { toJSON } = render(
-      <SectionWeekBars {...defaultProps} sectionWeeksCount={12} />
+      <SectionWeekBars {...defaultProps} sectionWeeksCount={12} />,
     );
     expect(toJSON()).toBeTruthy();
   });
 
   it("handles first section (sectionIndex 0)", () => {
     const { toJSON } = render(
-      <SectionWeekBars {...defaultProps} sectionIndex={0} activeWeek={0} />
+      <SectionWeekBars {...defaultProps} sectionIndex={0} activeWeek={0} />,
     );
     expect(toJSON()).toBeTruthy();
   });
 
   it("handles non-first section (sectionIndex > 0)", () => {
     const { toJSON } = render(
-      <SectionWeekBars {...defaultProps} sectionIndex={2} activeWeek={0} />
+      <SectionWeekBars {...defaultProps} sectionIndex={2} activeWeek={0} />,
     );
     expect(toJSON()).toBeTruthy();
   });
 
   it("renders with low intensity", () => {
     const { toJSON } = render(
-      <SectionWeekBars {...defaultProps} intensity={1} />
+      <SectionWeekBars {...defaultProps} intensity={1} />,
     );
     expect(toJSON()).toBeTruthy();
   });
 
   it("renders with high intensity", () => {
     const { toJSON } = render(
-      <SectionWeekBars {...defaultProps} intensity={12} />
+      <SectionWeekBars {...defaultProps} intensity={12} />,
     );
     expect(toJSON()).toBeTruthy();
   });
 
   it("handles different startWeek values", () => {
     const { toJSON } = render(
-      <SectionWeekBars {...defaultProps} startWeek={10} />
+      <SectionWeekBars {...defaultProps} startWeek={10} />,
     );
     expect(toJSON()).toBeTruthy();
   });
@@ -107,7 +107,7 @@ describe("<SectionWeekBars />", () => {
         intensity={1}
         sectionIndex={0}
         activeWeek={-1}
-      />
+      />,
     );
     expect(toJSON()).toBeTruthy();
   });

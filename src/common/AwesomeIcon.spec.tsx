@@ -24,7 +24,7 @@ describe("<AwesomeIcon />", () => {
 
   it("renders with all props", () => {
     const { toJSON } = render(
-      <AwesomeIcon name="home" size={48} color="#00FF00" />
+      <AwesomeIcon name="home" size={48} color="#00FF00" />,
     );
     const tree = toJSON();
     expect(tree).toBeTruthy();

@@ -61,7 +61,7 @@ const initialState: OnboardingState = {
 
 function onboardingReducer(
   state: OnboardingState,
-  action: OnboardingAction
+  action: OnboardingAction,
 ): OnboardingState {
   switch (action.type) {
     case "SET_EMAIL":
@@ -99,14 +99,14 @@ export default function OnboardingScreen() {
   const [state, dispatch] = useReducer(onboardingReducer, initialState);
   const router = useRouter();
   const { t } = useTranslation();
-  const { auth, setAuth } = useAuthStore();
+  const { setAuth } = useAuthStore();
   const { setIsInInitialAnamnesis } = useUserProfileStore();
 
   const handleEmailSubmit = async () => {
     if (!validateEmail(state.email)) {
       Alert.alert(
         t("onboarding.errorInvalidMailAdressTitle"),
-        t("onboarding.errorInvalidMailAdressMsg")
+        t("onboarding.errorInvalidMailAdressMsg"),
       );
       return;
     }
@@ -121,7 +121,7 @@ export default function OnboardingScreen() {
     } catch {
       Alert.alert(
         t("onboarding.alertErrorTitle"),
-        t("onboarding.alertAnErrorOccuredTitle")
+        t("onboarding.alertAnErrorOccuredTitle"),
       );
     } finally {
       dispatch({ type: "SET_PROCESSING", payload: false });
@@ -158,7 +158,7 @@ export default function OnboardingScreen() {
     if (!state.acceptedPrivacy) {
       Alert.alert(
         t("onboarding.errorTitleAcceptPrivacyInfo"),
-        t("onboarding.errorMessageAcceptPrivacyInfo")
+        t("onboarding.errorMessageAcceptPrivacyInfo"),
       );
       return;
     }
@@ -167,7 +167,7 @@ export default function OnboardingScreen() {
     if (state.password === "") {
       Alert.alert(
         t("onboarding.errorTitleWrongOrNoPassword"),
-        t("onboarding.errorMessageNoPassword")
+        t("onboarding.errorMessageNoPassword"),
       );
       return;
     }
@@ -175,7 +175,7 @@ export default function OnboardingScreen() {
     if (!validatePassword(state.password)) {
       Alert.alert(
         t("onboarding.errorTitleWrongOrNoPassword"),
-        t("onboarding.errorMessageWeakPassword")
+        t("onboarding.errorMessageWeakPassword"),
       );
       return;
     }
@@ -184,7 +184,7 @@ export default function OnboardingScreen() {
     if (state.password !== state.passwordConfirm) {
       Alert.alert(
         t("onboarding.errorTitleWrongOrNoPassword"),
-        t("onboarding.errorMessageDifferentPasswords")
+        t("onboarding.errorMessageDifferentPasswords"),
       );
       return;
     }
@@ -196,7 +196,7 @@ export default function OnboardingScreen() {
       const auth = await registerWithEmail(
         state.email,
         state.password,
-        state.acceptedAnalytics
+        state.acceptedAnalytics,
       );
       setAuth(auth);
       setIsInInitialAnamnesis(true);
@@ -224,7 +224,7 @@ export default function OnboardingScreen() {
     if (!validateEmail(state.email)) {
       Alert.alert(
         t("onboarding.errorInvalidMailAdressTitle"),
-        t("onboarding.errorInvalidMailAdressMsg")
+        t("onboarding.errorInvalidMailAdressMsg"),
       );
       return;
     }
@@ -233,7 +233,7 @@ export default function OnboardingScreen() {
       await resetPassword(state.email);
       Alert.alert(
         t("onboarding.onboardingLoginSentLinkTitle"),
-        t("onboarding.onboardingLoginSentLinkMessage", { email: state.email })
+        t("onboarding.onboardingLoginSentLinkMessage", { email: state.email }),
       );
     } catch (error: any) {
       let title = t("onboarding.alertErrorTitle");

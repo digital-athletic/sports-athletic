@@ -2,7 +2,7 @@ import { TrainingSectionType } from "./models/TrainingSection";
 
 export const getSectionForDate = (
   sections: TrainingSectionType[],
-  timestamp: number
+  timestamp: number,
 ) => {
   let sectionsNotInFuture = sections.filter((sec) => {
     return new Date(sec.start).getTime() <= timestamp;

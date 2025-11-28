@@ -54,12 +54,12 @@ export default function MoreScreen() {
   const hasTestAccess =
     auth?.userId &&
     TEST_EMAILS.some((email) =>
-      auth.userId.toLowerCase().includes(email.toLowerCase())
+      auth.userId.toLowerCase().includes(email.toLowerCase()),
     );
 
   const allowedForTraining = isAllowedForTraining(
     isSubscribed,
-    firstRegistration
+    firstRegistration,
   );
 
   return (

@@ -319,7 +319,7 @@ export const useAnamnesisStore = create<AnamnesisState>()(
                 // Extract values for this tag from the tags array
                 const tagPrefix = question.tag;
                 const tagValues = tags.filter((tag) =>
-                  tag.startsWith(`${tagPrefix}_`)
+                  tag.startsWith(`${tagPrefix}_`),
                 );
                 state.tags[tagPrefix] = tagValues;
               } else if (question.dataField) {
@@ -337,6 +337,6 @@ export const useAnamnesisStore = create<AnamnesisState>()(
     {
       name: "anamnesis-storage",
       storage: asyncStorage,
-    }
-  )
+    },
+  ),
 );

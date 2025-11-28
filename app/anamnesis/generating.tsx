@@ -21,7 +21,9 @@ export default function Generating() {
   const [stage, setStage] = useState(0);
   const [stagesEnded, setStagesEnded] = useState(false);
   const [generatingEnded, setGeneratingEnded] = useState(false);
-  const intervalRef = useRef<number>(undefined);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(
+    undefined,
+  );
 
   const {
     originPath: storedOriginPath,
@@ -90,7 +92,7 @@ export default function Generating() {
               }
             },
           },
-        ]
+        ],
       );
     }
   };

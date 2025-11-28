@@ -26,7 +26,7 @@ describe("FullScreenCoaching", () => {
   it("calls goOnFunction when Continue button is pressed", () => {
     const goOnFn = jest.fn();
     const { getByRole } = render(
-      <FullScreenCoaching {...defaultProps} goOnFunction={goOnFn} />
+      <FullScreenCoaching {...defaultProps} goOnFunction={goOnFn} />,
     );
 
     const button = getByRole("button");
@@ -42,7 +42,7 @@ describe("FullScreenCoaching", () => {
         {...defaultProps}
         skipText="Skip this"
         skipFunction={skipFn}
-      />
+      />,
     );
 
     const skipButton = getByText("Skip this");
@@ -60,7 +60,7 @@ describe("FullScreenCoaching", () => {
 
   it("does not render skip text when skipFunction is not provided", () => {
     const { queryByText } = render(
-      <FullScreenCoaching {...defaultProps} skipText="Skip this" />
+      <FullScreenCoaching {...defaultProps} skipText="Skip this" />,
     );
 
     expect(queryByText("Skip this")).toBeFalsy();
@@ -75,7 +75,7 @@ describe("FullScreenCoaching", () => {
   it("renders coach text in speech bubble", () => {
     const coachingText = "Get ready for your power test!";
     const { getByText } = render(
-      <FullScreenCoaching {...defaultProps} text={coachingText} />
+      <FullScreenCoaching {...defaultProps} text={coachingText} />,
     );
 
     expect(getByText(coachingText)).toBeTruthy();
@@ -88,7 +88,7 @@ describe("FullScreenCoaching", () => {
         goOnText="Start Power Test"
         skipText="Skip for now"
         skipFunction={jest.fn()}
-      />
+      />,
     );
 
     expect(getByText("Start Power Test")).toBeTruthy();
@@ -101,7 +101,7 @@ describe("FullScreenCoaching", () => {
         {...defaultProps}
         skipText="Skip"
         skipFunction={jest.fn()}
-      />
+      />,
     );
 
     const buttons = getAllByRole("button");

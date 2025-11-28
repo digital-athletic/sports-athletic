@@ -151,7 +151,7 @@ export default function AnamnesisQuestions() {
                   router.navigate(originPath);
                 },
               },
-            ]
+            ],
           );
         } else {
           router.navigate("/anamnesis/season-phase");
@@ -193,7 +193,7 @@ export default function AnamnesisQuestions() {
         setValue(question.dataField, value);
       }
     },
-    [setTag, setValue, resetToDefaults]
+    [setTag, setValue, resetToDefaults],
   );
 
   // Setup hardware back button handler
@@ -239,7 +239,7 @@ export default function AnamnesisQuestions() {
   const renderSelectInput = (
     question: AnamnesisQuestionType,
     i: number,
-    multiple: boolean
+    multiple: boolean,
   ) => {
     let value: string[] = [];
     if (question.dataType === "tag" && question.tag) {
@@ -371,7 +371,7 @@ export default function AnamnesisQuestions() {
   const renderDateInput = (
     question: AnamnesisQuestionType,
     i: number,
-    time: boolean
+    time: boolean,
   ) => {
     const currentDate = new Date();
     let value = time
@@ -402,7 +402,7 @@ export default function AnamnesisQuestions() {
 
   const renderSnapSliderInput = (
     question: AnamnesisQuestionType,
-    i: number
+    i: number,
   ) => {
     let value: string[] = [];
     if (question.dataType === "tag" && question.tag) {

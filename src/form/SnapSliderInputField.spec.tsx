@@ -18,7 +18,7 @@ describe("SnapSliderInputField", () => {
         sliderOptions={sliderOptions}
         descriptionText="Select a value"
         onChange={onChange}
-      />
+      />,
     );
 
     expect(getByText("Select a value")).toBeTruthy();
@@ -36,7 +36,7 @@ describe("SnapSliderInputField", () => {
         sliderOptions={sliderOptions}
         onChange={onChange}
         accessibilityLabel="slider"
-      />
+      />,
     );
 
     const slider = getByLabelText("slider");

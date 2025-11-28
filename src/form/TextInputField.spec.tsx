@@ -14,28 +14,28 @@ describe("<TextInputField />", () => {
 
   it("renders correctly with Ionicon", () => {
     const { toJSON } = render(
-      <TextInputField {...defaultProps} iconName="person" />
+      <TextInputField {...defaultProps} iconName="person" />,
     );
     expect(toJSON()).toMatchSnapshot();
   });
 
   it("renders correctly with AwesomeIcon", () => {
     const { toJSON } = render(
-      <TextInputField {...defaultProps} awesomeIconName="user" />
+      <TextInputField {...defaultProps} awesomeIconName="user" />,
     );
     expect(toJSON()).toMatchSnapshot();
   });
 
   it("displays Ionicon when iconName is provided", () => {
     const { getByLabelText } = render(
-      <TextInputField {...defaultProps} iconName="person" />
+      <TextInputField {...defaultProps} iconName="person" />,
     );
     expect(getByLabelText("input-icon")).toBeTruthy();
   });
 
   it("displays AwesomeIcon when awesomeIconName is provided", () => {
     const { getByLabelText } = render(
-      <TextInputField {...defaultProps} awesomeIconName="user" />
+      <TextInputField {...defaultProps} awesomeIconName="user" />,
     );
     expect(getByLabelText("input-icon")).toBeTruthy();
   });
@@ -46,7 +46,7 @@ describe("<TextInputField />", () => {
         {...defaultProps}
         iconName="person"
         awesomeIconName="user"
-      />
+      />,
     );
     // When both are provided, only one icon should render
     expect(getByLabelText("input-icon")).toBeTruthy();
@@ -54,14 +54,14 @@ describe("<TextInputField />", () => {
 
   it("displays the placeholder text", () => {
     const { getByPlaceholderText } = render(
-      <TextInputField {...defaultProps} placeholder="Enter your name" />
+      <TextInputField {...defaultProps} placeholder="Enter your name" />,
     );
     expect(getByPlaceholderText("Enter your name")).toBeTruthy();
   });
 
   it("displays the provided value", () => {
     const { getByDisplayValue } = render(
-      <TextInputField {...defaultProps} value="test value" />
+      <TextInputField {...defaultProps} value="test value" />,
     );
     expect(getByDisplayValue("test value")).toBeTruthy();
   });
@@ -69,7 +69,7 @@ describe("<TextInputField />", () => {
   it("calls onChange when text changes", () => {
     const onChange = jest.fn();
     const { getByPlaceholderText } = render(
-      <TextInputField {...defaultProps} onChange={onChange} />
+      <TextInputField {...defaultProps} onChange={onChange} />,
     );
 
     fireEvent.changeText(getByPlaceholderText("Enter text"), "new text");
@@ -80,7 +80,7 @@ describe("<TextInputField />", () => {
 
   it("has autoCapitalize set to none", () => {
     const { getByPlaceholderText } = render(
-      <TextInputField {...defaultProps} />
+      <TextInputField {...defaultProps} />,
     );
     const input = getByPlaceholderText("Enter text");
     expect(input.props.autoCapitalize).toBe("none");
@@ -88,7 +88,7 @@ describe("<TextInputField />", () => {
 
   it("uses default keyboard type", () => {
     const { getByPlaceholderText } = render(
-      <TextInputField {...defaultProps} />
+      <TextInputField {...defaultProps} />,
     );
     const input = getByPlaceholderText("Enter text");
     expect(input.props.keyboardType).toBe("default");
@@ -100,7 +100,7 @@ describe("<TextInputField />", () => {
         {...defaultProps}
         keyboardType="numeric"
         placeholder="Enter number"
-      />
+      />,
     );
     const input = getByPlaceholderText("Enter number");
     expect(input.props.keyboardType).toBe("numeric");

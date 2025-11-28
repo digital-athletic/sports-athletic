@@ -78,7 +78,7 @@ export const ListItem: FC<ListItemProps> = ({
               });
             },
           },
-        ]
+        ],
       );
       return;
     }

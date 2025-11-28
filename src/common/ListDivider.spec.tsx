@@ -14,7 +14,7 @@ describe("<ListDivider />", () => {
         <ListDivider />
         <ListDivider />
         <ListDivider />
-      </>
+      </>,
     );
     expect(toJSON()).toBeTruthy();
   });

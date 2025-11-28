@@ -216,7 +216,7 @@ describe("useTrainingStore", () => {
       });
 
       expect(result.current.exerciseList?.[0].feedback.difficulty).toBe(
-        "SUCCEEDED"
+        "SUCCEEDED",
       );
     });
 
@@ -228,7 +228,7 @@ describe("useTrainingStore", () => {
       });
 
       expect(result.current.exerciseList?.[1].feedback.difficulty).toBe(
-        "TOO_EASY"
+        "TOO_EASY",
       );
     });
 
@@ -240,7 +240,7 @@ describe("useTrainingStore", () => {
       });
 
       expect(result.current.exerciseList?.[2].feedback.difficulty).toBe(
-        "TOO_HARD"
+        "TOO_HARD",
       );
     });
 
@@ -253,11 +253,11 @@ describe("useTrainingStore", () => {
       });
 
       expect(result.current.exerciseList?.[0].feedback.difficulty).toBe(
-        "SUCCEEDED"
+        "SUCCEEDED",
       );
       expect(result.current.exerciseList?.[1].feedback.difficulty).toBeNull();
       expect(result.current.exerciseList?.[2].feedback.difficulty).toBe(
-        "TOO_EASY"
+        "TOO_EASY",
       );
     });
 
@@ -268,14 +268,14 @@ describe("useTrainingStore", () => {
         result.current.setExerciseFeedback(0, "SUCCEEDED");
       });
       expect(result.current.exerciseList?.[0].feedback.difficulty).toBe(
-        "SUCCEEDED"
+        "SUCCEEDED",
       );
 
       act(() => {
         result.current.setExerciseFeedback(0, "TOO_HARD");
       });
       expect(result.current.exerciseList?.[0].feedback.difficulty).toBe(
-        "TOO_HARD"
+        "TOO_HARD",
       );
     });
 
@@ -932,7 +932,7 @@ describe("useTrainingStore", () => {
       expect(result.current.time.skill.SWR).toBe(30000);
       expect(result.current.time.pause).toBe(2000);
       expect(result.current.exerciseList?.[0].feedback.difficulty).toBe(
-        "SUCCEEDED"
+        "SUCCEEDED",
       );
 
       // End training

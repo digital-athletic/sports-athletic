@@ -8,7 +8,7 @@ export class SubscriptionHelper {
     let isInTrialPeriod = false;
     if (Platform.OS !== "ios") {
       let daysLeft = SubscriptionHelper.getTestPeriodDaysLeft(
-        subscription.firstRegistration
+        subscription.firstRegistration,
       );
       isInTrialPeriod = daysLeft > -1;
     }

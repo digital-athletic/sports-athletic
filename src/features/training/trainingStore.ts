@@ -26,7 +26,7 @@ export interface TrainingState {
   setExerciseList: (list: UserExerciseDataType[] | null) => void;
   setExerciseFeedback: (
     index: number,
-    feedback: ExerciseDifficultyType
+    feedback: ExerciseDifficultyType,
   ) => void;
   setExerciseSkipped: (index: number) => void;
   setProgressBefore: (progress: UserProgressType | null) => void;
@@ -132,6 +132,6 @@ export const useTrainingStore = create<TrainingState>()(
     {
       name: "training-store",
       storage: asyncStorage,
-    }
-  )
+    },
+  ),
 );

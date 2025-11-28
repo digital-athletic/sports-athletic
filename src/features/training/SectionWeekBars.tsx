@@ -27,7 +27,7 @@ export const SectionWeekBars: FC<SectionWeekBarsProps> = ({
     weekIndex: number,
     activeWeek: number,
     sectionIndex: number,
-    sectionWeeksCount: number
+    sectionWeeksCount: number,
   ): ThemeColor => {
     // Active week
     if (weekIndex === activeWeek) {
@@ -110,7 +110,7 @@ export const SectionWeekBars: FC<SectionWeekBarsProps> = ({
               i,
               activeWeek,
               sectionIndex,
-              sectionWeeksCount
+              sectionWeeksCount,
             );
 
             return (

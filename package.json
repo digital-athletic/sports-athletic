@@ -9,11 +9,12 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "clean": "expo prebuild --clean",
-    "lint": "expo lint",
+    "lint": "expo lint --max-warnings 0",
     "format-check": "prettier . --check",
     "format-fix": "prettier . --write",
     "type-check": "tsc --noEmit",
-    "test": "jest --watchAll"
+    "test": "jest",
+    "expo-router-generate-types": "expo customize tsconfig.json"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
@@ -54,5 +55,5 @@
     "prettier": "3.6.2",
     "typescript": "~5.9.2"
   },
-  "packageManager": "pnpm@10.16.1+sha512.0e155aa2629db8672b49e8475da6226aa4bdea85fdcdfdc15350874946d4f3c91faaf64cbdc4a5d1ab8002f473d5c3fcedcd197989cf0390f9badd3c04678706"
+  "packageManager": "pnpm@10.22.0"
 }

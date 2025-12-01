@@ -1,6 +1,4 @@
-class Studio {}
-
-Studio.EQUIPMENT = [
+const EQUIPMENT = [
     "BENCH",
     "BLACK_ROLL",
     "BLACK_BALL",
@@ -20,4 +18,4 @@ Studio.EQUIPMENT = [
     "MARKERS"
 ];
 
-export default Studio;
+export default { EQUIPMENT };

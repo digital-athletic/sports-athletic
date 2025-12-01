@@ -1,6 +1,4 @@
-class Hall {}
-
-Hall.EQUIPMENT = [
+const EQUIPMENT = [
     "BLACK_BALL",
     "BLACK_ROLL",
     "BOTTLE",
@@ -27,4 +25,4 @@ Hall.EQUIPMENT = [
     "CEILING"
 ];
 
-export default Hall;
+export default { EQUIPMENT };

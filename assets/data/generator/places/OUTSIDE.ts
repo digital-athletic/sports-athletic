@@ -1,6 +1,4 @@
-class Outside {}
-
-Outside.EQUIPMENT = [
+const EQUIPMENT = [
     "PARK_BENCH",
     "TRACK_5",
     "TRACK_20",
@@ -11,4 +9,4 @@ Outside.EQUIPMENT = [
     "MARKERS"
 ];
 
-export default Outside;
+export default { EQUIPMENT };

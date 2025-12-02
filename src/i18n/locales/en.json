@@ -283,6 +283,14 @@
     "privacy": "Privacy",
     "notificationsSettings": "Notification Settings",
     "subscriptionStatus": "Subscription Status",
+    "notifications": {
+      "settings": "Notification settings",
+      "settingsTitle": "Turn on notifications",
+      "settingsText": "I want to receive notifications as reminders to Workout on my selected training days.",
+      "systemSettingsTitle": "Notifications currently not allowed",
+      "systemSettingsButtonText": "Go to device settings",
+      "systemSettingsText": "Please change your notification preferences in the device settings"
+    },
     "contact": "Contact",
     "imprint": "Imprint",
     "deleteUser": "Delete User",

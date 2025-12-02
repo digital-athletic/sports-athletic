@@ -29,7 +29,6 @@ export default function ProfileStackLayout() {
       <Stack.Screen name="exercise-information" />
       <Stack.Screen name="imprint" />
       <Stack.Screen name="privacy" />
-      <Stack.Screen name="notifications" />
       <Stack.Screen name="webview" />
       <Stack.Screen name="subscribe" />
       <Stack.Screen name="subscription-status" />

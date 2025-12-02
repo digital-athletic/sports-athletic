@@ -283,6 +283,14 @@
     "privacy": "Datenschutz",
     "notificationsSettings": "Benachrichtigungseinstellungen",
     "subscriptionStatus": "Abonnementstatus",
+    "notifications": {
+      "settings": "Nachrichten-Einstellungen",
+      "settingsTitle": "Erhalte Benachrichtigungen",
+      "settingsText": "Damit ich kein Training verpasse, möchte ich an meinen Trainingstagen mit einer Nachricht daran erinnert werden.",
+      "systemSettingsTitle": "Berechtigungen für Notifications nicht vorhanden",
+      "systemSettingsButtonText": "Zu den Systemeinstellungen",
+      "systemSettingsText": "Ändere deine Notification-Preferenzen in den Systemeinstellungen"
+    },
     "contact": "Kontakt",
     "imprint": "Impressum",
     "deleteUser": "Nutzer löschen",

@@ -1,6 +1,13 @@
 import { Loading } from "@/common/Loading";
 import { SpeechBubble } from "@/common/SpeechBubble";
+import PlanGenerator from "@/features/training/generators/PlanGenerator";
+import { Logger } from "@/services/Logger";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
+import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
+import { useExercisesStore } from "@/store/exercisesStore";
+import { usePlacesStore } from "@/store/placesStore";
+import { useSkillTreesStore } from "@/store/skillTreesStore";
+import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
@@ -34,9 +41,15 @@ export default function Generating() {
     workoutData,
     setSeasonPhase: saveSeasonPhaseToWorkoutData,
     trainingPlan,
+    setTrainingPlan,
   } = useUserWorkoutStore();
-  const { isInInitialAnamnesis, setIsInInitialAnamnesis } =
+  const { isInInitialAnamnesis, setIsInInitialAnamnesis, userId } =
     useUserProfileStore();
+  const { exercises } = useExercisesStore();
+  const { skillTrees } = useSkillTreesStore();
+  const { branchData } = useExerciseProgressStore();
+  const { trainingDays } = useTrainingScheduleStore();
+  const { places } = usePlacesStore();
 
   const createTrainingPlan = async () => {
     try {
@@ -45,9 +58,10 @@ export default function Generating() {
         seasonPhase &&
         workoutData.seasonPhase &&
         workoutData.seasonPhase.type === seasonPhase.type;
+
       if (trainingPlan && !shouldUpdateExisting) {
-        // Only create new if season phase type was changed
-        // await archiveTrainingPlan();
+        // TODO: Archive existing plan to Firebase
+        // await userService.archiveTrainingPlan(trainingPlan);
       }
 
       // Save season phase to workoutData (matches legacy behavior)
@@ -55,19 +69,46 @@ export default function Generating() {
         saveSeasonPhaseToWorkoutData(seasonPhase);
       }
 
-      // TODO: Implement actual plan generation logic
-      if (shouldUpdateExisting) {
-        // await updateUserTrainingPlan();
-      } else {
-        // Archive existing plan (would call API)
-        // await createUserTrainingPlan(seasonPhase);
-      }
+      // Prepare data for PlanGenerator
+      // Build user object matching legacy structure
+      const user = {
+        userId,
+        workoutData: {
+          ...workoutData,
+          seasonPhase: seasonPhase || workoutData.seasonPhase,
+        },
+      };
+
+      // Determine start date: use existing plan start or current date
+      const startDate =
+        shouldUpdateExisting && trainingPlan?.start
+          ? new Date(trainingPlan.start)
+          : new Date();
+
+      // Generate training plan
+      const plan = PlanGenerator.generatePlan(
+        user,
+        exercises || [],
+        skillTrees,
+        branchData,
+        trainingDays,
+        places,
+        startDate,
+      );
+
+      // Save generated plan
+      setTrainingPlan(plan);
+
+      // TODO: Persist to Firebase
+      // const userService = new UserService(firebaseConnector);
+      // await userService.setActiveTrainingPlan(plan);
+
+      // TODO: Setup push notifications for training reminders
+      // const pushNotificationService = new PushNotificationService();
+      // await pushNotificationService.checkPermissionsAndCreateNotifications(userId, plan);
 
       // Clean up anamnesis seasonPhase (matches legacy behavior)
       setAnamnesisSeasonPhase(null);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       setGeneratingEnded(true);
     } catch (error) {
@@ -75,6 +116,7 @@ export default function Generating() {
         clearInterval(intervalRef.current);
       }
       console.error("Error generating plan:", error);
+      Logger.logError(error as Error);
 
       const origin = originPath ?? storedOriginPath;
 
@@ -98,6 +140,8 @@ export default function Generating() {
   };
 
   useEffect(() => {
+    Logger.logEvent("anamnesis_create_training_plan_start");
+
     // Start the stage animation
     intervalRef.current = setInterval(() => {
       setStage((prev) => {
@@ -125,10 +169,7 @@ export default function Generating() {
 
   useEffect(() => {
     const goOn = () => {
-      // TODO: Setup push notifications for training reminders
-      // const pushNotificationService = new PushNotificationService();
-      // pushNotificationService.checkPermissionsAndCreateNotifications(userId, trainingPlan);
-
+      Logger.logEvent("anamnesis_create_training_plan_completed");
       if (isInInitialAnamnesis) {
         router.navigate({
           pathname: "/more/subscribe",

@@ -45,6 +45,7 @@ export default function AnamnesisQuestions() {
     anamnesisCompleted,
     isInInitialAnamnesis,
     setIsInInitialAnamnesis,
+    setAnamnesisCompleted,
   } = useUserProfileStore();
   const { trainingDays, resetToDefaults } = useTrainingScheduleStore();
 
@@ -120,6 +121,7 @@ export default function AnamnesisQuestions() {
         console.log("Anamnesis pains added:", tags[TagGroups.PAIN]);
       }
 
+      setAnamnesisCompleted(true);
       await setCompleted();
       await saveData();
 
@@ -165,10 +167,11 @@ export default function AnamnesisQuestions() {
     setLoading(false);
   }, [
     tags,
+    setAnamnesisCompleted,
     setCompleted,
     saveData,
+    workoutData.seasonPhase,
     trainingDays,
-    workoutData,
     setSeasonPhase,
     router,
   ]);

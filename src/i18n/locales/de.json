@@ -434,7 +434,11 @@
       "MINIBANDS_WEAK": "Leichte Minibänder",
       "MINIBANDS_NORMAL": "Normale Minibänder",
       "MINIBANDS_STRONG": "Starke Minibänder",
-      "MINIBANDS_SUPER": "Superstarke Minibänder"
+      "MINIBANDS_SUPER": "Superstarke Minibänder",
+      "TUBE": "Tube",
+      "MINIBAND": "Miniband",
+      "TRACK": "Laufstrecke",
+      "AREA": "Lauffläche"
     }
   }
 }

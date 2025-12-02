@@ -1,13 +1,10 @@
-import { ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
+import { SkillBranchType } from "@/features/training/models/SkillBranch";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
 
-export interface SkillTreeType {
-  name: string;
-  branches: ExerciseBranchType[];
-}
+export type SkillTreeType = Record<string, SkillBranchType>;
 
 export interface SkillTreesState {
   skillTrees: Record<string, SkillTreeType>;
@@ -19,14 +16,6 @@ export interface SkillTreesState {
 
   // Selectors
   getSkillTree: (skillName: string) => SkillTreeType | undefined;
-  getBranchById: (
-    skillName: string,
-    branchId: number,
-  ) => ExerciseBranchType | undefined;
-  getAvailableBranchesForLevel: (
-    skillName: string,
-    level: number,
-  ) => ExerciseBranchType[];
 }
 
 /**
@@ -76,18 +65,6 @@ export const useSkillTreesStore = create<SkillTreesState>()(
       getSkillTree: (skillName) => {
         const { skillTrees } = get();
         return skillTrees[skillName];
-      },
-
-      getBranchById: (skillName, branchId) => {
-        const tree = get().getSkillTree(skillName);
-        return tree?.branches.find(
-          (branch) => branch.exerciseBranchId === branchId,
-        );
-      },
-
-      getAvailableBranchesForLevel: (skillName, level) => {
-        const tree = get().getSkillTree(skillName);
-        return tree?.branches.filter((branch) => branch.exercises[level]) ?? [];
       },
     })),
     {

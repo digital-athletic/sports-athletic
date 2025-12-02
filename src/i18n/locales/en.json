@@ -431,10 +431,14 @@
       "MARKERS": "Markers",
       "HURDELS": "Hurdles",
       "HURDELS_TALL": "Tall Hurdles",
-      "MINIBANDS_WEAK": "Light Mini Bands",
-      "MINIBANDS_NORMAL": "Normal Mini Bands",
-      "MINIBANDS_STRONG": "Strong Mini Bands",
-      "MINIBANDS_SUPER": "Super Strong Mini Bands"
+      "MINIBANDS_WEAK": "Minibands weak",
+      "MINIBANDS_NORMAL": "Minibands middle",
+      "MINIBANDS_STRONG": "Minibands strong",
+      "MINIBANDS_SUPER": "Minibands extreme",
+      "TUBE": "Tube",
+      "MINIBAND": "Miniband",
+      "TRACK": "Running track",
+      "AREA": "Running area"
     }
   }
 }

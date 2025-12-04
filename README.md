@@ -34,6 +34,10 @@ For more control of individual tool versions or if you prefer developing without
 1. Run `pnpm install` to download project dependencies
 2. Run `pnpm start` to start the development server (Metro)
 
+## Backend (Supabase)
+
+Install and start supabase, using the CLI: https://supabase.com/docs/guides/local-development/cli/getting-started?queryGroups=platform&platform=linux
+
 ## Building a Native Development Client
 
 ### What is a development client?

@@ -42,3 +42,7 @@ yarn-error.*
 
 # pnpm
 .pnpm-store/
+
+.env
+docker-compose.dev.yml
+.claude

@@ -19,7 +19,7 @@ export default function HomeScreen() {
   const { setTrainingSelection } = useTrainingStore();
 
   const handleTrainingPress = () => {
-    setTrainingSelection("QUICK");
+    setTrainingSelection("PLAN");
     router.push("/training");
   };
 

@@ -23,6 +23,7 @@
     "comingSoon": "Demnächst verfügbar",
     "confirm": "Bestätigen",
     "email": "E-Mail",
+    "error": "Ein unerwarteter Fehler ist aufgetreten.",
     "goOn": "Weiter",
     "next": "Weiter",
     "no": "NEIN",
@@ -214,6 +215,16 @@
       "todayIsPowerTest": "Heute ist dein Krafttest! Lass uns sehen, wie stark du bist.",
       "startPowerTest": "Krafttest starten",
       "skipPowerTest": "Krafttest überspringen"
+    },
+    "muscleSoreness": {
+      "loading": "Training wird vorbereitet",
+      "title": "Muskelkater",
+      "placeAndEquipment": "Trainingsort & Ausrüstung",
+      "continue": "Weiter",
+      "planGenerator": {
+        "errorTitle": "Fehler",
+        "errorMessage": "Laden der Übungsliste fehlgeschlagen"
+      }
     }
   },
   "onboarding": {

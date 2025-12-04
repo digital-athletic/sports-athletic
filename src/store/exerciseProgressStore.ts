@@ -1,22 +1,9 @@
 import { MaxValuesType } from "@/features/training/models/MaxValues";
+import { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
-
-export type ExerciseFeedback = "EASY" | "NORMAL" | "HARD";
-
-export interface UserExerciseDataType {
-  exerciseId: number;
-  feedback?: ExerciseFeedback;
-  streakCounter?: number;
-  weight?: number;
-  nextWeightPercentage?: number;
-  duration?: number;
-  reps?: number;
-  height?: number;
-  skipped?: boolean;
-}
 
 export interface UserExerciseBranchDataType {
   branchId: number;
@@ -92,12 +79,19 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
 
       updateExercise: (exerciseId, data) =>
         set((state) => {
-          if (!state.exerciseData[exerciseId]) {
-            state.exerciseData[exerciseId] = { exerciseId, ...data };
-          } else {
-            // Direct property assignment - immer handles immutability
+          const existing = state.exerciseData[exerciseId];
+          if (!existing) {
+            // When creating new exercise, data must include required fields
             state.exerciseData[exerciseId] = {
-              ...state.exerciseData[exerciseId],
+              ...data,
+              exerciseId,
+              feedback: data.feedback || { difficulty: null },
+              skill: data.skill || "WARMUP",
+            };
+          } else {
+            // Merge with existing data while preserving required fields
+            state.exerciseData[exerciseId] = {
+              ...existing,
               ...data,
             };
           }

@@ -23,6 +23,7 @@
     "comingSoon": "Coming soon",
     "confirm": "Confirm",
     "email": "E-Mail",
+    "error": "An unexpected error occurred.",
     "goOn": "Go on",
     "next": "Next",
     "no": "NO",
@@ -214,6 +215,16 @@
       "todayIsPowerTest": "Today is your power test! Let's see how strong you are.",
       "startPowerTest": "Start power test",
       "skipPowerTest": "Skip power test"
+    },
+    "muscleSoreness": {
+      "loading": "preparing training",
+      "title": "Muscle soreness",
+      "placeAndEquipment": "Place & Equipment",
+      "continue": "Go on",
+      "planGenerator": {
+        "errorTitle": "Error",
+        "errorMessage": "Loading exercise list failed"
+      }
     }
   },
   "onboarding": {

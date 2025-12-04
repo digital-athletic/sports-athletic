@@ -70,6 +70,8 @@ import TEST_WORKOUTS_START_VALUES from "../../../../assets/data/generator/TEST_W
 import TEST_WORKOUTS_WU_REGION from "../../../../assets/data/generator/TEST_WORKOUTS_WU_REGION";
 
 export default class TrainingGenerator {
+  static DEBUG = false;
+
   generateTraining = (
     type: TrainingType,
     user: UserType,
@@ -81,10 +83,10 @@ export default class TrainingGenerator {
     givenSection?: number,
     daysSinceLastWorkout: number,
     userExerciseData: {
-      exerciseData: { [id: number]: UserExerciseDataType };
-      branchData: { [id: number]: UserExerciseBranchDataType };
+      exerciseData: Record<number, UserExerciseDataType>;
+      branchData: Record<number, UserExerciseBranchDataType>;
     },
-  ) => {
+  ): UserExerciseDataType[] => {
     if (type === "TEST_WORKOUT") {
       if (user.workoutData === null) {
         // anamnesis not finished

@@ -5,6 +5,7 @@ import {
   MaxValuesType,
 } from "@/features/training/models/MaxValues";
 import { SeasonPhaseType } from "@/features/training/models/SeasonPhase";
+import { TemporalDataType } from "@/features/training/models/TemporalData";
 import { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import {
   Sport,
@@ -19,6 +20,7 @@ import { asyncStorage } from "./middleware";
 export interface UserWorkoutState {
   workoutData: UserWorkoutDataType;
   trainingPlan: TrainingPlanType | null;
+  temporalData?: TemporalDataType[];
 
   // Actions
   setWorkoutData: (data: Partial<UserWorkoutDataType>) => void;
@@ -26,6 +28,7 @@ export interface UserWorkoutState {
   setSeasonPhase: (phase: SeasonPhaseType) => void;
   setTags: (tags: string[]) => void;
   setTrainingPlan: (plan: TrainingPlanType | null) => void;
+  setTemporalData: (data: TemporalDataType[]) => void;
   replaceBranchInTrainingPlan: (
     sectionIndex: number,
     weekday: number,
@@ -76,6 +79,7 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
     immer((set, get) => ({
       workoutData: DEFAULT_WORKOUT_DATA,
       trainingPlan: null,
+      temporalData: undefined,
 
       setWorkoutData: (data) =>
         set((state) => {
@@ -105,6 +109,10 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
       saveMaxValues: (maxValues) =>
         set((state) => {
           state.workoutData.maxValues = maxValues;
+        }),
+      setTemporalData: (data) =>
+        set((state) => {
+          state.temporalData = data;
         }),
 
       /**

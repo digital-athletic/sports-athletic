@@ -1,8 +1,8 @@
 import { TrainingPlanType } from "@/features/training/models/TrainingPlan";
+import { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import type { UserExerciseDataType } from "./exerciseProgressStore";
 import { asyncStorage } from "./middleware";
 
 export interface CompleteWorkoutType {

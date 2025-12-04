@@ -19,6 +19,7 @@
     "cancel": "Cancel",
     "choose": "Choose",
     "close": "Close",
+    "open": "Open",
     "comingSoon": "Coming soon",
     "confirm": "Confirm",
     "email": "E-Mail",
@@ -447,6 +448,57 @@
       "MINIBAND": "Miniband",
       "TRACK": "Running track",
       "AREA": "Running area"
+    }
+  },
+  "statistics": {
+    "screenTitle": "Evaluation",
+    "tabs": {
+      "workouts": "Training",
+      "powerTest": "Power test"
+    },
+    "powerTest": {
+      "title": "Power Test",
+      "subscriptionExpired": "Subscription Expired",
+      "chooseSubscription": "Choose a subscription to start your training.",
+      "testNotPossible": "Power test not possible",
+      "anamnesisNeeded": "Please complete your profile first.",
+      "startNow": "Start Now",
+      "gymOnly": "The power test will only take place in the gym.",
+      "axisWeight": "kg",
+      "axisDate": "Day",
+      "legendSquad": "Squat",
+      "legendBenchPress": "Bench press",
+      "legendRowing": "Rowing",
+      "legendShoulderPress": "Shoulder press",
+      "startNewTest": "Start New Test Workout",
+      "toggleEntry": "Toggle test entry for {{date}}",
+      "squad": "Squat",
+      "benchPress": "Bench press",
+      "rowing": "Rowing",
+      "shoulderPress": "Shoulder press",
+      "noTestYet": "Your results will be listed here as soon as you have completed your first test.",
+      "yourResults": "Your Test Results"
+    },
+    "workouts": {
+      "scales": {
+        "week": "Last week",
+        "month": "Last month",
+        "year": "Last year",
+        "total": "Total"
+      },
+      "noWorkoutYet": "No trainings yet",
+      "recentWorkouts": "Recent workouts",
+      "testWorkout": "Power test",
+      "summary": {
+        "duration": "Duration",
+        "durationAlt": "Duration icon",
+        "count": "Exercise count",
+        "countAlt": "Exercise count icon",
+        "points": "Points",
+        "pointsAlt": "Points icon",
+        "weight": "Moved weight",
+        "weightAlt": "Weight icon"
+      }
     }
   }
 }

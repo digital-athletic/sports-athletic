@@ -19,6 +19,7 @@
     "cancel": "Abbrechen",
     "choose": "Auswählen",
     "close": "Schließen",
+    "open": "Öffnen",
     "comingSoon": "Demnächst verfügbar",
     "confirm": "Bestätigen",
     "email": "E-Mail",
@@ -447,6 +448,57 @@
       "MINIBAND": "Miniband",
       "TRACK": "Laufstrecke",
       "AREA": "Lauffläche"
+    }
+  },
+  "statistics": {
+    "screenTitle": "Auswertung",
+    "tabs": {
+      "workouts": "Training",
+      "powerTest": "Krafttest"
+    },
+    "powerTest": {
+      "title": "Krafttest",
+      "subscriptionExpired": "Abo abgelaufen",
+      "chooseSubscription": "Wähle ein Abo, um mit dem Training zu beginnen.",
+      "testNotPossible": "Krafttest nicht möglich",
+      "anamnesisNeeded": "Bitte vervollständige zuerst dein Profil.",
+      "startNow": "Jetzt starten",
+      "gymOnly": "Der Krafttest findet nur im Fitnessstudio statt.",
+      "axisWeight": "kg",
+      "axisDate": "Tag",
+      "legendSquad": "Kniebeuge",
+      "legendBenchPress": "Bankdrücken",
+      "legendRowing": "Rudern",
+      "legendShoulderPress": "Schulterdrücken",
+      "startNewTest": "Neuen Krafttest starten",
+      "toggleEntry": "Testergebnis für {{date}} umschalten",
+      "squad": "Kniebeuge",
+      "benchPress": "Bankdrücken",
+      "rowing": "Rudern",
+      "shoulderPress": "Schulterdrücken",
+      "noTestYet": "Deine Ergebnisse werden hier angezeigt, sobald du deinen ersten Test abgeschlossen hast.",
+      "yourResults": "Deine Testergebnisse"
+    },
+    "workouts": {
+      "scales": {
+        "week": "Letzte Woche",
+        "month": "Letzter Monat",
+        "year": "Letztes Jahr",
+        "total": "Gesamt"
+      },
+      "noWorkoutYet": "Keine Trainings bisher",
+      "recentWorkouts": "Letzte Workouts",
+      "testWorkout": "Krafttest",
+      "summary": {
+        "duration": "Dauer",
+        "durationAlt": "Dauer-Symbol",
+        "count": "Übungszahl",
+        "countAlt": "Übungszahl-Symbol",
+        "points": "Punkte",
+        "pointsAlt": "Punkte-Symbol",
+        "weight": "Bewegtes Gewicht",
+        "weightAlt": "Gewicht-Symbol"
+      }
     }
   }
 }

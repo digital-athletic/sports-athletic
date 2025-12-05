@@ -7,5 +7,12 @@ import { Stack } from "expo-router";
  * Legacy: HomeStack (Stack Navigator)
  */
 export default function HomeStackLayout() {
-  return <Stack screenOptions={{ headerShown: false }}></Stack>;
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        headerBackButtonDisplayMode: "minimal",
+      }}
+    ></Stack>
+  );
 }

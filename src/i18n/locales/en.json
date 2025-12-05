@@ -260,6 +260,31 @@
       "SKKG": "Explosive power",
       "SA": "Speed perseverance",
       "SAKG": "Speed perseverance"
+    },
+    "sectionDetails": {
+      "title": "Specialization",
+      "target": "Target",
+      "speed": "Execution pace",
+      "chooseSection": "Please choose a training section",
+      "noVideo": "No video available for this focus",
+      "sectionTitles": {
+        "SWR": "Jump, throw and body strength",
+        "MAX": "Maximum force",
+        "SK": "High-speed strength",
+        "SA": "Speed perseverance"
+      },
+      "captions": {
+        "SWR": "Focus on correct execution",
+        "MAX": "Always watch your technique!",
+        "SK": "IMPORTANT!\nTechnique before speed!",
+        "SA": "Keep the speed up until the end"
+      },
+      "videoTitles": {
+        "SWR": "Info for muscle buildup",
+        "MAX": "Info for max force",
+        "SK": "Info for explosive power",
+        "SA": "Info for speed endurance"
+      }
     }
   },
   "onboarding": {

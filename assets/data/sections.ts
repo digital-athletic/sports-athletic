@@ -1,4 +1,22 @@
-export const SECTIONS_DATA = {
+import { SectionPrefix } from "@/features/training/models/SectionPrefix";
+
+type WithDefaultLocale<T> = { default: T } & Record<string, T>;
+
+type LocalizedTargetData = {
+    normal: string[];
+    highlight: string[];
+};
+
+type SectionData = {
+    target: WithDefaultLocale<LocalizedTargetData>;
+    speed: {
+        values: WithDefaultLocale<string[]>;
+        description: WithDefaultLocale<string>;
+    };
+};
+
+// Warning: Normal and Highlight arrays must have the same length
+export const SECTIONS_DATA: Record<SectionPrefix, SectionData> = {
     SWR: {
         target: {
             default: {
@@ -119,7 +137,13 @@ export const SECTIONS_DATA = {
     }
 };
 
-export const SECTIONS_VIDEOS = {
+type SectionVideoData = {
+    picture: string;
+    video: string;
+    title: string;
+};
+
+export const SECTIONS_VIDEOS: Record<SectionPrefix, SectionVideoData> = {
     SWR: {
         picture: "tutorialPictures/ErklaerungSWR2.jpg",
         video: "tutorialVideos/ErklaerungSWR2.mp4",

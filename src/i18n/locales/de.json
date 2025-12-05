@@ -260,6 +260,31 @@
       "SKKG": "Schnellkraft",
       "SA": "Schnelligkeitsausdauer",
       "SAKG": "Schnelligkeitsausdauer"
+    },
+    "sectionDetails": {
+      "title": "Schwerpunkte",
+      "target": "Ziel",
+      "speed": "Takt der Ausführung",
+      "chooseSection": "Bitte wähle einen Trainingsschwerpunkt",
+      "noVideo": "Es existiert kein Video zu diesem Schwerpunkt",
+      "sectionTitles": {
+        "SWR": "Sprung-, Wurf- und Körperkraft",
+        "MAX": "Maximalkraft",
+        "SK": "Schnellkraft",
+        "SA": "Schnelligkeitsausdauer"
+      },
+      "captions": {
+        "SWR": "Konzentriere dich auf saubere Ausführung",
+        "MAX": "Achte immer auf deine Technik!",
+        "SK": "WICHTIG!\nTechnik vor Geschwindigkeit!",
+        "SA": "Halte die Geschwindigkeit bis zum Ende durch"
+      },
+      "videoTitles": {
+        "SWR": "Infos zu Muskelaufbau",
+        "MAX": "Infos zu Maximalkraft",
+        "SK": "Infos zu Schnellkraft",
+        "SA": "Infos zu Schnelligkeitsausdauer"
+      }
     }
   },
   "onboarding": {

@@ -1,0 +1,10 @@
+# Supabase
+.branches
+.temp
+/videos
+/images
+
+# dotenvx
+.env.keys
+.env.local
+.env.*.local

@@ -6,13 +6,17 @@ Firebase Storage is being replaced by Supabase Storage as part of the broader Fi
 
 ## What Changes
 
-- **NEW**: Create `src/services/supabaseClient.ts` with Supabase client initialization using `SUPABASE_URL` and `SUPABASE_ANON_KEY`
-- **NEW**: Add Supabase credentials (`SUPABASE_URL`, `SUPABASE_ANON_KEY`) to `sharedConstants.ts`
+- **NEW**: Create `src/services/supabaseClient.ts` with Supabase client initialization
 - **NEW**: Introduce `StorageService` in `src/services/` to abstract Supabase Storage operations
-- **NEW**: Configure `videos` bucket in Supabase Storage (private) with RLS policy for signed URL generation
 - **NEW**: Implement signed URL generation with configurable expiry (default: 1 hour)
 - **NEW**: Add video bucket path constants to `sharedConstants.ts`
 - **UPDATE**: Video player components receive time-limited signed URLs for streaming
+
+### Prerequisites (Already Complete)
+
+- Supabase backend running and accessible
+- `SUPABASE_URL` and `SUPABASE_ANON_KEY` environment variables configured
+- `videos` bucket created in Supabase Storage (private)
 
 ### Security Model
 
@@ -25,6 +29,7 @@ The `videos` bucket is **private** by default. Access is granted via signed URLs
 - User-generated content uploads (workout details) - separate proposal
 - Data migration tooling (bucket seeding scripts) - operational task
 - CDN configuration - infrastructure task
+- Legacy Firebase compatibility layer - not needed, implement new system directly
 
 ## Impact
 
@@ -32,6 +37,5 @@ The `videos` bucket is **private** by default. Access is granted via signed URLs
 - **Affected code**:
   - `src/services/supabaseClient.ts` (new - Supabase client singleton)
   - `src/services/StorageService.ts` (new - Storage abstraction)
-  - `src/constants/sharedConstants.ts` (Supabase credentials + bucket paths)
+  - `src/constants/sharedConstants.ts` (bucket path constants)
   - `src/video/` components (consumer)
-  - `legacy/services/FirebaseStorageService.js` (video methods to be deprecated)

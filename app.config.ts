@@ -1,13 +1,43 @@
 import { ExpoConfig } from "expo/config";
 
+const variant =
+  (process.env.APP_VARIANT as
+    | "development"
+    | "production"
+    | "preview"
+    | undefined) ?? "development";
+
+const baseName = "Digital Athletic";
+
+const name = {
+  development: baseName + " (dev)",
+  preview: baseName + " (preview)",
+  production: baseName,
+}[variant];
+const icon = {
+  development: "./assets/app-icon/dev-icon.png",
+  preview: "./assets/app-icon/preview-icon.png",
+  production: "./assets/app-icon/app-icon.png",
+}[variant];
+const bundleIdentifier = {
+  development: "de.digital-athletic.app.development",
+  preview: "de.digital-athletic.app.preview",
+  production: "de.digital-athletic.app",
+}[variant];
+const packageName = {
+  development: "de.digital_athletic.app.development",
+  preview: "de.digital_athletic.app.preview",
+  production: "de.digital_athletic.app",
+}[variant];
+
 export default (): ExpoConfig => ({
-  name: "Sports Athletic",
-  slug: "sports-athletic",
-  scheme: "sportsathletic",
-  version: "1.0.0",
+  name,
+  slug: "digital-athletic",
+  scheme: "digitalathletic",
+  version: "0.0.1",
   primaryColor: "#C71B1B",
   orientation: "portrait",
-  icon: "./assets/icon.png",
+  icon,
   userInterfaceStyle: "light",
   newArchEnabled: true,
   splash: {
@@ -17,12 +47,22 @@ export default (): ExpoConfig => ({
   },
   ios: {
     supportsTablet: true,
-    bundleIdentifier: "com.sportsathletic.app",
+    bundleIdentifier,
+    infoPlist: {
+      ITSAppUsesNonExemptEncryption: false,
+    },
   },
   android: {
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
-    package: "com.sportsathletic.app",
+    package: packageName,
+  },
+  updates: {
+    url: "https://u.expo.dev/c864ab15-691c-429b-9dc9-eb920db5358d",
+    checkAutomatically: "ON_LOAD",
+  },
+  runtimeVersion: {
+    policy: "appVersion",
   },
   plugins: [
     "expo-router",
@@ -52,6 +92,11 @@ export default (): ExpoConfig => ({
       },
     ],
   ],
+  extra: {
+    eas: {
+      projectId: "c864ab15-691c-429b-9dc9-eb920db5358d",
+    },
+  },
   experiments: {
     typedRoutes: true,
   },

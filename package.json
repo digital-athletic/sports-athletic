@@ -14,7 +14,11 @@
     "format-fix": "prettier . --write",
     "type-check": "tsc --noEmit",
     "test": "jest",
-    "expo-router-generate-types": "expo customize tsconfig.json"
+    "expo-router-generate-types": "expo customize tsconfig.json",
+    "build:device-dev-client": "rm -rf android && rm -rf ios && pnpm dlx eas-cli@latest build --profile development",
+    "build:simulator-dev-client": "rm -rf android && rm -rf ios && pnpm dlx eas-cli@latest build --profile development-simulator",
+    "build:preview": "rm -rf android && rm -rf ios && pnpm dlx eas-cli@latest build --profile preview",
+    "build:production": "rm -rf android && rm -rf ios && pnpm dlx eas-cli@latest build --profile production"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
@@ -30,6 +34,7 @@
     "expo-router": "~6.0.14",
     "expo-status-bar": "~3.0.8",
     "expo-system-ui": "~6.0.8",
+    "expo-updates": "~29.0.14",
     "i18next": "25.6.2",
     "immer": "^10.2.0",
     "react": "19.1.0",

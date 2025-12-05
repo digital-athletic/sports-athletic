@@ -3,7 +3,7 @@
  * @see: https://github.com/sports-athletics/sports-athletic/issues/70
  */
 export class Logger {
-  static logEvent = async (eventName: string, params = {}) => {
+  static logEvent = async (eventName: string, params: any = {}) => {
     if (__DEV__) console.log("Event log: ", eventName, params);
   };
 

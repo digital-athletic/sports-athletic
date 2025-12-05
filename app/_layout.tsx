@@ -1,3 +1,4 @@
+import { useOTAService } from "@/services/OTAService";
 import { useAuthStore } from "@/store/authStore";
 import { theme } from "@/theme/theme";
 import { ThemeProvider } from "@shopify/restyle";
@@ -14,6 +15,9 @@ import { Stack } from "expo-router";
  */
 export default function RootLayout() {
   const { auth } = useAuthStore();
+
+  useOTAService();
+
   return (
     <ThemeProvider theme={theme}>
       <Stack screenOptions={{ headerShown: false }}>

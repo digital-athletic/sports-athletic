@@ -45,8 +45,8 @@ export const SectionWeekBars: FC<SectionWeekBarsProps> = ({
       }
     }
 
-    // Passed week in section
-    if (activeWeek > -1 && activeWeek < sectionWeeksCount) {
+    // Passed week (before active week)
+    if (weekIndex < activeWeek) {
       return "darkGrey2";
     }
 
@@ -81,10 +81,11 @@ export const SectionWeekBars: FC<SectionWeekBarsProps> = ({
           {weeks.map((_, i) => (
             <React.Fragment key={`week-${i}`}>
               <Box
-                flex={3}
-                justifyContent="center"
+                flex={intensity}
+                justifyContent="flex-start"
                 alignItems="center"
                 flexDirection="column"
+                alignSelf="stretch"
               >
                 <Text variant="body" fontSize={12}>
                   {startWeek + i}
@@ -116,7 +117,7 @@ export const SectionWeekBars: FC<SectionWeekBarsProps> = ({
             return (
               <React.Fragment key={`bar-${i}`}>
                 <Box
-                  flex={3}
+                  flex={intensity}
                   justifyContent="center"
                   alignItems="center"
                   flexDirection="column"

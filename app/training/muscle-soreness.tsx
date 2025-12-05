@@ -255,7 +255,7 @@ export default function MuscleSorenessScreen() {
             text: t("common.ok"),
             onPress: async () => {
               setLoading(false);
-              router.replace("/(tabs)");
+              router.replace("/(tabs)/(home)");
             },
           },
         ],

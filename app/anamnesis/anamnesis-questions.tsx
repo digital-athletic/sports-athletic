@@ -90,7 +90,7 @@ export default function AnamnesisQuestions() {
           if (isInInitialAnamnesis) {
             router.navigate({
               pathname: "/(tabs)/more/subscribe",
-              params: { goOn: "/(tabs)" satisfies Route },
+              params: { goOn: "/(tabs)/(home)" satisfies Route },
             });
             setIsInInitialAnamnesis(false);
           } else {

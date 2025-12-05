@@ -6,6 +6,8 @@ import {
   composeRestyleFunctions,
   layout,
   LayoutProps,
+  shadow,
+  ShadowProps,
   spacing,
   SpacingProps,
   useRestyle,
@@ -17,12 +19,14 @@ import { Theme } from "./theme";
 type RestyleProps = BackgroundColorProps<Theme> &
   BorderProps<Theme> &
   LayoutProps<Theme> &
+  ShadowProps<Theme> &
   SpacingProps<Theme>;
 
 const restyleFunctions = composeRestyleFunctions<Theme, RestyleProps>([
   backgroundColor,
   border,
   layout,
+  shadow,
   spacing,
 ]);
 

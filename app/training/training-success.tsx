@@ -31,7 +31,7 @@ export default function TrainingSuccessScreen() {
       </Text>
 
       <Box width="100%" gap="m">
-        <Link href="/(tabs)" replace asChild>
+        <Link href="/(tabs)/(home)" replace asChild>
           <Button variant="success">Back to Home</Button>
         </Link>
       </Box>

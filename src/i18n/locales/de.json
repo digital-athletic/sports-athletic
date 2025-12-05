@@ -53,7 +53,25 @@
     },
     "home": {
       "title": "Trainings-Startseite",
-      "description": "Dein personalisiertes Trainings-Dashboard"
+      "description": "Dein personalisiertes Trainings-Dashboard",
+      "greeting": "Hallo {{name}}",
+      "focusTraining": {
+        "title": "Fokus-Trainings",
+        "subtitle": "10-20 minütige Trainings für ausgewählte Schwerpunkte"
+      },
+      "preventionTraining": {
+        "title": "Präventions-Trainings",
+        "subtitle": "Beschwerden vorbeugen & verbessern"
+      },
+      "imageAlt": {
+        "background": "Trainingshintergrund",
+        "focusTrainingIcon": "Fokus-Trainings-Symbol",
+        "preventionIcon": "Präventions-Symbol"
+      },
+      "workoutWithOwnPlan": "Dein Trainingsplan",
+      "startTraining": "Training starten",
+      "incompleteAnamnesis": "Bitte fülle dein Profil aus, um zu beginnen",
+      "phaseEnded": "Deine Trainingsphase ist vorbei. Erstelle einen neuen Plan."
     },
     "welcome": {
       "title": "Persönliche Daten",
@@ -225,6 +243,23 @@
         "errorTitle": "Fehler",
         "errorMessage": "Laden der Übungsliste fehlgeschlagen"
       }
+    },
+    "status": {
+      "week": "Woche",
+      "intensity": "Intensität",
+      "noSections": "Du hast derzeit keine Trainingsphasen"
+    },
+    "sections": {
+      "SWR1": "Muskelaufbau",
+      "SWR1KG": "Muskelaufbau",
+      "SWR2": "Muskelaufbau",
+      "SWR2KG": "Muskelaufbau",
+      "MAX": "Maximalkraft",
+      "MAX_KRAFT": "Maximalkraft",
+      "SK": "Schnellkraft",
+      "SKKG": "Schnellkraft",
+      "SA": "Schnelligkeitsausdauer",
+      "SAKG": "Schnelligkeitsausdauer"
     }
   },
   "onboarding": {

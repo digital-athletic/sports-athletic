@@ -41,7 +41,7 @@ export default function IndexScreen() {
               Navigate to the main tab-based interface with Home, Statistics,
               and Profile tabs.
             </Text>
-            <Link href="/(tabs)" asChild>
+            <Link href="/(tabs)/(home)" asChild>
               <Button>Go to Main App</Button>
             </Link>
           </Card>

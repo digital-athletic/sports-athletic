@@ -130,7 +130,7 @@ export default function Generating() {
               if (origin === "/more") {
                 router.navigate("/more");
               } else {
-                router.navigate("/(tabs)");
+                router.navigate("/(tabs)/(home)");
               }
             },
           },
@@ -173,11 +173,11 @@ export default function Generating() {
       if (isInInitialAnamnesis) {
         router.navigate({
           pathname: "/more/subscribe",
-          params: { goOn: "/(tabs)" satisfies Route },
+          params: { goOn: "/(tabs)/(home)" satisfies Route },
         });
         setIsInInitialAnamnesis(false);
       } else {
-        router.replace("/(tabs)");
+        router.replace("/(tabs)/(home)");
       }
     };
 

@@ -123,7 +123,7 @@ export default function TrainingDays() {
               if (originPath === "/(tabs)/more") {
                 router.navigate("/(tabs)/more");
               } else {
-                router.navigate("/(tabs)");
+                router.navigate("/(tabs)/(home)");
               }
             },
           },

@@ -29,18 +29,12 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="(home)"
         options={{
           title: "Training",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="walk" size={size} color={color} />
           ),
-        }}
-      />
-      <Tabs.Screen
-        name="home"
-        options={{
-          href: null, // Hide from tab bar, used as stack navigation
         }}
       />
       <Tabs.Screen

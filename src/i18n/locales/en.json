@@ -53,7 +53,25 @@
     },
     "home": {
       "title": "Training Home",
-      "description": "Your personalized training dashboard"
+      "description": "Your personalized training dashboard",
+      "greeting": "Hello {{name}}",
+      "focusTraining": {
+        "title": "Focus-Trainings",
+        "subtitle": "10-20 minutes topic specific training"
+      },
+      "preventionTraining": {
+        "title": "Imminent Pains",
+        "subtitle": "Specifically improve imminent pains"
+      },
+      "imageAlt": {
+        "background": "Training background",
+        "focusTrainingIcon": "Focus training icon",
+        "preventionIcon": "Prevention training icon"
+      },
+      "workoutWithOwnPlan": "Your Training Plan",
+      "startTraining": "Start Training",
+      "incompleteAnamnesis": "Please complete your profile to get started",
+      "phaseEnded": "Your training phase has ended. Create a new plan."
     },
     "welcome": {
       "title": "Personal data",
@@ -225,6 +243,23 @@
         "errorTitle": "Error",
         "errorMessage": "Loading exercise list failed"
       }
+    },
+    "status": {
+      "week": "Week",
+      "intensity": "Intensity",
+      "noSections": "You have no training phases right now"
+    },
+    "sections": {
+      "SWR1": "Muscle development",
+      "SWR1KG": "Muscle development",
+      "SWR2": "Muscle development",
+      "SWR2KG": "Muscle development",
+      "MAX": "Maximum power",
+      "MAX_KRAFT": "Maximum power",
+      "SK": "Explosive power",
+      "SKKG": "Explosive power",
+      "SA": "Speed perseverance",
+      "SAKG": "Speed perseverance"
     }
   },
   "onboarding": {

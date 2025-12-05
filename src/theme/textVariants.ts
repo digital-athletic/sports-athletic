@@ -79,6 +79,12 @@ export const textVariants = {
     color: "darkGrey2",
   },
 
+  // Extra small text
+  xSmall: {
+    fontSize: 12,
+    color: "darkGrey2",
+  },
+
   // Tab labels
   tabLabel: {
     fontSize: 11,

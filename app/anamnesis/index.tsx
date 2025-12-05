@@ -39,7 +39,7 @@ export default function WelcomeScreen() {
             setIsInInitialAnamnesis(false);
             router.replace("/(tabs)/more/subscribe");
           } else {
-            router.replace("/(tabs)");
+            router.replace("/(tabs)/(home)");
           }
         },
       },

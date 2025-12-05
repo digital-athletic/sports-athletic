@@ -48,7 +48,7 @@ export default function SelectTraining() {
   // Back handler
   const handleBack = useCallback(() => {
     setTrainingSelection(null);
-    router.replace("/(tabs)");
+    router.replace("/(tabs)/(home)");
     return true;
   }, [setTrainingSelection]);
 

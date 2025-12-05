@@ -62,7 +62,7 @@ export default function UserProfileScreen() {
       {
         text: t("screens.userProfile.yes"),
         onPress: () => {
-          router.replace("/(tabs)");
+          router.replace("/(tabs)/(home)");
         },
       },
       {

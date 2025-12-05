@@ -4,6 +4,8 @@ import {
   composeRestyleFunctions,
   layout,
   LayoutProps,
+  shadow,
+  ShadowProps,
   spacing,
   SpacingProps,
   useRestyle,
@@ -13,13 +15,15 @@ import { ScrollView, ScrollViewProps } from "react-native";
 import { Theme } from "./theme";
 
 type RestyleProps = BackgroundColorProps<Theme> &
-  SpacingProps<Theme> &
-  LayoutProps<Theme>;
+  LayoutProps<Theme> &
+  ShadowProps<Theme> &
+  SpacingProps<Theme>;
 
 const restyleFunctions = composeRestyleFunctions<Theme, RestyleProps>([
-  spacing,
-  layout,
   backgroundColor,
+  layout,
+  shadow,
+  spacing,
 ]);
 
 export const ScrollBox: FC<ScrollViewProps & RestyleProps> = (props) => {

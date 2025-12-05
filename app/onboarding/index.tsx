@@ -135,7 +135,7 @@ export default function OnboardingScreen() {
     try {
       const auth = await signInWithEmail(state.email, state.password);
       setAuth(auth);
-      router.replace("/(tabs)");
+      router.replace("/(tabs)/(home)");
     } catch (error: any) {
       let title = t("onboarding.errorTitleWrongOrNoPassword");
       let message = t("onboarding.errorMessageWrongOrNoPassword");

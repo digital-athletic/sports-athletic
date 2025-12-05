@@ -29,12 +29,12 @@ export default function SportScreen() {
 
   const back = useCallback(() => {
     if (isInInitialAnamnesis) {
-      router.replace("/(tabs)");
+      router.replace("/(tabs)/(home)");
       setIsInInitialAnamnesis(false);
     } else if (originPath) {
       router.back();
     } else {
-      router.replace("/(tabs)");
+      router.replace("/(tabs)/(home)");
     }
   }, [isInInitialAnamnesis, originPath, setIsInInitialAnamnesis]);
 

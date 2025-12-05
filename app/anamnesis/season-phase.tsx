@@ -129,7 +129,7 @@ export default function SeasonPhase() {
           {
             text: t("common.no"),
             onPress: async () => {
-              router.navigate("/(tabs)");
+              router.navigate("/(tabs)/(home)");
             },
           },
         ],

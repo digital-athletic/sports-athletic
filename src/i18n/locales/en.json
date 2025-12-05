@@ -315,6 +315,32 @@
       "seconds": "{{count}} seconds",
       "kilos": "{{weight}} kg",
       "cmHigh": "{{height}} cm"
+    },
+    "active": {
+      "set": "{{current}} of {{total}}",
+      "nextExercise": "Next: {{exerciseName}}",
+      "finished": "Training completed",
+      "repetitions": "Repetitions",
+      "maxReps": "Max",
+      "noWeights": "No weights",
+      "controls": {
+        "clickToPause": "Click here to pause"
+      },
+      "pause": {
+        "label": "Pause",
+        "goOn": "Go on"
+      },
+      "feedback": {
+        "tooEasy": "too easy",
+        "tooHard": "too hard"
+      },
+      "syncIndicator": {
+        "synchronizing": "Synchronizing...",
+        "synchronized": "Synchronized",
+        "failed": "Synchronization failed",
+        "failedTitle": "Synchronization Error",
+        "failedMessage": "The synchronization could not be completed. Please try again."
+      }
     }
   },
   "onboarding": {

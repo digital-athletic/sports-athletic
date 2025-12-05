@@ -23,9 +23,9 @@ export type UserExerciseDataType = {
 };
 
 export const DEFAULT_USER_EXERCISE_DATA_LIST: UserExerciseDataType[] = [
-  //WARMUP 3 x EX0 with P10
+  //WARMUP 3 x EX126 with P10
   {
-    exerciseId: 0,
+    exerciseId: 126,
     set: [1, 3],
     repetition: 10,
     skill: "WARMUP",
@@ -39,7 +39,7 @@ export const DEFAULT_USER_EXERCISE_DATA_LIST: UserExerciseDataType[] = [
     feedback: { difficulty: "SUCCEEDED" },
   },
   {
-    exerciseId: 0,
+    exerciseId: 126,
     set: [2, 3],
     repetition: 10,
     skill: "WARMUP",
@@ -53,7 +53,7 @@ export const DEFAULT_USER_EXERCISE_DATA_LIST: UserExerciseDataType[] = [
     feedback: { difficulty: "SUCCEEDED" },
   },
   {
-    exerciseId: 0,
+    exerciseId: 126,
     set: [3, 3],
     repetition: 10,
     skill: "WARMUP",
@@ -181,9 +181,9 @@ export const DEFAULT_USER_EXERCISE_DATA_LIST: UserExerciseDataType[] = [
     skill: "SWR",
     feedback: { difficulty: "SUCCEEDED" },
   },
-  // SWR 2 x EX5 + EX6 mit P15
+  // SWR 2 x EX7 + EX8 mit P15
   {
-    exerciseId: 5,
+    exerciseId: 7,
     set: [1, 2],
     duration: 20,
     skill: "SWR",
@@ -197,7 +197,7 @@ export const DEFAULT_USER_EXERCISE_DATA_LIST: UserExerciseDataType[] = [
     feedback: { difficulty: "SUCCEEDED" },
   },
   {
-    exerciseId: 6,
+    exerciseId: 8,
     set: [1, 2],
     duration: 20,
     skill: "SWR",
@@ -211,7 +211,7 @@ export const DEFAULT_USER_EXERCISE_DATA_LIST: UserExerciseDataType[] = [
     feedback: { difficulty: "SUCCEEDED" },
   },
   {
-    exerciseId: 5,
+    exerciseId: 7,
     set: [2, 2],
     duration: 20,
     skill: "SWR",
@@ -225,7 +225,7 @@ export const DEFAULT_USER_EXERCISE_DATA_LIST: UserExerciseDataType[] = [
     feedback: { difficulty: "SUCCEEDED" },
   },
   {
-    exerciseId: 6,
+    exerciseId: 8,
     set: [2, 2],
     duration: 20,
     skill: "SWR",

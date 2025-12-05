@@ -29,6 +29,18 @@ export interface TrainingState {
     feedback: ExerciseDifficultyType,
   ) => void;
   setExerciseSkipped: (index: number) => void;
+  updateExerciseProgress: (
+    index: number,
+    weight?: number,
+    weightPercentage?: number,
+    duration?: number,
+    repetition?: number,
+    height?: number,
+  ) => void;
+  updateExerciseFeedbackData: (
+    index: number,
+    feedback: ExerciseDifficultyType | null,
+  ) => void;
   setProgressBefore: (progress: UserProgressType | null) => void;
   setEquipment: (equipment: string[]) => void;
   setActiveTraining: (training: ActiveTrainingType | null) => void;
@@ -88,6 +100,35 @@ export const useTrainingStore = create<TrainingState>()(
             }
             return ex;
           });
+        }),
+      updateExerciseProgress: (
+        index,
+        weight,
+        weightPercentage,
+        duration,
+        repetition,
+        height,
+      ) =>
+        set((state) => {
+          if (state.exerciseList && state.exerciseList[index]) {
+            const exercise = state.exerciseList[index];
+            if (weight !== undefined) exercise.weight = weight;
+            if (weightPercentage !== undefined)
+              exercise.nextWeightPercentage = weightPercentage;
+            if (duration !== undefined) exercise.duration = duration;
+            if (repetition !== undefined) exercise.repetition = repetition;
+            if (height !== undefined) exercise.height = height;
+          }
+        }),
+      updateExerciseFeedbackData: (index, feedback) =>
+        set((state) => {
+          if (state.exerciseList && state.exerciseList[index]) {
+            if (feedback === null) {
+              state.exerciseList[index].feedback.difficulty = "SUCCEEDED";
+            } else {
+              state.exerciseList[index].feedback.difficulty = feedback;
+            }
+          }
         }),
       setProgressBefore: (progress) =>
         set((state) => {

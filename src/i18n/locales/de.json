@@ -243,6 +243,7 @@
       "startPowerTest": "Krafttest starten",
       "skipPowerTest": "Krafttest überspringen"
     },
+
     "muscleSoreness": {
       "loading": "Training wird vorbereitet",
       "title": "Muskelkater",
@@ -315,6 +316,32 @@
       "seconds": "{{count}} Sekunden",
       "kilos": "{{weight}} kg",
       "cmHigh": "{{height}} cm"
+    },
+    "active": {
+      "set": "{{current}} von {{total}}",
+      "nextExercise": "Danach: {{exerciseName}}",
+      "finished": "Training geschafft",
+      "repetitions": "Wiederholungen",
+      "maxReps": "Max.",
+      "noWeights": "Keine Gewichte",
+      "controls": {
+        "clickToPause": "Hier klicken zum Pausieren"
+      },
+      "pause": {
+        "label": "Pause",
+        "goOn": "Weiter"
+      },
+      "feedback": {
+        "tooEasy": "zu einfach",
+        "tooHard": "zu schwer"
+      },
+      "syncIndicator": {
+        "synchronizing": "Synchronisierung läuft...",
+        "synchronized": "Synchronisiert",
+        "failed": "Synchronisierung fehlgeschlagen",
+        "failedTitle": "Synchronisierungsfehler",
+        "failedMessage": "Die Synchronisierung konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut."
+      }
     }
   },
   "onboarding": {

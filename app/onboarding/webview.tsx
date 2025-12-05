@@ -1,7 +1,6 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { WebView } from "react-native-webview";
-import { ViewWithTitle } from "../../src/common/ViewWithTitle";
 
 /**
  * Onboarding WebView Screen
@@ -11,21 +10,14 @@ import { ViewWithTitle } from "../../src/common/ViewWithTitle";
  */
 export default function OnboardingWebViewScreen() {
   const { url } = useLocalSearchParams<{ url: string }>();
-  const router = useRouter();
   const { t } = useTranslation();
 
-  const handleBack = () => {
-    router.back();
-  };
-
   return (
-    <ViewWithTitle
-      title={t("onboarding.webContent")}
-      fixed={true}
-      onBack={handleBack}
-      backgroundColor="white"
-    >
+    <>
+      <Stack.Screen
+        options={{ headerShown: true, title: t("onboarding.webContent") }}
+      />
       {url && <WebView source={{ uri: url }} />}
-    </ViewWithTitle>
+    </>
   );
 }

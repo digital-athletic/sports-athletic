@@ -3,7 +3,14 @@ import { ActiveTags } from "@/bodyParts/muscles/ActiveTags";
 import { TagLinks } from "@/bodyParts/muscles/TagLinks";
 import { Coaching } from "@/common/Coaching";
 import { Box } from "@/theme/Box";
-import { useCallback, useEffect, useState, type FC } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type FC,
+} from "react";
 import { useTranslation } from "react-i18next";
 import {
   Image,
@@ -94,9 +101,18 @@ export const BodyParts: FC<BodyPartsProps> = ({
   showsSoreness = false,
 }) => {
   const { t } = useTranslation();
-  const { width } = useWindowDimensions();
+
+  const [width, setWidth] = useState(useWindowDimensions().width);
   const aspectRatio = 1.5;
   const height = width * aspectRatio;
+
+  const containerRef = useRef<View>(null);
+
+  useLayoutEffect(() => {
+    containerRef.current?.measure((_x, _y, measuredWidth) => {
+      setWidth(measuredWidth);
+    });
+  }, []);
 
   const [side, setSide] = useState<Side>(propSide || "FRONT");
   const [availableTags, setAvailableTags] = useState<BodyPartData[]>(
@@ -195,7 +211,7 @@ export const BodyParts: FC<BodyPartsProps> = ({
         )}
 
         {/* Body Display Section */}
-        <View style={{ width: "100%", zIndex: 1 }}>
+        <View ref={containerRef} style={{ width: "100%", zIndex: 1 }}>
           {/* Rotation Button - only show if side not fixed by props */}
           {!propSide && (
             <TouchableOpacity

@@ -58,12 +58,7 @@ export const BodyPartsTagChips: FC<BodyPartsTagChipsProps> = ({
   );
 
   return tags.length > 0 ? (
-    <Box
-      flexDirection="row"
-      flexWrap="wrap"
-      paddingVertical="l"
-      paddingHorizontal="l"
-    >
+    <Box flexDirection="row" flexWrap="wrap" paddingVertical="l">
       {tags.map(renderTag)}
     </Box>
   ) : null;

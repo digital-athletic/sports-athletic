@@ -5,7 +5,7 @@ import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { ActiveTrainingType } from "./models/ActiveTraining";
 import {
-  SkillType,
+  SkillFocusType,
   TrainingSelectionType,
   TrainingTimeType,
 } from "./models/Training";
@@ -35,7 +35,7 @@ export interface TrainingState {
   setTrainingStartTime: (time: number) => void;
   setTrainingEndTime: (time: number) => void;
   addPauseTime: (pauseTime: number) => void;
-  addSkillTime: (focusArea: SkillType, skillTime: number) => void;
+  addSkillTime: (focusArea: SkillFocusType, skillTime: number) => void;
   resetTraining: () => void;
 }
 

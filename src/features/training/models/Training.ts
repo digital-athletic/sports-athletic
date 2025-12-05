@@ -19,13 +19,28 @@ export type SkillType =
   | "SWR"
   | "WARMUP"
   | "STABILITY"
-  | "CARDIO";
+  | "CARDIO"
+  | "SUPPORT"
+  | "BLACK_ROLL"
+  | "SCHNELLIGKEITSAUSDAUER_SPECIAL";
+
+export type SkillFocusType = Exclude<
+  SkillType,
+  "SUPPORT" | "BLACK_ROLL" | "SCHNELLIGKEITSAUSDAUER_SPECIAL"
+>;
 
 export type TrainingTimeType = {
   start?: number;
   end?: number;
   pause: number;
-  skill: Record<SkillType, number>;
+  skill: {
+    PREVENTION: number;
+    MOBILITY: number;
+    SWR: number;
+    WARMUP: number;
+    STABILITY: number;
+    CARDIO: number;
+  };
 };
 
 export type TrainingType =

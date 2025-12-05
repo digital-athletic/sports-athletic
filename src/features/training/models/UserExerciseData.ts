@@ -23,7 +23,7 @@ export type UserExerciseDataType = {
 };
 
 export const DEFAULT_USER_EXERCISE_DATA_LIST: UserExerciseDataType[] = [
-  //WARMUP 3 x EX0 mit P10
+  //WARMUP 3 x EX0 with P10
   {
     exerciseId: 0,
     set: [1, 3],

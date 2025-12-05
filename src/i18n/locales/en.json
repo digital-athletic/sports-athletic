@@ -189,6 +189,15 @@
       "PHASE": "Power",
       "STABILITY": "Stability"
     },
+    "skill": {
+      "PREVENTION": "Prevention",
+      "MOBILITY": "Mobility",
+      "SWR": "Jump, throw and torso power",
+      "WARMUP": "Warm up",
+      "STABILITY": "Stability",
+      "CARDIO": "Stamina",
+      "BLACK_ROLL": "Foam roller"
+    },
     "place": {
       "HOME": "At home",
       "STUDIO": "Fitness studio",
@@ -285,6 +294,27 @@
         "SK": "Info for explosive power",
         "SA": "Info for speed endurance"
       }
+    },
+    "exerciseInformation": {
+      "loading": "calculating result",
+      "musclesTrained": "Muscles trained",
+      "legendActiveMuscles": "Active working muscles",
+      "legendSupportingMuscles": "Supportive working muscles",
+      "exerciseHints": "Exercise hints"
+    },
+    "overview": {
+      "title": "Training Overview",
+      "equipmentNeeded": "Equipment needed",
+      "exerciseList": "Exercise list",
+      "startTraining": "Start training",
+      "oneSet": "1 set",
+      "setCount": "{{count}} sets",
+      "supportExercises": "Support exercises",
+      "numberMax": "Maximum",
+      "repetitions": "{{count}} repetitions",
+      "seconds": "{{count}} seconds",
+      "kilos": "{{weight}} kg",
+      "cmHigh": "{{height}} cm"
     }
   },
   "onboarding": {
@@ -393,6 +423,7 @@
     "AEUSSERE_OBERSCHENKELMUSKULATUR": "outer thigh",
     "AEUSSERER_OBERSCHENKEL_HINTEN_LINKS": "left outer back thigh",
     "AEUSSERER_OBERSCHENKEL_HINTEN_RECHTS": "right outer back thigh",
+    "ARMSTRECKER": "arm extensor",
     "ARMSTRECKER_LINKS": "left arm extensor",
     "ARMSTRECKER_RECHTS": "right arm extensor",
     "BIZEPS_LINKS": "left bicep",
@@ -418,6 +449,10 @@
     "HANDGELENKSSTRECKER_LINKS": "left wrist extensor",
     "HANDGELENKSSTRECKER_RECHTS": "right wrist extensor",
     "HERZ": "cardio",
+    "HINTERER_OBERSCHENKEL": "back thigh",
+    "HUEFT_AUSSEN_ROTATOR": "hip external rotator",
+    "HUEFT_BEUGER": "hip flexor",
+    "HUEFT_INNEN_ROTATOR": "hip internal rotator",
     "HUEFTE_LINKS": "left hip",
     "HUEFTE_RECHTS": "right hip",
     "INNERE_OBERSCHENKELMUSKULATUR": "inner thigh muscles",
@@ -425,6 +460,7 @@
     "INNERER_OBERSCHENKEL_HINTEN_RECHTS": "right inner back thigh",
     "KNIE_LINKS": "left knee",
     "KNIE_RECHTS": "right knee",
+    "MUSCLE_HINTERER_OBERSCHENKEL": "back thigh",
     "NACKEN": "neck",
     "OBERER_RUECKEN": "upper back",
     "OBERSCHENKEL_HINTEN_LINKS": "left back thigh",
@@ -433,8 +469,12 @@
     "OBERSCHENKELVORDERSEITE_RECHTS": "right front thigh",
     "SCHIENBEIN_LI": "left shin",
     "SCHIENBEIN": "shin",
+    "SCHULTER_HINTEN": "rear shoulder",
     "SCHULTER_LINKS": "left shoulder",
     "SCHULTER_RECHTS": "right shoulder",
+    "SCHULTER_VORNE": "front shoulder",
+    "SCHULTERBLATT_FIXIEREND_FRONT": "scapular stabilizer front",
+    "SCHULTERBLATT_FIXIEREND_HINTEN": "scapular stabilizer rear",
     "SEITLICHE_BAUCHMUSKELN": "side abdominal muscles",
     "SPRUNGGELENK_LINKS": "left ankle",
     "SPRUNGGELENK_RECHTS": "right ankle",

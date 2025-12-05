@@ -150,7 +150,7 @@ export default function SelectTraining() {
 
         const tile: TileData = {
           picture: WorkoutConstants.TRAINING_FOCUS_IMAGES[trainingFocus],
-          title: "common.altText.coachFace",
+          title: `training.focus.${trainingFocus}`,
           description: {
             text: "training.selectTraining.timeAndPlace",
             params: {

@@ -1,4 +1,3 @@
-import { Box } from "@/theme/Box";
 import { FC, useState } from "react";
 import { ScreenMetadata } from "./types";
 import { VideoPlayer } from "./VideoPlayer";
@@ -51,16 +50,14 @@ export const Video: FC<Props> = ({
   };
 
   return (
-    <Box>
-      <VideoPlayer
-        title={videoTitle ? videoTitle : videoName}
-        endVideo={handleVideoEnd}
-        source={videoPath}
-        screen={screen}
-        toggleFullScreen={handleToggleFullScreen}
-        setIsVideoPaused={handleVideoPause}
-        fullScreenDisabled={fullScreenDisabled}
-      />
-    </Box>
+    <VideoPlayer
+      title={videoTitle ? videoTitle : videoName}
+      endVideo={handleVideoEnd}
+      source={videoPath}
+      screen={screen}
+      toggleFullScreen={handleToggleFullScreen}
+      setIsVideoPaused={handleVideoPause}
+      fullScreenDisabled={fullScreenDisabled}
+    />
   );
 };

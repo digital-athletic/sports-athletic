@@ -1,4 +1,4 @@
-import { type SkillType } from "@/features/training/models/Training";
+import { SkillFocusType } from "@/features/training/models/Training";
 import { type TrainingPlanType } from "@/features/training/models/TrainingPlan";
 
 export type ScaleType = "week" | "month" | "year" | "total";
@@ -10,8 +10,8 @@ export interface WorkoutsListEntry {
   exerciseCount: number;
   points: number;
   movedWeight: number;
-  userSkills: Record<SkillType, number>;
-  userSkillsDuration?: Record<SkillType, number>;
+  userSkills: Record<SkillFocusType, number>;
+  userSkillsDuration?: Record<SkillFocusType, number>;
   exercises?: unknown[];
   time?: number;
 }
@@ -29,4 +29,4 @@ export interface UseWorkoutsDataParams {
   trainingPlan?: TrainingPlanType | null;
 }
 
-export type UserSkills = Record<SkillType, number>;
+export type UserSkills = Record<SkillFocusType, number>;

@@ -24,19 +24,17 @@ export const VideoPlayer: FC<Props> = ({ title, screen }) => {
       : "90deg"
     : "0deg";
 
-  const aspectRatio = screen.isFullScreen ? 2 : 1;
-
   return (
     <Box
       flex={1}
       alignItems="center"
       justifyContent="center"
       width={width}
-      aspectRatio={aspectRatio}
+      aspectRatio={2}
       style={{ transform: [{ rotate }] }}
       backgroundColor="black"
     >
-      <Text color="white">{`TODO: Play video ${title}`}</Text>
+      <Text color="white" textAlign="center">{`Video: ${title}`}</Text>
     </Box>
   );
 };

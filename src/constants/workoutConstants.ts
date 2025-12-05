@@ -134,30 +134,6 @@ const BIG_MUSCLES = [
 
 export type WorkoutRegion = "OBERKOERPER" | "UNTERKOERPER" | "RUMPF";
 
-export type WorkoutEquipmentTypes =
-  | "BALL"
-  | "ROPE"
-  | "WALL_BARS"
-  | "SPEED_LADDER"
-  | "CATTLE_BELL"
-  | "ROWING_MACHINE"
-  | "TREADMILL"
-  | "CROSS_TRAINER"
-  | "FITNESS_BIKE"
-  | "HURDLES"
-  | "BOX"
-  | "INCLINE_BENCH"
-  | "BENCH"
-  | "TUBE"
-  | "RUN_AREA"
-  | "RUN_TRACK"
-  | "MARKERS"
-  | "BLACK_ROLL"
-  | "BLACK_ROLL_BALL"
-  | "MEDICINE_BALL"
-  | "BARBELL"
-  | "DUMBBELL";
-
 const EQUIPMENT = {
   DUMBBELL: "DUMBBELL",
   ADJUSTABLE_BENCH: "ADJUSTABLE_BENCH",

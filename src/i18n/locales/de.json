@@ -189,6 +189,15 @@
       "PHASE": "Kraft/Prävention",
       "STABILITY": "Stabilität"
     },
+    "skill": {
+      "PREVENTION": "Prävention",
+      "MOBILITY": "Mobilität",
+      "SWR": "Kraft",
+      "WARMUP": "Aufwärmen",
+      "STABILITY": "Stabilität",
+      "CARDIO": "Ausdauer",
+      "BLACK_ROLL": "Hartschaumrolle"
+    },
     "place": {
       "HOME": "Zu Hause",
       "STUDIO": "Fitnessstudio",
@@ -285,6 +294,27 @@
         "SK": "Infos zu Schnellkraft",
         "SA": "Infos zu Schnelligkeitsausdauer"
       }
+    },
+    "exerciseInformation": {
+      "loading": "Ergebnis wird berechnet",
+      "musclesTrained": "Trainierte Muskeln",
+      "legendActiveMuscles": "Aktiv arbeitende Muskeln",
+      "legendSupportingMuscles": "Unterstützend arbeitende Muskeln",
+      "exerciseHints": "Übungshinweise"
+    },
+    "overview": {
+      "title": "Trainingsübersicht",
+      "equipmentNeeded": "Benötigte Ausrüstung",
+      "exerciseList": "Übungsliste",
+      "startTraining": "Training starten",
+      "oneSet": "1 Satz",
+      "setCount": "{{count}} Sätze",
+      "supportExercises": "Unterstützungsübungen",
+      "numberMax": "Maximum",
+      "repetitions": "{{count}} Wiederholungen",
+      "seconds": "{{count}} Sekunden",
+      "kilos": "{{weight}} kg",
+      "cmHigh": "{{height}} cm"
     }
   },
   "onboarding": {
@@ -393,6 +423,7 @@
     "AEUSSERE_OBERSCHENKELMUSKULATUR": "äußerer Oberschenkel",
     "AEUSSERER_OBERSCHENKEL_HINTEN_LINKS": "linker äußer hinterer Oberschenkel",
     "AEUSSERER_OBERSCHENKEL_HINTEN_RECHTS": "rechter äußerer hinterer Oberschenkel",
+    "ARMSTRECKER": "Armstrecker",
     "ARMSTRECKER_LINKS": "linker Armstrecker",
     "ARMSTRECKER_RECHTS": "rechter Armstrecker",
     "BIZEPS_LINKS": "linker Bizeps",
@@ -418,6 +449,10 @@
     "HANDGELENKSSTRECKER_LINKS": "linker Handgelenksstrecker",
     "HANDGELENKSSTRECKER_RECHTS": "rechter Handgelenksstrecker",
     "HERZ": "Herz-Kreislauf",
+    "HINTERER_OBERSCHENKEL": "hinterer Oberschenkel",
+    "HUEFT_AUSSEN_ROTATOR": "äußerer Hüftrotator",
+    "HUEFT_BEUGER": "Hüftbeuger",
+    "HUEFT_INNEN_ROTATOR": "innerer Hüftrotator",
     "HUEFTE_LINKS": "linke Hüfte",
     "HUEFTE_RECHTS": "rechte Hüfte",
     "INNERE_OBERSCHENKELMUSKULATUR": "innere Oberschenkelmuskulatur",
@@ -425,6 +460,7 @@
     "INNERER_OBERSCHENKEL_HINTEN_RECHTS": "rechter innerer hinterer Oberschenkel",
     "KNIE_LINKS": "linkes Knie",
     "KNIE_RECHTS": "rechtes Knie",
+    "MUSCLE_HINTERER_OBERSCHENKEL": "hinterer Oberschenkel",
     "NACKEN": "Nacken",
     "OBERER_RUECKEN": "oberer Rücken",
     "OBERSCHENKEL_HINTEN_LINKS": "linker hinterer Oberschenkel",
@@ -433,8 +469,12 @@
     "OBERSCHENKELVORDERSEITE_RECHTS": "rechter vorderer Oberschenkel",
     "SCHIENBEIN_LI": "linkes Schienbein",
     "SCHIENBEIN": "Schienbein",
+    "SCHULTER_HINTEN": "hintere Schulter",
     "SCHULTER_LINKS": "linke Schulter",
     "SCHULTER_RECHTS": "rechte Schulter",
+    "SCHULTER_VORNE": "vordere Schulter",
+    "SCHULTERBLATT_FIXIEREND_FRONT": "Schulterblattstabilisator vorne",
+    "SCHULTERBLATT_FIXIEREND_HINTEN": "Schulterblattstabilisator hinten",
     "SEITLICHE_BAUCHMUSKELN": "seitliche Bauchmuskulatur",
     "SPRUNGGELENK_LINKS": "linkes Sprunggelenk",
     "SPRUNGGELENK_RECHTS": "rechtes Sprunggelenk",

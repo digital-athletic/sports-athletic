@@ -23,8 +23,8 @@ export const SpeechBubble: FC<SpeechBubbleProps> = ({ text, centered }) => {
   const [height, setHeight] = useState(0);
 
   useLayoutEffect(() => {
-    containerRef.current?.measure((_x, _y, _width, height) => {
-      setHeight(height);
+    containerRef.current?.measure((_x, _y, _width, measuredHeight) => {
+      setHeight(measuredHeight);
     });
   }, []);
 

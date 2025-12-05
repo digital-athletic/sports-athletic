@@ -38,6 +38,8 @@ exports[`<EmailInputField /> renders correctly 1`] = `
   </View>
   <TextInput
     autoCapitalize="none"
+    autoComplete="email"
+    inputMode="email"
     keyboardType="email-address"
     onChangeText={[MockFunction]}
     placeholder="E-Mail"

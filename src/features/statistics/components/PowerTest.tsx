@@ -50,7 +50,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
           [
             {
               text: t("common.ok"),
-              onPress: () => router.push("/more/subscribe?backPath=PowerTest"),
+              onPress: () => router.push("/subscribe?backPath=PowerTest"),
             },
           ],
         );

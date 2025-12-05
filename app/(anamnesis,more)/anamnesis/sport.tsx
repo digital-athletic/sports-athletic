@@ -105,14 +105,17 @@ export default function SportScreen() {
     <>
       <Stack.Screen
         options={{
+          headerShown: true,
           title: t("screens.sport.title"),
           headerLeft: () => (
             <BackHeader
-              onBack={originPath === "/anamnesis" ? showClosePopup : back}
+              onBack={
+                originPath === "/(anamnesis)/anamnesis" ? showClosePopup : back
+              }
             />
           ),
           headerRight: () =>
-            originPath === "/anamnesis" ? (
+            originPath === "/(anamnesis)/anamnesis" ? (
               <SkipHeader onSkip={showClosePopup} />
             ) : null,
         }}
@@ -123,7 +126,7 @@ export default function SportScreen() {
         contentContainerStyle={{ paddingBottom: insets.bottom }}
       >
         {renderSports()}
-        {originPath === "/anamnesis" && (
+        {originPath === "/(anamnesis)/anamnesis" && (
           <Button onPress={goOn} margin="m">
             {t("screens.sport.goOn")}
           </Button>

@@ -1,5 +1,4 @@
 import { Stack } from "expo-router";
-import { useTranslation } from "react-i18next";
 
 /**
  * Profile/More Stack Layout
@@ -8,21 +7,14 @@ import { useTranslation } from "react-i18next";
  * Legacy: MoreStack (Stack Navigator)
  */
 export default function ProfileStackLayout() {
-  const { t } = useTranslation();
-
   return (
     <Stack
       screenOptions={{
         headerShown: true,
         headerBackButtonDisplayMode: "minimal",
       }}
+      initialRouteName="more"
     >
-      <Stack.Screen
-        name="index"
-        options={{
-          title: t("screens.more.title"),
-        }}
-      />
       <Stack.Screen name="profile" />
       <Stack.Screen name="settings" />
       <Stack.Screen name="exercises" />

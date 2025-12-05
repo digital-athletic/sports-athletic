@@ -79,7 +79,7 @@ export default function EquipmentScreen() {
   const handleSelectPlace = useCallback(
     (placeId: PlaceType) => {
       router.push({
-        pathname: "/(tabs)/more/equipment-details",
+        pathname: "/(tabs)/(more)/equipment-details",
         params: { placeId },
       });
     },

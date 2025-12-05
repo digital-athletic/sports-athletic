@@ -26,10 +26,10 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, BackHandler } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTrainingScheduleStore } from "../../src/store/trainingScheduleStore";
-import { useUserProfileStore } from "../../src/store/userProfileStore";
-import { useUserWorkoutStore } from "../../src/store/userWorkoutStore";
-import { Button } from "../../src/theme/Button";
+import { useTrainingScheduleStore } from "../../../src/store/trainingScheduleStore";
+import { useUserProfileStore } from "../../../src/store/userProfileStore";
+import { useUserWorkoutStore } from "../../../src/store/userWorkoutStore";
+import { Button } from "../../../src/theme/Button";
 
 /**
  * Anamnesis Component
@@ -72,7 +72,7 @@ export default function AnamnesisQuestions() {
       setGroupIndex(groupIndex - 1);
       return true;
     } else {
-      router.navigate("/anamnesis/userprofile");
+      router.back();
       return true;
     }
   }, [groupIndex, router]);
@@ -89,7 +89,7 @@ export default function AnamnesisQuestions() {
         onPress: async () => {
           if (isInInitialAnamnesis) {
             router.navigate({
-              pathname: "/(tabs)/more/subscribe",
+              pathname: "/(tabs)/(more)/subscribe",
               params: { goOn: "/(tabs)/(home)" satisfies Route },
             });
             setIsInInitialAnamnesis(false);
@@ -139,7 +139,7 @@ export default function AnamnesisQuestions() {
         workoutData?.seasonPhase?.type
       ) {
         setSeasonPhase(workoutData.seasonPhase);
-        router.navigate("/anamnesis/generating");
+        router.navigate("/(anamnesis)/anamnesis/generating");
       } else {
         // TODO: When coming from the more menu the originPath is not set here, so this doesn't trigger. This is as it was in the legacy flow.
         // if (originPath === "/(tabs)/more") {
@@ -159,7 +159,7 @@ export default function AnamnesisQuestions() {
         // } else {
         //   router.navigate("/anamnesis/season-phase");
         // }
-        router.navigate("/anamnesis/season-phase");
+        router.navigate("/(anamnesis)/anamnesis/season-phase");
       }
     } catch (e) {
       console.error("finish anamnesis error", e);

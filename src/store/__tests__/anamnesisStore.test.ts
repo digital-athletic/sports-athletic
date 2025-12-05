@@ -149,17 +149,17 @@ describe("anamnesisStore", () => {
       const { result } = renderHook(() => useAnamnesisStore());
 
       act(() => {
-        result.current.setOriginPath("/anamnesis/sport");
+        result.current.setOriginPath("/(anamnesis)/anamnesis/sport");
       });
 
-      expect(result.current.originPath).toBe("/anamnesis/sport");
+      expect(result.current.originPath).toBe("/(anamnesis)/anamnesis/sport");
     });
 
     it("should allow undefined origin path", () => {
       const { result } = renderHook(() => useAnamnesisStore());
 
       act(() => {
-        result.current.setOriginPath("/anamnesis/sport");
+        result.current.setOriginPath("/(anamnesis)/anamnesis/sport");
         result.current.setOriginPath(undefined);
       });
 

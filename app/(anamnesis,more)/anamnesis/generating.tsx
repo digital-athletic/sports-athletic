@@ -172,7 +172,7 @@ export default function Generating() {
       Logger.logEvent("anamnesis_create_training_plan_completed");
       if (isInInitialAnamnesis) {
         router.navigate({
-          pathname: "/more/subscribe",
+          pathname: "/(tabs)/(more)/subscribe",
           params: { goOn: "/(tabs)/(home)" satisfies Route },
         });
         setIsInInitialAnamnesis(false);
@@ -220,7 +220,7 @@ export default function Generating() {
 
           <Image
             style={styles.coach}
-            source={require("../../assets/img/coach/face.png")}
+            source={require("../../../assets/img/coach/face.png")}
             resizeMode="contain"
             accessibilityLabel={t("screens.welcome.coachImageAlt")}
           />

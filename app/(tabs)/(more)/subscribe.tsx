@@ -3,7 +3,7 @@ import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
 import { Link } from "expo-router";
 
-export default function ExercisesScreen() {
+export default function SubscribeScreen() {
   return (
     <Box
       flex={1}
@@ -12,13 +12,13 @@ export default function ExercisesScreen() {
       padding="l"
       backgroundColor="white"
     >
-      <Text variant="title">Exercises</Text>
+      <Text variant="title">Subscribe</Text>
       <Text variant="description">
-        Exercise library - Legacy: views/more/pages/Exercises
+        Subscription purchase flow - Legacy: views/more/pages/Subscribe
       </Text>
       <Box gap="m">
-        <Link href="/more/exercise-information" asChild>
-          <Button>View Exercise Info</Button>
+        <Link href="/subscription-status" asChild>
+          <Button>View Subscription Status</Button>
         </Link>
         <Link href="../" asChild>
           <Button variant="secondary">Back</Button>

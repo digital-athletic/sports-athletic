@@ -84,7 +84,7 @@ export default function SeasonPhase() {
         onPress: () => {
           if (isInInitialAnamnesis) {
             router.navigate({
-              pathname: "/more/subscribe",
+              pathname: "/subscribe",
               params: { goOn: origin satisfies Route | undefined },
             });
             setIsInInitialAnamnesis(false);
@@ -138,7 +138,7 @@ export default function SeasonPhase() {
 
     // Check if user has workout data (would need to be added to store)
     // For now, proceed to training days
-    if (originPath === ("/(tabs)/more" satisfies Route)) {
+    if (originPath === ("/(tabs)/(more)/more" satisfies Route)) {
       router.navigate({
         pathname: "/anamnesis/training-days",
         params: { originPath },
@@ -204,6 +204,7 @@ export default function SeasonPhase() {
     <>
       <Stack.Screen
         options={{
+          headerShown: true,
           title: t("screens.seasonPhase.title"),
           headerLeft: () => <BackHeader />,
           headerRight: () => <SkipHeader onSkip={handleClose} />,

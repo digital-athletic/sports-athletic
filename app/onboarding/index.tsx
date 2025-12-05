@@ -5,7 +5,12 @@ import { Box } from "@/theme/Box";
 import { useRouter } from "expo-router";
 import { useReducer } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Keyboard, TouchableWithoutFeedback } from "react-native";
+import {
+  Alert,
+  Keyboard,
+  Platform,
+  TouchableWithoutFeedback,
+} from "react-native";
 import {
   checkEmailExists,
   registerWithEmail,
@@ -309,6 +314,19 @@ export default function OnboardingScreen() {
       />
     );
   };
+
+  if (Platform.OS === "web") {
+    return (
+      <Box
+        flex={1}
+        justifyContent="space-between"
+        alignItems="stretch"
+        backgroundColor="white"
+      >
+        {renderContent()}
+      </Box>
+    );
+  }
 
   return (
     <TouchableWithoutFeedback

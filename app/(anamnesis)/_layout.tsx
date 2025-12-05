@@ -13,6 +13,7 @@ export default function AnamnesisLayout() {
     <Stack
       screenOptions={{
         headerStyle: { backgroundColor: theme.colors.lightGrey1 },
+        headerBackButtonDisplayMode: "minimal",
       }}
     />
   );

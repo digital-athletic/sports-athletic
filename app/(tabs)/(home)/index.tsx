@@ -44,12 +44,12 @@ export default function HomeScreen() {
   };
 
   const goToSeasonPhase = () => {
-    router.push("/anamnesis/season-phase");
+    router.push("/(more)/anamnesis/season-phase");
   };
 
   const goToSubscribe = () => {
     router.push({
-      pathname: "/more/subscribe",
+      pathname: "/subscribe",
       params: { backPath: "home" },
     });
   };

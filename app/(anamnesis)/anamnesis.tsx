@@ -37,7 +37,7 @@ export default function WelcomeScreen() {
         onPress: () => {
           if (isInInitialAnamnesis) {
             setIsInInitialAnamnesis(false);
-            router.replace("/(tabs)/more/subscribe");
+            router.replace("/(tabs)/(more)/subscribe");
           } else {
             router.replace("/(tabs)/(home)");
           }
@@ -51,8 +51,8 @@ export default function WelcomeScreen() {
 
   const handleStartAnamnesis = useCallback(() => {
     router.push({
-      pathname: "/anamnesis/sport",
-      params: { originPath: "/anamnesis" satisfies Route },
+      pathname: "/(anamnesis)/anamnesis/sport",
+      params: { originPath: "/(anamnesis)/anamnesis" satisfies Route },
     });
   }, []);
 

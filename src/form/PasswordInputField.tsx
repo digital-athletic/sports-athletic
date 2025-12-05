@@ -13,6 +13,8 @@ interface PasswordInputFieldProps {
   onSubmitEditing?: () => void;
 }
 
+const HEIGHT = 56;
+
 /**
  * Password input field with visibility toggle
  */
@@ -35,11 +37,11 @@ export const PasswordInputField: FC<PasswordInputFieldProps> = ({
       alignItems="center"
       backgroundColor="lightGrey2"
       borderRadius="m"
-      height={56}
+      height={HEIGHT}
     >
       <Box
-        width={56}
-        height={56}
+        width={HEIGHT}
+        height={HEIGHT}
         justifyContent="center"
         alignItems="center"
         backgroundColor="lightGrey1"
@@ -55,6 +57,7 @@ export const PasswordInputField: FC<PasswordInputFieldProps> = ({
         value={password}
         secureTextEntry={!showPw}
         onSubmitEditing={onSubmitEditing}
+        style={{ height: HEIGHT }}
       />
       <TouchableOpacity
         style={styles.showButton}

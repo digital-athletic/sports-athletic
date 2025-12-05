@@ -227,7 +227,7 @@ export default function SelectTraining() {
             text: t("common.ok"),
             onPress: () => {
               router.navigate({
-                pathname: "/(tabs)/more/subscribe",
+                pathname: "/(tabs)/(more)/subscribe",
                 params: { backPath: "SelectTraining" },
               });
             },

@@ -3,7 +3,6 @@ import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, BackHandler } from "react-native";
 
-import { BackHeader } from "@/common/BackHeader";
 import { ProgressBar } from "@/common/ProgressBar";
 import { SkipHeader } from "@/common/SkipHeader";
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
@@ -49,10 +48,6 @@ export default function UserProfileScreen() {
     loadQuestions();
   }, [loadQuestions]);
 
-  const onBack = useCallback(() => {
-    router.back();
-  }, []);
-
   const showClosePopup = useCallback(() => {
     const message = anamnesisCompleted
       ? t("screens.userProfile.abortAnamnesisExplanation")
@@ -72,7 +67,7 @@ export default function UserProfileScreen() {
   }, [t, anamnesisCompleted]);
 
   const handleBackPress = useCallback(() => {
-    if (originPath === "/anamnesis/sport") {
+    if (originPath === "/(anamnesis)/anamnesis/sport") {
       return false; // Allow back to Sport
     } else {
       showClosePopup();
@@ -90,8 +85,10 @@ export default function UserProfileScreen() {
 
   const goOn = () => {
     router.push({
-      pathname: "/anamnesis/anamnesis-questions",
-      params: { originPath: "/anamnesis/userprofile" satisfies Route },
+      pathname: "/(anamnesis)/anamnesis/anamnesis-questions",
+      params: {
+        originPath: "/(anamnesis)/anamnesis/userprofile" satisfies Route,
+      },
     });
   };
 
@@ -122,12 +119,13 @@ export default function UserProfileScreen() {
     <>
       <Stack.Screen
         options={{
+          headerShown: true,
           title: t("screens.userProfile.title"),
           headerRight: () =>
-            originPath === "/anamnesis/sport" ? (
+            originPath === "/(anamnesis)/anamnesis/sport" ? (
               <SkipHeader onSkip={showClosePopup} />
             ) : null,
-          headerLeft: () => <BackHeader onBack={onBack} />,
+          headerBackButtonDisplayMode: "minimal",
         }}
       />
       <ScrollBox flex={1} backgroundColor="lightGrey1">

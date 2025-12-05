@@ -78,7 +78,7 @@ export default function TrainingDays() {
         onPress: () => {
           if (isInInitialAnamnesis) {
             router.navigate({
-              pathname: "/more/subscribe",
+              pathname: "/subscribe",
               params: { goOn: origin satisfies Route | undefined },
             });
             setIsInInitialAnamnesis(false);
@@ -120,8 +120,8 @@ export default function TrainingDays() {
           {
             text: t("common.ok"),
             onPress: () => {
-              if (originPath === "/(tabs)/more") {
-                router.navigate("/(tabs)/more");
+              if (originPath === "/(tabs)/(more)/more") {
+                router.navigate("/(tabs)/(more)/more");
               } else {
                 router.navigate("/(tabs)/(home)");
               }
@@ -388,6 +388,7 @@ export default function TrainingDays() {
     <>
       <Stack.Screen
         options={{
+          headerShown: true,
           title: t("screens.trainingDays.title"),
           headerLeft: () => <BackHeader onBack={handleBack} />,
           headerRight: () => <SkipHeader onSkip={handleClose} />,

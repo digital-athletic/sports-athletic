@@ -1,5 +1,6 @@
 import { IndividualWorkoutDisplay } from "@/features/training/IndividualWorkoutDisplay";
 import { TestPeriodOverlay } from "@/features/training/TestPeriodOverlay";
+import { useTrainingStore } from "@/features/training/trainingStore";
 import { Logger } from "@/services/Logger";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { Box } from "@/theme/Box";
@@ -22,6 +23,7 @@ export default function HomeScreen() {
   const { colors, spacing } = useTheme();
   const insets = useSafeAreaInsets();
   const { personalData } = useUserProfileStore();
+  const { setTrainingSelection } = useTrainingStore();
 
   const username = personalData?.username || "Mr. Anderson";
 
@@ -30,6 +32,7 @@ export default function HomeScreen() {
   }, []);
 
   const goToTraining = (type: "QUICK" | "PREV" | "PLAN") => {
+    setTrainingSelection(type);
     router.push({
       pathname: "/training",
       params: { type },

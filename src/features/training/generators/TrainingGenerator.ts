@@ -5,7 +5,6 @@ import type { UserType } from "@/features/profile/models/User";
 import type { ExerciseType } from "@/features/training/models/Exercise";
 import {
   DEFAULT_MAX_VALUES,
-  EXERCISE_DIRECTIONS_VALUES_MAP,
   type MaxValuesType,
 } from "@/features/training/models/MaxValues";
 import type { SetListEntryType } from "@/features/training/models/SetListEntry";
@@ -68,6 +67,10 @@ import PauseSUPERSETS from "../../../../assets/data/generator/pause/SUPERSETS";
 import TEST_WORKOUTS from "../../../../assets/data/generator/TEST_WORKOUTS";
 import TEST_WORKOUTS_START_VALUES from "../../../../assets/data/generator/TEST_WORKOUTS_START_VALUES";
 import TEST_WORKOUTS_WU_REGION from "../../../../assets/data/generator/TEST_WORKOUTS_WU_REGION";
+import {
+  getRoundedResultForValueAndStep,
+  roundWeightValue,
+} from "../utils/workoutUtils";
 
 export default class TrainingGenerator {
   static DEBUG = false;
@@ -3648,21 +3651,6 @@ const hasJumpBox = (equipment: string[]) => {
   return equipment.some((eq) => eq === BOX_LOW || eq === BOX_HIGH);
 };
 
-const getRoundedResultForValueAndStep = (value: number, step: number) => {
-  const remainder = value % step;
-  return remainder < step / 2 ? value - remainder : value + step - remainder;
-};
-
-const roundWeightValue = (value: number) => {
-  if (value > 100) {
-    return getRoundedResultForValueAndStep(value, 2.5);
-  }
-  if (value > 25) {
-    return getRoundedResultForValueAndStep(value, 1);
-  }
-  return getRoundedResultForValueAndStep(value, 0.5);
-};
-
 const isInclineBenchPress = (
   equipment: string[],
   exerciseDirections: string[],
@@ -3893,45 +3881,4 @@ const getIntensityBySkill = (skill: string) => {
     default:
       return IntensityDEFAULTKG;
   }
-};
-
-const getMaxValueForExercise = (
-  exercise: ExerciseType,
-  maxValues: MaxValuesType,
-) => {
-  const exerciseDirections = getTagValues(
-    exercise.tags,
-    TagGroups.EXERCISE_DIRECTION,
-  );
-  let exerciseDirection =
-    exerciseDirections.length > 0 ? exerciseDirections[0] : null;
-  const exerciseRegion = getTagValues(exercise.tags, TagGroups.REGION)[0];
-  if (exerciseDirection === null) {
-    exerciseDirection =
-      exerciseRegion === "UNTERKOERPER" ? "UNTERKOERPER" : "VERTICAL_PULL";
-  }
-  if (exerciseDirection === "SIDE") {
-    exerciseDirection = "UNTERKOERPER";
-  }
-  const isOneSided = getTagValues(exercise.tags, TagGroups.SIDE).includes(
-    "ONE",
-  );
-  const equipment = getTagValues(exercise.tags, TagGroups.EQUIPMENT);
-  const isDumbbellExercise = equipment.includes("DUMBBELL");
-  let maxType = WorkoutConstants.MAX_VALUE_TYPES.BARBELL;
-  if (isDumbbellExercise) {
-    if (isOneSided) {
-      maxType =
-        exerciseRegion === "OBERKOERPER"
-          ? WorkoutConstants.MAX_VALUE_TYPES.ONE_SIDED_UPPER
-          : WorkoutConstants.MAX_VALUE_TYPES.ONE_SIDED_LOWER;
-    } else {
-      maxType = WorkoutConstants.MAX_VALUE_TYPES.DUMBBELLS;
-    }
-  } else if (isOneSided) {
-    maxType = WorkoutConstants.MAX_VALUE_TYPES.ONE_SIDED_BARBELL;
-  }
-  const directionKey = EXERCISE_DIRECTIONS_VALUES_MAP[exerciseDirection];
-  const directionValues = directionKey ? maxValues[directionKey] : null;
-  return directionValues ? directionValues[maxType] : null;
 };

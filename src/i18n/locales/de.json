@@ -44,7 +44,12 @@
       "saturday": "Sa",
       "sunday": "So"
     },
-    "generatingTrainingPlan": "Generiere Trainingsplan..."
+    "generatingTrainingPlan": "Generiere Trainingsplan...",
+    "levelProgress": {
+      "congratulations": "Glückwunsch!",
+      "level": "Level {{level}}",
+      "close": "Schließen"
+    }
   },
   "screens": {
     "start": {
@@ -204,6 +209,20 @@
       "HALL": "In der Halle",
       "OUTSIDE": "Draußen/Trainingsplatz",
       "NO_PLACE": "Keine Ausrüstung"
+    },
+    "success": {
+      "title": "Trainingsauswertung",
+      "calculating": "Ergebnis wird berechnet",
+      "dataMissing": "Deine Trainingsdaten konnten leider nicht korrekt erfasst werden. Unsere Entwickler wurden darüber informiert.\n\nSollte der Fehler weiterhin auftreten, melde dich bitte über den Punkt \"Kontakt\" im \"Profil\" Bereich bei uns.",
+      "goOn": "Weiter",
+      "summaryDuration": "Dauer",
+      "summaryCount": "Übungszahl",
+      "summaryPoints": "Punkte",
+      "summaryWeight": "Bewegtes Gewicht",
+      "timeIcon": "Zeit-Symbol",
+      "countIcon": "Übungszahl-Symbol",
+      "pointsIcon": "Trophäen-Symbol",
+      "weightIcon": "Gewicht-Symbol"
     },
     "quickstart": {
       "STABILITY_TILE_BAS": "Beinachsenstabilität",

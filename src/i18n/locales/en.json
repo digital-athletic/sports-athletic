@@ -44,7 +44,12 @@
       "saturday": "Sa",
       "sunday": "Su"
     },
-    "generatingTrainingPlan": "Generating training plan..."
+    "generatingTrainingPlan": "Generating training plan...",
+    "levelProgress": {
+      "congratulations": "Congratulations!",
+      "level": "Level {{level}}",
+      "close": "Close"
+    }
   },
   "screens": {
     "start": {
@@ -204,6 +209,20 @@
       "HALL": "Gym hall",
       "OUTSIDE": "Outside/training ground",
       "NO_PLACE": "No equipment"
+    },
+    "success": {
+      "title": "Training evaluation",
+      "calculating": "calculating result",
+      "dataMissing": "We could not save your training data. Our developers have been informed.\n\nIf the problem persists please contact us via \"Contact\" in \"Profile\".",
+      "goOn": "Go on",
+      "summaryDuration": "Duration",
+      "summaryCount": "Exercise count",
+      "summaryPoints": "Points",
+      "summaryWeight": "Moved weight",
+      "timeIcon": "Time icon",
+      "countIcon": "Exercise count icon",
+      "pointsIcon": "Trophy icon",
+      "weightIcon": "Weight icon"
     },
     "quickstart": {
       "STABILITY_TILE_BAS": "Leg Axis Stability",

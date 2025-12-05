@@ -6,6 +6,8 @@ export const colors = {
   // Neutral colors
   white: "#FFF",
   black: "#000",
+  transparent: "transparent",
+  overlay: "rgba(0, 0, 0, 0.8)",
   lightGrey1: "#FAFAFA",
   lightGrey2: "#E8E8E8",
   lightGrey3: "#AAAAAA",

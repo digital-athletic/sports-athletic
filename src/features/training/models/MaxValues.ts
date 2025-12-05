@@ -40,7 +40,7 @@ export const EXERCISE_POSITION_VALUES_MAP: (keyof MaxValuesType)[][] = [
 
 export const EXERCISE_DIRECTIONS_VALUES_MAP: Record<
   string,
-  keyof MaxValuesType
+  Exclude<keyof MaxValuesType, "testDate">
 > = {
   VERTICAL_PUSH: "verticalPush",
   VERTICAL_PULL: "verticalPull",

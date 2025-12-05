@@ -850,7 +850,7 @@ const MAX_VALUE_TYPES = {
   ONE_SIDED_BARBELL: "oneSidedBarbell",
   ONE_SIDED_LOWER: "oneSidedLower",
   ONE_SIDED_LOWER_SUPPORTED: "oneSidedLowerSupported",
-};
+} as const;
 
 const NO_INCREASE_WORKOUT_PLAN_TYPE = ["WU", "CD", "MOB", "BR", "TEST_WORKOUT"];
 

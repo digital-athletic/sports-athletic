@@ -374,6 +374,8 @@
     "loginSureToResetPasswordMessage": "Are you sure you want to reset the password for the entered e-mail address {{email}}?",
     "onboardingLoginSentLinkTitle": "Link sent",
     "onboardingLoginSentLinkMessage": "An email with a reset link was send to your Email-Adress {{email}}.",
+    "confirmEmailAddressTitle": "Confirm your email",
+    "confirmEmailAddressMessage": "Please check your inbox and confirm your email address to complete the registration.",
     "anonymisedDataUse": "I agree to improve the App performance by using my data ANONYMISED.",
     "privacyInformation1": "On my registration I accept the ",
     "privacyInformation2": " and ",
@@ -404,6 +406,8 @@
     "logoutQuestionMessage": "Are you sure you want to logout?",
     "yesCaps": "YES",
     "noCaps": "NO",
+    "noAccountYet": "No account yet?",
+    "register": "Sign up",
     "initializing": "Initializing",
     "webContent": "Web Content"
   },

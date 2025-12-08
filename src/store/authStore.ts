@@ -2,10 +2,10 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
+import { supabase } from "../services/supabaseClient";
 
 /**
  * Authentication data structure
- * Note: Removed 'provider' field as Facebook/Google login is being deprecated
  */
 export interface AuthType {
   userId: string;
@@ -14,10 +14,12 @@ export interface AuthType {
 
 export interface AuthState {
   auth: AuthType | null;
+  isInitialized: boolean;
 
   // Actions
   setAuth: (auth: AuthType | null) => void;
   clearAuth: () => void;
+  initializeFromSupabase: () => Promise<void>;
 
   // Selectors
   isAuthenticated: () => boolean;
@@ -49,6 +51,7 @@ export const useAuthStore = create<AuthState>()(
   persist(
     immer((set, get) => ({
       auth: null,
+      isInitialized: false,
 
       setAuth: (auth) =>
         set((state) => {
@@ -59,6 +62,23 @@ export const useAuthStore = create<AuthState>()(
         set((state) => {
           state.auth = null;
         }),
+
+      initializeFromSupabase: async () => {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        set((state) => {
+          if (session) {
+            state.auth = {
+              userId: session.user.id,
+              token: session.access_token,
+            };
+          } else {
+            state.auth = null;
+          }
+          state.isInitialized = true;
+        });
+      },
 
       isAuthenticated: () => get().auth !== null,
     })),

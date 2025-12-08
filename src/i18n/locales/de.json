@@ -262,7 +262,6 @@
       "startPowerTest": "Krafttest starten",
       "skipPowerTest": "Krafttest überspringen"
     },
-
     "muscleSoreness": {
       "loading": "Training wird vorbereitet",
       "title": "Muskelkater",
@@ -375,6 +374,8 @@
     "loginSureToResetPasswordMessage": "Bist du sicher, dass du das Password für die eingegebene E-Mail Adresse {{email}} zurücksetzen möchtest?",
     "onboardingLoginSentLinkTitle": "Link gesendet",
     "onboardingLoginSentLinkMessage": "Eine Email mit einem Wiederherstellungslink wurde an ihre Email {{email}} versendet.",
+    "confirmEmailAddressTitle": "E-Mail bestätigen",
+    "confirmEmailAddressMessage": "Bitte überprüfe deinen Posteingang und bestätige deine E-Mail-Adresse, um die Registrierung abzuschließen.",
     "anonymisedDataUse": "Ich bin damit einverstanden, dass zur Verbesserung der App meine Daten ANONYMISIERT verarbeitet werden.",
     "privacyInformation1": "Mit der Anmeldung erkläre ich mich mit den ",
     "privacyInformation2": " und ",
@@ -405,6 +406,8 @@
     "logoutQuestionMessage": "Bist du sicher, dass du dich abmelden möchtest?",
     "yesCaps": "JA",
     "noCaps": "NEIN",
+    "noAccountYet": "Noch kein Konto?",
+    "register": "Registrieren",
     "initializing": "Initialisierung",
     "webContent": "Webinhalt"
   },

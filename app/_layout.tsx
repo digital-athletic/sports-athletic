@@ -1,3 +1,4 @@
+import { useAuthStateListener } from "@/auth/useAuthStateListener";
 import { useOTAService } from "@/services/OTAService";
 import { useAuthStore } from "@/store/authStore";
 import { theme } from "@/theme/theme";
@@ -14,6 +15,9 @@ import { Stack } from "expo-router";
  * Expo Router uses conditional rendering and layout groups instead of Switch Navigator.
  */
 export default function RootLayout() {
+  // Initialize and subscribe to Supabase auth state changes
+  useAuthStateListener();
+
   const { auth } = useAuthStore();
 
   useOTAService();

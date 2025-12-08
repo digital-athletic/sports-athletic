@@ -1,4 +1,5 @@
 import { useAuthStore } from "@/store/authStore";
+import { logout as supabaseLogout } from "@/services/AuthService";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -18,6 +19,7 @@ export function useLogout() {
   const logout = async () => {
     setIsLoading(true);
     try {
+      await supabaseLogout();
       clearAuth();
       // TODO: Clear other stores when reset methods are available
       router.replace("/onboarding");

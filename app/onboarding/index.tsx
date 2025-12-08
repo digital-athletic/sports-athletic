@@ -1,4 +1,3 @@
-import { EmailInputScreen } from "@/features/onboarding/EmailInputScreen";
 import { LoginScreen } from "@/features/onboarding/LoginScreen";
 import { RegistrationScreen } from "@/features/onboarding/RegisterScreen";
 import { Box } from "@/theme/Box";
@@ -12,7 +11,6 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import {
-  checkEmailExists,
   registerWithEmail,
   resetPassword,
   signInWithEmail,
@@ -35,7 +33,7 @@ type OnboardingState = {
   email: string;
   password: string;
   passwordConfirm: string;
-  activeType: null | "LOGIN" | "REGISTER";
+  activeType: "LOGIN" | "REGISTER";
   acceptedPrivacy: boolean;
   acceptedAnalytics: boolean;
   processing: boolean;
@@ -46,7 +44,7 @@ type OnboardingAction =
   | { type: "SET_EMAIL"; payload: string }
   | { type: "SET_PASSWORD"; payload: string }
   | { type: "SET_PASSWORD_CONFIRM"; payload: string }
-  | { type: "SET_ACTIVE_TYPE"; payload: "LOGIN" | "REGISTER" | null }
+  | { type: "SET_ACTIVE_TYPE"; payload: "LOGIN" | "REGISTER" }
   | { type: "TOGGLE_PRIVACY" }
   | { type: "TOGGLE_ANALYTICS" }
   | { type: "SET_PROCESSING"; payload: boolean }
@@ -57,7 +55,7 @@ const initialState: OnboardingState = {
   email: "",
   password: "",
   passwordConfirm: "",
-  activeType: null,
+  activeType: "LOGIN",
   acceptedPrivacy: false,
   acceptedAnalytics: false,
   processing: false,
@@ -90,7 +88,7 @@ function onboardingReducer(
         ...state,
         password: "",
         passwordConfirm: "",
-        activeType: null,
+        activeType: "LOGIN",
         acceptedPrivacy: false,
         acceptedAnalytics: false,
         passwordError: null,
@@ -106,32 +104,6 @@ export default function OnboardingScreen() {
   const { t } = useTranslation();
   const { setAuth } = useAuthStore();
   const { setIsInInitialAnamnesis } = useUserProfileStore();
-
-  const handleEmailSubmit = async () => {
-    if (!validateEmail(state.email)) {
-      Alert.alert(
-        t("onboarding.errorInvalidMailAdressTitle"),
-        t("onboarding.errorInvalidMailAdressMsg"),
-      );
-      return;
-    }
-
-    dispatch({ type: "SET_PROCESSING", payload: true });
-    try {
-      const exists = await checkEmailExists(state.email);
-      dispatch({
-        type: "SET_ACTIVE_TYPE",
-        payload: exists ? "LOGIN" : "REGISTER",
-      });
-    } catch {
-      Alert.alert(
-        t("onboarding.alertErrorTitle"),
-        t("onboarding.alertAnErrorOccuredTitle"),
-      );
-    } finally {
-      dispatch({ type: "SET_PROCESSING", payload: false });
-    }
-  };
 
   const handleLogin = async () => {
     dispatch({ type: "SET_PROCESSING", payload: true });
@@ -198,28 +170,45 @@ export default function OnboardingScreen() {
     Keyboard.dismiss();
 
     try {
-      const auth = await registerWithEmail(
+      await registerWithEmail(
         state.email,
         state.password,
         state.acceptedAnalytics,
       );
-      setAuth(auth);
       setIsInInitialAnamnesis(true);
-      router.replace("/anamnesis");
+      Alert.alert(
+        t("onboarding.confirmEmailAddressTitle"),
+        t("onboarding.confirmEmailAddressMessage"),
+      );
+      dispatch({ type: "SET_ACTIVE_TYPE", payload: "LOGIN" });
     } catch (error: any) {
-      let message = t("onboarding.errorUnknownMsgRetry");
-
       if (error.code === "auth/email-already-in-use") {
-        message = t("onboarding.errorMessageEmailInUse");
-      } else if (error.code === "auth/weak-password") {
-        message = t("onboarding.errorMessageWeakPassword");
-      } else if (error.code === "auth/invalid-email") {
-        message = t("onboarding.invalidEmail");
-      } else if (error.code === "auth/network-request-failed") {
-        message = t("onboarding.errorMessageNoInternetConnection");
-      }
+        // Offer to switch to login flow
+        Alert.alert(
+          t("onboarding.errorTitleRegistration"),
+          t("onboarding.errorMessageEmailInUse"),
+          [
+            {
+              text: t("onboarding.login"),
+              onPress: () =>
+                dispatch({ type: "SET_ACTIVE_TYPE", payload: "LOGIN" }),
+            },
+            { text: t("common.cancel") },
+          ],
+        );
+      } else {
+        let message = t("onboarding.errorUnknownMsgRetry");
 
-      Alert.alert(t("onboarding.errorTitleRegistration"), message);
+        if (error.code === "auth/weak-password") {
+          message = t("onboarding.errorMessageWeakPassword");
+        } else if (error.code === "auth/invalid-email") {
+          message = t("onboarding.invalidEmail");
+        } else if (error.code === "auth/network-request-failed") {
+          message = t("onboarding.errorMessageNoInternetConnection");
+        }
+
+        Alert.alert(t("onboarding.errorTitleRegistration"), message);
+      }
     } finally {
       dispatch({ type: "SET_PROCESSING", payload: false });
     }
@@ -262,30 +251,24 @@ export default function OnboardingScreen() {
     dispatch({ type: "RESET" });
   };
 
-  const renderContent = () => {
-    if (state.activeType === null) {
-      return (
-        <EmailInputScreen
-          email={state.email}
-          onEmailChange={(email) =>
-            dispatch({ type: "SET_EMAIL", payload: email })
-          }
-          onSubmit={handleEmailSubmit}
-          processing={state.processing}
-        />
-      );
-    }
+  const handleGoToSignup = () => {
+    dispatch({ type: "SET_ACTIVE_TYPE", payload: "REGISTER" });
+  };
 
-    if (state.activeType === "LOGIN") {
+  const renderContent = () => {
+    if (state.activeType !== "REGISTER") {
       return (
         <LoginScreen
           email={state.email}
           password={state.password}
+          onEmailChange={(email) =>
+            dispatch({ type: "SET_EMAIL", payload: email })
+          }
           onPasswordChange={(password) =>
             dispatch({ type: "SET_PASSWORD", payload: password })
           }
           onLogin={handleLogin}
-          onBack={handleBack}
+          onSignup={handleGoToSignup}
           onResetPassword={handleResetPassword}
           processing={state.processing}
         />
@@ -300,6 +283,9 @@ export default function OnboardingScreen() {
         acceptedPrivacy={state.acceptedPrivacy}
         acceptedAnalytics={state.acceptedAnalytics}
         passwordError={state.passwordError}
+        onEmailChange={(email) =>
+          dispatch({ type: "SET_EMAIL", payload: email })
+        }
         onPasswordChange={(password) =>
           dispatch({ type: "SET_PASSWORD", payload: password })
         }

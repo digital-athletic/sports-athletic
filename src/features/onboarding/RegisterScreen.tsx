@@ -21,6 +21,7 @@ type Props = {
   acceptedPrivacy: boolean;
   acceptedAnalytics: boolean;
   passwordError: string | null;
+  onEmailChange: (email: string) => void;
   onPasswordChange: (password: string) => void;
   onPasswordConfirmChange: (password: string) => void;
   onPrivacyToggle: (accepted: boolean) => void;
@@ -43,6 +44,7 @@ export const RegistrationScreen: FC<Props> = ({
   acceptedPrivacy,
   acceptedAnalytics,
   passwordError,
+  onEmailChange,
   onPasswordChange,
   onPasswordConfirmChange,
   onPrivacyToggle,
@@ -83,7 +85,7 @@ export const RegistrationScreen: FC<Props> = ({
         nestedScrollEnabled={true}
       >
         <Box alignSelf="stretch" paddingHorizontal="m" paddingVertical="s">
-          <EmailInputField email={email} onChange={() => {}} />
+          <EmailInputField email={email} onChange={onEmailChange} />
         </Box>
 
         <Box alignSelf="stretch" paddingHorizontal="m" paddingVertical="s">

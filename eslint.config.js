@@ -7,7 +7,13 @@ module.exports = defineConfig([
   expoConfig,
   eslintConfigPrettier,
   {
-    ignores: ["dist/*", "flow/*", "legacy/*"],
+    ignores: [
+      "dist/*",
+      "flow/*",
+      "legacy/*",
+      "trainer-dashboard/*",
+      "supabase/*",
+    ],
     rules: {
       "@typescript-eslint/no-require-imports": "off",
     },

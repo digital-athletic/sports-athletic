@@ -1,0 +1,45 @@
+{
+  "common": {
+    "brandName": "SPORTS ATHLETIC",
+    "logoAlt": "Sports Athletic logo"
+  },
+  "login": {
+    "title": "Login",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Login",
+    "resetPassword": "Reset password",
+    "noAccount": "Don't have an account?",
+    "register": "Register"
+  },
+  "teamSelection": {
+    "title": "Select Team",
+    "description": "Select a team to continue.",
+    "players": "{{count}} players"
+  },
+  "dashboard": {
+    "title": "Trainer Dashboard",
+    "tabs": {
+      "team": "Team",
+      "evaluations": "Evaluations",
+      "settings": "Settings"
+    },
+    "players": {
+      "title": "Your Players",
+      "addPlayer": "Add new player",
+      "noRows": "No rows found",
+      "showingResults": "Showing {{count}} results",
+      "ofPages": "of {{count}}",
+      "removePlayer": "Remove player"
+    },
+    "info": {
+      "title": "Basic Information",
+      "availableCodes": "Available codes:"
+    },
+    "subscription": {
+      "title": "Subscription Status",
+      "noSubscription": "No valid subscription",
+      "activate": "Activate subscription"
+    }
+  }
+}

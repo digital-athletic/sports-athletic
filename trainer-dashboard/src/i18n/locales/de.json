@@ -1,40 +1,138 @@
 {
   "common": {
     "brandName": "SPORTS ATHLETIC",
-    "logoAlt": "Sports Athletic logo"
+    "logoAlt": "Sports Athletic Logo",
+    "loading": "Laden...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "copy": "Kopieren",
+    "copied": "Kopiert!",
+    "logout": "Abmelden",
+    "back": "Zurück",
+    "backToTeams": "Zurück zur Teamauswahl"
   },
   "login": {
-    "title": "Login",
+    "title": "Anmelden",
+    "signupTitle": "Konto erstellen",
     "email": "E-Mail",
     "password": "Passwort",
-    "submit": "Login",
+    "confirmPassword": "Passwort bestätigen",
+    "submit": "Anmelden",
+    "signupSubmit": "Konto erstellen",
     "resetPassword": "Passwort zurücksetzen",
     "noAccount": "Noch keinen Account?",
-    "register": "Registrieren"
+    "hasAccount": "Bereits ein Konto?",
+    "register": "Registrieren",
+    "backToLogin": "Zurück zur Anmeldung",
+    "invalidCredentials": "Ungültige E-Mail oder Passwort",
+    "passwordMismatch": "Passwörter stimmen nicht überein",
+    "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein",
+    "signupSuccessTitle": "Konto erstellt!",
+    "signupSuccessMessage": "Ihr Konto wurde erfolgreich erstellt. Sie können sich jetzt mit Ihren Zugangsdaten anmelden."
   },
   "teamSelection": {
     "title": "Team auswählen",
-    "description": "Wählen Sie ein Team aus, um fortzufahren.",
-    "players": "{{count}} Spieler"
+    "description": "Wählen Sie ein Team aus oder erstellen Sie ein neues.",
+    "players": "{{count}} Spieler",
+    "noTeam": "Sie sind noch kein Mitglied eines Teams.",
+    "createTeam": "Team erstellen",
+    "joinTeam": "Team beitreten",
+    "or": "oder"
+  },
+  "teamManagement": {
+    "createTeam": {
+      "title": "Neues Team erstellen",
+      "nameLabel": "Teamname",
+      "namePlaceholder": "Teamname eingeben",
+      "descriptionLabel": "Beschreibung (optional)",
+      "descriptionPlaceholder": "Teambeschreibung eingeben",
+      "submit": "Team erstellen",
+      "success": "Team erfolgreich erstellt!",
+      "error": "Team konnte nicht erstellt werden"
+    },
+    "joinTeam": {
+      "title": "Team beitreten",
+      "codeLabel": "Einladungscode",
+      "codePlaceholder": "6-stelligen Code eingeben",
+      "submit": "Team beitreten",
+      "success": "Erfolgreich dem Team beigetreten!",
+      "error": "Beitritt fehlgeschlagen",
+      "invalidCode": "Ungültiger Einladungscode",
+      "alreadyMember": "Sie sind bereits Mitglied eines Teams"
+    },
+    "inviteCode": {
+      "title": "Einladungscodes",
+      "description": "Teilen Sie diese Codes mit Athleten, um Ihrem Team beizutreten",
+      "regenerate": "Code neu generieren",
+      "regenerating": "Regeneriere...",
+      "copySuccess": "Code in Zwischenablage kopiert!",
+      "noCode": "Keine aktiven Einladungscodes"
+    },
+    "members": {
+      "title": "Teammitglieder",
+      "owner": "Eigentümer",
+      "member": "Mitglied",
+      "you": "(Sie)",
+      "joined": "Beigetreten",
+      "noMembers": "Noch keine Teammitglieder",
+      "remove": "Entfernen",
+      "removeConfirmTitle": "Mitglied entfernen?",
+      "removeConfirmMessage": "Sind Sie sicher, dass Sie dieses Mitglied aus dem Team entfernen möchten?"
+    },
+    "leaveTeam": {
+      "button": "Team verlassen",
+      "confirmTitle": "Team verlassen?",
+      "confirmMessage": "Sind Sie sicher, dass Sie dieses Team verlassen möchten?",
+      "confirmOwnerMessage": "Als Eigentümer wird beim Verlassen die Eigentümerschaft übertragen oder das Team gelöscht, wenn es leer ist.",
+      "success": "Sie haben das Team verlassen",
+      "ownershipTransferred": "Eigentümerschaft wurde übertragen",
+      "teamDeleted": "Team wurde gelöscht"
+    }
+  },
+  "errors": {
+    "AUTH_REQUIRED": "Authentifizierung erforderlich",
+    "AUTH_INVALID": "Ungültige Authentifizierung",
+    "TEAM_NAME_REQUIRED": "Teamname ist erforderlich",
+    "ALREADY_IN_TEAM": "Sie sind bereits Mitglied eines Teams. Verlassen Sie zuerst das aktuelle Team.",
+    "INVITE_CODE_REQUIRED": "Einladungscode ist erforderlich",
+    "INVITE_CODE_INVALID": "Ungültiger Einladungscode",
+    "INVITE_CODE_INACTIVE": "Einladungscode ist nicht mehr aktiv",
+    "INVITE_CODE_EXPIRED": "Einladungscode ist abgelaufen",
+    "INVITE_CODE_MAX_USES": "Einladungscode hat die maximale Nutzungsanzahl erreicht",
+    "ALREADY_TEAM_MEMBER": "Sie sind bereits Mitglied dieses Teams",
+    "TEAM_ID_REQUIRED": "Team-ID ist erforderlich",
+    "NOT_TEAM_MEMBER": "Sie sind kein Mitglied dieses Teams",
+    "TEAM_NOT_FOUND": "Team nicht gefunden",
+    "MEMBER_USER_ID_REQUIRED": "Mitglieder-Benutzer-ID ist erforderlich",
+    "NOT_TEAM_OWNER": "Nur der Teameigentümer kann diese Aktion durchführen",
+    "CANNOT_REMOVE_SELF": "Sie können sich nicht selbst entfernen. Nutzen Sie stattdessen Team verlassen.",
+    "MEMBER_NOT_FOUND": "Mitglied nicht in diesem Team gefunden",
+    "INTERNAL_ERROR": "Ein interner Fehler ist aufgetreten"
   },
   "dashboard": {
     "title": "Trainer Dashboard",
     "tabs": {
       "team": "Mannschaft",
       "evaluations": "Auswertungen",
-      "settings": "Einstellungen"
+      "settings": "Einstellungen",
+      "management": "Teamverwaltung"
     },
     "players": {
       "title": "Deine Spieler",
       "addPlayer": "Neue:n Spieler:in hinzufügen",
-      "noRows": "No rows found",
-      "showingResults": "Showing {{count}} results",
-      "ofPages": "of {{count}}",
+      "noRows": "Keine Einträge gefunden",
+      "showingResults": "{{count}} Ergebnisse",
+      "ofPages": "von {{count}}",
       "removePlayer": "Spieler entfernen"
     },
     "info": {
       "title": "Basis Informationen",
-      "availableCodes": "Noch verfügbare Codes:"
+      "availableCodes": "Noch verfügbare Codes:",
+      "teamName": "Teamname",
+      "memberCount": "{{count}} Mitglieder"
     },
     "subscription": {
       "title": "Abonnementstatus",

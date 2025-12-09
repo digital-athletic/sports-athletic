@@ -1,28 +1,124 @@
 {
   "common": {
     "brandName": "SPORTS ATHLETIC",
-    "logoAlt": "Sports Athletic logo"
+    "logoAlt": "Sports Athletic logo",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "logout": "Logout",
+    "back": "Back",
+    "backToTeams": "Back to team selection"
   },
   "login": {
     "title": "Login",
+    "signupTitle": "Create Account",
     "email": "Email",
     "password": "Password",
+    "confirmPassword": "Confirm Password",
     "submit": "Login",
+    "signupSubmit": "Create Account",
     "resetPassword": "Reset password",
     "noAccount": "Don't have an account?",
-    "register": "Register"
+    "hasAccount": "Already have an account?",
+    "register": "Register",
+    "backToLogin": "Back to Login",
+    "invalidCredentials": "Invalid email or password",
+    "passwordMismatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "signupSuccessTitle": "Account Created!",
+    "signupSuccessMessage": "Your account has been created successfully. You can now log in with your credentials."
   },
   "teamSelection": {
     "title": "Select Team",
-    "description": "Select a team to continue.",
-    "players": "{{count}} players"
+    "description": "Select a team to continue or create a new one.",
+    "players": "{{count}} players",
+    "noTeam": "You are not a member of any team yet.",
+    "createTeam": "Create Team",
+    "joinTeam": "Join Team",
+    "or": "or"
+  },
+  "teamManagement": {
+    "createTeam": {
+      "title": "Create New Team",
+      "nameLabel": "Team Name",
+      "namePlaceholder": "Enter team name",
+      "descriptionLabel": "Description (optional)",
+      "descriptionPlaceholder": "Enter team description",
+      "submit": "Create Team",
+      "success": "Team created successfully!",
+      "error": "Failed to create team"
+    },
+    "joinTeam": {
+      "title": "Join Team",
+      "codeLabel": "Invite Code",
+      "codePlaceholder": "Enter 6-character code",
+      "submit": "Join Team",
+      "success": "Successfully joined the team!",
+      "error": "Failed to join team",
+      "invalidCode": "Invalid invite code",
+      "alreadyMember": "You are already a member of a team"
+    },
+    "inviteCode": {
+      "title": "Invite Codes",
+      "description": "Share these codes with athletes to join your team",
+      "regenerate": "Regenerate Code",
+      "regenerating": "Regenerating...",
+      "copySuccess": "Code copied to clipboard!",
+      "noCode": "No active invite codes"
+    },
+    "members": {
+      "title": "Team Members",
+      "owner": "Owner",
+      "member": "Member",
+      "you": "(You)",
+      "joined": "Joined",
+      "noMembers": "No team members yet",
+      "remove": "Remove",
+      "removeConfirmTitle": "Remove Member?",
+      "removeConfirmMessage": "Are you sure you want to remove this member from the team?"
+    },
+    "leaveTeam": {
+      "button": "Leave Team",
+      "confirmTitle": "Leave Team?",
+      "confirmMessage": "Are you sure you want to leave this team?",
+      "confirmOwnerMessage": "As the owner, leaving will transfer ownership to the next member or delete the team if empty.",
+      "success": "You have left the team",
+      "ownershipTransferred": "Ownership has been transferred",
+      "teamDeleted": "Team has been deleted"
+    }
+  },
+  "errors": {
+    "AUTH_REQUIRED": "Authentication required",
+    "AUTH_INVALID": "Invalid authentication",
+    "TEAM_NAME_REQUIRED": "Team name is required",
+    "ALREADY_IN_TEAM": "You are already a member of a team. Leave current team first.",
+    "INVITE_CODE_REQUIRED": "Invite code is required",
+    "INVITE_CODE_INVALID": "Invalid invite code",
+    "INVITE_CODE_INACTIVE": "Invite code is no longer active",
+    "INVITE_CODE_EXPIRED": "Invite code has expired",
+    "INVITE_CODE_MAX_USES": "Invite code has reached maximum uses",
+    "ALREADY_TEAM_MEMBER": "You are already a member of this team",
+    "TEAM_ID_REQUIRED": "Team ID is required",
+    "NOT_TEAM_MEMBER": "You are not a member of this team",
+    "TEAM_NOT_FOUND": "Team not found",
+    "MEMBER_USER_ID_REQUIRED": "Member user ID is required",
+    "NOT_TEAM_OWNER": "Only the team owner can perform this action",
+    "CANNOT_REMOVE_SELF": "Cannot remove yourself. Use leave team instead.",
+    "MEMBER_NOT_FOUND": "Member not found in this team",
+    "INTERNAL_ERROR": "An internal error occurred"
   },
   "dashboard": {
     "title": "Trainer Dashboard",
     "tabs": {
       "team": "Team",
       "evaluations": "Evaluations",
-      "settings": "Settings"
+      "settings": "Settings",
+      "management": "Team Management"
     },
     "players": {
       "title": "Your Players",
@@ -34,7 +130,9 @@
     },
     "info": {
       "title": "Basic Information",
-      "availableCodes": "Available codes:"
+      "availableCodes": "Available codes:",
+      "teamName": "Team Name",
+      "memberCount": "{{count}} members"
     },
     "subscription": {
       "title": "Subscription Status",

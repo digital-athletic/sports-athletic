@@ -1,68 +1,83 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import appIcon from "./assets/app-icon.png";
+import { CreateTeamCard } from "./components/CreateTeamCard";
+import { CreateTeamForm } from "./components/CreateTeamForm";
+import { ErrorMessage } from "./components/ErrorMessage";
+import { JoinTeamForm } from "./components/JoinTeamForm";
+import { LoadingSpinner } from "./components/LoadingSpinner";
+import { PageLayout } from "./components/PageLayout";
+import { TeamCard } from "./components/TeamCard";
+import { useTeamSelection } from "./hooks/useTeamSelection";
 
 export const TeamSelection = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { teams, loading, error, createTeam, joinTeam } = useTeamSelection();
 
-  const handleSelectTeam = () => {
-    navigate("/dashboard");
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showJoinForm, setShowJoinForm] = useState(false);
+
+  const handleSelectTeam = (teamId: string) => {
+    navigate(`/dashboard?team=${teamId}`);
+  };
+
+  const handleCreateTeam = async (name: string, description?: string) => {
+    const result = await createTeam(name, description);
+    navigate(`/dashboard?team=${result.id}`);
+  };
+
+  const handleJoinTeam = async (code: string) => {
+    const result = await joinTeam(code);
+    navigate(`/dashboard?team=${result.team_id}`);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4 lg:max-w-5xl">
-          <div className="flex items-center gap-3">
-            <img
-              src={appIcon}
-              className="h-10 w-10"
-              alt={t("common.logoAlt")}
-            />
-            <span className="text-xl font-semibold text-gray-900">
-              {t("common.brandName")}
-            </span>
-          </div>
-        </div>
-      </header>
+    <PageLayout>
+      <h1 className="mb-6 text-2xl font-bold text-gray-900">
+        {t("teamSelection.title")}
+      </h1>
+      <p className="mb-8 text-gray-600">{t("teamSelection.description")}</p>
 
-      <main className="container mx-auto px-4 py-8 lg:max-w-5xl">
-        <h1 className="mb-6 text-2xl font-bold text-gray-900">
-          {t("teamSelection.title")}
-        </h1>
-        <p className="mb-8 text-gray-600">{t("teamSelection.description")}</p>
+      {error && <ErrorMessage message={error} className="mb-4" />}
 
+      {loading ? (
+        <LoadingSpinner />
+      ) : !showCreateForm && !showJoinForm ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <button
-            onClick={handleSelectTeam}
-            className="group rounded-lg border border-gray-200 bg-white p-6 text-left shadow-sm transition-all hover:border-red-500 hover:shadow-md"
-          >
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-600 group-hover:bg-red-600 group-hover:text-white">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-              </svg>
-            </div>
-            <h2 className="mb-2 text-lg font-semibold text-gray-900">
-              FC Musterstadt U19
-            </h2>
-            <p className="text-sm text-gray-500">
-              {t("teamSelection.players", { count: 12 })}
+          {teams.length === 0 && (
+            <p className="col-span-full text-gray-500">
+              {t("teamSelection.noTeam")}
             </p>
-          </button>
+          )}
+          {teams.map((team) => (
+            <TeamCard
+              key={team.id}
+              team={team}
+              memberCount={team.member_count}
+              onClick={() => handleSelectTeam(team.id)}
+            />
+          ))}
+          <CreateTeamCard
+            onCreateClick={() => setShowCreateForm(true)}
+            onJoinClick={() => setShowJoinForm(true)}
+          />
         </div>
-      </main>
-    </div>
+      ) : null}
+
+      {!loading && showCreateForm && (
+        <CreateTeamForm
+          onSubmit={handleCreateTeam}
+          onCancel={() => setShowCreateForm(false)}
+        />
+      )}
+
+      {!loading && showJoinForm && (
+        <JoinTeamForm
+          onSubmit={handleJoinTeam}
+          onCancel={() => setShowJoinForm(false)}
+        />
+      )}
+    </PageLayout>
   );
 };

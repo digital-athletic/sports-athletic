@@ -1,76 +1,99 @@
+import { useEffect, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import logo from "./assets/SA_dark.png";
+import { AuthPageLayout } from "./components/AuthPageLayout";
+import { LoginForm } from "./components/LoginForm";
+import { SignupSuccessMessage } from "./components/SignupSuccessMessage";
+import { useAuth } from "./hooks/useAuth";
+
+type AuthMode = "login" | "signup";
 
 export const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { signIn, signUp, user, loading: authLoading } = useAuth();
 
-  const handleLogin = () => {
-    navigate("/teams");
+  const [mode, setMode] = useState<AuthMode>("login");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(false);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate("/teams", { replace: true });
+    }
+  }, [authLoading, user, navigate]);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    if (mode === "signup") {
+      if (password !== confirmPassword) {
+        setError(t("login.passwordMismatch"));
+        setLoading(false);
+        return;
+      }
+      if (password.length < 6) {
+        setError(t("login.passwordTooShort"));
+        setLoading(false);
+        return;
+      }
+
+      const { error: signUpError } = await signUp(email, password);
+      if (signUpError) {
+        setError(signUpError.message);
+      } else {
+        setSignupSuccess(true);
+      }
+    } else {
+      const { error: signInError } = await signIn(email, password);
+      if (signInError) {
+        setError(t("login.invalidCredentials"));
+      } else {
+        navigate("/teams");
+      }
+    }
+
+    setLoading(false);
   };
 
+  const switchMode = () => {
+    setMode(mode === "login" ? "signup" : "login");
+    setError(null);
+    setSignupSuccess(false);
+    setConfirmPassword("");
+  };
+
+  const handleBackToLogin = () => {
+    setMode("login");
+    setSignupSuccess(false);
+  };
+
+  if (signupSuccess) {
+    return <SignupSuccessMessage onBackToLogin={handleBackToLogin} />;
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="w-full max-w-[400px] rounded-xl bg-white p-10 shadow-lg">
-        <div className="mb-8 flex justify-center">
-          <img
-            src={logo}
-            className="h-[120px] w-[120px] object-contain"
-            alt={t("common.logoAlt")}
-          />
-        </div>
-
-        <div className="flex flex-col gap-4">
-          <div className="mb-2 flex items-center">
-            <span className="flex-1 h-px bg-gray-200" />
-            <span className="px-4 text-base font-medium text-gray-800">
-              {t("login.title")}
-            </span>
-            <span className="flex-1 h-px bg-gray-200" />
-          </div>
-
-          <div className="w-full">
-            <input
-              type="email"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3.5 text-base transition-colors placeholder:text-gray-400 focus:border-red-600 focus:outline-none"
-              placeholder={t("login.email")}
-            />
-          </div>
-
-          <div className="w-full">
-            <input
-              type="password"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3.5 text-base transition-colors placeholder:text-gray-400 focus:border-red-600 focus:outline-none"
-              placeholder={t("login.password")}
-            />
-          </div>
-
-          <div className="w-full">
-            <button
-              className="w-full rounded-lg bg-red-600 py-3.5 text-base font-semibold text-white transition-colors hover:bg-red-700"
-              onClick={handleLogin}
-            >
-              {t("login.submit")}
-            </button>
-          </div>
-
-          <div className="text-center">
-            <span className="cursor-pointer text-sm text-gray-500 transition-colors hover:text-gray-800">
-              {t("login.resetPassword")}
-            </span>
-          </div>
-
-          <div className="mt-2 text-center">
-            <span className="text-sm text-gray-500">
-              {t("login.noAccount")}{" "}
-            </span>
-            <span className="cursor-pointer text-sm font-semibold text-red-600 transition-colors hover:text-red-700">
-              {t("login.register")}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <AuthPageLayout>
+      <LoginForm
+        mode={mode}
+        email={email}
+        password={password}
+        confirmPassword={confirmPassword}
+        error={error}
+        loading={loading || authLoading}
+        onEmailChange={setEmail}
+        onPasswordChange={setPassword}
+        onConfirmPasswordChange={setConfirmPassword}
+        onSubmit={handleSubmit}
+        onSwitchMode={switchMode}
+      />
+    </AuthPageLayout>
   );
 };

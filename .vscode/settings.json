@@ -8,5 +8,6 @@
     "source.sortMembers": "explicit"
   },
   "typescript.tsdk": "node_modules/typescript/lib",
-  "files.insertFinalNewline": true
+  "files.insertFinalNewline": true,
+  "deno.enable": true
 }

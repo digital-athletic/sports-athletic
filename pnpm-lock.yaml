@@ -135,6 +135,9 @@ importers:
 
   trainer-dashboard:
     dependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.86.0
+        version: 2.86.0
       i18next:
         specifier: 25.6.2
         version: 25.6.2(typescript@5.9.3)

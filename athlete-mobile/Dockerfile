@@ -8,7 +8,7 @@ ENV REACT_NATIVE_PACKAGER_HOSTNAME=0.0.0.0
 
 # Install pnpm
 RUN corepack enable && \
-    corepack prepare pnpm@10.22.0 --activate
+    corepack prepare pnpm@10.25.0 --activate
 
 # Expose ports
 EXPOSE 8081 19000 19001 19002

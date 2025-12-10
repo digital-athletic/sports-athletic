@@ -1,23 +1,32 @@
 services:
-  app:
-    build: .
-    working_dir: /workspace
+  athlete-mobile:
+    build: ./athlete-mobile
+    working_dir: /workspace/athlete-mobile
     volumes:
-      - .:/workspace
-      - node_modules:/workspace/node_modules
+      - ./:/workspace
+      - app_node_modules:/workspace/athlete-mobile/node_modules
     network_mode: host
-    # ports:
-    #   - "8081:8081"
-    #   - "19000:19000"
-    #   - "19001:19001"
-    #   - "19002:19002"
     environment:
       - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
       - REACT_NATIVE_PACKAGER_HOSTNAME=0.0.0.0
-      - EXPO_PUBLIC_SUPABASE_URL=${EXPO_PUBLIC_SUPABASE_URL}
-      - EXPO_PUBLIC_SUPABASE_ANON_KEY=${EXPO_PUBLIC_SUPABASE_ANON_KEY}
+      - EXPO_PUBLIC_SUPABASE_URL=${SUPABASE_URL}
+      - EXPO_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+    stdin_open: true
+    tty: true
+
+  trainer-web:
+    build: ./trainer-web
+    working_dir: /workspace/trainer-web
+    volumes:
+      - ./:/workspace
+      - web_trainer_node_modules:/workspace/trainer-web/node_modules
+    network_mode: host
+    environment:
+      - VITE_SUPABASE_URL=${SUPABASE_URL}
+      - VITE_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
     stdin_open: true
     tty: true
 
 volumes:
-  node_modules:
+  app_node_modules:
+  web_trainer_node_modules:

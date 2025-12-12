@@ -68,7 +68,7 @@ export default (): ExpoConfig => ({
     [
       "expo-audio",
       {
-        recordAudioAndroid: false,
+        microphonePermission: false,
       },
     ],
     "expo-router",

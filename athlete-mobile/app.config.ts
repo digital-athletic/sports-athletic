@@ -65,6 +65,12 @@ export default (): ExpoConfig => ({
     policy: "appVersion",
   },
   plugins: [
+    [
+      "expo-audio",
+      {
+        recordAudioAndroid: false,
+      },
+    ],
     "expo-router",
     "expo-localization",
     "expo-dev-client",

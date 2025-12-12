@@ -139,5 +139,15 @@
       "noSubscription": "Kein gültiges Abonnement",
       "activate": "Abonnement freischalten"
     }
+  },
+  "settings": {
+    "exampleData": {
+      "title": "Entwicklungswerkzeuge",
+      "description": "Beispiel-Trainingsdaten zu Testzwecken generieren.",
+      "button": "Beispiel-Trainings erstellen",
+      "generating": "Generiere...",
+      "success": "3 Beispiel-Trainingseinträge erfolgreich erstellt!",
+      "notLoggedIn": "Sie müssen angemeldet sein, um Beispieldaten zu generieren"
+    }
   }
 }

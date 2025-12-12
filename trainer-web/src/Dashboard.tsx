@@ -5,6 +5,7 @@ import { DashboardSidebar } from "./components/DashboardSidebar";
 import { ManagementTab } from "./components/ManagementTab";
 import { PageLayout } from "./components/PageLayout";
 import { PlayersTab } from "./components/PlayersTab";
+import { SettingsTab } from "./components/SettingsTab";
 import { TabBar } from "./components/TabBar";
 import { useTeam } from "./hooks/useTeam";
 
@@ -124,11 +125,7 @@ export const Dashboard = () => {
               </div>
             )}
 
-            {activeTab === "settings" && (
-              <div className="text-sm text-gray-400">
-                {t("dashboard.tabs.settings")} content
-              </div>
-            )}
+            {activeTab === "settings" && <SettingsTab />}
           </div>
         </div>
 

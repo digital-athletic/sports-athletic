@@ -139,5 +139,15 @@
       "noSubscription": "No valid subscription",
       "activate": "Activate subscription"
     }
+  },
+  "settings": {
+    "exampleData": {
+      "title": "Development Tools",
+      "description": "Generate example completed workout data for testing purposes.",
+      "button": "Generate Example Workouts",
+      "generating": "Generating...",
+      "success": "Successfully created 3 example workout entries!",
+      "notLoggedIn": "You must be logged in to generate example data"
+    }
   }
 }

@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { DashboardSidebar } from "./components/DashboardSidebar";
+import { EvaluationsTab } from "./components/EvaluationsTab";
 import { ManagementTab } from "./components/ManagementTab";
 import { PageLayout } from "./components/PageLayout";
-import { PlayersTab } from "./components/PlayersTab";
 import { SettingsTab } from "./components/SettingsTab";
 import { TabBar } from "./components/TabBar";
 import { useTeam } from "./hooks/useTeam";
@@ -14,7 +13,7 @@ export const Dashboard = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const teamId = searchParams.get("team");
-  const [activeTab, setActiveTab] = useState("team");
+  const [activeTab, setActiveTab] = useState("management");
   const {
     team,
     members,
@@ -40,7 +39,6 @@ export const Dashboard = () => {
   const [isRemoving, setIsRemoving] = useState(false);
 
   const tabs = [
-    { id: "team", label: t("dashboard.tabs.team") },
     { id: "management", label: t("dashboard.tabs.management") },
     { id: "evaluations", label: t("dashboard.tabs.evaluations") },
     { id: "settings", label: t("dashboard.tabs.settings") },
@@ -85,55 +83,41 @@ export const Dashboard = () => {
 
   return (
     <PageLayout>
-      <div className="flex gap-6">
-        <div className="flex-1 overflow-hidden rounded-lg bg-white shadow-sm">
-          <TabBar
-            tabs={tabs}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-          />
-
-          <div className="p-6">
-            {activeTab === "team" && <PlayersTab />}
-
-            {activeTab === "management" && (
-              <ManagementTab
-                team={team}
-                members={members}
-                inviteCodes={inviteCodes}
-                loading={loading}
-                isOwner={isOwner}
-                currentUserId={currentUserId}
-                actionError={actionError}
-                showLeaveConfirm={showLeaveConfirm}
-                isLeaving={isLeaving}
-                memberToRemove={memberToRemove}
-                isRemoving={isRemoving}
-                onRegenerateCode={handleRegenerateCode}
-                onLeaveClick={() => setShowLeaveConfirm(true)}
-                onLeaveConfirm={handleLeaveTeam}
-                onLeaveCancel={() => setShowLeaveConfirm(false)}
-                onRemoveMember={setMemberToRemove}
-                onRemoveConfirm={handleRemoveMember}
-                onRemoveCancel={() => setMemberToRemove(null)}
-              />
-            )}
-
-            {activeTab === "evaluations" && (
-              <div className="text-sm text-gray-400">
-                {t("dashboard.tabs.evaluations")} content
-              </div>
-            )}
-
-            {activeTab === "settings" && <SettingsTab />}
-          </div>
-        </div>
-
-        <DashboardSidebar
-          team={team}
-          inviteCodes={inviteCodes}
-          isOwner={isOwner}
+      <div className="rounded-lg bg-white shadow-sm">
+        <TabBar
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
         />
+
+        <div className="p-4 sm:p-6">
+          {activeTab === "management" && (
+            <ManagementTab
+              team={team}
+              members={members}
+              inviteCodes={inviteCodes}
+              loading={loading}
+              isOwner={isOwner}
+              currentUserId={currentUserId}
+              actionError={actionError}
+              showLeaveConfirm={showLeaveConfirm}
+              isLeaving={isLeaving}
+              memberToRemove={memberToRemove}
+              isRemoving={isRemoving}
+              onRegenerateCode={handleRegenerateCode}
+              onLeaveClick={() => setShowLeaveConfirm(true)}
+              onLeaveConfirm={handleLeaveTeam}
+              onLeaveCancel={() => setShowLeaveConfirm(false)}
+              onRemoveMember={setMemberToRemove}
+              onRemoveConfirm={handleRemoveMember}
+              onRemoveCancel={() => setMemberToRemove(null)}
+            />
+          )}
+
+          {activeTab === "evaluations" && <EvaluationsTab />}
+
+          {activeTab === "settings" && <SettingsTab />}
+        </div>
       </div>
     </PageLayout>
   );

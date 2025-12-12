@@ -140,6 +140,40 @@
       "activate": "Abonnement freischalten"
     }
   },
+  "evaluations": {
+    "noAthleteSelected": "Bitte wählen Sie einen Athleten aus der Liste aus.",
+    "timePeriods": {
+      "lastWeek": "Letzte Woche",
+      "lastMonth": "Letzter Monat",
+      "lastYear": "Letztes Jahr",
+      "total": "Gesamt"
+    },
+    "athletes": {
+      "firstName": "Vorname",
+      "lastName": "Nachname"
+    },
+    "sidebar": {
+      "collapse": "Athletenliste einklappen",
+      "expand": "Athletenliste ausklappen"
+    },
+    "summary": {
+      "duration": "Dauer",
+      "trainingCount": "Anzahl der Trainings",
+      "points": "Punkte",
+      "movedWeight": "Bewegtes Gewicht"
+    },
+    "workouts": {
+      "title": "Absolvierte Trainings",
+      "timestamp": "Zeitpunkt des Workouts",
+      "duration": "Dauer des Workouts",
+      "exerciseCount": "Anzahl der Übungen",
+      "points": "Punkte",
+      "movedWeight": "Bewegtes Gewicht",
+      "trainingPhase": "Trainingsphase",
+      "focus": "Fokus",
+      "noData": "Keine Trainings in diesem Zeitraum"
+    }
+  },
   "settings": {
     "exampleData": {
       "title": "Entwicklungswerkzeuge",

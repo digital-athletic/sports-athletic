@@ -140,6 +140,40 @@
       "activate": "Activate subscription"
     }
   },
+  "evaluations": {
+    "noAthleteSelected": "Please select an athlete from the list.",
+    "timePeriods": {
+      "lastWeek": "Last Week",
+      "lastMonth": "Last Month",
+      "lastYear": "Last Year",
+      "total": "Total"
+    },
+    "athletes": {
+      "firstName": "First Name",
+      "lastName": "Last Name"
+    },
+    "sidebar": {
+      "collapse": "Collapse athletes list",
+      "expand": "Expand athletes list"
+    },
+    "summary": {
+      "duration": "Duration",
+      "trainingCount": "Number of Trainings",
+      "points": "Points",
+      "movedWeight": "Moved Weight"
+    },
+    "workouts": {
+      "title": "Completed Trainings",
+      "timestamp": "Workout Time",
+      "duration": "Workout Duration",
+      "exerciseCount": "Number of Exercises",
+      "points": "Points",
+      "movedWeight": "Moved Weight",
+      "trainingPhase": "Training Phase",
+      "focus": "Focus",
+      "noData": "No trainings in this time period"
+    }
+  },
   "settings": {
     "exampleData": {
       "title": "Development Tools",

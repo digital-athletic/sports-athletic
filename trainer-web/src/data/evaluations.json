@@ -1,0 +1,343 @@
+{
+  "athletes": [
+    { "id": "1", "firstName": "Jonas", "lastName": "Bergmann" },
+    { "id": "2", "firstName": "Elena", "lastName": "Hoffmann" },
+    { "id": "3", "firstName": "Tobias", "lastName": "Richter" },
+    { "id": "4", "firstName": "Mia", "lastName": "Bauer" },
+    { "id": "5", "firstName": "Felix", "lastName": "Krause" }
+  ],
+  "athleteWorkouts": {
+    "1": {
+      "workouts": [
+        {
+          "id": "w1",
+          "daysAgo": 1,
+          "hours": 11,
+          "minutes": 14,
+          "duration": "45 min",
+          "exerciseCount": 18,
+          "points": 120,
+          "movedWeight": "850 kg",
+          "trainingPhase": "Muskelaufbau",
+          "focus": "Oberkörper"
+        },
+        {
+          "id": "w2",
+          "daysAgo": 2,
+          "hours": 9,
+          "minutes": 30,
+          "duration": "21 min",
+          "exerciseCount": 9,
+          "points": 55,
+          "movedWeight": "0 kg",
+          "trainingPhase": "Präventionstraining",
+          "focus": "Schulter"
+        },
+        {
+          "id": "w3",
+          "daysAgo": 4,
+          "hours": 14,
+          "minutes": 0,
+          "duration": "67 min",
+          "exerciseCount": 32,
+          "points": 189,
+          "movedWeight": "1 t 440 kg",
+          "trainingPhase": "Muskelaufbau",
+          "focus": "Kraft/Prävention"
+        },
+        {
+          "id": "w4",
+          "daysAgo": 10,
+          "hours": 10,
+          "minutes": 40,
+          "duration": "11 min",
+          "exerciseCount": 10,
+          "points": 41,
+          "movedWeight": "0 kg",
+          "trainingPhase": "Fokustraining",
+          "focus": "Muskeln triggern"
+        },
+        {
+          "id": "w5",
+          "daysAgo": 15,
+          "hours": 8,
+          "minutes": 38,
+          "duration": "19 min",
+          "exerciseCount": 9,
+          "points": 47,
+          "movedWeight": "0 kg",
+          "trainingPhase": "Präventionstraining",
+          "focus": "Knie und Hüfte"
+        },
+        {
+          "id": "w6",
+          "daysAgo": 22,
+          "hours": 9,
+          "minutes": 52,
+          "duration": "27 min",
+          "exerciseCount": 12,
+          "points": 99,
+          "movedWeight": "0 kg",
+          "trainingPhase": "Maximalkraft",
+          "focus": "Ausdauer"
+        },
+        {
+          "id": "w7",
+          "daysAgo": 60,
+          "hours": 9,
+          "minutes": 2,
+          "duration": "22 min",
+          "exerciseCount": 12,
+          "points": 46,
+          "movedWeight": "400.5 kg",
+          "trainingPhase": "Schnellkraft",
+          "focus": "Kraft/Prävention"
+        },
+        {
+          "id": "w8",
+          "daysAgo": 120,
+          "hours": 10,
+          "minutes": 4,
+          "duration": "10 min",
+          "exerciseCount": 9,
+          "points": 37,
+          "movedWeight": "0 kg",
+          "trainingPhase": "Fokustraining",
+          "focus": "Mobilität"
+        },
+        {
+          "id": "w9",
+          "daysAgo": 200,
+          "hours": 8,
+          "minutes": 18,
+          "duration": "11 min",
+          "exerciseCount": 10,
+          "points": 41,
+          "movedWeight": "0 kg",
+          "trainingPhase": "Fokustraining",
+          "focus": "Cool-Down"
+        }
+      ]
+    },
+    "2": {
+      "workouts": [
+        {
+          "id": "w1",
+          "daysAgo": 3,
+          "hours": 15,
+          "minutes": 30,
+          "duration": "45 min",
+          "exerciseCount": 18,
+          "points": 120,
+          "movedWeight": "850 kg",
+          "trainingPhase": "Muskelaufbau",
+          "focus": "Oberkörper"
+        },
+        {
+          "id": "w2",
+          "daysAgo": 5,
+          "hours": 10,
+          "minutes": 0,
+          "duration": "30 min",
+          "exerciseCount": 12,
+          "points": 85,
+          "movedWeight": "0 kg",
+          "trainingPhase": "Ausdauer",
+          "focus": "Cardio"
+        },
+        {
+          "id": "w3",
+          "daysAgo": 18,
+          "hours": 14,
+          "minutes": 0,
+          "duration": "55 min",
+          "exerciseCount": 20,
+          "points": 140,
+          "movedWeight": "1 t 100 kg",
+          "trainingPhase": "Maximalkraft",
+          "focus": "Beine"
+        },
+        {
+          "id": "w4",
+          "daysAgo": 90,
+          "hours": 11,
+          "minutes": 0,
+          "duration": "40 min",
+          "exerciseCount": 15,
+          "points": 95,
+          "movedWeight": "720 kg",
+          "trainingPhase": "Schnellkraft",
+          "focus": "Explosivität"
+        }
+      ]
+    },
+    "3": {
+      "workouts": [
+        {
+          "id": "w1",
+          "daysAgo": 0,
+          "hours": 9,
+          "minutes": 0,
+          "duration": "55 min",
+          "exerciseCount": 22,
+          "points": 145,
+          "movedWeight": "1 t 200 kg",
+          "trainingPhase": "Maximalkraft",
+          "focus": "Beine"
+        },
+        {
+          "id": "w2",
+          "daysAgo": 6,
+          "hours": 16,
+          "minutes": 30,
+          "duration": "35 min",
+          "exerciseCount": 14,
+          "points": 88,
+          "movedWeight": "600 kg",
+          "trainingPhase": "Muskelaufbau",
+          "focus": "Rücken"
+        },
+        {
+          "id": "w3",
+          "daysAgo": 25,
+          "hours": 8,
+          "minutes": 0,
+          "duration": "60 min",
+          "exerciseCount": 25,
+          "points": 165,
+          "movedWeight": "1 t 500 kg",
+          "trainingPhase": "Muskelaufbau",
+          "focus": "Ganzkörper"
+        },
+        {
+          "id": "w4",
+          "daysAgo": 400,
+          "hours": 10,
+          "minutes": 0,
+          "duration": "45 min",
+          "exerciseCount": 18,
+          "points": 110,
+          "movedWeight": "900 kg",
+          "trainingPhase": "Ausdauer",
+          "focus": "Cardio"
+        }
+      ]
+    },
+    "4": {
+      "workouts": [
+        {
+          "id": "w1",
+          "daysAgo": 12,
+          "hours": 16,
+          "minutes": 0,
+          "duration": "35 min",
+          "exerciseCount": 14,
+          "points": 95,
+          "movedWeight": "650 kg",
+          "trainingPhase": "Schnellkraft",
+          "focus": "Explosivität"
+        },
+        {
+          "id": "w2",
+          "daysAgo": 20,
+          "hours": 9,
+          "minutes": 0,
+          "duration": "42 min",
+          "exerciseCount": 16,
+          "points": 105,
+          "movedWeight": "780 kg",
+          "trainingPhase": "Muskelaufbau",
+          "focus": "Arme"
+        },
+        {
+          "id": "w3",
+          "daysAgo": 180,
+          "hours": 14,
+          "minutes": 30,
+          "duration": "50 min",
+          "exerciseCount": 20,
+          "points": 130,
+          "movedWeight": "950 kg",
+          "trainingPhase": "Maximalkraft",
+          "focus": "Brust"
+        }
+      ]
+    },
+    "5": {
+      "workouts": [
+        {
+          "id": "w1",
+          "daysAgo": 2,
+          "hours": 14,
+          "minutes": 0,
+          "duration": "60 min",
+          "exerciseCount": 25,
+          "points": 180,
+          "movedWeight": "2 t 100 kg",
+          "trainingPhase": "Muskelaufbau",
+          "focus": "Ganzkörper"
+        },
+        {
+          "id": "w2",
+          "daysAgo": 4,
+          "hours": 7,
+          "minutes": 30,
+          "duration": "25 min",
+          "exerciseCount": 10,
+          "points": 60,
+          "movedWeight": "0 kg",
+          "trainingPhase": "Fokustraining",
+          "focus": "Dehnung"
+        },
+        {
+          "id": "w3",
+          "daysAgo": 14,
+          "hours": 17,
+          "minutes": 0,
+          "duration": "70 min",
+          "exerciseCount": 30,
+          "points": 200,
+          "movedWeight": "2 t 500 kg",
+          "trainingPhase": "Maximalkraft",
+          "focus": "Unterkörper"
+        },
+        {
+          "id": "w4",
+          "daysAgo": 28,
+          "hours": 10,
+          "minutes": 0,
+          "duration": "40 min",
+          "exerciseCount": 16,
+          "points": 110,
+          "movedWeight": "800 kg",
+          "trainingPhase": "Ausdauer",
+          "focus": "Cardio"
+        },
+        {
+          "id": "w5",
+          "daysAgo": 100,
+          "hours": 11,
+          "minutes": 30,
+          "duration": "55 min",
+          "exerciseCount": 22,
+          "points": 150,
+          "movedWeight": "1 t 300 kg",
+          "trainingPhase": "Schnellkraft",
+          "focus": "Sprungkraft"
+        },
+        {
+          "id": "w6",
+          "daysAgo": 250,
+          "hours": 9,
+          "minutes": 0,
+          "duration": "48 min",
+          "exerciseCount": 19,
+          "points": 125,
+          "movedWeight": "1 t 050 kg",
+          "trainingPhase": "Muskelaufbau",
+          "focus": "Schultern"
+        }
+      ]
+    }
+  }
+}

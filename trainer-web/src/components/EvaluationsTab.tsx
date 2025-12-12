@@ -1,24 +1,35 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { TabBar } from "./TabBar";
-import { AthleteSelector, SummaryCards, WorkoutsTable } from "./evaluations";
+import { useTeamWorkouts } from "../hooks/useTeamWorkouts";
+import type { TeamMember } from "../types/team";
 import type { TimePeriod } from "../types/evaluations";
 import {
-  getAthletes,
-  getAthleteWorkouts,
   filterWorkoutsByPeriod,
   calculateSummaryStats,
 } from "../utils/evaluations";
+import { TabBar } from "./TabBar";
+import { AthleteSelector, SummaryCards, WorkoutsTable } from "./evaluations";
+import { LoadingSpinner } from "./LoadingSpinner";
 
-const athletes = getAthletes();
-const athleteWorkouts = getAthleteWorkouts();
+interface EvaluationsTabProps {
+  members: TeamMember[];
+  ownerId: string | null;
+}
 
-export function EvaluationsTab() {
+export function EvaluationsTab({ members, ownerId }: EvaluationsTabProps) {
   const { t } = useTranslation();
+  const { athletes, athleteWorkouts, loading, error } = useTeamWorkouts(
+    members,
+    ownerId
+  );
+
   const [selectedAthleteId, setSelectedAthleteId] = useState<string | null>(
-    athletes[0]?.id || null
+    null
   );
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("lastWeek");
+
+  // Auto-select first athlete when data loads
+  const effectiveSelectedId = selectedAthleteId ?? athletes[0]?.id ?? null;
 
   const timePeriodTabs = [
     { id: "lastWeek", label: t("evaluations.timePeriods.lastWeek") },
@@ -27,9 +38,9 @@ export function EvaluationsTab() {
     { id: "total", label: t("evaluations.timePeriods.total") },
   ];
 
-  const selectedAthlete = athletes.find((a) => a.id === selectedAthleteId);
-  const athleteData = selectedAthleteId
-    ? athleteWorkouts[selectedAthleteId]
+  const selectedAthlete = athletes.find((a) => a.id === effectiveSelectedId);
+  const athleteData = effectiveSelectedId
+    ? athleteWorkouts[effectiveSelectedId]
     : null;
 
   const filteredWorkouts = useMemo(() => {
@@ -42,11 +53,31 @@ export function EvaluationsTab() {
     [filteredWorkouts]
   );
 
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return (
+      <div className="py-8 text-center text-sm text-red-500">
+        {t("common.error")}: {error}
+      </div>
+    );
+  }
+
+  if (athletes.length === 0) {
+    return (
+      <div className="py-8 text-center text-sm text-gray-500">
+        {t("evaluations.noAthletes")}
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <AthleteSelector
         athletes={athletes}
-        selectedAthleteId={selectedAthleteId}
+        selectedAthleteId={effectiveSelectedId}
         onAthleteSelect={setSelectedAthleteId}
       />
 

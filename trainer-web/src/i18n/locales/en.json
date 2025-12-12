@@ -141,6 +141,7 @@
     }
   },
   "evaluations": {
+    "noAthletes": "No athletes in this team yet. Invite athletes using the invite code.",
     "noAthleteSelected": "Please select an athlete from the list.",
     "timePeriods": {
       "lastWeek": "Last Week",

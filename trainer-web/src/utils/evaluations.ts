@@ -1,69 +1,8 @@
-import type { Athlete, AthleteSummary, TimePeriod, WorkoutData } from "../types/evaluations";
-import evaluationsData from "../data/evaluations.json";
-
-interface RawWorkout {
-  id: string;
-  daysAgo: number;
-  hours: number;
-  minutes: number;
-  duration: string;
-  exerciseCount: number;
-  points: number;
-  movedWeight: string;
-  trainingPhase: string;
-  focus: string;
-}
-
-interface RawAthleteSummary {
-  workouts: RawWorkout[];
-}
-
-function createDate(daysAgo: number, hours: number = 10, minutes: number = 0): Date {
-  const date = new Date();
-  date.setDate(date.getDate() - daysAgo);
-  date.setHours(hours, minutes, 0, 0);
-  return date;
-}
-
-function formatTimestamp(date: Date): string {
-  const day = date.getDate().toString().padStart(2, "0");
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const year = date.getFullYear();
-  const hours = date.getHours().toString().padStart(2, "0");
-  const mins = date.getMinutes().toString().padStart(2, "0");
-  return `${day}.${month}.${year} ${hours}:${mins}`;
-}
-
-function transformWorkout(raw: RawWorkout): WorkoutData {
-  const date = createDate(raw.daysAgo, raw.hours, raw.minutes);
-  return {
-    id: raw.id,
-    date: date.toISOString(),
-    timestamp: formatTimestamp(date),
-    duration: raw.duration,
-    exerciseCount: raw.exerciseCount,
-    points: raw.points,
-    movedWeight: raw.movedWeight,
-    trainingPhase: raw.trainingPhase,
-    focus: raw.focus,
-  };
-}
-
-export function getAthletes(): Athlete[] {
-  return evaluationsData.athletes;
-}
-
-export function getAthleteWorkouts(): Record<string, AthleteSummary> {
-  const result: Record<string, AthleteSummary> = {};
-
-  for (const [athleteId, rawSummary] of Object.entries(evaluationsData.athleteWorkouts)) {
-    result[athleteId] = {
-      workouts: (rawSummary as RawAthleteSummary).workouts.map(transformWorkout),
-    };
-  }
-
-  return result;
-}
+import type {
+  TimePeriod,
+  UserCompletedWorkout,
+  WorkoutData,
+} from "../types/evaluations";
 
 export function getDateThreshold(period: TimePeriod): Date {
   const now = new Date();
@@ -80,8 +19,19 @@ export function getDateThreshold(period: TimePeriod): Date {
 }
 
 export function parseDuration(duration: string): number {
-  const match = duration.match(/(\d+)\s*min/);
-  return match ? parseInt(match[1], 10) : 0;
+  // Handle "X h Y min" format
+  const hoursMatch = duration.match(/(\d+)\s*h/);
+  const minutesMatch = duration.match(/(\d+)\s*min/);
+
+  let totalMinutes = 0;
+  if (hoursMatch) {
+    totalMinutes += parseInt(hoursMatch[1], 10) * 60;
+  }
+  if (minutesMatch) {
+    totalMinutes += parseInt(minutesMatch[1], 10);
+  }
+
+  return totalMinutes;
 }
 
 export function formatDuration(minutes: number): string {
@@ -91,6 +41,68 @@ export function formatDuration(minutes: number): string {
     return mins > 0 ? `${hours} h ${mins} min` : `${hours} h`;
   }
   return `${minutes} min`;
+}
+
+export function formatDurationFromSeconds(seconds: number): string {
+  const minutes = Math.round(seconds / 60);
+  return formatDuration(minutes);
+}
+
+export function formatWeight(kg: number): string {
+  if (kg >= 1000) {
+    const tonnes = Math.floor(kg / 1000);
+    const remaining = Math.round(kg % 1000);
+    if (remaining > 0) {
+      return `${tonnes} t ${remaining} kg`;
+    }
+    return `${tonnes} t`;
+  }
+  return `${Math.round(kg)} kg`;
+}
+
+export function formatTimestamp(date: Date): string {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  const hours = date.getHours().toString().padStart(2, "0");
+  const mins = date.getMinutes().toString().padStart(2, "0");
+  return `${day}.${month}.${year} ${hours}:${mins}`;
+}
+
+export function getTrainingPhaseLabel(trainingType: string | null): string {
+  const typeMap: Record<string, string> = {
+    PLAN: "Trainingsplan",
+    QUICK: "Schnelltraining",
+    PREV: "Prävention",
+  };
+  return trainingType ? typeMap[trainingType] || trainingType : "-";
+}
+
+export function getFocusLabel(trainingFocus: string | null): string {
+  const focusMap: Record<string, string> = {
+    STABILITY: "Stabilität",
+    GKS: "Ganzkörper",
+    PREVSHOULDER: "Schulter",
+    PREVKNEE: "Knie",
+    PREVHIP: "Hüfte",
+    PREVBACK: "Rücken",
+  };
+  return trainingFocus ? focusMap[trainingFocus] || trainingFocus : "-";
+}
+
+export function transformWorkout(workout: UserCompletedWorkout): WorkoutData {
+  const date = new Date(workout.workout_date);
+  return {
+    id: workout.id,
+    date: date.toISOString(),
+    timestamp: formatTimestamp(date),
+    duration: formatDurationFromSeconds(workout.duration),
+    exerciseCount: workout.exercise_count,
+    points: workout.points,
+    movedWeight: formatWeight(workout.moved_weight),
+    trainingPhase: getTrainingPhaseLabel(workout.training_type),
+    focus: getFocusLabel(workout.training_focus),
+  };
 }
 
 export function filterWorkoutsByPeriod(

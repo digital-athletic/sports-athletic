@@ -141,6 +141,7 @@
     }
   },
   "evaluations": {
+    "noAthletes": "Noch keine Athleten in diesem Team. Laden Sie Athleten mit dem Einladungscode ein.",
     "noAthleteSelected": "Bitte wählen Sie einen Athleten aus der Liste aus.",
     "timePeriods": {
       "lastWeek": "Letzte Woche",

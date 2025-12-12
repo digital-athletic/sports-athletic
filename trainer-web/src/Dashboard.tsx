@@ -114,7 +114,9 @@ export const Dashboard = () => {
             />
           )}
 
-          {activeTab === "evaluations" && <EvaluationsTab />}
+          {activeTab === "evaluations" && (
+            <EvaluationsTab members={members} ownerId={team?.owner_id ?? null} />
+          )}
 
           {activeTab === "settings" && <SettingsTab />}
         </div>

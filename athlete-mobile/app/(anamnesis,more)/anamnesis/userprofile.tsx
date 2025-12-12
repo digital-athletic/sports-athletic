@@ -6,10 +6,10 @@ import { Alert, BackHandler } from "react-native";
 import { ProgressBar } from "@/common/ProgressBar";
 import { SkipHeader } from "@/common/SkipHeader";
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
+import { useShowSeasonPhaseAfterAnamnesis } from "@/features/anamnesis/useShowSeasonPhaseAfterAnamnesis";
 import { DateInputField } from "@/form/DateInputField";
 import { SelectionInputField } from "@/form/SelectionInputField";
 import { TextInputField } from "@/form/TextInputField";
-import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { Button } from "@/theme/Button";
@@ -34,19 +34,13 @@ export default function UserProfileScreen() {
     setBirthday,
     anamnesisCompleted,
   } = useUserProfileStore();
-  const { getActiveTrainingDays, resetToDefaults } = useTrainingScheduleStore();
-  const { questions, loadQuestions } = useAnamnesisStore();
+  const { resetToDefaults } = useTrainingScheduleStore();
+
+  const showSeasonPhaseAfterAnamnesis = useShowSeasonPhaseAfterAnamnesis();
 
   const username = personalData.username;
   const gender = personalData.gender;
   const birthday = personalData.birthday;
-
-  const hasActiveTrainingDay = getActiveTrainingDays().length > 0;
-
-  // Load anamnesis questions on mount
-  useEffect(() => {
-    loadQuestions();
-  }, [loadQuestions]);
 
   const showClosePopup = useCallback(() => {
     const message = anamnesisCompleted
@@ -110,9 +104,7 @@ export default function UserProfileScreen() {
 
   // Calculate max steps for progress bar
   // In legacy: 3 + anamnesisQuestions.length or 1 + anamnesisQuestions.length if hasActiveTrainingDay
-  const totalSteps = hasActiveTrainingDay
-    ? 1 + questions.length
-    : 3 + questions.length;
+  const totalSteps = showSeasonPhaseAfterAnamnesis ? 6 : 4;
   const currentStep = 1;
 
   return (

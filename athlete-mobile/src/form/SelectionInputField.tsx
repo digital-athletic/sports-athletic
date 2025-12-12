@@ -1,6 +1,7 @@
 // app/form/SelectionInputField.tsx
 import { AwesomeIcon, FontAwesomeIconName } from "@/common/AwesomeIcon";
 import { Ionicon, IoniconName } from "@/common/Ionicon";
+import type { LocalizedDisplayName } from "@/common/types/LocalizedDisplayName";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
@@ -8,11 +9,6 @@ import { type FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity } from "react-native";
 import { SelectionModal } from "./SelectionModal";
-
-type LocalizedDisplayName = {
-  [lang: string]: string;
-  default: string;
-};
 
 type Item = {
   value: string;
@@ -44,7 +40,7 @@ export const SelectionInputField: FC<Props> = ({
 
   const mappedItems = items.map((item) => ({
     value: item.value,
-    displayName: item.displayName[i18n.language] || item.displayName.default,
+    displayName: item.displayName[i18n.language] ?? item.displayName.default,
   }));
 
   const toggleModal = (visible: boolean) => {
@@ -61,7 +57,12 @@ export const SelectionInputField: FC<Props> = ({
     selectedItems.length === 0
       ? t("common.choose")
       : singleSelection
-        ? selectedItems[0]
+        ? (items.find((item) => item.value === selectedItems[0])?.displayName[
+            i18n.language
+          ] ??
+          (items.find((item) => item.value === selectedItems[0])?.displayName
+            .default ||
+            selectedItems[0]))
         : t("common.selected", { count: selectedItems.length });
 
   return (

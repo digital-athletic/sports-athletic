@@ -660,5 +660,42 @@
         "weightAlt": "Weight icon"
       }
     }
+  },
+  "anamnesisQuestions": {
+    "groups": {
+      "heightWeight": "Height & Weight",
+      "positionFitness": "Position & Fitness",
+      "pains": "Pains"
+    },
+    "height": {
+      "title": "Height (cm)",
+      "description": "Your height influences the exercise selection.",
+      "placeholder": "175"
+    },
+    "weight": {
+      "title": "Weight (kg)",
+      "description": "Your weight also influences the exercise selection.",
+      "placeholder": "75"
+    },
+    "position": {
+      "title": "Position",
+      "description": "What position do you play?",
+      "options": {
+        "field": "Fieldplayer",
+        "goal": "Goalkeeper"
+      }
+    },
+    "fitnessLevel": {
+      "title": "Fitness Level",
+      "description": "How often do you do weight training on top of team trainings?\n\nBeginner: Rarely\n\nAdvanced: Since 6 months at least once a week\n\nProfessional: Since 18 months at least twice a week",
+      "options": {
+        "beginner": "Beginner",
+        "advanced": "Advanced",
+        "professional": "Professional"
+      }
+    },
+    "pain": {
+      "title": "Pains"
+    }
   }
 }

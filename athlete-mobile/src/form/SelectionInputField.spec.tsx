@@ -45,7 +45,7 @@ describe("SelectionInputField", () => {
       />,
     );
 
-    expect(getByText("sport1")).toBeTruthy();
+    expect(getByText("Football")).toBeTruthy();
   });
 
   it("renders select button with multi-selection count text (one item)", () => {

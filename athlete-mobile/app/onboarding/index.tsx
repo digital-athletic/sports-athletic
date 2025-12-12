@@ -175,12 +175,12 @@ export default function OnboardingScreen() {
         state.password,
         state.acceptedAnalytics,
       );
+
+      await signInWithEmail(state.email, state.password);
+
       setIsInInitialAnamnesis(true);
-      Alert.alert(
-        t("onboarding.confirmEmailAddressTitle"),
-        t("onboarding.confirmEmailAddressMessage"),
-      );
-      dispatch({ type: "SET_ACTIVE_TYPE", payload: "LOGIN" });
+
+      router.replace("/anamnesis");
     } catch (error: any) {
       if (error.code === "auth/email-already-in-use") {
         // Offer to switch to login flow

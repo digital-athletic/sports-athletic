@@ -50,7 +50,6 @@ export default function TrainingDays() {
   } = useUserWorkoutStore();
 
   const { originPath: storedOriginPath, seasonPhase } = useAnamnesisStore();
-  const { questions: anamnesisQuestions } = useAnamnesisStore();
   const {
     isInInitialAnamnesis,
     setIsInInitialAnamnesis,
@@ -379,8 +378,8 @@ export default function TrainingDays() {
     seasonPhase?.type === SeasonPhase.COMPETITION;
 
   // Calculate progress for progress bar
-  const maxSteps = originPath === "/more" ? 2 : 3 + anamnesisQuestions.length;
-  const progress = originPath === "/more" ? 2 : 3 + anamnesisQuestions.length;
+  const maxSteps = originPath === "/more" ? 2 : 3 + 3;
+  const progress = originPath === "/more" ? 2 : 3 + 3;
 
   const insets = useSafeAreaInsets();
 

@@ -660,5 +660,42 @@
         "weightAlt": "Gewicht-Symbol"
       }
     }
+  },
+  "anamnesisQuestions": {
+    "groups": {
+      "heightWeight": "Größe & Gewicht",
+      "positionFitness": "Position & Fitness",
+      "pains": "Beschwerden"
+    },
+    "height": {
+      "title": "Größe (cm)",
+      "description": "Deine Körpergröße hat Einfluss auf die Übungsauswahl.",
+      "placeholder": "175"
+    },
+    "weight": {
+      "title": "Gewicht (kg)",
+      "description": "Auch dein Gewicht beeinflusst die Übungsauswahl.",
+      "placeholder": "75"
+    },
+    "position": {
+      "title": "Position",
+      "description": "Welche Position spielst du in deiner Sportart?",
+      "options": {
+        "field": "Feldspieler",
+        "goal": "Torwart"
+      }
+    },
+    "fitnessLevel": {
+      "title": "Fitnesslevel",
+      "description": "Wie oft machst du Krafttraining zusätzlich zum Mannschaftstraining?\n\nAnfänger: Selten\n\nFortgeschrittener: Seit über 6 Monaten mindestens 1x pro Woche\n\nProfi: Seit 1,5 Jahren mindestens 2x pro Woche",
+      "options": {
+        "beginner": "Anfänger",
+        "advanced": "Fortgeschrittener",
+        "professional": "Profi"
+      }
+    },
+    "pain": {
+      "title": "Beschwerden"
+    }
   }
 }

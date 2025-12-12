@@ -35,7 +35,6 @@ export default function SeasonPhase() {
     setSeasonPhase,
   } = useAnamnesisStore();
   const { workoutData, trainingPlan } = useUserWorkoutStore();
-  const { questions: anamnesisQuestions } = useAnamnesisStore();
   const { isInInitialAnamnesis, setIsInInitialAnamnesis } =
     useUserProfileStore();
 
@@ -195,8 +194,8 @@ export default function SeasonPhase() {
   ];
 
   // Calculate progress for progress bar
-  const maxSteps = (originPath === "/more" ? 2 : 3) + anamnesisQuestions.length;
-  const progress = (originPath === "/more" ? 1 : 2) + anamnesisQuestions.length;
+  const maxSteps = (originPath === "/more" ? 2 : 3) + 3;
+  const progress = (originPath === "/more" ? 1 : 2) + 3;
 
   const insets = useSafeAreaInsets();
 

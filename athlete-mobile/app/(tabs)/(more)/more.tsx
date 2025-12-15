@@ -10,19 +10,19 @@ import { Ionicon } from "@/common/Ionicon";
 import { ListDivider } from "@/common/ListDivider";
 import { TEST_EMAILS } from "@/constants/TestEmails";
 import { ListItem } from "@/features/more/ListItem";
+import {
+  getTestPeriodDaysLeft,
+  isAllowedForTraining,
+} from "@/features/subscription/subscriptionHelpers";
+import { useSubscriptionStore } from "@/features/subscription/subscriptionStore";
 import { useAuthStore } from "@/store/authStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
-import {
-  getTestPeriodDaysLeft,
-  isAllowedForTraining,
-} from "@/utils/subscriptionHelpers";
 import { useResponsiveProp } from "@shopify/restyle";
 import { Stack, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Platform, TouchableOpacity } from "react-native";
 
@@ -30,7 +30,6 @@ export default function MoreScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
-  const [daysLeft, setDaysLeft] = useState(14);
 
   const iconContainerSize = useResponsiveProp({ phone: 30, tablet: 38 });
   const iconSize = useResponsiveProp({ phone: 16, tablet: 28 });
@@ -41,14 +40,10 @@ export default function MoreScreen() {
   const { logout, isLoading: isLoggingOut } = useLogout();
   const { deleteAccount } = useDeleteAccount();
 
-  // TODO: Get from subscription store when available
-  const isSubscribed = false;
-  const firstRegistration = 0;
+  const subscription = useSubscriptionStore((state) => state.subscription);
 
-  useEffect(() => {
-    const days = getTestPeriodDaysLeft(firstRegistration);
-    setDaysLeft(days);
-  }, [firstRegistration]);
+  const daysLeft = getTestPeriodDaysLeft(subscription.firstRegistration);
+  const allowedForTraining = isAllowedForTraining(subscription);
 
   // Check if user has test access
   const hasTestAccess =
@@ -56,11 +51,6 @@ export default function MoreScreen() {
     TEST_EMAILS.some((email) =>
       auth.userId.toLowerCase().includes(email.toLowerCase()),
     );
-
-  const allowedForTraining = isAllowedForTraining(
-    isSubscribed,
-    firstRegistration,
-  );
 
   return (
     <>
@@ -74,31 +64,30 @@ export default function MoreScreen() {
         backgroundColor="lightGrey2"
         contentContainerStyle={{ marginTop: 10 }}
       >
-        {false && // TODO: Currently subscription is disabled
-          !isSubscribed && (
-            <Box backgroundColor="white" marginBottom="s" padding="l">
-              <Button
-                variant="primary"
-                onPress={() =>
-                  router.navigate({
-                    pathname: "/(tabs)/(more)/subscribe",
-                    params: { backPath: "More" },
-                  })
-                }
-              >
-                <Text variant="button" color="white">
-                  {t("more.showSubscriptionOptions")}
-                </Text>
-              </Button>
-              {Platform.OS !== "ios" && (
-                <Text variant="body" marginTop="m" textAlign="center">
-                  {daysLeft > 0
-                    ? t("more.stillXDaysForFree", { count: daysLeft })
-                    : t("more.testPeriodExpired")}
-                </Text>
-              )}
-            </Box>
-          )}
+        {!subscription.isSubscribed && (
+          <Box backgroundColor="white" marginBottom="s" padding="l">
+            <Button
+              variant="primary"
+              onPress={() =>
+                router.navigate({
+                  pathname: "/(tabs)/(more)/subscribe",
+                  params: { backPath: "More" },
+                })
+              }
+            >
+              <Text variant="button" color="white">
+                {t("more.showSubscriptionOptions")}
+              </Text>
+            </Button>
+            {Platform.OS !== "ios" && (
+              <Text variant="body" marginTop="m" textAlign="center">
+                {daysLeft > 0
+                  ? t("more.stillXDaysForFree", { count: daysLeft })
+                  : t("more.testPeriodExpired")}
+              </Text>
+            )}
+          </Box>
+        )}
 
         {hasTestAccess && (
           <Box backgroundColor="white" marginBottom="s" paddingVertical="s">
@@ -107,12 +96,14 @@ export default function MoreScreen() {
               navPath="/test"
               iconName="help-circle"
               iconBackground="primary"
+              isSubscribed={allowedForTraining}
             />
             <ListItem
               title={t("more.trainingPlans")}
               navPath="/(tabs)/(more)/exercises"
               awesomeIconName="id-card"
               iconBackground="primary"
+              isSubscribed={allowedForTraining}
             />
             <ListItem
               title={t("more.exercises")}
@@ -120,6 +111,7 @@ export default function MoreScreen() {
               awesomeIconName="list-ul"
               iconBackground="primary"
               isLast
+              isSubscribed={allowedForTraining}
             />
           </Box>
         )}
@@ -130,24 +122,28 @@ export default function MoreScreen() {
             navPath="/(more)/anamnesis/userprofile"
             iconName="person"
             iconBackground="primary"
+            isSubscribed={allowedForTraining}
           />
           <ListItem
             title={t("more.mySport")}
             navPath="/(more)/anamnesis/sport"
             iconName="basketball"
             iconBackground="primary"
+            isSubscribed={allowedForTraining}
           />
           <ListItem
             title={t("more.myEquipment")}
             navPath="/(tabs)/(more)/equipment"
             iconName="fitness"
             iconBackground="primary"
+            isSubscribed={allowedForTraining}
           />
           <ListItem
             title={t("more.myTrainingData")}
             navPath="/(more)/anamnesis/season-phase"
             picPath={require("../../../assets/img/more/iconTrainingsdaten.png")}
             iconBackground="primary"
+            isSubscribed={allowedForTraining}
           />
           <ListItem
             title={t("more.startNewTestWorkout")}
@@ -162,6 +158,7 @@ export default function MoreScreen() {
             iconName="videocam"
             iconBackground="primary"
             isLast
+            isSubscribed={allowedForTraining}
           />
         </Box>
 
@@ -171,36 +168,42 @@ export default function MoreScreen() {
             navPath="/webview"
             awesomeIconName="info"
             iconBackground="darkGrey1"
+            isSubscribed={allowedForTraining}
           />
           <ListItem
             title={t("more.privacy")}
             navPath="/(tabs)/(more)/privacy"
             awesomeIconName="shield"
             iconBackground="darkGrey1"
+            isSubscribed={allowedForTraining}
           />
           <ListItem
             title={t("more.notificationsSettings")}
             navPath="/(tabs)/(more)/notifications"
             iconName="settings"
             iconBackground="darkGrey1"
+            isSubscribed={allowedForTraining}
           />
           <ListItem
             title={t("more.subscriptionStatus")}
             navPath="/(tabs)/(more)/subscription-status"
             iconName="eye"
             iconBackground="darkGrey1"
+            isSubscribed={allowedForTraining}
           />
           <ListItem
             title={t("more.contact")}
             navPath="/contact"
             awesomeIconName="envelope"
             iconBackground="darkGrey1"
+            isSubscribed={allowedForTraining}
           />
           <ListItem
             title={t("more.imprint")}
             navPath="/(tabs)/(more)/imprint"
             awesomeIconName="gavel"
             iconBackground="darkGrey1"
+            isSubscribed={allowedForTraining}
           />
 
           <Box>

@@ -6,7 +6,7 @@ import {
   TileData,
   WorkoutConstants,
 } from "@/constants/workoutConstants";
-import { SubscriptionHelper } from "@/features/subscription/SubscriptionHelper";
+import { isAllowedForTraining } from "@/features/subscription/subscriptionHelpers";
 import { useSubscriptionStore } from "@/features/subscription/subscriptionStore";
 import { ColumnList } from "@/features/training/ColumnList";
 import { useTrainingStore } from "@/features/training/trainingStore";
@@ -210,7 +210,7 @@ export default function SelectTraining() {
 
   const startPowerTest = useCallback(() => {
     // check if still subscribed
-    if (SubscriptionHelper.isAllowedForTraining(subscription)) {
+    if (isAllowedForTraining(subscription)) {
       setTrainingSelection(null);
       Logger.logEvent("test_coaching_selected_start");
       router.push({
@@ -276,10 +276,13 @@ export default function SelectTraining() {
 
     return (
       <Box marginBottom="s" flex={1}>
-        <ColumnList isSubscribed={true} listItems={listItems} />
+        <ColumnList
+          isSubscribed={subscription.isSubscribed}
+          listItems={listItems}
+        />
       </Box>
     );
-  }, [tiles, selection]);
+  }, [tiles, selection, subscription.isSubscribed]);
 
   const renderCoaching = useCallback(() => {
     let message: string = t("training.selectTraining.coachSportProhibitionMsg");

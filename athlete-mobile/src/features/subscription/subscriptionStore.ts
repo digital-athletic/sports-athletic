@@ -1,6 +1,4 @@
-import { asyncStorage } from "@/store/middleware";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import {
   DEFAULT_SUBSCRIPTION_DATA,
@@ -19,11 +17,11 @@ interface SubscriptionState {
   resetSubscription: () => void;
 }
 
+// TODO: removed persistence of subscription data for now. add persistence back when subscription concepts are done
 export const useSubscriptionStore = create<SubscriptionState>()(
-  persist(
-    immer((set) => ({
+  immer(
+    (set) => ({
       subscription: DEFAULT_SUBSCRIPTION_DATA,
-
       setUserSubscription: (userSubscription: SubscriptionType) =>
         set((state) => {
           const {
@@ -56,10 +54,10 @@ export const useSubscriptionStore = create<SubscriptionState>()(
           state.subscription.isSubscribed = isSubscribed;
         }),
       resetSubscription: () => set({ subscription: DEFAULT_SUBSCRIPTION_DATA }),
-    })),
-    {
-      name: "subscription-store",
-      storage: asyncStorage,
-    },
+    }),
+    // {
+    //   name: "subscription-store",
+    //   storage: asyncStorage,
+    // },
   ),
 );

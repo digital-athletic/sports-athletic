@@ -1,9 +1,8 @@
+import { getTestPeriodDaysLeft } from "@/features/subscription/subscriptionHelpers";
 import { useSubscriptionStore } from "@/features/subscription/subscriptionStore";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { TouchableBox } from "@/theme/TouchableBox";
-import { getTestPeriodDaysLeft } from "@/utils/subscriptionHelpers";
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Platform } from "react-native";
 
@@ -20,12 +19,8 @@ export function TestPeriodOverlay({ goToSubscribe }: TestPeriodOverlayProps) {
   const { isSubscribed, firstRegistration } = useSubscriptionStore(
     (state) => state.subscription,
   );
-  const [daysLeft, setDaysLeft] = useState<number>(-1);
 
-  useEffect(() => {
-    const days = getTestPeriodDaysLeft(firstRegistration);
-    setDaysLeft(days);
-  }, [firstRegistration]);
+  const daysLeft = getTestPeriodDaysLeft(firstRegistration);
 
   // Only show on Android and when user is in trial period
   if (Platform.OS === "ios" || isSubscribed || daysLeft < 0) {

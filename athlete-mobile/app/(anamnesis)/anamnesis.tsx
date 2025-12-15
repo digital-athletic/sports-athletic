@@ -37,10 +37,8 @@ export default function WelcomeScreen() {
         onPress: () => {
           if (isInInitialAnamnesis) {
             setIsInInitialAnamnesis(false);
-            router.replace("/(tabs)/(more)/subscribe");
-          } else {
-            router.replace("/(tabs)/(home)");
           }
+          router.replace("/(tabs)/(home)");
         },
       },
       {

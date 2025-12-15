@@ -1,7 +1,7 @@
 import { PowerTest as Chart } from "@/charts/PowerTest";
 import { Coaching } from "@/common/Coaching";
 import { Ionicon } from "@/common/Ionicon";
-import { SubscriptionHelper } from "@/features/subscription/SubscriptionHelper";
+import { isAllowedForTraining } from "@/features/subscription/subscriptionHelpers";
 import { useSubscriptionStore } from "@/features/subscription/subscriptionStore";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
 import { Box } from "@/theme/Box";
@@ -39,7 +39,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
 
   const startTestWorkout = useCallback(() => {
     if (anamnesisCompleted) {
-      if (SubscriptionHelper.isAllowedForTraining(subscription)) {
+      if (isAllowedForTraining(subscription)) {
         router.push(
           "/training/muscle-soreness?type=TEST_WORKOUT&origin=Statistics",
         );

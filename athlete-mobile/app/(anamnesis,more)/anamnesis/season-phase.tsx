@@ -82,14 +82,12 @@ export default function SeasonPhase() {
         text: t("common.yes"),
         onPress: () => {
           if (isInInitialAnamnesis) {
-            router.navigate({
-              pathname: "/subscribe",
-              params: { goOn: origin satisfies Route | undefined },
-            });
             setIsInInitialAnamnesis(false);
-            // Navigate to subscription or home
-          } else if (origin) {
+          }
+          if (origin) {
             router.navigate(origin);
+          } else {
+            router.navigate("/(tabs)/(home)");
           }
         },
       },

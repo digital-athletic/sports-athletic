@@ -171,14 +171,9 @@ export default function Generating() {
     const goOn = () => {
       Logger.logEvent("anamnesis_create_training_plan_completed");
       if (isInInitialAnamnesis) {
-        router.navigate({
-          pathname: "/(tabs)/(more)/subscribe",
-          params: { goOn: "/(tabs)/(home)" satisfies Route },
-        });
         setIsInInitialAnamnesis(false);
-      } else {
-        router.replace("/(tabs)/(home)");
       }
+      router.replace("/(tabs)/(home)");
     };
 
     // When both stages and generation are complete, navigate away

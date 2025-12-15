@@ -10,7 +10,7 @@ import { useShowSeasonPhaseAfterAnamnesis } from "@/features/anamnesis/useShowSe
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { Box } from "@/theme/Box";
 import { ScrollBox } from "@/theme/ScrollBox";
-import { Route, Stack, useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, BackHandler } from "react-native";
@@ -78,14 +78,9 @@ export default function AnamnesisQuestions() {
         text: t("common.yes"),
         onPress: async () => {
           if (isInInitialAnamnesis) {
-            router.navigate({
-              pathname: "/(tabs)/(more)/subscribe",
-              params: { goOn: "/(tabs)/(home)" satisfies Route },
-            });
             setIsInInitialAnamnesis(false);
-          } else {
-            if (originPath) router.navigate(originPath);
           }
+          if (originPath) router.navigate(originPath);
           resetData();
         },
       },

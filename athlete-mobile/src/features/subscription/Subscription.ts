@@ -6,6 +6,6 @@ export type SubscriptionType = {
 };
 
 export const DEFAULT_SUBSCRIPTION_DATA: SubscriptionType = {
-  firstRegistration: 0,
-  isSubscribed: false,
+  firstRegistration: Date.now(),
+  isSubscribed: true,
 };

@@ -8,7 +8,7 @@ import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 
 import { SectionPrefix } from "@/features/training/models/SectionPrefix";
-import { Video } from "@/video/Video";
+import { VideoPlayer } from "@/video/VideoPlayer";
 import { useResponsiveProp } from "@shopify/restyle";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { type FC, useEffect, useMemo, useState } from "react";
@@ -95,19 +95,13 @@ const SectionDetailsScreen: FC = () => {
 
     // Video component placeholder - will be implemented in a future PR
     return (
-      <Video
-        isPause={false}
-        videoTitle={
+      <VideoPlayer
+        title={
           videoData.title
             ? t(`training.sectionDetails.videoTitles.${prefix}`)
             : ""
         }
-        videoName={videoData.title}
-        title={videoData.title}
-        pictureName={videoData.picture}
-        size="Big"
-        changeVideoProperties={() => {}}
-        playButtonDisabled={true}
+        source={videoData.video}
       />
       // <Box
       //   padding="m"

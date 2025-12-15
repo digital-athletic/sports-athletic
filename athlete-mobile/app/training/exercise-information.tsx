@@ -10,7 +10,7 @@ import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { parseIntParam } from "@/utils/router";
 import { getTagValues } from "@/utils/tagUtils";
-import { Video } from "@/video/Video";
+import { VideoPlayer } from "@/video/VideoPlayer";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -40,7 +40,6 @@ export default function ExerciseInformationScreen() {
   const { getExerciseById } = useExercisesStore();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [isFullScreen, setIsFullScreen] = useState(false);
 
   const exerciseId = parseIntParam(params.exerciseId);
   const exercise =
@@ -62,30 +61,11 @@ export default function ExerciseInformationScreen() {
 
       <Box flex={1} style={{ paddingBottom: insets.bottom }}>
         {exercise && video && (
-          <Box
-            zIndex={9999}
-            width="100%"
-            aspectRatio={2}
-            justifyContent="center"
-            alignItems="center"
-            overflow="hidden"
-          >
-            <Video
-              pictureName={exercise.picture}
-              title={displayName}
-              videoName={video}
-              size="Big"
-              changeVideoProperties={(screen) =>
-                setIsFullScreen(screen.isFullScreen)
-              }
-              isPause={false}
-              videoTitle={displayName}
-            />
-          </Box>
+          <VideoPlayer title={displayName} source={video} />
         )}
 
         <ScrollView showsVerticalScrollIndicator={false}>
-          {!isFullScreen && exercise && (
+          {exercise && (
             <>
               <EquipmentList tags={exercise.tags} />
               <MusclesList tags={exercise.tags} gender={personalData.gender} />

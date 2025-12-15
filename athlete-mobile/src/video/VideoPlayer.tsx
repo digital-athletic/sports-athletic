@@ -1,40 +1,73 @@
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
-import { FC } from "react";
-import { useWindowDimensions } from "react-native";
-import { ScreenMetadata } from "./types";
+import { useEvent } from "expo";
+import { useVideoPlayer, VideoView } from "expo-video";
+import { FC, useEffect } from "react";
+import { StyleSheet } from "react-native";
 
 type Props = {
-  title: string;
+  title?: string;
   source: string;
-  screen: ScreenMetadata;
-  fullScreenDisabled: boolean;
-  endVideo: () => void;
-  toggleFullScreen: (screen: ScreenMetadata) => void;
-  setIsVideoPaused: (isPaused: boolean) => void;
+  fullScreenDisabled?: boolean;
+  controlsDisabled?: boolean;
+  setIsFullScreen?: (isFullScreen: boolean) => void;
+  setIsVideoPlaying?: (isPaused: boolean) => void;
 };
 
-// FIXME: Stub implementation, to be replaced with video playback functionality in
-// https://github.com/sports-athletics/sports-athletic/issues/21
-export const VideoPlayer: FC<Props> = ({ title, screen }) => {
-  const { width } = useWindowDimensions();
-  const rotate = screen.isFullScreen
-    ? screen.orientation === "LANDSCAPE-RIGHT"
-      ? "-90deg"
-      : "90deg"
-    : "0deg";
+export const VideoPlayer: FC<Props> = ({
+  title,
+  setIsVideoPlaying,
+  fullScreenDisabled,
+  setIsFullScreen,
+  controlsDisabled,
+}) => {
+  const player = useVideoPlayer(
+    "https://example.supabase.co/storage/v1/object/public/videos/001PushUps.mp4",
+  );
+
+  const { isPlaying } = useEvent(player, "playingChange", {
+    isPlaying: player.playing,
+  });
+
+  useEffect(() => {
+    setIsVideoPlaying?.(player.playing);
+  }, [isPlaying, player.playing, setIsVideoPlaying]);
 
   return (
-    <Box
-      flex={1}
-      alignItems="center"
-      justifyContent="center"
-      width={width}
-      aspectRatio={2}
-      style={{ transform: [{ rotate }] }}
-      backgroundColor="black"
-    >
-      <Text color="white" textAlign="center">{`Video: ${title}`}</Text>
+    <Box aspectRatio={16 / 9}>
+      <VideoView
+        fullscreenOptions={{ enable: !fullScreenDisabled }}
+        onFullscreenEnter={() => {
+          setIsFullScreen?.(true);
+        }}
+        onFullscreenExit={() => {
+          setIsFullScreen?.(false);
+        }}
+        style={styles.videoView}
+        nativeControls={!controlsDisabled}
+        //@ts-expect-error additional work needs to be done for web types
+        player={player}
+      />
+      {!isPlaying && !!title && (
+        <Box
+          backgroundColor="overlay"
+          position="absolute"
+          bottom={0}
+          left={0}
+          right={0}
+          padding="s"
+        >
+          <Text color="white" textAlign="center">
+            {title}
+          </Text>
+        </Box>
+      )}
     </Box>
   );
 };
+
+const styles = StyleSheet.create({
+  videoView: {
+    flex: 1,
+  },
+});

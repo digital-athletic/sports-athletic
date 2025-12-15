@@ -32,10 +32,6 @@ export default function RootLayout() {
           <Stack.Screen name="anamnesis" options={{ headerShown: false }} />
           <Stack.Screen name="training" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="video-player"
-            options={{ headerShown: false, presentation: "fullScreenModal" }}
-          />
         </Stack.Protected>
 
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />

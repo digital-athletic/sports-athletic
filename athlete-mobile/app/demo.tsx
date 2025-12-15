@@ -105,17 +105,6 @@ export default function IndexScreen() {
                   <Text variant="link">WebView</Text>
                 </Box>
               </Link>
-              <Link href="/video-player">
-                <Box
-                  backgroundColor="lightGrey2"
-                  padding="s"
-                  borderRadius="m"
-                  minWidth={80}
-                  alignItems="center"
-                >
-                  <Text variant="link">Video</Text>
-                </Box>
-              </Link>
               <Link href="/contact">
                 <Box
                   backgroundColor="lightGrey2"

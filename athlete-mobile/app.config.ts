@@ -72,6 +72,7 @@ export default (): ExpoConfig => ({
         microphonePermission: false,
       },
     ],
+    "expo-video",
     "expo-router",
     "expo-localization",
     "expo-dev-client",

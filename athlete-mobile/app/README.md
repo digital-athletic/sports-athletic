@@ -66,10 +66,6 @@ app/
 │   ├── _layout.tsx
 │   └── index.tsx
 │
-├── video-player/              # Full-screen modal
-│   ├── _layout.tsx
-│   └── index.tsx
-│
 └── test/                      # Development/testing
     ├── _layout.tsx
     ├── index.tsx
@@ -80,17 +76,17 @@ app/
 
 ### Legacy React Navigation → Expo Router
 
-| Legacy Navigator | Expo Router Equivalent | Location |
-|-----------------|------------------------|----------|
-| `AllStack` (Switch) | Conditional rendering in root | `app/_layout.tsx` + `app/index.tsx` |
-| `OnboardingStack` | Folder-based stack | `app/onboarding/` |
-| `AnamnesisStack` | Folder-based stack | `app/anamnesis/` |
-| `TrainingStack` | Folder-based stack | `app/training/` |
-| `TabNavigator` (Tabs) | `(tabs)` group | `app/(tabs)/` |
-| `HomeStack` | Nested stack in tabs | `app/(tabs)/home/` |
-| `StatisticsStack` | Nested stack in tabs | `app/(tabs)/statistics/` |
-| `MoreStack` | Nested stack in tabs | `app/(tabs)/profile/` |
-| `WebViewStack` | Full-screen modal | `app/webview/` |
-| `VideoPlayerViewStack` | Full-screen modal | `app/video-player/` |
-| `TestStack` | Folder-based stack | `app/test/` |
-| `Contact` (Modal) | Modal presentation | `app/contact.tsx` |
+| Legacy Navigator       | Expo Router Equivalent        | Location                            |
+| ---------------------- | ----------------------------- | ----------------------------------- |
+| `AllStack` (Switch)    | Conditional rendering in root | `app/_layout.tsx` + `app/index.tsx` |
+| `OnboardingStack`      | Folder-based stack            | `app/onboarding/`                   |
+| `AnamnesisStack`       | Folder-based stack            | `app/anamnesis/`                    |
+| `TrainingStack`        | Folder-based stack            | `app/training/`                     |
+| `TabNavigator` (Tabs)  | `(tabs)` group                | `app/(tabs)/`                       |
+| `HomeStack`            | Nested stack in tabs          | `app/(tabs)/home/`                  |
+| `StatisticsStack`      | Nested stack in tabs          | `app/(tabs)/statistics/`            |
+| `MoreStack`            | Nested stack in tabs          | `app/(tabs)/profile/`               |
+| `WebViewStack`         | Full-screen modal             | `app/webview/`                      |
+| `VideoPlayerViewStack` | Full-screen modal             | `app/video-player/`                 |
+| `TestStack`            | Folder-based stack            | `app/test/`                         |
+| `Contact` (Modal)      | Modal presentation            | `app/contact.tsx`                   |

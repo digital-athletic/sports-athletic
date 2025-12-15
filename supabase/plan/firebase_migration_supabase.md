@@ -47,24 +47,9 @@ This document assesses the feasibility of migrating from Firebase to Supabase ba
 
 ### Expo/React Native Setup
 
-```bash
-npx expo install @supabase/supabase-js @react-native-async-storage/async-storage react-native-url-polyfill
-```
+Install: `npx expo install @supabase/supabase-js @react-native-async-storage/async-storage react-native-url-polyfill`
 
-```typescript
-import 'react-native-url-polyfill/auto';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createClient } from '@supabase/supabase-js';
-
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-});
-```
+Configure client with `AsyncStorage` for session persistence and `detectSessionInUrl: false` for React Native.
 
 ### Files to Update
 
@@ -116,40 +101,24 @@ Firebase paths need conversion to PostgreSQL tables:
 | `UserSubscription/{userId}` | `user_subscriptions` |
 
 **Shared Data:**
-| Firebase Path | Supabase Table |
-|---------------|----------------|
-| `Anamnesis/Questions` | `anamnesis_questions` |
-| `Versions/ExerciseData` | `version_metadata` |
-| `Versions/SkillTrees/{skillName}` | `version_metadata` |
+| Firebase Path | Supabase Table | Status |
+|---------------|----------------|--------|
+| `Anamnesis/Questions` | ❌ SKIP | Hardcoded in app onboarding |
+| `Versions/ExerciseData` | `version_metadata` | ✅ Migrate |
+| `Versions/SkillTrees/{skillName}` | `version_metadata` | ✅ Migrate |
 
-**Team Data (disabled feature):**
-| Firebase Path | Supabase Table |
-|---------------|----------------|
-| `Teams/{teamId}/Data` | `teams` |
-| `Teams/{teamId}/Members/{userId}` | `team_members` |
-| `Users/{userId}/Team/{teamId}` | `user_team_memberships` |
-| `TeamWorkouts/{teamId}/{workoutId}` | `team_workouts` |
-| `Messages/{teamId}/{messageId}` | `team_messages` |
+**Team Data (disabled feature - NOT MIGRATING):**
+| Firebase Path | Status |
+|---------------|--------|
+| `Teams/{teamId}/Data` | ❌ SKIP |
+| `Teams/{teamId}/Members/{userId}` | ❌ SKIP |
+| `Users/{userId}/Team/{teamId}` | ❌ SKIP |
+| `TeamWorkouts/{teamId}/{workoutId}` | ❌ SKIP |
+| `Messages/{teamId}/{messageId}` | ❌ SKIP |
 
 ### Real-time Listeners
 
-Firebase real-time (currently disabled for team chat) maps to Supabase Realtime:
-
-```typescript
-// Firebase (current)
-firebase.database()
-  .ref("Messages/" + teamId)
-  .on("value", handler);
-
-// Supabase (equivalent)
-supabase
-  .channel('team-messages')
-  .on('postgres_changes',
-    { event: '*', schema: 'public', table: 'team_messages', filter: `team_id=eq.${teamId}` },
-    handler
-  )
-  .subscribe();
-```
+Firebase `.on("value", handler)` maps to Supabase `.channel().on('postgres_changes', {...}, handler).subscribe()`.
 
 ### Files to Update
 
@@ -183,7 +152,7 @@ supabase
 | `notificationsData/*.json` | `assets` | `notifications/*.json` |
 | `Pictures/*` | `assets` | `pictures/*` |
 | `Videos/*` | `assets` | `videos/*` |
-| `workoutDetails/{id}.zip` | `user-uploads` | `workout-details/{userId}/{id}.zip` |
+| `workoutDetails/{id}.zip` | `user-uploads` | ⚠️ **DO NOT MIGRATE** - write-only orphaned data (see `user_completed_workouts` notes) |
 
 ### Additional Features
 
@@ -385,8 +354,6 @@ Define PostgreSQL enum types to match codebase constants:
 | `created_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
 | `updated_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
 
-> **Note:** Team membership was previously shown as `team_id` FK, but Firebase actually stores `Users/{userId}/Team/{teamId}` - a **M:N relationship** where users can be in multiple teams. See `user_team_memberships` table in Team Tables section.
-
 **RLS:** Users can view/update own profile only.
 
 ---
@@ -459,77 +426,33 @@ Define PostgreSQL enum types to match codebase constants:
 | `id` | UUID | ✓ | gen_random_uuid() | PK | *(new)* |
 | `user_id` | UUID | ✓ | - | FK to auth.users, UNIQUE | *(new)* |
 | `xp` | INTEGER | | 0 | Total experience points | *(from Firebase)* |
-| `level` | INTEGER | | 1 | Current level | *(from Firebase)* |
-| `rank` | TEXT | | | Optional rank display | *(from Firebase)* |
+| `level` | INTEGER | | 1 | Current level | *(from Firebase)* - see note |
+| `rank` | TEXT | | | Optional rank display | *(from Firebase)* - see note |
 | `created_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
 | `updated_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
+
+> **Notes:**
+> - `xp`: ✅ Actively used.
+> - `level`: ⚠️ Stored but always recomputed from XP - consider making computed column.
+> - `rank`: ⚠️ Never used - do not migrate.
 
 ---
 
 #### `user_progress_totals`
 
-**Maps:** `UserProgress/{userId}/totals` - Aggregate training statistics
-**Relationship:** 1:1 with user
-**Source:** `legacy/models/UserProgress.js:9-20`
-
-| Column | Type | Required | Default | Description | Origin |
-|--------|------|----------|---------|-------------|--------|
-| `id` | UUID | ✓ | gen_random_uuid() | PK | *(new)* |
-| `user_id` | UUID | ✓ | - | FK to auth.users, UNIQUE | *(new)* |
-| `weight_moved` | DECIMAL(12,2) | | 0 | Total weight lifted (kg) | *(renamed)* `weightMoved` |
-| `time_trained` | INTEGER | | 0 | Total training time (seconds) | *(renamed)* `timeTrained` |
-| `time_active` | INTEGER | | 0 | Active exercise time | *(renamed)* `timeActive` |
-| `time_inactive` | INTEGER | | 0 | Rest time | *(renamed)* `timeInactive` |
-| `time_stretched` | INTEGER | | 0 | Stretching time | *(renamed)* `timeStreched` (note: typo in original) |
-| `time_mobilised` | INTEGER | | 0 | Mobility work time | *(renamed)* `timeMobilysed` (note: typo in original) |
-| `jumps_done` | INTEGER | | 0 | Total jumps | *(renamed)* `jumpsDone` |
-| `steps_done` | INTEGER | | 0 | Total steps | *(renamed)* `stepsDone` |
-| `exercises_skipped` | INTEGER | | 0 | Skipped exercises count | *(renamed)* `exercisesSkipped` |
-| `created_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
-| `updated_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
-
-> **Note:** Firebase field names contain typos (`timeStreched`, `timeMobilysed`). The PostgreSQL schema uses corrected spellings (`time_stretched`, `time_mobilised`). Data migration scripts must map the old typo names to new correct names.
+> ⚠️ **SKIP** - Firebase path `UserProgress/{userId}/totals`. Data exists but is never updated after registration (all zeros) and never displayed. Compute from `user_completed_workouts` if needed.
 
 ---
 
 #### `user_progress_qualities`
 
-**Maps:** `UserProgress/{userId}/qualities` - Quality/skill XP breakdown
-**Relationship:** 1:N with user (one row per quality)
-
-| Column | Type | Required | Default | Description |
-|--------|------|----------|---------|-------------|
-| `id` | UUID | ✓ | gen_random_uuid() | PK |
-| `user_id` | UUID | ✓ | - | FK to auth.users |
-| `quality_key` | TEXT | ✓ | - | e.g., 'STRENGTH', 'ENDURANCE' |
-| `quality_value` | INTEGER | | 0 | XP in this quality |
-| `created_at` | TIMESTAMPTZ | ✓ | NOW() | |
-
-**Constraints:** UNIQUE(user_id, quality_key)
+> ⚠️ **SKIP** - Firebase path `UserProgress/{userId}/qualities`. Always empty object `{}`. Never updated or displayed.
 
 ---
 
 #### `user_progress_exercises`
 
-**Maps:** `UserProgress/{userId}/exercises` - Per-exercise aggregate stats
-**Relationship:** 1:N with user (one row per exercise)
-**Source:** `legacy/models/UserProgress.js:22-29`
-
-| Column | Type | Required | Default | Description | Origin |
-|--------|------|----------|---------|-------------|--------|
-| `id` | UUID | ✓ | gen_random_uuid() | PK | *(new)* |
-| `user_id` | UUID | ✓ | - | FK to auth.users | *(new)* |
-| `exercise_id` | INTEGER | ✓ | - | Exercise identifier | *(from Firebase)* key |
-| `total_duration` | INTEGER | | 0 | Seconds | *(renamed)* `duration` |
-| `total_height` | DECIMAL(10,2) | | 0 | For jump exercises | *(renamed)* `height` |
-| `total_repetitions` | INTEGER | | 0 | | *(renamed)* `repetition` |
-| `total_weight` | DECIMAL(12,2) | | 0 | Total weight lifted | *(renamed)* `weight` |
-| `created_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
-| `updated_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
-
-> **Note:** Field names are prefixed with `total_` to clarify these are aggregate statistics, distinguishing them from the per-workout values in `user_exercise_data`.
-
-**Constraints:** UNIQUE(user_id, exercise_id)
+> ⚠️ **SKIP** - Firebase path `UserProgress/{userId}/exercises`. Updated after workouts but never displayed. Can be computed from `user_completed_workouts.exercises` JSONB if needed.
 
 ---
 
@@ -537,16 +460,21 @@ Define PostgreSQL enum types to match codebase constants:
 
 **Maps:** `UserProgress/{userId}/testHistory` - Max value test results
 **Relationship:** 1:N with user (one row per test)
+**Source:** `legacy/models/MaxValues.js`
+
+> ✅ **ACTIVELY USED** - Written after strength tests, displayed in PowerTest statistics view. Migrate.
 
 | Column | Type | Required | Default | Description |
 |--------|------|----------|---------|-------------|
 | `id` | UUID | ✓ | gen_random_uuid() | PK |
 | `user_id` | UUID | ✓ | - | FK to auth.users |
-| `test_date` | TIMESTAMPTZ | ✓ | - | When test was taken |
-| `max_values` | JSONB | ✓ | - | MaxValuesType object |
+| `test_date` | TIMESTAMPTZ | ✓ | - | When test was taken (stored as "DD-MM-YYYY" string in Firebase) |
+| `max_values` | JSONB | ✓ | - | MaxValuesType object containing strength values per muscle group |
 | `created_at` | TIMESTAMPTZ | ✓ | NOW() | |
 
-**Indexes:** (user_id, test_date DESC) for chronological queries
+> **MaxValuesType:** `{testDate, verticalPush, verticalPull, horizontalPush, horizontalPull, hip, knee, unterkoerper}` where each value = `{barbell, dumbbells, oneSidedUpper, oneSidedLower, oneSidedLowerSupported}`.
+
+**Indexes:** (user_id, test_date DESC)
 
 ---
 
@@ -556,6 +484,8 @@ Define PostgreSQL enum types to match codebase constants:
 
 **Maps:** `UserPlaces/{userId}`
 **Relationship:** 1:N with user
+
+> ✅ **ACTIVELY USED** - Core feature. Determines available equipment for exercise filtering in training generation.
 
 | Column | Type | Required | Default | Description |
 |--------|------|----------|---------|-------------|
@@ -569,8 +499,10 @@ Define PostgreSQL enum types to match codebase constants:
 
 #### `place_equipment`
 
-**Maps:** Equipment lists within `UserPlaces/{userId}`
+**Maps:** Equipment lists within `UserPlaces/{userId}/{place}.equipment`
 **Relationship:** N:1 with user_places
+
+> ✅ **ACTIVELY USED** - Equipment per place for exercise filtering. IDs: DUMBBELL, BARBELL, KETTLEBELL, BENCH, PULL_UP_BAR, BOX_LOW/HIGH, MEDICINE_BALL, TREADMILL, etc.
 
 | Column | Type | Required | Default | Description |
 |--------|------|----------|---------|-------------|
@@ -592,14 +524,16 @@ Define PostgreSQL enum types to match codebase constants:
 **Relationship:** 1:1 with user
 **Source:** `legacy/models/UserWorkoutData.js`
 
+> ✅ **ACTIVELY USED** - This is core configuration data used throughout the app for training generation, personalization, and anamnesis.
+
 | Column | Type | Required | Default | Description | Origin |
 |--------|------|----------|---------|-------------|--------|
 | `id` | UUID | ✓ | gen_random_uuid() | PK | *(new)* |
 | `user_id` | UUID | ✓ | - | FK to auth.users, UNIQUE | *(new)* |
 | `gender` | gender_enum | | | MALE or FEMALE | *(from Firebase)* |
 | `birthday` | TEXT | | | DD-MM-YYYY format (legacy) | *(from Firebase)* |
-| `weight` | DECIMAL(5,2) | | | kg | *(from Firebase)* |
-| `height` | DECIMAL(5,2) | | | cm | *(from Firebase)* |
+| `weight` | DECIMAL(5,2) | | | kg | *(from Firebase)* - see note |
+| `height` | DECIMAL(5,2) | | | cm | *(from Firebase)* - see note |
 | `sport` | sport_enum | | | User's sport/discipline | *(from Firebase)* - see enum note |
 | `season_phase_type` | season_phase_enum | | | PAUSE, PREPATORY, COMPETITION | *(flattened)* from `seasonPhase.type` |
 | `season_phase_num_weeks` | INTEGER | | | Weeks in current phase | *(flattened)* from `seasonPhase.numWeeks` |
@@ -608,7 +542,9 @@ Define PostgreSQL enum types to match codebase constants:
 | `created_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
 | `updated_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
 
-> **Note:** The `seasonPhase` nested object is flattened into three columns. The `tags` array and `maxValues` object are moved to separate tables (`user_workout_tags` and `user_max_values`) for normalization.
+> **Notes:**
+> - `weight`, `height`: ⚠️ Never used in app - consider omitting from migration.
+> - `seasonPhase` flattened into 3 columns. `tags` and `maxValues` normalized to separate tables.
 
 ---
 
@@ -616,6 +552,9 @@ Define PostgreSQL enum types to match codebase constants:
 
 **Maps:** `UserWorkoutData/{userId}/tags` - Anamnesis tags
 **Relationship:** 1:N with user (string array → separate rows)
+**Source:** `legacy/models/UserWorkoutData.js:25` (`tags: Array<string>`)
+
+> ✅ **ACTIVELY USED** - Injury/pain tags for exercise filtering. Set during anamnesis, used extensively in `TrainingGenerator.js`. Example: `PAIN_SHOULDER`, `PAIN_KNEE`, `INJURY_ANKLE`.
 
 | Column | Type | Required | Default | Description |
 |--------|------|----------|---------|-------------|
@@ -632,13 +571,16 @@ Define PostgreSQL enum types to match codebase constants:
 
 **Maps:** `UserWorkoutData/{userId}/maxValues` - Max strength test values
 **Relationship:** 1:1 with user
+**Source:** `legacy/models/MaxValues.js`
+
+> ✅ **ACTIVELY USED** - Current max strength values for weight calculations in training. Distinct from `user_progress_test_history` (which stores history).
 
 | Column | Type | Required | Default | Description |
 |--------|------|----------|---------|-------------|
 | `id` | UUID | ✓ | gen_random_uuid() | PK |
 | `user_id` | UUID | ✓ | - | FK to auth.users, UNIQUE |
-| `max_values` | JSONB | ✓ | - | MaxValuesType object (structure varies) |
-| `recorded_at` | TIMESTAMPTZ | | NOW() | When values were recorded |
+| `test_date` | TEXT | | | DD-MM-YYYY format from MaxValuesType.testDate |
+| `max_values` | JSONB | ✓ | - | MaxValuesType object (same structure as test_history) |
 | `created_at` | TIMESTAMPTZ | ✓ | NOW() | |
 | `updated_at` | TIMESTAMPTZ | ✓ | NOW() | |
 
@@ -650,13 +592,16 @@ Define PostgreSQL enum types to match codebase constants:
 
 **Maps:** `UserTrainingPlan/{userId}`
 **Relationship:** 1:N with user
+**Source:** `legacy/models/TrainingPlan.js`
+
+> ✅ **ACTIVELY USED** - Core personalized training feature. Contains `sections` (training phases) defining weekly workout schedule.
 
 | Column | Type | Required | Default | Description |
 |--------|------|----------|---------|-------------|
 | `id` | UUID | ✓ | gen_random_uuid() | PK |
 | `user_id` | UUID | ✓ | - | FK to auth.users |
 | `is_active` | BOOLEAN | | true | Currently active plan |
-| `start_date` | TIMESTAMPTZ | | | When plan started |
+| `start_date` | TIMESTAMPTZ | | | When plan started (from `TrainingPlanType.start`) |
 | `sections` | JSONB | | | TrainingSectionType[] array |
 | `created_at` | TIMESTAMPTZ | ✓ | NOW() | |
 | `updated_at` | TIMESTAMPTZ | ✓ | NOW() | |
@@ -667,6 +612,11 @@ Define PostgreSQL enum types to match codebase constants:
 
 **Maps:** `UserTrainingDays/{userId}` and `UserWorkoutData/{userId}/TrainingDays`
 **Relationship:** N:1 with user_training_plans
+**Source:** `legacy/models/TrainingDay.js`
+
+> ✅ **ACTIVELY USED** - Set during onboarding, used for training generation.
+>
+> **Dual Firebase paths:** App auto-migrates from `UserWorkoutData/{userId}/TrainingDays` to `UserTrainingDays/{userId}`. Only check current path for migration.
 
 | Column | Type | Required | Default | Description |
 |--------|------|----------|---------|-------------|
@@ -676,7 +626,7 @@ Define PostgreSQL enum types to match codebase constants:
 | `weekday` | INTEGER | ✓ | - | 0-6 (Sunday-Saturday) |
 | `active` | BOOLEAN | | true | Is this a training day? |
 | `duration` | INTEGER | | | Duration in minutes |
-| `place_id` | UUID | | | FK to user_places |
+| `place` | place_type_enum | | | HOME, OUTSIDE, HALL, STUDIO (from `TrainingDayType.place`) |
 | `created_at` | TIMESTAMPTZ | ✓ | NOW() | |
 | `updated_at` | TIMESTAMPTZ | ✓ | NOW() | |
 
@@ -740,15 +690,11 @@ Define PostgreSQL enum types to match codebase constants:
 | `created_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
 | `updated_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
 
-> **⚠️ Schema Enhancement:** The current Firebase model (`UserExerciseBranchDataType`) only contains:
-> ```javascript
-> { branchId: number, level: number }
-> ```
-> This schema adds `skill_tree_name`, `xp_in_branch`, `is_unlocked`, and `unlocked_at` for richer progression tracking. These fields will need to be populated during migration (potentially derived from existing data or initialized with defaults).
+> **Schema Enhancement:** Firebase model only has `{branchId, level}`. Added fields (`skill_tree_name`, `xp_in_branch`, `is_unlocked`, `unlocked_at`) enhance tracking - derive during migration or initialize defaults.
 
 **Constraints:** UNIQUE(user_id, branch_id, skill_tree_name)
 
-**Known skill trees** (from `WorkoutConstants.SKILL_TREES`): BAS, BR, CARDIO_1_SHORT, CARDIO_1_LAKTAT, CARDIO_2, CARDIO_3, CARDIO_4, CARDIO_5, CD, GKS, GKSKG, MAX, MOB, PLYO, PREV, PREVKG, SA, SASPEZIAL, SK, SKKG, SWR1, SWR1KG, WU, WUSKSA, WUSPEZIAL
+**Known skill trees:** BAS, BR, CARDIO_1_SHORT, CARDIO_1_LAKTAT, CARDIO_2-5, CD, GKS, GKSKG, MAX, MOB, PLYO, PREV, PREVKG, SA, SASPEZIAL, SK, SKKG, SWR1, SWR1KG, WU, WUSKSA, WUSPEZIAL
 
 ---
 
@@ -764,7 +710,7 @@ Define PostgreSQL enum types to match codebase constants:
 |--------|------|----------|---------|-------------|--------|
 | `id` | UUID | ✓ | gen_random_uuid() | PK | *(new)* |
 | `user_id` | UUID | ✓ | - | FK to auth.users | *(new)* |
-| `workout_id` | TEXT | ✓ | - | Original workout identifier | *(from Firebase)* `workoutId` |
+| `workout_id` | TEXT | | - | Legacy Firebase push key | *(from Firebase)* `workoutId` - see note below |
 | `workout_date` | BIGINT | ✓ | - | Unix timestamp (legacy) | *(renamed)* `date` |
 | `duration` | INTEGER | ✓ | - | Duration in seconds | *(from Firebase)* |
 | `exercise_count` | INTEGER | | 0 | Number of exercises | *(renamed)* `exerciseCount` |
@@ -776,12 +722,11 @@ Define PostgreSQL enum types to match codebase constants:
 | `training_focus` | TEXT | | | Specific focus: PREVSHOULDER, MOB, GKS, etc. | *(flattened)* from `training.focus` |
 | `created_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
 
-> **Note:** The `exercises` JSONB column stores a snapshot of exercise data at workout completion. This comes from `CompleteWorkoutType` (uploaded to Storage as zip), not `CompletedWorkoutListEntryType`. The `userSkills` and `userSkillsDuration` objects are normalized into the `completed_workout_skills` table.
->
-> **Important:** The `training_*` fields are stored in Firebase but are **missing from the Flow type definition** in `CompletedWorkoutListEntry.js`. They are actually saved in `WorkoutService.js:97-109`. These fields indicate:
-> - `training_type`: The workout category - "PLAN" (from training plan), "PREV" (prevention), "QUICK" (quick-start), or "TEST" (strength test)
-> - `training_cardio_type`: For PLAN workouts, the cardio zone from the training section
-> - `training_focus`: For PREV workouts this is the body part (e.g., "PREVSHOULDER", "PREVKNEE"); for QUICK workouts it's the type (e.g., "MOB", "GKS", "BAS"); for PLAN workouts it's the training focus ("PHASE", "CARDIO", "STABILITY", "COMBINED")
+> **Notes:**
+> - `exercises` JSONB stores snapshot from `CompleteWorkoutType`. The `userSkills`/`userSkillsDuration` are normalized into `completed_workout_skills` table.
+> - `training_*` fields exist in Firebase but are missing from Flow types (saved in `WorkoutService.js:97-109`). Values: `type`=PLAN/PREV/QUICK/TEST, `cardio_type`=cardio zone, `focus`=body part or workout type.
+> - `workout_id`: Legacy Firebase push key. Nullable - only needed for migrating existing data. New workouts can use UUID `id`.
+> - **Storage `.zip` files**: Firebase `workoutDetails/{id}.zip` files are **orphaned write-only data** (never downloaded). Do not migrate - store exercise data in `exercises` JSONB instead.
 
 **Indexes:** (user_id, workout_date DESC) for chronological queries
 
@@ -791,14 +736,17 @@ Define PostgreSQL enum types to match codebase constants:
 
 **Maps:** `UserCompletedWorkouts/{userId}/{workoutId}/userSkills` and `userSkillsDuration`
 **Relationship:** 1:6 with user_completed_workouts (one row per skill category)
+**Source:** `legacy/models/CompletedWorkoutListEntry.js:11-26`
+
+> ✅ **ACTIVELY USED** - Time/XP breakdown across 6 skill categories for radar chart display in statistics and profile views.
 
 | Column | Type | Required | Default | Description |
 |--------|------|----------|---------|-------------|
 | `id` | UUID | ✓ | gen_random_uuid() | PK |
 | `completed_workout_id` | UUID | ✓ | - | FK to user_completed_workouts (CASCADE) |
 | `skill_category` | skill_category_enum | ✓ | - | PREVENTION, MOBILITY, SWR, WARMUP, STABILITY, CARDIO |
-| `skill_xp` | INTEGER | | 0 | XP earned in this category |
-| `skill_duration` | INTEGER | | 0 | Duration in seconds for this category |
+| `skill_xp` | INTEGER | | 0 | XP earned in this category (from `userSkills`) |
+| `skill_duration` | INTEGER | | 0 | Duration in seconds (from `userSkillsDuration`) |
 | `created_at` | TIMESTAMPTZ | ✓ | NOW() | |
 
 **Constraints:** UNIQUE(completed_workout_id, skill_category)
@@ -806,121 +754,11 @@ Define PostgreSQL enum types to match codebase constants:
 
 ---
 
-### Team Tables (Disabled Feature - Low Priority)
+### Team Tables (Disabled Feature)
 
-> **Important:** The type definitions in the legacy codebase (`Team.js`, `TeamMessage.js`, `TeamMember.js`) do **NOT** match the actual Firebase data structure. The schemas below are based on the actual data saved in `TeamService.js` and `FirebaseConnector.js`.
-
-#### `teams`
-
-**Maps:** `Teams/{teamId}/Data`
-**Source:** `TeamService.js:25-33` (actual save logic, NOT `Team.js` type)
-
-| Column | Type | Required | Default | Description | Origin |
-|--------|------|----------|---------|-------------|--------|
-| `id` | UUID | ✓ | gen_random_uuid() | PK | *(new)* |
-| `name` | TEXT | ✓ | - | Team name | *(from Firebase)* `Data/name` |
-| `short_identifier` | TEXT | | | UNIQUE, maps TeamShortIdentifiers | *(from Firebase)* `Data/teamShortIdentifier` |
-| `creator_id` | UUID | ✓ | - | FK to auth.users (who created the team) | *(from Firebase)* `Data/creator` |
-| `created_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
-| `updated_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
-
-**RLS:** Team members can view, creator can manage
-
----
-
-#### `team_members`
-
-**Maps:** `Teams/{teamId}/Members/{userId}`
-**Source:** `TeamService.js:34-48` (actual save logic)
-
-> **Note:** This table is MISSING from the original type definitions but is required. Firebase stores team members separately from the team data.
-
-| Column | Type | Required | Default | Description | Origin |
-|--------|------|----------|---------|-------------|--------|
-| `id` | UUID | ✓ | gen_random_uuid() | PK | *(new)* |
-| `team_id` | UUID | ✓ | - | FK to teams (CASCADE) | *(new)* |
-| `user_id` | UUID | ✓ | - | FK to auth.users | *(from Firebase)* key |
-| `name` | TEXT | | | Member display name (denormalized) | *(from Firebase)* `name` |
-| `picture` | TEXT | | | Member picture URL | *(from Firebase)* `picture` |
-| `xp` | INTEGER | | 0 | Member XP (denormalized) | *(from Firebase)* `xp` |
-| `last_modified` | BIGINT | | | Unix timestamp of last update | *(from Firebase)* `lastModified` |
-| `created_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
-| `updated_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
-
-**Constraints:** UNIQUE(team_id, user_id)
-**RLS:** Team members can view their team's members
-
----
-
-#### `user_team_memberships`
-
-**Maps:** `Users/{userId}/Team/{teamId}`
-**Source:** `TeamService.js:49-59` (actual save logic)
-
-> **Note:** The original migration plan shows `profiles.team_id` as a single FK, but Firebase actually supports users being in MULTIPLE teams. This requires a separate junction table.
-
-| Column | Type | Required | Default | Description | Origin |
-|--------|------|----------|---------|-------------|--------|
-| `id` | UUID | ✓ | gen_random_uuid() | PK | *(new)* |
-| `user_id` | UUID | ✓ | - | FK to auth.users | *(new)* |
-| `team_id` | UUID | ✓ | - | FK to teams (CASCADE) | *(from Firebase)* `teamId` |
-| `team_name` | TEXT | | | Team name (denormalized) | *(from Firebase)* `name` |
-| `is_creator` | BOOLEAN | | false | Whether user created this team | *(from Firebase)* `isCreator` |
-| `created_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
-
-**Constraints:** UNIQUE(user_id, team_id)
-**RLS:** Users can view/manage their own memberships
-
----
-
-#### `team_workouts`
-
-**Maps:** `TeamWorkouts/{teamId}/{workoutId}`
-**Source:** `WorkoutService.js:150-157`, `TeamWorkout.js`, `CompleteWorkout.js`
-
-> **Important:** This table stores completed workout data shared with the team, NOT workout schedules. The structure is: `{ member: TeamMemberType, workout: CompleteWorkoutType }`.
-
-| Column | Type | Required | Default | Description | Origin |
-|--------|------|----------|---------|-------------|--------|
-| `id` | UUID | ✓ | gen_random_uuid() | PK | *(new)* |
-| `team_id` | UUID | ✓ | - | FK to teams (CASCADE) | *(new)* |
-| `workout_id` | TEXT | ✓ | - | Original workout identifier | *(from Firebase)* key |
-| `member_user_id` | UUID | ✓ | - | FK to auth.users (who did workout) | *(flattened)* from `member.userId` |
-| `member_name` | TEXT | | | Member name at time of workout | *(flattened)* from `member.name` |
-| `member_picture` | TEXT | | | Member picture at time of workout | *(flattened)* from `member.picture` |
-| `member_xp` | INTEGER | | 0 | Member XP at time of workout | *(flattened)* from `member.xp` |
-| `workout_date` | BIGINT | ✓ | - | Unix timestamp | *(flattened)* from `workout.date` |
-| `workout_time` | JSONB | | | TrainingTimeType (start, end, pause, skill times) | *(flattened)* from `workout.time` |
-| `workout_exercises` | JSONB | | | Array of CompleteExerciseType | *(flattened)* from `workout.exercises` |
-| `workout_xp_before` | INTEGER | | 0 | User XP before this workout | *(flattened)* from `workout.xpBefore` |
-| `created_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
-
-**Indexes:** (team_id, workout_date DESC) for team feed
-**RLS:** Team members can view their team's workouts
-
----
-
-#### `team_messages`
-
-**Maps:** `Messages/{teamId}/{messageId}` - Real-time messaging
-**Source:** `TeamService.js:93-100` (actual save logic, NOT `TeamMessage.js` type)
-
-> **Important:** The `TeamMessageType` definition is incomplete. The actual Firebase structure includes additional fields for message metadata.
-
-| Column | Type | Required | Default | Description | Origin |
-|--------|------|----------|---------|-------------|--------|
-| `id` | UUID | ✓ | gen_random_uuid() | PK | *(new)* |
-| `team_id` | UUID | ✓ | - | FK to teams (CASCADE) | *(new)* |
-| `message_id` | TEXT | | | Original Firebase message key | *(from Firebase)* `Id` |
-| `sender_id` | UUID | ✓ | - | FK to auth.users | *(from Firebase)* `userId` |
-| `sender_name` | TEXT | | | Sender display name (denormalized) | *(from Firebase)* `senderName` |
-| `message_type` | TEXT | | 'MESSAGE' | Message type identifier | *(from Firebase)* `name` |
-| `message_text` | TEXT | ✓ | - | Message content | *(from Firebase)* `message` |
-| `timestamp` | BIGINT | | | Unix timestamp (legacy format) | *(from Firebase)* `timestamp` |
-| `created_at` | TIMESTAMPTZ | ✓ | NOW() | | *(new)* |
-
-**Indexes:** (team_id, timestamp DESC) for real-time queries
-**RLS:** Team members can view and send
+> ❌ **SKIP** - Team feature disabled. Firebase paths `Teams/*`, `TeamWorkouts/*`, `Messages/*`, `Users/*/Team/*` will not be migrated.
+>
+> If re-enabling in future, note that Flow types (`Team.js`, `TeamMessage.js`, `TeamMember.js`) do NOT match actual Firebase structure in `TeamService.js`. Would need 5 tables: `teams`, `team_members`, `user_team_memberships` (M:N), `team_workouts`, `team_messages`.
 
 ---
 
@@ -928,27 +766,7 @@ Define PostgreSQL enum types to match codebase constants:
 
 #### `anamnesis_questions`
 
-**Maps:** `Anamnesis/Questions` (AnamnesisQuestionType)
-
-| Column | Type | Required | Default | Description |
-|--------|------|----------|---------|-------------|
-| `id` | UUID | ✓ | gen_random_uuid() | PK |
-| `question_key` | TEXT | ✓ | - | UNIQUE identifier |
-| `title` | JSONB | ✓ | - | Multi-lang: { "en": "...", "de": "..." } |
-| `description` | TEXT | | | |
-| `placeholder` | JSONB | | | Multi-lang placeholder text |
-| `question_type` | anamnesis_question_type_enum | ✓ | - | text, select, selectMultiple, switch, snap, email, password, date, time, bodyParts |
-| `tag` | TEXT | | | Associated tag for response |
-| `values` | TEXT[] | | | Available values for select types |
-| `data_field` | TEXT | | | Field name for storing response |
-| `data_type` | TEXT | | | 'single' or 'multiple' |
-| `body_part_type` | body_part_type_enum | | | MUSCLE or PAIN for bodyParts type |
-| `is_required` | BOOLEAN | | true | |
-| `display_order` | INTEGER | | | |
-| `created_at` | TIMESTAMPTZ | ✓ | NOW() | |
-| `updated_at` | TIMESTAMPTZ | ✓ | NOW() | |
-
-**RLS:** Public read access
+> ❌ **WON'T DO** - Questions hardcoded in app. User *responses* stored as `tags` in `user_workout_tags`.
 
 ---
 
@@ -972,13 +790,12 @@ Define PostgreSQL enum types to match codebase constants:
 
 ### Helper Functions (to be implemented)
 
-1. **Auto-update `updated_at`**: Trigger function to automatically set `updated_at` on UPDATE for all tables with that column.
+1. **Auto-update `updated_at`**: Trigger on UPDATE to set `updated_at = NOW()` for all tables with that column.
 
-2. **Auto-create profile on signup**: Trigger on `auth.users` INSERT to automatically create:
+2. **Auto-create profile on signup**: Trigger on `auth.users` INSERT to create:
    - `profiles` row
    - `user_settings` row (with defaults)
    - `user_progress` row (with defaults)
-   - `user_progress_totals` row (with defaults)
    - `user_workout_data` row (with defaults)
    - `user_subscriptions` row (with defaults)
 
@@ -987,91 +804,21 @@ Define PostgreSQL enum types to match codebase constants:
 ### Schema Diagram (Entity Relationships)
 
 ```
-┌──────────────────┐
-│   auth.users     │
-│   (Supabase)     │
-└────────┬─────────┘
-         │
-         │ 1:1
-         ▼
-┌──────────────────┐           ┌──────────────────┐
-│    profiles      │           │      teams       │
-└────────┬─────────┘           └────────┬─────────┘
-         │                              │
-    ┌────┴────┬────────────┐           │
-    │         │            │           │
-    ▼         ▼            ▼           ▼
-┌────────┐ ┌────────┐ ┌────────┐ ┌──────────────┐
-│settings│ │subscr. │ │ places │ │ team_members │
-└────────┘ └────────┘ └───┬────┘ └──────────────┘
-                          │              │
-                          ▼              │
-                   ┌────────────┐        │
-                   │ equipment  │        │
-                   └────────────┘        ▼
-                                  ┌──────────────────┐
-┌──────────────────────┐          │ user_team_       │
-│ auth.users ──M:N──── │◄────────►│ memberships      │
-│     (via junction)   │          │ (isCreator)      │
-└──────────────────────┘          └──────────────────┘
-                                         │
-                    ┌────────────────────┼────────────────────┐
-                    ▼                    ▼                    ▼
-             ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-             │team_workouts │    │team_messages │    │ (via teams)  │
-             │(member+      │    │(senderName,  │    │              │
-             │ workout data)│    │ timestamp)   │    │              │
-             └──────────────┘    └──────────────┘    └──────────────┘
+auth.users (Supabase Auth)
+    │
+    └─1:1─► profiles
+              ├─► user_settings
+              ├─► user_subscriptions
+              ├─► user_progress ─► user_progress_test_history
+              ├─► user_places ─► place_equipment
+              ├─► user_workout_data ─┬─► user_workout_tags
+              │                      └─► user_max_values
+              ├─► user_training_plans ─► user_training_days
+              ├─► user_exercise_data
+              ├─► user_exercise_branch_data
+              └─► user_completed_workouts ─► completed_workout_skills
 
-┌──────────────────────────────────────────────────────┐
-│                User Progress (5 tables)               │
-├────────────┬────────────┬───────────┬────────────────┤
-│  progress  │   totals   │ qualities │   exercises    │
-├────────────┴────────────┴───────────┴────────────────┤
-│                    test_history                       │
-└──────────────────────────────────────────────────────┘
-
-┌──────────────────────────────────────────────────────┐
-│              User Workout Data (3 tables)             │
-├──────────────────┬───────────────┬───────────────────┤
-│ user_workout_data│ user_max_vals │ user_workout_tags │
-│ (gender,birthday,│   (JSONB)     │    (tags[])       │
-│  weight,height,  │               │                   │
-│  sport,season)   │               │                   │
-└──────────────────┴───────────────┴───────────────────┘
-
-┌──────────────────────────────────────────────────────┐
-│               Training Plans (2 tables)               │
-├──────────────────────────┬───────────────────────────┤
-│   user_training_plans    │   user_training_days      │
-│   (sections JSONB)       │   (weekday,duration,      │
-│                          │    place FK)              │
-└──────────────────────────┴───────────────────────────┘
-
-┌──────────────────────────────────────────────────────┐
-│              Exercise Tracking (2 tables)             │
-├─────────────────────────────┬────────────────────────┤
-│     user_exercise_data      │ user_exercise_branch   │
-│ (per-exercise state w/      │      _data             │
-│  feedback, skill, sets,     │ (skill tree progress)  │
-│  max_f_repetitions JSONB)   │                        │
-└─────────────────────────────┴────────────────────────┘
-
-┌──────────────────────────────────────────────────────┐
-│             Completed Workouts (2 tables)             │
-├──────────────────────────┬───────────────────────────┤
-│ user_completed_workouts  │ completed_workout_skills  │
-│ (exercises JSONB,        │ (6 skill categories:      │
-│  moved_weight, points)   │  xp + duration each)      │
-└──────────────────────────┴───────────────────────────┘
-
-┌──────────────────────────────────────────────────────┐
-│                    Static/Shared                      │
-├──────────────────────────┬───────────────────────────┤
-│   anamnesis_questions    │    version_metadata       │
-│ (multi-lang title/       │                           │
-│  placeholder JSONB)      │                           │
-└──────────────────────────┴───────────────────────────┘
+Static: version_metadata
 ```
 
 ---
@@ -1137,15 +884,14 @@ This section provides a quick reference for field name mappings from Firebase (J
 | Firebase Path | Supabase Table | Notes |
 |---------------|----------------|-------|
 | `Users/{userId}` | `profiles` | Extends Supabase Auth, includes `username`, `picture_url` |
-| `Users/{userId}/Team` | `profiles.team_id` | FK to teams |
 | `UserSettings/{userId}` | `user_settings` | Includes `anonymised_data_use` for analytics opt-in |
 | `UserSettings/{userId}/reviewStatus` | `user_settings.has_given_review`, `.review_date`, `.review_years`, `.review_skips` | Flattened from nested object |
 | `UserSubscription/{userId}` | `user_subscriptions` | `package_id`, `is_subscribed`, timestamps as BIGINT |
-| `UserProgress/{userId}` | `user_progress` | Core XP/level only |
-| `UserProgress/{userId}/totals` | `user_progress_totals` | 9 aggregate stats (weight, time, jumps, etc.) |
-| `UserProgress/{userId}/qualities` | `user_progress_qualities` | Key-value pairs for quality XP |
-| `UserProgress/{userId}/exercises` | `user_progress_exercises` | Per-exercise aggregate stats |
-| `UserProgress/{userId}/testHistory` | `user_progress_test_history` | Array of max value tests |
+| `UserProgress/{userId}` | `user_progress` | Core XP only (level computed, rank unused) |
+| `UserProgress/{userId}/totals` | ⚠️ SKIP | Never updated - stored with zeros, never displayed |
+| `UserProgress/{userId}/qualities` | ⚠️ SKIP | Never updated - stored as empty object |
+| `UserProgress/{userId}/exercises` | ⚠️ SKIP | Updated but never displayed - consider skipping |
+| `UserProgress/{userId}/testHistory` | `user_progress_test_history` | Array of max value tests ✅ |
 | `UserPlaces/{userId}` | `user_places` | Uses `place_type_enum` (HOME, OUTSIDE, HALL, STUDIO) |
 | `UserPlaces/{userId}/equipment` | `place_equipment` | Equipment IDs as TEXT |
 | `UserWorkoutData/{userId}` | `user_workout_data` | `gender`, `birthday`, `weight`, `height`, `sport`, season phase |
@@ -1163,31 +909,34 @@ This section provides a quick reference for field name mappings from Firebase (J
 | `UserCompletedWorkouts/{userId}/{id}/training` | `user_completed_workouts.training_*` | Flattened: `training_type`, `training_cardio_type`, `training_focus` |
 | `UserCompletedWorkouts/{userId}/{id}/userSkills` | `completed_workout_skills` | 6 categories × (xp + duration) |
 | `UserCompletedWorkouts/{userId}/{id}/userSkillsDuration` | `completed_workout_skills` | Combined in same table |
-| `Teams/{teamId}/Data` | `teams` | Team metadata (`name`, `creator`, `teamShortIdentifier`) |
-| `Teams/{teamId}/Members/{userId}` | `team_members` | Team member data (`name`, `picture`, `xp`, `lastModified`) |
-| `Users/{userId}/Team/{teamId}` | `user_team_memberships` | User's team associations (M:N) with `isCreator` flag |
-| `TeamShortIdentifiers/{code}` | `teams.short_identifier` | UNIQUE constraint |
-| `TeamWorkouts/{teamId}/{id}` | `team_workouts` | **Completed** workout data shared with team (NOT schedules) |
-| `Messages/{teamId}/{id}` | `team_messages` | Real-time messaging with `senderName`, `name` (type), `timestamp` |
-| `Anamnesis/Questions` | `anamnesis_questions` | Multi-lang `title`/`placeholder` as JSONB |
+| `Teams/{teamId}/Data` | ❌ SKIP | Team feature disabled - not migrating |
+| `Teams/{teamId}/Members/{userId}` | ❌ SKIP | Team feature disabled - not migrating |
+| `Users/{userId}/Team/{teamId}` | ❌ SKIP | Team feature disabled - not migrating |
+| `TeamShortIdentifiers/{code}` | ❌ SKIP | Team feature disabled - not migrating |
+| `TeamWorkouts/{teamId}/{id}` | ❌ SKIP | Team feature disabled - not migrating |
+| `Messages/{teamId}/{id}` | ❌ SKIP | Team feature disabled - not migrating |
+| `Anamnesis/Questions` | ❌ SKIP | Hardcoded in app onboarding |
 | `Versions/*` | `version_metadata` | Unified version tracking |
 
 ---
 
 ### Table Count Summary
 
-| Category | Tables | Description |
-|----------|--------|-------------|
-| Core | 3 | `profiles`, `user_settings`, `user_subscriptions` |
-| Progress | 5 | `user_progress`, `_totals`, `_qualities`, `_exercises`, `_test_history` |
-| Places | 2 | `user_places`, `place_equipment` |
-| Workout Data | 3 | `user_workout_data`, `user_workout_tags`, `user_max_values` |
-| Training | 2 | `user_training_plans`, `user_training_days` |
-| Exercise | 2 | `user_exercise_data`, `user_exercise_branch_data` |
-| Completed | 2 | `user_completed_workouts`, `completed_workout_skills` |
-| Teams | 5 | `teams`, `team_members`, `user_team_memberships`, `team_workouts`, `team_messages` |
-| Static | 2 | `anamnesis_questions`, `version_metadata` |
-| **Total** | **26** | |
+| Category | Tables | Description | Status |
+|----------|--------|-------------|--------|
+| Core | 3 | `profiles`, `user_settings`, `user_subscriptions` | ✅ Migrate |
+| Progress | 2 | `user_progress` (xp only), `_test_history` | ✅ Migrate |
+| Progress (skip) | 3 | `_totals`, `_qualities`, `_exercises` | ⚠️ Skip - unused/write-only |
+| Places | 2 | `user_places`, `place_equipment` | ✅ Migrate |
+| Workout Data | 3 | `user_workout_data`, `user_workout_tags`, `user_max_values` | ✅ Migrate |
+| Training | 2 | `user_training_plans`, `user_training_days` | ✅ Migrate |
+| Exercise | 2 | `user_exercise_data`, `user_exercise_branch_data` | ✅ Migrate |
+| Completed | 2 | `user_completed_workouts`, `completed_workout_skills` | ✅ Migrate |
+| Teams | 5 | `teams`, `team_members`, `user_team_memberships`, `team_workouts`, `team_messages` | ❌ Skip - feature disabled |
+| Static | 1 | `version_metadata` | ✅ Migrate |
+| Static (skip) | 1 | `anamnesis_questions` | ❌ Skip - hardcoded in app |
+| **Total to Migrate** | **17** | | |
+| **Total Skipped** | **9** | | |
 
 ---
 
@@ -1232,21 +981,14 @@ The following fields/tables are **new additions** not present in the current Fir
 | `tags[]` → normalized | Array moved to separate `user_workout_tags` table |
 | `maxValues` → normalized | Object moved to separate `user_max_values` table |
 | `userSkills` + `userSkillsDuration` → normalized | Combined into `completed_workout_skills` table |
-| `Teams/{teamId}` → split | Split into `teams` (Data) + `team_members` (Members) tables |
-| `Users/{userId}/Team` → normalized | Moved from profile FK to `user_team_memberships` junction table (M:N) |
-| `TeamWorkouts` member/workout → flattened | Nested `member` and `workout` objects flattened into columns |
-| `Messages` → enhanced | Additional fields (`senderName`, `name`, `timestamp`) captured |
 
-#### Type Definition Discrepancies (CRITICAL)
+#### Type Definition Discrepancies
 
-> **Warning:** Several Flow type definitions in the legacy codebase do **NOT** match the actual data being saved to Firebase. The migration schema is based on the **actual service code**, not the type definitions.
+> **Warning:** Some Flow types don't match actual Firebase data. Schema is based on service code, not types.
 
-| Type File | Missing/Wrong Fields | Actual Source |
-|-----------|---------------------|---------------|
+| Type File | Issue | Actual Source |
+|-----------|-------|---------------|
 | `CompletedWorkoutListEntry.js` | Missing `training` object | `WorkoutService.js:97-109` |
-| `Team.js` | Wrong structure - uses `members` array | `TeamService.js:25-58` saves to `Data/` and `Members/` paths |
-| `TeamMessage.js` | Missing `senderName`, `name`, `Id`, `timestamp` | `TeamService.js:93-100` |
-| `TeamMember.js` | Missing `lastModified` | `TeamService.js:40-42` |
 
 ---
 

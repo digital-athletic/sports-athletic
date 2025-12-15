@@ -5,7 +5,7 @@ type ValueType = {
   m: { [key: string]: string };
   w: { [key: string]: string };
   k: { [key: string]: string };
-  type: {
+  type?: {
     type: ValueTypeType;
   };
 };

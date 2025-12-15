@@ -1,4 +1,5 @@
 import { useAuthStateListener } from "@/auth/useAuthStateListener";
+import { useLoadSkillTrees } from "@/features/training/hooks/useLoadSkillTree";
 import { useOTAService } from "@/services/OTAService";
 import { useAuthStore } from "@/store/authStore";
 import { theme } from "@/theme/theme";
@@ -21,6 +22,8 @@ export default function RootLayout() {
   const { auth } = useAuthStore();
 
   useOTAService();
+
+  useLoadSkillTrees();
 
   return (
     <ThemeProvider theme={theme}>

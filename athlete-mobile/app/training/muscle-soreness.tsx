@@ -10,14 +10,16 @@ import {
 } from "@/constants/workoutConstants";
 import { PlaceSelection } from "@/features/equipment/PlaceSelection";
 import { type UserType } from "@/features/profile/models/User";
+import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
 import { ExerciseType } from "@/features/training/models/Exercise";
 import { TrainingType } from "@/features/training/models/Training";
-import { DEFAULT_USER_EXERCISE_DATA_LIST } from "@/features/training/models/UserExerciseData";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { Logger } from "@/services/Logger";
 import { useCompletedWorkoutsStore } from "@/store/completedWorkoutsStore";
+import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useExercisesStore } from "@/store/exercisesStore";
 import { usePlacesStore } from "@/store/placesStore";
+import { useSkillTreesStore } from "@/store/skillTreesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
@@ -66,9 +68,8 @@ export default function MuscleSorenessScreen() {
   const [loading, setLoading] = useState(true);
   const [screenState, setScreenState] = useState<ScreenState>("SORENESS");
 
-  // TODO: Uncomment once issues with TrainingGenerator are fixed (#113)
-  // const { skillTrees } = useSkillTreesStore();
-  // const { branchData, exerciseData } = useExerciseProgressStore();
+  const { skillTrees } = useSkillTreesStore();
+  const { branchData, exerciseData } = useExerciseProgressStore();
   const { trainingDays } = useTrainingScheduleStore();
   const { places } = usePlacesStore();
   const { workoutsList } = useCompletedWorkoutsStore();
@@ -154,8 +155,6 @@ export default function MuscleSorenessScreen() {
     const test = parseBooleanParam(params.test);
     if (test && params.user) {
       try {
-        // TODO: Remove once issues with TrainingGenerator are fixed (#113)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         user = JSON.parse(params.user) as UserType;
       } catch (e) {
         if (e instanceof Error) {
@@ -180,8 +179,6 @@ export default function MuscleSorenessScreen() {
 
       if (lastWorkoutDate) {
         const lastDate = DDMMYYYYToDate(lastWorkoutDate);
-        // TODO: Remove once issues with TrainingGenerator are fixed (#113)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         daysSinceLastWorkout = Math.round(
           (today.getTime() - lastDate.getTime()) /
             SharedConstants.TIME_IN_MS.DAY,
@@ -191,26 +188,22 @@ export default function MuscleSorenessScreen() {
 
     const sectionIndex = parseIntParam(params.sectionIndex);
 
-    // FIXME: Generated exerciseList is currently empty
-    // See https://github.com/sports-athletics/sports-athletic/issues/113
-    // const tg = new TrainingGenerator();
-    // const exerciseList = tg.generateTraining(
-    //   trainingType,
-    //   user,
-    //   selectedPlace,
-    //   exercises,
-    //   skillTrees,
-    //   weekdayNumber ?? 0,
-    //   equipment,
-    //   sectionIndex,
-    //   daysSinceLastWorkout,
-    //   {
-    //     exerciseData,
-    //     branchData,
-    //   },
-    // );
-
-    const exerciseList = DEFAULT_USER_EXERCISE_DATA_LIST;
+    const tg = new TrainingGenerator();
+    const exerciseList = tg.generateTraining(
+      trainingType,
+      user,
+      selectedPlace,
+      exercises,
+      skillTrees,
+      weekdayNumber ?? 0,
+      equipment,
+      sectionIndex,
+      daysSinceLastWorkout,
+      {
+        exerciseData,
+        branchData,
+      },
+    );
 
     // Save training data to store
     setExerciseList(exerciseList);

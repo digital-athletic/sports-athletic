@@ -49,7 +49,7 @@ const SKILL_TREES = [
   "WUSPEZIAL",
 ] as const;
 
-export type SkillTree = (typeof SKILL_TREES)[number];
+export type SkillTree = (typeof SKILL_TREES)[number] | "SUPPORT" | "SAKG";
 
 const SECTION_ORDER = [
   "BR",

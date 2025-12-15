@@ -1222,7 +1222,9 @@ export default class TrainingGenerator {
             possibleBranches.indexOf(randomId),
             1,
           )[0];
-          let { tags, levels } = skillTree[exerciseBranchId];
+          let { tags, levels: constLevels } = skillTree[exerciseBranchId];
+          let levels = JSON.parse(JSON.stringify(constLevels));
+
           for (let key in levels) {
             levels[key] = {
               exerciseId: levels[key].id

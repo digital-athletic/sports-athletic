@@ -245,6 +245,28 @@
       "PREVENTION_TILE_SHOULDER": "Shoulder",
       "PREVENTION_TILE_WRIST": "Wrist"
     },
+    "generator": {
+      "errorMsgOther": "An unexpected error occurred.",
+      "errorTitleGenerator": "No workout could be generated",
+      "errorTitleNoExercisesParamsX": "The following problems occurred: {{params}}",
+      "errorTitleNoExercisesSubtypeX": "No exercises can be used because of the following reasons: {{subtype}}",
+      "errorTitleTooMuchSorenessParamsX": "Some areas need more regeneration: {{params}}\nTry a regenerative workout instead.",
+      "errorTitleTooMuchSorenessSubtypeX": "You should not stress your body right now: {{subtype}}",
+      "errorTitleTooMuchSorenessTestWorkout": "You can not do your power test with muscle soreness. Do a low impact cardio or focus training instead.",
+      "errorTitleNoAnamnesisParamsX": "No anamnesis data: {{params}}",
+      "failedToLoadExerciseList": "Loading exercise list failed",
+      "errorSubtype": {
+        "SKILL_TREE": "Skilltree",
+        "SORENESS": "Muscle soreness",
+        "PAIN": "Pain",
+        "EQUIPMENT": "Equipment",
+        "OTHER": "Other",
+        "TEST_WORKOUT": "Power test",
+        "MULTIPLE_REGIONS": "Muscle soreness in multiple regions",
+        "MISSING_WORKOUT_DATA": "Missing workout data",
+        "PREV_SHORT_TRAINING_SORENESS": "No prevention training with muscle soreness in this area."
+      }
+    },
     "selectTraining": {
       "title": "Start training",
       "workoutNowMsg": "Start your workout now!",
@@ -266,11 +288,7 @@
       "loading": "preparing training",
       "title": "Muscle soreness",
       "placeAndEquipment": "Place & Equipment",
-      "continue": "Go on",
-      "planGenerator": {
-        "errorTitle": "Error",
-        "errorMessage": "Loading exercise list failed"
-      }
+      "continue": "Go on"
     },
     "status": {
       "week": "Week",
@@ -535,6 +553,12 @@
     "WADE_RECHTS": "right calf",
     "WADEN": "calfs",
     "WIRBELSAEULE": "spine"
+  },
+  "region": {
+    "OBERKOERPER": "Upper body",
+    "UNTERKOERPER": "Lower body",
+    "GANZKOERPER": "Full body",
+    "CORE": "Core"
   },
   "equipment": {
     "title": "Equipment",

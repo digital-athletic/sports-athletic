@@ -3,6 +3,7 @@ import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useAuthStore } from "@/store/authStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
+import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -62,12 +63,15 @@ export function useDeleteAccount() {
   const { clearProgress } = useExerciseProgressStore();
   const { resetData } = useAnamnesisStore();
   const { clearProfile } = useUserProfileStore();
+  const { resetUserWorkoutData } = useUserWorkoutStore();
 
   const deleteAccount = async () => {
     try {
       // TODO: Delete user from Supabase
       // See: https://github.com/sports-athletics/sports-athletic/issues/219
       logout();
+      // Resets training plan and workout data
+      resetUserWorkoutData();
       // Resets local exercise progress data
       clearProgress();
       // Resets local anamnesis data

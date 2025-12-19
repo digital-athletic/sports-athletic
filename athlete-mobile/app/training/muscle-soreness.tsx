@@ -10,6 +10,8 @@ import {
 } from "@/constants/workoutConstants";
 import { PlaceSelection } from "@/features/equipment/PlaceSelection";
 import { type UserType } from "@/features/profile/models/User";
+import { isGeneratorError } from "@/features/training/generators/GeneratorError";
+import { buildGeneratorErrorMessage } from "@/features/training/generators/generatorErrorUtils";
 import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
 import { ExerciseType } from "@/features/training/models/Exercise";
 import { TrainingType } from "@/features/training/models/Training";
@@ -129,8 +131,8 @@ export default function MuscleSorenessScreen() {
 
     if (!exercises) {
       Alert.alert(
-        t("training.muscleSoreness.planGenerator.errorTitle"),
-        t("training.muscleSoreness.planGenerator.errorMessage"),
+        t("common.error"),
+        t("training.generator.failedToLoadExerciseList"),
       );
       return;
     }
@@ -234,25 +236,24 @@ export default function MuscleSorenessScreen() {
 
       setLoading(false);
     } catch (e) {
-      console.error(e);
-      if (e instanceof Error) {
+      let message = t("common.error");
+
+      if (isGeneratorError(e)) {
+        message = buildGeneratorErrorMessage(e, t);
+        Logger.logError(new Error(message));
+      } else if (e instanceof Error) {
         Logger.logError(e);
       }
 
-      const message = t("common.error");
-      Alert.alert(
-        t("training.muscleSoreness.planGenerator.errorTitle"),
-        message,
-        [
-          {
-            text: t("common.ok"),
-            onPress: async () => {
-              setLoading(false);
-              router.replace("/(tabs)/(home)");
-            },
+      Alert.alert(t("training.generator.errorTitleGenerator"), message, [
+        {
+          text: t("common.ok"),
+          onPress: async () => {
+            setLoading(false);
+            router.replace("/(tabs)/(home)");
           },
-        ],
-      );
+        },
+      ]);
     }
   };
 

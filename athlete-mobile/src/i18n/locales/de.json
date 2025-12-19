@@ -245,6 +245,28 @@
       "PREVENTION_TILE_SHOULDER": "Schulter",
       "PREVENTION_TILE_WRIST": "Handgelenk"
     },
+    "generator": {
+      "errorMsgOther": "Ein unerwarteter Fehler ist aufgetreten.",
+      "errorTitleGenerator": "Es konnte kein Training erstellt werden",
+      "errorTitleNoExercisesParamsX": "Folgende Probleme traten auf: {{params}}",
+      "errorTitleNoExercisesSubtypeX": "Aus folgendem Grund konnten keine Übungen gefunden werden: {{subtype}}",
+      "errorTitleTooMuchSorenessParamsX": "Folgende Bereiche benötigen noch Regeneration: {{params}}\nDu kannst stattdessen ein regeneratives Training machen.",
+      "errorTitleTooMuchSorenessSubtypeX": "Momentan solltest du deinen Körper nicht belasten: {{subtype}}",
+      "errorTitleTooMuchSorenessTestWorkout": "Mit Muskelkater kannst du den Krafttest nicht machen. Absolviere stattdessen einen regenerativen Lauf oder ein Fokus-Training.",
+      "errorTitleNoAnamnesisParamsX": "Keine Anamnesedaten: {{params}}",
+      "failedToLoadExerciseList": "Laden der Übungsliste fehlgeschlagen",
+      "errorSubtype": {
+        "SKILL_TREE": "Skillbaum",
+        "SORENESS": "Muskelkater",
+        "PAIN": "Beschwerden",
+        "EQUIPMENT": "Ausrüstung",
+        "OTHER": "Anderer",
+        "TEST_WORKOUT": "Krafttest",
+        "MULTIPLE_REGIONS": "Muskelkater in mehreren Regionen",
+        "MISSING_WORKOUT_DATA": "Keine Trainingsdaten",
+        "PREV_SHORT_TRAINING_SORENESS": "Kein Präventions-Training mit Muskelkater in dieser Region möglich."
+      }
+    },
     "selectTraining": {
       "title": "Dein Training starten",
       "workoutNowMsg": "Starte jetzt dein Training!",
@@ -266,11 +288,7 @@
       "loading": "Training wird vorbereitet",
       "title": "Muskelkater",
       "placeAndEquipment": "Trainingsort & Ausrüstung",
-      "continue": "Weiter",
-      "planGenerator": {
-        "errorTitle": "Fehler",
-        "errorMessage": "Laden der Übungsliste fehlgeschlagen"
-      }
+      "continue": "Weiter"
     },
     "status": {
       "week": "Woche",
@@ -535,6 +553,12 @@
     "WADE_RECHTS": "rechte Wade",
     "WADEN": "Waden",
     "WIRBELSAEULE": "Wirbelsäule"
+  },
+  "region": {
+    "OBERKOERPER": "Oberkörper",
+    "UNTERKOERPER": "Unterkörper",
+    "GANZKOERPER": "Ganzkörper",
+    "CORE": "Core"
   },
   "equipment": {
     "title": "Ausrüstung",

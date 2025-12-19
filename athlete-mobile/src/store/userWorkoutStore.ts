@@ -29,6 +29,7 @@ export interface UserWorkoutState {
   setTags: (tags: string[]) => void;
   setTrainingPlan: (plan: TrainingPlanType | null) => void;
   setTemporalData: (data: TemporalDataType[]) => void;
+  resetUserWorkoutData: () => void;
   replaceBranchInTrainingPlan: (
     sectionIndex: number,
     weekday: number,
@@ -114,6 +115,13 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
       setTemporalData: (data) =>
         set((state) => {
           state.temporalData = data;
+        }),
+
+      resetUserWorkoutData: () =>
+        set((state) => {
+          state.workoutData = DEFAULT_WORKOUT_DATA;
+          state.trainingPlan = null;
+          state.temporalData = undefined;
         }),
 
       /**

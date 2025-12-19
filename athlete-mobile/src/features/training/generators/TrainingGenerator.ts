@@ -8,8 +8,11 @@ import {
   type MaxValuesType,
 } from "@/features/training/models/MaxValues";
 import type { SetListEntryType } from "@/features/training/models/SetListEntry";
-import type { TemporalData } from "@/features/training/models/TemporalData";
-import type { TrainingType } from "@/features/training/models/Training";
+import type { TemporalDataType } from "@/features/training/models/TemporalData";
+import type {
+  SkillType,
+  TrainingType,
+} from "@/features/training/models/Training";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { getSectionForDate } from "@/features/training/trainingUtils";
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
@@ -44,21 +47,21 @@ import type { SkillTreeType } from "@/store/skillTreesStore";
 import { getTagValues } from "@/utils/tagUtils";
 
 // Intensity
-import IntensityBAS from "../../../../assets/data/generator/intensity/BAS";
-import IntensityCARDIO1LAKTAT from "../../../../assets/data/generator/intensity/CARDIO_1_LAKTAT";
-import IntensityCARDIO1SHORT from "../../../../assets/data/generator/intensity/CARDIO_1_SHORT";
-import IntensityCARDIO2 from "../../../../assets/data/generator/intensity/CARDIO_2";
-import IntensityCARDIO3 from "../../../../assets/data/generator/intensity/CARDIO_3";
-import IntensityDEFAULT from "../../../../assets/data/generator/intensity/DEFAULT";
-import IntensityDEFAULTKG from "../../../../assets/data/generator/intensity/DEFAULTKG";
-import IntensityGKS from "../../../../assets/data/generator/intensity/GKS";
-import IntensityPREV from "../../../../assets/data/generator/intensity/PREV";
-import IntensitySA from "../../../../assets/data/generator/intensity/SA";
-import IntensitySAKG from "../../../../assets/data/generator/intensity/SAKG";
-import IntensitySK from "../../../../assets/data/generator/intensity/SK";
-import IntensitySKKG from "../../../../assets/data/generator/intensity/SKKG";
-import IntensitySWR2 from "../../../../assets/data/generator/intensity/SWR2";
-import IntensitySWR2KG from "../../../../assets/data/generator/intensity/SWR2KG";
+import { IntensityBAS } from "../../../../assets/data/generator/intensity/BAS";
+import { IntensityCARDIO_1_LAKTAT } from "../../../../assets/data/generator/intensity/CARDIO_1_LAKTAT";
+import { IntensityCARDIO_1_SHORT } from "../../../../assets/data/generator/intensity/CARDIO_1_SHORT";
+import { IntensityCARDIO_2 } from "../../../../assets/data/generator/intensity/CARDIO_2";
+import { IntensityCARDIO_3 } from "../../../../assets/data/generator/intensity/CARDIO_3";
+import { IntensityDEFAULT } from "../../../../assets/data/generator/intensity/DEFAULT";
+import { IntensityDEFAULT_KG } from "../../../../assets/data/generator/intensity/DEFAULTKG";
+import { IntensityGKS } from "../../../../assets/data/generator/intensity/GKS";
+import { IntensityPREV } from "../../../../assets/data/generator/intensity/PREV";
+import { IntensitySA } from "../../../../assets/data/generator/intensity/SA";
+import { IntensitySA_KG } from "../../../../assets/data/generator/intensity/SAKG";
+import { IntensitySK } from "../../../../assets/data/generator/intensity/SK";
+import { IntensitySK_KG } from "../../../../assets/data/generator/intensity/SKKG";
+import { IntensitySWR_2 } from "../../../../assets/data/generator/intensity/SWR2";
+import { IntensitySWR_2_KG } from "../../../../assets/data/generator/intensity/SWR2KG";
 
 // Pause
 import PauseSUPERSETS from "../../../../assets/data/generator/pause/SUPERSETS";
@@ -86,8 +89,8 @@ export default class TrainingGenerator {
     givenSection?: number,
     daysSinceLastWorkout: number,
     userExerciseData: {
-      exerciseData: Record<number, UserExerciseDataType>;
-      branchData: Record<number, UserExerciseBranchDataType>;
+      exerciseData: Record<number, UserExerciseDataType | undefined>;
+      branchData: Record<number, UserExerciseBranchDataType | undefined>;
     },
   ): UserExerciseDataType[] => {
     if (type === "TEST_WORKOUT") {
@@ -733,7 +736,7 @@ export default class TrainingGenerator {
 
     let userLevel = getTagValues(user.workoutData.tags, TagGroups.LEVEL)[0];
 
-    let temporalData: TemporalData[] = user.temporalData;
+    let temporalData: TemporalDataType[] = user.temporalData;
 
     //select current section => max start date of those with start date before today
     let today = new Date();
@@ -3842,22 +3845,23 @@ const getStartValues = (data, gender: string, level: string) => {
   return result;
 };
 
-const getIntensityBySkill = (skill: string) => {
+export const getIntensityBySkill = (skill: SkillType) => {
   switch (skill) {
+    // use SWR2 till exercises can be distinguished between SWR1 and SWR2
     case "SWR1":
     case "SWR1KG":
     case "SWR2":
-      return IntensitySWR2;
+      return IntensitySWR_2;
     case "SWR2KG":
-      return IntensitySWR2KG;
+      return IntensitySWR_2_KG;
     case "CARDIO_3":
-      return IntensityCARDIO3;
+      return IntensityCARDIO_3;
     case "CARDIO_2":
-      return IntensityCARDIO2;
+      return IntensityCARDIO_2;
     case "CARDIO_1_LAKTAT":
-      return IntensityCARDIO1LAKTAT;
+      return IntensityCARDIO_1_LAKTAT;
     case "CARDIO_1_SHORT":
-      return IntensityCARDIO1SHORT;
+      return IntensityCARDIO_1_SHORT;
     case "BAS":
       return IntensityBAS;
     case "GKS":
@@ -3872,15 +3876,15 @@ const getIntensityBySkill = (skill: string) => {
     case "SA":
       return IntensitySA;
     case "SAKG":
-      return IntensitySAKG;
+      return IntensitySA_KG;
     case "SK":
       return IntensitySK;
     case "SKKG":
-      return IntensitySKKG;
+      return IntensitySK_KG;
     case "MAX":
     case "MAX_KRAFT":
       return IntensityDEFAULT;
     default:
-      return IntensityDEFAULTKG;
+      return IntensityDEFAULT_KG;
   }
 };

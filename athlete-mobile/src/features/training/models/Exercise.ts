@@ -1,19 +1,25 @@
+import { GenderTag } from "./Intensity";
+import { TrainingLevelType } from "./TrainingLevel";
+import { TrainingParameterType } from "./TrainingParameter";
+
 type ValueTypeType = "weightFMax" | "weightAbsolute" | "Unknown" | "Single";
 
-type ValueType = {
-  default: { [key: string]: string };
-  m: { [key: string]: string };
-  w: { [key: string]: string };
-  k: { [key: string]: string };
+export type ValueType = Partial<
+  Record<GenderTag, Partial<Record<TrainingLevelType, string>>>
+> & {
   type?: {
     type: ValueTypeType;
   };
 };
 
-type ExerciseValuesType = {
+export type ExerciseValuesType = {
   startValue: ValueType;
   targetValue: ValueType;
 };
+
+export type ExerciseValues = Partial<
+  Record<TrainingParameterType, ExerciseValuesType>
+>;
 
 export type ExerciseType = {
   id: number;
@@ -24,12 +30,7 @@ export type ExerciseType = {
   description: string;
   picture: string;
   video: string;
-  values: {
-    duration: ExerciseValuesType;
-    height: ExerciseValuesType;
-    repetition: ExerciseValuesType;
-    weight: ExerciseValuesType;
-  };
+  values: ExerciseValues;
   tags: string[];
   isAdvanceByReps: boolean;
   isAdvanceByDuration: boolean;

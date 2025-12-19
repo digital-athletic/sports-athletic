@@ -1,4 +1,4 @@
-import { SkillTypes } from "@/constants/workoutConstants";
+import { isSkillTypes } from "@/constants/workoutConstants";
 import { ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
 import {
   DEFAULT_MAX_VALUES,
@@ -32,7 +32,7 @@ export interface UserWorkoutState {
   replaceBranchInTrainingPlan: (
     sectionIndex: number,
     weekday: number,
-    skillId: SkillTypes,
+    skillId: string,
     branchIdToReplace: number,
     branchesToFillIn: ExerciseBranchType[],
   ) => void;
@@ -110,6 +110,7 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
         set((state) => {
           state.workoutData.maxValues = maxValues;
         }),
+
       setTemporalData: (data) =>
         set((state) => {
           state.temporalData = data;
@@ -142,18 +143,25 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
 
           const training = trainings.find((t) => t.weekday === weekday);
 
-          // Find the branch to replace
-          const skillBranches = training?.skills[skillId];
-          const branchIndex = skillBranches?.findIndex(
-            (branch) => branch.exerciseBranchId === branchIdToReplace,
-          );
+          if (isSkillTypes(skillId)) {
+            // Find the branch to replace
+            const skillBranches = training?.skills[skillId];
+            const branchIndex = skillBranches?.findIndex(
+              (branch) => branch.exerciseBranchId === branchIdToReplace,
+            );
 
-          // Find the training for the given skill
-          if (!training || !skillBranches || !branchIndex || branchIndex === -1)
-            return;
+            // Find the training for the given skill
+            if (
+              !training ||
+              !skillBranches ||
+              typeof branchIndex !== "number" ||
+              branchIndex === -1
+            )
+              return;
 
-          // Replace the branch with new branches (immer handles immutability)
-          skillBranches.splice(branchIndex, 1, ...branchesToFillIn);
+            // Replace the branch with new branches (immer handles immutability)
+            skillBranches.splice(branchIndex, 1, ...branchesToFillIn);
+          }
         }),
     })),
     {

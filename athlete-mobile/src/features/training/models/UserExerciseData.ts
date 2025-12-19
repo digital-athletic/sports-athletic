@@ -15,7 +15,7 @@ export type UserExerciseDataType = {
   skipped?: boolean; // save for completed workout
   set?: number[]; // [0] active run - [1] num of sets
   skill: SkillType;
-  feedback: {
+  feedback?: {
     difficulty: ExerciseDifficultyType;
     streakCounter?: number; //number of times that the current "difficulty" value has been chosen in a row
   };

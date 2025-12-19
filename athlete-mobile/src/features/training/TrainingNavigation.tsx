@@ -33,7 +33,6 @@ export interface TrainingNavigationProps {
   isTest: boolean;
   repsValue: number;
   changeReps: (value: string) => void;
-  saveRepsInput: (value: string) => boolean;
   pauseToggled: (isPaused: boolean) => void;
 }
 
@@ -60,7 +59,6 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
   isTest,
   repsValue,
   changeReps,
-  saveRepsInput,
   pauseToggled,
   exerciseId,
 }) => {

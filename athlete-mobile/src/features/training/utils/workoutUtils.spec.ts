@@ -1,8 +1,8 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { getTagValues } from "@/utils/tagUtils";
-import { type ExerciseType } from "../models/Exercise";
-import { type MaxValuesType, DEFAULT_MAX_VALUES } from "../models/MaxValues";
+import { ExerciseValuesType, type ExerciseType } from "../models/Exercise";
+import { DEFAULT_MAX_VALUES, type MaxValuesType } from "../models/MaxValues";
 import { type SkillType, type TrainingTimeType } from "../models/Training";
 import { type UserExerciseDataType } from "../models/UserExerciseData";
 import {
@@ -105,20 +105,20 @@ describe("workoutUtils", () => {
     let mockMaxValues: MaxValuesType;
 
     beforeEach(() => {
-      const baseValue = {
+      const baseValue: ExerciseValuesType = {
         startValue: {
           default: {},
           m: {},
           w: {},
           k: {},
-          type: { type: "Unknown" as const },
+          type: { type: "Unknown" },
         },
         targetValue: {
           default: {},
           m: {},
           w: {},
           k: {},
-          type: { type: "Unknown" as const },
+          type: { type: "Unknown" },
         },
       };
 
@@ -238,14 +238,14 @@ describe("workoutUtils", () => {
           exerciseId: 1,
           set: [3, 3],
           repetition: 10,
-          skill: "PREVENTION" as SkillType,
+          skill: "PREVENTION",
           feedback: { difficulty: "SUCCEEDED" },
         },
         {
           exerciseId: 2,
           set: [2, 3],
           repetition: 8,
-          skill: "PREVENTION" as SkillType,
+          skill: "PREVENTION",
           feedback: { difficulty: "SUCCEEDED" },
         },
       ];
@@ -266,14 +266,14 @@ describe("workoutUtils", () => {
           exerciseId: 999999,
           set: [1, 1],
           duration: 30,
-          skill: "PREVENTION" as SkillType,
+          skill: "PREVENTION",
           feedback: { difficulty: "SUCCEEDED" },
         },
         {
           exerciseId: 1,
           set: [1, 1],
           repetition: 10,
-          skill: "PREVENTION" as SkillType,
+          skill: "PREVENTION",
           feedback: { difficulty: "SUCCEEDED" },
         },
       ];
@@ -294,7 +294,7 @@ describe("workoutUtils", () => {
           exerciseId: 1,
           set: [1, 1],
           repetition: -1,
-          skill: "PREVENTION" as SkillType,
+          skill: "PREVENTION",
           feedback: { difficulty: "SUCCEEDED" },
         },
       ];
@@ -317,25 +317,25 @@ describe("workoutUtils", () => {
           repetition: 10,
           weight: 50,
           weightType: "weightAbsolute",
-          skill: "PREVENTION" as SkillType,
+          skill: "PREVENTION",
           feedback: { difficulty: "SUCCEEDED" },
         },
       ];
 
-      const baseValue = {
+      const baseValue: ExerciseValuesType = {
         startValue: {
           default: {},
           m: {},
           w: {},
           k: {},
-          type: { type: "Unknown" as const },
+          type: { type: "Unknown" },
         },
         targetValue: {
           default: {},
           m: {},
           w: {},
           k: {},
-          type: { type: "Unknown" as const },
+          type: { type: "Unknown" },
         },
       };
       const mockExercise: ExerciseType = {
@@ -375,7 +375,7 @@ describe("workoutUtils", () => {
           set: [1, 1],
           repetition: 5,
           height: 20,
-          skill: "PREVENTION" as SkillType,
+          skill: "PREVENTION",
           feedback: { difficulty: "SUCCEEDED" },
         },
       ];
@@ -432,7 +432,7 @@ describe("workoutUtils", () => {
           set: [1, 1],
           repetition: 10,
           duration: 50,
-          skill: "PREVENTION" as SkillType,
+          skill: "PREVENTION",
           feedback: { difficulty: "SUCCEEDED" },
         },
       ];

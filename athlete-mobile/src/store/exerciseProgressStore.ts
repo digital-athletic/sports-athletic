@@ -12,8 +12,8 @@ export interface UserExerciseBranchDataType {
 
 export interface ExerciseProgressState {
   // Exercise-level data
-  exerciseData: Record<number, UserExerciseDataType>;
-  branchData: Record<number, UserExerciseBranchDataType>;
+  exerciseData: Record<number, UserExerciseDataType | undefined>;
+  branchData: Record<number, UserExerciseBranchDataType | undefined>;
 
   // User progression
   xp: number;
@@ -22,10 +22,7 @@ export interface ExerciseProgressState {
 
   // Actions - Exercise Data
   setExerciseData: (data: Record<number, UserExerciseDataType>) => void;
-  updateExercise: (
-    exerciseId: number,
-    data: Partial<UserExerciseDataType>,
-  ) => void;
+  updateExercise: (exerciseId: number, data: UserExerciseDataType) => void;
   setBranchLevel: (branchId: number, level: number) => void;
 
   // Actions - User Progress
@@ -80,26 +77,105 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
       updateExercise: (exerciseId, data) =>
         set((state) => {
           const existing = state.exerciseData[exerciseId];
+
           if (!existing) {
             // When creating new exercise, data must include required fields
-            state.exerciseData[exerciseId] = {
-              ...data,
+            const update: UserExerciseDataType = {
               exerciseId,
-              feedback: data.feedback || { difficulty: null },
-              skill: data.skill || "WARMUP",
+              skill: data.skill,
             };
-          } else {
-            // Merge with existing data while preserving required fields
-            state.exerciseData[exerciseId] = {
-              ...existing,
-              ...data,
-            };
+
+            if (data.feedback) {
+              update.feedback = {
+                difficulty: data.feedback.difficulty || null,
+                streakCounter: 1,
+              };
+            }
+            if (typeof data.height === "number") {
+              update.height = data.height;
+            }
+            if (data.maxFLevelAdjustment) {
+              update.maxFLevelAdjustment = data.maxFLevelAdjustment;
+            }
+            if (data.maxFRepetitions) {
+              update.maxFRepetitions = data.maxFRepetitions;
+            }
+            if (typeof data.nextWeightPercentage === "number") {
+              update.nextWeightPercentage = data.nextWeightPercentage;
+            }
+            if (typeof data.repetition === "number") {
+              update.repetition = data.repetition;
+            }
+            if (data.set) {
+              update.set = data.set;
+            }
+            if (typeof data.skipped === "boolean") {
+              update.skipped = data.skipped;
+            }
+            if (typeof data.weight === "number") {
+              update.weight = data.weight;
+            }
+            if (typeof data.weightType === "string") {
+              update.weightType = data.weightType;
+            }
+
+            state.exerciseData[exerciseId] = update;
+            return;
+          }
+
+          if (data.feedback) {
+            const prevDifficulty = existing.feedback?.difficulty;
+
+            // Handle streak counter
+            if (prevDifficulty && prevDifficulty === data.feedback.difficulty) {
+              existing.feedback = {
+                difficulty: data.feedback.difficulty,
+                streakCounter: (existing.feedback?.streakCounter ?? 0) + 1,
+              };
+            } else {
+              existing.feedback = {
+                difficulty: data.feedback.difficulty,
+                streakCounter: 1,
+              };
+            }
+          }
+          if (typeof data.height === "number") {
+            existing.height = data.height;
+          }
+          if (data.maxFLevelAdjustment) {
+            existing.maxFLevelAdjustment = data.maxFLevelAdjustment;
+          }
+          if (data.maxFRepetitions) {
+            existing.maxFRepetitions = data.maxFRepetitions;
+          }
+          if (typeof data.nextWeightPercentage === "number") {
+            existing.nextWeightPercentage = data.nextWeightPercentage;
+          }
+          if (typeof data.repetition === "number") {
+            existing.repetition = data.repetition;
+          }
+          if (data.set) {
+            existing.set = data.set;
+          }
+          if (typeof data.skipped === "boolean") {
+            existing.skipped = data.skipped;
+          }
+          if (typeof data.weight === "number") {
+            existing.weight = data.weight;
+          }
+          if (typeof data.weightType === "string") {
+            existing.weightType = data.weightType;
           }
         }),
 
       setBranchLevel: (branchId, level) =>
         set((state) => {
-          state.branchData[branchId] = { branchId, level };
+          const branch = state.branchData[branchId];
+          if (branch) {
+            branch.level = level;
+          } else {
+            state.branchData[branchId] = { branchId, level };
+          }
         }),
 
       addXP: (amount) =>

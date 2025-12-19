@@ -212,10 +212,10 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseFeedback(0, "SUCCEEDED");
+        result.current.setExerciseFeedback(10, "SUCCEEDED");
       });
 
-      expect(result.current.exerciseList?.[0].feedback.difficulty).toBe(
+      expect(result.current.exerciseList?.[0]?.feedback?.difficulty).toBe(
         "SUCCEEDED",
       );
     });
@@ -224,10 +224,10 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseFeedback(1, "TOO_EASY");
+        result.current.setExerciseFeedback(20, "TOO_EASY");
       });
 
-      expect(result.current.exerciseList?.[1].feedback.difficulty).toBe(
+      expect(result.current.exerciseList?.[1]?.feedback?.difficulty).toBe(
         "TOO_EASY",
       );
     });
@@ -236,10 +236,10 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseFeedback(2, "TOO_HARD");
+        result.current.setExerciseFeedback(30, "TOO_HARD");
       });
 
-      expect(result.current.exerciseList?.[2].feedback.difficulty).toBe(
+      expect(result.current.exerciseList?.[2]?.feedback?.difficulty).toBe(
         "TOO_HARD",
       );
     });
@@ -248,15 +248,15 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseFeedback(0, "SUCCEEDED");
-        result.current.setExerciseFeedback(2, "TOO_EASY");
+        result.current.setExerciseFeedback(10, "SUCCEEDED");
+        result.current.setExerciseFeedback(30, "TOO_EASY");
       });
 
-      expect(result.current.exerciseList?.[0].feedback.difficulty).toBe(
+      expect(result.current.exerciseList?.[0]?.feedback?.difficulty).toBe(
         "SUCCEEDED",
       );
-      expect(result.current.exerciseList?.[1].feedback.difficulty).toBeNull();
-      expect(result.current.exerciseList?.[2].feedback.difficulty).toBe(
+      expect(result.current.exerciseList?.[1]?.feedback?.difficulty).toBeNull();
+      expect(result.current.exerciseList?.[2]?.feedback?.difficulty).toBe(
         "TOO_EASY",
       );
     });
@@ -265,16 +265,16 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseFeedback(0, "SUCCEEDED");
+        result.current.setExerciseFeedback(10, "SUCCEEDED");
       });
-      expect(result.current.exerciseList?.[0].feedback.difficulty).toBe(
+      expect(result.current.exerciseList?.[0]?.feedback?.difficulty).toBe(
         "SUCCEEDED",
       );
 
       act(() => {
-        result.current.setExerciseFeedback(0, "TOO_HARD");
+        result.current.setExerciseFeedback(10, "TOO_HARD");
       });
-      expect(result.current.exerciseList?.[0].feedback.difficulty).toBe(
+      expect(result.current.exerciseList?.[0]?.feedback?.difficulty).toBe(
         "TOO_HARD",
       );
     });
@@ -284,7 +284,7 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseFeedback(0, "SUCCEEDED");
+        result.current.setExerciseFeedback(10, "SUCCEEDED");
       });
 
       expect(result.current.exerciseList).toBeNull();
@@ -304,7 +304,7 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseSkipped(0);
+        result.current.setExerciseSkipped(10);
       });
 
       expect(result.current.exerciseList?.[0].skipped).toBe(true);
@@ -314,7 +314,7 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseSkipped(1);
+        result.current.setExerciseSkipped(20);
       });
 
       expect(result.current.exerciseList?.[0].skipped).toBe(false);
@@ -326,8 +326,8 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseSkipped(0);
-        result.current.setExerciseSkipped(2);
+        result.current.setExerciseSkipped(10);
+        result.current.setExerciseSkipped(30);
       });
 
       expect(result.current.exerciseList?.[0].skipped).toBe(true);
@@ -340,7 +340,7 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseSkipped(0);
+        result.current.setExerciseSkipped(10);
       });
 
       expect(result.current.exerciseList).toBeNull();
@@ -926,12 +926,12 @@ describe("useTrainingStore", () => {
       act(() => {
         result.current.addSkillTime("SWR", 30000);
         result.current.addPauseTime(2000);
-        result.current.setExerciseFeedback(0, "SUCCEEDED");
+        result.current.setExerciseFeedback(10, "SUCCEEDED");
       });
 
       expect(result.current.time.skill.SWR).toBe(30000);
       expect(result.current.time.pause).toBe(2000);
-      expect(result.current.exerciseList?.[0].feedback.difficulty).toBe(
+      expect(result.current.exerciseList?.[0]?.feedback?.difficulty).toBe(
         "SUCCEEDED",
       );
 
@@ -1053,14 +1053,14 @@ describe("useTrainingStore", () => {
 
       act(() => {
         result.current.setExerciseList(null);
-        result.current.setExerciseFeedback(0, "SUCCEEDED");
-        result.current.setExerciseSkipped(0);
+        result.current.setExerciseFeedback(10, "SUCCEEDED");
+        result.current.setExerciseSkipped(10);
       });
 
       expect(result.current.exerciseList).toBeNull();
     });
 
-    it("should handle out-of-bounds exercise indices", () => {
+    it("should handle unknown exercise ids", () => {
       const { result } = renderHook(() => useTrainingStore());
       const exercises: UserExerciseDataType[] = [
         {
@@ -1073,10 +1073,12 @@ describe("useTrainingStore", () => {
 
       act(() => {
         result.current.setExerciseList(exercises);
-        result.current.setExerciseFeedback(999, "SUCCEEDED"); // Out of bounds
+        result.current.setExerciseFeedback(-1, "SUCCEEDED"); // Unknown exercise Id
       });
 
-      expect(result.current.exerciseList?.[0].feedback.difficulty).toBeNull();
+      expect(
+        result.current.exerciseList?.[0]?.feedback?.difficulty ?? null,
+      ).toBeNull();
     });
   });
 });

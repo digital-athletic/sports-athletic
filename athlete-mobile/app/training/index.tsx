@@ -124,8 +124,8 @@ export default function SelectTraining() {
         const exercise = exercises?.find((ed) => ed.id === id);
 
         if (
-          exercise?.values.weight.startValue.type?.type === "weightFMax" ||
-          exercise?.values.weight.targetValue.type?.type === "weightFMax"
+          exercise?.values.weight?.startValue.type?.type === "weightFMax" ||
+          exercise?.values.weight?.targetValue.type?.type === "weightFMax"
         ) {
           needsFmaxValues = true;
           break;

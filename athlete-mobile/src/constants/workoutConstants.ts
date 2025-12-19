@@ -9,11 +9,21 @@ const AGE_GROUPS = {
   ADULT: "ADULT",
 } as const;
 
+export type AgeGroupTag = (typeof AGE_GROUPS)[keyof typeof AGE_GROUPS];
+
+export const isAgeGroupTag = (value: unknown): value is AgeGroupTag =>
+  typeof value === "string" && value in AGE_GROUPS;
+
 const LEVELS = {
   BEGINNER: "BEGINNER",
   ADVANCED: "ADVANCED",
   PROFESSIONAL: "PROFESSIONAL",
 } as const;
+
+export type LevelTag = (typeof LEVELS)[keyof typeof LEVELS];
+
+export const isLevelTag = (value: unknown): value is LevelTag =>
+  typeof value === "string" && value in LEVELS;
 
 const AGE_GROUPS_MAX_AGE = {
   CHILD: 16,
@@ -382,7 +392,12 @@ export const PREVENTION_TILES: TileData[] = [
   },
 ];
 
-const VALUE_TYPE_NAMES = ["duration", "height", "repetition", "weight"];
+const VALUE_TYPE_NAMES = [
+  "duration",
+  "height",
+  "repetition",
+  "weight",
+] as const;
 
 const DURATION_OPTIONS = {
   DEFAULT: [
@@ -797,7 +812,7 @@ const EXERCISE_DIRECTIONS = {
   UNTERKOERPER: "UNTERKOERPER",
 };
 
-const TEST_EXERCISES = {
+const TEST_EXERCISES: Record<number, string | undefined> = {
   7: "bench_press",
   25: "squad",
   54: "shoulder_press",
@@ -810,7 +825,7 @@ const TEST_EXERCISES = {
   355: "bench_press",
 };
 
-const TEST_EXERCISES_DIRECTIONS = {
+const TEST_EXERCISES_DIRECTIONS: Record<number, string[] | undefined> = {
   /*
    * 7: Bankdrücken mit 2 KH SWR
    * 25: Kniebeuge mit LH SWR Level 2
@@ -871,134 +886,140 @@ const EXERCISING_BENCH_EXERCISES = [
   622, 623, 624, 625, 962, 626, 963, 627, 964, 628, 965,
 ];
 
-const MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT = {
-  ADOLESCENT: {
-    ADVANCED: {
-      EASY: {
-        65: 3,
-        67.5: 3,
-        70: 3,
-        72.5: 2,
-        75: 2,
-        77.5: 2,
-        80: 1,
+type WeightToRepetitions = Record<number, number>;
+type DifficultyToWeight = Record<string, WeightToRepetitions>;
+type LevelToDifficulty = Record<LevelTag, DifficultyToWeight>;
+type AgeGroupToLevel = Record<AgeGroupTag, Partial<LevelToDifficulty>>;
+
+const MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT: Partial<AgeGroupToLevel> =
+  {
+    ADOLESCENT: {
+      ADVANCED: {
+        EASY: {
+          65: 3,
+          67.5: 3,
+          70: 3,
+          72.5: 2,
+          75: 2,
+          77.5: 2,
+          80: 1,
+        },
+        MEDIUM: {
+          65: 5,
+          67.5: 5,
+          70: 5,
+          72.5: 3,
+          75: 3,
+          77.5: 3,
+          80: 2,
+        },
+        HARD: {
+          65: 6,
+          67.5: 6,
+          70: 6,
+          72.5: 5,
+          75: 5,
+          77.5: 5,
+          80: 3,
+        },
       },
-      MEDIUM: {
-        65: 5,
-        67.5: 5,
-        70: 5,
-        72.5: 3,
-        75: 3,
-        77.5: 3,
-        80: 2,
-      },
-      HARD: {
-        65: 6,
-        67.5: 6,
-        70: 6,
-        72.5: 5,
-        75: 5,
-        77.5: 5,
-        80: 3,
-      },
-    },
-    PROFESSIONAL: {
-      EASY: {
-        65: 5,
-        67.5: 5,
-        70: 5,
-        72.5: 3,
-        75: 3,
-        77.5: 3,
-        80: 2,
-      },
-      MEDIUM: {
-        65: 6,
-        67.5: 6,
-        70: 6,
-        72.5: 5,
-        75: 5,
-        77.5: 5,
-        80: 3,
-      },
-      HARD: {
-        65: 6,
-        67.5: 6,
-        70: 6,
-        72.5: 6,
-        75: 6,
-        77.5: 6,
-        80: 5,
-      },
-    },
-  },
-  ADULT: {
-    ADVANCED: {
-      EASY: {
-        65: 3,
-        67.5: 3,
-        70: 3,
-        72.5: 2,
-        75: 2,
-        77.5: 2,
-        80: 1,
-      },
-      MEDIUM: {
-        65: 5,
-        67.5: 5,
-        70: 5,
-        72.5: 3,
-        75: 3,
-        77.5: 3,
-        80: 2,
-      },
-      HARD: {
-        65: 6,
-        67.5: 6,
-        70: 6,
-        72.5: 5,
-        75: 5,
-        77.5: 5,
-        80: 3,
+      PROFESSIONAL: {
+        EASY: {
+          65: 5,
+          67.5: 5,
+          70: 5,
+          72.5: 3,
+          75: 3,
+          77.5: 3,
+          80: 2,
+        },
+        MEDIUM: {
+          65: 6,
+          67.5: 6,
+          70: 6,
+          72.5: 5,
+          75: 5,
+          77.5: 5,
+          80: 3,
+        },
+        HARD: {
+          65: 6,
+          67.5: 6,
+          70: 6,
+          72.5: 6,
+          75: 6,
+          77.5: 6,
+          80: 5,
+        },
       },
     },
-    PROFESSIONAL: {
-      EASY: {
-        65: 5,
-        67.5: 5,
-        70: 5,
-        72.5: 3,
-        75: 3,
-        77.5: 3,
-        80: 2,
-        82.5: 1,
-        85: 1,
+    ADULT: {
+      ADVANCED: {
+        EASY: {
+          65: 3,
+          67.5: 3,
+          70: 3,
+          72.5: 2,
+          75: 2,
+          77.5: 2,
+          80: 1,
+        },
+        MEDIUM: {
+          65: 5,
+          67.5: 5,
+          70: 5,
+          72.5: 3,
+          75: 3,
+          77.5: 3,
+          80: 2,
+        },
+        HARD: {
+          65: 6,
+          67.5: 6,
+          70: 6,
+          72.5: 5,
+          75: 5,
+          77.5: 5,
+          80: 3,
+        },
       },
-      MEDIUM: {
-        65: 6,
-        67.5: 6,
-        70: 6,
-        72.5: 5,
-        75: 5,
-        77.5: 5,
-        80: 3,
-        82.5: 2,
-        85: 2,
-        87.5: 1,
-        90: 1,
-      },
-      HARD: {
-        75: 6,
-        77.5: 6,
-        80: 5,
-        82.5: 3,
-        85: 3,
-        87.5: 2,
-        90: 2,
+      PROFESSIONAL: {
+        EASY: {
+          65: 5,
+          67.5: 5,
+          70: 5,
+          72.5: 3,
+          75: 3,
+          77.5: 3,
+          80: 2,
+          82.5: 1,
+          85: 1,
+        },
+        MEDIUM: {
+          65: 6,
+          67.5: 6,
+          70: 6,
+          72.5: 5,
+          75: 5,
+          77.5: 5,
+          80: 3,
+          82.5: 2,
+          85: 2,
+          87.5: 1,
+          90: 1,
+        },
+        HARD: {
+          75: 6,
+          77.5: 6,
+          80: 5,
+          82.5: 3,
+          85: 3,
+          87.5: 2,
+          90: 2,
+        },
       },
     },
-  },
-};
+  };
 
 const MAX_KRAFT_REPETITIONS_WARMUP = [
   { level: "WARMUP", repetitions: 6 },

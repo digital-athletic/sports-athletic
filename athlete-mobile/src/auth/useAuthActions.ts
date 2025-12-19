@@ -1,5 +1,8 @@
-import { useAuthStore } from "@/store/authStore";
 import { logout as supabaseLogout } from "@/services/AuthService";
+import { useAnamnesisStore } from "@/store/anamnesisStore";
+import { useAuthStore } from "@/store/authStore";
+import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
+import { useUserProfileStore } from "@/store/userProfileStore";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -56,11 +59,21 @@ export function useLogout() {
 export function useDeleteAccount() {
   const { t } = useTranslation();
   const { logout } = useLogout();
+  const { clearProgress } = useExerciseProgressStore();
+  const { resetData } = useAnamnesisStore();
+  const { clearProfile } = useUserProfileStore();
 
   const deleteAccount = async () => {
     try {
-      // TODO: Call Firebase delete user API when available
-      await logout();
+      // TODO: Delete user from Supabase
+      // See: https://github.com/sports-athletics/sports-athletic/issues/219
+      logout();
+      // Resets local exercise progress data
+      clearProgress();
+      // Resets local anamnesis data
+      resetData();
+      // Resets user profile
+      clearProfile();
     } catch {
       Alert.alert(t("onboarding.alertErrorTitle"), t("more.deleteFailed"));
     }

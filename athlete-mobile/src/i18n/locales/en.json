@@ -337,6 +337,8 @@
     },
     "active": {
       "set": "{{current}} of {{total}}",
+      "sets_one": "Set",
+      "sets_other": "Sets",
       "nextExercise": "Next: {{exerciseName}}",
       "finished": "Training completed",
       "repetitions": "Repetitions",

@@ -1,18 +1,48 @@
 import { AwesomeIcon } from "@/common/AwesomeIcon";
+import { TagGroups } from "@/constants/tagGroups";
+import {
+  ExerciseDifficultyType,
+  isLevelTag,
+  WorkoutConstants,
+} from "@/constants/workoutConstants";
 import { TrainingNavigation } from "@/features/training/TrainingNavigation";
+import { getIntensityBySkill } from "@/features/training/generators/TrainingGenerator";
+import { ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
+import { SkillType } from "@/features/training/models/Training";
+import { isTrainingLevel } from "@/features/training/models/TrainingLevel";
+import { TrainingParameterType } from "@/features/training/models/TrainingParameter";
 import { useTrainingStore } from "@/features/training/trainingStore";
+import { ageGroupFor } from "@/features/training/utils/ageUtils";
+import { hasWeights } from "@/features/training/utils/equipmentUtils";
+import { getRegionsForPreventionSkills } from "@/features/training/utils/preventionUtils";
+import { getSkillTree } from "@/features/training/utils/skillTreeUtils";
+import {
+  calculateAdjustedMaxValues,
+  getEquivalentBranchWithGivenLevel,
+  getExerciseStartValue,
+  getExerciseTargetValue,
+  getMaxValueForExercise,
+  getRoundedResultForValueAndStep,
+  getValueByGenderAndLevel,
+  isInclineBenchPress,
+  maxWeightByEpley,
+} from "@/features/training/utils/workoutUtils";
 import { Logger } from "@/services/Logger";
+import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useExercisesStore } from "@/store/exercisesStore";
+import { useSkillTreesStore } from "@/store/skillTreesStore";
+import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { useTheme } from "@/theme/theme";
+import { getTagValues } from "@/utils/tagUtils";
 import { VideoPlayer } from "@/video/VideoPlayer";
 import { useKeepAwake } from "expo-keep-awake";
 import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState, type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, BackHandler, Keyboard } from "react-native";
+import { Alert, BackHandler } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type TrainingActiveProps = Record<string, never>;
@@ -31,14 +61,18 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
 
   // Training store state
   const {
+    equipment,
     exerciseList,
     activeTraining,
     setTrainingEndTime,
     setExerciseSkipped,
-    updateExerciseFeedbackData,
+    setExerciseFeedback,
   } = useTrainingStore();
-
+  const { skillTrees } = useSkillTreesStore();
+  const { branchData, setBranchLevel, updateExercise } =
+    useExerciseProgressStore();
   const { getExerciseById } = useExercisesStore();
+  const { workoutData, replaceBranchInTrainingPlan } = useUserWorkoutStore();
 
   // Local state
   const [activeExerciseIndex, setActiveExerciseIndex] = useState(0);
@@ -47,6 +81,16 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const [repsValue, setRepsValue] = useState(0);
   const exerciseStartTimeRef = useRef<number>(Date.now());
   const pauseStartRef = useRef<number>(0);
+
+  const currentExercise = exerciseList?.[activeExerciseIndex];
+  const exerciseId = currentExercise?.exerciseId ?? -1;
+  const currentExerciseData = getExerciseById(exerciseId);
+
+  const nextExerciseIndex = activeExerciseIndex + 1;
+  const hasNextExercise = nextExerciseIndex < (exerciseList?.length ?? 0);
+  const nextExercise = hasNextExercise
+    ? exerciseList?.[nextExerciseIndex]
+    : undefined;
 
   const logTrainingEvent = useCallback(
     (eventName: string, data?: Record<string, unknown>) => {
@@ -91,8 +135,884 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     [logTrainingEvent, router, setTrainingEndTime, t],
   );
 
+  const saveBranchData = (
+    skill: SkillType,
+    branchId: number,
+    exerciseId: number,
+  ) => {
+    const userExerciseBranch = branchData[branchId];
+    if (branchId !== -1 && !userExerciseBranch) {
+      // first time an exercise of this branch was completed => save level
+      const newSkillTree = Object.assign(
+        getSkillTree(skillTrees, skill, [], true),
+        getSkillTree(skillTrees, skill, [], false),
+      );
+      const newBranch = newSkillTree[branchId];
+      if (newBranch) {
+        const levels = newBranch.levels;
+
+        let userLevelString: string = WorkoutConstants.LEVELS.ADVANCED;
+        if (workoutData) {
+          userLevelString = getTagValues(workoutData.tags, TagGroups.LEVEL)[0];
+        }
+        const userLevel =
+          userLevelString === WorkoutConstants.LEVELS.BEGINNER
+            ? 1
+            : userLevelString === WorkoutConstants.LEVELS.ADVANCED
+              ? 2
+              : 3;
+        let newLevel = -1;
+        if (levels[userLevel] && levels[userLevel].id === exerciseId) {
+          newLevel = userLevel;
+        } else {
+          const match = Object.entries(levels).find(
+            ([_, v]) => v.id === exerciseId,
+          );
+          if (match && !isNaN(parseInt(match[0]))) {
+            newLevel = parseInt(match[0]);
+          }
+        }
+        if (newLevel > 0) {
+          setBranchLevel(branchId, newLevel);
+          Logger.logEvent("save_initial_branch_data", {
+            skill: skill,
+            branchId: branchId,
+            level: newLevel,
+          });
+        } else {
+          Logger.logEvent("save_initial_branch_data_failed_no_level_found", {
+            skill: skill,
+            branchId: branchId,
+            exerciseId: exerciseId,
+          });
+        }
+      }
+    } else {
+      Logger.logEvent("save_initial_branch_data_failed_no_branch_found", {
+        skill: skill,
+        branchId: branchId,
+        exerciseId: exerciseId,
+      });
+    }
+  };
+
+  const updateBranchLevel = (
+    levelUp: boolean,
+    branchId: number,
+    exerciseId: number,
+    skill: SkillType,
+    ageGroup: string,
+  ) => {
+    let levelChange = levelUp ? 1 : -1;
+
+    const sectionIndex = activeTraining?.sectionIndex;
+    const weekday = activeTraining?.weekday;
+
+    // find new level or branch
+    const allSkillTrees = getSkillTree(skillTrees, "ALL", [], true);
+    const branch = allSkillTrees[branchId];
+
+    const userBranchData = branchData[branchId];
+    let branchLevel = 1;
+    if (userBranchData) {
+      branchLevel = userBranchData.level;
+    } else {
+      // as fallback look for exercise id in branch levels
+      branchLevel = Object.keys(branch.levels).reduce<number>(
+        (branchLevel, level) => {
+          const levelNum = Number(level);
+
+          // start with lowest level
+          if (branchLevel === -1 && !isNaN(levelNum)) {
+            return levelNum;
+          }
+          // if branchLevel is not matching yet, but level is
+          if (
+            !isNaN(levelNum) &&
+            branchLevel !== levelNum &&
+            branch.levels[level] &&
+            branch.levels[level].id === exerciseId
+          ) {
+            return levelNum;
+          }
+          return branchLevel;
+        },
+        -1,
+      );
+    }
+
+    let newLevel = branchLevel + levelChange;
+
+    if (branch) {
+      let newExerciseId;
+      if (branch.levels && branch.levels[newLevel]) {
+        newExerciseId = branch.levels[newLevel].id;
+        while (
+          newLevel > 1 &&
+          branch.levels[newLevel] &&
+          newExerciseId &&
+          newExerciseId === exerciseId
+        ) {
+          // skip level with same exercise
+          if (levelUp) newLevel++;
+          else newLevel--;
+          if (branch.levels[newLevel]) {
+            newExerciseId = branch.levels[newLevel].id;
+          }
+        }
+      }
+      if (newExerciseId) {
+        // use existing next branch level
+        setBranchLevel(branchId, newLevel);
+        Logger.logEvent(
+          "branch_level_" + (levelUp ? "increased" : "decreased"),
+          {
+            branchId: branchId,
+            newBranchLevel: newLevel,
+          },
+        );
+      } else if (activeTraining?.type === "PLAN") {
+        // look for branch with new level entry - at least level 1
+        let searchLevel = Math.max(1, newLevel);
+
+        let prevRegions = getRegionsForPreventionSkills([skill]);
+
+        let skillTree = getSkillTree(skillTrees, skill, [], false);
+        if (hasWeights(equipment)) {
+          // add skill branches with weights
+          skillTree = Object.assign(
+            skillTree,
+            getSkillTree(skillTrees, skill, [], true),
+          );
+        }
+        let branchIdsInUse =
+          exerciseList?.reduce<number[]>((acc, { branchId }) => {
+            const branch = Number(branchId);
+            if (isNaN(branch) || branch === -1 || acc.indexOf(branch) > -1) {
+              return acc;
+            }
+            return acc.concat([branch]);
+          }, []) ?? [];
+        let equivalentBranches: ExerciseBranchType[] = [];
+        // find another branch that has searchLevel
+        const equivalent = getEquivalentBranchWithGivenLevel(
+          skillTree,
+          branchId,
+          branch,
+          searchLevel,
+          branchIdsInUse,
+          equipment,
+          ageGroup,
+          workoutData.gender,
+          prevRegions,
+          skill,
+        );
+        if (equivalent) {
+          equivalentBranches.push(equivalent);
+        }
+
+        const [match] = equivalentBranches;
+        if (
+          match &&
+          getTagValues(branch.tags, TagGroups.PREVENTION).length === 0 &&
+          getTagValues(branch.tags, TagGroups.SIDE).indexOf("ONE") > -1 &&
+          getTagValues(match.tags, TagGroups.SIDE).indexOf("BOTH") > -1
+        ) {
+          // add one more to compensate for other side branch used before if not prevention
+          const equivalentOtherSide = getEquivalentBranchWithGivenLevel(
+            skillTree,
+            branchId,
+            match,
+            searchLevel,
+            branchIdsInUse,
+            equipment,
+            ageGroup,
+            workoutData.gender,
+            prevRegions,
+            skill,
+          );
+          if (equivalentOtherSide) {
+            equivalentBranches.push(equivalentOtherSide);
+          }
+        }
+        if (match && sectionIndex !== undefined && weekday !== undefined) {
+          if (match.exerciseBranchId !== branchId) {
+            Logger.logEvent("branch_changed_for_new_level", {
+              previousBranchId: branchId,
+              newBranchIds: equivalentBranches.map(
+                (eb) => eb?.exerciseBranchId,
+              ),
+            });
+            // replace last branch in plan
+            replaceBranchInTrainingPlan(
+              sectionIndex,
+              weekday,
+              skill,
+              branchId,
+              equivalentBranches,
+            );
+          } else {
+            Logger.logEvent("branch_not_changed_because_only_found_the_same", {
+              branchId: branchId,
+            });
+          }
+        } else {
+          Logger.logEvent(
+            "branch_not_changed_because_no_matching_branch_found",
+            {
+              branchId: branchId,
+            },
+          );
+        }
+      }
+    } else {
+      Logger.logEvent(
+        "Branch with id " + branchId + " not found for leveling up",
+      );
+    }
+  };
+
+  /**
+   * saves the user exercise values
+   * these values where adjusted in the training generator
+   *
+   * checks if the branch level needs to increase and changes exercise in training plan
+   */
+  const saveExerciseAndBranchData = () => {
+    const skill = currentExercise?.skill;
+    let branchId =
+      typeof currentExercise?.branchId == "string"
+        ? parseInt(currentExercise.branchId)
+        : -1;
+    let id = exerciseId !== 999999 ? exerciseId : -1;
+
+    if (skill) {
+      saveBranchData(skill, branchId, id);
+    }
+
+    // save user general data
+    const weight = currentExercise?.weight ?? 0;
+    const duration = currentExercise?.duration ?? 0;
+    const height = currentExercise?.height ?? 0;
+    const weightPercentage = currentExercise?.nextWeightPercentage ?? 0;
+    const maxFRepetitions = currentExercise?.maxFRepetitions ?? [];
+    const reps = currentExercise?.repetition ?? 0;
+    if (reps === -1) {
+      //is test exercise, don't save
+      id = -1;
+    }
+
+    // do not increase exercises values in all workouts
+    const type = activeTraining?.type;
+
+    const levelTagValues = getTagValues(workoutData.tags, TagGroups.LEVEL)[0];
+    const levelTag = isLevelTag(levelTagValues) ? levelTagValues : undefined;
+    const lowercaseTag = levelTag?.toLowerCase();
+    const userLevel = isTrainingLevel(lowercaseTag) ? lowercaseTag : undefined;
+
+    if (
+      type &&
+      WorkoutConstants.NO_INCREASE_WORKOUT_PLAN_TYPE.indexOf(type) === -1 &&
+      skill &&
+      WorkoutConstants.NO_INCREASE_SKILL_TYPE.indexOf(skill) === -1
+    ) {
+      let doSave = false;
+      // check target values after last of all cardio exercises
+      if (skill?.includes("CARDIO")) {
+        // save data after last cardio in training
+        if (
+          id !== 999999 &&
+          (!hasNextExercise ||
+            nextExercise?.exerciseId === 999999 ||
+            nextExercise?.skill.indexOf("CARDIO") === -1)
+        ) {
+          // find the main cardio exercise
+          let cardioBranchId = "-1";
+          let cardioExerciseId = -1;
+          let pointer = activeExerciseIndex;
+          while (cardioBranchId === "-1" && pointer > -1) {
+            const exercise = exerciseList?.[pointer];
+            if (exercise && exercise.skill?.includes("CARDIO")) {
+              if (typeof exercise.branchId === "string") {
+                cardioBranchId = exercise.branchId;
+              }
+              cardioExerciseId = exercise.exerciseId;
+            }
+            pointer--;
+          }
+          if (cardioBranchId !== "-1") {
+            branchId = parseInt(cardioBranchId);
+            id = cardioExerciseId;
+            doSave = true;
+          }
+        }
+      }
+      // check target values after last set of max exercises
+      else if (skill?.includes("MAX")) {
+        if (
+          exerciseId !== -1 &&
+          currentExercise?.set &&
+          currentExercise.set[0] === currentExercise.set[1]
+        ) {
+          // choose adjustment for maxF by age, userlevel and level of repetitions
+          const ageGroup = ageGroupFor(workoutData.birthday);
+
+          // get adjustment of exercise
+          const exerciseData = exerciseList?.find(
+            (item) => item.exerciseId === exerciseId,
+          );
+          let adjustment = null;
+          if (exerciseData?.feedback) {
+            adjustment = exerciseData?.feedback.difficulty;
+          }
+
+          // get maxFRepetitions and maxFWeightPercentage done in this training
+          let maxValue = currentExerciseData
+            ? getMaxValueForExercise(currentExerciseData, workoutData.maxValues)
+            : null;
+          // get weightPercentage done in this training
+          let weightPercentage =
+            typeof maxValue === "number"
+              ? getRoundedResultForValueAndStep((weight / maxValue) * 100, 2.5)
+              : null;
+          let maxFRepetitionsNew = exerciseData?.maxFRepetitions ?? [];
+
+          // control adjustments
+          let increaseWeight = false;
+          let decreaseWeight = false;
+          let levelUp = false;
+          let levelDown = false;
+          const genderTag =
+            ageGroup === WorkoutConstants.AGE_GROUPS.CHILD
+              ? "k"
+              : workoutData.gender === "MALE"
+                ? "m"
+                : "w";
+          const maxFRepsHard =
+            ageGroup !== "CHILD" && levelTag
+              ? WorkoutConstants.MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT[
+                  ageGroup
+                ]?.[levelTag]?.HARD
+              : null;
+
+          let maximumWeightPercentage =
+            ageGroup !== "CHILD" && maxFRepsHard
+              ? Math.max(
+                  Object.keys(maxFRepsHard)
+                    .map(parseInt)
+                    .filter((v) => !isNaN(v))
+                    .sort((a, b) => b - a)[0],
+                )
+              : null;
+          // set exercise targetValue if entered from webTool
+          const targetValue = currentExerciseData?.values.weight?.targetValue;
+          if (targetValue) {
+            if (userLevel && targetValue[genderTag]?.[userLevel]) {
+              maximumWeightPercentage = parseFloat(
+                targetValue[genderTag][userLevel],
+              );
+            } else if (userLevel && targetValue.default?.[userLevel]) {
+              maximumWeightPercentage = parseFloat(
+                targetValue.default[userLevel],
+              );
+            }
+          }
+          let minimumWeightPercentage = levelTag
+            ? WorkoutConstants
+                .MAX_KRAFT_MINIMAL_WEIGHT_PERCENTAGE_PER_USER_LEVEL[levelTag]
+            : null;
+          let equipment = getTagValues(
+            currentExerciseData?.tags ?? [],
+            TagGroups.EQUIPMENT,
+          );
+          let exerciseDirections = getTagValues(
+            currentExerciseData?.tags ?? [],
+            TagGroups.EXERCISE_DIRECTION,
+          );
+          if (
+            isInclineBenchPress(equipment, exerciseDirections) &&
+            typeof minimumWeightPercentage === "number"
+          ) {
+            // reduce minimumWeightPercentage for inclined press
+            minimumWeightPercentage =
+              minimumWeightPercentage -
+              WorkoutConstants.MAX_KRAFT_INCLINE_BENCH_WEIGHT_DIFFERENCE;
+          }
+          // set exercise startValue if entered from webTool
+          if (currentExerciseData?.values.weight?.startValue) {
+            if (
+              userLevel &&
+              currentExerciseData?.values.weight?.startValue?.[genderTag]?.[
+                userLevel
+              ]
+            ) {
+              minimumWeightPercentage = Number(
+                currentExerciseData?.values.weight.startValue[genderTag][
+                  userLevel
+                ],
+              );
+            } else if (
+              userLevel &&
+              currentExerciseData?.values.weight?.startValue?.default?.[
+                userLevel
+              ]
+            ) {
+              minimumWeightPercentage = Number(
+                currentExerciseData?.values.weight.startValue.default[
+                  userLevel
+                ],
+              );
+            }
+          }
+          if (
+            (typeof weightPercentage === "number" &&
+              typeof maximumWeightPercentage === "number" &&
+              weightPercentage >= maximumWeightPercentage &&
+              maxFRepetitionsNew[maxFRepetitionsNew.length - 1].level ===
+                "HARD" &&
+              adjustment !== "TOO_HARD") ||
+            (maxFRepetitionsNew[maxFRepetitionsNew.length - 1].level ===
+              "MEDIUM" &&
+              adjustment === "TOO_EASY")
+          ) {
+            // No adjustment if max lvl and max weight is already reached
+            updateExercise(exerciseId, {
+              exerciseId,
+              skill,
+              feedback: { difficulty: null },
+            });
+            levelUp = true;
+          } else if (
+            typeof weightPercentage === "number" &&
+            typeof minimumWeightPercentage === "number" &&
+            weightPercentage <= minimumWeightPercentage &&
+            adjustment === "TOO_HARD"
+          ) {
+            // No adjustment if min weight is already too hard -> levelDown
+            updateExercise(exerciseId, {
+              exerciseId,
+              skill,
+              feedback: { difficulty: null },
+            });
+            levelDown = true;
+          } else if (
+            typeof weightPercentage === "number" &&
+            typeof maximumWeightPercentage === "number" &&
+            weightPercentage >= maximumWeightPercentage &&
+            maxFRepetitionsNew[maxFRepetitionsNew.length - 1].level ===
+              "MEDIUM" &&
+            adjustment === "TOO_EASY"
+          ) {
+            // No TOO_EASY adjustment if max lvl and max weight will be reached
+            updateExercise(exerciseId, {
+              exerciseId,
+              skill,
+              feedback: { difficulty: "SUCCEEDED" },
+            });
+          } else {
+            // adjust weight if needed
+            if (
+              (maxFRepetitionsNew[maxFRepetitionsNew.length - 1].level ===
+                "HARD" &&
+                adjustment !== "TOO_HARD") ||
+              (maxFRepetitionsNew[maxFRepetitionsNew.length - 1].level ===
+                "MEDIUM" &&
+                adjustment === "TOO_EASY")
+            ) {
+              // adjust weight up if jumping over HARD lvl
+              increaseWeight = true;
+            } else if (adjustment === "TOO_HARD") {
+              // adjust only weight down if is TOO_HARD
+              decreaseWeight = true;
+            }
+          }
+          let nextWeightPercentage = weightPercentage ?? undefined;
+          if (increaseWeight || decreaseWeight) {
+            if (increaseWeight && typeof nextWeightPercentage === "number") {
+              nextWeightPercentage +=
+                WorkoutConstants.MAX_KRAFT_WEIGHT_ADJUSTMENT["SUCCEEDED"];
+            } else if (typeof nextWeightPercentage === "number") {
+              nextWeightPercentage -=
+                WorkoutConstants.MAX_KRAFT_WEIGHT_ADJUSTMENT["TOO_HARD"];
+            }
+            // minimum weightPercentage for user
+            if (
+              typeof nextWeightPercentage === "number" &&
+              typeof minimumWeightPercentage === "number" &&
+              nextWeightPercentage < minimumWeightPercentage
+            )
+              nextWeightPercentage = minimumWeightPercentage;
+            // prevent bigger than maximum
+            if (
+              typeof nextWeightPercentage === "number" &&
+              typeof maximumWeightPercentage === "number" &&
+              nextWeightPercentage > maximumWeightPercentage
+            )
+              nextWeightPercentage = maximumWeightPercentage;
+          } else if (levelUp || levelDown) {
+            updateBranchLevel(levelUp, branchId, exerciseId, skill, ageGroup);
+          }
+
+          let newWeight = weight;
+          let newDuration = duration ? duration : undefined;
+          let newRepetition = reps ? reps : undefined;
+          // set new exercise values
+          updateExercise(exerciseId, {
+            exerciseId,
+            skill,
+            weight: newWeight,
+            nextWeightPercentage,
+            maxFRepetitions: maxFRepetitionsNew,
+            duration: newDuration,
+            repetition: newRepetition,
+            height,
+            weightType: currentExercise.weightType,
+          });
+        }
+      }
+      // check target values after last set of non cardio and max exercise
+      else if (
+        currentExercise?.set &&
+        currentExercise.set[0] === currentExercise.set[1]
+      ) {
+        doSave = true;
+      }
+      if (doSave) {
+        // do not increase values for pause/support exercises/others
+        if (branchId !== -1 && exerciseId !== -1 && skill) {
+          // from data/generator/TestIntensity
+          let intensity = getIntensityBySkill(skill);
+
+          // go on if exercise data found
+          if (currentExerciseData && userLevel) {
+            // use child values or gender otherwise
+            const ageGroup = ageGroupFor(workoutData.birthday);
+            const genderTag =
+              ageGroup === WorkoutConstants.AGE_GROUPS.CHILD
+                ? "k"
+                : workoutData.gender === "MALE"
+                  ? "m"
+                  : "w";
+
+            let eqTypes = getTagValues(
+              currentExerciseData.tags,
+              TagGroups.EQTYPE,
+            );
+            let targetValues: Partial<Record<TrainingParameterType, number>> =
+              {};
+            let startValues: Partial<Record<TrainingParameterType, number>> =
+              {};
+            let values = [
+              "duration",
+              "height",
+              "repetition",
+              "weight",
+            ] as const;
+            for (let value of values) {
+              targetValues[value] = getExerciseTargetValue(
+                intensity,
+                currentExerciseData,
+                value,
+                userLevel,
+                genderTag,
+              );
+
+              startValues[value] = getExerciseStartValue(
+                intensity,
+                currentExerciseData,
+                value,
+                userLevel,
+                genderTag,
+              );
+            }
+
+            let increaseWeight = false;
+            let decreaseWeight = false;
+            let levelUp = false;
+            let levelDown = false;
+
+            // check duration reched target
+            if (currentExerciseData.isAdvanceByDuration) {
+              if (eqTypes && eqTypes.indexOf("WEIGHTS") === -1) {
+                // non weight exercise reached duration target
+                if (
+                  typeof targetValues.duration === "number" &&
+                  duration >= targetValues.duration
+                ) {
+                  levelUp = true;
+                }
+                if (
+                  typeof startValues.duration === "number" &&
+                  duration < startValues.duration
+                ) {
+                  levelDown = true;
+                }
+              } else {
+                if (
+                  typeof targetValues.duration === "number" &&
+                  duration >= targetValues.duration
+                ) {
+                  if (
+                    typeof targetValues.weight === "number" &&
+                    weight >= targetValues.weight
+                  ) {
+                    // weight exercise reached duration and weight target
+                    levelUp = true;
+                  } else {
+                    //  weight exercise not at weight target yet
+                    increaseWeight = true;
+                  }
+                }
+                if (
+                  typeof startValues.duration === "number" &&
+                  duration < startValues.duration
+                ) {
+                  if (
+                    typeof startValues.weight === "number" &&
+                    weight < startValues.weight
+                  ) {
+                    // weight exercise reached duration and weight target
+                    levelDown = true;
+                  } else {
+                    //  weight exercise not at weight target yet
+                    decreaseWeight = true;
+                  }
+                }
+              }
+            }
+
+            // check repetitions reched target
+            if (currentExerciseData.isAdvanceByReps) {
+              if (eqTypes && eqTypes.indexOf("WEIGHTS") === -1) {
+                // non weight exercise reached repetition target
+                if (
+                  typeof targetValues.repetition === "number" &&
+                  reps >= targetValues.repetition
+                ) {
+                  levelUp = true;
+                }
+                if (
+                  typeof startValues.repetition === "number" &&
+                  reps < startValues.repetition
+                ) {
+                  levelDown = true;
+                }
+              } else {
+                if (
+                  typeof targetValues.repetition === "number" &&
+                  reps >= targetValues.repetition
+                ) {
+                  if (
+                    typeof targetValues.weight === "number" &&
+                    weight >= targetValues.weight
+                  ) {
+                    // weight exercise reached repetition and weight target
+                    levelUp = true;
+                  } else {
+                    //  weight exercise not at weight target yet
+                    increaseWeight = true;
+                  }
+                }
+                if (
+                  typeof startValues.repetition === "number" &&
+                  reps < startValues.repetition
+                ) {
+                  if (
+                    typeof startValues.weight === "number" &&
+                    weight < startValues.weight
+                  ) {
+                    // weight exercise reached repetition and weight target
+                    levelDown = true;
+                  } else {
+                    //  weight exercise not at weight target yet
+                    decreaseWeight = true;
+                  }
+                }
+              }
+            }
+            if (increaseWeight || decreaseWeight) {
+              let adjustment: ExerciseDifficultyType = increaseWeight
+                ? "SUCCEEDED"
+                : "TOO_HARD";
+              let newWeight = weight;
+              let nextWeightPercentage = weightPercentage
+                ? weightPercentage
+                : undefined;
+              let newDuration = duration ? duration : undefined;
+              let newRepetition = reps ? reps : undefined;
+              // increase weight
+              if (
+                (currentExerciseData.values.weight?.startValue.type &&
+                  currentExerciseData.values.weight.startValue.type.type ===
+                    "weightFMax") ||
+                (!currentExerciseData.values.weight?.startValue.type &&
+                  intensity.startValue.weight?.type &&
+                  intensity.startValue.weight.type.type === "weightFMax")
+              ) {
+                const weightFMaxAdjustment =
+                  intensity.adjustment.weightFMax?.default?.default?.[
+                    adjustment
+                  ];
+                if (typeof weightFMaxAdjustment === "number") {
+                  newWeight = weight + weightFMaxAdjustment;
+                }
+              } else {
+                const weightAbsoluteAdjustment =
+                  intensity.adjustment.weightAbsolute?.default?.default?.[
+                    adjustment
+                  ];
+                if (typeof weightAbsoluteAdjustment === "number") {
+                  newWeight = weight + weightAbsoluteAdjustment;
+                }
+              }
+
+              // reset duration
+              if (currentExerciseData.isAdvanceByDuration) {
+                let exerciseDurationStartValue = getValueByGenderAndLevel(
+                  currentExerciseData.values.duration?.startValue,
+                  genderTag,
+                  userLevel,
+                );
+                newDuration = exerciseDurationStartValue
+                  ? exerciseDurationStartValue
+                  : intensity.startValue.duration?.[genderTag]?.[userLevel];
+              }
+              // reset repetition
+              if (currentExerciseData.isAdvanceByReps) {
+                let repetitionDurationStartValue = getValueByGenderAndLevel(
+                  currentExerciseData.values.repetition?.startValue,
+                  genderTag,
+                  userLevel,
+                );
+                newRepetition = repetitionDurationStartValue
+                  ? repetitionDurationStartValue
+                  : intensity.startValue.repetition?.[genderTag]?.[userLevel];
+              }
+
+              // set new exercise values
+              updateExercise(exerciseId, {
+                exerciseId,
+                skill,
+                weight: newWeight,
+                nextWeightPercentage,
+                maxFRepetitions,
+                duration: newDuration,
+                repetition: newRepetition,
+                height,
+                weightType: currentExercise?.weightType,
+              });
+
+              // set user exercise difficulty to null, so its not adjusted in next training
+              updateExercise(exerciseId, {
+                exerciseId,
+                skill,
+                feedback: { difficulty: null },
+              });
+              Logger.logEvent(
+                "exercise_weight_" +
+                  (increaseWeight ? "increased" : "decreased"),
+                {
+                  exerciseId: exerciseId,
+                },
+              );
+            } else if (levelUp || levelDown) {
+              updateBranchLevel(levelUp, branchId, exerciseId, skill, ageGroup);
+            } else {
+              // no weight reset and no level up
+              let maxValue = getMaxValueForExercise(
+                currentExerciseData,
+                workoutData.maxValues,
+              );
+              let weightPercentage =
+                typeof maxValue === "number"
+                  ? (weight / maxValue) * 100
+                  : undefined;
+
+              updateExercise(exerciseId, {
+                exerciseId,
+                skill,
+                weight,
+                nextWeightPercentage: weightPercentage,
+                maxFRepetitions,
+                duration,
+                repetition: reps,
+                height,
+                weightType: currentExercise?.weightType,
+              });
+            }
+          }
+        }
+      }
+    }
+
+    // TODO: add completed totals in scope of:
+    // https://github.com/sports-athletics/sports-athletic/issues/203
+    // setProgressBefore(
+    //     exerciseId,
+    //     weight,
+    //     duration,
+    //     reps,
+    //     height
+    // );
+
+    // save global meta data
+    Logger.logEvent("exercise_completed", { exerciseId });
+  };
+
+  const saveRepsInput = async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const directions = WorkoutConstants.TEST_EXERCISES_DIRECTIONS[exerciseId];
+    let weight = currentExercise?.weight;
+    // add ten percent weight if test exercise used dumbbells
+    const isDumbbellExercise = getTagValues(
+      currentExerciseData?.tags ?? [],
+      TagGroups.EQUIPMENT,
+    ).some((eq) => eq === "DUMBBELL");
+
+    if (typeof weight === "number") {
+      if (isDumbbellExercise) {
+        // double for weight is only one KH
+        // add 10% to get value for LH
+        weight = 2 * weight * 1.1;
+      }
+
+      let maxValue = maxWeightByEpley(weight, repsValue);
+
+      // calculate max values for different settings
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      let result = calculateAdjustedMaxValues(maxValue);
+
+      // logging data
+      const exerciseName = WorkoutConstants.TEST_EXERCISES[exerciseId];
+      const age = ageGroupFor(workoutData.birthday);
+      const gender = workoutData.gender;
+      const level = getTagValues(workoutData.tags, TagGroups.LEVEL)[0];
+      Logger.logEvent("test_repitition_value_saved_" + exerciseName, {
+        value: repsValue,
+        age: age,
+        gender: gender,
+        level: level,
+      });
+
+      // TODO: save results in scope of:
+      // https://github.com/sports-athletics/sports-athletic/issues/204
+      // saveMaxValue(directions, result);
+    } else {
+      Logger.logEvent(
+        "no exercise direction found for test exercise with id ",
+        exerciseId,
+      );
+    }
+  };
+
   const advanceToNextExercise = () => {
     if (!exerciseList) return;
+
+    // handle reps
+    saveRepsInput();
+
+    // save exercise data
+    saveExerciseAndBranchData();
 
     if (activeExerciseIndex < exerciseList.length - 1) {
       setActiveExerciseIndex((prev) => prev + 1);
@@ -122,46 +1042,42 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   }, [saveAndNavigateToSuccess, t]);
 
   const handleExerciseSkipped = () => {
-    setExerciseSkipped(activeExerciseIndex);
+    setExerciseSkipped(exerciseId);
     Logger.logEvent("exercise_skipped", {
-      exerciseId: exerciseList?.[activeExerciseIndex]?.exerciseId,
+      exerciseId,
     });
     advanceToNextExercise();
   };
 
   const handleFeedback = (category: "TOO_EASY" | "TOO_HARD" | "SUCCEEDED") => {
-    updateExerciseFeedbackData(activeExerciseIndex, category);
-    Logger.logEvent("exercise_feedback", {
-      category,
-      exerciseId: exerciseList?.[activeExerciseIndex]?.exerciseId,
+    if (!currentExercise) return;
+
+    updateExercise(exerciseId, {
+      exerciseId,
+      skill: currentExercise.skill,
+      feedback: { difficulty: category },
     });
+    setExerciseFeedback(exerciseId, category);
+
+    if (category === "SUCCEEDED")
+      Logger.logEvent("exercise_completed_success", {
+        exerciseId: exerciseId,
+      });
+    if (category === "TOO_EASY")
+      Logger.logEvent("exercise_completed_easy", {
+        exerciseId: exerciseId,
+      });
+    if (category === "TOO_HARD")
+      Logger.logEvent("exercise_completed_hard", {
+        exerciseId: exerciseId,
+      });
+
     advanceToNextExercise();
   };
 
   const handleChangeReps = (value: string) => {
     const num = Number.parseInt(value) || 0;
     setRepsValue(num);
-  };
-
-  const handleSaveRepsInput = () => {
-    try {
-      Keyboard.dismiss();
-
-      // Validate input is numeric
-      if (repsValue <= 0) {
-        Alert.alert(t("common.error"), t("common.error"));
-        return false;
-      }
-
-      // TODO: Save test result with max value calculation via Epley formula
-      Logger.logEvent("test_repetition_value_saved", { value: repsValue });
-      setRepsValue(0);
-      return true;
-    } catch (error) {
-      Logger.logError(error as Error);
-      Alert.alert(t("common.error"), t("common.error"));
-      return false;
-    }
   };
 
   const handlePauseToggled = (wasPaused: boolean) => {
@@ -210,24 +1126,20 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     );
   }
 
-  const currentExercise = exerciseList[activeExerciseIndex];
-  const exerciseId = currentExercise?.exerciseId;
-  const nextExerciseIndex = activeExerciseIndex + 1;
-  const hasNextExercise = nextExerciseIndex < exerciseList.length;
-
   const progress = activeExerciseIndex / exerciseList.length;
   const isTestExercise = currentExercise?.repetition === -1;
-  const isCardioExercise = currentExercise?.skill?.includes("CARDIO");
+  const isCardioExercise = currentExercise?.skill?.includes("CARDIO") ?? false;
   const isPauseExercise = exerciseId === 999999;
   const hasDuration = !!currentExercise?.duration;
   const isLastInSet = currentExercise?.set?.[0] === currentExercise?.set?.[1];
 
-  const exerciseData = getExerciseById(exerciseId);
   const nextExerciseData = hasNextExercise
     ? getExerciseById(exerciseList[nextExerciseIndex].exerciseId)
     : undefined;
 
-  const name = isPauseExercise ? nextExerciseData?.name : exerciseData?.name;
+  const name = isPauseExercise
+    ? nextExerciseData?.name
+    : currentExerciseData?.name;
 
   const nextDisplayName = t("training.active.nextExercise", {
     exerciseName: hasNextExercise
@@ -235,10 +1147,27 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
       : t("training.active.finished"),
   });
 
-  const video = isPauseExercise ? nextExerciseData?.video : exerciseData?.video;
+  const video = isPauseExercise
+    ? nextExerciseData?.video
+    : currentExerciseData?.video;
 
   const isExerciseInformationVisible =
     typeof exerciseId === "number" && !isPauseExercise;
+
+  // if plan workout check skill.
+  // if short training check workout type
+  let isFeedbackSkill = false;
+  if (activeTraining?.type === "PLAN" && currentExercise) {
+    isFeedbackSkill =
+      WorkoutConstants.NO_INCREASE_SKILL_TYPE.indexOf(
+        currentExercise?.skill,
+      ) === -1;
+  } else if (activeTraining?.type) {
+    isFeedbackSkill =
+      WorkoutConstants.NO_INCREASE_WORKOUT_PLAN_TYPE.indexOf(
+        activeTraining.type,
+      ) === -1;
+  }
 
   const handleShowExerciseInformation = () => {
     if (!isExerciseInformationVisible) return;
@@ -331,12 +1260,14 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                   <Box alignItems="center">
                     <Text variant="title" textAlign="center">
                       {t("training.active.set", {
-                        current: currentExercise.set[0],
-                        total: currentExercise.set[1],
+                        current: currentExercise.set?.[0],
+                        total: currentExercise.set?.[1],
                       })}
                     </Text>
                     <Text variant="small" color="darkGrey1">
-                      {t("training.quickstart.QUICKSTART_WARM_UP")}
+                      {t("training.active.sets", {
+                        count: currentExercise.set?.[1],
+                      })}
                     </Text>
                   </Box>
                 )}
@@ -396,13 +1327,12 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
             videoIsFullScreen={isFullScreen}
             isFirstDurationInTraining={activeExerciseIndex === 0}
             isLastInSet={isLastInSet}
-            isFeedbackSkill={true}
+            isFeedbackSkill={isFeedbackSkill}
             isCardioExercise={isCardioExercise}
             isLastCardioExercise={isCardioExercise && !hasNextExercise}
             isTest={isTestExercise}
             repsValue={repsValue}
             changeReps={handleChangeReps}
-            saveRepsInput={handleSaveRepsInput}
             pauseToggled={handlePauseToggled}
           />
         )}

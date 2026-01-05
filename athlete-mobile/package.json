@@ -9,16 +9,18 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "clean": "expo prebuild --clean",
+    "clean:build": "rm -rf android && rm -rf ios",
     "lint": "expo lint --max-warnings 0",
     "format-check": "prettier . --check",
     "format-fix": "prettier . --write",
     "type-check": "tsc --noEmit",
     "test": "jest",
     "expo-router-generate-types": "expo customize tsconfig.json",
-    "build:device-dev-client": "rm -rf android && rm -rf ios && pnpm dlx eas-cli@latest build --profile development",
-    "build:simulator-dev-client": "rm -rf android && rm -rf ios && pnpm dlx eas-cli@latest build --profile development-simulator",
-    "build:preview": "rm -rf android && rm -rf ios && pnpm dlx eas-cli@latest build --profile preview",
-    "build:production": "rm -rf android && rm -rf ios && pnpm dlx eas-cli@latest build --profile production"
+    "build:device-dev-client": "pnpm run clean:build && pnpm dlx eas-cli@latest build --profile development",
+    "build:simulator-dev-client": "pnpm run clean:build && pnpm dlx eas-cli@latest build --profile development-simulator",
+    "build:preview": "pnpm run clean:build && pnpm dlx eas-cli@latest build --profile preview",
+    "build:production": "pnpm run clean:build && pnpm dlx eas-cli@latest build --profile production",
+    "submit:preview": "pnpm run clean:build && pnpm dlx eas-cli@latest build --profile preview --auto-submit"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

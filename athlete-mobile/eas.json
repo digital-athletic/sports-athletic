@@ -5,6 +5,7 @@
     },
     "development-simulator": {
       "extends": "base",
+      "environment": "development",
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
@@ -16,6 +17,7 @@
     },
     "development": {
       "extends": "base",
+      "environment": "development",
       "developmentClient": true,
       "distribution": "internal",
       "env": {
@@ -24,6 +26,7 @@
     },
     "preview": {
       "extends": "base",
+      "environment": "preview",
       "channel": "preview",
       "distribution": "store",
       "autoIncrement": true,
@@ -36,6 +39,7 @@
     },
     "production": {
       "extends": "base",
+      "environment": "production",
       "channel": "production",
       "distribution": "store",
       "autoIncrement": true,

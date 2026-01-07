@@ -247,29 +247,31 @@ export type SectionTypes =
   | "SAKG"
   | "SA";
 
-export const skillTypeValues = [
-  "SWR1",
-  "SWR1KG",
-  "SWR2",
-  "SWR2KG",
-  "MAX_KRAFT",
-  "SK",
-  "SKKG",
-  "SA",
-  "SAKG",
-  "BAS",
-  "BR",
-  "CD",
-  "GKS",
-  "HBCARDIO",
-  "MOB",
-  "PREVSHOULDER",
-  "PREVKNEE",
-  "PREVWRIST",
-  "PREVANKLE",
-  "PREVSPINE",
-  "WU",
-] as const;
+const SKILL_TYPES = {
+  SWR1: "SWR1",
+  SWR1KG: "SWR1KG",
+  SWR2: "SWR2",
+  SWR2KG: "SWR2KG",
+  MAX_KRAFT: "MAX_KRAFT",
+  SK: "SK",
+  SKKG: "SKKG",
+  SA: "SA",
+  SAKG: "SAKG",
+  BAS: "BAS",
+  BR: "BR",
+  CD: "CD",
+  GKS: "GKS",
+  HBCARDIO: "HBCARDIO",
+  MOB: "MOB",
+  PREVSHOULDER: "PREVSHOULDER",
+  PREVKNEE: "PREVKNEE",
+  PREVWRIST: "PREVWRIST",
+  PREVANKLE: "PREVANKLE",
+  PREVSPINE: "PREVSPINE",
+  WU: "WU",
+} as const;
+
+export const skillTypeValues = Object.values(SKILL_TYPES);
 
 export type SkillTypes = (typeof skillTypeValues)[number];
 
@@ -302,7 +304,7 @@ export type TileData = {
       type: SkillTypes | "PLAN" | "TEST_WORKOUT";
       weekday?: number;
       sectionIndex?: number;
-      origin?: string;
+      originPath?: string;
       sectionType?: SectionTypes;
       sectionCardioType?: CardioTypes;
       trainingFocus?: FocusType;
@@ -1111,6 +1113,7 @@ export const WorkoutConstants = {
   REP_DURATION_IN_S,
   SECTION_ORDER,
   SKILL_TREES,
+  SKILL_TYPES,
   SPORTS,
   SPORTS_IMAGES,
   SPORTS_SORTED,

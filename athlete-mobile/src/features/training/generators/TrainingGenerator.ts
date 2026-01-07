@@ -71,6 +71,7 @@ import TEST_WORKOUTS from "../../../../assets/data/generator/TEST_WORKOUTS";
 import TEST_WORKOUTS_START_VALUES from "../../../../assets/data/generator/TEST_WORKOUTS_START_VALUES";
 import TEST_WORKOUTS_WU_REGION from "../../../../assets/data/generator/TEST_WORKOUTS_WU_REGION";
 import {
+  getMaxValueForExercise,
   getRoundedResultForValueAndStep,
   roundWeightValue,
 } from "../utils/workoutUtils";
@@ -2918,7 +2919,8 @@ export default class TrainingGenerator {
       branchData: { [id: number]: UserExerciseBranchDataType };
     },
   ) => {
-    const userLevel = getTagValues(user.workoutData.tags, TagGroups.LEVEL)[0];
+    const userLevelTags = getTagValues(user.workoutData.tags, TagGroups.LEVEL);
+    const userLevel = userLevelTags[0] || WorkoutConstants.LEVELS.BEGINNER;
     // 5 min warm up to start
     let wuBranches = getSkillTree(skillTrees, "WU", [], true);
     let wuRegions = TEST_WORKOUTS_WU_REGION;
@@ -3001,10 +3003,17 @@ export default class TrainingGenerator {
     // make last pause duration 30sec
     wuSetList[wuSetList.length - 1].duration = 30;
 
-    let sortedExerciseIds: number[] = TEST_WORKOUTS[userLevel].default;
-    if (TEST_WORKOUTS[userLevel][user.workoutData.gender])
+    const testWorkout = TEST_WORKOUTS[userLevel];
+    if (!testWorkout) {
+      throw new Error(`Invalid userLevel for TEST_WORKOUT: ${userLevel}`);
+    }
+
+    let sortedExerciseIds: number[] = testWorkout.default;
+    const genderKey = user.workoutData.gender === "MALE" ? "m" : "w";
+    if (testWorkout[genderKey]) {
       // use gender specific if exists
-      sortedExerciseIds = TEST_WORKOUTS[userLevel][user.workoutData.gender];
+      sortedExerciseIds = testWorkout[genderKey];
+    }
     const sortedExercises = exercises
       .filter((entry) => {
         return sortedExerciseIds.indexOf(entry.id) > -1;

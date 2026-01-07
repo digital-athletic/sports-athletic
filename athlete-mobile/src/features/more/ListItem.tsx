@@ -22,6 +22,7 @@ export type ListItemProps = {
   backPath?: string;
   isLast?: boolean;
   isSubscribed?: boolean;
+  navParams?: Record<string, string>;
 } & (
   | {
       awesomeIconName: FontAwesomeIconName;
@@ -53,6 +54,7 @@ export const ListItem: FC<ListItemProps> = ({
   picPath,
   isLast = false,
   isSubscribed,
+  navParams,
 }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -87,7 +89,7 @@ export const ListItem: FC<ListItemProps> = ({
     // It has been verified that the allowed values are restricted to valid paths as expected.
     router.navigate({
       pathname: navPath,
-      params: { originPath: "/(tabs)/more" as Route },
+      params: { originPath: "/(tabs)/more" as Route, ...navParams },
     });
   };
 

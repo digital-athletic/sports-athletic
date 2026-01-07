@@ -40,9 +40,10 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
   const startTestWorkout = useCallback(() => {
     if (anamnesisCompleted) {
       if (isAllowedForTraining(subscription)) {
-        router.push(
-          "/training/muscle-soreness?type=TEST_WORKOUT&origin=Statistics",
-        );
+        router.push({
+          pathname: "/training/muscle-soreness",
+          params: { type: "TEST_WORKOUT", originPath: "/(tabs)/statistics" },
+        });
       } else {
         Alert.alert(
           t("statistics.powerTest.subscriptionExpired"),

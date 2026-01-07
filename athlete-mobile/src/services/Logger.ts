@@ -8,7 +8,7 @@ export class Logger {
   };
 
   static logError = async (error: Error) => {
-    if (__DEV__) console.log("Error log: ", error);
+    if (__DEV__) console.error(error);
   };
 
   static logPurchase = async (

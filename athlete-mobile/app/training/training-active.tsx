@@ -424,7 +424,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
           id !== 999999 &&
           (!hasNextExercise ||
             nextExercise?.exerciseId === 999999 ||
-            nextExercise?.skill.indexOf("CARDIO") === -1)
+            !nextExercise?.skill?.includes("CARDIO"))
         ) {
           // find the main cardio exercise
           let cardioBranchId = "-1";

@@ -165,7 +165,7 @@ export default function SelectTraining() {
               type: "PLAN",
               weekday: userTrainingDay.weekday,
               sectionIndex,
-              origin: "SelectTraining",
+              originPath: "/training",
               sectionType: section.type,
               sectionCardioType: section.cardioType,
               trainingFocus,
@@ -215,7 +215,7 @@ export default function SelectTraining() {
       Logger.logEvent("test_coaching_selected_start");
       router.push({
         pathname: "/training/muscle-soreness",
-        params: { type: "TEST_WORKOUT", origin: "SelectTraining" },
+        params: { type: "TEST_WORKOUT", originPath: "/training" },
       });
     } else {
       // no longer in test and not subscribed

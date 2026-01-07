@@ -43,7 +43,7 @@ type ScreenParams = {
   type: TrainingType;
   weekday?: string;
   sectionIndex?: string;
-  origin?: string;
+  originPath?: string;
   sectionType?: SectionTypes;
   sectionCardioType?: CardioTypes;
   trainingFocus?: FocusType;

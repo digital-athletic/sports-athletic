@@ -148,6 +148,10 @@ export default function MoreScreen() {
           <ListItem
             title={t("more.startNewTestWorkout")}
             navPath="/training/muscle-soreness"
+            navParams={{
+              type: "TEST_WORKOUT",
+              originPath: "/(tabs)/(more)/more",
+            }}
             picPath={require("../../../assets/img/more/iconKrafttest.png")}
             iconBackground="primary"
             isSubscribed={allowedForTraining}

@@ -1,7 +1,11 @@
 import type { UserType } from "@/features/profile/models/User";
 import type { ExerciseType } from "@/features/training/models/Exercise";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
+import type { SetListEntryType } from "@/features/training/models/SetListEntry";
 import type { SkillTreeType } from "@/store/skillTreesStore";
+import { fieldNamesToLowerCase } from "@/utils/fieldNames";
+import ExercisesData from "../../../../assets/data/generator/Exercises.json";
+import WU from "../../../../assets/data/generator/skillTrees/WU.json";
 import TrainingGenerator from "./TrainingGenerator";
 
 describe("TrainingGenerator", () => {
@@ -930,6 +934,417 @@ describe("TrainingGenerator", () => {
 
       expect(Array.isArray(result)).toBe(true);
       expect(result.length).toBe(0);
+    });
+  });
+
+  /**
+   * TEST_WORKOUT (Force Test) Integration Tests
+   *
+   * Testing Matrix:
+   * - Levels: BEGINNER, ADVANCED, PROFESSIONAL
+   * - Genders: MALE, FEMALE
+   *
+   * Special cases:
+   * - ADVANCED + MALE: Uses gender-specific exercises (m key)
+   * - All others: Use default exercises
+   * - Missing level tag: Falls back to BEGINNER
+   */
+  describe("TEST_WORKOUT (Force Test)", () => {
+    // Extended type for test workout entries which include skill property
+    type TestSetListEntry = SetListEntryType & {
+      skill: "WU" | "TEST";
+      weightType?: string;
+    };
+
+    const realExercises = fieldNamesToLowerCase(ExercisesData) as {
+      id: number;
+    }[];
+    const testSkillTrees = { WU: WU };
+
+    // Expected exercises by level and gender from TEST_WORKOUTS.ts
+    const EXPECTED_EXERCISES = {
+      BEGINNER: { default: [25, 7, 88, 317] },
+      ADVANCED: { default: [25, 7, 297, 317], m: [25, 342, 297, 54] },
+      PROFESSIONAL: { default: [25, 342, 297, 54] },
+    } as const;
+
+    const PAUSE_EXERCISE_ID = 999999;
+    const SETS_PER_EXERCISE = 3;
+    const STANDARD_PAUSE_SECONDS = 60;
+    const FINAL_SET_PAUSE_SECONDS = 120;
+    const WARMUP_TO_TEST_TRANSITION_PAUSE_SECONDS = 30;
+    const SET_1_REPS = 12;
+    const SET_2_REPS = 8;
+    const SET_3_REPS = -1;
+
+    const testUser = {
+      userId: "test-user",
+      workoutData: {
+        birthday: "01.01.1990",
+        gender: "MALE" as "MALE" | "FEMALE",
+        tags: ["LEVEL_ADVANCED"] as string[],
+        maxValues: {
+          testDate: "01.01.2020",
+          knee: { barbell: 100 },
+          horizontalPush: { barbell: 80 },
+          horizontalPull: { barbell: 70 },
+          verticalPush: { barbell: 60 },
+        } as Record<string, unknown>,
+      },
+      temporalData: [] as { tag: string }[],
+      trainingPlan: null,
+    };
+
+    const testUserExerciseData = {
+      exerciseData: {},
+      branchData: {},
+    };
+
+    const generateTestWorkout = (user: typeof testUser): TestSetListEntry[] => {
+      return generator.generateTraining(
+        "TEST_WORKOUT",
+        user as Parameters<typeof generator.generateTraining>[1],
+        "STUDIO",
+        realExercises as Parameters<typeof generator.generateTraining>[3],
+        testSkillTrees as Parameters<typeof generator.generateTraining>[4],
+        0,
+        [],
+        undefined,
+        0,
+        testUserExerciseData,
+      ) as unknown as TestSetListEntry[];
+    };
+
+    describe("Level × Gender Matrix", () => {
+      const testCases: {
+        level: keyof typeof EXPECTED_EXERCISES;
+        gender: "MALE" | "FEMALE";
+        expectedExerciseIds: readonly number[];
+      }[] = [
+        {
+          level: "BEGINNER",
+          gender: "MALE",
+          expectedExerciseIds: EXPECTED_EXERCISES.BEGINNER.default,
+        },
+        {
+          level: "BEGINNER",
+          gender: "FEMALE",
+          expectedExerciseIds: EXPECTED_EXERCISES.BEGINNER.default,
+        },
+        {
+          level: "ADVANCED",
+          gender: "MALE",
+          expectedExerciseIds: EXPECTED_EXERCISES.ADVANCED.m,
+        },
+        {
+          level: "ADVANCED",
+          gender: "FEMALE",
+          expectedExerciseIds: EXPECTED_EXERCISES.ADVANCED.default,
+        },
+        {
+          level: "PROFESSIONAL",
+          gender: "MALE",
+          expectedExerciseIds: EXPECTED_EXERCISES.PROFESSIONAL.default,
+        },
+        {
+          level: "PROFESSIONAL",
+          gender: "FEMALE",
+          expectedExerciseIds: EXPECTED_EXERCISES.PROFESSIONAL.default,
+        },
+      ];
+
+      it.each(testCases)(
+        "$level + $gender: generates correct exercise set",
+        ({ level, gender, expectedExerciseIds }) => {
+          const user = {
+            ...testUser,
+            workoutData: {
+              ...testUser.workoutData,
+              gender,
+              tags: [`LEVEL_${level}`],
+            },
+          };
+
+          const result = generateTestWorkout(user);
+          const testExercises = result.filter(
+            (entry) =>
+              entry.skill === "TEST" && entry.exerciseId !== PAUSE_EXERCISE_ID,
+          );
+
+          const actualExerciseIds = [
+            ...new Set(testExercises.map((e) => e.exerciseId)),
+          ];
+          expect({
+            exerciseIds: actualExerciseIds.sort((a, b) => a - b),
+            totalSets: testExercises.length,
+          }).toEqual({
+            exerciseIds: [...expectedExerciseIds].sort((a, b) => a - b),
+            totalSets: expectedExerciseIds.length * SETS_PER_EXERCISE,
+          });
+        },
+      );
+
+      it.each(testCases)(
+        "$level + $gender: sets have correct structure",
+        ({ level, gender, expectedExerciseIds }) => {
+          const user = {
+            ...testUser,
+            workoutData: {
+              ...testUser.workoutData,
+              gender,
+              tags: [`LEVEL_${level}`],
+            },
+          };
+
+          const result = generateTestWorkout(user);
+          const testExercises = result.filter(
+            (entry) =>
+              entry.skill === "TEST" && entry.exerciseId !== PAUSE_EXERCISE_ID,
+          );
+
+          expectedExerciseIds.forEach((exerciseId) => {
+            const exerciseSets = testExercises.filter(
+              (e) => e.exerciseId === exerciseId,
+            );
+
+            expect(
+              exerciseSets.map((s) => ({
+                set: s.set,
+                repetition: s.repetition,
+              })),
+            ).toEqual([
+              { set: [1, SETS_PER_EXERCISE], repetition: SET_1_REPS },
+              { set: [2, SETS_PER_EXERCISE], repetition: SET_2_REPS },
+              { set: [3, SETS_PER_EXERCISE], repetition: SET_3_REPS },
+            ]);
+          });
+        },
+      );
+
+      it.each(testCases)(
+        "$level + $gender: weights increase across sets",
+        ({ level, gender, expectedExerciseIds }) => {
+          const user = {
+            ...testUser,
+            workoutData: {
+              ...testUser.workoutData,
+              gender,
+              tags: [`LEVEL_${level}`],
+            },
+          };
+
+          const result = generateTestWorkout(user);
+          const testExercises = result.filter(
+            (entry) =>
+              entry.skill === "TEST" && entry.exerciseId !== PAUSE_EXERCISE_ID,
+          );
+
+          expectedExerciseIds.forEach((exerciseId) => {
+            const weights = testExercises
+              .filter((e) => e.exerciseId === exerciseId)
+              .map((e) => e.weight!);
+
+            expect(weights[0]).toBeLessThan(weights[1]);
+            expect(weights[1]).toBeLessThan(weights[2]);
+          });
+        },
+      );
+    });
+
+    describe("Warm-up Section", () => {
+      it("should include warm-up exercises with duration before test section", () => {
+        const result = generateTestWorkout(testUser);
+        const warmUpExercises = result.filter(
+          (entry) =>
+            entry.skill === "WU" && entry.exerciseId !== PAUSE_EXERCISE_ID,
+        );
+
+        expect(warmUpExercises.length).toBeGreaterThan(0);
+        expect(warmUpExercises.every((e) => e.duration && e.duration > 0)).toBe(
+          true,
+        );
+      });
+
+      it("should end warm-up with transition pause before test section", () => {
+        const result = generateTestWorkout(testUser);
+        const warmUpEntries = result.filter((entry) => entry.skill === "WU");
+        const lastWarmUpEntry = warmUpEntries[warmUpEntries.length - 1];
+
+        expect({
+          exerciseId: lastWarmUpEntry.exerciseId,
+          duration: lastWarmUpEntry.duration,
+        }).toEqual({
+          exerciseId: PAUSE_EXERCISE_ID,
+          duration: WARMUP_TO_TEST_TRANSITION_PAUSE_SECONDS,
+        });
+      });
+    });
+
+    describe("Test Exercise Pauses", () => {
+      it("should have standard pauses after sets 1 and 2", () => {
+        const result = generateTestWorkout(testUser);
+        const testPauses = result.filter(
+          (entry) =>
+            entry.skill === "TEST" && entry.exerciseId === PAUSE_EXERCISE_ID,
+        );
+
+        const set1And2Pauses = testPauses.filter(
+          (p) => p.set[0] === 1 || p.set[0] === 2,
+        );
+        expect(
+          set1And2Pauses.every((p) => p.duration === STANDARD_PAUSE_SECONDS),
+        ).toBe(true);
+      });
+
+      it("should have doubled pauses after final set (max effort recovery)", () => {
+        const result = generateTestWorkout(testUser);
+        const testPauses = result.filter(
+          (entry) =>
+            entry.skill === "TEST" && entry.exerciseId === PAUSE_EXERCISE_ID,
+        );
+
+        const set3Pauses = testPauses.filter((p) => p.set[0] === 3);
+        expect(
+          set3Pauses.every((p) => p.duration === FINAL_SET_PAUSE_SECONDS),
+        ).toBe(true);
+      });
+    });
+
+    describe("Weight Calculation", () => {
+      it("should calculate weights from start values when no max values exist", () => {
+        const userWithoutMaxValues = {
+          ...testUser,
+          workoutData: {
+            ...testUser.workoutData,
+            tags: ["LEVEL_BEGINNER"],
+            maxValues: {},
+          },
+        };
+
+        const result = generateTestWorkout(userWithoutMaxValues);
+        const testExercises = result.filter(
+          (entry) =>
+            entry.skill === "TEST" && entry.exerciseId !== PAUSE_EXERCISE_ID,
+        );
+
+        expect(testExercises.every((e) => e.weight && e.weight > 0)).toBe(true);
+      });
+
+      it("should use max values to calculate weights when available", () => {
+        const maxKneeValue = 100;
+        const userWithMaxValues = {
+          ...testUser,
+          workoutData: {
+            ...testUser.workoutData,
+            tags: ["LEVEL_ADVANCED"],
+            gender: "MALE" as const,
+            maxValues: {
+              testDate: "01.01.2024",
+              knee: { barbell: maxKneeValue },
+            },
+          },
+        };
+
+        const result = generateTestWorkout(userWithMaxValues);
+        const squatSets = result.filter(
+          (entry) => entry.exerciseId === 25 && entry.skill === "TEST",
+        );
+
+        const maxSetWeight = squatSets[2].weight!;
+        const advancedMaxPercentage = 0.65;
+        expect(maxSetWeight).toBeLessThanOrEqual(
+          maxKneeValue * advancedMaxPercentage,
+        );
+      });
+    });
+
+    describe("Edge Cases", () => {
+      it("should fallback to BEGINNER exercises when no level tag is present", () => {
+        const noLevelUser = {
+          ...testUser,
+          workoutData: { ...testUser.workoutData, tags: [] },
+        };
+
+        const result = generateTestWorkout(noLevelUser);
+        const testExercises = result.filter(
+          (entry) =>
+            entry.skill === "TEST" && entry.exerciseId !== PAUSE_EXERCISE_ID,
+        );
+
+        const actualExerciseIds = [
+          ...new Set(testExercises.map((e) => e.exerciseId)),
+        ];
+        expect(actualExerciseIds.sort((a, b) => a - b)).toEqual(
+          [...EXPECTED_EXERCISES.BEGINNER.default].sort((a, b) => a - b),
+        );
+      });
+
+      it("should throw descriptive error for invalid level tag", () => {
+        const invalidLevelUser = {
+          ...testUser,
+          workoutData: { ...testUser.workoutData, tags: ["LEVEL_INVALID"] },
+        };
+
+        expect(() => generateTestWorkout(invalidLevelUser)).toThrow(
+          "Invalid userLevel for TEST_WORKOUT: INVALID",
+        );
+      });
+    });
+
+    describe("Output Structure", () => {
+      it("should have skill property defined for ALL entries", () => {
+        const result = generateTestWorkout(testUser);
+
+        const entriesWithUndefinedSkill = result.filter(
+          (entry) => entry.skill === undefined,
+        );
+        expect(entriesWithUndefinedSkill).toHaveLength(0);
+
+        const validSkills = ["WU", "TEST"];
+        expect(result.every((entry) => validSkills.includes(entry.skill))).toBe(
+          true,
+        );
+      });
+
+      it("should return entries with required properties for test exercises", () => {
+        const result = generateTestWorkout(testUser);
+        const testExercise = result.find(
+          (entry) =>
+            entry.skill === "TEST" && entry.exerciseId !== PAUSE_EXERCISE_ID,
+        )!;
+
+        expect({
+          hasExerciseId: typeof testExercise.exerciseId === "number",
+          hasSet:
+            Array.isArray(testExercise.set) && testExercise.set.length === 2,
+          hasWeight: typeof testExercise.weight === "number",
+          hasRepetition: typeof testExercise.repetition === "number",
+          skill: testExercise.skill,
+        }).toEqual({
+          hasExerciseId: true,
+          hasSet: true,
+          hasWeight: true,
+          hasRepetition: true,
+          skill: "TEST",
+        });
+      });
+
+      it("should have warm-up section before test section", () => {
+        const result = generateTestWorkout(testUser);
+
+        const firstWUIndex = result.findIndex((entry) => entry.skill === "WU");
+        const firstTESTIndex = result.findIndex(
+          (entry) => entry.skill === "TEST",
+        );
+
+        expect({
+          wuFirst: firstWUIndex === 0,
+          testAfterWu: firstTESTIndex > firstWUIndex,
+        }).toEqual({
+          wuFirst: true,
+          testAfterWu: true,
+        });
+      });
     });
   });
 });

@@ -61,6 +61,20 @@ const SKILL_TREES = [
 
 export type SkillTree = (typeof SKILL_TREES)[number] | "SUPPORT" | "SAKG";
 
+type SkillTreeHeartRateMap = Partial<
+  Record<SkillTree, { low: number; high: number }>
+>;
+
+const SKILL_TREE_HEART_RATES: SkillTreeHeartRateMap = {
+  CARDIO_1_LAKTAT: { low: 0.8, high: 0.95 },
+  CARDIO_3: { low: 0.8, high: 0.95 },
+  CARDIO_2: { low: 0.9, high: 1 },
+  CARDIO_4: { low: 0.65, high: 0.8 },
+  CARDIO_5: { low: 0.55, high: 0.65 },
+};
+const SKILL_TREE_HEART_RATE_DEFAULT = { low: 1, high: 1 };
+const HEART_RATE_MAX = 210;
+
 const SECTION_ORDER = [
   "BR",
   "MOB",
@@ -1093,6 +1107,7 @@ export const WorkoutConstants = {
   EQUIPMENT,
   EXERCISE_DIRECTIONS,
   EXERCISING_BENCH_EXERCISES,
+  HEART_RATE_MAX,
   IGNORE_SORENESS_SKILLS,
   LEVELS,
   MAX_KRAFT_INCLINE_BENCH_WEIGHT_DIFFERENCE,
@@ -1114,6 +1129,8 @@ export const WorkoutConstants = {
   SECTION_ORDER,
   SKILL_TREES,
   SKILL_TYPES,
+  SKILL_TREE_HEART_RATES,
+  SKILL_TREE_HEART_RATE_DEFAULT,
   SPORTS,
   SPORTS_IMAGES,
   SPORTS_SORTED,

@@ -12,6 +12,16 @@ export const textVariants = {
     marginBottom: "s",
   },
 
+  largeTitle: {
+    fontSize: {
+      phone: 24,
+      tablet: 32,
+    },
+    fontWeight: "bold",
+    color: "darkGrey3",
+    marginBottom: "s",
+  },
+
   // Section titles
   sectionTitle: {
     fontSize: 20,

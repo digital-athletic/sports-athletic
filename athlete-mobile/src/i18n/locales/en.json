@@ -361,7 +361,11 @@
       "finished": "Training completed",
       "repetitions": "Repetitions",
       "maxReps": "Max",
+      "2x": "each ",
+      "weightIn": "Weight in kg",
       "noWeights": "No weights",
+      "cmHigh": "cm high",
+      "heartRateInterval": "Heart rate interval",
       "controls": {
         "clickToPause": "Click here to pause"
       },

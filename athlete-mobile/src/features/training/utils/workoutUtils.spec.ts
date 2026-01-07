@@ -7,6 +7,7 @@ import { type SkillType, type TrainingTimeType } from "../models/Training";
 import { type UserExerciseDataType } from "../models/UserExerciseData";
 import {
   calculateWorkoutTotals,
+  deriveWeightForExercise,
   getMaxValueForExercise,
   getRoundedResultForValueAndStep,
   roundWeightValue,
@@ -17,6 +18,52 @@ jest.mock("@/utils/tagUtils");
 jest.mock("@/constants/tagGroups");
 jest.mock("@/constants/workoutConstants");
 jest.mock("@/constants/userProgressConstants");
+
+const baseValue: ExerciseValuesType = {
+  startValue: {
+    default: {},
+    m: {},
+    w: {},
+    k: {},
+    type: { type: "Unknown" },
+  },
+  targetValue: {
+    default: {},
+    m: {},
+    w: {},
+    k: {},
+    type: { type: "Unknown" },
+  },
+};
+const mockExercise: ExerciseType = {
+  id: 1,
+  level: { m: 1, w: 1 },
+  name: "Test Exercise",
+  displayName: "Test",
+  description: "Test",
+  picture: "",
+  video: "",
+  tags: [],
+  values: {
+    duration: baseValue,
+    repetition: baseValue,
+    height: baseValue,
+    weight: baseValue,
+  },
+  isAdvanceByReps: false,
+  isAdvanceByDuration: false,
+  isJump: false,
+};
+const mockMaxValues: MaxValuesType = {
+  ...DEFAULT_MAX_VALUES,
+  verticalPush: {
+    barbell: 100,
+    dumbbells: 50,
+    oneSidedUpper: 30,
+    oneSidedLower: undefined,
+    oneSidedLowerSupported: undefined,
+  },
+};
 
 describe("workoutUtils", () => {
   beforeEach(() => {
@@ -101,59 +148,6 @@ describe("workoutUtils", () => {
   });
 
   describe("getMaxValueForExercise", () => {
-    let mockExercise: ExerciseType;
-    let mockMaxValues: MaxValuesType;
-
-    beforeEach(() => {
-      const baseValue: ExerciseValuesType = {
-        startValue: {
-          default: {},
-          m: {},
-          w: {},
-          k: {},
-          type: { type: "Unknown" },
-        },
-        targetValue: {
-          default: {},
-          m: {},
-          w: {},
-          k: {},
-          type: { type: "Unknown" },
-        },
-      };
-
-      mockExercise = {
-        id: 1,
-        level: { m: 1, w: 1 },
-        name: "Test Exercise",
-        displayName: "Test",
-        description: "Test",
-        picture: "",
-        video: "",
-        tags: [],
-        values: {
-          duration: baseValue,
-          repetition: baseValue,
-          height: baseValue,
-          weight: baseValue,
-        },
-        isAdvanceByReps: false,
-        isAdvanceByDuration: false,
-        isJump: false,
-      };
-
-      mockMaxValues = {
-        ...DEFAULT_MAX_VALUES,
-        verticalPush: {
-          barbell: 100,
-          dumbbells: 50,
-          oneSidedUpper: 30,
-          oneSidedLower: undefined,
-          oneSidedLowerSupported: undefined,
-        },
-      };
-    });
-
     it("should return max value for exercise", () => {
       (getTagValues as jest.Mock).mockImplementation((tags, group) => {
         if (group === TagGroups.EXERCISE_DIRECTION) return ["VERTICAL_PUSH"];
@@ -177,30 +171,22 @@ describe("workoutUtils", () => {
   });
 
   describe("calculateWorkoutTotals", () => {
-    let mockTime: TrainingTimeType;
-    let mockExerciseList: UserExerciseDataType[];
-    let mockExercisesData: ExerciseType[];
-    let mockMaxValues: MaxValuesType;
-
-    beforeEach(() => {
-      mockTime = {
-        start: 1000,
-        end: 61000,
-        pause: 10000,
-        skill: {
-          PREVENTION: 0,
-          MOBILITY: 0,
-          SWR: 0,
-          WARMUP: 0,
-          STABILITY: 0,
-          CARDIO: 0,
-        },
-      };
-
-      mockExerciseList = [];
-      mockExercisesData = [];
-      mockMaxValues = DEFAULT_MAX_VALUES;
-    });
+    const mockTime: TrainingTimeType = {
+      start: 1000,
+      end: 61000,
+      pause: 10000,
+      skill: {
+        PREVENTION: 0,
+        MOBILITY: 0,
+        SWR: 0,
+        WARMUP: 0,
+        STABILITY: 0,
+        CARDIO: 0,
+      },
+    };
+    const mockExerciseList: UserExerciseDataType[] = [];
+    const mockExercisesData: ExerciseType[] = [];
+    const mockMaxValues: MaxValuesType = DEFAULT_MAX_VALUES;
 
     it("should return zero totals for empty exercise list", () => {
       const result = calculateWorkoutTotals(
@@ -446,6 +432,150 @@ describe("workoutUtils", () => {
 
       expect(result.duration).toBeGreaterThan(0);
       expect(result.count).toBe(1);
+    });
+  });
+
+  describe("deriveWeightForExercise", () => {
+    it("should return undefined when weight is not a number", () => {
+      expect(
+        deriveWeightForExercise(
+          undefined,
+          "weightAbsolute",
+          mockExercise,
+          mockMaxValues,
+        ),
+      ).toBeUndefined();
+      expect(
+        deriveWeightForExercise(
+          null as any,
+          "weightAbsolute",
+          mockExercise,
+          mockMaxValues,
+        ),
+      ).toBeUndefined();
+    });
+
+    it("should return rounded absolute weight when weightType is not weightFMax", () => {
+      const result = deriveWeightForExercise(
+        50,
+        "weightAbsolute",
+        mockExercise,
+        mockMaxValues,
+      );
+      expect(result).toBe(50);
+    });
+
+    it("should return rounded absolute weight when weightType is undefined", () => {
+      const result = deriveWeightForExercise(
+        50,
+        undefined,
+        mockExercise,
+        mockMaxValues,
+      );
+      expect(result).toBe(50);
+    });
+
+    it("should round to nearest 0.5 for values <= 25", () => {
+      const result = deriveWeightForExercise(
+        10.3,
+        "weightAbsolute",
+        mockExercise,
+        mockMaxValues,
+      );
+      expect(result).toBe(10.5);
+    });
+
+    it("should round to nearest integer for values > 25 and <= 100", () => {
+      const result = deriveWeightForExercise(
+        26.6,
+        "weightAbsolute",
+        mockExercise,
+        mockMaxValues,
+      );
+      expect(result).toBe(27);
+    });
+
+    it("should round to nearest 2.5 for values > 100", () => {
+      const result = deriveWeightForExercise(
+        102.7,
+        "weightAbsolute",
+        mockExercise,
+        mockMaxValues,
+      );
+      expect(result).toBe(102.5);
+    });
+
+    it("should return undefined when weightFMax is used but maxValue cannot be determined", () => {
+      (getTagValues as jest.Mock).mockReturnValue([]);
+      const result = deriveWeightForExercise(
+        50,
+        "weightFMax",
+        mockExercise,
+        mockMaxValues,
+      );
+      expect(result).toBeUndefined();
+    });
+
+    it("should calculate percentage weight based on maxValue when weightFMax is used", () => {
+      (getTagValues as jest.Mock).mockImplementation((tags, group) => {
+        if (group === TagGroups.EXERCISE_DIRECTION) return ["VERTICAL_PUSH"];
+        if (group === TagGroups.REGION) return ["OBERKOERPER"];
+        return [];
+      });
+
+      // 50% of 100 (maxValue for VERTICAL_PUSH) = 50
+      const result = deriveWeightForExercise(
+        50,
+        "weightFMax",
+        mockExercise,
+        mockMaxValues,
+      );
+      expect(result).toBe(50);
+    });
+
+    it("should round percentage-based weight correctly", () => {
+      (getTagValues as jest.Mock).mockImplementation((tags, group) => {
+        if (group === TagGroups.EXERCISE_DIRECTION) return ["VERTICAL_PUSH"];
+        if (group === TagGroups.REGION) return ["OBERKOERPER"];
+        return [];
+      });
+
+      // 75% of 100 (maxValue for VERTICAL_PUSH) = 75
+      const result = deriveWeightForExercise(
+        75,
+        "weightFMax",
+        mockExercise,
+        mockMaxValues,
+      );
+      expect(result).toBe(75);
+    });
+
+    it("should handle edge case with zero weight", () => {
+      const result = deriveWeightForExercise(
+        0,
+        "weightAbsolute",
+        mockExercise,
+        mockMaxValues,
+      );
+      expect(result).toBe(0);
+    });
+
+    it("should handle weightFMax calculation with fractional results requiring rounding", () => {
+      (getTagValues as jest.Mock).mockImplementation((tags, group) => {
+        if (group === TagGroups.EXERCISE_DIRECTION) return ["VERTICAL_PUSH"];
+        if (group === TagGroups.REGION) return ["OBERKOERPER"];
+        return [];
+      });
+
+      // 33% of 100 = 33, which should round to 33
+      const result = deriveWeightForExercise(
+        33.3,
+        "weightFMax",
+        mockExercise,
+        mockMaxValues,
+      );
+      expect(typeof result).toBe("number");
+      expect(result).toBeGreaterThan(0);
     });
   });
 });

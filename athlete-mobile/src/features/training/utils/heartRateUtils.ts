@@ -3,6 +3,8 @@
  * Calculates target heart rate zones based on age, skill level, and exercise type
  */
 
+import { SkillTree, WorkoutConstants } from "@/constants/workoutConstants";
+
 export type HeartRateInterval = {
   low: number;
   high: number;
@@ -72,4 +74,30 @@ export const calculateHeartRateIntervalForExercise = (
 ): HeartRateInterval => {
   const intensity = getIntensityForSkill(skill);
   return calculateHeartRateZone(age, intensity);
+};
+
+/**
+ * Returns heart rate interval for given skill depending on the given birthday
+ */
+export const heartRateBySkillAndBirthday = (
+  skill: string,
+  birthday: string, // DD-MM-YYYY
+) => {
+  const birthYear = parseInt(birthday.split("-")[2], 10);
+
+  if (isNaN(birthYear)) {
+    return undefined;
+  }
+
+  const age = new Date().getFullYear() - birthYear;
+
+  let maxFrequency = WorkoutConstants.HEART_RATE_MAX - age;
+  let range =
+    WorkoutConstants.SKILL_TREE_HEART_RATES[skill as SkillTree] ||
+    WorkoutConstants.SKILL_TREE_HEART_RATE_DEFAULT;
+
+  return {
+    low: Math.round(range.low * maxFrequency),
+    high: Math.round(range.high * maxFrequency),
+  };
 };

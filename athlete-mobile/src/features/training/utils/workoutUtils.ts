@@ -585,3 +585,28 @@ export const calculateAdjustedMaxValues = (maxValue: number): MaxValueType => {
 
   return result;
 };
+
+export const deriveWeightForExercise = (
+  weight: number | undefined,
+  weightType: string | undefined,
+  exercise: ExerciseType,
+  maxValues: MaxValuesType,
+) => {
+  if (typeof weight !== "number") {
+    return undefined;
+  }
+
+  if (weightType === "weightFMax") {
+    // calculate weight value based on given percentage in weight and max Value from test for given exercise
+    const maxValue = getMaxValueForExercise(exercise, maxValues);
+
+    if (typeof maxValue !== "number") {
+      return undefined;
+    }
+
+    return roundWeightValue((weight / 100) * maxValue);
+  }
+
+  // given weight is absolute, so just round it
+  return roundWeightValue(weight);
+};

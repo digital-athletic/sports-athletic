@@ -14,10 +14,12 @@ import { TrainingParameterType } from "@/features/training/models/TrainingParame
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
 import { hasWeights } from "@/features/training/utils/equipmentUtils";
+import { heartRateBySkillAndBirthday } from "@/features/training/utils/heartRateUtils";
 import { getRegionsForPreventionSkills } from "@/features/training/utils/preventionUtils";
 import { getSkillTree } from "@/features/training/utils/skillTreeUtils";
 import {
   calculateAdjustedMaxValues,
+  deriveWeightForExercise,
   getEquivalentBranchWithGivenLevel,
   getExerciseStartValue,
   getExerciseTargetValue,
@@ -1180,6 +1182,94 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     });
   };
 
+  const renderWeightOrHeight = () => {
+    if (!currentExercise || !currentExerciseData) {
+      return null;
+    }
+
+    const weight = currentExercise?.weight;
+    const height = currentExercise?.height;
+
+    // Weight information
+    if (typeof weight === "number") {
+      const currentExerciseEquipment = getTagValues(
+        currentExerciseData.tags,
+        TagGroups.EQUIPMENT,
+      );
+      const isDumbbellExercise = currentExerciseEquipment.includes(
+        WorkoutConstants.EQUIPMENT.DUMBBELL,
+      );
+
+      const exerciseWeight = deriveWeightForExercise(
+        weight,
+        currentExercise.weightType,
+        currentExerciseData,
+        workoutData.maxValues,
+      );
+
+      return (
+        <>
+          <Text variant="largeTitle">
+            {isDumbbellExercise ? t("training.active.2x") : null}
+            {exerciseWeight}
+          </Text>
+          <Text variant="small" color="darkGrey1">
+            {t("training.active.weightIn")}
+          </Text>
+        </>
+      );
+    } else if (typeof height === "number") {
+      return (
+        <>
+          <Text variant="largeTitle">{height}</Text>
+          <Text variant="small" color="darkGrey1">
+            {t("training.active.cmHigh")}
+          </Text>
+        </>
+      );
+    } else {
+      return (
+        <Text variant="largeTitle" textAlign="center">
+          {t("training.active.noWeights")}
+        </Text>
+      );
+    }
+  };
+
+  const renderHeartRate = () => {
+    if (!currentExercise || !currentExerciseData) {
+      return null;
+    }
+    const [cardioSkill] = getTagValues(
+      currentExerciseData.tags,
+      TagGroups.SKILL,
+    ).filter((skill) => skill.includes("CARDIO") && skill !== "CARDIO");
+
+    if (typeof cardioSkill === "undefined") {
+      return null;
+    }
+
+    const heartRateInterval = heartRateBySkillAndBirthday(
+      cardioSkill,
+      workoutData.birthday,
+    );
+
+    if (typeof heartRateInterval === "undefined") {
+      return null;
+    }
+
+    return (
+      <>
+        <Text variant="largeTitle">
+          {`${heartRateInterval.low} - ${heartRateInterval.high}`}
+        </Text>
+        <Text variant="small" color="darkGrey1">
+          {t("training.active.heartRateInterval")}
+        </Text>
+      </>
+    );
+  };
+
   return (
     <Box
       flex={1}
@@ -1248,17 +1338,18 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
         {currentExercise && (
           <Box padding="m" gap="m" flex={1}>
             {/* Sets */}
-            <Box flexDirection="row">
+            <Box flexDirection="row" minHeight={75}>
               <Box
                 flex={1}
                 justifyContent="center"
                 alignItems="center"
                 borderRightWidth={1}
                 borderRightColor="lightGrey2"
+                paddingHorizontal="s"
               >
                 {currentExercise?.set && (
                   <Box alignItems="center">
-                    <Text variant="title" textAlign="center">
+                    <Text variant="largeTitle" textAlign="center">
                       {t("training.active.set", {
                         current: currentExercise.set?.[0],
                         total: currentExercise.set?.[1],
@@ -1280,10 +1371,11 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                 alignItems="center"
                 borderRightWidth={1}
                 borderRightColor="lightGrey2"
+                paddingHorizontal="s"
               >
                 {typeof currentExercise.duration === "number" && (
                   <Box alignItems="center">
-                    <Text variant="title">{currentExercise.duration}</Text>
+                    <Text variant="largeTitle">{currentExercise.duration}</Text>
                     <Text variant="small" color="darkGrey1">
                       sec
                     </Text>
@@ -1291,7 +1383,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                 )}
                 {typeof currentExercise.repetition === "number" && (
                   <Box alignItems="center">
-                    <Text variant="title">
+                    <Text variant="largeTitle">
                       {currentExercise.repetition === -1
                         ? t("training.active.maxReps")
                         : currentExercise.repetition}
@@ -1303,11 +1395,14 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                 )}
               </Box>
 
-              {/* TODO: Heart rate / Weight */}
-              <Box flex={1} justifyContent="center" alignItems="center">
-                <Text variant="cardTitle">
-                  {t("training.active.noWeights")}
-                </Text>
+              {/* Heart Rate / Weight / Height  */}
+              <Box
+                flex={1}
+                justifyContent="center"
+                alignItems="center"
+                paddingHorizontal="s"
+              >
+                {isCardioExercise ? renderHeartRate() : renderWeightOrHeight()}
               </Box>
             </Box>
           </Box>

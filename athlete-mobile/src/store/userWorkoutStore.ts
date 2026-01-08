@@ -11,6 +11,10 @@ import {
   Sport,
   UserWorkoutDataType,
 } from "@/features/training/models/UserWorkoutData";
+import {
+  enrichSeasonPhaseWithWeeks,
+  enrichSeasonPhaseWithWeeksFromDate,
+} from "@/features/training/utils/seasonPhaseUtils";
 import { dateToDDMMYYYY } from "@/utils/date";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -25,7 +29,7 @@ export interface UserWorkoutState {
   // Actions
   setWorkoutData: (data: Partial<UserWorkoutDataType>) => void;
   setSport: (sport: Sport) => void;
-  setSeasonPhase: (phase: SeasonPhaseType) => void;
+  setSeasonPhase: (phase: SeasonPhaseType, startDate?: Date) => void;
   setTags: (tags: string[]) => void;
   setTrainingPlan: (plan: TrainingPlanType | null) => void;
   setTemporalData: (data: TemporalDataType[]) => void;
@@ -92,9 +96,11 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
           state.workoutData.sport = sport;
         }),
 
-      setSeasonPhase: (phase) =>
+      setSeasonPhase: (phase, startDate) =>
         set((state) => {
-          state.workoutData.seasonPhase = phase;
+          state.workoutData.seasonPhase = startDate
+            ? enrichSeasonPhaseWithWeeksFromDate(phase, startDate)
+            : enrichSeasonPhaseWithWeeks(phase);
         }),
 
       setTags: (tags) =>

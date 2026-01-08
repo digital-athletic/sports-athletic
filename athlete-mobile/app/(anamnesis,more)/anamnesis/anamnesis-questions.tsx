@@ -28,7 +28,7 @@ export default function AnamnesisQuestions() {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const { workoutData, setSeasonPhase } = useUserWorkoutStore();
+  const { workoutData } = useUserWorkoutStore();
   const {
     personalData,
     anamnesisCompleted,
@@ -47,6 +47,7 @@ export default function AnamnesisQuestions() {
     originPath,
     setValue,
     setTag,
+    setSeasonPhase,
     setCompleted,
     saveData,
     resetData,

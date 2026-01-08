@@ -56,12 +56,10 @@ export default function SeasonPhase() {
       }
 
       // Set the phase with type from workoutData and calculated endDate
-      const phase = {
+      setSeasonPhase({
         type: workoutData.seasonPhase?.type ?? null,
         endDate: endDate,
-      };
-
-      setSeasonPhase(phase);
+      });
       setIsLoading(false);
     };
 

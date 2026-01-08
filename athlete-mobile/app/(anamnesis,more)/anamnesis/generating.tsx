@@ -64,10 +64,21 @@ export default function Generating() {
         // await userService.archiveTrainingPlan(trainingPlan);
       }
 
-      // Save season phase to workoutData (matches legacy behavior)
-      if (seasonPhase) {
-        saveSeasonPhaseToWorkoutData(seasonPhase);
+      // Determine start date: use existing plan start or current date
+      const startDate =
+        shouldUpdateExisting && trainingPlan?.start
+          ? new Date(trainingPlan.start)
+          : new Date();
+
+      // Save season phase to workoutData (calculates numOfWeeks with startDate)
+      if (!seasonPhase) {
+        throw new Error("seasonPhase is required for plan generation");
       }
+      saveSeasonPhaseToWorkoutData(seasonPhase, startDate);
+
+      // Get the enriched season phase from the store after saving
+      const enrichedPhase =
+        useUserWorkoutStore.getState().workoutData.seasonPhase;
 
       // Prepare data for PlanGenerator
       // Build user object matching legacy structure
@@ -75,15 +86,9 @@ export default function Generating() {
         userId,
         workoutData: {
           ...workoutData,
-          seasonPhase: seasonPhase || workoutData.seasonPhase,
+          seasonPhase: enrichedPhase,
         },
       };
-
-      // Determine start date: use existing plan start or current date
-      const startDate =
-        shouldUpdateExisting && trainingPlan?.start
-          ? new Date(trainingPlan.start)
-          : new Date();
 
       // Generate training plan
       const plan = PlanGenerator.generatePlan(

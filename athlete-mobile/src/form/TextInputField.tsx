@@ -13,6 +13,8 @@ interface TextInputFieldProps {
   placeholder: string;
   value: string;
   keyboardType?: KeyboardTypeOptions;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 /**
@@ -25,6 +27,8 @@ export const TextInputField: FC<TextInputFieldProps> = ({
   placeholder,
   value,
   keyboardType = "default",
+  onFocus,
+  onBlur,
 }) => {
   const { colors } = useTheme();
 
@@ -76,6 +80,8 @@ export const TextInputField: FC<TextInputFieldProps> = ({
         keyboardType={keyboardType}
         autoCapitalize="none"
         value={value}
+        onFocus={onFocus}
+        onBlur={onBlur}
       />
     </Box>
   );

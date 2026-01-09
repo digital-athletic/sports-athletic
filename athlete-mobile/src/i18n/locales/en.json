@@ -373,6 +373,10 @@
         "label": "Pause",
         "goOn": "Go on"
       },
+      "abort": {
+        "question": "Abort training?",
+        "explanation": "Better pull yourself together. You almost finished! Do you really want to stop?"
+      },
       "feedback": {
         "tooEasy": "too easy",
         "tooHard": "too hard"

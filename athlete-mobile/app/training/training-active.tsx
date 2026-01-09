@@ -8,6 +8,7 @@ import {
 import { TrainingNavigation } from "@/features/training/TrainingNavigation";
 import { getIntensityBySkill } from "@/features/training/generators/TrainingGenerator";
 import { ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
+import { MaxValuesType } from "@/features/training/models/MaxValues";
 import { SkillType } from "@/features/training/models/Training";
 import { isTrainingLevel } from "@/features/training/models/TrainingLevel";
 import { TrainingParameterType } from "@/features/training/models/TrainingParameter";
@@ -18,6 +19,7 @@ import { heartRateBySkillAndBirthday } from "@/features/training/utils/heartRate
 import { getRegionsForPreventionSkills } from "@/features/training/utils/preventionUtils";
 import { getSkillTree } from "@/features/training/utils/skillTreeUtils";
 import {
+  applyMaxValueToDirections,
   calculateAdjustedMaxValues,
   deriveWeightForExercise,
   getEquivalentBranchWithGivenLevel,
@@ -44,7 +46,14 @@ import { useKeepAwake } from "expo-keep-awake";
 import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState, type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, BackHandler } from "react-native";
+import {
+  Alert,
+  BackHandler,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type TrainingActiveProps = Record<string, never>;
@@ -71,10 +80,11 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     setExerciseFeedback,
   } = useTrainingStore();
   const { skillTrees } = useSkillTreesStore();
-  const { branchData, setBranchLevel, updateExercise } =
+  const { branchData, setBranchLevel, updateExercise, addTestResult } =
     useExerciseProgressStore();
   const { getExerciseById } = useExercisesStore();
-  const { workoutData, replaceBranchInTrainingPlan } = useUserWorkoutStore();
+  const { workoutData, replaceBranchInTrainingPlan, saveMaxValues } =
+    useUserWorkoutStore();
 
   // Local state
   const [activeExerciseIndex, setActiveExerciseIndex] = useState(0);
@@ -83,6 +93,14 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const [repsValue, setRepsValue] = useState(0);
   const exerciseStartTimeRef = useRef<number>(Date.now());
   const pauseStartRef = useRef<number>(0);
+
+  // Temporary storage for test workout results, only committed on successful completion
+  const [tempMaxValues, setTempMaxValues] = useState<MaxValuesType | null>(
+    null,
+  );
+
+  // Track test input focus to hide bottom bar
+  const [isTestInputFocused, setIsTestInputFocused] = useState(false);
 
   const currentExercise = exerciseList?.[activeExerciseIndex];
   const exerciseId = currentExercise?.exerciseId ?? -1;
@@ -124,6 +142,21 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
           logTrainingEvent("training_finished");
         }
 
+        // Save test results if this is a test workout and not aborted
+        if (
+          activeTraining?.type === "TEST_WORKOUT" &&
+          !aborted &&
+          tempMaxValues
+        ) {
+          // Commit temporary max values to persistent store
+          Logger.logEvent("saving_max_values", { maxValues: tempMaxValues });
+          saveMaxValues(tempMaxValues);
+          addTestResult(tempMaxValues);
+        }
+
+        // Clear temporary test results (committed or discarded)
+        setTempMaxValues(null);
+
         // Navigate to success screen
         router.push({
           pathname: "/training/training-success",
@@ -134,7 +167,16 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
         Alert.alert(t("common.error"), t("common.error"));
       }
     },
-    [logTrainingEvent, router, setTrainingEndTime, t],
+    [
+      activeTraining?.type,
+      tempMaxValues,
+      addTestResult,
+      saveMaxValues,
+      logTrainingEvent,
+      router,
+      setTrainingEndTime,
+      t,
+    ],
   );
 
   const saveBranchData = (
@@ -962,7 +1004,6 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   };
 
   const saveRepsInput = async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const directions = WorkoutConstants.TEST_EXERCISES_DIRECTIONS[exerciseId];
     let weight = currentExercise?.weight;
     // add ten percent weight if test exercise used dumbbells
@@ -971,18 +1012,17 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
       TagGroups.EQUIPMENT,
     ).some((eq) => eq === "DUMBBELL");
 
-    if (typeof weight === "number") {
+    if (typeof weight === "number" && directions) {
       if (isDumbbellExercise) {
         // double for weight is only one KH
         // add 10% to get value for LH
         weight = 2 * weight * 1.1;
       }
 
-      let maxValue = maxWeightByEpley(weight, repsValue);
+      const maxValue = maxWeightByEpley(weight, repsValue);
 
       // calculate max values for different settings
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      let result = calculateAdjustedMaxValues(maxValue);
+      const result = calculateAdjustedMaxValues(maxValue);
 
       // logging data
       const exerciseName = WorkoutConstants.TEST_EXERCISES[exerciseId];
@@ -996,9 +1036,14 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
         level: level,
       });
 
-      // TODO: save results in scope of:
-      // https://github.com/sports-athletics/sports-athletic/issues/204
-      // saveMaxValue(directions, result);
+      // save results to temporary state (committed on successful completion)
+      const baseMaxValues = tempMaxValues ?? workoutData.maxValues;
+      const updatedMaxValues = applyMaxValueToDirections(
+        baseMaxValues,
+        directions,
+        result,
+      );
+      setTempMaxValues(updatedMaxValues);
     } else {
       Logger.logEvent(
         "no exercise direction found for test exercise with id ",
@@ -1016,6 +1061,10 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     // save exercise data
     saveExerciseAndBranchData();
 
+    // Reset test input state for next exercise
+    setIsTestInputFocused(false);
+    setRepsValue(0);
+
     if (activeExerciseIndex < exerciseList.length - 1) {
       setActiveExerciseIndex((prev) => prev + 1);
       exerciseStartTimeRef.current = Date.now();
@@ -1027,8 +1076,8 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
 
   const handleAbortTraining = useCallback(() => {
     Alert.alert(
-      t("screens.trainingDays.abortQuestion"),
-      t("screens.trainingDays.abortExplanation"),
+      t("training.active.abort.question"),
+      t("training.active.abort.explanation"),
       [
         {
           text: t("common.yes"),
@@ -1271,175 +1320,196 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   };
 
   return (
-    <Box
-      flex={1}
-      style={{
-        paddingBottom: insets.bottom,
-        paddingTop: insets.top,
-        paddingLeft: insets.left,
-        paddingRight: insets.right,
-      }}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
     >
-      <Stack.Screen options={{ headerShown: false }} />
-      <Box flex={1} backgroundColor="white" justifyContent="flex-start">
-        {/* Progress bar */}
-        <Box height={4} backgroundColor="lightGrey1">
-          <Box
-            height="100%"
-            backgroundColor="primary"
-            width={`${progress * 100}%`}
-          />
-        </Box>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <Box
+          flex={1}
+          style={{
+            paddingBottom: insets.bottom,
+            paddingTop: insets.top,
+            paddingLeft: insets.left,
+            paddingRight: insets.right,
+          }}
+        >
+          <Stack.Screen options={{ headerShown: false }} />
+          <Box flex={1} backgroundColor="white" justifyContent="flex-start">
+            {/* Progress bar */}
+            <Box height={4} backgroundColor="lightGrey1">
+              <Box
+                height="100%"
+                backgroundColor="primary"
+                width={`${progress * 100}%`}
+              />
+            </Box>
 
-        {/* Video/Exercise container */}
-
-        <Box backgroundColor="lightGrey2">
-          {!!video && (
-            <VideoPlayer
-              title={name ?? ""}
-              source={video}
-              setIsFullScreen={setIsFullScreen}
-              setIsVideoPlaying={setVideoIsPlaying}
-            />
-          )}
-          <Box
-            position="absolute"
-            top={0}
-            left={0}
-            right={0}
-            bottom={0}
-            marginHorizontal="m"
-            marginVertical="s"
-            flexDirection="row"
-            justifyContent="space-between"
-          >
-            {isExerciseInformationVisible ? (
-              <TouchableBox
-                key="exercise_information"
-                onPress={handleShowExerciseInformation}
-              >
-                <AwesomeIcon
-                  name="info-circle"
-                  size={24}
-                  color={colors.white}
+            {/* Video/Exercise container */}
+            <Box backgroundColor="lightGrey2">
+              {!!video && (
+                <VideoPlayer
+                  title={name ?? ""}
+                  source={video}
+                  setIsFullScreen={setIsFullScreen}
+                  setIsVideoPlaying={setVideoIsPlaying}
                 />
-              </TouchableBox>
-            ) : (
-              <Box />
-            )}
-
-            <TouchableBox onPress={handleAbortTraining} key={"abort_training"}>
-              <AwesomeIcon name="times-circle" size={24} color={colors.white} />
-            </TouchableBox>
-          </Box>
-        </Box>
-
-        {/* Exercise information */}
-        {currentExercise && (
-          <Box padding="m" gap="m" flex={1}>
-            {/* Sets */}
-            <Box flexDirection="row" minHeight={75}>
+              )}
               <Box
-                flex={1}
-                justifyContent="center"
-                alignItems="center"
-                borderRightWidth={1}
-                borderRightColor="lightGrey2"
-                paddingHorizontal="s"
+                position="absolute"
+                top={0}
+                left={0}
+                right={0}
+                bottom={0}
+                marginHorizontal="m"
+                marginVertical="s"
+                flexDirection="row"
+                justifyContent="space-between"
               >
-                {currentExercise?.set && (
-                  <Box alignItems="center">
-                    <Text variant="largeTitle" textAlign="center">
-                      {t("training.active.set", {
-                        current: currentExercise.set?.[0],
-                        total: currentExercise.set?.[1],
-                      })}
-                    </Text>
-                    <Text variant="small" color="darkGrey1">
-                      {t("training.active.sets", {
-                        count: currentExercise.set?.[1],
-                      })}
-                    </Text>
-                  </Box>
+                {isExerciseInformationVisible ? (
+                  <TouchableBox
+                    key="exercise_information"
+                    onPress={handleShowExerciseInformation}
+                  >
+                    <AwesomeIcon
+                      name="info-circle"
+                      size={24}
+                      color={colors.white}
+                    />
+                  </TouchableBox>
+                ) : (
+                  <Box />
                 )}
-              </Box>
 
-              {/* Reps / Duration */}
-              <Box
-                flex={1}
-                justifyContent="center"
-                alignItems="center"
-                borderRightWidth={1}
-                borderRightColor="lightGrey2"
-                paddingHorizontal="s"
-              >
-                {typeof currentExercise.duration === "number" && (
-                  <Box alignItems="center">
-                    <Text variant="largeTitle">{currentExercise.duration}</Text>
-                    <Text variant="small" color="darkGrey1">
-                      sec
-                    </Text>
-                  </Box>
-                )}
-                {typeof currentExercise.repetition === "number" && (
-                  <Box alignItems="center">
-                    <Text variant="largeTitle">
-                      {currentExercise.repetition === -1
-                        ? t("training.active.maxReps")
-                        : currentExercise.repetition}
-                    </Text>
-                    <Text variant="small" color="darkGrey1">
-                      {t("training.active.repetitions")}
-                    </Text>
-                  </Box>
-                )}
-              </Box>
-
-              {/* Heart Rate / Weight / Height  */}
-              <Box
-                flex={1}
-                justifyContent="center"
-                alignItems="center"
-                paddingHorizontal="s"
-              >
-                {isCardioExercise ? renderHeartRate() : renderWeightOrHeight()}
+                <TouchableBox
+                  onPress={handleAbortTraining}
+                  key={"abort_training"}
+                >
+                  <AwesomeIcon
+                    name="times-circle"
+                    size={24}
+                    color={colors.white}
+                  />
+                </TouchableBox>
               </Box>
             </Box>
+
+            {/* Exercise information */}
+            {currentExercise && (
+              <Box padding="m" gap="m" flex={1}>
+                {/* Sets */}
+                <Box flexDirection="row" minHeight={75}>
+                  <Box
+                    flex={1}
+                    justifyContent="center"
+                    alignItems="center"
+                    borderRightWidth={1}
+                    borderRightColor="lightGrey2"
+                    paddingHorizontal="s"
+                  >
+                    {currentExercise?.set && (
+                      <Box alignItems="center">
+                        <Text variant="largeTitle" textAlign="center">
+                          {t("training.active.set", {
+                            current: currentExercise.set?.[0],
+                            total: currentExercise.set?.[1],
+                          })}
+                        </Text>
+                        <Text variant="small" color="darkGrey1">
+                          {t("training.active.sets", {
+                            count: currentExercise.set?.[1],
+                          })}
+                        </Text>
+                      </Box>
+                    )}
+                  </Box>
+
+                  {/* Reps / Duration */}
+                  <Box
+                    flex={1}
+                    justifyContent="center"
+                    alignItems="center"
+                    borderRightWidth={1}
+                    borderRightColor="lightGrey2"
+                    paddingHorizontal="s"
+                  >
+                    {typeof currentExercise.duration === "number" && (
+                      <Box alignItems="center">
+                        <Text variant="largeTitle">
+                          {currentExercise.duration}
+                        </Text>
+                        <Text variant="small" color="darkGrey1">
+                          sec
+                        </Text>
+                      </Box>
+                    )}
+                    {typeof currentExercise.repetition === "number" && (
+                      <Box alignItems="center">
+                        <Text variant="largeTitle">
+                          {currentExercise.repetition === -1
+                            ? t("training.active.maxReps")
+                            : currentExercise.repetition}
+                        </Text>
+                        <Text variant="small" color="darkGrey1">
+                          {t("training.active.repetitions")}
+                        </Text>
+                      </Box>
+                    )}
+                  </Box>
+
+                  {/* Heart Rate / Weight / Height  */}
+                  <Box
+                    flex={1}
+                    justifyContent="center"
+                    alignItems="center"
+                    paddingHorizontal="s"
+                  >
+                    {isCardioExercise
+                      ? renderHeartRate()
+                      : renderWeightOrHeight()}
+                  </Box>
+                </Box>
+              </Box>
+            )}
+
+            {/* Training Navigation or Fallback Controls */}
+            {currentExercise && (
+              <TrainingNavigation
+                exerciseId={exerciseId}
+                hasDuration={hasDuration}
+                duration={currentExercise.duration || 0}
+                next={advanceToNextExercise}
+                skip={handleExerciseSkipped}
+                isPause={isPauseExercise}
+                feedback={handleFeedback}
+                videoIsPlaying={videoIsPlaying}
+                videoIsFullScreen={isFullScreen}
+                isFirstDurationInTraining={activeExerciseIndex === 0}
+                isLastInSet={isLastInSet}
+                isFeedbackSkill={isFeedbackSkill}
+                isCardioExercise={isCardioExercise}
+                isLastCardioExercise={isCardioExercise && !hasNextExercise}
+                isTest={isTestExercise}
+                repsValue={repsValue}
+                changeReps={handleChangeReps}
+                pauseToggled={handlePauseToggled}
+                onTestInputFocusChange={setIsTestInputFocused}
+                isTestInputFocused={isTestInputFocused}
+              />
+            )}
+
+            {/* Next exercise preview - hidden when test input focused */}
+            {!isTestInputFocused && (
+              <Box padding="m" backgroundColor="lightGrey1" borderRadius="m">
+                <Text marginBottom="xs" fontWeight="bold">
+                  {nextDisplayName}
+                </Text>
+              </Box>
+            )}
           </Box>
-        )}
-
-        {/* Training Navigation or Fallback Controls */}
-        {currentExercise && (
-          <TrainingNavigation
-            exerciseId={exerciseId}
-            hasDuration={hasDuration}
-            duration={currentExercise.duration || 0}
-            next={advanceToNextExercise}
-            skip={handleExerciseSkipped}
-            isPause={isPauseExercise}
-            feedback={handleFeedback}
-            videoIsPlaying={videoIsPlaying}
-            videoIsFullScreen={isFullScreen}
-            isFirstDurationInTraining={activeExerciseIndex === 0}
-            isLastInSet={isLastInSet}
-            isFeedbackSkill={isFeedbackSkill}
-            isCardioExercise={isCardioExercise}
-            isLastCardioExercise={isCardioExercise && !hasNextExercise}
-            isTest={isTestExercise}
-            repsValue={repsValue}
-            changeReps={handleChangeReps}
-            pauseToggled={handlePauseToggled}
-          />
-        )}
-
-        {/* Next exercise preview */}
-        <Box padding="m" backgroundColor="lightGrey1" borderRadius="m">
-          <Text marginBottom="xs" fontWeight="bold">
-            {nextDisplayName}
-          </Text>
         </Box>
-      </Box>
-    </Box>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 

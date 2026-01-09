@@ -373,6 +373,10 @@
         "label": "Pause",
         "goOn": "Weiter"
       },
+      "abort": {
+        "question": "Training abbrechen?",
+        "explanation": "Gib dir einen Ruck und mach weiter. Du hast es bald geschafft! Willst du das Training wirklich abbrechen?"
+      },
       "feedback": {
         "tooEasy": "zu einfach",
         "tooHard": "zu schwer"

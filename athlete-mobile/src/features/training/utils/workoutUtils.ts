@@ -2,6 +2,7 @@ import { TagGroups } from "@/constants/tagGroups";
 import { XP_PER_MINUTE } from "@/constants/userProgressConstants";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { SkillTreeType } from "@/store/skillTreesStore";
+import { dateToDDMMYYYY } from "@/utils/date";
 import { getTagValues } from "@/utils/tagUtils";
 import { ExerciseType, ExerciseValues, ValueType } from "../models/Exercise";
 import { ExerciseBranchType } from "../models/ExerciseBranch";
@@ -609,4 +610,26 @@ export const deriveWeightForExercise = (
 
   // given weight is absolute, so just round it
   return roundWeightValue(weight);
+};
+
+/**
+ * Applies a calculated max value result to the appropriate directions in maxValues.
+ * Updates the testDate to current date.
+ */
+export const applyMaxValueToDirections = (
+  currentMaxValues: MaxValuesType,
+  directions: string[],
+  result: MaxValueType,
+): MaxValuesType => {
+  const updated = { ...currentMaxValues };
+
+  for (const direction of directions) {
+    const fieldName = EXERCISE_DIRECTIONS_VALUES_MAP[direction];
+    if (fieldName) {
+      updated[fieldName] = result;
+    }
+  }
+
+  updated.testDate = dateToDDMMYYYY(new Date());
+  return updated;
 };

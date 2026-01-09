@@ -34,6 +34,8 @@ export interface TrainingNavigationProps {
   repsValue: number;
   changeReps: (value: string) => void;
   pauseToggled: (isPaused: boolean) => void;
+  onTestInputFocusChange?: (isFocused: boolean) => void;
+  isTestInputFocused?: boolean;
 }
 
 const AnimatedIcon = Animated.createAnimatedComponent(Ionicon);
@@ -61,6 +63,8 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
   changeReps,
   pauseToggled,
   exerciseId,
+  onTestInputFocusChange,
+  isTestInputFocused,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme<Theme>();
@@ -310,17 +314,24 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
     const sec = remaining - min * 60;
     const minText = remaining < 0 ? "--" : ("0" + min).slice(-2);
     const secText = remaining < 0 ? "--" : ("0" + sec).slice(-2);
-    let displayText = `${minText}:${secText}`;
+    const timeText = `${minText}:${secText}`;
 
     let countdownColorKey: "primary" | "white" = "primary";
     let labelText = "";
+    let backgroundColor: "white" | "primary" = "white";
 
-    if (isPausedState) {
-      labelText = t("training.active.pause.goOn");
+    if (isPause) {
+      // Pause exercise
+      backgroundColor = "primary";
       countdownColorKey = "white";
+      labelText = t("training.active.pause.label");
+    } else if (isPausedState) {
+      // Manual pause
+      backgroundColor = "primary";
+      countdownColorKey = "white";
+      labelText = t("training.active.pause.goOn");
     } else if (isFirstDurationInTraining && secondsPassed < 4) {
       labelText = t("training.active.controls.clickToPause");
-      countdownColorKey = "white";
     }
 
     return (
@@ -337,11 +348,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
           backgroundColor="lightGrey3"
           zIndex={2}
         />
-        <Box
-          flex={remaining}
-          backgroundColor={isPausedState ? "primary" : "white"}
-          zIndex={2}
-        />
+        <Box flex={remaining} backgroundColor={backgroundColor} zIndex={2} />
         <Box
           position="absolute"
           top={0}
@@ -365,7 +372,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
             fontWeight="300"
             textAlign="center"
           >
-            {displayText}
+            {timeText}
           </Text>
         </Box>
       </TouchableOpacity>
@@ -496,6 +503,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
               repsValue={repsValue}
               changeReps={changeReps}
               saveRepsInput={handleClickNext}
+              onInputFocusChange={onTestInputFocusChange}
             />
           </Box>
         );
@@ -556,9 +564,9 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
   };
 
   return (
-    <Box flex={1} backgroundColor="white">
+    <Box flex={2} backgroundColor="white">
       {renderContent()}
-      {renderSkipButton()}
+      {!isTestInputFocused && renderSkipButton()}
     </Box>
   );
 };

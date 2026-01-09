@@ -51,6 +51,9 @@ importers:
       expo-font:
         specifier: ~14.0.10
         version: 14.0.10(expo@54.0.30)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      expo-image:
+        specifier: ~3.0.11
+        version: 3.0.11(expo@54.0.30)(react-native-web@0.21.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       expo-keep-awake:
         specifier: ~15.0.8
         version: 15.0.8(expo@54.0.30)(react@19.1.0)
@@ -3037,6 +3040,17 @@ packages:
       react: '*'
       react-native: '*'
 
+  expo-image@3.0.11:
+    resolution: {integrity: sha512-4TudfUCLgYgENv+f48omnU8tjS2S0Pd9EaON5/s1ZUBRwZ7K8acEr4NfvLPSaeXvxW24iLAiyQ7sV7BXQH3RoA==}
+    peerDependencies:
+      expo: '*'
+      react: '*'
+      react-native: '*'
+      react-native-web: '*'
+    peerDependenciesMeta:
+      react-native-web:
+        optional: true
+
   expo-json-utils@0.15.0:
     resolution: {integrity: sha512-duRT6oGl80IDzH2LD2yEFWNwGIC2WkozsB6HF3cDYNoNNdUvFk6uN3YiwsTsqVM/D0z6LEAQ01/SlYvN+Fw0JQ==}
 
@@ -5496,6 +5510,7 @@ packages:
   whatwg-encoding@2.0.0:
     resolution: {integrity: sha512-p41ogyeMUrw3jWclHWTQg1k05DSVXPLcVxRTYsXUk+ZooOCZLcoYgPZ/HL/D/N+uQPOtcp1me1WhBEaX02mhWg==}
     engines: {node: '>=12'}
+    deprecated: Use @exodus/bytes instead for a more spec-conformant and faster implementation
 
   whatwg-fetch@3.6.20:
     resolution: {integrity: sha512-EqhiFU6daOA8kpjOWTL0olhVOF3i7OrFzSYiGsEMB8GcXS+RrzauAERX65xMeNWVqxA6HXH2m69Z9LaKKdisfg==}
@@ -9130,6 +9145,14 @@ snapshots:
       fontfaceobserver: 2.3.0
       react: 19.1.0
       react-native: 0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0)
+
+  expo-image@3.0.11(expo@54.0.30)(react-native-web@0.21.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
+    dependencies:
+      expo: 54.0.30(@babel/core@7.28.5)(@expo/metro-runtime@6.1.2)(expo-router@6.0.21)(react-native-webview@13.15.0(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-native: 0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0)
+    optionalDependencies:
+      react-native-web: 0.21.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
 
   expo-json-utils@0.15.0: {}
 

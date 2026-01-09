@@ -1,6 +1,7 @@
 import { BackHeader } from "@/common/BackHeader";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { ExerciseType } from "@/features/training/models/Exercise";
+import { getExercisePictureUrl } from "@/services/StorageService";
 import { SkillType } from "@/features/training/models/Training";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { useTrainingStore } from "@/features/training/trainingStore";
@@ -11,13 +12,8 @@ import { Text } from "@/theme/Text";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { FC, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Image,
-  ImageSource,
-  Platform,
-  Pressable,
-  ScrollView,
-} from "react-native";
+import { Pressable, ScrollView } from "react-native";
+import { Image } from "expo-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 /**
@@ -421,30 +417,29 @@ const ExerciseItem: FC<ExerciseItemProps> = ({
   const exerciseData = exercises.find((e) => e.id === exercise.exerciseId);
   if (!exerciseData) return null;
 
-  // TODO: Missing exercise images. To be discussed further in Q&A session.
-  // See: https://github.com/sports-athletics/sports-athletic/issues/105
-  const source: ImageSource = {
-    uri:
-      Platform.select({ ios: "", android: "file://" }) + exerciseData.picture,
-  };
+  // Extract filename from path (e.g., "exercisePictures/1-picture-xxx.jpg" -> "1-picture-xxx.jpg")
+  const pictureFilename = exerciseData.picture?.split("/").pop() ?? "";
+  const imageUrl = pictureFilename
+    ? getExercisePictureUrl(pictureFilename)
+    : "";
+
   return (
     <Pressable onPress={onPress}>
       <Box flexDirection="row" marginBottom="m">
         {exerciseData.picture && (
           <Box
-            borderStyle={"dashed"}
-            borderWidth={1}
-            borderColor={"darkGrey1"}
             borderRadius={"s"}
             width={120}
             marginRight={"s"}
+            overflow="hidden"
           >
             <Image
-              source={source}
+              source={imageUrl}
               style={{
                 width: 120,
                 aspectRatio: 1,
               }}
+              cachePolicy="disk"
               accessibilityLabel={exerciseData.displayName}
             />
           </Box>

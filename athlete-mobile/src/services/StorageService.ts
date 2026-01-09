@@ -2,6 +2,7 @@ import { supabase } from "./supabaseClient";
 
 const SUPABASE_VIDEO_BUCKET = "videos";
 const SUPABASE_IMAGE_BUCKET = "images";
+const SUPABASE_EXERCISE_VIDEOS_BUCKET = "exercise_videos";
 const SUPABASE_EXERCISE_PICTURES_BUCKET = "exercise_pictures";
 
 export function getPublicUrl(bucket: string, path: string): string {
@@ -15,6 +16,10 @@ export function getVideoUrl(path: string): string {
 
 export function getImageUrl(path: string): string {
   return getPublicUrl(SUPABASE_IMAGE_BUCKET, path);
+}
+
+export function getExerciseVideoUrl(path: string): string {
+  return getPublicUrl(SUPABASE_EXERCISE_VIDEOS_BUCKET, path);
 }
 
 export function getExercisePictureUrl(path: string): string {

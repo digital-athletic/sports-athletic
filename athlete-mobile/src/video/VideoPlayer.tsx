@@ -1,8 +1,9 @@
+import { getExerciseVideoUrl } from "@/services/StorageService";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useEvent } from "expo";
 import { useVideoPlayer, VideoView } from "expo-video";
-import { FC, useEffect } from "react";
+import { FC, useEffect, useMemo } from "react";
 import { StyleSheet } from "react-native";
 
 type Props = {
@@ -16,14 +17,19 @@ type Props = {
 
 export const VideoPlayer: FC<Props> = ({
   title,
+  source,
   setIsVideoPlaying,
   fullScreenDisabled,
   setIsFullScreen,
   controlsDisabled,
 }) => {
-  const player = useVideoPlayer(
-    "https://example.supabase.co/storage/v1/object/public/videos/001PushUps.mp4",
-  );
+  // Extract filename from path (e.g., "exerciseVideos/1-video-xxx.mp4" -> "1-video-xxx.mp4")
+  const videoUrl = useMemo(() => {
+    const filename = source?.split("/").pop() ?? "";
+    return filename ? getExerciseVideoUrl(filename) : "";
+  }, [source]);
+
+  const player = useVideoPlayer(videoUrl);
 
   const { isPlaying } = useEvent(player, "playingChange", {
     isPlaying: player.playing,

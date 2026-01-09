@@ -366,6 +366,14 @@
       "noWeights": "Keine Gewichte",
       "cmHigh": "cm hoch",
       "heartRateInterval": "Pulsbereich",
+      "strengthTestAlert": {
+        "title": "Achtung bei Beschwerden",
+        "message": "Du hast Beschwerden angegeben. Achte bei Max-Kraft-Übungen besonders auf deinen Körper.\nBeende eine Übung sofort, wenn sich die Ausführung nicht gut anfühlt."
+      },
+      "weightCalculationAlert": {
+        "title": "Gewichtsangaben",
+        "message": "Das angegebene Langhantel-Gewicht ist immer Hantelstange + Zusatzgewicht."
+      },
       "controls": {
         "clickToPause": "Hier klicken zum Pausieren"
       },

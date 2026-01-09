@@ -17,7 +17,10 @@ import { ageGroupFor } from "@/features/training/utils/ageUtils";
 import { hasWeights } from "@/features/training/utils/equipmentUtils";
 import { heartRateBySkillAndBirthday } from "@/features/training/utils/heartRateUtils";
 import { getRegionsForPreventionSkills } from "@/features/training/utils/preventionUtils";
-import { getSkillTree } from "@/features/training/utils/skillTreeUtils";
+import {
+  getSkillTree,
+  mapSkillToFocusArea,
+} from "@/features/training/utils/skillTreeUtils";
 import {
   applyMaxValueToDirections,
   calculateAdjustedMaxValues,
@@ -75,6 +78,8 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     equipment,
     exerciseList,
     activeTraining,
+    addPauseTime,
+    addSkillTime,
     setTrainingEndTime,
     setExerciseSkipped,
     setExerciseFeedback,
@@ -91,8 +96,12 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [videoIsPlaying, setVideoIsPlaying] = useState(false);
   const [repsValue, setRepsValue] = useState(0);
+  const [maxFWarningPopUpShowable, setMaxFWarningPopUpShowable] =
+    useState(true);
+  const [weightCalculationPopUpShowable, setWeightCalculationPopUpShowable] =
+    useState(true);
   const exerciseStartTimeRef = useRef<number>(Date.now());
-  const pauseStartRef = useRef<number>(0);
+  const pauseStartRef = useRef<number>(Date.now());
 
   // Temporary storage for test workout results, only committed on successful completion
   const [tempMaxValues, setTempMaxValues] = useState<MaxValuesType | null>(
@@ -104,6 +113,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
 
   const currentExercise = exerciseList?.[activeExerciseIndex];
   const exerciseId = currentExercise?.exerciseId ?? -1;
+  const isPauseExercise = exerciseId === WorkoutConstants.PAUSE_EXERCISE_ID;
   const currentExerciseData = getExerciseById(exerciseId);
 
   const nextExerciseIndex = activeExerciseIndex + 1;
@@ -423,15 +433,22 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
    * checks if the branch level needs to increase and changes exercise in training plan
    */
   const saveExerciseAndBranchData = () => {
+    // skip saving for pause exercises
+    if (isPauseExercise) {
+      Logger.logEvent("pause_exercise_no_data_saved", { exerciseId });
+      return;
+    }
+
     const skill = currentExercise?.skill;
     let branchId =
       typeof currentExercise?.branchId == "string"
         ? parseInt(currentExercise.branchId)
-        : -1;
-    let id = exerciseId !== 999999 ? exerciseId : -1;
+        : undefined;
+    let id = exerciseId;
+    let currentExerciseData = getExerciseById(id);
 
-    if (skill) {
-      saveBranchData(skill, branchId, id);
+    if (skill && typeof branchId === "number" && !isPauseExercise) {
+      saveBranchData(skill, branchId, exerciseId);
     }
 
     // save user general data
@@ -443,7 +460,8 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     const reps = currentExercise?.repetition ?? 0;
     if (reps === -1) {
       //is test exercise, don't save
-      id = -1;
+      Logger.logEvent("test_exercise_no_data_saved", { exerciseId: id });
+      return;
     }
 
     // do not increase exercises values in all workouts
@@ -465,9 +483,9 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
       if (skill?.includes("CARDIO")) {
         // save data after last cardio in training
         if (
-          id !== 999999 &&
+          !isPauseExercise &&
           (!hasNextExercise ||
-            nextExercise?.exerciseId === 999999 ||
+            nextExercise?.exerciseId === WorkoutConstants.PAUSE_EXERCISE_ID ||
             !nextExercise?.skill?.includes("CARDIO"))
         ) {
           // find the main cardio exercise
@@ -487,6 +505,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
           if (cardioBranchId !== "-1") {
             branchId = parseInt(cardioBranchId);
             id = cardioExerciseId;
+            currentExerciseData = getExerciseById(id);
             doSave = true;
           }
         }
@@ -494,7 +513,6 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
       // check target values after last set of max exercises
       else if (skill?.includes("MAX")) {
         if (
-          exerciseId !== -1 &&
           currentExercise?.set &&
           currentExercise.set[0] === currentExercise.set[1]
         ) {
@@ -502,12 +520,12 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
           const ageGroup = ageGroupFor(workoutData.birthday);
 
           // get adjustment of exercise
-          const exerciseData = exerciseList?.find(
+          const exercise = exerciseList?.find(
             (item) => item.exerciseId === exerciseId,
           );
           let adjustment = null;
-          if (exerciseData?.feedback) {
-            adjustment = exerciseData?.feedback.difficulty;
+          if (exercise?.feedback) {
+            adjustment = exercise?.feedback.difficulty;
           }
 
           // get maxFRepetitions and maxFWeightPercentage done in this training
@@ -519,7 +537,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
             typeof maxValue === "number"
               ? getRoundedResultForValueAndStep((weight / maxValue) * 100, 2.5)
               : null;
-          let maxFRepetitionsNew = exerciseData?.maxFRepetitions ?? [];
+          let maxFRepetitionsNew = exercise?.maxFRepetitions ?? [];
 
           // control adjustments
           let increaseWeight = false;
@@ -620,8 +638,8 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
               adjustment === "TOO_EASY")
           ) {
             // No adjustment if max lvl and max weight is already reached
-            updateExercise(exerciseId, {
-              exerciseId,
+            updateExercise(id, {
+              exerciseId: id,
               skill,
               feedback: { difficulty: null },
             });
@@ -633,8 +651,8 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
             adjustment === "TOO_HARD"
           ) {
             // No adjustment if min weight is already too hard -> levelDown
-            updateExercise(exerciseId, {
-              exerciseId,
+            updateExercise(id, {
+              exerciseId: id,
               skill,
               feedback: { difficulty: null },
             });
@@ -648,8 +666,8 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
             adjustment === "TOO_EASY"
           ) {
             // No TOO_EASY adjustment if max lvl and max weight will be reached
-            updateExercise(exerciseId, {
-              exerciseId,
+            updateExercise(id, {
+              exerciseId: id,
               skill,
               feedback: { difficulty: "SUCCEEDED" },
             });
@@ -693,16 +711,16 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
               nextWeightPercentage > maximumWeightPercentage
             )
               nextWeightPercentage = maximumWeightPercentage;
-          } else if (levelUp || levelDown) {
-            updateBranchLevel(levelUp, branchId, exerciseId, skill, ageGroup);
+          } else if (typeof branchId === "number" && (levelUp || levelDown)) {
+            updateBranchLevel(levelUp, branchId, id, skill, ageGroup);
           }
 
           let newWeight = weight;
           let newDuration = duration ? duration : undefined;
           let newRepetition = reps ? reps : undefined;
           // set new exercise values
-          updateExercise(exerciseId, {
-            exerciseId,
+          updateExercise(id, {
+            exerciseId: id,
             skill,
             weight: newWeight,
             nextWeightPercentage,
@@ -723,7 +741,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
       }
       if (doSave) {
         // do not increase values for pause/support exercises/others
-        if (branchId !== -1 && exerciseId !== -1 && skill) {
+        if (typeof branchId === "number" && skill) {
           // from data/generator/TestIntensity
           let intensity = getIntensityBySkill(skill);
 
@@ -934,8 +952,8 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
               }
 
               // set new exercise values
-              updateExercise(exerciseId, {
-                exerciseId,
+              updateExercise(id, {
+                exerciseId: id,
                 skill,
                 weight: newWeight,
                 nextWeightPercentage,
@@ -947,8 +965,8 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
               });
 
               // set user exercise difficulty to null, so its not adjusted in next training
-              updateExercise(exerciseId, {
-                exerciseId,
+              updateExercise(id, {
+                exerciseId: id,
                 skill,
                 feedback: { difficulty: null },
               });
@@ -956,11 +974,11 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                 "exercise_weight_" +
                   (increaseWeight ? "increased" : "decreased"),
                 {
-                  exerciseId: exerciseId,
+                  exerciseId: id,
                 },
               );
             } else if (levelUp || levelDown) {
-              updateBranchLevel(levelUp, branchId, exerciseId, skill, ageGroup);
+              updateBranchLevel(levelUp, branchId, id, skill, ageGroup);
             } else {
               // no weight reset and no level up
               let maxValue = getMaxValueForExercise(
@@ -972,8 +990,8 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                   ? (weight / maxValue) * 100
                   : undefined;
 
-              updateExercise(exerciseId, {
-                exerciseId,
+              updateExercise(id, {
+                exerciseId: id,
                 skill,
                 weight,
                 nextWeightPercentage: weightPercentage,
@@ -1000,7 +1018,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     // );
 
     // save global meta data
-    Logger.logEvent("exercise_completed", { exerciseId });
+    Logger.logEvent("exercise_completed", { exerciseId: id });
   };
 
   const saveRepsInput = async () => {
@@ -1052,6 +1070,39 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     }
   };
 
+  const handlePainAlert = () => {
+    const userPains = getTagValues(workoutData.tags, TagGroups.PAIN);
+    if (userPains.length > 0) {
+      Alert.alert(
+        t("training.active.strengthTestAlert.title"),
+        t("training.active.strengthTestAlert.message"),
+        [
+          {
+            text: t("common.ok"),
+            onPress: () => {
+              setMaxFWarningPopUpShowable(false);
+            },
+          },
+        ],
+      );
+    }
+  };
+
+  const handleBarbellWeightAlert = () => {
+    Alert.alert(
+      t("training.active.weightCalculationAlert.title"),
+      t("training.active.weightCalculationAlert.message"),
+      [
+        {
+          text: t("common.ok"),
+          onPress: () => {
+            setWeightCalculationPopUpShowable(false);
+          },
+        },
+      ],
+    );
+  };
+
   const advanceToNextExercise = () => {
     if (!exerciseList) return;
 
@@ -1065,9 +1116,48 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     setIsTestInputFocused(false);
     setRepsValue(0);
 
+    if (isPauseExercise) {
+      // add time in pause to training stats
+      const pauseDuration = Date.now() - pauseStartRef.current;
+      addPauseTime(pauseDuration);
+
+      if (
+        maxFWarningPopUpShowable &&
+        nextExercise?.weightType === "weightFMax"
+      ) {
+        handlePainAlert();
+      }
+
+      const isNextExerciseWithBarbell = getTagValues(
+        nextExerciseData?.tags ?? [],
+        TagGroups.EQUIPMENT,
+      ).some((item) => item.includes("BARBELL"));
+
+      if (
+        weightCalculationPopUpShowable &&
+        activeTraining?.type === "TEST_WORKOUT" &&
+        isNextExerciseWithBarbell
+      ) {
+        handleBarbellWeightAlert();
+      }
+    } else if (currentExercise?.skill) {
+      // Add exercise time to skill (analytics) -> addTrainingSkillTime
+      const exerciseDuration = Date.now() - exerciseStartTimeRef.current;
+      const focusArea = mapSkillToFocusArea(currentExercise.skill);
+      if (focusArea) {
+        addSkillTime(focusArea, exerciseDuration);
+      }
+    }
+
     if (activeExerciseIndex < exerciseList.length - 1) {
       setActiveExerciseIndex((prev) => prev + 1);
-      exerciseStartTimeRef.current = Date.now();
+
+      if (isPauseExercise) {
+        // set pause timer to new start
+        pauseStartRef.current = Date.now();
+      } else {
+        exerciseStartTimeRef.current = Date.now();
+      }
     } else {
       // Training complete
       saveAndNavigateToSuccess(false);
@@ -1180,7 +1270,6 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const progress = activeExerciseIndex / exerciseList.length;
   const isTestExercise = currentExercise?.repetition === -1;
   const isCardioExercise = currentExercise?.skill?.includes("CARDIO") ?? false;
-  const isPauseExercise = exerciseId === 999999;
   const hasDuration = !!currentExercise?.duration;
   const isLastInSet = currentExercise?.set?.[0] === currentExercise?.set?.[1];
 

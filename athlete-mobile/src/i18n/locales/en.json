@@ -366,6 +366,14 @@
       "noWeights": "No weights",
       "cmHigh": "cm high",
       "heartRateInterval": "Heart rate interval",
+      "strengthTestAlert": {
+        "title": "Attention for pain",
+        "message": "You declared pains. Pay special attention to your body during Max Force exercises.\nStop an exercise immediately if it does not feel good."
+      },
+      "weightCalculationAlert": {
+        "title": "Weight Indication",
+        "message": "The weight indication for the barbell always includes barbell + weight plates."
+      },
       "controls": {
         "clickToPause": "Click here to pause"
       },

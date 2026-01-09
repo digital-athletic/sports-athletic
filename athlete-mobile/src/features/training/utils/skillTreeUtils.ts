@@ -6,6 +6,7 @@ import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
 import { SkillTreesState, SkillTreeType } from "@/store/skillTreesStore";
 import { getTagValues } from "../../../utils/tagUtils";
 import { TemporalDataType } from "../models/TemporalData";
+import { SkillFocusType } from "../models/Training";
 import { hasWeights } from "./equipmentUtils";
 
 /**
@@ -590,3 +591,52 @@ function getAreasFor(muscles: string[]): string[] {
     areaMap[area].some((muscle) => normalized.includes(muscle)),
   );
 }
+
+export const mapSkillToFocusArea = (
+  skill: string,
+): SkillFocusType | undefined => {
+  switch (skill) {
+    case "PREVSHOULDER":
+    case "PREVKNEE":
+    case "PREVWRIST":
+    case "PREVANKLE":
+    case "PREVSPINE":
+    case "PREV":
+      return "PREVENTION";
+    case "WU":
+    case "WUSKSA":
+    case "WUSPEZIAL":
+    case "CD":
+      return "WARMUP";
+    case "STABILITY":
+    case "BAS":
+    case "GKS":
+      return "STABILITY";
+    case "MOBILITY":
+    case "MOB":
+    case "BR":
+      return "MOBILITY";
+    case "SWR1":
+    case "SWR1KG":
+    case "SWR2":
+    case "SWR2KG":
+    case "MAX_KRAFT":
+    case "MAX":
+    case "SK":
+    case "SKKG":
+    case "SWR":
+      return "SWR";
+    case "SA":
+    case "SAKG":
+    case "CARDIO_1K":
+    case "CARDIO_1L":
+    case "CARDIO_2":
+    case "CARDIO_3":
+    case "CARDIO_4":
+    case "CARDIO_5":
+    case "HBCARDIO":
+      return "CARDIO";
+    default:
+      return undefined;
+  }
+};

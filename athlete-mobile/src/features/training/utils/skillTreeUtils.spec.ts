@@ -7,6 +7,7 @@ import {
   getNextTypeFiltered,
   getSkillTree,
   getUserExerciseFromBranch,
+  mapSkillToFocusArea,
 } from "./skillTreeUtils";
 
 describe("skillTreeUtils", () => {
@@ -491,6 +492,170 @@ describe("skillTreeUtils", () => {
 
       const result = getNextTypeFiltered("kg", items);
       expect(result).toEqual(items);
+    });
+  });
+
+  describe("mapSkillToFocusArea", () => {
+    describe("PREVENTION focus area", () => {
+      it("should map PREVSHOULDER to PREVENTION", () => {
+        expect(mapSkillToFocusArea("PREVSHOULDER")).toBe("PREVENTION");
+      });
+
+      it("should map PREVKNEE to PREVENTION", () => {
+        expect(mapSkillToFocusArea("PREVKNEE")).toBe("PREVENTION");
+      });
+
+      it("should map PREVWRIST to PREVENTION", () => {
+        expect(mapSkillToFocusArea("PREVWRIST")).toBe("PREVENTION");
+      });
+
+      it("should map PREVANKLE to PREVENTION", () => {
+        expect(mapSkillToFocusArea("PREVANKLE")).toBe("PREVENTION");
+      });
+
+      it("should map PREVSPINE to PREVENTION", () => {
+        expect(mapSkillToFocusArea("PREVSPINE")).toBe("PREVENTION");
+      });
+
+      it("should map PREV to PREVENTION", () => {
+        expect(mapSkillToFocusArea("PREV")).toBe("PREVENTION");
+      });
+    });
+
+    describe("WARMUP focus area", () => {
+      it("should map WU to WARMUP", () => {
+        expect(mapSkillToFocusArea("WU")).toBe("WARMUP");
+      });
+
+      it("should map WUSKSA to WARMUP", () => {
+        expect(mapSkillToFocusArea("WUSKSA")).toBe("WARMUP");
+      });
+
+      it("should map WUSPEZIAL to WARMUP", () => {
+        expect(mapSkillToFocusArea("WUSPEZIAL")).toBe("WARMUP");
+      });
+
+      it("should map CD to WARMUP", () => {
+        expect(mapSkillToFocusArea("CD")).toBe("WARMUP");
+      });
+    });
+
+    describe("STABILITY focus area", () => {
+      it("should map STABILITY to STABILITY", () => {
+        expect(mapSkillToFocusArea("STABILITY")).toBe("STABILITY");
+      });
+
+      it("should map BAS to STABILITY", () => {
+        expect(mapSkillToFocusArea("BAS")).toBe("STABILITY");
+      });
+
+      it("should map GKS to STABILITY", () => {
+        expect(mapSkillToFocusArea("GKS")).toBe("STABILITY");
+      });
+    });
+
+    describe("MOBILITY focus area", () => {
+      it("should map MOBILITY to MOBILITY", () => {
+        expect(mapSkillToFocusArea("MOBILITY")).toBe("MOBILITY");
+      });
+
+      it("should map MOB to MOBILITY", () => {
+        expect(mapSkillToFocusArea("MOB")).toBe("MOBILITY");
+      });
+
+      it("should map BR to MOBILITY", () => {
+        expect(mapSkillToFocusArea("BR")).toBe("MOBILITY");
+      });
+    });
+
+    describe("SWR focus area", () => {
+      it("should map SWR1 to SWR", () => {
+        expect(mapSkillToFocusArea("SWR1")).toBe("SWR");
+      });
+
+      it("should map SWR1KG to SWR", () => {
+        expect(mapSkillToFocusArea("SWR1KG")).toBe("SWR");
+      });
+
+      it("should map SWR2 to SWR", () => {
+        expect(mapSkillToFocusArea("SWR2")).toBe("SWR");
+      });
+
+      it("should map SWR2KG to SWR", () => {
+        expect(mapSkillToFocusArea("SWR2KG")).toBe("SWR");
+      });
+
+      it("should map MAX_KRAFT to SWR", () => {
+        expect(mapSkillToFocusArea("MAX_KRAFT")).toBe("SWR");
+      });
+
+      it("should map MAX to SWR", () => {
+        expect(mapSkillToFocusArea("MAX")).toBe("SWR");
+      });
+
+      it("should map SK to SWR", () => {
+        expect(mapSkillToFocusArea("SK")).toBe("SWR");
+      });
+
+      it("should map SKKG to SWR", () => {
+        expect(mapSkillToFocusArea("SKKG")).toBe("SWR");
+      });
+
+      it("should map SWR to SWR", () => {
+        expect(mapSkillToFocusArea("SWR")).toBe("SWR");
+      });
+    });
+
+    describe("CARDIO focus area", () => {
+      it("should map SA to CARDIO", () => {
+        expect(mapSkillToFocusArea("SA")).toBe("CARDIO");
+      });
+
+      it("should map SAKG to CARDIO", () => {
+        expect(mapSkillToFocusArea("SAKG")).toBe("CARDIO");
+      });
+
+      it("should map CARDIO_1K to CARDIO", () => {
+        expect(mapSkillToFocusArea("CARDIO_1K")).toBe("CARDIO");
+      });
+
+      it("should map CARDIO_1L to CARDIO", () => {
+        expect(mapSkillToFocusArea("CARDIO_1L")).toBe("CARDIO");
+      });
+
+      it("should map CARDIO_2 to CARDIO", () => {
+        expect(mapSkillToFocusArea("CARDIO_2")).toBe("CARDIO");
+      });
+
+      it("should map CARDIO_3 to CARDIO", () => {
+        expect(mapSkillToFocusArea("CARDIO_3")).toBe("CARDIO");
+      });
+
+      it("should map CARDIO_4 to CARDIO", () => {
+        expect(mapSkillToFocusArea("CARDIO_4")).toBe("CARDIO");
+      });
+
+      it("should map CARDIO_5 to CARDIO", () => {
+        expect(mapSkillToFocusArea("CARDIO_5")).toBe("CARDIO");
+      });
+
+      it("should map HBCARDIO to CARDIO", () => {
+        expect(mapSkillToFocusArea("HBCARDIO")).toBe("CARDIO");
+      });
+    });
+
+    describe("Default/Unknown skills", () => {
+      it("should return undefined for unknown skill", () => {
+        expect(mapSkillToFocusArea("UNKNOWN_SKILL")).toBeUndefined();
+      });
+
+      it("should return undefined for empty string", () => {
+        expect(mapSkillToFocusArea("")).toBeUndefined();
+      });
+
+      it("should return undefined for random string", () => {
+        expect(mapSkillToFocusArea("RANDOM_SKILL_NAME")).toBeUndefined();
+      });
     });
   });
 });

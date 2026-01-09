@@ -31,10 +31,11 @@ import { Text } from "@/theme/Text";
 import { DDMMYYYYToDate } from "@/utils/date";
 import { fieldNamesToLowerCase } from "@/utils/fieldNames";
 import { parseBooleanParam, parseIntParam } from "@/utils/router";
+import { BackHeader } from "@/common/BackHeader";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert } from "react-native";
+import { Alert, BackHandler } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type ScreenState = "SORENESS" | "PLACE";
@@ -86,6 +87,23 @@ export default function MuscleSorenessScreen() {
 
   const gender = workoutData.gender === "MALE" ? "m" : "w";
   const { type } = params;
+
+  const handleBack = useCallback(() => {
+    if (screenState === "PLACE") {
+      setScreenState("SORENESS");
+    } else {
+      router.back();
+    }
+    return true;
+  }, [screenState, router]);
+
+  useEffect(() => {
+    const handler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      handleBack,
+    );
+    return () => handler.remove();
+  }, [handleBack]);
 
   useEffect(() => {
     if (temporalData) {
@@ -281,7 +299,12 @@ export default function MuscleSorenessScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title }} />
+      <Stack.Screen
+        options={{
+          title,
+          headerLeft: () => <BackHeader onBack={handleBack} />,
+        }}
+      />
       <Box
         flex={1}
         justifyContent="center"

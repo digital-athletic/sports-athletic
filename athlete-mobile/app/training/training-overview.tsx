@@ -1,3 +1,4 @@
+import { BackHeader } from "@/common/BackHeader";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { ExerciseType } from "@/features/training/models/Exercise";
 import { SkillType } from "@/features/training/models/Training";
@@ -39,6 +40,11 @@ export default function TrainingOverviewScreen() {
   // Get store data
   const { exerciseList, setTrainingStartTime } = useTrainingStore();
   const { exercises } = useExercisesStore();
+
+  const handleBack = useCallback(() => {
+    router.back();
+    return true;
+  }, [router]);
 
   // Process exercise data on mount
   const processExerciseData = useCallback(() => {
@@ -158,7 +164,12 @@ export default function TrainingOverviewScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: t("training.overview.title") }} />
+      <Stack.Screen
+        options={{
+          title: t("training.overview.title"),
+          headerLeft: () => <BackHeader onBack={handleBack} />,
+        }}
+      />
       <Box
         flex={1}
         backgroundColor="white"

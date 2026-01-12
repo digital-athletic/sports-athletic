@@ -341,6 +341,7 @@
     },
     "overview": {
       "title": "Training Overview",
+      "loading": "Loading training...",
       "equipmentNeeded": "Equipment needed",
       "exerciseList": "Exercise list",
       "startTraining": "Start training",

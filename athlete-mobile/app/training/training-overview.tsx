@@ -130,16 +130,6 @@ export default function TrainingOverviewScreen() {
     setTrainingExerciseList(exList);
   }, [exerciseList, exercises]);
 
-  // Build exercise overview on mount
-  useEffect(() => {
-    if (!exerciseList || !exercises) {
-      console.error("Missing exerciseList or exercises data");
-      return;
-    }
-
-    processExerciseData();
-  }, [exerciseList, exercises, processExerciseData]);
-
   const handleStartTraining = useCallback(() => {
     setTrainingStartTime(Date.now());
     router.push({
@@ -157,6 +147,37 @@ export default function TrainingOverviewScreen() {
     },
     [router],
   );
+
+  // Build exercise overview on mount
+  useEffect(() => {
+    if (!exerciseList || !exercises) {
+      return;
+    }
+
+    processExerciseData();
+  }, [exerciseList, exercises, processExerciseData]);
+
+  // Show loading state when data isn't ready
+  if (!exerciseList || !exercises) {
+    return (
+      <>
+        <Stack.Screen
+          options={{
+            title: t("training.overview.title"),
+            headerLeft: () => <BackHeader onBack={handleBack} />,
+          }}
+        />
+        <Box
+          flex={1}
+          justifyContent="center"
+          alignItems="center"
+          backgroundColor="white"
+        >
+          <Text variant="title">{t("common.loading")}</Text>
+        </Box>
+      </>
+    );
+  }
 
   return (
     <>

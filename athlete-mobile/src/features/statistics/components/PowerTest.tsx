@@ -35,7 +35,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
     anamnesisCompleted,
     toggleHistoryEntry,
     isEntryExpanded,
-  } = usePowerTestData();
+  } = usePowerTestData({ expandFirstEntry: isSuccessScreen });
 
   const startTestWorkout = useCallback(() => {
     if (anamnesisCompleted) {

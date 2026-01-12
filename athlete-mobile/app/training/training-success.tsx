@@ -1,23 +1,21 @@
-import { PowerTest } from "@/charts/PowerTest";
 import { RadarChart } from "@/charts/RadarChart";
-import { Loading } from "@/common/Loading";
+import { PowerTest } from "@/features/statistics/components/PowerTest";
 import { TrainingSummary } from "@/features/statistics/components/TrainingSummary";
-import { type UserSkills } from "@/features/statistics/models/WorkoutsData";
+import { useTrainingStore } from "@/features/training/trainingStore";
+import { calculateSkillsFromTime } from "@/features/training/utils/trainingSuccessUtils";
+import { calculateWorkoutTotals } from "@/features/training/utils/workoutUtils";
+import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
+import { useExercisesStore } from "@/store/exercisesStore";
+import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
+import { getTimeString, getWeightString } from "@/utils/formatters";
 import { Stack, useRouter } from "expo-router";
-import { useEffect, useState, type FC } from "react";
+import { useEffect, useMemo, useRef, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
-
-type WorkoutTotals = {
-  duration: number;
-  count: number;
-  points: number;
-  weight: number;
-  height: number;
-};
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 /**
  * Training Success Screen
@@ -33,89 +31,61 @@ type WorkoutTotals = {
 const TrainingSuccessScreen: FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [isTestWorkout, setIsTestWorkout] = useState(false);
-  const [skills, setSkills] = useState<UserSkills>({
-    PREVENTION: 0,
-    MOBILITY: 0,
-    SWR: 0,
-    WARMUP: 0,
-    STABILITY: 0,
-    CARDIO: 0,
-  });
-  const [totals, setTotals] = useState<WorkoutTotals>({
-    duration: 0,
-    count: 0,
-    points: 0,
-    weight: 0,
-    height: 0,
-  });
+  const { exerciseList, time, activeTraining, resetTraining } =
+    useTrainingStore();
+  const { exercises } = useExercisesStore();
+  const { workoutData } = useUserWorkoutStore();
+  const maxValues = workoutData.maxValues;
+  const { addXP } = useExerciseProgressStore();
+  const xpAwarded = useRef(false);
+  const insets = useSafeAreaInsets();
 
+  // Detect test workout by checking if any exercise has repetition === -1
+  // This matches legacy behavior which is more reliable than checking activeTraining.type
+  const isTestWorkout =
+    activeTraining?.type === "TEST_WORKOUT" ||
+    exerciseList?.some((e) => e.repetition === -1) === true;
+
+  const skills = useMemo(
+    () => calculateSkillsFromTime(time.skill),
+    [time.skill],
+  );
+
+  const totals = useMemo(
+    () =>
+      calculateWorkoutTotals(
+        time,
+        exerciseList ?? [],
+        exercises ?? [],
+        maxValues,
+      ),
+    [time, exerciseList, exercises, maxValues],
+  );
+
+  // Award XP when workout is completed (only once)
   useEffect(() => {
-    // TODO: Fetch completed workout data from store/API
-    // TODO: Calculate XP and add to user progress
-    // TODO: Check if review prompt should be shown
-    // TODO: Determine if this is a test workout
-    // TODO: Calculate skill counts from workout data
-
-    // Placeholder: simulate loading
-    const timer = setTimeout(() => {
-      // Mock data for demonstration
-      setSkills({
-        PREVENTION: 15,
-        MOBILITY: 10,
-        SWR: 25,
-        WARMUP: 5,
-        STABILITY: 20,
-        CARDIO: 15,
-      });
-      setTotals({
-        duration: 1200, // 20 minutes in seconds
-        count: 12,
-        points: 85,
-        weight: 450, // kg
-        height: 0,
-      });
-      setIsTestWorkout(false);
-      setLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  const formatDuration = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return secs > 0
-      ? `${mins}:${secs.toString().padStart(2, "0")} min`
-      : `${mins} min`;
-  };
-
-  const formatWeight = (kg: number): string => {
-    return `${Math.round(kg)} kg`;
-  };
+    if (!xpAwarded.current && totals.points > 0) {
+      addXP(totals.points);
+      xpAwarded.current = true;
+    }
+  }, [totals.points, addXP]);
 
   const handleGoOn = () => {
-    // TODO: Reset training state
+    resetTraining();
     router.replace("/(tabs)/(home)");
   };
-
-  if (loading) {
-    return (
-      <>
-        <Stack.Screen options={{ title: t("training.success.title") }} />
-        <Box flex={1} justifyContent="center" alignItems="center">
-          <Loading show={true} text={t("training.success.calculating")} />
-        </Box>
-      </>
-    );
-  }
 
   const hasWorkoutData = totals.count > 0;
 
   return (
     <>
-      <Stack.Screen options={{ title: t("training.success.title") }} />
+      <Stack.Screen
+        options={{
+          title: t("training.success.title"),
+          headerBackVisible: false,
+          gestureEnabled: false,
+        }}
+      />
       <Box flex={1} backgroundColor="white">
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           {isTestWorkout ? (
@@ -140,10 +110,10 @@ const TrainingSuccessScreen: FC = () => {
                 backgroundColor="lightGrey1"
               >
                 <TrainingSummary
-                  duration={formatDuration(totals.duration)}
+                  duration={getTimeString(totals.duration)}
                   count={totals.count.toString()}
                   points={totals.points.toString()}
-                  weight={formatWeight(totals.weight)}
+                  weight={getWeightString(totals.weight)}
                 />
               </Box>
             </Box>
@@ -157,7 +127,11 @@ const TrainingSuccessScreen: FC = () => {
         </ScrollView>
 
         <Box padding="l">
-          <Button variant="primary" onPress={handleGoOn}>
+          <Button
+            variant="primary"
+            onPress={handleGoOn}
+            style={{ marginBottom: insets.bottom }}
+          >
             {t("training.success.goOn")}
           </Button>
         </Box>

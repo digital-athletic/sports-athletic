@@ -341,6 +341,7 @@
     },
     "overview": {
       "title": "Trainingsübersicht",
+      "loading": "Training wird geladen...",
       "equipmentNeeded": "Benötigte Ausrüstung",
       "exerciseList": "Übungsliste",
       "startTraining": "Training starten",

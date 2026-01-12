@@ -10,7 +10,7 @@ export const getTimeString = (time: number): string => {
   if (time < 3600) {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
-    return `${minutes} min ${seconds} s`;
+    return seconds > 0 ? `${minutes} min ${seconds} s` : `${minutes} min`;
   }
   const hours = Math.floor(time / 3600);
   const timeLeft = time - hours * 3600;
@@ -24,5 +24,7 @@ export const getTimeString = (time: number): string => {
  * @returns Formatted weight string
  */
 export const getWeightString = (weight: number): string => {
-  return weight < 1000 ? `${weight} kg` : `${(weight / 1000).toFixed(2)} t`;
+  return weight < 1000
+    ? `${Math.round(weight)} kg`
+    : `${(weight / 1000).toFixed(2)} t`;
 };

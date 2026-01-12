@@ -123,7 +123,7 @@ export const calculateWorkoutTotals = (
           //duration
           if (exercise.duration) {
             duration += +exercise.duration;
-            if (exercise.exerciseId === 999999) {
+            if (exercise.exerciseId === WorkoutConstants.PAUSE_EXERCISE_ID) {
               // count pause duration - no points
               pauseDuration += +exercise.duration;
             }
@@ -158,7 +158,7 @@ export const calculateWorkoutTotals = (
         }
 
         //count
-        if (exercise.exerciseId !== 999999) {
+        if (exercise.exerciseId !== WorkoutConstants.PAUSE_EXERCISE_ID) {
           // is not pause
           count++;
         }

@@ -1,4 +1,4 @@
-import { MaxValuesType } from "@/features/training/models/MaxValues";
+import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useCallback, useMemo, useState } from "react";
 import {
@@ -7,55 +7,29 @@ import {
   sortTestHistoryByDate,
 } from "../models/ChartData";
 
-const DUMMY_TEST_HISTORY: MaxValuesType[] = [
-  {
-    hip: { oneSidedBarbell: 100 },
-    knee: { barbell: 90 },
-    unterkoerper: { barbell: 95 },
-    verticalPush: { barbell: 80 },
-    verticalPull: { barbell: 85 },
-    horizontalPush: { barbell: 70 },
-    horizontalPull: { barbell: 75 },
-    testDate: "01-01-2023",
-  },
-  {
-    hip: { barbell: 110 },
-    knee: { barbell: 100 },
-    unterkoerper: { barbell: 105 },
-    verticalPush: { barbell: 90 },
-    verticalPull: { barbell: 95 },
-    horizontalPush: { barbell: 80 },
-    horizontalPull: { barbell: 85 },
-    testDate: "01-03-2023",
-  },
-  {
-    hip: { barbell: 120 },
-    knee: { barbell: 110 },
-    unterkoerper: { barbell: 115 },
-    verticalPush: { barbell: 100 },
-    verticalPull: { barbell: 105 },
-    horizontalPush: { barbell: 90 },
-    horizontalPull: { barbell: 95 },
-    testDate: "01-05-2023",
-  },
-];
+interface UsePowerTestDataOptions {
+  expandFirstEntry?: boolean;
+}
 
 /**
  * Custom hook for PowerTest data and logic
  */
-export const usePowerTestData = () => {
-  // const testHistory = useExerciseProgressStore((state) => {
-  //   return state.testHistory;
-  // });
-  const testHistory = DUMMY_TEST_HISTORY;
+export const usePowerTestData = (options: UsePowerTestDataOptions = {}) => {
+  const { expandFirstEntry = false } = options;
+  const testHistory = useExerciseProgressStore((state) => state.testHistory);
 
   const anamnesisCompleted = useUserProfileStore(
     (state) => state.anamnesisCompleted,
   );
 
-  const [expandedEntries, setExpandedEntries] = useState<boolean[]>(
-    () => testHistory?.map(() => false) ?? [],
-  );
+  // Initialize with first entry expanded if on success screen
+  const [expandedEntries, setExpandedEntries] = useState<boolean[]>(() => {
+    const entries =
+      testHistory?.map((_, index) =>
+        index === 0 && expandFirstEntry ? true : false,
+      ) ?? [];
+    return entries;
+  });
 
   const chartData: PowerTestChartData = useMemo(
     () => processTestHistory(testHistory),

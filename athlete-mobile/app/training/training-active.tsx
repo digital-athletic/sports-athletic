@@ -1368,11 +1368,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
         </>
       );
     } else {
-      return (
-        <Text variant="largeTitle" textAlign="center">
-          {t("training.active.noWeights")}
-        </Text>
-      );
+      return <Text textAlign="center">{t("training.active.noWeights")}</Text>;
     }
   };
 
@@ -1487,7 +1483,11 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
 
             {/* Exercise information */}
             {currentExercise && (
-              <Box padding="m" gap="m" flex={1}>
+              <Box
+                paddingVertical="m"
+                borderBottomWidth={1}
+                borderBottomColor="lightGrey2"
+              >
                 {/* Sets */}
                 <Box flexDirection="row" minHeight={75}>
                   <Box
@@ -1523,6 +1523,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                     borderRightWidth={1}
                     borderRightColor="lightGrey2"
                     paddingHorizontal="s"
+                    gap="m"
                   >
                     {typeof currentExercise.duration === "number" && (
                       <Box alignItems="center">

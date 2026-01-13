@@ -19,7 +19,7 @@ export const textVariants = {
     },
     fontWeight: "bold",
     color: "darkGrey3",
-    marginBottom: "s",
+    marginBottom: "xs",
   },
 
   // Section titles

@@ -13,18 +13,19 @@ import {
   type GestureResponderEvent,
 } from "react-native";
 import { TrainingRepetitionInput } from "./TrainingRepetitionInput";
+import { useCountdown } from "./hooks/useCountdown";
 import { useVoiceCoach } from "./hooks/useVoiceCoach";
 
 export interface TrainingNavigationProps {
   exerciseId: number;
-  hasDuration: boolean;
-  duration: number;
+  duration: number | undefined;
   next: () => void;
   skip: () => void;
   isPause: boolean;
+  isNextExercisePause: boolean;
+  isCountdownActive: boolean;
+  hasNextExercise: boolean;
   feedback: (type: "TOO_EASY" | "TOO_HARD" | "SUCCEEDED") => void;
-  videoIsPlaying: boolean;
-  videoIsFullScreen: boolean;
   isFirstDurationInTraining: boolean;
   isLastInSet: boolean;
   isFeedbackSkill: boolean;
@@ -42,17 +43,16 @@ const AnimatedIcon = Animated.createAnimatedComponent(Ionicon);
 const multiplier = 2;
 const normalText = 16;
 const bigText = 24;
-const UPDATE_CYCLE_TIME = 300;
 
 export const TrainingNavigation: FC<TrainingNavigationProps> = ({
-  hasDuration,
   duration,
   next,
   skip,
   isPause,
+  hasNextExercise,
+  isNextExercisePause,
+  isCountdownActive,
   feedback,
-  videoIsPlaying,
-  videoIsFullScreen,
   isFirstDurationInTraining,
   isLastInSet,
   isFeedbackSkill,
@@ -70,10 +70,9 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
   const theme = useTheme<Theme>();
 
   // State
-  const [remaining, setRemaining] = useState(-1);
   const [exerciseEnded, setExerciseEnded] = useState(false);
   const [isPausedState, setIsPausedState] = useState(false);
-  const startRef = useRef(0);
+  const timerStartRef = useRef(0);
   const lastNavEventFiredRef = useRef(0);
   const dxRef = useRef(new Animated.Value(0));
   const dyRef = useRef(new Animated.Value(0));
@@ -81,14 +80,35 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
     null,
   );
 
-  const { playCountdownToStart, playCountdownToPause, stopVoiceCoach } =
-    useVoiceCoach();
+  const hasDuration = typeof duration === "number";
+  const isTimerActive =
+    isCountdownActive && hasDuration && !exerciseEnded && !isPausedState;
+
+  const countdown = useCountdown({
+    exerciseId,
+    duration,
+    isActive: isTimerActive,
+    autoAdvance:
+      isPause ||
+      (isCardioExercise && !isLastCardioExercise) ||
+      (isLastInSet && !isFeedbackSkill && !isTest),
+    onAutoAdvance: () => {
+      handleClickNext();
+    },
+    onComplete: () => {
+      setExerciseEnded(true);
+    },
+  });
+  useVoiceCoach(
+    isNextExercisePause,
+    hasNextExercise && isTimerActive,
+    countdown,
+  );
 
   const resetState = () => {
-    setRemaining(-1);
     setExerciseEnded(false);
     setIsPausedState(false);
-    startRef.current = 0;
+    timerStartRef.current = 0;
     lastNavEventFiredRef.current = 0;
     dxRef.current.setValue(0);
     dyRef.current.setValue(0);
@@ -102,7 +122,6 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
 
   const handleClickNormalButton = useCallback(
     async (identification?: "too_easy" | "too_hard") => {
-      setRemaining(-1);
       if (isLastInSet && !isTest) {
         if (identification === "too_easy") {
           feedback("TOO_EASY");
@@ -112,11 +131,9 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
           feedback("SUCCEEDED");
         }
       }
-      next();
-      dxRef.current.setValue(0);
-      dyRef.current.setValue(0);
+      handleClickNext();
     },
-    [isLastInSet, isTest, feedback, next],
+    [isLastInSet, isTest, handleClickNext, feedback],
   );
 
   // Pan responder initialization
@@ -152,92 +169,17 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
     });
   }, [isTest, isLastInSet, handleClickNormalButton]);
 
-  useEffect(() => {
-    resetState();
-  }, [exerciseId]);
-
   const handleClickSkip = () => {
     skip();
     resetState();
   };
 
   const handleTogglePause = () => {
-    if (isPausedState && videoIsPlaying) {
-      stopVoiceCoach();
-    }
     if (!isPause) {
       pauseToggled(!isPausedState);
     }
     setIsPausedState(!isPausedState);
   };
-
-  // Replace the timer useEffect with:
-  useEffect(() => {
-    if (!hasDuration || !duration) {
-      return;
-    }
-
-    let startTime = startRef.current || Date.now();
-    let timerInterval: ReturnType<typeof setInterval>;
-
-    const tick = () => {
-      // Pause: freeze progress by adjusting start time
-      if (isPausedState || videoIsPlaying || videoIsFullScreen) {
-        const elapsed = duration - Math.max(remaining, 0);
-        startTime = Date.now() - elapsed * 1000;
-        return;
-      }
-
-      const elapsedSecs = Math.floor((Date.now() - startTime) / 1000);
-      const newRemaining = Math.max(0, duration - elapsedSecs);
-
-      setRemaining(newRemaining);
-
-      // Voice cues at specific times
-      if (isPause && newRemaining === 6) {
-        playCountdownToStart();
-      } else if (!isPause && newRemaining === 4) {
-        playCountdownToPause();
-      }
-
-      // Exercise complete
-      if (newRemaining === 0) {
-        setExerciseEnded(true);
-        clearInterval(timerInterval);
-
-        // Auto-advance conditions
-        const shouldAutoAdvance =
-          isPause ||
-          (isCardioExercise && !isLastCardioExercise) ||
-          (isLastInSet && !isFeedbackSkill && !isTest);
-
-        if (shouldAutoAdvance) {
-          handleClickNext();
-        }
-      }
-    };
-
-    startRef.current = startTime;
-    timerInterval = setInterval(tick, UPDATE_CYCLE_TIME);
-
-    return () => clearInterval(timerInterval);
-  }, [
-    hasDuration,
-    duration,
-    isPausedState,
-    videoIsPlaying,
-    videoIsFullScreen,
-    isPause,
-    isCardioExercise,
-    isLastCardioExercise,
-    isLastInSet,
-    isFeedbackSkill,
-    isTest,
-    remaining,
-    playCountdownToStart,
-    playCountdownToPause,
-    handleClickNext,
-  ]);
 
   const getInterpolations = () => {
     return {
@@ -308,12 +250,14 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
     };
   };
 
-  const renderTimeProgress = () => {
-    const secondsPassed = Math.floor((Date.now() - startRef.current) / 1000);
-    const min = Math.floor(remaining / 60);
-    const sec = remaining - min * 60;
-    const minText = remaining < 0 ? "--" : ("0" + min).slice(-2);
-    const secText = remaining < 0 ? "--" : ("0" + sec).slice(-2);
+  const renderTimeProgress = (duration: number) => {
+    const remainingInt =
+      typeof countdown === "number" ? Math.floor(countdown) : -1;
+    const elapsed = Math.max(duration - remainingInt, 0);
+    const min = Math.floor(remainingInt / 60);
+    const sec = remainingInt - min * 60;
+    const minText = remainingInt < 0 ? "--" : ("0" + min).slice(-2);
+    const secText = remainingInt < 0 ? "--" : ("0" + sec).slice(-2);
     const timeText = `${minText}:${secText}`;
 
     let countdownColorKey: "primary" | "white" = "primary";
@@ -330,7 +274,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
       backgroundColor = "primary";
       countdownColorKey = "white";
       labelText = t("training.active.pause.goOn");
-    } else if (isFirstDurationInTraining && secondsPassed < 4) {
+    } else if (isFirstDurationInTraining && elapsed < 4) {
       labelText = t("training.active.controls.clickToPause");
     }
 
@@ -344,11 +288,11 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
         onPress={handleTogglePause}
       >
         <Box
-          flex={duration - remaining}
+          flex={duration - remainingInt}
           backgroundColor="lightGrey3"
           zIndex={2}
         />
-        <Box flex={remaining} backgroundColor={backgroundColor} zIndex={2} />
+        <Box flex={remainingInt} backgroundColor={backgroundColor} zIndex={2} />
         <Box
           position="absolute"
           top={0}
@@ -416,7 +360,13 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
   };
 
   const renderFeedbackButtons = () => {
-    if (!isPausedState && isLastInSet && isFeedbackSkill && !isTest) {
+    if (
+      isFeedbackSkill &&
+      (hasDuration ? exerciseEnded : true) &&
+      !isPausedState &&
+      isLastInSet &&
+      !isTest
+    ) {
       const navValues = getInterpolations();
       return (
         <Box flex={2} flexDirection="row">
@@ -527,7 +477,9 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
       );
     }
 
-    return <Box flex={6}>{renderTimeProgress()}</Box>;
+    return hasDuration ? (
+      <Box flex={6}>{renderTimeProgress(duration)}</Box>
+    ) : null;
   };
 
   const renderSkipButton = () => {

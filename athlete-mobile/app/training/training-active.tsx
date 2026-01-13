@@ -95,6 +95,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const [activeExerciseIndex, setActiveExerciseIndex] = useState(0);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [videoIsPlaying, setVideoIsPlaying] = useState(false);
+  const [isAborted, setIsAborted] = useState(false);
   const [repsValue, setRepsValue] = useState(0);
   const [maxFWarningPopUpShowable, setMaxFWarningPopUpShowable] =
     useState(true);
@@ -120,6 +121,11 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const hasNextExercise = nextExerciseIndex < (exerciseList?.length ?? 0);
   const nextExercise = hasNextExercise
     ? exerciseList?.[nextExerciseIndex]
+    : undefined;
+  const isNextExercisePause =
+    nextExercise?.exerciseId === WorkoutConstants.PAUSE_EXERCISE_ID;
+  const nextExerciseData = nextExercise
+    ? getExerciseById(nextExercise.exerciseId)
     : undefined;
 
   const logTrainingEvent = useCallback(
@@ -1172,6 +1178,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
         {
           text: t("common.yes"),
           onPress: () => {
+            setIsAborted(true);
             saveAndNavigateToSuccess(true);
           },
         },
@@ -1270,12 +1277,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const progress = activeExerciseIndex / exerciseList.length;
   const isTestExercise = currentExercise?.repetition === -1;
   const isCardioExercise = currentExercise?.skill?.includes("CARDIO") ?? false;
-  const hasDuration = !!currentExercise?.duration;
   const isLastInSet = currentExercise?.set?.[0] === currentExercise?.set?.[1];
-
-  const nextExerciseData = hasNextExercise
-    ? getExerciseById(exerciseList[nextExerciseIndex].exerciseId)
-    : undefined;
 
   const name = isPauseExercise
     ? nextExerciseData?.name
@@ -1565,14 +1567,16 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
             {currentExercise && (
               <TrainingNavigation
                 exerciseId={exerciseId}
-                hasDuration={hasDuration}
                 duration={currentExercise.duration || 0}
                 next={advanceToNextExercise}
                 skip={handleExerciseSkipped}
                 isPause={isPauseExercise}
+                hasNextExercise={hasNextExercise}
+                isNextExercisePause={isNextExercisePause}
                 feedback={handleFeedback}
-                videoIsPlaying={videoIsPlaying}
-                videoIsFullScreen={isFullScreen}
+                isCountdownActive={
+                  !isAborted && !videoIsPlaying && !isFullScreen
+                }
                 isFirstDurationInTraining={activeExerciseIndex === 0}
                 isLastInSet={isLastInSet}
                 isFeedbackSkill={isFeedbackSkill}

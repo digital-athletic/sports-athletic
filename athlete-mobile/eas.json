@@ -54,7 +54,8 @@
   "submit": {
     "preview": {
       "android": {
-        "track": "internal"
+        "track": "internal",
+        "releaseStatus": "draft"
       },
       "ios": {
         "ascAppId": "6756181653",

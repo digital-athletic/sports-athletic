@@ -103,7 +103,7 @@ export default function HomeScreen() {
         >
           <TouchableOpacity
             style={[styles.quickstartButton, { backgroundColor: colors.white }]}
-            onPress={() => goToTraining("PLAN")}
+            onPress={() => goToTraining("QUICK")}
             accessibilityRole="button"
             accessibilityLabel={t("screens.home.focusTraining.title")}
           >

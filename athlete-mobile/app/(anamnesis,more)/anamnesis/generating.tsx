@@ -76,17 +76,16 @@ export default function Generating() {
       }
       saveSeasonPhaseToWorkoutData(seasonPhase, startDate);
 
-      // Get the enriched season phase from the store after saving
-      const enrichedPhase =
-        useUserWorkoutStore.getState().workoutData.seasonPhase;
+      // Get fresh workoutData from store (not stale closure data)
+      const freshWorkoutData = useUserWorkoutStore.getState().workoutData;
 
       // Prepare data for PlanGenerator
       // Build user object matching legacy structure
       const user = {
         userId,
         workoutData: {
-          ...workoutData,
-          seasonPhase: enrichedPhase,
+          ...freshWorkoutData,
+          seasonPhase: freshWorkoutData.seasonPhase,
         },
       };
 

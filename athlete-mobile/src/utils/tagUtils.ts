@@ -50,3 +50,26 @@ export function getTagValue(
   const values = getTagValues(tags, tagGroup);
   return values[0];
 }
+
+/**
+ * Convert anamnesis tags format to workout tags format.
+ * Transforms the object-based format used by anamnesisStore to the
+ * array-based format used by userWorkoutStore.
+ *
+ * @param anamnesisTags - Tags in anamnesis format (e.g., { LEVEL: ["BEGINNER"], PAIN: ["KNEE"] })
+ * @returns Tags in workout format (e.g., ["LEVEL_BEGINNER", "PAIN_KNEE"])
+ *
+ * @example
+ * ```tsx
+ * const anamnesisTags = { LEVEL: ["ADVANCED"], POSITION: ["FIELD"] };
+ * const workoutTags = convertAnamnesisTagsToWorkoutTags(anamnesisTags);
+ * // Result: ["LEVEL_ADVANCED", "POSITION_FIELD"]
+ * ```
+ */
+export function convertAnamnesisTagsToWorkoutTags(anamnesisTags: {
+  [tag: string]: string[];
+}): string[] {
+  return Object.entries(anamnesisTags).flatMap(([tagGroup, values]) =>
+    values.map((value) => `${tagGroup}_${value}`),
+  );
+}

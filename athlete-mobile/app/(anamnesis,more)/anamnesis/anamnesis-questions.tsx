@@ -6,6 +6,7 @@ import { TagGroups } from "@/constants/tagGroups";
 import { AnamnesisGroup1 } from "@/features/anamnesis/AnamnesisGroup1";
 import { AnamnesisGroup2 } from "@/features/anamnesis/AnamnesisGroup2";
 import { AnamnesisGroup3 } from "@/features/anamnesis/AnamnesisGroup3";
+import { useAnamnesisCompletion } from "@/features/anamnesis/useAnamnesisCompletion";
 import { useShowSeasonPhaseAfterAnamnesis } from "@/features/anamnesis/useShowSeasonPhaseAfterAnamnesis";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { Box } from "@/theme/Box";
@@ -52,6 +53,8 @@ export default function AnamnesisQuestions() {
     saveData,
     resetData,
   } = useAnamnesisStore();
+
+  const { saveAnamnesisData } = useAnamnesisCompletion();
 
   // Local state
   const [loading, setLoading] = useState(false);
@@ -109,6 +112,7 @@ export default function AnamnesisQuestions() {
 
       setAnamnesisCompleted(true);
       await setCompleted();
+      await saveAnamnesisData();
       await saveData();
 
       if (showSeasonPhaseAfterAnamnesis) {
@@ -126,6 +130,7 @@ export default function AnamnesisQuestions() {
     setAnamnesisCompleted,
     setCompleted,
     saveData,
+    saveAnamnesisData,
     showSeasonPhaseAfterAnamnesis,
     setSeasonPhase,
     workoutData.seasonPhase,

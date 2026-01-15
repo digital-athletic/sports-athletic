@@ -1280,8 +1280,8 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const isLastInSet = currentExercise?.set?.[0] === currentExercise?.set?.[1];
 
   const name = isPauseExercise
-    ? nextExerciseData?.name
-    : currentExerciseData?.name;
+    ? (nextExerciseData?.displayName ?? nextExerciseData?.name)
+    : (currentExerciseData?.displayName ?? currentExerciseData?.name);
 
   const nextDisplayName = t("training.active.nextExercise", {
     exerciseName: hasNextExercise

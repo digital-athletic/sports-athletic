@@ -30,6 +30,9 @@ i18n
     resources,
     ns: ["translations"], // List of namespaces
     defaultNS: "translations", // Default namespace
+    interpolation: {
+      escapeValue: false, // React Native doesn't render HTML, no XSS risk
+    },
   });
 
 export default i18n;

@@ -326,11 +326,10 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
   const renderNextButton = () => {
     const navValues = getInterpolations();
     return (
-      <Box flex={4} alignItems="center">
+      <>
         <TouchableOpacity
           onPress={() => handleClickNormalButton()}
           style={{
-            width: 150,
             justifyContent: "center",
             alignItems: "center",
           }}
@@ -343,7 +342,6 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
         </TouchableOpacity>
         <Animated.View
           style={{
-            flex: 2,
             justifyContent: "center",
             alignItems: "center",
             opacity: navValues.up.opacity,
@@ -355,7 +353,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
             color={theme.colors.darkGrey2}
           />
         </Animated.View>
-      </Box>
+      </>
     );
   };
 
@@ -369,7 +367,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
     ) {
       const navValues = getInterpolations();
       return (
-        <Box flex={2} flexDirection="row">
+        <Box flexDirection="row">
           <Box flex={1} flexDirection="row">
             <TouchableOpacity
               style={{
@@ -439,7 +437,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
         </Box>
       );
     }
-    return <Box flex={2} />;
+    return <></>;
   };
 
   const renderContent = () => {
@@ -462,17 +460,17 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
       return (
         <Box
           flex={6}
-          alignSelf="stretch"
+          flexDirection="row"
+          alignItems={"center"}
           style={{
             backgroundColor: "rgba(0,0,0,0)",
             ...panResponderRef.current.panHandlers,
           }}
         >
-          <Box flex={6} flexDirection="row" justifyContent="center">
+          <Box flex={1} flexDirection={"column"}>
             {renderNextButton()}
+            {renderFeedbackButtons()}
           </Box>
-          {renderFeedbackButtons()}
-          <Box flex={2} />
         </Box>
       );
     }
@@ -487,9 +485,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
       return (
         <Box
           flex={1}
-          flexDirection="row"
           justifyContent="center"
-          alignItems="center"
           backgroundColor="lightGrey1"
           borderTopWidth={1}
           borderTopColor="lightGrey2"

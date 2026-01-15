@@ -36,16 +36,10 @@ export const TrainingRepetitionInput: FC<TrainingRepetitionInputProps> = ({
   };
 
   return (
-    <Box
-      flex={1}
-      justifyContent="space-between"
-      alignItems="stretch"
-      alignSelf="stretch"
-      paddingHorizontal="m"
-    >
+    <Box flex={1} justifyContent="space-evenly" paddingHorizontal="m">
       {/* Title and description - hidden when input focused */}
       {!isFocused && (
-        <Box alignSelf="stretch" justifyContent="flex-end" alignItems="stretch">
+        <Box alignSelf="stretch" justifyContent="flex-end">
           <Text variant="title" marginBottom="s">
             {t("training.powerTest.title")}
           </Text>
@@ -54,7 +48,7 @@ export const TrainingRepetitionInput: FC<TrainingRepetitionInputProps> = ({
           </Text>
         </Box>
       )}
-      <Box justifyContent="flex-end" alignItems="stretch" marginBottom={"m"}>
+      <Box justifyContent="flex-end" marginBottom={"m"}>
         <TextInputField
           value={repsValue.toString()}
           placeholder={t("training.powerTest.placeholder")}

@@ -1,8 +1,11 @@
 import { BackHeader } from "@/common/BackHeader";
 import { Ionicon } from "@/common/Ionicon";
 import { PlaceType, WorkoutConstants } from "@/constants/workoutConstants";
+import { useUpdateTrainingPlan } from "@/features/training/hooks/useUpdateTrainingPlan";
 import { Logger } from "@/services/Logger";
 import { usePlacesStore } from "@/store/placesStore";
+import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
+import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { ScrollBox } from "@/theme/ScrollBox";
@@ -19,6 +22,9 @@ export default function EquipmentDetailsScreen() {
   const params = useLocalSearchParams();
   const { colors } = useTheme();
   const { getPlaceEquipment, setPlaceEquipment } = usePlacesStore();
+  const { trainingDays } = useTrainingScheduleStore();
+  const { trainingPlan } = useUserWorkoutStore();
+  const { updateTrainingPlan } = useUpdateTrainingPlan();
 
   const placeParam = params.placeId as string | undefined;
   const placeId: PlaceType = (placeParam as PlaceType) ?? "STUDIO";
@@ -52,8 +58,28 @@ export default function EquipmentDetailsScreen() {
 
   const handleSaveChanges = useCallback(() => {
     setPlaceEquipment(placeId, placeEquipment);
+
+    // Check if place is used in any active training day
+    const isPlaceUsedInActiveDays = trainingDays.some(
+      (day) => day.active && day.place === placeId,
+    );
+
+    // Regenerate training plan if place is used and plan exists
+    if (isPlaceUsedInActiveDays && trainingPlan) {
+      updateTrainingPlan();
+      Logger.logEvent("trainingplan_updated_by_equipment_change");
+    }
+
     router.back();
-  }, [placeId, placeEquipment, setPlaceEquipment, router]);
+  }, [
+    placeId,
+    placeEquipment,
+    setPlaceEquipment,
+    trainingDays,
+    trainingPlan,
+    updateTrainingPlan,
+    router,
+  ]);
 
   const equipmentKeys = (
     Object.keys(

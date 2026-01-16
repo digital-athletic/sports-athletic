@@ -150,7 +150,8 @@ export default function SelectTraining() {
 
         const tile: TileData = {
           picture: WorkoutConstants.TRAINING_FOCUS_IMAGES[trainingFocus],
-          title: `training.focus.${trainingFocus}`,
+          title:
+            WorkoutConstants.WEEKDAY_TRAINING_KEYS[userTrainingDay.weekday],
           description: {
             text: "training.selectTraining.timeAndPlace",
             params: {

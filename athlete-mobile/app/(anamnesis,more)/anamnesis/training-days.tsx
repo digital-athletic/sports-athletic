@@ -240,16 +240,7 @@ export default function TrainingDays() {
   };
 
   const getDayTitle = (weekday: number): string => {
-    const dayKeys = [
-      "screens.trainingDays.mondayTraining",
-      "screens.trainingDays.tuesdayTraining",
-      "screens.trainingDays.wednesdayTraining",
-      "screens.trainingDays.thursdayTraining",
-      "screens.trainingDays.fridayTraining",
-      "screens.trainingDays.saturdayTraining",
-      "screens.trainingDays.sundayTraining",
-    ] as const;
-    return t(dayKeys[weekday]);
+    return t(WorkoutConstants.WEEKDAY_TRAINING_KEYS[weekday]);
   };
 
   const handleChangeLocation = (weekday: number, selectedValues: string[]) => {

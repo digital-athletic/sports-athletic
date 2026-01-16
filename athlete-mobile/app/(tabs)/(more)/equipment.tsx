@@ -12,16 +12,6 @@ import { Stack, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const WEEKDAY_STRING = [
-  "screens.trainingDays.mondayTraining",
-  "screens.trainingDays.tuesdayTraining",
-  "screens.trainingDays.wednesdayTraining",
-  "screens.trainingDays.thursdayTraining",
-  "screens.trainingDays.fridayTraining",
-  "screens.trainingDays.saturdayTraining",
-  "screens.trainingDays.sundayTraining",
-] as const;
-
 /**
  * Equipment Screen
  *
@@ -69,7 +59,9 @@ export default function EquipmentScreen() {
 
     trainingDays.forEach((day) => {
       if (day.active) {
-        daysAtPlaces[day.place].push(WEEKDAY_STRING[day.weekday]);
+        daysAtPlaces[day.place].push(
+          WorkoutConstants.WEEKDAY_TRAINING_KEYS[day.weekday],
+        );
       }
     });
 

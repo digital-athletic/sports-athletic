@@ -812,6 +812,16 @@ const TRAINING_DAYS_TITLE = [
   "SUNDAY_TRAINING",
 ];
 
+const WEEKDAY_TRAINING_KEYS = [
+  "screens.trainingDays.mondayTraining",
+  "screens.trainingDays.tuesdayTraining",
+  "screens.trainingDays.wednesdayTraining",
+  "screens.trainingDays.thursdayTraining",
+  "screens.trainingDays.fridayTraining",
+  "screens.trainingDays.saturdayTraining",
+  "screens.trainingDays.sundayTraining",
+] as const;
+
 export type ExerciseDifficultyType =
   | null
   | "TOO_HARD"
@@ -1145,4 +1155,5 @@ export const WorkoutConstants = {
   TRAINING_PLACES,
   TRAINING_PLACES_IMAGES,
   VALUE_TYPE_NAMES,
+  WEEKDAY_TRAINING_KEYS,
 } as const;

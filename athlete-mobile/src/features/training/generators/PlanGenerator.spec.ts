@@ -157,7 +157,7 @@ describe("PlanGenerator", () => {
 
   describe("calculateStartingDates", () => {
     it("should calculate starting dates for sections", () => {
-      const startDate = new Date(2025, 0, 6); // Monday, Jan 6, 2025
+      const startDate = "06-01-2025"; // Monday, Jan 6, 2025
       const sections = [
         {
           type: "SWR1" as const,
@@ -191,7 +191,7 @@ describe("PlanGenerator", () => {
     });
 
     it("should adjust start date to next Monday if not Monday", () => {
-      const friday = new Date(2025, 0, 3); // Friday, Jan 3, 2025
+      const friday = "03-01-2025"; // Friday, Jan 3, 2025
       const sections = [
         {
           type: "SWR2" as const,

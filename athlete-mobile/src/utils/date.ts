@@ -1,15 +1,34 @@
+const DDMMYYYY_REGEX = /^\d{2}-\d{2}-\d{4}$/;
+
+const isDDMMYYYY = (dateString: string) => DDMMYYYY_REGEX.test(dateString);
+
+const isValidDate = (date: Date) => !isNaN(date.getTime());
+
+const isValidDateString = (dateString: string) =>
+  isValidDate(new Date(dateString));
+
 /**
  * Converts a Date to DD-MM-YYYY format
  */
 export const dateToDDMMYYYY = (date: Date | string): string => {
-  if (typeof date === "string" && date.length === 10) {
-    // assume this is already DD-MM-YYYY
-    return date;
+  if (typeof date === "string") {
+    if (isDDMMYYYY(date)) {
+      return date;
+    }
+
+    if (isValidDateString(date)) {
+      return dateToDDMMYYYY(new Date(date));
+    }
+    throw new Error("f:dateToDDMMYYYY - Invalid date string");
   }
-  const dateObj = date instanceof Date ? date : new Date(date);
-  const DD = ("0" + dateObj.getDate()).substr(-2);
-  const MM = ("0" + (dateObj.getMonth() + 1)).substr(-2);
-  const YYYY = dateObj.getFullYear();
+
+  if (!isValidDate(date)) {
+    throw new Error("f:dateToDDMMYYYY - Invalid Date object");
+  }
+
+  const DD = ("0" + date.getDate()).slice(-2);
+  const MM = ("0" + (date.getMonth() + 1)).slice(-2);
+  const YYYY = date.getFullYear();
   return [DD, MM, YYYY].join("-");
 };
 
@@ -17,18 +36,29 @@ export const dateToDDMMYYYY = (date: Date | string): string => {
  * Converts DD-MM-YYYY string to Date object
  */
 export const DDMMYYYYToDate = (dateString: string | Date): Date => {
-  if (dateString instanceof Date) {
-    return dateString;
+  if (typeof dateString === "string") {
+    if (isDDMMYYYY(dateString)) {
+      return new Date(dateString.split("-").reverse().join("-"));
+    }
+    if (isValidDateString(dateString)) {
+      return new Date(dateString);
+    }
+    throw new Error("f:dateToDDMMYYYY - Invalid date string");
   }
-  return new Date(dateString.split("-").reverse().join("-"));
+
+  if (!isValidDate(dateString)) {
+    throw new Error("f:DDMMYYYYToDate - Invalid Date object");
+  }
+
+  return dateString;
 };
 
 /**
  * Converts a Date to HH:mm format (24-hour)
  */
 export const dateToHHMM = (date: Date): string => {
-  const hh = ("0" + date.getHours()).substr(-2);
-  const mm = ("0" + date.getMinutes()).substr(-2);
+  const hh = ("0" + date.getHours()).slice(-2);
+  const mm = ("0" + date.getMinutes()).slice(-2);
   return [hh, mm].join(":");
 };
 

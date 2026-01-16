@@ -32,6 +32,7 @@ import {
   getSkillTree,
   getUserExerciseFromBranch,
 } from "@/features/training/utils/skillTreeUtils";
+import { dateToDDMMYYYY, DDMMYYYYToDate } from "@/utils/date";
 import { getTagValues } from "@/utils/tagUtils";
 
 // Assets
@@ -1116,9 +1117,9 @@ export default class PlanGenerator {
 
   static calculateStartingDates = (
     trainingSections: TrainingSectionType[],
-    trainingPlanStart: Date,
+    trainingPlanStart: string,
   ): TrainingSectionType[] => {
-    let d = trainingPlanStart;
+    let d = DDMMYYYYToDate(trainingPlanStart);
     //next monday(1)
     if (d.getDay() !== 1) {
       // is not monday
@@ -1128,14 +1129,14 @@ export default class PlanGenerator {
 
     let t = [];
     t = trainingSections.map((item) => {
-      return { ...item, start: d };
+      return { ...item, start: dateToDDMMYYYY(d) };
     });
     if (PlanGenerator.DEBUG) console.log("TrainingSections in progress: ", t);
 
     let x = [];
     x = t.map((value, index, array) => {
       const { start, ...rest } = value;
-      let startDate = new Date(start.getTime());
+      let startDate = DDMMYYYYToDate(start);
       let daysToAdd = 0;
       let sectionIndex = index - 1;
       while (sectionIndex > -1) {
@@ -1143,11 +1144,10 @@ export default class PlanGenerator {
         sectionIndex--;
       }
       startDate = this.addDays(startDate, daysToAdd);
-      startDate.setHours(0, 0, 0, 0);
       if (PlanGenerator.DEBUG)
         console.log("Start date section " + index + ": ", startDate);
 
-      return { start: startDate, ...rest };
+      return { start: dateToDDMMYYYY(startDate), ...rest };
     });
     return x;
   };

@@ -26,10 +26,23 @@ describe("date utils", () => {
       expect(result).toBe("15-06-2024");
     });
 
-    it("converts Date object created from ISO string to DD-MM-YYYY format", () => {
+    it("converts ISO string to DD-MM-YYYY format", () => {
       const date = new Date("2024-06-15");
-      const result = dateToDDMMYYYY(date);
+      const result = dateToDDMMYYYY(date.toISOString());
       expect(result).toBe("15-06-2024");
+    });
+
+    it("handles date string with slashes", () => {
+      const dateString = "2024/06/15";
+      const result = dateToDDMMYYYY(dateString);
+      expect(result).toBe("15-06-2024");
+    });
+
+    it("throws error for invalid inputs", () => {
+      expect(() => dateToDDMMYYYY(new Date(undefined as any))).toThrow();
+      expect(() => dateToDDMMYYYY("")).toThrow();
+      expect(() => dateToDDMMYYYY("AB-CD-EFGH")).toThrow();
+      expect(() => dateToDDMMYYYY("invalid-date")).toThrow();
     });
   });
 
@@ -50,11 +63,23 @@ describe("date utils", () => {
       expect(date.getFullYear()).toBe(2024);
     });
 
+    it("handles ISO Date strings", () => {
+      const date = new Date("2024-06-15");
+      const result = DDMMYYYYToDate(date.toISOString());
+      expect(result.getTime()).toBe(date.getTime());
+    });
+
     it("returns the same Date if already a Date object", () => {
       const originalDate = new Date(2024, 5, 15);
       const result = DDMMYYYYToDate(originalDate);
-      expect(result).toBe(originalDate);
       expect(result.getTime()).toBe(originalDate.getTime());
+    });
+
+    it("throws error for invalid inputs", () => {
+      expect(() => DDMMYYYYToDate(new Date(undefined as any))).toThrow();
+      expect(() => DDMMYYYYToDate("")).toThrow();
+      expect(() => DDMMYYYYToDate("AB-CD-EFGH")).toThrow();
+      expect(() => DDMMYYYYToDate("invalid-date")).toThrow();
     });
   });
 

@@ -5,6 +5,7 @@ import { SkipHeader } from "@/common/SkipHeader";
 import { SharedConstants } from "@/constants/sharedConstants";
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
 import { SeasonPhase as SeasonPhaseEnum } from "@/features/training/models/SeasonPhase";
+import { deriveSeasonPhaseEndDate } from "@/features/training/utils/timeUtils";
 import { DateInputField } from "@/form/DateInputField";
 import { SelectionInputField } from "@/form/SelectionInputField";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
@@ -13,7 +14,7 @@ import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { ScrollBox } from "@/theme/ScrollBox";
-import { dateToDDMMYYYY, DDMMYYYYToDate } from "@/utils/date";
+import { dateToDDMMYYYY } from "@/utils/date";
 import { Route, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -40,20 +41,11 @@ export default function SeasonPhase() {
 
   useEffect(() => {
     const initializeSeasonPhase = async () => {
-      const futureEndDateMs = Date.now() + TWELVE_WEEKS_IN_MS;
-      let futureEndDate = dateToDDMMYYYY(new Date(futureEndDateMs));
+      const lastSectionInPlan = trainingPlan?.sections
+        ? trainingPlan.sections[trainingPlan.sections.length - 1]
+        : undefined;
 
-      // Calculate end date based on training plan if available
-      let endDate = futureEndDate;
-      if (trainingPlan?.sections && trainingPlan.sections.length > 0) {
-        const lastSection =
-          trainingPlan.sections[trainingPlan.sections.length - 1];
-        const sectionStartMs = DDMMYYYYToDate(lastSection.start).getTime();
-        const sectionEndMs =
-          sectionStartMs +
-          SharedConstants.TIME_IN_MS.WEEK * lastSection.numOfWeeks;
-        endDate = dateToDDMMYYYY(new Date(sectionEndMs));
-      }
+      const endDate = deriveSeasonPhaseEndDate(lastSectionInPlan);
 
       // Set the phase with type from workoutData and calculated endDate
       setSeasonPhase({

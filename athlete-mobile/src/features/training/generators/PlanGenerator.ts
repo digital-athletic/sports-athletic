@@ -381,11 +381,12 @@ export default class PlanGenerator {
                   preventionsIndex = 0;
                 }
               }
-              arr[ind] = this.replaceUserSpecificSkill(
+              const replacedSkill = this.replaceUserSpecificSkill(
                 item,
                 ageGroup,
                 prevSkill,
               );
+              arr[ind] = replacedSkill;
               if (ind > fillPrioritiesHandledIndex) {
                 fillPrioritiesHandledIndex = ind;
               }

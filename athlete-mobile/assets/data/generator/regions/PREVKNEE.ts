@@ -1,4 +1,4 @@
-const PREVSHOULDER = {
+const PREVKNEE = {
     default: {
         5: [{ tags: [], count: 2 }],
         10: [{ tags: [], count: 4 }],
@@ -6,4 +6,4 @@ const PREVSHOULDER = {
     }
 } as const;
 
-export default PREVSHOULDER;
+export default PREVKNEE;

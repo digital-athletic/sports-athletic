@@ -1058,6 +1058,7 @@ export default class TrainingGenerator {
     if (TrainingGenerator.DEBUG) {
       console.log("FINAL SET LIST:", setList);
     }
+
     return setList;
   };
 

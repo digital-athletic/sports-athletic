@@ -6,6 +6,8 @@ import { SkillType } from "@/features/training/models/Training";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { getEquipmentList } from "@/features/training/trainingUtils";
+import { deriveWeightForExercise } from "@/features/training/utils/workoutUtils";
+import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { useExercisesStore } from "@/store/exercisesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { Box } from "@/theme/Box";
@@ -464,7 +466,7 @@ const ExerciseItem: FC<ExerciseItemProps> = ({
         )}
         <Box flex={1} justifyContent="center">
           <Text variant="body">{exerciseData.displayName}</Text>
-          <ExerciseValues exercise={exercise} />
+          <ExerciseValues exercise={exercise} exerciseData={exerciseData} />
         </Box>
       </Box>
     </Pressable>
@@ -473,12 +475,24 @@ const ExerciseItem: FC<ExerciseItemProps> = ({
 
 type ExerciseValuesProps = {
   exercise: UserExerciseDataType;
+  exerciseData: ExerciseType;
 };
 
-const ExerciseValues: FC<ExerciseValuesProps> = ({ exercise }) => {
+const ExerciseValues: FC<ExerciseValuesProps> = ({
+  exercise,
+  exerciseData,
+}) => {
   const { t } = useTranslation();
+  const { workoutData } = useUserWorkoutStore();
 
   const hasRepetition = typeof exercise.repetition !== "undefined";
+
+  const derivedWeight = deriveWeightForExercise(
+    exercise.weight,
+    exercise.weightType,
+    exerciseData,
+    workoutData.maxValues,
+  );
 
   return (
     <Box marginTop="s">
@@ -495,10 +509,10 @@ const ExerciseValues: FC<ExerciseValuesProps> = ({ exercise }) => {
           {t("training.overview.seconds", { count: exercise.duration })}
         </Text>
       )}
-      {exercise.weight && (
+      {typeof derivedWeight === "number" && (
         <Text variant="small" marginTop="xs">
           {t("training.overview.kilos", {
-            weight: exercise.weight.toFixed(2),
+            weight: derivedWeight.toFixed(2),
           })}
         </Text>
       )}

@@ -1,4 +1,7 @@
-import { getExerciseVideoUrl } from "@/services/StorageService";
+import {
+  getExerciseVideoUrl,
+  getTutorialVideoUrl,
+} from "@/services/StorageService";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useEvent } from "expo";
@@ -13,6 +16,8 @@ type Props = {
   controlsDisabled?: boolean;
   setIsFullScreen?: (isFullScreen: boolean) => void;
   setIsVideoPlaying?: (isPaused: boolean) => void;
+  /** Use tutorial_videos bucket instead of exercise_videos bucket */
+  isTutorial?: boolean;
 };
 
 export const VideoPlayer: FC<Props> = ({
@@ -22,12 +27,16 @@ export const VideoPlayer: FC<Props> = ({
   fullScreenDisabled,
   setIsFullScreen,
   controlsDisabled,
+  isTutorial,
 }) => {
-  // Extract filename from path (e.g., "exerciseVideos/1-video-xxx.mp4" -> "1-video-xxx.mp4")
   const videoUrl = useMemo(() => {
+    // Extract filename from path (e.g., "tutorialVideos/Bankdruecken.mp4" -> "Bankdruecken.mp4")
     const filename = source?.split("/").pop() ?? "";
-    return filename ? getExerciseVideoUrl(filename) : "";
-  }, [source]);
+    if (!filename) return "";
+    return isTutorial
+      ? getTutorialVideoUrl(filename)
+      : getExerciseVideoUrl(filename);
+  }, [source, isTutorial]);
 
   const player = useVideoPlayer(videoUrl);
 

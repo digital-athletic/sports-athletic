@@ -67,7 +67,7 @@ const TutorialListItem: FC<{
         shadowRadius: 2,
       }}
     >
-      <VideoPlayer source={item.video} title={item.displayTitle} />
+      <VideoPlayer source={item.video} title={item.displayTitle} isTutorial />
     </Box>
   );
 };

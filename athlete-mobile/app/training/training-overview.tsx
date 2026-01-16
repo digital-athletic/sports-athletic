@@ -5,7 +5,9 @@ import { getExercisePictureUrl } from "@/services/StorageService";
 import { SkillType } from "@/features/training/models/Training";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { useTrainingStore } from "@/features/training/trainingStore";
+import { getEquipmentList } from "@/features/training/trainingUtils";
 import { useExercisesStore } from "@/store/exercisesStore";
+import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
@@ -25,7 +27,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function TrainingOverviewScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const params = useLocalSearchParams();
+  const params = useLocalSearchParams<{ weekday?: string; place?: string }>();
   const insets = useSafeAreaInsets();
 
   const [trainingEquipment, setTrainingEquipment] = useState<string[]>([]);
@@ -36,6 +38,15 @@ export default function TrainingOverviewScreen() {
   // Get store data
   const { exerciseList, setTrainingStartTime } = useTrainingStore();
   const { exercises } = useExercisesStore();
+  const { trainingDays } = useTrainingScheduleStore();
+
+  // Get place from params or derive from weekday
+  const weekdayNumber = params.weekday ? parseInt(params.weekday) : undefined;
+  const place =
+    params.place ??
+    (weekdayNumber !== undefined
+      ? (trainingDays[weekdayNumber]?.place ?? "HOME")
+      : "HOME");
 
   const handleBack = useCallback(() => {
     router.back();
@@ -46,30 +57,16 @@ export default function TrainingOverviewScreen() {
   const processExerciseData = useCallback(() => {
     if (!exerciseList || !exercises) return;
 
-    const equipment: string[] = [];
-    const processedExercises: UserExerciseDataType[] = [];
-
-    // Collect unique equipment and valid exercises
-    for (const userExercise of exerciseList) {
-      if (userExercise.exerciseId === 999999) continue;
-
-      const exercise = exercises.find((e) => e.id === userExercise.exerciseId);
-      if (!exercise) continue;
-
-      // Extract equipment tags
-      const equipmentTags = exercise.tags.filter((tag) =>
-        tag.startsWith("EQUIPMENT_"),
-      );
-      equipmentTags.forEach((tag) => {
-        if (!equipment.includes(tag)) {
-          equipment.push(tag);
-        }
-      });
-
-      processedExercises.push(userExercise);
-    }
-
+    // Collect equipment using utility function
+    const equipment = getEquipmentList(exerciseList, exercises, place);
     setTrainingEquipment(equipment);
+
+    // Filter valid exercises for display
+    const processedExercises: UserExerciseDataType[] = exerciseList.filter(
+      (userExercise) =>
+        userExercise.exerciseId !== 999999 &&
+        exercises.some((e) => e.id === userExercise.exerciseId),
+    );
 
     // Build exercise list grouped by skill
     const exList: SkillGroup[] = [];
@@ -128,7 +125,7 @@ export default function TrainingOverviewScreen() {
       }
     }
     setTrainingExerciseList(exList);
-  }, [exerciseList, exercises]);
+  }, [exerciseList, exercises, place]);
 
   const handleStartTraining = useCallback(() => {
     setTrainingStartTime(Date.now());

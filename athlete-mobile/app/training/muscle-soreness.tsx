@@ -249,7 +249,7 @@ export default function MuscleSorenessScreen() {
       //start training
       router.navigate({
         pathname: "/training/training-overview",
-        params: { ...params }, // pass on params
+        params: { ...params, place }, // pass on params including place
       });
 
       setLoading(false);

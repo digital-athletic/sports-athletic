@@ -43,7 +43,7 @@ export const DDMMYYYYToDate = (dateString: string | Date): Date => {
     if (isValidDateString(dateString)) {
       return new Date(dateString);
     }
-    throw new Error("f:dateToDDMMYYYY - Invalid date string");
+    throw new Error("f:DDMMYYYYToDate - Invalid date string");
   }
 
   if (!isValidDate(dateString)) {

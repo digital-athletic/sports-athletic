@@ -1535,18 +1535,19 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                         </Text>
                       </Box>
                     )}
-                    {typeof currentExercise.repetition === "number" && (
-                      <Box alignItems="center">
-                        <Text variant="largeTitle">
-                          {currentExercise.repetition === -1
-                            ? t("training.active.maxReps")
-                            : currentExercise.repetition}
-                        </Text>
-                        <Text variant="small" color="darkGrey1">
-                          {t("training.active.repetitions")}
-                        </Text>
-                      </Box>
-                    )}
+                    {!isPauseExercise &&
+                      typeof currentExercise.repetition === "number" && (
+                        <Box alignItems="center">
+                          <Text variant="largeTitle">
+                            {currentExercise.repetition === -1
+                              ? t("training.active.maxReps")
+                              : currentExercise.repetition}
+                          </Text>
+                          <Text variant="small" color="darkGrey1">
+                            {t("training.active.repetitions")}
+                          </Text>
+                        </Box>
+                      )}
                   </Box>
 
                   {/* Heart Rate / Weight / Height  */}

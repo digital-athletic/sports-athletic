@@ -19,11 +19,13 @@ export const dateToDDMMYYYY = (date: Date | string): string => {
     if (isValidDateString(date)) {
       return dateToDDMMYYYY(new Date(date));
     }
-    throw new Error("f:dateToDDMMYYYY - Invalid date string");
+    throw new Error(
+      `f:dateToDDMMYYYY - Unable to convert ${date} to DD-MM-YYYY`,
+    );
   }
 
   if (!isValidDate(date)) {
-    throw new Error("f:dateToDDMMYYYY - Invalid Date object");
+    throw new Error(`f:dateToDDMMYYYY - Invalid Date: ${date}`);
   }
 
   const DD = ("0" + date.getDate()).slice(-2);
@@ -43,11 +45,13 @@ export const DDMMYYYYToDate = (dateString: string | Date): Date => {
     if (isValidDateString(dateString)) {
       return new Date(dateString);
     }
-    throw new Error("f:DDMMYYYYToDate - Invalid date string");
+    throw new Error(
+      `f:DDMMYYYYToDate - Unable to convert ${dateString} to Date`,
+    );
   }
 
   if (!isValidDate(dateString)) {
-    throw new Error("f:DDMMYYYYToDate - Invalid Date object");
+    throw new Error(`f:DDMMYYYYToDate - Invalid Date: ${dateString}`);
   }
 
   return dateString;

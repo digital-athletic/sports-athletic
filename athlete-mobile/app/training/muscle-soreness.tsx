@@ -1,5 +1,6 @@
 import { BodyParts } from "@/bodyParts/BodyParts";
 import { MuscleType } from "@/bodyParts/types";
+import { BackHeader } from "@/common/BackHeader";
 import { Loading } from "@/common/Loading";
 import { SharedConstants } from "@/constants/sharedConstants";
 import {
@@ -28,10 +29,9 @@ import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
-import { DDMMYYYYToDate } from "@/utils/date";
+import { dateToDDMMYYYY, DDMMYYYYToDate } from "@/utils/date";
 import { fieldNamesToLowerCase } from "@/utils/fieldNames";
 import { parseBooleanParam, parseIntParam } from "@/utils/router";
-import { BackHeader } from "@/common/BackHeader";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -192,9 +192,7 @@ export default function MuscleSorenessScreen() {
       let lastWorkoutDate: string | null = null;
       if (workoutsList && workoutsList.length > 0) {
         const lastWorkout = workoutsList[workoutsList.length - 1];
-        lastWorkoutDate = new Date(lastWorkout.timestamp).toLocaleDateString(
-          "de-DE",
-        );
+        lastWorkoutDate = dateToDDMMYYYY(new Date(lastWorkout.timestamp));
       }
 
       if (lastWorkoutDate) {

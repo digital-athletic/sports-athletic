@@ -20,7 +20,9 @@
     "build:simulator-dev-client": "pnpm run clean:build && pnpm dlx eas-cli@latest build --profile development-simulator",
     "build:preview": "pnpm run clean:build && pnpm dlx eas-cli@latest build --profile preview",
     "build:production": "pnpm run clean:build && pnpm dlx eas-cli@latest build --profile production",
-    "submit:preview": "pnpm run clean:build && pnpm dlx eas-cli@latest build --profile preview --auto-submit"
+    "submit:preview": "pnpm run clean:build && pnpm dlx eas-cli@latest build --profile preview --auto-submit",
+    "update:preview": "pnpm run clean:build && pnpm dlx eas-cli@latest update --channel preview --environment preview",
+    "update:production": "pnpm run clean:build && pnpm dlx eas-cli@latest update --channel production --environment production"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

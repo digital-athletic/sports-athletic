@@ -1,10 +1,108 @@
+import { WorkoutConstants } from "@/constants/workoutConstants";
+import type { UserType } from "@/features/profile/models/User";
 import { DEFAULT_MAX_VALUES } from "../models/MaxValues";
-import { applyMaxValueToDirections } from "./workoutUtils";
+import { applyMaxValueToDirections, getUserLevel } from "./workoutUtils";
 
 // Mock the date utility to return a consistent date for testing
 jest.mock("@/utils/date", () => ({
   dateToDDMMYYYY: () => "08-01-2026",
 }));
+
+describe("getUserLevel", () => {
+  it("returns BEGINNER when user is null", () => {
+    const result = getUserLevel(null as unknown as UserType);
+    expect(result).toBe(WorkoutConstants.LEVELS.BEGINNER);
+  });
+
+  it("returns BEGINNER when user is undefined", () => {
+    const result = getUserLevel(undefined as unknown as UserType);
+    expect(result).toBe(WorkoutConstants.LEVELS.BEGINNER);
+  });
+
+  it("returns BEGINNER when workoutData is undefined", () => {
+    const user: UserType = {
+      userId: "test-user-1",
+    };
+    const result = getUserLevel(user);
+    expect(result).toBe(WorkoutConstants.LEVELS.BEGINNER);
+  });
+
+  it("returns BEGINNER when workoutData.tags is undefined", () => {
+    const user: UserType = {
+      userId: "test-user-2",
+      workoutData: {},
+    };
+    const result = getUserLevel(user);
+    expect(result).toBe(WorkoutConstants.LEVELS.BEGINNER);
+  });
+
+  it("returns BEGINNER when workoutData.tags is an empty array", () => {
+    const user: UserType = {
+      userId: "test-user-3",
+      workoutData: {
+        tags: [],
+      },
+    };
+    const result = getUserLevel(user);
+    expect(result).toBe(WorkoutConstants.LEVELS.BEGINNER);
+  });
+
+  it("returns BEGINNER when tags array contains no LEVEL tags", () => {
+    const user: UserType = {
+      userId: "test-user-4",
+      workoutData: {
+        tags: ["POSITION_FIELD", "PAIN_KNEE"],
+      },
+    };
+    const result = getUserLevel(user);
+    expect(result).toBe(WorkoutConstants.LEVELS.BEGINNER);
+  });
+
+  it("returns BEGINNER level from tags", () => {
+    const user: UserType = {
+      userId: "test-user-5",
+      workoutData: {
+        tags: ["POSITION_FIELD", "LEVEL_BEGINNER", "PAIN_SHOULDER"],
+      },
+    };
+    const result = getUserLevel(user);
+    expect(result).toBe(WorkoutConstants.LEVELS.BEGINNER);
+  });
+
+  it("returns ADVANCED level from tags", () => {
+    const user: UserType = {
+      userId: "test-user-6",
+      workoutData: {
+        tags: ["POSITION_GOAL", "LEVEL_ADVANCED"],
+      },
+    };
+    const result = getUserLevel(user);
+    expect(result).toBe(WorkoutConstants.LEVELS.ADVANCED);
+  });
+
+  it("returns PROFESSIONAL level from tags", () => {
+    const user: UserType = {
+      userId: "test-user-7",
+      workoutData: {
+        tags: ["LEVEL_PROFESSIONAL", "POSITION_FIELD"],
+      },
+    };
+    const result = getUserLevel(user);
+    expect(result).toBe(WorkoutConstants.LEVELS.PROFESSIONAL);
+  });
+
+  it("returns the first LEVEL tag when multiple LEVEL tags exist", () => {
+    const user: UserType = {
+      userId: "test-user-8",
+      workoutData: {
+        tags: ["LEVEL_ADVANCED", "LEVEL_BEGINNER", "POSITION_FIELD"],
+      },
+    };
+    const result = getUserLevel(user);
+    // Should return the first LEVEL tag found
+    expect(result).toBe(WorkoutConstants.LEVELS.ADVANCED);
+  });
+});
 
 describe("applyMaxValueToDirections", () => {
   /**

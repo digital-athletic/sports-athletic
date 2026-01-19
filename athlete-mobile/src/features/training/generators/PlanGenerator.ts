@@ -32,6 +32,7 @@ import {
   getSkillTree,
   getUserExerciseFromBranch,
 } from "@/features/training/utils/skillTreeUtils";
+import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import { dateToDDMMYYYY, DDMMYYYYToDate } from "@/utils/date";
 import { getTagValues } from "@/utils/tagUtils";
 
@@ -131,7 +132,7 @@ export default class PlanGenerator {
     const dateOfBirth = workoutData.birthday;
     let ageGroup = ageGroupFor(dateOfBirth);
     if (PlanGenerator.DEBUG) console.log("AgeGroup: ", ageGroup);
-    let level = getTagValues(workoutData.tags, TagGroups.LEVEL)[0]; // there should always be just one LEVEL tag
+    let level = getUserLevel(user);
     if (
       level === WorkoutConstants.LEVELS.PROFESSIONAL &&
       ageGroup === WorkoutConstants.AGE_GROUPS.CHILD
@@ -1304,7 +1305,7 @@ export default class PlanGenerator {
       HAS_WEIGHTS,
     );
     const userAge = ageGroupFor(user.workoutData.birthday);
-    const userLevel = getTagValues(user.workoutData.tags, TagGroups.LEVEL)[0];
+    const userLevel = getUserLevel(user);
     const pains = getBlocksFromPains(
       getTagValues(user.workoutData.tags, TagGroups.PAIN),
     );

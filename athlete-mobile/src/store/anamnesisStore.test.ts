@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react-native";
 
-import { useAnamnesisStore } from "../anamnesisStore";
+import { DEFAULT_STATE, useAnamnesisStore } from "./anamnesisStore";
 
 describe("anamnesisStore", () => {
   beforeEach(() => {
@@ -12,19 +12,19 @@ describe("anamnesisStore", () => {
   });
 
   describe("Initial State", () => {
-    it("should have empty values object", () => {
+    it("matches default values object", () => {
       const { result } = renderHook(() => useAnamnesisStore());
-      expect(result.current.values).toEqual({});
+      expect(result.current.values).toEqual(DEFAULT_STATE.values);
     });
 
-    it("should have empty tags object", () => {
+    it("matches default tags object", () => {
       const { result } = renderHook(() => useAnamnesisStore());
-      expect(result.current.tags).toEqual({});
+      expect(result.current.tags).toEqual(DEFAULT_STATE.tags);
     });
 
-    it("should have undefined originPath", () => {
+    it("matches default originPath", () => {
       const { result } = renderHook(() => useAnamnesisStore());
-      expect(result.current.originPath).toBeUndefined();
+      expect(result.current.originPath).toBe(DEFAULT_STATE.originPath);
     });
   });
 
@@ -97,10 +97,8 @@ describe("anamnesisStore", () => {
         result.current.setTag("equipment", ["dumbbells", "barbell"]);
       });
 
-      expect(result.current.tags).toEqual({
-        injury: ["knee"],
-        equipment: ["dumbbells", "barbell"],
-      });
+      expect(result.current.tags.injury).toEqual(["knee"]);
+      expect(result.current.tags.equipment).toEqual(["dumbbells", "barbell"]);
     });
   });
 
@@ -138,8 +136,8 @@ describe("anamnesisStore", () => {
         result.current.resetData();
       });
 
-      expect(result.current.values).toEqual({});
-      expect(result.current.tags).toEqual({});
+      expect(result.current.values).toEqual(DEFAULT_STATE.values);
+      expect(result.current.tags).toEqual(DEFAULT_STATE.tags);
       expect(result.current.originPath).toBe("/test"); // Should be preserved
     });
   });

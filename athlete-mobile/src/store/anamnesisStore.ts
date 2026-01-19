@@ -1,3 +1,5 @@
+import { TagGroups } from "@/constants/tagGroups";
+import { WorkoutConstants } from "@/constants/workoutConstants";
 import { SeasonPhaseType } from "@/features/training/models/SeasonPhase";
 import { Route } from "expo-router";
 import { create } from "zustand";
@@ -25,9 +27,11 @@ type WithoutFunctions<T> = {
   [K in keyof T as T[K] extends (...args: any[]) => any ? never : K]: T[K];
 };
 
-const DEFAULT_STATE: WithoutFunctions<AnamnesisState> = {
+export const DEFAULT_STATE: WithoutFunctions<AnamnesisState> = {
   values: {},
-  tags: {},
+  tags: {
+    [TagGroups.LEVEL]: [WorkoutConstants.LEVELS.BEGINNER],
+  },
   originPath: undefined,
   seasonPhase: null,
 };
@@ -84,8 +88,8 @@ export const useAnamnesisStore = create<AnamnesisState>()(
       resetData: () => {
         const currentOriginPath = get().originPath;
         set((state) => {
-          state.values = {};
-          state.tags = {};
+          state.values = { ...DEFAULT_STATE.values };
+          state.tags = { ...DEFAULT_STATE.tags };
           state.originPath = currentOriginPath; // Preserve origin path like legacy
           state.seasonPhase = null;
         });

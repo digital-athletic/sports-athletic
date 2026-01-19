@@ -1,5 +1,5 @@
 import { WorkoutConstants } from "@/constants/workoutConstants";
-import { DDMMYYYYToDate } from "../../../utils/date";
+import { dateToDDMMYYYY, DDMMYYYYToDate } from "../../../utils/date";
 
 /**
  * Returns the age group for the given date of birth
@@ -9,7 +9,12 @@ export function ageGroupFor(
   dateOfBirth: string,
 ): (typeof WorkoutConstants.AGE_GROUPS)[keyof typeof WorkoutConstants.AGE_GROUPS] {
   const now = Date.now();
-  const birthDate = DDMMYYYYToDate(dateOfBirth);
+
+  // Fallback to current date in case of empty string.
+  // Note: Persisted user birthday may be empty string
+  const birthDate = DDMMYYYYToDate(
+    dateOfBirth ? dateOfBirth : dateToDDMMYYYY(new Date()),
+  );
 
   const ageToDate = (age: number, birthday: Date): Date => {
     const date = new Date(birthday);

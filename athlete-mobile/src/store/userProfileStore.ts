@@ -1,3 +1,4 @@
+import { dateToDDMMYYYY } from "@/utils/date";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
@@ -34,7 +35,7 @@ export interface UserProfileState {
 const DEFAULT_PERSONAL_DATA: UserPersonalDataType = {
   username: "",
   gender: "MALE",
-  birthday: "",
+  birthday: dateToDDMMYYYY(new Date()),
 };
 
 /**
@@ -63,7 +64,7 @@ export const useUserProfileStore = create<UserProfileState>()(
   persist(
     immer((set, get) => ({
       userId: null,
-      personalData: DEFAULT_PERSONAL_DATA,
+      personalData: { ...DEFAULT_PERSONAL_DATA },
       isInInitialAnamnesis: false,
       anamnesisCompleted: false,
       teamId: null,
@@ -111,7 +112,7 @@ export const useUserProfileStore = create<UserProfileState>()(
       clearProfile: () =>
         set((state) => {
           state.userId = null;
-          state.personalData = DEFAULT_PERSONAL_DATA;
+          state.personalData = { ...DEFAULT_PERSONAL_DATA };
           state.isInInitialAnamnesis = false;
           state.anamnesisCompleted = false;
           state.teamId = null;

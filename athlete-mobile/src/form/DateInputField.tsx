@@ -20,6 +20,8 @@ interface DateInputFieldProps {
   type: "date" | "time";
   dateTime?: string;
   onChange: (value: string) => void;
+  maximumDate?: Date;
+  minimumDate?: Date;
 }
 
 /**
@@ -29,6 +31,8 @@ export const DateInputField: FC<DateInputFieldProps> = ({
   type,
   dateTime,
   onChange,
+  maximumDate,
+  minimumDate,
 }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -60,6 +64,8 @@ export const DateInputField: FC<DateInputFieldProps> = ({
       value: getCurrentDate(),
       onChange: handleChange,
       mode: type,
+      maximumDate,
+      minimumDate,
     });
   };
 
@@ -90,6 +96,8 @@ export const DateInputField: FC<DateInputFieldProps> = ({
             mode={type}
             onChange={handleChange}
             locale={type === "time" ? "de" : undefined}
+            maximumDate={maximumDate}
+            minimumDate={minimumDate}
           />
         ),
         android: (

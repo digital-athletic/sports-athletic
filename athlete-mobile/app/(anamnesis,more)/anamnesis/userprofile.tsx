@@ -180,6 +180,7 @@ export default function UserProfileScreen() {
             type="date"
             dateTime={birthday}
             onChange={handleBirthdayChange}
+            maximumDate={new Date()}
           />
         </AnamnesisQuestionContainer>
 

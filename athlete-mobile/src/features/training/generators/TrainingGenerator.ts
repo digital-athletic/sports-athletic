@@ -73,6 +73,7 @@ import TEST_WORKOUTS_WU_REGION from "../../../../assets/data/generator/TEST_WORK
 import {
   getMaxValueForExercise,
   getRoundedResultForValueAndStep,
+  getUserLevel,
   roundWeightValue,
 } from "../utils/workoutUtils";
 
@@ -735,7 +736,7 @@ export default class TrainingGenerator {
       };
     }
 
-    let userLevel = getTagValues(user.workoutData.tags, TagGroups.LEVEL)[0];
+    let userLevel = getUserLevel(user);
 
     let temporalData: TemporalDataType[] = user.temporalData;
 
@@ -1129,7 +1130,7 @@ export default class TrainingGenerator {
           usedBranchIds.indexOf(branchId) === -1,
       );
 
-      let userLevel = getTagValues(user.workoutData.tags, TagGroups.LEVEL)[0];
+      let userLevel = getUserLevel(user);
       const maxCountPerRegion = userLevel === "PROFESSIONAL" ? 6 : 5;
       let branchesByRegion = {
         UNTERKOERPER: 0,
@@ -1603,9 +1604,7 @@ export default class TrainingGenerator {
               let ageGroup = user.workoutData
                 ? ageGroupFor(user.workoutData.birthday)
                 : WorkoutConstants.AGE_GROUPS.CHILD;
-              let userLevel = user.workoutData
-                ? getTagValues(user.workoutData.tags, TagGroups.LEVEL)[0]
-                : WorkoutConstants.LEVELS.BEGINNER;
+              let userLevel = getUserLevel(user);
               supWeight = getValueByGenderAndLevel(
                 supExercise.values.weight.startValue,
                 ageGroup === WorkoutConstants.AGE_GROUPS.CHILD
@@ -1981,7 +1980,7 @@ export default class TrainingGenerator {
     userExerciseData,
   ) => {
     if (TrainingGenerator.DEBUG) console.log("skillList: ", skillList);
-    const userLevel = getTagValues(user.workoutData.tags, TagGroups.LEVEL)[0];
+    const userLevel = getUserLevel(user);
     const PAINS = getTagValues(user.workoutData.tags, TagGroups.PAIN);
 
     let setList = [];
@@ -2805,10 +2804,7 @@ export default class TrainingGenerator {
             ? "m"
             : "w";
     }
-    const levels = user.workoutData
-      ? getTagValues(user.workoutData.tags, TagGroups.LEVEL)
-      : WorkoutConstants.LEVELS.BEGINNER;
-    const userLevel = levels[0] ? levels[0].toLowerCase() : "beginner"; // TODO check beginner as default?
+    const userLevel = getUserLevel(user).toLowerCase();
 
     // Init result
     let data = {};
@@ -3478,7 +3474,7 @@ export default class TrainingGenerator {
   };
 
   getMaxTrainingWeights = (exercise, user, userExercisesData) => {
-    let userLevel = getTagValues(user.workoutData.tags, TagGroups.LEVEL)[0];
+    const userLevel = getUserLevel(user);
     let equipment = getTagValues(exercise.tags, TagGroups.EQUIPMENT);
     let exerciseDirections = getTagValues(
       exercise.tags,
@@ -3553,7 +3549,7 @@ export default class TrainingGenerator {
         (w) => w + inclineBenchWeightDifference,
       );
     }
-    let userLevel = getTagValues(user.workoutData.tags, TagGroups.LEVEL)[0];
+    const userLevel = getUserLevel(user);
     let userAge = ageGroupFor(user.workoutData.birthday);
     let warmupTrainingReps = WorkoutConstants.MAX_KRAFT_REPETITIONS_WARMUP;
     let userExerciseData = userExercisesData

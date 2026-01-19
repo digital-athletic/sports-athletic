@@ -1,6 +1,7 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { XP_PER_MINUTE } from "@/constants/userProgressConstants";
 import { WorkoutConstants } from "@/constants/workoutConstants";
+import type { UserType } from "@/features/profile/models/User";
 import { SkillTreeType } from "@/store/skillTreesStore";
 import { dateToDDMMYYYY } from "@/utils/date";
 import { getTagValues } from "@/utils/tagUtils";
@@ -23,6 +24,24 @@ import {
   filterByPrevention,
 } from "./branchFilterUtils";
 import { filterByEquipment } from "./equipmentUtils";
+
+/**
+ * Extracts the user's training level from their workout data tags.
+ *
+ * @param user - The user object containing workout data
+ * @returns The user's training level or BEGINNER as a fallback
+ */
+export const getUserLevel = (user: UserType): string => {
+  if (!user?.workoutData?.tags) {
+    return WorkoutConstants.LEVELS.BEGINNER;
+  }
+
+  const levelTags = getTagValues(
+    user.workoutData.tags as string[],
+    TagGroups.LEVEL,
+  );
+  return levelTags[0] ?? WorkoutConstants.LEVELS.BEGINNER;
+};
 
 export const getMaxValueForExercise = (
   exercise: ExerciseType,

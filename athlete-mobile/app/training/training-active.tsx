@@ -96,7 +96,6 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [videoIsPlaying, setVideoIsPlaying] = useState(false);
   const [isAborted, setIsAborted] = useState(false);
-  const [repsValue, setRepsValue] = useState(0);
   const [maxFWarningPopUpShowable, setMaxFWarningPopUpShowable] =
     useState(true);
   const [weightCalculationPopUpShowable, setWeightCalculationPopUpShowable] =
@@ -1027,7 +1026,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     Logger.logEvent("exercise_completed", { exerciseId: id });
   };
 
-  const saveRepsInput = async () => {
+  const saveRepsInput = async (repsValue: number) => {
     const directions = WorkoutConstants.TEST_EXERCISES_DIRECTIONS[exerciseId];
     let weight = currentExercise?.weight;
     // add ten percent weight if test exercise used dumbbells
@@ -1112,15 +1111,11 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const advanceToNextExercise = () => {
     if (!exerciseList) return;
 
-    // handle reps
-    saveRepsInput();
-
     // save exercise data
     saveExerciseAndBranchData();
 
     // Reset test input state for next exercise
     setIsTestInputFocused(false);
-    setRepsValue(0);
 
     if (isPauseExercise) {
       // add time in pause to training stats
@@ -1221,11 +1216,6 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
       });
 
     advanceToNextExercise();
-  };
-
-  const handleChangeReps = (value: string) => {
-    const num = Number.parseInt(value) || 0;
-    setRepsValue(num);
   };
 
   const handlePauseToggled = (wasPaused: boolean) => {
@@ -1585,8 +1575,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                 isCardioExercise={isCardioExercise}
                 isLastCardioExercise={isCardioExercise && !hasNextExercise}
                 isTest={isTestExercise}
-                repsValue={repsValue}
-                changeReps={handleChangeReps}
+                onSubmitReps={saveRepsInput}
                 pauseToggled={handlePauseToggled}
                 onTestInputFocusChange={setIsTestInputFocused}
                 isTestInputFocused={isTestInputFocused}

@@ -439,7 +439,7 @@ describe("workoutUtils", () => {
     it("should return undefined when weight is not a number", () => {
       expect(
         deriveWeightForExercise(
-          undefined,
+          undefined as any,
           "weightAbsolute",
           mockExercise,
           mockMaxValues,

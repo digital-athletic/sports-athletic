@@ -1,23 +1,23 @@
 import { BackHeader } from "@/common/BackHeader";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { ExerciseType } from "@/features/training/models/Exercise";
-import { getExercisePictureUrl } from "@/services/StorageService";
 import { SkillType } from "@/features/training/models/Training";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { getEquipmentList } from "@/features/training/trainingUtils";
 import { deriveWeightForExercise } from "@/features/training/utils/workoutUtils";
-import { useUserWorkoutStore } from "@/store/userWorkoutStore";
+import { getExercisePictureUrl } from "@/services/StorageService";
 import { useExercisesStore } from "@/store/exercisesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
+import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
+import { Image } from "expo-image";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { FC, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView } from "react-native";
-import { Image } from "expo-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 /**
@@ -487,12 +487,14 @@ const ExerciseValues: FC<ExerciseValuesProps> = ({
 
   const hasRepetition = typeof exercise.repetition !== "undefined";
 
-  const derivedWeight = deriveWeightForExercise(
-    exercise.weight,
-    exercise.weightType,
-    exerciseData,
-    workoutData.maxValues,
-  );
+  const derivedWeight = exercise?.weight
+    ? deriveWeightForExercise(
+        exercise.weight,
+        exercise.weightType,
+        exerciseData,
+        workoutData.maxValues,
+      )
+    : undefined;
 
   return (
     <Box marginTop="s">

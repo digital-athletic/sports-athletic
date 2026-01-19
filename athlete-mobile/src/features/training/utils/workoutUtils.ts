@@ -2,6 +2,7 @@ import { TagGroups } from "@/constants/tagGroups";
 import { XP_PER_MINUTE } from "@/constants/userProgressConstants";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { UserType } from "@/features/profile/models/User";
+import { Logger } from "@/services/Logger";
 import { SkillTreeType } from "@/store/skillTreesStore";
 import { dateToDDMMYYYY } from "@/utils/date";
 import { getTagValues } from "@/utils/tagUtils";
@@ -85,7 +86,7 @@ export const getMaxValueForExercise = (
     const directionValues = maxValues[directionKey];
     if (directionValues) {
       const maxValue = directionValues[maxType];
-      if (typeof maxValue === "number") {
+      if (typeof maxValue === "number" && isFinite(maxValue)) {
         return maxValue;
       }
     }
@@ -102,6 +103,12 @@ export const getRoundedResultForValueAndStep = (
 };
 
 export const roundWeightValue = (value: number) => {
+  if (!isFinite(value)) {
+    Logger.logError(
+      new Error(`f:roundWeightValue ~ input: ${value} is not a finite number`),
+    );
+    return 0;
+  }
   if (value > 100) {
     return getRoundedResultForValueAndStep(value, 2.5);
   }
@@ -589,6 +596,22 @@ export const maxWeightByEpley = (weight: number, repetition: number) => {
  * @param maxValue
  */
 export const calculateAdjustedMaxValues = (maxValue: number): MaxValueType => {
+  if (!isFinite(maxValue) || maxValue <= 0) {
+    Logger.logError(
+      new Error(
+        `f:calculateAdjustedMaxValues ~ input: ${maxValue} is not a valid positive number`,
+      ),
+    );
+    return {
+      barbell: undefined,
+      dumbbells: undefined,
+      oneSidedUpper: undefined,
+      oneSidedBarbell: undefined,
+      oneSidedLower: undefined,
+      oneSidedLowerSupported: undefined,
+    };
+  }
+
   const MAX_VALUE_DIGITS = 4;
   const roundDownTo = (value: number, digits: number) => {
     return Number.parseFloat(value.toFixed(digits));
@@ -607,12 +630,17 @@ export const calculateAdjustedMaxValues = (maxValue: number): MaxValueType => {
 };
 
 export const deriveWeightForExercise = (
-  weight: number | undefined,
+  weight: number,
   weightType: string | undefined,
   exercise: ExerciseType,
   maxValues: MaxValuesType,
 ) => {
-  if (typeof weight !== "number") {
+  if (typeof weight !== "number" || !isFinite(weight)) {
+    Logger.logError(
+      new Error(
+        `f:deriveWeightForExercise ~ weight: ${weight} is not a finite number`,
+      ),
+    );
     return undefined;
   }
 

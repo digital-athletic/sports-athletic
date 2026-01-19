@@ -32,8 +32,7 @@ export interface TrainingNavigationProps {
   isCardioExercise: boolean;
   isLastCardioExercise: boolean;
   isTest: boolean;
-  repsValue: number;
-  changeReps: (value: string) => void;
+  onSubmitReps: (reps: number) => void;
   pauseToggled: (isPaused: boolean) => void;
   onTestInputFocusChange?: (isFocused: boolean) => void;
   isTestInputFocused?: boolean;
@@ -59,8 +58,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
   isCardioExercise,
   isLastCardioExercise,
   isTest,
-  repsValue,
-  changeReps,
+  onSubmitReps,
   pauseToggled,
   exerciseId,
   onTestInputFocusChange,
@@ -72,6 +70,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
   // State
   const [exerciseEnded, setExerciseEnded] = useState(false);
   const [isPausedState, setIsPausedState] = useState(false);
+  const [repsValue, setRepsValue] = useState(0);
   const timerStartRef = useRef(0);
   const lastNavEventFiredRef = useRef(0);
   const dxRef = useRef(new Animated.Value(0));
@@ -108,6 +107,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
   const resetState = () => {
     setExerciseEnded(false);
     setIsPausedState(false);
+    setRepsValue(0);
     timerStartRef.current = 0;
     lastNavEventFiredRef.current = 0;
     dxRef.current.setValue(0);
@@ -135,6 +135,16 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
     },
     [isLastInSet, isTest, handleClickNext, feedback],
   );
+
+  const handleChangeReps = (value: string) => {
+    const num = Number.parseInt(value) || 0;
+    setRepsValue(num);
+  };
+
+  const handleSubmitReps = () => {
+    onSubmitReps(repsValue);
+    handleClickNext();
+  };
 
   // Pan responder initialization
   useEffect(() => {
@@ -449,8 +459,8 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
           <Box flex={6}>
             <TrainingRepetitionInput
               repsValue={repsValue}
-              changeReps={changeReps}
-              saveRepsInput={handleClickNext}
+              changeReps={handleChangeReps}
+              saveRepsInput={handleSubmitReps}
               onInputFocusChange={onTestInputFocusChange}
             />
           </Box>

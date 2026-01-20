@@ -536,6 +536,134 @@ describe("TrainingGenerator", () => {
       expect(result.duration).toBe(baseData.duration);
       expect(result.repetition).toBe(12); // 10 + 2
     });
+
+    it("decreases absolute weight on TOO_HARD feedback", () => {
+      const result = generator.adjustExerciseValues(
+        { ...baseData, weight: 20, weightType: "weightAbsolute" },
+        mockUserExercise,
+        mockExercise,
+        null,
+        "m",
+        "intermediate",
+        "TOO_HARD",
+      );
+
+      expect(result.weight).toBe(19); // 20 - 1
+    });
+
+    it("increases absolute weight on TOO_EASY feedback", () => {
+      const result = generator.adjustExerciseValues(
+        { ...baseData, weight: 20, weightType: "weightAbsolute" },
+        mockUserExercise,
+        mockExercise,
+        null,
+        "m",
+        "intermediate",
+        "TOO_EASY",
+      );
+
+      expect(result.weight).toBe(22); // 20 + 2
+    });
+
+    it("increases absolute weight on SUCCEEDED feedback", () => {
+      const result = generator.adjustExerciseValues(
+        { ...baseData, weight: 20, weightType: "weightAbsolute" },
+        mockUserExercise,
+        mockExercise,
+        null,
+        "m",
+        "intermediate",
+        "SUCCEEDED",
+      );
+
+      expect(result.weight).toBe(21); // 20 + 1
+    });
+
+    it("decreases FMax weight on TOO_HARD feedback", () => {
+      const result = generator.adjustExerciseValues(
+        { ...baseData, weight: 80, weightType: "weightFMax" },
+        mockUserExercise,
+        mockExercise,
+        null,
+        "m",
+        "intermediate",
+        "TOO_HARD",
+      );
+
+      expect(result.weight).toBe(77.5); // 80 - 2.5
+    });
+
+    it("increases FMax weight on TOO_EASY feedback", () => {
+      const result = generator.adjustExerciseValues(
+        { ...baseData, weight: 80, weightType: "weightFMax" },
+        mockUserExercise,
+        mockExercise,
+        null,
+        "m",
+        "intermediate",
+        "TOO_EASY",
+      );
+
+      expect(result.weight).toBe(85); // 80 + 5
+    });
+
+    it("clamps absolute weight to minimum 0", () => {
+      const result = generator.adjustExerciseValues(
+        { ...baseData, weight: 0.5, weightType: "weightAbsolute" },
+        mockUserExercise,
+        mockExercise,
+        null,
+        "m",
+        "intermediate",
+        "TOO_HARD",
+      );
+
+      expect(result.weight).toBe(0); // clamped from -0.5 to 0
+    });
+
+    it("clamps FMax weight to minimum 50%", () => {
+      const result = generator.adjustExerciseValues(
+        { ...baseData, weight: 51, weightType: "weightFMax" },
+        mockUserExercise,
+        mockExercise,
+        null,
+        "m",
+        "intermediate",
+        "TOO_HARD",
+      );
+
+      expect(result.weight).toBe(50); // clamped from 48.5 to 50
+    });
+
+    it("clamps FMax weight to maximum 100%", () => {
+      const result = generator.adjustExerciseValues(
+        { ...baseData, weight: 98, weightType: "weightFMax" },
+        mockUserExercise,
+        mockExercise,
+        null,
+        "m",
+        "intermediate",
+        "TOO_EASY",
+      );
+
+      expect(result.weight).toBe(100); // clamped from 103 to 100
+    });
+
+    it("does not adjust weight when weight is undefined", () => {
+      const { weight: _, ...dataWithoutWeight } = baseData;
+
+      const result = generator.adjustExerciseValues(
+        dataWithoutWeight,
+        mockUserExercise,
+        mockExercise,
+        null,
+        "m",
+        "intermediate",
+        "TOO_EASY",
+      );
+
+      expect(result.weight).toBeUndefined();
+    });
   });
 
   describe("getExerciseStartValues", () => {

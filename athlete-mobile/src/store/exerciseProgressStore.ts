@@ -10,10 +10,15 @@ export interface UserExerciseBranchDataType {
   level: number;
 }
 
+export type BranchDataMapType = Record<
+  number,
+  UserExerciseBranchDataType | undefined
+>;
+
 export interface ExerciseProgressState {
   // Exercise-level data
   exerciseData: Record<number, UserExerciseDataType | undefined>;
-  branchData: Record<number, UserExerciseBranchDataType | undefined>;
+  branchData: BranchDataMapType;
 
   // User progression
   xp: number;

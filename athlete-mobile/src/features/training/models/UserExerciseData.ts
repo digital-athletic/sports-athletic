@@ -19,7 +19,7 @@ export type UserExerciseDataType = {
     difficulty: ExerciseDifficultyType;
     streakCounter?: number; //number of times that the current "difficulty" value has been chosen in a row
   };
-  branchId?: string; // id of branch this exercise was taken from
+  branchId?: number; // id of branch this exercise was taken from
 };
 
 export const DEFAULT_USER_EXERCISE_DATA_LIST: UserExerciseDataType[] = [

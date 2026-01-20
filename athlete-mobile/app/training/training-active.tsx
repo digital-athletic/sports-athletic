@@ -445,10 +445,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     }
 
     const skill = currentExercise?.skill;
-    let branchId =
-      typeof currentExercise?.branchId == "string"
-        ? parseInt(currentExercise.branchId)
-        : undefined;
+    let branchId = currentExercise?.branchId;
     let id = exerciseId;
     let currentExerciseData = getExerciseById(id);
 
@@ -494,21 +491,21 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
             !nextExercise?.skill?.includes("CARDIO"))
         ) {
           // find the main cardio exercise
-          let cardioBranchId = "-1";
+          let cardioBranchId = -1;
           let cardioExerciseId = -1;
           let pointer = activeExerciseIndex;
-          while (cardioBranchId === "-1" && pointer > -1) {
+          while (cardioBranchId === -1 && pointer > -1) {
             const exercise = exerciseList?.[pointer];
             if (exercise && exercise.skill?.includes("CARDIO")) {
-              if (typeof exercise.branchId === "string") {
+              if (typeof exercise.branchId === "number") {
                 cardioBranchId = exercise.branchId;
               }
               cardioExerciseId = exercise.exerciseId;
             }
             pointer--;
           }
-          if (cardioBranchId !== "-1") {
-            branchId = parseInt(cardioBranchId);
+          if (cardioBranchId !== -1) {
+            branchId = cardioBranchId;
             id = cardioExerciseId;
             currentExerciseData = getExerciseById(id);
             doSave = true;
@@ -744,6 +741,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
       ) {
         doSave = true;
       }
+
       if (doSave) {
         // do not increase values for pause/support exercises/others
         if (typeof branchId === "number" && skill) {
@@ -897,6 +895,13 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                 }
               }
             }
+            // Target-based weight progression for weight exercises:
+            // - reps/duration hit target but weight below target → increase weight
+            // - reps/duration below start but weight above start → decrease weight
+            // Feedback is cleared after to prevent double-adjustment in TrainingGenerator.
+            // If user is in the "in between" zone (start <= reps < target), neither
+            // this block nor levelUp triggers, and feedback is preserved for
+            // TrainingGenerator to adjust all values (reps, duration, height, weight).
             if (increaseWeight || decreaseWeight) {
               let adjustment: ExerciseDifficultyType = increaseWeight
                 ? "SUCCEEDED"
@@ -985,7 +990,9 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
             } else if (levelUp || levelDown) {
               updateBranchLevel(levelUp, branchId, id, skill, ageGroup);
             } else {
-              // no weight reset and no level up
+              // "In between" zone: user didn't hit targets, didn't fall below start.
+              // No level or weight change here. Feedback is preserved so TrainingGenerator
+              // can adjust all values (reps, duration, height, weight) based on feedback.
               let maxValue = getMaxValueForExercise(
                 currentExerciseData,
                 workoutData.maxValues,

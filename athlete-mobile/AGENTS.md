@@ -1,4 +1,6 @@
 <!-- OPENSPEC:START -->
+Be extremely concise. Sacrifice grammar for the sake of concision.
+
 # OpenSpec Instructions
 
 These instructions are for AI assistants working in this project.
@@ -98,6 +100,3 @@ This file provides guidance to AI Agents for building high-quality React Native 
 
 ## Documentation
 - Comments for components and functions should be concise. Comments should not exceed 3 lines in most cases.
-
-## Behavior
-Be extremely concise. Sacrifice grammar for the sake of concision.

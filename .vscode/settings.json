@@ -1,5 +1,4 @@
 {
-  "chat.useAgentsMdFile": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
@@ -7,7 +6,6 @@
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
   },
-  "typescript.tsdk": "node_modules/typescript/lib",
   "files.insertFinalNewline": true,
   "deno.enable": true
 }

@@ -11,6 +11,7 @@ import {
 } from "@/constants/workoutConstants";
 import { PlaceSelection } from "@/features/equipment/PlaceSelection";
 import { type UserType } from "@/features/profile/models/User";
+import { parseUserType } from "@/schemas/user.schema";
 import { isGeneratorError } from "@/features/training/generators/GeneratorError";
 import { buildGeneratorErrorMessage } from "@/features/training/generators/generatorErrorUtils";
 import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
@@ -165,7 +166,13 @@ export default function MuscleSorenessScreen() {
     const test = parseBooleanParam(params.test);
     if (test && params.user) {
       try {
-        user = JSON.parse(params.user) as UserType;
+        const parsed = JSON.parse(params.user);
+        const validated = parseUserType(parsed);
+        if (validated.success) {
+          user = validated.data as UserType;
+        } else {
+          Logger.logError(new Error(validated.error));
+        }
       } catch (e) {
         if (e instanceof Error) {
           Logger.logError(e);

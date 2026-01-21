@@ -55,6 +55,12 @@ import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { Logger } from "@/services/Logger";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
 import { getTagValues } from "@/utils/tagUtils";
+import {
+  ExerciseLevelsSchema,
+  SetListEntrySchema,
+  SkillBranchesSchema,
+} from "@/schemas/generator.schema";
+import { cloneWithValidation } from "@/utils/cloneWithValidation";
 
 // Intensity
 import { IntensityBAS } from "../../../../assets/data/generator/intensity/BAS";
@@ -776,7 +782,11 @@ export default class TrainingGenerator {
     }
 
     // if no test needed => build training
-    let exerciseBranches = JSON.parse(JSON.stringify(currTraining.skills));
+    let exerciseBranches = cloneWithValidation(
+      currTraining.skills,
+      SkillBranchesSchema,
+      "currTraining.skills",
+    );
 
     /** DEV for specific exercises
 
@@ -1214,7 +1224,11 @@ export default class TrainingGenerator {
             1,
           )[0];
           let { tags, levels: constLevels } = skillTree[exerciseBranchId];
-          let levels = JSON.parse(JSON.stringify(constLevels));
+          let levels = cloneWithValidation(
+            constLevels,
+            ExerciseLevelsSchema,
+            "constLevels",
+          );
 
           for (let levelKey in levels) {
             const level = Number(levelKey);
@@ -1789,7 +1803,11 @@ export default class TrainingGenerator {
             set = [j, setsToBuild];
             let firstWarmUpRepetition =
               skill.skill.indexOf("SK") > -1 ? 8 : first.repetition;
-            let firstWarmUp = JSON.parse(JSON.stringify(first));
+            let firstWarmUp = cloneWithValidation(
+              first,
+              SetListEntrySchema,
+              "first",
+            );
             firstWarmUp.weight = firstWarmUp.weight * warmUpWeightFactor;
             setList.push({
               ...firstWarmUp,
@@ -1805,7 +1823,11 @@ export default class TrainingGenerator {
               repetition: firstWarmUpRepetition,
             });
             if (second) {
-              let secondWarmUp = JSON.parse(JSON.stringify(second));
+              let secondWarmUp = cloneWithValidation(
+                second,
+                SetListEntrySchema,
+                "second",
+              );
               let secondWarmUpRepetition =
                 skill.skill.indexOf("SK") > -1 ? 8 : second.repetition;
               if (secondWarmUp.weight) {

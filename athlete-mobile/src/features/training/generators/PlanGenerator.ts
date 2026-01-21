@@ -35,6 +35,17 @@ import {
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import { dateToDDMMYYYY, DDMMYYYYToDate } from "@/utils/date";
 import { getTagValues } from "@/utils/tagUtils";
+import {
+  DirectionsMapSchema,
+  ExerciseBranchEntrySchema,
+  FallbackSectionSchema,
+  PlanStructureSchema,
+  SkillPrioritiesSchema,
+  SkillsMapSchema,
+  TrainingSectionsMapSchema,
+  WorkoutArraySchema,
+} from "@/schemas/generator.schema";
+import { cloneWithValidation } from "@/utils/cloneWithValidation";
 
 // Assets
 import SkillPriorities from "../../../../assets/data/generator/SkillPriorities";
@@ -221,7 +232,11 @@ export default class PlanGenerator {
     skillTrees,
     exerciseBranchData,
   ) => {
-    const skillPriorities = JSON.parse(JSON.stringify(SkillPriorities)); // Do not write in imported file!
+    const skillPriorities = cloneWithValidation(
+      SkillPriorities,
+      SkillPrioritiesSchema,
+      "SkillPriorities",
+    ); // Do not write in imported file!
     sec.trainings = [];
     const section = sec.type;
     const cardioType = sec.cardioType;
@@ -300,7 +315,7 @@ export default class PlanGenerator {
           this.getSkillTrainingplan(
             section,
             cardioType,
-            Object.assign({}, JSON.parse(JSON.stringify(skills))),
+            { ...cloneWithValidation(skills, SkillsMapSchema, "skills") },
             equipment,
           ),
         );
@@ -603,16 +618,26 @@ export default class PlanGenerator {
 
         const exercises: Record<string, ExerciseBranchType[]> = {};
 
-        const oberkoerperDirections = JSON.parse(
-          JSON.stringify(DirectionOBERKOERPER),
+        const oberkoerperDirections = cloneWithValidation(
+          DirectionOBERKOERPER,
+          DirectionsMapSchema,
+          "DirectionOBERKOERPER",
         );
         // "FRONT" will be added as pair with "BACK" while for side and rotation there will always be two
-        const rumpfDirections = JSON.parse(JSON.stringify(DirectionRUMPF));
-        const ganzkoerperDirections = JSON.parse(
-          JSON.stringify(DirectionGANZKOERPER),
+        const rumpfDirections = cloneWithValidation(
+          DirectionRUMPF,
+          DirectionsMapSchema,
+          "DirectionRUMPF",
         );
-        let unterkoerperDirections = JSON.parse(
-          JSON.stringify(DirectionUNTERKOERPER),
+        const ganzkoerperDirections = cloneWithValidation(
+          DirectionGANZKOERPER,
+          DirectionsMapSchema,
+          "DirectionGANZKOERPER",
+        );
+        let unterkoerperDirections = cloneWithValidation(
+          DirectionUNTERKOERPER,
+          DirectionsMapSchema,
+          "DirectionUNTERKOERPER",
         );
         if (
           Object.keys(tagsPerSkill).includes("GKS") &&
@@ -627,8 +652,10 @@ export default class PlanGenerator {
               tagsPerSkill["GKS"],
             );
           }
-          unterkoerperDirections = JSON.parse(
-            JSON.stringify(DirectionUNTERKOERPER_GKS),
+          unterkoerperDirections = cloneWithValidation(
+            DirectionUNTERKOERPER_GKS,
+            DirectionsMapSchema,
+            "DirectionUNTERKOERPER_GKS",
           );
         }
 
@@ -640,26 +667,26 @@ export default class PlanGenerator {
           //DEV set to false if not needed
           const LOG = false && skill.indexOf("SWR1") > -1;
           if (LOG) console.log("tagsPerSkill", tagsPerSkill[skill]);
-          exercises[skill] = JSON.parse(
-            JSON.stringify(
-              this.chooseByTags(
-                skill,
-                tagsPerSkill[skill],
-                oberkoerperDirections,
-                unterkoerperDirections,
-                ganzkoerperDirections,
-                rumpfDirections,
-                equipment,
-                user,
-                place,
-                exercisesList,
-                skillTrees,
-                prevSkills,
-                exerciseBranchData,
-                branchIdsInUse,
-                LOG,
-              ),
+          exercises[skill] = cloneWithValidation(
+            this.chooseByTags(
+              skill,
+              tagsPerSkill[skill],
+              oberkoerperDirections,
+              unterkoerperDirections,
+              ganzkoerperDirections,
+              rumpfDirections,
+              equipment,
+              user,
+              place,
+              exercisesList,
+              skillTrees,
+              prevSkills,
+              exerciseBranchData,
+              branchIdsInUse,
+              LOG,
             ),
+            WorkoutArraySchema,
+            "exercises[skill]",
           );
           if (LOG) console.log("exercises[skill]", exercises[skill]);
           if (exercises[skill].length === 0) {
@@ -988,7 +1015,11 @@ export default class PlanGenerator {
     if (planStructures.length === 3) {
       if (daysInRow !== 3) {
         // has a pause between days => use 1 - 2 - 1
-        planStructures[2] = JSON.parse(JSON.stringify(planStructures[0]));
+        planStructures[2] = cloneWithValidation(
+          planStructures[0],
+          PlanStructureSchema,
+          "planStructures[0]",
+        );
       }
       // use all three days
     }
@@ -1201,13 +1232,17 @@ export default class PlanGenerator {
   static mapFallbackSections = (chosen, fallback, type: string) => {
     let mappedSections = [];
     let i = 0;
-    let b = JSON.parse(JSON.stringify(fallback[i++]));
+    let b = cloneWithValidation(
+      fallback[i++],
+      FallbackSectionSchema,
+      "fallback",
+    );
     let m = {};
     for (let section of chosen) {
-      let a = JSON.parse(JSON.stringify(section));
+      let a = cloneWithValidation(section, FallbackSectionSchema, "section");
 
       while (a.length > b.length) {
-        m = JSON.parse(JSON.stringify(a));
+        m = cloneWithValidation(a, FallbackSectionSchema, "a");
         m.length = b.length;
         m[type + "Type"] = b.type;
         mappedSections.push(m);
@@ -1215,18 +1250,26 @@ export default class PlanGenerator {
         a.length -= b.length;
 
         if (i < fallback.length) {
-          b = JSON.parse(JSON.stringify(fallback[i++]));
+          b = cloneWithValidation(
+            fallback[i++],
+            FallbackSectionSchema,
+            "fallback",
+          );
         } else {
           return mappedSections;
         }
       }
-      m = JSON.parse(JSON.stringify(a));
+      m = cloneWithValidation(a, FallbackSectionSchema, "a");
       m[type + "Type"] = b.type;
       mappedSections.push(m);
 
       if (a.length === b.length) {
         if (i < fallback.length) {
-          b = JSON.parse(JSON.stringify(fallback[i++]));
+          b = cloneWithValidation(
+            fallback[i++],
+            FallbackSectionSchema,
+            "fallback",
+          );
         } else {
           return mappedSections;
         }
@@ -1473,16 +1516,12 @@ export default class PlanGenerator {
       "SCHIENBEIN",
     ];
 
-    let possibleExercises = JSON.parse(JSON.stringify(Object.keys(skillTree)));
+    let possibleExercises = [...Object.keys(skillTree)];
     if (regionTag && exerciseDirection.length > 0) {
       // get exercise branches by region
-      possibleExercises = JSON.parse(
-        JSON.stringify(
-          Object.keys(skillTree).filter((ex) =>
-            getTagValues(skillTree[ex]["tags"], TagGroups.REGION).includes(
-              regionTag,
-            ),
-          ),
+      possibleExercises = Object.keys(skillTree).filter((ex) =>
+        getTagValues(skillTree[ex]["tags"], TagGroups.REGION).includes(
+          regionTag,
         ),
       );
     } else if (skillTags.length > 0) {
@@ -1495,22 +1534,14 @@ export default class PlanGenerator {
         prevSkills,
         HAS_WEIGHTS,
       );
-      possibleExercises = JSON.parse(
-        JSON.stringify(
-          // get skill tree for skill to use, there should be only one
-          Object.keys(skillTree),
-        ),
-      );
+      // get skill tree for skill to use, there should be only one
+      possibleExercises = [...Object.keys(skillTree)];
     } else if (exNameTags.length > 0) {
       // get branch for exersice name, need all skill branches later
       skillTree = getSkillTree(skillTrees, "ALL", prevSkills, HAS_WEIGHTS);
       // TODO: add TAGS instead of hardcoded branch ids
-      possibleExercises = JSON.parse(
-        JSON.stringify(
-          // get branches for exercises set
-          getBranchIdsByNames(exNameTags, skill),
-        ),
-      );
+      // get branches for exercises set
+      possibleExercises = [...getBranchIdsByNames(exNameTags, skill)];
     }
     if (PlanGenerator.DEBUG)
       console.log("possibleExercises for " + skill, possibleExercises);
@@ -1802,27 +1833,27 @@ export default class PlanGenerator {
       if (remainingPossibilities.length > 0) {
         // take randomly chosen entry of remainingPossibilities out of possibleExercises
         // needs to be spliced from possibleBranches to not be reused
-        exerciseBranch = JSON.parse(
-          JSON.stringify(
-            possibleBranches.splice(
-              possibleBranches.indexOf(
-                remainingPossibilities[
-                  Math.floor(Math.random() * remainingPossibilities.length)
-                ],
-              ),
-              1,
-            )[0],
-          ),
+        exerciseBranch = cloneWithValidation(
+          possibleBranches.splice(
+            possibleBranches.indexOf(
+              remainingPossibilities[
+                Math.floor(Math.random() * remainingPossibilities.length)
+              ],
+            ),
+            1,
+          )[0],
+          ExerciseBranchEntrySchema,
+          "exerciseBranch",
         );
       } else {
         // use any branch from skill
-        exerciseBranch = JSON.parse(
-          JSON.stringify(
-            possibleBranches.splice(
-              Math.floor(Math.random() * possibleBranches.length),
-              1,
-            )[0],
-          ),
+        exerciseBranch = cloneWithValidation(
+          possibleBranches.splice(
+            Math.floor(Math.random() * possibleBranches.length),
+            1,
+          )[0],
+          ExerciseBranchEntrySchema,
+          "exerciseBranch",
         );
       }
 
@@ -1915,7 +1946,11 @@ export default class PlanGenerator {
       console.log("choose by tags for " + skill, weightedTags);
     let workout: ExerciseType[] = [];
     for (let i = 0; i < weightedTags.length; i++) {
-      let currentWorkout = JSON.parse(JSON.stringify(workout));
+      let currentWorkout = cloneWithValidation(
+        workout,
+        WorkoutArraySchema,
+        "workout",
+      );
       let branches = this.getBranchesForWorkout(
         skill,
         weightedTags[i],
@@ -2130,101 +2165,137 @@ export default class PlanGenerator {
       // Pause
       // - Child
       case "pausechildbeginner":
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsPauseChildBeginner),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsPauseChildBeginner,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsPauseChildBeginner",
+        );
         break;
       case "pausechildadvanced":
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsPauseChildAdvanced),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsPauseChildAdvanced,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsPauseChildAdvanced",
+        );
         break;
       case "pausechildprofessional":
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsPauseChildProfessional),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsPauseChildProfessional,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsPauseChildProfessional",
+        );
         break;
       // - Adult
       case "pauseadultbeginner":
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsPauseAdultBeginner),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsPauseAdultBeginner,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsPauseAdultBeginner",
+        );
         break;
       case "pauseadultadvanced":
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsPauseAdultAdvanced),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsPauseAdultAdvanced,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsPauseAdultAdvanced",
+        );
         break;
       case "pauseadultprofessional":
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsPauseAdultProfessional),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsPauseAdultProfessional,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsPauseAdultProfessional",
+        );
         break;
       // Prepatory
       // - Child
       case "prepatorychildbeginner":
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsPrepatoryChildBeginner),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsPrepatoryChildBeginner,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsPrepatoryChildBeginner",
+        );
         break;
       case "prepatorychildadvanced":
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsPrepatoryChildAdvanced),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsPrepatoryChildAdvanced,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsPrepatoryChildAdvanced",
+        );
         break;
       case "prepatorychildprofessional":
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsPrepatoryChildProfessional),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsPrepatoryChildProfessional,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsPrepatoryChildProfessional",
+        );
         break;
       // - Adult
       case "prepatoryadultbeginner":
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsPrepatoryAdultBeginner),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsPrepatoryAdultBeginner,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsPrepatoryAdultBeginner",
+        );
         break;
       case "prepatoryadultadvanced":
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsPrepatoryAdultAdvanced),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsPrepatoryAdultAdvanced,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsPrepatoryAdultAdvanced",
+        );
         break;
       case "prepatoryadultprofessional":
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsPrepatoryAdultProfessional),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsPrepatoryAdultProfessional,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsPrepatoryAdultProfessional",
+        );
         break;
       // Competition
       // - Child
       case "competitionchildbeginner":
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsCompetitionChildBeginner),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsCompetitionChildBeginner,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsCompetitionChildBeginner",
+        );
         break;
       case "competitionchildadvanced":
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsCompetitionChildAdvanced),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsCompetitionChildAdvanced,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsCompetitionChildAdvanced",
+        );
         break;
       case "competitionchildprofessional":
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsCompetitionChildProfessional),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsCompetitionChildProfessional,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsCompetitionChildProfessional",
+        );
         break;
       // - Adult
       case "competitionadultbeginner":
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsCompetitionAdultBeginner),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsCompetitionAdultBeginner,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsCompetitionAdultBeginner",
+        );
         break;
       case "competitionadultadvanced":
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsCompetitionAdultAdvanced),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsCompetitionAdultAdvanced,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsCompetitionAdultAdvanced",
+        );
         break;
       case "competitionadultprofessional":
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsCompetitionAdultProfessional),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsCompetitionAdultProfessional,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsCompetitionAdultProfessional",
+        );
         break;
       default:
         if (PlanGenerator.DEBUG) {
@@ -2233,9 +2304,11 @@ export default class PlanGenerator {
           );
         }
         // Use default
-        sectionsGroup = JSON.parse(
-          JSON.stringify(TrainingSectionsPrepatoryAdultAdvanced),
-        ); // Do not write in imported file!
+        sectionsGroup = cloneWithValidation(
+          TrainingSectionsPrepatoryAdultAdvanced,
+          TrainingSectionsMapSchema,
+          "TrainingSectionsPrepatoryAdultAdvanced",
+        );
         break;
     }
 

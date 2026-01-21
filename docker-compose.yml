@@ -27,6 +27,14 @@ services:
     stdin_open: true
     tty: true
 
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.57.0-noble
+    container_name: playwright
+    network_mode: host
+    expose:
+      - "9323"
+    command: ["npx", "playwright", "run-server", "--port=9323"]
+
 volumes:
   app_node_modules:
   web_trainer_node_modules:

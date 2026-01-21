@@ -1,9 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mockSupabaseAuth } from "./mocks/supabase";
+import { BasePage } from "./pages";
 
 /**
  * Completes the strength test workout by skipping warm-ups and entering reps.
- * Skips all exercises except strength tests, where it enters the specified reps.
  */
 async function completeStrengthTestWorkout(page: Page, reps: number) {
   const skipButton = page.locator('[aria-label="play-forward"]').first();
@@ -11,7 +11,6 @@ async function completeStrengthTestWorkout(page: Page, reps: number) {
   const saveButton = page.locator("button", { hasText: /save|speichern/i });
   const resultsPage = page.getByText("Training Evaluation");
 
-  // ~5 warm-ups + 4 exercises × 3 sets = ~25-30 iterations max
   for (let i = 0; i < 50; i++) {
     await Promise.race([
       resultsPage.waitFor({ state: "visible", timeout: 5000 }),
@@ -42,22 +41,17 @@ test.describe("Strength Test", () => {
 
     await mockSupabaseAuth(page);
 
-    // Login
-    await page.goto("/");
-    await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
-    await page.getByPlaceholder("E-Mail").fill("test@example.com");
-    await page.getByPlaceholder("Password").fill("password123");
-    await page.getByRole("button", { name: "Login" }).click();
-    await expect(page.getByText("Your Training Plan")).toBeVisible();
+    const basePage = new BasePage(page);
+    await basePage.login("test@example.com", "password123");
+    await basePage.expectTrainingPlanVisible();
 
     // Navigate to Profile > Start New Test Workout
-    await page.getByRole("tab", { name: /Profile/i }).click();
+    await basePage.navigateToTab("Profile");
     await expect(page.getByText("Profile").first()).toBeVisible();
     await page.getByText("Start New Test Workout").click();
 
     // Skip muscle soreness selection
-    await expect(page.getByText("Muscle soreness")).toBeVisible();
-    await page.getByRole("button", { name: "Go on" }).click();
+    await basePage.skipMuscleSoreness();
 
     // Start training
     await expect(page.getByText("Training Overview")).toBeVisible();
@@ -86,12 +80,11 @@ test.describe("Strength Test", () => {
     await expect(page.getByText("46.5 kg")).toBeVisible();
     // Bench press: (12.5kg × 2 × 1.1) × 1.333 = 36.67 → 36.5 kg
     await expect(page.getByText("36.5 kg").first()).toBeVisible();
-    // Rowing: same as bench → 36.5 kg (second occurrence)
+    // Rowing: same as bench → 36.5 kg
     await expect(page.getByText("36.5 kg").nth(1)).toBeVisible();
     // Shoulder press: (9kg × 2 × 1.1) × 1.333 = 26.4 → 26.5 kg
     await expect(page.getByText("26.5 kg")).toBeVisible();
 
-    // Take screenshot of results
     await page.screenshot({
       path: "playwright/screenshots/strength-test-results.png",
       fullPage: true,

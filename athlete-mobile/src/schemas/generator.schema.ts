@@ -99,7 +99,7 @@ export type ExerciseLevels = v.InferOutput<typeof ExerciseLevelsSchema>;
 
 // Set list entry schema (for warmup sets)
 export const SetListEntrySchema = v.looseObject({
-  branchId: v.optional(v.union([v.number(), v.string()])),
+  branchId: v.optional(v.string()),
   exerciseId: v.optional(v.string()),
   weight: v.optional(v.number()),
   repetition: v.optional(v.number()),

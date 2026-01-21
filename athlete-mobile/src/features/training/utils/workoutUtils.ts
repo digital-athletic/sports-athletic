@@ -8,6 +8,7 @@ import { dateToDDMMYYYY } from "@/utils/date";
 import { getTagValues } from "@/utils/tagUtils";
 import { ExerciseType, ExerciseValues, ValueType } from "../models/Exercise";
 import { ExerciseBranchType } from "../models/ExerciseBranch";
+import { isPauseExercise } from "../models/IdTypes";
 import { GenderTag, IntensityData } from "../models/Intensity";
 import { MaxValueType } from "../models/MaxValue";
 import {
@@ -149,7 +150,7 @@ export const calculateWorkoutTotals = (
           //duration
           if (exercise.duration) {
             duration += +exercise.duration;
-            if (exercise.exerciseId === WorkoutConstants.PAUSE_EXERCISE_ID) {
+            if (isPauseExercise(exercise.exerciseId)) {
               // count pause duration - no points
               pauseDuration += +exercise.duration;
             }
@@ -184,7 +185,7 @@ export const calculateWorkoutTotals = (
         }
 
         //count
-        if (exercise.exerciseId !== WorkoutConstants.PAUSE_EXERCISE_ID) {
+        if (!isPauseExercise(exercise.exerciseId)) {
           // is not pause
           count++;
         }
@@ -456,10 +457,10 @@ export const getStartValues = (
  */
 export const getEquivalentBranchWithGivenLevel = (
   skillTree: SkillTreeType,
-  previousBranchId: number,
+  previousBranchId: string,
   oldBranch: ExerciseBranchType | SkillBranchType,
   level: number,
-  branchIdsInUse: number[],
+  branchIdsInUse: string[],
   equipment: string[],
   ageGroup: string,
   userGender: string,
@@ -509,10 +510,7 @@ export const getEquivalentBranchWithGivenLevel = (
         }
       }
       // matches age and gender
-      if (
-        id === `${previousBranchId}` ||
-        branchIdsInUse.indexOf(Number(id)) > -1
-      ) {
+      if (id === previousBranchId || branchIdsInUse.includes(id)) {
         // do not use same branch again
         matchValue = 0;
       }
@@ -572,11 +570,11 @@ export const getEquivalentBranchWithGivenLevel = (
     tags: branch.tags,
     exercises: Object.fromEntries(
       Object.entries(branch.levels).map(([k, v]) => [
-        Number(k),
+        Number(k), // Level keys are numbers
         { exerciseId: v.id },
       ]),
     ),
-    exerciseBranchId: Number(exerciseBranchId),
+    exerciseBranchId: exerciseBranchId,
   };
 };
 

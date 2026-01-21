@@ -20,7 +20,7 @@ export type UserProgressType = {
   }; // TODO festlegen oder erweiterbar machen (siehe qualities)
   qualities: { [key: string]: number };
   exercises: {
-    [exerciseId: number]: {
+    [exerciseId: string]: {
       duration: number;
       height: number;
       repetition: number;

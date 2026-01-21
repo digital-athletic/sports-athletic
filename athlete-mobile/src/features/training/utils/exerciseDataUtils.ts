@@ -70,14 +70,14 @@ export function shouldProcessExerciseValues(
 export function findMainCardioExercise(
   exerciseList: UserExerciseDataType[] | null,
   startIndex: number,
-): { branchId: number; exerciseId: number } | null {
+): { branchId: string; exerciseId: string } | null {
   if (!exerciseList) return null;
 
   let pointer = startIndex;
   while (pointer > -1) {
     const exercise = exerciseList[pointer];
     if (exercise && exercise.skill?.includes("CARDIO")) {
-      if (typeof exercise.branchId === "number" && exercise.branchId !== -1) {
+      if (typeof exercise.branchId === "string" && exercise.branchId !== "-1") {
         return { branchId: exercise.branchId, exerciseId: exercise.exerciseId };
       }
     }

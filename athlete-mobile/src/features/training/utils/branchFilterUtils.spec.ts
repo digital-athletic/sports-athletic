@@ -11,7 +11,7 @@ import {
 describe("branchFilterUtils", () => {
   const createBranch = (tags: string[]): Branch => ({
     tags,
-    exercises: { "1": { exerciseId: 1 } },
+    exercises: { "1": { exerciseId: "1" } },
   });
 
   describe("filterByAge", () => {

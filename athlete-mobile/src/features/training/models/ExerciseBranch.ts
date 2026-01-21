@@ -1,19 +1,19 @@
 export type ExerciseBranchType = {
-  exerciseBranchId: number;
+  exerciseBranchId: string;
   tags: string[];
-  exercises: { [level: number]: { exerciseId: number } };
+  exercises: { [level: number]: { exerciseId: string } };
 };
 
 /**
  * Reference to a specific exercise within a skill tree branch.
  * Used throughout training generation to track exercise selections.
  *
- * Note: branchId of -1 indicates a placeholder/pause entry, not a real branch.
+ * Note: branchId of "-1" indicates a placeholder/pause entry, not a real branch.
  */
 export type BranchExerciseReference = {
-  branchId: number;
+  branchId: string;
   branchTags: string[];
-  exerciseId: number;
+  exerciseId: string;
 };
 
 /**
@@ -27,12 +27,12 @@ export type ExercisePair = {
 
 /**
  * Result from selecting a branch from a skill tree.
- * Contains the exercise reference and the numeric branch ID.
+ * Contains the exercise reference and the branch ID.
  */
 export type BranchSelectionResult = {
   branch: BranchExerciseReference;
-  /** The branch ID (converted from skill tree key to number) */
-  id: number;
+  /** The branch ID from skill tree */
+  id: string;
 };
 
 /**
@@ -41,7 +41,7 @@ export type BranchSelectionResult = {
  */
 export type SuperSetBranchSelectionResult = {
   branch: BranchExerciseReference;
-  id: number;
+  id: string;
   fillUpBranchAndId?: BranchSelectionResult;
   replacementBranchesAndIds?: BranchSelectionResult[];
 };

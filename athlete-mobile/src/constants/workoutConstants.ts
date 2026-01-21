@@ -838,22 +838,22 @@ const EXERCISE_DIRECTIONS = {
   UNTERKOERPER: "UNTERKOERPER",
 };
 
-const PAUSE_EXERCISE_ID = 999999;
+const PAUSE_EXERCISE_ID = "999999";
 
-const TEST_EXERCISES: Record<number, string | undefined> = {
-  7: "bench_press",
-  25: "squad",
-  54: "shoulder_press",
-  88: "rowing",
-  251: "squad",
-  297: "rowing",
-  315: "shoulder_press",
-  317: "shoulder_press",
-  342: "bench_press",
-  355: "bench_press",
+const TEST_EXERCISES: Record<string, string | undefined> = {
+  "7": "bench_press",
+  "25": "squad",
+  "54": "shoulder_press",
+  "88": "rowing",
+  "251": "squad",
+  "297": "rowing",
+  "315": "shoulder_press",
+  "317": "shoulder_press",
+  "342": "bench_press",
+  "355": "bench_press",
 };
 
-const TEST_EXERCISES_DIRECTIONS: Record<number, string[] | undefined> = {
+const TEST_EXERCISES_DIRECTIONS: Record<string, string[] | undefined> = {
   /*
    * 7: Bankdrücken mit 2 KH SWR
    * 25: Kniebeuge mit LH SWR Level 2
@@ -866,16 +866,16 @@ const TEST_EXERCISES_DIRECTIONS: Record<number, string[] | undefined> = {
    * 342: LH Bankdrücken SWR + Testeinheit
    * 355: KH Bankdrücken eng  SWR(Präv) + Präv + Testeinheit
    */
-  7: ["HORIZONTAL_PUSH"],
-  25: ["HIP", "KNEE", "UNTERKOERPER"],
-  54: ["VERTICAL_PUSH", "VERTICAL_PULL"],
-  88: ["HORIZONTAL_PULL"],
-  251: ["HIP", "KNEE", "UNTERKOERPER"],
-  297: ["HORIZONTAL_PULL"],
-  315: ["VERTICAL_PUSH", "VERTICAL_PULL"],
-  317: ["VERTICAL_PUSH", "VERTICAL_PULL"],
-  342: ["HORIZONTAL_PUSH"],
-  355: ["HORIZONTAL_PUSH"],
+  "7": ["HORIZONTAL_PUSH"],
+  "25": ["HIP", "KNEE", "UNTERKOERPER"],
+  "54": ["VERTICAL_PUSH", "VERTICAL_PULL"],
+  "88": ["HORIZONTAL_PULL"],
+  "251": ["HIP", "KNEE", "UNTERKOERPER"],
+  "297": ["HORIZONTAL_PULL"],
+  "315": ["VERTICAL_PUSH", "VERTICAL_PULL"],
+  "317": ["VERTICAL_PUSH", "VERTICAL_PULL"],
+  "342": ["HORIZONTAL_PUSH"],
+  "355": ["HORIZONTAL_PUSH"],
 };
 
 const TEST_EXERCISES_REPETITIONS_PERCENTAGE = [
@@ -910,8 +910,32 @@ const NO_INCREASE_SKILL_TYPE = [
 const IGNORE_SORENESS_SKILLS = ["WU", "WUSKSA", "CD", "MOB", "BR"];
 
 const EXERCISING_BENCH_EXERCISES = [
-  209, 210, 211, 212, 629, 630, 305, 306, 617, 618, 619, 960, 620, 961, 621,
-  622, 623, 624, 625, 962, 626, 963, 627, 964, 628, 965,
+  "209",
+  "210",
+  "211",
+  "212",
+  "629",
+  "630",
+  "305",
+  "306",
+  "617",
+  "618",
+  "619",
+  "960",
+  "620",
+  "961",
+  "621",
+  "622",
+  "623",
+  "624",
+  "625",
+  "962",
+  "626",
+  "963",
+  "627",
+  "964",
+  "628",
+  "965",
 ];
 
 type WeightToRepetitions = Record<number, number>;

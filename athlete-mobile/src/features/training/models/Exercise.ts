@@ -22,7 +22,7 @@ export type ExerciseValues = Partial<
 >;
 
 export type ExerciseType = {
-  id: number;
+  id: string;
   //TODO remove?
   level: { m: number; w: number };
   name: string;
@@ -35,6 +35,6 @@ export type ExerciseType = {
   isAdvanceByReps: boolean;
   isAdvanceByDuration: boolean;
   isJump: boolean;
-  otherSideExerciseId?: number;
-  equivalentExercises?: number[];
+  otherSideExerciseId?: string;
+  equivalentExercises?: string[];
 };

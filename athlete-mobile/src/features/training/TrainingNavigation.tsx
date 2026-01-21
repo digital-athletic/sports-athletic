@@ -17,7 +17,7 @@ import { useCountdown } from "./hooks/useCountdown";
 import { useVoiceCoach } from "./hooks/useVoiceCoach";
 
 export interface TrainingNavigationProps {
-  exerciseId: number;
+  exerciseId: string;
   duration: number | undefined;
   next: () => void;
   skip: () => void;

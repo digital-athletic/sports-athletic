@@ -30,7 +30,7 @@ import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
 import { dateToDDMMYYYY, DDMMYYYYToDate } from "@/utils/date";
-import { fieldNamesToLowerCase } from "@/utils/fieldNames";
+import { transformExerciseData } from "@/utils/fieldNames";
 import { parseBooleanParam, parseIntParam } from "@/utils/router";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -122,7 +122,7 @@ export default function MuscleSorenessScreen() {
       "../../assets/data/generator/Exercises.json"
     );
 
-    const exercises = fieldNamesToLowerCase(
+    const exercises = transformExerciseData(
       localData.default,
     ) as ExerciseType[];
 

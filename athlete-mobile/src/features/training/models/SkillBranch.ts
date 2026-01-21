@@ -3,5 +3,5 @@
  */
 export type SkillBranchType = {
   tags: string[];
-  levels: Record<string, { id: number }>;
+  levels: Record<number, { id: string }>;
 };

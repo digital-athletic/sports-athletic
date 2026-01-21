@@ -8,7 +8,6 @@ import { useExercisesStore } from "@/store/exercisesStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
-import { parseIntParam } from "@/utils/router";
 import { getTagValues } from "@/utils/tagUtils";
 import { VideoPlayer } from "@/video/VideoPlayer";
 import { Stack, useLocalSearchParams } from "expo-router";
@@ -41,9 +40,10 @@ export default function ExerciseInformationScreen() {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  const exerciseId = parseIntParam(params.exerciseId);
-  const exercise =
-    typeof exerciseId === "number" ? getExerciseById(exerciseId) : undefined;
+  const exerciseIdParam = params.exerciseId;
+  const exerciseId =
+    typeof exerciseIdParam === "string" ? exerciseIdParam : undefined;
+  const exercise = exerciseId ? getExerciseById(exerciseId) : undefined;
   const displayName = (exercise?.displayName || exercise?.name) ?? "";
   const video = exercise?.video;
 

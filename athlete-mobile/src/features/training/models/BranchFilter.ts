@@ -8,8 +8,8 @@
  */
 export interface Branch {
   tags: string[];
-  exercises?: Record<string, { exerciseId: number }>;
-  levels?: Record<string, { id: number }>;
+  exercises?: Record<string, { exerciseId: string }>;
+  levels?: Record<number, { id: string }>;
 }
 
 /**

@@ -279,8 +279,8 @@ Skill progression trees for workout planning.
 
 ### exerciseProgressStore
 User progression and exercise performance.
-- `exerciseData: Record<number, UserExerciseDataType>` - Per-exercise data
-- `branchData: Record<number, UserExerciseBranchDataType>` - Branch levels
+- `exerciseData: Record<string, UserExerciseDataType>` - Per-exercise data
+- `branchData: Record<string, UserExerciseBranchDataType>` - Branch levels
 - `xp: number` - User XP
 - `level: number` - User level
 - `testHistory: MaxValuesType[]` - Power test results

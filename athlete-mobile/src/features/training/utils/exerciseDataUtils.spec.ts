@@ -16,7 +16,7 @@ import {
 // Minimal exercise data for testing
 const createExercise = (overrides: Partial<ExerciseType> = {}): ExerciseType =>
   ({
-    id: 1,
+    id: "1",
     name: "Test Exercise",
     tags: [],
     isAdvanceByReps: false,
@@ -74,8 +74,8 @@ const createExerciseListItem = (
   overrides: Partial<UserExerciseDataType>,
 ): UserExerciseDataType =>
   ({
-    exerciseId: 1,
-    branchId: 10,
+    exerciseId: "1",
+    branchId: "10",
     skill: "SWR",
     ...overrides,
   }) as UserExerciseDataType;
@@ -131,41 +131,49 @@ describe("exerciseDataUtils", () => {
     it("finds cardio exercise by walking back", () => {
       const exerciseList = [
         createExerciseListItem({
-          exerciseId: 1,
-          branchId: 10,
+          exerciseId: "1",
+          branchId: "10",
           skill: "CARDIO",
         }),
         createExerciseListItem({
-          exerciseId: 2,
-          branchId: -1,
+          exerciseId: "2",
+          branchId: "-1",
           skill: "CARDIO",
         }),
-        createExerciseListItem({ exerciseId: 3, branchId: 20, skill: "SWR" }),
+        createExerciseListItem({
+          exerciseId: "3",
+          branchId: "20",
+          skill: "SWR",
+        }),
       ];
       const result = findMainCardioExercise(exerciseList, 2);
-      expect(result).toEqual({ branchId: 10, exerciseId: 1 });
+      expect(result).toEqual({ branchId: "10", exerciseId: "1" });
     });
 
     it("skips exercises with branchId -1", () => {
       const exerciseList = [
         createExerciseListItem({
-          exerciseId: 1,
-          branchId: 10,
+          exerciseId: "1",
+          branchId: "10",
           skill: "CARDIO",
         }),
         createExerciseListItem({
-          exerciseId: 2,
-          branchId: -1,
+          exerciseId: "2",
+          branchId: "-1",
           skill: "CARDIO",
         }),
       ];
       const result = findMainCardioExercise(exerciseList, 1);
-      expect(result).toEqual({ branchId: 10, exerciseId: 1 });
+      expect(result).toEqual({ branchId: "10", exerciseId: "1" });
     });
 
     it("returns null when no cardio found", () => {
       const exerciseList = [
-        createExerciseListItem({ exerciseId: 1, branchId: 10, skill: "SWR" }),
+        createExerciseListItem({
+          exerciseId: "1",
+          branchId: "10",
+          skill: "SWR",
+        }),
       ];
       expect(findMainCardioExercise(exerciseList, 0)).toBeNull();
     });

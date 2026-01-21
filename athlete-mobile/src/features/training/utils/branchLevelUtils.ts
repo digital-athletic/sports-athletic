@@ -1,5 +1,6 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
+import { isPlaceholderBranch } from "@/features/training/models/IdTypes";
 import { SkillBranchType } from "@/features/training/models/SkillBranch";
 import { SkillType } from "@/features/training/models/Training";
 import { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
@@ -27,8 +28,8 @@ export interface TrainingPlanContext {
 
 export interface BranchLevelUpdateInput {
   levelUp: boolean;
-  branchId: number;
-  exerciseId: number;
+  branchId: string;
+  exerciseId: string;
   skill: SkillType;
   ageGroup: string;
 }
@@ -36,12 +37,12 @@ export interface BranchLevelUpdateInput {
 export type BranchLevelResult =
   | {
       type: "SAME_BRANCH";
-      branchId: number;
+      branchId: string;
       newLevel: number;
     }
   | {
       type: "BRANCH_SUBSTITUTION";
-      previousBranchId: number;
+      previousBranchId: string;
       equivalentBranches: ExerciseBranchType[];
       sectionIndex: number;
       weekday: number;
@@ -50,19 +51,19 @@ export type BranchLevelResult =
   | {
       type: "NO_CHANGE";
       reason: "same_branch_found" | "no_matching_branch_found";
-      branchId: number;
+      branchId: string;
     }
   | {
       type: "BRANCH_NOT_FOUND";
-      branchId: number;
+      branchId: string;
     };
 
 /**
  * Find the current level for a branch from branchData or as fallback from branch levels.
  */
 export function findCurrentBranchLevel(
-  branchId: number,
-  exerciseId: number,
+  branchId: string,
+  exerciseId: string,
   branch: SkillBranchType,
   branchData: BranchDataMapType,
 ): number {
@@ -72,21 +73,19 @@ export function findCurrentBranchLevel(
   }
 
   // Fallback: look for exercise id in branch levels
-  return Object.keys(branch.levels).reduce<number>((currentLevel, level) => {
-    const levelNum = Number(level);
-
+  const levelKeys = Object.keys(branch.levels).map(Number);
+  return levelKeys.reduce<number>((currentLevel, level) => {
     // Start with lowest level
-    if (currentLevel === -1 && !isNaN(levelNum)) {
-      return levelNum;
+    if (currentLevel === -1) {
+      return level;
     }
     // If branchLevel is not matching yet, but level is
     if (
-      !isNaN(levelNum) &&
-      currentLevel !== levelNum &&
+      currentLevel !== level &&
       branch.levels[level] &&
       branch.levels[level].id === exerciseId
     ) {
-      return levelNum;
+      return level;
     }
     return currentLevel;
   }, -1);
@@ -98,10 +97,10 @@ export function findCurrentBranchLevel(
  */
 export function findNextExerciseInBranch(
   branch: SkillBranchType,
-  currentExerciseId: number,
+  currentExerciseId: string,
   targetLevel: number,
   levelUp: boolean,
-): { exerciseId: number; level: number } | null {
+): { exerciseId: string; level: number } | null {
   if (!branch.levels || !branch.levels[targetLevel]) {
     return null;
   }
@@ -140,21 +139,20 @@ export function findNextExerciseInBranch(
 
 /**
  * Get branch IDs currently in use from the exercise list.
- * Filters out invalid branch IDs (-1, NaN) and deduplicates.
+ * Filters out invalid branch IDs (placeholder, undefined) and deduplicates.
  */
 export function getBranchIdsInUse(
   exerciseList: UserExerciseDataType[] | null,
-): number[] {
+): string[] {
   if (!exerciseList) {
     return [];
   }
 
-  return exerciseList.reduce<number[]>((acc, { branchId }) => {
-    const branch = Number(branchId);
-    if (isNaN(branch) || branch === -1 || acc.indexOf(branch) > -1) {
+  return exerciseList.reduce<string[]>((acc, { branchId }) => {
+    if (!branchId || isPlaceholderBranch(branchId) || acc.includes(branchId)) {
       return acc;
     }
-    return acc.concat([branch]);
+    return acc.concat([branchId]);
   }, []);
 }
 
@@ -304,12 +302,12 @@ export function calculateBranchLevelUpdate(
 }
 
 export interface BranchLevelCallbacks {
-  setBranchLevel: (branchId: number, level: number) => void;
+  setBranchLevel: (branchId: string, level: number) => void;
   replaceBranchInTrainingPlan: (
     sectionIndex: number,
     weekday: number,
     skill: SkillType,
-    branchId: number,
+    branchId: string,
     equivalentBranches: ExerciseBranchType[],
   ) => void;
 }

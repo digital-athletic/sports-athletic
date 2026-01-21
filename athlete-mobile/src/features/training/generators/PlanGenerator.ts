@@ -635,7 +635,7 @@ export default class PlanGenerator {
         let prevSkills = Object.keys(tagsPerSkill).filter(
           (s) => s.indexOf("PREV") > -1,
         );
-        let branchIdsInUse: number[] = [];
+        let branchIdsInUse: string[] = [];
         for (let skill in tagsPerSkill) {
           //DEV set to false if not needed
           const LOG = false && skill.indexOf("SWR1") > -1;
@@ -1283,12 +1283,12 @@ export default class PlanGenerator {
     skillTrees: { [skillName: string]: SkillTreeType },
     prevSkills: string[],
     exerciseBranchData: BranchDataMapType,
-    branchIdsInUse: number[],
+    branchIdsInUse: string[],
     log: boolean = false,
   ): {
     tags: string[];
-    exercises: Record<string, { exerciseId: number }> | null;
-    exerciseBranchId: number;
+    exercises: Record<string, { exerciseId: string }> | null;
+    exerciseBranchId: string;
   }[] => {
     if (PlanGenerator.DEBUG || log) {
       console.log("GET BRANCHES FOR WORKOUT with");
@@ -1531,29 +1531,32 @@ export default class PlanGenerator {
       }
     }
     let possibleBranches = possibleExercises.map((idStr) => {
-      const id = Number(idStr);
-      if (skillTree[id] && skillTree[id].tags && skillTree[id].levels) {
+      if (
+        skillTree[idStr] &&
+        skillTree[idStr].tags &&
+        skillTree[idStr].levels
+      ) {
         return {
-          exerciseBranchId: id,
-          tags: skillTree[id].tags,
-          levels: skillTree[id].levels,
+          exerciseBranchId: idStr,
+          tags: skillTree[idStr].tags,
+          levels: skillTree[idStr].levels,
         };
       } else if (
-        id === 141 &&
-        skillTree[142] &&
-        skillTree[142].tags &&
-        skillTree[142].levels
+        idStr === "141" &&
+        skillTree["142"] &&
+        skillTree["142"].tags &&
+        skillTree["142"].levels
       ) {
         // DEV TEST SETTING because rowing moved to another branch
         // TODO: REMOVE when set by TAGS instead of branch ids
         return {
-          exerciseBranchId: 142,
-          tags: skillTree[142].tags,
-          levels: skillTree[142].levels,
+          exerciseBranchId: "142",
+          tags: skillTree["142"].tags,
+          levels: skillTree["142"].levels,
         };
       }
       return {
-        exerciseBranchId: -1,
+        exerciseBranchId: "-1",
         tags: [],
         levels: [],
       };
@@ -1874,8 +1877,9 @@ export default class PlanGenerator {
           if (skill.indexOf("PREV") === -1) k++;
         }
         let { levels, ...rest } = exerciseBranch;
-        for (let key in levels) {
-          levels[key] = { exerciseId: levels[key].id };
+        for (let levelKey in levels) {
+          const level = Number(levelKey);
+          levels[level] = { exerciseId: levels[level].id };
         }
         branches.push({
           tags: rest.tags,
@@ -1904,7 +1908,7 @@ export default class PlanGenerator {
     skillTrees: { [skillName: string]: SkillTreeType },
     prevSkills: string[],
     exerciseBranchData: BranchDataMapType,
-    branchIdsInUse: number[],
+    branchIdsInUse: string[],
     log: boolean = false,
   ): ExerciseType[] => {
     if (PlanGenerator.DEBUG)
@@ -2527,9 +2531,10 @@ export default class PlanGenerator {
         // DEV
         if (
           Object.keys(additionalSkillTree[id].levels).some(
-            (level) =>
-              goalExercises.indexOf(additionalSkillTree[id].levels[level].id) >
-              -1,
+            (levelKey) =>
+              goalExercises.indexOf(
+                additionalSkillTree[id].levels[Number(levelKey)].id,
+              ) > -1,
           )
         ) {
           // DEV skip goal exercise
@@ -2542,9 +2547,9 @@ export default class PlanGenerator {
           additionalSkillTree[id].tags.length > 0;
         //  already in use
         const inUse =
-          branchIdsInUse.indexOf(Number(id)) > -1 ||
+          branchIdsInUse.includes(id) ||
           workout.some((entry) => {
-            return entry.exerciseBranchId === Number(id);
+            return entry.exerciseBranchId === id;
           });
 
         // get tags for userLevel branch exercise
@@ -2583,7 +2588,8 @@ export default class PlanGenerator {
               equipment,
               eq,
               Object.keys(additionalSkillTree[id].levels).map(
-                (level) => additionalSkillTree[id].levels[level].id,
+                (levelKey) =>
+                  additionalSkillTree[id].levels[Number(levelKey)].id,
               ),
             );
           });

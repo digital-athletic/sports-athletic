@@ -14,3 +14,23 @@ export const fieldNamesToLowerCase = (
     ),
   );
 };
+
+/**
+ * Transforms exercise data by:
+ * 1. Converting field names to camelCase
+ * 2. Converting ID fields (id, otherSideExerciseId, equivalentExercises) to strings
+ */
+export const transformExerciseData = (
+  input: Record<string, any>[],
+): Record<string, any>[] => {
+  return fieldNamesToLowerCase(input).map((entry) => ({
+    ...entry,
+    id: String(entry.id),
+    ...(entry.otherSideExerciseId !== undefined && {
+      otherSideExerciseId: String(entry.otherSideExerciseId),
+    }),
+    ...(entry.equivalentExercises !== undefined && {
+      equivalentExercises: entry.equivalentExercises.map(String),
+    }),
+  }));
+};

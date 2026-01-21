@@ -19,7 +19,7 @@ describe("useCountdown", () => {
         useCountdown({
           autoAdvance: false,
           duration: 10,
-          exerciseId: 1,
+          exerciseId: "1",
           isActive: false,
         }),
       );
@@ -34,7 +34,7 @@ describe("useCountdown", () => {
         useCountdown({
           autoAdvance: false,
           duration: 5,
-          exerciseId: 1,
+          exerciseId: "1",
           isActive: true,
           timeoutMs: 100,
         }),
@@ -52,7 +52,7 @@ describe("useCountdown", () => {
         useCountdown({
           autoAdvance: false,
           duration: 5,
-          exerciseId: 1,
+          exerciseId: "1",
           isActive: true,
           timeoutMs: 100,
         }),
@@ -74,7 +74,7 @@ describe("useCountdown", () => {
         useCountdown({
           autoAdvance: false,
           duration: 2,
-          exerciseId: 1,
+          exerciseId: "1",
           isActive: true,
           timeoutMs: 100,
         }),
@@ -105,7 +105,7 @@ describe("useCountdown", () => {
         useCountdown({
           autoAdvance: false,
           duration: 5,
-          exerciseId: 1,
+          exerciseId: "1",
           isActive: false,
           timeoutMs: 100,
         }),
@@ -124,7 +124,7 @@ describe("useCountdown", () => {
           useCountdown({
             autoAdvance: false,
             duration: 5,
-            exerciseId: 1,
+            exerciseId: "1",
             isActive,
             timeoutMs: 100,
           }),
@@ -151,7 +151,7 @@ describe("useCountdown", () => {
           useCountdown({
             autoAdvance: false,
             duration: 5,
-            exerciseId: 1,
+            exerciseId: "1",
             isActive,
             timeoutMs: 100,
           }),
@@ -189,7 +189,7 @@ describe("useCountdown", () => {
         useCountdown({
           autoAdvance: false,
           duration: 2,
-          exerciseId: 1,
+          exerciseId: "1",
           isActive: true,
           onComplete,
           timeoutMs: 100,
@@ -215,7 +215,7 @@ describe("useCountdown", () => {
         useCountdown({
           autoAdvance: true,
           duration: 2,
-          exerciseId: 1,
+          exerciseId: "1",
           isActive: true,
           onAutoAdvance,
           onComplete,
@@ -242,7 +242,7 @@ describe("useCountdown", () => {
         useCountdown({
           autoAdvance: false,
           duration: 2,
-          exerciseId: 1,
+          exerciseId: "1",
           isActive: true,
           onAutoAdvance,
           timeoutMs: 100,
@@ -260,7 +260,7 @@ describe("useCountdown", () => {
   describe("Duration Changes", () => {
     it("resets countdown when exerciseId changes", () => {
       const { result, rerender } = renderHook(
-        ({ exerciseId, duration }: { exerciseId: number; duration: number }) =>
+        ({ exerciseId, duration }: { exerciseId: string; duration: number }) =>
           useCountdown({
             autoAdvance: false,
             duration,
@@ -268,7 +268,7 @@ describe("useCountdown", () => {
             isActive: true,
             timeoutMs: 100,
           }),
-        { initialProps: { exerciseId: 1, duration: 10 } },
+        { initialProps: { exerciseId: "1", duration: 10 } },
       );
 
       act(() => {
@@ -276,7 +276,7 @@ describe("useCountdown", () => {
       });
       expect(result.current).toBe(8);
 
-      rerender({ exerciseId: 2, duration: 10 });
+      rerender({ exerciseId: "2", duration: 10 });
 
       expect(result.current).toBe(10);
 
@@ -294,7 +294,7 @@ describe("useCountdown", () => {
         useCountdown({
           autoAdvance: false,
           duration: 10,
-          exerciseId: 1,
+          exerciseId: "1",
           isActive: true,
           timeoutMs: 100,
         }),

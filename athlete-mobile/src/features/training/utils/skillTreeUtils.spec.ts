@@ -12,18 +12,18 @@ import {
 
 describe("skillTreeUtils", () => {
   const mockExercises = [
-    { id: 1, name: "Test Exercise 1", tags: ["EQ_DUMBBELL"] },
-    { id: 2, name: "Test Exercise 2", tags: ["EQ_BARBELL"] },
-    { id: 3, name: "Test Exercise 3", tags: [] },
+    { id: "1", name: "Test Exercise 1", tags: ["EQ_DUMBBELL"] },
+    { id: "2", name: "Test Exercise 2", tags: ["EQ_BARBELL"] },
+    { id: "3", name: "Test Exercise 3", tags: [] },
   ] as ExerciseType[];
 
   const createMockSkillBranch = (): SkillBranchType =>
     ({
       tags: ["PREVENTION_SHOULDER"],
       levels: {
-        1: { id: 1 },
-        2: { id: 2 },
-        3: { id: 3 },
+        1: { id: "1" },
+        2: { id: "2" },
+        3: { id: "3" },
       },
     }) as SkillBranchType;
 
@@ -173,7 +173,7 @@ describe("skillTreeUtils", () => {
         TEST: {
           branch1: {
             ...mockSkillBranch,
-            levels: { 1: { id: 1 } },
+            levels: { 1: { id: "1" } },
           } as SkillBranchType,
           branch2: { ...mockSkillBranch, levels: {} } as SkillBranchType,
         },
@@ -185,95 +185,95 @@ describe("skillTreeUtils", () => {
 
   describe("getBranchIdByNameAndSkill", () => {
     it("should return 25 for SQUAT with SWR", () => {
-      expect(getBranchIdByNameAndSkill("SQUAT", "SWR1")).toBe(25);
+      expect(getBranchIdByNameAndSkill("SQUAT", "SWR1")).toBe("25");
     });
 
     it("should return 143 for SQUAT with MAX", () => {
-      expect(getBranchIdByNameAndSkill("SQUAT", "MAX")).toBe(143);
+      expect(getBranchIdByNameAndSkill("SQUAT", "MAX")).toBe("143");
     });
 
     it("should return 219 for SQUAT with SK", () => {
-      expect(getBranchIdByNameAndSkill("SQUAT", "SK")).toBe(219);
+      expect(getBranchIdByNameAndSkill("SQUAT", "SK")).toBe("219");
     });
 
     it("should return 316 for SQUAT with SA", () => {
-      expect(getBranchIdByNameAndSkill("SQUAT", "SA")).toBe(316);
+      expect(getBranchIdByNameAndSkill("SQUAT", "SA")).toBe("316");
     });
 
     it("should return 663 for DEADLIFT with SWR", () => {
-      expect(getBranchIdByNameAndSkill("DEADLIFT", "SWR1")).toBe(663);
+      expect(getBranchIdByNameAndSkill("DEADLIFT", "SWR1")).toBe("663");
     });
 
     it("should return 145 for DEADLIFT with MAX", () => {
-      expect(getBranchIdByNameAndSkill("DEADLIFT", "MAX")).toBe(145);
+      expect(getBranchIdByNameAndSkill("DEADLIFT", "MAX")).toBe("145");
     });
 
     it("should return 661 for DEADLIFT with SK", () => {
-      expect(getBranchIdByNameAndSkill("DEADLIFT", "SK")).toBe(661);
+      expect(getBranchIdByNameAndSkill("DEADLIFT", "SK")).toBe("661");
     });
 
     it("should return 662 for DEADLIFT with SA", () => {
-      expect(getBranchIdByNameAndSkill("DEADLIFT", "SA")).toBe(662);
+      expect(getBranchIdByNameAndSkill("DEADLIFT", "SA")).toBe("662");
     });
 
     it("should return 26 for BENCH_PRESS with SWR", () => {
-      expect(getBranchIdByNameAndSkill("BENCH_PRESS", "SWR1")).toBe(26);
+      expect(getBranchIdByNameAndSkill("BENCH_PRESS", "SWR1")).toBe("26");
     });
 
     it("should return 134 for BENCH_PRESS with MAX", () => {
-      expect(getBranchIdByNameAndSkill("BENCH_PRESS", "MAX")).toBe(134);
+      expect(getBranchIdByNameAndSkill("BENCH_PRESS", "MAX")).toBe("134");
     });
 
     it("should return 215 for BENCH_PRESS with SK", () => {
-      expect(getBranchIdByNameAndSkill("BENCH_PRESS", "SK")).toBe(215);
+      expect(getBranchIdByNameAndSkill("BENCH_PRESS", "SK")).toBe("215");
     });
 
     it("should return 314 for BENCH_PRESS with SA", () => {
-      expect(getBranchIdByNameAndSkill("BENCH_PRESS", "SA")).toBe(314);
+      expect(getBranchIdByNameAndSkill("BENCH_PRESS", "SA")).toBe("314");
     });
 
     it("should return 664 for ROWING with SWR", () => {
-      expect(getBranchIdByNameAndSkill("ROWING", "SWR1")).toBe(664);
+      expect(getBranchIdByNameAndSkill("ROWING", "SWR1")).toBe("664");
     });
 
     it("should return 141 for ROWING with MAX", () => {
-      expect(getBranchIdByNameAndSkill("ROWING", "MAX")).toBe(141);
+      expect(getBranchIdByNameAndSkill("ROWING", "MAX")).toBe("141");
     });
 
     it("should return 665 for ROWING with SK", () => {
-      expect(getBranchIdByNameAndSkill("ROWING", "SK")).toBe(665);
+      expect(getBranchIdByNameAndSkill("ROWING", "SK")).toBe("665");
     });
 
     it("should return 666 for ROWING with SA", () => {
-      expect(getBranchIdByNameAndSkill("ROWING", "SA")).toBe(666);
+      expect(getBranchIdByNameAndSkill("ROWING", "SA")).toBe("666");
     });
 
     it("should return 5 for SHOULDER_PRESS with SWR", () => {
-      expect(getBranchIdByNameAndSkill("SHOULDER_PRESS", "SWR1")).toBe(5);
+      expect(getBranchIdByNameAndSkill("SHOULDER_PRESS", "SWR1")).toBe("5");
     });
 
     it("should return 140 for SHOULDER_PRESS with MAX", () => {
-      expect(getBranchIdByNameAndSkill("SHOULDER_PRESS", "MAX")).toBe(140);
+      expect(getBranchIdByNameAndSkill("SHOULDER_PRESS", "MAX")).toBe("140");
     });
 
     it("should return 667 for SHOULDER_PRESS with SK", () => {
-      expect(getBranchIdByNameAndSkill("SHOULDER_PRESS", "SK")).toBe(667);
+      expect(getBranchIdByNameAndSkill("SHOULDER_PRESS", "SK")).toBe("667");
     });
 
     it("should return 668 for SHOULDER_PRESS with SA", () => {
-      expect(getBranchIdByNameAndSkill("SHOULDER_PRESS", "SA")).toBe(668);
+      expect(getBranchIdByNameAndSkill("SHOULDER_PRESS", "SA")).toBe("668");
     });
 
     it("should return 53 for CALFLIFT", () => {
-      expect(getBranchIdByNameAndSkill("CALFLIFT", "ANY_SKILL")).toBe(53);
+      expect(getBranchIdByNameAndSkill("CALFLIFT", "ANY_SKILL")).toBe("53");
     });
 
     it("should return -1 for unknown exercise", () => {
-      expect(getBranchIdByNameAndSkill("UNKNOWN", "SWR1")).toBe(-1);
+      expect(getBranchIdByNameAndSkill("UNKNOWN", "SWR1")).toBe("-1");
     });
 
     it("should return -1 when skill doesn't match any variant", () => {
-      expect(getBranchIdByNameAndSkill("SQUAT", "UNKNOWN")).toBe(-1);
+      expect(getBranchIdByNameAndSkill("SQUAT", "UNKNOWN")).toBe("-1");
     });
   });
 
@@ -281,7 +281,7 @@ describe("skillTreeUtils", () => {
     it("should map exercise names to branch IDs", () => {
       const names = ["SQUAT", "BENCH_PRESS", "DEADLIFT"];
       const result = getBranchIdsByNames(names, "SWR1");
-      expect(result).toEqual([25, 26, 663]);
+      expect(result).toEqual(["25", "26", "663"]);
     });
 
     it("should return empty array for empty names", () => {
@@ -292,15 +292,15 @@ describe("skillTreeUtils", () => {
     it("should handle mixed valid and invalid names", () => {
       const names = ["SQUAT", "UNKNOWN", "BENCH_PRESS"];
       const result = getBranchIdsByNames(names, "SWR1");
-      expect(result).toEqual([25, -1, 26]);
+      expect(result).toEqual(["25", "-1", "26"]);
     });
 
     it("should respect skill parameter for ID mapping", () => {
       const names = ["SQUAT"];
       const resultSWR = getBranchIdsByNames(names, "SWR1");
       const resultMAX = getBranchIdsByNames(names, "MAX");
-      expect(resultSWR).toEqual([25]);
-      expect(resultMAX).toEqual([143]);
+      expect(resultSWR).toEqual(["25"]);
+      expect(resultMAX).toEqual(["143"]);
     });
   });
 
@@ -346,7 +346,7 @@ describe("skillTreeUtils", () => {
     it("should fall back to lower level if higher level not available", () => {
       const branchData: SkillBranchType = {
         ...mockSkillBranch,
-        levels: { 1: { id: 1 } },
+        levels: { 1: { id: "1" } },
       } as SkillBranchType;
       const result = getUserExerciseFromBranch(
         branchData,
@@ -358,7 +358,7 @@ describe("skillTreeUtils", () => {
 
     it("should return null when exercise ID not found", () => {
       const result = getUserExerciseFromBranch(mockSkillBranch, "BEGINNER", [
-        { id: 999 } as ExerciseType,
+        { id: "999" } as ExerciseType,
       ]);
       expect(result).toBeNull();
     });
@@ -366,7 +366,7 @@ describe("skillTreeUtils", () => {
     it("should return null when exerciseId is -1", () => {
       const branchData: SkillBranchType = {
         ...mockSkillBranch,
-        levels: { 1: { id: -1 } },
+        levels: { 1: { id: "-1" } },
       } as SkillBranchType;
       const result = getUserExerciseFromBranch(
         branchData,
@@ -380,7 +380,7 @@ describe("skillTreeUtils", () => {
       const branchData: SkillBranchType = {
         ...mockSkillBranch,
         levels: {
-          1: { exerciseId: 1 } as any,
+          1: { exerciseId: "1" } as any,
         },
       } as SkillBranchType;
       const result = getUserExerciseFromBranch(
@@ -395,7 +395,7 @@ describe("skillTreeUtils", () => {
       const branchData: SkillBranchType = {
         ...mockSkillBranch,
         levels: {
-          1: { id: 1, exerciseId: undefined } as any,
+          1: { id: "1", exerciseId: undefined } as any,
         },
       } as SkillBranchType;
       const result = getUserExerciseFromBranch(
@@ -403,14 +403,14 @@ describe("skillTreeUtils", () => {
         "BEGINNER",
         mockExercises,
       );
-      expect(result?.id).toBe(1);
+      expect(result?.id).toBe("1");
     });
 
     it("should prefer exerciseId when available", () => {
       const branchData: SkillBranchType = {
         ...mockSkillBranch,
         levels: {
-          1: { id: 1, exerciseId: 2 } as any,
+          1: { id: "1", exerciseId: "2" } as any,
         },
       } as SkillBranchType;
       const result = getUserExerciseFromBranch(
@@ -418,7 +418,7 @@ describe("skillTreeUtils", () => {
         "BEGINNER",
         mockExercises,
       );
-      expect(result?.id).toBe(2);
+      expect(result?.id).toBe("2");
     });
 
     it("should log errors when log is true and exercise not found", () => {
@@ -426,7 +426,7 @@ describe("skillTreeUtils", () => {
       getUserExerciseFromBranch(
         mockSkillBranch,
         "BEGINNER",
-        [{ id: 999 } as ExerciseType],
+        [{ id: "999" } as ExerciseType],
         undefined,
         true,
       );
@@ -442,7 +442,7 @@ describe("skillTreeUtils", () => {
       const consoleSpy = jest.spyOn(console, "log").mockImplementation();
       const branchData: SkillBranchType = {
         ...mockSkillBranch,
-        levels: { 1: { id: 999 } },
+        levels: { 1: { id: "999" } },
       } as SkillBranchType;
       getUserExerciseFromBranch(
         branchData,

@@ -1,9 +1,9 @@
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { ExerciseType } from "./models/Exercise";
+import { isPauseExercise } from "./models/IdTypes";
 import { TrainingSectionType } from "./models/TrainingSection";
 import type { UserExerciseDataType } from "./models/UserExerciseData";
 
-const PAUSE_EXERCISE_ID = 999999;
 const EQUIPMENT_TAG_PREFIX = "EQ_";
 
 // Helper predicates
@@ -85,7 +85,7 @@ const extractExerciseEquipment = (exercise: ExerciseType): string[] =>
 // Collects unique equipment from exercises matching the given IDs
 const collectEquipmentFromExercises = (
   exercises: ExerciseType[],
-  usedExerciseIds: Set<number>,
+  usedExerciseIds: Set<string>,
 ): string[] => {
   const allEquipment = exercises
     .filter((exercise) => usedExerciseIds.has(exercise.id))
@@ -97,10 +97,10 @@ const collectEquipmentFromExercises = (
 // Extracts unique exercise IDs excluding pause exercises
 const getUsedExerciseIds = (
   exerciseList: UserExerciseDataType[],
-): Set<number> =>
+): Set<string> =>
   new Set(
     exerciseList
-      .filter((userExercise) => userExercise.exerciseId !== PAUSE_EXERCISE_ID)
+      .filter((userExercise) => !isPauseExercise(userExercise.exerciseId))
       .map((userExercise) => userExercise.exerciseId),
   );
 

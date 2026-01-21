@@ -36,7 +36,7 @@ const baseValue: ExerciseValuesType = {
   },
 };
 const mockExercise: ExerciseType = {
-  id: 1,
+  id: "1",
   level: { m: 1, w: 1 },
   name: "Test Exercise",
   displayName: "Test",
@@ -221,14 +221,14 @@ describe("workoutUtils", () => {
     it("should count completed exercises", () => {
       const exercises: UserExerciseDataType[] = [
         {
-          exerciseId: 1,
+          exerciseId: "1",
           set: [3, 3],
           repetition: 10,
           skill: "PREVENTION",
           feedback: { difficulty: "SUCCEEDED" },
         },
         {
-          exerciseId: 2,
+          exerciseId: "2",
           set: [2, 3],
           repetition: 8,
           skill: "PREVENTION",
@@ -249,14 +249,14 @@ describe("workoutUtils", () => {
     it("should skip pause exercises (exerciseId === 999999)", () => {
       const exercises: UserExerciseDataType[] = [
         {
-          exerciseId: 999999,
+          exerciseId: "999999",
           set: [1, 1],
           duration: 30,
           skill: "PREVENTION",
           feedback: { difficulty: "SUCCEEDED" },
         },
         {
-          exerciseId: 1,
+          exerciseId: "1",
           set: [1, 1],
           repetition: 10,
           skill: "PREVENTION",
@@ -277,7 +277,7 @@ describe("workoutUtils", () => {
     it("should skip test exercises (repetition === -1)", () => {
       const exercises: UserExerciseDataType[] = [
         {
-          exerciseId: 1,
+          exerciseId: "1",
           set: [1, 1],
           repetition: -1,
           skill: "PREVENTION",
@@ -298,7 +298,7 @@ describe("workoutUtils", () => {
     it("should calculate weight correctly for absolute weight", () => {
       const exercises: UserExerciseDataType[] = [
         {
-          exerciseId: 1,
+          exerciseId: "1",
           set: [1, 1],
           repetition: 10,
           weight: 50,
@@ -325,7 +325,7 @@ describe("workoutUtils", () => {
         },
       };
       const mockExercise: ExerciseType = {
-        id: 1,
+        id: "1",
         level: { m: 1, w: 1 },
         name: "Test",
         displayName: "Test",
@@ -357,7 +357,7 @@ describe("workoutUtils", () => {
     it("should calculate height correctly", () => {
       const exercises: UserExerciseDataType[] = [
         {
-          exerciseId: 1,
+          exerciseId: "1",
           set: [1, 1],
           repetition: 5,
           height: 20,
@@ -379,7 +379,7 @@ describe("workoutUtils", () => {
     it("should handle multiple completed sets", () => {
       const exercises: UserExerciseDataType[] = [
         {
-          exerciseId: 1,
+          exerciseId: "1",
           set: [3, 3],
           repetition: 10,
           height: 5,
@@ -414,7 +414,7 @@ describe("workoutUtils", () => {
 
       const exercises: UserExerciseDataType[] = [
         {
-          exerciseId: 1,
+          exerciseId: "1",
           set: [1, 1],
           repetition: 10,
           duration: 50,

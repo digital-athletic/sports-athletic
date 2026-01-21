@@ -6,18 +6,18 @@ import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
 
 export interface UserExerciseBranchDataType {
-  branchId: number;
+  branchId: string;
   level: number;
 }
 
 export type BranchDataMapType = Record<
-  number,
+  string,
   UserExerciseBranchDataType | undefined
 >;
 
 export interface ExerciseProgressState {
   // Exercise-level data
-  exerciseData: Record<number, UserExerciseDataType | undefined>;
+  exerciseData: Record<string, UserExerciseDataType | undefined>;
   branchData: BranchDataMapType;
 
   // User progression
@@ -26,9 +26,9 @@ export interface ExerciseProgressState {
   testHistory: MaxValuesType[];
 
   // Actions - Exercise Data
-  setExerciseData: (data: Record<number, UserExerciseDataType>) => void;
-  updateExercise: (exerciseId: number, data: UserExerciseDataType) => void;
-  setBranchLevel: (branchId: number, level: number) => void;
+  setExerciseData: (data: Record<string, UserExerciseDataType>) => void;
+  updateExercise: (exerciseId: string, data: UserExerciseDataType) => void;
+  setBranchLevel: (branchId: string, level: number) => void;
 
   // Actions - User Progress
   addXP: (amount: number) => void;
@@ -37,8 +37,8 @@ export interface ExerciseProgressState {
   clearProgress: () => void;
 
   // Selectors
-  getExerciseData: (exerciseId: number) => UserExerciseDataType | undefined;
-  getBranchLevel: (branchId: number) => number;
+  getExerciseData: (exerciseId: string) => UserExerciseDataType | undefined;
+  getBranchLevel: (branchId: string) => number;
   getLatestTestResult: () => MaxValuesType | undefined;
 }
 

@@ -96,7 +96,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.MEDICINE_BALL;
         const equipment = [EQUIPMENT.DUMBBELL];
         const otherParts = [EQUIPMENT.DUMBBELL];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           true,
@@ -107,7 +107,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.DUMBBELL;
         const equipment = [EQUIPMENT.MEDICINE_BALL];
         const otherParts = [EQUIPMENT.MEDICINE_BALL];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           true,
@@ -121,7 +121,7 @@ describe("equipmentUtils", () => {
           EQUIPMENT.DUMBBELL,
           EQUIPMENT.MEDICINE_BALL_JUMPING,
         ];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           true,
@@ -134,7 +134,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.BARBELL;
         const equipment = [EQUIPMENT.BARBELL];
         const otherParts: string[] = [];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           true,
@@ -145,7 +145,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.BARBELL;
         const equipment = [EQUIPMENT.BARBELL_MULTIPLE];
         const otherParts: string[] = [];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           true,
@@ -156,7 +156,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.BARBELL;
         const equipment = [EQUIPMENT.DUMBBELL];
         const otherParts: string[] = [];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           false,
@@ -169,7 +169,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.CHAIR;
         const equipment = [EQUIPMENT.BENCH];
         const otherParts: string[] = [];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           true,
@@ -180,7 +180,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.CHAIR;
         const equipment = [EQUIPMENT.CHAIR];
         const otherParts: string[] = [];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           true,
@@ -191,7 +191,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.BOX_LOW;
         const equipment = [EQUIPMENT.BENCH];
         const otherParts: string[] = [];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           true,
@@ -202,7 +202,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.BOX_LOW;
         const equipment = [EQUIPMENT.CHAIR];
         const otherParts: string[] = [];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           true,
@@ -215,7 +215,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.BENCH;
         const equipment = [EQUIPMENT.BENCH];
         const otherParts: string[] = [];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           true,
@@ -226,7 +226,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.BENCH;
         const equipment = [EQUIPMENT.ADJUSTABLE_BENCH];
         const otherParts: string[] = [];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           true,
@@ -237,7 +237,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.INCLINE_BENCH;
         const equipment = [EQUIPMENT.ADJUSTABLE_BENCH];
         const otherParts = [EQUIPMENT.INCLINE_BENCH];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           true,
@@ -248,7 +248,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.INCLINE_BENCH;
         const equipment = [EQUIPMENT.INCLINE_BENCH];
         const otherParts = [EQUIPMENT.INCLINE_BENCH];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           true,
@@ -259,7 +259,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.INCLINE_BENCH;
         const equipment = [EQUIPMENT.BENCH];
         const otherParts = [EQUIPMENT.INCLINE_BENCH, EQUIPMENT.BENCH];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           true,
@@ -270,7 +270,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.INCLINE_BENCH;
         const equipment = [EQUIPMENT.BENCH];
         const otherParts = [EQUIPMENT.INCLINE_BENCH];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           false,
@@ -283,7 +283,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.KETTLEBELL;
         const equipment = [EQUIPMENT.KETTLEBELL];
         const otherParts: string[] = [];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           true,
@@ -294,7 +294,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.KETTLEBELL;
         const equipment = [EQUIPMENT.DUMBBELL, EQUIPMENT.BENCH];
         const otherParts: string[] = [];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           false,
@@ -305,7 +305,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.TOWEL;
         const equipment = [EQUIPMENT.BENCH, EQUIPMENT.TOWEL, EQUIPMENT.CHAIR];
         const otherParts: string[] = [];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           true,
@@ -316,7 +316,7 @@ describe("equipmentUtils", () => {
         const part = EQUIPMENT.DUMBBELL;
         const equipment: string[] = [];
         const otherParts: string[] = [];
-        const exerciseIds: number[] = [];
+        const exerciseIds: string[] = [];
 
         expect(equipmentExists(part, equipment, otherParts, exerciseIds)).toBe(
           false,

@@ -246,66 +246,66 @@ export function getSkillTree(
 /**
  * Gets branch ID for given exercise name and skill
  */
-export function getBranchIdByNameAndSkill(name: string, skill: string): number {
-  let result = -1;
+export function getBranchIdByNameAndSkill(name: string, skill: string): string {
+  let result: string = "-1";
   switch (name) {
     case "SQUAT":
       if (skill.includes("SWR")) {
-        result = 25;
+        result = "25";
       } else if (skill.includes("MAX")) {
-        result = 143;
+        result = "143";
       } else if (skill.includes("SK")) {
-        result = 219;
+        result = "219";
       } else if (skill.includes("SA")) {
-        result = 316;
+        result = "316";
       }
       break;
     case "DEADLIFT":
       if (skill.includes("SWR")) {
-        result = 663;
+        result = "663";
       } else if (skill.includes("MAX")) {
-        result = 145;
+        result = "145";
       } else if (skill.includes("SK")) {
-        result = 661;
+        result = "661";
       } else if (skill.includes("SA")) {
-        result = 662;
+        result = "662";
       }
       break;
     case "BENCH_PRESS":
       if (skill.includes("SWR")) {
-        result = 26;
+        result = "26";
       } else if (skill.includes("MAX")) {
-        result = 134;
+        result = "134";
       } else if (skill.includes("SK")) {
-        result = 215;
+        result = "215";
       } else if (skill.includes("SA")) {
-        result = 314;
+        result = "314";
       }
       break;
     case "ROWING":
       if (skill.includes("SWR")) {
-        result = 664;
+        result = "664";
       } else if (skill.includes("MAX")) {
-        result = 141;
+        result = "141";
       } else if (skill.includes("SK")) {
-        result = 665;
+        result = "665";
       } else if (skill.includes("SA")) {
-        result = 666;
+        result = "666";
       }
       break;
     case "SHOULDER_PRESS":
       if (skill.includes("SWR")) {
-        result = 5;
+        result = "5";
       } else if (skill.includes("MAX")) {
-        result = 140;
+        result = "140";
       } else if (skill.includes("SK")) {
-        result = 667;
+        result = "667";
       } else if (skill.includes("SA")) {
-        result = 668;
+        result = "668";
       }
       break;
     case "CALFLIFT":
-      result = 53;
+      result = "53";
       break;
     default:
       break;
@@ -319,7 +319,7 @@ export function getBranchIdByNameAndSkill(name: string, skill: string): number {
 export function getBranchIdsByNames(
   exerciseNames: string[],
   skill: string,
-): number[] {
+): string[] {
   return exerciseNames.map((name) => getBranchIdByNameAndSkill(name, skill));
 }
 
@@ -333,7 +333,7 @@ export function getUserExerciseFromBranch(
   userBranchData?: UserExerciseBranchDataType | null,
   log = false,
 ): ExerciseType | null {
-  let exerciseId: number | null = null;
+  let exerciseId: string | null = null;
 
   // First try user's specific progress level
   if (userBranchData?.level && branchData.levels[userBranchData.level]) {
@@ -370,7 +370,7 @@ export function getUserExerciseFromBranch(
 
   const result = exercises.find((ex) => ex.id === exerciseId);
 
-  if (!result && exerciseId !== -1) {
+  if (!result && exerciseId !== "-1") {
     if (log) {
       console.log("Could not find exercise from branch", branchData);
       console.log("exerciseId", exerciseId);

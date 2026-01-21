@@ -1,5 +1,6 @@
 import { SkillTree } from "@/constants/workoutConstants";
 import { useSkillTreesStore } from "@/store/skillTreesStore";
+import { transformSkillTree } from "@/utils/skillTreeTransform";
 import BAS from "../../../../assets/data/generator/skillTrees/BAS.json";
 import BR from "../../../../assets/data/generator/skillTrees/BR.json";
 import CARDIO_1_LAKTAT from "../../../../assets/data/generator/skillTrees/CARDIO_1_LAKTAT.json";
@@ -125,6 +126,6 @@ export const useLoadSkillTrees = () => {
 
   AVAILABLE_SKILL_TREES.forEach((skillName) => {
     const skillTreeData = loadSkillTree(skillName);
-    setSkillTree(skillName, skillTreeData);
+    setSkillTree(skillName, transformSkillTree(skillTreeData));
   });
 };

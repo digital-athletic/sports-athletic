@@ -90,15 +90,15 @@ export default function SelectTraining() {
     // look if exercises with Fmax used
     let needsFmaxValues = false;
     if (lastTestExpired) {
-      const exerciseIds = sectionTrainings.reduce<number[]>(
+      const exerciseIds = sectionTrainings.reduce<string[]>(
         (acc, trainingDay) => {
-          let dayExerciseIds = Object.keys(trainingDay.skills).reduce<number[]>(
+          let dayExerciseIds = Object.keys(trainingDay.skills).reduce<string[]>(
             (acc2, skill) => {
               if (!isSkillTypes(skill)) {
                 return acc2;
               }
 
-              let additionalIds = [];
+              let additionalIds: string[] = [];
               for (let branch of trainingDay.skills[skill] ?? []) {
                 for (let level in branch.exercises) {
                   let exerciseId = branch.exercises[level].exerciseId;

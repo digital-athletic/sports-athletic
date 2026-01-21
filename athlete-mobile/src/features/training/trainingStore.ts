@@ -25,12 +25,12 @@ export interface TrainingState {
   setTrainingSelection: (selection: TrainingSelectionType | null) => void;
   setExerciseList: (list: UserExerciseDataType[] | null) => void;
   setExerciseFeedback: (
-    exerciseId: number,
+    exerciseId: string,
     feedback: ExerciseDifficultyType,
   ) => void;
-  setExerciseSkipped: (exerciseId: number) => void;
+  setExerciseSkipped: (exerciseId: string) => void;
   updateExerciseProgress: (
-    exerciseId: number,
+    exerciseId: string,
     weight?: number,
     weightPercentage?: number,
     duration?: number,

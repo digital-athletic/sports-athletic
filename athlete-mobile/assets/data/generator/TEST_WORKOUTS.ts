@@ -15,18 +15,18 @@
 /**
  * Use these exercise combinations as test workout with 1 set warm-up and 2 sets for measuring
  *
- * @type {{PROFESSIONAL: {default: number[]}, BEGINNER: {default: number[]}, ADVANCED: {default: number[], m: number[]}}}
+ * @type {{PROFESSIONAL: {default: string[]}, BEGINNER: {default: string[]}, ADVANCED: {default: string[], m: string[]}}}
  */
 const TEST_WORKOUTS = {
     BEGINNER: {
-        default: [25, 7, 88, 317]
+        default: ["25", "7", "88", "317"]
     },
     ADVANCED: {
-        default: [25, 7, 297, 317],
-        m: [25, 342, 297, 54]
+        default: ["25", "7", "297", "317"],
+        m: ["25", "342", "297", "54"]
     },
     PROFESSIONAL: {
-        default: [25, 342, 297, 54]
+        default: ["25", "342", "297", "54"]
     }
 } as const;
 

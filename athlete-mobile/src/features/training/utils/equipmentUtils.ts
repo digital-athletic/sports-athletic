@@ -35,7 +35,7 @@ export function equipmentExists(
   part: string,
   equipment: string[],
   otherParts: string[],
-  exerciseIds: number[],
+  exerciseIds: string[],
 ): boolean {
   const { EQUIPMENT } = WorkoutConstants;
 
@@ -153,7 +153,7 @@ export function equipmentForExerciseExists(
   const equipmentTags = tags
     .filter((tag) => tag.startsWith("EQ_"))
     .map((tag) => tag.replace("EQ_", ""));
-  const exerciseIds = typeof exercise?.id === "number" ? [exercise.id] : [];
+  const exerciseIds = exercise?.id ? [exercise.id] : [];
 
   for (const eqPart of equipmentTags) {
     if (!equipmentExists(eqPart, equipment, equipmentTags, exerciseIds)) {
@@ -186,14 +186,19 @@ export function filterByEquipment<T extends Branch>(
     const levels = entry.levels || entry.exercises;
     if (!levels) continue;
 
-    const exerciseIds = Object.keys(levels).reduce<number[]>((acc, level) => {
-      const levelEntry = levels[level] as { id?: number; exerciseId?: number };
-      const exerciseId = levelEntry.id ?? levelEntry.exerciseId;
-      if (typeof exerciseId === "number" && !acc.includes(exerciseId)) {
-        acc.push(exerciseId);
-      }
-      return acc;
-    }, []);
+    const exerciseIds = Object.keys(levels).reduce<string[]>(
+      (acc, levelKey) => {
+        const levelEntry = (
+          levels as Record<string, { id?: string; exerciseId?: string }>
+        )[levelKey];
+        const exerciseId = levelEntry.id ?? levelEntry.exerciseId;
+        if (typeof exerciseId === "string" && !acc.includes(exerciseId)) {
+          acc.push(exerciseId);
+        }
+        return acc;
+      },
+      [],
+    );
 
     let everythingAvailable = true;
 

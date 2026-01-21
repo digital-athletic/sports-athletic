@@ -5,6 +5,7 @@ import {
   isLevelTag,
   WorkoutConstants,
 } from "@/constants/workoutConstants";
+import { isPauseExercise as checkIsPauseExercise } from "@/features/training/models/IdTypes";
 import { TrainingNavigation } from "@/features/training/TrainingNavigation";
 import { getIntensityBySkill } from "@/features/training/generators/TrainingGenerator";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
@@ -119,8 +120,8 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const [isTestInputFocused, setIsTestInputFocused] = useState(false);
 
   const currentExercise = exerciseList?.[activeExerciseIndex];
-  const exerciseId = currentExercise?.exerciseId ?? -1;
-  const isPauseExercise = exerciseId === WorkoutConstants.PAUSE_EXERCISE_ID;
+  const exerciseId = currentExercise?.exerciseId ?? "-1";
+  const isPauseExercise = checkIsPauseExercise(exerciseId);
   const currentExerciseData = getExerciseById(exerciseId);
 
   const nextExerciseIndex = activeExerciseIndex + 1;
@@ -128,8 +129,9 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const nextExercise = hasNextExercise
     ? exerciseList?.[nextExerciseIndex]
     : undefined;
-  const isNextExercisePause =
-    nextExercise?.exerciseId === WorkoutConstants.PAUSE_EXERCISE_ID;
+  const isNextExercisePause = nextExercise
+    ? checkIsPauseExercise(nextExercise.exerciseId)
+    : false;
   const nextExerciseData = nextExercise
     ? getExerciseById(nextExercise.exerciseId)
     : undefined;
@@ -203,11 +205,11 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
 
   const saveBranchData = (
     skill: SkillType,
-    branchId: number,
-    exerciseId: number,
+    branchId: string,
+    exerciseId: string,
   ) => {
     const userExerciseBranch = branchData[branchId];
-    if (branchId !== -1 && !userExerciseBranch) {
+    if (branchId !== "-1" && !userExerciseBranch) {
       // first time an exercise of this branch was completed => save level
       const newSkillTree = Object.assign(
         getSkillTree(skillTrees, skill, [], true),
@@ -264,8 +266,8 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
 
   const updateBranchLevel = (
     levelUp: boolean,
-    branchId: number,
-    exerciseId: number,
+    branchId: string,
+    exerciseId: string,
     skill: SkillType,
     ageGroup: string,
   ) => {
@@ -351,7 +353,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     let id = exerciseId;
     let currentExerciseData = getExerciseById(id);
 
-    if (skill && typeof branchId === "number" && !isPauseExercise) {
+    if (skill && typeof branchId === "string" && !isPauseExercise) {
       saveBranchData(skill, branchId, exerciseId);
     }
 
@@ -385,7 +387,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
         if (
           !isPauseExercise &&
           (!hasNextExercise ||
-            nextExercise?.exerciseId === WorkoutConstants.PAUSE_EXERCISE_ID ||
+            isNextExercisePause ||
             !nextExercise?.skill?.includes("CARDIO"))
         ) {
           const mainCardio = findMainCardioExercise(
@@ -601,7 +603,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
               nextWeightPercentage > maximumWeightPercentage
             )
               nextWeightPercentage = maximumWeightPercentage;
-          } else if (typeof branchId === "number" && (levelUp || levelDown)) {
+          } else if (typeof branchId === "string" && (levelUp || levelDown)) {
             updateBranchLevel(levelUp, branchId, id, skill, ageGroup);
           }
 
@@ -632,7 +634,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
 
       if (doSave) {
         // do not increase values for pause/support exercises/others
-        if (typeof branchId === "number" && skill) {
+        if (typeof branchId === "string" && skill) {
           // from data/generator/TestIntensity
           let intensity = getIntensityBySkill(skill);
 
@@ -1032,7 +1034,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     : currentExerciseData?.video;
 
   const isExerciseInformationVisible =
-    typeof exerciseId === "number" && !isPauseExercise;
+    typeof exerciseId === "string" && !isPauseExercise;
 
   // if plan workout check skill.
   // if short training check workout type

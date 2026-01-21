@@ -38,7 +38,7 @@ export interface UserWorkoutState {
     sectionIndex: number,
     weekday: number,
     skillId: string,
-    branchIdToReplace: number,
+    branchIdToReplace: string,
     branchesToFillIn: ExerciseBranchType[],
   ) => void;
   saveMaxValues: (maxValues: MaxValuesType) => void;

@@ -66,7 +66,7 @@ export default function TrainingOverviewScreen() {
     // Filter valid exercises for display
     const processedExercises: UserExerciseDataType[] = exerciseList.filter(
       (userExercise) =>
-        userExercise.exerciseId !== 999999 &&
+        userExercise.exerciseId !== "999999" &&
         exercises.some((e) => e.id === userExercise.exerciseId),
     );
 
@@ -138,7 +138,7 @@ export default function TrainingOverviewScreen() {
   }, [router, params, setTrainingStartTime]);
 
   const handleShowExerciseInfo = useCallback(
-    (exerciseId: number) => {
+    (exerciseId: string) => {
       router.push({
         pathname: "/training/exercise-information",
         params: { exerciseId },
@@ -265,7 +265,7 @@ const EquipmentSection: FC<EquipmentSectionProps> = ({ equipment }) => {
 type ExercisesSectionProps = {
   exList: SkillGroup[];
   exercises: ExerciseType[];
-  onShowExerciseInfo: (exerciseId: number) => void;
+  onShowExerciseInfo: (exerciseId: string) => void;
 };
 
 const ExercisesSection: FC<ExercisesSectionProps> = ({
@@ -295,7 +295,7 @@ const ExercisesSection: FC<ExercisesSectionProps> = ({
 type SkillGroupItemProps = {
   skillGroup: SkillGroup;
   exercises: ExerciseType[];
-  onShowExerciseInfo: (exerciseId: number) => void;
+  onShowExerciseInfo: (exerciseId: string) => void;
 };
 
 const SkillGroupItem: FC<SkillGroupItemProps> = ({
@@ -331,7 +331,7 @@ type ExerciseSetItemProps = {
   set: ExerciseSet;
   exercises: ExerciseType[];
   isMaxSkill: boolean;
-  onShowExerciseInfo: (exerciseId: number) => void;
+  onShowExerciseInfo: (exerciseId: string) => void;
 };
 
 const ExerciseSetItem: FC<ExerciseSetItemProps> = ({
@@ -379,7 +379,7 @@ type MaxSetContentProps = {
   set: ExerciseSet;
   exercises: ExerciseType[];
   setLabel: string;
-  onShowExerciseInfo: (exerciseId: number) => void;
+  onShowExerciseInfo: (exerciseId: string) => void;
 };
 
 const MaxSetContent: FC<MaxSetContentProps> = ({

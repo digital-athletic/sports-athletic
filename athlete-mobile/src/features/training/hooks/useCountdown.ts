@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type CountdownArgs = {
-  exerciseId: number;
+  exerciseId: string;
   autoAdvance: boolean;
   duration: number | undefined;
   isActive: boolean;

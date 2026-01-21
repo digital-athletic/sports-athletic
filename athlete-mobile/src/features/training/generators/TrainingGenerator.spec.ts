@@ -3,7 +3,8 @@ import type { ExerciseType } from "@/features/training/models/Exercise";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { SetListEntryType } from "@/features/training/models/SetListEntry";
 import type { SkillTreeType } from "@/store/skillTreesStore";
-import { fieldNamesToLowerCase } from "@/utils/fieldNames";
+import { transformExerciseData } from "@/utils/fieldNames";
+import { transformSkillTree } from "@/utils/skillTreeTransform";
 import ExercisesData from "../../../../assets/data/generator/Exercises.json";
 import WU from "../../../../assets/data/generator/skillTrees/WU.json";
 import TrainingGenerator from "./TrainingGenerator";
@@ -23,7 +24,7 @@ describe("TrainingGenerator", () => {
   };
 
   const mockExercise: ExerciseType = {
-    id: 1,
+    id: "1",
     name: "Test Exercise",
     displayName: "Test Exercise",
     description: "Test Description",
@@ -672,8 +673,8 @@ describe("TrainingGenerator", () => {
         "WU",
         {
           branchTags: mockExercise.tags,
-          exerciseId: 1,
-          branchId: 1,
+          exerciseId: "1",
+          branchId: "1",
         },
         mockUser,
         mockExercise,
@@ -698,8 +699,8 @@ describe("TrainingGenerator", () => {
         "MOB",
         {
           branchTags: durationExercise.tags,
-          exerciseId: 1,
-          branchId: 1,
+          exerciseId: "1",
+          branchId: "1",
         },
         mockUser,
         durationExercise,
@@ -718,8 +719,8 @@ describe("TrainingGenerator", () => {
         "SA",
         {
           branchTags: mockExercise.tags,
-          exerciseId: 1,
-          branchId: 1,
+          exerciseId: "1",
+          branchId: "1",
         },
         mockUser,
         mockExercise,
@@ -738,8 +739,8 @@ describe("TrainingGenerator", () => {
         "SA",
         {
           branchTags: mockExercise.tags,
-          exerciseId: 1,
-          branchId: 1,
+          exerciseId: "1",
+          branchId: "1",
         },
         mockUser,
         mockExercise,
@@ -756,8 +757,8 @@ describe("TrainingGenerator", () => {
         "WU",
         {
           branchTags: mockExercise.tags,
-          exerciseId: 1,
-          branchId: 1,
+          exerciseId: "1",
+          branchId: "1",
         },
         mockUser,
         mockExercise,
@@ -952,30 +953,30 @@ describe("TrainingGenerator", () => {
   describe("getExercisePairs", () => {
     const branches = [
       {
-        branchId: 1,
+        branchId: "1",
         branchTags: [
           "SKILL_SA",
           "MUSCLEINVOLVEMENT_COMPOUND",
           "SIDE_BOTH",
           "MUSCLE_BRUST",
         ],
-        exerciseId: 1,
+        exerciseId: "1",
       },
       {
-        branchId: 2,
+        branchId: "2",
         branchTags: [
           "SKILL_SA",
           "MUSCLEINVOLVEMENT_ISOLATED",
           "SIDE_BOTH",
           "MUSCLE_BIZEPS",
         ],
-        exerciseId: 2,
+        exerciseId: "2",
       },
     ];
 
     const exercises: ExerciseType[] = [
-      { ...mockExercise, id: 1 },
-      { ...mockExercise, id: 2 },
+      { ...mockExercise, id: "1" },
+      { ...mockExercise, id: "2" },
     ];
 
     it("returns array of exercise pairs", () => {
@@ -1026,15 +1027,15 @@ describe("TrainingGenerator", () => {
     it("handles one-sided exercises with other side", () => {
       const oneSidedExercise: ExerciseType = {
         ...mockExercise,
-        id: 3,
-        otherSideExerciseId: 4 as number,
+        id: "3",
+        otherSideExerciseId: "4",
       };
 
       const oneSidedBranches = [
         {
-          branchId: 3,
+          branchId: "3",
           branchTags: ["SKILL_SA", "SIDE_ONE", "SIDE_LEFT", "MUSCLE_BRUST"],
-          exerciseId: 3,
+          exerciseId: "3",
         },
       ];
 
@@ -1084,19 +1085,24 @@ describe("TrainingGenerator", () => {
       weightType?: string;
     };
 
-    const realExercises = fieldNamesToLowerCase(ExercisesData) as {
-      id: number;
+    const realExercises = transformExerciseData(ExercisesData) as {
+      id: string;
     }[];
-    const testSkillTrees = { WU: WU };
+    const testSkillTrees = { WU: transformSkillTree(WU) } as {
+      [skillName: string]: SkillTreeType;
+    };
 
     // Expected exercises by level and gender from TEST_WORKOUTS.ts
     const EXPECTED_EXERCISES = {
-      BEGINNER: { default: [25, 7, 88, 317] },
-      ADVANCED: { default: [25, 7, 297, 317], m: [25, 342, 297, 54] },
-      PROFESSIONAL: { default: [25, 342, 297, 54] },
+      BEGINNER: { default: ["25", "7", "88", "317"] },
+      ADVANCED: {
+        default: ["25", "7", "297", "317"],
+        m: ["25", "342", "297", "54"],
+      },
+      PROFESSIONAL: { default: ["25", "342", "297", "54"] },
     } as const;
 
-    const PAUSE_EXERCISE_ID = 999999;
+    const PAUSE_EXERCISE_ID = "999999";
     const SETS_PER_EXERCISE = 3;
     const STANDARD_PAUSE_SECONDS = 60;
     const FINAL_SET_PAUSE_SECONDS = 120;
@@ -1147,7 +1153,7 @@ describe("TrainingGenerator", () => {
       const testCases: {
         level: keyof typeof EXPECTED_EXERCISES;
         gender: "MALE" | "FEMALE";
-        expectedExerciseIds: readonly number[];
+        expectedExerciseIds: readonly string[];
       }[] = [
         {
           level: "BEGINNER",
@@ -1203,10 +1209,10 @@ describe("TrainingGenerator", () => {
             ...new Set(testExercises.map((e) => e.exerciseId)),
           ];
           expect({
-            exerciseIds: actualExerciseIds.sort((a, b) => a - b),
+            exerciseIds: actualExerciseIds.sort(),
             totalSets: testExercises.length,
           }).toEqual({
-            exerciseIds: [...expectedExerciseIds].sort((a, b) => a - b),
+            exerciseIds: [...expectedExerciseIds].sort(),
             totalSets: expectedExerciseIds.length * SETS_PER_EXERCISE,
           });
         },
@@ -1375,7 +1381,7 @@ describe("TrainingGenerator", () => {
 
         const result = generateTestWorkout(userWithMaxValues);
         const squatSets = result.filter(
-          (entry) => entry.exerciseId === 25 && entry.skill === "TEST",
+          (entry) => entry.exerciseId === "25" && entry.skill === "TEST",
         );
 
         const maxSetWeight = squatSets[2].weight!;
@@ -1402,8 +1408,8 @@ describe("TrainingGenerator", () => {
         const actualExerciseIds = [
           ...new Set(testExercises.map((e) => e.exerciseId)),
         ];
-        expect(actualExerciseIds.sort((a, b) => a - b)).toEqual(
-          [...EXPECTED_EXERCISES.BEGINNER.default].sort((a, b) => a - b),
+        expect(actualExerciseIds.sort()).toEqual(
+          [...EXPECTED_EXERCISES.BEGINNER.default].sort(),
         );
       });
 
@@ -1442,7 +1448,7 @@ describe("TrainingGenerator", () => {
         )!;
 
         expect({
-          hasExerciseId: typeof testExercise.exerciseId === "number",
+          hasExerciseId: typeof testExercise.exerciseId === "string",
           hasSet:
             Array.isArray(testExercise.set) && testExercise.set.length === 2,
           hasWeight: typeof testExercise.weight === "number",

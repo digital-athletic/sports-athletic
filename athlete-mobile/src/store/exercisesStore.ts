@@ -12,7 +12,7 @@ export interface ExercisesState {
   clearExercises: () => void;
 
   // Selectors
-  getExerciseById: (id: number) => ExerciseType | undefined;
+  getExerciseById: (id: string) => ExerciseType | undefined;
   getExercisesByTag: (tag: string) => ExerciseType[];
 }
 

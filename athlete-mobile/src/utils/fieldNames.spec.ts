@@ -1,4 +1,4 @@
-import { fieldNamesToLowerCase } from "./fieldNames";
+import { fieldNamesToLowerCase, transformExerciseData } from "./fieldNames";
 
 describe("fieldNamesToLowerCase", () => {
   it("converts PascalCase to camelCase", () => {
@@ -78,5 +78,58 @@ describe("fieldNamesToLowerCase", () => {
       middleName: null,
       suffix: undefined,
     });
+  });
+});
+
+describe("transformExerciseData", () => {
+  it("converts id to string", () => {
+    const input = [{ Id: 123, Name: "Exercise" }];
+    const result = transformExerciseData(input);
+    expect(result[0].id).toBe("123");
+    expect(typeof result[0].id).toBe("string");
+  });
+
+  it("converts otherSideExerciseId to string when present", () => {
+    const input = [{ Id: 123, OtherSideExerciseId: 456 }];
+    const result = transformExerciseData(input);
+    expect(result[0].otherSideExerciseId).toBe("456");
+    expect(typeof result[0].otherSideExerciseId).toBe("string");
+  });
+
+  it("does not include otherSideExerciseId when undefined", () => {
+    const input = [{ Id: 123, Name: "Exercise" }];
+    const result = transformExerciseData(input);
+    expect(result[0]).not.toHaveProperty("otherSideExerciseId");
+  });
+
+  it("converts equivalentExercises array to strings", () => {
+    const input = [{ Id: 123, EquivalentExercises: [456, 789, 101] }];
+    const result = transformExerciseData(input);
+    expect(result[0].equivalentExercises).toEqual(["456", "789", "101"]);
+  });
+
+  it("does not include equivalentExercises when undefined", () => {
+    const input = [{ Id: 123, Name: "Exercise" }];
+    const result = transformExerciseData(input);
+    expect(result[0]).not.toHaveProperty("equivalentExercises");
+  });
+
+  it("converts field names to camelCase", () => {
+    const input = [{ Id: 123, DisplayName: "Test Exercise", Tags: ["tag1"] }];
+    const result = transformExerciseData(input);
+    expect(result[0]).toHaveProperty("displayName", "Test Exercise");
+    expect(result[0]).toHaveProperty("tags", ["tag1"]);
+  });
+
+  it("handles multiple exercises", () => {
+    const input = [
+      { Id: 1, Name: "Ex1" },
+      { Id: 2, Name: "Ex2", OtherSideExerciseId: 3 },
+    ];
+    const result = transformExerciseData(input);
+    expect(result).toHaveLength(2);
+    expect(result[0].id).toBe("1");
+    expect(result[1].id).toBe("2");
+    expect(result[1].otherSideExerciseId).toBe("3");
   });
 });

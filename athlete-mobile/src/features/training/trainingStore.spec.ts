@@ -32,19 +32,19 @@ describe("useTrainingStore", () => {
   const mockExercises: UserExerciseDataType[] = [
     {
       skill: "SWR",
-      exerciseId: 10,
+      exerciseId: "10",
       feedback: { difficulty: null },
       skipped: false,
     },
     {
       skill: "CARDIO",
-      exerciseId: 20,
+      exerciseId: "20",
       feedback: { difficulty: null },
       skipped: false,
     },
     {
       skill: "WARMUP",
-      exerciseId: 30,
+      exerciseId: "30",
       feedback: { difficulty: null },
       skipped: false,
     },
@@ -157,7 +157,7 @@ describe("useTrainingStore", () => {
       const mockExercises: UserExerciseDataType[] = [
         {
           skill: "SWR",
-          exerciseId: 10,
+          exerciseId: "10",
           feedback: { difficulty: null },
           skipped: false,
         },
@@ -212,7 +212,7 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseFeedback(10, "SUCCEEDED");
+        result.current.setExerciseFeedback("10", "SUCCEEDED");
       });
 
       expect(result.current.exerciseList?.[0]?.feedback?.difficulty).toBe(
@@ -224,7 +224,7 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseFeedback(20, "TOO_EASY");
+        result.current.setExerciseFeedback("20", "TOO_EASY");
       });
 
       expect(result.current.exerciseList?.[1]?.feedback?.difficulty).toBe(
@@ -236,7 +236,7 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseFeedback(30, "TOO_HARD");
+        result.current.setExerciseFeedback("30", "TOO_HARD");
       });
 
       expect(result.current.exerciseList?.[2]?.feedback?.difficulty).toBe(
@@ -248,8 +248,8 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseFeedback(10, "SUCCEEDED");
-        result.current.setExerciseFeedback(30, "TOO_EASY");
+        result.current.setExerciseFeedback("10", "SUCCEEDED");
+        result.current.setExerciseFeedback("30", "TOO_EASY");
       });
 
       expect(result.current.exerciseList?.[0]?.feedback?.difficulty).toBe(
@@ -265,14 +265,14 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseFeedback(10, "SUCCEEDED");
+        result.current.setExerciseFeedback("10", "SUCCEEDED");
       });
       expect(result.current.exerciseList?.[0]?.feedback?.difficulty).toBe(
         "SUCCEEDED",
       );
 
       act(() => {
-        result.current.setExerciseFeedback(10, "TOO_HARD");
+        result.current.setExerciseFeedback("10", "TOO_HARD");
       });
       expect(result.current.exerciseList?.[0]?.feedback?.difficulty).toBe(
         "TOO_HARD",
@@ -284,7 +284,7 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseFeedback(10, "SUCCEEDED");
+        result.current.setExerciseFeedback("10", "SUCCEEDED");
       });
 
       expect(result.current.exerciseList).toBeNull();
@@ -304,7 +304,7 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseSkipped(10);
+        result.current.setExerciseSkipped("10");
       });
 
       expect(result.current.exerciseList?.[0].skipped).toBe(true);
@@ -314,7 +314,7 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseSkipped(20);
+        result.current.setExerciseSkipped("20");
       });
 
       expect(result.current.exerciseList?.[0].skipped).toBe(false);
@@ -326,8 +326,8 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseSkipped(10);
-        result.current.setExerciseSkipped(30);
+        result.current.setExerciseSkipped("10");
+        result.current.setExerciseSkipped("30");
       });
 
       expect(result.current.exerciseList?.[0].skipped).toBe(true);
@@ -340,7 +340,7 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setExerciseSkipped(10);
+        result.current.setExerciseSkipped("10");
       });
 
       expect(result.current.exerciseList).toBeNull();
@@ -769,7 +769,7 @@ describe("useTrainingStore", () => {
         result.current.setTrainingSelection("PLAN");
         result.current.setExerciseList([
           {
-            exerciseId: 10,
+            exerciseId: "10",
             skill: "SWR",
             feedback: { difficulty: null },
             skipped: false,
@@ -862,7 +862,7 @@ describe("useTrainingStore", () => {
       act(() => {
         result.current.setExerciseList([
           {
-            exerciseId: 10,
+            exerciseId: "10",
             skill: "SWR",
             feedback: { difficulty: null },
             skipped: false,
@@ -903,13 +903,13 @@ describe("useTrainingStore", () => {
       // Add exercises
       const exercises: UserExerciseDataType[] = [
         {
-          exerciseId: 10,
+          exerciseId: "10",
           skill: "SWR",
           feedback: { difficulty: null },
           skipped: false,
         },
         {
-          exerciseId: 20,
+          exerciseId: "20",
           skill: "CARDIO",
           feedback: { difficulty: null },
           skipped: false,
@@ -926,7 +926,7 @@ describe("useTrainingStore", () => {
       act(() => {
         result.current.addSkillTime("SWR", 30000);
         result.current.addPauseTime(2000);
-        result.current.setExerciseFeedback(10, "SUCCEEDED");
+        result.current.setExerciseFeedback("10", "SUCCEEDED");
       });
 
       expect(result.current.time.skill.SWR).toBe(30000);
@@ -1053,8 +1053,8 @@ describe("useTrainingStore", () => {
 
       act(() => {
         result.current.setExerciseList(null);
-        result.current.setExerciseFeedback(10, "SUCCEEDED");
-        result.current.setExerciseSkipped(10);
+        result.current.setExerciseFeedback("10", "SUCCEEDED");
+        result.current.setExerciseSkipped("10");
       });
 
       expect(result.current.exerciseList).toBeNull();
@@ -1064,7 +1064,7 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
       const exercises: UserExerciseDataType[] = [
         {
-          exerciseId: 10,
+          exerciseId: "10",
           skill: "SWR",
           feedback: { difficulty: null },
           skipped: false,
@@ -1073,7 +1073,7 @@ describe("useTrainingStore", () => {
 
       act(() => {
         result.current.setExerciseList(exercises);
-        result.current.setExerciseFeedback(-1, "SUCCEEDED"); // Unknown exercise Id
+        result.current.setExerciseFeedback("-1", "SUCCEEDED"); // Unknown exercise Id
       });
 
       expect(

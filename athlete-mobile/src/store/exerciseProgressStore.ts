@@ -117,7 +117,7 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
             if (typeof data.skipped === "boolean") {
               update.skipped = data.skipped;
             }
-            if (typeof data.weight === "number") {
+            if (data.weight) {
               update.weight = data.weight;
             }
             if (typeof data.weightType === "string") {
@@ -165,7 +165,7 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
           if (typeof data.skipped === "boolean") {
             existing.skipped = data.skipped;
           }
-          if (typeof data.weight === "number") {
+          if (data.weight) {
             existing.weight = data.weight;
           }
           if (typeof data.weightType === "string") {

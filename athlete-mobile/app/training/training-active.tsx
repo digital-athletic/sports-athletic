@@ -794,7 +794,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
       TagGroups.EQUIPMENT,
     ).some((eq) => eq === "DUMBBELL");
 
-    if (typeof weight === "number" && directions) {
+    if (weight && directions) {
       if (isDumbbellExercise) {
         // double for weight is only one KH
         // add 10% to get value for LH
@@ -1084,8 +1084,8 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     const weight = currentExercise?.weight;
     const height = currentExercise?.height;
 
-    // Weight information
-    if (typeof weight === "number") {
+    // Weight information (truthy check filters out NaN, undefined, null, 0)
+    if (weight) {
       const currentExerciseEquipment = getTagValues(
         currentExerciseData.tags,
         TagGroups.EQUIPMENT,

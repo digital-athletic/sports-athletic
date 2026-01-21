@@ -2,7 +2,6 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { UserType } from "@/features/profile/models/User";
-import type { ExerciseType } from "@/features/training/models/Exercise";
 import type {
   BranchExerciseReference,
   BranchSelectionResult,
@@ -51,9 +50,10 @@ import {
   getSkillTree,
   getUserExerciseFromBranch,
 } from "@/features/training/utils/skillTreeUtils";
+import type { ExerciseType } from "@/schemas/exercise.schema";
+import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { Logger } from "@/services/Logger";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
-import type { SkillTreeType } from "@/store/skillTreesStore";
 import { getTagValues } from "@/utils/tagUtils";
 
 // Intensity

@@ -1,13 +1,13 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
-import type { ExerciseType } from "@/features/training/models/Exercise";
 import type {
   GenderTag,
   IntensityData,
 } from "@/features/training/models/Intensity";
 import type { SkillType } from "@/features/training/models/Training";
-import type { TrainingLevelType } from "@/features/training/models/TrainingLevel";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
+import type { TrainingLevelType } from "@/schemas/common.schema";
+import type { ExerciseType } from "@/schemas/exercise.schema";
 import { getTagValues } from "@/utils/tagUtils";
 import {
   getExerciseStartValue,
@@ -223,9 +223,9 @@ export function calculateNewWeight(
   intensity: IntensityData,
 ): number {
   const isWeightFMax =
-    (exerciseData.values.weight?.startValue.type &&
+    (exerciseData.values?.weight?.startValue.type &&
       exerciseData.values.weight.startValue.type.type === "weightFMax") ||
-    (!exerciseData.values.weight?.startValue.type &&
+    (!exerciseData.values?.weight?.startValue.type &&
       intensity.startValue.weight?.type &&
       intensity.startValue.weight.type.type === "weightFMax");
 
@@ -258,7 +258,7 @@ export function getResetDuration(
   if (!exerciseData.isAdvanceByDuration) return undefined;
 
   const exerciseStartValue = getValueByGenderAndLevel(
-    exerciseData.values.duration?.startValue,
+    exerciseData.values?.duration?.startValue,
     genderTag,
     userLevel,
   );
@@ -281,7 +281,7 @@ export function getResetRepetition(
   if (!exerciseData.isAdvanceByReps) return undefined;
 
   const exerciseStartValue = getValueByGenderAndLevel(
-    exerciseData.values.repetition?.startValue,
+    exerciseData.values?.repetition?.startValue,
     genderTag,
     userLevel,
   );

@@ -1,7 +1,7 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
 import { isPlaceholderBranch } from "@/features/training/models/IdTypes";
-import { SkillBranchType } from "@/features/training/models/SkillBranch";
+import type { SkillBranchType } from "@/schemas/skillTree.schema";
 import { SkillType } from "@/features/training/models/Training";
 import { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { hasWeights } from "@/features/training/utils/equipmentUtils";

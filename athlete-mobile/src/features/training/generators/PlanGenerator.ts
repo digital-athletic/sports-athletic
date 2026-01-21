@@ -6,14 +6,14 @@ import {
   type SectionTypes,
 } from "@/constants/workoutConstants";
 import { type UserType } from "@/features/profile/models/User";
-import { type ExerciseType } from "@/features/training/models/Exercise";
 import { type ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
 import { type SeasonPhaseType } from "@/features/training/models/SeasonPhase";
 import { type TrainingDayType } from "@/features/training/models/TrainingDay";
 import { type TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { type TrainingSectionType } from "@/features/training/models/TrainingSection";
+import { type ExerciseType } from "@/schemas/exercise.schema";
+import { type SkillTreeType } from "@/schemas/skillTree.schema";
 import { type BranchDataMapType } from "@/store/exerciseProgressStore";
-import { type SkillTreeType } from "@/store/skillTreesStore";
 
 // Utility functions
 import { ageGroupFor } from "@/features/training/utils/ageUtils";

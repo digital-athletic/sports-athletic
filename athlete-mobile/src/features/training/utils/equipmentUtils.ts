@@ -3,7 +3,7 @@ import type {
   Branch,
   FilterResult,
 } from "@/features/training/models/BranchFilter";
-import type { ExerciseType } from "@/features/training/models/Exercise";
+import type { ExerciseType } from "@/schemas/exercise.schema";
 
 /**
  * Checks if weight equipment (dumbbells or barbells) is present

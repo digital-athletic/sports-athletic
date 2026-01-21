@@ -1,5 +1,5 @@
-import type { ExerciseType } from "@/features/training/models/Exercise";
-import type { SkillBranchType } from "@/features/training/models/SkillBranch";
+import type { ExerciseType } from "@/schemas/exercise.schema";
+import type { SkillBranchType } from "@/schemas/skillTree.schema";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
 import {
   getBranchIdByNameAndSkill,

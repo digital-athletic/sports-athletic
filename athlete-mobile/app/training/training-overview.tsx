@@ -1,6 +1,6 @@
 import { BackHeader } from "@/common/BackHeader";
 import { WorkoutConstants } from "@/constants/workoutConstants";
-import type { ExerciseType } from "@/features/training/models/Exercise";
+import type { ExerciseType } from "@/schemas/exercise.schema";
 import { SkillType } from "@/features/training/models/Training";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { useTrainingStore } from "@/features/training/trainingStore";
@@ -460,7 +460,7 @@ const ExerciseItem: FC<ExerciseItemProps> = ({
                 aspectRatio: 1,
               }}
               cachePolicy="disk"
-              accessibilityLabel={exerciseData.displayName}
+              accessibilityLabel={exerciseData.displayName ?? undefined}
             />
           </Box>
         )}

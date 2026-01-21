@@ -1,7 +1,10 @@
 import { ExerciseDifficultyType } from "@/constants/workoutConstants";
+import {
+  type GenderTagType,
+  type TrainingLevelType,
+  type TrainingParameterType,
+} from "@/schemas/common.schema";
 import { AdjustmentParameterType } from "./AdjustmentParameter";
-import { TrainingLevelType } from "./TrainingLevel";
-import { TrainingParameterType } from "./TrainingParameter";
 
 export type AdjustmentValue = Record<
   Exclude<ExerciseDifficultyType, null>,
@@ -12,9 +15,9 @@ export type AdjustmentLevel = Partial<
   Record<TrainingLevelType, AdjustmentValue>
 >;
 
-const genderTags = ["default", "m", "w", "k"] as const;
+export type GenderTag = GenderTagType;
 
-export type GenderTag = (typeof genderTags)[number];
+const genderTags: GenderTag[] = ["default", "m", "w", "k"];
 
 export const isGenderTag = (value: unknown): value is GenderTag => {
   return typeof value === "string" && genderTags.includes(value as GenderTag);

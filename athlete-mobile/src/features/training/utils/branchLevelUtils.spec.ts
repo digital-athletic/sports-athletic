@@ -1,4 +1,4 @@
-import type { SkillBranchType } from "@/features/training/models/SkillBranch";
+import type { SkillBranchType } from "@/schemas/skillTree.schema";
 import type { BranchDataMapType } from "@/store/exerciseProgressStore";
 import type { SkillTreesState } from "@/store/skillTreesStore";
 import {

@@ -1,4 +1,4 @@
-import type { ExerciseType } from "@/features/training/models/Exercise";
+import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { IntensityData } from "@/features/training/models/Intensity";
 import type { SkillType } from "@/features/training/models/Training";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";

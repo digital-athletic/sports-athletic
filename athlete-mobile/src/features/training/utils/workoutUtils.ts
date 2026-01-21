@@ -2,11 +2,22 @@ import { TagGroups } from "@/constants/tagGroups";
 import { XP_PER_MINUTE } from "@/constants/userProgressConstants";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { UserType } from "@/features/profile/models/User";
+import {
+  type TrainingLevelType,
+  type TrainingParameterType,
+} from "@/schemas/common.schema";
+import {
+  type ExerciseType,
+  type ExerciseValues,
+  type ValueType,
+} from "@/schemas/exercise.schema";
+import {
+  type SkillBranchType,
+  type SkillTreeType,
+} from "@/schemas/skillTree.schema";
 import { Logger } from "@/services/Logger";
-import { SkillTreeType } from "@/store/skillTreesStore";
 import { dateToDDMMYYYY } from "@/utils/date";
 import { getTagValues } from "@/utils/tagUtils";
-import { ExerciseType, ExerciseValues, ValueType } from "../models/Exercise";
 import { ExerciseBranchType } from "../models/ExerciseBranch";
 import { isPauseExercise } from "../models/IdTypes";
 import { GenderTag, IntensityData } from "../models/Intensity";
@@ -15,10 +26,7 @@ import {
   EXERCISE_DIRECTIONS_VALUES_MAP,
   MaxValuesType,
 } from "../models/MaxValues";
-import { SkillBranchType } from "../models/SkillBranch";
 import { SkillType, TrainingTimeType } from "../models/Training";
-import { TrainingLevelType } from "../models/TrainingLevel";
-import { TrainingParameterType } from "../models/TrainingParameter";
 import { UserExerciseDataType } from "../models/UserExerciseData";
 import {
   filterByAge,
@@ -284,6 +292,7 @@ export const getExerciseTargetValue = (
     }
   }
   if (
+    branchExercise.values &&
     branchExercise.values[valueName] &&
     branchExercise.values[valueName].targetValue
   ) {
@@ -357,6 +366,7 @@ export const getExerciseStartValue = (
     }
   }
   if (
+    branchExercise.values &&
     branchExercise.values[valueName] &&
     branchExercise.values[valueName].startValue
   ) {

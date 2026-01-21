@@ -1,7 +1,10 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { getTagValues } from "@/utils/tagUtils";
-import { ExerciseValuesType, type ExerciseType } from "../models/Exercise";
+import type {
+  ExerciseType,
+  ExerciseValuesType,
+} from "@/schemas/exercise.schema";
 import { DEFAULT_MAX_VALUES, type MaxValuesType } from "../models/MaxValues";
 import { type SkillType, type TrainingTimeType } from "../models/Training";
 import { type UserExerciseDataType } from "../models/UserExerciseData";

@@ -1,4 +1,4 @@
-import type { SkillTreeType } from "@/store/skillTreesStore";
+import type { SkillTreeType } from "@/schemas/skillTree.schema";
 
 type RawSkillTree = Record<
   string,

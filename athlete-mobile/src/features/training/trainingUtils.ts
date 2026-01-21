@@ -1,5 +1,5 @@
 import { WorkoutConstants } from "@/constants/workoutConstants";
-import type { ExerciseType } from "./models/Exercise";
+import type { ExerciseType } from "@/schemas/exercise.schema";
 import { isPauseExercise } from "./models/IdTypes";
 import { TrainingSectionType } from "./models/TrainingSection";
 import type { UserExerciseDataType } from "./models/UserExerciseData";

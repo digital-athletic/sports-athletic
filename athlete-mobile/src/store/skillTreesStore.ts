@@ -1,10 +1,8 @@
-import { SkillBranchType } from "@/features/training/models/SkillBranch";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
+import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { asyncStorage } from "./middleware";
-
-export type SkillTreeType = Record<string, SkillBranchType>;
 
 export interface SkillTreesState {
   skillTrees: Record<string, SkillTreeType>;

@@ -10,7 +10,7 @@ import { TrainingNavigation } from "@/features/training/TrainingNavigation";
 import { getIntensityBySkill } from "@/features/training/generators/TrainingGenerator";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
 import { SkillType } from "@/features/training/models/Training";
-import { isTrainingLevel } from "@/features/training/models/TrainingLevel";
+import { isTrainingLevel } from "@/schemas/common.schema";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
 import {
@@ -465,7 +465,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                 )
               : null;
           // set exercise targetValue if entered from webTool
-          const targetValue = currentExerciseData?.values.weight?.targetValue;
+          const targetValue = currentExerciseData?.values?.weight?.targetValue;
           if (targetValue) {
             if (userLevel && targetValue[genderTag]?.[userLevel]) {
               maximumWeightPercentage = parseFloat(
@@ -499,7 +499,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
               WorkoutConstants.MAX_KRAFT_INCLINE_BENCH_WEIGHT_DIFFERENCE;
           }
           // set exercise startValue if entered from webTool
-          if (currentExerciseData?.values.weight?.startValue) {
+          if (currentExerciseData?.values?.weight?.startValue) {
             if (
               userLevel &&
               currentExerciseData?.values.weight?.startValue?.[genderTag]?.[

@@ -1,8 +1,8 @@
 import type { UserType } from "@/features/profile/models/User";
-import type { ExerciseType } from "@/features/training/models/Exercise";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { SetListEntryType } from "@/features/training/models/SetListEntry";
-import type { SkillTreeType } from "@/store/skillTreesStore";
+import type { ExerciseType } from "@/schemas/exercise.schema";
+import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { transformExerciseData } from "@/utils/fieldNames";
 import { transformSkillTree } from "@/utils/skillTreeTransform";
 import ExercisesData from "../../../../assets/data/generator/Exercises.json";

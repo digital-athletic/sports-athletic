@@ -14,7 +14,6 @@ import { type UserType } from "@/features/profile/models/User";
 import { isGeneratorError } from "@/features/training/generators/GeneratorError";
 import { buildGeneratorErrorMessage } from "@/features/training/generators/generatorErrorUtils";
 import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
-import { ExerciseType } from "@/features/training/models/Exercise";
 import { TrainingType } from "@/features/training/models/Training";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { Logger } from "@/services/Logger";
@@ -30,7 +29,7 @@ import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
 import { dateToDDMMYYYY, DDMMYYYYToDate } from "@/utils/date";
-import { transformExerciseData } from "@/utils/fieldNames";
+import { loadExercises } from "@/data/loadExercises";
 import { parseBooleanParam, parseIntParam } from "@/utils/router";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -116,18 +115,9 @@ export default function MuscleSorenessScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const loadExercises = async () => {
-    // Previously this was imported from local file system (see: exercisesActions.loadExercises())
-    const localData = await import(
-      "../../assets/data/generator/Exercises.json"
-    );
-
-    const exercises = transformExerciseData(
-      localData.default,
-    ) as ExerciseType[];
-
+  const loadAndSetExercises = () => {
+    const exercises = loadExercises();
     setExercises(exercises);
-
     return exercises;
   };
 
@@ -142,8 +132,8 @@ export default function MuscleSorenessScreen() {
     setTemporalData(temporalData);
   };
 
-  const generateExerciseList = async (place: PlaceType) => {
-    const exercises = await loadExercises();
+  const generateExerciseList = (place: PlaceType) => {
+    const exercises = loadAndSetExercises();
 
     const trainingType = params.type;
 

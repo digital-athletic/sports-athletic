@@ -153,8 +153,14 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     [activeTraining],
   );
 
+  // strengthTestMaxValues is passed directly for strength tests to avoid React state batching issues.
+  // For non-test workouts (PREV, FOCUS, PLAN), strengthTestMaxValues is undefined and the
+  // TEST_WORKOUT check below ensures no max values are saved.
   const saveAndNavigateToSuccess = useCallback(
-    (aborted: boolean = false) => {
+    (
+      aborted: boolean = false,
+      strengthTestMaxValues?: MaxValuesType | null,
+    ) => {
       try {
         // Record end time
         setTrainingEndTime(Date.now());
@@ -170,12 +176,13 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
         if (
           activeTraining?.type === "TEST_WORKOUT" &&
           !aborted &&
-          tempMaxValues
+          strengthTestMaxValues
         ) {
-          // Commit temporary max values to persistent store
-          Logger.logEvent("saving_max_values", { maxValues: tempMaxValues });
-          saveMaxValues(tempMaxValues);
-          addTestResult(tempMaxValues);
+          Logger.logEvent("saving_max_values", {
+            maxValues: strengthTestMaxValues,
+          });
+          saveMaxValues(strengthTestMaxValues);
+          addTestResult(strengthTestMaxValues);
         }
 
         // Clear temporary test results (committed or discarded)
@@ -193,7 +200,6 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     },
     [
       activeTraining?.type,
-      tempMaxValues,
       addTestResult,
       saveMaxValues,
       logTrainingEvent,
@@ -776,7 +782,10 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     Logger.logEvent("exercise_completed", { exerciseId: id });
   };
 
-  const saveRepsInput = async (repsValue: number) => {
+  // Strength test only: calculates and stores max values based on reps entered.
+  // Returns the updated maxValues to pass directly to saveAndNavigateToSuccess
+  // (avoids React state batching issue with setTempMaxValues).
+  const saveRepsInput = (repsValue: number): MaxValuesType | null => {
     const directions = WorkoutConstants.TEST_EXERCISES_DIRECTIONS[exerciseId];
     let weight = currentExercise?.weight;
     // add ten percent weight if test exercise used dumbbells
@@ -817,11 +826,13 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
         result,
       );
       setTempMaxValues(updatedMaxValues);
+      return updatedMaxValues;
     } else {
       Logger.logEvent(
         "no exercise direction found for test exercise with id ",
         exerciseId,
       );
+      return null;
     }
   };
 
@@ -858,7 +869,10 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     );
   };
 
-  const advanceToNextExercise = () => {
+  // strengthTestMaxValues only provided for strength test's last exercise
+  const advanceToNextExercise = (
+    strengthTestMaxValues?: MaxValuesType | null,
+  ) => {
     if (!exerciseList) return;
 
     // save exercise data
@@ -911,7 +925,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
       }
     } else {
       // Training complete
-      saveAndNavigateToSuccess(false);
+      saveAndNavigateToSuccess(false, strengthTestMaxValues);
     }
   };
 

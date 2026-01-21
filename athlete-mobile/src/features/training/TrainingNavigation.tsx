@@ -15,11 +15,12 @@ import {
 import { TrainingRepetitionInput } from "./TrainingRepetitionInput";
 import { useCountdown } from "./hooks/useCountdown";
 import { useVoiceCoach } from "./hooks/useVoiceCoach";
+import { type MaxValuesType } from "./models/MaxValues";
 
 export interface TrainingNavigationProps {
   exerciseId: string;
   duration: number | undefined;
-  next: () => void;
+  next: (strengthTestMaxValues?: MaxValuesType | null) => void;
   skip: () => void;
   isPause: boolean;
   isNextExercisePause: boolean;
@@ -32,7 +33,7 @@ export interface TrainingNavigationProps {
   isCardioExercise: boolean;
   isLastCardioExercise: boolean;
   isTest: boolean;
-  onSubmitReps: (reps: number) => void;
+  onSubmitReps: (reps: number) => MaxValuesType | null;
   pauseToggled: (isPaused: boolean) => void;
   onTestInputFocusChange?: (isFocused: boolean) => void;
   isTestInputFocused?: boolean;
@@ -115,10 +116,13 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
   };
 
   // Define handlers before effects
-  const handleClickNext = useCallback(async () => {
-    next();
-    resetState();
-  }, [next]);
+  const handleClickNext = useCallback(
+    (strengthTestMaxValues?: MaxValuesType | null) => {
+      next(strengthTestMaxValues);
+      resetState();
+    },
+    [next],
+  );
 
   const handleClickNormalButton = useCallback(
     async (identification?: "too_easy" | "too_hard") => {
@@ -141,9 +145,11 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
     setRepsValue(num);
   };
 
-  const handleSubmitReps = () => {
-    onSubmitReps(repsValue);
-    handleClickNext();
+  // Only called for strength test exercises (isTest=true, repetition=-1).
+  // Pass maxValues directly to avoid React state batching race condition.
+  const handleSubmitStrengthTestReps = () => {
+    const maxValues = onSubmitReps(repsValue);
+    handleClickNext(maxValues);
   };
 
   // Pan responder initialization
@@ -460,7 +466,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
             <TrainingRepetitionInput
               repsValue={repsValue}
               changeReps={handleChangeReps}
-              saveRepsInput={handleSubmitReps}
+              saveRepsInput={handleSubmitStrengthTestReps}
               onInputFocusChange={onTestInputFocusChange}
             />
           </Box>

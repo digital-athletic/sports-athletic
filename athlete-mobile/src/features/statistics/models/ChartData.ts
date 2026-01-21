@@ -110,23 +110,33 @@ export const formatDateTick = (dateString: string): string => {
 
 /**
  * Sorts test history by date (newest first)
+ * When entries have the same date, newer entries (higher original index) come first
  */
 export const sortTestHistoryByDate = (
   history: MaxValuesType[],
 ): MaxValuesType[] => {
-  return [...history].sort((a, b) => {
-    const aDate = a.testDate.split("-").map(Number);
-    const bDate = b.testDate.split("-").map(Number);
+  // Add original index to maintain insertion order for same-day entries
+  const indexed = history.map((item, index) => ({ item, index }));
 
-    // Compare year
-    if (aDate[2] !== bDate[2]) {
-      return bDate[2] - aDate[2];
-    }
-    // Compare month
-    if (aDate[1] !== bDate[1]) {
-      return bDate[1] - aDate[1];
-    }
-    // Compare day
-    return bDate[0] - aDate[0];
-  });
+  return indexed
+    .sort((a, b) => {
+      const aDate = a.item.testDate.split("-").map(Number);
+      const bDate = b.item.testDate.split("-").map(Number);
+
+      // Compare year
+      if (aDate[2] !== bDate[2]) {
+        return bDate[2] - aDate[2];
+      }
+      // Compare month
+      if (aDate[1] !== bDate[1]) {
+        return bDate[1] - aDate[1];
+      }
+      // Compare day
+      if (aDate[0] !== bDate[0]) {
+        return bDate[0] - aDate[0];
+      }
+      // Same date: newer entries (higher index) come first
+      return b.index - a.index;
+    })
+    .map(({ item }) => item);
 };

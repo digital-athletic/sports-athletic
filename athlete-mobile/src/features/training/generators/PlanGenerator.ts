@@ -36,6 +36,7 @@ import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import { dateToDDMMYYYY, DDMMYYYYToDate } from "@/utils/date";
 import { getTagValues } from "@/utils/tagUtils";
 import {
+  type DirectionsMap,
   DirectionsMapSchema,
   ExerciseBranchEntrySchema,
   FallbackSectionSchema,
@@ -1314,10 +1315,10 @@ export default class PlanGenerator {
   static getBranchesForWorkout = (
     skill: string,
     weightedTag: { tags: string[]; count: number },
-    oberkoerperDirections,
-    unterkoerperDirections,
-    ganzkoerperDirections,
-    rumpfDirections,
+    oberkoerperDirections: DirectionsMap,
+    unterkoerperDirections: DirectionsMap,
+    ganzkoerperDirections: DirectionsMap,
+    rumpfDirections: DirectionsMap,
     equipment: string[],
     workout: ExerciseBranchType[],
     user: UserType,
@@ -1924,10 +1925,10 @@ export default class PlanGenerator {
   static chooseByTags = (
     skill: string,
     weightedTags: { tags: string[]; count: number }[],
-    oberkoerperDirections,
-    unterkoerperDirections,
-    ganzkoerperDirections,
-    rumpfDirections,
+    oberkoerperDirections: DirectionsMap,
+    unterkoerperDirections: DirectionsMap,
+    ganzkoerperDirections: DirectionsMap,
+    rumpfDirections: DirectionsMap,
     equipment: string[],
     user: UserType,
     place: string,

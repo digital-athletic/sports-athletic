@@ -25,7 +25,7 @@ import { type ExerciseType } from "@/schemas/exercise.schema";
 import { type SkillTreeType } from "@/schemas/skillTree.schema";
 import { type UserType } from "@/schemas/user.schema";
 import { type BranchDataMapType } from "@/store/exerciseProgressStore";
-import { type PlaceEquipment, type PlacesState } from "@/store/placesStore";
+import { type PlaceEquipment, type PlacesData } from "@/store/placesStore";
 
 // Utility functions
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
@@ -158,7 +158,7 @@ export default class PlanGenerator {
     skillTrees: Record<string, SkillTreeType>,
     exerciseBranchData: BranchDataMapType,
     userTrainingDays: TrainingDayType[],
-    places: PlacesState,
+    places: PlacesData,
     startDate: Date,
   ): TrainingPlanType => {
     if (PlanGenerator.DEBUG) console.log("GENERATE for user: ", user);
@@ -263,7 +263,7 @@ export default class PlanGenerator {
   static createSection = (
     sec: SectionWithStartType,
     userTrainingDays: TrainingDayType[],
-    places: PlacesState,
+    places: PlacesData,
     seasonPhase: SeasonPhaseType,
     user: UserType,
     hasPain: boolean,
@@ -324,7 +324,7 @@ export default class PlanGenerator {
         const trainingFocus = groupFocus[trDay];
         const place = day.place as PlaceType;
         const duration = day.duration;
-        const equipment = places[place as keyof PlacesState].equipment;
+        const equipment = places[place as keyof PlacesData].equipment;
         const structure =
           trainingFocus === "PHASE"
             ? "phase"
@@ -800,7 +800,7 @@ export default class PlanGenerator {
   static getTrainingDayGroupsFocuses = (
     trainingDayGroups: TrainingDayType[][],
     ageGroup: AgeGroupTag,
-    places: PlacesState,
+    places: PlacesData,
   ): FocusType[][] => {
     let groupFocuses: FocusType[][] = [];
     let hasCardio = false;
@@ -2470,7 +2470,7 @@ export default class PlanGenerator {
   static getFocusForTrainingDayGroup = (
     groupTrainingDays: TrainingDayType[],
     ageGroup: AgeGroupTag,
-    places: PlacesState,
+    places: PlacesData,
   ): FocusType[] => {
     type TrainingPossibility = TrainingDayType & {
       hasWeights: boolean;

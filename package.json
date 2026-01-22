@@ -1,5 +1,10 @@
 {
   "name": "sports-athletic",
   "private": true,
-  "packageManager": "pnpm@10.25.0"
+  "packageManager": "pnpm@10.25.0",
+  "pnpm": {
+    "overrides": {
+      "lodash": ">=4.17.23"
+    }
+  }
 }

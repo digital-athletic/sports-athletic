@@ -1319,7 +1319,7 @@ export default class PlanGenerator {
     ganzkoerperDirections,
     rumpfDirections,
     equipment: string[],
-    workout: ExerciseType[],
+    workout: ExerciseBranchType[],
     user: UserType,
     place: string,
     exercises: ExerciseType[],
@@ -1328,11 +1328,7 @@ export default class PlanGenerator {
     exerciseBranchData: BranchDataMapType,
     branchIdsInUse: string[],
     log: boolean = false,
-  ): {
-    tags: string[];
-    exercises: Record<string, { exerciseId: string }> | null;
-    exerciseBranchId: string;
-  }[] => {
+  ): ExerciseBranchType[] => {
     if (PlanGenerator.DEBUG || log) {
       console.log("GET BRANCHES FOR WORKOUT with");
       console.log("skill", skill);
@@ -1358,7 +1354,7 @@ export default class PlanGenerator {
 
     //filter branches
     if (PlanGenerator.DEBUG) console.log("full skillTree", fullSkillTree);
-    let skillTree = {};
+    let skillTree: SkillTreeType = {};
     skillTree = this.addToSkillTree(
       skillTree,
       fullSkillTree,
@@ -2585,18 +2581,18 @@ export default class PlanGenerator {
   };
 
   static addToSkillTree = (
-    skillTree,
-    additionalSkillTree,
-    workout,
-    userAge,
-    userGender,
-    userLevel,
-    equipment,
-    pains,
-    exerciseBranchData,
-    exercises,
-    branchIdsInUse,
-  ) => {
+    skillTree: SkillTreeType,
+    additionalSkillTree: SkillTreeType,
+    workout: ExerciseBranchType[],
+    userAge: string,
+    userGender: string,
+    userLevel: string,
+    equipment: string[],
+    pains: string[],
+    exerciseBranchData: BranchDataMapType,
+    exercises: ExerciseType[],
+    branchIdsInUse: string[],
+  ): SkillTreeType => {
     // DEV do not use exercises in goal, as long as all users act like goalkeepers
     const goalExercises = ["661", "662", "767", "768", "769"];
     for (let id in additionalSkillTree) {

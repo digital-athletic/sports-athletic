@@ -7,62 +7,6 @@ import type { PlacesState } from "@/store/placesStore";
 import PlanGenerator from "./PlanGenerator";
 
 describe("PlanGenerator", () => {
-  describe("addDays", () => {
-    it("should add days to a date within the same month", () => {
-      const date = new Date(2025, 0, 15); // Jan 15, 2025
-      const result = PlanGenerator.addDays(date, 10);
-      expect(result.getDate()).toBe(25);
-      expect(result.getMonth()).toBe(0);
-      expect(result.getFullYear()).toBe(2025);
-    });
-
-    it("should add days crossing into next month", () => {
-      const date = new Date(2025, 0, 25); // Jan 25, 2025
-      const result = PlanGenerator.addDays(date, 10);
-      expect(result.getDate()).toBe(4);
-      expect(result.getMonth()).toBe(1);
-      expect(result.getFullYear()).toBe(2025);
-    });
-
-    it("should add days crossing into next year", () => {
-      const date = new Date(2025, 11, 28); // Dec 28, 2025
-      const result = PlanGenerator.addDays(date, 10);
-      expect(result.getDate()).toBe(7);
-      expect(result.getMonth()).toBe(0);
-      expect(result.getFullYear()).toBe(2026);
-    });
-  });
-
-  describe("isLeapYear", () => {
-    it("should check if year is leap year", () => {
-      const year2024 = new Date(2024, 0, 1);
-      const year2023 = new Date(2023, 0, 1);
-
-      // Test the function returns a boolean
-      expect(typeof PlanGenerator.isLeapYear(year2024)).toBe("boolean");
-      expect(typeof PlanGenerator.isLeapYear(year2023)).toBe("boolean");
-    });
-  });
-
-  describe("getMonthLength", () => {
-    it("should return 31 for months with 31 days", () => {
-      expect(PlanGenerator.getMonthLength(new Date(2025, 0, 1))).toBe(31); // Jan
-      expect(PlanGenerator.getMonthLength(new Date(2025, 2, 1))).toBe(31); // Mar
-      expect(PlanGenerator.getMonthLength(new Date(2025, 11, 1))).toBe(31); // Dec
-    });
-
-    it("should return 30 for months with 30 days", () => {
-      expect(PlanGenerator.getMonthLength(new Date(2025, 3, 1))).toBe(30); // Apr
-      expect(PlanGenerator.getMonthLength(new Date(2025, 5, 1))).toBe(30); // Jun
-    });
-
-    it("should return length for February", () => {
-      const febLength = PlanGenerator.getMonthLength(new Date(2025, 1, 1));
-      expect(febLength).toBeGreaterThanOrEqual(28);
-      expect(febLength).toBeLessThanOrEqual(29);
-    });
-  });
-
   describe("indexByCounter", () => {
     it("should return 0 for negative counter", () => {
       expect(PlanGenerator.indexByCounter(-5)).toBe(0);

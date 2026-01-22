@@ -1,4 +1,10 @@
-import { dateToDDMMYYYY, dateToHHMM, DDMMYYYYToDate, HHMMToDate } from "./date";
+import {
+  dateToDDMMYYYY,
+  dateToHHMM,
+  DDMMYYYYToDate,
+  HHMMToDate,
+  addDays,
+} from "./date";
 
 describe("date utils", () => {
   describe("dateToDDMMYYYY", () => {
@@ -165,6 +171,42 @@ describe("date utils", () => {
 
       expect(convertedDate.getHours()).toBe(originalDate.getHours());
       expect(convertedDate.getMinutes()).toBe(originalDate.getMinutes());
+    });
+  });
+
+  describe("addDays", () => {
+    it("adds days within same month", () => {
+      const result = addDays(new Date(2025, 0, 15), 10);
+      expect(result.getDate()).toBe(25);
+      expect(result.getMonth()).toBe(0);
+      expect(result.getFullYear()).toBe(2025);
+    });
+
+    it("adds days crossing into next month", () => {
+      const result = addDays(new Date(2025, 0, 25), 10);
+      expect(result.getDate()).toBe(4);
+      expect(result.getMonth()).toBe(1);
+      expect(result.getFullYear()).toBe(2025);
+    });
+
+    it("adds days crossing into next year", () => {
+      const result = addDays(new Date(2025, 11, 28), 10);
+      expect(result.getDate()).toBe(7);
+      expect(result.getMonth()).toBe(0);
+      expect(result.getFullYear()).toBe(2026);
+    });
+
+    it("handles adding zero days", () => {
+      const result = addDays(new Date(2025, 5, 15), 0);
+      expect(result.getDate()).toBe(15);
+      expect(result.getMonth()).toBe(5);
+    });
+
+    it("does not mutate the original date", () => {
+      const original = new Date(2025, 0, 15);
+      const originalTime = original.getTime();
+      addDays(original, 10);
+      expect(original.getTime()).toBe(originalTime);
     });
   });
 });

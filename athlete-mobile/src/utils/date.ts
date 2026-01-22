@@ -77,3 +77,12 @@ export const HHMMToDate = (time: string): Date => {
   date.setHours(parseInt(splitTime[0], 10), parseInt(splitTime[1], 10));
   return date;
 };
+
+/**
+ * Returns a new Date advanced by the specified number of days
+ */
+export const addDays = (date: Date, days: number): Date => {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+};

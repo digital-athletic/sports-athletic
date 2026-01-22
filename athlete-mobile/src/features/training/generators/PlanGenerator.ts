@@ -66,7 +66,7 @@ import {
 } from "@/schemas/generator.schema";
 
 import { cloneWithValidation } from "@/utils/cloneWithValidation";
-import { dateToDDMMYYYY, DDMMYYYYToDate } from "@/utils/date";
+import { dateToDDMMYYYY, DDMMYYYYToDate, addDays } from "@/utils/date";
 import { getTagValues } from "@/utils/tagUtils";
 
 // Assets
@@ -1238,7 +1238,7 @@ export default class PlanGenerator {
     if (d.getDay() !== 1) {
       // is not monday
       let daysToAdd = (1 + 7 - d.getDay()) % 7;
-      d = this.addDays(d, daysToAdd);
+      d = addDays(d, daysToAdd);
     }
 
     let t = [];
@@ -1257,58 +1257,13 @@ export default class PlanGenerator {
         daysToAdd += array[sectionIndex].numOfWeeks * 7;
         sectionIndex--;
       }
-      startDate = this.addDays(startDate, daysToAdd);
+      startDate = addDays(startDate, daysToAdd);
       if (PlanGenerator.DEBUG)
         console.log("Start date section " + index + ": ", startDate);
 
       return { start: dateToDDMMYYYY(startDate), ...rest };
     });
     return x;
-  };
-
-  static isLeapYear = (d: Date) => {
-    const year = d.getFullYear();
-    return year / 4 === 0 && (year / 100 !== 1 || year / 400 === 0);
-  };
-
-  static getMonthLength = (d: Date) => {
-    switch (d.getMonth()) {
-      case 0:
-      case 2:
-      case 4:
-      case 6:
-      case 7:
-      case 9:
-      case 11:
-        return 31;
-      case 3:
-      case 5:
-      case 8:
-      case 10:
-        return 30;
-      case 1:
-        return this.isLeapYear(d) ? 29 : 28;
-      default:
-        return 30;
-    }
-  };
-
-  static addDays = (d: Date, daysToAdd: number) => {
-    let date = new Date(d.getTime());
-    let newDate = date.getDate() + daysToAdd;
-    while (newDate > this.getMonthLength(date)) {
-      // is in next month
-      newDate -= this.getMonthLength(date);
-      let newMonth = date.getMonth() + 1;
-      if (newMonth > 11) {
-        // is new year
-        newMonth = 0;
-        date.setFullYear(date.getFullYear() + 1);
-      }
-      date.setMonth(newMonth);
-    }
-    date.setDate(newDate);
-    return date;
   };
 
   static mapFallbackSections = (chosen, fallback, type: string) => {

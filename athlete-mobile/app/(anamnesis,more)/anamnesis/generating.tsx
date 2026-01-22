@@ -79,6 +79,10 @@ export default function Generating() {
       // Get fresh workoutData from store (not stale closure data)
       const freshWorkoutData = useUserWorkoutStore.getState().workoutData;
 
+      if (!userId) {
+        throw new Error("userId is required for plan generation");
+      }
+
       // Prepare data for PlanGenerator
       // Build user object matching legacy structure
       const user = {

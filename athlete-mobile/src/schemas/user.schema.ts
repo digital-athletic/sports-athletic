@@ -11,10 +11,14 @@ export const SeasonPhaseSchema = v.object({
   endDate: v.string(),
 });
 
+export type SeasonPhaseSchemaType = v.InferOutput<typeof SeasonPhaseSchema>;
+
 export const WorkoutDataSchema = v.looseObject({
   gender: v.optional(v.picklist(["MALE", "FEMALE"])),
   anamnesisCompleted: v.optional(v.boolean()),
   seasonPhase: v.optional(SeasonPhaseSchema),
+  birthday: v.optional(v.string()), // DD-MM-YYYY format
+  tags: v.optional(v.array(v.string())),
 });
 
 export const TemporalDataSchema = v.object({

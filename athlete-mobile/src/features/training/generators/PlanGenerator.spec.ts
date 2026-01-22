@@ -402,8 +402,9 @@ describe("PlanGenerator", () => {
             "POSITION_MIDFIELDER",
           ],
           seasonPhase: {
-            type: "COMPETITION",
+            type: SeasonPhase.COMPETITION,
             numOfWeeks: 8,
+            endDate: "01-03-2025",
           },
         },
       };
@@ -411,21 +412,21 @@ describe("PlanGenerator", () => {
       const exercisesList: any[] = [];
       const skillTrees: any = {};
       const exerciseBranchData: any = {};
-      const userTrainingDays = [
-        { active: true, weekday: 1, place: "home" },
-        { active: false, weekday: 2, place: "home" },
-        { active: true, weekday: 3, place: "home" },
-        { active: false, weekday: 4, place: "home" },
-        { active: true, weekday: 5, place: "home" },
-        { active: false, weekday: 6, place: "home" },
-        { active: false, weekday: 0, place: "home" },
+      const userTrainingDays: TrainingDayType[] = [
+        { active: true, weekday: 1, duration: 60, place: "HOME" },
+        { active: false, weekday: 2, duration: 60, place: "HOME" },
+        { active: true, weekday: 3, duration: 60, place: "HOME" },
+        { active: false, weekday: 4, duration: 60, place: "HOME" },
+        { active: true, weekday: 5, duration: 60, place: "HOME" },
+        { active: false, weekday: 6, duration: 60, place: "HOME" },
+        { active: false, weekday: 0, duration: 60, place: "HOME" },
       ];
       const places = {
-        home: {
-          name: "Home",
+        HOME: {
+          name: "HOME",
           equipment: ["WEIGHTS", "MAT"],
         },
-      };
+      } as PlacesState;
       const startDate = new Date(2025, 0, 6); // Monday, Jan 6, 2025
 
       const result = PlanGenerator.generatePlan(
@@ -455,8 +456,9 @@ describe("PlanGenerator", () => {
             "POSITION_FORWARD",
           ],
           seasonPhase: {
-            type: "PREPATORY",
+            type: SeasonPhase.PREPATORY,
             numOfWeeks: 6,
+            endDate: "15-02-2025",
           },
         },
       };
@@ -464,21 +466,21 @@ describe("PlanGenerator", () => {
       const exercisesList: any[] = [];
       const skillTrees: any = {};
       const exerciseBranchData: any = {};
-      const userTrainingDays = [
-        { active: false, weekday: 0, place: "field" },
-        { active: true, weekday: 1, place: "field" },
-        { active: false, weekday: 2, place: "field" },
-        { active: true, weekday: 3, place: "field" },
-        { active: false, weekday: 4, place: "field" },
-        { active: false, weekday: 5, place: "field" },
-        { active: false, weekday: 6, place: "field" },
+      const userTrainingDays: TrainingDayType[] = [
+        { active: false, weekday: 0, duration: 60, place: "OUTSIDE" },
+        { active: true, weekday: 1, duration: 60, place: "OUTSIDE" },
+        { active: false, weekday: 2, duration: 60, place: "OUTSIDE" },
+        { active: true, weekday: 3, duration: 60, place: "OUTSIDE" },
+        { active: false, weekday: 4, duration: 60, place: "OUTSIDE" },
+        { active: false, weekday: 5, duration: 60, place: "OUTSIDE" },
+        { active: false, weekday: 6, duration: 60, place: "OUTSIDE" },
       ];
       const places = {
-        field: {
-          name: "Field",
+        OUTSIDE: {
+          name: "OUTSIDE",
           equipment: ["MAT"],
         },
-      };
+      } as PlacesState;
       const startDate = new Date(2025, 0, 6);
 
       const result = PlanGenerator.generatePlan(
@@ -507,30 +509,62 @@ describe("PlanGenerator", () => {
             "PAIN_KNIE_LINKS",
           ],
           seasonPhase: {
-            type: "PAUSE",
+            type: SeasonPhase.PAUSE,
             numOfWeeks: 4,
+            endDate: "03-02-2025",
           },
         },
       };
 
       const exercisesList: any[] = [];
-      const skillTrees: any = {};
+      const mockBranch = {
+        tags: ["PREVENTION_KNEE"],
+        levels: { "1": { id: "exercise-1" } },
+      };
+      const mockSkillTree = { "mock-branch": mockBranch };
+      const skillTrees: Record<
+        string,
+        Record<
+          string,
+          { tags: string[]; levels: Record<string, { id: string }> }
+        >
+      > = {
+        PREV: mockSkillTree,
+        PREVKG: mockSkillTree,
+        WUSPEZIAL: mockSkillTree,
+        GKS: mockSkillTree,
+        GKSKG: mockSkillTree,
+        SA: mockSkillTree,
+        SAKG: mockSkillTree,
+        SK: mockSkillTree,
+        SKKG: mockSkillTree,
+        SWR1: mockSkillTree,
+        SWR1KG: mockSkillTree,
+        SWR2: mockSkillTree,
+        SWR2KG: mockSkillTree,
+        MOB: mockSkillTree,
+        BAS: mockSkillTree,
+        CD: mockSkillTree,
+        BR: mockSkillTree,
+        MAX: mockSkillTree,
+        PLYO: mockSkillTree,
+      };
       const exerciseBranchData: any = {};
-      const userTrainingDays = [
-        { active: false, weekday: 0, place: "gym" },
-        { active: false, weekday: 1, place: "gym" },
-        { active: true, weekday: 2, place: "gym" },
-        { active: false, weekday: 3, place: "gym" },
-        { active: true, weekday: 4, place: "gym" },
-        { active: false, weekday: 5, place: "gym" },
-        { active: false, weekday: 6, place: "gym" },
+      const userTrainingDays: TrainingDayType[] = [
+        { active: false, weekday: 0, duration: 60, place: "STUDIO" },
+        { active: false, weekday: 1, duration: 60, place: "STUDIO" },
+        { active: true, weekday: 2, duration: 60, place: "STUDIO" },
+        { active: false, weekday: 3, duration: 60, place: "STUDIO" },
+        { active: true, weekday: 4, duration: 60, place: "STUDIO" },
+        { active: false, weekday: 5, duration: 60, place: "STUDIO" },
+        { active: false, weekday: 6, duration: 60, place: "STUDIO" },
       ];
       const places = {
-        gym: {
-          name: "Gym",
-          equipment: ["WEIGHTS", "MAT", "BANDS"],
+        STUDIO: {
+          name: "STUDIO",
+          equipment: ["DUMBBELL", "MAT", "BANDS"],
         },
-      };
+      } as PlacesState;
       const startDate = new Date(2025, 0, 6);
 
       const result = PlanGenerator.generatePlan(

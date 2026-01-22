@@ -69,3 +69,10 @@ export const SeasonPhaseEnumSchema = v.picklist([
   "COMPETITION",
 ]);
 export type SeasonPhaseEnumType = v.InferOutput<typeof SeasonPhaseEnumSchema>;
+
+export const LevelTagSchema = v.picklist([
+  "BEGINNER",
+  "ADVANCED",
+  "PROFESSIONAL",
+]);
+export type LevelTagSchemaType = v.InferOutput<typeof LevelTagSchema>;

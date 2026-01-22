@@ -22,7 +22,7 @@ export function useUpdateTrainingPlan() {
   const { workoutData, trainingPlan, setTrainingPlan } = useUserWorkoutStore();
 
   const updateTrainingPlan = useCallback(() => {
-    if (!trainingPlan) {
+    if (!trainingPlan || !userId) {
       return;
     }
 

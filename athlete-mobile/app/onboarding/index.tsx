@@ -103,7 +103,7 @@ export default function OnboardingScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const { setAuth } = useAuthStore();
-  const { setIsInInitialAnamnesis } = useUserProfileStore();
+  const { setUserId, setIsInInitialAnamnesis } = useUserProfileStore();
 
   const handleLogin = async () => {
     dispatch({ type: "SET_PROCESSING", payload: true });
@@ -112,6 +112,7 @@ export default function OnboardingScreen() {
     try {
       const auth = await signInWithEmail(state.email, state.password);
       setAuth(auth);
+      setUserId(auth.userId);
       router.replace("/(tabs)/(home)");
     } catch (error: any) {
       let title = t("onboarding.errorTitleWrongOrNoPassword");
@@ -176,7 +177,9 @@ export default function OnboardingScreen() {
         state.acceptedAnalytics,
       );
 
-      await signInWithEmail(state.email, state.password);
+      const auth = await signInWithEmail(state.email, state.password);
+      setAuth(auth);
+      setUserId(auth.userId);
 
       setIsInInitialAnamnesis(true);
 

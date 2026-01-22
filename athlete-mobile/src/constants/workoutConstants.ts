@@ -1,4 +1,5 @@
 import { I18nKey } from "@/i18n";
+import { type LevelTagSchemaType } from "@/schemas/common.schema";
 import { Route } from "expo-router";
 import { ImageSourcePropType } from "react-native";
 import { SharedConstants } from "./sharedConstants";
@@ -20,7 +21,7 @@ const LEVELS = {
   PROFESSIONAL: "PROFESSIONAL",
 } as const;
 
-export type LevelTag = (typeof LEVELS)[keyof typeof LEVELS];
+export type LevelTag = LevelTagSchemaType;
 
 export const isLevelTag = (value: unknown): value is LevelTag =>
   typeof value === "string" && value in LEVELS;

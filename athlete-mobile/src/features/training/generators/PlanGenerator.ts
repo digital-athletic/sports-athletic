@@ -7,7 +7,6 @@ import {
   type PlaceType,
   type SectionTypes,
 } from "@/constants/workoutConstants";
-import { type UserType } from "@/schemas/user.schema";
 import { type ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
 import { type SeasonPhaseType } from "@/features/training/models/SeasonPhase";
 import { type TrainingDayType } from "@/features/training/models/TrainingDay";
@@ -15,8 +14,9 @@ import { type TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { type TrainingSectionType } from "@/features/training/models/TrainingSection";
 import { type ExerciseType } from "@/schemas/exercise.schema";
 import { type SkillTreeType } from "@/schemas/skillTree.schema";
+import { type UserType } from "@/schemas/user.schema";
 import { type BranchDataMapType } from "@/store/exerciseProgressStore";
-import { type PlacesState } from "@/store/placesStore";
+import { type PlaceEquipment, type PlacesState } from "@/store/placesStore";
 
 // Utility functions
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
@@ -134,18 +134,22 @@ export default class PlanGenerator {
   static DEBUG = false;
 
   static generatePlan = (
-    user,
-    exercisesList,
-    skillTrees,
-    exerciseBranchData,
-    userTrainingDays,
-    places,
-    startDate,
-  ) => {
+    user: UserType,
+    exercisesList: ExerciseType[],
+    skillTrees: Record<string, SkillTreeType>,
+    exerciseBranchData: BranchDataMapType,
+    userTrainingDays: TrainingDayType[],
+    places: PlacesState,
+    startDate: Date,
+  ): TrainingPlanType => {
     if (PlanGenerator.DEBUG) console.log("GENERATE for user: ", user);
     // initialize relevant user workout data
     const workoutData = user.workoutData;
-    const dateOfBirth = workoutData.birthday;
+    if (!workoutData) {
+      throw new Error("workoutData is required for plan generation");
+    }
+    // birthday may be undefined - ageGroupFor handles this by defaulting to current date (adult)
+    const dateOfBirth = workoutData.birthday ?? "";
     let ageGroup = ageGroupFor(dateOfBirth);
     if (PlanGenerator.DEBUG) console.log("AgeGroup: ", ageGroup);
     let level = getUserLevel(user);
@@ -157,11 +161,15 @@ export default class PlanGenerator {
       level = WorkoutConstants.LEVELS.ADVANCED;
     }
     if (PlanGenerator.DEBUG) console.log("Level: ", level);
-    const position = getTagValues(workoutData.tags, TagGroups.POSITION)[0]; // there should always be just one POSITION tag
+    const tags = workoutData.tags ?? [];
+    const position = getTagValues(tags, TagGroups.POSITION)[0]; // there should always be just one POSITION tag
     if (PlanGenerator.DEBUG) console.log("Position: ", position);
     const seasonPhase = workoutData.seasonPhase;
+    if (!seasonPhase) {
+      throw new Error("seasonPhase is required for plan generation");
+    }
     if (PlanGenerator.DEBUG) console.log("SeasonPhase: ", seasonPhase);
-    const pains: string[] = getTagValues(workoutData.tags, TagGroups.PAIN);
+    const pains: string[] = getTagValues(tags, TagGroups.PAIN);
 
     let hasPain: boolean = pains.length > 0 ? true : false;
 
@@ -175,7 +183,7 @@ export default class PlanGenerator {
     for (let index = 0; index < userTrainingDays.length; index++) {
       let entry: TrainingDayType = Object.assign({}, userTrainingDays[index]);
       if (entry.active) {
-        let place: PlaceType = places[entry.place];
+        const place: PlaceEquipment | undefined = places[entry.place];
         if (place && !hasWeightsAvailable)
           hasWeightsAvailable = hasWeights(place.equipment);
         entry.weekday = index;

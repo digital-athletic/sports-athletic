@@ -1,6 +1,6 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { XP_PER_MINUTE } from "@/constants/userProgressConstants";
-import { WorkoutConstants } from "@/constants/workoutConstants";
+import { type LevelTag, WorkoutConstants } from "@/constants/workoutConstants";
 import type { UserType } from "@/schemas/user.schema";
 import {
   type TrainingLevelType,
@@ -41,16 +41,13 @@ import { filterByEquipment } from "./equipmentUtils";
  * @param user - The user object containing workout data
  * @returns The user's training level or BEGINNER as a fallback
  */
-export const getUserLevel = (user: UserType): string => {
+export const getUserLevel = (user: UserType): LevelTag => {
   if (!user?.workoutData?.tags) {
     return WorkoutConstants.LEVELS.BEGINNER;
   }
 
-  const levelTags = getTagValues(
-    user.workoutData.tags as string[],
-    TagGroups.LEVEL,
-  );
-  return levelTags[0] ?? WorkoutConstants.LEVELS.BEGINNER;
+  const levelTags = getTagValues(user.workoutData.tags, TagGroups.LEVEL);
+  return (levelTags[0] as LevelTag) ?? WorkoutConstants.LEVELS.BEGINNER;
 };
 
 export const getMaxValueForExercise = (

@@ -1,4 +1,4 @@
-import type { UserType } from "@/features/profile/models/User";
+import type { UserType } from "@/schemas/user.schema";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { SetListEntryType } from "@/features/training/models/SetListEntry";
 import type { ExerciseType } from "@/schemas/exercise.schema";
@@ -1125,7 +1125,7 @@ describe("TrainingGenerator", () => {
           verticalPush: { barbell: 60 },
         } as Record<string, unknown>,
       },
-      temporalData: [] as { tag: string }[],
+      temporalData: [] as { date: Date; expiration: Date; tag: string }[],
       trainingPlan: null,
     };
 

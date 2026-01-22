@@ -1,7 +1,7 @@
 //@ts-nocheck
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
-import type { UserType } from "@/features/profile/models/User";
+import type { UserType } from "@/schemas/user.schema";
 import type {
   BranchExerciseReference,
   BranchSelectionResult,

@@ -10,8 +10,7 @@ import {
   SectionTypes,
 } from "@/constants/workoutConstants";
 import { PlaceSelection } from "@/features/equipment/PlaceSelection";
-import { type UserType } from "@/features/profile/models/User";
-import { parseUserType } from "@/schemas/user.schema";
+import { type UserType, parseUserType } from "@/schemas/user.schema";
 import { isGeneratorError } from "@/features/training/generators/GeneratorError";
 import { buildGeneratorErrorMessage } from "@/features/training/generators/generatorErrorUtils";
 import TrainingGenerator from "@/features/training/generators/TrainingGenerator";

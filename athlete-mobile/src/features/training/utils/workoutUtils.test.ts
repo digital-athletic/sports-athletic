@@ -1,5 +1,5 @@
 import { WorkoutConstants } from "@/constants/workoutConstants";
-import type { UserType } from "@/features/profile/models/User";
+import type { UserType } from "@/schemas/user.schema";
 import { DEFAULT_MAX_VALUES } from "../models/MaxValues";
 import { applyMaxValueToDirections, getUserLevel } from "./workoutUtils";
 

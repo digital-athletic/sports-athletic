@@ -36,21 +36,47 @@ export const TrainingPlanSchema = v.object({
   sections: v.array(TrainingSectionSchema),
 });
 
+export const ReviewStatusSchema = v.object({
+  hasGivenReview: v.boolean(),
+  reviewDate: v.number(),
+  reviewYears: v.number(),
+  reviewSkips: v.number(),
+});
+
+export const UserSettingsSchema = v.object({
+  anonymisedDataUse: v.boolean(),
+  reviewStatus: ReviewStatusSchema,
+});
+
+export const StatisticsTotalsSchema = v.object({
+  reps: v.number(),
+  weight: v.number(),
+  time: v.number(),
+});
+
+export const UserStatisticsSchema = v.object({
+  totals: StatisticsTotalsSchema,
+  lastWeek: StatisticsTotalsSchema,
+});
+
 export const UserTypeSchema = v.looseObject({
   userId: v.string(),
   isInInitialAnamnesis: v.optional(v.boolean()),
   workoutData: v.optional(WorkoutDataSchema),
   temporalData: v.optional(v.array(TemporalDataSchema)),
   trainingPlan: v.optional(v.union([TrainingPlanSchema, v.null()])),
+  settings: v.optional(UserSettingsSchema),
+  statistics: v.optional(UserStatisticsSchema),
+  teamId: v.optional(v.string()),
 });
 
-export type UserTypeValidated = v.InferOutput<typeof UserTypeSchema>;
+export type UserType = v.InferOutput<typeof UserTypeSchema>;
+export type UserSettingsType = v.InferOutput<typeof UserSettingsSchema>;
+export type UserStatisticsType = v.InferOutput<typeof UserStatisticsSchema>;
 
 export const parseUserType = (
   data: unknown,
-):
-  | { success: true; data: UserTypeValidated }
-  | { success: false; error: string } => {
+): { success: true; data: UserType } | { success: false; error: string } => {
   const result = v.safeParse(UserTypeSchema, data);
   if (result.success) {
     return { success: true, data: result.output };

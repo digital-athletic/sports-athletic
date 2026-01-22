@@ -7,7 +7,7 @@ import {
   type PlaceType,
   type SectionTypes,
 } from "@/constants/workoutConstants";
-import { type UserType } from "@/features/profile/models/User";
+import { type UserType } from "@/schemas/user.schema";
 import { type ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
 import { type SeasonPhaseType } from "@/features/training/models/SeasonPhase";
 import { type TrainingDayType } from "@/features/training/models/TrainingDay";

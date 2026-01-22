@@ -1,7 +1,7 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { XP_PER_MINUTE } from "@/constants/userProgressConstants";
 import { WorkoutConstants } from "@/constants/workoutConstants";
-import type { UserType } from "@/features/profile/models/User";
+import type { UserType } from "@/schemas/user.schema";
 import {
   type TrainingLevelType,
   type TrainingParameterType,

@@ -126,6 +126,14 @@ export const ExerciseLevelsSchema = v.record(
 );
 export type ExerciseLevels = v.InferOutput<typeof ExerciseLevelsSchema>;
 
+// SkillBranch with ID schema (for possibleBranches validation in plan generator)
+export const SkillBranchWithIdSchema = v.object({
+  exerciseBranchId: v.string(),
+  tags: v.array(v.string()),
+  levels: v.record(v.string(), v.object({ id: v.string() })),
+});
+export type SkillBranchWithId = v.InferOutput<typeof SkillBranchWithIdSchema>;
+
 // Set list entry schema (for warmup sets)
 export const SetListEntrySchema = v.looseObject({
   branchId: v.optional(v.string()),

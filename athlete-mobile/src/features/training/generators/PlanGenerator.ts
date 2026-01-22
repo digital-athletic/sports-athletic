@@ -1,4 +1,3 @@
-//@ts-nocheck
 import { TagGroups } from "@/constants/tagGroups";
 import {
   WorkoutConstants,
@@ -49,19 +48,21 @@ import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import {
   DirectionsMapSchema,
   ExerciseBranchArraySchema,
-  ExerciseBranchEntrySchema,
   FallbackSectionSchema,
   PlanStructureSchema,
+  SkillBranchWithIdSchema,
   SkillPrioritiesSchema,
   SkillsMapSchema,
   TrainingSectionsMapSchema,
-  WorkoutArraySchema,
+  type DirectionEntry,
   type DirectionsMap,
   type DurationTagMap,
   type FallbackSection,
   type PlanStructure,
   type RegionConfig,
+  type RegionTagEntry,
   type SectionEntry,
+  type SkillBranchWithId,
   type StudioPreferencePlans,
   type TrainingSectionsMap,
 } from "@/schemas/generator.schema";
@@ -379,10 +380,7 @@ export default class PlanGenerator {
           (a, b) => +a - +b,
         );
         let prevDurationKey: number | null = null;
-        const tagsPerSkill: Record<
-          string,
-          { tags: string[]; count: number }[]
-        > = {};
+        const tagsPerSkill: Record<string, readonly RegionTagEntry[]> = {};
         let timePerSkill: Record<string, number> = {};
 
         if (PlanGenerator.DEBUG) {
@@ -641,10 +639,10 @@ export default class PlanGenerator {
             if (PlanGenerator.DEBUG) {
               console.log(
                 "use tags for skill " + skill + " and time " + keyToUse,
-                tagObj[keyToUse],
+                tagObj[Number(keyToUse)],
               );
             }
-            tagsPerSkill[skill] = tagObj[keyToUse];
+            tagsPerSkill[skill] = tagObj[Number(keyToUse)];
           }
         }
 
@@ -1359,7 +1357,7 @@ export default class PlanGenerator {
 
   static getBranchesForWorkout = (
     skill: string,
-    weightedTag: { tags: string[]; count: number },
+    weightedTag: RegionTagEntry,
     oberkoerperDirections: DirectionsMap,
     unterkoerperDirections: DirectionsMap,
     ganzkoerperDirections: DirectionsMap,
@@ -1389,10 +1387,10 @@ export default class PlanGenerator {
       prevSkills,
       HAS_WEIGHTS,
     );
-    const userAge = ageGroupFor(user.workoutData.birthday);
+    const userAge = ageGroupFor(user.workoutData?.birthday ?? "");
     const userLevel = getUserLevel(user);
     const pains = getBlocksFromPains(
-      getTagValues(user.workoutData.tags, TagGroups.PAIN),
+      getTagValues(user.workoutData?.tags ?? [], TagGroups.PAIN),
     );
     if (PlanGenerator.DEBUG && pains.length > 0) {
       console.log("filter pains ", pains);
@@ -1406,7 +1404,7 @@ export default class PlanGenerator {
       fullSkillTree,
       workout,
       userAge,
-      user.workoutData.gender,
+      user.workoutData?.gender ?? "MALE",
       userLevel,
       equipment,
       pains,
@@ -1434,7 +1432,7 @@ export default class PlanGenerator {
         secondSkillTree,
         workout,
         userAge,
-        user.workoutData.gender,
+        user.workoutData?.gender ?? "MALE",
         userLevel,
         equipment,
         pains,
@@ -1462,8 +1460,8 @@ export default class PlanGenerator {
     const exNameTags = getTagValues(weightedTag.tags, TagGroups.EXERCISENAME);
 
     // init selection
-    let bigMuscles = [];
-    let exerciseDirection = [];
+    let bigMuscles: string[] = [];
+    let exerciseDirection: DirectionEntry[] = [];
     let regionTag = null;
     const length = weightedTag.count;
 
@@ -1472,12 +1470,15 @@ export default class PlanGenerator {
       if (PlanGenerator.DEBUG || log) console.log("regionTags", regionTags);
       // if multiple take one
       regionTag = regionTags[Math.floor(Math.random() * regionTags.length)];
-      const getDirectionsByLength = (dir, len) => {
+      const getDirectionsByLength = (
+        dir: DirectionsMap,
+        len: number,
+      ): DirectionEntry[] => {
         if (len === 0) return [];
         if (dir.hasOwnProperty(len)) {
           return dir[len];
         }
-        const lastKey = Math.max(...Object.keys(dir));
+        const lastKey = Math.max(...Object.keys(dir).map(Number));
         return dir[lastKey];
       };
       if (regionTag === "OBERKOERPER") {
@@ -1514,7 +1515,7 @@ export default class PlanGenerator {
         exerciseDirection = [];
         // set default entries
         for (let i = 0; i < length; i++) {
-          exerciseDirection.push({ tags: null, count: 1 });
+          exerciseDirection.push({ direction: null, side: "BOTH" });
         }
       }
       if (PlanGenerator.DEBUG)
@@ -1630,8 +1631,8 @@ export default class PlanGenerator {
       }
       return {
         exerciseBranchId: "-1",
-        tags: [],
-        levels: [],
+        tags: [] as string[],
+        levels: {} as Record<string, { id: string }>,
       };
     });
     if (PlanGenerator.DEBUG || log)
@@ -1668,7 +1669,7 @@ export default class PlanGenerator {
     // setup for choosing
     let weightExercisesToUse = Math.ceil(weightPercentage * numOfBranchesToUse);
     let kgExercisesToUse = numOfBranchesToUse - weightExercisesToUse;
-    let nextType = "kg";
+    let nextType: "kg" | "weight" = "kg";
 
     // add by tags for count times
     for (let k = 0; k < numOfBranchesToUse; k++) {
@@ -1701,7 +1702,7 @@ export default class PlanGenerator {
         console.log("START FILTERING WITH", possibleBranches);
       }
 
-      let directionFiltered = [];
+      let directionFiltered: typeof possibleBranches = [];
       let directionFound;
       if (PlanGenerator.DEBUG) {
         console.log(
@@ -1714,15 +1715,13 @@ export default class PlanGenerator {
       let directionIndex = 0;
       for (; directionIndex < exerciseDirection.length; directionIndex++) {
         directionFiltered = possibleBranches.filter((possEx) => {
-          let dirs = getTagValues(possEx.tags, "EXERCISEDIRECTION");
-          let sides = getTagValues(possEx.tags, "SIDE");
+          const dirs = getTagValues(possEx.tags, "EXERCISEDIRECTION");
+          const sides = getTagValues(possEx.tags, "SIDE");
+          const direction = exerciseDirection[directionIndex]["direction"];
+          const side = exerciseDirection[directionIndex]["side"];
           return (
-            (exerciseDirection[directionIndex]["direction"]
-              ? dirs.includes(exerciseDirection[directionIndex]["direction"])
-              : true) &&
-            (exerciseDirection[directionIndex]["side"]
-              ? sides.includes(exerciseDirection[directionIndex]["side"])
-              : true)
+            (direction ? dirs.includes(direction) : true) &&
+            (side ? sides.includes(side) : true)
           );
         });
         if (directionFiltered.length > 0) {
@@ -1750,7 +1749,7 @@ export default class PlanGenerator {
         console.log("DIRECTION FILTERED", directionFiltered.length);
       }
 
-      let sideFiltered = [];
+      let sideFiltered: typeof possibleBranches = [];
       if (k === numOfBranchesToUse - 1) {
         // is last exercise, do not use one sided exercises
         sideFiltered = directionFiltered.filter((branch) => {
@@ -1811,7 +1810,7 @@ export default class PlanGenerator {
       }
 
       // prefer complex exercises only for non core regions
-      let involvementFiltered = [];
+      let involvementFiltered: typeof possibleBranches = [];
       if (regionTag !== "RUMPF" && regionTag !== "CORE") {
         // use complex with 70%, isolated with 30%
         let involvementToUse = Math.random() > 0.3 ? "COMPLEX" : "ISOLATED";
@@ -1835,7 +1834,7 @@ export default class PlanGenerator {
         involvementFiltered = muscleFiltered;
       }
 
-      let equipmentFiltered = [];
+      let equipmentFiltered: typeof possibleBranches = [];
       if (skill.indexOf("MAX") > -1) {
         // prefer LH before KH
         equipmentFiltered = involvementFiltered.filter((possEx) =>
@@ -1850,7 +1849,7 @@ export default class PlanGenerator {
       }
 
       // filter by type for weight/kg distribution only if not MAX
-      let nextTypeFiltered = [];
+      let nextTypeFiltered: typeof possibleBranches = [];
       if (skill.indexOf("MAX") === -1) {
         nextTypeFiltered = getNextTypeFiltered(nextType, involvementFiltered);
         if (nextTypeFiltered.length < 1) {
@@ -1870,7 +1869,7 @@ export default class PlanGenerator {
       }
 
       let remainingPossibilities = equipmentFiltered;
-      let exerciseBranch = null;
+      let exerciseBranch: SkillBranchWithId | null = null;
 
       if (remainingPossibilities.length > 0) {
         // take randomly chosen entry of remainingPossibilities out of possibleExercises
@@ -1884,7 +1883,7 @@ export default class PlanGenerator {
             ),
             1,
           )[0],
-          ExerciseBranchEntrySchema,
+          SkillBranchWithIdSchema,
           "exerciseBranch",
         );
       } else {
@@ -1894,7 +1893,7 @@ export default class PlanGenerator {
             Math.floor(Math.random() * possibleBranches.length),
             1,
           )[0],
-          ExerciseBranchEntrySchema,
+          SkillBranchWithIdSchema,
           "exerciseBranch",
         );
       }
@@ -1949,14 +1948,16 @@ export default class PlanGenerator {
           // if not a single side used prev exercise => reduce exercise number by one
           if (skill.indexOf("PREV") === -1) k++;
         }
-        let { levels, ...rest } = exerciseBranch;
-        for (let levelKey in levels) {
+        const { levels, ...rest } = exerciseBranch;
+        const exercisesMap: { [level: number]: { exerciseId: string } } = {};
+        for (const levelKey in levels) {
           const level = Number(levelKey);
-          levels[level] = { exerciseId: levels[level].id };
+          const levelData = levels[levelKey];
+          exercisesMap[level] = { exerciseId: levelData.id };
         }
         branches.push({
           tags: rest.tags,
-          exercises: levels,
+          exercises: exercisesMap,
           exerciseBranchId: rest.exerciseBranchId,
         });
       }
@@ -1974,7 +1975,7 @@ export default class PlanGenerator {
    */
   static chooseByTags = (
     skill: string,
-    weightedTags: { tags: string[]; count: number }[],
+    weightedTags: readonly RegionTagEntry[],
     oberkoerperDirections: DirectionsMap,
     unterkoerperDirections: DirectionsMap,
     ganzkoerperDirections: DirectionsMap,
@@ -1995,7 +1996,7 @@ export default class PlanGenerator {
     for (let i: number = 0; i < weightedTags.length; i++) {
       const currentWorkout: ExerciseBranchType[] = cloneWithValidation(
         workout,
-        WorkoutArraySchema,
+        ExerciseBranchArraySchema,
         "workout",
       );
       const branches: ExerciseBranchType[] = this.getBranchesForWorkout(

@@ -18,7 +18,10 @@
  * const age = getTagValues(tags, "AGE");     // ["ADULT"]
  * ```
  */
-export function getTagValues(tags: string[], tagGroup: string): string[] {
+export function getTagValues(
+  tags: readonly string[],
+  tagGroup: string,
+): string[] {
   if (!tags || !Array.isArray(tags)) {
     return [];
   }
@@ -44,7 +47,7 @@ export function getTagValues(tags: string[], tagGroup: string): string[] {
  * ```
  */
 export function getTagValue(
-  tags: string[],
+  tags: readonly string[],
   tagGroup: string,
 ): string | undefined {
   const values = getTagValues(tags, tagGroup);

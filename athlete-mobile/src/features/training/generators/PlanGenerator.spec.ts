@@ -1,4 +1,9 @@
 import { WorkoutConstants } from "@/constants/workoutConstants";
+import type { SeasonPhaseType } from "@/features/training/models/SeasonPhase";
+import { SeasonPhase } from "@/features/training/models/SeasonPhase";
+import type { TrainingDayType } from "@/features/training/models/TrainingDay";
+import type { TrainingSectionType } from "@/features/training/models/TrainingSection";
+import type { PlacesState } from "@/store/placesStore";
 import PlanGenerator from "./PlanGenerator";
 
 describe("PlanGenerator", () => {
@@ -541,6 +546,242 @@ describe("PlanGenerator", () => {
       expect(result).toBeDefined();
       expect(result.sections).toBeDefined();
       expect(Array.isArray(result.sections)).toBe(true);
+    });
+  });
+
+  describe("createSection", () => {
+    const mockPlaces: PlacesState = {
+      HOME: { name: "HOME", equipment: ["DUMBBELL", "BLACK_ROLL"] },
+      STUDIO: { name: "STUDIO", equipment: ["BARBELL", "BENCH"] },
+      HALL: { name: "HALL", equipment: [] },
+      OUTSIDE: { name: "OUTSIDE", equipment: ["TRACK_20"] },
+    };
+
+    const mockSeasonPhase: SeasonPhaseType = {
+      type: SeasonPhase.PREPATORY,
+      numOfWeeks: 4,
+      endDate: "01-03-2026",
+    };
+
+    const mockUser = {
+      userId: "test-user",
+      workoutData: {
+        tags: ["LEVEL_BEGINNER", "POSITION_FIELD"],
+        birthday: "01-01-1990",
+      },
+    };
+
+    const createMockSection = (
+      type: "SWR1" | "SK" | "SA" = "SWR1",
+    ): TrainingSectionType => ({
+      start: "01-01-2026",
+      numOfWeeks: 4,
+      type,
+      cardioType: "ZONE_1",
+      trainings: [],
+    });
+
+    const createMockTrainingDays = (
+      activeDays: number[] = [0, 2, 4],
+    ): TrainingDayType[] => {
+      return Array.from({ length: 7 }, (_, i) => ({
+        active: activeDays.includes(i),
+        weekday: i,
+        duration: 60,
+        place: "HOME" as const,
+      }));
+    };
+
+    it("returns a section with trainings matching active days", () => {
+      const section = createMockSection();
+      const trainingDays = createMockTrainingDays([0, 2]);
+
+      const result = PlanGenerator.createSection(
+        section,
+        trainingDays,
+        mockPlaces,
+        mockSeasonPhase,
+        mockUser,
+        false,
+        "ADULT",
+        "BEGINNER",
+        [],
+        [],
+        {},
+        {},
+      );
+
+      expect(result.trainings).toHaveLength(2);
+      expect(result.type).toBe("SWR1");
+    });
+
+    it("preserves weekday info in generated trainings", () => {
+      const section = createMockSection();
+      const trainingDays = createMockTrainingDays([1, 4]);
+
+      const result = PlanGenerator.createSection(
+        section,
+        trainingDays,
+        mockPlaces,
+        mockSeasonPhase,
+        mockUser,
+        false,
+        "ADULT",
+        "BEGINNER",
+        [],
+        [],
+        {},
+        {},
+      );
+
+      const weekdays = result.trainings.map((t) => t.weekday);
+      expect(weekdays).toContain(1);
+      expect(weekdays).toContain(4);
+    });
+
+    it("returns empty trainings when no active days", () => {
+      const result = PlanGenerator.createSection(
+        createMockSection(),
+        createMockTrainingDays([]),
+        mockPlaces,
+        mockSeasonPhase,
+        mockUser,
+        false,
+        "ADULT",
+        "BEGINNER",
+        [],
+        [],
+        {},
+        {},
+      );
+
+      expect(result.trainings).toHaveLength(0);
+    });
+
+    it("assigns focus and time lengths to each training", () => {
+      const section = createMockSection();
+      const trainingDays = createMockTrainingDays([0]);
+
+      const result = PlanGenerator.createSection(
+        section,
+        trainingDays,
+        mockPlaces,
+        mockSeasonPhase,
+        mockUser,
+        false,
+        "ADULT",
+        "BEGINNER",
+        [],
+        [],
+        {},
+        {},
+      );
+
+      const training = result.trainings[0];
+      expect(training).toMatchObject({
+        weekday: 0,
+        focus: expect.stringMatching(/^(PHASE|CARDIO|STABILITY|COMBINED)$/),
+      });
+      expect(
+        Object.values(training.lengths).every(
+          (v) => typeof v === "number" && v > 0,
+        ),
+      ).toBe(true);
+    });
+  });
+
+  /**
+   * Selects exercise branches for a skill based on weighted tags.
+   * Accumulates branches from getBranchesForWorkout for each tag group.
+   */
+  describe("chooseByTags", () => {
+    const emptyDirections = {};
+    const mockUser = {
+      userId: "test-user",
+      workoutData: { birthday: "01-01-1990", tags: [] },
+    };
+
+    it("returns empty array when weightedTags is empty", () => {
+      const result = PlanGenerator.chooseByTags(
+        "SWR1",
+        [],
+        emptyDirections,
+        emptyDirections,
+        emptyDirections,
+        emptyDirections,
+        [],
+        mockUser,
+        "HOME",
+        [],
+        {},
+        [],
+        {},
+        [],
+      );
+
+      expect(result).toEqual([]);
+    });
+
+    it("returns array (empty when no matching branches found)", () => {
+      const result = PlanGenerator.chooseByTags(
+        "SWR1",
+        [{ tags: ["UPPER_BODY"], count: 1 }],
+        emptyDirections,
+        emptyDirections,
+        emptyDirections,
+        emptyDirections,
+        [],
+        mockUser,
+        "HOME",
+        [],
+        {},
+        [],
+        {},
+        [],
+      );
+
+      expect(Array.isArray(result)).toBe(true);
+      expect(result).toHaveLength(0);
+    });
+
+    it("accumulates branches from multiple weighted tag groups", () => {
+      const mockBranch = {
+        exerciseBranchId: "branch-1",
+        tags: ["UPPER_BODY"],
+        exercises: { 1: { exerciseId: "ex1" } },
+      };
+
+      const spy = jest
+        .spyOn(PlanGenerator, "getBranchesForWorkout")
+        .mockReturnValue([mockBranch]);
+
+      const result = PlanGenerator.chooseByTags(
+        "SWR1",
+        [
+          { tags: ["UPPER_BODY"], count: 1 },
+          { tags: ["LOWER_BODY"], count: 1 },
+        ],
+        emptyDirections,
+        emptyDirections,
+        emptyDirections,
+        emptyDirections,
+        [],
+        mockUser,
+        "HOME",
+        [],
+        {},
+        [],
+        {},
+        [],
+      );
+
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject({
+        exerciseBranchId: "branch-1",
+        tags: ["UPPER_BODY"],
+      });
+
+      spy.mockRestore();
     });
   });
 });

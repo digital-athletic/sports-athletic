@@ -2,6 +2,8 @@
 import { TagGroups } from "@/constants/tagGroups";
 import {
   WorkoutConstants,
+  type AgeGroupTag,
+  type LevelTag,
   type PlaceType,
   type SectionTypes,
 } from "@/constants/workoutConstants";
@@ -14,6 +16,7 @@ import { type TrainingSectionType } from "@/features/training/models/TrainingSec
 import { type ExerciseType } from "@/schemas/exercise.schema";
 import { type SkillTreeType } from "@/schemas/skillTree.schema";
 import { type BranchDataMapType } from "@/store/exerciseProgressStore";
+import { type PlacesState } from "@/store/placesStore";
 
 // Utility functions
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
@@ -33,11 +36,9 @@ import {
   getUserExerciseFromBranch,
 } from "@/features/training/utils/skillTreeUtils";
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
-import { dateToDDMMYYYY, DDMMYYYYToDate } from "@/utils/date";
-import { getTagValues } from "@/utils/tagUtils";
 import {
-  type DirectionsMap,
   DirectionsMapSchema,
+  ExerciseBranchArraySchema,
   ExerciseBranchEntrySchema,
   FallbackSectionSchema,
   PlanStructureSchema,
@@ -45,8 +46,11 @@ import {
   SkillsMapSchema,
   TrainingSectionsMapSchema,
   WorkoutArraySchema,
+  type DirectionsMap,
 } from "@/schemas/generator.schema";
 import { cloneWithValidation } from "@/utils/cloneWithValidation";
+import { dateToDDMMYYYY, DDMMYYYYToDate } from "@/utils/date";
+import { getTagValues } from "@/utils/tagUtils";
 
 // Assets
 import SkillPriorities from "../../../../assets/data/generator/SkillPriorities";
@@ -219,20 +223,25 @@ export default class PlanGenerator {
     return trainingPlan;
   };
 
+  /**
+   * Populates a training section with individual training days.
+   * Groups active training days, assigns skill focuses and durations,
+   * then selects exercises for each skill based on user profile and equipment.
+   */
   static createSection = (
-    sec,
-    userTrainingDays,
-    places,
-    seasonPhase,
-    user,
-    hasPain,
-    ageGroup,
-    level,
-    prevention,
-    exercisesList,
-    skillTrees,
-    exerciseBranchData,
-  ) => {
+    sec: TrainingSectionType,
+    userTrainingDays: TrainingDayType[],
+    places: PlacesState,
+    seasonPhase: SeasonPhaseType,
+    user: UserType,
+    hasPain: boolean,
+    ageGroup: AgeGroupTag,
+    level: LevelTag,
+    prevention: string[],
+    exercisesList: ExerciseType[],
+    skillTrees: Record<string, SkillTreeType>,
+    exerciseBranchData: BranchDataMapType,
+  ): TrainingSectionType => {
     const skillPriorities = cloneWithValidation(
       SkillPriorities,
       SkillPrioritiesSchema,
@@ -281,9 +290,9 @@ export default class PlanGenerator {
         // get training day data
         const day = groupTrainingDays[trDay];
         const trainingFocus = groupFocus[trDay];
-        const place = day.place;
+        const place = day.place as PlaceType;
         const duration = day.duration;
-        const equipment = places[place].equipment;
+        const equipment = places[place as keyof PlacesState].equipment;
         const structure =
           trainingFocus === "PHASE"
             ? "phase"
@@ -332,21 +341,13 @@ export default class PlanGenerator {
             JSON.parse(JSON.stringify(skillTrainingplan)),
           );
 
-        let fillPriorities = [];
+        let fillPriorities: string[] = [];
 
         //skillTrainingplan sorted keys to ensure properties = lengths can be processed in ascending order
         const skillsForDuration = Object.keys(skillTrainingplan).sort(
-          (a, b) => {
-            if (a > b) {
-              return 1;
-            }
-            if (b > a) {
-              return -1;
-            }
-            return 0;
-          },
+          (a, b) => +a - +b,
         );
-        let previousProp = -1;
+        let prevDurationKey: number | null = null;
         const tagsPerSkill: Record<
           string,
           { tags: string[]; count: number }[]
@@ -372,7 +373,7 @@ export default class PlanGenerator {
           );
         }
         let fillPrioritiesHandledIndex = -1;
-        let prevSkill = null;
+        let prevSkill: string | null = null;
 
         //calculate time per skill, iterate over array of sorted keys for right order
         for (let durationForBlock of skillsForDuration) {
@@ -404,7 +405,9 @@ export default class PlanGenerator {
                 ageGroup,
                 prevSkill,
               );
-              arr[ind] = replacedSkill;
+              if (replacedSkill !== null) {
+                arr[ind] = replacedSkill;
+              }
               if (ind > fillPrioritiesHandledIndex) {
                 fillPrioritiesHandledIndex = ind;
               }
@@ -413,9 +416,11 @@ export default class PlanGenerator {
           // change to specific prev
           skillTrainingplan[durationForBlock] = skillTrainingplan[
             durationForBlock
-          ].map((skill) => {
-            return this.replaceUserSpecificSkill(skill, ageGroup, prevSkill);
-          });
+          ]
+            .map((skill) => {
+              return this.replaceUserSpecificSkill(skill, ageGroup, prevSkill);
+            })
+            .filter((skill): skill is string => skill !== null);
           // filter skills removed by replace fn
           fillPriorities = fillPriorities.filter((e) => e !== null);
           if (PlanGenerator.DEBUG) {
@@ -428,19 +433,20 @@ export default class PlanGenerator {
               JSON.parse(JSON.stringify(fillPriorities)),
             );
           }
-          if (durationForBlock > 0 && duration >= +previousProp) {
+          if (prevDurationKey !== null && duration >= prevDurationKey) {
             //work with previous entry, because durationForBlock always means "for the time after the current value until the next entry"
-            let block = skillTrainingplan[previousProp];
+            let block = skillTrainingplan[String(prevDurationKey)];
             let blockDuration;
-            if (durationForBlock >= duration) {
-              blockDuration = duration - previousProp;
+            if (+durationForBlock >= duration) {
+              blockDuration = duration - prevDurationKey;
             } else {
-              blockDuration = durationForBlock - previousProp;
+              blockDuration = +durationForBlock - prevDurationKey;
             }
             if (blockDuration > 0) {
               let minDurs = this.getMinimumDurationsForBlock(
                 block,
-                seasonPhase.type.toLowerCase(),
+                prevention,
+                seasonPhase.type?.toLowerCase() ?? "pause",
                 ageGroup,
                 level,
               );
@@ -452,11 +458,12 @@ export default class PlanGenerator {
                 durationForBlock ===
                 skillsForDuration[skillsForDuration.length - 1]
               ) {
-                if (duration > durationForBlock) {
+                if (duration > +durationForBlock) {
                   let block = skillTrainingplan[durationForBlock];
                   let minDurs = this.getMinimumDurationsForBlock(
                     block,
-                    seasonPhase.type.toLowerCase(),
+                    prevention,
+                    seasonPhase.type?.toLowerCase() ?? "pause",
                     ageGroup,
                     level,
                   );
@@ -475,7 +482,7 @@ export default class PlanGenerator {
                 );
             }
           }
-          previousProp = durationForBlock;
+          prevDurationKey = +durationForBlock;
         }
         let trainingDuration = Object.keys(timePerSkill).reduce((acc, key) => {
           return acc + timePerSkill[key];
@@ -513,8 +520,8 @@ export default class PlanGenerator {
             time += remainingTime || 0;
             remainingTime = 0;
 
-            let minDuration = Math.min(...Object.keys(tagObj)); // get first entry i.e. the one with lowest key
-            let maxDuration = Math.max(...Object.keys(tagObj));
+            let minDuration = Math.min(...Object.keys(tagObj).map(Number)); // get first entry i.e. the one with lowest key
+            let maxDuration = Math.max(...Object.keys(tagObj).map(Number));
             if (PlanGenerator.DEBUG) {
               console.log(
                 "Section: Group " +
@@ -579,21 +586,24 @@ export default class PlanGenerator {
             }
 
             // get matching or closets set of regions
-            let keyToUse = Object.keys(tagObj).reduce((acc, e) => {
-              // find smallest key
-              if (acc === -1) return +e;
-              if (e < acc) return e;
-              return acc;
-            }, -1);
+            let keyToUse: number | string = Object.keys(tagObj).reduce(
+              (acc: number, e) => {
+                // find smallest key
+                if (acc === -1) return +e;
+                if (+e < acc) return +e;
+                return acc;
+              },
+              -1,
+            );
 
             if (tagObj[time]) {
               keyToUse = time;
             } else {
               let diff = -1;
               for (let key in tagObj) {
-                if (diff === -1 || Math.abs(key - time) < diff) {
+                if (diff === -1 || Math.abs(+key - time) < diff) {
                   keyToUse = key;
-                  diff = Math.abs(key - time);
+                  diff = Math.abs(+key - time);
                 }
               }
             }
@@ -642,7 +652,7 @@ export default class PlanGenerator {
         );
         if (
           Object.keys(tagsPerSkill).includes("GKS") &&
-          tagsPerSkill["GKS"].reduce((entry, result) => {
+          tagsPerSkill["GKS"].reduce((result, entry) => {
             // result is already true, or REGION_GANZKOERPER is part of skill tags
             return result || entry.tags.includes("REGION_GANZKOERPER");
           }, false)
@@ -686,13 +696,13 @@ export default class PlanGenerator {
               branchIdsInUse,
               LOG,
             ),
-            WorkoutArraySchema,
+            ExerciseBranchArraySchema,
             "exercises[skill]",
           );
           if (LOG) console.log("exercises[skill]", exercises[skill]);
           if (exercises[skill].length === 0) {
             // remove skills without content
-            exercises[skill] = undefined;
+            delete exercises[skill];
           } else {
             for (let e = 0; e < exercises[skill].length; e++) {
               branchIdsInUse.push(exercises[skill][e].exerciseBranchId);
@@ -1938,10 +1948,10 @@ export default class PlanGenerator {
     exerciseBranchData: BranchDataMapType,
     branchIdsInUse: string[],
     log: boolean = false,
-  ): ExerciseType[] => {
+  ): ExerciseBranchType[] => {
     if (PlanGenerator.DEBUG)
       console.log("choose by tags for " + skill, weightedTags);
-    let workout: ExerciseType[] = [];
+    let workout: ExerciseBranchType[] = [];
     for (let i = 0; i < weightedTags.length; i++) {
       let currentWorkout = cloneWithValidation(
         workout,

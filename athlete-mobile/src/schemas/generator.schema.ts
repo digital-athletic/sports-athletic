@@ -107,9 +107,20 @@ export const SetListEntrySchema = v.looseObject({
 });
 export type SetListEntryClone = v.InferOutput<typeof SetListEntrySchema>;
 
-// Workout/Exercise array schema
+// Workout/Exercise array schema (loose, for generic validation)
 export const WorkoutArraySchema = v.array(v.looseObject({}));
 export type WorkoutArray = v.InferOutput<typeof WorkoutArraySchema>;
+
+// ExerciseBranch schema (strict, matches ExerciseBranchType)
+export const ExerciseBranchSchema = v.object({
+  exerciseBranchId: v.string(),
+  tags: v.array(v.string()),
+  exercises: v.record(v.string(), v.object({ exerciseId: v.string() })),
+});
+export const ExerciseBranchArraySchema = v.array(ExerciseBranchSchema);
+export type ExerciseBranchArray = v.InferOutput<
+  typeof ExerciseBranchArraySchema
+>;
 
 // Transform schema (for CSS transforms in bodyParts)
 export const TransformSchema = v.array(

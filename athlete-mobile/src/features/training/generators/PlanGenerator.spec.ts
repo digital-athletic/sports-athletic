@@ -355,6 +355,11 @@ describe("PlanGenerator", () => {
     });
   });
 
+  /**
+   * Returns the maximum allowed time for a skill based on the user's level.
+   * Different skills have different max time configurations (e.g., SWR allows more time than BAS).
+   * Falls back to a default max time for unknown skill types.
+   */
   describe("getMaxTimeForSkillAndLevel", () => {
     it("should return max time for BAS skill", () => {
       const result = PlanGenerator.getMaxTimeForSkillAndLevel(
@@ -379,6 +384,53 @@ describe("PlanGenerator", () => {
         "MAX",
         WorkoutConstants.LEVELS.PROFESSIONAL,
       );
+      expect(typeof result).toBe("number");
+      expect(result).toBeGreaterThan(0);
+    });
+
+    it("should return different max times for SWR skill based on level", () => {
+      const beginnerMax = PlanGenerator.getMaxTimeForSkillAndLevel(
+        "SWR1",
+        WorkoutConstants.LEVELS.BEGINNER,
+      );
+      const advancedMax = PlanGenerator.getMaxTimeForSkillAndLevel(
+        "SWR1",
+        WorkoutConstants.LEVELS.ADVANCED,
+      );
+      const professionalMax = PlanGenerator.getMaxTimeForSkillAndLevel(
+        "SWR1",
+        WorkoutConstants.LEVELS.PROFESSIONAL,
+      );
+
+      expect(beginnerMax).toBe(35);
+      expect(advancedMax).toBe(45);
+      expect(professionalMax).toBeGreaterThan(advancedMax);
+    });
+
+    it("should return same max time for SWR variants (SWR1, SWR2, SWR1KG, SWR2KG)", () => {
+      const level = WorkoutConstants.LEVELS.ADVANCED;
+      const swr1Max = PlanGenerator.getMaxTimeForSkillAndLevel("SWR1", level);
+      const swr2Max = PlanGenerator.getMaxTimeForSkillAndLevel("SWR2", level);
+      const swr1kgMax = PlanGenerator.getMaxTimeForSkillAndLevel(
+        "SWR1KG",
+        level,
+      );
+      const swr2kgMax = PlanGenerator.getMaxTimeForSkillAndLevel(
+        "SWR2KG",
+        level,
+      );
+
+      expect(swr1Max).toBe(swr2Max);
+      expect(swr1Max).toBe(swr1kgMax);
+      expect(swr1Max).toBe(swr2kgMax);
+    });
+
+    it("should return default max time for unknown skill types", () => {
+      const result = PlanGenerator.getMaxTimeForSkillAndLevel(
+        "UNKNOWN_SKILL",
+        WorkoutConstants.LEVELS.BEGINNER,
+      );
+
       expect(typeof result).toBe("number");
       expect(result).toBeGreaterThan(0);
     });
@@ -434,6 +486,11 @@ describe("PlanGenerator", () => {
     });
   });
 
+  /**
+   * Distributes remaining training time across skills based on fill priorities.
+   * For longer sessions (>45 min), priority 2 skill is filled first before distributing to others.
+   * Each skill is capped at its maximum allowed time based on the user's level.
+   */
   describe("addTimeLeftToSkills", () => {
     it("should distribute remaining time across skills", () => {
       const timePerSkill = {
@@ -483,6 +540,72 @@ describe("PlanGenerator", () => {
         WorkoutConstants.LEVELS.BEGINNER,
       );
       expect(result.BAS).toBeLessThanOrEqual(maxTime);
+    });
+
+    it("should fill priority 2 skill first when training duration > 45", () => {
+      const timePerSkill = {
+        SWR1: 10,
+        SA: 10,
+        SK: 10,
+      };
+      const fillPriorities = ["SWR1", "SA", "SK"]; // SA is prio 2 (index 1)
+      const timeLeft = 15;
+
+      const result = PlanGenerator.addTimeLeftToSkills(
+        timePerSkill,
+        fillPriorities,
+        timeLeft,
+        WorkoutConstants.LEVELS.ADVANCED,
+        60, // duration > 45
+      );
+
+      // SA (priority 2) should be filled first, then remaining distributed
+      expect(result.SA).toBeGreaterThan(timePerSkill.SA);
+    });
+
+    it("should skip priority 2 special treatment when training duration <= 45", () => {
+      const timePerSkill = {
+        SWR1: 10,
+        SA: 10,
+      };
+      const fillPriorities = ["SWR1", "SA"];
+      const timeLeft = 10;
+
+      const result = PlanGenerator.addTimeLeftToSkills(
+        timePerSkill,
+        fillPriorities,
+        timeLeft,
+        WorkoutConstants.LEVELS.BEGINNER,
+        45, // duration <= 45
+      );
+
+      // With shorter duration, filling starts from priority 0
+      // SWR1 max for BEGINNER is 35, so it can take all 10 extra minutes
+      expect(result.SWR1).toBe(20);
+    });
+
+    it("should fill skills in priority order up to their max times", () => {
+      const timePerSkill = {
+        BAS: 5,
+        SWR1: 30,
+        SA: 25,
+      };
+      const fillPriorities = ["BAS", "SWR1", "SA"];
+      const timeLeft = 50;
+
+      const result = PlanGenerator.addTimeLeftToSkills(
+        timePerSkill,
+        fillPriorities,
+        timeLeft,
+        WorkoutConstants.LEVELS.ADVANCED,
+        90,
+      );
+
+      // BAS max is 10, so capped at 10 (adds 5)
+      // SWR1 max for ADVANCED is 45, so capped at 45 (adds 15)
+      // SA max for ADVANCED is 35, so capped at 35 (adds 10)
+      expect(result.BAS).toBe(10);
+      expect(result.SWR1).toBe(45);
     });
   });
 

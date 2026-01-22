@@ -919,12 +919,12 @@ export default class PlanGenerator {
   };
 
   static addTimeLeftToSkills = (
-    timePerSkill,
-    fillPriorities,
-    time,
-    level,
-    trainingDuration,
-  ) => {
+    timePerSkill: Record<string, number>,
+    fillPriorities: string[],
+    time: number,
+    level: LevelTag,
+    trainingDuration: number,
+  ): Record<string, number> => {
     let result = Object.assign({}, timePerSkill);
     let timeLeft = time;
     if (trainingDuration > 45) {
@@ -973,8 +973,11 @@ export default class PlanGenerator {
     return result;
   };
 
-  static getMaxTimeForSkillAndLevel = (skill, level) => {
-    let maxTimeObj;
+  static getMaxTimeForSkillAndLevel = (
+    skill: string,
+    level: LevelTag,
+  ): number => {
+    let maxTimeObj: Record<LevelTag, number>;
     switch (skill) {
       case "BAS":
         maxTimeObj = MaxTimeBAS;

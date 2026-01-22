@@ -1356,6 +1356,57 @@ describe("PlanGenerator", () => {
   });
 
   /**
+   * Calculates minimum durations for each skill in a training block.
+   * Uses getTagsForSkill to fetch tag configurations and extracts the smallest duration key.
+   * Returns an object mapping each skill to its minimum required time in minutes.
+   */
+  describe("getMinimumDurationsForBlock", () => {
+    it("should return minimum duration for a single skill in block", () => {
+      const block = ["SA"];
+      const result = PlanGenerator.getMinimumDurationsForBlock(
+        block,
+        [],
+        "prepatory",
+        WorkoutConstants.AGE_GROUPS.ADULT,
+        WorkoutConstants.LEVELS.BEGINNER,
+      );
+
+      expect(result).toHaveProperty("SA");
+      expect(result.SA).toBe(15);
+    });
+
+    it("should return minimum durations for multiple skills in block", () => {
+      const block = ["SWR1", "BAS"];
+      const result = PlanGenerator.getMinimumDurationsForBlock(
+        block,
+        [],
+        "competition",
+        WorkoutConstants.AGE_GROUPS.ADULT,
+        WorkoutConstants.LEVELS.ADVANCED,
+      );
+
+      expect(Object.keys(result)).toHaveLength(2);
+      expect(result.SWR1).toBe(20);
+      expect(result.BAS).toBe(5);
+    });
+
+    it("should skip null skills in the block", () => {
+      const block = ["MAX", null, "BAS"];
+      const result = PlanGenerator.getMinimumDurationsForBlock(
+        block,
+        [],
+        "competition",
+        WorkoutConstants.AGE_GROUPS.ADULT,
+        WorkoutConstants.LEVELS.PROFESSIONAL,
+      );
+
+      expect(Object.keys(result)).toHaveLength(2);
+      expect(result).not.toHaveProperty("null");
+      expect(result.MAX).toBe(15);
+    });
+  });
+
+  /**
    * Selects exercise branches for a skill based on weighted tags.
    * Accumulates branches from getBranchesForWorkout for each tag group.
    */

@@ -66,7 +66,7 @@ import {
 } from "@/schemas/generator.schema";
 
 import { cloneWithValidation } from "@/utils/cloneWithValidation";
-import { dateToDDMMYYYY, DDMMYYYYToDate, addDays } from "@/utils/date";
+import { addDays, dateToDDMMYYYY, DDMMYYYYToDate } from "@/utils/date";
 import { getTagValues } from "@/utils/tagUtils";
 
 // Assets
@@ -1958,6 +1958,11 @@ export default class PlanGenerator {
     return branches;
   };
 
+  /**
+   * Selects exercise branches for a skill based on weighted tags.
+   * Iterates through each tag group and accumulates matching branches from getBranchesForWorkout.
+   * Returns the combined workout array containing all selected exercise branches.
+   */
   static chooseByTags = (
     skill: string,
     weightedTags: { tags: string[]; count: number }[],
@@ -1977,14 +1982,14 @@ export default class PlanGenerator {
   ): ExerciseBranchType[] => {
     if (PlanGenerator.DEBUG)
       console.log("choose by tags for " + skill, weightedTags);
-    let workout: ExerciseBranchType[] = [];
-    for (let i = 0; i < weightedTags.length; i++) {
-      let currentWorkout = cloneWithValidation(
+    const workout: ExerciseBranchType[] = [];
+    for (let i: number = 0; i < weightedTags.length; i++) {
+      const currentWorkout: ExerciseBranchType[] = cloneWithValidation(
         workout,
         WorkoutArraySchema,
         "workout",
       );
-      let branches = this.getBranchesForWorkout(
+      const branches: ExerciseBranchType[] = this.getBranchesForWorkout(
         skill,
         weightedTags[i],
         oberkoerperDirections,
@@ -2015,22 +2020,31 @@ export default class PlanGenerator {
     return workout;
   };
 
+  /**
+   * Calculates minimum durations for each skill in a training block.
+   * Uses getTagsForSkill to fetch tag configurations and extracts the smallest duration key.
+   * Returns an object mapping each skill to its minimum required time in minutes.
+   */
   static getMinimumDurationsForBlock = (
-    block,
-    prevention,
-    seasonPhase,
-    ageGroup,
-    level,
-  ) => {
-    let time = 0;
-    let timePerSkill = {};
+    block: (string | null)[],
+    prevention: string[],
+    seasonPhase: string,
+    ageGroup: AgeGroupTag,
+    level: LevelTag,
+  ): Record<string, number> => {
+    let time: number = 0;
+    const timePerSkill: Record<string, number> = {};
     if (PlanGenerator.DEBUG) console.log("BLOCK: ", block);
     //assign minimum duration to each skill
-    for (let skill of block) {
+    for (const skill of block) {
       // DEV prevent Crash for incomplete mock data
       if (skill !== null) {
         // TODO get from assets
-        let tagObj = this.getTagsForSkill(skill, ageGroup, level);
+        const tagObj: DurationTagMap = this.getTagsForSkill(
+          skill,
+          ageGroup,
+          level,
+        );
         if (PlanGenerator.DEBUG)
           console.log(
             "minDuration tagObj for SKILL: ",
@@ -2040,7 +2054,9 @@ export default class PlanGenerator {
           );
 
         //get minimum duration for skill
-        let minDuration = Math.min(...Object.keys(tagObj)); // get first entry i.e. the one with lowest key
+        const minDuration: number = Math.min(
+          ...Object.keys(tagObj).map(Number),
+        );
         time = minDuration;
 
         timePerSkill[skill] = time;

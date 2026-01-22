@@ -3,6 +3,7 @@ import { TagGroups } from "@/constants/tagGroups";
 import {
   WorkoutConstants,
   type AgeGroupTag,
+  type FocusType,
   type LevelTag,
   type PlaceType,
   type SectionTypes,
@@ -736,8 +737,14 @@ export default class PlanGenerator {
     return sec;
   };
 
-  static getTrainingDayGroups = (userTrainingDays) => {
-    let trainingDayGroups = [];
+  /**
+   * Groups consecutive active training days into arrays.
+   * Starts from the first inactive day and wraps around the week boundary.
+   */
+  static getTrainingDayGroups = (
+    userTrainingDays: TrainingDayType[],
+  ): TrainingDayType[][] => {
+    let trainingDayGroups: TrainingDayType[][] = [];
     let firstDayOff = 0;
     for (let d1 = 0; d1 < userTrainingDays.length; d1++) {
       if (!userTrainingDays[d1].active) {
@@ -745,7 +752,7 @@ export default class PlanGenerator {
         break;
       }
     }
-    let group = [];
+    let group: TrainingDayType[] = [];
     for (let d2 = 0; d2 < 7; d2++) {
       const currDay = (firstDayOff + d2) % 7;
       if (userTrainingDays[currDay].active) {
@@ -765,12 +772,16 @@ export default class PlanGenerator {
     return trainingDayGroups;
   };
 
+  /**
+   * Determines the training focus (PHASE, CARDIO, STABILITY, COMBINED) for each day in each group.
+   * Children always get PHASE; adults get focus based on place, equipment, and duration.
+   */
   static getTrainingDayGroupsFocuses = (
-    trainingDayGroups,
-    ageGroup,
-    places,
-  ) => {
-    let groupFocuses = [];
+    trainingDayGroups: TrainingDayType[][],
+    ageGroup: AgeGroupTag,
+    places: PlacesState,
+  ): FocusType[][] => {
+    let groupFocuses: FocusType[][] = [];
     let hasCardio = false;
     const numOfTrainingDays = trainingDayGroups.reduce((acc, group) => {
       return acc + group.length;
@@ -783,7 +794,7 @@ export default class PlanGenerator {
       groupIndex++
     ) {
       //set focus for days
-      let focuses = this.getFocusForTrainingDayGroup(
+      const focuses: FocusType[] = this.getFocusForTrainingDayGroup(
         trainingDayGroups[groupIndex],
         ageGroup,
         places,

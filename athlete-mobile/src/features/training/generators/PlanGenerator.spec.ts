@@ -118,14 +118,14 @@ describe("PlanGenerator", () => {
 
   describe("getTrainingDayGroups", () => {
     it("should group consecutive active training days", () => {
-      const userTrainingDays = [
-        { active: true, weekday: 0 },
-        { active: true, weekday: 1 },
-        { active: false, weekday: 2 },
-        { active: true, weekday: 3 },
-        { active: true, weekday: 4 },
-        { active: false, weekday: 5 },
-        { active: false, weekday: 6 },
+      const userTrainingDays: TrainingDayType[] = [
+        { active: true, weekday: 0, duration: 60, place: "HOME" },
+        { active: true, weekday: 1, duration: 60, place: "HOME" },
+        { active: false, weekday: 2, duration: 60, place: "HOME" },
+        { active: true, weekday: 3, duration: 60, place: "HOME" },
+        { active: true, weekday: 4, duration: 60, place: "HOME" },
+        { active: false, weekday: 5, duration: 60, place: "HOME" },
+        { active: false, weekday: 6, duration: 60, place: "HOME" },
       ];
 
       const groups = PlanGenerator.getTrainingDayGroups(userTrainingDays);
@@ -135,11 +135,13 @@ describe("PlanGenerator", () => {
     });
 
     it("should handle all active days as single group", () => {
-      const userTrainingDays = Array(7)
+      const userTrainingDays: TrainingDayType[] = Array(7)
         .fill(null)
         .map((_, i) => ({
           active: true,
           weekday: i,
+          duration: 60,
+          place: "HOME" as const,
         }));
 
       const groups = PlanGenerator.getTrainingDayGroups(userTrainingDays);
@@ -148,15 +150,132 @@ describe("PlanGenerator", () => {
     });
 
     it("should handle no active days", () => {
-      const userTrainingDays = Array(7)
+      const userTrainingDays: TrainingDayType[] = Array(7)
         .fill(null)
         .map((_, i) => ({
           active: false,
           weekday: i,
+          duration: 60,
+          place: "HOME" as const,
         }));
 
       const groups = PlanGenerator.getTrainingDayGroups(userTrainingDays);
       expect(groups.length).toBe(0);
+    });
+
+    it("should wrap around week boundary for consecutive days spanning Sunday to Monday", () => {
+      const userTrainingDays: TrainingDayType[] = [
+        { active: true, weekday: 0, duration: 60, place: "HOME" }, // Sunday - active
+        { active: false, weekday: 1, duration: 60, place: "HOME" },
+        { active: false, weekday: 2, duration: 60, place: "HOME" },
+        { active: false, weekday: 3, duration: 60, place: "HOME" },
+        { active: false, weekday: 4, duration: 60, place: "HOME" },
+        { active: true, weekday: 5, duration: 60, place: "HOME" }, // Friday - active
+        { active: true, weekday: 6, duration: 60, place: "HOME" }, // Saturday - active
+      ];
+
+      const groups = PlanGenerator.getTrainingDayGroups(userTrainingDays);
+      expect(groups.length).toBe(1);
+      expect(groups[0].map((d) => d.weekday)).toEqual([5, 6, 0]);
+    });
+
+    it("should create separate groups for alternating training days", () => {
+      const userTrainingDays: TrainingDayType[] = [
+        { active: true, weekday: 0, duration: 60, place: "HOME" },
+        { active: false, weekday: 1, duration: 60, place: "HOME" },
+        { active: true, weekday: 2, duration: 60, place: "HOME" },
+        { active: false, weekday: 3, duration: 60, place: "HOME" },
+        { active: true, weekday: 4, duration: 60, place: "HOME" },
+        { active: false, weekday: 5, duration: 60, place: "HOME" },
+        { active: false, weekday: 6, duration: 60, place: "HOME" },
+      ];
+
+      const groups = PlanGenerator.getTrainingDayGroups(userTrainingDays);
+      expect(groups.length).toBe(3);
+      expect(groups.every((g) => g.length === 1)).toBe(true);
+    });
+
+    it("should preserve training day properties in groups", () => {
+      const userTrainingDays: TrainingDayType[] = [
+        { active: true, weekday: 0, duration: 60, place: "HOME" },
+        { active: true, weekday: 1, duration: 45, place: "STUDIO" },
+        { active: false, weekday: 2, duration: 60, place: "HOME" },
+        { active: false, weekday: 3, duration: 60, place: "HOME" },
+        { active: false, weekday: 4, duration: 60, place: "HOME" },
+        { active: false, weekday: 5, duration: 60, place: "HOME" },
+        { active: false, weekday: 6, duration: 60, place: "HOME" },
+      ];
+
+      const groups = PlanGenerator.getTrainingDayGroups(userTrainingDays);
+      expect(groups[0][0]).toMatchObject({
+        weekday: 0,
+        duration: 60,
+        place: "HOME",
+      });
+      expect(groups[0][1]).toMatchObject({
+        weekday: 1,
+        duration: 45,
+        place: "STUDIO",
+      });
+    });
+  });
+
+  describe("getTrainingDayGroupsFocuses", () => {
+    const mockPlaces: PlacesState = {
+      HOME: { name: "HOME", equipment: ["DUMBBELL", "MAT"] },
+      STUDIO: { name: "STUDIO", equipment: ["BARBELL", "BENCH"] },
+      HALL: { name: "HALL", equipment: [] },
+      OUTSIDE: { name: "OUTSIDE", equipment: ["TRACK_20"] },
+    };
+
+    it("should return PHASE for all child training days", () => {
+      const trainingDayGroups: TrainingDayType[][] = [
+        [{ active: true, weekday: 1, duration: 60, place: "HOME" }],
+        [{ active: true, weekday: 4, duration: 45, place: "STUDIO" }],
+      ];
+
+      const focuses = PlanGenerator.getTrainingDayGroupsFocuses(
+        trainingDayGroups,
+        WorkoutConstants.AGE_GROUPS.CHILD,
+        mockPlaces,
+      );
+
+      expect(focuses).toHaveLength(2);
+      expect(focuses[0]).toEqual(["PHASE"]);
+      expect(focuses[1]).toEqual(["PHASE"]);
+    });
+
+    it("should assign PHASE to studio and CARDIO to location with run equipment for 2-day adult group", () => {
+      const trainingDayGroups: TrainingDayType[][] = [
+        [
+          { active: true, weekday: 1, duration: 60, place: "STUDIO" },
+          { active: true, weekday: 2, duration: 60, place: "OUTSIDE" },
+        ],
+      ];
+
+      const focuses = PlanGenerator.getTrainingDayGroupsFocuses(
+        trainingDayGroups,
+        WorkoutConstants.AGE_GROUPS.ADULT,
+        mockPlaces,
+      );
+
+      expect(focuses[0]).toContain("PHASE");
+      expect(focuses[0]).toContain("CARDIO");
+    });
+
+    it("should return PHASE for single-day adult training group", () => {
+      const trainingDayGroups: TrainingDayType[][] = [
+        [{ active: true, weekday: 3, duration: 60, place: "HOME" }],
+      ];
+
+      const focuses = PlanGenerator.getTrainingDayGroupsFocuses(
+        trainingDayGroups,
+        WorkoutConstants.AGE_GROUPS.ADULT,
+        mockPlaces,
+      );
+
+      expect(focuses).toHaveLength(1);
+      expect(focuses[0]).toEqual(["PHASE"]);
     });
   });
 

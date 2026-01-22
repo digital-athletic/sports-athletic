@@ -297,57 +297,197 @@ describe("PlanGenerator", () => {
     });
   });
 
+  /**
+   * Determines training section types and durations based on season phase and user profile.
+   * Delegates to getSectionsBySeasonPhaseAgeGroupLevelNumOfWeeks for section selection.
+   * Returns an array of TrainingSectionType objects with type, numOfWeeks, and cardioType.
+   */
+  describe("getWeightedSections", () => {
+    it("should return correct sections for competition adult advanced 8 weeks", () => {
+      const seasonPhase: SeasonPhaseType = {
+        type: SeasonPhase.COMPETITION,
+        numOfWeeks: 8,
+        endDate: "01-05-2025",
+      };
+
+      const result = PlanGenerator.getWeightedSections(
+        seasonPhase,
+        WorkoutConstants.AGE_GROUPS.ADULT,
+        "MIDFIELDER",
+        WorkoutConstants.LEVELS.ADVANCED,
+        true,
+        false,
+      );
+
+      expect(result).toHaveLength(3);
+      expect(result[0]).toMatchObject({
+        type: "SWR2",
+        numOfWeeks: 3,
+        cardioType: "CARDIO_2",
+      });
+      expect(result[1]).toMatchObject({
+        type: "MAX",
+        numOfWeeks: 3,
+        cardioType: "CARDIO_1_SHORT",
+      });
+      expect(result[2]).toMatchObject({
+        type: "SK",
+        numOfWeeks: 2,
+        cardioType: "CARDIO_2",
+      });
+    });
+
+    it("should return correct sections for prepatory child beginner 6 weeks", () => {
+      const seasonPhase: SeasonPhaseType = {
+        type: SeasonPhase.PREPATORY,
+        numOfWeeks: 6,
+        endDate: "01-03-2025",
+      };
+
+      const result = PlanGenerator.getWeightedSections(
+        seasonPhase,
+        WorkoutConstants.AGE_GROUPS.CHILD,
+        "FORWARD",
+        WorkoutConstants.LEVELS.BEGINNER,
+        false,
+        false,
+      );
+
+      expect(result).toHaveLength(3);
+      expect(result[0]).toMatchObject({
+        type: "SWR1",
+        numOfWeeks: 2,
+        cardioType: "CARDIO_3",
+      });
+      expect(result[1]).toMatchObject({
+        type: "SWR1",
+        numOfWeeks: 2,
+        cardioType: "CARDIO_2",
+      });
+      expect(result[2]).toMatchObject({
+        type: "SWR1",
+        numOfWeeks: 2,
+        cardioType: "CARDIO_1_SHORT",
+      });
+    });
+
+    it("should return sections without SA for keepers", () => {
+      const seasonPhase: SeasonPhaseType = {
+        type: SeasonPhase.PAUSE,
+        numOfWeeks: 4,
+        endDate: "01-02-2025",
+      };
+
+      const result = PlanGenerator.getWeightedSections(
+        seasonPhase,
+        WorkoutConstants.AGE_GROUPS.ADULT,
+        "GOALKEEPER",
+        WorkoutConstants.LEVELS.PROFESSIONAL,
+        true,
+        true,
+      );
+
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject({
+        type: "SWR1",
+        numOfWeeks: 2,
+        cardioType: "CARDIO_4",
+      });
+      expect(result[1]).toMatchObject({
+        type: "SWR2",
+        numOfWeeks: 2,
+        cardioType: "CARDIO_4",
+      });
+    });
+  });
+
+  /**
+   * Calculates sequential start dates for training sections based on a plan start date.
+   * Adjusts the start date to the next Monday if it doesn't fall on a Monday.
+   * Each section's start is offset by the cumulative weeks of all previous sections.
+   */
   describe("calculateStartingDates", () => {
-    it("should calculate starting dates for sections", () => {
+    it("should calculate sequential start dates for multiple sections", () => {
       const startDate = "06-01-2025"; // Monday, Jan 6, 2025
       const sections = [
         {
-          type: "SWR1" as const,
+          type: "SWR1",
           numOfWeeks: 2,
-          start: "06-01-2025",
-          cardioType: "ZONE_1" as const,
+          start: "",
+          cardioType: "CARDIO_2",
           trainings: [],
         },
         {
-          type: "SA" as const,
+          type: "SA",
           numOfWeeks: 3,
-          start: "06-01-2025",
-          cardioType: "ZONE_2" as const,
+          start: "",
+          cardioType: "CARDIO_2",
           trainings: [],
         },
         {
-          type: "MAX" as const,
+          type: "MAX",
           numOfWeeks: 1,
-          start: "06-01-2025",
-          cardioType: "ZONE_1" as const,
+          start: "",
+          cardioType: "CARDIO_1_SHORT",
           trainings: [],
         },
-      ];
+      ] as unknown as TrainingSectionType[];
 
       const result = PlanGenerator.calculateStartingDates(sections, startDate);
 
-      expect(result.length).toBe(3);
-      expect(result[0].start).toBeDefined();
-      expect(result[1].start).toBeDefined();
-      expect(result[2].start).toBeDefined();
+      expect(result).toHaveLength(3);
+      expect(result[0].start).toBe("06-01-2025"); // Jan 6
+      expect(result[1].start).toBe("20-01-2025"); // Jan 6 + 2 weeks = Jan 20
+      expect(result[2].start).toBe("10-02-2025"); // Jan 20 + 3 weeks = Feb 10
     });
 
-    it("should adjust start date to next Monday if not Monday", () => {
+    it("should adjust Friday start to next Monday", () => {
       const friday = "03-01-2025"; // Friday, Jan 3, 2025
       const sections = [
         {
-          type: "SWR2" as const,
-          numOfWeeks: 1,
-          start: "03-01-2025",
-          cardioType: "ZONE_1" as const,
+          type: "SWR2",
+          numOfWeeks: 2,
+          start: "",
+          cardioType: "CARDIO_3",
           trainings: [],
         },
-      ];
+        {
+          type: "SK",
+          numOfWeeks: 1,
+          start: "",
+          cardioType: "CARDIO_2",
+          trainings: [],
+        },
+      ] as unknown as TrainingSectionType[];
 
       const result = PlanGenerator.calculateStartingDates(sections, friday);
 
-      expect(result[0]).toBeDefined();
-      expect(result[0].start).toBeDefined();
+      // Friday Jan 3 -> next Monday is Jan 6
+      expect(result[0].start).toBe("06-01-2025");
+      expect(result[1].start).toBe("20-01-2025"); // Jan 6 + 2 weeks
+    });
+
+    it("should preserve section properties while adding start dates", () => {
+      const startDate = "06-01-2025";
+      const sections = [
+        {
+          type: "SWR1",
+          numOfWeeks: 2,
+          start: "",
+          cardioType: "CARDIO_3",
+          trainings: [],
+        },
+      ] as unknown as TrainingSectionType[];
+
+      const result = PlanGenerator.calculateStartingDates(sections, startDate);
+
+      expect(result[0]).toEqual({
+        type: "SWR1",
+        numOfWeeks: 2,
+        start: "06-01-2025",
+        cardioType: "CARDIO_3",
+        trainings: [],
+      });
     });
   });
 
@@ -454,13 +594,19 @@ describe("PlanGenerator", () => {
     });
   });
 
+  /**
+   * Creates a complete training plan by combining weighted sections with calculated start dates.
+   * Uses season phase, user demographics, and training preferences to determine section structure.
+   * Returns a TrainingPlanType with a start date and array of training sections.
+   */
   describe("initializeTrainingPlan", () => {
-    it("should initialize training plan with sections", () => {
-      const seasonPhase = {
-        type: "COMPETITION",
+    it("should create plan with correct start date and sections for competition adult", () => {
+      const seasonPhase: SeasonPhaseType = {
+        type: SeasonPhase.COMPETITION,
         numOfWeeks: 8,
+        endDate: "06-03-2025",
       };
-      const startDate = new Date(2025, 0, 6);
+      const startDate = new Date(2025, 0, 6); // Monday, Jan 6, 2025
 
       const result = PlanGenerator.initializeTrainingPlan(
         seasonPhase,
@@ -472,10 +618,85 @@ describe("PlanGenerator", () => {
         false,
       );
 
-      expect(result).toHaveProperty("start");
-      expect(result).toHaveProperty("sections");
-      expect(Array.isArray(result.sections)).toBe(true);
-      expect(result.sections.length).toBeGreaterThan(0);
+      expect(result.start).toEqual(startDate);
+      expect(result.sections).toHaveLength(3);
+      expect(result.sections[0]).toMatchObject({
+        type: "SWR2",
+        numOfWeeks: 3,
+        start: "06-01-2025",
+      });
+      expect(result.sections[1]).toMatchObject({
+        type: "MAX",
+        numOfWeeks: 3,
+        start: "27-01-2025",
+      });
+      expect(result.sections[2]).toMatchObject({
+        type: "SK",
+        numOfWeeks: 2,
+        start: "17-02-2025",
+      });
+    });
+
+    it("should create plan with child-appropriate sections for prepatory phase", () => {
+      const seasonPhase: SeasonPhaseType = {
+        type: SeasonPhase.PREPATORY,
+        numOfWeeks: 6,
+        endDate: "17-03-2025",
+      };
+      const startDate = new Date(2025, 1, 3); // Monday, Feb 3, 2025
+
+      const result = PlanGenerator.initializeTrainingPlan(
+        seasonPhase,
+        WorkoutConstants.AGE_GROUPS.CHILD,
+        "FORWARD",
+        WorkoutConstants.LEVELS.BEGINNER,
+        false,
+        startDate,
+        false,
+      );
+
+      expect(result.start).toEqual(startDate);
+      expect(result.sections).toHaveLength(3);
+      expect(result.sections[0]).toMatchObject({
+        type: "SWR1",
+        numOfWeeks: 2,
+        start: "03-02-2025",
+      });
+      expect(result.sections[1]).toMatchObject({
+        type: "SWR1",
+        numOfWeeks: 2,
+        start: "17-02-2025",
+      });
+      expect(result.sections[2]).toMatchObject({
+        type: "SWR1",
+        numOfWeeks: 2,
+        start: "03-03-2025",
+      });
+    });
+
+    it("should create plan without SA sections for keepers", () => {
+      const seasonPhase: SeasonPhaseType = {
+        type: SeasonPhase.COMPETITION,
+        numOfWeeks: 10,
+        endDate: "19-05-2025",
+      };
+      const startDate = new Date(2025, 2, 10); // Monday, Mar 10, 2025
+
+      const result = PlanGenerator.initializeTrainingPlan(
+        seasonPhase,
+        WorkoutConstants.AGE_GROUPS.ADULT,
+        "GOALKEEPER",
+        WorkoutConstants.LEVELS.ADVANCED,
+        true,
+        startDate,
+        true,
+      );
+
+      expect(result.start).toEqual(startDate);
+      expect(result.sections).toHaveLength(3);
+      const sectionTypes = result.sections.map((s) => s.type);
+      expect(sectionTypes).not.toContain("SA");
+      expect(sectionTypes).toEqual(["SWR2", "MAX", "SK"]);
     });
   });
 
@@ -978,7 +1199,7 @@ describe("PlanGenerator", () => {
       start: "01-01-2026",
       numOfWeeks: 4,
       type,
-      cardioType: "ZONE_1",
+      cardioType: "CARDIO_1",
       trainings: [],
     });
 
@@ -1088,6 +1309,105 @@ describe("PlanGenerator", () => {
           (v) => typeof v === "number" && v > 0,
         ),
       ).toBe(true);
+    });
+  });
+
+  /**
+   * Selects appropriate training section templates based on season phase, age group, and level.
+   * Handles plans longer than 20 weeks by repeating sections, and adjusts MAX to SWR2 for
+   * beginners or users without weights. For keepers, converts SA sections to SK.
+   */
+  describe("getSectionsBySeasonPhaseAgeGroupLevelNumOfWeeks", () => {
+    it("should return correct sections for competition adult advanced 8 weeks", () => {
+      const result =
+        PlanGenerator.getSectionsBySeasonPhaseAgeGroupLevelNumOfWeeks(
+          SeasonPhase.COMPETITION,
+          WorkoutConstants.AGE_GROUPS.ADULT,
+          WorkoutConstants.LEVELS.ADVANCED,
+          8,
+          true,
+          false,
+        );
+
+      expect(result).toHaveLength(3);
+      expect(result[0]).toMatchObject({
+        type: "SWR2",
+        numOfWeeks: 3,
+        cardioType: "CARDIO_2",
+      });
+      expect(result[1]).toMatchObject({
+        type: "MAX",
+        numOfWeeks: 3,
+        cardioType: "CARDIO_1_SHORT",
+      });
+      expect(result[2]).toMatchObject({
+        type: "SK",
+        numOfWeeks: 2,
+        cardioType: "CARDIO_2",
+      });
+    });
+
+    it("should convert MAX to SWR2 for beginners with weights", () => {
+      // Use competition adult beginner - the beginner data doesn't have MAX originally,
+      // but if it did, it would be converted. We verify no MAX exists in result.
+      const result =
+        PlanGenerator.getSectionsBySeasonPhaseAgeGroupLevelNumOfWeeks(
+          SeasonPhase.PREPATORY,
+          WorkoutConstants.AGE_GROUPS.ADULT,
+          WorkoutConstants.LEVELS.BEGINNER,
+          6,
+          true,
+          false,
+        );
+
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject({
+        type: "SWR1",
+        numOfWeeks: 3,
+        cardioType: "CARDIO_3",
+      });
+      expect(result[1]).toMatchObject({
+        type: "SWR2",
+        numOfWeeks: 3,
+        cardioType: "CARDIO_2",
+      });
+      expect(result.some((s) => s.type === "MAX")).toBe(false);
+    });
+
+    it("should convert MAX to SWR2 when professional user has no weights", () => {
+      // competition adult professional 12 weeks normally has MAX sections
+      const result =
+        PlanGenerator.getSectionsBySeasonPhaseAgeGroupLevelNumOfWeeks(
+          SeasonPhase.COMPETITION,
+          WorkoutConstants.AGE_GROUPS.ADULT,
+          WorkoutConstants.LEVELS.PROFESSIONAL,
+          12,
+          false, // no weights - should convert MAX to SWR2
+          false,
+        );
+
+      expect(result).toHaveLength(4);
+      // MAX sections should be converted to SWR2
+      expect(result[0]).toMatchObject({
+        type: "SWR2",
+        numOfWeeks: 3,
+        cardioType: "CARDIO_2",
+      });
+      expect(result[1]).toMatchObject({
+        type: "SWR2",
+        numOfWeeks: 3,
+        cardioType: "CARDIO_1_SHORT",
+      });
+      expect(result[2]).toMatchObject({
+        type: "SK",
+        numOfWeeks: 3,
+        cardioType: "CARDIO_2",
+      });
+      expect(result[3]).toMatchObject({
+        type: "SWR2",
+        numOfWeeks: 3,
+        cardioType: "CARDIO_1_LAKTAT",
+      });
     });
   });
 

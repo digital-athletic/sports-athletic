@@ -11,3 +11,6 @@ export type TrainingSectionType = {
   cardioType: CardioTypes;
   trainings: UserTrainingType[];
 };
+
+// Intermediate type: section with start date but no trainings yet
+export type SectionWithStartType = Omit<TrainingSectionType, "trainings">;

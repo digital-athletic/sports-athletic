@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { CardioTypesSchema, SectionTypesSchema } from "./common.schema";
 
 // Direction schemas - use string for direction values to accommodate all variants
 export const SideTypeSchema = v.picklist(["BOTH", "ONE"]);
@@ -20,15 +21,18 @@ export type DirectionsMap = v.InferOutput<typeof DirectionsMapSchema>;
 
 // Training Section schemas
 export const SectionEntrySchema = v.object({
-  type: v.string(),
+  type: SectionTypesSchema,
   numOfWeeks: v.number(),
-  cardioType: v.string(),
+  cardioType: CardioTypesSchema,
 });
 export type SectionEntry = v.InferOutput<typeof SectionEntrySchema>;
 
-export const TrainingSectionsMapSchema = v.looseObject({
-  repeat: v.optional(v.array(SectionEntrySchema)),
-});
+// Uses objectWithRest to type both the explicit 'repeat' property and
+// numeric week keys (1-20) which map to SectionEntry arrays
+export const TrainingSectionsMapSchema = v.objectWithRest(
+  { repeat: v.optional(v.array(SectionEntrySchema)) },
+  v.array(SectionEntrySchema),
+);
 export type TrainingSectionsMap = v.InferOutput<
   typeof TrainingSectionsMapSchema
 >;

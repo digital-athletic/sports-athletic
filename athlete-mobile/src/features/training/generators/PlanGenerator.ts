@@ -9,10 +9,19 @@ import {
   type SectionTypes,
 } from "@/constants/workoutConstants";
 import { type ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
-import { type SeasonPhaseType } from "@/features/training/models/SeasonPhase";
+import {
+  SeasonPhase,
+  type SeasonPhaseType,
+} from "@/features/training/models/SeasonPhase";
 import { type TrainingDayType } from "@/features/training/models/TrainingDay";
-import { type TrainingPlanType } from "@/features/training/models/TrainingPlan";
-import { type TrainingSectionType } from "@/features/training/models/TrainingSection";
+import {
+  type TrainingPlanInitialType,
+  type TrainingPlanType,
+} from "@/features/training/models/TrainingPlan";
+import {
+  type SectionWithStartType,
+  type TrainingSectionType,
+} from "@/features/training/models/TrainingSection";
 import { type ExerciseType } from "@/schemas/exercise.schema";
 import { type SkillTreeType } from "@/schemas/skillTree.schema";
 import { type UserType } from "@/schemas/user.schema";
@@ -51,8 +60,11 @@ import {
   type DurationTagMap,
   type PlanStructure,
   type RegionConfig,
+  type SectionEntry,
   type StudioPreferencePlans,
+  type TrainingSectionsMap,
 } from "@/schemas/generator.schema";
+
 import { cloneWithValidation } from "@/utils/cloneWithValidation";
 import { dateToDDMMYYYY, DDMMYYYYToDate } from "@/utils/date";
 import { getTagValues } from "@/utils/tagUtils";
@@ -201,7 +213,7 @@ export default class PlanGenerator {
     }
 
     //create new training plan
-    let trainingPlan: TrainingPlanType = this.initializeTrainingPlan(
+    const initialPlan = this.initializeTrainingPlan(
       seasonPhase,
       ageGroup,
       position,
@@ -211,26 +223,31 @@ export default class PlanGenerator {
       true, // treat all as GK till SA is fixed
       // position === "GOAL"
     );
-    if (PlanGenerator.DEBUG) console.log("InitializedPlan: ", trainingPlan);
+    if (PlanGenerator.DEBUG) console.log("InitializedPlan: ", initialPlan);
 
     //for every trainingPlan section for all the user's training(day)s
-    for (let i = 0; i < trainingPlan.sections.length; i++) {
-      const section = trainingPlan.sections[i];
-      trainingPlan.sections[i] = this.createSection(
-        section,
-        userTrainingDays,
-        places,
-        seasonPhase,
-        user,
-        hasPain,
-        ageGroup,
-        level,
-        prevention,
-        exercisesList,
-        skillTrees,
-        exerciseBranchData,
-      );
-    }
+    const sections: TrainingSectionType[] = initialPlan.sections.map(
+      (section) =>
+        this.createSection(
+          section,
+          userTrainingDays,
+          places,
+          seasonPhase,
+          user,
+          hasPain,
+          ageGroup,
+          level,
+          prevention,
+          exercisesList,
+          skillTrees,
+          exerciseBranchData,
+        ),
+    );
+
+    const trainingPlan: TrainingPlanType = {
+      start: initialPlan.start,
+      sections,
+    };
     if (PlanGenerator.DEBUG) console.log("Final TrainingPlan: ", trainingPlan);
 
     return trainingPlan;
@@ -242,7 +259,7 @@ export default class PlanGenerator {
    * then selects exercises for each skill based on user profile and equipment.
    */
   static createSection = (
-    sec: TrainingSectionType,
+    sec: SectionWithStartType,
     userTrainingDays: TrainingDayType[],
     places: PlacesState,
     seasonPhase: SeasonPhaseType,
@@ -260,7 +277,7 @@ export default class PlanGenerator {
       SkillPrioritiesSchema,
       "SkillPriorities",
     ); // Do not write in imported file!
-    sec.trainings = [];
+    const trainings: TrainingSectionType["trainings"] = [];
     const section = sec.type;
     const cardioType = sec.cardioType;
 
@@ -723,7 +740,7 @@ export default class PlanGenerator {
           }
         }
 
-        sec.trainings.push({
+        trainings.push({
           weekday: day.weekday,
           skills: exercises,
           lengths: timePerSkill,
@@ -733,12 +750,13 @@ export default class PlanGenerator {
         if (PlanGenerator.DEBUG)
           console.log(
             "Section: Day " + trDay + " - Training: ",
-            sec.trainings[sec.trainings.length - 1],
+            trainings[trainings.length - 1],
           );
       }
     }
-    if (PlanGenerator.DEBUG) console.log("Section: ", sec);
-    return sec;
+    const result: TrainingSectionType = { ...sec, trainings };
+    if (PlanGenerator.DEBUG) console.log("Section: ", result);
+    return result;
   };
 
   /**
@@ -1137,17 +1155,21 @@ export default class PlanGenerator {
     return result;
   };
 
+  /**
+   * Creates a complete training plan by combining weighted sections with calculated start dates.
+   * Uses season phase, user demographics, and training preferences to determine section structure.
+   */
   static initializeTrainingPlan = (
-    seasonPhase,
-    ageGroup,
-    position,
-    level,
-    hasWeights,
-    startDate,
-    isKeeper,
-  ) => {
+    seasonPhase: SeasonPhaseType,
+    ageGroup: AgeGroupTag,
+    position: string,
+    level: LevelTag,
+    hasWeights: boolean,
+    startDate: Date,
+    isKeeper: boolean,
+  ): TrainingPlanInitialType => {
     //defines type and numOfWeeks for each section
-    let trainingSections = this.getWeightedSections(
+    const sectionConfigs = this.getWeightedSections(
       seasonPhase,
       ageGroup,
       position,
@@ -1156,37 +1178,43 @@ export default class PlanGenerator {
       isKeeper,
     );
 
-    let trainingPlan: TrainingPlanType = {};
-    trainingPlan.start = startDate; // if is update is start of current plan - now otherwise
+    const startDateStr = dateToDDMMYYYY(startDate);
 
     //calculate start for each section
-    trainingSections = this.calculateStartingDates(
-      trainingSections,
-      trainingPlan.start,
+    const trainingSections = this.calculateStartingDates(
+      sectionConfigs,
+      startDateStr,
     );
-    /*const trainSections = trainingSections.map(sec => {
-            sec.start = dateToDDMMYYYY(sec.start);
-            return sec;
-        });*/
+
     if (PlanGenerator.DEBUG)
       console.log("TrainingSections: ", trainingSections);
-    trainingPlan.sections = trainingSections; //TODO change to DDMMYYYY everywhere
+
+    const trainingPlan: TrainingPlanInitialType = {
+      start: startDate,
+      sections: trainingSections,
+    };
+
     if (PlanGenerator.DEBUG) console.log("TrainingPlan: ", trainingPlan);
     return trainingPlan;
   };
 
-  //defines type and numOfWeeks for each section
+  /**
+   * Determines training section types and durations based on season phase and user profile.
+   * Delegates to getSectionsBySeasonPhaseAgeGroupLevelNumOfWeeks for section selection.
+   */
   static getWeightedSections = (
     seasonPhase: SeasonPhaseType,
-    ageGroup,
-    position,
-    level,
-    hasWeights,
-    isKeeper,
-  ): TrainingSectionType[] => {
-    let numOfWeeks = seasonPhase.numOfWeeks;
-    let sections = this.getSectionsBySeasonPhaseAgeGroupLevelNumOfWeeks(
-      seasonPhase.type,
+    ageGroup: AgeGroupTag,
+    position: string,
+    level: LevelTag,
+    hasWeights: boolean,
+    isKeeper: boolean,
+  ): SectionEntry[] => {
+    const numOfWeeks = seasonPhase.numOfWeeks ?? 0;
+    const phaseType = (seasonPhase.type ??
+      SeasonPhase.PREPATORY) as SeasonPhase;
+    const sections = this.getSectionsBySeasonPhaseAgeGroupLevelNumOfWeeks(
+      phaseType,
       ageGroup,
       level,
       numOfWeeks,
@@ -1197,10 +1225,14 @@ export default class PlanGenerator {
     return sections;
   };
 
+  /**
+   * Calculates sequential start dates for training sections based on a plan start date.
+   * Adjusts the start date to the next Monday if needed, then offsets each section by cumulative weeks.
+   */
   static calculateStartingDates = (
-    trainingSections: TrainingSectionType[],
+    trainingSections: SectionEntry[],
     trainingPlanStart: string,
-  ): TrainingSectionType[] => {
+  ): SectionWithStartType[] => {
     let d = DDMMYYYYToDate(trainingPlanStart);
     //next monday(1)
     if (d.getDay() !== 1) {
@@ -2186,21 +2218,27 @@ export default class PlanGenerator {
     return region.default; // default should always be set
   };
 
+  /**
+   * Selects appropriate training section templates based on season phase, age group, and level.
+   * Handles plans longer than 20 weeks by repeating sections. Adjusts MAX to SWR2 for beginners
+   * or users without weights, and converts SA to SK for keepers.
+   */
   static getSectionsBySeasonPhaseAgeGroupLevelNumOfWeeks = (
-    seasonPhase: string,
-    ageGroup: string,
-    level: string,
+    seasonPhase: SeasonPhase,
+    ageGroup: AgeGroupTag,
+    level: LevelTag,
     numOfWeeks: number,
     hasWeights: boolean,
     isKeeper: boolean,
-  ) => {
+  ): SectionEntry[] => {
     const sp = seasonPhase.toLowerCase();
     const ag =
       ageGroup.toLowerCase() === "adolescent"
         ? "adult"
         : ageGroup.toLowerCase(); // treat adolescents as adults
     const lv = level.toLowerCase();
-    let sectionsGroup = null;
+    // sectionsGroup contains numeric keys (1-20) mapping to section arrays, plus optional repeat array
+    let sectionsGroup: TrainingSectionsMap | null = null;
     if (PlanGenerator.DEBUG) {
       console.log(
         "Find training sections for " +
@@ -2366,41 +2404,47 @@ export default class PlanGenerator {
     if (PlanGenerator.DEBUG) {
       console.log("Found training sections", sectionsGroup);
     }
-    let sections = sectionsGroup[20];
+
+    if (!sectionsGroup) {
+      return [];
+    }
+
+    let sections: SectionEntry[] = [...(sectionsGroup[20] ?? [])];
     if (typeof sectionsGroup[numOfWeeks] === "undefined") {
       // numOfWeeks is bigger than 20, add more sections
-      const repeat = sectionsGroup["repeat"];
-      let remainingWeeks = numOfWeeks - 20;
-      let i = 0;
-      while (remainingWeeks > 0) {
-        if (i === repeat.length) {
-          // go back to start of reapeat
-          i = 0;
-        }
-        // add new section
-        let nextSection = Object.assign({}, repeat[i]);
-        nextSection.numOfWeeks = 0;
-        for (let k = repeat[i].numOfWeeks; k > 0; k--) {
-          if (remainingWeeks === 0) break;
-          // add week to section
-          nextSection.numOfWeeks++;
-          remainingWeeks--;
-        }
-        if (
-          sections[sections.length - 1].type === nextSection.type &&
-          sections[sections.length - 1].cardioType === nextSection.cardioType
-        ) {
-          // add weeks to existing section
-          sections[sections.length - 1].numOfWeeks += nextSection.numOfWeeks;
-        } else {
+      const repeat = sectionsGroup.repeat;
+      if (repeat && repeat.length > 0) {
+        let remainingWeeks = numOfWeeks - 20;
+        let i = 0;
+        while (remainingWeeks > 0) {
+          if (i === repeat.length) {
+            // go back to start of repeat
+            i = 0;
+          }
           // add new section
-          sections.push(nextSection);
+          const nextSection: SectionEntry = { ...repeat[i], numOfWeeks: 0 };
+          for (let k = repeat[i].numOfWeeks; k > 0; k--) {
+            if (remainingWeeks === 0) break;
+            // add week to section
+            nextSection.numOfWeeks++;
+            remainingWeeks--;
+          }
+          if (
+            sections[sections.length - 1].type === nextSection.type &&
+            sections[sections.length - 1].cardioType === nextSection.cardioType
+          ) {
+            // add weeks to existing section
+            sections[sections.length - 1].numOfWeeks += nextSection.numOfWeeks;
+          } else {
+            // add new section
+            sections.push(nextSection);
+          }
+          i++;
         }
-        i++;
       }
     } else {
       // set sections from preset
-      sections = sectionsGroup[numOfWeeks];
+      sections = [...(sectionsGroup[numOfWeeks] ?? [])];
     }
 
     if (PlanGenerator.DEBUG) {

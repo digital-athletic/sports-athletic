@@ -39,13 +39,13 @@ export const GenderTagSchema = v.picklist(["default", "m", "w", "k"]);
 export type GenderTagType = v.InferOutput<typeof GenderTagSchema>;
 
 export const CardioTypesSchema = v.picklist([
-  "ZONE_1",
-  "ZONE_1_SHORT",
-  "ZONE_1_LAKTAT",
-  "ZONE_2",
-  "ZONE_3",
-  "ZONE_4",
-  "ZONE_5",
+  "CARDIO_1",
+  "CARDIO_1_SHORT",
+  "CARDIO_1_LAKTAT",
+  "CARDIO_2",
+  "CARDIO_3",
+  "CARDIO_4",
+  "CARDIO_5",
 ]);
 export type CardioTypesSchemaType = v.InferOutput<typeof CardioTypesSchema>;
 

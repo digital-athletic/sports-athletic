@@ -125,7 +125,7 @@ const STORE_DATA = {
             start: "20-01-2026",
             numOfWeeks: 3,
             type: "SWR1",
-            cardioType: "ZONE_3",
+            cardioType: "CARDIO_3",
             trainings: [
               {
                 weekday: 1,

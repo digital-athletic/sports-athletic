@@ -1,10 +1,12 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const connectOptions = {
-  connectOptions: {
-    wsEndpoint: "ws://localhost:9323",
-  },
-};
+const connectOptions = process.env.CI
+  ? {}
+  : {
+      connectOptions: {
+        wsEndpoint: "ws://localhost:9323",
+      },
+    };
 
 export default defineConfig({
   testDir: "./e2e",

@@ -114,6 +114,24 @@ describe("PlanGenerator", () => {
       const result = PlanGenerator.replaceUserSpecificSkill("SWR1", "ADULT");
       expect(result).toBe("SWR1");
     });
+
+    it("should replace PREV2 with GKS for children without prevSkill", () => {
+      const result = PlanGenerator.replaceUserSpecificSkill("PREV2", "CHILD");
+      expect(result).toBe("GKS");
+    });
+
+    it("should replace PREV3 with BAS for children without prevSkill", () => {
+      const result = PlanGenerator.replaceUserSpecificSkill("PREV3", "CHILD");
+      expect(result).toBe("BAS");
+    });
+
+    it("should return null for WUSPEZIAL when no prevSkill is provided", () => {
+      const result = PlanGenerator.replaceUserSpecificSkill(
+        "WUSPEZIAL",
+        "ADULT",
+      );
+      expect(result).toBeNull();
+    });
   });
 
   describe("getTrainingDayGroups", () => {
@@ -484,6 +502,52 @@ describe("PlanGenerator", () => {
       );
       expect(result).toBeDefined();
     });
+
+    it("should return cardio region tags for CARDIO skills", () => {
+      const result = PlanGenerator.getTagsForSkill("CARDIO_1_SHORT");
+      expect(result).toEqual({
+        10: [{ tags: [], count: 1 }],
+      });
+    });
+
+    it("should return default SWR1 tags for unknown skill types", () => {
+      const unknownSkillTags = PlanGenerator.getTagsForSkill("UNKNOWN_SKILL");
+      const swr1Tags = PlanGenerator.getTagsForSkill("SWR1");
+      expect(unknownSkillTags).toEqual(swr1Tags);
+    });
+
+    it("should return default tags when adult with non-professional level", () => {
+      const result = PlanGenerator.getTagsForSkill(
+        "SA",
+        WorkoutConstants.AGE_GROUPS.ADULT,
+        WorkoutConstants.LEVELS.BEGINNER,
+      );
+      expect(result).toEqual({
+        15: [
+          { tags: ["REGION_OBERKOERPER", "REGION_UNTERKOERPER"], count: 2 },
+          { tags: ["SKILL_SAS"], count: 1 },
+        ],
+        20: [
+          { tags: ["REGION_OBERKOERPER"], count: 2 },
+          { tags: ["REGION_UNTERKOERPER"], count: 2 },
+        ],
+        25: [
+          { tags: ["REGION_OBERKOERPER"], count: 2 },
+          { tags: ["REGION_UNTERKOERPER"], count: 2 },
+          { tags: ["SKILL_SAS"], count: 2 },
+        ],
+        30: [
+          { tags: ["REGION_OBERKOERPER"], count: 2 },
+          { tags: ["REGION_UNTERKOERPER"], count: 2 },
+          { tags: ["SKILL_SAS"], count: 2 },
+        ],
+        35: [
+          { tags: ["REGION_OBERKOERPER"], count: 3 },
+          { tags: ["REGION_UNTERKOERPER"], count: 3 },
+          { tags: ["SKILL_SAS"], count: 1 },
+        ],
+      });
+    });
   });
 
   /**
@@ -630,6 +694,67 @@ describe("PlanGenerator", () => {
       expect(result).toHaveProperty("nonStudio");
       expect(Array.isArray(result.studio)).toBe(true);
       expect(Array.isArray(result.nonStudio)).toBe(true);
+    });
+
+    it("should keep original plan structure when 3 consecutive training days exist", () => {
+      const planStructures = [
+        { PHASE: ["SWR1", "SA"] },
+        { PHASE: ["SK", "MAX"] },
+        { PHASE: ["BAS", "GKS"] },
+      ];
+      const activeTrainingDays = [
+        { weekday: 1, active: true },
+        { weekday: 2, active: true },
+        { weekday: 3, active: true },
+      ];
+
+      const result = PlanGenerator.getStudioPreferencePlans(
+        planStructures,
+        activeTrainingDays,
+      );
+
+      expect(result.studio.length + result.nonStudio.length).toBe(3);
+    });
+
+    it("should adjust plan structure to 1-2-1 pattern when training days have gaps", () => {
+      const planStructures = [
+        { PHASE: ["SWR1"] },
+        { PHASE: ["SK"] },
+        { PHASE: ["MAX"] },
+      ];
+      const activeTrainingDays = [
+        { weekday: 1, active: true },
+        { weekday: 3, active: true },
+        { weekday: 5, active: true },
+      ];
+
+      const result = PlanGenerator.getStudioPreferencePlans(
+        planStructures,
+        activeTrainingDays,
+      );
+
+      expect(result.studio).toBeDefined();
+      expect(result.nonStudio).toBeDefined();
+    });
+
+    it("should handle wrap-around consecutive days (Sat-Sun-Mon)", () => {
+      const planStructures = [
+        { PHASE: ["SWR1", "SA"] },
+        { PHASE: ["SK", "MAX"] },
+        { PHASE: ["BAS", "GKS"] },
+      ];
+      const activeTrainingDays = [
+        { weekday: 6, active: true },
+        { weekday: 0, active: true },
+        { weekday: 1, active: true },
+      ];
+
+      const result = PlanGenerator.getStudioPreferencePlans(
+        planStructures,
+        activeTrainingDays,
+      );
+
+      expect(result.studio.length + result.nonStudio.length).toBe(3);
     });
   });
 

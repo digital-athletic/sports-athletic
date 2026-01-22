@@ -48,6 +48,10 @@ import {
   TrainingSectionsMapSchema,
   WorkoutArraySchema,
   type DirectionsMap,
+  type DurationTagMap,
+  type PlanStructure,
+  type RegionConfig,
+  type StudioPreferencePlans,
 } from "@/schemas/generator.schema";
 import { cloneWithValidation } from "@/utils/cloneWithValidation";
 import { dateToDDMMYYYY, DDMMYYYYToDate } from "@/utils/date";
@@ -1028,7 +1032,15 @@ export default class PlanGenerator {
     return maxTime;
   };
 
-  static getStudioPreferencePlans = (planStructures, activeTrainingDays) => {
+  /**
+   * Separates plan structures into studio and non-studio categories based on skill types.
+   * Also adjusts the plan structure to a 1-2-1 pattern when training days have gaps between them.
+   * For 3-day plans with consecutive training days, keeps all three distinct structures.
+   */
+  static getStudioPreferencePlans = (
+    planStructures: PlanStructure[],
+    activeTrainingDays: Pick<TrainingDayType, "weekday">[],
+  ): StudioPreferencePlans => {
     let daysInRow = 1;
     for (let i = 0; i < activeTrainingDays.length; i++) {
       const weekday = activeTrainingDays[i].weekday;
@@ -1057,12 +1069,12 @@ export default class PlanGenerator {
       // use all three days
     }
 
-    let studio = [];
-    let nonStudio = [];
+    const studio: PlanStructure[] = [];
+    const nonStudio: PlanStructure[] = [];
     // get plan structures for studio and no studio days
     planStructures.forEach((entry) => {
-      for (let curr of Object.values(entry)) {
-        for (let skill of curr) {
+      for (const curr of Object.values(entry) as string[][]) {
+        for (const skill of curr) {
           if (skill === "PHASE" || skill.indexOf("CARDIO")) {
             studio.push(entry);
             return;
@@ -1077,13 +1089,18 @@ export default class PlanGenerator {
     };
   };
 
+  /**
+   * Replaces generic skill placeholders with user-specific skills based on age group and prevention needs.
+   * Handles PREV skill replacements (prevention exercises), WUSPEZIAL (special warm-up), and
+   * weight-based skill alternatives for children (SWR1->SWR1KG, SWR2->SWR2KG).
+   */
   static replaceUserSpecificSkill = (
     skill: string | null,
-    ageGroup: "CHILD" | "ADOLESCENT" | "ADULT",
+    ageGroup: AgeGroupTag,
     prevSkill?: string | null,
   ): string | null => {
     if (skill === null) return skill;
-    let result = skill;
+    let result: string | null = skill;
     //get user specific prevention
     if (["PREV", "PREV1", "PREV2", "PREV3", "PREV4"].indexOf(skill) > -1) {
       if (prevSkill) {
@@ -2059,15 +2076,20 @@ export default class PlanGenerator {
     return counter;
   };
 
+  /**
+   * Returns the exercise selection tags for a given skill type, optionally adjusted for age and level.
+   * Maps skills to their corresponding body region configurations (e.g., SWR1 -> RegionSWR1).
+   * Returns child-specific tags for children, professional tags for professional level, or default tags otherwise.
+   */
   static getTagsForSkill = (
     skill: string,
-    age?: string | null,
-    level?: string | null,
-  ) => {
+    age?: AgeGroupTag | string | null,
+    level?: LevelTag | string | null,
+  ): DurationTagMap => {
     if (PlanGenerator.DEBUG) {
       console.log("get tags for skill", skill, age, level);
     }
-    let region = RegionSWR1;
+    let region: RegionConfig = RegionSWR1;
     switch (skill) {
       case "CARDIO_1_SHORT":
       case "CARDIO_1_LAKTAT":

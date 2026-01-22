@@ -80,6 +80,31 @@ export type SkillsMap = v.InferOutput<typeof SkillsMapSchema>;
 export const PlanStructureSchema = v.looseObject({});
 export type PlanStructure = v.InferOutput<typeof PlanStructureSchema>;
 
+// Studio preference plans return type
+export type StudioPreferencePlans = {
+  studio: PlanStructure[];
+  nonStudio: PlanStructure[];
+};
+
+// Region tag entry (used in skill tag configurations)
+export type RegionTagEntry = {
+  readonly tags: readonly string[];
+  readonly count: number;
+  readonly support?: boolean;
+};
+
+// Duration-to-tags mapping (e.g., { 20: [...], 25: [...] })
+export type DurationTagMap = {
+  readonly [key: number]: readonly RegionTagEntry[];
+};
+
+// Region configuration with optional child/professional variants
+export type RegionConfig = {
+  readonly default: DurationTagMap;
+  readonly child?: DurationTagMap;
+  readonly professional?: DurationTagMap;
+};
+
 // Fallback section schema (used in mapFallbackSections)
 export const FallbackSectionSchema = v.looseObject({
   length: v.optional(v.number()),

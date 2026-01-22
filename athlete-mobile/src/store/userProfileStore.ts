@@ -1,3 +1,4 @@
+import { SharedConstants } from "@/constants/sharedConstants";
 import { dateToDDMMYYYY } from "@/utils/date";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -10,14 +11,29 @@ export interface UserPersonalDataType {
   birthday: string; // DD-MM-YYYY format
 }
 
-export interface UserProfileState {
+type State = {
   userId: string | null;
   personalData: UserPersonalDataType;
   isInInitialAnamnesis: boolean;
   anamnesisCompleted: boolean;
   teamId: string | null;
+};
 
-  // Actions
+const DEFAULT_PERSONAL_DATA: UserPersonalDataType = {
+  username: "",
+  gender: "MALE",
+  birthday: dateToDDMMYYYY(new Date()),
+};
+
+const DEFAULT_STATE: State = {
+  userId: null,
+  personalData: { ...DEFAULT_PERSONAL_DATA },
+  isInInitialAnamnesis: false,
+  anamnesisCompleted: false,
+  teamId: null,
+};
+
+type Actions = {
   setUserId: (userId: string | null) => void;
   setUsername: (username: string) => void;
   setGender: (gender: "MALE" | "FEMALE") => void;
@@ -27,16 +43,13 @@ export interface UserProfileState {
   setAnamnesisCompleted: (completed: boolean) => void;
   setTeamId: (teamId: string | null) => void;
   clearProfile: () => void;
-
-  // Selectors
-  getAge: () => number | null;
-}
-
-const DEFAULT_PERSONAL_DATA: UserPersonalDataType = {
-  username: "",
-  gender: "MALE",
-  birthday: dateToDDMMYYYY(new Date()),
 };
+
+type Selectors = {
+  getAge: () => number | null;
+};
+
+export type UserProfileState = State & Actions & Selectors;
 
 /**
  * User Profile Store
@@ -63,11 +76,7 @@ const DEFAULT_PERSONAL_DATA: UserPersonalDataType = {
 export const useUserProfileStore = create<UserProfileState>()(
   persist(
     immer((set, get) => ({
-      userId: null,
-      personalData: { ...DEFAULT_PERSONAL_DATA },
-      isInInitialAnamnesis: false,
-      anamnesisCompleted: false,
-      teamId: null,
+      ...DEFAULT_STATE,
 
       setUserId: (userId) =>
         set((state) => {
@@ -143,6 +152,11 @@ export const useUserProfileStore = create<UserProfileState>()(
     {
       name: "user-profile-storage",
       storage: asyncStorage,
+      version: SharedConstants.PERSIST_VERSION,
+      migrate: (persistedState, version) =>
+        version < SharedConstants.PERSIST_VERSION
+          ? DEFAULT_STATE
+          : persistedState,
     },
   ),
 );

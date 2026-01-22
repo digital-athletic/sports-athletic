@@ -1,3 +1,4 @@
+import { SharedConstants } from "@/constants/sharedConstants";
 import { isSkillTypes } from "@/constants/workoutConstants";
 import { ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
 import {
@@ -21,28 +22,11 @@ import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
 
-export interface UserWorkoutState {
+type State = {
   workoutData: UserWorkoutDataType;
   trainingPlan: TrainingPlanType | null;
   temporalData?: TemporalDataType[];
-
-  // Actions
-  setWorkoutData: (data: Partial<UserWorkoutDataType>) => void;
-  setSport: (sport: Sport) => void;
-  setSeasonPhase: (phase: SeasonPhaseType, startDate?: Date) => void;
-  setTags: (tags: string[]) => void;
-  setTrainingPlan: (plan: TrainingPlanType | null) => void;
-  setTemporalData: (data: TemporalDataType[]) => void;
-  resetUserWorkoutData: () => void;
-  replaceBranchInTrainingPlan: (
-    sectionIndex: number,
-    weekday: number,
-    skillId: string,
-    branchIdToReplace: string,
-    branchesToFillIn: ExerciseBranchType[],
-  ) => void;
-  saveMaxValues: (maxValues: MaxValuesType) => void;
-}
+};
 
 const DEFAULT_WORKOUT_DATA: UserWorkoutDataType = {
   anamnesisCompleted: false,
@@ -58,6 +42,32 @@ const DEFAULT_WORKOUT_DATA: UserWorkoutDataType = {
   },
   maxValues: DEFAULT_MAX_VALUES,
 };
+
+const DEFAULT_STATE: State = {
+  workoutData: DEFAULT_WORKOUT_DATA,
+  trainingPlan: null,
+  temporalData: undefined,
+};
+
+type Actions = {
+  setWorkoutData: (data: Partial<UserWorkoutDataType>) => void;
+  setSport: (sport: Sport) => void;
+  setSeasonPhase: (phase: SeasonPhaseType, startDate?: Date) => void;
+  setTags: (tags: string[]) => void;
+  setTrainingPlan: (plan: TrainingPlanType | null) => void;
+  setTemporalData: (data: TemporalDataType[]) => void;
+  resetUserWorkoutData: () => void;
+  replaceBranchInTrainingPlan: (
+    sectionIndex: number,
+    weekday: number,
+    skillId: string,
+    branchIdToReplace: string,
+    branchesToFillIn: ExerciseBranchType[],
+  ) => void;
+  saveMaxValues: (maxValues: MaxValuesType) => void;
+};
+
+export type UserWorkoutState = State & Actions;
 
 /**
  * User Workout Store
@@ -82,9 +92,7 @@ const DEFAULT_WORKOUT_DATA: UserWorkoutDataType = {
 export const useUserWorkoutStore = create<UserWorkoutState>()(
   persist(
     immer((set, get) => ({
-      workoutData: DEFAULT_WORKOUT_DATA,
-      trainingPlan: null,
-      temporalData: undefined,
+      ...DEFAULT_STATE,
 
       setWorkoutData: (data) =>
         set((state) => {
@@ -181,6 +189,11 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
     {
       name: "user-workout-storage",
       storage: asyncStorage,
+      version: SharedConstants.PERSIST_VERSION,
+      migrate: (persistedState, version) =>
+        version < SharedConstants.PERSIST_VERSION
+          ? DEFAULT_STATE
+          : persistedState,
     },
   ),
 );

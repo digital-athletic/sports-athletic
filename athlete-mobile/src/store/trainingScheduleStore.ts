@@ -1,3 +1,4 @@
+import { SharedConstants } from "@/constants/sharedConstants";
 import { PlaceType } from "@/constants/workoutConstants";
 import { TrainingDayType } from "@/features/training/models/TrainingDay";
 import { create } from "zustand";
@@ -5,20 +6,9 @@ import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
 
-export interface TrainingScheduleState {
+type State = {
   trainingDays: TrainingDayType[];
-
-  // Actions
-  setTrainingDays: (days: TrainingDayType[]) => void;
-  toggleDay: (weekday: number) => void;
-  setDayLocation: (weekday: number, placeId: PlaceType) => void;
-  setDayDuration: (weekday: number, duration: number) => void;
-  resetToDefaults: () => void;
-
-  // Selectors
-  getActiveTrainingDays: () => TrainingDayType[];
-  getTotalActiveHours: () => number;
-}
+};
 
 const DEFAULT_TRAINING_DAYS: TrainingDayType[] = [
   {
@@ -65,6 +55,25 @@ const DEFAULT_TRAINING_DAYS: TrainingDayType[] = [
   },
 ];
 
+const DEFAULT_STATE: State = {
+  trainingDays: DEFAULT_TRAINING_DAYS,
+};
+
+type Actions = {
+  setTrainingDays: (days: TrainingDayType[]) => void;
+  toggleDay: (weekday: number) => void;
+  setDayLocation: (weekday: number, placeId: PlaceType) => void;
+  setDayDuration: (weekday: number, duration: number) => void;
+  resetToDefaults: () => void;
+};
+
+type Selectors = {
+  getActiveTrainingDays: () => TrainingDayType[];
+  getTotalActiveHours: () => number;
+};
+
+export type TrainingScheduleState = State & Actions & Selectors;
+
 /**
  * Training Schedule Store
  *
@@ -88,7 +97,7 @@ const DEFAULT_TRAINING_DAYS: TrainingDayType[] = [
 export const useTrainingScheduleStore = create<TrainingScheduleState>()(
   persist(
     immer((set, get) => ({
-      trainingDays: DEFAULT_TRAINING_DAYS,
+      ...DEFAULT_STATE,
 
       setTrainingDays: (days) =>
         set((state) => {
@@ -140,6 +149,11 @@ export const useTrainingScheduleStore = create<TrainingScheduleState>()(
     {
       name: "training-schedule-storage",
       storage: asyncStorage,
+      version: SharedConstants.PERSIST_VERSION,
+      migrate: (persistedState, version) =>
+        version < SharedConstants.PERSIST_VERSION
+          ? DEFAULT_STATE
+          : persistedState,
     },
   ),
 );

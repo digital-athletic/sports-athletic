@@ -117,6 +117,10 @@ pnpm lint
 # Format code
 pnpm format-check
 pnpm format-fix
+
+# Increment persisted store verson (See: PERSIST_VERSION in sharedConstants.ts)
+# Resets persisted store to default values
+pnpm bump:persist-version
 ```
 
 ## Helpful Resources

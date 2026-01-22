@@ -1,20 +1,29 @@
+import { SharedConstants } from "@/constants/sharedConstants";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
 
-export interface ExercisesState {
+type State = {
   exercises: ExerciseType[] | null;
+};
 
-  // Actions
+const DEFAULT_STATE: State = {
+  exercises: null,
+};
+
+type Actions = {
   setExercises: (exercises: ExerciseType[]) => void;
   clearExercises: () => void;
+};
 
-  // Selectors
+type Selectors = {
   getExerciseById: (id: string) => ExerciseType | undefined;
   getExercisesByTag: (tag: string) => ExerciseType[];
-}
+};
+
+export type ExercisesState = State & Actions & Selectors;
 
 /**
  * Exercises Store
@@ -36,7 +45,7 @@ export interface ExercisesState {
 export const useExercisesStore = create<ExercisesState>()(
   persist(
     immer((set, get) => ({
-      exercises: null,
+      ...DEFAULT_STATE,
 
       setExercises: (exercises) =>
         set((state) => {
@@ -63,6 +72,11 @@ export const useExercisesStore = create<ExercisesState>()(
     {
       name: "exercises-storage",
       storage: asyncStorage,
+      version: SharedConstants.PERSIST_VERSION,
+      migrate: (persistedState, version) =>
+        version < SharedConstants.PERSIST_VERSION
+          ? DEFAULT_STATE
+          : persistedState,
     },
   ),
 );

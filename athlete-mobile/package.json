@@ -16,14 +16,16 @@
     "type-check": "tsc --noEmit",
     "test": "jest",
     "test:e2e": "playwright test",
+    "bump:persist-version": "tsx scripts/bump-persist-version.ts",
+    "prepare:build": "pnpm clean:build && pnpm bump:persist-version",
     "expo-router-generate-types": "expo customize tsconfig.json",
-    "build:device-dev-client": "pnpm run clean:build && pnpm dlx eas-cli@latest build --profile development",
-    "build:simulator-dev-client": "pnpm run clean:build && pnpm dlx eas-cli@latest build --profile development-simulator",
-    "build:preview": "pnpm run clean:build && pnpm dlx eas-cli@latest build --profile preview",
-    "build:production": "pnpm run clean:build && pnpm dlx eas-cli@latest build --profile production",
-    "submit:preview": "pnpm run clean:build && pnpm dlx eas-cli@latest build --profile preview --auto-submit",
-    "update:preview": "pnpm run clean:build && pnpm dlx eas-cli@latest update --channel preview --environment preview",
-    "update:production": "pnpm run clean:build && pnpm dlx eas-cli@latest update --channel production --environment production"
+    "build:device-dev-client": "pnpm prepare:build && pnpm dlx eas-cli@latest build --profile development",
+    "build:simulator-dev-client": "pnpm prepare:build && pnpm dlx eas-cli@latest build --profile development-simulator",
+    "build:preview": "pnpm prepare:build && pnpm dlx eas-cli@latest build --profile preview",
+    "build:production": "pnpm prepare:build && pnpm dlx eas-cli@latest build --profile production",
+    "submit:preview": "pnpm prepare:build && pnpm dlx eas-cli@latest build --profile preview --auto-submit",
+    "update:preview": " pnpm clean:build && pnpm dlx eas-cli@latest update --channel preview --environment preview",
+    "update:production": "pnpm clean:build && pnpm dlx eas-cli@latest update --channel production --environment production"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -75,6 +77,7 @@
     "jest": "~29.7.0",
     "jest-expo": "~54.0.16",
     "prettier": "3.6.2",
+    "tsx": "^4.21.0",
     "typescript": "~5.9.2"
   },
   "packageManager": "pnpm@10.25.0"

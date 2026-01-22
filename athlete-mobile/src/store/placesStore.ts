@@ -1,3 +1,4 @@
+import { SharedConstants } from "@/constants/sharedConstants";
 import { PlaceType } from "@/constants/workoutConstants";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -13,23 +14,18 @@ export type PlaceEquipment = {
   equipment: string[];
 };
 
-export type PlacesState = {
+export type PlacesData = {
   HOME: PlaceEquipment;
   STUDIO: PlaceEquipment;
   HALL: PlaceEquipment;
   OUTSIDE: PlaceEquipment;
 };
 
-export interface PlacesStoreState {
-  places: PlacesState;
+type State = {
+  places: PlacesData;
+};
 
-  // Actions
-  setPlaceEquipment: (placeId: PlaceType, equipment: string[]) => void;
-  toggleEquipment: (placeId: PlaceType, equipmentId: string) => void;
-  getPlaceEquipment: (placeId: PlaceType) => string[];
-}
-
-const DEFAULT_PLACES: PlacesState = {
+const DEFAULT_PLACES: PlacesData = {
   HOME: {
     name: "HOME",
     equipment: HOME.EQUIPMENT,
@@ -47,6 +43,18 @@ const DEFAULT_PLACES: PlacesState = {
     equipment: OUTSIDE.EQUIPMENT,
   },
 };
+
+const DEFAULT_STATE: State = {
+  places: DEFAULT_PLACES,
+};
+
+type Actions = {
+  setPlaceEquipment: (placeId: PlaceType, equipment: string[]) => void;
+  toggleEquipment: (placeId: PlaceType, equipmentId: string) => void;
+  getPlaceEquipment: (placeId: PlaceType) => string[];
+};
+
+export type PlacesStoreState = State & Actions;
 
 /**
  * Places Store
@@ -96,6 +104,11 @@ export const usePlacesStore = create<PlacesStoreState>()(
     {
       name: "places-storage",
       storage: asyncStorage,
+      version: SharedConstants.PERSIST_VERSION,
+      migrate: (persistedState, version) =>
+        version < SharedConstants.PERSIST_VERSION
+          ? DEFAULT_STATE
+          : persistedState,
     },
   ),
 );

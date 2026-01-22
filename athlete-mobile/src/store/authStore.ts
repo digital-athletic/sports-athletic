@@ -1,8 +1,9 @@
+import { SharedConstants } from "@/constants/sharedConstants";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { asyncStorage } from "./middleware";
 import { supabase } from "../services/supabaseClient";
+import { asyncStorage } from "./middleware";
 
 /**
  * Authentication data structure
@@ -12,18 +13,27 @@ export interface AuthType {
   token: string;
 }
 
-export interface AuthState {
+type State = {
   auth: AuthType | null;
   isInitialized: boolean;
+};
 
-  // Actions
+const DEFAULT_STATE: State = {
+  auth: null,
+  isInitialized: false,
+};
+
+type Actions = {
   setAuth: (auth: AuthType | null) => void;
   clearAuth: () => void;
   initializeFromSupabase: () => Promise<void>;
+};
 
-  // Selectors
+type Selectors = {
   isAuthenticated: () => boolean;
-}
+};
+
+export type AuthState = State & Actions & Selectors;
 
 /**
  * Authentication Store
@@ -50,8 +60,7 @@ export interface AuthState {
 export const useAuthStore = create<AuthState>()(
   persist(
     immer((set, get) => ({
-      auth: null,
-      isInitialized: false,
+      ...DEFAULT_STATE,
 
       setAuth: (auth) =>
         set((state) => {
@@ -85,6 +94,13 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "auth-storage",
       storage: asyncStorage,
+      version: SharedConstants.PERSIST_VERSION,
+      // Migration strategy: Reset to default state on version mismatch
+      // This prevents errors from incompatible persisted data after updates
+      migrate: (persistedState, version) =>
+        version < SharedConstants.PERSIST_VERSION
+          ? DEFAULT_STATE
+          : persistedState,
     },
   ),
 );

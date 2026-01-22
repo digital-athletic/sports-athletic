@@ -1,3 +1,4 @@
+import { SharedConstants } from "@/constants/sharedConstants";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
 import { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { create } from "zustand";
@@ -15,7 +16,7 @@ export type BranchDataMapType = Record<
   UserExerciseBranchDataType | undefined
 >;
 
-export interface ExerciseProgressState {
+type State = {
   // Exercise-level data
   exerciseData: Record<string, UserExerciseDataType | undefined>;
   branchData: BranchDataMapType;
@@ -24,23 +25,36 @@ export interface ExerciseProgressState {
   xp: number;
   level: number;
   testHistory: MaxValuesType[];
+};
 
-  // Actions - Exercise Data
+const DEFAULT_STATE: State = {
+  exerciseData: {},
+  branchData: {},
+  xp: 0,
+  level: 1,
+  testHistory: [],
+};
+
+type Actions = {
+  // Exercise Data
   setExerciseData: (data: Record<string, UserExerciseDataType>) => void;
   updateExercise: (exerciseId: string, data: UserExerciseDataType) => void;
   setBranchLevel: (branchId: string, level: number) => void;
 
-  // Actions - User Progress
+  // User Progress
   addXP: (amount: number) => void;
   setLevel: (level: number) => void;
   addTestResult: (result: MaxValuesType) => void;
   clearProgress: () => void;
+};
 
-  // Selectors
+type Selectors = {
   getExerciseData: (exerciseId: string) => UserExerciseDataType | undefined;
   getBranchLevel: (branchId: string) => number;
   getLatestTestResult: () => MaxValuesType | undefined;
-}
+};
+
+export type ExerciseProgressState = State & Actions & Selectors;
 
 /**
  * Exercise Progress Store
@@ -68,11 +82,7 @@ export interface ExerciseProgressState {
 export const useExerciseProgressStore = create<ExerciseProgressState>()(
   persist(
     immer((set, get) => ({
-      exerciseData: {},
-      branchData: {},
-      xp: 0,
-      level: 1,
-      testHistory: [],
+      ...DEFAULT_STATE,
 
       setExerciseData: (data) =>
         set((state) => {
@@ -226,6 +236,11 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
     {
       name: "exercise-progress-storage",
       storage: asyncStorage,
+      version: SharedConstants.PERSIST_VERSION,
+      migrate: (persistedState, version) =>
+        version < SharedConstants.PERSIST_VERSION
+          ? DEFAULT_STATE
+          : persistedState,
     },
   ),
 );

@@ -1,3 +1,4 @@
+import { SharedConstants } from "@/constants/sharedConstants";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
@@ -9,11 +10,22 @@ export interface ReviewStatusType {
   promptCount?: number;
 }
 
-export interface UserSettingsState {
+type State = {
   reviewStatus: ReviewStatusType;
   anonymisedDataUse: boolean;
+};
 
-  // Actions
+const DEFAULT_REVIEW_STATUS: ReviewStatusType = {
+  hasReviewed: false,
+  promptCount: 0,
+};
+
+const DEFAULT_STATE: State = {
+  reviewStatus: DEFAULT_REVIEW_STATUS,
+  anonymisedDataUse: false,
+};
+
+type Actions = {
   setSettings: (
     settings: Partial<
       Omit<
@@ -24,12 +36,9 @@ export interface UserSettingsState {
   ) => void;
   setReviewStatus: (status: ReviewStatusType) => void;
   setAnonymisedDataUse: (enabled: boolean) => void;
-}
-
-const DEFAULT_REVIEW_STATUS: ReviewStatusType = {
-  hasReviewed: false,
-  promptCount: 0,
 };
+
+export type UserSettingsState = State & Actions;
 
 /**
  * User Settings Store
@@ -51,8 +60,7 @@ const DEFAULT_REVIEW_STATUS: ReviewStatusType = {
 export const useUserSettingsStore = create<UserSettingsState>()(
   persist(
     immer((set) => ({
-      reviewStatus: DEFAULT_REVIEW_STATUS,
-      anonymisedDataUse: false,
+      ...DEFAULT_STATE,
 
       setSettings: (settings) =>
         set((state) => {
@@ -74,6 +82,11 @@ export const useUserSettingsStore = create<UserSettingsState>()(
     {
       name: "user-settings-storage",
       storage: asyncStorage,
+      version: SharedConstants.PERSIST_VERSION,
+      migrate: (persistedState, version) =>
+        version < SharedConstants.PERSIST_VERSION
+          ? DEFAULT_STATE
+          : persistedState,
     },
   ),
 );

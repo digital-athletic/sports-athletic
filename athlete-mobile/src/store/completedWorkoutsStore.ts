@@ -1,3 +1,4 @@
+import { SharedConstants } from "@/constants/sharedConstants";
 import { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { create } from "zustand";
@@ -19,25 +20,35 @@ export interface CompletedWorkoutListEntryType {
   summary: string;
 }
 
-export interface CompletedWorkoutsState {
+type State = {
   workouts: Record<string, CompleteWorkoutType>;
   workoutsList: CompletedWorkoutListEntryType[];
   trainingPlans: TrainingPlanType[];
+};
 
-  // Actions
+const DEFAULT_STATE: State = {
+  workouts: {},
+  workoutsList: [],
+  trainingPlans: [],
+};
+
+type Actions = {
   addCompletedWorkout: (workout: CompleteWorkoutType) => void;
   setCompletedWorkouts: (workouts: Record<string, CompleteWorkoutType>) => void;
   setWorkoutsList: (list: CompletedWorkoutListEntryType[]) => void;
   addCompletedTrainingPlan: (plan: TrainingPlanType) => void;
   setCompletedTrainingPlans: (plans: TrainingPlanType[]) => void;
   clearHistory: () => void;
+};
 
-  // Selectors
+type Selectors = {
   getWorkoutById: (id: string) => CompleteWorkoutType | undefined;
   getRecentWorkouts: (limit: number) => CompleteWorkoutType[];
   getTotalWorkouts: () => number;
   getTotalTrainingTime: () => number;
-}
+};
+
+export type CompletedWorkoutsState = State & Actions & Selectors;
 
 /**
  * Completed Workouts Store
@@ -70,9 +81,7 @@ export interface CompletedWorkoutsState {
 export const useCompletedWorkoutsStore = create<CompletedWorkoutsState>()(
   persist(
     immer((set, get) => ({
-      workouts: {},
-      workoutsList: [],
-      trainingPlans: [],
+      ...DEFAULT_STATE,
 
       addCompletedWorkout: (workout) =>
         set((state) => {
@@ -145,6 +154,11 @@ export const useCompletedWorkoutsStore = create<CompletedWorkoutsState>()(
     {
       name: "completed-workouts-storage",
       storage: asyncStorage,
+      version: SharedConstants.PERSIST_VERSION,
+      migrate: (persistedState, version) =>
+        version < SharedConstants.PERSIST_VERSION
+          ? DEFAULT_STATE
+          : persistedState,
     },
   ),
 );

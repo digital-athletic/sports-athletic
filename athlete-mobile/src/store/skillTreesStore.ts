@@ -1,20 +1,29 @@
+import { SharedConstants } from "@/constants/sharedConstants";
+import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { asyncStorage } from "./middleware";
 
-export interface SkillTreesState {
+type State = {
   skillTrees: Record<string, SkillTreeType>;
+};
 
-  // Actions
+const DEFAULT_STATE: State = {
+  skillTrees: {},
+};
+
+type Actions = {
   setSkillTree: (skillName: string, tree: SkillTreeType) => void;
   setAllSkillTrees: (trees: Record<string, SkillTreeType>) => void;
   clearSkillTrees: () => void;
+};
 
-  // Selectors
+type Selectors = {
   getSkillTree: (skillName: string) => SkillTreeType | undefined;
-}
+};
+
+export type SkillTreesState = State & Actions & Selectors;
 
 /**
  * Skill Trees Store
@@ -43,7 +52,7 @@ export interface SkillTreesState {
 export const useSkillTreesStore = create<SkillTreesState>()(
   persist(
     immer((set, get) => ({
-      skillTrees: {},
+      ...DEFAULT_STATE,
 
       setSkillTree: (skillName, tree) =>
         set((state) => {
@@ -68,6 +77,11 @@ export const useSkillTreesStore = create<SkillTreesState>()(
     {
       name: "skill-trees-storage",
       storage: asyncStorage,
+      version: SharedConstants.PERSIST_VERSION,
+      migrate: (persistedState, version) =>
+        version < SharedConstants.PERSIST_VERSION
+          ? DEFAULT_STATE
+          : persistedState,
     },
   ),
 );

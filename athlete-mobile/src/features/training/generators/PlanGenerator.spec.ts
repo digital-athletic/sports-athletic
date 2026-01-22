@@ -3,7 +3,7 @@ import type { SeasonPhaseType } from "@/features/training/models/SeasonPhase";
 import { SeasonPhase } from "@/features/training/models/SeasonPhase";
 import type { TrainingDayType } from "@/features/training/models/TrainingDay";
 import type { TrainingSectionType } from "@/features/training/models/TrainingSection";
-import type { PlacesState } from "@/store/placesStore";
+import { PlacesData } from "@/store/placesStore";
 import PlanGenerator from "./PlanGenerator";
 
 describe("PlanGenerator", () => {
@@ -183,7 +183,7 @@ describe("PlanGenerator", () => {
   });
 
   describe("getTrainingDayGroupsFocuses", () => {
-    const mockPlaces: PlacesState = {
+    const mockPlaces: PlacesData = {
       HOME: { name: "HOME", equipment: ["DUMBBELL", "MAT"] },
       STUDIO: { name: "STUDIO", equipment: ["BARBELL", "BENCH"] },
       HALL: { name: "HALL", equipment: [] },
@@ -247,7 +247,7 @@ describe("PlanGenerator", () => {
    * availability (weights, run equipment), and session duration to optimize training variety.
    */
   describe("getFocusForTrainingDayGroup", () => {
-    const mockPlaces: PlacesState = {
+    const mockPlaces: PlacesData = {
       HOME: { name: "HOME", equipment: ["DUMBBELL", "MAT"] },
       STUDIO: { name: "STUDIO", equipment: ["BARBELL", "BENCH"] },
       HALL: { name: "HALL", equipment: [] },
@@ -1130,7 +1130,7 @@ describe("PlanGenerator", () => {
           name: "HOME",
           equipment: ["WEIGHTS", "MAT"],
         },
-      } as PlacesState;
+      } as PlacesData;
       const startDate = new Date(2025, 0, 6); // Monday, Jan 6, 2025
 
       const result = PlanGenerator.generatePlan(
@@ -1184,7 +1184,7 @@ describe("PlanGenerator", () => {
           name: "OUTSIDE",
           equipment: ["MAT"],
         },
-      } as PlacesState;
+      } as PlacesData;
       const startDate = new Date(2025, 0, 6);
 
       const result = PlanGenerator.generatePlan(
@@ -1268,7 +1268,7 @@ describe("PlanGenerator", () => {
           name: "STUDIO",
           equipment: ["DUMBBELL", "MAT", "BANDS"],
         },
-      } as PlacesState;
+      } as PlacesData;
       const startDate = new Date(2025, 0, 6);
 
       const result = PlanGenerator.generatePlan(
@@ -1288,7 +1288,7 @@ describe("PlanGenerator", () => {
   });
 
   describe("createSection", () => {
-    const mockPlaces: PlacesState = {
+    const mockPlaces: PlacesData = {
       HOME: { name: "HOME", equipment: ["DUMBBELL", "BLACK_ROLL"] },
       STUDIO: { name: "STUDIO", equipment: ["BARBELL", "BENCH"] },
       HALL: { name: "HALL", equipment: [] },

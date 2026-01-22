@@ -1,3 +1,4 @@
+import { SharedConstants } from "@/constants/sharedConstants";
 import { ExerciseDifficultyType } from "@/constants/workoutConstants";
 import { asyncStorage } from "@/store/middleware";
 import { create } from "zustand";
@@ -12,16 +13,39 @@ import {
 import { UserExerciseDataType } from "./models/UserExerciseData";
 import { UserProgressType } from "./models/UserProgress";
 
-export interface TrainingState {
-  // State
+type State = {
   selection: TrainingSelectionType | null;
   exerciseList: UserExerciseDataType[] | null;
   progressBefore: UserProgressType | null;
   equipment: string[];
   time: TrainingTimeType;
   activeTraining: ActiveTrainingType | null;
+};
 
-  // Actions
+const DEFAULT_TIME: TrainingTimeType = {
+  start: undefined,
+  end: undefined,
+  pause: 0,
+  skill: {
+    PREVENTION: 0,
+    MOBILITY: 0,
+    SWR: 0,
+    WARMUP: 0,
+    STABILITY: 0,
+    CARDIO: 0,
+  },
+};
+
+const DEFAULT_STATE: State = {
+  selection: null,
+  exerciseList: null,
+  progressBefore: null,
+  equipment: [],
+  time: DEFAULT_TIME,
+  activeTraining: null,
+};
+
+type Actions = {
   setTrainingSelection: (selection: TrainingSelectionType | null) => void;
   setExerciseList: (list: UserExerciseDataType[] | null) => void;
   setExerciseFeedback: (
@@ -45,31 +69,14 @@ export interface TrainingState {
   addPauseTime: (pauseTime: number) => void;
   addSkillTime: (focusArea: SkillFocusType, skillTime: number) => void;
   resetTraining: () => void;
-}
-
-const DEFAULT_TIME: TrainingTimeType = {
-  start: undefined,
-  end: undefined,
-  pause: 0,
-  skill: {
-    PREVENTION: 0,
-    MOBILITY: 0,
-    SWR: 0,
-    WARMUP: 0,
-    STABILITY: 0,
-    CARDIO: 0,
-  },
 };
+
+export type TrainingState = State & Actions;
 
 export const useTrainingStore = create<TrainingState>()(
   persist(
     immer((set) => ({
-      selection: null,
-      exerciseList: null,
-      progressBefore: null,
-      equipment: [],
-      time: DEFAULT_TIME,
-      activeTraining: null,
+      ...DEFAULT_STATE,
 
       setTrainingSelection: (selection) =>
         set((state) => {
@@ -166,6 +173,11 @@ export const useTrainingStore = create<TrainingState>()(
     {
       name: "training-store",
       storage: asyncStorage,
+      version: SharedConstants.PERSIST_VERSION,
+      migrate: (persistedState, version) =>
+        version < SharedConstants.PERSIST_VERSION
+          ? DEFAULT_STATE
+          : persistedState,
     },
   ),
 );

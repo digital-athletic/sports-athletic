@@ -1,3 +1,4 @@
+import { SharedConstants } from "@/constants/sharedConstants";
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { SeasonPhaseType } from "@/features/training/models/SeasonPhase";
@@ -7,27 +8,14 @@ import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
 
-export interface AnamnesisState {
+type State = {
   values: { [path: string]: any };
   tags: { [tag: string]: string[] };
   originPath?: Route;
   seasonPhase: SeasonPhaseType | null;
-
-  // Actions
-  setValue: (path: string, value: any) => void;
-  setTag: (tag: string, values: string[]) => void;
-  setOriginPath: (path?: Route) => void;
-  setSeasonPhase: (phase: SeasonPhaseType | null) => void;
-  resetData: () => void;
-  setCompleted: () => Promise<void>;
-  saveData: () => Promise<void>;
-}
-
-type WithoutFunctions<T> = {
-  [K in keyof T as T[K] extends (...args: any[]) => any ? never : K]: T[K];
 };
 
-export const DEFAULT_STATE: WithoutFunctions<AnamnesisState> = {
+export const DEFAULT_STATE: State = {
   values: {},
   tags: {
     [TagGroups.LEVEL]: [WorkoutConstants.LEVELS.BEGINNER],
@@ -35,6 +23,18 @@ export const DEFAULT_STATE: WithoutFunctions<AnamnesisState> = {
   originPath: undefined,
   seasonPhase: null,
 };
+
+type Actions = {
+  setValue: (path: string, value: any) => void;
+  setTag: (tag: string, values: string[]) => void;
+  setOriginPath: (path?: Route) => void;
+  setSeasonPhase: (phase: SeasonPhaseType | null) => void;
+  resetData: () => void;
+  setCompleted: () => Promise<void>;
+  saveData: () => Promise<void>;
+};
+
+export type AnamnesisState = State & Actions;
 
 /**
  * Anamnesis Store
@@ -111,6 +111,11 @@ export const useAnamnesisStore = create<AnamnesisState>()(
     {
       name: "anamnesis-storage",
       storage: asyncStorage,
+      version: SharedConstants.PERSIST_VERSION,
+      migrate: (persistedState, version) =>
+        version < SharedConstants.PERSIST_VERSION
+          ? DEFAULT_STATE
+          : persistedState,
     },
   ),
 );

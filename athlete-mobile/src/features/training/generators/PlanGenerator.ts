@@ -58,6 +58,7 @@ import {
   WorkoutArraySchema,
   type DirectionsMap,
   type DurationTagMap,
+  type FallbackSection,
   type PlanStructure,
   type RegionConfig,
   type SectionEntry,
@@ -1266,25 +1267,33 @@ export default class PlanGenerator {
     return x;
   };
 
-  static mapFallbackSections = (chosen, fallback, type: string) => {
-    let mappedSections = [];
+  static mapFallbackSections = (
+    chosen: FallbackSection[],
+    fallback: FallbackSection[],
+    type: string,
+  ): (FallbackSection & Record<string, unknown>)[] => {
+    const mappedSections: (FallbackSection & Record<string, unknown>)[] = [];
     let i = 0;
-    let b = cloneWithValidation(
+    let b: FallbackSection = cloneWithValidation(
       fallback[i++],
       FallbackSectionSchema,
       "fallback",
     );
-    let m = {};
-    for (let section of chosen) {
-      let a = cloneWithValidation(section, FallbackSectionSchema, "section");
+    let m: FallbackSection & Record<string, unknown>;
+    for (const section of chosen) {
+      let a: FallbackSection = cloneWithValidation(
+        section,
+        FallbackSectionSchema,
+        "section",
+      );
 
-      while (a.length > b.length) {
+      while ((a.length ?? 0) > (b.length ?? 0)) {
         m = cloneWithValidation(a, FallbackSectionSchema, "a");
         m.length = b.length;
-        m[type + "Type"] = b.type;
+        m[type + "Type"] = b.type ?? "";
         mappedSections.push(m);
 
-        a.length -= b.length;
+        a.length = (a.length ?? 0) - (b.length ?? 0);
 
         if (i < fallback.length) {
           b = cloneWithValidation(
@@ -1297,7 +1306,7 @@ export default class PlanGenerator {
         }
       }
       m = cloneWithValidation(a, FallbackSectionSchema, "a");
-      m[type + "Type"] = b.type;
+      m[type + "Type"] = b.type ?? "";
       mappedSections.push(m);
 
       if (a.length === b.length) {
@@ -1310,8 +1319,8 @@ export default class PlanGenerator {
         } else {
           return mappedSections;
         }
-      } else if (a.length < b.length) {
-        b.length -= a.length;
+      } else if ((a.length ?? 0) < (b.length ?? 0)) {
+        b.length = (b.length ?? 0) - (a.length ?? 0);
       }
     }
     return mappedSections;
@@ -1320,11 +1329,11 @@ export default class PlanGenerator {
   static getSkillTrainingplan = (
     section: SectionTypes,
     cardioType: string,
-    skills,
-    placeEquipment,
+    skills: Record<string, string[]>,
+    placeEquipment: string[],
   ): Record<string, string[]> => {
     //replace "phase" by actual phase name
-    for (let entry in skills) {
+    for (const entry in skills) {
       for (let i = 0; i < skills[entry].length; i++) {
         if (skills[entry][i] === "PHASE") {
           if (hasWeights(placeEquipment)) {

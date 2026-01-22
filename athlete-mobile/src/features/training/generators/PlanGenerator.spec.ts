@@ -498,6 +498,11 @@ describe("PlanGenerator", () => {
     });
   });
 
+  /**
+   * Maps chosen training sections to fallback section types based on length matching.
+   * Splits sections when the chosen section is longer than the fallback, and assigns
+   * the fallback's type property to each resulting section with a dynamic key (e.g., cardioType).
+   */
   describe("mapFallbackSections", () => {
     it("should map chosen sections to fallback types", () => {
       const chosen = [{ length: 6 }, { length: 4 }];
@@ -517,6 +522,110 @@ describe("PlanGenerator", () => {
       expect(result[0]).toEqual({ length: 3, cardioType: "TYPE_A" });
       expect(result[1]).toEqual({ length: 3, cardioType: "TYPE_B" });
       expect(result[2]).toEqual({ length: 4, cardioType: "TYPE_C" });
+    });
+
+    it("should handle chosen section shorter than fallback and split across types", () => {
+      const chosen = [{ length: 2 }, { length: 4 }];
+      const fallback = [
+        { length: 3, type: "CARDIO_1" },
+        { length: 3, type: "CARDIO_2" },
+      ];
+
+      const result = PlanGenerator.mapFallbackSections(
+        chosen,
+        fallback,
+        "cardio",
+      );
+
+      expect(result).toHaveLength(3);
+      expect(result[0]).toEqual({ length: 2, cardioType: "CARDIO_1" });
+      expect(result[1]).toEqual({ length: 1, cardioType: "CARDIO_1" });
+      expect(result[2]).toEqual({ length: 3, cardioType: "CARDIO_2" });
+    });
+
+    it("should stop mapping when fallback sections are exhausted", () => {
+      const chosen = [{ length: 4 }, { length: 4 }, { length: 4 }];
+      const fallback = [
+        { length: 2, type: "CARDIO_3" },
+        { length: 2, type: "CARDIO_4" },
+      ];
+
+      const result = PlanGenerator.mapFallbackSections(
+        chosen,
+        fallback,
+        "cardio",
+      );
+
+      expect(result).toHaveLength(2);
+      expect(result[0]).toEqual({ length: 2, cardioType: "CARDIO_3" });
+      expect(result[1]).toEqual({ length: 2, cardioType: "CARDIO_4" });
+    });
+  });
+
+  /**
+   * Replaces placeholder skills in a training plan with concrete skill types based on context.
+   * Substitutes PHASE with the section type (with KG suffix if no weights), WU with WUSKSA
+   * for SA/SK sections, and CARDIO placeholders with the actual cardio type for the section.
+   */
+  describe("getSkillTrainingplan", () => {
+    it("should replace PHASE with section type when weights are available", () => {
+      const skills = {
+        day1: ["PHASE", "BAS", "MOB"],
+        day2: ["PHASE", "CARDIO"],
+      };
+      const placeEquipment = ["DUMBBELL", "BARBELL"];
+
+      const result = PlanGenerator.getSkillTrainingplan(
+        "SWR1",
+        "CARDIO_2",
+        skills,
+        placeEquipment,
+      );
+
+      expect(result.day1[0]).toBe("SWR1");
+      expect(result.day2[0]).toBe("SWR1");
+    });
+
+    it("should replace PHASE with KG suffix when no weights and MAX becomes SWR2KG", () => {
+      const skills = {
+        day1: ["PHASE", "BAS"],
+        day2: ["PHASE", "MOB"],
+      };
+      const placeEquipment = ["MAT", "TRACK_20"];
+
+      const resultMax = PlanGenerator.getSkillTrainingplan(
+        "MAX",
+        "CARDIO_1_SHORT",
+        { ...skills },
+        placeEquipment,
+      );
+      expect(resultMax.day1[0]).toBe("SWR2KG");
+
+      const resultSwr = PlanGenerator.getSkillTrainingplan(
+        "SWR1",
+        "CARDIO_3",
+        { day1: ["PHASE"] },
+        placeEquipment,
+      );
+      expect(resultSwr.day1[0]).toBe("SWR1KG");
+    });
+
+    it("should replace WU with WUSKSA for SA/SK sections and CARDIO with cardioType", () => {
+      const skills = {
+        warmup: ["WU", "MOB"],
+        main: ["PHASE", "CARDIO"],
+      };
+      const placeEquipment = ["DUMBBELL"];
+
+      const result = PlanGenerator.getSkillTrainingplan(
+        "SA",
+        "CARDIO_2",
+        skills,
+        placeEquipment,
+      );
+
+      expect(result.warmup[0]).toBe("WUSKSA");
+      expect(result.main[1]).toBe("CARDIO_2");
     });
   });
 

@@ -242,6 +242,69 @@ describe("PlanGenerator", () => {
   });
 
   /**
+   * Assigns a training focus (PHASE, CARDIO, STABILITY, COMBINED) to each day in a group.
+   * Children always receive PHASE. For adults, assignment depends on place type, equipment
+   * availability (weights, run equipment), and session duration to optimize training variety.
+   */
+  describe("getFocusForTrainingDayGroup", () => {
+    const mockPlaces: PlacesState = {
+      HOME: { name: "HOME", equipment: ["DUMBBELL", "MAT"] },
+      STUDIO: { name: "STUDIO", equipment: ["BARBELL", "BENCH"] },
+      HALL: { name: "HALL", equipment: [] },
+      OUTSIDE: { name: "OUTSIDE", equipment: ["TRACK_20"] },
+    };
+
+    it("should assign PHASE to studio and CARDIO to outside for 2-day adult group", () => {
+      const groupTrainingDays: TrainingDayType[] = [
+        { active: true, weekday: 1, duration: 60, place: "STUDIO" },
+        { active: true, weekday: 2, duration: 45, place: "OUTSIDE" },
+      ];
+
+      const focuses = PlanGenerator.getFocusForTrainingDayGroup(
+        groupTrainingDays,
+        WorkoutConstants.AGE_GROUPS.ADULT,
+        mockPlaces,
+      );
+
+      expect(focuses[0]).toBe("PHASE");
+      expect(focuses[1]).toBe("CARDIO");
+    });
+
+    it("should assign PHASE to longer and STABILITY to shorter home day without run equipment", () => {
+      const groupTrainingDays: TrainingDayType[] = [
+        { active: true, weekday: 1, duration: 45, place: "HOME" },
+        { active: true, weekday: 2, duration: 60, place: "HOME" },
+      ];
+
+      const focuses = PlanGenerator.getFocusForTrainingDayGroup(
+        groupTrainingDays,
+        WorkoutConstants.AGE_GROUPS.ADULT,
+        mockPlaces,
+      );
+
+      expect(focuses[0]).toBe("STABILITY");
+      expect(focuses[1]).toBe("PHASE");
+    });
+
+    it("should return PHASE for all days in child age group regardless of places", () => {
+      const groupTrainingDays: TrainingDayType[] = [
+        { active: true, weekday: 1, duration: 60, place: "STUDIO" },
+        { active: true, weekday: 2, duration: 45, place: "OUTSIDE" },
+        { active: true, weekday: 3, duration: 30, place: "HOME" },
+      ];
+
+      const focuses = PlanGenerator.getFocusForTrainingDayGroup(
+        groupTrainingDays,
+        WorkoutConstants.AGE_GROUPS.CHILD,
+        mockPlaces,
+      );
+
+      expect(focuses).toHaveLength(3);
+      expect(focuses.every((f) => f === "PHASE")).toBe(true);
+    });
+  });
+
+  /**
    * Determines training section types and durations based on season phase and user profile.
    * Delegates to getSectionsBySeasonPhaseAgeGroupLevelNumOfWeeks for section selection.
    * Returns an array of TrainingSectionType objects with type, numOfWeeks, and cardioType.

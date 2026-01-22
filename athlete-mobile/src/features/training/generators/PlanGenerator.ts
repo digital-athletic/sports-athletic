@@ -2452,19 +2452,31 @@ export default class PlanGenerator {
     return sections;
   };
 
+  /**
+   * Assigns a training focus (PHASE, CARDIO, STABILITY, COMBINED) to each day in a group.
+   * Children always receive PHASE. For adults, assignment depends on place type, equipment
+   * availability (weights, run equipment), and session duration to optimize training variety.
+   */
   static getFocusForTrainingDayGroup = (
-    groupTrainingDays,
-    ageGroup,
-    places,
-  ): ("PHASE" | "CARDIO" | "STABILITY" | "COMBINED")[] => {
-    let trainingPossibilities = groupTrainingDays.map((day) => {
-      let eq = places[day.place].equipment;
-      return {
-        ...day,
-        hasWeights: hasWeights(eq),
-        hasRunEquipment: hasRunEquipment(eq),
-      };
-    });
+    groupTrainingDays: TrainingDayType[],
+    ageGroup: AgeGroupTag,
+    places: PlacesState,
+  ): FocusType[] => {
+    type TrainingPossibility = TrainingDayType & {
+      hasWeights: boolean;
+      hasRunEquipment: boolean;
+    };
+
+    const trainingPossibilities: TrainingPossibility[] = groupTrainingDays.map(
+      (day) => {
+        const eq: string[] = places[day.place].equipment;
+        return {
+          ...day,
+          hasWeights: hasWeights(eq),
+          hasRunEquipment: hasRunEquipment(eq),
+        };
+      },
+    );
     if (ageGroup === WorkoutConstants.AGE_GROUPS.CHILD) {
       // training days should always be just one and kids only have phase training
       // map for backwards sanity
@@ -2548,10 +2560,11 @@ export default class PlanGenerator {
             trainingPossibilities[1].place === "STUDIO" &&
             trainingPossibilities[2].place === "HOME"
           ) {
-            let firstHome = trainingPossibilities[0].hasRunEquipment
+            const firstHome: FocusType = trainingPossibilities[0]
+              .hasRunEquipment
               ? "CARDIO"
               : "STABILITY";
-            let secondHome = "STABILITY";
+            let secondHome: FocusType = "STABILITY";
             if (
               firstHome !== "CARDIO" &&
               trainingPossibilities[2].hasRunEquipment
@@ -2562,15 +2575,15 @@ export default class PlanGenerator {
           }
 
           // else match best
-          let sorting: { [weekday: number]: string } = {};
-          let focuses = ["PHASE", "CARDIO", "STABILITY"];
-          let studioDays = trainingPossibilities.filter(
+          const sorting: Record<number, FocusType> = {};
+          const focuses: FocusType[] = ["PHASE", "CARDIO", "STABILITY"];
+          let studioDays: TrainingPossibility[] = trainingPossibilities.filter(
             (e) => e.place === "STUDIO",
           );
-          let homeDays = trainingPossibilities.filter(
+          let homeDays: TrainingPossibility[] = trainingPossibilities.filter(
             (e) => e.place === "HOME",
           );
-          let otherDays = trainingPossibilities.filter(
+          let otherDays: TrainingPossibility[] = trainingPossibilities.filter(
             (e) => e.place !== "STUDIO" && e.place !== "HOME",
           );
           // 1 - STUDIO
@@ -2616,7 +2629,7 @@ export default class PlanGenerator {
                 longestHomeDayIndex = i;
               }
             }
-            let focus = focuses.splice(0, 1)[0];
+            let focus: FocusType = focuses.splice(0, 1)[0];
             if (
               focus === "CARDIO" &&
               !homeDays[longestHomeDayIndex].hasRunEquipment
@@ -2627,7 +2640,9 @@ export default class PlanGenerator {
             sorting[homeDays[longestHomeDayIndex].weekday] = focus;
             homeDays.splice(longestHomeDayIndex, 1);
           }
-          let result = trainingPossibilities.map((e) => sorting[e.weekday]);
+          let result: FocusType[] = trainingPossibilities.map(
+            (e) => sorting[e.weekday],
+          );
           if (result.indexOf("CARDIO") === -1) {
             // add cardio to phase focus
             result = result.map((e) => {

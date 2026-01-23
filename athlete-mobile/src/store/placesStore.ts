@@ -25,7 +25,7 @@ type State = {
   places: PlacesData;
 };
 
-const DEFAULT_PLACES: PlacesData = {
+const createInitialPlaces = (): PlacesData => ({
   HOME: {
     name: "HOME",
     equipment: HOME.EQUIPMENT,
@@ -42,16 +42,17 @@ const DEFAULT_PLACES: PlacesData = {
     name: "OUTSIDE",
     equipment: OUTSIDE.EQUIPMENT,
   },
-};
+});
 
-const DEFAULT_STATE: State = {
-  places: DEFAULT_PLACES,
-};
+const createInitialState = (): State => ({
+  places: createInitialPlaces(),
+});
 
 type Actions = {
   setPlaceEquipment: (placeId: PlaceType, equipment: string[]) => void;
   toggleEquipment: (placeId: PlaceType, equipmentId: string) => void;
   getPlaceEquipment: (placeId: PlaceType) => string[];
+  clearPlaces: () => void;
 };
 
 export type PlacesStoreState = State & Actions;
@@ -80,7 +81,7 @@ export type PlacesStoreState = State & Actions;
 export const usePlacesStore = create<PlacesStoreState>()(
   persist(
     immer((set, get) => ({
-      places: DEFAULT_PLACES,
+      ...createInitialState(),
 
       setPlaceEquipment: (placeId, equipment) =>
         set((state) => {
@@ -100,6 +101,11 @@ export const usePlacesStore = create<PlacesStoreState>()(
         }),
 
       getPlaceEquipment: (placeId) => get().places[placeId].equipment,
+      clearPlaces: () =>
+        set((state) => {
+          const initialState = createInitialState();
+          state.places = initialState.places;
+        }),
     })),
     {
       name: "places-storage",
@@ -107,7 +113,7 @@ export const usePlacesStore = create<PlacesStoreState>()(
       version: SharedConstants.PERSIST_VERSION,
       migrate: (persistedState, version) =>
         version < SharedConstants.PERSIST_VERSION
-          ? DEFAULT_STATE
+          ? createInitialState()
           : persistedState,
     },
   ),

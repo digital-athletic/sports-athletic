@@ -27,13 +27,13 @@ type State = {
   testHistory: MaxValuesType[];
 };
 
-const DEFAULT_STATE: State = {
+const createInitialState = (): State => ({
   exerciseData: {},
   branchData: {},
   xp: 0,
   level: 1,
   testHistory: [],
-};
+});
 
 type Actions = {
   // Exercise Data
@@ -82,7 +82,7 @@ export type ExerciseProgressState = State & Actions & Selectors;
 export const useExerciseProgressStore = create<ExerciseProgressState>()(
   persist(
     immer((set, get) => ({
-      ...DEFAULT_STATE,
+      ...createInitialState(),
 
       setExerciseData: (data) =>
         set((state) => {
@@ -211,11 +211,12 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
 
       clearProgress: () =>
         set((state) => {
-          state.exerciseData = {};
-          state.branchData = {};
-          state.xp = 0;
-          state.level = 1;
-          state.testHistory = [];
+          const initialState = createInitialState();
+          state.exerciseData = initialState.exerciseData;
+          state.branchData = initialState.branchData;
+          state.xp = initialState.xp;
+          state.level = initialState.level;
+          state.testHistory = initialState.testHistory;
         }),
 
       getExerciseData: (exerciseId) => {
@@ -239,7 +240,7 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
       version: SharedConstants.PERSIST_VERSION,
       migrate: (persistedState, version) =>
         version < SharedConstants.PERSIST_VERSION
-          ? DEFAULT_STATE
+          ? createInitialState()
           : persistedState,
     },
   ),

@@ -9,7 +9,6 @@ import { deriveSeasonPhaseEndDate } from "@/features/training/utils/timeUtils";
 import { DateInputField } from "@/form/DateInputField";
 import { SelectionInputField } from "@/form/SelectionInputField";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
-import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
@@ -30,14 +29,9 @@ export default function SeasonPhase() {
   const params = useLocalSearchParams<{ originPath?: Route }>();
   const originPath = params.originPath;
 
-  const {
-    originPath: storedOriginPath,
-    seasonPhase,
-    setSeasonPhase,
-  } = useAnamnesisStore();
+  const { seasonPhase, setSeasonPhase } = useAnamnesisStore();
   const { workoutData, trainingPlan } = useUserWorkoutStore();
-  const { isInInitialAnamnesis, setIsInInitialAnamnesis } =
-    useUserProfileStore();
+  const hasPhaseType = Boolean(seasonPhase?.type);
 
   useEffect(() => {
     const initializeSeasonPhase = async () => {
@@ -58,34 +52,6 @@ export default function SeasonPhase() {
     initializeSeasonPhase();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const handleClose = () => {
-    const hasPhaseType = Boolean(seasonPhase?.type);
-    const message = hasPhaseType
-      ? t("screens.seasonPhase.abortExplanation")
-      : t("screens.seasonPhase.abortIncomplete");
-
-    const origin = originPath ?? storedOriginPath;
-
-    Alert.alert(t("screens.seasonPhase.abortQuestion"), message, [
-      {
-        text: t("common.yes"),
-        onPress: () => {
-          if (isInInitialAnamnesis) {
-            setIsInInitialAnamnesis(false);
-          }
-          if (origin) {
-            router.navigate(origin);
-          } else {
-            router.navigate("/(tabs)/(home)");
-          }
-        },
-      },
-      {
-        text: t("common.no"),
-      },
-    ]);
-  };
 
   const handleGoOn = () => {
     if (!seasonPhase?.type) {
@@ -194,7 +160,16 @@ export default function SeasonPhase() {
           headerShown: true,
           title: t("screens.seasonPhase.title"),
           headerLeft: () => <BackHeader />,
-          headerRight: () => <SkipHeader onSkip={handleClose} />,
+          headerRight: () => (
+            <SkipHeader
+              alertTitle="screens.seasonPhase.abortQuestion"
+              alertMessage={
+                hasPhaseType
+                  ? "screens.seasonPhase.abortExplanation"
+                  : "screens.seasonPhase.abortIncomplete"
+              }
+            />
+          ),
         }}
       />
       {isLoading ? (

@@ -13,6 +13,6 @@ export default function HomeStackLayout() {
         headerShown: false,
         headerBackButtonDisplayMode: "minimal",
       }}
-    ></Stack>
+    />
   );
 }

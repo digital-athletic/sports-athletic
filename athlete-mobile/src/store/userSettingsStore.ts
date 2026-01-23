@@ -15,15 +15,15 @@ type State = {
   anonymisedDataUse: boolean;
 };
 
-const DEFAULT_REVIEW_STATUS: ReviewStatusType = {
+const createInitialReviewStatus = (): ReviewStatusType => ({
   hasReviewed: false,
   promptCount: 0,
-};
+});
 
-const DEFAULT_STATE: State = {
-  reviewStatus: DEFAULT_REVIEW_STATUS,
+const createInitialState = (): State => ({
+  reviewStatus: createInitialReviewStatus(),
   anonymisedDataUse: false,
-};
+});
 
 type Actions = {
   setSettings: (
@@ -36,6 +36,7 @@ type Actions = {
   ) => void;
   setReviewStatus: (status: ReviewStatusType) => void;
   setAnonymisedDataUse: (enabled: boolean) => void;
+  clearSettings: () => void;
 };
 
 export type UserSettingsState = State & Actions;
@@ -60,7 +61,7 @@ export type UserSettingsState = State & Actions;
 export const useUserSettingsStore = create<UserSettingsState>()(
   persist(
     immer((set) => ({
-      ...DEFAULT_STATE,
+      ...createInitialState(),
 
       setSettings: (settings) =>
         set((state) => {
@@ -78,6 +79,13 @@ export const useUserSettingsStore = create<UserSettingsState>()(
         set((state) => {
           state.anonymisedDataUse = enabled;
         }),
+      clearSettings: () => {
+        set((state) => {
+          const initialState = createInitialState();
+          state.reviewStatus = initialState.reviewStatus;
+          state.anonymisedDataUse = initialState.anonymisedDataUse;
+        });
+      },
     })),
     {
       name: "user-settings-storage",
@@ -85,7 +93,7 @@ export const useUserSettingsStore = create<UserSettingsState>()(
       version: SharedConstants.PERSIST_VERSION,
       migrate: (persistedState, version) =>
         version < SharedConstants.PERSIST_VERSION
-          ? DEFAULT_STATE
+          ? createInitialState()
           : persistedState,
     },
   ),

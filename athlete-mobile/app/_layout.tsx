@@ -43,7 +43,7 @@ export default function RootLayout() {
     <ThemeProvider theme={theme}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Protected guard={auth != null}>
-          <Stack.Screen name="anamnesis" options={{ headerShown: false }} />
+          <Stack.Screen name="(anamnesis)" options={{ headerShown: false }} />
           <Stack.Screen name="training" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack.Protected>

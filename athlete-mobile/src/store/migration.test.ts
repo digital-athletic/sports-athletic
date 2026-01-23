@@ -1,9 +1,9 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SharedConstants } from "@/constants/sharedConstants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAnamnesisStore } from "./anamnesisStore";
 import { useAuthStore } from "./authStore";
 import { useUserProfileStore } from "./userProfileStore";
 import { useUserWorkoutStore } from "./userWorkoutStore";
-import { useAnamnesisStore } from "./anamnesisStore";
 
 /**
  * Tests for store migration behavior on version bumps
@@ -99,7 +99,6 @@ describe("Store Migration on Version Bump", () => {
 
       expect(state.userId).toBeNull();
       expect(state.anamnesisCompleted).toBe(false);
-      expect(state.isInInitialAnamnesis).toBe(false);
     });
   });
 

@@ -1,5 +1,6 @@
 import { LoginScreen } from "@/features/onboarding/LoginScreen";
 import { RegistrationScreen } from "@/features/onboarding/RegisterScreen";
+import { useUserProfileStore } from "@/store/userProfileStore";
 import { Box } from "@/theme/Box";
 import { useRouter } from "expo-router";
 import { useReducer } from "react";
@@ -16,7 +17,6 @@ import {
   signInWithEmail,
 } from "../../src/services/AuthService";
 import { useAuthStore } from "../../src/store/authStore";
-import { useUserProfileStore } from "../../src/store/userProfileStore";
 import {
   validateEmail,
   validatePassword,
@@ -103,7 +103,7 @@ export default function OnboardingScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const { setAuth } = useAuthStore();
-  const { setUserId, setIsInInitialAnamnesis } = useUserProfileStore();
+  const { setUserId } = useUserProfileStore();
 
   const handleLogin = async () => {
     dispatch({ type: "SET_PROCESSING", payload: true });
@@ -180,8 +180,6 @@ export default function OnboardingScreen() {
       const auth = await signInWithEmail(state.email, state.password);
       setAuth(auth);
       setUserId(auth.userId);
-
-      setIsInInitialAnamnesis(true);
 
       router.replace("/anamnesis");
     } catch (error: any) {

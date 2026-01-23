@@ -28,7 +28,7 @@ type State = {
   temporalData?: TemporalDataType[];
 };
 
-const DEFAULT_WORKOUT_DATA: UserWorkoutDataType = {
+const createInitialWorkoutData = (): UserWorkoutDataType => ({
   anamnesisCompleted: false,
   gender: "MALE",
   birthday: "01-01-2000",
@@ -40,14 +40,14 @@ const DEFAULT_WORKOUT_DATA: UserWorkoutDataType = {
     type: null,
     endDate: dateToDDMMYYYY(new Date()),
   },
-  maxValues: DEFAULT_MAX_VALUES,
-};
+  maxValues: { ...DEFAULT_MAX_VALUES },
+});
 
-const DEFAULT_STATE: State = {
-  workoutData: DEFAULT_WORKOUT_DATA,
+const createInitialState = (): State => ({
+  workoutData: createInitialWorkoutData(),
   trainingPlan: null,
   temporalData: undefined,
-};
+});
 
 type Actions = {
   setWorkoutData: (data: Partial<UserWorkoutDataType>) => void;
@@ -56,7 +56,7 @@ type Actions = {
   setTags: (tags: string[]) => void;
   setTrainingPlan: (plan: TrainingPlanType | null) => void;
   setTemporalData: (data: TemporalDataType[]) => void;
-  resetUserWorkoutData: () => void;
+  clearUserWorkoutData: () => void;
   replaceBranchInTrainingPlan: (
     sectionIndex: number,
     weekday: number,
@@ -91,8 +91,8 @@ export type UserWorkoutState = State & Actions;
  */
 export const useUserWorkoutStore = create<UserWorkoutState>()(
   persist(
-    immer((set, get) => ({
-      ...DEFAULT_STATE,
+    immer((set) => ({
+      ...createInitialState(),
 
       setWorkoutData: (data) =>
         set((state) => {
@@ -131,11 +131,12 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
           state.temporalData = data;
         }),
 
-      resetUserWorkoutData: () =>
+      clearUserWorkoutData: () =>
         set((state) => {
-          state.workoutData = DEFAULT_WORKOUT_DATA;
-          state.trainingPlan = null;
-          state.temporalData = undefined;
+          const initialState = createInitialState();
+          state.workoutData = initialState.workoutData;
+          state.trainingPlan = initialState.trainingPlan;
+          state.temporalData = initialState.temporalData;
         }),
 
       /**
@@ -192,7 +193,7 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
       version: SharedConstants.PERSIST_VERSION,
       migrate: (persistedState, version) =>
         version < SharedConstants.PERSIST_VERSION
-          ? DEFAULT_STATE
+          ? createInitialState()
           : persistedState,
     },
   ),

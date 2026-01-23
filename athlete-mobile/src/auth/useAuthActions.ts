@@ -1,10 +1,13 @@
 import { logout as supabaseLogout } from "@/services/AuthService";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useAuthStore } from "@/store/authStore";
+import { useCompletedWorkoutsStore } from "@/store/completedWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
+import { usePlacesStore } from "@/store/placesStore";
+import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
+import { useUserSettingsStore } from "@/store/userSettingsStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
-import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "@/common/Alert";
@@ -15,7 +18,6 @@ import { Alert } from "@/common/Alert";
  */
 export function useLogout() {
   const { t } = useTranslation();
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const clearAuth = useAuthStore((state) => state.clearAuth);
@@ -26,7 +28,6 @@ export function useLogout() {
       await supabaseLogout();
       clearAuth();
       // TODO: Clear other stores when reset methods are available
-      router.replace("/onboarding");
     } catch {
       Alert.alert(t("onboarding.alertErrorTitle"), t("more.logoutFailed"));
     } finally {
@@ -61,9 +62,13 @@ export function useDeleteAccount() {
   const { t } = useTranslation();
   const { logout } = useLogout();
   const { clearProgress } = useExerciseProgressStore();
-  const { resetData } = useAnamnesisStore();
+  const { clearAnamnesisData } = useAnamnesisStore();
   const { clearProfile } = useUserProfileStore();
-  const { resetUserWorkoutData } = useUserWorkoutStore();
+  const { clearUserWorkoutData } = useUserWorkoutStore();
+  const { clearWorkoutHistory } = useCompletedWorkoutsStore();
+  const { clearTrainingSchedule } = useTrainingScheduleStore();
+  const { clearPlaces } = usePlacesStore();
+  const { clearSettings } = useUserSettingsStore();
 
   const deleteAccount = async () => {
     try {
@@ -71,13 +76,21 @@ export function useDeleteAccount() {
       // See: https://github.com/sports-athletics/sports-athletic/issues/219
       logout();
       // Resets training plan and workout data
-      resetUserWorkoutData();
+      clearUserWorkoutData();
       // Resets local exercise progress data
       clearProgress();
       // Resets local anamnesis data
-      resetData();
-      // Resets user profile
+      clearAnamnesisData();
+      // Resets user profile & anamnesisCompleted flag
       clearProfile();
+      // Resets workout history
+      clearWorkoutHistory();
+      // Resets training schedule
+      clearTrainingSchedule();
+      // Resets equipment selections
+      clearPlaces();
+      // Resets user preferences
+      clearSettings();
     } catch {
       Alert.alert(t("onboarding.alertErrorTitle"), t("more.deleteFailed"));
     }

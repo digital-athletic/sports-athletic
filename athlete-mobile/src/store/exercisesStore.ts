@@ -9,9 +9,9 @@ type State = {
   exercises: ExerciseType[] | null;
 };
 
-const DEFAULT_STATE: State = {
+const createInitialState = (): State => ({
   exercises: null,
-};
+});
 
 type Actions = {
   setExercises: (exercises: ExerciseType[]) => void;
@@ -48,7 +48,7 @@ export const selectSetExercises = (state: ExercisesState) => state.setExercises;
 export const useExercisesStore = create<ExercisesState>()(
   persist(
     immer((set, get) => ({
-      ...DEFAULT_STATE,
+      ...createInitialState(),
 
       setExercises: (exercises) =>
         set((state) => {
@@ -78,7 +78,7 @@ export const useExercisesStore = create<ExercisesState>()(
       version: SharedConstants.PERSIST_VERSION,
       migrate: (persistedState, version) =>
         version < SharedConstants.PERSIST_VERSION
-          ? DEFAULT_STATE
+          ? createInitialState()
           : persistedState,
     },
   ),

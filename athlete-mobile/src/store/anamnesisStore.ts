@@ -2,7 +2,6 @@ import { SharedConstants } from "@/constants/sharedConstants";
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { SeasonPhaseType } from "@/features/training/models/SeasonPhase";
-import { Route } from "expo-router";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
@@ -11,27 +10,27 @@ import { asyncStorage } from "./middleware";
 type State = {
   values: { [path: string]: any };
   tags: { [tag: string]: string[] };
-  originPath?: Route;
   seasonPhase: SeasonPhaseType | null;
+  isSkipped: boolean;
 };
 
-export const DEFAULT_STATE: State = {
+export const createInitialState = (): State => ({
   values: {},
   tags: {
     [TagGroups.LEVEL]: [WorkoutConstants.LEVELS.BEGINNER],
   },
-  originPath: undefined,
   seasonPhase: null,
-};
+  isSkipped: false,
+});
 
 type Actions = {
   setValue: (path: string, value: any) => void;
   setTag: (tag: string, values: string[]) => void;
-  setOriginPath: (path?: Route) => void;
   setSeasonPhase: (phase: SeasonPhaseType | null) => void;
-  resetData: () => void;
+  clearAnamnesisData: () => void;
   setCompleted: () => Promise<void>;
   saveData: () => Promise<void>;
+  setIsSkipped: (skipped: boolean) => void;
 };
 
 export type AnamnesisState = State & Actions;
@@ -59,7 +58,7 @@ export type AnamnesisState = State & Actions;
 export const useAnamnesisStore = create<AnamnesisState>()(
   persist(
     immer((set, get) => ({
-      ...DEFAULT_STATE,
+      ...createInitialState(),
 
       setValue: (path, value) => {
         set((state) => {
@@ -73,25 +72,19 @@ export const useAnamnesisStore = create<AnamnesisState>()(
         });
       },
 
-      setOriginPath: (path) => {
-        set((state) => {
-          state.originPath = path;
-        });
-      },
-
       setSeasonPhase: (phase) => {
         set((state) => {
           state.seasonPhase = phase;
         });
       },
 
-      resetData: () => {
-        const currentOriginPath = get().originPath;
+      clearAnamnesisData: () => {
         set((state) => {
-          state.values = { ...DEFAULT_STATE.values };
-          state.tags = { ...DEFAULT_STATE.tags };
-          state.originPath = currentOriginPath; // Preserve origin path like legacy
-          state.seasonPhase = null;
+          const initialState = createInitialState();
+          state.values = initialState.values;
+          state.tags = initialState.tags;
+          state.seasonPhase = initialState.seasonPhase;
+          state.isSkipped = initialState.isSkipped;
         });
       },
 
@@ -107,6 +100,11 @@ export const useAnamnesisStore = create<AnamnesisState>()(
         // This should save both values and tags to Firebase
         console.log("saveData called", { values, tags });
       },
+      setIsSkipped: (skipped) => {
+        set((state) => {
+          state.isSkipped = skipped;
+        });
+      },
     })),
     {
       name: "anamnesis-storage",
@@ -114,7 +112,7 @@ export const useAnamnesisStore = create<AnamnesisState>()(
       version: SharedConstants.PERSIST_VERSION,
       migrate: (persistedState, version) =>
         version < SharedConstants.PERSIST_VERSION
-          ? DEFAULT_STATE
+          ? createInitialState()
           : persistedState,
     },
   ),

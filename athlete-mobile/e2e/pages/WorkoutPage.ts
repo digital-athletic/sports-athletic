@@ -37,9 +37,7 @@ export class WorkoutPage extends BasePage {
 
     await this.skipMuscleSoreness();
 
-    await expect(this.page.getByText("Training Overview")).toBeVisible({
-      timeout: 10000,
-    });
+    await expect(this.page.getByText("Training Overview")).toBeVisible();
   }
 
   async getExerciseValues(exerciseName: string) {
@@ -103,7 +101,7 @@ export class WorkoutPage extends BasePage {
       }
     }
 
-    await expect(this.goOnButton).toBeVisible({ timeout: 10000 });
+    await expect(this.goOnButton).toBeVisible();
   }
 
   async returnToHome() {

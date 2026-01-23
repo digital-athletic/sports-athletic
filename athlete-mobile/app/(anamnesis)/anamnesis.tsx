@@ -3,9 +3,9 @@ import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { useTheme } from "@/theme/theme";
 import { Route, router, Stack } from "expo-router";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, BackHandler, Image, StyleSheet } from "react-native";
+import { Image, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SpeechBubble } from "../../src/common/SpeechBubble";
 import { useUserProfileStore } from "../../src/store/userProfileStore";
@@ -13,39 +13,8 @@ import { useUserProfileStore } from "../../src/store/userProfileStore";
 export default function WelcomeScreen() {
   const { t } = useTranslation();
   const { spacing } = useTheme();
-  const { isInInitialAnamnesis, anamnesisCompleted, setIsInInitialAnamnesis } =
-    useUserProfileStore();
+  const { anamnesisCompleted } = useUserProfileStore();
   const insets = useSafeAreaInsets();
-
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      () => true, // Prevent back navigation
-    );
-
-    return () => backHandler.remove();
-  }, []);
-
-  const onSkip = useCallback(() => {
-    const message = anamnesisCompleted
-      ? t("screens.welcome.abortExplanation")
-      : t("screens.welcome.abortIncomplete");
-
-    Alert.alert(t("screens.welcome.abortQuestion"), message, [
-      {
-        text: t("screens.welcome.yes"),
-        onPress: () => {
-          if (isInInitialAnamnesis) {
-            setIsInInitialAnamnesis(false);
-          }
-          router.replace("/(tabs)/(home)");
-        },
-      },
-      {
-        text: t("screens.welcome.no"),
-      },
-    ]);
-  }, [anamnesisCompleted, isInInitialAnamnesis, setIsInInitialAnamnesis, t]);
 
   const handleStartAnamnesis = useCallback(() => {
     router.push({
@@ -59,7 +28,16 @@ export default function WelcomeScreen() {
       <Stack.Screen
         options={{
           title: t("screens.welcome.title"),
-          headerRight: () => <SkipHeader onSkip={onSkip} />,
+          headerRight: () => (
+            <SkipHeader
+              alertTitle="screens.welcome.abortQuestion"
+              alertMessage={
+                anamnesisCompleted
+                  ? "screens.welcome.abortExplanation"
+                  : "screens.welcome.abortIncomplete"
+              }
+            />
+          ),
         }}
       />
       <Box flex={1} padding="l" style={{ paddingBottom: insets.bottom }}>

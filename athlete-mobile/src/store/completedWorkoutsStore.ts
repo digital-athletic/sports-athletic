@@ -26,11 +26,11 @@ type State = {
   trainingPlans: TrainingPlanType[];
 };
 
-const DEFAULT_STATE: State = {
+const createInitialState = (): State => ({
   workouts: {},
   workoutsList: [],
   trainingPlans: [],
-};
+});
 
 type Actions = {
   addCompletedWorkout: (workout: CompleteWorkoutType) => void;
@@ -38,7 +38,7 @@ type Actions = {
   setWorkoutsList: (list: CompletedWorkoutListEntryType[]) => void;
   addCompletedTrainingPlan: (plan: TrainingPlanType) => void;
   setCompletedTrainingPlans: (plans: TrainingPlanType[]) => void;
-  clearHistory: () => void;
+  clearWorkoutHistory: () => void;
 };
 
 type Selectors = {
@@ -81,7 +81,7 @@ export type CompletedWorkoutsState = State & Actions & Selectors;
 export const useCompletedWorkoutsStore = create<CompletedWorkoutsState>()(
   persist(
     immer((set, get) => ({
-      ...DEFAULT_STATE,
+      ...createInitialState(),
 
       addCompletedWorkout: (workout) =>
         set((state) => {
@@ -113,11 +113,12 @@ export const useCompletedWorkoutsStore = create<CompletedWorkoutsState>()(
           state.trainingPlans = plans;
         }),
 
-      clearHistory: () =>
+      clearWorkoutHistory: () =>
         set((state) => {
-          state.workouts = {};
-          state.workoutsList = [];
-          state.trainingPlans = [];
+          const initialState = createInitialState();
+          state.workouts = initialState.workouts;
+          state.workoutsList = initialState.workoutsList;
+          state.trainingPlans = initialState.trainingPlans;
         }),
 
       getWorkoutById: (id) => {
@@ -157,7 +158,7 @@ export const useCompletedWorkoutsStore = create<CompletedWorkoutsState>()(
       version: SharedConstants.PERSIST_VERSION,
       migrate: (persistedState, version) =>
         version < SharedConstants.PERSIST_VERSION
-          ? DEFAULT_STATE
+          ? createInitialState()
           : persistedState,
     },
   ),

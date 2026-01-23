@@ -20,7 +20,7 @@ export class BasePage {
   async expectLoggedIn() {
     await expect(
       this.page.getByRole("heading", { name: /Hello .+/i }),
-    ).toBeVisible({ timeout: 10000 });
+    ).toBeVisible();
   }
 
   async expectTrainingPlanVisible() {

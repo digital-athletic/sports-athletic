@@ -2,11 +2,12 @@ import { IndividualWorkoutDisplay } from "@/features/training/IndividualWorkoutD
 import { TestPeriodOverlay } from "@/features/training/TestPeriodOverlay";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { Logger } from "@/services/Logger";
+import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
-import { Stack, router } from "expo-router";
+import { Stack, router, useFocusEffect } from "expo-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -23,13 +24,21 @@ export default function HomeScreen() {
   const { colors, spacing } = useTheme();
   const insets = useSafeAreaInsets();
   const { personalData } = useUserProfileStore();
+  const { isSkipped } = useAnamnesisStore();
   const { setTrainingSelection } = useTrainingStore();
+  const { anamnesisCompleted } = useUserProfileStore();
 
   const username = personalData?.username || "Mr. Anderson";
 
   useEffect(() => {
     Logger.logEvent("home_opened");
   }, []);
+
+  useFocusEffect(() => {
+    if (!anamnesisCompleted && !isSkipped) {
+      router.replace("/anamnesis");
+    }
+  });
 
   const goToTraining = (type: "QUICK" | "PREV" | "PLAN") => {
     setTrainingSelection(type);
@@ -40,7 +49,7 @@ export default function HomeScreen() {
   };
 
   const goToAnamnesis = () => {
-    router.push("/anamnesis");
+    router.replace("/anamnesis");
   };
 
   const goToSeasonPhase = () => {

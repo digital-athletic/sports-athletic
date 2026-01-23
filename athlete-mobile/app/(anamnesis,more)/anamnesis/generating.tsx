@@ -32,18 +32,15 @@ export default function Generating() {
     undefined,
   );
 
-  const {
-    originPath: storedOriginPath,
-    seasonPhase,
-    setSeasonPhase: setAnamnesisSeasonPhase,
-  } = useAnamnesisStore();
+  const { seasonPhase, setSeasonPhase: setAnamnesisSeasonPhase } =
+    useAnamnesisStore();
   const {
     workoutData,
     setSeasonPhase: saveSeasonPhaseToWorkoutData,
     trainingPlan,
     setTrainingPlan,
   } = useUserWorkoutStore();
-  const { isInInitialAnamnesis, setIsInInitialAnamnesis, userId } =
+  const { anamnesisCompleted, setAnamnesisCompleted, userId } =
     useUserProfileStore();
   const { exercises } = useExercisesStore();
   const { skillTrees } = useSkillTreesStore();
@@ -126,8 +123,6 @@ export default function Generating() {
       console.error("Error generating plan:", error);
       Logger.logError(error as Error);
 
-      const origin = originPath ?? storedOriginPath;
-
       Alert.alert(
         t("screens.generating.errorTitle"),
         t("screens.generating.errorMessage"),
@@ -135,7 +130,7 @@ export default function Generating() {
           {
             text: t("common.ok"),
             onPress: () => {
-              if (origin === "/more") {
+              if (originPath === "/more") {
                 router.navigate("/more");
               } else {
                 router.navigate("/(tabs)/(home)");
@@ -178,8 +173,8 @@ export default function Generating() {
   useEffect(() => {
     const goOn = () => {
       Logger.logEvent("anamnesis_create_training_plan_completed");
-      if (isInInitialAnamnesis) {
-        setIsInInitialAnamnesis(false);
+      if (!anamnesisCompleted) {
+        setAnamnesisCompleted(true);
       }
       router.replace("/(tabs)/(home)");
     };

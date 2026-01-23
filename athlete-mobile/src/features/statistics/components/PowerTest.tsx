@@ -64,7 +64,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
           { text: t("common.ok"), onPress: () => {} },
           {
             text: t("statistics.powerTest.startNow"),
-            onPress: () => router.push("/anamnesis"),
+            onPress: () => router.replace("/anamnesis"),
           },
         ],
       );

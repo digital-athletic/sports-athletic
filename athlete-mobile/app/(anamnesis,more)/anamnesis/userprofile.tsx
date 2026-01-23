@@ -34,7 +34,7 @@ export default function UserProfileScreen() {
     setBirthday,
     anamnesisCompleted,
   } = useUserProfileStore();
-  const { resetToDefaults } = useTrainingScheduleStore();
+  const { clearTrainingSchedule } = useTrainingScheduleStore();
 
   const showSeasonPhaseAfterAnamnesis = useShowSeasonPhaseAfterAnamnesis();
 
@@ -49,13 +49,13 @@ export default function UserProfileScreen() {
 
     Alert.alert(t("screens.userProfile.abortAnamnesisQuestion"), message, [
       {
-        text: t("screens.userProfile.yes"),
+        text: t("common.yes"),
         onPress: () => {
           router.replace("/(tabs)/(home)");
         },
       },
       {
-        text: t("screens.userProfile.no"),
+        text: t("common.no"),
       },
     ]);
   }, [t, anamnesisCompleted]);
@@ -99,7 +99,7 @@ export default function UserProfileScreen() {
   const handleBirthdayChange = async (value: string) => {
     setBirthday(value);
     // Reset training days if age changed
-    resetToDefaults();
+    clearTrainingSchedule();
   };
 
   // Calculate max steps for progress bar
@@ -115,7 +115,14 @@ export default function UserProfileScreen() {
           title: t("screens.userProfile.title"),
           headerRight: () =>
             originPath === "/(anamnesis)/anamnesis/sport" ? (
-              <SkipHeader onSkip={showClosePopup} />
+              <SkipHeader
+                alertTitle="screens.userProfile.abortAnamnesisQuestion"
+                alertMessage={
+                  anamnesisCompleted
+                    ? "screens.userProfile.abortAnamnesisExplanation"
+                    : "screens.userProfile.abortAnamnesisIncomplete"
+                }
+              />
             ) : null,
           headerBackButtonDisplayMode: "minimal",
         }}

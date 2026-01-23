@@ -26,14 +26,14 @@
     "error": "Ein unerwarteter Fehler ist aufgetreten.",
     "goOn": "Weiter",
     "next": "Weiter",
-    "no": "NEIN",
+    "no": "Nein",
     "ok": "OK",
     "password": "Passwort",
     "save": "Speichern",
     "saving": "Speichern ...",
     "selected": "{{count}} ausgewählt",
     "skip": "Überspringen",
-    "yes": "JA",
+    "yes": "Ja",
     "loading": "Laden",
     "days": {
       "monday": "Mo",
@@ -85,8 +85,6 @@
       "abortQuestion": "Bearbeitung abbrechen?",
       "abortIncomplete": "Das Profil ist noch nicht vollständig.",
       "abortExplanation": "Deine bisherigen Änderungen gehen verloren.",
-      "yes": "JA",
-      "no": "NEIN",
       "coachImageAlt": "Trainer Ingemar"
     },
     "sport": {
@@ -95,9 +93,7 @@
       "sportSelected": "Ausgewählt",
       "abortAnamnesisQuestion": "Fragebogen abbrechen?",
       "abortAnamnesisIncomplete": "Dein Profil ist noch nicht vollständig.",
-      "abortAnamnesisExplanation": "Alle deine Änderungen gehen verloren.",
-      "yes": "JA",
-      "no": "NEIN"
+      "abortAnamnesisExplanation": "Alle deine Änderungen gehen verloren."
     },
     "userProfile": {
       "title": "Persönliche Daten",
@@ -105,8 +101,6 @@
       "abortAnamnesisQuestion": "Fragebogen abbrechen?",
       "abortAnamnesisIncomplete": "Dein Profil ist noch nicht vollständig.",
       "abortAnamnesisExplanation": "Alle deine Änderungen gehen verloren.",
-      "yes": "JA",
-      "no": "NEIN",
       "usernameTitle": "Name",
       "usernameDescription": "Wie sollen wir dich nennen?",
       "usernamePlaceholder": "Gib deinen Namen ein",

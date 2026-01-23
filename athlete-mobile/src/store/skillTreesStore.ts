@@ -9,9 +9,9 @@ type State = {
   skillTrees: Record<string, SkillTreeType>;
 };
 
-const DEFAULT_STATE: State = {
+const createInitialState = (): State => ({
   skillTrees: {},
-};
+});
 
 type Actions = {
   setSkillTree: (skillName: string, tree: SkillTreeType) => void;
@@ -52,7 +52,7 @@ export type SkillTreesState = State & Actions & Selectors;
 export const useSkillTreesStore = create<SkillTreesState>()(
   persist(
     immer((set, get) => ({
-      ...DEFAULT_STATE,
+      ...createInitialState(),
 
       setSkillTree: (skillName, tree) =>
         set((state) => {
@@ -80,7 +80,7 @@ export const useSkillTreesStore = create<SkillTreesState>()(
       version: SharedConstants.PERSIST_VERSION,
       migrate: (persistedState, version) =>
         version < SharedConstants.PERSIST_VERSION
-          ? DEFAULT_STATE
+          ? createInitialState()
           : persistedState,
     },
   ),

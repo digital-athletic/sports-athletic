@@ -1,18 +1,55 @@
+import { I18nKey } from "@/i18n";
+import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { Text } from "@/theme/Text";
-import { FC } from "react";
+import { useRouter } from "expo-router";
+import { FC, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { TouchableOpacity } from "react-native";
+import { Alert, TouchableOpacity } from "react-native";
 
 interface SkipHeaderProps {
-  onSkip: () => void;
+  alertTitle: I18nKey;
+  alertMessage: I18nKey;
+  confirmText?: I18nKey;
+  cancelText?: I18nKey;
 }
 
-export const SkipHeader: FC<SkipHeaderProps> = ({ onSkip }) => {
+export const SkipHeader: FC<SkipHeaderProps> = ({
+  alertTitle,
+  alertMessage,
+  confirmText,
+  cancelText,
+}) => {
+  const router = useRouter();
   const { t } = useTranslation();
+  const { setIsSkipped } = useAnamnesisStore();
+
+  const showSkipAlert = useCallback(() => {
+    Alert.alert(t(alertTitle), t(alertMessage), [
+      {
+        text: t(confirmText || "common.yes"),
+        onPress: () => {
+          setIsSkipped(true);
+
+          router.replace("/(tabs)/(home)");
+        },
+      },
+      {
+        text: t(cancelText || "common.no"),
+      },
+    ]);
+  }, [
+    alertMessage,
+    alertTitle,
+    cancelText,
+    confirmText,
+    router,
+    setIsSkipped,
+    t,
+  ]);
 
   return (
     <TouchableOpacity
-      onPress={onSkip}
+      onPress={showSkipAlert}
       accessibilityRole="button"
       accessibilityLabel={t("common.skip")}
     >

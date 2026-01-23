@@ -26,14 +26,14 @@
     "error": "An unexpected error occurred.",
     "goOn": "Go on",
     "next": "Next",
-    "no": "NO",
+    "no": "No",
     "ok": "OK",
     "password": "Password",
     "save": "Save",
     "saving": "Saving ...",
     "selected": "{{count}} selected",
     "skip": "skip",
-    "yes": "YES",
+    "yes": "Yes",
     "loading": "Loading",
     "days": {
       "monday": "Mo",
@@ -85,8 +85,6 @@
       "abortQuestion": "Abort editing profile?",
       "abortIncomplete": "Your profile is incomplete.",
       "abortExplanation": "All your changes will be lost.",
-      "yes": "YES",
-      "no": "NO",
       "coachImageAlt": "Coach Ingemar"
     },
     "sport": {
@@ -95,9 +93,7 @@
       "sportSelected": "Selected",
       "abortAnamnesisQuestion": "Abort questionnaire?",
       "abortAnamnesisIncomplete": "Your profile is incomplete.",
-      "abortAnamnesisExplanation": "All your changes will be lost.",
-      "yes": "YES",
-      "no": "NO"
+      "abortAnamnesisExplanation": "All your changes will be lost."
     },
     "userProfile": {
       "title": "Personal Data",
@@ -105,8 +101,6 @@
       "abortAnamnesisQuestion": "Abort questionnaire?",
       "abortAnamnesisIncomplete": "Your profile is incomplete.",
       "abortAnamnesisExplanation": "All your changes will be lost.",
-      "yes": "YES",
-      "no": "NO",
       "usernameTitle": "Name",
       "usernameDescription": "How should we call you?",
       "usernamePlaceholder": "Enter your name",

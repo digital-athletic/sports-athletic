@@ -14,7 +14,7 @@ import { ScrollBox } from "@/theme/ScrollBox";
 import { Stack, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, BackHandler } from "react-native";
+import { BackHandler } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTrainingScheduleStore } from "../../../src/store/trainingScheduleStore";
 import { useUserProfileStore } from "../../../src/store/userProfileStore";
@@ -30,14 +30,9 @@ export default function AnamnesisQuestions() {
   const router = useRouter();
 
   const { workoutData } = useUserWorkoutStore();
-  const {
-    personalData,
-    anamnesisCompleted,
-    isInInitialAnamnesis,
-    setIsInInitialAnamnesis,
-    setAnamnesisCompleted,
-  } = useUserProfileStore();
-  const { resetToDefaults } = useTrainingScheduleStore();
+  const { personalData, anamnesisCompleted, setAnamnesisCompleted } =
+    useUserProfileStore();
+  const { clearTrainingSchedule } = useTrainingScheduleStore();
 
   const showSeasonPhaseAfterAnamnesis = useShowSeasonPhaseAfterAnamnesis();
 
@@ -45,13 +40,11 @@ export default function AnamnesisQuestions() {
   const {
     values,
     tags,
-    originPath,
     setValue,
     setTag,
     setSeasonPhase,
     setCompleted,
     saveData,
-    resetData,
   } = useAnamnesisStore();
 
   const { saveAnamnesisData } = useAnamnesisCompletion();
@@ -70,37 +63,6 @@ export default function AnamnesisQuestions() {
       return true;
     }
   }, [groupIndex, router]);
-
-  const showClosePopup = useCallback(() => {
-    let message = t("screens.anamnesis.abortIncomplete");
-    if (anamnesisCompleted) {
-      message = t("screens.anamnesis.abortExplanation");
-    }
-
-    Alert.alert(t("screens.anamnesis.abortQuestion"), message, [
-      {
-        text: t("common.yes"),
-        onPress: async () => {
-          if (isInInitialAnamnesis) {
-            setIsInInitialAnamnesis(false);
-          }
-          if (originPath) router.navigate(originPath);
-          resetData();
-        },
-      },
-      {
-        text: t("common.no"),
-      },
-    ]);
-  }, [
-    t,
-    anamnesisCompleted,
-    isInInitialAnamnesis,
-    resetData,
-    router,
-    setIsInInitialAnamnesis,
-    originPath,
-  ]);
 
   const finishAnamnesis = useCallback(async () => {
     setLoading(true);
@@ -156,11 +118,11 @@ export default function AnamnesisQuestions() {
     (tag: string, values: string[]) => {
       // Reset training days if level changed
       if (tag === TagGroups.LEVEL) {
-        resetToDefaults();
+        clearTrainingSchedule();
       }
       setTag(tag, values);
     },
-    [setTag, resetToDefaults],
+    [setTag, clearTrainingSchedule],
   );
 
   // Setup hardware back button handler
@@ -204,7 +166,16 @@ export default function AnamnesisQuestions() {
         options={{
           title,
           headerLeft: () => <BackHeader onBack={onBack} />,
-          headerRight: () => <SkipHeader onSkip={showClosePopup} />,
+          headerRight: () => (
+            <SkipHeader
+              alertTitle="screens.anamnesis.abortQuestion"
+              alertMessage={
+                anamnesisCompleted
+                  ? "screens.anamnesis.abortExplanation"
+                  : "screens.anamnesis.abortIncomplete"
+              }
+            />
+          ),
         }}
       />
       <Box

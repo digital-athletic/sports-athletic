@@ -14,24 +14,22 @@ export interface UserPersonalDataType {
 type State = {
   userId: string | null;
   personalData: UserPersonalDataType;
-  isInInitialAnamnesis: boolean;
   anamnesisCompleted: boolean;
   teamId: string | null;
 };
 
-const DEFAULT_PERSONAL_DATA: UserPersonalDataType = {
+const createInitialPersonalData = (): UserPersonalDataType => ({
   username: "",
   gender: "MALE",
   birthday: dateToDDMMYYYY(new Date()),
-};
+});
 
-const DEFAULT_STATE: State = {
+const createInitialState = (): State => ({
   userId: null,
-  personalData: { ...DEFAULT_PERSONAL_DATA },
-  isInInitialAnamnesis: false,
+  personalData: createInitialPersonalData(),
   anamnesisCompleted: false,
   teamId: null,
-};
+});
 
 type Actions = {
   setUserId: (userId: string | null) => void;
@@ -39,7 +37,6 @@ type Actions = {
   setGender: (gender: "MALE" | "FEMALE") => void;
   setBirthday: (birthday: string) => void;
   setPersonalData: (data: Partial<UserPersonalDataType>) => void;
-  setIsInInitialAnamnesis: (value: boolean) => void;
   setAnamnesisCompleted: (completed: boolean) => void;
   setTeamId: (teamId: string | null) => void;
   clearProfile: () => void;
@@ -76,7 +73,7 @@ export type UserProfileState = State & Actions & Selectors;
 export const useUserProfileStore = create<UserProfileState>()(
   persist(
     immer((set, get) => ({
-      ...DEFAULT_STATE,
+      ...createInitialState(),
 
       setUserId: (userId) =>
         set((state) => {
@@ -103,11 +100,6 @@ export const useUserProfileStore = create<UserProfileState>()(
           state.personalData = { ...state.personalData, ...data };
         }),
 
-      setIsInInitialAnamnesis: (value) =>
-        set((state) => {
-          state.isInInitialAnamnesis = value;
-        }),
-
       setAnamnesisCompleted: (completed) =>
         set((state) => {
           state.anamnesisCompleted = completed;
@@ -120,11 +112,11 @@ export const useUserProfileStore = create<UserProfileState>()(
 
       clearProfile: () =>
         set((state) => {
-          state.userId = null;
-          state.personalData = { ...DEFAULT_PERSONAL_DATA };
-          state.isInInitialAnamnesis = false;
-          state.anamnesisCompleted = false;
-          state.teamId = null;
+          const initialState = createInitialState();
+          state.userId = initialState.userId;
+          state.personalData = initialState.personalData;
+          state.anamnesisCompleted = initialState.anamnesisCompleted;
+          state.teamId = initialState.teamId;
         }),
 
       getAge: () => {
@@ -155,7 +147,7 @@ export const useUserProfileStore = create<UserProfileState>()(
       version: SharedConstants.PERSIST_VERSION,
       migrate: (persistedState, version) =>
         version < SharedConstants.PERSIST_VERSION
-          ? DEFAULT_STATE
+          ? createInitialState()
           : persistedState,
     },
   ),

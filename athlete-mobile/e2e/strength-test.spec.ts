@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { mockSupabaseAuth } from "./mocks/supabase";
+import { PROFILE_MALE_COMPETITVE } from "./constants";
 import { BasePage } from "./pages";
 
 /**
@@ -36,14 +36,11 @@ async function completeStrengthTestWorkout(page: Page, reps: number) {
 }
 
 test.describe("Strength Test", () => {
+  test.use({ storageState: PROFILE_MALE_COMPETITVE });
   test("complete strength test workflow", async ({ page }) => {
-    test.setTimeout(60000);
-
-    await mockSupabaseAuth(page);
-
+    await page.goto("/");
     const basePage = new BasePage(page);
-    await basePage.login("test@example.com", "password123");
-    await basePage.expectTrainingPlanVisible();
+    await basePage.expectLoggedIn();
 
     // Navigate to Profile > Start New Test Workout
     await basePage.navigateToTab("Profile");
@@ -61,9 +58,7 @@ test.describe("Strength Test", () => {
     await completeStrengthTestWorkout(page, 10);
 
     // Verify results page
-    await expect(page.getByText("Training evaluation")).toBeVisible({
-      timeout: 10000,
-    });
+    await expect(page.getByText("Training evaluation")).toBeVisible();
     await expect(
       page.getByText("Your Test Results", { exact: true }),
     ).toBeVisible();

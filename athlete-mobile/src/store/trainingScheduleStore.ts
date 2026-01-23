@@ -10,7 +10,7 @@ type State = {
   trainingDays: TrainingDayType[];
 };
 
-const DEFAULT_TRAINING_DAYS: TrainingDayType[] = [
+const createInitialTrainingDays = (): TrainingDayType[] => [
   {
     active: false,
     weekday: 0, // Monday
@@ -55,16 +55,16 @@ const DEFAULT_TRAINING_DAYS: TrainingDayType[] = [
   },
 ];
 
-const DEFAULT_STATE: State = {
-  trainingDays: DEFAULT_TRAINING_DAYS,
-};
+const createInitialState = (): State => ({
+  trainingDays: createInitialTrainingDays(),
+});
 
 type Actions = {
   setTrainingDays: (days: TrainingDayType[]) => void;
   toggleDay: (weekday: number) => void;
   setDayLocation: (weekday: number, placeId: PlaceType) => void;
   setDayDuration: (weekday: number, duration: number) => void;
-  resetToDefaults: () => void;
+  clearTrainingSchedule: () => void;
 };
 
 type Selectors = {
@@ -97,7 +97,7 @@ export type TrainingScheduleState = State & Actions & Selectors;
 export const useTrainingScheduleStore = create<TrainingScheduleState>()(
   persist(
     immer((set, get) => ({
-      ...DEFAULT_STATE,
+      ...createInitialState(),
 
       setTrainingDays: (days) =>
         set((state) => {
@@ -128,9 +128,10 @@ export const useTrainingScheduleStore = create<TrainingScheduleState>()(
           }
         }),
 
-      resetToDefaults: () =>
+      clearTrainingSchedule: () =>
         set((state) => {
-          state.trainingDays = DEFAULT_TRAINING_DAYS;
+          const initialState = createInitialState();
+          state.trainingDays = initialState.trainingDays;
         }),
 
       getActiveTrainingDays: () =>
@@ -152,7 +153,7 @@ export const useTrainingScheduleStore = create<TrainingScheduleState>()(
       version: SharedConstants.PERSIST_VERSION,
       migrate: (persistedState, version) =>
         version < SharedConstants.PERSIST_VERSION
-          ? DEFAULT_STATE
+          ? createInitialState()
           : persistedState,
     },
   ),

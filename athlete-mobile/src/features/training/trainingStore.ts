@@ -1,8 +1,5 @@
-import { SharedConstants } from "@/constants/sharedConstants";
 import { ExerciseDifficultyType } from "@/constants/workoutConstants";
-import { asyncStorage } from "@/store/middleware";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { ActiveTrainingType } from "./models/ActiveTraining";
 import {
@@ -22,7 +19,7 @@ type State = {
   activeTraining: ActiveTrainingType | null;
 };
 
-const DEFAULT_TIME: TrainingTimeType = {
+const createInitialTrainingTime = (): TrainingTimeType => ({
   start: undefined,
   end: undefined,
   pause: 0,
@@ -34,16 +31,16 @@ const DEFAULT_TIME: TrainingTimeType = {
     STABILITY: 0,
     CARDIO: 0,
   },
-};
+});
 
-const DEFAULT_STATE: State = {
+const createInitialState = (): State => ({
   selection: null,
   exerciseList: null,
   progressBefore: null,
   equipment: [],
-  time: DEFAULT_TIME,
+  time: createInitialTrainingTime(),
   activeTraining: null,
-};
+});
 
 type Actions = {
   setTrainingSelection: (selection: TrainingSelectionType | null) => void;
@@ -74,110 +71,97 @@ type Actions = {
 export type TrainingState = State & Actions;
 
 export const useTrainingStore = create<TrainingState>()(
-  persist(
-    immer((set) => ({
-      ...DEFAULT_STATE,
+  immer((set) => ({
+    ...createInitialState(),
 
-      setTrainingSelection: (selection) =>
-        set((state) => {
-          state.selection = selection;
-        }),
-      setExerciseList: (list) =>
-        set((state) => {
-          state.exerciseList = list;
-        }),
-      setExerciseFeedback: (exerciseId, feedback) =>
-        set((state) => {
-          const exercise = state.exerciseList?.find(
-            (item) => item.exerciseId === exerciseId,
-          );
-          if (exercise) {
-            if (exercise.feedback) {
-              exercise.feedback.difficulty = feedback;
-            } else {
-              exercise.feedback = { difficulty: feedback };
-            }
+    setTrainingSelection: (selection) =>
+      set((state) => {
+        state.selection = selection;
+      }),
+    setExerciseList: (list) =>
+      set((state) => {
+        state.exerciseList = list;
+      }),
+    setExerciseFeedback: (exerciseId, feedback) =>
+      set((state) => {
+        const exercise = state.exerciseList?.find(
+          (item) => item.exerciseId === exerciseId,
+        );
+        if (exercise) {
+          if (exercise.feedback) {
+            exercise.feedback.difficulty = feedback;
+          } else {
+            exercise.feedback = { difficulty: feedback };
           }
-        }),
-      setExerciseSkipped: (exerciseId) =>
-        set((state) => {
-          const exercise = state.exerciseList?.find(
-            (item) => item.exerciseId === exerciseId,
-          );
-          if (exercise) {
-            exercise.skipped = true;
-          }
-        }),
-      updateExerciseProgress: (
-        exerciseId,
-        weight,
-        weightPercentage,
-        duration,
-        repetition,
-        height,
-      ) =>
-        set((state) => {
-          const exercise = state.exerciseList?.find(
-            (item) => item.exerciseId === exerciseId,
-          );
+        }
+      }),
+    setExerciseSkipped: (exerciseId) =>
+      set((state) => {
+        const exercise = state.exerciseList?.find(
+          (item) => item.exerciseId === exerciseId,
+        );
+        if (exercise) {
+          exercise.skipped = true;
+        }
+      }),
+    updateExerciseProgress: (
+      exerciseId,
+      weight,
+      weightPercentage,
+      duration,
+      repetition,
+      height,
+    ) =>
+      set((state) => {
+        const exercise = state.exerciseList?.find(
+          (item) => item.exerciseId === exerciseId,
+        );
 
-          if (exercise) {
-            if (weight !== undefined) exercise.weight = weight;
-            if (weightPercentage !== undefined)
-              exercise.nextWeightPercentage = weightPercentage;
-            if (duration !== undefined) exercise.duration = duration;
-            if (repetition !== undefined) exercise.repetition = repetition;
-            if (height !== undefined) exercise.height = height;
-          }
-        }),
-      setProgressBefore: (progress) =>
-        set((state) => {
-          state.progressBefore = progress;
-        }),
-      setEquipment: (equipment) =>
-        set((state) => {
-          state.equipment = equipment;
-        }),
-      setActiveTraining: (training) =>
-        set((state) => {
-          state.activeTraining = training;
-        }),
-      setTrainingStartTime: (time) =>
-        set((state) => {
-          state.time.start = time;
-        }),
-      setTrainingEndTime: (time) =>
-        set((state) => {
-          state.time.end = time;
-        }),
-      addPauseTime: (pauseTime) =>
-        set((state) => {
-          state.time.pause += pauseTime;
-        }),
-      addSkillTime: (focusArea, skillTime) =>
-        set((state) => {
-          state.time.skill[focusArea] += skillTime;
-        }),
-      resetTraining: () =>
-        set((state) => {
-          state.exerciseList = null;
-          state.progressBefore = null;
-          state.equipment = [];
-          // clone DEFAULT_TIME to avoid retaining mutated reference
-          state.time = {
-            ...DEFAULT_TIME,
-          };
-          state.activeTraining = null;
-        }),
-    })),
-    {
-      name: "training-store",
-      storage: asyncStorage,
-      version: SharedConstants.PERSIST_VERSION,
-      migrate: (persistedState, version) =>
-        version < SharedConstants.PERSIST_VERSION
-          ? DEFAULT_STATE
-          : persistedState,
-    },
-  ),
+        if (exercise) {
+          if (weight !== undefined) exercise.weight = weight;
+          if (weightPercentage !== undefined)
+            exercise.nextWeightPercentage = weightPercentage;
+          if (duration !== undefined) exercise.duration = duration;
+          if (repetition !== undefined) exercise.repetition = repetition;
+          if (height !== undefined) exercise.height = height;
+        }
+      }),
+    setProgressBefore: (progress) =>
+      set((state) => {
+        state.progressBefore = progress;
+      }),
+    setEquipment: (equipment) =>
+      set((state) => {
+        state.equipment = equipment;
+      }),
+    setActiveTraining: (training) =>
+      set((state) => {
+        state.activeTraining = training;
+      }),
+    setTrainingStartTime: (time) =>
+      set((state) => {
+        state.time.start = time;
+      }),
+    setTrainingEndTime: (time) =>
+      set((state) => {
+        state.time.end = time;
+      }),
+    addPauseTime: (pauseTime) =>
+      set((state) => {
+        state.time.pause += pauseTime;
+      }),
+    addSkillTime: (focusArea, skillTime) =>
+      set((state) => {
+        state.time.skill[focusArea] += skillTime;
+      }),
+    resetTraining: () =>
+      set((state) => {
+        const initialState = createInitialState();
+        state.exerciseList = initialState.exerciseList;
+        state.progressBefore = initialState.progressBefore;
+        state.equipment = initialState.equipment;
+        state.time = initialState.time;
+        state.activeTraining = initialState.activeTraining;
+      }),
+  })),
 );

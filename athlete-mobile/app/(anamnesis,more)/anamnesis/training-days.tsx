@@ -49,46 +49,14 @@ export default function TrainingDays() {
     workoutData: { tags },
   } = useUserWorkoutStore();
 
-  const { originPath: storedOriginPath, seasonPhase } = useAnamnesisStore();
-  const {
-    isInInitialAnamnesis,
-    setIsInInitialAnamnesis,
-    personalData,
-    anamnesisCompleted,
-  } = useUserProfileStore();
+  const { seasonPhase } = useAnamnesisStore();
+  const { personalData, anamnesisCompleted } = useUserProfileStore();
   const { trainingDays, toggleDay, setDayLocation, setDayDuration } =
     useTrainingScheduleStore();
+  const hasActiveDay = trainingDays.some((day) => day.active);
 
   const handleBack = () => {
     router.back();
-  };
-
-  const handleClose = () => {
-    const hasActiveDay = trainingDays.some((day) => day.active);
-    const message = hasActiveDay
-      ? t("screens.trainingDays.abortExplanation")
-      : t("screens.trainingDays.abortIncomplete");
-
-    const origin = originPath ?? storedOriginPath;
-
-    Alert.alert(t("screens.trainingDays.abortQuestion"), message, [
-      {
-        text: t("common.yes"),
-        onPress: () => {
-          if (isInInitialAnamnesis) {
-            setIsInInitialAnamnesis(false);
-          }
-          if (origin) {
-            router.navigate(origin);
-          } else {
-            router.navigate("/(tabs)/(home)");
-          }
-        },
-      },
-      {
-        text: t("common.no"),
-      },
-    ]);
   };
 
   const handleGoOn = async () => {
@@ -380,7 +348,16 @@ export default function TrainingDays() {
           headerShown: true,
           title: t("screens.trainingDays.title"),
           headerLeft: () => <BackHeader onBack={handleBack} />,
-          headerRight: () => <SkipHeader onSkip={handleClose} />,
+          headerRight: () => (
+            <SkipHeader
+              alertTitle="screens.trainingDays.abortQuestion"
+              alertMessage={
+                hasActiveDay
+                  ? "screens.trainingDays.abortExplanation"
+                  : "screens.trainingDays.abortIncomplete"
+              }
+            />
+          ),
         }}
       />
       <Box

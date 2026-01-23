@@ -18,10 +18,11 @@ type State = {
   isInitialized: boolean;
 };
 
-const DEFAULT_STATE: State = {
+// Prefer factory function to avoid mutable references
+const createInitialState = (): State => ({
   auth: null,
   isInitialized: false,
-};
+});
 
 type Actions = {
   setAuth: (auth: AuthType | null) => void;
@@ -60,7 +61,7 @@ export type AuthState = State & Actions & Selectors;
 export const useAuthStore = create<AuthState>()(
   persist(
     immer((set, get) => ({
-      ...DEFAULT_STATE,
+      ...createInitialState(),
 
       setAuth: (auth) =>
         set((state) => {
@@ -69,7 +70,9 @@ export const useAuthStore = create<AuthState>()(
 
       clearAuth: () =>
         set((state) => {
-          state.auth = null;
+          const initialState = createInitialState();
+          state.auth = initialState.auth;
+          state.isInitialized = initialState.isInitialized;
         }),
 
       initializeFromSupabase: async () => {
@@ -99,7 +102,7 @@ export const useAuthStore = create<AuthState>()(
       // This prevents errors from incompatible persisted data after updates
       migrate: (persistedState, version) =>
         version < SharedConstants.PERSIST_VERSION
-          ? DEFAULT_STATE
+          ? createInitialState()
           : persistedState,
     },
   ),

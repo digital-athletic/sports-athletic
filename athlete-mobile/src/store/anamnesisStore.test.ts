@@ -1,13 +1,15 @@
 import { act, renderHook } from "@testing-library/react-native";
 
-import { DEFAULT_STATE, useAnamnesisStore } from "./anamnesisStore";
+import { createInitialState, useAnamnesisStore } from "./anamnesisStore";
+
+const DEFAULT_STATE = createInitialState();
 
 describe("anamnesisStore", () => {
   beforeEach(() => {
     // Reset store state before each test
     const { result } = renderHook(() => useAnamnesisStore());
     act(() => {
-      result.current.resetData();
+      result.current.clearAnamnesisData();
     });
   });
 
@@ -20,11 +22,6 @@ describe("anamnesisStore", () => {
     it("matches default tags object", () => {
       const { result } = renderHook(() => useAnamnesisStore());
       expect(result.current.tags).toEqual(DEFAULT_STATE.tags);
-    });
-
-    it("matches default originPath", () => {
-      const { result } = renderHook(() => useAnamnesisStore());
-      expect(result.current.originPath).toBe(DEFAULT_STATE.originPath);
     });
   });
 
@@ -102,43 +99,18 @@ describe("anamnesisStore", () => {
     });
   });
 
-  describe("setOriginPath", () => {
-    it("should set origin path", () => {
-      const { result } = renderHook(() => useAnamnesisStore());
-
-      act(() => {
-        result.current.setOriginPath("/(anamnesis)/anamnesis/sport");
-      });
-
-      expect(result.current.originPath).toBe("/(anamnesis)/anamnesis/sport");
-    });
-
-    it("should allow undefined origin path", () => {
-      const { result } = renderHook(() => useAnamnesisStore());
-
-      act(() => {
-        result.current.setOriginPath("/(anamnesis)/anamnesis/sport");
-        result.current.setOriginPath(undefined);
-      });
-
-      expect(result.current.originPath).toBeUndefined();
-    });
-  });
-
-  describe("resetData", () => {
-    it("should reset all state except originPath", () => {
+  describe("clearAnamnesisData", () => {
+    it("should reset all state", () => {
       const { result } = renderHook(() => useAnamnesisStore());
 
       act(() => {
         result.current.setValue("user.height", 180);
         result.current.setTag("injury", ["knee"]);
-        result.current.setOriginPath("/test");
-        result.current.resetData();
+        result.current.clearAnamnesisData();
       });
 
       expect(result.current.values).toEqual(DEFAULT_STATE.values);
       expect(result.current.tags).toEqual(DEFAULT_STATE.tags);
-      expect(result.current.originPath).toBe("/test"); // Should be preserved
     });
   });
 });

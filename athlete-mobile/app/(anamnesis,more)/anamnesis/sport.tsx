@@ -7,7 +7,6 @@ import { BackHeader } from "@/common/BackHeader";
 import { SkipHeader } from "@/common/SkipHeader";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { SportListItem } from "@/features/anamnesis/SportListItem";
-import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Button } from "@/theme/Button";
@@ -21,57 +20,50 @@ export default function SportScreen() {
   const insets = useSafeAreaInsets();
 
   const { workoutData, setSport } = useUserWorkoutStore();
-  const { isInInitialAnamnesis, setIsInInitialAnamnesis } =
-    useUserProfileStore();
-  const { setOriginPath } = useAnamnesisStore();
+  const { anamnesisCompleted } = useUserProfileStore();
 
   const currentSport = workoutData.sport;
 
   const back = useCallback(() => {
-    if (isInInitialAnamnesis) {
+    if (!anamnesisCompleted) {
       router.replace("/(tabs)/(home)");
-      setIsInInitialAnamnesis(false);
     } else if (originPath) {
       router.back();
     } else {
       router.replace("/(tabs)/(home)");
     }
-  }, [isInInitialAnamnesis, originPath, setIsInInitialAnamnesis]);
+  }, [anamnesisCompleted, originPath]);
 
   const showClosePopup = useCallback(() => {
     const message = t("screens.sport.abortAnamnesisIncomplete");
 
     Alert.alert(t("screens.sport.abortAnamnesisQuestion"), message, [
       {
-        text: t("screens.sport.yes"),
+        text: t("common.yes"),
         onPress: () => back(),
       },
       {
-        text: t("screens.sport.no"),
+        text: t("common.no"),
       },
     ]);
   }, [t, back]);
 
-  const handleBackPress = useCallback(() => {
-    if (originPath === "/anamnesis") {
-      return true; // Block back to welcome
-    } else {
+  const handleHardwareBackPress = useCallback(() => {
+    if (originPath === "/(anamnesis)/anamnesis") {
       showClosePopup();
-      return true;
+      return true; // Block back to welcome
     }
+
+    return false; // Allow default back behavior
   }, [originPath, showClosePopup]);
 
   useEffect(() => {
     const subscription = BackHandler.addEventListener(
       "hardwareBackPress",
-      handleBackPress,
+      handleHardwareBackPress,
     );
     return () => subscription.remove();
-  }, [handleBackPress]);
-
-  useEffect(() => {
-    setOriginPath(originPath);
-  }, [originPath, setOriginPath]);
+  }, [handleHardwareBackPress]);
 
   const goOn = () => {
     router.push({
@@ -116,7 +108,10 @@ export default function SportScreen() {
           ),
           headerRight: () =>
             originPath === "/(anamnesis)/anamnesis" ? (
-              <SkipHeader onSkip={showClosePopup} />
+              <SkipHeader
+                alertTitle="screens.sport.abortAnamnesisQuestion"
+                alertMessage="screens.sport.abortAnamnesisIncomplete"
+              />
             ) : null,
         }}
       />

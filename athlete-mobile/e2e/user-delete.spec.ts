@@ -35,13 +35,9 @@ test.describe("User Deletion", () => {
     await page.getByText("YES").first().click();
 
     // Wait for dialog to close and navigation to complete
-    await expect(page.getByText("Logout?", { exact: true })).not.toBeVisible({
-      timeout: 5000,
-    });
+    await expect(page.getByText("Logout?", { exact: true })).not.toBeVisible();
 
     // Should land on login/onboarding page
-    await expect(page.getByRole("button", { name: "Login" })).toBeVisible({
-      timeout: 15000,
-    });
+    await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
   });
 });

@@ -1,19 +1,15 @@
 import { expect, test } from "@playwright/test";
-import { mockSupabaseAuth } from "./mocks/supabase";
+import { PROFILE_MALE_COMPETITVE } from "./constants";
 import { BasePage } from "./pages";
 
-test("visits start page", async ({ page }) => {
-  await mockSupabaseAuth(page);
+test.describe("Start Page", () => {
+  test.use({ storageState: PROFILE_MALE_COMPETITVE });
 
-  await page.goto("/");
-  await expect(page).toHaveURL("/");
-  await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
-});
+  test("displays start page", async ({ page }) => {
+    await page.goto("/");
+    await expect(page).toHaveURL("/");
 
-test("successful login", async ({ page }) => {
-  await mockSupabaseAuth(page);
-
-  const basePage = new BasePage(page);
-  await basePage.login("test@example.com", "password123");
-  await basePage.expectTrainingPlanVisible();
+    const basePage = new BasePage(page);
+    await basePage.expectTrainingPlanVisible();
+  });
 });

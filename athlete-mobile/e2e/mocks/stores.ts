@@ -82,7 +82,6 @@ const STORE_DATA = {
         },
       },
     },
-    version: 0,
   },
 
   "user-profile-storage": {
@@ -97,7 +96,6 @@ const STORE_DATA = {
       anamnesisCompleted: true,
       teamId: null,
     },
-    version: 0,
   },
 
   "user-workout-storage": {
@@ -163,7 +161,6 @@ const STORE_DATA = {
       },
       temporalData: undefined,
     },
-    version: 0,
   },
 
   "exercise-progress-storage": {
@@ -174,7 +171,6 @@ const STORE_DATA = {
       level: 1,
       testHistory: [STRENGTH_TEST_RESULTS],
     },
-    version: 0,
   },
 
   "training-schedule-storage": {
@@ -189,7 +185,6 @@ const STORE_DATA = {
         { active: false, weekday: 6, duration: 30, place: "STUDIO" },
       ],
     },
-    version: 0,
   },
 
   "anamnesis-storage": {
@@ -209,7 +204,6 @@ const STORE_DATA = {
         endDate: "31-12-2026",
       },
     },
-    version: 0,
   },
 };
 
@@ -231,7 +225,7 @@ export async function seedCompletedProfile(page: Page) {
 export async function seedStores(page: Page, stores: Record<string, unknown>) {
   await page.addInitScript((storeData) => {
     for (const [key, value] of Object.entries(storeData)) {
-      localStorage.setItem(key, JSON.stringify({ state: value, version: 0 }));
+      localStorage.setItem(key, JSON.stringify({ state: value }));
     }
   }, stores);
 }
@@ -280,7 +274,6 @@ export async function seedProfileAtBranchThreshold(page: Page) {
         level: 1,
         testHistory: [STRENGTH_TEST_RESULTS],
       },
-      version: 0,
     },
   };
 

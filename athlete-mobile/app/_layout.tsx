@@ -1,10 +1,12 @@
 import { useAuthStateListener } from "@/auth/useAuthStateListener";
+import { AlertHost } from "@/common/Alert";
 import { useLoadSkillTrees } from "@/features/training/hooks/useLoadSkillTree";
 import { useOTAService } from "@/services/OTAService";
 import { useAuthStore } from "@/store/authStore";
 import { theme } from "@/theme/theme";
 import { ThemeProvider } from "@shopify/restyle";
 import { Stack } from "expo-router";
+import { Platform } from "react-native";
 
 /**
  * Root Layout Component
@@ -50,6 +52,7 @@ export default function RootLayout() {
           }}
         />
       </Stack>
+      {Platform.OS === "web" && <AlertHost />}
     </ThemeProvider>
   );
 }

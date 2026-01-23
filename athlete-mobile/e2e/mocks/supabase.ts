@@ -60,12 +60,10 @@ export async function mockSupabaseAuth(page: Page) {
     });
   });
 
-  // Mock signOut
-  await page.route(`${SUPABASE_URL}/auth/v1/logout`, async (route) => {
+  // Mock signOut - use wildcard to match query params like ?scope=global
+  await page.route(`${SUPABASE_URL}/auth/v1/logout**`, async (route) => {
     await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({}),
+      status: 204,
     });
   });
 

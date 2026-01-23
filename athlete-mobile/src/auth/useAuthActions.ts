@@ -7,7 +7,7 @@ import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert } from "react-native";
+import { Alert } from "@/common/Alert";
 
 /**
  * Hook for logout functionality

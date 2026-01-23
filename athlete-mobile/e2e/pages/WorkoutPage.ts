@@ -27,6 +27,10 @@ export class WorkoutPage extends BasePage {
   }
 
   async startWorkout(weekday: string) {
+    await this.startTrainingButton.waitFor({
+      state: "visible",
+      timeout: 15000,
+    });
     await this.startTrainingButton.click();
     await expect(
       this.page.getByRole("heading", { name: /Start.*training/i }),
@@ -64,6 +68,10 @@ export class WorkoutPage extends BasePage {
   }
 
   async beginWorkout() {
+    await this.startTrainingButton.waitFor({
+      state: "visible",
+      timeout: 15000,
+    });
     await this.startTrainingButton.click();
   }
 

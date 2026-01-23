@@ -42,6 +42,9 @@ export type ExercisesState = State & Actions & Selectors;
  *
  * ```
  */
+export const selectExercises = (state: ExercisesState) => state.exercises;
+export const selectSetExercises = (state: ExercisesState) => state.setExercises;
+
 export const useExercisesStore = create<ExercisesState>()(
   persist(
     immer((set, get) => ({

@@ -978,8 +978,6 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
       Logger.logEvent("exercise_completed_hard", {
         exerciseId: exerciseId,
       });
-
-    advanceToNextExercise();
   };
 
   const handlePauseToggled = (wasPaused: boolean) => {

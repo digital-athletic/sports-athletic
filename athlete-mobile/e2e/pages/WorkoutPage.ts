@@ -27,11 +27,7 @@ export class WorkoutPage extends BasePage {
   }
 
   async startWorkout(weekday: string) {
-    await this.startTrainingButton.waitFor({
-      state: "visible",
-      timeout: 15000,
-    });
-    await this.startTrainingButton.click();
+    await this.startTrainingButton.click({ timeout: 15000 });
     await expect(
       this.page.getByRole("heading", { name: /Start.*training/i }),
     ).toBeVisible();
@@ -68,11 +64,7 @@ export class WorkoutPage extends BasePage {
   }
 
   async beginWorkout() {
-    await this.startTrainingButton.waitFor({
-      state: "visible",
-      timeout: 15000,
-    });
-    await this.startTrainingButton.click();
+    await this.startTrainingButton.click({ timeout: 15000 });
   }
 
   async completeWorkout(options?: {
@@ -97,9 +89,9 @@ export class WorkoutPage extends BasePage {
           .catch(() => false);
 
         if (isLastSet && lastSetFeedback === "too_easy") {
-          await this.tooEasyButton.click({ force: true });
+          await this.tooEasyButton.click({ timeout: 3000 });
         } else if (isLastSet && lastSetFeedback === "too_hard") {
-          await this.tooHardButton.click({ force: true });
+          await this.tooHardButton.click({ timeout: 3000 });
         } else {
           await this.checkmarkButton.click({ force: true });
         }

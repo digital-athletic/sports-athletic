@@ -12,7 +12,7 @@
 - Build screen by screen; comment remaining steps while developing
 - Use mocks from `./mocks/stores.ts` for seeding Zustand state
 - Use `mockSupabaseAuth()` for auth — never real credentials in tests
-- Avoid hardcoded timeouts; use `waitFor()` with optional timeout
+- Avoid hardcoded timeouts; use the Auto-waiting feature with optional timeouts, e.g. `.click({ timeout: 3000 })`
 
 ## Debugging
 - Don't delete failing steps — comment them out

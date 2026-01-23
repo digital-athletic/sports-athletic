@@ -29,7 +29,6 @@ import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
 import { dateToDDMMYYYY, DDMMYYYYToDate } from "@/utils/date";
-import { loadExercises } from "@/data/loadExercises";
 import { parseBooleanParam, parseIntParam } from "@/utils/router";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -77,7 +76,7 @@ export default function MuscleSorenessScreen() {
   const { workoutsList } = useCompletedWorkoutsStore();
   const { setExerciseList, setEquipment, setActiveTraining } =
     useTrainingStore();
-  const { setExercises } = useExercisesStore();
+  const { exercises } = useExercisesStore();
   const { userId } = useUserProfileStore();
   const { workoutData, temporalData, setTemporalData, trainingPlan } =
     useUserWorkoutStore();
@@ -115,12 +114,6 @@ export default function MuscleSorenessScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const loadAndSetExercises = () => {
-    const exercises = loadExercises();
-    setExercises(exercises);
-    return exercises;
-  };
-
   const setMuscles = (tags: string[]) => {
     // save updated muscle soreness to temporal data
     const temporalData = tags.map((tag) => ({
@@ -133,8 +126,6 @@ export default function MuscleSorenessScreen() {
   };
 
   const generateExerciseList = (place: PlaceType) => {
-    const exercises = loadAndSetExercises();
-
     const trainingType = params.type;
 
     if (!exercises) {

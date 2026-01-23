@@ -1,5 +1,11 @@
 import { useAuthStateListener } from "@/auth/useAuthStateListener";
 import { AlertHost } from "@/common/Alert";
+import { loadExercises } from "@/data/loadExercises";
+import {
+  selectExercises,
+  selectSetExercises,
+  useExercisesStore,
+} from "@/store/exercisesStore";
 import { useLoadSkillTrees } from "@/features/training/hooks/useLoadSkillTree";
 import { useOTAService } from "@/services/OTAService";
 import { useAuthStore } from "@/store/authStore";
@@ -26,6 +32,12 @@ export default function RootLayout() {
   useOTAService();
 
   useLoadSkillTrees();
+
+  const exercises = useExercisesStore(selectExercises);
+  const setExercises = useExercisesStore(selectSetExercises);
+  if (!exercises) {
+    setExercises(loadExercises());
+  }
 
   return (
     <ThemeProvider theme={theme}>

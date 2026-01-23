@@ -1,9 +1,12 @@
 import { WorkoutConstants } from "@/constants/workoutConstants";
+import { loadExercises } from "@/data/loadExercises";
+import { loadSkillTree } from "@/data/loadSkillTrees";
 import type { SeasonPhaseType } from "@/features/training/models/SeasonPhase";
 import { SeasonPhase } from "@/features/training/models/SeasonPhase";
 import type { TrainingDayType } from "@/features/training/models/TrainingDay";
 import type { TrainingSectionType } from "@/features/training/models/TrainingSection";
-import { PlacesData } from "@/store/placesStore";
+import type { SkillTreeType } from "@/schemas/skillTree.schema";
+import type { PlacesData } from "@/store/placesStore";
 import PlanGenerator from "./PlanGenerator";
 
 describe("PlanGenerator", () => {
@@ -1284,6 +1287,88 @@ describe("PlanGenerator", () => {
       expect(result).toBeDefined();
       expect(result.sections).toBeDefined();
       expect(Array.isArray(result.sections)).toBe(true);
+    });
+
+    it("should generate a valid plan for advanced fieldplayer with preparatory phase", () => {
+      const skillTreeNames = [
+        "BAS",
+        "BR",
+        "CARDIO_1_SHORT",
+        "CARDIO_1_LAKTAT",
+        "CARDIO_2",
+        "CARDIO_3",
+        "CARDIO_4",
+        "CARDIO_5",
+        "CD",
+        "GKS",
+        "GKSKG",
+        "MAX",
+        "MOB",
+        "PLYO",
+        "PREV",
+        "PREVKG",
+        "SA",
+        "SAKG",
+        "SASPEZIAL",
+        "SK",
+        "SKKG",
+        "SWR1",
+        "SWR1KG",
+        "WU",
+        "WUSKSA",
+        "WUSPEZIAL",
+      ] as const;
+      const skillTrees: Record<string, SkillTreeType> = {};
+      for (const name of skillTreeNames) {
+        skillTrees[name] = loadSkillTree(name);
+      }
+      const exercisesList = loadExercises();
+
+      const user = {
+        userId: "test-user-prep",
+        workoutData: {
+          birthday: "01-01-1987",
+          tags: [`LEVEL_${WorkoutConstants.LEVELS.ADVANCED}`, "POSITION_FIELD"],
+          seasonPhase: {
+            type: SeasonPhase.PREPATORY,
+            numOfWeeks: 20,
+            endDate: "15-06-2026",
+          },
+        },
+      };
+      // Tu, We, Th, Sa active - each 30 min at STUDIO
+      const userTrainingDays: TrainingDayType[] = [
+        { active: false, weekday: 0, duration: 30, place: "STUDIO" },
+        { active: true, weekday: 1, duration: 30, place: "STUDIO" },
+        { active: true, weekday: 2, duration: 30, place: "STUDIO" },
+        { active: true, weekday: 3, duration: 30, place: "STUDIO" },
+        { active: false, weekday: 4, duration: 30, place: "STUDIO" },
+        { active: true, weekday: 5, duration: 30, place: "STUDIO" },
+        { active: false, weekday: 6, duration: 30, place: "STUDIO" },
+      ];
+      const places = {
+        STUDIO: {
+          name: "STUDIO",
+          equipment: ["WEIGHTS", "MAT", "DUMBBELL"],
+        },
+      } as PlacesData;
+      const startDate = new Date(2026, 0, 19);
+
+      const result = PlanGenerator.generatePlan(
+        user,
+        exercisesList,
+        skillTrees,
+        {},
+        userTrainingDays,
+        places,
+        startDate,
+      );
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("start");
+      expect(result).toHaveProperty("sections");
+      expect(Array.isArray(result.sections)).toBe(true);
+      expect(result.sections.length).toBeGreaterThan(0);
     });
   });
 

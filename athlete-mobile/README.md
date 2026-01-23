@@ -90,6 +90,20 @@ pnpm ios
 
 This generates the native iOS project files, builds the app with Xcode and installs the generated build on your simulator.
 
+## e2e Tests
+
+```bash
+docker compose up -d # start containers including the playwright server
+```
+
+Then:
+
+```bash
+pnpm run test:e2e
+ # When executing directly on the macOS, you cant use localhost to refer to the host. Instead:
+TESTING_PLAYWRIGHT_BASE_URL=http://host.docker.internal:8081 pnpm run test:e2e
+```
+
 ## 🧰 Useful Commands
 
 ```bash

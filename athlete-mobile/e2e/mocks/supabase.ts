@@ -1,7 +1,5 @@
 import { type Page } from "@playwright/test";
 
-const SUPABASE_URL = "http://localhost:54321";
-
 const mockUser = {
   id: "mock-user-id-123",
   email: "test@example.com",
@@ -22,22 +20,19 @@ const mockSession = {
 
 export async function mockSupabaseAuth(page: Page) {
   // Mock signInWithPassword
-  await page.route(
-    `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
-    async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({
-          ...mockSession,
-          user: mockUser,
-        }),
-      });
-    },
-  );
+  await page.route(`**/auth/v1/token?grant_type=password`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        ...mockSession,
+        user: mockUser,
+      }),
+    });
+  });
 
   // Mock getSession
-  await page.route(`${SUPABASE_URL}/auth/v1/session`, async (route) => {
+  await page.route(`**/auth/v1/session`, async (route) => {
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -49,7 +44,7 @@ export async function mockSupabaseAuth(page: Page) {
   });
 
   // Mock signUp
-  await page.route(`${SUPABASE_URL}/auth/v1/signup`, async (route) => {
+  await page.route(`**/auth/v1/signup`, async (route) => {
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -61,14 +56,14 @@ export async function mockSupabaseAuth(page: Page) {
   });
 
   // Mock signOut - use wildcard to match query params like ?scope=global
-  await page.route(`${SUPABASE_URL}/auth/v1/logout**`, async (route) => {
+  await page.route(`**/auth/v1/logout**`, async (route) => {
     await route.fulfill({
       status: 204,
     });
   });
 
   // Mock any other Supabase REST API calls
-  await page.route(`${SUPABASE_URL}/rest/v1/**`, async (route) => {
+  await page.route(`**/rest/v1/**`, async (route) => {
     await route.fulfill({
       status: 200,
       contentType: "application/json",

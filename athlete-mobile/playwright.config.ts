@@ -26,7 +26,7 @@ export default defineConfig({
     ...{
       ignoreHTTPSErrors: true,
       baseURL:
-        process.env.TESTING_PLAYWRIGHT_BASE_URL ?? "http://localhost:8081",
+        process.env.TESTING_PLAYWRIGHT_BASE_URL ?? "http://localhost:8081", // Use TESTING_PLAYWRIGHT_BASE_URL=http://host.docker.internal:8081 on mac when executing on the host
 
       /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
       trace: "on-first-retry",
@@ -62,7 +62,8 @@ export default defineConfig({
       stderr: "pipe",
       timeout: 120 * 1000, // 2 minutes timeout
       env: {
-        EXPO_PUBLIC_SUPABASE_URL: "http://localhost:54321",
+        EXPO_PUBLIC_SUPABASE_URL:
+          process.env.TESTING_SUPABASE_BASE_URL ?? "http://localhost:54321",
         EXPO_PUBLIC_SUPABASE_ANON_KEY: "mock-anon-key",
       },
     },

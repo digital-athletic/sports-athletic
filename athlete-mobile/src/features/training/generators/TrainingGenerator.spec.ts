@@ -413,8 +413,8 @@ describe("TrainingGenerator", () => {
       expect(generator.isEmptyOrUndefined({ key: "value" })).toBe(false);
     });
 
-    it("throws error for null", () => {
-      expect(() => generator.isEmptyOrUndefined(null)).toThrow();
+    it("returns true for null", () => {
+      expect(generator.isEmptyOrUndefined(null)).toBe(true);
     });
 
     it("returns false for array", () => {

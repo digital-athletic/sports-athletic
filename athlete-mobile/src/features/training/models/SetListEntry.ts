@@ -28,4 +28,8 @@ export type GeneratedSetListEntry = {
   weight?: number;
   height?: number;
   weightType?: string;
+  /** Branch tags - used during MAX training generation */
+  tags?: string[];
+  /** Max force repetition data - used during MAX training generation */
+  repetitionMAX?: { level: string; repetitions: number };
 };

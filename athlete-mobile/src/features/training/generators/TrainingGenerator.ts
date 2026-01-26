@@ -1,13 +1,9 @@
-// @ts-nocheck
-// TODO: Continue removing @ts-nocheck
-//
-//
-// REMAINING BLOCKERS:
-// 1. Many helper methods still use exercises[id] array indexing - need exerciseMap
-// 2. Multiple branchId: -1 occurrences need PLACEHOLDER_BRANCH_ID
-// 3. Other methods need temporalData/trainingPlan null handling
 import { TagGroups } from "@/constants/tagGroups";
-import { WorkoutConstants } from "@/constants/workoutConstants";
+import {
+  WorkoutConstants,
+  type SkillTypes,
+} from "@/constants/workoutConstants";
+import type { Branch } from "@/features/training/models/BranchFilter";
 import type {
   BranchExerciseReference,
   BranchSelectionResult,
@@ -31,6 +27,7 @@ import type {
   TrainingType,
 } from "@/features/training/models/Training";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
+import type { UserTrainingType } from "@/features/training/models/UserTraining";
 import { getSectionForDate } from "@/features/training/trainingUtils";
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
 import {
@@ -70,6 +67,7 @@ import {
   type ExerciseStartValues,
   type ExerciseValuesConfig,
   type ExerciseValuesData,
+  type FeedbackAdjustment,
   type FilterResult,
   type GenderLevelValueMap,
   type GeneratorSkillTypeFromSchema,
@@ -690,7 +688,7 @@ export default class TrainingGenerator {
 
     let exerciseList = this.getSetListFromExercisePairs(
       exercisePairs,
-      { skill: type, length: exerciseTime },
+      { skill: type as GeneratorSkillTypeFromSchema, length: exerciseTime },
       skillTrees,
       user,
       place,
@@ -803,26 +801,37 @@ export default class TrainingGenerator {
       //clip last section by number of added weeks -> end of season phase is definite
       const lastSection =
         trainingPlan.sections[trainingPlan.sections.length - 1];
-      lastSection.length = Math.max(0, lastSection.length - additionalWeeks);
+      lastSection.numOfWeeks = Math.max(
+        0,
+        lastSection.numOfWeeks - additionalWeeks,
+      );
     }
 
     let currSec;
     if (givenSection) {
       currSec = trainingPlan.sections[givenSection];
     } else {
-      currSec = getSectionForDate(trainingPlan.sections, today.getTime());
+      currSec = getSectionForDate(
+        trainingPlan.sections as Parameters<typeof getSectionForDate>[0],
+        today.getTime(),
+      );
     }
 
     if (TrainingGenerator.DEBUG) console.log("CURRENT SECTION:", currSec);
 
+    // Cast trainings to UserTrainingType[] since schema uses unknown[]
+    const trainings = currSec.trainings as UserTrainingType[];
+
     //get training for current weekday -- there should be only one
-    let currTraining = currSec.trainings.filter((training) => {
-      return training.weekday === weekday;
-    })[0];
+    let currTraining: UserTrainingType | undefined = trainings.filter(
+      (training) => {
+        return training.weekday === weekday;
+      },
+    )[0];
     // This should never happen
     if (typeof currTraining === "undefined") {
       // use first training in list
-      currTraining = currSec.trainings[0];
+      currTraining = trainings[0];
     }
 
     if (TrainingGenerator.DEBUG) {
@@ -879,15 +888,21 @@ export default class TrainingGenerator {
         };
      */
 
-    for (let skill in exerciseBranches) {
+    for (const skill of Object.keys(exerciseBranches) as SkillTypes[]) {
       let replace: string[] = [];
-      let branches = exerciseBranches[skill].reduce<
-        Record<string, (typeof exerciseBranches)[string][number]>
+      let branches = exerciseBranches[skill]!.reduce<
+        Record<string, (typeof exerciseBranches)[SkillTypes][number]>
       >((acc, entry) => {
-        acc[entry.exerciseBranchId] = entry;
+        if (entry.exerciseBranchId) {
+          acc[entry.exerciseBranchId] = entry;
+        }
         return acc;
       }, {});
-      let sorenessFiltered = filterBySoreness(branches, temporalData, skill);
+      let sorenessFiltered = filterBySoreness(
+        branches as unknown as Record<string, Branch>,
+        temporalData,
+        skill,
+      );
       replace = replace.concat(sorenessFiltered.replace);
       let equipmentFiltered = filterByEquipment(
         sorenessFiltered.keep,
@@ -930,10 +945,10 @@ export default class TrainingGenerator {
 
           // replace existing cardio skill with cardio 5
           exerciseBranches[skill] = [];
-          const cardioLength = currTraining.lengths[skill];
-          skill = "CARDIO_5";
-          currTraining.lengths[skill] = Math.min(cardioLength, 20); // max 20 minutes of replacemnet cardio
-          exerciseBranches[skill] = [
+          const cardioLength = currTraining.lengths[skill] ?? 0;
+          const cardioSkill = "CARDIO_5" as SkillTypes;
+          currTraining.lengths[cardioSkill] = Math.min(cardioLength, 20); // max 20 minutes of replacemnet cardio
+          exerciseBranches[cardioSkill] = [
             {
               tags: cardioReplacement.tags,
               exercises: cardioReplacement.levels,
@@ -947,7 +962,10 @@ export default class TrainingGenerator {
           );
           const prevSkills = getPreventionsFromPains(PAINS);
           // make sure to replace ALL exercises for WUSPEZ and PREV
-          if (skill.indexOf("PREV") !== -1 || skill === "WUSPEZIAL") {
+          if (
+            skill.indexOf("PREV") !== -1 ||
+            skill === ("WUSPEZIAL" as SkillTypes)
+          ) {
             for (let i = 0; i < keep.length; i++) {
               let temp = replace[0];
               replace.push(temp);
@@ -962,7 +980,9 @@ export default class TrainingGenerator {
             user,
             exercises,
             skillTrees,
-            Object.keys(keep).map((index) => keep[index].exerciseBranchId),
+            Object.keys(keep).map(
+              (index) => keep[parseInt(index, 10)].exerciseBranchId,
+            ),
             prevSkills,
             userExerciseData,
             false,
@@ -983,7 +1003,7 @@ export default class TrainingGenerator {
             }
             if (regionReplacement.length === 0) {
               // change to new PREV skill
-              let otherPrevSkill = skill;
+              let otherPrevSkill: SkillTypes = skill;
               for (let p = 0; p < prevSkillsSecondary.length; p++) {
                 let secondaryPrevRegion = getRegionsForPreventionSkills([
                   prevSkillsSecondary[p],
@@ -994,54 +1014,54 @@ export default class TrainingGenerator {
                   ),
                 );
                 if (secondaryRegionReplacement.length === replacement.length) {
-                  otherPrevSkill = prevSkillsSecondary[p];
+                  otherPrevSkill = prevSkillsSecondary[p] as SkillTypes;
                   break;
                 }
               }
               // Check if skill already has branches (not null/undefined AND has content)
               if (exerciseBranches[otherPrevSkill]?.length > 0) {
                 exerciseBranches[otherPrevSkill] =
-                  exerciseBranches[otherPrevSkill].concat(replacement);
+                  exerciseBranches[otherPrevSkill]!.concat(replacement);
                 currTraining.lengths[otherPrevSkill] =
-                  currTraining.lengths[otherPrevSkill] +
-                  currTraining.lengths[skill];
+                  (currTraining.lengths[otherPrevSkill] ?? 0) +
+                  (currTraining.lengths[skill] ?? 0);
               } else {
                 exerciseBranches[otherPrevSkill] = replacement;
                 currTraining.lengths[otherPrevSkill] =
-                  currTraining.lengths[skill];
+                  currTraining.lengths[skill] ?? 0;
               }
               // select exercise for updated userLevel
               exerciseBranches[otherPrevSkill] = exerciseBranches[
                 otherPrevSkill
-              ]
-                .map((branchData) => {
-                  if (branchData) {
-                    const exercise = getUserExerciseFromBranch(
-                      {
-                        levels: branchData.exercises
-                          ? branchData.exercises
-                          : branchData.levels,
-                        tags: branchData.tags,
-                      },
-                      userLevel,
-                      exercises,
-                      userExerciseData.branchData[branchData.exerciseBranchId]
-                        ? userExerciseData.branchData[
-                            branchData.exerciseBranchId
-                          ]
-                        : null,
-                    );
-                    return {
-                      branchId: branchData.exerciseBranchId,
-                      branchTags: exercise ? exercise.tags : branchData.tags,
-                      exerciseId: exercise?.id ?? "-1",
-                    };
-                  }
-                  return null;
-                })
-                .filter(
-                  (item): item is NonNullable<typeof item> => item !== null,
-                );
+              ]!.map((branchData) => {
+                if (branchData && branchData.exerciseBranchId) {
+                  const branchId = branchData.exerciseBranchId;
+                  const typedBranchData = branchData as {
+                    tags: string[];
+                    exercises?: Record<string, { id: string }>;
+                    levels?: Record<string, { id: string }>;
+                  };
+                  const levels =
+                    typedBranchData.exercises ?? typedBranchData.levels ?? {};
+                  const exercise = getUserExerciseFromBranch(
+                    {
+                      levels: levels as Record<string, { id: string }>,
+                      tags: typedBranchData.tags,
+                    },
+                    userLevel,
+                    exercises,
+                    userExerciseData.branchData[branchId] ?? null,
+                  );
+                  return {
+                    branchId,
+                    branchTags: exercise ? exercise.tags : typedBranchData.tags,
+                    exerciseId: exercise?.id ?? "-1",
+                  };
+                }
+                return null;
+              }).filter(
+                (item): item is NonNullable<typeof item> => item !== null,
+              );
               replacement = [];
             }
           }
@@ -1051,7 +1071,8 @@ export default class TrainingGenerator {
             console.log("skillTrees", skillTrees);
           }
           if (
-            (skill.indexOf("PREV") !== -1 || skill === "WUSPEZIAL") &&
+            (skill.indexOf("PREV") !== -1 ||
+              skill === ("WUSPEZIAL" as SkillTypes)) &&
             replacement.length === 0
           ) {
             exerciseBranches[skill] = [];
@@ -1062,49 +1083,50 @@ export default class TrainingGenerator {
       }
 
       //for each exerciseBranch select exercise for updated userLevel
-      exerciseBranches[skill] = exerciseBranches[skill]
-        .map((branchData) => {
-          if (branchData) {
-            const exercise = getUserExerciseFromBranch(
-              {
-                levels: branchData.exercises
-                  ? branchData.exercises
-                  : branchData.levels,
-                tags: branchData.tags,
-              },
-              userLevel,
-              exercises,
-              userExerciseData.branchData[branchData.exerciseBranchId]
-                ? userExerciseData.branchData[branchData.exerciseBranchId]
-                : null,
-            );
-            return {
-              branchId: branchData.exerciseBranchId,
-              branchTags: exercise ? exercise.tags : branchData.tags,
-              exerciseId: exercise?.id ?? "-1",
-            };
-          }
-          return null;
-        })
-        .filter((item): item is NonNullable<typeof item> => item !== null);
+      exerciseBranches[skill] = exerciseBranches[skill]!.map((branchData) => {
+        if (branchData && branchData.exerciseBranchId) {
+          const branchId = branchData.exerciseBranchId;
+          const typedBranchData = branchData as {
+            tags: string[];
+            exercises?: Record<string, { id: string }>;
+            levels?: Record<string, { id: string }>;
+          };
+          const levels =
+            typedBranchData.exercises ?? typedBranchData.levels ?? {};
+          const exercise = getUserExerciseFromBranch(
+            {
+              levels: levels as Record<string, { id: string }>,
+              tags: typedBranchData.tags,
+            },
+            userLevel,
+            exercises,
+            userExerciseData.branchData[branchId] ?? null,
+          );
+          return {
+            branchId,
+            branchTags: exercise ? exercise.tags : typedBranchData.tags,
+            exerciseId: exercise?.id ?? "-1",
+          };
+        }
+        return null;
+      }).filter((item): item is NonNullable<typeof item> => item !== null);
     }
 
-    const sorted: (SkillBranchList & { length: number })[] = Object.keys(
-      exerciseBranches,
-    )
+    const sorted = (Object.keys(exerciseBranches) as SkillTypes[])
       .sort((a, b) => {
         return (
           WorkoutConstants.SECTION_ORDER.indexOf(a) -
           WorkoutConstants.SECTION_ORDER.indexOf(b)
         );
       })
-      .map((skill) => {
-        if (exerciseBranches[skill] && exerciseBranches[skill].length > 0) {
+      .map((skillKey) => {
+        const branchArray = exerciseBranches[skillKey];
+        if (branchArray && branchArray.length > 0) {
           // add to sorted if not null/empty
           return {
-            skill: skill,
-            length: currTraining.lengths[skill],
-            branches: exerciseBranches[skill],
+            skill: skillKey as string,
+            length: currTraining.lengths[skillKey] ?? 0,
+            branches: branchArray as BranchExerciseReference[],
           };
         }
         return undefined;
@@ -1195,19 +1217,25 @@ export default class TrainingGenerator {
           exerciseBranchData: id,
         };
       }
-      let filteredBranches = filterBySoreness(
+      let filteredBranches: Record<string, SkillBranchData> = filterBySoreness(
         allBranches,
         temporalData,
         skill,
-      ).keep;
-      filteredBranches = filterByEquipment(filteredBranches, equipment).keep;
+      ).keep as Record<string, SkillBranchData>;
+      filteredBranches = filterByEquipment(
+        filteredBranches as unknown as Record<string, Branch>,
+        equipment,
+      ).keep as Record<string, SkillBranchData>;
       filteredBranches = filterByUserLevel(
         filteredBranches,
         user,
         exercises,
         userExerciseData.branchData,
       ).keep;
-      filteredBranches = filterByAge(filteredBranches, ageGroup).keep;
+      filteredBranches = filterByAge(
+        filteredBranches as unknown as Record<string, Branch>,
+        ageGroup,
+      ).keep as Record<string, SkillBranchData>;
 
       let possibleBranches = Object.keys(filteredBranches).filter(
         (branchId) => usedBranchIds.indexOf(branchId) === -1,
@@ -1360,7 +1388,7 @@ export default class TrainingGenerator {
    */
   getSetListFromExercisePairs = (
     exercisePairs: ExercisePair[],
-    skill: { skill: string; length: number },
+    skill: { skill: GeneratorSkillTypeFromSchema; length: number },
     skillTrees: { [skillName: string]: SkillTreeType },
     user: UserType,
     place: string,
@@ -1514,9 +1542,10 @@ export default class TrainingGenerator {
       // build max training with 2 warm up and 2/3 training sets filled with support exercises
       const setList: GeneratedSetListEntry[] = [];
       const maxValues: MaxValuesType =
-        workoutData.maxValues ?? DEFAULT_MAX_VALUES;
+        (workoutData.maxValues as MaxValuesType | undefined) ??
+        DEFAULT_MAX_VALUES;
       // try not to reuse sup exercises
-      const usedSupExercisesIds: string[] = [];
+      let usedSupExercisesIds: string[] = [];
 
       // distribute weight/kg of support exercises by age and place
       let weightPercentage = 0.3; // child is default
@@ -1683,26 +1712,29 @@ export default class TrainingGenerator {
               supExercise.values &&
               supExercise.values.weight
             ) {
-              const supAgeGroup = workoutData
+              const supAgeGroup = workoutData?.birthday
                 ? ageGroupFor(workoutData.birthday)
                 : WorkoutConstants.AGE_GROUPS.CHILD;
               const supUserLevel = getUserLevel(user);
               supWeight =
                 getValueByGenderAndLevel(
-                  supExercise.values.weight.startValue,
+                  supExercise.values.weight.startValue as GenderLevelValueMap,
                   supAgeGroup === WorkoutConstants.AGE_GROUPS.CHILD
                     ? "k"
-                    : workoutData.gender === "MALE"
+                    : workoutData?.gender === "MALE"
                       ? "m"
                       : "w",
                   supUserLevel.toLowerCase(),
                 ) ?? -1;
             }
-            let supExerciseEntryFirst = {
+            let supExerciseEntryFirst: GeneratedSetListEntry = {
               branchId: PLACEHOLDER_BRANCH_ID,
               exerciseId: supExercise.id,
               tags: supExercise.tags,
-              set: [trainingSet + 1, trainingWeights.length],
+              set: [trainingSet + 1, trainingWeights.length] as [
+                number,
+                number,
+              ],
               skill: skill.skill,
               duration: supportExerciseDuration,
               weight: supWeight > -1 ? supWeight : undefined,
@@ -1712,13 +1744,17 @@ export default class TrainingGenerator {
                 branchId: PLACEHOLDER_BRANCH_ID,
                 exerciseId: supExercise.id,
                 tags: supExercise.tags,
-                set: [trainingSet + 1, trainingWeights.length],
+                set: [trainingSet + 1, trainingWeights.length] as [
+                  number,
+                  number,
+                ],
                 skill: skill.skill,
                 repetition: supportExerciseRepetition,
                 weight: supWeight > -1 ? supWeight : undefined,
               };
             }
-            let supExerciseEntrySecond = supExerciseEntryFirst;
+            let supExerciseEntrySecond: GeneratedSetListEntry =
+              supExerciseEntryFirst;
             if (
               supExercise.tags.indexOf("SIDE_ONE") > -1 &&
               supExercise.otherSideExerciseId
@@ -1728,7 +1764,10 @@ export default class TrainingGenerator {
                 branchId: PLACEHOLDER_BRANCH_ID,
                 exerciseId: supExercise.otherSideExerciseId,
                 tags: supExercise.tags,
-                set: [trainingSet + 1, trainingWeights.length],
+                set: [trainingSet + 1, trainingWeights.length] as [
+                  number,
+                  number,
+                ],
                 skill: skill.skill,
                 duration: supportExerciseDuration,
                 weight: supWeight > -1 ? supWeight : undefined,
@@ -1738,7 +1777,10 @@ export default class TrainingGenerator {
                   branchId: PLACEHOLDER_BRANCH_ID,
                   exerciseId: supExercise.otherSideExerciseId,
                   tags: supExercise.tags,
-                  set: [trainingSet + 1, trainingWeights.length],
+                  set: [trainingSet + 1, trainingWeights.length] as [
+                    number,
+                    number,
+                  ],
                   skill: skill.skill,
                   repetition: supportExerciseRepetition,
                   weight: supWeight > -1 ? supWeight : undefined,
@@ -1845,14 +1887,15 @@ export default class TrainingGenerator {
           afterSetPauseLength = pauseForSkill; // TODO check if single/super set
 
         let second: ReturnType<typeof this.getExerciseStartValues> | undefined;
-        if (exercisePairs[i].second && exercisePairs[i].second.exerciseId) {
-          if (exercisePairs[i].second.exerciseId === "-1") {
+        const secondPair = exercisePairs[i].second;
+        if (secondPair && secondPair.exerciseId) {
+          if (secondPair.exerciseId === "-1") {
             // no exercises found for this pair
             if (TrainingGenerator.DEBUG)
               console.error("NO SECOND EXERCISES IN PAIR: ", exercisePairs[i]);
             continue;
           }
-          const secondRef = exercisePairs[i].second!;
+          const secondRef = secondPair;
           const secondExerciseData = exerciseMap.get(secondRef.exerciseId);
           if (!secondExerciseData) {
             if (TrainingGenerator.DEBUG)
@@ -1864,22 +1907,19 @@ export default class TrainingGenerator {
             skill.skill,
             secondRef,
             user,
-            secondExerciseData,
+            secondExerciseData!,
             userExerciseData,
             isShortTraining,
           );
         } else {
           if (
             TrainingGenerator.DEBUG &&
-            exercisePairs[i].second &&
-            typeof exercisePairs[i].second.exerciseId === "undefined"
+            secondPair &&
+            typeof secondPair.exerciseId === "undefined"
           )
-            console.error(
-              "NO EXERCISE ID DEFINED IN SECOND: ",
-              exercisePairs[i].second,
-            );
+            console.error("NO EXERCISE ID DEFINED IN SECOND: ", secondPair);
         }
-        let set = [];
+        let set: [number, number] = [0, 0];
         let j = 1;
         let setsToBuild = setsPerExercise;
 
@@ -1906,12 +1946,21 @@ export default class TrainingGenerator {
               first,
               SetListEntrySchema,
               "first",
-            );
-            firstWarmUp.weight = firstWarmUp.weight * warmUpWeightFactor;
+            ) as ExerciseStartValues;
+            if (firstWarmUp.weight !== undefined) {
+              firstWarmUp.weight = firstWarmUp.weight * warmUpWeightFactor;
+            }
             setList.push({
-              ...firstWarmUp,
+              branchId: firstWarmUp.branchId,
+              exerciseId: firstWarmUp.exerciseId,
+              tags: firstWarmUp.tags,
               set: set,
               skill: skill.skill,
+              duration: firstWarmUp.duration,
+              repetition: firstWarmUp.repetition,
+              weight: firstWarmUp.weight,
+              height: firstWarmUp.height,
+              weightType: firstWarmUp.weightType,
             });
             setList.push({
               branchId: PLACEHOLDER_BRANCH_ID,
@@ -1926,7 +1975,7 @@ export default class TrainingGenerator {
                 second,
                 SetListEntrySchema,
                 "second",
-              );
+              ) as ExerciseStartValues;
               let secondWarmUpRepetition =
                 skill.skill.indexOf("SK") > -1 ? 8 : second.repetition;
               if (secondWarmUp.weight) {
@@ -1935,9 +1984,16 @@ export default class TrainingGenerator {
               }
               // add second exercise to set anyway
               setList.push({
-                ...secondWarmUp,
+                branchId: secondWarmUp.branchId,
+                exerciseId: secondWarmUp.exerciseId,
+                tags: secondWarmUp.tags,
                 set: set,
                 skill: skill.skill,
+                duration: secondWarmUp.duration,
+                repetition: secondWarmUp.repetition,
+                weight: secondWarmUp.weight,
+                height: secondWarmUp.height,
+                weightType: secondWarmUp.weightType,
               });
               setList.push({
                 branchId: PLACEHOLDER_BRANCH_ID,
@@ -2102,7 +2158,10 @@ export default class TrainingGenerator {
       setList.push(
         ...this.getSetListFromExercisePairs(
           exercisePairs,
-          { skill: skillList[i].skill, length: skillList[i].length ?? 0 },
+          {
+            skill: skillList[i].skill as GeneratorSkillTypeFromSchema,
+            length: skillList[i].length ?? 0,
+          },
           skillTrees,
           user,
           place,
@@ -2845,8 +2904,8 @@ export default class TrainingGenerator {
     }
 
     // use child values or gender otherwise
-    let userGender = "k";
-    if (user.workoutData) {
+    let userGender: GenderTag = "k";
+    if (user.workoutData?.birthday) {
       userGender =
         ageGroupFor(user.workoutData.birthday) ===
         WorkoutConstants.AGE_GROUPS.CHILD
@@ -2876,29 +2935,13 @@ export default class TrainingGenerator {
     };
 
     const userExercise = userExerciseData
-      ? userExerciseData[skill.exerciseId]
+      ? (userExerciseData[skill.exerciseId] ?? null)
       : null;
 
     // from data/generator/TestIntensity
-    let intensity: {
-      adjustment: {
-        [value: string]: {
-          [gender: string]: {
-            [level: string]: { [feedback: string]: number };
-          };
-        };
-      };
-      startValue: {
-        [value: string]: {
-          [gender: string]: { [level: string]: number };
-        };
-      };
-      targetValue: {
-        [value: string]: {
-          [gender: string]: { [level: string]: number };
-        };
-      };
-    } | null = getIntensityBySkill(skillName);
+    let intensity: IntensityData | null = getIntensityBySkill(
+      skillName as SkillType,
+    );
 
     let exerciseValues = this.getExerciseValues(
       userExercise,
@@ -2906,27 +2949,25 @@ export default class TrainingGenerator {
       intensity,
       userGender,
       userLevel,
-      user.workoutData ? user.workoutData.maxValues : DEFAULT_MAX_VALUES,
+      (user.workoutData?.maxValues as MaxValuesType | undefined) ??
+        DEFAULT_MAX_VALUES,
     );
     let isNewDifficultySet = false;
-    let difficultyFeedback = "None";
+    let difficultyFeedback: DifficultyFeedbackType | null = null;
     if (userExercise) {
-      if (userExercise.feedback) {
-        isNewDifficultySet =
-          userExercise.feedback.difficulty !== null &&
-          typeof userExercise.feedback.difficulty !== "undefined";
+      if (userExercise.feedback?.difficulty) {
+        isNewDifficultySet = true;
       }
     }
 
     if (
       WorkoutConstants.NO_INCREASE_SKILL_TYPE.indexOf(skillName) === -1 &&
       userExercise &&
-      (isNewDifficultySet || userExercise.difficulty !== null)
+      isNewDifficultySet
     ) {
-      if (isNewDifficultySet) {
-        difficultyFeedback = userExercise.feedback.difficulty;
-      } else {
-        difficultyFeedback = userExercise.difficulty;
+      if (userExercise.feedback?.difficulty) {
+        difficultyFeedback = userExercise.feedback
+          .difficulty as DifficultyFeedbackType;
       }
       if (difficultyFeedback) {
         // adjustment is necessary
@@ -2960,7 +3001,7 @@ export default class TrainingGenerator {
    * Used for validation before processing exercise or user data.
    */
   isEmptyOrUndefined = (obj: object | null | undefined): boolean => {
-    if (typeof obj === "undefined") {
+    if (typeof obj === "undefined" || obj === null) {
       return true;
     } else if (Object.keys(obj).length === 0 && obj.constructor === Object) {
       return true;
@@ -2982,7 +3023,8 @@ export default class TrainingGenerator {
       branchData: Record<string, UserExerciseBranchDataType | undefined>;
     },
   ): GeneratedSetListEntry[] => {
-    const userLevelTags = getTagValues(user.workoutData.tags, TagGroups.LEVEL);
+    const workoutData = requireWorkoutData(user);
+    const userLevelTags = getTagValues(workoutData.tags ?? [], TagGroups.LEVEL);
     const userLevel = userLevelTags[0] || WorkoutConstants.LEVELS.BEGINNER;
     // 5 min warm up to start
     let wuBranches = getSkillTree(skillTrees, "WU", [], true);
@@ -3026,9 +3068,7 @@ export default class TrainingGenerator {
           wuBranches[selectedBranchId],
           userLevel,
           exercises,
-          userExerciseData.branchData[selectedBranchId]
-            ? userExerciseData.branchData[selectedBranchId]
-            : null,
+          userExerciseData.branchData[selectedBranchId] ?? null,
         );
         usedBranches.push(selectedBranchId);
         if (userLevelExercise) {
@@ -3038,11 +3078,17 @@ export default class TrainingGenerator {
             set: [1, 1],
             skill: "WU",
           };
+          const exerciseById = exercises.find((e) => e.id === entry.exerciseId);
+          const branchRef: BranchExerciseReference = {
+            branchId: entry.branchId,
+            branchTags: [],
+            exerciseId: entry.exerciseId,
+          };
           const startValue = this.getExerciseStartValues(
             WorkoutConstants.SKILL_TYPES.WU,
-            entry,
+            branchRef,
             user,
-            exercises[entry.exerciseId],
+            exerciseById!,
             userExerciseData.exerciseData,
             true,
           );
@@ -3068,16 +3114,18 @@ export default class TrainingGenerator {
     // make last pause duration 30sec
     wuSetList[wuSetList.length - 1].duration = 30;
 
-    const testWorkout = TEST_WORKOUTS[userLevel];
+    const testWorkout = TEST_WORKOUTS[userLevel as keyof typeof TEST_WORKOUTS];
     if (!testWorkout) {
       throw new Error(`Invalid userLevel for TEST_WORKOUT: ${userLevel}`);
     }
 
-    let sortedExerciseIds: string[] = testWorkout.default;
-    const genderKey = user.workoutData.gender === "MALE" ? "m" : "w";
-    if (testWorkout[genderKey]) {
+    let sortedExerciseIds: readonly string[] = testWorkout.default;
+    const genderKey = workoutData.gender === "MALE" ? "m" : "w";
+    const genderSpecificExercises =
+      testWorkout[genderKey as keyof typeof testWorkout];
+    if (genderSpecificExercises) {
       // use gender specific if exists
-      sortedExerciseIds = testWorkout[genderKey];
+      sortedExerciseIds = genderSpecificExercises as readonly string[];
     }
     const sortedExercises = exercises
       .filter((entry) => {
@@ -3119,15 +3167,16 @@ export default class TrainingGenerator {
       for (let i = 0; i < sortedExercises.length; i++) {
         singleExerciseLists[sortedExercises[i].id].push(
           this.getTestSetExercise(
-            user.workoutData.gender,
+            workoutData.gender ?? "MALE",
             userLevel,
             sortedExercises[i],
-            user.workoutData.maxValues,
+            (workoutData.maxValues as MaxValuesType | undefined) ??
+              DEFAULT_MAX_VALUES,
             TEST_WORKOUTS_START_VALUES,
             percentage,
             repetitions,
             set,
-            skill,
+            skill as GeneratorSkillTypeFromSchema,
             i,
           ),
         );
@@ -3136,7 +3185,7 @@ export default class TrainingGenerator {
           exerciseId: PAUSE_EXERCISE_ID,
           set: [set, 3],
           duration: pauseFactor * pauseLength,
-          skill: skill,
+          skill: skill as GeneratorSkillTypeFromSchema,
         });
       }
     }
@@ -3263,74 +3312,44 @@ export default class TrainingGenerator {
       };
       const skillAdjustments: Partial<AdjustmentConfig> = {};
 
+      // Helper to get adjustment value with proper fallback
+      const getAdjustmentValue = (
+        adjustObj:
+          | {
+              [gender: string]: {
+                [level: string]: { [feedback: string]: number };
+              };
+            }
+          | undefined,
+      ): FeedbackAdjustment | undefined => {
+        if (!adjustObj) return undefined;
+        // by gender and level first
+        if (adjustObj[userGender]?.[userLevel]) {
+          return adjustObj[userGender][userLevel] as FeedbackAdjustment;
+        }
+        // default by level
+        if (adjustObj.default?.[userLevel]) {
+          return adjustObj.default[userLevel] as FeedbackAdjustment;
+        }
+        // default
+        if (adjustObj.default?.default) {
+          return adjustObj.default.default as FeedbackAdjustment;
+        }
+        return undefined;
+      };
+
       // Duration
-      skillAdjustments.duration = adjust.duration
-        ? adjust.duration.default.default
-        : undefined;
-      //default by level
-      if (adjust.duration && adjust.duration.default[userLevel])
-        skillAdjustments.duration = adjust.duration.default[userLevel];
-      // by gender and level
-      if (
-        adjust.duration &&
-        adjust.duration[userGender] &&
-        adjust.duration[userGender][userLevel]
-      )
-        skillAdjustments.duration = adjust.duration[userGender][userLevel];
-
+      skillAdjustments.duration = getAdjustmentValue(adjust.duration);
       // Height
-      skillAdjustments.height = adjust.height
-        ? adjust.height.default.default
-        : undefined;
-      if (adjust.height && adjust.height.default[userLevel])
-        skillAdjustments.height = adjust.height.default[userLevel];
-      if (
-        adjust.height &&
-        adjust.height[userGender] &&
-        adjust.height[userGender][userLevel]
-      )
-        skillAdjustments.height = adjust.height[userGender][userLevel];
-
+      skillAdjustments.height = getAdjustmentValue(adjust.height);
       // Repetition
-      skillAdjustments.repetition = adjust.repetition
-        ? adjust.repetition.default.default
-        : undefined;
-      if (adjust.repetition && adjust.repetition.default[userLevel])
-        skillAdjustments.repetition = adjust.repetition.default[userLevel];
-      if (
-        adjust.repetition &&
-        adjust.repetition[userGender] &&
-        adjust.repetition[userGender][userLevel]
-      )
-        skillAdjustments.repetition = adjust.repetition[userGender][userLevel];
-
+      skillAdjustments.repetition = getAdjustmentValue(adjust.repetition);
       // Weight absolute
-      skillAdjustments.weightAbsolute = adjust.weightAbsolute
-        ? adjust.weightAbsolute.default.default
-        : undefined;
-      if (adjust.weightAbsolute && adjust.weightAbsolute.default[userLevel])
-        skillAdjustments.weightAbsolute =
-          adjust.weightAbsolute.default[userLevel];
-      if (
-        adjust.weightAbsolute &&
-        adjust.weightAbsolute[userGender] &&
-        adjust.weightAbsolute[userGender][userLevel]
-      )
-        skillAdjustments.weightAbsolute =
-          adjust.weightAbsolute[userGender][userLevel];
-
+      skillAdjustments.weightAbsolute = getAdjustmentValue(
+        adjust.weightAbsolute,
+      );
       // Weight F max
-      skillAdjustments.weightFMax = adjust.weightFMax
-        ? adjust.weightFMax.default.default
-        : undefined;
-      if (adjust.weightFMax && adjust.weightFMax.default[userLevel])
-        skillAdjustments.weightFMax = adjust.weightFMax.default[userLevel];
-      if (
-        adjust.weightFMax &&
-        adjust.weightFMax[userGender] &&
-        adjust.weightFMax[userGender][userLevel]
-      )
-        skillAdjustments.weightFMax = adjust.weightFMax[userGender][userLevel];
+      skillAdjustments.weightFMax = getAdjustmentValue(adjust.weightFMax);
 
       // finally set adjustments
       adjustment = skillAdjustments as AdjustmentConfig;
@@ -3415,11 +3434,11 @@ export default class TrainingGenerator {
     // default by skill
     if (intensity) {
       // use default skill data for new exercise
-      const startValue: {
+      const startValue = intensity.startValue as unknown as {
         [skill: string]: {
           [gender: string]: { [level: string]: number };
         };
-      } = intensity.startValue;
+      };
 
       // set default by skill and exercise type
 
@@ -3473,11 +3492,9 @@ export default class TrainingGenerator {
           data.weight = +startValue.weight[userGender][userLevel];
         }
 
-        if (
-          startValue.weight &&
-          startValue.weight.type &&
-          startValue.weight.type.type === "weightFMax"
-        ) {
+        const weightTypeObj = (startValue.weight as Record<string, unknown>)
+          ?.type as { type?: string } | undefined;
+        if (weightTypeObj?.type === "weightFMax") {
           // value is percentage of Fmax
           data.weight = data.weight;
           data.weightType = "weightFMax";
@@ -3513,16 +3530,17 @@ export default class TrainingGenerator {
         duration?: number;
         weight?: number;
         height?: number;
-      } = getStartValues(exercise.values, userGender, userLevel);
+      } = getStartValues(
+        exercise.values as unknown as ExerciseValuesConfig,
+        userGender,
+        userLevel,
+      );
+
+      const exerciseWeightType = exercise.values.weight?.startValue?.type?.type;
+      const intensityWeightType = intensity?.startValue?.weight?.type?.type;
       let isWeightFMaxExercise =
-        (exercise.values.weight &&
-          exercise.values.weight.startValue &&
-          exercise.values.weight.startValue.type &&
-          exercise.values.weight.startValue.type.type === "weightFMax") ||
-        (!exercise.values.weight.startValue.type &&
-          intensity.startValue.weight &&
-          intensity.startValue.weight.type &&
-          intensity.startValue.weight.type.type === "weightFMax");
+        exerciseWeightType === "weightFMax" ||
+        (!exerciseWeightType && intensityWeightType === "weightFMax");
 
       if (exercise.isAdvanceByReps && startValues.repetition) {
         data.repetition = startValues.repetition; // not ternary could overwrite
@@ -3562,15 +3580,12 @@ export default class TrainingGenerator {
       if (userExercise.weight) {
         data.weight = userExercise.weight;
       }
+      const exerciseWeightType =
+        exercise.values?.weight?.startValue?.type?.type;
+      const intensityWeightType = intensity?.startValue?.weight?.type?.type;
       if (
-        (exercise.values.weight &&
-          exercise.values.weight.startValue &&
-          exercise.values.weight.startValue.type &&
-          exercise.values.weight.startValue.type.type === "weightFMax") ||
-        (!exercise.values.weight.startValue.type &&
-          intensity.startValue.weight &&
-          intensity.startValue.weight.type &&
-          intensity.startValue.weight.type.type === "weightFMax")
+        exerciseWeightType === "weightFMax" ||
+        (!exerciseWeightType && intensityWeightType === "weightFMax")
       ) {
         data.weightType = "weightFMax";
       } else {
@@ -3625,8 +3640,10 @@ export default class TrainingGenerator {
     const trainingWeights: number[] = [];
     const numOfSets =
       WorkoutConstants.MAX_KRAFT_WORKING_REPS_PER_USER_LEVEL[userLevel];
+    const exerciseWeightStartValue = exercise.values?.weight?.startValue
+      ?.default as Record<string, string> | undefined;
     let percentage = parseFloat(
-      exercise.values.weight.startValue.default[userLevel.toLowerCase()],
+      exerciseWeightStartValue?.[userLevel.toLowerCase()] ?? "75",
     );
     if (userExerciseData && userExerciseData.nextWeightPercentage) {
       percentage = getRoundedResultForValueAndStep(
@@ -3682,28 +3699,32 @@ export default class TrainingGenerator {
       );
     }
     const userLevel = getUserLevel(user);
-    const userAge = ageGroupFor(user.workoutData.birthday);
+    const workoutData = requireWorkoutData(user);
+    const userAge = ageGroupFor(workoutData.birthday ?? "");
     const warmupTrainingReps = WorkoutConstants.MAX_KRAFT_REPETITIONS_WARMUP;
     const userExerciseData = userExercisesData
       ? userExercisesData[exercise.id]
       : undefined;
+    const ageReps =
+      WorkoutConstants.MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT[
+        userAge as keyof typeof WorkoutConstants.MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT
+      ];
+    const levelReps = ageReps?.[userLevel as keyof typeof ageReps];
     let maximumWeightPercentage = Math.max(
-      ...Object.keys(
-        WorkoutConstants.MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT[
-          userAge
-        ][userLevel].HARD,
-      ).map(Number),
+      ...Object.keys(levelReps?.HARD ?? { "75": 8 }).map(Number),
     );
     // set exercise targetValue if entered from webTool
-    if (exercise.values.weight.targetValue) {
-      if (exercise.values.weight.targetValue[genderTag]?.[userLevel]) {
-        maximumWeightPercentage = parseFloat(
-          exercise.values.weight.targetValue[genderTag][userLevel],
-        );
-      } else if (exercise.values.weight.targetValue.default?.[userLevel]) {
-        maximumWeightPercentage = parseFloat(
-          exercise.values.weight.targetValue.default[userLevel],
-        );
+    const weightTargetValue = exercise.values?.weight?.targetValue as
+      | Record<string, Record<string, string> | undefined>
+      | undefined;
+    if (weightTargetValue) {
+      const levelLower = userLevel.toLowerCase();
+      const genderValue = weightTargetValue[genderTag];
+      const defaultValue = weightTargetValue.default;
+      if (genderValue?.[levelLower]) {
+        maximumWeightPercentage = parseFloat(genderValue[levelLower]);
+      } else if (defaultValue?.[levelLower]) {
+        maximumWeightPercentage = parseFloat(defaultValue[levelLower]);
       }
     }
     let level = "EASY";
@@ -3752,10 +3773,11 @@ export default class TrainingGenerator {
       { level: level, repetitions: firstMaxTrainingReps },
     ];
     for (let w = 1; w < maxTrainingWeights.length; w++) {
-      let repetitions =
-        WorkoutConstants.MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT[
-          userAge
-        ][userLevel][level][maxTrainingWeights[w].toString()];
+      const levelKey = level as keyof typeof levelReps;
+      const weightKey = maxTrainingWeights[w].toString();
+      let repetitions = (
+        levelReps?.[levelKey] as Record<string, number> | undefined
+      )?.[weightKey];
       let checkableLevel = level;
       // look for undefined repetitionLevels and if found check if other levels would not be undefined
       for (let i = 0; i < 2; i++) {
@@ -3765,10 +3787,10 @@ export default class TrainingGenerator {
           } else if (checkableLevel === "MEDIUM") {
             checkableLevel = "HARD";
           }
-          repetitions =
-            WorkoutConstants.MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT[
-              userAge
-            ][userLevel][checkableLevel][maxTrainingWeights[w].toString()];
+          const checkKey = checkableLevel as keyof typeof levelReps;
+          repetitions = (
+            levelReps?.[checkKey] as Record<string, number> | undefined
+          )?.[weightKey];
         }
       }
       // handle corrupt data by using min or max repetition count for high or low weight
@@ -3933,7 +3955,10 @@ const filterByUserLevel = (
   if (!user || !user.workoutData) {
     return { keep: branches, replace: [] };
   }
-  const userLevelTags = getTagValues(user.workoutData.tags, TagGroups.LEVEL);
+  const userLevelTags = getTagValues(
+    user.workoutData.tags ?? [],
+    TagGroups.LEVEL,
+  );
   const userLevel = userLevelTags[0] || WorkoutConstants.LEVELS.BEGINNER;
   const keep: Record<string, SkillBranchData> = {};
   let replace: string[] = [];
@@ -3945,10 +3970,13 @@ const filterByUserLevel = (
       ? branchData.exercises
       : branchData.levels;
     const exercise = getUserExerciseFromBranch(
-      { tags: branchData.tags, levels: levelSource },
+      {
+        tags: branchData.tags,
+        levels: levelSource as Record<string, { id: string }>,
+      },
       userLevel,
       exercises,
-      userBranchData && userBranchData[id] ? userBranchData[id] : null,
+      userBranchData?.[id] ?? null,
     );
     if (exercise === null) {
       const exerciseRegions = getTagValues(branchData.tags, TagGroups.REGION);
@@ -4011,7 +4039,9 @@ const getStartValues = (
   return result;
 };
 
-export const getIntensityBySkill = (skill: SkillType) => {
+export const getIntensityBySkill = (
+  skill: SkillType | GeneratorSkillTypeFromSchema | string,
+) => {
   switch (skill) {
     // use SWR2 till exercises can be distinguished between SWR1 and SWR2
     case "SWR1":

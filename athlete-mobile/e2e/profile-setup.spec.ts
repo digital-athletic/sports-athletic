@@ -1,8 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { PROFILE_MALE_COMPETITVE } from "./constants";
 import { mockSupabaseAuth } from "./mocks/supabase";
-import { BasePage } from "./pages";
-import { completeAnamnesis, selectSport } from "./utils/anamnesis";
+import { AnamnesisPage } from "./pages";
 
 test.describe("Profile Setup", () => {
   test.slow();
@@ -10,8 +9,8 @@ test.describe("Profile Setup", () => {
   test("complete profile setup flow (anamnesis)", async ({ page }) => {
     await mockSupabaseAuth(page);
 
-    const basePage = new BasePage(page);
-    await basePage.login("test@example.com", "password123");
+    const anamnesisPage = new AnamnesisPage(page);
+    await anamnesisPage.login("test@example.com", "password123");
 
     // Should see anamnesis CTA on first login
     await expect(
@@ -22,10 +21,10 @@ test.describe("Profile Setup", () => {
     await page.getByRole("button", { name: /let's go/i }).click();
 
     // Select sport
-    await selectSport(page, "Handball");
+    await anamnesisPage.selectSport("Handball");
 
     // Complete all profile setup screens
-    await completeAnamnesis(page, {
+    await anamnesisPage.completeAnamnesis({
       name: "Test User",
       heightCm: 180,
       weightKg: 80,
@@ -35,7 +34,7 @@ test.describe("Profile Setup", () => {
     });
 
     // Verify training plan was generated
-    await basePage.expectLoggedIn();
+    await anamnesisPage.expectLoggedIn();
     await expect(
       page.getByRole("button", { name: /Start.*Training/i }),
     ).toBeVisible();

@@ -70,6 +70,8 @@ export class WorkoutPage extends BasePage {
   }) {
     const { lastSetFeedback = "normal" } = options ?? {};
 
+    // Iterate through workout steps (sets, rest periods) clicking checkmark or skip
+    // until the "Go On" button appears indicating workout completion. Max 20 iterations as safety limit.
     for (let i = 0; i < 20; i++) {
       await Promise.race([
         this.goOnButton.waitFor({ state: "visible", timeout: 3000 }),
@@ -93,6 +95,9 @@ export class WorkoutPage extends BasePage {
         } else {
           await this.checkmarkButton.click({ force: true });
         }
+        // Wait for async storage operations to complete before continuing
+        // This ensures exercise progress and feedback are persisted
+        await this.page.waitForTimeout(500);
         continue;
       }
 

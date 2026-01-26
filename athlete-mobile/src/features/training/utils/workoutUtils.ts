@@ -1,7 +1,7 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { XP_PER_MINUTE } from "@/constants/userProgressConstants";
 import { type LevelTag, WorkoutConstants } from "@/constants/workoutConstants";
-import type { UserType } from "@/schemas/user.schema";
+import type { MaxValueType, UserType } from "@/schemas/user.schema";
 import {
   type TrainingLevelType,
   type TrainingParameterType,
@@ -21,7 +21,6 @@ import { getTagValues } from "@/utils/tagUtils";
 import { ExerciseBranchType } from "../models/ExerciseBranch";
 import { isPauseExercise } from "../models/IdTypes";
 import { GenderTag, IntensityData } from "../models/Intensity";
-import { MaxValueType } from "../models/MaxValue";
 import {
   EXERCISE_DIRECTIONS_VALUES_MAP,
   MaxValuesType,

@@ -3,7 +3,6 @@ import {
   WorkoutConstants,
   type SkillTypes,
 } from "@/constants/workoutConstants";
-import type { Branch } from "@/features/training/models/BranchFilter";
 import type {
   BranchExerciseReference,
   BranchSelectionResult,
@@ -64,6 +63,7 @@ import {
   type CardioBranchReference,
   type CardioExercisePair,
   type DifficultyFeedbackType,
+  type ExerciseBranchEntry,
   type ExerciseStartValues,
   type ExerciseValuesConfig,
   type ExerciseValuesData,
@@ -819,7 +819,7 @@ export default class TrainingGenerator {
 
     if (TrainingGenerator.DEBUG) console.log("CURRENT SECTION:", currSec);
 
-    // Cast trainings to UserTrainingType[] since schema uses unknown[]
+    // Cast trainings - schema type differs from UserTrainingType model due to skills property typing
     const trainings = currSec.trainings as UserTrainingType[];
 
     //get training for current weekday -- there should be only one
@@ -891,18 +891,14 @@ export default class TrainingGenerator {
     for (const skill of Object.keys(exerciseBranches) as SkillTypes[]) {
       let replace: string[] = [];
       let branches = exerciseBranches[skill]!.reduce<
-        Record<string, (typeof exerciseBranches)[SkillTypes][number]>
+        Record<string, ExerciseBranchEntry>
       >((acc, entry) => {
         if (entry.exerciseBranchId) {
           acc[entry.exerciseBranchId] = entry;
         }
         return acc;
       }, {});
-      let sorenessFiltered = filterBySoreness(
-        branches as unknown as Record<string, Branch>,
-        temporalData,
-        skill,
-      );
+      let sorenessFiltered = filterBySoreness(branches, temporalData, skill);
       replace = replace.concat(sorenessFiltered.replace);
       let equipmentFiltered = filterByEquipment(
         sorenessFiltered.keep,
@@ -946,7 +942,7 @@ export default class TrainingGenerator {
           // replace existing cardio skill with cardio 5
           exerciseBranches[skill] = [];
           const cardioLength = currTraining.lengths[skill] ?? 0;
-          const cardioSkill = "CARDIO_5" as SkillTypes;
+          const cardioSkill = "CARDIO_5" satisfies SkillTypes;
           currTraining.lengths[cardioSkill] = Math.min(cardioLength, 20); // max 20 minutes of replacemnet cardio
           exerciseBranches[cardioSkill] = [
             {
@@ -962,10 +958,7 @@ export default class TrainingGenerator {
           );
           const prevSkills = getPreventionsFromPains(PAINS);
           // make sure to replace ALL exercises for WUSPEZ and PREV
-          if (
-            skill.indexOf("PREV") !== -1 ||
-            skill === ("WUSPEZIAL" as SkillTypes)
-          ) {
+          if (skill.indexOf("PREV") !== -1 || skill === "WUSPEZIAL") {
             for (let i = 0; i < keep.length; i++) {
               let temp = replace[0];
               replace.push(temp);
@@ -1036,17 +1029,13 @@ export default class TrainingGenerator {
               ]!.map((branchData) => {
                 if (branchData && branchData.exerciseBranchId) {
                   const branchId = branchData.exerciseBranchId;
-                  const typedBranchData = branchData as {
-                    tags: string[];
-                    exercises?: Record<string, { id: string }>;
-                    levels?: Record<string, { id: string }>;
-                  };
                   const levels =
-                    typedBranchData.exercises ?? typedBranchData.levels ?? {};
+                    branchData.exercises ?? branchData.levels ?? {};
+                  const branchTags = branchData.tags ?? [];
                   const exercise = getUserExerciseFromBranch(
                     {
                       levels: levels as Record<string, { id: string }>,
-                      tags: typedBranchData.tags,
+                      tags: branchTags,
                     },
                     userLevel,
                     exercises,
@@ -1054,7 +1043,7 @@ export default class TrainingGenerator {
                   );
                   return {
                     branchId,
-                    branchTags: exercise ? exercise.tags : typedBranchData.tags,
+                    branchTags: exercise ? exercise.tags : branchTags,
                     exerciseId: exercise?.id ?? "-1",
                   };
                 }
@@ -1071,8 +1060,7 @@ export default class TrainingGenerator {
             console.log("skillTrees", skillTrees);
           }
           if (
-            (skill.indexOf("PREV") !== -1 ||
-              skill === ("WUSPEZIAL" as SkillTypes)) &&
+            (skill.indexOf("PREV") !== -1 || skill === "WUSPEZIAL") &&
             replacement.length === 0
           ) {
             exerciseBranches[skill] = [];
@@ -1086,17 +1074,12 @@ export default class TrainingGenerator {
       exerciseBranches[skill] = exerciseBranches[skill]!.map((branchData) => {
         if (branchData && branchData.exerciseBranchId) {
           const branchId = branchData.exerciseBranchId;
-          const typedBranchData = branchData as {
-            tags: string[];
-            exercises?: Record<string, { id: string }>;
-            levels?: Record<string, { id: string }>;
-          };
-          const levels =
-            typedBranchData.exercises ?? typedBranchData.levels ?? {};
+          const levels = branchData.exercises ?? branchData.levels ?? {};
+          const branchTags = branchData.tags ?? [];
           const exercise = getUserExerciseFromBranch(
             {
               levels: levels as Record<string, { id: string }>,
-              tags: typedBranchData.tags,
+              tags: branchTags,
             },
             userLevel,
             exercises,
@@ -1104,7 +1087,7 @@ export default class TrainingGenerator {
           );
           return {
             branchId,
-            branchTags: exercise ? exercise.tags : typedBranchData.tags,
+            branchTags: exercise ? exercise.tags : branchTags,
             exerciseId: exercise?.id ?? "-1",
           };
         }
@@ -1124,7 +1107,7 @@ export default class TrainingGenerator {
         if (branchArray && branchArray.length > 0) {
           // add to sorted if not null/empty
           return {
-            skill: skillKey as string,
+            skill: skillKey,
             length: currTraining.lengths[skillKey] ?? 0,
             branches: branchArray as BranchExerciseReference[],
           };
@@ -1189,53 +1172,39 @@ export default class TrainingGenerator {
       replace.length,
     );
     if (Object.keys(skillTree).length !== 0) {
-      const allBranches: Record<
-        string,
-        {
-          tags: string[];
-          exercises: { [level: number]: { exerciseId: string } };
-          exerciseBranchData: string;
-        }
-      > = {};
+      const allBranches: Record<string, SkillBranchData> = {};
       // rewrite data format of branches for filter methods
       for (const id in skillTree) {
-        const exercisesMap: { [level: number]: { exerciseId: string } } = {};
+        const exercisesMap: Record<string, { exerciseId: string }> = {};
         for (const lvlKey in skillTree[id].levels) {
-          const lvl = Number(lvlKey);
           const levelData = skillTree[id].levels[lvlKey];
           // Schema has `id`, but runtime data may have `exerciseId` - use either
           const exerciseId =
             (levelData as { id?: string; exerciseId?: string }).exerciseId ??
             levelData.id;
-          exercisesMap[lvl] = {
+          exercisesMap[lvlKey] = {
             exerciseId,
           };
         }
         allBranches[id] = {
           tags: skillTree[id].tags,
           exercises: exercisesMap,
-          exerciseBranchData: id,
+          exerciseBranchId: id,
         };
       }
-      let filteredBranches: Record<string, SkillBranchData> = filterBySoreness(
+      let filteredBranches = filterBySoreness(
         allBranches,
         temporalData,
         skill,
-      ).keep as Record<string, SkillBranchData>;
-      filteredBranches = filterByEquipment(
-        filteredBranches as unknown as Record<string, Branch>,
-        equipment,
-      ).keep as Record<string, SkillBranchData>;
+      ).keep;
+      filteredBranches = filterByEquipment(filteredBranches, equipment).keep;
       filteredBranches = filterByUserLevel(
         filteredBranches,
         user,
         exercises,
         userExerciseData.branchData,
       ).keep;
-      filteredBranches = filterByAge(
-        filteredBranches as unknown as Record<string, Branch>,
-        ageGroup,
-      ).keep as Record<string, SkillBranchData>;
+      filteredBranches = filterByAge(filteredBranches, ageGroup).keep;
 
       let possibleBranches = Object.keys(filteredBranches).filter(
         (branchId) => usedBranchIds.indexOf(branchId) === -1,
@@ -1526,7 +1495,7 @@ export default class TrainingGenerator {
           duration: pauseLength,
         });
       }
-      return result as GeneratedSetListEntry[];
+      return result;
     } else if (skill.skill.indexOf("MAX") > -1) {
       const workoutData = requireWorkoutData(user);
       const ageGroup = workoutData.birthday
@@ -1542,8 +1511,7 @@ export default class TrainingGenerator {
       // build max training with 2 warm up and 2/3 training sets filled with support exercises
       const setList: GeneratedSetListEntry[] = [];
       const maxValues: MaxValuesType =
-        (workoutData.maxValues as MaxValuesType | undefined) ??
-        DEFAULT_MAX_VALUES;
+        workoutData.maxValues ?? DEFAULT_MAX_VALUES;
       // try not to reuse sup exercises
       let usedSupExercisesIds: string[] = [];
 
@@ -2949,8 +2917,7 @@ export default class TrainingGenerator {
       intensity,
       userGender,
       userLevel,
-      (user.workoutData?.maxValues as MaxValuesType | undefined) ??
-        DEFAULT_MAX_VALUES,
+      user.workoutData?.maxValues ?? DEFAULT_MAX_VALUES,
     );
     let isNewDifficultySet = false;
     let difficultyFeedback: DifficultyFeedbackType | null = null;
@@ -3170,8 +3137,7 @@ export default class TrainingGenerator {
             workoutData.gender ?? "MALE",
             userLevel,
             sortedExercises[i],
-            (workoutData.maxValues as MaxValuesType | undefined) ??
-              DEFAULT_MAX_VALUES,
+            workoutData.maxValues ?? DEFAULT_MAX_VALUES,
             TEST_WORKOUTS_START_VALUES,
             percentage,
             repetitions,
@@ -3966,12 +3932,13 @@ const filterByUserLevel = (
   for (const id in branches) {
     if (!Object.prototype.hasOwnProperty.call(branches, id)) continue;
     const branchData = branches[id];
+    const branchTags = branchData.tags ?? [];
     const levelSource = branchData.exercises
       ? branchData.exercises
       : branchData.levels;
     const exercise = getUserExerciseFromBranch(
       {
-        tags: branchData.tags,
+        tags: branchTags,
         levels: levelSource as Record<string, { id: string }>,
       },
       userLevel,
@@ -3979,7 +3946,7 @@ const filterByUserLevel = (
       userBranchData?.[id] ?? null,
     );
     if (exercise === null) {
-      const exerciseRegions = getTagValues(branchData.tags, TagGroups.REGION);
+      const exerciseRegions = getTagValues(branchTags, TagGroups.REGION);
       replace = replace.concat(exerciseRegions);
     } else {
       keep[id] = branchData;

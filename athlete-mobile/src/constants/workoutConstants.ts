@@ -284,6 +284,9 @@ const SKILL_TYPES = {
   PREVANKLE: "PREVANKLE",
   PREVSPINE: "PREVSPINE",
   WU: "WU",
+  // Generator-specific skills
+  CARDIO_5: "CARDIO_5",
+  WUSPEZIAL: "WUSPEZIAL",
 } as const;
 
 export const skillTypeValues = Object.values(SKILL_TYPES);

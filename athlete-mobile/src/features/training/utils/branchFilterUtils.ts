@@ -27,7 +27,7 @@ export function filterByAge<T extends Branch>(
   const userAgeTag = ageGroup === "CHILD" ? "CHILD" : "ADULT";
 
   for (const id in branches) {
-    const ageTags = getTagValues(branches[id].tags, "AGE");
+    const ageTags = getTagValues(branches[id].tags ?? [], "AGE");
     if (ageTags.length === 0 || ageTags.includes(userAgeTag)) {
       keep[id] = branches[id];
     }
@@ -51,7 +51,7 @@ export function filterByGender<T extends Branch>(
   const replace: string[] = [];
 
   for (const id in branches) {
-    const genderTags = getTagValues(branches[id].tags, "GENDER");
+    const genderTags = getTagValues(branches[id].tags ?? [], "GENDER");
     if (genderTags.length === 0 || genderTags.includes(gender)) {
       keep[id] = branches[id];
     }
@@ -75,7 +75,7 @@ export function filterByRegion<T extends Branch>(
   const replace: string[] = [];
 
   for (const id in branches) {
-    const regionTags = getTagValues(branches[id].tags, "REGION");
+    const regionTags = getTagValues(branches[id].tags ?? [], "REGION");
     if (
       regionTags.length === 0 ||
       regions.length === 0 ||
@@ -105,7 +105,7 @@ export function filterByPrevention<T extends Branch>(
 
     for (const id in branches) {
       const branchPreventionRegions = getTagValues(
-        branches[id].tags,
+        branches[id].tags ?? [],
         "PREVENTION",
       );
       if (
@@ -194,7 +194,7 @@ export function filterBySoreness<T extends Branch>(
     const keep: Record<string, T> = {};
 
     for (const id in branches) {
-      const branchRegions = getTagValues(branches[id].tags, "REGION");
+      const branchRegions = getTagValues(branches[id].tags ?? [], "REGION");
       if (
         areas.some((element) => branchRegions.includes(element.toUpperCase()))
       ) {

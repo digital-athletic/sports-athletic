@@ -1,16 +1,7 @@
-import { MaxValueType } from "./MaxValue";
+import { type MaxValueType, type MaxValuesType } from "@/schemas/user.schema";
 
-export type MaxValuesType = {
-  testDate: string; // DD-MM-YYYY
-  // one field for each of WorkoutConstants.EXERCISE_DIRECTIONS
-  verticalPush: MaxValueType;
-  verticalPull: MaxValueType; // same as verticalPush
-  horizontalPush: MaxValueType;
-  horizontalPull: MaxValueType;
-  hip: MaxValueType; // same as unterkoerper
-  knee: MaxValueType; // same as unterkoerper
-  unterkoerper: MaxValueType;
-};
+// Re-export types from schema - single source of truth
+export type { MaxValueType, MaxValuesType };
 
 export const DEFAULT_MAX_VALUE: MaxValueType = {
   barbell: undefined,

@@ -47,7 +47,6 @@ export const CardioTypesSchema = v.picklist([
   "CARDIO_4",
   "CARDIO_5",
 ]);
-export type CardioTypesSchemaType = v.InferOutput<typeof CardioTypesSchema>;
 
 export const SectionTypesSchema = v.picklist([
   "SWR1",
@@ -61,14 +60,12 @@ export const SectionTypesSchema = v.picklist([
   "SAKG",
   "SA",
 ]);
-export type SectionTypesSchemaType = v.InferOutput<typeof SectionTypesSchema>;
 
 export const SeasonPhaseEnumSchema = v.picklist([
   "PAUSE",
   "PREPATORY",
   "COMPETITION",
 ]);
-export type SeasonPhaseEnumType = v.InferOutput<typeof SeasonPhaseEnumSchema>;
 
 export const LevelTagSchema = v.picklist([
   "BEGINNER",

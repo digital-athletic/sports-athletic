@@ -1,3 +1,5 @@
+import type { SkillTypes } from "@/constants/workoutConstants";
+
 export type ExerciseBranchType = {
   exerciseBranchId: string;
   tags: string[];
@@ -51,7 +53,7 @@ export type SuperSetBranchSelectionResult = {
  * Used during training generation to organize exercises by skill type.
  */
 export type SkillBranchList = {
-  skill: string;
+  skill: SkillTypes;
   length?: number;
   branches: BranchExerciseReference[];
 };

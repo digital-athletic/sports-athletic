@@ -179,7 +179,7 @@ export function filterByEquipment<T extends Branch>(
     if (!branches.hasOwnProperty(id)) continue;
 
     const entry = branches[id];
-    const exerciseEq = entry.tags
+    const exerciseEq = (entry.tags ?? [])
       .filter((tag) => tag.startsWith("EQ_"))
       .map((tag) => tag.replace("EQ_", ""));
 
@@ -214,7 +214,7 @@ export function filterByEquipment<T extends Branch>(
     if (everythingAvailable) {
       equipmentFiltered[id] = entry;
     } else {
-      const exerciseRegions = entry.tags
+      const exerciseRegions = (entry.tags ?? [])
         .filter((tag) => tag.startsWith("REGION_"))
         .map((tag) => tag.replace("REGION_", ""));
       replace.push(...exerciseRegions);

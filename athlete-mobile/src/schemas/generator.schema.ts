@@ -41,7 +41,6 @@ export type TrainingSectionsMap = v.InferOutput<
 
 // SkillPriorities schemas
 export const PhaseMapSchema = v.record(v.string(), v.array(v.string()));
-export type PhaseMap = v.InferOutput<typeof PhaseMapSchema>;
 
 export const PainConfigSchema = v.looseObject({
   phase: v.optional(PhaseMapSchema),
@@ -59,11 +58,21 @@ export const SkillPrioritiesSchema = v.object({
   CHILD: AgeGroupConfigSchema,
   ADULT: AgeGroupConfigSchema,
 });
-export type SkillPrioritiesType = v.InferOutput<typeof SkillPrioritiesSchema>;
 
-// Exercise branch schemas
+// Exercise branch exercise reference - used in exercises and levels records
+// Note: id must be string - raw JSON data must be transformed via transformSkillTree first
+export const BranchExerciseRefSchema = v.looseObject({
+  id: v.optional(v.string()),
+  exerciseId: v.optional(v.string()),
+});
+
+// Exercise branch schemas - matches Branch interface for filter compatibility
+// Note: tags is optional to handle data variations; filter functions use ?? [] fallback
 export const ExerciseBranchEntrySchema = v.looseObject({
   exerciseBranchId: v.optional(v.string()),
+  tags: v.optional(v.array(v.string())),
+  exercises: v.optional(v.record(v.string(), BranchExerciseRefSchema)),
+  levels: v.optional(v.record(v.string(), BranchExerciseRefSchema)),
   regionTag: v.optional(v.string()),
   direction: v.optional(v.union([v.string(), v.null()])),
   count: v.optional(v.number()),
@@ -76,11 +85,9 @@ export const SkillBranchesSchema = v.record(
   v.string(),
   v.array(ExerciseBranchEntrySchema),
 );
-export type SkillBranches = v.InferOutput<typeof SkillBranchesSchema>;
 
 // Skills map schema (for skill training plan)
 export const SkillsMapSchema = v.record(v.string(), v.array(v.string()));
-export type SkillsMap = v.InferOutput<typeof SkillsMapSchema>;
 
 // Plan structure schema
 export const PlanStructureSchema = v.looseObject({});
@@ -126,7 +133,6 @@ export const ExerciseLevelsSchema = v.record(
     exerciseId: v.optional(v.string()),
   }),
 );
-export type ExerciseLevels = v.InferOutput<typeof ExerciseLevelsSchema>;
 
 // SkillBranch with ID schema (for possibleBranches validation in plan generator)
 export const SkillBranchWithIdSchema = v.object({
@@ -147,7 +153,6 @@ export const SetListEntrySchema = v.looseObject({
 
 // Workout/Exercise array schema (loose, for generic validation)
 export const WorkoutArraySchema = v.array(v.looseObject({}));
-export type WorkoutArray = v.InferOutput<typeof WorkoutArraySchema>;
 
 // ExerciseBranch schema (strict, matches ExerciseBranchType)
 export const ExerciseBranchSchema = v.object({
@@ -169,7 +174,6 @@ export const TransformSchema = v.array(
     translateY: v.optional(v.number()),
   }),
 );
-export type TransformType = v.InferOutput<typeof TransformSchema>;
 
 // User exercise data map type (used across multiple generator methods)
 
@@ -281,7 +285,6 @@ export type GeneratorSkillTypeFromSchema = v.InferOutput<
  * Tuple representing [currentSet, totalSets] for exercise sets.
  */
 export const SetTupleSchema = v.tuple([v.number(), v.number()]);
-export type SetTuple = v.InferOutput<typeof SetTupleSchema>;
 
 /**
  * Generated set list entry with required branchId (used during training generation).
@@ -572,11 +575,14 @@ export type MaxTrainingRepsEntry = {
 
 /**
  * Branch data structure for filter functions.
+ * Used throughout training generation for branch data with levels/exercises.
+ * Note: tags is optional to support different data sources; consumers use ?? [] fallback.
  */
 export type SkillBranchData = {
-  tags: string[];
+  tags?: string[];
   exercises?: Record<string, { exerciseId?: string; id?: string }>;
   levels?: Record<string, { exerciseId?: string; id?: string }>;
+  exerciseBranchId?: string;
 };
 
 /**

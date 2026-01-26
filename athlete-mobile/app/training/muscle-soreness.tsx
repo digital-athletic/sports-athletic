@@ -14,6 +14,7 @@ import { type UserType, parseUserType } from "@/schemas/user.schema";
 import { isGeneratorError } from "@/features/training/generators/GeneratorError";
 import { buildGeneratorErrorMessage } from "@/features/training/generators/generatorErrorUtils";
 import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
+import { toUserExerciseDataList } from "@/schemas/generator.schema";
 import { TrainingType } from "@/features/training/models/Training";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { Logger } from "@/services/Logger";
@@ -194,7 +195,7 @@ export default function MuscleSorenessScreen() {
     const sectionIndex = parseIntParam(params.sectionIndex);
 
     const tg = new TrainingGenerator();
-    const exerciseList = tg.generateTraining(
+    const generatedList = tg.generateTraining(
       trainingType,
       user,
       selectedPlace,
@@ -210,7 +211,8 @@ export default function MuscleSorenessScreen() {
       },
     );
 
-    // Save training data to store
+    // Convert generated list to user exercise data format and save to store
+    const exerciseList = toUserExerciseDataList(generatedList);
     setExerciseList(exerciseList);
     setEquipment(equipment);
     setActiveTraining({

@@ -1,3 +1,5 @@
+import type { GeneratorSkillTypeFromSchema } from "@/schemas/generator.schema";
+
 export type SetListEntryType = {
   exerciseId: string;
   set: [number, number];
@@ -12,13 +14,15 @@ export type SetListEntryType = {
  * Used during training generation to track the full context of each exercise set.
  *
  * Note: branchId of "-1" indicates a placeholder/pause entry, not a real branch.
+ * Use PLACEHOLDER_BRANCH_ID constant from IdTypes.ts for consistency.
  */
 export type GeneratedSetListEntry = {
   branchId: string;
   exerciseId: string;
-  /** Tuple of [setNumber, totalSets] or [setNumber, repetitionCount] */
+  /** Tuple of [currentSet, totalSets] */
   set: [number, number];
-  skill: string;
+  /** Skill identifier - uses GeneratorSkillTypeFromSchema for type safety */
+  skill: GeneratorSkillTypeFromSchema;
   duration?: number;
   repetition?: number;
   weight?: number;

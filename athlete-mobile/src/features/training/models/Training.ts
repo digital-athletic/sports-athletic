@@ -24,6 +24,13 @@ export type SkillType =
   | "BLACK_ROLL"
   | "SCHNELLIGKEITSAUSDAUER_SPECIAL";
 
+/**
+ * Extended skill type that includes generator-specific skill values.
+ * These are used internally during workout generation but may not appear
+ * in the final user-facing exercise data.
+ */
+export type GeneratorSkillType = SkillType | "WUSPEZIAL" | "main";
+
 export type SkillFocusType = Exclude<
   SkillType,
   "SUPPORT" | "BLACK_ROLL" | "SCHNELLIGKEITSAUSDAUER_SPECIAL"

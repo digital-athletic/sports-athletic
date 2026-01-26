@@ -1,4 +1,6 @@
 import * as v from "valibot";
+import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
+import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
 import { CardioTypesSchema, SectionTypesSchema } from "./common.schema";
 
 // Direction schemas - use string for direction values to accommodate all variants
@@ -142,7 +144,6 @@ export const SetListEntrySchema = v.looseObject({
   repetition: v.optional(v.number()),
   duration: v.optional(v.number()),
 });
-export type SetListEntryClone = v.InferOutput<typeof SetListEntrySchema>;
 
 // Workout/Exercise array schema (loose, for generic validation)
 export const WorkoutArraySchema = v.array(v.looseObject({}));
@@ -169,3 +170,227 @@ export const TransformSchema = v.array(
   }),
 );
 export type TransformType = v.InferOutput<typeof TransformSchema>;
+
+// User exercise data map type (used across multiple generator methods)
+
+/**
+ * Parameter type for user exercise progress data passed to generator methods.
+ * Contains both exercise-level data and branch-level progression data.
+ */
+export type UserExerciseDataMapType = {
+  exerciseData: Record<string, UserExerciseDataType | undefined>;
+  branchData: Record<string, UserExerciseBranchDataType | undefined>;
+};
+
+// ============================================================================
+// Base Exercise Entry Schema
+// ============================================================================
+
+/**
+ * All valid skill types used in user-facing exercise data.
+ * Matches SkillType from Training.ts.
+ */
+export const SkillTypeSchema = v.picklist([
+  "PREVENTION",
+  "MOBILITY",
+  "SWR",
+  "WARMUP",
+  "STABILITY",
+  "CARDIO",
+  "SUPPORT",
+  "BLACK_ROLL",
+  "SCHNELLIGKEITSAUSDAUER_SPECIAL",
+]);
+export type SkillTypeFromSchema = v.InferOutput<typeof SkillTypeSchema>;
+
+/**
+ * Complete set of all valid skill values used during training generation.
+ * These are internal generator values that get mapped to user-facing SkillType
+ * via mapToSkillType() before being stored/displayed.
+ *
+ * Includes:
+ * - Generator aliases (MOB, WU, BR, etc.)
+ * - Section types (SA, SK, SWR1, SWR2, etc.)
+ * - Prevention variants (PREV, PREVKNEE, etc.)
+ * - Warmup variants (WUPREV, WUSPEZIAL, etc.)
+ * - Cardio variants (CARDIO_1, CARDIO_1_SHORT, etc.)
+ * - Internal placeholders (main, PHASE, TEST)
+ */
+export const GeneratorSkillTypeSchema = v.picklist([
+  // Generator aliases (map to user-facing types)
+  "MOB", // -> MOBILITY
+  "WU", // -> WARMUP
+  "BR", // -> BLACK_ROLL
+  "PREV", // -> PREVENTION
+  "CD", // -> CARDIO
+
+  // SWR section variants (all -> SWR)
+  "SWR1",
+  "SWR1KG",
+  "SWR2",
+  "SWR2KG",
+
+  // Schnellkraft section types (all -> SWR)
+  "SA",
+  "SAKG",
+  "SAS",
+  "SASKG",
+  "SK",
+  "SKKG",
+
+  // MAX section types (-> SWR)
+  "MAX",
+  "MAX_KRAFT",
+
+  // Stability types (-> STABILITY)
+  "BAS",
+  "GKS",
+
+  // Prevention variants (all -> PREVENTION)
+  "PREVKNEE",
+  "PREVSHOULDER",
+  "PREVWRIST",
+  "PREVANKLE",
+  "PREVSPINE",
+
+  // Warmup variants (all -> WARMUP)
+  "WUPREV",
+  "WUSPEZIAL",
+  "WUSKSA",
+
+  // Cardio variants (all -> CARDIO)
+  "CARDIO_1",
+  "CARDIO_1_SHORT",
+  "CARDIO_1_LAKTAT",
+  "CARDIO_2",
+  "CARDIO_3",
+  "CARDIO_4",
+  "CARDIO_5",
+  "HBCARDIO",
+
+  // Internal placeholders
+  "main", // -> SWR
+  "PHASE", // -> SWR (replaced during plan building)
+  "TEST", // -> SWR (force test workout)
+]);
+export type GeneratorSkillTypeFromSchema = v.InferOutput<
+  typeof GeneratorSkillTypeSchema
+>;
+
+/**
+ * Tuple representing [currentSet, totalSets] for exercise sets.
+ */
+export const SetTupleSchema = v.tuple([v.number(), v.number()]);
+export type SetTuple = v.InferOutput<typeof SetTupleSchema>;
+
+/**
+ * Generated set list entry with required branchId (used during training generation).
+ * Uses GeneratorSkillTypeSchema for type-safe skill values.
+ */
+export const GeneratedSetListEntrySchema = v.object({
+  branchId: v.string(),
+  exerciseId: v.string(),
+  set: SetTupleSchema,
+  skill: GeneratorSkillTypeSchema,
+  duration: v.optional(v.number()),
+  repetition: v.optional(v.number()),
+  weight: v.optional(v.number()),
+  height: v.optional(v.number()),
+  weightType: v.optional(v.string()),
+});
+export type GeneratedSetListEntryFromSchema = v.InferOutput<
+  typeof GeneratedSetListEntrySchema
+>;
+
+// ============================================================================
+// Conversion Utilities
+// ============================================================================
+
+/** User-facing exercise entry format (after skill mapping) */
+export type UserExerciseEntry = {
+  exerciseId: string;
+  set: [number, number];
+  skill: SkillTypeFromSchema;
+  duration?: number;
+  repetition?: number;
+  weight?: number;
+  height?: number;
+  weightType?: string;
+  branchId?: string;
+};
+
+/** Maps generator skill values to user-facing SkillType */
+const SKILL_TYPE_MAP: Record<
+  GeneratorSkillTypeFromSchema,
+  SkillTypeFromSchema
+> = {
+  MOB: "MOBILITY",
+  WU: "WARMUP",
+  BR: "BLACK_ROLL",
+  PREV: "PREVENTION",
+  CD: "CARDIO",
+  SWR1: "SWR",
+  SWR1KG: "SWR",
+  SWR2: "SWR",
+  SWR2KG: "SWR",
+  SA: "SWR",
+  SAKG: "SWR",
+  SAS: "SWR",
+  SASKG: "SWR",
+  SK: "SWR",
+  SKKG: "SWR",
+  MAX: "SWR",
+  MAX_KRAFT: "SWR",
+  BAS: "STABILITY",
+  GKS: "STABILITY",
+  PREVKNEE: "PREVENTION",
+  PREVSHOULDER: "PREVENTION",
+  PREVWRIST: "PREVENTION",
+  PREVANKLE: "PREVENTION",
+  PREVSPINE: "PREVENTION",
+  WUPREV: "WARMUP",
+  WUSPEZIAL: "WARMUP",
+  WUSKSA: "WARMUP",
+  CARDIO_1: "CARDIO",
+  CARDIO_1_SHORT: "CARDIO",
+  CARDIO_1_LAKTAT: "CARDIO",
+  CARDIO_2: "CARDIO",
+  CARDIO_3: "CARDIO",
+  CARDIO_4: "CARDIO",
+  CARDIO_5: "CARDIO",
+  HBCARDIO: "CARDIO",
+  main: "SWR",
+  PHASE: "SWR",
+  TEST: "SWR",
+};
+
+/** Maps a generator skill value to a user-facing SkillType */
+export function mapToSkillType(
+  skill: GeneratorSkillTypeFromSchema,
+): SkillTypeFromSchema {
+  return SKILL_TYPE_MAP[skill];
+}
+
+/** Converts a GeneratedSetListEntry to user-facing format */
+export function toUserExerciseData(
+  entry: GeneratedSetListEntryFromSchema,
+): UserExerciseEntry {
+  return {
+    exerciseId: entry.exerciseId,
+    set: entry.set,
+    skill: mapToSkillType(entry.skill),
+    duration: entry.duration,
+    repetition: entry.repetition,
+    weight: entry.weight,
+    height: entry.height,
+    weightType: entry.weightType,
+    branchId: entry.branchId,
+  };
+}
+
+/** Converts an array of GeneratedSetListEntry to user-facing format */
+export function toUserExerciseDataList(
+  entries: GeneratedSetListEntryFromSchema[],
+): UserExerciseEntry[] {
+  return entries.map(toUserExerciseData);
+}

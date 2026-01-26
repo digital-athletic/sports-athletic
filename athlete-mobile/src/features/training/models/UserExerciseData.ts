@@ -13,7 +13,8 @@ export type UserExerciseDataType = {
   height?: number;
   weightType?: string;
   skipped?: boolean; // save for completed workout
-  set?: number[]; // [0] active run - [1] num of sets
+  /** Tuple of [currentSet, totalSets] */
+  set?: [number, number];
   skill: SkillType;
   feedback?: {
     difficulty: ExerciseDifficultyType;

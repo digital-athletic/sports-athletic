@@ -1,0 +1,95 @@
+import type { UserType } from "@/schemas/user.schema";
+import type { TemporalDataType } from "@/features/training/models/TemporalData";
+
+/**
+ * Safely gets temporal data from user, converting date strings to Date objects.
+ * Returns empty array if temporalData is undefined.
+ */
+export function getTemporalData(user: UserType): TemporalDataType[] {
+  if (!user.temporalData) return [];
+
+  return user.temporalData.map((td) => ({
+    tag: td.tag,
+    date: td.date instanceof Date ? td.date : new Date(td.date),
+    expiration:
+      td.expiration instanceof Date ? td.expiration : new Date(td.expiration),
+  }));
+}
+
+/**
+ * Gets temporal data tags as a string array.
+ * Useful for filtering and checking active soreness/pain tags.
+ */
+export function getTemporalTags(user: UserType): string[] {
+  if (!user.temporalData) return [];
+  return user.temporalData.map((td) => td.tag);
+}
+
+/**
+ * Type for a non-null training plan with sections.
+ */
+export type ValidTrainingPlan = NonNullable<UserType["trainingPlan"]> & {
+  sections: NonNullable<NonNullable<UserType["trainingPlan"]>["sections"]>;
+};
+
+/**
+ * Asserts that the user has a valid training plan.
+ * Throws a generator error if trainingPlan is null/undefined.
+ */
+export function requireTrainingPlan(user: UserType): ValidTrainingPlan {
+  if (!user.trainingPlan) {
+    throw {
+      type: "NO_TRAINING_PLAN",
+      subtype: "MISSING_PLAN",
+      params: [],
+    };
+  }
+  if (!user.trainingPlan.sections || user.trainingPlan.sections.length === 0) {
+    throw {
+      type: "NO_TRAINING_PLAN",
+      subtype: "MISSING_SECTIONS",
+      params: [],
+    };
+  }
+  return user.trainingPlan as ValidTrainingPlan;
+}
+
+/**
+ * Checks if user has a valid training plan without throwing.
+ */
+export function hasTrainingPlan(
+  user: UserType,
+): user is UserType & { trainingPlan: ValidTrainingPlan } {
+  return (
+    user.trainingPlan !== null &&
+    user.trainingPlan !== undefined &&
+    Array.isArray(user.trainingPlan.sections) &&
+    user.trainingPlan.sections.length > 0
+  );
+}
+
+/**
+ * Asserts that the user has completed anamnesis (has workoutData).
+ * Throws a generator error if workoutData is undefined.
+ */
+export function requireWorkoutData(
+  user: UserType,
+): NonNullable<UserType["workoutData"]> {
+  if (!user.workoutData) {
+    throw {
+      type: "NO_ANAMNESIS",
+      subtype: "MISSING_WORKOUT_DATA",
+      params: [],
+    };
+  }
+  return user.workoutData;
+}
+
+/**
+ * Checks if user has completed anamnesis.
+ */
+export function hasWorkoutData(
+  user: UserType,
+): user is UserType & { workoutData: NonNullable<UserType["workoutData"]> } {
+  return user.workoutData !== undefined;
+}

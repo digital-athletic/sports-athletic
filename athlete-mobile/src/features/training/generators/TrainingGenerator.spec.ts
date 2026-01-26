@@ -909,6 +909,86 @@ describe("TrainingGenerator", () => {
       const result = generator.getSetCountBySkill("UNKNOWN", "INTERMEDIATE");
       expect(result).toBeDefined();
     });
+
+    /**
+     * Enhanced tests for getSetCountBySkill - verify explicit return values
+     * based on documented method behavior.
+     */
+    it("returns 1 for warm-up and mobility skills", () => {
+      expect(generator.getSetCountBySkill("WU", "BEGINNER")).toBe(1);
+      expect(generator.getSetCountBySkill("WUSKSA", "INTERMEDIATE")).toBe(1);
+      expect(generator.getSetCountBySkill("WUSPEZIAL", "ADVANCED")).toBe(1);
+      expect(generator.getSetCountBySkill("CD", "PROFESSIONAL")).toBe(1);
+      expect(generator.getSetCountBySkill("MOB", "BEGINNER")).toBe(1);
+      expect(generator.getSetCountBySkill("BR", "INTERMEDIATE")).toBe(1);
+    });
+
+    it("returns 1 for cardio skills", () => {
+      expect(generator.getSetCountBySkill("CARDIO_4", "BEGINNER")).toBe(1);
+      expect(generator.getSetCountBySkill("CARDIO_5", "ADVANCED")).toBe(1);
+    });
+
+    it("returns specific counts for cardio interval skills", () => {
+      expect(generator.getSetCountBySkill("CARDIO_1_SHORT", "BEGINNER")).toBe(
+        10,
+      );
+      expect(
+        generator.getSetCountBySkill("CARDIO_1_LAKTAT", "INTERMEDIATE"),
+      ).toBe(4);
+      expect(generator.getSetCountBySkill("CARDIO_2", "ADVANCED")).toBe(8);
+      expect(generator.getSetCountBySkill("CARDIO_3", "PROFESSIONAL")).toBe(6);
+    });
+
+    it("returns 4 for MAX training skills", () => {
+      expect(generator.getSetCountBySkill("MAX", "BEGINNER")).toBe(4);
+      expect(generator.getSetCountBySkill("MAX", "INTERMEDIATE")).toBe(4);
+      expect(generator.getSetCountBySkill("MAX", "ADVANCED")).toBe(4);
+      expect(generator.getSetCountBySkill("MAX", "PROFESSIONAL")).toBe(4);
+      expect(generator.getSetCountBySkill("MAX_KRAFT", "BEGINNER")).toBe(4);
+    });
+
+    it("returns 2 for standard strength skills (SA, SK, SWR)", () => {
+      expect(generator.getSetCountBySkill("SA", "BEGINNER")).toBe(2);
+      expect(generator.getSetCountBySkill("SAKG", "INTERMEDIATE")).toBe(2);
+      expect(generator.getSetCountBySkill("SK", "ADVANCED")).toBe(2);
+      expect(generator.getSetCountBySkill("SKKG", "PROFESSIONAL")).toBe(2);
+      expect(generator.getSetCountBySkill("SWR1", "BEGINNER")).toBe(2);
+      expect(generator.getSetCountBySkill("SWR2", "INTERMEDIATE")).toBe(2);
+      expect(generator.getSetCountBySkill("SWR1KG", "ADVANCED")).toBe(2);
+      expect(generator.getSetCountBySkill("SWR2KG", "PROFESSIONAL")).toBe(2);
+    });
+
+    it("returns 2 for stability and prevention skills (default)", () => {
+      expect(generator.getSetCountBySkill("BAS", "BEGINNER")).toBe(2);
+      expect(generator.getSetCountBySkill("GKS", "INTERMEDIATE")).toBe(2);
+      expect(generator.getSetCountBySkill("GKSKG", "ADVANCED")).toBe(2);
+      expect(generator.getSetCountBySkill("PREV", "PROFESSIONAL")).toBe(2);
+      expect(generator.getSetCountBySkill("PREVSHOULDER", "BEGINNER")).toBe(2);
+      expect(generator.getSetCountBySkill("PREVKNEE", "INTERMEDIATE")).toBe(2);
+      expect(generator.getSetCountBySkill("PREVWRIST", "ADVANCED")).toBe(2);
+      expect(generator.getSetCountBySkill("PREVANKLE", "PROFESSIONAL")).toBe(2);
+      expect(generator.getSetCountBySkill("PREVSPINE", "BEGINNER")).toBe(2);
+      expect(generator.getSetCountBySkill("STABILITY", "INTERMEDIATE")).toBe(2);
+    });
+
+    it("returns 2 for unknown skills (default case)", () => {
+      expect(generator.getSetCountBySkill("UNKNOWN_SKILL", "BEGINNER")).toBe(2);
+      expect(generator.getSetCountBySkill("RANDOM", "PROFESSIONAL")).toBe(2);
+    });
+
+    it("always returns a number type for any input", () => {
+      const skills = ["WU", "MAX", "SA", "PREV", "CARDIO_5", "UNKNOWN"];
+      const levels = ["BEGINNER", "INTERMEDIATE", "ADVANCED", "PROFESSIONAL"];
+
+      skills.forEach((skill) => {
+        levels.forEach((level) => {
+          const result = generator.getSetCountBySkill(skill, level);
+          expect(typeof result).toBe("number");
+          expect(Number.isInteger(result)).toBe(true);
+          expect(result).toBeGreaterThan(0);
+        });
+      });
+    });
   });
 
   describe("getMaxTrainingWeights", () => {

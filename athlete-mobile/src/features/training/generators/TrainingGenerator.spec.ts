@@ -3,6 +3,10 @@ import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { SetListEntryType } from "@/features/training/models/SetListEntry";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
+import type {
+  SkillWithLength,
+  CardioBranchReference,
+} from "@/schemas/generator.schema";
 import { transformExerciseData } from "@/utils/fieldNames";
 import { transformSkillTree } from "@/utils/skillTreeTransform";
 import ExercisesData from "../../../../assets/data/generator/Exercises.json";
@@ -1258,6 +1262,246 @@ describe("TrainingGenerator", () => {
 
       expect(Array.isArray(result)).toBe(true);
       expect(result.length).toBe(0);
+    });
+  });
+
+  describe("getCardioExercisePairs", () => {
+    const mockCardioBranches: CardioBranchReference[] = [
+      {
+        branchTags: ["SKILL_CARDIO", "EQUIPMENT_NONE"],
+        exerciseId: "cardio-1",
+      },
+      {
+        branchTags: ["SKILL_CARDIO", "EQUIPMENT_TREADMILL"],
+        exerciseId: "cardio-2",
+      },
+    ];
+
+    const mockCardioExercises: ExerciseType[] = [
+      { ...mockExercise, id: "cardio-1" },
+      { ...mockExercise, id: "cardio-2" },
+    ];
+
+    describe("CARDIO_5 skill", () => {
+      it("returns single exercise pair with first branch", () => {
+        const skill: SkillWithLength = { skill: "CARDIO_5", length: 30 };
+
+        const result = generator.getCardioExercisePairs(
+          skill,
+          mockCardioBranches,
+          mockCardioExercises,
+          [],
+          false,
+        );
+
+        expect(Array.isArray(result)).toBe(true);
+        expect(result).toHaveLength(1);
+        expect(result[0]).toHaveProperty("first");
+        expect(result[0].first).toEqual(mockCardioBranches[0]);
+      });
+
+      it("returns first branch even when multiple branches provided", () => {
+        const skill: SkillWithLength = { skill: "CARDIO_5", length: 45 };
+
+        const result = generator.getCardioExercisePairs(
+          skill,
+          mockCardioBranches,
+          mockCardioExercises,
+          [],
+          false,
+        );
+
+        expect(result[0].first.exerciseId).toBe("cardio-1");
+        expect(result[0].second).toBeUndefined();
+      });
+    });
+
+    describe("CARDIO_4 skill", () => {
+      it("returns single exercise pair with first branch", () => {
+        const skill: SkillWithLength = { skill: "CARDIO_4", length: 20 };
+
+        const result = generator.getCardioExercisePairs(
+          skill,
+          mockCardioBranches,
+          mockCardioExercises,
+          [],
+          false,
+        );
+
+        expect(Array.isArray(result)).toBe(true);
+        expect(result).toHaveLength(1);
+        expect(result[0]).toHaveProperty("first");
+        expect(result[0].first).toEqual(mockCardioBranches[0]);
+      });
+
+      it("does not include second exercise in pair", () => {
+        const skill: SkillWithLength = { skill: "CARDIO_4", length: 15 };
+
+        const result = generator.getCardioExercisePairs(
+          skill,
+          mockCardioBranches,
+          mockCardioExercises,
+          [],
+          false,
+        );
+
+        expect(result[0].second).toBeUndefined();
+      });
+    });
+
+    describe("interval cardio skills (TODO - currently return empty)", () => {
+      const intervalSkills = [
+        "CARDIO_3",
+        "CARDIO_2",
+        "CARDIO_1_SHORT",
+        "CARDIO_1_LAKTAT",
+      ];
+
+      it.each(intervalSkills)(
+        "%s returns empty array (interval implementation TODO)",
+        (skillName) => {
+          const skill: SkillWithLength = { skill: skillName, length: 30 };
+
+          const result = generator.getCardioExercisePairs(
+            skill,
+            mockCardioBranches,
+            mockCardioExercises,
+            [],
+            false,
+          );
+
+          expect(Array.isArray(result)).toBe(true);
+          expect(result).toHaveLength(0);
+        },
+      );
+    });
+
+    describe("unknown skill types", () => {
+      it("returns empty array for unknown skill", () => {
+        const skill: SkillWithLength = { skill: "UNKNOWN_CARDIO", length: 30 };
+
+        const result = generator.getCardioExercisePairs(
+          skill,
+          mockCardioBranches,
+          mockCardioExercises,
+          [],
+          false,
+        );
+
+        expect(Array.isArray(result)).toBe(true);
+        expect(result).toHaveLength(0);
+      });
+
+      it("returns empty array for non-cardio skill", () => {
+        const skill: SkillWithLength = { skill: "SA", length: 30 };
+
+        const result = generator.getCardioExercisePairs(
+          skill,
+          mockCardioBranches,
+          mockCardioExercises,
+          [],
+          false,
+        );
+
+        expect(Array.isArray(result)).toBe(true);
+        expect(result).toHaveLength(0);
+      });
+
+      it("returns empty array for empty skill string", () => {
+        const skill: SkillWithLength = { skill: "", length: 30 };
+
+        const result = generator.getCardioExercisePairs(
+          skill,
+          mockCardioBranches,
+          mockCardioExercises,
+          [],
+          false,
+        );
+
+        expect(Array.isArray(result)).toBe(true);
+        expect(result).toHaveLength(0);
+      });
+    });
+
+    describe("edge cases", () => {
+      it("handles single branch for CARDIO_5", () => {
+        const skill: SkillWithLength = { skill: "CARDIO_5", length: 30 };
+        const singleBranch: CardioBranchReference[] = [mockCardioBranches[0]];
+
+        const result = generator.getCardioExercisePairs(
+          skill,
+          singleBranch,
+          mockCardioExercises,
+          [],
+          false,
+        );
+
+        expect(result).toHaveLength(1);
+        expect(result[0].first).toEqual(singleBranch[0]);
+      });
+
+      it("handles pains parameter (currently unused)", () => {
+        const skill: SkillWithLength = { skill: "CARDIO_4", length: 30 };
+        const pains = ["PAIN_KNEE", "PAIN_BACK"];
+
+        const result = generator.getCardioExercisePairs(
+          skill,
+          mockCardioBranches,
+          mockCardioExercises,
+          pains,
+          false,
+        );
+
+        expect(result).toHaveLength(1);
+        expect(result[0].first).toEqual(mockCardioBranches[0]);
+      });
+
+      it("handles isShortTraining flag (currently unused)", () => {
+        const skill: SkillWithLength = { skill: "CARDIO_5", length: 30 };
+
+        const resultShort = generator.getCardioExercisePairs(
+          skill,
+          mockCardioBranches,
+          mockCardioExercises,
+          [],
+          true,
+        );
+
+        const resultFull = generator.getCardioExercisePairs(
+          skill,
+          mockCardioBranches,
+          mockCardioExercises,
+          [],
+          false,
+        );
+
+        expect(resultShort).toEqual(resultFull);
+      });
+
+      it("handles different length values", () => {
+        const skill15: SkillWithLength = { skill: "CARDIO_5", length: 15 };
+        const skill60: SkillWithLength = { skill: "CARDIO_5", length: 60 };
+
+        const result15 = generator.getCardioExercisePairs(
+          skill15,
+          mockCardioBranches,
+          mockCardioExercises,
+          [],
+          false,
+        );
+
+        const result60 = generator.getCardioExercisePairs(
+          skill60,
+          mockCardioBranches,
+          mockCardioExercises,
+          [],
+          false,
+        );
+
+        expect(result15).toHaveLength(1);
+        expect(result60).toHaveLength(1);
+        expect(result15[0].first).toEqual(result60[0].first);
+      });
     });
   });
 

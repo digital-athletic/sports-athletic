@@ -394,3 +394,43 @@ export function toUserExerciseDataList(
 ): UserExerciseEntry[] {
   return entries.map(toUserExerciseData);
 }
+
+// ============================================================================
+// Cardio Exercise Types (for getCardioExercisePairs)
+// ============================================================================
+
+/**
+ * Skill identifier with associated duration/length.
+ * Used in cardio training methods where the skill type determines
+ * the interval pattern and length determines total duration.
+ */
+export const SkillWithLengthSchema = v.object({
+  skill: v.string(),
+  length: v.number(),
+});
+export type SkillWithLength = v.InferOutput<typeof SkillWithLengthSchema>;
+
+/**
+ * Simplified branch reference for cardio exercises.
+ * Unlike BranchExerciseReference, this omits branchId as cardio
+ * exercises are identified solely by their tags and exercise ID.
+ */
+export const CardioBranchReferenceSchema = v.object({
+  branchTags: v.array(v.string()),
+  exerciseId: v.string(),
+});
+export type CardioBranchReference = v.InferOutput<
+  typeof CardioBranchReferenceSchema
+>;
+
+/**
+ * Exercise pair for cardio training intervals.
+ * First exercise is always required (the main cardio activity).
+ * Second is optional, used for alternating interval patterns
+ * in lower-intensity cardio types (CARDIO_1 through CARDIO_3).
+ */
+export const CardioExercisePairSchema = v.object({
+  first: CardioBranchReferenceSchema,
+  second: v.optional(CardioBranchReferenceSchema),
+});
+export type CardioExercisePair = v.InferOutput<typeof CardioExercisePairSchema>;

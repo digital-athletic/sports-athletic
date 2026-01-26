@@ -59,6 +59,9 @@ import {
   ExerciseLevelsSchema,
   SetListEntrySchema,
   SkillBranchesSchema,
+  type CardioBranchReference,
+  type CardioExercisePair,
+  type SkillWithLength,
   type UserExerciseDataMapType,
 } from "@/schemas/generator.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
@@ -2045,7 +2048,7 @@ export default class TrainingGenerator {
   ): GeneratedSetListEntry[] => {
     if (TrainingGenerator.DEBUG) console.log("skillList: ", skillList);
     const userLevel = getUserLevel(user);
-    const PAINS = getTagValues(user.workoutData.tags, TagGroups.PAIN);
+    const PAINS = getTagValues(user.workoutData?.tags ?? [], TagGroups.PAIN);
 
     let setList: GeneratedSetListEntry[] = [];
 
@@ -2082,14 +2085,14 @@ export default class TrainingGenerator {
       setList.push(
         ...this.getSetListFromExercisePairs(
           exercisePairs,
-          skillList[i],
+          { skill: skillList[i].skill, length: skillList[i].length ?? 0 },
           skillTrees,
           user,
           place,
           equipment,
           exercises,
           setsPerExercise,
-          user.temporalData,
+          (user.temporalData ?? []) as TemporalDataType[],
           userExerciseData,
         ),
       );
@@ -2099,43 +2102,32 @@ export default class TrainingGenerator {
     return setList;
   };
 
+  /**
+   * Creates exercise pairs specifically for cardio training types.
+   * Returns the appropriate branch selection for different cardio intensities
+   * (CARDIO_1 through CARDIO_5) with their interval patterns.
+   */
   getCardioExercisePairs = (
-    skill: {
-      skill: string;
-      length: number;
-    },
-    branches: {
-      branchTags: string[];
-      exerciseId: string;
-    }[],
-    exercises: ExerciseType[],
-    pains: string[],
-    isShortTraining: boolean = false,
-  ): {
-    first: {
-      branchTags: string[];
-      exerciseId: string;
-    };
-    second?: {
-      branchTags: string[];
-      exerciseId: string;
-    };
-  }[] => {
-    console.log(skill);
-    let exercisePairs = [];
+    skill: SkillWithLength,
+    branches: CardioBranchReference[],
+    _exercises: ExerciseType[],
+    _pains: string[],
+    _isShortTraining: boolean = false,
+  ): CardioExercisePair[] => {
+    const exercisePairs: CardioExercisePair[] = [];
     switch (skill.skill) {
-      case "CADRIO_5":
-      case "CADRIO_4":
+      case "CARDIO_5":
+      case "CARDIO_4":
         // use the one given branch
         return [
           {
             first: branches[0],
           },
         ];
-      case "CADRIO_3":
-      case "CADRIO_2":
-      case "CADRIO_1_SHORT":
-      case "CADRIO_1_LAKTAT":
+      case "CARDIO_3":
+      case "CARDIO_2":
+      case "CARDIO_1_SHORT":
+      case "CARDIO_1_LAKTAT":
         // run intervalls with cardio5 pause and cardio 4 wu 5min and and fill till end
         break;
       default:
@@ -2183,9 +2175,9 @@ export default class TrainingGenerator {
     }
 
     // if set use only pain side in prevention
-    let prevSides = [];
-    let regionPains = [];
-    let prevRegions;
+    let prevSides: string[] = [];
+    let regionPains: string[] = [];
+    let prevRegions: string[] = [];
     if (skill.indexOf("PREV") > -1) {
       prevRegions = getRegionsForPreventionSkills([skill]);
       //filter for pains matching given skill
@@ -2230,17 +2222,19 @@ export default class TrainingGenerator {
         bigMuscleExercises,
         exercises,
         prevSides,
-      );
+      ) as BranchExerciseReference[];
       // filter side small
       smallMuscleExercises = filterExercisesBySides(
         smallMuscleExercises,
         exercises,
         prevSides,
-      );
+      ) as BranchExerciseReference[];
 
       // build exercise pairs
       while (bigMuscleExercises.length > 0) {
-        let pair = { first: bigMuscleExercises.pop() };
+        const first = bigMuscleExercises.pop();
+        if (!first) continue;
+        const pair: ExercisePair = { first };
         if (bigMuscleExercises.length > 0) {
           pair.second = bigMuscleExercises.pop();
         } else if (smallMuscleExercises.length > 0) {
@@ -2249,7 +2243,9 @@ export default class TrainingGenerator {
         exercisePairs.push(pair);
       }
       while (smallMuscleExercises.length > 0) {
-        let pair = { first: smallMuscleExercises.pop() };
+        const first = smallMuscleExercises.pop();
+        if (!first) continue;
+        const pair: ExercisePair = { first };
         if (smallMuscleExercises.length > 0) {
           pair.second = smallMuscleExercises.pop();
         }
@@ -2264,26 +2260,26 @@ export default class TrainingGenerator {
 
     // use big muscle exercises
     while (bigMuscleExercises.length > 0) {
-      let pair = { first: bigMuscleExercises.pop() };
+      const first = bigMuscleExercises.pop();
 
       // safety check here because sometimes exerciseId is not set ?!?
       if (
-        typeof pair.first.exerciseId === "undefined" ||
-        pair.first.exerciseId === null
+        !first ||
+        typeof first.exerciseId === "undefined" ||
+        first.exerciseId === null
       )
         continue;
 
-      let exercise = exercises.filter(
-        (entry) => entry.id === pair.first.exerciseId,
+      const pair: ExercisePair = { first };
+
+      const exercise = exercises.filter(
+        (entry) => entry.id === first.exerciseId,
       )[0];
       if (!exercise) {
-        Logger.logEvent("exercise_data_in_pair_not_found", pair.first);
+        Logger.logEvent("exercise_data_in_pair_not_found", first);
         continue;
       }
-      const sides: string[] = getTagValues(
-        pair.first.branchTags,
-        TagGroups.SIDE,
-      );
+      const sides: string[] = getTagValues(first.branchTags, TagGroups.SIDE);
       if (TrainingGenerator.DEBUG) {
         console.log("found sides", sides, "for exercise", exercise);
       }
@@ -2295,29 +2291,29 @@ export default class TrainingGenerator {
       ) {
         // use other side in superset
         pair.second = {
-          branchId: pair.first.branchId,
-          branchTags: pair.first.branchTags,
+          branchId: first.branchId,
+          branchTags: first.branchTags,
           exerciseId: exercise.otherSideExerciseId,
         };
         if (TrainingGenerator.DEBUG) {
           console.log("found other side exercise", pair.second.exerciseId);
         }
       } else if (isSuperset) {
-        let oppMuscles = getOpposingMuscles(
-          getTagValues(pair.first.branchTags, TagGroups.MUSCLE),
+        const oppMuscles = getOpposingMuscles(
+          getTagValues(first.branchTags, TagGroups.MUSCLE),
         );
         // do not use one sided exercises to complete superset
-        let bothSideBigMuscleExercises = bigMuscleExercises.filter((e, i) => {
+        const bothSideBigMuscleExercises = bigMuscleExercises.filter((e) => {
           return (
-            getTagValues(e.branchTags, TagGroups.SIDE).filter((e2, i2) => {
+            getTagValues(e.branchTags, TagGroups.SIDE).filter((e2) => {
               return e2 === "ONE" || e2 === "LEFT" || e2 === "RIGHT";
             }).length === 0
           );
         });
-        let bothSideSmallMuscleExercises = smallMuscleExercises.filter(
-          (e, i) => {
+        const bothSideSmallMuscleExercises = smallMuscleExercises.filter(
+          (e) => {
             return (
-              getTagValues(e.branchTags, TagGroups.SIDE).filter((e2, i2) => {
+              getTagValues(e.branchTags, TagGroups.SIDE).filter((e2) => {
                 return e2 === "ONE" || e2 === "LEFT" || e2 === "RIGHT";
               }).length === 0
             );
@@ -2325,13 +2321,13 @@ export default class TrainingGenerator {
         );
 
         // find exercise with opposing muscle
-        let oppBigExercises = [];
-        let oppSmallExercises = [];
+        let oppBigExercises: BranchExerciseReference[] = [];
+        let oppSmallExercises: BranchExerciseReference[] = [];
         if (bothSideBigMuscleExercises.length > 0) {
-          oppBigExercises = bothSideBigMuscleExercises.filter((e, i) => {
+          oppBigExercises = bothSideBigMuscleExercises.filter((e) => {
             return (
               // use opposing muscles
-              getTagValues(e.branchTags, TagGroups.MUSCLE).filter((e3, i3) => {
+              getTagValues(e.branchTags, TagGroups.MUSCLE).filter((e3) => {
                 return oppMuscles.indexOf(e3) > -1;
               }).length > 0
             );
@@ -2339,10 +2335,10 @@ export default class TrainingGenerator {
         }
         if (oppBigExercises.length === 0) {
           // no big muscle opponent found, look for small one
-          oppSmallExercises = bothSideSmallMuscleExercises.filter((e, i) => {
+          oppSmallExercises = bothSideSmallMuscleExercises.filter((e) => {
             return (
               // use opposing muscles
-              getTagValues(e.branchTags, TagGroups.MUSCLE).filter((e3, i3) => {
+              getTagValues(e.branchTags, TagGroups.MUSCLE).filter((e3) => {
                 return oppMuscles.indexOf(e3) > -1;
               }).length > 0
             );
@@ -2350,7 +2346,7 @@ export default class TrainingGenerator {
         }
         if (oppBigExercises.length > 0) {
           // use opposing big muscle
-          let exId = oppBigExercises[0].exerciseId;
+          const exId = oppBigExercises[0].exerciseId;
           for (let i = 0; i < bigMuscleExercises.length; i++) {
             if (bigMuscleExercises[i].exerciseId === exId) {
               pair.second = bigMuscleExercises.splice(i, 1)[0];
@@ -2359,7 +2355,7 @@ export default class TrainingGenerator {
           }
         } else if (oppSmallExercises.length > 0) {
           // use opposing big muscle
-          let exId = oppSmallExercises[0].exerciseId;
+          const exId = oppSmallExercises[0].exerciseId;
           for (let i = 0; i < smallMuscleExercises.length; i++) {
             if (smallMuscleExercises[i].exerciseId === exId) {
               pair.second = smallMuscleExercises.splice(i, 1)[0];
@@ -2368,7 +2364,7 @@ export default class TrainingGenerator {
           }
         } else if (bothSideBigMuscleExercises.length > 0) {
           // use any big muscle
-          let exId = bothSideBigMuscleExercises[0].exerciseId;
+          const exId = bothSideBigMuscleExercises[0].exerciseId;
           for (let i = 0; i < bigMuscleExercises.length; i++) {
             if (bigMuscleExercises[i].exerciseId === exId) {
               pair.second = bigMuscleExercises.splice(i, 1)[0];
@@ -2377,7 +2373,7 @@ export default class TrainingGenerator {
           }
         } else if (bothSideSmallMuscleExercises.length > 0) {
           // use any small muscle
-          let exId = bothSideSmallMuscleExercises[0].exerciseId;
+          const exId = bothSideSmallMuscleExercises[0].exerciseId;
           for (let i = 0; i < smallMuscleExercises.length; i++) {
             if (smallMuscleExercises[i].exerciseId === exId) {
               pair.second = smallMuscleExercises.splice(i, 1)[0];
@@ -2386,10 +2382,7 @@ export default class TrainingGenerator {
           }
         } else {
           if (TrainingGenerator.DEBUG)
-            console.log(
-              "No second exercise found for super set with: ",
-              pair.first,
-            );
+            console.log("No second exercise found for super set with: ", first);
         }
       }
       exercisePairs.push(pair);
@@ -2397,19 +2390,22 @@ export default class TrainingGenerator {
 
     // use small muscle exercises
     while (smallMuscleExercises.length > 0) {
-      let pair = { first: smallMuscleExercises.pop() };
+      const first = smallMuscleExercises.pop();
 
       // safety check here because sometimes exerciseId is not set ?!?
       if (
-        typeof pair.first.exerciseId === "undefined" ||
-        pair.first.exerciseId === null
+        !first ||
+        typeof first.exerciseId === "undefined" ||
+        first.exerciseId === null
       )
         continue;
 
-      let exercise = exercises.filter(
-        (entry) => entry.id === pair.first.exerciseId,
+      const pair: ExercisePair = { first };
+
+      const exercise = exercises.filter(
+        (entry) => entry.id === first.exerciseId,
       )[0];
-      let sides: string[] = getTagValues(pair.first.branchTags, TagGroups.SIDE);
+      const sides: string[] = getTagValues(first.branchTags, TagGroups.SIDE);
 
       if (TrainingGenerator.DEBUG) {
         console.log("found sides", sides, "for exercise", exercise);
@@ -2422,8 +2418,8 @@ export default class TrainingGenerator {
       ) {
         // use other side in superset
         pair.second = {
-          branchId: pair.first.branchId,
-          branchTags: pair.first.branchTags,
+          branchId: first.branchId,
+          branchTags: first.branchTags,
           exerciseId: exercise.otherSideExerciseId,
         };
         if (TrainingGenerator.DEBUG) {
@@ -2432,25 +2428,25 @@ export default class TrainingGenerator {
       } else if (isSuperset) {
         // TODO filter complex before isolated
         // TODO opp direction first
-        let oppMuscles = getOpposingMuscles(
-          getTagValues(pair.first.branchTags, TagGroups.MUSCLE),
+        const oppMuscles = getOpposingMuscles(
+          getTagValues(first.branchTags, TagGroups.MUSCLE),
         );
 
-        let bothSideSmallMuscleExercises = smallMuscleExercises.filter(
-          (e, i) => {
+        const bothSideSmallMuscleExercises = smallMuscleExercises.filter(
+          (e) => {
             return (
-              getTagValues(e.branchTags, TagGroups.SIDE).filter((e2, i2) => {
+              getTagValues(e.branchTags, TagGroups.SIDE).filter((e2) => {
                 return e2 === "ONE" || e2 === "LEFT" || e2 === "RIGHT";
               }).length === 0
             );
           },
         );
 
-        let oppExercises = [];
+        let oppExercises: BranchExerciseReference[] = [];
         if (bothSideSmallMuscleExercises.length > 0) {
-          oppExercises = bothSideSmallMuscleExercises.filter((e, i) => {
+          oppExercises = bothSideSmallMuscleExercises.filter((e) => {
             return (
-              getTagValues(e.branchTags, TagGroups.MUSCLE).filter((e2, i2) => {
+              getTagValues(e.branchTags, TagGroups.MUSCLE).filter((e2) => {
                 return oppMuscles.indexOf(e2) > -1;
               }).length > 0
             );
@@ -2459,7 +2455,7 @@ export default class TrainingGenerator {
 
         if (oppExercises.length > 0) {
           // use opposing small muscle
-          let exId =
+          const exId =
             oppExercises[Math.floor(Math.random() * oppExercises.length)]
               .exerciseId;
           for (let i = 0; i < smallMuscleExercises.length; i++) {
@@ -2470,7 +2466,7 @@ export default class TrainingGenerator {
           }
         } else if (bothSideSmallMuscleExercises.length > 0) {
           // use any small muscle
-          let exId =
+          const exId =
             bothSideSmallMuscleExercises[
               Math.floor(Math.random() * bothSideSmallMuscleExercises.length)
             ].exerciseId;
@@ -2482,10 +2478,7 @@ export default class TrainingGenerator {
           }
         } else {
           if (TrainingGenerator.DEBUG)
-            console.log(
-              "No second exercise found for super set with: ",
-              pair.first,
-            );
+            console.log("No second exercise found for super set with: ", first);
         }
       }
       exercisePairs.push(pair);

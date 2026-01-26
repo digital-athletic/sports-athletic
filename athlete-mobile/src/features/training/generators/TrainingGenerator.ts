@@ -61,7 +61,10 @@ import {
   SkillBranchesSchema,
   type CardioBranchReference,
   type CardioExercisePair,
+  type ExerciseStartValues,
+  type GeneratorSkillTypeFromSchema,
   type SkillWithLength,
+  type TestWorkoutsStartValuesType,
   type UserExerciseDataMapType,
 } from "@/schemas/generator.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
@@ -2490,7 +2493,12 @@ export default class TrainingGenerator {
     return exercisePairs;
   };
 
-  isSuperset = (skill: string, shortTraining: boolean = false) => {
+  /**
+   * Determines if a skill type should use superset pairing (two exercises alternating).
+   * Short training versions have different rules - some skills like BAS become supersets
+   * while MAX and cardio skills never use supersets regardless of training length.
+   */
+  isSuperset = (skill: string, shortTraining: boolean = false): boolean => {
     if (shortTraining) {
       switch (skill) {
         case "CARDIO_1_SHORT":
@@ -2568,8 +2576,13 @@ export default class TrainingGenerator {
     }
   };
 
-  getInSetPauseBySkill = (skill: string) => {
-    let pause;
+  /**
+   * Returns the pause duration (in seconds) between sets within a superset.
+   * Different skill types have different recovery needs: cardio intervals use longer pauses,
+   * strength skills use moderate pauses, and warm-up/mobility use minimal pauses.
+   */
+  getInSetPauseBySkill = (skill: string): number => {
+    let pause: number;
     switch (skill) {
       case "CARDIO_1_SHORT":
         pause = 50;
@@ -2625,8 +2638,13 @@ export default class TrainingGenerator {
     return pause;
   };
 
-  getAfterSetPauseBySkill = (skill: string) => {
-    let pause;
+  /**
+   * Returns the pause duration (in seconds) after completing all sets of an exercise.
+   * This is the rest period before moving to the next exercise pair.
+   * MAX/SA skills have longer recovery (3 min), while warm-up skills use minimal rest.
+   */
+  getAfterSetPauseBySkill = (skill: string): number => {
+    let pause: number;
     switch (skill) {
       case "CARDIO_1_SHORT":
         pause = 50;
@@ -2682,8 +2700,13 @@ export default class TrainingGenerator {
     return pause;
   };
 
-  getRepetitionDefaultBySkill = (skillName: string) => {
-    let repititions;
+  /**
+   * Returns the default number of repetitions for a skill type.
+   * Cardio skills use 3 reps (intervals), while most strength and
+   * mobility skills default to 8 reps per set.
+   */
+  getRepetitionDefaultBySkill = (skillName: string): number => {
+    let repetitions: number;
     switch (skillName) {
       case "CARDIO_1_SHORT":
       case "CARDIO_1_LAKTAT":
@@ -2691,7 +2714,7 @@ export default class TrainingGenerator {
       case "CARDIO_3":
       case "CARDIO_4":
       case "CARDIO_5":
-        repititions = 3;
+        repetitions = 3;
         break;
       case "WU":
       case "CD":
@@ -2718,14 +2741,19 @@ export default class TrainingGenerator {
       case "SWR2KG":
       case "STABILITY":
       default:
-        repititions = 8;
+        repetitions = 8;
         break;
     }
-    return repititions;
+    return repetitions;
   };
 
-  getDurationDefaultBySkill = (skillName: string) => {
-    let duration;
+  /**
+   * Returns the default exercise duration (in seconds) for a skill type.
+   * Cardio skills have varying durations based on intensity level,
+   * while most other skills default to 30 seconds per exercise.
+   */
+  getDurationDefaultBySkill = (skillName: string): number => {
+    let duration: number;
     switch (skillName) {
       case "CARDIO_1_SHORT":
         duration = 10;
@@ -2777,28 +2805,18 @@ export default class TrainingGenerator {
   };
 
   /**
-   * Finds the best matching values for given exercise in following order
-   *
-   * - default by skill
-   * - default by exercise
-   * -- specific by exercise
-   * - increased value based on value of last training with exercise and given feedback
-   *
-   * @param skillName
-   * @param skill
-   * @param user
-   * @param exercise
-   * @param isShortTraining
-   * @returns Object containing exercise start values with duration, branchId, exerciseId, weight, repetition, tags, and height properties, or an empty object
+   * Determines the starting values (weight, reps, duration, height) for an exercise.
+   * Priority order: user's previous exercise data > exercise-specific defaults >
+   * skill-based defaults. Applies difficulty adjustments based on user feedback.
    */
   getExerciseStartValues = (
     skillName: string,
     skill: BranchExerciseReference,
     user: UserType,
     exercise: ExerciseType,
-    userExerciseData: { [id: string]: UserExerciseDataType },
+    userExerciseData: Record<string, UserExerciseDataType | undefined> | null,
     isShortTraining = false,
-  ) => {
+  ): ExerciseStartValues => {
     if (isShortTraining) {
       return {
         tags: skill.branchTags,
@@ -2826,21 +2844,22 @@ export default class TrainingGenerator {
     const userLevel = getUserLevel(user).toLowerCase();
 
     // Init result
-    let data = {};
-    data.tags = skill.branchTags;
-    data.exerciseId = skill.exerciseId;
-    data.branchId = skill.branchId;
-    data.duration =
-      exercise && exercise.isAdvanceByDuration
-        ? this.getDurationDefaultBySkill(skillName)
-        : undefined;
-    data.height = undefined;
-    data.repetition =
-      exercise && exercise.isAdvanceByReps
-        ? this.getRepetitionDefaultBySkill(skillName)
-        : undefined;
-    data.weight = undefined;
-    data.weightType = "weightAbsolute";
+    const data: ExerciseStartValues = {
+      tags: skill.branchTags,
+      exerciseId: skill.exerciseId,
+      branchId: skill.branchId,
+      duration:
+        exercise && exercise.isAdvanceByDuration
+          ? this.getDurationDefaultBySkill(skillName)
+          : undefined,
+      height: undefined,
+      repetition:
+        exercise && exercise.isAdvanceByReps
+          ? this.getRepetitionDefaultBySkill(skillName)
+          : undefined,
+      weight: undefined,
+      weightType: "weightAbsolute",
+    };
 
     const userExercise = userExerciseData
       ? userExerciseData[skill.exerciseId]
@@ -2912,12 +2931,21 @@ export default class TrainingGenerator {
     if (exerciseValues.height) data.height = exerciseValues.height;
     if (exerciseValues.repetition) data.repetition = exerciseValues.repetition;
     if (exerciseValues.weight) data.weight = exerciseValues.weight;
-    if (exerciseValues.weightType) data.weightType = exerciseValues.weightType;
+    if (
+      exerciseValues.weightType === "weightAbsolute" ||
+      exerciseValues.weightType === "weightFMax"
+    ) {
+      data.weightType = exerciseValues.weightType;
+    }
 
     return data;
   };
 
-  isEmptyOrUndefined = (obj: object | null | undefined) => {
+  /**
+   * Checks if an object is undefined or an empty object ({}).
+   * Used for validation before processing exercise or user data.
+   */
+  isEmptyOrUndefined = (obj: object | null | undefined): boolean => {
     if (typeof obj === "undefined") {
       return true;
     } else if (Object.keys(obj).length === 0 && obj.constructor === Object) {
@@ -2926,6 +2954,11 @@ export default class TrainingGenerator {
     return false;
   };
 
+  /**
+   * Generates the exercise list for a max strength test workout.
+   * Includes warm-up exercises followed by test exercises with progressively
+   * increasing weights (50%, 75%, 100% of calculated test weight).
+   */
   getTestSetList = (
     user: UserType,
     exercises: ExerciseType[],
@@ -3051,7 +3084,9 @@ export default class TrainingGenerator {
     let skill = "TEST";
 
     // build single lists to concat afterwards
-    let singleExerciseLists = sortedExerciseIds.reduce((acc, entry) => {
+    const singleExerciseLists = sortedExerciseIds.reduce<
+      Record<string, GeneratedSetListEntry[]>
+    >((acc, entry) => {
       acc[entry] = [];
       return acc;
     }, {});
@@ -3098,20 +3133,25 @@ export default class TrainingGenerator {
     return setList;
   };
 
+  /**
+   * Creates a single test set entry with calculated weight based on percentage.
+   * Uses either the user's previous max value or default start values,
+   * adjusting weight by the specified percentage for warm-up or test sets.
+   */
   getTestSetExercise = (
-    userGender,
-    userLevel,
-    sortedExercise,
-    maxValues,
-    startValues,
-    percentage,
-    repetitions,
-    set,
-    skill,
-    num,
-  ) => {
-    let gender = userGender === "MALE" ? "m" : "w";
-    let level;
+    userGender: "MALE" | "FEMALE",
+    userLevel: string,
+    sortedExercise: ExerciseType,
+    maxValues: MaxValuesType,
+    startValues: TestWorkoutsStartValuesType,
+    percentage: number,
+    repetitions: number,
+    set: number,
+    skill: GeneratorSkillTypeFromSchema,
+    _num: number,
+  ): GeneratedSetListEntry => {
+    const gender = userGender === "MALE" ? "m" : "w";
+    let level: "beginner" | "advanced" | "professional";
     switch (userLevel) {
       case WorkoutConstants.LEVELS.BEGINNER:
         level = "beginner";
@@ -3128,9 +3168,11 @@ export default class TrainingGenerator {
         level = "beginner";
         break;
     }
-    let weight = startValues[sortedExercise.id][gender][level];
+    const exerciseStartValues = startValues[sortedExercise.id];
+    const genderWeights = exerciseStartValues?.[gender];
+    let weight = genderWeights?.[level] ?? 0;
     // use previous max value if set
-    let maxValue = getMaxValueForExercise(sortedExercise, maxValues);
+    const maxValue = getMaxValueForExercise(sortedExercise, maxValues);
     if (maxValue) {
       // do not use 100% of last max value
       // use percentage of last maxValue by level

@@ -434,3 +434,68 @@ export const CardioExercisePairSchema = v.object({
   second: v.optional(CardioBranchReferenceSchema),
 });
 export type CardioExercisePair = v.InferOutput<typeof CardioExercisePairSchema>;
+
+// ============================================================================
+// Exercise Start Values (for getExerciseStartValues return type)
+// ============================================================================
+
+/**
+ * Weight type indicator: absolute weight in kg or percentage of F-max.
+ */
+export const WeightTypeSchema = v.picklist(["weightAbsolute", "weightFMax"]);
+export type WeightType = v.InferOutput<typeof WeightTypeSchema>;
+
+/**
+ * Return type for getExerciseStartValues method.
+ * Contains exercise parameters computed from skill defaults,
+ * user progression data, and feedback adjustments.
+ */
+export type ExerciseStartValues = {
+  /** Branch tags for the exercise */
+  tags: string[];
+  /** Exercise identifier */
+  exerciseId: string;
+  /** Branch identifier */
+  branchId: string;
+  /** Duration in seconds (for isAdvanceByDuration exercises) */
+  duration?: number;
+  /** Height setting */
+  height?: number;
+  /** Repetition count (for isAdvanceByReps exercises) */
+  repetition?: number;
+  /** Weight value */
+  weight?: number;
+  /** Weight type - absolute kg or F-max percentage */
+  weightType: WeightType;
+};
+
+// ============================================================================
+// Test Workout Types (for getTestSetExercise and getTestSetList)
+// ============================================================================
+
+/**
+ * Level-based weight values for test workouts.
+ * Not all levels may be present for all exercises/genders.
+ */
+export type TestWorkoutLevelWeights = Partial<{
+  beginner: number;
+  advanced: number;
+  professional: number;
+}>;
+
+/**
+ * Gender-based weight configuration for a single test workout exercise.
+ */
+export type TestWorkoutGenderWeights = {
+  w?: TestWorkoutLevelWeights;
+  m?: TestWorkoutLevelWeights;
+};
+
+/**
+ * Start values configuration for test workout exercises.
+ * Maps exercise ID to gender-specific level-based weights.
+ */
+export type TestWorkoutsStartValuesType = Record<
+  string,
+  TestWorkoutGenderWeights
+>;

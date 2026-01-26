@@ -5,6 +5,8 @@ import { ProgressBar } from "@/common/ProgressBar";
 import { SkipHeader } from "@/common/SkipHeader";
 import { isPlaceType, WorkoutConstants } from "@/constants/workoutConstants";
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
+import { useAgeGroup } from "@/features/anamnesis/useAgeGroup";
+import { validateDaySelection } from "@/features/anamnesis/utils/trainingDays";
 import { SeasonPhase } from "@/features/training/models/SeasonPhase";
 import { SelectionInputField } from "@/form/SelectionInputField";
 import { SnapSliderInputField } from "@/form/SnapSliderInputField";
@@ -34,9 +36,6 @@ const DAY_KEYS = [
   "sunday",
 ] as const;
 
-// Age thresholds from WorkoutConstants
-const AGE_THRESHOLDS = WorkoutConstants.AGE_GROUPS_MAX_AGE;
-
 export default function TrainingDays() {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -50,9 +49,10 @@ export default function TrainingDays() {
   } = useUserWorkoutStore();
 
   const { seasonPhase } = useAnamnesisStore();
-  const { personalData, anamnesisCompleted } = useUserProfileStore();
+  const { anamnesisCompleted } = useUserProfileStore();
   const { trainingDays, toggleDay, setDayLocation, setDayDuration } =
     useTrainingScheduleStore();
+  const ageGroup = useAgeGroup();
   const hasActiveDay = trainingDays.some((day) => day.active);
 
   const handleBack = () => {
@@ -101,7 +101,7 @@ export default function TrainingDays() {
   };
 
   const handleToggleDay = (weekday: number) => {
-    const isChild = getAgeGroup() === WorkoutConstants.AGE_GROUPS.CHILD;
+    const isChild = ageGroup === WorkoutConstants.AGE_GROUPS.CHILD;
     const clickedDay = trainingDays[weekday];
 
     if (clickedDay.active) {
@@ -110,69 +110,22 @@ export default function TrainingDays() {
       return;
     }
 
-    // Check consecutive days restrictions
-    const prevDay = trainingDays[(weekday + 6) % 7];
-    const nextDay = trainingDays[(weekday + 1) % 7];
+    // Validate if this day can be selected
+    const isValid = validateDaySelection(trainingDays, weekday, isChild);
 
-    if (isChild) {
-      // Children: no consecutive days
-      if (prevDay.active || nextDay.active) {
-        Alert.alert(
-          t("screens.trainingDays.daySelectionNotPossibleTitle"),
-          t("screens.trainingDays.daySelectionNotPossibleChild"),
-        );
-        return;
-      }
-    } else {
-      // Adults: max 3 consecutive days
-      let consecutiveBefore = 0;
-      let consecutiveAfter = 0;
-
-      // Count consecutive days before
-      for (let i = 1; i <= 6; i++) {
-        if (trainingDays[(weekday + 7 - i) % 7].active) {
-          consecutiveBefore++;
-        } else {
-          break;
-        }
-      }
-
-      // Count consecutive days after
-      for (let i = 1; i <= 6; i++) {
-        if (trainingDays[(weekday + i) % 7].active) {
-          consecutiveAfter++;
-        } else {
-          break;
-        }
-      }
-
-      const totalConsecutive = consecutiveBefore + consecutiveAfter + 1;
-
-      if (totalConsecutive > 3) {
-        Alert.alert(
-          t("screens.trainingDays.daySelectionNotPossibleTitle"),
-          t("screens.trainingDays.daySelectionNotPossibleAdult"),
-        );
-        return;
-      }
+    if (!isValid) {
+      Alert.alert(
+        t("screens.trainingDays.daySelectionNotPossibleTitle"),
+        t(
+          isChild
+            ? "screens.trainingDays.daySelectionNotPossibleChild"
+            : "screens.trainingDays.daySelectionNotPossibleAdult",
+        ),
+      );
+      return;
     }
 
     toggleDay(weekday);
-  };
-
-  const getAgeGroup = (): "CHILD" | "ADOLESCENT" | "ADULT" => {
-    if (!personalData.birthday) return WorkoutConstants.AGE_GROUPS.ADULT;
-
-    const birthDate = new Date(
-      personalData.birthday.split("-").reverse().join("-"),
-    );
-    const today = new Date();
-    const age = today.getFullYear() - birthDate.getFullYear();
-
-    if (age <= AGE_THRESHOLDS.CHILD) return WorkoutConstants.AGE_GROUPS.CHILD;
-    if (age <= AGE_THRESHOLDS.ADOLESCENT)
-      return WorkoutConstants.AGE_GROUPS.ADOLESCENT;
-    return WorkoutConstants.AGE_GROUPS.ADULT;
   };
 
   const renderDayButton = (weekday: number) => {
@@ -238,15 +191,11 @@ export default function TrainingDays() {
       | "ADVANCED"
       | "PROFESSIONAL";
 
-    let ageGroup = getAgeGroup();
     // Treat adolescents as adults for duration options
-    if (ageGroup === WorkoutConstants.AGE_GROUPS.ADOLESCENT) {
-      ageGroup = WorkoutConstants.AGE_GROUPS.ADULT;
-    }
-
     const durationOptionsRaw =
-      WorkoutConstants.DURATION_OPTIONS[userLevel]?.[ageGroup] ||
-      WorkoutConstants.DURATION_OPTIONS.DEFAULT;
+      WorkoutConstants.DURATION_OPTIONS[userLevel]?.[
+        ageGroup === "ADOLESCENT" ? "ADULT" : ageGroup
+      ] || WorkoutConstants.DEFAULT_DURATION_OPTIONS;
 
     // Convert numeric labels to strings for SnapSliderInputField
     const durationOptions = durationOptionsRaw.map((opt) => ({
@@ -305,7 +254,6 @@ export default function TrainingDays() {
       | "ADVANCED"
       | "PROFESSIONAL";
 
-    const ageGroup = getAgeGroup();
     const seasonType = seasonPhase?.type || SeasonPhase.PAUSE;
 
     const recommendedDays =

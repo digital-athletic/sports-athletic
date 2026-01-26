@@ -419,57 +419,62 @@ const VALUE_TYPE_NAMES = [
   "weight",
 ] as const;
 
-const DURATION_OPTIONS = {
-  DEFAULT: [
-    {
-      value: 20,
-      label: 20,
-    },
-    {
-      value: 25,
-      label: 25,
-    },
-    {
-      value: 30,
-      label: 30,
-    },
-    {
-      value: 35,
-      label: 35,
-    },
-    {
-      value: 40,
-      label: 40,
-    },
-    {
-      value: 45,
-      label: 45,
-    },
-    {
-      value: 50,
-      label: 50,
-    },
-    {
-      value: 55,
-      label: 55,
-    },
-    {
-      value: 60,
-      label: 60,
-    },
-    {
-      value: 65,
-      label: 65,
-    },
-    {
-      value: 70,
-      label: 70,
-    },
-    {
-      value: 75,
-      label: 75,
-    },
-  ],
+type DurationOption = { value: number; label: number };
+
+const DEFAULT_DURATION_OPTIONS: DurationOption[] = [
+  {
+    value: 20,
+    label: 20,
+  },
+  {
+    value: 25,
+    label: 25,
+  },
+  {
+    value: 30,
+    label: 30,
+  },
+  {
+    value: 35,
+    label: 35,
+  },
+  {
+    value: 40,
+    label: 40,
+  },
+  {
+    value: 45,
+    label: 45,
+  },
+  {
+    value: 50,
+    label: 50,
+  },
+  {
+    value: 55,
+    label: 55,
+  },
+  {
+    value: 60,
+    label: 60,
+  },
+  {
+    value: 65,
+    label: 65,
+  },
+  {
+    value: 70,
+    label: 70,
+  },
+  {
+    value: 75,
+    label: 75,
+  },
+];
+
+type DurationByAgeGroup = Partial<Record<AgeGroupTag, DurationOption[]>>;
+
+const DURATION_OPTIONS: Record<LevelTag, DurationByAgeGroup> = {
   BEGINNER: {
     CHILD: [
       {
@@ -1143,6 +1148,7 @@ export const WorkoutConstants = {
   AGE_GROUPS_MAX_AGE,
   BIG_MUSCLES,
   DEACTIVATED_EQUIPMENT,
+  DEFAULT_DURATION_OPTIONS,
   DURATION_OPTIONS,
   EQUIPMENT,
   EXERCISE_DIRECTIONS,

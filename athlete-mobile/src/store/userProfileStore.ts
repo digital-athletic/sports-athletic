@@ -31,6 +31,8 @@ const createInitialState = (): State => ({
   teamId: null,
 });
 
+export const DEFAULT_STATE = createInitialState();
+
 type Actions = {
   setUserId: (userId: string | null) => void;
   setUsername: (username: string) => void;

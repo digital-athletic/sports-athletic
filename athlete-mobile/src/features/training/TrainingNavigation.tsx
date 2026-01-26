@@ -99,13 +99,14 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
       setExerciseEnded(true);
     },
   });
+
   useVoiceCoach(
     isNextExercisePause,
     hasNextExercise && isTimerActive,
     countdown,
   );
 
-  const resetState = () => {
+  const resetState = useCallback(() => {
     setExerciseEnded(false);
     setIsPausedState(false);
     setRepsValue(0);
@@ -113,13 +114,17 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
     lastNavEventFiredRef.current = 0;
     dxRef.current.setValue(0);
     dyRef.current.setValue(0);
-  };
+  }, []);
+
+  useEffect(() => {
+    resetState();
+  }, [exerciseId, resetState]);
 
   // Define handlers before effects
   const handleClickNext = useCallback(
     (strengthTestMaxValues?: MaxValuesType | null) => {
+      setExerciseEnded(true);
       next(strengthTestMaxValues);
-      resetState();
     },
     [next],
   );
@@ -150,6 +155,11 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
   const handleSubmitStrengthTestReps = () => {
     const maxValues = onSubmitReps(repsValue);
     handleClickNext(maxValues);
+  };
+
+  const handleClickSkip = () => {
+    setExerciseEnded(true);
+    skip();
   };
 
   // Pan responder initialization
@@ -184,11 +194,6 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
       },
     });
   }, [isTest, isLastInSet, handleClickNormalButton]);
-
-  const handleClickSkip = () => {
-    skip();
-    resetState();
-  };
 
   const handleTogglePause = () => {
     if (!isPause) {

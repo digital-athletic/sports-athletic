@@ -16,6 +16,10 @@ import type {
   SkillBranchList,
   SuperSetBranchSelectionResult,
 } from "@/features/training/models/ExerciseBranch";
+import type {
+  GenderTag,
+  IntensityData,
+} from "@/features/training/models/Intensity";
 import {
   DEFAULT_MAX_VALUES,
   type MaxValuesType,
@@ -59,11 +63,21 @@ import {
   ExerciseLevelsSchema,
   SetListEntrySchema,
   SkillBranchesSchema,
+  type AdjustmentConfig,
   type CardioBranchReference,
   type CardioExercisePair,
+  type DifficultyFeedbackType,
   type ExerciseStartValues,
+  type ExerciseValuesConfig,
+  type ExerciseValuesData,
+  type FilterResult,
+  type GenderLevelValueMap,
   type GeneratorSkillTypeFromSchema,
+  type MaxTrainingRepsEntry,
+  type MaxTrainingWeightsResult,
+  type SkillBranchData,
   type SkillWithLength,
+  type StartValuesResult,
   type TestWorkoutsStartValuesType,
   type UserExerciseDataMapType,
 } from "@/schemas/generator.schema";
@@ -3195,9 +3209,18 @@ export default class TrainingGenerator {
     };
   };
 
-  getAdjustmentByUserData = (intensity, userGender, userLevel) => {
+  /**
+   * Retrieves adjustment values for exercise progression based on intensity config.
+   * Returns how much to increase/decrease duration, reps, height, or weight
+   * based on user feedback (SUCCEEDED, TOO_EASY, TOO_HARD) and user level.
+   */
+  getAdjustmentByUserData = (
+    intensity: IntensityData | null,
+    userGender: GenderTag,
+    userLevel: string,
+  ): AdjustmentConfig => {
     // init
-    let adjustment = {
+    let adjustment: AdjustmentConfig = {
       duration: {
         SUCCEEDED: 5,
         TOO_EASY: 10,
@@ -3231,8 +3254,14 @@ export default class TrainingGenerator {
             [level: string]: { [feedback: string]: number };
           };
         };
-      } = intensity.adjustment;
-      let skillAdjustments = {};
+      } = intensity.adjustment as {
+        [skill: string]: {
+          [gender: string]: {
+            [level: string]: { [feedback: string]: number };
+          };
+        };
+      };
+      const skillAdjustments: Partial<AdjustmentConfig> = {};
 
       // Duration
       skillAdjustments.duration = adjust.duration
@@ -3304,32 +3333,35 @@ export default class TrainingGenerator {
         skillAdjustments.weightFMax = adjust.weightFMax[userGender][userLevel];
 
       // finally set adjustments
-      adjustment = skillAdjustments;
+      adjustment = skillAdjustments as AdjustmentConfig;
     }
     return adjustment;
   };
 
+  /**
+   * Applies difficulty-based adjustments to exercise values.
+   * Increases or decreases duration, reps, height, and weight based on
+   * user feedback from the previous workout with this exercise.
+   */
   adjustExerciseValues = (
-    dataInput,
-    userExercise,
-    exercise,
-    intensity,
-    userGender,
-    userLevel,
-    difficultyFeedback,
-  ) => {
-    let data = Object.assign({}, dataInput);
+    dataInput: ExerciseValuesData,
+    userExercise: UserExerciseDataType | null,
+    exercise: ExerciseType,
+    intensity: IntensityData | null,
+    userGender: GenderTag,
+    userLevel: string,
+    difficultyFeedback: DifficultyFeedbackType,
+  ): ExerciseValuesData => {
+    const data: ExerciseValuesData = { ...dataInput };
     // use userExerciseData and adjust
-    let adjustment = this.getAdjustmentByUserData(
+    const adjustment = this.getAdjustmentByUserData(
       intensity,
       userGender,
       userLevel,
     );
 
     // consider feedback TODO consider streak length
-    let adjustString = "SUCCEEDED";
-    if (difficultyFeedback === "TOO_HARD") adjustString = "TOO_HARD";
-    if (difficultyFeedback === "TOO_EASY") adjustString = "TOO_EASY";
+    const adjustString: DifficultyFeedbackType = difficultyFeedback;
 
     //adjust
     if (exercise.isAdvanceByDuration && data.duration && adjustment.duration) {
@@ -3362,16 +3394,21 @@ export default class TrainingGenerator {
     return data;
   };
 
+  /**
+   * Retrieves current exercise values from multiple sources.
+   * Priority: user's saved data > exercise-specific config > skill intensity defaults.
+   * Handles weight type detection (absolute vs F-max percentage).
+   */
   getExerciseValues = (
-    userExercise,
-    exercise,
-    intensity,
-    userGender,
-    userLevel,
-    maxValues,
-  ) => {
+    userExercise: UserExerciseDataType | null,
+    exercise: ExerciseType,
+    intensity: IntensityData | null,
+    userGender: GenderTag,
+    userLevel: string,
+    maxValues: MaxValuesType,
+  ): ExerciseValuesData => {
     const EQ_TYPES = getTagValues(exercise.tags, TagGroups.EQTYPE);
-    let data = {
+    const data: ExerciseValuesData = {
       weightType: "weightAbsolute",
     };
 
@@ -3554,10 +3591,19 @@ export default class TrainingGenerator {
     return data;
   };
 
-  getMaxTrainingWeights = (exercise, user, userExercisesData) => {
+  /**
+   * Calculates the weight percentages for max strength training sets.
+   * Returns progressive weights starting from minimum (based on user level)
+   * up to the target percentage, with special handling for incline bench press.
+   */
+  getMaxTrainingWeights = (
+    exercise: ExerciseType,
+    user: UserType,
+    userExercisesData: Record<string, UserExerciseDataType | undefined> | null,
+  ): MaxTrainingWeightsResult => {
     const userLevel = getUserLevel(user);
-    let equipment = getTagValues(exercise.tags, TagGroups.EQUIPMENT);
-    let exerciseDirections = getTagValues(
+    const equipment = getTagValues(exercise.tags, TagGroups.EQUIPMENT);
+    const exerciseDirections = getTagValues(
       exercise.tags,
       TagGroups.EXERCISE_DIRECTION,
     );
@@ -3573,11 +3619,11 @@ export default class TrainingGenerator {
       inclineBenchWeightDifference =
         WorkoutConstants.MAX_KRAFT_INCLINE_BENCH_WEIGHT_DIFFERENCE;
     }
-    let userExerciseData = userExercisesData
+    const userExerciseData = userExercisesData
       ? userExercisesData[exercise.id]
       : undefined;
-    let trainingWeights = [];
-    let numOfSets =
+    const trainingWeights: number[] = [];
+    const numOfSets =
       WorkoutConstants.MAX_KRAFT_WORKING_REPS_PER_USER_LEVEL[userLevel];
     let percentage = parseFloat(
       exercise.values.weight.startValue.default[userLevel.toLowerCase()],
@@ -3615,15 +3661,20 @@ export default class TrainingGenerator {
     };
   };
 
+  /**
+   * Calculates the repetition count for each set in max strength training.
+   * Uses lookup tables based on user age, level, weight percentage, and difficulty level.
+   * Returns warm-up reps followed by working set reps.
+   */
   getMaxTrainingReps = (
-    user,
-    maxTrainingWeightsObject,
-    userExercisesData,
-    exercise,
-    genderTag,
-  ) => {
+    user: UserType,
+    maxTrainingWeightsObject: MaxTrainingWeightsResult,
+    userExercisesData: Record<string, UserExerciseDataType | undefined> | null,
+    exercise: ExerciseType,
+    genderTag: GenderTag,
+  ): MaxTrainingRepsEntry[] => {
     let maxTrainingWeights = maxTrainingWeightsObject.trainingWeights;
-    let inclineBenchWeightDifference =
+    const inclineBenchWeightDifference =
       maxTrainingWeightsObject.inclineBenchWeightDifference;
     if (inclineBenchWeightDifference > 0) {
       maxTrainingWeights = maxTrainingWeights.map(
@@ -3631,9 +3682,9 @@ export default class TrainingGenerator {
       );
     }
     const userLevel = getUserLevel(user);
-    let userAge = ageGroupFor(user.workoutData.birthday);
-    let warmupTrainingReps = WorkoutConstants.MAX_KRAFT_REPETITIONS_WARMUP;
-    let userExerciseData = userExercisesData
+    const userAge = ageGroupFor(user.workoutData.birthday);
+    const warmupTrainingReps = WorkoutConstants.MAX_KRAFT_REPETITIONS_WARMUP;
+    const userExerciseData = userExercisesData
       ? userExercisesData[exercise.id]
       : undefined;
     let maximumWeightPercentage = Math.max(
@@ -3641,15 +3692,15 @@ export default class TrainingGenerator {
         WorkoutConstants.MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT[
           userAge
         ][userLevel].HARD,
-      ),
+      ).map(Number),
     );
     // set exercise targetValue if entered from webTool
     if (exercise.values.weight.targetValue) {
-      if (exercise.values.weight.targetValue[genderTag][userLevel]) {
+      if (exercise.values.weight.targetValue[genderTag]?.[userLevel]) {
         maximumWeightPercentage = parseFloat(
           exercise.values.weight.targetValue[genderTag][userLevel],
         );
-      } else if (exercise.values.weight.targetValue.default[userLevel]) {
+      } else if (exercise.values.weight.targetValue.default?.[userLevel]) {
         maximumWeightPercentage = parseFloat(
           exercise.values.weight.targetValue.default[userLevel],
         );
@@ -3657,7 +3708,7 @@ export default class TrainingGenerator {
     }
     let level = "EASY";
     if (userExerciseData && userExerciseData.maxFRepetitions) {
-      if (userExerciseData.feedback.difficulty) {
+      if (userExerciseData.feedback?.difficulty) {
         //adjust level
         const lastLevel =
           userExerciseData.maxFRepetitions[
@@ -3695,9 +3746,11 @@ export default class TrainingGenerator {
         }
       }
     }
-    let firstMaxTrainingReps =
+    const firstMaxTrainingReps =
       userLevel === WorkoutConstants.LEVELS.PROFESSIONAL ? 3 : 4;
-    let maxTrainingReps = [{ level: level, repetitions: firstMaxTrainingReps }];
+    const maxTrainingReps: MaxTrainingRepsEntry[] = [
+      { level: level, repetitions: firstMaxTrainingReps },
+    ];
     for (let w = 1; w < maxTrainingWeights.length; w++) {
       let repetitions =
         WorkoutConstants.MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT[
@@ -3731,7 +3784,7 @@ export default class TrainingGenerator {
         repetitions: repetitions,
       };
     }
-    let trainingReps = warmupTrainingReps.concat(maxTrainingReps);
+    const trainingReps = warmupTrainingReps.concat(maxTrainingReps);
     return trainingReps;
   };
 }
@@ -3866,22 +3919,27 @@ const filterExercisesBySides = (
   });
 };
 
+/**
+ * Filters exercise branches by user level, keeping only branches that have
+ * exercises available at the user's current level. Returns branches to keep
+ * and region tags of branches that need replacement.
+ */
 const filterByUserLevel = (
-  branches,
+  branches: Record<string, SkillBranchData>,
   user: UserType,
   exercises: ExerciseType[],
-  userBranchData,
-) => {
+  userBranchData: Record<string, UserExerciseBranchDataType | undefined> | null,
+): FilterResult => {
   if (!user || !user.workoutData) {
     return { keep: branches, replace: [] };
   }
   const userLevelTags = getTagValues(user.workoutData.tags, TagGroups.LEVEL);
   const userLevel = userLevelTags[0] || WorkoutConstants.LEVELS.BEGINNER;
-  const keep = {};
+  const keep: Record<string, SkillBranchData> = {};
   let replace: string[] = [];
 
   for (const id in branches) {
-    if (!branches.hasOwnProperty(id)) continue;
+    if (!Object.prototype.hasOwnProperty.call(branches, id)) continue;
     const branchData = branches[id];
     const levelSource = branchData.exercises
       ? branchData.exercises
@@ -3903,30 +3961,51 @@ const filterByUserLevel = (
   return { keep, replace };
 };
 
-const getValueByGenderAndLevel = (data, gender: string, level: string) => {
-  let result;
+/**
+ * Retrieves a numeric value from a gender/level lookup structure.
+ * Falls back through: gender+level -> gender+default -> default+level -> default+default.
+ */
+const getValueByGenderAndLevel = (
+  data: GenderLevelValueMap,
+  gender: string,
+  level: string,
+): number | undefined => {
+  let result: number | undefined;
   if (data) {
-    if (data.default) {
-      if (data.default.default) result = +data.default.default;
-      if (data.default[level]) result = +data.default[level];
+    const defaultData = data.default;
+    if (defaultData && typeof defaultData === "object") {
+      if (defaultData.default !== undefined) result = +defaultData.default;
+      if (defaultData[level] !== undefined) result = +defaultData[level];
     }
-    if (data[gender]) {
-      if (data[gender].default) result = +data[gender].default;
-      if (data[gender][level]) result = +data[gender][level];
+    const genderData = data[gender];
+    if (genderData && typeof genderData === "object") {
+      if (genderData.default !== undefined) result = +genderData.default;
+      if (genderData[level] !== undefined) result = +genderData[level];
     }
   }
   return result;
 };
 
-const getStartValues = (data, gender: string, level: string) => {
-  const result = {};
+/**
+ * Extracts starting values for all value types (repetition, duration, weight, height)
+ * from an exercise's values configuration, looking up by gender and level.
+ */
+const getStartValues = (
+  data: ExerciseValuesConfig,
+  gender: string,
+  level: string,
+): StartValuesResult => {
+  const result: StartValuesResult = {};
   WorkoutConstants.VALUE_TYPE_NAMES.forEach((valueName) => {
     if (data[valueName] && data[valueName].startValue) {
-      result[valueName] = getValueByGenderAndLevel(
+      const value = getValueByGenderAndLevel(
         data[valueName].startValue,
         gender,
         level,
       );
+      if (value !== undefined) {
+        (result as Record<string, number>)[valueName] = value;
+      }
     }
   });
   return result;

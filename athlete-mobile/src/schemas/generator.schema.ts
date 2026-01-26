@@ -499,3 +499,122 @@ export type TestWorkoutsStartValuesType = Record<
   string,
   TestWorkoutGenderWeights
 >;
+
+// ============================================================================
+// Adjustment Types (for getAdjustmentByUserData - Step 7)
+// ============================================================================
+
+/**
+ * User feedback type on exercise difficulty (non-null values).
+ */
+export type DifficultyFeedbackType = "SUCCEEDED" | "TOO_EASY" | "TOO_HARD";
+
+/**
+ * Adjustment values for each feedback type.
+ */
+export type FeedbackAdjustment = {
+  SUCCEEDED: number;
+  TOO_EASY: number;
+  TOO_HARD: number;
+};
+
+/**
+ * Configuration for how to adjust exercise values based on feedback.
+ * Returned by getAdjustmentByUserData method.
+ */
+export type AdjustmentConfig = {
+  duration?: FeedbackAdjustment;
+  height?: FeedbackAdjustment;
+  repetition?: FeedbackAdjustment;
+  weightFMax?: FeedbackAdjustment;
+  weightAbsolute?: FeedbackAdjustment;
+};
+
+// ============================================================================
+// Exercise Values Types (for getExerciseValues/adjustExerciseValues - Step 7)
+// ============================================================================
+
+/**
+ * Exercise values data structure for duration, reps, weight, height.
+ * Used by getExerciseValues and adjustExerciseValues methods.
+ */
+export type ExerciseValuesData = {
+  duration?: number;
+  height?: number;
+  repetition?: number;
+  weight?: number;
+  weightType?: WeightType;
+};
+
+// ============================================================================
+// Max Training Types (for getMaxTrainingWeights/getMaxTrainingReps - Step 8)
+// ============================================================================
+
+/**
+ * Result of max training weight calculation.
+ */
+export type MaxTrainingWeightsResult = {
+  trainingWeights: number[];
+  inclineBenchWeightDifference: number;
+};
+
+/**
+ * Single entry in max training reps array with difficulty level.
+ */
+export type MaxTrainingRepsEntry = {
+  level: string;
+  repetitions: number;
+};
+
+// ============================================================================
+// Helper Function Types (for filterByUserLevel, getStartValues - Step 8)
+// ============================================================================
+
+/**
+ * Branch data structure for filter functions.
+ */
+export type SkillBranchData = {
+  tags: string[];
+  exercises?: Record<string, { exerciseId?: string; id?: string }>;
+  levels?: Record<string, { exerciseId?: string; id?: string }>;
+};
+
+/**
+ * Result of branch filtering operations.
+ */
+export type FilterResult = {
+  keep: Record<string, SkillBranchData>;
+  replace: string[];
+};
+
+/**
+ * Nested lookup structure: gender -> level -> value.
+ * Used by getValueByGenderAndLevel helper function.
+ */
+export type GenderLevelValueMap =
+  | Record<string, Record<string, number> | number | undefined>
+  | undefined;
+
+/**
+ * Exercise value configuration with start/target values.
+ */
+export type ExerciseValueConfig = {
+  startValue?: GenderLevelValueMap;
+  targetValue?: GenderLevelValueMap;
+  type?: { type: string };
+};
+
+/**
+ * Full exercise values configuration keyed by parameter type.
+ */
+export type ExerciseValuesConfig = Record<string, ExerciseValueConfig>;
+
+/**
+ * Extracted start values for all exercise value types.
+ */
+export type StartValuesResult = {
+  repetition?: number;
+  duration?: number;
+  weight?: number;
+  height?: number;
+};

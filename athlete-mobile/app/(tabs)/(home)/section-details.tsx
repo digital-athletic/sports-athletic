@@ -93,7 +93,6 @@ const SectionDetailsScreen: FC = () => {
       );
     }
 
-    // Video component placeholder - will be implemented in a future PR
     return (
       <VideoPlayer
         title={
@@ -102,21 +101,8 @@ const SectionDetailsScreen: FC = () => {
             : ""
         }
         source={videoData.video}
+        isTutorial
       />
-      // <Box
-      //   padding="m"
-      //   justifyContent="center"
-      //   alignItems="center"
-      //   backgroundColor="lightGrey1"
-      //   borderRadius="m"
-      // >
-      //   <Ionicon name="play-circle" size={64} color={colors.primary} />
-      //   <Text variant="body" marginTop="s" textAlign="center">
-      //     {videoData.title
-      //       ? t(`training.sectionDetails.videoTitles.${prefix}`)
-      //       : ""}
-      //   </Text>
-      // </Box>
     );
   };
 

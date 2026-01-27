@@ -5,12 +5,11 @@ import {
   isLevelTag,
   WorkoutConstants,
 } from "@/constants/workoutConstants";
-import { isPauseExercise as checkIsPauseExercise } from "@/features/training/models/IdTypes";
 import { TrainingNavigation } from "@/features/training/TrainingNavigation";
 import { getIntensityBySkill } from "@/features/training/generators/TrainingGenerator";
+import { isPauseExercise as checkIsPauseExercise } from "@/features/training/models/IdTypes";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
 import { SkillType } from "@/features/training/models/Training";
-import { isTrainingLevel } from "@/schemas/common.schema";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
 import {
@@ -42,6 +41,7 @@ import {
   isInclineBenchPress,
   maxWeightByEpley,
 } from "@/features/training/utils/workoutUtils";
+import { isTrainingLevel } from "@/schemas/common.schema";
 import { Logger } from "@/services/Logger";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useExercisesStore } from "@/store/exercisesStore";
@@ -55,7 +55,7 @@ import { getTagValues } from "@/utils/tagUtils";
 import { VideoPlayer } from "@/video/VideoPlayer";
 import { useKeepAwake } from "expo-keep-awake";
 import { Stack, useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useRef, useState, type FC } from "react";
+import { type FC, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -65,6 +65,7 @@ import {
   Platform,
   TouchableWithoutFeedback,
 } from "react-native";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type TrainingActiveProps = Record<string, never>;
@@ -1168,12 +1169,53 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
           flex={1}
           style={{
             paddingBottom: insets.bottom,
-            paddingTop: insets.top,
             paddingLeft: insets.left,
             paddingRight: insets.right,
           }}
         >
-          <Stack.Screen options={{ headerShown: false }} />
+          <Stack.Screen
+            options={{
+              headerTitle: "",
+              headerBackVisible: false,
+              headerLeft: () =>
+                isExerciseInformationVisible ? (
+                  <Animated.View entering={FadeIn} exiting={FadeOut}>
+                    <TouchableBox
+                      key="exercise_information"
+                      onPress={handleShowExerciseInformation}
+                      minWidth={36}
+                      minHeight={36}
+                      alignItems={"center"}
+                      justifyContent={"center"}
+                    >
+                      <AwesomeIcon
+                        name="info-circle"
+                        size={28}
+                        color={colors.black}
+                      />
+                    </TouchableBox>
+                  </Animated.View>
+                ) : undefined,
+              headerRight: () => (
+                <Animated.View entering={FadeIn} exiting={FadeOut}>
+                  <TouchableBox
+                    onPress={handleAbortTraining}
+                    key={"abort_training"}
+                    minWidth={36}
+                    minHeight={36}
+                    alignItems={"center"}
+                    justifyContent={"center"}
+                  >
+                    <AwesomeIcon
+                      name="times-circle"
+                      size={28}
+                      color={colors.black}
+                    />
+                  </TouchableBox>
+                </Animated.View>
+              ),
+            }}
+          />
           <Box flex={1} backgroundColor="white" justifyContent="flex-start">
             {/* Progress bar */}
             <Box height={4} backgroundColor="lightGrey1">
@@ -1192,45 +1234,9 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                   source={video}
                   setIsFullScreen={setIsFullScreen}
                   setIsVideoPlaying={setVideoIsPlaying}
+                  disabled={isAborted}
                 />
               )}
-              <Box
-                position="absolute"
-                top={0}
-                left={0}
-                right={0}
-                bottom={0}
-                marginHorizontal="m"
-                marginVertical="s"
-                flexDirection="row"
-                justifyContent="space-between"
-              >
-                {isExerciseInformationVisible ? (
-                  <TouchableBox
-                    key="exercise_information"
-                    onPress={handleShowExerciseInformation}
-                  >
-                    <AwesomeIcon
-                      name="info-circle"
-                      size={24}
-                      color={colors.white}
-                    />
-                  </TouchableBox>
-                ) : (
-                  <Box />
-                )}
-
-                <TouchableBox
-                  onPress={handleAbortTraining}
-                  key={"abort_training"}
-                >
-                  <AwesomeIcon
-                    name="times-circle"
-                    size={24}
-                    color={colors.white}
-                  />
-                </TouchableBox>
-              </Box>
             </Box>
 
             {/* Exercise information */}

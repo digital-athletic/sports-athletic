@@ -18,6 +18,7 @@ type Props = {
   setIsVideoPlaying?: (isPaused: boolean) => void;
   /** Use tutorial_videos bucket instead of exercise_videos bucket */
   isTutorial?: boolean;
+  disabled?: boolean;
 };
 
 export const VideoPlayer: FC<Props> = ({
@@ -28,6 +29,7 @@ export const VideoPlayer: FC<Props> = ({
   setIsFullScreen,
   controlsDisabled,
   isTutorial,
+  disabled = false,
 }) => {
   const videoUrl = useMemo(() => {
     // Extract filename from path (e.g., "tutorialVideos/Bankdruecken.mp4" -> "Bankdruecken.mp4")
@@ -38,7 +40,10 @@ export const VideoPlayer: FC<Props> = ({
       : getExerciseVideoUrl(filename);
   }, [source, isTutorial]);
 
-  const player = useVideoPlayer(videoUrl);
+  const player = useVideoPlayer(videoUrl, (player) => {
+    // Ensure shared audio session is paused when video plays
+    player.audioMixingMode = "doNotMix";
+  });
 
   const { isPlaying } = useEvent(player, "playingChange", {
     isPlaying: player.playing,
@@ -47,6 +52,12 @@ export const VideoPlayer: FC<Props> = ({
   useEffect(() => {
     setIsVideoPlaying?.(player.playing);
   }, [isPlaying, player.playing, setIsVideoPlaying]);
+
+  useEffect(() => {
+    if (disabled && player.playing) {
+      player.pause();
+    }
+  }, [disabled, player]);
 
   return (
     <Box aspectRatio={16 / 9}>
@@ -60,7 +71,6 @@ export const VideoPlayer: FC<Props> = ({
         }}
         style={styles.videoView}
         nativeControls={!controlsDisabled}
-        //@ts-expect-error additional work needs to be done for web types
         player={player}
       />
       {!isPlaying && !!title && (

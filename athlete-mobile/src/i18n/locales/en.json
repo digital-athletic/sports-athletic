@@ -134,7 +134,7 @@
       "goToProfile": "Go to profile",
       "phases": {
         "PAUSE": "Transition",
-        "PREPATORY": "Prepatory",
+        "PREPARATORY": "Preparatory",
         "COMPETITION": "Competitive"
       }
     },

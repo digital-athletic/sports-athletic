@@ -280,7 +280,7 @@ export default function TrainingDays() {
   };
 
   const showCoaching =
-    seasonPhase?.type === SeasonPhase.PREPATORY ||
+    seasonPhase?.type === SeasonPhase.PREPARATORY ||
     seasonPhase?.type === SeasonPhase.COMPETITION;
 
   // Calculate progress for progress bar

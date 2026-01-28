@@ -134,7 +134,7 @@
       "goToProfile": "Profil Daten angeben",
       "phases": {
         "PAUSE": "Trainingsfrei",
-        "PREPATORY": "Vorbereitung",
+        "PREPARATORY": "Vorbereitung",
         "COMPETITION": "Spielsaison"
       }
     },

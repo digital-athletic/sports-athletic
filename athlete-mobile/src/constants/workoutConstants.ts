@@ -671,51 +671,51 @@ const RECOMMENDATIONS_TRAINING_DAYS = {
   BEGINNER: {
     CHILD: {
       PAUSE: 2,
-      PREPATORY: 2,
+      PREPARATORY: 2,
       COMPETITION: 2,
     },
     ADOLESCENT: {
       PAUSE: 2,
-      PREPATORY: 3,
+      PREPARATORY: 3,
       COMPETITION: 2,
     },
     ADULT: {
       PAUSE: 2,
-      PREPATORY: 3,
+      PREPARATORY: 3,
       COMPETITION: 2,
     },
   },
   ADVANCED: {
     CHILD: {
       PAUSE: 2,
-      PREPATORY: 3,
+      PREPARATORY: 3,
       COMPETITION: 2,
     },
     ADOLESCENT: {
       PAUSE: 3,
-      PREPATORY: 3,
+      PREPARATORY: 3,
       COMPETITION: 3,
     },
     ADULT: {
       PAUSE: 3,
-      PREPATORY: 3,
+      PREPARATORY: 3,
       COMPETITION: 3,
     },
   },
   PROFESSIONAL: {
     CHILD: {
       PAUSE: 2,
-      PREPATORY: 3,
+      PREPARATORY: 3,
       COMPETITION: 2,
     },
     ADOLESCENT: {
       PAUSE: 4,
-      PREPATORY: 4,
+      PREPARATORY: 4,
       COMPETITION: 3,
     },
     ADULT: {
       PAUSE: 4,
-      PREPATORY: 4,
+      PREPARATORY: 4,
       COMPETITION: 3,
     },
   },
@@ -725,51 +725,51 @@ const RECOMMENDATIONS_TRAINING_MINUTES = {
   BEGINNER: {
     CHILD: {
       PAUSE: 35,
-      PREPATORY: 35,
+      PREPARATORY: 35,
       COMPETITION: 35,
     },
     ADOLESCENT: {
       PAUSE: 45,
-      PREPATORY: 45,
+      PREPARATORY: 45,
       COMPETITION: 40,
     },
     ADULT: {
       PAUSE: 45,
-      PREPATORY: 45,
+      PREPARATORY: 45,
       COMPETITION: 40,
     },
   },
   ADVANCED: {
     CHILD: {
       PAUSE: 45,
-      PREPATORY: 45,
+      PREPARATORY: 45,
       COMPETITION: 40,
     },
     ADOLESCENT: {
       PAUSE: 50,
-      PREPATORY: 50,
+      PREPARATORY: 50,
       COMPETITION: 45,
     },
     ADULT: {
       PAUSE: 50,
-      PREPATORY: 50,
+      PREPARATORY: 50,
       COMPETITION: 45,
     },
   },
   PROFESSIONAL: {
     CHILD: {
       PAUSE: 45,
-      PREPATORY: 45,
+      PREPARATORY: 45,
       COMPETITION: 40,
     },
     ADOLESCENT: {
       PAUSE: 60,
-      PREPATORY: 60,
+      PREPARATORY: 60,
       COMPETITION: 50,
     },
     ADULT: {
       PAUSE: 60,
-      PREPATORY: 60,
+      PREPARATORY: 60,
       COMPETITION: 50,
     },
   },

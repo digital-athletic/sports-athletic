@@ -1211,7 +1211,7 @@ export default class PlanGenerator {
   ): SectionEntry[] => {
     const numOfWeeks = seasonPhase.numOfWeeks ?? 0;
     const phaseType = (seasonPhase.type ??
-      SeasonPhase.PREPATORY) as SeasonPhase;
+      SeasonPhase.PREPARATORY) as SeasonPhase;
     const sections = this.getSectionsBySeasonPhaseAgeGroupLevelNumOfWeeks(
       phaseType,
       ageGroup,
@@ -2263,23 +2263,23 @@ export default class PlanGenerator {
           "TrainingSectionsPauseAdultProfessional",
         );
         break;
-      // Prepatory
+      // Preparatory
       // - Child
-      case "prepatorychildbeginner":
+      case "preparatorychildbeginner":
         sectionsGroup = cloneWithValidation(
           TrainingSectionsPrepatoryChildBeginner,
           TrainingSectionsMapSchema,
           "TrainingSectionsPrepatoryChildBeginner",
         );
         break;
-      case "prepatorychildadvanced":
+      case "preparatorychildadvanced":
         sectionsGroup = cloneWithValidation(
           TrainingSectionsPrepatoryChildAdvanced,
           TrainingSectionsMapSchema,
           "TrainingSectionsPrepatoryChildAdvanced",
         );
         break;
-      case "prepatorychildprofessional":
+      case "preparatorychildprofessional":
         sectionsGroup = cloneWithValidation(
           TrainingSectionsPrepatoryChildProfessional,
           TrainingSectionsMapSchema,
@@ -2287,21 +2287,21 @@ export default class PlanGenerator {
         );
         break;
       // - Adult
-      case "prepatoryadultbeginner":
+      case "preparatoryadultbeginner":
         sectionsGroup = cloneWithValidation(
           TrainingSectionsPrepatoryAdultBeginner,
           TrainingSectionsMapSchema,
           "TrainingSectionsPrepatoryAdultBeginner",
         );
         break;
-      case "prepatoryadultadvanced":
+      case "preparatoryadultadvanced":
         sectionsGroup = cloneWithValidation(
           TrainingSectionsPrepatoryAdultAdvanced,
           TrainingSectionsMapSchema,
           "TrainingSectionsPrepatoryAdultAdvanced",
         );
         break;
-      case "prepatoryadultprofessional":
+      case "preparatoryadultprofessional":
         sectionsGroup = cloneWithValidation(
           TrainingSectionsPrepatoryAdultProfessional,
           TrainingSectionsMapSchema,

@@ -869,7 +869,7 @@ export default class TrainingGenerator {
                         "MUSCLEINVOLVEMENT_ISOLATED",
                         "REGION_UPPER_BODY",
                         "EXERCISEDIRECTION_LOWER_BODY",
-                        "SEASONPHASE_PREPATORY",
+                        "SEASONPHASE_PREPARATORY",
                         "SEASONPHASE_COMPETITION",
                         "SEASONPHASE_PAUSE",
                         "PLACE_HALL",

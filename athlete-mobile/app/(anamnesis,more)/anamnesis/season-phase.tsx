@@ -130,10 +130,10 @@ export default function SeasonPhase() {
       },
     },
     {
-      value: SeasonPhaseEnum.PREPATORY,
+      value: SeasonPhaseEnum.PREPARATORY,
       displayName: {
-        default: t("screens.seasonPhase.phases.PREPATORY"),
-        en: "Prepatory",
+        default: t("screens.seasonPhase.phases.PREPARATORY"),
+        en: "Preparatory",
         de: "Vorbereitung",
       },
     },

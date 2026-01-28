@@ -23,7 +23,7 @@ const p = {
                 "PAIN_KNEE_RIGHT"
             ],
             seasonPhase: {
-                type: "PREPATORY",
+                type: "PREPARATORY",
                 numOfWeeks: 9,
                 // NO NEED TO SET endDate is only used in anamnesis to calc numOfWeeks
                 endDate: "25-10-2019"

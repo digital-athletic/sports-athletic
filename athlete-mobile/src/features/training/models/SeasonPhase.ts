@@ -2,7 +2,7 @@ import { type SeasonPhaseSchemaType } from "@/schemas/user.schema";
 
 export enum SeasonPhase {
   PAUSE = "PAUSE",
-  PREPATORY = "PREPATORY",
+  PREPARATORY = "PREPARATORY",
   COMPETITION = "COMPETITION",
 }
 

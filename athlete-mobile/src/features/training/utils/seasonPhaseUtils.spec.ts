@@ -63,14 +63,14 @@ describe("seasonPhaseUtils", () => {
     it("should add numOfWeeks calculated from start date", () => {
       const startDate = new Date("2025-01-01");
       const phase = {
-        type: SeasonPhase.PREPATORY,
+        type: SeasonPhase.PREPARATORY,
         endDate: "29-01-2025", // 4 weeks later
       };
 
       const result = enrichSeasonPhaseWithWeeksFromDate(phase, startDate);
 
       expect(result.numOfWeeks).toBe(4);
-      expect(result.type).toBe(SeasonPhase.PREPATORY);
+      expect(result.type).toBe(SeasonPhase.PREPARATORY);
     });
   });
 });

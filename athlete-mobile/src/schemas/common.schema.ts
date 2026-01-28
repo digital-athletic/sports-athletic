@@ -63,7 +63,7 @@ export const SectionTypesSchema = v.picklist([
 
 export const SeasonPhaseEnumSchema = v.picklist([
   "PAUSE",
-  "PREPATORY",
+  "PREPARATORY",
   "COMPETITION",
 ]);
 

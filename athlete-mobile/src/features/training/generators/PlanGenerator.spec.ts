@@ -349,7 +349,7 @@ describe("PlanGenerator", () => {
 
     it("should return correct sections for prepatory child beginner 6 weeks", () => {
       const seasonPhase: SeasonPhaseType = {
-        type: SeasonPhase.PREPATORY,
+        type: SeasonPhase.PREPARATORY,
         numOfWeeks: 6,
         endDate: "01-03-2025",
       };
@@ -758,7 +758,7 @@ describe("PlanGenerator", () => {
 
     it("should create plan with child-appropriate sections for prepatory phase", () => {
       const seasonPhase: SeasonPhaseType = {
-        type: SeasonPhase.PREPATORY,
+        type: SeasonPhase.PREPARATORY,
         numOfWeeks: 6,
         endDate: "17-03-2025",
       };
@@ -1163,7 +1163,7 @@ describe("PlanGenerator", () => {
             "POSITION_FORWARD",
           ],
           seasonPhase: {
-            type: SeasonPhase.PREPATORY,
+            type: SeasonPhase.PREPARATORY,
             numOfWeeks: 6,
             endDate: "15-02-2025",
           },
@@ -1330,7 +1330,7 @@ describe("PlanGenerator", () => {
           birthday: "01-01-1987",
           tags: [`LEVEL_${WorkoutConstants.LEVELS.ADVANCED}`, "POSITION_FIELD"],
           seasonPhase: {
-            type: SeasonPhase.PREPATORY,
+            type: SeasonPhase.PREPARATORY,
             numOfWeeks: 20,
             endDate: "15-06-2026",
           },
@@ -1381,7 +1381,7 @@ describe("PlanGenerator", () => {
     };
 
     const mockSeasonPhase: SeasonPhaseType = {
-      type: SeasonPhase.PREPATORY,
+      type: SeasonPhase.PREPARATORY,
       numOfWeeks: 4,
       endDate: "01-03-2026",
     };
@@ -1553,7 +1553,7 @@ describe("PlanGenerator", () => {
       // but if it did, it would be converted. We verify no MAX exists in result.
       const result =
         PlanGenerator.getSectionsBySeasonPhaseAgeGroupLevelNumOfWeeks(
-          SeasonPhase.PREPATORY,
+          SeasonPhase.PREPARATORY,
           WorkoutConstants.AGE_GROUPS.ADULT,
           WorkoutConstants.LEVELS.BEGINNER,
           6,
@@ -1623,7 +1623,7 @@ describe("PlanGenerator", () => {
       const result = PlanGenerator.getMinimumDurationsForBlock(
         block,
         [],
-        "prepatory",
+        "preparatory",
         WorkoutConstants.AGE_GROUPS.ADULT,
         WorkoutConstants.LEVELS.BEGINNER,
       );

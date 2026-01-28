@@ -1,3 +1,9 @@
-const EQUIPMENT = ["BOTTLE", "CHAIR", "TOWEL", "SLIPPERY_GROUND", "WALL"];
+const EQUIPMENT = [
+    "TOWEL",
+    "BOTTLE",
+    "SLIPPERY_GROUND",
+    "CHAIR",
+    "ADDITIONAL_WEIGHTS"
+];
 
 export default { EQUIPMENT };

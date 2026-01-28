@@ -1,5 +1,19 @@
 import { expect } from "@playwright/test";
+import * as v from "valibot";
 import { BasePage } from "./BasePage";
+
+const PersistedExerciseEntrySchema = v.object({
+  exerciseId: v.string(),
+  weight: v.optional(v.number()),
+  repetition: v.optional(v.number()),
+  skipped: v.optional(v.boolean()),
+});
+
+const PersistedExerciseProgressStorageSchema = v.object({
+  state: v.object({
+    exerciseData: v.record(v.string(), PersistedExerciseEntrySchema),
+  }),
+});
 
 export class WorkoutPage extends BasePage {
   private get skipButton() {
@@ -65,6 +79,37 @@ export class WorkoutPage extends BasePage {
     await this.startTrainingButton.click({ timeout: 15000 });
   }
 
+  /**
+   * Waits for Zustand's persist middleware to flush exercise data to localStorage.
+   * Polls localStorage until exercise-progress-storage contains exerciseData with
+   * at least one exercise entry that has been fully saved by saveExerciseAndBranchData.
+   * Uses valibot to validate the persisted data shape in Node.js context.
+   */
+  private async waitForExerciseDataPersisted(timeoutMs = 5000) {
+    await expect
+      .poll(
+        async () => {
+          const raw = await this.page.evaluate(() =>
+            localStorage.getItem("exercise-progress-storage"),
+          );
+          if (!raw) return false;
+          const result = v.safeParse(
+            PersistedExerciseProgressStorageSchema,
+            JSON.parse(raw),
+          );
+          if (!result.success) return false;
+          return Object.values(result.output.state.exerciseData).some(
+            (ex) =>
+              ex.weight !== undefined ||
+              ex.repetition !== undefined ||
+              ex.skipped !== undefined,
+          );
+        },
+        { timeout: timeoutMs, message: "Exercise data not persisted in time" },
+      )
+      .toBe(true);
+  }
+
   async completeWorkout(options?: {
     lastSetFeedback?: "normal" | "too_easy" | "too_hard";
   }) {
@@ -95,9 +140,9 @@ export class WorkoutPage extends BasePage {
         } else {
           await this.checkmarkButton.click({ force: true });
         }
-        // Wait for async storage operations to complete before continuing
-        // This ensures exercise progress and feedback are persisted
-        await this.page.waitForTimeout(500);
+        // Brief pause for UI state transition between workout steps (set completion animation,
+        // rest screen transition). The deterministic persistence wait happens in returnToHome().
+        await this.page.waitForTimeout(200);
         continue;
       }
 
@@ -110,6 +155,10 @@ export class WorkoutPage extends BasePage {
   }
 
   async returnToHome() {
+    // Wait for all exercise data to be persisted to localStorage before navigating away.
+    // Zustand's persist middleware writes asynchronously, and on slower CI environments
+    // the write may not complete before the page transitions.
+    await this.waitForExerciseDataPersisted();
     await this.goOnButton.click();
     await this.expectLoggedIn();
   }

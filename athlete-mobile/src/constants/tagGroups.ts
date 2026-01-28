@@ -5,7 +5,7 @@ export enum TagGroups {
   SIDE = "SIDE",
   EQUIPMENT = "EQ",
   EQTYPE = "EQTYPE", // WEIGHTS/EQUIPMENT/KG
-  REGION = "REGION", //oberkoerper, unterkoerper, rumpf
+  REGION = "REGION", //upper_body, lower_body, core
   MUSCLE = "MUSCLE",
   MUSCLE_SECONDARY = "MUSCLESECONDARY",
   POSITION = "POSITION",

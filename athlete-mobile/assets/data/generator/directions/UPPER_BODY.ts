@@ -1,7 +1,7 @@
-const GANZKOERPER = {
+const UPPER_BODY = {
     1: [
         {
-            direction: null,
+            direction: "HORIZONTAL_PUSH",
             side: "BOTH"
         }
     ],
@@ -24,9 +24,14 @@ const GANZKOERPER = {
             direction: "HORIZONTAL_PULL",
             side: "BOTH"
         },
-        { direction: null, side: "BOTH" }
+        { direction: "VERTICAL_PUSH", side: "BOTH" }
     ],
     4: [
+        { direction: "VERTICAL_PUSH", side: "BOTH" },
+        {
+            direction: "VERTICAL_PULL",
+            side: "BOTH"
+        },
         {
             direction: "HORIZONTAL_PUSH",
             side: "BOTH"
@@ -34,9 +39,7 @@ const GANZKOERPER = {
         {
             direction: "HORIZONTAL_PULL",
             side: "BOTH"
-        },
-        { direction: "HIP", side: "BOTH" },
-        { direction: "KNEE", side: "BOTH" }
+        }
     ],
     5: [
         {
@@ -47,8 +50,11 @@ const GANZKOERPER = {
             direction: "HORIZONTAL_PULL",
             side: "BOTH"
         },
-        { direction: "HIP", side: "BOTH" },
-        { direction: "KNEE", side: "BOTH" },
+        { direction: "VERTICAL_PUSH", side: "BOTH" },
+        {
+            direction: "VERTICAL_PULL",
+            side: "BOTH"
+        },
         {
             direction: null,
             side: "BOTH"
@@ -63,14 +69,20 @@ const GANZKOERPER = {
             direction: "HORIZONTAL_PULL",
             side: "BOTH"
         },
-        { direction: "HIP", side: "BOTH" },
-        { direction: "KNEE", side: "BOTH" },
         { direction: "VERTICAL_PUSH", side: "BOTH" },
         {
             direction: "VERTICAL_PULL",
             side: "BOTH"
+        },
+        {
+            direction: null,
+            side: "ONE"
+        },
+        {
+            direction: null,
+            side: "ONE"
         }
     ]
 } as const;
 
-export default GANZKOERPER;
+export default UPPER_BODY;

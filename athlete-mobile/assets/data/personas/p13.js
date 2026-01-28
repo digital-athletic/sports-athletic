@@ -19,7 +19,7 @@ const p = {
                 // LEVEL
                 "LEVEL_ADVANCED",
                 // PAINS
-                "PAIN_SCHULTER_LINKS"
+                "PAIN_SHOULDER_LEFT"
             ],
             seasonPhase: {
                 type: "PAUSE",

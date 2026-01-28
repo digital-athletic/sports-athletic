@@ -19,8 +19,8 @@ const p = {
                 // LEVEL
                 "LEVEL_BEGINNER",
                 // PAINS
-                "PAIN_SCHULTER_RECHTS",
-                "PAIN_KNIE_LINKS"
+                "PAIN_SHOULDER_RIGHT",
+                "PAIN_KNEE_LEFT"
             ],
             seasonPhase: {
                 type: "PREPATORY",

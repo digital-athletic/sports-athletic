@@ -1,6 +1,6 @@
 const wFront = [
     {
-        name: "FUSS_RECHTS",
+        name: "FOOT_RIGHT",
         width: 0.1,
         height: 0.2,
         top: 0.7,

@@ -154,7 +154,7 @@ describe("workoutUtils", () => {
     it("should return max value for exercise", () => {
       (getTagValues as jest.Mock).mockImplementation((tags, group) => {
         if (group === TagGroups.EXERCISE_DIRECTION) return ["VERTICAL_PUSH"];
-        if (group === TagGroups.REGION) return ["OBERKOERPER"];
+        if (group === TagGroups.REGION) return ["UPPER_BODY"];
         return [];
       });
 
@@ -164,7 +164,7 @@ describe("workoutUtils", () => {
 
     it("should handle missing exercise direction by using region", () => {
       (getTagValues as jest.Mock).mockImplementation((tags, group) => {
-        if (group === TagGroups.REGION) return ["UNTERKOERPER"];
+        if (group === TagGroups.REGION) return ["LOWER_BODY"];
         return [];
       });
 
@@ -522,7 +522,7 @@ describe("workoutUtils", () => {
     it("should calculate percentage weight based on maxValue when weightFMax is used", () => {
       (getTagValues as jest.Mock).mockImplementation((tags, group) => {
         if (group === TagGroups.EXERCISE_DIRECTION) return ["VERTICAL_PUSH"];
-        if (group === TagGroups.REGION) return ["OBERKOERPER"];
+        if (group === TagGroups.REGION) return ["UPPER_BODY"];
         return [];
       });
 
@@ -539,7 +539,7 @@ describe("workoutUtils", () => {
     it("should round percentage-based weight correctly", () => {
       (getTagValues as jest.Mock).mockImplementation((tags, group) => {
         if (group === TagGroups.EXERCISE_DIRECTION) return ["VERTICAL_PUSH"];
-        if (group === TagGroups.REGION) return ["OBERKOERPER"];
+        if (group === TagGroups.REGION) return ["UPPER_BODY"];
         return [];
       });
 
@@ -566,7 +566,7 @@ describe("workoutUtils", () => {
     it("should handle weightFMax calculation with fractional results requiring rounding", () => {
       (getTagValues as jest.Mock).mockImplementation((tags, group) => {
         if (group === TagGroups.EXERCISE_DIRECTION) return ["VERTICAL_PUSH"];
-        if (group === TagGroups.REGION) return ["OBERKOERPER"];
+        if (group === TagGroups.REGION) return ["UPPER_BODY"];
         return [];
       });
 

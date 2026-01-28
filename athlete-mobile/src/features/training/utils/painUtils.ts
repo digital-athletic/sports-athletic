@@ -1,18 +1,18 @@
 // Pain location constants
 const PAIN = {
-  SCHULTER_LINKS: "SCHULTER_LINKS",
-  SCHULTER_RECHTS: "SCHULTER_RECHTS",
-  ELLBOGEN_LINKS: "ELLBOGEN_LINKS",
-  ELLBOGEN_RECHTS: "ELLBOGEN_RECHTS",
-  HANDGELENK_LINKS: "HANDGELENK_LINKS",
-  HANDGELENK_RECHTS: "HANDGELENK_RECHTS",
-  WIRBELSAEULE: "WIRBELSAEULE",
-  HUEFTE_LINKS: "HUEFTE_LINKS",
-  HUEFTE_RECHTS: "HUEFTE_RECHTS",
-  KNIE_LINKS: "KNIE_LINKS",
-  KNIE_RECHTS: "KNIE_RECHTS",
-  SPRUNGGELENK_LINKS: "SPRUNGGELENK_LINKS",
-  SPRUNGGELENK_RECHTS: "SPRUNGGELENK_RECHTS",
+  SHOULDER_LEFT: "SHOULDER_LEFT",
+  SHOULDER_RIGHT: "SHOULDER_RIGHT",
+  ELBOW_LEFT: "ELBOW_LEFT",
+  ELBOW_RIGHT: "ELBOW_RIGHT",
+  WRIST_LEFT: "WRIST_LEFT",
+  WRIST_RIGHT: "WRIST_RIGHT",
+  SPINE: "SPINE",
+  HIP_LEFT: "HIP_LEFT",
+  HIP_RIGHT: "HIP_RIGHT",
+  KNEE_LEFT: "KNEE_LEFT",
+  KNEE_RIGHT: "KNEE_RIGHT",
+  ANKLE_LEFT: "ANKLE_LEFT",
+  ANKLE_RIGHT: "ANKLE_RIGHT",
 } as const;
 
 // Prevention exercise types
@@ -26,13 +26,13 @@ const PREVENTION = {
 
 // Body part blocks
 const BODY_BLOCKS = {
-  SCHULTER: "SCHULTER",
-  ELLENBOGEN: "ELLENBOGEN",
-  HANDGELENK: "HANDGELENK",
-  WIRBELSAEULE: "WIRBELSAEULE",
-  HUEFTE: "HUEFTE",
-  KNIE: "KNIE",
-  SPRUNGGELENK: "SPRUNGGELENK",
+  SHOULDER: "SHOULDER",
+  ELBOW: "ELBOW",
+  WRIST: "WRIST",
+  SPINE: "SPINE",
+  HIP: "HIP",
+  KNEE: "KNEE",
+  ANKLE: "ANKLE",
 } as const;
 
 /**
@@ -45,27 +45,27 @@ export function getPreventionsFromPains(pains: string[]): string[] {
     let prev: string;
 
     switch (pain) {
-      case PAIN.SCHULTER_LINKS:
-      case PAIN.SCHULTER_RECHTS:
+      case PAIN.SHOULDER_LEFT:
+      case PAIN.SHOULDER_RIGHT:
         prev = PREVENTION.SHOULDER;
         break;
-      case PAIN.ELLBOGEN_LINKS:
-      case PAIN.ELLBOGEN_RECHTS:
-      case PAIN.HANDGELENK_LINKS:
-      case PAIN.HANDGELENK_RECHTS:
+      case PAIN.ELBOW_LEFT:
+      case PAIN.ELBOW_RIGHT:
+      case PAIN.WRIST_LEFT:
+      case PAIN.WRIST_RIGHT:
         prev = PREVENTION.WRIST;
         break;
-      case PAIN.WIRBELSAEULE:
+      case PAIN.SPINE:
         prev = PREVENTION.SPINE;
         break;
-      case PAIN.HUEFTE_LINKS:
-      case PAIN.HUEFTE_RECHTS:
-      case PAIN.KNIE_LINKS:
-      case PAIN.KNIE_RECHTS:
+      case PAIN.HIP_LEFT:
+      case PAIN.HIP_RIGHT:
+      case PAIN.KNEE_LEFT:
+      case PAIN.KNEE_RIGHT:
         prev = PREVENTION.KNEE;
         break;
-      case PAIN.SPRUNGGELENK_LINKS:
-      case PAIN.SPRUNGGELENK_RECHTS:
+      case PAIN.ANKLE_LEFT:
+      case PAIN.ANKLE_RIGHT:
         prev = PREVENTION.ANKLE;
         break;
       default:
@@ -91,35 +91,35 @@ export function getBlocksFromPains(pains: string[]): string[] {
     let block: string;
 
     switch (pain) {
-      case PAIN.SCHULTER_LINKS:
-      case PAIN.SCHULTER_RECHTS:
-        block = BODY_BLOCKS.SCHULTER;
+      case PAIN.SHOULDER_LEFT:
+      case PAIN.SHOULDER_RIGHT:
+        block = BODY_BLOCKS.SHOULDER;
         break;
-      case PAIN.ELLBOGEN_LINKS:
-      case PAIN.ELLBOGEN_RECHTS:
-        block = BODY_BLOCKS.ELLENBOGEN;
+      case PAIN.ELBOW_LEFT:
+      case PAIN.ELBOW_RIGHT:
+        block = BODY_BLOCKS.ELBOW;
         break;
-      case PAIN.HANDGELENK_LINKS:
-      case PAIN.HANDGELENK_RECHTS:
-        block = BODY_BLOCKS.HANDGELENK;
+      case PAIN.WRIST_LEFT:
+      case PAIN.WRIST_RIGHT:
+        block = BODY_BLOCKS.WRIST;
         break;
-      case PAIN.WIRBELSAEULE:
-        block = BODY_BLOCKS.WIRBELSAEULE;
+      case PAIN.SPINE:
+        block = BODY_BLOCKS.SPINE;
         break;
-      case PAIN.HUEFTE_LINKS:
-      case PAIN.HUEFTE_RECHTS:
-        block = BODY_BLOCKS.HUEFTE;
+      case PAIN.HIP_LEFT:
+      case PAIN.HIP_RIGHT:
+        block = BODY_BLOCKS.HIP;
         break;
-      case PAIN.KNIE_LINKS:
-      case PAIN.KNIE_RECHTS:
-        block = BODY_BLOCKS.KNIE;
+      case PAIN.KNEE_LEFT:
+      case PAIN.KNEE_RIGHT:
+        block = BODY_BLOCKS.KNEE;
         break;
-      case PAIN.SPRUNGGELENK_LINKS:
-      case PAIN.SPRUNGGELENK_RECHTS:
-        block = BODY_BLOCKS.SPRUNGGELENK;
+      case PAIN.ANKLE_LEFT:
+      case PAIN.ANKLE_RIGHT:
+        block = BODY_BLOCKS.ANKLE;
         break;
       default:
-        block = BODY_BLOCKS.SCHULTER;
+        block = BODY_BLOCKS.SHOULDER;
         break;
     }
 

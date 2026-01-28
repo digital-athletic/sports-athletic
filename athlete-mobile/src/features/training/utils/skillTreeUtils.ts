@@ -407,23 +407,19 @@ function getRegionsForPreventionSkills(preventionSkills: string[]): string[] {
   for (const skill of preventionSkills) {
     switch (skill) {
       case "PREVANKLE":
-        prevRegions = prevRegions.concat(["SPRUNGGELENK"]);
+        prevRegions = prevRegions.concat(["ANKLE"]);
         break;
       case "PREVKNEE":
-        prevRegions = prevRegions.concat(["KNIE", "HUEFTE", "KNIE_HUEFTE"]);
+        prevRegions = prevRegions.concat(["KNEE", "HIP", "KNEE_HIP"]);
         break;
       case "PREVSHOULDER":
-        prevRegions = prevRegions.concat(["SCHULTER"]);
+        prevRegions = prevRegions.concat(["SHOULDER"]);
         break;
       case "PREVSPINE":
-        prevRegions = prevRegions.concat(["WIRBELSAEULE", "WIRBELSAULE"]);
+        prevRegions = prevRegions.concat(["SPINE"]);
         break;
       case "PREVWRIST":
-        prevRegions = prevRegions.concat([
-          "HANDGELENK",
-          "ELLBOGEN",
-          "HANDGELENK_ELLENBOGEN",
-        ]);
+        prevRegions = prevRegions.concat(["WRIST", "ELBOW", "WRIST_ELBOW"]);
         break;
     }
   }
@@ -457,16 +453,14 @@ function filterBySoreness(
     switch (skill) {
       case "PREVSHOULDER":
       case "PREVWRIST":
-        soreInArea = areas.some((area) => area.toUpperCase() === "OBERKOERPER");
+        soreInArea = areas.some((area) => area.toUpperCase() === "UPPER_BODY");
         break;
       case "PREVSPINE":
         soreInArea = areas.some((area) => area.toUpperCase() === "CORE");
         break;
       case "PREVKNEE":
       case "PREVANKLE":
-        soreInArea = areas.some(
-          (area) => area.toUpperCase() === "UNTERKOERPER",
-        );
+        soreInArea = areas.some((area) => area.toUpperCase() === "LOWER_BODY");
         break;
       default:
         break;
@@ -488,10 +482,10 @@ function filterBySoreness(
     };
   }
 
-  if (skill.includes("CARDIO") && areas.includes("unterkoerper")) {
+  if (skill.includes("CARDIO") && areas.includes("lower_body")) {
     return {
       keep: {},
-      replace: [WorkoutConstants.EXERCISE_DIRECTIONS.UNTERKOERPER],
+      replace: [WorkoutConstants.EXERCISE_DIRECTIONS.LOWER_BODY],
     };
   }
 
@@ -522,70 +516,70 @@ function filterBySoreness(
 }
 
 function getAreasFor(muscles: string[]): string[] {
-  const areaMap: Record<"oberkoerper" | "unterkoerper" | "core", string[]> = {
-    oberkoerper: [
-      "BRUST",
-      "NACKEN",
-      "OBERER_RUECKEN",
-      "SCHULTER_RECHTS",
-      "SCHULTER_LINKS",
-      "SCHULTER_VORNE",
-      "SCHULTER_HINTEN",
-      "SCHULTER",
-      "SCHULTERBLATT_FIXIEREND_HINTEN",
-      "SCHULTERBLATT_FIXIEREND_FRONT",
-      "BIZEPS_RECHTS",
-      "BIZEPS_LINKS",
-      "BIZEPS",
-      "ARMSTRECKER",
-      "ARMSTRECKER_RECHTS",
-      "ARMSTRECKER_LINKS",
-      "HANDGELENKSBEUGER_RECHTS",
-      "HANDGELENKSBEUGER_LINKS",
-      "HANDGELENKSBEUGER",
-      "FINGER_HANDGELENKSBEUGER_RECHTS",
-      "FINGER_HANDGELENKSBEUGER_LINKS",
-      "FINGER_HANDGELENKSBEUGER",
-      "FINGER_HANDGELENKSMUSKULATUR_RECHTS",
-      "FINGER_HANDGELENKSMUSKULATUR_LINKS",
-      "FINGER_HANDGELENKSMUSKULATUR",
-      "GROSSER_RUECKENMUSKEL_LAT_RECHTS",
-      "GROSSER_RUECKENMUSKEL_LAT_LINKS",
-      "GROSSER_RUECKENMUSKEL_LAT",
-      "HANDGELENKSSTRECKER_RECHTS",
-      "HANDGELENKSSTRECKER_LINKS",
-      "HANDGELENKSSTRECKER",
+  const areaMap: Record<"upper_body" | "lower_body" | "core", string[]> = {
+    upper_body: [
+      "CHEST",
+      "NECK",
+      "UPPER_BACK",
+      "SHOULDER_RIGHT",
+      "SHOULDER_LEFT",
+      "SHOULDER_FRONT",
+      "SHOULDER_REAR",
+      "SHOULDER",
+      "SCAPULAR_STABILIZER_REAR",
+      "SCAPULAR_STABILIZER_FRONT",
+      "BICEPS_RIGHT",
+      "BICEPS_LEFT",
+      "BICEPS",
+      "TRICEPS",
+      "TRICEPS_RIGHT",
+      "TRICEPS_LEFT",
+      "WRIST_FLEXOR_RIGHT",
+      "WRIST_FLEXOR_LEFT",
+      "WRIST_FLEXOR",
+      "FINGER_WRIST_FLEXOR_RIGHT",
+      "FINGER_WRIST_FLEXOR_LEFT",
+      "FINGER_WRIST_FLEXOR",
+      "FINGER_WRIST_MUSCLES_RIGHT",
+      "FINGER_WRIST_MUSCLES_LEFT",
+      "FINGER_WRIST_MUSCLES",
+      "LATISSIMUS_RIGHT",
+      "LATISSIMUS_LEFT",
+      "LATISSIMUS",
+      "WRIST_EXTENSOR_RIGHT",
+      "WRIST_EXTENSOR_LEFT",
+      "WRIST_EXTENSOR",
     ],
-    unterkoerper: [
-      "INNERE_OBERSCHENKELMUSKULATUR",
-      "OBERSCHENKELVORDERSEITE_LINKS",
-      "OBERSCHENKELVORDERSEITE_RECHTS",
-      "OBERSCHENKELVORDERSEITE",
-      "AEUSSERE_OBERSCHENKELMUSKULATUR_RECHTS",
-      "AEUSSERE_OBERSCHENKELMUSKULATUR_LINKS",
-      "AEUSSERE_OBERSCHENKELMUSKULATUR",
-      "WADE_RECHTS",
-      "WADE_LINKS",
-      "WADE",
-      "WADEN",
-      "OBERSCHENKEL_HINTEN_RECHTS",
-      "OBERSCHENKEL_HINTEN_LINKS",
-      "OBERSCHENKEL_HINTEN",
-      "INNERER_OBERSCHENKEL_HINTEN_RECHTS",
-      "INNERER_OBERSCHENKEL_HINTEN_LINKS",
-      "INNERER_OBERSCHENKEL",
-      "AEUSSERER_OBERSCHENKEL",
-      "HINTERER_OBERSCHENKEL",
-      "SCHIENBEIN",
-      "SCHIENBEIN_LI",
-      "SCHIENBEIN_RE",
-      "SPRUNGGELENK",
-      "GESAESS",
-      "HUEFT_BEUGER",
-      "HUEFT_INNEN_ROTATOR",
-      "HUEFT_AUSSEN_ROTATOR",
+    lower_body: [
+      "ADDUCTORS",
+      "QUADRICEPS_LEFT",
+      "QUADRICEPS_RIGHT",
+      "QUADRICEPS",
+      "ABDUCTORS_RIGHT",
+      "ABDUCTORS_LEFT",
+      "ABDUCTORS",
+      "CALF_RIGHT",
+      "CALF_LEFT",
+      "CALF",
+      "CALVES",
+      "HAMSTRINGS_RIGHT",
+      "HAMSTRINGS_LEFT",
+      "HAMSTRINGS",
+      "INNER_THIGH_REAR_RIGHT",
+      "INNER_THIGH_REAR_LEFT",
+      "INNER_THIGH",
+      "OUTER_THIGH",
+      "HAMSTRINGS",
+      "SHIN",
+      "SHIN_LEFT",
+      "SHIN_RIGHT",
+      "ANKLE",
+      "GLUTES",
+      "HIP_FLEXOR",
+      "HIP_INTERNAL_ROTATOR",
+      "HIP_EXTERNAL_ROTATOR",
     ],
-    core: ["GERADE_BAUCHMUSKELN", "SEITLICHE_BAUCHMUSKELN", "UNTERER_RUECKEN"],
+    core: ["RECTUS_ABDOMINIS", "OBLIQUES", "LOWER_BACK"],
   };
 
   const normalized = muscles.map((muscle) => muscle.toUpperCase());

@@ -1,6 +1,6 @@
 const kineticMuscles = [
     {
-        name: "BRUST",
+        name: "CHEST",
         width: 0.24,
         height: 0.08,
         top: 0.21,
@@ -11,7 +11,7 @@ const kineticMuscles = [
         secondaryImage: require("../../img/bodyparts/muscle_m_front/brust.png")
     },
     {
-        name: "WADEN",
+        name: "CALVES",
         width: 0.13,
         height: 0.2,
         top: 0.67,
@@ -22,7 +22,7 @@ const kineticMuscles = [
         secondaryImage: require("../../img/bodyparts/muscle_m_front/waden.png")
     },
     {
-        name: "SCHIENBEIN",
+        name: "SHIN",
         width: 0.12,
         height: 0.17,
         top: 0.684,
@@ -32,7 +32,7 @@ const kineticMuscles = [
         secondaryImage: require("../../img/bodyparts/muscle_m_front/schienbein.png")
     },
     {
-        name: "OBERSCHENKELVORDERSEITE_RECHTS",
+        name: "QUADRICEPS_RIGHT",
         width: 0.08,
         height: 0.15,
         top: 0.47,
@@ -43,7 +43,7 @@ const kineticMuscles = [
         secondaryImage: require("../../img/bodyparts/muscle_m_front/oberschenkelvorderseite_re.png")
     },
     {
-        name: "AEUSSERE_OBERSCHENKELMUSKULATUR_RECHTS",
+        name: "ABDUCTORS_RIGHT",
         width: 0.06,
         height: 0.175,
         top: 0.441,
@@ -54,7 +54,7 @@ const kineticMuscles = [
         secondaryImage: require("../../img/bodyparts/muscle_m_front/aeussereOberschenkelmuskulatur_re.png")
     },
     {
-        name: "INNERE_OBERSCHENKELMUSKULATUR",
+        name: "ADDUCTORS",
         width: 0.09,
         height: 0.14,
         top: 0.475,
@@ -65,7 +65,7 @@ const kineticMuscles = [
         secondaryImage: require("../../img/bodyparts/muscle_m_front/innereOberschenkelmuskulatur.png")
     },
     {
-        name: "OBERSCHENKELVORDERSEITE_LINKS",
+        name: "QUADRICEPS_LEFT",
         width: 0.055,
         height: 0.19,
         top: 0.433,
@@ -75,7 +75,7 @@ const kineticMuscles = [
         secondaryImage: require("../../img/bodyparts/muscle_m_front/oberschenkelvorderseite_li.png")
     },
     {
-        name: "GERADE_BAUCHMUSKELN",
+        name: "RECTUS_ABDOMINIS",
         width: 0.1,
         height: 0.16,
         top: 0.3,
@@ -85,7 +85,7 @@ const kineticMuscles = [
         secondaryImage: require("../../img/bodyparts/muscle_m_front/geradeBauchmuskeln.png")
     },
     {
-        name: "SEITLICHE_BAUCHMUSKELN",
+        name: "OBLIQUES",
         width: 0.02,
         height: 0.11,
         top: 0.29,
@@ -96,7 +96,7 @@ const kineticMuscles = [
         secondaryImage: require("../../img/bodyparts/muscle_m_front/seitlicheBauchmuskeln.png")
     },
     {
-        name: "SEITLICHE_BAUCHMUSKELN",
+        name: "OBLIQUES",
         width: 0.06,
         height: 0.1,
         top: 0.305,
@@ -105,7 +105,7 @@ const kineticMuscles = [
         backgroundColor: "rgba(0,0,0,0)"
     },
     {
-        name: "NACKEN",
+        name: "NECK",
         width: 0.1,
         height: 0.07,
         top: 0.123,
@@ -116,7 +116,7 @@ const kineticMuscles = [
         secondaryImage: require("../../img/bodyparts/muscle_m_front/nacken.png")
     },
     {
-        name: "SCHULTER_RECHTS",
+        name: "SHOULDER_RIGHT",
         width: 0.06,
         height: 0.09,
         top: 0.18,
@@ -127,7 +127,7 @@ const kineticMuscles = [
         secondaryImage: require("../../img/bodyparts/muscle_m_front/schulter_re.png")
     },
     {
-        name: "SCHULTER_LINKS",
+        name: "SHOULDER_LEFT",
         width: 0.06,
         height: 0.09,
         top: 0.16,
@@ -138,7 +138,7 @@ const kineticMuscles = [
         secondaryImage: require("../../img/bodyparts/muscle_m_front/schulter_li.png")
     },
     {
-        name: "BIZEPS_RECHTS",
+        name: "BICEPS_RIGHT",
         width: 0.06,
         height: 0.07,
         top: 0.27,
@@ -149,7 +149,7 @@ const kineticMuscles = [
         secondaryImage: require("../../img/bodyparts/muscle_m_front/bizeps_re.png")
     },
     {
-        name: "BIZEPS_LINKS",
+        name: "BICEPS_LEFT",
         width: 0.06,
         height: 0.07,
         top: 0.257,
@@ -160,7 +160,7 @@ const kineticMuscles = [
         secondaryImage: require("../../img/bodyparts/muscle_m_front/bizeps_li.png")
     },
     {
-        name: "HANDGELENKSBEUGER_RECHTS",
+        name: "WRIST_FLEXOR_RIGHT",
         width: 0.06,
         height: 0.11,
         top: 0.35,
@@ -171,7 +171,7 @@ const kineticMuscles = [
         secondaryImage: require("../../img/bodyparts/muscle_m_front/handgelenksbeuger_re.png")
     },
     {
-        name: "FINGER_HANDGELENKSBEUGER_LINKS",
+        name: "FINGER_WRIST_FLEXOR_LEFT",
         width: 0.06,
         height: 0.11,
         top: 0.34,
@@ -182,7 +182,7 @@ const kineticMuscles = [
         secondaryImage: require("../../img/bodyparts/muscle_m_front/handgelenksbeuger_li.png")
     },
     {
-        name: "FINGER_HANDGELENKSMUSKULATUR_RECHTS",
+        name: "FINGER_WRIST_MUSCLES_RIGHT",
         width: 0.06,
         height: 0.04,
         top: 0.48,
@@ -193,7 +193,7 @@ const kineticMuscles = [
         secondaryImage: require("../../img/bodyparts/muscle_m_front/fingerHandgelenksmuskulatur_re.png")
     },
     {
-        name: "FINGER_HANDGELENKSMUSKULATUR_LINKS",
+        name: "FINGER_WRIST_MUSCLES_LEFT",
         width: 0.06,
         height: 0.04,
         top: 0.46,

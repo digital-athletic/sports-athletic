@@ -19,7 +19,7 @@ const p = {
                 // LEVEL
                 "LEVEL_BEGINNER",
                 // PAINS
-                "PAIN_ELLBOGEN_RECHTS"
+                "PAIN_ELBOW_RIGHT"
             ],
             seasonPhase: {
                 type: "PAUSE",

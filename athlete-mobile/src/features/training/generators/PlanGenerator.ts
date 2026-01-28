@@ -143,11 +143,11 @@ import MaxTimeWUSPEZIAL from "../../../../assets/data/generator/maxTime/WUSPEZIA
 
 // Directions
 
-import DirectionGANZKOERPER from "../../../../assets/data/generator/directions/GANZKOERPER";
-import DirectionOBERKOERPER from "../../../../assets/data/generator/directions/OBERKOERPER";
-import DirectionRUMPF from "../../../../assets/data/generator/directions/RUMPF";
-import DirectionUNTERKOERPER from "../../../../assets/data/generator/directions/UNTERKOERPER";
-import DirectionUNTERKOERPER_GKS from "../../../../assets/data/generator/directions/UNTERKOERPER_GKS";
+import DirectionFULL_BODY from "../../../../assets/data/generator/directions/FULL_BODY";
+import DirectionUPPER_BODY from "../../../../assets/data/generator/directions/UPPER_BODY";
+import DirectionCORE from "../../../../assets/data/generator/directions/CORE";
+import DirectionLOWER_BODY from "../../../../assets/data/generator/directions/LOWER_BODY";
+import DirectionLOWER_BODY_GKS from "../../../../assets/data/generator/directions/LOWER_BODY_GKS";
 
 export default class PlanGenerator {
   static DEBUG = false;
@@ -658,32 +658,32 @@ export default class PlanGenerator {
 
         const exercises: Record<string, ExerciseBranchType[]> = {};
 
-        const oberkoerperDirections = cloneWithValidation(
-          DirectionOBERKOERPER,
+        const upperBodyDirections = cloneWithValidation(
+          DirectionUPPER_BODY,
           DirectionsMapSchema,
-          "DirectionOBERKOERPER",
+          "DirectionUPPER_BODY",
         );
         // "FRONT" will be added as pair with "BACK" while for side and rotation there will always be two
-        const rumpfDirections = cloneWithValidation(
-          DirectionRUMPF,
+        const coreDirections = cloneWithValidation(
+          DirectionCORE,
           DirectionsMapSchema,
-          "DirectionRUMPF",
+          "DirectionCORE",
         );
-        const ganzkoerperDirections = cloneWithValidation(
-          DirectionGANZKOERPER,
+        const fullBodyDirections = cloneWithValidation(
+          DirectionFULL_BODY,
           DirectionsMapSchema,
-          "DirectionGANZKOERPER",
+          "DirectionFULL_BODY",
         );
-        let unterkoerperDirections = cloneWithValidation(
-          DirectionUNTERKOERPER,
+        let lowerBodyDirections = cloneWithValidation(
+          DirectionLOWER_BODY,
           DirectionsMapSchema,
-          "DirectionUNTERKOERPER",
+          "DirectionLOWER_BODY",
         );
         if (
           Object.keys(tagsPerSkill).includes("GKS") &&
           tagsPerSkill["GKS"].reduce((result, entry) => {
-            // result is already true, or REGION_GANZKOERPER is part of skill tags
-            return result || entry.tags.includes("REGION_GANZKOERPER");
+            // result is already true, or REGION_FULL_BODY is part of skill tags
+            return result || entry.tags.includes("REGION_FULL_BODY");
           }, false)
         ) {
           if (PlanGenerator.DEBUG) {
@@ -692,10 +692,10 @@ export default class PlanGenerator {
               tagsPerSkill["GKS"],
             );
           }
-          unterkoerperDirections = cloneWithValidation(
-            DirectionUNTERKOERPER_GKS,
+          lowerBodyDirections = cloneWithValidation(
+            DirectionLOWER_BODY_GKS,
             DirectionsMapSchema,
-            "DirectionUNTERKOERPER_GKS",
+            "DirectionLOWER_BODY_GKS",
           );
         }
 
@@ -711,10 +711,10 @@ export default class PlanGenerator {
             this.chooseByTags(
               skill,
               tagsPerSkill[skill],
-              oberkoerperDirections,
-              unterkoerperDirections,
-              ganzkoerperDirections,
-              rumpfDirections,
+              upperBodyDirections,
+              lowerBodyDirections,
+              fullBodyDirections,
+              coreDirections,
               equipment,
               user,
               place,
@@ -1358,10 +1358,10 @@ export default class PlanGenerator {
   static getBranchesForWorkout = (
     skill: string,
     weightedTag: RegionTagEntry,
-    oberkoerperDirections: DirectionsMap,
-    unterkoerperDirections: DirectionsMap,
-    ganzkoerperDirections: DirectionsMap,
-    rumpfDirections: DirectionsMap,
+    upperBodyDirections: DirectionsMap,
+    lowerBodyDirections: DirectionsMap,
+    fullBodyDirections: DirectionsMap,
+    coreDirections: DirectionsMap,
     equipment: string[],
     workout: ExerciseBranchType[],
     user: UserType,
@@ -1481,34 +1481,20 @@ export default class PlanGenerator {
         const lastKey = Math.max(...Object.keys(dir).map(Number));
         return dir[lastKey];
       };
-      if (regionTag === "OBERKOERPER") {
-        bigMuscles = ["BRUST", "GROSSER_RUECKENMUSKEL_LAT"];
-        exerciseDirection = getDirectionsByLength(
-          oberkoerperDirections,
-          length,
-        );
-      } else if (regionTag === "UNTERKOERPER") {
-        bigMuscles = ["GESAESS", "OBERSCHENKELVORDERSEITE"];
-        //choose entry of unterkoerper directions where index is number of unterkoerper exercises (for that skill)
-        exerciseDirection = getDirectionsByLength(
-          unterkoerperDirections,
-          length,
-        );
-      } else if (regionTag === "RUMPF" || regionTag === "CORE") {
+      if (regionTag === "UPPER_BODY") {
+        bigMuscles = ["CHEST", "LATISSIMUS"];
+        exerciseDirection = getDirectionsByLength(upperBodyDirections, length);
+      } else if (regionTag === "LOWER_BODY") {
+        bigMuscles = ["GLUTES", "QUADRICEPS"];
+        //choose entry of lower_body directions where index is number of lower_body exercises (for that skill)
+        exerciseDirection = getDirectionsByLength(lowerBodyDirections, length);
+      } else if (regionTag === "CORE" || regionTag === "CORE") {
         //shuffle the order
-        exerciseDirection = getDirectionsByLength(rumpfDirections, length);
+        exerciseDirection = getDirectionsByLength(coreDirections, length);
         regionTag = "CORE";
-      } else if (regionTag === "GANZKOERPER") {
-        bigMuscles = [
-          "GESAESS",
-          "OBERSCHENKELVORDERSEITE",
-          "BRUST",
-          "GROSSER_RUECKENMUSKEL_LAT",
-        ];
-        exerciseDirection = getDirectionsByLength(
-          ganzkoerperDirections,
-          length,
-        );
+      } else if (regionTag === "FULL_BODY") {
+        bigMuscles = ["GLUTES", "QUADRICEPS", "CHEST", "LATISSIMUS"];
+        exerciseDirection = getDirectionsByLength(fullBodyDirections, length);
       } else {
         if (PlanGenerator.DEBUG)
           console.log("No exerciseDirection found for tag " + regionTag);
@@ -1530,33 +1516,33 @@ export default class PlanGenerator {
 
     let notChosenBigMuscles = Array.from(bigMuscles);
     let smallMuscles = [
-      "NACKEN_HINTEN",
-      "NACKEN_VORNE",
-      "NACKEN_SEITE",
-      "SCHULTER",
-      "SCHULTER_VORNE",
-      "SCHULTER_HINTEN",
-      "SCHULTER_SEITE",
-      "BIZEPS",
-      "ARMSTRECKER",
-      "HANDGELENKSBEUGER",
-      "HANDGELENKSSTRECKER",
-      "FINGER_HANDGELENKSMUSKULATUR",
-      "NACKEN",
-      "OBERER_RUECKEN",
-      "SCHULTERBLATT_FIXIEREND_HINTEN",
-      "SCHULTERBLATT_FIXIEREND_FRONT",
-      "UNTERER_RUECKEN",
-      "GERADE_BAUCHMUSKELN",
-      "SEITLICHE_BAUCHMUSKELN",
-      "HUEFT_BEUGER",
-      "HUEFT_INNEN_ROTATOR",
-      "HUEFT_AUSSEN_ROTATOR",
-      "INNERER_OBERSCHENKEL",
-      "AEUSSERER_OBERSCHENKEL",
-      "WADE",
-      "SPRUNGGELENK",
-      "SCHIENBEIN",
+      "NECK_REAR",
+      "NECK_FRONT",
+      "NECK_LATERAL",
+      "SHOULDER",
+      "SHOULDER_FRONT",
+      "SHOULDER_REAR",
+      "SHOULDER_LATERAL",
+      "BICEPS",
+      "TRICEPS",
+      "WRIST_FLEXOR",
+      "WRIST_EXTENSOR",
+      "FINGER_WRIST_MUSCLES",
+      "NECK",
+      "UPPER_BACK",
+      "SCAPULAR_STABILIZER_REAR",
+      "SCAPULAR_STABILIZER_FRONT",
+      "LOWER_BACK",
+      "RECTUS_ABDOMINIS",
+      "OBLIQUES",
+      "HIP_FLEXOR",
+      "HIP_INTERNAL_ROTATOR",
+      "HIP_EXTERNAL_ROTATOR",
+      "INNER_THIGH",
+      "OUTER_THIGH",
+      "CALF",
+      "ANKLE",
+      "SHIN",
     ];
 
     let possibleExercises = [...Object.keys(skillTree)];
@@ -1776,9 +1762,9 @@ export default class PlanGenerator {
         sideFiltered = directionFiltered;
       }
 
-      // no muscle filtering for rumpf / other than ober/unterkoerper -> no different muscle groups!?
+      // no muscle filtering for core / other than ober/lower_body -> no different muscle groups!?
       let muscleFiltered = sideFiltered;
-      if (regionTag !== "RUMPF" && regionTag !== "CORE") {
+      if (regionTag !== "CORE" && regionTag !== "CORE") {
         // not yet chosen big muscles
         muscleFiltered = sideFiltered.filter((possEx) =>
           notChosenBigMuscles.some((tag) =>
@@ -1811,7 +1797,7 @@ export default class PlanGenerator {
 
       // prefer complex exercises only for non core regions
       let involvementFiltered: typeof possibleBranches = [];
-      if (regionTag !== "RUMPF" && regionTag !== "CORE") {
+      if (regionTag !== "CORE" && regionTag !== "CORE") {
         // use complex with 70%, isolated with 30%
         let involvementToUse = Math.random() > 0.3 ? "COMPLEX" : "ISOLATED";
         involvementFiltered = muscleFiltered.filter((possEx) => {
@@ -1976,10 +1962,10 @@ export default class PlanGenerator {
   static chooseByTags = (
     skill: string,
     weightedTags: readonly RegionTagEntry[],
-    oberkoerperDirections: DirectionsMap,
-    unterkoerperDirections: DirectionsMap,
-    ganzkoerperDirections: DirectionsMap,
-    rumpfDirections: DirectionsMap,
+    upperBodyDirections: DirectionsMap,
+    lowerBodyDirections: DirectionsMap,
+    fullBodyDirections: DirectionsMap,
+    coreDirections: DirectionsMap,
     equipment: string[],
     user: UserType,
     place: string,
@@ -2002,10 +1988,10 @@ export default class PlanGenerator {
       const branches: ExerciseBranchType[] = this.getBranchesForWorkout(
         skill,
         weightedTags[i],
-        oberkoerperDirections,
-        unterkoerperDirections,
-        ganzkoerperDirections,
-        rumpfDirections,
+        upperBodyDirections,
+        lowerBodyDirections,
+        fullBodyDirections,
+        coreDirections,
         equipment,
         currentWorkout,
         user,

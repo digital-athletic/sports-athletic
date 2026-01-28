@@ -27,7 +27,7 @@ const p = {
                 // LEVEL
                 "LEVEL_ADVANCED",
                 // PAINS
-                "PAIN_WIRBELSAEULE"
+                "PAIN_SPINE"
             ],
             seasonPhase: {
                 type: "COMPETITION",

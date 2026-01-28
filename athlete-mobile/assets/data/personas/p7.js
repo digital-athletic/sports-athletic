@@ -19,8 +19,8 @@ const p = {
                 // LEVEL
                 "LEVEL_PROFESSIONAL",
                 // PAINS
-                "PAIN_KNIE_LINKS",
-                "PAIN_SPRUNGGELENK_LINKS"
+                "PAIN_KNEE_LEFT",
+                "PAIN_ANKLE_LEFT"
             ],
             seasonPhase: {
                 type: "PREPATORY",

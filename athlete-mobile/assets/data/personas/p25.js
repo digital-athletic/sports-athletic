@@ -23,7 +23,7 @@ const p = {
                 // LEVEL
                 "LEVEL_PROFESSIONAL",
                 // PAINS
-                "PAIN_HUEFTE_RECHTS"
+                "PAIN_HIP_RIGHT"
             ],
             seasonPhase: {
                 type: "PREPATORY",

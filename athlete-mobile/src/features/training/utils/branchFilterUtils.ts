@@ -151,7 +151,7 @@ export function filterBySoreness<T extends Branch>(
         case "PREVSHOULDER":
         case "PREVWRIST":
           hasSorenessInArea = areas.some(
-            (a) => a.toUpperCase() === "OBERKOERPER",
+            (a) => a.toUpperCase() === "UPPER_BODY",
           );
           break;
         case "PREVSPINE":
@@ -160,7 +160,7 @@ export function filterBySoreness<T extends Branch>(
         case "PREVKNEE":
         case "PREVANKLE":
           hasSorenessInArea = areas.some(
-            (a) => a.toUpperCase() === "UNTERKOERPER",
+            (a) => a.toUpperCase() === "LOWER_BODY",
           );
           break;
         default:
@@ -183,10 +183,10 @@ export function filterBySoreness<T extends Branch>(
       };
     }
 
-    if (skill.includes("CARDIO") && areas.includes("unterkoerper")) {
+    if (skill.includes("CARDIO") && areas.includes("lower_body")) {
       return {
         keep: {},
-        replace: ["UNTERKOERPER"],
+        replace: ["LOWER_BODY"],
       };
     }
 

@@ -1,6 +1,6 @@
 const muscleMBack = [
     {
-        name: "WADE_RECHTS",
+        name: "CALF_RIGHT",
         width: 0.13,
         height: 0.2,
         top: 0.69,
@@ -11,7 +11,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/wade_re.png")
     },
     {
-        name: "WADE_LINKS",
+        name: "CALF_LEFT",
         width: 0.13,
         height: 0.2,
         top: 0.69,
@@ -21,7 +21,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/wade_li.png")
     },
     {
-        name: "OBERSCHENKEL_HINTEN_RECHTS",
+        name: "HAMSTRINGS_RIGHT",
         width: 0.11,
         height: 0.15,
         top: 0.54,
@@ -32,7 +32,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/oberschenkel_re.png")
     },
     {
-        name: "OBERSCHENKEL_HINTEN_LINKS",
+        name: "HAMSTRINGS_LEFT",
         width: 0.09,
         height: 0.15,
         top: 0.53,
@@ -42,7 +42,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/oberschenkel_li.png")
     },
     {
-        name: "INNERER_OBERSCHENKEL_HINTEN_LINKS",
+        name: "INNER_THIGH_REAR_LEFT",
         width: 0.05,
         height: 0.12,
         top: 0.54,
@@ -53,7 +53,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/innererOberschenkel_hinten_li.png")
     },
     {
-        name: "AEUSSERER_OBERSCHENKEL_HINTEN_RECHTS",
+        name: "OUTER_THIGH_REAR_RIGHT",
         width: 0.06,
         height: 0.19,
         top: 0.44,
@@ -64,7 +64,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/aeussererOberschenkel_hinten_re.png")
     },
     {
-        name: "GESAESS",
+        name: "GLUTES",
         width: 0.21,
         height: 0.09,
         top: 0.44,
@@ -75,7 +75,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/gesaess.png")
     },
     {
-        name: "UNTERER_RUECKEN",
+        name: "LOWER_BACK",
         width: 0.12,
         height: 0.06,
         top: 0.363,
@@ -87,7 +87,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/untererRuecken.png")
     },
     {
-        name: "GROSSER_RUECKENMUSKEL_LAT_LINKS",
+        name: "LATISSIMUS_LEFT",
         width: 0.08,
         height: 0.08,
         top: 0.29,
@@ -98,7 +98,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/grosserRueckenmuskel_lat.png")
     },
     {
-        name: "GROSSER_RUECKENMUSKEL_LAT_RECHTS",
+        name: "LATISSIMUS_RIGHT",
         width: 0.075,
         height: 0.07,
         top: 0.277,
@@ -109,7 +109,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/grosserRueckenmuskel_lat.png")
     },
     {
-        name: "OBERER_RUECKEN",
+        name: "UPPER_BACK",
         width: 0.197,
         height: 0.075,
         top: 0.203,
@@ -120,7 +120,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/obererRuecken.png")
     },
     {
-        name: "OBERER_RUECKEN",
+        name: "UPPER_BACK",
         width: 0.079,
         height: 0.04,
         top: 0.275,
@@ -129,7 +129,7 @@ const muscleMBack = [
         backgroundColor: "rgba(0,0,0,0)"
     },
     {
-        name: "NACKEN",
+        name: "NECK",
         width: 0.15,
         height: 0.08,
         top: 0.12,
@@ -140,7 +140,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/nacken.png")
     },
     {
-        name: "SCHULTER_LINKS",
+        name: "SHOULDER_LEFT",
         width: 0.09,
         height: 0.03,
         top: 0.21,
@@ -151,7 +151,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/schulter_li.png")
     },
     {
-        name: "SCHULTER_RECHTS",
+        name: "SHOULDER_RIGHT",
         width: 0.09,
         height: 0.03,
         top: 0.205,
@@ -162,7 +162,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/schulter_re.png")
     },
     {
-        name: "ARMSTRECKER_LINKS",
+        name: "TRICEPS_LEFT",
         width: 0.06,
         height: 0.09,
         top: 0.26,
@@ -173,7 +173,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/armstrecker_li.png")
     },
     {
-        name: "ARMSTRECKER_RECHTS",
+        name: "TRICEPS_RIGHT",
         width: 0.06,
         height: 0.09,
         top: 0.26,
@@ -184,7 +184,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/armstrecker_re.png")
     },
     {
-        name: "HANDGELENKSSTRECKER_LINKS",
+        name: "WRIST_EXTENSOR_LEFT",
         width: 0.06,
         height: 0.1,
         top: 0.36,
@@ -195,7 +195,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/handgelenksstrecker_li.png")
     },
     {
-        name: "HANDGELENKSSTRECKER_RECHTS",
+        name: "WRIST_EXTENSOR_RIGHT",
         width: 0.06,
         height: 0.1,
         top: 0.35,
@@ -206,7 +206,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/handgelenksstrecker_re.png")
     },
     {
-        name: "FINGER_HANDGELENKSMUSKULATUR_LINKS",
+        name: "FINGER_WRIST_MUSCLES_LEFT",
         width: 0.06,
         height: 0.04,
         top: 0.48,
@@ -217,7 +217,7 @@ const muscleMBack = [
         secondaryImage: require("../../img/bodyparts/muscle_m_back/finger_handgelenksmuskulatur_li.png")
     },
     {
-        name: "FINGER_HANDGELENKSMUSKULATUR_RECHTS",
+        name: "FINGER_WRIST_MUSCLES_RIGHT",
         width: 0.06,
         height: 0.04,
         top: 0.49,

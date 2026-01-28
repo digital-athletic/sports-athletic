@@ -23,7 +23,7 @@ const p = {
                 // LEVEL
                 "LEVEL_ADVANCED",
                 // PAINS
-                "PAIN_ELLBOGEN_LINKS",
+                "PAIN_ELBOW_LEFT",
                 "PAIN_SPINE"
             ],
             seasonPhase: {

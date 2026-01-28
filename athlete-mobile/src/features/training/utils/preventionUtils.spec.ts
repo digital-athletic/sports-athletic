@@ -4,31 +4,27 @@ describe("preventionUtils", () => {
   describe("getRegionsForPreventionSkills", () => {
     it("returns ankle regions for PREVANKLE", () => {
       const result = getRegionsForPreventionSkills(["PREVANKLE"]);
-      expect(result).toEqual(["SPRUNGGELENK"]);
+      expect(result).toEqual(["ANKLE"]);
     });
 
     it("returns knee and hip regions for PREVKNEE", () => {
       const result = getRegionsForPreventionSkills(["PREVKNEE"]);
-      expect(result).toEqual(["KNIE", "HUEFTE", "KNIE_HUEFTE"]);
+      expect(result).toEqual(["KNEE", "HIP", "KNEE_HIP"]);
     });
 
     it("returns shoulder region for PREVSHOULDER", () => {
       const result = getRegionsForPreventionSkills(["PREVSHOULDER"]);
-      expect(result).toEqual(["SCHULTER"]);
+      expect(result).toEqual(["SHOULDER"]);
     });
 
     it("returns spine regions for PREVSPINE", () => {
       const result = getRegionsForPreventionSkills(["PREVSPINE"]);
-      expect(result).toEqual(["WIRBELSAEULE", "WIRBELSAULE"]);
+      expect(result).toEqual(["SPINE"]);
     });
 
     it("returns wrist and elbow regions for PREVWRIST", () => {
       const result = getRegionsForPreventionSkills(["PREVWRIST"]);
-      expect(result).toEqual([
-        "HANDGELENK",
-        "ELLBOGEN",
-        "HANDGELENK_ELLENBOGEN",
-      ]);
+      expect(result).toEqual(["WRIST", "ELBOW", "WRIST_ELBOW"]);
     });
 
     it("returns multiple regions for multiple prevention skills", () => {
@@ -36,7 +32,7 @@ describe("preventionUtils", () => {
         "PREVANKLE",
         "PREVSHOULDER",
       ]);
-      expect(result).toEqual(["SPRUNGGELENK", "SCHULTER"]);
+      expect(result).toEqual(["ANKLE", "SHOULDER"]);
     });
 
     it("returns empty array for empty input", () => {
@@ -46,7 +42,7 @@ describe("preventionUtils", () => {
 
     it("ignores unknown prevention skills", () => {
       const result = getRegionsForPreventionSkills(["UNKNOWN", "PREVKNEE"]);
-      expect(result).toEqual(["KNIE", "HUEFTE", "KNIE_HUEFTE"]);
+      expect(result).toEqual(["KNEE", "HIP", "KNEE_HIP"]);
     });
 
     it("handles all prevention skills at once", () => {
@@ -57,11 +53,11 @@ describe("preventionUtils", () => {
         "PREVSPINE",
         "PREVWRIST",
       ]);
-      expect(result).toContain("SPRUNGGELENK");
-      expect(result).toContain("KNIE");
-      expect(result).toContain("SCHULTER");
-      expect(result).toContain("WIRBELSAEULE");
-      expect(result).toContain("HANDGELENK");
+      expect(result).toContain("ANKLE");
+      expect(result).toContain("KNEE");
+      expect(result).toContain("SHOULDER");
+      expect(result).toContain("SPINE");
+      expect(result).toContain("WRIST");
     });
   });
 });

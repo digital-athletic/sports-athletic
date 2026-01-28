@@ -7,7 +7,7 @@
  * Used in training generation to target specific prevention areas.
  *
  * @param preventionSkills - Array of prevention skill strings (e.g., ["PREVKNEE", "PREVANKLE"])
- * @returns Array of region strings (e.g., ["KNIE", "HUEFTE", "SPRUNGGELENK"])
+ * @returns Array of region strings (e.g., ["KNEE", "HIP", "ANKLE"])
  */
 export function getRegionsForPreventionSkills(
   preventionSkills: string[],
@@ -17,19 +17,19 @@ export function getRegionsForPreventionSkills(
   for (const skill of preventionSkills) {
     switch (skill) {
       case "PREVANKLE":
-        prevRegions.push("SPRUNGGELENK");
+        prevRegions.push("ANKLE");
         break;
       case "PREVKNEE":
-        prevRegions.push("KNIE", "HUEFTE", "KNIE_HUEFTE");
+        prevRegions.push("KNEE", "HIP", "KNEE_HIP");
         break;
       case "PREVSHOULDER":
-        prevRegions.push("SCHULTER");
+        prevRegions.push("SHOULDER");
         break;
       case "PREVSPINE":
-        prevRegions.push("WIRBELSAEULE", "WIRBELSAULE");
+        prevRegions.push("SPINE");
         break;
       case "PREVWRIST":
-        prevRegions.push("HANDGELENK", "ELLBOGEN", "HANDGELENK_ELLENBOGEN");
+        prevRegions.push("WRIST", "ELBOW", "WRIST_ELBOW");
         break;
       default:
         break;

@@ -19,9 +19,9 @@ const p = {
                 // LEVEL
                 "LEVEL_PROFESSIONAL",
                 // PAINS
-                "PAIN_SCHULTER_LINKS",
-                "PAIN_KNIE_RECHTS",
-                "PAIN_SPRUNGGELENK_RECHTS"
+                "PAIN_SHOULDER_LEFT",
+                "PAIN_KNEE_RIGHT",
+                "PAIN_ANKLE_RIGHT"
             ],
             seasonPhase: {
                 type: "COMPETITION",

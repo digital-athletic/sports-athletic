@@ -37,7 +37,7 @@ describe("TrainingGenerator", () => {
     level: { m: 1, w: 1 },
     tags: [
       "SKILL_WU",
-      "REGION_OBERKOERPER",
+      "REGION_UPPER_BODY",
       "EQUIPMENT_NONE",
       "SIDE_BOTH",
       "MUSCLEINVOLVEMENT_COMPOUND",
@@ -1163,7 +1163,7 @@ describe("TrainingGenerator", () => {
           "SKILL_SA",
           "MUSCLEINVOLVEMENT_COMPOUND",
           "SIDE_BOTH",
-          "MUSCLE_BRUST",
+          "MUSCLE_CHEST",
         ],
         exerciseId: "1",
       },
@@ -1173,7 +1173,7 @@ describe("TrainingGenerator", () => {
           "SKILL_SA",
           "MUSCLEINVOLVEMENT_ISOLATED",
           "SIDE_BOTH",
-          "MUSCLE_BIZEPS",
+          "MUSCLE_BICEPS",
         ],
         exerciseId: "2",
       },
@@ -1239,7 +1239,7 @@ describe("TrainingGenerator", () => {
       const oneSidedBranches = [
         {
           branchId: "3",
-          branchTags: ["SKILL_SA", "SIDE_ONE", "SIDE_LEFT", "MUSCLE_BRUST"],
+          branchTags: ["SKILL_SA", "SIDE_ONE", "SIDE_LEFT", "MUSCLE_CHEST"],
           exerciseId: "3",
         },
       ];

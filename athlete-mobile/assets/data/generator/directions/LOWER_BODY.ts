@@ -1,4 +1,4 @@
-const UNTERKOERPER = {
+const LOWER_BODY = {
     1: [{ direction: "KNEE", side: "BOTH" }],
     2: [{ direction: null, side: "ONE" }, { direction: null, side: "ONE" }],
     3: [
@@ -29,4 +29,4 @@ const UNTERKOERPER = {
     ]
 } as const;
 
-export default UNTERKOERPER;
+export default LOWER_BODY;

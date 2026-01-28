@@ -83,7 +83,7 @@ describe("branchFilterUtils", () => {
     it("keeps all branches when no regions specified", () => {
       const branches = {
         "1": createBranch(["REGION_CORE"]),
-        "2": createBranch(["REGION_OBERKOERPER"]),
+        "2": createBranch(["REGION_UPPER_BODY"]),
       };
       const result = filterByRegion(branches, []);
       expect(result.keep).toEqual(branches);
@@ -100,10 +100,10 @@ describe("branchFilterUtils", () => {
     it("filters branches by specific regions", () => {
       const branches = {
         "1": createBranch(["REGION_CORE"]),
-        "2": createBranch(["REGION_OBERKOERPER"]),
-        "3": createBranch(["REGION_UNTERKOERPER"]),
+        "2": createBranch(["REGION_UPPER_BODY"]),
+        "3": createBranch(["REGION_LOWER_BODY"]),
       };
-      const result = filterByRegion(branches, ["CORE", "OBERKOERPER"]);
+      const result = filterByRegion(branches, ["CORE", "UPPER_BODY"]);
       expect(Object.keys(result.keep)).toHaveLength(2);
       expect(result.keep["1"]).toBeDefined();
       expect(result.keep["2"]).toBeDefined();
@@ -113,7 +113,7 @@ describe("branchFilterUtils", () => {
   describe("filterByPrevention", () => {
     it("returns all branches when prevRegions is null", () => {
       const branches = {
-        "1": createBranch(["PREVENTION_SCHULTER"]),
+        "1": createBranch(["PREVENTION_SHOULDER"]),
       };
       const result = filterByPrevention(branches, null);
       expect(result.keep).toEqual(branches);
@@ -121,7 +121,7 @@ describe("branchFilterUtils", () => {
 
     it("returns all branches when prevRegions is empty", () => {
       const branches = {
-        "1": createBranch(["PREVENTION_SCHULTER"]),
+        "1": createBranch(["PREVENTION_SHOULDER"]),
       };
       const result = filterByPrevention(branches, []);
       expect(result.keep).toEqual(branches);
@@ -129,11 +129,11 @@ describe("branchFilterUtils", () => {
 
     it("filters branches by prevention regions", () => {
       const branches = {
-        "1": createBranch(["PREVENTION_SCHULTER"]),
-        "2": createBranch(["PREVENTION_KNIE"]),
-        "3": createBranch(["PREVENTION_SPRUNGGELENK"]),
+        "1": createBranch(["PREVENTION_SHOULDER"]),
+        "2": createBranch(["PREVENTION_KNEE"]),
+        "3": createBranch(["PREVENTION_ANKLE"]),
       };
-      const result = filterByPrevention(branches, ["SCHULTER", "KNIE"]);
+      const result = filterByPrevention(branches, ["SHOULDER", "KNEE"]);
       expect(Object.keys(result.keep)).toHaveLength(2);
       expect(result.keep["1"]).toBeDefined();
       expect(result.keep["2"]).toBeDefined();
@@ -151,10 +151,10 @@ describe("branchFilterUtils", () => {
 
     it("returns all branches for ignored soreness skills", () => {
       const branches = {
-        "1": createBranch(["REGION_OBERKOERPER"]),
+        "1": createBranch(["REGION_UPPER_BODY"]),
       };
       const temporalData: TemporalDataType[] = [
-        { tag: "BRUST", date: new Date(), expiration: new Date() },
+        { tag: "CHEST", date: new Date(), expiration: new Date() },
       ];
       const result = filterBySoreness(branches, temporalData, "MOB", false, [
         "MOB",
@@ -164,18 +164,18 @@ describe("branchFilterUtils", () => {
 
     it("filters out branches in sore areas", () => {
       const branches = {
-        "1": createBranch(["REGION_OBERKOERPER"]),
-        "2": createBranch(["REGION_UNTERKOERPER"]),
+        "1": createBranch(["REGION_UPPER_BODY"]),
+        "2": createBranch(["REGION_LOWER_BODY"]),
         "3": createBranch(["REGION_CORE"]),
       };
       const temporalData: TemporalDataType[] = [
-        { tag: "BRUST", date: new Date(), expiration: new Date() },
+        { tag: "CHEST", date: new Date(), expiration: new Date() },
       ];
       const result = filterBySoreness(branches, temporalData, "SWR1");
       expect(Object.keys(result.keep)).toHaveLength(2);
       expect(result.keep["2"]).toBeDefined();
       expect(result.keep["3"]).toBeDefined();
-      expect(result.replace).toContain("OBERKOERPER");
+      expect(result.replace).toContain("UPPER_BODY");
     });
 
     it("throws error for multiple sore regions", () => {
@@ -183,34 +183,34 @@ describe("branchFilterUtils", () => {
         "1": createBranch(["REGION_CORE"]),
       };
       const temporalData: TemporalDataType[] = [
-        { tag: "BRUST", date: new Date(), expiration: new Date() },
-        { tag: "GESAESS", date: new Date(), expiration: new Date() },
+        { tag: "CHEST", date: new Date(), expiration: new Date() },
+        { tag: "GLUTES", date: new Date(), expiration: new Date() },
       ];
       expect(() => filterBySoreness(branches, temporalData, "SWR1")).toThrow();
     });
 
     it("throws error for PREV short workout with soreness in area", () => {
       const branches = {
-        "1": createBranch(["REGION_OBERKOERPER"]),
+        "1": createBranch(["REGION_UPPER_BODY"]),
       };
       const temporalData: TemporalDataType[] = [
-        { tag: "SCHULTER", date: new Date(), expiration: new Date() },
+        { tag: "SHOULDER", date: new Date(), expiration: new Date() },
       ];
       expect(() =>
         filterBySoreness(branches, temporalData, "PREVSHOULDER", true),
       ).toThrow();
     });
 
-    it("returns empty keep for CARDIO with unterkoerper soreness", () => {
+    it("returns empty keep for CARDIO with lower_body soreness", () => {
       const branches = {
-        "1": createBranch(["REGION_UNTERKOERPER"]),
+        "1": createBranch(["REGION_LOWER_BODY"]),
       };
       const temporalData: TemporalDataType[] = [
-        { tag: "GESAESS", date: new Date(), expiration: new Date() },
+        { tag: "GLUTES", date: new Date(), expiration: new Date() },
       ];
       const result = filterBySoreness(branches, temporalData, "CARDIO_1");
       expect(Object.keys(result.keep)).toHaveLength(0);
-      expect(result.replace).toContain("UNTERKOERPER");
+      expect(result.replace).toContain("LOWER_BODY");
     });
   });
 });

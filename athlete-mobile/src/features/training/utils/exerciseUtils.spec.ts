@@ -32,36 +32,32 @@ describe("exerciseUtils", () => {
   });
 
   describe("getAreasFor", () => {
-    it("returns oberkoerper for upper body muscles", () => {
-      const result = getAreasFor(["BRUST", "SCHULTER"]);
-      expect(result).toContain("oberkoerper");
-      expect(result).not.toContain("unterkoerper");
+    it("returns upper_body for upper body muscles", () => {
+      const result = getAreasFor(["CHEST", "SHOULDER"]);
+      expect(result).toContain("upper_body");
+      expect(result).not.toContain("lower_body");
       expect(result).not.toContain("core");
     });
 
-    it("returns unterkoerper for lower body muscles", () => {
-      const result = getAreasFor([
-        "OBERSCHENKELVORDERSEITE",
-        "WADE",
-        "GESAESS",
-      ]);
-      expect(result).toContain("unterkoerper");
-      expect(result).not.toContain("oberkoerper");
+    it("returns lower_body for lower body muscles", () => {
+      const result = getAreasFor(["QUADRICEPS", "CALF", "GLUTES"]);
+      expect(result).toContain("lower_body");
+      expect(result).not.toContain("upper_body");
       expect(result).not.toContain("core");
     });
 
     it("returns core for core muscles", () => {
-      const result = getAreasFor(["GERADE_BAUCHMUSKELN", "UNTERER_RUECKEN"]);
+      const result = getAreasFor(["RECTUS_ABDOMINIS", "LOWER_BACK"]);
       expect(result).toContain("core");
-      expect(result).not.toContain("oberkoerper");
-      expect(result).not.toContain("unterkoerper");
+      expect(result).not.toContain("upper_body");
+      expect(result).not.toContain("lower_body");
     });
 
     it("returns multiple areas for muscles from different regions", () => {
-      const result = getAreasFor(["BRUST", "GERADE_BAUCHMUSKELN", "GESAESS"]);
-      expect(result).toContain("oberkoerper");
+      const result = getAreasFor(["CHEST", "RECTUS_ABDOMINIS", "GLUTES"]);
+      expect(result).toContain("upper_body");
       expect(result).toContain("core");
-      expect(result).toContain("unterkoerper");
+      expect(result).toContain("lower_body");
       expect(result).toHaveLength(3);
     });
 
@@ -76,8 +72,8 @@ describe("exerciseUtils", () => {
     });
 
     it("handles sided muscles correctly", () => {
-      const result = getAreasFor(["SCHULTER_RECHTS", "SCHULTER_LINKS"]);
-      expect(result).toContain("oberkoerper");
+      const result = getAreasFor(["SHOULDER_RIGHT", "SHOULDER_LEFT"]);
+      expect(result).toContain("upper_body");
       expect(result).toHaveLength(1);
     });
   });

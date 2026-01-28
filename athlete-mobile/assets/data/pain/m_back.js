@@ -1,6 +1,6 @@
 const mBack = [
     {
-        name: "SCHULTER_LINKS",
+        name: "SHOULDER_LEFT",
         width: 0.13,
         height: 0.1,
         top: 0.16,
@@ -10,7 +10,7 @@ const mBack = [
         secondaryImage: require("../../img/bodyparts/pain_m_back/schulter_li.png")
     },
     {
-        name: "SCHULTER_RECHTS",
+        name: "SHOULDER_RIGHT",
         width: 0.13,
         height: 0.1,
         top: 0.16,
@@ -20,7 +20,7 @@ const mBack = [
         secondaryImage: require("../../img/bodyparts/pain_m_back/schulter_re.png")
     },
     {
-        name: "ELLBOGEN_LINKS",
+        name: "ELBOW_LEFT",
         width: 0.13,
         height: 0.1,
         top: 0.29,
@@ -30,7 +30,7 @@ const mBack = [
         secondaryImage: require("../../img/bodyparts/pain_m_back/ellbogen_li.png")
     },
     {
-        name: "ELLBOGEN_RECHTS",
+        name: "ELBOW_RIGHT",
         width: 0.13,
         height: 0.1,
         top: 0.29,
@@ -40,7 +40,7 @@ const mBack = [
         secondaryImage: require("../../img/bodyparts/pain_m_back/ellbogen_re.png")
     },
     {
-        name: "HANDGELENK_LINKS",
+        name: "WRIST_LEFT",
         width: 0.13,
         height: 0.1,
         top: 0.41,
@@ -50,7 +50,7 @@ const mBack = [
         secondaryImage: require("../../img/bodyparts/pain_m_back/handgelenk_li.png")
     },
     {
-        name: "HANDGELENK_RECHTS",
+        name: "WRIST_RIGHT",
         width: 0.13,
         height: 0.1,
         top: 0.41,
@@ -60,7 +60,7 @@ const mBack = [
         secondaryImage: require("../../img/bodyparts/pain_m_back/handgelenk_re.png")
     },
     {
-        name: "WIRBELSAEULE",
+        name: "SPINE",
         width: 0.14,
         height: 0.1,
         top: 0.25,
@@ -70,7 +70,7 @@ const mBack = [
         secondaryImage: require("../../img/bodyparts/pain_m_back/wirbelsaeule.png")
     },
     {
-        name: "HUEFTE_LINKS",
+        name: "HIP_LEFT",
         width: 0.13,
         height: 0.1,
         top: 0.42,
@@ -80,7 +80,7 @@ const mBack = [
         secondaryImage: require("../../img/bodyparts/pain_m_back/huefte_li.png")
     },
     {
-        name: "HUEFTE_RECHTS",
+        name: "HIP_RIGHT",
         width: 0.13,
         height: 0.1,
         top: 0.42,
@@ -90,7 +90,7 @@ const mBack = [
         secondaryImage: require("../../img/bodyparts/pain_m_back/huefte_re.png")
     },
     {
-        name: "KNIE_LINKS",
+        name: "KNEE_LEFT",
         width: 0.13,
         height: 0.1,
         top: 0.63,
@@ -100,7 +100,7 @@ const mBack = [
         secondaryImage: require("../../img/bodyparts/pain_m_back/knie_li.png")
     },
     {
-        name: "KNIE_RECHTS",
+        name: "KNEE_RIGHT",
         width: 0.13,
         height: 0.1,
         top: 0.64,
@@ -110,7 +110,7 @@ const mBack = [
         secondaryImage: require("../../img/bodyparts/pain_m_back/knie_re.png")
     },
     {
-        name: "SPRUNGGELENK_LINKS",
+        name: "ANKLE_LEFT",
         width: 0.13,
         height: 0.1,
         top: 0.82,
@@ -120,7 +120,7 @@ const mBack = [
         secondaryImage: require("../../img/bodyparts/pain_m_back/sprunggelenk_li.png")
     },
     {
-        name: "SPRUNGGELENK_RECHTS",
+        name: "ANKLE_RIGHT",
         width: 0.13,
         height: 0.1,
         top: 0.82,

@@ -1,7 +1,7 @@
-const OBERKOERPER = {
+const FULL_BODY = {
     1: [
         {
-            direction: "HORIZONTAL_PUSH",
+            direction: null,
             side: "BOTH"
         }
     ],
@@ -24,14 +24,9 @@ const OBERKOERPER = {
             direction: "HORIZONTAL_PULL",
             side: "BOTH"
         },
-        { direction: "VERTICAL_PUSH", side: "BOTH" }
+        { direction: null, side: "BOTH" }
     ],
     4: [
-        { direction: "VERTICAL_PUSH", side: "BOTH" },
-        {
-            direction: "VERTICAL_PULL",
-            side: "BOTH"
-        },
         {
             direction: "HORIZONTAL_PUSH",
             side: "BOTH"
@@ -39,7 +34,9 @@ const OBERKOERPER = {
         {
             direction: "HORIZONTAL_PULL",
             side: "BOTH"
-        }
+        },
+        { direction: "HIP", side: "BOTH" },
+        { direction: "KNEE", side: "BOTH" }
     ],
     5: [
         {
@@ -50,11 +47,8 @@ const OBERKOERPER = {
             direction: "HORIZONTAL_PULL",
             side: "BOTH"
         },
-        { direction: "VERTICAL_PUSH", side: "BOTH" },
-        {
-            direction: "VERTICAL_PULL",
-            side: "BOTH"
-        },
+        { direction: "HIP", side: "BOTH" },
+        { direction: "KNEE", side: "BOTH" },
         {
             direction: null,
             side: "BOTH"
@@ -69,20 +63,14 @@ const OBERKOERPER = {
             direction: "HORIZONTAL_PULL",
             side: "BOTH"
         },
+        { direction: "HIP", side: "BOTH" },
+        { direction: "KNEE", side: "BOTH" },
         { direction: "VERTICAL_PUSH", side: "BOTH" },
         {
             direction: "VERTICAL_PULL",
             side: "BOTH"
-        },
-        {
-            direction: null,
-            side: "ONE"
-        },
-        {
-            direction: null,
-            side: "ONE"
         }
     ]
 } as const;
 
-export default OBERKOERPER;
+export default FULL_BODY;

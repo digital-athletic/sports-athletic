@@ -1,4 +1,4 @@
-const RUMPF = {
+const CORE = {
     1: [
         {
             direction: "SIDE",
@@ -97,4 +97,4 @@ const RUMPF = {
     ]
 } as const;
 
-export default RUMPF;
+export default CORE;

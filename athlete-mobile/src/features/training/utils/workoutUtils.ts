@@ -62,10 +62,10 @@ export const getMaxValueForExercise = (
   const exerciseRegion = getTagValues(exercise.tags, TagGroups.REGION)[0];
   if (exerciseDirection === null) {
     exerciseDirection =
-      exerciseRegion === "UNTERKOERPER" ? "UNTERKOERPER" : "VERTICAL_PULL";
+      exerciseRegion === "LOWER_BODY" ? "LOWER_BODY" : "VERTICAL_PULL";
   }
   if (exerciseDirection === "SIDE") {
-    exerciseDirection = "UNTERKOERPER";
+    exerciseDirection = "LOWER_BODY";
   }
   const isOneSided = getTagValues(exercise.tags, TagGroups.SIDE).includes(
     "ONE",
@@ -77,7 +77,7 @@ export const getMaxValueForExercise = (
   if (isDumbbellExercise) {
     if (isOneSided) {
       maxType =
-        exerciseRegion === "OBERKOERPER"
+        exerciseRegion === "UPPER_BODY"
           ? WorkoutConstants.MAX_VALUE_TYPES.ONE_SIDED_UPPER
           : WorkoutConstants.MAX_VALUE_TYPES.ONE_SIDED_LOWER;
     } else {

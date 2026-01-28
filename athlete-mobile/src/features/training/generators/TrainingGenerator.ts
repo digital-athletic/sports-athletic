@@ -250,22 +250,22 @@ export default class TrainingGenerator {
     if (type.indexOf("PREV") > -1) {
       switch (type) {
         case "PREVSHOULDER":
-          prev = "SCHULTER";
+          prev = "SHOULDER";
           break;
         case "PREVKNEE":
-          prev = "KNIE_HUEFTE";
+          prev = "KNEE_HIP";
           break;
         case "PREVWRIST":
-          prev = "HANDGELENK_ELLENBOGEN";
+          prev = "WRIST_ELBOW";
           break;
         case "PREVANKLE":
-          prev = "SPRUNGGELENK";
+          prev = "ANKLE";
           break;
         case "PREVSPINE":
-          prev = "WIRBELSAULE";
+          prev = "SPINE";
           break;
         default:
-          prev = "SCHULTER";
+          prev = "SHOULDER";
           break;
       }
 
@@ -522,8 +522,8 @@ export default class TrainingGenerator {
       let regions =
         type === "GKS"
           ? [
-              { tags: ["REGION_OBERKOERPER"], count: 3 },
-              { tags: ["REGION_GANZKOERPER"], count: 2 },
+              { tags: ["REGION_UPPER_BODY"], count: 3 },
+              { tags: ["REGION_FULL_BODY"], count: 2 },
             ]
           : [{ tags: [], count: 4 }];
       for (let region of regions) {
@@ -861,14 +861,14 @@ export default class TrainingGenerator {
                 {
                     exerciseBranchId: "152",
                     tags: [
-                        "PREVENTION_SCHULTER",
+                        "PREVENTION_SHOULDER",
                         "SKILL_COOL_DOWN",
                         "SKILL_MOBILITY",
                         "EQTYPE_KG",
                         "SIDE_ONE",
                         "MUSCLEINVOLVEMENT_ISOLATED",
-                        "REGION_OBERKOERPER",
-                        "EXERCISEDIRECTION_UNTERKOERPER",
+                        "REGION_UPPER_BODY",
+                        "EXERCISEDIRECTION_LOWER_BODY",
                         "SEASONPHASE_PREPATORY",
                         "SEASONPHASE_COMPETITION",
                         "SEASONPHASE_PAUSE",
@@ -876,14 +876,14 @@ export default class TrainingGenerator {
                         "PLACE_STUDIO",
                         "PLACE_HOME",
                         "PLACE_OUTSIDE",
-                        "MUSCLE_SCHULTER",
-                        "MUSCLE_SCHULTERBLATT_FIXIEREND_HINTEN",
-                        "MUSCLESECONDARY_SCHULTERBLATT_FIXIEREND_FRONT",
-                        "MUSCLESECONDARY_UNTERER_RUECKEN",
-                        "MUSCLESECONDARY_GESAESS",
-                        "MUSCLESECONDARY_AEUSSERER_OBERSCHENKEL",
-                        "PAIN_SCHULTER",
-                        "PAIN_WIRBELSAEULE",
+                        "MUSCLE_SHOULDER",
+                        "MUSCLE_SCAPULAR_STABILIZER_REAR",
+                        "MUSCLESECONDARY_SCAPULAR_STABILIZER_FRONT",
+                        "MUSCLESECONDARY_LOWER_BACK",
+                        "MUSCLESECONDARY_GLUTES",
+                        "MUSCLESECONDARY_OUTER_THIGH",
+                        "PAIN_SHOULDER",
+                        "PAIN_SPINE",
                         "SIDE_LEFT"
                     ],
                     exercises: {
@@ -1221,10 +1221,10 @@ export default class TrainingGenerator {
       const userLevel = getUserLevel(user);
       const maxCountPerRegion = userLevel === "PROFESSIONAL" ? 6 : 5;
       const branchesByRegion: Record<string, number> = {
-        UNTERKOERPER: 0,
-        OBERKOERPER: 0,
+        LOWER_BODY: 0,
+        UPPER_BODY: 0,
         CORE: 0,
-        GANZKOERPER: 0,
+        FULL_BODY: 0,
       };
       for (const branchId of usedBranchIds) {
         if (skillTree[branchId]) {
@@ -1400,8 +1400,8 @@ export default class TrainingGenerator {
           let length = skill.length;
           const tempTags = temporalData.map((element) => element.tag);
           let areas = getAreasFor(tempTags);
-          if (areas.indexOf("unterkoerper") > -1) {
-            // max 20 minutes if unterkoerper soreness
+          if (areas.indexOf("lower_body") > -1) {
+            // max 20 minutes if lower_body soreness
             length = Math.min(length, 20);
           }
           // run given time
@@ -3817,36 +3817,36 @@ const isInclineBenchPress = (
 
 const getOpposingMuscles = (muscles: string[]): string[] => {
   const agonists = [
-    ["BRUST"],
-    ["OBERSCHENKELVORDERSEITE"],
-    ["GERADE_BAUCHMUSKELN"],
-    ["SCHULTER"],
+    ["CHEST"],
+    ["QUADRICEPS"],
+    ["RECTUS_ABDOMINIS"],
+    ["SHOULDER"],
   ];
   const antagonists = [
-    ["GROSSER_RUECKENMUSKEL_LAT", "NACKEN", "OBERER_RUECKEN"],
-    ["GESAESS"],
-    ["UNTERER_RUECKEN"],
-    ["GROSSER_RUECKENMUSKEL_LAT"],
+    ["LATISSIMUS", "NECK", "UPPER_BACK"],
+    ["GLUTES"],
+    ["LOWER_BACK"],
+    ["LATISSIMUS"],
   ];
   const agonistsPrio2 = [
-    ["BIZEPS"],
-    ["HANDGELENKSSTRECKER"],
-    ["SCHULTER_VORNE"],
-    ["WADE"],
-    ["INNERER_OBERSCHENKEL"],
-    ["SCHULTERBLATT_FIXIEREND_FRONT"],
-    ["HUEFT_AUSSEN_ROTATOR"],
-    ["NACKEN_VORNE"],
+    ["BICEPS"],
+    ["WRIST_EXTENSOR"],
+    ["SHOULDER_FRONT"],
+    ["CALF"],
+    ["INNER_THIGH"],
+    ["SCAPULAR_STABILIZER_FRONT"],
+    ["HIP_EXTERNAL_ROTATOR"],
+    ["NECK_FRONT"],
   ];
   const antagonistsPrio2 = [
-    ["ARMSTRECKER"],
-    ["HANDGELENKSBEUGER"],
-    ["SCHULTER_HINTEN"],
-    ["SPRUNGGELENK", "SCHIENBEIN"],
-    ["AEUSSERER_OBERSCHENKEL"],
-    ["SCHULTERBLATT_FIXIEREND_HINTEN"],
-    ["HUEFT_INNEN_ROTATOR"],
-    ["NACKEN_HINTEN"],
+    ["TRICEPS"],
+    ["WRIST_FLEXOR"],
+    ["SHOULDER_REAR"],
+    ["ANKLE", "SHIN"],
+    ["OUTER_THIGH"],
+    ["SCAPULAR_STABILIZER_REAR"],
+    ["HIP_INTERNAL_ROTATOR"],
+    ["NECK_REAR"],
   ];
 
   const result: string[] = [];

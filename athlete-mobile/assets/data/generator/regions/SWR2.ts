@@ -33,8 +33,8 @@ const SWR2 = {
             { tags: ["EXERCISENAME_ROWING"], count: 1 },
             { tags: ["EXERCISENAME_DEADLIFT"], count: 1 },
             { tags: ["EXERCISENAME_CALFLIFT"], count: 1 },
-            { tags: ["REGION_OBERKOERPER"], count: 1 },
-            { tags: ["REGION_UNTERKOERPER"], count: 1 },
+            { tags: ["REGION_UPPER_BODY"], count: 1 },
+            { tags: ["REGION_LOWER_BODY"], count: 1 },
             { tags: ["REGION_CORE"], count: 2 }
         ],
         40: [
@@ -44,8 +44,8 @@ const SWR2 = {
             { tags: ["EXERCISENAME_ROWING"], count: 1 },
             { tags: ["EXERCISENAME_DEADLIFT"], count: 1 },
             { tags: ["EXERCISENAME_CALFLIFT"], count: 1 },
-            { tags: ["REGION_OBERKOERPER"], count: 1 },
-            { tags: ["REGION_UNTERKOERPER"], count: 1 },
+            { tags: ["REGION_UPPER_BODY"], count: 1 },
+            { tags: ["REGION_LOWER_BODY"], count: 1 },
             { tags: ["REGION_CORE"], count: 3 }
         ],
         45: [
@@ -55,8 +55,8 @@ const SWR2 = {
             { tags: ["EXERCISENAME_ROWING"], count: 1 },
             { tags: ["EXERCISENAME_DEADLIFT"], count: 1 },
             { tags: ["EXERCISENAME_CALFLIFT"], count: 1 },
-            { tags: ["REGION_OBERKOERPER"], count: 1 },
-            { tags: ["REGION_UNTERKOERPER"], count: 1 },
+            { tags: ["REGION_UPPER_BODY"], count: 1 },
+            { tags: ["REGION_LOWER_BODY"], count: 1 },
             { tags: ["REGION_CORE"], count: 4 }
         ]
     }

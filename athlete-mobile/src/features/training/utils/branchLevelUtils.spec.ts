@@ -13,7 +13,7 @@ import {
 
 // Minimal real branch data for testing
 const SWR_BRANCH: SkillBranchType = {
-  tags: ["REGION_UNTERKOERPER", "SIDE_BOTH", "EXERCISEDIRECTION_SQUAT"],
+  tags: ["REGION_LOWER_BODY", "SIDE_BOTH", "EXERCISEDIRECTION_SQUAT"],
   levels: {
     "1": { id: "101" },
     "2": { id: "102" },
@@ -22,12 +22,12 @@ const SWR_BRANCH: SkillBranchType = {
 };
 
 const ONE_SIDED_BRANCH: SkillBranchType = {
-  tags: ["REGION_UNTERKOERPER", "SIDE_ONE"],
+  tags: ["REGION_LOWER_BODY", "SIDE_ONE"],
   levels: { "1": { id: "201" }, "2": { id: "202" } },
 };
 
 const PREVENTION_BRANCH: SkillBranchType = {
-  tags: ["REGION_OBERKOERPER", "SIDE_ONE", "PREVENTION_SCHULTER"],
+  tags: ["REGION_UPPER_BODY", "SIDE_ONE", "PREVENTION_SHOULDER"],
   levels: { "1": { id: "401" }, "2": { id: "402" } },
 };
 
@@ -133,7 +133,7 @@ describe("branchLevelUtils", () => {
     });
 
     it("returns false for prevention exercises", () => {
-      const bothSidedPrev = ["SIDE_BOTH", "PREVENTION_SCHULTER"];
+      const bothSidedPrev = ["SIDE_BOTH", "PREVENTION_SHOULDER"];
       const result = needsOneToBothCompensation(
         PREVENTION_BRANCH.tags,
         bothSidedPrev,

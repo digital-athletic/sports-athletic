@@ -1,4 +1,4 @@
-const UNTERKOERPER_GKS = {
+const LOWER_BODY_GKS = {
     1: [{ exercise_direction: "KNEE", side: "BOTH" }],
     2: [
         { exercise_direction: "KNEE", side: "BOTH" },
@@ -32,4 +32,4 @@ const UNTERKOERPER_GKS = {
     ]
 } as const;
 
-export default UNTERKOERPER_GKS;
+export default LOWER_BODY_GKS;

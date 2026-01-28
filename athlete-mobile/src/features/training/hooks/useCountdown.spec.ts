@@ -182,8 +182,8 @@ describe("useCountdown", () => {
   });
 
   describe("Callbacks", () => {
-    it("calls onComplete when countdown reaches 0", () => {
-      const onComplete = jest.fn();
+    it("fires 'complete' event when countdown reaches 0", () => {
+      const onEvent = jest.fn();
 
       renderHook(() =>
         useCountdown({
@@ -191,7 +191,7 @@ describe("useCountdown", () => {
           duration: 2,
           exerciseId: "1",
           isActive: true,
-          onComplete,
+          onEvent,
           timeoutMs: 100,
         }),
       );
@@ -204,12 +204,12 @@ describe("useCountdown", () => {
         jest.advanceTimersByTime(100);
       });
 
-      expect(onComplete).toHaveBeenCalledTimes(1);
+      expect(onEvent).toHaveBeenCalledTimes(1);
+      expect(onEvent).toHaveBeenCalledWith("complete");
     });
 
-    it("calls onAutoAdvance when countdown reaches 0 and autoAdvance is truthy", () => {
-      const onAutoAdvance = jest.fn();
-      const onComplete = jest.fn();
+    it("fires 'advance' event when countdown reaches 0 and autoAdvance is truthy", () => {
+      const onEvent = jest.fn();
 
       renderHook(() =>
         useCountdown({
@@ -217,8 +217,7 @@ describe("useCountdown", () => {
           duration: 2,
           exerciseId: "1",
           isActive: true,
-          onAutoAdvance,
-          onComplete,
+          onEvent,
           timeoutMs: 100,
         }),
       );
@@ -231,12 +230,13 @@ describe("useCountdown", () => {
         jest.advanceTimersByTime(100);
       });
 
-      expect(onComplete).toHaveBeenCalledTimes(1);
-      expect(onAutoAdvance).toHaveBeenCalledTimes(1);
+      expect(onEvent).toHaveBeenCalledTimes(2);
+      expect(onEvent).toHaveBeenCalledWith("complete");
+      expect(onEvent).toHaveBeenCalledWith("advance");
     });
 
-    it("does not call onAutoAdvance when autoAdvance is falsy", () => {
-      const onAutoAdvance = jest.fn();
+    it("does not fire 'advance' event when autoAdvance is falsy", () => {
+      const onEvent = jest.fn();
 
       renderHook(() =>
         useCountdown({
@@ -244,7 +244,7 @@ describe("useCountdown", () => {
           duration: 2,
           exerciseId: "1",
           isActive: true,
-          onAutoAdvance,
+          onEvent,
           timeoutMs: 100,
         }),
       );
@@ -253,7 +253,8 @@ describe("useCountdown", () => {
         jest.advanceTimersByTime(300);
       });
 
-      expect(onAutoAdvance).not.toHaveBeenCalled();
+      expect(onEvent).toHaveBeenCalledTimes(1);
+      expect(onEvent).toHaveBeenCalledWith("complete");
     });
   });
 

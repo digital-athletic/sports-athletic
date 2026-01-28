@@ -3,8 +3,13 @@ import { TagGroups } from "@/constants/tagGroups";
 import {
   ExerciseDifficultyType,
   isLevelTag,
+  isSkillTypes,
   WorkoutConstants,
 } from "@/constants/workoutConstants";
+import {
+  FOOTER_HEIGHT,
+  TrainingFooter,
+} from "@/features/training/TrainingFooter";
 import { TrainingNavigation } from "@/features/training/TrainingNavigation";
 import { getIntensityBySkill } from "@/features/training/generators/TrainingGenerator";
 import { isPauseExercise as checkIsPauseExercise } from "@/features/training/models/IdTypes";
@@ -30,6 +35,7 @@ import {
 import { heartRateBySkillAndBirthday } from "@/features/training/utils/heartRateUtils";
 import {
   getSkillTree,
+  isPreventionSkill,
   mapSkillToFocusArea,
 } from "@/features/training/utils/skillTreeUtils";
 import {
@@ -55,18 +61,20 @@ import { getTagValues } from "@/utils/tagUtils";
 import { VideoPlayer } from "@/video/VideoPlayer";
 import { useKeepAwake } from "expo-keep-awake";
 import { Stack, useFocusEffect, useRouter } from "expo-router";
-import { type FC, useCallback, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import {
-  Alert,
-  BackHandler,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
-} from "react-native";
-import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+  type FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { useTranslation } from "react-i18next";
+import { Alert, BackHandler } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const TRAINING_INPUT_OFFSET = 100;
 
 type TrainingActiveProps = Record<string, never>;
 
@@ -111,14 +119,36 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     useState(true);
   const exerciseStartTimeRef = useRef<number>(Date.now());
   const pauseStartRef = useRef<number>(Date.now());
+  const [isSkipped, setIsSkipped] = useState(false);
 
   // Temporary storage for test workout results, only committed on successful completion
   const [tempMaxValues, setTempMaxValues] = useState<MaxValuesType | null>(
     null,
   );
 
-  // Track test input focus to hide bottom bar
-  const [isTestInputFocused, setIsTestInputFocused] = useState(false);
+  const headerTitle = useMemo(() => {
+    const type = activeTraining?.type;
+
+    if (!type) {
+      return t("training.active.title.plan");
+    }
+
+    // Strength test
+    if (type === "TEST_WORKOUT") {
+      return t("training.active.title.strengthTest");
+    }
+
+    // Focus or Prevention training
+    if (isSkillTypes(type)) {
+      return t(`training.skill.${type as SkillType}`, {
+        defaultValue: isPreventionSkill(type)
+          ? t("training.active.title.prevention")
+          : t("training.active.title.focus"),
+      });
+    }
+
+    return t("training.active.title.plan");
+  }, [activeTraining?.type, t]);
 
   const currentExercise = exerciseList?.[activeExerciseIndex];
   const exerciseId = currentExercise?.exerciseId ?? "-1";
@@ -146,7 +176,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
         ...data,
       };
 
-      if (activeTraining.type.includes("PREV")) {
+      if (isPreventionSkill(activeTraining.type)) {
         Logger.logEvent(`prevention_${eventName}`, eventData);
       }
       Logger.logEvent(eventName, eventData);
@@ -879,9 +909,6 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     // save exercise data
     saveExerciseAndBranchData();
 
-    // Reset test input state for next exercise
-    setIsTestInputFocused(false);
-
     if (isPauseExercise) {
       // add time in pause to training stats
       const pauseDuration = Date.now() - pauseStartRef.current;
@@ -950,12 +977,17 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   }, [saveAndNavigateToSuccess, t]);
 
   const handleExerciseSkipped = () => {
+    setIsSkipped(true);
     setExerciseSkipped(exerciseId);
     Logger.logEvent("exercise_skipped", {
       exerciseId,
     });
     advanceToNextExercise();
   };
+
+  useEffect(() => {
+    setIsSkipped(false);
+  }, [exerciseId]);
 
   const handleFeedback = (category: "TOO_EASY" | "TOO_HARD" | "SUCCEEDED") => {
     if (!currentExercise) return;
@@ -1036,18 +1068,9 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     ? (nextExerciseData?.displayName ?? nextExerciseData?.name)
     : (currentExerciseData?.displayName ?? currentExerciseData?.name);
 
-  const nextDisplayName = t("training.active.nextExercise", {
-    exerciseName: hasNextExercise
-      ? (nextExerciseData?.displayName ?? nextExerciseData?.name)
-      : t("training.active.finished"),
-  });
-
   const video = isPauseExercise
     ? nextExerciseData?.video
     : currentExerciseData?.video;
-
-  const isExerciseInformationVisible =
-    typeof exerciseId === "string" && !isPauseExercise;
 
   // if plan workout check skill.
   // if short training check workout type
@@ -1065,12 +1088,16 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   }
 
   const handleShowExerciseInformation = () => {
-    if (!isExerciseInformationVisible) return;
+    const id = isPauseExercise ? nextExercise?.exerciseId : exerciseId;
+
+    if (!id || id === "-1") {
+      return;
+    }
 
     router.navigate({
       pathname: "/training/exercise-information",
       params: {
-        exerciseId,
+        exerciseId: id,
       },
     });
   };
@@ -1159,63 +1186,55 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     );
   };
 
+  const isCountdownActive =
+    !isAborted && !videoIsPlaying && !isFullScreen && !isSkipped;
+
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
-    >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <Box
-          flex={1}
-          style={{
-            paddingBottom: insets.bottom,
-            paddingLeft: insets.left,
-            paddingRight: insets.right,
-          }}
+    <>
+      <Stack.Screen
+        options={{
+          headerTitle,
+          headerBackVisible: false,
+          headerLeft: () => (
+            <TouchableBox
+              key="exercise_information"
+              onPress={handleShowExerciseInformation}
+              minWidth={36}
+              minHeight={36}
+              alignItems={"center"}
+              justifyContent={"center"}
+            >
+              <AwesomeIcon name="info-circle" size={28} color={colors.black} />
+            </TouchableBox>
+          ),
+          headerRight: () => (
+            <TouchableBox
+              onPress={handleAbortTraining}
+              key={"abort_training"}
+              minWidth={36}
+              minHeight={36}
+              alignItems={"center"}
+              justifyContent={"center"}
+            >
+              <AwesomeIcon name="times-circle" size={28} color={colors.black} />
+            </TouchableBox>
+          ),
+        }}
+      />
+      <Box
+        flex={1}
+        style={{
+          paddingBottom: insets.bottom,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        }}
+      >
+        <KeyboardAwareScrollView
+          style={{ flex: 1, backgroundColor: colors.white }}
+          // Ensures input and save button remain visible
+          bottomOffset={TRAINING_INPUT_OFFSET}
+          keyboardShouldPersistTaps="handled"
         >
-          <Stack.Screen
-            options={{
-              headerTitle: "",
-              headerBackVisible: false,
-              headerLeft: () =>
-                isExerciseInformationVisible ? (
-                  <Animated.View entering={FadeIn} exiting={FadeOut}>
-                    <TouchableBox
-                      key="exercise_information"
-                      onPress={handleShowExerciseInformation}
-                      minWidth={36}
-                      minHeight={36}
-                      alignItems={"center"}
-                      justifyContent={"center"}
-                    >
-                      <AwesomeIcon
-                        name="info-circle"
-                        size={28}
-                        color={colors.black}
-                      />
-                    </TouchableBox>
-                  </Animated.View>
-                ) : undefined,
-              headerRight: () => (
-                <Animated.View entering={FadeIn} exiting={FadeOut}>
-                  <TouchableBox
-                    onPress={handleAbortTraining}
-                    key={"abort_training"}
-                    minWidth={36}
-                    minHeight={36}
-                    alignItems={"center"}
-                    justifyContent={"center"}
-                  >
-                    <AwesomeIcon
-                      name="times-circle"
-                      size={28}
-                      color={colors.black}
-                    />
-                  </TouchableBox>
-                </Animated.View>
-              ),
-            }}
-          />
           <Box flex={1} backgroundColor="white" justifyContent="flex-start">
             {/* Progress bar */}
             <Box height={4} backgroundColor="lightGrey1">
@@ -1327,16 +1346,11 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
             {currentExercise && (
               <TrainingNavigation
                 exerciseId={exerciseId}
+                nextExerciseId={nextExercise?.exerciseId}
                 duration={currentExercise.duration || 0}
                 next={advanceToNextExercise}
-                skip={handleExerciseSkipped}
-                isPause={isPauseExercise}
-                hasNextExercise={hasNextExercise}
-                isNextExercisePause={isNextExercisePause}
                 feedback={handleFeedback}
-                isCountdownActive={
-                  !isAborted && !videoIsPlaying && !isFullScreen
-                }
+                isCountdownActive={isCountdownActive}
                 isFirstDurationInTraining={activeExerciseIndex === 0}
                 isLastInSet={isLastInSet}
                 isFeedbackSkill={isFeedbackSkill}
@@ -1345,23 +1359,25 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                 isTest={isTestExercise}
                 onSubmitReps={saveRepsInput}
                 pauseToggled={handlePauseToggled}
-                onTestInputFocusChange={setIsTestInputFocused}
-                isTestInputFocused={isTestInputFocused}
               />
             )}
 
-            {/* Next exercise preview - hidden when test input focused */}
-            {!isTestInputFocused && (
-              <Box padding="m" backgroundColor="lightGrey1" borderRadius="m">
-                <Text marginBottom="xs" fontWeight="bold">
-                  {nextDisplayName}
-                </Text>
-              </Box>
-            )}
+            {/* Avoids content being hidden behind TrainingFooter */}
+            <Box height={FOOTER_HEIGHT} />
           </Box>
-        </Box>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+        </KeyboardAwareScrollView>
+        {/* Skip button & next exercise preview */}
+        <TrainingFooter
+          isSkipHidden={
+            isTestExercise && typeof currentExercise.duration === "undefined"
+          }
+          nextExerciseName={
+            nextExerciseData?.displayName ?? nextExerciseData?.name
+          }
+          onSkipPress={handleExerciseSkipped}
+        />
+      </Box>
+    </>
   );
 };
 

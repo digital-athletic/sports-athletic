@@ -448,7 +448,7 @@ function filterBySoreness(
 
   const areas = getAreasFor(temporalData.map((entry) => entry.tag));
 
-  if (isShortWorkout && skill.includes("PREV")) {
+  if (isShortWorkout && isPreventionSkill(skill)) {
     let soreInArea = false;
     switch (skill) {
       case "PREVSHOULDER":
@@ -637,3 +637,8 @@ export const mapSkillToFocusArea = (
       return undefined;
   }
 };
+
+const PREVENTION_PREFIX = "PREV";
+
+export const isPreventionSkill = (skill: string): boolean =>
+  skill.startsWith(PREVENTION_PREFIX);

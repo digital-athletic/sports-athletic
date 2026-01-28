@@ -10,6 +10,7 @@ import type {
 import { getTagValues } from "../../../utils/tagUtils";
 import { TemporalDataType } from "../models/TemporalData";
 import { getAreasFor } from "./exerciseUtils";
+import { isPreventionSkill } from "./skillTreeUtils";
 
 /**
  * Filter branches by age group (child vs adult).
@@ -145,7 +146,7 @@ export function filterBySoreness<T extends Branch>(
     const areas = getAreasFor(tempTags);
 
     // Check for muscle soreness in area of short workout prevention
-    if (isShortWorkout && skill.includes("PREV")) {
+    if (isShortWorkout && isPreventionSkill(skill)) {
       let hasSorenessInArea = false;
       switch (skill) {
         case "PREVSHOULDER":

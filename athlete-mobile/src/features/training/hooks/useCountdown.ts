@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type CountdownArgs = {
-  exerciseId: string;
   autoAdvance: boolean;
   duration: number | undefined;
+  exerciseId: string;
   isActive: boolean;
-  onAutoAdvance?: () => void;
-  onComplete?: () => void;
+  onEvent?: (event: "advance" | "complete") => void;
   timeoutMs?: number;
 };
 
@@ -15,8 +14,7 @@ export const useCountdown = ({
   duration,
   exerciseId,
   isActive,
-  onAutoAdvance,
-  onComplete,
+  onEvent,
   // Default to 1 second
   timeoutMs = 1000,
 }: CountdownArgs) => {
@@ -46,16 +44,16 @@ export const useCountdown = ({
 
   useEffect(() => {
     if (countdown === 0) {
-      onComplete?.();
+      onEvent?.("complete");
 
       if (autoAdvance) {
-        onAutoAdvance?.();
+        onEvent?.("advance");
       }
 
       clearInterval(intervalRef.current);
       setCountdown(undefined);
     }
-  }, [autoAdvance, countdown, onAutoAdvance, onComplete]);
+  }, [autoAdvance, countdown, onEvent]);
 
   useEffect(() => {
     // Reset countdown when duration or exerciseId changes

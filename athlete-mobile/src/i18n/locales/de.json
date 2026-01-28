@@ -382,6 +382,12 @@
       "cmHigh": "{{height}} cm"
     },
     "active": {
+      "title": {
+        "focus": "Fokustraining",
+        "plan": "Training",
+        "prevention": "Präventionstraining",
+        "strengthTest": "Krafttest"
+      },
       "set": "{{current}} von {{total}}",
       "sets_one": "Satz",
       "sets_other": "Sätze",

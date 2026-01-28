@@ -3,7 +3,7 @@ import type { SkillTypes } from "@/constants/workoutConstants";
 export type ExerciseBranchType = {
   exerciseBranchId: string;
   tags: string[];
-  exercises: { [level: number]: { exerciseId: string } };
+  exercises: { [level: string]: { exerciseId: string } };
 };
 
 /**

@@ -107,7 +107,9 @@ export default function MuscleSorenessScreen() {
   useEffect(() => {
     if (temporalData) {
       setTemporalData(
-        temporalData.filter((data) => data.expiration.valueOf() > Date.now()),
+        temporalData.filter(
+          (data) => new Date(data.expiration).valueOf() > Date.now(),
+        ),
       );
     }
     setLoading(false);
@@ -119,8 +121,10 @@ export default function MuscleSorenessScreen() {
     // save updated muscle soreness to temporal data
     const temporalData = tags.map((tag) => ({
       tag,
-      date: new Date(Date.now()),
-      expiration: new Date(Date.now() + SharedConstants.TIME_IN_MS.DAY),
+      date: new Date(Date.now()).toISOString(),
+      expiration: new Date(
+        Date.now() + SharedConstants.TIME_IN_MS.DAY,
+      ).toISOString(),
     }));
 
     setTemporalData(temporalData);

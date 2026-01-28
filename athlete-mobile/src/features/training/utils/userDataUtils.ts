@@ -2,7 +2,7 @@ import type { UserType } from "@/schemas/user.schema";
 import type { TemporalDataType } from "@/features/training/models/TemporalData";
 
 /**
- * Safely gets temporal data from user, converting date strings to Date objects.
+ * Safely gets temporal data from user as ISO date strings.
  * Returns empty array if temporalData is undefined.
  */
 export function getTemporalData(user: UserType): TemporalDataType[] {
@@ -10,9 +10,8 @@ export function getTemporalData(user: UserType): TemporalDataType[] {
 
   return user.temporalData.map((td) => ({
     tag: td.tag,
-    date: td.date instanceof Date ? td.date : new Date(td.date),
-    expiration:
-      td.expiration instanceof Date ? td.expiration : new Date(td.expiration),
+    date: td.date,
+    expiration: td.expiration,
   }));
 }
 

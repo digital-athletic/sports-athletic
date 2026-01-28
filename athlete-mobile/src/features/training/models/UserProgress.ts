@@ -12,8 +12,8 @@ export type UserProgressType = {
     timeTrained: number;
     timeActive: number;
     timeInactive: number;
-    timeStreched: number;
-    timeMobilysed: number;
+    timeStretched: number;
+    timeMobilised: number;
     jumpsDone: number;
     stepsDone: number;
     exercisesSkipped: number;

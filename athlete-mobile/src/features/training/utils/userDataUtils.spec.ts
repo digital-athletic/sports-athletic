@@ -23,13 +23,13 @@ describe("userDataUtils", () => {
       expect(result).toEqual([]);
     });
 
-    it("converts string dates to Date objects", () => {
+    it("returns temporal data with string dates", () => {
       const user = createMockUser({
         temporalData: [
           {
             tag: "SORENESS_ARM",
-            date: "2024-01-01",
-            expiration: "2024-01-03",
+            date: "2024-01-01T00:00:00.000Z",
+            expiration: "2024-01-03T00:00:00.000Z",
           },
         ],
       });
@@ -38,27 +38,27 @@ describe("userDataUtils", () => {
 
       expect(result).toHaveLength(1);
       expect(result[0].tag).toBe("SORENESS_ARM");
-      expect(result[0].date).toBeInstanceOf(Date);
-      expect(result[0].expiration).toBeInstanceOf(Date);
+      expect(typeof result[0].date).toBe("string");
+      expect(typeof result[0].expiration).toBe("string");
     });
 
-    it("preserves Date objects if already Date", () => {
-      const dateObj = new Date("2024-01-01");
-      const expirationObj = new Date("2024-01-03");
+    it("preserves ISO strings if already string", () => {
+      const dateStr = "2024-01-01T00:00:00.000Z";
+      const expirationStr = "2024-01-03T00:00:00.000Z";
       const user = createMockUser({
         temporalData: [
           {
             tag: "SORENESS_LEG",
-            date: dateObj,
-            expiration: expirationObj,
+            date: dateStr,
+            expiration: expirationStr,
           },
         ],
       });
 
       const result = getTemporalData(user);
 
-      expect(result[0].date).toBe(dateObj);
-      expect(result[0].expiration).toBe(expirationObj);
+      expect(result[0].date).toBe(dateStr);
+      expect(result[0].expiration).toBe(expirationStr);
     });
   });
 
@@ -74,8 +74,16 @@ describe("userDataUtils", () => {
     it("returns array of tags", () => {
       const user = createMockUser({
         temporalData: [
-          { tag: "SORENESS_ARM", date: new Date(), expiration: new Date() },
-          { tag: "SORENESS_LEG", date: new Date(), expiration: new Date() },
+          {
+            tag: "SORENESS_ARM",
+            date: "2024-01-01T00:00:00.000Z",
+            expiration: "2024-01-03T00:00:00.000Z",
+          },
+          {
+            tag: "SORENESS_LEG",
+            date: "2024-01-01T00:00:00.000Z",
+            expiration: "2024-01-03T00:00:00.000Z",
+          },
         ],
       });
 
@@ -89,7 +97,7 @@ describe("userDataUtils", () => {
     it("returns training plan when present", () => {
       const user = createMockUser({
         trainingPlan: {
-          start: new Date(),
+          start: "2024-01-01T00:00:00.000Z",
           sections: [
             {
               start: "2024-01-01",
@@ -122,7 +130,7 @@ describe("userDataUtils", () => {
     it("throws when sections is empty", () => {
       const user = createMockUser({
         trainingPlan: {
-          start: new Date(),
+          start: "2024-01-01T00:00:00.000Z",
           sections: [],
         },
       });
@@ -135,7 +143,7 @@ describe("userDataUtils", () => {
     it("returns true when training plan exists with sections", () => {
       const user = createMockUser({
         trainingPlan: {
-          start: new Date(),
+          start: "2024-01-01T00:00:00.000Z",
           sections: [
             {
               start: "2024-01-01",
@@ -166,7 +174,7 @@ describe("userDataUtils", () => {
     it("returns false when sections is empty", () => {
       const user = createMockUser({
         trainingPlan: {
-          start: new Date(),
+          start: "2024-01-01T00:00:00.000Z",
           sections: [],
         },
       });

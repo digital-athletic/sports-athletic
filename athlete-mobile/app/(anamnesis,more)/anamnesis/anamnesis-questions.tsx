@@ -109,7 +109,7 @@ export default function AnamnesisQuestions() {
 
   const onChangeValue = useCallback(
     (field: string, value: unknown) => {
-      setValue(field, value);
+      setValue(field, value as string | number | boolean);
     },
     [setValue],
   );

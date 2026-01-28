@@ -1189,7 +1189,7 @@ export default class PlanGenerator {
       console.log("TrainingSections: ", trainingSections);
 
     const trainingPlan: TrainingPlanInitialType = {
-      start: startDate,
+      start: startDate.toISOString(),
       sections: trainingSections,
     };
 

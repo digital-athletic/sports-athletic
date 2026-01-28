@@ -7,9 +7,17 @@ import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
 
+/** Anamnesis form field value types */
+export type AnamnesisValue = string | number | boolean | null | undefined;
+
 type State = {
-  values: { [path: string]: any };
-  tags: { [tag: string]: string[] };
+  /** Form field values keyed by field path (e.g., "height", "weight", "birthday") */
+  values: Record<string, AnamnesisValue>;
+  /**
+   * Tags grouped by tag group key.
+   * Keys should match TagGroups enum values (e.g., "LEVEL", "POSITION", "PAIN").
+   */
+  tags: Record<string, string[]>;
   seasonPhase: SeasonPhaseType | null;
   isSkipped: boolean;
 };
@@ -24,7 +32,8 @@ export const createInitialState = (): State => ({
 });
 
 type Actions = {
-  setValue: (path: string, value: any) => void;
+  setValue: (path: string, value: AnamnesisValue) => void;
+  /** Set tags for a group. Tag param should be a TagGroups value (e.g., "LEVEL", "POSITION") */
   setTag: (tag: string, values: string[]) => void;
   setSeasonPhase: (phase: SeasonPhaseType | null) => void;
   clearAnamnesisData: () => void;

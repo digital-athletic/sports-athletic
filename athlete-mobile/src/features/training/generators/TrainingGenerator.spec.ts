@@ -1570,7 +1570,7 @@ describe("TrainingGenerator", () => {
           verticalPush: { barbell: 60 },
         } as Record<string, unknown>,
       },
-      temporalData: [] as { date: Date; expiration: Date; tag: string }[],
+      temporalData: [] as { date: string; expiration: string; tag: string }[],
       trainingPlan: null,
     };
 

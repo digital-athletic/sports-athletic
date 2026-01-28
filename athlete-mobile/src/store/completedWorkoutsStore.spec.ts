@@ -136,7 +136,7 @@ describe("completedWorkoutsStore", () => {
   describe("addCompletedTrainingPlan", () => {
     it("appends to trainingPlans array", () => {
       const { result } = renderHook(() => useCompletedWorkoutsStore());
-      const plan = { start: new Date(), sections: [] };
+      const plan = { start: new Date().toISOString(), sections: [] };
 
       act(() => {
         result.current.addCompletedTrainingPlan(plan);

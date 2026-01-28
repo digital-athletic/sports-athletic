@@ -738,7 +738,7 @@ describe("PlanGenerator", () => {
         false,
       );
 
-      expect(result.start).toEqual(startDate);
+      expect(result.start).toEqual(startDate.toISOString());
       expect(result.sections).toHaveLength(3);
       expect(result.sections[0]).toMatchObject({
         type: "SWR2",
@@ -775,7 +775,7 @@ describe("PlanGenerator", () => {
         false,
       );
 
-      expect(result.start).toEqual(startDate);
+      expect(result.start).toEqual(startDate.toISOString());
       expect(result.sections).toHaveLength(3);
       expect(result.sections[0]).toMatchObject({
         type: "SWR1",
@@ -812,7 +812,7 @@ describe("PlanGenerator", () => {
         true,
       );
 
-      expect(result.start).toEqual(startDate);
+      expect(result.start).toEqual(startDate.toISOString());
       expect(result.sections).toHaveLength(3);
       const sectionTypes = result.sections.map((s) => s.type);
       expect(sectionTypes).not.toContain("SA");

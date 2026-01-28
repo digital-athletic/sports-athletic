@@ -7,9 +7,12 @@ export type Sport = keyof typeof WorkoutConstants.SPORTS; // e.g., 'SOCCER', 'BA
 export type UserWorkoutDataType = {
   anamnesisCompleted: boolean;
   gender: "MALE" | "FEMALE";
-  birthday: string; // DD-MM-YYYY
+  /** Date of birth in DD-MM-YYYY format */
+  birthday: string;
+  /** Body weight in kg. Valid range: 20-300 */
   weight: number;
-  height: number; // TODO do we need this?
+  /** Height in cm. Valid range: 50-250 */
+  height: number;
   sport: Sport;
   tags: string[];
   seasonPhase: SeasonPhaseType;

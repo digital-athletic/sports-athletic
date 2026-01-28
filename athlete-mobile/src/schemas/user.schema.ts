@@ -112,9 +112,10 @@ export const WorkoutDataSchema = v.looseObject({
   maxValues: v.optional(MaxValuesSchema),
 });
 
+// ISO 8601 date strings
 export const TemporalDataSchema = v.object({
-  date: v.union([v.date(), v.string()]),
-  expiration: v.union([v.date(), v.string()]),
+  date: v.string(),
+  expiration: v.string(),
   tag: v.string(),
 });
 
@@ -127,15 +128,15 @@ export const TrainingSectionSchema = v.looseObject({
 });
 
 export const TrainingPlanSchema = v.object({
-  start: v.union([v.date(), v.string()]),
+  start: v.string(), // ISO 8601 date string
   sections: v.array(TrainingSectionSchema),
 });
 
+// Aligned with userSettingsStore.ts ReviewStatusType
 export const ReviewStatusSchema = v.object({
-  hasGivenReview: v.boolean(),
-  reviewDate: v.number(),
-  reviewYears: v.number(),
-  reviewSkips: v.number(),
+  hasReviewed: v.boolean(),
+  lastPromptDate: v.optional(v.string()),
+  promptCount: v.optional(v.number()),
 });
 
 export const UserSettingsSchema = v.object({

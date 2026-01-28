@@ -154,7 +154,11 @@ describe("branchFilterUtils", () => {
         "1": createBranch(["REGION_UPPER_BODY"]),
       };
       const temporalData: TemporalDataType[] = [
-        { tag: "CHEST", date: new Date(), expiration: new Date() },
+        {
+          tag: "CHEST",
+          date: "2024-01-01T00:00:00.000Z",
+          expiration: "2024-01-03T00:00:00.000Z",
+        },
       ];
       const result = filterBySoreness(branches, temporalData, "MOB", false, [
         "MOB",
@@ -169,7 +173,11 @@ describe("branchFilterUtils", () => {
         "3": createBranch(["REGION_CORE"]),
       };
       const temporalData: TemporalDataType[] = [
-        { tag: "CHEST", date: new Date(), expiration: new Date() },
+        {
+          tag: "CHEST",
+          date: "2024-01-01T00:00:00.000Z",
+          expiration: "2024-01-03T00:00:00.000Z",
+        },
       ];
       const result = filterBySoreness(branches, temporalData, "SWR1");
       expect(Object.keys(result.keep)).toHaveLength(2);
@@ -183,8 +191,16 @@ describe("branchFilterUtils", () => {
         "1": createBranch(["REGION_CORE"]),
       };
       const temporalData: TemporalDataType[] = [
-        { tag: "CHEST", date: new Date(), expiration: new Date() },
-        { tag: "GLUTES", date: new Date(), expiration: new Date() },
+        {
+          tag: "CHEST",
+          date: "2024-01-01T00:00:00.000Z",
+          expiration: "2024-01-03T00:00:00.000Z",
+        },
+        {
+          tag: "GLUTES",
+          date: "2024-01-01T00:00:00.000Z",
+          expiration: "2024-01-03T00:00:00.000Z",
+        },
       ];
       expect(() => filterBySoreness(branches, temporalData, "SWR1")).toThrow();
     });
@@ -194,7 +210,11 @@ describe("branchFilterUtils", () => {
         "1": createBranch(["REGION_UPPER_BODY"]),
       };
       const temporalData: TemporalDataType[] = [
-        { tag: "SHOULDER", date: new Date(), expiration: new Date() },
+        {
+          tag: "SHOULDER",
+          date: "2024-01-01T00:00:00.000Z",
+          expiration: "2024-01-03T00:00:00.000Z",
+        },
       ];
       expect(() =>
         filterBySoreness(branches, temporalData, "PREVSHOULDER", true),
@@ -206,7 +226,11 @@ describe("branchFilterUtils", () => {
         "1": createBranch(["REGION_LOWER_BODY"]),
       };
       const temporalData: TemporalDataType[] = [
-        { tag: "GLUTES", date: new Date(), expiration: new Date() },
+        {
+          tag: "GLUTES",
+          date: "2024-01-01T00:00:00.000Z",
+          expiration: "2024-01-03T00:00:00.000Z",
+        },
       ];
       const result = filterBySoreness(branches, temporalData, "CARDIO_1");
       expect(Object.keys(result.keep)).toHaveLength(0);

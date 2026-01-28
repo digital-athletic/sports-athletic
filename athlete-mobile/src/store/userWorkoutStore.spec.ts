@@ -66,7 +66,7 @@ describe("userWorkoutStore", () => {
   describe("setTrainingPlan", () => {
     it("sets training plan", () => {
       const { result } = renderHook(() => useUserWorkoutStore());
-      const plan = { start: new Date(), sections: [] };
+      const plan = { start: new Date().toISOString(), sections: [] };
 
       act(() => {
         result.current.setTrainingPlan(plan);
@@ -80,7 +80,7 @@ describe("userWorkoutStore", () => {
 
       act(() => {
         result.current.setTrainingPlan({
-          start: new Date(),
+          start: new Date().toISOString(),
           sections: [],
         });
         result.current.setTrainingPlan(null);
@@ -136,7 +136,7 @@ describe("userWorkoutStore", () => {
       act(() => {
         result.current.setWorkoutData({ weight: 100 });
         result.current.setTrainingPlan({
-          start: new Date(),
+          start: new Date().toISOString(),
           sections: [],
         });
         result.current.clearUserWorkoutData();

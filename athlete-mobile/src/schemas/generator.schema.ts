@@ -508,7 +508,9 @@ export type TestWorkoutsStartValuesType = Record<
 // ============================================================================
 
 /**
- * User feedback type on exercise difficulty (non-null values).
+ * User feedback type on exercise difficulty (non-null values only).
+ * Use with `| null` when the feedback state can be absent.
+ * See also: ExerciseDifficultyType in workoutConstants.ts which includes null.
  */
 export type DifficultyFeedbackType = "SUCCEEDED" | "TOO_EASY" | "TOO_HARD";
 

@@ -4,12 +4,12 @@ import {
 } from "./TrainingSection";
 
 export type TrainingPlanType = {
-  start: Date; // can be any time the plan is created
+  start: string; // ISO 8601 date string when the plan is created
   sections: TrainingSectionType[];
 };
 
 // Intermediate type: plan before trainings are generated for each section
 export type TrainingPlanInitialType = {
-  start: Date;
+  start: string;
   sections: SectionWithStartType[];
 };

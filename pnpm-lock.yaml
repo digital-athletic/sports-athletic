@@ -6,6 +6,7 @@ settings:
 
 overrides:
   lodash: '>=4.17.23'
+  tar: 7.5.7
 
 importers:
 

@@ -120,6 +120,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const exerciseStartTimeRef = useRef<number>(Date.now());
   const pauseStartRef = useRef<number>(Date.now());
   const [isSkipped, setIsSkipped] = useState(false);
+  const [isScreenFocused, setIsScreenFocused] = useState(true);
 
   // Temporary storage for test workout results, only committed on successful completion
   const [tempMaxValues, setTempMaxValues] = useState<MaxValuesType | null>(
@@ -1039,6 +1040,16 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     }, [handleAbortTraining]),
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      setIsScreenFocused(true);
+
+      return () => {
+        setIsScreenFocused(false);
+      };
+    }, []),
+  );
+
   // Log training started
   useEffect(() => {
     logTrainingEvent("training_started");
@@ -1187,7 +1198,11 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   };
 
   const isCountdownActive =
-    !isAborted && !videoIsPlaying && !isFullScreen && !isSkipped;
+    isScreenFocused &&
+    !isAborted &&
+    !videoIsPlaying &&
+    !isFullScreen &&
+    !isSkipped;
 
   return (
     <>

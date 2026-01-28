@@ -3,6 +3,7 @@ import { loadExercises } from "@/data/loadExercises";
 import { loadSkillTree } from "@/data/loadSkillTrees";
 import type { SeasonPhaseType } from "@/features/training/models/SeasonPhase";
 import { SeasonPhase } from "@/features/training/models/SeasonPhase";
+import { minutes } from "@/features/training/models/TimeUnits";
 import type { TrainingDayType } from "@/features/training/models/TrainingDay";
 import type { TrainingSectionType } from "@/features/training/models/TrainingSection";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
@@ -84,13 +85,13 @@ describe("PlanGenerator", () => {
   describe("getTrainingDayGroups", () => {
     it("should group consecutive active training days", () => {
       const userTrainingDays: TrainingDayType[] = [
-        { active: true, weekday: 0, duration: 60, place: "HOME" },
-        { active: true, weekday: 1, duration: 60, place: "HOME" },
-        { active: false, weekday: 2, duration: 60, place: "HOME" },
-        { active: true, weekday: 3, duration: 60, place: "HOME" },
-        { active: true, weekday: 4, duration: 60, place: "HOME" },
-        { active: false, weekday: 5, duration: 60, place: "HOME" },
-        { active: false, weekday: 6, duration: 60, place: "HOME" },
+        { active: true, weekday: 0, duration: minutes(60), place: "HOME" },
+        { active: true, weekday: 1, duration: minutes(60), place: "HOME" },
+        { active: false, weekday: 2, duration: minutes(60), place: "HOME" },
+        { active: true, weekday: 3, duration: minutes(60), place: "HOME" },
+        { active: true, weekday: 4, duration: minutes(60), place: "HOME" },
+        { active: false, weekday: 5, duration: minutes(60), place: "HOME" },
+        { active: false, weekday: 6, duration: minutes(60), place: "HOME" },
       ];
 
       const groups = PlanGenerator.getTrainingDayGroups(userTrainingDays);
@@ -105,7 +106,7 @@ describe("PlanGenerator", () => {
         .map((_, i) => ({
           active: true,
           weekday: i,
-          duration: 60,
+          duration: minutes(60),
           place: "HOME" as const,
         }));
 
@@ -120,7 +121,7 @@ describe("PlanGenerator", () => {
         .map((_, i) => ({
           active: false,
           weekday: i,
-          duration: 60,
+          duration: minutes(60),
           place: "HOME" as const,
         }));
 
@@ -130,13 +131,13 @@ describe("PlanGenerator", () => {
 
     it("should wrap around week boundary for consecutive days spanning Sunday to Monday", () => {
       const userTrainingDays: TrainingDayType[] = [
-        { active: true, weekday: 0, duration: 60, place: "HOME" }, // Sunday - active
-        { active: false, weekday: 1, duration: 60, place: "HOME" },
-        { active: false, weekday: 2, duration: 60, place: "HOME" },
-        { active: false, weekday: 3, duration: 60, place: "HOME" },
-        { active: false, weekday: 4, duration: 60, place: "HOME" },
-        { active: true, weekday: 5, duration: 60, place: "HOME" }, // Friday - active
-        { active: true, weekday: 6, duration: 60, place: "HOME" }, // Saturday - active
+        { active: true, weekday: 0, duration: minutes(60), place: "HOME" }, // Sunday - active
+        { active: false, weekday: 1, duration: minutes(60), place: "HOME" },
+        { active: false, weekday: 2, duration: minutes(60), place: "HOME" },
+        { active: false, weekday: 3, duration: minutes(60), place: "HOME" },
+        { active: false, weekday: 4, duration: minutes(60), place: "HOME" },
+        { active: true, weekday: 5, duration: minutes(60), place: "HOME" }, // Friday - active
+        { active: true, weekday: 6, duration: minutes(60), place: "HOME" }, // Saturday - active
       ];
 
       const groups = PlanGenerator.getTrainingDayGroups(userTrainingDays);
@@ -146,13 +147,13 @@ describe("PlanGenerator", () => {
 
     it("should create separate groups for alternating training days", () => {
       const userTrainingDays: TrainingDayType[] = [
-        { active: true, weekday: 0, duration: 60, place: "HOME" },
-        { active: false, weekday: 1, duration: 60, place: "HOME" },
-        { active: true, weekday: 2, duration: 60, place: "HOME" },
-        { active: false, weekday: 3, duration: 60, place: "HOME" },
-        { active: true, weekday: 4, duration: 60, place: "HOME" },
-        { active: false, weekday: 5, duration: 60, place: "HOME" },
-        { active: false, weekday: 6, duration: 60, place: "HOME" },
+        { active: true, weekday: 0, duration: minutes(60), place: "HOME" },
+        { active: false, weekday: 1, duration: minutes(60), place: "HOME" },
+        { active: true, weekday: 2, duration: minutes(60), place: "HOME" },
+        { active: false, weekday: 3, duration: minutes(60), place: "HOME" },
+        { active: true, weekday: 4, duration: minutes(60), place: "HOME" },
+        { active: false, weekday: 5, duration: minutes(60), place: "HOME" },
+        { active: false, weekday: 6, duration: minutes(60), place: "HOME" },
       ];
 
       const groups = PlanGenerator.getTrainingDayGroups(userTrainingDays);
@@ -162,24 +163,24 @@ describe("PlanGenerator", () => {
 
     it("should preserve training day properties in groups", () => {
       const userTrainingDays: TrainingDayType[] = [
-        { active: true, weekday: 0, duration: 60, place: "HOME" },
-        { active: true, weekday: 1, duration: 45, place: "STUDIO" },
-        { active: false, weekday: 2, duration: 60, place: "HOME" },
-        { active: false, weekday: 3, duration: 60, place: "HOME" },
-        { active: false, weekday: 4, duration: 60, place: "HOME" },
-        { active: false, weekday: 5, duration: 60, place: "HOME" },
-        { active: false, weekday: 6, duration: 60, place: "HOME" },
+        { active: true, weekday: 0, duration: minutes(60), place: "HOME" },
+        { active: true, weekday: 1, duration: minutes(45), place: "STUDIO" },
+        { active: false, weekday: 2, duration: minutes(60), place: "HOME" },
+        { active: false, weekday: 3, duration: minutes(60), place: "HOME" },
+        { active: false, weekday: 4, duration: minutes(60), place: "HOME" },
+        { active: false, weekday: 5, duration: minutes(60), place: "HOME" },
+        { active: false, weekday: 6, duration: minutes(60), place: "HOME" },
       ];
 
       const groups = PlanGenerator.getTrainingDayGroups(userTrainingDays);
       expect(groups[0][0]).toMatchObject({
         weekday: 0,
-        duration: 60,
+        duration: minutes(60),
         place: "HOME",
       });
       expect(groups[0][1]).toMatchObject({
         weekday: 1,
-        duration: 45,
+        duration: minutes(45),
         place: "STUDIO",
       });
     });
@@ -195,8 +196,8 @@ describe("PlanGenerator", () => {
 
     it("should return PHASE for all child training days", () => {
       const trainingDayGroups: TrainingDayType[][] = [
-        [{ active: true, weekday: 1, duration: 60, place: "HOME" }],
-        [{ active: true, weekday: 4, duration: 45, place: "STUDIO" }],
+        [{ active: true, weekday: 1, duration: minutes(60), place: "HOME" }],
+        [{ active: true, weekday: 4, duration: minutes(45), place: "STUDIO" }],
       ];
 
       const focuses = PlanGenerator.getTrainingDayGroupsFocuses(
@@ -213,8 +214,8 @@ describe("PlanGenerator", () => {
     it("should assign PHASE to studio and CARDIO to location with run equipment for 2-day adult group", () => {
       const trainingDayGroups: TrainingDayType[][] = [
         [
-          { active: true, weekday: 1, duration: 60, place: "STUDIO" },
-          { active: true, weekday: 2, duration: 60, place: "OUTSIDE" },
+          { active: true, weekday: 1, duration: minutes(60), place: "STUDIO" },
+          { active: true, weekday: 2, duration: minutes(60), place: "OUTSIDE" },
         ],
       ];
 
@@ -230,7 +231,7 @@ describe("PlanGenerator", () => {
 
     it("should return PHASE for single-day adult training group", () => {
       const trainingDayGroups: TrainingDayType[][] = [
-        [{ active: true, weekday: 3, duration: 60, place: "HOME" }],
+        [{ active: true, weekday: 3, duration: minutes(60), place: "HOME" }],
       ];
 
       const focuses = PlanGenerator.getTrainingDayGroupsFocuses(
@@ -259,8 +260,8 @@ describe("PlanGenerator", () => {
 
     it("should assign PHASE to studio and CARDIO to outside for 2-day adult group", () => {
       const groupTrainingDays: TrainingDayType[] = [
-        { active: true, weekday: 1, duration: 60, place: "STUDIO" },
-        { active: true, weekday: 2, duration: 45, place: "OUTSIDE" },
+        { active: true, weekday: 1, duration: minutes(60), place: "STUDIO" },
+        { active: true, weekday: 2, duration: minutes(45), place: "OUTSIDE" },
       ];
 
       const focuses = PlanGenerator.getFocusForTrainingDayGroup(
@@ -275,8 +276,8 @@ describe("PlanGenerator", () => {
 
     it("should assign PHASE to longer and STABILITY to shorter home day without run equipment", () => {
       const groupTrainingDays: TrainingDayType[] = [
-        { active: true, weekday: 1, duration: 45, place: "HOME" },
-        { active: true, weekday: 2, duration: 60, place: "HOME" },
+        { active: true, weekday: 1, duration: minutes(45), place: "HOME" },
+        { active: true, weekday: 2, duration: minutes(60), place: "HOME" },
       ];
 
       const focuses = PlanGenerator.getFocusForTrainingDayGroup(
@@ -291,9 +292,9 @@ describe("PlanGenerator", () => {
 
     it("should return PHASE for all days in child age group regardless of places", () => {
       const groupTrainingDays: TrainingDayType[] = [
-        { active: true, weekday: 1, duration: 60, place: "STUDIO" },
-        { active: true, weekday: 2, duration: 45, place: "OUTSIDE" },
-        { active: true, weekday: 3, duration: 30, place: "HOME" },
+        { active: true, weekday: 1, duration: minutes(60), place: "STUDIO" },
+        { active: true, weekday: 2, duration: minutes(45), place: "OUTSIDE" },
+        { active: true, weekday: 3, duration: minutes(30), place: "HOME" },
       ];
 
       const focuses = PlanGenerator.getFocusForTrainingDayGroup(
@@ -1120,13 +1121,13 @@ describe("PlanGenerator", () => {
       const skillTrees: any = {};
       const exerciseBranchData: any = {};
       const userTrainingDays: TrainingDayType[] = [
-        { active: true, weekday: 1, duration: 60, place: "HOME" },
-        { active: false, weekday: 2, duration: 60, place: "HOME" },
-        { active: true, weekday: 3, duration: 60, place: "HOME" },
-        { active: false, weekday: 4, duration: 60, place: "HOME" },
-        { active: true, weekday: 5, duration: 60, place: "HOME" },
-        { active: false, weekday: 6, duration: 60, place: "HOME" },
-        { active: false, weekday: 0, duration: 60, place: "HOME" },
+        { active: true, weekday: 1, duration: minutes(60), place: "HOME" },
+        { active: false, weekday: 2, duration: minutes(60), place: "HOME" },
+        { active: true, weekday: 3, duration: minutes(60), place: "HOME" },
+        { active: false, weekday: 4, duration: minutes(60), place: "HOME" },
+        { active: true, weekday: 5, duration: minutes(60), place: "HOME" },
+        { active: false, weekday: 6, duration: minutes(60), place: "HOME" },
+        { active: false, weekday: 0, duration: minutes(60), place: "HOME" },
       ];
       const places = {
         HOME: {
@@ -1174,13 +1175,13 @@ describe("PlanGenerator", () => {
       const skillTrees: any = {};
       const exerciseBranchData: any = {};
       const userTrainingDays: TrainingDayType[] = [
-        { active: false, weekday: 0, duration: 60, place: "OUTSIDE" },
-        { active: true, weekday: 1, duration: 60, place: "OUTSIDE" },
-        { active: false, weekday: 2, duration: 60, place: "OUTSIDE" },
-        { active: true, weekday: 3, duration: 60, place: "OUTSIDE" },
-        { active: false, weekday: 4, duration: 60, place: "OUTSIDE" },
-        { active: false, weekday: 5, duration: 60, place: "OUTSIDE" },
-        { active: false, weekday: 6, duration: 60, place: "OUTSIDE" },
+        { active: false, weekday: 0, duration: minutes(60), place: "OUTSIDE" },
+        { active: true, weekday: 1, duration: minutes(60), place: "OUTSIDE" },
+        { active: false, weekday: 2, duration: minutes(60), place: "OUTSIDE" },
+        { active: true, weekday: 3, duration: minutes(60), place: "OUTSIDE" },
+        { active: false, weekday: 4, duration: minutes(60), place: "OUTSIDE" },
+        { active: false, weekday: 5, duration: minutes(60), place: "OUTSIDE" },
+        { active: false, weekday: 6, duration: minutes(60), place: "OUTSIDE" },
       ];
       const places = {
         OUTSIDE: {
@@ -1258,13 +1259,13 @@ describe("PlanGenerator", () => {
       };
       const exerciseBranchData: any = {};
       const userTrainingDays: TrainingDayType[] = [
-        { active: false, weekday: 0, duration: 60, place: "STUDIO" },
-        { active: false, weekday: 1, duration: 60, place: "STUDIO" },
-        { active: true, weekday: 2, duration: 60, place: "STUDIO" },
-        { active: false, weekday: 3, duration: 60, place: "STUDIO" },
-        { active: true, weekday: 4, duration: 60, place: "STUDIO" },
-        { active: false, weekday: 5, duration: 60, place: "STUDIO" },
-        { active: false, weekday: 6, duration: 60, place: "STUDIO" },
+        { active: false, weekday: 0, duration: minutes(60), place: "STUDIO" },
+        { active: false, weekday: 1, duration: minutes(60), place: "STUDIO" },
+        { active: true, weekday: 2, duration: minutes(60), place: "STUDIO" },
+        { active: false, weekday: 3, duration: minutes(60), place: "STUDIO" },
+        { active: true, weekday: 4, duration: minutes(60), place: "STUDIO" },
+        { active: false, weekday: 5, duration: minutes(60), place: "STUDIO" },
+        { active: false, weekday: 6, duration: minutes(60), place: "STUDIO" },
       ];
       const places = {
         STUDIO: {
@@ -1338,13 +1339,13 @@ describe("PlanGenerator", () => {
       };
       // Tu, We, Th, Sa active - each 30 min at STUDIO
       const userTrainingDays: TrainingDayType[] = [
-        { active: false, weekday: 0, duration: 30, place: "STUDIO" },
-        { active: true, weekday: 1, duration: 30, place: "STUDIO" },
-        { active: true, weekday: 2, duration: 30, place: "STUDIO" },
-        { active: true, weekday: 3, duration: 30, place: "STUDIO" },
-        { active: false, weekday: 4, duration: 30, place: "STUDIO" },
-        { active: true, weekday: 5, duration: 30, place: "STUDIO" },
-        { active: false, weekday: 6, duration: 30, place: "STUDIO" },
+        { active: false, weekday: 0, duration: minutes(30), place: "STUDIO" },
+        { active: true, weekday: 1, duration: minutes(30), place: "STUDIO" },
+        { active: true, weekday: 2, duration: minutes(30), place: "STUDIO" },
+        { active: true, weekday: 3, duration: minutes(30), place: "STUDIO" },
+        { active: false, weekday: 4, duration: minutes(30), place: "STUDIO" },
+        { active: true, weekday: 5, duration: minutes(30), place: "STUDIO" },
+        { active: false, weekday: 6, duration: minutes(30), place: "STUDIO" },
       ];
       const places = {
         STUDIO: {
@@ -1410,7 +1411,7 @@ describe("PlanGenerator", () => {
       return Array.from({ length: 7 }, (_, i) => ({
         active: activeDays.includes(i),
         weekday: i,
-        duration: 60,
+        duration: minutes(60),
         place: "HOME" as const,
       }));
     };

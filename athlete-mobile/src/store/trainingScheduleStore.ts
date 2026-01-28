@@ -1,6 +1,7 @@
 import { SharedConstants } from "@/constants/sharedConstants";
 import { PlaceType } from "@/constants/workoutConstants";
 import { TrainingDayType } from "@/features/training/models/TrainingDay";
+import { minutes } from "@/features/training/models/TimeUnits";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
@@ -14,43 +15,43 @@ const createInitialTrainingDays = (): TrainingDayType[] => [
   {
     active: false,
     weekday: 0, // Monday
-    duration: 30,
+    duration: minutes(30),
     place: "STUDIO",
   },
   {
     active: false,
     weekday: 1, // Tuesday
-    duration: 30,
+    duration: minutes(30),
     place: "STUDIO",
   },
   {
     active: false,
     weekday: 2, // Wednesday
-    duration: 30,
+    duration: minutes(30),
     place: "STUDIO",
   },
   {
     active: false,
     weekday: 3, // Thursday
-    duration: 30,
+    duration: minutes(30),
     place: "STUDIO",
   },
   {
     active: false,
     weekday: 4, // Friday
-    duration: 30,
+    duration: minutes(30),
     place: "STUDIO",
   },
   {
     active: false,
     weekday: 5, // Saturday
-    duration: 30,
+    duration: minutes(30),
     place: "STUDIO",
   },
   {
     active: false,
     weekday: 6, // Sunday
-    duration: 30,
+    duration: minutes(30),
     place: "STUDIO",
   },
 ];
@@ -63,7 +64,7 @@ type Actions = {
   setTrainingDays: (days: TrainingDayType[]) => void;
   toggleDay: (weekday: number) => void;
   setDayLocation: (weekday: number, placeId: PlaceType) => void;
-  setDayDuration: (weekday: number, duration: number) => void;
+  setDayDuration: (weekday: number, durationMinutes: number) => void;
   clearTrainingSchedule: () => void;
 };
 
@@ -120,11 +121,11 @@ export const useTrainingScheduleStore = create<TrainingScheduleState>()(
           }
         }),
 
-      setDayDuration: (weekday, duration) =>
+      setDayDuration: (weekday, durationMinutes) =>
         set((state) => {
           const day = state.trainingDays.find((d) => d.weekday === weekday);
           if (day) {
-            day.duration = duration;
+            day.duration = minutes(durationMinutes);
           }
         }),
 

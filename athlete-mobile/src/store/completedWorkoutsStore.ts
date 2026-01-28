@@ -1,5 +1,6 @@
 import { SharedConstants } from "@/constants/sharedConstants";
 import { TrainingPlanType } from "@/features/training/models/TrainingPlan";
+import type { DurationSeconds } from "@/features/training/models/TimeUnits";
 import { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -10,7 +11,8 @@ export interface CompleteWorkoutType {
   id: string;
   timestamp: number;
   exercises: UserExerciseDataType[];
-  duration: number;
+  /** Duration in seconds */
+  duration: DurationSeconds;
   xpEarned?: number;
 }
 

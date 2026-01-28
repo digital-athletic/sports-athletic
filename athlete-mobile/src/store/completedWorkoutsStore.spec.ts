@@ -1,4 +1,5 @@
 import { act, renderHook } from "@testing-library/react-native";
+import { seconds } from "@/features/training/models/TimeUnits";
 import {
   CompleteWorkoutType,
   useCompletedWorkoutsStore,
@@ -11,7 +12,7 @@ const createMockWorkout = (
   id,
   timestamp,
   exercises: [],
-  duration: 1800, // 30 minutes in seconds
+  duration: seconds(1800), // 30 minutes in seconds
 });
 
 describe("completedWorkoutsStore", () => {
@@ -120,11 +121,11 @@ describe("completedWorkoutsStore", () => {
       act(() => {
         result.current.addCompletedWorkout({
           ...createMockWorkout("w1", 1000),
-          duration: 1800,
+          duration: seconds(1800),
         });
         result.current.addCompletedWorkout({
           ...createMockWorkout("w2", 2000),
-          duration: 3600,
+          duration: seconds(3600),
         });
       });
 

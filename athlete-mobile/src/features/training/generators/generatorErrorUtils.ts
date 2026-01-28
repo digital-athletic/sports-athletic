@@ -1,6 +1,9 @@
 import { RegionType } from "@/bodyParts/types";
+import translations from "@/i18n/locales/en.json";
 import { TFunction } from "i18next";
 import { GeneratorError } from "./GeneratorError";
+
+type EquipmentItemKey = keyof typeof translations.equipment.items;
 
 /**
  *  builds message to show in generator error message
@@ -22,7 +25,12 @@ export const buildGeneratorErrorMessage = (
       message +=
         "\n" +
         t("training.generator.errorTitleNoExercisesParamsX", {
-          params: e.params.join(),
+          params:
+            e.subtype === "EQUIPMENT"
+              ? e.params
+                  .map((p) => t(`equipment.items.${p as EquipmentItemKey}`))
+                  .join(", ")
+              : e.params.join(),
         });
       break;
     case "TOO_MUCH_SORENESS":

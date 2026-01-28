@@ -1,6 +1,6 @@
 const EQUIPMENT = [
-    "BLACK_BALL",
-    "BLACK_ROLL",
+    "FOAM_BALL",
+    "FOAM_ROLLER",
     "BOTTLE",
     "HANDBALL",
     "HANDBALL_GOAL",

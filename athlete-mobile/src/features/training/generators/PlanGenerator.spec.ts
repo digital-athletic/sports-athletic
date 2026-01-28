@@ -1374,7 +1374,7 @@ describe("PlanGenerator", () => {
 
   describe("createSection", () => {
     const mockPlaces: PlacesData = {
-      HOME: { name: "HOME", equipment: ["DUMBBELL", "BLACK_ROLL"] },
+      HOME: { name: "HOME", equipment: ["DUMBBELL", "FOAM_ROLLER"] },
       STUDIO: { name: "STUDIO", equipment: ["BARBELL", "BENCH"] },
       HALL: { name: "HALL", equipment: [] },
       OUTSIDE: { name: "OUTSIDE", equipment: ["TRACK_20"] },

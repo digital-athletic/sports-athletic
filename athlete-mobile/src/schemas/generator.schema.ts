@@ -202,7 +202,7 @@ export const SkillTypeSchema = v.picklist([
   "STABILITY",
   "CARDIO",
   "SUPPORT",
-  "BLACK_ROLL",
+  "FOAM_ROLLER",
   "SCHNELLIGKEITSAUSDAUER_SPECIAL",
 ]);
 export type SkillTypeFromSchema = v.InferOutput<typeof SkillTypeSchema>;
@@ -224,7 +224,7 @@ export const GeneratorSkillTypeSchema = v.picklist([
   // Generator aliases (map to user-facing types)
   "MOB", // -> MOBILITY
   "WU", // -> WARMUP
-  "BR", // -> BLACK_ROLL
+  "BR", // -> FOAM_ROLLER
   "PREV", // -> PREVENTION
   "CD", // -> CARDIO
 
@@ -329,7 +329,7 @@ const SKILL_TYPE_MAP: Record<
 > = {
   MOB: "MOBILITY",
   WU: "WARMUP",
-  BR: "BLACK_ROLL",
+  BR: "FOAM_ROLLER",
   PREV: "PREVENTION",
   CD: "CARDIO",
   SWR1: "SWR",

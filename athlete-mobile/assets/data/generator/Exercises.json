@@ -8405,7 +8405,7 @@
     "DisplayName": "Schulterblatt triggern mit Ball li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_BALL",
+      "EQ_FOAM_BALL",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_OBERER_RUECKEN",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -8420,7 +8420,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -11494,7 +11494,7 @@
     "DisplayName": "Beininnenseite triggern auf Rolle li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "EXERCISEDIRECTION_UNTERKOERPER",
       "MUSCLE_INNERER_OBERSCHENKEL",
@@ -11511,7 +11511,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -11556,7 +11556,7 @@
     "DisplayName": "Beinaussenseite triggern auf Rolle li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "EXERCISEDIRECTION_UNTERKOERPER",
       "MUSCLE_AEUSSERER_OBERSCHENKEL",
@@ -11576,7 +11576,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -11621,7 +11621,7 @@
     "DisplayName": "Oberschenkelvorderseite triggern auf Rolle li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "EXERCISEDIRECTION_UNTERKOERPER",
       "MUSCLE_OBERSCHENKELVORDERSEITE",
@@ -11640,7 +11640,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -11685,7 +11685,7 @@
     "DisplayName": "Schienbein triggern auf Rolle li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "EXERCISEDIRECTION_UNTERKOERPER",
       "MUSCLE_SCHIENBEIN",
@@ -11701,7 +11701,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -11746,7 +11746,7 @@
     "DisplayName": "Wade triggern auf Rolle li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "EXERCISEDIRECTION_UNTERKOERPER",
       "MUSCLE_WADE",
@@ -11764,7 +11764,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -32570,7 +32570,7 @@
     "DisplayName": "Wirbelsäulen-Rotation auf Rolle li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_GERADE_BAUCHMUSKELN",
       "MUSCLE_OBERER_RUECKEN",
@@ -32861,7 +32861,7 @@
     "DisplayName": "Armrollen auf Rolle",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_GROSSER_RUECKENMUSKEL_LAT",
       "MUSCLE_NACKEN",
@@ -34381,7 +34381,7 @@
     "DisplayName": "Fußsohle triggern auf Ball li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_BALL",
+      "EQ_FOAM_BALL",
       "EQTYPE_EQUIPMENT",
       "EXERCISEDIRECTION_UNTERKOERPER",
       "MUSCLE_SPRUNGGELENK",
@@ -34405,7 +34405,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -40340,7 +40340,7 @@
     "DisplayName": "Lat triggern mit Rolle li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_GROSSER_RUECKENMUSKEL_LAT",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -40355,7 +40355,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -40400,7 +40400,7 @@
     "DisplayName": "Brust triggern mit Rolle li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_BRUST",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -40415,7 +40415,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -40460,7 +40460,7 @@
     "DisplayName": "seitlichen oberen Rücken triggern auf Rolle (li+re)",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_GROSSER_RUECKENMUSKEL_LAT",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -40475,7 +40475,7 @@
       "SEASONPHASE_PAUSE",
       "SEASONPHASE_PREPATORY",
       "SIDE_BOTH",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -40520,7 +40520,7 @@
     "DisplayName": "Rücken triggern mit gestreckten Armen auf Rolle",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_OBERER_RUECKEN",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -40538,7 +40538,7 @@
       "SEASONPHASE_PAUSE",
       "SEASONPHASE_PREPATORY",
       "SIDE_BOTH",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -40583,7 +40583,7 @@
     "DisplayName": "oberer Rücken triggern mit Crunch auf Rolle",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_OBERER_RUECKEN",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -40601,7 +40601,7 @@
       "SEASONPHASE_PAUSE",
       "SEASONPHASE_PREPATORY",
       "SIDE_BOTH",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -40646,7 +40646,7 @@
     "DisplayName": "oberen Rücken triggern mit Rotation auf Rolle",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_GROSSER_RUECKENMUSKEL_LAT",
       "MUSCLE_OBERER_RUECKEN",
@@ -40664,7 +40664,7 @@
       "SEASONPHASE_PAUSE",
       "SEASONPHASE_PREPATORY",
       "SIDE_BOTH",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -40709,7 +40709,7 @@
     "DisplayName": "Po triggern mit Ball li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_BALL",
+      "EQ_FOAM_BALL",
       "EQTYPE_EQUIPMENT",
       "EXERCISEDIRECTION_UNTERKOERPER",
       "MUSCLE_GESAESS",
@@ -40726,7 +40726,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -40771,7 +40771,7 @@
     "DisplayName": "Po triggern mit Rolle li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "SKILL_BLACK_ROLL",
+      "SKILL_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "SIDE_ONE",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -40784,7 +40784,7 @@
       "PLACE_STUDIO",
       "PLACE_HOME",
       "PLACE_OUTSIDE",
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "MUSCLE_GESAESS",
       "PAIN_HUEFTE",
       "PAIN_KNIE",
@@ -40833,7 +40833,7 @@
     "DisplayName": "Beinrückseite triggern mit Rolle li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "SKILL_BLACK_ROLL",
+      "SKILL_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "SIDE_ONE",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -40846,7 +40846,7 @@
       "PLACE_STUDIO",
       "PLACE_HOME",
       "PLACE_OUTSIDE",
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "MUSCLE_HINTERER_OBERSCHENKEL",
       "PAIN_HUEFTE",
       "PAIN_KNIE",
@@ -40895,7 +40895,7 @@
     "DisplayName": "Beinrückseite triggern mit Ball li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "SKILL_BLACK_ROLL",
+      "SKILL_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "SIDE_ONE",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -40914,7 +40914,7 @@
       "EQ_CHAIR",
       "EQ_MULTIPLE_EXERCISING_BENCHES",
       "EQ_EXERCISING_BENCH",
-      "EQ_BLACK_BALL",
+      "EQ_FOAM_BALL",
       "MUSCLE_HINTERER_OBERSCHENKEL",
       "PAIN_HUEFTE",
       "PAIN_KNIE",
@@ -40963,7 +40963,7 @@
     "DisplayName": "Hüftbeuger triggern mit Ball li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "SKILL_BLACK_ROLL",
+      "SKILL_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "SIDE_ONE",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -40976,7 +40976,7 @@
       "PLACE_STUDIO",
       "PLACE_HOME",
       "PLACE_OUTSIDE",
-      "EQ_BLACK_BALL",
+      "EQ_FOAM_BALL",
       "MUSCLE_HUEFT_BEUGER",
       "PAIN_WIRBELSAEULE",
       "PAIN_HUEFTE",
@@ -42907,7 +42907,7 @@
     "DisplayName": "Bauchpresse mit Rolle",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "EXERCISEDIRECTION_CORE",
       "EXERCISEDIRECTION_FRONT",
@@ -59804,7 +59804,7 @@
     "DisplayName": "Brust triggern mit Ball li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_BALL",
+      "EQ_FOAM_BALL",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_BRUST",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -59819,7 +59819,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -60005,7 +60005,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -60177,7 +60177,7 @@
     "DisplayName": "Schulterrückseite triggern mit Ball li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_BALL",
+      "EQ_FOAM_BALL",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_OBERER_RUECKEN",
       "MUSCLE_SCHULTER_HINTEN",
@@ -60193,7 +60193,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -63385,7 +63385,7 @@
     "DisplayName": "Schulterblatt triggern mit Ball re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_BALL",
+      "EQ_FOAM_BALL",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_OBERER_RUECKEN",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -63400,7 +63400,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -64469,7 +64469,7 @@
     "DisplayName": "Beininnenseite triggern auf Rolle re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "EXERCISEDIRECTION_UNTERKOERPER",
       "MUSCLE_INNERER_OBERSCHENKEL",
@@ -64486,7 +64486,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -64531,7 +64531,7 @@
     "DisplayName": "Beinaussenseite triggern auf Rolle re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "EXERCISEDIRECTION_UNTERKOERPER",
       "MUSCLE_AEUSSERER_OBERSCHENKEL",
@@ -64551,7 +64551,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -64596,7 +64596,7 @@
     "DisplayName": "Oberschenkelvorderseite triggern auf Rolle re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "SKILL_BLACK_ROLL",
+      "SKILL_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "SIDE_ONE",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -64609,7 +64609,7 @@
       "PLACE_STUDIO",
       "PLACE_HOME",
       "PLACE_OUTSIDE",
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "MUSCLE_OBERSCHENKELVORDERSEITE",
       "MUSCLESECONDARY_GERADE_BAUCHMUSKELN",
       "MUSCLESECONDARY_SEITLICHE_BAUCHMUSKELN",
@@ -64660,7 +64660,7 @@
     "DisplayName": "Schienbein triggern auf Rolle re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "SKILL_BLACK_ROLL",
+      "SKILL_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "SIDE_ONE",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -64673,7 +64673,7 @@
       "PLACE_STUDIO",
       "PLACE_HOME",
       "PLACE_OUTSIDE",
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "MUSCLE_SCHIENBEIN",
       "PAIN_SPRUNGGELENK",
       "SIDE_RIGHT"
@@ -64721,7 +64721,7 @@
     "DisplayName": "Wade triggern auf Rolle re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "SKILL_BLACK_ROLL",
+      "SKILL_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "SIDE_ONE",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -64734,7 +64734,7 @@
       "PLACE_STUDIO",
       "PLACE_HOME",
       "PLACE_OUTSIDE",
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "MUSCLE_WADE",
       "PAIN_HUEFTE",
       "PAIN_KNIE",
@@ -70963,7 +70963,7 @@
     "DisplayName": "Wirbelsäulen-Rotation auf Rolle re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_GERADE_BAUCHMUSKELN",
       "MUSCLE_SEITLICHE_BAUCHMUSKELN",
@@ -71537,7 +71537,7 @@
     "DisplayName": "Fußsohle triggern auf Ball re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_BALL",
+      "EQ_FOAM_BALL",
       "EQTYPE_EQUIPMENT",
       "EXERCISEDIRECTION_UNTERKOERPER",
       "MUSCLE_SPRUNGGELENK",
@@ -71561,7 +71561,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -72803,7 +72803,7 @@
     "DisplayName": "Lat triggern mit Rolle re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_GROSSER_RUECKENMUSKEL_LAT",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -72818,7 +72818,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -72863,7 +72863,7 @@
     "DisplayName": "Brust triggern mit Rolle re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_BRUST",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -72878,7 +72878,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -72923,7 +72923,7 @@
     "DisplayName": "Po triggern mit Ball re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "SKILL_BLACK_ROLL",
+      "SKILL_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "SIDE_ONE",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -72936,7 +72936,7 @@
       "PLACE_STUDIO",
       "PLACE_HOME",
       "PLACE_OUTSIDE",
-      "EQ_BLACK_BALL",
+      "EQ_FOAM_BALL",
       "MUSCLE_GESAESS",
       "PAIN_HUEFTE",
       "PAIN_KNIE",
@@ -72985,7 +72985,7 @@
     "DisplayName": "Po triggern mit Rolle re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "SKILL_BLACK_ROLL",
+      "SKILL_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "SIDE_ONE",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -72998,7 +72998,7 @@
       "PLACE_STUDIO",
       "PLACE_HOME",
       "PLACE_OUTSIDE",
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "MUSCLE_GESAESS",
       "PAIN_HUEFTE",
       "PAIN_KNIE",
@@ -73047,7 +73047,7 @@
     "DisplayName": "Beinrückseite triggern mit Rolle re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "SKILL_BLACK_ROLL",
+      "SKILL_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "SIDE_ONE",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -73060,7 +73060,7 @@
       "PLACE_STUDIO",
       "PLACE_HOME",
       "PLACE_OUTSIDE",
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "MUSCLE_HINTERER_OBERSCHENKEL",
       "PAIN_HUEFTE",
       "PAIN_KNIE",
@@ -73109,7 +73109,7 @@
     "DisplayName": "Beinrückseite triggern mit Ball re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "SKILL_BLACK_ROLL",
+      "SKILL_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "SIDE_ONE",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -73128,7 +73128,7 @@
       "EQ_CHAIR",
       "EQ_MULTIPLE_EXERCISING_BENCHES",
       "EQ_EXERCISING_BENCH",
-      "EQ_BLACK_BALL",
+      "EQ_FOAM_BALL",
       "MUSCLE_HINTERER_OBERSCHENKEL",
       "PAIN_HUEFTE",
       "PAIN_KNIE",
@@ -73177,7 +73177,7 @@
     "DisplayName": "Hüftbeuger triggern mit Ball re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "SKILL_BLACK_ROLL",
+      "SKILL_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "SIDE_ONE",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -73190,7 +73190,7 @@
       "PLACE_STUDIO",
       "PLACE_HOME",
       "PLACE_OUTSIDE",
-      "EQ_BLACK_BALL",
+      "EQ_FOAM_BALL",
       "MUSCLE_HUEFT_BEUGER",
       "PAIN_WIRBELSAEULE",
       "PAIN_HUEFTE",
@@ -76785,7 +76785,7 @@
     "DisplayName": "Brust triggern mit Ball re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_BALL",
+      "EQ_FOAM_BALL",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_BRUST",
       "MUSCLEINVOLVEMENT_ISOLATED",
@@ -76800,7 +76800,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -76986,7 +76986,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -77158,7 +77158,7 @@
     "DisplayName": "Schulterrückseite triggern mit Ball re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_BALL",
+      "EQ_FOAM_BALL",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_OBERER_RUECKEN",
       "MUSCLE_SCHULTER_HINTEN",
@@ -77174,7 +77174,7 @@
       "SEASONPHASE_PREPATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_BLACK_ROLL"
+      "SKILL_FOAM_ROLLER"
     ],
     "IsAdvanceByReps": false,
     "IsAdvanceByDuration": true,
@@ -89952,7 +89952,7 @@
     "DisplayName": "4-Füßlerstand mit Rolle",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "EXERCISEDIRECTION_HORIZONTAL_PUSH",
       "MUSCLE_BRUST",
@@ -90038,7 +90038,7 @@
     "DisplayName": "Unterarmliegestütz mit Rolle",
     "Level": { "m": 2, "w": 2 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_EQUIPMENT",
       "EXERCISEDIRECTION_HORIZONTAL_PUSH",
       "MUSCLE_ARMSTRECKER",
@@ -94696,7 +94696,7 @@
     "DisplayName": "Mobilisieren/Kräftigen der Hüftinnenrotatoren",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQTYPE_KG",
       "EXERCISEDIRECTION_UNTERKOERPER",
       "MUSCLE_GESAESS",
@@ -94867,7 +94867,7 @@
     "DisplayName": "seitliche Körper-Muskelkette mobilisieren li",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQ_WALL",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_AEUSSERER_OBERSCHENKEL",
@@ -94954,7 +94954,7 @@
     "DisplayName": "seitliche Körper-Muskelkette mobilisieren re",
     "Level": { "m": 1, "w": 1 },
     "Tags": [
-      "EQ_BLACK_ROLL",
+      "EQ_FOAM_ROLLER",
       "EQ_WALL",
       "EQTYPE_EQUIPMENT",
       "MUSCLE_AEUSSERER_OBERSCHENKEL",

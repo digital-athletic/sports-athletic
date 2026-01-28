@@ -1,7 +1,7 @@
 const EQUIPMENT = [
     "BENCH",
-    "BLACK_ROLL",
-    "BLACK_BALL",
+    "FOAM_ROLLER",
+    "FOAM_BALL",
     "TOWEL",
     "CROSS_BAR",
     "POWER_RACK",

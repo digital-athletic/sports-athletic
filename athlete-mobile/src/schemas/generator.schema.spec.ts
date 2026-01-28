@@ -17,7 +17,7 @@ describe("generator.schema", () => {
         "STABILITY",
         "CARDIO",
         "SUPPORT",
-        "BLACK_ROLL",
+        "FOAM_ROLLER",
         "SCHNELLIGKEITSAUSDAUER_SPECIAL",
       ];
 

@@ -21,7 +21,7 @@ export type SkillType =
   | "STABILITY"
   | "CARDIO"
   | "SUPPORT"
-  | "BLACK_ROLL"
+  | "FOAM_ROLLER"
   | "SCHNELLIGKEITSAUSDAUER_SPECIAL";
 
 /**
@@ -33,7 +33,7 @@ export type GeneratorSkillType = SkillType | "WUSPEZIAL" | "main";
 
 export type SkillFocusType = Exclude<
   SkillType,
-  "SUPPORT" | "BLACK_ROLL" | "SCHNELLIGKEITSAUSDAUER_SPECIAL"
+  "SUPPORT" | "FOAM_ROLLER" | "SCHNELLIGKEITSAUSDAUER_SPECIAL"
 >;
 
 export type TrainingTimeType = {

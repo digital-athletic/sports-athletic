@@ -72,7 +72,7 @@ export type PlacesStoreState = State & Actions;
  * const homeEquipment = places.HOME.equipment;
  *
  * // Set all equipment for a place
- * setPlaceEquipment('HOME', ['DUMBBELL', 'BLACK_ROLL']);
+ * setPlaceEquipment('HOME', ['DUMBBELL', 'FOAM_ROLLER']);
  *
  * // Toggle a single equipment item
  * toggleEquipment('STUDIO', 'BARBELL');

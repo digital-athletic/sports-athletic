@@ -230,10 +230,17 @@ export default class TrainingGenerator {
       console.log("skillTree", skillTree);
     }
 
-    // add black roll to eq if chosen type is BR
-    if (type === "BR") {
-      if (!equipment.includes("BLACK_ROLL")) equipment.push("BLACK_ROLL");
-      if (!equipment.includes("BLACK_BALL")) equipment.push("BLACK_BALL");
+    // check foam roller (Faszienrolle) equipment if chosen type is BR
+    if (
+      type === "BR" &&
+      !equipment.includes("FOAM_ROLLER") &&
+      !equipment.includes("FOAM_BALL")
+    ) {
+      throw {
+        type: "NO_EXERCISES",
+        subtype: "EQUIPMENT",
+        params: ["FOAM_ROLLER", "FOAM_BALL"],
+      };
     }
 
     // get branches matching
@@ -354,10 +361,11 @@ export default class TrainingGenerator {
     }
 
     // equipment
-    const equipmentFiltered = filterByEquipment(
+    const equipmentFilterResult = filterByEquipment(
       sorenessFiltered,
       equipment,
-    ).keep;
+    );
+    const equipmentFiltered = equipmentFilterResult.keep;
 
     if (TrainingGenerator.DEBUG) {
       console.log("equipment filtered", equipmentFiltered);
@@ -385,7 +393,7 @@ export default class TrainingGenerator {
       throw {
         type: "NO_EXERCISES",
         subtype: "EQUIPMENT",
-        params: equipmentFiltered.missingEquipment || [],
+        params: equipmentFilterResult.missingEquipment || [],
       };
     }
 

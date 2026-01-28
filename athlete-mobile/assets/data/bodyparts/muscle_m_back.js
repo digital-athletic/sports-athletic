@@ -60,8 +60,8 @@ const muscleMBack = [
         right: 0.33,
         transform: [{ rotate: "-15deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/aeußererOberschenkel_hinten_re.png"),
-        secondaryImage: require("../../img/bodyparts/muscle_m_back/aeußererOberschenkel_hinten_re.png")
+        image: require("../../img/bodyparts/muscle_m_back/aeussererOberschenkel_hinten_re.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/aeussererOberschenkel_hinten_re.png")
     },
     {
         name: "GESAESS",
@@ -71,8 +71,8 @@ const muscleMBack = [
         left: 0.357,
         transform: [{ rotate: "12deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/gesaeß.png"),
-        secondaryImage: require("../../img/bodyparts/muscle_m_back/gesaeß.png")
+        image: require("../../img/bodyparts/muscle_m_back/gesaess.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/gesaess.png")
     },
     {
         name: "UNTERER_RUECKEN",
@@ -94,8 +94,8 @@ const muscleMBack = [
         left: 0.36,
         transform: [{ rotate: "-10deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/großerRueckenmuskel_lat.png"),
-        secondaryImage: require("../../img/bodyparts/muscle_m_back/großerRueckenmuskel_lat.png")
+        image: require("../../img/bodyparts/muscle_m_back/grosserRueckenmuskel_lat.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/grosserRueckenmuskel_lat.png")
     },
     {
         name: "GROSSER_RUECKENMUSKEL_LAT_RECHTS",
@@ -105,8 +105,8 @@ const muscleMBack = [
         right: 0.392,
         transform: [{ rotate: "30deg" }],
         backgroundColor: "rgba(0,0,0,0)",
-        image: require("../../img/bodyparts/muscle_m_back/großerRueckenmuskel_lat.png"),
-        secondaryImage: require("../../img/bodyparts/muscle_m_back/großerRueckenmuskel_lat.png")
+        image: require("../../img/bodyparts/muscle_m_back/grosserRueckenmuskel_lat.png"),
+        secondaryImage: require("../../img/bodyparts/muscle_m_back/grosserRueckenmuskel_lat.png")
     },
     {
         name: "OBERER_RUECKEN",

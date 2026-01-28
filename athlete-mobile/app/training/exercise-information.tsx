@@ -1,6 +1,6 @@
 import { BodyParts } from "@/bodyParts/BodyParts";
 import { BodyPartsTagChips } from "@/bodyParts/BodyPartsTagChips";
-import { MuscleType } from "@/bodyParts/types";
+import { expandMuscleTags } from "@/bodyParts/muscleTagMapping";
 import { Loading } from "@/common/Loading";
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
@@ -134,11 +134,10 @@ type MusclesListProps = {
 const MusclesList: FC<MusclesListProps> = ({ tags, gender }) => {
   const { t } = useTranslation();
 
-  const muscles = getTagValues(tags, TagGroups.MUSCLE) as MuscleType[];
-  const musclesSecondary = getTagValues(
-    tags,
-    TagGroups.MUSCLE_SECONDARY,
-  ) as MuscleType[];
+  const musclesRaw = getTagValues(tags, TagGroups.MUSCLE);
+  const musclesSecondaryRaw = getTagValues(tags, TagGroups.MUSCLE_SECONDARY);
+  const muscles = expandMuscleTags(musclesRaw);
+  const musclesSecondary = expandMuscleTags(musclesSecondaryRaw);
 
   if (muscles.length === 0) return null;
 

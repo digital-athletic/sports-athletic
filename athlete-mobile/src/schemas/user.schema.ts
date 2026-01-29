@@ -160,10 +160,17 @@ export const TrainingSectionSchema = v.looseObject({
   trainings: v.array(UserTrainingSchema),
 });
 
+export type TrainingSectionSchemaType = v.InferOutput<
+  typeof TrainingSectionSchema
+>;
+
 export const TrainingPlanSchema = v.object({
-  start: v.string(), // ISO 8601 date string
+  /** Training plan start date in ISO 8601 format (YYYY-MM-DD) */
+  start: v.string(),
   sections: v.array(TrainingSectionSchema),
 });
+
+export type TrainingPlanSchemaType = v.InferOutput<typeof TrainingPlanSchema>;
 
 // Aligned with userSettingsStore.ts ReviewStatusType
 export const ReviewStatusSchema = v.object({

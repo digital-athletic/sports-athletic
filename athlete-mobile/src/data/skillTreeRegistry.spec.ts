@@ -18,10 +18,10 @@ describe("skillTreeRegistry", () => {
   });
 
   describe("getAllSkillTrees", () => {
-    it("returns all 26 skill trees", () => {
+    it("returns all 27 skill trees", () => {
       const trees = getAllSkillTrees();
 
-      expect(Object.keys(trees)).toHaveLength(26);
+      expect(Object.keys(trees)).toHaveLength(27);
     });
   });
 
@@ -44,6 +44,7 @@ describe("skillTreeRegistry", () => {
           "PREV",
           "SA",
           "SK",
+          "SUPPORT",
           "SWR1",
           "WU",
         ]),

@@ -50,7 +50,7 @@ export default function TrainingDays() {
 
   const { seasonPhase } = useAnamnesisStore();
   const { anamnesisCompleted } = useUserProfileStore();
-  const { trainingDays, toggleDay, setDayLocation, setDayDuration } =
+  const { trainingDays, toggleDay, setDayPlace, setDayDuration } =
     useTrainingScheduleStore();
   const ageGroup = useAgeGroup();
   const hasActiveDay = trainingDays.some((day) => day.active);
@@ -168,7 +168,7 @@ export default function TrainingDays() {
     if (selectedValues.length > 0) {
       const location = selectedValues[0];
       if (isPlaceType(location)) {
-        setDayLocation(weekday, location);
+        setDayPlace(weekday, location);
       }
     }
   };

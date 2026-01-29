@@ -5,6 +5,7 @@ import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import PlanGenerator from "@/features/training/generators/PlanGenerator";
 import { Logger } from "@/services/Logger";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
+import { useAuthStore } from "@/store/authStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { usePlacesStore } from "@/store/placesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
@@ -40,8 +41,10 @@ export default function Generating() {
     trainingPlan,
     setTrainingPlan,
   } = useUserWorkoutStore();
-  const { anamnesisCompleted, setAnamnesisCompleted, userId, personalData } =
+  const { anamnesisCompleted, setAnamnesisCompleted, personalData } =
     useUserProfileStore();
+  const { auth } = useAuthStore();
+  const userId = auth?.userId;
   const exercises = getAllExercises();
   const skillTrees = getAllSkillTrees();
   const { branchData } = useExerciseProgressStore();

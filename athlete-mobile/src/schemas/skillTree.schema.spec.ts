@@ -35,8 +35,8 @@ describe("SkillTreeSchema", () => {
     const branch = {
       tags: ["TAG1", "TAG2"],
       levels: {
-        "1": { id: "100" },
-        "2": { id: "101" },
+        "1": { exerciseId: "100" },
+        "2": { exerciseId: "101" },
       },
     };
 
@@ -48,11 +48,11 @@ describe("SkillTreeSchema", () => {
     const skillTree = {
       branch1: {
         tags: ["TAG1"],
-        levels: { "1": { id: "100" } },
+        levels: { "1": { exerciseId: "100" } },
       },
       branch2: {
         tags: ["TAG2", "TAG3"],
-        levels: { "1": { id: "200" }, "2": { id: "201" } },
+        levels: { "1": { exerciseId: "200" }, "2": { exerciseId: "201" } },
       },
     };
 
@@ -64,11 +64,45 @@ describe("SkillTreeSchema", () => {
     const invalidBranch = {
       tags: ["TAG1"],
       levels: {
-        "not-a-number": { id: "100" },
+        "not-a-number": { exerciseId: "100" },
       },
     };
 
     const result = v.safeParse(SkillBranchSchema, invalidBranch);
     expect(result.success).toBe(false);
+  });
+
+  test("transform converts string keys to number keys", () => {
+    const input = {
+      tags: ["TAG1"],
+      levels: { "1": { exerciseId: "100" }, "2": { exerciseId: "101" } },
+    };
+    const result = v.parse(SkillBranchSchema, input);
+
+    expect(result.levels[1]).toEqual({ exerciseId: "100" });
+    expect(result.levels[2]).toEqual({ exerciseId: "101" });
+  });
+
+  test("direct number access works on transformed output", () => {
+    const input = {
+      tags: ["TAG1", "TAG2"],
+      levels: { "5": { exerciseId: "500" }, "10": { exerciseId: "1000" } },
+    };
+    const result = v.parse(SkillBranchSchema, input);
+
+    expect(result.levels[5]).toBeDefined();
+    expect(result.levels[5].exerciseId).toBe("500");
+    expect(result.levels[10]).toBeDefined();
+    expect(result.levels[10].exerciseId).toBe("1000");
+  });
+
+  test("transformed output preserves tags array", () => {
+    const input = {
+      tags: ["TAG1", "TAG2", "TAG3"],
+      levels: { "1": { exerciseId: "100" } },
+    };
+    const result = v.parse(SkillBranchSchema, input);
+
+    expect(result.tags).toEqual(["TAG1", "TAG2", "TAG3"]);
   });
 });

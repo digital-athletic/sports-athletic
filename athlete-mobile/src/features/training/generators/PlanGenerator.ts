@@ -742,7 +742,7 @@ export default class PlanGenerator {
             delete exercises[skill];
           } else {
             for (let e = 0; e < exercises[skill].length; e++) {
-              branchIdsInUse.push(exercises[skill][e].exerciseBranchId);
+              branchIdsInUse.push(exercises[skill][e].branchId);
             }
           }
         }
@@ -1611,7 +1611,7 @@ export default class PlanGenerator {
         skillTree[idStr].levels
       ) {
         return {
-          exerciseBranchId: idStr,
+          branchId: idStr,
           tags: skillTree[idStr].tags,
           levels: skillTree[idStr].levels,
         };
@@ -1624,15 +1624,15 @@ export default class PlanGenerator {
         // DEV TEST SETTING because rowing moved to another branch
         // TODO: REMOVE when set by TAGS instead of branch ids
         return {
-          exerciseBranchId: "142",
+          branchId: "142",
           tags: skillTree["142"].tags,
           levels: skillTree["142"].levels,
         };
       }
       return {
-        exerciseBranchId: "-1",
+        branchId: "-1",
         tags: [] as string[],
-        levels: {} as Record<string, { id: string }>,
+        levels: {} as Record<number, { exerciseId: string }>,
       };
     });
     if (PlanGenerator.DEBUG || log)
@@ -1758,8 +1758,8 @@ export default class PlanGenerator {
             branch,
             userLevel,
             exercises,
-            exerciseBranchData[branch.exerciseBranchId]
-              ? exerciseBranchData[branch.exerciseBranchId]
+            exerciseBranchData[branch.branchId]
+              ? exerciseBranchData[branch.branchId]
               : null,
           );
           if (userLevelExercise) {
@@ -1920,8 +1920,8 @@ export default class PlanGenerator {
           exerciseBranch,
           userLevel,
           exercises,
-          exerciseBranchData[exerciseBranch.exerciseBranchId]
-            ? exerciseBranchData[exerciseBranch.exerciseBranchId]
+          exerciseBranchData[exerciseBranch.branchId]
+            ? exerciseBranchData[exerciseBranch.branchId]
             : null,
         );
         if (!userLevelExercise) {
@@ -1953,12 +1953,12 @@ export default class PlanGenerator {
         for (const levelKey in levels) {
           const level = Number(levelKey);
           const levelData = levels[levelKey];
-          exercisesMap[level] = { exerciseId: levelData.id };
+          exercisesMap[level] = { exerciseId: levelData.exerciseId };
         }
         branches.push({
           tags: rest.tags,
           exercises: exercisesMap,
-          exerciseBranchId: rest.exerciseBranchId,
+          branchId: rest.branchId,
         });
       }
     }
@@ -2697,7 +2697,7 @@ export default class PlanGenerator {
           Object.keys(additionalSkillTree[id].levels).some(
             (levelKey) =>
               goalExercises.indexOf(
-                additionalSkillTree[id].levels[Number(levelKey)].id,
+                additionalSkillTree[id].levels[Number(levelKey)].exerciseId,
               ) > -1,
           )
         ) {
@@ -2713,7 +2713,7 @@ export default class PlanGenerator {
         const inUse =
           branchIdsInUse.includes(id) ||
           workout.some((entry) => {
-            return entry.exerciseBranchId === id;
+            return entry.branchId === id;
           });
 
         // get tags for userLevel branch exercise
@@ -2753,7 +2753,7 @@ export default class PlanGenerator {
               eq,
               Object.keys(additionalSkillTree[id].levels).map(
                 (levelKey) =>
-                  additionalSkillTree[id].levels[Number(levelKey)].id,
+                  additionalSkillTree[id].levels[Number(levelKey)].exerciseId,
               ),
             );
           });

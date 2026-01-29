@@ -275,11 +275,11 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
               ? 2
               : 3;
         let newLevel = -1;
-        if (levels[userLevel] && levels[userLevel].id === exerciseId) {
+        if (levels[userLevel] && levels[userLevel].exerciseId === exerciseId) {
           newLevel = userLevel;
         } else {
           const match = Object.entries(levels).find(
-            ([_, v]) => v.id === exerciseId,
+            ([_, v]) => v.exerciseId === exerciseId,
           );
           if (match && !isNaN(parseInt(match[0]))) {
             newLevel = parseInt(match[0]);
@@ -350,9 +350,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
       case "BRANCH_SUBSTITUTION":
         Logger.logEvent("branch_changed_for_new_level", {
           previousBranchId: result.previousBranchId,
-          newBranchIds: result.equivalentBranches.map(
-            (eb) => eb?.exerciseBranchId,
-          ),
+          newBranchIds: result.equivalentBranches.map((eb) => eb?.branchId),
         });
         break;
       case "NO_CHANGE":

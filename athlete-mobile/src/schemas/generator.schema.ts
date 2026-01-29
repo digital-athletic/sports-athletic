@@ -60,16 +60,15 @@ export const SkillPrioritiesSchema = v.object({
 });
 
 // Exercise branch exercise reference - used in exercises and levels records
-// Note: id must be string - raw JSON data must be transformed via transformSkillTree first
+// Uses exerciseId field (the id field is deprecated)
 export const BranchExerciseRefSchema = v.looseObject({
-  id: v.optional(v.string()),
   exerciseId: v.optional(v.string()),
 });
 
 // Exercise branch schemas - matches Branch interface for filter compatibility
 // Note: tags is optional to handle data variations; filter functions use ?? [] fallback
 export const ExerciseBranchEntrySchema = v.looseObject({
-  exerciseBranchId: v.optional(v.string()),
+  branchId: v.optional(v.string()),
   tags: v.optional(v.array(v.string())),
   exercises: v.optional(v.record(v.string(), BranchExerciseRefSchema)),
   levels: v.optional(v.record(v.string(), BranchExerciseRefSchema)),
@@ -128,17 +127,14 @@ export type FallbackSection = v.InferOutput<typeof FallbackSectionSchema>;
 // Exercise levels schema (from skillTree)
 export const ExerciseLevelsSchema = v.record(
   v.string(),
-  v.looseObject({
-    id: v.optional(v.string()),
-    exerciseId: v.optional(v.string()),
-  }),
+  v.object({ exerciseId: v.string() }),
 );
 
 // SkillBranch with ID schema (for possibleBranches validation in plan generator)
 export const SkillBranchWithIdSchema = v.object({
-  exerciseBranchId: v.string(),
+  branchId: v.string(),
   tags: v.array(v.string()),
-  levels: v.record(v.string(), v.object({ id: v.string() })),
+  levels: v.record(v.string(), v.object({ exerciseId: v.string() })),
 });
 export type SkillBranchWithId = v.InferOutput<typeof SkillBranchWithIdSchema>;
 
@@ -154,11 +150,19 @@ export const SetListEntrySchema = v.looseObject({
 // Workout/Exercise array schema (loose, for generic validation)
 export const WorkoutArraySchema = v.array(v.looseObject({}));
 
+// Schema for numeric string keys that transform to number
+const NumericKeySchema = v.pipe(
+  v.string(),
+  v.regex(/^\d+$/, "Expected numeric string key"),
+  v.transform(Number),
+);
+
 // ExerciseBranch schema (strict, matches ExerciseBranchType)
+// Note: exercises keys are numbers at runtime (JS coerces to string in JSON, we convert back)
 export const ExerciseBranchSchema = v.object({
-  exerciseBranchId: v.string(),
+  branchId: v.string(),
   tags: v.array(v.string()),
-  exercises: v.record(v.string(), v.object({ exerciseId: v.string() })),
+  exercises: v.record(NumericKeySchema, v.object({ exerciseId: v.string() })),
 });
 export const ExerciseBranchArraySchema = v.array(ExerciseBranchSchema);
 export type ExerciseBranchArray = v.InferOutput<
@@ -283,8 +287,10 @@ export type GeneratorSkillTypeFromSchema = v.InferOutput<
 
 /**
  * Tuple representing [currentSet, totalSets] for exercise sets.
+ * @example [1, 3] means "set 1 of 3"
  */
 export const SetTupleSchema = v.tuple([v.number(), v.number()]);
+export type SetTuple = v.InferOutput<typeof SetTupleSchema>;
 
 /**
  * Generated set list entry with required branchId (used during training generation).
@@ -312,7 +318,7 @@ export type GeneratedSetListEntryFromSchema = v.InferOutput<
 /** User-facing exercise entry format (after skill mapping) */
 export type UserExerciseEntry = {
   exerciseId: string;
-  set: [number, number];
+  set: SetTuple;
   skill: SkillTypeFromSchema;
   duration?: number;
   repetition?: number;
@@ -578,13 +584,14 @@ export type MaxTrainingRepsEntry = {
 /**
  * Branch data structure for filter functions.
  * Used throughout training generation for branch data with levels/exercises.
+ * Level keys are numbers (converted from string during import).
  * Note: tags is optional to support different data sources; consumers use ?? [] fallback.
  */
 export type SkillBranchData = {
   tags?: string[];
-  exercises?: Record<string, { exerciseId?: string; id?: string }>;
-  levels?: Record<string, { exerciseId?: string; id?: string }>;
-  exerciseBranchId?: string;
+  exercises?: Record<number, { exerciseId?: string }>;
+  levels?: Record<number, { exerciseId?: string }>;
+  branchId?: string;
 };
 
 /**

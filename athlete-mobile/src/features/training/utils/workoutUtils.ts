@@ -566,21 +566,18 @@ export const getEquivalentBranchWithGivenLevel = (
   let bestMatchingBranchIds = matchValues
     .filter((mv) => mv.value === highestValue)
     .map((f) => f.id);
-  const exerciseBranchId =
+  const branchId =
     bestMatchingBranchIds[
       Math.floor(Math.random() * bestMatchingBranchIds.length)
     ];
-  let branch = availableBranches[exerciseBranchId];
+  let branch = availableBranches[branchId];
 
   return {
     tags: branch.tags,
     exercises: Object.fromEntries(
-      Object.entries(branch.levels).map(([k, v]) => [
-        Number(k), // Level keys are numbers
-        { exerciseId: v.id },
-      ]),
+      Object.entries(branch.levels).map(([k, v]) => [Number(k), v]),
     ),
-    exerciseBranchId: exerciseBranchId,
+    branchId: branchId,
   };
 };
 

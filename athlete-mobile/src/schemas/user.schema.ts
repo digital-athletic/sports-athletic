@@ -64,7 +64,7 @@ export type MaxValuesType = v.InferOutput<typeof MaxValuesSchema>;
 
 // Exercise branch entry schema for UserTraining skills
 export const UserTrainingExerciseBranchSchema = v.looseObject({
-  exerciseBranchId: v.optional(v.string()),
+  branchId: v.optional(v.string()),
   tags: v.optional(v.array(v.string())),
   exercises: v.optional(
     v.record(

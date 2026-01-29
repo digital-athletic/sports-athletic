@@ -17,12 +17,6 @@ describe("userProfileStore", () => {
       expect(result.current.personalData.gender).toBe("MALE");
     });
 
-    it("has no userId initially", () => {
-      const { result } = renderHook(() => useUserProfileStore());
-
-      expect(result.current.userId).toBeNull();
-    });
-
     it("has anamnesisCompleted false initially", () => {
       const { result } = renderHook(() => useUserProfileStore());
 

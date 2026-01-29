@@ -95,34 +95,35 @@ The monolithic Redux `user` branch handled too many concerns. After analyzing 17
 **TypeScript Definition**:
 ```typescript
 interface UserProfileState {
-  userId: string | null;
   personalData: {
     username: string;
     gender: 'MALE' | 'FEMALE';
-    birthday: string;              // DD-MM-YYYY format
+    birthday: string;              // ISO 8601 format (YYYY-MM-DD)
+    height?: number;               // height in cm (50-250)
+    weight?: number;               // weight in kg (20-300)
   };
-  isInInitialAnamnesis: boolean;   // Initial onboarding flow state
   anamnesisCompleted: boolean;     // Whether user has completed anamnesis questionnaire
   teamId: string | null;           // Team association
-  
+
   // Actions
-  setUserId: (userId: string | null) => void;
   setUsername: (username: string) => void;
   setGender: (gender: 'MALE' | 'FEMALE') => void;
   setBirthday: (birthday: string) => void;
+  setHeight: (height: number) => void;
+  setWeight: (weight: number) => void;
   setPersonalData: (data: Partial<UserPersonalDataType>) => void;
-  setIsInInitialAnamnesis: (value: boolean) => void;
   setAnamnesisCompleted: (completed: boolean) => void;
   setTeamId: (teamId: string | null) => void;
   clearProfile: () => void;
-  
+
   // Selectors
   getAge: () => number | null;
 }
 ```
 
+Note: `userId` is managed by `authStore` as the single source of truth. Use `auth.userId` from authStore instead.
+
 **Current Redux Actions Migrated**:
-- `SET_USER_ID` → `setUserId`
 - `SET_USER_PERSONAL_DATA` → `setPersonalData`
 - `SET_USERNAME` → `setUsername`
 - `SET_GENDER` → `setGender`
@@ -266,7 +267,7 @@ interface TrainingScheduleState {
   // Actions
   setTrainingDays: (days: TrainingDayType[]) => void;
   toggleDay: (weekday: number) => void;
-  setDayLocation: (weekday: number, placeId: string) => void;
+  setDayPlace: (weekday: number, placeId: string) => void;
   setDayDuration: (weekday: number, duration: string) => void;
   resetToDefaults: () => void;
 }

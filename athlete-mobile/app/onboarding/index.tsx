@@ -1,6 +1,5 @@
 import { LoginScreen } from "@/features/onboarding/LoginScreen";
 import { RegistrationScreen } from "@/features/onboarding/RegisterScreen";
-import { useUserProfileStore } from "@/store/userProfileStore";
 import { Box } from "@/theme/Box";
 import { useRouter } from "expo-router";
 import { useReducer } from "react";
@@ -103,7 +102,6 @@ export default function OnboardingScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const { setAuth } = useAuthStore();
-  const { setUserId } = useUserProfileStore();
 
   const handleLogin = async () => {
     dispatch({ type: "SET_PROCESSING", payload: true });
@@ -112,7 +110,6 @@ export default function OnboardingScreen() {
     try {
       const auth = await signInWithEmail(state.email, state.password);
       setAuth(auth);
-      setUserId(auth.userId);
       router.replace("/(tabs)/(home)");
     } catch (error: any) {
       let title = t("onboarding.errorTitleWrongOrNoPassword");
@@ -179,7 +176,6 @@ export default function OnboardingScreen() {
 
       const auth = await signInWithEmail(state.email, state.password);
       setAuth(auth);
-      setUserId(auth.userId);
 
       router.replace("/anamnesis");
     } catch (error: any) {

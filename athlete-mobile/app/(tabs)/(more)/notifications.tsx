@@ -1,7 +1,7 @@
 import { SwitchInputField } from "@/form/SwitchInputField";
 import { AsyncStorageService } from "@/services/AsyncStorageService";
 import { PushNotificationService } from "@/services/PushNotificationService";
-import { useUserProfileStore } from "@/store/userProfileStore";
+import { useAuthStore } from "@/store/authStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
@@ -22,7 +22,8 @@ export default function NotificationsScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
-  const { userId } = useUserProfileStore();
+  const { auth } = useAuthStore();
+  const userId = auth?.userId;
   const { trainingPlan } = useUserWorkoutStore();
 
   const [notificationsAllowedApp, setNotificationsAllowedApp] = useState(true);

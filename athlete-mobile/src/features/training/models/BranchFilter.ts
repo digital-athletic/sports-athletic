@@ -5,16 +5,15 @@
 /**
  * Represents a branch with tags and exercises/levels.
  * This is used as a unified base for SkillBranchType and ExerciseBranchType.
- * Accepts both `id` and `exerciseId` patterns for compatibility with
- * different data sources (skillTree uses `id`, exerciseBranch uses `exerciseId`).
+ * Level keys are numbers (converted from string during import).
  * Note: tags is optional to support different schema variations but filter
  * functions treat missing tags as empty array.
  */
 export interface Branch {
   tags?: string[];
-  exercises?: Record<string, { exerciseId?: string; id?: string }>;
-  levels?: Record<string | number, { exerciseId?: string; id?: string }>;
-  exerciseBranchId?: string;
+  exercises?: Record<number, { exerciseId?: string }>;
+  levels?: Record<number, { exerciseId?: string }>;
+  branchId?: string;
 }
 
 /**

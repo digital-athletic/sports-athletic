@@ -1,9 +1,9 @@
 import type { SkillTypes } from "@/constants/workoutConstants";
 
 export type ExerciseBranchType = {
-  exerciseBranchId: string;
+  branchId: string;
   tags: string[];
-  exercises: { [level: string]: { exerciseId: string } };
+  exercises: { [level: number]: { exerciseId: string } };
 };
 
 /**
@@ -34,7 +34,7 @@ export type ExercisePair = {
 export type BranchSelectionResult = {
   branch: BranchExerciseReference;
   /** The branch ID from skill tree */
-  id: string;
+  branchId: string;
 };
 
 /**
@@ -43,7 +43,7 @@ export type BranchSelectionResult = {
  */
 export type SuperSetBranchSelectionResult = {
   branch: BranchExerciseReference;
-  id: string;
+  branchId: string;
   fillUpBranchAndId?: BranchSelectionResult;
   replacementBranchesAndIds?: BranchSelectionResult[];
 };

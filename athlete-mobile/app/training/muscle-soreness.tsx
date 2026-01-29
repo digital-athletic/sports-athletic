@@ -20,6 +20,7 @@ import { useTrainingStore } from "@/features/training/trainingStore";
 import { toUserExerciseDataList } from "@/schemas/generator.schema";
 import { type UserType, parseUserType } from "@/schemas/user.schema";
 import { Logger } from "@/services/Logger";
+import { useAuthStore } from "@/store/authStore";
 import { useCompletedWorkoutsStore } from "@/store/completedWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { usePlacesStore } from "@/store/placesStore";
@@ -78,7 +79,9 @@ export default function MuscleSorenessScreen() {
   const { workoutsList } = useCompletedWorkoutsStore();
   const { setExerciseList, setEquipment, setActiveTraining } =
     useTrainingStore();
-  const { userId, personalData } = useUserProfileStore();
+  const { auth } = useAuthStore();
+  const userId = auth?.userId;
+  const { personalData } = useUserProfileStore();
   const { workoutData, temporalData, setTemporalData, trainingPlan } =
     useUserWorkoutStore();
   const muscleTags =

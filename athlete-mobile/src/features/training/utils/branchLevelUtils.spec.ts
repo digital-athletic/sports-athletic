@@ -15,29 +15,29 @@ import {
 const SWR_BRANCH: SkillBranchType = {
   tags: ["REGION_LOWER_BODY", "SIDE_BOTH", "EXERCISEDIRECTION_SQUAT"],
   levels: {
-    "1": { id: "101" },
-    "2": { id: "102" },
-    "3": { id: "103" },
+    1: { exerciseId: "101" },
+    2: { exerciseId: "102" },
+    3: { exerciseId: "103" },
   },
 };
 
 const ONE_SIDED_BRANCH: SkillBranchType = {
   tags: ["REGION_LOWER_BODY", "SIDE_ONE"],
-  levels: { "1": { id: "201" }, "2": { id: "202" } },
+  levels: { 1: { exerciseId: "201" }, 2: { exerciseId: "202" } },
 };
 
 const PREVENTION_BRANCH: SkillBranchType = {
   tags: ["REGION_UPPER_BODY", "SIDE_ONE", "PREVENTION_SHOULDER"],
-  levels: { "1": { id: "401" }, "2": { id: "402" } },
+  levels: { 1: { exerciseId: "401" }, 2: { exerciseId: "402" } },
 };
 
 // Branch with duplicate exercise IDs across levels (for skip testing)
 const DUPLICATE_ID_BRANCH: SkillBranchType = {
   tags: ["REGION_CORE", "SIDE_BOTH"],
   levels: {
-    "1": { id: "601" },
-    "2": { id: "601" }, // same as level 1
-    "3": { id: "602" },
+    1: { exerciseId: "601" },
+    2: { exerciseId: "601" }, // same as level 1
+    3: { exerciseId: "602" },
   },
 };
 

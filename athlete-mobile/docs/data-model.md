@@ -98,11 +98,11 @@ State {
 **File**: `src/store/userProfileStore.ts`
 **Key**: `"user-profile-storage"`
 
-This store is the **single source of truth** for user identity data (gender, birthday, height, weight).
+This store is the **single source of truth** for user profile data (gender, birthday, height, weight).
+Note: `userId` is managed exclusively by `authStore` - use `auth.userId` from authStore.
 
 ```
 State {
-  userId: string | null               // matches authStore.auth.userId
   personalData: {
     username: string
     gender: "MALE" | "FEMALE"
@@ -115,14 +115,14 @@ State {
 }
 ```
 
-**Actions**: `setUserId`, `setUsername`, `setGender`, `setBirthday`, `setHeight`, `setWeight`, `setPersonalData`, `setAnamnesisCompleted`, `setTeamId`, `clearProfile`
+**Actions**: `setUsername`, `setGender`, `setBirthday`, `setHeight`, `setWeight`, `setPersonalData`, `setAnamnesisCompleted`, `setTeamId`, `clearProfile`
 **Selectors**: `getAge`
 
 **Relationships**:
-- `userId` <-- `authStore.auth.userId`
 - `anamnesisCompleted` <-- set after anamnesis flow completes
 - `teamId` links to a trainer team (trainer-web domain)
 - `personalData.gender`, `personalData.birthday`, `personalData.height`, `personalData.weight` are accessed by training generators via utility functions in `userDataUtils.ts`
+- For `userId`, use `authStore.auth.userId` instead
 
 ---
 
@@ -249,7 +249,7 @@ State {
         weekday: number               // 0-6
         skills: {                     // keyed by SkillTypes
           [skillKey: string]: {       // ExerciseBranchType[]
-            exerciseBranchId: string
+            branchId: string
             tags: string[]
             exercises: { [level: number]: { exerciseId: string } }
           }[]
@@ -316,7 +316,7 @@ State {
 
 **Default**: 7 days, all `active: false`, `duration: 30`, `place: "STUDIO"`
 
-**Actions**: `setTrainingDays`, `toggleDay`, `setDayLocation`, `setDayDuration`, `clearTrainingSchedule`
+**Actions**: `setTrainingDays`, `toggleDay`, `setDayPlace`, `setDayDuration`, `clearTrainingSchedule`
 **Selectors**: `getActiveTrainingDays`, `getTotalActiveHours`
 
 **Relationships**:
@@ -336,15 +336,13 @@ State {
 ```
 State {
   places: {
-    HOME:    { name: "HOME",    equipment: string[] }
-    STUDIO:  { name: "STUDIO",  equipment: string[] }
-    HALL:    { name: "HALL",    equipment: string[] }
-    OUTSIDE: { name: "OUTSIDE", equipment: string[] }
+    HOME:    { equipment: string[] }
+    STUDIO:  { equipment: string[] }
+    HALL:    { equipment: string[] }
+    OUTSIDE: { equipment: string[] }
   }
 }
 ```
-
-Note: `name` is redundant with the record key. It holds a type identifier, not a human-readable name.
 
 **Default equipment** (loaded from `assets/data/generator/places/`):
 
@@ -483,7 +481,7 @@ State {
       cardioType: "CARDIO_1" | "CARDIO_1_SHORT" | "CARDIO_1_LAKTAT" | "CARDIO_2" | "CARDIO_3" | "CARDIO_4" | "CARDIO_5"
       trainings: {
         weekday: number
-        skills: { [skillKey: string]: { exerciseBranchId: string, tags: string[], exercises: { [level: number]: { exerciseId: string } } }[] }
+        skills: { [skillKey: string]: { branchId: string, tags: string[], exercises: { [level: number]: { exerciseId: string } } }[] }
         lengths: { [skillKey: string]: number }
         focus: "PHASE" | "CARDIO" | "STABILITY" | "COMBINED"
       }[]
@@ -578,8 +576,8 @@ Record<string, SkillBranchType>  // Keyed by branch name
 
 SkillBranchType = {
   tags: string[]                    // Tags for filtering
-  levels: {                         // Numeric string key -> exercise ID
-    [levelNumber: string]: { id: string }
+  levels: {                         // Numeric key -> exercise reference
+    [levelNumber: number]: { exerciseId: string }
   }
 }
 ```
@@ -598,7 +596,7 @@ BAS, BR, CARDIO_1_LAKTAT, CARDIO_1_SHORT, CARDIO_2, CARDIO_3, CARDIO_4, CARDIO_5
 **Relationships**:
 - `levels[n].id` references `ExerciseType.id` in exercise registry
 - Branch tags are matched against user tags during plan generation
-- Training plans reference branches via `exerciseBranchId`
+- Training plans reference branches via `branchId`
 - `exerciseProgressStore.branchData` keys reference branch IDs from skill trees
 
 ---
@@ -628,7 +626,6 @@ erDiagram
     }
 
     userProfileStore {
-        string userId
         string username
         enum gender "MALE | FEMALE"
         string birthday "YYYY-MM-DD"
@@ -691,12 +688,11 @@ erDiagram
         json trainingPlans "TrainingPlanType array"
     }
 
-    authStore ||--o| userProfileStore : "userId"
     anamnesisStore ||--o| userWorkoutStore : "tags, seasonPhase"
     anamnesisStore ||--o| userProfileStore : "personalData, anamnesisCompleted"
     trainingScheduleStore }o--|| placesStore : "place selects equipment"
     skillTreeRegistry }o--|| exerciseRegistry : "levels.id to exercise.id"
-    userWorkoutStore }o--|| skillTreeRegistry : "exerciseBranchId"
+    userWorkoutStore }o--|| skillTreeRegistry : "branchId"
     userWorkoutStore }o--|| exerciseRegistry : "exercise references"
     exerciseProgressStore }o--|| exerciseRegistry : "exerciseData by exerciseId"
     exerciseProgressStore }o--|| skillTreeRegistry : "branchData by branchId"
@@ -720,13 +716,12 @@ erDiagram
 
 | Source | Field | Target | Field |
 |--------|-------|--------|-------|
-| authStore | `auth.userId` | userProfileStore | `userId` |
 | anamnesisStore | `tags` | userWorkoutStore | `workoutData.tags` |
 | anamnesisStore | `seasonPhase` | userWorkoutStore | `workoutData.seasonPhase` |
 | anamnesisStore | `values` (height, weight, etc.) | userProfileStore | `personalData` |
 | trainingScheduleStore | `trainingDays[].place` | placesStore | `places[place]` |
 | skillTreeRegistry | `levels[n].id` | exerciseRegistry | `exercises.get(id)` |
-| userWorkoutStore | `trainingPlan...skills[].exerciseBranchId` | skillTreeRegistry | branch key |
+| userWorkoutStore | `trainingPlan...skills[].branchId` | skillTreeRegistry | branch key |
 | exerciseProgressStore | `exerciseData[exerciseId]` | exerciseRegistry | `exercises.get(id)` |
 | exerciseProgressStore | `branchData[branchId]` | skillTreeRegistry | branch key |
 | exerciseProgressStore | `testHistory[]` | userWorkoutStore | `workoutData.maxValues` (same shape) |
@@ -906,129 +901,13 @@ Note: Branded types for time units (`DurationMinutes`, `DurationSeconds`) have a
 
 These are problems within the data model itself: duplicated fields, naming inconsistencies, type mismatches, missing constraints, and shape conflicts.
 
-### 10.1 Remaining Duplicated Fields Across Stores
-
-Most duplicate fields have been eliminated. The following intentional duplications remain:
-
-| Field | Store A | Store B | Notes |
-|-------|---------|---------|-------|
-| `seasonPhase` | `anamnesisStore.seasonPhase` (nullable) | `userWorkoutStore.workoutData.seasonPhase` (required) | Anamnesis is input, userWorkout is working copy |
-| `tags` | `anamnesisStore.tags` | `userWorkoutStore.workoutData.tags` | Both now use same structured `TagsByGroup` format |
-| `userId` | `authStore.auth.userId` | `userProfileStore.userId` | Two copies of user identity |
-| `maxValues` | `userWorkoutStore.workoutData.maxValues` | `exerciseProgressStore.testHistory` (latest entry) | No enforcement that latest testHistory matches workoutData |
-| `trainingPlan` | `userWorkoutStore.trainingPlan` (active) | `completedWorkoutsStore.trainingPlans` (archived) | Intentional: active vs historical |
-
-**Note**: User identity data (`gender`, `birthday`, `height`, `weight`, `anamnesisCompleted`) is now stored exclusively in `userProfileStore` as the single source of truth.
-
----
-
-### 10.2 Inconsistent Naming
-
-Same concept using different names across files.
-
-| Concept | Name A | Location | Name B | Location |
-|---------|--------|----------|--------|----------|
-| Branch identifier | `exerciseBranchId` | `ExerciseBranch.ts:4` | `branchId` | `ExerciseBranch.ts:16`, `UserExerciseData.ts:23`, `exerciseProgressStore.ts:10` |
-| Branch identifier | `branchId` | (above) | `id` | `BranchSelectionResult` in `ExerciseBranch.ts:37` |
-| Exercise ref in branch | `exerciseId` | `ExerciseBranch.ts:6` | `id` | `skillTree.schema.ts:10` |
-| Set day location | `setDayLocation` | `trainingScheduleStore.ts:65` | `place` | `TrainingDay.ts:7` (field it sets) |
-| Place identity | `name` | `placesStore.ts:13` | key in `PlacesData` record | `placesStore.ts:7-12` (redundant) |
-
-**Recommendation**: Standardize on one name per concept. Use `branchId` consistently for branch identifiers and `exerciseId` consistently for exercise references.
-
----
-
-### 10.3 Type Mismatches
-
-Same logical field using different types in different locations.
-
-#### a. `ExerciseBranch.exercises` keys -- model uses `number`, schemas use `string`
-
-- `src/features/training/models/ExerciseBranch.ts:6`: `{ [level: number]: ... }`
-- `src/schemas/generator.schema.ts:161`: `v.record(v.string(), ...)`
-- `src/schemas/skillTree.schema.ts:10`: `v.record(NumericStringSchema, ...)`
-- JS object keys are always strings at runtime, making the `number` key type misleading.
-
-#### b. `ExerciseDifficultyType` -- two incompatible definitions
-
-- `src/constants/workoutConstants.ts:834-838`: `null | "TOO_HARD" | "TOO_EASY" | "SUCCEEDED"`
-- `src/schemas/generator.schema.ts:513`: `"SUCCEEDED" | "TOO_EASY" | "TOO_HARD"` (no `null`)
-
----
-
-### 10.4 Denormalization Problems
-
-#### a. `completedWorkoutsStore` has both `workouts` (Record) and `workoutsList` (array)
-
-- `workoutsList` contains `{ id, timestamp, summary }` where `id` and `timestamp` duplicate data from `workouts`.
-- Only `addCompletedWorkout` keeps both in sync. The individual setters (`setCompletedWorkouts`, `setWorkoutsList`) do not.
-
-#### b. `exerciseProgressStore.level` is derived from `xp` but also independently settable
-
-- `addXP` computes `level = Math.floor(xp / 1000) + 1`.
-- `setLevel` can set any arbitrary value, breaking the derived relationship.
-
----
-
-### 10.5 Shape Inconsistencies
-
-#### a. `ExerciseBranch.exercises` vs `SkillBranch.levels` -- same concept, different names and inner fields
-
-- Model (`ExerciseBranch.ts:6`): `exercises: { [level: number]: { exerciseId: string } }`
-- Schema (`skillTree.schema.ts:10`): `levels: Record<NumericString, { id: string }>`
-- `BranchFilter.ts:15-16` has to support both `exerciseId` and `id` patterns because of this.
-
-#### b. Set tuple `[number, number]` defined inline three separate times
-
-- `UserExerciseData.ts:17`: `set?: [number, number]`
-- `SetListEntry.ts:6`: `set: [number, number]`
-- `generator.schema.ts:287`: `SetTupleSchema = v.tuple([v.number(), v.number()])`
-- Should be a shared type alias.
-
----
-
-### 10.6 Missing Constraints
-
-| Field | Location | Issue |
-|-------|----------|-------|
-| `anamnesisStore.values` | `anamnesisStore.ts` | `Record<string, AnamnesisValue>` -- accepts any string key |
-| `anamnesisStore.tags` | `anamnesisStore.ts` | Keys are not constrained to `TagGroups` enum values |
-| `TrainingDay.weekday` | `TrainingDay.ts:5` | Bare `number`, not `0 \| 1 \| 2 \| 3 \| 4 \| 5 \| 6` |
-| `userProfileStore.personalData.height` | `userProfileStore.ts` | No min/max validation (documented as 50-250 cm) |
-| `userProfileStore.personalData.weight` | `userProfileStore.ts` | No min/max validation (documented as 20-300 kg) |
-| `CompleteWorkoutType.id` | `completedWorkoutsStore.ts:10` | No format constraint (UUID, etc.) |
-| `MaxValues.testDate` | `user.schema.ts:53` | `v.string()` with no date format validation |
-| `feedback.difficulty` | `UserExerciseData.ts:20` | Allows `null` inside an existing feedback object (semantically odd) |
-
----
-
-### 10.7 Semantic Issues
-
-#### a. `PlaceEquipment.name` holds a type identifier, not a human-readable name
-
-- `placesStore.ts:13`: `name: PlaceType` holds `"HOME"`, `"STUDIO"`, etc. -- should be `type` or `placeType`.
-
----
-
-### 10.8 Orphan References
+### 10.8 Orphan References ???
 
 | Reference | Source | Target | Risk |
 |-----------|--------|--------|------|
 | `exerciseId` | `exerciseProgressStore.exerciseData` keys | `exerciseRegistry` | Progress data orphaned if catalog changes |
 | `branchId` | `exerciseProgressStore.branchData` keys | `skillTreeRegistry` branches | Branch data orphaned if skill trees change |
 | Hardcoded IDs | `UserExerciseData.ts` (`DEFAULT_USER_EXERCISE_DATA_LIST`) | Exercise catalog | Magic strings `"126"`, `"999999"`, `"1"`-`"8"` silently break if catalog changes |
-
----
-
-### 10.9 Unused or Vestigial Fields
-
-| Field/Method | Location | Issue |
-|-------------|----------|-------|
-| `UserProgress.rank` | `UserProgress.ts:8` | Has `// TODO do we need this?` |
-| `anamnesisStore.setCompleted` | `anamnesisStore.ts` | Stub with `console.log` and TODO referencing Firebase |
-| `anamnesisStore.saveData` | `anamnesisStore.ts` | Stub with `console.log` and TODO referencing Firebase |
-| `UserProgressType` | `UserProgress.ts` | Defines rich `totals`, `qualities`, per-exercise stats -- none represented in `exerciseProgressStore` |
-| `PAUSE_EXERCISE_ID` | `workoutConstants.ts` + `IdTypes.ts` | Defined independently in two files |
 
 ---
 
@@ -1044,3 +923,5 @@ Types defined twice (manual TypeScript + valibot schema) that must be kept in sy
 | `FilterResult` | `BranchFilter.ts` (generic, with `missingEquipment`) | `generator.schema.ts` (concrete, without `missingEquipment`) |
 
 Note: Some types have been unified to re-export from schemas (e.g., `MaxValuesType`, `SeasonPhaseType`, `ReviewStatusType`).
+
+Recommendation: Prefer typescript model files, when the schema is never used to verify the content. Prefer the schema, if the content is verifed at other places.

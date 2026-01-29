@@ -83,7 +83,7 @@ export function findCurrentBranchLevel(
     if (
       currentLevel !== level &&
       branch.levels[level] &&
-      branch.levels[level].id === exerciseId
+      branch.levels[level].exerciseId === exerciseId
     ) {
       return level;
     }
@@ -106,7 +106,7 @@ export function findNextExerciseInBranch(
   }
 
   let newLevel = targetLevel;
-  let newExerciseId = branch.levels[newLevel]?.id;
+  let newExerciseId = branch.levels[newLevel]?.exerciseId;
 
   // Skip levels with the same exercise
   while (
@@ -121,7 +121,7 @@ export function findNextExerciseInBranch(
       newLevel--;
     }
     if (branch.levels[newLevel]) {
-      newExerciseId = branch.levels[newLevel].id;
+      newExerciseId = branch.levels[newLevel].exerciseId;
     }
   }
 
@@ -285,7 +285,7 @@ export function calculateBranchLevelUpdate(
   }
 
   if (match && sectionIndex !== undefined && weekday !== undefined) {
-    if (match.exerciseBranchId !== branchId) {
+    if (match.branchId !== branchId) {
       return {
         type: "BRANCH_SUBSTITUTION",
         previousBranchId: branchId,

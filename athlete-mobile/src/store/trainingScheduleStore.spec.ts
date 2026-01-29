@@ -45,12 +45,12 @@ describe("trainingScheduleStore", () => {
     });
   });
 
-  describe("setDayLocation", () => {
+  describe("setDayPlace", () => {
     it("updates place for a weekday", () => {
       const { result } = renderHook(() => useTrainingScheduleStore());
 
       act(() => {
-        result.current.setDayLocation(1, "HOME");
+        result.current.setDayPlace(1, "HOME");
       });
 
       expect(result.current.trainingDays[1].place).toBe("HOME");

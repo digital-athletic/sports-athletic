@@ -188,10 +188,10 @@ describe("PlanGenerator", () => {
 
   describe("getTrainingDayGroupsFocuses", () => {
     const mockPlaces: PlacesData = {
-      HOME: { name: "HOME", equipment: ["DUMBBELL", "MAT"] },
-      STUDIO: { name: "STUDIO", equipment: ["BARBELL", "BENCH"] },
-      HALL: { name: "HALL", equipment: [] },
-      OUTSIDE: { name: "OUTSIDE", equipment: ["TRACK_20"] },
+      HOME: { equipment: ["DUMBBELL", "MAT"] },
+      STUDIO: { equipment: ["BARBELL", "BENCH"] },
+      HALL: { equipment: [] },
+      OUTSIDE: { equipment: ["TRACK_20"] },
     };
 
     it("should return PHASE for all child training days", () => {
@@ -252,10 +252,10 @@ describe("PlanGenerator", () => {
    */
   describe("getFocusForTrainingDayGroup", () => {
     const mockPlaces: PlacesData = {
-      HOME: { name: "HOME", equipment: ["DUMBBELL", "MAT"] },
-      STUDIO: { name: "STUDIO", equipment: ["BARBELL", "BENCH"] },
-      HALL: { name: "HALL", equipment: [] },
-      OUTSIDE: { name: "OUTSIDE", equipment: ["TRACK_20"] },
+      HOME: { equipment: ["DUMBBELL", "MAT"] },
+      STUDIO: { equipment: ["BARBELL", "BENCH"] },
+      HALL: { equipment: [] },
+      OUTSIDE: { equipment: ["TRACK_20"] },
     };
 
     it("should assign PHASE to studio and CARDIO to outside for 2-day adult group", () => {
@@ -1131,7 +1131,6 @@ describe("PlanGenerator", () => {
       ];
       const places = {
         HOME: {
-          name: "HOME",
           equipment: ["WEIGHTS", "MAT"],
         },
       } as PlacesData;
@@ -1185,7 +1184,6 @@ describe("PlanGenerator", () => {
       ];
       const places = {
         OUTSIDE: {
-          name: "OUTSIDE",
           equipment: ["MAT"],
         },
       } as PlacesData;
@@ -1227,14 +1225,14 @@ describe("PlanGenerator", () => {
       const exercisesList: any[] = [];
       const mockBranch = {
         tags: ["PREVENTION_KNEE"],
-        levels: { "1": { id: "exercise-1" } },
+        levels: { 1: { exerciseId: "exercise-1" } },
       };
       const mockSkillTree = { "mock-branch": mockBranch };
       const skillTrees: Record<
         string,
         Record<
           string,
-          { tags: string[]; levels: Record<string, { id: string }> }
+          { tags: string[]; levels: Record<number, { exerciseId: string }> }
         >
       > = {
         PREV: mockSkillTree,
@@ -1269,7 +1267,6 @@ describe("PlanGenerator", () => {
       ];
       const places = {
         STUDIO: {
-          name: "STUDIO",
           equipment: ["DUMBBELL", "MAT", "BANDS"],
         },
       } as PlacesData;
@@ -1352,7 +1349,6 @@ describe("PlanGenerator", () => {
       ];
       const places = {
         STUDIO: {
-          name: "STUDIO",
           equipment: ["WEIGHTS", "MAT", "DUMBBELL"],
         },
       } as PlacesData;
@@ -1378,10 +1374,10 @@ describe("PlanGenerator", () => {
 
   describe("createSection", () => {
     const mockPlaces: PlacesData = {
-      HOME: { name: "HOME", equipment: ["DUMBBELL", "FOAM_ROLLER"] },
-      STUDIO: { name: "STUDIO", equipment: ["BARBELL", "BENCH"] },
-      HALL: { name: "HALL", equipment: [] },
-      OUTSIDE: { name: "OUTSIDE", equipment: ["TRACK_20"] },
+      HOME: { equipment: ["DUMBBELL", "FOAM_ROLLER"] },
+      STUDIO: { equipment: ["BARBELL", "BENCH"] },
+      HALL: { equipment: [] },
+      OUTSIDE: { equipment: ["TRACK_20"] },
     };
 
     const mockSeasonPhase: SeasonPhaseType = {
@@ -1723,7 +1719,7 @@ describe("PlanGenerator", () => {
 
     it("accumulates branches from multiple weighted tag groups", () => {
       const mockBranch = {
-        exerciseBranchId: "branch-1",
+        branchId: "branch-1",
         tags: ["UPPER_BODY"],
         exercises: { 1: { exerciseId: "ex1" } },
       };
@@ -1754,7 +1750,7 @@ describe("PlanGenerator", () => {
 
       expect(result).toHaveLength(2);
       expect(result[0]).toMatchObject({
-        exerciseBranchId: "branch-1",
+        branchId: "branch-1",
         tags: ["UPPER_BODY"],
       });
 

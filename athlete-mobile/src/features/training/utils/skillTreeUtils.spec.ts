@@ -18,15 +18,14 @@ describe("skillTreeUtils", () => {
     { id: "3", name: "Test Exercise 3", tags: [] },
   ] as ExerciseType[];
 
-  const createMockSkillBranch = (): SkillBranchType =>
-    ({
-      tags: ["PREVENTION_SHOULDER"],
-      levels: {
-        1: { id: "1" },
-        2: { id: "2" },
-        3: { id: "3" },
-      },
-    }) as SkillBranchType;
+  const createMockSkillBranch = (): SkillBranchType => ({
+    tags: ["PREVENTION_SHOULDER"],
+    levels: {
+      1: { exerciseId: "1" },
+      2: { exerciseId: "2" },
+      3: { exerciseId: "3" },
+    },
+  });
 
   const mockSkillTrees = {
     GKS: {
@@ -64,6 +63,25 @@ describe("skillTreeUtils", () => {
     },
     WUSPEZIAL: {
       wuBranch: { ...createMockSkillBranch(), tags: ["PAIN_SHOULDER"] },
+    },
+    // User-facing skill type targets
+    MOB: {
+      mobBranch: createMockSkillBranch(),
+    },
+    WU: {
+      wuBranch: createMockSkillBranch(),
+    },
+    BR: {
+      brBranch: createMockSkillBranch(),
+    },
+    BAS: {
+      basBranch: createMockSkillBranch(),
+    },
+    CD: {
+      cdBranch: createMockSkillBranch(),
+    },
+    SUPPORT: {
+      supportBranch: createMockSkillBranch(),
     },
   };
 
@@ -174,13 +192,37 @@ describe("skillTreeUtils", () => {
         TEST: {
           branch1: {
             ...mockSkillBranch,
-            levels: { 1: { id: "1" } },
+            levels: { 1: { exerciseId: "1" } },
           } as SkillBranchType,
           branch2: { ...mockSkillBranch, levels: {} } as SkillBranchType,
         },
       };
       const result = getSkillTree(treesWithEmptyLevels, "TEST", [], false);
       expect(Object.keys(result)).toEqual(["branch1"]);
+    });
+
+    it("should map MOBILITY to MOB and WARMUP to WU", () => {
+      expect(getSkillTree(mockSkillTrees, "MOBILITY", [], false)).toEqual(
+        mockSkillTrees.MOB,
+      );
+      expect(getSkillTree(mockSkillTrees, "WARMUP", [], false)).toEqual(
+        mockSkillTrees.WU,
+      );
+    });
+
+    it("should map FOAM_ROLLER to BR", () => {
+      expect(getSkillTree(mockSkillTrees, "FOAM_ROLLER", [], false)).toEqual(
+        mockSkillTrees.BR,
+      );
+    });
+
+    it("should map STABILITY to BAS/GKS and SUPPORT to SUPPORT", () => {
+      expect(getSkillTree(mockSkillTrees, "STABILITY", [], true)).toEqual(
+        mockSkillTrees.BAS,
+      );
+      expect(getSkillTree(mockSkillTrees, "SUPPORT", [], false)).toEqual(
+        mockSkillTrees.SUPPORT,
+      );
     });
   });
 
@@ -347,7 +389,7 @@ describe("skillTreeUtils", () => {
     it("should fall back to lower level if higher level not available", () => {
       const branchData: SkillBranchType = {
         ...mockSkillBranch,
-        levels: { 1: { id: "1" } },
+        levels: { 1: { exerciseId: "1" } },
       } as SkillBranchType;
       const result = getUserExerciseFromBranch(
         branchData,
@@ -367,7 +409,7 @@ describe("skillTreeUtils", () => {
     it("should return null when exerciseId is -1", () => {
       const branchData: SkillBranchType = {
         ...mockSkillBranch,
-        levels: { 1: { id: "-1" } },
+        levels: { 1: { exerciseId: "-1" } },
       } as SkillBranchType;
       const result = getUserExerciseFromBranch(
         branchData,
@@ -443,7 +485,7 @@ describe("skillTreeUtils", () => {
       const consoleSpy = jest.spyOn(console, "log").mockImplementation();
       const branchData: SkillBranchType = {
         ...mockSkillBranch,
-        levels: { 1: { id: "999" } },
+        levels: { 1: { exerciseId: "999" } },
       } as SkillBranchType;
       getUserExerciseFromBranch(
         branchData,

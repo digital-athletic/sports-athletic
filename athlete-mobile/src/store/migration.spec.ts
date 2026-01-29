@@ -77,13 +77,11 @@ describe("Store Migration on Version Bump", () => {
     it("should reset to default state when persisted version is lower", async () => {
       const oldState = {
         state: {
-          userId: "old-user",
           personalData: {
             username: "olduser",
             gender: "MALE",
             birthday: "01-01-1990",
           },
-          isInInitialAnamnesis: true,
           anamnesisCompleted: true,
           teamId: "old-team",
         },
@@ -97,7 +95,6 @@ describe("Store Migration on Version Bump", () => {
       const state = useUserProfileStore.getState();
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      expect(state.userId).toBeNull();
       expect(state.anamnesisCompleted).toBe(false);
     });
   });

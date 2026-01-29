@@ -171,7 +171,7 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
             // Find the branch to replace
             const skillBranches = training?.skills[skillId];
             const branchIndex = skillBranches?.findIndex(
-              (branch) => branch.exerciseBranchId === branchIdToReplace,
+              (branch) => branch.branchId === branchIdToReplace,
             );
 
             // Find the training for the given skill

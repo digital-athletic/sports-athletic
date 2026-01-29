@@ -1,6 +1,7 @@
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import PlanGenerator from "@/features/training/generators/PlanGenerator";
+import { useAuthStore } from "@/store/authStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { usePlacesStore } from "@/store/placesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
@@ -16,7 +17,9 @@ export function useUpdateTrainingPlan() {
   const { branchData } = useExerciseProgressStore();
   const { trainingDays } = useTrainingScheduleStore();
   const { places } = usePlacesStore();
-  const { userId, personalData } = useUserProfileStore();
+  const { auth } = useAuthStore();
+  const userId = auth?.userId;
+  const { personalData } = useUserProfileStore();
   const { workoutData, trainingPlan, setTrainingPlan } = useUserWorkoutStore();
 
   const updateTrainingPlan = useCallback(() => {

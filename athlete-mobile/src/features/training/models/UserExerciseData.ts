@@ -2,6 +2,7 @@ import { ExerciseDifficultyType } from "@/constants/workoutConstants";
 import type { MaxForceRepetitionsDataType } from "./MaxForceRepetitionsData";
 import { PAUSE_EXERCISE_ID } from "./IdTypes";
 import { SkillType } from "./Training";
+import type { SetTuple } from "@/common/types/SetTuple";
 
 /** Default exercise IDs used in sample workout data. These reference the exercise catalog. */
 const DEFAULT_EXERCISE_IDS = {
@@ -27,7 +28,7 @@ export type UserExerciseDataType = {
   weightType?: string;
   skipped?: boolean; // save for completed workout
   /** Tuple of [currentSet, totalSets] */
-  set?: [number, number];
+  set?: SetTuple;
   skill: SkillType;
   feedback?: {
     difficulty: ExerciseDifficultyType;

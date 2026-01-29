@@ -5,10 +5,20 @@ const NumericStringSchema = v.pipe(
   v.regex(/^\d+$/, "Expected numeric string"),
 );
 
-export const SkillBranchSchema = v.object({
+const SkillBranchInputSchema = v.object({
   tags: v.array(v.string()),
-  levels: v.record(NumericStringSchema, v.object({ id: v.string() })),
+  levels: v.record(NumericStringSchema, v.object({ exerciseId: v.string() })),
 });
+
+export const SkillBranchSchema = v.pipe(
+  SkillBranchInputSchema,
+  v.transform((input) => ({
+    ...input,
+    levels: Object.fromEntries(
+      Object.entries(input.levels).map(([key, value]) => [Number(key), value]),
+    ) as Record<number, { exerciseId: string }>,
+  })),
+);
 export type SkillBranchType = v.InferOutput<typeof SkillBranchSchema>;
 
 export const SkillTreeSchema = v.record(v.string(), SkillBranchSchema);

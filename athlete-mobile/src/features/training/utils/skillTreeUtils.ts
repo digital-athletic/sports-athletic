@@ -221,6 +221,35 @@ export function getSkillTree(
       );
       break;
 
+    // User-facing skill types mapped to internal skill tree names
+    case "MOBILITY":
+      result = skillTrees["MOB"];
+      break;
+
+    case "WARMUP":
+      result = skillTrees["WU"];
+      break;
+
+    case "FOAM_ROLLER":
+      result = skillTrees["BR"];
+      break;
+
+    case "STABILITY":
+      result = hasWeightsFlag ? skillTrees["BAS"] : skillTrees["GKS"];
+      break;
+
+    case "CARDIO":
+      result = skillTrees["CD"];
+      break;
+
+    case "PREVENTION":
+      result = hasWeightsFlag ? skillTrees["PREV"] : skillTrees["PREVKG"];
+      break;
+
+    case "SUPPORT":
+      result = skillTrees["SUPPORT"];
+      break;
+
     default:
       break;
   }

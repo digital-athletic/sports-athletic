@@ -133,7 +133,7 @@ const STORE_DATA = {
                   // Branch IDs from actual JSON skill tree files
                   WU: [
                     {
-                      exerciseBranchId: "410", // WU.json branch 410 -> exercise 431
+                      branchId: "410", // WU.json branch 410 -> exercise 431
                       tags: ["SKILL_WARM_UP", "PLACE_STUDIO"],
                       exercises: {
                         1: { exerciseId: "431" },
@@ -144,7 +144,7 @@ const STORE_DATA = {
                   ],
                   SWR1: [
                     {
-                      exerciseBranchId: "22", // SWR1.json branch 22 -> exercise 118
+                      branchId: "22", // SWR1.json branch 22 -> exercise 118
                       tags: ["SKILL_SWR", "PLACE_STUDIO", "EQ_DUMBBELL"],
                       exercises: {
                         1: { exerciseId: "118" },

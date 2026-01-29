@@ -419,9 +419,9 @@ export default class TrainingGenerator {
       const branch = {
         branchId: id,
         branchTags: branches[id].tags,
-        exerciseId: branches[id].levels[level].id,
+        exerciseId: branches[id].levels[level].exerciseId,
       };
-      return { branch, id };
+      return { branch, branchId: id };
     };
 
     const getSuperSetPairBranchAndId = (
@@ -435,7 +435,7 @@ export default class TrainingGenerator {
       let id = branchKeys[Math.floor(Math.random() * branchKeys.length)];
       const levelKeys = Object.keys(branches[id].levels).map(Number);
       const level = Math.min(...levelKeys);
-      const exerciseId = branches[id].levels[level].id;
+      const exerciseId = branches[id].levels[level].exerciseId;
       let branch = {
         branchId: id,
         branchTags: branches[id].tags,
@@ -486,12 +486,12 @@ export default class TrainingGenerator {
             Math.floor(Math.random() * replacementBranchesAndIds.length)
           ];
         branch = randomBranchAndId.branch;
-        id = randomBranchAndId.id;
+        id = randomBranchAndId.branchId;
         fillUpBranchAndId = undefined;
       }
       return {
         branch,
-        id,
+        branchId: id,
         fillUpBranchAndId,
         replacementBranchesAndIds:
           replacementBranchesAndIds.length > 0
@@ -519,7 +519,7 @@ export default class TrainingGenerator {
         }
 
         branches.main.push(result.branch);
-        branchesIds.push(result.id);
+        branchesIds.push(result.branchId);
       }
     } else if (["BAS", "GKS"].indexOf(type) > -1) {
       // set these short trainings to 10 exercises, 1 set, 60 secs, 10 secs pause
@@ -547,7 +547,7 @@ export default class TrainingGenerator {
           if (result === null) break;
           let side = getTagValues(result.branch.branchTags, TagGroups.SIDE);
           // do not use again
-          branchesIds.push(result.id);
+          branchesIds.push(result.branchId);
 
           if (side.indexOf("ONE") > -1) {
             if (i === region.count - 1) {
@@ -617,7 +617,7 @@ export default class TrainingGenerator {
               result.branch.branchTags.includes("EQTYPE_WEIGHTS");
             if (hasWeights) {
               branches.main.unshift(result.branch);
-              branchesIds.unshift(result.id);
+              branchesIds.unshift(result.branchId);
               // add fill up branch for BOTH_SIDE
               if (result.fillUpBranchAndId?.branch) {
                 branches.main.unshift(result.fillUpBranchAndId.branch);
@@ -625,7 +625,7 @@ export default class TrainingGenerator {
               }
             } else {
               branches.main.push(result.branch);
-              branchesIds.push(result.id);
+              branchesIds.push(result.branchId);
               // add fill up branch for BOTH_SIDE
               if (result.fillUpBranchAndId?.branch) {
                 branches.main.push(result.fillUpBranchAndId.branch);
@@ -641,7 +641,7 @@ export default class TrainingGenerator {
               branches[set.skill] = [];
             }
             branches[set.skill].push(result.branch);
-            branchesIds.push(result.id);
+            branchesIds.push(result.branchId);
           }
         }
       }
@@ -652,7 +652,7 @@ export default class TrainingGenerator {
         // end if no more branches
         if (result === null) break;
         branches.main.push(result.branch);
-        branchesIds.push(result.id);
+        branchesIds.push(result.branchId);
 
         //calc length
         let exDur = setsPerExercise * 60; // TODO is 60 sec a good guess?
@@ -863,7 +863,7 @@ export default class TrainingGenerator {
      exerciseBranches = {
             PREV: [
                 {
-                    exerciseBranchId: "152",
+                    branchId: "152",
                     tags: [
                         "PREVENTION_SHOULDER",
                         "SKILL_COOL_DOWN",
@@ -905,8 +905,8 @@ export default class TrainingGenerator {
       let branches = exerciseBranches[skill]!.reduce<
         Record<string, ExerciseBranchEntry>
       >((acc, entry) => {
-        if (entry.exerciseBranchId) {
-          acc[entry.exerciseBranchId] = entry;
+        if (entry.branchId) {
+          acc[entry.branchId] = entry;
         }
         return acc;
       }, {});
@@ -929,7 +929,7 @@ export default class TrainingGenerator {
         return {
           tags: levelFiltered.keep[id].tags,
           exercises: levelFiltered.keep[id].exercises,
-          exerciseBranchId: id,
+          branchId: id,
         };
       });
 
@@ -960,7 +960,7 @@ export default class TrainingGenerator {
             {
               tags: cardioReplacement.tags,
               exercises: cardioReplacement.levels,
-              exerciseBranchId: "576",
+              branchId: "576",
             },
           ];
         } else {
@@ -986,7 +986,7 @@ export default class TrainingGenerator {
             exercises,
             skillTrees,
             Object.keys(keep).map(
-              (index) => keep[parseInt(index, 10)].exerciseBranchId,
+              (index) => keep[parseInt(index, 10)].branchId,
             ),
             prevSkills,
             userExerciseData,
@@ -1039,14 +1039,14 @@ export default class TrainingGenerator {
               exerciseBranches[otherPrevSkill] = exerciseBranches[
                 otherPrevSkill
               ]!.map((branchData) => {
-                if (branchData && branchData.exerciseBranchId) {
-                  const branchId = branchData.exerciseBranchId;
+                if (branchData && branchData.branchId) {
+                  const branchId = branchData.branchId;
                   const levels =
                     branchData.exercises ?? branchData.levels ?? {};
                   const branchTags = branchData.tags ?? [];
                   const exercise = getUserExerciseFromBranch(
                     {
-                      levels: levels as Record<string, { id: string }>,
+                      levels: levels as Record<number, { exerciseId: string }>,
                       tags: branchTags,
                     },
                     userLevel,
@@ -1084,13 +1084,13 @@ export default class TrainingGenerator {
 
       //for each exerciseBranch select exercise for updated userLevel
       exerciseBranches[skill] = exerciseBranches[skill]!.map((branchData) => {
-        if (branchData && branchData.exerciseBranchId) {
-          const branchId = branchData.exerciseBranchId;
+        if (branchData && branchData.branchId) {
+          const branchId = branchData.branchId;
           const levels = branchData.exercises ?? branchData.levels ?? {};
           const branchTags = branchData.tags ?? [];
           const exercise = getUserExerciseFromBranch(
             {
-              levels: levels as Record<string, { id: string }>,
+              levels: levels as Record<number, { exerciseId: string }>,
               tags: branchTags,
             },
             userLevel,
@@ -1191,10 +1191,7 @@ export default class TrainingGenerator {
         const exercisesMap: Record<string, { exerciseId: string }> = {};
         for (const lvlKey in skillTree[id].levels) {
           const levelData = skillTree[id].levels[lvlKey];
-          // Schema has `id`, but runtime data may have `exerciseId` - use either
-          const exerciseId =
-            (levelData as { id?: string; exerciseId?: string }).exerciseId ??
-            levelData.id;
+          const exerciseId = levelData.exerciseId;
           exercisesMap[lvlKey] = {
             exerciseId,
           };
@@ -1202,7 +1199,7 @@ export default class TrainingGenerator {
         allBranches[id] = {
           tags: skillTree[id].tags,
           exercises: exercisesMap,
-          exerciseBranchId: id,
+          branchId: id,
         };
       }
       let filteredBranches = filterBySoreness(
@@ -1318,11 +1315,11 @@ export default class TrainingGenerator {
           //choose random id of possible ones and avoid choosing it again
           let randomId =
             regionBranches[Math.floor(Math.random() * regionBranches.length)];
-          const exerciseBranchId = possibleBranches.splice(
+          const branchId = possibleBranches.splice(
             possibleBranches.indexOf(randomId),
             1,
           )[0];
-          const { tags, levels: constLevels } = skillTree[exerciseBranchId];
+          const { tags, levels: constLevels } = skillTree[branchId];
           const levels = cloneWithValidation(
             constLevels,
             ExerciseLevelsSchema,
@@ -1335,7 +1332,7 @@ export default class TrainingGenerator {
             const level = Number(levelKey);
             const levelData = levels[levelKey];
             exerciseLevels[level] = {
-              exerciseId: levelData.id ?? levelData.exerciseId ?? "",
+              exerciseId: levelData.exerciseId,
             };
           }
           const countChosen =
@@ -1346,7 +1343,7 @@ export default class TrainingGenerator {
           replacement.push({
             tags: tags,
             exercises: exerciseLevels,
-            exerciseBranchId: exerciseBranchId,
+            branchId: branchId,
           });
         }
       }
@@ -1392,10 +1389,12 @@ export default class TrainingGenerator {
       const CARDIO_4 = skillTrees["CARDIO_4"];
       let pauseExercise = CARDIO_5[Object.keys(CARDIO_5)[0]];
       let pauseExerciseId =
-        pauseExercise.levels[Number(Object.keys(pauseExercise.levels)[0])].id;
+        pauseExercise.levels[Number(Object.keys(pauseExercise.levels)[0])]
+          .exerciseId;
       let fillExercise = CARDIO_4[Object.keys(CARDIO_4)[0]];
       let fillExerciseId =
-        fillExercise.levels[Number(Object.keys(fillExercise.levels)[0])].id;
+        fillExercise.levels[Number(Object.keys(fillExercise.levels)[0])]
+          .exerciseId;
       let intervalLength = 120;
       let pauseLength = 60;
       let startRepetition = 3;
@@ -3954,7 +3953,7 @@ const filterByUserLevel = (
     const exercise = getUserExerciseFromBranch(
       {
         tags: branchTags,
-        levels: levelSource as Record<string, { id: string }>,
+        levels: levelSource as Record<number, { exerciseId: string }>,
       },
       userLevel,
       exercises,

@@ -63,7 +63,7 @@ const createInitialState = (): State => ({
 type Actions = {
   setTrainingDays: (days: TrainingDayType[]) => void;
   toggleDay: (weekday: number) => void;
-  setDayLocation: (weekday: number, placeId: PlaceType) => void;
+  setDayPlace: (weekday: number, placeId: PlaceType) => void;
   setDayDuration: (weekday: number, durationMinutes: number) => void;
   clearTrainingSchedule: () => void;
 };
@@ -113,7 +113,7 @@ export const useTrainingScheduleStore = create<TrainingScheduleState>()(
           }
         }),
 
-      setDayLocation: (weekday, placeId) =>
+      setDayPlace: (weekday, placeId) =>
         set((state) => {
           const day = state.trainingDays.find((d) => d.weekday === weekday);
           if (day) {

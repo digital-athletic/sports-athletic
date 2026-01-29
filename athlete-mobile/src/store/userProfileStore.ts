@@ -14,7 +14,6 @@ export interface UserPersonalDataType {
 }
 
 type State = {
-  userId: string | null;
   personalData: UserPersonalDataType;
   anamnesisCompleted: boolean;
   teamId: string | null;
@@ -27,7 +26,6 @@ const createInitialPersonalData = (): UserPersonalDataType => ({
 });
 
 const createInitialState = (): State => ({
-  userId: null,
   personalData: createInitialPersonalData(),
   anamnesisCompleted: false,
   teamId: null,
@@ -36,7 +34,6 @@ const createInitialState = (): State => ({
 export const DEFAULT_STATE = createInitialState();
 
 type Actions = {
-  setUserId: (userId: string | null) => void;
   setUsername: (username: string) => void;
   setGender: (gender: "MALE" | "FEMALE") => void;
   setBirthday: (birthday: string) => void;
@@ -57,12 +54,12 @@ export type UserProfileState = State & Actions & Selectors;
 /**
  * User Profile Store
  *
- * Manages user identity, profile data, and onboarding state.
- * This store handles authentication-related user info and anamnesis flow.
+ * Manages user profile data and onboarding state.
+ * Note: userId is managed by authStore as the single source of truth.
  *
  * @example
  * ```tsx
- * const { userId, personalData, setUsername, getAge } = useUserProfileStore();
+ * const { personalData, setUsername, getAge } = useUserProfileStore();
  *
  * // Update username
  * setUsername('JohnDoe');
@@ -80,11 +77,6 @@ export const useUserProfileStore = create<UserProfileState>()(
   persist(
     immer((set, get) => ({
       ...createInitialState(),
-
-      setUserId: (userId) =>
-        set((state) => {
-          state.userId = userId;
-        }),
 
       setUsername: (username) =>
         set((state) => {
@@ -129,7 +121,6 @@ export const useUserProfileStore = create<UserProfileState>()(
       clearProfile: () =>
         set((state) => {
           const initialState = createInitialState();
-          state.userId = initialState.userId;
           state.personalData = initialState.personalData;
           state.anamnesisCompleted = initialState.anamnesisCompleted;
           state.teamId = initialState.teamId;

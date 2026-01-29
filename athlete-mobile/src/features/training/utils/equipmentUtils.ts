@@ -188,12 +188,14 @@ export function filterByEquipment<T extends Branch>(
 
     const exerciseIds = Object.keys(levels).reduce<string[]>(
       (acc, levelKey) => {
-        const levelEntry = (
-          levels as Record<string, { id?: string; exerciseId?: string }>
-        )[levelKey];
-        const exerciseId = levelEntry.id ?? levelEntry.exerciseId;
-        if (typeof exerciseId === "string" && !acc.includes(exerciseId)) {
-          acc.push(exerciseId);
+        const levelEntry = (levels as Record<number, { exerciseId: string }>)[
+          Number(levelKey)
+        ];
+        if (
+          typeof levelEntry.exerciseId === "string" &&
+          !acc.includes(levelEntry.exerciseId)
+        ) {
+          acc.push(levelEntry.exerciseId);
         }
         return acc;
       },

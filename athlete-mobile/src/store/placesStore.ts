@@ -10,7 +10,6 @@ import STUDIO from "../../assets/data/generator/places/STUDIO";
 import { asyncStorage } from "./middleware";
 
 export type PlaceEquipment = {
-  name: PlaceType;
   equipment: string[];
 };
 
@@ -27,19 +26,15 @@ type State = {
 
 const createInitialPlaces = (): PlacesData => ({
   HOME: {
-    name: "HOME",
     equipment: HOME.EQUIPMENT,
   },
   STUDIO: {
-    name: "STUDIO",
     equipment: STUDIO.EQUIPMENT,
   },
   HALL: {
-    name: "HALL",
     equipment: HALL.EQUIPMENT,
   },
   OUTSIDE: {
-    name: "OUTSIDE",
     equipment: OUTSIDE.EQUIPMENT,
   },
 });

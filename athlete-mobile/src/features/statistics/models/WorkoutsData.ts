@@ -6,6 +6,7 @@ export type ScaleType = "week" | "month" | "year" | "total";
 export interface WorkoutsListEntry {
   workoutId: string;
   date: number;
+  /** Duration in seconds */
   duration: number;
   exerciseCount: number;
   points: number;
@@ -17,6 +18,7 @@ export interface WorkoutsListEntry {
 }
 
 export interface WorkoutsSummary {
+  /** Total duration in seconds */
   duration: number;
   count: number;
   points: number;

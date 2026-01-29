@@ -21,6 +21,7 @@ export type UserExerciseDataType = {
   nextWeightPercentage?: number;
   maxFRepetitions?: MaxForceRepetitionsDataType[];
   maxFLevelAdjustment?: ExerciseDifficultyType; // added to adjust repetitions in maxF phase different than in other
+  /** Duration in seconds for timed exercises (e.g., planks, stretches, pauses) */
   duration?: number;
   height?: number;
   weightType?: string;

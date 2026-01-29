@@ -21,6 +21,7 @@ export type UserProgressType = {
   qualities: { [key: string]: number };
   exercises: {
     [exerciseId: string]: {
+      /** Duration in seconds for timed exercises */
       duration: number;
       height: number;
       repetition: number;

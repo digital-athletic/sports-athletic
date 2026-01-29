@@ -3,6 +3,7 @@ import type { GeneratorSkillTypeFromSchema } from "@/schemas/generator.schema";
 export type SetListEntryType = {
   exerciseId: string;
   set: [number, number];
+  /** Duration in seconds for timed exercises */
   duration?: number;
   height?: number;
   repetition?: number;
@@ -23,6 +24,7 @@ export type GeneratedSetListEntry = {
   set: [number, number];
   /** Skill identifier - uses GeneratorSkillTypeFromSchema for type safety */
   skill: GeneratorSkillTypeFromSchema;
+  /** Duration in seconds for timed exercises */
   duration?: number;
   repetition?: number;
   weight?: number;

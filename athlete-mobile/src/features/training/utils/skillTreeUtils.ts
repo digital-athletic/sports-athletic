@@ -1,4 +1,5 @@
 import { TagGroups } from "@/constants/tagGroups";
+import { areaToRegion } from "./exerciseUtils";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { SkillTreesState } from "@/data/skillTreeRegistry";
 import type { ExerciseType } from "@/schemas/exercise.schema";
@@ -453,14 +454,14 @@ function filterBySoreness(
     switch (skill) {
       case "PREVSHOULDER":
       case "PREVWRIST":
-        soreInArea = areas.some((area) => area.toUpperCase() === "UPPER_BODY");
+        soreInArea = areas.includes("upperBody");
         break;
       case "PREVSPINE":
-        soreInArea = areas.some((area) => area.toUpperCase() === "CORE");
+        soreInArea = areas.includes("core");
         break;
       case "PREVKNEE":
       case "PREVANKLE":
-        soreInArea = areas.some((area) => area.toUpperCase() === "LOWER_BODY");
+        soreInArea = areas.includes("lowerBody");
         break;
       default:
         break;
@@ -469,7 +470,7 @@ function filterBySoreness(
       throw {
         type: "TOO_MUCH_SORENESS",
         subtype: "PREV_SHORT_TRAINING_SORENESS",
-        params: areas.map((area) => area.toUpperCase()),
+        params: areas.map(areaToRegion),
       };
     }
   }
@@ -478,11 +479,11 @@ function filterBySoreness(
     throw {
       type: "TOO_MUCH_SORENESS",
       subtype: "MULTIPLE_REGIONS",
-      params: areas.map((area) => area.toUpperCase()),
+      params: areas.map(areaToRegion),
     };
   }
 
-  if (skill.includes("CARDIO") && areas.includes("lower_body")) {
+  if (skill.includes("CARDIO") && areas.includes("lowerBody")) {
     return {
       keep: {},
       replace: [WorkoutConstants.EXERCISE_DIRECTIONS.LOWER_BODY],
@@ -491,7 +492,7 @@ function filterBySoreness(
 
   const keep: SkillTreeType = {};
   const replace: string[] = [];
-  const areasUpper = areas.map((area) => area.toUpperCase());
+  const areasAsRegions = areas.map(areaToRegion);
 
   for (const branchId of Object.keys(branches)) {
     const branchRegions = getTagValues(
@@ -499,7 +500,7 @@ function filterBySoreness(
       TagGroups.REGION,
     );
     const matchesArea = branchRegions.some((region) =>
-      areasUpper.includes(region.toUpperCase()),
+      areasAsRegions.includes(region),
     );
 
     if (matchesArea) {
@@ -516,8 +517,8 @@ function filterBySoreness(
 }
 
 function getAreasFor(muscles: string[]): string[] {
-  const areaMap: Record<"upper_body" | "lower_body" | "core", string[]> = {
-    upper_body: [
+  const areaMap: Record<"upperBody" | "lowerBody" | "core", string[]> = {
+    upperBody: [
       "CHEST",
       "NECK",
       "UPPER_BACK",
@@ -550,7 +551,7 @@ function getAreasFor(muscles: string[]): string[] {
       "WRIST_EXTENSOR_LEFT",
       "WRIST_EXTENSOR",
     ],
-    lower_body: [
+    lowerBody: [
       "ADDUCTORS",
       "QUADRICEPS_LEFT",
       "QUADRICEPS_RIGHT",

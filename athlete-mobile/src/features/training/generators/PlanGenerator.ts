@@ -1496,7 +1496,7 @@ export default class PlanGenerator {
         exerciseDirection = getDirectionsByLength(upperBodyDirections, length);
       } else if (regionTag === "LOWER_BODY") {
         bigMuscles = ["GLUTES", "QUADRICEPS"];
-        //choose entry of lower_body directions where index is number of lower_body exercises (for that skill)
+        //choose entry of lowerBody directions where index is number of lowerBody exercises (for that skill)
         exerciseDirection = getDirectionsByLength(lowerBodyDirections, length);
       } else if (regionTag === "CORE" || regionTag === "CORE") {
         //shuffle the order
@@ -1772,7 +1772,7 @@ export default class PlanGenerator {
         sideFiltered = directionFiltered;
       }
 
-      // no muscle filtering for core / other than ober/lower_body -> no different muscle groups!?
+      // no muscle filtering for core / other than upperBody/lowerBody -> no different muscle groups!?
       let muscleFiltered = sideFiltered;
       if (regionTag !== "CORE" && regionTag !== "CORE") {
         // not yet chosen big muscles

@@ -29,15 +29,15 @@ export function getOpposingExerciseDirection(direction: string): string {
 }
 
 /**
- * Map muscles to their body area regions (upper_body, lower_body, core).
+ * Map muscles to their body area regions (upperBody, lowerBody, core).
  * Used to filter exercises based on muscle soreness data.
  *
  * @param muscles - Array of muscle tag strings
- * @returns Array of area strings (e.g., ["upper_body", "lower_body"])
+ * @returns Array of area strings (e.g., ["upperBody", "lowerBody"])
  */
 export function getAreasFor(muscles: string[]): string[] {
   const areas = {
-    upper_body: [
+    upperBody: [
       "CHEST",
       "NECK",
       "UPPER_BACK",
@@ -70,7 +70,7 @@ export function getAreasFor(muscles: string[]): string[] {
       "WRIST_EXTENSOR_LEFT",
       "WRIST_EXTENSOR",
     ],
-    lower_body: [
+    lowerBody: [
       "ADDUCTORS",
       "QUADRICEPS_LEFT",
       "QUADRICEPS_RIGHT",
@@ -107,4 +107,19 @@ export function getAreasFor(muscles: string[]): string[] {
       areas[area as keyof typeof areas].includes(muscle),
     ),
   );
+}
+
+const areaToRegionTag: Record<string, string> = {
+  upperBody: "UPPER_BODY",
+  lowerBody: "LOWER_BODY",
+  core: "CORE",
+};
+
+/**
+ * Convert a camelCase area name to its REGION tag equivalent.
+ * @param area - camelCase area name (e.g., "upperBody")
+ * @returns REGION tag (e.g., "UPPER_BODY")
+ */
+export function areaToRegion(area: string): string {
+  return areaToRegionTag[area] ?? area.toUpperCase();
 }

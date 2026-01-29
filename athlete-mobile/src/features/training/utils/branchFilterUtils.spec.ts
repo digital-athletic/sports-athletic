@@ -221,7 +221,7 @@ describe("branchFilterUtils", () => {
       ).toThrow();
     });
 
-    it("returns empty keep for CARDIO with lower_body soreness", () => {
+    it("returns empty keep for CARDIO with lowerBody soreness", () => {
       const branches = {
         "1": createBranch(["REGION_LOWER_BODY"]),
       };

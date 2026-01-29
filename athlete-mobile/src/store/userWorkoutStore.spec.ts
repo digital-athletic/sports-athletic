@@ -112,7 +112,7 @@ describe("userWorkoutStore", () => {
         horizontalPull: {},
         hip: {},
         knee: {},
-        lower_body: {},
+        lowerBody: {},
       };
 
       act(() => {

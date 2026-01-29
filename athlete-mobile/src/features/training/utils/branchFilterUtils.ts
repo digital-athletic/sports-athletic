@@ -9,7 +9,7 @@ import type {
 } from "@/features/training/models/BranchFilter";
 import { getTagValues } from "../../../utils/tagUtils";
 import { TemporalDataType } from "../models/TemporalData";
-import { getAreasFor } from "./exerciseUtils";
+import { areaToRegion, getAreasFor } from "./exerciseUtils";
 import { isPreventionSkill } from "./skillTreeUtils";
 
 /**
@@ -151,18 +151,14 @@ export function filterBySoreness<T extends Branch>(
       switch (skill) {
         case "PREVSHOULDER":
         case "PREVWRIST":
-          hasSorenessInArea = areas.some(
-            (a) => a.toUpperCase() === "UPPER_BODY",
-          );
+          hasSorenessInArea = areas.includes("upperBody");
           break;
         case "PREVSPINE":
-          hasSorenessInArea = areas.some((a) => a.toUpperCase() === "CORE");
+          hasSorenessInArea = areas.includes("core");
           break;
         case "PREVKNEE":
         case "PREVANKLE":
-          hasSorenessInArea = areas.some(
-            (a) => a.toUpperCase() === "LOWER_BODY",
-          );
+          hasSorenessInArea = areas.includes("lowerBody");
           break;
         default:
           break;
@@ -171,7 +167,7 @@ export function filterBySoreness<T extends Branch>(
         throw {
           type: "TOO_MUCH_SORENESS",
           subtype: "PREV_SHORT_TRAINING_SORENESS",
-          params: areas.map((a) => a.toUpperCase()),
+          params: areas.map(areaToRegion),
         };
       }
     }
@@ -180,11 +176,11 @@ export function filterBySoreness<T extends Branch>(
       throw {
         type: "TOO_MUCH_SORENESS",
         subtype: "MULTIPLE_REGIONS",
-        params: areas.map((a) => a.toUpperCase()),
+        params: areas.map(areaToRegion),
       };
     }
 
-    if (skill.includes("CARDIO") && areas.includes("lower_body")) {
+    if (skill.includes("CARDIO") && areas.includes("lowerBody")) {
       return {
         keep: {},
         replace: ["LOWER_BODY"],
@@ -196,9 +192,7 @@ export function filterBySoreness<T extends Branch>(
 
     for (const id in branches) {
       const branchRegions = getTagValues(branches[id].tags ?? [], "REGION");
-      if (
-        areas.some((element) => branchRegions.includes(element.toUpperCase()))
-      ) {
+      if (areas.some((area) => branchRegions.includes(areaToRegion(area)))) {
         replace.push(...branchRegions);
       } else {
         keep[id] = branches[id];

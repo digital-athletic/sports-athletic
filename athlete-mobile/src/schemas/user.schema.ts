@@ -58,7 +58,7 @@ export const MaxValuesSchema = v.object({
   horizontalPull: MaxValueSchema,
   hip: MaxValueSchema,
   knee: MaxValueSchema,
-  lower_body: MaxValueSchema,
+  lowerBody: MaxValueSchema,
 });
 export type MaxValuesType = v.InferOutput<typeof MaxValuesSchema>;
 

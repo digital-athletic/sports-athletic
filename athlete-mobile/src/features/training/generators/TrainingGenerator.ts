@@ -1403,8 +1403,8 @@ export default class TrainingGenerator {
           let length = skill.length;
           const tempTags = temporalData.map((element) => element.tag);
           let areas = getAreasFor(tempTags);
-          if (areas.indexOf("lower_body") > -1) {
-            // max 20 minutes if lower_body soreness
+          if (areas.indexOf("lowerBody") > -1) {
+            // max 20 minutes if lowerBody soreness
             length = Math.min(length, 20);
           }
           // run given time

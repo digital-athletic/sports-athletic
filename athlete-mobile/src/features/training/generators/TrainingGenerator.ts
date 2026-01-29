@@ -84,7 +84,7 @@ import type { UserType } from "@/schemas/user.schema";
 import { Logger } from "@/services/Logger";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
 import { cloneWithValidation } from "@/utils/cloneWithValidation";
-import { getTagValues } from "@/utils/tagUtils";
+import { getTagValues, getUserTagValues } from "@/utils/tagUtils";
 
 // Intensity
 import { IntensityBAS } from "../../../../assets/data/generator/intensity/BAS";
@@ -307,7 +307,9 @@ export default class TrainingGenerator {
 
     // pain
     const painData: string[] = user.workoutData?.tags
-      ? getBlocksFromPains(getTagValues(user.workoutData.tags, TagGroups.PAIN))
+      ? getBlocksFromPains(
+          getUserTagValues(user.workoutData.tags, TagGroups.PAIN),
+        )
       : [];
 
     const painFiltered: SkillTreeType = {};
@@ -962,8 +964,8 @@ export default class TrainingGenerator {
             },
           ];
         } else {
-          const PAINS = getTagValues(
-            user.workoutData?.tags ?? [],
+          const PAINS = getUserTagValues(
+            user.workoutData?.tags,
             TagGroups.PAIN,
           );
           const prevSkills = getPreventionsFromPains(PAINS);
@@ -2102,7 +2104,7 @@ export default class TrainingGenerator {
   ): GeneratedSetListEntry[] => {
     if (TrainingGenerator.DEBUG) console.log("skillList: ", skillList);
     const userLevel = getUserLevel(user);
-    const PAINS = getTagValues(user.workoutData?.tags ?? [], TagGroups.PAIN);
+    const PAINS = getUserTagValues(user.workoutData?.tags, TagGroups.PAIN);
 
     let setList: GeneratedSetListEntry[] = [];
 
@@ -3004,7 +3006,7 @@ export default class TrainingGenerator {
   ): GeneratedSetListEntry[] => {
     const workoutData = requireWorkoutData(user);
     const gender = getUserGender(user);
-    const userLevelTags = getTagValues(workoutData.tags ?? [], TagGroups.LEVEL);
+    const userLevelTags = getUserTagValues(workoutData.tags, TagGroups.LEVEL);
     const userLevel = userLevelTags[0] || WorkoutConstants.LEVELS.BEGINNER;
     // 5 min warm up to start
     let wuBranches = getSkillTree(skillTrees, "WU", [], true);
@@ -3934,8 +3936,8 @@ const filterByUserLevel = (
   if (!user || !user.workoutData) {
     return { keep: branches, replace: [] };
   }
-  const userLevelTags = getTagValues(
-    user.workoutData.tags ?? [],
+  const userLevelTags = getUserTagValues(
+    user.workoutData.tags,
     TagGroups.LEVEL,
   );
   const userLevel = userLevelTags[0] || WorkoutConstants.LEVELS.BEGINNER;

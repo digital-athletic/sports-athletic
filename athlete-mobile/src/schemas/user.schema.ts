@@ -118,6 +118,13 @@ export const PersonalDataSchema = v.object({
 });
 
 /**
+ * Schema for user tags in structured format.
+ * Keys are tag group identifiers (e.g., "LEVEL", "POSITION", "PAIN"),
+ * values are arrays of selected tag values.
+ */
+export const TagsByGroupSchema = v.record(v.string(), v.array(v.string()));
+
+/**
  * Workout-specific data schema.
  *
  * NOTE: gender, birthday, anamnesisCompleted, height, and weight have been moved to
@@ -125,23 +132,12 @@ export const PersonalDataSchema = v.object({
  * These fields are kept here with v.optional() for backward compatibility
  * during data migration but should NOT be used for new code.
  *
- * @deprecated Use personalData.gender, personalData.birthday, personalData.height,
- * personalData.weight, and anamnesisCompleted at user level instead.
  */
 export const WorkoutDataSchema = v.looseObject({
-  // DEPRECATED: use user.personalData.gender
-  gender: v.optional(v.picklist(["MALE", "FEMALE"])),
-  // DEPRECATED: use user.anamnesisCompleted
-  anamnesisCompleted: v.optional(v.boolean()),
-  seasonPhase: v.optional(SeasonPhaseSchema),
-  // DEPRECATED: use user.personalData.birthday
-  birthday: v.optional(v.string()), // ISO 8601 format (YYYY-MM-DD)
-  // DEPRECATED: use user.personalData.height
-  height: v.optional(v.number()),
-  // DEPRECATED: use user.personalData.weight
-  weight: v.optional(v.number()),
-  tags: v.optional(v.array(v.string())),
+  /** User preference tags in structured format (e.g., { LEVEL: ["BEGINNER"], PAIN: ["KNEE"] }) */
+  tags: v.optional(TagsByGroupSchema),
   maxValues: v.optional(MaxValuesSchema),
+  seasonPhase: v.optional(SeasonPhaseSchema),
 });
 
 // ISO 8601 date strings

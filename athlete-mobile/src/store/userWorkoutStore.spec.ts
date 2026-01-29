@@ -13,16 +13,10 @@ describe("userWorkoutStore", () => {
     it("has default workout data", () => {
       const { result } = renderHook(() => useUserWorkoutStore());
       expect(result.current.workoutData.sport).toBe("OTHER_SPORT");
-      expect(result.current.workoutData.tags).toEqual([
-        "POSITION_FIELD",
-        "LEVEL_BEGINNER",
-      ]);
-    });
-
-    it("does not include height/weight (moved to userProfileStore)", () => {
-      const { result } = renderHook(() => useUserWorkoutStore());
-      expect(result.current.workoutData.height).toBeUndefined();
-      expect(result.current.workoutData.weight).toBeUndefined();
+      expect(result.current.workoutData.tags).toEqual({
+        POSITION: ["FIELD"],
+        LEVEL: ["BEGINNER"],
+      });
     });
 
     it("has no training plan", () => {
@@ -40,10 +34,10 @@ describe("userWorkoutStore", () => {
       });
 
       expect(result.current.workoutData.sport).toBe("FOOTBALL_SPORT");
-      expect(result.current.workoutData.tags).toEqual([
-        "POSITION_FIELD",
-        "LEVEL_BEGINNER",
-      ]); // unchanged
+      expect(result.current.workoutData.tags).toEqual({
+        POSITION: ["FIELD"],
+        LEVEL: ["BEGINNER"],
+      }); // unchanged
     });
   });
 
@@ -60,17 +54,17 @@ describe("userWorkoutStore", () => {
   });
 
   describe("setTags", () => {
-    it("replaces tags array", () => {
+    it("replaces tags with structured format", () => {
       const { result } = renderHook(() => useUserWorkoutStore());
 
       act(() => {
-        result.current.setTags(["LEVEL_ADVANCED", "POSITION_GOAL"]);
+        result.current.setTags({ LEVEL: ["ADVANCED"], POSITION: ["GOAL"] });
       });
 
-      expect(result.current.workoutData.tags).toEqual([
-        "LEVEL_ADVANCED",
-        "POSITION_GOAL",
-      ]);
+      expect(result.current.workoutData.tags).toEqual({
+        LEVEL: ["ADVANCED"],
+        POSITION: ["GOAL"],
+      });
     });
   });
 

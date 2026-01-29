@@ -17,7 +17,7 @@ import {
 } from "@/schemas/skillTree.schema";
 import { Logger } from "@/services/Logger";
 import { dateToISODate } from "@/utils/date";
-import { getTagValues } from "@/utils/tagUtils";
+import { getTagValues, getUserTagValue } from "@/utils/tagUtils";
 import { ExerciseBranchType } from "../models/ExerciseBranch";
 import { isPauseExercise } from "../models/IdTypes";
 import { GenderTag, IntensityData } from "../models/Intensity";
@@ -45,8 +45,8 @@ export const getUserLevel = (user: UserType): LevelTag => {
     return WorkoutConstants.LEVELS.BEGINNER;
   }
 
-  const levelTags = getTagValues(user.workoutData.tags, TagGroups.LEVEL);
-  return (levelTags[0] as LevelTag) ?? WorkoutConstants.LEVELS.BEGINNER;
+  const level = getUserTagValue(user.workoutData.tags, TagGroups.LEVEL);
+  return (level as LevelTag) ?? WorkoutConstants.LEVELS.BEGINNER;
 };
 
 export const getMaxValueForExercise = (

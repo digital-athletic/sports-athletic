@@ -16,6 +16,7 @@ import {
   enrichSeasonPhaseWithWeeks,
   enrichSeasonPhaseWithWeeksFromDate,
 } from "@/features/training/utils/seasonPhaseUtils";
+import type { TagsByGroup } from "@/features/training/models/Tags";
 import { dateToISODate } from "@/utils/date";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -32,7 +33,10 @@ const createInitialWorkoutData = (): UserWorkoutDataType => ({
   // NOTE: height and weight have been moved to userProfileStore.personalData
   // Use getUserHeight/getUserWeight from userDataUtils.ts for access with fallback
   sport: "OTHER_SPORT",
-  tags: ["POSITION_FIELD", "LEVEL_BEGINNER"],
+  tags: {
+    POSITION: ["FIELD"],
+    LEVEL: ["BEGINNER"],
+  },
   seasonPhase: {
     type: null,
     endDate: dateToISODate(new Date()),
@@ -50,7 +54,7 @@ type Actions = {
   setWorkoutData: (data: Partial<UserWorkoutDataType>) => void;
   setSport: (sport: Sport) => void;
   setSeasonPhase: (phase: SeasonPhaseType, startDate?: Date) => void;
-  setTags: (tags: string[]) => void;
+  setTags: (tags: TagsByGroup) => void;
   setTrainingPlan: (plan: TrainingPlanType | null) => void;
   setTemporalData: (data: TemporalDataType[]) => void;
   clearUserWorkoutData: () => void;

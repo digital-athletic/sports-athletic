@@ -19,7 +19,7 @@ import { Button } from "@/theme/Button";
 import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
-import { getTagValue } from "@/utils/tagUtils";
+import { getUserTagValue } from "@/utils/tagUtils";
 import { Route, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -185,7 +185,7 @@ export default function TrainingDays() {
     }
 
     // Get duration options based on user level and age group
-    const userLevel = (getTagValue(tags, "LEVEL") ||
+    const userLevel = (getUserTagValue(tags, "LEVEL") ||
       WorkoutConstants.LEVELS.BEGINNER) as
       | "BEGINNER"
       | "ADVANCED"
@@ -248,7 +248,7 @@ export default function TrainingDays() {
     }
 
     // Get recommendations from constants based on level and age group
-    const userLevel = (getTagValue(tags, "LEVEL") ||
+    const userLevel = (getUserTagValue(tags, "LEVEL") ||
       WorkoutConstants.LEVELS.BEGINNER) as
       | "BEGINNER"
       | "ADVANCED"

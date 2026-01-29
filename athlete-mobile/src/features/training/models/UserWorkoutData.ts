@@ -1,6 +1,7 @@
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { MaxValuesType } from "./MaxValues";
 import type { SeasonPhaseType } from "./SeasonPhase";
+import type { TagsByGroup } from "./Tags";
 
 export type Sport = keyof typeof WorkoutConstants.SPORTS; // e.g., 'SOCCER', 'BASKETBALL', etc.
 
@@ -15,18 +16,13 @@ export type Sport = keyof typeof WorkoutConstants.SPORTS; // e.g., 'SOCCER', 'BA
  * with fallback support during migration.
  */
 export type UserWorkoutDataType = {
-  /**
-   * @deprecated Use userProfileStore.personalData.weight instead.
-   * Kept optional for backward compatibility during migration.
-   */
-  weight?: number;
-  /**
-   * @deprecated Use userProfileStore.personalData.height instead.
-   * Kept optional for backward compatibility during migration.
-   */
-  height?: number;
   sport: Sport;
-  tags: string[];
+  /**
+   * User preference tags in structured format.
+   * Keys are tag group identifiers (e.g., "LEVEL", "POSITION", "PAIN"),
+   * values are arrays of selected tag values.
+   */
+  tags: TagsByGroup;
   seasonPhase: SeasonPhaseType;
   maxValues: MaxValuesType;
 };

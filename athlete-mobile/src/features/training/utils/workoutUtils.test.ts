@@ -36,22 +36,22 @@ describe("getUserLevel", () => {
     expect(result).toBe(WorkoutConstants.LEVELS.BEGINNER);
   });
 
-  it("returns BEGINNER when workoutData.tags is an empty array", () => {
+  it("returns BEGINNER when workoutData.tags is an empty object", () => {
     const user: UserType = {
       userId: "test-user-3",
       workoutData: {
-        tags: [],
+        tags: {},
       },
     };
     const result = getUserLevel(user);
     expect(result).toBe(WorkoutConstants.LEVELS.BEGINNER);
   });
 
-  it("returns BEGINNER when tags array contains no LEVEL tags", () => {
+  it("returns BEGINNER when tags object contains no LEVEL key", () => {
     const user: UserType = {
       userId: "test-user-4",
       workoutData: {
-        tags: ["POSITION_FIELD", "PAIN_KNEE"],
+        tags: { POSITION: ["FIELD"], PAIN: ["KNEE"] },
       },
     };
     const result = getUserLevel(user);
@@ -62,7 +62,7 @@ describe("getUserLevel", () => {
     const user: UserType = {
       userId: "test-user-5",
       workoutData: {
-        tags: ["POSITION_FIELD", "LEVEL_BEGINNER", "PAIN_SHOULDER"],
+        tags: { POSITION: ["FIELD"], LEVEL: ["BEGINNER"], PAIN: ["SHOULDER"] },
       },
     };
     const result = getUserLevel(user);
@@ -73,7 +73,7 @@ describe("getUserLevel", () => {
     const user: UserType = {
       userId: "test-user-6",
       workoutData: {
-        tags: ["POSITION_GOAL", "LEVEL_ADVANCED"],
+        tags: { POSITION: ["GOAL"], LEVEL: ["ADVANCED"] },
       },
     };
     const result = getUserLevel(user);
@@ -84,22 +84,22 @@ describe("getUserLevel", () => {
     const user: UserType = {
       userId: "test-user-7",
       workoutData: {
-        tags: ["LEVEL_PROFESSIONAL", "POSITION_FIELD"],
+        tags: { LEVEL: ["PROFESSIONAL"], POSITION: ["FIELD"] },
       },
     };
     const result = getUserLevel(user);
     expect(result).toBe(WorkoutConstants.LEVELS.PROFESSIONAL);
   });
 
-  it("returns the first LEVEL tag when multiple LEVEL tags exist", () => {
+  it("returns the first LEVEL value when multiple LEVEL values exist", () => {
     const user: UserType = {
       userId: "test-user-8",
       workoutData: {
-        tags: ["LEVEL_ADVANCED", "LEVEL_BEGINNER", "POSITION_FIELD"],
+        tags: { LEVEL: ["ADVANCED", "BEGINNER"], POSITION: ["FIELD"] },
       },
     };
     const result = getUserLevel(user);
-    // Should return the first LEVEL tag found
+    // Should return the first LEVEL value found
     expect(result).toBe(WorkoutConstants.LEVELS.ADVANCED);
   });
 });

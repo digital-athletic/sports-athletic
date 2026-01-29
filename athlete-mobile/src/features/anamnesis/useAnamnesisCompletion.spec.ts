@@ -50,7 +50,7 @@ describe("useAnamnesisCompletion", () => {
       expect(profileResult.current.personalData.weight).toBe(75);
     });
 
-    it("saves tags to userWorkoutStore.workoutData", () => {
+    it("saves tags to userWorkoutStore.workoutData in structured format", () => {
       const { result: anamnesisResult } = renderHook(() => useAnamnesisStore());
       const { result: workoutResult } = renderHook(() => useUserWorkoutStore());
       const { result: hookResult } = renderHook(() => useAnamnesisCompletion());
@@ -64,44 +64,11 @@ describe("useAnamnesisCompletion", () => {
         hookResult.current.saveAnamnesisData();
       });
 
-      expect(workoutResult.current.workoutData.tags).toContain(
-        "LEVEL_ADVANCED",
-      );
-      expect(workoutResult.current.workoutData.tags).toContain("POSITION_GOAL");
-    });
-
-    it("does NOT save height to userWorkoutStore (deprecated field)", () => {
-      const { result: anamnesisResult } = renderHook(() => useAnamnesisStore());
-      const { result: workoutResult } = renderHook(() => useUserWorkoutStore());
-      const { result: hookResult } = renderHook(() => useAnamnesisCompletion());
-
-      act(() => {
-        anamnesisResult.current.setValue("height", 999);
-      });
-
-      act(() => {
-        hookResult.current.saveAnamnesisData();
-      });
-
-      // workoutData.height is deprecated and no longer set
-      expect(workoutResult.current.workoutData.height).toBeUndefined();
-    });
-
-    it("does NOT save weight to userWorkoutStore (deprecated field)", () => {
-      const { result: anamnesisResult } = renderHook(() => useAnamnesisStore());
-      const { result: workoutResult } = renderHook(() => useUserWorkoutStore());
-      const { result: hookResult } = renderHook(() => useAnamnesisCompletion());
-
-      act(() => {
-        anamnesisResult.current.setValue("weight", 999);
-      });
-
-      act(() => {
-        hookResult.current.saveAnamnesisData();
-      });
-
-      // workoutData.weight is deprecated and no longer set
-      expect(workoutResult.current.workoutData.weight).toBeUndefined();
+      // Tags are now passed directly in structured format (no conversion)
+      expect(workoutResult.current.workoutData.tags.LEVEL).toEqual([
+        "ADVANCED",
+      ]);
+      expect(workoutResult.current.workoutData.tags.POSITION).toEqual(["GOAL"]);
     });
 
     it("handles undefined height gracefully", () => {

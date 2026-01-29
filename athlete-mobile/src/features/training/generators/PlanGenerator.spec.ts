@@ -1105,10 +1105,10 @@ describe("PlanGenerator", () => {
         userId: "test-user-1",
         workoutData: {
           birthday: "01-01-1990",
-          tags: [
-            `LEVEL_${WorkoutConstants.LEVELS.ADVANCED}`,
-            "POSITION_MIDFIELDER",
-          ],
+          tags: {
+            LEVEL: [WorkoutConstants.LEVELS.ADVANCED],
+            POSITION: ["MIDFIELDER"],
+          },
           seasonPhase: {
             type: SeasonPhase.COMPETITION,
             numOfWeeks: 8,
@@ -1159,10 +1159,10 @@ describe("PlanGenerator", () => {
         userId: "test-child-1",
         workoutData: {
           birthday: "01-01-2015",
-          tags: [
-            `LEVEL_${WorkoutConstants.LEVELS.PROFESSIONAL}`,
-            "POSITION_FORWARD",
-          ],
+          tags: {
+            LEVEL: [WorkoutConstants.LEVELS.PROFESSIONAL],
+            POSITION: ["FORWARD"],
+          },
           seasonPhase: {
             type: SeasonPhase.PREPARATORY,
             numOfWeeks: 6,
@@ -1211,11 +1211,11 @@ describe("PlanGenerator", () => {
         userId: "test-user-pain",
         workoutData: {
           birthday: "01-01-1985",
-          tags: [
-            `LEVEL_${WorkoutConstants.LEVELS.BEGINNER}`,
-            "POSITION_DEFENDER",
-            "PAIN_KNEE_LEFT",
-          ],
+          tags: {
+            LEVEL: [WorkoutConstants.LEVELS.BEGINNER],
+            POSITION: ["DEFENDER"],
+            PAIN: ["KNEE_LEFT"],
+          },
           seasonPhase: {
             type: SeasonPhase.PAUSE,
             numOfWeeks: 4,
@@ -1329,7 +1329,10 @@ describe("PlanGenerator", () => {
         userId: "test-user-prep",
         workoutData: {
           birthday: "01-01-1987",
-          tags: [`LEVEL_${WorkoutConstants.LEVELS.ADVANCED}`, "POSITION_FIELD"],
+          tags: {
+            LEVEL: [WorkoutConstants.LEVELS.ADVANCED],
+            POSITION: ["FIELD"],
+          },
           seasonPhase: {
             type: SeasonPhase.PREPARATORY,
             numOfWeeks: 20,
@@ -1390,7 +1393,7 @@ describe("PlanGenerator", () => {
     const mockUser = {
       userId: "test-user",
       workoutData: {
-        tags: ["LEVEL_BEGINNER", "POSITION_FIELD"],
+        tags: { LEVEL: ["BEGINNER"], POSITION: ["FIELD"] },
         birthday: "01-01-1990",
       },
     };
@@ -1672,7 +1675,7 @@ describe("PlanGenerator", () => {
     const emptyDirections = {};
     const mockUser = {
       userId: "test-user",
-      workoutData: { birthday: "01-01-1990", tags: [] },
+      workoutData: { birthday: "01-01-1990", tags: {} },
     };
 
     it("returns empty array when weightedTags is empty", () => {

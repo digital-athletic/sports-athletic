@@ -21,7 +21,7 @@ describe("TrainingGenerator", () => {
     workoutData: {
       birthday: "1990-01-01",
       gender: "MALE",
-      tags: ["LEVEL_INTERMEDIATE"],
+      tags: { LEVEL: ["INTERMEDIATE"] },
       maxValues: DEFAULT_MAX_VALUES,
     },
     temporalData: [],
@@ -1119,7 +1119,7 @@ describe("TrainingGenerator", () => {
         ...mockUser,
         workoutData: {
           ...mockUser.workoutData,
-          tags: ["LEVEL_BEGINNER"],
+          tags: { LEVEL: ["BEGINNER"] },
         },
       };
 
@@ -1558,10 +1558,12 @@ describe("TrainingGenerator", () => {
 
     const testUser = {
       userId: "test-user",
-      workoutData: {
+      personalData: {
         birthday: "01.01.1990",
         gender: "MALE" as "MALE" | "FEMALE",
-        tags: ["LEVEL_ADVANCED"] as string[],
+      },
+      workoutData: {
+        tags: { LEVEL: ["ADVANCED"] } as Record<string, string[]>,
         maxValues: {
           testDate: "01-01-2020",
           knee: { barbell: 100 },
@@ -1637,10 +1639,13 @@ describe("TrainingGenerator", () => {
         ({ level, gender, expectedExerciseIds }) => {
           const user = {
             ...testUser,
+            personalData: {
+              ...testUser.personalData,
+              gender,
+            },
             workoutData: {
               ...testUser.workoutData,
-              gender,
-              tags: [`LEVEL_${level}`],
+              tags: { LEVEL: [level] },
             },
           };
 
@@ -1668,10 +1673,13 @@ describe("TrainingGenerator", () => {
         ({ level, gender, expectedExerciseIds }) => {
           const user = {
             ...testUser,
+            personalData: {
+              ...testUser.personalData,
+              gender,
+            },
             workoutData: {
               ...testUser.workoutData,
-              gender,
-              tags: [`LEVEL_${level}`],
+              tags: { LEVEL: [level] },
             },
           };
 
@@ -1705,10 +1713,13 @@ describe("TrainingGenerator", () => {
         ({ level, gender, expectedExerciseIds }) => {
           const user = {
             ...testUser,
+            personalData: {
+              ...testUser.personalData,
+              gender,
+            },
             workoutData: {
               ...testUser.workoutData,
-              gender,
-              tags: [`LEVEL_${level}`],
+              tags: { LEVEL: [level] },
             },
           };
 
@@ -1795,7 +1806,7 @@ describe("TrainingGenerator", () => {
           ...testUser,
           workoutData: {
             ...testUser.workoutData,
-            tags: ["LEVEL_BEGINNER"],
+            tags: { LEVEL: ["BEGINNER"] },
             maxValues: {},
           },
         };
@@ -1815,7 +1826,7 @@ describe("TrainingGenerator", () => {
           ...testUser,
           workoutData: {
             ...testUser.workoutData,
-            tags: ["LEVEL_ADVANCED"],
+            tags: { LEVEL: ["ADVANCED"] },
             gender: "MALE" as const,
             maxValues: {
               testDate: "01-01-2024",
@@ -1841,7 +1852,7 @@ describe("TrainingGenerator", () => {
       it("should fallback to BEGINNER exercises when no level tag is present", () => {
         const noLevelUser = {
           ...testUser,
-          workoutData: { ...testUser.workoutData, tags: [] },
+          workoutData: { ...testUser.workoutData, tags: {} },
         };
 
         const result = generateTestWorkout(noLevelUser);
@@ -1861,7 +1872,10 @@ describe("TrainingGenerator", () => {
       it("should throw descriptive error for invalid level tag", () => {
         const invalidLevelUser = {
           ...testUser,
-          workoutData: { ...testUser.workoutData, tags: ["LEVEL_INVALID"] },
+          workoutData: {
+            ...testUser.workoutData,
+            tags: { LEVEL: ["INVALID"] },
+          },
         };
 
         expect(() => generateTestWorkout(invalidLevelUser)).toThrow(

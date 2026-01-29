@@ -1,7 +1,6 @@
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
-import { convertAnamnesisTagsToWorkoutTags } from "@/utils/tagUtils";
 
 /**
  * Hook for orchestrating anamnesis completion.
@@ -12,6 +11,9 @@ import { convertAnamnesisTagsToWorkoutTags } from "@/utils/tagUtils";
  * NOTE: gender and birthday are stored in userProfileStore (set during onboarding)
  * and are NOT copied here. Components needing these values should
  * read from userProfileStore.personalData directly.
+ *
+ * Both anamnesisStore and userWorkoutStore now use the same structured
+ * TagsByGroup format, so tags are passed directly without conversion.
  */
 export const useAnamnesisCompletion = () => {
   const { values, tags } = useAnamnesisStore();
@@ -19,10 +21,9 @@ export const useAnamnesisCompletion = () => {
   const { setTags } = useUserWorkoutStore();
 
   const saveAnamnesisData = () => {
-    const workoutTags = convertAnamnesisTagsToWorkoutTags(tags);
-
     // Save tags to workout store (training configuration)
-    setTags(workoutTags);
+    // Tags are now in the same structured format in both stores
+    setTags(tags);
 
     // Save physical attributes to profile store (personal data)
     if (values.height) {

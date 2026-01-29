@@ -106,7 +106,10 @@ const STORE_DATA = {
         // NOTE: gender, birthday, height, weight, anamnesisCompleted have been
         // moved to user-profile-storage as the single source of truth
         sport: "SOCCER",
-        tags: ["POSITION_FIELD", "LEVEL_BEGINNER"],
+        tags: {
+          POSITION: ["FIELD"],
+          LEVEL: ["BEGINNER"],
+        },
         seasonPhase: {
           type: "COMPETITION",
           endDate: "31-12-2026",

@@ -73,7 +73,11 @@ import {
 
 import { cloneWithValidation } from "@/utils/cloneWithValidation";
 import { addDays, dateToISODate, ISODateToDate } from "@/utils/date";
-import { getTagValues } from "@/utils/tagUtils";
+import {
+  getTagValues,
+  getUserTagValue,
+  getUserTagValues,
+} from "@/utils/tagUtils";
 
 // Assets
 import SkillPriorities from "../../../../assets/data/generator/SkillPriorities";
@@ -184,15 +188,15 @@ export default class PlanGenerator {
       level = WorkoutConstants.LEVELS.ADVANCED;
     }
     if (PlanGenerator.DEBUG) console.log("Level: ", level);
-    const tags = workoutData.tags ?? [];
-    const position = getTagValues(tags, TagGroups.POSITION)[0]; // there should always be just one POSITION tag
+    const tags = workoutData.tags ?? {};
+    const position = getUserTagValue(tags, TagGroups.POSITION); // there should always be just one POSITION tag
     if (PlanGenerator.DEBUG) console.log("Position: ", position);
     const seasonPhase = workoutData.seasonPhase;
     if (!seasonPhase) {
       throw new Error("seasonPhase is required for plan generation");
     }
     if (PlanGenerator.DEBUG) console.log("SeasonPhase: ", seasonPhase);
-    const pains: string[] = getTagValues(tags, TagGroups.PAIN);
+    const pains: string[] = getUserTagValues(tags, TagGroups.PAIN);
 
     let hasPain: boolean = pains.length > 0 ? true : false;
 
@@ -222,7 +226,7 @@ export default class PlanGenerator {
     const initialPlan = this.initializeTrainingPlan(
       seasonPhase,
       ageGroup,
-      position,
+      position ?? "FIELD", // Default to FIELD if no position tag
       level,
       hasWeightsAvailable,
       startDate,
@@ -1400,7 +1404,7 @@ export default class PlanGenerator {
     const userAge = ageGroupFor(getUserBirthday(user) ?? "");
     const userLevel = getUserLevel(user);
     const pains = getBlocksFromPains(
-      getTagValues(user.workoutData?.tags ?? [], TagGroups.PAIN),
+      getUserTagValues(user.workoutData?.tags, TagGroups.PAIN),
     );
     if (PlanGenerator.DEBUG && pains.length > 0) {
       console.log("filter pains ", pains);

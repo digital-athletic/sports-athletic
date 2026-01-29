@@ -58,7 +58,11 @@ import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { useTheme } from "@/theme/theme";
-import { getTagValues } from "@/utils/tagUtils";
+import {
+  getTagValues,
+  getUserTagValue,
+  getUserTagValues,
+} from "@/utils/tagUtils";
 import { VideoPlayer } from "@/video/VideoPlayer";
 import { useKeepAwake } from "expo-keep-awake";
 import { Stack, useFocusEffect, useRouter } from "expo-router";
@@ -260,7 +264,9 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
 
         let userLevelString: string = WorkoutConstants.LEVELS.ADVANCED;
         if (workoutData) {
-          userLevelString = getTagValues(workoutData.tags, TagGroups.LEVEL)[0];
+          userLevelString =
+            getUserTagValue(workoutData.tags, TagGroups.LEVEL) ??
+            WorkoutConstants.LEVELS.ADVANCED;
         }
         const userLevel =
           userLevelString === WorkoutConstants.LEVELS.BEGINNER
@@ -413,7 +419,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     // do not increase exercises values in all workouts
     const type = activeTraining?.type;
 
-    const levelTagValues = getTagValues(workoutData.tags, TagGroups.LEVEL)[0];
+    const levelTagValues = getUserTagValue(workoutData.tags, TagGroups.LEVEL);
     const levelTag = isLevelTag(levelTagValues) ? levelTagValues : undefined;
     const lowercaseTag = levelTag?.toLowerCase();
     const userLevel = isTrainingLevel(lowercaseTag) ? lowercaseTag : undefined;
@@ -843,7 +849,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
       const exerciseName = WorkoutConstants.TEST_EXERCISES[exerciseId];
       const age = ageGroupFor(personalData.birthday);
       const gender = personalData.gender;
-      const level = getTagValues(workoutData.tags, TagGroups.LEVEL)[0];
+      const level = getUserTagValue(workoutData.tags, TagGroups.LEVEL);
       Logger.logEvent("test_repitition_value_saved_" + exerciseName, {
         value: repsValue,
         age: age,
@@ -870,7 +876,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   };
 
   const handlePainAlert = () => {
-    const userPains = getTagValues(workoutData.tags, TagGroups.PAIN);
+    const userPains = getUserTagValues(workoutData.tags, TagGroups.PAIN);
     if (userPains.length > 0) {
       Alert.alert(
         t("training.active.strengthTestAlert.title"),

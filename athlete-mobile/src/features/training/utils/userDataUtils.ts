@@ -97,37 +97,29 @@ export function hasWorkoutData(
 }
 
 /**
- * Get user's height from personalData (preferred) or workoutData (fallback).
- * personalData is the canonical source since Issue #1 phase 2 refactoring.
+ * Get user's height from personalData.
  */
 export function getUserHeight(user: UserType): number {
-  return (
-    user.personalData?.height ?? user.workoutData?.height ?? DEFAULT_HEIGHT
-  );
+  return user.personalData?.height ?? DEFAULT_HEIGHT;
 }
 
 /**
- * Get user's weight from personalData (preferred) or workoutData (fallback).
- * personalData is the canonical source since Issue #1 phase 2 refactoring.
+ * Get user's weight from personalData.
  */
 export function getUserWeight(user: UserType): number {
-  return (
-    user.personalData?.weight ?? user.workoutData?.weight ?? DEFAULT_WEIGHT
-  );
+  return user.personalData?.weight ?? DEFAULT_WEIGHT;
 }
 
 /**
- * Get user's birthday from personalData (preferred) or workoutData (fallback).
- * personalData is the canonical source since Issue #1 deduplication.
+ * Get user's birthday from personalData.
  */
 export function getUserBirthday(user: UserType): string {
-  return user.personalData?.birthday ?? user.workoutData?.birthday ?? "";
+  return user.personalData?.birthday ?? "";
 }
 
 /**
- * Get user's gender from personalData (preferred) or workoutData (fallback).
- * personalData is the canonical source since Issue #1 deduplication.
+ * Get user's gender from personalData.
  */
 export function getUserGender(user: UserType): "MALE" | "FEMALE" {
-  return user.personalData?.gender ?? user.workoutData?.gender ?? "FEMALE";
+  return user.personalData?.gender ?? "FEMALE";
 }

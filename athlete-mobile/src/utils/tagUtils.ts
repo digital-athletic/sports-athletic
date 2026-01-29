@@ -1,7 +1,17 @@
 /**
  * Tag utility functions for extracting and filtering tag values.
- * Tags are stored as strings with format "TAG_VALUE" in arrays.
+ *
+ * There are two tag formats in the codebase:
+ * 1. Flat format (string[]): Used for exercise/branch tags from external data.
+ *    Example: ["LEVEL_ADVANCED", "MUSCLE_QUAD"]
+ *    Use getTagValues() and getTagValue() for these.
+ *
+ * 2. Structured format (TagsByGroup): Used for user preference tags.
+ *    Example: { LEVEL: ["BEGINNER"], PAIN: ["KNEE"] }
+ *    Use getUserTagValues() and getUserTagValue() for these.
  */
+
+import type { TagsByGroup } from "@/features/training/models/Tags";
 
 /**
  * Extract tag values by tag group from a tags array.
@@ -55,24 +65,48 @@ export function getTagValue(
 }
 
 /**
- * Convert anamnesis tags format to workout tags format.
- * Transforms the object-based format used by anamnesisStore to the
- * array-based format used by userWorkoutStore.
+ * Extract tag values from structured user tags by tag group.
  *
- * @param anamnesisTags - Tags in anamnesis format (e.g., { LEVEL: ["BEGINNER"], PAIN: ["KNEE"] })
- * @returns Tags in workout format (e.g., ["LEVEL_BEGINNER", "PAIN_KNEE"])
+ * @param tags - Tags in structured format (e.g., { LEVEL: ["BEGINNER"], PAIN: ["KNEE"] })
+ * @param tagGroup - Tag group key to look up (e.g., "LEVEL", "PAIN")
+ * @returns Array of tag values for the group, or empty array if not found
  *
  * @example
  * ```tsx
- * const anamnesisTags = { LEVEL: ["ADVANCED"], POSITION: ["FIELD"] };
- * const workoutTags = convertAnamnesisTagsToWorkoutTags(anamnesisTags);
- * // Result: ["LEVEL_ADVANCED", "POSITION_FIELD"]
+ * const tags = { LEVEL: ["ADVANCED"], PAIN: ["KNEE", "BACK"] };
+ * getUserTagValues(tags, "PAIN"); // ["KNEE", "BACK"]
+ * getUserTagValues(tags, "POSITION"); // []
  * ```
  */
-export function convertAnamnesisTagsToWorkoutTags(anamnesisTags: {
-  [tag: string]: string[];
-}): string[] {
-  return Object.entries(anamnesisTags).flatMap(([tagGroup, values]) =>
-    values.map((value) => `${tagGroup}_${value}`),
-  );
+export function getUserTagValues(
+  tags: TagsByGroup | undefined,
+  tagGroup: string,
+): string[] {
+  if (!tags) {
+    return [];
+  }
+  return tags[tagGroup] ?? [];
+}
+
+/**
+ * Extract the first tag value from structured user tags by tag group.
+ * Convenience function for cases where only one value is expected.
+ *
+ * @param tags - Tags in structured format
+ * @param tagGroup - Tag group key to look up
+ * @returns First tag value, or undefined if not found
+ *
+ * @example
+ * ```tsx
+ * const tags = { LEVEL: ["ADVANCED"], POSITION: ["FIELD"] };
+ * getUserTagValue(tags, "LEVEL"); // "ADVANCED"
+ * getUserTagValue(tags, "PAIN"); // undefined
+ * ```
+ */
+export function getUserTagValue(
+  tags: TagsByGroup | undefined,
+  tagGroup: string,
+): string | undefined {
+  const values = getUserTagValues(tags, tagGroup);
+  return values[0];
 }

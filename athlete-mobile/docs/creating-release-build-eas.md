@@ -25,6 +25,7 @@ pnpm dlx eas-cli@latest login
 | `pnpm build:preview`              | Preview build for QA testing                      |
 | `pnpm build:production`           | Production build for app stores                   |
 | `pnpm submit:preview`             | Build and auto-submit preview build to TestFlight |
+| `pnpm update:preview`             | Update Build via OTA for TestFlight               |
 
 ---
 

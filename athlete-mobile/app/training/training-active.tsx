@@ -6,6 +6,8 @@ import {
   isSkillTypes,
   WorkoutConstants,
 } from "@/constants/workoutConstants";
+import { getExerciseById } from "@/data/exerciseRegistry";
+import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import {
   FOOTER_HEIGHT,
   TrainingFooter,
@@ -50,8 +52,6 @@ import {
 import { isTrainingLevel } from "@/schemas/common.schema";
 import { Logger } from "@/services/Logger";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
-import { useExercisesStore } from "@/store/exercisesStore";
-import { useSkillTreesStore } from "@/store/skillTreesStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
@@ -101,10 +101,9 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     setExerciseSkipped,
     setExerciseFeedback,
   } = useTrainingStore();
-  const { skillTrees } = useSkillTreesStore();
+  const skillTrees = getAllSkillTrees();
   const { branchData, setBranchLevel, updateExercise, addTestResult } =
     useExerciseProgressStore();
-  const { getExerciseById } = useExercisesStore();
   const { workoutData, replaceBranchInTrainingPlan, saveMaxValues } =
     useUserWorkoutStore();
 

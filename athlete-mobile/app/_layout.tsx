@@ -1,14 +1,7 @@
 import { useAuthStateListener } from "@/auth/useAuthStateListener";
 import { AlertHost } from "@/common/Alert";
-import { loadExercises } from "@/data/loadExercises";
-import { useLoadSkillTrees } from "@/features/training/hooks/useLoadSkillTree";
 import { useOTAService } from "@/services/OTAService";
 import { useAuthStore } from "@/store/authStore";
-import {
-  selectExercises,
-  selectSetExercises,
-  useExercisesStore,
-} from "@/store/exercisesStore";
 import { theme } from "@/theme/theme";
 import { ThemeProvider } from "@shopify/restyle";
 import { Stack } from "expo-router";
@@ -23,6 +16,10 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
  *
  * In the legacy app, this was the AppContainer with AllStack (Switch Navigator).
  * Expo Router uses conditional rendering and layout groups instead of Switch Navigator.
+ *
+ * Note: Exercise and skill tree data are now accessed via lazy-initialized registries
+ * (exerciseRegistry, skillTreeRegistry) instead of Zustand stores, so no initialization
+ * is needed here.
  */
 export default function RootLayout() {
   // Initialize and subscribe to Supabase auth state changes
@@ -31,14 +28,6 @@ export default function RootLayout() {
   const { auth } = useAuthStore();
 
   useOTAService();
-
-  useLoadSkillTrees();
-
-  const exercises = useExercisesStore(selectExercises);
-  const setExercises = useExercisesStore(selectSetExercises);
-  if (!exercises) {
-    setExercises(loadExercises());
-  }
 
   return (
     <ThemeProvider theme={theme}>

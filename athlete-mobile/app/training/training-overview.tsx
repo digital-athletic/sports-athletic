@@ -1,5 +1,6 @@
 import { BackHeader } from "@/common/BackHeader";
 import { WorkoutConstants } from "@/constants/workoutConstants";
+import { getAllExercises } from "@/data/exerciseRegistry";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import { SkillType } from "@/features/training/models/Training";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
@@ -7,7 +8,6 @@ import { useTrainingStore } from "@/features/training/trainingStore";
 import { getEquipmentList } from "@/features/training/trainingUtils";
 import { deriveWeightForExercise } from "@/features/training/utils/workoutUtils";
 import { getExercisePictureUrl } from "@/services/StorageService";
-import { useExercisesStore } from "@/store/exercisesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
@@ -39,7 +39,7 @@ export default function TrainingOverviewScreen() {
 
   // Get store data
   const { exerciseList, setTrainingStartTime } = useTrainingStore();
-  const { exercises } = useExercisesStore();
+  const exercises = getAllExercises();
   const { trainingDays } = useTrainingScheduleStore();
 
   // Get place from params or derive from weekday
@@ -57,7 +57,7 @@ export default function TrainingOverviewScreen() {
 
   // Process exercise data on mount
   const processExerciseData = useCallback(() => {
-    if (!exerciseList || !exercises) return;
+    if (!exerciseList) return;
 
     // Collect equipment using utility function
     const equipment = getEquipmentList(exerciseList, exercises, place);
@@ -149,15 +149,15 @@ export default function TrainingOverviewScreen() {
 
   // Build exercise overview on mount
   useEffect(() => {
-    if (!exerciseList || !exercises) {
+    if (!exerciseList) {
       return;
     }
 
     processExerciseData();
-  }, [exerciseList, exercises, processExerciseData]);
+  }, [exerciseList, processExerciseData]);
 
   // Show loading state when data isn't ready
-  if (!exerciseList || !exercises) {
+  if (!exerciseList) {
     return (
       <>
         <Stack.Screen
@@ -196,7 +196,7 @@ export default function TrainingOverviewScreen() {
             <EquipmentSection equipment={trainingEquipment} />
             <ExercisesSection
               exList={trainingExerciseList}
-              exercises={exercises || []}
+              exercises={exercises}
               onShowExerciseInfo={handleShowExerciseInfo}
             />
           </Box>

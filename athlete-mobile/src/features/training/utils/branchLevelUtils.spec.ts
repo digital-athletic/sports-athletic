@@ -1,6 +1,6 @@
+import type { SkillTreesState } from "@/data/skillTreeRegistry";
 import type { SkillBranchType } from "@/schemas/skillTree.schema";
 import type { BranchDataMapType } from "@/store/exerciseProgressStore";
-import type { SkillTreesState } from "@/store/skillTreesStore";
 import {
   type BranchLevelContext,
   calculateBranchLevelUpdate,

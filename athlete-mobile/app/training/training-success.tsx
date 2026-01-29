@@ -1,11 +1,11 @@
 import { RadarChart } from "@/charts/RadarChart";
+import { getAllExercises } from "@/data/exerciseRegistry";
 import { PowerTest } from "@/features/statistics/components/PowerTest";
 import { TrainingSummary } from "@/features/statistics/components/TrainingSummary";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { calculateSkillsFromTime } from "@/features/training/utils/trainingSuccessUtils";
 import { calculateWorkoutTotals } from "@/features/training/utils/workoutUtils";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
-import { useExercisesStore } from "@/store/exercisesStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
@@ -33,7 +33,7 @@ const TrainingSuccessScreen: FC = () => {
   const router = useRouter();
   const { exerciseList, time, activeTraining, resetTraining } =
     useTrainingStore();
-  const { exercises } = useExercisesStore();
+  const exercises = getAllExercises();
   const { workoutData } = useUserWorkoutStore();
   const maxValues = workoutData.maxValues;
   const { addXP } = useExerciseProgressStore();
@@ -53,12 +53,7 @@ const TrainingSuccessScreen: FC = () => {
 
   const totals = useMemo(
     () =>
-      calculateWorkoutTotals(
-        time,
-        exerciseList ?? [],
-        exercises ?? [],
-        maxValues,
-      ),
+      calculateWorkoutTotals(time, exerciseList ?? [], exercises, maxValues),
     [time, exerciseList, exercises, maxValues],
   );
 

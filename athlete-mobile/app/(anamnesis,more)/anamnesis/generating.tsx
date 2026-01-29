@@ -1,12 +1,12 @@
 import { Loading } from "@/common/Loading";
 import { SpeechBubble } from "@/common/SpeechBubble";
+import { getAllExercises } from "@/data/exerciseRegistry";
+import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import PlanGenerator from "@/features/training/generators/PlanGenerator";
 import { Logger } from "@/services/Logger";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
-import { useExercisesStore } from "@/store/exercisesStore";
 import { usePlacesStore } from "@/store/placesStore";
-import { useSkillTreesStore } from "@/store/skillTreesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
@@ -42,8 +42,8 @@ export default function Generating() {
   } = useUserWorkoutStore();
   const { anamnesisCompleted, setAnamnesisCompleted, userId } =
     useUserProfileStore();
-  const { exercises } = useExercisesStore();
-  const { skillTrees } = useSkillTreesStore();
+  const exercises = getAllExercises();
+  const skillTrees = getAllSkillTrees();
   const { branchData } = useExerciseProgressStore();
   const { trainingDays } = useTrainingScheduleStore();
   const { places } = usePlacesStore();
@@ -93,7 +93,7 @@ export default function Generating() {
       // Generate training plan
       const plan = PlanGenerator.generatePlan(
         user,
-        exercises || [],
+        exercises,
         skillTrees,
         branchData,
         trainingDays,

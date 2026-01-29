@@ -4,7 +4,7 @@ import { expandMuscleTags } from "@/bodyParts/muscleTagMapping";
 import { Loading } from "@/common/Loading";
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
-import { useExercisesStore } from "@/store/exercisesStore";
+import { getExerciseById } from "@/data/exerciseRegistry";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
@@ -36,7 +36,6 @@ export default function ExerciseInformationScreen() {
   const insets = useSafeAreaInsets();
 
   const { personalData } = useUserProfileStore();
-  const { getExerciseById } = useExercisesStore();
 
   const [isLoading, setIsLoading] = useState(true);
 

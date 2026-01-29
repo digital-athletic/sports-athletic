@@ -6,13 +6,13 @@ import {
   TileData,
   WorkoutConstants,
 } from "@/constants/workoutConstants";
+import { getAllExercises } from "@/data/exerciseRegistry";
 import { isAllowedForTraining } from "@/features/subscription/subscriptionHelpers";
 import { useSubscriptionStore } from "@/features/subscription/subscriptionStore";
 import { ColumnList } from "@/features/training/ColumnList";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { getSectionForDate } from "@/features/training/trainingUtils";
 import { Logger } from "@/services/Logger";
-import { useExercisesStore } from "@/store/exercisesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
@@ -39,7 +39,7 @@ export default function SelectTraining() {
   const { selection, setTrainingSelection } = useTrainingStore();
   const { workoutData, trainingPlan } = useUserWorkoutStore();
   const { trainingDays } = useTrainingScheduleStore();
-  const { exercises } = useExercisesStore();
+  const exercises = getAllExercises();
   const { subscription } = useSubscriptionStore();
 
   const [screenState, setScreenState] = useState<ScreenState>("SELECT");

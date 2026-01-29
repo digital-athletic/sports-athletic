@@ -1,4 +1,5 @@
 import { TagGroups } from "@/constants/tagGroups";
+import type { SkillTreesState } from "@/data/skillTreeRegistry";
 import { ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
 import { isPlaceholderBranch } from "@/features/training/models/IdTypes";
 import type { SkillBranchType } from "@/schemas/skillTree.schema";
@@ -9,7 +10,6 @@ import { getRegionsForPreventionSkills } from "@/features/training/utils/prevent
 import { getSkillTree } from "@/features/training/utils/skillTreeUtils";
 import { getEquivalentBranchWithGivenLevel } from "@/features/training/utils/workoutUtils";
 import { BranchDataMapType } from "@/store/exerciseProgressStore";
-import { SkillTreesState } from "@/store/skillTreesStore";
 import { getTagValues } from "@/utils/tagUtils";
 
 export interface BranchLevelContext {

@@ -1,12 +1,12 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
+import type { SkillTreesState } from "@/data/skillTreeRegistry";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type {
   SkillBranchType,
   SkillTreeType,
 } from "@/schemas/skillTree.schema";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
-import type { SkillTreesState } from "@/store/skillTreesStore";
 import { getTagValues } from "../../../utils/tagUtils";
 import { TemporalDataType } from "../models/TemporalData";
 import { SkillFocusType } from "../models/Training";

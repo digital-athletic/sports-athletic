@@ -9,6 +9,8 @@ import {
   PlaceType,
   SectionTypes,
 } from "@/constants/workoutConstants";
+import { getAllExercises } from "@/data/exerciseRegistry";
+import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { PlaceSelection } from "@/features/equipment/PlaceSelection";
 import { type UserType, parseUserType } from "@/schemas/user.schema";
 import { isGeneratorError } from "@/features/training/generators/GeneratorError";
@@ -20,9 +22,7 @@ import { useTrainingStore } from "@/features/training/trainingStore";
 import { Logger } from "@/services/Logger";
 import { useCompletedWorkoutsStore } from "@/store/completedWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
-import { useExercisesStore } from "@/store/exercisesStore";
 import { usePlacesStore } from "@/store/placesStore";
-import { useSkillTreesStore } from "@/store/skillTreesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
@@ -70,14 +70,14 @@ export default function MuscleSorenessScreen() {
   const [loading, setLoading] = useState(true);
   const [screenState, setScreenState] = useState<ScreenState>("SORENESS");
 
-  const { skillTrees } = useSkillTreesStore();
+  const skillTrees = getAllSkillTrees();
+  const exercises = getAllExercises();
   const { branchData, exerciseData } = useExerciseProgressStore();
   const { trainingDays } = useTrainingScheduleStore();
   const { places } = usePlacesStore();
   const { workoutsList } = useCompletedWorkoutsStore();
   const { setExerciseList, setEquipment, setActiveTraining } =
     useTrainingStore();
-  const { exercises } = useExercisesStore();
   const { userId } = useUserProfileStore();
   const { workoutData, temporalData, setTemporalData, trainingPlan } =
     useUserWorkoutStore();
@@ -132,14 +132,6 @@ export default function MuscleSorenessScreen() {
 
   const generateExerciseList = (place: PlaceType) => {
     const trainingType = params.type;
-
-    if (!exercises) {
-      Alert.alert(
-        t("common.error"),
-        t("training.generator.failedToLoadExerciseList"),
-      );
-      return;
-    }
 
     let selectedPlace = place;
     const weekdayNumber = parseIntParam(params.weekday);

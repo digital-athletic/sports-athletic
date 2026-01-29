@@ -16,7 +16,7 @@ export function useUpdateTrainingPlan() {
   const { branchData } = useExerciseProgressStore();
   const { trainingDays } = useTrainingScheduleStore();
   const { places } = usePlacesStore();
-  const { userId } = useUserProfileStore();
+  const { userId, personalData } = useUserProfileStore();
   const { workoutData, trainingPlan, setTrainingPlan } = useUserWorkoutStore();
 
   const updateTrainingPlan = useCallback(() => {
@@ -28,6 +28,7 @@ export function useUpdateTrainingPlan() {
 
     const user = {
       userId,
+      personalData,
       workoutData,
     };
 
@@ -50,6 +51,7 @@ export function useUpdateTrainingPlan() {
     trainingDays,
     places,
     userId,
+    personalData,
     workoutData,
     trainingPlan,
     setTrainingPlan,

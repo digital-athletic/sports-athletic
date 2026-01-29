@@ -1,6 +1,9 @@
 import type { UserType } from "@/schemas/user.schema";
 import type { TemporalDataType } from "@/features/training/models/TemporalData";
 
+const DEFAULT_HEIGHT = 175;
+const DEFAULT_WEIGHT = 65;
+
 /**
  * Safely gets temporal data from user as ISO date strings.
  * Returns empty array if temporalData is undefined.
@@ -91,4 +94,40 @@ export function hasWorkoutData(
   user: UserType,
 ): user is UserType & { workoutData: NonNullable<UserType["workoutData"]> } {
   return user.workoutData !== undefined;
+}
+
+/**
+ * Get user's height from personalData (preferred) or workoutData (fallback).
+ * personalData is the canonical source since Issue #1 phase 2 refactoring.
+ */
+export function getUserHeight(user: UserType): number {
+  return (
+    user.personalData?.height ?? user.workoutData?.height ?? DEFAULT_HEIGHT
+  );
+}
+
+/**
+ * Get user's weight from personalData (preferred) or workoutData (fallback).
+ * personalData is the canonical source since Issue #1 phase 2 refactoring.
+ */
+export function getUserWeight(user: UserType): number {
+  return (
+    user.personalData?.weight ?? user.workoutData?.weight ?? DEFAULT_WEIGHT
+  );
+}
+
+/**
+ * Get user's birthday from personalData (preferred) or workoutData (fallback).
+ * personalData is the canonical source since Issue #1 deduplication.
+ */
+export function getUserBirthday(user: UserType): string {
+  return user.personalData?.birthday ?? user.workoutData?.birthday ?? "";
+}
+
+/**
+ * Get user's gender from personalData (preferred) or workoutData (fallback).
+ * personalData is the canonical source since Issue #1 deduplication.
+ */
+export function getUserGender(user: UserType): "MALE" | "FEMALE" {
+  return user.personalData?.gender ?? user.workoutData?.gender ?? "FEMALE";
 }

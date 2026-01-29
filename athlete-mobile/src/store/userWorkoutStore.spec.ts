@@ -12,8 +12,17 @@ describe("userWorkoutStore", () => {
   describe("initial state", () => {
     it("has default workout data", () => {
       const { result } = renderHook(() => useUserWorkoutStore());
-      expect(result.current.workoutData.anamnesisCompleted).toBe(false);
       expect(result.current.workoutData.sport).toBe("OTHER_SPORT");
+      expect(result.current.workoutData.tags).toEqual([
+        "POSITION_FIELD",
+        "LEVEL_BEGINNER",
+      ]);
+    });
+
+    it("does not include height/weight (moved to userProfileStore)", () => {
+      const { result } = renderHook(() => useUserWorkoutStore());
+      expect(result.current.workoutData.height).toBeUndefined();
+      expect(result.current.workoutData.weight).toBeUndefined();
     });
 
     it("has no training plan", () => {
@@ -27,12 +36,14 @@ describe("userWorkoutStore", () => {
       const { result } = renderHook(() => useUserWorkoutStore());
 
       act(() => {
-        result.current.setWorkoutData({ weight: 80, height: 180 });
+        result.current.setWorkoutData({ sport: "FOOTBALL_SPORT" });
       });
 
-      expect(result.current.workoutData.weight).toBe(80);
-      expect(result.current.workoutData.height).toBe(180);
-      expect(result.current.workoutData.sport).toBe("OTHER_SPORT"); // unchanged
+      expect(result.current.workoutData.sport).toBe("FOOTBALL_SPORT");
+      expect(result.current.workoutData.tags).toEqual([
+        "POSITION_FIELD",
+        "LEVEL_BEGINNER",
+      ]); // unchanged
     });
   });
 
@@ -134,7 +145,7 @@ describe("userWorkoutStore", () => {
       const { result } = renderHook(() => useUserWorkoutStore());
 
       act(() => {
-        result.current.setWorkoutData({ weight: 100 });
+        result.current.setSport("FOOTBALL_SPORT");
         result.current.setTrainingPlan({
           start: new Date().toISOString(),
           sections: [],
@@ -142,7 +153,7 @@ describe("userWorkoutStore", () => {
         result.current.clearUserWorkoutData();
       });
 
-      expect(result.current.workoutData.weight).toBe(65);
+      expect(result.current.workoutData.sport).toBe("OTHER_SPORT");
       expect(result.current.trainingPlan).toBeNull();
     });
   });

@@ -40,7 +40,7 @@ export default function Generating() {
     trainingPlan,
     setTrainingPlan,
   } = useUserWorkoutStore();
-  const { anamnesisCompleted, setAnamnesisCompleted, userId } =
+  const { anamnesisCompleted, setAnamnesisCompleted, userId, personalData } =
     useUserProfileStore();
   const exercises = getAllExercises();
   const skillTrees = getAllSkillTrees();
@@ -84,6 +84,7 @@ export default function Generating() {
       // Build user object matching legacy structure
       const user = {
         userId,
+        personalData,
         workoutData: {
           ...freshWorkoutData,
           seasonPhase: freshWorkoutData.seasonPhase,

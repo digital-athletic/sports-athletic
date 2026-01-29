@@ -91,6 +91,8 @@ const STORE_DATA = {
         username: "Test User",
         gender: "MALE",
         birthday: "01-01-1990",
+        height: 180,
+        weight: 80,
       },
       isInInitialAnamnesis: false,
       anamnesisCompleted: true,
@@ -101,11 +103,8 @@ const STORE_DATA = {
   "user-workout-storage": {
     state: {
       workoutData: {
-        anamnesisCompleted: true,
-        gender: "MALE",
-        birthday: "01-01-1990",
-        weight: 80,
-        height: 180,
+        // NOTE: gender, birthday, height, weight, anamnesisCompleted have been
+        // moved to user-profile-storage as the single source of truth
         sport: "SOCCER",
         tags: ["POSITION_FIELD", "LEVEL_BEGINNER"],
         seasonPhase: {

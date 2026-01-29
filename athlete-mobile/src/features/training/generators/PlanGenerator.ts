@@ -44,6 +44,10 @@ import {
   getSkillTree,
   getUserExerciseFromBranch,
 } from "@/features/training/utils/skillTreeUtils";
+import {
+  getUserBirthday,
+  getUserGender,
+} from "@/features/training/utils/userDataUtils";
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import {
   DirectionsMapSchema,
@@ -168,7 +172,7 @@ export default class PlanGenerator {
       throw new Error("workoutData is required for plan generation");
     }
     // birthday may be undefined - ageGroupFor handles this by defaulting to current date (adult)
-    const dateOfBirth = workoutData.birthday ?? "";
+    const dateOfBirth = getUserBirthday(user);
     let ageGroup = ageGroupFor(dateOfBirth);
     if (PlanGenerator.DEBUG) console.log("AgeGroup: ", ageGroup);
     let level = getUserLevel(user);
@@ -1387,7 +1391,7 @@ export default class PlanGenerator {
       prevSkills,
       HAS_WEIGHTS,
     );
-    const userAge = ageGroupFor(user.workoutData?.birthday ?? "");
+    const userAge = ageGroupFor(getUserBirthday(user) ?? "");
     const userLevel = getUserLevel(user);
     const pains = getBlocksFromPains(
       getTagValues(user.workoutData?.tags ?? [], TagGroups.PAIN),
@@ -1404,7 +1408,7 @@ export default class PlanGenerator {
       fullSkillTree,
       workout,
       userAge,
-      user.workoutData?.gender ?? "MALE",
+      getUserGender(user) ?? "MALE",
       userLevel,
       equipment,
       pains,
@@ -1432,7 +1436,7 @@ export default class PlanGenerator {
         secondSkillTree,
         workout,
         userAge,
-        user.workoutData?.gender ?? "MALE",
+        getUserGender(user) ?? "MALE",
         userLevel,
         equipment,
         pains,

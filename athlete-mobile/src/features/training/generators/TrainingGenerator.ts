@@ -115,6 +115,8 @@ import { createExerciseMap } from "../utils/exerciseAccessor";
 import {
   getTemporalData,
   getTemporalTags,
+  getUserBirthday,
+  getUserGender,
   requireTrainingPlan,
   requireWorkoutData,
 } from "../utils/userDataUtils";
@@ -372,8 +374,8 @@ export default class TrainingGenerator {
     }
 
     // age
-    const ageGroup = user.workoutData?.birthday
-      ? ageGroupFor(user.workoutData.birthday)
+    const ageGroup = getUserBirthday(user)
+      ? ageGroupFor(getUserBirthday(user))
       : WorkoutConstants.AGE_GROUPS.CHILD;
     let ageFiltered = filterByAge(equipmentFiltered, ageGroup).keep;
 
@@ -382,7 +384,7 @@ export default class TrainingGenerator {
     }
 
     // gender
-    const userGender = user.workoutData?.gender ?? "FEMALE";
+    const userGender = getUserGender(user) ?? "FEMALE";
     const genderFiltered = filterByGender(ageFiltered, userGender).keep;
 
     if (TrainingGenerator.DEBUG) {
@@ -1163,9 +1165,10 @@ export default class TrainingGenerator {
   ): ExerciseBranchType[] => {
     const replacement: ExerciseBranchType[] = [];
     // no weights for kids
-    const workoutData = requireWorkoutData(user);
-    const ageGroup = workoutData.birthday
-      ? ageGroupFor(workoutData.birthday)
+    requireWorkoutData(user);
+    const birthday = getUserBirthday(user);
+    const ageGroup = birthday
+      ? ageGroupFor(birthday)
       : WorkoutConstants.AGE_GROUPS.ADULT;
     const HAS_WEIGHTS =
       ageGroup !== WorkoutConstants.AGE_GROUPS.CHILD && hasWeights(equipment);
@@ -1506,13 +1509,15 @@ export default class TrainingGenerator {
       return result;
     } else if (skill.skill.indexOf("MAX") > -1) {
       const workoutData = requireWorkoutData(user);
-      const ageGroup = workoutData.birthday
-        ? ageGroupFor(workoutData.birthday)
+      const birthday = getUserBirthday(user);
+      const gender = getUserGender(user);
+      const ageGroup = birthday
+        ? ageGroupFor(birthday)
         : WorkoutConstants.AGE_GROUPS.ADULT;
       const genderTag =
         ageGroup === WorkoutConstants.AGE_GROUPS.CHILD
           ? "k"
-          : workoutData.gender === "MALE"
+          : gender === "MALE"
             ? "m"
             : "w";
 
@@ -1688,8 +1693,8 @@ export default class TrainingGenerator {
               supExercise.values &&
               supExercise.values.weight
             ) {
-              const supAgeGroup = workoutData?.birthday
-                ? ageGroupFor(workoutData.birthday)
+              const supAgeGroup = birthday
+                ? ageGroupFor(birthday)
                 : WorkoutConstants.AGE_GROUPS.CHILD;
               const supUserLevel = getUserLevel(user);
               supWeight =
@@ -1697,7 +1702,7 @@ export default class TrainingGenerator {
                   supExercise.values.weight.startValue as GenderLevelValueMap,
                   supAgeGroup === WorkoutConstants.AGE_GROUPS.CHILD
                     ? "k"
-                    : workoutData?.gender === "MALE"
+                    : gender === "MALE"
                       ? "m"
                       : "w",
                   supUserLevel.toLowerCase(),
@@ -2881,12 +2886,11 @@ export default class TrainingGenerator {
 
     // use child values or gender otherwise
     let userGender: GenderTag = "k";
-    if (user.workoutData?.birthday) {
+    if (getUserBirthday(user)) {
       userGender =
-        ageGroupFor(user.workoutData.birthday) ===
-        WorkoutConstants.AGE_GROUPS.CHILD
+        ageGroupFor(getUserBirthday(user)) === WorkoutConstants.AGE_GROUPS.CHILD
           ? "k"
-          : user.workoutData.gender === "MALE"
+          : getUserGender(user) === "MALE"
             ? "m"
             : "w";
     }
@@ -2999,6 +3003,7 @@ export default class TrainingGenerator {
     },
   ): GeneratedSetListEntry[] => {
     const workoutData = requireWorkoutData(user);
+    const gender = getUserGender(user);
     const userLevelTags = getTagValues(workoutData.tags ?? [], TagGroups.LEVEL);
     const userLevel = userLevelTags[0] || WorkoutConstants.LEVELS.BEGINNER;
     // 5 min warm up to start
@@ -3095,7 +3100,7 @@ export default class TrainingGenerator {
     }
 
     let sortedExerciseIds: readonly string[] = testWorkout.default;
-    const genderKey = workoutData.gender === "MALE" ? "m" : "w";
+    const genderKey = gender === "MALE" ? "m" : "w";
     const genderSpecificExercises =
       testWorkout[genderKey as keyof typeof testWorkout];
     if (genderSpecificExercises) {
@@ -3142,7 +3147,7 @@ export default class TrainingGenerator {
       for (let i = 0; i < sortedExercises.length; i++) {
         singleExerciseLists[sortedExercises[i].id].push(
           this.getTestSetExercise(
-            workoutData.gender ?? "MALE",
+            gender,
             userLevel,
             sortedExercises[i],
             workoutData.maxValues ?? DEFAULT_MAX_VALUES,
@@ -3673,8 +3678,8 @@ export default class TrainingGenerator {
       );
     }
     const userLevel = getUserLevel(user);
-    const workoutData = requireWorkoutData(user);
-    const userAge = ageGroupFor(workoutData.birthday ?? "");
+    const birthday = getUserBirthday(user);
+    const userAge = ageGroupFor(birthday);
     const warmupTrainingReps = WorkoutConstants.MAX_KRAFT_REPETITIONS_WARMUP;
     const userExerciseData = userExercisesData
       ? userExercisesData[exercise.id]

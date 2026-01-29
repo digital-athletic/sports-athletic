@@ -6,6 +6,10 @@ import {
   hasTrainingPlan,
   requireWorkoutData,
   hasWorkoutData,
+  getUserHeight,
+  getUserWeight,
+  getUserBirthday,
+  getUserGender,
 } from "./userDataUtils";
 
 const createMockUser = (overrides: Partial<UserType> = {}): UserType => ({
@@ -219,6 +223,210 @@ describe("userDataUtils", () => {
       const user = createMockUser({ workoutData: undefined });
 
       expect(hasWorkoutData(user)).toBe(false);
+    });
+  });
+
+  describe("getUserHeight", () => {
+    it("returns height from personalData when available", () => {
+      const user = createMockUser({
+        personalData: {
+          username: "test",
+          gender: "MALE",
+          birthday: "01-01-1990",
+          height: 180,
+        },
+      });
+
+      const result = getUserHeight(user);
+
+      expect(result).toBe(180);
+    });
+
+    it("falls back to workoutData.height when personalData.height is undefined", () => {
+      const user = createMockUser({
+        personalData: {
+          username: "test",
+          gender: "MALE",
+          birthday: "01-01-1990",
+        },
+        workoutData: {
+          height: 175,
+        },
+      });
+
+      const result = getUserHeight(user);
+
+      expect(result).toBe(175);
+    });
+
+    it("returns default 175 when both sources are undefined", () => {
+      const user = createMockUser({
+        personalData: {
+          username: "test",
+          gender: "MALE",
+          birthday: "01-01-1990",
+        },
+      });
+
+      const result = getUserHeight(user);
+
+      expect(result).toBe(175);
+    });
+
+    it("prefers personalData over workoutData when both exist", () => {
+      const user = createMockUser({
+        personalData: {
+          username: "test",
+          gender: "MALE",
+          birthday: "01-01-1990",
+          height: 185,
+        },
+        workoutData: {
+          height: 170,
+        },
+      });
+
+      const result = getUserHeight(user);
+
+      expect(result).toBe(185);
+    });
+  });
+
+  describe("getUserWeight", () => {
+    it("returns weight from personalData when available", () => {
+      const user = createMockUser({
+        personalData: {
+          username: "test",
+          gender: "MALE",
+          birthday: "01-01-1990",
+          weight: 80,
+        },
+      });
+
+      const result = getUserWeight(user);
+
+      expect(result).toBe(80);
+    });
+
+    it("falls back to workoutData.weight when personalData.weight is undefined", () => {
+      const user = createMockUser({
+        personalData: {
+          username: "test",
+          gender: "MALE",
+          birthday: "01-01-1990",
+        },
+        workoutData: {
+          weight: 75,
+        },
+      });
+
+      const result = getUserWeight(user);
+
+      expect(result).toBe(75);
+    });
+
+    it("returns default 65 when both sources are undefined", () => {
+      const user = createMockUser({
+        personalData: {
+          username: "test",
+          gender: "MALE",
+          birthday: "01-01-1990",
+        },
+      });
+
+      const result = getUserWeight(user);
+
+      expect(result).toBe(65);
+    });
+
+    it("prefers personalData over workoutData when both exist", () => {
+      const user = createMockUser({
+        personalData: {
+          username: "test",
+          gender: "MALE",
+          birthday: "01-01-1990",
+          weight: 85,
+        },
+        workoutData: {
+          weight: 70,
+        },
+      });
+
+      const result = getUserWeight(user);
+
+      expect(result).toBe(85);
+    });
+  });
+
+  describe("getUserBirthday", () => {
+    it("returns birthday from personalData when available", () => {
+      const user = createMockUser({
+        personalData: {
+          username: "test",
+          gender: "MALE",
+          birthday: "15-06-1990",
+        },
+      });
+
+      const result = getUserBirthday(user);
+
+      expect(result).toBe("15-06-1990");
+    });
+
+    it("falls back to workoutData.birthday when personalData is undefined", () => {
+      const user = createMockUser({
+        workoutData: {
+          birthday: "01-01-1985",
+        },
+      });
+
+      const result = getUserBirthday(user);
+
+      expect(result).toBe("01-01-1985");
+    });
+
+    it("returns empty string when both sources are undefined", () => {
+      const user = createMockUser({});
+
+      const result = getUserBirthday(user);
+
+      expect(result).toBe("");
+    });
+  });
+
+  describe("getUserGender", () => {
+    it("returns gender from personalData when available", () => {
+      const user = createMockUser({
+        personalData: {
+          username: "test",
+          gender: "FEMALE",
+          birthday: "01-01-1990",
+        },
+      });
+
+      const result = getUserGender(user);
+
+      expect(result).toBe("FEMALE");
+    });
+
+    it("falls back to workoutData.gender when personalData is undefined", () => {
+      const user = createMockUser({
+        workoutData: {
+          gender: "MALE",
+        },
+      });
+
+      const result = getUserGender(user);
+
+      expect(result).toBe("MALE");
+    });
+
+    it("returns FEMALE as default when both sources are undefined", () => {
+      const user = createMockUser({});
+
+      const result = getUserGender(user);
+
+      expect(result).toBe("FEMALE");
     });
   });
 });

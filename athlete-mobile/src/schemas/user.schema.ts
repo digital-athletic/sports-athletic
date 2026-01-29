@@ -103,11 +103,41 @@ export const SeasonPhaseSchema = v.object({
 
 export type SeasonPhaseSchemaType = v.InferOutput<typeof SeasonPhaseSchema>;
 
+/**
+ * Personal data schema - canonical source for user identity data.
+ * This is the single source of truth for gender, birthday, height, and weight.
+ */
+export const PersonalDataSchema = v.object({
+  username: v.optional(v.string()),
+  gender: v.picklist(["MALE", "FEMALE"]),
+  birthday: v.string(), // DD-MM-YYYY format
+  height: v.optional(v.number()), // Height in cm (50-250)
+  weight: v.optional(v.number()), // Weight in kg (20-300)
+});
+
+/**
+ * Workout-specific data schema.
+ *
+ * NOTE: gender, birthday, anamnesisCompleted, height, and weight have been moved to
+ * user.personalData and user.anamnesisCompleted respectively.
+ * These fields are kept here with v.optional() for backward compatibility
+ * during data migration but should NOT be used for new code.
+ *
+ * @deprecated Use personalData.gender, personalData.birthday, personalData.height,
+ * personalData.weight, and anamnesisCompleted at user level instead.
+ */
 export const WorkoutDataSchema = v.looseObject({
+  // DEPRECATED: use user.personalData.gender
   gender: v.optional(v.picklist(["MALE", "FEMALE"])),
+  // DEPRECATED: use user.anamnesisCompleted
   anamnesisCompleted: v.optional(v.boolean()),
   seasonPhase: v.optional(SeasonPhaseSchema),
+  // DEPRECATED: use user.personalData.birthday
   birthday: v.optional(v.string()), // DD-MM-YYYY format
+  // DEPRECATED: use user.personalData.height
+  height: v.optional(v.number()),
+  // DEPRECATED: use user.personalData.weight
+  weight: v.optional(v.number()),
   tags: v.optional(v.array(v.string())),
   maxValues: v.optional(MaxValuesSchema),
 });
@@ -158,6 +188,10 @@ export const UserStatisticsSchema = v.object({
 export const UserTypeSchema = v.looseObject({
   userId: v.string(),
   isInInitialAnamnesis: v.optional(v.boolean()),
+  /** Single source of truth for user personal data (gender, birthday, username) */
+  personalData: v.optional(PersonalDataSchema),
+  /** Whether user has completed the anamnesis flow */
+  anamnesisCompleted: v.optional(v.boolean()),
   workoutData: v.optional(WorkoutDataSchema),
   temporalData: v.optional(v.array(TemporalDataSchema)),
   trainingPlan: v.optional(v.union([TrainingPlanSchema, v.null()])),

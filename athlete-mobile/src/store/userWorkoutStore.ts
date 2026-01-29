@@ -29,11 +29,8 @@ type State = {
 };
 
 const createInitialWorkoutData = (): UserWorkoutDataType => ({
-  anamnesisCompleted: false,
-  gender: "MALE",
-  birthday: "01-01-2000",
-  weight: 65,
-  height: 175,
+  // NOTE: height and weight have been moved to userProfileStore.personalData
+  // Use getUserHeight/getUserWeight from userDataUtils.ts for access with fallback
   sport: "OTHER_SPORT",
   tags: ["POSITION_FIELD", "LEVEL_BEGINNER"],
   seasonPhase: {

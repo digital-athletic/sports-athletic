@@ -52,6 +52,7 @@ import {
 import { isTrainingLevel } from "@/schemas/common.schema";
 import { Logger } from "@/services/Logger";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
+import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
@@ -104,6 +105,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const skillTrees = getAllSkillTrees();
   const { branchData, setBranchLevel, updateExercise, addTestResult } =
     useExerciseProgressStore();
+  const { personalData } = useUserProfileStore();
   const { workoutData, replaceBranchInTrainingPlan, saveMaxValues } =
     useUserWorkoutStore();
 
@@ -312,7 +314,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
       skillTrees,
       branchData,
       equipment,
-      gender: workoutData.gender,
+      gender: personalData.gender,
       exerciseList,
     };
 
@@ -446,7 +448,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
           currentExercise.set[0] === currentExercise.set[1]
         ) {
           // choose adjustment for maxF by age, userlevel and level of repetitions
-          const ageGroup = ageGroupFor(workoutData.birthday);
+          const ageGroup = ageGroupFor(personalData.birthday);
 
           // get adjustment of exercise
           const exercise = exerciseList?.find(
@@ -476,7 +478,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
           const genderTag =
             ageGroup === WorkoutConstants.AGE_GROUPS.CHILD
               ? "k"
-              : workoutData.gender === "MALE"
+              : personalData.gender === "MALE"
                 ? "m"
                 : "w";
           const maxFRepsHard =
@@ -678,11 +680,11 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
           // go on if exercise data found
           if (currentExerciseData && userLevel) {
             // use child values or gender otherwise
-            const ageGroup = ageGroupFor(workoutData.birthday);
+            const ageGroup = ageGroupFor(personalData.birthday);
             const genderTag =
               ageGroup === WorkoutConstants.AGE_GROUPS.CHILD
                 ? "k"
-                : workoutData.gender === "MALE"
+                : personalData.gender === "MALE"
                   ? "m"
                   : "w";
 
@@ -839,8 +841,8 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
 
       // logging data
       const exerciseName = WorkoutConstants.TEST_EXERCISES[exerciseId];
-      const age = ageGroupFor(workoutData.birthday);
-      const gender = workoutData.gender;
+      const age = ageGroupFor(personalData.birthday);
+      const gender = personalData.gender;
       const level = getTagValues(workoutData.tags, TagGroups.LEVEL)[0];
       Logger.logEvent("test_repitition_value_saved_" + exerciseName, {
         value: repsValue,
@@ -1177,7 +1179,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
 
     const heartRateInterval = heartRateBySkillAndBirthday(
       cardioSkill,
-      workoutData.birthday,
+      personalData.birthday,
     );
 
     if (typeof heartRateInterval === "undefined") {

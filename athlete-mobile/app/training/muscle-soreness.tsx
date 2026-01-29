@@ -12,13 +12,13 @@ import {
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { PlaceSelection } from "@/features/equipment/PlaceSelection";
-import { type UserType, parseUserType } from "@/schemas/user.schema";
 import { isGeneratorError } from "@/features/training/generators/GeneratorError";
 import { buildGeneratorErrorMessage } from "@/features/training/generators/generatorErrorUtils";
 import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
-import { toUserExerciseDataList } from "@/schemas/generator.schema";
 import { TrainingType } from "@/features/training/models/Training";
 import { useTrainingStore } from "@/features/training/trainingStore";
+import { toUserExerciseDataList } from "@/schemas/generator.schema";
+import { type UserType, parseUserType } from "@/schemas/user.schema";
 import { Logger } from "@/services/Logger";
 import { useCompletedWorkoutsStore } from "@/store/completedWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
@@ -78,13 +78,13 @@ export default function MuscleSorenessScreen() {
   const { workoutsList } = useCompletedWorkoutsStore();
   const { setExerciseList, setEquipment, setActiveTraining } =
     useTrainingStore();
-  const { userId } = useUserProfileStore();
+  const { userId, personalData } = useUserProfileStore();
   const { workoutData, temporalData, setTemporalData, trainingPlan } =
     useUserWorkoutStore();
   const muscleTags =
     temporalData?.map<MuscleType>((data) => data.tag as MuscleType) ?? [];
 
-  const gender = workoutData.gender === "MALE" ? "m" : "w";
+  const gender = personalData.gender === "MALE" ? "m" : "w";
   const { type } = params;
 
   const handleBack = useCallback(() => {
@@ -145,6 +145,7 @@ export default function MuscleSorenessScreen() {
 
     let user: UserType = {
       userId: userId ?? "test-user",
+      personalData,
       workoutData,
       temporalData: temporalData ?? [],
       trainingPlan,

@@ -9,6 +9,8 @@ export interface UserPersonalDataType {
   username: string;
   gender: "MALE" | "FEMALE";
   birthday: string; // DD-MM-YYYY format
+  height?: number; // Height in cm (50-250)
+  weight?: number; // Weight in kg (20-300)
 }
 
 type State = {
@@ -38,6 +40,8 @@ type Actions = {
   setUsername: (username: string) => void;
   setGender: (gender: "MALE" | "FEMALE") => void;
   setBirthday: (birthday: string) => void;
+  setHeight: (height: number) => void;
+  setWeight: (weight: number) => void;
   setPersonalData: (data: Partial<UserPersonalDataType>) => void;
   setAnamnesisCompleted: (completed: boolean) => void;
   setTeamId: (teamId: string | null) => void;
@@ -95,6 +99,16 @@ export const useUserProfileStore = create<UserProfileState>()(
       setBirthday: (birthday) =>
         set((state) => {
           state.personalData.birthday = birthday;
+        }),
+
+      setHeight: (height) =>
+        set((state) => {
+          state.personalData.height = height;
+        }),
+
+      setWeight: (weight) =>
+        set((state) => {
+          state.personalData.weight = weight;
         }),
 
       setPersonalData: (data) =>

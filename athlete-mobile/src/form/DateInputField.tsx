@@ -2,9 +2,9 @@ import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import {
-  dateToDDMMYYYY,
+  dateToISODate,
   dateToHHMM,
-  DDMMYYYYToDate,
+  ISODateToDate,
   HHMMToDate,
 } from "@/utils/date";
 import DateTimePicker, {
@@ -40,11 +40,12 @@ export const DateInputField: FC<DateInputFieldProps> = ({
   const iconName = type === "date" ? "calendar" : "time";
 
   // Parse existing dateTime or use current date
+  // ISODateToDate handles both ISO 8601 and legacy DD-MM-YYYY formats
   const getCurrentDate = (): Date => {
     if (!dateTime) return new Date();
 
     if (type === "date") {
-      return DDMMYYYYToDate(dateTime);
+      return ISODateToDate(dateTime);
     }
     return HHMMToDate(dateTime);
   };
@@ -52,7 +53,7 @@ export const DateInputField: FC<DateInputFieldProps> = ({
   const handleChange = (_: DateTimePickerEvent, selectedDate?: Date) => {
     if (selectedDate) {
       if (type === "date") {
-        onChange(dateToDDMMYYYY(selectedDate));
+        onChange(dateToISODate(selectedDate));
       } else {
         onChange(dateToHHMM(selectedDate));
       }

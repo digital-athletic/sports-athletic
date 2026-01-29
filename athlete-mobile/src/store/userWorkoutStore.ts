@@ -16,7 +16,7 @@ import {
   enrichSeasonPhaseWithWeeks,
   enrichSeasonPhaseWithWeeksFromDate,
 } from "@/features/training/utils/seasonPhaseUtils";
-import { dateToDDMMYYYY } from "@/utils/date";
+import { dateToISODate } from "@/utils/date";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
@@ -35,7 +35,7 @@ const createInitialWorkoutData = (): UserWorkoutDataType => ({
   tags: ["POSITION_FIELD", "LEVEL_BEGINNER"],
   seasonPhase: {
     type: null,
-    endDate: dateToDDMMYYYY(new Date()),
+    endDate: dateToISODate(new Date()),
   },
   maxValues: { ...DEFAULT_MAX_VALUES },
 });

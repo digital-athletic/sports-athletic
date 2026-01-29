@@ -25,8 +25,8 @@
 import * as v from "valibot";
 import {
   CardioTypesSchema,
-  SectionTypesSchema,
   SeasonPhaseEnumSchema,
+  SectionTypesSchema,
 } from "./common.schema";
 
 // FocusType schema (matches FocusType from workoutConstants.ts)
@@ -50,6 +50,7 @@ export type MaxValueType = v.InferOutput<typeof MaxValueSchema>;
 
 // MaxValues schema - single source of truth for all max values by direction
 export const MaxValuesSchema = v.object({
+  /** Test date in ISO 8601 format (YYYY-MM-DD) */
   testDate: v.string(),
   verticalPush: MaxValueSchema,
   verticalPull: MaxValueSchema,
@@ -98,6 +99,7 @@ export const UserTrainingSchema = v.looseObject({
 export const SeasonPhaseSchema = v.object({
   type: v.union([SeasonPhaseEnumSchema, v.null()]),
   numOfWeeks: v.optional(v.number()),
+  /** End date in ISO 8601 format (YYYY-MM-DD) */
   endDate: v.string(),
 });
 
@@ -133,7 +135,7 @@ export const WorkoutDataSchema = v.looseObject({
   anamnesisCompleted: v.optional(v.boolean()),
   seasonPhase: v.optional(SeasonPhaseSchema),
   // DEPRECATED: use user.personalData.birthday
-  birthday: v.optional(v.string()), // DD-MM-YYYY format
+  birthday: v.optional(v.string()), // ISO 8601 format (YYYY-MM-DD)
   // DEPRECATED: use user.personalData.height
   height: v.optional(v.number()),
   // DEPRECATED: use user.personalData.weight
@@ -150,6 +152,7 @@ export const TemporalDataSchema = v.object({
 });
 
 export const TrainingSectionSchema = v.looseObject({
+  /** Section start date in ISO 8601 format (YYYY-MM-DD) */
   start: v.string(),
   numOfWeeks: v.number(),
   type: SectionTypesSchema,

@@ -54,10 +54,12 @@ describe("heartRateUtils", () => {
   describe("heartRateBySkillAndBirthday", () => {
     const currentYear = new Date().getFullYear();
     // Age group thresholds: CHILD (≤16), ADOLESCENT (17-18), ADULT (≥19) as defined in WorkoutConstants.AGE_GROUPS_MAX_AGE
-    const childBirthday = `15-06-${currentYear - 10}`; // age 10
-    const adolescentBirthday = `20-03-${currentYear - 17}`; // age 17
-    const adultBirthday = `15-06-${currentYear - 30}`; // age 30
-    const seniorBirthday = `10-12-${currentYear - 60}`; // age 60
+    // ISO 8601 format: YYYY-MM-DD
+    // Using January 1st to ensure birthday has passed and age calculation is predictable
+    const childBirthday = `${currentYear - 10}-01-01`; // age 10
+    const adolescentBirthday = `${currentYear - 17}-01-01`; // age 17
+    const adultBirthday = `${currentYear - 30}-01-01`; // age 30
+    const seniorBirthday = `${currentYear - 60}-01-01`; // age 60
 
     it("should return undefined for invalid birthday format", () => {
       expect(

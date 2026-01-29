@@ -3,9 +3,9 @@ import type { UserType } from "@/schemas/user.schema";
 import { DEFAULT_MAX_VALUES } from "../models/MaxValues";
 import { applyMaxValueToDirections, getUserLevel } from "./workoutUtils";
 
-// Mock the date utility to return a consistent date for testing
+// Mock the date utility to return a consistent date for testing (ISO 8601 format)
 jest.mock("@/utils/date", () => ({
-  dateToDDMMYYYY: () => "08-01-2026",
+  dateToISODate: () => "2026-01-08",
 }));
 
 describe("getUserLevel", () => {
@@ -132,7 +132,7 @@ describe("applyMaxValueToDirections", () => {
     );
 
     expect(result.horizontalPush).toEqual(newCalculatedResult);
-    expect(result.testDate).toBe("08-01-2026");
+    expect(result.testDate).toBe("2026-01-08");
     // Other directions should remain unchanged (still default/empty)
     expect(result.verticalPush).toEqual(DEFAULT_MAX_VALUES.verticalPush);
     expect(result.horizontalPull).toEqual(DEFAULT_MAX_VALUES.horizontalPull);
@@ -151,7 +151,7 @@ describe("applyMaxValueToDirections", () => {
     // Both directions get the same new result
     expect(result.verticalPush).toEqual(newCalculatedResult);
     expect(result.verticalPull).toEqual(newCalculatedResult);
-    expect(result.testDate).toBe("08-01-2026");
+    expect(result.testDate).toBe("2026-01-08");
     // Unrelated directions remain unchanged
     expect(result.horizontalPush).toEqual(DEFAULT_MAX_VALUES.horizontalPush);
   });

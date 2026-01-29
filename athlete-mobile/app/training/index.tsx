@@ -16,7 +16,7 @@ import { Logger } from "@/services/Logger";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
-import { DDMMYYYYToDate } from "@/utils/date";
+import { ISODateToDate } from "@/utils/date";
 import { router, Stack } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -82,7 +82,8 @@ export default function SelectTraining() {
     const sectionTrainings = section.trainings;
 
     // check if power test is needed
-    const lastTestDate = DDMMYYYYToDate(workoutData.maxValues.testDate);
+    // ISODateToDate handles both ISO 8601 and legacy DD-MM-YYYY formats
+    const lastTestDate = ISODateToDate(workoutData.maxValues.testDate);
     const lastTestExpired =
       lastTestDate.getTime() +
         WorkoutConstants.MAX_VALUES_EXPIRATION_TIME_IN_MS <

@@ -419,7 +419,7 @@ describe("PlanGenerator", () => {
    */
   describe("calculateStartingDates", () => {
     it("should calculate sequential start dates for multiple sections", () => {
-      const startDate = "06-01-2025"; // Monday, Jan 6, 2025
+      const startDate = "2025-01-06"; // Monday, Jan 6, 2025
       const sections = [
         {
           type: "SWR1",
@@ -447,13 +447,13 @@ describe("PlanGenerator", () => {
       const result = PlanGenerator.calculateStartingDates(sections, startDate);
 
       expect(result).toHaveLength(3);
-      expect(result[0].start).toBe("06-01-2025"); // Jan 6
-      expect(result[1].start).toBe("20-01-2025"); // Jan 6 + 2 weeks = Jan 20
-      expect(result[2].start).toBe("10-02-2025"); // Jan 20 + 3 weeks = Feb 10
+      expect(result[0].start).toBe("2025-01-06"); // Jan 6
+      expect(result[1].start).toBe("2025-01-20"); // Jan 6 + 2 weeks = Jan 20
+      expect(result[2].start).toBe("2025-02-10"); // Jan 20 + 3 weeks = Feb 10
     });
 
     it("should adjust Friday start to next Monday", () => {
-      const friday = "03-01-2025"; // Friday, Jan 3, 2025
+      const friday = "2025-01-03"; // Friday, Jan 3, 2025
       const sections = [
         {
           type: "SWR2",
@@ -474,12 +474,12 @@ describe("PlanGenerator", () => {
       const result = PlanGenerator.calculateStartingDates(sections, friday);
 
       // Friday Jan 3 -> next Monday is Jan 6
-      expect(result[0].start).toBe("06-01-2025");
-      expect(result[1].start).toBe("20-01-2025"); // Jan 6 + 2 weeks
+      expect(result[0].start).toBe("2025-01-06");
+      expect(result[1].start).toBe("2025-01-20"); // Jan 6 + 2 weeks
     });
 
     it("should preserve section properties while adding start dates", () => {
-      const startDate = "06-01-2025";
+      const startDate = "2025-01-06";
       const sections = [
         {
           type: "SWR1",
@@ -495,7 +495,7 @@ describe("PlanGenerator", () => {
       expect(result[0]).toEqual({
         type: "SWR1",
         numOfWeeks: 2,
-        start: "06-01-2025",
+        start: "2025-01-06",
         cardioType: "CARDIO_3",
         trainings: [],
       });
@@ -743,17 +743,17 @@ describe("PlanGenerator", () => {
       expect(result.sections[0]).toMatchObject({
         type: "SWR2",
         numOfWeeks: 3,
-        start: "06-01-2025",
+        start: "2025-01-06",
       });
       expect(result.sections[1]).toMatchObject({
         type: "MAX",
         numOfWeeks: 3,
-        start: "27-01-2025",
+        start: "2025-01-27",
       });
       expect(result.sections[2]).toMatchObject({
         type: "SK",
         numOfWeeks: 2,
-        start: "17-02-2025",
+        start: "2025-02-17",
       });
     });
 
@@ -761,7 +761,7 @@ describe("PlanGenerator", () => {
       const seasonPhase: SeasonPhaseType = {
         type: SeasonPhase.PREPARATORY,
         numOfWeeks: 6,
-        endDate: "17-03-2025",
+        endDate: "2025-03-17",
       };
       const startDate = new Date(2025, 1, 3); // Monday, Feb 3, 2025
 
@@ -780,17 +780,17 @@ describe("PlanGenerator", () => {
       expect(result.sections[0]).toMatchObject({
         type: "SWR1",
         numOfWeeks: 2,
-        start: "03-02-2025",
+        start: "2025-02-03",
       });
       expect(result.sections[1]).toMatchObject({
         type: "SWR1",
         numOfWeeks: 2,
-        start: "17-02-2025",
+        start: "2025-02-17",
       });
       expect(result.sections[2]).toMatchObject({
         type: "SWR1",
         numOfWeeks: 2,
-        start: "03-03-2025",
+        start: "2025-03-03",
       });
     });
 
@@ -798,7 +798,7 @@ describe("PlanGenerator", () => {
       const seasonPhase: SeasonPhaseType = {
         type: SeasonPhase.COMPETITION,
         numOfWeeks: 10,
-        endDate: "19-05-2025",
+        endDate: "2025-05-19",
       };
       const startDate = new Date(2025, 2, 10); // Monday, Mar 10, 2025
 

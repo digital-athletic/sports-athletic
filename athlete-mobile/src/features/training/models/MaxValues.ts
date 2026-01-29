@@ -12,7 +12,7 @@ export const DEFAULT_MAX_VALUE: MaxValueType = {
 };
 
 export const DEFAULT_MAX_VALUES: MaxValuesType = {
-  testDate: "01-01-1990",
+  testDate: "1990-01-01",
   verticalPush: DEFAULT_MAX_VALUE,
   verticalPull: DEFAULT_MAX_VALUE,
   horizontalPush: DEFAULT_MAX_VALUE,

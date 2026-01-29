@@ -13,7 +13,7 @@ import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { ScrollBox } from "@/theme/ScrollBox";
-import { dateToDDMMYYYY } from "@/utils/date";
+import { dateToISODate } from "@/utils/date";
 import { Route, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -104,7 +104,7 @@ export default function SeasonPhase() {
   const handlePhaseTypeChange = (values: string[]) => {
     if (values.length > 0) {
       const futureEndDateMs = Date.now() + TWELVE_WEEKS_IN_MS;
-      const futureEndDate = dateToDDMMYYYY(new Date(futureEndDateMs));
+      const futureEndDate = dateToISODate(new Date(futureEndDateMs));
 
       setSeasonPhase({
         type: values[0] as SeasonPhaseEnum,

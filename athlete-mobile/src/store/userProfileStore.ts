@@ -1,5 +1,5 @@
 import { SharedConstants } from "@/constants/sharedConstants";
-import { dateToDDMMYYYY } from "@/utils/date";
+import { calculateAgeFromBirthday, dateToISODate } from "@/utils/date";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
@@ -8,7 +8,7 @@ import { asyncStorage } from "./middleware";
 export interface UserPersonalDataType {
   username: string;
   gender: "MALE" | "FEMALE";
-  birthday: string; // DD-MM-YYYY format
+  birthday: string; // Date of birth in ISO 8601 format (YYYY-MM-DD)
   height?: number; // Height in cm (50-250)
   weight?: number; // Weight in kg (20-300)
 }
@@ -23,7 +23,7 @@ type State = {
 const createInitialPersonalData = (): UserPersonalDataType => ({
   username: "",
   gender: "MALE",
-  birthday: dateToDDMMYYYY(new Date()),
+  birthday: dateToISODate(new Date()),
 });
 
 const createInitialState = (): State => ({
@@ -138,23 +138,7 @@ export const useUserProfileStore = create<UserProfileState>()(
       getAge: () => {
         const { birthday } = get().personalData;
         if (!birthday) return null;
-
-        const [day, month, year] = birthday.split("-").map(Number);
-        if (!day || !month || !year) return null;
-
-        const birthDate = new Date(year, month - 1, day);
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-
-        if (
-          monthDiff < 0 ||
-          (monthDiff === 0 && today.getDate() < birthDate.getDate())
-        ) {
-          age--;
-        }
-
-        return age;
+        return calculateAgeFromBirthday(birthday);
       },
     })),
     {

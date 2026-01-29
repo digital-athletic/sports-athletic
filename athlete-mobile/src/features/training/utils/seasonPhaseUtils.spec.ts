@@ -4,7 +4,7 @@ import {
   enrichSeasonPhaseWithWeeks,
   enrichSeasonPhaseWithWeeksFromDate,
 } from "./seasonPhaseUtils";
-import { dateToDDMMYYYY } from "@/utils/date";
+import { dateToISODate } from "@/utils/date";
 import { SeasonPhase } from "@/features/training/models/SeasonPhase";
 
 describe("seasonPhaseUtils", () => {
@@ -13,7 +13,7 @@ describe("seasonPhaseUtils", () => {
       // Use 22 days to ensure we get at least 3 full weeks (accounting for floor rounding)
       const futureDate = new Date();
       futureDate.setDate(futureDate.getDate() + 22);
-      const endDate = dateToDDMMYYYY(futureDate);
+      const endDate = dateToISODate(futureDate);
 
       const result = calculateNumOfWeeks(endDate);
 
@@ -23,7 +23,7 @@ describe("seasonPhaseUtils", () => {
     it("should return minimum 1 week for past dates", () => {
       const pastDate = new Date();
       pastDate.setDate(pastDate.getDate() - 7);
-      const endDate = dateToDDMMYYYY(pastDate);
+      const endDate = dateToISODate(pastDate);
 
       const result = calculateNumOfWeeks(endDate);
 
@@ -34,7 +34,7 @@ describe("seasonPhaseUtils", () => {
   describe("calculateNumOfWeeksFromDate", () => {
     it("should calculate weeks from start date to end date", () => {
       const startDate = new Date("2025-01-01");
-      const endDate = "22-01-2025"; // 3 weeks later
+      const endDate = "2025-01-22"; // 3 weeks later (ISO 8601 format)
 
       const result = calculateNumOfWeeksFromDate(endDate, startDate);
 
@@ -49,7 +49,7 @@ describe("seasonPhaseUtils", () => {
       futureDate.setDate(futureDate.getDate() + 15);
       const phase = {
         type: SeasonPhase.COMPETITION,
-        endDate: dateToDDMMYYYY(futureDate),
+        endDate: dateToISODate(futureDate),
       };
 
       const result = enrichSeasonPhaseWithWeeks(phase);
@@ -64,7 +64,7 @@ describe("seasonPhaseUtils", () => {
       const startDate = new Date("2025-01-01");
       const phase = {
         type: SeasonPhase.PREPARATORY,
-        endDate: "29-01-2025", // 4 weeks later
+        endDate: "2025-01-29", // 4 weeks later (ISO 8601 format)
       };
 
       const result = enrichSeasonPhaseWithWeeksFromDate(phase, startDate);

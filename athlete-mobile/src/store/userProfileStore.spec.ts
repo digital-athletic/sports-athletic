@@ -128,7 +128,8 @@ describe("userProfileStore", () => {
       const birthDay = String(today.getDate()).padStart(2, "0");
 
       act(() => {
-        result.current.setBirthday(`${birthDay}-${birthMonth}-${birthYear}`);
+        // ISO 8601 format: YYYY-MM-DD
+        result.current.setBirthday(`${birthYear}-${birthMonth}-${birthDay}`);
       });
 
       expect(result.current.getAge()).toBe(25);

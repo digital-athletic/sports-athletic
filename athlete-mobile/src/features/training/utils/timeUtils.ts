@@ -1,21 +1,29 @@
 import { SharedConstants } from "@/constants/sharedConstants";
-import { dateToDDMMYYYY, DDMMYYYYToDate } from "@/utils/date";
+import { dateToISODate, ISODateToDate } from "@/utils/date";
 
-export const getPassedWeeksSinceDate = (
-  start: string, // DD-MM-YYYY
-): number => {
+/**
+ * Calculate number of weeks passed since a given start date
+ * @param start - Start date in ISO 8601 format (YYYY-MM-DD)
+ */
+export const getPassedWeeksSinceDate = (start: string): number => {
   const now = new Date();
+  // ISODateToDate handles both ISO 8601 and legacy DD-MM-YYYY formats
   return Math.floor(
-    (now.getTime() - DDMMYYYYToDate(start).getTime()) /
+    (now.getTime() - ISODateToDate(start).getTime()) /
       SharedConstants.TIME_IN_MS.WEEK,
   );
 };
 
 type DeriveSeasonPhaseEndDateArgs = {
-  start: string; // DD-MM-YYYY
+  /** Start date in ISO 8601 format (YYYY-MM-DD) */
+  start: string;
   numOfWeeks: number;
 };
 
+/**
+ * Derive end date for a season phase
+ * @returns End date in ISO 8601 format (YYYY-MM-DD)
+ */
 export const deriveSeasonPhaseEndDate = (
   args: DeriveSeasonPhaseEndDateArgs | undefined,
 ) => {
@@ -23,11 +31,12 @@ export const deriveSeasonPhaseEndDate = (
   if (!args) {
     const twelveWeeksInMs = SharedConstants.TIME_IN_MS.WEEK * 12;
     const futureEndDateMs = Date.now() + twelveWeeksInMs;
-    return dateToDDMMYYYY(new Date(futureEndDateMs));
+    return dateToISODate(new Date(futureEndDateMs));
   }
 
-  const sectionStartMs = DDMMYYYYToDate(args.start).getTime();
+  // ISODateToDate handles both ISO 8601 and legacy DD-MM-YYYY formats
+  const sectionStartMs = ISODateToDate(args.start).getTime();
   const sectionEndMs =
     sectionStartMs + SharedConstants.TIME_IN_MS.WEEK * args.numOfWeeks;
-  return dateToDDMMYYYY(new Date(sectionEndMs));
+  return dateToISODate(new Date(sectionEndMs));
 };

@@ -5,7 +5,8 @@ import {
 import { type UserTrainingType } from "./UserTraining";
 
 export type TrainingSectionType = {
-  start: string; // DD-MM-YYYY
+  /** Start date in ISO 8601 format (YYYY-MM-DD) */
+  start: string;
   numOfWeeks: number;
   type: SectionTypes;
   cardioType: CardioTypes;

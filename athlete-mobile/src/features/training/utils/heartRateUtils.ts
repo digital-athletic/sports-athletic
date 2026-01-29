@@ -4,6 +4,7 @@
  */
 
 import { SkillTree, WorkoutConstants } from "@/constants/workoutConstants";
+import { calculateAgeFromBirthday } from "@/utils/date";
 
 export type HeartRateInterval = {
   low: number;
@@ -78,18 +79,16 @@ export const calculateHeartRateIntervalForExercise = (
 
 /**
  * Returns heart rate interval for given skill depending on the given birthday
+ * @param birthday - Date of birth in ISO 8601 format (YYYY-MM-DD)
  */
 export const heartRateBySkillAndBirthday = (
   skill: string,
-  birthday: string, // DD-MM-YYYY
+  birthday: string,
 ) => {
-  const birthYear = parseInt(birthday.split("-")[2], 10);
-
-  if (isNaN(birthYear)) {
+  const age = calculateAgeFromBirthday(birthday);
+  if (age === null) {
     return undefined;
   }
-
-  const age = new Date().getFullYear() - birthYear;
 
   let maxFrequency = WorkoutConstants.HEART_RATE_MAX - age;
   let range =

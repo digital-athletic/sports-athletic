@@ -8,25 +8,26 @@ const createTestEntry = (testDate: string) => ({
 
 describe("sortTestHistoryByDate", () => {
   it("sorts entries by date with newest first", () => {
+    // ISO 8601 format: YYYY-MM-DD
     const history = [
-      createTestEntry("15-01-2026"),
-      createTestEntry("20-01-2026"),
-      createTestEntry("10-01-2026"),
+      createTestEntry("2026-01-15"),
+      createTestEntry("2026-01-20"),
+      createTestEntry("2026-01-10"),
     ];
 
     const sorted = sortTestHistoryByDate(history);
 
     expect(sorted.map((e) => e.testDate)).toEqual([
-      "20-01-2026",
-      "15-01-2026",
-      "10-01-2026",
+      "2026-01-20",
+      "2026-01-15",
+      "2026-01-10",
     ]);
   });
 
   it("returns newer entries first when dates are identical", () => {
     const history = [
-      createTestEntry("21-01-2026"), // older entry (index 0)
-      createTestEntry("21-01-2026"), // newer entry (index 1)
+      createTestEntry("2026-01-21"), // older entry (index 0)
+      createTestEntry("2026-01-21"), // newer entry (index 1)
     ];
 
     const sorted = sortTestHistoryByDate(history);

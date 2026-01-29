@@ -29,7 +29,7 @@ import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
-import { dateToDDMMYYYY, DDMMYYYYToDate } from "@/utils/date";
+import { dateToISODate, ISODateToDate } from "@/utils/date";
 import { parseBooleanParam, parseIntParam } from "@/utils/router";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -177,11 +177,12 @@ export default function MuscleSorenessScreen() {
       let lastWorkoutDate: string | null = null;
       if (workoutsList && workoutsList.length > 0) {
         const lastWorkout = workoutsList[workoutsList.length - 1];
-        lastWorkoutDate = dateToDDMMYYYY(new Date(lastWorkout.timestamp));
+        lastWorkoutDate = dateToISODate(new Date(lastWorkout.timestamp));
       }
 
       if (lastWorkoutDate) {
-        const lastDate = DDMMYYYYToDate(lastWorkoutDate);
+        // ISODateToDate handles both ISO 8601 and legacy DD-MM-YYYY formats
+        const lastDate = ISODateToDate(lastWorkoutDate);
         daysSinceLastWorkout = Math.round(
           (today.getTime() - lastDate.getTime()) /
             SharedConstants.TIME_IN_MS.DAY,

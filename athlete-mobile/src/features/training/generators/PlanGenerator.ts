@@ -72,7 +72,7 @@ import {
 } from "@/schemas/generator.schema";
 
 import { cloneWithValidation } from "@/utils/cloneWithValidation";
-import { addDays, dateToDDMMYYYY, DDMMYYYYToDate } from "@/utils/date";
+import { addDays, dateToISODate, ISODateToDate } from "@/utils/date";
 import { getTagValues } from "@/utils/tagUtils";
 
 // Assets
@@ -1181,7 +1181,7 @@ export default class PlanGenerator {
       isKeeper,
     );
 
-    const startDateStr = dateToDDMMYYYY(startDate);
+    const startDateStr = dateToISODate(startDate);
 
     //calculate start for each section
     const trainingSections = this.calculateStartingDates(
@@ -1232,11 +1232,17 @@ export default class PlanGenerator {
    * Calculates sequential start dates for training sections based on a plan start date.
    * Adjusts the start date to the next Monday if needed, then offsets each section by cumulative weeks.
    */
+  /**
+   * Calculates sequential start dates for training sections based on a plan start date.
+   * Adjusts the start date to the next Monday if needed, then offsets each section by cumulative weeks.
+   * @param trainingPlanStart - Start date in ISO 8601 format (YYYY-MM-DD)
+   */
   static calculateStartingDates = (
     trainingSections: SectionEntry[],
     trainingPlanStart: string,
   ): SectionWithStartType[] => {
-    let d = DDMMYYYYToDate(trainingPlanStart);
+    // ISODateToDate handles both ISO 8601 and legacy DD-MM-YYYY formats
+    let d = ISODateToDate(trainingPlanStart);
     //next monday(1)
     if (d.getDay() !== 1) {
       // is not monday
@@ -1246,14 +1252,14 @@ export default class PlanGenerator {
 
     let t = [];
     t = trainingSections.map((item) => {
-      return { ...item, start: dateToDDMMYYYY(d) };
+      return { ...item, start: dateToISODate(d) };
     });
     if (PlanGenerator.DEBUG) console.log("TrainingSections in progress: ", t);
 
     let x = [];
     x = t.map((value, index, array) => {
       const { start, ...rest } = value;
-      let startDate = DDMMYYYYToDate(start);
+      let startDate = ISODateToDate(start);
       let daysToAdd = 0;
       let sectionIndex = index - 1;
       while (sectionIndex > -1) {
@@ -1264,7 +1270,7 @@ export default class PlanGenerator {
       if (PlanGenerator.DEBUG)
         console.log("Start date section " + index + ": ", startDate);
 
-      return { start: dateToDDMMYYYY(startDate), ...rest };
+      return { start: dateToISODate(startDate), ...rest };
     });
     return x;
   };

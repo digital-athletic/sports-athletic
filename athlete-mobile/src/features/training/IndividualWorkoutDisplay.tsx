@@ -7,7 +7,7 @@ import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { useTheme } from "@/theme/theme";
-import { DDMMYYYYToDate } from "@/utils/date";
+import { ISODateToDate } from "@/utils/date";
 import { useMemo, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { TrainingPlanStatusWidget } from "./TrainingPlanStatusWidget";
@@ -38,11 +38,12 @@ const getPlanState = (
     planState = PLAN_STATES.RUNNING;
 
     // Check if plan has ended
+    // ISODateToDate handles both ISO 8601 and legacy DD-MM-YYYY formats
     if (trainingPlan.sections && trainingPlan.sections.length > 0) {
       const lastSection =
         trainingPlan.sections[trainingPlan.sections.length - 1];
       const sectionEnd =
-        DDMMYYYYToDate(lastSection.start).getTime() +
+        ISODateToDate(lastSection.start).getTime() +
         lastSection.numOfWeeks * SharedConstants.TIME_IN_MS.WEEK;
       if (sectionEnd < Date.now()) {
         planState = PLAN_STATES.ENDED;

@@ -52,11 +52,12 @@ export const processTestHistory = (
   }
 
   // Add starting point for chart rendering
+  // testDate is now in ISO 8601 format (YYYY-MM-DD)
   if (dates.length > 0) {
     const split = dates[0].split("-");
-    const day = Number.parseInt(split[0]);
+    const year = Number.parseInt(split[0]);
     const month = Number.parseInt(split[1]);
-    const year = Number.parseInt(split[2]);
+    const day = Number.parseInt(split[2]);
 
     let startDay = day;
     let startMonth = month;
@@ -66,14 +67,16 @@ export const processTestHistory = (
       if (month === 1) {
         startYear = year - 1;
         startMonth = 12;
+        startDay = 31;
       } else {
         startMonth = month - 1;
+        startDay = new Date(startYear, startMonth, 0).getDate();
       }
     } else {
       startDay = day - 1;
     }
 
-    const startDate = `${startDay}-${startMonth}-${startYear}`;
+    const startDate = `${startYear}-${startMonth.toString().padStart(2, "0")}-${startDay.toString().padStart(2, "0")}`;
     dates.unshift(startDate);
     knee.unshift(0);
     rowing.unshift(0);
@@ -99,18 +102,22 @@ export const toChartPoints = (
 
 /**
  * Formats date for chart axis display
+ * @param dateString - Date in ISO 8601 format (YYYY-MM-DD) with optional suffix
  */
 export const formatDateTick = (dateString: string): string => {
   if (typeof dateString !== "string") return "";
 
+  // ISO 8601 format: YYYY-MM-DD (with optional -count suffix for same-day duplicates)
   const split = dateString.split("-");
   const count = split.length === 4 ? ` - ${split[3]}` : "";
-  return `${split[0]}.${split[1]}.${count}`;
+  // Display as DD.MM.
+  return `${split[2]}.${split[1]}.${count}`;
 };
 
 /**
  * Sorts test history by date (newest first)
  * When entries have the same date, newer entries (higher original index) come first
+ * @param history - Array of MaxValuesType with testDate in ISO 8601 format (YYYY-MM-DD)
  */
 export const sortTestHistoryByDate = (
   history: MaxValuesType[],
@@ -120,20 +127,21 @@ export const sortTestHistoryByDate = (
 
   return indexed
     .sort((a, b) => {
+      // ISO 8601 format: YYYY-MM-DD (index 0=year, 1=month, 2=day)
       const aDate = a.item.testDate.split("-").map(Number);
       const bDate = b.item.testDate.split("-").map(Number);
 
       // Compare year
-      if (aDate[2] !== bDate[2]) {
-        return bDate[2] - aDate[2];
+      if (aDate[0] !== bDate[0]) {
+        return bDate[0] - aDate[0];
       }
       // Compare month
       if (aDate[1] !== bDate[1]) {
         return bDate[1] - aDate[1];
       }
       // Compare day
-      if (aDate[0] !== bDate[0]) {
-        return bDate[0] - aDate[0];
+      if (aDate[2] !== bDate[2]) {
+        return bDate[2] - aDate[2];
       }
       // Same date: newer entries (higher index) come first
       return b.index - a.index;

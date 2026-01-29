@@ -1,9 +1,11 @@
 import {
   dateToDDMMYYYY,
   dateToHHMM,
+  dateToISODate,
   DDMMYYYYToDate,
   HHMMToDate,
   addDays,
+  calculateAgeFromBirthday,
 } from "./date";
 
 describe("date utils", () => {
@@ -207,6 +209,66 @@ describe("date utils", () => {
       const originalTime = original.getTime();
       addDays(original, 10);
       expect(original.getTime()).toBe(originalTime);
+    });
+  });
+
+  describe("dateToISODate", () => {
+    it("formats date to ISO 8601 format", () => {
+      const date = new Date("2024-06-15");
+      const result = dateToISODate(date);
+      expect(result).toBe("2024-06-15");
+    });
+
+    it("returns the same string if already in ISO format", () => {
+      const result = dateToISODate("2024-06-15");
+      expect(result).toBe("2024-06-15");
+    });
+
+    it("converts DD-MM-YYYY to ISO format", () => {
+      const result = dateToISODate("15-06-2024");
+      expect(result).toBe("2024-06-15");
+    });
+
+    it("handles ISO date string without timezone shift", () => {
+      // This tests that parsing "2024-01-15" (UTC midnight) and converting
+      // back doesn't shift the date regardless of local timezone
+      const result = dateToISODate("2024-01-15");
+      expect(result).toBe("2024-01-15");
+    });
+  });
+
+  describe("calculateAgeFromBirthday", () => {
+    it("calculates age correctly for birthday earlier this year", () => {
+      const currentYear = new Date().getFullYear();
+      const birthday = `${currentYear - 25}-01-01`;
+      expect(calculateAgeFromBirthday(birthday)).toBe(25);
+    });
+
+    it("calculates age correctly for birthday later this year", () => {
+      const currentYear = new Date().getFullYear();
+      const birthday = `${currentYear - 25}-12-31`;
+      // Birthday hasn't occurred yet, so age is 24
+      expect(calculateAgeFromBirthday(birthday)).toBe(24);
+    });
+
+    it("returns null for invalid birthday format", () => {
+      expect(calculateAgeFromBirthday("invalid")).toBeNull();
+      expect(calculateAgeFromBirthday("15-06-2024")).toBeNull(); // DD-MM-YYYY not supported
+      expect(calculateAgeFromBirthday("")).toBeNull();
+    });
+
+    it("returns null for incomplete date", () => {
+      expect(calculateAgeFromBirthday("2024-06")).toBeNull();
+      expect(calculateAgeFromBirthday("2024")).toBeNull();
+    });
+
+    it("handles edge case of birthday today", () => {
+      const today = new Date();
+      const year = today.getUTCFullYear() - 30;
+      const month = String(today.getUTCMonth() + 1).padStart(2, "0");
+      const day = String(today.getUTCDate()).padStart(2, "0");
+      const birthday = `${year}-${month}-${day}`;
+      expect(calculateAgeFromBirthday(birthday)).toBe(30);
     });
   });
 });

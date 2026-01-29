@@ -99,7 +99,7 @@ describe("userWorkoutStore", () => {
     it("updates maxValues in workoutData", () => {
       const { result } = renderHook(() => useUserWorkoutStore());
       const newMaxValues = {
-        testDate: "15-01-2025",
+        testDate: "2025-01-15",
         verticalPush: { barbell: 100 },
         verticalPull: {},
         horizontalPush: {},
@@ -126,7 +126,7 @@ describe("userWorkoutStore", () => {
       act(() => {
         result.current.setSeasonPhase({
           type: "COMPETITION",
-          endDate: "31-12-2025",
+          endDate: "2025-12-31",
         });
       });
 

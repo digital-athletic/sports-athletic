@@ -112,7 +112,7 @@ export type SeasonPhaseSchemaType = v.InferOutput<typeof SeasonPhaseSchema>;
 export const PersonalDataSchema = v.object({
   username: v.optional(v.string()),
   gender: v.picklist(["MALE", "FEMALE"]),
-  birthday: v.string(), // DD-MM-YYYY format
+  birthday: v.string(), // ISO 8601 format (YYYY-MM-DD)
   height: v.optional(v.number()), // Height in cm (50-250)
   weight: v.optional(v.number()), // Weight in kg (20-300)
 });

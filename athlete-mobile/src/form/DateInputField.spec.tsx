@@ -16,7 +16,7 @@ describe("<DateInputField />", () => {
 
   it.skip("renders correctly for date type", () => {
     const { toJSON } = render(
-      <DateInputField {...defaultProps} dateTime="01-01-1999" />,
+      <DateInputField {...defaultProps} dateTime="1999-01-01" />,
     );
     expect(toJSON()).toMatchSnapshot();
   });

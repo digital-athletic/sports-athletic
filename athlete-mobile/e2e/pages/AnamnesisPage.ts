@@ -131,6 +131,11 @@ export class AnamnesisPage extends BasePage {
     await this.chooseButton.click();
     await this.page.getByText(phase).click();
     await this.okButton.click();
+
+    // Note: The @react-native-community/datetimepicker doesn't render on web,
+    // so the end date is auto-calculated by the app (12 weeks from now).
+    // We verify the stored date is valid in the test assertions.
+
     await this.goOnButton.click();
   }
 
@@ -149,5 +154,49 @@ export class AnamnesisPage extends BasePage {
     await expect(
       this.page.getByText(/generating training plan/i),
     ).toBeVisible();
+  }
+
+  /**
+   * Gets the stored season phase data from the user-workout-storage.
+   * The final season phase is stored in workoutData.seasonPhase in userWorkoutStore,
+   * not in the anamnesisStore (which only holds temporary form state).
+   */
+  async getStoredSeasonPhase(): Promise<{
+    type: string | null;
+    endDate: string | null;
+    numOfWeeks?: number;
+  } | null> {
+    return await this.page.evaluate(() => {
+      const workoutStorage = localStorage.getItem("user-workout-storage");
+      if (!workoutStorage) return null;
+
+      const parsed = JSON.parse(workoutStorage);
+      // Zustand persist middleware stores state in a 'state' property
+      const state = parsed?.state;
+      if (!state) return null;
+
+      return state.workoutData?.seasonPhase ?? null;
+    });
+  }
+
+  /**
+   * Debug helper: Returns all localStorage keys and their values.
+   * Useful for understanding what data is actually stored.
+   */
+  async debugLocalStorage(): Promise<Record<string, unknown>> {
+    return await this.page.evaluate(() => {
+      const result: Record<string, unknown> = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key) {
+          try {
+            result[key] = JSON.parse(localStorage.getItem(key) || "null");
+          } catch {
+            result[key] = localStorage.getItem(key);
+          }
+        }
+      }
+      return result;
+    });
   }
 }

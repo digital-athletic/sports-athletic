@@ -7,6 +7,7 @@ import { MaxValuesType } from "@/features/training/models/MaxValues";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
+import { formatDateForDisplay } from "@/utils/date";
 import { useRouter } from "expo-router";
 import { type FC, useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -149,7 +150,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
   }) => {
     const visible = isEntryExpanded(index);
     const iconName = visible ? "chevron-up" : "chevron-down";
-    const date = item.testDate.replace(/-/g, ".");
+    const date = formatDateForDisplay(item.testDate);
 
     const formatWeight = (value: number | undefined) =>
       `${Math.round((value ?? 0) * 2) / 2} kg`;

@@ -3,7 +3,7 @@ import { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
-import { dateToDDMMYYYY, dateToHHMM } from "@/utils/date";
+import { formatDateForDisplay, dateToHHMM } from "@/utils/date";
 import { getTimeString, getWeightString } from "@/utils/formatters";
 import { useCallback, useState, type FC } from "react";
 import { useTranslation } from "react-i18next";
@@ -83,7 +83,7 @@ export const Workouts: FC<WorkoutsProps> = ({
       const isTestWorkout = item.points === 0;
 
       const date = new Date(item.date);
-      const formattedDate = `${dateToDDMMYYYY(date)} - ${dateToHHMM(date)}`;
+      const formattedDate = `${formatDateForDisplay(date)} - ${dateToHHMM(date)}`;
 
       return (
         <Box

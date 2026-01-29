@@ -11,7 +11,7 @@ import { type Page } from "@playwright/test";
  * - Shoulder press: (9kg × 2 × 1.1) × 1.333 = 26.5 kg
  */
 
-const TEST_DATE = "21-01-2026";
+const TEST_DATE = "2026-01-21";
 
 const STRENGTH_TEST_MAX_VALUE = {
   barbell: 46.6667,
@@ -90,7 +90,7 @@ const STORE_DATA = {
       personalData: {
         username: "Test User",
         gender: "MALE",
-        birthday: "01-01-1990",
+        birthday: "1990-01-01",
         height: 180,
         weight: 80,
       },
@@ -112,7 +112,7 @@ const STORE_DATA = {
         },
         seasonPhase: {
           type: "COMPETITION",
-          endDate: "31-12-2026",
+          endDate: "2026-12-31",
           currentWeek: 1,
           totalWeeks: 52,
         },
@@ -122,7 +122,7 @@ const STORE_DATA = {
         start: "2026-01-20T00:00:00.000Z",
         sections: [
           {
-            start: "20-01-2026",
+            start: "2026-01-20",
             numOfWeeks: 3,
             type: "SWR1",
             cardioType: "CARDIO_3",
@@ -203,7 +203,7 @@ const STORE_DATA = {
       originPath: undefined,
       seasonPhase: {
         type: "COMPETITION",
-        endDate: "31-12-2026",
+        endDate: "2026-12-31",
       },
     },
   },

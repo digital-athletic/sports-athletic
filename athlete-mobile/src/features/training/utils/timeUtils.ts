@@ -7,7 +7,6 @@ import { dateToISODate, ISODateToDate } from "@/utils/date";
  */
 export const getPassedWeeksSinceDate = (start: string): number => {
   const now = new Date();
-  // ISODateToDate handles both ISO 8601 and legacy DD-MM-YYYY formats
   return Math.floor(
     (now.getTime() - ISODateToDate(start).getTime()) /
       SharedConstants.TIME_IN_MS.WEEK,
@@ -34,7 +33,6 @@ export const deriveSeasonPhaseEndDate = (
     return dateToISODate(new Date(futureEndDateMs));
   }
 
-  // ISODateToDate handles both ISO 8601 and legacy DD-MM-YYYY formats
   const sectionStartMs = ISODateToDate(args.start).getTime();
   const sectionEndMs =
     sectionStartMs + SharedConstants.TIME_IN_MS.WEEK * args.numOfWeeks;

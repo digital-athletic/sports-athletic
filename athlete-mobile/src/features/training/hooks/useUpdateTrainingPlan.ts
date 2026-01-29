@@ -7,6 +7,7 @@ import { usePlacesStore } from "@/store/placesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
+import { ISODateToDate } from "@/utils/date";
 import { useCallback } from "react";
 
 /**
@@ -45,7 +46,7 @@ export function useUpdateTrainingPlan() {
       branchData,
       trainingDays,
       places,
-      new Date(oldStartDate),
+      ISODateToDate(oldStartDate),
     );
 
     setTrainingPlan(plan);

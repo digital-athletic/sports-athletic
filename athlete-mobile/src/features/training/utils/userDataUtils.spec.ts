@@ -232,7 +232,7 @@ describe("userDataUtils", () => {
         personalData: {
           username: "test",
           gender: "MALE",
-          birthday: "01-01-1990",
+          birthday: "1990-01-01",
           height: 180,
         },
       });
@@ -247,7 +247,7 @@ describe("userDataUtils", () => {
         personalData: {
           username: "test",
           gender: "MALE",
-          birthday: "01-01-1990",
+          birthday: "1990-01-01",
         },
       });
 
@@ -263,7 +263,7 @@ describe("userDataUtils", () => {
         personalData: {
           username: "test",
           gender: "MALE",
-          birthday: "01-01-1990",
+          birthday: "1990-01-01",
           weight: 80,
         },
       });
@@ -278,7 +278,7 @@ describe("userDataUtils", () => {
         personalData: {
           username: "test",
           gender: "MALE",
-          birthday: "01-01-1990",
+          birthday: "1990-01-01",
         },
       });
 
@@ -294,13 +294,13 @@ describe("userDataUtils", () => {
         personalData: {
           username: "test",
           gender: "MALE",
-          birthday: "15-06-1990",
+          birthday: "1990-06-15",
         },
       });
 
       const result = getUserBirthday(user);
 
-      expect(result).toBe("15-06-1990");
+      expect(result).toBe("1990-06-15");
     });
 
     it("returns empty string when personalData.birthday is undefined", () => {
@@ -318,7 +318,7 @@ describe("userDataUtils", () => {
         personalData: {
           username: "test",
           gender: "FEMALE",
-          birthday: "01-01-1990",
+          birthday: "1990-01-01",
         },
       });
 

@@ -40,7 +40,6 @@ export const DateInputField: FC<DateInputFieldProps> = ({
   const iconName = type === "date" ? "calendar" : "time";
 
   // Parse existing dateTime or use current date
-  // ISODateToDate handles both ISO 8601 and legacy DD-MM-YYYY formats
   const getCurrentDate = (): Date => {
     if (!dateTime) return new Date();
 

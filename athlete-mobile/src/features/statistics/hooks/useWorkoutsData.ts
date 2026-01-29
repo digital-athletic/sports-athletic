@@ -6,6 +6,7 @@ import {
 } from "@/features/statistics/models/WorkoutsData";
 import { type TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { useUserProfileStore } from "@/store/userProfileStore";
+import { ISODateToDate } from "@/utils/date";
 import { useMemo } from "react";
 
 const INITIAL_USER_SKILLS: UserSkills = {
@@ -40,7 +41,7 @@ const getStartDate = (
       if (trainingPlan?.sections && trainingPlan.sections.length > 0) {
         for (let i = 0; i < trainingPlan.sections.length; i++) {
           const sectionStart = trainingPlan.sections[i].start;
-          const startTime = new Date(sectionStart).getTime();
+          const startTime = ISODateToDate(sectionStart).getTime();
           if (startTime < now) {
             return startTime;
           }

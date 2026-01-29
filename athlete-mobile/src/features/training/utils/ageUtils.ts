@@ -12,7 +12,7 @@ export function ageGroupFor(
 
   // Fallback to current date in case of empty string.
   // Note: Persisted user birthday may be empty string
-  // ISODateToDate handles both ISO 8601 (YYYY-MM-DD) and legacy DD-MM-YYYY formats
+  // ISODateToDate expects ISO 8601 format (YYYY-MM-DD) only
   const birthDate = ISODateToDate(
     dateOfBirth ? dateOfBirth : dateToISODate(new Date()),
   );

@@ -318,7 +318,7 @@ describe("PlanGenerator", () => {
       const seasonPhase: SeasonPhaseType = {
         type: SeasonPhase.COMPETITION,
         numOfWeeks: 8,
-        endDate: "01-05-2025",
+        endDate: "2025-05-01",
       };
 
       const result = PlanGenerator.getWeightedSections(
@@ -352,7 +352,7 @@ describe("PlanGenerator", () => {
       const seasonPhase: SeasonPhaseType = {
         type: SeasonPhase.PREPARATORY,
         numOfWeeks: 6,
-        endDate: "01-03-2025",
+        endDate: "2025-03-01",
       };
 
       const result = PlanGenerator.getWeightedSections(
@@ -386,7 +386,7 @@ describe("PlanGenerator", () => {
       const seasonPhase: SeasonPhaseType = {
         type: SeasonPhase.PAUSE,
         numOfWeeks: 4,
-        endDate: "01-02-2025",
+        endDate: "2025-02-01",
       };
 
       const result = PlanGenerator.getWeightedSections(
@@ -724,7 +724,7 @@ describe("PlanGenerator", () => {
       const seasonPhase: SeasonPhaseType = {
         type: SeasonPhase.COMPETITION,
         numOfWeeks: 8,
-        endDate: "06-03-2025",
+        endDate: "2025-03-06",
       };
       const startDate = new Date(2025, 0, 6); // Monday, Jan 6, 2025
 
@@ -1104,7 +1104,7 @@ describe("PlanGenerator", () => {
       const user = {
         userId: "test-user-1",
         workoutData: {
-          birthday: "01-01-1990",
+          birthday: "1990-01-01",
           tags: {
             LEVEL: [WorkoutConstants.LEVELS.ADVANCED],
             POSITION: ["MIDFIELDER"],
@@ -1112,7 +1112,7 @@ describe("PlanGenerator", () => {
           seasonPhase: {
             type: SeasonPhase.COMPETITION,
             numOfWeeks: 8,
-            endDate: "01-03-2025",
+            endDate: "2025-03-01",
           },
         },
       };
@@ -1157,7 +1157,7 @@ describe("PlanGenerator", () => {
       const user = {
         userId: "test-child-1",
         workoutData: {
-          birthday: "01-01-2015",
+          birthday: "2015-01-01",
           tags: {
             LEVEL: [WorkoutConstants.LEVELS.PROFESSIONAL],
             POSITION: ["FORWARD"],
@@ -1165,7 +1165,7 @@ describe("PlanGenerator", () => {
           seasonPhase: {
             type: SeasonPhase.PREPARATORY,
             numOfWeeks: 6,
-            endDate: "15-02-2025",
+            endDate: "2025-02-15",
           },
         },
       };
@@ -1208,7 +1208,7 @@ describe("PlanGenerator", () => {
       const user = {
         userId: "test-user-pain",
         workoutData: {
-          birthday: "01-01-1985",
+          birthday: "1985-01-01",
           tags: {
             LEVEL: [WorkoutConstants.LEVELS.BEGINNER],
             POSITION: ["DEFENDER"],
@@ -1217,7 +1217,7 @@ describe("PlanGenerator", () => {
           seasonPhase: {
             type: SeasonPhase.PAUSE,
             numOfWeeks: 4,
-            endDate: "03-02-2025",
+            endDate: "2025-02-03",
           },
         },
       };
@@ -1325,7 +1325,7 @@ describe("PlanGenerator", () => {
       const user = {
         userId: "test-user-prep",
         workoutData: {
-          birthday: "01-01-1987",
+          birthday: "1987-01-01",
           tags: {
             LEVEL: [WorkoutConstants.LEVELS.ADVANCED],
             POSITION: ["FIELD"],
@@ -1333,7 +1333,7 @@ describe("PlanGenerator", () => {
           seasonPhase: {
             type: SeasonPhase.PREPARATORY,
             numOfWeeks: 20,
-            endDate: "15-06-2026",
+            endDate: "2026-06-15",
           },
         },
       };
@@ -1383,21 +1383,21 @@ describe("PlanGenerator", () => {
     const mockSeasonPhase: SeasonPhaseType = {
       type: SeasonPhase.PREPARATORY,
       numOfWeeks: 4,
-      endDate: "01-03-2026",
+      endDate: "2026-03-01",
     };
 
     const mockUser = {
       userId: "test-user",
       workoutData: {
         tags: { LEVEL: ["BEGINNER"], POSITION: ["FIELD"] },
-        birthday: "01-01-1990",
+        birthday: "1990-01-01",
       },
     };
 
     const createMockSection = (
       type: "SWR1" | "SK" | "SA" = "SWR1",
     ): TrainingSectionType => ({
-      start: "01-01-2026",
+      start: "2026-01-01",
       numOfWeeks: 4,
       type,
       cardioType: "CARDIO_1",
@@ -1671,7 +1671,7 @@ describe("PlanGenerator", () => {
     const emptyDirections = {};
     const mockUser = {
       userId: "test-user",
-      workoutData: { birthday: "01-01-1990", tags: {} },
+      workoutData: { birthday: "1990-01-01", tags: {} },
     };
 
     it("returns empty array when weightedTags is empty", () => {

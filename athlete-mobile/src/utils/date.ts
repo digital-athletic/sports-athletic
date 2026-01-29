@@ -1,203 +1,89 @@
 /**
- * ISO 8601 date string format (YYYY-MM-DD)
- * This is the standard format used throughout the application.
+ * Date Utilities
+ *
+ * All date-only values (birthdays, season dates, etc.) are treated as calendar dates,
+ * not moments in time. They are always stored in ISO 8601 format (YYYY-MM-DD) and
+ * handled in UTC to avoid timezone-related shifts.
+ *
+ * Key principle: A date like "2024-01-15" represents that calendar date everywhere,
+ * regardless of the user's timezone.
  */
+
+/** ISO 8601 date string format (YYYY-MM-DD) */
 export type ISODateString = string;
 
 const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
-const DDMMYYYY_REGEX = /^\d{2}-\d{2}-\d{4}$/;
 
-const isISODate = (dateString: string) => ISO_DATE_REGEX.test(dateString);
-const isDDMMYYYY = (dateString: string) => DDMMYYYY_REGEX.test(dateString);
+/** Validates that a string matches ISO 8601 date format (YYYY-MM-DD) */
+export const isISODate = (value: string): value is ISODateString =>
+  ISO_DATE_REGEX.test(value);
 
-const isValidDate = (date: Date) => !isNaN(date.getTime());
+/** Validates that a Date object is valid (not Invalid Date) */
+const isValidDate = (date: Date): boolean => !Number.isNaN(date.getTime());
 
-const isValidDateString = (dateString: string) =>
-  isValidDate(new Date(dateString));
+const pad2 = (n: number): string => String(n).padStart(2, "0");
+
+/** Converts a Date to ISO 8601 date string (YYYY-MM-DD) using UTC */
+export const dateToISODate = (date: Date): ISODateString =>
+  `${date.getUTCFullYear()}-${pad2(date.getUTCMonth() + 1)}-${pad2(date.getUTCDate())}`;
 
 /**
- * Converts a Date to ISO 8601 date format (YYYY-MM-DD)
- * This is the standard date format for the application.
- *
- * Uses UTC methods to avoid timezone shifts when the Date was created
- * from a date-only ISO string (which is parsed as UTC midnight).
+ * Parses an ISO 8601 date string (YYYY-MM-DD) to a Date at UTC midnight.
+ * The returned Date represents the calendar date in UTC.
  */
-export const dateToISODate = (
-  date: Date | string,
-  useUTC = true,
-): ISODateString => {
-  if (typeof date === "string") {
-    if (isISODate(date)) {
-      return date;
-    }
-
-    // Handle legacy DD-MM-YYYY format
-    if (isDDMMYYYY(date)) {
-      return convertDDMMYYYYToISO(date);
-    }
-
-    if (isValidDateString(date)) {
-      return dateToISODate(new Date(date), useUTC);
-    }
+export const ISODateToDate = (dateString: ISODateString): Date => {
+  if (!isISODate(dateString)) {
     throw new Error(
-      `f:dateToISODate - Unable to convert ${date} to ISO 8601 date`,
+      `Expected ISO 8601 date format (YYYY-MM-DD), got: ${dateString}`,
     );
   }
 
-  if (!isValidDate(date)) {
-    throw new Error(`f:dateToISODate - Invalid Date: ${date}`);
-  }
-
-  // Use UTC methods to avoid timezone shifts for date-only values
-  const YYYY = useUTC ? date.getUTCFullYear() : date.getFullYear();
-  const MM = (
-    "0" +
-    ((useUTC ? date.getUTCMonth() : date.getMonth()) + 1)
-  ).slice(-2);
-  const DD = ("0" + (useUTC ? date.getUTCDate() : date.getDate())).slice(-2);
-  return `${YYYY}-${MM}-${DD}`;
+  const [year, month, day] = dateString.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day));
 };
 
 /**
- * Converts ISO 8601 date string (YYYY-MM-DD) to Date object
+ * Formats a date for user display in DD.MM.YYYY format.
+ * Uses UTC to ensure the displayed date matches the stored calendar date.
  */
-export const ISODateToDate = (dateString: string | Date): Date => {
-  if (typeof dateString === "string") {
-    if (isISODate(dateString)) {
-      return new Date(dateString);
-    }
-    // Handle legacy DD-MM-YYYY format
-    if (isDDMMYYYY(dateString)) {
-      return new Date(dateString.split("-").reverse().join("-"));
-    }
-    if (isValidDateString(dateString)) {
-      return new Date(dateString);
-    }
-    throw new Error(
-      `f:ISODateToDate - Unable to convert ${dateString} to Date`,
-    );
+export const formatDateForDisplay = (date: Date | ISODateString): string => {
+  const d = typeof date === "string" ? ISODateToDate(date) : date;
+
+  if (!isValidDate(d)) {
+    throw new Error(`Invalid Date: ${d}`);
   }
 
-  if (!isValidDate(dateString)) {
-    throw new Error(`f:ISODateToDate - Invalid Date: ${dateString}`);
-  }
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const year = d.getUTCFullYear();
 
-  return dateString;
+  return `${day}.${month}.${year}`;
 };
 
 /**
- * Converts DD-MM-YYYY format to ISO 8601 (YYYY-MM-DD) format.
- * Used for migrating legacy date strings.
- */
-export const convertDDMMYYYYToISO = (dateString: string): ISODateString => {
-  if (!isDDMMYYYY(dateString)) {
-    throw new Error(
-      `f:convertDDMMYYYYToISO - Expected DD-MM-YYYY format, got: ${dateString}`,
-    );
-  }
-  const [day, month, year] = dateString.split("-");
-  return `${year}-${month}-${day}`;
-};
-
-/**
- * @deprecated Use dateToISODate instead. DD-MM-YYYY format is being phased out.
- * Converts a Date to DD-MM-YYYY format
- */
-export const dateToDDMMYYYY = (date: Date | string): string => {
-  if (typeof date === "string") {
-    if (isDDMMYYYY(date)) {
-      return date;
-    }
-
-    if (isValidDateString(date)) {
-      return dateToDDMMYYYY(new Date(date));
-    }
-    throw new Error(
-      `f:dateToDDMMYYYY - Unable to convert ${date} to DD-MM-YYYY`,
-    );
-  }
-
-  if (!isValidDate(date)) {
-    throw new Error(`f:dateToDDMMYYYY - Invalid Date: ${date}`);
-  }
-
-  const DD = ("0" + date.getDate()).slice(-2);
-  const MM = ("0" + (date.getMonth() + 1)).slice(-2);
-  const YYYY = date.getFullYear();
-  return [DD, MM, YYYY].join("-");
-};
-
-/**
- * @deprecated Use ISODateToDate instead. DD-MM-YYYY format is being phased out.
- * Converts DD-MM-YYYY string to Date object
- */
-export const DDMMYYYYToDate = (dateString: string | Date): Date => {
-  if (typeof dateString === "string") {
-    if (isDDMMYYYY(dateString)) {
-      return new Date(dateString.split("-").reverse().join("-"));
-    }
-    if (isValidDateString(dateString)) {
-      return new Date(dateString);
-    }
-    throw new Error(
-      `f:DDMMYYYYToDate - Unable to convert ${dateString} to Date`,
-    );
-  }
-
-  if (!isValidDate(dateString)) {
-    throw new Error(`f:DDMMYYYYToDate - Invalid Date: ${dateString}`);
-  }
-
-  return dateString;
-};
-
-/**
- * Converts a Date to HH:mm format (24-hour)
- */
-export const dateToHHMM = (date: Date): string => {
-  const hh = ("0" + date.getHours()).slice(-2);
-  const mm = ("0" + date.getMinutes()).slice(-2);
-  return [hh, mm].join(":");
-};
-
-/**
- * Converts HH:MM time string to today's Date with that time
- */
-export const HHMMToDate = (time: string): Date => {
-  const date = new Date();
-  const splitTime = time.split(":");
-  date.setMilliseconds(0);
-  date.setSeconds(0);
-  date.setHours(parseInt(splitTime[0], 10), parseInt(splitTime[1], 10));
-  return date;
-};
-
-/**
- * Returns a new Date advanced by the specified number of days
+ * Returns a new Date advanced by the specified number of days.
+ * Operates in UTC to maintain calendar date semantics.
  */
 export const addDays = (date: Date, days: number): Date => {
-  const result = new Date(date);
-  result.setDate(result.getDate() + days);
+  const result = new Date(date.getTime());
+  result.setUTCDate(result.getUTCDate() + days);
   return result;
 };
 
 /**
- * Calculates age from a birthday string in ISO 8601 format (YYYY-MM-DD).
- * Uses UTC to avoid timezone-related date shifts.
+ * Calculates age in years from an ISO 8601 birthday string.
  * @returns Age in years, or null if the birthday is invalid
  */
-export const calculateAgeFromBirthday = (birthday: string): number | null => {
+export const calculateAgeFromBirthday = (
+  birthday: ISODateString,
+): number | null => {
   if (!isISODate(birthday)) {
     return null;
   }
 
-  const birthDate = new Date(birthday);
-  if (!isValidDate(birthDate)) {
-    return null;
-  }
-
+  const birthDate = ISODateToDate(birthday);
   const today = new Date();
-  // Use UTC methods to avoid timezone shifts
+
   let age = today.getUTCFullYear() - birthDate.getUTCFullYear();
   const monthDiff = today.getUTCMonth() - birthDate.getUTCMonth();
 
@@ -209,4 +95,25 @@ export const calculateAgeFromBirthday = (birthday: string): number | null => {
   }
 
   return age;
+};
+
+/**
+ * Converts a Date to HH:mm format (24-hour, local time).
+ * Time values use local time as they represent times of day in the user's context.
+ */
+export const dateToHHMM = (date: Date): string => {
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
+};
+
+/**
+ * Creates a Date with today's date and the specified time (HH:mm format).
+ * Uses local time as times represent moments in the user's day.
+ */
+export const HHMMToDate = (time: string): Date => {
+  const [hours, minutes] = time.split(":").map(Number);
+  const date = new Date();
+  date.setHours(hours, minutes, 0, 0);
+  return date;
 };

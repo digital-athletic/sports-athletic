@@ -8,7 +8,6 @@ import { ISODateToDate } from "@/utils/date";
  * @param endDate - End date in ISO 8601 format (YYYY-MM-DD)
  */
 export const calculateNumOfWeeks = (endDate: string): number => {
-  // ISODateToDate handles both ISO 8601 and legacy DD-MM-YYYY formats
   const endMs = ISODateToDate(endDate).getTime();
   const nowMs = Date.now();
   const weeks = Math.floor((endMs - nowMs) / SharedConstants.TIME_IN_MS.WEEK);
@@ -23,7 +22,6 @@ export const calculateNumOfWeeksFromDate = (
   endDate: string,
   startDate: Date,
 ): number => {
-  // ISODateToDate handles both ISO 8601 and legacy DD-MM-YYYY formats
   const endMs = ISODateToDate(endDate).getTime();
   const startMs = startDate.getTime();
   const weeks = Math.floor((endMs - startMs) / SharedConstants.TIME_IN_MS.WEEK);

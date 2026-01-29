@@ -47,7 +47,7 @@ describe("useAgeGroup", () => {
       useUserProfileStore.setState({
         personalData: {
           ...DEFAULT_STATE.personalData,
-          birthday: "01-01-2016",
+          birthday: "2016-01-01",
         },
       });
 
@@ -61,7 +61,7 @@ describe("useAgeGroup", () => {
       useUserProfileStore.setState({
         personalData: {
           ...DEFAULT_STATE.personalData,
-          birthday: "01-01-2011",
+          birthday: "2011-01-01",
         },
       });
 
@@ -75,7 +75,7 @@ describe("useAgeGroup", () => {
       useUserProfileStore.setState({
         personalData: {
           ...DEFAULT_STATE.personalData,
-          birthday: "02-01-2010",
+          birthday: "2010-01-02",
         },
       });
 
@@ -91,7 +91,7 @@ describe("useAgeGroup", () => {
       useUserProfileStore.setState({
         personalData: {
           ...DEFAULT_STATE.personalData,
-          birthday: "01-01-2010",
+          birthday: "2010-01-01",
         },
       });
 
@@ -105,7 +105,7 @@ describe("useAgeGroup", () => {
       useUserProfileStore.setState({
         personalData: {
           ...DEFAULT_STATE.personalData,
-          birthday: "01-01-2009",
+          birthday: "2009-01-01",
         },
       });
 
@@ -119,7 +119,7 @@ describe("useAgeGroup", () => {
       useUserProfileStore.setState({
         personalData: {
           ...DEFAULT_STATE.personalData,
-          birthday: "30-12-2009",
+          birthday: "2009-12-30",
         },
       });
 
@@ -135,7 +135,7 @@ describe("useAgeGroup", () => {
       useUserProfileStore.setState({
         personalData: {
           ...DEFAULT_STATE.personalData,
-          birthday: "01-01-2008",
+          birthday: "2008-01-01",
         },
       });
 
@@ -149,7 +149,7 @@ describe("useAgeGroup", () => {
       useUserProfileStore.setState({
         personalData: {
           ...DEFAULT_STATE.personalData,
-          birthday: "01-01-2001",
+          birthday: "2001-01-01",
         },
       });
 
@@ -163,7 +163,7 @@ describe("useAgeGroup", () => {
       useUserProfileStore.setState({
         personalData: {
           ...DEFAULT_STATE.personalData,
-          birthday: "01-01-1976",
+          birthday: "1976-01-01",
         },
       });
 
@@ -179,7 +179,7 @@ describe("useAgeGroup", () => {
       useUserProfileStore.setState({
         personalData: {
           ...DEFAULT_STATE.personalData,
-          birthday: "02-01-2010",
+          birthday: "2010-01-02",
         },
       });
 
@@ -193,7 +193,7 @@ describe("useAgeGroup", () => {
       useUserProfileStore.setState({
         personalData: {
           ...DEFAULT_STATE.personalData,
-          birthday: "02-01-2008",
+          birthday: "2008-01-02",
         },
       });
 

@@ -5,7 +5,7 @@ import { applyMaxValueToDirections, getUserLevel } from "./workoutUtils";
 
 // Mock the date utility to return a consistent date for testing (ISO 8601 format)
 jest.mock("@/utils/date", () => ({
-  dateToISODate: () => "2026-01-08",
+  formatDateToISO: () => "2026-01-08",
 }));
 
 describe("getUserLevel", () => {

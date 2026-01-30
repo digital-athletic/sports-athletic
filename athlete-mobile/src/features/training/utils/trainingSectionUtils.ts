@@ -1,4 +1,4 @@
-import { addDays, dateToISODate, ISODateToDate } from "@/utils/date";
+import { addDays, formatDateToISO, ISODateToDate } from "@/utils/date";
 import { TrainingSectionType } from "../models/TrainingSection";
 
 /**
@@ -48,7 +48,7 @@ export const extendSectionsForMissedWeeks = <T extends SectionLike>(
 
     return {
       ...sec,
-      start: dateToISODate(extended),
+      start: formatDateToISO(extended),
       numOfWeeks,
     };
   });

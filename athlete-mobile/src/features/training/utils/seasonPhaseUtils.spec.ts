@@ -4,7 +4,7 @@ import {
   enrichSeasonPhaseWithWeeks,
   enrichSeasonPhaseWithWeeksFromDate,
 } from "./seasonPhaseUtils";
-import { dateToISODate } from "@/utils/date";
+import { formatDateToISO } from "@/utils/date";
 import { SeasonPhase } from "@/features/training/models/SeasonPhase";
 
 describe("seasonPhaseUtils", () => {
@@ -13,7 +13,7 @@ describe("seasonPhaseUtils", () => {
       // Use 22 days to ensure we get at least 3 full weeks (accounting for floor rounding)
       const futureDate = new Date();
       futureDate.setDate(futureDate.getDate() + 22);
-      const endDate = dateToISODate(futureDate);
+      const endDate = formatDateToISO(futureDate);
 
       const result = calculateNumOfWeeks(endDate);
 
@@ -23,7 +23,7 @@ describe("seasonPhaseUtils", () => {
     it("should return minimum 1 week for past dates", () => {
       const pastDate = new Date();
       pastDate.setDate(pastDate.getDate() - 7);
-      const endDate = dateToISODate(pastDate);
+      const endDate = formatDateToISO(pastDate);
 
       const result = calculateNumOfWeeks(endDate);
 
@@ -49,7 +49,7 @@ describe("seasonPhaseUtils", () => {
       futureDate.setDate(futureDate.getDate() + 15);
       const phase = {
         type: SeasonPhase.COMPETITION,
-        endDate: dateToISODate(futureDate),
+        endDate: formatDateToISO(futureDate),
       };
 
       const result = enrichSeasonPhaseWithWeeks(phase);

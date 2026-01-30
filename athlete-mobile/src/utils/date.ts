@@ -2,11 +2,15 @@
  * Date Utilities
  *
  * All date-only values (birthdays, season dates, etc.) are treated as calendar dates,
- * not moments in time. They are always stored in ISO 8601 format (YYYY-MM-DD) and
- * handled in UTC to avoid timezone-related shifts.
+ * not moments in time. They are stored in ISO 8601 format (YYYY-MM-DD).
  *
- * Key principle: A date like "2024-01-15" represents that calendar date everywhere,
- * regardless of the user's timezone.
+ * STRATEGY: All Local
+ * All functions use local time methods consistently. This keeps things simple -
+ * a date string "2024-01-15" becomes local midnight Jan 15, and extracting
+ * components from any Date gives the local calendar date.
+ *
+ * Key principle: A date like "2024-01-15" represents that calendar date
+ * in the user's local context.
  */
 
 /** ISO 8601 date string format (YYYY-MM-DD) */
@@ -23,13 +27,12 @@ const isValidDate = (date: Date): boolean => !Number.isNaN(date.getTime());
 
 const pad2 = (n: number): string => String(n).padStart(2, "0");
 
-/** Converts a Date to ISO 8601 date string (YYYY-MM-DD) using UTC */
-export const dateToISODate = (date: Date): ISODateString =>
-  `${date.getUTCFullYear()}-${pad2(date.getUTCMonth() + 1)}-${pad2(date.getUTCDate())}`;
+/** Converts a Date to ISO 8601 date string (YYYY-MM-DD) */
+export const formatDateToISO = (date: Date): ISODateString =>
+  `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
 
 /**
- * Parses an ISO 8601 date string (YYYY-MM-DD) to a Date at UTC midnight.
- * The returned Date represents the calendar date in UTC.
+ * Parses an ISO 8601 date string (YYYY-MM-DD) to a Date at local midnight.
  */
 export const ISODateToDate = (dateString: ISODateString): Date => {
   if (!isISODate(dateString)) {
@@ -39,12 +42,11 @@ export const ISODateToDate = (dateString: ISODateString): Date => {
   }
 
   const [year, month, day] = dateString.split("-").map(Number);
-  return new Date(Date.UTC(year, month - 1, day));
+  return new Date(year, month - 1, day);
 };
 
 /**
  * Formats a date for user display in DD.MM.YYYY format.
- * Uses UTC to ensure the displayed date matches the stored calendar date.
  */
 export const formatDateForDisplay = (date: Date | ISODateString): string => {
   const d = typeof date === "string" ? ISODateToDate(date) : date;
@@ -53,20 +55,19 @@ export const formatDateForDisplay = (date: Date | ISODateString): string => {
     throw new Error(`Invalid Date: ${d}`);
   }
 
-  const day = String(d.getUTCDate()).padStart(2, "0");
-  const month = String(d.getUTCMonth() + 1).padStart(2, "0");
-  const year = d.getUTCFullYear();
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
 
   return `${day}.${month}.${year}`;
 };
 
 /**
  * Returns a new Date advanced by the specified number of days.
- * Operates in UTC to maintain calendar date semantics.
  */
 export const addDays = (date: Date, days: number): Date => {
   const result = new Date(date.getTime());
-  result.setUTCDate(result.getUTCDate() + days);
+  result.setDate(result.getDate() + days);
   return result;
 };
 
@@ -84,12 +85,12 @@ export const calculateAgeFromBirthday = (
   const birthDate = ISODateToDate(birthday);
   const today = new Date();
 
-  let age = today.getUTCFullYear() - birthDate.getUTCFullYear();
-  const monthDiff = today.getUTCMonth() - birthDate.getUTCMonth();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
 
   if (
     monthDiff < 0 ||
-    (monthDiff === 0 && today.getUTCDate() < birthDate.getUTCDate())
+    (monthDiff === 0 && today.getDate() < birthDate.getDate())
   ) {
     age--;
   }
@@ -98,8 +99,7 @@ export const calculateAgeFromBirthday = (
 };
 
 /**
- * Converts a Date to HH:mm format (24-hour, local time).
- * Time values use local time as they represent times of day in the user's context.
+ * Converts a Date to HH:mm format (24-hour).
  */
 export const dateToHHMM = (date: Date): string => {
   const hours = String(date.getHours()).padStart(2, "0");
@@ -109,7 +109,6 @@ export const dateToHHMM = (date: Date): string => {
 
 /**
  * Creates a Date with today's date and the specified time (HH:mm format).
- * Uses local time as times represent moments in the user's day.
  */
 export const HHMMToDate = (time: string): Date => {
   const [hours, minutes] = time.split(":").map(Number);

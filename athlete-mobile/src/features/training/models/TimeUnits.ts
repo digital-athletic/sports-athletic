@@ -22,17 +22,3 @@ export const minutes = (value: number): DurationMinutes =>
 /** Create a DurationSeconds value from a raw number */
 export const seconds = (value: number): DurationSeconds =>
   value as DurationSeconds;
-
-/** Convert minutes to seconds */
-export const minutesToSeconds = (mins: DurationMinutes): DurationSeconds =>
-  (mins * 60) as DurationSeconds;
-
-/** Convert seconds to minutes (rounds down) */
-export const secondsToMinutes = (secs: DurationSeconds): DurationMinutes =>
-  Math.floor(secs / 60) as DurationMinutes;
-
-/** Get the raw number value from a DurationMinutes */
-export const rawMinutes = (mins: DurationMinutes): number => mins;
-
-/** Get the raw number value from a DurationSeconds */
-export const rawSeconds = (secs: DurationSeconds): number => secs;

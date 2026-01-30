@@ -2,10 +2,10 @@ import { expect, test } from "@playwright/test";
 import { PROFILE_MALE_COMPETITVE } from "./constants";
 import { mockSupabaseAuth } from "./mocks/supabase";
 import { AnamnesisPage } from "./pages";
-import { addDays, dateToISODate } from "@/utils/date";
+import { addDays, formatDateToISO } from "@/utils/date";
 
 const weeksFromNow = (weeks: number): string =>
-  dateToISODate(addDays(new Date(), weeks * 7));
+  formatDateToISO(addDays(new Date(), weeks * 7));
 
 test.describe("Profile Setup", () => {
   test.slow();

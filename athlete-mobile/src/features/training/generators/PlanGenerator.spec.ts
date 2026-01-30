@@ -726,7 +726,7 @@ describe("PlanGenerator", () => {
         numOfWeeks: 8,
         endDate: "2025-03-06",
       };
-      const startDate = new Date(Date.UTC(2025, 0, 6)); // Monday, Jan 6, 2025 UTC
+      const startDate = new Date(2025, 0, 6); // Monday, Jan 6, 2025
 
       const result = PlanGenerator.initializeTrainingPlan(
         seasonPhase,
@@ -748,7 +748,7 @@ describe("PlanGenerator", () => {
         numOfWeeks: 8,
         endDate: "2025-03-06",
       };
-      const startDate = new Date(Date.UTC(2025, 0, 6)); // Monday, Jan 6, 2025 UTC
+      const startDate = new Date(2025, 0, 6); // Monday, Jan 6, 2025
 
       const result = PlanGenerator.initializeTrainingPlan(
         seasonPhase,
@@ -785,7 +785,7 @@ describe("PlanGenerator", () => {
         numOfWeeks: 6,
         endDate: "2025-03-17",
       };
-      const startDate = new Date(Date.UTC(2025, 1, 3)); // Monday, Feb 3, 2025 UTC
+      const startDate = new Date(2025, 1, 3); // Monday, Feb 3, 2025
 
       const result = PlanGenerator.initializeTrainingPlan(
         seasonPhase,
@@ -822,7 +822,7 @@ describe("PlanGenerator", () => {
         numOfWeeks: 10,
         endDate: "2025-05-19",
       };
-      const startDate = new Date(Date.UTC(2025, 2, 10)); // Monday, Mar 10, 2025 UTC
+      const startDate = new Date(2025, 2, 10); // Monday, Mar 10, 2025
 
       const result = PlanGenerator.initializeTrainingPlan(
         seasonPhase,

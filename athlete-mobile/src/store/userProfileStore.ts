@@ -1,5 +1,5 @@
 import { SharedConstants } from "@/constants/sharedConstants";
-import { calculateAgeFromBirthday, dateToISODate } from "@/utils/date";
+import { calculateAgeFromBirthday, formatDateToISO } from "@/utils/date";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
@@ -22,7 +22,7 @@ type State = {
 const createInitialPersonalData = (): UserPersonalDataType => ({
   username: "",
   gender: "MALE",
-  birthday: dateToISODate(new Date()),
+  birthday: formatDateToISO(new Date()),
 });
 
 const createInitialState = (): State => ({

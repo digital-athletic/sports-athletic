@@ -2,7 +2,7 @@ import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import {
-  dateToISODate,
+  formatDateToISO,
   dateToHHMM,
   ISODateToDate,
   HHMMToDate,
@@ -52,7 +52,7 @@ export const DateInputField: FC<DateInputFieldProps> = ({
   const handleChange = (_: DateTimePickerEvent, selectedDate?: Date) => {
     if (selectedDate) {
       if (type === "date") {
-        onChange(dateToISODate(selectedDate));
+        onChange(formatDateToISO(selectedDate));
       } else {
         onChange(dateToHHMM(selectedDate));
       }

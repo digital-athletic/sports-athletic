@@ -16,7 +16,7 @@ import {
   type SkillTreeType,
 } from "@/schemas/skillTree.schema";
 import { Logger } from "@/services/Logger";
-import { dateToISODate } from "@/utils/date";
+import { formatDateToISO } from "@/utils/date";
 import { getTagValues, getUserTagValue } from "@/utils/tagUtils";
 import { ExerciseBranchType } from "../models/ExerciseBranch";
 import { isPauseExercise } from "../models/IdTypes";
@@ -678,6 +678,6 @@ export const applyMaxValueToDirections = (
     }
   }
 
-  updated.testDate = dateToISODate(new Date());
+  updated.testDate = formatDateToISO(new Date());
   return updated;
 };

@@ -1,5 +1,5 @@
 import { WorkoutConstants } from "@/constants/workoutConstants";
-import { dateToISODate, ISODateToDate } from "../../../utils/date";
+import { formatDateToISO, ISODateToDate } from "../../../utils/date";
 
 /**
  * Returns the age group for the given date of birth
@@ -14,7 +14,7 @@ export function ageGroupFor(
   // Note: Persisted user birthday may be empty string
   // ISODateToDate expects ISO 8601 format (YYYY-MM-DD) only
   const birthDate = ISODateToDate(
-    dateOfBirth ? dateOfBirth : dateToISODate(new Date()),
+    dateOfBirth ? dateOfBirth : formatDateToISO(new Date()),
   );
 
   const ageToDate = (age: number, birthday: Date): Date => {

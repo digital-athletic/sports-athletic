@@ -1,5 +1,5 @@
 import { SharedConstants } from "@/constants/sharedConstants";
-import { dateToISODate, ISODateToDate } from "@/utils/date";
+import { formatDateToISO, ISODateToDate } from "@/utils/date";
 
 /**
  * Calculate number of weeks passed since a given start date
@@ -30,11 +30,11 @@ export const deriveSeasonPhaseEndDate = (
   if (!args) {
     const twelveWeeksInMs = SharedConstants.TIME_IN_MS.WEEK * 12;
     const futureEndDateMs = Date.now() + twelveWeeksInMs;
-    return dateToISODate(new Date(futureEndDateMs));
+    return formatDateToISO(new Date(futureEndDateMs));
   }
 
   const sectionStartMs = ISODateToDate(args.start).getTime();
   const sectionEndMs =
     sectionStartMs + SharedConstants.TIME_IN_MS.WEEK * args.numOfWeeks;
-  return dateToISODate(new Date(sectionEndMs));
+  return formatDateToISO(new Date(sectionEndMs));
 };

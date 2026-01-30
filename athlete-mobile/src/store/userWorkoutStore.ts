@@ -17,7 +17,7 @@ import {
   enrichSeasonPhaseWithWeeksFromDate,
 } from "@/features/training/utils/seasonPhaseUtils";
 import type { TagsByGroup } from "@/features/training/models/Tags";
-import { dateToISODate } from "@/utils/date";
+import { formatDateToISO } from "@/utils/date";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
@@ -39,7 +39,7 @@ const createInitialWorkoutData = (): UserWorkoutDataType => ({
   },
   seasonPhase: {
     type: null,
-    endDate: dateToISODate(new Date()),
+    endDate: formatDateToISO(new Date()),
   },
   maxValues: { ...DEFAULT_MAX_VALUES },
 });

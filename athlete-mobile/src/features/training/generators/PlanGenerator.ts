@@ -72,7 +72,7 @@ import {
 } from "@/schemas/generator.schema";
 
 import { cloneWithValidation } from "@/utils/cloneWithValidation";
-import { addDays, dateToISODate, ISODateToDate } from "@/utils/date";
+import { addDays, formatDateToISO, ISODateToDate } from "@/utils/date";
 import {
   getTagValues,
   getUserTagValue,
@@ -1185,7 +1185,7 @@ export default class PlanGenerator {
       isKeeper,
     );
 
-    const startDateStr = dateToISODate(startDate);
+    const startDateStr = formatDateToISO(startDate);
 
     //calculate start for each section
     const trainingSections = this.calculateStartingDates(
@@ -1256,7 +1256,7 @@ export default class PlanGenerator {
 
     let t = [];
     t = trainingSections.map((item) => {
-      return { ...item, start: dateToISODate(d) };
+      return { ...item, start: formatDateToISO(d) };
     });
     if (PlanGenerator.DEBUG) console.log("TrainingSections in progress: ", t);
 
@@ -1274,7 +1274,7 @@ export default class PlanGenerator {
       if (PlanGenerator.DEBUG)
         console.log("Start date section " + index + ": ", startDate);
 
-      return { start: dateToISODate(startDate), ...rest };
+      return { start: formatDateToISO(startDate), ...rest };
     });
     return x;
   };

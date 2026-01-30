@@ -1,5 +1,5 @@
 import { act, renderHook } from "@testing-library/react-native";
-import { dateToISODate } from "@/utils/date";
+import { formatDateToISO } from "@/utils/date";
 import { useUserWorkoutStore } from "./userWorkoutStore";
 
 describe("userWorkoutStore", () => {
@@ -72,7 +72,7 @@ describe("userWorkoutStore", () => {
   describe("setTrainingPlan", () => {
     it("sets training plan", () => {
       const { result } = renderHook(() => useUserWorkoutStore());
-      const plan = { start: dateToISODate(new Date()), sections: [] };
+      const plan = { start: formatDateToISO(new Date()), sections: [] };
 
       act(() => {
         result.current.setTrainingPlan(plan);
@@ -86,7 +86,7 @@ describe("userWorkoutStore", () => {
 
       act(() => {
         result.current.setTrainingPlan({
-          start: dateToISODate(new Date()),
+          start: formatDateToISO(new Date()),
           sections: [],
         });
         result.current.setTrainingPlan(null);
@@ -142,7 +142,7 @@ describe("userWorkoutStore", () => {
       act(() => {
         result.current.setSport("FOOTBALL_SPORT");
         result.current.setTrainingPlan({
-          start: dateToISODate(new Date()),
+          start: formatDateToISO(new Date()),
           sections: [],
         });
         result.current.clearUserWorkoutData();

@@ -1,5 +1,6 @@
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { ExerciseType } from "@/schemas/exercise.schema";
+import { ISODateToDate } from "@/utils/date";
 import { isPauseExercise } from "./models/IdTypes";
 import { TrainingSectionType } from "./models/TrainingSection";
 import type { UserExerciseDataType } from "./models/UserExerciseData";
@@ -121,7 +122,7 @@ export const getEquipmentList = (
 
 // Converts section start date to timestamp
 const getSectionTimestamp = (section: TrainingSectionType): number =>
-  new Date(section.start).getTime();
+  ISODateToDate(section.start).getTime();
 
 // Finds section with latest start time
 const findLatestSection = (

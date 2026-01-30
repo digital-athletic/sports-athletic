@@ -13,6 +13,7 @@ import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
+import { ISODateToDate } from "@/utils/date";
 import { Route, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -67,7 +68,7 @@ export default function Generating() {
       // Determine start date: use existing plan start or current date
       const startDate =
         shouldUpdateExisting && trainingPlan?.start
-          ? new Date(trainingPlan.start)
+          ? ISODateToDate(trainingPlan.start)
           : new Date();
 
       // Save season phase to workoutData (calculates numOfWeeks with startDate)

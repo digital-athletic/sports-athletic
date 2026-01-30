@@ -1,4 +1,4 @@
-/** ISO 8601 date string format */
+/** ISO 8601 datetime string format (full datetime for precise expiration comparison) */
 export type TemporalDataType = {
   date: string;
   expiration: string;

@@ -1,5 +1,6 @@
 import { act, renderHook } from "@testing-library/react-native";
 import { seconds } from "@/features/training/models/TimeUnits";
+import { dateToISODate } from "@/utils/date";
 import {
   CompleteWorkoutType,
   useCompletedWorkoutsStore,
@@ -136,7 +137,7 @@ describe("completedWorkoutsStore", () => {
   describe("addCompletedTrainingPlan", () => {
     it("appends to trainingPlans array", () => {
       const { result } = renderHook(() => useCompletedWorkoutsStore());
-      const plan = { start: new Date().toISOString(), sections: [] };
+      const plan = { start: dateToISODate(new Date()), sections: [] };
 
       act(() => {
         result.current.addCompletedTrainingPlan(plan);

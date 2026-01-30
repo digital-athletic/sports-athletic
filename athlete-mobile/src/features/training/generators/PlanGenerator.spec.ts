@@ -720,13 +720,13 @@ describe("PlanGenerator", () => {
    * Returns a TrainingPlanType with a start date and array of training sections.
    */
   describe("initializeTrainingPlan", () => {
-    it("should create plan with correct start date and sections for competition adult", () => {
+    it("should return start date in ISO 8601 date format (YYYY-MM-DD), not full ISO datetime", () => {
       const seasonPhase: SeasonPhaseType = {
         type: SeasonPhase.COMPETITION,
         numOfWeeks: 8,
         endDate: "2025-03-06",
       };
-      const startDate = new Date(2025, 0, 6); // Monday, Jan 6, 2025
+      const startDate = new Date(Date.UTC(2025, 0, 6)); // Monday, Jan 6, 2025 UTC
 
       const result = PlanGenerator.initializeTrainingPlan(
         seasonPhase,
@@ -738,7 +738,29 @@ describe("PlanGenerator", () => {
         false,
       );
 
-      expect(result.start).toEqual(startDate.toISOString());
+      // The start field should be in YYYY-MM-DD format, NOT full ISO datetime
+      expect(result.start).toBe("2025-01-06");
+    });
+
+    it("should create plan with correct start date and sections for competition adult", () => {
+      const seasonPhase: SeasonPhaseType = {
+        type: SeasonPhase.COMPETITION,
+        numOfWeeks: 8,
+        endDate: "2025-03-06",
+      };
+      const startDate = new Date(Date.UTC(2025, 0, 6)); // Monday, Jan 6, 2025 UTC
+
+      const result = PlanGenerator.initializeTrainingPlan(
+        seasonPhase,
+        WorkoutConstants.AGE_GROUPS.ADULT,
+        "MIDFIELDER",
+        WorkoutConstants.LEVELS.ADVANCED,
+        true,
+        startDate,
+        false,
+      );
+
+      expect(result.start).toBe("2025-01-06");
       expect(result.sections).toHaveLength(3);
       expect(result.sections[0]).toMatchObject({
         type: "SWR2",
@@ -763,7 +785,7 @@ describe("PlanGenerator", () => {
         numOfWeeks: 6,
         endDate: "2025-03-17",
       };
-      const startDate = new Date(2025, 1, 3); // Monday, Feb 3, 2025
+      const startDate = new Date(Date.UTC(2025, 1, 3)); // Monday, Feb 3, 2025 UTC
 
       const result = PlanGenerator.initializeTrainingPlan(
         seasonPhase,
@@ -775,7 +797,7 @@ describe("PlanGenerator", () => {
         false,
       );
 
-      expect(result.start).toEqual(startDate.toISOString());
+      expect(result.start).toBe("2025-02-03");
       expect(result.sections).toHaveLength(3);
       expect(result.sections[0]).toMatchObject({
         type: "SWR1",
@@ -800,7 +822,7 @@ describe("PlanGenerator", () => {
         numOfWeeks: 10,
         endDate: "2025-05-19",
       };
-      const startDate = new Date(2025, 2, 10); // Monday, Mar 10, 2025
+      const startDate = new Date(Date.UTC(2025, 2, 10)); // Monday, Mar 10, 2025 UTC
 
       const result = PlanGenerator.initializeTrainingPlan(
         seasonPhase,
@@ -812,7 +834,7 @@ describe("PlanGenerator", () => {
         true,
       );
 
-      expect(result.start).toEqual(startDate.toISOString());
+      expect(result.start).toBe("2025-03-10");
       expect(result.sections).toHaveLength(3);
       const sectionTypes = result.sections.map((s) => s.type);
       expect(sectionTypes).not.toContain("SA");

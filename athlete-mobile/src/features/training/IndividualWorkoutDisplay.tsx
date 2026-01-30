@@ -38,7 +38,7 @@ const getPlanState = (
     planState = PLAN_STATES.RUNNING;
 
     // Check if plan has ended
-    // ISODateToDate handles both ISO 8601 and legacy DD-MM-YYYY formats
+    // ISODateToDate expects ISO 8601 format (YYYY-MM-DD) only
     if (trainingPlan.sections && trainingPlan.sections.length > 0) {
       const lastSection =
         trainingPlan.sections[trainingPlan.sections.length - 1];

@@ -29,6 +29,7 @@ import type { UserExerciseDataType } from "@/features/training/models/UserExerci
 import type { UserTrainingType } from "@/features/training/models/UserTraining";
 import { getSectionForDate } from "@/features/training/trainingUtils";
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
+import { extendSectionsForMissedWeeks } from "@/features/training/utils/trainingSectionUtils";
 import {
   filterByAge,
   filterByGender,
@@ -801,22 +802,17 @@ export default class TrainingGenerator {
     if (daysSinceLastWorkout > 21) {
       if (TrainingGenerator.DEBUG) console.log("NEUEN PLAN GENERIEREN");
     } else if (daysSinceLastWorkout > 7) {
-      const additionalWeeks = Math.floor(daysSinceLastWorkout / 7);
+      // Extend section start dates when user has missed multiple weeks
+      const { sections: extendedSections, additionalWeeks } =
+        extendSectionsForMissedWeeks(
+          trainingPlan.sections,
+          daysSinceLastWorkout,
+        );
+
       if (TrainingGenerator.DEBUG)
         console.log(`Extending plan sections by ${additionalWeeks} weeks`);
-      //extend ALL (starts of) sections of current plan by number of missed weeks
-      trainingPlan.sections.forEach((sec) => {
-        const curr = new Date(sec.start);
-        curr.setDate(curr.getDate() + additionalWeeks * 7);
-        sec.start = curr.toISOString();
-      });
-      //clip last section by number of added weeks -> end of season phase is definite
-      const lastSection =
-        trainingPlan.sections[trainingPlan.sections.length - 1];
-      lastSection.numOfWeeks = Math.max(
-        0,
-        lastSection.numOfWeeks - additionalWeeks,
-      );
+
+      trainingPlan.sections = extendedSections;
     }
 
     let currSec;

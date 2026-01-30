@@ -1197,7 +1197,7 @@ export default class PlanGenerator {
       console.log("TrainingSections: ", trainingSections);
 
     const trainingPlan: TrainingPlanInitialType = {
-      start: startDate.toISOString(),
+      start: startDateStr,
       sections: trainingSections,
     };
 
@@ -1245,7 +1245,7 @@ export default class PlanGenerator {
     trainingSections: SectionEntry[],
     trainingPlanStart: string,
   ): SectionWithStartType[] => {
-    // ISODateToDate handles both ISO 8601 and legacy DD-MM-YYYY formats
+    // ISODateToDate expects ISO 8601 format (YYYY-MM-DD) only
     let d = ISODateToDate(trainingPlanStart);
     //next monday(1)
     if (d.getDay() !== 1) {

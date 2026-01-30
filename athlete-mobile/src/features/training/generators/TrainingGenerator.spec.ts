@@ -276,6 +276,9 @@ describe("TrainingGenerator", () => {
       expect(mockResult[0]).toHaveProperty("branchId");
       spy.mockRestore();
     });
+
+    // Note: Section extension date format tests have been moved to trainingSectionUtils.spec.ts
+    // where the extendSectionsForMissedWeeks function is properly unit tested as a pure function.
   });
 
   describe("isSuperset", () => {

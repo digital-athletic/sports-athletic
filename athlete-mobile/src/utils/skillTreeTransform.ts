@@ -1,17 +1,19 @@
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 
-type RawSkillTree = Record<
+export type RawSkillTree = Record<
   string,
   {
     tags: string[];
-    levels: Record<string, { exerciseId?: number; id?: number }>;
+    levels: Record<string, { exerciseId: string }>;
   }
 >;
 
 /**
- * Transforms a raw skill tree by converting exercise IDs to strings and level keys to numbers.
- * Supports both old format (id) and new format (exerciseId) for backward compatibility.
- * This is applied when loading skill tree JSON data into the store.
+ * Transforms a raw skill tree by converting level keys from strings to numbers.
+ * JSON cannot have numeric keys, so this conversion is still needed at runtime.
+ * The JSON files have been pre-transformed to already use:
+ * - 'exerciseId' (instead of 'id')
+ * - String exercise IDs (instead of numbers)
  */
 export const transformSkillTree = (rawTree: RawSkillTree): SkillTreeType => {
   const result: SkillTreeType = {};
@@ -23,11 +25,7 @@ export const transformSkillTree = (rawTree: RawSkillTree): SkillTreeType => {
 
       for (const level in branch.levels) {
         if (Object.prototype.hasOwnProperty.call(branch.levels, level)) {
-          const levelData = branch.levels[level];
-          const rawId = levelData.exerciseId ?? levelData.id;
-          transformedLevels[Number(level)] = {
-            exerciseId: String(rawId),
-          };
+          transformedLevels[Number(level)] = branch.levels[level];
         }
       }
 

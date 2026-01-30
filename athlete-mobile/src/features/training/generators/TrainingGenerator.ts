@@ -85,7 +85,7 @@ import type { UserType } from "@/schemas/user.schema";
 import { Logger } from "@/services/Logger";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
 import { cloneWithValidation } from "@/utils/cloneWithValidation";
-import { getTagValues, getUserTagValues } from "@/utils/tagUtils";
+import { getTagValue, getTagValues, getUserTagValues } from "@/utils/tagUtils";
 
 // Intensity
 import { IntensityBAS } from "../../../../assets/data/generator/intensity/BAS";
@@ -449,12 +449,11 @@ export default class TrainingGenerator {
       if (exercise?.tags.includes("SIDE_BOTH")) {
         // searching for oppositeDirection exercise
         let oppositeDirection = "noDirection";
-        const direction = exercise.tags.find((t) =>
-          t.includes("EXERCISEDIRECTION_"),
+        const directionType = getTagValue(
+          exercise.tags,
+          TagGroups.EXERCISE_DIRECTION,
         );
-        if (direction) {
-          // delete EXERCISEDIRECTION_ part
-          const directionType = direction.slice(18);
+        if (directionType) {
           oppositeDirection = getOpposingExerciseDirection(directionType);
           if (oppositeDirection === "") {
             oppositeDirection = "noDirection";
@@ -615,7 +614,7 @@ export default class TrainingGenerator {
             if (result === null) break;
             // set branches for main skill ordered WEIGHTS last
             const hasWeights =
-              result.branch.branchTags.includes("EQTYPE_WEIGHTS");
+              result.branch.branchTags.includes("EQ_TYPE_WEIGHTS");
             if (hasWeights) {
               branches.main.unshift(result.branch);
               branchesIds.unshift(result.branchId);
@@ -864,24 +863,24 @@ export default class TrainingGenerator {
                         "PREVENTION_SHOULDER",
                         "SKILL_COOL_DOWN",
                         "SKILL_MOBILITY",
-                        "EQTYPE_KG",
+                        "EQ_TYPE_KG",
                         "SIDE_ONE",
-                        "MUSCLEINVOLVEMENT_ISOLATED",
+                        "MUSCLE_INVOLVEMENT_ISOLATED",
                         "REGION_UPPER_BODY",
-                        "EXERCISEDIRECTION_LOWER_BODY",
-                        "SEASONPHASE_PREPARATORY",
-                        "SEASONPHASE_COMPETITION",
-                        "SEASONPHASE_PAUSE",
+                        "EXERCISE_DIRECTION_LOWER_BODY",
+                        "SEASON_PHASE_PREPARATORY",
+                        "SEASON_PHASE_COMPETITION",
+                        "SEASON_PHASE_PAUSE",
                         "PLACE_HALL",
                         "PLACE_STUDIO",
                         "PLACE_HOME",
                         "PLACE_OUTSIDE",
                         "MUSCLE_SHOULDER",
                         "MUSCLE_SCAPULAR_STABILIZER_REAR",
-                        "MUSCLESECONDARY_SCAPULAR_STABILIZER_FRONT",
-                        "MUSCLESECONDARY_LOWER_BACK",
-                        "MUSCLESECONDARY_GLUTES",
-                        "MUSCLESECONDARY_OUTER_THIGH",
+                        "MUSCLE_SECONDARY_SCAPULAR_STABILIZER_FRONT",
+                        "MUSCLE_SECONDARY_LOWER_BACK",
+                        "MUSCLE_SECONDARY_GLUTES",
+                        "MUSCLE_SECONDARY_OUTER_THIGH",
                         "PAIN_SHOULDER",
                         "PAIN_SPINE",
                         "SIDE_LEFT"
@@ -1684,7 +1683,7 @@ export default class TrainingGenerator {
             usedSupExercisesIds.push(supExercise.id);
             let supWeight: number = -1;
             if (
-              getTagValues(supExercise.tags, TagGroups.EQTYPE).indexOf(
+              getTagValues(supExercise.tags, TagGroups.EQ_TYPE).indexOf(
                 "WEIGHTS",
               ) > -1 &&
               supExercise.values &&
@@ -1902,9 +1901,9 @@ export default class TrainingGenerator {
         let setsToBuild = setsPerExercise;
 
         if (skill.skill.indexOf("SWR") > -1 || skill.skill.indexOf("SK") > -1) {
-          let firstEqType = getTagValues(first.tags, TagGroups.EQTYPE);
+          let firstEqType = getTagValues(first.tags, TagGroups.EQ_TYPE);
           let secondEqType = second
-            ? getTagValues(second.tags, TagGroups.EQTYPE)
+            ? getTagValues(second.tags, TagGroups.EQ_TYPE)
             : [];
           if (
             firstEqType.indexOf("WEIGHTS") > -1 ||
@@ -3402,7 +3401,7 @@ export default class TrainingGenerator {
     userLevel: string,
     maxValues: MaxValuesType,
   ): ExerciseValuesData => {
-    const EQ_TYPES = getTagValues(exercise.tags, TagGroups.EQTYPE);
+    const EQ_TYPES = getTagValues(exercise.tags, TagGroups.EQ_TYPE);
     const data: ExerciseValuesData = {
       weightType: "weightAbsolute",
     };
@@ -3524,7 +3523,7 @@ export default class TrainingGenerator {
       if (exercise.isAdvanceByDuration && startValues.duration) {
         data.duration = startValues.duration; // not ternary could overwrite
       }
-      // check for EQTYPE_ tag
+      // check for EQ_TYPE_ tag
       // TODO adjust filter for med balls o.ä.
       if (EQ_TYPES.indexOf("WEIGHTS") > -1 && startValues.weight) {
         if (isWeightFMaxExercise) {

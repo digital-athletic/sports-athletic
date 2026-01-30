@@ -99,7 +99,7 @@ export function calculateStandardExerciseAdjustment(
 ): ExerciseAdjustmentResult {
   const { userLevel, genderTag } = context;
 
-  const eqTypes = getTagValues(exerciseData.tags, TagGroups.EQTYPE);
+  const eqTypes = getTagValues(exerciseData.tags, TagGroups.EQ_TYPE);
   const hasWeights = eqTypes.indexOf("WEIGHTS") !== -1;
 
   // Get target and start values

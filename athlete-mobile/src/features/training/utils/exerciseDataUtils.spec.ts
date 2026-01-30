@@ -249,7 +249,7 @@ describe("exerciseDataUtils", () => {
     it("returns INCREASE_WEIGHT when reps >= target but weight < target", () => {
       const exercise = createExercise({
         isAdvanceByReps: true,
-        tags: ["EQTYPE_WEIGHTS"],
+        tags: ["EQ_TYPE_WEIGHTS"],
         values: {
           repetition: {
             startValue: { m: { beginner: "5" } },

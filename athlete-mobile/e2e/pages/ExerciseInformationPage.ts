@@ -2,6 +2,10 @@ import { expect } from "@playwright/test";
 import { BasePage } from "./BasePage";
 
 export class ExerciseInformationPage extends BasePage {
+  private get equipmentHeading() {
+    return this.page.getByText("Equipment", { exact: true });
+  }
+
   private get musclesTrainedHeading() {
     return this.page.getByText("Muscles trained");
   }
@@ -54,5 +58,26 @@ export class ExerciseInformationPage extends BasePage {
 
   async expectExerciseHintsVisible() {
     await expect(this.exerciseHintsHeading).toBeVisible();
+  }
+
+  /**
+   * Asserts that the Equipment section is visible.
+   */
+  async expectEquipmentSectionVisible() {
+    await expect(this.equipmentHeading).toBeVisible();
+  }
+
+  /**
+   * Asserts that specific equipment items are displayed.
+   * Equipment items are shown as bullet points (• Equipment Name).
+   * @param equipmentNames - Array of translated equipment names (e.g., ["Barbell", "Power Rack"])
+   */
+  async expectEquipmentItems(equipmentNames: string[]) {
+    await this.expectEquipmentSectionVisible();
+
+    for (const name of equipmentNames) {
+      const bulletItem = this.page.getByText(`• ${name}`);
+      await expect(bulletItem).toBeVisible();
+    }
   }
 }

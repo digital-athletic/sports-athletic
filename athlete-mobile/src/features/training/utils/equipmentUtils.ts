@@ -1,9 +1,11 @@
+import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type {
   Branch,
   FilterResult,
 } from "@/features/training/models/BranchFilter";
 import type { ExerciseType } from "@/schemas/exercise.schema";
+import { getTagValues } from "@/utils/tagUtils";
 
 /**
  * Checks if weight equipment (dumbbells or barbells) is present
@@ -17,15 +19,21 @@ export function hasWeights(equipment: string[]): boolean {
 }
 
 /**
+ * Equipment keywords that indicate running/cardio capability
+ */
+const RUN_EQUIPMENT_KEYWORDS = [
+  WorkoutConstants.EQUIPMENT.TREADMILL,
+  WorkoutConstants.EQUIPMENT.AREA,
+  WorkoutConstants.EQUIPMENT.TRACK,
+] as const;
+
+/**
  * Checks if running/cardio equipment is present
  */
 export function hasRunEquipment(equipment: string[]): boolean {
-  for (const item of equipment) {
-    if (item.includes(WorkoutConstants.EQUIPMENT.TREADMILL)) return true;
-    if (item.includes(WorkoutConstants.EQUIPMENT.AREA)) return true;
-    if (item.includes(WorkoutConstants.EQUIPMENT.TRACK)) return true;
-  }
-  return false;
+  return equipment.some((item) =>
+    RUN_EQUIPMENT_KEYWORDS.some((keyword) => item.includes(keyword)),
+  );
 }
 
 /**
@@ -150,82 +158,87 @@ export function equipmentForExerciseExists(
   equipment: string[],
 ): boolean {
   const tags = exercise?.tags ?? [];
-  const equipmentTags = tags
-    .filter((tag) => tag.startsWith("EQ_"))
-    .map((tag) => tag.replace("EQ_", ""));
+  const equipmentTags = getTagValues(tags, TagGroups.EQUIPMENT);
   const exerciseIds = exercise?.id ? [exercise.id] : [];
 
-  for (const eqPart of equipmentTags) {
-    if (!equipmentExists(eqPart, equipment, equipmentTags, exerciseIds)) {
-      return false;
-    }
+  return equipmentTags.every((eqPart) =>
+    equipmentExists(eqPart, equipment, equipmentTags, exerciseIds),
+  );
+}
+
+type LevelEntry = { exerciseId: string };
+type Levels = Record<number, LevelEntry>;
+
+/**
+ * Extracts unique exercise IDs from a branch's levels/exercises.
+ * Pure function with no side effects.
+ */
+function extractExerciseIds(levels: Levels | undefined): string[] {
+  if (!levels) {
+    return [];
   }
 
-  return true;
+  const ids = Object.values(levels)
+    .map((level) => level.exerciseId)
+    .filter((id): id is string => typeof id === "string");
+
+  return [...new Set(ids)];
+}
+
+/**
+ * Analyzes a branch to determine equipment availability.
+ */
+function analyzeBranchEquipment(
+  entry: Branch,
+  equipment: string[],
+): { available: boolean; missing: string[] } {
+  const exerciseEq = getTagValues(entry.tags ?? [], TagGroups.EQUIPMENT);
+  const levels = entry.levels || entry.exercises;
+  const exerciseIds = extractExerciseIds(levels as Levels);
+
+  const missing = exerciseEq.filter(
+    (eq) => !equipmentExists(eq, equipment, exerciseEq, exerciseIds),
+  );
+
+  return {
+    available: missing.length === 0,
+    missing,
+  };
 }
 
 /**
  * Filter branches by available equipment.
+ * Returns branches that have all required equipment, plus metadata about
+ * missing equipment and regions that need replacement exercises.
  */
 export function filterByEquipment<T extends Branch>(
   branches: Record<string, T>,
   equipment: string[],
 ): FilterResult<T> {
-  const missingEquipment: string[] = [];
-  const equipmentFiltered: Record<string, T> = {};
-  const replace: string[] = [];
+  const entries = Object.entries(branches);
 
-  for (const id in branches) {
-    if (!branches.hasOwnProperty(id)) continue;
+  // Analyze each branch for equipment availability
+  const analyzed = entries
+    .filter(([, entry]) => entry.levels || entry.exercises)
+    .map(([id, entry]) => {
+      const { available, missing } = analyzeBranchEquipment(entry, equipment);
+      const regions = available
+        ? []
+        : getTagValues(entry.tags ?? [], TagGroups.REGION);
 
-    const entry = branches[id];
-    const exerciseEq = (entry.tags ?? [])
-      .filter((tag) => tag.startsWith("EQ_"))
-      .map((tag) => tag.replace("EQ_", ""));
+      return { id, entry, available, missing, regions };
+    });
 
-    const levels = entry.levels || entry.exercises;
-    if (!levels) continue;
+  // Partition into kept and filtered branches
+  const kept = analyzed.filter((item) => item.available);
+  const filtered = analyzed.filter((item) => !item.available);
 
-    const exerciseIds = Object.keys(levels).reduce<string[]>(
-      (acc, levelKey) => {
-        const levelEntry = (levels as Record<number, { exerciseId: string }>)[
-          Number(levelKey)
-        ];
-        if (
-          typeof levelEntry.exerciseId === "string" &&
-          !acc.includes(levelEntry.exerciseId)
-        ) {
-          acc.push(levelEntry.exerciseId);
-        }
-        return acc;
-      },
-      [],
-    );
-
-    let everythingAvailable = true;
-
-    for (const eq of exerciseEq) {
-      if (!equipmentExists(eq, equipment, exerciseEq, exerciseIds)) {
-        everythingAvailable = false;
-        if (!missingEquipment.includes(eq)) {
-          missingEquipment.push(eq);
-        }
-      }
-    }
-
-    if (everythingAvailable) {
-      equipmentFiltered[id] = entry;
-    } else {
-      const exerciseRegions = (entry.tags ?? [])
-        .filter((tag) => tag.startsWith("REGION_"))
-        .map((tag) => tag.replace("REGION_", ""));
-      replace.push(...exerciseRegions);
-    }
-  }
-
+  // Build result immutably
   return {
-    keep: equipmentFiltered,
-    replace,
-    missingEquipment,
+    keep: Object.fromEntries(
+      kept.map((item) => [item.id, item.entry]),
+    ) as Record<string, T>,
+    replace: [...new Set(filtered.flatMap((item) => item.regions))],
+    missingEquipment: [...new Set(filtered.flatMap((item) => item.missing))],
   };
 }

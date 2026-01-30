@@ -69,4 +69,34 @@ test.describe("Exercise Detail View", () => {
       fullPage: true,
     });
   });
+
+  test("displays equipment tags correctly on exercise information page", async ({
+    page,
+  }) => {
+    await seedCompletedProfile(page);
+    await mockSupabaseAuth(page);
+
+    const basePage = new BasePage(page);
+    await basePage.login("test@example.com", "password123");
+    await basePage.expectLoggedIn();
+
+    // Navigate to Profile tab and start strength test
+    await basePage.navigateToTab("Profile");
+    await page.getByText("Start New Test Workout").click();
+
+    // Skip muscle soreness selection
+    await basePage.skipMuscleSoreness();
+
+    // Verify training overview and open first exercise
+    const overviewPage = new TrainingOverviewPage(page);
+    await overviewPage.expectVisible();
+    await overviewPage.openExerciseInfo(0);
+
+    // Verify exercise information page shows equipment correctly
+    const exerciseInfoPage = new ExerciseInformationPage(page);
+    await exerciseInfoPage.expectVisible();
+
+    // Exercise 25 (LH-Kniebeuge / barbell squat) has EQ_BARBELL and EQ_POWER_RACK
+    await exerciseInfoPage.expectEquipmentItems(["Barbell", "Power Rack"]);
+  });
 });

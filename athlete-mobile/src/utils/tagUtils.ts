@@ -11,11 +11,57 @@
  *    Use getUserTagValues() and getUserTagValue() for these.
  */
 
+import { TagGroups } from "@/constants/tagGroups";
 import type { TagsByGroup } from "@/features/training/models/Tags";
+
+/**
+ * Defines tag group hierarchies where a parent group has sub-groups.
+ * When extracting values for a parent group, tags belonging to sub-groups
+ * are automatically excluded.
+ *
+ * Example: EQ_DUMBBELL is equipment, but EQ_TYPE_WEIGHTS is an equipment type.
+ * When querying "EQ", we want DUMBBELL but not TYPE_WEIGHTS.
+ */
+export const TAG_GROUP_SUBGROUPS: Partial<Record<TagGroups, TagGroups[]>> = {
+  [TagGroups.EQUIPMENT]: [TagGroups.EQ_TYPE],
+  [TagGroups.MUSCLE]: [
+    TagGroups.MUSCLE_SECONDARY,
+    TagGroups.MUSCLE_INVOLVEMENT,
+  ],
+};
+
+/**
+ * Checks if a tag belongs to a parent group but not to any of its sub-groups.
+ * Useful for filtering equipment tags while excluding equipment type tags, etc.
+ *
+ * @param tag - The full tag string (e.g., "EQ_DUMBBELL" or "EQ_TYPE_WEIGHTS")
+ * @param tagGroup - The parent tag group prefix (e.g., "EQ")
+ * @returns true if tag belongs to the parent group but not a sub-group
+ *
+ * @example
+ * ```tsx
+ * isTagInGroup("EQ_DUMBBELL", "EQ");      // true
+ * isTagInGroup("EQ_TYPE_WEIGHTS", "EQ");  // false (belongs to sub-group)
+ * isTagInGroup("MUSCLE_CHEST", "MUSCLE"); // true
+ * isTagInGroup("MUSCLE_SECONDARY_BACK", "MUSCLE"); // false (belongs to sub-group)
+ * ```
+ */
+export function isTagInGroup(tag: string, tagGroup: string): boolean {
+  const prefix = `${tagGroup}_`;
+  if (!tag.startsWith(prefix)) {
+    return false;
+  }
+
+  const subGroups = TAG_GROUP_SUBGROUPS[tagGroup as TagGroups] ?? [];
+  const excludedPrefixes = subGroups.map((subGroup) => `${subGroup}_`);
+
+  return !excludedPrefixes.some((excluded) => tag.startsWith(excluded));
+}
 
 /**
  * Extract tag values by tag group from a tags array.
  * Filters tags that start with a specific prefix and returns the suffix values.
+ * Automatically excludes tags that belong to sub-groups of the requested group.
  *
  * @param tags - Array of tags (e.g., ["LEVEL_BEGINNER", "AGE_ADULT", ...])
  * @param tagGroup - Tag group prefix to filter by (e.g., "LEVEL", "AGE")
@@ -26,6 +72,11 @@ import type { TagsByGroup } from "@/features/training/models/Tags";
  * const tags = ["LEVEL_ADVANCED", "AGE_ADULT", "GENDER_MALE"];
  * const level = getTagValues(tags, "LEVEL"); // ["ADVANCED"]
  * const age = getTagValues(tags, "AGE");     // ["ADULT"]
+ *
+ * // Sub-groups are automatically excluded:
+ * const tags2 = ["EQ_DUMBBELL", "EQ_TYPE_WEIGHTS", "MUSCLE_CHEST", "MUSCLE_SECONDARY_BACK"];
+ * getTagValues(tags2, "EQ");     // ["DUMBBELL"] - excludes TYPE_WEIGHTS
+ * getTagValues(tags2, "MUSCLE"); // ["CHEST"] - excludes SECONDARY_BACK
  * ```
  */
 export function getTagValues(
@@ -38,7 +89,7 @@ export function getTagValues(
 
   const prefix = `${tagGroup}_`;
   return tags
-    .filter((tag) => tag.startsWith(prefix))
+    .filter((tag) => isTagInGroup(tag, tagGroup))
     .map((tag) => tag.replace(prefix, ""));
 }
 

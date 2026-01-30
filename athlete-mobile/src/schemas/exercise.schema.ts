@@ -5,7 +5,11 @@ import {
   ValueTypeTypeSchema,
 } from "./common.schema";
 
-const TrainingLevelValuesSchema = v.record(TrainingLevelSchema, v.string());
+// Accept both strings and numbers for training level values (numbers preferred)
+const TrainingLevelValuesSchema = v.record(
+  TrainingLevelSchema,
+  v.union([v.string(), v.number()]),
+);
 
 const ValueTypeSchema = v.object({
   default: v.optional(TrainingLevelValuesSchema),

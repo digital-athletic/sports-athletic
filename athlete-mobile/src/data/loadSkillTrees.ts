@@ -1,5 +1,8 @@
 import * as v from "valibot";
-import { transformSkillTree } from "@/utils/skillTreeTransform";
+import {
+  transformSkillTree,
+  type RawSkillTree,
+} from "@/utils/skillTreeTransform";
 import {
   SkillTreeSchema,
   type SkillTreeType,
@@ -34,7 +37,7 @@ import WU from "../../assets/data/generator/skillTrees/WU.json";
 import WUSKSA from "../../assets/data/generator/skillTrees/WUSKSA.json";
 import WUSPEZIAL from "../../assets/data/generator/skillTrees/WUSPEZIAL.json";
 
-const SKILL_TREE_MAP: Record<SkillTree, unknown> = {
+const SKILL_TREE_MAP: Record<SkillTree, RawSkillTree> = {
   BAS,
   BR,
   CARDIO_1_LAKTAT,
@@ -70,9 +73,7 @@ export const loadSkillTree = (skillName: SkillTree): SkillTreeType => {
     throw new Error(`Unknown skill tree: ${skillName}`);
   }
 
-  const transformed = transformSkillTree(
-    rawData as Parameters<typeof transformSkillTree>[0],
-  );
+  const transformed = transformSkillTree(rawData);
   const result = v.safeParse(SkillTreeSchema, transformed);
 
   if (!result.success) {

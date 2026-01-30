@@ -65,7 +65,7 @@ describe("skillTreeRegistry", () => {
       const bas = getSkillTree("BAS")!;
       const branch548 = bas["548"];
 
-      expect(branch548.tags).toContain("EQTYPE_KG");
+      expect(branch548.tags).toContain("EQ_TYPE_KG");
       expect(branch548.tags).toContain("MUSCLE_QUADRICEPS");
       expect(branch548.tags).toContain("PLACE_HOME");
       expect(branch548.levels).toBeDefined();

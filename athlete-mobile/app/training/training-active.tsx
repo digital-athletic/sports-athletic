@@ -505,13 +505,11 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
           const targetValue = currentExerciseData?.values?.weight?.targetValue;
           if (targetValue) {
             if (userLevel && targetValue[genderTag]?.[userLevel]) {
-              maximumWeightPercentage = parseFloat(
+              maximumWeightPercentage = Number(
                 targetValue[genderTag][userLevel],
               );
             } else if (userLevel && targetValue.default?.[userLevel]) {
-              maximumWeightPercentage = parseFloat(
-                targetValue.default[userLevel],
-              );
+              maximumWeightPercentage = Number(targetValue.default[userLevel]);
             }
           }
           let minimumWeightPercentage = levelTag

@@ -36,7 +36,7 @@ describe("exerciseRegistry", () => {
       expect(pause).toEqual(
         expect.objectContaining({
           id: "999999",
-          name: "Pause ",
+          name: "Pause",
           displayName: "Pause",
           tags: ["PAUSE"],
           level: { m: 1, w: 1 },
@@ -83,7 +83,7 @@ describe("exerciseRegistry", () => {
       const registry = getExerciseRegistry();
 
       expect(registry.size).toBe(1210);
-      expect(registry.get("999999")?.name).toBe("Pause ");
+      expect(registry.get("999999")?.name).toBe("Pause");
       expect(registry.get("1")?.tags).toContain("EQ_DUMBBELL");
     });
   });

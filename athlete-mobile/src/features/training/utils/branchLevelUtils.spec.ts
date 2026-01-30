@@ -13,7 +13,7 @@ import {
 
 // Minimal real branch data for testing
 const SWR_BRANCH: SkillBranchType = {
-  tags: ["REGION_LOWER_BODY", "SIDE_BOTH", "EXERCISEDIRECTION_SQUAT"],
+  tags: ["REGION_LOWER_BODY", "SIDE_BOTH", "EXERCISE_DIRECTION_SQUAT"],
   levels: {
     1: { exerciseId: "101" },
     2: { exerciseId: "102" },

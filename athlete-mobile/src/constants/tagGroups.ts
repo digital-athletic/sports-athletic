@@ -4,10 +4,10 @@ export enum TagGroups {
   GENDER = "GENDER",
   SIDE = "SIDE",
   EQUIPMENT = "EQ",
-  EQTYPE = "EQTYPE", // WEIGHTS/EQUIPMENT/KG
+  EQ_TYPE = "EQ_TYPE", // WEIGHTS/EQUIPMENT/KG
   REGION = "REGION", //upperBody, lowerBody, core
   MUSCLE = "MUSCLE",
-  MUSCLE_SECONDARY = "MUSCLESECONDARY",
+  MUSCLE_SECONDARY = "MUSCLE_SECONDARY",
   POSITION = "POSITION",
   PREVENTION = "PREVENTION",
   PAIN = "PAIN",
@@ -16,7 +16,8 @@ export enum TagGroups {
   DEFECT = "DEFECT",
   BLOCK = "BLOCK",
   SKILL = "SKILL",
-  MUSCLE_INVOLVEMENT = "MUSCLEINVOLVEMENT", //complex, isolated
-  EXERCISE_DIRECTION = "EXERCISEDIRECTION", //vertical push, ...
-  EXERCISENAME = "EXERCISENAME", //vertical push, ...
+  MUSCLE_INVOLVEMENT = "MUSCLE_INVOLVEMENT", //complex, isolated
+  EXERCISE_DIRECTION = "EXERCISE_DIRECTION", //vertical push, ...
+  EXERCISE_NAME = "EXERCISE_NAME", //squat, deadlift, bench press, ...
+  SEASON_PHASE = "SEASON_PHASE", //preparatory, competition, pause
 }

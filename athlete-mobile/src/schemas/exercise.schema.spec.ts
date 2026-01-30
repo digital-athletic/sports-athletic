@@ -1,12 +1,10 @@
-import { transformExerciseData } from "@/utils/fieldNames";
 import * as v from "valibot";
 import ExercisesData from "../../assets/data/generator/Exercises.json";
 import { ExerciseSchema, ExercisesArraySchema } from "./exercise.schema";
 
 describe("ExerciseSchema", () => {
-  test("validates transformed Exercises.json", () => {
-    const transformed = transformExerciseData(ExercisesData);
-    const result = v.safeParse(ExercisesArraySchema, transformed);
+  test("validates Exercises.json", () => {
+    const result = v.safeParse(ExercisesArraySchema, ExercisesData);
 
     if (!result.success) {
       console.error("Validation issues:", v.flatten(result.issues));

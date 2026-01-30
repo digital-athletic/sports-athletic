@@ -1,4 +1,7 @@
-import { transformSkillTree } from "@/utils/skillTreeTransform";
+import {
+  transformSkillTree,
+  type RawSkillTree,
+} from "@/utils/skillTreeTransform";
 import * as v from "valibot";
 import BAS from "../../assets/data/generator/skillTrees/BAS.json";
 import WU from "../../assets/data/generator/skillTrees/WU.json";
@@ -6,9 +9,7 @@ import { SkillBranchSchema, SkillTreeSchema } from "./skillTree.schema";
 
 describe("SkillTreeSchema", () => {
   test("validates transformed BAS.json", () => {
-    const transformed = transformSkillTree(
-      BAS as Parameters<typeof transformSkillTree>[0],
-    );
+    const transformed = transformSkillTree(BAS as RawSkillTree);
     const result = v.safeParse(SkillTreeSchema, transformed);
 
     if (!result.success) {
@@ -19,9 +20,7 @@ describe("SkillTreeSchema", () => {
   });
 
   test("validates transformed WU.json", () => {
-    const transformed = transformSkillTree(
-      WU as Parameters<typeof transformSkillTree>[0],
-    );
+    const transformed = transformSkillTree(WU as RawSkillTree);
     const result = v.safeParse(SkillTreeSchema, transformed);
 
     if (!result.success) {

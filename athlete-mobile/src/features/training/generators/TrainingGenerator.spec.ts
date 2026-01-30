@@ -7,8 +7,10 @@ import type {
   SkillWithLength,
   CardioBranchReference,
 } from "@/schemas/generator.schema";
-import { transformExerciseData } from "@/utils/fieldNames";
-import { transformSkillTree } from "@/utils/skillTreeTransform";
+import {
+  transformSkillTree,
+  type RawSkillTree,
+} from "@/utils/skillTreeTransform";
 import ExercisesData from "../../../../assets/data/generator/Exercises.json";
 import WU from "../../../../assets/data/generator/skillTrees/WU.json";
 import TrainingGenerator from "./TrainingGenerator";
@@ -40,7 +42,7 @@ describe("TrainingGenerator", () => {
       "REGION_UPPER_BODY",
       "EQUIPMENT_NONE",
       "SIDE_BOTH",
-      "MUSCLEINVOLVEMENT_COMPOUND",
+      "MUSCLE_INVOLVEMENT_COMPOUND",
     ],
     isAdvanceByReps: true,
     isAdvanceByDuration: false,
@@ -1007,8 +1009,8 @@ describe("TrainingGenerator", () => {
       ...mockExercise,
       tags: [
         ...mockExercise.tags,
-        "EQTYPE_KG",
-        "EXERCISEDIRECTION_HORIZONTAL_PUSH",
+        "EQ_TYPE_KG",
+        "EXERCISE_DIRECTION_HORIZONTAL_PUSH",
       ],
       values: {
         ...mockExercise.values,
@@ -1164,7 +1166,7 @@ describe("TrainingGenerator", () => {
         branchId: "1",
         branchTags: [
           "SKILL_SA",
-          "MUSCLEINVOLVEMENT_COMPOUND",
+          "MUSCLE_INVOLVEMENT_COMPOUND",
           "SIDE_BOTH",
           "MUSCLE_CHEST",
         ],
@@ -1174,7 +1176,7 @@ describe("TrainingGenerator", () => {
         branchId: "2",
         branchTags: [
           "SKILL_SA",
-          "MUSCLEINVOLVEMENT_ISOLATED",
+          "MUSCLE_INVOLVEMENT_ISOLATED",
           "SIDE_BOTH",
           "MUSCLE_BICEPS",
         ],
@@ -1533,10 +1535,8 @@ describe("TrainingGenerator", () => {
       weightType?: string;
     };
 
-    const realExercises = transformExerciseData(ExercisesData) as {
-      id: string;
-    }[];
-    const testSkillTrees = { WU: transformSkillTree(WU) } as {
+    const realExercises = ExercisesData as { id: string }[];
+    const testSkillTrees = { WU: transformSkillTree(WU as RawSkillTree) } as {
       [skillName: string]: SkillTreeType;
     };
 

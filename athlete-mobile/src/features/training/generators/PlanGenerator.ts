@@ -1471,7 +1471,7 @@ export default class PlanGenerator {
     // get region presets
     const regionTags = getTagValues(weightedTag.tags, TagGroups.REGION);
     const skillTags = getTagValues(weightedTag.tags, TagGroups.SKILL);
-    const exNameTags = getTagValues(weightedTag.tags, TagGroups.EXERCISENAME);
+    const exNameTags = getTagValues(weightedTag.tags, TagGroups.EXERCISE_NAME);
 
     // init selection
     let bigMuscles: string[] = [];
@@ -1715,7 +1715,7 @@ export default class PlanGenerator {
       let directionIndex = 0;
       for (; directionIndex < exerciseDirection.length; directionIndex++) {
         directionFiltered = possibleBranches.filter((possEx) => {
-          const dirs = getTagValues(possEx.tags, "EXERCISEDIRECTION");
+          const dirs = getTagValues(possEx.tags, TagGroups.EXERCISE_DIRECTION);
           const sides = getTagValues(possEx.tags, "SIDE");
           const direction = exerciseDirection[directionIndex]["direction"];
           const side = exerciseDirection[directionIndex]["side"];

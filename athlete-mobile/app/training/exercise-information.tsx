@@ -89,9 +89,8 @@ type EquipmentListProps = {
 const EquipmentList: FC<EquipmentListProps> = ({ tags }) => {
   const { t } = useTranslation();
 
-  // Filter out non-equipment tags
+  // Filter out non-equipment tags (legacy naming issues)
   const equipment = getTagValues(tags, TagGroups.EQUIPMENT).filter(
-    // some EQ_ tags don't relate to training equipment
     // KG - Exercise with body weight (Körpergewicht)
     // MED_BALL - Exercise with equipment (naming deluxe)
     // weightS - Exercise with weights (naming broke)

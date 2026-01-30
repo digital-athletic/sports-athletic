@@ -1,6 +1,8 @@
+import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import { ISODateToDate } from "@/utils/date";
+import { isTagInGroup } from "@/utils/tagUtils";
 import { isPauseExercise } from "./models/IdTypes";
 import { TrainingSectionType } from "./models/TrainingSection";
 import type { UserExerciseDataType } from "./models/UserExerciseData";
@@ -12,7 +14,7 @@ const includesBench = (item: string): boolean => item.includes("BENCH");
 const includesMedicineBall = (item: string): boolean =>
   item.includes("MEDICINE_BALL");
 const isEquipmentTag = (tag: string): boolean =>
-  tag.startsWith(EQUIPMENT_TAG_PREFIX);
+  isTagInGroup(tag, TagGroups.EQUIPMENT);
 const extractEquipmentName = (tag: string): string =>
   tag.substring(EQUIPMENT_TAG_PREFIX.length);
 

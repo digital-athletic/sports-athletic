@@ -1,11 +1,11 @@
+import { SeasonPhase } from "@/features/training/models/SeasonPhase";
+import { formatDateToISO, ISODateToDate } from "@/utils/date";
 import {
   calculateNumOfWeeks,
   calculateNumOfWeeksFromDate,
   enrichSeasonPhaseWithWeeks,
   enrichSeasonPhaseWithWeeksFromDate,
 } from "./seasonPhaseUtils";
-import { formatDateToISO } from "@/utils/date";
-import { SeasonPhase } from "@/features/training/models/SeasonPhase";
 
 describe("seasonPhaseUtils", () => {
   describe("calculateNumOfWeeks", () => {
@@ -33,7 +33,7 @@ describe("seasonPhaseUtils", () => {
 
   describe("calculateNumOfWeeksFromDate", () => {
     it("should calculate weeks from start date to end date", () => {
-      const startDate = new Date("2025-01-01");
+      const startDate = ISODateToDate("2025-01-01");
       const endDate = "2025-01-22"; // 3 weeks later (ISO 8601 format)
 
       const result = calculateNumOfWeeksFromDate(endDate, startDate);
@@ -61,7 +61,7 @@ describe("seasonPhaseUtils", () => {
 
   describe("enrichSeasonPhaseWithWeeksFromDate", () => {
     it("should add numOfWeeks calculated from start date", () => {
-      const startDate = new Date("2025-01-01");
+      const startDate = ISODateToDate("2025-01-01");
       const phase = {
         type: SeasonPhase.PREPARATORY,
         endDate: "2025-01-29", // 4 weeks later (ISO 8601 format)

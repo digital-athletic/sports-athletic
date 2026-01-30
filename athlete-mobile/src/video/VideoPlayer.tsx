@@ -47,14 +47,14 @@ export const VideoPlayer: FC<Props> = ({
   });
 
   useEffect(() => {
-    setIsVideoPlaying?.(player.playing);
-  }, [isPlaying, player.playing, setIsVideoPlaying]);
+    setIsVideoPlaying?.(isPlaying);
+  }, [isPlaying, setIsVideoPlaying]);
 
   useEffect(() => {
-    if (disabled && player.playing) {
+    if (disabled && isPlaying) {
       player.pause();
     }
-  }, [disabled, player]);
+  }, [disabled, isPlaying, player]);
 
   return (
     <Box aspectRatio={16 / 9}>

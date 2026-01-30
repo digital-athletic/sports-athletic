@@ -1271,7 +1271,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                   source={video}
                   setIsFullScreen={setIsFullScreen}
                   setIsVideoPlaying={setVideoIsPlaying}
-                  disabled={isAborted}
+                  disabled={isAborted || !isScreenFocused}
                 />
               )}
             </Box>

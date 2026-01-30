@@ -1,5 +1,22 @@
-import { useAudioPlayer } from "expo-audio";
+import {
+  AudioPlayer,
+  AudioPlayerOptions,
+  useAudioPlayer,
+  useAudioPlayerStatus,
+} from "expo-audio";
 import { useCallback, useEffect } from "react";
+
+const playerOptions: AudioPlayerOptions = {
+  // Maintains audio session for seamless handoff to video playback
+  keepAudioSessionActive: true,
+};
+
+const play = (player: AudioPlayer, position?: number) => {
+  if (typeof position === "number") {
+    player.seekTo(position);
+  }
+  player.play();
+};
 
 /**
  * Hook for managing voice coach audio playback during training.
@@ -14,40 +31,57 @@ export const useVoiceCoach = (
 
   const startPlayer = useAudioPlayer(
     require("../../../../assets/audio/start_5sec.mp3"),
-    {
-      // Maintains audio session for seamless handoff to video playback
-      keepAudioSessionActive: true,
-    },
+    playerOptions,
   );
+  const { playing: startCoachPlaying, duration: startCoachDuration } =
+    useAudioPlayerStatus(startPlayer);
+
+  // Plays start exercise countdown audio clip if within the final 6 seconds
+  const playStartCoach = useCallback(
+    (remaining: number) => {
+      if (remaining <= 6 && !startCoachPlaying) {
+        play(startPlayer, Math.max(0, startCoachDuration - remaining));
+      }
+    },
+    [startCoachDuration, startCoachPlaying, startPlayer],
+  );
+
   const pausePlayer = useAudioPlayer(
     require("../../../../assets/audio/pause_3sec.mp3"),
-    {
-      // Maintains audio session for seamless handoff to video playback
-      keepAudioSessionActive: true,
+    playerOptions,
+  );
+  const { playing: pauseCoachPlaying, duration: pauseCoachDuration } =
+    useAudioPlayerStatus(pausePlayer);
+
+  // Plays pause countdown audio clip if within the final 4 seconds
+  const playPauseCoach = useCallback(
+    (remaining: number) => {
+      if (remaining <= 4 && !pauseCoachPlaying) {
+        play(pausePlayer, Math.max(0, pauseCoachDuration - remaining));
+      }
     },
+    [pauseCoachDuration, pauseCoachPlaying, pausePlayer],
   );
 
   const playCountdown = useCallback(
     (remaining: number) => {
-      if (isPauseNext && remaining <= 4 && !pausePlayer.playing) {
-        pausePlayer.seekTo(Math.max(0, pausePlayer.duration - remaining));
-        pausePlayer.play();
-      } else if (!isPauseNext && remaining <= 6 && !startPlayer.playing) {
-        startPlayer.seekTo(Math.max(0, startPlayer.duration - remaining));
-        startPlayer.play();
+      if (isPauseNext) {
+        playPauseCoach(remaining);
+      } else {
+        playStartCoach(remaining);
       }
     },
-    [isPauseNext, pausePlayer, startPlayer],
+    [isPauseNext, playPauseCoach, playStartCoach],
   );
 
   const stopCountdown = useCallback(() => {
-    if (startPlayer.playing) {
+    if (startCoachPlaying) {
       startPlayer.pause();
     }
-    if (pausePlayer.playing) {
+    if (pauseCoachPlaying) {
       pausePlayer.pause();
     }
-  }, [pausePlayer, startPlayer]);
+  }, [pauseCoachPlaying, pausePlayer, startCoachPlaying, startPlayer]);
 
   useEffect(() => {
     if (isActive && hasCountdown) {

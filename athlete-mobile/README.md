@@ -144,3 +144,4 @@ pnpm bump:persist-version
 - [Expo Documentation](https://docs.expo.dev) - Development and deployment
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/) - Type safety
 - [Creating a Release Build](./docs/creating-release-build-eas.md) - How to build and submit via EAS
+- [Publishing OTA updates](./docs/publishing-ota-updates-eas.md) - How to publish and test OTA updates

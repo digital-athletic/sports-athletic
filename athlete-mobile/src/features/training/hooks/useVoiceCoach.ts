@@ -14,9 +14,17 @@ export const useVoiceCoach = (
 
   const startPlayer = useAudioPlayer(
     require("../../../../assets/audio/start_5sec.mp3"),
+    {
+      // Maintains audio session for seamless handoff to video playback
+      keepAudioSessionActive: true,
+    },
   );
   const pausePlayer = useAudioPlayer(
     require("../../../../assets/audio/pause_3sec.mp3"),
+    {
+      // Maintains audio session for seamless handoff to video playback
+      keepAudioSessionActive: true,
+    },
   );
 
   const playCountdown = useCallback(

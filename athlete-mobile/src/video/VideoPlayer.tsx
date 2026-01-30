@@ -40,10 +40,7 @@ export const VideoPlayer: FC<Props> = ({
       : getExerciseVideoUrl(filename);
   }, [source, isTutorial]);
 
-  const player = useVideoPlayer(videoUrl, (player) => {
-    // Ensure shared audio session is paused when video plays
-    player.audioMixingMode = "doNotMix";
-  });
+  const player = useVideoPlayer(videoUrl);
 
   const { isPlaying } = useEvent(player, "playingChange", {
     isPlaying: player.playing,

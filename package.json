@@ -4,8 +4,7 @@
   "packageManager": "pnpm@10.25.0",
   "pnpm": {
     "overrides": {
-      "lodash": ">=4.17.23",
-      "tar": "7.5.7"
+      "lodash": ">=4.17.23"
     }
   }
 }

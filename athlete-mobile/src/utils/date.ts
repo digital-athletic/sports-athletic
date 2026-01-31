@@ -40,9 +40,7 @@ export const ISODateToDate = (dateString: ISODateString): Date => {
       `Expected ISO 8601 date format (YYYY-MM-DD), got: ${dateString}`,
     );
   }
-
-  const [year, month, day] = dateString.split("-").map(Number);
-  return new Date(year, month - 1, day);
+  return new Date(dateString);
 };
 
 /**
@@ -114,5 +112,14 @@ export const HHMMToDate = (time: string): Date => {
   const [hours, minutes] = time.split(":").map(Number);
   const date = new Date();
   date.setHours(hours, minutes, 0, 0);
+  return date;
+};
+
+/**
+ * Returns a Date one year from now.
+ */
+export const getDateOneYearFromNow = (): Date => {
+  const date = new Date();
+  date.setFullYear(date.getFullYear() + 1);
   return date;
 };

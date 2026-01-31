@@ -13,7 +13,7 @@ import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { ScrollBox } from "@/theme/ScrollBox";
-import { formatDateToISO } from "@/utils/date";
+import { formatDateToISO, getDateOneYearFromNow } from "@/utils/date";
 import { Route, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -209,6 +209,9 @@ export default function SeasonPhase() {
                 type="date"
                 dateTime={seasonPhase?.endDate}
                 onChange={handlePhaseEndChange}
+                maximumDate={
+                  seasonPhase?.endDate ? getDateOneYearFromNow() : undefined
+                }
               />
             </AnamnesisQuestionContainer>
           </ScrollBox>

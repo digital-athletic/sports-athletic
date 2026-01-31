@@ -7,6 +7,7 @@ import {
   calculateAgeFromBirthday,
   dateToHHMM,
   HHMMToDate,
+  getDateOneYearFromNow,
 } from "./date";
 
 describe("date utils", () => {
@@ -232,6 +233,14 @@ describe("date utils", () => {
         const date = HHMMToDate(time);
         expect(dateToHHMM(date)).toBe(time);
       }
+    });
+  });
+
+  describe("getDateOneYearFromNow", () => {
+    it("returns a date with year incremented by one", () => {
+      const result = getDateOneYearFromNow();
+
+      expect(result.getFullYear()).toBe(new Date().getFullYear() + 1);
     });
   });
 });

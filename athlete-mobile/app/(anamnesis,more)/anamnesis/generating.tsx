@@ -181,6 +181,9 @@ export default function Generating() {
       if (!anamnesisCompleted) {
         setAnamnesisCompleted(true);
       }
+      // Dismiss all anamnesis screens from the stack before navigating to home
+      // This prevents them from remaining in memory and causing navigation issues
+      router.dismissAll();
       router.replace("/(tabs)/(home)");
     };
 

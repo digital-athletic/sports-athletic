@@ -1,12 +1,10 @@
 import { expect, test } from "@playwright/test";
 import { seedCompletedProfile } from "./mocks/stores";
 import { mockSupabaseAuth } from "./mocks/supabase";
-import { BasePage } from "./pages";
+import { AnamnesisPage, BasePage, ProfilePage } from "./pages";
 
 test.describe("User Deletion", () => {
   test("delete user and return to login page", async ({ page }) => {
-    test.setTimeout(60000);
-
     await seedCompletedProfile(page);
     await mockSupabaseAuth(page);
 
@@ -26,18 +24,67 @@ test.describe("User Deletion", () => {
     await deleteUserButton.scrollIntoViewIfNeeded();
     await deleteUserButton.click();
 
-    // First dialog: "Delete User?" - click YES
+    // Confirmation dialog: "Delete User?" - click YES
     await expect(page.getByText("Delete User?")).toBeVisible();
     await page.getByText("YES").first().click();
 
-    // Second dialog: "Logout?" - click YES
-    await expect(page.getByText("Logout?", { exact: true })).toBeVisible();
-    await page.getByText("YES").first().click();
-
-    // Wait for dialog to close and navigation to complete
-    await expect(page.getByText("Logout?", { exact: true })).not.toBeVisible();
-
     // Should land on login/onboarding page
     await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
+  });
+});
+
+test.describe("User Deletion after Training Data Change", () => {
+  test("complete anamnesis then change training data then delete user should return to login page", async ({
+    page,
+  }) => {
+    await mockSupabaseAuth(page);
+
+    const anamnesisPage = new AnamnesisPage(page);
+    const profilePage = new ProfilePage(page);
+
+    // Login and start anamnesis
+    await anamnesisPage.login("test@example.com", "password123");
+
+    // Complete welcome screen
+    const letsGoButton = page.getByRole("button", { name: "Let's go" });
+    await expect(letsGoButton).toBeVisible({ timeout: 10000 });
+    await letsGoButton.click();
+
+    // Select sport and complete anamnesis
+    await anamnesisPage.selectSport("Handball");
+    await anamnesisPage.completeAnamnesis({
+      name: "Test User",
+      heightCm: 180,
+      weightKg: 80,
+      position: "Fieldplayer",
+      seasonPhase: "Competitive",
+      trainingDays: ["Tu", "Fr"],
+    });
+
+    // Wait for generation to complete
+    const generatingText = page.getByText(/generating.*training.*plan/i);
+    if (await generatingText.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await expect(generatingText).not.toBeVisible({ timeout: 60000 });
+    }
+
+    // Wait for home screen
+    await expect(page.getByRole("heading", { name: /Hello/i })).toBeVisible({
+      timeout: 15000,
+    });
+
+    // Navigate to training data and modify it
+    await profilePage.navigateToProfile();
+    await profilePage.openMyTrainingData();
+    await profilePage.changeSeasonPhase("Competitive", "Preparatory");
+    await profilePage.proceedToTrainingDays();
+
+    // Save the changes - this triggers a new training plan generation
+    await profilePage.saveTrainingDataChanges();
+
+    // Now navigate to profile and delete account
+    await profilePage.navigateToProfile();
+    await profilePage.deleteAccount();
+
+    await profilePage.expectLoginPage();
   });
 });

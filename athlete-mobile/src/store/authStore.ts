@@ -70,9 +70,8 @@ export const useAuthStore = create<AuthState>()(
 
       clearAuth: () =>
         set((state) => {
-          const initialState = createInitialState();
-          state.auth = initialState.auth;
-          state.isInitialized = initialState.isInitialized;
+          state.auth = null;
+          // Keep isInitialized true - the store is still initialized, just without auth
         }),
 
       initializeFromSupabase: async () => {

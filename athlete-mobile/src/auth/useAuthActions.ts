@@ -13,8 +13,9 @@ import { useTranslation } from "react-i18next";
 import { Alert } from "@/common/Alert";
 
 /**
- * Hook for logout functionality
- * Clears auth state and navigates to onboarding
+ * Hook for logout functionality.
+ * Handles Supabase signout and clears auth state.
+ * Explicitly navigates to onboarding to ensure navigation state is reset.
  */
 export function useLogout() {
   const { t } = useTranslation();
@@ -27,7 +28,8 @@ export function useLogout() {
     try {
       await supabaseLogout();
       clearAuth();
-      // TODO: Clear other stores when reset methods are available
+      // Stack.Protected in _layout.tsx automatically redirects to onboarding
+      // when user becomes null
     } catch {
       Alert.alert(t("onboarding.alertErrorTitle"), t("more.logoutFailed"));
     } finally {
@@ -55,12 +57,13 @@ export function useLogout() {
 }
 
 /**
- * Hook for delete account functionality
- * Deletes user account and logs out
+ * Hook for delete account functionality.
+ * Handles Supabase signout and clears all user data stores.
+ * Stack.Protected in _layout.tsx handles redirect to onboarding.
  */
 export function useDeleteAccount() {
   const { t } = useTranslation();
-  const { logout } = useLogout();
+  const clearAuth = useAuthStore((state) => state.clearAuth);
   const { clearProgress } = useExerciseProgressStore();
   const { clearAnamnesisData } = useAnamnesisStore();
   const { clearProfile } = useUserProfileStore();
@@ -74,23 +77,20 @@ export function useDeleteAccount() {
     try {
       // TODO: Delete user from Supabase
       // See: https://github.com/sports-athletics/sports-athletic/issues/219
-      logout();
-      // Resets training plan and workout data
+      await supabaseLogout();
+
+      // Clear all user data stores
+      clearAuth();
       clearUserWorkoutData();
-      // Resets local exercise progress data
       clearProgress();
-      // Resets local anamnesis data
       clearAnamnesisData();
-      // Resets user profile & anamnesisCompleted flag
       clearProfile();
-      // Resets workout history
       clearWorkoutHistory();
-      // Resets training schedule
       clearTrainingSchedule();
-      // Resets equipment selections
       clearPlaces();
-      // Resets user preferences
       clearSettings();
+      // Stack.Protected in _layout.tsx automatically redirects to onboarding
+      // when user becomes null
     } catch {
       Alert.alert(t("onboarding.alertErrorTitle"), t("more.deleteFailed"));
     }

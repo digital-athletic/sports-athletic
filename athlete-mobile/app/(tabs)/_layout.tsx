@@ -7,12 +7,11 @@ import { Platform } from "react-native";
  * Main Tab Navigator Layout
  *
  * Primary app interface with bottom tabs.
- * Legacy: MainStack (Tab Navigator) with HomeStack, StatisticsStack, and MoreStack
- *
- * Note: TeamStack is disabled in legacy app
+ * Protected by Stack.Protected in root layout.
  */
 export default function TabLayout() {
   const { colors } = useTheme();
+
   return (
     <Tabs
       screenOptions={{

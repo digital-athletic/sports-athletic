@@ -6,14 +6,15 @@ import { Stack } from "expo-router";
  *
  * Active training session management flow.
  * Gestures disabled on key screens to prevent accidental navigation.
- * Legacy: TrainingStack (Stack Navigator)
+ * Protected by Stack.Protected in root layout.
  */
 export default function TrainingLayout() {
-  const theme = useTheme();
+  const { colors } = useTheme();
+
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: theme.colors.lightGrey1 },
+        headerStyle: { backgroundColor: colors.lightGrey1 },
         headerBackButtonDisplayMode: "minimal",
       }}
     />

@@ -18,12 +18,13 @@ export const SportListItem: FC<SportListItemProps> = ({
   onPress,
 }) => {
   const { t } = useTranslation();
+  const sportName = t(`sports.${sportKey}`);
 
   return (
     <TouchableOpacity
       onPress={onPress}
       style={styles.listItem}
-      accessibilityLabel={`sport-item-${sportKey}`}
+      accessibilityLabel={sportName}
       accessibilityRole="button"
     >
       <Image

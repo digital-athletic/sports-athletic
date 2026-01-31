@@ -11,23 +11,15 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 /**
  * Root Layout Component
  *
- * This is the main entry point for the Expo Router navigation hierarchy.
- * It wraps all screens with a Stack navigator and provides the base layout.
- *
- * In the legacy app, this was the AppContainer with AllStack (Switch Navigator).
- * Expo Router uses conditional rendering and layout groups instead of Switch Navigator.
- *
- * Note: Exercise and skill tree data are now accessed via lazy-initialized registries
- * (exerciseRegistry, skillTreeRegistry) instead of Zustand stores, so no initialization
- * is needed here.
+ * Entry point for the Expo Router navigation hierarchy.
+ * Provides global context (theme, keyboard) and initializes auth listener.
+ * Protected routes are guarded via Stack.Protected.
  */
 export default function RootLayout() {
-  // Initialize and subscribe to Supabase auth state changes
   useAuthStateListener();
+  useOTAService();
 
   const { auth } = useAuthStore();
-
-  useOTAService();
 
   return (
     <ThemeProvider theme={theme}>
@@ -39,8 +31,9 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           </Stack.Protected>
 
-          <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-
+          <Stack.Protected guard={auth == null}>
+            <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+          </Stack.Protected>
           <Stack.Screen
             name="webview"
             options={{ headerShown: false, presentation: "fullScreenModal" }}

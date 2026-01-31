@@ -5,14 +5,15 @@ import { Stack } from "expo-router";
  * Anamnesis Stack Layout
  *
  * User onboarding and profile setup flow including health questionnaire.
- * Legacy: AnamnesisStack (Stack Navigator)
+ * Protected by Stack.Protected in root layout.
  */
 export default function AnamnesisLayout() {
-  const theme = useTheme();
+  const { colors } = useTheme();
+
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: theme.colors.lightGrey1 },
+        headerStyle: { backgroundColor: colors.lightGrey1 },
         headerBackButtonDisplayMode: "minimal",
       }}
     />

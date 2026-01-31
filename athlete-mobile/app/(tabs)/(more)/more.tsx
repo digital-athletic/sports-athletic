@@ -8,14 +8,12 @@
 import { useDeleteAccount, useLogout } from "@/auth/useAuthActions";
 import { Ionicon } from "@/common/Ionicon";
 import { ListDivider } from "@/common/ListDivider";
-import { TEST_EMAILS } from "@/constants/TestEmails";
 import { ListItem } from "@/features/more/ListItem";
 import {
   getTestPeriodDaysLeft,
   isAllowedForTraining,
 } from "@/features/subscription/subscriptionHelpers";
 import { useSubscriptionStore } from "@/features/subscription/subscriptionStore";
-import { useAuthStore } from "@/store/authStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { ScrollBox } from "@/theme/ScrollBox";
@@ -36,7 +34,6 @@ export default function MoreScreen() {
   const listItemHeight = useResponsiveProp({ phone: 40, tablet: 65 });
   const listItemMarginBottom = useResponsiveProp({ phone: 6, tablet: 16 });
 
-  const auth = useAuthStore((state) => state.auth);
   const { logout, isLoading: isLoggingOut } = useLogout();
   const { deleteAccount } = useDeleteAccount();
 
@@ -46,11 +43,7 @@ export default function MoreScreen() {
   const allowedForTraining = isAllowedForTraining(subscription);
 
   // Check if user has test access
-  const hasTestAccess =
-    auth?.userId &&
-    TEST_EMAILS.some((email) =>
-      auth.userId.toLowerCase().includes(email.toLowerCase()),
-    );
+  const hasTestAccess = false;
 
   return (
     <>

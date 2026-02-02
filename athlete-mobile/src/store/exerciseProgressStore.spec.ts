@@ -1,6 +1,252 @@
+import {
+  accumulateExerciseTotals,
+  createEmptyExerciseTotals,
+  type ExerciseTotalsType,
+} from "@/features/training/models/ExerciseTotals";
+import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import { act, renderHook } from "@testing-library/react-native";
 import { useExerciseProgressStore } from "./exerciseProgressStore";
-import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
+
+describe("ExerciseTotals Types", () => {
+  describe("createEmptyExerciseTotals", () => {
+    it("returns an object with all values set to 0", () => {
+      const result = createEmptyExerciseTotals();
+
+      expect(result).toEqual({
+        weight: 0,
+        duration: 0,
+        repetition: 0,
+        height: 0,
+      });
+    });
+
+    it("returns a new object each time", () => {
+      const first = createEmptyExerciseTotals();
+      const second = createEmptyExerciseTotals();
+
+      expect(first).not.toBe(second);
+      expect(first).toEqual(second);
+    });
+  });
+
+  describe("accumulateExerciseTotals", () => {
+    it("accumulates values into existing totals", () => {
+      const existing: ExerciseTotalsType = {
+        weight: 100,
+        duration: 60,
+        repetition: 10,
+        height: 50,
+      };
+
+      const result = accumulateExerciseTotals(existing, 50, 30, 5, 10);
+
+      expect(result).toEqual({
+        weight: 150,
+        duration: 90,
+        repetition: 15,
+        height: 60,
+      });
+    });
+
+    it("creates new totals when existing is undefined", () => {
+      const result = accumulateExerciseTotals(undefined, 100, 60, 10, 50);
+
+      expect(result).toEqual({
+        weight: 100,
+        duration: 60,
+        repetition: 10,
+        height: 50,
+      });
+    });
+
+    it("handles undefined values with ?? 0", () => {
+      const existing: ExerciseTotalsType = {
+        weight: 100,
+        duration: 60,
+        repetition: 10,
+        height: 50,
+      };
+
+      const result = accumulateExerciseTotals(
+        existing,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+      );
+
+      expect(result).toEqual(existing);
+    });
+
+    it("handles partial undefined values", () => {
+      const existing: ExerciseTotalsType = {
+        weight: 100,
+        duration: 60,
+        repetition: 10,
+        height: 50,
+      };
+
+      const result = accumulateExerciseTotals(existing, 50, undefined, 5);
+
+      expect(result).toEqual({
+        weight: 150,
+        duration: 60,
+        repetition: 15,
+        height: 50,
+      });
+    });
+
+    it("handles zero values correctly", () => {
+      const existing: ExerciseTotalsType = {
+        weight: 100,
+        duration: 60,
+        repetition: 10,
+        height: 50,
+      };
+
+      const result = accumulateExerciseTotals(existing, 0, 0, 0, 0);
+
+      expect(result).toEqual(existing);
+    });
+
+    it("handles negative values (edge case)", () => {
+      const existing: ExerciseTotalsType = {
+        weight: 100,
+        duration: 60,
+        repetition: 10,
+        height: 50,
+      };
+
+      const result = accumulateExerciseTotals(existing, -10, -5, -2, -1);
+
+      expect(result).toEqual({
+        weight: 90,
+        duration: 55,
+        repetition: 8,
+        height: 49,
+      });
+    });
+
+    it("returns a new object (immutability)", () => {
+      const existing: ExerciseTotalsType = {
+        weight: 100,
+        duration: 60,
+        repetition: 10,
+        height: 50,
+      };
+
+      const result = accumulateExerciseTotals(existing, 50, 30, 5, 10);
+
+      expect(result).not.toBe(existing);
+      expect(existing.weight).toBe(100); // Original unchanged
+    });
+  });
+});
+
+describe("updateUserExerciseTotals", () => {
+  beforeEach(() => {
+    act(() => {
+      useExerciseProgressStore.getState().clearProgress();
+    });
+  });
+
+  it("creates new totals for a new exercise", () => {
+    const { updateUserExerciseTotals } = useExerciseProgressStore.getState();
+
+    act(() => {
+      updateUserExerciseTotals("exercise-1", 100, 60, 10, 50);
+    });
+
+    const { exerciseTotals } = useExerciseProgressStore.getState();
+
+    expect(exerciseTotals["exercise-1"]).toEqual({
+      weight: 100,
+      duration: 60,
+      repetition: 10,
+      height: 50,
+    });
+  });
+
+  it("accumulates values for existing exercise", () => {
+    const { updateUserExerciseTotals } = useExerciseProgressStore.getState();
+
+    act(() => {
+      updateUserExerciseTotals("exercise-1", 100, 60, 10, 50);
+    });
+
+    act(() => {
+      updateUserExerciseTotals("exercise-1", 50, 30, 5, 10);
+    });
+
+    const { exerciseTotals } = useExerciseProgressStore.getState();
+
+    expect(exerciseTotals["exercise-1"]).toEqual({
+      weight: 150,
+      duration: 90,
+      repetition: 15,
+      height: 60,
+    });
+  });
+
+  it("handles multiple exercises independently", () => {
+    const { updateUserExerciseTotals } = useExerciseProgressStore.getState();
+
+    act(() => {
+      updateUserExerciseTotals("exercise-1", 100, 60, 10, 50);
+      updateUserExerciseTotals("exercise-2", 200, 120, 20, 100);
+    });
+
+    const { exerciseTotals } = useExerciseProgressStore.getState();
+
+    expect(exerciseTotals["exercise-1"]).toEqual({
+      weight: 100,
+      duration: 60,
+      repetition: 10,
+      height: 50,
+    });
+
+    expect(exerciseTotals["exercise-2"]).toEqual({
+      weight: 200,
+      duration: 120,
+      repetition: 20,
+      height: 100,
+    });
+  });
+
+  it("handles partial parameters with defaults", () => {
+    const { updateUserExerciseTotals } = useExerciseProgressStore.getState();
+
+    act(() => {
+      updateUserExerciseTotals("exercise-1", 100);
+    });
+
+    const { exerciseTotals } = useExerciseProgressStore.getState();
+
+    expect(exerciseTotals["exercise-1"]).toEqual({
+      weight: 100,
+      duration: 0,
+      repetition: 0,
+      height: 0,
+    });
+  });
+
+  it("getExerciseTotals returns totals for specific exercise", () => {
+    const { updateUserExerciseTotals, getExerciseTotals } =
+      useExerciseProgressStore.getState();
+
+    act(() => {
+      updateUserExerciseTotals("exercise-1", 100, 60, 10, 50);
+    });
+
+    expect(getExerciseTotals("exercise-1")).toEqual({
+      weight: 100,
+      duration: 60,
+      repetition: 10,
+      height: 50,
+    });
+    expect(getExerciseTotals("non-existent")).toBeUndefined();
+  });
+});
 
 describe("exerciseProgressStore", () => {
   beforeEach(() => {

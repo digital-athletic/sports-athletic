@@ -1,4 +1,9 @@
 import { SharedConstants } from "@/constants/sharedConstants";
+import {
+  accumulateExerciseTotals,
+  type ExerciseTotalsMapType,
+  type ExerciseTotalsType,
+} from "@/features/training/models/ExerciseTotals";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
 import { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { create } from "zustand";
@@ -21,6 +26,9 @@ type State = {
   exerciseData: Record<string, UserExerciseDataType | undefined>;
   branchData: BranchDataMapType;
 
+  // Exercise totals (cumulative values)
+  exerciseTotals: ExerciseTotalsMapType;
+
   // User progression
   xp: number;
   level: number;
@@ -30,6 +38,7 @@ type State = {
 const createInitialState = (): State => ({
   exerciseData: {},
   branchData: {},
+  exerciseTotals: {},
   xp: 0,
   level: 1,
   testHistory: [],
@@ -40,6 +49,15 @@ type Actions = {
   setExerciseData: (data: Record<string, UserExerciseDataType>) => void;
   updateExercise: (exerciseId: string, data: UserExerciseDataType) => void;
   setBranchLevel: (branchId: string, level: number) => void;
+
+  // Exercise Totals
+  updateUserExerciseTotals: (
+    exerciseId: string,
+    weight?: number,
+    duration?: number,
+    reps?: number,
+    height?: number,
+  ) => void;
 
   // User Progress
   addXP: (amount: number) => void;
@@ -52,6 +70,7 @@ type Selectors = {
   getExerciseData: (exerciseId: string) => UserExerciseDataType | undefined;
   getBranchLevel: (branchId: string) => number;
   getLatestTestResult: () => MaxValuesType | undefined;
+  getExerciseTotals: (exerciseId: string) => ExerciseTotalsType | undefined;
 };
 
 export type ExerciseProgressState = State & Actions & Selectors;
@@ -193,6 +212,29 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
           }
         }),
 
+      updateUserExerciseTotals: (
+        exerciseId,
+        weight,
+        duration,
+        reps,
+        height,
+      ) => {
+        const existing = get().exerciseTotals[exerciseId];
+        const newTotals = accumulateExerciseTotals(
+          existing,
+          weight,
+          duration,
+          reps,
+          height,
+        );
+
+        set((state) => {
+          state.exerciseTotals[exerciseId] = newTotals;
+        });
+
+        // TODO: Add Supabase sync in the future
+      },
+
       addXP: (amount) =>
         set((state) => {
           state.xp += amount;
@@ -214,6 +256,7 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
           const initialState = createInitialState();
           state.exerciseData = initialState.exerciseData;
           state.branchData = initialState.branchData;
+          state.exerciseTotals = initialState.exerciseTotals;
           state.xp = initialState.xp;
           state.level = initialState.level;
           state.testHistory = initialState.testHistory;
@@ -232,6 +275,11 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
       getLatestTestResult: () => {
         const { testHistory } = get();
         return testHistory[testHistory.length - 1];
+      },
+
+      getExerciseTotals: (exerciseId) => {
+        const { exerciseTotals } = get();
+        return exerciseTotals[exerciseId];
       },
     })),
     {

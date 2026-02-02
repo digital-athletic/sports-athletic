@@ -107,8 +107,13 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     setExerciseFeedback,
   } = useTrainingStore();
   const skillTrees = getAllSkillTrees();
-  const { branchData, setBranchLevel, updateExercise, addTestResult } =
-    useExerciseProgressStore();
+  const {
+    branchData,
+    setBranchLevel,
+    updateExercise,
+    addTestResult,
+    updateUserExerciseTotals,
+  } = useExerciseProgressStore();
   const { personalData } = useUserProfileStore();
   const { workoutData, replaceBranchInTrainingPlan, saveMaxValues } =
     useUserWorkoutStore();
@@ -803,15 +808,8 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
       }
     }
 
-    // TODO: add completed totals in scope of:
-    // https://github.com/sports-athletics/sports-athletic/issues/203
-    // setProgressBefore(
-    //     exerciseId,
-    //     weight,
-    //     duration,
-    //     reps,
-    //     height
-    // );
+    // Update cumulative exercise totals
+    updateUserExerciseTotals(id, weight, duration, reps, height);
 
     // save global meta data
     Logger.logEvent("exercise_completed", { exerciseId: id });

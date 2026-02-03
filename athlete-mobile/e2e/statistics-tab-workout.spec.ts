@@ -1,6 +1,7 @@
 import { expect, test } from "./fixtures";
 import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile";
 import {
+  createRadarChartFilteringProfile,
   createTimeFilteredWorkoutsProfile,
   createWorkoutsProfile,
 } from "./mocks/stores/profiles/workoutsProfile";
@@ -164,6 +165,111 @@ test.describe("Statistics Page - Multiple Workouts", () => {
     // Verify second workout row also shows values
     const row1Duration = await statsPage.getWorkoutRowDurationSeconds(1);
     expect(row1Duration, "Second row duration should be 1800s").toBe(1800);
+  });
+});
+
+test.describe("Statistics Page - Radar Chart Labels", () => {
+  test.describe("empty state", () => {
+    test.use({ profile: createCompletedProfile() });
+
+    test("radar chart displays zero percentages when no workouts completed", async ({
+      page,
+    }) => {
+      test.setTimeout(30000);
+      await mockSupabaseAuth(page);
+
+      const workoutPage = new WorkoutPage(page);
+      const basePage = new BasePage(page);
+      const statsPage = new StatisticsPage(page);
+
+      await workoutPage.login("test@example.com", "password123");
+      await workoutPage.expectLoggedIn();
+
+      await basePage.navigateToTab("Statistics");
+      await statsPage.expectEmptyState();
+
+      // Verify radar chart is still visible even with no data
+      await statsPage.expectRadarChartVisible();
+
+      // Verify all skill labels show 0% when no workouts have been completed
+      // This matches TrainingSummary showing zero values in empty state
+      await statsPage.expectRadarChartLabels({
+        Mobility: 0,
+        Prevention: 0,
+        Endurance: 0,
+        Stability: 0,
+        "Warm-up": 0,
+        Strength: 0,
+      });
+    });
+  });
+
+  test.describe("filtered labels", () => {
+    test.use({ profile: createRadarChartFilteringProfile() });
+
+    test("radar chart adapts percentages when time filter changes", async ({
+      page,
+    }) => {
+      test.setTimeout(30000);
+      await mockSupabaseAuth(page);
+
+      const workoutPage = new WorkoutPage(page);
+      const basePage = new BasePage(page);
+      const statsPage = new StatisticsPage(page);
+
+      await workoutPage.login("test@example.com", "password123");
+      await workoutPage.expectLoggedIn();
+
+      await basePage.navigateToTab("Statistics");
+      await statsPage.expectHasWorkouts();
+      await statsPage.expectRadarChartVisible();
+
+      // "Total" (default) - all 3 workouts combined
+      // Skills: MOBILITY=76, PREVENTION=24, CARDIO=76, STABILITY=24, WARMUP=24, SWR=76
+      // Total = 300, so percentages: 25%, 8%, 25%, 8%, 8%, 25%
+      await statsPage.expectRadarChartLabels({
+        Mobility: 25,
+        Prevention: 8,
+        Endurance: 25,
+        Stability: 8,
+        "Warm-up": 8,
+        Strength: 25,
+      });
+
+      // "Last month" - 2 workouts (excludes 45-day old mobility-focused workout)
+      // Skills: MOBILITY=16, PREVENTION=16, CARDIO=68, STABILITY=16, WARMUP=16, SWR=68
+      // Total = 200, so percentages: 8%, 8%, 34%, 8%, 8%, 34%
+      await statsPage.selectTimeScale("Last month");
+      await statsPage.expectRadarChartLabels({
+        Mobility: 8,
+        Prevention: 8,
+        Endurance: 34,
+        Stability: 8,
+        "Warm-up": 8,
+        Strength: 34,
+      });
+
+      // "Last week" - 1 workout (only the strength-focused recent workout)
+      // Skills: MOBILITY=8, PREVENTION=8, CARDIO=8, STABILITY=8, WARMUP=8, SWR=60
+      // Total = 100, so percentages: 8%, 8%, 8%, 8%, 8%, 60%
+      await statsPage.selectTimeScale("Last week");
+      await statsPage.expectRadarChartLabels({
+        Mobility: 8,
+        Prevention: 8,
+        Endurance: 8,
+        Stability: 8,
+        "Warm-up": 8,
+        Strength: 60,
+      });
+
+      // Verify "Total" restores original percentages
+      await statsPage.selectTimeScale("Total");
+      await statsPage.expectRadarChartLabels({
+        Strength: 25,
+        Endurance: 25,
+        Mobility: 25,
+      });
+    });
   });
 });
 

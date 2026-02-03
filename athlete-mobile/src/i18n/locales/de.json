@@ -749,6 +749,14 @@
         "pointsAlt": "Punkte-Symbol",
         "weight": "Bewegtes Gewicht",
         "weightAlt": "Gewicht-Symbol"
+      },
+      "radarChart": {
+        "MOBILITY": "Mobilität",
+        "PREVENTION": "Prävention",
+        "CARDIO": "Ausdauer",
+        "STABILITY": "Stabilität",
+        "WARMUP": "Aufwärmen",
+        "SWR": "Kraft"
       }
     }
   },

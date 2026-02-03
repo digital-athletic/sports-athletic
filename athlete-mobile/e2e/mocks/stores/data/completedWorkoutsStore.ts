@@ -28,6 +28,14 @@ export function createSampleWorkout(
     xpEarned: 50,
     exerciseCount: 2,
     movedWeight: 450, // 15kg x 10 reps x 3 sets
+    userSkills: {
+      MOBILITY: 25,
+      PREVENTION: 15,
+      CARDIO: 18,
+      STABILITY: 12,
+      WARMUP: 10,
+      SWR: 20,
+    },
     exercises: [
       {
         exerciseId: "118",
@@ -78,6 +86,50 @@ export function createCompletedWorkoutsStoreWithCount(
     workouts[workout.id] = workout;
   }
   return createCompletedWorkoutsStore({ workouts });
+}
+
+/**
+ * User skill distribution for a workout.
+ * Extends Record<string, number> for compatibility with CompletedWorkout type.
+ */
+export interface UserSkillsData extends Record<string, number> {
+  MOBILITY: number;
+  PREVENTION: number;
+  CARDIO: number;
+  STABILITY: number;
+  WARMUP: number;
+  SWR: number;
+}
+
+/**
+ * Creates a sample workout with custom userSkills.
+ * Used for testing radar chart filtering where different workouts
+ * need different skill distributions.
+ */
+export function createWorkoutWithSkills(
+  id: string,
+  timestampOffset: number,
+  userSkills: UserSkillsData,
+): CompletedWorkout {
+  const now = Date.now();
+  return {
+    id,
+    timestamp: now - timestampOffset,
+    duration: 1800,
+    xpEarned: 50,
+    exerciseCount: 2,
+    movedWeight: 450,
+    userSkills,
+    exercises: [
+      {
+        exerciseId: "118",
+        skill: "SWR1",
+        weight: 15,
+        repetition: 10,
+        set: [3, 3],
+      },
+    ],
+  };
 }
 
 /**

@@ -749,6 +749,14 @@
         "pointsAlt": "Points icon",
         "weight": "Moved weight",
         "weightAlt": "Weight icon"
+      },
+      "radarChart": {
+        "MOBILITY": "Mobility",
+        "PREVENTION": "Prevention",
+        "CARDIO": "Endurance",
+        "STABILITY": "Stability",
+        "WARMUP": "Warm-up",
+        "SWR": "Strength"
       }
     }
   },

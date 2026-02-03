@@ -9,6 +9,7 @@ import { STORAGE_KEYS } from "../constants";
 import {
   createCompletedWorkoutsStore,
   createSampleWorkout,
+  createWorkoutWithSkills,
   createZeroXpWorkout,
 } from "../data/completedWorkoutsStore";
 import type { CompletedWorkout, StoreDataMap } from "../types";
@@ -118,6 +119,80 @@ export function createZeroXpWorkoutsProfile(
     );
     workouts[workout.id] = workout;
   }
+
+  return {
+    ...baseProfile,
+    [STORAGE_KEYS.COMPLETED_WORKOUTS]: createCompletedWorkoutsStore({
+      workouts,
+    }),
+  };
+}
+
+/**
+ * Creates a profile with workouts at different time intervals, each with
+ * DIFFERENT skill distributions. Used for testing radar chart filtering.
+ *
+ * Workouts created:
+ * - "recent": 1 day ago - Strength-focused (SWR: 60, others: 8 each = 100 total)
+ * - "two-weeks-old": 10 days ago - Cardio-focused (CARDIO: 60, others: 8 each)
+ * - "two-months-old": 45 days ago - Mobility-focused (MOBILITY: 60, others: 8 each)
+ *
+ * Expected radar chart percentages by filter:
+ *
+ * "Last week" (recent only):
+ *   Strength: 60%, others: 8% each
+ *
+ * "Last month" (recent + two-weeks-old, totals: SWR=68, CARDIO=68, others=16 each):
+ *   Total = 200, so: Strength: 34%, Endurance: 34%, others: 8% each
+ *
+ * "Total" (all 3 workouts, totals: SWR=76, CARDIO=76, MOBILITY=76, others=24 each):
+ *   Total = 300, so: Strength: 25%, Endurance: 25%, Mobility: 25%, others: 8% each
+ */
+export function createRadarChartFilteringProfile(): StoreDataMap {
+  const baseProfile = createCompletedProfile();
+
+  const workouts: Record<string, CompletedWorkout> = {};
+
+  // Recent workout - 1 day ago - Strength-focused
+  const recentWorkout = createWorkoutWithSkills("recent", ONE_DAY_MS, {
+    MOBILITY: 8,
+    PREVENTION: 8,
+    CARDIO: 8,
+    STABILITY: 8,
+    WARMUP: 8,
+    SWR: 60,
+  });
+  workouts[recentWorkout.id] = recentWorkout;
+
+  // 10 days old workout - Cardio/Endurance-focused
+  const twoWeeksOldWorkout = createWorkoutWithSkills(
+    "two-weeks-old",
+    10 * ONE_DAY_MS,
+    {
+      MOBILITY: 8,
+      PREVENTION: 8,
+      CARDIO: 60,
+      STABILITY: 8,
+      WARMUP: 8,
+      SWR: 8,
+    },
+  );
+  workouts[twoWeeksOldWorkout.id] = twoWeeksOldWorkout;
+
+  // 45 days old workout - Mobility-focused
+  const twoMonthsOldWorkout = createWorkoutWithSkills(
+    "two-months-old",
+    45 * ONE_DAY_MS,
+    {
+      MOBILITY: 60,
+      PREVENTION: 8,
+      CARDIO: 8,
+      STABILITY: 8,
+      WARMUP: 8,
+      SWR: 8,
+    },
+  );
+  workouts[twoMonthsOldWorkout.id] = twoMonthsOldWorkout;
 
   return {
     ...baseProfile,

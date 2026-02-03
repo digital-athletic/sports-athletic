@@ -114,13 +114,8 @@ export const Workouts: FC<WorkoutsProps> = ({
           setScale={setScale}
         />
       </Box>
-      <Box
-        flex={1}
-        alignSelf="stretch"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <RadarChart adjustScales userSkills={userSkills} />
+      <Box alignSelf="stretch" alignItems="center">
+        <RadarChart userSkills={userSkills} />
         <TrainingSummary
           duration={getTimeString(summaryData.duration)}
           count={String(summaryData.count)}
@@ -147,6 +142,7 @@ export const Workouts: FC<WorkoutsProps> = ({
           justifyContent="center"
           alignItems="center"
           backgroundColor="lightGrey1"
+          marginTop="m"
           testID="workouts-list-container"
         >
           <Text

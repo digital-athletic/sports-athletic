@@ -5,6 +5,19 @@ import { BasePage } from "./BasePage";
 type TimeScale = "Last week" | "Last month" | "Last year" | "Total";
 
 /**
+ * Expected radar chart label values.
+ * Keys are the translated skill names, values are expected percentages.
+ */
+export interface RadarChartLabelExpectations {
+  Mobility?: number;
+  Prevention?: number;
+  Endurance?: number; // CARDIO in the data model
+  Stability?: number;
+  "Warm-up"?: number; // WARMUP in the data model
+  Strength?: number; // SWR in the data model
+}
+
+/**
  * Expected summary values for assertions.
  * All fields are optional - only provided fields will be verified.
  */
@@ -372,5 +385,75 @@ export class StatisticsPage extends BasePage {
     const summary = await this.getWorkoutRowSummary(rowIndex);
     if (!summary) return 0;
     return parseWeightString(summary.weight);
+  }
+
+  /**
+   * Gets the radar chart container.
+   */
+  getRadarChartContainer() {
+    return this.page.getByTestId("radar-chart-container");
+  }
+
+  /**
+   * Verifies the radar chart is visible.
+   */
+  async expectRadarChartVisible(): Promise<void> {
+    await expect(this.getRadarChartContainer()).toBeVisible();
+  }
+
+  /**
+   * Extracts the percentage from a radar chart label.
+   * Labels are formatted as "Skill Name\nXX%"
+   */
+  private parseRadarChartLabelPercentage(labelText: string): number {
+    const match = labelText.match(/(\d+)%/);
+    return match ? parseInt(match[1], 10) : 0;
+  }
+
+  /**
+   * Gets the percentage value for a specific skill label in the radar chart.
+   * The radar chart uses SVG text elements with tspans for multiline labels.
+   *
+   * DOM structure: SVG text element contains "SkillName\nXX%" rendered as tspans.
+   * We find the skill name, traverse to parent text element, and extract percentage.
+   */
+  async getRadarChartSkillPercentage(skillName: string): Promise<number> {
+    const chartContainer = this.getRadarChartContainer();
+
+    // Find the skill name text within the radar chart
+    const skillLabel = chartContainer.getByText(skillName, { exact: true });
+    await expect(
+      skillLabel,
+      `Radar chart should display ${skillName} label`,
+    ).toBeVisible({ timeout: 5000 });
+
+    // The label is formatted as "SkillName\nXX%" which renders as tspans inside SVG text
+    // Navigate to parent text element to get the full content including percentage
+    const parent = skillLabel.locator("..");
+    const percentageText = await parent.textContent();
+
+    if (percentageText) {
+      return this.parseRadarChartLabelPercentage(percentageText);
+    }
+
+    return 0;
+  }
+
+  /**
+   * Verifies all provided radar chart labels match expected percentages.
+   * Only provided fields are verified.
+   */
+  async expectRadarChartLabels(
+    expected: RadarChartLabelExpectations,
+  ): Promise<void> {
+    for (const [skillName, expectedPercentage] of Object.entries(expected)) {
+      if (expectedPercentage !== undefined) {
+        const actual = await this.getRadarChartSkillPercentage(skillName);
+        expect(
+          actual,
+          `${skillName} percentage should be ${expectedPercentage}%`,
+        ).toBe(expectedPercentage);
+      }
+    }
   }
 }

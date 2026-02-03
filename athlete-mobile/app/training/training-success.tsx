@@ -121,7 +121,7 @@ const TrainingSuccessScreen: FC = () => {
                 justifyContent="center"
                 alignItems="center"
               >
-                <RadarChart adjustScales={true} userSkills={skills} />
+                <RadarChart userSkills={skills} />
               </Box>
               <Box
                 flex={1}

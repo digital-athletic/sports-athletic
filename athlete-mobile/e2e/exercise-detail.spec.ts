@@ -32,21 +32,11 @@ test.describe("Exercise Detail View", () => {
     const overviewPage = new TrainingOverviewPage(page);
     await overviewPage.expectVisible();
 
-    await page.screenshot({
-      path: "playwright/screenshots/exercise-detail-overview.png",
-      fullPage: true,
-    });
-
     await overviewPage.openExerciseInfo(0);
 
     // Verify exercise information page shows muscle regions
     const exerciseInfoPage = new ExerciseInformationPage(page);
     await exerciseInfoPage.expectVisible();
-
-    await page.screenshot({
-      path: "playwright/screenshots/exercise-detail-muscles.png",
-      fullPage: true,
-    });
 
     await exerciseInfoPage.expectMusclesSectionComplete();
     await exerciseInfoPage.expectMuscleChips(6);

@@ -35,7 +35,10 @@ export class BasePage {
   }
 
   async navigateToTab(tabName: string) {
+    // Target the bottom navigation tablist to avoid matching tabs in page content
+    // The bottom navigation has tabs within a tablist element
     await this.page
+      .getByRole("tablist")
       .getByRole("tab", { name: new RegExp(tabName, "i") })
       .click();
   }

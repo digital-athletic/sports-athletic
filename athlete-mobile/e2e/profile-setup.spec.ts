@@ -1,5 +1,4 @@
 import { expect, test } from "@playwright/test";
-import { PROFILE_MALE_COMPETITVE } from "./constants";
 import { mockSupabaseAuth } from "./mocks/supabase";
 import { AnamnesisPage } from "./pages";
 import { addDays, formatDateToISO } from "@/utils/date";
@@ -54,7 +53,5 @@ test.describe("Profile Setup", () => {
       path: "playwright/screenshots/profile-setup-complete.png",
       fullPage: true,
     });
-
-    await page.context().storageState({ path: PROFILE_MALE_COMPETITVE });
   });
 });

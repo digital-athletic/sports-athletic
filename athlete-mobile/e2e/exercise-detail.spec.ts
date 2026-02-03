@@ -1,5 +1,5 @@
-import { test } from "@playwright/test";
-import { seedCompletedProfile } from "./mocks/stores";
+import { test } from "./fixtures";
+import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
 import {
   BasePage,
@@ -8,12 +8,13 @@ import {
 } from "./pages";
 
 test.describe("Exercise Detail View", () => {
+  test.use({ profile: createCompletedProfile() });
+
   test("displays muscle regions on exercise information page from strength test overview", async ({
     page,
   }) => {
     test.setTimeout(60000);
 
-    await seedCompletedProfile(page);
     await mockSupabaseAuth(page);
 
     const basePage = new BasePage(page);
@@ -73,7 +74,6 @@ test.describe("Exercise Detail View", () => {
   test("displays equipment tags correctly on exercise information page", async ({
     page,
   }) => {
-    await seedCompletedProfile(page);
     await mockSupabaseAuth(page);
 
     const basePage = new BasePage(page);

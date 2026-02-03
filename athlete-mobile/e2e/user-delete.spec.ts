@@ -1,11 +1,12 @@
-import { expect, test } from "@playwright/test";
-import { seedCompletedProfile } from "./mocks/stores";
+import { expect, test } from "./fixtures";
+import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
 import { AnamnesisPage, BasePage, ProfilePage } from "./pages";
 
 test.describe("User Deletion", () => {
+  test.use({ profile: createCompletedProfile() });
+
   test("delete user and return to login page", async ({ page }) => {
-    await seedCompletedProfile(page);
     await mockSupabaseAuth(page);
 
     // Log browser console for debugging
@@ -34,6 +35,7 @@ test.describe("User Deletion", () => {
 });
 
 test.describe("User Deletion after Training Data Change", () => {
+  // This test starts from scratch (no profile) and goes through anamnesis
   test("complete anamnesis then change training data then delete user should return to login page", async ({
     page,
   }) => {

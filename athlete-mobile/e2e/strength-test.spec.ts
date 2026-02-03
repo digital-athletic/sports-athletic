@@ -1,5 +1,7 @@
-import { expect, test, type Page } from "@playwright/test";
-import { PROFILE_MALE_COMPETITVE } from "./constants";
+import { type Page } from "@playwright/test";
+import { expect, test } from "./fixtures";
+import { createFreshAnamnesisProfile } from "./mocks/stores/profiles/freshAnamnesisProfile";
+import { mockSupabaseAuth } from "./mocks/supabase";
 import { BasePage } from "./pages";
 
 /**
@@ -36,10 +38,13 @@ async function completeStrengthTestWorkout(page: Page, reps: number) {
 }
 
 test.describe("Strength Test", () => {
-  test.use({ storageState: PROFILE_MALE_COMPETITVE });
+  test.use({ profile: createFreshAnamnesisProfile() });
+
   test("complete strength test workflow", async ({ page }) => {
-    await page.goto("/");
+    await mockSupabaseAuth(page);
+
     const basePage = new BasePage(page);
+    await basePage.login("test@example.com", "password123");
     await basePage.expectLoggedIn();
 
     // Navigate to Profile > Start New Test Workout

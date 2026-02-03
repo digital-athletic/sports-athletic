@@ -1,6 +1,7 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 import { mockSupabaseAuth } from "./mocks/supabase";
-import { clearStores, seedCompletedProfile, seedStores } from "./mocks/stores";
+import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile";
+import { createIncompleteAnamnesisProfile } from "./mocks/stores/profiles/incompleteAnamnesisProfile";
 import { BasePage } from "./pages";
 
 /**
@@ -21,12 +22,11 @@ import { BasePage } from "./pages";
  */
 test.describe("Auth Flow", () => {
   test.describe("Unauthenticated User", () => {
+    // No profile = empty localStorage = unauthenticated state
+
     test("sees onboarding/login screen when visiting root", async ({
       page,
     }) => {
-      // Clear any existing auth state
-      await clearStores(page);
-
       await page.goto("/");
 
       // Should see the login screen (part of onboarding)
@@ -42,8 +42,6 @@ test.describe("Auth Flow", () => {
     test("can access onboarding screen when visiting /onboarding", async ({
       page,
     }) => {
-      await clearStores(page);
-
       await page.goto("/onboarding");
 
       // Should see the login screen
@@ -54,8 +52,6 @@ test.describe("Auth Flow", () => {
     test("cannot access protected /tabs route - blocked by Stack.Protected", async ({
       page,
     }) => {
-      await clearStores(page);
-
       // Attempt to navigate to protected tabs route
       await page.goto("/(tabs)/(home)");
 
@@ -67,8 +63,6 @@ test.describe("Auth Flow", () => {
     test("cannot access protected /anamnesis route - blocked by Stack.Protected", async ({
       page,
     }) => {
-      await clearStores(page);
-
       // Attempt to navigate to protected anamnesis route
       await page.goto("/(anamnesis)/anamnesis");
 
@@ -79,8 +73,6 @@ test.describe("Auth Flow", () => {
     test("cannot access protected /training route - blocked by Stack.Protected", async ({
       page,
     }) => {
-      await clearStores(page);
-
       // Attempt to navigate to protected training route
       await page.goto("/training");
 
@@ -90,11 +82,11 @@ test.describe("Auth Flow", () => {
   });
 
   test.describe("Authenticated User", () => {
+    test.use({ profile: createCompletedProfile() });
+
     test("cannot access onboarding - blocked by Stack.Protected", async ({
       page,
     }) => {
-      // Seed completed profile and mock Supabase auth
-      await seedCompletedProfile(page);
       await mockSupabaseAuth(page);
 
       // Login to establish auth session
@@ -113,8 +105,6 @@ test.describe("Auth Flow", () => {
     });
 
     test("can access protected /tabs route after login", async ({ page }) => {
-      // Seed completed profile and mock Supabase auth
-      await seedCompletedProfile(page);
       await mockSupabaseAuth(page);
 
       // Login to establish auth session
@@ -132,8 +122,6 @@ test.describe("Auth Flow", () => {
     test("can access tabs and sees correct content after login", async ({
       page,
     }) => {
-      // Seed completed profile and mock Supabase auth
-      await seedCompletedProfile(page);
       await mockSupabaseAuth(page);
 
       // Login to establish auth session
@@ -151,26 +139,14 @@ test.describe("Auth Flow", () => {
       ).toBeVisible();
       await expect(page.getByRole("tab", { name: /profile/i })).toBeVisible();
     });
+  });
+
+  test.describe("Authenticated User - Incomplete Anamnesis", () => {
+    test.use({ profile: createIncompleteAnamnesisProfile() });
 
     test("can access protected /anamnesis route when authenticated", async ({
       page,
     }) => {
-      // Seed profile with anamnesis not completed to allow access to anamnesis
-      await seedStores(page, {
-        "user-profile-storage": {
-          userId: "test-user-id",
-          personalData: {
-            username: "Test User",
-            gender: "MALE",
-            birthday: "1990-01-01",
-            height: 180,
-            weight: 80,
-          },
-          isInInitialAnamnesis: true,
-          anamnesisCompleted: false,
-          teamId: null,
-        },
-      });
       await mockSupabaseAuth(page);
 
       // Login to establish auth session
@@ -240,8 +216,9 @@ test.describe("Auth Flow", () => {
   });
 
   test.describe("Login Flow", () => {
+    // No profile = fresh user experience
+
     test("successful login redirects to home", async ({ page }) => {
-      await clearStores(page);
       await mockSupabaseAuth(page);
 
       await page.goto("/");
@@ -271,15 +248,20 @@ test.describe("Auth Flow", () => {
       // Use the pre-authenticated storage state
       await context.clearCookies();
 
-      // Seed auth state manually
-      await seedStores(page, {
-        "auth-storage": {
-          auth: {
-            userId: "test-user-id",
-            token: "mock-access-token",
-          },
-          isInitialized: true,
-        },
+      // Seed auth state directly via evaluate (before navigation)
+      await page.addInitScript(() => {
+        localStorage.setItem(
+          "auth-storage",
+          JSON.stringify({
+            state: {
+              auth: {
+                userId: "test-user-id",
+                token: "mock-access-token",
+              },
+              isInitialized: true,
+            },
+          }),
+        );
       });
 
       // Also need to mock Supabase auth endpoint
@@ -311,7 +293,6 @@ test.describe("Auth Flow", () => {
       // are handled via Stack.Protected guards in the root layout
 
       // Test 1: Unauthenticated - onboarding accessible, tabs blocked
-      await clearStores(page);
       await page.goto("/onboarding");
       await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
 
@@ -319,10 +300,19 @@ test.describe("Auth Flow", () => {
       // Should still see login (tabs blocked)
       await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
 
-      // Test 2: Authenticate and verify guards flip
-      await seedCompletedProfile(page);
+      // Test 2: Authenticate via login and verify guards flip
       await mockSupabaseAuth(page);
 
+      // Seed profile data for authenticated experience
+      const profileData = createCompletedProfile();
+      await page.evaluate((stores) => {
+        for (const [key, value] of Object.entries(stores)) {
+          localStorage.setItem(key, JSON.stringify(value));
+        }
+      }, profileData);
+
+      // Go to login page and authenticate
+      await page.goto("/");
       const basePage = new BasePage(page);
       await basePage.login("test@example.com", "password123");
       await basePage.expectLoggedIn();

@@ -4,7 +4,7 @@ import {
   UserSkills,
   type WorkoutsSummary,
 } from "@/features/statistics/models/WorkoutsData";
-import { type TrainingPlanType } from "@/features/training/models/TrainingPlan";
+import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { ISODateToDate } from "@/utils/date";
 import { useMemo } from "react";
@@ -37,7 +37,6 @@ const getStartDate = (
       return now - DAY * 365;
     case "total":
     default:
-      // For phase, find active section
       if (trainingPlan?.sections && trainingPlan.sections.length > 0) {
         for (let i = 0; i < trainingPlan.sections.length; i++) {
           const sectionStart = trainingPlan.sections[i].start;
@@ -56,7 +55,7 @@ const getStartDate = (
  */
 export const useWorkoutsData = ({
   scale,
-  workoutsList,
+  workouts,
   trainingPlan = null,
 }: UseWorkoutsDataParams) => {
   const anamnesisCompleted = useUserProfileStore(
@@ -65,15 +64,15 @@ export const useWorkoutsData = ({
 
   const filteredWorkouts = useMemo(() => {
     const startDate = getStartDate(scale, trainingPlan);
-    return workoutsList.filter((workout) => workout.date > startDate);
-  }, [workoutsList, scale, trainingPlan]);
+    return workouts.filter((workout) => workout.timestamp > startDate);
+  }, [workouts, scale, trainingPlan]);
 
   const summaryData = useMemo((): WorkoutsSummary => {
     return filteredWorkouts.reduce(
       (acc, workout) => ({
         duration: acc.duration + (workout.duration || 0),
         count: acc.count + (workout.exerciseCount || 0),
-        points: acc.points + (workout.points || 0),
+        points: acc.points + (workout.xpEarned || 0),
         weight: acc.weight + (workout.movedWeight || 0),
       }),
       { duration: 0, count: 0, points: 0, weight: 0 },
@@ -95,10 +94,10 @@ export const useWorkoutsData = ({
   }, [filteredWorkouts]);
 
   const sortedWorkouts = useMemo(() => {
-    return [...workoutsList].sort((a, b) => b.date - a.date);
-  }, [workoutsList]);
+    return [...workouts].sort((a, b) => b.timestamp - a.timestamp);
+  }, [workouts]);
 
-  const hasWorkouts = workoutsList.length > 0;
+  const hasWorkouts = workouts.length > 0;
 
   return {
     summaryData,

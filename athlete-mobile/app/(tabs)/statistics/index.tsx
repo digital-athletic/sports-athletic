@@ -42,6 +42,7 @@ const StatisticsScreen: FC = () => {
           accessibilityRole="tab"
           accessibilityState={{ selected: view === View.WORKOUTS }}
           accessibilityLabel={t("statistics.tabs.workouts")}
+          testID="statistics-tab-workouts"
         >
           <Text
             variant="title"
@@ -61,6 +62,7 @@ const StatisticsScreen: FC = () => {
           accessibilityRole="tab"
           accessibilityState={{ selected: view === View.TESTS }}
           accessibilityLabel={t("statistics.tabs.powerTest")}
+          testID="statistics-tab-tests"
         >
           <Text
             variant="title"

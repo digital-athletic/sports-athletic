@@ -2,9 +2,11 @@ import { RadarChart } from "@/charts/RadarChart";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { PowerTest } from "@/features/statistics/components/PowerTest";
 import { TrainingSummary } from "@/features/statistics/components/TrainingSummary";
+import { seconds } from "@/features/training/models/TimeUnits";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { calculateSkillsFromTime } from "@/features/training/utils/trainingSuccessUtils";
 import { calculateWorkoutTotals } from "@/features/training/utils/workoutUtils";
+import { useCompletedWorkoutsStore } from "@/store/completedWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
@@ -37,7 +39,9 @@ const TrainingSuccessScreen: FC = () => {
   const { workoutData } = useUserWorkoutStore();
   const maxValues = workoutData.maxValues;
   const { addXP } = useExerciseProgressStore();
+  const { addCompletedWorkout } = useCompletedWorkoutsStore();
   const xpAwarded = useRef(false);
+  const workoutSaved = useRef(false);
   const insets = useSafeAreaInsets();
 
   // Detect test workout by checking if any exercise has repetition === -1
@@ -64,6 +68,28 @@ const TrainingSuccessScreen: FC = () => {
       xpAwarded.current = true;
     }
   }, [totals.points, addXP]);
+
+  // Save completed workout to history (only once, exclude test workouts)
+  useEffect(() => {
+    if (
+      !workoutSaved.current &&
+      totals.count > 0 &&
+      !isTestWorkout &&
+      exerciseList
+    ) {
+      addCompletedWorkout({
+        id: `workout-${Date.now()}`,
+        timestamp: Date.now(),
+        exercises: exerciseList,
+        duration: seconds(totals.duration),
+        xpEarned: totals.points,
+        movedWeight: totals.weight,
+        exerciseCount: totals.count,
+        userSkills: skills,
+      });
+      workoutSaved.current = true;
+    }
+  }, [totals, skills, exerciseList, isTestWorkout, addCompletedWorkout]);
 
   const handleGoOn = () => {
     resetTraining();

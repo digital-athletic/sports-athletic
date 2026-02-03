@@ -122,6 +122,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
         onPress={startTestWorkout}
         accessibilityLabel={t("statistics.powerTest.startNewTest")}
         accessibilityRole="button"
+        testID="power-test-start-button"
       >
         <Box
           alignSelf="stretch"
@@ -156,7 +157,12 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
       `${Math.round((value ?? 0) * 2) / 2} kg`;
 
     return (
-      <Box flexDirection="row" alignItems="stretch" width="100%">
+      <Box
+        flexDirection="row"
+        alignItems="stretch"
+        width="100%"
+        testID={`power-test-entry-${index}`}
+      >
         <Box
           flex={1}
           width="100%"
@@ -264,6 +270,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
           alignSelf="stretch"
           justifyContent="center"
           alignItems="center"
+          testID="power-test-no-results"
         >
           <Text variant="subtitle" padding="l" color="darkGrey2">
             {t("statistics.powerTest.noTestYet")}
@@ -278,6 +285,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
         alignSelf="stretch"
         justifyContent="center"
         alignItems="center"
+        testID="power-test-results-container"
       >
         <Text variant="title" padding="m" alignSelf="stretch" color="darkGrey3">
           {t("statistics.powerTest.yourResults")}
@@ -291,13 +299,19 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
           keyExtractor={(item, index) => `${item.testDate}-${index}`}
           initialNumToRender={10}
           style={{ width: "100%" }}
+          testID="power-test-results-list"
         />
       </Box>
     );
   };
 
   return (
-    <Box flex={1} justifyContent="flex-start" alignItems="stretch">
+    <Box
+      flex={1}
+      justifyContent="flex-start"
+      alignItems="stretch"
+      testID="power-test-container"
+    >
       {renderChart()}
       {renderLegend()}
       {renderStartTestButton()}

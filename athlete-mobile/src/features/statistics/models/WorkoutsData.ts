@@ -1,21 +1,8 @@
-import { SkillFocusType } from "@/features/training/models/Training";
-import { type TrainingPlanType } from "@/features/training/models/TrainingPlan";
+import type { SkillFocusType } from "@/features/training/models/Training";
+import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
+import type { CompleteWorkoutType } from "@/store/completedWorkoutsStore";
 
 export type ScaleType = "week" | "month" | "year" | "total";
-
-export interface WorkoutsListEntry {
-  workoutId: string;
-  date: number;
-  /** Duration in seconds */
-  duration: number;
-  exerciseCount: number;
-  points: number;
-  movedWeight: number;
-  userSkills: Record<SkillFocusType, number>;
-  userSkillsDuration?: Record<SkillFocusType, number>;
-  exercises?: unknown[];
-  time?: number;
-}
 
 export interface WorkoutsSummary {
   /** Total duration in seconds */
@@ -27,7 +14,7 @@ export interface WorkoutsSummary {
 
 export interface UseWorkoutsDataParams {
   scale: ScaleType;
-  workoutsList: WorkoutsListEntry[];
+  workouts: CompleteWorkoutType[];
   trainingPlan?: TrainingPlanType | null;
 }
 

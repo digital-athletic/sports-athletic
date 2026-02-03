@@ -10,6 +10,7 @@ interface TrainingSummaryProps {
   count: string;
   points: string;
   weight: string;
+  testID?: string;
 }
 
 type SummaryType = "DURATION" | "COUNT" | "POINTS" | "WEIGHT";
@@ -32,6 +33,7 @@ export const TrainingSummary: FC<TrainingSummaryProps> = ({
   count,
   points,
   weight,
+  testID,
 }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -106,6 +108,7 @@ export const TrainingSummary: FC<TrainingSummaryProps> = ({
       justifyContent="space-between"
       alignItems="center"
       alignSelf="stretch"
+      testID={testID}
     >
       {renderEntry("DURATION")}
       {renderEntry("COUNT")}

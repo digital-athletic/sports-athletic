@@ -2,6 +2,9 @@
 
 Complete documentation of all persisted data structures, their fields, and relationships.
 
+**Version**: 2.0
+**Updated**: 2026-02-04
+
 ---
 
 ## Table of Contents
@@ -26,7 +29,7 @@ Complete documentation of all persisted data structures, their fields, and relat
 7. [Data Flow Summary](#7-data-flow-summary)
 8. [Architectural Notes](#8-architectural-notes)
 9. [Recommended Improvements](#9-recommended-improvements)
-10. [Structural Issues in the Data Model](#10-structural-issues-in-the-data-model)
+10. [Changelog from v1](#10-changelog-from-v1)
 
 ---
 
@@ -57,8 +60,8 @@ Complete documentation of all persisted data structures, their fields, and relat
 | 5 | userWorkoutStore | `user-workout-storage` | The central domain entity that holds the user's training configuration (sport, tags, season phase, max strength values) and the generated training plan. Note: user identity data (gender, birthday, height, weight) has been moved to `userProfileStore`. The training plan contains time-phased sections, each with weekly training sessions that map skills to exercise branches. This store is the primary input and output of the training plan generator. |
 | 6 | trainingScheduleStore | `training-schedule-storage` | Defines the user's weekly training schedule as 7 day entries (Monday through Sunday), each with an active/inactive flag, duration in minutes (using `DurationMinutes` branded type), and training location. Active days and their durations feed directly into the training plan generator to determine how many sessions to create and how long each should be. The location selection connects to `placesStore` to determine available equipment for each session. |
 | 7 | placesStore | `places-storage` | Maintains the available equipment for each of the four training locations: HOME, STUDIO, HALL, and OUTSIDE. Each location has a default equipment list (e.g., STUDIO includes barbell, dumbbell, power rack, etc.) that the user can customize. During training plan generation, exercises are filtered based on the equipment available at the selected location for each training day. |
-| 8 | exerciseProgressStore | `exercise-progress-storage` | Tracks the user's per-exercise performance data (reps, weight, duration, feedback) and per-branch progression level that determines which exercise difficulty the user currently trains at. Also maintains the user's XP, derived level, and a history of max strength test results. Feedback streaks (consecutive "too easy" or "too hard" ratings) drive automatic progression and regression through branch levels. |
-| 9 | completedWorkoutsStore | `completed-workouts-storage` | Archives completed workout sessions with full exercise snapshots, timestamps, duration (in seconds, using `DurationSeconds` branded type), and XP earned. Maintains both a detailed `workouts` record (keyed by ID) and a lightweight `workoutsList` index for efficient listing without loading full exercise data. Also stores archived training plans that have been completed or replaced, preserving the user's full training history. |
+| 8 | exerciseProgressStore | `exercise-progress-storage` | Tracks the user's per-exercise performance data (reps, weight, duration, feedback), per-branch progression level, and **cumulative exercise totals** (total weight, reps, duration, height per exercise). Also maintains the user's **XP**, derived level, and a history of max strength test results. Feedback streaks (consecutive "too easy" or "too hard" ratings) drive automatic progression and regression through branch levels. |
+| 9 | completedWorkoutsStore | `completed-workouts-storage` | Archives completed workout sessions with full exercise snapshots, timestamps, duration (in seconds, using `DurationSeconds` branded type), and **XP earned**. Now includes **pre-calculated aggregates** (exerciseCount, movedWeight, userSkills) for efficient statistics display. Maintains both a detailed `workouts` record (keyed by ID) and a lightweight `workoutsList` index for efficient listing without loading full exercise data. Also stores archived training plans that have been completed or replaced, preserving the user's full training history. |
 
 All 9 stores persist to AsyncStorage. Static catalog data (exercises and skill trees) is loaded as non-persisted modules via registries (see [Non-Persisted Data](#4-non-persisted-data)).
 
@@ -402,8 +405,17 @@ State {
     } | undefined
   }
 
-  xp: number
-  level: number                       // derived: Math.floor(xp / 1000) + 1
+  exerciseTotals: {                   // ExerciseTotalsMapType - cumulative values per exercise
+    [exerciseId: string]: {
+      weight: number                  // total weight moved
+      duration: number                // total time in seconds
+      repetition: number              // total reps completed
+      height: number                  // total height (for jump exercises)
+    }
+  }
+
+  xp: number                          // user's experience points
+  level: number                       // derived: based on xp using progressive formula
 
   testHistory: {                      // MaxValuesType[] -- historical max value snapshots
     testDate: string                  // ISO 8601 format (YYYY-MM-DD)
@@ -420,17 +432,18 @@ State {
 
 Where **MaxValueType** = `{ barbell?, dumbbells?, oneSidedUpper?, oneSidedBarbell?, oneSidedLower?, oneSidedLowerSupported? }` (all optional numbers).
 
-**Actions**: `setExerciseData`, `updateExercise`, `setBranchLevel`, `addXP`, `setLevel`, `addTestResult`, `clearProgress`
-**Selectors**: `getExerciseData`, `getBranchLevel`, `getLatestTestResult`
+**Actions**: `setExerciseData`, `updateExercise`, `setBranchLevel`, `updateUserExerciseTotals`, `addXP`, `setLevel`, `addTestResult`, `clearProgress`
+**Selectors**: `getExerciseData`, `getBranchLevel`, `getLatestTestResult`, `getExerciseTotals`
 
 **Relationships**:
 - `exerciseData` keys are `ExerciseType.id` from exercise registry
 - `branchData` keys are branch IDs from skill tree registry
 - `branchData[].level` selects which exercise within a branch is active
+- `exerciseTotals` accumulates values per exercise across all workouts
 - `testHistory` stores `MaxValuesType` snapshots (same structure as `userWorkoutStore.workoutData.maxValues`)
 - `feedback.streakCounter` drives progression/regression decisions
 
-**Key model files**: `src/features/training/models/UserExerciseData.ts`, `MaxForceRepetitionsData.ts`, `MaxValues.ts`
+**Key model files**: `src/features/training/models/UserExerciseData.ts`, `MaxForceRepetitionsData.ts`, `MaxValues.ts`, `ExerciseTotals.ts`
 
 ---
 
@@ -462,7 +475,19 @@ State {
         branchId?: string
       }[]
       duration: DurationSeconds       // branded type for seconds (distinct from TrainingDay.duration: DurationMinutes)
-      xpEarned?: number
+
+      // Aggregate fields (new in v2)
+      xpEarned?: number               // experience points earned in this workout
+      exerciseCount?: number          // number of non-pause exercises
+      movedWeight?: number            // total weight * reps
+      userSkills?: {                  // exercise counts per focus area
+        PREVENTION: number
+        MOBILITY: number
+        SWR: number
+        WARMUP: number
+        STABILITY: number
+        CARDIO: number
+      }
     }
   }
 
@@ -497,6 +522,16 @@ State {
 - `exercises[].exerciseId` references `ExerciseType.id` from exercise registry
 - `trainingPlans[]` archives completed plans (same shape as `userWorkoutStore.trainingPlan`)
 - `workoutsList` is a denormalized index over `workouts` -- `id` and `timestamp` are duplicated
+- `userSkills` matches `FocusArea` type for radar chart display
+
+**Legacy fields not migrated (REGRESSION)**:
+- `time.pause` - Pause duration in ms, was used to exclude pauses from XP calculation (low impact)
+- `time.skill` - **REGRESSION**: Time spent per skill area in ms, was the **preferred metric** for radar charts post-2021. The legacy code explicitly switched from exercise counts to time-based metrics on 2021-01-01 because time more accurately represents training focus.
+- `userSkillsDuration` - Time per skill in seconds (defined but not actively used in legacy UI)
+
+**Current limitation:** The radar chart uses **exercise counts** instead of the preferred **time-based** metric. This is a regression from the intentional 2021 improvement. A 5-minute strength exercise counts the same as a 30-second mobility stretch, which misrepresents the user's actual training distribution.
+
+**See:** `issue-restore-time-based-radar-chart.md` for the fix implementation plan.
 
 ---
 
@@ -677,13 +712,14 @@ erDiagram
     exerciseProgressStore {
         json exerciseData "Record UserExerciseDataType"
         json branchData "Record UserExerciseBranchDataType"
-        number xp
+        json exerciseTotals "Record ExerciseTotalsType"
+        number xp "experience points"
         number level
         json testHistory "MaxValuesType array"
     }
 
     completedWorkoutsStore {
-        json workouts "Record CompleteWorkoutType"
+        json workouts "Record CompleteWorkoutType with aggregates"
         json workoutsList "CompletedWorkoutListEntryType array"
         json trainingPlans "TrainingPlanType array"
     }
@@ -708,9 +744,10 @@ erDiagram
 1. **Onboarding flow**: `anamnesisStore` -> `userProfileStore` (personalData, anamnesisCompleted) + `userWorkoutStore` (tags, seasonPhase)
 2. **Plan generation**: `userWorkoutStore.workoutData` + `userProfileStore.personalData` + `trainingScheduleStore` + `placesStore` + `skillTreeRegistry` + `exerciseRegistry` -> `userWorkoutStore.trainingPlan`
 3. **Workout execution**: `trainingPlan` + `exerciseRegistry` -> `exerciseProgressStore` (updated per exercise)
-4. **Workout completion**: Exercise snapshots -> `completedWorkoutsStore.workouts`, XP -> `exerciseProgressStore.xp`
+4. **Workout completion**: Exercise snapshots -> `completedWorkoutsStore.workouts` (with aggregates), XP -> `exerciseProgressStore.xp`, Totals -> `exerciseProgressStore.exerciseTotals`
 5. **Plan archival**: Completed `trainingPlan` -> `completedWorkoutsStore.trainingPlans`
 6. **Exercise selection**: `skillTreeRegistry` branches filtered by tags + `placesStore` equipment -> `exerciseRegistry` lookup by ID -> `exerciseProgressStore.branchData[].level` selects difficulty level
+7. **Statistics display**: `completedWorkoutsStore.workouts` (with userSkills, xpEarned, movedWeight) -> `useWorkoutsData` hook -> radar chart and summary cards
 
 ### Key Referential Links
 
@@ -724,8 +761,10 @@ erDiagram
 | userWorkoutStore | `trainingPlan...skills[].branchId` | skillTreeRegistry | branch key |
 | exerciseProgressStore | `exerciseData[exerciseId]` | exerciseRegistry | `exercises.get(id)` |
 | exerciseProgressStore | `branchData[branchId]` | skillTreeRegistry | branch key |
+| exerciseProgressStore | `exerciseTotals[exerciseId]` | exerciseRegistry | `exercises.get(id)` |
 | exerciseProgressStore | `testHistory[]` | userWorkoutStore | `workoutData.maxValues` (same shape) |
 | completedWorkoutsStore | `workouts[].exercises[]` | exerciseRegistry | via `exerciseId` |
+| completedWorkoutsStore | `workouts[].userSkills` | FocusArea type | radar chart display |
 | completedWorkoutsStore | `trainingPlans[]` | userWorkoutStore | `trainingPlan` (same shape) |
 | exerciseRegistry | `otherSideExerciseId` | exerciseRegistry | `exercises.get(id)` |
 | exerciseRegistry | `equivalentExercises[]` | exerciseRegistry | `exercises.get(id)` |
@@ -756,9 +795,15 @@ erDiagram
 
 11. **Single source of truth for user identity**: User identity data (gender, birthday, height, weight) is stored exclusively in `userProfileStore.personalData`. Training generators access this via utility functions in `userDataUtils.ts`.
 
+12. **Terminology: XP**: The gamification system uses "XP" (experience points) terminology consistently throughout the codebase.
+
+13. **Exercise totals tracking**: Per-exercise cumulative values (weight, duration, reps, height) are now tracked in `exerciseProgressStore.exerciseTotals` for lifetime statistics.
+
+14. **Pre-calculated workout aggregates**: `CompleteWorkoutType` now includes pre-calculated `exerciseCount`, `movedWeight`, and `userSkills` fields for efficient statistics display without recalculating from exercise arrays.
+
 ---
 
-## 9. Recommended Improvements (Architecture)
+## 9. Recommended Improvements
 
 Each improvement is classified by **impact** (how much it improves reliability, performance, or maintainability) and **effort** (implementation complexity).
 
@@ -897,31 +942,61 @@ Note: Branded types for time units (`DurationMinutes`, `DurationSeconds`) have a
 
 ---
 
-## 10. Structural Issues in the Data Model
+## 10. Changelog from v1
 
-These are problems within the data model itself: duplicated fields, naming inconsistencies, type mismatches, missing constraints, and shape conflicts.
+### Terminology
 
-### 10.8 Orphan References ???
+The gamification system uses **XP** (experience points) terminology:
+- `exerciseProgressStore.xp` - user's total experience points
+- `addXP()` - action to add XP after workout completion
+- `XP_PER_MINUTE` - constant for XP earned per minute of training
+- `xpEarned` - XP earned in a completed workout
 
-| Reference | Source | Target | Risk |
-|-----------|--------|--------|------|
-| `exerciseId` | `exerciseProgressStore.exerciseData` keys | `exerciseRegistry` | Progress data orphaned if catalog changes |
-| `branchId` | `exerciseProgressStore.branchData` keys | `skillTreeRegistry` branches | Branch data orphaned if skill trees change |
-| Hardcoded IDs | `UserExerciseData.ts` (`DEFAULT_USER_EXERCISE_DATA_LIST`) | Exercise catalog | Magic strings `"126"`, `"999999"`, `"1"`-`"8"` silently break if catalog changes |
+### New Types and Fields
 
----
+| Type/Field | Location | Description |
+|------------|----------|-------------|
+| `ExerciseTotalsType` | `models/ExerciseTotals.ts` | Cumulative values (weight, duration, repetition, height) |
+| `ExerciseTotalsMapType` | `models/ExerciseTotals.ts` | Map of exerciseId -> ExerciseTotalsType |
+| `exerciseTotals` | `exerciseProgressStore` | Per-exercise cumulative totals |
+| `FocusArea` | `models/Training.ts` | Union type for 6 radar chart categories |
+| `FOCUS_AREAS` | `models/Training.ts` | Array constant of focus areas |
+| `exerciseCount` | `CompleteWorkoutType` | Pre-calculated exercise count |
+| `movedWeight` | `CompleteWorkoutType` | Pre-calculated total weight moved |
+| `userSkills` | `CompleteWorkoutType` | Pre-calculated skill counts for radar chart |
 
-### 10.10 Parallel Type Definitions
+### New Utility Functions
 
-Types defined twice (manual TypeScript + valibot schema) that must be kept in sync manually.
+| Function | File | Description |
+|----------|------|-------------|
+| `calculateUserLevel(xp)` | `userProgressUtils.ts` | Calculate level from total XP |
+| `getXPInLevel(xp)` | `userProgressUtils.ts` | Get progress within current level |
+| `getXPForNextLevel(xp)` | `userProgressUtils.ts` | Get XP needed for next level |
+| `accumulateExerciseTotals()` | `models/ExerciseTotals.ts` | Add values to existing totals |
+| `createEmptyExerciseTotals()` | `models/ExerciseTotals.ts` | Create zero-initialized totals |
+| `updateUserExerciseTotals()` | `exerciseProgressStore.ts` | Store action for totals |
+| `getExerciseTotals()` | `exerciseProgressStore.ts` | Selector for exercise totals |
 
-| Type | Manual Definition | Schema Definition |
-|------|------------------|-------------------|
-| `CardioTypes` | `workoutConstants.ts` | `common.schema.ts` |
-| `SectionTypes` | `workoutConstants.ts` | `common.schema.ts` |
-| `SkillType` | `Training.ts` | `generator.schema.ts` |
-| `FilterResult` | `BranchFilter.ts` (generic, with `missingEquipment`) | `generator.schema.ts` (concrete, without `missingEquipment`) |
+### Statistics Support
 
-Note: Some types have been unified to re-export from schemas (e.g., `MaxValuesType`, `SeasonPhaseType`, `ReviewStatusType`).
+| Feature | Implementation |
+|---------|----------------|
+| Radar chart data | `userSkills` field in `CompleteWorkoutType` mapped to `FocusArea` type |
+| Time filtering | `useWorkoutsData` hook with `ScaleType` (week/month/year/total) |
+| Summary aggregation | `WorkoutsSummary` type with duration, count, xp, weight |
+| Statistics hook | `useWorkoutsData()` in `hooks/useWorkoutsData.ts` |
 
-Recommendation: Prefer typescript model files, when the schema is never used to verify the content. Prefer the schema, if the content is verifed at other places.
+### Level Calculation Formula
+
+The level calculation uses a progressive formula (constants in `userProgressConstants.ts`):
+
+```typescript
+XP_PER_MINUTE = 4          // XP earned per minute
+LEVEL_STEP_1 = 150         // XP for level 1 -> 2
+LEVEL_STEP_2 = 200         // XP for level 2 -> 3
+LEVEL_STEP = 5             // standard increase per level
+BIG_LEVEL_STEP = 150       // bonus increase at milestone levels
+BIG_LEVEL_FREQUENCE = 15   // milestone frequency
+```
+
+Level titles are defined in `LEVEL_STAGES_TITLES` from level 1 (ROOKIE) to level 45 (HANDBALL_GOTT).

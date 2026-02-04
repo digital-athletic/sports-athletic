@@ -72,10 +72,10 @@ export const useWorkoutsData = ({
       (acc, workout) => ({
         duration: acc.duration + (workout.duration || 0),
         count: acc.count + (workout.exerciseCount || 0),
-        points: acc.points + (workout.xpEarned || 0),
+        xp: acc.xp + (workout.xpEarned || 0),
         weight: acc.weight + (workout.movedWeight || 0),
       }),
-      { duration: 0, count: 0, points: 0, weight: 0 },
+      { duration: 0, count: 0, xp: 0, weight: 0 },
     );
   }, [filteredWorkouts]);
 

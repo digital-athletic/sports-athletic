@@ -8,30 +8,30 @@ import { Image, ImageSourcePropType } from "react-native";
 interface TrainingSummaryProps {
   duration: string;
   count: string;
-  points: string;
+  xp: string;
   weight: string;
   testID?: string;
 }
 
-type SummaryType = "DURATION" | "COUNT" | "POINTS" | "WEIGHT";
+type SummaryType = "DURATION" | "COUNT" | "XP" | "WEIGHT";
 
 const ICON_SIZE = 48;
 
 const SUMMARY_ICONS: Record<SummaryType, ImageSourcePropType> = {
   DURATION: require("../../../../assets/img/trainingsSummary/time.png"),
   COUNT: require("../../../../assets/img/trainingsSummary/count.png"),
-  POINTS: require("../../../../assets/img/trainingsSummary/trophy.png"),
+  XP: require("../../../../assets/img/trainingsSummary/trophy.png"),
   WEIGHT: require("../../../../assets/img/trainingsSummary/weight.png"),
 };
 
 /**
  * Training Summary Component
- * Displays duration, count, points, and weight statistics for a workout.
+ * Displays duration, count, XP, and weight statistics for a workout.
  */
 export const TrainingSummary: FC<TrainingSummaryProps> = ({
   duration,
   count,
-  points,
+  xp,
   weight,
   testID,
 }) => {
@@ -47,9 +47,9 @@ export const TrainingSummary: FC<TrainingSummaryProps> = ({
       title: t("statistics.workouts.summary.count"),
       alt: t("statistics.workouts.summary.countAlt"),
     },
-    POINTS: {
-      title: t("statistics.workouts.summary.points"),
-      alt: t("statistics.workouts.summary.pointsAlt"),
+    XP: {
+      title: t("statistics.workouts.summary.xp"),
+      alt: t("statistics.workouts.summary.xpAlt"),
     },
     WEIGHT: {
       title: t("statistics.workouts.summary.weight"),
@@ -60,7 +60,7 @@ export const TrainingSummary: FC<TrainingSummaryProps> = ({
   const values: Record<SummaryType, string> = {
     DURATION: duration,
     COUNT: count,
-    POINTS: points,
+    XP: xp,
     WEIGHT: weight,
   };
 
@@ -112,7 +112,7 @@ export const TrainingSummary: FC<TrainingSummaryProps> = ({
     >
       {renderEntry("DURATION")}
       {renderEntry("COUNT")}
-      {renderEntry("POINTS")}
+      {renderEntry("XP")}
       {renderEntry("WEIGHT")}
     </Box>
   );

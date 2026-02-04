@@ -8,7 +8,7 @@ export interface WorkoutsSummary {
   /** Total duration in seconds */
   duration: number;
   count: number;
-  points: number;
+  xp: number;
   weight: number;
 }
 

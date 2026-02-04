@@ -202,7 +202,7 @@ describe("workoutUtils", () => {
       expect(result).toEqual({
         duration: expect.any(Number),
         count: 0,
-        points: expect.any(Number),
+        xp: expect.any(Number),
         weight: 0,
         height: 0,
       });
@@ -215,10 +215,10 @@ describe("workoutUtils", () => {
       expect(result.duration).toBe(60);
     });
 
-    it("should calculate points from time", () => {
+    it("should calculate xp from time", () => {
       const result = calculateWorkoutTotals(mockTime, [], [], mockMaxValues);
 
-      expect(result.points).toBeGreaterThan(0);
+      expect(result.xp).toBeGreaterThan(0);
     });
 
     it("should count completed exercises", () => {

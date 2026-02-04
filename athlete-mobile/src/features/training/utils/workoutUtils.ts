@@ -132,14 +132,14 @@ export const calculateWorkoutTotals = (
 ): {
   duration: number;
   count: number;
-  points: number;
+  xp: number;
   weight: number;
   height: number;
 } => {
   let duration = 0;
   let pauseDuration = 0;
   let count = 0;
-  let points = 0;
+  let xp = 0;
   let weight = 0;
   let height = 0;
   if (exerciseList) {
@@ -156,7 +156,7 @@ export const calculateWorkoutTotals = (
           if (exercise.duration) {
             duration += +exercise.duration;
             if (isPauseExercise(exercise.exerciseId)) {
-              // count pause duration - no points
+              // count pause duration - no xp
               pauseDuration += +exercise.duration;
             }
           } else if (exercise.repetition) {
@@ -209,18 +209,18 @@ export const calculateWorkoutTotals = (
   ) {
     // calculate time in ms
     duration = time.end - time.start;
-    // calculate points from time without pause
-    points = Math.round(((duration - time.pause) / 1000 / 60) * XP_PER_MINUTE);
+    // calculate xp from time without pause
+    xp = Math.round(((duration - time.pause) / 1000 / 60) * XP_PER_MINUTE);
     // switch to seconds for return
     duration = Math.ceil(duration / 1000);
   } else {
     // use old estimation
-    points = (duration - pauseDuration) * XP_PER_MINUTE;
+    xp = (duration - pauseDuration) * XP_PER_MINUTE;
   }
   return {
     duration: duration,
     count: count,
-    points: points,
+    xp: xp,
     weight: weight,
     height: height,
   };

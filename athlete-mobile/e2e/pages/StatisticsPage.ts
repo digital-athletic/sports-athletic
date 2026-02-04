@@ -24,8 +24,8 @@ export interface RadarChartLabelExpectations {
 export interface SummaryExpectations {
   /** Expected duration in seconds */
   duration?: number;
-  /** Expected points/XP */
-  points?: number;
+  /** Expected XP */
+  xp?: number;
   /** Expected moved weight in kg */
   weight?: number;
   /** Expected exercise count */
@@ -88,9 +88,9 @@ export class StatisticsPage extends BasePage {
   }
 
   /**
-   * Gets points from summary.
+   * Gets XP from summary.
    */
-  async getPoints(): Promise<number> {
+  async getXp(): Promise<number> {
     const text = await this.getSummaryValue("Points");
     return parseInt(text.match(/(\d+)/)?.[1] ?? "0", 10);
   }
@@ -114,11 +114,9 @@ export class StatisticsPage extends BasePage {
         expected.duration,
       );
     }
-    if (expected.points) {
-      const actual = await this.getPoints();
-      expect(actual, `Points should be ${expected.points}`).toBe(
-        expected.points,
-      );
+    if (expected.xp) {
+      const actual = await this.getXp();
+      expect(actual, `XP should be ${expected.xp}`).toBe(expected.xp);
     }
     if (expected.weight) {
       const actual = await this.getMovedWeightKg();
@@ -294,7 +292,7 @@ export class StatisticsPage extends BasePage {
   async getWorkoutRowSummary(rowIndex: number): Promise<{
     duration: string;
     count: string;
-    points: string;
+    xp: string;
     weight: string;
   } | null> {
     const row = this.getWorkoutRow(rowIndex);
@@ -318,7 +316,7 @@ export class StatisticsPage extends BasePage {
     return {
       duration: await this.getSummaryValueFromContainer(summary, "Duration"),
       count: await this.getSummaryValueFromContainer(summary, "Exercise count"),
-      points: await this.getSummaryValueFromContainer(summary, "Points"),
+      xp: await this.getSummaryValueFromContainer(summary, "Points"),
       weight: await this.getSummaryValueFromContainer(summary, "Moved weight"),
     };
   }
@@ -370,12 +368,12 @@ export class StatisticsPage extends BasePage {
   }
 
   /**
-   * Gets the points from a specific workout row.
+   * Gets the XP from a specific workout row.
    */
-  async getWorkoutRowPoints(rowIndex: number): Promise<number> {
+  async getWorkoutRowXp(rowIndex: number): Promise<number> {
     const summary = await this.getWorkoutRowSummary(rowIndex);
     if (!summary) return 0;
-    return parseInt(summary.points.match(/(\d+)/)?.[1] ?? "0", 10);
+    return parseInt(summary.xp.match(/(\d+)/)?.[1] ?? "0", 10);
   }
 
   /**

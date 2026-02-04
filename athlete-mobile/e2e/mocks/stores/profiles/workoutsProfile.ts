@@ -20,7 +20,7 @@ import { createCompletedProfile } from "./completedProfile";
  *
  * Each seeded workout has:
  * - Duration: 1800s (30 min)
- * - XP: 50 points
+ * - XP: 50
  * - 2 exercises (1 with weight: 15kg × 10 reps × 3 sets = 450kg)
  *
  * @param workoutCount - Number of workouts to seed (default: 1)
@@ -102,7 +102,7 @@ export function createTimeFilteredWorkoutsProfile(): StoreDataMap {
  *
  * Each seeded workout has:
  * - Duration: 1200s (20 min)
- * - XP: 0 points (the bug scenario)
+ * - XP: 0 (the bug scenario)
  * - 3 exercises
  * - Moved weight: 300kg
  */

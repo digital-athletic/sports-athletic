@@ -74,7 +74,7 @@ export const Workouts: FC<WorkoutsProps> = ({
             <TrainingSummary
               duration={getTimeString(item.duration)}
               count={String(item.exerciseCount ?? 0)}
-              points={String(item.xpEarned ?? 0)}
+              xp={String(item.xpEarned ?? 0)}
               weight={getWeightString(item.movedWeight ?? 0)}
               testID={`workout-row-${item.id}-summary`}
             />
@@ -119,7 +119,7 @@ export const Workouts: FC<WorkoutsProps> = ({
         <TrainingSummary
           duration={getTimeString(summaryData.duration)}
           count={String(summaryData.count)}
-          points={String(summaryData.points)}
+          xp={String(summaryData.xp)}
           weight={getWeightString(summaryData.weight)}
           testID="overall-summary"
         />

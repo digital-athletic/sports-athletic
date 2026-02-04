@@ -745,8 +745,8 @@
         "durationAlt": "Duration icon",
         "count": "Exercise count",
         "countAlt": "Exercise count icon",
-        "points": "Points",
-        "pointsAlt": "Points icon",
+        "xp": "Points",
+        "xpAlt": "Points icon",
         "weight": "Moved weight",
         "weightAlt": "Weight icon"
       },

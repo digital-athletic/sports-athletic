@@ -24,7 +24,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
  *
  * Displays training completion summary with:
  * - Radar chart showing skill distribution
- * - Training summary (duration, exercises, points, weight)
+ * - Training summary (duration, exercises, xp, weight)
  * - Special handling for test workouts (power test results)
  *
  * Back gestures disabled to ensure controlled flow.
@@ -63,11 +63,11 @@ const TrainingSuccessScreen: FC = () => {
 
   // Award XP when workout is completed (only once)
   useEffect(() => {
-    if (!xpAwarded.current && totals.points > 0) {
-      addXP(totals.points);
+    if (!xpAwarded.current && totals.xp > 0) {
+      addXP(totals.xp);
       xpAwarded.current = true;
     }
-  }, [totals.points, addXP]);
+  }, [totals.xp, addXP]);
 
   // Save completed workout to history (only once, exclude test workouts)
   useEffect(() => {
@@ -82,7 +82,7 @@ const TrainingSuccessScreen: FC = () => {
         timestamp: Date.now(),
         exercises: exerciseList,
         duration: seconds(totals.duration),
-        xpEarned: totals.points,
+        xpEarned: totals.xp,
         movedWeight: totals.weight,
         exerciseCount: totals.count,
         userSkills: skills,
@@ -133,7 +133,7 @@ const TrainingSuccessScreen: FC = () => {
                 <TrainingSummary
                   duration={getTimeString(totals.duration)}
                   count={totals.count.toString()}
-                  points={totals.points.toString()}
+                  xp={totals.xp.toString()}
                   weight={getWeightString(totals.weight)}
                 />
               </Box>

@@ -745,8 +745,8 @@
         "durationAlt": "Dauer-Symbol",
         "count": "Übungszahl",
         "countAlt": "Übungszahl-Symbol",
-        "points": "Punkte",
-        "pointsAlt": "Punkte-Symbol",
+        "xp": "Punkte",
+        "xpAlt": "Punkte-Symbol",
         "weight": "Bewegtes Gewicht",
         "weightAlt": "Gewicht-Symbol"
       },

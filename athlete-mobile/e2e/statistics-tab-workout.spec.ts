@@ -85,11 +85,11 @@ test.describe("Statistics Page - Single Workout Completion", () => {
       `Exercise count should be > 0, got ${countNumeric}`,
     ).toBeGreaterThan(0);
 
-    // Verify points (XP) >= 0 (XP calculation may not always populate in test scenarios)
-    const pointsNumeric = await statsPage.getPoints();
+    // Verify XP >= 0 (XP calculation may not always populate in test scenarios)
+    const xpNumeric = await statsPage.getXp();
     expect(
-      pointsNumeric,
-      `Points should be >= 0, got ${pointsNumeric}`,
+      xpNumeric,
+      `XP should be >= 0, got ${xpNumeric}`,
     ).toBeGreaterThanOrEqual(0);
 
     // Verify at least one workout entry is visible
@@ -120,7 +120,7 @@ test.describe("Statistics Page - Multiple Workouts", () => {
     await statsPage.expectSummaryValues({
       duration: 3600, // 2 × 1800s
       exerciseCount: 4, // 2 × 2 exercises
-      points: 100, // 2 × 50 XP
+      xp: 100, // 2 × 50 XP
       weight: 900, // 2 × 450kg
     });
 
@@ -148,7 +148,7 @@ test.describe("Statistics Page - Multiple Workouts", () => {
     // Verify first workout row shows expected values from seed data:
     // - Duration: 1800s (30 min)
     // - Exercise count: 2
-    // - Points: 50
+    // - XP: 50
     // - Weight: 450kg
     const row0Duration = await statsPage.getWorkoutRowDurationSeconds(0);
     expect(row0Duration, "First row duration should be 1800s").toBe(1800);
@@ -156,8 +156,8 @@ test.describe("Statistics Page - Multiple Workouts", () => {
     const row0Count = await statsPage.getWorkoutRowExerciseCount(0);
     expect(row0Count, "First row exercise count should be 2").toBe(2);
 
-    const row0Points = await statsPage.getWorkoutRowPoints(0);
-    expect(row0Points, "First row points should be 50").toBe(50);
+    const row0Xp = await statsPage.getWorkoutRowXp(0);
+    expect(row0Xp, "First row XP should be 50").toBe(50);
 
     const row0Weight = await statsPage.getWorkoutRowWeightKg(0);
     expect(row0Weight, "First row weight should be 450kg").toBe(450);
@@ -295,28 +295,28 @@ test.describe("Statistics Page - Time Filtering", () => {
     // "Total" (default) - all 3 workouts
     await statsPage.expectSummaryValues({
       duration: 5400, // 3 × 1800s
-      points: 150, // 3 × 50
+      xp: 150, // 3 × 50
       weight: 1350, // 3 × 450kg
     });
 
     // "Last year" - all 3 workouts (all within 1 year)
     await statsPage.expectSummaryValuesForScale("Last year", {
       duration: 5400,
-      points: 150,
+      xp: 150,
       weight: 1350,
     });
 
     // "Last month" - 2 workouts (excludes 45-day old)
     await statsPage.expectSummaryValuesForScale("Last month", {
       duration: 3600, // 2 × 1800s
-      points: 100, // 2 × 50
+      xp: 100, // 2 × 50
       weight: 900, // 2 × 450kg
     });
 
     // "Last week" - 1 workout (excludes 10-day and 45-day old)
     await statsPage.expectSummaryValuesForScale("Last week", {
       duration: 1800, // 1 × 1800s
-      points: 50, // 1 × 50
+      xp: 50, // 1 × 50
       weight: 450, // 1 × 450kg
     });
 

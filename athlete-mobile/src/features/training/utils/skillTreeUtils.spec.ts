@@ -8,7 +8,7 @@ import {
   getSkillTree,
   getUserExerciseFromBranch,
   isPreventionSkill,
-  mapSkillToFocusArea,
+  mapSkillCodeToFocusArea,
 } from "./skillTreeUtils";
 
 describe("skillTreeUtils", () => {
@@ -104,14 +104,8 @@ describe("skillTreeUtils", () => {
       expect(result).toEqual(mockSkillTrees.GKSKG);
     });
 
-    it("should return PLYO for all PLYO variants", () => {
+    it("should return PLYO skill tree for PLYO skill", () => {
       expect(getSkillTree(mockSkillTrees, "PLYO", [], false)).toEqual(
-        mockSkillTrees.PLYO,
-      );
-      expect(getSkillTree(mockSkillTrees, "PLYO_MEDIUM", [], false)).toEqual(
-        mockSkillTrees.PLYO,
-      );
-      expect(getSkillTree(mockSkillTrees, "PLYO_HIGH", [], false)).toEqual(
         mockSkillTrees.PLYO,
       );
     });
@@ -538,167 +532,118 @@ describe("skillTreeUtils", () => {
     });
   });
 
-  describe("mapSkillToFocusArea", () => {
-    describe("PREVENTION focus area", () => {
-      it("should map PREVSHOULDER to PREVENTION", () => {
-        expect(mapSkillToFocusArea("PREVSHOULDER")).toBe("PREVENTION");
-      });
-
-      it("should map PREVKNEE to PREVENTION", () => {
-        expect(mapSkillToFocusArea("PREVKNEE")).toBe("PREVENTION");
-      });
-
-      it("should map PREVWRIST to PREVENTION", () => {
-        expect(mapSkillToFocusArea("PREVWRIST")).toBe("PREVENTION");
-      });
-
-      it("should map PREVANKLE to PREVENTION", () => {
-        expect(mapSkillToFocusArea("PREVANKLE")).toBe("PREVENTION");
-      });
-
-      it("should map PREVSPINE to PREVENTION", () => {
-        expect(mapSkillToFocusArea("PREVSPINE")).toBe("PREVENTION");
-      });
-
-      it("should map PREV to PREVENTION", () => {
-        expect(mapSkillToFocusArea("PREV")).toBe("PREVENTION");
+  describe("mapSkillCodeToFocusArea", () => {
+    describe("FocusArea pass-through", () => {
+      it.each([
+        ["PREVENTION", "PREVENTION"],
+        ["MOBILITY", "MOBILITY"],
+        ["SWR", "SWR"],
+        ["WARMUP", "WARMUP"],
+        ["STABILITY", "STABILITY"],
+        ["CARDIO", "CARDIO"],
+      ])("should pass through %s unchanged", (input, expected) => {
+        expect(mapSkillCodeToFocusArea(input)).toBe(expected);
       });
     });
 
-    describe("WARMUP focus area", () => {
-      it("should map WU to WARMUP", () => {
-        expect(mapSkillToFocusArea("WU")).toBe("WARMUP");
-      });
-
-      it("should map WUSKSA to WARMUP", () => {
-        expect(mapSkillToFocusArea("WUSKSA")).toBe("WARMUP");
-      });
-
-      it("should map WUSPEZIAL to WARMUP", () => {
-        expect(mapSkillToFocusArea("WUSPEZIAL")).toBe("WARMUP");
-      });
-
-      it("should map CD to WARMUP", () => {
-        expect(mapSkillToFocusArea("CD")).toBe("WARMUP");
+    describe("PREVENTION codes", () => {
+      it.each([
+        ["PREV", "PREVENTION"],
+        ["PREVKNEE", "PREVENTION"],
+        ["PREVSHOULDER", "PREVENTION"],
+        ["PREVWRIST", "PREVENTION"],
+        ["PREVANKLE", "PREVENTION"],
+        ["PREVSPINE", "PREVENTION"],
+      ])("should map %s to PREVENTION", (input, expected) => {
+        expect(mapSkillCodeToFocusArea(input)).toBe(expected);
       });
     });
 
-    describe("STABILITY focus area", () => {
-      it("should map STABILITY to STABILITY", () => {
-        expect(mapSkillToFocusArea("STABILITY")).toBe("STABILITY");
-      });
-
-      it("should map BAS to STABILITY", () => {
-        expect(mapSkillToFocusArea("BAS")).toBe("STABILITY");
-      });
-
-      it("should map GKS to STABILITY", () => {
-        expect(mapSkillToFocusArea("GKS")).toBe("STABILITY");
+    describe("WARMUP codes", () => {
+      it.each([
+        ["WU", "WARMUP"],
+        ["WUPREV", "WARMUP"],
+        ["WUSPEZIAL", "WARMUP"],
+        ["WUSKSA", "WARMUP"],
+        ["CD", "WARMUP"],
+      ])("should map %s to WARMUP", (input, expected) => {
+        expect(mapSkillCodeToFocusArea(input)).toBe(expected);
       });
     });
 
-    describe("MOBILITY focus area", () => {
-      it("should map MOBILITY to MOBILITY", () => {
-        expect(mapSkillToFocusArea("MOBILITY")).toBe("MOBILITY");
-      });
-
-      it("should map MOB to MOBILITY", () => {
-        expect(mapSkillToFocusArea("MOB")).toBe("MOBILITY");
-      });
-
-      it("should map BR to MOBILITY", () => {
-        expect(mapSkillToFocusArea("BR")).toBe("MOBILITY");
+    describe("MOBILITY codes", () => {
+      it.each([
+        ["MOB", "MOBILITY"],
+        ["BR", "MOBILITY"],
+        ["FOAM_ROLLER", "MOBILITY"],
+      ])("should map %s to MOBILITY", (input, expected) => {
+        expect(mapSkillCodeToFocusArea(input)).toBe(expected);
       });
     });
 
-    describe("SWR focus area", () => {
-      it("should map SWR1 to SWR", () => {
-        expect(mapSkillToFocusArea("SWR1")).toBe("SWR");
-      });
-
-      it("should map SWR1KG to SWR", () => {
-        expect(mapSkillToFocusArea("SWR1KG")).toBe("SWR");
-      });
-
-      it("should map SWR2 to SWR", () => {
-        expect(mapSkillToFocusArea("SWR2")).toBe("SWR");
-      });
-
-      it("should map SWR2KG to SWR", () => {
-        expect(mapSkillToFocusArea("SWR2KG")).toBe("SWR");
-      });
-
-      it("should map MAX_KRAFT to SWR", () => {
-        expect(mapSkillToFocusArea("MAX_KRAFT")).toBe("SWR");
-      });
-
-      it("should map MAX to SWR", () => {
-        expect(mapSkillToFocusArea("MAX")).toBe("SWR");
-      });
-
-      it("should map SK to SWR", () => {
-        expect(mapSkillToFocusArea("SK")).toBe("SWR");
-      });
-
-      it("should map SKKG to SWR", () => {
-        expect(mapSkillToFocusArea("SKKG")).toBe("SWR");
-      });
-
-      it("should map SWR to SWR", () => {
-        expect(mapSkillToFocusArea("SWR")).toBe("SWR");
+    describe("STABILITY codes", () => {
+      it.each([
+        ["BAS", "STABILITY"],
+        ["GKS", "STABILITY"],
+        ["GKSKG", "STABILITY"],
+      ])("should map %s to STABILITY", (input, expected) => {
+        expect(mapSkillCodeToFocusArea(input)).toBe(expected);
       });
     });
 
-    describe("CARDIO focus area", () => {
-      it("should map SA to CARDIO", () => {
-        expect(mapSkillToFocusArea("SA")).toBe("CARDIO");
-      });
-
-      it("should map SAKG to CARDIO", () => {
-        expect(mapSkillToFocusArea("SAKG")).toBe("CARDIO");
-      });
-
-      it("should map CARDIO_1K to CARDIO", () => {
-        expect(mapSkillToFocusArea("CARDIO_1K")).toBe("CARDIO");
-      });
-
-      it("should map CARDIO_1L to CARDIO", () => {
-        expect(mapSkillToFocusArea("CARDIO_1L")).toBe("CARDIO");
-      });
-
-      it("should map CARDIO_2 to CARDIO", () => {
-        expect(mapSkillToFocusArea("CARDIO_2")).toBe("CARDIO");
-      });
-
-      it("should map CARDIO_3 to CARDIO", () => {
-        expect(mapSkillToFocusArea("CARDIO_3")).toBe("CARDIO");
-      });
-
-      it("should map CARDIO_4 to CARDIO", () => {
-        expect(mapSkillToFocusArea("CARDIO_4")).toBe("CARDIO");
-      });
-
-      it("should map CARDIO_5 to CARDIO", () => {
-        expect(mapSkillToFocusArea("CARDIO_5")).toBe("CARDIO");
-      });
-
-      it("should map HBCARDIO to CARDIO", () => {
-        expect(mapSkillToFocusArea("HBCARDIO")).toBe("CARDIO");
+    describe("SWR codes", () => {
+      it.each([
+        ["SWR1", "SWR"],
+        ["SWR1KG", "SWR"],
+        ["SWR2", "SWR"],
+        ["SWR2KG", "SWR"],
+        ["SK", "SWR"],
+        ["SKKG", "SWR"],
+        ["MAX", "SWR"],
+        ["MAX_KRAFT", "SWR"],
+        ["main", "SWR"],
+        ["PHASE", "SWR"],
+        ["TEST", "SWR"],
+      ])("should map %s to SWR", (input, expected) => {
+        expect(mapSkillCodeToFocusArea(input)).toBe(expected);
       });
     });
 
-    describe("Default/Unknown skills", () => {
-      it("should return undefined for unknown skill", () => {
-        expect(mapSkillToFocusArea("UNKNOWN_SKILL")).toBeUndefined();
+    describe("CARDIO codes", () => {
+      it.each([
+        ["SA", "CARDIO"],
+        ["SAKG", "CARDIO"],
+        ["SAS", "CARDIO"],
+        ["SASKG", "CARDIO"],
+        ["CARDIO_1", "CARDIO"],
+        ["CARDIO_1_SHORT", "CARDIO"],
+        ["CARDIO_1_LAKTAT", "CARDIO"],
+        ["CARDIO_2", "CARDIO"],
+        ["CARDIO_3", "CARDIO"],
+        ["CARDIO_4", "CARDIO"],
+        ["CARDIO_5", "CARDIO"],
+        ["HBCARDIO", "CARDIO"],
+      ])("should map %s to CARDIO", (input, expected) => {
+        expect(mapSkillCodeToFocusArea(input)).toBe(expected);
       });
+    });
 
-      it("should return undefined for empty string", () => {
-        expect(mapSkillToFocusArea("")).toBeUndefined();
-      });
+    describe("Non-focus skill types", () => {
+      it.each([["SUPPORT"], ["SCHNELLIGKEITSAUSDAUER_SPECIAL"]])(
+        "should return undefined for %s",
+        (input) => {
+          expect(mapSkillCodeToFocusArea(input)).toBeUndefined();
+        },
+      );
+    });
 
-      it("should return undefined for random string", () => {
-        expect(mapSkillToFocusArea("RANDOM_SKILL_NAME")).toBeUndefined();
-      });
+    describe("Unknown/Invalid codes", () => {
+      it.each([["UNKNOWN_SKILL"], [""], ["RANDOM_SKILL_NAME"]])(
+        "should return undefined for %s",
+        (input) => {
+          expect(mapSkillCodeToFocusArea(input)).toBeUndefined();
+        },
+      );
     });
   });
 

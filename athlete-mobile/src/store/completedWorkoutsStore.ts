@@ -1,6 +1,6 @@
 import { SharedConstants } from "@/constants/sharedConstants";
 import type { DurationSeconds } from "@/features/training/models/TimeUnits";
-import type { SkillFocusType } from "@/features/training/models/Training";
+import type { FocusArea } from "@/features/training/models/Training";
 import { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { create } from "zustand";
@@ -17,7 +17,7 @@ export interface CompleteWorkoutType {
   xpEarned?: number;
   movedWeight?: number;
   exerciseCount?: number;
-  userSkills?: Record<SkillFocusType, number>;
+  userSkills?: Record<FocusArea, number>;
 }
 
 export interface CompletedWorkoutListEntryType {

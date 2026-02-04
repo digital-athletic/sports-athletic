@@ -3,7 +3,7 @@ import type { SkillTreesState } from "@/data/skillTreeRegistry";
 import { ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
 import { isPlaceholderBranch } from "@/features/training/models/IdTypes";
 import type { SkillBranchType } from "@/schemas/skillTree.schema";
-import { SkillType } from "@/features/training/models/Training";
+import type { SkillCode } from "@/schemas/generator.schema";
 import { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { hasWeights } from "@/features/training/utils/equipmentUtils";
 import { getRegionsForPreventionSkills } from "@/features/training/utils/preventionUtils";
@@ -30,7 +30,7 @@ export interface BranchLevelUpdateInput {
   levelUp: boolean;
   branchId: string;
   exerciseId: string;
-  skill: SkillType;
+  skill: SkillCode;
   ageGroup: string;
 }
 
@@ -46,7 +46,7 @@ export type BranchLevelResult =
       equivalentBranches: ExerciseBranchType[];
       sectionIndex: number;
       weekday: number;
-      skill: SkillType;
+      skill: SkillCode;
     }
   | {
       type: "NO_CHANGE";
@@ -306,7 +306,7 @@ export interface BranchLevelCallbacks {
   replaceBranchInTrainingPlan: (
     sectionIndex: number,
     weekday: number,
-    skill: SkillType,
+    skill: SkillCode,
     branchId: string,
     equivalentBranches: ExerciseBranchType[],
   ) => void;

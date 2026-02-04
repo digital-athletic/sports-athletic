@@ -21,10 +21,7 @@ import {
 } from "@/features/training/models/MaxValues";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { TemporalDataType } from "@/features/training/models/TemporalData";
-import type {
-  SkillType,
-  TrainingType,
-} from "@/features/training/models/Training";
+import type { TrainingType } from "@/features/training/models/Training";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import type { UserTrainingType } from "@/features/training/models/UserTraining";
 import { getSectionForDate } from "@/features/training/trainingUtils";
@@ -71,10 +68,10 @@ import {
   type FeedbackAdjustment,
   type FilterResult,
   type GenderLevelValueMap,
-  type GeneratorSkillTypeFromSchema,
   type MaxTrainingRepsEntry,
   type MaxTrainingWeightsResult,
   type SkillBranchData,
+  type SkillCode,
   type SkillWithLength,
   type StartValuesResult,
   type TestWorkoutsStartValuesType,
@@ -700,7 +697,7 @@ export default class TrainingGenerator {
 
     let exerciseList = this.getSetListFromExercisePairs(
       exercisePairs,
-      { skill: type as GeneratorSkillTypeFromSchema, length: exerciseTime },
+      { skill: type as SkillCode, length: exerciseTime },
       skillTrees,
       user,
       place,
@@ -1362,7 +1359,7 @@ export default class TrainingGenerator {
    */
   getSetListFromExercisePairs = (
     exercisePairs: ExercisePair[],
-    skill: { skill: GeneratorSkillTypeFromSchema; length: number },
+    skill: { skill: SkillCode; length: number },
     skillTrees: { [skillName: string]: SkillTreeType },
     user: UserType,
     place: string,
@@ -2136,7 +2133,7 @@ export default class TrainingGenerator {
         ...this.getSetListFromExercisePairs(
           exercisePairs,
           {
-            skill: skillList[i].skill as GeneratorSkillTypeFromSchema,
+            skill: skillList[i].skill as SkillCode,
             length: skillList[i].length ?? 0,
           },
           skillTrees,
@@ -2916,7 +2913,7 @@ export default class TrainingGenerator {
 
     // from data/generator/TestIntensity
     let intensity: IntensityData | null = getIntensityBySkill(
-      skillName as SkillType,
+      skillName as SkillCode,
     );
 
     let exerciseValues = this.getExerciseValues(
@@ -3151,7 +3148,7 @@ export default class TrainingGenerator {
             percentage,
             repetitions,
             set,
-            skill as GeneratorSkillTypeFromSchema,
+            skill as SkillCode,
             i,
           ),
         );
@@ -3160,7 +3157,7 @@ export default class TrainingGenerator {
           exerciseId: PAUSE_EXERCISE_ID,
           set: [set, 3],
           duration: pauseFactor * pauseLength,
-          skill: skill as GeneratorSkillTypeFromSchema,
+          skill: skill as SkillCode,
         });
       }
     }
@@ -3185,7 +3182,7 @@ export default class TrainingGenerator {
     percentage: number,
     repetitions: number,
     set: number,
-    skill: GeneratorSkillTypeFromSchema,
+    skill: SkillCode,
     _num: number,
   ): GeneratedSetListEntry => {
     const gender = userGender === "MALE" ? "m" : "w";
@@ -4015,9 +4012,7 @@ const getStartValues = (
   return result;
 };
 
-export const getIntensityBySkill = (
-  skill: SkillType | GeneratorSkillTypeFromSchema | string,
-) => {
+export const getIntensityBySkill = (skill: SkillCode) => {
   switch (skill) {
     // use SWR2 till exercises can be distinguished between SWR1 and SWR2
     case "SWR1":

@@ -50,7 +50,7 @@ const CONNECTION_TIMOUT_MS = 1000 * 45; // 45 seconds
  *
  * Note: Incrementing this will log out users and clear all app data.
  */
-const PERSIST_VERSION = 9;
+const PERSIST_VERSION = 10;
 
 export const SharedConstants = {
   APP_NAME,

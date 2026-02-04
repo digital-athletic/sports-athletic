@@ -2,7 +2,6 @@ import { BackHeader } from "@/common/BackHeader";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import { SkillType } from "@/features/training/models/Training";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { getEquipmentList } from "@/features/training/trainingUtils";
@@ -310,7 +309,7 @@ const SkillGroupItem: FC<SkillGroupItemProps> = ({
   return (
     <Box marginBottom="l">
       <Text variant="subtitle" marginBottom="m">
-        {t(`training.skill.${skillGroup.skill as SkillType}`, {
+        {t(`training.skill.${skillGroup.skill}`, {
           defaultValue: skillGroup.skill,
         })}
       </Text>

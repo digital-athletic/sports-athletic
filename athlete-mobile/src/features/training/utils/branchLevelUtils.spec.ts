@@ -103,17 +103,17 @@ describe("branchLevelUtils", () => {
   describe("getBranchIdsInUse", () => {
     it("extracts unique branch IDs from exercise list", () => {
       const exerciseList = [
-        { exerciseId: "101", branchId: "25", skill: "SWR" as const },
-        { exerciseId: "201", branchId: "26", skill: "SWR" as const },
-        { exerciseId: "102", branchId: "25", skill: "SWR" as const },
+        { exerciseId: "101", branchId: "25", skill: "SWR1" as const },
+        { exerciseId: "201", branchId: "26", skill: "SWR1" as const },
+        { exerciseId: "102", branchId: "25", skill: "SWR1" as const },
       ];
       expect(getBranchIdsInUse(exerciseList)).toEqual(["25", "26"]);
     });
 
     it("filters out -1 branch IDs (pause exercises)", () => {
       const exerciseList = [
-        { exerciseId: "101", branchId: "25", skill: "SWR" as const },
-        { exerciseId: "999999", branchId: "-1", skill: "SWR" as const },
+        { exerciseId: "101", branchId: "25", skill: "SWR1" as const },
+        { exerciseId: "999999", branchId: "-1", skill: "SWR1" as const },
       ];
       expect(getBranchIdsInUse(exerciseList)).toEqual(["25"]);
     });
@@ -186,7 +186,7 @@ describe("branchLevelUtils", () => {
           levelUp: true,
           branchId: "999",
           exerciseId: "100",
-          skill: "SWR",
+          skill: "SWR1",
           ageGroup: "ADULT",
         },
         context,
@@ -205,7 +205,7 @@ describe("branchLevelUtils", () => {
           levelUp: true,
           branchId: "25",
           exerciseId: "102",
-          skill: "SWR",
+          skill: "SWR1",
           ageGroup: "ADULT",
         },
         context,
@@ -228,7 +228,7 @@ describe("branchLevelUtils", () => {
           levelUp: false,
           branchId: "25",
           exerciseId: "103",
-          skill: "SWR",
+          skill: "SWR1",
           ageGroup: "ADULT",
         },
         context,
@@ -251,7 +251,7 @@ describe("branchLevelUtils", () => {
           levelUp: true,
           branchId: "25",
           exerciseId: "103",
-          skill: "SWR",
+          skill: "SWR1",
           ageGroup: "ADULT",
         },
         context,
@@ -274,7 +274,7 @@ describe("branchLevelUtils", () => {
           levelUp: true,
           branchId: "50",
           exerciseId: "601",
-          skill: "STABILITY",
+          skill: "BAS",
           ageGroup: "ADULT",
         },
         context,

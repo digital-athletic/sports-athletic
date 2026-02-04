@@ -1,5 +1,5 @@
 import type { UserSkills } from "@/features/statistics/models/WorkoutsData";
-import type { SkillFocusType } from "@/features/training/models/Training";
+import type { FocusArea } from "@/features/training/models/Training";
 import { Box } from "@/theme/Box";
 import { getHexagonPoints } from "@/utils/geometry";
 import { Image } from "expo-image";
@@ -40,7 +40,7 @@ export const RadarChart: FC<RadarChartProps> = ({ userSkills }) => {
   );
 
   // Create labels with skill name and percentage on separate lines
-  const labels = SKILL_ORDER.map((skill: SkillFocusType) => {
+  const labels = SKILL_ORDER.map((skill: FocusArea) => {
     const skillName = t(`statistics.workouts.radarChart.${skill}`) as string;
     const percentage = `${Math.round(percentages[skill])}%`;
     return `${skillName}\n${percentage}`;

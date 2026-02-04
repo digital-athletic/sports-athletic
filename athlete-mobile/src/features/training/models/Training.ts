@@ -13,28 +13,29 @@ export type TrainingDataType = {
 
 export type TrainingSelectionType = "PLAN" | "PREV" | "QUICK";
 
-export type SkillType =
+/**
+ * The 6 focus areas displayed on the radar chart and used for statistics.
+ * These are the canonical categories for aggregating training time.
+ */
+export type FocusArea =
   | "PREVENTION"
   | "MOBILITY"
   | "SWR"
   | "WARMUP"
   | "STABILITY"
-  | "CARDIO"
-  | "SUPPORT"
-  | "FOAM_ROLLER"
-  | "SCHNELLIGKEITSAUSDAUER_SPECIAL";
+  | "CARDIO";
 
 /**
- * Extended skill type that includes generator-specific skill values.
- * These are used internally during workout generation but may not appear
- * in the final user-facing exercise data.
+ * Array of all focus areas in radar chart display order.
  */
-export type GeneratorSkillType = SkillType | "WUSPEZIAL" | "main";
-
-export type SkillFocusType = Exclude<
-  SkillType,
-  "SUPPORT" | "FOAM_ROLLER" | "SCHNELLIGKEITSAUSDAUER_SPECIAL"
->;
+export const FOCUS_AREAS: readonly FocusArea[] = [
+  "MOBILITY",
+  "PREVENTION",
+  "CARDIO",
+  "STABILITY",
+  "WARMUP",
+  "SWR",
+] as const;
 
 export type TrainingTimeType = {
   start?: number;

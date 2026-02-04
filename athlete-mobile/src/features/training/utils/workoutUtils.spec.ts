@@ -6,7 +6,7 @@ import type {
   ExerciseValuesType,
 } from "@/schemas/exercise.schema";
 import { DEFAULT_MAX_VALUES, type MaxValuesType } from "../models/MaxValues";
-import { type SkillType, type TrainingTimeType } from "../models/Training";
+import type { TrainingTimeType } from "../models/Training";
 import { type UserExerciseDataType } from "../models/UserExerciseData";
 import {
   calculateWorkoutTotals,
@@ -227,14 +227,14 @@ describe("workoutUtils", () => {
           exerciseId: "1",
           set: [3, 3],
           repetition: 10,
-          skill: "PREVENTION",
+          skill: "PREV",
           feedback: { difficulty: "SUCCEEDED" },
         },
         {
           exerciseId: "2",
           set: [2, 3],
           repetition: 8,
-          skill: "PREVENTION",
+          skill: "PREV",
           feedback: { difficulty: "SUCCEEDED" },
         },
       ];
@@ -255,14 +255,14 @@ describe("workoutUtils", () => {
           exerciseId: "999999",
           set: [1, 1],
           duration: 30,
-          skill: "PREVENTION",
+          skill: "PREV",
           feedback: { difficulty: "SUCCEEDED" },
         },
         {
           exerciseId: "1",
           set: [1, 1],
           repetition: 10,
-          skill: "PREVENTION",
+          skill: "PREV",
           feedback: { difficulty: "SUCCEEDED" },
         },
       ];
@@ -283,7 +283,7 @@ describe("workoutUtils", () => {
           exerciseId: "1",
           set: [1, 1],
           repetition: -1,
-          skill: "PREVENTION",
+          skill: "PREV",
           feedback: { difficulty: "SUCCEEDED" },
         },
       ];
@@ -306,7 +306,7 @@ describe("workoutUtils", () => {
           repetition: 10,
           weight: 50,
           weightType: "weightAbsolute",
-          skill: "PREVENTION",
+          skill: "PREV",
           feedback: { difficulty: "SUCCEEDED" },
         },
       ];
@@ -364,7 +364,7 @@ describe("workoutUtils", () => {
           set: [1, 1],
           repetition: 5,
           height: 20,
-          skill: "PREVENTION",
+          skill: "PREV",
           feedback: { difficulty: "SUCCEEDED" },
         },
       ];
@@ -386,7 +386,7 @@ describe("workoutUtils", () => {
           set: [3, 3],
           repetition: 10,
           height: 5,
-          skill: "PREVENTION" as SkillType,
+          skill: "PREV",
           feedback: { difficulty: "SUCCEEDED" },
         },
       ];
@@ -421,7 +421,7 @@ describe("workoutUtils", () => {
           set: [1, 1],
           repetition: 10,
           duration: 50,
-          skill: "PREVENTION",
+          skill: "PREV",
           feedback: { difficulty: "SUCCEEDED" },
         },
       ];

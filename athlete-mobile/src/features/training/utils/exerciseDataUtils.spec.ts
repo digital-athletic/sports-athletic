@@ -1,6 +1,6 @@
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { IntensityData } from "@/features/training/models/Intensity";
-import type { SkillType } from "@/features/training/models/Training";
+import type { SkillCode } from "@/schemas/generator.schema";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import {
   calculateNewWeight,
@@ -76,7 +76,7 @@ const createExerciseListItem = (
   ({
     exerciseId: "1",
     branchId: "10",
-    skill: "SWR",
+    skill: "SWR1",
     ...overrides,
   }) as UserExerciseDataType;
 
@@ -100,7 +100,7 @@ describe("exerciseDataUtils", () => {
 
   describe("shouldProcessExerciseValues", () => {
     it("returns false when type is undefined", () => {
-      expect(shouldProcessExerciseValues(undefined, "SWR")).toBe(false);
+      expect(shouldProcessExerciseValues(undefined, "SWR1")).toBe(false);
     });
 
     it("returns false when skill is undefined", () => {
@@ -108,18 +108,18 @@ describe("exerciseDataUtils", () => {
     });
 
     it("returns false for NO_INCREASE workout types", () => {
-      expect(shouldProcessExerciseValues("MOB", "SWR")).toBe(false);
+      expect(shouldProcessExerciseValues("MOB", "SWR1")).toBe(false);
     });
 
     it("returns false for NO_INCREASE skill types", () => {
-      // WU is in NO_INCREASE_SKILL_TYPE list (cast needed as SkillType doesn't include WU)
-      expect(shouldProcessExerciseValues("PLAN", "WU" as SkillType)).toBe(
+      // WU is in NO_INCREASE_SKILL_TYPE list
+      expect(shouldProcessExerciseValues("PLAN", "WU" as SkillCode)).toBe(
         false,
       );
     });
 
     it("returns true for valid type and skill", () => {
-      expect(shouldProcessExerciseValues("PLAN", "SWR")).toBe(true);
+      expect(shouldProcessExerciseValues("PLAN", "SWR1")).toBe(true);
     });
   });
 
@@ -133,17 +133,17 @@ describe("exerciseDataUtils", () => {
         createExerciseListItem({
           exerciseId: "1",
           branchId: "10",
-          skill: "CARDIO",
+          skill: "CARDIO_1",
         }),
         createExerciseListItem({
           exerciseId: "2",
           branchId: "-1",
-          skill: "CARDIO",
+          skill: "CARDIO_1",
         }),
         createExerciseListItem({
           exerciseId: "3",
           branchId: "20",
-          skill: "SWR",
+          skill: "SWR1",
         }),
       ];
       const result = findMainCardioExercise(exerciseList, 2);
@@ -155,12 +155,12 @@ describe("exerciseDataUtils", () => {
         createExerciseListItem({
           exerciseId: "1",
           branchId: "10",
-          skill: "CARDIO",
+          skill: "CARDIO_1",
         }),
         createExerciseListItem({
           exerciseId: "2",
           branchId: "-1",
-          skill: "CARDIO",
+          skill: "CARDIO_1",
         }),
       ];
       const result = findMainCardioExercise(exerciseList, 1);
@@ -172,7 +172,7 @@ describe("exerciseDataUtils", () => {
         createExerciseListItem({
           exerciseId: "1",
           branchId: "10",
-          skill: "SWR",
+          skill: "SWR1",
         }),
       ];
       expect(findMainCardioExercise(exerciseList, 0)).toBeNull();

@@ -4,7 +4,7 @@ import type {
   GenderTag,
   IntensityData,
 } from "@/features/training/models/Intensity";
-import type { SkillType } from "@/features/training/models/Training";
+import type { SkillCode } from "@/schemas/generator.schema";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import type { TrainingLevelType } from "@/schemas/common.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
@@ -54,12 +54,16 @@ export function shouldSkipExerciseSave(
  */
 export function shouldProcessExerciseValues(
   type: string | undefined,
-  skill: SkillType | undefined,
+  skill: SkillCode | undefined,
 ): boolean {
   if (!type || !skill) return false;
   if (WorkoutConstants.NO_INCREASE_WORKOUT_PLAN_TYPE.indexOf(type) !== -1)
     return false;
-  if (WorkoutConstants.NO_INCREASE_SKILL_TYPE.indexOf(skill) !== -1)
+  if (
+    WorkoutConstants.NO_INCREASE_SKILL_TYPE.indexOf(
+      skill as (typeof WorkoutConstants.NO_INCREASE_SKILL_TYPE)[number],
+    ) !== -1
+  )
     return false;
   return true;
 }

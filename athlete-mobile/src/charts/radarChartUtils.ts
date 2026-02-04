@@ -1,11 +1,11 @@
 import type { UserSkills } from "@/features/statistics/models/WorkoutsData";
-import type { SkillFocusType } from "@/features/training/models/Training";
+import type { FocusArea } from "@/features/training/models/Training";
 
 /**
  * Order matches design: MOBILITY (top), PREVENTION (top-right),
  * CARDIO (bottom-right), STABILITY (bottom), WARMUP (bottom-left), SWR (top-left)
  */
-export const SKILL_ORDER: SkillFocusType[] = [
+export const SKILL_ORDER: FocusArea[] = [
   "MOBILITY",
   "PREVENTION",
   "CARDIO",
@@ -21,7 +21,7 @@ export const SKILL_ORDER: SkillFocusType[] = [
  */
 export const calculatePercentages = (
   userSkills: UserSkills,
-): Record<SkillFocusType, number> => {
+): Record<FocusArea, number> => {
   const total = Object.values(userSkills).reduce(
     (sum, value) => sum + value,
     0,

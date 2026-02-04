@@ -543,7 +543,7 @@ describe("TrainingGenerator", () => {
     it("prioritizes user exercise data over defaults", () => {
       const userExerciseData = {
         exerciseId: "1",
-        skill: "SWR" as const,
+        skill: "SWR1" as const,
         repetition: 15,
         weight: 20,
         duration: undefined,
@@ -574,7 +574,7 @@ describe("TrainingGenerator", () => {
 
     const mockUserExercise = {
       exerciseId: "1",
-      skill: "SWR" as const,
+      skill: "SWR1" as const,
       repetition: 10,
       duration: 30,
       height: 50,
@@ -1145,7 +1145,7 @@ describe("TrainingGenerator", () => {
       const userExerciseData = {
         "1": {
           exerciseId: "1",
-          skill: "SWR" as const,
+          skill: "SWR1" as const,
           nextWeightPercentage: 60,
         },
       };

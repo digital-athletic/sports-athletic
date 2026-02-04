@@ -2,11 +2,8 @@ import { ExerciseDifficultyType } from "@/constants/workoutConstants";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { ActiveTrainingType } from "./models/ActiveTraining";
-import {
-  SkillFocusType,
-  TrainingSelectionType,
-  TrainingTimeType,
-} from "./models/Training";
+import type { FocusArea } from "./models/Training";
+import { TrainingSelectionType, TrainingTimeType } from "./models/Training";
 import { UserExerciseDataType } from "./models/UserExerciseData";
 import { UserProgressType } from "./models/UserProgress";
 
@@ -64,7 +61,7 @@ type Actions = {
   setTrainingStartTime: (time: number) => void;
   setTrainingEndTime: (time: number) => void;
   addPauseTime: (pauseTime: number) => void;
-  addSkillTime: (focusArea: SkillFocusType, skillTime: number) => void;
+  addSkillTime: (focusArea: FocusArea, skillTime: number) => void;
   resetTraining: () => void;
 };
 

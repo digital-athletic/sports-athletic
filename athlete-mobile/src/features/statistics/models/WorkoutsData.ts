@@ -1,4 +1,4 @@
-import type { SkillFocusType } from "@/features/training/models/Training";
+import type { FocusArea } from "@/features/training/models/Training";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import type { CompleteWorkoutType } from "@/store/completedWorkoutsStore";
 
@@ -18,4 +18,4 @@ export interface UseWorkoutsDataParams {
   trainingPlan?: TrainingPlanType | null;
 }
 
-export type UserSkills = Record<SkillFocusType, number>;
+export type UserSkills = Record<FocusArea, number>;

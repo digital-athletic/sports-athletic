@@ -71,7 +71,7 @@ describe("getEquipmentList", () => {
 
   it("extracts equipment from exercises using EQ_ tag prefix", () => {
     const exerciseList: UserExerciseDataType[] = [
-      { exerciseId: "1", skill: "SWR", set: [1, 2], repetition: 10 },
+      { exerciseId: "1", skill: "SWR1", set: [1, 2], repetition: 10 },
     ];
 
     const result = getEquipmentList(exerciseList, exercises, "HOME");
@@ -81,8 +81,8 @@ describe("getEquipmentList", () => {
 
   it("excludes pause exercises (id 999999)", () => {
     const exerciseList: UserExerciseDataType[] = [
-      { exerciseId: "1", skill: "SWR", set: [1, 2], repetition: 10 },
-      { exerciseId: "999999", skill: "SWR", set: [1, 2], duration: 10 },
+      { exerciseId: "1", skill: "SWR1", set: [1, 2], repetition: 10 },
+      { exerciseId: "999999", skill: "SWR1", set: [1, 2], duration: 10 },
     ];
 
     const result = getEquipmentList(exerciseList, exercises, "HOME");

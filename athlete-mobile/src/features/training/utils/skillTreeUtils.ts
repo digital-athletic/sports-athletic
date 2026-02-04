@@ -10,7 +10,7 @@ import type {
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
 import { getTagValues } from "../../../utils/tagUtils";
 import { TemporalDataType } from "../models/TemporalData";
-import { SkillFocusType } from "../models/Training";
+import type { FocusArea } from "../models/Training";
 import { hasWeights } from "./equipmentUtils";
 
 /**
@@ -36,8 +36,6 @@ export function getSkillTree(
       break;
 
     case "PLYO":
-    case "PLYO_MEDIUM":
-    case "PLYO_HIGH":
       result = skillTrees["PLYO"];
       break;
 
@@ -619,50 +617,91 @@ function getAreasFor(muscles: string[]): string[] {
   );
 }
 
-export const mapSkillToFocusArea = (
-  skill: string,
-): SkillFocusType | undefined => {
-  switch (skill) {
-    case "PREVSHOULDER":
+/**
+ * Maps any skill code to a FocusArea.
+ * This is the SINGLE conversion point for the entire codebase.
+ *
+ * Handles:
+ * - FocusArea pass-through (e.g., "MOBILITY" -> "MOBILITY")
+ * - SkillCode conversion (e.g., "MOB" -> "MOBILITY")
+ * - Legacy SkillType (e.g., "FOAM_ROLLER" -> "MOBILITY")
+ */
+export const mapSkillCodeToFocusArea = (
+  skillCode: string,
+): FocusArea | undefined => {
+  switch (skillCode) {
+    // Focus areas pass through unchanged
+    case "PREVENTION":
+    case "MOBILITY":
+    case "SWR":
+    case "WARMUP":
+    case "STABILITY":
+    case "CARDIO":
+      return skillCode;
+
+    // Prevention codes
+    case "PREV":
     case "PREVKNEE":
+    case "PREVSHOULDER":
     case "PREVWRIST":
     case "PREVANKLE":
     case "PREVSPINE":
-    case "PREV":
       return "PREVENTION";
+
+    // Warmup codes (including cooldown)
     case "WU":
-    case "WUSKSA":
+    case "WUPREV":
     case "WUSPEZIAL":
+    case "WUSKSA":
     case "CD":
       return "WARMUP";
-    case "STABILITY":
-    case "BAS":
-    case "GKS":
-      return "STABILITY";
-    case "MOBILITY":
+
+    // Mobility codes (including foam roller)
     case "MOB":
     case "BR":
+    case "FOAM_ROLLER":
       return "MOBILITY";
+
+    // Stability codes
+    case "BAS":
+    case "GKS":
+    case "GKSKG":
+      return "STABILITY";
+
+    // SWR/Strength codes
     case "SWR1":
     case "SWR1KG":
     case "SWR2":
     case "SWR2KG":
-    case "MAX_KRAFT":
-    case "MAX":
     case "SK":
     case "SKKG":
-    case "SWR":
+    case "MAX":
+    case "MAX_KRAFT":
+    case "main":
+    case "PHASE":
+    case "TEST":
       return "SWR";
+
+    // Cardio codes
     case "SA":
     case "SAKG":
-    case "CARDIO_1K":
-    case "CARDIO_1L":
+    case "SAS":
+    case "SASKG":
+    case "CARDIO_1":
+    case "CARDIO_1_SHORT":
+    case "CARDIO_1_LAKTAT":
     case "CARDIO_2":
     case "CARDIO_3":
     case "CARDIO_4":
     case "CARDIO_5":
     case "HBCARDIO":
       return "CARDIO";
+
+    // Non-focus skill types (excluded from radar chart)
+    case "SUPPORT":
+    case "SCHNELLIGKEITSAUSDAUER_SPECIAL":
+      return undefined;
+
     default:
       return undefined;
   }

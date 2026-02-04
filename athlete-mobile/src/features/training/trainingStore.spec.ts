@@ -31,19 +31,19 @@ describe("useTrainingStore", () => {
 
   const mockExercises: UserExerciseDataType[] = [
     {
-      skill: "SWR",
+      skill: "SWR1",
       exerciseId: "10",
       feedback: { difficulty: null },
       skipped: false,
     },
     {
-      skill: "CARDIO",
+      skill: "CARDIO_1",
       exerciseId: "20",
       feedback: { difficulty: null },
       skipped: false,
     },
     {
-      skill: "WARMUP",
+      skill: "WU",
       exerciseId: "30",
       feedback: { difficulty: null },
       skipped: false,
@@ -156,7 +156,7 @@ describe("useTrainingStore", () => {
       const { result } = renderHook(() => useTrainingStore());
       const mockExercises: UserExerciseDataType[] = [
         {
-          skill: "SWR",
+          skill: "SWR1",
           exerciseId: "10",
           feedback: { difficulty: null },
           skipped: false,
@@ -770,7 +770,7 @@ describe("useTrainingStore", () => {
         result.current.setExerciseList([
           {
             exerciseId: "10",
-            skill: "SWR",
+            skill: "SWR1",
             feedback: { difficulty: null },
             skipped: false,
           },
@@ -863,7 +863,7 @@ describe("useTrainingStore", () => {
         result.current.setExerciseList([
           {
             exerciseId: "10",
-            skill: "SWR",
+            skill: "SWR1",
             feedback: { difficulty: null },
             skipped: false,
           },
@@ -904,13 +904,13 @@ describe("useTrainingStore", () => {
       const exercises: UserExerciseDataType[] = [
         {
           exerciseId: "10",
-          skill: "SWR",
+          skill: "SWR1",
           feedback: { difficulty: null },
           skipped: false,
         },
         {
           exerciseId: "20",
-          skill: "CARDIO",
+          skill: "CARDIO_1",
           feedback: { difficulty: null },
           skipped: false,
         },
@@ -1065,7 +1065,7 @@ describe("useTrainingStore", () => {
       const exercises: UserExerciseDataType[] = [
         {
           exerciseId: "10",
-          skill: "SWR",
+          skill: "SWR1",
           feedback: { difficulty: null },
           skipped: false,
         },

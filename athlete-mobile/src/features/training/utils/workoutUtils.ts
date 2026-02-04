@@ -25,7 +25,8 @@ import {
   EXERCISE_DIRECTIONS_VALUES_MAP,
   MaxValuesType,
 } from "../models/MaxValues";
-import { SkillType, TrainingTimeType } from "../models/Training";
+import type { SkillCode } from "@/schemas/generator.schema";
+import { TrainingTimeType } from "../models/Training";
 import { UserExerciseDataType } from "../models/UserExerciseData";
 import {
   filterByAge,
@@ -471,7 +472,7 @@ export const getEquivalentBranchWithGivenLevel = (
   ageGroup: string,
   userGender: string,
   prevRegions: string[],
-  skill: SkillType,
+  skill: SkillCode,
 ): ExerciseBranchType | undefined => {
   // filter skill branches
   let availableBranches = filterByEquipment(skillTree, equipment).keep;

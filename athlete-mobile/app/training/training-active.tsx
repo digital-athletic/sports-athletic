@@ -16,7 +16,7 @@ import { TrainingNavigation } from "@/features/training/TrainingNavigation";
 import { getIntensityBySkill } from "@/features/training/generators/TrainingGenerator";
 import { isPauseExercise as checkIsPauseExercise } from "@/features/training/models/IdTypes";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
-import { SkillType } from "@/features/training/models/Training";
+import type { SkillCode } from "@/schemas/generator.schema";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
 import {
@@ -38,7 +38,7 @@ import { heartRateBySkillAndBirthday } from "@/features/training/utils/heartRate
 import {
   getSkillTree,
   isPreventionSkill,
-  mapSkillToFocusArea,
+  mapSkillCodeToFocusArea,
 } from "@/features/training/utils/skillTreeUtils";
 import {
   applyMaxValueToDirections,
@@ -151,7 +151,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
 
     // Focus or Prevention training
     if (isSkillTypes(type)) {
-      return t(`training.skill.${type as SkillType}`, {
+      return t(`training.skill.${type}`, {
         defaultValue: isPreventionSkill(type)
           ? t("training.active.title.prevention")
           : t("training.active.title.focus"),
@@ -252,7 +252,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   );
 
   const saveBranchData = (
-    skill: SkillType,
+    skill: SkillCode,
     branchId: string,
     exerciseId: string,
   ) => {
@@ -318,7 +318,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     levelUp: boolean,
     branchId: string,
     exerciseId: string,
-    skill: SkillType,
+    skill: SkillCode,
     ageGroup: string,
   ) => {
     const context: BranchLevelContext = {
@@ -938,7 +938,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     } else if (currentExercise?.skill) {
       // Add exercise time to skill (analytics) -> addTrainingSkillTime
       const exerciseDuration = Date.now() - exerciseStartTimeRef.current;
-      const focusArea = mapSkillToFocusArea(currentExercise.skill);
+      const focusArea = mapSkillCodeToFocusArea(currentExercise.skill);
       if (focusArea) {
         addSkillTime(focusArea, exerciseDuration);
       }
@@ -947,7 +947,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     if (activeExerciseIndex < exerciseList.length - 1) {
       setActiveExerciseIndex((prev) => prev + 1);
 
-      if (isPauseExercise) {
+      if (isNextExercisePause) {
         // set pause timer to new start
         pauseStartRef.current = Date.now();
       } else {

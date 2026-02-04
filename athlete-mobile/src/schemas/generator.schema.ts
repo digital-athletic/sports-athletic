@@ -253,6 +253,7 @@ export const GeneratorSkillTypeSchema = v.picklist([
   // Stability types (-> STABILITY)
   "BAS",
   "GKS",
+  "GKSKG",
 
   // Prevention variants (all -> PREVENTION)
   "PREVKNEE",
@@ -286,6 +287,12 @@ export type GeneratorSkillTypeFromSchema = v.InferOutput<
 >;
 
 /**
+ * Canonical type for all skill codes used during training generation.
+ * Re-exported as SkillCode for cleaner imports.
+ */
+export type SkillCode = GeneratorSkillTypeFromSchema;
+
+/**
  * Tuple representing [currentSet, totalSets] for exercise sets.
  * @example [1, 3] means "set 1 of 3"
  */
@@ -315,11 +322,15 @@ export type GeneratedSetListEntryFromSchema = v.InferOutput<
 // Conversion Utilities
 // ============================================================================
 
-/** User-facing exercise entry format (after skill mapping) */
+/**
+ * User-facing exercise entry format.
+ * The skill field stores the raw generator skill code. Use mapSkillCodeToFocusArea()
+ * from skillTreeUtils.ts to convert to FocusArea for statistics/radar chart.
+ */
 export type UserExerciseEntry = {
   exerciseId: string;
   set: SetTuple;
-  skill: SkillTypeFromSchema;
+  skill: GeneratorSkillTypeFromSchema;
   duration?: number;
   repetition?: number;
   weight?: number;
@@ -328,66 +339,17 @@ export type UserExerciseEntry = {
   branchId?: string;
 };
 
-/** Maps generator skill values to user-facing SkillType */
-const SKILL_TYPE_MAP: Record<
-  GeneratorSkillTypeFromSchema,
-  SkillTypeFromSchema
-> = {
-  MOB: "MOBILITY",
-  WU: "WARMUP",
-  BR: "FOAM_ROLLER",
-  PREV: "PREVENTION",
-  CD: "CARDIO",
-  SWR1: "SWR",
-  SWR1KG: "SWR",
-  SWR2: "SWR",
-  SWR2KG: "SWR",
-  SA: "SWR",
-  SAKG: "SWR",
-  SAS: "SWR",
-  SASKG: "SWR",
-  SK: "SWR",
-  SKKG: "SWR",
-  MAX: "SWR",
-  MAX_KRAFT: "SWR",
-  BAS: "STABILITY",
-  GKS: "STABILITY",
-  PREVKNEE: "PREVENTION",
-  PREVSHOULDER: "PREVENTION",
-  PREVWRIST: "PREVENTION",
-  PREVANKLE: "PREVENTION",
-  PREVSPINE: "PREVENTION",
-  WUPREV: "WARMUP",
-  WUSPEZIAL: "WARMUP",
-  WUSKSA: "WARMUP",
-  CARDIO_1: "CARDIO",
-  CARDIO_1_SHORT: "CARDIO",
-  CARDIO_1_LAKTAT: "CARDIO",
-  CARDIO_2: "CARDIO",
-  CARDIO_3: "CARDIO",
-  CARDIO_4: "CARDIO",
-  CARDIO_5: "CARDIO",
-  HBCARDIO: "CARDIO",
-  main: "SWR",
-  PHASE: "SWR",
-  TEST: "SWR",
-};
-
-/** Maps a generator skill value to a user-facing SkillType */
-export function mapToSkillType(
-  skill: GeneratorSkillTypeFromSchema,
-): SkillTypeFromSchema {
-  return SKILL_TYPE_MAP[skill];
-}
-
-/** Converts a GeneratedSetListEntry to user-facing format */
+/**
+ * Converts a GeneratedSetListEntry to user-facing format.
+ * Skill is passed through unchanged - use mapSkillCodeToFocusArea() for FocusArea conversion.
+ */
 export function toUserExerciseData(
   entry: GeneratedSetListEntryFromSchema,
 ): UserExerciseEntry {
   return {
     exerciseId: entry.exerciseId,
     set: entry.set,
-    skill: mapToSkillType(entry.skill),
+    skill: entry.skill,
     duration: entry.duration,
     repetition: entry.repetition,
     weight: entry.weight,

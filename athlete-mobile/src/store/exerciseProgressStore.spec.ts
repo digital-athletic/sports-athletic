@@ -299,7 +299,7 @@ describe("exerciseProgressStore", () => {
       act(() => {
         result.current.updateExercise("ex1", {
           exerciseId: "ex1",
-          skill: "WARMUP",
+          skill: "WU",
           repetition: 10,
         });
       });
@@ -313,12 +313,12 @@ describe("exerciseProgressStore", () => {
       act(() => {
         result.current.updateExercise("ex1", {
           exerciseId: "ex1",
-          skill: "WARMUP",
+          skill: "WU",
           repetition: 10,
         });
         result.current.updateExercise("ex1", {
           exerciseId: "ex1",
-          skill: "WARMUP",
+          skill: "WU",
           repetition: 15,
         });
       });
@@ -332,12 +332,12 @@ describe("exerciseProgressStore", () => {
       act(() => {
         result.current.updateExercise("ex1", {
           exerciseId: "ex1",
-          skill: "WARMUP",
+          skill: "WU",
           feedback: { difficulty: "TOO_EASY" },
         });
         result.current.updateExercise("ex1", {
           exerciseId: "ex1",
-          skill: "WARMUP",
+          skill: "WU",
           feedback: { difficulty: "TOO_EASY" },
         });
       });

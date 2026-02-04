@@ -130,7 +130,6 @@ import RegionSK from "../../../../assets/data/generator/regions/SK";
 import RegionSKKG from "../../../../assets/data/generator/regions/SKKG";
 import RegionSWR1 from "../../../../assets/data/generator/regions/SWR1";
 import RegionSWR1KG from "../../../../assets/data/generator/regions/SWR1KG";
-import RegionSWR2 from "../../../../assets/data/generator/regions/SWR2";
 import RegionSWR2KG from "../../../../assets/data/generator/regions/SWR2KG";
 import RegionWU from "../../../../assets/data/generator/regions/WU";
 import RegionWUSKSA from "../../../../assets/data/generator/regions/WUSKSA";
@@ -2163,9 +2162,6 @@ export default class PlanGenerator {
         break;
       case "SWR1KG":
         region = RegionSWR1KG;
-        break;
-      case "SWR":
-        region = RegionSWR2;
         break;
       case "SWR2KG":
         region = RegionSWR2KG;

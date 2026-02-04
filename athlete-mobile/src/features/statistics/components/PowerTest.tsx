@@ -81,7 +81,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
       );
     }
 
-    return <Chart isSuccessScreen={false} />;
+    return <Chart />;
   };
 
   const renderLegend = () => {

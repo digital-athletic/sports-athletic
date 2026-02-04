@@ -102,16 +102,15 @@ export const toChartPoints = (
 
 /**
  * Formats date for chart axis display
- * @param dateString - Date in ISO 8601 format (YYYY-MM-DD) with optional suffix
+ * @param dateString - Date in ISO 8601 format (YYYY-MM-DD)
  */
 export const formatDateTick = (dateString: string): string => {
   if (typeof dateString !== "string") return "";
 
-  // ISO 8601 format: YYYY-MM-DD (with optional -count suffix for same-day duplicates)
+  // ISO 8601 format: YYYY-MM-DD
   const split = dateString.split("-");
-  const count = split.length === 4 ? ` - ${split[3]}` : "";
   // Display as DD.MM.
-  return `${split[2]}.${split[1]}.${count}`;
+  return `${split[2]}.${split[1]}.`;
 };
 
 /**

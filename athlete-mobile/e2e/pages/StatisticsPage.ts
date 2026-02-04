@@ -456,4 +456,56 @@ export class StatisticsPage extends BasePage {
       }
     }
   }
+
+  // ==================== Power Test LineChart Methods ====================
+
+  /**
+   * Gets the power test line chart container.
+   */
+  getPowerTestLineChart() {
+    return this.page.getByTestId("power-test-line-chart");
+  }
+
+  /**
+   * Verifies the power test line chart is visible.
+   */
+  async expectPowerTestLineChartVisible(): Promise<void> {
+    await expect(
+      this.getPowerTestLineChart(),
+      "Power test line chart should be visible",
+    ).toBeVisible({ timeout: 5000 });
+  }
+
+  /**
+   * Verifies the power test line chart is NOT visible (empty state).
+   */
+  async expectPowerTestLineChartNotVisible(): Promise<void> {
+    await expect(
+      this.getPowerTestLineChart(),
+      "Power test line chart should not be visible in empty state",
+    ).not.toBeVisible();
+  }
+
+  /**
+   * Verifies the legend items are visible for the power test chart.
+   * Legend items: Kniebeuge (Squad), Bankdrücken (Bench Press), Rudern (Rowing), Schulterdrücken (Shoulder Press)
+   */
+  async expectPowerTestLegendVisible(): Promise<void> {
+    const container = this.page.getByTestId("power-test-container");
+    // English legend labels from translations
+    await expect(container.getByText("Squat")).toBeVisible();
+    await expect(container.getByText("Bench press")).toBeVisible();
+    await expect(container.getByText("Rowing")).toBeVisible();
+    await expect(container.getByText("Shoulder press")).toBeVisible();
+  }
+
+  /**
+   * Takes a screenshot of the power test section for visual verification.
+   */
+  async screenshotPowerTestChart(filename: string): Promise<void> {
+    const container = this.page.getByTestId("power-test-container");
+    await container.screenshot({
+      path: `playwright/screenshots/${filename}`,
+    });
+  }
 }

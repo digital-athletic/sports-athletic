@@ -267,10 +267,10 @@
     },
     "prevention": {
       "PREVENTION_TILE_ANKLE": "Ankle",
-      "PREVENTION_TILE_KNEE": "Knee",
+      "PREVENTION_TILE_KNEE": "Knee & Hip",
       "PREVENTION_TILE_SPINE": "Spine",
       "PREVENTION_TILE_SHOULDER": "Shoulder",
-      "PREVENTION_TILE_WRIST": "Wrist"
+      "PREVENTION_TILE_WRIST": "Wrist & Elbow"
     },
     "generator": {
       "errorMsgOther": "An unexpected error occurred.",
@@ -663,7 +663,7 @@
       "MEDICINE_BALL": "Medicine Ball",
       "MEDICINE_BALL_JUMPING": "Medicine Ball (Jumping)",
       "HANDBALL": "Handball",
-      "EXERCISING_BENCH": "Exercising Bench",
+      "EXERCISING_BENCH": "Exercising Bench (Hall)",
       "SLIPPERY_GROUND": "Slippery Ground",
       "TOWEL": "Towel",
       "TUBE_WEAK": "Light Resistance Band",
@@ -675,7 +675,7 @@
       "BOX_LOW": "Low Box",
       "AREA_10": "10m² Area",
       "AREA_20": "20m² Area",
-      "MULTIPLE_EXERCISING_BENCHES": "Multiple Exercising Benches",
+      "MULTIPLE_EXERCISING_BENCHES": "Multiple Exercising Benches (Hall)",
       "INCLINE_BENCH": "Incline Bench",
       "WALL_BAR": "Wall Bars",
       "HANDBALL_GOAL": "Handball Goal",

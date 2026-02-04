@@ -267,10 +267,10 @@
     },
     "prevention": {
       "PREVENTION_TILE_ANKLE": "Knöchel",
-      "PREVENTION_TILE_KNEE": "Knie",
+      "PREVENTION_TILE_KNEE": "Knie & Hüfte",
       "PREVENTION_TILE_SPINE": "Wirbelsäule",
       "PREVENTION_TILE_SHOULDER": "Schulter",
-      "PREVENTION_TILE_WRIST": "Handgelenk"
+      "PREVENTION_TILE_WRIST": "Handgelenk & Ellbogen"
     },
     "generator": {
       "errorMsgOther": "Ein unerwarteter Fehler ist aufgetreten.",
@@ -663,7 +663,7 @@
       "MEDICINE_BALL": "Medizinball",
       "MEDICINE_BALL_JUMPING": "Medizinball (springend)",
       "HANDBALL": "Handball",
-      "EXERCISING_BENCH": "Trainingsbank",
+      "EXERCISING_BENCH": "Trainingsbank (Halle)",
       "SLIPPERY_GROUND": "Rutschiger Boden/Untergrund",
       "TOWEL": "2 Handtücher",
       "TUBE_WEAK": "Leichtes Widerstandsband",
@@ -675,7 +675,7 @@
       "BOX_LOW": "Niedrige Box (bis 45 cm)",
       "AREA_10": "10 x 10m Lauffläche",
       "AREA_20": "20 x 20m Lauffläche",
-      "MULTIPLE_EXERCISING_BENCHES": "Mehrere Trainingsbänke",
+      "MULTIPLE_EXERCISING_BENCHES": "Mehrere Trainingsbänke (Halle)",
       "INCLINE_BENCH": "Langhantel Schrägbank",
       "WALL_BAR": "Sprossenwand",
       "HANDBALL_GOAL": "Handballtor",

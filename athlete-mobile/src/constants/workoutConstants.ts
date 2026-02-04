@@ -239,6 +239,10 @@ const DEACTIVATED_EQUIPMENT = [
   "TUBE_MEDIUM_MULTIPLE",
   "TUBE_STRONG_MULTIPLE",
   "TUBE_EXTREME_MULTIPLE",
+  "TUBE",
+  "MINIBAND",
+  "TRACK",
+  "AREA",
 ];
 
 export type CardioTypes =

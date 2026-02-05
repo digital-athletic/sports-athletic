@@ -4,13 +4,22 @@ services:
     working_dir: /workspace/athlete-mobile
     volumes:
       - ./:/workspace
-      - app_node_modules:/workspace/athlete-mobile/node_modules
-    network_mode: host
+      # use anonymous volumes for node_modules to fix permission problems
+      - /workspace/node_modules
+      - /workspace/.pnpm-store
+      - /workspace/athlete-mobile/node_modules
+    ports:
+      - 8081:8081
+      - 19000:19000
+      - 19001:19001
+      - 19002:19002
     environment:
       - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
       - REACT_NATIVE_PACKAGER_HOSTNAME=0.0.0.0
       - EXPO_PUBLIC_SUPABASE_URL=${SUPABASE_URL}
       - EXPO_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - TESTING_PLAYWRIGHT_WS_ENDPOINT=ws://playwright:9323
+      - TESTING_PLAYWRIGHT_BASE_URL=http://athlete-mobile:8081
     stdin_open: true
     tty: true
 
@@ -20,21 +29,20 @@ services:
     volumes:
       - ./:/workspace
       - web_trainer_node_modules:/workspace/trainer-web/node_modules
-    network_mode: host
     environment:
       - VITE_SUPABASE_URL=${SUPABASE_URL}
       - VITE_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+    ports:
+      - 5173:5173
     stdin_open: true
     tty: true
 
   playwright:
     image: mcr.microsoft.com/playwright:v1.58.0-noble
     container_name: playwright
-    network_mode: host
     expose:
       - "9323"
     command: ["npx", "playwright", "run-server", "--port=9323"]
 
 volumes:
-  app_node_modules:
   web_trainer_node_modules:

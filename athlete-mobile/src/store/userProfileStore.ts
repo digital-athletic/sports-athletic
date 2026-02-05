@@ -148,8 +148,13 @@ export const useUserProfileStore = create<UserProfileState>()(
         version < SharedConstants.PERSIST_VERSION
           ? createInitialState()
           : persistedState,
-      onRehydrateStorage: () => (state) => {
-        state?.setHasHydrated(true);
+      onRehydrateStorage: () => (_state, error) => {
+        if (error) {
+          console.error("Error hydrating user profile store:", error);
+        }
+        // Always mark as hydrated, even if there was an error
+        // This prevents the app from being stuck in loading state
+        useUserProfileStore.getState().setHasHydrated(true);
       },
     },
   ),

@@ -4,7 +4,8 @@ const connectOptions = process.env.CI
   ? {}
   : {
       connectOptions: {
-        wsEndpoint: "ws://localhost:9323",
+        wsEndpoint:
+          process.env.TESTING_PLAYWRIGHT_WS_ENDPOINT ?? "ws://localhost:9323",
       },
     };
 

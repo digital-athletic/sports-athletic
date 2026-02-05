@@ -1,7 +1,7 @@
 import { expect, test } from "./fixtures";
-import { mockSupabaseAuth } from "./mocks/supabase";
 import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile";
 import { createIncompleteAnamnesisProfile } from "./mocks/stores/profiles/incompleteAnamnesisProfile";
+import { mockSupabaseAuth } from "./mocks/supabase";
 import { BasePage } from "./pages";
 
 /**
@@ -31,7 +31,9 @@ test.describe("Auth Flow", () => {
 
       // Should see the login screen (part of onboarding)
       // Stack.Protected with guard={user == null} allows access when not authenticated
-      await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
+      await expect(page.getByRole("button", { name: "Login" })).toBeVisible({
+        timeout: 5000,
+      });
       await expect(page.getByPlaceholder("E-Mail")).toBeVisible();
       await expect(page.getByPlaceholder("Password")).toBeVisible();
 

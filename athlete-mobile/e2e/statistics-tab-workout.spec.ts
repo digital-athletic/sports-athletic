@@ -6,6 +6,7 @@ import {
   createWorkoutsProfile,
 } from "./mocks/stores/profiles/workoutsProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
+import { mockWakeLock } from "./mocks/wakeLock";
 import { BasePage, StatisticsPage, WorkoutPage } from "./pages";
 
 test.describe("Statistics Page - Empty State", () => {
@@ -50,6 +51,7 @@ test.describe("Statistics Page - Single Workout Completion", () => {
   }) => {
     test.setTimeout(60000);
     await mockSupabaseAuth(page);
+    await mockWakeLock(page);
 
     const workoutPage = new WorkoutPage(page);
     const basePage = new BasePage(page);

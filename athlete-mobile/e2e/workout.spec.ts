@@ -1,7 +1,8 @@
 import { expect, test } from "./fixtures";
-import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile";
 import { createBranchThresholdProfile } from "./mocks/stores/profiles/branchThresholdProfile";
+import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
+import { mockWakeLock } from "./mocks/wakeLock";
 import { WorkoutPage } from "./pages";
 
 test.describe("Workout Flow", () => {
@@ -17,6 +18,7 @@ test.describe("Workout Flow", () => {
     test("complete workout and verify weight progression", async ({ page }) => {
       test.setTimeout(60000);
       await mockSupabaseAuth(page);
+      await mockWakeLock(page);
 
       const workoutPage = new WorkoutPage(page);
 
@@ -51,6 +53,7 @@ test.describe("Workout Flow", () => {
       const EXPECTED_TOO_EASY_WEIGHT = 17;
 
       await mockSupabaseAuth(page);
+      await mockWakeLock(page);
 
       const workoutPage = new WorkoutPage(page);
 
@@ -85,6 +88,7 @@ test.describe("Workout Flow", () => {
       const EXPECTED_TOO_HARD_WEIGHT = 14;
 
       await mockSupabaseAuth(page);
+      await mockWakeLock(page);
 
       const workoutPage = new WorkoutPage(page);
 
@@ -123,6 +127,7 @@ test.describe("Workout Flow", () => {
       const UPGRADED_EXERCISE = "LH-Frontkniebeuge";
 
       await mockSupabaseAuth(page);
+      await mockWakeLock(page);
 
       const workoutPage = new WorkoutPage(page);
 

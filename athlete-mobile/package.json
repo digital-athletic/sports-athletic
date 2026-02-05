@@ -5,6 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
+    "start:docker": "expo start --lan",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",

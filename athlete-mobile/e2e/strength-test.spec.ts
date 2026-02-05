@@ -2,6 +2,7 @@ import { type Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
 import { createFreshAnamnesisProfile } from "./mocks/stores/profiles/freshAnamnesisProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
+import { mockWakeLock } from "./mocks/wakeLock";
 import { BasePage } from "./pages";
 
 /**
@@ -42,6 +43,7 @@ test.describe("Strength Test", () => {
 
   test("complete strength test workflow", async ({ page }) => {
     await mockSupabaseAuth(page);
+    await mockWakeLock(page);
 
     const basePage = new BasePage(page);
     await basePage.login("test@example.com", "password123");

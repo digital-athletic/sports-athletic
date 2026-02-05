@@ -16,18 +16,21 @@ export interface AuthType {
 type State = {
   auth: AuthType | null;
   isInitialized: boolean;
+  _hasHydrated: boolean;
 };
 
 // Prefer factory function to avoid mutable references
 const createInitialState = (): State => ({
   auth: null,
   isInitialized: false,
+  _hasHydrated: false,
 });
 
 type Actions = {
   setAuth: (auth: AuthType | null) => void;
   clearAuth: () => void;
   initializeFromSupabase: () => Promise<void>;
+  setHasHydrated: (hydrated: boolean) => void;
 };
 
 type Selectors = {
@@ -92,6 +95,11 @@ export const useAuthStore = create<AuthState>()(
       },
 
       isAuthenticated: () => get().auth !== null,
+
+      setHasHydrated: (hydrated) =>
+        set((state) => {
+          state._hasHydrated = hydrated;
+        }),
     })),
     {
       name: "auth-storage",
@@ -103,6 +111,9 @@ export const useAuthStore = create<AuthState>()(
         version < SharedConstants.PERSIST_VERSION
           ? createInitialState()
           : persistedState,
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     },
   ),
 );

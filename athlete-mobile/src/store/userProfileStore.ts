@@ -17,6 +17,7 @@ type State = {
   personalData: UserPersonalDataType;
   anamnesisCompleted: boolean;
   teamId: string | null;
+  _hasHydrated: boolean;
 };
 
 const createInitialPersonalData = (): UserPersonalDataType => ({
@@ -29,6 +30,7 @@ const createInitialState = (): State => ({
   personalData: createInitialPersonalData(),
   anamnesisCompleted: false,
   teamId: null,
+  _hasHydrated: false,
 });
 
 export const DEFAULT_STATE = createInitialState();
@@ -43,6 +45,7 @@ type Actions = {
   setAnamnesisCompleted: (completed: boolean) => void;
   setTeamId: (teamId: string | null) => void;
   clearProfile: () => void;
+  setHasHydrated: (hydrated: boolean) => void;
 };
 
 type Selectors = {
@@ -126,6 +129,11 @@ export const useUserProfileStore = create<UserProfileState>()(
           state.teamId = initialState.teamId;
         }),
 
+      setHasHydrated: (hydrated) =>
+        set((state) => {
+          state._hasHydrated = hydrated;
+        }),
+
       getAge: () => {
         const { birthday } = get().personalData;
         if (!birthday) return null;
@@ -140,6 +148,9 @@ export const useUserProfileStore = create<UserProfileState>()(
         version < SharedConstants.PERSIST_VERSION
           ? createInitialState()
           : persistedState,
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     },
   ),
 );

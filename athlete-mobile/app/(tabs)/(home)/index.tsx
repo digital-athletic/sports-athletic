@@ -8,7 +8,7 @@ import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { Stack, router, useFocusEffect } from "expo-router";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Image,
@@ -23,10 +23,10 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const { colors, spacing } = useTheme();
   const insets = useSafeAreaInsets();
-  const { personalData } = useUserProfileStore();
+  const { personalData, anamnesisCompleted, _hasHydrated } =
+    useUserProfileStore();
   const { isSkipped } = useAnamnesisStore();
   const { setTrainingSelection } = useTrainingStore();
-  const { anamnesisCompleted } = useUserProfileStore();
 
   const username = personalData?.username || "Mr. Anderson";
 
@@ -34,11 +34,15 @@ export default function HomeScreen() {
     Logger.logEvent("home_opened");
   }, []);
 
-  useFocusEffect(() => {
-    if (!anamnesisCompleted && !isSkipped) {
-      router.replace("/anamnesis");
-    }
-  });
+  useFocusEffect(
+    useCallback(() => {
+      // Wait for store hydration before checking anamnesis status
+      // to avoid redirecting based on default (non-persisted) values
+      if (_hasHydrated && !anamnesisCompleted && !isSkipped) {
+        router.replace("/anamnesis");
+      }
+    }, [_hasHydrated, anamnesisCompleted, isSkipped]),
+  );
 
   const goToTraining = (type: "QUICK" | "PREV" | "PLAN") => {
     setTrainingSelection(type);

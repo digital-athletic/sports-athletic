@@ -6,6 +6,7 @@ describe("userProfileStore", () => {
     const { result } = renderHook(() => useUserProfileStore());
     act(() => {
       result.current.clearProfile();
+      result.current.setHasHydrated(false);
     });
   });
 
@@ -127,6 +128,37 @@ describe("userProfileStore", () => {
       });
 
       expect(result.current.getAge()).toBe(25);
+    });
+  });
+
+  describe("hydration tracking", () => {
+    it("has _hasHydrated false initially", () => {
+      const { result } = renderHook(() => useUserProfileStore());
+
+      expect(result.current._hasHydrated).toBe(false);
+    });
+
+    it("can set _hasHydrated via setHasHydrated", () => {
+      const { result } = renderHook(() => useUserProfileStore());
+
+      act(() => {
+        result.current.setHasHydrated(true);
+      });
+
+      expect(result.current._hasHydrated).toBe(true);
+    });
+
+    it("clearProfile does not reset _hasHydrated", () => {
+      const { result } = renderHook(() => useUserProfileStore());
+
+      act(() => {
+        result.current.setHasHydrated(true);
+        result.current.clearProfile();
+      });
+
+      // _hasHydrated should remain true after clearProfile
+      // since it tracks storage hydration, not user data
+      expect(result.current._hasHydrated).toBe(true);
     });
   });
 });

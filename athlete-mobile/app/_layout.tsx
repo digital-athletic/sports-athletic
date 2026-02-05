@@ -5,7 +5,7 @@ import { useAuthStore } from "@/store/authStore";
 import { theme } from "@/theme/theme";
 import { ThemeProvider } from "@shopify/restyle";
 import { Stack } from "expo-router";
-import { Platform } from "react-native";
+import { ActivityIndicator, Platform, View } from "react-native";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 
 /**
@@ -19,16 +19,30 @@ export default function RootLayout() {
   useAuthStateListener();
   useOTAService();
 
-  const { auth } = useAuthStore();
+  const { auth, _hasHydrated } = useAuthStore();
+
+  // Wait for auth store to hydrate before rendering routes
+  // to avoid flickering between auth states
+  if (!_hasHydrated) {
+    return (
+      <ThemeProvider theme={theme}>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      </ThemeProvider>
+    );
+  }
 
   return (
     <ThemeProvider theme={theme}>
       <KeyboardProvider>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Protected guard={auth != null}>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="(anamnesis)" options={{ headerShown: false }} />
             <Stack.Screen name="training" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           </Stack.Protected>
 
           <Stack.Protected guard={auth == null}>

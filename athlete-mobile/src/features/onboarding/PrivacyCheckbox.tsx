@@ -7,6 +7,7 @@ import { TouchableOpacity } from "react-native";
 
 type Props = {
   checked: boolean;
+  showError?: boolean;
   onCheck: (checked: boolean) => void;
   onPrivacyPress: () => void;
   onAgbPress: () => void;
@@ -27,6 +28,7 @@ const ELEMENT_SIZE = 48;
 
 export const PrivacyCheckbox: FC<Props> = ({
   checked,
+  showError,
   onCheck,
   onPrivacyPress,
   onAgbPress,
@@ -42,6 +44,9 @@ export const PrivacyCheckbox: FC<Props> = ({
       flexDirection="row"
       alignItems="center"
       gap="m"
+      borderWidth={showError ? 1 : 0}
+      borderColor={showError ? "error" : undefined}
+      borderRadius="m"
       style={{
         minHeight: ELEMENT_SIZE,
       }}

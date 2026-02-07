@@ -20,6 +20,7 @@ const HEIGHT = 56;
  */
 export const PasswordInputField: FC<PasswordInputFieldProps> = ({
   password,
+  showError,
   onChange,
   onSubmitEditing,
 }) => {
@@ -38,6 +39,8 @@ export const PasswordInputField: FC<PasswordInputFieldProps> = ({
       backgroundColor="lightGrey2"
       borderRadius="m"
       height={HEIGHT}
+      borderWidth={showError ? 1 : 0}
+      borderColor={showError ? "error" : undefined}
     >
       <Box
         width={HEIGHT}
@@ -47,6 +50,10 @@ export const PasswordInputField: FC<PasswordInputFieldProps> = ({
         backgroundColor="lightGrey1"
         borderTopLeftRadius="m"
         borderBottomLeftRadius="m"
+        borderLeftWidth={showError ? 1 : 0}
+        borderTopWidth={showError ? 1 : 0}
+        borderBottomWidth={showError ? 1 : 0}
+        borderColor={showError ? "error" : undefined}
       >
         <Ionicon name="lock-closed" size={24} color={colors.lightGrey3} />
       </Box>

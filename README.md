@@ -25,9 +25,14 @@ To run the full application locally, you need to start all three services.
 
 **Start the backend:**
 
+Before starting, create `images/` and `videos/` folders inside `supabase/`. These are mount points for storage buckets.
+
 ```bash
 # From the repository root
 supabase start
+
+# If the vector container fails to start, exclude it
+supabase start -x vector
 ```
 
 To start Edge Functions (optional, for team features):
@@ -35,6 +40,17 @@ To start Edge Functions (optional, for team features):
 ```bash
 supabase functions serve
 ```
+
+**Stop the backend:**
+
+```bash
+supabase stop
+
+# Stop and wipe all database data
+supabase stop --no-backup
+```
+
+> **Note:** To reach Supabase from a local dev container, use [ngrok](https://ngrok.com/) to expose it via a stable URL. URLs other than `localhost` may be blocked by CORS.
 
 ### 2. Athlete Mobile App
 

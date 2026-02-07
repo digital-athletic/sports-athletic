@@ -1,0 +1,212 @@
+import { supabase } from "@/services/supabaseClient";
+import { useAuthStore } from "@/store/authStore";
+import { Box } from "@/theme/Box";
+import { Button } from "@/theme/Button";
+import { Text } from "@/theme/Text";
+import { useTheme } from "@/theme/theme";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Alert, StyleSheet, TextInput } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const RESEND_COOLDOWN_SECONDS = 60;
+const OTP_LENGTH = 6;
+
+/** Screen shown after registration when email confirmation is required. */
+export function EmailVerificationScreen() {
+  const { email } = useLocalSearchParams<{ email: string }>();
+  const router = useRouter();
+  const { t } = useTranslation();
+  const { colors, spacing, borderRadii } = useTheme();
+  const { initializeFromSupabase } = useAuthStore();
+  const insets = useSafeAreaInsets();
+  const [resending, setResending] = useState(false);
+  const [resent, setResent] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  const [otpCode, setOtpCode] = useState("");
+  const [verifying, setVerifying] = useState(false);
+  const [verificationError, setVerificationError] = useState<string | null>(
+    null,
+  );
+  const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (cooldownRef.current) clearInterval(cooldownRef.current);
+    };
+  }, []);
+
+  const startCooldown = useCallback(() => {
+    setCooldown(RESEND_COOLDOWN_SECONDS);
+    cooldownRef.current = setInterval(() => {
+      setCooldown((prev) => {
+        if (prev <= 1) {
+          if (cooldownRef.current) clearInterval(cooldownRef.current);
+          cooldownRef.current = null;
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }, []);
+
+  const handleResend = async () => {
+    if (resending || cooldown > 0) return;
+    setResending(true);
+    setResent(false);
+
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: email ?? "",
+    });
+
+    setResending(false);
+    if (error) {
+      Alert.alert(
+        t("onboarding.alertErrorTitle"),
+        t("onboarding.alertAnErrorOccuredTitle"),
+      );
+    } else {
+      setResent(true);
+      startCooldown();
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (verifying || otpCode.length !== OTP_LENGTH) return;
+    setVerifying(true);
+    setVerificationError(null);
+
+    const { data, error } = await supabase.auth.verifyOtp({
+      email: email ?? "",
+      token: otpCode,
+      type: "signup",
+    });
+
+    setVerifying(false);
+
+    if (error) {
+      setOtpCode("");
+      setVerificationError(t("onboarding.invalidVerificationCode"));
+      return;
+    }
+
+    if (data.session) {
+      await initializeFromSupabase();
+      router.replace("/anamnesis");
+    } else {
+      setVerificationError(t("onboarding.alertAnErrorOccuredTitle"));
+    }
+  };
+
+  return (
+    <Box
+      flex={1}
+      backgroundColor="white"
+      paddingHorizontal="l"
+      justifyContent="center"
+      alignItems="center"
+      style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+    >
+      <Text variant="title" textAlign="center" marginBottom="m">
+        {t("onboarding.confirmEmailAddressTitle")}
+      </Text>
+
+      <Text variant="body" textAlign="center" marginBottom="s">
+        {t("onboarding.confirmEmailAddressMessage")}
+      </Text>
+
+      <Text variant="body" textAlign="center" marginBottom="l" color="primary">
+        {email}
+      </Text>
+
+      <Text variant="body" textAlign="center" marginBottom="s">
+        {t("onboarding.enterVerificationCode")}
+      </Text>
+
+      <TextInput
+        value={otpCode}
+        onChangeText={(text) => {
+          setOtpCode(text.replace(/[^0-9]/g, ""));
+          if (verificationError) setVerificationError(null);
+        }}
+        maxLength={OTP_LENGTH}
+        keyboardType="number-pad"
+        textContentType="oneTimeCode"
+        autoComplete="one-time-code"
+        placeholder="_ _ _ _ _ _"
+        accessibilityLabel={t("onboarding.verificationCodeInput")}
+        style={[
+          styles.otpInput,
+          {
+            color: colors.darkGrey3,
+            backgroundColor: colors.lightGrey2,
+            borderColor: verificationError ? colors.error : colors.lightGrey2,
+            borderRadius: borderRadii.m,
+            padding: spacing.m,
+          },
+        ]}
+      />
+
+      {verificationError && (
+        <Text
+          variant="description"
+          textAlign="center"
+          marginBottom="s"
+          color="error"
+          accessibilityRole="alert"
+        >
+          {verificationError}
+        </Text>
+      )}
+
+      <Button
+        onPress={handleVerifyOtp}
+        disabled={verifying || otpCode.length !== OTP_LENGTH}
+        marginBottom="m"
+        accessibilityRole="button"
+      >
+        {t("onboarding.verifyCode")}
+      </Button>
+
+      {resent && (
+        <Text
+          variant="description"
+          textAlign="center"
+          marginBottom="m"
+          color="success"
+        >
+          {t("onboarding.emailResent")}
+        </Text>
+      )}
+
+      <Button
+        variant="secondary"
+        onPress={handleResend}
+        disabled={resending || cooldown > 0}
+        marginBottom="m"
+        accessibilityRole="button"
+      >
+        {cooldown > 0
+          ? `${t("onboarding.resendEmail")} (${cooldown}s)`
+          : t("onboarding.resendEmail")}
+      </Button>
+
+      <Button variant="secondary" onPress={() => router.replace("/onboarding")}>
+        {t("common.back")}
+      </Button>
+    </Box>
+  );
+}
+
+const styles = StyleSheet.create({
+  otpInput: {
+    width: "100%",
+    fontSize: 24,
+    letterSpacing: 12,
+    textAlign: "center",
+    borderWidth: 1,
+    marginBottom: 15,
+  },
+});

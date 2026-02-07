@@ -7,6 +7,7 @@ import { BasicTextInput } from "./BasicTextInput";
 
 interface EmailInputFieldProps {
   email: string;
+  showError?: boolean;
   onChange: (value: string) => void;
   onFocus?: () => void;
   onSubmitEditing?: () => void;
@@ -19,6 +20,7 @@ const HEIGHT = 56;
  */
 export const EmailInputField: FC<EmailInputFieldProps> = ({
   email,
+  showError,
   onChange,
   onFocus,
   onSubmitEditing,
@@ -33,6 +35,8 @@ export const EmailInputField: FC<EmailInputFieldProps> = ({
       backgroundColor="lightGrey2"
       borderRadius="m"
       height={HEIGHT}
+      borderWidth={showError ? 1 : 0}
+      borderColor={showError ? "error" : undefined}
     >
       <Box
         width={HEIGHT}
@@ -42,6 +46,10 @@ export const EmailInputField: FC<EmailInputFieldProps> = ({
         backgroundColor="lightGrey1"
         borderTopLeftRadius="m"
         borderBottomLeftRadius="m"
+        borderLeftWidth={showError ? 1 : 0}
+        borderTopWidth={showError ? 1 : 0}
+        borderBottomWidth={showError ? 1 : 0}
+        borderColor={showError ? "error" : undefined}
       >
         <Ionicon
           name="mail"

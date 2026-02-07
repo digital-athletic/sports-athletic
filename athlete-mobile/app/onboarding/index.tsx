@@ -28,6 +28,8 @@ import {
  * Migrated from legacy/views/onboarding/Onboarding.js
  */
 
+type ErrorField = "email" | "password" | "passwordConfirm" | "privacy";
+
 type OnboardingState = {
   email: string;
   password: string;
@@ -37,6 +39,8 @@ type OnboardingState = {
   acceptedAnalytics: boolean;
   processing: boolean;
   passwordError: string | null;
+  registrationError: string | null;
+  errorFields: ErrorField[];
 };
 
 type OnboardingAction =
@@ -48,6 +52,8 @@ type OnboardingAction =
   | { type: "TOGGLE_ANALYTICS" }
   | { type: "SET_PROCESSING"; payload: boolean }
   | { type: "SET_PASSWORD_ERROR"; payload: string | null }
+  | { type: "SET_REGISTRATION_ERROR"; payload: string | null }
+  | { type: "SET_ERROR_FIELDS"; payload: ErrorField[] }
   | { type: "RESET" };
 
 const initialState: OnboardingState = {
@@ -59,6 +65,8 @@ const initialState: OnboardingState = {
   acceptedAnalytics: false,
   processing: false,
   passwordError: null,
+  registrationError: null,
+  errorFields: [],
 };
 
 function onboardingReducer(
@@ -67,21 +75,47 @@ function onboardingReducer(
 ): OnboardingState {
   switch (action.type) {
     case "SET_EMAIL":
-      return { ...state, email: action.payload };
+      return {
+        ...state,
+        email: action.payload,
+        registrationError: null,
+        errorFields: state.errorFields.filter((f) => f !== "email"),
+      };
     case "SET_PASSWORD":
-      return { ...state, password: action.payload, passwordError: null };
+      return {
+        ...state,
+        password: action.payload,
+        passwordError: null,
+        registrationError: null,
+        errorFields: state.errorFields.filter((f) => f !== "password"),
+      };
     case "SET_PASSWORD_CONFIRM":
-      return { ...state, passwordConfirm: action.payload, passwordError: null };
+      return {
+        ...state,
+        passwordConfirm: action.payload,
+        passwordError: null,
+        registrationError: null,
+        errorFields: state.errorFields.filter((f) => f !== "passwordConfirm"),
+      };
     case "SET_ACTIVE_TYPE":
       return { ...state, activeType: action.payload };
     case "TOGGLE_PRIVACY":
-      return { ...state, acceptedPrivacy: !state.acceptedPrivacy };
+      return {
+        ...state,
+        acceptedPrivacy: !state.acceptedPrivacy,
+        registrationError: null,
+        errorFields: state.errorFields.filter((f) => f !== "privacy"),
+      };
     case "TOGGLE_ANALYTICS":
       return { ...state, acceptedAnalytics: !state.acceptedAnalytics };
     case "SET_PROCESSING":
       return { ...state, processing: action.payload };
     case "SET_PASSWORD_ERROR":
       return { ...state, passwordError: action.payload };
+    case "SET_REGISTRATION_ERROR":
+      return { ...state, registrationError: action.payload };
+    case "SET_ERROR_FIELDS":
+      return { ...state, errorFields: action.payload };
     case "RESET":
       return {
         ...state,
@@ -91,6 +125,8 @@ function onboardingReducer(
         acceptedPrivacy: false,
         acceptedAnalytics: false,
         passwordError: null,
+        registrationError: null,
+        errorFields: [],
       };
     default:
       return state;
@@ -112,6 +148,14 @@ export default function OnboardingScreen() {
       setAuth(auth);
       router.replace("/(tabs)/(home)");
     } catch (error: any) {
+      if (error.code === "auth/email-not-confirmed") {
+        router.push({
+          pathname: "/onboarding/email-verification",
+          params: { email: state.email },
+        });
+        return;
+      }
+
       let title = t("onboarding.errorTitleWrongOrNoPassword");
       let message = t("onboarding.errorMessageWrongOrNoPassword");
 
@@ -129,38 +173,52 @@ export default function OnboardingScreen() {
   };
 
   const handleRegister = async () => {
+    // Validate email
+    if (!validateEmail(state.email)) {
+      dispatch({
+        type: "SET_REGISTRATION_ERROR",
+        payload: t("onboarding.invalidEmail"),
+      });
+      dispatch({ type: "SET_ERROR_FIELDS", payload: ["email"] });
+      return;
+    }
+
     // Validate privacy acceptance
     if (!state.acceptedPrivacy) {
-      Alert.alert(
-        t("onboarding.errorTitleAcceptPrivacyInfo"),
-        t("onboarding.errorMessageAcceptPrivacyInfo"),
-      );
+      dispatch({
+        type: "SET_REGISTRATION_ERROR",
+        payload: t("onboarding.errorMessageAcceptPrivacyInfo"),
+      });
+      dispatch({ type: "SET_ERROR_FIELDS", payload: ["privacy"] });
       return;
     }
 
     // Validate password
     if (state.password === "") {
-      Alert.alert(
-        t("onboarding.errorTitleWrongOrNoPassword"),
-        t("onboarding.errorMessageNoPassword"),
-      );
+      dispatch({
+        type: "SET_PASSWORD_ERROR",
+        payload: t("onboarding.errorMessageNoPassword"),
+      });
+      dispatch({ type: "SET_ERROR_FIELDS", payload: ["password"] });
       return;
     }
 
     if (!validatePassword(state.password)) {
-      Alert.alert(
-        t("onboarding.errorTitleWrongOrNoPassword"),
-        t("onboarding.errorMessageWeakPassword"),
-      );
+      dispatch({
+        type: "SET_PASSWORD_ERROR",
+        payload: t("onboarding.errorMessageWeakPassword"),
+      });
+      dispatch({ type: "SET_ERROR_FIELDS", payload: ["password"] });
       return;
     }
 
     // Validate password confirmation
     if (state.password !== state.passwordConfirm) {
-      Alert.alert(
-        t("onboarding.errorTitleWrongOrNoPassword"),
-        t("onboarding.errorMessageDifferentPasswords"),
-      );
+      dispatch({
+        type: "SET_PASSWORD_ERROR",
+        payload: t("onboarding.errorMessageDifferentPasswords"),
+      });
+      dispatch({ type: "SET_ERROR_FIELDS", payload: ["passwordConfirm"] });
       return;
     }
 
@@ -168,11 +226,19 @@ export default function OnboardingScreen() {
     Keyboard.dismiss();
 
     try {
-      await registerWithEmail(
+      const { requiresEmailConfirmation } = await registerWithEmail(
         state.email,
         state.password,
         state.acceptedAnalytics,
       );
+
+      if (requiresEmailConfirmation) {
+        router.push({
+          pathname: "/onboarding/email-verification",
+          params: { email: state.email },
+        });
+        return;
+      }
 
       const auth = await signInWithEmail(state.email, state.password);
       setAuth(auth);
@@ -180,7 +246,7 @@ export default function OnboardingScreen() {
       router.replace("/anamnesis");
     } catch (error: any) {
       if (error.code === "auth/email-already-in-use") {
-        // Offer to switch to login flow
+        // Offer to switch to login flow — keep as Alert for interactive buttons
         Alert.alert(
           t("onboarding.errorTitleRegistration"),
           t("onboarding.errorMessageEmailInUse"),
@@ -195,16 +261,22 @@ export default function OnboardingScreen() {
         );
       } else {
         let message = t("onboarding.errorUnknownMsgRetry");
+        let fields: ErrorField[] = [];
 
         if (error.code === "auth/weak-password") {
           message = t("onboarding.errorMessageWeakPassword");
+          fields = ["password"];
         } else if (error.code === "auth/invalid-email") {
           message = t("onboarding.invalidEmail");
+          fields = ["email"];
         } else if (error.code === "auth/network-request-failed") {
           message = t("onboarding.errorMessageNoInternetConnection");
         }
 
-        Alert.alert(t("onboarding.errorTitleRegistration"), message);
+        dispatch({ type: "SET_REGISTRATION_ERROR", payload: message });
+        if (fields.length > 0) {
+          dispatch({ type: "SET_ERROR_FIELDS", payload: fields });
+        }
       }
     } finally {
       dispatch({ type: "SET_PROCESSING", payload: false });
@@ -280,6 +352,8 @@ export default function OnboardingScreen() {
         acceptedPrivacy={state.acceptedPrivacy}
         acceptedAnalytics={state.acceptedAnalytics}
         passwordError={state.passwordError}
+        registrationError={state.registrationError}
+        errorFields={state.errorFields}
         onEmailChange={(email) =>
           dispatch({ type: "SET_EMAIL", payload: email })
         }

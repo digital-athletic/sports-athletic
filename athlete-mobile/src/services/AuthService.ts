@@ -50,6 +50,11 @@ const mapSupabaseError = (error: {
   ) {
     authError.code = "auth/invalid-email";
   } else if (
+    message.includes("email not confirmed") ||
+    code.includes("email_not_confirmed")
+  ) {
+    authError.code = "auth/email-not-confirmed";
+  } else if (
     message.includes("network") ||
     message.includes("fetch") ||
     message.includes("connection")
@@ -99,8 +104,8 @@ export const registerWithEmail = async (
   email: string,
   password: string,
   _anonymisedDataUse: boolean,
-) => {
-  const { error } = await supabase.auth.signUp({
+): Promise<{ requiresEmailConfirmation: boolean }> => {
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
   });
@@ -108,6 +113,8 @@ export const registerWithEmail = async (
   if (error) {
     throw mapSupabaseError(error);
   }
+
+  return { requiresEmailConfirmation: !data.session };
 };
 
 /**

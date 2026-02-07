@@ -52,6 +52,7 @@ export default function RootLayout() {
             name="webview"
             options={{ headerShown: false, presentation: "fullScreenModal" }}
           />
+          <Stack.Screen name="auth" options={{ headerShown: false }} />
           <Stack.Screen name="test" options={{ headerShown: false }} />
           <Stack.Screen
             name="contact"

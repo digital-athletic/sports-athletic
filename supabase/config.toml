@@ -106,16 +106,38 @@ enabled = true
 file_size_limit = "50MiB"
 
 [storage.buckets.images]
-public = true
+public = false
 file_size_limit = "5MiB"
 allowed_mime_types = ["image/png", "image/jpeg"]
 objects_path = "./images"
 
 [storage.buckets.videos]
-public = true
+public = false
 file_size_limit = "50MiB"
 allowed_mime_types = ["video/mp4"]
 objects_path = "./videos"
+
+[storage.buckets.exercise_videos]
+public = false
+file_size_limit = "50MiB"
+allowed_mime_types = ["video/mp4"]
+objects_path = "./exercise_videos"
+
+[storage.buckets.exercise_pictures]
+public = false
+file_size_limit = "5MiB"
+allowed_mime_types = ["image/png", "image/jpeg"]
+objects_path = "./exercise_images"
+
+[storage.buckets.tutorial_videos]
+public = false
+file_size_limit = "50MiB"
+allowed_mime_types = ["video/mp4"]
+
+[storage.buckets.tutorial_pictures]
+public = false
+file_size_limit = "5MiB"
+allowed_mime_types = ["image/png", "image/jpeg"]
 
 # Uncomment to allow connections via S3 compatible clients
 # [storage.s3_protocol]

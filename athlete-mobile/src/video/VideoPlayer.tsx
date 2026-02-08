@@ -6,7 +6,7 @@ import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useEvent } from "expo";
 import { useVideoPlayer, VideoView } from "expo-video";
-import { FC, useEffect, useMemo } from "react";
+import { FC, useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 
 type Props = {
@@ -31,16 +31,22 @@ export const VideoPlayer: FC<Props> = ({
   isTutorial,
   disabled = false,
 }) => {
-  const videoUrl = useMemo(() => {
-    // Extract filename from path (e.g., "tutorialVideos/Bankdruecken.mp4" -> "Bankdruecken.mp4")
-    const filename = source?.split("/").pop() ?? "";
-    if (!filename) return "";
-    return isTutorial
-      ? getTutorialVideoUrl(filename)
-      : getExerciseVideoUrl(filename);
-  }, [source, isTutorial]);
+  const [videoUrl, setVideoUrl] = useState("");
 
   const player = useVideoPlayer(videoUrl);
+
+  useEffect(() => {
+    const filename = source?.split("/").pop() ?? "";
+    if (!filename) return;
+
+    const getUrl = isTutorial ? getTutorialVideoUrl : getExerciseVideoUrl;
+    getUrl(filename)
+      .then((url) => {
+        setVideoUrl(url);
+        player.replace(url);
+      })
+      .catch(() => {});
+  }, [source, isTutorial, player]);
 
   const { isPlaying } = useEvent(player, "playingChange", {
     isPlaying: player.playing,

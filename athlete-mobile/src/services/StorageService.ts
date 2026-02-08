@@ -7,31 +7,45 @@ const SUPABASE_EXERCISE_PICTURES_BUCKET = "exercise_pictures";
 const SUPABASE_TUTORIAL_VIDEOS_BUCKET = "tutorial_videos";
 const SUPABASE_TUTORIAL_PICTURES_BUCKET = "tutorial_pictures";
 
-export function getPublicUrl(bucket: string, path: string): string {
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-  return data.publicUrl;
+const DEFAULT_SIGNED_URL_EXPIRY = 3600;
+
+export async function getSignedUrl(
+  bucket: string,
+  path: string,
+): Promise<string> {
+  const { data, error } = await supabase.storage
+    .from(bucket)
+    .createSignedUrl(path, DEFAULT_SIGNED_URL_EXPIRY);
+
+  if (error || !data?.signedUrl) {
+    throw new Error(
+      `Failed to get signed URL for ${bucket}/${path}: ${error?.message ?? "unknown error"}`,
+    );
+  }
+
+  return data.signedUrl;
 }
 
-export function getVideoUrl(path: string): string {
-  return getPublicUrl(SUPABASE_VIDEO_BUCKET, path);
+export async function getVideoUrl(path: string): Promise<string> {
+  return getSignedUrl(SUPABASE_VIDEO_BUCKET, path);
 }
 
-export function getImageUrl(path: string): string {
-  return getPublicUrl(SUPABASE_IMAGE_BUCKET, path);
+export async function getImageUrl(path: string): Promise<string> {
+  return getSignedUrl(SUPABASE_IMAGE_BUCKET, path);
 }
 
-export function getExerciseVideoUrl(path: string): string {
-  return getPublicUrl(SUPABASE_EXERCISE_VIDEOS_BUCKET, path);
+export async function getExerciseVideoUrl(path: string): Promise<string> {
+  return getSignedUrl(SUPABASE_EXERCISE_VIDEOS_BUCKET, path);
 }
 
-export function getExercisePictureUrl(path: string): string {
-  return getPublicUrl(SUPABASE_EXERCISE_PICTURES_BUCKET, path);
+export async function getExercisePictureUrl(path: string): Promise<string> {
+  return getSignedUrl(SUPABASE_EXERCISE_PICTURES_BUCKET, path);
 }
 
-export function getTutorialVideoUrl(path: string): string {
-  return getPublicUrl(SUPABASE_TUTORIAL_VIDEOS_BUCKET, path);
+export async function getTutorialVideoUrl(path: string): Promise<string> {
+  return getSignedUrl(SUPABASE_TUTORIAL_VIDEOS_BUCKET, path);
 }
 
-export function getTutorialPictureUrl(path: string): string {
-  return getPublicUrl(SUPABASE_TUTORIAL_PICTURES_BUCKET, path);
+export async function getTutorialPictureUrl(path: string): Promise<string> {
+  return getSignedUrl(SUPABASE_TUTORIAL_PICTURES_BUCKET, path);
 }

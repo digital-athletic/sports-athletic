@@ -433,14 +433,21 @@ const ExerciseItem: FC<ExerciseItemProps> = ({
   exercises,
   onPress,
 }) => {
+  const [imageUrl, setImageUrl] = useState("");
   const exerciseData = exercises.find((e) => e.id === exercise.exerciseId);
-  if (!exerciseData) return null;
 
-  // Extract filename from path (e.g., "exercisePictures/1-picture-xxx.jpg" -> "1-picture-xxx.jpg")
-  const pictureFilename = exerciseData.picture?.split("/").pop() ?? "";
-  const imageUrl = pictureFilename
-    ? getExercisePictureUrl(pictureFilename)
-    : "";
+  useEffect(() => {
+    if (!exerciseData?.picture) return;
+
+    const pictureFilename = exerciseData.picture.split("/").pop() ?? "";
+    if (!pictureFilename) return;
+
+    getExercisePictureUrl(pictureFilename)
+      .then(setImageUrl)
+      .catch(() => {});
+  }, [exerciseData?.picture]);
+
+  if (!exerciseData) return null;
 
   return (
     <Pressable onPress={onPress}>

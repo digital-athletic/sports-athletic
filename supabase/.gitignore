@@ -3,6 +3,8 @@
 .temp
 /videos
 /images
+/exercise_videos
+/exercise_images
 
 # dotenvx
 .env.keys

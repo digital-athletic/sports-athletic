@@ -150,6 +150,12 @@ export default function MoreScreen() {
             isSubscribed={allowedForTraining}
           />
           <ListItem
+            title={t("more.enterTestManually")}
+            navPath="/training/manual-strength-test"
+            iconName="create"
+            iconBackground="primary"
+          />
+          <ListItem
             title={t("more.technicalVideos")}
             navPath="/(tabs)/(more)/tutorials"
             iconName="videocam"

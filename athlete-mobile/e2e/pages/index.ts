@@ -1,6 +1,7 @@
 export { AnamnesisPage } from "./AnamnesisPage";
 export { BasePage } from "./BasePage";
 export { ExerciseInformationPage } from "./ExerciseInformationPage";
+export { ManualStrengthTestPage } from "./ManualStrengthTestPage";
 export { ProfilePage } from "./ProfilePage";
 export { RegistrationPage } from "./RegistrationPage";
 export { StatisticsPage } from "./StatisticsPage";

@@ -142,6 +142,54 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
     );
   };
 
+  const navigateToManualInput = useCallback(() => {
+    if (anamnesisCompleted) {
+      router.push("/training/manual-strength-test");
+    } else {
+      Alert.alert(
+        t("statistics.powerTest.testNotPossible"),
+        t("statistics.powerTest.anamnesisNeeded"),
+        [
+          { text: t("common.ok"), onPress: () => {} },
+          {
+            text: t("statistics.powerTest.startNow"),
+            onPress: () => router.replace("/anamnesis"),
+          },
+        ],
+      );
+    }
+  }, [anamnesisCompleted, router, t]);
+
+  const renderManualInputButton = () => {
+    if (isSuccessScreen) return null;
+
+    return (
+      <TouchableOpacity
+        onPress={navigateToManualInput}
+        accessibilityLabel={t("statistics.powerTest.enterManually")}
+        accessibilityRole="button"
+        testID="power-test-manual-input-button"
+      >
+        <Box
+          alignSelf="stretch"
+          flexDirection="row"
+          justifyContent="center"
+          alignItems="center"
+          marginHorizontal="l"
+          marginBottom="l"
+          padding="m"
+          borderRadius="m"
+          borderWidth={1}
+          borderColor="primary"
+        >
+          <Text variant="button" color="primary">
+            {t("statistics.powerTest.enterManually")}
+          </Text>
+        </Box>
+      </TouchableOpacity>
+    );
+  };
+
   const renderHistoryEntry = ({
     item,
     index,
@@ -315,6 +363,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
       {renderChart()}
       {renderLegend()}
       {renderStartTestButton()}
+      {renderManualInputButton()}
       {renderHistory()}
     </Box>
   );

@@ -16,7 +16,7 @@ test.describe("Statistics Tabs - Tests with workouts profile", () => {
     const workoutPage = new WorkoutPage(page);
     const basePage = new BasePage(page);
 
-    await workoutPage.login("test@example.com", "password123");
+    await workoutPage.login("test@example.com");
     await workoutPage.expectLoggedIn();
 
     // Navigate to Statistics tab
@@ -55,7 +55,7 @@ test.describe("Statistics Tabs - Tab switching with workouts", () => {
     const workoutPage = new WorkoutPage(page);
     const basePage = new BasePage(page);
 
-    await workoutPage.login("test@example.com", "password123");
+    await workoutPage.login("test@example.com");
     await workoutPage.expectLoggedIn();
 
     await basePage.navigateToTab("Statistics");
@@ -90,7 +90,7 @@ test.describe("Statistics Tabs - Empty test history", () => {
     const workoutPage = new WorkoutPage(page);
     const basePage = new BasePage(page);
 
-    await workoutPage.login("test@example.com", "password123");
+    await workoutPage.login("test@example.com");
     await workoutPage.expectLoggedIn();
 
     await basePage.navigateToTab("Statistics");

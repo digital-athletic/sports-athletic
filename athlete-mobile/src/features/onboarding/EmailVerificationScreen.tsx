@@ -1,3 +1,7 @@
+import {
+  requestLoginOtp,
+  requestRegistrationOtp,
+} from "@/services/AuthService";
 import { supabase } from "@/services/supabaseClient";
 import { useAuthStore } from "@/store/authStore";
 import { Box } from "@/theme/Box";
@@ -13,9 +17,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const RESEND_COOLDOWN_SECONDS = 60;
 const OTP_LENGTH = 6;
 
-/** Screen shown after registration when email confirmation is required. */
+type VerificationMode = "LOGIN" | "REGISTER";
+
+/** Screen shown after OTP request to enter the 6-digit verification code. */
 export function EmailVerificationScreen() {
-  const { email } = useLocalSearchParams<{ email: string }>();
+  const { email, mode } = useLocalSearchParams<{
+    email: string;
+    mode: VerificationMode;
+  }>();
   const router = useRouter();
   const { t } = useTranslation();
   const { colors, spacing, borderRadii } = useTheme();
@@ -56,20 +65,22 @@ export function EmailVerificationScreen() {
     setResending(true);
     setResent(false);
 
-    const { error } = await supabase.auth.resend({
-      type: "signup",
-      email: email ?? "",
-    });
-
-    setResending(false);
-    if (error) {
-      Alert.alert(
-        t("onboarding.alertErrorTitle"),
-        t("onboarding.alertAnErrorOccuredTitle"),
-      );
-    } else {
+    try {
+      if (mode === "REGISTER") {
+        await requestRegistrationOtp(email ?? "", false);
+      } else {
+        await requestLoginOtp(email ?? "");
+      }
       setResent(true);
       startCooldown();
+    } catch (error: any) {
+      const message =
+        error?.code === "auth/too-many-requests"
+          ? t("onboarding.errorMessageTooManyRequests")
+          : t("onboarding.alertAnErrorOccuredTitle");
+      Alert.alert(t("onboarding.alertErrorTitle"), message);
+    } finally {
+      setResending(false);
     }
   };
 
@@ -81,7 +92,7 @@ export function EmailVerificationScreen() {
     const { data, error } = await supabase.auth.verifyOtp({
       email: email ?? "",
       token: otpCode,
-      type: "signup",
+      type: "email",
     });
 
     setVerifying(false);
@@ -94,7 +105,11 @@ export function EmailVerificationScreen() {
 
     if (data.session) {
       await initializeFromSupabase();
-      router.replace("/anamnesis");
+      // For login, Stack.Protected automatically navigates to (tabs).
+      // For registration, override to anamnesis (profile setup).
+      if (mode === "REGISTER") {
+        router.replace("/anamnesis");
+      }
     } else {
       setVerificationError(t("onboarding.alertAnErrorOccuredTitle"));
     }

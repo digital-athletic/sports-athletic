@@ -31,11 +31,12 @@ test.describe("Auth Flow", () => {
 
       // Should see the login screen (part of onboarding)
       // Stack.Protected with guard={user == null} allows access when not authenticated
-      await expect(page.getByRole("button", { name: "Login" })).toBeVisible({
-        timeout: 5000,
-      });
+      await expect(page.getByRole("button", { name: "Send code" })).toBeVisible(
+        {
+          timeout: 5000,
+        },
+      );
       await expect(page.getByPlaceholder("E-Mail")).toBeVisible();
-      await expect(page.getByPlaceholder("Password")).toBeVisible();
 
       // Should also have signup option
       await expect(page.getByText(/sign up/i)).toBeVisible();
@@ -48,7 +49,9 @@ test.describe("Auth Flow", () => {
 
       // Should see the login screen
       // Stack.Protected with guard={user == null} allows onboarding access when not authenticated
-      await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Send code" }),
+      ).toBeVisible();
     });
 
     test("cannot access protected /tabs route - blocked by Stack.Protected", async ({
@@ -59,7 +62,9 @@ test.describe("Auth Flow", () => {
 
       // Stack.Protected with guard={user != null} blocks access when user is null
       // User should be shown onboarding/login instead
-      await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Send code" }),
+      ).toBeVisible();
     });
 
     test("cannot access protected /anamnesis route - blocked by Stack.Protected", async ({
@@ -69,7 +74,9 @@ test.describe("Auth Flow", () => {
       await page.goto("/(anamnesis)/anamnesis");
 
       // Stack.Protected with guard={user != null} blocks access when user is null
-      await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Send code" }),
+      ).toBeVisible();
     });
 
     test("cannot access protected /training route - blocked by Stack.Protected", async ({
@@ -79,7 +86,9 @@ test.describe("Auth Flow", () => {
       await page.goto("/training");
 
       // Stack.Protected with guard={user != null} blocks access when user is null
-      await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Send code" }),
+      ).toBeVisible();
     });
   });
 
@@ -93,7 +102,7 @@ test.describe("Auth Flow", () => {
 
       // Login to establish auth session
       const basePage = new BasePage(page);
-      await basePage.login("test@example.com", "password123");
+      await basePage.login("test@example.com");
       await basePage.expectLoggedIn();
 
       // Now try to navigate to onboarding route
@@ -101,9 +110,8 @@ test.describe("Auth Flow", () => {
 
       // Stack.Protected with guard={user == null} blocks onboarding when user is authenticated
       // User should NOT see the login screen - they should see protected content instead
-      // The exact screen depends on app state, but login should definitely not be visible
-      const loginButton = page.getByRole("button", { name: "Login" });
-      await expect(loginButton).not.toBeVisible({ timeout: 5000 });
+      const sendCodeButton = page.getByRole("button", { name: "Send code" });
+      await expect(sendCodeButton).not.toBeVisible({ timeout: 5000 });
     });
 
     test("can access protected /tabs route after login", async ({ page }) => {
@@ -111,7 +119,7 @@ test.describe("Auth Flow", () => {
 
       // Login to establish auth session
       const basePage = new BasePage(page);
-      await basePage.login("test@example.com", "password123");
+      await basePage.login("test@example.com");
       await basePage.expectLoggedIn();
 
       // Navigate to tabs route
@@ -128,7 +136,7 @@ test.describe("Auth Flow", () => {
 
       // Login to establish auth session
       const basePage = new BasePage(page);
-      await basePage.login("test@example.com", "password123");
+      await basePage.login("test@example.com");
       await basePage.expectLoggedIn();
 
       // Verify we're on the home screen with training plan
@@ -153,15 +161,15 @@ test.describe("Auth Flow", () => {
 
       // Login to establish auth session
       const basePage = new BasePage(page);
-      await basePage.login("test@example.com", "password123");
+      await basePage.login("test@example.com");
 
       // Navigate to anamnesis route
       await page.goto("/(anamnesis)/anamnesis");
 
       // Stack.Protected with guard={user != null} allows access when authenticated
       // Should see anamnesis content (not login screen)
-      const loginButton = page.getByRole("button", { name: "Login" });
-      await expect(loginButton).not.toBeVisible({ timeout: 5000 });
+      const sendCodeButton = page.getByRole("button", { name: "Send code" });
+      await expect(sendCodeButton).not.toBeVisible({ timeout: 5000 });
     });
   });
 
@@ -211,9 +219,11 @@ test.describe("Auth Flow", () => {
 
       // After auth initializes with null session, should see onboarding
       // Stack.Protected with guard={user == null} shows onboarding for unauthenticated users
-      await expect(page.getByRole("button", { name: "Login" })).toBeVisible({
-        timeout: 5000,
-      });
+      await expect(page.getByRole("button", { name: "Send code" })).toBeVisible(
+        {
+          timeout: 5000,
+        },
+      );
     });
   });
 
@@ -225,12 +235,18 @@ test.describe("Auth Flow", () => {
 
       await page.goto("/");
 
-      // Fill login form
+      // Fill login form (email only, passwordless)
       await page.getByPlaceholder("E-Mail").fill("test@example.com");
-      await page.getByPlaceholder("Password").fill("password123");
 
-      // Click login
-      await page.getByRole("button", { name: "Login" }).click();
+      // Click send code
+      await page.getByRole("button", { name: "Send code" }).click();
+
+      // Enter OTP on verification screen
+      await expect(
+        page.getByText("Confirm your email", { exact: true }),
+      ).toBeVisible({ timeout: 5000 });
+      await page.getByRole("textbox").fill("123456");
+      await page.getByRole("button", { name: "Verify" }).click();
 
       // After successful login, Stack.Protected guards update:
       // - guard={user != null} now passes for protected routes
@@ -276,13 +292,15 @@ test.describe("Auth Flow", () => {
 
       // Should still be authenticated after reload
       // Stack.Protected guards should allow protected content
-      const loginButton = page.getByRole("button", { name: "Login" });
-      const isLoginVisible = await loginButton.isVisible().catch(() => false);
+      const sendCodeButton = page.getByRole("button", { name: "Send code" });
+      const isSendCodeVisible = await sendCodeButton
+        .isVisible()
+        .catch(() => false);
 
-      // If login is not visible, user is authenticated
-      if (!isLoginVisible) {
+      // If send code is not visible, user is authenticated
+      if (!isSendCodeVisible) {
         // Verify we see authenticated content
-        await expect(page.locator("body")).not.toContainText("Login");
+        await expect(page.locator("body")).not.toContainText("Send code");
       }
     });
   });
@@ -296,11 +314,15 @@ test.describe("Auth Flow", () => {
 
       // Test 1: Unauthenticated - onboarding accessible, tabs blocked
       await page.goto("/onboarding");
-      await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Send code" }),
+      ).toBeVisible();
 
       await page.goto("/(tabs)/(home)");
-      // Should still see login (tabs blocked)
-      await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
+      // Should still see send code button (tabs blocked)
+      await expect(
+        page.getByRole("button", { name: "Send code" }),
+      ).toBeVisible();
 
       // Test 2: Authenticate via login and verify guards flip
       await mockSupabaseAuth(page);
@@ -316,17 +338,17 @@ test.describe("Auth Flow", () => {
       // Go to login page and authenticate
       await page.goto("/");
       const basePage = new BasePage(page);
-      await basePage.login("test@example.com", "password123");
+      await basePage.login("test@example.com");
       await basePage.expectLoggedIn();
 
       // Now tabs should be accessible
       await page.goto("/(tabs)/(home)");
       await basePage.expectTrainingPlanVisible();
 
-      // And onboarding should be blocked - verify login is NOT visible
+      // And onboarding should be blocked - verify send code is NOT visible
       await page.goto("/onboarding");
-      const loginButton = page.getByRole("button", { name: "Login" });
-      await expect(loginButton).not.toBeVisible({ timeout: 5000 });
+      const sendCodeButton = page.getByRole("button", { name: "Send code" });
+      await expect(sendCodeButton).not.toBeVisible({ timeout: 5000 });
     });
   });
 });

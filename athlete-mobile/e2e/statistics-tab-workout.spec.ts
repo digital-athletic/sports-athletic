@@ -20,7 +20,7 @@ test.describe("Statistics Page - Empty State", () => {
     const basePage = new BasePage(page);
     const statsPage = new StatisticsPage(page);
 
-    await workoutPage.login("test@example.com", "password123");
+    await workoutPage.login("test@example.com");
     await workoutPage.expectLoggedIn();
 
     // Navigate directly to Statistics without completing any workout
@@ -57,7 +57,7 @@ test.describe("Statistics Page - Single Workout Completion", () => {
     const basePage = new BasePage(page);
     const statsPage = new StatisticsPage(page);
 
-    await workoutPage.login("test@example.com", "password123");
+    await workoutPage.login("test@example.com");
     await workoutPage.expectLoggedIn();
 
     // Complete one workout
@@ -112,7 +112,7 @@ test.describe("Statistics Page - Multiple Workouts", () => {
     const basePage = new BasePage(page);
     const statsPage = new StatisticsPage(page);
 
-    await workoutPage.login("test@example.com", "password123");
+    await workoutPage.login("test@example.com");
     await workoutPage.expectLoggedIn();
 
     await basePage.navigateToTab("Statistics");
@@ -137,7 +137,7 @@ test.describe("Statistics Page - Multiple Workouts", () => {
     const basePage = new BasePage(page);
     const statsPage = new StatisticsPage(page);
 
-    await workoutPage.login("test@example.com", "password123");
+    await workoutPage.login("test@example.com");
     await workoutPage.expectLoggedIn();
 
     // Navigate to Statistics
@@ -184,7 +184,7 @@ test.describe("Statistics Page - Radar Chart Labels", () => {
       const basePage = new BasePage(page);
       const statsPage = new StatisticsPage(page);
 
-      await workoutPage.login("test@example.com", "password123");
+      await workoutPage.login("test@example.com");
       await workoutPage.expectLoggedIn();
 
       await basePage.navigateToTab("Statistics");
@@ -219,7 +219,7 @@ test.describe("Statistics Page - Radar Chart Labels", () => {
       const basePage = new BasePage(page);
       const statsPage = new StatisticsPage(page);
 
-      await workoutPage.login("test@example.com", "password123");
+      await workoutPage.login("test@example.com");
       await workoutPage.expectLoggedIn();
 
       await basePage.navigateToTab("Statistics");
@@ -288,7 +288,7 @@ test.describe("Statistics Page - Time Filtering", () => {
     const basePage = new BasePage(page);
     const statsPage = new StatisticsPage(page);
 
-    await workoutPage.login("test@example.com", "password123");
+    await workoutPage.login("test@example.com");
     await workoutPage.expectLoggedIn();
 
     await basePage.navigateToTab("Statistics");

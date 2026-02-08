@@ -229,6 +229,10 @@ otp_expiry = 3600
 subject = "E-Mail bestätigen"
 content_path = "./supabase/templates/confirmation.html"
 
+[auth.email.template.magic_link]
+subject = "Dein Anmeldecode"
+content_path = "./supabase/templates/magic_link.html"
+
 # Uncomment to customize email template
 # [auth.email.template.invite]
 # subject = "You have been invited"

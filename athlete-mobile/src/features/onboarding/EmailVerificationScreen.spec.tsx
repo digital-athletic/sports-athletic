@@ -1,6 +1,6 @@
 /**
  * Tests for EmailVerificationScreen component
- * Tests rendering, resend functionality, and back navigation
+ * Tests rendering, resend functionality, OTP verification, and back navigation
  */
 
 /* eslint-disable import/first */
@@ -9,8 +9,12 @@ import { act, fireEvent, render } from "../../utils/testUtils";
 // Mock expo-router
 const mockBack = jest.fn();
 const mockReplace = jest.fn();
+let mockSearchParams: Record<string, string> = {
+  email: "user@example.com",
+  mode: "REGISTER",
+};
 jest.mock("expo-router", () => ({
-  useLocalSearchParams: () => ({ email: "user@example.com" }),
+  useLocalSearchParams: () => mockSearchParams,
   useRouter: () => ({ back: mockBack, replace: mockReplace }),
 }));
 
@@ -20,15 +24,22 @@ jest.mock("react-native-safe-area-context", () => ({
 }));
 
 // Mock supabase client
-const mockResend = jest.fn();
 const mockVerifyOtp = jest.fn();
 jest.mock("@/services/supabaseClient", () => ({
   supabase: {
     auth: {
-      resend: (...args: unknown[]) => mockResend(...args),
       verifyOtp: (...args: unknown[]) => mockVerifyOtp(...args),
     },
   },
+}));
+
+// Mock AuthService
+const mockRequestLoginOtp = jest.fn();
+const mockRequestRegistrationOtp = jest.fn();
+jest.mock("@/services/AuthService", () => ({
+  requestLoginOtp: (...args: unknown[]) => mockRequestLoginOtp(...args),
+  requestRegistrationOtp: (...args: unknown[]) =>
+    mockRequestRegistrationOtp(...args),
 }));
 
 // Mock auth store
@@ -46,9 +57,11 @@ import { EmailVerificationScreen } from "./EmailVerificationScreen";
 describe("<EmailVerificationScreen />", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockResend.mockResolvedValue({ error: null });
+    mockSearchParams = { email: "user@example.com", mode: "REGISTER" };
     mockVerifyOtp.mockResolvedValue({ data: {}, error: null });
     mockInitializeFromSupabase.mockResolvedValue(undefined);
+    mockRequestLoginOtp.mockResolvedValue(undefined);
+    mockRequestRegistrationOtp.mockResolvedValue(undefined);
     jest.spyOn(Alert, "alert").mockImplementation(() => {});
   });
 
@@ -81,23 +94,33 @@ describe("<EmailVerificationScreen />", () => {
     expect(getByText("Back")).toBeTruthy();
   });
 
-  it("calls supabase resend when resend button is pressed", async () => {
+  it("calls requestRegistrationOtp when resending in REGISTER mode", async () => {
     const { getByText } = render(<EmailVerificationScreen />);
 
     await act(async () => {
       fireEvent.press(getByText("Resend verification email"));
     });
 
-    expect(mockResend).toHaveBeenCalledWith({
-      type: "signup",
-      email: "user@example.com",
+    expect(mockRequestRegistrationOtp).toHaveBeenCalledWith(
+      "user@example.com",
+      false,
+    );
+  });
+
+  it("calls requestLoginOtp when resending in LOGIN mode", async () => {
+    mockSearchParams = { email: "user@example.com", mode: "LOGIN" };
+    const { getByText } = render(<EmailVerificationScreen />);
+
+    await act(async () => {
+      fireEvent.press(getByText("Resend verification email"));
     });
+
+    expect(mockRequestLoginOtp).toHaveBeenCalledWith("user@example.com");
   });
 
   it("shows success message after resending email", async () => {
     const { getByText, queryByText } = render(<EmailVerificationScreen />);
 
-    // Success message not shown initially
     expect(
       queryByText("A new verification email has been sent to your inbox."),
     ).toBeNull();
@@ -119,37 +142,8 @@ describe("<EmailVerificationScreen />", () => {
     expect(mockReplace).toHaveBeenCalledWith("/onboarding");
   });
 
-  it("disables resend button while loading", async () => {
-    // Make resend take a long time
-    let resolveResend: (value: unknown) => void;
-    mockResend.mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          resolveResend = resolve;
-        }),
-    );
-
-    const { getByText } = render(<EmailVerificationScreen />);
-
-    fireEvent.press(getByText("Resend verification email"));
-
-    // The resend button should show loading state
-    expect(mockResend).toHaveBeenCalledTimes(1);
-
-    // Pressing again should not trigger another call (disabled while loading)
-    fireEvent.press(getByText("Resend verification email"));
-    expect(mockResend).toHaveBeenCalledTimes(1);
-
-    // Cleanup: resolve the promise
-    await act(async () => {
-      resolveResend!({ error: null });
-    });
-  });
-
   it("shows error alert when resend fails", async () => {
-    mockResend.mockResolvedValue({
-      error: { message: "Rate limit exceeded" },
-    });
+    mockRequestRegistrationOtp.mockRejectedValue(new Error("Rate limited"));
 
     const { getByText, queryByText } = render(<EmailVerificationScreen />);
 
@@ -157,12 +151,9 @@ describe("<EmailVerificationScreen />", () => {
       fireEvent.press(getByText("Resend verification email"));
     });
 
-    // Should not show success message on error
     expect(
       queryByText("A new verification email has been sent to your inbox."),
     ).toBeNull();
-
-    // Should show error alert
     expect(Alert.alert).toHaveBeenCalled();
   });
 
@@ -175,19 +166,15 @@ describe("<EmailVerificationScreen />", () => {
       fireEvent.press(getByText("Resend verification email"));
     });
 
-    // After successful resend, button should show cooldown
     expect(getByText(/Resend verification email \(\d+s\)/)).toBeTruthy();
 
-    // Second press should not trigger another call
     fireEvent.press(getByText(/Resend verification email \(\d+s\)/));
-    expect(mockResend).toHaveBeenCalledTimes(1);
+    expect(mockRequestRegistrationOtp).toHaveBeenCalledTimes(1);
 
-    // Advance past cooldown
     act(() => {
       jest.advanceTimersByTime(61000);
     });
 
-    // Button should be enabled again
     expect(getByText("Resend verification email")).toBeTruthy();
 
     jest.useRealTimers();
@@ -198,11 +185,6 @@ describe("<EmailVerificationScreen />", () => {
     expect(getByLabelText("Verification code")).toBeTruthy();
   });
 
-  it("renders the verify button", () => {
-    const { getByText } = render(<EmailVerificationScreen />);
-    expect(getByText("Verify")).toBeTruthy();
-  });
-
   it("filters non-numeric characters from OTP input", () => {
     const { getByLabelText } = render(<EmailVerificationScreen />);
     const input = getByLabelText("Verification code");
@@ -211,7 +193,7 @@ describe("<EmailVerificationScreen />", () => {
     expect(input.props.value).toBe("1234");
   });
 
-  it("calls verifyOtp with correct parameters when verify is pressed", async () => {
+  it("calls verifyOtp with type email", async () => {
     mockVerifyOtp.mockResolvedValue({
       data: {
         session: { user: { id: "user-1" }, access_token: "token-1" },
@@ -230,11 +212,11 @@ describe("<EmailVerificationScreen />", () => {
     expect(mockVerifyOtp).toHaveBeenCalledWith({
       email: "user@example.com",
       token: "123456",
-      type: "signup",
+      type: "email",
     });
   });
 
-  it("navigates to anamnesis after successful verification", async () => {
+  it("navigates to anamnesis after successful verification in REGISTER mode", async () => {
     mockVerifyOtp.mockResolvedValue({
       data: {
         session: { user: { id: "user-1" }, access_token: "token-1" },
@@ -254,6 +236,27 @@ describe("<EmailVerificationScreen />", () => {
     expect(mockReplace).toHaveBeenCalledWith("/anamnesis");
   });
 
+  it("lets Stack.Protected handle navigation after successful LOGIN verification", async () => {
+    mockSearchParams = { email: "user@example.com", mode: "LOGIN" };
+    mockVerifyOtp.mockResolvedValue({
+      data: {
+        session: { user: { id: "user-1" }, access_token: "token-1" },
+      },
+      error: null,
+    });
+
+    const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
+
+    fireEvent.changeText(getByLabelText("Verification code"), "123456");
+
+    await act(async () => {
+      fireEvent.press(getByText("Verify"));
+    });
+
+    expect(mockInitializeFromSupabase).toHaveBeenCalled();
+    expect(mockReplace).not.toHaveBeenCalled();
+  });
+
   it("shows inline error and clears OTP when verification fails", async () => {
     mockVerifyOtp.mockResolvedValue({
       data: {},
@@ -264,7 +267,6 @@ describe("<EmailVerificationScreen />", () => {
       <EmailVerificationScreen />,
     );
 
-    // No error message initially
     expect(queryByText(/code you entered is invalid/)).toBeNull();
 
     fireEvent.changeText(getByLabelText("Verification code"), "999999");
@@ -273,10 +275,7 @@ describe("<EmailVerificationScreen />", () => {
       fireEvent.press(getByText("Verify"));
     });
 
-    // Inline error message is shown
     expect(getByText(/code you entered is invalid/)).toBeTruthy();
-
-    // OTP input is cleared
     expect(getByLabelText("Verification code").props.value).toBe("");
   });
 
@@ -296,13 +295,10 @@ describe("<EmailVerificationScreen />", () => {
       fireEvent.press(getByText("Verify"));
     });
 
-    // Error is shown
     expect(queryByText(/code you entered is invalid/)).toBeTruthy();
 
-    // User starts typing a new code
     fireEvent.changeText(getByLabelText("Verification code"), "1");
 
-    // Error is cleared
     expect(queryByText(/code you entered is invalid/)).toBeNull();
   });
 

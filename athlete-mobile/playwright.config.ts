@@ -44,7 +44,16 @@ export default defineConfig({
    */
   projects: [
     {
+      name: "setup",
+      testMatch: /global\.setup\.ts/,
+      timeout: 120 * 1000,
+      use: {
+        ...devices["iPhone 12"],
+      },
+    },
+    {
       name: "Mobile Safari",
+      dependencies: ["setup"],
       use: {
         ...devices["iPhone 12"],
         headless: true, // Force headless mode for Docker environment
@@ -56,7 +65,7 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: [
     {
-      port: 8081,
+      url: process.env.TESTING_PLAYWRIGHT_BASE_URL ?? "http://localhost:8081",
       command: "pnpm run web --clear",
       reuseExistingServer: !process.env.CI,
       stdout: "pipe",

@@ -3,8 +3,6 @@ import { BasePage } from "./BasePage";
 
 interface RegistrationFormData {
   email: string;
-  password: string;
-  passwordConfirm: string;
   acceptPrivacy?: boolean;
 }
 
@@ -15,7 +13,9 @@ export class RegistrationPage extends BasePage {
 
   async goToRegistration() {
     await this.page.goto("/");
-    await expect(this.page.getByRole("button", { name: "Login" })).toBeVisible({
+    await expect(
+      this.page.getByRole("button", { name: "Send code" }),
+    ).toBeVisible({
       timeout: 5000,
     });
     await this.page.getByText(/sign up/i).click();
@@ -24,17 +24,8 @@ export class RegistrationPage extends BasePage {
     ).toBeVisible();
   }
 
-  async fillForm({
-    email,
-    password,
-    passwordConfirm,
-    acceptPrivacy = true,
-  }: RegistrationFormData) {
+  async fillForm({ email, acceptPrivacy = true }: RegistrationFormData) {
     await this.page.getByPlaceholder("E-Mail").fill(email);
-
-    const passwordInputs = this.page.getByPlaceholder("Password");
-    await passwordInputs.nth(0).fill(password);
-    await passwordInputs.nth(1).fill(passwordConfirm);
 
     if (acceptPrivacy) {
       // Click the second checkbox (privacy acceptance — first is analytics)

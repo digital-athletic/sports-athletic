@@ -123,7 +123,9 @@ export class ProfilePage extends BasePage {
   }
 
   async expectLoginPage() {
-    await expect(this.page.getByRole("button", { name: "Login" })).toBeVisible({
+    await expect(
+      this.page.getByRole("button", { name: "Send code" }),
+    ).toBeVisible({
       timeout: 10000,
     });
   }

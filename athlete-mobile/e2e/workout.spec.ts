@@ -22,7 +22,7 @@ test.describe("Workout Flow", () => {
 
       const workoutPage = new WorkoutPage(page);
 
-      await workoutPage.login("test@example.com", "password123");
+      await workoutPage.login("test@example.com");
       await workoutPage.expectLoggedIn();
       await workoutPage.startWorkout("Tuesday");
 
@@ -57,7 +57,7 @@ test.describe("Workout Flow", () => {
 
       const workoutPage = new WorkoutPage(page);
 
-      await workoutPage.login("test@example.com", "password123");
+      await workoutPage.login("test@example.com");
       await workoutPage.expectLoggedIn();
       await workoutPage.startWorkout("Tuesday");
 
@@ -92,7 +92,7 @@ test.describe("Workout Flow", () => {
 
       const workoutPage = new WorkoutPage(page);
 
-      await workoutPage.login("test@example.com", "password123");
+      await workoutPage.login("test@example.com");
       await workoutPage.expectLoggedIn();
       await workoutPage.startWorkout("Tuesday");
 
@@ -131,7 +131,7 @@ test.describe("Workout Flow", () => {
 
       const workoutPage = new WorkoutPage(page);
 
-      await workoutPage.login("test@example.com", "password123");
+      await workoutPage.login("test@example.com");
       await workoutPage.expectLoggedIn();
       await workoutPage.startWorkout("Tuesday");
 

@@ -13,7 +13,7 @@ test.describe("User Deletion", () => {
     page.on("console", (msg) => console.log("BROWSER:", msg.text()));
 
     const basePage = new BasePage(page);
-    await basePage.login("test@example.com", "password123");
+    await basePage.login("test@example.com");
     await basePage.expectLoggedIn();
 
     // Navigate to Profile tab
@@ -30,7 +30,7 @@ test.describe("User Deletion", () => {
     await page.getByText("YES").first().click();
 
     // Should land on login/onboarding page
-    await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Send code" })).toBeVisible();
   });
 });
 
@@ -45,7 +45,7 @@ test.describe("User Deletion after Training Data Change", () => {
     const profilePage = new ProfilePage(page);
 
     // Login and start anamnesis
-    await anamnesisPage.login("test@example.com", "password123");
+    await anamnesisPage.login("test@example.com");
 
     // Complete welcome screen
     const letsGoButton = page.getByRole("button", { name: "Let's go" });

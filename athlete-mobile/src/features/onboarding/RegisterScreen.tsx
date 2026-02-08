@@ -2,7 +2,6 @@ import { LINK_AGB, LINK_PRIVACY } from "@/constants/AppConstants";
 import { DividerWithText } from "@/features/onboarding/DividerWithText";
 import { PrivacyCheckbox } from "@/features/onboarding/PrivacyCheckbox";
 import { EmailInputField } from "@/form/EmailInputField";
-import { PasswordInputField } from "@/form/PasswordInputField";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { ScrollBox } from "@/theme/ScrollBox";
@@ -14,20 +13,15 @@ import { useTranslation } from "react-i18next";
 import { ActivityIndicator, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-type ErrorField = "email" | "password" | "passwordConfirm" | "privacy";
+type ErrorField = "email" | "privacy";
 
 type Props = {
   email: string;
-  password: string;
-  passwordConfirm: string;
   acceptedPrivacy: boolean;
   acceptedAnalytics: boolean;
-  passwordError: string | null;
   registrationError: string | null;
   errorFields: ErrorField[];
   onEmailChange: (email: string) => void;
-  onPasswordChange: (password: string) => void;
-  onPasswordConfirmChange: (password: string) => void;
   onPrivacyToggle: (accepted: boolean) => void;
   onAnalyticsToggle: (accepted: boolean) => void;
   onRegister: () => void;
@@ -38,21 +32,15 @@ type Props = {
 /**
  * RegistrationScreen Component
  *
- * Registration screen with password inputs and privacy checkboxes
- * Migrated from legacy/views/onboarding/Onboarding.js renderRegistration
+ * Registration screen with email input and privacy checkboxes (passwordless OTP)
  */
 export const RegistrationScreen: FC<Props> = ({
   email,
-  password,
-  passwordConfirm,
   acceptedPrivacy,
   acceptedAnalytics,
-  passwordError,
   registrationError,
   errorFields,
   onEmailChange,
-  onPasswordChange,
-  onPasswordConfirmChange,
   onPrivacyToggle,
   onAnalyticsToggle,
   onRegister,
@@ -97,33 +85,6 @@ export const RegistrationScreen: FC<Props> = ({
             showError={errorFields.includes("email")}
           />
         </Box>
-
-        <Box alignSelf="stretch" paddingHorizontal="m" paddingVertical="s">
-          <PasswordInputField
-            password={password}
-            onChange={onPasswordChange}
-            showError={errorFields.includes("password")}
-          />
-        </Box>
-
-        <Box alignSelf="stretch" paddingHorizontal="m" paddingVertical="s">
-          <PasswordInputField
-            password={passwordConfirm}
-            onChange={onPasswordConfirmChange}
-            showError={
-              errorFields.includes("passwordConfirm") ||
-              (password !== passwordConfirm && passwordConfirm !== "")
-            }
-          />
-        </Box>
-
-        {passwordError && (
-          <Box paddingHorizontal="m" paddingVertical="xs">
-            <Text variant="body" color="error">
-              {passwordError}
-            </Text>
-          </Box>
-        )}
 
         <PrivacyCheckbox
           checked={acceptedAnalytics}

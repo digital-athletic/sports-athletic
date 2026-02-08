@@ -1,10 +1,10 @@
-import type { AuthType } from "../store/authStore";
 import { supabase } from "./supabaseClient";
 
 /**
  * Authentication Service
  *
  * Handles user authentication operations using Supabase Auth.
+ * Uses passwordless OTP flow: send code via email, verify to create session.
  */
 
 /**
@@ -22,13 +22,9 @@ const mapSupabaseError = (error: {
   const code = error.code?.toLowerCase() || "";
 
   if (
-    message.includes("invalid login credentials") ||
-    code.includes("invalid_credentials")
-  ) {
-    authError.code = "auth/wrong-password";
-  } else if (
     message.includes("user not found") ||
-    code.includes("user_not_found")
+    code.includes("user_not_found") ||
+    code.includes("otp_disabled")
   ) {
     authError.code = "auth/user-not-found";
   } else if (
@@ -37,13 +33,6 @@ const mapSupabaseError = (error: {
     code.includes("email_exists")
   ) {
     authError.code = "auth/email-already-in-use";
-  } else if (
-    message.includes("password") &&
-    (message.includes("weak") ||
-      message.includes("short") ||
-      message.includes("at least"))
-  ) {
-    authError.code = "auth/weak-password";
   } else if (
     message.includes("invalid email") ||
     code.includes("invalid_email")
@@ -54,6 +43,13 @@ const mapSupabaseError = (error: {
     code.includes("email_not_confirmed")
   ) {
     authError.code = "auth/email-not-confirmed";
+  } else if (
+    message.includes("rate limit") ||
+    message.includes("too many requests") ||
+    code.includes("over_request_rate_limit") ||
+    code.includes("over_email_send_rate_limit")
+  ) {
+    authError.code = "auth/too-many-requests";
   } else if (
     message.includes("network") ||
     message.includes("fetch") ||
@@ -68,60 +64,33 @@ const mapSupabaseError = (error: {
 };
 
 /**
- * Sign in with email and password
+ * Request a login OTP code for an existing user
  */
-export const signInWithEmail = async (
-  email: string,
-  password: string,
-): Promise<AuthType> => {
-  const { data, error } = await supabase.auth.signInWithPassword({
+export const requestLoginOtp = async (email: string): Promise<void> => {
+  const { error } = await supabase.auth.signInWithOtp({
     email,
-    password,
+    options: { shouldCreateUser: false },
   });
 
   if (error) {
     throw mapSupabaseError(error);
   }
-
-  if (!data.user || !data.session) {
-    const authError: Error & { code?: string } = new Error(
-      "Authentication failed",
-    );
-    authError.code = "auth/unknown";
-    throw authError;
-  }
-
-  return {
-    userId: data.user.id,
-    token: data.session.access_token,
-  };
 };
 
 /**
- * Register a new user with email and password
+ * Request a registration OTP code, creating the user if needed
  */
-export const registerWithEmail = async (
+export const requestRegistrationOtp = async (
   email: string,
-  password: string,
-  _anonymisedDataUse: boolean,
-): Promise<{ requiresEmailConfirmation: boolean }> => {
-  const { data, error } = await supabase.auth.signUp({
+  anonymisedDataUse: boolean,
+): Promise<void> => {
+  const { error } = await supabase.auth.signInWithOtp({
     email,
-    password,
+    options: {
+      shouldCreateUser: true,
+      data: { anonymisedDataUse },
+    },
   });
-
-  if (error) {
-    throw mapSupabaseError(error);
-  }
-
-  return { requiresEmailConfirmation: !data.session };
-};
-
-/**
- * Send password reset email
- */
-export const resetPassword = async (email: string): Promise<void> => {
-  const { error } = await supabase.auth.resetPasswordForEmail(email);
 
   if (error) {
     throw mapSupabaseError(error);
@@ -142,7 +111,10 @@ export const logout = async (): Promise<void> => {
 /**
  * Get the current authenticated user
  */
-export const getCurrentUser = async (): Promise<AuthType | null> => {
+export const getCurrentUser = async (): Promise<{
+  userId: string;
+  token: string;
+} | null> => {
   const {
     data: { session },
   } = await supabase.auth.getSession();

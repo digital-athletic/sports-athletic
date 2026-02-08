@@ -20,7 +20,7 @@ test.describe("Power Test LineChart - Multiple Test Results", () => {
     const workoutPage = new WorkoutPage(page);
     const basePage = new BasePage(page);
 
-    await workoutPage.login("test@example.com", "password123");
+    await workoutPage.login("test@example.com");
     await workoutPage.expectLoggedIn();
 
     // Navigate to Statistics tab
@@ -54,7 +54,7 @@ test.describe("Power Test LineChart - Multiple Test Results", () => {
     const workoutPage = new WorkoutPage(page);
     const basePage = new BasePage(page);
 
-    await workoutPage.login("test@example.com", "password123");
+    await workoutPage.login("test@example.com");
     await workoutPage.expectLoggedIn();
 
     await basePage.navigateToTab("Statistics");
@@ -88,7 +88,7 @@ test.describe("Power Test LineChart - Single Test Result", () => {
     const workoutPage = new WorkoutPage(page);
     const basePage = new BasePage(page);
 
-    await workoutPage.login("test@example.com", "password123");
+    await workoutPage.login("test@example.com");
     await workoutPage.expectLoggedIn();
 
     await basePage.navigateToTab("Statistics");
@@ -126,7 +126,7 @@ test.describe("Power Test LineChart - Empty State", () => {
     const workoutPage = new WorkoutPage(page);
     const basePage = new BasePage(page);
 
-    await workoutPage.login("test@example.com", "password123");
+    await workoutPage.login("test@example.com");
     await workoutPage.expectLoggedIn();
 
     await basePage.navigateToTab("Statistics");
@@ -163,7 +163,7 @@ test.describe("Power Test LineChart - Many Data Points (Label Crowding)", () => 
     const workoutPage = new WorkoutPage(page);
     const basePage = new BasePage(page);
 
-    await workoutPage.login("test@example.com", "password123");
+    await workoutPage.login("test@example.com");
     await workoutPage.expectLoggedIn();
 
     await basePage.navigateToTab("Statistics");
@@ -204,7 +204,7 @@ test.describe("Power Test LineChart - Many Data Points (Label Crowding)", () => 
     const workoutPage = new WorkoutPage(page);
     const basePage = new BasePage(page);
 
-    await workoutPage.login("test@example.com", "password123");
+    await workoutPage.login("test@example.com");
     await workoutPage.expectLoggedIn();
 
     await basePage.navigateToTab("Statistics");

@@ -1,14 +1,13 @@
 import { expect, test } from "./fixtures";
-import { mockSignupRequiresConfirmation } from "./mocks/supabase";
+import { mockOtpFlow } from "./mocks/supabase";
 import { RegistrationPage } from "./pages";
 
 /**
  * Registration Flow E2E Tests
  *
- * Tests the new registration functionality:
+ * Tests the passwordless OTP registration:
  * 1. Inline validation errors for missing/invalid fields
- * 2. Successful registration with email verification (OTP code entry)
- * 3. Successful registration with auto-confirmed email (direct redirect)
+ * 2. Successful registration with OTP code verification
  */
 
 test.describe("Registration Flow", () => {
@@ -24,38 +23,25 @@ test.describe("Registration Flow", () => {
     await expect(page.getByRole("alert")).toBeVisible();
     await expect(page.getByText(/valid e-mail/i)).toBeVisible();
 
-    // Fill only email, leave passwords empty — should show password error
+    // Fill email but don't accept privacy — should show privacy error
     await page.getByPlaceholder("E-Mail").fill("test@example.com");
-    await page.getByRole("checkbox").nth(1).click();
     await registration.submitRegistration();
 
     await expect(
-      page.getByText(/forgotten to enter a password/i),
+      page.getByRole("alert").filter({ hasText: /accept.*terms/i }),
     ).toBeVisible();
-
-    // Fill mismatched passwords — should show mismatch error
-    const passwordInputs = page.getByPlaceholder("Password");
-    await passwordInputs.nth(0).fill("StrongPass1!");
-    await passwordInputs.nth(1).fill("DifferentPass1!");
-    await registration.submitRegistration();
-
-    await expect(page.getByText(/passwords do not match/i)).toBeVisible();
   });
 
-  test("successful registration with email verification and OTP code", async ({
+  test("successful registration with OTP code verification", async ({
     page,
   }) => {
     const email = "newuser@example.com";
-    await mockSignupRequiresConfirmation(page, email);
+    await mockOtpFlow(page, email);
 
     const registration = new RegistrationPage(page);
     await registration.goToRegistration();
 
-    await registration.fillForm({
-      email,
-      password: "StrongPass1!",
-      passwordConfirm: "StrongPass1!",
-    });
+    await registration.fillForm({ email });
 
     await registration.submitRegistration();
     await registration.expectEmailVerificationScreen(email);

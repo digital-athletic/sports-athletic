@@ -13,7 +13,7 @@ test.describe("Profile Setup", () => {
     await mockSupabaseAuth(page);
 
     const anamnesisPage = new AnamnesisPage(page);
-    await anamnesisPage.login("test@example.com", "password123");
+    await anamnesisPage.login("test@example.com");
 
     // Should see anamnesis CTA on first login
     await expect(

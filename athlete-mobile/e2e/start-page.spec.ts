@@ -10,7 +10,7 @@ test.describe("Start Page", () => {
     await mockSupabaseAuth(page);
 
     const basePage = new BasePage(page);
-    await basePage.login("test@example.com", "password123");
+    await basePage.login("test@example.com");
     await basePage.expectLoggedIn();
 
     await expect(page).toHaveURL("/");

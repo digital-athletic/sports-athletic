@@ -18,7 +18,7 @@ test.describe("Exercise Detail View", () => {
     await mockSupabaseAuth(page);
 
     const basePage = new BasePage(page);
-    await basePage.login("test@example.com", "password123");
+    await basePage.login("test@example.com");
     await basePage.expectLoggedIn();
 
     // Navigate to Profile tab and start strength test
@@ -67,7 +67,7 @@ test.describe("Exercise Detail View", () => {
     await mockSupabaseAuth(page);
 
     const basePage = new BasePage(page);
-    await basePage.login("test@example.com", "password123");
+    await basePage.login("test@example.com");
     await basePage.expectLoggedIn();
 
     // Navigate to Profile tab and start strength test

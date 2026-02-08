@@ -7,14 +7,20 @@ export class BasePage {
     return this.page.getByRole("button", { name: "Go on" });
   }
 
-  async login(email: string, password: string) {
+  async login(email: string) {
     await this.page.goto("/");
     await expect(
-      this.page.getByRole("button", { name: "Login" }),
+      this.page.getByRole("button", { name: "Send code" }),
     ).toBeVisible();
     await this.page.getByPlaceholder("E-Mail").fill(email);
-    await this.page.getByPlaceholder("Password").fill(password);
-    await this.page.getByRole("button", { name: "Login" }).click();
+    await this.page.getByRole("button", { name: "Send code" }).click();
+
+    // Enter OTP code on verification screen
+    await expect(
+      this.page.getByText("Confirm your email", { exact: true }),
+    ).toBeVisible({ timeout: 5000 });
+    await this.page.getByRole("textbox").fill("123456");
+    await this.page.getByRole("button", { name: "Verify" }).click();
   }
 
   async expectLoggedIn() {

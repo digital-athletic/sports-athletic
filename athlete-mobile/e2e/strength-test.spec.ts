@@ -46,7 +46,7 @@ test.describe("Strength Test", () => {
     await mockWakeLock(page);
 
     const basePage = new BasePage(page);
-    await basePage.login("test@example.com", "password123");
+    await basePage.login("test@example.com");
     await basePage.expectLoggedIn();
 
     // Navigate to Profile > Start New Test Workout

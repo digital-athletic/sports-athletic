@@ -2,18 +2,23 @@
  * User workout store - training plan and workout configuration.
  */
 
-import { STRENGTH_TEST_RESULTS } from "../constants";
+import {
+  STRENGTH_TEST_RESULTS,
+  PLAN_START_DATE,
+  SEASON_END_DATE,
+} from "../constants";
 import type { UserWorkoutState, StoreState } from "../types";
 
 /**
  * Default training plan with Tuesday/Friday schedule.
  * Uses real branch IDs from JSON skill tree files.
+ * Dates are computed dynamically so the plan never expires.
  */
 const DEFAULT_TRAINING_PLAN = {
-  start: "2026-01-20T00:00:00.000Z",
+  start: PLAN_START_DATE.toISOString(),
   sections: [
     {
-      start: "2026-01-20",
+      start: PLAN_START_DATE.toISOString().split("T")[0],
       numOfWeeks: 3,
       type: "SWR1",
       cardioType: "CARDIO_3",
@@ -88,7 +93,7 @@ export function createUserWorkoutStore(
     },
     seasonPhase = {
       type: "COMPETITION",
-      endDate: "2026-12-31",
+      endDate: SEASON_END_DATE,
       currentWeek: 1,
       totalWeeks: 52,
     },

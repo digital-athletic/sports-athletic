@@ -1,24 +1,12 @@
 import { SharedConstants } from "@/constants/sharedConstants";
-import type { DurationSeconds } from "@/features/training/models/TimeUnits";
-import type { FocusArea } from "@/features/training/models/Training";
+import type { CompleteWorkoutType } from "@/schemas/sync.schema";
 import { TrainingPlanType } from "@/features/training/models/TrainingPlan";
-import { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
 
-export interface CompleteWorkoutType {
-  id: string;
-  timestamp: number;
-  exercises: UserExerciseDataType[];
-  /** Duration in seconds */
-  duration: DurationSeconds;
-  xpEarned?: number;
-  movedWeight?: number;
-  exerciseCount?: number;
-  userSkills?: Record<FocusArea, number>;
-}
+export type { CompleteWorkoutType } from "@/schemas/sync.schema";
 
 export interface CompletedWorkoutListEntryType {
   id: string;

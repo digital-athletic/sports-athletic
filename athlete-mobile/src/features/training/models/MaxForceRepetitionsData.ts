@@ -1,4 +1,1 @@
-export type MaxForceRepetitionsDataType = {
-  level: "WARMUP" | "EASY" | "MEDIUM" | "HARD";
-  repetitions: number;
-};
+export type { MaxForceRepetitionsDataType } from "@/schemas/sync.schema";

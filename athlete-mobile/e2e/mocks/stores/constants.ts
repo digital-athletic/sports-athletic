@@ -2,7 +2,35 @@
  * Shared test constants for E2E mock data.
  */
 
-export const TEST_DATE = "2026-01-21";
+/** Format a Date as YYYY-MM-DD. */
+function formatDate(date: Date): string {
+  return date.toISOString().split("T")[0];
+}
+
+/** Get a Date representing N days before today (midnight UTC). */
+export function daysAgo(days: number): Date {
+  const date = new Date();
+  date.setUTCHours(0, 0, 0, 0);
+  date.setUTCDate(date.getUTCDate() - days);
+  return date;
+}
+
+/** Get a Date representing N days after today (midnight UTC). */
+export function daysFromNow(days: number): Date {
+  const date = new Date();
+  date.setUTCHours(0, 0, 0, 0);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date;
+}
+
+/** Training plan start: 7 days ago so the 3-week plan is always mid-cycle. */
+export const PLAN_START_DATE = daysAgo(7);
+
+/** Strength test date: 6 days ago (1 day after plan start). */
+export const TEST_DATE = formatDate(daysAgo(6));
+
+/** Season phase end: 1 year from now so it never expires. */
+export const SEASON_END_DATE = formatDate(daysFromNow(365));
 
 /**
  * Maximum strength test values for a male beginner.

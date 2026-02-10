@@ -2,7 +2,7 @@
  * Anamnesis store - user health/fitness questionnaire data.
  */
 
-import { DEFAULT_USER } from "../constants";
+import { DEFAULT_USER, SEASON_END_DATE } from "../constants";
 import type { AnamnesisState, StoreState } from "../types";
 
 export interface AnamnesisStoreOptions {
@@ -28,7 +28,7 @@ export function createAnamnesisStore(
     },
     seasonPhase = {
       type: "COMPETITION",
-      endDate: "2026-12-31",
+      endDate: SEASON_END_DATE,
     },
   } = options;
 

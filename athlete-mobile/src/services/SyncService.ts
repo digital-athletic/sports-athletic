@@ -119,6 +119,12 @@ export async function syncCompletedWorkout(
   if (error) {
     throw new Error(`Failed to sync workout: ${error.message}`);
   }
+
+  Logger.logEvent("sync:completed_workout", {
+    workoutId: payload.id,
+    duration: payload.duration,
+    exerciseCount: payload.exerciseCount,
+  });
 }
 
 export async function syncExerciseData(
@@ -128,6 +134,7 @@ export async function syncExerciseData(
   const row = {
     user_id: userId,
     exercise_id: payload.exerciseId,
+    workout_id: payload.workoutId ?? "legacy",
     repetition: payload.repetition ?? null,
     weight: payload.weight ?? null,
     duration: payload.duration ?? null,
@@ -147,11 +154,17 @@ export async function syncExerciseData(
 
   const { error } = await supabase
     .from("user_exercises")
-    .upsert(row, { onConflict: "user_id,exercise_id" });
+    .upsert(row, { onConflict: "user_id,exercise_id,workout_id" });
 
   if (error) {
     throw new Error(`Failed to sync exercise data: ${error.message}`);
   }
+
+  Logger.logEvent("sync:exercise_data", {
+    exerciseId: payload.exerciseId,
+    workoutId: payload.workoutId,
+    skill: payload.skill,
+  });
 }
 
 export async function syncStrengthTest(
@@ -165,16 +178,23 @@ export async function syncStrengthTest(
     vertical_pull: payload.verticalPull,
     horizontal_push: payload.horizontalPush,
     horizontal_pull: payload.horizontalPull,
-    hip: payload.hip,
-    knee: payload.knee,
+    hip_hinge: payload.hip,
+    knee_dominant: payload.knee,
     lower_body: payload.lowerBody,
   };
 
-  const { error } = await supabase.from("strength_tests").insert(row);
+  const { error } = await supabase
+    .from("strength_tests")
+    .upsert(row, { onConflict: "user_id,test_date" });
 
   if (error) {
     throw new Error(`Failed to sync strength test: ${error.message}`);
   }
+
+  Logger.logEvent("sync:strength_test", {
+    testDate: payload.testDate,
+    row,
+  });
 }
 
 export function resetProcessingFlag(): void {

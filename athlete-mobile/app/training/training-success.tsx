@@ -78,7 +78,7 @@ const TrainingSuccessScreen: FC = () => {
       exerciseList
     ) {
       addCompletedWorkout({
-        id: `workout-${Date.now()}`,
+        id: activeTraining?.id ?? `workout-${Date.now()}`,
         timestamp: Date.now(),
         exercises: exerciseList,
         duration: seconds(totals.duration),
@@ -89,7 +89,14 @@ const TrainingSuccessScreen: FC = () => {
       });
       workoutSaved.current = true;
     }
-  }, [totals, skills, exerciseList, isTestWorkout, addCompletedWorkout]);
+  }, [
+    totals,
+    skills,
+    exerciseList,
+    isTestWorkout,
+    addCompletedWorkout,
+    activeTraining?.id,
+  ]);
 
   const handleGoOn = () => {
     resetTraining();

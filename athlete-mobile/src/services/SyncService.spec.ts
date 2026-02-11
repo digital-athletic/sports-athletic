@@ -31,6 +31,7 @@ jest.mock("./supabaseClient", () => ({
 jest.mock("./Logger", () => ({
   Logger: {
     logError: jest.fn(),
+    logEvent: jest.fn(),
   },
 }));
 
@@ -140,6 +141,7 @@ describe("syncExerciseData", () => {
       exerciseId: "ex-1",
       skill: "SWR1" as const,
       set: [3, 5] as [number, number],
+      workoutId: "workout-1",
     };
 
     await syncExerciseData(payload, TEST_USER_ID);
@@ -148,6 +150,7 @@ describe("syncExerciseData", () => {
       expect.objectContaining({
         set_active_run: 3,
         set_num_of_sets: 5,
+        workout_id: "workout-1",
       }),
       expect.any(Object),
     );
@@ -157,6 +160,7 @@ describe("syncExerciseData", () => {
     const payload = {
       exerciseId: "ex-2",
       skill: "MOB" as const,
+      workoutId: "workout-1",
       feedback: {
         difficulty: "TOO_HARD" as const,
         streakCounter: 2,
@@ -177,6 +181,7 @@ describe("syncExerciseData", () => {
   it("maps all fields to DB columns", async () => {
     const payload: UserExerciseDataType = {
       exerciseId: "ex-3",
+      workoutId: "workout-99",
       skill: "SWR1",
       repetition: 10,
       weight: 80,
@@ -197,6 +202,7 @@ describe("syncExerciseData", () => {
       {
         user_id: TEST_USER_ID,
         exercise_id: "ex-3",
+        workout_id: "workout-99",
         repetition: 10,
         weight: 80,
         duration: 30,
@@ -213,7 +219,21 @@ describe("syncExerciseData", () => {
         max_f_level_adjustment: null,
         max_f_repetitions: [{ level: "EASY", repetitions: 5 }],
       },
-      { onConflict: "user_id,exercise_id" },
+      { onConflict: "user_id,exercise_id,workout_id" },
+    );
+  });
+
+  it("defaults workout_id to 'legacy' when workoutId is missing", async () => {
+    const payload = {
+      exerciseId: "ex-4",
+      skill: "WU" as const,
+    };
+
+    await syncExerciseData(payload, TEST_USER_ID);
+
+    expect(mockUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({ workout_id: "legacy" }),
+      { onConflict: "user_id,exercise_id,workout_id" },
     );
   });
 });
@@ -234,17 +254,20 @@ describe("syncStrengthTest", () => {
     await syncStrengthTest(payload, TEST_USER_ID);
 
     expect(mockFrom).toHaveBeenCalledWith("strength_tests");
-    expect(mockInsert).toHaveBeenCalledWith({
-      user_id: TEST_USER_ID,
-      test_date: "2024-01-15",
-      vertical_push: { barbell: 60 },
-      vertical_pull: { barbell: 50 },
-      horizontal_push: { barbell: 80 },
-      horizontal_pull: { barbell: 70 },
-      hip: { barbell: 100 },
-      knee: { barbell: 90 },
-      lower_body: { barbell: 120 },
-    });
+    expect(mockUpsert).toHaveBeenCalledWith(
+      {
+        user_id: TEST_USER_ID,
+        test_date: "2024-01-15",
+        vertical_push: { barbell: 60 },
+        vertical_pull: { barbell: 50 },
+        horizontal_push: { barbell: 80 },
+        horizontal_pull: { barbell: 70 },
+        hip_hinge: { barbell: 100 },
+        knee_dominant: { barbell: 90 },
+        lower_body: { barbell: 120 },
+      },
+      { onConflict: "user_id,test_date" },
+    );
   });
 });
 

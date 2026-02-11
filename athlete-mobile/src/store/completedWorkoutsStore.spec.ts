@@ -1,10 +1,17 @@
 import { act, renderHook } from "@testing-library/react-native";
 import { seconds } from "@/features/training/models/TimeUnits";
 import { formatDateToISO } from "@/utils/date";
+import { syncManager } from "@/services/SyncManager";
 import {
   CompleteWorkoutType,
   useCompletedWorkoutsStore,
 } from "./completedWorkoutsStore";
+
+jest.mock("@/services/SyncManager", () => ({
+  syncManager: {
+    notifyWorkoutCompleted: jest.fn(),
+  },
+}));
 
 const createMockWorkout = (
   id: string,
@@ -22,6 +29,7 @@ describe("completedWorkoutsStore", () => {
     act(() => {
       result.current.clearWorkoutHistory();
     });
+    jest.clearAllMocks();
   });
 
   describe("initial state", () => {
@@ -54,6 +62,17 @@ describe("completedWorkoutsStore", () => {
 
       expect(result.current.workoutsList).toHaveLength(1);
       expect(result.current.workoutsList[0].id).toBe("w1");
+    });
+
+    it("notifies sync of completed workout", () => {
+      const { result } = renderHook(() => useCompletedWorkoutsStore());
+      const workout = createMockWorkout("w1", Date.now());
+
+      act(() => {
+        result.current.addCompletedWorkout(workout);
+      });
+
+      expect(syncManager.notifyWorkoutCompleted).toHaveBeenCalledWith(workout);
     });
   });
 

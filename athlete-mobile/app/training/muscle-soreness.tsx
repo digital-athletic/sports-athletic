@@ -217,6 +217,7 @@ export default function MuscleSorenessScreen() {
     setExerciseList(exerciseList);
     setEquipment(equipment);
     setActiveTraining({
+      id: `workout-${Date.now()}`,
       type: trainingType,
       sectionIndex: sectionIndex,
       weekday: weekdayNumber,

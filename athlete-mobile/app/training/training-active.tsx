@@ -576,11 +576,15 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
               adjustment === "TOO_EASY")
           ) {
             // No adjustment if max lvl and max weight is already reached
-            updateExercise(id, {
-              exerciseId: id,
-              skill,
-              feedback: { difficulty: null },
-            });
+            updateExercise(
+              id,
+              {
+                exerciseId: id,
+                skill,
+                feedback: { difficulty: null },
+              },
+              activeTraining?.id,
+            );
             levelUp = true;
           } else if (
             typeof weightPercentage === "number" &&
@@ -589,11 +593,15 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
             adjustment === "TOO_HARD"
           ) {
             // No adjustment if min weight is already too hard -> levelDown
-            updateExercise(id, {
-              exerciseId: id,
-              skill,
-              feedback: { difficulty: null },
-            });
+            updateExercise(
+              id,
+              {
+                exerciseId: id,
+                skill,
+                feedback: { difficulty: null },
+              },
+              activeTraining?.id,
+            );
             levelDown = true;
           } else if (
             typeof weightPercentage === "number" &&
@@ -604,11 +612,15 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
             adjustment === "TOO_EASY"
           ) {
             // No TOO_EASY adjustment if max lvl and max weight will be reached
-            updateExercise(id, {
-              exerciseId: id,
-              skill,
-              feedback: { difficulty: "SUCCEEDED" },
-            });
+            updateExercise(
+              id,
+              {
+                exerciseId: id,
+                skill,
+                feedback: { difficulty: "SUCCEEDED" },
+              },
+              activeTraining?.id,
+            );
           } else {
             // adjust weight if needed
             if (
@@ -657,17 +669,24 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
           let newDuration = duration ? duration : undefined;
           let newRepetition = reps ? reps : undefined;
           // set new exercise values
-          updateExercise(id, {
-            exerciseId: id,
-            skill,
-            weight: newWeight,
-            nextWeightPercentage,
-            maxFRepetitions: maxFRepetitionsNew,
-            duration: newDuration,
-            repetition: newRepetition,
-            height,
-            weightType: currentExercise.weightType,
-          });
+          updateExercise(
+            id,
+            {
+              exerciseId: id,
+              skill,
+              weight: newWeight,
+              nextWeightPercentage,
+              maxFRepetitions: maxFRepetitionsNew,
+              maxFLevelAdjustment: adjustment,
+              duration: newDuration,
+              repetition: newRepetition,
+              height,
+              weightType: currentExercise.weightType,
+              branchId,
+              set: currentExercise.set,
+            },
+            activeTraining?.id,
+          );
         }
       }
       // check target values after last set of non cardio and max exercise
@@ -751,24 +770,34 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                 (reps || undefined);
 
               // set new exercise values
-              updateExercise(id, {
-                exerciseId: id,
-                skill,
-                weight: newWeight,
-                nextWeightPercentage,
-                maxFRepetitions,
-                duration: newDuration,
-                repetition: newRepetition,
-                height,
-                weightType: currentExercise?.weightType,
-              });
+              updateExercise(
+                id,
+                {
+                  exerciseId: id,
+                  skill,
+                  weight: newWeight,
+                  nextWeightPercentage,
+                  maxFRepetitions,
+                  duration: newDuration,
+                  repetition: newRepetition,
+                  height,
+                  weightType: currentExercise?.weightType,
+                  branchId,
+                  set: currentExercise?.set,
+                },
+                activeTraining?.id,
+              );
 
               // set user exercise difficulty to null, so its not adjusted in next training
-              updateExercise(id, {
-                exerciseId: id,
-                skill,
-                feedback: { difficulty: null },
-              });
+              updateExercise(
+                id,
+                {
+                  exerciseId: id,
+                  skill,
+                  feedback: { difficulty: null },
+                },
+                activeTraining?.id,
+              );
               Logger.logEvent(
                 "exercise_weight_" +
                   (increaseWeight ? "increased" : "decreased"),
@@ -791,17 +820,23 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                   ? (weight / maxValue) * 100
                   : undefined;
 
-              updateExercise(id, {
-                exerciseId: id,
-                skill,
-                weight,
-                nextWeightPercentage: weightPercentage,
-                maxFRepetitions,
-                duration,
-                repetition: reps,
-                height,
-                weightType: currentExercise?.weightType,
-              });
+              updateExercise(
+                id,
+                {
+                  exerciseId: id,
+                  skill,
+                  weight,
+                  nextWeightPercentage: weightPercentage,
+                  maxFRepetitions,
+                  duration,
+                  repetition: reps,
+                  height,
+                  weightType: currentExercise?.weightType,
+                  branchId,
+                  set: currentExercise?.set,
+                },
+                activeTraining?.id,
+              );
             }
           }
         }
@@ -981,6 +1016,19 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const handleExerciseSkipped = () => {
     setIsSkipped(true);
     setExerciseSkipped(exerciseId);
+    if (currentExercise?.skill) {
+      updateExercise(
+        exerciseId,
+        {
+          exerciseId,
+          skill: currentExercise.skill,
+          skipped: true,
+          branchId: currentExercise.branchId,
+          set: currentExercise.set,
+        },
+        activeTraining?.id,
+      );
+    }
     Logger.logEvent("exercise_skipped", {
       exerciseId,
     });
@@ -994,11 +1042,15 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const handleFeedback = (category: "TOO_EASY" | "TOO_HARD" | "SUCCEEDED") => {
     if (!currentExercise) return;
 
-    updateExercise(exerciseId, {
+    updateExercise(
       exerciseId,
-      skill: currentExercise.skill,
-      feedback: { difficulty: category },
-    });
+      {
+        exerciseId,
+        skill: currentExercise.skill,
+        feedback: { difficulty: category },
+      },
+      activeTraining?.id,
+    );
     setExerciseFeedback(exerciseId, category);
 
     if (category === "SUCCEEDED")

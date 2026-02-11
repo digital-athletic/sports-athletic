@@ -68,7 +68,34 @@ function mockSession_(page: Page, email: string) {
   });
 }
 
+const SYNC_TABLES = [
+  "user_completed_workouts",
+  "user_exercises",
+  "strength_tests",
+];
+
 function mockRestApi(page: Page) {
+  // Mock sync table upserts with proper empty-body 201 response
+  for (const table of SYNC_TABLES) {
+    page.route(`**/rest/v1/${table}**`, async (route) => {
+      const method = route.request().method();
+      if (method === "POST") {
+        await route.fulfill({
+          status: 201,
+          contentType: "application/json",
+          body: JSON.stringify({}),
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify([]),
+        });
+      }
+    });
+  }
+
+  // Catch-all for any other REST API calls
   return page.route(`**/rest/v1/**`, async (route) => {
     await route.fulfill({
       status: 200,
@@ -119,14 +146,8 @@ export async function mockSupabaseAuth(page: Page) {
     });
   });
 
-  // Mock any other Supabase REST API calls
-  await page.route(`**/rest/v1/**`, async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify([]),
-    });
-  });
+  // Mock Supabase REST API calls (sync tables + catch-all)
+  await mockRestApi(page);
 
   // Mock Supabase storage (images, videos, etc.)
   await mockSupabaseStorage(page);

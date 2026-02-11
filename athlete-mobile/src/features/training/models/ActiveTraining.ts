@@ -1,6 +1,7 @@
 import { CardioTypes, SectionTypes } from "@/constants/workoutConstants";
 
 export type ActiveTrainingType = {
+  id: string;
   type: string;
   sectionIndex?: number;
   weekday?: number;

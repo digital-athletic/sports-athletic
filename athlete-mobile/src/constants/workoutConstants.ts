@@ -891,6 +891,15 @@ const TEST_EXERCISES_DIRECTIONS: Record<string, string[] | undefined> = {
   "355": ["HORIZONTAL_PUSH"],
 };
 
+const STRENGTH_TEST_DIRECTIONS: Record<string, string[]> = Object.fromEntries(
+  Object.entries(TEST_EXERCISES)
+    .filter(
+      ([id, name]) =>
+        name !== undefined && TEST_EXERCISES_DIRECTIONS[id] !== undefined,
+    )
+    .map(([id, name]) => [name!, TEST_EXERCISES_DIRECTIONS[id]!]),
+);
+
 const TEST_EXERCISES_REPETITIONS_PERCENTAGE = [
   0, 1, 0.95, 0.9, 0.875, 0.85, 0.8, 0.775, 0.75, 0.75, 0.725, 0.725, 0.7,
   0.675, 0.675, 0.65,
@@ -1185,6 +1194,7 @@ export const WorkoutConstants = {
   SPORTS,
   SPORTS_IMAGES,
   SPORTS_SORTED,
+  STRENGTH_TEST_DIRECTIONS,
   TEST_EXERCISES,
   TEST_EXERCISES_DIRECTIONS,
   TEST_EXERCISES_REPETITIONS_PERCENTAGE,

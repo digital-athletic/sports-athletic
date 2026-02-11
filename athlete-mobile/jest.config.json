@@ -6,6 +6,7 @@
   "rootDir": "./src",
   "setupFiles": ["<rootDir>/utils/jestSetup.ts"],
   "moduleNameMapper": {
-    "^@/(.*)$": "<rootDir>/$1"
+    "^@/(.*)$": "<rootDir>/$1",
+    "@react-native-community/netinfo": "<rootDir>/utils/netinfoMock"
   }
 }

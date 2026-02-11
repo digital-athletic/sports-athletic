@@ -4,6 +4,7 @@ import { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
+import { syncManager } from "@/services/SyncManager";
 import { asyncStorage } from "./middleware";
 
 export type { CompleteWorkoutType } from "@/schemas/sync.schema";
@@ -77,7 +78,7 @@ export const useCompletedWorkoutsStore = create<CompletedWorkoutsState>()(
     immer((set, get) => ({
       ...createInitialState(),
 
-      addCompletedWorkout: (workout) =>
+      addCompletedWorkout: (workout) => {
         set((state) => {
           state.workouts[workout.id] = workout;
           state.workoutsList.push({
@@ -85,7 +86,9 @@ export const useCompletedWorkoutsStore = create<CompletedWorkoutsState>()(
             timestamp: workout.timestamp,
             summary: `Workout completed in ${Math.floor(workout.duration / 60)} minutes`,
           });
-        }),
+        });
+        syncManager.notifyWorkoutCompleted(workout);
+      },
 
       setCompletedWorkouts: (workouts) =>
         set((state) => {

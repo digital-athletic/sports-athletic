@@ -4,8 +4,16 @@ import {
   type ExerciseTotalsType,
 } from "@/features/training/models/ExerciseTotals";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
+import { syncManager } from "@/services/SyncManager";
 import { act, renderHook } from "@testing-library/react-native";
 import { useExerciseProgressStore } from "./exerciseProgressStore";
+
+jest.mock("@/services/SyncManager", () => ({
+  syncManager: {
+    notifyExerciseUpdated: jest.fn(),
+    notifyTestResultAdded: jest.fn(),
+  },
+}));
 
 describe("ExerciseTotals Types", () => {
   describe("createEmptyExerciseTotals", () => {
@@ -254,6 +262,7 @@ describe("exerciseProgressStore", () => {
     act(() => {
       result.current.clearProgress();
     });
+    jest.clearAllMocks();
   });
 
   describe("initial state", () => {
@@ -346,6 +355,156 @@ describe("exerciseProgressStore", () => {
         2,
       );
     });
+
+    it("notifies sync of exercise update", () => {
+      const { result } = renderHook(() => useExerciseProgressStore());
+
+      act(() => {
+        result.current.updateExercise("ex1", {
+          exerciseId: "ex1",
+          skill: "WU",
+          repetition: 10,
+        });
+      });
+
+      expect(syncManager.notifyExerciseUpdated).toHaveBeenCalledWith(
+        "ex1",
+        expect.objectContaining({
+          exerciseId: "ex1",
+          skill: "WU",
+          repetition: 10,
+        }),
+      );
+    });
+
+    it("notifies sync for each update", () => {
+      const { result } = renderHook(() => useExerciseProgressStore());
+
+      act(() => {
+        result.current.updateExercise("ex1", {
+          exerciseId: "ex1",
+          skill: "WU",
+          repetition: 10,
+        });
+        result.current.updateExercise("ex1", {
+          exerciseId: "ex1",
+          skill: "WU",
+          repetition: 15,
+        });
+      });
+
+      expect(syncManager.notifyExerciseUpdated).toHaveBeenCalledTimes(2);
+    });
+
+    it("stores duration and branchId on new exercise", () => {
+      const { result } = renderHook(() => useExerciseProgressStore());
+
+      act(() => {
+        result.current.updateExercise("ex1", {
+          exerciseId: "ex1",
+          skill: "SWR1",
+          duration: 30,
+          branchId: "branch-1",
+        });
+      });
+
+      expect(result.current.exerciseData["ex1"]).toEqual(
+        expect.objectContaining({
+          duration: 30,
+          branchId: "branch-1",
+        }),
+      );
+    });
+
+    it("updates duration and branchId on existing exercise", () => {
+      const { result } = renderHook(() => useExerciseProgressStore());
+
+      act(() => {
+        result.current.updateExercise("ex1", {
+          exerciseId: "ex1",
+          skill: "SWR1",
+          duration: 30,
+          branchId: "branch-1",
+        });
+        result.current.updateExercise("ex1", {
+          exerciseId: "ex1",
+          skill: "SWR1",
+          duration: 45,
+          branchId: "branch-2",
+        });
+      });
+
+      expect(result.current.exerciseData["ex1"]).toEqual(
+        expect.objectContaining({
+          duration: 45,
+          branchId: "branch-2",
+        }),
+      );
+    });
+
+    it("stores weight of zero", () => {
+      const { result } = renderHook(() => useExerciseProgressStore());
+
+      act(() => {
+        result.current.updateExercise("ex1", {
+          exerciseId: "ex1",
+          skill: "WU",
+          weight: 0,
+        });
+      });
+
+      expect(result.current.exerciseData["ex1"]?.weight).toBe(0);
+    });
+
+    it("stores skipped flag", () => {
+      const { result } = renderHook(() => useExerciseProgressStore());
+
+      act(() => {
+        result.current.updateExercise("ex1", {
+          exerciseId: "ex1",
+          skill: "WU",
+          skipped: true,
+        });
+      });
+
+      expect(result.current.exerciseData["ex1"]?.skipped).toBe(true);
+    });
+
+    it("includes workoutId in sync notification when provided", () => {
+      const { result } = renderHook(() => useExerciseProgressStore());
+
+      act(() => {
+        result.current.updateExercise(
+          "ex1",
+          { exerciseId: "ex1", skill: "WU", repetition: 10 },
+          "workout-42",
+        );
+      });
+
+      expect(syncManager.notifyExerciseUpdated).toHaveBeenCalledWith(
+        "ex1",
+        expect.objectContaining({
+          exerciseId: "ex1",
+          workoutId: "workout-42",
+        }),
+      );
+    });
+
+    it("omits workoutId from sync notification when not provided", () => {
+      const { result } = renderHook(() => useExerciseProgressStore());
+
+      act(() => {
+        result.current.updateExercise("ex1", {
+          exerciseId: "ex1",
+          skill: "WU",
+          repetition: 5,
+        });
+      });
+
+      const call = (syncManager.notifyExerciseUpdated as jest.Mock).mock
+        .calls[0][1];
+      expect(call).not.toHaveProperty("workoutId");
+    });
   });
 
   describe("setBranchLevel", () => {
@@ -387,6 +546,18 @@ describe("exerciseProgressStore", () => {
       });
 
       expect(result.current.testHistory).toHaveLength(1);
+    });
+
+    it("notifies sync of test result", () => {
+      const { result } = renderHook(() => useExerciseProgressStore());
+
+      act(() => {
+        result.current.addTestResult(DEFAULT_MAX_VALUES);
+      });
+
+      expect(syncManager.notifyTestResultAdded).toHaveBeenCalledWith(
+        DEFAULT_MAX_VALUES,
+      );
     });
   });
 

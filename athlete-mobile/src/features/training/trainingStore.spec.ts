@@ -455,6 +455,7 @@ describe("useTrainingStore", () => {
     it("should set active training", () => {
       const { result } = renderHook(() => useTrainingStore());
       const mockActiveTraining: ActiveTrainingType = {
+        id: "workout-1",
         type: "PLAN",
       };
 
@@ -468,6 +469,7 @@ describe("useTrainingStore", () => {
     it("should set active training to null", () => {
       const { result } = renderHook(() => useTrainingStore());
       const mockActiveTraining: ActiveTrainingType = {
+        id: "workout-1",
         type: "PLAN",
       };
 
@@ -481,8 +483,14 @@ describe("useTrainingStore", () => {
 
     it("should update active training", () => {
       const { result } = renderHook(() => useTrainingStore());
-      const firstTraining: ActiveTrainingType = { type: "PLAN" };
-      const secondTraining: ActiveTrainingType = { type: "PREV" };
+      const firstTraining: ActiveTrainingType = {
+        id: "workout-1",
+        type: "PLAN",
+      };
+      const secondTraining: ActiveTrainingType = {
+        id: "workout-2",
+        type: "PREV",
+      };
 
       act(() => {
         result.current.setActiveTraining(firstTraining);
@@ -868,7 +876,7 @@ describe("useTrainingStore", () => {
             skipped: false,
           },
         ]);
-        result.current.setActiveTraining({ type: "PLAN" });
+        result.current.setActiveTraining({ id: "workout-test", type: "PLAN" });
       });
 
       expect(result.current.exerciseList).not.toBeNull();

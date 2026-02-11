@@ -1,3 +1,4 @@
+import { WorkoutConstants } from "@/constants/workoutConstants";
 import { TextInputField } from "@/form/TextInputField";
 import { PowerTest } from "@/features/statistics/components/PowerTest";
 import { type MaxValuesType } from "@/schemas/user.schema";
@@ -68,22 +69,22 @@ const ManualStrengthTestScreen: FC = () => {
       squat: {
         label: t("training.manualStrengthTest.squat"),
         color: colors.squad,
-        directions: ["KNEE"],
+        directions: WorkoutConstants.STRENGTH_TEST_DIRECTIONS.squad,
       },
       benchPress: {
         label: t("training.manualStrengthTest.benchPress"),
         color: colors.benchPress,
-        directions: ["HORIZONTAL_PUSH"],
+        directions: WorkoutConstants.STRENGTH_TEST_DIRECTIONS.bench_press,
       },
       rowing: {
         label: t("training.manualStrengthTest.rowing"),
         color: colors.rowing,
-        directions: ["HORIZONTAL_PULL"],
+        directions: WorkoutConstants.STRENGTH_TEST_DIRECTIONS.rowing,
       },
       shoulderPress: {
         label: t("training.manualStrengthTest.shoulderPress"),
         color: colors.shoulderPress,
-        directions: ["VERTICAL_PUSH"],
+        directions: WorkoutConstants.STRENGTH_TEST_DIRECTIONS.shoulder_press,
       },
     }),
     [t, colors.squad, colors.benchPress, colors.rowing, colors.shoulderPress],

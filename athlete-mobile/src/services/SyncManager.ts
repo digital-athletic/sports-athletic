@@ -2,6 +2,11 @@ import { AppState, type NativeEventSubscription } from "react-native";
 import NetInfo, {
   type NetInfoSubscription,
 } from "@react-native-community/netinfo";
+import type {
+  CompleteWorkoutType,
+  UserExerciseDataType,
+} from "@/schemas/sync.schema";
+import type { MaxValuesType } from "@/features/training/models/MaxValues";
 import { useAuthStore } from "@/store/authStore";
 import { useSyncQueueStore } from "@/store/syncQueueStore";
 import { processQueue } from "./SyncService";
@@ -17,6 +22,13 @@ class SyncManager {
   private retryIntervalId: ReturnType<typeof setInterval> | null = null;
   private started = false;
   private online = false;
+
+  private onWorkoutCompleted: ((workout: CompleteWorkoutType) => void) | null =
+    null;
+  private onExerciseUpdated:
+    | ((exerciseId: string, data: UserExerciseDataType) => void)
+    | null = null;
+  private onTestResultAdded: ((result: MaxValuesType) => void) | null = null;
 
   private constructor() {}
 
@@ -41,6 +53,7 @@ class SyncManager {
     }
     this.started = true;
 
+    this.registerHandlers();
     useSyncQueueStore.getState().resetStaleItems();
 
     this.unsubscribeNetInfo = NetInfo.addEventListener((state) => {
@@ -73,6 +86,10 @@ class SyncManager {
   }
 
   stop(): void {
+    this.onWorkoutCompleted = null;
+    this.onExerciseUpdated = null;
+    this.onTestResultAdded = null;
+
     if (this.unsubscribeNetInfo) {
       this.unsubscribeNetInfo();
       this.unsubscribeNetInfo = null;
@@ -89,6 +106,49 @@ class SyncManager {
     }
 
     this.started = false;
+  }
+
+  notifyWorkoutCompleted(workout: CompleteWorkoutType): void {
+    this.onWorkoutCompleted?.(workout);
+  }
+
+  notifyExerciseUpdated(exerciseId: string, data: UserExerciseDataType): void {
+    this.onExerciseUpdated?.(exerciseId, data);
+  }
+
+  notifyTestResultAdded(result: MaxValuesType): void {
+    this.onTestResultAdded?.(result);
+  }
+
+  private registerHandlers(): void {
+    const enqueue = useSyncQueueStore.getState().enqueue;
+
+    this.onWorkoutCompleted = (workout) => {
+      enqueue({
+        type: "COMPLETED_WORKOUT",
+        referenceId: workout.id,
+        payload: workout,
+      });
+      this.triggerSync();
+    };
+
+    this.onExerciseUpdated = (exerciseId, data) => {
+      enqueue({
+        type: "EXERCISE_DATA",
+        referenceId: exerciseId,
+        payload: data,
+      });
+      this.triggerSync();
+    };
+
+    this.onTestResultAdded = (result) => {
+      enqueue({
+        type: "STRENGTH_TEST",
+        referenceId: `test-${result.testDate}`,
+        payload: result,
+      });
+      this.triggerSync();
+    };
   }
 
   triggerSync(): void {

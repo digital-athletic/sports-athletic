@@ -16,6 +16,7 @@ export type MaxForceRepetitionsDataType = v.InferOutput<
 
 export const UserExerciseDataSchema = v.looseObject({
   exerciseId: v.string(),
+  workoutId: v.optional(v.pipe(v.string(), v.minLength(1), v.maxLength(100))),
   repetition: v.optional(v.number()),
   weight: v.optional(v.number()),
   nextWeightPercentage: v.optional(v.number()),

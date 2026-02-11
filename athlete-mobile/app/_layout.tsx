@@ -1,6 +1,7 @@
 import { useAuthStateListener } from "@/auth/useAuthStateListener";
 import { AlertHost } from "@/common/Alert";
 import { useOTAService } from "@/services/OTAService";
+import { useSyncManager } from "@/services/useSyncManager";
 import { useAuthStore } from "@/store/authStore";
 import { theme } from "@/theme/theme";
 import { ThemeProvider } from "@shopify/restyle";
@@ -18,6 +19,7 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 export default function RootLayout() {
   useAuthStateListener();
   useOTAService();
+  useSyncManager();
 
   const { auth, _hasHydrated } = useAuthStore();
 

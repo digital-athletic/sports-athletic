@@ -9,6 +9,7 @@ import { UserExerciseDataType } from "@/features/training/models/UserExerciseDat
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
+import { syncManager } from "@/services/SyncManager";
 import { asyncStorage } from "./middleware";
 
 export interface UserExerciseBranchDataType {
@@ -47,7 +48,11 @@ const createInitialState = (): State => ({
 type Actions = {
   // Exercise Data
   setExerciseData: (data: Record<string, UserExerciseDataType>) => void;
-  updateExercise: (exerciseId: string, data: UserExerciseDataType) => void;
+  updateExercise: (
+    exerciseId: string,
+    data: UserExerciseDataType,
+    workoutId?: string,
+  ) => void;
   setBranchLevel: (branchId: string, level: number) => void;
 
   // Exercise Totals
@@ -108,7 +113,7 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
           state.exerciseData = data;
         }),
 
-      updateExercise: (exerciseId, data) =>
+      updateExercise: (exerciseId, data, workoutId) => {
         set((state) => {
           const existing = state.exerciseData[exerciseId];
 
@@ -125,8 +130,14 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
                 streakCounter: 1,
               };
             }
+            if (typeof data.duration === "number") {
+              update.duration = data.duration;
+            }
             if (typeof data.height === "number") {
               update.height = data.height;
+            }
+            if (typeof data.branchId === "string") {
+              update.branchId = data.branchId;
             }
             if (data.maxFLevelAdjustment) {
               update.maxFLevelAdjustment = data.maxFLevelAdjustment;
@@ -146,7 +157,7 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
             if (typeof data.skipped === "boolean") {
               update.skipped = data.skipped;
             }
-            if (data.weight) {
+            if (typeof data.weight === "number") {
               update.weight = data.weight;
             }
             if (typeof data.weightType === "string") {
@@ -173,8 +184,14 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
               };
             }
           }
+          if (typeof data.duration === "number") {
+            existing.duration = data.duration;
+          }
           if (typeof data.height === "number") {
             existing.height = data.height;
+          }
+          if (typeof data.branchId === "string") {
+            existing.branchId = data.branchId;
           }
           if (data.maxFLevelAdjustment) {
             existing.maxFLevelAdjustment = data.maxFLevelAdjustment;
@@ -194,13 +211,21 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
           if (typeof data.skipped === "boolean") {
             existing.skipped = data.skipped;
           }
-          if (data.weight) {
+          if (typeof data.weight === "number") {
             existing.weight = data.weight;
           }
           if (typeof data.weightType === "string") {
             existing.weightType = data.weightType;
           }
-        }),
+        });
+        const updatedData = get().exerciseData[exerciseId];
+        if (updatedData) {
+          const payload = workoutId
+            ? { ...updatedData, workoutId }
+            : updatedData;
+          syncManager.notifyExerciseUpdated(exerciseId, payload);
+        }
+      },
 
       setBranchLevel: (branchId, level) =>
         set((state) => {
@@ -246,10 +271,12 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
           state.level = level;
         }),
 
-      addTestResult: (result) =>
+      addTestResult: (result) => {
         set((state) => {
           state.testHistory.push(result);
-        }),
+        });
+        syncManager.notifyTestResultAdded(result);
+      },
 
       clearProgress: () =>
         set((state) => {

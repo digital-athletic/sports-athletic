@@ -1,12 +1,12 @@
-import type { UserType } from "@/schemas/user.schema";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { SetListEntryType } from "@/features/training/models/SetListEntry";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type {
-  SkillWithLength,
   CardioBranchReference,
+  SkillWithLength,
 } from "@/schemas/generator.schema";
+import type { SkillTreeType } from "@/schemas/skillTree.schema";
+import type { UserType } from "@/schemas/user.schema";
 import {
   transformSkillTree,
   type RawSkillTree,
@@ -1941,6 +1941,214 @@ describe("TrainingGenerator", () => {
           testAfterWu: true,
         });
       });
+    });
+  });
+
+  /** Integration tests for generatePlanWorkout — known failing bug scenarios. */
+  describe("PLAN Workout — Known Issues", () => {
+    const {
+      realExercises,
+      PAUSE_ID,
+      noExerciseData,
+      today,
+      nextWeek,
+      importTrees,
+      buildPlanUser,
+    } = require("../../../../test/factories/planWorkout");
+
+    /**
+     * When a plan branch requires specific equipment (EQ_BOTTLE) but the
+     * user has no equipment and no replacement tree is available, the
+     * generator should throw a NO_EXERCISES/EQUIPMENT error.
+     */
+    it("throws EQUIPMENT error when hall has no equipment", () => {
+      const user = buildPlanUser({
+        weekday: 1,
+        skills: {
+          SWR1: [
+            {
+              branchId: "68",
+              tags: [
+                "EQ_BOTTLE",
+                "EQ_TYPE_EQUIPMENT",
+                "PLACE_HALL",
+                "REGION_CORE",
+              ],
+              exercises: {
+                "1": { exerciseId: "223" },
+                "2": { exerciseId: "224" },
+                "3": { exerciseId: "224" },
+              },
+            },
+          ],
+        },
+        lengths: { SWR1: 10 },
+      });
+
+      let thrownError: unknown;
+      try {
+        generator.generatePlanWorkout(
+          "PLAN",
+          user,
+          "HALL",
+          realExercises,
+          importTrees("WU", "CARDIO_4", "CARDIO_5"),
+          1,
+          [],
+          undefined,
+          0,
+          noExerciseData,
+        );
+      } catch (e) {
+        thrownError = e;
+      }
+      expect(thrownError).toEqual({
+        type: "NO_EXERCISES",
+        subtype: "EQUIPMENT",
+        params: expect.any(Array),
+      });
+    });
+
+    /**
+     * Verifies that replaceExerciseBranches avoids duplicate exercise IDs.
+     *
+     * User plan — 2 GKS branches:
+     *   "C1"  CORE       → exercise 357  (kept — survives CHEST soreness)
+     *   "UB1" UPPER_BODY → exercise 222  (removed by CHEST soreness → needs replacement)
+     *
+     * Mock GKSKG tree — 3 branches (the pool replaceExerciseBranches draws from):
+     *   "C1"  CORE      → exercise 357  (excluded: already kept via usedBranchIds)
+     *   "C2"  CORE      → exercise 357  (duplicate trap — same exercise as C1)
+     *   "FB1" FULL_BODY → exercise 4    (unique alternative, both-sided)
+     *
+     * Expected unique exercise IDs in GKS result: ["4", "357"]
+     *   357 — kept branch C1
+     *   4   — replacement from FB1
+     */
+    it("should not have duplicate exercise IDs within GKS skill after CHEST soreness replacement", () => {
+      const {
+        transformSkillTree,
+      } = require("../../../../src/utils/skillTreeTransform");
+
+      const mockGKSKG = transformSkillTree({
+        C1: {
+          tags: ["EQ_TYPE_KG", "REGION_CORE", "PLACE_HALL", "SIDE_BOTH"],
+          levels: { "1": { exerciseId: "357" }, "2": { exerciseId: "357" } },
+        },
+        C2: {
+          tags: ["EQ_TYPE_KG", "REGION_CORE", "PLACE_HALL", "SIDE_BOTH"],
+          levels: { "1": { exerciseId: "357" }, "2": { exerciseId: "357" } },
+        },
+        FB1: {
+          tags: ["EQ_TYPE_KG", "REGION_FULL_BODY", "PLACE_HALL", "SIDE_BOTH"],
+          levels: { "1": { exerciseId: "4" }, "2": { exerciseId: "4" } },
+        },
+      });
+
+      const user = buildPlanUser({
+        weekday: 2,
+        temporalData: [{ date: today, expiration: nextWeek, tag: "CHEST" }],
+        skills: {
+          GKS: [
+            {
+              branchId: "C1",
+              tags: ["EQ_TYPE_KG", "REGION_CORE", "PLACE_HALL"],
+              exercises: {
+                "1": { exerciseId: "357" },
+                "2": { exerciseId: "357" },
+              },
+            },
+            {
+              branchId: "UB1",
+              tags: ["EQ_TYPE_KG", "REGION_UPPER_BODY", "PLACE_HALL"],
+              exercises: { "2": { exerciseId: "222" } },
+            },
+          ],
+        },
+        lengths: { GKS: 15 },
+      });
+
+      const result = generator.generatePlanWorkout(
+        "PLAN",
+        user,
+        "HALL",
+        realExercises,
+        { ...importTrees("WU", "CARDIO_4", "CARDIO_5"), GKSKG: mockGKSKG },
+        2,
+        ["TOWEL", "FOAM_ROLLER"],
+        undefined,
+        0,
+        noExerciseData,
+      );
+
+      const gksExerciseIds = result
+        .filter(
+          (e: { skill: string; exerciseId: string }) =>
+            e.skill === "GKS" && e.exerciseId !== PAUSE_ID,
+        )
+        .map((e: { exerciseId: string }) => e.exerciseId);
+
+      // The set list repeats IDs across sets (multiple sets per exercise).
+      // Extract unique IDs to verify the two branch-level exercises.
+      const uniqueIds = [...new Set(gksExerciseIds)].sort();
+      expect(uniqueIds).toEqual(["357", "4"]);
+    });
+
+    it("branch threshold profile: BEGINNER with branch level 2 does not throw", () => {
+      const user = buildPlanUser({
+        weekday: 1,
+        skills: {
+          SWR1: [
+            {
+              branchId: "22",
+              tags: ["SKILL_SWR", "PLACE_STUDIO", "EQ_DUMBBELL"],
+              exercises: {
+                "1": { exerciseId: "118" },
+                "2": { exerciseId: "118" },
+                "3": { exerciseId: "261" },
+              },
+            },
+          ],
+        },
+        lengths: { SWR1: 10 },
+      });
+      user.workoutData!.tags = { LEVEL: ["BEGINNER"], POSITION: ["FIELD"] };
+
+      const studioEquipment = [
+        "DUMBBELL",
+        "BARBELL",
+        "BENCH",
+        "ADJUSTABLE_BENCH",
+        "BARBELL_BENCH",
+        "EXERCISING_BENCH",
+        "POWER_RACK",
+      ];
+      const exerciseData = {
+        exerciseData: {
+          "118": {
+            exerciseId: "118",
+            skill: "SWR1",
+            weight: 25,
+            repetition: 15,
+            weightType: "weightAbsolute",
+          },
+        },
+        branchData: { "22": { level: 2 } },
+      };
+
+      const result = generator.generatePlanWorkout(
+        "PLAN",
+        user,
+        "STUDIO",
+        realExercises,
+        importTrees("WU", "SWR1", "CARDIO_3", "CARDIO_4", "CARDIO_5"),
+        1,
+        studioEquipment,
+        0,
+        0,
+        exerciseData as any,
+      );
+      expect(result.length).toBeGreaterThan(0);
     });
   });
 });

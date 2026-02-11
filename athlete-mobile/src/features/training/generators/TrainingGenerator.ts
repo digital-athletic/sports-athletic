@@ -917,6 +917,18 @@ export default class TrainingGenerator {
       );
 
       replace = replace.concat(levelFiltered.replace);
+
+      if (
+        Object.keys(levelFiltered.keep).length === 0 &&
+        replace.length === 0
+      ) {
+        throw {
+          type: "NO_EXERCISES",
+          subtype: "EQUIPMENT",
+          params: equipmentFiltered.missingEquipment || [],
+        };
+      }
+
       let keep = Object.keys(levelFiltered.keep).map((id) => {
         return {
           tags: levelFiltered.keep[id].tags,
@@ -984,6 +996,18 @@ export default class TrainingGenerator {
             userExerciseData,
             false,
           );
+          if (
+            replacement.length === 0 &&
+            keep.length === 0 &&
+            skill.indexOf("PREV") === -1 &&
+            skill !== "WUSPEZIAL"
+          ) {
+            throw {
+              type: "NO_EXERCISES",
+              subtype: "EQUIPMENT",
+              params: equipmentFiltered.missingEquipment || [],
+            };
+          }
           // Change used skill from former prevention to new PREV skill if needed
           if (skill.indexOf("PREV") !== -1 && replacement.length !== 0) {
             let prevRegion = getRegionsForPreventionSkills([skill]);
@@ -993,11 +1017,7 @@ export default class TrainingGenerator {
                 prevRegion.includes(p),
               ),
             );
-            let prevSkillsSecondary = prevSkills;
-            const prevIndex = prevSkillsSecondary.indexOf(skill);
-            if (prevIndex > -1) {
-              prevSkillsSecondary.splice(prevIndex, 1);
-            }
+            const prevSkillsSecondary = prevSkills.filter((s) => s !== skill);
             if (regionReplacement.length === 0) {
               // change to new PREV skill
               let otherPrevSkill: SkillTypes = skill;
@@ -1233,6 +1253,22 @@ export default class TrainingGenerator {
         }
       }
 
+      const usedExerciseIds = new Set<string>();
+      const levelNum =
+        userLevel === "PROFESSIONAL" ? 3 : userLevel === "ADVANCED" ? 2 : 1;
+
+      for (const branchId of usedBranchIds) {
+        if (skillTree[branchId]) {
+          const levels = skillTree[branchId].levels;
+          for (let l = levelNum; l > 0; l--) {
+            if (levels[l]) {
+              usedExerciseIds.add(levels[l].exerciseId);
+              break;
+            }
+          }
+        }
+      }
+
       for (let i = 0; i < replace.length; i++) {
         if (possibleBranches.length < 1) {
           // skip for now
@@ -1256,18 +1292,36 @@ export default class TrainingGenerator {
             );
             return branchRegions.includes(regionToReplace);
           });
-          if (regionBranches.length === 0) {
-            // try choosing branches from less used regions
+          // Filter for branches with unique exercise IDs (not already used)
+          const filterUniqueExercises = (branches: string[]): string[] =>
+            branches.filter((branchId) => {
+              const levels = skillTree[branchId].levels;
+              for (let l = levelNum; l > 0; l--) {
+                if (levels[l]) {
+                  return !usedExerciseIds.has(levels[l].exerciseId);
+                }
+              }
+              return true;
+            });
+
+          // Prefer branches with unique exercise IDs in the exact region
+          const uniqueExactRegion = filterUniqueExercises(regionBranches);
+          if (uniqueExactRegion.length > 0) {
+            regionBranches = uniqueExactRegion;
+          } else {
+            // Try less-used regions, preferring those with unique exercises
             let arrayOfLessUsedRegions = Object.keys(branchesByRegion).sort(
               (a, b) => branchesByRegion[a] - branchesByRegion[b],
             );
+            let fallbackRegionBranches: string[] = [];
+            regionBranches = [];
             for (let l = 0; l < arrayOfLessUsedRegions.length; l++) {
               if (
                 branchesByRegion[arrayOfLessUsedRegions[l]] >= maxCountPerRegion
               ) {
                 break;
               }
-              regionBranches = possibleBranches.filter((branchId) => {
+              let candidatesForRegion = possibleBranches.filter((branchId) => {
                 let branchRegions = getTagValues(
                   skillTree[branchId].tags,
                   TagGroups.REGION,
@@ -1282,7 +1336,7 @@ export default class TrainingGenerator {
                 1
               ) {
                 // only one more ex allowed for this region
-                regionBranches = regionBranches.filter((branchId) => {
+                candidatesForRegion = candidatesForRegion.filter((branchId) => {
                   const branchSide = getTagValues(
                     skillTree[branchId].tags,
                     TagGroups.SIDE,
@@ -1290,7 +1344,21 @@ export default class TrainingGenerator {
                   return branchSide.indexOf("ONE") === -1;
                 });
               }
-              if (regionBranches.length > 0) break;
+              if (candidatesForRegion.length > 0) {
+                if (fallbackRegionBranches.length === 0) {
+                  fallbackRegionBranches = candidatesForRegion;
+                }
+                const uniqueInRegion =
+                  filterUniqueExercises(candidatesForRegion);
+                if (uniqueInRegion.length > 0) {
+                  regionBranches = uniqueInRegion;
+                  break;
+                }
+              }
+            }
+            // If no region had unique exercises, accept duplicates as last resort
+            if (regionBranches.length === 0) {
+              regionBranches = fallbackRegionBranches;
             }
           }
           if (regionBranches.length === 0) {
@@ -1326,6 +1394,13 @@ export default class TrainingGenerator {
             exerciseLevels[level] = {
               exerciseId: levelData.exerciseId,
             };
+          }
+          const resolvedId =
+            exerciseLevels[levelNum]?.exerciseId ??
+            exerciseLevels[levelNum - 1]?.exerciseId ??
+            "";
+          if (resolvedId) {
+            usedExerciseIds.add(resolvedId);
           }
           const countChosen =
             getTagValues(tags, TagGroups.SIDE).indexOf("ONE") > -1 ? 2 : 1;

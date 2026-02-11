@@ -8,13 +8,13 @@ import type { PlacesState, StoreState } from "../types";
  * Default studio equipment for a fully equipped gym.
  */
 export const DEFAULT_EQUIPMENT = [
-  "EQ_DUMBBELL",
-  "EQ_BARBELL",
-  "EQ_BENCH",
-  "EQ_ADJUSTABLE_BENCH",
-  "EQ_BARBELL_BENCH",
-  "EQ_EXERCISING_BENCH",
-  "EQ_POWER_RACK",
+  "DUMBBELL",
+  "BARBELL",
+  "BENCH",
+  "ADJUSTABLE_BENCH",
+  "BARBELL_BENCH",
+  "EXERCISING_BENCH",
+  "POWER_RACK",
 ];
 
 export interface PlacesStoreOptions {

@@ -34,7 +34,7 @@ export const DateInputField: FC<DateInputFieldProps> = ({
   maximumDate,
   minimumDate,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
 
   const iconName = type === "date" ? "calendar" : "time";
@@ -95,7 +95,7 @@ export const DateInputField: FC<DateInputFieldProps> = ({
             value={getCurrentDate()}
             mode={type}
             onChange={handleChange}
-            locale={type === "time" ? "de" : undefined}
+            locale={i18n.language}
             maximumDate={maximumDate}
             minimumDate={minimumDate}
           />

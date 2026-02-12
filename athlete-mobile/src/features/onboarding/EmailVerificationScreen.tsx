@@ -11,8 +11,15 @@ import { useTheme } from "@/theme/theme";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, StyleSheet, TextInput } from "react-native";
+import {
+  Alert,
+  Keyboard,
+  Pressable,
+  StyleSheet,
+  TextInput,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { BackHeader } from "@/common/BackHeader";
 
 const RESEND_COOLDOWN_SECONDS = 60;
 const OTP_LENGTH = 6;
@@ -116,102 +123,111 @@ export function EmailVerificationScreen() {
   };
 
   return (
-    <Box
-      flex={1}
-      backgroundColor="white"
-      paddingHorizontal="l"
-      justifyContent="center"
-      alignItems="center"
-      style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
-    >
-      <Text variant="title" textAlign="center" marginBottom="m">
-        {t("onboarding.confirmEmailAddressTitle")}
-      </Text>
-
-      <Text variant="body" textAlign="center" marginBottom="s">
-        {t("onboarding.confirmEmailAddressMessage")}
-      </Text>
-
-      <Text variant="body" textAlign="center" marginBottom="l" color="primary">
-        {email}
-      </Text>
-
-      <Text variant="body" textAlign="center" marginBottom="s">
-        {t("onboarding.enterVerificationCode")}
-      </Text>
-
-      <TextInput
-        value={otpCode}
-        onChangeText={(text) => {
-          setOtpCode(text.replace(/[^0-9]/g, ""));
-          if (verificationError) setVerificationError(null);
-        }}
-        maxLength={OTP_LENGTH}
-        keyboardType="number-pad"
-        textContentType="oneTimeCode"
-        autoComplete="one-time-code"
-        placeholder="_ _ _ _ _ _"
-        accessibilityLabel={t("onboarding.verificationCodeInput")}
-        style={[
-          styles.otpInput,
-          {
-            color: colors.darkGrey3,
-            backgroundColor: colors.lightGrey2,
-            borderColor: verificationError ? colors.error : colors.lightGrey2,
-            borderRadius: borderRadii.m,
-            padding: spacing.m,
-          },
-        ]}
-      />
-
-      {verificationError && (
-        <Text
-          variant="description"
-          textAlign="center"
-          marginBottom="s"
-          color="error"
-          accessibilityRole="alert"
-        >
-          {verificationError}
-        </Text>
-      )}
-
-      <Button
-        onPress={handleVerifyOtp}
-        disabled={verifying || otpCode.length !== OTP_LENGTH}
-        marginBottom="m"
-        accessibilityRole="button"
+    <Pressable style={{ flex: 1 }} onPress={Keyboard.dismiss}>
+      <Box
+        flex={1}
+        backgroundColor="white"
+        paddingHorizontal="l"
+        style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
       >
-        {t("onboarding.verifyCode")}
-      </Button>
+        <Box paddingVertical="s">
+          <BackHeader onBack={() => router.replace("/onboarding")} />
+        </Box>
 
-      {resent && (
-        <Text
-          variant="description"
-          textAlign="center"
-          marginBottom="m"
-          color="success"
-        >
-          {t("onboarding.emailResent")}
-        </Text>
-      )}
+        <Box flex={1} justifyContent="center" alignItems="center">
+          <Text variant="title" textAlign="center" marginBottom="m">
+            {t("onboarding.confirmEmailAddressTitle")}
+          </Text>
 
-      <Button
-        variant="secondary"
-        onPress={handleResend}
-        disabled={resending || cooldown > 0}
-        marginBottom="m"
-        accessibilityRole="button"
-      >
-        {cooldown > 0
-          ? `${t("onboarding.resendEmail")} (${cooldown}s)`
-          : t("onboarding.resendEmail")}
-      </Button>
+          <Text variant="body" textAlign="center" marginBottom="s">
+            {t("onboarding.confirmEmailAddressMessage")}
+          </Text>
 
-      <Button variant="secondary" onPress={() => router.replace("/onboarding")}>
-        {t("common.back")}
-      </Button>
-    </Box>
+          <Text
+            variant="body"
+            textAlign="center"
+            marginBottom="l"
+            color="primary"
+          >
+            {email}
+          </Text>
+
+          <Text variant="body" textAlign="center" marginBottom="s">
+            {t("onboarding.enterVerificationCode")}
+          </Text>
+
+          <TextInput
+            value={otpCode}
+            onChangeText={(text) => {
+              setOtpCode(text.replace(/[^0-9]/g, ""));
+              if (verificationError) setVerificationError(null);
+            }}
+            maxLength={OTP_LENGTH}
+            keyboardType="number-pad"
+            textContentType="oneTimeCode"
+            autoComplete="one-time-code"
+            placeholder="_ _ _ _ _ _"
+            accessibilityLabel={t("onboarding.verificationCodeInput")}
+            style={[
+              styles.otpInput,
+              {
+                color: colors.darkGrey3,
+                backgroundColor: colors.lightGrey2,
+                borderColor: verificationError
+                  ? colors.error
+                  : colors.lightGrey2,
+                borderRadius: borderRadii.m,
+                padding: spacing.m,
+              },
+            ]}
+          />
+
+          {verificationError && (
+            <Text
+              variant="description"
+              textAlign="center"
+              marginBottom="s"
+              color="error"
+              accessibilityRole="alert"
+            >
+              {verificationError}
+            </Text>
+          )}
+
+          <Button
+            onPress={handleVerifyOtp}
+            disabled={verifying || otpCode.length !== OTP_LENGTH}
+            marginBottom="m"
+            accessibilityRole="button"
+          >
+            {t("onboarding.verifyCode")}
+          </Button>
+
+          {resent && (
+            <Text
+              variant="description"
+              textAlign="center"
+              marginBottom="m"
+              color="success"
+            >
+              {t("onboarding.emailResent")}
+            </Text>
+          )}
+
+          <Button
+            variant="secondary"
+            onPress={handleResend}
+            disabled={resending || cooldown > 0}
+            marginBottom="m"
+            accessibilityRole="button"
+          >
+            {cooldown > 0
+              ? `${t("onboarding.resendEmail")} (${cooldown}s)`
+              : t("onboarding.resendEmail")}
+          </Button>
+        </Box>
+      </Box>
+    </Pressable>
   );
 }
 

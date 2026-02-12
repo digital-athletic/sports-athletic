@@ -39,5 +39,7 @@ const styles = StyleSheet.create({
   inputField: {
     flex: 1,
     fontSize: 16,
+    fontFamily: "System",
+    letterSpacing: 0,
   },
 });

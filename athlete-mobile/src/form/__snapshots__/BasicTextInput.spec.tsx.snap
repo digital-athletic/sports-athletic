@@ -7,7 +7,9 @@ exports[`<BasicTextInput /> renders correctly 1`] = `
     [
       {
         "flex": 1,
+        "fontFamily": "System",
         "fontSize": 16,
+        "letterSpacing": 0,
       },
       {
         "color": "#333333",

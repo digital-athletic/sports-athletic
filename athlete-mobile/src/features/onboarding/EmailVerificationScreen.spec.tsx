@@ -90,8 +90,8 @@ describe("<EmailVerificationScreen />", () => {
   });
 
   it("renders the back button", () => {
-    const { getByText } = render(<EmailVerificationScreen />);
-    expect(getByText("Back")).toBeTruthy();
+    const { getByLabelText } = render(<EmailVerificationScreen />);
+    expect(getByLabelText("Back")).toBeTruthy();
   });
 
   it("calls requestRegistrationOtp when resending in REGISTER mode", async () => {
@@ -135,9 +135,9 @@ describe("<EmailVerificationScreen />", () => {
   });
 
   it("navigates to onboarding when back button is pressed", () => {
-    const { getByText } = render(<EmailVerificationScreen />);
+    const { getByLabelText } = render(<EmailVerificationScreen />);
 
-    fireEvent.press(getByText("Back"));
+    fireEvent.press(getByLabelText("Back"));
 
     expect(mockReplace).toHaveBeenCalledWith("/onboarding");
   });

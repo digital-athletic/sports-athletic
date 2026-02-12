@@ -1,6 +1,7 @@
 import { useTheme } from "@/theme/theme";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Platform } from "react-native";
 
 /**
@@ -11,6 +12,7 @@ import { Platform } from "react-native";
  */
 export default function TabLayout() {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <Tabs
@@ -30,7 +32,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="(home)"
         options={{
-          title: "Training",
+          title: t("tabs.training"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="walk" size={size} color={color} />
           ),
@@ -39,7 +41,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="statistics"
         options={{
-          title: "Statistics",
+          title: t("tabs.statistics"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="stats-chart" size={size} color={color} />
           ),
@@ -48,7 +50,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="(more)"
         options={{
-          title: "Profile",
+          title: t("tabs.profile"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
           ),

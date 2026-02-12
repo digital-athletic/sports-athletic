@@ -8,6 +8,8 @@ import { ThemeProvider } from "@shopify/restyle";
 import { Stack } from "expo-router";
 import { ActivityIndicator, Platform, View } from "react-native";
 import { KeyboardProvider } from "react-native-keyboard-controller";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useFonts } from "expo-font";
 
 /**
  * Root Layout Component
@@ -21,11 +23,12 @@ export default function RootLayout() {
   useOTAService();
   useSyncManager();
 
+  const [loaded, error] = useFonts(Ionicons.font);
   const { auth, _hasHydrated } = useAuthStore();
 
   // Wait for auth store to hydrate before rendering routes
   // to avoid flickering between auth states
-  if (!_hasHydrated) {
+  if (!_hasHydrated || (!loaded && !error)) {
     return (
       <ThemeProvider theme={theme}>
         <View

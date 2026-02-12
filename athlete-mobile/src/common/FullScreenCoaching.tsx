@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   type ImageSourcePropType,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SpeechBubble } from "./SpeechBubble";
 
 export type FullScreenCoachingProps = {
@@ -33,6 +34,7 @@ export const FullScreenCoaching: FC<FullScreenCoachingProps> = ({
   skipFunction,
 }) => {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
 
   const speechFlex = useResponsiveProp({
     phone: 2,
@@ -89,6 +91,7 @@ export const FullScreenCoaching: FC<FullScreenCoachingProps> = ({
         alignItems="stretch"
         paddingHorizontal="l"
         paddingBottom="l"
+        style={{ marginBottom: insets.bottom }}
       >
         <Button onPress={goOnFunction}>{goOnText}</Button>
 

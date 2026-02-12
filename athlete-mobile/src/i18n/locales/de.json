@@ -314,12 +314,11 @@
     "manualStrengthTest": {
       "title": "Manueller Krafttest",
       "description": "Gib deine Testergebnisse unten ein. Lasse Felder leer, um eine Übung zu überspringen.",
+      "barbellNote": "Alle Übungen sind mit einer Langhantel auszuführen, nicht mit Kurzhanteln.",
       "squat": "Kniebeuge",
       "benchPress": "Bankdrücken",
       "rowing": "Rudern",
       "shoulderPress": "Schulterdrücken",
-      "barbell": "Langhantel",
-      "dumbbells": "Kurzhanteln",
       "weightPlaceholder": "Gewicht",
       "repsPlaceholder": "Wdh.",
       "weightUnit": "kg",

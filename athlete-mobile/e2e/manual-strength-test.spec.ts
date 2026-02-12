@@ -19,8 +19,8 @@ test.describe("Manual Strength Test", () => {
     // Fill in squat: 100kg barbell, 8 reps
     await manualTestPage.fillExercise("squat", "100", "8");
 
-    // Fill in bench press: 15kg dumbbells, 10 reps
-    await manualTestPage.fillExercise("benchPress", "15", "10", "dumbbells");
+    // Fill in bench press: 15kg barbell, 10 reps
+    await manualTestPage.fillExercise("benchPress", "15", "10");
 
     await manualTestPage.saveAndExpectSuccess();
 

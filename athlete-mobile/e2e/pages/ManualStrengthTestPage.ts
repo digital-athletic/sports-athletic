@@ -2,7 +2,6 @@ import { expect } from "@playwright/test";
 import { BasePage } from "./BasePage";
 
 type ExerciseKey = "squat" | "benchPress" | "rowing" | "shoulderPress";
-type EquipmentType = "barbell" | "dumbbells";
 
 export class ManualStrengthTestPage extends BasePage {
   private get saveButton() {
@@ -65,25 +64,9 @@ export class ManualStrengthTestPage extends BasePage {
   }
 
   /**
-   * Selects the equipment type for an exercise.
-   */
-  async selectEquipment(exercise: ExerciseKey, equipment: EquipmentType) {
-    const label = equipment === "barbell" ? "Barbell" : "Dumbbells";
-    await this.getExerciseSection(exercise).getByText(label).click();
-  }
-
-  /**
    * Fills in weight and reps for an exercise.
    */
-  async fillExercise(
-    exercise: ExerciseKey,
-    weight: string,
-    reps: string,
-    equipment?: EquipmentType,
-  ) {
-    if (equipment) {
-      await this.selectEquipment(exercise, equipment);
-    }
+  async fillExercise(exercise: ExerciseKey, weight: string, reps: string) {
     await this.getWeightInput(exercise).fill(weight);
     await this.getRepsInput(exercise).fill(reps);
   }

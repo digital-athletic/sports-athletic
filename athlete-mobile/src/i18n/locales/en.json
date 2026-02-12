@@ -314,12 +314,11 @@
     "manualStrengthTest": {
       "title": "Manual Strength Test",
       "description": "Enter your test results below. Leave fields empty to skip an exercise.",
+      "barbellNote": "All exercises are to be executed with a barbell, not with dumbbells.",
       "squat": "Squat",
       "benchPress": "Bench Press",
       "rowing": "Rowing",
       "shoulderPress": "Shoulder Press",
-      "barbell": "Barbell",
-      "dumbbells": "Dumbbells",
       "weightPlaceholder": "Weight",
       "repsPlaceholder": "Reps",
       "weightUnit": "kg",

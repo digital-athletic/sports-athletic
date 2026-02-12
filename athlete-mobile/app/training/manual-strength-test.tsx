@@ -19,16 +19,13 @@ import { Stack, useRouter } from "expo-router";
 import { type FC, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "@/common/Alert";
-import { ScrollView, TouchableOpacity } from "react-native";
+import { ScrollView } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-type EquipmentType = "barbell" | "dumbbells";
 
 interface ExerciseInput {
   weight: string;
   reps: string;
-  equipment: EquipmentType;
 }
 
 interface ExerciseConfig {
@@ -40,7 +37,6 @@ interface ExerciseConfig {
 const createEmptyInput = (): ExerciseInput => ({
   weight: "",
   reps: "",
-  equipment: "barbell",
 });
 
 const ManualStrengthTestScreen: FC = () => {
@@ -99,23 +95,12 @@ const ManualStrengthTestScreen: FC = () => {
     [],
   );
 
-  const toggleEquipment = useCallback(
-    (exercise: string, equipment: EquipmentType) => {
-      setInputs((prev) => ({
-        ...prev,
-        [exercise]: { ...prev[exercise], equipment },
-      }));
-    },
-    [],
-  );
-
   const handleSave = useCallback(() => {
     const filledExercises: {
       key: string;
       weight: number;
       reps: number;
       config: ExerciseConfig;
-      equipment: EquipmentType;
     }[] = [];
     let hasIncomplete = false;
 
@@ -143,7 +128,6 @@ const ManualStrengthTestScreen: FC = () => {
             weight,
             reps,
             config: exercises[key],
-            equipment: input.equipment,
           });
         }
       }
@@ -165,12 +149,7 @@ const ManualStrengthTestScreen: FC = () => {
     };
 
     for (const exercise of filledExercises) {
-      let effectiveWeight = exercise.weight;
-      if (exercise.equipment === "dumbbells") {
-        effectiveWeight = exercise.weight * 2 * 1.1;
-      }
-
-      const oneRepMax = maxWeightByEpley(effectiveWeight, exercise.reps);
+      const oneRepMax = maxWeightByEpley(exercise.weight, exercise.reps);
       const result = calculateAdjustedMaxValues(oneRepMax);
       updatedMaxValues = applyMaxValueToDirections(
         updatedMaxValues,
@@ -189,59 +168,6 @@ const ManualStrengthTestScreen: FC = () => {
     }
   }, [inputs, exercises, workoutMaxValues, saveMaxValues, addTestResult, t]);
 
-  const renderEquipmentToggle = (exerciseKey: string) => {
-    const input = inputs[exerciseKey];
-
-    return (
-      <Box flexDirection="row" gap="s" marginBottom="s">
-        <TouchableOpacity
-          onPress={() => toggleEquipment(exerciseKey, "barbell")}
-          style={{ flex: 1 }}
-          accessibilityRole="button"
-          accessibilityState={{ selected: input.equipment === "barbell" }}
-        >
-          <Box
-            paddingVertical="s"
-            borderRadius="m"
-            alignItems="center"
-            backgroundColor={
-              input.equipment === "barbell" ? "primary" : "lightGrey2"
-            }
-          >
-            <Text
-              variant="body"
-              color={input.equipment === "barbell" ? "white" : "darkGrey3"}
-            >
-              {t("training.manualStrengthTest.barbell")}
-            </Text>
-          </Box>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => toggleEquipment(exerciseKey, "dumbbells")}
-          style={{ flex: 1 }}
-          accessibilityRole="button"
-          accessibilityState={{ selected: input.equipment === "dumbbells" }}
-        >
-          <Box
-            paddingVertical="s"
-            borderRadius="m"
-            alignItems="center"
-            backgroundColor={
-              input.equipment === "dumbbells" ? "primary" : "lightGrey2"
-            }
-          >
-            <Text
-              variant="body"
-              color={input.equipment === "dumbbells" ? "white" : "darkGrey3"}
-            >
-              {t("training.manualStrengthTest.dumbbells")}
-            </Text>
-          </Box>
-        </TouchableOpacity>
-      </Box>
-    );
-  };
-
   const renderExerciseSection = (exerciseKey: string) => {
     const config = exercises[exerciseKey];
     const input = inputs[exerciseKey];
@@ -259,8 +185,6 @@ const ManualStrengthTestScreen: FC = () => {
         >
           {config.label}
         </Text>
-
-        {renderEquipmentToggle(exerciseKey)}
 
         <Box flexDirection="row" gap="s">
           <Box flex={1}>
@@ -335,8 +259,17 @@ const ManualStrengthTestScreen: FC = () => {
         <KeyboardAwareScrollView
           contentContainerStyle={{ flexGrow: 1, padding: 16 }}
         >
-          <Text variant="body" color="darkGrey2" marginBottom="l">
+          <Text variant="body" color="darkGrey2" marginBottom="s">
             {t("training.manualStrengthTest.description")}
+          </Text>
+
+          <Text
+            variant="body"
+            fontWeight="bold"
+            color="primary"
+            marginBottom="l"
+          >
+            {t("training.manualStrengthTest.barbellNote")}
           </Text>
 
           {Object.keys(exercises).map((key) => renderExerciseSection(key))}

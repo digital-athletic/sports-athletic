@@ -588,6 +588,7 @@ export const getEquivalentBranchWithGivenLevel = (
  * @param repetition
  */
 export const maxWeightByEpley = (weight: number, repetition: number) => {
+  if (repetition <= 1) return weight;
   return weight * (1 + repetition / 30);
 };
 

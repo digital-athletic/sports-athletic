@@ -5,7 +5,7 @@ describe("userSettingsStore", () => {
   beforeEach(() => {
     const { result } = renderHook(() => useUserSettingsStore());
     act(() => {
-      result.current.clearSettings();
+      result.current.resetSettings();
     });
   });
 
@@ -49,14 +49,14 @@ describe("userSettingsStore", () => {
     });
   });
 
-  describe("clearSettings", () => {
+  describe("resetSettings", () => {
     it("resets to initial state", () => {
       const { result } = renderHook(() => useUserSettingsStore());
 
       act(() => {
         result.current.setAnonymisedDataUse(true);
         result.current.setReviewStatus({ hasReviewed: true });
-        result.current.clearSettings();
+        result.current.resetSettings();
       });
 
       expect(result.current.anonymisedDataUse).toBe(false);

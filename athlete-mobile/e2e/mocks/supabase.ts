@@ -146,6 +146,15 @@ export async function mockSupabaseAuth(page: Page) {
     });
   });
 
+  // Mock delete-account edge function
+  await page.route(`**/functions/v1/delete-account`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ deleted: true }),
+    });
+  });
+
   // Mock Supabase REST API calls (sync tables + catch-all)
   await mockRestApi(page);
 

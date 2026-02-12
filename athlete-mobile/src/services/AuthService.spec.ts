@@ -5,15 +5,25 @@
 
 /* eslint-disable import/first */
 const mockSignInWithOtp = jest.fn();
+const mockGetSession = jest.fn();
+const mockFunctionsInvoke = jest.fn();
 jest.mock("./supabaseClient", () => ({
   supabase: {
     auth: {
       signInWithOtp: (...args: unknown[]) => mockSignInWithOtp(...args),
+      getSession: () => mockGetSession(),
+    },
+    functions: {
+      invoke: (...args: unknown[]) => mockFunctionsInvoke(...args),
     },
   },
 }));
 
-import { requestLoginOtp, requestRegistrationOtp } from "./AuthService";
+import {
+  deleteAccount,
+  requestLoginOtp,
+  requestRegistrationOtp,
+} from "./AuthService";
 
 describe("requestLoginOtp", () => {
   beforeEach(() => {
@@ -113,6 +123,72 @@ describe("requestRegistrationOtp", () => {
       requestRegistrationOtp("not-an-email", false),
     ).rejects.toMatchObject({
       code: "auth/invalid-email",
+    });
+  });
+});
+
+describe("deleteAccount", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("invokes delete-account edge function with session token", async () => {
+    mockGetSession.mockResolvedValue({
+      data: {
+        session: { access_token: "test-token", user: { id: "user-1" } },
+      },
+    });
+    mockFunctionsInvoke.mockResolvedValue({
+      data: { deleted: true },
+      error: null,
+    });
+
+    await deleteAccount();
+
+    expect(mockFunctionsInvoke).toHaveBeenCalledWith("delete-account", {
+      headers: { Authorization: "Bearer test-token" },
+    });
+  });
+
+  it("throws auth/user-not-found when no session exists", async () => {
+    mockGetSession.mockResolvedValue({ data: { session: null } });
+
+    await expect(deleteAccount()).rejects.toMatchObject({
+      code: "auth/user-not-found",
+    });
+
+    expect(mockFunctionsInvoke).not.toHaveBeenCalled();
+  });
+
+  it("throws when edge function returns an error", async () => {
+    mockGetSession.mockResolvedValue({
+      data: {
+        session: { access_token: "test-token", user: { id: "user-1" } },
+      },
+    });
+    mockFunctionsInvoke.mockResolvedValue({
+      data: null,
+      error: { message: "Internal error" },
+    });
+
+    await expect(deleteAccount()).rejects.toMatchObject({
+      code: "auth/unknown",
+    });
+  });
+
+  it("throws when edge function response has deleted: false", async () => {
+    mockGetSession.mockResolvedValue({
+      data: {
+        session: { access_token: "test-token", user: { id: "user-1" } },
+      },
+    });
+    mockFunctionsInvoke.mockResolvedValue({
+      data: { deleted: false },
+      error: null,
+    });
+
+    await expect(deleteAccount()).rejects.toMatchObject({
+      code: "auth/unknown",
     });
   });
 });

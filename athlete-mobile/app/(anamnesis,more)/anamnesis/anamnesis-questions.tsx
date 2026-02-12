@@ -32,7 +32,7 @@ export default function AnamnesisQuestions() {
   const { workoutData } = useUserWorkoutStore();
   const { personalData, anamnesisCompleted, setAnamnesisCompleted } =
     useUserProfileStore();
-  const { clearTrainingSchedule } = useTrainingScheduleStore();
+  const { resetTrainingSchedule } = useTrainingScheduleStore();
 
   const showSeasonPhaseAfterAnamnesis = useShowSeasonPhaseAfterAnamnesis();
 
@@ -118,11 +118,11 @@ export default function AnamnesisQuestions() {
     (tag: string, values: string[]) => {
       // Reset training days if level changed
       if (tag === TagGroups.LEVEL) {
-        clearTrainingSchedule();
+        resetTrainingSchedule();
       }
       setTag(tag, values);
     },
-    [setTag, clearTrainingSchedule],
+    [setTag, resetTrainingSchedule],
   );
 
   // Setup hardware back button handler

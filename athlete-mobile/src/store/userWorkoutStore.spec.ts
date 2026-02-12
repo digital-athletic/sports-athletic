@@ -6,7 +6,7 @@ describe("userWorkoutStore", () => {
   beforeEach(() => {
     const { result } = renderHook(() => useUserWorkoutStore());
     act(() => {
-      result.current.clearUserWorkoutData();
+      result.current.resetUserWorkoutData();
     });
   });
 
@@ -135,7 +135,7 @@ describe("userWorkoutStore", () => {
     });
   });
 
-  describe("clearUserWorkoutData", () => {
+  describe("resetUserWorkoutData", () => {
     it("resets to initial state", () => {
       const { result } = renderHook(() => useUserWorkoutStore());
 
@@ -145,7 +145,7 @@ describe("userWorkoutStore", () => {
           start: formatDateToISO(new Date()),
           sections: [],
         });
-        result.current.clearUserWorkoutData();
+        result.current.resetUserWorkoutData();
       });
 
       expect(result.current.workoutData.sport).toBe("OTHER_SPORT");

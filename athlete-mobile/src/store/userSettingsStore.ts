@@ -36,7 +36,7 @@ type Actions = {
   ) => void;
   setReviewStatus: (status: ReviewStatusType) => void;
   setAnonymisedDataUse: (enabled: boolean) => void;
-  clearSettings: () => void;
+  resetSettings: () => void;
 };
 
 export type UserSettingsState = State & Actions;
@@ -79,7 +79,7 @@ export const useUserSettingsStore = create<UserSettingsState>()(
         set((state) => {
           state.anonymisedDataUse = enabled;
         }),
-      clearSettings: () => {
+      resetSettings: () => {
         set((state) => {
           const initialState = createInitialState();
           state.reviewStatus = initialState.reviewStatus;

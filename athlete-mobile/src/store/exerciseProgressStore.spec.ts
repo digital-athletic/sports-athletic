@@ -154,7 +154,7 @@ describe("ExerciseTotals Types", () => {
 describe("updateUserExerciseTotals", () => {
   beforeEach(() => {
     act(() => {
-      useExerciseProgressStore.getState().clearProgress();
+      useExerciseProgressStore.getState().resetProgress();
     });
   });
 
@@ -260,7 +260,7 @@ describe("exerciseProgressStore", () => {
   beforeEach(() => {
     const { result } = renderHook(() => useExerciseProgressStore());
     act(() => {
-      result.current.clearProgress();
+      result.current.resetProgress();
     });
     jest.clearAllMocks();
   });

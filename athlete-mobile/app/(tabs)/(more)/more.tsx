@@ -35,7 +35,7 @@ export default function MoreScreen() {
   const listItemMarginBottom = useResponsiveProp({ phone: 6, tablet: 16 });
 
   const { logout, isLoading: isLoggingOut } = useLogout();
-  const { deleteAccount } = useDeleteAccount();
+  const { deleteAccount, isLoading: isDeleting } = useDeleteAccount();
 
   const subscription = useSubscriptionStore((state) => state.subscription);
 
@@ -284,7 +284,7 @@ export default function MoreScreen() {
           </TouchableOpacity>
         </Box>
 
-        {isLoggingOut && (
+        {(isLoggingOut || isDeleting) && (
           <Box
             position="absolute"
             top={0}
@@ -297,7 +297,7 @@ export default function MoreScreen() {
             alignItems="center"
           >
             <Text variant="title" color="white">
-              {t("more.loggingOut")}
+              {isDeleting ? t("more.deletingAccount") : t("more.loggingOut")}
             </Text>
           </Box>
         )}

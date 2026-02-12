@@ -65,7 +65,7 @@ type Actions = {
   toggleDay: (weekday: number) => void;
   setDayPlace: (weekday: number, placeId: PlaceType) => void;
   setDayDuration: (weekday: number, durationMinutes: number) => void;
-  clearTrainingSchedule: () => void;
+  resetTrainingSchedule: () => void;
 };
 
 type Selectors = {
@@ -129,7 +129,7 @@ export const useTrainingScheduleStore = create<TrainingScheduleState>()(
           }
         }),
 
-      clearTrainingSchedule: () =>
+      resetTrainingSchedule: () =>
         set((state) => {
           const initialState = createInitialState();
           state.trainingDays = initialState.trainingDays;

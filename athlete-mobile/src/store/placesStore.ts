@@ -47,7 +47,7 @@ type Actions = {
   setPlaceEquipment: (placeId: PlaceType, equipment: string[]) => void;
   toggleEquipment: (placeId: PlaceType, equipmentId: string) => void;
   getPlaceEquipment: (placeId: PlaceType) => string[];
-  clearPlaces: () => void;
+  resetPlaces: () => void;
 };
 
 export type PlacesStoreState = State & Actions;
@@ -96,7 +96,7 @@ export const usePlacesStore = create<PlacesStoreState>()(
         }),
 
       getPlaceEquipment: (placeId) => get().places[placeId].equipment,
-      clearPlaces: () =>
+      resetPlaces: () =>
         set((state) => {
           const initialState = createInitialState();
           state.places = initialState.places;

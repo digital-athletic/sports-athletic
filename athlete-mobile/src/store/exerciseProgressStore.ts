@@ -68,7 +68,7 @@ type Actions = {
   addXP: (amount: number) => void;
   setLevel: (level: number) => void;
   addTestResult: (result: MaxValuesType) => void;
-  clearProgress: () => void;
+  resetProgress: () => void;
 };
 
 type Selectors = {
@@ -278,7 +278,7 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
         syncManager.notifyTestResultAdded(result);
       },
 
-      clearProgress: () =>
+      resetProgress: () =>
         set((state) => {
           const initialState = createInitialState();
           state.exerciseData = initialState.exerciseData;

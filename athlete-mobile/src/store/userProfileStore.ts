@@ -44,7 +44,7 @@ type Actions = {
   setPersonalData: (data: Partial<UserPersonalDataType>) => void;
   setAnamnesisCompleted: (completed: boolean) => void;
   setTeamId: (teamId: string | null) => void;
-  clearProfile: () => void;
+  resetProfile: () => void;
   setHasHydrated: (hydrated: boolean) => void;
 };
 
@@ -121,7 +121,7 @@ export const useUserProfileStore = create<UserProfileState>()(
           state.teamId = teamId;
         }),
 
-      clearProfile: () =>
+      resetProfile: () =>
         set((state) => {
           const initialState = createInitialState();
           state.personalData = initialState.personalData;

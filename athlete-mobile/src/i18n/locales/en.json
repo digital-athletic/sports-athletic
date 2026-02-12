@@ -542,6 +542,7 @@
     "deleteFailed": "Deletion failed",
     "logoutFailed": "Logout failed",
     "loggingOut": "Logging out...",
+    "deletingAccount": "Deleting account...",
     "loadingTutorials": "Loading tutorials...",
     "tutorialVideoAlt": "{{title}} technical video",
     "imageAlt": {

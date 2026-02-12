@@ -542,6 +542,7 @@
     "deleteFailed": "Löschen fehlgeschlagen",
     "logoutFailed": "Abmelden fehlgeschlagen",
     "loggingOut": "Melde ab...",
+    "deletingAccount": "Konto wird gelöscht...",
     "loadingTutorials": "Lade Technikvideos...",
     "tutorialVideoAlt": "{{title}} Technikvideo",
     "imageAlt": {

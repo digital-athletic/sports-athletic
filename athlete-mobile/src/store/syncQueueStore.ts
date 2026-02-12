@@ -45,7 +45,7 @@ type Actions = {
   markCompleted: (id: string) => void;
   markFailed: (id: string, error: string) => void;
   resetStaleItems: () => void;
-  clearAll: () => void;
+  clearSyncQueue: () => void;
 };
 
 type Selectors = {
@@ -122,7 +122,7 @@ export const useSyncQueueStore = create<SyncQueueState>()(
           }
         }),
 
-      clearAll: () =>
+      clearSyncQueue: () =>
         set((state) => {
           state.queue = [];
         }),

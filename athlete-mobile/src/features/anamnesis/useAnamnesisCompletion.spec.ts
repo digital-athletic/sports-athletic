@@ -11,9 +11,9 @@ describe("useAnamnesisCompletion", () => {
     const { result: workoutResult } = renderHook(() => useUserWorkoutStore());
 
     act(() => {
-      anamnesisResult.current.clearAnamnesisData();
-      profileResult.current.clearProfile();
-      workoutResult.current.clearUserWorkoutData();
+      anamnesisResult.current.resetAnamnesisData();
+      profileResult.current.resetProfile();
+      workoutResult.current.resetUserWorkoutData();
     });
   });
 

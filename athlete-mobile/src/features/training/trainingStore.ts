@@ -62,7 +62,7 @@ type Actions = {
   setTrainingEndTime: (time: number) => void;
   addPauseTime: (pauseTime: number) => void;
   addSkillTime: (focusArea: FocusArea, skillTime: number) => void;
-  resetTraining: () => void;
+  clearTraining: () => void;
 };
 
 export type TrainingState = State & Actions;
@@ -151,7 +151,7 @@ export const useTrainingStore = create<TrainingState>()(
       set((state) => {
         state.time.skill[focusArea] += skillTime;
       }),
-    resetTraining: () =>
+    clearTraining: () =>
       set((state) => {
         const initialState = createInitialState();
         state.exerciseList = initialState.exerciseList;

@@ -5,7 +5,7 @@ describe("placesStore", () => {
   beforeEach(() => {
     const { result } = renderHook(() => usePlacesStore());
     act(() => {
-      result.current.clearPlaces();
+      result.current.resetPlaces();
     });
   });
 

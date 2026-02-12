@@ -5,7 +5,7 @@ describe("userProfileStore", () => {
   beforeEach(() => {
     const { result } = renderHook(() => useUserProfileStore());
     act(() => {
-      result.current.clearProfile();
+      result.current.resetProfile();
       result.current.setHasHydrated(false);
     });
   });
@@ -99,14 +99,14 @@ describe("userProfileStore", () => {
     });
   });
 
-  describe("clearProfile", () => {
+  describe("resetProfile", () => {
     it("resets height and weight to undefined", () => {
       const { result } = renderHook(() => useUserProfileStore());
 
       act(() => {
         result.current.setHeight(180);
         result.current.setWeight(80);
-        result.current.clearProfile();
+        result.current.resetProfile();
       });
 
       expect(result.current.personalData.height).toBeUndefined();
@@ -148,15 +148,15 @@ describe("userProfileStore", () => {
       expect(result.current._hasHydrated).toBe(true);
     });
 
-    it("clearProfile does not reset _hasHydrated", () => {
+    it("resetProfile does not reset _hasHydrated", () => {
       const { result } = renderHook(() => useUserProfileStore());
 
       act(() => {
         result.current.setHasHydrated(true);
-        result.current.clearProfile();
+        result.current.resetProfile();
       });
 
-      // _hasHydrated should remain true after clearProfile
+      // _hasHydrated should remain true after resetProfile
       // since it tracks storage hydration, not user data
       expect(result.current._hasHydrated).toBe(true);
     });

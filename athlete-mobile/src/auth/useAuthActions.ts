@@ -1,9 +1,16 @@
-import { logout as supabaseLogout } from "@/services/AuthService";
+import {
+  deleteAccount as supabaseDeleteAccount,
+  logout as supabaseLogout,
+} from "@/services/AuthService";
+import { useSubscriptionStore } from "@/features/subscription/subscriptionStore";
+import { useSynchronizationStore } from "@/features/training/synchronizationStore";
+import { useTrainingStore } from "@/features/training/trainingStore";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useAuthStore } from "@/store/authStore";
 import { useCompletedWorkoutsStore } from "@/store/completedWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { usePlacesStore } from "@/store/placesStore";
+import { useSyncQueueStore } from "@/store/syncQueueStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserSettingsStore } from "@/store/userSettingsStore";
@@ -63,36 +70,47 @@ export function useLogout() {
  */
 export function useDeleteAccount() {
   const { t } = useTranslation();
+  const [isLoading, setIsLoading] = useState(false);
   const clearAuth = useAuthStore((state) => state.clearAuth);
-  const { clearProgress } = useExerciseProgressStore();
-  const { clearAnamnesisData } = useAnamnesisStore();
-  const { clearProfile } = useUserProfileStore();
-  const { clearUserWorkoutData } = useUserWorkoutStore();
+  const { resetProgress } = useExerciseProgressStore();
+  const { resetAnamnesisData } = useAnamnesisStore();
+  const { resetProfile } = useUserProfileStore();
+  const { resetUserWorkoutData } = useUserWorkoutStore();
   const { clearWorkoutHistory } = useCompletedWorkoutsStore();
-  const { clearTrainingSchedule } = useTrainingScheduleStore();
-  const { clearPlaces } = usePlacesStore();
-  const { clearSettings } = useUserSettingsStore();
+  const { resetTrainingSchedule } = useTrainingScheduleStore();
+  const { resetPlaces } = usePlacesStore();
+  const { resetSettings } = useUserSettingsStore();
+  const { clearSyncQueue } = useSyncQueueStore();
+  const { resetSubscription } = useSubscriptionStore();
+  const { clearTraining } = useTrainingStore();
+  const { resetSynchronization } = useSynchronizationStore();
 
   const deleteAccount = async () => {
+    setIsLoading(true);
     try {
-      // TODO: Delete user from Supabase
-      // See: https://github.com/sports-athletics/sports-athletic/issues/219
+      await supabaseDeleteAccount();
       await supabaseLogout();
 
-      // Clear all user data stores
+      // Clear stores with no default state, reset stores to their defaults
       clearAuth();
-      clearUserWorkoutData();
-      clearProgress();
-      clearAnamnesisData();
-      clearProfile();
+      resetUserWorkoutData();
+      resetProgress();
+      resetAnamnesisData();
+      resetProfile();
       clearWorkoutHistory();
-      clearTrainingSchedule();
-      clearPlaces();
-      clearSettings();
+      resetTrainingSchedule();
+      resetPlaces();
+      resetSettings();
+      clearSyncQueue();
+      resetSubscription();
+      clearTraining();
+      resetSynchronization();
       // Stack.Protected in _layout.tsx automatically redirects to onboarding
       // when user becomes null
     } catch {
       Alert.alert(t("onboarding.alertErrorTitle"), t("more.deleteFailed"));
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -112,5 +130,5 @@ export function useDeleteAccount() {
     );
   };
 
-  return { deleteAccount: confirmDelete };
+  return { deleteAccount: confirmDelete, isLoading };
 }

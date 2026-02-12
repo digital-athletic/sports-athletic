@@ -9,7 +9,7 @@ describe("syncQueueStore", () => {
   beforeEach(() => {
     const { result } = renderHook(() => useSyncQueueStore());
     act(() => {
-      result.current.clearAll();
+      result.current.clearSyncQueue();
     });
   });
 
@@ -302,7 +302,7 @@ describe("syncQueueStore", () => {
     });
   });
 
-  describe("clearAll", () => {
+  describe("clearSyncQueue", () => {
     it("empties the queue", () => {
       const { result } = renderHook(() => useSyncQueueStore());
 
@@ -322,7 +322,7 @@ describe("syncQueueStore", () => {
       expect(result.current.queue).toHaveLength(2);
 
       act(() => {
-        result.current.clearAll();
+        result.current.clearSyncQueue();
       });
 
       expect(result.current.queue).toHaveLength(0);

@@ -36,7 +36,7 @@ type Actions = {
   /** Set tags for a group. Tag param should be a TagGroups value (e.g., "LEVEL", "POSITION") */
   setTag: (tag: string, values: string[]) => void;
   setSeasonPhase: (phase: SeasonPhaseType | null) => void;
-  clearAnamnesisData: () => void;
+  resetAnamnesisData: () => void;
   setCompleted: () => Promise<void>;
   saveData: () => Promise<void>;
   setIsSkipped: (skipped: boolean) => void;
@@ -87,7 +87,7 @@ export const useAnamnesisStore = create<AnamnesisState>()(
         });
       },
 
-      clearAnamnesisData: () => {
+      resetAnamnesisData: () => {
         set((state) => {
           const initialState = createInitialState();
           state.values = initialState.values;

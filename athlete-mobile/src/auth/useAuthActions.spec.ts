@@ -10,7 +10,9 @@ jest.mock("react-i18next", () => ({
 
 // Mock AuthService
 const mockSupabaseLogout = jest.fn();
+const mockSupabaseDeleteAccount = jest.fn();
 jest.mock("@/services/AuthService", () => ({
+  deleteAccount: () => mockSupabaseDeleteAccount(),
   logout: () => mockSupabaseLogout(),
 }));
 
@@ -29,31 +31,31 @@ jest.mock("@/store/authStore", () => ({
     selector({ clearAuth: mockClearAuth }),
 }));
 
-const mockClearProgress = jest.fn();
+const mockResetProgress = jest.fn();
 jest.mock("@/store/exerciseProgressStore", () => ({
   useExerciseProgressStore: () => ({
-    clearProgress: mockClearProgress,
+    resetProgress: mockResetProgress,
   }),
 }));
 
-const mockClearAnamnesisData = jest.fn();
+const mockResetAnamnesisData = jest.fn();
 jest.mock("@/store/anamnesisStore", () => ({
   useAnamnesisStore: () => ({
-    clearAnamnesisData: mockClearAnamnesisData,
+    resetAnamnesisData: mockResetAnamnesisData,
   }),
 }));
 
-const mockClearProfile = jest.fn();
+const mockResetProfile = jest.fn();
 jest.mock("@/store/userProfileStore", () => ({
   useUserProfileStore: () => ({
-    clearProfile: mockClearProfile,
+    resetProfile: mockResetProfile,
   }),
 }));
 
-const mockClearUserWorkoutData = jest.fn();
+const mockResetUserWorkoutData = jest.fn();
 jest.mock("@/store/userWorkoutStore", () => ({
   useUserWorkoutStore: () => ({
-    clearUserWorkoutData: mockClearUserWorkoutData,
+    resetUserWorkoutData: mockResetUserWorkoutData,
   }),
 }));
 
@@ -64,24 +66,52 @@ jest.mock("@/store/completedWorkoutsStore", () => ({
   }),
 }));
 
-const mockClearTrainingSchedule = jest.fn();
+const mockResetTrainingSchedule = jest.fn();
 jest.mock("@/store/trainingScheduleStore", () => ({
   useTrainingScheduleStore: () => ({
-    clearTrainingSchedule: mockClearTrainingSchedule,
+    resetTrainingSchedule: mockResetTrainingSchedule,
   }),
 }));
 
-const mockClearPlaces = jest.fn();
+const mockResetPlaces = jest.fn();
 jest.mock("@/store/placesStore", () => ({
   usePlacesStore: () => ({
-    clearPlaces: mockClearPlaces,
+    resetPlaces: mockResetPlaces,
   }),
 }));
 
-const mockClearSettings = jest.fn();
+const mockResetSettings = jest.fn();
 jest.mock("@/store/userSettingsStore", () => ({
   useUserSettingsStore: () => ({
-    clearSettings: mockClearSettings,
+    resetSettings: mockResetSettings,
+  }),
+}));
+
+const mockClearSyncQueue = jest.fn();
+jest.mock("@/store/syncQueueStore", () => ({
+  useSyncQueueStore: () => ({
+    clearSyncQueue: mockClearSyncQueue,
+  }),
+}));
+
+const mockResetSubscription = jest.fn();
+jest.mock("@/features/subscription/subscriptionStore", () => ({
+  useSubscriptionStore: () => ({
+    resetSubscription: mockResetSubscription,
+  }),
+}));
+
+const mockClearTraining = jest.fn();
+jest.mock("@/features/training/trainingStore", () => ({
+  useTrainingStore: () => ({
+    clearTraining: mockClearTraining,
+  }),
+}));
+
+const mockResetSynchronization = jest.fn();
+jest.mock("@/features/training/synchronizationStore", () => ({
+  useSynchronizationStore: () => ({
+    resetSynchronization: mockResetSynchronization,
   }),
 }));
 
@@ -188,6 +218,7 @@ describe("useLogout", () => {
 describe("useDeleteAccount", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockSupabaseDeleteAccount.mockResolvedValue(undefined);
     mockSupabaseLogout.mockResolvedValue(undefined);
   });
 
@@ -208,7 +239,7 @@ describe("useDeleteAccount", () => {
     );
   });
 
-  it("should call supabase logout when delete is confirmed", async () => {
+  it("should call deleteAccount and logout when confirmed", async () => {
     const { result } = renderHook(() => useDeleteAccount());
 
     await act(async () => {
@@ -223,8 +254,10 @@ describe("useDeleteAccount", () => {
     });
 
     await waitFor(() => {
-      expect(mockSupabaseLogout).toHaveBeenCalled();
+      expect(mockSupabaseDeleteAccount).toHaveBeenCalled();
     });
+
+    expect(mockSupabaseLogout).toHaveBeenCalled();
   });
 
   it("should clear all stores when delete is confirmed", async () => {
@@ -245,19 +278,22 @@ describe("useDeleteAccount", () => {
       expect(mockClearAuth).toHaveBeenCalled();
     });
 
-    expect(mockClearUserWorkoutData).toHaveBeenCalled();
-    expect(mockClearProgress).toHaveBeenCalled();
-    expect(mockClearAnamnesisData).toHaveBeenCalled();
-    expect(mockClearProfile).toHaveBeenCalled();
+    expect(mockResetUserWorkoutData).toHaveBeenCalled();
+    expect(mockResetProgress).toHaveBeenCalled();
+    expect(mockResetAnamnesisData).toHaveBeenCalled();
+    expect(mockResetProfile).toHaveBeenCalled();
     expect(mockClearWorkoutHistory).toHaveBeenCalled();
-    expect(mockClearTrainingSchedule).toHaveBeenCalled();
-    expect(mockClearPlaces).toHaveBeenCalled();
-    expect(mockClearSettings).toHaveBeenCalled();
-    // Navigation is handled automatically by Stack.Protected in _layout.tsx
+    expect(mockResetTrainingSchedule).toHaveBeenCalled();
+    expect(mockResetPlaces).toHaveBeenCalled();
+    expect(mockResetSettings).toHaveBeenCalled();
+    expect(mockClearSyncQueue).toHaveBeenCalled();
+    expect(mockResetSubscription).toHaveBeenCalled();
+    expect(mockClearTraining).toHaveBeenCalled();
+    expect(mockResetSynchronization).toHaveBeenCalled();
   });
 
-  it("should show error alert if supabase logout fails", async () => {
-    mockSupabaseLogout.mockRejectedValue(new Error("Supabase error"));
+  it("should show error alert if deleteAccount fails", async () => {
+    mockSupabaseDeleteAccount.mockRejectedValue(new Error("Delete failed"));
 
     const { result } = renderHook(() => useDeleteAccount());
 
@@ -282,8 +318,8 @@ describe("useDeleteAccount", () => {
     );
   });
 
-  it("should not clear stores if supabase logout fails", async () => {
-    mockSupabaseLogout.mockRejectedValue(new Error("Supabase error"));
+  it("should not logout or clear stores if deleteAccount fails", async () => {
+    mockSupabaseDeleteAccount.mockRejectedValue(new Error("Delete failed"));
 
     const { result } = renderHook(() => useDeleteAccount());
 
@@ -299,11 +335,35 @@ describe("useDeleteAccount", () => {
     });
 
     await waitFor(() => {
-      expect(mockSupabaseLogout).toHaveBeenCalled();
+      expect(mockSupabaseDeleteAccount).toHaveBeenCalled();
     });
 
-    // Stores should NOT be cleared on error
+    expect(mockSupabaseLogout).not.toHaveBeenCalled();
     expect(mockClearAuth).not.toHaveBeenCalled();
-    expect(mockClearUserWorkoutData).not.toHaveBeenCalled();
+    expect(mockResetUserWorkoutData).not.toHaveBeenCalled();
+  });
+
+  it("should not clear stores if logout fails after deleteAccount succeeds", async () => {
+    mockSupabaseLogout.mockRejectedValue(new Error("Logout error"));
+
+    const { result } = renderHook(() => useDeleteAccount());
+
+    await act(async () => {
+      result.current.deleteAccount();
+    });
+
+    const yesButton = mockAlert.mock.calls[0][2].find(
+      (btn: { text: string }) => btn.text === "common.yes",
+    );
+    await act(async () => {
+      await yesButton.onPress();
+    });
+
+    await waitFor(() => {
+      expect(mockSupabaseDeleteAccount).toHaveBeenCalled();
+    });
+
+    expect(mockClearAuth).not.toHaveBeenCalled();
+    expect(mockResetUserWorkoutData).not.toHaveBeenCalled();
   });
 });

@@ -33,7 +33,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const TrainingSuccessScreen: FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { exerciseList, time, activeTraining, resetTraining } =
+  const { exerciseList, time, activeTraining, clearTraining } =
     useTrainingStore();
   const exercises = getAllExercises();
   const { workoutData } = useUserWorkoutStore();
@@ -99,7 +99,7 @@ const TrainingSuccessScreen: FC = () => {
   ]);
 
   const handleGoOn = () => {
-    resetTraining();
+    clearTraining();
     router.replace("/(tabs)/(home)");
   };
 

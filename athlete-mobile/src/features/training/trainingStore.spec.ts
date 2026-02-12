@@ -768,7 +768,7 @@ describe("useTrainingStore", () => {
   // Reset Tests
   // ============================================================================
 
-  describe("resetTraining", () => {
+  describe("clearTraining", () => {
     it("should reset all training state to defaults", () => {
       const { result } = renderHook(() => useTrainingStore());
 
@@ -803,7 +803,7 @@ describe("useTrainingStore", () => {
 
       // Reset
       act(() => {
-        result.current.resetTraining();
+        result.current.clearTraining();
       });
 
       // Verify reset
@@ -824,7 +824,7 @@ describe("useTrainingStore", () => {
       act(() => {
         result.current.setTrainingSelection("QUICK");
         result.current.setTrainingStartTime(1000);
-        result.current.resetTraining();
+        result.current.clearTraining();
       });
 
       expect(result.current.selection).toBe("QUICK");
@@ -852,7 +852,7 @@ describe("useTrainingStore", () => {
       expect(result.current.time.skill.CARDIO).toBe(15000);
 
       act(() => {
-        result.current.resetTraining();
+        result.current.clearTraining();
       });
 
       // Verify all skills reset to zero
@@ -883,7 +883,7 @@ describe("useTrainingStore", () => {
       expect(result.current.activeTraining).not.toBeNull();
 
       act(() => {
-        result.current.resetTraining();
+        result.current.clearTraining();
       });
 
       expect(result.current.exerciseList).toBeNull();
@@ -966,7 +966,7 @@ describe("useTrainingStore", () => {
 
       // Reset for next session
       act(() => {
-        result.current.resetTraining();
+        result.current.clearTraining();
       });
 
       expect(result.current.time.start).toBeUndefined();

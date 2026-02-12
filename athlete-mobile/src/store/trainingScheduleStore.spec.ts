@@ -5,7 +5,7 @@ describe("trainingScheduleStore", () => {
   beforeEach(() => {
     const { result } = renderHook(() => useTrainingScheduleStore());
     act(() => {
-      result.current.clearTrainingSchedule();
+      result.current.resetTrainingSchedule();
     });
   });
 

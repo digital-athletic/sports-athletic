@@ -34,7 +34,7 @@ export default function UserProfileScreen() {
     setBirthday,
     anamnesisCompleted,
   } = useUserProfileStore();
-  const { clearTrainingSchedule } = useTrainingScheduleStore();
+  const { resetTrainingSchedule } = useTrainingScheduleStore();
 
   const showSeasonPhaseAfterAnamnesis = useShowSeasonPhaseAfterAnamnesis();
 
@@ -99,7 +99,7 @@ export default function UserProfileScreen() {
   const handleBirthdayChange = async (value: string) => {
     setBirthday(value);
     // Reset training days if age changed
-    clearTrainingSchedule();
+    resetTrainingSchedule();
   };
 
   // Calculate max steps for progress bar

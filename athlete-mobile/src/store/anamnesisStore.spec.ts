@@ -9,7 +9,7 @@ describe("anamnesisStore", () => {
     // Reset store state before each test
     const { result } = renderHook(() => useAnamnesisStore());
     act(() => {
-      result.current.clearAnamnesisData();
+      result.current.resetAnamnesisData();
     });
   });
 
@@ -99,14 +99,14 @@ describe("anamnesisStore", () => {
     });
   });
 
-  describe("clearAnamnesisData", () => {
+  describe("resetAnamnesisData", () => {
     it("should reset all state", () => {
       const { result } = renderHook(() => useAnamnesisStore());
 
       act(() => {
         result.current.setValue("user.height", 180);
         result.current.setTag("injury", ["knee"]);
-        result.current.clearAnamnesisData();
+        result.current.resetAnamnesisData();
       });
 
       expect(result.current.values).toEqual(DEFAULT_STATE.values);

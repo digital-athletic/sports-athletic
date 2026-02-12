@@ -98,6 +98,38 @@ export const requestRegistrationOtp = async (
 };
 
 /**
+ * Delete the current user's account via the delete-account edge function.
+ * All user data is cascade-deleted on the database level.
+ */
+export const deleteAccount = async (): Promise<void> => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    throw mapSupabaseError({
+      message: "User not found",
+      code: "user_not_found",
+    });
+  }
+
+  const { data, error: invokeError } = await supabase.functions.invoke(
+    "delete-account",
+    {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    },
+  );
+
+  if (invokeError) {
+    throw mapSupabaseError(invokeError);
+  }
+
+  if (!data?.deleted) {
+    throw mapSupabaseError({ message: "Failed to delete account" });
+  }
+};
+
+/**
  * Sign out the current user
  */
 export const logout = async (): Promise<void> => {

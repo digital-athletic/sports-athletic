@@ -40,7 +40,7 @@ beforeEach(() => {
   jest.useFakeTimers();
   mockProcessQueue.mockResolvedValue(undefined);
   SyncManager.resetForTesting();
-  useSyncQueueStore.getState().clearAll();
+  useSyncQueueStore.getState().clearSyncQueue();
   useAuthStore.getState().setAuth({ userId: "user-1", token: "tok" });
 });
 

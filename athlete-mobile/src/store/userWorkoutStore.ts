@@ -57,7 +57,7 @@ type Actions = {
   setTags: (tags: TagsByGroup) => void;
   setTrainingPlan: (plan: TrainingPlanType | null) => void;
   setTemporalData: (data: TemporalDataType[]) => void;
-  clearUserWorkoutData: () => void;
+  resetUserWorkoutData: () => void;
   replaceBranchInTrainingPlan: (
     sectionIndex: number,
     weekday: number,
@@ -132,7 +132,7 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
           state.temporalData = data;
         }),
 
-      clearUserWorkoutData: () =>
+      resetUserWorkoutData: () =>
         set((state) => {
           const initialState = createInitialState();
           state.workoutData = initialState.workoutData;

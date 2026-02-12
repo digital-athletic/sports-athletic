@@ -3,10 +3,15 @@ import type { UserType } from "@/schemas/user.schema";
 import { DEFAULT_MAX_VALUES } from "../models/MaxValues";
 import { applyMaxValueToDirections, getUserLevel } from "./workoutUtils";
 
-// Mock the date utility to return a consistent date for testing (ISO 8601 format)
-jest.mock("@/utils/date", () => ({
-  formatDateToISO: () => "2026-01-08",
-}));
+const MOCK_TIMESTAMP = 1736294400000; // 2026-01-08T00:00:00.000Z
+
+beforeEach(() => {
+  jest.spyOn(Date, "now").mockReturnValue(MOCK_TIMESTAMP);
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe("getUserLevel", () => {
   it("returns BEGINNER when user is null", () => {
@@ -132,7 +137,7 @@ describe("applyMaxValueToDirections", () => {
     );
 
     expect(result.horizontalPush).toEqual(newCalculatedResult);
-    expect(result.testDate).toBe("2026-01-08");
+    expect(result.testDate).toBe(MOCK_TIMESTAMP);
     // Other directions should remain unchanged (still default/empty)
     expect(result.verticalPush).toEqual(DEFAULT_MAX_VALUES.verticalPush);
     expect(result.horizontalPull).toEqual(DEFAULT_MAX_VALUES.horizontalPull);
@@ -151,7 +156,7 @@ describe("applyMaxValueToDirections", () => {
     // Both directions get the same new result
     expect(result.verticalPush).toEqual(newCalculatedResult);
     expect(result.verticalPull).toEqual(newCalculatedResult);
-    expect(result.testDate).toBe("2026-01-08");
+    expect(result.testDate).toBe(MOCK_TIMESTAMP);
     // Unrelated directions remain unchanged
     expect(result.horizontalPush).toEqual(DEFAULT_MAX_VALUES.horizontalPush);
   });

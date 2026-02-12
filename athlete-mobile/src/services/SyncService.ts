@@ -173,7 +173,7 @@ export async function syncStrengthTest(
 ): Promise<void> {
   const row = {
     user_id: userId,
-    test_date: payload.testDate,
+    test_at: payload.testDate,
     vertical_push: payload.verticalPush,
     vertical_pull: payload.verticalPull,
     horizontal_push: payload.horizontalPush,
@@ -185,7 +185,7 @@ export async function syncStrengthTest(
 
   const { error } = await supabase
     .from("strength_tests")
-    .upsert(row, { onConflict: "user_id,test_date" });
+    .upsert(row, { onConflict: "user_id,test_at" });
 
   if (error) {
     throw new Error(`Failed to sync strength test: ${error.message}`);

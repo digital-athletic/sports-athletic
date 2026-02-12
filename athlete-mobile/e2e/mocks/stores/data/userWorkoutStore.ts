@@ -72,7 +72,7 @@ export interface UserWorkoutStoreOptions {
 }
 
 const EMPTY_MAX_VALUES = {
-  testDate: "1990-01-01",
+  testDate: 0,
   verticalPush: {},
   verticalPull: {},
   horizontalPush: {},

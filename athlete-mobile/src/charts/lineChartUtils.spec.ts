@@ -65,7 +65,7 @@ describe("lineChartUtils", () => {
       ]);
     });
 
-    it("handles duplicate dates with inline labels (suffix omitted from display)", () => {
+    it("handles duplicate dates with inline labels (suffix stripped)", () => {
       const chartData: PowerTestChartData = {
         dates: ["2024-07-06", "2024-07-06-1"],
         knee: [80, 85],

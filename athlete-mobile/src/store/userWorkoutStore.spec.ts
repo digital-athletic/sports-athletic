@@ -100,7 +100,7 @@ describe("userWorkoutStore", () => {
     it("updates maxValues in workoutData", () => {
       const { result } = renderHook(() => useUserWorkoutStore());
       const newMaxValues = {
-        testDate: "2025-01-15",
+        testDate: new Date("2025-01-15").getTime(),
         verticalPush: { barbell: 100 },
         verticalPull: {},
         horizontalPush: {},

@@ -4,7 +4,7 @@
 /videos
 /images
 /exercise_videos
-/exercise_images
+/exercise_pictures
 
 # dotenvx
 .env.keys

@@ -50,8 +50,8 @@ export type MaxValueType = v.InferOutput<typeof MaxValueSchema>;
 
 // MaxValues schema - single source of truth for all max values by direction
 export const MaxValuesSchema = v.object({
-  /** Test date in ISO 8601 format (YYYY-MM-DD) */
-  testDate: v.string(),
+  /** Test date as Unix timestamp in milliseconds (Date.now()) */
+  testDate: v.number(),
   verticalPush: MaxValueSchema,
   verticalPull: MaxValueSchema,
   horizontalPush: MaxValueSchema,

@@ -127,7 +127,7 @@ objects_path = "./exercise_videos"
 public = false
 file_size_limit = "5MiB"
 allowed_mime_types = ["image/png", "image/jpeg"]
-objects_path = "./exercise_images"
+objects_path = "./exercise_pictures"
 
 [storage.buckets.tutorial_videos]
 public = false

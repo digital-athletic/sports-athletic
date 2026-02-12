@@ -13,7 +13,7 @@ import { createExerciseProgressStore } from "../data/exerciseProgressStore";
  * Creates a strength test result with specific values for each exercise.
  */
 function createTestResult(
-  testDate: string,
+  testDate: number,
   values: {
     knee: number;
     benchPress: number;
@@ -71,7 +71,7 @@ function createTestResult(
 /**
  * Creates a profile with multiple power test results for LineChart visualization.
  *
- * Test results with progression over time:
+ * Test results with progression over time (timestamps in ms):
  * - 2024-07-01: knee=60, benchPress=40, rowing=35, shoulderPress=25
  * - 2024-09-15: knee=80, benchPress=55, rowing=50, shoulderPress=35
  * - 2024-11-20: knee=100, benchPress=70, rowing=60, shoulderPress=45
@@ -85,25 +85,25 @@ export function createPowerTestChartProfile(): StoreDataMap {
 
   const testHistory = [
     // Most recent first (store keeps them in descending date order)
-    createTestResult("2025-01-15", {
+    createTestResult(new Date("2025-01-15").getTime(), {
       knee: 115,
       benchPress: 75,
       rowing: 65,
       shoulderPress: 50,
     }),
-    createTestResult("2024-11-20", {
+    createTestResult(new Date("2024-11-20").getTime(), {
       knee: 100,
       benchPress: 70,
       rowing: 60,
       shoulderPress: 45,
     }),
-    createTestResult("2024-09-15", {
+    createTestResult(new Date("2024-09-15").getTime(), {
       knee: 80,
       benchPress: 55,
       rowing: 50,
       shoulderPress: 35,
     }),
-    createTestResult("2024-07-01", {
+    createTestResult(new Date("2024-07-01").getTime(), {
       knee: 60,
       benchPress: 40,
       rowing: 35,
@@ -131,7 +131,7 @@ export function createSinglePowerTestProfile(): StoreDataMap {
   const baseProfile = createCompletedProfile();
 
   const testHistory = [
-    createTestResult("2025-01-15", {
+    createTestResult(new Date("2025-01-15").getTime(), {
       knee: 80,
       benchPress: 60,
       rowing: 50,
@@ -172,55 +172,55 @@ export function createManyPowerTestsProfile(): StoreDataMap {
 
   const testHistory = [
     // Most recent first (store keeps them in descending date order)
-    createTestResult("2025-01-25", {
+    createTestResult(new Date("2025-01-25").getTime(), {
       knee: 140,
       benchPress: 100,
       rowing: 85,
       shoulderPress: 65,
     }),
-    createTestResult("2024-10-12", {
+    createTestResult(new Date("2024-10-12").getTime(), {
       knee: 130,
       benchPress: 95,
       rowing: 80,
       shoulderPress: 60,
     }),
-    createTestResult("2024-06-30", {
+    createTestResult(new Date("2024-06-30").getTime(), {
       knee: 120,
       benchPress: 88,
       rowing: 75,
       shoulderPress: 55,
     }),
-    createTestResult("2024-03-22", {
+    createTestResult(new Date("2024-03-22").getTime(), {
       knee: 112,
       benchPress: 82,
       rowing: 70,
       shoulderPress: 52,
     }),
-    createTestResult("2023-12-18", {
+    createTestResult(new Date("2023-12-18").getTime(), {
       knee: 105,
       benchPress: 76,
       rowing: 65,
       shoulderPress: 48,
     }),
-    createTestResult("2023-10-05", {
+    createTestResult(new Date("2023-10-05").getTime(), {
       knee: 95,
       benchPress: 70,
       rowing: 60,
       shoulderPress: 44,
     }),
-    createTestResult("2023-07-20", {
+    createTestResult(new Date("2023-07-20").getTime(), {
       knee: 85,
       benchPress: 62,
       rowing: 55,
       shoulderPress: 40,
     }),
-    createTestResult("2023-05-15", {
+    createTestResult(new Date("2023-05-15").getTime(), {
       knee: 72,
       benchPress: 52,
       rowing: 48,
       shoulderPress: 35,
     }),
-    createTestResult("2023-03-10", {
+    createTestResult(new Date("2023-03-10").getTime(), {
       knee: 60,
       benchPress: 45,
       rowing: 40,

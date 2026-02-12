@@ -26,8 +26,8 @@ export function daysFromNow(days: number): Date {
 /** Training plan start: 7 days ago so the 3-week plan is always mid-cycle. */
 export const PLAN_START_DATE = daysAgo(7);
 
-/** Strength test date: 6 days ago (1 day after plan start). */
-export const TEST_DATE = formatDate(daysAgo(6));
+/** Strength test date: 6 days ago (1 day after plan start), as Unix timestamp ms. */
+export const TEST_DATE = daysAgo(6).getTime();
 
 /** Season phase end: 1 year from now so it never expires. */
 export const SEASON_END_DATE = formatDate(daysFromNow(365));

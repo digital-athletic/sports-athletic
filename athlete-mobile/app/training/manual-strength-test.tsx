@@ -10,7 +10,6 @@ import {
 import { Logger } from "@/services/Logger";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
-import { formatDateToISO } from "@/utils/date";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
@@ -162,7 +161,7 @@ const ManualStrengthTestScreen: FC = () => {
 
     let updatedMaxValues: MaxValuesType = {
       ...workoutMaxValues,
-      testDate: formatDateToISO(new Date()),
+      testDate: Date.now(),
     };
 
     for (const exercise of filledExercises) {

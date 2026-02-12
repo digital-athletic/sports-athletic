@@ -199,7 +199,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
   }) => {
     const visible = isEntryExpanded(index);
     const iconName = visible ? "chevron-up" : "chevron-down";
-    const date = formatDateForDisplay(item.testDate);
+    const date = formatDateForDisplay(new Date(item.testDate));
 
     const formatWeight = (value: number | undefined) =>
       `${Math.round((value ?? 0) * 2) / 2} kg`;

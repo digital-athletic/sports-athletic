@@ -240,8 +240,9 @@ describe("syncExerciseData", () => {
 
 describe("syncStrengthTest", () => {
   it("maps camelCase to snake_case columns", async () => {
+    const testTimestamp = new Date("2024-01-15").getTime();
     const payload: MaxValuesType = {
-      testDate: "2024-01-15",
+      testDate: testTimestamp,
       verticalPush: { barbell: 60 },
       verticalPull: { barbell: 50 },
       horizontalPush: { barbell: 80 },
@@ -257,7 +258,7 @@ describe("syncStrengthTest", () => {
     expect(mockUpsert).toHaveBeenCalledWith(
       {
         user_id: TEST_USER_ID,
-        test_date: "2024-01-15",
+        test_at: testTimestamp,
         vertical_push: { barbell: 60 },
         vertical_pull: { barbell: 50 },
         horizontal_push: { barbell: 80 },
@@ -266,7 +267,7 @@ describe("syncStrengthTest", () => {
         knee_dominant: { barbell: 90 },
         lower_body: { barbell: 120 },
       },
-      { onConflict: "user_id,test_date" },
+      { onConflict: "user_id,test_at" },
     );
   });
 });

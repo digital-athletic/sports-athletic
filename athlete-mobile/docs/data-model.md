@@ -2,9 +2,6 @@
 
 Complete documentation of all persisted data structures, their fields, and relationships.
 
-**Version**: 2.0
-**Updated**: 2026-02-04
-
 ---
 
 ## Table of Contents
@@ -21,6 +18,7 @@ Complete documentation of all persisted data structures, their fields, and relat
    - [Places Store](#37-places-store)
    - [Exercise Progress Store](#38-exercise-progress-store)
    - [Completed Workouts Store](#39-completed-workouts-store)
+   - [Sync Queue Store](#310-sync-queue-store)
 4. [Non-Persisted Data](#4-non-persisted-data)
    - [Exercise Registry](#41-exercise-registry)
    - [Skill Tree Registry](#42-skill-tree-registry)
@@ -29,7 +27,6 @@ Complete documentation of all persisted data structures, their fields, and relat
 7. [Data Flow Summary](#7-data-flow-summary)
 8. [Architectural Notes](#8-architectural-notes)
 9. [Recommended Improvements](#9-recommended-improvements)
-10. [Changelog from v1](#10-changelog-from-v1)
 
 ---
 
@@ -42,7 +39,7 @@ Complete documentation of all persisted data structures, their fields, and relat
 **Middleware stack**: All stores use `persist(immer(...))` from `zustand/middleware`.
 
 **Version control**: `src/constants/sharedConstants.ts`
-- `PERSIST_VERSION = 3` -- shared across all stores.
+- `PERSIST_VERSION = 13` -- shared across all stores.
 - Migration strategy: if persisted version < `PERSIST_VERSION`, the store **resets to default state**. No incremental migration.
 
 **Validation**: Uses **valibot** (not Zod) for runtime schema validation in `src/schemas/`.
@@ -60,10 +57,11 @@ Complete documentation of all persisted data structures, their fields, and relat
 | 5 | userWorkoutStore | `user-workout-storage` | The central domain entity that holds the user's training configuration (sport, tags, season phase, max strength values) and the generated training plan. Note: user identity data (gender, birthday, height, weight) has been moved to `userProfileStore`. The training plan contains time-phased sections, each with weekly training sessions that map skills to exercise branches. This store is the primary input and output of the training plan generator. |
 | 6 | trainingScheduleStore | `training-schedule-storage` | Defines the user's weekly training schedule as 7 day entries (Monday through Sunday), each with an active/inactive flag, duration in minutes (using `DurationMinutes` branded type), and training location. Active days and their durations feed directly into the training plan generator to determine how many sessions to create and how long each should be. The location selection connects to `placesStore` to determine available equipment for each session. |
 | 7 | placesStore | `places-storage` | Maintains the available equipment for each of the four training locations: HOME, STUDIO, HALL, and OUTSIDE. Each location has a default equipment list (e.g., STUDIO includes barbell, dumbbell, power rack, etc.) that the user can customize. During training plan generation, exercises are filtered based on the equipment available at the selected location for each training day. |
-| 8 | exerciseProgressStore | `exercise-progress-storage` | Tracks the user's per-exercise performance data (reps, weight, duration, feedback), per-branch progression level, and **cumulative exercise totals** (total weight, reps, duration, height per exercise). Also maintains the user's **XP**, derived level, and a history of max strength test results. Feedback streaks (consecutive "too easy" or "too hard" ratings) drive automatic progression and regression through branch levels. |
-| 9 | completedWorkoutsStore | `completed-workouts-storage` | Archives completed workout sessions with full exercise snapshots, timestamps, duration (in seconds, using `DurationSeconds` branded type), and **XP earned**. Now includes **pre-calculated aggregates** (exerciseCount, movedWeight, userSkills) for efficient statistics display. Maintains both a detailed `workouts` record (keyed by ID) and a lightweight `workoutsList` index for efficient listing without loading full exercise data. Also stores archived training plans that have been completed or replaced, preserving the user's full training history. |
+| 8 | exerciseProgressStore | `exercise-progress-storage` | Tracks the user's per-exercise performance data (reps, weight, duration, feedback), per-branch progression level, and **cumulative exercise totals** (total weight, reps, duration, height per exercise). Also maintains the user's **XP**, derived level, and a history of max strength test results. Feedback streaks (consecutive "too easy" or "too hard" ratings) drive automatic progression and regression through branch levels. Integrates with `syncManager` to notify the sync system on exercise updates and test result additions. |
+| 9 | completedWorkoutsStore | `completed-workouts-storage` | Archives completed workout sessions with full exercise snapshots, timestamps, duration (in seconds, using `DurationSeconds` branded type), and **XP earned**. Now includes **pre-calculated aggregates** (exerciseCount, movedWeight, userSkills) for efficient statistics display. Maintains both a detailed `workouts` record (keyed by ID) and a lightweight `workoutsList` index for efficient listing without loading full exercise data. Also stores archived training plans that have been completed or replaced, preserving the user's full training history. Integrates with `syncManager` to notify the sync system on workout completion. |
+| 10 | syncQueueStore | `sync-queue-storage` | Manages a persistent queue of data sync operations (completed workouts, exercise data, strength tests) destined for Supabase. Each queue item tracks its type, status (PENDING/IN_PROGRESS/FAILED), retry count, and error information. Provides retry logic with a maximum of 5 attempts per item and a queue size cap of 500 items. Items are enqueued by `syncManager` when stores notify of data changes, processed by the sync service, and removed on success. |
 
-All 9 stores persist to AsyncStorage. Static catalog data (exercises and skill trees) is loaded as non-persisted modules via registries (see [Non-Persisted Data](#4-non-persisted-data)).
+All 10 stores persist to AsyncStorage. Static catalog data (exercises and skill trees) is loaded as non-persisted modules via registries (see [Non-Persisted Data](#4-non-persisted-data)).
 
 ---
 
@@ -118,7 +116,7 @@ State {
 }
 ```
 
-**Actions**: `setUsername`, `setGender`, `setBirthday`, `setHeight`, `setWeight`, `setPersonalData`, `setAnamnesisCompleted`, `setTeamId`, `clearProfile`
+**Actions**: `setUsername`, `setGender`, `setBirthday`, `setHeight`, `setWeight`, `setPersonalData`, `setAnamnesisCompleted`, `setTeamId`, `resetProfile`
 **Selectors**: `getAge`
 
 **Relationships**:
@@ -147,7 +145,7 @@ State {
 
 **Default**: `{ reviewStatus: { hasReviewed: false, promptCount: 0 }, anonymisedDataUse: false }`
 
-**Actions**: `setSettings`, `setReviewStatus`, `setAnonymisedDataUse`, `clearSettings`
+**Actions**: `setSettings`, `setReviewStatus`, `setAnonymisedDataUse`, `resetSettings`
 
 **Relationships**: Independent from other stores.
 
@@ -174,7 +172,7 @@ State {
 
 **Default**: `{ values: {}, tags: { LEVEL: ["BEGINNER"] }, seasonPhase: null, isSkipped: false }`
 
-**Actions**: `setValue`, `setTag`, `setSeasonPhase`, `clearAnamnesisData`, `setCompleted`, `saveData`, `setIsSkipped`
+**Actions**: `setValue`, `setTag`, `setSeasonPhase`, `resetAnamnesisData`, `setCompleted`, `saveData`, `setIsSkipped`
 
 **Tag groups** (20 groups, from `TagGroups` enum in `src/constants/tagGroups.ts`):
 
@@ -230,7 +228,7 @@ State {
       endDate: string                 // ISO 8601 format (YYYY-MM-DD)
     }
     maxValues: {
-      testDate: string                // ISO 8601 format (YYYY-MM-DD)
+      testDate: number                // Unix timestamp in milliseconds (Date.now())
       verticalPush: MaxValueType
       verticalPull: MaxValueType
       horizontalPush: MaxValueType
@@ -283,11 +281,11 @@ Where **MaxValueType** is:
 }
 ```
 
-**Default**: `workoutData: { sport: "OTHER_SPORT", tags: { POSITION: ["FIELD"], LEVEL: ["BEGINNER"] }, seasonPhase: <default>, maxValues: DEFAULT_MAX_VALUES }`, `trainingPlan: null`, `temporalData: undefined`
+**Default**: `workoutData: { sport: "OTHER_SPORT", tags: { POSITION: ["FIELD"], LEVEL: ["BEGINNER"] }, seasonPhase: <default>, maxValues: DEFAULT_MAX_VALUES (testDate: 0) }`, `trainingPlan: null`, `temporalData: undefined`
 
 **Sport enum** (9 values): `HANDBALL_SPORT`, `FOOTBALL_SPORT`, `VOLLEYBALL_SPORT`, `BASKETBALL_SPORT`, `ICE_HOCKEY_SPORT`, `HOCKEY_SPORT`, `AMERICAN_FOOTBALL_SPORT`, `RUGBY_SPORT`, `OTHER_SPORT`
 
-**Actions**: `setWorkoutData`, `setSport`, `setSeasonPhase`, `setTags`, `setTrainingPlan`, `setTemporalData`, `clearUserWorkoutData`, `replaceBranchInTrainingPlan`, `saveMaxValues`
+**Actions**: `setWorkoutData`, `setSport`, `setSeasonPhase`, `setTags`, `setTrainingPlan`, `setTemporalData`, `resetUserWorkoutData`, `replaceBranchInTrainingPlan`, `saveMaxValues`
 
 **Relationships**:
 - `workoutData.tags` populated from `anamnesisStore.tags` (same structured format)
@@ -319,7 +317,7 @@ State {
 
 **Default**: 7 days, all `active: false`, `duration: 30`, `place: "STUDIO"`
 
-**Actions**: `setTrainingDays`, `toggleDay`, `setDayPlace`, `setDayDuration`, `clearTrainingSchedule`
+**Actions**: `setTrainingDays`, `toggleDay`, `setDayPlace`, `setDayDuration`, `resetTrainingSchedule`
 **Selectors**: `getActiveTrainingDays`, `getTotalActiveHours`
 
 **Relationships**:
@@ -358,7 +356,7 @@ State {
 
 50+ equipment types defined in `src/constants/workoutConstants.ts`.
 
-**Actions**: `setPlaceEquipment`, `toggleEquipment`, `getPlaceEquipment`, `clearPlaces`
+**Actions**: `setPlaceEquipment`, `toggleEquipment`, `getPlaceEquipment`, `resetPlaces`
 
 **Relationships**:
 - `trainingScheduleStore.trainingDays[].place` selects which place's equipment is active
@@ -376,6 +374,7 @@ State {
   exerciseData: {                     // Record<string, UserExerciseDataType | undefined>, keyed by exerciseId
     [exerciseId: string]: {
       exerciseId: string
+      workoutId?: string              // optional, links to the workout that last updated this exercise
       repetition?: number
       weight?: number
       nextWeightPercentage?: number
@@ -415,10 +414,10 @@ State {
   }
 
   xp: number                          // user's experience points
-  level: number                       // derived: based on xp using progressive formula
+  level: number                       // derived: Math.floor(xp / 1000) + 1
 
   testHistory: {                      // MaxValuesType[] -- historical max value snapshots
-    testDate: string                  // ISO 8601 format (YYYY-MM-DD)
+    testDate: number                  // Unix timestamp in milliseconds (Date.now())
     verticalPush: MaxValueType
     verticalPull: MaxValueType
     horizontalPush: MaxValueType
@@ -432,8 +431,10 @@ State {
 
 Where **MaxValueType** = `{ barbell?, dumbbells?, oneSidedUpper?, oneSidedBarbell?, oneSidedLower?, oneSidedLowerSupported? }` (all optional numbers).
 
-**Actions**: `setExerciseData`, `updateExercise`, `setBranchLevel`, `updateUserExerciseTotals`, `addXP`, `setLevel`, `addTestResult`, `clearProgress`
+**Actions**: `setExerciseData`, `updateExercise`, `setBranchLevel`, `updateUserExerciseTotals`, `addXP`, `setLevel`, `addTestResult`, `resetProgress`
 **Selectors**: `getExerciseData`, `getBranchLevel`, `getLatestTestResult`, `getExerciseTotals`
+
+**Sync integration**: `updateExercise` calls `syncManager.notifyExerciseUpdated()` and `addTestResult` calls `syncManager.notifyTestResultAdded()` to enqueue data for Supabase sync.
 
 **Relationships**:
 - `exerciseData` keys are `ExerciseType.id` from exercise registry
@@ -452,6 +453,8 @@ Where **MaxValueType** = `{ barbell?, dumbbells?, oneSidedUpper?, oneSidedBarbel
 **File**: `src/store/completedWorkoutsStore.ts`
 **Key**: `"completed-workouts-storage"`
 
+**Type source**: `CompleteWorkoutType` is defined in `src/schemas/sync.schema.ts` and re-exported from this store module. `UserExerciseDataType` is also defined in `sync.schema.ts`.
+
 ```
 State {
   workouts: {                         // Record<string, CompleteWorkoutType>, keyed by workout ID
@@ -460,6 +463,7 @@ State {
       timestamp: number               // epoch ms
       exercises: {                    // UserExerciseDataType[] -- full snapshot per exercise
         exerciseId: string
+        workoutId?: string            // optional link back to parent workout
         repetition?: number
         weight?: number
         nextWeightPercentage?: number
@@ -518,6 +522,8 @@ State {
 **Actions**: `addCompletedWorkout`, `setCompletedWorkouts`, `setWorkoutsList`, `addCompletedTrainingPlan`, `setCompletedTrainingPlans`, `clearWorkoutHistory`
 **Selectors**: `getWorkoutById`, `getRecentWorkouts`, `getTotalWorkouts`, `getTotalTrainingTime`
 
+**Sync integration**: `addCompletedWorkout` calls `syncManager.notifyWorkoutCompleted()` to enqueue the workout for Supabase sync.
+
 **Relationships**:
 - `exercises[].exerciseId` references `ExerciseType.id` from exercise registry
 - `trainingPlans[]` archives completed plans (same shape as `userWorkoutStore.trainingPlan`)
@@ -532,6 +538,47 @@ State {
 **Current limitation:** The radar chart uses **exercise counts** instead of the preferred **time-based** metric. This is a regression from the intentional 2021 improvement. A 5-minute strength exercise counts the same as a 30-second mobility stretch, which misrepresents the user's actual training distribution.
 
 **See:** `issue-restore-time-based-radar-chart.md` for the fix implementation plan.
+
+---
+
+### 3.10 Sync Queue Store
+
+**File**: `src/store/syncQueueStore.ts`
+**Key**: `"sync-queue-storage"`
+
+Manages a persistent queue of operations to sync local data to Supabase. Items are enqueued by `syncManager` when stores notify of data changes (workout completion, exercise updates, strength test results). The sync service processes items from the queue and removes them on success.
+
+```
+State {
+  queue: {                            // SyncQueueItem[]
+    id: string                        // unique ID (generated from Date.now + random)
+    type: SyncItemType                // "COMPLETED_WORKOUT" | "EXERCISE_DATA" | "STRENGTH_TEST"
+    referenceId: string               // ID of the source entity (workoutId, exerciseId, etc.)
+    payload: unknown                  // serialized data to sync
+    status: SyncStatus                // "PENDING" | "IN_PROGRESS" | "FAILED"
+    createdAt: number                 // epoch ms
+    lastAttemptAt?: number            // epoch ms of last sync attempt
+    attemptCount: number              // number of sync attempts made
+    error?: string                    // error message from last failed attempt
+  }[]
+}
+```
+
+**Default**: `{ queue: [] }`
+
+**Constants**:
+- `MAX_RETRY_ATTEMPTS = 5` -- items exceeding this are skipped by `getNextPending`
+- `MAX_QUEUE_SIZE = 500` -- new items are dropped (with error log) when queue is full
+
+**Actions**: `enqueue`, `markInProgress`, `markCompleted`, `markFailed`, `resetStaleItems`, `clearSyncQueue`
+**Selectors**: `getNextPending`, `getPendingCount`, `getFailedItems`, `hasItemsToSync`
+
+**Relationships**:
+- Fed by `syncManager` which is called from `exerciseProgressStore` and `completedWorkoutsStore`
+- `type: "COMPLETED_WORKOUT"` items reference `completedWorkoutsStore.workouts` by ID
+- `type: "EXERCISE_DATA"` items reference `exerciseProgressStore.exerciseData` by exercise ID
+- `type: "STRENGTH_TEST"` items reference `exerciseProgressStore.testHistory` entries
+- Processed by sync service which sends data to Supabase and calls `markCompleted` on success
 
 ---
 
@@ -617,10 +664,10 @@ SkillBranchType = {
 }
 ```
 
-**Data source**: 26 JSON files in `assets/data/generator/skillTrees/`, loaded via `src/data/loadSkillTrees.ts`. Validated against valibot `SkillTreeSchema` in `src/schemas/skillTree.schema.ts`.
+**Data source**: 27 JSON files in `assets/data/generator/skillTrees/`, loaded via `src/data/loadSkillTrees.ts`. Validated against valibot `SkillTreeSchema` in `src/schemas/skillTree.schema.ts`.
 
-**Skill tree names** (26 total):
-BAS, BR, CARDIO_1_LAKTAT, CARDIO_1_SHORT, CARDIO_2, CARDIO_3, CARDIO_4, CARDIO_5, CD, GKS, GKSKG, MAX, MOB, PLYO, PREV, PREVKG, SA, SAKG, SASPEZIAL, SK, SKKG, SWR1, SWR1KG, WU, WUSKSA, WUSPEZIAL
+**Skill tree names** (27 total):
+BAS, BR, CARDIO_1_LAKTAT, CARDIO_1_SHORT, CARDIO_2, CARDIO_3, CARDIO_4, CARDIO_5, CD, GKS, GKSKG, MAX, MOB, PLYO, PREV, PREVKG, SA, SAKG, SASPEZIAL, SK, SKKG, SUPPORT, SWR1, SWR1KG, WU, WUSKSA, WUSPEZIAL
 
 **Exported functions**:
 - `getSkillTree(name)` - Get skill tree by name
@@ -641,7 +688,7 @@ BAS, BR, CARDIO_1_LAKTAT, CARDIO_1_SHORT, CARDIO_2, CARDIO_3, CARDIO_4, CARDIO_5
 | Asset Path | Format | Loaded By | Loaded Into |
 |-----------|--------|-----------|-------------|
 | `assets/data/generator/Exercises.json` | JSON | `src/data/loadExercises.ts` | `exerciseRegistry` (non-persisted) |
-| `assets/data/generator/skillTrees/*.json` (26 files) | JSON | `src/data/loadSkillTrees.ts` | `skillTreeRegistry` (non-persisted) |
+| `assets/data/generator/skillTrees/*.json` (27 files) | JSON | `src/data/loadSkillTrees.ts` | `skillTreeRegistry` (non-persisted) |
 | `assets/data/generator/TestIntensity.json` | JSON | Training generator | Runtime only |
 | `assets/data/generator/places/HOME.ts` | TS export | `placesStore` initial state | `placesStore` |
 | `assets/data/generator/places/STUDIO.ts` | TS export | `placesStore` initial state | `placesStore` |
@@ -724,6 +771,10 @@ erDiagram
         json trainingPlans "TrainingPlanType array"
     }
 
+    syncQueueStore {
+        json queue "SyncQueueItem array"
+    }
+
     anamnesisStore ||--o| userWorkoutStore : "tags, seasonPhase"
     anamnesisStore ||--o| userProfileStore : "personalData, anamnesisCompleted"
     trainingScheduleStore }o--|| placesStore : "place selects equipment"
@@ -732,8 +783,10 @@ erDiagram
     userWorkoutStore }o--|| exerciseRegistry : "exercise references"
     exerciseProgressStore }o--|| exerciseRegistry : "exerciseData by exerciseId"
     exerciseProgressStore }o--|| skillTreeRegistry : "branchData by branchId"
+    exerciseProgressStore ||--o| syncQueueStore : "notifies via syncManager"
     completedWorkoutsStore }o--|| exerciseRegistry : "exercises by exerciseId"
     completedWorkoutsStore ||--o{ userWorkoutStore : "archived trainingPlans"
+    completedWorkoutsStore ||--o| syncQueueStore : "notifies via syncManager"
     exerciseProgressStore ||--o| userWorkoutStore : "testHistory same as maxValues"
 ```
 
@@ -748,6 +801,7 @@ erDiagram
 5. **Plan archival**: Completed `trainingPlan` -> `completedWorkoutsStore.trainingPlans`
 6. **Exercise selection**: `skillTreeRegistry` branches filtered by tags + `placesStore` equipment -> `exerciseRegistry` lookup by ID -> `exerciseProgressStore.branchData[].level` selects difficulty level
 7. **Statistics display**: `completedWorkoutsStore.workouts` (with userSkills, xpEarned, movedWeight) -> `useWorkoutsData` hook -> radar chart and summary cards
+8. **Data sync**: Store actions -> `syncManager` -> `syncQueueStore.enqueue()` -> sync service processes queue -> Supabase
 
 ### Key Referential Links
 
@@ -763,9 +817,11 @@ erDiagram
 | exerciseProgressStore | `branchData[branchId]` | skillTreeRegistry | branch key |
 | exerciseProgressStore | `exerciseTotals[exerciseId]` | exerciseRegistry | `exercises.get(id)` |
 | exerciseProgressStore | `testHistory[]` | userWorkoutStore | `workoutData.maxValues` (same shape) |
+| exerciseProgressStore | (via syncManager) | syncQueueStore | `queue[]` items |
 | completedWorkoutsStore | `workouts[].exercises[]` | exerciseRegistry | via `exerciseId` |
 | completedWorkoutsStore | `workouts[].userSkills` | FocusArea type | radar chart display |
 | completedWorkoutsStore | `trainingPlans[]` | userWorkoutStore | `trainingPlan` (same shape) |
+| completedWorkoutsStore | (via syncManager) | syncQueueStore | `queue[]` items |
 | exerciseRegistry | `otherSideExerciseId` | exerciseRegistry | `exercises.get(id)` |
 | exerciseRegistry | `equivalentExercises[]` | exerciseRegistry | `exercises.get(id)` |
 
@@ -773,19 +829,17 @@ erDiagram
 
 ## 8. Architectural Notes
 
-1. **Local-first architecture**: Only `authStore` integrates with Supabase at the store level. All other data is persisted locally via AsyncStorage.
+1. **Local-first architecture**: Only `authStore` integrates with Supabase at the store level. All other data is persisted locally via AsyncStorage. The new sync system (`syncQueueStore` + `syncManager`) provides eventual consistency with Supabase for workout data, exercise progress, and strength tests.
 
-2. **Destructive migration**: A single `PERSIST_VERSION` counter controls all 9 persisted stores. Incrementing it resets every store to defaults -- no incremental migration support.
+2. **Destructive migration**: A single `PERSIST_VERSION` counter (currently 13) controls all 10 persisted stores. Incrementing it resets every store to defaults -- no incremental migration support.
 
-3. **Unbounded growth**: `completedWorkoutsStore` grows without pagination, cleanup, or size limits. Each completed workout stores a full snapshot of all exercise data.
+3. **Unbounded growth**: `completedWorkoutsStore` grows without pagination, cleanup, or size limits. Each completed workout stores a full snapshot of all exercise data. `syncQueueStore` has a cap of 500 items.
 
-4. **Dual type system**: Valibot schemas produce generic `Record<string, ...>` types, while model files define explicit property keys. Type casts are required at boundaries between these two systems. Note: Some model types now re-export from schemas (e.g., `MaxValuesType`) to reduce duplication.
+4. **Dual type system**: Valibot schemas produce generic `Record<string, ...>` types, while model files define explicit property keys. Type casts are required at boundaries between these two systems. Note: Some model types now re-export from schemas (e.g., `MaxValuesType`, `UserExerciseDataType`, `CompleteWorkoutType`) to reduce duplication.
 
 5. **Tag-driven architecture**: Tags are now stored in a structured format (`TagsByGroup`) with tag group keys mapping to arrays of values. This is consistent across `anamnesisStore` and `userWorkoutStore`. 20 tag groups cover level, body region, equipment, pain areas, muscle groups, and more.
 
 6. **Immutable store pattern**: All stores use `immer` middleware, allowing mutable-style writes within actions that produce immutable state updates externally.
-
-7. **Hardcoded credentials in constants**: `src/constants/sharedConstants.ts` contains `ADMIN_USER` with plaintext email and password, a `TEST_PASSWORD`, and API keys for Amplitude, Bugsnag, and RevenueCat. These should be moved to environment variables.
 
 8. **Validation library mismatch**: The project-level `CLAUDE.md` lists Zod in the tech stack, but the actual runtime validation uses **valibot**. The documentation is out of date.
 
@@ -801,6 +855,12 @@ erDiagram
 
 14. **Pre-calculated workout aggregates**: `CompleteWorkoutType` now includes pre-calculated `exerciseCount`, `movedWeight`, and `userSkills` fields for efficient statistics display without recalculating from exercise arrays.
 
+15. **Simplified level formula**: The store uses `Math.floor(xp / 1000) + 1` for level calculation. The progressive formula constants (`LEVEL_STEP_1`, `LEVEL_STEP_2`, etc.) still exist in `userProgressConstants.ts` but are not used by the store's `addXP` action.
+
+16. **Centralized sync schema**: `src/schemas/sync.schema.ts` is the single source of truth for `CompleteWorkoutType`, `UserExerciseDataType`, `MaxForceRepetitionsDataType`, and `FocusArea`. Model files in `src/features/training/models/` re-export these types rather than defining them independently.
+
+17. **Sync queue architecture**: The sync system uses an event-driven pattern: store actions call `syncManager` methods, which enqueue items into `syncQueueStore`. A separate sync service processes the queue, sending data to Supabase with retry logic (max 5 attempts per item).
+
 ---
 
 ## 9. Recommended Improvements
@@ -814,7 +874,7 @@ Each improvement is classified by **impact** (how much it improves reliability, 
 | 3 | Unify the dual type system | High | High |
 | 4 | Normalize exercise snapshots in completed workouts | Medium | Medium |
 | 5 | Add data integrity validation on rehydration | High | Low |
-| 6 | Add Supabase sync for workout and progress stores | High | High |
+| 6 | Extend Supabase sync to remaining stores | Medium | Medium |
 | 7 | Replace loose string IDs with branded types | Medium | Low |
 
 ---
@@ -823,7 +883,7 @@ Each improvement is classified by **impact** (how much it improves reliability, 
 
 **Impact: High** | **Effort: Medium**
 
-**Problem**: A single `PERSIST_VERSION` controls all 9 persisted stores. Any schema change to any store forces a full reset of every store, effectively logging the user out and wiping all local progress, workout history, and configuration.
+**Problem**: A single `PERSIST_VERSION` (currently 13) controls all 10 persisted stores. Any schema change to any store forces a full reset of every store, effectively logging the user out and wiping all local progress, workout history, and configuration.
 
 **Recommendation**: Give each store its own version number and migration function. When a store's schema changes, only that store migrates or resets. Zustand's `persist` middleware already supports per-store `version` and `migrate` fields -- they are just not being used independently.
 
@@ -852,7 +912,7 @@ persist(..., {
 **Recommendation**:
 - Cap `workouts` to the most recent N entries (e.g. 200) and archive or drop older ones.
 - Use the existing `workoutsList` lightweight index for listing, and lazy-load full workout data only when the user views a specific workout.
-- Consider moving historical workouts to Supabase to free local storage.
+- Consider moving historical workouts to Supabase to free local storage (the sync infrastructure is now in place).
 
 ---
 
@@ -864,7 +924,7 @@ persist(..., {
 
 **Recommendation**: Make valibot schemas the single source of truth. Define schemas with explicit property keys using `v.object({ verticalPush: ..., horizontalPull: ... })` instead of `v.record(...)`, and infer model types directly from them. Remove the parallel manual type definitions in the `models/` directory.
 
-Note: Some progress has been made here -- `MaxValuesType` and `SeasonPhaseType` now re-export from schemas as the single source of truth.
+Note: Significant progress has been made -- `MaxValuesType`, `SeasonPhaseType`, `UserExerciseDataType`, `CompleteWorkoutType`, and `MaxForceRepetitionsDataType` now re-export from schemas as the single source of truth.
 
 ---
 
@@ -904,16 +964,16 @@ onRehydrateStorage: () => (state) => {
 
 ---
 
-### 6. Add Supabase Sync for Workout and Progress Stores
+### 6. Extend Supabase Sync to Remaining Stores
 
-**Impact: High** | **Effort: High**
+**Impact: Medium** | **Effort: Medium**
 
-**Problem**: Only `authStore` integrates with Supabase. All workout data, exercise progress, completed workouts, and training plans are purely local. If the user switches devices, reinstalls the app, or clears app data, everything is lost.
+**Problem**: The sync system currently covers completed workouts, exercise data updates, and strength test results. Other stores (`userWorkoutStore`, `trainingScheduleStore`, `placesStore`, `userProfileStore`) remain purely local. If the user switches devices, reinstalls the app, or clears app data, training plans and configuration are lost.
 
 **Recommendation**:
-- Prioritize syncing `exerciseProgressStore`, `completedWorkoutsStore`, and `userWorkoutStore` to Supabase.
+- Extend `syncManager` to cover `userWorkoutStore` (training plans and configuration) and `userProfileStore` (personal data).
+- The sync infrastructure (`syncQueueStore`, `syncManager`, sync service) is already in place -- extending it requires adding new `SyncItemType` values and corresponding Supabase endpoints.
 - Use a last-write-wins or timestamp-based merge strategy for conflict resolution.
-- Sync on workout completion (not continuously) to minimize network overhead.
 - The `userProfileStore` already has `userId` and `teamId` that imply a server-side relationship -- extend this to cover training data.
 
 ---
@@ -939,64 +999,3 @@ const branchId = (id: string): BranchId => id as BranchId
 This is a zero-runtime-cost change that catches cross-ID assignment bugs at compile time.
 
 Note: Branded types for time units (`DurationMinutes`, `DurationSeconds`) have already been implemented in `src/features/training/models/TimeUnits.ts` -- this pattern could be extended to IDs.
-
----
-
-## 10. Changelog from v1
-
-### Terminology
-
-The gamification system uses **XP** (experience points) terminology:
-- `exerciseProgressStore.xp` - user's total experience points
-- `addXP()` - action to add XP after workout completion
-- `XP_PER_MINUTE` - constant for XP earned per minute of training
-- `xpEarned` - XP earned in a completed workout
-
-### New Types and Fields
-
-| Type/Field | Location | Description |
-|------------|----------|-------------|
-| `ExerciseTotalsType` | `models/ExerciseTotals.ts` | Cumulative values (weight, duration, repetition, height) |
-| `ExerciseTotalsMapType` | `models/ExerciseTotals.ts` | Map of exerciseId -> ExerciseTotalsType |
-| `exerciseTotals` | `exerciseProgressStore` | Per-exercise cumulative totals |
-| `FocusArea` | `models/Training.ts` | Union type for 6 radar chart categories |
-| `FOCUS_AREAS` | `models/Training.ts` | Array constant of focus areas |
-| `exerciseCount` | `CompleteWorkoutType` | Pre-calculated exercise count |
-| `movedWeight` | `CompleteWorkoutType` | Pre-calculated total weight moved |
-| `userSkills` | `CompleteWorkoutType` | Pre-calculated skill counts for radar chart |
-
-### New Utility Functions
-
-| Function | File | Description |
-|----------|------|-------------|
-| `calculateUserLevel(xp)` | `userProgressUtils.ts` | Calculate level from total XP |
-| `getXPInLevel(xp)` | `userProgressUtils.ts` | Get progress within current level |
-| `getXPForNextLevel(xp)` | `userProgressUtils.ts` | Get XP needed for next level |
-| `accumulateExerciseTotals()` | `models/ExerciseTotals.ts` | Add values to existing totals |
-| `createEmptyExerciseTotals()` | `models/ExerciseTotals.ts` | Create zero-initialized totals |
-| `updateUserExerciseTotals()` | `exerciseProgressStore.ts` | Store action for totals |
-| `getExerciseTotals()` | `exerciseProgressStore.ts` | Selector for exercise totals |
-
-### Statistics Support
-
-| Feature | Implementation |
-|---------|----------------|
-| Radar chart data | `userSkills` field in `CompleteWorkoutType` mapped to `FocusArea` type |
-| Time filtering | `useWorkoutsData` hook with `ScaleType` (week/month/year/total) |
-| Summary aggregation | `WorkoutsSummary` type with duration, count, xp, weight |
-| Statistics hook | `useWorkoutsData()` in `hooks/useWorkoutsData.ts` |
-
-### Level Calculation Formula
-
-The level calculation uses a progressive formula (constants in `userProgressConstants.ts`):
-
-```typescript
-XP_PER_MINUTE = 4          // XP earned per minute
-LEVEL_STEP_1 = 150         // XP for level 1 -> 2
-LEVEL_STEP_2 = 200         // XP for level 2 -> 3
-LEVEL_STEP = 5             // standard increase per level
-BIG_LEVEL_STEP = 150       // bonus increase at milestone levels
-BIG_LEVEL_FREQUENCE = 15   // milestone frequency
-```
-
-Level titles are defined in `LEVEL_STAGES_TITLES` from level 1 (ROOKIE) to level 45 (HANDBALL_GOTT).

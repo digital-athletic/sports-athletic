@@ -319,6 +319,7 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
         STORE_VERSIONS.EXERCISE_PROGRESS,
         exerciseProgressStoreMigrations,
         createInitialState,
+        "exercise-progress",
       ),
     },
   ),

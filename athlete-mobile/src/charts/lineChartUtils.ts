@@ -61,12 +61,12 @@ export const shouldShowLabel = (
 export const transformToLineData = (
   chartData: PowerTestChartData,
 ): TransformedLineData => {
-  const { dates, knee, rowing, benchPress, shoulderPress } = chartData;
+  const { dates, kneeDominant, rowing, benchPress, shoulderPress } = chartData;
 
   const labelStep = calculateLabelStep(dates.length);
 
   // Primary series with inline labels (library reads labels from data prop)
-  const squadData: LineDataItem[] = knee.map((value, index) => {
+  const squadData: LineDataItem[] = kneeDominant.map((value, index) => {
     const showLabel = shouldShowLabel(index, dates.length, labelStep);
     return {
       value,
@@ -124,7 +124,7 @@ export const calculateSpacing = (
  */
 export const calculateYAxisMax = (chartData: PowerTestChartData): number => {
   const allValues = [
-    ...chartData.knee,
+    ...chartData.kneeDominant,
     ...chartData.rowing,
     ...chartData.benchPress,
     ...chartData.shoulderPress,

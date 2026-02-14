@@ -150,6 +150,7 @@ export const useUserProfileStore = create<UserProfileState>()(
         STORE_VERSIONS.USER_PROFILE,
         userProfileStoreMigrations,
         createInitialState,
+        "user-profile",
       ),
       onRehydrateStorage: () => (_state, error) => {
         if (error) {

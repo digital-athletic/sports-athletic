@@ -198,6 +198,7 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
         STORE_VERSIONS.USER_WORKOUT,
         userWorkoutStoreMigrations,
         createInitialState,
+        "user-workout",
       ),
     },
   ),

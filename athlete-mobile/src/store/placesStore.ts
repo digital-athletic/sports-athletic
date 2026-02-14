@@ -112,6 +112,7 @@ export const usePlacesStore = create<PlacesStoreState>()(
         STORE_VERSIONS.PLACES,
         placesStoreMigrations,
         createInitialState,
+        "places",
       ),
     },
   ),

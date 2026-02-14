@@ -125,6 +125,7 @@ export const useAnamnesisStore = create<AnamnesisState>()(
         STORE_VERSIONS.ANAMNESIS,
         anamnesisStoreMigrations,
         createInitialState,
+        "anamnesis",
       ),
     },
   ),

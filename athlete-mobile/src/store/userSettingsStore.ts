@@ -97,6 +97,7 @@ export const useUserSettingsStore = create<UserSettingsState>()(
         STORE_VERSIONS.USER_SETTINGS,
         userSettingsStoreMigrations,
         createInitialState,
+        "user-settings",
       ),
     },
   ),

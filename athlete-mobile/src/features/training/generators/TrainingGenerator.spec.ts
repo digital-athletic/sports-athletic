@@ -1568,8 +1568,8 @@ describe("TrainingGenerator", () => {
       workoutData: {
         tags: { LEVEL: ["ADVANCED"] } as Record<string, string[]>,
         maxValues: {
-          testDate: new Date("2020-01-01").getTime(),
-          knee: { barbell: 100 },
+          testAt: new Date("2020-01-01").getTime(),
+          kneeDominant: { barbell: 100 },
           horizontalPush: { barbell: 80 },
           horizontalPull: { barbell: 70 },
           verticalPush: { barbell: 60 },
@@ -1832,8 +1832,8 @@ describe("TrainingGenerator", () => {
             tags: { LEVEL: ["ADVANCED"] },
             gender: "MALE" as const,
             maxValues: {
-              testDate: new Date("2024-01-01").getTime(),
-              knee: { barbell: maxKneeValue },
+              testAt: new Date("2024-01-01").getTime(),
+              kneeDominant: { barbell: maxKneeValue },
             },
           },
         };

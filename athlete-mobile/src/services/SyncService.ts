@@ -173,13 +173,13 @@ export async function syncStrengthTest(
 ): Promise<void> {
   const row = {
     user_id: userId,
-    test_at: payload.testDate,
+    test_at: payload.testAt,
     vertical_push: payload.verticalPush,
     vertical_pull: payload.verticalPull,
     horizontal_push: payload.horizontalPush,
     horizontal_pull: payload.horizontalPull,
-    hip_hinge: payload.hip,
-    knee_dominant: payload.knee,
+    hip_hinge: payload.hipHinge,
+    knee_dominant: payload.kneeDominant,
     lower_body: payload.lowerBody,
   };
 
@@ -192,7 +192,7 @@ export async function syncStrengthTest(
   }
 
   Logger.logEvent("sync:strength_test", {
-    testDate: payload.testDate,
+    testAt: payload.testAt,
     row,
   });
 }

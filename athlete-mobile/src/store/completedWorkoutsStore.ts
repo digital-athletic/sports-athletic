@@ -159,6 +159,7 @@ export const useCompletedWorkoutsStore = create<CompletedWorkoutsState>()(
         STORE_VERSIONS.COMPLETED_WORKOUTS,
         completedWorkoutsStoreMigrations,
         createInitialState,
+        "completed-workouts",
       ),
     },
   ),

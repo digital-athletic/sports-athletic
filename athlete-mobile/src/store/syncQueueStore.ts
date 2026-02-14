@@ -163,6 +163,7 @@ export const useSyncQueueStore = create<SyncQueueState>()(
         STORE_VERSIONS.SYNC_QUEUE,
         syncQueueStoreMigrations,
         createInitialState,
+        "sync-queue",
       ),
     },
   ),

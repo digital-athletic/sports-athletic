@@ -5,10 +5,10 @@ import {
 } from "./ChartData";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 
-const createTestEntry = (testDate: number, knee = 0) => ({
+const createTestEntry = (testAt: number, kneeDominant = 0) => ({
   ...DEFAULT_MAX_VALUES,
-  testDate,
-  knee: { ...DEFAULT_MAX_VALUES.knee, barbell: knee },
+  testAt,
+  kneeDominant: { ...DEFAULT_MAX_VALUES.kneeDominant, barbell: kneeDominant },
 });
 
 // Timestamps for test dates (UTC midnight)
@@ -28,7 +28,7 @@ describe("sortTestHistoryByDate", () => {
 
     const sorted = sortTestHistoryByDate(history);
 
-    expect(sorted.map((e) => e.testDate)).toEqual([JAN_20, JAN_15, JAN_10]);
+    expect(sorted.map((e) => e.testAt)).toEqual([JAN_20, JAN_15, JAN_10]);
   });
 
   it("returns newer entries first when dates are identical", () => {
@@ -53,7 +53,7 @@ describe("processTestHistory", () => {
 
     expect(result).toEqual({
       dates: [],
-      knee: [],
+      kneeDominant: [],
       rowing: [],
       benchPress: [],
       shoulderPress: [],
@@ -76,7 +76,7 @@ describe("processTestHistory", () => {
       "2026-01-15",
       "2026-01-20",
     ]);
-    expect(result.knee).toEqual([0, 60, 70, 80]);
+    expect(result.kneeDominant).toEqual([0, 60, 70, 80]);
   });
 
   it("handles same-day entries with correct order and suffixed dates", () => {
@@ -89,7 +89,7 @@ describe("processTestHistory", () => {
 
     // Oldest first: JAN_21 then JAN_21_AFTERNOON (same ISO date → suffix)
     expect(result.dates).toEqual(["2026-01-20", "2026-01-21", "2026-01-21-1"]);
-    expect(result.knee).toEqual([0, 100, 110]);
+    expect(result.kneeDominant).toEqual([0, 100, 110]);
   });
 
   it("prepends a zero-point one day before the oldest entry", () => {
@@ -98,7 +98,7 @@ describe("processTestHistory", () => {
     const result = processTestHistory(history);
 
     expect(result.dates[0]).toBe("2026-01-14");
-    expect(result.knee[0]).toBe(0);
+    expect(result.kneeDominant[0]).toBe(0);
   });
 });
 

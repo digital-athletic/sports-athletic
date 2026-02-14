@@ -137,7 +137,7 @@ describe("applyMaxValueToDirections", () => {
     );
 
     expect(result.horizontalPush).toEqual(newCalculatedResult);
-    expect(result.testDate).toBe(MOCK_TIMESTAMP);
+    expect(result.testAt).toBe(MOCK_TIMESTAMP);
     // Other directions should remain unchanged (still default/empty)
     expect(result.verticalPush).toEqual(DEFAULT_MAX_VALUES.verticalPush);
     expect(result.horizontalPull).toEqual(DEFAULT_MAX_VALUES.horizontalPull);
@@ -156,7 +156,7 @@ describe("applyMaxValueToDirections", () => {
     // Both directions get the same new result
     expect(result.verticalPush).toEqual(newCalculatedResult);
     expect(result.verticalPull).toEqual(newCalculatedResult);
-    expect(result.testDate).toBe(MOCK_TIMESTAMP);
+    expect(result.testAt).toBe(MOCK_TIMESTAMP);
     // Unrelated directions remain unchanged
     expect(result.horizontalPush).toEqual(DEFAULT_MAX_VALUES.horizontalPush);
   });

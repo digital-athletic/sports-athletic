@@ -12,7 +12,7 @@ describe("lineChartUtils", () => {
     it("transforms empty chart data to empty arrays", () => {
       const chartData: PowerTestChartData = {
         dates: [],
-        knee: [],
+        kneeDominant: [],
         rowing: [],
         benchPress: [],
         shoulderPress: [],
@@ -31,7 +31,7 @@ describe("lineChartUtils", () => {
     it("transforms single data point with inline label shown", () => {
       const chartData: PowerTestChartData = {
         dates: ["2024-07-06"],
-        knee: [80],
+        kneeDominant: [80],
         rowing: [50],
         benchPress: [60],
         shoulderPress: [35],
@@ -50,7 +50,7 @@ describe("lineChartUtils", () => {
     it("transforms multiple data points with inline labels", () => {
       const chartData: PowerTestChartData = {
         dates: ["2024-06-30", "2024-07-06", "2024-09-04"],
-        knee: [0, 80, 85],
+        kneeDominant: [0, 80, 85],
         rowing: [0, 50, 55],
         benchPress: [0, 60, 65],
         shoulderPress: [0, 35, 40],
@@ -68,7 +68,7 @@ describe("lineChartUtils", () => {
     it("handles duplicate dates with inline labels (suffix stripped)", () => {
       const chartData: PowerTestChartData = {
         dates: ["2024-07-06", "2024-07-06-1"],
-        knee: [80, 85],
+        kneeDominant: [80, 85],
         rowing: [50, 55],
         benchPress: [60, 65],
         shoulderPress: [35, 40],
@@ -84,7 +84,7 @@ describe("lineChartUtils", () => {
     it("shows labels at calculated step intervals for large data sets", () => {
       const chartData: PowerTestChartData = {
         dates: Array.from({ length: 9 }, (_, i) => `2024-0${i + 1}-01`),
-        knee: Array.from({ length: 9 }, () => 80),
+        kneeDominant: Array.from({ length: 9 }, () => 80),
         rowing: Array.from({ length: 9 }, () => 50),
         benchPress: Array.from({ length: 9 }, () => 60),
         shoulderPress: Array.from({ length: 9 }, () => 35),
@@ -107,7 +107,7 @@ describe("lineChartUtils", () => {
     it("secondary series have values only without labels", () => {
       const chartData: PowerTestChartData = {
         dates: ["2024-07-06"],
-        knee: [80],
+        kneeDominant: [80],
         rowing: [50],
         benchPress: [60],
         shoulderPress: [35],
@@ -125,7 +125,7 @@ describe("lineChartUtils", () => {
     it("returns default max (120) for empty data", () => {
       const chartData: PowerTestChartData = {
         dates: [],
-        knee: [],
+        kneeDominant: [],
         rowing: [],
         benchPress: [],
         shoulderPress: [],
@@ -137,7 +137,7 @@ describe("lineChartUtils", () => {
     it("returns default max (120) when all values are zero", () => {
       const chartData: PowerTestChartData = {
         dates: ["2024-07-06"],
-        knee: [0],
+        kneeDominant: [0],
         rowing: [0],
         benchPress: [0],
         shoulderPress: [0],
@@ -149,7 +149,7 @@ describe("lineChartUtils", () => {
     it("rounds up to nearest 20 with padding for values under 120", () => {
       const chartData: PowerTestChartData = {
         dates: ["2024-07-06"],
-        knee: [100],
+        kneeDominant: [100],
         rowing: [50],
         benchPress: [60],
         shoulderPress: [35],
@@ -162,7 +162,7 @@ describe("lineChartUtils", () => {
     it("expands beyond default max for high values", () => {
       const chartData: PowerTestChartData = {
         dates: ["2024-07-06"],
-        knee: [150],
+        kneeDominant: [150],
         rowing: [50],
         benchPress: [60],
         shoulderPress: [35],

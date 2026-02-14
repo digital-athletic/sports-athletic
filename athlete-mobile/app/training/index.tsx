@@ -82,7 +82,7 @@ export default function SelectTraining() {
 
     // check if power test is needed
     const lastTestExpired =
-      workoutData.maxValues.testDate +
+      workoutData.maxValues.testAt +
         WorkoutConstants.MAX_VALUES_EXPIRATION_TIME_IN_MS <
       Date.now();
     // look if exercises with Fmax used

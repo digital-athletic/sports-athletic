@@ -663,7 +663,7 @@ export const deriveWeightForExercise = (
 
 /**
  * Applies a calculated max value result to the appropriate directions in maxValues.
- * Updates the testDate to current date.
+ * Updates the testAt to current date.
  */
 export const applyMaxValueToDirections = (
   currentMaxValues: MaxValuesType,
@@ -679,6 +679,6 @@ export const applyMaxValueToDirections = (
     }
   }
 
-  updated.testDate = Date.now();
+  updated.testAt = Date.now();
   return updated;
 };

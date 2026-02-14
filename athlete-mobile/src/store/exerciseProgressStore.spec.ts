@@ -571,11 +571,11 @@ describe("exerciseProgressStore", () => {
       const { result } = renderHook(() => useExerciseProgressStore());
 
       act(() => {
-        result.current.addTestResult({ ...DEFAULT_MAX_VALUES, testDate: 1000 });
-        result.current.addTestResult({ ...DEFAULT_MAX_VALUES, testDate: 2000 });
+        result.current.addTestResult({ ...DEFAULT_MAX_VALUES, testAt: 1000 });
+        result.current.addTestResult({ ...DEFAULT_MAX_VALUES, testAt: 2000 });
       });
 
-      expect(result.current.getLatestTestResult()?.testDate).toBe(2000);
+      expect(result.current.getLatestTestResult()?.testAt).toBe(2000);
     });
   });
 });

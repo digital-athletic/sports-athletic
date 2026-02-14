@@ -145,7 +145,7 @@ const ManualStrengthTestScreen: FC = () => {
 
     let updatedMaxValues: MaxValuesType = {
       ...workoutMaxValues,
-      testDate: Date.now(),
+      testAt: Date.now(),
     };
 
     for (const exercise of filledExercises) {

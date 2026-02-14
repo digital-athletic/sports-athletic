@@ -111,6 +111,7 @@ export const useAuthStore = create<AuthState>()(
         STORE_VERSIONS.AUTH,
         authStoreMigrations,
         createInitialState,
+        "auth",
       ),
       onRehydrateStorage: () => (_state, error) => {
         if (error) {

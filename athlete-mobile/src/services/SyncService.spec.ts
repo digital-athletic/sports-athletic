@@ -242,13 +242,13 @@ describe("syncStrengthTest", () => {
   it("maps camelCase to snake_case columns", async () => {
     const testTimestamp = new Date("2024-01-15").getTime();
     const payload: MaxValuesType = {
-      testDate: testTimestamp,
+      testAt: testTimestamp,
       verticalPush: { barbell: 60 },
       verticalPull: { barbell: 50 },
       horizontalPush: { barbell: 80 },
       horizontalPull: { barbell: 70 },
-      hip: { barbell: 100 },
-      knee: { barbell: 90 },
+      hipHinge: { barbell: 100 },
+      kneeDominant: { barbell: 90 },
       lowerBody: { barbell: 120 },
     };
 

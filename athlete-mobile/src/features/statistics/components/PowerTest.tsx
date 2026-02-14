@@ -199,7 +199,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
   }) => {
     const visible = isEntryExpanded(index);
     const iconName = visible ? "chevron-up" : "chevron-down";
-    const date = formatDateForDisplay(new Date(item.testDate));
+    const date = formatDateForDisplay(new Date(item.testAt));
 
     const formatWeight = (value: number | undefined) =>
       `${Math.round((value ?? 0) * 2) / 2} kg`;
@@ -258,7 +258,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
                   {t("statistics.powerTest.squad")}
                 </Text>
                 <Text variant="body" style={{ color: colors.squad }}>
-                  {formatWeight(item.knee.barbell)}
+                  {formatWeight(item.kneeDominant.barbell)}
                 </Text>
               </Box>
               <Box
@@ -344,7 +344,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
           disableVirtualization
           data={sortedHistory}
           renderItem={renderHistoryEntry}
-          keyExtractor={(item, index) => `${item.testDate}-${index}`}
+          keyExtractor={(item, index) => `${item.testAt}-${index}`}
           initialNumToRender={10}
           style={{ width: "100%" }}
           testID="power-test-results-list"

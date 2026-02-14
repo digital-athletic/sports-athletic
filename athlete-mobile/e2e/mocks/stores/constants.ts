@@ -49,7 +49,7 @@ export const STRENGTH_TEST_MAX_VALUE = {
  * Epley formula: weight × (1 + reps/30), rounded to 0.5kg
  */
 export const STRENGTH_TEST_RESULTS = {
-  testDate: TEST_DATE,
+  testAt: TEST_DATE,
   verticalPush: {
     barbell: 26.4,
     dumbbells: 11.88,
@@ -82,9 +82,9 @@ export const STRENGTH_TEST_RESULTS = {
     oneSidedLower: 8.25,
     oneSidedLowerSupported: 11,
   },
-  hip: STRENGTH_TEST_MAX_VALUE,
-  knee: STRENGTH_TEST_MAX_VALUE,
-  unterkoerper: STRENGTH_TEST_MAX_VALUE,
+  hipHinge: STRENGTH_TEST_MAX_VALUE,
+  kneeDominant: STRENGTH_TEST_MAX_VALUE,
+  lowerBody: STRENGTH_TEST_MAX_VALUE,
 };
 
 /**

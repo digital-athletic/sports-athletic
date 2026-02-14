@@ -72,13 +72,13 @@ export interface UserWorkoutStoreOptions {
 }
 
 const EMPTY_MAX_VALUES = {
-  testDate: 0,
+  testAt: 0,
   verticalPush: {},
   verticalPull: {},
   horizontalPush: {},
   horizontalPull: {},
-  hip: {},
-  knee: {},
+  hipHinge: {},
+  kneeDominant: {},
   lowerBody: {},
 };
 

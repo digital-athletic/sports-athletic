@@ -13,7 +13,7 @@ import { createExerciseProgressStore } from "../data/exerciseProgressStore";
  * Creates a strength test result with specific values for each exercise.
  */
 function createTestResult(
-  testDate: number,
+  testAt: number,
   values: {
     knee: number;
     benchPress: number;
@@ -22,7 +22,7 @@ function createTestResult(
   },
 ) {
   return {
-    testDate,
+    testAt,
     verticalPush: {
       barbell: values.shoulderPress,
       dumbbells: values.shoulderPress * 0.45,
@@ -55,8 +55,8 @@ function createTestResult(
       oneSidedLower: values.rowing * 0.225,
       oneSidedLowerSupported: values.rowing * 0.3,
     },
-    hip: STRENGTH_TEST_MAX_VALUE,
-    knee: {
+    hipHinge: STRENGTH_TEST_MAX_VALUE,
+    kneeDominant: {
       barbell: values.knee,
       dumbbells: values.knee * 0.45,
       oneSidedUpper: values.knee * 0.45,
@@ -64,7 +64,7 @@ function createTestResult(
       oneSidedLower: values.knee * 0.225,
       oneSidedLowerSupported: values.knee * 0.3,
     },
-    unterkoerper: STRENGTH_TEST_MAX_VALUE,
+    lowerBody: STRENGTH_TEST_MAX_VALUE,
   };
 }
 

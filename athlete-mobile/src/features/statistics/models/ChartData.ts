@@ -8,7 +8,7 @@ export interface ChartDataPoint {
 
 export interface PowerTestChartData {
   dates: string[];
-  knee: number[];
+  kneeDominant: number[];
   rowing: number[];
   benchPress: number[];
   shoulderPress: number[];
@@ -22,31 +22,31 @@ export const processTestHistory = (
   history: MaxValuesType[],
 ): PowerTestChartData => {
   const dates: string[] = [];
-  const knee: number[] = [];
+  const kneeDominant: number[] = [];
   const rowing: number[] = [];
   const benchPress: number[] = [];
   const shoulderPress: number[] = [];
 
   if (!history || history.length === 0) {
-    return { dates, knee, rowing, benchPress, shoulderPress };
+    return { dates, kneeDominant, rowing, benchPress, shoulderPress };
   }
 
   // Sort by timestamp ascending (oldest first) for chronological chart display
-  const sorted = [...history].sort((a, b) => a.testDate - b.testDate);
+  const sorted = [...history].sort((a, b) => a.testAt - b.testAt);
 
   for (const values of sorted) {
-    let testDate = formatDateToISO(new Date(values.testDate));
+    let dateLabel = formatDateToISO(new Date(values.testAt));
 
     // Handle duplicate dates on same day by appending a counter
     const existingCount = dates.filter(
-      (d) => d === testDate || d.startsWith(`${testDate}-`),
+      (d) => d === dateLabel || d.startsWith(`${dateLabel}-`),
     ).length;
     if (existingCount > 0) {
-      testDate = `${testDate}-${existingCount}`;
+      dateLabel = `${dateLabel}-${existingCount}`;
     }
 
-    dates.push(testDate);
-    knee.push(values.knee.barbell ?? 0);
+    dates.push(dateLabel);
+    kneeDominant.push(values.kneeDominant.barbell ?? 0);
     rowing.push(values.horizontalPull.barbell ?? 0);
     benchPress.push(values.horizontalPush.barbell ?? 0);
     shoulderPress.push(values.verticalPush.barbell ?? 0);
@@ -54,18 +54,18 @@ export const processTestHistory = (
 
   // Add starting zero-point one day before the oldest entry
   if (dates.length > 0) {
-    const oldestDate = new Date(sorted[0].testDate);
+    const oldestDate = new Date(sorted[0].testAt);
     oldestDate.setDate(oldestDate.getDate() - 1);
     const startDate = formatDateToISO(oldestDate);
 
     dates.unshift(startDate);
-    knee.unshift(0);
+    kneeDominant.unshift(0);
     rowing.unshift(0);
     benchPress.unshift(0);
     shoulderPress.unshift(0);
   }
 
-  return { dates, knee, rowing, benchPress, shoulderPress };
+  return { dates, kneeDominant, rowing, benchPress, shoulderPress };
 };
 
 /**
@@ -103,7 +103,7 @@ export const sortTestHistoryByDate = (
 
   return indexed
     .sort((a, b) => {
-      const diff = b.item.testDate - a.item.testDate;
+      const diff = b.item.testAt - a.item.testAt;
       if (diff !== 0) return diff;
       return b.index - a.index;
     })

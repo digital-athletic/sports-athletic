@@ -158,6 +158,7 @@ export const useTrainingScheduleStore = create<TrainingScheduleState>()(
         STORE_VERSIONS.TRAINING_SCHEDULE,
         trainingScheduleStoreMigrations,
         createInitialState,
+        "training-schedule",
       ),
     },
   ),

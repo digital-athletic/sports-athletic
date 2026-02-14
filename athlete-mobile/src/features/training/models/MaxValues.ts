@@ -12,32 +12,32 @@ export const DEFAULT_MAX_VALUE: MaxValueType = {
 };
 
 export const DEFAULT_MAX_VALUES: MaxValuesType = {
-  testDate: 0,
+  testAt: 0,
   verticalPush: DEFAULT_MAX_VALUE,
   verticalPull: DEFAULT_MAX_VALUE,
   horizontalPush: DEFAULT_MAX_VALUE,
   horizontalPull: DEFAULT_MAX_VALUE,
-  hip: DEFAULT_MAX_VALUE,
-  knee: DEFAULT_MAX_VALUE,
+  hipHinge: DEFAULT_MAX_VALUE,
+  kneeDominant: DEFAULT_MAX_VALUE,
   lowerBody: DEFAULT_MAX_VALUE,
 };
 
 export const EXERCISE_POSITION_VALUES_MAP: (keyof MaxValuesType)[][] = [
   ["horizontalPull"],
   ["horizontalPush"],
-  ["knee", "hip", "lowerBody"],
+  ["kneeDominant", "hipHinge", "lowerBody"],
   ["verticalPush", "verticalPull"],
 ];
 
 export const EXERCISE_DIRECTIONS_VALUES_MAP: Record<
   string,
-  Exclude<keyof MaxValuesType, "testDate">
+  Exclude<keyof MaxValuesType, "testAt">
 > = {
   VERTICAL_PUSH: "verticalPush",
   VERTICAL_PULL: "verticalPull",
   HORIZONTAL_PUSH: "horizontalPush",
   HORIZONTAL_PULL: "horizontalPull",
-  KNEE: "knee",
-  HIP: "hip",
+  KNEE: "kneeDominant",
+  HIP: "hipHinge",
   LOWER_BODY: "lowerBody",
 };

@@ -144,7 +144,7 @@ class SyncManager {
     this.onTestResultAdded = (result) => {
       enqueue({
         type: "STRENGTH_TEST",
-        referenceId: `test-${result.testDate}`,
+        referenceId: `test-${result.testAt}`,
         payload: result,
       });
       this.triggerSync();

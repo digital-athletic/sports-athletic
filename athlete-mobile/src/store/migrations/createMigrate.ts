@@ -20,10 +20,16 @@ export function createMigrate<TState>(
   currentVersion: number,
   migrations: MigrationMap<TState>,
   createInitialState: () => TState,
+  storeName?: string,
 ): (persistedState: unknown, persistedVersion: number) => TState {
+  const tag = storeName ? `[migration:${storeName}]` : "[migration]";
+
   return (persistedState: unknown, persistedVersion: number): TState => {
     // Reject non-integer version numbers (NaN, Infinity, floats)
     if (!Number.isInteger(persistedVersion)) {
+      console.warn(
+        `${tag} Invalid persisted version (${persistedVersion}), resetting to defaults`,
+      );
       return createInitialState();
     }
 
@@ -33,13 +39,26 @@ export function createMigrate<TState>(
     // Legacy bridge: version 13 was the shared version.
     // Data is valid, so we treat it as version 14 (first per-store version).
     if (version === LEGACY_SHARED_VERSION) {
+      console.log(`${tag} Bridging from legacy shared version 13 → 14`);
       version = 14;
     }
 
     // Data from before the legacy version is too old — reset
     if (version < LEGACY_SHARED_VERSION) {
+      console.warn(
+        `${tag} Version ${version} is too old (< ${LEGACY_SHARED_VERSION}), resetting to defaults`,
+      );
       return createInitialState();
     }
+
+    if (version === currentVersion) {
+      console.log(
+        `${tag} Already at version ${currentVersion}, no migration needed`,
+      );
+      return state;
+    }
+
+    console.log(`${tag} Migrating from version ${version} → ${currentVersion}`);
 
     // Apply sequential migrations
     while (version < currentVersion) {
@@ -47,7 +66,12 @@ export function createMigrate<TState>(
       if (migration) {
         try {
           state = migration(state);
-        } catch {
+          console.log(`${tag} Applied migration ${version} → ${version + 1}`);
+        } catch (error) {
+          console.error(
+            `${tag} Migration ${version} → ${version + 1} failed, resetting to defaults`,
+            error,
+          );
           return createInitialState();
         }
       }
@@ -56,6 +80,7 @@ export function createMigrate<TState>(
       version++;
     }
 
+    console.log(`${tag} Migration complete, now at version ${currentVersion}`);
     return state;
   };
 }

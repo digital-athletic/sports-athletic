@@ -4,7 +4,7 @@ import { PowerTest } from "./PowerTest";
 // Default mock chart data
 const mockChartData = {
   dates: ["2024-06-30", "2024-07-06", "2024-09-04"],
-  knee: [0, 80, 85],
+  kneeDominant: [0, 80, 85],
   rowing: [0, 50, 55],
   benchPress: [0, 60, 65],
   shoulderPress: [0, 35, 40],
@@ -135,7 +135,7 @@ describe("PowerTest LineChart", () => {
       mockUsePowerTestData.mockReturnValue({
         chartData: {
           dates: [],
-          knee: [],
+          kneeDominant: [],
           rowing: [],
           benchPress: [],
           shoulderPress: [],
@@ -152,7 +152,7 @@ describe("PowerTest LineChart", () => {
       mockUsePowerTestData.mockReturnValue({
         chartData: {
           dates: [],
-          knee: [],
+          kneeDominant: [],
           rowing: [],
           benchPress: [],
           shoulderPress: [],

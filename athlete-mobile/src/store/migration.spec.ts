@@ -38,10 +38,10 @@ describe("Per-Store Migration Versioning", () => {
       expect(Object.keys(STORE_VERSIONS)).toHaveLength(expectedStores.length);
     });
 
-    it("should all start at version 14 (first per-store version)", () => {
+    it("should be at least version 14 (first per-store version)", () => {
       const versions = Object.values(STORE_VERSIONS);
       for (const version of versions) {
-        expect(version).toBe(14);
+        expect(version).toBeGreaterThanOrEqual(14);
       }
     });
   });

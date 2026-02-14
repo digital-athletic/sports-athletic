@@ -1,9 +1,11 @@
-import { SharedConstants } from "@/constants/sharedConstants";
 import { calculateAgeFromBirthday, formatDateToISO } from "@/utils/date";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
+import { createMigrate } from "./migrations/createMigrate";
+import { userProfileStoreMigrations } from "./migrations/userProfileStoreMigrations";
+import { STORE_VERSIONS } from "./storeVersions";
 
 export interface UserPersonalDataType {
   username: string;
@@ -13,7 +15,7 @@ export interface UserPersonalDataType {
   weight?: number; // Weight in kg (20-300)
 }
 
-type State = {
+export type State = {
   personalData: UserPersonalDataType;
   anamnesisCompleted: boolean;
   teamId: string | null;
@@ -143,11 +145,12 @@ export const useUserProfileStore = create<UserProfileState>()(
     {
       name: "user-profile-storage",
       storage: asyncStorage,
-      version: SharedConstants.PERSIST_VERSION,
-      migrate: (persistedState, version) =>
-        version < SharedConstants.PERSIST_VERSION
-          ? createInitialState()
-          : persistedState,
+      version: STORE_VERSIONS.USER_PROFILE,
+      migrate: createMigrate(
+        STORE_VERSIONS.USER_PROFILE,
+        userProfileStoreMigrations,
+        createInitialState,
+      ),
       onRehydrateStorage: () => (_state, error) => {
         if (error) {
           console.error("Error hydrating user profile store:", error);

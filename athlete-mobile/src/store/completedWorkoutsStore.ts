@@ -1,4 +1,3 @@
-import { SharedConstants } from "@/constants/sharedConstants";
 import type { CompleteWorkoutType } from "@/schemas/sync.schema";
 import { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { create } from "zustand";
@@ -6,6 +5,9 @@ import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { syncManager } from "@/services/SyncManager";
 import { asyncStorage } from "./middleware";
+import { createMigrate } from "./migrations/createMigrate";
+import { completedWorkoutsStoreMigrations } from "./migrations/completedWorkoutsStoreMigrations";
+import { STORE_VERSIONS } from "./storeVersions";
 
 export type { CompleteWorkoutType } from "@/schemas/sync.schema";
 
@@ -15,7 +17,7 @@ export interface CompletedWorkoutListEntryType {
   summary: string;
 }
 
-type State = {
+export type State = {
   workouts: Record<string, CompleteWorkoutType>;
   workoutsList: CompletedWorkoutListEntryType[];
   trainingPlans: TrainingPlanType[];
@@ -152,11 +154,12 @@ export const useCompletedWorkoutsStore = create<CompletedWorkoutsState>()(
     {
       name: "completed-workouts-storage",
       storage: asyncStorage,
-      version: SharedConstants.PERSIST_VERSION,
-      migrate: (persistedState, version) =>
-        version < SharedConstants.PERSIST_VERSION
-          ? createInitialState()
-          : persistedState,
+      version: STORE_VERSIONS.COMPLETED_WORKOUTS,
+      migrate: createMigrate(
+        STORE_VERSIONS.COMPLETED_WORKOUTS,
+        completedWorkoutsStoreMigrations,
+        createInitialState,
+      ),
     },
   ),
 );

@@ -1,4 +1,3 @@
-import { SharedConstants } from "@/constants/sharedConstants";
 import { PlaceType } from "@/constants/workoutConstants";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -8,6 +7,9 @@ import HOME from "../../assets/data/generator/places/HOME";
 import OUTSIDE from "../../assets/data/generator/places/OUTSIDE";
 import STUDIO from "../../assets/data/generator/places/STUDIO";
 import { asyncStorage } from "./middleware";
+import { createMigrate } from "./migrations/createMigrate";
+import { placesStoreMigrations } from "./migrations/placesStoreMigrations";
+import { STORE_VERSIONS } from "./storeVersions";
 
 export type PlaceEquipment = {
   equipment: string[];
@@ -20,7 +22,7 @@ export type PlacesData = {
   OUTSIDE: PlaceEquipment;
 };
 
-type State = {
+export type State = {
   places: PlacesData;
 };
 
@@ -105,11 +107,12 @@ export const usePlacesStore = create<PlacesStoreState>()(
     {
       name: "places-storage",
       storage: asyncStorage,
-      version: SharedConstants.PERSIST_VERSION,
-      migrate: (persistedState, version) =>
-        version < SharedConstants.PERSIST_VERSION
-          ? createInitialState()
-          : persistedState,
+      version: STORE_VERSIONS.PLACES,
+      migrate: createMigrate(
+        STORE_VERSIONS.PLACES,
+        placesStoreMigrations,
+        createInitialState,
+      ),
     },
   ),
 );

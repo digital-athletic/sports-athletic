@@ -1,4 +1,3 @@
-import { SharedConstants } from "@/constants/sharedConstants";
 import { PlaceType } from "@/constants/workoutConstants";
 import { TrainingDayType } from "@/features/training/models/TrainingDay";
 import { minutes } from "@/features/training/models/TimeUnits";
@@ -6,8 +5,11 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
+import { createMigrate } from "./migrations/createMigrate";
+import { trainingScheduleStoreMigrations } from "./migrations/trainingScheduleStoreMigrations";
+import { STORE_VERSIONS } from "./storeVersions";
 
-type State = {
+export type State = {
   trainingDays: TrainingDayType[];
 };
 
@@ -151,11 +153,12 @@ export const useTrainingScheduleStore = create<TrainingScheduleState>()(
     {
       name: "training-schedule-storage",
       storage: asyncStorage,
-      version: SharedConstants.PERSIST_VERSION,
-      migrate: (persistedState, version) =>
-        version < SharedConstants.PERSIST_VERSION
-          ? createInitialState()
-          : persistedState,
+      version: STORE_VERSIONS.TRAINING_SCHEDULE,
+      migrate: createMigrate(
+        STORE_VERSIONS.TRAINING_SCHEDULE,
+        trainingScheduleStoreMigrations,
+        createInitialState,
+      ),
     },
   ),
 );

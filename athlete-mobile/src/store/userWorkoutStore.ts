@@ -1,4 +1,3 @@
-import { SharedConstants } from "@/constants/sharedConstants";
 import { isSkillTypes } from "@/constants/workoutConstants";
 import { ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
 import {
@@ -22,8 +21,11 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
+import { createMigrate } from "./migrations/createMigrate";
+import { userWorkoutStoreMigrations } from "./migrations/userWorkoutStoreMigrations";
+import { STORE_VERSIONS } from "./storeVersions";
 
-type State = {
+export type State = {
   workoutData: UserWorkoutDataType;
   trainingPlan: TrainingPlanType | null;
   temporalData?: TemporalDataType[];
@@ -191,11 +193,12 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
     {
       name: "user-workout-storage",
       storage: asyncStorage,
-      version: SharedConstants.PERSIST_VERSION,
-      migrate: (persistedState, version) =>
-        version < SharedConstants.PERSIST_VERSION
-          ? createInitialState()
-          : persistedState,
+      version: STORE_VERSIONS.USER_WORKOUT,
+      migrate: createMigrate(
+        STORE_VERSIONS.USER_WORKOUT,
+        userWorkoutStoreMigrations,
+        createInitialState,
+      ),
     },
   ),
 );

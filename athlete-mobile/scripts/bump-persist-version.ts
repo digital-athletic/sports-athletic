@@ -1,33 +1,22 @@
-import { readFile, writeFile } from "fs/promises";
+import { readFile } from "fs/promises";
 import path from "path";
 
-const incrementPersistVersion = async () => {
-  console.log("🤖 | Incrementing PERSIST_VERSION. Reading sharedConstants...");
+const auditStoreVersions = async () => {
+  const versionsFile = path.join(__dirname, "../src/store/storeVersions.ts");
+  const contents = await readFile(versionsFile, "utf-8");
+  const versionRegex = /(\w+):\s*(\d+)/g;
+  let match;
 
-  const sharedConstants = path.join(
-    __dirname,
-    "../src/constants/sharedConstants.ts",
-  );
-  const contents = await readFile(sharedConstants, "utf-8");
-  // Extract number
-  const exp = new RegExp(/const\s+PERSIST_VERSION\s*=\s*(\d+);/);
-  const match = contents.match(exp);
-
-  if (!match || match.length < 2) {
-    throw new Error("PERSIST_VERSION not found");
+  console.log("Store Versions:");
+  console.log("---------------");
+  while ((match = versionRegex.exec(contents)) !== null) {
+    console.log(`  ${match[1]}: ${match[2]}`);
   }
-
-  const currentVersion = Number(match[1]);
-  console.log(`   | Current PERSIST_VERSION: ${currentVersion}`);
-  const nextVersion = currentVersion + 1;
-  console.log(`   | Next PERSIST_VERSION: ${nextVersion}`);
-  const updatedContents = contents.replace(
-    exp,
-    `const PERSIST_VERSION = ${nextVersion};`,
+  console.log("");
+  console.log("To bump a store version, edit src/store/storeVersions.ts");
+  console.log(
+    "and add a migration in src/store/migrations/<storeName>Migrations.ts",
   );
-
-  writeFile(sharedConstants, updatedContents, "utf8");
-  console.log("✅ | Successfully incremented PERSIST_VERSION");
 };
 
-incrementPersistVersion();
+auditStoreVersions();

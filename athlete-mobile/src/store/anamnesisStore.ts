@@ -1,4 +1,3 @@
-import { SharedConstants } from "@/constants/sharedConstants";
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { SeasonPhaseType } from "@/features/training/models/SeasonPhase";
@@ -6,11 +5,14 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
+import { createMigrate } from "./migrations/createMigrate";
+import { anamnesisStoreMigrations } from "./migrations/anamnesisStoreMigrations";
+import { STORE_VERSIONS } from "./storeVersions";
 
 /** Anamnesis form field value types */
 export type AnamnesisValue = string | number | boolean | null | undefined;
 
-type State = {
+export type State = {
   /** Form field values keyed by field path (e.g., "height", "weight", "birthday") */
   values: Record<string, AnamnesisValue>;
   /**
@@ -118,11 +120,12 @@ export const useAnamnesisStore = create<AnamnesisState>()(
     {
       name: "anamnesis-storage",
       storage: asyncStorage,
-      version: SharedConstants.PERSIST_VERSION,
-      migrate: (persistedState, version) =>
-        version < SharedConstants.PERSIST_VERSION
-          ? createInitialState()
-          : persistedState,
+      version: STORE_VERSIONS.ANAMNESIS,
+      migrate: createMigrate(
+        STORE_VERSIONS.ANAMNESIS,
+        anamnesisStoreMigrations,
+        createInitialState,
+      ),
     },
   ),
 );

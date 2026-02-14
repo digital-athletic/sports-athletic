@@ -1,86 +1,76 @@
-import { SharedConstants } from "@/constants/sharedConstants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useAnamnesisStore } from "./anamnesisStore";
+import { STORE_VERSIONS } from "./storeVersions";
 import { useAuthStore } from "./authStore";
 import { useUserProfileStore } from "./userProfileStore";
 import { useUserWorkoutStore } from "./userWorkoutStore";
+import { useAnamnesisStore } from "./anamnesisStore";
 
-/**
- * Tests for store migration behavior on version bumps
- *
- * These tests verify that when PERSIST_VERSION is incremented,
- * stores correctly reset to their default state to avoid
- * errors from incompatible persisted data.
- */
-describe("Store Migration on Version Bump", () => {
+describe("Per-Store Migration Versioning", () => {
   beforeEach(async () => {
-    // Clear AsyncStorage before each test
     await AsyncStorage.clear();
   });
 
   afterEach(async () => {
-    // Clean up after each test
     await AsyncStorage.clear();
   });
 
-  describe("authStore migration", () => {
-    it("should reset to default state when persisted version is lower", async () => {
-      // Simulate old persisted state with old version
-      const oldState = {
+  describe("STORE_VERSIONS", () => {
+    it("should have all 10 store versions defined as integers >= 14", () => {
+      const expectedStores = [
+        "AUTH",
+        "USER_PROFILE",
+        "USER_WORKOUT",
+        "USER_SETTINGS",
+        "ANAMNESIS",
+        "TRAINING_SCHEDULE",
+        "PLACES",
+        "COMPLETED_WORKOUTS",
+        "SYNC_QUEUE",
+        "EXERCISE_PROGRESS",
+      ] as const;
+
+      for (const store of expectedStores) {
+        const version = STORE_VERSIONS[store];
+        expect(version).toBeGreaterThanOrEqual(14);
+        expect(Number.isInteger(version)).toBe(true);
+      }
+
+      expect(Object.keys(STORE_VERSIONS)).toHaveLength(expectedStores.length);
+    });
+
+    it("should all start at version 14 (first per-store version)", () => {
+      const versions = Object.values(STORE_VERSIONS);
+      for (const version of versions) {
+        expect(version).toBe(14);
+      }
+    });
+  });
+
+  describe("Ancient version reset", () => {
+    it("should reset authStore when persisted version is below legacy", async () => {
+      const ancientState = {
         state: {
-          auth: { userId: "old-user-id", token: "old-token" },
+          auth: { userId: "old-user", token: "old-token" },
           isInitialized: true,
         },
-        version: 0, // Old version
+        version: 5,
       };
-      await AsyncStorage.setItem("auth-storage", JSON.stringify(oldState));
+      await AsyncStorage.setItem("auth-storage", JSON.stringify(ancientState));
 
-      // Get store (this triggers migration)
       const state = useAuthStore.getState();
-
-      // Wait for hydration
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      // Should be reset to default state
       expect(state.auth).toBeNull();
       expect(state.isInitialized).toBe(false);
     });
 
-    it("should preserve state when persisted version matches", async () => {
-      // Simulate persisted state with current version
-      const currentState = {
-        state: {
-          auth: { userId: "current-user", token: "current-token" },
-          isInitialized: true,
-        },
-        version: SharedConstants.PERSIST_VERSION,
-      };
-      await AsyncStorage.setItem("auth-storage", JSON.stringify(currentState));
-
-      // Get store - this triggers hydration
-      useAuthStore.getState();
-
-      // Wait for hydration to complete
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      // State should be preserved (though we can't test this easily in unit tests
-      // due to the async nature of zustand persistence)
-      // The key is that migration function returned persistedState, not DEFAULT_STATE
-
-      // Verify the test setup at least ran without errors
-      const storedData = await AsyncStorage.getItem("auth-storage");
-      expect(storedData).toBeTruthy();
-    });
-  });
-
-  describe("userProfileStore migration", () => {
-    it("should reset to default state when persisted version is lower", async () => {
-      const oldState = {
+    it("should reset userProfileStore when persisted version is below legacy", async () => {
+      const ancientState = {
         state: {
           personalData: {
             username: "olduser",
             gender: "MALE",
-            birthday: "01-01-1990",
+            birthday: "1990-01-01",
           },
           anamnesisCompleted: true,
           teamId: "old-team",
@@ -89,7 +79,7 @@ describe("Store Migration on Version Bump", () => {
       };
       await AsyncStorage.setItem(
         "user-profile-storage",
-        JSON.stringify(oldState),
+        JSON.stringify(ancientState),
       );
 
       const state = useUserProfileStore.getState();
@@ -99,72 +89,25 @@ describe("Store Migration on Version Bump", () => {
     });
   });
 
-  describe("migration function behavior", () => {
-    it("should return DEFAULT_STATE when version is lower", () => {
-      // Test the migration logic directly
-      const DEFAULT_STATE = { auth: null, isInitialized: false };
-      const persistedState = { auth: { userId: "test", token: "test" } };
-
-      // Simulate what the migrate function does
-      const migratedState =
-        0 < SharedConstants.PERSIST_VERSION ? DEFAULT_STATE : persistedState;
-
-      expect(migratedState).toEqual(DEFAULT_STATE);
+  describe("Store smoke tests", () => {
+    it("should have migration configured in authStore", () => {
+      expect(useAuthStore).toBeDefined();
+      expect(useAuthStore.getState).toBeDefined();
     });
 
-    it("should return persistedState when version matches", () => {
-      const DEFAULT_STATE = { auth: null, isInitialized: false };
-      const persistedState = { auth: { userId: "test", token: "test" } };
-
-      // Simulate what the migrate function does when versions match
-      // Using the current version as both persisted and current version
-      const currentVersion = SharedConstants.PERSIST_VERSION;
-      const migratedState =
-        currentVersion < SharedConstants.PERSIST_VERSION
-          ? DEFAULT_STATE
-          : persistedState;
-
-      expect(migratedState).toEqual(persistedState);
-    });
-  });
-
-  describe("PERSIST_VERSION constant", () => {
-    it("should have a valid version number", () => {
-      expect(SharedConstants.PERSIST_VERSION).toBeGreaterThan(0);
-      expect(Number.isInteger(SharedConstants.PERSIST_VERSION)).toBe(true);
+    it("should have migration configured in userProfileStore", () => {
+      expect(useUserProfileStore).toBeDefined();
+      expect(useUserProfileStore.getState).toBeDefined();
     });
 
-    it("should be accessible from SharedConstants", () => {
-      expect(SharedConstants.PERSIST_VERSION).toBeDefined();
-      expect(typeof SharedConstants.PERSIST_VERSION).toBe("number");
-    });
-  });
-
-  describe("all stores have migration configured", () => {
-    it("should have migration pattern in authStore", () => {
-      // This is a smoke test to ensure the store is properly configured
-      // Real migration behavior is tested in integration tests
-      const store = useAuthStore;
-      expect(store).toBeDefined();
-      expect(store.getState).toBeDefined();
+    it("should have migration configured in userWorkoutStore", () => {
+      expect(useUserWorkoutStore).toBeDefined();
+      expect(useUserWorkoutStore.getState).toBeDefined();
     });
 
-    it("should have migration pattern in userProfileStore", () => {
-      const store = useUserProfileStore;
-      expect(store).toBeDefined();
-      expect(store.getState).toBeDefined();
-    });
-
-    it("should have migration pattern in userWorkoutStore", () => {
-      const store = useUserWorkoutStore;
-      expect(store).toBeDefined();
-      expect(store.getState).toBeDefined();
-    });
-
-    it("should have migration pattern in anamnesisStore", () => {
-      const store = useAnamnesisStore;
-      expect(store).toBeDefined();
-      expect(store.getState).toBeDefined();
+    it("should have migration configured in anamnesisStore", () => {
+      expect(useAnamnesisStore).toBeDefined();
+      expect(useAnamnesisStore.getState).toBeDefined();
     });
   });
 });

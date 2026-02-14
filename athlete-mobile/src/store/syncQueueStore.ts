@@ -1,9 +1,11 @@
-import { SharedConstants } from "@/constants/sharedConstants";
 import { Logger } from "@/services/Logger";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
+import { createMigrate } from "./migrations/createMigrate";
+import { syncQueueStoreMigrations } from "./migrations/syncQueueStoreMigrations";
+import { STORE_VERSIONS } from "./storeVersions";
 
 export const MAX_RETRY_ATTEMPTS = 5;
 export const MAX_QUEUE_SIZE = 500;
@@ -27,7 +29,7 @@ export interface SyncQueueItem {
   error?: string;
 }
 
-type State = {
+export type State = {
   queue: SyncQueueItem[];
 };
 
@@ -156,11 +158,12 @@ export const useSyncQueueStore = create<SyncQueueState>()(
     {
       name: "sync-queue-storage",
       storage: asyncStorage,
-      version: SharedConstants.PERSIST_VERSION,
-      migrate: (persistedState, version) =>
-        version < SharedConstants.PERSIST_VERSION
-          ? createInitialState()
-          : persistedState,
+      version: STORE_VERSIONS.SYNC_QUEUE,
+      migrate: createMigrate(
+        STORE_VERSIONS.SYNC_QUEUE,
+        syncQueueStoreMigrations,
+        createInitialState,
+      ),
     },
   ),
 );

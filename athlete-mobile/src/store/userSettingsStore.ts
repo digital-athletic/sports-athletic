@@ -1,8 +1,10 @@
-import { SharedConstants } from "@/constants/sharedConstants";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { asyncStorage } from "./middleware";
+import { createMigrate } from "./migrations/createMigrate";
+import { userSettingsStoreMigrations } from "./migrations/userSettingsStoreMigrations";
+import { STORE_VERSIONS } from "./storeVersions";
 
 export interface ReviewStatusType {
   hasReviewed: boolean;
@@ -10,7 +12,7 @@ export interface ReviewStatusType {
   promptCount?: number;
 }
 
-type State = {
+export type State = {
   reviewStatus: ReviewStatusType;
   anonymisedDataUse: boolean;
 };
@@ -90,11 +92,12 @@ export const useUserSettingsStore = create<UserSettingsState>()(
     {
       name: "user-settings-storage",
       storage: asyncStorage,
-      version: SharedConstants.PERSIST_VERSION,
-      migrate: (persistedState, version) =>
-        version < SharedConstants.PERSIST_VERSION
-          ? createInitialState()
-          : persistedState,
+      version: STORE_VERSIONS.USER_SETTINGS,
+      migrate: createMigrate(
+        STORE_VERSIONS.USER_SETTINGS,
+        userSettingsStoreMigrations,
+        createInitialState,
+      ),
     },
   ),
 );

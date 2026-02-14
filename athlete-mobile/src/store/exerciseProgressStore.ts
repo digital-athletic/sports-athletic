@@ -1,4 +1,3 @@
-import { SharedConstants } from "@/constants/sharedConstants";
 import {
   accumulateExerciseTotals,
   type ExerciseTotalsMapType,
@@ -11,6 +10,9 @@ import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { syncManager } from "@/services/SyncManager";
 import { asyncStorage } from "./middleware";
+import { createMigrate } from "./migrations/createMigrate";
+import { exerciseProgressStoreMigrations } from "./migrations/exerciseProgressStoreMigrations";
+import { STORE_VERSIONS } from "./storeVersions";
 
 export interface UserExerciseBranchDataType {
   branchId: string;
@@ -22,7 +24,7 @@ export type BranchDataMapType = Record<
   UserExerciseBranchDataType | undefined
 >;
 
-type State = {
+export type State = {
   // Exercise-level data
   exerciseData: Record<string, UserExerciseDataType | undefined>;
   branchData: BranchDataMapType;
@@ -312,11 +314,12 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
     {
       name: "exercise-progress-storage",
       storage: asyncStorage,
-      version: SharedConstants.PERSIST_VERSION,
-      migrate: (persistedState, version) =>
-        version < SharedConstants.PERSIST_VERSION
-          ? createInitialState()
-          : persistedState,
+      version: STORE_VERSIONS.EXERCISE_PROGRESS,
+      migrate: createMigrate(
+        STORE_VERSIONS.EXERCISE_PROGRESS,
+        exerciseProgressStoreMigrations,
+        createInitialState,
+      ),
     },
   ),
 );

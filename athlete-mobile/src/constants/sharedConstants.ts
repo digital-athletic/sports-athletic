@@ -32,26 +32,6 @@ const LINK_PRIVACY = "https://www.sports-athletic.com/datenschutz";
 
 const CONNECTION_TIMOUT_MS = 1000 * 45; // 45 seconds
 
-/**
- * Version of persisted state
- *
- * Increment to trigger a reset of all persisted stores to their default state.
- * This prevents errors from incompatible data structures after app updates.
- *
- * When to increment:
- * - Removing or renaming fields in persisted stores
- * - Changing field types (e.g., string to number)
- * - Restructuring nested objects
- * - Any breaking change to store state shape
- *
- * How to increment:
- * - Run: pnpm bump:persist-version
- * - Or manually increment the number below
- *
- * Note: Incrementing this will log out users and clear all app data.
- */
-const PERSIST_VERSION = 13;
-
 export const SharedConstants = {
   APP_NAME,
   CONNECTION_TIMOUT_MS,
@@ -60,7 +40,7 @@ export const SharedConstants = {
   FILE_PATH_SKILL_TREES,
   LINK_AGB,
   LINK_PRIVACY,
-  PERSIST_VERSION,
+
   SUPABASE_IMAGE_BUCKET,
   SUPABASE_VIDEO_BUCKET,
   TIME_IN_MS,

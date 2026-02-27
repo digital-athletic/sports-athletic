@@ -793,6 +793,9 @@ export default class TrainingGenerator {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    // Use a local variable for sections to avoid mutating frozen store objects
+    let sections = trainingPlan.sections;
+
     if (TrainingGenerator.DEBUG)
       console.log("NO training for " + daysSinceLastWorkout + " days");
     if (daysSinceLastWorkout > 21) {
@@ -800,23 +803,20 @@ export default class TrainingGenerator {
     } else if (daysSinceLastWorkout > 7) {
       // Extend section start dates when user has missed multiple weeks
       const { sections: extendedSections, additionalWeeks } =
-        extendSectionsForMissedWeeks(
-          trainingPlan.sections,
-          daysSinceLastWorkout,
-        );
+        extendSectionsForMissedWeeks(sections, daysSinceLastWorkout);
 
       if (TrainingGenerator.DEBUG)
         console.log(`Extending plan sections by ${additionalWeeks} weeks`);
 
-      trainingPlan.sections = extendedSections;
+      sections = extendedSections;
     }
 
     let currSec;
     if (givenSection) {
-      currSec = trainingPlan.sections[givenSection];
+      currSec = sections[givenSection];
     } else {
       currSec = getSectionForDate(
-        trainingPlan.sections as Parameters<typeof getSectionForDate>[0],
+        sections as Parameters<typeof getSectionForDate>[0],
         today.getTime(),
       );
     }
@@ -841,6 +841,9 @@ export default class TrainingGenerator {
     if (TrainingGenerator.DEBUG) {
       console.log("TRAINING INPUT", currTraining);
     }
+
+    // Shallow copy lengths to avoid mutating frozen store objects (immer)
+    const lengths = { ...currTraining.lengths };
 
     // if no test needed => build training
     let exerciseBranches = cloneWithValidation(
@@ -957,9 +960,9 @@ export default class TrainingGenerator {
 
           // replace existing cardio skill with cardio 5
           exerciseBranches[skill] = [];
-          const cardioLength = currTraining.lengths[skill] ?? 0;
+          const cardioLength = lengths[skill] ?? 0;
           const cardioSkill = "CARDIO_5" satisfies SkillTypes;
-          currTraining.lengths[cardioSkill] = Math.min(cardioLength, 20); // max 20 minutes of replacemnet cardio
+          lengths[cardioSkill] = Math.min(cardioLength, 20); // max 20 minutes of replacemnet cardio
           exerciseBranches[cardioSkill] = [
             {
               tags: cardioReplacement.tags,
@@ -1039,13 +1042,11 @@ export default class TrainingGenerator {
               if (exerciseBranches[otherPrevSkill]?.length > 0) {
                 exerciseBranches[otherPrevSkill] =
                   exerciseBranches[otherPrevSkill]!.concat(replacement);
-                currTraining.lengths[otherPrevSkill] =
-                  (currTraining.lengths[otherPrevSkill] ?? 0) +
-                  (currTraining.lengths[skill] ?? 0);
+                lengths[otherPrevSkill] =
+                  (lengths[otherPrevSkill] ?? 0) + (lengths[skill] ?? 0);
               } else {
                 exerciseBranches[otherPrevSkill] = replacement;
-                currTraining.lengths[otherPrevSkill] =
-                  currTraining.lengths[skill] ?? 0;
+                lengths[otherPrevSkill] = lengths[skill] ?? 0;
               }
               // select exercise for updated userLevel
               exerciseBranches[otherPrevSkill] = exerciseBranches[
@@ -1132,7 +1133,7 @@ export default class TrainingGenerator {
           // add to sorted if not null/empty
           return {
             skill: skillKey,
-            length: currTraining.lengths[skillKey] ?? 0,
+            length: lengths[skillKey] ?? 0,
             branches: branchArray as BranchExerciseReference[],
           };
         }

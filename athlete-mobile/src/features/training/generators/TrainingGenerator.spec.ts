@@ -2094,6 +2094,53 @@ describe("TrainingGenerator", () => {
       expect(uniqueIds).toEqual(["357", "4"]);
     });
 
+    it("does not throw when trainingPlan is frozen (immer store) and daysSinceLastWorkout > 7", () => {
+      function deepFreeze<T extends object>(obj: T): T {
+        Object.freeze(obj);
+        for (const value of Object.values(obj)) {
+          if (value && typeof value === "object" && !Object.isFrozen(value)) {
+            deepFreeze(value);
+          }
+        }
+        return obj;
+      }
+
+      const user = buildPlanUser({
+        weekday: 1,
+        skills: {
+          SWR1: [
+            {
+              branchId: "22",
+              tags: ["SKILL_SWR", "PLACE_STUDIO", "EQ_DUMBBELL"],
+              exercises: {
+                "1": { exerciseId: "118" },
+                "2": { exerciseId: "118" },
+                "3": { exerciseId: "261" },
+              },
+            },
+          ],
+        },
+        lengths: { SWR1: 10 },
+      });
+
+      // Simulate immer's recursive deep freeze (Zustand immer middleware freezes all store state)
+      deepFreeze(user.trainingPlan!);
+
+      const result = generator.generatePlanWorkout(
+        "PLAN",
+        user,
+        "STUDIO",
+        realExercises,
+        importTrees("WU", "SWR1", "CARDIO_3", "CARDIO_4", "CARDIO_5"),
+        1,
+        ["DUMBBELL", "BARBELL"],
+        undefined,
+        14, // > 7 days triggers extendSectionsForMissedWeeks
+        noExerciseData,
+      );
+      expect(result.length).toBeGreaterThan(0);
+    });
+
     it("branch threshold profile: BEGINNER with branch level 2 does not throw", () => {
       const user = buildPlanUser({
         weekday: 1,

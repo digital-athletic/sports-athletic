@@ -1,5 +1,6 @@
 import { BodyParts } from "@/bodyParts/BodyParts";
 import { BodyPartsTagChips } from "@/bodyParts/BodyPartsTagChips";
+import { MaleMusclesSvg } from "@/bodyParts/MaleMusclesSvg";
 import { expandMuscleTags } from "@/bodyParts/muscleTagMapping";
 import { Loading } from "@/common/Loading";
 import { TagGroups } from "@/constants/tagGroups";
@@ -11,7 +12,7 @@ import { Text } from "@/theme/Text";
 import { getTagValues } from "@/utils/tagUtils";
 import { VideoPlayer } from "@/video/VideoPlayer";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { FC, useEffect, useState } from "react";
+import { type FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -139,6 +140,8 @@ const MusclesList: FC<MusclesListProps> = ({ tags, gender }) => {
 
   if (muscles.length === 0) return null;
 
+  const isMale = gender === "MALE";
+
   return (
     <Box padding="l">
       <Text variant="cardTitle" marginBottom="s">
@@ -146,28 +149,37 @@ const MusclesList: FC<MusclesListProps> = ({ tags, gender }) => {
       </Text>
 
       <Box flexDirection="row" justifyContent="space-around" marginBottom="l">
-        <Box flex={1}>
-          <BodyParts
-            type="MUSCLE"
-            gender={gender === "MALE" ? "m" : "w"}
-            tags={muscles}
-            secondaryTags={musclesSecondary}
-            side="FRONT"
-            showChips={false}
-            hideCoaching
+        {isMale ? (
+          <MaleMusclesSvg
+            muscles={muscles}
+            musclesSecondary={musclesSecondary}
           />
-        </Box>
-        <Box flex={1}>
-          <BodyParts
-            type="MUSCLE"
-            gender={gender === "MALE" ? "m" : "w"}
-            tags={muscles}
-            secondaryTags={musclesSecondary}
-            side="BACK"
-            showChips={false}
-            hideCoaching
-          />
-        </Box>
+        ) : (
+          <>
+            <Box flex={1}>
+              <BodyParts
+                type="MUSCLE"
+                gender="w"
+                tags={muscles}
+                secondaryTags={musclesSecondary}
+                side="FRONT"
+                showChips={false}
+                hideCoaching
+              />
+            </Box>
+            <Box flex={1}>
+              <BodyParts
+                type="MUSCLE"
+                gender="w"
+                tags={muscles}
+                secondaryTags={musclesSecondary}
+                side="BACK"
+                showChips={false}
+                hideCoaching
+              />
+            </Box>
+          </>
+        )}
       </Box>
 
       <Box paddingHorizontal="l" marginBottom="m">

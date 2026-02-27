@@ -5,7 +5,14 @@
   "pnpm": {
     "overrides": {
       "lodash": ">=4.17.23",
-      "@isaacs/brace-expansion": ">=5.0.1"
+      "@isaacs/brace-expansion": ">=5.0.1",
+      "tar": ">=7.5.8",
+      "minimatch": ">=10.2.3",
+      "rollup": ">=4.59.0",
+      "expo-dev-launcher>ajv": ">=8.18.0",
+      "eslint>ajv": "6.14.0",
+      "@eslint/eslintrc>ajv": "6.14.0",
+      "qs": ">=6.14.2"
     }
   }
 }

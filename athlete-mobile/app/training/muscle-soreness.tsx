@@ -35,7 +35,7 @@ import { parseBooleanParam, parseIntParam } from "@/utils/router";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, BackHandler } from "react-native";
+import { Alert, BackHandler, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type ScreenState = "SORENESS" | "PLACE";
@@ -309,7 +309,7 @@ export default function MuscleSorenessScreen() {
           <>
             <Box flex={1} justifyContent="center" alignItems="stretch">
               {screenState === "SORENESS" ? (
-                <Box flex={1}>
+                <ScrollView style={{ flex: 1 }}>
                   {type === "PLAN" ? (
                     <Text variant="title">
                       {t("training.muscleSoreness.title")}
@@ -324,7 +324,7 @@ export default function MuscleSorenessScreen() {
                     showChips
                     showsSoreness
                   />
-                </Box>
+                </ScrollView>
               ) : (
                 <PlaceSelection selectPlace={selectPlace} places={places} />
               )}

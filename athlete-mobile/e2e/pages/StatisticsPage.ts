@@ -33,10 +33,6 @@ export interface SummaryExpectations {
 }
 
 export class StatisticsPage extends BasePage {
-  constructor(page: Page) {
-    super(page);
-  }
-
   /**
    * Extracts text value from a summary section by label.
    * The TrainingSummary component shows label and value in a column layout.

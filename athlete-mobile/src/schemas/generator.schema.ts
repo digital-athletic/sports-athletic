@@ -313,6 +313,12 @@ export const GeneratedSetListEntrySchema = v.object({
   weight: v.optional(v.number()),
   height: v.optional(v.number()),
   weightType: v.optional(v.string()),
+  repetitionMAX: v.optional(
+    v.object({
+      level: v.string(),
+      repetitions: v.number(),
+    }),
+  ),
 });
 export type GeneratedSetListEntryFromSchema = v.InferOutput<
   typeof GeneratedSetListEntrySchema
@@ -337,6 +343,10 @@ export type UserExerciseEntry = {
   height?: number;
   weightType?: string;
   branchId?: string;
+  maxFRepetitions?: {
+    level: "WARMUP" | "EASY" | "MEDIUM" | "HARD";
+    repetitions: number;
+  }[];
 };
 
 /**
@@ -356,6 +366,14 @@ export function toUserExerciseData(
     height: entry.height,
     weightType: entry.weightType,
     branchId: entry.branchId,
+    maxFRepetitions: entry.repetitionMAX
+      ? [
+          entry.repetitionMAX as {
+            level: "WARMUP" | "EASY" | "MEDIUM" | "HARD";
+            repetitions: number;
+          },
+        ]
+      : undefined,
   };
 }
 

@@ -1,4 +1,4 @@
-import { expect, type Page } from "@playwright/test";
+import { expect } from "@playwright/test";
 import { BasePage } from "./BasePage";
 
 interface RegistrationFormData {
@@ -7,10 +7,6 @@ interface RegistrationFormData {
 }
 
 export class RegistrationPage extends BasePage {
-  constructor(page: Page) {
-    super(page);
-  }
-
   async goToRegistration() {
     await this.page.goto("/");
     await expect(

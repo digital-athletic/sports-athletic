@@ -6,7 +6,6 @@ async function mockSupabaseStorage(page: Page) {
 
   // Intercept createSignedUrl API calls
   await page.route("**/storage/v1/object/sign/**", async (route) => {
-    const url = new URL(route.request().url());
     await route.fulfill({
       status: 200,
       contentType: "application/json",

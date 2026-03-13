@@ -1,6 +1,7 @@
 import { expect, test } from "./fixtures";
 import { createBranchThresholdProfile } from "./mocks/stores/profiles/branchThresholdProfile";
 import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile";
+import { createMaxExerciseProfile } from "./mocks/stores/profiles/maxExerciseProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
 import { mockWakeLock } from "./mocks/wakeLock";
 import { WorkoutPage } from "./pages";
@@ -148,6 +149,45 @@ test.describe("Workout Flow", () => {
 
       await expect(page.getByText(UPGRADED_EXERCISE)).toBeVisible();
       await expect(page.getByText(INITIAL_EXERCISE)).not.toBeVisible();
+    });
+  });
+
+  test.describe("MAX exercise level progression", () => {
+    test.use({ profile: createMaxExerciseProfile() });
+
+    test("TOO_EASY on MAX exercise produces HARD level in next workout", async ({
+      page,
+    }) => {
+      test.setTimeout(120000);
+      await mockSupabaseAuth(page);
+      await mockWakeLock(page);
+
+      const workoutPage = new WorkoutPage(page);
+
+      await workoutPage.login("test@example.com");
+      await workoutPage.expectLoggedIn();
+
+      // First workout: complete with TOO_EASY feedback
+      await workoutPage.startWorkout("Tuesday");
+      await expect(page.getByText("KH-Bankdrücken (Max-K)")).toBeVisible();
+      await workoutPage.beginWorkout();
+      await workoutPage.completeWorkout({ lastSetFeedback: "too_easy" });
+      await workoutPage.returnToHome();
+
+      // Second workout: verify generator produced HARD level
+      await workoutPage.startWorkout("Tuesday");
+      await workoutPage.beginWorkout();
+
+      const exerciseList = await workoutPage.getGeneratedExerciseList();
+      // Filter to MAX exercise entries (exerciseId "8")
+      const maxExercises =
+        exerciseList?.filter((e: any) => e.exerciseId === "8") ?? [];
+      // Last entry is the working set (not warmup)
+      const lastSet = maxExercises[maxExercises.length - 1];
+      // Verify level is HARD (EASY + TOO_EASY feedback = HARD per level progression rules)
+      const lastMaxFRep =
+        lastSet?.maxFRepetitions?.[lastSet.maxFRepetitions.length - 1];
+      expect(lastMaxFRep).toEqual(expect.objectContaining({ level: "HARD" }));
     });
   });
 });

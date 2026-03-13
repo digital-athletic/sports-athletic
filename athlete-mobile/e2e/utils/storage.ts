@@ -135,13 +135,13 @@ export interface CompletedWorkoutData {
   timestamp: number;
   duration: number;
   xpEarned?: number;
-  exercises: Array<{
+  exercises: {
     exerciseId: string;
     skill?: string;
     weight?: number;
     repetition?: number;
     set?: [number, number];
-  }>;
+  }[];
 }
 
 /**

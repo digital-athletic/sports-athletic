@@ -13,9 +13,16 @@ module.exports = defineConfig([
       "legacy/*",
       "trainer-dashboard/*",
       "supabase/*",
+      "assets/data/personas/*",
     ],
     rules: {
       "@typescript-eslint/no-require-imports": "off",
+    },
+  },
+  {
+    files: ["e2e/**/*.ts"],
+    rules: {
+      "react-hooks/rules-of-hooks": "off",
     },
   },
 ]);

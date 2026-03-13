@@ -35,6 +35,7 @@ import {
   shouldProcessExerciseValues,
 } from "@/features/training/utils/exerciseDataUtils";
 import { heartRateBySkillAndBirthday } from "@/features/training/utils/heartRateUtils";
+import { getLastMaxFRep } from "@/features/training/utils/maxFRepetitionsUtils";
 import {
   getSkillTree,
   isPreventionSkill,
@@ -460,7 +461,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
           const ageGroup = ageGroupFor(personalData.birthday);
 
           // get adjustment of exercise
-          const exercise = exerciseList?.find(
+          const exercise = exerciseList?.findLast(
             (item) => item.exerciseId === exerciseId,
           );
           let adjustment = null;
@@ -477,7 +478,8 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
             typeof maxValue === "number"
               ? getRoundedResultForValueAndStep((weight / maxValue) * 100, 2.5)
               : null;
-          let maxFRepetitionsNew = exercise?.maxFRepetitions ?? [];
+          const maxFRepetitionsNew = exercise?.maxFRepetitions ?? [];
+          const lastMaxFRep = getLastMaxFRep(exercise?.maxFRepetitions);
 
           // control adjustments
           let increaseWeight = false;
@@ -568,12 +570,9 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
             (typeof weightPercentage === "number" &&
               typeof maximumWeightPercentage === "number" &&
               weightPercentage >= maximumWeightPercentage &&
-              maxFRepetitionsNew[maxFRepetitionsNew.length - 1].level ===
-                "HARD" &&
+              lastMaxFRep?.level === "HARD" &&
               adjustment !== "TOO_HARD") ||
-            (maxFRepetitionsNew[maxFRepetitionsNew.length - 1].level ===
-              "MEDIUM" &&
-              adjustment === "TOO_EASY")
+            (lastMaxFRep?.level === "MEDIUM" && adjustment === "TOO_EASY")
           ) {
             // No adjustment if max lvl and max weight is already reached
             updateExercise(
@@ -607,8 +606,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
             typeof weightPercentage === "number" &&
             typeof maximumWeightPercentage === "number" &&
             weightPercentage >= maximumWeightPercentage &&
-            maxFRepetitionsNew[maxFRepetitionsNew.length - 1].level ===
-              "MEDIUM" &&
+            lastMaxFRep?.level === "MEDIUM" &&
             adjustment === "TOO_EASY"
           ) {
             // No TOO_EASY adjustment if max lvl and max weight will be reached
@@ -624,12 +622,8 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
           } else {
             // adjust weight if needed
             if (
-              (maxFRepetitionsNew[maxFRepetitionsNew.length - 1].level ===
-                "HARD" &&
-                adjustment !== "TOO_HARD") ||
-              (maxFRepetitionsNew[maxFRepetitionsNew.length - 1].level ===
-                "MEDIUM" &&
-                adjustment === "TOO_EASY")
+              (lastMaxFRep?.level === "HARD" && adjustment !== "TOO_HARD") ||
+              (lastMaxFRep?.level === "MEDIUM" && adjustment === "TOO_EASY")
             ) {
               // adjust weight up if jumping over HARD lvl
               increaseWeight = true;

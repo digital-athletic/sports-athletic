@@ -1,5 +1,7 @@
 import { ExerciseDifficultyType } from "@/constants/workoutConstants";
+import { asyncStorage } from "@/store/middleware";
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { ActiveTrainingType } from "./models/ActiveTraining";
 import type { FocusArea } from "./models/Training";
@@ -14,6 +16,7 @@ type State = {
   equipment: string[];
   time: TrainingTimeType;
   activeTraining: ActiveTrainingType | null;
+  _hasHydrated: boolean;
 };
 
 const createInitialTrainingTime = (): TrainingTimeType => ({
@@ -37,6 +40,7 @@ const createInitialState = (): State => ({
   equipment: [],
   time: createInitialTrainingTime(),
   activeTraining: null,
+  _hasHydrated: false,
 });
 
 type Actions = {
@@ -63,102 +67,128 @@ type Actions = {
   addPauseTime: (pauseTime: number) => void;
   addSkillTime: (focusArea: FocusArea, skillTime: number) => void;
   clearTraining: () => void;
+  setHasHydrated: (hydrated: boolean) => void;
 };
 
 export type TrainingState = State & Actions;
 
 export const useTrainingStore = create<TrainingState>()(
-  immer((set) => ({
-    ...createInitialState(),
+  persist(
+    immer((set) => ({
+      ...createInitialState(),
 
-    setTrainingSelection: (selection) =>
-      set((state) => {
-        state.selection = selection;
-      }),
-    setExerciseList: (list) =>
-      set((state) => {
-        state.exerciseList = list;
-      }),
-    setExerciseFeedback: (exerciseId, feedback) =>
-      set((state) => {
-        const exercise = state.exerciseList?.find(
-          (item) => item.exerciseId === exerciseId,
-        );
-        if (exercise) {
-          if (exercise.feedback) {
-            exercise.feedback.difficulty = feedback;
-          } else {
-            exercise.feedback = { difficulty: feedback };
+      setTrainingSelection: (selection) =>
+        set((state) => {
+          state.selection = selection;
+        }),
+      setExerciseList: (list) =>
+        set((state) => {
+          state.exerciseList = list;
+        }),
+      setExerciseFeedback: (exerciseId, feedback) =>
+        set((state) => {
+          const exercise = state.exerciseList?.findLast(
+            (item) => item.exerciseId === exerciseId,
+          );
+          if (exercise) {
+            if (exercise.feedback) {
+              exercise.feedback.difficulty = feedback;
+            } else {
+              exercise.feedback = { difficulty: feedback };
+            }
           }
-        }
-      }),
-    setExerciseSkipped: (exerciseId) =>
-      set((state) => {
-        const exercise = state.exerciseList?.find(
-          (item) => item.exerciseId === exerciseId,
-        );
-        if (exercise) {
-          exercise.skipped = true;
-        }
-      }),
-    updateExerciseProgress: (
-      exerciseId,
-      weight,
-      weightPercentage,
-      duration,
-      repetition,
-      height,
-    ) =>
-      set((state) => {
-        const exercise = state.exerciseList?.find(
-          (item) => item.exerciseId === exerciseId,
-        );
+        }),
+      setExerciseSkipped: (exerciseId) =>
+        set((state) => {
+          const exercise = state.exerciseList?.find(
+            (item) => item.exerciseId === exerciseId,
+          );
+          if (exercise) {
+            exercise.skipped = true;
+          }
+        }),
+      updateExerciseProgress: (
+        exerciseId,
+        weight,
+        weightPercentage,
+        duration,
+        repetition,
+        height,
+      ) =>
+        set((state) => {
+          const exercise = state.exerciseList?.find(
+            (item) => item.exerciseId === exerciseId,
+          );
 
-        if (exercise) {
-          if (weight !== undefined) exercise.weight = weight;
-          if (weightPercentage !== undefined)
-            exercise.nextWeightPercentage = weightPercentage;
-          if (duration !== undefined) exercise.duration = duration;
-          if (repetition !== undefined) exercise.repetition = repetition;
-          if (height !== undefined) exercise.height = height;
+          if (exercise) {
+            if (weight !== undefined) exercise.weight = weight;
+            if (weightPercentage !== undefined)
+              exercise.nextWeightPercentage = weightPercentage;
+            if (duration !== undefined) exercise.duration = duration;
+            if (repetition !== undefined) exercise.repetition = repetition;
+            if (height !== undefined) exercise.height = height;
+          }
+        }),
+      setProgressBefore: (progress) =>
+        set((state) => {
+          state.progressBefore = progress;
+        }),
+      setEquipment: (equipment) =>
+        set((state) => {
+          state.equipment = equipment;
+        }),
+      setActiveTraining: (training) =>
+        set((state) => {
+          state.activeTraining = training;
+        }),
+      setTrainingStartTime: (time) =>
+        set((state) => {
+          state.time.start = time;
+        }),
+      setTrainingEndTime: (time) =>
+        set((state) => {
+          state.time.end = time;
+        }),
+      addPauseTime: (pauseTime) =>
+        set((state) => {
+          state.time.pause += pauseTime;
+        }),
+      addSkillTime: (focusArea, skillTime) =>
+        set((state) => {
+          state.time.skill[focusArea] += skillTime;
+        }),
+      clearTraining: () =>
+        set((state) => {
+          const initialState = createInitialState();
+          state.exerciseList = initialState.exerciseList;
+          state.progressBefore = initialState.progressBefore;
+          state.equipment = initialState.equipment;
+          state.time = initialState.time;
+          state.activeTraining = initialState.activeTraining;
+        }),
+      setHasHydrated: (hydrated) =>
+        set((state) => {
+          state._hasHydrated = hydrated;
+        }),
+    })),
+    {
+      name: "training-storage",
+      storage: asyncStorage,
+      version: 0,
+      partialize: (state) => ({
+        selection: state.selection,
+        exerciseList: state.exerciseList,
+        progressBefore: state.progressBefore,
+        equipment: state.equipment,
+        time: state.time,
+        activeTraining: state.activeTraining,
+      }),
+      onRehydrateStorage: () => (_state, error) => {
+        if (error) {
+          console.error("Error hydrating training store:", error);
         }
-      }),
-    setProgressBefore: (progress) =>
-      set((state) => {
-        state.progressBefore = progress;
-      }),
-    setEquipment: (equipment) =>
-      set((state) => {
-        state.equipment = equipment;
-      }),
-    setActiveTraining: (training) =>
-      set((state) => {
-        state.activeTraining = training;
-      }),
-    setTrainingStartTime: (time) =>
-      set((state) => {
-        state.time.start = time;
-      }),
-    setTrainingEndTime: (time) =>
-      set((state) => {
-        state.time.end = time;
-      }),
-    addPauseTime: (pauseTime) =>
-      set((state) => {
-        state.time.pause += pauseTime;
-      }),
-    addSkillTime: (focusArea, skillTime) =>
-      set((state) => {
-        state.time.skill[focusArea] += skillTime;
-      }),
-    clearTraining: () =>
-      set((state) => {
-        const initialState = createInitialState();
-        state.exerciseList = initialState.exerciseList;
-        state.progressBefore = initialState.progressBefore;
-        state.equipment = initialState.equipment;
-        state.time = initialState.time;
-        state.activeTraining = initialState.activeTraining;
-      }),
-  })),
+        useTrainingStore.getState().setHasHydrated(true);
+      },
+    },
+  ),
 );

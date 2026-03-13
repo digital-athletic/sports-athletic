@@ -24,7 +24,6 @@ export const noExerciseData = { exerciseData: {}, branchData: {} } as const;
 
 /** Load a real skill tree JSON by name. */
 export function importTree(name: string): SkillTreeType {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const raw = require(`../../assets/data/generator/skillTrees/${name}.json`);
   return transformSkillTree(raw as RawSkillTree);
 }

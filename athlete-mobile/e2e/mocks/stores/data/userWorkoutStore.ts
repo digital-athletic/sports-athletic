@@ -57,6 +57,29 @@ const DEFAULT_TRAINING_PLAN = {
   ],
 };
 
+export interface TrainingPlan {
+  start: string;
+  sections: {
+    start: string;
+    numOfWeeks: number;
+    type: string;
+    cardioType: string;
+    trainings: {
+      weekday: number;
+      skills: Record<
+        string,
+        {
+          branchId: string;
+          tags: string[];
+          exercises: Record<string, { exerciseId: string }>;
+        }[]
+      >;
+      lengths: Record<string, number>;
+      focus: string;
+    }[];
+  }[];
+}
+
 export interface UserWorkoutStoreOptions {
   sport?: string;
   tags?: Record<string, string[]>;
@@ -67,7 +90,7 @@ export interface UserWorkoutStoreOptions {
     totalWeeks?: number;
     numOfWeeks?: number;
   };
-  trainingPlan?: typeof DEFAULT_TRAINING_PLAN;
+  trainingPlan?: TrainingPlan;
   maxValues?: Record<string, unknown> | null;
 }
 

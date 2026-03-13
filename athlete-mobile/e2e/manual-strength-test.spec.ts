@@ -1,4 +1,4 @@
-import { expect, test } from "./fixtures";
+import { test } from "./fixtures";
 import { createFreshAnamnesisProfile } from "./mocks/stores/profiles/freshAnamnesisProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
 import { ManualStrengthTestPage } from "./pages";

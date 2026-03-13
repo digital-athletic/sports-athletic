@@ -36,8 +36,22 @@ export class WorkoutPage extends BasePage {
     return this.page.getByText("too hard");
   }
 
-  private get lastSetIndicator() {
-    return this.page.getByText("3 of 3");
+  /**
+   * Checks if the current set is the last set by finding "N of M" text where N === M.
+   */
+  private async isLastSet(): Promise<boolean> {
+    try {
+      const elements = this.page.getByText(/\d+ of \d+/);
+      const count = await elements.count();
+      for (let i = 0; i < count; i++) {
+        const text = await elements.nth(i).textContent();
+        const match = text?.match(/(\d+) of (\d+)/);
+        if (match && match[1] === match[2]) return true;
+      }
+    } catch {
+      /* element not found */
+    }
+    return false;
   }
 
   async startWorkout(weekday: string) {
@@ -117,7 +131,7 @@ export class WorkoutPage extends BasePage {
 
     // Iterate through workout steps (sets, rest periods) clicking checkmark or skip
     // until the "Go On" button appears indicating workout completion. Max 20 iterations as safety limit.
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 60; i++) {
       await Promise.race([
         this.goOnButton.waitFor({ state: "visible", timeout: 3000 }),
         this.checkmarkButton.waitFor({ state: "visible", timeout: 3000 }),
@@ -129,9 +143,7 @@ export class WorkoutPage extends BasePage {
       }
 
       if (await this.checkmarkButton.isVisible().catch(() => false)) {
-        const isLastSet = await this.lastSetIndicator
-          .isVisible()
-          .catch(() => false);
+        const isLastSet = await this.isLastSet();
 
         if (isLastSet && lastSetFeedback === "too_easy") {
           await this.tooEasyButton.click({ timeout: 3000 });
@@ -152,6 +164,32 @@ export class WorkoutPage extends BasePage {
     }
 
     await expect(this.goOnButton).toBeVisible();
+  }
+
+  /**
+   * Reads exercise progress data from localStorage for a specific exercise ID.
+   * Returns the raw persisted data including maxFRepetitions and feedback.
+   */
+  async getExerciseProgressData(exerciseId: string) {
+    return this.page.evaluate((id) => {
+      const raw = localStorage.getItem("exercise-progress-storage");
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return parsed?.state?.exerciseData?.[id] ?? null;
+    }, exerciseId);
+  }
+
+  /**
+   * Reads the generated training exercise list from the training store.
+   * Returns exercises with their maxFRepetitions (level + repetitions).
+   */
+  async getGeneratedExerciseList() {
+    return this.page.evaluate(() => {
+      const raw = localStorage.getItem("training-storage");
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return parsed?.state?.exerciseList ?? null;
+    });
   }
 
   async returnToHome() {

@@ -84,12 +84,12 @@ export interface ExerciseData {
  * Training schedule store state.
  */
 export interface TrainingScheduleState {
-  trainingDays: Array<{
+  trainingDays: {
     active: boolean;
     weekday: number;
     duration: number;
     place: string;
-  }>;
+  }[];
 }
 
 /**
@@ -128,13 +128,13 @@ export interface CompletedWorkout {
   movedWeight?: number;
   exerciseCount?: number;
   userSkills?: Record<string, number>;
-  exercises: Array<{
+  exercises: {
     exerciseId: string;
     skill?: string;
     weight?: number;
     repetition?: number;
     set?: [number, number];
-  }>;
+  }[];
 }
 
 /**

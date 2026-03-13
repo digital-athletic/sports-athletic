@@ -1,6 +1,7 @@
 docker-compose.dev.yml
 docker-compose.override.yml
 .claude
+.planning/
 node_modules/
 
 # pnpm

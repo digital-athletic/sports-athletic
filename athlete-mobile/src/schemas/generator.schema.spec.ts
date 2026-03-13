@@ -4,6 +4,8 @@ import {
   SetTupleSchema,
   GeneratedSetListEntrySchema,
   ExerciseBranchSchema,
+  toUserExerciseData,
+  toUserExerciseDataList,
   type GeneratedSetListEntryFromSchema,
 } from "./generator.schema";
 
@@ -83,6 +85,93 @@ describe("generator.schema", () => {
         skill: "WU",
       };
       expect(v.is(GeneratedSetListEntrySchema, entryWithoutBranch)).toBe(false);
+    });
+
+    it("validates entry with repetitionMAX field", () => {
+      const entryWithRepMAX = {
+        ...validEntry,
+        repetitionMAX: { level: "EASY", repetitions: 5 },
+      };
+      expect(v.is(GeneratedSetListEntrySchema, entryWithRepMAX)).toBe(true);
+    });
+
+    it("validates entry without repetitionMAX (optional)", () => {
+      expect(v.is(GeneratedSetListEntrySchema, validEntry)).toBe(true);
+    });
+  });
+
+  describe("toUserExerciseData", () => {
+    const baseEntry: GeneratedSetListEntryFromSchema = {
+      branchId: "branch-1",
+      exerciseId: "ex-123",
+      set: [1, 3],
+      skill: "MAX",
+    };
+
+    it("maps repetitionMAX to maxFRepetitions as single-element array", () => {
+      const entry = {
+        ...baseEntry,
+        repetitionMAX: { level: "EASY", repetitions: 5 },
+      };
+      const result = toUserExerciseData(entry);
+      expect(result.maxFRepetitions).toEqual([
+        { level: "EASY", repetitions: 5 },
+      ]);
+    });
+
+    it("returns maxFRepetitions as undefined when repetitionMAX is absent", () => {
+      const result = toUserExerciseData(baseEntry);
+      expect(result.maxFRepetitions).toBeUndefined();
+    });
+
+    it("preserves all other fields in conversion", () => {
+      const entry = {
+        ...baseEntry,
+        duration: 30,
+        repetition: 8,
+        weight: 80,
+        height: 1,
+        weightType: "weightAbsolute",
+        repetitionMAX: { level: "HARD", repetitions: 3 },
+      };
+      const result = toUserExerciseData(entry);
+      expect(result).toEqual({
+        exerciseId: "ex-123",
+        set: [1, 3],
+        skill: "MAX",
+        duration: 30,
+        repetition: 8,
+        weight: 80,
+        height: 1,
+        weightType: "weightAbsolute",
+        branchId: "branch-1",
+        maxFRepetitions: [{ level: "HARD", repetitions: 3 }],
+      });
+    });
+  });
+
+  describe("toUserExerciseDataList", () => {
+    it("maps array correctly, preserving maxFRepetitions on entries that have it", () => {
+      const entries: GeneratedSetListEntryFromSchema[] = [
+        {
+          branchId: "branch-1",
+          exerciseId: "ex-1",
+          set: [1, 3],
+          skill: "MAX",
+          repetitionMAX: { level: "EASY", repetitions: 5 },
+        },
+        {
+          branchId: "branch-2",
+          exerciseId: "ex-2",
+          set: [2, 3],
+          skill: "WU",
+        },
+      ];
+      const results = toUserExerciseDataList(entries);
+      expect(results[0].maxFRepetitions).toEqual([
+        { level: "EASY", repetitions: 5 },
+      ]);
+      expect(results[1].maxFRepetitions).toBeUndefined();
     });
   });
 

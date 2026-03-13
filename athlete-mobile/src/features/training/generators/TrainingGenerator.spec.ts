@@ -2197,5 +2197,71 @@ describe("TrainingGenerator", () => {
       );
       expect(result.length).toBeGreaterThan(0);
     });
+
+    /**
+     * Reproduces crash: endurance training day + leg muscle soreness.
+     *
+     * When user has a CARDIO_3 training and reports leg soreness (e.g. QUADRICEPS_LEFT),
+     * filterBySoreness returns keep:{} for the CARDIO skill (all branches are LOWER_BODY).
+     * The generator replaces with CARDIO_5 but the replacement entries are added mid-loop
+     * and never go through exercise selection (lines 1098-1121), so they have
+     * {tags, exercises, branchId} instead of {branchTags, exerciseId, branchId}.
+     * This causes a crash when building the set list.
+     */
+    it("does not crash with leg soreness on endurance (CARDIO_3) training day", () => {
+      const user = buildPlanUser({
+        weekday: 1,
+        skills: {
+          CARDIO_3: [
+            {
+              branchId: "580",
+              tags: [
+                "EQ_TREADMILL",
+                "EQ_TYPE_EQUIPMENT",
+                "REGION_LOWER_BODY",
+                "SKILL_CARDIO",
+                "SKILL_CARDIO_3",
+                "PLACE_STUDIO",
+              ],
+              exercises: {
+                "1": { exerciseId: "43" },
+                "2": { exerciseId: "43" },
+                "3": { exerciseId: "43" },
+              },
+            },
+          ],
+        },
+        lengths: { CARDIO_3: 20 },
+        temporalData: [
+          {
+            tag: "QUADRICEPS_LEFT",
+            date: new Date().toISOString(),
+            expiration: new Date(
+              Date.now() + 24 * 60 * 60 * 1000,
+            ).toISOString(),
+          },
+        ],
+      });
+
+      const result = generator.generatePlanWorkout(
+        "PLAN",
+        user,
+        "STUDIO",
+        realExercises,
+        importTrees("WU", "CARDIO_3", "CARDIO_4", "CARDIO_5"),
+        1,
+        ["TREADMILL"],
+        undefined,
+        0,
+        noExerciseData,
+      );
+
+      expect(result.length).toBeGreaterThan(0);
+      // All entries should have valid exerciseId (not undefined)
+      for (const entry of result) {
+        expect(entry.exerciseId).toBeDefined();
+        expect(typeof entry.exerciseId).toBe("string");
+      }
+    });
   });
 });

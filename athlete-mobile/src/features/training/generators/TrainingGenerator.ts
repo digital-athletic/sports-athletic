@@ -963,11 +963,28 @@ export default class TrainingGenerator {
           const cardioLength = lengths[skill] ?? 0;
           const cardioSkill = "CARDIO_5" satisfies SkillTypes;
           lengths[cardioSkill] = Math.min(cardioLength, 20); // max 20 minutes of replacemnet cardio
+
+          // Resolve the exercise for user level (CARDIO_5 is added mid-loop
+          // and won't be processed by the exercise selection step below)
+          const cardioExercise = getUserExerciseFromBranch(
+            {
+              levels: cardioReplacement.levels as Record<
+                number,
+                { exerciseId: string }
+              >,
+              tags: cardioReplacement.tags,
+            },
+            userLevel,
+            exercises,
+            userExerciseData.branchData["576"] ?? null,
+          );
           exerciseBranches[cardioSkill] = [
             {
-              tags: cardioReplacement.tags,
-              exercises: cardioReplacement.levels,
               branchId: "576",
+              branchTags: cardioExercise
+                ? cardioExercise.tags
+                : cardioReplacement.tags,
+              exerciseId: cardioExercise?.id ?? "-1",
             },
           ];
         } else {

@@ -194,15 +194,15 @@ export default function MoreScreen() {
             iconBackground="darkGrey1"
             isSubscribed={allowedForTraining}
           />
-          <ListItem
-            title={t("more.subscriptionStatus")}
-            navPath="/(tabs)/(more)/subscription-status"
-            iconName="eye"
-            iconBackground="darkGrey1"
-            isSubscribed={allowedForTraining}
-          />
           {showTermsAndContact && (
             <>
+              <ListItem
+                title={t("more.subscriptionStatus")}
+                navPath="/(tabs)/(more)/subscription-status"
+                iconName="eye"
+                iconBackground="darkGrey1"
+                isSubscribed={allowedForTraining}
+              />
               <ListItem
                 title={t("more.contact")}
                 navPath="/contact"

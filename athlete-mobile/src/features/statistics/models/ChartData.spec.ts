@@ -54,6 +54,7 @@ describe("processTestHistory", () => {
     expect(result).toEqual({
       dates: [],
       kneeDominant: [],
+      deadlift: [],
       rowing: [],
       benchPress: [],
       shoulderPress: [],

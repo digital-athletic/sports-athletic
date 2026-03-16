@@ -5,6 +5,7 @@ import { PowerTest } from "./PowerTest";
 const mockChartData = {
   dates: ["2024-06-30", "2024-07-06", "2024-09-04"],
   kneeDominant: [0, 80, 85],
+  deadlift: [0, 70, 75],
   rowing: [0, 50, 55],
   benchPress: [0, 60, 65],
   shoulderPress: [0, 35, 40],
@@ -73,11 +74,11 @@ describe("PowerTest LineChart", () => {
       render(<PowerTest />);
 
       const data2 = capturedProps?.data2 as { value: number }[];
-      expect(data2[1]).toEqual({ value: 60 });
+      expect(data2[1]).toEqual({ value: 70 });
       expect(data2[1]).not.toHaveProperty("label");
     });
 
-    it("passes all four data series with correct colors", () => {
+    it("passes all five data series with correct colors", () => {
       render(<PowerTest />);
 
       expect({
@@ -85,11 +86,13 @@ describe("PowerTest LineChart", () => {
         color2: capturedProps?.color2,
         color3: capturedProps?.color3,
         color4: capturedProps?.color4,
+        color5: capturedProps?.color5,
       }).toEqual({
         color: "#000000",
-        color2: "#6DC33F",
-        color3: "#4791DE",
-        color4: "#F46E70",
+        color2: "#9B59B6",
+        color3: "#6DC33F",
+        color4: "#4791DE",
+        color5: "#F46E70",
       });
     });
   });
@@ -115,11 +118,13 @@ describe("PowerTest LineChart", () => {
         hideDataPoints2: capturedProps?.hideDataPoints2,
         hideDataPoints3: capturedProps?.hideDataPoints3,
         hideDataPoints4: capturedProps?.hideDataPoints4,
+        hideDataPoints5: capturedProps?.hideDataPoints5,
       }).toEqual({
         hideDataPoints: true,
         hideDataPoints2: true,
         hideDataPoints3: true,
         hideDataPoints4: true,
+        hideDataPoints5: true,
       });
     });
 
@@ -136,6 +141,7 @@ describe("PowerTest LineChart", () => {
         chartData: {
           dates: [],
           kneeDominant: [],
+          deadlift: [],
           rowing: [],
           benchPress: [],
           shoulderPress: [],
@@ -153,6 +159,7 @@ describe("PowerTest LineChart", () => {
         chartData: {
           dates: [],
           kneeDominant: [],
+          deadlift: [],
           rowing: [],
           benchPress: [],
           shoulderPress: [],

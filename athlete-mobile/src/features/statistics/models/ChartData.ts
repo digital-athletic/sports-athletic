@@ -9,6 +9,7 @@ export interface ChartDataPoint {
 export interface PowerTestChartData {
   dates: string[];
   kneeDominant: number[];
+  deadlift: number[];
   rowing: number[];
   benchPress: number[];
   shoulderPress: number[];
@@ -23,12 +24,13 @@ export const processTestHistory = (
 ): PowerTestChartData => {
   const dates: string[] = [];
   const kneeDominant: number[] = [];
+  const deadlift: number[] = [];
   const rowing: number[] = [];
   const benchPress: number[] = [];
   const shoulderPress: number[] = [];
 
   if (!history || history.length === 0) {
-    return { dates, kneeDominant, rowing, benchPress, shoulderPress };
+    return { dates, kneeDominant, deadlift, rowing, benchPress, shoulderPress };
   }
 
   // Sort by timestamp ascending (oldest first) for chronological chart display
@@ -47,6 +49,7 @@ export const processTestHistory = (
 
     dates.push(dateLabel);
     kneeDominant.push(values.kneeDominant.barbell ?? 0);
+    deadlift.push(values.hipHinge.barbell ?? 0);
     rowing.push(values.horizontalPull.barbell ?? 0);
     benchPress.push(values.horizontalPush.barbell ?? 0);
     shoulderPress.push(values.verticalPush.barbell ?? 0);
@@ -60,12 +63,13 @@ export const processTestHistory = (
 
     dates.unshift(startDate);
     kneeDominant.unshift(0);
+    deadlift.unshift(0);
     rowing.unshift(0);
     benchPress.unshift(0);
     shoulderPress.unshift(0);
   }
 
-  return { dates, kneeDominant, rowing, benchPress, shoulderPress };
+  return { dates, kneeDominant, deadlift, rowing, benchPress, shoulderPress };
 };
 
 /**

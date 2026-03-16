@@ -1543,22 +1543,24 @@ describe("TrainingGenerator", () => {
 
     // Expected exercises by level and gender from TEST_WORKOUTS.ts
     const EXPECTED_EXERCISES = {
-      BEGINNER: { default: ["25", "7", "88", "317"] },
+      BEGINNER: { default: ["25", "50", "342", "297", "54"] },
       ADVANCED: {
-        default: ["25", "7", "297", "317"],
-        m: ["25", "342", "297", "54"],
+        default: ["25", "50", "342", "297", "54"],
       },
-      PROFESSIONAL: { default: ["25", "342", "297", "54"] },
+      PROFESSIONAL: { default: ["25", "50", "342", "297", "54"] },
     } as const;
 
     const PAUSE_EXERCISE_ID = "999999";
-    const SETS_PER_EXERCISE = 3;
-    const STANDARD_PAUSE_SECONDS = 60;
-    const FINAL_SET_PAUSE_SECONDS = 120;
+    const SETS_PER_EXERCISE = 4;
+    const WARMUP_1_PAUSE = 60;
+    const WARMUP_2_PAUSE = 60;
+    const WARMUP_3_PAUSE = 120;
+    const TEST_SET_PAUSE = 180;
     const WARMUP_TO_TEST_TRANSITION_PAUSE_SECONDS = 30;
-    const SET_1_REPS = 12;
-    const SET_2_REPS = 8;
-    const SET_3_REPS = -1;
+    const SET_1_REPS = 6;
+    const SET_2_REPS = 4;
+    const SET_3_REPS = 2;
+    const SET_4_REPS = -1;
 
     const testUser = {
       userId: "test-user",
@@ -1619,7 +1621,7 @@ describe("TrainingGenerator", () => {
         {
           level: "ADVANCED",
           gender: "MALE",
-          expectedExerciseIds: EXPECTED_EXERCISES.ADVANCED.m,
+          expectedExerciseIds: EXPECTED_EXERCISES.ADVANCED.default,
         },
         {
           level: "ADVANCED",
@@ -1707,6 +1709,7 @@ describe("TrainingGenerator", () => {
               { set: [1, SETS_PER_EXERCISE], repetition: SET_1_REPS },
               { set: [2, SETS_PER_EXERCISE], repetition: SET_2_REPS },
               { set: [3, SETS_PER_EXERCISE], repetition: SET_3_REPS },
+              { set: [4, SETS_PER_EXERCISE], repetition: SET_4_REPS },
             ]);
           });
         },
@@ -1739,7 +1742,8 @@ describe("TrainingGenerator", () => {
               .map((e) => e.weight!);
 
             expect(weights[0]).toBeLessThan(weights[1]);
-            expect(weights[1]).toBeLessThan(weights[2]);
+            expect(weights[1]).toBeLessThanOrEqual(weights[2]);
+            expect(weights[2]).toBeLessThanOrEqual(weights[3]);
           });
         },
       );
@@ -1775,22 +1779,24 @@ describe("TrainingGenerator", () => {
     });
 
     describe("Test Exercise Pauses", () => {
-      it("should have standard pauses after sets 1 and 2", () => {
+      it("should have 60s pauses after warmup sets 1 and 2", () => {
         const result = generateTestWorkout(testUser);
         const testPauses = result.filter(
           (entry) =>
             entry.skill === "TEST" && entry.exerciseId === PAUSE_EXERCISE_ID,
         );
 
-        const set1And2Pauses = testPauses.filter(
-          (p) => p.set[0] === 1 || p.set[0] === 2,
+        const set1Pauses = testPauses.filter((p) => p.set[0] === 1);
+        const set2Pauses = testPauses.filter((p) => p.set[0] === 2);
+        expect(set1Pauses.every((p) => p.duration === WARMUP_1_PAUSE)).toBe(
+          true,
         );
-        expect(
-          set1And2Pauses.every((p) => p.duration === STANDARD_PAUSE_SECONDS),
-        ).toBe(true);
+        expect(set2Pauses.every((p) => p.duration === WARMUP_2_PAUSE)).toBe(
+          true,
+        );
       });
 
-      it("should have doubled pauses after final set (max effort recovery)", () => {
+      it("should have 120s pause after warmup set 3", () => {
         const result = generateTestWorkout(testUser);
         const testPauses = result.filter(
           (entry) =>
@@ -1798,9 +1804,28 @@ describe("TrainingGenerator", () => {
         );
 
         const set3Pauses = testPauses.filter((p) => p.set[0] === 3);
-        expect(
-          set3Pauses.every((p) => p.duration === FINAL_SET_PAUSE_SECONDS),
-        ).toBe(true);
+        expect(set3Pauses.every((p) => p.duration === WARMUP_3_PAUSE)).toBe(
+          true,
+        );
+      });
+
+      it("should have 180s pauses after test set (last pause popped by caller)", () => {
+        const result = generateTestWorkout(testUser);
+        const testPauses = result.filter(
+          (entry) =>
+            entry.skill === "TEST" && entry.exerciseId === PAUSE_EXERCISE_ID,
+        );
+
+        const set4Pauses = testPauses.filter((p) => p.set[0] === 4);
+        expect(set4Pauses.every((p) => p.duration === TEST_SET_PAUSE)).toBe(
+          true,
+        );
+      });
+
+      it("should not end with a pause (last pause removed by generateTraining)", () => {
+        const result = generateTestWorkout(testUser);
+        const lastEntry = result[result.length - 1];
+        expect(lastEntry.exerciseId).not.toBe(PAUSE_EXERCISE_ID);
       });
     });
 
@@ -1876,8 +1901,7 @@ describe("TrainingGenerator", () => {
 
           const levelKey = level as keyof typeof EXPECTED_EXERCISES;
           const exerciseIds = EXPECTED_EXERCISES[levelKey];
-          const firstTestExerciseId =
-            "m" in exerciseIds ? exerciseIds.m[0] : exerciseIds.default[0];
+          const firstTestExerciseId = exerciseIds.default[0];
 
           const testSets = result.filter(
             (entry) =>
@@ -1885,21 +1909,18 @@ describe("TrainingGenerator", () => {
               entry.skill === "TEST",
           );
 
-          expect(testSets).toHaveLength(3);
+          expect(testSets).toHaveLength(4);
 
-          const set3Weight = testSets[2].weight!;
-          const set1Weight = testSets[0].weight!;
-          const set2Weight = testSets[1].weight!;
+          const warmup1Weight = testSets[0].weight!;
+          const warmup2Weight = testSets[1].weight!;
+          const warmup3Weight = testSets[2].weight!;
+          const testSetWeight = testSets[3].weight!;
 
-          expect(set3Weight).toBe(
-            roundWeightValue(maxKneeValue * expectedPercentage * 1.0),
-          );
-          expect(set1Weight).toBe(
-            roundWeightValue(maxKneeValue * expectedPercentage * 0.5),
-          );
-          expect(set2Weight).toBe(
-            roundWeightValue(maxKneeValue * expectedPercentage * 0.75),
-          );
+          const testWeight = maxKneeValue * expectedPercentage;
+          expect(testSetWeight).toBe(roundWeightValue(testWeight * 1.0));
+          expect(warmup1Weight).toBe(roundWeightValue(testWeight * 0.4));
+          expect(warmup2Weight).toBe(roundWeightValue(testWeight * 0.6));
+          expect(warmup3Weight).toBe(roundWeightValue(testWeight * 0.85));
         },
       );
     });

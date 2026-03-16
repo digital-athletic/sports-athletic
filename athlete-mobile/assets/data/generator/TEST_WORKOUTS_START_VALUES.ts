@@ -1,119 +1,71 @@
 /*
- * 7: Bankdrücken mit 2 KH SWR
- * 25: Kniebeuge mit LH SWR Level 2
- * 54: LH Schulterfrontdrücken SWR
- * 88: Rudern mit 2 KH vorgebeugt (Level 1) SWR
- * 251: Kniebeuge mit 2 KH SWR - DERZEIT NICHT GENUTZT
- * 297: LH Rudern mit Untergriff SWR + Testeinheit
- * 315: KH Schulterdrücken eng sitzend SWR(Präv) + Präv + Testeinheit (Präv)
- * 317: KH Schulterdrücken (sitzend) SWR + Testeinheit
- * 342: LH Bankdrücken SWR + Testeinheit
- * 355: KH Bankdrücken eng  SWR(Präv) + Präv + Testeinheit
+ * 25: Kniebeuge mit LH SWR Level 2 (Squat)
+ * 50: LH Kreuzheben SWR (Deadlift)
+ * 54: LH Schulterfrontdruecken SWR (Shoulder Press)
+ * 297: LH Rudern mit Untergriff SWR (Bent-over Row)
+ * 342: LH Bankdruecken SWR (Bench Press)
  *
  */
 
 const START_VALUES = {
-    "7": {
-        w: {
-            beginner: 7,
-            advanced: 10,
-            professional: 12.5
-        },
-        m: {
-            beginner: 12.5,
-            advanced: 17.5,
-            professional: 22.5
-        }
-    },
     "25": {
         w: {
-            beginner: 25,
-            advanced: 35,
-            professional: 45
-        },
-        m: {
-            beginner: 35,
-            advanced: 50,
-            professional: 65
-        }
-    },
-    "54": {
-        w: {
-            professional: 20
-        },
-        m: {
-            advanced: 25,
-            professional: 30
-        }
-    },
-    "88": {
-        w: {
-            beginner: 8,
-            advanced: 10,
-            professional: 12.5
-        },
-        m: {
-            beginner: 12.5,
-            advanced: 17.5,
-            professional: 22.5
-        }
-    },
-    "297": {
-        w: {
-            advanced: 22.5,
-            professional: 30
-        },
-        m: {
             beginner: 30,
-            advanced: 40,
-            professional: 50
-        }
-    },
-    "315": {
-        w: {
-            beginner: 5,
-            advanced: 7,
-            professional: 8
+            advanced: 45,
+            professional: 60
         },
         m: {
-            beginner: 9,
-            advanced: 12.5,
-            professional: 15
+            beginner: 40,
+            advanced: 60,
+            professional: 80
         }
     },
-    "317": {
+    "50": {
         w: {
-            beginner: 5,
-            advanced: 7,
-            professional: 8
+            beginner: 30,
+            advanced: 45,
+            professional: 60
         },
         m: {
-            beginner: 9,
-            advanced: 12.5,
-            professional: 15
+            beginner: 40,
+            advanced: 60,
+            professional: 80
         }
     },
     "342": {
         w: {
-            advanced: 22.5,
-            professional: 27.5
+            beginner: 20,
+            advanced: 25,
+            professional: 30
+        },
+        m: {
+            beginner: 35,
+            advanced: 50,
+            professional: 60
+        }
+    },
+    "297": {
+        w: {
+            beginner: 20,
+            advanced: 30,
+            professional: 35
         },
         m: {
             beginner: 30,
-            advanced: 40,
-            professional: 50
+            advanced: 45,
+            professional: 55
         }
     },
-    "355": {
+    "54": {
         w: {
-            beginner: 6,
-            advanced: 7,
-            professional: 9
+            beginner: 15,
+            advanced: 20,
+            professional: 25
         },
         m: {
-            beginner: 9,
-            advanced: 12.5,
-            professional: 17.5
+            beginner: 25,
+            advanced: 30,
+            professional: 40
         }
     }
 } as const;

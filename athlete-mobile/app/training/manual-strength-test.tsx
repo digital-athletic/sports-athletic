@@ -54,6 +54,7 @@ const ManualStrengthTestScreen: FC = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [inputs, setInputs] = useState<Record<string, ExerciseInput>>({
     squat: createEmptyInput(),
+    deadlift: createEmptyInput(),
     benchPress: createEmptyInput(),
     rowing: createEmptyInput(),
     shoulderPress: createEmptyInput(),
@@ -65,6 +66,11 @@ const ManualStrengthTestScreen: FC = () => {
         label: t("training.manualStrengthTest.squat"),
         color: colors.squad,
         directions: WorkoutConstants.STRENGTH_TEST_DIRECTIONS.squad,
+      },
+      deadlift: {
+        label: t("training.manualStrengthTest.deadlift"),
+        color: colors.deadlift,
+        directions: WorkoutConstants.STRENGTH_TEST_DIRECTIONS.deadlift,
       },
       benchPress: {
         label: t("training.manualStrengthTest.benchPress"),
@@ -82,7 +88,14 @@ const ManualStrengthTestScreen: FC = () => {
         directions: WorkoutConstants.STRENGTH_TEST_DIRECTIONS.shoulder_press,
       },
     }),
-    [t, colors.squad, colors.benchPress, colors.rowing, colors.shoulderPress],
+    [
+      t,
+      colors.squad,
+      colors.deadlift,
+      colors.benchPress,
+      colors.rowing,
+      colors.shoulderPress,
+    ],
   );
 
   const updateInput = useCallback(

@@ -3077,7 +3077,7 @@ export default class TrainingGenerator {
   /**
    * Generates the exercise list for a max strength test workout.
    * Includes warm-up exercises followed by test exercises with progressively
-   * increasing weights (50%, 75%, 100% of calculated test weight).
+   * increasing weights (40%, 60%, 85%, 100% of calculated test weight).
    */
   getTestSetList = (
     user: UserType,
@@ -3205,11 +3205,7 @@ export default class TrainingGenerator {
 
     let setList: GeneratedSetListEntry[] = wuSetList;
 
-    let percentage = 0.5;
-    let repetitions = 12;
-    let pauseLength = 60; // max and test always 60
-    let pauseFactor = 1;
-    let skill = "TEST";
+    const skill = "TEST";
 
     // build single lists to concat afterwards
     const singleExerciseLists = sortedExerciseIds.reduce<
@@ -3219,37 +3215,52 @@ export default class TrainingGenerator {
       return acc;
     }, {});
 
-    // build 2 warm-up sets, one test set
-    for (let set = 1; set < 4; set++) {
-      if (set === 2) {
-        percentage = 0.75;
-        repetitions = 8;
-      }
-      if (set === 3) {
-        percentage = 1;
-        pauseFactor = 2; // double pause after test set
-        repetitions = -1; // -1 for "do as much as you can", get number afterwards
-      }
+    // Warmup + test set protocol (Tabelle 2)
+    const setProtocol = [
+      { percentage: 0.4, repetitions: 6, pauseSeconds: 60 },
+      { percentage: 0.6, repetitions: 4, pauseSeconds: 60 },
+      { percentage: 0.85, repetitions: 2, pauseSeconds: 120 },
+      { percentage: 1, repetitions: -1, pauseSeconds: 180 },
+    ];
+    const totalSets = setProtocol.length;
+
+    // build 3 warm-up sets + one test set
+    for (let setIndex = 0; setIndex < setProtocol.length; setIndex++) {
+      const { percentage, repetitions, pauseSeconds } = setProtocol[setIndex];
+      const setNumber = setIndex + 1;
+      const isTestSet = setIndex === setProtocol.length - 1;
+
       for (let i = 0; i < sortedExercises.length; i++) {
-        singleExerciseLists[sortedExercises[i].id].push(
-          this.getTestSetExercise(
-            gender,
-            userLevel,
-            sortedExercises[i],
-            workoutData.maxValues ?? DEFAULT_MAX_VALUES,
-            TEST_WORKOUTS_START_VALUES,
-            percentage,
-            repetitions,
-            set,
-            skill as SkillCode,
-            i,
-          ),
+        const entry = this.getTestSetExercise(
+          gender,
+          userLevel,
+          sortedExercises[i],
+          workoutData.maxValues ?? DEFAULT_MAX_VALUES,
+          TEST_WORKOUTS_START_VALUES,
+          percentage,
+          repetitions,
+          setNumber,
+          skill as SkillCode,
+          i,
         );
+
+        // Round warmup weights to whole kg
+        if (!isTestSet && entry.weight !== undefined) {
+          entry.weight = Math.round(entry.weight);
+        }
+
+        // Update set tuple to reflect 4 total sets
+        entry.set = [setNumber, totalSets];
+
+        singleExerciseLists[sortedExercises[i].id].push(entry);
+
+        const actualPause = pauseSeconds;
+
         singleExerciseLists[sortedExercises[i].id].push({
           branchId: PLACEHOLDER_BRANCH_ID,
           exerciseId: PAUSE_EXERCISE_ID,
-          set: [set, 3],
-          duration: pauseFactor * pauseLength,
+          set: [setNumber, totalSets],
+          duration: actualPause,
           skill: skill as SkillCode,
         });
       }
@@ -3325,7 +3336,7 @@ export default class TrainingGenerator {
     return {
       branchId: PLACEHOLDER_BRANCH_ID,
       exerciseId: sortedExercise.id,
-      set: [set, 3] as [number, number],
+      set: [set, 4] as [number, number],
       weight: weight,
       repetition: repetitions,
       skill: skill,

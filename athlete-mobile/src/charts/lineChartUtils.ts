@@ -18,6 +18,7 @@ export interface LineDataItem {
  */
 export interface TransformedLineData {
   squad: LineDataItem[];
+  deadlift: LineDataItem[];
   benchPress: LineDataItem[];
   rowing: LineDataItem[];
   shoulderPress: LineDataItem[];
@@ -61,7 +62,8 @@ export const shouldShowLabel = (
 export const transformToLineData = (
   chartData: PowerTestChartData,
 ): TransformedLineData => {
-  const { dates, kneeDominant, rowing, benchPress, shoulderPress } = chartData;
+  const { dates, kneeDominant, deadlift, rowing, benchPress, shoulderPress } =
+    chartData;
 
   const labelStep = calculateLabelStep(dates.length);
 
@@ -76,6 +78,7 @@ export const transformToLineData = (
   });
 
   // Secondary series - values only (labels ignored by library)
+  const deadliftData: LineDataItem[] = deadlift.map((value) => ({ value }));
   const benchPressData: LineDataItem[] = benchPress.map((value) => ({ value }));
   const rowingData: LineDataItem[] = rowing.map((value) => ({ value }));
   const shoulderPressData: LineDataItem[] = shoulderPress.map((value) => ({
@@ -84,6 +87,7 @@ export const transformToLineData = (
 
   return {
     squad: squadData,
+    deadlift: deadliftData,
     benchPress: benchPressData,
     rowing: rowingData,
     shoulderPress: shoulderPressData,
@@ -125,6 +129,7 @@ export const calculateSpacing = (
 export const calculateYAxisMax = (chartData: PowerTestChartData): number => {
   const allValues = [
     ...chartData.kneeDominant,
+    ...chartData.deadlift,
     ...chartData.rowing,
     ...chartData.benchPress,
     ...chartData.shoulderPress,

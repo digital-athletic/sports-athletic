@@ -854,41 +854,26 @@ const EXERCISE_DIRECTIONS = {
 const PAUSE_EXERCISE_ID = "999999";
 
 const TEST_EXERCISES: Record<string, string | undefined> = {
-  "7": "bench_press",
   "25": "squad",
+  "50": "deadlift",
   "54": "shoulder_press",
-  "88": "rowing",
-  "251": "squad",
   "297": "rowing",
-  "315": "shoulder_press",
-  "317": "shoulder_press",
   "342": "bench_press",
-  "355": "bench_press",
 };
 
 const TEST_EXERCISES_DIRECTIONS: Record<string, string[] | undefined> = {
   /*
-   * 7: Bankdrücken mit 2 KH SWR
-   * 25: Kniebeuge mit LH SWR Level 2
-   * 54: LH Schulterfrontdrücken SWR
-   * 88: Rudern mit 2 KH vorgebeugt (Level 1) SWR
-   * 251: Kniebeuge mit 2 KH SWR
-   * 297: LH Rudern mit Untergriff SWR + Testeinheit
-   * 315: KH Schulterdrücken eng sitzend SWR(Präv) + Präv + Testeinheit (Präv)
-   * 317: KH Schulterdrücken (sitzend) SWR + Testeinheit
-   * 342: LH Bankdrücken SWR + Testeinheit
-   * 355: KH Bankdrücken eng  SWR(Präv) + Präv + Testeinheit
+   * 25: Kniebeuge mit LH SWR Level 2 (Squat)
+   * 50: LH Kreuzheben SWR (Deadlift)
+   * 54: LH Schulterfrontdruecken SWR (Shoulder Press)
+   * 297: LH Rudern mit Untergriff SWR (Bent-over Row)
+   * 342: LH Bankdruecken SWR (Bench Press)
    */
-  "7": ["HORIZONTAL_PUSH"],
   "25": ["HIP", "KNEE", "LOWER_BODY"],
+  "50": ["HIP"],
   "54": ["VERTICAL_PUSH", "VERTICAL_PULL"],
-  "88": ["HORIZONTAL_PULL"],
-  "251": ["HIP", "KNEE", "LOWER_BODY"],
   "297": ["HORIZONTAL_PULL"],
-  "315": ["VERTICAL_PUSH", "VERTICAL_PULL"],
-  "317": ["VERTICAL_PUSH", "VERTICAL_PULL"],
   "342": ["HORIZONTAL_PUSH"],
-  "355": ["HORIZONTAL_PUSH"],
 };
 
 const STRENGTH_TEST_DIRECTIONS: Record<string, string[]> = Object.fromEntries(

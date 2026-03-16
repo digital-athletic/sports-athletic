@@ -19,7 +19,7 @@ import {
 
 /**
  * LineChart component for Power Test statistics.
- * Displays 4 exercise metrics (Squat, Bench Press, Rowing, Shoulder Press) over time.
+ * Displays 5 exercise metrics (Squat, Deadlift, Bench Press, Rowing, Shoulder Press) over time.
  */
 export const PowerTest: FC = () => {
   const { chartData } = usePowerTestData();
@@ -62,9 +62,10 @@ export const PowerTest: FC = () => {
       <LineChart
         // Data series
         data={lineData.squad}
-        data2={lineData.benchPress}
-        data3={lineData.rowing}
-        data4={lineData.shoulderPress}
+        data2={lineData.deadlift}
+        data3={lineData.benchPress}
+        data4={lineData.rowing}
+        data5={lineData.shoulderPress}
         // Sizing
         height={LINE_CHART_SIZING.chartHeight}
         width={chartWidth}
@@ -73,14 +74,16 @@ export const PowerTest: FC = () => {
         endSpacing={0}
         // Line colors
         color={LINE_CHART_COLORS.squad}
-        color2={LINE_CHART_COLORS.benchPress}
-        color3={LINE_CHART_COLORS.rowing}
-        color4={LINE_CHART_COLORS.shoulderPress}
+        color2={LINE_CHART_COLORS.deadlift}
+        color3={LINE_CHART_COLORS.benchPress}
+        color4={LINE_CHART_COLORS.rowing}
+        color5={LINE_CHART_COLORS.shoulderPress}
         // Line styling
         thickness={LINE_CHART_STYLE.thickness}
         thickness2={LINE_CHART_STYLE.thickness}
         thickness3={LINE_CHART_STYLE.thickness}
         thickness4={LINE_CHART_STYLE.thickness}
+        thickness5={LINE_CHART_STYLE.thickness}
         curved={LINE_CHART_STYLE.curved}
         areaChart={LINE_CHART_STYLE.areaChart}
         // Data points (hidden to match design)
@@ -88,6 +91,7 @@ export const PowerTest: FC = () => {
         hideDataPoints2
         hideDataPoints3
         hideDataPoints4
+        hideDataPoints5
         yAxisTextStyle={{
           color: LINE_CHART_COLORS.axisText,
           fontSize: LINE_CHART_AXIS.fontSize,

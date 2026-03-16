@@ -23,6 +23,7 @@ export const colors = {
 
   // Test colors
   squad: "#000000",
+  deadlift: "#9B59B6",
   benchPress: "#6DC33F",
   rowing: "#4791DE",
   shoulderPress: "#F46E70",

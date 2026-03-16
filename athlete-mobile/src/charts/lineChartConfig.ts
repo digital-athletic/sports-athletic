@@ -24,6 +24,8 @@ export const LINE_CHART_DATA = {
 export const LINE_CHART_COLORS = {
   /** Squat line color (black) */
   squad: colors.squad,
+  /** Deadlift line color (purple) */
+  deadlift: colors.deadlift,
   /** Bench Press line color (green) */
   benchPress: colors.benchPress,
   /** Rowing line color (blue) */

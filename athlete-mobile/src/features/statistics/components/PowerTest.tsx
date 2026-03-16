@@ -91,11 +91,15 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
       <Box
         alignSelf="stretch"
         flexDirection="row"
+        flexWrap="wrap"
         justifyContent="center"
         alignItems="center"
       >
         <Text variant="small" padding="xs" style={{ color: colors.squad }}>
           {t("statistics.powerTest.legendSquad")}
+        </Text>
+        <Text variant="small" padding="xs" style={{ color: colors.deadlift }}>
+          {t("statistics.powerTest.legendDeadlift")}
         </Text>
         <Text variant="small" padding="xs" style={{ color: colors.benchPress }}>
           {t("statistics.powerTest.legendBenchPress")}
@@ -259,6 +263,20 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
                 </Text>
                 <Text variant="body" style={{ color: colors.squad }}>
                   {formatWeight(item.kneeDominant.barbell)}
+                </Text>
+              </Box>
+              <Box
+                height={36}
+                alignSelf="stretch"
+                flexDirection="row"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Text variant="body" style={{ color: colors.deadlift }}>
+                  {t("statistics.powerTest.deadlift")}
+                </Text>
+                <Text variant="body" style={{ color: colors.deadlift }}>
+                  {formatWeight(item.hipHinge.barbell)}
                 </Text>
               </Box>
               <Box

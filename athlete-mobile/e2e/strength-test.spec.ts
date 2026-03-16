@@ -72,20 +72,27 @@ test.describe("Strength Test", () => {
 
     // Verify exercise tabs are shown
     await expect(page.getByText("Squat").first()).toBeVisible();
+    await expect(page.getByText("Deadlift").first()).toBeVisible();
     await expect(page.getByText("Bench press").first()).toBeVisible();
     await expect(page.getByText("Rowing").first()).toBeVisible();
     await expect(page.getByText("Shoulder press").first()).toBeVisible();
 
     // Verify calculated 1RM values (based on 10 reps with test weights)
     // Formula: weight × (1 + reps/30), then rounded to nearest 0.5 kg
-    // Squat: 35kg × 1.333 = 46.67 → 46.5 kg
+    // All exercises are barbell (LH) now, so weight is used directly
+    // Squat: 40kg × 1.333 = 53.33 → 53.5 kg
+    await expect(page.getByText("53.5 kg").first()).toBeVisible();
+    // Deadlift: 40kg × 1.333 = 53.33 → 53.5 kg
+    await expect(page.getByText("53.5 kg").nth(1)).toBeVisible();
+    // Bench press: 35kg × 1.333 = 46.67 → 46.5 kg
     await expect(page.getByText("46.5 kg")).toBeVisible();
-    // Bench press: (12.5kg × 2 × 1.1) × 1.333 = 36.67 → 36.5 kg
-    await expect(page.getByText("36.5 kg").first()).toBeVisible();
-    // Rowing: same as bench → 36.5 kg
-    await expect(page.getByText("36.5 kg").nth(1)).toBeVisible();
-    // Shoulder press: (9kg × 2 × 1.1) × 1.333 = 26.4 → 26.5 kg
-    await expect(page.getByText("26.5 kg")).toBeVisible();
+    // Rowing: 30kg × 1.333 = 40.0 → 40 kg
+    // Scoped to results list to avoid ambiguity with chart Y-axis label "40 kg"
+    await expect(
+      page.getByTestId("power-test-results-list").getByText("40 kg"),
+    ).toBeVisible();
+    // Shoulder press: 25kg × 1.333 = 33.33 → 33.5 kg
+    await expect(page.getByText("33.5 kg")).toBeVisible();
 
     await page.screenshot({
       path: "playwright/screenshots/strength-test-results.png",

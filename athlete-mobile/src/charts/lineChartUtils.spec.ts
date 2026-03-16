@@ -13,6 +13,7 @@ describe("lineChartUtils", () => {
       const chartData: PowerTestChartData = {
         dates: [],
         kneeDominant: [],
+        deadlift: [],
         rowing: [],
         benchPress: [],
         shoulderPress: [],
@@ -22,6 +23,7 @@ describe("lineChartUtils", () => {
 
       expect(result).toEqual({
         squad: [],
+        deadlift: [],
         benchPress: [],
         rowing: [],
         shoulderPress: [],
@@ -32,6 +34,7 @@ describe("lineChartUtils", () => {
       const chartData: PowerTestChartData = {
         dates: ["2024-07-06"],
         kneeDominant: [80],
+        deadlift: [70],
         rowing: [50],
         benchPress: [60],
         shoulderPress: [35],
@@ -51,6 +54,7 @@ describe("lineChartUtils", () => {
       const chartData: PowerTestChartData = {
         dates: ["2024-06-30", "2024-07-06", "2024-09-04"],
         kneeDominant: [0, 80, 85],
+        deadlift: [0, 70, 75],
         rowing: [0, 50, 55],
         benchPress: [0, 60, 65],
         shoulderPress: [0, 35, 40],
@@ -69,6 +73,7 @@ describe("lineChartUtils", () => {
       const chartData: PowerTestChartData = {
         dates: ["2024-07-06", "2024-07-06-1"],
         kneeDominant: [80, 85],
+        deadlift: [70, 75],
         rowing: [50, 55],
         benchPress: [60, 65],
         shoulderPress: [35, 40],
@@ -85,6 +90,7 @@ describe("lineChartUtils", () => {
       const chartData: PowerTestChartData = {
         dates: Array.from({ length: 9 }, (_, i) => `2024-0${i + 1}-01`),
         kneeDominant: Array.from({ length: 9 }, () => 80),
+        deadlift: Array.from({ length: 9 }, () => 70),
         rowing: Array.from({ length: 9 }, () => 50),
         benchPress: Array.from({ length: 9 }, () => 60),
         shoulderPress: Array.from({ length: 9 }, () => 35),
@@ -108,6 +114,7 @@ describe("lineChartUtils", () => {
       const chartData: PowerTestChartData = {
         dates: ["2024-07-06"],
         kneeDominant: [80],
+        deadlift: [70],
         rowing: [50],
         benchPress: [60],
         shoulderPress: [35],
@@ -126,6 +133,7 @@ describe("lineChartUtils", () => {
       const chartData: PowerTestChartData = {
         dates: [],
         kneeDominant: [],
+        deadlift: [],
         rowing: [],
         benchPress: [],
         shoulderPress: [],
@@ -138,6 +146,7 @@ describe("lineChartUtils", () => {
       const chartData: PowerTestChartData = {
         dates: ["2024-07-06"],
         kneeDominant: [0],
+        deadlift: [0],
         rowing: [0],
         benchPress: [0],
         shoulderPress: [0],
@@ -150,6 +159,7 @@ describe("lineChartUtils", () => {
       const chartData: PowerTestChartData = {
         dates: ["2024-07-06"],
         kneeDominant: [100],
+        deadlift: [90],
         rowing: [50],
         benchPress: [60],
         shoulderPress: [35],
@@ -163,6 +173,7 @@ describe("lineChartUtils", () => {
       const chartData: PowerTestChartData = {
         dates: ["2024-07-06"],
         kneeDominant: [150],
+        deadlift: [130],
         rowing: [50],
         benchPress: [60],
         shoulderPress: [35],

@@ -1,6 +1,13 @@
 import { TagGroups } from "@/constants/tagGroups";
+import {
+  getDefaultPositionForSport,
+  getPositionsForSport,
+  shouldShowPositionQuestion,
+} from "@/constants/sportPositions";
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
 import { SelectionInputField } from "@/form/SelectionInputField";
+import { useUserWorkoutStore } from "@/store/userWorkoutStore";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { type AnamnesisQuestionProps } from "./AnamnesisQuestionProps";
 
@@ -9,23 +16,51 @@ export function PositionQuestion({
   onChangeTag,
 }: AnamnesisQuestionProps) {
   const { t } = useTranslation();
+  const sport = useUserWorkoutStore((state) => state.workoutData.sport);
 
-  const value = tags[TagGroups.POSITION] || [];
+  const showSelector = shouldShowPositionQuestion(sport);
+  const sportPositions = getPositionsForSport(sport);
+  const currentPositions = tags[TagGroups.POSITION] ?? [];
 
-  const items = [
-    {
-      value: "FIELD",
-      displayName: {
-        default: t("anamnesisQuestions.position.options.field"),
-      },
+  // Auto-set position for OTHER_SPORT or if nothing is selected for a single-position sport
+  useEffect(() => {
+    if (!showSelector) {
+      onChangeTag(TagGroups.POSITION, getDefaultPositionForSport(sport));
+      return;
+    }
+    if (
+      sportPositions &&
+      sportPositions.length === 1 &&
+      currentPositions.length === 0
+    ) {
+      onChangeTag(TagGroups.POSITION, getDefaultPositionForSport(sport));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sport]);
+
+  // Clear invalid position when sport changes
+  useEffect(() => {
+    if (!showSelector || !sportPositions) return;
+    const validValues = sportPositions.map((p) => p.value);
+    const hasInvalidSelection = currentPositions.some(
+      (pos) => !validValues.includes(pos),
+    );
+    if (hasInvalidSelection) {
+      onChangeTag(TagGroups.POSITION, []);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sport]);
+
+  if (!showSelector) {
+    return null;
+  }
+
+  const items = (sportPositions ?? []).map((pos) => ({
+    value: pos.value,
+    displayName: {
+      default: t(pos.translationKey) as string,
     },
-    {
-      value: "GOAL",
-      displayName: {
-        default: t("anamnesisQuestions.position.options.goal"),
-      },
-    },
-  ];
+  }));
 
   return (
     <AnamnesisQuestionContainer
@@ -35,7 +70,7 @@ export function PositionQuestion({
       <SelectionInputField
         onChange={(value) => onChangeTag(TagGroups.POSITION, value as string[])}
         iconName="locate"
-        selectedItems={value}
+        selectedItems={currentPositions}
         items={items}
         singleSelection={true}
       />

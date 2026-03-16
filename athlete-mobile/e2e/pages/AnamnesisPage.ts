@@ -8,7 +8,13 @@ export interface AnamnesisParams {
   gender?: "Male" | "Female";
   heightCm?: number;
   weightKg?: number;
-  position?: "Fieldplayer" | "Goalkeeper";
+  position?:
+    | "Fieldplayer"
+    | "Goalkeeper"
+    | "Backcourt"
+    | "Wing"
+    | "Pivot"
+    | "Referee";
   seasonPhase: "Preparation" | "Competitive" | "Transition";
   trainingDays: TrainingDay[];
 }

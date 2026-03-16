@@ -33,7 +33,7 @@ test.describe("Profile Setup", () => {
       name: "Test User",
       heightCm: 180,
       weightKg: 80,
-      position: "Fieldplayer",
+      position: "Backcourt",
       seasonPhase: "Competitive",
       trainingDays: ["Tu", "Fr"],
     });

@@ -502,7 +502,7 @@
     "HOCKEY_SPORT": "Hockey",
     "AMERICAN_FOOTBALL_SPORT": "American Football",
     "RUGBY_SPORT": "Rugby",
-    "OTHER_SPORT": "Other Sports"
+    "OTHER_SPORT": "General Athletics"
   },
   "more": {
     "title": "Profile",
@@ -803,7 +803,13 @@
       "description": "What position do you play?",
       "options": {
         "field": "Fieldplayer",
-        "goal": "Goalkeeper"
+        "goal": "Goalkeeper",
+        "other": "other",
+        "backcourt": "Backcourt",
+        "wing": "Wing",
+        "pivot": "Pivot",
+        "goalkeeper": "Goalkeeper",
+        "referee": "Referee"
       }
     },
     "fitnessLevel": {

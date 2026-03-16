@@ -58,7 +58,7 @@ test.describe("User Deletion after Training Data Change", () => {
       name: "Test User",
       heightCm: 180,
       weightKg: 80,
-      position: "Fieldplayer",
+      position: "Backcourt",
       seasonPhase: "Competitive",
       trainingDays: ["Tu", "Fr"],
     });

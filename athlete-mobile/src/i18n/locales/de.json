@@ -502,7 +502,7 @@
     "HOCKEY_SPORT": "Hockey",
     "AMERICAN_FOOTBALL_SPORT": "American Football",
     "RUGBY_SPORT": "Rugby",
-    "OTHER_SPORT": "Sonstige Sportarten"
+    "OTHER_SPORT": "Allgemeine Athletik"
   },
   "more": {
     "title": "Profil",
@@ -802,8 +802,14 @@
       "title": "Position",
       "description": "Welche Position spielst du in deiner Sportart?",
       "options": {
-        "field": "Feldspieler",
-        "goal": "Torwart"
+        "field": "Feldspieler/in",
+        "goal": "Tor",
+        "other": "sonstige",
+        "backcourt": "Rückraum",
+        "wing": "Außen",
+        "pivot": "Kreis",
+        "goalkeeper": "Tor",
+        "referee": "Schiri"
       }
     },
     "fitnessLevel": {

@@ -77,14 +77,21 @@ export const ColumnList: FC<ColumnListProps> = ({
           borderBottomColor="lightGrey2"
           flexDirection="row"
         >
-          <Image
-            source={item.picture}
-            resizeMode="cover"
-            style={{
-              width: listItemWidth,
-              aspectRatio: 1,
-            }}
-          />
+          {item.svgComponent ? (
+            <item.svgComponent
+              width={listItemWidth ?? 120}
+              height={listItemWidth ?? 120}
+            />
+          ) : item.picture ? (
+            <Image
+              source={item.picture}
+              resizeMode="cover"
+              style={{
+                width: listItemWidth,
+                aspectRatio: 1,
+              }}
+            />
+          ) : null}
           <Box
             paddingHorizontal="m"
             paddingVertical="m"

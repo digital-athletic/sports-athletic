@@ -1,6 +1,8 @@
+import { createPreventionTileComponent } from "@/bodyParts/PreventionTileSvg";
 import { I18nKey } from "@/i18n";
 import { type LevelTagSchemaType } from "@/schemas/common.schema";
 import { Route } from "expo-router";
+import { type FC } from "react";
 import { ImageSourcePropType } from "react-native";
 import { SharedConstants } from "./sharedConstants";
 
@@ -310,7 +312,8 @@ export const isPlaceType = (value: unknown): value is PlaceType =>
 export type FocusType = "PHASE" | "CARDIO" | "STABILITY" | "COMBINED";
 
 export type TileData = {
-  picture: ImageSourcePropType;
+  picture?: ImageSourcePropType;
+  svgComponent?: FC<{ width: number; height: number }>;
   title: I18nKey;
   description?: {
     text: I18nKey;
@@ -375,7 +378,7 @@ export const QUICKSTART_TILES: TileData[] = [
 
 export const PREVENTION_TILES: TileData[] = [
   {
-    picture: require("../../assets/img/prevention/prevention_ankle_4to3.png"),
+    svgComponent: createPreventionTileComponent("PREVANKLE"),
     title: "training.prevention.PREVENTION_TILE_ANKLE",
     navigate: {
       key: "/training/muscle-soreness",
@@ -383,7 +386,7 @@ export const PREVENTION_TILES: TileData[] = [
     },
   },
   {
-    picture: require("../../assets/img/prevention/prevention_hip_4to3.png"),
+    svgComponent: createPreventionTileComponent("PREVKNEE"),
     title: "training.prevention.PREVENTION_TILE_KNEE",
     navigate: {
       key: "/training/muscle-soreness",
@@ -391,7 +394,7 @@ export const PREVENTION_TILES: TileData[] = [
     },
   },
   {
-    picture: require("../../assets/img/prevention/prevention_spine_4to3.png"),
+    svgComponent: createPreventionTileComponent("PREVSPINE"),
     title: "training.prevention.PREVENTION_TILE_SPINE",
     navigate: {
       key: "/training/muscle-soreness",
@@ -399,7 +402,7 @@ export const PREVENTION_TILES: TileData[] = [
     },
   },
   {
-    picture: require("../../assets/img/prevention/prevention_shoulder_4to3.png"),
+    svgComponent: createPreventionTileComponent("PREVSHOULDER"),
     title: "training.prevention.PREVENTION_TILE_SHOULDER",
     navigate: {
       key: "/training/muscle-soreness",
@@ -407,7 +410,7 @@ export const PREVENTION_TILES: TileData[] = [
     },
   },
   {
-    picture: require("../../assets/img/prevention/prevention_wrist_4to3.png"),
+    svgComponent: createPreventionTileComponent("PREVWRIST"),
     title: "training.prevention.PREVENTION_TILE_WRIST",
     navigate: {
       key: "/training/muscle-soreness",

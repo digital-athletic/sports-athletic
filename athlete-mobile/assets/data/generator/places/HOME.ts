@@ -1,9 +1,9 @@
 const EQUIPMENT = [
-    "TOWEL",
     "BOTTLE",
-    "SLIPPERY_GROUND",
     "CHAIR",
-    "ADDITIONAL_WEIGHTS"
+    "SLIPPERY_GROUND",
+    "TOWEL",
+    "WALL",
 ];
 
 export default { EQUIPMENT };

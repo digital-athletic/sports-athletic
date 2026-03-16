@@ -1,36 +1,49 @@
 /**
- * Places store - gym/studio equipment configuration.
+ * Places store - training location equipment configuration.
  */
 
 import type { PlacesState, StoreState } from "../types";
+import STUDIO from "../../../../assets/data/generator/places/STUDIO";
+import HOME from "../../../../assets/data/generator/places/HOME";
+import HALL from "../../../../assets/data/generator/places/HALL";
+import OUTSIDE from "../../../../assets/data/generator/places/OUTSIDE";
 
-/**
- * Default studio equipment for a fully equipped gym.
- */
-export const DEFAULT_EQUIPMENT = [
-  "DUMBBELL",
-  "BARBELL",
-  "BENCH",
-  "ADJUSTABLE_BENCH",
-  "BARBELL_BENCH",
-  "EXERCISING_BENCH",
-  "POWER_RACK",
-];
+export const DEFAULT_HOME_EQUIPMENT = HOME.EQUIPMENT;
+export const DEFAULT_STUDIO_EQUIPMENT = STUDIO.EQUIPMENT;
+export const DEFAULT_HALL_EQUIPMENT = HALL.EQUIPMENT;
+export const DEFAULT_OUTSIDE_EQUIPMENT = OUTSIDE.EQUIPMENT;
 
 export interface PlacesStoreOptions {
-  equipment?: string[];
+  homeEquipment?: string[];
+  studioEquipment?: string[];
+  hallEquipment?: string[];
+  outsideEquipment?: string[];
 }
 
 export function createPlacesStore(
   options: PlacesStoreOptions = {},
 ): StoreState<PlacesState> {
-  const { equipment = DEFAULT_EQUIPMENT } = options;
+  const {
+    homeEquipment = DEFAULT_HOME_EQUIPMENT,
+    studioEquipment = DEFAULT_STUDIO_EQUIPMENT,
+    hallEquipment = DEFAULT_HALL_EQUIPMENT,
+    outsideEquipment = DEFAULT_OUTSIDE_EQUIPMENT,
+  } = options;
 
   return {
     state: {
       places: {
+        HOME: {
+          equipment: homeEquipment,
+        },
         STUDIO: {
-          equipment,
+          equipment: studioEquipment,
+        },
+        HALL: {
+          equipment: hallEquipment,
+        },
+        OUTSIDE: {
+          equipment: outsideEquipment,
         },
       },
     },

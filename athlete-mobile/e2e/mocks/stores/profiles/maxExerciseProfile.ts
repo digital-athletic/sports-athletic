@@ -9,7 +9,10 @@ import { STORAGE_KEYS, PLAN_START_DATE } from "../constants";
 import type { StoreDataMap } from "../types";
 import { createCompletedProfile } from "./completedProfile";
 import { createUserWorkoutStore } from "../data/userWorkoutStore";
-import { createPlacesStore, DEFAULT_EQUIPMENT } from "../data/placesStore";
+import {
+  createPlacesStore,
+  DEFAULT_STUDIO_EQUIPMENT,
+} from "../data/placesStore";
 
 /**
  * Creates a profile with WU + SWR1 + MAX training plan:
@@ -25,7 +28,10 @@ export function createMaxExerciseProfile(): StoreDataMap {
   return {
     ...baseProfile,
     [STORAGE_KEYS.PLACES]: createPlacesStore({
-      equipment: [...DEFAULT_EQUIPMENT, "MULTIPLE_EXERCISING_BENCHES"],
+      studioEquipment: [
+        ...DEFAULT_STUDIO_EQUIPMENT,
+        "MULTIPLE_EXERCISING_BENCHES",
+      ],
     }),
     [STORAGE_KEYS.USER_WORKOUT]: createUserWorkoutStore({
       trainingPlan: {

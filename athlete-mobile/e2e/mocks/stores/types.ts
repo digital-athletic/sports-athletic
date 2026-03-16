@@ -16,7 +16,16 @@ export interface StoreState<T> {
  */
 export interface PlacesState {
   places: {
+    HOME: {
+      equipment: string[];
+    };
     STUDIO: {
+      equipment: string[];
+    };
+    HALL: {
+      equipment: string[];
+    };
+    OUTSIDE: {
       equipment: string[];
     };
   };

@@ -304,11 +304,10 @@ export default class TrainingGenerator {
     }
 
     // pain
-    const painData: string[] = user.workoutData?.tags
-      ? getBlocksFromPains(
-          getUserTagValues(user.workoutData.tags, TagGroups.PAIN),
-        )
+    const userPains: string[] = user.workoutData?.tags
+      ? getUserTagValues(user.workoutData.tags, TagGroups.PAIN)
       : [];
+    const painData: string[] = getBlocksFromPains(userPains);
 
     const painFiltered: SkillTreeType = {};
     const painList: string[] = [];
@@ -669,7 +668,7 @@ export default class TrainingGenerator {
       type,
       branches.main,
       exercises,
-      painData,
+      userPains,
       prevs,
       isShortTraining,
     );
@@ -718,7 +717,7 @@ export default class TrainingGenerator {
         "WUSPEZIAL",
         branches["WUSPEZIAL"],
         exercises,
-        painData,
+        userPains,
         [type],
         isShortTraining,
       );
@@ -2335,18 +2334,18 @@ export default class TrainingGenerator {
     if (regionPains.length > 0) {
       for (let pain = 0; pain < regionPains.length; pain++) {
         if (
-          regionPains[pain].indexOf("LINKS") > -1 &&
+          regionPains[pain].indexOf("LEFT") > -1 &&
           prevSides.indexOf("LEFT") === -1
         )
           prevSides.push("LEFT");
         if (
-          regionPains[pain].indexOf("RECHTS") > -1 &&
+          regionPains[pain].indexOf("RIGHT") > -1 &&
           prevSides.indexOf("RIGHT") === -1
         )
           prevSides.push("RIGHT");
         if (
-          regionPains[pain].indexOf("LINKS") === -1 &&
-          regionPains[pain].indexOf("RECHTS") === -1 &&
+          regionPains[pain].indexOf("LEFT") === -1 &&
+          regionPains[pain].indexOf("RIGHT") === -1 &&
           prevSides.indexOf("BOTH") === -1
         )
           prevSides.push("BOTH");

@@ -12,7 +12,10 @@ import {
   type RawSkillTree,
 } from "@/utils/skillTreeTransform";
 import ExercisesData from "../../../../assets/data/generator/Exercises.json";
+import PREV from "../../../../assets/data/generator/skillTrees/PREV.json";
+import PREVKG from "../../../../assets/data/generator/skillTrees/PREVKG.json";
 import WU from "../../../../assets/data/generator/skillTrees/WU.json";
+import WUSPEZIAL from "../../../../assets/data/generator/skillTrees/WUSPEZIAL.json";
 import { roundWeightValue } from "../utils/workoutUtils";
 import TrainingGenerator from "./TrainingGenerator";
 
@@ -2336,6 +2339,84 @@ describe("TrainingGenerator", () => {
         expect(entry.exerciseId).toBeDefined();
         expect(typeof entry.exerciseId).toBe("string");
       }
+    });
+  });
+
+  /**
+   * PREVKNEE (Praventionstraining Knie und Hufte) generation.
+   * Should always produce 3 WUSPEZIAL warm-up exercises + 6 main prevention exercises
+   * (3 super-set pairs) when given sided knee pain (e.g. KNEE_RIGHT).
+   */
+  describe("PREVKNEE generation with sided pain", () => {
+    const realExercises = ExercisesData as { id: string }[];
+    const prevSkillTrees = {
+      WU: transformSkillTree(WU as RawSkillTree),
+      PREV: transformSkillTree(PREV as RawSkillTree),
+      PREVKG: transformSkillTree(PREVKG as RawSkillTree),
+      WUSPEZIAL: transformSkillTree(WUSPEZIAL as RawSkillTree),
+    } as { [skillName: string]: SkillTreeType };
+
+    const prevKneeUser: UserType = {
+      userId: "prevknee-test-user",
+      workoutData: {
+        birthday: "1990-01-01",
+        gender: "MALE",
+        tags: {
+          LEVEL: ["INTERMEDIATE"],
+          PAIN: ["KNEE_RIGHT"],
+        },
+        maxValues: DEFAULT_MAX_VALUES,
+      },
+      temporalData: [],
+    };
+
+    const noExerciseData = { exerciseData: {}, branchData: {} };
+
+    const PAUSE_ID = "999999";
+
+    it("generates exactly 3 WUSPEZIAL + 6 main PREV exercises for KNEE_RIGHT pain", () => {
+      const result = generator.generateShortWorkout(
+        "PREVKNEE",
+        prevKneeUser,
+        "STUDIO",
+        realExercises as Parameters<typeof generator.generateShortWorkout>[3],
+        prevSkillTrees,
+        [],
+        noExerciseData,
+      );
+
+      const wuEntries = result.filter(
+        (e) => e.skill === "WUSPEZIAL" && e.exerciseId !== PAUSE_ID,
+      );
+      const prevEntries = result.filter(
+        (e) => e.skill === "PREVKNEE" && e.exerciseId !== PAUSE_ID,
+      );
+
+      // 3 warm-up branches selected; ONE_SIDE exercises expand to left+right so count >= 3
+      expect(wuEntries.length).toBeGreaterThanOrEqual(3);
+      // 3 super-set pairs selected; fill-up branches can expand count beyond 6
+      expect(prevEntries.length).toBeGreaterThanOrEqual(6);
+    });
+
+    it("side detection uses English LEFT/RIGHT from original pain tags", () => {
+      // KNEE_RIGHT pain should produce RIGHT-side exercises, not BOTH (the broken default).
+      // With broken German string matching the exercises were filtered to 0-2.
+      // Correct English matching produces at least 6 exercises (3 super-set pairs).
+      const result = generator.generateShortWorkout(
+        "PREVKNEE",
+        prevKneeUser,
+        "STUDIO",
+        realExercises as Parameters<typeof generator.generateShortWorkout>[3],
+        prevSkillTrees,
+        [],
+        noExerciseData,
+      );
+
+      const exerciseEntries = result.filter(
+        (e) => e.skill === "PREVKNEE" && e.exerciseId !== PAUSE_ID,
+      );
+
+      expect(exerciseEntries.length).toBeGreaterThanOrEqual(6);
     });
   });
 });

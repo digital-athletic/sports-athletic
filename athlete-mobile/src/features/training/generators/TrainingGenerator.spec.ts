@@ -13,6 +13,7 @@ import {
 } from "@/utils/skillTreeTransform";
 import ExercisesData from "../../../../assets/data/generator/Exercises.json";
 import WU from "../../../../assets/data/generator/skillTrees/WU.json";
+import { roundWeightValue } from "../utils/workoutUtils";
 import TrainingGenerator from "./TrainingGenerator";
 
 describe("TrainingGenerator", () => {
@@ -1844,11 +1845,63 @@ describe("TrainingGenerator", () => {
         );
 
         const maxSetWeight = squatSets[2].weight!;
-        const advancedMaxPercentage = 0.65;
+        const advancedMaxPercentage = 0.8;
         expect(maxSetWeight).toBeLessThanOrEqual(
           maxKneeValue * advancedMaxPercentage,
         );
       });
+
+      it.each([
+        { level: "BEGINNER", expectedPercentage: 0.75 },
+        { level: "ADVANCED", expectedPercentage: 0.8 },
+        { level: "PROFESSIONAL", expectedPercentage: 0.85 },
+      ])(
+        "$level: should use $expectedPercentage of 1RM for test weight",
+        ({ level, expectedPercentage }) => {
+          const maxKneeValue = 100;
+          const userWithMaxValues = {
+            ...testUser,
+            workoutData: {
+              ...testUser.workoutData,
+              tags: { LEVEL: [level] },
+              gender: "MALE" as const,
+              maxValues: {
+                testAt: new Date("2024-01-01").getTime(),
+                kneeDominant: { barbell: maxKneeValue },
+              },
+            },
+          };
+
+          const result = generateTestWorkout(userWithMaxValues);
+
+          const levelKey = level as keyof typeof EXPECTED_EXERCISES;
+          const exerciseIds = EXPECTED_EXERCISES[levelKey];
+          const firstTestExerciseId =
+            "m" in exerciseIds ? exerciseIds.m[0] : exerciseIds.default[0];
+
+          const testSets = result.filter(
+            (entry) =>
+              entry.exerciseId === firstTestExerciseId &&
+              entry.skill === "TEST",
+          );
+
+          expect(testSets).toHaveLength(3);
+
+          const set3Weight = testSets[2].weight!;
+          const set1Weight = testSets[0].weight!;
+          const set2Weight = testSets[1].weight!;
+
+          expect(set3Weight).toBe(
+            roundWeightValue(maxKneeValue * expectedPercentage * 1.0),
+          );
+          expect(set1Weight).toBe(
+            roundWeightValue(maxKneeValue * expectedPercentage * 0.5),
+          );
+          expect(set2Weight).toBe(
+            roundWeightValue(maxKneeValue * expectedPercentage * 0.75),
+          );
+        },
+      );
     });
 
     describe("Edge Cases", () => {

@@ -3302,11 +3302,20 @@ export default class TrainingGenerator {
     // use previous max value if set
     const maxValue = getMaxValueForExercise(sortedExercise, maxValues);
     if (maxValue) {
-      // do not use 100% of last max value
-      // use percentage of last maxValue by level
-      let maxValuePercentage = 0.65;
-      if (userLevel === WorkoutConstants.LEVELS.PROFESSIONAL) {
-        maxValuePercentage = 0.7;
+      // Use experience-level-based percentage of last 1RM
+      // Beginner: 75%, Advanced: 80%, Professional: 85%
+      let maxValuePercentage: number;
+      switch (userLevel) {
+        case WorkoutConstants.LEVELS.PROFESSIONAL:
+          maxValuePercentage = 0.85;
+          break;
+        case WorkoutConstants.LEVELS.ADVANCED:
+          maxValuePercentage = 0.8;
+          break;
+        case WorkoutConstants.LEVELS.BEGINNER:
+        default:
+          maxValuePercentage = 0.75;
+          break;
       }
       weight = roundWeightValue(maxValue * maxValuePercentage * percentage);
     } else {

@@ -9,6 +9,9 @@ export const featureFlags = {
   get reviewOtp(): string | null {
     return process.env.EXPO_PUBLIC_REVIEW_OTP ?? null;
   },
+  get termsAndContactEnabled(): boolean {
+    return process.env.EXPO_PUBLIC_TERMS_CONTACT_ENABLED === "true";
+  },
   isReviewUser(email: string): boolean {
     return (
       this.reviewEmail !== null &&

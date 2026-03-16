@@ -5,6 +5,7 @@ describe("featureFlags", () => {
     delete process.env.EXPO_PUBLIC_SERVER_SYNC_ENABLED;
     delete process.env.EXPO_PUBLIC_REVIEW_EMAIL;
     delete process.env.EXPO_PUBLIC_REVIEW_OTP;
+    delete process.env.EXPO_PUBLIC_TERMS_CONTACT_ENABLED;
   });
 
   describe("serverSyncEnabled", () => {
@@ -42,6 +43,22 @@ describe("featureFlags", () => {
     it("returns the configured value when EXPO_PUBLIC_REVIEW_OTP is set", () => {
       process.env.EXPO_PUBLIC_REVIEW_OTP = "123456";
       expect(featureFlags.reviewOtp).toBe("123456");
+    });
+  });
+
+  describe("termsAndContactEnabled", () => {
+    it("defaults to false when EXPO_PUBLIC_TERMS_CONTACT_ENABLED is unset", () => {
+      expect(featureFlags.termsAndContactEnabled).toBe(false);
+    });
+
+    it("is true when EXPO_PUBLIC_TERMS_CONTACT_ENABLED is 'true'", () => {
+      process.env.EXPO_PUBLIC_TERMS_CONTACT_ENABLED = "true";
+      expect(featureFlags.termsAndContactEnabled).toBe(true);
+    });
+
+    it("is false when EXPO_PUBLIC_TERMS_CONTACT_ENABLED is 'false'", () => {
+      process.env.EXPO_PUBLIC_TERMS_CONTACT_ENABLED = "false";
+      expect(featureFlags.termsAndContactEnabled).toBe(false);
     });
   });
 

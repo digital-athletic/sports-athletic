@@ -137,6 +137,26 @@ pnpm format-fix
 pnpm bump:persist-version
 ```
 
+## Environment Variables
+
+### Feature Flags
+
+These optional variables control feature flags for launch and store review testing:
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `EXPO_PUBLIC_SERVER_SYNC_ENABLED` | Set to `"false"` to disable server sync of workouts/strength tests. Login and registration still work. | `true` |
+| `EXPO_PUBLIC_REVIEW_EMAIL` | Email address that bypasses OTP verification for app store review (e.g. `reviewer@apple.com`). | Not set (no bypass) |
+| `EXPO_PUBLIC_REVIEW_OTP` | OTP code the review user enters on the verification screen. | Not set |
+
+**Example `.env` for store review build:**
+
+```bash
+REVIEW_EMAIL=reviewer@example.com
+```
+
+When none of these variables are set, the app behaves normally with full server sync and real authentication.
+
 ## Helpful Resources
 
 - [React Documentation](https://react.dev) - Core React concepts

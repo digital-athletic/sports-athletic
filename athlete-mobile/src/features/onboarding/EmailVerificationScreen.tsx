@@ -3,6 +3,7 @@ import {
   requestRegistrationOtp,
 } from "@/services/AuthService";
 import { supabase } from "@/services/supabaseClient";
+import { featureFlags } from "@/config/featureFlags";
 import { useAuthStore } from "@/store/authStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
@@ -95,6 +96,19 @@ export function EmailVerificationScreen() {
     if (verifying || otpCode.length !== OTP_LENGTH) return;
     setVerifying(true);
     setVerificationError(null);
+
+    if (
+      featureFlags.isReviewUser(email ?? "") &&
+      otpCode === featureFlags.reviewOtp
+    ) {
+      useAuthStore
+        .getState()
+        .setAuth({ userId: "review-user", token: "review-token" });
+      if (mode === "REGISTER") {
+        router.replace("/anamnesis");
+      }
+      return;
+    }
 
     const { data, error } = await supabase.auth.verifyOtp({
       email: email ?? "",

@@ -1,6 +1,8 @@
 import { LoginScreen } from "@/features/onboarding/LoginScreen";
 import { RegistrationScreen } from "@/features/onboarding/RegisterScreen";
 import { Box } from "@/theme/Box";
+import { featureFlags } from "@/config/featureFlags";
+import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "expo-router";
 import { useReducer } from "react";
 import { useTranslation } from "react-i18next";
@@ -115,6 +117,13 @@ export default function OnboardingScreen() {
     dispatch({ type: "SET_PROCESSING", payload: true });
     Keyboard.dismiss();
 
+    if (featureFlags.isReviewUser(state.email)) {
+      useAuthStore
+        .getState()
+        .setAuth({ userId: "review-user", token: "review-token" });
+      return;
+    }
+
     try {
       await requestLoginOtp(state.email);
     } catch (error: any) {
@@ -158,6 +167,13 @@ export default function OnboardingScreen() {
 
     dispatch({ type: "SET_PROCESSING", payload: true });
     Keyboard.dismiss();
+
+    if (featureFlags.isReviewUser(state.email)) {
+      useAuthStore
+        .getState()
+        .setAuth({ userId: "review-user", token: "review-token" });
+      return;
+    }
 
     try {
       await requestRegistrationOtp(state.email, state.acceptedAnalytics);

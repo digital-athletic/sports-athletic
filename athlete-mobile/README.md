@@ -132,9 +132,8 @@ pnpm lint
 pnpm format-check
 pnpm format-fix
 
-# Increment persisted store verson (See: PERSIST_VERSION in sharedConstants.ts)
-# Resets persisted store to default values
-pnpm bump:persist-version
+# Store versioning is handled by per-store migrations.
+# See: src/store/storeVersions.ts and src/store/migrations/
 ```
 
 ## Environment Variables

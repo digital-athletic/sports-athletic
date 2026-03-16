@@ -49,20 +49,14 @@ The project uses three update channels that correspond to build profiles:
 | `pnpm update:preview`     | preview       | preview      | Update TestFlight/internal test builds   |
 | `pnpm update:production`  | production    | production   | Update production app store builds       |
 
-## ⚠️ Important Warning: Persist Version
+## Store Schema Changes in OTA Updates
 
-The update scripts **do not** run `bump:persist-version`, which means the app's internal storage version will not be incremented. This is intentional for most OTA updates.
+Store versioning is handled per-store via `src/store/storeVersions.ts` with automatic migrations in `src/store/migrations/`.
 
-**When you need to bump persist version:**
-- If your update changes AsyncStorage data structures
-- If you're migrating data formats
-- If you need to invalidate cached data
-
-**To publish an update with bumped persist version:**
-```bash
-pnpm bump:persist-version
-pnpm dlx eas-cli@latest update --channel <channel> --environment <environment>
-```
+**When your OTA update changes a store's persisted data structure:**
+1. Increment the store's version in `src/store/storeVersions.ts`
+2. Add a migration function in `src/store/migrations/<storeName>Migrations.ts`
+3. The migration runs automatically on app launch — no manual bump script needed
 
 ## Publishing Updates
 

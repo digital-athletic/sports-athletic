@@ -1130,15 +1130,15 @@ const SPORTS = {
 } as const;
 
 const SPORTS_IMAGES = {
-  HANDBALL_SPORT: require("../../assets/img/sports/Handball.png"),
-  FOOTBALL_SPORT: require("../../assets/img/sports/Football.png"),
-  VOLLEYBALL_SPORT: require("../../assets/img/sports/Volleyball.png"),
-  BASKETBALL_SPORT: require("../../assets/img/sports/Basketball.png"),
-  ICE_HOCKEY_SPORT: require("../../assets/img/sports/Eishockey.png"),
-  HOCKEY_SPORT: require("../../assets/img/sports/Hockey.png"),
-  AMERICAN_FOOTBALL_SPORT: require("../../assets/img/sports/AmericanFootball.png"),
-  RUGBY_SPORT: require("../../assets/img/sports/Rugby.png"),
-  OTHER_SPORT: require("../../assets/img/sports/SonstigeSportarten.png"),
+  HANDBALL_SPORT: require("../../assets/img/sport-selection/Handball.png"),
+  FOOTBALL_SPORT: require("../../assets/img/sport-selection/Football.png"),
+  VOLLEYBALL_SPORT: require("../../assets/img/sport-selection/Volleyball.png"),
+  BASKETBALL_SPORT: require("../../assets/img/sport-selection/Basketball.png"),
+  ICE_HOCKEY_SPORT: require("../../assets/img/sport-selection/IceHockey.png"),
+  HOCKEY_SPORT: require("../../assets/img/sport-selection/Hockey.png"),
+  AMERICAN_FOOTBALL_SPORT: require("../../assets/img/sport-selection/AmericanFootball.png"),
+  RUGBY_SPORT: require("../../assets/img/sport-selection/Rugby.png"),
+  OTHER_SPORT: require("../../assets/img/sport-selection/GeneralAthletics.png"),
 };
 
 export const WorkoutConstants = {

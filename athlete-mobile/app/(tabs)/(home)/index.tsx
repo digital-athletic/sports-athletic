@@ -4,6 +4,7 @@ import { useTrainingStore } from "@/features/training/trainingStore";
 import { Logger } from "@/services/Logger";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
+import { Ionicon } from "@/common/Ionicon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
@@ -11,7 +12,6 @@ import { Stack, router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Image,
   ImageBackground,
   Platform,
   StyleSheet,
@@ -121,10 +121,10 @@ export default function HomeScreen() {
             accessibilityLabel={t("screens.home.focusTraining.title")}
           >
             <Box alignItems="center" justifyContent="space-between" gap="s">
-              <Image
-                source={require("../../../assets/img/home/Icons/iconFocusTraining.png")}
-                resizeMode="contain"
-                style={styles.buttonIcon}
+              <Ionicon
+                name="fitness-outline"
+                size={48}
+                color={colors.primary}
                 accessibilityLabel={t(
                   "screens.home.imageAlt.focusTrainingIcon",
                 )}
@@ -150,10 +150,10 @@ export default function HomeScreen() {
             accessibilityLabel={t("screens.home.preventionTraining.title")}
           >
             <Box alignItems="center" justifyContent="space-between" gap="s">
-              <Image
-                source={require("../../../assets/img/home/Icons/iconComplains.png")}
-                resizeMode="contain"
-                style={styles.buttonIcon}
+              <Ionicon
+                name="medkit-outline"
+                size={48}
+                color={colors.primary}
                 accessibilityLabel={t("screens.home.imageAlt.preventionIcon")}
               />
               <Text variant="cardTitle" textAlign="center" fontSize={14}>
@@ -189,9 +189,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-  },
-  buttonIcon: {
-    width: 48,
-    height: 48,
   },
 });

@@ -155,7 +155,7 @@ export default function UserProfileScreen() {
         >
           <SelectionInputField
             onChange={handleGenderChange}
-            awesomeIconName="venus-mars"
+            iconName="people"
             selectedItems={[gender]}
             items={[
               {

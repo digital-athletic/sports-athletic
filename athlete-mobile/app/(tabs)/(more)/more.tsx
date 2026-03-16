@@ -97,14 +97,14 @@ export default function MoreScreen() {
             <ListItem
               title={t("more.trainingPlans")}
               navPath="/(tabs)/(more)/exercises"
-              awesomeIconName="id-card"
+              iconName="clipboard"
               iconBackground="primary"
               isSubscribed={allowedForTraining}
             />
             <ListItem
               title={t("more.exercises")}
               navPath="/(tabs)/(more)/exercises"
-              awesomeIconName="list-ul"
+              iconName="list"
               iconBackground="primary"
               isLast
               isSubscribed={allowedForTraining}
@@ -137,7 +137,7 @@ export default function MoreScreen() {
           <ListItem
             title={t("more.myTrainingData")}
             navPath="/(more)/anamnesis/season-phase"
-            picPath={require("../../../assets/img/more/iconTrainingsdaten.png")}
+            iconName="stats-chart"
             iconBackground="primary"
             isSubscribed={allowedForTraining}
           />
@@ -148,7 +148,7 @@ export default function MoreScreen() {
               type: "TEST_WORKOUT",
               originPath: "/(tabs)/(more)/more",
             }}
-            picPath={require("../../../assets/img/more/iconKrafttest.png")}
+            iconName="barbell"
             iconBackground="primary"
             isSubscribed={allowedForTraining}
           />
@@ -174,14 +174,14 @@ export default function MoreScreen() {
               <ListItem
                 title={t("more.agb")}
                 navPath="/webview"
-                awesomeIconName="info"
+                iconName="information-circle"
                 iconBackground="darkGrey1"
                 isSubscribed={allowedForTraining}
               />
               <ListItem
                 title={t("more.privacy")}
                 navPath="/(tabs)/(more)/privacy"
-                awesomeIconName="shield"
+                iconName="shield-checkmark"
                 iconBackground="darkGrey1"
                 isSubscribed={allowedForTraining}
               />
@@ -206,14 +206,14 @@ export default function MoreScreen() {
               <ListItem
                 title={t("more.contact")}
                 navPath="/contact"
-                awesomeIconName="envelope"
+                iconName="mail"
                 iconBackground="darkGrey1"
                 isSubscribed={allowedForTraining}
               />
               <ListItem
                 title={t("more.imprint")}
                 navPath="/(tabs)/(more)/imprint"
-                awesomeIconName="gavel"
+                iconName="document-text"
                 iconBackground="darkGrey1"
                 isSubscribed={allowedForTraining}
               />

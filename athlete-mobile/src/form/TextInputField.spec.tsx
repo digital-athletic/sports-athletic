@@ -19,36 +19,10 @@ describe("<TextInputField />", () => {
     expect(toJSON()).toMatchSnapshot();
   });
 
-  it("renders correctly with AwesomeIcon", () => {
-    const { toJSON } = render(
-      <TextInputField {...defaultProps} awesomeIconName="user" />,
-    );
-    expect(toJSON()).toMatchSnapshot();
-  });
-
   it("displays Ionicon when iconName is provided", () => {
     const { getByLabelText } = render(
       <TextInputField {...defaultProps} iconName="person" />,
     );
-    expect(getByLabelText("input-icon")).toBeTruthy();
-  });
-
-  it("displays AwesomeIcon when awesomeIconName is provided", () => {
-    const { getByLabelText } = render(
-      <TextInputField {...defaultProps} awesomeIconName="user" />,
-    );
-    expect(getByLabelText("input-icon")).toBeTruthy();
-  });
-
-  it("prioritizes Ionicon when both icon types are provided", () => {
-    const { getByLabelText } = render(
-      <TextInputField
-        {...defaultProps}
-        iconName="person"
-        awesomeIconName="user"
-      />,
-    );
-    // When both are provided, only one icon should render
     expect(getByLabelText("input-icon")).toBeTruthy();
   });
 

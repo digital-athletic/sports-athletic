@@ -1,4 +1,4 @@
-import { AwesomeIcon } from "@/common/AwesomeIcon";
+import { Ionicon } from "@/common/Ionicon";
 import { TagGroups } from "@/constants/tagGroups";
 import {
   ExerciseDifficultyType,
@@ -1266,7 +1266,11 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
               alignItems={"center"}
               justifyContent={"center"}
             >
-              <AwesomeIcon name="info-circle" size={28} color={colors.black} />
+              <Ionicon
+                name="information-circle"
+                size={28}
+                color={colors.black}
+              />
             </TouchableBox>
           ),
           headerRight: () => (
@@ -1278,7 +1282,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
               alignItems={"center"}
               justifyContent={"center"}
             >
-              <AwesomeIcon name="times-circle" size={28} color={colors.black} />
+              <Ionicon name="close-circle" size={28} color={colors.black} />
             </TouchableBox>
           ),
         }}

@@ -19,7 +19,7 @@ export function HeightQuestion({
       <TextInputField
         value={value}
         placeholder={t("anamnesisQuestions.height.placeholder")}
-        awesomeIconName="arrows-v"
+        iconName="resize"
         onChange={(value) => onChangeValue("height", value)}
       />
     </AnamnesisQuestionContainer>

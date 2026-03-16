@@ -2,14 +2,12 @@ import { Box } from "@/theme/Box";
 import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
 import { type KeyboardTypeOptions } from "react-native";
-import { AwesomeIcon, type FontAwesomeIconName } from "../common/AwesomeIcon";
-import { Ionicon, IoniconName } from "../common/Ionicon";
+import { Ionicon, type IoniconName } from "../common/Ionicon";
 import { BasicTextInput } from "./BasicTextInput";
 
 interface TextInputFieldProps {
   onChange: (value: string) => void;
   iconName?: IoniconName;
-  awesomeIconName?: FontAwesomeIconName;
   placeholder: string;
   value: string;
   keyboardType?: KeyboardTypeOptions;
@@ -23,7 +21,6 @@ interface TextInputFieldProps {
 export const TextInputField: FC<TextInputFieldProps> = ({
   onChange,
   iconName,
-  awesomeIconName,
   placeholder,
   value,
   keyboardType = "default",
@@ -31,29 +28,6 @@ export const TextInputField: FC<TextInputFieldProps> = ({
   onBlur,
 }) => {
   const { colors } = useTheme();
-
-  const renderIcon = () => {
-    if (iconName) {
-      return (
-        <Ionicon
-          name={iconName}
-          size={24}
-          color={colors.lightGrey3}
-          accessibilityLabel="input-icon"
-        />
-      );
-    } else if (awesomeIconName) {
-      return (
-        <AwesomeIcon
-          name={awesomeIconName}
-          size={24}
-          color={colors.lightGrey3}
-          accessibilityLabel="input-icon"
-        />
-      );
-    }
-    return null;
-  };
 
   return (
     <Box
@@ -72,7 +46,14 @@ export const TextInputField: FC<TextInputFieldProps> = ({
         borderTopLeftRadius="m"
         borderBottomLeftRadius="m"
       >
-        {renderIcon()}
+        {iconName && (
+          <Ionicon
+            name={iconName}
+            size={24}
+            color={colors.lightGrey3}
+            accessibilityLabel="input-icon"
+          />
+        )}
       </Box>
       <BasicTextInput
         onChangeText={onChange}

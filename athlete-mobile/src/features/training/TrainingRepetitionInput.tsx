@@ -35,7 +35,7 @@ export const TrainingRepetitionInput: FC<TrainingRepetitionInputProps> = ({
         <TextInputField
           value={repsValue.toString()}
           placeholder={t("training.powerTest.placeholder")}
-          awesomeIconName="hashtag"
+          iconName="keypad"
           onChange={changeReps}
           keyboardType="number-pad"
         />

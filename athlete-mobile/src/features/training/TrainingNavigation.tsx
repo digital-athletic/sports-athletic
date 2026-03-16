@@ -1,4 +1,3 @@
-import { AwesomeIcon } from "@/common/AwesomeIcon";
 import { Ionicon } from "@/common/Ionicon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
@@ -133,11 +132,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
           <Ionicon name="checkmark" size={75} color={theme.colors.primary} />
         </TouchableBox>
         <Box opacity={0.2}>
-          <AwesomeIcon
-            name="arrow-up"
-            size={22}
-            color={theme.colors.darkGrey2}
-          />
+          <Ionicon name="arrow-up" size={22} color={theme.colors.darkGrey2} />
         </Box>
       </Box>
     );
@@ -164,8 +159,8 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
               </Text>
             </TouchableBox>
             <Box flex={2} justifyContent="center" opacity={0.2}>
-              <AwesomeIcon
-                name="arrow-left"
+              <Ionicon
+                name="arrow-back"
                 size={22}
                 color={theme.colors.darkGrey2}
               />
@@ -178,8 +173,8 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
               alignItems="flex-end"
               opacity={0.2}
             >
-              <AwesomeIcon
-                name="arrow-right"
+              <Ionicon
+                name="arrow-forward"
                 size={22}
                 color={theme.colors.darkGrey2}
               />

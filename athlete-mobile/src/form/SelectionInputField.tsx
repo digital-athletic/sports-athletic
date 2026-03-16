@@ -1,6 +1,5 @@
 // app/form/SelectionInputField.tsx
-import { AwesomeIcon, FontAwesomeIconName } from "@/common/AwesomeIcon";
-import { Ionicon, IoniconName } from "@/common/Ionicon";
+import { Ionicon, type IoniconName } from "@/common/Ionicon";
 import type { LocalizedDisplayName } from "@/common/types/LocalizedDisplayName";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
@@ -20,13 +19,11 @@ type Props = {
   onChange: (selectedItems: string[]) => void;
   onToggle?: (opened: boolean) => void;
   iconName?: IoniconName;
-  awesomeIconName?: FontAwesomeIconName;
   items: readonly Item[];
   selectedItems: string[];
 };
 
 export const SelectionInputField: FC<Props> = ({
-  awesomeIconName,
   iconName,
   singleSelection = false,
   onChange,
@@ -89,24 +86,6 @@ export const SelectionInputField: FC<Props> = ({
               marginRight="s"
             >
               <Ionicon name={iconName} size={24} color={colors.lightGrey3} />
-            </Box>
-          )}
-          {awesomeIconName && (
-            <Box
-              width={40}
-              height="100%"
-              justifyContent="center"
-              alignItems="center"
-              backgroundColor="lightGrey1"
-              borderTopLeftRadius="m"
-              borderBottomLeftRadius="m"
-              marginRight="s"
-            >
-              <AwesomeIcon
-                name={awesomeIconName}
-                size={24}
-                color={colors.lightGrey3}
-              />
             </Box>
           )}
           <Box flex={1} justifyContent="center">

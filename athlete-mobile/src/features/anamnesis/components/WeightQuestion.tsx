@@ -19,7 +19,7 @@ export function WeightQuestion({
       <TextInputField
         value={value}
         placeholder={t("anamnesisQuestions.weight.placeholder")}
-        awesomeIconName="balance-scale"
+        iconName="scale"
         onChange={(value) => onChangeValue("weight", value)}
       />
     </AnamnesisQuestionContainer>

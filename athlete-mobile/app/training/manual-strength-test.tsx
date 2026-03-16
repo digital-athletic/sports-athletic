@@ -204,7 +204,7 @@ const ManualStrengthTestScreen: FC = () => {
             <TextInputField
               value={input.weight}
               placeholder={t("training.manualStrengthTest.weightPlaceholder")}
-              awesomeIconName="balance-scale"
+              iconName="scale"
               onChange={(value) => updateInput(exerciseKey, "weight", value)}
               keyboardType="numeric"
             />
@@ -213,7 +213,7 @@ const ManualStrengthTestScreen: FC = () => {
             <TextInputField
               value={input.reps}
               placeholder={t("training.manualStrengthTest.repsPlaceholder")}
-              awesomeIconName="hashtag"
+              iconName="keypad"
               onChange={(value) => updateInput(exerciseKey, "reps", value)}
               keyboardType="number-pad"
             />

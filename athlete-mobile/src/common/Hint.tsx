@@ -1,4 +1,4 @@
-import { AwesomeIcon } from "@/common/AwesomeIcon";
+import { Ionicon, type IoniconName } from "@/common/Ionicon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
@@ -27,7 +27,7 @@ export const Hint: FC<HintProps> = ({ type, message }) => {
   });
 
   const isWarning = type === "WARNING";
-  const iconName = isWarning ? "warning" : "info-circle";
+  const iconName: IoniconName = isWarning ? "warning" : "information-circle";
   const textColor = isWarning ? "primary" : "darkGrey1";
   const accessibilityLabel = isWarning
     ? t("common.altText.warningIcon")
@@ -47,7 +47,7 @@ export const Hint: FC<HintProps> = ({ type, message }) => {
       {/* Icon area */}
       <Box justifyContent="center">
         <Box justifyContent="center" alignItems="center">
-          <AwesomeIcon
+          <Ionicon
             name={iconName}
             size={iconSize}
             color={colors.lightGrey2}

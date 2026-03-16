@@ -1,57 +1,34 @@
-import { AwesomeIcon, type FontAwesomeIconName } from "@/common/AwesomeIcon";
 import { Ionicon, type IoniconName } from "@/common/Ionicon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
-import { ThemeColor, useTheme } from "@/theme/theme";
+import { type ThemeColor, useTheme } from "@/theme/theme";
 import { useResponsiveProp } from "@shopify/restyle";
-import { Route, useRouter } from "expo-router";
+import { type Route, useRouter } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Alert,
-  Image,
-  type ImageSourcePropType,
-  TouchableOpacity,
-} from "react-native";
+import { Alert, TouchableOpacity } from "react-native";
 import { ListDivider } from "../../common/ListDivider";
 
 export type ListItemProps = {
   title: string;
   navPath: Route;
+  iconName: IoniconName;
   iconBackground: ThemeColor;
   backPath?: string;
   isLast?: boolean;
   isSubscribed?: boolean;
   navParams?: Record<string, string>;
-} & (
-  | {
-      awesomeIconName: FontAwesomeIconName;
-      iconName?: never;
-      picPath?: never;
-    }
-  | {
-      awesomeIconName?: never;
-      iconName: IoniconName;
-      picPath?: never;
-    }
-  | {
-      awesomeIconName?: never;
-      iconName?: never;
-      picPath: ImageSourcePropType;
-    }
-);
+};
 
 /**
  * List item component for navigation menus.
- * Renders an icon/image with text and handles navigation or URL opening.
+ * Renders an Ionicon with text and handles navigation.
  */
 export const ListItem: FC<ListItemProps> = ({
   title,
   navPath,
   iconName,
-  awesomeIconName,
   iconBackground,
-  picPath,
   isLast = false,
   isSubscribed,
   navParams,
@@ -105,39 +82,21 @@ export const ListItem: FC<ListItemProps> = ({
           style={{ height: listItemHeight, marginBottom: listItemMarginBottom }}
         >
           <Box flex={1}>
-            {picPath ? (
-              <Image
-                source={picPath}
-                resizeMode="contain"
-                style={{ width: iconContainerSize, height: iconContainerSize }}
-                accessibilityLabel={t("common.altText.image", { title })}
+            <Box
+              width={iconContainerSize}
+              height={iconContainerSize}
+              borderRadius="round"
+              justifyContent="center"
+              alignItems="center"
+              backgroundColor={iconBackground || "primary"}
+            >
+              <Ionicon
+                name={iconName}
+                size={iconSize}
+                color={colors.white}
+                accessibilityLabel={t("common.altText.icon", { title })}
               />
-            ) : (
-              <Box
-                width={iconContainerSize}
-                height={iconContainerSize}
-                borderRadius="round"
-                justifyContent="center"
-                alignItems="center"
-                backgroundColor={iconBackground || "primary"}
-              >
-                {iconName ? (
-                  <Ionicon
-                    name={iconName}
-                    size={iconSize}
-                    color={colors.white}
-                    accessibilityLabel={t("common.altText.icon", { title })}
-                  />
-                ) : (
-                  <AwesomeIcon
-                    name={awesomeIconName || "home"}
-                    size={iconSize}
-                    color={colors.white}
-                    accessibilityLabel={t("common.altText.icon", { title })}
-                  />
-                )}
-              </Box>
-            )}
+            </Box>
           </Box>
           <Text flex={5} variant="body" numberOfLines={1}>
             {title}

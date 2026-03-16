@@ -1,9 +1,9 @@
+import { Ionicon, type IoniconName } from "@/common/Ionicon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, ImageSourcePropType } from "react-native";
 
 interface TrainingSummaryProps {
   duration: string;
@@ -15,13 +15,13 @@ interface TrainingSummaryProps {
 
 type SummaryType = "DURATION" | "COUNT" | "XP" | "WEIGHT";
 
-const ICON_SIZE = 48;
+const ICON_SIZE = 32;
 
-const SUMMARY_ICONS: Record<SummaryType, ImageSourcePropType> = {
-  DURATION: require("../../../../assets/img/trainingsSummary/time.png"),
-  COUNT: require("../../../../assets/img/trainingsSummary/count.png"),
-  XP: require("../../../../assets/img/trainingsSummary/trophy.png"),
-  WEIGHT: require("../../../../assets/img/trainingsSummary/weight.png"),
+const SUMMARY_ICONS: Record<SummaryType, IoniconName> = {
+  DURATION: "time-outline",
+  COUNT: "keypad-outline",
+  XP: "trophy-outline",
+  WEIGHT: "barbell-outline",
 };
 
 /**
@@ -74,9 +74,10 @@ export const TrainingSummary: FC<TrainingSummaryProps> = ({
       paddingVertical="m"
     >
       <Box flex={1} justifyContent="center" alignItems="center">
-        <Image
-          source={SUMMARY_ICONS[type]}
-          style={{ width: ICON_SIZE, height: ICON_SIZE }}
+        <Ionicon
+          name={SUMMARY_ICONS[type]}
+          size={ICON_SIZE}
+          color={colors.primary}
           accessibilityLabel={labels[type].alt}
         />
       </Box>

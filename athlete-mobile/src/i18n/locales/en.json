@@ -35,6 +35,8 @@
     "skip": "skip",
     "yes": "Yes",
     "loading": "Loading",
+    "retry": "Retry",
+    "videoLoadError": "Video could not be loaded",
     "days": {
       "monday": "Mo",
       "tuesday": "Tu",

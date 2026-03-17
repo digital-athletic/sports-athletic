@@ -7,7 +7,8 @@ import { Text } from "@/theme/Text";
 import { useEvent } from "expo";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { FC, useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
+import { ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
 
 type Props = {
   title?: string;
@@ -31,22 +32,46 @@ export const VideoPlayer: FC<Props> = ({
   isTutorial,
   disabled = false,
 }) => {
+  const { t } = useTranslation();
   const [videoUrl, setVideoUrl] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
 
   const player = useVideoPlayer(videoUrl);
 
   useEffect(() => {
+    setError(null);
+    setLoading(true);
+
     const filename = source?.split("/").pop() ?? "";
-    if (!filename) return;
+    if (!filename) {
+      setLoading(false);
+      return;
+    }
 
     const getUrl = isTutorial ? getTutorialVideoUrl : getExerciseVideoUrl;
-    getUrl(filename)
-      .then((url) => {
+
+    const loadVideo = async () => {
+      try {
+        const url = await getUrl(filename);
         setVideoUrl(url);
-        player.replace(url);
-      })
-      .catch(() => {});
-  }, [source, isTutorial, player]);
+        await player.replaceAsync(url);
+        setError(null);
+        setLoading(false);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        const bucketType = isTutorial ? "tutorial_videos" : "exercise_videos";
+        console.warn(
+          `[VideoPlayer] Failed to load video — bucket: ${bucketType}, file: ${filename}, error: ${message}`,
+        );
+        setError(t("common.videoLoadError"));
+        setLoading(false);
+      }
+    };
+
+    loadVideo();
+  }, [source, isTutorial, player, retryCount, t]);
 
   const { isPlaying } = useEvent(player, "playingChange", {
     isPlaying: player.playing,
@@ -61,6 +86,44 @@ export const VideoPlayer: FC<Props> = ({
       player.pause();
     }
   }, [disabled, isPlaying, player]);
+
+  if (error) {
+    return (
+      <Box
+        aspectRatio={16 / 9}
+        backgroundColor="darkGrey3"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Text color="lightGrey3" textAlign="center" marginBottom="s">
+          {error}
+        </Text>
+        <TouchableOpacity onPress={() => setRetryCount((c) => c + 1)}>
+          <Box
+            borderRadius="m"
+            paddingHorizontal="m"
+            paddingVertical="s"
+            backgroundColor="primary"
+          >
+            <Text color="white">{t("common.retry")}</Text>
+          </Box>
+        </TouchableOpacity>
+      </Box>
+    );
+  }
+
+  if (loading && !videoUrl) {
+    return (
+      <Box
+        aspectRatio={16 / 9}
+        justifyContent="center"
+        alignItems="center"
+        backgroundColor="darkGrey3"
+      >
+        <ActivityIndicator />
+      </Box>
+    );
+  }
 
   return (
     <Box aspectRatio={16 / 9}>

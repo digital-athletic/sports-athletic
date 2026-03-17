@@ -133,11 +133,13 @@ objects_path = "./exercise_pictures"
 public = false
 file_size_limit = "50MiB"
 allowed_mime_types = ["video/mp4"]
+objects_path = "./tutorial_pictures"
 
 [storage.buckets.tutorial_pictures]
 public = false
 file_size_limit = "5MiB"
 allowed_mime_types = ["image/png", "image/jpeg"]
+objects_path = "./tutorial_pictures"
 
 # Uncomment to allow connections via S3 compatible clients
 # [storage.s3_protocol]

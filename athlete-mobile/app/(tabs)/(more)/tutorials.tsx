@@ -94,6 +94,10 @@ const TutorialsScreen: FC = () => {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <TutorialListItem item={item} />}
           showsVerticalScrollIndicator={false}
+          windowSize={3}
+          maxToRenderPerBatch={2}
+          initialNumToRender={2}
+          removeClippedSubviews
         />
       </Box>
     </>

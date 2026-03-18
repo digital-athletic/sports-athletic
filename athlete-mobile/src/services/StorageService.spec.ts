@@ -49,26 +49,30 @@ describe("getSignedUrl", () => {
     expect(mockCreateSignedUrl).toHaveBeenCalledWith("clip.mp4", 3600);
   });
 
-  it("throws when createSignedUrl returns an error", async () => {
+  it("returns null when createSignedUrl returns an error", async () => {
     mockCreateSignedUrl.mockResolvedValue({
       data: null,
       error: { message: "Object not found" },
     });
 
-    await expect(getSignedUrl("images", "missing.jpg")).rejects.toThrow(
-      "Failed to get signed URL for images/missing.jpg: Object not found",
-    );
+    expect(await getSignedUrl("images", "missing.jpg")).toBeNull();
   });
 
-  it("throws when signedUrl is missing from response", async () => {
+  it("returns null when signedUrl is missing from response", async () => {
     mockCreateSignedUrl.mockResolvedValue({
       data: { signedUrl: null },
       error: null,
     });
 
-    await expect(getSignedUrl("images", "broken.jpg")).rejects.toThrow(
-      "Failed to get signed URL for images/broken.jpg",
+    expect(await getSignedUrl("images", "broken.jpg")).toBeNull();
+  });
+
+  it("returns null when createSignedUrl throws a network error", async () => {
+    mockCreateSignedUrl.mockRejectedValue(
+      new TypeError("Network request failed"),
     );
+
+    expect(await getSignedUrl("images", "offline.jpg")).toBeNull();
   });
 });
 
@@ -108,5 +112,23 @@ describe("bucket-specific helpers", () => {
   it("getTutorialPictureUrl uses tutorial_pictures bucket", async () => {
     await getTutorialPictureUrl("bench.jpg");
     expect(supabase.storage.from).toHaveBeenCalledWith("tutorial_pictures");
+  });
+});
+
+describe("bucket helpers return null on error", () => {
+  beforeEach(() => {
+    mockCreateSignedUrl.mockResolvedValue({
+      data: null,
+      error: { message: "fail" },
+    });
+  });
+
+  it("all bucket helpers return null when getSignedUrl returns null", async () => {
+    expect(await getVideoUrl("clip.mp4")).toBeNull();
+    expect(await getImageUrl("photo.jpg")).toBeNull();
+    expect(await getExerciseVideoUrl("squat.mp4")).toBeNull();
+    expect(await getExercisePictureUrl("squat.jpg")).toBeNull();
+    expect(await getTutorialVideoUrl("bench.mp4")).toBeNull();
+    expect(await getTutorialPictureUrl("bench.jpg")).toBeNull();
   });
 });

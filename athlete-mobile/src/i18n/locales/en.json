@@ -28,6 +28,8 @@
     "next": "Next",
     "no": "No",
     "ok": "OK",
+    "noConnection": "No connection",
+    "offline": "Offline — some features unavailable",
     "password": "Password",
     "save": "Save",
     "saving": "Saving ...",

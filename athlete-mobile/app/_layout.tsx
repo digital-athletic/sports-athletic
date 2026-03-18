@@ -1,5 +1,6 @@
 import { useAuthStateListener } from "@/auth/useAuthStateListener";
 import { AlertHost } from "@/common/Alert";
+import { OfflineBanner } from "@/common/OfflineBanner";
 import { useOTAService } from "@/services/OTAService";
 import { useSyncManager } from "@/services/useSyncManager";
 import { useAuthStore } from "@/store/authStore";
@@ -67,6 +68,7 @@ export default function RootLayout() {
             }}
           />
         </Stack>
+        <OfflineBanner />
         {Platform.OS === "web" && <AlertHost />}
       </KeyboardProvider>
     </ThemeProvider>

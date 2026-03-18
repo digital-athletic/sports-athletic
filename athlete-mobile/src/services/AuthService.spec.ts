@@ -7,11 +7,13 @@
 const mockSignInWithOtp = jest.fn();
 const mockGetSession = jest.fn();
 const mockFunctionsInvoke = jest.fn();
+const mockSignOut = jest.fn();
 jest.mock("./supabaseClient", () => ({
   supabase: {
     auth: {
       signInWithOtp: (...args: unknown[]) => mockSignInWithOtp(...args),
       getSession: () => mockGetSession(),
+      signOut: () => mockSignOut(),
     },
     functions: {
       invoke: (...args: unknown[]) => mockFunctionsInvoke(...args),
@@ -19,8 +21,16 @@ jest.mock("./supabaseClient", () => ({
   },
 }));
 
+const mockClearAuth = jest.fn();
+jest.mock("../store/authStore", () => ({
+  useAuthStore: {
+    getState: () => ({ clearAuth: mockClearAuth }),
+  },
+}));
+
 import {
   deleteAccount,
+  logout,
   requestLoginOtp,
   requestRegistrationOtp,
 } from "./AuthService";
@@ -190,5 +200,18 @@ describe("deleteAccount", () => {
     await expect(deleteAccount()).rejects.toMatchObject({
       code: "auth/unknown",
     });
+  });
+});
+
+describe("logout", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("clears local auth even when signOut throws a network error", async () => {
+    mockSignOut.mockRejectedValue(new TypeError("Network request failed"));
+
+    await expect(logout()).resolves.not.toThrow();
+    expect(mockClearAuth).toHaveBeenCalledTimes(1);
   });
 });

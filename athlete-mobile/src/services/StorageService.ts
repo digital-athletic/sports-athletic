@@ -12,40 +12,50 @@ const DEFAULT_SIGNED_URL_EXPIRY = 3600;
 export async function getSignedUrl(
   bucket: string,
   path: string,
-): Promise<string> {
-  const { data, error } = await supabase.storage
-    .from(bucket)
-    .createSignedUrl(path, DEFAULT_SIGNED_URL_EXPIRY);
+): Promise<string | null> {
+  try {
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .createSignedUrl(path, DEFAULT_SIGNED_URL_EXPIRY);
 
-  if (error || !data?.signedUrl) {
-    throw new Error(
-      `Failed to get signed URL for ${bucket}/${path}: ${error?.message ?? "unknown error"}`,
-    );
+    if (error || !data?.signedUrl) {
+      return null;
+    }
+
+    return data.signedUrl;
+  } catch {
+    return null;
   }
-
-  return data.signedUrl;
 }
 
-export async function getVideoUrl(path: string): Promise<string> {
+export async function getVideoUrl(path: string): Promise<string | null> {
   return getSignedUrl(SUPABASE_VIDEO_BUCKET, path);
 }
 
-export async function getImageUrl(path: string): Promise<string> {
+export async function getImageUrl(path: string): Promise<string | null> {
   return getSignedUrl(SUPABASE_IMAGE_BUCKET, path);
 }
 
-export async function getExerciseVideoUrl(path: string): Promise<string> {
+export async function getExerciseVideoUrl(
+  path: string,
+): Promise<string | null> {
   return getSignedUrl(SUPABASE_EXERCISE_VIDEOS_BUCKET, path);
 }
 
-export async function getExercisePictureUrl(path: string): Promise<string> {
+export async function getExercisePictureUrl(
+  path: string,
+): Promise<string | null> {
   return getSignedUrl(SUPABASE_EXERCISE_PICTURES_BUCKET, path);
 }
 
-export async function getTutorialVideoUrl(path: string): Promise<string> {
+export async function getTutorialVideoUrl(
+  path: string,
+): Promise<string | null> {
   return getSignedUrl(SUPABASE_TUTORIAL_VIDEOS_BUCKET, path);
 }
 
-export async function getTutorialPictureUrl(path: string): Promise<string> {
+export async function getTutorialPictureUrl(
+  path: string,
+): Promise<string | null> {
   return getSignedUrl(SUPABASE_TUTORIAL_PICTURES_BUCKET, path);
 }

@@ -6,6 +6,7 @@ import type { UserExerciseDataType } from "@/features/training/models/UserExerci
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { getEquipmentList } from "@/features/training/trainingUtils";
 import { deriveWeightForExercise } from "@/features/training/utils/workoutUtils";
+import { MediaSkeleton } from "@/media/MediaSkeleton";
 import { getExercisePictureUrl } from "@/services/StorageService";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
@@ -433,7 +434,7 @@ const ExerciseItem: FC<ExerciseItemProps> = ({
   exercises,
   onPress,
 }) => {
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const exerciseData = exercises.find((e) => e.id === exercise.exerciseId);
 
   useEffect(() => {
@@ -442,9 +443,7 @@ const ExerciseItem: FC<ExerciseItemProps> = ({
     const pictureFilename = exerciseData.picture.split("/").pop() ?? "";
     if (!pictureFilename) return;
 
-    getExercisePictureUrl(pictureFilename)
-      .then(setImageUrl)
-      .catch(() => {});
+    getExercisePictureUrl(pictureFilename).then(setImageUrl);
   }, [exerciseData?.picture]);
 
   if (!exerciseData) return null;
@@ -459,15 +458,19 @@ const ExerciseItem: FC<ExerciseItemProps> = ({
             marginRight={"s"}
             overflow="hidden"
           >
-            <Image
-              source={imageUrl}
-              style={{
-                width: 120,
-                aspectRatio: 1,
-              }}
-              cachePolicy="disk"
-              accessibilityLabel={exerciseData.displayName ?? undefined}
-            />
+            {imageUrl ? (
+              <Image
+                source={imageUrl}
+                style={{
+                  width: 120,
+                  aspectRatio: 1,
+                }}
+                cachePolicy="disk"
+                accessibilityLabel={exerciseData.displayName ?? undefined}
+              />
+            ) : (
+              <MediaSkeleton width={120} aspectRatio={1} showRetry={false} />
+            )}
           </Box>
         )}
         <Box flex={1} justifyContent="center">

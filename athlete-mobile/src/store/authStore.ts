@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { supabase } from "../services/supabaseClient";
+import { Logger } from "../services/Logger";
 import { asyncStorage } from "./middleware";
 import { createMigrate } from "./migrations/createMigrate";
 import { authStoreMigrations } from "./migrations/authStoreMigrations";
@@ -80,20 +81,30 @@ export const useAuthStore = create<AuthState>()(
         }),
 
       initializeFromSupabase: async () => {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        set((state) => {
-          if (session) {
-            state.auth = {
-              userId: session.user.id,
-              token: session.access_token,
-            };
-          } else {
-            state.auth = null;
-          }
-          state.isInitialized = true;
-        });
+        try {
+          const {
+            data: { session },
+          } = await supabase.auth.getSession();
+          set((state) => {
+            if (session) {
+              state.auth = {
+                userId: session.user.id,
+                token: session.access_token,
+              };
+            } else {
+              state.auth = null;
+            }
+            state.isInitialized = true;
+          });
+        } catch {
+          // Network unavailable — preserve persisted auth, mark initialized
+          Logger.logError(
+            new Error("initializeFromSupabase: offline, using persisted auth"),
+          );
+          set((state) => {
+            state.isInitialized = true;
+          });
+        }
       },
 
       isAuthenticated: () => get().auth !== null,

@@ -15,6 +15,7 @@ import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserSettingsStore } from "@/store/userSettingsStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
+import { syncManager } from "@/services/SyncManager";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "@/common/Alert";
@@ -45,6 +46,11 @@ export function useLogout() {
   };
 
   const confirmLogout = () => {
+    if (!syncManager.isOnline) {
+      Alert.alert(t("more.logoutQuestionTitle"), t("common.noConnection"));
+      return;
+    }
+
     Alert.alert(
       t("more.logoutQuestionTitle"),
       t("more.logoutQuestionMessage"),
@@ -115,6 +121,11 @@ export function useDeleteAccount() {
   };
 
   const confirmDelete = () => {
+    if (!syncManager.isOnline) {
+      Alert.alert(t("more.deleteQuestionTitle"), t("common.noConnection"));
+      return;
+    }
+
     Alert.alert(
       t("more.deleteQuestionTitle"),
       t("more.deleteQuestionMessage"),

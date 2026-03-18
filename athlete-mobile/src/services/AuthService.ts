@@ -1,4 +1,5 @@
 import { supabase } from "./supabaseClient";
+import { useAuthStore } from "../store/authStore";
 
 /**
  * Authentication Service
@@ -130,14 +131,16 @@ export const deleteAccount = async (): Promise<void> => {
 };
 
 /**
- * Sign out the current user
+ * Sign out the current user. Clears local auth even if signOut throws.
  */
 export const logout = async (): Promise<void> => {
-  const { error } = await supabase.auth.signOut();
-
-  if (error) {
-    throw mapSupabaseError(error);
+  try {
+    await supabase.auth.signOut();
+  } catch {
+    // Network error during sign out — proceed with local cleanup
   }
+  // Always clear local auth regardless of signOut result
+  useAuthStore.getState().clearAuth();
 };
 
 /**

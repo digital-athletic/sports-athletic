@@ -16,6 +16,14 @@ jest.mock("@/services/AuthService", () => ({
   logout: () => mockSupabaseLogout(),
 }));
 
+// Mock SyncManager
+const mockSyncManager = { isOnline: true };
+jest.mock("@/services/SyncManager", () => ({
+  get syncManager() {
+    return mockSyncManager;
+  },
+}));
+
 // Mock Alert
 const mockAlert = jest.fn();
 jest.mock("@/common/Alert", () => ({
@@ -118,10 +126,27 @@ jest.mock("@/features/training/synchronizationStore", () => ({
 describe("useLogout", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockSyncManager.isOnline = true;
     mockSupabaseLogout.mockResolvedValue(undefined);
   });
 
-  it("should show confirmation dialog when logout is called", async () => {
+  it("should show no-connection alert when offline", async () => {
+    mockSyncManager.isOnline = false;
+
+    const { result } = renderHook(() => useLogout());
+
+    await act(async () => {
+      result.current.logout();
+    });
+
+    expect(mockAlert).toHaveBeenCalledWith(
+      "more.logoutQuestionTitle",
+      "common.noConnection",
+    );
+    expect(mockSupabaseLogout).not.toHaveBeenCalled();
+  });
+
+  it("should show confirmation dialog when online and logout is called", async () => {
     const { result } = renderHook(() => useLogout());
 
     await act(async () => {
@@ -218,6 +243,7 @@ describe("useLogout", () => {
 describe("useDeleteAccount", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockSyncManager.isOnline = true;
     mockSupabaseDeleteAccount.mockResolvedValue(undefined);
     mockSupabaseLogout.mockResolvedValue(undefined);
   });
@@ -261,6 +287,22 @@ describe("useDeleteAccount", () => {
   });
 
   it("should clear all stores when delete is confirmed", async () => {
+    const allStoreResets = [
+      mockClearAuth,
+      mockResetUserWorkoutData,
+      mockResetProgress,
+      mockResetAnamnesisData,
+      mockResetProfile,
+      mockClearWorkoutHistory,
+      mockResetTrainingSchedule,
+      mockResetPlaces,
+      mockResetSettings,
+      mockClearSyncQueue,
+      mockResetSubscription,
+      mockClearTraining,
+      mockResetSynchronization,
+    ];
+
     const { result } = renderHook(() => useDeleteAccount());
 
     await act(async () => {
@@ -278,18 +320,10 @@ describe("useDeleteAccount", () => {
       expect(mockClearAuth).toHaveBeenCalled();
     });
 
-    expect(mockResetUserWorkoutData).toHaveBeenCalled();
-    expect(mockResetProgress).toHaveBeenCalled();
-    expect(mockResetAnamnesisData).toHaveBeenCalled();
-    expect(mockResetProfile).toHaveBeenCalled();
-    expect(mockClearWorkoutHistory).toHaveBeenCalled();
-    expect(mockResetTrainingSchedule).toHaveBeenCalled();
-    expect(mockResetPlaces).toHaveBeenCalled();
-    expect(mockResetSettings).toHaveBeenCalled();
-    expect(mockClearSyncQueue).toHaveBeenCalled();
-    expect(mockResetSubscription).toHaveBeenCalled();
-    expect(mockClearTraining).toHaveBeenCalled();
-    expect(mockResetSynchronization).toHaveBeenCalled();
+    const uncalledResets = allStoreResets
+      .filter((mock) => mock.mock.calls.length === 0)
+      .map((mock) => mock.getMockName());
+    expect(uncalledResets).toEqual([]);
   });
 
   it("should show error alert if deleteAccount fails", async () => {
@@ -341,6 +375,22 @@ describe("useDeleteAccount", () => {
     expect(mockSupabaseLogout).not.toHaveBeenCalled();
     expect(mockClearAuth).not.toHaveBeenCalled();
     expect(mockResetUserWorkoutData).not.toHaveBeenCalled();
+  });
+
+  it("should show no-connection alert when offline", async () => {
+    mockSyncManager.isOnline = false;
+
+    const { result } = renderHook(() => useDeleteAccount());
+
+    await act(async () => {
+      result.current.deleteAccount();
+    });
+
+    expect(mockAlert).toHaveBeenCalledWith(
+      "more.deleteQuestionTitle",
+      "common.noConnection",
+    );
+    expect(mockSupabaseDeleteAccount).not.toHaveBeenCalled();
   });
 
   it("should not clear stores if logout fails after deleteAccount succeeds", async () => {

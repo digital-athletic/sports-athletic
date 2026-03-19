@@ -3,14 +3,23 @@ export const featureFlags = {
   get serverSyncEnabled(): boolean {
     return process.env.EXPO_PUBLIC_SERVER_SYNC_ENABLED !== "false";
   },
+  get healthInfoEnabled(): boolean {
+    return process.env.EXPO_PUBLIC_HEALTH_INFO_ENABLED !== "false";
+  },
+  get termsEnabled(): boolean {
+    return (process.env.EXPO_PUBLIC_LINK_AGB ?? "") !== "";
+  },
+  get privacyEnabled(): boolean {
+    return (process.env.EXPO_PUBLIC_LINK_PRIVACY ?? "") !== "";
+  },
+  get imprintEnabled(): boolean {
+    return (process.env.EXPO_PUBLIC_LINK_IMPRINT ?? "") !== "";
+  },
   get reviewEmail(): string | null {
     return process.env.EXPO_PUBLIC_REVIEW_EMAIL ?? null;
   },
   get reviewOtp(): string | null {
     return process.env.EXPO_PUBLIC_REVIEW_OTP ?? null;
-  },
-  get termsAndContactEnabled(): boolean {
-    return process.env.EXPO_PUBLIC_TERMS_CONTACT_ENABLED === "true";
   },
   isReviewUser(email: string): boolean {
     return (

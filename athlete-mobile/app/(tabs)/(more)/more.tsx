@@ -6,8 +6,8 @@
  */
 
 import { useDeleteAccount, useLogout } from "@/auth/useAuthActions";
-import { featureFlags } from "@/config/featureFlags";
 import { Ionicon } from "@/common/Ionicon";
+import { featureFlags } from "@/config/featureFlags";
 import { ListDivider } from "@/common/ListDivider";
 import { ListItem } from "@/features/more/ListItem";
 import {
@@ -45,8 +45,6 @@ export default function MoreScreen() {
 
   // Check if user has test access
   const hasTestAccess = false;
-
-  const showTermsAndContact = featureFlags.termsAndContactEnabled;
 
   return (
     <>
@@ -169,23 +167,23 @@ export default function MoreScreen() {
         </Box>
 
         <Box backgroundColor="white" paddingVertical="s">
-          {showTermsAndContact && (
-            <>
-              <ListItem
-                title={t("more.agb")}
-                navPath="/webview"
-                iconName="information-circle"
-                iconBackground="darkGrey1"
-                isSubscribed={allowedForTraining}
-              />
-              <ListItem
-                title={t("more.privacy")}
-                navPath="/(tabs)/(more)/privacy"
-                iconName="shield-checkmark"
-                iconBackground="darkGrey1"
-                isSubscribed={allowedForTraining}
-              />
-            </>
+          {featureFlags.termsEnabled && (
+            <ListItem
+              title={t("more.agb")}
+              navPath="/webview"
+              iconName="information-circle"
+              iconBackground="darkGrey1"
+              isSubscribed={allowedForTraining}
+            />
+          )}
+          {featureFlags.privacyEnabled && (
+            <ListItem
+              title={t("more.privacy")}
+              navPath="/(tabs)/(more)/privacy"
+              iconName="shield-checkmark"
+              iconBackground="darkGrey1"
+              isSubscribed={allowedForTraining}
+            />
           )}
           <ListItem
             title={t("more.notificationsSettings")}
@@ -194,30 +192,28 @@ export default function MoreScreen() {
             iconBackground="darkGrey1"
             isSubscribed={allowedForTraining}
           />
-          {showTermsAndContact && (
-            <>
-              <ListItem
-                title={t("more.subscriptionStatus")}
-                navPath="/(tabs)/(more)/subscription-status"
-                iconName="eye"
-                iconBackground="darkGrey1"
-                isSubscribed={allowedForTraining}
-              />
-              <ListItem
-                title={t("more.contact")}
-                navPath="/contact"
-                iconName="mail"
-                iconBackground="darkGrey1"
-                isSubscribed={allowedForTraining}
-              />
-              <ListItem
-                title={t("more.imprint")}
-                navPath="/(tabs)/(more)/imprint"
-                iconName="document-text"
-                iconBackground="darkGrey1"
-                isSubscribed={allowedForTraining}
-              />
-            </>
+          <ListItem
+            title={t("more.subscriptionStatus")}
+            navPath="/(tabs)/(more)/subscription-status"
+            iconName="eye"
+            iconBackground="darkGrey1"
+            isSubscribed={allowedForTraining}
+          />
+          <ListItem
+            title={t("more.contact")}
+            navPath="/contact"
+            iconName="mail"
+            iconBackground="darkGrey1"
+            isSubscribed={allowedForTraining}
+          />
+          {featureFlags.imprintEnabled && (
+            <ListItem
+              title={t("more.imprint")}
+              navPath="/(tabs)/(more)/imprint"
+              iconName="document-text"
+              iconBackground="darkGrey1"
+              isSubscribed={allowedForTraining}
+            />
           )}
 
           <Box>

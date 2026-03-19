@@ -5,7 +5,10 @@ describe("featureFlags", () => {
     delete process.env.EXPO_PUBLIC_SERVER_SYNC_ENABLED;
     delete process.env.EXPO_PUBLIC_REVIEW_EMAIL;
     delete process.env.EXPO_PUBLIC_REVIEW_OTP;
-    delete process.env.EXPO_PUBLIC_TERMS_CONTACT_ENABLED;
+    delete process.env.EXPO_PUBLIC_HEALTH_INFO_ENABLED;
+    delete process.env.EXPO_PUBLIC_LINK_AGB;
+    delete process.env.EXPO_PUBLIC_LINK_PRIVACY;
+    delete process.env.EXPO_PUBLIC_LINK_IMPRINT;
   });
 
   describe("serverSyncEnabled", () => {
@@ -21,6 +24,22 @@ describe("featureFlags", () => {
     it("is true when EXPO_PUBLIC_SERVER_SYNC_ENABLED is 'true'", () => {
       process.env.EXPO_PUBLIC_SERVER_SYNC_ENABLED = "true";
       expect(featureFlags.serverSyncEnabled).toBe(true);
+    });
+  });
+
+  describe("healthInfoEnabled", () => {
+    it("defaults to true when EXPO_PUBLIC_HEALTH_INFO_ENABLED is unset", () => {
+      expect(featureFlags.healthInfoEnabled).toBe(true);
+    });
+
+    it("is false when EXPO_PUBLIC_HEALTH_INFO_ENABLED is 'false'", () => {
+      process.env.EXPO_PUBLIC_HEALTH_INFO_ENABLED = "false";
+      expect(featureFlags.healthInfoEnabled).toBe(false);
+    });
+
+    it("is true when EXPO_PUBLIC_HEALTH_INFO_ENABLED is 'true'", () => {
+      process.env.EXPO_PUBLIC_HEALTH_INFO_ENABLED = "true";
+      expect(featureFlags.healthInfoEnabled).toBe(true);
     });
   });
 
@@ -46,19 +65,36 @@ describe("featureFlags", () => {
     });
   });
 
-  describe("termsAndContactEnabled", () => {
-    it("defaults to false when EXPO_PUBLIC_TERMS_CONTACT_ENABLED is unset", () => {
-      expect(featureFlags.termsAndContactEnabled).toBe(false);
+  describe("termsEnabled", () => {
+    it("is false when EXPO_PUBLIC_LINK_AGB is unset", () => {
+      expect(featureFlags.termsEnabled).toBe(false);
     });
 
-    it("is true when EXPO_PUBLIC_TERMS_CONTACT_ENABLED is 'true'", () => {
-      process.env.EXPO_PUBLIC_TERMS_CONTACT_ENABLED = "true";
-      expect(featureFlags.termsAndContactEnabled).toBe(true);
+    it("is true when EXPO_PUBLIC_LINK_AGB is set", () => {
+      process.env.EXPO_PUBLIC_LINK_AGB = "https://example.com/agb";
+      expect(featureFlags.termsEnabled).toBe(true);
+    });
+  });
+
+  describe("privacyEnabled", () => {
+    it("is false when EXPO_PUBLIC_LINK_PRIVACY is unset", () => {
+      expect(featureFlags.privacyEnabled).toBe(false);
     });
 
-    it("is false when EXPO_PUBLIC_TERMS_CONTACT_ENABLED is 'false'", () => {
-      process.env.EXPO_PUBLIC_TERMS_CONTACT_ENABLED = "false";
-      expect(featureFlags.termsAndContactEnabled).toBe(false);
+    it("is true when EXPO_PUBLIC_LINK_PRIVACY is set", () => {
+      process.env.EXPO_PUBLIC_LINK_PRIVACY = "https://example.com/privacy";
+      expect(featureFlags.privacyEnabled).toBe(true);
+    });
+  });
+
+  describe("imprintEnabled", () => {
+    it("is false when EXPO_PUBLIC_LINK_IMPRINT is unset", () => {
+      expect(featureFlags.imprintEnabled).toBe(false);
+    });
+
+    it("is true when EXPO_PUBLIC_LINK_IMPRINT is set", () => {
+      process.env.EXPO_PUBLIC_LINK_IMPRINT = "https://example.com/imprint";
+      expect(featureFlags.imprintEnabled).toBe(true);
     });
   });
 

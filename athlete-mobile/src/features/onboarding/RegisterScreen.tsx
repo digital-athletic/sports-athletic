@@ -1,3 +1,4 @@
+import { featureFlags } from "@/config/featureFlags";
 import { LINK_AGB, LINK_PRIVACY } from "@/constants/AppConstants";
 import { DividerWithText } from "@/features/onboarding/DividerWithText";
 import { PrivacyCheckbox } from "@/features/onboarding/PrivacyCheckbox";
@@ -86,22 +87,26 @@ export const RegistrationScreen: FC<Props> = ({
           />
         </Box>
 
-        <PrivacyCheckbox
-          checked={acceptedAnalytics}
-          onCheck={onAnalyticsToggle}
-          onPrivacyPress={handlePrivacyPress}
-          onAgbPress={handleAgbPress}
-          label="ANONYMISED_DATA_USE"
-        />
+        {featureFlags.healthInfoEnabled && (
+          <PrivacyCheckbox
+            checked={acceptedAnalytics}
+            onCheck={onAnalyticsToggle}
+            onPrivacyPress={handlePrivacyPress}
+            onAgbPress={handleAgbPress}
+            label="ANONYMISED_DATA_USE"
+          />
+        )}
 
-        <PrivacyCheckbox
-          checked={acceptedPrivacy}
-          showError={errorFields.includes("privacy")}
-          onCheck={onPrivacyToggle}
-          onPrivacyPress={handlePrivacyPress}
-          onAgbPress={handleAgbPress}
-          label="PRIVACY_INFORMATION_1"
-        />
+        {featureFlags.termsEnabled && (
+          <PrivacyCheckbox
+            checked={acceptedPrivacy}
+            showError={errorFields.includes("privacy")}
+            onCheck={onPrivacyToggle}
+            onPrivacyPress={handlePrivacyPress}
+            onAgbPress={handleAgbPress}
+            label="PRIVACY_INFORMATION_1"
+          />
+        )}
       </ScrollBox>
 
       {registrationError && (

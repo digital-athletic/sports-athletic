@@ -156,7 +156,7 @@ export default function OnboardingScreen() {
       return;
     }
 
-    if (!state.acceptedPrivacy) {
+    if (featureFlags.termsEnabled && !state.acceptedPrivacy) {
       dispatch({
         type: "SET_REGISTRATION_ERROR",
         payload: t("onboarding.errorMessageAcceptPrivacyInfo"),

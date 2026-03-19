@@ -2,7 +2,6 @@ import { LoginScreen } from "@/features/onboarding/LoginScreen";
 import { RegistrationScreen } from "@/features/onboarding/RegisterScreen";
 import { Box } from "@/theme/Box";
 import { featureFlags } from "@/config/featureFlags";
-import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "expo-router";
 import { useReducer } from "react";
 import { useTranslation } from "react-i18next";
@@ -25,7 +24,7 @@ import { validateEmail } from "../../src/utils/ValidationUtils";
  * Uses passwordless OTP flow: email → send code → verify
  */
 
-type ErrorField = "email" | "privacy";
+type ErrorField = "email" | "privacy" | "analytics";
 
 type OnboardingState = {
   email: string;
@@ -79,7 +78,12 @@ function onboardingReducer(
         errorFields: state.errorFields.filter((f) => f !== "privacy"),
       };
     case "TOGGLE_ANALYTICS":
-      return { ...state, acceptedAnalytics: !state.acceptedAnalytics };
+      return {
+        ...state,
+        acceptedAnalytics: !state.acceptedAnalytics,
+        registrationError: null,
+        errorFields: state.errorFields.filter((f) => f !== "analytics"),
+      };
     case "SET_PROCESSING":
       return { ...state, processing: action.payload };
     case "SET_REGISTRATION_ERROR":
@@ -118,9 +122,11 @@ export default function OnboardingScreen() {
     Keyboard.dismiss();
 
     if (featureFlags.isReviewUser(state.email)) {
-      useAuthStore
-        .getState()
-        .setAuth({ userId: "review-user", token: "review-token" });
+      router.push({
+        pathname: "/onboarding/email-verification",
+        params: { email: state.email, mode: "LOGIN" },
+      });
+      dispatch({ type: "SET_PROCESSING", payload: false });
       return;
     }
 
@@ -156,7 +162,7 @@ export default function OnboardingScreen() {
       return;
     }
 
-    if (featureFlags.termsEnabled && !state.acceptedPrivacy) {
+    if (featureFlags.privacyEnabled && !state.acceptedPrivacy) {
       dispatch({
         type: "SET_REGISTRATION_ERROR",
         payload: t("onboarding.errorMessageAcceptPrivacyInfo"),
@@ -165,13 +171,24 @@ export default function OnboardingScreen() {
       return;
     }
 
+    if (featureFlags.analyticsConsentEnabled && !state.acceptedAnalytics) {
+      dispatch({
+        type: "SET_REGISTRATION_ERROR",
+        payload: t("onboarding.errorMessageAcceptAnalytics"),
+      });
+      dispatch({ type: "SET_ERROR_FIELDS", payload: ["analytics"] });
+      return;
+    }
+
     dispatch({ type: "SET_PROCESSING", payload: true });
     Keyboard.dismiss();
 
     if (featureFlags.isReviewUser(state.email)) {
-      useAuthStore
-        .getState()
-        .setAuth({ userId: "review-user", token: "review-token" });
+      router.push({
+        pathname: "/onboarding/email-verification",
+        params: { email: state.email, mode: "REGISTER" },
+      });
+      dispatch({ type: "SET_PROCESSING", payload: false });
       return;
     }
 

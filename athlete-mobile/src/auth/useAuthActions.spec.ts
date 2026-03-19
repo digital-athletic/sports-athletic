@@ -16,12 +16,10 @@ jest.mock("@/services/AuthService", () => ({
   logout: () => mockSupabaseLogout(),
 }));
 
-// Mock SyncManager
-const mockSyncManager = { isOnline: true };
-jest.mock("@/services/SyncManager", () => ({
-  get syncManager() {
-    return mockSyncManager;
-  },
+// Mock useNetworkState
+let mockIsOnline = true;
+jest.mock("@/hooks/useNetworkState", () => ({
+  useNetworkState: () => mockIsOnline,
 }));
 
 // Mock Alert
@@ -126,12 +124,12 @@ jest.mock("@/features/training/synchronizationStore", () => ({
 describe("useLogout", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockSyncManager.isOnline = true;
+    mockIsOnline = true;
     mockSupabaseLogout.mockResolvedValue(undefined);
   });
 
   it("should show no-connection alert when offline", async () => {
-    mockSyncManager.isOnline = false;
+    mockIsOnline = false;
 
     const { result } = renderHook(() => useLogout());
 
@@ -243,7 +241,7 @@ describe("useLogout", () => {
 describe("useDeleteAccount", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockSyncManager.isOnline = true;
+    mockIsOnline = true;
     mockSupabaseDeleteAccount.mockResolvedValue(undefined);
     mockSupabaseLogout.mockResolvedValue(undefined);
   });
@@ -378,7 +376,7 @@ describe("useDeleteAccount", () => {
   });
 
   it("should show no-connection alert when offline", async () => {
-    mockSyncManager.isOnline = false;
+    mockIsOnline = false;
 
     const { result } = renderHook(() => useDeleteAccount());
 

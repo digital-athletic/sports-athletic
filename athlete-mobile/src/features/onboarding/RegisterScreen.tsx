@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { ActivityIndicator, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-type ErrorField = "email" | "privacy";
+type ErrorField = "email" | "privacy" | "analytics";
 
 type Props = {
   email: string;
@@ -87,9 +87,10 @@ export const RegistrationScreen: FC<Props> = ({
           />
         </Box>
 
-        {featureFlags.healthInfoEnabled && (
+        {featureFlags.analyticsConsentEnabled && (
           <PrivacyCheckbox
             checked={acceptedAnalytics}
+            showError={errorFields.includes("analytics")}
             onCheck={onAnalyticsToggle}
             onPrivacyPress={handlePrivacyPress}
             onAgbPress={handleAgbPress}
@@ -97,14 +98,16 @@ export const RegistrationScreen: FC<Props> = ({
           />
         )}
 
-        {featureFlags.termsEnabled && (
+        {featureFlags.privacyEnabled && (
           <PrivacyCheckbox
             checked={acceptedPrivacy}
             showError={errorFields.includes("privacy")}
             onCheck={onPrivacyToggle}
             onPrivacyPress={handlePrivacyPress}
             onAgbPress={handleAgbPress}
-            label="PRIVACY_INFORMATION_1"
+            label={
+              featureFlags.termsEnabled ? "PRIVACY_FULL" : "PRIVACY_SIMPLE"
+            }
           />
         )}
       </ScrollBox>

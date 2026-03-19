@@ -2,8 +2,7 @@ import { CheckBox } from "@/common/CheckBox";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { type FC } from "react";
-import { useTranslation } from "react-i18next";
-import { TouchableOpacity } from "react-native";
+import { Trans, useTranslation } from "react-i18next";
 
 type Props = {
   checked: boolean;
@@ -11,18 +10,13 @@ type Props = {
   onCheck: (checked: boolean) => void;
   onPrivacyPress: () => void;
   onAgbPress: () => void;
-  label:
-    | "ANONYMISED_DATA_USE"
-    | "PRIVACY_INFORMATION_1"
-    | "PRIVACY_INFORMATION_2"
-    | "PRIVACY_INFORMATION_3";
+  label: "ANONYMISED_DATA_USE" | "PRIVACY_SIMPLE" | "PRIVACY_FULL";
 };
 
 /**
  * PrivacyCheckbox Component
  *
  * Renders a checkbox with privacy/AGB text and tappable links
- * Migrated from legacy/views/onboarding/Onboarding.js
  */
 const ELEMENT_SIZE = 48;
 
@@ -35,6 +29,12 @@ export const PrivacyCheckbox: FC<Props> = ({
   label,
 }) => {
   const { t } = useTranslation();
+
+  const privacyComponents = {
+    agb: <Text textDecorationLine="underline" onPress={onAgbPress} />,
+    privacy: <Text textDecorationLine="underline" onPress={onPrivacyPress} />,
+    info: <Text textDecorationLine="underline" onPress={onPrivacyPress} />,
+  };
 
   return (
     <Box
@@ -67,22 +67,16 @@ export const PrivacyCheckbox: FC<Props> = ({
             {t("onboarding.anonymisedDataUse")}
           </Text>
         ) : (
-          <TouchableOpacity onPress={onPrivacyPress}>
-            <Text color="darkGrey2" fontSize={14}>
-              <Text>{t("onboarding.privacyInformation1")}</Text>
-              <Text textDecorationLine="underline" onPress={onAgbPress}>
-                {t("onboarding.agbLink")}
-              </Text>
-              <Text>{t("onboarding.privacyInformation2")}</Text>
-              <Text textDecorationLine="underline" onPress={onPrivacyPress}>
-                {t("onboarding.privacyLink")}
-              </Text>
-              <Text>{t("onboarding.privacyInformation3")}</Text>
-              <Text textDecorationLine="underline" onPress={onPrivacyPress}>
-                {t("onboarding.moreInformation")}
-              </Text>
-            </Text>
-          </TouchableOpacity>
+          <Text color="darkGrey2" fontSize={14}>
+            <Trans
+              i18nKey={
+                label === "PRIVACY_FULL"
+                  ? "onboarding.privacyFull"
+                  : "onboarding.privacySimple"
+              }
+              components={privacyComponents}
+            />
+          </Text>
         )}
       </Box>
     </Box>

@@ -75,6 +75,8 @@ export default defineConfig({
         EXPO_PUBLIC_SUPABASE_URL:
           process.env.TESTING_SUPABASE_BASE_URL ?? "http://localhost:54321",
         EXPO_PUBLIC_SUPABASE_ANON_KEY: "mock-anon-key",
+        EXPO_PUBLIC_LINK_AGB: "http://localhost:8081/agb",
+        EXPO_PUBLIC_LINK_PRIVACY: "http://localhost:8081/privacy",
       },
     },
   ],

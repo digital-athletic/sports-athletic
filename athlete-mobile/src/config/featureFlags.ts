@@ -3,8 +3,8 @@ export const featureFlags = {
   get serverSyncEnabled(): boolean {
     return process.env.EXPO_PUBLIC_SERVER_SYNC_ENABLED !== "false";
   },
-  get healthInfoEnabled(): boolean {
-    return process.env.EXPO_PUBLIC_HEALTH_INFO_ENABLED !== "false";
+  get analyticsConsentEnabled(): boolean {
+    return process.env.EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED !== "false";
   },
   get termsEnabled(): boolean {
     return (process.env.EXPO_PUBLIC_LINK_AGB ?? "") !== "";

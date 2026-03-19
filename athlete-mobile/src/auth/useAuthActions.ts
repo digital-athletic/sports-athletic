@@ -15,7 +15,7 @@ import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserSettingsStore } from "@/store/userSettingsStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
-import { syncManager } from "@/services/SyncManager";
+import { useNetworkState } from "@/hooks/useNetworkState";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "@/common/Alert";
@@ -28,6 +28,7 @@ import { Alert } from "@/common/Alert";
 export function useLogout() {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
+  const isOnline = useNetworkState();
 
   const clearAuth = useAuthStore((state) => state.clearAuth);
 
@@ -46,7 +47,7 @@ export function useLogout() {
   };
 
   const confirmLogout = () => {
-    if (!syncManager.isOnline) {
+    if (!isOnline) {
       Alert.alert(t("more.logoutQuestionTitle"), t("common.noConnection"));
       return;
     }
@@ -77,6 +78,7 @@ export function useLogout() {
 export function useDeleteAccount() {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
+  const isOnline = useNetworkState();
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const { resetProgress } = useExerciseProgressStore();
   const { resetAnamnesisData } = useAnamnesisStore();
@@ -121,7 +123,7 @@ export function useDeleteAccount() {
   };
 
   const confirmDelete = () => {
-    if (!syncManager.isOnline) {
+    if (!isOnline) {
       Alert.alert(t("more.deleteQuestionTitle"), t("common.noConnection"));
       return;
     }

@@ -4,6 +4,7 @@ import { BasePage } from "./BasePage";
 interface RegistrationFormData {
   email: string;
   acceptPrivacy?: boolean;
+  acceptAnalytics?: boolean;
 }
 
 export class RegistrationPage extends BasePage {
@@ -20,11 +21,20 @@ export class RegistrationPage extends BasePage {
     ).toBeVisible();
   }
 
-  async fillForm({ email, acceptPrivacy = true }: RegistrationFormData) {
+  async fillForm({
+    email,
+    acceptPrivacy = true,
+    acceptAnalytics = true,
+  }: RegistrationFormData) {
     await this.page.getByPlaceholder("E-Mail").fill(email);
 
+    if (acceptAnalytics) {
+      // Click the first checkbox (analytics/data improvement)
+      await this.page.getByRole("checkbox").nth(0).click();
+    }
+
     if (acceptPrivacy) {
-      // Click the second checkbox (privacy acceptance — first is analytics)
+      // Click the second checkbox (privacy acceptance)
       await this.page.getByRole("checkbox").nth(1).click();
     }
   }

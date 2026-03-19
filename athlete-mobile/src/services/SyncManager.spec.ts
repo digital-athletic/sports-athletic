@@ -18,11 +18,16 @@ let netInfoCallback: (state: {
   isInternetReachable: boolean | null;
 }) => void;
 const mockNetInfoUnsubscribe = jest.fn();
+const mockNetInfoFetch = jest.fn().mockResolvedValue({
+  isConnected: true,
+  isInternetReachable: true,
+});
 jest.mock("@react-native-community/netinfo", () => ({
   addEventListener: jest.fn((cb: typeof netInfoCallback) => {
     netInfoCallback = cb;
     return mockNetInfoUnsubscribe;
   }),
+  fetch: (...args: unknown[]) => mockNetInfoFetch(...args),
 }));
 
 let appStateCallback: (state: string) => void;
@@ -68,6 +73,17 @@ describe("start", () => {
     );
   });
 
+  it("eagerly fetches current network state on start", () => {
+    mockNetInfoFetch.mockResolvedValue({
+      isConnected: true,
+      isInternetReachable: true,
+    });
+
+    SyncManager.getInstance().start();
+
+    expect(mockNetInfoFetch).toHaveBeenCalledTimes(1);
+  });
+
   it("is idempotent — calling twice does not duplicate subscriptions", () => {
     const manager = SyncManager.getInstance();
     manager.start();
@@ -103,6 +119,16 @@ describe("stop", () => {
     expect(mockNetInfoUnsubscribe).toHaveBeenCalled();
     expect(mockAppStateRemove).toHaveBeenCalled();
     expect(manager.isStarted).toBe(false);
+  });
+
+  it("resets online to false when stopped", () => {
+    const manager = SyncManager.getInstance();
+    manager.start();
+    netInfoCallback({ isConnected: true, isInternetReachable: true });
+    expect(manager.isOnline).toBe(true);
+
+    manager.stop();
+    expect(manager.isOnline).toBe(false);
   });
 });
 

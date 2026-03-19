@@ -56,6 +56,13 @@ class SyncManager {
     this.registerHandlers();
     useSyncQueueStore.getState().resetStaleItems();
 
+    // Eagerly fetch current network state so isOnline is correct immediately
+    NetInfo.fetch().then((state) => {
+      this.online = !!(
+        state.isConnected && state.isInternetReachable !== false
+      );
+    });
+
     this.unsubscribeNetInfo = NetInfo.addEventListener((state) => {
       const wasOffline = !this.online;
       this.online = !!(
@@ -106,6 +113,7 @@ class SyncManager {
     }
 
     this.started = false;
+    this.online = false;
   }
 
   notifyWorkoutCompleted(workout: CompleteWorkoutType): void {

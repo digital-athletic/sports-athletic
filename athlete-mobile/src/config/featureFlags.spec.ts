@@ -5,7 +5,7 @@ describe("featureFlags", () => {
     delete process.env.EXPO_PUBLIC_SERVER_SYNC_ENABLED;
     delete process.env.EXPO_PUBLIC_REVIEW_EMAIL;
     delete process.env.EXPO_PUBLIC_REVIEW_OTP;
-    delete process.env.EXPO_PUBLIC_HEALTH_INFO_ENABLED;
+    delete process.env.EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED;
     delete process.env.EXPO_PUBLIC_LINK_AGB;
     delete process.env.EXPO_PUBLIC_LINK_PRIVACY;
     delete process.env.EXPO_PUBLIC_LINK_IMPRINT;
@@ -27,19 +27,19 @@ describe("featureFlags", () => {
     });
   });
 
-  describe("healthInfoEnabled", () => {
-    it("defaults to true when EXPO_PUBLIC_HEALTH_INFO_ENABLED is unset", () => {
-      expect(featureFlags.healthInfoEnabled).toBe(true);
+  describe("analyticsConsentEnabled", () => {
+    it("defaults to true when EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED is unset", () => {
+      expect(featureFlags.analyticsConsentEnabled).toBe(true);
     });
 
-    it("is false when EXPO_PUBLIC_HEALTH_INFO_ENABLED is 'false'", () => {
-      process.env.EXPO_PUBLIC_HEALTH_INFO_ENABLED = "false";
-      expect(featureFlags.healthInfoEnabled).toBe(false);
+    it("is false when EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED is 'false'", () => {
+      process.env.EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED = "false";
+      expect(featureFlags.analyticsConsentEnabled).toBe(false);
     });
 
-    it("is true when EXPO_PUBLIC_HEALTH_INFO_ENABLED is 'true'", () => {
-      process.env.EXPO_PUBLIC_HEALTH_INFO_ENABLED = "true";
-      expect(featureFlags.healthInfoEnabled).toBe(true);
+    it("is true when EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED is 'true'", () => {
+      process.env.EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED = "true";
+      expect(featureFlags.analyticsConsentEnabled).toBe(true);
     });
   });
 

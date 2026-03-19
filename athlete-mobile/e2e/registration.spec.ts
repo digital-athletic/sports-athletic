@@ -30,6 +30,14 @@ test.describe("Registration Flow", () => {
     await expect(
       page.getByRole("alert").filter({ hasText: /accept.*terms/i }),
     ).toBeVisible();
+
+    // Accept privacy but not analytics — should show analytics error
+    await page.getByRole("checkbox").nth(1).click();
+    await registration.submitRegistration();
+
+    await expect(
+      page.getByRole("alert").filter({ hasText: /improve.*app/i }),
+    ).toBeVisible();
   });
 
   test("successful registration with OTP code verification", async ({

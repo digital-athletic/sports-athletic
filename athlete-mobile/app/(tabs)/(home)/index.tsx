@@ -122,7 +122,7 @@ export default function HomeScreen() {
           >
             <Box alignItems="center" justifyContent="space-between" gap="s">
               <Ionicon
-                name="fitness-outline"
+                name="scan-outline"
                 size={48}
                 color={colors.primary}
                 accessibilityLabel={t(
@@ -151,7 +151,7 @@ export default function HomeScreen() {
           >
             <Box alignItems="center" justifyContent="space-between" gap="s">
               <Ionicon
-                name="medkit-outline"
+                name="calendar-outline"
                 size={48}
                 color={colors.primary}
                 accessibilityLabel={t("screens.home.imageAlt.preventionIcon")}

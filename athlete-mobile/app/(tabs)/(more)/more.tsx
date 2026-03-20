@@ -8,6 +8,7 @@
 import { useDeleteAccount, useLogout } from "@/auth/useAuthActions";
 import { Ionicon } from "@/common/Ionicon";
 import { featureFlags } from "@/config/featureFlags";
+import { LINK_AGB, LINK_IMPRINT, LINK_PRIVACY } from "@/constants/AppConstants";
 import { ListDivider } from "@/common/ListDivider";
 import { ListItem } from "@/features/more/ListItem";
 import {
@@ -170,7 +171,7 @@ export default function MoreScreen() {
           {featureFlags.termsEnabled && (
             <ListItem
               title={t("more.agb")}
-              navPath="/webview"
+              externalUrl={LINK_AGB}
               iconName="information-circle"
               iconBackground="darkGrey1"
               isSubscribed={allowedForTraining}
@@ -179,7 +180,7 @@ export default function MoreScreen() {
           {featureFlags.privacyEnabled && (
             <ListItem
               title={t("more.privacy")}
-              navPath="/(tabs)/(more)/privacy"
+              externalUrl={LINK_PRIVACY}
               iconName="shield-checkmark"
               iconBackground="darkGrey1"
               isSubscribed={allowedForTraining}
@@ -192,24 +193,28 @@ export default function MoreScreen() {
             iconBackground="darkGrey1"
             isSubscribed={allowedForTraining}
           />
-          <ListItem
-            title={t("more.subscriptionStatus")}
-            navPath="/(tabs)/(more)/subscription-status"
-            iconName="eye"
-            iconBackground="darkGrey1"
-            isSubscribed={allowedForTraining}
-          />
-          <ListItem
-            title={t("more.contact")}
-            navPath="/contact"
-            iconName="mail"
-            iconBackground="darkGrey1"
-            isSubscribed={allowedForTraining}
-          />
+          {featureFlags.subscriptionStatusEnabled && (
+            <ListItem
+              title={t("more.subscriptionStatus")}
+              navPath="/(tabs)/(more)/subscription-status"
+              iconName="eye"
+              iconBackground="darkGrey1"
+              isSubscribed={allowedForTraining}
+            />
+          )}
+          {featureFlags.contactEnabled && (
+            <ListItem
+              title={t("more.contact")}
+              navPath="/contact"
+              iconName="mail"
+              iconBackground="darkGrey1"
+              isSubscribed={allowedForTraining}
+            />
+          )}
           {featureFlags.imprintEnabled && (
             <ListItem
               title={t("more.imprint")}
-              navPath="/(tabs)/(more)/imprint"
+              externalUrl={LINK_IMPRINT}
               iconName="document-text"
               iconBackground="darkGrey1"
               isSubscribed={allowedForTraining}

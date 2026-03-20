@@ -6,12 +6,13 @@ import { useResponsiveProp } from "@shopify/restyle";
 import { type Route, useRouter } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, TouchableOpacity } from "react-native";
+import { Alert, Linking, TouchableOpacity } from "react-native";
 import { ListDivider } from "../../common/ListDivider";
 
 export type ListItemProps = {
   title: string;
-  navPath: Route;
+  navPath?: Route;
+  externalUrl?: string;
   iconName: IoniconName;
   iconBackground: ThemeColor;
   backPath?: string;
@@ -27,6 +28,7 @@ export type ListItemProps = {
 export const ListItem: FC<ListItemProps> = ({
   title,
   navPath,
+  externalUrl,
   iconName,
   iconBackground,
   isLast = false,
@@ -43,6 +45,11 @@ export const ListItem: FC<ListItemProps> = ({
   const listItemMarginBottom = useResponsiveProp({ phone: 6, tablet: 16 });
 
   const handlePress = () => {
+    if (externalUrl) {
+      Linking.openURL(externalUrl);
+      return;
+    }
+
     if (navPath === "/training/muscle-soreness" && !isSubscribed) {
       Alert.alert(
         t("subscription.expired"),
@@ -61,6 +68,8 @@ export const ListItem: FC<ListItemProps> = ({
       );
       return;
     }
+
+    if (!navPath) return;
 
     // @ts-expect-error Suppress ts(2345) Types of property 'pathname' are incompatible.
     // It has been verified that the allowed values are restricted to valid paths as expected.

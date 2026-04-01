@@ -6,6 +6,9 @@ export const featureFlags = {
   get analyticsConsentEnabled(): boolean {
     return process.env.EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED !== "false";
   },
+  get healthConsentEnabled(): boolean {
+    return process.env.EXPO_PUBLIC_HEALTH_CONSENT_ENABLED === "true";
+  },
   /**
    * When true, exercise sync is enabled but only activity counts are transmitted —
    * no weights, repetitions, or other performance specifics leave the device.

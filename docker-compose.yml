@@ -23,6 +23,8 @@ services:
       - EXPO_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
       - TESTING_PLAYWRIGHT_WS_ENDPOINT=ws://playwright:9323
       - TESTING_PLAYWRIGHT_BASE_URL=http://athlete-mobile:8081
+      - EXPO_PUBLIC_LINK_IMPRINT=https://www.hvsh.de/handball-erleben/sports-athletic/
+      - EXPO_PUBLIC_LINK_PRIVACY=https://www.hvsh.de/fileadmin/user_upload/Bilder_allgemein/Sports_Athletic/260320_-_Datenschutzerklaerung_v2_mit_TrainerInnenbereich_HVSH_Verbandsebene.pdf
     stdin_open: true
     tty: true
     networks:

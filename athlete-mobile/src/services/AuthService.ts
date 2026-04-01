@@ -143,6 +143,32 @@ export const logout = async (): Promise<void> => {
   useAuthStore.getState().clearAuth();
 };
 
+type ConsentFlags = {
+  healthUse: boolean;
+  privacyAccepted: boolean;
+  analytics: boolean;
+};
+
+/**
+ * Upsert all three consent flags to user_profiles
+ */
+export const saveConsentToProfile = async (
+  userId: string,
+  consent: ConsentFlags,
+): Promise<void> => {
+  const { error } = await supabase.from("user_profiles").upsert({
+    user_id: userId,
+    consent_health_accepted: consent.healthUse,
+    consent_privacy_accepted: consent.privacyAccepted,
+    consent_analytics_accepted: consent.analytics,
+    consent_updated_at: new Date().toISOString(),
+  });
+
+  if (error) {
+    throw mapSupabaseError(error);
+  }
+};
+
 /**
  * Get the current authenticated user
  */

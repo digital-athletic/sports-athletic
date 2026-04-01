@@ -1,10 +1,12 @@
 import {
   requestLoginOtp,
   requestRegistrationOtp,
+  saveConsentToProfile,
 } from "@/services/AuthService";
 import { supabase } from "@/services/supabaseClient";
 import { featureFlags } from "@/config/featureFlags";
 import { useAuthStore } from "@/store/authStore";
+import { useUserSettingsStore } from "@/store/userSettingsStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
@@ -29,14 +31,22 @@ type VerificationMode = "LOGIN" | "REGISTER";
 
 /** Screen shown after OTP request to enter the 6-digit verification code. */
 export function EmailVerificationScreen() {
-  const { email, mode } = useLocalSearchParams<{
-    email: string;
-    mode: VerificationMode;
-  }>();
+  const { email, mode, acceptedAnalytics, acceptedHealth, acceptedTerms } =
+    useLocalSearchParams<{
+      email: string;
+      mode: VerificationMode;
+      acceptedAnalytics?: string;
+      acceptedHealth?: string;
+      acceptedTerms?: string;
+    }>();
+  const healthConsent = acceptedHealth === "true";
+  const termsConsent = acceptedTerms === "true";
+  const analyticsConsent = acceptedAnalytics === "true";
   const router = useRouter();
   const { t } = useTranslation();
   const { colors, spacing, borderRadii } = useTheme();
   const { initializeFromSupabase } = useAuthStore();
+  const { setAnonymisedDataUse } = useUserSettingsStore();
   const insets = useSafeAreaInsets();
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
@@ -75,7 +85,7 @@ export function EmailVerificationScreen() {
 
     try {
       if (mode === "REGISTER") {
-        await requestRegistrationOtp(email ?? "", false);
+        await requestRegistrationOtp(email ?? "", analyticsConsent);
       } else {
         await requestLoginOtp(email ?? "");
       }
@@ -126,9 +136,17 @@ export function EmailVerificationScreen() {
 
     if (data.session) {
       await initializeFromSupabase();
-      // For login, Stack.Protected automatically navigates to (tabs).
-      // For registration, override to anamnesis (profile setup).
       if (mode === "REGISTER") {
+        try {
+          await saveConsentToProfile(data.session.user.id, {
+            healthUse: healthConsent,
+            privacyAccepted: termsConsent,
+            analytics: analyticsConsent,
+          });
+          setAnonymisedDataUse(analyticsConsent);
+        } catch {
+          // Non-fatal: proceed with registration even if consent persistence fails
+        }
         router.replace("/anamnesis");
       }
     } else {

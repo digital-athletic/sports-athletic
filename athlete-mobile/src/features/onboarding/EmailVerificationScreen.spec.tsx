@@ -36,10 +36,13 @@ jest.mock("@/services/supabaseClient", () => ({
 // Mock AuthService
 const mockRequestLoginOtp = jest.fn();
 const mockRequestRegistrationOtp = jest.fn();
+const mockSaveConsentToProfile = jest.fn();
 jest.mock("@/services/AuthService", () => ({
   requestLoginOtp: (...args: unknown[]) => mockRequestLoginOtp(...args),
   requestRegistrationOtp: (...args: unknown[]) =>
     mockRequestRegistrationOtp(...args),
+  saveConsentToProfile: (...args: unknown[]) =>
+    mockSaveConsentToProfile(...args),
 }));
 
 // Mock auth store
@@ -47,6 +50,14 @@ const mockInitializeFromSupabase = jest.fn();
 jest.mock("@/store/authStore", () => ({
   useAuthStore: () => ({
     initializeFromSupabase: mockInitializeFromSupabase,
+  }),
+}));
+
+// Mock user settings store
+const mockSetAnonymisedDataUse = jest.fn();
+jest.mock("@/store/userSettingsStore", () => ({
+  useUserSettingsStore: () => ({
+    setAnonymisedDataUse: mockSetAnonymisedDataUse,
   }),
 }));
 
@@ -62,6 +73,7 @@ describe("<EmailVerificationScreen />", () => {
     mockInitializeFromSupabase.mockResolvedValue(undefined);
     mockRequestLoginOtp.mockResolvedValue(undefined);
     mockRequestRegistrationOtp.mockResolvedValue(undefined);
+    mockSaveConsentToProfile.mockResolvedValue(undefined);
     jest.spyOn(Alert, "alert").mockImplementation(() => {});
   });
 
@@ -104,6 +116,24 @@ describe("<EmailVerificationScreen />", () => {
     expect(mockRequestRegistrationOtp).toHaveBeenCalledWith(
       "user@example.com",
       false,
+    );
+  });
+
+  it("preserves acceptedAnalytics=true when resending in REGISTER mode", async () => {
+    mockSearchParams = {
+      email: "user@example.com",
+      mode: "REGISTER",
+      acceptedAnalytics: "true",
+    };
+    const { getByText } = render(<EmailVerificationScreen />);
+
+    await act(async () => {
+      fireEvent.press(getByText("Resend verification email"));
+    });
+
+    expect(mockRequestRegistrationOtp).toHaveBeenCalledWith(
+      "user@example.com",
+      true,
     );
   });
 
@@ -300,6 +330,73 @@ describe("<EmailVerificationScreen />", () => {
     fireEvent.changeText(getByLabelText("Verification code"), "1");
 
     expect(queryByText(/code you entered is invalid/)).toBeNull();
+  });
+
+  it("upserts consent and syncs local store after successful REGISTER verification", async () => {
+    mockSearchParams = {
+      email: "user@example.com",
+      mode: "REGISTER",
+      acceptedAnalytics: "true",
+    };
+    mockVerifyOtp.mockResolvedValue({
+      data: {
+        session: { user: { id: "user-1" }, access_token: "token-1" },
+      },
+      error: null,
+    });
+
+    const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
+    fireEvent.changeText(getByLabelText("Verification code"), "123456");
+
+    await act(async () => {
+      fireEvent.press(getByText("Verify"));
+    });
+
+    expect(mockSaveConsentToProfile).toHaveBeenCalledWith("user-1", {
+      analytics: true,
+      healthUse: false,
+      privacyAccepted: false,
+    });
+    expect(mockSetAnonymisedDataUse).toHaveBeenCalledWith(true);
+    expect(mockReplace).toHaveBeenCalledWith("/anamnesis");
+  });
+
+  it("still navigates to anamnesis when consent upsert fails", async () => {
+    mockSaveConsentToProfile.mockRejectedValue(new Error("network"));
+    mockVerifyOtp.mockResolvedValue({
+      data: {
+        session: { user: { id: "user-1" }, access_token: "token-1" },
+      },
+      error: null,
+    });
+
+    const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
+    fireEvent.changeText(getByLabelText("Verification code"), "123456");
+
+    await act(async () => {
+      fireEvent.press(getByText("Verify"));
+    });
+
+    expect(mockReplace).toHaveBeenCalledWith("/anamnesis");
+  });
+
+  it("does not upsert consent after successful LOGIN verification", async () => {
+    mockSearchParams = { email: "user@example.com", mode: "LOGIN" };
+    mockVerifyOtp.mockResolvedValue({
+      data: {
+        session: { user: { id: "user-1" }, access_token: "token-1" },
+      },
+      error: null,
+    });
+
+    const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
+    fireEvent.changeText(getByLabelText("Verification code"), "123456");
+
+    await act(async () => {
+      fireEvent.press(getByText("Verify"));
+    });
+
+    expect(mockSaveConsentToProfile).not.toHaveBeenCalled();
   });
 
   it("does not call verifyOtp when code is incomplete", async () => {

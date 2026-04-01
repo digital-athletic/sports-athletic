@@ -8,6 +8,8 @@ const mockSignInWithOtp = jest.fn();
 const mockGetSession = jest.fn();
 const mockFunctionsInvoke = jest.fn();
 const mockSignOut = jest.fn();
+const mockUpsert = jest.fn();
+const mockFrom = jest.fn((_table: string) => ({ upsert: mockUpsert }));
 jest.mock("./supabaseClient", () => ({
   supabase: {
     auth: {
@@ -18,6 +20,7 @@ jest.mock("./supabaseClient", () => ({
     functions: {
       invoke: (...args: unknown[]) => mockFunctionsInvoke(...args),
     },
+    from: (table: string) => mockFrom(table),
   },
 }));
 
@@ -33,6 +36,7 @@ import {
   logout,
   requestLoginOtp,
   requestRegistrationOtp,
+  saveConsentToProfile,
 } from "./AuthService";
 
 describe("requestLoginOtp", () => {
@@ -198,6 +202,48 @@ describe("deleteAccount", () => {
     });
 
     await expect(deleteAccount()).rejects.toMatchObject({
+      code: "auth/unknown",
+    });
+  });
+});
+
+describe("saveConsentToProfile", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockFrom.mockReturnValue({ upsert: mockUpsert });
+  });
+
+  it("upserts all consent flags to user_profiles", async () => {
+    mockUpsert.mockResolvedValue({ error: null });
+
+    await saveConsentToProfile("user-1", {
+      healthUse: true,
+      privacyAccepted: true,
+      analytics: false,
+    });
+
+    expect(mockFrom).toHaveBeenCalledWith("user_profiles");
+    expect(mockUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        user_id: "user-1",
+        consent_health_accepted: true,
+        consent_privacy_accepted: true,
+        consent_analytics_accepted: false,
+        consent_updated_at: expect.any(String),
+      }),
+    );
+  });
+
+  it("throws on supabase error", async () => {
+    mockUpsert.mockResolvedValue({ error: { message: "DB error", code: "" } });
+
+    await expect(
+      saveConsentToProfile("user-1", {
+        healthUse: false,
+        privacyAccepted: false,
+        analytics: false,
+      }),
+    ).rejects.toMatchObject({
       code: "auth/unknown",
     });
   });

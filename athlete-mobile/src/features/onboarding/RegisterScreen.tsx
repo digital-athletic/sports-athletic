@@ -14,17 +14,19 @@ import { useTranslation } from "react-i18next";
 import { ActivityIndicator, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-type ErrorField = "email" | "privacy" | "analytics";
+type ErrorField = "email" | "privacy" | "analytics" | "health";
 
 type Props = {
   email: string;
   acceptedPrivacy: boolean;
   acceptedAnalytics: boolean;
+  acceptedHealth: boolean;
   registrationError: string | null;
   errorFields: ErrorField[];
   onEmailChange: (email: string) => void;
   onPrivacyToggle: (accepted: boolean) => void;
   onAnalyticsToggle: (accepted: boolean) => void;
+  onHealthToggle: (accepted: boolean) => void;
   onRegister: () => void;
   onBack: () => void;
   processing: boolean;
@@ -39,11 +41,13 @@ export const RegistrationScreen: FC<Props> = ({
   email,
   acceptedPrivacy,
   acceptedAnalytics,
+  acceptedHealth,
   registrationError,
   errorFields,
   onEmailChange,
   onPrivacyToggle,
   onAnalyticsToggle,
+  onHealthToggle,
   onRegister,
   onBack,
   processing,
@@ -87,6 +91,19 @@ export const RegistrationScreen: FC<Props> = ({
           />
         </Box>
 
+        {featureFlags.privacyEnabled && (
+          <PrivacyCheckbox
+            checked={acceptedPrivacy}
+            showError={errorFields.includes("privacy")}
+            onCheck={onPrivacyToggle}
+            onPrivacyPress={handlePrivacyPress}
+            onAgbPress={handleAgbPress}
+            label={
+              featureFlags.termsEnabled ? "PRIVACY_FULL" : "PRIVACY_SIMPLE"
+            }
+          />
+        )}
+
         {featureFlags.analyticsConsentEnabled && (
           <PrivacyCheckbox
             checked={acceptedAnalytics}
@@ -98,16 +115,14 @@ export const RegistrationScreen: FC<Props> = ({
           />
         )}
 
-        {featureFlags.privacyEnabled && (
+        {featureFlags.healthConsentEnabled && (
           <PrivacyCheckbox
-            checked={acceptedPrivacy}
-            showError={errorFields.includes("privacy")}
-            onCheck={onPrivacyToggle}
+            checked={acceptedHealth}
+            showError={errorFields.includes("health")}
+            onCheck={onHealthToggle}
             onPrivacyPress={handlePrivacyPress}
             onAgbPress={handleAgbPress}
-            label={
-              featureFlags.termsEnabled ? "PRIVACY_FULL" : "PRIVACY_SIMPLE"
-            }
+            label="HEALTH_CONSENT"
           />
         )}
       </ScrollBox>

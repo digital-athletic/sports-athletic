@@ -15,6 +15,11 @@ import { MaxValuesSchema } from "@/schemas/user.schema";
 import * as v from "valibot";
 import { supabase } from "./supabaseClient";
 import { Logger } from "./Logger";
+import { featureFlags } from "@/config/featureFlags";
+
+function isActivityOnlyMode(): boolean {
+  return featureFlags.serverSyncActivityOnlyEnabled;
+}
 
 let isProcessing = false;
 
@@ -37,9 +42,14 @@ export async function processQueue(): Promise<void> {
 
   try {
     const store = useSyncQueueStore.getState();
+    const attemptedIds = new Set<string>();
     let nextItem = store.getNextPending();
 
     while (nextItem) {
+      if (attemptedIds.has(nextItem.id)) {
+        break;
+      }
+      attemptedIds.add(nextItem.id);
       await processSingleItem(nextItem, auth.userId);
       nextItem = useSyncQueueStore.getState().getNextPending();
     }
@@ -55,6 +65,13 @@ export async function processSingleItem(
   const store = useSyncQueueStore.getState();
 
   if (item.attemptCount >= MAX_RETRY_ATTEMPTS) {
+    return;
+  }
+
+  if (
+    isActivityOnlyMode() &&
+    (item.type === "EXERCISE_DATA" || item.type === "STRENGTH_TEST")
+  ) {
     return;
   }
 
@@ -100,15 +117,16 @@ export async function syncCompletedWorkout(
   payload: CompleteWorkoutType,
   userId: string,
 ): Promise<void> {
+  const activityOnly = isActivityOnlyMode();
   const row = {
     user_id: userId,
     workout_id: payload.id,
     workout_date: payload.timestamp,
     duration: payload.duration,
     exercise_count: payload.exerciseCount ?? null,
-    xp_earned: payload.xpEarned ?? null,
-    moved_weight: payload.movedWeight ?? null,
-    exercises: payload.exercises,
+    xp_earned: activityOnly ? null : (payload.xpEarned ?? null),
+    moved_weight: activityOnly ? null : (payload.movedWeight ?? null),
+    exercises: activityOnly ? null : payload.exercises,
     user_skills: payload.userSkills ?? null,
   };
 

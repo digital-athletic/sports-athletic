@@ -50,3 +50,12 @@ cd trainer-web && pnpm dev
 # Supabase functions
 cd supabase && supabase functions serve
 ```
+
+## Dependency Security (`pnpm audit`)
+
+When `pnpm audit` reports vulnerabilities, fix them in this order:
+
+1. **Bump the direct dependency first** — upgrade the package that pulls in the vulnerable transitive dep to a version that resolves it. This is the clean fix.
+2. **Use `pnpm overrides` only as a last resort** — if bumping the origin lib is not possible (e.g. no release exists yet, or upgrading causes breaking changes that cannot be resolved), add an override in `package.json` to force the safe version of the transitive dep.
+
+Never add an override if bumping the origin lib resolves the audit.

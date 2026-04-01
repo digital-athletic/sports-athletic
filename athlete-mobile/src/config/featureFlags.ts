@@ -6,6 +6,15 @@ export const featureFlags = {
   get analyticsConsentEnabled(): boolean {
     return process.env.EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED !== "false";
   },
+  /**
+   * When true, exercise sync is enabled but only activity counts are transmitted —
+   * no weights, repetitions, or other performance specifics leave the device.
+   * Acts as a sub-mode of serverSyncEnabled for privacy-sensitive deployments.
+   * Env var: EXPO_PUBLIC_SERVER_SYNC_ACTIVITY_ONLY_ENABLED
+   */
+  get serverSyncActivityOnlyEnabled(): boolean {
+    return process.env.EXPO_PUBLIC_SERVER_SYNC_ACTIVITY_ONLY_ENABLED === "true";
+  },
   get termsEnabled(): boolean {
     return (process.env.EXPO_PUBLIC_LINK_AGB ?? "") !== "";
   },

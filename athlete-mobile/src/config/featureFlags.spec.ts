@@ -3,6 +3,7 @@ import { featureFlags } from "./featureFlags";
 describe("featureFlags", () => {
   afterEach(() => {
     delete process.env.EXPO_PUBLIC_SERVER_SYNC_ENABLED;
+    delete process.env.EXPO_PUBLIC_SERVER_SYNC_ACTIVITY_ONLY_ENABLED;
     delete process.env.EXPO_PUBLIC_REVIEW_EMAIL;
     delete process.env.EXPO_PUBLIC_REVIEW_OTP;
     delete process.env.EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED;
@@ -24,6 +25,22 @@ describe("featureFlags", () => {
     it("is true when EXPO_PUBLIC_SERVER_SYNC_ENABLED is 'true'", () => {
       process.env.EXPO_PUBLIC_SERVER_SYNC_ENABLED = "true";
       expect(featureFlags.serverSyncEnabled).toBe(true);
+    });
+  });
+
+  describe("serverSyncActivityOnlyEnabled", () => {
+    it("defaults to false when EXPO_PUBLIC_SERVER_SYNC_ACTIVITY_ONLY_ENABLED is unset", () => {
+      expect(featureFlags.serverSyncActivityOnlyEnabled).toBe(false);
+    });
+
+    it("is false when EXPO_PUBLIC_SERVER_SYNC_ACTIVITY_ONLY_ENABLED is 'false'", () => {
+      process.env.EXPO_PUBLIC_SERVER_SYNC_ACTIVITY_ONLY_ENABLED = "false";
+      expect(featureFlags.serverSyncActivityOnlyEnabled).toBe(false);
+    });
+
+    it("is true when EXPO_PUBLIC_SERVER_SYNC_ACTIVITY_ONLY_ENABLED is 'true'", () => {
+      process.env.EXPO_PUBLIC_SERVER_SYNC_ACTIVITY_ONLY_ENABLED = "true";
+      expect(featureFlags.serverSyncActivityOnlyEnabled).toBe(true);
     });
   });
 

@@ -51,6 +51,12 @@ cd trainer-web && pnpm dev
 cd supabase && supabase functions serve
 ```
 
+## TypeScript & Lint Strictness
+
+- **Never use `// eslint-disable-next-line`, `// eslint-disable`, `// @ts-ignore`, or any other inline suppression comment.** If a lint or type error appears, fix the root cause.
+- **`// @ts-expect-error` is only permitted when suppressing a known incompatibility in a third-party library** where the types are wrong and no workaround exists. It must always be accompanied by a comment explaining exactly why it is needed and why fixing it properly is not possible.
+- All new code must use strict TypeScript types. Avoid `any` — use `unknown` and narrow safely, or introduce a proper type.
+
 ## Dependency Security (`pnpm audit`)
 
 When `pnpm audit` reports vulnerabilities, fix them in this order:

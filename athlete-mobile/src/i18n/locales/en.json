@@ -281,7 +281,7 @@
       "errorTitleGenerator": "No workout could be generated",
       "errorTitleNoExercisesParamsX": "The following problems occurred: {{params}}",
       "errorTitleNoExercisesSubtypeX": "No exercises can be used because of the following reasons: {{subtype}}",
-      "errorTitleTooMuchSorenessParamsX": "Some areas need more regeneration: {{params}}\nTry a regenerative workout instead.",
+      "errorTitleTooMuchSorenessParamsX": "Some areas need more regeneration: {{params}}\nTry a focus or prevention training for the other areas instead.",
       "errorTitleTooMuchSorenessSubtypeX": "You should not stress your body right now: {{subtype}}",
       "errorTitleTooMuchSorenessTestWorkout": "You can not do your power test with muscle soreness. Do a low impact cardio or focus training instead.",
       "errorTitleNoAnamnesisParamsX": "No anamnesis data: {{params}}",

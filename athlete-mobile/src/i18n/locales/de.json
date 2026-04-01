@@ -281,7 +281,7 @@
       "errorTitleGenerator": "Es konnte kein Training erstellt werden",
       "errorTitleNoExercisesParamsX": "Folgende Probleme traten auf: {{params}}",
       "errorTitleNoExercisesSubtypeX": "Aus folgendem Grund konnten keine Übungen gefunden werden: {{subtype}}",
-      "errorTitleTooMuchSorenessParamsX": "Folgende Bereiche benötigen noch Regeneration: {{params}}\nDu kannst stattdessen ein regeneratives Training machen.",
+      "errorTitleTooMuchSorenessParamsX": "Folgende Bereiche benötigen noch Regeneration: {{params}}\nDu kannst stattdessen ein Fokus- oder Präventionstraining für die anderen Bereiche machen.",
       "errorTitleTooMuchSorenessSubtypeX": "Momentan solltest du deinen Körper nicht belasten: {{subtype}}",
       "errorTitleTooMuchSorenessTestWorkout": "Mit Muskelkater kannst du den Krafttest nicht machen. Absolviere stattdessen einen regenerativen Lauf oder ein Fokus-Training.",
       "errorTitleNoAnamnesisParamsX": "Keine Anamnesedaten: {{params}}",

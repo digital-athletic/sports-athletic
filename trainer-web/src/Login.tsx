@@ -63,13 +63,6 @@ export const Login = () => {
     setLoading(false);
   };
 
-  const switchMode = () => {
-    setMode(mode === "login" ? "signup" : "login");
-    setError(null);
-    setSignupSuccess(false);
-    setConfirmPassword("");
-  };
-
   const handleBackToLogin = () => {
     setMode("login");
     setSignupSuccess(false);
@@ -92,7 +85,6 @@ export const Login = () => {
         onPasswordChange={setPassword}
         onConfirmPasswordChange={setConfirmPassword}
         onSubmit={handleSubmit}
-        onSwitchMode={switchMode}
       />
     </AuthPageLayout>
   );

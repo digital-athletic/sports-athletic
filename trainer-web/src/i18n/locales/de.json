@@ -27,11 +27,15 @@
     "hasAccount": "Bereits ein Konto?",
     "register": "Registrieren",
     "backToLogin": "Zurück zur Anmeldung",
+    "registerViaApp": "Die Kontoerstellung ist nur über die SPORTS ATHLETIC App möglich.",
     "invalidCredentials": "Ungültige E-Mail oder Passwort",
     "passwordMismatch": "Passwörter stimmen nicht überein",
     "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein",
     "signupSuccessTitle": "Konto erstellt!",
-    "signupSuccessMessage": "Ihr Konto wurde erfolgreich erstellt. Sie können sich jetzt mit Ihren Zugangsdaten anmelden."
+    "signupSuccessMessage": "Ihr Konto wurde erfolgreich erstellt. Sie können sich jetzt mit Ihren Zugangsdaten anmelden.",
+    "privacyConsentPrefix": "Ich habe die",
+    "privacyConsentLink": "Datenschutzerklärung",
+    "privacyConsentSuffix": "gelesen und akzeptiere sie"
   },
   "teamSelection": {
     "title": "Team auswählen",
@@ -174,6 +178,10 @@
       "focus": "Fokus",
       "noData": "Keine Trainings in diesem Zeitraum"
     }
+  },
+  "footer": {
+    "imprint": "Impressum",
+    "privacyPolicy": "Datenschutzerklärung"
   },
   "settings": {
     "exampleData": {

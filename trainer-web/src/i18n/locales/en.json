@@ -27,11 +27,15 @@
     "hasAccount": "Already have an account?",
     "register": "Register",
     "backToLogin": "Back to Login",
+    "registerViaApp": "Account creation is only possible via the SPORTS ATHLETIC app.",
     "invalidCredentials": "Invalid email or password",
     "passwordMismatch": "Passwords do not match",
     "passwordTooShort": "Password must be at least 6 characters",
     "signupSuccessTitle": "Account Created!",
-    "signupSuccessMessage": "Your account has been created successfully. You can now log in with your credentials."
+    "signupSuccessMessage": "Your account has been created successfully. You can now log in with your credentials.",
+    "privacyConsentPrefix": "I have read and accept the",
+    "privacyConsentLink": "Privacy Policy",
+    "privacyConsentSuffix": ""
   },
   "teamSelection": {
     "title": "Select Team",
@@ -174,6 +178,10 @@
       "focus": "Focus",
       "noData": "No trainings in this time period"
     }
+  },
+  "footer": {
+    "imprint": "Legal Notice",
+    "privacyPolicy": "Privacy Policy"
   },
   "settings": {
     "exampleData": {

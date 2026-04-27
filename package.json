@@ -4,7 +4,10 @@
   "packageManager": "pnpm@10.25.0",
   "pnpm": {
     "overrides": {
-      "@tootallnate/once": ">=3.0.1"
+      "@tootallnate/once": ">=3.0.1",
+      "lodash": ">=4.18.0",
+      "postcss": ">=8.5.10",
+      "uuid": ">=14.0.0"
     }
   },
   "devDependencies": {

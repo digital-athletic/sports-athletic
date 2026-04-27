@@ -1,4 +1,4 @@
-import { type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "./Button";
 import { ErrorMessage } from "./ErrorMessage";
@@ -17,7 +17,6 @@ interface LoginFormProps {
   onPasswordChange: (value: string) => void;
   onConfirmPasswordChange: (value: string) => void;
   onSubmit: (e: FormEvent) => void;
-  onSwitchMode: () => void;
 }
 
 export function LoginForm({
@@ -31,9 +30,9 @@ export function LoginForm({
   onPasswordChange,
   onConfirmPasswordChange,
   onSubmit,
-  onSwitchMode,
 }: LoginFormProps) {
   const { t } = useTranslation();
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
@@ -73,9 +72,35 @@ export function LoginForm({
         />
       )}
 
+      {mode === "signup" && (
+        <label className="flex cursor-pointer items-start gap-2 text-sm text-gray-600">
+          <input
+            type="checkbox"
+            checked={privacyAccepted}
+            onChange={(e) => setPrivacyAccepted(e.target.checked)}
+            required
+            className="mt-0.5 h-4 w-4 accent-red-600"
+          />
+          <span>
+            {t("login.privacyConsentPrefix")}{" "}
+            <a
+              href="https://www.ingemarpohl-ug.de/startseite/datenschutzerkl%C3%A4rung"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-red-600 hover:underline"
+            >
+              {t("login.privacyConsentLink")}
+            </a>
+            {t("login.privacyConsentSuffix") && (
+              <> {t("login.privacyConsentSuffix")}</>
+            )}
+          </span>
+        </label>
+      )}
+
       <Button
         type="submit"
-        disabled={loading}
+        disabled={loading || (mode === "signup" && !privacyAccepted)}
         isLoading={loading}
         loadingText={t("common.loading")}
         className="w-full py-3.5 text-base"
@@ -93,15 +118,8 @@ export function LoginForm({
 
       <div className="mt-2 text-center">
         <span className="text-sm text-gray-500">
-          {mode === "login" ? t("login.noAccount") : t("login.hasAccount")}{" "}
+          {t("login.registerViaApp")}
         </span>
-        <button
-          type="button"
-          onClick={onSwitchMode}
-          className="text-sm font-semibold text-red-600 transition-colors hover:text-red-700"
-        >
-          {mode === "login" ? t("login.register") : t("login.backToLogin")}
-        </button>
       </div>
     </form>
   );

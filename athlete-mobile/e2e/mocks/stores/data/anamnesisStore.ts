@@ -33,6 +33,7 @@ export function createAnamnesisStore(
   } = options;
 
   return {
+    version: 15,
     state: {
       values: {
         height,

@@ -27,6 +27,7 @@ export function createTrainingScheduleStore(
   const { trainingDays = DEFAULT_TRAINING_DAYS } = options;
 
   return {
+    version: 14,
     state: {
       trainingDays,
     },

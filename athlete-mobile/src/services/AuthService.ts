@@ -148,6 +148,35 @@ type ConsentFlags = {
   analytics: boolean;
 };
 
+export type ConsentRecord = {
+  privacyAccepted: boolean;
+  analyticsAccepted: boolean;
+};
+
+/**
+ * Fetch consent record from user_profiles. Returns null when no row exists.
+ */
+export const fetchConsentFromProfile = async (
+  userId: string,
+): Promise<ConsentRecord | null> => {
+  const { data, error } = await supabase
+    .from("user_profiles")
+    .select("consent_privacy_accepted, consent_analytics_accepted")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error) {
+    throw mapSupabaseError(error);
+  }
+
+  if (!data) return null;
+
+  return {
+    privacyAccepted: data.consent_privacy_accepted === true,
+    analyticsAccepted: data.consent_analytics_accepted === true,
+  };
+};
+
 /**
  * Upsert all three consent flags to user_profiles
  */

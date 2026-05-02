@@ -33,6 +33,7 @@ export function createUserProfileStore(
   } = options;
 
   return {
+    version: 14,
     state: {
       userId,
       personalData: {

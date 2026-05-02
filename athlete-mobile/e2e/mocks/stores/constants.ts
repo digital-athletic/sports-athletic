@@ -110,6 +110,7 @@ export const STORAGE_KEYS = {
   TRAINING_SCHEDULE: "training-schedule-storage",
   ANAMNESIS: "anamnesis-storage",
   COMPLETED_WORKOUTS: "completed-workouts-storage",
+  USER_SETTINGS: "user-settings-storage",
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];

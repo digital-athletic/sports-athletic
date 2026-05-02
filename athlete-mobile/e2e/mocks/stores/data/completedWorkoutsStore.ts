@@ -64,6 +64,7 @@ export function createCompletedWorkoutsStore(
   const { workouts = {} } = options;
 
   return {
+    version: 14,
     state: {
       workouts,
     },

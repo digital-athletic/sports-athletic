@@ -494,7 +494,11 @@
     "noAccountYet": "Noch kein Konto?",
     "register": "Registrieren",
     "initializing": "Initialisierung",
-    "webContent": "Webinhalt"
+    "webContent": "Webinhalt",
+    "consentTitle": "Datenschutz",
+    "consentSubtitle": "Um die App weiter zu nutzen, akzeptiere bitte unsere Datenschutzbestimmungen.",
+    "consentAccept": "Weiter",
+    "errorMessageConsentSaveFailed": "Deine Einwilligung konnte nicht gespeichert werden. Bitte prüfe deine Verbindung und versuche es erneut."
   },
   "sports": {
     "HANDBALL_SPORT": "Handball",

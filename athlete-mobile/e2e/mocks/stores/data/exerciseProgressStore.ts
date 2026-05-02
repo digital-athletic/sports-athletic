@@ -25,6 +25,7 @@ export function createExerciseProgressStore(
   } = options;
 
   return {
+    version: 15,
     state: {
       exerciseData,
       branchData,

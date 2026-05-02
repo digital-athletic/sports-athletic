@@ -44,7 +44,7 @@ export function EmailVerificationScreen() {
   const { t } = useTranslation();
   const { colors, spacing, borderRadii } = useTheme();
   const { initializeFromSupabase } = useAuthStore();
-  const { setAnonymisedDataUse } = useUserSettingsStore();
+  const { setAnonymisedDataUse, setConsentStatus } = useUserSettingsStore();
   const insets = useSafeAreaInsets();
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
@@ -89,9 +89,13 @@ export function EmailVerificationScreen() {
       }
       setResent(true);
       startCooldown();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const code =
+        error instanceof Error && "code" in error
+          ? (error as Error & { code: string }).code
+          : undefined;
       const message =
-        error?.code === "auth/too-many-requests"
+        code === "auth/too-many-requests"
           ? t("onboarding.errorMessageTooManyRequests")
           : t("onboarding.alertAnErrorOccuredTitle");
       Alert.alert(t("onboarding.alertErrorTitle"), message);
@@ -141,8 +145,10 @@ export function EmailVerificationScreen() {
             analytics: analyticsConsent,
           });
           setAnonymisedDataUse(analyticsConsent);
+          setConsentStatus("accepted");
         } catch {
           // Non-fatal: proceed with registration even if consent persistence fails
+          setConsentStatus("accepted");
         }
         router.replace("/anamnesis");
       }

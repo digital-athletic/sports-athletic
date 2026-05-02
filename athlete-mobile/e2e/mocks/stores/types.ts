@@ -9,6 +9,7 @@ import type { StorageKey } from "./constants";
  */
 export interface StoreState<T> {
   state: T;
+  version: number;
 }
 
 /**

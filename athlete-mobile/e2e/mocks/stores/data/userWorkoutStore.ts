@@ -125,6 +125,7 @@ export function createUserWorkoutStore(
   } = options;
 
   return {
+    version: 16,
     state: {
       workoutData: {
         sport,

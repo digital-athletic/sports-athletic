@@ -3,13 +3,27 @@
  * Tests requestLoginOtp, requestRegistrationOtp and mapSupabaseError mapping
  */
 
-/* eslint-disable import/first */
+import {
+  deleteAccount,
+  fetchConsentFromProfile,
+  logout,
+  requestLoginOtp,
+  requestRegistrationOtp,
+  saveConsentToProfile,
+} from "./AuthService";
+
 const mockSignInWithOtp = jest.fn();
 const mockGetSession = jest.fn();
 const mockFunctionsInvoke = jest.fn();
 const mockSignOut = jest.fn();
 const mockUpsert = jest.fn();
-const mockFrom = jest.fn((_table: string) => ({ upsert: mockUpsert }));
+const mockMaybeSingle = jest.fn();
+const mockEq = jest.fn(() => ({ maybeSingle: mockMaybeSingle }));
+const mockSelect = jest.fn(() => ({ eq: mockEq }));
+const mockFrom = jest.fn((_table: string) => ({
+  upsert: mockUpsert,
+  select: mockSelect,
+}));
 jest.mock("./supabaseClient", () => ({
   supabase: {
     auth: {
@@ -30,14 +44,6 @@ jest.mock("../store/authStore", () => ({
     getState: () => ({ clearAuth: mockClearAuth }),
   },
 }));
-
-import {
-  deleteAccount,
-  logout,
-  requestLoginOtp,
-  requestRegistrationOtp,
-  saveConsentToProfile,
-} from "./AuthService";
 
 describe("requestLoginOtp", () => {
   beforeEach(() => {
@@ -210,7 +216,7 @@ describe("deleteAccount", () => {
 describe("saveConsentToProfile", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockFrom.mockReturnValue({ upsert: mockUpsert });
+    mockFrom.mockReturnValue({ upsert: mockUpsert, select: mockSelect });
   });
 
   it("upserts all consent flags to user_profiles", async () => {
@@ -256,5 +262,70 @@ describe("logout", () => {
 
     await expect(logout()).resolves.not.toThrow();
     expect(mockClearAuth).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("fetchConsentFromProfile", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockMaybeSingle.mockReset();
+    mockEq.mockReturnValue({ maybeSingle: mockMaybeSingle });
+    mockSelect.mockReturnValue({ eq: mockEq });
+    mockFrom.mockReturnValue({ upsert: mockUpsert, select: mockSelect });
+  });
+
+  it("returns null when no row exists", async () => {
+    mockMaybeSingle.mockResolvedValue({ data: null, error: null });
+
+    const result = await fetchConsentFromProfile("user-1");
+
+    expect(result).toBeNull();
+    expect(mockFrom).toHaveBeenCalledWith("user_profiles");
+    expect(mockSelect).toHaveBeenCalledWith(
+      "consent_privacy_accepted, consent_analytics_accepted",
+    );
+    expect(mockEq).toHaveBeenCalledWith("user_id", "user-1");
+  });
+
+  it("returns consent flags when row has privacy accepted", async () => {
+    mockMaybeSingle.mockResolvedValue({
+      data: {
+        consent_privacy_accepted: true,
+        consent_analytics_accepted: true,
+      },
+      error: null,
+    });
+
+    const result = await fetchConsentFromProfile("user-1");
+
+    expect(result).toEqual({ privacyAccepted: true, analyticsAccepted: true });
+  });
+
+  it("returns consent flags when row has privacy rejected", async () => {
+    mockMaybeSingle.mockResolvedValue({
+      data: {
+        consent_privacy_accepted: false,
+        consent_analytics_accepted: false,
+      },
+      error: null,
+    });
+
+    const result = await fetchConsentFromProfile("user-1");
+
+    expect(result).toEqual({
+      privacyAccepted: false,
+      analyticsAccepted: false,
+    });
+  });
+
+  it("throws on Supabase error", async () => {
+    mockMaybeSingle.mockResolvedValue({
+      data: null,
+      error: { message: "DB error", code: "" },
+    });
+
+    await expect(fetchConsentFromProfile("user-1")).rejects.toMatchObject({
+      code: "auth/unknown",
+    });
   });
 });

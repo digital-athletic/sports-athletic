@@ -8,6 +8,7 @@
 import { STORAGE_KEYS } from "../constants";
 import type { StoreDataMap } from "../types";
 import { createUserProfileStore } from "../data/userProfileStore";
+import { createUserSettingsStore } from "../data/userSettingsStore";
 
 /**
  * Creates a profile with anamnesis not completed.
@@ -19,5 +20,6 @@ export function createIncompleteAnamnesisProfile(): StoreDataMap {
       isInInitialAnamnesis: true,
       anamnesisCompleted: false,
     }),
+    [STORAGE_KEYS.USER_SETTINGS]: createUserSettingsStore(),
   };
 }

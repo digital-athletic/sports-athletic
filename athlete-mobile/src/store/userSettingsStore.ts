@@ -12,9 +12,12 @@ export interface ReviewStatusType {
   promptCount?: number;
 }
 
+export type ConsentStatus = "loading" | "accepted" | "missing";
+
 export type State = {
   reviewStatus: ReviewStatusType;
   anonymisedDataUse: boolean;
+  consentStatus: ConsentStatus;
 };
 
 const createInitialReviewStatus = (): ReviewStatusType => ({
@@ -25,6 +28,7 @@ const createInitialReviewStatus = (): ReviewStatusType => ({
 const createInitialState = (): State => ({
   reviewStatus: createInitialReviewStatus(),
   anonymisedDataUse: false,
+  consentStatus: "loading",
 });
 
 type Actions = {
@@ -32,12 +36,17 @@ type Actions = {
     settings: Partial<
       Omit<
         UserSettingsState,
-        "setSettings" | "setReviewStatus" | "setAnonymisedDataUse"
+        | "setSettings"
+        | "setReviewStatus"
+        | "setAnonymisedDataUse"
+        | "setConsentStatus"
+        | "resetSettings"
       >
     >,
   ) => void;
   setReviewStatus: (status: ReviewStatusType) => void;
   setAnonymisedDataUse: (enabled: boolean) => void;
+  setConsentStatus: (status: ConsentStatus) => void;
   resetSettings: () => void;
 };
 
@@ -46,18 +55,13 @@ export type UserSettingsState = State & Actions;
 /**
  * User Settings Store
  *
- * Manages app preferences and review state.
+ * Manages app preferences, review state, and consent status.
  * Independent from profile and workout data.
  *
  * @example
  * ```tsx
- * const { reviewStatus, anonymisedDataUse, setAnonymisedDataUse } = useUserSettingsStore();
- *
- * // Update privacy setting
- * setAnonymisedDataUse(true);
- *
- * // Update review status
- * setReviewStatus({ hasReviewed: true, lastPromptDate: '2025-11-14' });
+ * const { consentStatus, setConsentStatus } = useUserSettingsStore();
+ * setConsentStatus('accepted');
  * ```
  */
 export const useUserSettingsStore = create<UserSettingsState>()(
@@ -70,6 +74,7 @@ export const useUserSettingsStore = create<UserSettingsState>()(
           state.reviewStatus = settings.reviewStatus ?? state.reviewStatus;
           state.anonymisedDataUse =
             settings.anonymisedDataUse ?? state.anonymisedDataUse;
+          state.consentStatus = settings.consentStatus ?? state.consentStatus;
         }),
 
       setReviewStatus: (status) =>
@@ -81,11 +86,18 @@ export const useUserSettingsStore = create<UserSettingsState>()(
         set((state) => {
           state.anonymisedDataUse = enabled;
         }),
+
+      setConsentStatus: (status) =>
+        set((state) => {
+          state.consentStatus = status;
+        }),
+
       resetSettings: () => {
         set((state) => {
           const initialState = createInitialState();
           state.reviewStatus = initialState.reviewStatus;
           state.anonymisedDataUse = initialState.anonymisedDataUse;
+          state.consentStatus = initialState.consentStatus;
         });
       },
     })),

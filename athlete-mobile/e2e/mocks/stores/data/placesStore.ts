@@ -31,6 +31,7 @@ export function createPlacesStore(
   } = options;
 
   return {
+    version: 14,
     state: {
       places: {
         HOME: {

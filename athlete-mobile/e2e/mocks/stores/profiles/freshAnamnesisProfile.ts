@@ -15,6 +15,7 @@ import { createUserWorkoutStore } from "../data/userWorkoutStore";
 import { createExerciseProgressStore } from "../data/exerciseProgressStore";
 import { createTrainingScheduleStore } from "../data/trainingScheduleStore";
 import { createAnamnesisStore } from "../data/anamnesisStore";
+import { createUserSettingsStore } from "../data/userSettingsStore";
 
 /**
  * Creates a profile with:
@@ -39,5 +40,6 @@ export function createFreshAnamnesisProfile(): StoreDataMap {
     }),
     [STORAGE_KEYS.TRAINING_SCHEDULE]: createTrainingScheduleStore(),
     [STORAGE_KEYS.ANAMNESIS]: createAnamnesisStore(),
+    [STORAGE_KEYS.USER_SETTINGS]: createUserSettingsStore(),
   };
 }

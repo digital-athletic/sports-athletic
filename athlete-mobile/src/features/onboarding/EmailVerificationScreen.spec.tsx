@@ -3,8 +3,9 @@
  * Tests rendering, resend functionality, OTP verification, and back navigation
  */
 
-/* eslint-disable import/first */
 import { act, fireEvent, render } from "../../utils/testUtils";
+import { Alert } from "react-native";
+import { EmailVerificationScreen } from "./EmailVerificationScreen";
 
 // Mock expo-router
 const mockBack = jest.fn();
@@ -55,15 +56,13 @@ jest.mock("@/store/authStore", () => ({
 
 // Mock user settings store
 const mockSetAnonymisedDataUse = jest.fn();
+const mockSetConsentStatus = jest.fn();
 jest.mock("@/store/userSettingsStore", () => ({
   useUserSettingsStore: () => ({
     setAnonymisedDataUse: mockSetAnonymisedDataUse,
+    setConsentStatus: mockSetConsentStatus,
   }),
 }));
-
-// Import after mocks
-import { Alert } from "react-native";
-import { EmailVerificationScreen } from "./EmailVerificationScreen";
 
 describe("<EmailVerificationScreen />", () => {
   beforeEach(() => {
@@ -358,6 +357,43 @@ describe("<EmailVerificationScreen />", () => {
     });
     expect(mockSetAnonymisedDataUse).toHaveBeenCalledWith(true);
     expect(mockReplace).toHaveBeenCalledWith("/anamnesis");
+  });
+
+  it("sets consentStatus to accepted in REGISTER path after successful verification", async () => {
+    mockVerifyOtp.mockResolvedValue({
+      data: {
+        session: { user: { id: "user-1" }, access_token: "token-1" },
+      },
+      error: null,
+    });
+
+    const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
+    fireEvent.changeText(getByLabelText("Verification code"), "123456");
+
+    await act(async () => {
+      fireEvent.press(getByText("Verify"));
+    });
+
+    expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
+  });
+
+  it("does not call setConsentStatus in LOGIN path after successful verification", async () => {
+    mockSearchParams = { email: "user@example.com", mode: "LOGIN" };
+    mockVerifyOtp.mockResolvedValue({
+      data: {
+        session: { user: { id: "user-1" }, access_token: "token-1" },
+      },
+      error: null,
+    });
+
+    const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
+    fireEvent.changeText(getByLabelText("Verification code"), "123456");
+
+    await act(async () => {
+      fireEvent.press(getByText("Verify"));
+    });
+
+    expect(mockSetConsentStatus).not.toHaveBeenCalled();
   });
 
   it("still navigates to anamnesis when consent upsert fails", async () => {

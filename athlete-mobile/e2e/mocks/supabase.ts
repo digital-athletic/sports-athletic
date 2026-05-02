@@ -95,11 +95,26 @@ function mockRestApi(page: Page) {
   }
 
   // Catch-all for any other REST API calls
-  return page.route(`**/rest/v1/**`, async (route) => {
+  page.route(`**/rest/v1/**`, async (route) => {
     await route.fulfill({
       status: 200,
       contentType: "application/json",
       body: JSON.stringify([]),
+    });
+  });
+
+  // Registered after catch-all so it takes priority (Playwright uses LIFO ordering).
+  // Returns consent-accepted so checkAndSetConsent resolves to "accepted" after UI login flows.
+  return page.route(`**/rest/v1/user_profiles**`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify([
+        {
+          consent_privacy_accepted: true,
+          consent_analytics_accepted: true,
+        },
+      ]),
     });
   });
 }

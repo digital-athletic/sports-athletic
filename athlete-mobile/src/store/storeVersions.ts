@@ -12,7 +12,7 @@
  * - Version 14+: Per-store versioning.
  */
 export const STORE_VERSIONS = {
-  AUTH: 14,
+  AUTH: 15,
   USER_PROFILE: 14,
   USER_WORKOUT: 16,
   USER_SETTINGS: 15,

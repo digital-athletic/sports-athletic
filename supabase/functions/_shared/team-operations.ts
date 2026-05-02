@@ -139,13 +139,15 @@ export async function getOldestMember(
 }
 
 export async function getInvitationByCode(
-  client: SupabaseClient,
   code: string,
 ): Promise<TeamInvitation | null> {
-  const { data, error } = await client
+  // Uses admin client: the broad RLS SELECT policy for code validation was
+  // removed (F3). The invite code itself is the secret; no user-scoped
+  // filtering is needed here.
+  const { data, error } = await supabaseAdmin
     .from(Tables.TEAM_INVITATIONS)
     .select("*")
-    .ilike("code", code.toUpperCase())
+    .eq("code", code.toUpperCase())
     .single();
 
   if (error && error.code !== "PGRST116") {

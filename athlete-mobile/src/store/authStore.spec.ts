@@ -41,20 +41,18 @@ describe("initializeFromSupabase", () => {
 
     expect(useAuthStore.getState().auth).toEqual({
       userId: "user-1",
-      token: "tok-1",
     });
     expect(useAuthStore.getState().isInitialized).toBe(true);
   });
 
   it("preserves persisted auth and sets isInitialized=true when getSession throws Network request failed", async () => {
-    useAuthStore.setState({ auth: { userId: "existing", token: "old" } });
+    useAuthStore.setState({ auth: { userId: "existing" } });
     mockGetSession.mockRejectedValue(new TypeError("Network request failed"));
 
     await useAuthStore.getState().initializeFromSupabase();
 
     expect(useAuthStore.getState().auth).toEqual({
       userId: "existing",
-      token: "old",
     });
     expect(useAuthStore.getState().isInitialized).toBe(true);
   });

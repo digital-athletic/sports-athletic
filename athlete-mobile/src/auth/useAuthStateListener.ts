@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from "react";
+import { AppState, type AppStateStatus } from "react-native";
 import NetInfo from "@react-native-community/netinfo";
 import { supabase } from "@/services/supabaseClient";
 import { useAuthStore } from "@/store/authStore";
@@ -12,8 +13,8 @@ import { featureFlags } from "@/config/featureFlags";
 /**
  * Hook to subscribe to Supabase auth state changes.
  * Updates authStore when session changes (login, logout, token refresh).
- * Checks and caches consent status on sign-in; resets it on sign-out.
- * Silently refreshes session when device transitions from offline to online.
+ * Checks and caches consent status on sign-in, app foreground, and reconnect.
+ * Resets consent on sign-out.
  */
 export function useAuthStateListener() {
   const setAuth = useAuthStore((state) => state.setAuth);
@@ -38,7 +39,9 @@ export function useAuthStateListener() {
 
   const checkAndSetConsent = useCallback(
     async (userId: string) => {
-      if (consentStatusRef.current !== "loading") return;
+      // Skip only when already accepted; allow retry when "missing" (e.g. after
+      // a prior network failure) so foreground/reconnect can resolve the gate.
+      if (consentStatusRef.current === "accepted") return;
 
       try {
         const record = await fetchConsentFromProfile(userId);
@@ -56,8 +59,11 @@ export function useAuthStateListener() {
           setConsentStatus("accepted");
         }
       } catch {
-        // Fail open — prevent offline lockout
-        setConsentStatus("accepted");
+        // Fail closed — a network error must not bypass the consent gate.
+        // Returning users have "accepted" persisted and are skipped by the
+        // guard above; only users who have never consented are held at the
+        // consent screen until connectivity is restored.
+        setConsentStatus("missing");
       }
     },
     [setConsentStatus, setAnonymisedDataUse],
@@ -77,7 +83,6 @@ export function useAuthStateListener() {
         if (session) {
           setAuth({
             userId: session.user.id,
-            token: session.access_token,
           });
           if (event === "SIGNED_IN") {
             checkAndSetConsent(session.user.id);
@@ -94,14 +99,35 @@ export function useAuthStateListener() {
         state.isConnected && state.isInternetReachable !== false
       );
       if (isOnline && wasOfflineRef.current) {
+        // Re-check consent on reconnect for users blocked by a prior network
+        // failure so the gate resolves automatically without requiring a
+        // manual interaction or sign-out cycle.
+        if (authRef.current && consentStatusRef.current !== "accepted") {
+          checkAndSetConsent(authRef.current.userId);
+        }
         initializeFromSupabase();
       }
       wasOfflineRef.current = !isOnline;
     });
 
+    const handleAppStateChange = (nextState: AppStateStatus) => {
+      if (
+        nextState === "active" &&
+        authRef.current &&
+        consentStatusRef.current !== "accepted"
+      ) {
+        checkAndSetConsent(authRef.current.userId);
+      }
+    };
+    const appStateSubscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange,
+    );
+
     return () => {
       subscription.unsubscribe();
       unsubscribeNetInfo();
+      appStateSubscription.remove();
     };
   }, [
     setAuth,

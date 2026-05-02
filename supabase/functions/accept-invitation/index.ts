@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
 
     const { code } = parsed.data;
 
-    const invitation = await getInvitationByCode(auth.client, code);
+    const invitation = await getInvitationByCode(code);
     if (!invitation) {
       return errorResponse(
         ErrorCodes.INVITE_CODE_INVALID,

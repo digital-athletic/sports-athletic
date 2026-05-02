@@ -13,7 +13,6 @@ import { STORE_VERSIONS } from "./storeVersions";
  */
 export interface AuthType {
   userId: string;
-  token: string;
 }
 
 export type State = {
@@ -53,7 +52,7 @@ export type AuthState = State & Actions & Selectors;
  * const { auth, setAuth, clearAuth, isAuthenticated } = useAuthStore();
  *
  * // Login
- * setAuth({ userId: '123', token: 'abc...' });
+ * setAuth({ userId: '123' });
  *
  * // Check auth status
  * if (isAuthenticated()) {
@@ -89,7 +88,6 @@ export const useAuthStore = create<AuthState>()(
             if (session) {
               state.auth = {
                 userId: session.user.id,
-                token: session.access_token,
               };
             } else {
               state.auth = null;

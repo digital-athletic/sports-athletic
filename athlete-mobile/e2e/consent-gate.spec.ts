@@ -2,7 +2,10 @@ import { type Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
 import { createAcceptedConsentProfile } from "./mocks/stores/profiles/acceptedConsentProfile";
 import { createMissingConsentProfile } from "./mocks/stores/profiles/missingConsentProfile";
-import { mockSupabaseAuth } from "./mocks/supabase";
+import {
+  mockMissingConsentUserProfile,
+  mockSupabaseAuth,
+} from "./mocks/supabase";
 
 /**
  * Consent Gate E2E Tests
@@ -60,11 +63,18 @@ async function seedAuthStore(page: Page) {
 test.describe("Consent Gate — Missing Consent", () => {
   test.use({ profile: createMissingConsentProfile() });
 
+  async function setup(page: Parameters<typeof mockSupabaseAuth>[0]) {
+    await mockSupabaseAuth(page);
+    // Override user_profiles after mockSupabaseAuth so LIFO ordering gives this
+    // handler priority — keeps checkAndSetConsent resolving to "missing".
+    await mockMissingConsentUserProfile(page);
+    await seedAuthStore(page);
+  }
+
   test("authenticated user with missing consent sees consent screen", async ({
     page,
   }) => {
-    await mockSupabaseAuth(page);
-    await seedAuthStore(page);
+    await setup(page);
     await page.goto("/");
 
     await expect(page.getByText("Data Protection")).toBeVisible({
@@ -80,8 +90,7 @@ test.describe("Consent Gate — Missing Consent", () => {
   test("consent screen blocks navigation to protected routes", async ({
     page,
   }) => {
-    await mockSupabaseAuth(page);
-    await seedAuthStore(page);
+    await setup(page);
     await page.goto("/");
 
     await expect(page.getByText("Data Protection")).toBeVisible({
@@ -102,8 +111,7 @@ test.describe("Consent Gate — Missing Consent", () => {
   test("submitting without accepting privacy shows validation error", async ({
     page,
   }) => {
-    await mockSupabaseAuth(page);
-    await seedAuthStore(page);
+    await setup(page);
     await page.goto("/");
 
     await expect(page.getByText("Data Protection")).toBeVisible({
@@ -123,8 +131,7 @@ test.describe("Consent Gate — Missing Consent", () => {
   test("accepting consent removes gate and grants access to the app", async ({
     page,
   }) => {
-    await mockSupabaseAuth(page);
-    await seedAuthStore(page);
+    await setup(page);
     await page.goto("/");
 
     await expect(page.getByText("Data Protection")).toBeVisible({

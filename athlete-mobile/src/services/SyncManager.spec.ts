@@ -46,7 +46,7 @@ beforeEach(() => {
   mockProcessQueue.mockResolvedValue(undefined);
   SyncManager.resetForTesting();
   useSyncQueueStore.getState().clearSyncQueue();
-  useAuthStore.getState().setAuth({ userId: "user-1", token: "tok" });
+  useAuthStore.getState().setAuth({ userId: "user-1" });
 });
 
 afterEach(() => {

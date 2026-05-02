@@ -45,7 +45,6 @@ beforeEach(() => {
   useSyncQueueStore.getState().clearSyncQueue();
   useAuthStore.getState().setAuth({
     userId: TEST_USER_ID,
-    token: "test-token",
   });
   delete process.env.EXPO_PUBLIC_SERVER_SYNC_ACTIVITY_ONLY_ENABLED;
 });

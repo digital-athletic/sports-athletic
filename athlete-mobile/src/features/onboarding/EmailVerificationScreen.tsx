@@ -113,9 +113,7 @@ export function EmailVerificationScreen() {
       featureFlags.isReviewUser(email ?? "") &&
       otpCode === featureFlags.reviewOtp
     ) {
-      useAuthStore
-        .getState()
-        .setAuth({ userId: "review-user", token: "review-token" });
+      useAuthStore.getState().setAuth({ userId: "review-user" });
       if (mode === "REGISTER") {
         router.replace("/anamnesis");
       }

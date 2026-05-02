@@ -119,6 +119,26 @@ function mockRestApi(page: Page) {
   });
 }
 
+/**
+ * Override the user_profiles mock to return missing consent.
+ * Must be called AFTER mockSupabaseAuth so Playwright's LIFO route ordering
+ * gives this handler priority over the accepted-consent default.
+ */
+export async function mockMissingConsentUserProfile(page: Page) {
+  await page.route(`**/rest/v1/user_profiles**`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify([
+        {
+          consent_privacy_accepted: false,
+          consent_analytics_accepted: false,
+        },
+      ]),
+    });
+  });
+}
+
 export async function mockSupabaseAuth(page: Page) {
   // Mock signInWithOtp (POST /auth/v1/otp)
   await page.route(`**/auth/v1/otp**`, async (route) => {

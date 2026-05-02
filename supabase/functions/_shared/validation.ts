@@ -55,7 +55,7 @@ export const CreateTeamSchema = v.object({
 export type CreateTeamInput = v.InferOutput<typeof CreateTeamSchema>;
 
 export const AcceptInvitationSchema = v.object({
-  code: v.pipe(v.string(), v.trim(), v.minLength(1)),
+  code: v.pipe(v.string(), v.trim(), v.regex(/^[A-Z0-9]+$/i)),
 });
 
 export type AcceptInvitationInput = v.InferOutput<

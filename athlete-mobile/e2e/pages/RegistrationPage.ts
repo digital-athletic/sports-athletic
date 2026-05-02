@@ -28,13 +28,11 @@ export class RegistrationPage extends BasePage {
   }: RegistrationFormData) {
     await this.page.getByPlaceholder("E-Mail").fill(email);
 
-    if (acceptAnalytics) {
-      // Click the first checkbox (analytics/data improvement)
+    if (acceptPrivacy) {
       await this.page.getByRole("checkbox").nth(0).click();
     }
 
-    if (acceptPrivacy) {
-      // Click the second checkbox (privacy acceptance)
+    if (acceptAnalytics) {
       await this.page.getByRole("checkbox").nth(1).click();
     }
   }

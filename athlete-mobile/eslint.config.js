@@ -15,6 +15,8 @@ module.exports = defineConfig([
       "supabase/*",
       "assets/data/personas/*",
     ],
+  },
+  {
     rules: {
       "@typescript-eslint/no-require-imports": "off",
     },

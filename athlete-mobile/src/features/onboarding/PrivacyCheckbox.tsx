@@ -10,11 +10,7 @@ type Props = {
   onCheck: (checked: boolean) => void;
   onPrivacyPress: () => void;
   onAgbPress: () => void;
-  label:
-    | "ANONYMISED_DATA_USE"
-    | "PRIVACY_SIMPLE"
-    | "PRIVACY_FULL"
-    | "HEALTH_CONSENT";
+  label: "ANONYMISED_DATA_USE" | "PRIVACY_SIMPLE" | "PRIVACY_FULL";
 };
 
 /**
@@ -69,13 +65,6 @@ export const PrivacyCheckbox: FC<Props> = ({
         {label === "ANONYMISED_DATA_USE" ? (
           <Text color="darkGrey2" fontSize={14}>
             {t("onboarding.anonymisedDataUse")}
-          </Text>
-        ) : label === "HEALTH_CONSENT" ? (
-          <Text color="darkGrey2" fontSize={14}>
-            <Trans
-              i18nKey="onboarding.healthConsent"
-              components={privacyComponents}
-            />
           </Text>
         ) : (
           <Text color="darkGrey2" fontSize={14}>

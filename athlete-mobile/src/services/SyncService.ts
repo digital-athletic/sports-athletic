@@ -68,10 +68,8 @@ export async function processSingleItem(
     return;
   }
 
-  if (
-    isActivityOnlyMode() &&
-    (item.type === "EXERCISE_DATA" || item.type === "STRENGTH_TEST")
-  ) {
+  if (isActivityOnlyMode() && item.type === "EXERCISE_DATA") {
+    store.markCompleted(item.id);
     return;
   }
 
@@ -189,16 +187,17 @@ export async function syncStrengthTest(
   payload: MaxValuesType,
   userId: string,
 ): Promise<void> {
+  const activityOnly = isActivityOnlyMode();
   const row = {
     user_id: userId,
     test_at: payload.testAt,
-    vertical_push: payload.verticalPush,
-    vertical_pull: payload.verticalPull,
-    horizontal_push: payload.horizontalPush,
-    horizontal_pull: payload.horizontalPull,
-    hip_hinge: payload.hipHinge,
-    knee_dominant: payload.kneeDominant,
-    lower_body: payload.lowerBody,
+    vertical_push: activityOnly ? null : payload.verticalPush,
+    vertical_pull: activityOnly ? null : payload.verticalPull,
+    horizontal_push: activityOnly ? null : payload.horizontalPush,
+    horizontal_pull: activityOnly ? null : payload.horizontalPull,
+    hip_hinge: activityOnly ? null : payload.hipHinge,
+    knee_dominant: activityOnly ? null : payload.kneeDominant,
+    lower_body: activityOnly ? null : payload.lowerBody,
   };
 
   const { error } = await supabase

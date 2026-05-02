@@ -3,7 +3,6 @@ import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { supabase } from "../services/supabaseClient";
 import { Logger } from "../services/Logger";
-import { useUserSettingsStore } from "./userSettingsStore";
 import { asyncStorage } from "./middleware";
 import { createMigrate } from "./migrations/createMigrate";
 import { authStoreMigrations } from "./migrations/authStoreMigrations";
@@ -97,25 +96,6 @@ export const useAuthStore = create<AuthState>()(
             }
             state.isInitialized = true;
           });
-          if (session) {
-            try {
-              const { data: profile } = await supabase
-                .from("user_profiles")
-                .select("consent_health_accepted")
-                .eq("user_id", session.user.id)
-                .maybeSingle();
-              if (
-                profile?.consent_health_accepted !== undefined &&
-                profile?.consent_health_accepted !== null
-              ) {
-                useUserSettingsStore
-                  .getState()
-                  .setAnonymisedDataUse(profile.consent_health_accepted);
-              }
-            } catch {
-              // Non-fatal: consent sync failure should not block auth initialization
-            }
-          }
         } catch {
           // Network unavailable — preserve persisted auth, mark initialized
           Logger.logError(

@@ -337,7 +337,7 @@ describe("activity-only mode", () => {
     process.env.EXPO_PUBLIC_SERVER_SYNC_ACTIVITY_ONLY_ENABLED = "true";
   });
 
-  it("skips EXERCISE_DATA items without changing their status", async () => {
+  it("removes EXERCISE_DATA items from queue without syncing them", async () => {
     useSyncQueueStore.getState().enqueue({
       type: "EXERCISE_DATA",
       referenceId: "ex-1",
@@ -348,35 +348,43 @@ describe("activity-only mode", () => {
     await processSingleItem(item, TEST_USER_ID);
 
     expect(mockFrom).not.toHaveBeenCalled();
-    const queue = useSyncQueueStore.getState().queue;
-    expect(queue).toHaveLength(1);
-    expect(queue[0].status).toBe("PENDING");
+    expect(useSyncQueueStore.getState().queue).toHaveLength(0);
   });
 
-  it("skips STRENGTH_TEST items without changing their status", async () => {
+  it("syncs STRENGTH_TEST to DB with null weight columns in activity-only mode", async () => {
     const testTimestamp = new Date("2024-01-15").getTime();
     useSyncQueueStore.getState().enqueue({
       type: "STRENGTH_TEST",
       referenceId: "st-1",
       payload: {
         testAt: testTimestamp,
-        verticalPush: {},
-        verticalPull: {},
-        horizontalPush: {},
-        horizontalPull: {},
-        hipHinge: {},
-        kneeDominant: {},
-        lowerBody: {},
+        verticalPush: { barbell: 60 },
+        verticalPull: { barbell: 50 },
+        horizontalPush: { barbell: 80 },
+        horizontalPull: { barbell: 70 },
+        hipHinge: { barbell: 100 },
+        kneeDominant: { barbell: 90 },
+        lowerBody: { barbell: 120 },
       },
     });
 
     const item = useSyncQueueStore.getState().queue[0];
     await processSingleItem(item, TEST_USER_ID);
 
-    expect(mockFrom).not.toHaveBeenCalled();
-    const queue = useSyncQueueStore.getState().queue;
-    expect(queue).toHaveLength(1);
-    expect(queue[0].status).toBe("PENDING");
+    expect(mockFrom).toHaveBeenCalledWith("strength_tests");
+    expect(mockUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        test_at: testTimestamp,
+        vertical_push: null,
+        vertical_pull: null,
+        horizontal_push: null,
+        horizontal_pull: null,
+        hip_hinge: null,
+        knee_dominant: null,
+        lower_body: null,
+      }),
+      expect.any(Object),
+    );
   });
 
   it("strips exercises and movedWeight from COMPLETED_WORKOUT payload", async () => {
@@ -425,37 +433,20 @@ describe("activity-only mode", () => {
     );
   });
 
-  it("processQueue does not infinite-loop when only skippable items exist", async () => {
+  it("processQueue removes EXERCISE_DATA items without syncing them", async () => {
     useSyncQueueStore.getState().enqueue({
       type: "EXERCISE_DATA",
       referenceId: "ex-1",
       payload: { exerciseId: "ex-1", skill: "SWR1" },
     });
-    useSyncQueueStore.getState().enqueue({
-      type: "STRENGTH_TEST",
-      referenceId: "st-1",
-      payload: {
-        testAt: 1000,
-        verticalPush: {},
-        verticalPull: {},
-        horizontalPush: {},
-        horizontalPull: {},
-        hipHinge: {},
-        kneeDominant: {},
-        lowerBody: {},
-      },
-    });
 
     await processQueue();
 
     expect(mockFrom).not.toHaveBeenCalled();
-    expect(useSyncQueueStore.getState().queue).toHaveLength(2);
-    expect(
-      useSyncQueueStore.getState().queue.every((i) => i.status === "PENDING"),
-    ).toBe(true);
+    expect(useSyncQueueStore.getState().queue).toHaveLength(0);
   });
 
-  it("processQueue processes COMPLETED_WORKOUT but skips EXERCISE_DATA in same queue", async () => {
+  it("processQueue syncs COMPLETED_WORKOUT and removes EXERCISE_DATA in same queue", async () => {
     useSyncQueueStore.getState().enqueue({
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
@@ -469,11 +460,31 @@ describe("activity-only mode", () => {
 
     await processQueue();
 
-    // COMPLETED_WORKOUT synced, EXERCISE_DATA stays pending
-    const queue = useSyncQueueStore.getState().queue;
-    expect(queue).toHaveLength(1);
-    expect(queue[0].type).toBe("EXERCISE_DATA");
-    expect(queue[0].status).toBe("PENDING");
+    expect(useSyncQueueStore.getState().queue).toHaveLength(0);
+    expect(mockFrom).toHaveBeenCalledWith("user_completed_workouts");
+  });
+
+  it("processes COMPLETED_WORKOUT when EXERCISE_DATA items are queued before it", async () => {
+    // Real-world order: exercises are updated during training (before workout completion)
+    useSyncQueueStore.getState().enqueue({
+      type: "EXERCISE_DATA",
+      referenceId: "ex-1",
+      payload: { exerciseId: "ex-1", skill: "SWR1" },
+    });
+    useSyncQueueStore.getState().enqueue({
+      type: "EXERCISE_DATA",
+      referenceId: "ex-2",
+      payload: { exerciseId: "ex-2", skill: "SWR1" },
+    });
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "w1",
+      payload: { id: "w1", timestamp: 1000, exercises: [], duration: 100 },
+    });
+
+    await processQueue();
+
+    expect(useSyncQueueStore.getState().queue).toHaveLength(0);
     expect(mockFrom).toHaveBeenCalledWith("user_completed_workouts");
   });
 });

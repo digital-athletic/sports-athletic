@@ -31,15 +31,13 @@ type VerificationMode = "LOGIN" | "REGISTER";
 
 /** Screen shown after OTP request to enter the 6-digit verification code. */
 export function EmailVerificationScreen() {
-  const { email, mode, acceptedAnalytics, acceptedHealth, acceptedTerms } =
+  const { email, mode, acceptedAnalytics, acceptedTerms } =
     useLocalSearchParams<{
       email: string;
       mode: VerificationMode;
       acceptedAnalytics?: string;
-      acceptedHealth?: string;
       acceptedTerms?: string;
     }>();
-  const healthConsent = acceptedHealth === "true";
   const termsConsent = acceptedTerms === "true";
   const analyticsConsent = acceptedAnalytics === "true";
   const router = useRouter();
@@ -139,7 +137,6 @@ export function EmailVerificationScreen() {
       if (mode === "REGISTER") {
         try {
           await saveConsentToProfile(data.session.user.id, {
-            healthUse: healthConsent,
             privacyAccepted: termsConsent,
             analytics: analyticsConsent,
           });

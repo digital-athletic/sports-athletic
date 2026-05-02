@@ -354,7 +354,6 @@ describe("<EmailVerificationScreen />", () => {
 
     expect(mockSaveConsentToProfile).toHaveBeenCalledWith("user-1", {
       analytics: true,
-      healthUse: false,
       privacyAccepted: false,
     });
     expect(mockSetAnonymisedDataUse).toHaveBeenCalledWith(true);

@@ -14,19 +14,17 @@ import { useTranslation } from "react-i18next";
 import { ActivityIndicator, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-type ErrorField = "email" | "privacy" | "analytics" | "health";
+type ErrorField = "email" | "privacy" | "analytics";
 
 type Props = {
   email: string;
   acceptedPrivacy: boolean;
   acceptedAnalytics: boolean;
-  acceptedHealth: boolean;
   registrationError: string | null;
   errorFields: ErrorField[];
   onEmailChange: (email: string) => void;
   onPrivacyToggle: (accepted: boolean) => void;
   onAnalyticsToggle: (accepted: boolean) => void;
-  onHealthToggle: (accepted: boolean) => void;
   onRegister: () => void;
   onBack: () => void;
   processing: boolean;
@@ -41,13 +39,11 @@ export const RegistrationScreen: FC<Props> = ({
   email,
   acceptedPrivacy,
   acceptedAnalytics,
-  acceptedHealth,
   registrationError,
   errorFields,
   onEmailChange,
   onPrivacyToggle,
   onAnalyticsToggle,
-  onHealthToggle,
   onRegister,
   onBack,
   processing,
@@ -112,17 +108,6 @@ export const RegistrationScreen: FC<Props> = ({
             onPrivacyPress={handlePrivacyPress}
             onAgbPress={handleAgbPress}
             label="ANONYMISED_DATA_USE"
-          />
-        )}
-
-        {featureFlags.healthConsentEnabled && (
-          <PrivacyCheckbox
-            checked={acceptedHealth}
-            showError={errorFields.includes("health")}
-            onCheck={onHealthToggle}
-            onPrivacyPress={handlePrivacyPress}
-            onAgbPress={handleAgbPress}
-            label="HEALTH_CONSENT"
           />
         )}
       </ScrollBox>

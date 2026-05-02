@@ -217,7 +217,6 @@ describe("saveConsentToProfile", () => {
     mockUpsert.mockResolvedValue({ error: null });
 
     await saveConsentToProfile("user-1", {
-      healthUse: true,
       privacyAccepted: true,
       analytics: false,
     });
@@ -226,7 +225,6 @@ describe("saveConsentToProfile", () => {
     expect(mockUpsert).toHaveBeenCalledWith(
       expect.objectContaining({
         user_id: "user-1",
-        consent_health_accepted: true,
         consent_privacy_accepted: true,
         consent_analytics_accepted: false,
         consent_updated_at: expect.any(String),
@@ -239,7 +237,6 @@ describe("saveConsentToProfile", () => {
 
     await expect(
       saveConsentToProfile("user-1", {
-        healthUse: false,
         privacyAccepted: false,
         analytics: false,
       }),

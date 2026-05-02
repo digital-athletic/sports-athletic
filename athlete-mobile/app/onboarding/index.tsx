@@ -24,14 +24,13 @@ import { validateEmail } from "../../src/utils/ValidationUtils";
  * Uses passwordless OTP flow: email → send code → verify
  */
 
-type ErrorField = "email" | "privacy" | "analytics" | "health";
+type ErrorField = "email" | "privacy" | "analytics";
 
 type OnboardingState = {
   email: string;
   activeType: "LOGIN" | "REGISTER";
   acceptedPrivacy: boolean;
   acceptedAnalytics: boolean;
-  acceptedHealth: boolean;
   processing: boolean;
   registrationError: string | null;
   errorFields: ErrorField[];
@@ -42,7 +41,6 @@ type OnboardingAction =
   | { type: "SET_ACTIVE_TYPE"; payload: "LOGIN" | "REGISTER" }
   | { type: "TOGGLE_PRIVACY" }
   | { type: "TOGGLE_ANALYTICS" }
-  | { type: "TOGGLE_HEALTH" }
   | { type: "SET_PROCESSING"; payload: boolean }
   | { type: "SET_REGISTRATION_ERROR"; payload: string | null }
   | { type: "SET_ERROR_FIELDS"; payload: ErrorField[] }
@@ -53,7 +51,6 @@ const initialState: OnboardingState = {
   activeType: "LOGIN",
   acceptedPrivacy: false,
   acceptedAnalytics: false,
-  acceptedHealth: false,
   processing: false,
   registrationError: null,
   errorFields: [],
@@ -87,13 +84,6 @@ function onboardingReducer(
         registrationError: null,
         errorFields: state.errorFields.filter((f) => f !== "analytics"),
       };
-    case "TOGGLE_HEALTH":
-      return {
-        ...state,
-        acceptedHealth: !state.acceptedHealth,
-        registrationError: null,
-        errorFields: state.errorFields.filter((f) => f !== "health"),
-      };
     case "SET_PROCESSING":
       return { ...state, processing: action.payload };
     case "SET_REGISTRATION_ERROR":
@@ -106,7 +96,6 @@ function onboardingReducer(
         activeType: "LOGIN",
         acceptedPrivacy: false,
         acceptedAnalytics: false,
-        acceptedHealth: false,
         registrationError: null,
         errorFields: [],
       };
@@ -191,15 +180,6 @@ export default function OnboardingScreen() {
       return;
     }
 
-    if (featureFlags.healthConsentEnabled && !state.acceptedHealth) {
-      dispatch({
-        type: "SET_REGISTRATION_ERROR",
-        payload: t("onboarding.errorMessageAcceptHealth"),
-      });
-      dispatch({ type: "SET_ERROR_FIELDS", payload: ["health"] });
-      return;
-    }
-
     dispatch({ type: "SET_PROCESSING", payload: true });
     Keyboard.dismiss();
 
@@ -210,7 +190,6 @@ export default function OnboardingScreen() {
           email: state.email,
           mode: "REGISTER",
           acceptedAnalytics: String(state.acceptedAnalytics),
-          acceptedHealth: String(state.acceptedHealth),
           acceptedTerms: String(state.acceptedPrivacy),
         },
       });
@@ -250,7 +229,6 @@ export default function OnboardingScreen() {
         email: state.email,
         mode: "REGISTER",
         acceptedAnalytics: String(state.acceptedAnalytics),
-        acceptedHealth: String(state.acceptedHealth),
         acceptedTerms: String(state.acceptedPrivacy),
       },
     });
@@ -285,7 +263,6 @@ export default function OnboardingScreen() {
         email={state.email}
         acceptedPrivacy={state.acceptedPrivacy}
         acceptedAnalytics={state.acceptedAnalytics}
-        acceptedHealth={state.acceptedHealth}
         registrationError={state.registrationError}
         errorFields={state.errorFields}
         onEmailChange={(email) =>
@@ -293,7 +270,6 @@ export default function OnboardingScreen() {
         }
         onPrivacyToggle={() => dispatch({ type: "TOGGLE_PRIVACY" })}
         onAnalyticsToggle={() => dispatch({ type: "TOGGLE_ANALYTICS" })}
-        onHealthToggle={() => dispatch({ type: "TOGGLE_HEALTH" })}
         onRegister={handleRegister}
         onBack={handleBack}
         processing={state.processing}

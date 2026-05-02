@@ -1,6 +1,7 @@
 -- Migration: Create user_profiles table with consent columns
 -- Description: Adds a user_profiles table to store GDPR-relevant consent data
---   (consent_health_use, consent_terms_privacy) with RLS and audit timestamps.
+--   (consent_health_accepted, consent_privacy_accepted, consent_analytics_accepted)
+--   with RLS and audit timestamps.
 --   Closes #334.
 
 BEGIN;
@@ -10,12 +11,12 @@ BEGIN;
 -- ============================================
 
 CREATE TABLE IF NOT EXISTS user_profiles (
-  user_id           UUID        PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  consent_health_use    BOOLEAN     NOT NULL DEFAULT FALSE,
-  consent_terms_privacy BOOLEAN     NOT NULL DEFAULT FALSE,
-  consent_updated_at    TIMESTAMPTZ,
-  created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at            TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  user_id                    UUID        PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  consent_privacy_accepted   BOOLEAN     NOT NULL DEFAULT FALSE,
+  consent_analytics_accepted BOOLEAN     NOT NULL DEFAULT FALSE,
+  consent_updated_at         TIMESTAMPTZ,
+  created_at                 TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at                 TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- ============================================
@@ -32,8 +33,7 @@ CREATE TRIGGER update_user_profiles_updated_at
 CREATE OR REPLACE FUNCTION update_consent_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
-  IF (NEW.consent_health_use IS DISTINCT FROM OLD.consent_health_use)
-     OR (NEW.consent_terms_privacy IS DISTINCT FROM OLD.consent_terms_privacy)
+  IF (NEW.consent_privacy_accepted IS DISTINCT FROM OLD.consent_privacy_accepted)
   THEN
     NEW.consent_updated_at = NOW();
   END IF;

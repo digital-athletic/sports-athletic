@@ -144,7 +144,6 @@ export const logout = async (): Promise<void> => {
 };
 
 type ConsentFlags = {
-  healthUse: boolean;
   privacyAccepted: boolean;
   analytics: boolean;
 };
@@ -158,7 +157,6 @@ export const saveConsentToProfile = async (
 ): Promise<void> => {
   const { error } = await supabase.from("user_profiles").upsert({
     user_id: userId,
-    consent_health_accepted: consent.healthUse,
     consent_privacy_accepted: consent.privacyAccepted,
     consent_analytics_accepted: consent.analytics,
     consent_updated_at: new Date().toISOString(),

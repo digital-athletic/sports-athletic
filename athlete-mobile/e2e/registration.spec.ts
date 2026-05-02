@@ -32,7 +32,7 @@ test.describe("Registration Flow", () => {
     ).toBeVisible();
 
     // Accept privacy but not analytics — should show analytics error
-    await page.getByRole("checkbox").nth(1).click();
+    await page.getByRole("checkbox").nth(0).click();
     await registration.submitRegistration();
 
     await expect(

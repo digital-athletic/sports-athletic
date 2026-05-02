@@ -17,9 +17,12 @@ services:
       - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
       - REACT_NATIVE_PACKAGER_HOSTNAME=0.0.0.0
       - EXPO_PUBLIC_SUPABASE_URL=${SUPABASE_URL}
-      - EXPO_PUBLIC_SERVER_SYNC_ENABLED=false
+      - EXPO_PUBLIC_SERVER_SYNC_ENABLED=true
       - EXPO_PUBLIC_REVIEW_EMAIL=${REVIEW_EMAIL}
+      - EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED=true
+      - EXPO_PUBLIC_HEALTH_CONSENT_ENABLED=false
       - EXPO_PUBLIC_REVIEW_OTP=123456
+      - EXPO_PUBLIC_SERVER_SYNC_ACTIVITY_ONLY_ENABLED=true
       - EXPO_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
       - TESTING_PLAYWRIGHT_WS_ENDPOINT=ws://playwright:9323
       - TESTING_PLAYWRIGHT_BASE_URL=http://athlete-mobile:8081
@@ -46,7 +49,7 @@ services:
     tty: true
 
   playwright:
-    image: mcr.microsoft.com/playwright:v1.58.0-noble
+    image: mcr.microsoft.com/playwright:v1.59.1-noble
     container_name: playwright
     expose:
       - "9323"

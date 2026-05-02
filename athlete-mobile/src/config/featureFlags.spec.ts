@@ -7,7 +7,6 @@ describe("featureFlags", () => {
     delete process.env.EXPO_PUBLIC_REVIEW_EMAIL;
     delete process.env.EXPO_PUBLIC_REVIEW_OTP;
     delete process.env.EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED;
-    delete process.env.EXPO_PUBLIC_HEALTH_CONSENT_ENABLED;
     delete process.env.EXPO_PUBLIC_LINK_AGB;
     delete process.env.EXPO_PUBLIC_LINK_PRIVACY;
     delete process.env.EXPO_PUBLIC_LINK_IMPRINT;
@@ -58,22 +57,6 @@ describe("featureFlags", () => {
     it("is true when EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED is 'true'", () => {
       process.env.EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED = "true";
       expect(featureFlags.analyticsConsentEnabled).toBe(true);
-    });
-  });
-
-  describe("healthConsentEnabled", () => {
-    it("defaults to false when EXPO_PUBLIC_HEALTH_CONSENT_ENABLED is unset", () => {
-      expect(featureFlags.healthConsentEnabled).toBe(false);
-    });
-
-    it("is false when EXPO_PUBLIC_HEALTH_CONSENT_ENABLED is 'false'", () => {
-      process.env.EXPO_PUBLIC_HEALTH_CONSENT_ENABLED = "false";
-      expect(featureFlags.healthConsentEnabled).toBe(false);
-    });
-
-    it("is true when EXPO_PUBLIC_HEALTH_CONSENT_ENABLED is 'true'", () => {
-      process.env.EXPO_PUBLIC_HEALTH_CONSENT_ENABLED = "true";
-      expect(featureFlags.healthConsentEnabled).toBe(true);
     });
   });
 

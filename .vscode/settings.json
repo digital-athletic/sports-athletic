@@ -6,6 +6,5 @@
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
   },
-  "files.insertFinalNewline": true,
-  "deno.enable": true
+  "files.insertFinalNewline": true
 }

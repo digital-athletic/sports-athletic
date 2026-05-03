@@ -120,6 +120,7 @@ jest.mock("../services/AuthService", () => ({
 
 let mockPrivacyEnabled = true;
 let mockAnalyticsConsentEnabled = true;
+let mockIsReviewUserId = false;
 jest.mock("../config/featureFlags", () => ({
   featureFlags: {
     get privacyEnabled() {
@@ -128,6 +129,7 @@ jest.mock("../config/featureFlags", () => ({
     get analyticsConsentEnabled() {
       return mockAnalyticsConsentEnabled;
     },
+    isReviewUserId: (_userId: string) => mockIsReviewUserId,
   },
 }));
 
@@ -138,6 +140,7 @@ beforeEach(() => {
   capturedAppStateListener = null;
   mockPrivacyEnabled = true;
   mockAnalyticsConsentEnabled = true;
+  mockIsReviewUserId = false;
   mockInitializeFromSupabase.mockReturnValue(Promise.resolve());
   mockAuthValue = null;
   mockConsentStatus = "loading";
@@ -474,6 +477,18 @@ describe("useAuthStateListener — consent gate", () => {
     capturedNetInfoListener!({ isConnected: true, isInternetReachable: true });
 
     await Promise.resolve();
+    expect(mockFetchConsentFromProfile).not.toHaveBeenCalled();
+  });
+
+  it("sets consentStatus to accepted without fetching for review user", async () => {
+    mockIsReviewUserId = true;
+    mockAuthValue = { userId: "review-user" };
+
+    renderHook(() => useAuthStateListener());
+
+    await waitFor(() => {
+      expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
+    });
     expect(mockFetchConsentFromProfile).not.toHaveBeenCalled();
   });
 });

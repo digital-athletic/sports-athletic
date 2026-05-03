@@ -114,6 +114,7 @@ export function EmailVerificationScreen() {
       otpCode === featureFlags.reviewOtp
     ) {
       useAuthStore.getState().setAuth({ userId: "review-user" });
+      setConsentStatus("accepted");
       if (mode === "REGISTER") {
         router.replace("/anamnesis");
       }

@@ -115,6 +115,20 @@ describe("featureFlags", () => {
     });
   });
 
+  describe("isReviewUserId", () => {
+    it("returns true for the sentinel review-user ID", () => {
+      expect(featureFlags.isReviewUserId("review-user")).toBe(true);
+    });
+
+    it("returns false for any other user ID", () => {
+      expect(featureFlags.isReviewUserId("real-uuid-1234")).toBe(false);
+    });
+
+    it("returns false for empty string", () => {
+      expect(featureFlags.isReviewUserId("")).toBe(false);
+    });
+  });
+
   describe("isReviewUser", () => {
     it("returns false when reviewEmail is null", () => {
       expect(featureFlags.isReviewUser("reviewer@example.com")).toBe(false);

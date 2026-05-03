@@ -39,9 +39,22 @@ jest.mock("./supabaseClient", () => ({
 }));
 
 const mockClearAuth = jest.fn();
+let mockAuthStoreAuth: { userId: string } | null = null;
 jest.mock("../store/authStore", () => ({
   useAuthStore: {
-    getState: () => ({ clearAuth: mockClearAuth }),
+    getState: () => ({
+      clearAuth: mockClearAuth,
+      get auth() {
+        return mockAuthStoreAuth;
+      },
+    }),
+  },
+}));
+
+let mockIsReviewUserId = false;
+jest.mock("../config/featureFlags", () => ({
+  featureFlags: {
+    isReviewUserId: (_userId: string) => mockIsReviewUserId,
   },
 }));
 
@@ -150,6 +163,8 @@ describe("requestRegistrationOtp", () => {
 describe("deleteAccount", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockAuthStoreAuth = null;
+    mockIsReviewUserId = false;
   });
 
   it("invokes delete-account edge function with session token", async () => {
@@ -194,6 +209,17 @@ describe("deleteAccount", () => {
     await expect(deleteAccount()).rejects.toMatchObject({
       code: "auth/unknown",
     });
+  });
+
+  it("does nothing for review user — no server call, no logout", async () => {
+    mockAuthStoreAuth = { userId: "review-user" };
+    mockIsReviewUserId = true;
+
+    await deleteAccount();
+
+    expect(mockGetSession).not.toHaveBeenCalled();
+    expect(mockFunctionsInvoke).not.toHaveBeenCalled();
+    expect(mockClearAuth).not.toHaveBeenCalled();
   });
 
   it("throws when edge function response has deleted: false", async () => {

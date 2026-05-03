@@ -1,5 +1,6 @@
 import { supabase } from "./supabaseClient";
 import { useAuthStore } from "../store/authStore";
+import { featureFlags } from "../config/featureFlags";
 
 /**
  * Authentication Service
@@ -103,6 +104,11 @@ export const requestRegistrationOtp = async (
  * All user data is cascade-deleted on the database level.
  */
 export const deleteAccount = async (): Promise<void> => {
+  const auth = useAuthStore.getState().auth;
+  if (auth && featureFlags.isReviewUserId(auth.userId)) {
+    return;
+  }
+
   const {
     data: { session },
   } = await supabase.auth.getSession();

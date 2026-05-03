@@ -48,10 +48,16 @@ jest.mock("@/services/AuthService", () => ({
 
 // Mock auth store
 const mockInitializeFromSupabase = jest.fn();
+const mockSetAuth = jest.fn();
 jest.mock("@/store/authStore", () => ({
-  useAuthStore: () => ({
-    initializeFromSupabase: mockInitializeFromSupabase,
-  }),
+  useAuthStore: Object.assign(
+    () => ({
+      initializeFromSupabase: mockInitializeFromSupabase,
+    }),
+    {
+      getState: () => ({ setAuth: mockSetAuth }),
+    },
+  ),
 }));
 
 // Mock user settings store
@@ -444,5 +450,67 @@ describe("<EmailVerificationScreen />", () => {
     });
 
     expect(mockVerifyOtp).not.toHaveBeenCalled();
+  });
+
+  describe("review user bypass", () => {
+    beforeEach(() => {
+      process.env.EXPO_PUBLIC_REVIEW_EMAIL = "reviewer@example.com";
+      process.env.EXPO_PUBLIC_REVIEW_OTP = "654321";
+      mockSearchParams = { email: "reviewer@example.com", mode: "REGISTER" };
+    });
+
+    afterEach(() => {
+      delete process.env.EXPO_PUBLIC_REVIEW_EMAIL;
+      delete process.env.EXPO_PUBLIC_REVIEW_OTP;
+    });
+
+    it("sets consentStatus to accepted and does not call supabase for review user in REGISTER mode", async () => {
+      const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
+      fireEvent.changeText(getByLabelText("Verification code"), "654321");
+
+      await act(async () => {
+        fireEvent.press(getByText("Verify"));
+      });
+
+      expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
+      expect(mockVerifyOtp).not.toHaveBeenCalled();
+    });
+
+    it("navigates to anamnesis for review user in REGISTER mode", async () => {
+      const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
+      fireEvent.changeText(getByLabelText("Verification code"), "654321");
+
+      await act(async () => {
+        fireEvent.press(getByText("Verify"));
+      });
+
+      expect(mockReplace).toHaveBeenCalledWith("/anamnesis");
+    });
+
+    it("sets consentStatus to accepted and does not navigate for review user in LOGIN mode", async () => {
+      mockSearchParams = { email: "reviewer@example.com", mode: "LOGIN" };
+      const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
+      fireEvent.changeText(getByLabelText("Verification code"), "654321");
+
+      await act(async () => {
+        fireEvent.press(getByText("Verify"));
+      });
+
+      expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
+      expect(mockVerifyOtp).not.toHaveBeenCalled();
+      expect(mockReplace).not.toHaveBeenCalled();
+    });
+
+    it("falls through to supabase verifyOtp when OTP does not match review OTP", async () => {
+      const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
+      fireEvent.changeText(getByLabelText("Verification code"), "000000");
+
+      await act(async () => {
+        fireEvent.press(getByText("Verify"));
+      });
+
+      expect(mockVerifyOtp).toHaveBeenCalled();
+      expect(mockSetConsentStatus).not.toHaveBeenCalledWith("accepted");
+    });
   });
 });

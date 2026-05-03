@@ -42,4 +42,7 @@ export const featureFlags = {
       email.toLowerCase() === this.reviewEmail.toLowerCase()
     );
   },
+  isReviewUserId(userId: string): boolean {
+    return userId === "review-user";
+  },
 };

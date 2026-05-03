@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { supabase } from "../services/supabaseClient";
 import { Logger } from "../services/Logger";
+import { featureFlags } from "../config/featureFlags";
 import { asyncStorage } from "./middleware";
 import { createMigrate } from "./migrations/createMigrate";
 import { authStoreMigrations } from "./migrations/authStoreMigrations";
@@ -90,7 +91,12 @@ export const useAuthStore = create<AuthState>()(
                 userId: session.user.id,
               };
             } else {
-              state.auth = null;
+              const isReviewUser =
+                state.auth !== null &&
+                featureFlags.isReviewUserId(state.auth.userId);
+              if (!isReviewUser) {
+                state.auth = null;
+              }
             }
             state.isInitialized = true;
           });

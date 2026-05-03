@@ -9,10 +9,15 @@ import { syncManager } from "./SyncManager";
  * Sync can be disabled entirely via EXPO_PUBLIC_SERVER_SYNC_ENABLED=false.
  */
 export function useSyncManager() {
-  const isAuthenticated = useAuthStore((state) => state.auth !== null);
+  const auth = useAuthStore((state) => state.auth);
 
   useEffect(() => {
-    if (isAuthenticated && featureFlags.serverSyncEnabled) {
+    const shouldSync =
+      auth !== null &&
+      featureFlags.serverSyncEnabled &&
+      !featureFlags.isReviewUserId(auth.userId);
+
+    if (shouldSync) {
       syncManager.start();
     } else {
       syncManager.stop();
@@ -21,5 +26,5 @@ export function useSyncManager() {
     return () => {
       syncManager.stop();
     };
-  }, [isAuthenticated]);
+  }, [auth]);
 }

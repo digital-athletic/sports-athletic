@@ -6,5 +6,8 @@
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
   },
-  "files.insertFinalNewline": true
+  "files.insertFinalNewline": true,
+  "files.exclude": {
+    "**/.git": false
+  }
 }

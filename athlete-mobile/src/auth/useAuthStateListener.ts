@@ -39,6 +39,10 @@ export function useAuthStateListener() {
 
   const checkAndSetConsent = useCallback(
     async (userId: string) => {
+      if (featureFlags.isReviewUserId(userId)) {
+        setConsentStatus("accepted");
+        return;
+      }
       // Skip only when already accepted; allow retry when "missing" (e.g. after
       // a prior network failure) so foreground/reconnect can resolve the gate.
       if (consentStatusRef.current === "accepted") return;

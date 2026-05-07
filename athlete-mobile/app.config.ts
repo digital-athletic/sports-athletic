@@ -56,7 +56,11 @@ export default (): ExpoConfig => ({
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
     package: packageName,
-    blockedPermissions: ["android.permission.RECORD_AUDIO"],
+    blockedPermissions: [
+      "android.permission.RECORD_AUDIO",
+      "android.permission.FOREGROUND_SERVICE",
+      "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+    ],
   },
   updates: {
     url: "https://u.expo.dev/c864ab15-691c-429b-9dc9-eb920db5358d",

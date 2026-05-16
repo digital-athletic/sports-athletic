@@ -1,6 +1,6 @@
 {
   "common": {
-    "brandName": "SPORTS ATHLETIC",
+    "brandName": "Sports Athletic",
     "logoAlt": "Sports Athletic logo",
     "loading": "Loading...",
     "error": "Error",
@@ -23,7 +23,7 @@
     "otpSentMessage": "We sent a 6-digit code to",
     "resendCode": "Resend Code",
     "backToEmail": "Back",
-    "registerViaApp": "Account creation is only possible via the SPORTS ATHLETIC app.",
+    "registerViaApp": "Account creation is only possible via the Sports Athletic app.",
     "invalidOtp": "Invalid or expired code. Please try again.",
     "tooManyRequests": "Too many requests. Please wait a moment before trying again.",
     "unknownError": "An unexpected error occurred. Please try again."
@@ -145,8 +145,8 @@
       "total": "Total"
     },
     "athletes": {
-      "firstName": "First Name",
-      "lastName": "Last Name"
+      "name": "Name",
+      "anonymous": "Anonymous User"
     },
     "sidebar": {
       "collapse": "Collapse athletes list",

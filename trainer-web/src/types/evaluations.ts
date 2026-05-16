@@ -1,7 +1,6 @@
 export interface Athlete {
   id: string;
-  firstName: string;
-  lastName: string;
+  displayName: string;
 }
 
 export interface WorkoutData {

@@ -35,9 +35,9 @@ export function TeamMemberList({
             >
               <div>
                 <span className="text-sm font-medium text-gray-900">
-                  {member.user_id === currentUserId
-                    ? `${member.user_id.slice(0, 8)}... ${t("teamManagement.members.you")}`
-                    : `${member.user_id.slice(0, 8)}...`}
+                  {t("evaluations.athletes.anonymous")}
+                  {member.user_id === currentUserId &&
+                    ` ${t("teamManagement.members.you")}`}
                 </span>
                 <span
                   className={`ml-2 inline-block rounded px-2 py-0.5 text-xs ${

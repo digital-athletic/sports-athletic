@@ -48,7 +48,7 @@ export function AthleteSelector({
           )}
           <span>
             {selectedAthlete
-              ? `${selectedAthlete.firstName} ${selectedAthlete.lastName}`
+              ? selectedAthlete.displayName
               : t("evaluations.sidebar.expand")}
           </span>
         </div>
@@ -58,10 +58,7 @@ export function AthleteSelector({
           <thead>
             <tr className="border-b border-gray-200">
               <th className="pb-2 text-left text-xs font-medium text-gray-500">
-                {t("evaluations.athletes.firstName")}
-              </th>
-              <th className="pb-2 text-left text-xs font-medium text-gray-500">
-                {t("evaluations.athletes.lastName")}
+                {t("evaluations.athletes.name")}
               </th>
             </tr>
           </thead>
@@ -77,10 +74,7 @@ export function AthleteSelector({
                 }`}
               >
                 <td className="py-2 text-sm text-gray-900">
-                  {athlete.firstName}
-                </td>
-                <td className="py-2 text-sm text-gray-900">
-                  {athlete.lastName}
+                  {athlete.displayName}
                 </td>
               </tr>
             ))}

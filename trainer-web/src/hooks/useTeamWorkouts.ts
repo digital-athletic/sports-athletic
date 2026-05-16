@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "../services/supabase";
 import { transformWorkout } from "../utils/evaluations";
 import type { TeamMember } from "../types/team";
@@ -14,6 +15,7 @@ interface TeamWorkoutsData {
 }
 
 export function useTeamWorkouts(members: TeamMember[], ownerId: string | null) {
+  const { t } = useTranslation();
   const [data, setData] = useState<TeamWorkoutsData>({
     athletes: [],
     athleteWorkouts: {},
@@ -44,8 +46,7 @@ export function useTeamWorkouts(members: TeamMember[], ownerId: string | null) {
       // Create athlete list from members
       const athletes: Athlete[] = athleteMembers.map((member) => ({
         id: member.user_id,
-        firstName: member.user_id.slice(0, 8),
-        lastName: "...",
+        displayName: t("evaluations.athletes.anonymous"),
       }));
 
       // Fetch workouts for all athletes
@@ -76,7 +77,7 @@ export function useTeamWorkouts(members: TeamMember[], ownerId: string | null) {
     } finally {
       setLoading(false);
     }
-  }, [members, ownerId]);
+  }, [members, ownerId, t]);
 
   useEffect(() => {
     loadWorkouts();

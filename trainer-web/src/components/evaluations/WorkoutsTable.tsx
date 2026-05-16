@@ -14,7 +14,7 @@ export function WorkoutsTable({ workouts }: WorkoutsTableProps) {
         {t("evaluations.workouts.title")}
       </h3>
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[800px]">
+        <table className="w-full min-w-[600px]">
           <thead>
             <tr className="border-b border-gray-200 bg-gray-50">
               <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">
@@ -28,9 +28,6 @@ export function WorkoutsTable({ workouts }: WorkoutsTableProps) {
               </th>
               <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">
                 {t("evaluations.workouts.points")}
-              </th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">
-                {t("evaluations.workouts.movedWeight")}
               </th>
               <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">
                 {t("evaluations.workouts.trainingPhase")}
@@ -60,9 +57,6 @@ export function WorkoutsTable({ workouts }: WorkoutsTableProps) {
                     {workout.points}
                   </td>
                   <td className="px-3 py-3 text-sm text-gray-900">
-                    {workout.movedWeight}
-                  </td>
-                  <td className="px-3 py-3 text-sm text-gray-900">
                     {workout.trainingPhase}
                   </td>
                   <td className="px-3 py-3 text-sm text-gray-900">
@@ -73,7 +67,7 @@ export function WorkoutsTable({ workouts }: WorkoutsTableProps) {
             ) : (
               <tr>
                 <td
-                  colSpan={7}
+                  colSpan={6}
                   className="px-3 py-8 text-center text-sm text-gray-500"
                 >
                   {t("evaluations.workouts.noData")}

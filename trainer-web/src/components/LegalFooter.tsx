@@ -6,7 +6,7 @@ export function LegalFooter() {
   return (
     <footer className="py-4 text-center text-xs text-gray-400">
       <a
-        href="https://b310.de/imprint.html"
+        href="https://www.ingemarpohl-ug.de/startseite/impressum"
         target="_blank"
         rel="noopener noreferrer"
         className="hover:text-gray-600 hover:underline"
@@ -15,7 +15,7 @@ export function LegalFooter() {
       </a>
       <span className="mx-2">·</span>
       <a
-        href="https://b310.de/data-protection.html"
+        href="https://www.ingemarpohl-ug.de/startseite/datenschutz-app"
         target="_blank"
         rel="noopener noreferrer"
         className="hover:text-gray-600 hover:underline"

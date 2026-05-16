@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { type Session, type User, type AuthError } from "@supabase/supabase-js";
+import { type Session, type User } from "@supabase/supabase-js";
 import { supabase } from "../services/supabase";
 
 interface AuthState {
@@ -8,15 +8,14 @@ interface AuthState {
   loading: boolean;
 }
 
+type OtpErrorCode = "tooManyRequests" | "unknown";
+
 interface UseAuthReturn extends AuthState {
-  signIn: (
+  requestOtp: (email: string) => Promise<{ error: OtpErrorCode | null }>;
+  verifyOtp: (
     email: string,
-    password: string,
-  ) => Promise<{ error: AuthError | null }>;
-  signUp: (
-    email: string,
-    password: string,
-  ) => Promise<{ error: AuthError | null }>;
+    token: string,
+  ) => Promise<{ error: "invalidOtp" | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -28,7 +27,6 @@ export const useAuth = (): UseAuthReturn => {
   });
 
   useEffect(() => {
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setState({
         user: session?.user ?? null,
@@ -37,7 +35,6 @@ export const useAuth = (): UseAuthReturn => {
       });
     });
 
-    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -51,21 +48,52 @@ export const useAuth = (): UseAuthReturn => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
-  }, []);
+  const requestOtp = useCallback(
+    async (email: string): Promise<{ error: OtpErrorCode | null }> => {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: false },
+      });
 
-  const signUp = useCallback(async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    return { error };
-  }, []);
+      if (!error) return { error: null };
+
+      const message = error.message?.toLowerCase() ?? "";
+      const code = error.code?.toLowerCase() ?? "";
+
+      if (
+        message.includes("user not found") ||
+        code.includes("user_not_found") ||
+        code.includes("otp_disabled")
+      ) {
+        return { error: null };
+      }
+      if (
+        message.includes("rate limit") ||
+        message.includes("too many requests") ||
+        code.includes("over_request_rate_limit") ||
+        code.includes("over_email_send_rate_limit")
+      ) {
+        return { error: "tooManyRequests" };
+      }
+      return { error: "unknown" };
+    },
+    [],
+  );
+
+  const verifyOtp = useCallback(
+    async (
+      email: string,
+      token: string,
+    ): Promise<{ error: "invalidOtp" | null }> => {
+      const { error } = await supabase.auth.verifyOtp({
+        email,
+        token,
+        type: "email",
+      });
+      return { error: error ? "invalidOtp" : null };
+    },
+    [],
+  );
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
@@ -73,8 +101,8 @@ export const useAuth = (): UseAuthReturn => {
 
   return {
     ...state,
-    signIn,
-    signUp,
+    requestOtp,
+    verifyOtp,
     signOut,
   };
 };

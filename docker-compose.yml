@@ -40,7 +40,7 @@ services:
       - ./:/workspace
       - web_trainer_node_modules:/workspace/trainer-web/node_modules
     environment:
-      - VITE_SUPABASE_URL=${SUPABASE_URL}
+      - VITE_SUPABASE_URL=${SUPABASE_URL_EXTERNAL}
       - VITE_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
     ports:
       - 5173:5173

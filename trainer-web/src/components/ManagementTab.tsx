@@ -20,6 +20,8 @@ interface ManagementTabProps {
   isLeaving: boolean;
   memberToRemove: string | null;
   isRemoving: boolean;
+  showDeleteConfirm: boolean;
+  isDeleting: boolean;
   onRegenerateCode: () => void;
   onLeaveClick: () => void;
   onLeaveConfirm: () => void;
@@ -27,6 +29,9 @@ interface ManagementTabProps {
   onRemoveMember: (memberId: string) => void;
   onRemoveConfirm: () => void;
   onRemoveCancel: () => void;
+  onDeleteClick: () => void;
+  onDeleteConfirm: () => void;
+  onDeleteCancel: () => void;
 }
 
 export function ManagementTab({
@@ -41,6 +46,8 @@ export function ManagementTab({
   isLeaving,
   memberToRemove,
   isRemoving,
+  showDeleteConfirm,
+  isDeleting,
   onRegenerateCode,
   onLeaveClick,
   onLeaveConfirm,
@@ -48,6 +55,9 @@ export function ManagementTab({
   onRemoveMember,
   onRemoveConfirm,
   onRemoveCancel,
+  onDeleteClick,
+  onDeleteConfirm,
+  onDeleteCancel,
 }: ManagementTabProps) {
   const { t } = useTranslation();
 
@@ -79,16 +89,16 @@ export function ManagementTab({
             onRemoveMember={onRemoveMember}
           />
 
-          <LeaveTeamSection onLeaveClick={onLeaveClick} />
+          <LeaveTeamSection
+            isOwner={isOwner}
+            onLeaveClick={onLeaveClick}
+            onDeleteClick={onDeleteClick}
+          />
 
           {showLeaveConfirm && (
             <ConfirmModal
               title={t("teamManagement.leaveTeam.confirmTitle")}
-              message={
-                isOwner
-                  ? t("teamManagement.leaveTeam.confirmOwnerMessage")
-                  : t("teamManagement.leaveTeam.confirmMessage")
-              }
+              message={t("teamManagement.leaveTeam.confirmMessage")}
               confirmLabel={t("teamManagement.leaveTeam.button")}
               isLoading={isLeaving}
               onConfirm={onLeaveConfirm}
@@ -104,6 +114,17 @@ export function ManagementTab({
               isLoading={isRemoving}
               onConfirm={onRemoveConfirm}
               onCancel={onRemoveCancel}
+            />
+          )}
+
+          {showDeleteConfirm && (
+            <ConfirmModal
+              title={t("teamManagement.deleteTeam.confirmTitle")}
+              message={t("teamManagement.deleteTeam.confirmMessage")}
+              confirmLabel={t("teamManagement.deleteTeam.button")}
+              isLoading={isDeleting}
+              onConfirm={onDeleteConfirm}
+              onCancel={onDeleteCancel}
             />
           )}
         </>

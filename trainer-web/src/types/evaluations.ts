@@ -34,7 +34,7 @@ export interface UserCompletedWorkout {
   workout_date: number;
   duration: number;
   exercise_count: number;
-  points: number;
+  xp_earned: number;
   moved_weight: number;
   training_type: string | null;
   training_focus: string | null;

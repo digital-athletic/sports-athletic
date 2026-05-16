@@ -98,7 +98,7 @@ export function transformWorkout(workout: UserCompletedWorkout): WorkoutData {
     timestamp: formatTimestamp(date),
     duration: formatDurationFromSeconds(workout.duration),
     exerciseCount: workout.exercise_count,
-    points: workout.points,
+    points: workout.xp_earned,
     movedWeight: formatWeight(workout.moved_weight),
     trainingPhase: getTrainingPhaseLabel(workout.training_type),
     focus: getFocusLabel(workout.training_focus),

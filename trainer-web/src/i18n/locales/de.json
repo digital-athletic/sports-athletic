@@ -81,10 +81,13 @@
       "button": "Team verlassen",
       "confirmTitle": "Team verlassen?",
       "confirmMessage": "Sind Sie sicher, dass Sie dieses Team verlassen möchten?",
-      "confirmOwnerMessage": "Als Eigentümer wird beim Verlassen die Eigentümerschaft übertragen oder das Team gelöscht, wenn es leer ist.",
-      "success": "Sie haben das Team verlassen",
-      "ownershipTransferred": "Eigentümerschaft wurde übertragen",
-      "teamDeleted": "Team wurde gelöscht"
+      "success": "Sie haben das Team verlassen"
+    },
+    "deleteTeam": {
+      "button": "Team löschen",
+      "confirmTitle": "Team löschen?",
+      "confirmMessage": "Sind Sie sicher, dass Sie dieses Team dauerhaft löschen möchten? Alle Mitglieder werden entfernt. Dies kann nicht rückgängig gemacht werden.",
+      "success": "Team wurde gelöscht"
     }
   },
   "errors": {
@@ -103,6 +106,7 @@
     "TEAM_NOT_FOUND": "Team nicht gefunden",
     "MEMBER_USER_ID_REQUIRED": "Mitglieder-Benutzer-ID ist erforderlich",
     "NOT_TEAM_OWNER": "Nur der Teameigentümer kann diese Aktion durchführen",
+    "OWNER_CANNOT_LEAVE": "Teameigentümer können das Team nicht verlassen. Löschen Sie stattdessen das Team.",
     "CANNOT_REMOVE_SELF": "Sie können sich nicht selbst entfernen. Nutzen Sie stattdessen Team verlassen.",
     "MEMBER_NOT_FOUND": "Mitglied nicht in diesem Team gefunden",
     "INTERNAL_ERROR": "Ein interner Fehler ist aufgetreten"
@@ -167,7 +171,7 @@
       "movedWeight": "Bewegtes Gewicht",
       "trainingPhase": "Trainingsphase",
       "focus": "Fokus",
-      "noData": "Keine Trainings in diesem Zeitraum"
+      "noData": "Keine Trainingseinheiten in diesem Zeitraum"
     }
   },
   "footer": {

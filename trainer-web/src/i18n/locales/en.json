@@ -81,10 +81,13 @@
       "button": "Leave Team",
       "confirmTitle": "Leave Team?",
       "confirmMessage": "Are you sure you want to leave this team?",
-      "confirmOwnerMessage": "As the owner, leaving will transfer ownership to the next member or delete the team if empty.",
-      "success": "You have left the team",
-      "ownershipTransferred": "Ownership has been transferred",
-      "teamDeleted": "Team has been deleted"
+      "success": "You have left the team"
+    },
+    "deleteTeam": {
+      "button": "Delete Team",
+      "confirmTitle": "Delete Team?",
+      "confirmMessage": "Are you sure you want to permanently delete this team? All members will be removed. This cannot be undone.",
+      "success": "Team has been deleted"
     }
   },
   "errors": {
@@ -103,6 +106,7 @@
     "TEAM_NOT_FOUND": "Team not found",
     "MEMBER_USER_ID_REQUIRED": "Member user ID is required",
     "NOT_TEAM_OWNER": "Only the team owner can perform this action",
+    "OWNER_CANNOT_LEAVE": "Team owners cannot leave. Delete the team instead.",
     "CANNOT_REMOVE_SELF": "Cannot remove yourself. Use leave team instead.",
     "MEMBER_NOT_FOUND": "Member not found in this team",
     "INTERNAL_ERROR": "An internal error occurred"

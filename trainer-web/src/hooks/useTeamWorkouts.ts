@@ -34,7 +34,6 @@ export function useTeamWorkouts(members: TeamMember[], ownerId: string | null) {
     setError(null);
 
     try {
-      // Filter to only get non-owner members (athletes)
       const athleteMembers = members.filter((m) => m.user_id !== ownerId);
 
       if (athleteMembers.length === 0) {
@@ -43,13 +42,11 @@ export function useTeamWorkouts(members: TeamMember[], ownerId: string | null) {
         return;
       }
 
-      // Create athlete list from members
       const athletes: Athlete[] = athleteMembers.map((member) => ({
         id: member.user_id,
         displayName: t("evaluations.athletes.anonymous"),
       }));
 
-      // Fetch workouts for all athletes
       const userIds = athleteMembers.map((m) => m.user_id);
       const { data: workouts, error: workoutsError } = await supabase
         .from("user_completed_workouts")
@@ -65,7 +62,7 @@ export function useTeamWorkouts(members: TeamMember[], ownerId: string | null) {
       const athleteWorkouts: Record<string, { workouts: WorkoutData[] }> = {};
 
       for (const athlete of athletes) {
-        const userWorkouts = (workouts || [])
+        const userWorkouts = (workouts ?? [])
           .filter((w: UserCompletedWorkout) => w.user_id === athlete.id)
           .map(transformWorkout);
         athleteWorkouts[athlete.id] = { workouts: userWorkouts };

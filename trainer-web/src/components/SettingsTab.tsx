@@ -5,11 +5,16 @@ import { generateExampleWorkoutData } from "../utils/generation/workouts";
 import { Button } from "./Button";
 import { ErrorMessage } from "./ErrorMessage";
 
+const settingsEnabled =
+  import.meta.env.VITE_FEATURE_FLAG_DEBUG_SETTINGS_TAB_ENABLED === "true";
+
 export function SettingsTab() {
   const { t } = useTranslation();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  if (!settingsEnabled) return null;
 
   const generateExampleWorkouts = async () => {
     setIsGenerating(true);

@@ -1,6 +1,7 @@
 import type {
   CreateTeamResponse,
   AcceptInvitationResponse,
+  DeleteTeamResponse,
   LeaveTeamResponse,
   RemoveMemberResponse,
   InviteCode,
@@ -83,6 +84,12 @@ export async function acceptInvitation(
 
 export async function leaveTeam(teamId: string): Promise<LeaveTeamResponse> {
   return callEdgeFunction<LeaveTeamResponse>("leave-team", {
+    team_id: teamId,
+  });
+}
+
+export async function deleteTeam(teamId: string): Promise<DeleteTeamResponse> {
+  return callEdgeFunction<DeleteTeamResponse>("delete-team", {
     team_id: teamId,
   });
 }

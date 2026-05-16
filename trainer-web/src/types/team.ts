@@ -43,9 +43,13 @@ export interface AcceptInvitationResponse {
 }
 
 export interface LeaveTeamResponse {
-  action: "left_team" | "ownership_transferred" | "team_deleted";
+  action: "left_team";
   team_id: string;
-  new_owner_id?: string;
+}
+
+export interface DeleteTeamResponse {
+  action: "team_deleted";
+  team_id: string;
 }
 
 export interface RemoveMemberResponse {

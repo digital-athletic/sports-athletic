@@ -9,6 +9,20 @@ A web application for trainers to manage teams, create workouts, and track athle
 - [Node.js](https://nodejs.org/) v20+
 - [pnpm](https://pnpm.io/installation)
 
+## Environment Variables
+
+Copy `.env.example` to `.env` and fill in the values:
+
+```bash
+cp .env.example .env
+```
+
+| Variable | Required | Description |
+|---|---|---|
+| `VITE_SUPABASE_URL` | Yes | URL of the Supabase instance (e.g. `http://localhost:54321` for local dev) |
+| `VITE_SUPABASE_ANON_KEY` | Yes | Supabase anonymous/public API key |
+| `VITE_FEATURE_FLAG_DEBUG_SETTINGS_TAB_ENABLED` | No | Set to `true` to show the Settings tab with debug tooling (e.g. example data generation). Disabled by default. Do not enable in production. |
+
 ## Getting Started
 
 ```bash

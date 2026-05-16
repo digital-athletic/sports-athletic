@@ -68,6 +68,9 @@ export const LeaveTeamSchema = v.object({
 
 export type LeaveTeamInput = v.InferOutput<typeof LeaveTeamSchema>;
 
+export const DeleteTeamSchema = LeaveTeamSchema;
+export type DeleteTeamInput = LeaveTeamInput;
+
 export const RemoveMemberSchema = v.object({
   team_id: v.pipe(v.string(), v.uuid()),
   member_user_id: v.pipe(v.string(), v.uuid()),

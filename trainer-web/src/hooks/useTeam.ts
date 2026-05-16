@@ -9,6 +9,7 @@ import {
   generateInviteCode as generateInviteCodeApi,
   acceptInvitation as acceptInvitationApi,
   leaveTeam as leaveTeamApi,
+  deleteTeam as deleteTeamApi,
   removeMember as removeMemberApi,
   ApiError,
 } from "../services/teamsApi";
@@ -144,6 +145,22 @@ export function useTeam(teamId: string | null) {
     }
   };
 
+  const deleteCurrentTeam = async () => {
+    if (!team) throw new Error("No team to delete");
+    setError(null);
+    try {
+      const result = await deleteTeamApi(team.id);
+      setTeam(null);
+      setMembers([]);
+      setInviteCodes([]);
+      return result;
+    } catch (err) {
+      const message = translateError(err, "common.error");
+      setError(message);
+      throw err;
+    }
+  };
+
   const removeMember = async (memberUserId: string) => {
     if (!team) throw new Error("No team selected");
     setError(null);
@@ -172,6 +189,7 @@ export function useTeam(teamId: string | null) {
     regenerateInviteCode,
     joinTeam,
     leaveCurrentTeam,
+    deleteCurrentTeam,
     removeMember,
     refresh: loadTeam,
   };

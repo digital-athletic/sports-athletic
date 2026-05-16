@@ -1,4 +1,3 @@
-import { type SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { requireAuth } from "../_shared/auth.ts";
 import { ErrorCodes, HttpMethods, HttpStatus } from "../_shared/constants.ts";
 import { LeaveTeamSchema, parseRequestBody } from "../_shared/validation.ts";
@@ -9,50 +8,10 @@ import {
   requireMethod,
 } from "../_shared/response.ts";
 import {
-  deleteTeam,
-  getMemberCount,
-  getOldestMember,
   getTeam,
   getTeamMembership,
   removeMember,
-  transferOwnership,
 } from "../_shared/team-operations.ts";
-
-async function handleOwnerLeaving(
-  client: SupabaseClient,
-  teamId: string,
-  userId: string,
-): Promise<Response> {
-  const remainingMemberCount = await getMemberCount(client, teamId, userId);
-
-  if (remainingMemberCount > 0) {
-    const newOwner = await getOldestMember(client, teamId, userId);
-    if (!newOwner) {
-      throw new Error("Failed to find new owner");
-    }
-
-    await transferOwnership(teamId, newOwner.user_id);
-    await removeMember(client, teamId, userId);
-
-    return jsonResponse({
-      action: "ownership_transferred",
-      new_owner_id: newOwner.user_id,
-      team_id: teamId,
-    });
-  }
-
-  await deleteTeam(client, teamId);
-  return jsonResponse({ action: "team_deleted", team_id: teamId });
-}
-
-async function handleMemberLeaving(
-  client: SupabaseClient,
-  teamId: string,
-  userId: string,
-): Promise<Response> {
-  await removeMember(client, teamId, userId);
-  return jsonResponse({ action: "left_team", team_id: teamId });
-}
 
 Deno.serve(async (req) => {
   const methodCheck = requireMethod(req, HttpMethods.POST);
@@ -81,13 +40,15 @@ Deno.serve(async (req) => {
       return errorResponse(ErrorCodes.TEAM_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
-    const isOwner = team.owner_id === auth.userId;
-
-    if (isOwner) {
-      return handleOwnerLeaving(auth.client, team_id, auth.userId);
+    if (team.owner_id === auth.userId) {
+      return errorResponse(
+        ErrorCodes.OWNER_CANNOT_LEAVE,
+        HttpStatus.FORBIDDEN,
+      );
     }
 
-    return handleMemberLeaving(auth.client, team_id, auth.userId);
+    await removeMember(auth.client, team_id, auth.userId);
+    return jsonResponse({ action: "left_team", team_id });
   } catch (error) {
     console.error("Error leaving team:", error);
     return internalErrorResponse();

@@ -1,7 +1,13 @@
 import { requireAuth } from "../_shared/auth.ts";
-import { HttpMethods, HttpStatus, Roles } from "../_shared/constants.ts";
+import {
+  ErrorCodes,
+  HttpMethods,
+  HttpStatus,
+  Roles,
+} from "../_shared/constants.ts";
 import { generateUniqueInviteCode } from "../_shared/invite-code.ts";
 import {
+  errorResponse,
   internalErrorResponse,
   jsonResponse,
   requireMethod,
@@ -12,6 +18,7 @@ import {
   createTeam,
   deleteTeam,
 } from "../_shared/team-operations.ts";
+import { supabaseAdmin } from "../_shared/supabase.ts";
 import { CreateTeamSchema, parseRequestBody } from "../_shared/validation.ts";
 
 Deno.serve(async (req) => {
@@ -21,6 +28,21 @@ Deno.serve(async (req) => {
   try {
     const auth = await requireAuth(req);
     if (auth.error) return auth.error;
+
+    const { data: profileData, error: profileError } = await supabaseAdmin
+      .from("user_profiles")
+      .select("trainer_granted_at")
+      .eq("user_id", auth.userId)
+      .maybeSingle();
+
+    if (profileError) {
+      console.error("Error fetching trainer profile:", profileError);
+      return internalErrorResponse();
+    }
+
+    if (!profileData?.trainer_granted_at) {
+      return errorResponse(ErrorCodes.NOT_A_TRAINER, HttpStatus.FORBIDDEN);
+    }
 
     const parsed = await parseRequestBody(req, CreateTeamSchema);
     if (!parsed.success) return parsed.error;

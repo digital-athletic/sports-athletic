@@ -35,7 +35,9 @@
     "noTeam": "Sie sind noch kein Mitglied eines Teams.",
     "createTeam": "Team erstellen",
     "joinTeam": "Team beitreten",
-    "or": "oder"
+    "or": "oder",
+    "notTrainerTitle": "Trainer-Zugang erforderlich",
+    "notTrainerMessage": "Nur freigeschaltete Trainer können Gruppen erstellen. Bitte kontaktieren Sie das Sports Athletic Team, um Zugang anzufordern."
   },
   "teamManagement": {
     "createTeam": {
@@ -106,6 +108,9 @@
     "TEAM_NOT_FOUND": "Team nicht gefunden",
     "MEMBER_USER_ID_REQUIRED": "Mitglieder-Benutzer-ID ist erforderlich",
     "NOT_TEAM_OWNER": "Nur der Teameigentümer kann diese Aktion durchführen",
+    "NOT_A_TRAINER": "Sie sind nicht berechtigt, Gruppen zu erstellen. Bitte kontaktieren Sie das Sports Athletic Team.",
+    "NOT_AN_ADMIN": "Sie haben keinen Admin-Zugang.",
+    "USER_NOT_FOUND": "Kein Benutzer mit dieser E-Mail-Adresse gefunden.",
     "OWNER_CANNOT_LEAVE": "Teameigentümer können das Team nicht verlassen. Löschen Sie stattdessen das Team.",
     "CANNOT_REMOVE_SELF": "Sie können sich nicht selbst entfernen. Nutzen Sie stattdessen Team verlassen.",
     "MEMBER_NOT_FOUND": "Mitglied nicht in diesem Team gefunden",
@@ -173,6 +178,19 @@
       "focus": "Fokus",
       "noData": "Keine Trainingseinheiten in diesem Zeitraum"
     }
+  },
+  "admin": {
+    "menuLabel": "Admin",
+    "title": "Admin-Bereich",
+    "description": "Suchen Sie nach einem Benutzer anhand seiner genauen E-Mail-Adresse, um den Trainer-Zugang zu verwalten.",
+    "emailLabel": "E-Mail-Adresse",
+    "emailPlaceholder": "benutzer@beispiel.de",
+    "search": "Suchen",
+    "trainerStatus": "Trainer-Status",
+    "trainerSince": "Trainer seit {{date}}",
+    "notTrainer": "Kein Trainer",
+    "grantTrainer": "Trainer-Zugang erteilen",
+    "revokeTrainer": "Trainer-Zugang entziehen"
   },
   "footer": {
     "imprint": "Impressum",

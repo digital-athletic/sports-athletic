@@ -78,6 +78,19 @@ export const RemoveMemberSchema = v.object({
 
 export type RemoveMemberInput = v.InferOutput<typeof RemoveMemberSchema>;
 
+export const AdminLookupUserSchema = v.object({
+  email: v.pipe(v.string(), v.trim(), v.email()),
+});
+
+export type AdminLookupUserInput = v.InferOutput<typeof AdminLookupUserSchema>;
+
+export const AdminSetTrainerSchema = v.object({
+  user_id: v.pipe(v.string(), v.uuid()),
+  is_trainer: v.boolean(),
+});
+
+export type AdminSetTrainerInput = v.InferOutput<typeof AdminSetTrainerSchema>;
+
 export const GenerateInviteCodeSchema = v.object({
   team_id: v.pipe(v.string(), v.uuid()),
   expires_at: v.optional(v.pipe(v.string(), v.isoTimestamp())),

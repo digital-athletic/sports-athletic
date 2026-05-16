@@ -28,6 +28,13 @@ export const ErrorCodes = {
   INVALID_REQUEST_BODY: "INVALID_REQUEST_BODY",
   METHOD_NOT_ALLOWED: "METHOD_NOT_ALLOWED",
 
+  // Trainer whitelist errors
+  NOT_A_TRAINER: "NOT_A_TRAINER",
+
+  // Admin errors
+  NOT_AN_ADMIN: "NOT_AN_ADMIN",
+  USER_NOT_FOUND: "USER_NOT_FOUND",
+
   // Generic errors
   INTERNAL_ERROR: "INTERNAL_ERROR",
 } as const;

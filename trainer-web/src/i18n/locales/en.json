@@ -35,7 +35,9 @@
     "noTeam": "You are not a member of any team yet.",
     "createTeam": "Create Team",
     "joinTeam": "Join Team",
-    "or": "or"
+    "or": "or",
+    "notTrainerTitle": "Trainer access required",
+    "notTrainerMessage": "Only whitelisted trainers can create groups. Please contact the Sports Athletic team to request access."
   },
   "teamManagement": {
     "createTeam": {
@@ -106,6 +108,9 @@
     "TEAM_NOT_FOUND": "Team not found",
     "MEMBER_USER_ID_REQUIRED": "Member user ID is required",
     "NOT_TEAM_OWNER": "Only the team owner can perform this action",
+    "NOT_A_TRAINER": "You are not authorized to create groups. Please contact the Sports Athletic team.",
+    "NOT_AN_ADMIN": "You do not have admin access.",
+    "USER_NOT_FOUND": "No user found with that email address.",
     "OWNER_CANNOT_LEAVE": "Team owners cannot leave. Delete the team instead.",
     "CANNOT_REMOVE_SELF": "Cannot remove yourself. Use leave team instead.",
     "MEMBER_NOT_FOUND": "Member not found in this team",
@@ -173,6 +178,19 @@
       "focus": "Focus",
       "noData": "No trainings in this time period"
     }
+  },
+  "admin": {
+    "menuLabel": "Admin",
+    "title": "Admin Panel",
+    "description": "Search for a user by their exact email address to manage their trainer access.",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "user@example.com",
+    "search": "Search",
+    "trainerStatus": "Trainer status",
+    "trainerSince": "Trainer since {{date}}",
+    "notTrainer": "Not a trainer",
+    "grantTrainer": "Grant trainer access",
+    "revokeTrainer": "Revoke trainer access"
   },
   "footer": {
     "imprint": "Legal Notice",

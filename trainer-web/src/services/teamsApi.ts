@@ -23,7 +23,7 @@ export class ApiError extends Error {
   }
 }
 
-async function callEdgeFunction<T>(
+export async function callEdgeFunction<T>(
   functionName: string,
   body: Record<string, unknown>,
 ): Promise<T> {

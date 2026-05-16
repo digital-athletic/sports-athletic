@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { Button } from "./components/Button";
 import { CreateTeamCard } from "./components/CreateTeamCard";
 import { CreateTeamForm } from "./components/CreateTeamForm";
 import { ErrorMessage } from "./components/ErrorMessage";
@@ -8,12 +9,14 @@ import { JoinTeamForm } from "./components/JoinTeamForm";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { PageLayout } from "./components/PageLayout";
 import { TeamCard } from "./components/TeamCard";
+import { useProfile } from "./hooks/useProfile";
 import { useTeamSelection } from "./hooks/useTeamSelection";
 
 export const TeamSelection = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { teams, loading, error, createTeam, joinTeam } = useTeamSelection();
+  const { profile, loading: profileLoading } = useProfile();
 
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showJoinForm, setShowJoinForm] = useState(false);
@@ -34,14 +37,27 @@ export const TeamSelection = () => {
 
   return (
     <PageLayout>
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">
-        {t("teamSelection.title")}
-      </h1>
-      <p className="mb-8 text-gray-600">{t("teamSelection.description")}</p>
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {t("teamSelection.title")}
+          </h1>
+          <p className="mt-1 text-gray-600">{t("teamSelection.description")}</p>
+        </div>
+        {profile?.adminGrantedAt && (
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/admin")}
+            className="shrink-0 text-sm"
+          >
+            {t("admin.menuLabel")}
+          </Button>
+        )}
+      </div>
 
       {error && <ErrorMessage message={error} className="mb-4" />}
 
-      {loading ? (
+      {loading || profileLoading ? (
         <LoadingSpinner />
       ) : !showCreateForm && !showJoinForm ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -61,6 +77,7 @@ export const TeamSelection = () => {
           <CreateTeamCard
             onCreateClick={() => setShowCreateForm(true)}
             onJoinClick={() => setShowJoinForm(true)}
+            isTrainer={profile?.trainerGrantedAt != null}
           />
         </div>
       ) : null}

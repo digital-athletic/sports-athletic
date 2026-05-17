@@ -139,15 +139,17 @@ export function EmailVerificationScreen() {
       await initializeFromSupabase();
       if (mode === "REGISTER") {
         try {
-          await saveConsentToProfile(data.session.user.id, {
+          await saveConsentToProfile({
             privacyAccepted: termsConsent,
-            analytics: analyticsConsent,
+            analyticsAccepted: analyticsConsent,
           });
           setAnonymisedDataUse(analyticsConsent);
           setConsentStatus("accepted");
         } catch {
-          // Non-fatal: proceed with registration even if consent persistence fails
-          setConsentStatus("accepted");
+          // Fail closed: without a server consent record we must not grant access.
+          // The consent gate (Stack.Protected) will intercept the navigation below
+          // and route the user to ConsentScreen where they can retry.
+          setConsentStatus("missing");
         }
         router.replace("/anamnesis");
       }

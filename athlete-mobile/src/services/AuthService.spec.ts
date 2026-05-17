@@ -16,12 +16,10 @@ const mockSignInWithOtp = jest.fn();
 const mockGetSession = jest.fn();
 const mockFunctionsInvoke = jest.fn();
 const mockSignOut = jest.fn();
-const mockUpsert = jest.fn();
+const mockRpc = jest.fn();
 const mockMaybeSingle = jest.fn();
-const mockEq = jest.fn(() => ({ maybeSingle: mockMaybeSingle }));
-const mockSelect = jest.fn(() => ({ eq: mockEq }));
+const mockSelect = jest.fn(() => ({ maybeSingle: mockMaybeSingle }));
 const mockFrom = jest.fn((_table: string) => ({
-  upsert: mockUpsert,
   select: mockSelect,
 }));
 jest.mock("./supabaseClient", () => ({
@@ -35,6 +33,7 @@ jest.mock("./supabaseClient", () => ({
       invoke: (...args: unknown[]) => mockFunctionsInvoke(...args),
     },
     from: (table: string) => mockFrom(table),
+    rpc: (...args: unknown[]) => mockRpc(...args),
   },
 }));
 
@@ -242,35 +241,48 @@ describe("deleteAccount", () => {
 describe("saveConsentToProfile", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockFrom.mockReturnValue({ upsert: mockUpsert, select: mockSelect });
   });
 
-  it("upserts all consent flags to user_profiles", async () => {
-    mockUpsert.mockResolvedValue({ error: null });
+  it("calls save_user_consent RPC with privacy and analytics flags", async () => {
+    mockRpc.mockResolvedValue({ error: null });
 
-    await saveConsentToProfile("user-1", {
+    await saveConsentToProfile({
       privacyAccepted: true,
-      analytics: false,
+      analyticsAccepted: false,
     });
 
-    expect(mockFrom).toHaveBeenCalledWith("user_profiles");
-    expect(mockUpsert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        user_id: "user-1",
-        consent_privacy_accepted: true,
-        consent_analytics_accepted: false,
-        consent_updated_at: expect.any(String),
-      }),
-    );
+    expect(mockRpc).toHaveBeenCalledWith("save_user_consent", {
+      p_privacy_accepted: true,
+      p_analytics_accepted: false,
+    });
   });
 
-  it("throws on supabase error", async () => {
-    mockUpsert.mockResolvedValue({ error: { message: "DB error", code: "" } });
+  it("does not accept a userId parameter — user_id is resolved server-side", async () => {
+    mockRpc.mockResolvedValue({ error: null });
+
+    // The function signature takes only ConsentFlags, never a userId string.
+    await saveConsentToProfile({
+      privacyAccepted: true,
+      analyticsAccepted: true,
+    });
+
+    expect(mockRpc).toHaveBeenCalledTimes(1);
+    const [fnName, params] = mockRpc.mock.calls[0] as [
+      string,
+      Record<string, unknown>,
+    ];
+    expect(fnName).toBe("save_user_consent");
+    expect(params).not.toHaveProperty("user_id");
+    expect(params).not.toHaveProperty("userId");
+  });
+
+  it("throws on RPC error", async () => {
+    mockRpc.mockResolvedValue({ error: { message: "DB error", code: "" } });
 
     await expect(
-      saveConsentToProfile("user-1", {
+      saveConsentToProfile({
         privacyAccepted: false,
-        analytics: false,
+        analyticsAccepted: false,
       }),
     ).rejects.toMatchObject({
       code: "auth/unknown",
@@ -283,11 +295,17 @@ describe("logout", () => {
     jest.clearAllMocks();
   });
 
-  it("clears local auth even when signOut throws a network error", async () => {
-    mockSignOut.mockRejectedValue(new TypeError("Network request failed"));
-
+  it("resolves without throwing when signOut succeeds", async () => {
+    mockSignOut.mockResolvedValue({});
     await expect(logout()).resolves.not.toThrow();
-    expect(mockClearAuth).toHaveBeenCalledTimes(1);
+    expect(mockSignOut).toHaveBeenCalledTimes(1);
+  });
+
+  it("resolves without throwing when signOut throws a network error — caller handles cleanup", async () => {
+    mockSignOut.mockRejectedValue(new TypeError("Network request failed"));
+    await expect(logout()).resolves.not.toThrow();
+    // clearAuth is no longer called here — owned by useLogout's finally block
+    expect(mockClearAuth).not.toHaveBeenCalled();
   });
 });
 
@@ -295,22 +313,20 @@ describe("fetchConsentFromProfile", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockMaybeSingle.mockReset();
-    mockEq.mockReturnValue({ maybeSingle: mockMaybeSingle });
-    mockSelect.mockReturnValue({ eq: mockEq });
-    mockFrom.mockReturnValue({ upsert: mockUpsert, select: mockSelect });
+    mockSelect.mockReturnValue({ maybeSingle: mockMaybeSingle });
+    mockFrom.mockReturnValue({ select: mockSelect });
   });
 
   it("returns null when no row exists", async () => {
     mockMaybeSingle.mockResolvedValue({ data: null, error: null });
 
-    const result = await fetchConsentFromProfile("user-1");
+    const result = await fetchConsentFromProfile();
 
     expect(result).toBeNull();
     expect(mockFrom).toHaveBeenCalledWith("user_profiles");
     expect(mockSelect).toHaveBeenCalledWith(
       "consent_privacy_accepted, consent_analytics_accepted",
     );
-    expect(mockEq).toHaveBeenCalledWith("user_id", "user-1");
   });
 
   it("returns consent flags when row has privacy accepted", async () => {
@@ -322,7 +338,7 @@ describe("fetchConsentFromProfile", () => {
       error: null,
     });
 
-    const result = await fetchConsentFromProfile("user-1");
+    const result = await fetchConsentFromProfile();
 
     expect(result).toEqual({ privacyAccepted: true, analyticsAccepted: true });
   });
@@ -336,7 +352,7 @@ describe("fetchConsentFromProfile", () => {
       error: null,
     });
 
-    const result = await fetchConsentFromProfile("user-1");
+    const result = await fetchConsentFromProfile();
 
     expect(result).toEqual({
       privacyAccepted: false,
@@ -350,7 +366,7 @@ describe("fetchConsentFromProfile", () => {
       error: { message: "DB error", code: "" },
     });
 
-    await expect(fetchConsentFromProfile("user-1")).rejects.toMatchObject({
+    await expect(fetchConsentFromProfile()).rejects.toMatchObject({
       code: "auth/unknown",
     });
   });

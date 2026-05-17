@@ -137,21 +137,20 @@ export const deleteAccount = async (): Promise<void> => {
 };
 
 /**
- * Sign out the current user. Clears local auth even if signOut throws.
+ * Sign out the current user. Network errors are swallowed — the caller owns
+ * all local state cleanup so it runs regardless of network outcome.
  */
 export const logout = async (): Promise<void> => {
   try {
     await supabase.auth.signOut();
   } catch {
-    // Network error during sign out — proceed with local cleanup
+    // Network error — proceed; caller handles local state cleanup
   }
-  // Always clear local auth regardless of signOut result
-  useAuthStore.getState().clearAuth();
 };
 
 type ConsentFlags = {
   privacyAccepted: boolean;
-  analytics: boolean;
+  analyticsAccepted: boolean;
 };
 
 export type ConsentRecord = {
@@ -161,40 +160,37 @@ export type ConsentRecord = {
 
 /**
  * Fetch consent record from user_profiles. Returns null when no row exists.
+ * user_id is scoped by RLS (auth.uid()) — no client-supplied filter needed.
  */
-export const fetchConsentFromProfile = async (
-  userId: string,
-): Promise<ConsentRecord | null> => {
-  const { data, error } = await supabase
-    .from("user_profiles")
-    .select("consent_privacy_accepted, consent_analytics_accepted")
-    .eq("user_id", userId)
-    .maybeSingle();
+export const fetchConsentFromProfile =
+  async (): Promise<ConsentRecord | null> => {
+    const { data, error } = await supabase
+      .from("user_profiles")
+      .select("consent_privacy_accepted, consent_analytics_accepted")
+      .maybeSingle();
 
-  if (error) {
-    throw mapSupabaseError(error);
-  }
+    if (error) {
+      throw mapSupabaseError(error);
+    }
 
-  if (!data) return null;
+    if (!data) return null;
 
-  return {
-    privacyAccepted: data.consent_privacy_accepted === true,
-    analyticsAccepted: data.consent_analytics_accepted === true,
+    return {
+      privacyAccepted: data.consent_privacy_accepted === true,
+      analyticsAccepted: data.consent_analytics_accepted === true,
+    };
   };
-};
 
 /**
- * Upsert all three consent flags to user_profiles
+ * Upsert consent flags via the save_user_consent RPC.
+ * user_id is resolved server-side from auth.uid() — never supplied by the client.
  */
 export const saveConsentToProfile = async (
-  userId: string,
   consent: ConsentFlags,
 ): Promise<void> => {
-  const { error } = await supabase.from("user_profiles").upsert({
-    user_id: userId,
-    consent_privacy_accepted: consent.privacyAccepted,
-    consent_analytics_accepted: consent.analytics,
-    consent_updated_at: new Date().toISOString(),
+  const { error } = await supabase.rpc("save_user_consent", {
+    p_privacy_accepted: consent.privacyAccepted,
+    p_analytics_accepted: consent.analyticsAccepted,
   });
 
   if (error) {

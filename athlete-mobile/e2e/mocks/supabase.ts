@@ -120,21 +120,65 @@ function mockRestApi(page: Page) {
 }
 
 /**
- * Override the user_profiles mock to return missing consent.
- * Must be called AFTER mockSupabaseAuth so Playwright's LIFO route ordering
- * gives this handler priority over the accepted-consent default.
+ * Override user_profiles to return specific consent flags.
+ * Must be called AFTER mockSupabaseAuth/mockOtpFlow so Playwright's LIFO route
+ * ordering gives this handler priority over the default accepted-consent mock.
  */
-export async function mockMissingConsentUserProfile(page: Page) {
+async function mockUserProfileConsent(
+  page: Page,
+  consent: { privacy: boolean; analytics: boolean },
+) {
   await page.route(`**/rest/v1/user_profiles**`, async (route) => {
     await route.fulfill({
       status: 200,
       contentType: "application/json",
       body: JSON.stringify([
         {
-          consent_privacy_accepted: false,
-          consent_analytics_accepted: false,
+          consent_privacy_accepted: consent.privacy,
+          consent_analytics_accepted: consent.analytics,
         },
       ]),
+    });
+  });
+}
+
+export async function mockMissingConsentUserProfile(page: Page) {
+  await mockUserProfileConsent(page, { privacy: false, analytics: false });
+}
+
+/** Simulates a brand-new user with no profile row yet. */
+export async function mockEmptyUserProfiles(page: Page) {
+  await page.route(`**/rest/v1/user_profiles**`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify([]),
+    });
+  });
+}
+
+/** Simulates a user who consented to privacy but not analytics. */
+export async function mockAnalyticsMissingConsentUserProfile(page: Page) {
+  await mockUserProfileConsent(page, { privacy: true, analytics: false });
+}
+
+/**
+ * Override the OTP verify response to return a session for a specific user.
+ * Use mid-test (LIFO priority) to simulate a different user logging in.
+ */
+export async function mockOtpVerifyAsUser(
+  page: Page,
+  userId: string,
+  email: string,
+) {
+  await page.route(`**/auth/v1/verify**`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        ...createMockSessionResponse(email),
+        user: { ...createMockUser(email), id: userId },
+      }),
     });
   });
 }

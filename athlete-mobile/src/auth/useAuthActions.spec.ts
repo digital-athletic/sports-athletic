@@ -87,10 +87,20 @@ jest.mock("@/store/placesStore", () => ({
 }));
 
 const mockResetSettings = jest.fn();
+const mockSetConsentStatus = jest.fn();
 jest.mock("@/store/userSettingsStore", () => ({
-  useUserSettingsStore: () => ({
-    resetSettings: mockResetSettings,
-  }),
+  useUserSettingsStore: (
+    selector?: (state: {
+      resetSettings: () => void;
+      setConsentStatus: (s: string) => void;
+    }) => unknown,
+  ) => {
+    const state = {
+      resetSettings: mockResetSettings,
+      setConsentStatus: mockSetConsentStatus,
+    };
+    return selector ? selector(state) : state;
+  },
 }));
 
 const mockClearSyncQueue = jest.fn();
@@ -161,7 +171,7 @@ describe("useLogout", () => {
     );
   });
 
-  it("should call supabase logout and clear auth when confirmed", async () => {
+  it("should call supabase logout, clear auth and reset consent when confirmed", async () => {
     const { result } = renderHook(() => useLogout());
 
     await act(async () => {
@@ -181,6 +191,7 @@ describe("useLogout", () => {
     });
 
     expect(mockClearAuth).toHaveBeenCalled();
+    expect(mockSetConsentStatus).toHaveBeenCalledWith("loading");
     // Navigation is handled automatically by Stack.Protected in _layout.tsx
   });
 
@@ -213,7 +224,7 @@ describe("useLogout", () => {
     );
   });
 
-  it("should not clear auth if logout fails", async () => {
+  it("should always clear auth and reset consent even when logout fails — finally block guarantees local cleanup", async () => {
     mockSupabaseLogout.mockRejectedValue(new Error("Network error"));
 
     const { result } = renderHook(() => useLogout());
@@ -233,8 +244,10 @@ describe("useLogout", () => {
       expect(mockSupabaseLogout).toHaveBeenCalled();
     });
 
-    // Auth should NOT be cleared on error
-    expect(mockClearAuth).not.toHaveBeenCalled();
+    // Local state is reset in finally — independent of network outcome.
+    // This prevents stale "accepted" consent from persisting after a failed logout.
+    expect(mockClearAuth).toHaveBeenCalled();
+    expect(mockSetConsentStatus).toHaveBeenCalledWith("loading");
   });
 });
 

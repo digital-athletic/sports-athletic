@@ -212,15 +212,22 @@ describe("useAuthStateListener — consent gate", () => {
     expect(mockFetchConsentFromProfile).not.toHaveBeenCalled();
   });
 
-  it("does not fetch if consentStatus is already accepted", async () => {
+  it("always fetches from server on startup even when consentStatus is cached as accepted — GDPR re-verification", async () => {
+    // consentStatus "accepted" may belong to a different user (force-quit scenario).
+    // lastVerifiedUserIdRef is null on cold start, so the guard never fires and
+    // we always do one server round-trip to verify consent for the current user.
     mockAuthValue = { userId: "user-1" };
     mockConsentStatus = "accepted";
+    mockFetchConsentFromProfile.mockResolvedValue({
+      privacyAccepted: true,
+      analyticsAccepted: true,
+    });
 
     renderHook(() => useAuthStateListener());
 
-    await Promise.resolve();
-
-    expect(mockFetchConsentFromProfile).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockFetchConsentFromProfile).toHaveBeenCalled();
+    });
   });
 
   it("re-fetches consent when consentStatus is missing (allows retry for previously-failed checks)", async () => {
@@ -234,7 +241,7 @@ describe("useAuthStateListener — consent gate", () => {
     renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
-      expect(mockFetchConsentFromProfile).toHaveBeenCalledWith("user-1");
+      expect(mockFetchConsentFromProfile).toHaveBeenCalled();
     });
   });
 
@@ -345,7 +352,7 @@ describe("useAuthStateListener — consent gate", () => {
     });
 
     await waitFor(() => {
-      expect(mockFetchConsentFromProfile).toHaveBeenCalledWith("user-2");
+      expect(mockFetchConsentFromProfile).toHaveBeenCalled();
       expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
     });
   });
@@ -389,17 +396,27 @@ describe("useAuthStateListener — consent gate", () => {
     capturedAppStateListener!("active");
 
     await waitFor(() => {
-      expect(mockFetchConsentFromProfile).toHaveBeenCalledWith("user-1");
+      expect(mockFetchConsentFromProfile).toHaveBeenCalled();
     });
   });
 
   it("does not re-check consent on foreground when status is already accepted", async () => {
     mockAuthValue = { userId: "user-1" };
     mockConsentStatus = "accepted";
+    mockFetchConsentFromProfile.mockResolvedValue({
+      privacyAccepted: true,
+      analyticsAccepted: true,
+    });
 
     renderHook(() => useAuthStateListener());
-    await Promise.resolve();
+    // Startup always fetches once (lastVerifiedUserIdRef is null on cold start).
+    await waitFor(() => {
+      expect(mockFetchConsentFromProfile).toHaveBeenCalledTimes(1);
+    });
+    mockFetchConsentFromProfile.mockClear();
 
+    // After startup verification, the AppState guard (consentStatus !== "accepted")
+    // prevents a second call when the user foregrounds with accepted status.
     capturedAppStateListener!("active");
 
     await Promise.resolve();
@@ -458,7 +475,7 @@ describe("useAuthStateListener — consent gate", () => {
     capturedNetInfoListener!({ isConnected: true, isInternetReachable: true });
 
     await waitFor(() => {
-      expect(mockFetchConsentFromProfile).toHaveBeenCalledWith("user-1");
+      expect(mockFetchConsentFromProfile).toHaveBeenCalled();
       expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
     });
   });
@@ -466,10 +483,20 @@ describe("useAuthStateListener — consent gate", () => {
   it("does not re-check consent on reconnect when status is already accepted", async () => {
     mockAuthValue = { userId: "user-1" };
     mockConsentStatus = "accepted";
+    mockFetchConsentFromProfile.mockResolvedValue({
+      privacyAccepted: true,
+      analyticsAccepted: true,
+    });
 
     renderHook(() => useAuthStateListener());
-    await Promise.resolve();
+    // Startup always fetches once (lastVerifiedUserIdRef is null on cold start).
+    await waitFor(() => {
+      expect(mockFetchConsentFromProfile).toHaveBeenCalledTimes(1);
+    });
+    mockFetchConsentFromProfile.mockClear();
 
+    // After startup verification, the NetInfo guard (consentStatus !== "accepted")
+    // prevents a second call when connectivity is restored with accepted status.
     capturedNetInfoListener!({
       isConnected: false,
       isInternetReachable: false,
@@ -478,6 +505,104 @@ describe("useAuthStateListener — consent gate", () => {
 
     await Promise.resolve();
     expect(mockFetchConsentFromProfile).not.toHaveBeenCalled();
+  });
+
+  it("skips the server round-trip on SIGNED_IN for the same user after a successful startup check in this session", async () => {
+    // consentStatus starts as "accepted" so consentStatusRef.current initialises
+    // to "accepted" on first render. The startup check still runs (lastVerifiedUserIdRef
+    // is null) and sets lastVerifiedUserIdRef to "user-1" after verifying.
+    // A subsequent SIGNED_IN for the same user then hits both guard conditions
+    // (consentStatus=accepted AND verifiedUserId=user-1) and skips the fetch.
+    mockAuthValue = { userId: "user-1" };
+    mockConsentStatus = "accepted";
+    mockFetchConsentFromProfile.mockResolvedValue({
+      privacyAccepted: true,
+      analyticsAccepted: true,
+    });
+
+    renderHook(() => useAuthStateListener());
+
+    // Wait for the mandatory cold-start check (lastVerifiedUserIdRef was null)
+    await waitFor(() => {
+      expect(mockFetchConsentFromProfile).toHaveBeenCalled();
+    });
+    mockFetchConsentFromProfile.mockClear();
+
+    // Second SIGNED_IN for the same user — guard fires, no second fetch.
+    capturedAuthCallback!("SIGNED_IN", {
+      user: { id: "user-1" },
+      access_token: "token-refreshed",
+    });
+
+    await Promise.resolve();
+    expect(mockFetchConsentFromProfile).not.toHaveBeenCalled();
+  });
+
+  it("always re-fetches on SIGNED_IN when a different userId appears — GDPR cross-user protection", async () => {
+    // User A's consent was verified at startup. A different user then signs in
+    // (e.g. on a shared device). lastVerifiedUserIdRef is "user-a", not "user-b",
+    // so the guard doesn't fire and a server re-check is mandatory.
+    mockAuthValue = { userId: "user-a" };
+    mockConsentStatus = "accepted";
+    mockFetchConsentFromProfile.mockResolvedValue({
+      privacyAccepted: true,
+      analyticsAccepted: true,
+    });
+
+    renderHook(() => useAuthStateListener());
+
+    // Wait for startup check to verify user-a and set lastVerifiedUserIdRef
+    await waitFor(() => {
+      expect(mockFetchConsentFromProfile).toHaveBeenCalled();
+    });
+    mockFetchConsentFromProfile.mockClear();
+
+    // Different user signs in — lastVerifiedUserIdRef is "user-a", not "user-b"
+    capturedAuthCallback!("SIGNED_IN", {
+      user: { id: "user-b" },
+      access_token: "token-b",
+    });
+
+    await waitFor(() => {
+      expect(mockFetchConsentFromProfile).toHaveBeenCalled();
+    });
+  });
+
+  it("re-fetches consent for a new user when SIGNED_OUT never fired — offline warm-logout scenario", async () => {
+    // Scenario: User A taps "Logout" while offline. clearAuth() runs locally but
+    // Supabase never emits SIGNED_OUT, so lastVerifiedUserIdRef stays "user-a"
+    // and consentStatus stays "accepted" in the store. User B then signs in on
+    // the same device. The guard's userId check ("user-a" !== "user-b") fails,
+    // so a server re-check runs for User B regardless of the cached status.
+    mockAuthValue = { userId: "user-a" };
+    mockConsentStatus = "accepted";
+    mockFetchConsentFromProfile.mockResolvedValue({
+      privacyAccepted: true,
+      analyticsAccepted: true,
+    });
+
+    renderHook(() => useAuthStateListener());
+
+    // Cold-start check verifies user-a and sets lastVerifiedUserIdRef = "user-a".
+    await waitFor(() => {
+      expect(mockFetchConsentFromProfile).toHaveBeenCalled();
+    });
+    mockFetchConsentFromProfile.mockClear();
+
+    // Offline logout: SIGNED_OUT never fires. consentStatus remains "accepted",
+    // lastVerifiedUserIdRef remains "user-a". No state is reset by the listener.
+
+    // User B signs in — SIGNED_IN fires with a different userId.
+    capturedAuthCallback!("SIGNED_IN", {
+      user: { id: "user-b" },
+      access_token: "token-b",
+    });
+
+    // lastVerifiedUserIdRef ("user-a") !== "user-b", so the guard does not skip.
+    // Consent must be re-verified server-side for User B.
+    await waitFor(() => {
+      expect(mockFetchConsentFromProfile).toHaveBeenCalled();
+    });
   });
 
   it("sets consentStatus to accepted without fetching for review user", async () => {

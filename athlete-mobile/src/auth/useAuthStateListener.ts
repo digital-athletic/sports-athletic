@@ -36,19 +36,26 @@ export function useAuthStateListener() {
   const consentStatusRef = useRef<ConsentStatus>(consentStatus);
   consentStatusRef.current = consentStatus;
   const wasOfflineRef = useRef(false);
+  // Session-scoped: null on every cold start, so stale AsyncStorage "accepted"
+  // from a different user cannot bypass the consent gate (GDPR re-verification).
+  const lastVerifiedUserIdRef = useRef<string | null>(null);
 
   const checkAndSetConsent = useCallback(
     async (userId: string) => {
       if (featureFlags.isReviewUserId(userId)) {
         setConsentStatus("accepted");
+        lastVerifiedUserIdRef.current = userId;
         return;
       }
-      // Skip only when already accepted; allow retry when "missing" (e.g. after
-      // a prior network failure) so foreground/reconnect can resolve the gate.
-      if (consentStatusRef.current === "accepted") return;
+      if (
+        consentStatusRef.current === "accepted" &&
+        lastVerifiedUserIdRef.current === userId
+      ) {
+        return;
+      }
 
       try {
-        const record = await fetchConsentFromProfile(userId);
+        const record = await fetchConsentFromProfile();
         const privacyMissing =
           featureFlags.privacyEnabled && record?.privacyAccepted !== true;
         const analyticsMissing =
@@ -61,12 +68,10 @@ export function useAuthStateListener() {
             setAnonymisedDataUse(record.analyticsAccepted);
           }
           setConsentStatus("accepted");
+          lastVerifiedUserIdRef.current = userId;
         }
       } catch {
         // Fail closed — a network error must not bypass the consent gate.
-        // Returning users have "accepted" persisted and are skipped by the
-        // guard above; only users who have never consented are held at the
-        // consent screen until connectivity is restored.
         setConsentStatus("missing");
       }
     },
@@ -95,6 +100,7 @@ export function useAuthStateListener() {
       } else if (event === "SIGNED_OUT") {
         clearAuth();
         setConsentStatus("loading");
+        lastVerifiedUserIdRef.current = null;
       }
     });
 

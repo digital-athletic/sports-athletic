@@ -27,19 +27,6 @@ jest.mock("@/store/userSettingsStore", () => ({
     }),
 }));
 
-let mockAuth: { userId: string; token: string } | null = {
-  userId: "user-1",
-  token: "token",
-};
-jest.mock("@/store/authStore", () => ({
-  useAuthStore: (selector: (state: { auth: typeof mockAuth }) => unknown) =>
-    selector({
-      get auth() {
-        return mockAuth;
-      },
-    }),
-}));
-
 jest.mock("@/config/featureFlags", () => ({
   featureFlags: {
     termsEnabled: false,
@@ -59,7 +46,6 @@ jest.mock("react-native-safe-area-context", () => ({
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockAuth = { userId: "user-1", token: "token" };
 });
 
 describe("ConsentScreen", () => {
@@ -111,21 +97,6 @@ describe("ConsentScreen", () => {
     ).toBeTruthy();
   });
 
-  it("does nothing when auth is missing", async () => {
-    mockAuth = null;
-    render(<ConsentScreen />);
-
-    const checkboxes = screen.getAllByRole("checkbox");
-    fireEvent.press(checkboxes[0]);
-    fireEvent.press(checkboxes[1]);
-    fireEvent.press(screen.getByRole("button", { name: "Continue" }));
-
-    await waitFor(() => {
-      expect(mockSaveConsentToProfile).not.toHaveBeenCalled();
-      expect(mockSetConsentStatus).not.toHaveBeenCalled();
-    });
-  });
-
   it("saves consent when both privacy and analytics are accepted", async () => {
     mockSaveConsentToProfile.mockResolvedValue(undefined);
     render(<ConsentScreen />);
@@ -136,9 +107,9 @@ describe("ConsentScreen", () => {
     fireEvent.press(screen.getByRole("button", { name: "Continue" }));
 
     await waitFor(() => {
-      expect(mockSaveConsentToProfile).toHaveBeenCalledWith("user-1", {
+      expect(mockSaveConsentToProfile).toHaveBeenCalledWith({
         privacyAccepted: true,
-        analytics: true,
+        analyticsAccepted: true,
       });
       expect(mockSetAnonymisedDataUse).toHaveBeenCalledWith(true);
       expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");

@@ -48,11 +48,11 @@ services:
     tty: true
 
   playwright:
-    image: mcr.microsoft.com/playwright:v1.59.1-noble
+    image: mcr.microsoft.com/playwright:v1.60.0-noble
     container_name: playwright
     expose:
       - "9323"
-    command: ["npx", "playwright", "run-server", "--port=9323"]
+    command: ["npx", "playwright", "run-server", "--port=9323", "--host=0.0.0.0"]
 
 volumes:
   web_trainer_node_modules:

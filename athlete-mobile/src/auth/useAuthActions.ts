@@ -31,17 +31,21 @@ export function useLogout() {
   const isOnline = useNetworkState();
 
   const clearAuth = useAuthStore((state) => state.clearAuth);
+  const setConsentStatus = useUserSettingsStore(
+    (state) => state.setConsentStatus,
+  );
 
   const logout = async () => {
     setIsLoading(true);
     try {
       await supabaseLogout();
-      clearAuth();
-      // Stack.Protected in _layout.tsx automatically redirects to onboarding
-      // when user becomes null
     } catch {
       Alert.alert(t("onboarding.alertErrorTitle"), t("more.logoutFailed"));
     } finally {
+      // Fail-safe: reset local state even when signOut fails offline and
+      // SIGNED_OUT never fires.
+      clearAuth();
+      setConsentStatus("loading");
       setIsLoading(false);
     }
   };

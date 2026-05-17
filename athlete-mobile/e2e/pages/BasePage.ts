@@ -7,15 +7,16 @@ export class BasePage {
     return this.page.getByRole("button", { name: "Go on" });
   }
 
-  async login(email: string) {
-    await this.page.goto("/");
+  async login(email: string, { navigate = true }: { navigate?: boolean } = {}) {
+    if (navigate) {
+      await this.page.goto("/");
+    }
     await expect(
       this.page.getByRole("button", { name: "Send code" }),
     ).toBeVisible();
     await this.page.getByPlaceholder("E-Mail").fill(email);
     await this.page.getByRole("button", { name: "Send code" }).click();
 
-    // Enter OTP code on verification screen
     await expect(
       this.page.getByText("Confirm your email", { exact: true }),
     ).toBeVisible({ timeout: 5000 });
@@ -42,10 +43,17 @@ export class BasePage {
 
   async navigateToTab(tabName: string) {
     // Target the bottom navigation tablist to avoid matching tabs in page content
-    // The bottom navigation has tabs within a tablist element
     await this.page
       .getByRole("tablist")
       .getByRole("tab", { name: new RegExp(tabName, "i") })
       .click();
+  }
+
+  async logout() {
+    await this.navigateToTab("Profile");
+    const logoutButton = this.page.getByText("Logout", { exact: true });
+    await logoutButton.scrollIntoViewIfNeeded();
+    await logoutButton.click();
+    await this.page.getByText("YES").first().click();
   }
 }

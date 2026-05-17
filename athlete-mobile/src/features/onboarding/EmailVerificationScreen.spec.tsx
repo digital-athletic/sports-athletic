@@ -357,8 +357,8 @@ describe("<EmailVerificationScreen />", () => {
       fireEvent.press(getByText("Verify"));
     });
 
-    expect(mockSaveConsentToProfile).toHaveBeenCalledWith("user-1", {
-      analytics: true,
+    expect(mockSaveConsentToProfile).toHaveBeenCalledWith({
+      analyticsAccepted: true,
       privacyAccepted: false,
     });
     expect(mockSetAnonymisedDataUse).toHaveBeenCalledWith(true);
@@ -402,7 +402,7 @@ describe("<EmailVerificationScreen />", () => {
     expect(mockSetConsentStatus).not.toHaveBeenCalled();
   });
 
-  it("still navigates to anamnesis when consent upsert fails", async () => {
+  it("sets consentStatus to missing and navigates to anamnesis when consent save fails — consent gate handles retry", async () => {
     mockSaveConsentToProfile.mockRejectedValue(new Error("network"));
     mockVerifyOtp.mockResolvedValue({
       data: {
@@ -418,6 +418,10 @@ describe("<EmailVerificationScreen />", () => {
       fireEvent.press(getByText("Verify"));
     });
 
+    // Fail closed: no server record means no access. Stack.Protected intercepts
+    // the /anamnesis navigation and shows ConsentScreen for retry.
+    expect(mockSetConsentStatus).toHaveBeenCalledWith("missing");
+    expect(mockSetConsentStatus).not.toHaveBeenCalledWith("accepted");
     expect(mockReplace).toHaveBeenCalledWith("/anamnesis");
   });
 

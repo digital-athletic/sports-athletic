@@ -1,7 +1,6 @@
 import { saveConsentToProfile } from "@/services/AuthService";
 import { featureFlags } from "@/config/featureFlags";
 import { LINK_AGB, LINK_PRIVACY } from "@/constants/AppConstants";
-import { useAuthStore } from "@/store/authStore";
 import { useUserSettingsStore } from "@/store/userSettingsStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
@@ -24,7 +23,6 @@ export function ConsentScreen() {
   const [showSaveError, setShowSaveError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const auth = useAuthStore((state) => state.auth);
   const setConsentStatus = useUserSettingsStore(
     (state) => state.setConsentStatus,
   );
@@ -53,14 +51,12 @@ export function ConsentScreen() {
       setShowAnalyticsError(true);
       return;
     }
-    if (!auth) return;
-
     setShowSaveError(false);
     setSubmitting(true);
     try {
-      await saveConsentToProfile(auth.userId, {
+      await saveConsentToProfile({
         privacyAccepted: true,
-        analytics: analyticsAccepted,
+        analyticsAccepted,
       });
       setAnonymisedDataUse(analyticsAccepted);
       setConsentStatus("accepted");

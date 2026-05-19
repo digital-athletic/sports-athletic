@@ -14,16 +14,19 @@ jest.mock("@/services/AuthService", () => ({
 
 const mockSetConsentStatus = jest.fn();
 const mockSetAnonymisedDataUse = jest.fn();
+const mockAcceptConsent = jest.fn();
 jest.mock("@/store/userSettingsStore", () => ({
   useUserSettingsStore: (
     selector: (state: {
       setConsentStatus: typeof mockSetConsentStatus;
       setAnonymisedDataUse: typeof mockSetAnonymisedDataUse;
+      acceptConsent: typeof mockAcceptConsent;
     }) => unknown,
   ) =>
     selector({
       setConsentStatus: mockSetConsentStatus,
       setAnonymisedDataUse: mockSetAnonymisedDataUse,
+      acceptConsent: mockAcceptConsent,
     }),
 }));
 
@@ -112,7 +115,8 @@ describe("ConsentScreen", () => {
         analyticsAccepted: true,
       });
       expect(mockSetAnonymisedDataUse).toHaveBeenCalledWith(true);
-      expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
+      expect(mockAcceptConsent).toHaveBeenCalled();
+      expect(mockSetConsentStatus).not.toHaveBeenCalledWith("accepted");
     });
   });
 
@@ -133,5 +137,22 @@ describe("ConsentScreen", () => {
         "Your consent could not be saved. Please check your connection and try again.",
       ),
     ).toBeTruthy();
+  });
+
+  it("rapid double-press fires saveConsentToProfile exactly once", async () => {
+    mockSaveConsentToProfile.mockImplementation(() => new Promise(() => {}));
+    render(<ConsentScreen />);
+
+    const checkboxes = screen.getAllByRole("checkbox");
+    fireEvent.press(checkboxes[0]);
+    fireEvent.press(checkboxes[1]);
+
+    const button = screen.getByRole("button", { name: "Continue" });
+    fireEvent.press(button);
+    fireEvent.press(button); // second press before re-render
+
+    await waitFor(() => {
+      expect(mockSaveConsentToProfile).toHaveBeenCalledTimes(1);
+    });
   });
 });

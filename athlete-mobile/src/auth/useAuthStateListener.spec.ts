@@ -69,47 +69,75 @@ jest.mock("@react-native-community/netinfo", () => {
   };
 });
 
-const mockSetAuth = jest.fn();
+// mockSetAuth updates mockAuthValue so getState().auth mirrors the real store
+// behavior (SIGNED_IN sets auth before checkAndSetConsent's cross-user guard runs).
+const mockSetAuth = jest.fn((auth: { userId: string }) => {
+  mockAuthValue = auth;
+});
 const mockClearAuth = jest.fn();
 const mockInitializeFromSupabase = jest.fn(() => Promise.resolve());
 let mockAuthValue: { userId: string } | null = null;
+// Controls useAuthStore.getState().auth independently from mockAuthValue.
+// undefined (default) = mirror mockAuthValue, so most tests work unchanged.
+// null | object      = use this value directly (R5 test only).
+let mockGetStateAuth: { userId: string } | null | undefined = undefined;
 jest.mock("../store/authStore", () => ({
-  useAuthStore: (
-    selector: (state: {
-      setAuth: typeof mockSetAuth;
-      clearAuth: typeof mockClearAuth;
-      initializeFromSupabase: typeof mockInitializeFromSupabase;
-      auth: typeof mockAuthValue;
-    }) => unknown,
-  ) =>
-    selector({
-      setAuth: mockSetAuth,
-      clearAuth: mockClearAuth,
-      initializeFromSupabase: mockInitializeFromSupabase,
-      get auth() {
-        return mockAuthValue;
-      },
-    }),
+  useAuthStore: Object.assign(
+    (
+      selector: (state: {
+        setAuth: typeof mockSetAuth;
+        clearAuth: typeof mockClearAuth;
+        initializeFromSupabase: typeof mockInitializeFromSupabase;
+        auth: typeof mockAuthValue;
+      }) => unknown,
+    ) =>
+      selector({
+        setAuth: mockSetAuth,
+        clearAuth: mockClearAuth,
+        initializeFromSupabase: mockInitializeFromSupabase,
+        get auth() {
+          return mockAuthValue;
+        },
+      }),
+    {
+      getState: () => ({
+        get auth() {
+          // undefined = mirror mockAuthValue; explicit null/object = independent
+          return mockGetStateAuth !== undefined
+            ? mockGetStateAuth
+            : mockAuthValue;
+        },
+      }),
+    },
+  ),
 }));
 
 const mockSetConsentStatus = jest.fn();
 const mockSetAnonymisedDataUse = jest.fn();
+const mockAcceptConsent = jest.fn();
 let mockConsentStatus: "loading" | "accepted" | "missing" = "loading";
 jest.mock("../store/userSettingsStore", () => ({
-  useUserSettingsStore: (
-    selector: (state: {
-      setConsentStatus: typeof mockSetConsentStatus;
-      setAnonymisedDataUse: typeof mockSetAnonymisedDataUse;
-      consentStatus: typeof mockConsentStatus;
-    }) => unknown,
-  ) =>
-    selector({
-      setConsentStatus: mockSetConsentStatus,
-      setAnonymisedDataUse: mockSetAnonymisedDataUse,
-      get consentStatus() {
-        return mockConsentStatus;
-      },
-    }),
+  useUserSettingsStore: Object.assign(
+    (
+      selector: (state: {
+        setConsentStatus: typeof mockSetConsentStatus;
+        setAnonymisedDataUse: typeof mockSetAnonymisedDataUse;
+        acceptConsent: typeof mockAcceptConsent;
+      }) => unknown,
+    ) =>
+      selector({
+        setConsentStatus: mockSetConsentStatus,
+        setAnonymisedDataUse: mockSetAnonymisedDataUse,
+        acceptConsent: mockAcceptConsent,
+      }),
+    {
+      getState: () => ({
+        get consentStatus() {
+          return mockConsentStatus;
+        },
+      }),
+    },
+  ),
 }));
 
 const mockFetchConsentFromProfile = jest.fn();
@@ -143,6 +171,7 @@ beforeEach(() => {
   mockIsReviewUserId = false;
   mockInitializeFromSupabase.mockReturnValue(Promise.resolve());
   mockAuthValue = null;
+  mockGetStateAuth = undefined; // mirror mode: getState().auth tracks mockAuthValue
   mockConsentStatus = "loading";
 });
 
@@ -198,7 +227,8 @@ describe("useAuthStateListener — consent gate", () => {
     renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
-      expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
+      expect(mockSetAnonymisedDataUse).toHaveBeenCalledWith(true);
+      expect(mockAcceptConsent).toHaveBeenCalled();
     });
   });
 
@@ -281,7 +311,7 @@ describe("useAuthStateListener — consent gate", () => {
 
     await waitFor(() => {
       expect(mockSetAnonymisedDataUse).toHaveBeenCalledWith(true);
-      expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
+      expect(mockAcceptConsent).toHaveBeenCalled();
     });
   });
 
@@ -310,7 +340,8 @@ describe("useAuthStateListener — consent gate", () => {
     renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
-      expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
+      expect(mockSetAnonymisedDataUse).toHaveBeenCalledWith(false);
+      expect(mockAcceptConsent).toHaveBeenCalled();
     });
   });
 
@@ -323,7 +354,8 @@ describe("useAuthStateListener — consent gate", () => {
     renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
-      expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
+      expect(mockSetAnonymisedDataUse).toHaveBeenCalledWith(false);
+      expect(mockAcceptConsent).toHaveBeenCalled();
     });
   });
 
@@ -353,12 +385,16 @@ describe("useAuthStateListener — consent gate", () => {
 
     await waitFor(() => {
       expect(mockFetchConsentFromProfile).toHaveBeenCalled();
-      expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
+      expect(mockSetAnonymisedDataUse).toHaveBeenCalledWith(true);
+      expect(mockAcceptConsent).toHaveBeenCalled();
     });
   });
 
   it("does not call checkAndSetConsent on TOKEN_REFRESHED", async () => {
     renderHook(() => useAuthStateListener());
+    // Let the init .then() settle first (init finds no user → no consent check).
+    // TOKEN_REFRESHED fires after, mirroring real Supabase event ordering.
+    await Promise.resolve();
 
     capturedAuthCallback!("TOKEN_REFRESHED", {
       user: { id: "user-1" },
@@ -476,7 +512,8 @@ describe("useAuthStateListener — consent gate", () => {
 
     await waitFor(() => {
       expect(mockFetchConsentFromProfile).toHaveBeenCalled();
-      expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
+      expect(mockSetAnonymisedDataUse).toHaveBeenCalledWith(true);
+      expect(mockAcceptConsent).toHaveBeenCalled();
     });
   });
 
@@ -605,7 +642,7 @@ describe("useAuthStateListener — consent gate", () => {
     });
   });
 
-  it("sets consentStatus to accepted without fetching for review user", async () => {
+  it("bypasses consent fetch for review user and marks consent accepted", async () => {
     mockIsReviewUserId = true;
     mockAuthValue = { userId: "review-user" };
 
@@ -614,6 +651,220 @@ describe("useAuthStateListener — consent gate", () => {
     await waitFor(() => {
       expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
     });
+    expect(mockAcceptConsent).not.toHaveBeenCalled();
     expect(mockFetchConsentFromProfile).not.toHaveBeenCalled();
+  });
+
+  // R1 — epoch deduplication
+  it("drops a stale consent check result when a newer check starts and resolves first", async () => {
+    mockAuthValue = { userId: "user-1" };
+    mockConsentStatus = "missing";
+
+    let resolvePromise1!: (value: {
+      privacyAccepted: boolean;
+      analyticsAccepted: boolean;
+    }) => void;
+    let resolvePromise2!: (value: {
+      privacyAccepted: boolean;
+      analyticsAccepted: boolean;
+    }) => void;
+    const promise1 = new Promise<{
+      privacyAccepted: boolean;
+      analyticsAccepted: boolean;
+    }>((resolve) => {
+      resolvePromise1 = resolve;
+    });
+    const promise2 = new Promise<{
+      privacyAccepted: boolean;
+      analyticsAccepted: boolean;
+    }>((resolve) => {
+      resolvePromise2 = resolve;
+    });
+
+    mockFetchConsentFromProfile
+      .mockReturnValueOnce(promise1)
+      .mockReturnValueOnce(promise2);
+
+    // epoch 1: mount triggers first check
+    renderHook(() => useAuthStateListener());
+    await Promise.resolve();
+    await Promise.resolve();
+
+    // epoch 2: AppState foreground triggers second check
+    capturedAppStateListener!("active");
+    await Promise.resolve();
+    await Promise.resolve();
+
+    // Resolve second (newer) fetch first — epoch 2 result is valid
+    resolvePromise2({ privacyAccepted: true, analyticsAccepted: true });
+    await waitFor(() => expect(mockAcceptConsent).toHaveBeenCalled());
+
+    mockAcceptConsent.mockClear();
+    mockSetConsentStatus.mockClear();
+
+    // Resolve first (stale) fetch — epoch 1 result must be dropped
+    resolvePromise1({ privacyAccepted: false, analyticsAccepted: false });
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(mockSetConsentStatus).not.toHaveBeenCalledWith("missing");
+    expect(mockAcceptConsent).not.toHaveBeenCalled();
+  });
+
+  // R2 — sticky accepted
+  it("does not downgrade consentStatus from accepted to missing when a background re-check resolves after a local accept", async () => {
+    mockAuthValue = { userId: "user-1" };
+    mockConsentStatus = "missing";
+
+    let resolvePromise!: (value: {
+      privacyAccepted: boolean;
+      analyticsAccepted: boolean;
+    }) => void;
+    const promise = new Promise<{
+      privacyAccepted: boolean;
+      analyticsAccepted: boolean;
+    }>((resolve) => {
+      resolvePromise = resolve;
+    });
+
+    mockFetchConsentFromProfile.mockReturnValueOnce(promise);
+
+    // Mount: init check starts (in flight)
+    renderHook(() => useAuthStateListener());
+    await Promise.resolve();
+    await Promise.resolve();
+
+    // Simulate local accept while the fetch is still in flight.
+    // The sticky guard reads useUserSettingsStore.getState().consentStatus directly,
+    // so a re-render is not needed — updating mockConsentStatus is sufficient.
+    mockConsentStatus = "accepted";
+
+    // Now the stale fetch resolves with "missing" data
+    resolvePromise({ privacyAccepted: false, analyticsAccepted: false });
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    // The sticky guard must prevent overwriting "accepted" with "missing"
+    expect(mockSetConsentStatus).not.toHaveBeenCalledWith("missing");
+  });
+
+  // R1-catch — epoch dedup on the error path
+  it("drops a stale consent check error when a newer check has already resolved", async () => {
+    mockAuthValue = { userId: "user-1" };
+    mockConsentStatus = "missing";
+
+    let rejectPromise1!: (err: Error) => void;
+    let resolvePromise2!: (value: {
+      privacyAccepted: boolean;
+      analyticsAccepted: boolean;
+    }) => void;
+    const promise1 = new Promise<{
+      privacyAccepted: boolean;
+      analyticsAccepted: boolean;
+    }>((_, reject) => {
+      rejectPromise1 = reject;
+    });
+    const promise2 = new Promise<{
+      privacyAccepted: boolean;
+      analyticsAccepted: boolean;
+    }>((resolve) => {
+      resolvePromise2 = resolve;
+    });
+
+    mockFetchConsentFromProfile
+      .mockReturnValueOnce(promise1)
+      .mockReturnValueOnce(promise2);
+
+    // epoch 1: mount triggers first check
+    renderHook(() => useAuthStateListener());
+    await Promise.resolve();
+    await Promise.resolve();
+
+    // epoch 2: AppState foreground triggers second check
+    capturedAppStateListener!("active");
+    await Promise.resolve();
+    await Promise.resolve();
+
+    // Resolve second (newer) fetch first — epoch 2 result is valid
+    resolvePromise2({ privacyAccepted: true, analyticsAccepted: true });
+    await waitFor(() => expect(mockAcceptConsent).toHaveBeenCalled());
+
+    mockAcceptConsent.mockClear();
+    mockSetConsentStatus.mockClear();
+
+    // Reject first (stale) fetch — epoch 1 error must be silently dropped
+    rejectPromise1(new Error("network"));
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(mockSetConsentStatus).not.toHaveBeenCalledWith("missing");
+    expect(mockAcceptConsent).not.toHaveBeenCalled();
+  });
+
+  // Cross-user guard — userId mismatch between fetch start and result
+  it("does not apply a consent result for a user who signed out before the fetch resolved", async () => {
+    mockAuthValue = { userId: "user-a" };
+    mockConsentStatus = "missing";
+
+    let resolvePromise!: (value: {
+      privacyAccepted: boolean;
+      analyticsAccepted: boolean;
+    }) => void;
+    const promise = new Promise<{
+      privacyAccepted: boolean;
+      analyticsAccepted: boolean;
+    }>((resolve) => {
+      resolvePromise = resolve;
+    });
+
+    mockFetchConsentFromProfile.mockReturnValueOnce(promise);
+
+    renderHook(() => useAuthStateListener());
+    await Promise.resolve();
+    await Promise.resolve();
+
+    // User signs out while fetch is in flight — store auth becomes null
+    mockGetStateAuth = null;
+
+    // Fetch resolves with accepted data for the now-signed-out user
+    resolvePromise({ privacyAccepted: true, analyticsAccepted: true });
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    // Cross-user guard must prevent acceptConsent from firing for the wrong user
+    expect(mockAcceptConsent).not.toHaveBeenCalled();
+  });
+
+  // R5 — fresh auth from store.getState() after init
+  it("reads post-init auth from store.getState() rather than the stale pre-init ref", async () => {
+    // Set mockGetStateAuth to null (not undefined) to activate independent mode:
+    // getState().auth uses mockGetStateAuth while authRef.current tracks mockAuthValue.
+    // Both start null, but only getState() sees the post-init update.
+    mockAuthValue = null; // hook renders with null → authRef.current = null
+    mockGetStateAuth = null; // getState().auth starts null too (independent mode)
+
+    mockInitializeFromSupabase.mockImplementation(async () => {
+      // Mutates only the getState() path — no React re-render fires,
+      // so authRef.current stays null throughout the .then() callback.
+      mockGetStateAuth = { userId: "user-1" };
+    });
+    mockFetchConsentFromProfile.mockResolvedValue({
+      privacyAccepted: true,
+      analyticsAccepted: true,
+    });
+
+    renderHook(() => useAuthStateListener());
+
+    // Fails if the implementation reads authRef.current (null — no re-render).
+    // Passes only when it calls useAuthStore.getState().auth (returns mockGetStateAuth).
+    await waitFor(() => expect(mockFetchConsentFromProfile).toHaveBeenCalled());
   });
 });

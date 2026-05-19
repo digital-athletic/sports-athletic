@@ -2,6 +2,9 @@
 
 This file provides guidance to AI Agents for building high-quality React Native applications with modern patterns, hooks, and best practices following the official React documentation at https://react.dev and React Native documentation at https://reactnative.dev/
 
+## Agent Output Style
+- Be concise: no filler, no preamble, no restating the question. Answer completely in as few words as possible.
+
 ## Project Context
 - `react` version 19.1.0
 - `react-native` version 0.81.5
@@ -76,6 +79,17 @@ This file provides guidance to AI Agents for building high-quality React Native 
   - It should only be **referenced** for understanding existing logic or data structures.
   - The AI **must not modify, move, or create files** in `/legacy`.
 - All **new code** (components, screens, hooks, utils, etc.) should be created inside the `/app` directory.
+
+## App Store Review User
+
+The app has a dedicated review user bypass (`EXPO_PUBLIC_REVIEW_EMAIL` / `EXPO_PUBLIC_REVIEW_OTP`) for app store review teams (Apple, Google). This is intentional and must not be removed or flagged as a security issue.
+
+Key facts:
+- The review user authenticates with a fixed OTP instead of a real Supabase auth flow.
+- The review user does **not** sync any data to the backend — all server interactions are skipped.
+- Because no data leaves the device, **no GDPR consent is required** for the review user. The consent gate is bypassed on purpose (`setConsentStatus("accepted")` without a server round-trip).
+- The OTP value in `docker-compose.yml` / env config is intentionally static and known to review teams. Do not treat it as a leaked secret.
+- `isReviewUserId("review-user")` and `isReviewUser(email)` in `featureFlags.ts` are the two guards for this flow. Do not refactor them away.
 
 ## Documentation
 - Comments for components and functions should be concise. Comments should not exceed 3 lines in most cases.

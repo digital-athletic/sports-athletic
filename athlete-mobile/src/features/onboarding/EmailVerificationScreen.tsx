@@ -7,6 +7,8 @@ import { supabase } from "@/services/supabaseClient";
 import { featureFlags } from "@/config/featureFlags";
 import { useAuthStore } from "@/store/authStore";
 import { useUserSettingsStore } from "@/store/userSettingsStore";
+import { useRegistrationConsentStore } from "@/store/registrationConsentStore";
+import { getErrorCode } from "@/utils/ErrorUtils";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
@@ -31,20 +33,28 @@ type VerificationMode = "LOGIN" | "REGISTER";
 
 /** Screen shown after OTP request to enter the 6-digit verification code. */
 export function EmailVerificationScreen() {
-  const { email, mode, acceptedAnalytics, acceptedTerms } =
-    useLocalSearchParams<{
-      email: string;
-      mode: VerificationMode;
-      acceptedAnalytics?: string;
-      acceptedTerms?: string;
-    }>();
-  const termsConsent = acceptedTerms === "true";
-  const analyticsConsent = acceptedAnalytics === "true";
+  const { email, mode } = useLocalSearchParams<{
+    email: string;
+    mode: VerificationMode;
+  }>();
+  // Consent flags come from the in-memory store (set by the registration screen)
+  // so they cannot be forged via URL parameter manipulation.
+  const pendingConsent = useRegistrationConsentStore((s) => s.pendingConsent);
+  const clearPendingConsent = useRegistrationConsentStore(
+    (s) => s.clearPendingConsent,
+  );
+  const termsConsent = pendingConsent?.termsAccepted ?? false;
+  const analyticsConsent = pendingConsent?.analyticsAccepted ?? false;
+
   const router = useRouter();
   const { t } = useTranslation();
   const { colors, spacing, borderRadii } = useTheme();
-  const { initializeFromSupabase } = useAuthStore();
-  const { setAnonymisedDataUse, setConsentStatus } = useUserSettingsStore();
+  const initializeFromSupabase = useAuthStore((s) => s.initializeFromSupabase);
+  const acceptConsent = useUserSettingsStore((s) => s.acceptConsent);
+  const setAnonymisedDataUse = useUserSettingsStore(
+    (s) => s.setAnonymisedDataUse,
+  );
+  const setConsentStatus = useUserSettingsStore((s) => s.setConsentStatus);
   const insets = useSafeAreaInsets();
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
@@ -90,10 +100,7 @@ export function EmailVerificationScreen() {
       setResent(true);
       startCooldown();
     } catch (error: unknown) {
-      const code =
-        error instanceof Error && "code" in error
-          ? (error as Error & { code: string }).code
-          : undefined;
+      const code = getErrorCode(error);
       const message =
         code === "auth/too-many-requests"
           ? t("onboarding.errorMessageTooManyRequests")
@@ -116,45 +123,55 @@ export function EmailVerificationScreen() {
       useAuthStore.getState().setAuth({ userId: "review-user" });
       setConsentStatus("accepted");
       if (mode === "REGISTER") {
+        clearPendingConsent();
         router.replace("/anamnesis");
       }
+      setVerifying(false);
       return;
     }
 
-    const { data, error } = await supabase.auth.verifyOtp({
-      email: email ?? "",
-      token: otpCode,
-      type: "email",
-    });
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        email: email ?? "",
+        token: otpCode,
+        type: "email",
+      });
 
-    setVerifying(false);
+      if (error) {
+        setOtpCode("");
+        setVerificationError(t("onboarding.invalidVerificationCode"));
+        return;
+      }
 
-    if (error) {
-      setOtpCode("");
-      setVerificationError(t("onboarding.invalidVerificationCode"));
-      return;
-    }
-
-    if (data.session) {
-      await initializeFromSupabase();
-      if (mode === "REGISTER") {
+      if (data.session) {
         try {
-          await saveConsentToProfile({
-            privacyAccepted: termsConsent,
-            analyticsAccepted: analyticsConsent,
-          });
-          setAnonymisedDataUse(analyticsConsent);
-          setConsentStatus("accepted");
+          await initializeFromSupabase();
         } catch {
-          // Fail closed: without a server consent record we must not grant access.
-          // The consent gate (Stack.Protected) will intercept the navigation below
-          // and route the user to ConsentScreen where they can retry.
-          setConsentStatus("missing");
+          // Session is valid but local store init failed — auth listener will recover.
         }
-        router.replace("/anamnesis");
+        if (mode === "REGISTER") {
+          try {
+            await saveConsentToProfile({
+              privacyAccepted: termsConsent,
+              analyticsAccepted: analyticsConsent,
+            });
+            setAnonymisedDataUse(analyticsConsent);
+            acceptConsent();
+          } catch {
+            // Fail closed: without a server consent record we must not grant access.
+            // The consent gate (Stack.Protected) will intercept the navigation below
+            // and route the user to ConsentScreen where they can retry.
+            setConsentStatus("missing");
+          } finally {
+            clearPendingConsent();
+          }
+          router.replace("/anamnesis");
+        }
+      } else {
+        setVerificationError(t("onboarding.alertAnErrorOccuredTitle"));
       }
-    } else {
-      setVerificationError(t("onboarding.alertAnErrorOccuredTitle"));
+    } finally {
+      setVerifying(false);
     }
   };
 

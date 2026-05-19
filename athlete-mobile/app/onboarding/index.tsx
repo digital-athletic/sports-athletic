@@ -16,6 +16,8 @@ import {
   requestRegistrationOtp,
 } from "../../src/services/AuthService";
 import { validateEmail } from "../../src/utils/ValidationUtils";
+import { getErrorCode } from "../../src/utils/ErrorUtils";
+import { useRegistrationConsentStore } from "@/store/registrationConsentStore";
 
 /**
  * Onboarding Screen
@@ -110,6 +112,7 @@ export default function OnboardingScreen() {
   const { t } = useTranslation();
 
   const handleLogin = async () => {
+    useRegistrationConsentStore.getState().clearPendingConsent();
     if (!validateEmail(state.email)) {
       Alert.alert(
         t("onboarding.errorInvalidMailAdressTitle"),
@@ -132,11 +135,12 @@ export default function OnboardingScreen() {
 
     try {
       await requestLoginOtp(state.email);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const code = getErrorCode(error);
       // Silently proceed for user-not-found to prevent user enumeration
-      if (error.code !== "auth/user-not-found") {
+      if (code !== "auth/user-not-found") {
         const message =
-          error.code === "auth/too-many-requests"
+          code === "auth/too-many-requests"
             ? t("onboarding.errorMessageTooManyRequests")
             : t("onboarding.alertAnErrorOccuredTitle");
         Alert.alert(t("onboarding.alertErrorTitle"), message);
@@ -183,15 +187,15 @@ export default function OnboardingScreen() {
     dispatch({ type: "SET_PROCESSING", payload: true });
     Keyboard.dismiss();
 
+    useRegistrationConsentStore.getState().setPendingConsent({
+      analyticsAccepted: state.acceptedAnalytics,
+      termsAccepted: state.acceptedPrivacy,
+    });
+
     if (featureFlags.isReviewUser(state.email)) {
       router.push({
         pathname: "/onboarding/email-verification",
-        params: {
-          email: state.email,
-          mode: "REGISTER",
-          acceptedAnalytics: String(state.acceptedAnalytics),
-          acceptedTerms: String(state.acceptedPrivacy),
-        },
+        params: { email: state.email, mode: "REGISTER" },
       });
       dispatch({ type: "SET_PROCESSING", payload: false });
       return;
@@ -199,18 +203,19 @@ export default function OnboardingScreen() {
 
     try {
       await requestRegistrationOtp(state.email, state.acceptedAnalytics);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const code = getErrorCode(error);
       // Silently proceed for email-already-in-use to prevent user enumeration
-      if (error.code !== "auth/email-already-in-use") {
+      if (code !== "auth/email-already-in-use") {
         let message = t("onboarding.errorUnknownMsgRetry");
         let fields: ErrorField[] = [];
 
-        if (error.code === "auth/invalid-email") {
+        if (code === "auth/invalid-email") {
           message = t("onboarding.invalidEmail");
           fields = ["email"];
-        } else if (error.code === "auth/network-request-failed") {
+        } else if (code === "auth/network-request-failed") {
           message = t("onboarding.errorMessageNoInternetConnection");
-        } else if (error.code === "auth/too-many-requests") {
+        } else if (code === "auth/too-many-requests") {
           message = t("onboarding.errorMessageTooManyRequests");
         }
 
@@ -225,17 +230,13 @@ export default function OnboardingScreen() {
 
     router.push({
       pathname: "/onboarding/email-verification",
-      params: {
-        email: state.email,
-        mode: "REGISTER",
-        acceptedAnalytics: String(state.acceptedAnalytics),
-        acceptedTerms: String(state.acceptedPrivacy),
-      },
+      params: { email: state.email, mode: "REGISTER" },
     });
     dispatch({ type: "SET_PROCESSING", payload: false });
   };
 
   const handleBack = () => {
+    useRegistrationConsentStore.getState().clearPendingConsent();
     dispatch({ type: "RESET" });
   };
 

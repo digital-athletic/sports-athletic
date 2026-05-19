@@ -51,9 +51,11 @@ const mockInitializeFromSupabase = jest.fn();
 const mockSetAuth = jest.fn();
 jest.mock("@/store/authStore", () => ({
   useAuthStore: Object.assign(
-    () => ({
-      initializeFromSupabase: mockInitializeFromSupabase,
-    }),
+    (
+      selector: (state: {
+        initializeFromSupabase: typeof mockInitializeFromSupabase;
+      }) => unknown,
+    ) => selector({ initializeFromSupabase: mockInitializeFromSupabase }),
     {
       getState: () => ({ setAuth: mockSetAuth }),
     },
@@ -63,17 +65,48 @@ jest.mock("@/store/authStore", () => ({
 // Mock user settings store
 const mockSetAnonymisedDataUse = jest.fn();
 const mockSetConsentStatus = jest.fn();
+const mockAcceptConsent = jest.fn();
 jest.mock("@/store/userSettingsStore", () => ({
-  useUserSettingsStore: () => ({
-    setAnonymisedDataUse: mockSetAnonymisedDataUse,
-    setConsentStatus: mockSetConsentStatus,
-  }),
+  useUserSettingsStore: (
+    selector: (state: {
+      setAnonymisedDataUse: typeof mockSetAnonymisedDataUse;
+      setConsentStatus: typeof mockSetConsentStatus;
+      acceptConsent: typeof mockAcceptConsent;
+    }) => unknown,
+  ) =>
+    selector({
+      setAnonymisedDataUse: mockSetAnonymisedDataUse,
+      setConsentStatus: mockSetConsentStatus,
+      acceptConsent: mockAcceptConsent,
+    }),
+}));
+
+// Mock registration consent store
+let mockPendingConsent: {
+  analyticsAccepted: boolean;
+  termsAccepted: boolean;
+} | null = null;
+const mockClearPendingConsent = jest.fn();
+jest.mock("@/store/registrationConsentStore", () => ({
+  useRegistrationConsentStore: (
+    selector: (state: {
+      pendingConsent: typeof mockPendingConsent;
+      clearPendingConsent: typeof mockClearPendingConsent;
+    }) => unknown,
+  ) =>
+    selector({
+      get pendingConsent() {
+        return mockPendingConsent;
+      },
+      clearPendingConsent: mockClearPendingConsent,
+    }),
 }));
 
 describe("<EmailVerificationScreen />", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockSearchParams = { email: "user@example.com", mode: "REGISTER" };
+    mockPendingConsent = null;
     mockVerifyOtp.mockResolvedValue({ data: {}, error: null });
     mockInitializeFromSupabase.mockResolvedValue(undefined);
     mockRequestLoginOtp.mockResolvedValue(undefined);
@@ -124,12 +157,8 @@ describe("<EmailVerificationScreen />", () => {
     );
   });
 
-  it("preserves acceptedAnalytics=true when resending in REGISTER mode", async () => {
-    mockSearchParams = {
-      email: "user@example.com",
-      mode: "REGISTER",
-      acceptedAnalytics: "true",
-    };
+  it("preserves analyticsAccepted=true from store when resending in REGISTER mode", async () => {
+    mockPendingConsent = { analyticsAccepted: true, termsAccepted: false };
     const { getByText } = render(<EmailVerificationScreen />);
 
     await act(async () => {
@@ -338,11 +367,11 @@ describe("<EmailVerificationScreen />", () => {
   });
 
   it("upserts consent and syncs local store after successful REGISTER verification", async () => {
-    mockSearchParams = {
-      email: "user@example.com",
-      mode: "REGISTER",
-      acceptedAnalytics: "true",
-    };
+    // Consent flags come from the in-memory store, not URL params.
+    // termsAccepted is false because the registration screen omits the privacy
+    // checkbox when privacyEnabled is false; the consent gate only enforces it when
+    // featureFlags.privacyEnabled is true.
+    mockPendingConsent = { analyticsAccepted: true, termsAccepted: false };
     mockVerifyOtp.mockResolvedValue({
       data: {
         session: { user: { id: "user-1" }, access_token: "token-1" },
@@ -362,6 +391,8 @@ describe("<EmailVerificationScreen />", () => {
       privacyAccepted: false,
     });
     expect(mockSetAnonymisedDataUse).toHaveBeenCalledWith(true);
+    expect(mockAcceptConsent).toHaveBeenCalled();
+    expect(mockClearPendingConsent).toHaveBeenCalled();
     expect(mockReplace).toHaveBeenCalledWith("/anamnesis");
   });
 
@@ -380,7 +411,8 @@ describe("<EmailVerificationScreen />", () => {
       fireEvent.press(getByText("Verify"));
     });
 
-    expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
+    expect(mockAcceptConsent).toHaveBeenCalled();
+    expect(mockSetConsentStatus).not.toHaveBeenCalledWith("accepted");
   });
 
   it("does not call setConsentStatus in LOGIN path after successful verification", async () => {
@@ -444,6 +476,28 @@ describe("<EmailVerificationScreen />", () => {
     expect(mockSaveConsentToProfile).not.toHaveBeenCalled();
   });
 
+  it("saves consent with false/false when pendingConsent is null — guards against deep-link bypass", async () => {
+    mockPendingConsent = null;
+    mockVerifyOtp.mockResolvedValue({
+      data: {
+        session: { user: { id: "user-1" }, access_token: "token-1" },
+      },
+      error: null,
+    });
+
+    const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
+    fireEvent.changeText(getByLabelText("Verification code"), "123456");
+
+    await act(async () => {
+      fireEvent.press(getByText("Verify"));
+    });
+
+    expect(mockSaveConsentToProfile).toHaveBeenCalledWith({
+      privacyAccepted: false,
+      analyticsAccepted: false,
+    });
+  });
+
   it("does not call verifyOtp when code is incomplete", async () => {
     const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
 
@@ -468,7 +522,7 @@ describe("<EmailVerificationScreen />", () => {
       delete process.env.EXPO_PUBLIC_REVIEW_OTP;
     });
 
-    it("sets consentStatus to accepted and does not call supabase for review user in REGISTER mode", async () => {
+    it("bypasses supabase and marks consent accepted for review user in REGISTER mode", async () => {
       const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
       fireEvent.changeText(getByLabelText("Verification code"), "654321");
 
@@ -477,6 +531,7 @@ describe("<EmailVerificationScreen />", () => {
       });
 
       expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
+      expect(mockAcceptConsent).not.toHaveBeenCalled();
       expect(mockVerifyOtp).not.toHaveBeenCalled();
     });
 
@@ -491,7 +546,7 @@ describe("<EmailVerificationScreen />", () => {
       expect(mockReplace).toHaveBeenCalledWith("/anamnesis");
     });
 
-    it("sets consentStatus to accepted and does not navigate for review user in LOGIN mode", async () => {
+    it("bypasses supabase and marks consent accepted for review user in LOGIN mode", async () => {
       mockSearchParams = { email: "reviewer@example.com", mode: "LOGIN" };
       const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
       fireEvent.changeText(getByLabelText("Verification code"), "654321");
@@ -501,6 +556,7 @@ describe("<EmailVerificationScreen />", () => {
       });
 
       expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
+      expect(mockAcceptConsent).not.toHaveBeenCalled();
       expect(mockVerifyOtp).not.toHaveBeenCalled();
       expect(mockReplace).not.toHaveBeenCalled();
     });
@@ -514,7 +570,7 @@ describe("<EmailVerificationScreen />", () => {
       });
 
       expect(mockVerifyOtp).toHaveBeenCalled();
-      expect(mockSetConsentStatus).not.toHaveBeenCalledWith("accepted");
+      expect(mockAcceptConsent).not.toHaveBeenCalled();
     });
   });
 });

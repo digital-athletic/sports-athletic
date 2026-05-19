@@ -45,8 +45,8 @@ describe("featureFlags", () => {
   });
 
   describe("analyticsConsentEnabled", () => {
-    it("defaults to true when EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED is unset", () => {
-      expect(featureFlags.analyticsConsentEnabled).toBe(true);
+    it("defaults to false when EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED is unset", () => {
+      expect(featureFlags.analyticsConsentEnabled).toBe(false);
     });
 
     it("is false when EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED is 'false'", () => {

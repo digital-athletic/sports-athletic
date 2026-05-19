@@ -23,9 +23,7 @@ export function ConsentScreen() {
   const [showSaveError, setShowSaveError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const setConsentStatus = useUserSettingsStore(
-    (state) => state.setConsentStatus,
-  );
+  const acceptConsent = useUserSettingsStore((state) => state.acceptConsent);
   const setAnonymisedDataUse = useUserSettingsStore(
     (state) => state.setAnonymisedDataUse,
   );
@@ -43,6 +41,7 @@ export function ConsentScreen() {
   };
 
   const handleAccept = async () => {
+    if (submitting) return;
     if (!privacyAccepted) {
       setShowPrivacyError(true);
       return;
@@ -59,7 +58,7 @@ export function ConsentScreen() {
         analyticsAccepted,
       });
       setAnonymisedDataUse(analyticsAccepted);
-      setConsentStatus("accepted");
+      acceptConsent();
     } catch {
       setShowSaveError(true);
     } finally {

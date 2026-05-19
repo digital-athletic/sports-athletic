@@ -3,10 +3,7 @@ import { AppState, type AppStateStatus } from "react-native";
 import NetInfo from "@react-native-community/netinfo";
 import { supabase } from "@/services/supabaseClient";
 import { useAuthStore } from "@/store/authStore";
-import {
-  useUserSettingsStore,
-  type ConsentStatus,
-} from "@/store/userSettingsStore";
+import { useUserSettingsStore } from "@/store/userSettingsStore";
 import { fetchConsentFromProfile } from "@/services/AuthService";
 import { featureFlags } from "@/config/featureFlags";
 
@@ -22,68 +19,84 @@ export function useAuthStateListener() {
   const initializeFromSupabase = useAuthStore(
     (state) => state.initializeFromSupabase,
   );
-  const auth = useAuthStore((state) => state.auth);
   const setConsentStatus = useUserSettingsStore(
     (state) => state.setConsentStatus,
   );
+  const acceptConsent = useUserSettingsStore((state) => state.acceptConsent);
   const setAnonymisedDataUse = useUserSettingsStore(
     (state) => state.setAnonymisedDataUse,
   );
-  const consentStatus = useUserSettingsStore((state) => state.consentStatus);
 
-  const authRef = useRef(auth);
-  authRef.current = auth;
-  const consentStatusRef = useRef<ConsentStatus>(consentStatus);
-  consentStatusRef.current = consentStatus;
   const wasOfflineRef = useRef(false);
   // Session-scoped: null on every cold start, so stale AsyncStorage "accepted"
   // from a different user cannot bypass the consent gate (GDPR re-verification).
   const lastVerifiedUserIdRef = useRef<string | null>(null);
+  const checkEpochRef = useRef(0);
 
   const checkAndSetConsent = useCallback(
     async (userId: string) => {
       if (featureFlags.isReviewUserId(userId)) {
         setConsentStatus("accepted");
-        lastVerifiedUserIdRef.current = userId;
         return;
       }
       if (
-        consentStatusRef.current === "accepted" &&
+        useUserSettingsStore.getState().consentStatus === "accepted" &&
         lastVerifiedUserIdRef.current === userId
       ) {
         return;
       }
 
+      // Capture status before the async fetch to distinguish two "accepted" cases:
+      //   a) stale from persistence (cold start or offline warm-logout) — server wins
+      //   b) user accepted in-session while this check was in-flight — don't downgrade
+      const statusBeforeFetch = useUserSettingsStore.getState().consentStatus;
+      const epoch = ++checkEpochRef.current;
+      // Returns true when an in-session accept must be preserved (case b above).
+      const shouldPreserveInSessionAccept = () =>
+        statusBeforeFetch !== "accepted" &&
+        useUserSettingsStore.getState().consentStatus === "accepted";
+
       try {
         const record = await fetchConsentFromProfile();
+        if (checkEpochRef.current !== epoch) return;
+
         const privacyMissing =
           featureFlags.privacyEnabled && record?.privacyAccepted !== true;
         const analyticsMissing =
           featureFlags.analyticsConsentEnabled &&
           record?.analyticsAccepted !== true;
         if (privacyMissing || analyticsMissing) {
+          if (shouldPreserveInSessionAccept()) return;
           setConsentStatus("missing");
         } else {
-          if (record?.analyticsAccepted !== undefined) {
-            setAnonymisedDataUse(record.analyticsAccepted);
-          }
-          setConsentStatus("accepted");
+          // Defense-in-depth: verify the auth user hasn't changed since the fetch started.
+          if (userId !== useAuthStore.getState().auth?.userId) return;
+          setAnonymisedDataUse(record?.analyticsAccepted ?? false);
+          acceptConsent();
           lastVerifiedUserIdRef.current = userId;
         }
       } catch {
+        if (checkEpochRef.current !== epoch) return;
+        if (shouldPreserveInSessionAccept()) return;
         // Fail closed — a network error must not bypass the consent gate.
         setConsentStatus("missing");
       }
     },
-    [setConsentStatus, setAnonymisedDataUse],
+    [setConsentStatus, acceptConsent, setAnonymisedDataUse],
   );
 
   useEffect(() => {
-    initializeFromSupabase().then(() => {
-      if (authRef.current) {
-        checkAndSetConsent(authRef.current.userId);
-      }
-    });
+    initializeFromSupabase()
+      .then(() => {
+        const currentAuth = useAuthStore.getState().auth;
+        if (currentAuth) {
+          checkAndSetConsent(currentAuth.userId);
+        }
+      })
+      .catch(() => {
+        // Initialization failure — consent gate remains in "loading";
+        // the NetInfo reconnect handler will retry automatically.
+      });
 
     const {
       data: { subscription },
@@ -109,24 +122,31 @@ export function useAuthStateListener() {
         state.isConnected && state.isInternetReachable !== false
       );
       if (isOnline && wasOfflineRef.current) {
-        // Re-check consent on reconnect for users blocked by a prior network
-        // failure so the gate resolves automatically without requiring a
-        // manual interaction or sign-out cycle.
-        if (authRef.current && consentStatusRef.current !== "accepted") {
-          checkAndSetConsent(authRef.current.userId);
-        }
-        initializeFromSupabase();
+        // Mirror the mount path: initialize first, then re-check consent so that
+        // a session established during the offline period is also covered.
+        initializeFromSupabase()
+          .then(() => {
+            const currentAuth = useAuthStore.getState().auth;
+            if (
+              currentAuth &&
+              useUserSettingsStore.getState().consentStatus !== "accepted"
+            ) {
+              checkAndSetConsent(currentAuth.userId);
+            }
+          })
+          .catch(() => {});
       }
       wasOfflineRef.current = !isOnline;
     });
 
     const handleAppStateChange = (nextState: AppStateStatus) => {
+      const currentAuth = useAuthStore.getState().auth;
       if (
         nextState === "active" &&
-        authRef.current &&
-        consentStatusRef.current !== "accepted"
+        currentAuth &&
+        useUserSettingsStore.getState().consentStatus !== "accepted"
       ) {
-        checkAndSetConsent(authRef.current.userId);
+        checkAndSetConsent(currentAuth.userId);
       }
     };
     const appStateSubscription = AppState.addEventListener(

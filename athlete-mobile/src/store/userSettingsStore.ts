@@ -40,13 +40,16 @@ type Actions = {
         | "setReviewStatus"
         | "setAnonymisedDataUse"
         | "setConsentStatus"
+        | "acceptConsent"
         | "resetSettings"
+        | "consentStatus"
       >
     >,
   ) => void;
   setReviewStatus: (status: ReviewStatusType) => void;
   setAnonymisedDataUse: (enabled: boolean) => void;
   setConsentStatus: (status: ConsentStatus) => void;
+  acceptConsent: () => void;
   resetSettings: () => void;
 };
 
@@ -74,7 +77,6 @@ export const useUserSettingsStore = create<UserSettingsState>()(
           state.reviewStatus = settings.reviewStatus ?? state.reviewStatus;
           state.anonymisedDataUse =
             settings.anonymisedDataUse ?? state.anonymisedDataUse;
-          state.consentStatus = settings.consentStatus ?? state.consentStatus;
         }),
 
       setReviewStatus: (status) =>
@@ -90,6 +92,13 @@ export const useUserSettingsStore = create<UserSettingsState>()(
       setConsentStatus: (status) =>
         set((state) => {
           state.consentStatus = status;
+        }),
+
+      acceptConsent: () =>
+        set((state) => {
+          if (state.consentStatus !== "accepted") {
+            state.consentStatus = "accepted";
+          }
         }),
 
       resetSettings: () => {

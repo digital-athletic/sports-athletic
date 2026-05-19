@@ -63,4 +63,27 @@ describe("userSettingsStore", () => {
       expect(result.current.reviewStatus.hasReviewed).toBe(false);
     });
   });
+
+  describe("acceptConsent", () => {
+    it("sets consentStatus to accepted", () => {
+      const { result } = renderHook(() => useUserSettingsStore());
+
+      act(() => {
+        result.current.acceptConsent();
+      });
+
+      expect(result.current.consentStatus).toBe("accepted");
+    });
+
+    it("does not modify anonymisedDataUse", () => {
+      const { result } = renderHook(() => useUserSettingsStore());
+
+      act(() => {
+        result.current.setAnonymisedDataUse(true);
+        result.current.acceptConsent();
+      });
+
+      expect(result.current.anonymisedDataUse).toBe(true);
+    });
+  });
 });

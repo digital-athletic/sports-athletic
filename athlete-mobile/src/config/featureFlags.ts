@@ -4,7 +4,7 @@ export const featureFlags = {
     return process.env.EXPO_PUBLIC_SERVER_SYNC_ENABLED !== "false";
   },
   get analyticsConsentEnabled(): boolean {
-    return process.env.EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED !== "false";
+    return process.env.EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED === "true";
   },
   /**
    * When true, exercise sync is enabled but only activity counts are transmitted —

@@ -79,6 +79,7 @@ export default defineConfig({
         EXPO_PUBLIC_LINK_PRIVACY: "http://localhost:8081/privacy",
         EXPO_PUBLIC_SERVER_SYNC_ENABLED: "true",
         EXPO_PUBLIC_SERVER_SYNC_ACTIVITY_ONLY_ENABLED: "true",
+        EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED: "true",
       },
     },
   ],

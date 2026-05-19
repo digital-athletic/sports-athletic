@@ -6,21 +6,27 @@
 import {
   deleteAccount,
   fetchConsentFromProfile,
+  fetchDisplayName,
   logout,
   requestLoginOtp,
   requestRegistrationOtp,
   saveConsentToProfile,
+  saveDisplayName,
 } from "./AuthService";
 
 const mockSignInWithOtp = jest.fn();
 const mockGetSession = jest.fn();
+const mockGetUser = jest.fn();
+const mockUpdateUser = jest.fn();
 const mockFunctionsInvoke = jest.fn();
 const mockSignOut = jest.fn();
 const mockRpc = jest.fn();
 const mockMaybeSingle = jest.fn();
 const mockSelect = jest.fn(() => ({ maybeSingle: mockMaybeSingle }));
+const mockUpsert = jest.fn();
 const mockFrom = jest.fn((_table: string) => ({
   select: mockSelect,
+  upsert: mockUpsert,
 }));
 jest.mock("./supabaseClient", () => ({
   supabase: {
@@ -28,6 +34,8 @@ jest.mock("./supabaseClient", () => ({
       signInWithOtp: (...args: unknown[]) => mockSignInWithOtp(...args),
       getSession: () => mockGetSession(),
       signOut: () => mockSignOut(),
+      getUser: () => mockGetUser(),
+      updateUser: (...args: unknown[]) => mockUpdateUser(...args),
     },
     functions: {
       invoke: (...args: unknown[]) => mockFunctionsInvoke(...args),
@@ -314,7 +322,7 @@ describe("fetchConsentFromProfile", () => {
     jest.clearAllMocks();
     mockMaybeSingle.mockReset();
     mockSelect.mockReturnValue({ maybeSingle: mockMaybeSingle });
-    mockFrom.mockReturnValue({ select: mockSelect });
+    mockFrom.mockReturnValue({ select: mockSelect, upsert: mockUpsert });
   });
 
   it("returns null when no row exists", async () => {
@@ -369,5 +377,136 @@ describe("fetchConsentFromProfile", () => {
     await expect(fetchConsentFromProfile()).rejects.toMatchObject({
       code: "auth/unknown",
     });
+  });
+});
+
+describe("fetchDisplayName", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("returns the display_name string from session user_metadata", async () => {
+    mockGetSession.mockResolvedValue({
+      data: {
+        session: { user: { user_metadata: { display_name: "Alice" } } },
+      },
+    });
+
+    const result = await fetchDisplayName();
+
+    expect(result).toBe("Alice");
+  });
+
+  it("returns null when display_name is absent from user_metadata", async () => {
+    mockGetSession.mockResolvedValue({
+      data: { session: { user: { user_metadata: {} } } },
+    });
+
+    const result = await fetchDisplayName();
+
+    expect(result).toBeNull();
+  });
+
+  it("returns null when there is no active session", async () => {
+    mockGetSession.mockResolvedValue({ data: { session: null } });
+
+    const result = await fetchDisplayName();
+
+    expect(result).toBeNull();
+  });
+});
+
+describe("saveDisplayName", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockFrom.mockImplementation(() => ({
+      select: mockSelect,
+      upsert: mockUpsert,
+    }));
+  });
+
+  it("calls updateUser with the correct display_name payload", async () => {
+    mockUpdateUser.mockResolvedValue({
+      data: { user: { id: "user-123" } },
+      error: null,
+    });
+    mockUpsert.mockResolvedValue({ error: null });
+
+    await saveDisplayName("Alice");
+
+    expect(mockUpdateUser).toHaveBeenCalledWith({
+      data: { display_name: "Alice" },
+    });
+  });
+
+  it("skips both writes when display name is empty string", async () => {
+    await saveDisplayName("");
+
+    expect(mockUpdateUser).not.toHaveBeenCalled();
+    expect(mockUpsert).not.toHaveBeenCalled();
+  });
+
+  it("skips both writes when display name is whitespace only", async () => {
+    await saveDisplayName("   ");
+
+    expect(mockUpdateUser).not.toHaveBeenCalled();
+    expect(mockUpsert).not.toHaveBeenCalled();
+  });
+
+  it("skips both writes when display name exceeds 64 characters", async () => {
+    await saveDisplayName("a".repeat(65));
+
+    expect(mockUpdateUser).not.toHaveBeenCalled();
+    expect(mockUpsert).not.toHaveBeenCalled();
+  });
+
+  it("throws a mapped error when updateUser returns an error", async () => {
+    mockUpdateUser.mockResolvedValue({
+      data: {},
+      error: { message: "Update failed", code: "" },
+    });
+
+    await expect(saveDisplayName("Alice")).rejects.toMatchObject({
+      code: expect.any(String),
+    });
+  });
+
+  it("upserts display name into team_member_details after updateUser succeeds", async () => {
+    mockUpdateUser.mockResolvedValue({
+      data: { user: { id: "user-123" } },
+      error: null,
+    });
+    mockUpsert.mockResolvedValue({ error: null });
+
+    await saveDisplayName("Alice");
+
+    expect(mockFrom).toHaveBeenCalledWith("team_member_details");
+    expect(mockUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({ user_id: "user-123", display_name: "Alice" }),
+      { onConflict: "user_id" },
+    );
+  });
+
+  it("throws a mapped error when team_member_details upsert fails", async () => {
+    mockUpdateUser.mockResolvedValue({
+      data: { user: { id: "user-123" } },
+      error: null,
+    });
+    mockUpsert.mockResolvedValue({ error: { message: "DB error", code: "" } });
+
+    await expect(saveDisplayName("Alice")).rejects.toMatchObject({
+      code: expect.any(String),
+    });
+  });
+
+  it("does not upsert to team_member_details when updateUser fails", async () => {
+    mockUpdateUser.mockResolvedValue({
+      data: {},
+      error: { message: "Auth error", code: "" },
+    });
+
+    await expect(saveDisplayName("Alice")).rejects.toBeDefined();
+
+    expect(mockUpsert).not.toHaveBeenCalled();
   });
 });

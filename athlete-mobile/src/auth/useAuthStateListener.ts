@@ -4,7 +4,11 @@ import NetInfo from "@react-native-community/netinfo";
 import { supabase } from "@/services/supabaseClient";
 import { useAuthStore } from "@/store/authStore";
 import { useUserSettingsStore } from "@/store/userSettingsStore";
-import { fetchConsentFromProfile } from "@/services/AuthService";
+import {
+  fetchConsentFromProfile,
+  fetchDisplayName,
+} from "@/services/AuthService";
+import { useUserProfileStore } from "@/store/userProfileStore";
 import { featureFlags } from "@/config/featureFlags";
 
 /**
@@ -26,12 +30,24 @@ export function useAuthStateListener() {
   const setAnonymisedDataUse = useUserSettingsStore(
     (state) => state.setAnonymisedDataUse,
   );
+  const setUsername = useUserProfileStore((state) => state.setUsername);
 
   const wasOfflineRef = useRef(false);
   // Session-scoped: null on every cold start, so stale AsyncStorage "accepted"
   // from a different user cannot bypass the consent gate (GDPR re-verification).
   const lastVerifiedUserIdRef = useRef<string | null>(null);
   const checkEpochRef = useRef(0);
+
+  const syncDisplayName = useCallback(async () => {
+    try {
+      const name = await fetchDisplayName();
+      if (name !== null) {
+        setUsername(name);
+      }
+    } catch {
+      // display name is non-critical — swallow silently
+    }
+  }, [setUsername]);
 
   const checkAndSetConsent = useCallback(
     async (userId: string) => {
@@ -90,7 +106,10 @@ export function useAuthStateListener() {
       .then(() => {
         const currentAuth = useAuthStore.getState().auth;
         if (currentAuth) {
-          checkAndSetConsent(currentAuth.userId);
+          void Promise.all([
+            checkAndSetConsent(currentAuth.userId),
+            syncDisplayName(),
+          ]);
         }
       })
       .catch(() => {
@@ -107,7 +126,15 @@ export function useAuthStateListener() {
             userId: session.user.id,
           });
           if (event === "SIGNED_IN") {
-            checkAndSetConsent(session.user.id);
+            const nameFromSession: unknown =
+              session.user.user_metadata?.display_name;
+            if (
+              typeof nameFromSession === "string" &&
+              nameFromSession.length > 0
+            ) {
+              setUsername(nameFromSession);
+            }
+            void checkAndSetConsent(session.user.id);
           }
         }
       } else if (event === "SIGNED_OUT") {
@@ -164,6 +191,8 @@ export function useAuthStateListener() {
     clearAuth,
     initializeFromSupabase,
     checkAndSetConsent,
+    syncDisplayName,
     setConsentStatus,
+    setUsername,
   ]);
 }

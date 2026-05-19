@@ -34,6 +34,7 @@ export function useLogout() {
   const setConsentStatus = useUserSettingsStore(
     (state) => state.setConsentStatus,
   );
+  const resetProfile = useUserProfileStore((state) => state.resetProfile);
 
   const logout = async () => {
     setIsLoading(true);
@@ -46,6 +47,7 @@ export function useLogout() {
       // SIGNED_OUT never fires.
       clearAuth();
       setConsentStatus("loading");
+      resetProfile();
       setIsLoading(false);
     }
   };

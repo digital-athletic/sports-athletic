@@ -9,6 +9,8 @@ import { featureFlags } from "../config/featureFlags";
  * Uses passwordless OTP flow: send code via email, verify to create session.
  */
 
+export const DISPLAY_NAME_MAX_LENGTH = 64;
+
 /**
  * Maps Supabase auth errors to app-compatible error codes
  */
@@ -195,6 +197,38 @@ export const saveConsentToProfile = async (
 
   if (error) {
     throw mapSupabaseError(error);
+  }
+};
+
+export const fetchDisplayName = async (): Promise<string | null> => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  return session?.user?.user_metadata?.display_name ?? null;
+};
+
+export const saveDisplayName = async (displayName: string): Promise<void> => {
+  const trimmed = displayName.trim();
+  if (trimmed.length === 0 || trimmed.length > DISPLAY_NAME_MAX_LENGTH) return;
+
+  const { data: updateData, error: authError } = await supabase.auth.updateUser(
+    { data: { display_name: trimmed } },
+  );
+
+  if (authError) {
+    throw mapSupabaseError(authError);
+  }
+
+  const { error: dbError } = await supabase
+    .from("team_member_details")
+    .upsert(
+      { user_id: updateData.user.id, display_name: trimmed },
+      { onConflict: "user_id" },
+    );
+
+  if (dbError) {
+    throw mapSupabaseError(dbError);
   }
 };
 

@@ -10,6 +10,10 @@ import { useShowSeasonPhaseAfterAnamnesis } from "@/features/anamnesis/useShowSe
 import { DateInputField } from "@/form/DateInputField";
 import { SelectionInputField } from "@/form/SelectionInputField";
 import { TextInputField } from "@/form/TextInputField";
+import {
+  saveDisplayName,
+  DISPLAY_NAME_MAX_LENGTH,
+} from "@/services/AuthService";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { Button } from "@/theme/Button";
@@ -78,6 +82,7 @@ export default function UserProfileScreen() {
   }, [handleBackPress]);
 
   const goOn = () => {
+    saveDisplayName(username).catch(() => {}); // non-critical; display name re-syncs on next sign-in
     router.push({
       pathname: "/(anamnesis)/anamnesis/anamnesis-questions",
       params: {
@@ -87,7 +92,9 @@ export default function UserProfileScreen() {
   };
 
   const handleNameChange = (value: string) => {
-    setUsername(value);
+    if (value.length <= DISPLAY_NAME_MAX_LENGTH) {
+      setUsername(value);
+    }
   };
 
   const handleGenderChange = (values: string[]) => {

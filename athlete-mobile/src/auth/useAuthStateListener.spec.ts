@@ -10,14 +10,20 @@ const mockUnsubscribeSupabase = jest.fn();
 let capturedAuthCallback:
   | ((
       event: string,
-      session: { user: { id: string }; access_token: string } | null,
+      session: {
+        user: { id: string; user_metadata?: Record<string, unknown> };
+        access_token: string;
+      } | null,
     ) => void)
   | null = null;
 const mockOnAuthStateChange = jest.fn(
   (
     callback: (
       event: string,
-      session: { user: { id: string }; access_token: string } | null,
+      session: {
+        user: { id: string; user_metadata?: Record<string, unknown> };
+        access_token: string;
+      } | null,
     ) => void,
   ) => {
     capturedAuthCallback = callback;
@@ -141,9 +147,18 @@ jest.mock("../store/userSettingsStore", () => ({
 }));
 
 const mockFetchConsentFromProfile = jest.fn();
+const mockFetchDisplayName = jest.fn();
 jest.mock("../services/AuthService", () => ({
   fetchConsentFromProfile: (...args: unknown[]) =>
     mockFetchConsentFromProfile(...args),
+  fetchDisplayName: (...args: unknown[]) => mockFetchDisplayName(...args),
+}));
+
+const mockSetUsername = jest.fn();
+jest.mock("../store/userProfileStore", () => ({
+  useUserProfileStore: (
+    selector: (state: { setUsername: typeof mockSetUsername }) => unknown,
+  ) => selector({ setUsername: mockSetUsername }),
 }));
 
 let mockPrivacyEnabled = true;
@@ -173,6 +188,8 @@ beforeEach(() => {
   mockAuthValue = null;
   mockGetStateAuth = undefined; // mirror mode: getState().auth tracks mockAuthValue
   mockConsentStatus = "loading";
+  mockFetchDisplayName.mockResolvedValue(null);
+  mockSetUsername.mockReset();
 });
 
 describe("useAuthStateListener", () => {
@@ -866,5 +883,85 @@ describe("useAuthStateListener — consent gate", () => {
     // Fails if the implementation reads authRef.current (null — no re-render).
     // Passes only when it calls useAuthStore.getState().auth (returns mockGetStateAuth).
     await waitFor(() => expect(mockFetchConsentFromProfile).toHaveBeenCalled());
+  });
+});
+
+describe("useAuthStateListener — display name sync", () => {
+  it("fetches display name and sets it in the store on cold start when auth is present", async () => {
+    mockAuthValue = { userId: "user-1" };
+    mockFetchConsentFromProfile.mockResolvedValue({
+      privacyAccepted: true,
+      analyticsAccepted: true,
+    });
+    mockFetchDisplayName.mockResolvedValue("Alice");
+
+    renderHook(() => useAuthStateListener());
+
+    await waitFor(() => {
+      expect(mockFetchDisplayName).toHaveBeenCalled();
+      expect(mockSetUsername).toHaveBeenCalledWith("Alice");
+    });
+  });
+
+  it("reads display name from session metadata and sets it in the store on SIGNED_IN", async () => {
+    // Independent mode: cold start finds no auth so it never calls syncDisplayName,
+    // keeping this test focused solely on the SIGNED_IN code path.
+    mockGetStateAuth = null;
+    mockFetchConsentFromProfile.mockResolvedValue({
+      privacyAccepted: true,
+      analyticsAccepted: true,
+    });
+
+    renderHook(() => useAuthStateListener());
+
+    capturedAuthCallback!("SIGNED_IN", {
+      user: { id: "user-1", user_metadata: { display_name: "Bob" } },
+      access_token: "token",
+    });
+
+    await waitFor(() => {
+      expect(mockSetUsername).toHaveBeenCalledWith("Bob");
+    });
+    expect(mockFetchDisplayName).not.toHaveBeenCalled();
+  });
+
+  it("does not call setUsername when fetchDisplayName returns null", async () => {
+    mockAuthValue = { userId: "user-1" };
+    mockFetchConsentFromProfile.mockResolvedValue({
+      privacyAccepted: true,
+      analyticsAccepted: true,
+    });
+    mockFetchDisplayName.mockResolvedValue(null);
+
+    renderHook(() => useAuthStateListener());
+
+    await waitFor(() => {
+      expect(mockFetchDisplayName).toHaveBeenCalled();
+    });
+    expect(mockSetUsername).not.toHaveBeenCalled();
+  });
+
+  it("swallows errors from fetchDisplayName without crashing or blocking consent flow", async () => {
+    mockAuthValue = { userId: "user-1" };
+    mockFetchConsentFromProfile.mockResolvedValue({
+      privacyAccepted: true,
+      analyticsAccepted: true,
+    });
+    mockFetchDisplayName.mockRejectedValue(new Error("network failure"));
+
+    renderHook(() => useAuthStateListener());
+
+    await waitFor(() => {
+      expect(mockAcceptConsent).toHaveBeenCalled();
+    });
+    expect(mockSetUsername).not.toHaveBeenCalled();
+  });
+
+  it("does not call setUsername on SIGNED_OUT", () => {
+    renderHook(() => useAuthStateListener());
+
+    capturedAuthCallback!("SIGNED_OUT", null);
+
+    expect(mockSetUsername).not.toHaveBeenCalled();
   });
 });

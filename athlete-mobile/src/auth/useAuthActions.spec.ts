@@ -53,9 +53,12 @@ jest.mock("@/store/anamnesisStore", () => ({
 
 const mockResetProfile = jest.fn();
 jest.mock("@/store/userProfileStore", () => ({
-  useUserProfileStore: () => ({
-    resetProfile: mockResetProfile,
-  }),
+  useUserProfileStore: (
+    selector?: (state: { resetProfile: () => void }) => unknown,
+  ) => {
+    const state = { resetProfile: mockResetProfile };
+    return selector ? selector(state) : state;
+  },
 }));
 
 const mockResetUserWorkoutData = jest.fn();
@@ -248,6 +251,50 @@ describe("useLogout", () => {
     // This prevents stale "accepted" consent from persisting after a failed logout.
     expect(mockClearAuth).toHaveBeenCalled();
     expect(mockSetConsentStatus).toHaveBeenCalledWith("loading");
+  });
+
+  it("calls resetProfile on successful logout", async () => {
+    const { result } = renderHook(() => useLogout());
+
+    await act(async () => {
+      result.current.logout();
+    });
+
+    const yesButton = mockAlert.mock.calls[0][2].find(
+      (btn: { text: string }) => btn.text === "common.yes",
+    );
+    await act(async () => {
+      await yesButton.onPress();
+    });
+
+    await waitFor(() => {
+      expect(mockSupabaseLogout).toHaveBeenCalled();
+    });
+
+    expect(mockResetProfile).toHaveBeenCalled();
+  });
+
+  it("calls resetProfile even when supabase logout fails", async () => {
+    mockSupabaseLogout.mockRejectedValue(new Error("Network error"));
+
+    const { result } = renderHook(() => useLogout());
+
+    await act(async () => {
+      result.current.logout();
+    });
+
+    const yesButton = mockAlert.mock.calls[0][2].find(
+      (btn: { text: string }) => btn.text === "common.yes",
+    );
+    await act(async () => {
+      await yesButton.onPress();
+    });
+
+    await waitFor(() => {
+      expect(mockSupabaseLogout).toHaveBeenCalled();
+    });
+
+    expect(mockResetProfile).toHaveBeenCalled();
   });
 });
 

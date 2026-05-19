@@ -145,7 +145,22 @@ export async function getTeamMembers(teamId: string): Promise<TeamMember[]> {
     throw new Error(error.message);
   }
 
-  return data ?? [];
+  if (!data?.length) return [];
+
+  const userIds = data.map((m) => m.user_id);
+  const { data: details } = await supabase
+    .from("team_member_details")
+    .select("user_id, display_name")
+    .in("user_id", userIds);
+
+  const detailsMap = new Map(
+    (details ?? []).map((d) => [d.user_id, d.display_name as string | null]),
+  );
+
+  return data.map((member) => ({
+    ...member,
+    display_name: detailsMap.get(member.user_id) ?? null,
+  }));
 }
 
 export async function getTeamInviteCodes(teamId: string): Promise<string[]> {

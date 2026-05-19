@@ -4,6 +4,7 @@ import type { TeamMember } from "../types/team";
 interface TeamMemberListProps {
   members: TeamMember[];
   currentUserId: string | null;
+  currentUserDisplayName?: string | null;
   isOwner: boolean;
   onRemoveMember?: (userId: string) => void;
 }
@@ -11,10 +12,18 @@ interface TeamMemberListProps {
 export function TeamMemberList({
   members,
   currentUserId,
+  currentUserDisplayName,
   isOwner,
   onRemoveMember,
 }: TeamMemberListProps) {
   const { t } = useTranslation();
+
+  const resolveDisplayName = (member: TeamMember): string => {
+    if (member.display_name) return member.display_name;
+    if (member.user_id === currentUserId && currentUserDisplayName)
+      return currentUserDisplayName;
+    return t("evaluations.athletes.anonymous");
+  };
 
   return (
     <div className="rounded-lg border border-gray-200 p-4">
@@ -35,7 +44,7 @@ export function TeamMemberList({
             >
               <div>
                 <span className="text-sm font-medium text-gray-900">
-                  {t("evaluations.athletes.anonymous")}
+                  {resolveDisplayName(member)}
                   {member.user_id === currentUserId &&
                     ` ${t("teamManagement.members.you")}`}
                 </span>

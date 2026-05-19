@@ -16,6 +16,9 @@ ENV REACT_NATIVE_PACKAGER_HOSTNAME=0.0.0.0
 RUN corepack enable && \
     corepack prepare pnpm@10.25.0 --activate
 
+# Install secretlint globally for Claude Code secret-scanning hooks
+RUN npm install -g secretlint @secretlint/secretlint-rule-preset-recommend
+
 # Expose ports
 EXPOSE 8081 19000 19001 19002
 

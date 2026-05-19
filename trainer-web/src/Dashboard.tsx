@@ -21,6 +21,7 @@ export const Dashboard = () => {
     loading,
     isOwner,
     currentUserId,
+    currentUserDisplayName,
     regenerateInviteCode,
     leaveCurrentTeam,
     deleteCurrentTeam,
@@ -126,6 +127,7 @@ export const Dashboard = () => {
               loading={loading}
               isOwner={isOwner}
               currentUserId={currentUserId}
+              currentUserDisplayName={currentUserDisplayName}
               actionError={actionError}
               showLeaveConfirm={showLeaveConfirm}
               isLeaving={isLeaving}

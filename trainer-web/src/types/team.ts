@@ -14,6 +14,7 @@ export interface TeamMember {
   user_id: string;
   role: "owner" | "member";
   joined_at: string;
+  display_name?: string | null;
 }
 
 export interface InviteCode {

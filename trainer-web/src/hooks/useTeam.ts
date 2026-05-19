@@ -23,6 +23,9 @@ export function useTeam(teamId: string | null) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserDisplayName, setCurrentUserDisplayName] = useState<
+    string | null
+  >(null);
 
   const translateError = useCallback(
     (err: unknown, fallbackKey: string): string => {
@@ -46,6 +49,9 @@ export function useTeam(teamId: string | null) {
         data: { user },
       } = await supabase.auth.getUser();
       setCurrentUserId(user?.id ?? null);
+      setCurrentUserDisplayName(
+        (user?.user_metadata?.display_name as string | undefined) ?? null,
+      );
 
       if (!teamId) {
         setTeam(null);
@@ -185,6 +191,7 @@ export function useTeam(teamId: string | null) {
     error,
     isOwner,
     currentUserId,
+    currentUserDisplayName,
     createTeam,
     regenerateInviteCode,
     joinTeam,

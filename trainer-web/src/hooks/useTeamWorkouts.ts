@@ -44,7 +44,7 @@ export function useTeamWorkouts(members: TeamMember[], ownerId: string | null) {
 
       const athletes: Athlete[] = athleteMembers.map((member) => ({
         id: member.user_id,
-        displayName: t("evaluations.athletes.anonymous"),
+        displayName: member.display_name ?? t("evaluations.athletes.anonymous"),
       }));
 
       const userIds = athleteMembers.map((m) => m.user_id);

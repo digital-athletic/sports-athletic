@@ -15,6 +15,7 @@ interface ManagementTabProps {
   loading: boolean;
   isOwner: boolean;
   currentUserId: string | null;
+  currentUserDisplayName: string | null;
   actionError: string | null;
   showLeaveConfirm: boolean;
   isLeaving: boolean;
@@ -41,6 +42,7 @@ export function ManagementTab({
   loading,
   isOwner,
   currentUserId,
+  currentUserDisplayName,
   actionError,
   showLeaveConfirm,
   isLeaving,
@@ -85,6 +87,7 @@ export function ManagementTab({
           <TeamMemberList
             members={members}
             currentUserId={currentUserId}
+            currentUserDisplayName={currentUserDisplayName}
             isOwner={isOwner}
             onRemoveMember={onRemoveMember}
           />

@@ -42,28 +42,6 @@ type Selectors = {
 
 export type AuthState = State & Actions & Selectors;
 
-/**
- * Authentication Store
- *
- * Manages user authentication state globally.
- * Persisted to AsyncStorage for session management.
- *
- * @example
- * ```tsx
- * const { auth, setAuth, clearAuth, isAuthenticated } = useAuthStore();
- *
- * // Login
- * setAuth({ userId: '123' });
- *
- * // Check auth status
- * if (isAuthenticated()) {
- *   // Navigate to protected route
- * }
- *
- * // Logout
- * clearAuth();
- * ```
- */
 export const useAuthStore = create<AuthState>()(
   persist(
     immer((set, get) => ({
@@ -77,7 +55,6 @@ export const useAuthStore = create<AuthState>()(
       clearAuth: () =>
         set((state) => {
           state.auth = null;
-          // Keep isInitialized true - the store is still initialized, just without auth
         }),
 
       initializeFromSupabase: async () => {
@@ -130,7 +107,9 @@ export const useAuthStore = create<AuthState>()(
       ),
       onRehydrateStorage: () => (_state, error) => {
         if (error) {
-          console.error("Error hydrating auth store:", error);
+          Logger.logError(
+            new Error("Auth store hydration failed", { cause: error }),
+          );
         }
         // Always mark as hydrated, even if there was an error
         // This prevents the app from being stuck in loading state

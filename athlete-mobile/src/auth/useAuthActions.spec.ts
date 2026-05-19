@@ -1,6 +1,12 @@
 import { renderHook, act, waitFor } from "@testing-library/react-native";
 import { useLogout, useDeleteAccount } from "./useAuthActions";
 
+// Mock expo-router
+const mockReplace = jest.fn();
+jest.mock("expo-router", () => ({
+  useRouter: () => ({ replace: mockReplace }),
+}));
+
 // Mock react-i18next
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -134,6 +140,70 @@ jest.mock("@/features/training/synchronizationStore", () => ({
   }),
 }));
 
+function storeCallCounts() {
+  return {
+    clearAuth: mockClearAuth.mock.calls.length,
+    resetUserWorkoutData: mockResetUserWorkoutData.mock.calls.length,
+    resetProgress: mockResetProgress.mock.calls.length,
+    resetAnamnesisData: mockResetAnamnesisData.mock.calls.length,
+    resetProfile: mockResetProfile.mock.calls.length,
+    clearWorkoutHistory: mockClearWorkoutHistory.mock.calls.length,
+    resetTrainingSchedule: mockResetTrainingSchedule.mock.calls.length,
+    resetPlaces: mockResetPlaces.mock.calls.length,
+    resetSettings: mockResetSettings.mock.calls.length,
+    clearSyncQueue: mockClearSyncQueue.mock.calls.length,
+    resetSubscription: mockResetSubscription.mock.calls.length,
+    clearTraining: mockClearTraining.mock.calls.length,
+    resetSynchronization: mockResetSynchronization.mock.calls.length,
+  };
+}
+
+const ALL_STORES_CALLED_ONCE = {
+  clearAuth: 1,
+  resetUserWorkoutData: 1,
+  resetProgress: 1,
+  resetAnamnesisData: 1,
+  resetProfile: 1,
+  clearWorkoutHistory: 1,
+  resetTrainingSchedule: 1,
+  resetPlaces: 1,
+  resetSettings: 1,
+  clearSyncQueue: 1,
+  resetSubscription: 1,
+  clearTraining: 1,
+  resetSynchronization: 1,
+};
+
+const ALL_STORES_NOT_CALLED = Object.fromEntries(
+  Object.keys(ALL_STORES_CALLED_ONCE).map((k) => [k, 0]),
+) as typeof ALL_STORES_CALLED_ONCE;
+
+async function confirmLogout() {
+  const { result } = renderHook(() => useLogout());
+  await act(async () => {
+    result.current.logout();
+  });
+  const yesButton = mockAlert.mock.calls[0][2].find(
+    (btn: { text: string }) => btn.text === "common.yes",
+  );
+  await act(async () => {
+    await yesButton.onPress();
+  });
+}
+
+async function confirmDeleteAccount() {
+  const { result } = renderHook(() => useDeleteAccount());
+  await act(async () => {
+    result.current.deleteAccount();
+  });
+  const yesButton = mockAlert.mock.calls[0][2].find(
+    (btn: { text: string }) => btn.text === "common.yes",
+  );
+  await act(async () => {
+    await yesButton.onPress();
+  });
+}
+
 describe("useLogout", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -143,9 +213,7 @@ describe("useLogout", () => {
 
   it("should show no-connection alert when offline", async () => {
     mockIsOnline = false;
-
     const { result } = renderHook(() => useLogout());
-
     await act(async () => {
       result.current.logout();
     });
@@ -154,12 +222,20 @@ describe("useLogout", () => {
       "more.logoutQuestionTitle",
       "common.noConnection",
     );
+  });
+
+  it("should not call supabaseLogout when offline", async () => {
+    mockIsOnline = false;
+    const { result } = renderHook(() => useLogout());
+    await act(async () => {
+      result.current.logout();
+    });
+
     expect(mockSupabaseLogout).not.toHaveBeenCalled();
   });
 
-  it("should show confirmation dialog when online and logout is called", async () => {
+  it("should show confirmation dialog when online", async () => {
     const { result } = renderHook(() => useLogout());
-
     await act(async () => {
       result.current.logout();
     });
@@ -174,127 +250,75 @@ describe("useLogout", () => {
     );
   });
 
-  it("should call supabase logout, clear auth and reset consent when confirmed", async () => {
-    const { result } = renderHook(() => useLogout());
-
-    await act(async () => {
-      result.current.logout();
-    });
-
-    // Simulate user pressing "Yes" on the confirmation dialog
-    const yesButton = mockAlert.mock.calls[0][2].find(
-      (btn: { text: string }) => btn.text === "common.yes",
-    );
-    await act(async () => {
-      await yesButton.onPress();
-    });
+  it("should call supabaseLogout when confirmed", async () => {
+    await confirmLogout();
 
     await waitFor(() => {
       expect(mockSupabaseLogout).toHaveBeenCalled();
     });
+  });
 
-    expect(mockClearAuth).toHaveBeenCalled();
+  it("should clear auth and reset consent when confirmed", async () => {
+    await confirmLogout();
+
+    await waitFor(() => {
+      expect(mockClearAuth).toHaveBeenCalled();
+    });
     expect(mockSetConsentStatus).toHaveBeenCalledWith("loading");
-    // Navigation is handled automatically by Stack.Protected in _layout.tsx
   });
 
-  it("should show error alert if logout fails", async () => {
-    mockSupabaseLogout.mockRejectedValue(new Error("Network error"));
-
-    const { result } = renderHook(() => useLogout());
-
-    await act(async () => {
-      result.current.logout();
-    });
-
-    // Simulate user pressing "Yes"
-    const yesButton = mockAlert.mock.calls[0][2].find(
-      (btn: { text: string }) => btn.text === "common.yes",
-    );
-    await act(async () => {
-      await yesButton.onPress();
-    });
+  it("should navigate to onboarding when confirmed", async () => {
+    await confirmLogout();
 
     await waitFor(() => {
-      expect(mockSupabaseLogout).toHaveBeenCalled();
+      expect(mockReplace).toHaveBeenCalledWith("/onboarding");
     });
-
-    // Error alert should be shown (confirmation + error = 2 calls)
-    expect(mockAlert).toHaveBeenCalledTimes(2);
-    expect(mockAlert).toHaveBeenLastCalledWith(
-      "onboarding.alertErrorTitle",
-      "more.logoutFailed",
-    );
   });
 
-  it("should always clear auth and reset consent even when logout fails — finally block guarantees local cleanup", async () => {
+  it("should show error alert when logout fails", async () => {
     mockSupabaseLogout.mockRejectedValue(new Error("Network error"));
-
-    const { result } = renderHook(() => useLogout());
-
-    await act(async () => {
-      result.current.logout();
-    });
-
-    const yesButton = mockAlert.mock.calls[0][2].find(
-      (btn: { text: string }) => btn.text === "common.yes",
-    );
-    await act(async () => {
-      await yesButton.onPress();
-    });
+    await confirmLogout();
 
     await waitFor(() => {
-      expect(mockSupabaseLogout).toHaveBeenCalled();
+      expect(mockAlert).toHaveBeenCalledWith(
+        "onboarding.alertErrorTitle",
+        "more.logoutFailed",
+      );
     });
+  });
 
-    // Local state is reset in finally — independent of network outcome.
-    // This prevents stale "accepted" consent from persisting after a failed logout.
-    expect(mockClearAuth).toHaveBeenCalled();
+  it("should still clear auth and reset consent when logout fails", async () => {
+    mockSupabaseLogout.mockRejectedValue(new Error("Network error"));
+    await confirmLogout();
+
+    await waitFor(() => {
+      expect(mockClearAuth).toHaveBeenCalled();
+    });
     expect(mockSetConsentStatus).toHaveBeenCalledWith("loading");
   });
 
   it("calls resetProfile on successful logout", async () => {
-    const { result } = renderHook(() => useLogout());
-
-    await act(async () => {
-      result.current.logout();
-    });
-
-    const yesButton = mockAlert.mock.calls[0][2].find(
-      (btn: { text: string }) => btn.text === "common.yes",
-    );
-    await act(async () => {
-      await yesButton.onPress();
-    });
-
+    await confirmLogout();
     await waitFor(() => {
-      expect(mockSupabaseLogout).toHaveBeenCalled();
+      expect(mockResetProfile).toHaveBeenCalled();
     });
-
-    expect(mockResetProfile).toHaveBeenCalled();
   });
 
   it("calls resetProfile even when supabase logout fails", async () => {
     mockSupabaseLogout.mockRejectedValue(new Error("Network error"));
-
-    const { result } = renderHook(() => useLogout());
-
-    await act(async () => {
-      result.current.logout();
+    await confirmLogout();
+    await waitFor(() => {
+      expect(mockResetProfile).toHaveBeenCalled();
     });
+  });
 
-    const yesButton = mockAlert.mock.calls[0][2].find(
-      (btn: { text: string }) => btn.text === "common.yes",
-    );
-    await act(async () => {
-      await yesButton.onPress();
-    });
+  it("should still navigate to onboarding when logout fails", async () => {
+    mockSupabaseLogout.mockRejectedValue(new Error("Network error"));
+    await confirmLogout();
 
     await waitFor(() => {
-      expect(mockSupabaseLogout).toHaveBeenCalled();
+      expect(mockReplace).toHaveBeenCalledWith("/onboarding");
     });
-
-    expect(mockResetProfile).toHaveBeenCalled();
   });
 });
 
@@ -308,7 +332,6 @@ describe("useDeleteAccount", () => {
 
   it("should show confirmation dialog when deleteAccount is called", async () => {
     const { result } = renderHook(() => useDeleteAccount());
-
     await act(async () => {
       result.current.deleteAccount();
     });
@@ -323,123 +346,9 @@ describe("useDeleteAccount", () => {
     );
   });
 
-  it("should call deleteAccount and logout when confirmed", async () => {
-    const { result } = renderHook(() => useDeleteAccount());
-
-    await act(async () => {
-      result.current.deleteAccount();
-    });
-
-    const yesButton = mockAlert.mock.calls[0][2].find(
-      (btn: { text: string }) => btn.text === "common.yes",
-    );
-    await act(async () => {
-      await yesButton.onPress();
-    });
-
-    await waitFor(() => {
-      expect(mockSupabaseDeleteAccount).toHaveBeenCalled();
-    });
-
-    expect(mockSupabaseLogout).toHaveBeenCalled();
-  });
-
-  it("should clear all stores when delete is confirmed", async () => {
-    const allStoreResets = [
-      mockClearAuth,
-      mockResetUserWorkoutData,
-      mockResetProgress,
-      mockResetAnamnesisData,
-      mockResetProfile,
-      mockClearWorkoutHistory,
-      mockResetTrainingSchedule,
-      mockResetPlaces,
-      mockResetSettings,
-      mockClearSyncQueue,
-      mockResetSubscription,
-      mockClearTraining,
-      mockResetSynchronization,
-    ];
-
-    const { result } = renderHook(() => useDeleteAccount());
-
-    await act(async () => {
-      result.current.deleteAccount();
-    });
-
-    const yesButton = mockAlert.mock.calls[0][2].find(
-      (btn: { text: string }) => btn.text === "common.yes",
-    );
-    await act(async () => {
-      await yesButton.onPress();
-    });
-
-    await waitFor(() => {
-      expect(mockClearAuth).toHaveBeenCalled();
-    });
-
-    const uncalledResets = allStoreResets
-      .filter((mock) => mock.mock.calls.length === 0)
-      .map((mock) => mock.getMockName());
-    expect(uncalledResets).toEqual([]);
-  });
-
-  it("should show error alert if deleteAccount fails", async () => {
-    mockSupabaseDeleteAccount.mockRejectedValue(new Error("Delete failed"));
-
-    const { result } = renderHook(() => useDeleteAccount());
-
-    await act(async () => {
-      result.current.deleteAccount();
-    });
-
-    const yesButton = mockAlert.mock.calls[0][2].find(
-      (btn: { text: string }) => btn.text === "common.yes",
-    );
-    await act(async () => {
-      await yesButton.onPress();
-    });
-
-    await waitFor(() => {
-      expect(mockAlert).toHaveBeenCalledTimes(2);
-    });
-
-    expect(mockAlert).toHaveBeenLastCalledWith(
-      "onboarding.alertErrorTitle",
-      "more.deleteFailed",
-    );
-  });
-
-  it("should not logout or clear stores if deleteAccount fails", async () => {
-    mockSupabaseDeleteAccount.mockRejectedValue(new Error("Delete failed"));
-
-    const { result } = renderHook(() => useDeleteAccount());
-
-    await act(async () => {
-      result.current.deleteAccount();
-    });
-
-    const yesButton = mockAlert.mock.calls[0][2].find(
-      (btn: { text: string }) => btn.text === "common.yes",
-    );
-    await act(async () => {
-      await yesButton.onPress();
-    });
-
-    await waitFor(() => {
-      expect(mockSupabaseDeleteAccount).toHaveBeenCalled();
-    });
-
-    expect(mockSupabaseLogout).not.toHaveBeenCalled();
-    expect(mockClearAuth).not.toHaveBeenCalled();
-    expect(mockResetUserWorkoutData).not.toHaveBeenCalled();
-  });
-
   it("should show no-connection alert when offline", async () => {
     mockIsOnline = false;
-
     const { result } = renderHook(() => useDeleteAccount());
-
     await act(async () => {
       result.current.deleteAccount();
     });
@@ -448,30 +357,123 @@ describe("useDeleteAccount", () => {
       "more.deleteQuestionTitle",
       "common.noConnection",
     );
-    expect(mockSupabaseDeleteAccount).not.toHaveBeenCalled();
   });
 
-  it("should not clear stores if logout fails after deleteAccount succeeds", async () => {
-    mockSupabaseLogout.mockRejectedValue(new Error("Logout error"));
-
+  it("should not call supabaseDeleteAccount when offline", async () => {
+    mockIsOnline = false;
     const { result } = renderHook(() => useDeleteAccount());
-
     await act(async () => {
       result.current.deleteAccount();
     });
 
-    const yesButton = mockAlert.mock.calls[0][2].find(
-      (btn: { text: string }) => btn.text === "common.yes",
-    );
-    await act(async () => {
-      await yesButton.onPress();
-    });
+    expect(mockSupabaseDeleteAccount).not.toHaveBeenCalled();
+  });
+
+  it("should call supabaseDeleteAccount when confirmed", async () => {
+    await confirmDeleteAccount();
 
     await waitFor(() => {
       expect(mockSupabaseDeleteAccount).toHaveBeenCalled();
     });
+  });
 
-    expect(mockClearAuth).not.toHaveBeenCalled();
-    expect(mockResetUserWorkoutData).not.toHaveBeenCalled();
+  it("should call supabaseLogout when confirmed", async () => {
+    await confirmDeleteAccount();
+
+    await waitFor(() => {
+      expect(mockSupabaseLogout).toHaveBeenCalled();
+    });
+  });
+
+  it("should clear all stores when confirmed", async () => {
+    await confirmDeleteAccount();
+
+    await waitFor(() => {
+      expect(mockClearAuth).toHaveBeenCalled();
+    });
+    expect(storeCallCounts()).toEqual(ALL_STORES_CALLED_ONCE);
+  });
+
+  it("should clear auth before navigating to onboarding when confirmed", async () => {
+    await confirmDeleteAccount();
+
+    await waitFor(() => {
+      expect(mockClearAuth).toHaveBeenCalled();
+    });
+    expect(mockReplace).toHaveBeenCalledWith("/onboarding");
+  });
+
+  it("should show error alert when deleteAccount fails", async () => {
+    mockSupabaseDeleteAccount.mockRejectedValue(new Error("Delete failed"));
+    await confirmDeleteAccount();
+
+    await waitFor(() => {
+      expect(mockAlert).toHaveBeenCalledWith(
+        "onboarding.alertErrorTitle",
+        "more.deleteFailed",
+      );
+    });
+  });
+
+  it("should not call supabaseLogout when deleteAccount fails", async () => {
+    mockSupabaseDeleteAccount.mockRejectedValue(new Error("Delete failed"));
+    await confirmDeleteAccount();
+
+    await waitFor(() => {
+      expect(mockSupabaseDeleteAccount).toHaveBeenCalled();
+    });
+    expect(mockSupabaseLogout).not.toHaveBeenCalled();
+  });
+
+  it("should not clear any store when deleteAccount fails", async () => {
+    mockSupabaseDeleteAccount.mockRejectedValue(new Error("Delete failed"));
+    await confirmDeleteAccount();
+
+    await waitFor(() => {
+      expect(mockSupabaseDeleteAccount).toHaveBeenCalled();
+    });
+    expect(storeCallCounts()).toEqual(ALL_STORES_NOT_CALLED);
+  });
+
+  it("should not navigate when deleteAccount fails", async () => {
+    mockSupabaseDeleteAccount.mockRejectedValue(new Error("Delete failed"));
+    await confirmDeleteAccount();
+
+    await waitFor(() => {
+      expect(mockSupabaseDeleteAccount).toHaveBeenCalled();
+    });
+    expect(mockReplace).not.toHaveBeenCalled();
+  });
+
+  it("should show error alert when logout fails after deleteAccount succeeds", async () => {
+    mockSupabaseLogout.mockRejectedValue(new Error("Logout error"));
+    await confirmDeleteAccount();
+
+    await waitFor(() => {
+      expect(mockAlert).toHaveBeenCalledWith(
+        "onboarding.alertErrorTitle",
+        "more.deleteFailed",
+      );
+    });
+  });
+
+  it("should still clear all stores when logout fails after deleteAccount succeeds", async () => {
+    mockSupabaseLogout.mockRejectedValue(new Error("Logout error"));
+    await confirmDeleteAccount();
+
+    await waitFor(() => {
+      expect(mockClearAuth).toHaveBeenCalled();
+    });
+    expect(storeCallCounts()).toEqual(ALL_STORES_CALLED_ONCE);
+  });
+
+  it("should still navigate to onboarding when logout fails after deleteAccount succeeds", async () => {
+    mockSupabaseLogout.mockRejectedValue(new Error("Logout error"));
+    await confirmDeleteAccount();
+
+    await waitFor(() => {
+      expect(mockClearAuth).toHaveBeenCalled();
+    });
+    expect(mockReplace).toHaveBeenCalledWith("/onboarding");
   });
 });

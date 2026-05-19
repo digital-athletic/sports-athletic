@@ -16,19 +16,17 @@ import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserSettingsStore } from "@/store/userSettingsStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { useNetworkState } from "@/hooks/useNetworkState";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "@/common/Alert";
 
-/**
- * Hook for logout functionality.
- * Handles Supabase signout and clears auth state.
- * Explicitly navigates to onboarding to ensure navigation state is reset.
- */
+/** Explicitly navigates to onboarding to ensure navigation state is reset. */
 export function useLogout() {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const isOnline = useNetworkState();
+  const router = useRouter();
 
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const setConsentStatus = useUserSettingsStore(
@@ -49,6 +47,7 @@ export function useLogout() {
       setConsentStatus("loading");
       resetProfile();
       setIsLoading(false);
+      router.replace("/onboarding");
     }
   };
 
@@ -76,15 +75,12 @@ export function useLogout() {
   return { logout: confirmLogout, isLoading };
 }
 
-/**
- * Hook for delete account functionality.
- * Handles Supabase signout and clears all user data stores.
- * Stack.Protected in _layout.tsx handles redirect to onboarding.
- */
+/** Explicitly navigates to onboarding even when supabaseLogout throws after a successful deletion. */
 export function useDeleteAccount() {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const isOnline = useNetworkState();
+  const router = useRouter();
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const { resetProgress } = useExerciseProgressStore();
   const { resetAnamnesisData } = useAnamnesisStore();
@@ -101,29 +97,33 @@ export function useDeleteAccount() {
 
   const deleteAccount = async () => {
     setIsLoading(true);
+    let deletionSucceeded = false;
     try {
       await supabaseDeleteAccount();
+      deletionSucceeded = true;
       await supabaseLogout();
-
-      // Clear stores with no default state, reset stores to their defaults
-      clearAuth();
-      resetUserWorkoutData();
-      resetProgress();
-      resetAnamnesisData();
-      resetProfile();
-      clearWorkoutHistory();
-      resetTrainingSchedule();
-      resetPlaces();
-      resetSettings();
-      clearSyncQueue();
-      resetSubscription();
-      clearTraining();
-      resetSynchronization();
-      // Stack.Protected in _layout.tsx automatically redirects to onboarding
-      // when user becomes null
     } catch {
       Alert.alert(t("onboarding.alertErrorTitle"), t("more.deleteFailed"));
     } finally {
+      // Clear stores and navigate only when the account was actually deleted.
+      // This runs even if supabaseLogout throws, preventing a stale session
+      // from persisting after a successful server-side deletion.
+      if (deletionSucceeded) {
+        clearAuth();
+        resetUserWorkoutData();
+        resetProgress();
+        resetAnamnesisData();
+        resetProfile();
+        clearWorkoutHistory();
+        resetTrainingSchedule();
+        resetPlaces();
+        resetSettings();
+        clearSyncQueue();
+        resetSubscription();
+        clearTraining();
+        resetSynchronization();
+        router.replace("/onboarding");
+      }
       setIsLoading(false);
     }
   };

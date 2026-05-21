@@ -555,6 +555,30 @@
     "imageAlt": {
       "trainingData": "Meine Trainingsdaten Icon",
       "powerTest": "Krafttest Icon"
+    },
+    "joinTeam": {
+      "menuItem": "Teamverwaltung",
+      "title": "Teamverwaltung",
+      "yourTeams": "Deine Teams",
+      "noTeams": "Du bist noch kein Mitglied eines Teams.",
+      "leave": "Verlassen",
+      "leaveConfirmTitle": "Team verlassen?",
+      "leaveConfirmMessage": "Möchtest du {{teamName}} wirklich verlassen?",
+      "leaveConfirmButton": "Verlassen",
+      "leaveErrorNotMember": "Du bist kein Mitglied dieses Teams.",
+      "leaveErrorNotFound": "Team nicht gefunden.",
+      "leaveErrorOwner": "Der Teaminhaber kann das Team nicht verlassen.",
+      "joinSection": "Team beitreten",
+      "codeLabel": "Einladungscode",
+      "codePlaceholder": "______",
+      "submit": "Beitreten",
+      "successMessage": "Du bist erfolgreich {{teamName}} beigetreten!",
+      "errorInvalidCode": "Ungültiger Einladungscode.",
+      "errorAlreadyMember": "Du bist bereits Mitglied dieses Teams.",
+      "errorExpired": "Dieser Einladungscode ist abgelaufen.",
+      "errorInactive": "Dieser Einladungscode ist nicht mehr aktiv.",
+      "errorMaxUses": "Dieser Einladungscode hat die maximale Anzahl an Verwendungen erreicht.",
+      "errorGeneric": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
     }
   },
   "muscles": {

@@ -12,6 +12,7 @@ import {
 
 export interface AlertButton {
   text: string;
+  style?: "default" | "cancel" | "destructive";
   onPress?: () => void;
 }
 

@@ -162,6 +162,13 @@ export default function MoreScreen() {
             navPath="/(tabs)/(more)/tutorials"
             iconName="videocam"
             iconBackground="primary"
+            isSubscribed={allowedForTraining}
+          />
+          <ListItem
+            title={t("more.joinTeam.menuItem")}
+            navPath="/(tabs)/(more)/join-team"
+            iconName="people"
+            iconBackground="primary"
             isLast
             isSubscribed={allowedForTraining}
           />

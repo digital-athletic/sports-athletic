@@ -555,6 +555,30 @@
     "imageAlt": {
       "trainingData": "My Training Data Icon",
       "powerTest": "Power Test Icon"
+    },
+    "joinTeam": {
+      "menuItem": "Team Management",
+      "title": "Team Management",
+      "yourTeams": "Your Teams",
+      "noTeams": "You are not a member of any team yet.",
+      "leave": "Leave",
+      "leaveConfirmTitle": "Leave team?",
+      "leaveConfirmMessage": "Are you sure you want to leave {{teamName}}?",
+      "leaveConfirmButton": "Leave",
+      "leaveErrorNotMember": "You are not a member of this team.",
+      "leaveErrorNotFound": "Team not found.",
+      "leaveErrorOwner": "The team owner cannot leave the team.",
+      "joinSection": "Join a Team",
+      "codeLabel": "Invite Code",
+      "codePlaceholder": "______",
+      "submit": "Join",
+      "successMessage": "You have successfully joined {{teamName}}!",
+      "errorInvalidCode": "Invalid invite code.",
+      "errorAlreadyMember": "You are already a member of this team.",
+      "errorExpired": "This invite code has expired.",
+      "errorInactive": "This invite code is no longer active.",
+      "errorMaxUses": "This invite code has reached its maximum number of uses.",
+      "errorGeneric": "Something went wrong. Please try again."
     }
   },
   "muscles": {

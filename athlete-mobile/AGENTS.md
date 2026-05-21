@@ -73,6 +73,8 @@ This file provides guidance to AI Agents for building high-quality React Native 
 - Test component behavior, not implementation details
 - Mock external dependencies and API calls appropriately
 - Ensure accessibility features are included in testing specs
+- Use a colon as separator in `describe` names (e.g. `"MyScreen: feature under test"`), never an em dash
+- Never use dashes (em dash or hyphen as separator) in test names or any raw text; dashes are only allowed in markdown list items
 
 ## File & Directory Rules
 - The `/legacy` directory is **read-only**.  

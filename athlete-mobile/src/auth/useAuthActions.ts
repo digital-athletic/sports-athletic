@@ -1,10 +1,12 @@
+import { Alert } from "@/common/Alert";
+import { useSubscriptionStore } from "@/features/subscription/subscriptionStore";
+import { useSynchronizationStore } from "@/features/training/synchronizationStore";
+import { useTrainingStore } from "@/features/training/trainingStore";
+import { useNetworkState } from "@/hooks/useNetworkState";
 import {
   deleteAccount as supabaseDeleteAccount,
   logout as supabaseLogout,
 } from "@/services/AuthService";
-import { useSubscriptionStore } from "@/features/subscription/subscriptionStore";
-import { useSynchronizationStore } from "@/features/training/synchronizationStore";
-import { useTrainingStore } from "@/features/training/trainingStore";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useAuthStore } from "@/store/authStore";
 import { useCompletedWorkoutsStore } from "@/store/completedWorkoutsStore";
@@ -12,16 +14,14 @@ import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { usePlacesStore } from "@/store/placesStore";
 import { useSyncQueueStore } from "@/store/syncQueueStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
+import { useUserDataBackupStore } from "@/store/userDataBackupStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserSettingsStore } from "@/store/userSettingsStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
-import { useNetworkState } from "@/hooks/useNetworkState";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert } from "@/common/Alert";
 
-/** Explicitly navigates to onboarding to ensure navigation state is reset. */
 export function useLogout() {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
@@ -29,25 +29,30 @@ export function useLogout() {
   const router = useRouter();
 
   const clearAuth = useAuthStore((state) => state.clearAuth);
+  const userId = useAuthStore((state) => state.auth?.userId);
   const setConsentStatus = useUserSettingsStore(
     (state) => state.setConsentStatus,
   );
   const resetProfile = useUserProfileStore((state) => state.resetProfile);
+  const takeSnapshot = useUserDataBackupStore((state) => state.takeSnapshot);
 
   const logout = async () => {
     setIsLoading(true);
+    if (userId) {
+      takeSnapshot(userId);
+    }
+
+    // Order matters, otherwise user is stuck on the wrong screen
+    clearAuth();
+    router.replace("/onboarding");
     try {
       await supabaseLogout();
     } catch {
       Alert.alert(t("onboarding.alertErrorTitle"), t("more.logoutFailed"));
     } finally {
-      // Fail-safe: reset local state even when signOut fails offline and
-      // SIGNED_OUT never fires.
-      clearAuth();
       setConsentStatus("loading");
       resetProfile();
       setIsLoading(false);
-      router.replace("/onboarding");
     }
   };
 

@@ -15,9 +15,10 @@ describe("Per-Store Migration Versioning", () => {
   });
 
   describe("STORE_VERSIONS", () => {
-    it("should have all 10 store versions defined as integers >= 14", () => {
+    it("should have all 11 store versions defined as integers >= 14", () => {
       const expectedStores = [
         "AUTH",
+        "USER_DATA_BACKUP",
         "USER_PROFILE",
         "USER_WORKOUT",
         "USER_SETTINGS",

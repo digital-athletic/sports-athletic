@@ -37,10 +37,19 @@ jest.mock("@/common/Alert", () => ({
 }));
 
 // Mock all stores
+let mockAuthUserId: string | undefined;
 const mockClearAuth = jest.fn();
 jest.mock("@/store/authStore", () => ({
-  useAuthStore: (selector: (state: { clearAuth: () => void }) => unknown) =>
-    selector({ clearAuth: mockClearAuth }),
+  useAuthStore: (
+    selector: (state: {
+      clearAuth: () => void;
+      auth?: { userId: string };
+    }) => unknown,
+  ) =>
+    selector({
+      clearAuth: mockClearAuth,
+      auth: mockAuthUserId ? { userId: mockAuthUserId } : undefined,
+    }),
 }));
 
 const mockResetProgress = jest.fn();
@@ -63,6 +72,16 @@ jest.mock("@/store/userProfileStore", () => ({
     selector?: (state: { resetProfile: () => void }) => unknown,
   ) => {
     const state = { resetProfile: mockResetProfile };
+    return selector ? selector(state) : state;
+  },
+}));
+
+const mockTakeSnapshot = jest.fn();
+jest.mock("@/store/userDataBackupStore", () => ({
+  useUserDataBackupStore: (
+    selector?: (state: { takeSnapshot: typeof mockTakeSnapshot }) => unknown,
+  ) => {
+    const state = { takeSnapshot: mockTakeSnapshot };
     return selector ? selector(state) : state;
   },
 }));
@@ -208,6 +227,7 @@ describe("useLogout", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockIsOnline = true;
+    mockAuthUserId = undefined;
     mockSupabaseLogout.mockResolvedValue(undefined);
   });
 
@@ -267,14 +287,6 @@ describe("useLogout", () => {
     expect(mockSetConsentStatus).toHaveBeenCalledWith("loading");
   });
 
-  it("should navigate to onboarding when confirmed", async () => {
-    await confirmLogout();
-
-    await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith("/onboarding");
-    });
-  });
-
   it("should show error alert when logout fails", async () => {
     mockSupabaseLogout.mockRejectedValue(new Error("Network error"));
     await confirmLogout();
@@ -312,7 +324,32 @@ describe("useLogout", () => {
     });
   });
 
-  it("should still navigate to onboarding when logout fails", async () => {
+  it("calls takeSnapshot with userId before logout when a session is active", async () => {
+    mockAuthUserId = "user-abc";
+    await confirmLogout();
+    await waitFor(() => {
+      expect(mockTakeSnapshot).toHaveBeenCalledWith("user-abc");
+    });
+  });
+
+  it("does not call takeSnapshot when no session is active", async () => {
+    mockAuthUserId = undefined;
+    await confirmLogout();
+    await waitFor(() => {
+      expect(mockResetProfile).toHaveBeenCalled();
+    });
+    expect(mockTakeSnapshot).not.toHaveBeenCalled();
+  });
+
+  it("navigates to onboarding when confirmed", async () => {
+    await confirmLogout();
+
+    await waitFor(() => {
+      expect(mockReplace).toHaveBeenCalledWith("/onboarding");
+    });
+  });
+
+  it("navigates to onboarding even when supabase logout fails", async () => {
     mockSupabaseLogout.mockRejectedValue(new Error("Network error"));
     await confirmLogout();
 

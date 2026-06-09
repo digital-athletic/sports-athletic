@@ -52,10 +52,13 @@ export const SkipHeader: FC<SkipHeaderProps> = ({
       onPress={showSkipAlert}
       accessibilityRole="button"
       accessibilityLabel={t("common.skip")}
+      style={{
+        alignItems: "center",
+        justifyContent: "center",
+        paddingHorizontal: 8,
+      }}
     >
-      <Text ml="m" variant="skip">
-        {t("common.skip")}
-      </Text>
+      <Text variant="skip">{t("common.skip")}</Text>
     </TouchableOpacity>
   );
 };

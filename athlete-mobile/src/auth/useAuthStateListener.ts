@@ -8,6 +8,7 @@ import {
   fetchConsentFromProfile,
   fetchDisplayName,
 } from "@/services/AuthService";
+import { useUserDataBackupStore } from "@/store/userDataBackupStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { featureFlags } from "@/config/featureFlags";
 
@@ -31,6 +32,9 @@ export function useAuthStateListener() {
     (state) => state.setAnonymisedDataUse,
   );
   const setUsername = useUserProfileStore((state) => state.setUsername);
+  const restoreSnapshot = useUserDataBackupStore(
+    (state) => state.restoreSnapshot,
+  );
 
   const wasOfflineRef = useRef(false);
   // Session-scoped: null on every cold start, so stale AsyncStorage "accepted"
@@ -126,6 +130,7 @@ export function useAuthStateListener() {
             userId: session.user.id,
           });
           if (event === "SIGNED_IN") {
+            restoreSnapshot(session.user.id);
             const nameFromSession: unknown =
               session.user.user_metadata?.display_name;
             if (
@@ -194,5 +199,6 @@ export function useAuthStateListener() {
     syncDisplayName,
     setConsentStatus,
     setUsername,
+    restoreSnapshot,
   ]);
 }

@@ -161,6 +161,15 @@ jest.mock("../store/userProfileStore", () => ({
   ) => selector({ setUsername: mockSetUsername }),
 }));
 
+const mockRestoreSnapshot = jest.fn();
+jest.mock("../store/userDataBackupStore", () => ({
+  useUserDataBackupStore: (
+    selector: (state: {
+      restoreSnapshot: typeof mockRestoreSnapshot;
+    }) => unknown,
+  ) => selector({ restoreSnapshot: mockRestoreSnapshot }),
+}));
+
 let mockPrivacyEnabled = true;
 let mockAnalyticsConsentEnabled = true;
 let mockIsReviewUserId = false;
@@ -901,6 +910,17 @@ describe("useAuthStateListener — display name sync", () => {
       expect(mockFetchDisplayName).toHaveBeenCalled();
       expect(mockSetUsername).toHaveBeenCalledWith("Alice");
     });
+  });
+
+  it("calls restoreSnapshot with userId on SIGNED_IN", () => {
+    renderHook(() => useAuthStateListener());
+
+    capturedAuthCallback!("SIGNED_IN", {
+      user: { id: "user-1" },
+      access_token: "token",
+    });
+
+    expect(mockRestoreSnapshot).toHaveBeenCalledWith("user-1");
   });
 
   it("reads display name from session metadata and sets it in the store on SIGNED_IN", async () => {

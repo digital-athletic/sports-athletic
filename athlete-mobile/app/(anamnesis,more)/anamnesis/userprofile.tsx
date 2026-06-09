@@ -1,8 +1,7 @@
 import { Route, router, Stack, useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, BackHandler } from "react-native";
 
+import { BackHeader } from "@/common/BackHeader";
 import { ProgressBar } from "@/common/ProgressBar";
 import { SkipHeader } from "@/common/SkipHeader";
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
@@ -46,41 +45,6 @@ export default function UserProfileScreen() {
   const gender = personalData.gender;
   const birthday = personalData.birthday;
 
-  const showClosePopup = useCallback(() => {
-    const message = anamnesisCompleted
-      ? t("screens.userProfile.abortAnamnesisExplanation")
-      : t("screens.userProfile.abortAnamnesisIncomplete");
-
-    Alert.alert(t("screens.userProfile.abortAnamnesisQuestion"), message, [
-      {
-        text: t("common.yes"),
-        onPress: () => {
-          router.replace("/(tabs)/(home)");
-        },
-      },
-      {
-        text: t("common.no"),
-      },
-    ]);
-  }, [t, anamnesisCompleted]);
-
-  const handleBackPress = useCallback(() => {
-    if (originPath === "/(anamnesis)/anamnesis/sport") {
-      return false; // Allow back to Sport
-    } else {
-      showClosePopup();
-      return true;
-    }
-  }, [originPath, showClosePopup]);
-
-  useEffect(() => {
-    const subscription = BackHandler.addEventListener(
-      "hardwareBackPress",
-      handleBackPress,
-    );
-    return () => subscription.remove();
-  }, [handleBackPress]);
-
   const goOn = () => {
     saveDisplayName(username).catch(() => {}); // non-critical; display name re-syncs on next sign-in
     router.push({
@@ -109,8 +73,6 @@ export default function UserProfileScreen() {
     resetTrainingSchedule();
   };
 
-  // Calculate max steps for progress bar
-  // In legacy: 3 + anamnesisQuestions.length or 1 + anamnesisQuestions.length if hasActiveTrainingDay
   const totalSteps = showSeasonPhaseAfterAnamnesis ? 6 : 4;
   const currentStep = 1;
 
@@ -131,7 +93,7 @@ export default function UserProfileScreen() {
                 }
               />
             ) : null,
-          headerBackButtonDisplayMode: "minimal",
+          headerLeft: () => <BackHeader />,
         }}
       />
       <ScrollBox flex={1} backgroundColor="lightGrey1">

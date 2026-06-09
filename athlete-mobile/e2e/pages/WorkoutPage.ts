@@ -7,6 +7,7 @@ const PersistedExerciseEntrySchema = v.object({
   weight: v.optional(v.number()),
   repetition: v.optional(v.number()),
   skipped: v.optional(v.boolean()),
+  duration: v.optional(v.number()),
 });
 
 const PersistedExerciseProgressStorageSchema = v.object({
@@ -116,7 +117,8 @@ export class WorkoutPage extends BasePage {
             (ex) =>
               ex.weight !== undefined ||
               ex.repetition !== undefined ||
-              ex.skipped !== undefined,
+              ex.skipped !== undefined ||
+              ex.duration !== undefined,
           );
         },
         { timeout: timeoutMs, message: "Exercise data not persisted in time" },

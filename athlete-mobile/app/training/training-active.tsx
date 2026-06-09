@@ -82,6 +82,17 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const TRAINING_INPUT_OFFSET = 100;
 
+function formatExerciseDuration(seconds: number): {
+  value: string;
+  unit: string;
+} {
+  if (seconds < 60) return { value: String(seconds), unit: "sec" };
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  if (secs === 0) return { value: String(mins), unit: "min" };
+  return { value: `${mins} min`, unit: `${secs} sec` };
+}
+
 type TrainingActiveProps = Record<string, never>;
 
 /**
@@ -800,6 +811,22 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                 },
               );
             } else if (levelUp || levelDown) {
+              updateExercise(
+                id,
+                {
+                  exerciseId: id,
+                  skill,
+                  weight,
+                  maxFRepetitions,
+                  duration,
+                  repetition: reps,
+                  height,
+                  weightType: currentExercise?.weightType,
+                  branchId,
+                  set: currentExercise?.set,
+                },
+                activeTraining?.id,
+              );
               updateBranchLevel(levelUp, branchId, id, skill, ageGroup);
             } else {
               // "In between" zone: user didn't hit targets, didn't fall below start.
@@ -1120,6 +1147,11 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const progress = activeExerciseIndex / exerciseList.length;
   const isTestExercise = currentExercise?.repetition === -1;
   const isCardioExercise = currentExercise?.skill?.includes("CARDIO") ?? false;
+  // Endurance exercises show a checkmark instead of a countdown timer. This app focuses on
+  // strength training, so we defer detailed endurance tracking to dedicated apps.
+  const isEnduranceExercise =
+    currentExercise?.skill === "CARDIO_4" ||
+    currentExercise?.skill === "CARDIO_5";
   const isLastInSet = currentExercise?.set?.[0] === currentExercise?.set?.[1];
 
   const name = isPauseExercise
@@ -1368,16 +1400,20 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                     paddingHorizontal="s"
                     gap="m"
                   >
-                    {typeof currentExercise.duration === "number" && (
-                      <Box alignItems="center">
-                        <Text variant="largeTitle">
-                          {currentExercise.duration}
-                        </Text>
-                        <Text variant="small" color="darkGrey1">
-                          sec
-                        </Text>
-                      </Box>
-                    )}
+                    {typeof currentExercise.duration === "number" &&
+                      (() => {
+                        const { value, unit } = formatExerciseDuration(
+                          currentExercise.duration,
+                        );
+                        return (
+                          <Box alignItems="center">
+                            <Text variant="largeTitle">{value}</Text>
+                            <Text variant="small" color="darkGrey1">
+                              {unit}
+                            </Text>
+                          </Box>
+                        );
+                      })()}
                     {!isPauseExercise &&
                       typeof currentExercise.repetition === "number" && (
                         <Box alignItems="center">
@@ -1413,13 +1449,17 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
               <TrainingNavigation
                 exerciseId={exerciseId}
                 nextExerciseId={nextExercise?.exerciseId}
-                duration={currentExercise.duration || 0}
+                duration={
+                  isEnduranceExercise
+                    ? undefined
+                    : currentExercise.duration || 0
+                }
                 next={advanceToNextExercise}
                 feedback={handleFeedback}
                 isCountdownActive={isCountdownActive}
                 isFirstDurationInTraining={activeExerciseIndex === 0}
                 isLastInSet={isLastInSet}
-                isFeedbackSkill={isFeedbackSkill}
+                isFeedbackSkill={isFeedbackSkill && !isEnduranceExercise}
                 isCardioExercise={isCardioExercise}
                 isLastCardioExercise={isCardioExercise && !hasNextExercise}
                 isTest={isTestExercise}

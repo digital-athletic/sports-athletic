@@ -1,0 +1,95 @@
+import { fireEvent, render, screen } from "@/utils/testUtils";
+import { TrainingNavigation } from "./TrainingNavigation";
+
+jest.mock("./TrainingCountdown", () => ({
+  TrainingCountdown: () => {
+    const { View } = require("react-native");
+    return <View testID="countdown-timer" />;
+  },
+}));
+
+const defaultProps = {
+  exerciseId: "123",
+  nextExerciseId: undefined,
+  feedback: jest.fn(),
+  isCountdownActive: true,
+  isFirstDurationInTraining: false,
+  isLastInSet: true,
+  isFeedbackSkill: false,
+  isCardioExercise: false,
+  isLastCardioExercise: false,
+  isTest: false,
+  next: jest.fn(),
+  onSubmitReps: jest.fn().mockReturnValue(null),
+  pauseToggled: jest.fn(),
+};
+
+describe("TrainingNavigation: checkmark path (duration undefined)", () => {
+  it("renders checkmark icon when duration is undefined", () => {
+    render(<TrainingNavigation {...defaultProps} duration={undefined} />);
+    expect(screen.getByLabelText("checkmark")).toBeTruthy();
+  });
+
+  it("does not render countdown timer when duration is undefined", () => {
+    render(<TrainingNavigation {...defaultProps} duration={undefined} />);
+    expect(screen.queryByTestId("countdown-timer")).toBeNull();
+  });
+
+  it("calls next when checkmark is pressed", () => {
+    const next = jest.fn();
+    render(
+      <TrainingNavigation {...defaultProps} duration={undefined} next={next} />,
+    );
+    fireEvent.press(screen.getByLabelText("checkmark"));
+    expect(next).toHaveBeenCalledTimes(1);
+  });
+
+  it("hides feedback buttons when isFeedbackSkill is false", () => {
+    render(
+      <TrainingNavigation
+        {...defaultProps}
+        duration={undefined}
+        isFeedbackSkill={false}
+      />,
+    );
+    expect(screen.queryByText("too easy")).toBeNull();
+    expect(screen.queryByText("too hard")).toBeNull();
+  });
+
+  it("shows feedback buttons when isFeedbackSkill is true and isLastInSet", () => {
+    render(
+      <TrainingNavigation
+        {...defaultProps}
+        duration={undefined}
+        isFeedbackSkill={true}
+      />,
+    );
+    expect(screen.getByText("too easy")).toBeTruthy();
+    expect(screen.getByText("too hard")).toBeTruthy();
+  });
+});
+
+describe("TrainingNavigation: timer path (duration number)", () => {
+  it("renders countdown timer when duration is provided", () => {
+    render(<TrainingNavigation {...defaultProps} duration={30} />);
+    expect(screen.getByTestId("countdown-timer")).toBeTruthy();
+  });
+
+  it("does not show checkmark while timer is active", () => {
+    render(<TrainingNavigation {...defaultProps} duration={30} />);
+    expect(screen.queryByLabelText("checkmark")).toBeNull();
+  });
+
+  it("hides feedback buttons until timer ends even when isFeedbackSkill is true", () => {
+    render(
+      <TrainingNavigation
+        {...defaultProps}
+        duration={30}
+        isFeedbackSkill={true}
+        isLastInSet={true}
+      />,
+    );
+    expect(screen.queryByText("too easy")).toBeNull();
+    expect(screen.queryByText("too hard")).toBeNull();
+  });
+});

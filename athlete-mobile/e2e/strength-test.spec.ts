@@ -49,10 +49,10 @@ test.describe("Strength Test", () => {
     await basePage.login("test@example.com");
     await basePage.expectLoggedIn();
 
-    // Navigate to Profile > Start New Test Workout
+    // Navigate to Profile > Start Strength Test
     await basePage.navigateToTab("Profile");
     await expect(page.getByText("Profile").first()).toBeVisible();
-    await page.getByText("Start New Test Workout").click();
+    await page.getByText("Start Strength Test").click();
 
     // Skip muscle soreness selection
     await basePage.skipMuscleSoreness();

@@ -1,5 +1,4 @@
 import { IndividualWorkoutDisplay } from "@/features/training/IndividualWorkoutDisplay";
-import { TestPeriodOverlay } from "@/features/training/TestPeriodOverlay";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { Logger } from "@/services/Logger";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
@@ -60,13 +59,6 @@ export default function HomeScreen() {
     router.push("/(more)/anamnesis/season-phase");
   };
 
-  const goToSubscribe = () => {
-    router.push({
-      pathname: "/subscribe",
-      params: { backPath: "home" },
-    });
-  };
-
   const goToSectionDetails = (index: number) => {
     Logger.logEvent("section_details_opened");
     router.push({
@@ -93,7 +85,6 @@ export default function HomeScreen() {
           style={styles.backgroundImage}
           accessibilityLabel={t("screens.home.imageAlt.background")}
         >
-          <TestPeriodOverlay goToSubscribe={goToSubscribe} />
           <Box flex={1} />
           <Box flex={3} justifyContent="flex-start" paddingHorizontal="l">
             <IndividualWorkoutDisplay

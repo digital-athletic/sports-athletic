@@ -11,25 +11,18 @@ import { featureFlags } from "@/config/featureFlags";
 import { LINK_AGB, LINK_IMPRINT, LINK_PRIVACY } from "@/constants/AppConstants";
 import { ListDivider } from "@/common/ListDivider";
 import { ListItem } from "@/features/more/ListItem";
-import {
-  getTestPeriodDaysLeft,
-  isAllowedForTraining,
-} from "@/features/subscription/subscriptionHelpers";
-import { useSubscriptionStore } from "@/features/subscription/subscriptionStore";
 import { Box } from "@/theme/Box";
-import { Button } from "@/theme/Button";
 import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { useResponsiveProp } from "@shopify/restyle";
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Platform, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 
 export default function MoreScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const router = useRouter();
 
   const iconContainerSize = useResponsiveProp({ phone: 30, tablet: 38 });
   const iconSize = useResponsiveProp({ phone: 16, tablet: 28 });
@@ -38,11 +31,6 @@ export default function MoreScreen() {
 
   const { logout, isLoading: isLoggingOut } = useLogout();
   const { deleteAccount, isLoading: isDeleting } = useDeleteAccount();
-
-  const subscription = useSubscriptionStore((state) => state.subscription);
-
-  const daysLeft = getTestPeriodDaysLeft(subscription.firstRegistration);
-  const allowedForTraining = isAllowedForTraining(subscription);
 
   // Check if user has test access
   const hasTestAccess = false;
@@ -59,31 +47,6 @@ export default function MoreScreen() {
         backgroundColor="lightGrey2"
         contentContainerStyle={{ marginTop: 10 }}
       >
-        {!subscription.isSubscribed && (
-          <Box backgroundColor="white" marginBottom="s" padding="l">
-            <Button
-              variant="primary"
-              onPress={() =>
-                router.navigate({
-                  pathname: "/(tabs)/(more)/subscribe",
-                  params: { backPath: "More" },
-                })
-              }
-            >
-              <Text variant="button" color="white">
-                {t("more.showSubscriptionOptions")}
-              </Text>
-            </Button>
-            {Platform.OS !== "ios" && (
-              <Text variant="body" marginTop="m" textAlign="center">
-                {daysLeft > 0
-                  ? t("more.stillXDaysForFree", { count: daysLeft })
-                  : t("more.testPeriodExpired")}
-              </Text>
-            )}
-          </Box>
-        )}
-
         {hasTestAccess && (
           <Box backgroundColor="white" marginBottom="s" paddingVertical="s">
             <ListItem
@@ -91,14 +54,12 @@ export default function MoreScreen() {
               navPath="/test"
               iconName="help-circle"
               iconBackground="primary"
-              isSubscribed={allowedForTraining}
             />
             <ListItem
               title={t("more.trainingPlans")}
               navPath="/(tabs)/(more)/exercises"
               iconName="clipboard"
               iconBackground="primary"
-              isSubscribed={allowedForTraining}
             />
             <ListItem
               title={t("more.exercises")}
@@ -106,7 +67,6 @@ export default function MoreScreen() {
               iconName="list"
               iconBackground="primary"
               isLast
-              isSubscribed={allowedForTraining}
             />
           </Box>
         )}
@@ -117,28 +77,24 @@ export default function MoreScreen() {
             navPath="/(more)/anamnesis/userprofile"
             iconName="person"
             iconBackground="primary"
-            isSubscribed={allowedForTraining}
           />
           <ListItem
             title={t("more.mySport")}
             navPath="/(more)/anamnesis/sport"
             iconName="basketball"
             iconBackground="primary"
-            isSubscribed={allowedForTraining}
           />
           <ListItem
             title={t("more.myEquipment")}
             navPath="/(tabs)/(more)/equipment"
             iconName="fitness"
             iconBackground="primary"
-            isSubscribed={allowedForTraining}
           />
           <ListItem
             title={t("more.myTrainingData")}
             navPath="/(more)/anamnesis/season-phase"
             iconName="stats-chart"
             iconBackground="primary"
-            isSubscribed={allowedForTraining}
           />
           <ListItem
             title={t("more.startNewTestWorkout")}
@@ -149,7 +105,6 @@ export default function MoreScreen() {
             }}
             iconName="barbell"
             iconBackground="primary"
-            isSubscribed={allowedForTraining}
           />
           <ListItem
             title={t("more.enterTestManually")}
@@ -162,7 +117,6 @@ export default function MoreScreen() {
             navPath="/(tabs)/(more)/tutorials"
             iconName="videocam"
             iconBackground="primary"
-            isSubscribed={allowedForTraining}
           />
           <ListItem
             title={t("more.joinTeam.menuItem")}
@@ -170,7 +124,6 @@ export default function MoreScreen() {
             iconName="people"
             iconBackground="primary"
             isLast
-            isSubscribed={allowedForTraining}
           />
         </Box>
 
@@ -181,7 +134,6 @@ export default function MoreScreen() {
               externalUrl={LINK_AGB}
               iconName="information-circle"
               iconBackground="darkGrey1"
-              isSubscribed={allowedForTraining}
             />
           )}
           {featureFlags.privacyEnabled && (
@@ -190,7 +142,6 @@ export default function MoreScreen() {
               externalUrl={LINK_PRIVACY}
               iconName="shield-checkmark"
               iconBackground="darkGrey1"
-              isSubscribed={allowedForTraining}
             />
           )}
           <ListItem
@@ -198,24 +149,13 @@ export default function MoreScreen() {
             navPath="/(tabs)/(more)/notifications"
             iconName="settings"
             iconBackground="darkGrey1"
-            isSubscribed={allowedForTraining}
           />
-          {featureFlags.subscriptionStatusEnabled && (
-            <ListItem
-              title={t("more.subscriptionStatus")}
-              navPath="/(tabs)/(more)/subscription-status"
-              iconName="eye"
-              iconBackground="darkGrey1"
-              isSubscribed={allowedForTraining}
-            />
-          )}
           {featureFlags.contactEnabled && (
             <ListItem
               title={t("more.contact")}
               navPath="/contact"
               iconName="mail"
               iconBackground="darkGrey1"
-              isSubscribed={allowedForTraining}
             />
           )}
           {featureFlags.imprintEnabled && (
@@ -224,7 +164,6 @@ export default function MoreScreen() {
               externalUrl={LINK_IMPRINT}
               iconName="document-text"
               iconBackground="darkGrey1"
-              isSubscribed={allowedForTraining}
             />
           )}
 

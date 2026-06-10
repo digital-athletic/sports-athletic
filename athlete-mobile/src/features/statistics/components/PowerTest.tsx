@@ -1,8 +1,6 @@
 import { PowerTest as Chart } from "@/charts/PowerTest";
 import { Coaching } from "@/common/Coaching";
 import { Ionicon } from "@/common/Ionicon";
-import { isAllowedForTraining } from "@/features/subscription/subscriptionHelpers";
-import { useSubscriptionStore } from "@/features/subscription/subscriptionStore";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
@@ -27,7 +25,6 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
-  const subscription = useSubscriptionStore((state) => state.subscription);
 
   const {
     sortedHistory,
@@ -40,23 +37,10 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
 
   const startTestWorkout = useCallback(() => {
     if (anamnesisCompleted) {
-      if (isAllowedForTraining(subscription)) {
-        router.push({
-          pathname: "/training/muscle-soreness",
-          params: { type: "TEST_WORKOUT", originPath: "/(tabs)/statistics" },
-        });
-      } else {
-        Alert.alert(
-          t("statistics.powerTest.subscriptionExpired"),
-          t("statistics.powerTest.chooseSubscription"),
-          [
-            {
-              text: t("common.ok"),
-              onPress: () => router.push("/subscribe?backPath=PowerTest"),
-            },
-          ],
-        );
-      }
+      router.push({
+        pathname: "/training/muscle-soreness",
+        params: { type: "TEST_WORKOUT", originPath: "/(tabs)/statistics" },
+      });
     } else {
       Alert.alert(
         t("statistics.powerTest.testNotPossible"),
@@ -70,7 +54,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
         ],
       );
     }
-  }, [anamnesisCompleted, subscription, router, t]);
+  }, [anamnesisCompleted, router, t]);
 
   const renderChart = () => {
     if (!hasChartData) {

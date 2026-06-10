@@ -181,10 +181,6 @@
       "title": "Profil"
     }
   },
-  "subscription": {
-    "expired": "Abonnement abgelaufen",
-    "chooseSubscriptionToStart": "Wähle ein Abonnement, um dein Training zu starten"
-  },
   "training": {
     "focus": {
       "CARDIO": "Ausdauer",
@@ -517,13 +513,12 @@
     "mySport": "Meine Sportart",
     "myEquipment": "Meine Ausrüstung",
     "myTrainingData": "Meine Trainingsdaten",
-    "startNewTestWorkout": "Neues Test-Workout starten",
-    "enterTestManually": "Testergebnisse manuell eingeben",
+    "startNewTestWorkout": "Krafttest starten",
+    "enterTestManually": "Krafttestergebnisse eingeben",
     "technicalVideos": "Technikvideos",
     "agb": "AGB",
     "privacy": "Datenschutz",
     "notificationsSettings": "Benachrichtigungseinstellungen",
-    "subscriptionStatus": "Abonnementstatus",
     "notifications": {
       "settings": "Nachrichten-Einstellungen",
       "settingsTitle": "Erhalte Benachrichtigungen",
@@ -539,9 +534,6 @@
     "testPersonas": "Test Personas",
     "trainingPlans": "Trainingspläne",
     "exercises": "Übungen",
-    "showSubscriptionOptions": "Abonnementoptionen anzeigen",
-    "testPeriodExpired": "Testzeitraum abgelaufen",
-    "stillXDaysForFree": "Noch {{count}} Tage kostenlos",
     "deleteQuestionTitle": "Nutzer löschen?",
     "deleteQuestionMessage": "Bist du sicher, dass du deinen Account unwiderruflich löschen möchtest?",
     "logoutQuestionTitle": "Abmelden?",
@@ -754,8 +746,6 @@
     },
     "powerTest": {
       "title": "Krafttest",
-      "subscriptionExpired": "Abo abgelaufen",
-      "chooseSubscription": "Wähle ein Abo, um mit dem Training zu beginnen.",
       "testNotPossible": "Krafttest nicht möglich",
       "anamnesisNeeded": "Bitte vervollständige zuerst dein Profil.",
       "startNow": "Jetzt starten",
@@ -767,8 +757,8 @@
       "legendBenchPress": "Bankdrücken",
       "legendRowing": "Rudern",
       "legendShoulderPress": "Schulterdrücken",
-      "startNewTest": "Neuen Krafttest starten",
-      "enterManually": "Ergebnisse manuell eingeben",
+      "startNewTest": "Krafttest starten",
+      "enterManually": "Krafttestergebnisse eingeben",
       "toggleEntry": "Testergebnis für {{date}} umschalten",
       "squad": "Kniebeuge",
       "deadlift": "Kreuzheben",

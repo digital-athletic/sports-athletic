@@ -5,7 +5,25 @@ import type {
   FilterResult,
 } from "@/features/training/models/BranchFilter";
 import type { ExerciseType } from "@/schemas/exercise.schema";
+import type { PlacesData } from "@/store/placesStore";
 import { getTagValues } from "@/utils/tagUtils";
+
+/**
+ * Checks if barbell equipment (single or multiple) is present
+ */
+export function hasBarbell(equipment: string[]): boolean {
+  return (
+    equipment.includes(WorkoutConstants.EQUIPMENT.BARBELL) ||
+    equipment.includes(WorkoutConstants.EQUIPMENT.BARBELL_MULTIPLE)
+  );
+}
+
+/**
+ * Checks if any training place has barbell equipment
+ */
+export function hasAnyBarbell(places: PlacesData): boolean {
+  return Object.values(places).some((p) => hasBarbell(p.equipment));
+}
 
 /**
  * Checks if weight equipment (dumbbells or barbells) is present

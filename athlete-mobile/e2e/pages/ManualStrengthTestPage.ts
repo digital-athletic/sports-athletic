@@ -41,7 +41,7 @@ export class ManualStrengthTestPage extends BasePage {
   async navigateFromMore() {
     await this.navigateToTab("Profile");
     await expect(this.page.getByText("Profile").first()).toBeVisible();
-    await this.page.getByText("Enter Test Results Manually").click();
+    await this.page.getByText("Enter Strength Test Results").click();
     await this.expectScreenVisible();
   }
 

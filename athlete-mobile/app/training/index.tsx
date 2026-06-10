@@ -7,19 +7,19 @@ import {
   WorkoutConstants,
 } from "@/constants/workoutConstants";
 import { getAllExercises } from "@/data/exerciseRegistry";
-import { isAllowedForTraining } from "@/features/subscription/subscriptionHelpers";
-import { useSubscriptionStore } from "@/features/subscription/subscriptionStore";
 import { ColumnList } from "@/features/training/ColumnList";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { getSectionForDate } from "@/features/training/trainingUtils";
+import { hasAnyBarbell } from "@/features/training/utils/equipmentUtils";
 import { Logger } from "@/services/Logger";
+import { usePlacesStore } from "@/store/placesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { router, Stack } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, BackHandler } from "react-native";
+import { BackHandler } from "react-native";
 
 type ScreenState = "SELECT" | "TEST";
 
@@ -39,7 +39,7 @@ export default function SelectTraining() {
   const { workoutData, trainingPlan } = useUserWorkoutStore();
   const { trainingDays } = useTrainingScheduleStore();
   const exercises = getAllExercises();
-  const { subscription } = useSubscriptionStore();
+  const barbellAvailable = usePlacesStore((s) => hasAnyBarbell(s.places));
 
   const [screenState, setScreenState] = useState<ScreenState>("SELECT");
   const [tiles, setTiles] = useState<TileData[]>([]);
@@ -131,7 +131,7 @@ export default function SelectTraining() {
       }
     }
 
-    if (lastTestExpired && needsFmaxValues) {
+    if (lastTestExpired && needsFmaxValues && barbellAvailable) {
       Logger.logEvent("test_coaching_opened");
       setScreenState("TEST");
     }
@@ -182,7 +182,15 @@ export default function SelectTraining() {
     }
 
     return tiles;
-  }, [workoutData, selection, trainingPlan, trainingDays, exercises, t]);
+  }, [
+    workoutData,
+    selection,
+    trainingPlan,
+    trainingDays,
+    exercises,
+    t,
+    barbellAvailable,
+  ]);
 
   // Initialize tile data
   useEffect(() => {
@@ -208,33 +216,13 @@ export default function SelectTraining() {
   }, [getTrainingDays, selection]);
 
   const startPowerTest = useCallback(() => {
-    // check if still subscribed
-    if (isAllowedForTraining(subscription)) {
-      setTrainingSelection(null);
-      Logger.logEvent("test_coaching_selected_start");
-      router.push({
-        pathname: "/training/muscle-soreness",
-        params: { type: "TEST_WORKOUT", originPath: "/training" },
-      });
-    } else {
-      // no longer in test and not subscribed
-      Alert.alert(
-        t("subscription.expired"),
-        t("subscription.chooseSubscriptionToStart"),
-        [
-          {
-            text: t("common.ok"),
-            onPress: () => {
-              router.navigate({
-                pathname: "/(tabs)/(more)/subscribe",
-                params: { backPath: "SelectTraining" },
-              });
-            },
-          },
-        ],
-      );
-    }
-  }, [setTrainingSelection, subscription, t]);
+    setTrainingSelection(null);
+    Logger.logEvent("test_coaching_selected_start");
+    router.push({
+      pathname: "/training/muscle-soreness",
+      params: { type: "TEST_WORKOUT", originPath: "/training" },
+    });
+  }, [setTrainingSelection]);
 
   const skipPowerTest = useCallback(() => {
     Logger.logEvent("test_coaching_selected_skip");
@@ -275,13 +263,10 @@ export default function SelectTraining() {
 
     return (
       <Box marginBottom="s" flex={1}>
-        <ColumnList
-          isSubscribed={subscription.isSubscribed}
-          listItems={listItems}
-        />
+        <ColumnList listItems={listItems} />
       </Box>
     );
-  }, [tiles, selection, subscription.isSubscribed]);
+  }, [tiles, selection]);
 
   const renderCoaching = useCallback(() => {
     let message: string = t("training.selectTraining.coachSportProhibitionMsg");

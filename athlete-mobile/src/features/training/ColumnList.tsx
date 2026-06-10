@@ -6,7 +6,6 @@ import { useRouter } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Alert,
   FlatList,
   Image,
   ListRenderItem,
@@ -14,18 +13,14 @@ import {
 } from "react-native";
 
 export type ColumnListProps = {
-  isSubscribed: boolean;
   listItems: TileData[];
 };
 
 /**
  * Grid list component for displaying exercises/tutorials.
- * Shows image with title and optional description, handles navigation and subscription gating.
+ * Shows image with title and optional description, handles navigation.
  */
-export const ColumnList: FC<ColumnListProps> = ({
-  isSubscribed,
-  listItems,
-}) => {
+export const ColumnList: FC<ColumnListProps> = ({ listItems }) => {
   const { t } = useTranslation();
   const router = useRouter();
   const listItemWidth = useResponsiveProp({
@@ -34,28 +29,10 @@ export const ColumnList: FC<ColumnListProps> = ({
   });
 
   const handleNavigate = (item: TileData) => {
-    if (isSubscribed) {
-      const { key, params } = item.navigate;
-      // @ts-expect-error Suppress ts(2345) Types of property 'pathname' are incompatible.
-      // It has been verified that the allowed values are restricted to valid paths as expected.
-      router.navigate({ pathname: key, params });
-    } else {
-      Alert.alert(
-        t("subscription.expired"),
-        t("subscription.chooseSubscriptionToStart"),
-        [
-          {
-            text: t("common.ok"),
-            onPress: () => {
-              router.navigate({
-                pathname: "/(tabs)/(more)/subscribe",
-                params: { backPath: "SelectTraining" },
-              });
-            },
-          },
-        ],
-      );
-    }
+    const { key, params } = item.navigate;
+    // @ts-expect-error Suppress ts(2345) Types of property 'pathname' are incompatible.
+    // It has been verified that the allowed values are restricted to valid paths as expected.
+    router.navigate({ pathname: key, params });
   };
 
   const renderItem: ListRenderItem<TileData> = ({ item }) => {

@@ -138,13 +138,6 @@ jest.mock("@/store/syncQueueStore", () => ({
   }),
 }));
 
-const mockResetSubscription = jest.fn();
-jest.mock("@/features/subscription/subscriptionStore", () => ({
-  useSubscriptionStore: () => ({
-    resetSubscription: mockResetSubscription,
-  }),
-}));
-
 const mockClearTraining = jest.fn();
 jest.mock("@/features/training/trainingStore", () => ({
   useTrainingStore: () => ({
@@ -171,7 +164,6 @@ function storeCallCounts() {
     resetPlaces: mockResetPlaces.mock.calls.length,
     resetSettings: mockResetSettings.mock.calls.length,
     clearSyncQueue: mockClearSyncQueue.mock.calls.length,
-    resetSubscription: mockResetSubscription.mock.calls.length,
     clearTraining: mockClearTraining.mock.calls.length,
     resetSynchronization: mockResetSynchronization.mock.calls.length,
   };
@@ -188,7 +180,6 @@ const ALL_STORES_CALLED_ONCE = {
   resetPlaces: 1,
   resetSettings: 1,
   clearSyncQueue: 1,
-  resetSubscription: 1,
   clearTraining: 1,
   resetSynchronization: 1,
 };

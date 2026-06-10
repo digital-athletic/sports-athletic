@@ -181,10 +181,6 @@
       "title": "Profile"
     }
   },
-  "subscription": {
-    "expired": "Subscription expired",
-    "chooseSubscriptionToStart": "Choose a subscription to start your training"
-  },
   "training": {
     "focus": {
       "CARDIO": "Stamina",
@@ -517,13 +513,12 @@
     "mySport": "My Sport",
     "myEquipment": "My Equipment",
     "myTrainingData": "My Training Data",
-    "startNewTestWorkout": "Start New Test Workout",
-    "enterTestManually": "Enter Test Results Manually",
+    "startNewTestWorkout": "Start Strength Test",
+    "enterTestManually": "Enter Strength Test Results",
     "technicalVideos": "Technical Videos",
     "agb": "Terms and Conditions",
     "privacy": "Privacy",
     "notificationsSettings": "Notification Settings",
-    "subscriptionStatus": "Subscription Status",
     "notifications": {
       "settings": "Notification settings",
       "settingsTitle": "Turn on notifications",
@@ -539,9 +534,6 @@
     "testPersonas": "Test Personas",
     "trainingPlans": "Training Plans",
     "exercises": "Exercises",
-    "showSubscriptionOptions": "Show Subscription Options",
-    "testPeriodExpired": "Test period expired",
-    "stillXDaysForFree": "Still {{count}} days for free",
     "deleteQuestionTitle": "Delete User?",
     "deleteQuestionMessage": "Are you sure you want to permanently delete your account?",
     "logoutQuestionTitle": "Logout?",
@@ -754,8 +746,6 @@
     },
     "powerTest": {
       "title": "Power Test",
-      "subscriptionExpired": "Subscription Expired",
-      "chooseSubscription": "Choose a subscription to start your training.",
       "testNotPossible": "Power test not possible",
       "anamnesisNeeded": "Please complete your profile first.",
       "startNow": "Start Now",
@@ -767,8 +757,8 @@
       "legendBenchPress": "Bench press",
       "legendRowing": "Rowing",
       "legendShoulderPress": "Shoulder press",
-      "startNewTest": "Start New Test Workout",
-      "enterManually": "Enter Results Manually",
+      "startNewTest": "Start Strength Test",
+      "enterManually": "Enter Strength Test Results",
       "toggleEntry": "Toggle test entry for {{date}}",
       "squad": "Squat",
       "deadlift": "Deadlift",

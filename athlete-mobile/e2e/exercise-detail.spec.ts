@@ -23,7 +23,7 @@ test.describe("Exercise Detail View", () => {
 
     // Navigate to Profile tab and start strength test
     await basePage.navigateToTab("Profile");
-    await page.getByText("Start New Test Workout").click();
+    await page.getByText("Start Strength Test").click();
 
     // Skip muscle soreness selection
     await basePage.skipMuscleSoreness();
@@ -72,7 +72,7 @@ test.describe("Exercise Detail View", () => {
 
     // Navigate to Profile tab and start strength test
     await basePage.navigateToTab("Profile");
-    await page.getByText("Start New Test Workout").click();
+    await page.getByText("Start Strength Test").click();
 
     // Skip muscle soreness selection
     await basePage.skipMuscleSoreness();

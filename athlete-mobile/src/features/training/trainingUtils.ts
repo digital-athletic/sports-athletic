@@ -3,6 +3,7 @@ import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import { ISODateToDate } from "@/utils/date";
 import { isTagInGroup } from "@/utils/tagUtils";
+import { hasBarbell } from "./utils/equipmentUtils";
 import { isPauseExercise } from "./models/IdTypes";
 import { TrainingSectionType } from "./models/TrainingSection";
 import type { UserExerciseDataType } from "./models/UserExerciseData";
@@ -17,11 +18,6 @@ const isEquipmentTag = (tag: string): boolean =>
   isTagInGroup(tag, TagGroups.EQUIPMENT);
 const extractEquipmentName = (tag: string): string =>
   tag.substring(EQUIPMENT_TAG_PREFIX.length);
-
-// Checks if equipment list contains barbell types
-const hasBarbell = (equipment: string[]): boolean =>
-  equipment.includes(WorkoutConstants.EQUIPMENT.BARBELL) ||
-  equipment.includes(WorkoutConstants.EQUIPMENT.BARBELL_MULTIPLE);
 
 const hasDumbbell = (equipment: string[]): boolean =>
   equipment.includes(WorkoutConstants.EQUIPMENT.DUMBBELL);

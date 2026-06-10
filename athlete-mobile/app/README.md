@@ -58,9 +58,7 @@ app/
 │       ├── imprint.tsx
 │       ├── privacy.tsx
 │       ├── notifications.tsx
-│       ├── webview.tsx
-│       ├── subscribe.tsx
-│       └── subscription-status.tsx
+│       └── webview.tsx
 │
 ├── webview/                   # Full-screen modal
 │   ├── _layout.tsx

@@ -1,8 +1,67 @@
 import { WorkoutConstants } from "@/constants/workoutConstants";
-import { equipmentExists, hasRunEquipment, hasWeights } from "./equipmentUtils";
+import type { PlacesData } from "@/store/placesStore";
+import {
+  equipmentExists,
+  hasAnyBarbell,
+  hasBarbell,
+  hasRunEquipment,
+  hasWeights,
+} from "./equipmentUtils";
+
+const makePlaces = (overrides: Partial<PlacesData> = {}): PlacesData => ({
+  HOME: { equipment: [] },
+  STUDIO: { equipment: [] },
+  HALL: { equipment: [] },
+  OUTSIDE: { equipment: [] },
+  ...overrides,
+});
 
 describe("equipmentUtils", () => {
   const { EQUIPMENT } = WorkoutConstants;
+
+  describe("hasBarbell", () => {
+    it("returns true when equipment includes BARBELL", () => {
+      expect(hasBarbell([EQUIPMENT.BARBELL])).toBe(true);
+    });
+
+    it("returns true when equipment includes BARBELL_MULTIPLE", () => {
+      expect(hasBarbell([EQUIPMENT.BARBELL_MULTIPLE])).toBe(true);
+    });
+
+    it("returns false when equipment has no barbell", () => {
+      expect(hasBarbell([EQUIPMENT.DUMBBELL, EQUIPMENT.BENCH])).toBe(false);
+    });
+
+    it("returns false for empty equipment array", () => {
+      expect(hasBarbell([])).toBe(false);
+    });
+  });
+
+  describe("hasAnyBarbell", () => {
+    it("returns true when barbell is in exactly one place", () => {
+      const places = makePlaces({ HALL: { equipment: [EQUIPMENT.BARBELL] } });
+      expect(hasAnyBarbell(places)).toBe(true);
+    });
+
+    it("returns false when no place has barbell equipment", () => {
+      const places = makePlaces({
+        HOME: { equipment: [EQUIPMENT.DUMBBELL] },
+        STUDIO: { equipment: [EQUIPMENT.BENCH] },
+      });
+      expect(hasAnyBarbell(places)).toBe(false);
+    });
+
+    it("returns true when only BARBELL_MULTIPLE is present", () => {
+      const places = makePlaces({
+        STUDIO: { equipment: [EQUIPMENT.BARBELL_MULTIPLE] },
+      });
+      expect(hasAnyBarbell(places)).toBe(true);
+    });
+
+    it("returns false when all places have empty equipment arrays", () => {
+      expect(hasAnyBarbell(makePlaces())).toBe(false);
+    });
+  });
 
   describe("hasWeights", () => {
     it("returns true when equipment includes DUMBBELL", () => {

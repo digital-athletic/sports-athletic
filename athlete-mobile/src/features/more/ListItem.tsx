@@ -6,7 +6,7 @@ import { useResponsiveProp } from "@shopify/restyle";
 import { type Route, useRouter } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Linking, TouchableOpacity } from "react-native";
+import { Linking, TouchableOpacity } from "react-native";
 import { ListDivider } from "../../common/ListDivider";
 
 export type ListItemProps = {
@@ -17,7 +17,6 @@ export type ListItemProps = {
   iconBackground: ThemeColor;
   backPath?: string;
   isLast?: boolean;
-  isSubscribed?: boolean;
   navParams?: Record<string, string>;
 };
 
@@ -32,7 +31,6 @@ export const ListItem: FC<ListItemProps> = ({
   iconName,
   iconBackground,
   isLast = false,
-  isSubscribed,
   navParams,
 }) => {
   const { t } = useTranslation();
@@ -47,25 +45,6 @@ export const ListItem: FC<ListItemProps> = ({
   const handlePress = () => {
     if (externalUrl) {
       Linking.openURL(externalUrl);
-      return;
-    }
-
-    if (navPath === "/training/muscle-soreness" && !isSubscribed) {
-      Alert.alert(
-        t("subscription.expired"),
-        t("subscription.chooseSubscriptionToStart"),
-        [
-          {
-            text: t("common.ok"),
-            onPress: () => {
-              router.navigate({
-                pathname: "/(tabs)/(more)/subscribe",
-                params: { backPath: "PowerTest" },
-              });
-            },
-          },
-        ],
-      );
       return;
     }
 

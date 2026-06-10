@@ -1,5 +1,4 @@
 import { Alert } from "@/common/Alert";
-import { useSubscriptionStore } from "@/features/subscription/subscriptionStore";
 import { useSynchronizationStore } from "@/features/training/synchronizationStore";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { useNetworkState } from "@/hooks/useNetworkState";
@@ -96,7 +95,6 @@ export function useDeleteAccount() {
   const { resetPlaces } = usePlacesStore();
   const { resetSettings } = useUserSettingsStore();
   const { clearSyncQueue } = useSyncQueueStore();
-  const { resetSubscription } = useSubscriptionStore();
   const { clearTraining } = useTrainingStore();
   const { resetSynchronization } = useSynchronizationStore();
 
@@ -124,7 +122,6 @@ export function useDeleteAccount() {
         resetPlaces();
         resetSettings();
         clearSyncQueue();
-        resetSubscription();
         clearTraining();
         resetSynchronization();
         router.replace("/onboarding");

@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
     const ownerCheck = await verifyTeamOwner(auth.client, team_id, auth.userId);
     if (ownerCheck) return ownerCheck;
 
-    await deleteTeam(auth.client, team_id);
+    await deleteTeam(team_id);
     return jsonResponse({ action: "team_deleted", team_id });
   } catch (error) {
     console.error("Error deleting team:", error);

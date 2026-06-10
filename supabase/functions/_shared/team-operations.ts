@@ -180,7 +180,7 @@ export async function verifyTeamOwner(
 }
 
 // ============================================
-// WRITE OPERATIONS - Use user client (RLS enforced)
+// WRITE OPERATIONS - Use admin client; authorization enforced in edge functions
 // ============================================
 
 export async function createTeam(
@@ -222,11 +222,10 @@ export async function addTeamMember(
 }
 
 export async function removeMember(
-  client: SupabaseClient,
   teamId: string,
   userId: string,
 ): Promise<void> {
-  const { error } = await client
+  const { error } = await supabaseAdmin
     .from(Tables.TEAM_MEMBERS)
     .delete()
     .eq("team_id", teamId)
@@ -237,11 +236,11 @@ export async function removeMember(
   }
 }
 
-export async function deleteTeam(
-  client: SupabaseClient,
-  teamId: string,
-): Promise<void> {
-  const { error } = await client.from(Tables.TEAMS).delete().eq("id", teamId);
+export async function deleteTeam(teamId: string): Promise<void> {
+  const { error } = await supabaseAdmin
+    .from(Tables.TEAMS)
+    .delete()
+    .eq("id", teamId);
 
   if (error) {
     throw error;
@@ -249,14 +248,13 @@ export async function deleteTeam(
 }
 
 export async function createInvitation(
-  client: SupabaseClient,
   teamId: string,
   code: string,
   createdBy: string,
   expiresAt?: string | null,
   maxUses?: number | null,
 ): Promise<TeamInvitation> {
-  const { data, error } = await client
+  const { data, error } = await supabaseAdmin
     .from(Tables.TEAM_INVITATIONS)
     .insert({
       team_id: teamId,
@@ -275,11 +273,8 @@ export async function createInvitation(
   return data;
 }
 
-export async function deactivateTeamInvitations(
-  client: SupabaseClient,
-  teamId: string,
-): Promise<void> {
-  const { error } = await client
+export async function deactivateTeamInvitations(teamId: string): Promise<void> {
+  const { error } = await supabaseAdmin
     .from(Tables.TEAM_INVITATIONS)
     .update({ is_active: false })
     .eq("team_id", teamId)

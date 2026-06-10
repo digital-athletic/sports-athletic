@@ -41,13 +41,10 @@ Deno.serve(async (req) => {
     }
 
     if (team.owner_id === auth.userId) {
-      return errorResponse(
-        ErrorCodes.OWNER_CANNOT_LEAVE,
-        HttpStatus.FORBIDDEN,
-      );
+      return errorResponse(ErrorCodes.OWNER_CANNOT_LEAVE, HttpStatus.FORBIDDEN);
     }
 
-    await removeMember(auth.client, team_id, auth.userId);
+    await removeMember(team_id, auth.userId);
     return jsonResponse({ action: "left_team", team_id });
   } catch (error) {
     console.error("Error leaving team:", error);

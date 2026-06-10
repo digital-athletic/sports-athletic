@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
       return errorResponse(ErrorCodes.MEMBER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
-    await removeMember(auth.client, team_id, member_user_id);
+    await removeMember(team_id, member_user_id);
 
     return jsonResponse({
       success: true,

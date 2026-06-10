@@ -33,12 +33,11 @@ Deno.serve(async (req) => {
     if (ownerError) return ownerError;
 
     if (deactivate_existing) {
-      await deactivateTeamInvitations(auth.client, team_id);
+      await deactivateTeamInvitations(team_id);
     }
 
     const code = await generateUniqueInviteCode(auth.client);
     const invitation = await createInvitation(
-      auth.client,
       team_id,
       code,
       auth.userId,

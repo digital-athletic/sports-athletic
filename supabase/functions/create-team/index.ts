@@ -54,16 +54,16 @@ Deno.serve(async (req) => {
     try {
       await addTeamMember(team.id, auth.userId, Roles.OWNER);
     } catch (error) {
-      await deleteTeam(auth.client, team.id);
+      await deleteTeam(team.id);
       throw error;
     }
 
     let inviteCode: string;
     try {
       inviteCode = await generateUniqueInviteCode(auth.client);
-      await createInvitation(auth.client, team.id, inviteCode, auth.userId);
+      await createInvitation(team.id, inviteCode, auth.userId);
     } catch (error) {
-      await deleteTeam(auth.client, team.id);
+      await deleteTeam(team.id);
       throw error;
     }
 

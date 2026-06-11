@@ -25,6 +25,13 @@ interface DateInputFieldProps {
 }
 
 /**
+ * Default lower bound for date pickers. Without an explicit minimumDate the
+ * native Android picker clamps selections at the Unix epoch (1970-01-01),
+ * making earlier birthdays unselectable. Providing a real floor avoids this.
+ */
+const DEFAULT_MIN_DATE = new Date(1920, 0, 1);
+
+/**
  * Date/Time picker input field
  */
 export const DateInputField: FC<DateInputFieldProps> = ({
@@ -38,6 +45,10 @@ export const DateInputField: FC<DateInputFieldProps> = ({
   const { colors } = useTheme();
 
   const iconName = type === "date" ? "calendar" : "time";
+
+  // Only date pickers need the floor; time pickers have no lower bound.
+  const effectiveMinimumDate =
+    minimumDate ?? (type === "date" ? DEFAULT_MIN_DATE : undefined);
 
   // Parse existing dateTime or use current date
   const getCurrentDate = (): Date => {
@@ -65,7 +76,7 @@ export const DateInputField: FC<DateInputFieldProps> = ({
       onChange: handleChange,
       mode: type,
       maximumDate,
-      minimumDate,
+      minimumDate: effectiveMinimumDate,
     });
   };
 
@@ -97,7 +108,7 @@ export const DateInputField: FC<DateInputFieldProps> = ({
             onChange={handleChange}
             locale={i18n.language}
             maximumDate={maximumDate}
-            minimumDate={minimumDate}
+            minimumDate={effectiveMinimumDate}
           />
         ),
         android: (

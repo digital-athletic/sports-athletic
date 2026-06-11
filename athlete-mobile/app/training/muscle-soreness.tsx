@@ -77,7 +77,7 @@ export default function MuscleSorenessScreen() {
   const { trainingDays } = useTrainingScheduleStore();
   const { places } = usePlacesStore();
   const { workoutsList } = useCompletedWorkoutsStore();
-  const { setExerciseList, setEquipment, setActiveTraining } =
+  const { setExerciseList, setEquipment, setActiveTraining, clearTraining } =
     useTrainingStore();
   const { auth } = useAuthStore();
   const userId = auth?.userId;
@@ -213,6 +213,9 @@ export default function MuscleSorenessScreen() {
     );
 
     // Convert generated list to user exercise data format and save to store
+    // Stale session state from a killed workout must not leak into the new session.
+    // clearTraining preserves `selection` so the user's training selection is unaffected.
+    clearTraining();
     const exerciseList = toUserExerciseDataList(generatedList);
     setExerciseList(exerciseList);
     setEquipment(equipment);

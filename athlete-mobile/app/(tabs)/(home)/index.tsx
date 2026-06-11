@@ -1,5 +1,9 @@
 import { IndividualWorkoutDisplay } from "@/features/training/IndividualWorkoutDisplay";
 import { useTrainingStore } from "@/features/training/trainingStore";
+import {
+  hasStaleLeftovers,
+  isResumableSession,
+} from "@/features/training/utils/resumeUtils";
 import { Logger } from "@/services/Logger";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
@@ -26,6 +30,10 @@ export default function HomeScreen() {
     useUserProfileStore();
   const { isSkipped } = useAnamnesisStore();
   const { setTrainingSelection } = useTrainingStore();
+  const trainingHasHydrated = useTrainingStore((s) => s._hasHydrated);
+  const activeTraining = useTrainingStore((s) => s.activeTraining);
+  const time = useTrainingStore((s) => s.time);
+  const clearTraining = useTrainingStore((s) => s.clearTraining);
 
   const username = personalData?.username || "Mr. Anderson";
 
@@ -39,8 +47,30 @@ export default function HomeScreen() {
       // to avoid redirecting based on default (non-persisted) values
       if (_hasHydrated && !anamnesisCompleted && !isSkipped) {
         router.replace("/anamnesis");
+        return;
       }
-    }, [_hasHydrated, anamnesisCompleted, isSkipped]),
+
+      if (!trainingHasHydrated) {
+        return;
+      }
+
+      // A started and unfinished workout survives an OS kill in the persisted store
+      // and is resumed directly; stale leftovers that were never started are discarded.
+      // Runs after the anamnesis gate: a resumable workout implies completed anamnesis.
+      if (isResumableSession(activeTraining, time)) {
+        router.replace("/training/training-active");
+      } else if (hasStaleLeftovers(activeTraining, time)) {
+        clearTraining();
+      }
+    }, [
+      _hasHydrated,
+      anamnesisCompleted,
+      isSkipped,
+      trainingHasHydrated,
+      activeTraining,
+      time,
+      clearTraining,
+    ]),
   );
 
   const goToTraining = (type: "QUICK" | "PREV" | "PLAN") => {

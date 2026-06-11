@@ -13,7 +13,8 @@ import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
 import { getTimeString, getWeightString } from "@/utils/formatters";
-import { Stack, useRouter } from "expo-router";
+import { parseBooleanParam } from "@/utils/router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useRef, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
@@ -22,17 +23,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 /**
  * Training Success Screen
  *
- * Displays training completion summary with:
- * - Radar chart showing skill distribution
- * - Training summary (duration, exercises, xp, weight)
- * - Special handling for test workouts (power test results)
- *
+ * Displays training completion summary. Aborted sessions skip XP and history.
  * Back gestures disabled to ensure controlled flow.
  * Legacy: views/training/TrainingSuccess
  */
 const TrainingSuccessScreen: FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
+  const params = useLocalSearchParams<{ aborted?: string }>();
+  const aborted = parseBooleanParam(params.aborted);
   const { exerciseList, time, activeTraining, clearTraining } =
     useTrainingStore();
   const exercises = getAllExercises();
@@ -61,17 +60,18 @@ const TrainingSuccessScreen: FC = () => {
     [time, exerciseList, exercises, maxValues],
   );
 
-  // Award XP when workout is completed (only once)
+  // Award XP when workout is completed (only once, skip aborted sessions)
   useEffect(() => {
-    if (!xpAwarded.current && totals.xp > 0) {
+    if (!aborted && !xpAwarded.current && totals.xp > 0) {
       addXP(totals.xp);
       xpAwarded.current = true;
     }
-  }, [totals.xp, addXP]);
+  }, [aborted, totals.xp, addXP]);
 
-  // Save completed workout to history (only once, exclude test workouts)
+  // Save completed workout to history (only once, skip aborted and test workouts)
   useEffect(() => {
     if (
+      !aborted &&
       !workoutSaved.current &&
       totals.count > 0 &&
       !isTestWorkout &&
@@ -90,6 +90,7 @@ const TrainingSuccessScreen: FC = () => {
       workoutSaved.current = true;
     }
   }, [
+    aborted,
     totals,
     skills,
     exerciseList,

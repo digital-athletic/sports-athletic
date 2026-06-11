@@ -1,8 +1,9 @@
 import { act, renderHook } from "@testing-library/react-native";
 import { ActiveTrainingType } from "./models/ActiveTraining";
+import { DEFAULT_MAX_VALUES } from "./models/MaxValues";
 import { UserExerciseDataType } from "./models/UserExerciseData";
 import { UserProgressType } from "./models/UserProgress";
-import { useTrainingStore } from "./trainingStore";
+import { migrateTrainingStore, useTrainingStore } from "./trainingStore";
 
 describe("useTrainingStore", () => {
   beforeEach(() => {
@@ -26,6 +27,8 @@ describe("useTrainingStore", () => {
         },
       },
       activeTraining: null,
+      activeExerciseIndex: 0,
+      tempMaxValues: null,
     });
   });
 
@@ -889,6 +892,96 @@ describe("useTrainingStore", () => {
       expect(result.current.exerciseList).toBeNull();
       expect(result.current.activeTraining).toBeNull();
     });
+
+    it("should reset activeExerciseIndex and tempMaxValues", () => {
+      const { result } = renderHook(() => useTrainingStore());
+
+      act(() => {
+        result.current.setActiveExerciseIndex(3);
+        result.current.setTempMaxValues(DEFAULT_MAX_VALUES);
+      });
+
+      expect(result.current.activeExerciseIndex).toBe(3);
+      expect(result.current.tempMaxValues).toEqual(DEFAULT_MAX_VALUES);
+
+      act(() => {
+        result.current.clearTraining();
+      });
+
+      expect(result.current.activeExerciseIndex).toBe(0);
+      expect(result.current.tempMaxValues).toBeNull();
+    });
+  });
+
+  // ============================================================================
+  // Active Exercise Index Tests
+  // ============================================================================
+
+  describe("useTrainingStore: setActiveExerciseIndex", () => {
+    it("should default to 0", () => {
+      const { result } = renderHook(() => useTrainingStore());
+
+      expect(result.current.activeExerciseIndex).toBe(0);
+    });
+
+    it("should set the active exercise index", () => {
+      const { result } = renderHook(() => useTrainingStore());
+
+      act(() => {
+        result.current.setActiveExerciseIndex(2);
+      });
+
+      expect(result.current.activeExerciseIndex).toBe(2);
+    });
+
+    it("should update the active exercise index multiple times", () => {
+      const { result } = renderHook(() => useTrainingStore());
+
+      act(() => {
+        result.current.setActiveExerciseIndex(1);
+      });
+      expect(result.current.activeExerciseIndex).toBe(1);
+
+      act(() => {
+        result.current.setActiveExerciseIndex(4);
+      });
+      expect(result.current.activeExerciseIndex).toBe(4);
+
+      act(() => {
+        result.current.setActiveExerciseIndex(0);
+      });
+      expect(result.current.activeExerciseIndex).toBe(0);
+    });
+  });
+
+  // ============================================================================
+  // Temp Max Values Tests
+  // ============================================================================
+
+  describe("useTrainingStore: setTempMaxValues", () => {
+    it("should set a MaxValuesType value", () => {
+      const { result } = renderHook(() => useTrainingStore());
+
+      act(() => {
+        result.current.setTempMaxValues(DEFAULT_MAX_VALUES);
+      });
+
+      expect(result.current.tempMaxValues).toEqual(DEFAULT_MAX_VALUES);
+    });
+
+    it("should set tempMaxValues back to null", () => {
+      const { result } = renderHook(() => useTrainingStore());
+
+      act(() => {
+        result.current.setTempMaxValues(DEFAULT_MAX_VALUES);
+      });
+      expect(result.current.tempMaxValues).not.toBeNull();
+
+      act(() => {
+        result.current.setTempMaxValues(null);
+      });
+      expect(result.current.tempMaxValues).toBeNull();
+    });
   });
 
   // ============================================================================
@@ -1088,5 +1181,65 @@ describe("useTrainingStore", () => {
         result.current.exerciseList?.[0]?.feedback?.difficulty ?? null,
       ).toBeNull();
     });
+  });
+});
+
+describe("migrateTrainingStore: legacy version bridge", () => {
+  const persistedAtVersionZero = {
+    selection: "QUICK",
+    exerciseList: [
+      {
+        skill: "SWR1",
+        exerciseId: "10",
+        feedback: { difficulty: null },
+        skipped: false,
+      },
+    ],
+    progressBefore: null,
+    equipment: ["DUMBBELL"],
+    time: {
+      start: 1000,
+      end: undefined,
+      pause: 5,
+      skill: {
+        PREVENTION: 0,
+        MOBILITY: 0,
+        SWR: 0,
+        WARMUP: 0,
+        STABILITY: 0,
+        CARDIO: 0,
+      },
+    },
+    activeTraining: null,
+    activeExerciseIndex: 2,
+    tempMaxValues: null,
+  };
+
+  it("preserves user data persisted at legacy version 0", () => {
+    const result = migrateTrainingStore(persistedAtVersionZero, 0);
+
+    expect(result).toEqual(persistedAtVersionZero);
+  });
+
+  it("returns state unchanged when already at the registered version", () => {
+    const result = migrateTrainingStore(persistedAtVersionZero, 14);
+
+    expect(result).toEqual(persistedAtVersionZero);
+  });
+
+  it("resets to defaults for unknown ancient versions", () => {
+    const result = migrateTrainingStore(persistedAtVersionZero, 5);
+
+    expect(result.selection).toBeNull();
+    expect(result.activeExerciseIndex).toBe(0);
+    expect(result.tempMaxValues).toBeNull();
+    expect(result.time.start).toBeUndefined();
+  });
+
+  it("resets to defaults for non integer versions", () => {
+    const result = migrateTrainingStore(persistedAtVersionZero, Number.NaN);
+
+    expect(result.selection).toBeNull();
+    expect(result.activeExerciseIndex).toBe(0);
   });
 });

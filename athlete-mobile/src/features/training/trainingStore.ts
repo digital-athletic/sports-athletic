@@ -1,21 +1,27 @@
 import { ExerciseDifficultyType } from "@/constants/workoutConstants";
 import { asyncStorage } from "@/store/middleware";
+import { createMigrate } from "@/store/migrations/createMigrate";
+import { trainingStoreMigrations } from "@/store/migrations/trainingStoreMigrations";
+import { STORE_VERSIONS } from "@/store/storeVersions";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { ActiveTrainingType } from "./models/ActiveTraining";
+import { type MaxValuesType } from "./models/MaxValues";
 import type { FocusArea } from "./models/Training";
 import { TrainingSelectionType, TrainingTimeType } from "./models/Training";
 import { UserExerciseDataType } from "./models/UserExerciseData";
 import { UserProgressType } from "./models/UserProgress";
 
-type State = {
+export type State = {
   selection: TrainingSelectionType | null;
   exerciseList: UserExerciseDataType[] | null;
   progressBefore: UserProgressType | null;
   equipment: string[];
   time: TrainingTimeType;
   activeTraining: ActiveTrainingType | null;
+  activeExerciseIndex: number;
+  tempMaxValues: MaxValuesType | null;
   _hasHydrated: boolean;
 };
 
@@ -40,6 +46,8 @@ const createInitialState = (): State => ({
   equipment: [],
   time: createInitialTrainingTime(),
   activeTraining: null,
+  activeExerciseIndex: 0,
+  tempMaxValues: null,
   _hasHydrated: false,
 });
 
@@ -62,6 +70,8 @@ type Actions = {
   setProgressBefore: (progress: UserProgressType | null) => void;
   setEquipment: (equipment: string[]) => void;
   setActiveTraining: (training: ActiveTrainingType | null) => void;
+  setActiveExerciseIndex: (index: number) => void;
+  setTempMaxValues: (values: MaxValuesType | null) => void;
   setTrainingStartTime: (time: number) => void;
   setTrainingEndTime: (time: number) => void;
   addPauseTime: (pauseTime: number) => void;
@@ -71,6 +81,25 @@ type Actions = {
 };
 
 export type TrainingState = State & Actions;
+
+const migrateRegistered = createMigrate<State>(
+  STORE_VERSIONS.TRAINING,
+  trainingStoreMigrations,
+  createInitialState,
+  "training",
+);
+
+// This store persisted valid data at raw version 0 before it was registered
+// in storeVersions.ts. The shared createMigrate resets anything below the
+// legacy v13, so version 0 is bridged to 14 to preserve existing user data.
+export const migrateTrainingStore = (
+  persistedState: unknown,
+  persistedVersion: number,
+): State =>
+  migrateRegistered(
+    persistedState,
+    persistedVersion === 0 ? 14 : persistedVersion,
+  );
 
 export const useTrainingStore = create<TrainingState>()(
   persist(
@@ -141,6 +170,14 @@ export const useTrainingStore = create<TrainingState>()(
         set((state) => {
           state.activeTraining = training;
         }),
+      setActiveExerciseIndex: (index) =>
+        set((state) => {
+          state.activeExerciseIndex = index;
+        }),
+      setTempMaxValues: (values) =>
+        set((state) => {
+          state.tempMaxValues = values;
+        }),
       setTrainingStartTime: (time) =>
         set((state) => {
           state.time.start = time;
@@ -165,6 +202,8 @@ export const useTrainingStore = create<TrainingState>()(
           state.equipment = initialState.equipment;
           state.time = initialState.time;
           state.activeTraining = initialState.activeTraining;
+          state.activeExerciseIndex = initialState.activeExerciseIndex;
+          state.tempMaxValues = initialState.tempMaxValues;
         }),
       setHasHydrated: (hydrated) =>
         set((state) => {
@@ -174,7 +213,8 @@ export const useTrainingStore = create<TrainingState>()(
     {
       name: "training-storage",
       storage: asyncStorage,
-      version: 0,
+      version: STORE_VERSIONS.TRAINING,
+      migrate: migrateTrainingStore,
       partialize: (state) => ({
         selection: state.selection,
         exerciseList: state.exerciseList,
@@ -182,6 +222,8 @@ export const useTrainingStore = create<TrainingState>()(
         equipment: state.equipment,
         time: state.time,
         activeTraining: state.activeTraining,
+        activeExerciseIndex: state.activeExerciseIndex,
+        tempMaxValues: state.tempMaxValues,
       }),
       onRehydrateStorage: () => (_state, error) => {
         if (error) {

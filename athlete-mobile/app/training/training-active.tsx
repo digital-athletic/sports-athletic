@@ -112,6 +112,10 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     equipment,
     exerciseList,
     activeTraining,
+    activeExerciseIndex,
+    setActiveExerciseIndex,
+    tempMaxValues,
+    setTempMaxValues,
     addPauseTime,
     addSkillTime,
     setTrainingEndTime,
@@ -131,7 +135,6 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     useUserWorkoutStore();
 
   // Local state
-  const [activeExerciseIndex, setActiveExerciseIndex] = useState(0);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [videoIsPlaying, setVideoIsPlaying] = useState(false);
   const [isAborted, setIsAborted] = useState(false);
@@ -143,11 +146,6 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const pauseStartRef = useRef<number>(Date.now());
   const [isSkipped, setIsSkipped] = useState(false);
   const [isScreenFocused, setIsScreenFocused] = useState(true);
-
-  // Temporary storage for test workout results, only committed on successful completion
-  const [tempMaxValues, setTempMaxValues] = useState<MaxValuesType | null>(
-    null,
-  );
 
   const headerTitle = useMemo(() => {
     const type = activeTraining?.type;
@@ -173,12 +171,18 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     return t("training.active.title.plan");
   }, [activeTraining?.type, t]);
 
-  const currentExercise = exerciseList?.[activeExerciseIndex];
+  // Clamp guards against a persisted index that exceeds the current exercise list length
+  // (e.g. after a workout is regenerated with fewer exercises).
+  const safeExerciseIndex = Math.min(
+    activeExerciseIndex,
+    (exerciseList?.length ?? 1) - 1,
+  );
+  const currentExercise = exerciseList?.[safeExerciseIndex];
   const exerciseId = currentExercise?.exerciseId ?? "-1";
   const isPauseExercise = checkIsPauseExercise(exerciseId);
   const currentExerciseData = getExerciseById(exerciseId);
 
-  const nextExerciseIndex = activeExerciseIndex + 1;
+  const nextExerciseIndex = safeExerciseIndex + 1;
   const hasNextExercise = nextExerciseIndex < (exerciseList?.length ?? 0);
   const nextExercise = hasNextExercise
     ? exerciseList?.[nextExerciseIndex]
@@ -258,6 +262,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
       saveMaxValues,
       logTrainingEvent,
       router,
+      setTempMaxValues,
       setTrainingEndTime,
       t,
     ],
@@ -452,7 +457,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
         ) {
           const mainCardio = findMainCardioExercise(
             exerciseList,
-            activeExerciseIndex,
+            safeExerciseIndex,
           );
           if (mainCardio) {
             branchId = mainCardio.branchId;
@@ -1000,8 +1005,8 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
       }
     }
 
-    if (activeExerciseIndex < exerciseList.length - 1) {
-      setActiveExerciseIndex((prev) => prev + 1);
+    if (safeExerciseIndex < exerciseList.length - 1) {
+      setActiveExerciseIndex(safeExerciseIndex + 1);
 
       if (isNextExercisePause) {
         // set pause timer to new start
@@ -1144,7 +1149,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     );
   }
 
-  const progress = activeExerciseIndex / exerciseList.length;
+  const progress = safeExerciseIndex / exerciseList.length;
   const isTestExercise = currentExercise?.repetition === -1;
   const isCardioExercise = currentExercise?.skill?.includes("CARDIO") ?? false;
   // Endurance exercises show a checkmark instead of a countdown timer. This app focuses on
@@ -1457,7 +1462,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                 next={advanceToNextExercise}
                 feedback={handleFeedback}
                 isCountdownActive={isCountdownActive}
-                isFirstDurationInTraining={activeExerciseIndex === 0}
+                isFirstDurationInTraining={safeExerciseIndex === 0}
                 isLastInSet={isLastInSet}
                 isFeedbackSkill={isFeedbackSkill && !isEnduranceExercise}
                 isCardioExercise={isCardioExercise}

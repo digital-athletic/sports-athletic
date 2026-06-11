@@ -10,6 +10,8 @@
  * History:
  * - Versions 1-13: Shared PERSIST_VERSION era (all stores shared one number).
  * - Version 14+: Per-store versioning.
+ * - TRAINING persisted valid data at raw version 0 before registration;
+ *   its migrate bridges 0 to 14 so existing data is preserved.
  */
 export const STORE_VERSIONS = {
   AUTH: 15,
@@ -23,4 +25,5 @@ export const STORE_VERSIONS = {
   COMPLETED_WORKOUTS: 14,
   SYNC_QUEUE: 14,
   EXERCISE_PROGRESS: 15,
+  TRAINING: 14,
 } as const;

@@ -313,20 +313,8 @@ export default function SelectTraining() {
       {screenState === "SELECT" ? (
         <Box flex={1} backgroundColor="lightGrey1">
           {renderTiles()}
-          <Box
-            paddingHorizontal="m"
-            paddingBottom="m"
-            justifyContent="flex-end"
-            alignItems="stretch"
-          >
+          <Box paddingHorizontal="m" paddingTop="s" paddingBottom="m" gap="s">
             {renderTrainingAdvice()}
-          </Box>
-          <Box
-            paddingHorizontal="m"
-            paddingBottom="m"
-            justifyContent="flex-end"
-            alignItems="stretch"
-          >
             {renderCoaching()}
           </Box>
         </Box>

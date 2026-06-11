@@ -1,6 +1,8 @@
+import { Ionicon } from "@/common/Ionicon";
 import { TileData } from "@/constants/workoutConstants";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
+import { useTheme } from "@/theme/theme";
 import { useResponsiveProp } from "@shopify/restyle";
 import { useRouter } from "expo-router";
 import { type FC } from "react";
@@ -22,11 +24,15 @@ export type ColumnListProps = {
  */
 export const ColumnList: FC<ColumnListProps> = ({ listItems }) => {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const router = useRouter();
-  const listItemWidth = useResponsiveProp({
-    phone: 120,
-    tablet: 360,
-  });
+  // useResponsiveProp can briefly return undefined on web, so fall back to a
+  // compact fixed size to keep rows from rendering at the image's natural size.
+  const imageSize =
+    useResponsiveProp({
+      phone: 96,
+      tablet: 140,
+    }) ?? 96;
 
   const handleNavigate = (item: TileData) => {
     const { key, params } = item.navigate;
@@ -50,34 +56,35 @@ export const ColumnList: FC<ColumnListProps> = ({ listItems }) => {
         <Box
           position="relative"
           width="100%"
+          backgroundColor="white"
           borderBottomWidth={1}
           borderBottomColor="lightGrey2"
           flexDirection="row"
+          alignItems="center"
         >
           {item.svgComponent ? (
-            <item.svgComponent
-              width={listItemWidth ?? 120}
-              height={listItemWidth ?? 120}
-            />
+            <item.svgComponent width={imageSize} height={imageSize} />
           ) : item.picture ? (
             <Image
               source={item.picture}
               resizeMode="cover"
-              style={{
-                width: listItemWidth,
-                aspectRatio: 1,
-              }}
+              style={{ width: imageSize, height: imageSize }}
             />
           ) : null}
           <Box
             paddingHorizontal="m"
             paddingVertical="m"
-            justifyContent="flex-start"
+            justifyContent="center"
             flex={1}
           >
-            <Text variant="cardTitle">{t(item.title)}</Text>
+            <Text
+              variant="cardTitle"
+              marginBottom={hasDescription ? "xs" : "none"}
+            >
+              {t(item.title)}
+            </Text>
             {hasDescription && (
-              <Box marginTop="s">
+              <Box>
                 <Text variant="body" color="darkGrey1">
                   {t(description.text, description.params)}
                 </Text>
@@ -88,6 +95,13 @@ export const ColumnList: FC<ColumnListProps> = ({ listItems }) => {
                 )}
               </Box>
             )}
+          </Box>
+          <Box paddingRight="m">
+            <Ionicon
+              name="chevron-forward"
+              size={20}
+              color={colors.lightGrey3}
+            />
           </Box>
         </Box>
       </TouchableOpacity>

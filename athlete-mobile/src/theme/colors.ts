@@ -33,4 +33,8 @@ export const colors = {
   warning: "#FF9500",
   error: "#FF3B30",
   info: "#007AFF",
+
+  // Subtle status backgrounds (tints)
+  warningTint: "#FFF3E0",
+  infoTint: "#EAF3FF",
 } as const;

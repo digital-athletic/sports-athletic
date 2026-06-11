@@ -160,4 +160,34 @@ describe("applyMaxValueToDirections", () => {
     // Unrelated directions remain unchanged
     expect(result.horizontalPush).toEqual(DEFAULT_MAX_VALUES.horizontalPush);
   });
+
+  it("should not overwrite the deadlift (hipHinge) max when only squat is tested", () => {
+    // Regression: squat and deadlift previously shared the HIP direction, so a
+    // squat-only test leaked the squat value into the deadlift max display.
+    // Squat now maps to KNEE + LOWER_BODY only and must leave hipHinge untouched.
+    const existingDeadliftMax = {
+      barbell: 140,
+      dumbbells: 63,
+      oneSidedUpper: 63,
+      oneSidedBarbell: 63,
+      oneSidedLower: 31.5,
+      oneSidedLowerSupported: 42,
+    };
+    const maxValuesWithDeadlift = {
+      ...DEFAULT_MAX_VALUES,
+      hipHinge: existingDeadliftMax,
+    };
+
+    const result = applyMaxValueToDirections(
+      maxValuesWithDeadlift,
+      WorkoutConstants.STRENGTH_TEST_DIRECTIONS.squad,
+      newCalculatedResult,
+    );
+
+    // Squat writes its own directions...
+    expect(result.kneeDominant).toEqual(newCalculatedResult);
+    expect(result.lowerBody).toEqual(newCalculatedResult);
+    // ...but the previously recorded deadlift max is preserved.
+    expect(result.hipHinge).toEqual(existingDeadliftMax);
+  });
 });

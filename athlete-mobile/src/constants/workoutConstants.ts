@@ -872,7 +872,10 @@ const TEST_EXERCISES_DIRECTIONS: Record<string, string[] | undefined> = {
    * 297: LH Rudern mit Untergriff SWR (Bent-over Row)
    * 342: LH Bankdruecken SWR (Bench Press)
    */
-  "25": ["HIP", "KNEE", "LOWER_BODY"],
+  // Squat measures knee-dominant / lower-body strength only. It must NOT write
+  // the hip-hinge direction, which is owned exclusively by the deadlift (50) so
+  // a squat-only test does not overwrite the displayed deadlift max.
+  "25": ["KNEE", "LOWER_BODY"],
   "50": ["HIP"],
   "54": ["VERTICAL_PUSH", "VERTICAL_PULL"],
   "297": ["HORIZONTAL_PULL"],

@@ -13,6 +13,19 @@ enum View {
   TESTS = 1,
 }
 
+const TABS = [
+  {
+    view: View.WORKOUTS,
+    labelKey: "statistics.tabs.workouts",
+    testID: "statistics-tab-workouts",
+  },
+  {
+    view: View.TESTS,
+    labelKey: "statistics.tabs.powerTest",
+    testID: "statistics-tab-tests",
+  },
+] as const;
+
 /**
  * Statistics Screen
  * User statistics and progress tracking with tabbed navigation.
@@ -26,51 +39,38 @@ const StatisticsScreen: FC = () => {
     <ScrollBox flex={1} backgroundColor="lightGrey1" style={{ marginTop: top }}>
       <Box
         flexDirection="row"
-        justifyContent="center"
         alignItems="stretch"
         height={52}
-        gap="xs"
+        backgroundColor="white"
+        borderBottomWidth={1}
+        borderBottomColor="lightGrey2"
       >
-        <TouchableBox
-          flex={1}
-          justifyContent="center"
-          alignItems="center"
-          borderBottomColor="primary"
-          backgroundColor="lightGrey2"
-          borderBottomWidth={view === View.WORKOUTS ? 2 : 0}
-          onPress={() => setView(View.WORKOUTS)}
-          accessibilityRole="tab"
-          accessibilityState={{ selected: view === View.WORKOUTS }}
-          accessibilityLabel={t("statistics.tabs.workouts")}
-          testID="statistics-tab-workouts"
-        >
-          <Text
-            variant="title"
-            style={{ fontWeight: view === View.WORKOUTS ? "bold" : "normal" }}
-          >
-            {t("statistics.tabs.workouts")}
-          </Text>
-        </TouchableBox>
-        <TouchableBox
-          flex={1}
-          justifyContent="center"
-          alignItems="center"
-          borderBottomColor="primary"
-          backgroundColor="lightGrey2"
-          borderBottomWidth={view === View.TESTS ? 2 : 0}
-          onPress={() => setView(View.TESTS)}
-          accessibilityRole="tab"
-          accessibilityState={{ selected: view === View.TESTS }}
-          accessibilityLabel={t("statistics.tabs.powerTest")}
-          testID="statistics-tab-tests"
-        >
-          <Text
-            variant="title"
-            style={{ fontWeight: view === View.TESTS ? "bold" : "normal" }}
-          >
-            {t("statistics.tabs.powerTest")}
-          </Text>
-        </TouchableBox>
+        {TABS.map(({ view: tabView, labelKey, testID }) => {
+          const isActive = view === tabView;
+          return (
+            <TouchableBox
+              key={tabView}
+              flex={1}
+              justifyContent="center"
+              alignItems="center"
+              borderBottomColor="primary"
+              borderBottomWidth={isActive ? 3 : 0}
+              onPress={() => setView(tabView)}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: isActive }}
+              accessibilityLabel={t(labelKey)}
+              testID={testID}
+            >
+              <Text
+                fontSize={17}
+                fontWeight={isActive ? "700" : "500"}
+                color={isActive ? "primary" : "darkGrey1"}
+              >
+                {t(labelKey)}
+              </Text>
+            </TouchableBox>
+          );
+        })}
       </Box>
       <Box
         flex={4}

@@ -110,7 +110,7 @@ export default function HomeScreen() {
       />
       <Box flex={1} backgroundColor="lightGrey1">
         <ImageBackground
-          source={require("../../../assets/img/home/Background_2022_06_Alpha_30.png")}
+          source={require("../../../assets/home-background.jpg")}
           resizeMode="cover"
           style={styles.backgroundImage}
           accessibilityLabel={t("screens.home.imageAlt.background")}

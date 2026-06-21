@@ -325,7 +325,6 @@ export default function MuscleSorenessScreen() {
                     secondaryTags={[]}
                     onChange={setMuscles}
                     showChips
-                    showsSoreness
                   />
                 </ScrollView>
               ) : (

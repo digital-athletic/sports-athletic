@@ -107,9 +107,16 @@ async function navigateAndWaitForSvg(page: Page) {
   await expect(greyMusclePaths(page).first()).toBeVisible({ timeout: 5000 });
 }
 
-test.describe("Muscle Soreness – Male SVG", () => {
-  test.use({ profile: createCompletedProfile() });
+// Transparent tap-target ellipses overlay the visible muscle paths, so a normal
+// click on a path is reported as intercepted. Forcing the click dispatches the
+// event to the overlaying ellipse's onPress handler for that same muscle.
+async function clickMuscle(locator: Locator) {
+  await locator.click({ force: true });
+}
 
+// Shared SVG selection behaviour, identical for male and female bodies since
+// both now render through MuscleBodySvgBase with the same grey/red fills.
+function registerSvgSelectionTests() {
   test("renders grey muscle regions on the front view", async ({ page }) => {
     test.setTimeout(60000);
     await navigateAndWaitForSvg(page);
@@ -135,7 +142,7 @@ test.describe("Muscle Soreness – Male SVG", () => {
     test.setTimeout(60000);
     await navigateAndWaitForSvg(page);
 
-    await greyMusclePaths(page).first().click();
+    await clickMuscle(greyMusclePaths(page).first());
 
     await expect(redMusclePaths(page).first()).toBeVisible({ timeout: 3000 });
   });
@@ -145,7 +152,7 @@ test.describe("Muscle Soreness – Male SVG", () => {
     await navigateAndWaitForSvg(page);
     const greyBefore = await greyMusclePaths(page).count();
 
-    await greyMusclePaths(page).first().click();
+    await clickMuscle(greyMusclePaths(page).first());
     await expect(redMusclePaths(page).first()).toBeVisible({ timeout: 3000 });
 
     expect(await greyMusclePaths(page).count()).toBeLessThan(greyBefore);
@@ -155,11 +162,11 @@ test.describe("Muscle Soreness – Male SVG", () => {
     test.setTimeout(60000);
     await navigateAndWaitForSvg(page);
 
-    await greyMusclePaths(page).first().click();
+    await clickMuscle(greyMusclePaths(page).first());
     await expect(redMusclePaths(page).first()).toBeVisible({ timeout: 3000 });
     const redCount = await redMusclePaths(page).count();
 
-    await redMusclePaths(page).first().click();
+    await clickMuscle(redMusclePaths(page).first());
 
     expect(await redMusclePaths(page).count()).toBeLessThan(redCount);
   });
@@ -173,13 +180,13 @@ test.describe("Muscle Soreness – Male SVG", () => {
     await expect(greyMusclePaths(page).first()).toBeVisible({ timeout: 5000 });
   });
 
-  test("selection persists after rotating front → back → front", async ({
+  test("selection persists after rotating front, back, front", async ({
     page,
   }) => {
     test.setTimeout(60000);
     await navigateAndWaitForSvg(page);
 
-    await greyMusclePaths(page).first().click();
+    await clickMuscle(greyMusclePaths(page).first());
     await expect(redMusclePaths(page).first()).toBeVisible({ timeout: 3000 });
     const selectedRedCount = await redMusclePaths(page).count();
 
@@ -190,10 +197,18 @@ test.describe("Muscle Soreness – Male SVG", () => {
 
     expect(await redMusclePaths(page).count()).toBe(selectedRedCount);
   });
+}
+
+test.describe("Muscle Soreness: Male SVG", () => {
+  test.use({ profile: createCompletedProfile() });
+
+  registerSvgSelectionTests();
 });
 
-test.describe("Muscle Soreness – Female PNG", () => {
+test.describe("Muscle Soreness: Female SVG", () => {
   test.use({ profile: createFemaleCompletedProfile() });
+
+  registerSvgSelectionTests();
 
   test("renders coaching prompt", async ({ page }) => {
     test.setTimeout(60000);
@@ -204,17 +219,9 @@ test.describe("Muscle Soreness – Female PNG", () => {
       timeout: 5000,
     });
   });
-
-  test("shows the rotate button", async ({ page }) => {
-    test.setTimeout(60000);
-    await mockSupabaseAuth(page);
-    await navigateToMuscleSoreness(page);
-
-    await expect(rotateButton(page)).toBeVisible({ timeout: 5000 });
-  });
 });
 
-test.describe("Pain Regions – Male SVG", () => {
+test.describe("Pain Regions: Male SVG", () => {
   test.use({ profile: createMaleIncompleteProfile() });
 
   test("renders coaching prompt on pain screen", async ({ page }) => {
@@ -228,7 +235,7 @@ test.describe("Pain Regions – Male SVG", () => {
   });
 });
 
-test.describe("Pain Regions – Female PNG", () => {
+test.describe("Pain Regions: Female SVG", () => {
   test.use({ profile: createFemaleIncompleteProfile() });
 
   test("renders coaching prompt on pain screen", async ({ page }) => {

@@ -32,6 +32,11 @@ This file provides guidance to AI Agents for building high-quality React Native 
 - Leverage React and React-Native's built-in types (`FC`, `PropsWithChildren`, etc.) by importing them directly
 - Use `type` imports for types when possible (e.g. `import { type FC } from "react"`)
 
+### Type checking and Expo typed routes
+- Typed routes are enabled (`typedRoutes: true`). The strict `Route`/`Href` union lives in the generated `.expo/types/router.d.ts`, which is **not** committed.
+- **Always run `pnpm expo-router-generate-types` before `pnpm type-check`.** CI does this; a bare `tsc --noEmit` without the generated types silently passes because the route unions fall back to loose types, masking real route errors.
+- `router.navigate`/`router.push` in object form reject a dynamic `pathname` (e.g. a value typed as `Route`), because the object form correlates each literal `pathname` with its own `params`. When the pathname is dynamic and already validated, assert the object `as Href` rather than suppressing with `@ts-expect-error`.
+
 ### Component Design
 - Keep components small and focused on a single concern
 - Use descriptive and consistent naming conventions
@@ -95,3 +100,4 @@ Key facts:
 
 ## Documentation
 - Comments for components and functions should be concise. Comments should not exceed 3 lines in most cases.
+- Do not write comments that merely restate what the code already says (e.g. `// Public URLs resolve synchronously, so derive the image source directly.` above a clearly named `imageUrl` derivation). Only comment to explain non-obvious *why* — a workaround, a gotcha, or intent the code cannot convey. If the code is self-explanatory, omit the comment.

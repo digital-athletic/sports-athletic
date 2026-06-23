@@ -3,7 +3,7 @@ import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { type ThemeColor, useTheme } from "@/theme/theme";
 import { useResponsiveProp } from "@shopify/restyle";
-import { type Route, useRouter } from "expo-router";
+import { type Href, type Route, useRouter } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Linking, TouchableOpacity } from "react-native";
@@ -50,12 +50,12 @@ export const ListItem: FC<ListItemProps> = ({
 
     if (!navPath) return;
 
-    // @ts-expect-error Suppress ts(2345) Types of property 'pathname' are incompatible.
-    // It has been verified that the allowed values are restricted to valid paths as expected.
+    // Typed routes reject a dynamic `pathname` in the object form, so assert
+    // the correlated pathname/params object as Href. navPath is a valid Route.
     router.navigate({
       pathname: navPath,
       params: { originPath: "/(tabs)/more" as Route, ...navParams },
-    });
+    } as Href);
   };
 
   return (

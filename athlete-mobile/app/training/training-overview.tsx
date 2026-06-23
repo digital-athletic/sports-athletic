@@ -15,7 +15,7 @@ import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
 import { Image } from "expo-image";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -434,16 +434,12 @@ const ExerciseItem: FC<ExerciseItemProps> = ({
   exercises,
   onPress,
 }) => {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const exerciseData = exercises.find((e) => e.id === exercise.exerciseId);
 
-  useEffect(() => {
-    if (!exerciseData?.picture) return;
-
-    const pictureFilename = exerciseData.picture.split("/").pop() ?? "";
-    if (!pictureFilename) return;
-
-    getExercisePictureUrl(pictureFilename).then(setImageUrl);
+  const imageUrl = useMemo(() => {
+    const pictureFilename = exerciseData?.picture?.split("/").pop() ?? "";
+    if (!pictureFilename) return null;
+    return getExercisePictureUrl(pictureFilename);
   }, [exerciseData?.picture]);
 
   if (!exerciseData) return null;

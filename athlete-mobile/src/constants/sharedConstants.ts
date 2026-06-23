@@ -13,8 +13,6 @@ const TIME_IN_MS = {
 const FILE_PATH_EXERCISES = "exerciseData";
 const FILE_PATH_SKILL_TREES = "skillTrees";
 const FILE_PATH_NOTIFICATIONS_DATA = "notificationsData";
-const SUPABASE_VIDEO_BUCKET = "videos";
-const SUPABASE_IMAGE_BUCKET = "images";
 export type GeneratprErrorTypes = "NO_EXERCISES" | "OTHER";
 export type GeneratorErrorSubTypes =
   | "SKILL_TREE"
@@ -40,8 +38,5 @@ export const SharedConstants = {
   FILE_PATH_SKILL_TREES,
   LINK_AGB,
   LINK_PRIVACY,
-
-  SUPABASE_IMAGE_BUCKET,
-  SUPABASE_VIDEO_BUCKET,
   TIME_IN_MS,
 };

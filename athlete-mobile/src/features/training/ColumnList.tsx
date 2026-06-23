@@ -4,7 +4,7 @@ import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { useResponsiveProp } from "@shopify/restyle";
-import { useRouter } from "expo-router";
+import { type Href, useRouter } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -36,9 +36,9 @@ export const ColumnList: FC<ColumnListProps> = ({ listItems }) => {
 
   const handleNavigate = (item: TileData) => {
     const { key, params } = item.navigate;
-    // @ts-expect-error Suppress ts(2345) Types of property 'pathname' are incompatible.
-    // It has been verified that the allowed values are restricted to valid paths as expected.
-    router.navigate({ pathname: key, params });
+    // Typed routes reject a dynamic `pathname` in the object form, so assert
+    // the correlated pathname/params object as Href. key is a valid Route.
+    router.navigate({ pathname: key, params } as Href);
   };
 
   const renderItem: ListRenderItem<TileData> = ({ item }) => {

@@ -1,22 +1,8 @@
 import { type Page } from "@playwright/test";
 
-/** Intercept Supabase storage signed URL requests and return mock signed URLs. */
+/** Intercept Supabase storage public asset requests and return empty assets. */
 async function mockSupabaseStorage(page: Page) {
-  const mockSignedPath = "/storage/v1/object/sign/mock-signed";
-
-  // Intercept createSignedUrl API calls
-  await page.route("**/storage/v1/object/sign/**", async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        signedURL: `${mockSignedPath}?token=mock-token`,
-      }),
-    });
-  });
-
-  // Intercept the mock signed URL when the app tries to load the asset
-  await page.route("**/storage/v1/object/sign/mock-signed**", async (route) => {
+  await page.route("**/storage/v1/object/public/**", async (route) => {
     await route.fulfill({ status: 200, body: "" });
   });
 }

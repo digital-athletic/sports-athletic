@@ -54,16 +54,7 @@ export const VideoPlayer: FC<Props> = ({
 
     const loadVideo = async () => {
       try {
-        const url = await getUrl(filename);
-        if (!url) {
-          const bucketType = isTutorial ? "tutorial_videos" : "exercise_videos";
-          console.warn(
-            `[VideoPlayer] No URL returned — bucket: ${bucketType}, file: ${filename}`,
-          );
-          setError(t("common.videoLoadError"));
-          setLoading(false);
-          return;
-        }
+        const url = getUrl(filename);
         setVideoUrl(url);
         await player.replaceAsync(url);
         setError(null);

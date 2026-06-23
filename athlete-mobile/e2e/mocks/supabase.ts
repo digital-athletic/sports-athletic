@@ -210,17 +210,18 @@ export async function mockSupabaseAuth(page: Page) {
     });
   });
 
-  // Mock delete-account edge function
-  await page.route(`**/functions/v1/delete-account`, async (route) => {
+  // Mock Supabase REST API calls (sync tables + catch-all)
+  await mockRestApi(page);
+
+  // Mock delete_my_account RPC. Registered after mockRestApi so Playwright's
+  // LIFO route ordering gives it priority over the /rest/v1/** catch-all.
+  await page.route(`**/rest/v1/rpc/delete_my_account`, async (route) => {
     await route.fulfill({
       status: 200,
       contentType: "application/json",
       body: JSON.stringify({ deleted: true }),
     });
   });
-
-  // Mock Supabase REST API calls (sync tables + catch-all)
-  await mockRestApi(page);
 
   // Mock Supabase storage (images, videos, etc.)
   await mockSupabaseStorage(page);

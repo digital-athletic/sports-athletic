@@ -102,7 +102,7 @@ export const requestRegistrationOtp = async (
 };
 
 /**
- * Delete the current user's account via the delete-account edge function.
+ * Delete the current user's account via the delete_my_account RPC.
  * All user data is cascade-deleted on the database level.
  */
 export const deleteAccount = async (): Promise<void> => {
@@ -122,18 +122,14 @@ export const deleteAccount = async (): Promise<void> => {
     });
   }
 
-  const { data, error: invokeError } = await supabase.functions.invoke(
-    "delete-account",
-    {
-      headers: { Authorization: `Bearer ${session.access_token}` },
-    },
-  );
+  const { data, error } = await supabase.rpc("delete_my_account");
 
-  if (invokeError) {
-    throw mapSupabaseError(invokeError);
+  if (error) {
+    throw mapSupabaseError(error);
   }
 
-  if (!data?.deleted) {
+  const result = data as { deleted?: boolean } | null;
+  if (!result?.deleted) {
     throw mapSupabaseError({ message: "Failed to delete account" });
   }
 };

@@ -27,7 +27,7 @@ interface TeamRow {
   owner_id: string;
 }
 
-const EDGE_FUNCTION_ERROR_MAP: Record<string, I18nKey> = {
+const RPC_ERROR_MAP: Record<string, I18nKey> = {
   INVITE_CODE_INVALID: "more.joinTeam.errorInvalidCode",
   INVITE_CODE_INACTIVE: "more.joinTeam.errorInactive",
   INVITE_CODE_EXPIRED: "more.joinTeam.errorExpired",
@@ -38,17 +38,13 @@ const EDGE_FUNCTION_ERROR_MAP: Record<string, I18nKey> = {
   OWNER_CANNOT_LEAVE: "more.joinTeam.leaveErrorOwner",
 };
 
-async function mapEdgeFunctionError(error: unknown): Promise<I18nKey> {
-  try {
-    const body = await (error as { context: Response }).context.json();
-    const code: unknown = body?.error;
-    return (
-      (typeof code === "string" && EDGE_FUNCTION_ERROR_MAP[code]) ||
-      "more.joinTeam.errorGeneric"
-    );
-  } catch {
-    return "more.joinTeam.errorGeneric";
-  }
+// RPC functions RAISE with MESSAGE set to an ErrorCode, surfaced as error.message.
+function mapRpcError(error: { message?: string } | null): I18nKey {
+  const code = error?.message;
+  return (
+    (typeof code === "string" && RPC_ERROR_MAP[code]) ||
+    "more.joinTeam.errorGeneric"
+  );
 }
 
 export async function getUserTeams(): Promise<UserTeam[]> {
@@ -87,13 +83,12 @@ export async function acceptInvitation(code: string): Promise<JoinTeamResult> {
   const { data: sessionData } = await supabase.auth.getSession();
   if (!sessionData.session) throw new Error("more.joinTeam.errorGeneric");
 
-  const { data, error } = await supabase.functions.invoke("accept-invitation", {
-    body: { code },
-    headers: { Authorization: `Bearer ${sessionData.session.access_token}` },
+  const { data, error } = await supabase.rpc("accept_invitation", {
+    p_code: code,
   });
 
   if (error) {
-    throw new Error(await mapEdgeFunctionError(error));
+    throw new Error(mapRpcError(error));
   }
 
   const result = data as AcceptInvitationResponse;
@@ -107,12 +102,11 @@ export async function leaveTeam(teamId: string): Promise<void> {
   const { data: sessionData } = await supabase.auth.getSession();
   if (!sessionData.session) throw new Error("more.joinTeam.errorGeneric");
 
-  const { error } = await supabase.functions.invoke("leave-team", {
-    body: { team_id: teamId },
-    headers: { Authorization: `Bearer ${sessionData.session.access_token}` },
+  const { error } = await supabase.rpc("leave_team", {
+    p_team_id: teamId,
   });
 
   if (error) {
-    throw new Error(await mapEdgeFunctionError(error));
+    throw new Error(mapRpcError(error));
   }
 }

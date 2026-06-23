@@ -1,10 +1,10 @@
 import { acceptInvitation, getUserTeams, leaveTeam } from "./TeamService";
 
-function makeEdgeFunctionError(code: string) {
-  return { context: { json: () => Promise.resolve({ error: code }) } };
+function makeRpcError(code: string) {
+  return { message: code };
 }
 
-const mockFunctionsInvoke = jest.fn();
+const mockRpc = jest.fn();
 const mockGetSession = jest.fn();
 
 const mockOrder = jest.fn();
@@ -23,9 +23,7 @@ jest.mock("./supabaseClient", () => ({
     auth: {
       getSession: () => mockGetSession(),
     },
-    functions: {
-      invoke: (...args: unknown[]) => mockFunctionsInvoke(...args),
-    },
+    rpc: (...args: unknown[]) => mockRpc(...args),
     from: (table: string) => mockFrom(table),
   },
 }));
@@ -180,16 +178,16 @@ describe("acceptInvitation", () => {
     await expect(acceptInvitation("CODE123")).rejects.toThrow(
       "more.joinTeam.errorGeneric",
     );
-    expect(mockFunctionsInvoke).not.toHaveBeenCalled();
+    expect(mockRpc).not.toHaveBeenCalled();
   });
 
-  it("calls functions.invoke with accept-invitation, correct body and Authorization header", async () => {
+  it("calls rpc with accept_invitation and the code parameter", async () => {
     mockGetSession.mockResolvedValue({
       data: {
         session: { access_token: "tok-abc" },
       },
     });
-    mockFunctionsInvoke.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: {
         member_id: "m-1",
         team_id: "t-1",
@@ -202,9 +200,8 @@ describe("acceptInvitation", () => {
 
     await acceptInvitation("CODE123");
 
-    expect(mockFunctionsInvoke).toHaveBeenCalledWith("accept-invitation", {
-      body: { code: "CODE123" },
-      headers: { Authorization: "Bearer tok-abc" },
+    expect(mockRpc).toHaveBeenCalledWith("accept_invitation", {
+      p_code: "CODE123",
     });
   });
 
@@ -214,7 +211,7 @@ describe("acceptInvitation", () => {
         session: { access_token: "tok-abc" },
       },
     });
-    mockFunctionsInvoke.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: {
         member_id: "m-1",
         team_id: "t-1",
@@ -237,9 +234,9 @@ describe("acceptInvitation", () => {
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: "tok-abc" } },
     });
-    mockFunctionsInvoke.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: null,
-      error: makeEdgeFunctionError("INVITE_CODE_INVALID"),
+      error: makeRpcError("INVITE_CODE_INVALID"),
     });
 
     await expect(acceptInvitation("BAD")).rejects.toThrow(
@@ -251,9 +248,9 @@ describe("acceptInvitation", () => {
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: "tok-abc" } },
     });
-    mockFunctionsInvoke.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: null,
-      error: makeEdgeFunctionError("INVITE_CODE_INACTIVE"),
+      error: makeRpcError("INVITE_CODE_INACTIVE"),
     });
 
     await expect(acceptInvitation("INACTIVE")).rejects.toThrow(
@@ -265,9 +262,9 @@ describe("acceptInvitation", () => {
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: "tok-abc" } },
     });
-    mockFunctionsInvoke.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: null,
-      error: makeEdgeFunctionError("INVITE_CODE_EXPIRED"),
+      error: makeRpcError("INVITE_CODE_EXPIRED"),
     });
 
     await expect(acceptInvitation("EXPIRED")).rejects.toThrow(
@@ -279,9 +276,9 @@ describe("acceptInvitation", () => {
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: "tok-abc" } },
     });
-    mockFunctionsInvoke.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: null,
-      error: makeEdgeFunctionError("INVITE_CODE_MAX_USES"),
+      error: makeRpcError("INVITE_CODE_MAX_USES"),
     });
 
     await expect(acceptInvitation("MAXED")).rejects.toThrow(
@@ -293,9 +290,9 @@ describe("acceptInvitation", () => {
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: "tok-abc" } },
     });
-    mockFunctionsInvoke.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: null,
-      error: makeEdgeFunctionError("ALREADY_TEAM_MEMBER"),
+      error: makeRpcError("ALREADY_TEAM_MEMBER"),
     });
 
     await expect(acceptInvitation("DUPE")).rejects.toThrow(
@@ -307,9 +304,9 @@ describe("acceptInvitation", () => {
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: "tok-abc" } },
     });
-    mockFunctionsInvoke.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: null,
-      error: makeEdgeFunctionError("SOME_UNKNOWN_ERROR"),
+      error: makeRpcError("SOME_UNKNOWN_ERROR"),
     });
 
     await expect(acceptInvitation("CODE")).rejects.toThrow(
@@ -329,20 +326,19 @@ describe("leaveTeam", () => {
     await expect(leaveTeam("team-1")).rejects.toThrow(
       "more.joinTeam.errorGeneric",
     );
-    expect(mockFunctionsInvoke).not.toHaveBeenCalled();
+    expect(mockRpc).not.toHaveBeenCalled();
   });
 
-  it("calls functions.invoke with leave-team, correct body and Authorization header", async () => {
+  it("calls rpc with leave_team and the team_id parameter", async () => {
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: "tok-xyz" } },
     });
-    mockFunctionsInvoke.mockResolvedValue({ data: {}, error: null });
+    mockRpc.mockResolvedValue({ data: {}, error: null });
 
     await leaveTeam("team-42");
 
-    expect(mockFunctionsInvoke).toHaveBeenCalledWith("leave-team", {
-      body: { team_id: "team-42" },
-      headers: { Authorization: "Bearer tok-xyz" },
+    expect(mockRpc).toHaveBeenCalledWith("leave_team", {
+      p_team_id: "team-42",
     });
   });
 
@@ -350,7 +346,7 @@ describe("leaveTeam", () => {
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: "tok-xyz" } },
     });
-    mockFunctionsInvoke.mockResolvedValue({ data: {}, error: null });
+    mockRpc.mockResolvedValue({ data: {}, error: null });
 
     await expect(leaveTeam("team-1")).resolves.toBeUndefined();
   });
@@ -359,9 +355,9 @@ describe("leaveTeam", () => {
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: "tok-xyz" } },
     });
-    mockFunctionsInvoke.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: null,
-      error: makeEdgeFunctionError("NOT_TEAM_MEMBER"),
+      error: makeRpcError("NOT_TEAM_MEMBER"),
     });
 
     await expect(leaveTeam("team-1")).rejects.toThrow(
@@ -373,9 +369,9 @@ describe("leaveTeam", () => {
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: "tok-xyz" } },
     });
-    mockFunctionsInvoke.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: null,
-      error: makeEdgeFunctionError("TEAM_NOT_FOUND"),
+      error: makeRpcError("TEAM_NOT_FOUND"),
     });
 
     await expect(leaveTeam("team-1")).rejects.toThrow(
@@ -387,9 +383,9 @@ describe("leaveTeam", () => {
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: "tok-xyz" } },
     });
-    mockFunctionsInvoke.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: null,
-      error: makeEdgeFunctionError("OWNER_CANNOT_LEAVE"),
+      error: makeRpcError("OWNER_CANNOT_LEAVE"),
     });
 
     await expect(leaveTeam("team-1")).rejects.toThrow(
@@ -401,9 +397,9 @@ describe("leaveTeam", () => {
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: "tok-xyz" } },
     });
-    mockFunctionsInvoke.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: null,
-      error: { context: { error: "SOMETHING_ELSE" } },
+      error: makeRpcError("SOMETHING_ELSE"),
     });
 
     await expect(leaveTeam("team-1")).rejects.toThrow(

@@ -11,8 +11,6 @@ import type {
 } from "../types/team";
 import { supabase, getAuthToken } from "./supabase";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-
 export class ApiError extends Error {
   code: string;
 
@@ -23,28 +21,27 @@ export class ApiError extends Error {
   }
 }
 
-export async function callEdgeFunction<T>(
+// RPC functions RAISE with MESSAGE set to an ErrorCode; anything else (e.g. a
+// permission-denied sentence) is opaque, so collapse it to INTERNAL_ERROR.
+function rpcErrorCode(message: string | undefined): string {
+  return message && /^[A-Z][A-Z0-9_]*$/.test(message)
+    ? message
+    : "INTERNAL_ERROR";
+}
+
+export async function callRpc<T>(
   functionName: string,
-  body: Record<string, unknown>,
+  params: Record<string, unknown>,
 ): Promise<T> {
   const token = await getAuthToken();
   if (!token) {
     throw new ApiError("AUTH_REQUIRED");
   }
 
-  const response = await fetch(`${SUPABASE_URL}/functions/v1/${functionName}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(body),
-  });
+  const { data, error } = await supabase.rpc(functionName, params);
 
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new ApiError(data.error || "INTERNAL_ERROR");
+  if (error) {
+    throw new ApiError(rpcErrorCode(error.message));
   }
 
   return data as T;
@@ -54,9 +51,9 @@ export async function createTeam(
   name: string,
   description?: string,
 ): Promise<CreateTeamResponse> {
-  return callEdgeFunction<CreateTeamResponse>("create-team", {
-    name,
-    description,
+  return callRpc<CreateTeamResponse>("create_team", {
+    p_name: name,
+    p_description: description ?? null,
   });
 }
 
@@ -68,29 +65,31 @@ export async function generateInviteCode(
     deactivate_existing?: boolean;
   },
 ): Promise<InviteCode> {
-  return callEdgeFunction<InviteCode>("generate-invite-code", {
-    team_id: teamId,
-    ...options,
+  return callRpc<InviteCode>("generate_invite_code", {
+    p_team_id: teamId,
+    p_expires_at: options?.expires_at ?? null,
+    p_max_uses: options?.max_uses ?? null,
+    p_deactivate_existing: options?.deactivate_existing ?? false,
   });
 }
 
 export async function acceptInvitation(
   code: string,
 ): Promise<AcceptInvitationResponse> {
-  return callEdgeFunction<AcceptInvitationResponse>("accept-invitation", {
-    code,
+  return callRpc<AcceptInvitationResponse>("accept_invitation", {
+    p_code: code,
   });
 }
 
 export async function leaveTeam(teamId: string): Promise<LeaveTeamResponse> {
-  return callEdgeFunction<LeaveTeamResponse>("leave-team", {
-    team_id: teamId,
+  return callRpc<LeaveTeamResponse>("leave_team", {
+    p_team_id: teamId,
   });
 }
 
 export async function deleteTeam(teamId: string): Promise<DeleteTeamResponse> {
-  return callEdgeFunction<DeleteTeamResponse>("delete-team", {
-    team_id: teamId,
+  return callRpc<DeleteTeamResponse>("delete_team", {
+    p_team_id: teamId,
   });
 }
 
@@ -181,8 +180,8 @@ export async function removeMember(
   teamId: string,
   memberUserId: string,
 ): Promise<RemoveMemberResponse> {
-  return callEdgeFunction<RemoveMemberResponse>("remove-member", {
-    team_id: teamId,
-    member_user_id: memberUserId,
+  return callRpc<RemoveMemberResponse>("remove_member", {
+    p_team_id: teamId,
+    p_member_user_id: memberUserId,
   });
 }

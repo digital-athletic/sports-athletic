@@ -1,4 +1,4 @@
-import { callEdgeFunction } from "./teamsApi";
+import { callRpc } from "./teamsApi";
 
 export interface LookupUserResponse {
   user_id: string;
@@ -12,15 +12,15 @@ export interface SetTrainerResponse {
 }
 
 export function lookupUserByEmail(email: string): Promise<LookupUserResponse> {
-  return callEdgeFunction<LookupUserResponse>("admin-lookup-user", { email });
+  return callRpc<LookupUserResponse>("admin_lookup_user", { p_email: email });
 }
 
 export function setTrainerStatus(
   userId: string,
   isTrainer: boolean,
 ): Promise<SetTrainerResponse> {
-  return callEdgeFunction<SetTrainerResponse>("admin-set-trainer", {
-    user_id: userId,
-    is_trainer: isTrainer,
+  return callRpc<SetTrainerResponse>("admin_set_trainer", {
+    p_user_id: userId,
+    p_is_trainer: isTrainer,
   });
 }

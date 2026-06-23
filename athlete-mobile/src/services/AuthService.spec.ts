@@ -18,7 +18,6 @@ const mockSignInWithOtp = jest.fn();
 const mockGetSession = jest.fn();
 const mockGetUser = jest.fn();
 const mockUpdateUser = jest.fn();
-const mockFunctionsInvoke = jest.fn();
 const mockSignOut = jest.fn();
 const mockRpc = jest.fn();
 const mockMaybeSingle = jest.fn();
@@ -36,9 +35,6 @@ jest.mock("./supabaseClient", () => ({
       signOut: () => mockSignOut(),
       getUser: () => mockGetUser(),
       updateUser: (...args: unknown[]) => mockUpdateUser(...args),
-    },
-    functions: {
-      invoke: (...args: unknown[]) => mockFunctionsInvoke(...args),
     },
     from: (table: string) => mockFrom(table),
     rpc: (...args: unknown[]) => mockRpc(...args),
@@ -174,22 +170,20 @@ describe("deleteAccount", () => {
     mockIsReviewUserId = false;
   });
 
-  it("invokes delete-account edge function with session token", async () => {
+  it("calls delete_my_account RPC when a session exists", async () => {
     mockGetSession.mockResolvedValue({
       data: {
         session: { access_token: "test-token", user: { id: "user-1" } },
       },
     });
-    mockFunctionsInvoke.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: { deleted: true },
       error: null,
     });
 
     await deleteAccount();
 
-    expect(mockFunctionsInvoke).toHaveBeenCalledWith("delete-account", {
-      headers: { Authorization: "Bearer test-token" },
-    });
+    expect(mockRpc).toHaveBeenCalledWith("delete_my_account");
   });
 
   it("throws auth/user-not-found when no session exists", async () => {
@@ -199,16 +193,16 @@ describe("deleteAccount", () => {
       code: "auth/user-not-found",
     });
 
-    expect(mockFunctionsInvoke).not.toHaveBeenCalled();
+    expect(mockRpc).not.toHaveBeenCalled();
   });
 
-  it("throws when edge function returns an error", async () => {
+  it("throws when the RPC returns an error", async () => {
     mockGetSession.mockResolvedValue({
       data: {
         session: { access_token: "test-token", user: { id: "user-1" } },
       },
     });
-    mockFunctionsInvoke.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: null,
       error: { message: "Internal error" },
     });
@@ -225,17 +219,17 @@ describe("deleteAccount", () => {
     await deleteAccount();
 
     expect(mockGetSession).not.toHaveBeenCalled();
-    expect(mockFunctionsInvoke).not.toHaveBeenCalled();
+    expect(mockRpc).not.toHaveBeenCalled();
     expect(mockClearAuth).not.toHaveBeenCalled();
   });
 
-  it("throws when edge function response has deleted: false", async () => {
+  it("throws when the RPC response has deleted: false", async () => {
     mockGetSession.mockResolvedValue({
       data: {
         session: { access_token: "test-token", user: { id: "user-1" } },
       },
     });
-    mockFunctionsInvoke.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: { deleted: false },
       error: null,
     });

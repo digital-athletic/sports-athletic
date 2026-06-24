@@ -1,5 +1,5 @@
-import { type SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { Tables } from "./constants.ts";
+import { supabaseAdmin } from "./supabase.ts";
 
 const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 const CODE_LENGTH = 6;
@@ -17,13 +17,11 @@ function generateSecureCode(): string {
   return code;
 }
 
-export async function generateUniqueInviteCode(
-  client: SupabaseClient,
-): Promise<string> {
+export async function generateUniqueInviteCode(): Promise<string> {
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
     const code = generateSecureCode();
 
-    const { data, error } = await client
+    const { data, error } = await supabaseAdmin
       .from(Tables.TEAM_INVITATIONS)
       .select("id")
       .eq("code", code)

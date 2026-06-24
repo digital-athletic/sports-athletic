@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
 
     let inviteCode: string;
     try {
-      inviteCode = await generateUniqueInviteCode(auth.client);
+      inviteCode = await generateUniqueInviteCode();
       await createInvitation(team.id, inviteCode, auth.userId);
     } catch (error) {
       await deleteTeam(team.id);

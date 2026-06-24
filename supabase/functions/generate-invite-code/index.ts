@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
       await deactivateTeamInvitations(team_id);
     }
 
-    const code = await generateUniqueInviteCode(auth.client);
+    const code = await generateUniqueInviteCode();
     const invitation = await createInvitation(
       team_id,
       code,

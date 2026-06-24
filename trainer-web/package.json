@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "pnpm generate:notice && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "start": "node server.js"
+    "start": "node server.js",
+    "generate:sbom": "node scripts/generate-sbom.mjs",
+    "generate:notice": "node scripts/generate-notice.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.86.0",

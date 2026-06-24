@@ -1,27 +1,28 @@
-import { render } from "../utils/testUtils";
+import { fireEvent, render } from "../utils/testUtils";
 import { Loading } from "./Loading";
 
-describe("<Loading />", () => {
-  it("should not render when show is false", () => {
-    const { toJSON } = render(<Loading show={false} text="Loading..." />);
+describe("Loading", () => {
+  it("renders nothing while hidden", () => {
+    const { toJSON } = render(<Loading show={false} text="Loading" />);
     expect(toJSON()).toBeNull();
   });
 
-  it("should render loading text when show is true", () => {
-    const { getByText } = render(<Loading show={true} text="Please wait..." />);
-    expect(getByText("Please wait...")).toBeTruthy();
+  it("shows the supplied text when visible", () => {
+    const { getByText } = render(<Loading show text="Please wait" />);
+    expect(getByText("Please wait")).toBeTruthy();
   });
 
-  it("should render cancel button when onClose is provided", () => {
+  it("omits the cancel control without an onClose handler", () => {
+    const { queryByText } = render(<Loading show text="Please wait" />);
+    expect(queryByText("Cancel")).toBeNull();
+  });
+
+  it("invokes onClose when the cancel control is pressed", () => {
     const onClose = jest.fn();
     const { getByText } = render(
-      <Loading show={true} text="Loading..." onClose={onClose} />,
+      <Loading show text="Please wait" onClose={onClose} />,
     );
-    expect(getByText("Cancel")).toBeTruthy();
-  });
-
-  it("should not render cancel button when onClose is not provided", () => {
-    const { queryByText } = render(<Loading show={true} text="Loading..." />);
-    expect(queryByText("Cancel")).toBeNull();
+    fireEvent.press(getByText("Cancel"));
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });

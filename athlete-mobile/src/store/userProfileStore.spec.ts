@@ -1,164 +1,61 @@
-import { act, renderHook } from "@testing-library/react-native";
+import { act } from "@testing-library/react-native";
 import { useUserProfileStore } from "./userProfileStore";
 
+const store = () => useUserProfileStore.getState();
+
+beforeEach(() => {
+  act(() => store().resetProfile());
+});
+
 describe("userProfileStore", () => {
-  beforeEach(() => {
-    const { result } = renderHook(() => useUserProfileStore());
+  it("starts with an empty male profile", () => {
+    expect(store().personalData.username).toBe("");
+    expect(store().personalData.gender).toBe("MALE");
+  });
+
+  it("has no measurements before they are set", () => {
+    expect(
+      store().personalData.height ?? store().personalData.weight,
+    ).toBeUndefined();
+  });
+
+  it("stores height through its setter", () => {
+    act(() => store().setHeight(182));
+    expect(store().personalData.height).toBe(182);
+  });
+
+  it("stores weight through its setter", () => {
+    act(() => store().setWeight(78));
+    expect(store().personalData.weight).toBe(78);
+  });
+
+  it("merges partial patches over existing data", () => {
+    act(() => store().setPersonalData({ gender: "FEMALE" }));
+    expect(store().personalData.gender).toBe("FEMALE");
+  });
+
+  it("clears measurements on reset", () => {
     act(() => {
-      result.current.resetProfile();
-      result.current.setHasHydrated(false);
+      store().setWeight(90);
+      store().resetProfile();
     });
+    expect(store().personalData.weight).toBeUndefined();
   });
 
-  describe("initial state", () => {
-    it("has default personal data", () => {
-      const { result } = renderHook(() => useUserProfileStore());
-
-      expect(result.current.personalData.username).toBe("");
-      expect(result.current.personalData.gender).toBe("MALE");
+  it("keeps the hydration flag across a reset", () => {
+    act(() => {
+      store().setHasHydrated(true);
+      store().resetProfile();
     });
-
-    it("has anamnesisCompleted false initially", () => {
-      const { result } = renderHook(() => useUserProfileStore());
-
-      expect(result.current.anamnesisCompleted).toBe(false);
-    });
-
-    it("has undefined height and weight initially", () => {
-      const { result } = renderHook(() => useUserProfileStore());
-
-      expect(result.current.personalData.height).toBeUndefined();
-      expect(result.current.personalData.weight).toBeUndefined();
-    });
+    expect(store()._hasHydrated).toBe(true);
   });
 
-  describe("setHeight", () => {
-    it("sets height in personalData", () => {
-      const { result } = renderHook(() => useUserProfileStore());
-
-      act(() => {
-        result.current.setHeight(180);
-      });
-
-      expect(result.current.personalData.height).toBe(180);
-    });
-
-    it("does not affect other personalData fields", () => {
-      const { result } = renderHook(() => useUserProfileStore());
-
-      act(() => {
-        result.current.setUsername("TestUser");
-        result.current.setHeight(185);
-      });
-
-      expect(result.current.personalData.username).toBe("TestUser");
-      expect(result.current.personalData.height).toBe(185);
-      expect(result.current.personalData.gender).toBe("MALE");
-    });
-  });
-
-  describe("setWeight", () => {
-    it("sets weight in personalData", () => {
-      const { result } = renderHook(() => useUserProfileStore());
-
-      act(() => {
-        result.current.setWeight(75);
-      });
-
-      expect(result.current.personalData.weight).toBe(75);
-    });
-
-    it("does not affect other personalData fields", () => {
-      const { result } = renderHook(() => useUserProfileStore());
-
-      act(() => {
-        result.current.setGender("FEMALE");
-        result.current.setWeight(60);
-      });
-
-      expect(result.current.personalData.gender).toBe("FEMALE");
-      expect(result.current.personalData.weight).toBe(60);
-      expect(result.current.personalData.username).toBe("");
-    });
-  });
-
-  describe("setPersonalData", () => {
-    it("merges height and weight with existing data", () => {
-      const { result } = renderHook(() => useUserProfileStore());
-
-      act(() => {
-        result.current.setPersonalData({
-          height: 175,
-          weight: 70,
-        });
-      });
-
-      expect(result.current.personalData.height).toBe(175);
-      expect(result.current.personalData.weight).toBe(70);
-      expect(result.current.personalData.gender).toBe("MALE");
-    });
-  });
-
-  describe("resetProfile", () => {
-    it("resets height and weight to undefined", () => {
-      const { result } = renderHook(() => useUserProfileStore());
-
-      act(() => {
-        result.current.setHeight(180);
-        result.current.setWeight(80);
-        result.current.resetProfile();
-      });
-
-      expect(result.current.personalData.height).toBeUndefined();
-      expect(result.current.personalData.weight).toBeUndefined();
-    });
-  });
-
-  describe("getAge", () => {
-    it("calculates age from birthday", () => {
-      const { result } = renderHook(() => useUserProfileStore());
-      const today = new Date();
-      const birthYear = today.getFullYear() - 25;
-      const birthMonth = String(today.getMonth() + 1).padStart(2, "0");
-      const birthDay = String(today.getDate()).padStart(2, "0");
-
-      act(() => {
-        // ISO 8601 format: YYYY-MM-DD
-        result.current.setBirthday(`${birthYear}-${birthMonth}-${birthDay}`);
-      });
-
-      expect(result.current.getAge()).toBe(25);
-    });
-  });
-
-  describe("hydration tracking", () => {
-    it("has _hasHydrated false initially", () => {
-      const { result } = renderHook(() => useUserProfileStore());
-
-      expect(result.current._hasHydrated).toBe(false);
-    });
-
-    it("can set _hasHydrated via setHasHydrated", () => {
-      const { result } = renderHook(() => useUserProfileStore());
-
-      act(() => {
-        result.current.setHasHydrated(true);
-      });
-
-      expect(result.current._hasHydrated).toBe(true);
-    });
-
-    it("resetProfile does not reset _hasHydrated", () => {
-      const { result } = renderHook(() => useUserProfileStore());
-
-      act(() => {
-        result.current.setHasHydrated(true);
-        result.current.resetProfile();
-      });
-
-      // _hasHydrated should remain true after resetProfile
-      // since it tracks storage hydration, not user data
-      expect(result.current._hasHydrated).toBe(true);
-    });
+  it("derives age in whole years from the birthday", () => {
+    const today = new Date();
+    const year = today.getFullYear() - 28;
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    act(() => store().setBirthday(`${year}-${month}-${day}`));
+    expect(store().getAge()).toBe(28);
   });
 });

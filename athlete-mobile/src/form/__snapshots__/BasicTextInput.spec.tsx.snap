@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<BasicTextInput /> renders correctly 1`] = `
+exports[`BasicTextInput matches the snapshot 1`] = `
 <TextInput
   onChangeText={[MockFunction]}
   style={
@@ -18,6 +18,6 @@ exports[`<BasicTextInput /> renders correctly 1`] = `
       undefined,
     ]
   }
-  value="test value"
+  value="hello"
 />
 `;

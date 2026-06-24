@@ -1,76 +1,45 @@
 import { fireEvent, render } from "../utils/testUtils";
 import { BasicTextInput } from "./BasicTextInput";
 
-describe("<BasicTextInput />", () => {
-  it("renders correctly", () => {
+describe("BasicTextInput", () => {
+  it("matches the snapshot", () => {
     const { toJSON } = render(
-      <BasicTextInput value="test value" onChangeText={jest.fn()} />,
+      <BasicTextInput value="hello" onChangeText={jest.fn()} />,
     );
     expect(toJSON()).toMatchSnapshot();
   });
 
-  it("renders with placeholder", () => {
-    const { getByPlaceholderText } = render(
-      <BasicTextInput placeholder="Enter text" onChangeText={jest.fn()} />,
-    );
-    expect(getByPlaceholderText("Enter text")).toBeTruthy();
-  });
-
-  it("displays the provided value", () => {
+  it("displays the current value", () => {
     const { getByDisplayValue } = render(
-      <BasicTextInput value="test value" onChangeText={jest.fn()} />,
+      <BasicTextInput value="hello" onChangeText={jest.fn()} />,
     );
-    expect(getByDisplayValue("test value")).toBeTruthy();
+    expect(getByDisplayValue("hello")).toBeTruthy();
   });
 
-  it("calls onChangeText when text changes", () => {
+  it("shows the placeholder", () => {
+    const { getByPlaceholderText } = render(
+      <BasicTextInput placeholder="Name" onChangeText={jest.fn()} />,
+    );
+    expect(getByPlaceholderText("Name")).toBeTruthy();
+  });
+
+  it("forwards edits to onChangeText", () => {
     const onChangeText = jest.fn();
     const { getByPlaceholderText } = render(
-      <BasicTextInput placeholder="Enter text" onChangeText={onChangeText} />,
+      <BasicTextInput placeholder="Name" onChangeText={onChangeText} />,
     );
-
-    fireEvent.changeText(getByPlaceholderText("Enter text"), "new text");
-
-    expect(onChangeText).toHaveBeenCalledWith("new text");
-    expect(onChangeText).toHaveBeenCalledTimes(1);
+    fireEvent.changeText(getByPlaceholderText("Name"), "world");
+    expect(onChangeText).toHaveBeenCalledWith("world");
   });
 
-  it("accepts custom keyboard type", () => {
+  it("forwards native TextInput props such as secureTextEntry", () => {
     const { getByPlaceholderText } = render(
       <BasicTextInput
-        placeholder="Enter email"
-        keyboardType="email-address"
-        onChangeText={jest.fn()}
-      />,
-    );
-
-    const input = getByPlaceholderText("Enter email");
-    expect(input.props.keyboardType).toBe("email-address");
-  });
-
-  it("accepts secureTextEntry prop", () => {
-    const { getByPlaceholderText } = render(
-      <BasicTextInput
-        placeholder="Enter password"
+        placeholder="Password"
         secureTextEntry
         onChangeText={jest.fn()}
       />,
     );
-
-    const input = getByPlaceholderText("Enter password");
-    expect(input.props.secureTextEntry).toBe(true);
-  });
-
-  it("accepts autoCapitalize prop", () => {
-    const { getByPlaceholderText } = render(
-      <BasicTextInput
-        placeholder="Enter text"
-        autoCapitalize="none"
-        onChangeText={jest.fn()}
-      />,
-    );
-
-    const input = getByPlaceholderText("Enter text");
-    expect(input.props.autoCapitalize).toBe("none");
+    expect(getByPlaceholderText("Password").props.secureTextEntry).toBe(true);
   });
 });

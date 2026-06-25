@@ -20,10 +20,6 @@ function describe(projectRoot, name) {
     typeof manifest.license === "string"
       ? manifest.license
       : manifest.license?.type;
-  const author =
-    typeof manifest.author === "string"
-      ? manifest.author
-      : manifest.author?.name;
   let text = null;
   try {
     const file = readdirSync(dir).find((f) => LICENSE_FILE.test(f));
@@ -34,9 +30,7 @@ function describe(projectRoot, name) {
   return {
     name,
     version: manifest.version ?? "unknown",
-    license: license ?? "see homepage",
-    author,
-    homepage: manifest.homepage,
+    license: license ?? "unknown",
     text,
   };
 }
@@ -65,8 +59,6 @@ export function generateNotice({ projectRoot, output }) {
   for (const d of deps) {
     lines.push(`### ${d.name}@${d.version}`, "");
     lines.push(`- License: ${d.license}`);
-    if (d.author) lines.push(`- Author: ${d.author}`);
-    if (d.homepage) lines.push(`- Homepage: ${d.homepage}`);
     lines.push("");
     if (d.text) lines.push("```", d.text, "```", "");
   }

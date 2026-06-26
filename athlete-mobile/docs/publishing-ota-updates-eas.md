@@ -31,11 +31,10 @@ pnpm dlx eas-cli@latest login
 
 ### Understanding Channels
 
-The project uses three update channels that correspond to build profiles:
+The project uses two update channels that correspond to build profiles:
 
 | Channel        | Environment  | Target Build Profile | Use Case                          |
 | -------------- | ------------ | -------------------- | --------------------------------- |
-| `development`  | `preview`    | development          | Development client testing        |
 | `preview`      | `preview`    | preview              | TestFlight/Internal Testing (QA)  |
 | `production`   | `production` | production           | Production app store releases     |
 
@@ -45,7 +44,6 @@ The project uses three update channels that correspond to build profiles:
 
 | Command                 | Channel       | Environment  | Purpose                                  |
 | ----------------------- | ------------- | ------------ | ---------------------------------------- |
-| `pnpm update:development` | development   | preview      | Update development builds                |
 | `pnpm update:preview`     | preview       | preview      | Update TestFlight/internal test builds   |
 | `pnpm update:production`  | production    | production   | Update production app store builds       |
 
@@ -91,16 +89,6 @@ pnpm update:production
 3. **Confirm publish** - Confirm to upload the update
 4. **Monitor deployment** - The CLI shows upload progress
 5. **User reception** - Production apps will check for and download the update on next launch
-
-### Development Environment
-
-For updating development client builds:
-
-```bash
-pnpm update:development
-```
-
-This is useful for testing OTA updates on development builds without rebuilding the entire app.
 
 ---
 

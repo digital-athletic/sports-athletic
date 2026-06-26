@@ -151,7 +151,8 @@ These optional variables control feature flags for launch and store review testi
 **Example `.env` for store review build:**
 
 ```bash
-REVIEW_EMAIL=reviewer@example.com
+EXPO_PUBLIC_REVIEW_EMAIL=reviewer@example.com
+EXPO_PUBLIC_REVIEW_OTP=000000
 ```
 
 When none of these variables are set, the app behaves normally with full server sync and real authentication.

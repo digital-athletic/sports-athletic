@@ -1,6 +1,6 @@
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { Box } from "@/theme/Box";
@@ -27,11 +27,11 @@ export const SportListItem: FC<SportListItemProps> = ({
       accessibilityLabel={sportName}
       accessibilityRole="button"
     >
-      <Image
-        source={WorkoutConstants.SPORTS_IMAGES[sportKey]}
+      <Box
         style={styles.listImage}
-        resizeMode="cover"
-        accessibilityLabel={t(`sports.${sportKey}`)}
+        backgroundColor="white"
+        borderWidth={1}
+        borderColor="lightGrey2"
       />
       <Box style={styles.listContent}>
         <Text variant="cardTitle" color="darkGrey3">

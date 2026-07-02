@@ -1,8 +1,6 @@
-import { createPreventionTileComponent } from "@/bodyParts/PreventionTileSvg";
 import { I18nKey } from "@/i18n";
 import { type LevelTagSchemaType } from "@/schemas/common.schema";
 import { Route } from "expo-router";
-import { type FC } from "react";
 import { ImageSourcePropType } from "react-native";
 import { SharedConstants } from "./sharedConstants";
 
@@ -313,7 +311,6 @@ export type FocusType = "PHASE" | "CARDIO" | "STABILITY" | "COMBINED";
 
 export type TileData = {
   picture?: ImageSourcePropType;
-  svgComponent?: FC<{ width: number; height: number }>;
   title: I18nKey;
   description?: {
     text: I18nKey;
@@ -378,7 +375,6 @@ export const QUICKSTART_TILES: TileData[] = [
 
 export const PREVENTION_TILES: TileData[] = [
   {
-    svgComponent: createPreventionTileComponent("PREVANKLE"),
     title: "training.prevention.PREVENTION_TILE_ANKLE",
     navigate: {
       key: "/training/muscle-soreness",
@@ -386,7 +382,6 @@ export const PREVENTION_TILES: TileData[] = [
     },
   },
   {
-    svgComponent: createPreventionTileComponent("PREVKNEE"),
     title: "training.prevention.PREVENTION_TILE_KNEE",
     navigate: {
       key: "/training/muscle-soreness",
@@ -394,7 +389,6 @@ export const PREVENTION_TILES: TileData[] = [
     },
   },
   {
-    svgComponent: createPreventionTileComponent("PREVSPINE"),
     title: "training.prevention.PREVENTION_TILE_SPINE",
     navigate: {
       key: "/training/muscle-soreness",
@@ -402,7 +396,6 @@ export const PREVENTION_TILES: TileData[] = [
     },
   },
   {
-    svgComponent: createPreventionTileComponent("PREVSHOULDER"),
     title: "training.prevention.PREVENTION_TILE_SHOULDER",
     navigate: {
       key: "/training/muscle-soreness",
@@ -410,7 +403,6 @@ export const PREVENTION_TILES: TileData[] = [
     },
   },
   {
-    svgComponent: createPreventionTileComponent("PREVWRIST"),
     title: "training.prevention.PREVENTION_TILE_WRIST",
     navigate: {
       key: "/training/muscle-soreness",
@@ -811,13 +803,6 @@ const TRAINING_PLACES_IMAGES: Record<PlaceType, ImageSourcePropType> = {
   STUDIO: require("../../assets/img/sportsAthletic.png"),
 };
 
-const TRAINING_FOCUS_IMAGES: Record<FocusType, ImageSourcePropType> = {
-  PHASE: require("../../assets/img/shortTrainings/kraft.png"),
-  COMBINED: require("../../assets/img/shortTrainings/kraftausdauer.jpg"),
-  CARDIO: require("../../assets/img/shortTrainings/ausdauer.png"),
-  STABILITY: require("../../assets/img/shortTrainings/stabilitaet.png"),
-};
-
 const TRAINING_DAYS_TITLE = [
   "MONDAY_TRAINING",
   "TUESDAY_TRAINING",
@@ -1135,18 +1120,6 @@ const SPORTS = {
   OTHER_SPORT: "OTHER_SPORT",
 } as const;
 
-const SPORTS_IMAGES = {
-  HANDBALL_SPORT: require("../../assets/img/sport-selection/Handball.png"),
-  FOOTBALL_SPORT: require("../../assets/img/sport-selection/Football.png"),
-  VOLLEYBALL_SPORT: require("../../assets/img/sport-selection/Volleyball.png"),
-  BASKETBALL_SPORT: require("../../assets/img/sport-selection/Basketball.png"),
-  ICE_HOCKEY_SPORT: require("../../assets/img/sport-selection/IceHockey.png"),
-  HOCKEY_SPORT: require("../../assets/img/sport-selection/Hockey.png"),
-  AMERICAN_FOOTBALL_SPORT: require("../../assets/img/sport-selection/AmericanFootball.png"),
-  RUGBY_SPORT: require("../../assets/img/sport-selection/Rugby.png"),
-  OTHER_SPORT: require("../../assets/img/sport-selection/GeneralAthletics.png"),
-};
-
 export const WorkoutConstants = {
   AGE_GROUPS,
   AGE_GROUPS_MAX_AGE,
@@ -1183,14 +1156,12 @@ export const WorkoutConstants = {
   SKILL_TREE_HEART_RATES,
   SKILL_TREE_HEART_RATE_DEFAULT,
   SPORTS,
-  SPORTS_IMAGES,
   SPORTS_SORTED,
   STRENGTH_TEST_DIRECTIONS,
   TEST_EXERCISES,
   TEST_EXERCISES_DIRECTIONS,
   TEST_EXERCISES_REPETITIONS_PERCENTAGE,
   TRAINING_DAYS_TITLE,
-  TRAINING_FOCUS_IMAGES,
   TRAINING_PLACES,
   TRAINING_PLACES_IMAGES,
   VALUE_TYPE_NAMES,

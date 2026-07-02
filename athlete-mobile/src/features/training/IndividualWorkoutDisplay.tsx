@@ -122,7 +122,7 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
 
   return (
     <Box flex={1} justifyContent="space-between">
-      <Text variant="title" paddingHorizontal="m" paddingTop="m" color="white">
+      <Text variant="title" paddingHorizontal="m" paddingTop="m">
         {t("screens.home.workoutWithOwnPlan")}
       </Text>
       {planState === PLAN_STATES.RUNNING ? renderRunningPlan() : renderNoPlan()}

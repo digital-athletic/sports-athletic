@@ -1,12 +1,9 @@
-import { BodyParts } from "@/bodyParts/BodyParts";
 import { BodyPartsTagChips } from "@/bodyParts/BodyPartsTagChips";
-import { MaleMusclesSvg } from "@/bodyParts/MaleMusclesSvg";
 import { expandMuscleTags } from "@/bodyParts/muscleTagMapping";
 import { Loading } from "@/common/Loading";
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { getExerciseById } from "@/data/exerciseRegistry";
-import { useUserProfileStore } from "@/store/userProfileStore";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { getTagValues } from "@/utils/tagUtils";
@@ -35,8 +32,6 @@ export default function ExerciseInformationScreen() {
     ScreenParams
   >();
   const insets = useSafeAreaInsets();
-
-  const { personalData } = useUserProfileStore();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -68,7 +63,7 @@ export default function ExerciseInformationScreen() {
           {exercise && (
             <>
               <EquipmentList tags={exercise.tags} />
-              <MusclesList tags={exercise.tags} gender={personalData.gender} />
+              <MusclesList tags={exercise.tags} />
               <DescriptionsList description={exercise.description} />
             </>
           )}
@@ -127,10 +122,9 @@ const EquipmentList: FC<EquipmentListProps> = ({ tags }) => {
 
 type MusclesListProps = {
   tags: string[];
-  gender: "MALE" | "FEMALE";
 };
 
-const MusclesList: FC<MusclesListProps> = ({ tags, gender }) => {
+const MusclesList: FC<MusclesListProps> = ({ tags }) => {
   const { t } = useTranslation();
 
   const musclesRaw = getTagValues(tags, TagGroups.MUSCLE);
@@ -140,58 +134,25 @@ const MusclesList: FC<MusclesListProps> = ({ tags, gender }) => {
 
   if (muscles.length === 0) return null;
 
-  const isMale = gender === "MALE";
-
   return (
-    <Box padding="l">
+    <Box padding="l" testID="muscles-trained-section">
       <Text variant="cardTitle" marginBottom="s">
         {t("training.exerciseInformation.musclesTrained")}
       </Text>
 
-      <Box flexDirection="row" justifyContent="space-around" marginBottom="l">
-        {isMale ? (
-          <MaleMusclesSvg
-            muscles={muscles}
-            musclesSecondary={musclesSecondary}
-          />
-        ) : (
-          <>
-            <Box flex={1}>
-              <BodyParts
-                type="MUSCLE"
-                gender="w"
-                tags={muscles}
-                secondaryTags={musclesSecondary}
-                side="FRONT"
-                showChips={false}
-                hideCoaching
-              />
-            </Box>
-            <Box flex={1}>
-              <BodyParts
-                type="MUSCLE"
-                gender="w"
-                tags={muscles}
-                secondaryTags={musclesSecondary}
-                side="BACK"
-                showChips={false}
-                hideCoaching
-              />
-            </Box>
-          </>
-        )}
-      </Box>
-
-      <Box paddingHorizontal="l" marginBottom="m">
-        <Text variant="body" color="primary" marginBottom="xs">
-          {t("training.exerciseInformation.legendActiveMuscles")}
-        </Text>
-        <Text variant="body" color="primary" opacity={0.5}>
-          {t("training.exerciseInformation.legendSupportingMuscles")}
-        </Text>
-      </Box>
-
+      <Text variant="body" color="primary" marginBottom="xs">
+        {t("training.exerciseInformation.legendActiveMuscles")}
+      </Text>
       <BodyPartsTagChips tags={muscles} />
+
+      {musclesSecondary.length > 0 && (
+        <>
+          <Text variant="body" color="primary" opacity={0.5} marginTop="s">
+            {t("training.exerciseInformation.legendSupportingMuscles")}
+          </Text>
+          <BodyPartsTagChips tags={musclesSecondary} />
+        </>
+      )}
     </Box>
   );
 };

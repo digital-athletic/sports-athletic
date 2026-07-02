@@ -53,3 +53,5 @@ playwright-report
 coverage
 legacy
 .planning
+
+.tmp

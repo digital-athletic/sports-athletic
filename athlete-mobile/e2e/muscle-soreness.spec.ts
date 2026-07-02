@@ -89,126 +89,104 @@ async function navigateToPainScreen(page: Page) {
   });
 }
 
-function greyMusclePaths(page: Page): Locator {
-  return page.locator('svg path[fill="#e8e8e8"]');
+// Chip background colours from the theme: lightGrey2 when unselected, primary
+// (red) when selected.
+const UNSELECTED = "rgb(232, 232, 232)";
+const SELECTED = "rgb(199, 27, 27)";
+
+function muscleChip(page: Page, name: string): Locator {
+  return page.getByRole("button", { name, exact: true });
 }
 
-function redMusclePaths(page: Page): Locator {
-  return page.locator('svg path[fill="#c71b1b"]');
-}
-
-function rotateButton(page: Page): Locator {
-  return page.getByRole("button", { name: "Rotate body view" });
-}
-
-async function navigateAndWaitForSvg(page: Page) {
+async function navigateAndWaitForOptions(page: Page) {
   await mockSupabaseAuth(page);
   await navigateToMuscleSoreness(page);
-  await expect(greyMusclePaths(page).first()).toBeVisible({ timeout: 5000 });
+  await expect(muscleChip(page, "neck")).toBeVisible({ timeout: 5000 });
 }
 
-// Transparent tap-target ellipses overlay the visible muscle paths, so a normal
-// click on a path is reported as intercepted. Forcing the click dispatches the
-// event to the overlaying ellipse's onPress handler for that same muscle.
-async function clickMuscle(locator: Locator) {
-  await locator.click({ force: true });
-}
-
-// Shared SVG selection behaviour, identical for male and female bodies since
-// both now render through MuscleBodySvgBase with the same grey/red fills.
-function registerSvgSelectionTests() {
-  test("renders grey muscle regions on the front view", async ({ page }) => {
+// Shared label selection behaviour, identical for male and female bodies since
+// both render the same option chips through BodyPartsSelector.
+function registerLabelSelectionTests() {
+  test("renders selectable muscle labels", async ({ page }) => {
     test.setTimeout(60000);
-    await navigateAndWaitForSvg(page);
+    await navigateAndWaitForOptions(page);
 
-    expect(await greyMusclePaths(page).count()).toBeGreaterThan(0);
+    await expect(muscleChip(page, "neck")).toBeVisible();
+    await expect(muscleChip(page, "breast")).toBeVisible();
   });
 
-  test("has no selected muscles initially", async ({ page }) => {
+  test("shows muscle labels unselected initially", async ({ page }) => {
     test.setTimeout(60000);
-    await navigateAndWaitForSvg(page);
+    await navigateAndWaitForOptions(page);
 
-    expect(await redMusclePaths(page).count()).toBe(0);
+    await expect(muscleChip(page, "neck")).toHaveCSS(
+      "background-color",
+      UNSELECTED,
+    );
   });
 
-  test("shows the rotate button", async ({ page }) => {
+  test("selecting a muscle highlights its label", async ({ page }) => {
     test.setTimeout(60000);
-    await navigateAndWaitForSvg(page);
+    await navigateAndWaitForOptions(page);
 
-    await expect(rotateButton(page)).toBeVisible();
+    await muscleChip(page, "neck").click();
+
+    await expect(muscleChip(page, "neck")).toHaveCSS(
+      "background-color",
+      SELECTED,
+      { timeout: 3000 },
+    );
   });
 
-  test("selecting a muscle turns paths red", async ({ page }) => {
+  test("deselecting a muscle removes the highlight", async ({ page }) => {
     test.setTimeout(60000);
-    await navigateAndWaitForSvg(page);
+    await navigateAndWaitForOptions(page);
 
-    await clickMuscle(greyMusclePaths(page).first());
+    await muscleChip(page, "neck").click();
+    await expect(muscleChip(page, "neck")).toHaveCSS(
+      "background-color",
+      SELECTED,
+      { timeout: 3000 },
+    );
 
-    await expect(redMusclePaths(page).first()).toBeVisible({ timeout: 3000 });
+    await muscleChip(page, "neck").click();
+    await expect(muscleChip(page, "neck")).toHaveCSS(
+      "background-color",
+      UNSELECTED,
+      { timeout: 3000 },
+    );
   });
 
-  test("selecting a muscle decreases grey path count", async ({ page }) => {
+  test("selecting multiple muscles highlights each", async ({ page }) => {
     test.setTimeout(60000);
-    await navigateAndWaitForSvg(page);
-    const greyBefore = await greyMusclePaths(page).count();
+    await navigateAndWaitForOptions(page);
 
-    await clickMuscle(greyMusclePaths(page).first());
-    await expect(redMusclePaths(page).first()).toBeVisible({ timeout: 3000 });
+    await muscleChip(page, "neck").click();
+    await muscleChip(page, "breast").click();
 
-    expect(await greyMusclePaths(page).count()).toBeLessThan(greyBefore);
-  });
-
-  test("deselecting a muscle removes the red highlight", async ({ page }) => {
-    test.setTimeout(60000);
-    await navigateAndWaitForSvg(page);
-
-    await clickMuscle(greyMusclePaths(page).first());
-    await expect(redMusclePaths(page).first()).toBeVisible({ timeout: 3000 });
-    const redCount = await redMusclePaths(page).count();
-
-    await clickMuscle(redMusclePaths(page).first());
-
-    expect(await redMusclePaths(page).count()).toBeLessThan(redCount);
-  });
-
-  test("rotating to back renders grey muscle regions", async ({ page }) => {
-    test.setTimeout(60000);
-    await navigateAndWaitForSvg(page);
-
-    await rotateButton(page).click();
-
-    await expect(greyMusclePaths(page).first()).toBeVisible({ timeout: 5000 });
-  });
-
-  test("selection persists after rotating front, back, front", async ({
-    page,
-  }) => {
-    test.setTimeout(60000);
-    await navigateAndWaitForSvg(page);
-
-    await clickMuscle(greyMusclePaths(page).first());
-    await expect(redMusclePaths(page).first()).toBeVisible({ timeout: 3000 });
-    const selectedRedCount = await redMusclePaths(page).count();
-
-    await rotateButton(page).click();
-    await expect(greyMusclePaths(page).first()).toBeVisible({ timeout: 5000 });
-    await rotateButton(page).click();
-    await expect(greyMusclePaths(page).first()).toBeVisible({ timeout: 5000 });
-
-    expect(await redMusclePaths(page).count()).toBe(selectedRedCount);
+    await expect(muscleChip(page, "neck")).toHaveCSS(
+      "background-color",
+      SELECTED,
+      { timeout: 3000 },
+    );
+    await expect(muscleChip(page, "breast")).toHaveCSS(
+      "background-color",
+      SELECTED,
+      { timeout: 3000 },
+    );
   });
 }
 
-test.describe("Muscle Soreness: Male SVG", () => {
+test.describe("Muscle Soreness: Male", () => {
   test.use({ profile: createCompletedProfile() });
 
-  registerSvgSelectionTests();
+  registerLabelSelectionTests();
 });
 
-test.describe("Muscle Soreness: Female SVG", () => {
+test.describe("Muscle Soreness: Female", () => {
   test.use({ profile: createFemaleCompletedProfile() });
 
-  registerSvgSelectionTests();
+  registerLabelSelectionTests();
 
   test("renders coaching prompt", async ({ page }) => {
     test.setTimeout(60000);
@@ -221,7 +199,7 @@ test.describe("Muscle Soreness: Female SVG", () => {
   });
 });
 
-test.describe("Pain Regions: Male SVG", () => {
+test.describe("Pain Regions: Male", () => {
   test.use({ profile: createMaleIncompleteProfile() });
 
   test("renders coaching prompt on pain screen", async ({ page }) => {
@@ -235,7 +213,7 @@ test.describe("Pain Regions: Male SVG", () => {
   });
 });
 
-test.describe("Pain Regions: Female SVG", () => {
+test.describe("Pain Regions: Female", () => {
   test.use({ profile: createFemaleIncompleteProfile() });
 
   test("renders coaching prompt on pain screen", async ({ page }) => {

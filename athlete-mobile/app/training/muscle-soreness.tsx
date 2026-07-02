@@ -87,7 +87,6 @@ export default function MuscleSorenessScreen() {
   const muscleTags =
     temporalData?.map<MuscleType>((data) => data.tag as MuscleType) ?? [];
 
-  const gender = personalData.gender === "MALE" ? "m" : "w";
   const { type } = params;
 
   const handleBack = useCallback(() => {
@@ -320,11 +319,8 @@ export default function MuscleSorenessScreen() {
                   ) : null}
                   <BodyParts
                     type={"MUSCLE"}
-                    gender={gender}
                     tags={muscleTags}
-                    secondaryTags={[]}
                     onChange={setMuscles}
-                    showChips
                   />
                 </ScrollView>
               ) : (

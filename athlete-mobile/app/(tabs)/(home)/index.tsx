@@ -9,17 +9,13 @@ import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { Ionicon } from "@/common/Ionicon";
 import { Box } from "@/theme/Box";
+import { Card } from "@/theme/Card";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { Stack, router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  ImageBackground,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { Platform, StyleSheet, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
@@ -109,28 +105,22 @@ export default function HomeScreen() {
         }}
       />
       <Box flex={1} backgroundColor="lightGrey1">
-        <ImageBackground
-          source={require("../../../assets/home-background.jpg")}
-          resizeMode="cover"
-          style={styles.backgroundImage}
-          accessibilityLabel={t("screens.home.imageAlt.background")}
-        >
-          <Box flex={1} />
-          <Box flex={3} justifyContent="flex-start" paddingHorizontal="l">
+        <Box flex={1} padding="l">
+          <Card variant="elevated" flex={1}>
             <IndividualWorkoutDisplay
               goToTraining={goToTraining}
               goToAnamnesis={goToAnamnesis}
               goToSeasonPhase={goToSeasonPhase}
               goToSectionDetails={goToSectionDetails}
             />
-          </Box>
-        </ImageBackground>
+          </Card>
+        </Box>
 
         <Box
           flexDirection="row"
-          padding="l"
+          paddingHorizontal="l"
+          paddingTop="none"
           gap="m"
-          backgroundColor="lightGrey2"
           style={{
             paddingBottom: Platform.OS === "ios" ? insets.bottom : spacing.l,
           }}
@@ -197,10 +187,6 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  backgroundImage: {
-    flex: 2,
-    justifyContent: "center",
-  },
   quickstartButton: {
     flex: 1,
     padding: 16,

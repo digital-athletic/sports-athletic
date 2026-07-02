@@ -23,9 +23,14 @@ export class ExerciseInformationPage extends BasePage {
   }
 
   private get muscleChips() {
-    return this.page.locator(
-      "text=/left|right|thigh|shoulder|back|buttock|bicep|latissimus|abdominal|breast|calf/i",
-    );
+    // Scope to the muscles section so the broad regex cannot match muscle
+    // labels on other stack screens (e.g. the still mounted, hidden muscle
+    // soreness selector) that render every region as text.
+    return this.page
+      .getByTestId("muscles-trained-section")
+      .locator(
+        "text=/left|right|thigh|shoulder|back|buttock|bicep|latissimus|abdominal|breast|calf/i",
+      );
   }
 
   async expectVisible() {
@@ -49,8 +54,11 @@ export class ExerciseInformationPage extends BasePage {
    * Labels should be the translated muscle names (e.g. "buttock", "lower back").
    */
   async expectMuscleChipLabels(labels: string[]) {
+    // Scope to the muscles section: the same labels also render in the still
+    // mounted, hidden muscle soreness selector on another stack screen.
+    const section = this.page.getByTestId("muscles-trained-section");
     for (const label of labels) {
-      await expect(this.page.getByText(label, { exact: true })).toBeVisible({
+      await expect(section.getByText(label, { exact: true })).toBeVisible({
         timeout: 5000,
       });
     }

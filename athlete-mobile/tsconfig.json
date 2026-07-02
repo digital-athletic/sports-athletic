@@ -7,6 +7,11 @@
       "@/*": ["./src/*"]
     }
   },
-  "exclude": ["legacy/**/*", "trainer-dashboard/**/*", "supabase/**/*"],
+  "exclude": [
+    ".tmp/**/*",
+    "legacy/**/*",
+    "trainer-dashboard/**/*",
+    "supabase/**/*"
+  ],
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }

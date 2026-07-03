@@ -354,7 +354,6 @@ export const QUICKSTART_TILES: TileData[] = [
     navigate: { key: "/training/muscle-soreness", params: { type: "MOB" } },
   },
   {
-    picture: require("../../assets/img/shortTrainings/foam_roller.png"),
     title: "training.quickstart.QUICKSTART_FOAM_ROLLER",
     description: { text: "training.quickstart.QUICKSTART_FOAM_ROLLER_DESC" },
     navigate: { key: "/training/muscle-soreness", params: { type: "BR" } },

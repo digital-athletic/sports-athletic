@@ -2,12 +2,14 @@ services:
   athlete-mobile:
     build: ./athlete-mobile
     working_dir: /workspace/athlete-mobile
+    # Run as node (uid 1000) so runtime files match the volume ownership seeded
+    # by the Dockerfile and the host user.
+    user: node
     volumes:
       - ./:/workspace
-      # use anonymous volumes for node_modules to fix permission problems
-      - /workspace/node_modules
-      - /workspace/.pnpm-store
-      - /workspace/athlete-mobile/node_modules
+      - root_node_modules:/workspace/node_modules
+      - pnpm_store:/workspace/.pnpm-store
+      - athlete_mobile_node_modules:/workspace/athlete-mobile/node_modules
     ports:
       - 8081:8081
       - 19000:19000
@@ -25,8 +27,8 @@ services:
       - EXPO_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
       - TESTING_PLAYWRIGHT_WS_ENDPOINT=ws://playwright:9323
       - TESTING_PLAYWRIGHT_BASE_URL=http://athlete-mobile:8081
-      - EXPO_PUBLIC_LINK_IMPRINT=https://www.hvsh.de/handball-erleben/sports-athletic/
-      - EXPO_PUBLIC_LINK_PRIVACY=https://www.hvsh.de/fileadmin/user_upload/Bilder_allgemein/Sports_Athletic/260320_-_Datenschutzerklaerung_v2_mit_TrainerInnenbereich_HVSH_Verbandsebene.pdf
+      - EXPO_PUBLIC_LINK_IMPRINT=
+      - EXPO_PUBLIC_LINK_PRIVACY=
     stdin_open: true
     tty: true
     networks:
@@ -36,8 +38,11 @@ services:
   trainer-web:
     build: ./trainer-web
     working_dir: /workspace/trainer-web
+    user: node
     volumes:
       - ./:/workspace
+      - root_node_modules:/workspace/node_modules
+      - pnpm_store:/workspace/.pnpm-store
       - web_trainer_node_modules:/workspace/trainer-web/node_modules
     environment:
       - VITE_SUPABASE_URL=${SUPABASE_URL_EXTERNAL}
@@ -55,6 +60,9 @@ services:
     command: ["npx", "playwright", "run-server", "--port=9323", "--host=0.0.0.0"]
 
 volumes:
+  root_node_modules:
+  pnpm_store:
+  athlete_mobile_node_modules:
   web_trainer_node_modules:
 
 networks:

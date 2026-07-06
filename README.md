@@ -25,7 +25,7 @@ To run the full application locally, you need to start all three services.
 
 **Start the backend:**
 
-Before starting, create `images/` and `videos/` folders inside `supabase/`. These are mount points for storage buckets.
+Before starting, create `images/`, `videos/`, `tutorial_pictures`, `tutorial_videos`, `exercise_pictures` and `exercise_videos` folders inside `supabase/`. These are mount points for storage buckets.
 
 ```bash
 # From the repository root

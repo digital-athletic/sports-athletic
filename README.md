@@ -134,3 +134,12 @@ Each project has its own README with detailed documentation:
 - [Supabase README](supabase/README.md) - Database setup, migrations, Edge Functions
 - [Athlete Mobile README](athlete-mobile/README.md) - Mobile app development, native builds
 - [Trainer Web README](trainer-web/README.md) - Web app development
+
+## License
+
+Source code is licensed under the Apache License, Version 2.0 (see
+[LICENSE](LICENSE)). Images and other visual assets are licensed
+separately (see [LICENSE-ASSETS.md](LICENSE-ASSETS.md)).
+
+Copyright holders, attributions, and further notices are listed in
+[NOTICE](NOTICE).

@@ -16,4 +16,4 @@ This file documents copyright (Author / License) and personality rights (Depicte
 | audio-pause-countdown | athlete-mobile/assets/audio/pause_3sec.mp3 | Workout pause countdown sound (3 seconds) |  |  | n/a | n/a |
 | audio-start-countdown | athlete-mobile/assets/audio/start_5sec.mp3 | Workout start countdown sound (5 seconds) |  |  | n/a | n/a |
 
-Note on `logos`: the trainer-web files are identical copies of `SA_dark.png` and `app-icon/app-icon.png` from the athlete-mobile logos folder and where added to be included in the web release as well.
+Note on `logos`: the trainer-web files are identical copies of `SA_dark.png` and `app-icon/app-icon.png` from the athlete-mobile logos folder and were copied to be included in the web release as well.

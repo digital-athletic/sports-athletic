@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { generateSbom } from "../../scripts/sbom.mjs";
+import { generateSbom } from "../../scripts/notice.mjs";
 
 const projectRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
-generateSbom({ projectRoot, output: join(projectRoot, "sbom.json") });
+generateSbom({
+  projectRoot,
+  output: join(projectRoot, "SPDX_athlete-mobile.spdx.json"),
+});

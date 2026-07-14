@@ -36,10 +36,6 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-# SBOM is a per-release artifact generated on demand (`pnpm generate:sbom`), never
-# part of a build. NOTICE.md is committed and refreshed by `pnpm generate:notice`.
-sbom.json
-
 # generated native folders
 /ios
 /android

@@ -12,10 +12,6 @@ dist
 dist-ssr
 *.local
 
-# SBOM is a per-release artifact generated on demand (`pnpm generate:sbom`), never
-# shipped in dist/. NOTICE.md is committed and refreshed by `pnpm generate:notice`.
-sbom.json
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

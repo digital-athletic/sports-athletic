@@ -1,8 +1,8 @@
 Sports Athletic
 
-Copyright 2018-2022 Horizon Alpha GmbH & Co. KG
-Copyright 2025-2026 Bitglow GmbH
-Copyright 2025-present B310 Digital GmbH
+Copyright (c) 2018-2022 Horizon Alpha GmbH & Co. KG
+Copyright (c) 2025-2026 Bitglow GmbH
+Copyright (c) 2025-present B310 Digital GmbH
 
 This product's source code is licensed under the Apache License,
 Version 2.0. The full license text is in the LICENSE file in this
@@ -10,9 +10,14 @@ directory and may also be obtained at:
 
     http://www.apache.org/licenses/LICENSE-2.0
 
-Images and other assets are not covered by the Apache License
-and are licensed separately. See LICENSE-ASSETS.md for per-asset
-authors and license terms.
+The Apache License applies to the software in this project.
+Images, logos and other media assets are licensed separately and
+are not covered by the Apache License. In the original Sports
+Athletic repository, these are documented in LICENSE-ASSETS.md .
 
-Contributions by B310 Digital GmbH and Bitglow GmbH on behalf of Handballverband Schleswig-Holstein e.V. under the
+Attributions for bundled third-party software are listed in
+THIRD-PARTY-NOTICES.txt file distributed with each application.
+
+Contributions by B310 Digital GmbH and Bitglow GmbH on behalf of
+Handballverband Schleswig-Holstein e.V. under the 
 "Landesprogramm offene Innovation" in Schleswig-Holstein.

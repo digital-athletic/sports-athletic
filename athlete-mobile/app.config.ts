@@ -15,9 +15,9 @@ const name = {
   production: baseName,
 }[variant];
 const icon = {
-  development: "./assets/app-icon/dev-icon.png",
-  preview: "./assets/app-icon/preview-icon.png",
-  production: "./assets/app-icon/app-icon.png",
+  development: "./assets/img/logos/app-icon/dev-icon.png",
+  preview: "./assets/img/logos/app-icon/preview-icon.png",
+  production: "./assets/img/logos/app-icon/app-icon.png",
 }[variant];
 const bundleIdentifier = {
   development: "de.digital-athletic.app.development",
@@ -41,7 +41,7 @@ export default (): ExpoConfig => ({
   userInterfaceStyle: "light",
   newArchEnabled: true,
   splash: {
-    image: "./assets/splash-icon.png",
+    image: "./assets/img/logos/splash-icon.png",
     resizeMode: "contain",
     backgroundColor: "#ffffff",
   },

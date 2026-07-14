@@ -1,6 +1,6 @@
 import { type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import logo from "../assets/SA_dark.png";
+import logo from "../assets/logos/SA_dark.png";
 import { LegalFooter } from "./LegalFooter";
 
 interface AuthPageLayoutProps {

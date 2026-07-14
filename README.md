@@ -138,7 +138,7 @@ Each project has its own README with detailed documentation:
 ## License
 
 Source code is licensed under the Apache License, Version 2.0 (see
-[LICENSE](LICENSE)). Images and other visual assets are licensed
+[LICENSE](LICENSE)). Images and other assets are licensed
 separately (see [LICENSE-ASSETS.md](LICENSE-ASSETS.md)).
 
 Copyright holders, attributions, and further notices are listed in

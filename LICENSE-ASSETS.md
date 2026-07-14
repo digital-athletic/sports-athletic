@@ -4,7 +4,7 @@ This file documents copyright (Author / License) and personality rights (Depicte
 
 | Name | Path | Description | Author | License | Depicted Person | Consent |
 | --- | --- | --- | --- | --- | --- | --- |
-| logos | athlete-mobile/assets/img/logos/, trainer-web/src/assets/logos/ | Brand logos, splash icon and app icons (entire folders, see note below) |  |  | n/a | n/a |
+| logos | athlete-mobile/assets/img/logos/, trainer-web/src/assets/logos/ | Brand logos (e.g. SA_dark.png, old-sportsAthletic.png), splash icon and app icons (entire folders, see note below) |  |  | n/a | n/a |
 | coach-face | athlete-mobile/assets/img/coach/face.png | Coach avatar |  |  |  |  |
 | coach-welcome-trainer | athlete-mobile/assets/img/coach/welcome/trainer.png | Trainer welcome image |  |  |  |  |
 | short-training-leg-axis-stability | athlete-mobile/assets/img/shortTrainings/beinachsenstabilitaet.jpg | Short training cover: leg axis stability |  |  |  |  |

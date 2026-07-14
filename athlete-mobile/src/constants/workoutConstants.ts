@@ -795,13 +795,6 @@ const TRAINING_PLACES = [
   },
 ] as const;
 
-const TRAINING_PLACES_IMAGES: Record<PlaceType, ImageSourcePropType> = {
-  HOME: require("../../assets/img/sportsAthletic.png"),
-  OUTSIDE: require("../../assets/img/sportsAthletic.png"),
-  HALL: require("../../assets/img/sportsAthletic.png"),
-  STUDIO: require("../../assets/img/sportsAthletic.png"),
-};
-
 const TRAINING_DAYS_TITLE = [
   "MONDAY_TRAINING",
   "TUESDAY_TRAINING",
@@ -1162,7 +1155,6 @@ export const WorkoutConstants = {
   TEST_EXERCISES_REPETITIONS_PERCENTAGE,
   TRAINING_DAYS_TITLE,
   TRAINING_PLACES,
-  TRAINING_PLACES_IMAGES,
   VALUE_TYPE_NAMES,
   WEEKDAY_TRAINING_KEYS,
 } as const;

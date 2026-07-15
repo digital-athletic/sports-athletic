@@ -100,15 +100,13 @@ export const useAnamnesisStore = create<AnamnesisState>()(
       },
 
       setCompleted: async () => {
-        // TODO: Implement with Firebase service
-        // This should call userStore to set anamnesisCompleted flag
+        // TODO: Persist the anamnesisCompleted flag via the user store
         console.log("setCompleted called");
       },
 
       saveData: async () => {
         const { values, tags } = get();
-        // TODO: Implement with Firebase service
-        // This should save both values and tags to Firebase
+        // TODO: Persist values and tags to the backend
         console.log("saveData called", { values, tags });
       },
       setIsSkipped: (skipped) => {

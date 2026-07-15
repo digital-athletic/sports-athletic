@@ -21,7 +21,7 @@ Sports Athletic is a fitness training mobile application designed for athletic t
 - **Localization**: i18next 25.6.2 + react-i18next
 - **Animations**: React Native Reanimated 4.1.5
 - **Testing**: Jest 29.7.0 + @testing-library/react-native
-- **Package Manager**: pnpm 10.25.0
+- **Package Manager**: pnpm 11.13.0
 - **Platforms**: iOS, Android, Web
 
 ## Project Conventions

@@ -61,8 +61,7 @@ export default function Generating() {
         workoutData.seasonPhase.type === seasonPhase.type;
 
       if (trainingPlan && !shouldUpdateExisting) {
-        // TODO: Archive existing plan to Firebase
-        // await userService.archiveTrainingPlan(trainingPlan);
+        // TODO: Archive the existing plan on the backend before replacing it
       }
 
       // Determine start date: use existing plan start or current date
@@ -109,9 +108,7 @@ export default function Generating() {
       // Save generated plan
       setTrainingPlan(plan);
 
-      // TODO: Persist to Firebase
-      // const userService = new UserService(firebaseConnector);
-      // await userService.setActiveTrainingPlan(plan);
+      // TODO: Persist the active plan to the backend
 
       // TODO: Setup push notifications for training reminders
       // const pushNotificationService = new PushNotificationService();

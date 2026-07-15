@@ -2,6 +2,12 @@ packages:
   - athlete-mobile
   - trainer-web
 
+# Isolated node_modules with symlinks to the pnpm store
+nodeLinker: isolated
+
+# Packages can only access their explicitly declared dependencies
+strictPeerDependencies: true
+
 overrides:
   "@babel/core": ">=7.29.6 <8"
   "@tootallnate/once": ">=3.0.1"
@@ -19,3 +25,7 @@ overrides:
   "ws@6": ">=6.2.4 <7"
   "ws@7": ">=7.5.11 <8"
   "ws@8": ">=8.21.0 <9"
+
+allowBuilds:
+  esbuild: false
+  unrs-resolver: false

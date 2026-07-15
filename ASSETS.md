@@ -1,6 +1,8 @@
-# Assets Licenses
+# Asset Licenses & Personality Rights
 
 This file documents copyright (Author / License) and personality rights (Depicted Person / Consent) for all media assets bundled in this repository.
+
+The license of each asset is stated in the table below.
 
 | Name | Path | Description | Author | License | Depicted Person | Consent |
 | --- | --- | --- | --- | --- | --- | --- |

@@ -82,10 +82,8 @@ This file provides guidance to AI Agents for building high-quality React Native 
 - Never use dashes (em dash or hyphen as separator) in test names or any raw text; dashes are only allowed in markdown list items
 
 ## File & Directory Rules
-- The `/legacy` directory is **read-only**.  
-  - It should only be **referenced** for understanding existing logic or data structures.
-  - The AI **must not modify, move, or create files** in `/legacy`.
-- All **new code** (components, screens, hooks, utils, etc.) should be created inside the `/app` directory.
+- Route files and navigation layouts belong in the `app/` directory (Expo Router file-based routing).
+- Domain logic belongs in `src/`: feature modules in `src/features/`, Zustand stores in `src/store/`, API clients in `src/services/`.
 
 ## App Store Review User
 

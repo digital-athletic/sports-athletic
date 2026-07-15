@@ -13,8 +13,6 @@ import { AsyncStorageService } from "./AsyncStorageService";
  * Service for managing push notifications and workout reminders.
  * Currently contains placeholder implementations pending migration to a modern notification library.
  *
- * Migrated from legacy/services/PushNotificationService.js
- *
  * @todo Replace dummy implementations with actual notification library
  * @todo Consider using expo-notifications for cross-platform support
  */
@@ -171,14 +169,11 @@ export class PushNotificationService {
 
   /**
    * Checks for and downloads updated workout reminder texts
-   * @todo Implement when Firebase services are migrated
+   * @todo Implement once reminder texts are hosted on the backend
    */
   async checkForWorkoutReminderTextUpdates(): Promise<void> {
-    // TODO: Implement when FirebaseConnector and FirebaseStorageService are migrated
-    // Original implementation:
-    // 1. Get local reminder text version from AsyncStorage
-    // 2. Get remote version from Firebase
-    // 3. Download updated texts if remote version is newer
+    // TODO: Compare a locally stored reminder text version (AsyncStorage)
+    // against the backend and download updated texts when newer
 
     console.log(
       "[PushNotificationService] checkForWorkoutReminderTextUpdates - not yet implemented",

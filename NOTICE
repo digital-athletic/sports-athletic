@@ -13,7 +13,7 @@ directory and may also be obtained at:
 The Apache License applies to the software in this project.
 Images, logos and other media assets are licensed separately and
 are not covered by the Apache License. In the original Sports
-Athletic repository, these are documented in LICENSE-ASSETS.md .
+Athletic repository, per-asset details are documented in ASSETS.md .
 
 Attributions for bundled third-party software are listed in
 THIRD-PARTY-NOTICES.txt file distributed with each application.

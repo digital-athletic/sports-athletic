@@ -40,11 +40,6 @@ export default (): ExpoConfig => ({
   icon,
   userInterfaceStyle: "light",
   newArchEnabled: true,
-  splash: {
-    image: "./assets/img/logos/splash-icon.png",
-    resizeMode: "contain",
-    backgroundColor: "#ffffff",
-  },
   ios: {
     supportsTablet: true,
     bundleIdentifier,
@@ -80,6 +75,15 @@ export default (): ExpoConfig => ({
     ],
     "expo-video",
     "expo-router",
+    [
+      "expo-splash-screen",
+      {
+        image: "./assets/img/logos/SA_dark.png",
+        imageWidth: 150,
+        resizeMode: "contain",
+        backgroundColor: "#ffffff",
+      },
+    ],
     "expo-localization",
     "expo-dev-client",
     "expo-system-ui",

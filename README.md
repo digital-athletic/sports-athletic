@@ -144,5 +144,3 @@ personality rights for every bundled asset.
 
 Copyright holders, attributions, and further notices are listed in
 [NOTICE](NOTICE).
-
-Commits authored by @JannikStreek (jannik.streek@gmail.com) are made on behalf of B310 Digital GmbH.

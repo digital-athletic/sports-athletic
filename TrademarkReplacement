@@ -1,0 +1,40 @@
+# TrademarkReplacement
+
+## Non-open-source trademark assets
+
+The project name, the project logo, and all trademark-related branding assets contained in this repository are **not** covered by the open source license applicable to the source code.
+
+This includes, in particular, the following files (where present):
+
+* `athlete-mobile/assets/img/logos/SA_dark.png`
+* `athlete-mobile/assets/img/logos/app-icon/app-icon.png`
+* `athlete-mobile/assets/img/logos/app-icon/dev-icon.png`
+* `athlete-mobile/assets/img/logos/app-icon/preview-icon.png`
+
+**Note:** The folder `athlete-mobile/assets/img/logos/` is where the trademark-related branding assets are usually kept; as a rule, all files in it are logo files and are protected by this notice. However, this notice is not limited to that folder, it applies to the trademark assets themselves, wherever they are located in the repository (for example if the folder is moved or a logo file is added by accident elsewhere).
+
+The above list is intended to identify the trademark assets currently included in this repository. If additional copies, alternative formats, or derived versions of the project logo or other trademark assets are inadvertently included elsewhere in the repository, they are subject to this notice as well.
+
+Trademark assets may be reproduced, distributed and made publicly available only as an integral part of an unmodified copy of this software and its repository.
+
+## Replacement
+
+Trademark assets are not required for the technical functionality of the software and may be replaced without affecting its core functionality.
+
+To replace them:
+
+1. Replace the logo, icon, favicon, and other trademark-related branding assets with your own.
+2. Update any corresponding asset references where necessary.
+3. Rebuild the application.
+
+Replacement names, logos and branding must not infringe the rights of third parties or create confusion with the original project.
+
+## Trademark Notice
+
+"SPORTS ATHLETIC" and the combined Sports Athletic logo are the subject of pending European Union Trade Mark application No. 019395408, filed by Ingemar Pohl UG (haftungsbeschränkt) on 15 July 2026.
+
+The open source software licenses and media licenses applicable to this repository do not grant any rights to use the name or the logos as a trademark, product identifier, application name, or company identifier.
+
+Forks and derivative products must use a different product name and their own branding and must not create the impression of being an official version of Sports Athletic.
+
+Factual statements of origin, such as "Based on the open source project Sports Athletic", remain permitted.

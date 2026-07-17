@@ -8,9 +8,9 @@ For information regarding the project logo, please see `LOGO_NOTICE`.
 
 This file documents copyright (Author / License) and personality
 rights (Depicted Person / Consent) for the media assets originating
-from this project, mapped by file/asset name. This bundled notice is
-the intended form of attribution for these assets; attribution on the
-individual asset is not required.
+from this project, mapped by file/asset name. For assets under licenses that require attribution (e.g. CC BY-SA 4.0),
+this bundled notice is the intended form of attribution; attribution on
+the individual asset is not required.
 
 Third-party assets bundled via dependencies are not covered here. They remain under their own
 respective licenses; see e.g. fontawesome and ionicons / its license for the

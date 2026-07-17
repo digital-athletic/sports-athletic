@@ -2,13 +2,18 @@
 
 ## Note: Logo
 
-For information regarding the project logo, please see `LOGO-NOTICE.md`.
+For information regarding the project logo, please see `LOGO-NOTICE`.
 
-## Assets
+## Attributions
 
-This file documents copyright (Author / License) and personality rights (Depicted Person / Consent) for all media assets bundled in this repository.
+This file documents copyright (Author / License) and personality
+rights (Depicted Person / Consent) for all media assets in this
+repository, mapped by file/asset name. This bundled notice is the
+intended form of attribution for this project; attribution on the
+individual asset is not required.
 
-The license of each asset is stated in the table below.
+Licenses used in this project:
+- CC BY-SA 4.0 — https://creativecommons.org/licenses/by-sa/4.0/
 
 | Name | Path | Description | Author | License | Depicted Person | Consent |
 | --- | --- | --- | --- | --- | --- | --- |

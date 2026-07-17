@@ -2,13 +2,22 @@
 
 ## Note: Logo
 
-For information regarding the project logo, please see `LOGO-NOTICE.md`.
+For information regarding the project logo, please see `LOGO_NOTICE`.
 
-## Assets
+## Attributions
 
-This file documents copyright (Author / License) and personality rights (Depicted Person / Consent) for all media assets bundled in this repository.
+This file documents copyright (Author / License) and personality
+rights (Depicted Person / Consent) for the media assets originating
+from this project, mapped by file/asset name. This bundled notice is
+the intended form of attribution for these assets; attribution on the
+individual asset is not required.
 
-The license of each asset is stated in the table below.
+Third-party assets bundled via dependencies are not covered here. They remain under their own
+respective licenses; see e.g. fontawesome and ionicons / its license for the
+applicable terms. These are covered in the THIRD-PARTY-NOTICES files.
+
+Licenses used in this project:
+- CC BY-SA 4.0 — https://creativecommons.org/licenses/by-sa/4.0/
 
 | Name | Path | Description | Author | License | Depicted Person | Consent |
 | --- | --- | --- | --- | --- | --- | --- |

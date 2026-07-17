@@ -16,7 +16,7 @@ Third-party assets bundled via dependencies are not covered here. They remain un
 respective licenses; see e.g. fontawesome and ionicons / its license for the
 applicable terms. These are covered in the THIRD-PARTY-NOTICES files.
 
-Licenses used in this project:
+For reference, license URLs used in this project (where applicable):
 - CC BY-SA 4.0 — https://creativecommons.org/licenses/by-sa/4.0/
 
 | Name | Path | Description | Author | License | Depicted Person | Consent |

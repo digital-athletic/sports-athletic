@@ -14,7 +14,7 @@ individual asset is not required.
 
 Third-party assets bundled via dependencies are not covered here. They remain under their own
 respective licenses; see e.g. fontawesome and ionicons / its license for the
-applicable terms.
+applicable terms. These are covered in the THIRD-PARTY-NOTICES files.
 
 Licenses used in this project:
 - CC BY-SA 4.0 — https://creativecommons.org/licenses/by-sa/4.0/

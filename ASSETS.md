@@ -2,7 +2,7 @@
 
 ## Note: Logo
 
-For information regarding the project logo, please see `LOGO-NOTICE`.
+For information regarding the project logo, please see `LOGO_NOTICE`.
 
 ## Attributions
 

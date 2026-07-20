@@ -1,10 +1,29 @@
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Image,
+  type ImageSourcePropType,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
+
+const SPORT_IMAGES: Partial<
+  Record<keyof typeof WorkoutConstants.SPORTS, ImageSourcePropType>
+> = {
+  HANDBALL_SPORT: require("../../../assets/img/sportSelection/Handball.png"),
+  FOOTBALL_SPORT: require("../../../assets/img/sportSelection/soccer.jpg"),
+  VOLLEYBALL_SPORT: require("../../../assets/img/sportSelection/volleyball.jpg"),
+  BASKETBALL_SPORT: require("../../../assets/img/sportSelection/basketball.jpg"),
+  ICE_HOCKEY_SPORT: require("../../../assets/img/sportSelection/icehockey.jpg"),
+  HOCKEY_SPORT: require("../../../assets/img/sportSelection/Hockey.jpg"),
+  AMERICAN_FOOTBALL_SPORT: require("../../../assets/img/sportSelection/american-football.jpg"),
+  RUGBY_SPORT: require("../../../assets/img/sportSelection/Rugby.jpg"),
+  OTHER_SPORT: require("../../../assets/img/sportSelection/generel-athletic.jpg"),
+};
 
 interface SportListItemProps {
   sportKey: keyof typeof WorkoutConstants.SPORTS;
@@ -19,6 +38,7 @@ export const SportListItem: FC<SportListItemProps> = ({
 }) => {
   const { t } = useTranslation();
   const sportName = t(`sports.${sportKey}`);
+  const sportImage = SPORT_IMAGES[sportKey];
 
   return (
     <TouchableOpacity
@@ -27,12 +47,21 @@ export const SportListItem: FC<SportListItemProps> = ({
       accessibilityLabel={sportName}
       accessibilityRole="button"
     >
-      <Box
-        style={styles.listImage}
-        backgroundColor="white"
-        borderWidth={1}
-        borderColor="lightGrey2"
-      />
+      {sportImage ? (
+        <Image
+          source={sportImage}
+          style={styles.listImage}
+          resizeMode="cover"
+          accessibilityIgnoresInvertColors
+        />
+      ) : (
+        <Box
+          style={styles.listImage}
+          backgroundColor="white"
+          borderWidth={1}
+          borderColor="lightGrey2"
+        />
+      )}
       <Box style={styles.listContent}>
         <Text variant="cardTitle" color="darkGrey3">
           {t(`sports.${sportKey}`)}

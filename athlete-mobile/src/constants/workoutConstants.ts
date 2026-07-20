@@ -309,6 +309,15 @@ export const isPlaceType = (value: unknown): value is PlaceType =>
 
 export type FocusType = "PHASE" | "CARDIO" | "STABILITY" | "COMBINED";
 
+const DAILY_TRAINING_FOCUS_IMAGES: Partial<
+  Record<FocusType, ImageSourcePropType>
+> = {
+  PHASE: require("../../assets/img/dailyTrainingFocuses/strength.jpg"),
+  CARDIO: require("../../assets/img/dailyTrainingFocuses/endurance.jpg"),
+  STABILITY: require("../../assets/img/dailyTrainingFocuses/stability.jpg"),
+  COMBINED: require("../../assets/img/dailyTrainingFocuses/strength-endurance.jpg"),
+};
+
 export type TileData = {
   picture?: ImageSourcePropType;
   title: I18nKey;
@@ -354,6 +363,7 @@ export const QUICKSTART_TILES: TileData[] = [
     navigate: { key: "/training/muscle-soreness", params: { type: "MOB" } },
   },
   {
+    picture: require("../../assets/img/shortTrainings/foam-roller.jpg"),
     title: "training.quickstart.QUICKSTART_FOAM_ROLLER",
     description: { text: "training.quickstart.QUICKSTART_FOAM_ROLLER_DESC" },
     navigate: { key: "/training/muscle-soreness", params: { type: "BR" } },
@@ -1116,6 +1126,7 @@ export const WorkoutConstants = {
   AGE_GROUPS,
   AGE_GROUPS_MAX_AGE,
   BIG_MUSCLES,
+  DAILY_TRAINING_FOCUS_IMAGES,
   DEACTIVATED_EQUIPMENT,
   DEFAULT_DURATION_OPTIONS,
   DURATION_OPTIONS,

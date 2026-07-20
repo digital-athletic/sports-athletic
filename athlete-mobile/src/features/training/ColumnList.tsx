@@ -7,7 +7,12 @@ import { useResponsiveProp } from "@shopify/restyle";
 import { type Href, useRouter } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, ListRenderItem, TouchableOpacity } from "react-native";
+import {
+  FlatList,
+  Image,
+  ListRenderItem,
+  TouchableOpacity,
+} from "react-native";
 
 export type ColumnListProps = {
   listItems: TileData[];
@@ -57,13 +62,22 @@ export const ColumnList: FC<ColumnListProps> = ({ listItems }) => {
           flexDirection="row"
           alignItems="center"
         >
-          <Box
-            width={imageSize}
-            height={imageSize}
-            backgroundColor="white"
-            borderWidth={1}
-            borderColor="lightGrey2"
-          />
+          {item.picture ? (
+            <Image
+              source={item.picture}
+              style={{ width: imageSize, height: imageSize }}
+              resizeMode="cover"
+              accessibilityIgnoresInvertColors
+            />
+          ) : (
+            <Box
+              width={imageSize}
+              height={imageSize}
+              backgroundColor="white"
+              borderWidth={1}
+              borderColor="lightGrey2"
+            />
+          )}
           <Box
             paddingHorizontal="m"
             paddingVertical="m"

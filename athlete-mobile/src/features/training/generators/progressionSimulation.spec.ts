@@ -1,10 +1,10 @@
 /**
  * Example test for the persona-driven progression simulator (p1 × MAX_KRAFT).
- * It proves the framework runs end-to-end against the real generator and
- * asserts the intra-session invariants; the golden assertions stay skipped
- * until the tables are committed. INV1 is intentionally red: it encodes Bug 1 from
- * docs/bugs-progression-algorithm.md (reps rising with weight) and flips to a
- * regression guard once the bug is fixed.
+ * It proves the framework runs end-to-end against the real generator, compares
+ * the output against the committed golden tables, and asserts the intra-session
+ * invariants. INV1 is intentionally red: it encodes a known defect (working set
+ * reps rise together with weight instead of falling) and flips to a regression
+ * guard once that defect is fixed.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -100,9 +100,7 @@ describe("progressionSimulation: p1 × MAX_KRAFT", () => {
     for (const { name, feedback } of RUNS) results.set(name, run(feedback));
   });
 
-  // Skipped until the goldens are committed in the follow-up PR; generate them
-  // with UPDATE_GOLDEN=1 (see __golden__/README.md) and drop the `.skip`.
-  it.skip.each(RUNS)(
+  it.each(RUNS)(
     "$name: matches the committed progression golden",
     ({ name }) => {
       assertGolden(
@@ -112,7 +110,7 @@ describe("progressionSimulation: p1 × MAX_KRAFT", () => {
     },
   );
 
-  it.skip.each(RUNS)("$name: matches the committed sets golden", ({ name }) => {
+  it.each(RUNS)("$name: matches the committed sets golden", ({ name }) => {
     assertGolden(
       `p1-max-strength.${name}.sets.md`,
       serializeSets(results.get(name)!),
@@ -146,11 +144,11 @@ describe("progressionSimulation: p1 × MAX_KRAFT", () => {
     },
   );
 
-  // INV1 is expected to fail against current code (Bug 1: BEGINNER reps fall
-  // through to a weight-based fallback, so reps rise as weight rises). `it.failing`
-  // keeps the suite green while the bug stands and turns red the moment it is
-  // fixed, prompting removal of `.failing`. The committed golden table shows the
-  // offending per set reps. See docs/bugs-progression-algorithm.md.
+  // INV1 is expected to fail against current code: BEGINNER reps fall through
+  // to a weight-based fallback, so reps rise as weight rises. `it.failing`
+  // keeps the suite green while the defect stands and turns red the moment it
+  // is fixed, prompting removal of `.failing`. The committed golden table shows
+  // the offending per set reps.
   it.failing("INV1 working set reps never increase across a session", () => {
     const reps = workingSets(results.get("tooEasy")![0]).map((s) => s.reps);
     for (let i = 1; i < reps.length; i++) {

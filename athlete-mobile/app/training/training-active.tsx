@@ -35,7 +35,7 @@ import {
   shouldProcessExerciseValues,
 } from "@/features/training/utils/exerciseDataUtils";
 import { heartRateBySkillAndBirthday } from "@/features/training/utils/heartRateUtils";
-import { getLastMaxFRep } from "@/features/training/utils/maxFRepetitionsUtils";
+import { calculateMaxStrengthAdjustment } from "@/features/training/utils/maxStrengthAdjustment";
 import {
   getSkillTree,
   isPreventionSkill,
@@ -46,8 +46,6 @@ import {
   calculateAdjustedMaxValues,
   deriveWeightForExercise,
   getMaxValueForExercise,
-  getRoundedResultForValueAndStep,
-  isInclineBenchPress,
   maxWeightByEpley,
 } from "@/features/training/utils/workoutUtils";
 import { isTrainingLevel } from "@/schemas/common.schema";
@@ -485,193 +483,49 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
             adjustment = exercise?.feedback.difficulty;
           }
 
-          // get maxFRepetitions and maxFWeightPercentage done in this training
-          let maxValue = currentExerciseData
-            ? getMaxValueForExercise(currentExerciseData, workoutData.maxValues)
-            : null;
-          // get weightPercentage done in this training
-          let weightPercentage =
-            typeof maxValue === "number"
-              ? getRoundedResultForValueAndStep((weight / maxValue) * 100, 2.5)
-              : null;
-          const maxFRepetitionsNew = exercise?.maxFRepetitions ?? [];
-          const lastMaxFRep = getLastMaxFRep(exercise?.maxFRepetitions);
-
-          // control adjustments
-          let increaseWeight = false;
-          let decreaseWeight = false;
-          let levelUp = false;
-          let levelDown = false;
           const genderTag =
             ageGroup === WorkoutConstants.AGE_GROUPS.CHILD
               ? "k"
               : personalData.gender === "MALE"
                 ? "m"
                 : "w";
-          const maxFRepsHard =
-            ageGroup !== "CHILD" && levelTag
-              ? WorkoutConstants.MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT[
-                  ageGroup
-                ]?.[levelTag]?.HARD
-              : null;
 
-          let maximumWeightPercentage =
-            ageGroup !== "CHILD" && maxFRepsHard
-              ? Math.max(
-                  Object.keys(maxFRepsHard)
-                    .map(parseInt)
-                    .filter((v) => !isNaN(v))
-                    .sort((a, b) => b - a)[0],
-                )
-              : null;
-          // set exercise targetValue if entered from webTool
-          const targetValue = currentExerciseData?.values?.weight?.targetValue;
-          if (targetValue) {
-            if (userLevel && targetValue[genderTag]?.[userLevel]) {
-              maximumWeightPercentage = Number(
-                targetValue[genderTag][userLevel],
-              );
-            } else if (userLevel && targetValue.default?.[userLevel]) {
-              maximumWeightPercentage = Number(targetValue.default[userLevel]);
-            }
-          }
-          let minimumWeightPercentage = levelTag
-            ? WorkoutConstants
-                .MAX_KRAFT_MINIMAL_WEIGHT_PERCENTAGE_PER_USER_LEVEL[levelTag]
-            : null;
-          let equipment = getTagValues(
-            currentExerciseData?.tags ?? [],
-            TagGroups.EQUIPMENT,
-          );
-          let exerciseDirections = getTagValues(
-            currentExerciseData?.tags ?? [],
-            TagGroups.EXERCISE_DIRECTION,
-          );
-          if (
-            isInclineBenchPress(equipment, exerciseDirections) &&
-            typeof minimumWeightPercentage === "number"
-          ) {
-            // reduce minimumWeightPercentage for inclined press
-            minimumWeightPercentage =
-              minimumWeightPercentage -
-              WorkoutConstants.MAX_KRAFT_INCLINE_BENCH_WEIGHT_DIFFERENCE;
-          }
-          // set exercise startValue if entered from webTool
-          if (currentExerciseData?.values?.weight?.startValue) {
-            if (
-              userLevel &&
-              currentExerciseData?.values.weight?.startValue?.[genderTag]?.[
-                userLevel
-              ]
-            ) {
-              minimumWeightPercentage = Number(
-                currentExerciseData?.values.weight.startValue[genderTag][
-                  userLevel
-                ],
-              );
-            } else if (
-              userLevel &&
-              currentExerciseData?.values.weight?.startValue?.default?.[
-                userLevel
-              ]
-            ) {
-              minimumWeightPercentage = Number(
-                currentExerciseData?.values.weight.startValue.default[
-                  userLevel
-                ],
-              );
-            }
+          const {
+            nextWeightPercentage,
+            maxFRepetitions: maxFRepetitionsNew,
+            levelUp,
+            levelDown,
+            weightAdjusted,
+            feedbackOverride,
+          } = calculateMaxStrengthAdjustment({
+            weight,
+            adjustment,
+            exerciseData: currentExerciseData,
+            userExerciseData: exercise,
+            maxValues: workoutData.maxValues,
+            ageGroup,
+            genderTag,
+            levelTag,
+            userLevel,
+          });
+
+          // persist intermediate feedback override before the main update
+          if (feedbackOverride) {
+            updateExercise(
+              id,
+              {
+                exerciseId: id,
+                skill,
+                feedback: feedbackOverride,
+              },
+              activeTraining?.id,
+            );
           }
           if (
-            (typeof weightPercentage === "number" &&
-              typeof maximumWeightPercentage === "number" &&
-              weightPercentage >= maximumWeightPercentage &&
-              lastMaxFRep?.level === "HARD" &&
-              adjustment !== "TOO_HARD") ||
-            (lastMaxFRep?.level === "MEDIUM" && adjustment === "TOO_EASY")
+            !weightAdjusted &&
+            typeof branchId === "string" &&
+            (levelUp || levelDown)
           ) {
-            // No adjustment if max lvl and max weight is already reached
-            updateExercise(
-              id,
-              {
-                exerciseId: id,
-                skill,
-                feedback: { difficulty: null },
-              },
-              activeTraining?.id,
-            );
-            levelUp = true;
-          } else if (
-            typeof weightPercentage === "number" &&
-            typeof minimumWeightPercentage === "number" &&
-            weightPercentage <= minimumWeightPercentage &&
-            adjustment === "TOO_HARD"
-          ) {
-            // No adjustment if min weight is already too hard -> levelDown
-            updateExercise(
-              id,
-              {
-                exerciseId: id,
-                skill,
-                feedback: { difficulty: null },
-              },
-              activeTraining?.id,
-            );
-            levelDown = true;
-          } else if (
-            typeof weightPercentage === "number" &&
-            typeof maximumWeightPercentage === "number" &&
-            weightPercentage >= maximumWeightPercentage &&
-            lastMaxFRep?.level === "MEDIUM" &&
-            adjustment === "TOO_EASY"
-          ) {
-            // No TOO_EASY adjustment if max lvl and max weight will be reached
-            updateExercise(
-              id,
-              {
-                exerciseId: id,
-                skill,
-                feedback: { difficulty: "SUCCEEDED" },
-              },
-              activeTraining?.id,
-            );
-          } else {
-            // adjust weight if needed
-            if (
-              (lastMaxFRep?.level === "HARD" && adjustment !== "TOO_HARD") ||
-              (lastMaxFRep?.level === "MEDIUM" && adjustment === "TOO_EASY")
-            ) {
-              // adjust weight up if jumping over HARD lvl
-              increaseWeight = true;
-            } else if (adjustment === "TOO_HARD") {
-              // adjust only weight down if is TOO_HARD
-              decreaseWeight = true;
-            }
-          }
-          let nextWeightPercentage = weightPercentage ?? undefined;
-          if (increaseWeight || decreaseWeight) {
-            if (increaseWeight && typeof nextWeightPercentage === "number") {
-              nextWeightPercentage +=
-                WorkoutConstants.MAX_KRAFT_WEIGHT_ADJUSTMENT["SUCCEEDED"];
-            } else if (typeof nextWeightPercentage === "number") {
-              nextWeightPercentage -=
-                WorkoutConstants.MAX_KRAFT_WEIGHT_ADJUSTMENT["TOO_HARD"];
-            }
-            // minimum weightPercentage for user
-            if (
-              typeof nextWeightPercentage === "number" &&
-              typeof minimumWeightPercentage === "number" &&
-              nextWeightPercentage < minimumWeightPercentage
-            )
-              nextWeightPercentage = minimumWeightPercentage;
-            // prevent bigger than maximum
-            if (
-              typeof nextWeightPercentage === "number" &&
-              typeof maximumWeightPercentage === "number" &&
-              nextWeightPercentage > maximumWeightPercentage
-            )
-              nextWeightPercentage = maximumWeightPercentage;
-          } else if (typeof branchId === "string" && (levelUp || levelDown)) {
             updateBranchLevel(levelUp, branchId, id, skill, ageGroup);
           }
 

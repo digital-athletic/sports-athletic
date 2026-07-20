@@ -160,11 +160,7 @@ export function simulateProgression(
     });
 
     const levelBefore = workingReps[0]?.level ?? "EASY";
-    const feedbackGiven = opts.feedback({
-      session,
-      exerciseId: exercise.id,
-      focus,
-    });
+    const feedbackGiven = opts.feedback({ session });
 
     const recordedReps: MaxForceRepetitionsDataType[] = workingReps.map(
       (entry) => {

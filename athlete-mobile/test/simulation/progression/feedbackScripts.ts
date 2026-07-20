@@ -4,13 +4,10 @@
  * drives the inter-session weight/level adjustment.
  */
 import type { ExerciseDifficultyType } from "@/constants/workoutConstants";
-import type { SkillCode } from "@/schemas/generator.schema";
 
 export interface FeedbackContext {
   /** 1-based session index. */
   session: number;
-  exerciseId: string;
-  focus: SkillCode;
 }
 
 export type FeedbackScript = (ctx: FeedbackContext) => ExerciseDifficultyType;

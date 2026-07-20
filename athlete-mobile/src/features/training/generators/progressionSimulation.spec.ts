@@ -1,8 +1,8 @@
 /**
  * Example test for the persona-driven progression simulator (p1 × MAX_KRAFT).
- * It proves the framework runs end-to-end against the real generator, emits a
- * committed golden table for human audit, and asserts the intra-session
- * invariants. INV1 is intentionally red: it encodes Bug 1 from
+ * It proves the framework runs end-to-end against the real generator and
+ * asserts the intra-session invariants; the golden assertions stay skipped
+ * until the tables are committed. INV1 is intentionally red: it encodes Bug 1 from
  * docs/bugs-progression-algorithm.md (reps rising with weight) and flips to a
  * regression guard once the bug is fixed.
  */

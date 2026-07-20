@@ -8,8 +8,7 @@
  * `getMaxTrainingWeights` + `getMaxTrainingReps` and closes the inter-session
  * loop through `calculateMaxStrengthAdjustment`. Warm-up loads and support
  * exercises (assembled in `getSetListFromExercisePairs`) are out of scope; the
- * progression under test is the working sets. See
- * `.omc/specs/deep-dive-the-algorithm-for-generating-exercises.md`.
+ * progression under test is the working sets.
  */
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { ExerciseDifficultyType } from "@/constants/workoutConstants";

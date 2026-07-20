@@ -4,8 +4,6 @@ Output of the progression simulator, one pair of files per run
 (`<persona>-<focus>.<feedback>.{progression,sets}.md`, with the focus as a
 readable slug, e.g. `max-strength` for `MAX_KRAFT`), compared by string
 equality in `src/features/training/generators/progressionSimulation.spec.ts`.
-The concrete golden files land in a follow-up PR; until then the golden
-assertions in the spec are skipped.
 
 The simulator only *records* generator output. The level state machine those
 records depend on is pinned independently in
@@ -52,7 +50,7 @@ differ only by the feedback reported each session:
 | `p1-max-strength.succeeded.*` | always "passt" | level EASY→MEDIUM→HARD→EASY; one +2.5% bump in 4 sessions |
 | `p1-max-strength.tooHard.*` | always "zu schwer" | level stays EASY; weight drops to the 70% floor |
 
-These are bug baselines, not correct ones: they capture Bug 1 (reps rise with
-weight) and Bug 2 (weight barely responds to "zu leicht") from
-[`docs/bugs-progression-algorithm.md`](../../../../docs/bugs-progression-algorithm.md).
-Regenerate and drop the matching `it.failing` when a bug is fixed.
+These are baselines of the current behavior, not correct ones: they show
+working set reps rising together with weight instead of falling, and the
+weight percentage barely responding to "zu leicht" feedback. Regenerate and
+drop the matching `it.failing` in the spec once either defect is fixed.

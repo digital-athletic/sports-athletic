@@ -9,11 +9,10 @@ import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { MaxForceRepetitionsDataType } from "@/schemas/sync.schema";
 
 // Locks the current behavior of the logic extracted verbatim from
-// training-active.tsx. Expectations encode known quirks from
-// docs/bugs-progression-algorithm.md: for ADULT/ADVANCED the max weight
-// percentage collapses to 65% (a `.map(parseInt)` radix bug) while the min is
-// 70%, so a weight adjustment always lands on the 65% cap. Update these
-// deliberately once those bugs are fixed.
+// training-active.tsx. Expectations encode a known quirk: for ADULT/ADVANCED
+// the max weight percentage collapses to 65% (a `.map(parseInt)` radix bug)
+// while the min is 70%, so a weight adjustment always lands on the 65% cap.
+// Update these deliberately once those bugs are fixed.
 
 // A LOWER_BODY barbell exercise resolves to maxValues.lowerBody.barbell.
 const lowerBodyExercise = { tags: ["REGION_LOWER_BODY"] } as ExerciseType;

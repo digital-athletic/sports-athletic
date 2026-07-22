@@ -147,6 +147,7 @@ export default function SelectTraining() {
         const trainingFocus = sectionTraining.focus;
 
         const tile: TileData = {
+          picture: WorkoutConstants.DAILY_TRAINING_FOCUS_IMAGES[trainingFocus],
           title:
             WorkoutConstants.WEEKDAY_TRAINING_KEYS[userTrainingDay.weekday],
           description: {

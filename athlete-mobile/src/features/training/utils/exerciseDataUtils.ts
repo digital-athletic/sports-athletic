@@ -1,5 +1,6 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
+import type { ActiveTrainingType } from "@/features/training/models/ActiveTraining";
 import type {
   GenderTag,
   IntensityData,
@@ -66,6 +67,28 @@ export function shouldProcessExerciseValues(
   )
     return false;
   return true;
+}
+
+/**
+ * Determines whether an exercise should show "too easy"/"too hard" feedback
+ * controls: PLAN workouts key off the exercise's own skill, other workout
+ * types key off the workout type itself.
+ */
+export function isFeedbackEligibleSkill(
+  activeTraining: ActiveTrainingType | null,
+  skill: SkillCode,
+): boolean {
+  if (activeTraining?.type === "PLAN") {
+    return WorkoutConstants.NO_INCREASE_SKILL_TYPE.indexOf(skill) === -1;
+  }
+  if (activeTraining?.type) {
+    return (
+      WorkoutConstants.NO_INCREASE_WORKOUT_PLAN_TYPE.indexOf(
+        activeTraining.type,
+      ) === -1
+    );
+  }
+  return false;
 }
 
 /**

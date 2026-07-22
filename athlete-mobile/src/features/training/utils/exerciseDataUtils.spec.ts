@@ -1,3 +1,4 @@
+import type { ActiveTrainingType } from "@/features/training/models/ActiveTraining";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { IntensityData } from "@/features/training/models/Intensity";
 import type { SkillCode } from "@/schemas/generator.schema";
@@ -9,6 +10,7 @@ import {
   findMainCardioExercise,
   getResetDuration,
   getResetRepetition,
+  isFeedbackEligibleSkill,
   shouldProcessExerciseValues,
   shouldSkipExerciseSave,
 } from "./exerciseDataUtils";
@@ -120,6 +122,41 @@ describe("exerciseDataUtils", () => {
 
     it("returns true for valid type and skill", () => {
       expect(shouldProcessExerciseValues("PLAN", "SWR1")).toBe(true);
+    });
+  });
+
+  describe("isFeedbackEligibleSkill", () => {
+    const withType = (type: string): ActiveTrainingType => ({
+      id: "1",
+      type,
+    });
+
+    it("returns false when activeTraining is null", () => {
+      expect(isFeedbackEligibleSkill(null, "SWR1")).toBe(false);
+    });
+
+    it("returns false for PLAN training with a NO_INCREASE skill", () => {
+      // WU is in NO_INCREASE_SKILL_TYPE list
+      expect(isFeedbackEligibleSkill(withType("PLAN"), "WU" as SkillCode)).toBe(
+        false,
+      );
+    });
+
+    it("returns true for PLAN training with an eligible skill", () => {
+      expect(isFeedbackEligibleSkill(withType("PLAN"), "SWR1")).toBe(true);
+    });
+
+    it("returns false for a NO_INCREASE workout type", () => {
+      // TEST_WORKOUT is in NO_INCREASE_WORKOUT_PLAN_TYPE list
+      expect(isFeedbackEligibleSkill(withType("TEST_WORKOUT"), "SWR1")).toBe(
+        false,
+      );
+    });
+
+    it("returns true for a non-PLAN, non-NO_INCREASE workout type", () => {
+      expect(
+        isFeedbackEligibleSkill(withType("QUICK"), "WU" as SkillCode),
+      ).toBe(true);
     });
   });
 

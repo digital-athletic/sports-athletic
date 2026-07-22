@@ -1,67 +1,32 @@
 import { Ionicon } from "@/common/Ionicon";
 import { TagGroups } from "@/constants/tagGroups";
-import {
-  ExerciseDifficultyType,
-  isLevelTag,
-  isSkillTypes,
-  WorkoutConstants,
-} from "@/constants/workoutConstants";
+import { isSkillTypes, WorkoutConstants } from "@/constants/workoutConstants";
 import { getExerciseById } from "@/data/exerciseRegistry";
-import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import {
   FOOTER_HEIGHT,
   TrainingFooter,
 } from "@/features/training/TrainingFooter";
 import { TrainingNavigation } from "@/features/training/TrainingNavigation";
-import { getIntensityBySkill } from "@/features/training/generators/TrainingGenerator";
+import { useExerciseCompletion } from "@/features/training/hooks/useExerciseCompletion";
+import { useFinishTraining } from "@/features/training/hooks/useFinishTraining";
 import { isPauseExercise as checkIsPauseExercise } from "@/features/training/models/IdTypes";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
-import type { SkillCode } from "@/schemas/generator.schema";
 import { useTrainingStore } from "@/features/training/trainingStore";
-import { ageGroupFor } from "@/features/training/utils/ageUtils";
-import {
-  applyBranchLevelUpdate,
-  type BranchLevelContext,
-  calculateBranchLevelUpdate,
-  type TrainingPlanContext,
-} from "@/features/training/utils/branchLevelUtils";
-import {
-  calculateNewWeight,
-  calculateStandardExerciseAdjustment,
-  type ExerciseAdjustmentContext,
-  findMainCardioExercise,
-  getResetDuration,
-  getResetRepetition,
-  shouldProcessExerciseValues,
-} from "@/features/training/utils/exerciseDataUtils";
+import { isFeedbackEligibleSkill } from "@/features/training/utils/exerciseDataUtils";
 import { heartRateBySkillAndBirthday } from "@/features/training/utils/heartRateUtils";
-import { calculateMaxStrengthAdjustment } from "@/features/training/utils/maxStrengthAdjustment";
 import {
-  getSkillTree,
   isPreventionSkill,
   mapSkillCodeToFocusArea,
 } from "@/features/training/utils/skillTreeUtils";
-import {
-  applyMaxValueToDirections,
-  calculateAdjustedMaxValues,
-  deriveWeightForExercise,
-  getMaxValueForExercise,
-  maxWeightByEpley,
-} from "@/features/training/utils/workoutUtils";
-import { isTrainingLevel } from "@/schemas/common.schema";
-import { Logger } from "@/services/Logger";
-import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
+import { logTrainingEvent } from "@/features/training/utils/trainingEventUtils";
+import { deriveWeightForExercise } from "@/features/training/utils/workoutUtils";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { useTheme } from "@/theme/theme";
-import {
-  getTagValues,
-  getUserTagValue,
-  getUserTagValues,
-} from "@/utils/tagUtils";
+import { getTagValues, getUserTagValues } from "@/utils/tagUtils";
 import { VideoPlayer } from "@/video/VideoPlayer";
 import { useKeepAwake } from "expo-keep-awake";
 import { Stack, useFocusEffect, useRouter } from "expo-router";
@@ -107,30 +72,22 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
 
   // Training store state
   const {
-    equipment,
     exerciseList,
     activeTraining,
     activeExerciseIndex,
     setActiveExerciseIndex,
-    tempMaxValues,
-    setTempMaxValues,
     addPauseTime,
     addSkillTime,
-    setTrainingEndTime,
-    setExerciseSkipped,
-    setExerciseFeedback,
   } = useTrainingStore();
-  const skillTrees = getAllSkillTrees();
-  const {
-    branchData,
-    setBranchLevel,
-    updateExercise,
-    addTestResult,
-    updateUserExerciseTotals,
-  } = useExerciseProgressStore();
   const { personalData } = useUserProfileStore();
-  const { workoutData, replaceBranchInTrainingPlan, saveMaxValues } =
-    useUserWorkoutStore();
+  const { workoutData } = useUserWorkoutStore();
+  const {
+    saveExerciseAndBranchData,
+    saveRepsInput,
+    handleFeedback: completeFeedback,
+    handleExerciseSkipped: markExerciseSkipped,
+  } = useExerciseCompletion();
+  const { finishTraining } = useFinishTraining();
 
   // Local state
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -192,598 +149,6 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     ? getExerciseById(nextExercise.exerciseId)
     : undefined;
 
-  const logTrainingEvent = useCallback(
-    (eventName: string, data?: Record<string, unknown>) => {
-      if (!activeTraining) return;
-
-      const eventData = {
-        type: activeTraining.type,
-        ...data,
-      };
-
-      if (isPreventionSkill(activeTraining.type)) {
-        Logger.logEvent(`prevention_${eventName}`, eventData);
-      }
-      Logger.logEvent(eventName, eventData);
-    },
-    [activeTraining],
-  );
-
-  // strengthTestMaxValues is passed directly for strength tests to avoid React state batching issues.
-  // For non-test workouts (PREV, FOCUS, PLAN), strengthTestMaxValues is undefined and the
-  // TEST_WORKOUT check below ensures no max values are saved.
-  const saveAndNavigateToSuccess = useCallback(
-    (
-      aborted: boolean = false,
-      strengthTestMaxValues?: MaxValuesType | null,
-    ) => {
-      try {
-        // Record end time
-        setTrainingEndTime(Date.now());
-
-        // Log completion/abortion
-        if (aborted) {
-          logTrainingEvent("training_aborted");
-        } else {
-          logTrainingEvent("training_finished");
-        }
-
-        // Save test results if this is a test workout and not aborted
-        if (
-          activeTraining?.type === "TEST_WORKOUT" &&
-          !aborted &&
-          strengthTestMaxValues
-        ) {
-          Logger.logEvent("saving_max_values", {
-            maxValues: strengthTestMaxValues,
-          });
-          saveMaxValues(strengthTestMaxValues);
-          addTestResult(strengthTestMaxValues);
-        }
-
-        // Clear temporary test results (committed or discarded)
-        setTempMaxValues(null);
-
-        // Navigate to success screen
-        router.push({
-          pathname: "/training/training-success",
-          params: { aborted: aborted.toString() },
-        });
-      } catch (error) {
-        Logger.logError(error as Error);
-        Alert.alert(t("common.error"), t("common.error"));
-      }
-    },
-    [
-      activeTraining?.type,
-      addTestResult,
-      saveMaxValues,
-      logTrainingEvent,
-      router,
-      setTempMaxValues,
-      setTrainingEndTime,
-      t,
-    ],
-  );
-
-  const saveBranchData = (
-    skill: SkillCode,
-    branchId: string,
-    exerciseId: string,
-  ) => {
-    const userExerciseBranch = branchData[branchId];
-    if (branchId !== "-1" && !userExerciseBranch) {
-      // first time an exercise of this branch was completed => save level
-      const newSkillTree = Object.assign(
-        getSkillTree(skillTrees, skill, [], true),
-        getSkillTree(skillTrees, skill, [], false),
-      );
-      const newBranch = newSkillTree[branchId];
-      if (newBranch) {
-        const levels = newBranch.levels;
-
-        let userLevelString: string = WorkoutConstants.LEVELS.ADVANCED;
-        if (workoutData) {
-          userLevelString =
-            getUserTagValue(workoutData.tags, TagGroups.LEVEL) ??
-            WorkoutConstants.LEVELS.ADVANCED;
-        }
-        const userLevel =
-          userLevelString === WorkoutConstants.LEVELS.BEGINNER
-            ? 1
-            : userLevelString === WorkoutConstants.LEVELS.ADVANCED
-              ? 2
-              : 3;
-        let newLevel = -1;
-        if (levels[userLevel] && levels[userLevel].exerciseId === exerciseId) {
-          newLevel = userLevel;
-        } else {
-          const match = Object.entries(levels).find(
-            ([_, v]) => v.exerciseId === exerciseId,
-          );
-          if (match && !isNaN(parseInt(match[0]))) {
-            newLevel = parseInt(match[0]);
-          }
-        }
-        if (newLevel > 0) {
-          setBranchLevel(branchId, newLevel);
-          Logger.logEvent("save_initial_branch_data", {
-            skill: skill,
-            branchId: branchId,
-            level: newLevel,
-          });
-        } else {
-          Logger.logEvent("save_initial_branch_data_failed_no_level_found", {
-            skill: skill,
-            branchId: branchId,
-            exerciseId: exerciseId,
-          });
-        }
-      }
-    } else {
-      Logger.logEvent("save_initial_branch_data_failed_no_branch_found", {
-        skill: skill,
-        branchId: branchId,
-        exerciseId: exerciseId,
-      });
-    }
-  };
-
-  const updateBranchLevel = (
-    levelUp: boolean,
-    branchId: string,
-    exerciseId: string,
-    skill: SkillCode,
-    ageGroup: string,
-  ) => {
-    const context: BranchLevelContext = {
-      skillTrees,
-      branchData,
-      equipment,
-      gender: personalData.gender,
-      exerciseList,
-    };
-
-    const planContext: TrainingPlanContext = {
-      type: activeTraining?.type ?? "",
-      sectionIndex: activeTraining?.sectionIndex,
-      weekday: activeTraining?.weekday,
-    };
-
-    const result = calculateBranchLevelUpdate(
-      { levelUp, branchId, exerciseId, skill, ageGroup },
-      context,
-      planContext,
-    );
-
-    // Log the result
-    switch (result.type) {
-      case "SAME_BRANCH":
-        Logger.logEvent(
-          "branch_level_" + (levelUp ? "increased" : "decreased"),
-          {
-            branchId: result.branchId,
-            newBranchLevel: result.newLevel,
-          },
-        );
-        break;
-      case "BRANCH_SUBSTITUTION":
-        Logger.logEvent("branch_changed_for_new_level", {
-          previousBranchId: result.previousBranchId,
-          newBranchIds: result.equivalentBranches.map((eb) => eb?.branchId),
-        });
-        break;
-      case "NO_CHANGE":
-        if (result.reason === "same_branch_found") {
-          Logger.logEvent("branch_not_changed_because_only_found_the_same", {
-            branchId: result.branchId,
-          });
-        } else {
-          Logger.logEvent(
-            "branch_not_changed_because_no_matching_branch_found",
-            { branchId: result.branchId },
-          );
-        }
-        break;
-      case "BRANCH_NOT_FOUND":
-        Logger.logEvent(
-          "Branch with id " + result.branchId + " not found for leveling up",
-        );
-        break;
-    }
-
-    applyBranchLevelUpdate(result, {
-      setBranchLevel,
-      replaceBranchInTrainingPlan,
-    });
-  };
-
-  /**
-   * saves the user exercise values
-   * these values where adjusted in the training generator
-   *
-   * checks if the branch level needs to increase and changes exercise in training plan
-   */
-  const saveExerciseAndBranchData = () => {
-    // Skip saving for pause exercises
-    if (isPauseExercise) {
-      Logger.logEvent("pause_exercise_no_data_saved", { exerciseId });
-      return;
-    }
-
-    const skill = currentExercise?.skill;
-    let branchId = currentExercise?.branchId;
-    let id = exerciseId;
-    let currentExerciseData = getExerciseById(id);
-
-    if (skill && typeof branchId === "string" && !isPauseExercise) {
-      saveBranchData(skill, branchId, exerciseId);
-    }
-
-    // Save user general data
-    const weight = currentExercise?.weight ?? 0;
-    const duration = currentExercise?.duration ?? 0;
-    const height = currentExercise?.height ?? 0;
-    const weightPercentage = currentExercise?.nextWeightPercentage ?? 0;
-    const maxFRepetitions = currentExercise?.maxFRepetitions ?? [];
-    const reps = currentExercise?.repetition ?? 0;
-
-    if (reps === -1) {
-      // Is test exercise, don't save
-      Logger.logEvent("test_exercise_no_data_saved", { exerciseId: id });
-      return;
-    }
-
-    // do not increase exercises values in all workouts
-    const type = activeTraining?.type;
-
-    const levelTagValues = getUserTagValue(workoutData.tags, TagGroups.LEVEL);
-    const levelTag = isLevelTag(levelTagValues) ? levelTagValues : undefined;
-    const lowercaseTag = levelTag?.toLowerCase();
-    const userLevel = isTrainingLevel(lowercaseTag) ? lowercaseTag : undefined;
-
-    if (shouldProcessExerciseValues(type, skill)) {
-      let doSave = false;
-      // check target values after last of all cardio exercises
-      if (skill?.includes("CARDIO")) {
-        // save data after last cardio in training
-        if (
-          !isPauseExercise &&
-          (!hasNextExercise ||
-            isNextExercisePause ||
-            !nextExercise?.skill?.includes("CARDIO"))
-        ) {
-          const mainCardio = findMainCardioExercise(
-            exerciseList,
-            safeExerciseIndex,
-          );
-          if (mainCardio) {
-            branchId = mainCardio.branchId;
-            id = mainCardio.exerciseId;
-            currentExerciseData = getExerciseById(id);
-            doSave = true;
-          }
-        }
-      }
-      // check target values after last set of max exercises
-      else if (skill?.includes("MAX")) {
-        if (
-          currentExercise?.set &&
-          currentExercise.set[0] === currentExercise.set[1]
-        ) {
-          // choose adjustment for maxF by age, userlevel and level of repetitions
-          const ageGroup = ageGroupFor(personalData.birthday);
-
-          // get adjustment of exercise
-          const exercise = exerciseList?.findLast(
-            (item) => item.exerciseId === exerciseId,
-          );
-          let adjustment = null;
-          if (exercise?.feedback) {
-            adjustment = exercise?.feedback.difficulty;
-          }
-
-          const genderTag =
-            ageGroup === WorkoutConstants.AGE_GROUPS.CHILD
-              ? "k"
-              : personalData.gender === "MALE"
-                ? "m"
-                : "w";
-
-          const {
-            nextWeightPercentage,
-            maxFRepetitions: maxFRepetitionsNew,
-            levelUp,
-            levelDown,
-            weightAdjusted,
-            feedbackOverride,
-          } = calculateMaxStrengthAdjustment({
-            weight,
-            adjustment,
-            exerciseData: currentExerciseData,
-            userExerciseData: exercise,
-            maxValues: workoutData.maxValues,
-            ageGroup,
-            genderTag,
-            levelTag,
-            userLevel,
-          });
-
-          // persist intermediate feedback override before the main update
-          if (feedbackOverride) {
-            updateExercise(
-              id,
-              {
-                exerciseId: id,
-                skill,
-                feedback: feedbackOverride,
-              },
-              activeTraining?.id,
-            );
-          }
-          if (
-            !weightAdjusted &&
-            typeof branchId === "string" &&
-            (levelUp || levelDown)
-          ) {
-            updateBranchLevel(levelUp, branchId, id, skill, ageGroup);
-          }
-
-          let newWeight = weight;
-          let newDuration = duration ? duration : undefined;
-          let newRepetition = reps ? reps : undefined;
-          // set new exercise values
-          updateExercise(
-            id,
-            {
-              exerciseId: id,
-              skill,
-              weight: newWeight,
-              nextWeightPercentage,
-              maxFRepetitions: maxFRepetitionsNew,
-              maxFLevelAdjustment: adjustment,
-              duration: newDuration,
-              repetition: newRepetition,
-              height,
-              weightType: currentExercise.weightType,
-              branchId,
-              set: currentExercise.set,
-            },
-            activeTraining?.id,
-          );
-        }
-      }
-      // check target values after last set of non cardio and max exercise
-      else if (
-        currentExercise?.set &&
-        currentExercise.set[0] === currentExercise.set[1]
-      ) {
-        doSave = true;
-      }
-
-      if (doSave) {
-        // do not increase values for pause/support exercises/others
-        if (typeof branchId === "string" && skill) {
-          // from data/generator/TestIntensity
-          let intensity = getIntensityBySkill(skill);
-
-          // go on if exercise data found
-          if (currentExerciseData && userLevel) {
-            // use child values or gender otherwise
-            const ageGroup = ageGroupFor(personalData.birthday);
-            const genderTag =
-              ageGroup === WorkoutConstants.AGE_GROUPS.CHILD
-                ? "k"
-                : personalData.gender === "MALE"
-                  ? "m"
-                  : "w";
-
-            const adjustmentContext: ExerciseAdjustmentContext = {
-              userLevel,
-              genderTag,
-              ageGroup,
-              levelTag,
-            };
-
-            const adjustmentResult = calculateStandardExerciseAdjustment(
-              weight,
-              duration,
-              reps,
-              currentExerciseData,
-              adjustmentContext,
-              intensity,
-            );
-
-            const levelUp = adjustmentResult.type === "LEVEL_UP";
-            const levelDown = adjustmentResult.type === "LEVEL_DOWN";
-            const increaseWeight = adjustmentResult.type === "INCREASE_WEIGHT";
-            const decreaseWeight = adjustmentResult.type === "DECREASE_WEIGHT";
-            // Target-based weight progression for weight exercises:
-            // - reps/duration hit target but weight below target → increase weight
-            // - reps/duration below start but weight above start → decrease weight
-            // Feedback is cleared after to prevent double-adjustment in TrainingGenerator.
-            // If user is in the "in between" zone (start <= reps < target), neither
-            // this block nor levelUp triggers, and feedback is preserved for
-            // TrainingGenerator to adjust all values (reps, duration, height, weight).
-            if (increaseWeight || decreaseWeight) {
-              const adjustment: ExerciseDifficultyType = increaseWeight
-                ? "SUCCEEDED"
-                : "TOO_HARD";
-              const newWeight = calculateNewWeight(
-                weight,
-                adjustment,
-                currentExerciseData,
-                intensity,
-              );
-              const nextWeightPercentage = weightPercentage || undefined;
-              const newDuration =
-                getResetDuration(
-                  currentExerciseData,
-                  intensity,
-                  genderTag,
-                  userLevel,
-                ) ??
-                (duration || undefined);
-              const newRepetition =
-                getResetRepetition(
-                  currentExerciseData,
-                  intensity,
-                  genderTag,
-                  userLevel,
-                ) ??
-                (reps || undefined);
-
-              // set new exercise values
-              updateExercise(
-                id,
-                {
-                  exerciseId: id,
-                  skill,
-                  weight: newWeight,
-                  nextWeightPercentage,
-                  maxFRepetitions,
-                  duration: newDuration,
-                  repetition: newRepetition,
-                  height,
-                  weightType: currentExercise?.weightType,
-                  branchId,
-                  set: currentExercise?.set,
-                },
-                activeTraining?.id,
-              );
-
-              // set user exercise difficulty to null, so its not adjusted in next training
-              updateExercise(
-                id,
-                {
-                  exerciseId: id,
-                  skill,
-                  feedback: { difficulty: null },
-                },
-                activeTraining?.id,
-              );
-              Logger.logEvent(
-                "exercise_weight_" +
-                  (increaseWeight ? "increased" : "decreased"),
-                {
-                  exerciseId: id,
-                },
-              );
-            } else if (levelUp || levelDown) {
-              updateExercise(
-                id,
-                {
-                  exerciseId: id,
-                  skill,
-                  weight,
-                  maxFRepetitions,
-                  duration,
-                  repetition: reps,
-                  height,
-                  weightType: currentExercise?.weightType,
-                  branchId,
-                  set: currentExercise?.set,
-                },
-                activeTraining?.id,
-              );
-              updateBranchLevel(levelUp, branchId, id, skill, ageGroup);
-            } else {
-              // "In between" zone: user didn't hit targets, didn't fall below start.
-              // No level or weight change here. Feedback is preserved so TrainingGenerator
-              // can adjust all values (reps, duration, height, weight) based on feedback.
-              let maxValue = getMaxValueForExercise(
-                currentExerciseData,
-                workoutData.maxValues,
-              );
-              let weightPercentage =
-                typeof maxValue === "number"
-                  ? (weight / maxValue) * 100
-                  : undefined;
-
-              updateExercise(
-                id,
-                {
-                  exerciseId: id,
-                  skill,
-                  weight,
-                  nextWeightPercentage: weightPercentage,
-                  maxFRepetitions,
-                  duration,
-                  repetition: reps,
-                  height,
-                  weightType: currentExercise?.weightType,
-                  branchId,
-                  set: currentExercise?.set,
-                },
-                activeTraining?.id,
-              );
-            }
-          }
-        }
-      }
-    }
-
-    // Update cumulative exercise totals
-    updateUserExerciseTotals(id, weight, duration, reps, height);
-
-    // save global meta data
-    Logger.logEvent("exercise_completed", { exerciseId: id });
-  };
-
-  // Strength test only: calculates and stores max values based on reps entered.
-  // Returns the updated maxValues to pass directly to saveAndNavigateToSuccess
-  // (avoids React state batching issue with setTempMaxValues).
-  const saveRepsInput = (repsValue: number): MaxValuesType | null => {
-    const directions = WorkoutConstants.TEST_EXERCISES_DIRECTIONS[exerciseId];
-    let weight = currentExercise?.weight;
-    // add ten percent weight if test exercise used dumbbells
-    const isDumbbellExercise = getTagValues(
-      currentExerciseData?.tags ?? [],
-      TagGroups.EQUIPMENT,
-    ).some((eq) => eq === "DUMBBELL");
-
-    if (weight && directions) {
-      if (isDumbbellExercise) {
-        // double for weight is only one KH
-        // add 10% to get value for LH
-        weight = 2 * weight * 1.1;
-      }
-
-      const maxValue = maxWeightByEpley(weight, repsValue);
-
-      // calculate max values for different settings
-      const result = calculateAdjustedMaxValues(maxValue);
-
-      // logging data
-      const exerciseName = WorkoutConstants.TEST_EXERCISES[exerciseId];
-      const age = ageGroupFor(personalData.birthday);
-      const gender = personalData.gender;
-      const level = getUserTagValue(workoutData.tags, TagGroups.LEVEL);
-      Logger.logEvent("test_repitition_value_saved_" + exerciseName, {
-        value: repsValue,
-        age: age,
-        gender: gender,
-        level: level,
-      });
-
-      // save results to temporary state (committed on successful completion)
-      const baseMaxValues = tempMaxValues ?? workoutData.maxValues;
-      const updatedMaxValues = applyMaxValueToDirections(
-        baseMaxValues,
-        directions,
-        result,
-      );
-      setTempMaxValues(updatedMaxValues);
-      return updatedMaxValues;
-    } else {
-      Logger.logEvent(
-        "no exercise direction found for test exercise with id ",
-        exerciseId,
-      );
-      return null;
-    }
-  };
-
   const handlePainAlert = () => {
     const userPains = getUserTagValues(workoutData.tags, TagGroups.PAIN);
     if (userPains.length > 0) {
@@ -824,7 +189,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     if (!exerciseList) return;
 
     // save exercise data
-    saveExerciseAndBranchData();
+    saveExerciseAndBranchData(safeExerciseIndex);
 
     if (isPauseExercise) {
       // add time in pause to training stats
@@ -870,7 +235,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
       }
     } else {
       // Training complete
-      saveAndNavigateToSuccess(false, strengthTestMaxValues);
+      finishTraining(false, strengthTestMaxValues);
     }
   };
 
@@ -883,7 +248,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
           text: t("common.yes"),
           onPress: () => {
             setIsAborted(true);
-            saveAndNavigateToSuccess(true);
+            finishTraining(true);
           },
         },
         {
@@ -891,27 +256,11 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
         },
       ],
     );
-  }, [saveAndNavigateToSuccess, t]);
+  }, [finishTraining, t]);
 
   const handleExerciseSkipped = () => {
     setIsSkipped(true);
-    setExerciseSkipped(exerciseId);
-    if (currentExercise?.skill) {
-      updateExercise(
-        exerciseId,
-        {
-          exerciseId,
-          skill: currentExercise.skill,
-          skipped: true,
-          branchId: currentExercise.branchId,
-          set: currentExercise.set,
-        },
-        activeTraining?.id,
-      );
-    }
-    Logger.logEvent("exercise_skipped", {
-      exerciseId,
-    });
+    markExerciseSkipped(safeExerciseIndex);
     advanceToNextExercise();
   };
 
@@ -920,31 +269,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   }, [exerciseId]);
 
   const handleFeedback = (category: "TOO_EASY" | "TOO_HARD" | "SUCCEEDED") => {
-    if (!currentExercise) return;
-
-    updateExercise(
-      exerciseId,
-      {
-        exerciseId,
-        skill: currentExercise.skill,
-        feedback: { difficulty: category },
-      },
-      activeTraining?.id,
-    );
-    setExerciseFeedback(exerciseId, category);
-
-    if (category === "SUCCEEDED")
-      Logger.logEvent("exercise_completed_success", {
-        exerciseId: exerciseId,
-      });
-    if (category === "TOO_EASY")
-      Logger.logEvent("exercise_completed_easy", {
-        exerciseId: exerciseId,
-      });
-    if (category === "TOO_HARD")
-      Logger.logEvent("exercise_completed_hard", {
-        exerciseId: exerciseId,
-      });
+    completeFeedback(safeExerciseIndex, category);
   };
 
   const handlePauseToggled = (wasPaused: boolean) => {
@@ -985,9 +310,9 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
 
   // Log training started
   useEffect(() => {
-    logTrainingEvent("training_started");
+    logTrainingEvent(activeTraining, "training_started");
     exerciseStartTimeRef.current = Date.now();
-  }, [logTrainingEvent]);
+  }, [activeTraining]);
 
   if (!exerciseList || exerciseList.length === 0) {
     return (
@@ -1021,20 +346,9 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
     ? nextExerciseData?.video
     : currentExerciseData?.video;
 
-  // if plan workout check skill.
-  // if short training check workout type
-  let isFeedbackSkill = false;
-  if (activeTraining?.type === "PLAN" && currentExercise) {
-    isFeedbackSkill =
-      WorkoutConstants.NO_INCREASE_SKILL_TYPE.indexOf(
-        currentExercise?.skill,
-      ) === -1;
-  } else if (activeTraining?.type) {
-    isFeedbackSkill =
-      WorkoutConstants.NO_INCREASE_WORKOUT_PLAN_TYPE.indexOf(
-        activeTraining.type,
-      ) === -1;
-  }
+  const isFeedbackSkill = currentExercise
+    ? isFeedbackEligibleSkill(activeTraining, currentExercise.skill)
+    : false;
 
   const handleShowExerciseInformation = () => {
     const id = isPauseExercise ? nextExercise?.exerciseId : exerciseId;
@@ -1322,7 +636,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                 isCardioExercise={isCardioExercise}
                 isLastCardioExercise={isCardioExercise && !hasNextExercise}
                 isTest={isTestExercise}
-                onSubmitReps={saveRepsInput}
+                onSubmitReps={(reps) => saveRepsInput(safeExerciseIndex, reps)}
                 pauseToggled={handlePauseToggled}
               />
             )}

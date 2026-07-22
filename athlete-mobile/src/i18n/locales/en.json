@@ -400,7 +400,8 @@
     },
     "list": {
       "title": "Training Checklist",
-      "skipExercise": "Skip exercise"
+      "skipExercise": "Skip exercise",
+      "finishTraining": "Finish Training"
     },
     "active": {
       "title": {

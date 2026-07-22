@@ -14,6 +14,10 @@ export class TrainingListPage extends BasePage {
     return this.page.getByRole("button", { name: "Save" }).first();
   }
 
+  private get finishButton() {
+    return this.page.getByTestId("training-list-finish-button");
+  }
+
   private checkmarkFor(testId: string) {
     return this.page.getByTestId(`${testId}-checkmark`);
   }
@@ -87,14 +91,21 @@ export class TrainingListPage extends BasePage {
 
   /**
    * Completes every remaining checkbox/reps row in the checklist, regardless of
-   * order, until the session finishes and navigates to training-success. Rows
-   * already skipped by the caller are left alone. Reps rows fall back to a
-   * default value of 10 when no specific value has been entered.
+   * order, then presses the finish button (enabled only once every row is
+   * done) to navigate to training-success. Rows already skipped by the caller
+   * are left alone. Reps rows fall back to a default value of 10 when no
+   * specific value has been entered.
    */
   async completeAll() {
     for (let i = 0; i < 60; i++) {
       if (await this.goOnButton.isVisible().catch(() => false)) {
         break;
+      }
+
+      if (await this.finishButton.isEnabled().catch(() => false)) {
+        await this.finishButton.click({ force: true });
+        await this.page.waitForTimeout(200);
+        continue;
       }
 
       if (await this.firstUncompletedCheckmark.isVisible().catch(() => false)) {

@@ -400,7 +400,8 @@
     },
     "list": {
       "title": "Trainings-Checkliste",
-      "skipExercise": "Übung überspringen"
+      "skipExercise": "Übung überspringen",
+      "finishTraining": "Training beenden"
     },
     "active": {
       "title": {

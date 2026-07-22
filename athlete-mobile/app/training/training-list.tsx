@@ -12,18 +12,12 @@ import { useTrainingStore } from "@/features/training/trainingStore";
 import { isFeedbackEligibleSkill } from "@/features/training/utils/exerciseDataUtils";
 import { getIncompleteCount } from "@/features/training/utils/listCompletionUtils";
 import { Box } from "@/theme/Box";
+import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { useTheme } from "@/theme/theme";
 import { Stack, useFocusEffect, useRouter } from "expo-router";
-import {
-  type FC,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { type FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, BackHandler, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -71,7 +65,6 @@ const TrainingList: FC<TrainingListProps> = () => {
   const { finishTraining } = useFinishTraining();
 
   const [repsDraft, setRepsDraft] = useState<Record<number, number>>({});
-  const hasFinishedRef = useRef(false);
 
   // Deep-link/flag-flip guard: this screen only exists behind the flag.
   useEffect(() => {
@@ -119,21 +112,19 @@ const TrainingList: FC<TrainingListProps> = () => {
     }, []);
   }, [exerciseList, activeTraining, t]);
 
-  // All visible rows completed -> finish the session, same as the last
-  // exercise in the sequential flow.
-  useEffect(() => {
-    if (rows.length === 0 || hasFinishedRef.current) return;
-
-    const incompleteCount = getIncompleteCount(
+  // All visible rows completed -> enable the finish button, mirroring the
+  // last exercise in the sequential flow, but requiring an explicit tap
+  // instead of auto-navigating.
+  const allCompleted =
+    rows.length > 0 &&
+    getIncompleteCount(
       rows.map((row) => row.index),
       completedExerciseIndices,
-    );
+    ) === 0;
 
-    if (incompleteCount === 0) {
-      hasFinishedRef.current = true;
-      finishTraining(false, tempMaxValues);
-    }
-  }, [rows, completedExerciseIndices, finishTraining, tempMaxValues]);
+  const handleFinish = () => {
+    finishTraining(false, tempMaxValues);
+  };
 
   const handleComplete = (
     row: ListRow,
@@ -272,6 +263,21 @@ const TrainingList: FC<TrainingListProps> = () => {
             ))}
           </Box>
         </ScrollView>
+        <Box
+          paddingHorizontal="l"
+          paddingVertical="m"
+          borderTopWidth={1}
+          borderTopColor="lightGrey1"
+        >
+          <Button
+            onPress={handleFinish}
+            disabled={!allCompleted}
+            style={{ opacity: allCompleted ? 1 : 0.5 }}
+            testID="training-list-finish-button"
+          >
+            {t("training.list.finishTraining")}
+          </Button>
+        </Box>
       </Box>
     </>
   );

@@ -29,18 +29,18 @@ For reference, license URLs used in this project (where applicable):
 | short-training-full-body-stability | athlete-mobile/assets/img/shortTrainings/ganzkoerperstabilitaet.jpg | Short training cover: full body stability | Michaela Pohl | CC BY-SA 4.0 | Ingemar Pohl | yes |
 | short-training-mobility | athlete-mobile/assets/img/shortTrainings/mobility.jpg | Short training cover: mobility | Michaela Pohl | CC BY-SA 4.0 | Ingemar Pohl | yes |
 | short-training-warm-up | athlete-mobile/assets/img/shortTrainings/warm_up.jpg | Short training cover: warm up | Michaela Pohl | CC BY-SA 4.0 | Ingemar Pohl | yes |
-| daily-training-focus-endurance | athlete-mobile/assets/img/dailyTrainingFocuses/endurance.jpg |daily training focus cover: endurance | ChatGPT-10.7.2026|CC BY-SA 4.0 |n/a |yes |
+| daily-training-focus-endurance | athlete-mobile/assets/img/dailyTrainingFocuses/endurance.jpg |daily training focus cover: endurance | ChatGPT-10.7.2026 + Ingemar Pohl|CC BY-SA 4.0 |n/a |yes |
 | daily-training-focus-stability | athlete-mobile/assets/img/dailyTrainingFocuses/stability.jpg |daily training focus cover: stability | Michaela Pohl|CC BY-SA 4.0 | n/a|yes |
-| daily-training-focus-strength | athlete-mobile/assets/img/dailyTrainingFocuses/strength.jpg | daily training focus cover: strength| ChatGPT-6.7.2026|CC BY-SA 4.0 | n/a| yes|
-| daily-training-focus-strength-endurance | athlete-mobile/assets/img/dailyTrainingFocuses/strength-endurance.jpg |daily training focus cover: strength&endurance | ChatGPT-10.7.2026|CC BY-SA 4.0 |n/a |yes |
-| sport-selection-american-football | athlete-mobile/assets/img/sportSelection/american-football.jpg | sport selection cover: american football |ChatGPT-4.7.2026 | CC BY-SA 4.0| n/a| yes|
-| sport-selection-basketball | athlete-mobile/assets/img/sportSelection/basketball.jpg |sport selection cover: basketball |ChatGPT-10.7.2026 |CC BY-SA 4.0 | n/a|yes |
-| sport-selection-general-athletic | athlete-mobile/assets/img/sportSelection/generel-athletic.jpg |sport selection cover: general athletic | ChatGPT-4.7.2026| CC BY-SA 4.0|n/a |yes |
-| sport-selection-handball | athlete-mobile/assets/img/sportSelection/Handball.png |sport selection cover: handball |ChatGPT-17.2.2026 |CC BY-SA 4.0 |n/a | yes|
-| sport-selection-hockey | athlete-mobile/assets/img/sportSelection/Hockey.jpg |sport selection cover: hockey |ChatGPT-17.2.2026 |CC BY-SA 4.0 | n/a| yes|
-| sport-selection-icehockey | athlete-mobile/assets/img/sportSelection/icehockey.jpg |sport selection cover: icehockey |ChatGPT-4.7.2026 | CC BY-SA 4.0|n/a | yes|
-| sport-selection-rugby | athlete-mobile/assets/img/sportSelection/Rugby.jpg | sport selection cover: rugby|ChatGPT-4.7.2026 |CC BY-SA 4.0 | n/a| yes|
-| sport-selection-soccer | athlete-mobile/assets/img/sportSelection/soccer.jpg |sport selection cover: soccer |ChatGPT-8.7.2026 | CC BY-SA 4.0|n/a | yes|
-| sport-selection-volleyball | athlete-mobile/assets/img/sportSelection/volleyball.jpg |sport selection cover: volleyball | ChatGPT-8.7.2026|CC BY-SA 4.0 |n/a | yes|
+| daily-training-focus-strength | athlete-mobile/assets/img/dailyTrainingFocuses/strength.jpg | daily training focus cover: strength| ChatGPT-6.7.2026 + Ingemar Pohl|CC BY-SA 4.0 | n/a| yes|
+| daily-training-focus-strength-endurance | athlete-mobile/assets/img/dailyTrainingFocuses/strength-endurance.jpg |daily training focus cover: strength&endurance | ChatGPT-10.7.2026 + Ingemar Pohl|CC BY-SA 4.0 |n/a |yes |
+| sport-selection-american-football | athlete-mobile/assets/img/sportSelection/american-football.jpg | sport selection cover: american football |ChatGPT-4.7.2026 + Ingemar Pohl | CC BY-SA 4.0| n/a| yes|
+| sport-selection-basketball | athlete-mobile/assets/img/sportSelection/basketball.jpg |sport selection cover: basketball |ChatGPT-10.7.2026 + Ingemar Pohl |CC BY-SA 4.0 | n/a|yes |
+| sport-selection-general-athletic | athlete-mobile/assets/img/sportSelection/generel-athletic.jpg |sport selection cover: general athletic | ChatGPT-4.7.2026 + Ingemar Pohl| CC BY-SA 4.0|n/a |yes |
+| sport-selection-handball | athlete-mobile/assets/img/sportSelection/Handball.png |sport selection cover: handball |ChatGPT-17.2.2026 + Ingemar Pohl |CC BY-SA 4.0 |n/a | yes|
+| sport-selection-hockey | athlete-mobile/assets/img/sportSelection/Hockey.jpg |sport selection cover: hockey |ChatGPT-17.2.2026 + Ingemar Pohl |CC BY-SA 4.0 | n/a| yes|
+| sport-selection-icehockey | athlete-mobile/assets/img/sportSelection/icehockey.jpg |sport selection cover: icehockey |ChatGPT-4.7.2026 + Ingemar Pohl | CC BY-SA 4.0|n/a | yes|
+| sport-selection-rugby | athlete-mobile/assets/img/sportSelection/Rugby.jpg | sport selection cover: rugby|ChatGPT-4.7.2026 + Ingemar Pohl |CC BY-SA 4.0 | n/a| yes|
+| sport-selection-soccer | athlete-mobile/assets/img/sportSelection/soccer.jpg |sport selection cover: soccer |ChatGPT-8.7.2026 + Ingemar Pohl | CC BY-SA 4.0|n/a | yes|
+| sport-selection-volleyball | athlete-mobile/assets/img/sportSelection/volleyball.jpg |sport selection cover: volleyball | ChatGPT-8.7.2026 + Ingemar Pohl|CC BY-SA 4.0 |n/a | yes|
 | audio-pause-countdown | athlete-mobile/assets/audio/pause_3sec.mp3 | Workout pause countdown sound (3 seconds) | Ingemar Pohl | CC BY-SA 4.0 | n/a | n/a |
 | audio-start-countdown | athlete-mobile/assets/audio/start_5sec.mp3 | Workout start countdown sound (5 seconds) | Ingemar Pohl | CC BY-SA 4.0 | n/a | n/a |

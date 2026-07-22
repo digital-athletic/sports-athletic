@@ -137,9 +137,9 @@ describe("exerciseDataUtils", () => {
 
     it("returns false for PLAN training with a NO_INCREASE skill", () => {
       // WU is in NO_INCREASE_SKILL_TYPE list
-      expect(
-        isFeedbackEligibleSkill(withType("PLAN"), "WU" as SkillCode),
-      ).toBe(false);
+      expect(isFeedbackEligibleSkill(withType("PLAN"), "WU" as SkillCode)).toBe(
+        false,
+      );
     });
 
     it("returns true for PLAN training with an eligible skill", () => {
@@ -148,15 +148,15 @@ describe("exerciseDataUtils", () => {
 
     it("returns false for a NO_INCREASE workout type", () => {
       // TEST_WORKOUT is in NO_INCREASE_WORKOUT_PLAN_TYPE list
-      expect(
-        isFeedbackEligibleSkill(withType("TEST_WORKOUT"), "SWR1"),
-      ).toBe(false);
+      expect(isFeedbackEligibleSkill(withType("TEST_WORKOUT"), "SWR1")).toBe(
+        false,
+      );
     });
 
     it("returns true for a non-PLAN, non-NO_INCREASE workout type", () => {
-      expect(isFeedbackEligibleSkill(withType("QUICK"), "WU" as SkillCode)).toBe(
-        true,
-      );
+      expect(
+        isFeedbackEligibleSkill(withType("QUICK"), "WU" as SkillCode),
+      ).toBe(true);
     });
   });
 

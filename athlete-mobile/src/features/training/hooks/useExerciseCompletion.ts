@@ -63,8 +63,12 @@ export function useExerciseCompletion() {
     setExerciseFeedback,
   } = useTrainingStore();
   const skillTrees = getAllSkillTrees();
-  const { branchData, setBranchLevel, updateExercise, updateUserExerciseTotals } =
-    useExerciseProgressStore();
+  const {
+    branchData,
+    setBranchLevel,
+    updateExercise,
+    updateUserExerciseTotals,
+  } = useExerciseProgressStore();
   const { personalData } = useUserProfileStore();
   const { workoutData, replaceBranchInTrainingPlan } = useUserWorkoutStore();
 

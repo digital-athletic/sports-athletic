@@ -388,6 +388,7 @@
       "equipmentNeeded": "Equipment needed",
       "exerciseList": "Exercise list",
       "startTraining": "Start training",
+      "startAsChecklist": "Start without guidance",
       "oneSet": "1 set",
       "setCount": "{{count}} sets",
       "supportExercises": "Support exercises",
@@ -396,6 +397,10 @@
       "seconds": "{{count}} seconds",
       "kilos": "{{weight}} kg",
       "cmHigh": "{{height}} cm"
+    },
+    "list": {
+      "title": "Training Checklist",
+      "skipExercise": "Skip exercise"
     },
     "active": {
       "title": {

@@ -1,5 +1,6 @@
 import { BackHeader } from "@/common/BackHeader";
 import { CenteredLoading } from "@/common/CenteredLoading";
+import { featureFlags } from "@/config/featureFlags";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import type { ExerciseType } from "@/schemas/exercise.schema";
@@ -39,7 +40,8 @@ export default function TrainingOverviewScreen() {
   >([]);
 
   // Get store data
-  const { exerciseList, setTrainingStartTime } = useTrainingStore();
+  const { exerciseList, setTrainingStartTime, setTrainingViewMode } =
+    useTrainingStore();
   const exercises = getAllExercises();
   const { trainingDays } = useTrainingScheduleStore();
 
@@ -132,11 +134,21 @@ export default function TrainingOverviewScreen() {
 
   const handleStartTraining = useCallback(() => {
     setTrainingStartTime(Date.now());
+    setTrainingViewMode("SEQUENTIAL");
     router.push({
       pathname: "/training/training-active",
       params: params,
     });
-  }, [router, params, setTrainingStartTime]);
+  }, [router, params, setTrainingStartTime, setTrainingViewMode]);
+
+  const handleStartTrainingAsChecklist = useCallback(() => {
+    setTrainingStartTime(Date.now());
+    setTrainingViewMode("LIST");
+    router.push({
+      pathname: "/training/training-list",
+      params: params,
+    });
+  }, [router, params, setTrainingStartTime, setTrainingViewMode]);
 
   const handleShowExerciseInfo = useCallback(
     (exerciseId: string) => {
@@ -205,6 +217,15 @@ export default function TrainingOverviewScreen() {
           <Button onPress={handleStartTraining}>
             {t("training.overview.startTraining")}
           </Button>
+          {featureFlags.trainingListViewEnabled && (
+            <Button
+              onPress={handleStartTrainingAsChecklist}
+              variant="secondary"
+              marginTop="s"
+            >
+              {t("training.overview.startAsChecklist")}
+            </Button>
+          )}
         </Box>
       </Box>
     </>

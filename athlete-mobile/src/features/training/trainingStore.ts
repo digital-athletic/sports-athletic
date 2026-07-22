@@ -13,6 +13,8 @@ import { TrainingSelectionType, TrainingTimeType } from "./models/Training";
 import { UserExerciseDataType } from "./models/UserExerciseData";
 import { UserProgressType } from "./models/UserProgress";
 
+export type TrainingViewMode = "SEQUENTIAL" | "LIST";
+
 export type State = {
   selection: TrainingSelectionType | null;
   exerciseList: UserExerciseDataType[] | null;
@@ -23,6 +25,8 @@ export type State = {
   activeExerciseIndex: number;
   tempMaxValues: MaxValuesType | null;
   _hasHydrated: boolean;
+  trainingViewMode: TrainingViewMode | null;
+  completedExerciseIndices: number[];
 };
 
 const createInitialTrainingTime = (): TrainingTimeType => ({
@@ -49,6 +53,8 @@ const createInitialState = (): State => ({
   activeExerciseIndex: 0,
   tempMaxValues: null,
   _hasHydrated: false,
+  trainingViewMode: null,
+  completedExerciseIndices: [],
 });
 
 type Actions = {
@@ -78,6 +84,8 @@ type Actions = {
   addSkillTime: (focusArea: FocusArea, skillTime: number) => void;
   clearTraining: () => void;
   setHasHydrated: (hydrated: boolean) => void;
+  setTrainingViewMode: (mode: TrainingViewMode | null) => void;
+  markExerciseCompleted: (index: number) => void;
 };
 
 export type TrainingState = State & Actions;
@@ -204,10 +212,22 @@ export const useTrainingStore = create<TrainingState>()(
           state.activeTraining = initialState.activeTraining;
           state.activeExerciseIndex = initialState.activeExerciseIndex;
           state.tempMaxValues = initialState.tempMaxValues;
+          state.trainingViewMode = initialState.trainingViewMode;
+          state.completedExerciseIndices = initialState.completedExerciseIndices;
         }),
       setHasHydrated: (hydrated) =>
         set((state) => {
           state._hasHydrated = hydrated;
+        }),
+      setTrainingViewMode: (mode) =>
+        set((state) => {
+          state.trainingViewMode = mode;
+        }),
+      markExerciseCompleted: (index) =>
+        set((state) => {
+          if (!state.completedExerciseIndices.includes(index)) {
+            state.completedExerciseIndices.push(index);
+          }
         }),
     })),
     {
@@ -224,6 +244,8 @@ export const useTrainingStore = create<TrainingState>()(
         activeTraining: state.activeTraining,
         activeExerciseIndex: state.activeExerciseIndex,
         tempMaxValues: state.tempMaxValues,
+        trainingViewMode: state.trainingViewMode,
+        completedExerciseIndices: state.completedExerciseIndices,
       }),
       onRehydrateStorage: () => (_state, error) => {
         if (error) {

@@ -10,6 +10,10 @@ export class TrainingOverviewPage extends BasePage {
     return this.page.getByRole("button", { name: "Start Training" });
   }
 
+  private get startAsChecklistButton() {
+    return this.page.getByRole("button", { name: "Start without guidance" });
+  }
+
   private get exerciseItems() {
     return this.page.getByText(
       /KH-Kniebeuge|LH-Kniebeuge|Bankdrücken|Bench press|Squat|Rowing|Shoulder press|KH-Frontkniebeuge|LH-Frontkniebeuge/i,
@@ -22,6 +26,10 @@ export class TrainingOverviewPage extends BasePage {
 
   async startTraining() {
     await this.startTrainingButton.click({ timeout: 15000 });
+  }
+
+  async startAsChecklist() {
+    await this.startAsChecklistButton.click({ timeout: 15000 });
   }
 
   async openExerciseInfo(index = 0) {

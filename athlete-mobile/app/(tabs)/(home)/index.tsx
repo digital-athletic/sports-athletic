@@ -29,6 +29,7 @@ export default function HomeScreen() {
   const trainingHasHydrated = useTrainingStore((s) => s._hasHydrated);
   const activeTraining = useTrainingStore((s) => s.activeTraining);
   const time = useTrainingStore((s) => s.time);
+  const trainingViewMode = useTrainingStore((s) => s.trainingViewMode);
   const clearTraining = useTrainingStore((s) => s.clearTraining);
 
   const username = personalData?.username || "Mr. Anderson";
@@ -54,7 +55,11 @@ export default function HomeScreen() {
       // and is resumed directly; stale leftovers that were never started are discarded.
       // Runs after the anamnesis gate: a resumable workout implies completed anamnesis.
       if (isResumableSession(activeTraining, time)) {
-        router.replace("/training/training-active");
+        router.replace(
+          trainingViewMode === "LIST"
+            ? "/training/training-list"
+            : "/training/training-active",
+        );
       } else if (hasStaleLeftovers(activeTraining, time)) {
         clearTraining();
       }
@@ -65,6 +70,7 @@ export default function HomeScreen() {
       trainingHasHydrated,
       activeTraining,
       time,
+      trainingViewMode,
       clearTraining,
     ]),
   );

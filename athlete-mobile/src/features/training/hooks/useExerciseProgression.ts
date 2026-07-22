@@ -24,6 +24,8 @@ export function useExerciseProgression() {
     setActiveExerciseIndex,
     addPauseTime,
     addSkillTime,
+    completedExerciseIndices,
+    markExerciseCompleted,
   } = useTrainingStore();
   const {
     safeExerciseIndex,
@@ -58,8 +60,12 @@ export function useExerciseProgression() {
   ) => {
     if (!exerciseList) return;
 
-    // save exercise data
-    saveExerciseAndBranchData(safeExerciseIndex);
+    // Skip re-saving if this index was already completed via the checklist
+    // (list-view) flow, to avoid double-applying weight/level progression.
+    if (!completedExerciseIndices.includes(safeExerciseIndex)) {
+      saveExerciseAndBranchData(safeExerciseIndex);
+      markExerciseCompleted(safeExerciseIndex);
+    }
 
     if (isPauseExercise) {
       // add time in pause to training stats

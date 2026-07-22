@@ -27,6 +27,14 @@ export const featureFlags = {
   get contactEnabled(): boolean {
     return process.env.EXPO_PUBLIC_CONTACT_ENABLED === "true";
   },
+  /**
+   * When true, athletes can start a training session in an alternative
+   * checklist view (all exercises in one scrollable list) instead of the
+   * one-by-one flow. Env var: EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED
+   */
+  get trainingListViewEnabled(): boolean {
+    return process.env.EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED === "true";
+  },
   get reviewEmail(): string | null {
     return process.env.EXPO_PUBLIC_REVIEW_EMAIL ?? null;
   },

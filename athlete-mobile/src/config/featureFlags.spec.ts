@@ -10,6 +10,7 @@ describe("featureFlags", () => {
     delete process.env.EXPO_PUBLIC_LINK_AGB;
     delete process.env.EXPO_PUBLIC_LINK_PRIVACY;
     delete process.env.EXPO_PUBLIC_LINK_IMPRINT;
+    delete process.env.EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED;
   });
 
   describe("serverSyncEnabled", () => {
@@ -112,6 +113,22 @@ describe("featureFlags", () => {
     it("is true when EXPO_PUBLIC_LINK_IMPRINT is set", () => {
       process.env.EXPO_PUBLIC_LINK_IMPRINT = "https://example.com/imprint";
       expect(featureFlags.imprintEnabled).toBe(true);
+    });
+  });
+
+  describe("trainingListViewEnabled", () => {
+    it("defaults to false when EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED is unset", () => {
+      expect(featureFlags.trainingListViewEnabled).toBe(false);
+    });
+
+    it("is false when EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED is 'false'", () => {
+      process.env.EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED = "false";
+      expect(featureFlags.trainingListViewEnabled).toBe(false);
+    });
+
+    it("is true when EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED is 'true'", () => {
+      process.env.EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED = "true";
+      expect(featureFlags.trainingListViewEnabled).toBe(true);
     });
   });
 

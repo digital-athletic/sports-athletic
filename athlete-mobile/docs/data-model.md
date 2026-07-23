@@ -15,7 +15,7 @@ Runtime validation uses **valibot** (`src/schemas/`).
 ```mermaid
 flowchart TD
     subgraph Identity
-        auth[authStore<br/>session, userId, JWT]
+        auth[authStore<br/>userId, init flag]
         profile[userProfileStore<br/>identity, teamId]
         backup[userDataBackupStore<br/>profile snapshots]
     end
@@ -59,11 +59,11 @@ flowchart TD
 
 | Store | Key | Holds |
 |-------|-----|-------|
-| authStore | `auth-storage` | Supabase session (userId, JWT) and init flag. Only store with direct Supabase integration; gates all user data. |
+| authStore | `auth-storage` | Auth reference (`userId` only; the JWT stays inside the Supabase client and is stripped from persistence) and init flag. Only store with direct Supabase integration; gates all user data. |
 | userProfileStore | `user-profile-storage` | Single source of truth for identity (username, gender, birthday, height, weight), `anamnesisCompleted` gate, and `teamId` linking to a trainer team. |
-| userSettingsStore | `user-settings-storage` | App preferences: review-prompt state and anonymised-data-use consent flag. Independent of training data. |
+| userSettingsStore | `user-settings-storage` | App preferences: review-prompt state, anonymised-data-use flag, and GDPR `consentStatus` (`loading`/`accepted`/`missing`). Independent of training data. |
 | anamnesisStore | `anamnesis-storage` | Onboarding answers: form `values`, structured `tags` (21 groups), `seasonPhase`, `isSkipped`. Flows into profile and workout stores on completion. |
-| userWorkoutStore | `user-workout-storage` | Central domain entity: training config (sport, tags, season phase, max strength) and the generated `trainingPlan`. |
+| userWorkoutStore | `user-workout-storage` | Central domain entity: training config (sport, tags, season phase, max strength), the generated `trainingPlan`, and optional `temporalData` (expiring tags, e.g. soreness, that the generator uses to filter or replace branches). |
 | trainingScheduleStore | `training-schedule-storage` | 7 day entries (Mon-Sun): active flag, duration (`DurationMinutes`), and location. Feeds session count and length into the generator. |
 | placesStore | `places-storage` | Equipment lists for HOME, STUDIO, HALL, OUTSIDE. Equipment filters exercise selection during generation. |
 | exerciseProgressStore | `exercise-progress-storage` | Per-exercise data (reps, weight, feedback), per-branch level, cumulative totals, XP and derived level, and max-strength test history. |
@@ -139,8 +139,7 @@ flowchart LR
 | Area | Detail |
 |------|--------|
 | Unbounded history | `completedWorkoutsStore` keeps full snapshots per workout with no pagination or cap, growing AsyncStorage over time. |
-| Radar metric | The radar chart aggregates by exercise count rather than time per skill, so a long strength set weighs the same as a short stretch. |
-| Rehydration validation | Rehydrated state is JSON-parsed but not schema-validated, so corrupt data surfaces as deep runtime errors. |
+| Rehydration validation | Rehydrated state is JSON-parsed but not schema-validated (the `onRehydrateStorage` handlers in auth, profile, and training stores only log errors and set a hydration flag), so corrupt data surfaces as deep runtime errors. |
 | Partial sync coverage | Sync covers workouts, exercise data, and strength tests; profile, plan, schedule, and places stay local-only. |
 
 ## Recommended Improvements

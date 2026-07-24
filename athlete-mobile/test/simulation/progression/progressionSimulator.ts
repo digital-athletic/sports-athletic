@@ -6,9 +6,10 @@
  *
  * Scope: reconstructs the MAX (Maximalkraft) intra-session set list from
  * `getMaxTrainingWeights` + `getMaxTrainingReps` and closes the inter-session
- * loop through `calculateMaxStrengthAdjustment`. Warm-up loads and support
- * exercises (assembled in `getSetListFromExercisePairs`) are out of scope; the
- * progression under test is the working sets.
+ * loop through `calculateMaxStrengthAdjustment`. Warm-up loads are derived per
+ * spec section 2 (50% / 75% of the displayed weight of the 1st working set);
+ * support exercises (assembled in `getSetListFromExercisePairs`) remain out of
+ * scope. The progression under test is the working sets.
  */
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { ExerciseDifficultyType } from "@/constants/workoutConstants";
@@ -38,7 +39,11 @@ import {
 export interface SetSnapshot {
   setNumber: number;
   isWarmup: boolean;
-  /** null for warm-ups whose loads are not reconstructed here. */
+  /**
+   * Working sets: percent of F-Max. Warm-ups: percent of the 1st working
+   * set's displayed weight (spec section 2), since the spec defines warm-up
+   * loads relative to that set, not to F-Max.
+   */
   percentage: number | null;
   weightKg: number | null;
   reps: number;
@@ -74,6 +79,9 @@ export interface SimulateOptions {
 }
 
 const MAX_LEVELS = ["WARMUP", "EASY", "MEDIUM", "HARD"] as const;
+
+/** Warm-up loads per spec section 2: 50% / 75% of the 1st working set. */
+const WARMUP_PERCENTAGES = [50, 75];
 
 function isMaxLevel(
   level: string,
@@ -133,16 +141,30 @@ export function simulateProgression(
     const workingReps = repsEntries.slice(warmupCount);
     const inclineDiff = weightsObj.inclineBenchWeightDifference;
 
+    // Spec section 2: warm-ups derive from the displayed (rounded) weight of
+    // the 1st working set and are rounded again like any load.
+    const firstWorkingPercentage = weightsObj.trainingWeights[0] + inclineDiff;
+    const firstWorkingKg =
+      maxValue > 0
+        ? roundWeightValue((firstWorkingPercentage / 100) * maxValue)
+        : null;
+
     const sets: SetSnapshot[] = repsEntries
       .slice(0, warmupCount)
-      .map((entry, i) => ({
-        setNumber: i + 1,
-        isWarmup: true,
-        percentage: null,
-        weightKg: null,
-        reps: entry.repetitions,
-        pauseSeconds: inSetPause,
-      }));
+      .map((entry, i) => {
+        const warmupPercentage = WARMUP_PERCENTAGES[i] ?? null;
+        return {
+          setNumber: i + 1,
+          isWarmup: true,
+          percentage: warmupPercentage,
+          weightKg:
+            firstWorkingKg !== null && warmupPercentage !== null
+              ? roundWeightValue((warmupPercentage / 100) * firstWorkingKg)
+              : null,
+          reps: entry.repetitions,
+          pauseSeconds: inSetPause,
+        };
+      });
 
     workingReps.forEach((entry, i) => {
       const percentage = weightsObj.trainingWeights[i] + inclineDiff;

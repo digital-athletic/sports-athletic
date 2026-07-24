@@ -14,6 +14,11 @@
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { ExerciseDifficultyType } from "@/constants/workoutConstants";
 import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
+import {
+  computeWarmupTrainingWeights,
+  WARMUP_REST_SECONDS,
+  WARMUP_WEIGHT_PERCENTAGES,
+} from "@/features/training/generators/warmupDerivation";
 import type { MaxValuesType } from "@/features/training/models/MaxValues";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
@@ -21,12 +26,13 @@ import { calculateMaxStrengthAdjustment } from "@/features/training/utils/maxStr
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
 import { getUserBirthday } from "@/features/training/utils/userDataUtils";
 import {
+  deriveWeightForExercise,
   getMaxValueForExercise,
   getUserLevel,
-  roundWeightValue,
 } from "@/features/training/utils/workoutUtils";
 import type { SkillCode } from "@/schemas/generator.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
+import { MAX_FORCE_LEVELS } from "@/schemas/sync.schema";
 import type { MaxForceRepetitionsDataType } from "@/schemas/sync.schema";
 import type { TrainingLevelType } from "@/schemas/common.schema";
 import type { FeedbackScript } from "./feedbackScripts";
@@ -45,7 +51,7 @@ export interface SetSnapshot {
    * loads relative to that set, not to F-Max.
    */
   percentage: number | null;
-  weightKg: number | null;
+  weightKg: number;
   reps: number;
   pauseSeconds: number;
 }
@@ -78,15 +84,10 @@ export interface SimulateOptions {
   maxValues?: MaxValuesType;
 }
 
-const MAX_LEVELS = ["WARMUP", "EASY", "MEDIUM", "HARD"] as const;
-
-/** Warm-up loads per spec section 2: 50% / 75% of the 1st working set. */
-const WARMUP_PERCENTAGES = [50, 75];
-
 function isMaxLevel(
   level: string,
 ): level is MaxForceRepetitionsDataType["level"] {
-  return (MAX_LEVELS as readonly string[]).includes(level);
+  return (MAX_FORCE_LEVELS as readonly string[]).includes(level);
 }
 
 /**
@@ -115,7 +116,6 @@ export function simulateProgression(
   const ageGroup = ageGroupFor(getUserBirthday(user));
   const maxValue = getMaxValueForExercise(exercise, maxValues) ?? 0;
   const warmupCount = WorkoutConstants.MAX_KRAFT_REPETITIONS_WARMUP.length;
-  const inSetPause = generator.getInSetPauseBySkill("MAX_KRAFT");
   const afterSetPause = generator.getAfterSetPauseBySkill("MAX_KRAFT");
 
   let userExercisesData: Record<string, UserExerciseDataType | undefined> = {};
@@ -139,37 +139,40 @@ export function simulateProgression(
     );
 
     const workingReps = repsEntries.slice(warmupCount);
-    const inclineDiff = weightsObj.inclineBenchWeightDifference;
 
-    // Spec section 2: warm-ups derive from the displayed (rounded) weight of
-    // the 1st working set and are rounded again like any load.
-    const firstWorkingPercentage = weightsObj.trainingWeights[0] + inclineDiff;
-    const firstWorkingKg =
-      maxValue > 0
-        ? roundWeightValue((firstWorkingPercentage / 100) * maxValue)
-        : null;
+    const warmupTrainingWeights = computeWarmupTrainingWeights(
+      weightsObj.trainingWeights[0],
+    );
 
     const sets: SetSnapshot[] = repsEntries
       .slice(0, warmupCount)
       .map((entry, i) => {
-        const warmupPercentage = WARMUP_PERCENTAGES[i] ?? null;
+        const warmupPercentage = WARMUP_WEIGHT_PERCENTAGES[i] ?? null;
         return {
           setNumber: i + 1,
           isWarmup: true,
           percentage: warmupPercentage,
           weightKg:
-            firstWorkingKg !== null && warmupPercentage !== null
-              ? roundWeightValue((warmupPercentage / 100) * firstWorkingKg)
-              : null,
+            deriveWeightForExercise(
+              warmupTrainingWeights[i],
+              "weightFMax",
+              exercise,
+              maxValues,
+            ) ?? 0,
           reps: entry.repetitions,
-          pauseSeconds: inSetPause,
+          pauseSeconds: WARMUP_REST_SECONDS,
         };
       });
 
     workingReps.forEach((entry, i) => {
-      const percentage = weightsObj.trainingWeights[i] + inclineDiff;
+      const percentage = weightsObj.trainingWeights[i];
       const weightKg =
-        maxValue > 0 ? roundWeightValue((percentage / 100) * maxValue) : null;
+        deriveWeightForExercise(
+          percentage,
+          "weightFMax",
+          exercise,
+          maxValues,
+        ) ?? 0;
       sets.push({
         setNumber: warmupCount + i + 1,
         isWarmup: false,

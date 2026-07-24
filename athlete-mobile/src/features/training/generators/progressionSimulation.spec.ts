@@ -11,6 +11,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
 import {
   DEFAULT_MAX_VALUE,
   DEFAULT_MAX_VALUES,
@@ -28,7 +29,10 @@ import {
   serializeProgression,
   serializeSets,
 } from "../../../../test/simulation/progression/goldenTable";
-import type { LegacyPersona } from "../../../../test/simulation/progression/personaAdapter";
+import {
+  personaToUser,
+  type LegacyPersona,
+} from "../../../../test/simulation/progression/personaAdapter";
 import {
   simulateProgression,
   type SessionSnapshot,
@@ -43,16 +47,14 @@ const personaP2 = (
   }
 ).default;
 
-// Barbell back squat (Kniebeuge mit LH Max-K) — the exercise from the bug report.
-const SQUAT_ID = "26";
-const squat = ((): ExerciseType => {
-  const found = (ExercisesData as ExerciseType[]).find(
-    (e) => e.id === SQUAT_ID,
-  );
-  if (!found)
-    throw new Error(`Exercise ${SQUAT_ID} missing from Exercises.json`);
+const exerciseById = (id: string): ExerciseType => {
+  const found = (ExercisesData as ExerciseType[]).find((e) => e.id === id);
+  if (!found) throw new Error(`Exercise ${id} missing from Exercises.json`);
   return found;
-})();
+};
+
+// Barbell back squat (Kniebeuge mit LH Max-K) — the exercise from the bug report.
+const squat = exerciseById("26");
 
 // Seed the squat 1RM (kneeDominant/barbell) from the bug report so kg are real.
 const maxValues: MaxValuesType = {
@@ -177,4 +179,62 @@ describe("progressionSimulation: p2 × MAX_KRAFT", () => {
       }
     },
   );
+});
+
+// The simulator reconstructs sets from the generator's building blocks, while
+// production assembles them in getSetListFromExercisePairs. This guards the
+// two paths against drifting apart.
+describe("progressionSimulation: simulator aligns with production set list assembly", () => {
+  it("main exercise sets from getSetListFromExercisePairs match the simulator snapshot", () => {
+    const generator = new TrainingGenerator();
+    const user = personaToUser(personaP2, maxValues);
+
+    // A bodyweight SUPPORT exercise must be in the pool: production fills the
+    // pauses between working sets with support exercises and throws if none
+    // clears the equipment filter.
+    const setList = generator.getSetListFromExercisePairs(
+      [
+        {
+          first: {
+            branchId: "alignment-test-branch",
+            branchTags: [],
+            exerciseId: squat.id,
+          },
+        },
+      ],
+      { skill: "MAX_KRAFT", length: 0 },
+      {},
+      user,
+      "HOME",
+      [],
+      [squat, exerciseById("137")],
+      3,
+      [],
+      {},
+    );
+
+    const sets = simulateProgression(personaP2, squat, "MAX_KRAFT", {
+      sessions: 1,
+      feedback: alwaysSucceeded,
+      maxValues,
+    })[0]!.exercises[0].sets;
+
+    const squatEntries = setList.filter((e) => e.exerciseId === squat.id);
+    expect(squatEntries.map((e) => e.weight)).toEqual(
+      sets.map((s) => s.weightKg),
+    );
+    expect(squatEntries.map((e) => e.repetition)).toEqual(
+      sets.map((s) => s.reps),
+    );
+
+    // Warm-up rest: the entry right after each warm-up squat entry is its
+    // pause. Working set rests are out of scope: production interleaves
+    // support exercises there, which the simulator intentionally omits.
+    sets
+      .filter((s) => s.isWarmup)
+      .forEach((warmup, i) => {
+        const pauseEntry = setList[setList.indexOf(squatEntries[i]!) + 1];
+        expect(pauseEntry?.duration).toBe(warmup.pauseSeconds);
+      });
+  });
 });

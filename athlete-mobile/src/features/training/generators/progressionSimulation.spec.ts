@@ -117,15 +117,12 @@ describe("progressionSimulation: p2 × MAX_KRAFT", () => {
     },
   );
 
-  it.skip.each(RUNS)(
-    "$name: matches the committed sets golden",
-    ({ name }) => {
-      assertGolden(
-        `p2-max-strength.${name}.sets.md`,
-        serializeSets(results.get(name)!),
-      );
-    },
-  );
+  it.skip.each(RUNS)("$name: matches the committed sets golden", ({ name }) => {
+    assertGolden(
+      `p2-max-strength.${name}.sets.md`,
+      serializeSets(results.get(name)!),
+    );
+  });
 
   it("runs four sessions and records working set weights and reps", () => {
     const sessions = results.get("tooEasy")!;

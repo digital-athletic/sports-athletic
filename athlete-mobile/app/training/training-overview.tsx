@@ -1,4 +1,5 @@
 import { BackHeader } from "@/common/BackHeader";
+import { CenteredLoading } from "@/common/CenteredLoading";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import type { ExerciseType } from "@/schemas/exercise.schema";
@@ -166,14 +167,7 @@ export default function TrainingOverviewScreen() {
             headerLeft: () => <BackHeader onBack={handleBack} />,
           }}
         />
-        <Box
-          flex={1}
-          justifyContent="center"
-          alignItems="center"
-          backgroundColor="white"
-        >
-          <Text variant="title">{t("common.loading")}</Text>
-        </Box>
+        <CenteredLoading />
       </>
     );
   }

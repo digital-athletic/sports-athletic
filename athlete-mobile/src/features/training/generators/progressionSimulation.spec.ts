@@ -1,7 +1,8 @@
 /**
  * Example test for the persona-driven progression simulator (p2 × MAX_KRAFT).
- * It proves the framework runs end-to-end against the real generator and
- * asserts the intra-session invariants.
+ * It proves the framework runs end-to-end against the real generator - the sets
+ * come from `getSetListFromExercisePairs` - and asserts the intra-session
+ * invariants.
  *
  * The golden-comparison tests are skipped: the tables under `__golden__/` now
  * encode the target values from
@@ -11,7 +12,6 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
 import {
   DEFAULT_MAX_VALUE,
   DEFAULT_MAX_VALUES,
@@ -29,10 +29,7 @@ import {
   serializeProgression,
   serializeSets,
 } from "../../../../test/simulation/progression/goldenTable";
-import {
-  personaToUser,
-  type LegacyPersona,
-} from "../../../../test/simulation/progression/personaAdapter";
+import { type LegacyPersona } from "../../../../test/simulation/progression/personaAdapter";
 import {
   simulateProgression,
   type SessionSnapshot,
@@ -92,11 +89,17 @@ const RUNS: { name: string; feedback: FeedbackScript }[] = [
   { name: "tooHard", feedback: alwaysTooHard },
 ];
 
+// A bodyweight SUPPORT exercise must be in the pool: production fills the gaps
+// between working sets with support exercises and throws if none clears the
+// equipment filter.
+const exercisePool = [squat, exerciseById("137")];
+
 function run(feedback: FeedbackScript): SessionSnapshot[] {
   return simulateProgression(personaP2, squat, "MAX_KRAFT", {
     sessions: 4,
     feedback,
     maxValues,
+    exercises: exercisePool,
   });
 }
 
@@ -163,10 +166,11 @@ describe("progressionSimulation: p2 × MAX_KRAFT", () => {
     }
   });
 
-  // Spec section 2: warm-up loads derive from the 1st working set (50% / 75%)
-  // and must therefore be present and ascending.
+  // Spec section 2: warm-ups ramp up to the 1st working set at a nominal
+  // 50% / 75%. The applied load is floored in percentage space, so it is checked
+  // as a ramp rather than against an exact fraction.
   it.each(RUNS)(
-    "$name: warm-up sets carry loads derived from the first working set",
+    "$name: warm-up sets ramp up to the first working set",
     ({ name }) => {
       for (const session of results.get(name)!) {
         const warmups = session.exercises[0].sets.filter((s) => s.isWarmup);
@@ -176,65 +180,19 @@ describe("progressionSimulation: p2 × MAX_KRAFT", () => {
           expect(load).toBeGreaterThan(0);
         }
         expect(loads[0]!).toBeLessThan(loads[1]!);
+        expect(loads[1]!).toBeLessThan(workingSets(session)[0].weightKg);
       }
     },
   );
 });
 
-// The simulator reconstructs sets from the generator's building blocks, while
-// production assembles them in getSetListFromExercisePairs. This guards the
-// two paths against drifting apart.
-describe("progressionSimulation: simulator aligns with production set list assembly", () => {
-  it("main exercise sets from getSetListFromExercisePairs match the simulator snapshot", () => {
-    const generator = new TrainingGenerator();
-    const user = personaToUser(personaP2, maxValues);
+// The snapshot reads its rests off the generated set list, so this pins the
+// scheme production emits: 60 s between warm-ups, the ~3 min superset block
+// between working sets, and a shorter rest closing the exercise.
+describe("progressionSimulation: rest scheme taken from the generated set list", () => {
+  it("records 60 s warm-up rests, 180 s between working sets and 120 s after the last", () => {
+    const sets = run(alwaysSucceeded)[0].exercises[0].sets;
 
-    // A bodyweight SUPPORT exercise must be in the pool: production fills the
-    // pauses between working sets with support exercises and throws if none
-    // clears the equipment filter.
-    const setList = generator.getSetListFromExercisePairs(
-      [
-        {
-          first: {
-            branchId: "alignment-test-branch",
-            branchTags: [],
-            exerciseId: squat.id,
-          },
-        },
-      ],
-      { skill: "MAX_KRAFT", length: 0 },
-      {},
-      user,
-      "HOME",
-      [],
-      [squat, exerciseById("137")],
-      3,
-      [],
-      {},
-    );
-
-    const sets = simulateProgression(personaP2, squat, "MAX_KRAFT", {
-      sessions: 1,
-      feedback: alwaysSucceeded,
-      maxValues,
-    })[0]!.exercises[0].sets;
-
-    const squatEntries = setList.filter((e) => e.exerciseId === squat.id);
-    expect(squatEntries.map((e) => e.weight)).toEqual(
-      sets.map((s) => s.weightKg),
-    );
-    expect(squatEntries.map((e) => e.repetition)).toEqual(
-      sets.map((s) => s.reps),
-    );
-
-    // Warm-up rest: the entry right after each warm-up squat entry is its
-    // pause. Working set rests are out of scope: production interleaves
-    // support exercises there, which the simulator intentionally omits.
-    sets
-      .filter((s) => s.isWarmup)
-      .forEach((warmup, i) => {
-        const pauseEntry = setList[setList.indexOf(squatEntries[i]!) + 1];
-        expect(pauseEntry?.duration).toBe(warmup.pauseSeconds);
-      });
+    expect(sets.map((s) => s.pauseSeconds)).toEqual([60, 60, 180, 180, 120]);
   });
 });

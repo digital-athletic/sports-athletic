@@ -30,13 +30,23 @@ spec targets with the current (defective) generator output.
 - `feedback applied`: what the adjustment persists. Per the spec there are no
   overrides, so it always equals `feedback given` (a "too heavy" at the 65%
   floor is still applied; the reduction simply clamps).
+- `branch level`: `up` or `down` when the adjustment asks production to change
+  the branch level, which swaps the exercise (spec section 6). Blank in every
+  target row: the spec keeps each run on the same exercise for all four
+  sessions. An `up` or `down` in actual output therefore means the run stopped
+  describing what the app would do from that session on, since the simulator
+  does not model the swap.
 
 **sets** has one row per set. For working sets `weight%` is the percentage of
 F-Max. For warm-ups it is the percentage of the 1st working set's displayed
 weight (spec section 2: 50 and 75), and `weight kg` is that fraction of the
 rounded 1st working set load, rounded again per spec section 8. Warm-up reps
-are 6 and 5 with 60 s rest; working sets carry the ≈3 min superset block as
-`pause s` = 180.
+are 6 and 5.
+
+`pause s` is the whole gap to the next set of the same exercise, support-set
+work included: 60 s between the warm-ups, the ≈3 min superset block between
+working sets (spec section 7), and 120 s after the closing set, where the
+exercise ends and no block follows.
 
 The `<feedback>` in the filename is the scripted difficulty reported every
 session: `tooEasy`, `succeeded` ("passt"), or `tooHard`.
@@ -52,7 +62,10 @@ nearest 2.5 kg (barbell; exact ties round down): 65% → 77.5, 67.5% → 82.5,
 Warm-up loads derive from the rounded 1st working set (spec section 2):
 1st working set 85 kg → 42.5 kg (50%) and 62.5 kg (75%; 63.75 is an exact tie
 and rounds down); 77.5 kg (tooHard from session 2 on) → 37.5 kg (38.75 ties
-down) and 57.5 kg.
+down) and 57.5 kg. The generator instead floors the two warm-up percentages
+against the 1st working percentage and converts afterwards
+(`computeWarmupTrainingWeights`), so today it yields 42 and 63 kg; that is one
+of the gaps these targets document.
 
 The runs use the spec's Advanced structure (3 working sets starting at
 70 / 72.5 / 75%, maxing at 70 / 75 / 80%).

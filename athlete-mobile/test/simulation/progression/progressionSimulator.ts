@@ -4,21 +4,23 @@
  * records a per-set snapshot each session, so weight/rep progression can be
  * audited against golden tables and coded invariants.
  *
- * Scope: reconstructs the MAX (Maximalkraft) intra-session set list from
- * `getMaxTrainingWeights` + `getMaxTrainingReps` and closes the inter-session
- * loop through `calculateMaxStrengthAdjustment`. Warm-up loads are derived per
- * spec section 2 (50% / 75% of the displayed weight of the 1st working set);
- * support exercises (assembled in `getSetListFromExercisePairs`) remain out of
- * scope. The progression under test is the working sets.
+ * Every recorded value comes from the production path: the sets are read off
+ * `getSetListFromExercisePairs` (the assembly the app renders) and the
+ * inter-session step replays `useExerciseCompletion` - the same
+ * `calculateMaxStrengthAdjustment` call, followed by the field guards
+ * `exerciseProgressStore.updateExercise` applies. Nothing is recomputed here,
+ * so the harness cannot drift into a progression production never produces.
+ *
+ * Out of scope: branch level changes. Production hands `levelUp`/`levelDown` to
+ * `updateBranchLevel`, which can swap the exercise for a harder or easier one.
+ * The harness stays on a single exercise and records the flags instead, so any
+ * session following a flagged one no longer mirrors the app.
  */
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { ExerciseDifficultyType } from "@/constants/workoutConstants";
 import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
-import {
-  computeWarmupTrainingWeights,
-  WARMUP_REST_SECONDS,
-  WARMUP_WEIGHT_PERCENTAGES,
-} from "@/features/training/generators/warmupDerivation";
+import { WARMUP_WEIGHT_PERCENTAGES } from "@/features/training/generators/warmupDerivation";
+import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { MaxValuesType } from "@/features/training/models/MaxValues";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
@@ -26,14 +28,12 @@ import { calculateMaxStrengthAdjustment } from "@/features/training/utils/maxStr
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
 import { getUserBirthday } from "@/features/training/utils/userDataUtils";
 import {
-  deriveWeightForExercise,
   getMaxValueForExercise,
   getUserLevel,
 } from "@/features/training/utils/workoutUtils";
 import type { SkillCode } from "@/schemas/generator.schema";
+import { toUserExerciseData } from "@/schemas/generator.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import { MAX_FORCE_LEVELS } from "@/schemas/sync.schema";
-import type { MaxForceRepetitionsDataType } from "@/schemas/sync.schema";
 import type { TrainingLevelType } from "@/schemas/common.schema";
 import type { FeedbackScript } from "./feedbackScripts";
 import {
@@ -42,17 +42,25 @@ import {
   type LegacyPersona,
 } from "./personaAdapter";
 
+/** Stand-in branch for the single exercise under simulation. */
+const SIMULATED_BRANCH_ID = "progression-simulator-branch";
+
+/** Ignored by the MAX branch, which sizes the set count from the user level. */
+const SETS_PER_EXERCISE = 3;
+
 export interface SetSnapshot {
   setNumber: number;
   isWarmup: boolean;
   /**
-   * Working sets: percent of F-Max. Warm-ups: percent of the 1st working
-   * set's displayed weight (spec section 2), since the spec defines warm-up
-   * loads relative to that set, not to F-Max.
+   * Working sets: percent of F-Max. Warm-ups: the nominal percentage of the 1st
+   * working set from `WARMUP_WEIGHT_PERCENTAGES`; the applied load is floored in
+   * percentage space (see `computeWarmupTrainingWeights`), so `weightKg` is not
+   * exactly this fraction of the 1st working set's displayed weight.
    */
   percentage: number | null;
   weightKg: number;
   reps: number;
+  /** Seconds between this set and the next set of the same exercise, support work included. */
   pauseSeconds: number;
 }
 
@@ -69,6 +77,12 @@ export interface ExerciseSnapshot {
   weightPercentageAfter: number | null;
   /** Level applied next session; null for the last simulated session. */
   levelAfter: string | null;
+  /**
+   * Branch level change requested by the adjustment. Production would swap the
+   * exercise here, which the harness does not model.
+   */
+  levelUp: boolean;
+  levelDown: boolean;
 }
 
 export interface SessionSnapshot {
@@ -80,14 +94,93 @@ export interface SessionSnapshot {
 export interface SimulateOptions {
   sessions: number;
   feedback: FeedbackScript;
+  /**
+   * Exercise pool handed to the generator. Must contain the exercise under test
+   * plus SUPPORT exercises that clear the equipment filter, since production
+   * fills the gaps between working sets with them. Mixing timed and rep-based
+   * support exercises makes `pauseSeconds` depend on the generator's random
+   * pick, so keep the pool uniform for stable goldens.
+   */
+  exercises: ExerciseType[];
   /** Absolute strength values so percentages resolve to realistic kg. */
   maxValues?: MaxValuesType;
+  place?: string;
+  equipment?: string[];
 }
 
-function isMaxLevel(
-  level: string,
-): level is MaxForceRepetitionsDataType["level"] {
-  return (MAX_FORCE_LEVELS as readonly string[]).includes(level);
+/**
+ * Mirrors the field guards of `exerciseProgressStore.updateExercise`, so the
+ * state carried into the next session is what the store would hold.
+ */
+function applyExerciseUpdate(
+  existing: UserExerciseDataType | undefined,
+  data: Partial<UserExerciseDataType> &
+    Pick<UserExerciseDataType, "exerciseId" | "skill">,
+): UserExerciseDataType {
+  const next: UserExerciseDataType = {
+    ...existing,
+    exerciseId: data.exerciseId,
+    skill: data.skill,
+  };
+  if (data.feedback) {
+    const previousDifficulty = existing?.feedback?.difficulty;
+    next.feedback = {
+      difficulty: data.feedback.difficulty,
+      streakCounter:
+        previousDifficulty && previousDifficulty === data.feedback.difficulty
+          ? (existing?.feedback?.streakCounter ?? 0) + 1
+          : 1,
+    };
+  }
+  if (data.maxFLevelAdjustment) {
+    next.maxFLevelAdjustment = data.maxFLevelAdjustment;
+  }
+  if (data.maxFRepetitions) {
+    next.maxFRepetitions = data.maxFRepetitions;
+  }
+  if (typeof data.nextWeightPercentage === "number") {
+    next.nextWeightPercentage = data.nextWeightPercentage;
+  }
+  if (typeof data.weight === "number") {
+    next.weight = data.weight;
+  }
+  return next;
+}
+
+/**
+ * Turns the generated set list into per-set snapshots. Pause entries and
+ * support exercises are not recorded as sets; their duration is folded into the
+ * preceding set's `pauseSeconds`, which is what the athlete actually rests.
+ */
+function toSetSnapshots(
+  setList: GeneratedSetListEntry[],
+  exerciseId: string,
+  workingPercentages: number[],
+): SetSnapshot[] {
+  const mainIndices = setList.reduce<number[]>((indices, entry, index) => {
+    if (entry.exerciseId === exerciseId) indices.push(index);
+    return indices;
+  }, []);
+  const warmupCount = WARMUP_WEIGHT_PERCENTAGES.length;
+
+  return mainIndices.map((entryIndex, setIndex) => {
+    const entry = setList[entryIndex];
+    const nextEntryIndex = mainIndices[setIndex + 1] ?? setList.length;
+    const isWarmup = setIndex < warmupCount;
+    return {
+      setNumber: setIndex + 1,
+      isWarmup,
+      percentage:
+        (isWarmup
+          ? WARMUP_WEIGHT_PERCENTAGES[setIndex]
+          : workingPercentages[setIndex - warmupCount]) ?? null,
+      weightKg: entry.weight ?? 0,
+      reps: entry.repetition ?? 0,
+      pauseSeconds: setList
+        .slice(entryIndex + 1, nextEntryIndex)
+        .reduce((seconds, next) => seconds + (next.duration ?? 0), 0),
+    };
+  });
 }
 
 /**
@@ -110,105 +203,62 @@ export function simulateProgression(
   const maxValues = opts.maxValues ?? DEFAULT_MAX_VALUES;
   const generator = new TrainingGenerator();
   const user = personaToUser(persona, maxValues);
-  const genderTag = personaGenderTag(persona);
+  const ageGroup = ageGroupFor(getUserBirthday(user));
+  // Production tags children "k" regardless of gender (useExerciseCompletion).
+  const genderTag =
+    ageGroup === WorkoutConstants.AGE_GROUPS.CHILD
+      ? "k"
+      : personaGenderTag(persona);
   const levelTag = getUserLevel(user);
   const userLevel = levelTag.toLowerCase() as TrainingLevelType;
-  const ageGroup = ageGroupFor(getUserBirthday(user));
   const maxValue = getMaxValueForExercise(exercise, maxValues) ?? 0;
-  const warmupCount = WorkoutConstants.MAX_KRAFT_REPETITIONS_WARMUP.length;
-  const afterSetPause = generator.getAfterSetPauseBySkill("MAX_KRAFT");
 
   let userExercisesData: Record<string, UserExerciseDataType | undefined> = {};
   const sessions: SessionSnapshot[] = [];
 
   for (let session = 1; session <= opts.sessions; session++) {
-    const prev = userExercisesData[exercise.id];
-    const weightPercentageBefore = prev?.nextWeightPercentage ?? null;
+    const previous = userExercisesData[exercise.id];
+    const weightPercentageBefore = previous?.nextWeightPercentage ?? null;
 
-    const weightsObj = generator.getMaxTrainingWeights(
+    const setList = generator.getSetListFromExercisePairs(
+      [
+        {
+          first: {
+            branchId: SIMULATED_BRANCH_ID,
+            branchTags: [],
+            exerciseId: exercise.id,
+          },
+        },
+      ],
+      { skill: focus, length: 0 },
+      {},
+      user,
+      opts.place ?? "HOME",
+      opts.equipment ?? [],
+      opts.exercises,
+      SETS_PER_EXERCISE,
+      [],
+      userExercisesData,
+    );
+
+    // The set list carries kg only; the percentages come from the same
+    // generator call production makes internally, purely to annotate the table.
+    const { trainingWeights } = generator.getMaxTrainingWeights(
       exercise,
       user,
       userExercisesData,
     );
-    const repsEntries = generator.getMaxTrainingReps(
-      user,
-      weightsObj,
-      userExercisesData,
-      exercise,
-      genderTag,
-    );
+    const sets = toSetSnapshots(setList, exercise.id, trainingWeights);
 
-    const workingReps = repsEntries.slice(warmupCount);
+    // What the screen reads: the exercise's last entry in the training list,
+    // converted the way the generator output is converted for the store.
+    const lastEntry = setList.findLast((e) => e.exerciseId === exercise.id);
+    const currentEntry = lastEntry ? toUserExerciseData(lastEntry) : undefined;
+    const levelBefore = currentEntry?.maxFRepetitions?.at(-1)?.level ?? "EASY";
 
-    const warmupTrainingWeights = computeWarmupTrainingWeights(
-      weightsObj.trainingWeights[0],
-    );
-
-    const sets: SetSnapshot[] = repsEntries
-      .slice(0, warmupCount)
-      .map((entry, i) => {
-        const warmupPercentage = WARMUP_WEIGHT_PERCENTAGES[i] ?? null;
-        return {
-          setNumber: i + 1,
-          isWarmup: true,
-          percentage: warmupPercentage,
-          weightKg:
-            deriveWeightForExercise(
-              warmupTrainingWeights[i],
-              "weightFMax",
-              exercise,
-              maxValues,
-            ) ?? 0,
-          reps: entry.repetitions,
-          pauseSeconds: WARMUP_REST_SECONDS,
-        };
-      });
-
-    workingReps.forEach((entry, i) => {
-      const percentage = weightsObj.trainingWeights[i];
-      const weightKg =
-        deriveWeightForExercise(
-          percentage,
-          "weightFMax",
-          exercise,
-          maxValues,
-        ) ?? 0;
-      sets.push({
-        setNumber: warmupCount + i + 1,
-        isWarmup: false,
-        percentage,
-        weightKg,
-        reps: entry.repetitions,
-        pauseSeconds: afterSetPause,
-      });
-    });
-
-    const levelBefore = workingReps[0]?.level ?? "EASY";
     const feedbackGiven = opts.feedback({ session });
-
-    const recordedReps: MaxForceRepetitionsDataType[] = workingReps.map(
-      (entry) => {
-        if (!isMaxLevel(entry.level)) {
-          throw new Error(`Generator returned unknown level "${entry.level}"`);
-        }
-        return { level: entry.level, repetitions: entry.repetitions };
-      },
-    );
-
-    // The screen feeds the adjustment THIS session's generated entry (its
-    // per-set `repetitionMAX` becomes `maxFRepetitions` via toUserExerciseData),
-    // so the weight-increase gate reads the level applied this session, not the
-    // previous one. Mirror that: carry `prev` forward but override the reps.
-    const currentEntry: UserExerciseDataType = {
-      ...prev,
-      exerciseId: exercise.id,
-      skill: focus,
-      maxFRepetitions: recordedReps,
-    };
-
-    const lastWorkingSet = sets.filter((s) => !s.isWarmup).at(-1);
     const adjustment = calculateMaxStrengthAdjustment({
-      weight: lastWorkingSet?.weightKg ?? 0,
+      weight: lastEntry?.weight ?? 0,
       adjustment: feedbackGiven,
       exerciseData: exercise,
       userExerciseData: currentEntry,
@@ -239,17 +289,36 @@ export function simulateProgression(
           weightPercentageAfter:
             adjustment.nextWeightPercentage ?? weightPercentageBefore,
           levelAfter: null,
+          levelUp: adjustment.levelUp,
+          levelDown: adjustment.levelDown,
         },
       ],
     });
 
+    // Same write order as the screen: the reported feedback is persisted first,
+    // an override replaces it, and the closing update writes no feedback at all.
+    let stored = applyExerciseUpdate(previous, {
+      exerciseId: exercise.id,
+      skill: focus,
+      feedback: { difficulty: feedbackGiven },
+    });
+    if (adjustment.feedbackOverride) {
+      stored = applyExerciseUpdate(stored, {
+        exerciseId: exercise.id,
+        skill: focus,
+        feedback: adjustment.feedbackOverride,
+      });
+    }
     userExercisesData = {
       ...userExercisesData,
-      [exercise.id]: {
-        ...currentEntry,
+      [exercise.id]: applyExerciseUpdate(stored, {
+        exerciseId: exercise.id,
+        skill: focus,
+        weight: lastEntry?.weight,
         nextWeightPercentage: adjustment.nextWeightPercentage,
-        feedback: { difficulty: persistedDifficulty },
-      },
+        maxFRepetitions: adjustment.maxFRepetitions,
+        maxFLevelAdjustment: feedbackGiven,
+      }),
     };
   }
 

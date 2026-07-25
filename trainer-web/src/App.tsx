@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router";
 import { Admin } from "./Admin";
 import { Login } from "./Login";
 import { TeamSelection } from "./TeamSelection";

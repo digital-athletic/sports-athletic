@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import appIcon from "@logos/app-icon/app-icon.png";
 import { useAuth } from "../hooks/useAuth";
 

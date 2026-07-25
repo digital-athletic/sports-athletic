@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router";
 import { EvaluationsTab } from "./components/EvaluationsTab";
 import { ManagementTab } from "./components/ManagementTab";
 import { SettingsTab } from "./components/SettingsTab";

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { AuthPageLayout } from "./components/AuthPageLayout";
 import { LoginForm } from "./components/LoginForm";
 import { useAuth } from "./hooks/useAuth";

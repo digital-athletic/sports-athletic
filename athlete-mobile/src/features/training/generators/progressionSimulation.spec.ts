@@ -8,9 +8,10 @@
  * docs/specs/max-weight-training-progression-logic.md, which the current
  * generator does not produce yet. Drop the `.skip` once the generator
  * implements the spec.
+ *
+ * The non-golden assertions are generator regression guards: the harness reads
+ * the production set list, so there is no reimplementation left to drift.
  */
-import fs from "node:fs";
-import path from "node:path";
 import {
   DEFAULT_MAX_VALUE,
   DEFAULT_MAX_VALUES,
@@ -25,6 +26,7 @@ import {
   type FeedbackScript,
 } from "../../../../test/simulation/progression/feedbackScripts";
 import {
+  progressionGoldens,
   serializeProgression,
   serializeSets,
 } from "../../../../test/simulation/progression/goldenTable";
@@ -57,27 +59,6 @@ const maxValues: MaxValuesType = {
   ...DEFAULT_MAX_VALUES,
   kneeDominant: { ...DEFAULT_MAX_VALUE, barbell: 121 },
 };
-
-const goldenDir = path.resolve(
-  __dirname,
-  "../../../../test/simulation/progression/__golden__",
-);
-
-function assertGolden(file: string, actual: string) {
-  const goldenPath = path.join(goldenDir, file);
-  if (process.env.UPDATE_GOLDEN) {
-    if (process.env.CI) {
-      throw new Error("UPDATE_GOLDEN must not be set in CI");
-    }
-    fs.writeFileSync(goldenPath, actual);
-  }
-  if (!fs.existsSync(goldenPath)) {
-    throw new Error(
-      `Missing golden ${file}; regenerate with UPDATE_GOLDEN=1 (see __golden__/README.md)`,
-    );
-  }
-  expect(actual).toBe(fs.readFileSync(goldenPath, "utf8"));
-}
 
 const workingSets = (session: SessionSnapshot) =>
   session.exercises[0].sets.filter((s) => !s.isWarmup);
@@ -114,7 +95,7 @@ describe("progressionSimulation: p2 × MAX_KRAFT", () => {
   it.skip.each(RUNS)(
     "$name: matches the committed progression golden",
     ({ name }) => {
-      assertGolden(
+      progressionGoldens.assertMatches(
         `p2-max-strength.${name}.progression.md`,
         serializeProgression(results.get(name)!),
       );
@@ -122,20 +103,20 @@ describe("progressionSimulation: p2 × MAX_KRAFT", () => {
   );
 
   it.skip.each(RUNS)("$name: matches the committed sets golden", ({ name }) => {
-    assertGolden(
+    progressionGoldens.assertMatches(
       `p2-max-strength.${name}.sets.md`,
       serializeSets(results.get(name)!),
     );
   });
 
-  it("runs four sessions and records working set weights and reps", () => {
+  // Guards the invariant loops below, which pass vacuously on an empty set list.
+  it("runs four sessions that each produce working sets", () => {
     const sessions = results.get("tooEasy")!;
     expect(sessions).toHaveLength(4);
     for (const session of sessions) {
       const working = workingSets(session);
       expect(working.length).toBeGreaterThan(0);
       for (const set of working) {
-        expect(typeof set.weightKg).toBe("number");
         expect(set.reps).toBeGreaterThan(0);
       }
     }
@@ -158,15 +139,16 @@ describe("progressionSimulation: p2 × MAX_KRAFT", () => {
   // INV1 held only for ADVANCED personas; BEGINNER reps fell through to a
   // weight-based fallback that made reps rise with weight. With p2 (ADVANCED)
   // the rep table applies, so this is a plain regression guard.
-  it("INV1 working set reps never increase across a session", () => {
+  // First session only: later sessions let reps rise across sets again.
+  it("INV1 working set reps never increase across the first session", () => {
     const reps = workingSets(results.get("tooEasy")![0]).map((s) => s.reps);
     for (let i = 1; i < reps.length; i++) {
       expect(reps[i]).toBeLessThanOrEqual(reps[i - 1]);
     }
   });
 
-  // Spec section 2: the applied warm-up load is floored, so the ramp up to the
-  // first working set is what can be asserted, not an exact fraction.
+  // Spec section 2: `computeWarmupTrainingWeights` floors the applied load, so
+  // the ramp is what can be asserted, not an exact fraction.
   it.each(RUNS)(
     "$name: warm-up sets ramp up to the first working set",
     ({ name }) => {

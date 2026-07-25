@@ -1,8 +1,7 @@
 /**
  * Example test for the persona-driven progression simulator (p2 × MAX_KRAFT).
- * It proves the framework runs end-to-end against the real generator - the sets
- * come from `getSetListFromExercisePairs` - and asserts the intra-session
- * invariants.
+ * It proves the framework runs end-to-end against the real generator and
+ * asserts the intra-session invariants.
  *
  * The golden-comparison tests are skipped: the tables under `__golden__/` now
  * encode the target values from
@@ -17,8 +16,8 @@ import {
   DEFAULT_MAX_VALUES,
   type MaxValuesType,
 } from "@/features/training/models/MaxValues";
+import { getExerciseById } from "@/data/exerciseRegistry";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import ExercisesData from "../../../../assets/data/generator/Exercises.json";
 import {
   alwaysSucceeded,
   alwaysTooEasy,
@@ -45,8 +44,8 @@ const personaP2 = (
 ).default;
 
 const exerciseById = (id: string): ExerciseType => {
-  const found = (ExercisesData as ExerciseType[]).find((e) => e.id === id);
-  if (!found) throw new Error(`Exercise ${id} missing from Exercises.json`);
+  const found = getExerciseById(id);
+  if (!found) throw new Error(`Exercise ${id} missing from the registry`);
   return found;
 };
 
@@ -148,9 +147,9 @@ describe("progressionSimulation: p2 × MAX_KRAFT", () => {
     "$name: INV2 working set weight never decreases across a session",
     ({ name }) => {
       for (const session of results.get(name)!) {
-        const percentages = workingSets(session).map((s) => s.percentage ?? 0);
-        for (let i = 1; i < percentages.length; i++) {
-          expect(percentages[i]).toBeGreaterThanOrEqual(percentages[i - 1]);
+        const loads = workingSets(session).map((s) => s.weightKg);
+        for (let i = 1; i < loads.length; i++) {
+          expect(loads[i]).toBeGreaterThanOrEqual(loads[i - 1]);
         }
       }
     },
@@ -166,32 +165,28 @@ describe("progressionSimulation: p2 × MAX_KRAFT", () => {
     }
   });
 
-  // Spec section 2: warm-ups ramp up to the 1st working set at a nominal
-  // 50% / 75%. The applied load is floored in percentage space, so it is checked
-  // as a ramp rather than against an exact fraction.
+  // Spec section 2: the applied warm-up load is floored, so the ramp up to the
+  // first working set is what can be asserted, not an exact fraction.
   it.each(RUNS)(
     "$name: warm-up sets ramp up to the first working set",
     ({ name }) => {
       for (const session of results.get(name)!) {
-        const warmups = session.exercises[0].sets.filter((s) => s.isWarmup);
-        expect(warmups.map((s) => s.percentage)).toEqual([50, 75]);
-        const loads = warmups.map((s) => s.weightKg);
-        for (const load of loads) {
-          expect(load).toBeGreaterThan(0);
-        }
-        expect(loads[0]!).toBeLessThan(loads[1]!);
-        expect(loads[1]!).toBeLessThan(workingSets(session)[0].weightKg);
+        const loads = session.exercises[0].sets
+          .filter((s) => s.isWarmup)
+          .map((s) => s.weightKg);
+
+        expect(loads).toHaveLength(2);
+        expect(loads[0]).toBeGreaterThan(0);
+        expect(loads[0]).toBeLessThan(loads[1]);
+        expect(loads[1]).toBeLessThan(workingSets(session)[0].weightKg);
       }
     },
   );
-});
 
-// The snapshot reads its rests off the generated set list, so this pins the
-// scheme production emits: 60 s between warm-ups, the ~3 min superset block
-// between working sets, and a shorter rest closing the exercise.
-describe("progressionSimulation: rest scheme taken from the generated set list", () => {
-  it("records 60 s warm-up rests, 180 s between working sets and 120 s after the last", () => {
-    const sets = run(alwaysSucceeded)[0].exercises[0].sets;
+  // 60 s between the warm-ups, the 3 min superset block between working sets,
+  // and 2 min after the closing set before the next exercise.
+  it("records the rest scheme of a max strength exercise", () => {
+    const sets = results.get("succeeded")![0].exercises[0].sets;
 
     expect(sets.map((s) => s.pauseSeconds)).toEqual([60, 60, 180, 180, 120]);
   });

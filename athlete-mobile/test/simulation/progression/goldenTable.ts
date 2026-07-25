@@ -16,22 +16,12 @@ function table(header: string, rows: string[]): string {
   return `${[header, divider, ...rows].join("\n")}\n`;
 }
 
-/** Branch level change the adjustment requested; blank when it stayed put. */
-function branchLevel(exercise: {
-  levelUp: boolean;
-  levelDown: boolean;
-}): string {
-  if (exercise.levelUp) return "up";
-  if (exercise.levelDown) return "down";
-  return "";
-}
-
 /** One row per session: the inter-session weight/level progression. */
 export function serializeProgression(sessions: SessionSnapshot[]): string {
   const rows = sessions.flatMap((session) =>
     session.exercises.map(
       (ex) =>
-        `| ${session.session} | ${ex.displayName} | ${ex.maxValue} | ${session.focus} | ${cell(ex.weightPercentageBefore)} | ${cell(ex.weightPercentageAfter)} | ${ex.levelBefore} | ${cell(ex.levelAfter)} | ${ex.feedbackGiven ?? ""} | ${ex.feedbackApplied ?? ""} | ${branchLevel(ex)} |`,
+        `| ${session.session} | ${ex.displayName} | ${ex.maxValue} | ${session.focus} | ${cell(ex.weightPercentageBefore)} | ${cell(ex.weightPercentageAfter)} | ${ex.levelBefore} | ${cell(ex.levelAfter)} | ${ex.feedbackGiven ?? ""} | ${ex.feedbackApplied ?? ""} | ${cell(ex.branchLevelChange)} |`,
     ),
   );
   return table(

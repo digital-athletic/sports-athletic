@@ -6,10 +6,8 @@ export const ExerciseDifficultySchema = v.nullable(
   v.picklist(["TOO_HARD", "TOO_EASY", "SUCCEEDED"]),
 );
 
-export const MAX_FORCE_LEVELS = ["WARMUP", "EASY", "MEDIUM", "HARD"] as const;
-
 export const MaxForceRepetitionsDataSchema = v.object({
-  level: v.picklist(MAX_FORCE_LEVELS),
+  level: v.picklist(["WARMUP", "EASY", "MEDIUM", "HARD"]),
   repetitions: v.number(),
 });
 export type MaxForceRepetitionsDataType = v.InferOutput<

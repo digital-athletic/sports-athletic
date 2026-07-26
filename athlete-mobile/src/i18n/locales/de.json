@@ -416,6 +416,10 @@
       "noWeights": "Keine Gewichte",
       "cmHigh": "cm hoch",
       "heartRateInterval": "Pulsbereich",
+      "a11y": {
+        "showExerciseInfo": "Übungsinformationen anzeigen",
+        "abortTraining": "Training abbrechen"
+      },
       "strengthTestAlert": {
         "title": "Achtung bei Beschwerden",
         "message": "Du hast Beschwerden angegeben. Achte bei Max-Kraft-Übungen besonders auf deinen Körper.\nBeende eine Übung sofort, wenn sich die Ausführung nicht gut anfühlt."

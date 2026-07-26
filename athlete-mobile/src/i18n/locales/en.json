@@ -416,6 +416,10 @@
       "noWeights": "No weights",
       "cmHigh": "cm high",
       "heartRateInterval": "Heart rate interval",
+      "a11y": {
+        "showExerciseInfo": "Show exercise information",
+        "abortTraining": "Abort training"
+      },
       "strengthTestAlert": {
         "title": "Attention for pain",
         "message": "You declared pains. Pay special attention to your body during Max Force exercises.\nStop an exercise immediately if it does not feel good."

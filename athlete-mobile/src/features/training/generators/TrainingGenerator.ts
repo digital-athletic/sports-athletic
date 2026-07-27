@@ -119,11 +119,16 @@ import {
   requireWorkoutData,
 } from "../utils/userDataUtils";
 import {
+  deriveWeightForExercise,
   getMaxValueForExercise,
   getRoundedResultForValueAndStep,
   getUserLevel,
   roundWeightValue,
 } from "../utils/workoutUtils";
+import {
+  computeWarmupTrainingWeights,
+  WARMUP_REST_SECONDS,
+} from "./warmupDerivation";
 
 export default class TrainingGenerator {
   static DEBUG = false;
@@ -1631,9 +1636,6 @@ export default class TrainingGenerator {
         const first = exercisePairs[ep].first;
         const exercise = exerciseMap.get(first.exerciseId);
         if (!exercise) continue;
-        const maxValue = getMaxValueForExercise(exercise, maxValues) ?? 0;
-        // 2 warm-up with reduced weight later calculated with trainingWeights
-        let warmUpWeights = [50, 75];
         // set with ex - pause -sup1 -pause -sup2 -pause
         let maxTrainingWeights = this.getMaxTrainingWeights(
           exercise,
@@ -1647,8 +1649,8 @@ export default class TrainingGenerator {
           exercise,
           genderTag,
         );
-        warmUpWeights = warmUpWeights.map((w) =>
-          Math.floor((w / 100) * maxTrainingWeights.trainingWeights[0]),
+        const warmUpWeights = computeWarmupTrainingWeights(
+          maxTrainingWeights.trainingWeights[0],
         );
         let trainingWeights = warmUpWeights.concat(
           maxTrainingWeights.trainingWeights,
@@ -1670,40 +1672,31 @@ export default class TrainingGenerator {
         );
 
         // build warm up
-        // warm up scheme: ex - 60s pause - ex - 60s pause
-        setList.push({
-          branchId: first.branchId,
-          exerciseId: first.exerciseId,
-          tags: first.branchTags,
-          set: [1, trainingWeights.length],
-          skill: skill.skill,
-          weight: roundWeightValue((trainingWeights[0] / 100) * maxValue),
-          repetition: trainingReps[0].repetitions,
-          repetitionMAX: trainingReps[0],
-        });
-        setList.push({
-          branchId: PLACEHOLDER_BRANCH_ID,
-          exerciseId: "999999",
-          set: [1, trainingWeights.length],
-          skill: skill.skill,
-          duration: 60,
-        });
-        setList.push({
-          branchId: first.branchId,
-          exerciseId: first.exerciseId,
-          tags: first.branchTags,
-          set: [2, trainingWeights.length],
-          skill: skill.skill,
-          weight: roundWeightValue((trainingWeights[1] / 100) * maxValue),
-          repetition: trainingReps[1].repetitions,
-          repetitionMAX: trainingReps[1],
-        });
-        setList.push({
-          branchId: PLACEHOLDER_BRANCH_ID,
-          exerciseId: "999999",
-          set: [2, trainingWeights.length],
-          skill: skill.skill,
-          duration: 60,
+        // warm up scheme: ex - 60s pause, per warm up weight
+        warmUpWeights.forEach((_, w) => {
+          setList.push({
+            branchId: first.branchId,
+            exerciseId: first.exerciseId,
+            tags: first.branchTags,
+            set: [w + 1, trainingWeights.length],
+            skill: skill.skill,
+            weight:
+              deriveWeightForExercise(
+                trainingWeights[w],
+                "weightFMax",
+                exercise,
+                maxValues,
+              ) ?? 0,
+            repetition: trainingReps[w].repetitions,
+            repetitionMAX: trainingReps[w],
+          });
+          setList.push({
+            branchId: PLACEHOLDER_BRANCH_ID,
+            exerciseId: PAUSE_EXERCISE_ID,
+            set: [w + 1, trainingWeights.length],
+            skill: skill.skill,
+            duration: WARMUP_REST_SECONDS,
+          });
         });
         // build training
         // training scheme: ex - 30s pause - 8rep/30s supEx - 60s pause - 8rep/30s supEx - 30s pause
@@ -1712,7 +1705,7 @@ export default class TrainingGenerator {
         const supportExerciseRepetition = 10;
 
         for (
-          let trainingSet = 2;
+          let trainingSet = warmUpWeights.length;
           trainingSet < trainingWeights.length;
           trainingSet++
         ) {
@@ -1860,9 +1853,13 @@ export default class TrainingGenerator {
               tags: first.branchTags,
               set: [trainingSet + 1, trainingWeights.length],
               skill: skill.skill,
-              weight: roundWeightValue(
-                (trainingWeights[trainingSet] / 100) * maxValue,
-              ),
+              weight:
+                deriveWeightForExercise(
+                  trainingWeights[trainingSet],
+                  "weightFMax",
+                  exercise,
+                  maxValues,
+                ) ?? 0,
               repetition: trainingReps[trainingSet].repetitions,
               repetitionMAX: trainingReps[trainingSet],
             });
@@ -1897,9 +1894,13 @@ export default class TrainingGenerator {
               tags: first.branchTags,
               set: [trainingSet + 1, trainingWeights.length],
               skill: skill.skill,
-              weight: roundWeightValue(
-                (trainingWeights[trainingSet] / 100) * maxValue,
-              ),
+              weight:
+                deriveWeightForExercise(
+                  trainingWeights[trainingSet],
+                  "weightFMax",
+                  exercise,
+                  maxValues,
+                ) ?? 0,
               repetition: trainingReps[trainingSet].repetitions,
               repetitionMAX: trainingReps[trainingSet],
             });

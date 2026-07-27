@@ -4,44 +4,81 @@
  * and asserted by string equality; human-facing context lives in the folder's
  * README.
  */
-import type { SessionSnapshot } from "./progressionSimulator";
+import path from "node:path";
+import { GoldenDirectory } from "../../goldenDirectory";
+import { renderTable, type ColumnSpec } from "../../markdownTable";
+import type {
+  ExerciseSnapshot,
+  SessionSnapshot,
+  SetSnapshot,
+} from "./progressionSimulator";
 
-/** Blank cell for unknown values (e.g. warm-up loads, last-session level after). */
-function cell(value: number | string | null): string {
-  return value === null ? "" : String(value);
+export const progressionGoldens = new GoldenDirectory(
+  path.join(__dirname, "__golden__"),
+);
+
+interface ProgressionRow {
+  session: SessionSnapshot;
+  exercise: ExerciseSnapshot;
 }
 
-function table(header: string, rows: string[]): string {
-  const divider = `|${" --- |".repeat(header.split("|").length - 2)}`;
-  return `${[header, divider, ...rows].join("\n")}\n`;
+interface SetRow {
+  session: SessionSnapshot;
+  exercise: ExerciseSnapshot;
+  set: SetSnapshot;
 }
+
+const PROGRESSION_COLUMNS: ColumnSpec<ProgressionRow>[] = [
+  { header: "session", value: ({ session }) => session.session },
+  { header: "exercise", value: ({ exercise }) => exercise.displayName },
+  { header: "max kg", value: ({ exercise }) => exercise.maxValue },
+  { header: "focus", value: ({ session }) => session.focus },
+  {
+    header: "weight% before",
+    value: ({ exercise }) => exercise.weightPercentageBefore,
+  },
+  {
+    header: "weight% after",
+    value: ({ exercise }) => exercise.weightPercentageAfter,
+  },
+  { header: "level before", value: ({ exercise }) => exercise.levelBefore },
+  { header: "level after", value: ({ exercise }) => exercise.levelAfter },
+  { header: "feedback given", value: ({ exercise }) => exercise.feedbackGiven },
+  {
+    header: "feedback applied",
+    value: ({ exercise }) => exercise.feedbackApplied,
+  },
+  {
+    header: "branch level",
+    value: ({ exercise }) => exercise.branchLevelChange,
+  },
+];
+
+const SET_COLUMNS: ColumnSpec<SetRow>[] = [
+  { header: "session", value: ({ session }) => session.session },
+  { header: "exercise", value: ({ exercise }) => exercise.displayName },
+  { header: "set", value: ({ set }) => set.setNumber },
+  { header: "type", value: ({ set }) => (set.isWarmup ? "warmup" : "working") },
+  { header: "weight%", value: ({ set }) => set.percentage },
+  { header: "weight kg", value: ({ set }) => set.weightKg },
+  { header: "reps", value: ({ set }) => set.reps },
+  { header: "pause s", value: ({ set }) => set.pauseSeconds },
+];
 
 /** One row per session: the inter-session weight/level progression. */
 export function serializeProgression(sessions: SessionSnapshot[]): string {
   const rows = sessions.flatMap((session) =>
-    session.exercises.map(
-      (ex) =>
-        `| ${session.session} | ${ex.displayName} | ${ex.maxValue} | ${session.focus} | ${cell(ex.weightPercentageBefore)} | ${cell(ex.weightPercentageAfter)} | ${ex.levelBefore} | ${cell(ex.levelAfter)} | ${ex.feedbackGiven ?? ""} | ${ex.feedbackApplied ?? ""} |`,
-    ),
+    session.exercises.map((exercise) => ({ session, exercise })),
   );
-  return table(
-    "| session | exercise | max kg | focus | weight% before | weight% after | level before | level after | feedback given | feedback applied |",
-    rows,
-  );
+  return renderTable(PROGRESSION_COLUMNS, rows);
 }
 
 /** One row per set: the intra-session weight/rep protocol. */
 export function serializeSets(sessions: SessionSnapshot[]): string {
   const rows = sessions.flatMap((session) =>
-    session.exercises.flatMap((ex) =>
-      ex.sets.map(
-        (s) =>
-          `| ${session.session} | ${ex.displayName} | ${s.setNumber} | ${s.isWarmup ? "warmup" : "working"} | ${cell(s.percentage)} | ${cell(s.weightKg)} | ${s.reps} | ${s.pauseSeconds} |`,
-      ),
+    session.exercises.flatMap((exercise) =>
+      exercise.sets.map((set) => ({ session, exercise, set })),
     ),
   );
-  return table(
-    "| session | exercise | set | type | weight% | weight kg | reps | pause s |",
-    rows,
-  );
+  return renderTable(SET_COLUMNS, rows);
 }

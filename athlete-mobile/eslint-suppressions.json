@@ -1,0 +1,702 @@
+{
+  "app.config.ts": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "app/(anamnesis,more)/anamnesis/anamnesis-questions.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "app/(anamnesis,more)/anamnesis/generating.tsx": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "app/(anamnesis,more)/anamnesis/season-phase.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "app/(anamnesis,more)/anamnesis/sport.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "app/(anamnesis,more)/anamnesis/training-days.tsx": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "app/(anamnesis,more)/anamnesis/userprofile.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "app/(tabs)/(home)/index.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "app/(tabs)/(home)/section-details.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "app/(tabs)/(more)/equipment-details.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "app/(tabs)/(more)/equipment.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "app/(tabs)/(more)/more.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "app/(tabs)/(more)/notifications.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "app/contact.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "app/demo.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "app/onboarding/index.tsx": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 2
+    }
+  },
+  "app/training/exercise-information.tsx": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "app/training/index.tsx": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 2
+    }
+  },
+  "app/training/manual-strength-test.tsx": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "app/training/muscle-soreness.tsx": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 2
+    }
+  },
+  "app/training/training-active.tsx": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "app/training/training-overview.tsx": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "app/training/training-success.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "assets/data/generator/trainingSections/competition/adult/advanced.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "assets/data/generator/trainingSections/competition/adult/beginner.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "assets/data/generator/trainingSections/competition/adult/professional.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "assets/data/generator/trainingSections/competition/child/advanced.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "assets/data/generator/trainingSections/competition/child/beginner.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "assets/data/generator/trainingSections/competition/child/professional.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "assets/data/generator/trainingSections/pause/adult/advanced.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "assets/data/generator/trainingSections/pause/adult/beginner.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "assets/data/generator/trainingSections/pause/adult/professional.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "assets/data/generator/trainingSections/pause/child/advanced.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "assets/data/generator/trainingSections/pause/child/beginner.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "assets/data/generator/trainingSections/pause/child/professional.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "assets/data/generator/trainingSections/prepatory/adult/advanced.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "assets/data/generator/trainingSections/prepatory/adult/beginner.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "assets/data/generator/trainingSections/prepatory/adult/professional.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "assets/data/generator/trainingSections/prepatory/child/advanced.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "assets/data/generator/trainingSections/prepatory/child/beginner.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "assets/data/generator/trainingSections/prepatory/child/professional.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "assets/mockdata/TestIntensity.js": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "e2e/mocks/stores/data/userProfileStore.ts": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "e2e/mocks/stores/data/userWorkoutStore.ts": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "e2e/pages/WorkoutPage.ts": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "e2e/utils/storage.ts": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "src/auth/useAuthActions.ts": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/auth/useAuthStateListener.ts": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 2
+    }
+  },
+  "src/charts/PowerTest.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/charts/RadarChart.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/common/FullScreenCoaching.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/constants/workoutConstants.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "src/features/equipment/PlaceSelection.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/more/JoinTeamScreen.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/onboarding/ConsentScreen.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/onboarding/EmailVerificationScreen.tsx": {
+    "complexity": {
+      "count": 2
+    },
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/onboarding/LoginScreen.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/onboarding/RegisterScreen.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/statistics/components/PowerTest.tsx": {
+    "max-lines": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 2
+    }
+  },
+  "src/features/statistics/components/TrainingSummary.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/statistics/components/Workouts.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/statistics/hooks/useWorkoutsData.ts": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "src/features/statistics/models/ChartData.ts": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "src/features/training/ColumnList.tsx": {
+    "max-lines-per-function": {
+      "count": 2
+    }
+  },
+  "src/features/training/ExerciseInfoPanel.tsx": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/training/IndividualWorkoutDisplay.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/training/LevelProgress.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/training/SectionWeekBars.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/training/SyncIndicator.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/training/TrainingCountdown.tsx": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/training/TrainingNavigation.tsx": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/training/generators/PlanGenerator.ts": {
+    "complexity": {
+      "count": 12
+    },
+    "max-depth": {
+      "count": 16
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 11
+    },
+    "max-params": {
+      "count": 10
+    }
+  },
+  "src/features/training/generators/TrainingGenerator.ts": {
+    "complexity": {
+      "count": 21
+    },
+    "max-depth": {
+      "count": 38
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 22
+    },
+    "max-params": {
+      "count": 13
+    }
+  },
+  "src/features/training/generators/generatorErrorUtils.ts": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/training/hooks/useActiveExerciseView.ts": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/training/hooks/useExerciseCompletion.ts": {
+    "complexity": {
+      "count": 4
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 4
+    },
+    "max-params": {
+      "count": 1
+    }
+  },
+  "src/features/training/hooks/useExerciseProgression.ts": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/training/hooks/useFinishTraining.ts": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/training/hooks/usePanResponder.ts": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/training/hooks/useTrainingAlerts.ts": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/training/hooks/useVoiceCoach.ts": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/training/models/ExerciseTotals.ts": {
+    "max-params": {
+      "count": 1
+    }
+  },
+  "src/features/training/trainingStore.ts": {
+    "max-lines-per-function": {
+      "count": 1
+    },
+    "max-params": {
+      "count": 2
+    }
+  },
+  "src/features/training/utils/branchFilterUtils.ts": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    },
+    "max-params": {
+      "count": 1
+    }
+  },
+  "src/features/training/utils/branchLevelUtils.ts": {
+    "complexity": {
+      "count": 2
+    },
+    "max-lines-per-function": {
+      "count": 1
+    },
+    "max-params": {
+      "count": 1
+    }
+  },
+  "src/features/training/utils/equipmentUtils.ts": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/training/utils/exerciseDataUtils.ts": {
+    "complexity": {
+      "count": 2
+    },
+    "max-lines-per-function": {
+      "count": 1
+    },
+    "max-params": {
+      "count": 1
+    }
+  },
+  "src/features/training/utils/exerciseUtils.ts": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/training/utils/maxFRepetitionsFallback.spec.ts": {
+    "complexity": {
+      "count": 1
+    },
+    "max-params": {
+      "count": 1
+    }
+  },
+  "src/features/training/utils/maxStrengthAdjustment.test.ts": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/training/utils/maxStrengthAdjustment.ts": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/features/training/utils/painUtils.ts": {
+    "complexity": {
+      "count": 2
+    }
+  },
+  "src/features/training/utils/skillTreeUtils.ts": {
+    "complexity": {
+      "count": 5
+    },
+    "max-depth": {
+      "count": 2
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 5
+    },
+    "max-params": {
+      "count": 2
+    }
+  },
+  "src/features/training/utils/trainingSectionUtils.ts": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "src/features/training/utils/workoutUtils.test.ts": {
+    "max-lines-per-function": {
+      "count": 2
+    }
+  },
+  "src/features/training/utils/workoutUtils.ts": {
+    "complexity": {
+      "count": 5
+    },
+    "max-depth": {
+      "count": 4
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 4
+    },
+    "max-params": {
+      "count": 3
+    }
+  },
+  "src/form/DateInputField.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/form/SelectionInputField.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/form/SelectionModal.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/schemas/generator.schema.ts": {
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "src/services/AuthService.ts": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "src/services/SyncService.ts": {
+    "complexity": {
+      "count": 2
+    }
+  },
+  "src/store/completedWorkoutsStore.ts": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/store/exerciseProgressStore.ts": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 3
+    },
+    "max-params": {
+      "count": 2
+    }
+  },
+  "src/store/migrations/createMigrate.ts": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/store/syncQueueStore.ts": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/store/userProfileStore.ts": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "src/store/userWorkoutStore.ts": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    },
+    "max-params": {
+      "count": 2
+    }
+  },
+  "src/video/VideoPlayer.tsx": {
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "test/simulation/progression/progressionSimulator.ts": {
+    "complexity": {
+      "count": 1
+    }
+  }
+}

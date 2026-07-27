@@ -75,8 +75,8 @@ export interface ExerciseSnapshot {
   /** What the adjustment actually persists; differs from `feedbackGiven` when overridden. */
   feedbackApplied: ExerciseDifficultyType;
   weightPercentageAfter: number | null;
-  /** Level applied next session; null for the last simulated session. */
-  levelAfter: string | null;
+  /** Buffer column of the last working set in the following session. */
+  levelAfter: string;
   /** Recorded only; the harness does not model the exercise swap it triggers. */
   branchLevelChange: "up" | "down" | null;
 }
@@ -85,6 +85,13 @@ export interface SessionSnapshot {
   session: number;
   focus: SkillCode;
   exercises: ExerciseSnapshot[];
+}
+
+/** A recorded session before `levelAfter` is known; see `simulateProgression`. */
+interface PendingSession {
+  session: number;
+  focus: SkillCode;
+  exercise: Omit<ExerciseSnapshot, "levelAfter">;
 }
 
 export interface SimulateOptions {
@@ -181,9 +188,11 @@ export function simulateProgression(
   const progressOf = (exerciseId: string) =>
     useExerciseProgressStore.getState().exerciseData[exerciseId];
   resetProgress();
-  const sessions: SessionSnapshot[] = [];
+  const pending: PendingSession[] = [];
 
-  for (let session = 1; session <= opts.sessions; session++) {
+  // One session past the requested count: a session's `levelAfter` is only
+  // observable by generating the next one. The extra row is dropped below.
+  for (let session = 1; session <= opts.sessions + 1; session++) {
     const weightPercentageBefore =
       progressOf(exercise.id)?.nextWeightPercentage ?? null;
     const userExercisesData = useExerciseProgressStore.getState().exerciseData;
@@ -250,39 +259,39 @@ export function simulateProgression(
       maxFLevelAdjustment: feedbackGiven,
     });
 
-    sessions.push({
+    pending.push({
       session,
       focus,
-      exercises: [
-        {
-          exerciseId: exercise.id,
-          displayName: exercise.displayName ?? exercise.name ?? exercise.id,
-          maxValue,
-          weightPercentageBefore,
-          levelBefore,
-          sets,
-          feedbackGiven,
-          feedbackApplied:
-            progressOf(exercise.id)?.feedback?.difficulty ?? null,
-          weightPercentageAfter:
-            adjustment.nextWeightPercentage ?? weightPercentageBefore,
-          levelAfter: null,
-          branchLevelChange: adjustment.levelUp
-            ? "up"
-            : adjustment.levelDown
-              ? "down"
-              : null,
-        },
-      ],
+      exercise: {
+        exerciseId: exercise.id,
+        displayName: exercise.displayName ?? exercise.name ?? exercise.id,
+        maxValue,
+        weightPercentageBefore,
+        levelBefore,
+        sets,
+        feedbackGiven,
+        feedbackApplied: progressOf(exercise.id)?.feedback?.difficulty ?? null,
+        weightPercentageAfter:
+          adjustment.nextWeightPercentage ?? weightPercentageBefore,
+        branchLevelChange: adjustment.levelUp
+          ? "up"
+          : adjustment.levelDown
+            ? "down"
+            : null,
+      },
     });
   }
 
-  // Link levelAfter to the next session's applied level (real generator output,
-  // no duplicated transition logic); the last session's stays null (unknown).
-  sessions.forEach((s, i) => {
-    const next = sessions[i + 1];
-    if (next) s.exercises[0].levelAfter = next.exercises[0].levelBefore;
-  });
-
-  return sessions;
+  // levelAfter reads the next session's applied level off the real generator
+  // output, so no transition logic is duplicated here. The extra session that
+  // supplies it for the final row is discarded.
+  return pending
+    .slice(0, opts.sessions)
+    .map(({ session, focus, exercise }, i) => ({
+      session,
+      focus,
+      exercises: [
+        { ...exercise, levelAfter: pending[i + 1].exercise.levelBefore },
+      ],
+    }));
 }

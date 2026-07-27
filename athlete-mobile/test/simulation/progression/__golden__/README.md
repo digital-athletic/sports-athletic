@@ -24,8 +24,11 @@ spec targets with the current (defective) generator output.
   reconstruct the other sets; the top set is recorded because it drives the
   end-of-exercise rule.
 - `level before` / `after`: buffer column of the last working set this
-  session / the next one (blank on the last session, where no next session was
-  simulated). Advanced columns map as EASY = 20%, MEDIUM = 15%, HARD = 10%.
+  session / the next one. Advanced columns map as EASY = 20%, MEDIUM = 15%,
+  HARD = 10%. A session's `level after` is only observable by generating the
+  following session, so the simulator always runs one session past the
+  requested count and drops that extra row; the last recorded session
+  therefore still has a value.
 - `feedback given`: difficulty the athlete reported this session.
 - `feedback applied`: what the adjustment persists. Per the spec there are no
   overrides, so it always equals `feedback given` (a "too heavy" at the 65%
@@ -59,9 +62,10 @@ squat 1RM 121 kg. Weights are percentages of that F-Max, rounded to the
 nearest 2.5 kg (barbell; exact ties round down): 65% → 77.5, 67.5% → 82.5,
 70% → 85, 72.5% → 87.5, 75% → 90, 77.5% → 95, 80% → 97.5.
 
-Warm-up loads derive from the rounded 1st working set (spec section 2):
-1st working set 85 kg → 42.5 kg (50%) and 62.5 kg (75%; 63.75 is an exact tie
-and rounds down); 77.5 kg (tooHard from session 2 on) → 37.5 kg (38.75 ties
+Warm-up loads derive from the rounded 1st working set (spec section 2), at 50%
+and 75% of it, rounded the same way: 85 kg → 42.5 and 62.5 kg (63.75 is an
+exact tie and rounds down); 82.5 kg (tooHard session 2) → 40 kg (41.25 ties
+down) and 62.5 kg; 77.5 kg (tooHard from session 3 on) → 37.5 kg (38.75 ties
 down) and 57.5 kg. The generator instead floors the two warm-up percentages
 against the 1st working percentage and converts afterwards
 (`computeWarmupTrainingWeights`), so today it yields 42 and 63 kg; that is one
@@ -76,4 +80,4 @@ They differ only by the feedback reported each session:
 | --- | --- | --- |
 | `p2-max-strength.tooEasy.*` | always "zu leicht" | every set advances 2 ladder steps per session, capped at its final step |
 | `p2-max-strength.succeeded.*` | always "passt" | every set advances 1 ladder step per session; set 1 parks at 70% × 6 |
-| `p2-max-strength.tooHard.*` | always "zu schwer" | all sets drop 5 percentage points per session, floored at 65%, keeping their buffer column |
+| `p2-max-strength.tooHard.*` | always "zu schwer" | all sets drop 2.5 percentage points per session, floored at 65%, keeping their buffer column |

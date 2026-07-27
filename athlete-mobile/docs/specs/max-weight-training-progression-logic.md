@@ -2,16 +2,25 @@
 
 *Complete and self-contained set of rules for max strength training with free weights (barbell/dumbbell). All required information, including the repetition table, is contained in this document.*
 
+## 0. F-Max and the Strength Test
+
+Every percentage in this document refers to **F-Max**: the maximum load that applies to the exercise being performed.
+
+- F-Max is not measured per exercise. It is derived from the barbell 1RM of the exercise's **movement direction** (knee, hip, horizontal push, …) and then converted for the **equipment variant** of the exercise (barbell 100%, dumbbells 45% per hand, …). "The F-Max of the respective exercise" is therefore the equipment-adjusted max value for that exercise's direction.
+- The 1RM itself comes from a periodic **strength test**: a submaximal rep-out estimated with the Epley formula, `1RM = test weight × (1 + reps / 30)`. A true single-rep max attempt is never performed.
+- The full chain (test → 1RM → equipment conversion → training weight → rounding) is specified in [Weight Calculation from Strength Tests](./weight-calculation-strength-test.md).
+- F-Max is treated as constant while an exercise progresses. A new strength test replaces it; because progression is stored as percentages (Section 8), the ladder position is kept and only the resulting kg values change. The re-test cadence is not prescribed by this document.
+
 ## 1. Basic Rules
 
 - All weights are percentages of the personal maximum (F-Max) of the respective exercise. Example: 80% at an F-Max of 100 kg = 80 kg.
 - There are two levels: Advanced and Pro. They differ in number of sets, weights, and repetitions.
-- Max strength training is only intended for ages 16 and up (adults) and only from the performance level Advanced or Pro.
+- Max strength training is only intended for ages 16 and up and only from the performance level Advanced or Pro.
 - Each session consists of 2 warm-up sets + the defined working sets.
 - Each working set follows a fixed ladder (weight × repetitions) that runs from light to heavy. The heavier the weight, the fewer the repetitions – the built-in safety margin (buffer) protects against injuries.
 - Rating happens once after the last set of the exercise (too heavy / completed / too easy) – not after every set. The rating only takes effect in the next session.
 - Each set has a fixed starting weight and a fixed maximum weight (Section 3). The sets progress in parallel along their own ladders, each only up to its maximum weight. The spread between the sets arises automatically from the different maximum weights; there is no additional spacing rule.
-- If the last set reaches the end of its ladder and is rated "completed" there, the exercise is switched.
+- If the last set reaches the end of its ladder and is rated "completed" or "too easy" there, the exercise is switched.
 ## 2. Warm-up (both levels)
 
 Always 2 warm-up sets, calculated from the actually displayed (rounded) weight of the 1st working set:
@@ -23,11 +32,11 @@ Always 2 warm-up sets, calculated from the actually displayed (rounded) weight o
 
 The warm-up weights are then rounded according to the rounding rules in Section 8.
 
-- Between the warm-up sets: 60 s rest.
+- Between the warm-up sets: 60 s rest. Also 60 s between the 2nd warm-up set and the 1st working set.
 - Warm-up sets run without a supporting exercise / superset (Section 7 applies only to working sets).
 ## 3. Set Structure
 
-Each working set has a fixed starting weight and a fixed maximum weight. The starting values come exclusively from the following tables.
+Each working set has a fixed starting weight and a fixed maximum weight. The starting values come exclusively from the following tables. The starting weight is the entry point of a new exercise, the maximum weight the ceiling of its ladder. Neither is a hard bound downward: a "too heavy" rating can push a set below its starting weight, down to the 65% floor (Section 5.1).
 
 **Pro – 4 sets**
 
@@ -50,33 +59,35 @@ Development of the set structure over the sessions: Pro from 75 / 77.5 / 80 / 80
 
 ## 4. The Ladders
 
-In a session, the currently stored step of each set is performed. The ladder is read from left (light, start) to right (heavy, end). After the rating, the stored step is moved (Section 5). The repetition counts come from the following repetition table (buffer table).
+The repetition ladder shows the repetition count per buffer percentage. Throughout an exercise, athletes move "up" by proceeding through the columns until they reach the next row, where they start again in the highest buffer column of their level that has a value for that weight. The buffer is the percentage subtracted from the maximum an athlete can perform, as measured by the strength test.
 
 ### Repetition table (reps per weight and buffer column)
 
-A higher buffer means more safety margin and therefore fewer repetitions. Pro uses the columns 5 / 10 / 15%, Advanced uses the columns 10 / 15 / 20%. A dash (–) means: not used for this level/weight.
+A higher buffer means more safety margin and therefore fewer repetitions. Pro uses the columns 15 / 10 / 5%, Advanced uses the columns 20 / 15 / 10%. A dash (–) means: not used for this level/weight.
 
-| Weight | 5% | 10% | 15% | 20% |
+| Weight | 20% (Advanced Only) | 15% | 10% | 5% (Pro Only) |
 |---|---|---|---|---|
-| 65% | – | 6 | 5 | 3 |
-| 67.5% | – | 6 | 5 | 3 |
-| 70% | – | 6 | 5 | 3 |
-| 72.5% | – | 5 | 3 | 2 |
-| 75% | 6 | 5 | 3 | 2 |
-| 77.5% | 6 | 5 | 3 | 2 |
-| 80% | 5 | 3 | 2 | 1 |
-| 82.5% | 3 | 2 | 1 | – |
-| 85% | 3 | 2 | 1 | – |
-| 87.5% | 2 | 1 | – | – |
-| 90% | 2 | 1 | – | – |
+| 65% | 3 | 5 | 6 | – |
+| 67.5% | 3 | 5 | 6 | – |
+| 70% | 3 | 5 | 6 | – |
+| 72.5% | 2 | 3 | 5 | – |
+| 75% | 2 | 3 | 5 | 6 |
+| 77.5% | 2 | 3 | 5 | 6 |
+| 80% | 1 | 2 | 3 | 5 |
+| 82.5% | – | 1 | 2 | 3 |
+| 85% | – | 1 | 2 | 3 |
+| 87.5% | – | – | 1 | 2 |
+| 90% | – | – | 1 | 2 |
 
 The weights 65 – 67.5% serve only as a fallback for "too heavy" (Section 5.1).
 
 ### Derivation of the steps
 
-At a fixed weight, moving one step further means more repetitions (switching from the higher to the lower buffer column). Once the repetitions at the current weight are maxed out, the weight increases by +2.5%, and the repetitions start again in the highest buffer column of the level.
+At a fixed weight, moving one step further means more repetitions (switching from the higher to the lower buffer column). Once the repetitions at the current weight are maxed out, the weight increases by +2.5 percentage points of F-Max, and the repetitions start again in the highest buffer column of the level that has a value for the new weight.
 
-- Pro: per weight 15% → 10% → 5%.
+There are two categories targeted here, "Advanced" and "Professionals (Pro)". Beginners do not perform this kind of exercise.
+
+- Pro: per weight 15% → 10% → 5%. Exception: At 87.5% and 90% the 15% column is empty, so those weights start in the 10% column (87.5% × 1, 90% × 1).
 - Advanced: per weight 20% → 15% → 10%. Exception: The very first step (set 1, 70%) starts in the 15% column (70% × 5); the 20% column is only used as the starting column from the next weight (72.5%) onward.
 - A set never rises above its maximum weight (Section 3).
 ### Ladder: Pro
@@ -100,7 +111,9 @@ After the last set of the exercise, feedback is given once (not per set): too ea
 |---|---|
 | completed | 1 step further (one move → to the right on the ladder). |
 | too easy | 2 steps further (two moves → to the right on the ladder). |
-| too heavy | Weight −5 percentage points of F-Max, never below 65%. See Section 5.1. |
+| too heavy | Weight −2.5 percentage points of F-Max, never below 65%. See Section 5.1. |
+
+Both progression ratings clamp at the end of the ladder: a set advances as far as its own ladder allows and then stays at its final value. If only one step remains, "too easy" advances that one step; the surplus step is discarded, not carried over into the next session.
 
 **Progression ("completed" / "too easy")**
 
@@ -111,13 +124,16 @@ After the last set of the exercise, feedback is given once (not per set): too ea
 
 "too heavy" is not a step movement on the ladder, but a pure weight fallback:
 
-- All working sets of the exercise are reduced by 5 percentage points of F-Max, but never below 65%. All sets are reduced so that the order continues to ascend from light to heavy and no later set becomes lighter than an earlier one.
+- All working sets of the exercise are reduced by 2.5 percentage points of F-Max, but never below 65%. All sets are reduced together, so the weights never decrease from set to set. At the 65% floor, several sets can come to rest on the same weight.
 - For each set, the person remains in the same buffer column of the repetition table (Section 4) as before the reduction. For the new, lower weight, the repetition count stored in that column is used. The ladder is not reset to the first step.
-- Examples (10% buffer column): 77.5% × 5 → 72.5% × 5. 80% × 3 → 75% × 5.
+- If that column is empty for the new weight (the 5% column below 75%), the set moves one column up to the next higher buffer that has a value there and uses its repetition count. The set continues in that column from then on.
+- Examples: 77.5% × 5 → 75% × 5 (10% column). 80% × 3 → 77.5% × 5 (10% column). Pro 75% × 6 (5% column) → 72.5% × 5 (10% column, since the 5% column is empty at 72.5%).
+- A set already at 65% cannot be reduced further. Another "too heavy" leaves it unchanged: same weight, same buffer column, same repetitions, and the session repeats as is.
 - After a successfully completed session, the normal parallel progression resumes.
+
 ## 6. End of the Exercise
 
-If the last set reaches its last ladder step and is rated "completed" there, the exercise is finished:
+If the last set reaches its last ladder step and is rated "completed" or "too easy" there, the exercise is finished:
 
 - Pro: 90% × 2
 - Advanced: 80% × 3
@@ -148,6 +164,15 @@ A supporting block is inserted between each working set. The final rest differs 
 | 5 | 90 s rest (instead of 30 s) |
 
 For the supporting exercise: 2 sets of the same exercise; bilateral exercise 8 repetitions or 30 s duration; left/right exercise 1 set per side per round. The specific exercise is freely selectable. Warm-up sets are excluded (Section 2).
+
+**Pause between two working sets** is the whole block above, support sets included, counted from the end of one working set to the start of the next:
+
+| Level | Pause between working sets |
+|---|---|
+| Advanced | 3 min (180 s) |
+| Pro | 4 min (240 s) – the 60 s longer final rest |
+
+After the last working set of an exercise no supporting block follows. The pause before the next exercise starts is **2 min (120 s)**, at both levels.
 
 ## 8. Rounding to Loadable Weights
 

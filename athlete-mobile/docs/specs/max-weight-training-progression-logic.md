@@ -20,7 +20,8 @@ Every percentage in this document refers to **F-Max**: the maximum load that app
 - Each working set follows a fixed ladder (weight × repetitions) that runs from light to heavy. The heavier the weight, the fewer the repetitions – the built-in safety margin (buffer) protects against injuries.
 - Rating happens once after the last set of the exercise (too heavy / completed / too easy) – not after every set. The rating only takes effect in the next session.
 - Each set has a fixed starting weight and a fixed maximum weight (Section 3). The sets progress in parallel along their own ladders, each only up to its maximum weight. The spread between the sets arises automatically from the different maximum weights; there is no additional spacing rule.
-- If the last set reaches the end of its ladder and is rated "completed" or "too easy" there, the exercise is switched.
+- If the last set reaches the end of its ladder and is rated "completed" or "too easy" there, the exercise is switched (top of the exercise, Section 6.1).
+- Mirrored at the bottom: if the sets are already at the 65% floor and the exercise is rated "too heavy" again, the exercise is switched to an easier one (Section 6.2).
 ## 2. Warm-up (both levels)
 
 Always 2 warm-up sets, calculated from the actually displayed (rounded) weight of the 1st working set:
@@ -111,7 +112,7 @@ After the last set of the exercise, feedback is given once (not per set): too ea
 |---|---|
 | completed | 1 step further (one move → to the right on the ladder). |
 | too easy | 2 steps further (two moves → to the right on the ladder). |
-| too heavy | Weight −2.5 percentage points of F-Max, never below 65%. See Section 5.1. |
+| too heavy | Weight −2.5 percentage points of F-Max, never below 65%. Already at 65% → switch to an easier exercise. See Sections 5.1 and 6.2. |
 
 Both progression ratings clamp at the end of the ladder: a set advances as far as its own ladder allows and then stays at its final value. If only one step remains, "too easy" advances that one step; the surplus step is discarded, not carried over into the next session.
 
@@ -128,16 +129,37 @@ Both progression ratings clamp at the end of the ladder: a set advances as far a
 - For each set, the person remains in the same buffer column of the repetition table (Section 4) as before the reduction. For the new, lower weight, the repetition count stored in that column is used. The ladder is not reset to the first step.
 - If that column is empty for the new weight (the 5% column below 75%), the set moves one column up to the next higher buffer that has a value there and uses its repetition count. The set continues in that column from then on.
 - Examples: 77.5% × 5 → 75% × 5 (10% column). 80% × 3 → 77.5% × 5 (10% column). Pro 75% × 6 (5% column) → 72.5% × 5 (10% column, since the 5% column is empty at 72.5%).
-- A set already at 65% cannot be reduced further. Another "too heavy" leaves it unchanged: same weight, same buffer column, same repetitions, and the session repeats as is.
 - After a successfully completed session, the normal parallel progression resumes.
+- The 65% floor is a hard clamp on the weight only. Once a set sits at 65%, a further "too heavy" no longer changes weight, buffer column, or repetitions; it ends the exercise at the bottom instead (Section 6.2).
 
 ## 6. End of the Exercise
 
-If the last set reaches its last ladder step and is rated "completed" or "too easy" there, the exercise is finished:
+An exercise is left at either of its two ends, and both ends follow the same logic in opposite directions: move one level along the branch of the skill tree (see the branch, exercise, and level spec), harder at the top and easier at the bottom. In both cases the athlete's progression on the new exercise starts again at step 1 of every set's ladder, calculated from the F-Max of the new exercise. If no replacement exercise exists, nothing changes and the athlete stays at the current weight% / repetition level.
+
+### 6.1 Top: last set maxed out and rated "completed" or "too easy"
+
+Trigger: the last set stands at its last ladder step and is rated "completed" or "too easy" there:
 
 - Pro: 90% × 2
 - Advanced: 80% × 3
-Afterwards, the exercise is replaced by another exercise for the same muscle group (if available). For the new exercise, the progression starts again at step 1.
+
+Effect, in this order:
+
+1. Level up within the branch: the next higher level holding a different exercise (the harder variant of the same movement pattern).
+2. If the branch has no higher level, an equivalent branch from the same skill tree is substituted (same muscle group / movement pattern).
+3. If neither is available, the exercise is kept and remains at its final value; further "completed" or "too easy" ratings have no effect.
+
+### 6.2 Bottom: floor reached and rated "too heavy"
+
+Trigger: the working sets are already at the 65% floor (a previous "too heavy" reduction was clamped there, Section 5.1) and the exercise is rated "too heavy" again. The weight cannot go any lower, so the exercise itself is the wrong difficulty.
+
+Effect, in this order:
+
+1. Level down within the branch: the next lower level holding a different exercise (the easier variant of the same movement pattern).
+2. If the branch is exhausted at the bottom (already level 1), an equivalent branch from the same skill tree is substituted at the same difficulty, i.e. a different movement of comparable demand instead of an easier variant.
+3. If neither is available, the exercise is kept unchanged: it stays at 65% with the current repetitions, and further "too heavy" ratings have no effect. This is the mirror of the stalled final value in Section 6.1.
+
+The rating at the bottom applies to the exercise as a whole, exactly as at the top: a single "too heavy" at the floor is enough, no repeated confirmation over several sessions is required.
 
 ## 7. Superset Between the Sets
 

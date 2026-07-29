@@ -12,6 +12,15 @@ strictPeerDependencies: true
 # pulled from the registry before they reach us.
 minimumReleaseAge: 10080
 
+packageExtensions:
+  # 5.0.1 doesn't declare react/react-native as peers at all, so pnpm can't
+  # scope it per-consumer under isolated node-modules; this makes it resolve
+  # against each workspace package's own react version instead of ambient hoisting.
+  "@react-native-community/slider@5.0.1":
+    peerDependencies:
+      react: "*"
+      react-native: "*"
+
 overrides:
   "@babel/core": ">=7.29.6 <8"
   "@tootallnate/once": ">=3.0.1"

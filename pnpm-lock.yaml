@@ -23,6 +23,8 @@ overrides:
   ws@7: '>=7.5.11 <8'
   ws@8: '>=8.21.0 <9'
 
+packageExtensionsChecksum: sha256-qTeEgtiPWIbIukgyLv2k8QEYQZ6r9eYm/o7J5YwYkNU=
+
 importers:
 
   .:
@@ -53,7 +55,7 @@ importers:
         version: 11.5.2(react-native@0.81.5(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.17)(react@19.1.0)(supports-color@8.1.1))(react@19.1.0)
       '@react-native-community/slider':
         specifier: 5.0.1
-        version: 5.0.1
+        version: 5.0.1(react-native@0.81.5(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.17)(react@19.1.0)(supports-color@8.1.1))(react@19.1.0)
       '@shopify/restyle':
         specifier: 2.4.5
         version: 2.4.5(react-native@0.81.5(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.17)(react@19.1.0)(supports-color@8.1.1))(react@19.1.0)
@@ -1816,6 +1818,9 @@ packages:
 
   '@react-native-community/slider@5.0.1':
     resolution: {integrity: sha512-K3JRWkIW4wQ79YJ6+BPZzp1SamoikxfPRw7Yw4B4PElEQmqZFrmH9M5LxvIo460/3QSrZF/wCgi3qizJt7g/iw==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
 
   '@react-native/assets-registry@0.81.5':
     resolution: {integrity: sha512-705B6x/5Kxm1RKRvSv0ADYWm5JOnoiQ1ufW7h8uu2E6G9Of/eE6hP/Ivw3U5jI16ERqZxiKQwk34VJbB0niX9w==}
@@ -8295,7 +8300,10 @@ snapshots:
       react: 19.1.0
       react-native: 0.81.5(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.17)(react@19.1.0)(supports-color@8.1.1)
 
-  '@react-native-community/slider@5.0.1': {}
+  '@react-native-community/slider@5.0.1(react-native@0.81.5(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.17)(react@19.1.0)(supports-color@8.1.1))(react@19.1.0)':
+    dependencies:
+      react: 19.1.0
+      react-native: 0.81.5(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.17)(react@19.1.0)(supports-color@8.1.1)
 
   '@react-native/assets-registry@0.81.5': {}
 

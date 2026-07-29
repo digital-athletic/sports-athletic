@@ -213,7 +213,8 @@ export const useTrainingStore = create<TrainingState>()(
           state.activeExerciseIndex = initialState.activeExerciseIndex;
           state.tempMaxValues = initialState.tempMaxValues;
           state.trainingViewMode = initialState.trainingViewMode;
-          state.completedExerciseIndices = initialState.completedExerciseIndices;
+          state.completedExerciseIndices =
+            initialState.completedExerciseIndices;
         }),
       setHasHydrated: (hydrated) =>
         set((state) => {

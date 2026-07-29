@@ -130,7 +130,9 @@ export const TrainingListItem: FC<TrainingListItemProps> = ({
                   name={FEEDBACK_ICON[completedFeedback ?? "SUCCEEDED"].filled}
                   size={32}
                   color={
-                    colors[FEEDBACK_ICON[completedFeedback ?? "SUCCEEDED"].color]
+                    colors[
+                      FEEDBACK_ICON[completedFeedback ?? "SUCCEEDED"].color
+                    ]
                   }
                 />
               </TouchableBox>

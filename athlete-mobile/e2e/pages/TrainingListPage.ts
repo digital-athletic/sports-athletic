@@ -84,9 +84,7 @@ export class TrainingListPage extends BasePage {
 
   async selectFeedbackInRow(row: Locator, feedback: "too_easy" | "too_hard") {
     const suffix = feedback === "too_easy" ? "too-easy" : "too-hard";
-    await row
-      .locator(`[data-testid$="-${suffix}"]`)
-      .click({ timeout: 3000 });
+    await row.locator(`[data-testid$="-${suffix}"]`).click({ timeout: 3000 });
   }
 
   /**
@@ -114,7 +112,9 @@ export class TrainingListPage extends BasePage {
         continue;
       }
 
-      if (await this.firstVisibleRepsSaveButton.isVisible().catch(() => false)) {
+      if (
+        await this.firstVisibleRepsSaveButton.isVisible().catch(() => false)
+      ) {
         const input = this.page.getByPlaceholder("Repetitions").first();
         if (!(await input.inputValue().catch(() => ""))) {
           await input.fill("10");

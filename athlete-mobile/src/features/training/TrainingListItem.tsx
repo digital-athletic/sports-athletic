@@ -1,31 +1,10 @@
-import { Ionicon } from "@/common/Ionicon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
-import { useTheme } from "@/theme/theme";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { type FC } from "react";
-import { useTranslation } from "react-i18next";
+import { TrainingListItemActions } from "./TrainingListItemActions";
 import { TrainingRepetitionInput } from "./TrainingRepetitionInput";
-
-export type TrainingListItemFeedback = "TOO_EASY" | "TOO_HARD" | "SUCCEEDED";
-
-const FEEDBACK_ICON = {
-  TOO_EASY: {
-    outline: "arrow-down-circle-outline",
-    filled: "arrow-down-circle",
-    color: "info",
-  },
-  SUCCEEDED: {
-    outline: "checkmark-circle-outline",
-    filled: "checkmark-circle",
-    color: "darkGrey2",
-  },
-  TOO_HARD: {
-    outline: "arrow-up-circle-outline",
-    filled: "arrow-up-circle",
-    color: "error",
-  },
-} as const;
+import { type TrainingListItemFeedback } from "./trainingListItemFeedback";
 
 export type TrainingListItemProps = {
   displayName: string;
@@ -65,9 +44,6 @@ export const TrainingListItem: FC<TrainingListItemProps> = ({
   onShowInfo,
   testId,
 }) => {
-  const { t } = useTranslation();
-  const { colors } = useTheme();
-
   return (
     <Box
       testID={testId}
@@ -87,119 +63,16 @@ export const TrainingListItem: FC<TrainingListItemProps> = ({
           </Box>
         </TouchableBox>
 
-        <Box flexDirection="row" alignItems="center" gap="m">
-          {!isTest && (
-            <TouchableBox
-              onPress={onSkip}
-              disabled={isCompleted}
-              minWidth={32}
-              minHeight={32}
-              justifyContent="center"
-              alignItems="center"
-              accessibilityLabel={t("training.list.skipExercise")}
-              testID={`${testId}-skip`}
-            >
-              <Box opacity={isCompleted ? 0 : 1}>
-                <Ionicon
-                  name="play-forward"
-                  size={20}
-                  color={colors.darkGrey2}
-                />
-              </Box>
-            </TouchableBox>
-          )}
-
-          {isTest && isCompleted && repsValue > 0 && (
-            <Text variant="small" color="darkGrey1">
-              {t("training.overview.repetitions", { count: repsValue })}
-            </Text>
-          )}
-
-          {(!isTest || isCompleted) &&
-            (isCompleted ? (
-              <TouchableBox
-                onPress={() => onComplete()}
-                disabled
-                minWidth={36}
-                minHeight={36}
-                justifyContent="center"
-                alignItems="center"
-                testID={`${testId}-checkmark`}
-              >
-                <Ionicon
-                  name={FEEDBACK_ICON[completedFeedback ?? "SUCCEEDED"].filled}
-                  size={32}
-                  color={
-                    colors[
-                      FEEDBACK_ICON[completedFeedback ?? "SUCCEEDED"].color
-                    ]
-                  }
-                />
-              </TouchableBox>
-            ) : isFeedbackEligible ? (
-              <Box flexDirection="row" alignItems="center" gap="m">
-                <TouchableBox
-                  onPress={() => onComplete("TOO_EASY")}
-                  minWidth={36}
-                  minHeight={36}
-                  justifyContent="center"
-                  alignItems="center"
-                  accessibilityLabel={t("training.active.feedback.tooEasy")}
-                  testID={`${testId}-too-easy`}
-                >
-                  <Ionicon
-                    name={FEEDBACK_ICON.TOO_EASY.outline}
-                    size={32}
-                    color={colors[FEEDBACK_ICON.TOO_EASY.color]}
-                  />
-                </TouchableBox>
-                <TouchableBox
-                  onPress={() => onComplete()}
-                  minWidth={36}
-                  minHeight={36}
-                  justifyContent="center"
-                  alignItems="center"
-                  testID={`${testId}-checkmark`}
-                >
-                  <Ionicon
-                    name={FEEDBACK_ICON.SUCCEEDED.outline}
-                    size={32}
-                    color={colors[FEEDBACK_ICON.SUCCEEDED.color]}
-                  />
-                </TouchableBox>
-                <TouchableBox
-                  onPress={() => onComplete("TOO_HARD")}
-                  minWidth={36}
-                  minHeight={36}
-                  justifyContent="center"
-                  alignItems="center"
-                  accessibilityLabel={t("training.active.feedback.tooHard")}
-                  testID={`${testId}-too-hard`}
-                >
-                  <Ionicon
-                    name={FEEDBACK_ICON.TOO_HARD.outline}
-                    size={32}
-                    color={colors[FEEDBACK_ICON.TOO_HARD.color]}
-                  />
-                </TouchableBox>
-              </Box>
-            ) : (
-              <TouchableBox
-                onPress={() => onComplete()}
-                minWidth={36}
-                minHeight={36}
-                justifyContent="center"
-                alignItems="center"
-                testID={`${testId}-checkmark`}
-              >
-                <Ionicon
-                  name={FEEDBACK_ICON.SUCCEEDED.outline}
-                  size={32}
-                  color={colors[FEEDBACK_ICON.SUCCEEDED.color]}
-                />
-              </TouchableBox>
-            ))}
-        </Box>
+        <TrainingListItemActions
+          isTest={isTest}
+          isCompleted={isCompleted}
+          isFeedbackEligible={isFeedbackEligible}
+          completedFeedback={completedFeedback}
+          repsValue={repsValue}
+          onComplete={onComplete}
+          onSkip={onSkip}
+          testId={testId}
+        />
       </Box>
 
       {!isCompleted && isTest && (

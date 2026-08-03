@@ -6,7 +6,7 @@ readable slug, e.g. `max-strength` for `MAX_KRAFT`), compared by string
 equality in `src/features/training/generators/progressionSimulation.spec.ts`.
 
 **These tables encode the values as they SHOULD be** according to
-`docs/specs/max-weight-training-progression-logic.md`, hand-derived from the
+`docs/specs/progression/max-strength-progression.md`, hand-derived from the
 spec's Advanced-level ladders. The current generator does not produce them
 yet, so the golden-comparison tests in the spec file are skipped
 (`it.skip.each`). Drop the `.skip` once the generator implements the spec —

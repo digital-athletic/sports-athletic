@@ -23,7 +23,7 @@ The plan stays a skeleton on purpose: sets, repetitions, and weights are compute
 
 - Session (workout) generation: set lists, repetitions, weights, warm-up sets, supersets, pauses
 - Progression between sessions and feedback handling (too easy, succeeded, too hard)
-- Weight derivation from strength tests (see the weight calculation spec)
+- Weight derivation from strength tests: [Weight Calculation from Strength Tests](../progression/weight-calculation-from-strength-tests.md)
 - Manual single-branch replacement inside an existing plan
 - Backend persistence of plans (plans are currently device-local)
 - The anamnesis questionnaire UI itself

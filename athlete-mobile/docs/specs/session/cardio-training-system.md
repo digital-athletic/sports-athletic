@@ -2,11 +2,11 @@
 
 ## Why & What
 
-Cardio is the endurance half of the training system: every plan section carries one **cardio type** (a heart-rate intensity zone), and CARDIO days spend their whole minute budget in it. A cardio block is not a list of sets like a strength block, it is an interval or steady-run structure built from one exercise plus timed running pauses, with a heart-rate band the athlete is supposed to hold. This spec defines the six zones, how each one turns a minute budget into a set list, and how the work progresses between sessions.
+Cardio is the endurance half of the training system: every plan section carries one **zone** (a heart-rate intensity band with its own interval structure), and CARDIO days spend their whole minute budget in it. A cardio block alternates one work interval with a timed running pause, or runs steadily for the whole budget, under a heart-rate band the athlete must hold. This spec defines the six zones, how each one turns a minute budget into a set list, and how the work progresses between sessions.
 
 ## Problem
 
-The zones differ in every dimension (work length, pause length, interval count, heart-rate band, whether they run as intervals at all), and those values exist only in code. Nothing states which zone means what, how a 45-minute cardio budget is filled, or which quantity progresses when an athlete finds a session easy. Two heart-rate formulas coexist, so the band shown to the athlete cannot be traced to a decision.
+A CARDIO day shows the athlete a timer and a heart-rate target, and neither traces to a written rule. The zones differ in work length, pause length, interval count, heart-rate band, and whether they run as intervals at all, and those values live in the generator alone. Nothing records how the generator fills a 45-minute budget, or which quantity moves when a session feels easy. Two heart-rate formulas coexist, so the band on screen matches no documented decision.
 
 ## Solution
 
@@ -15,13 +15,13 @@ Six authored zones, split into two structures:
 - **Steady zones** (CARDIO_4, CARDIO_5): one continuous run for the full budget.
 - **Interval zones** (CARDIO_1_SHORT, CARDIO_1_LAKTAT, CARDIO_2, CARDIO_3): a fixed work interval alternating with a running pause, repeated an athlete-specific number of times, then padded to the budget with zone-4 running.
 
-Intensity is prescribed as a heart-rate band derived from the athlete's age, not as a pace or a distance, so the same structure works on a treadmill, a track, and outdoors. The progressing quantity for interval zones is the **interval count**, not the interval length: the work interval defines the zone and stays constant.
+The heart-rate band comes from the athlete's age, which lets the same structure run on a treadmill, a track, and outdoors. For interval zones the ladder is the **interval count**: the work interval defines the zone and holds constant across sessions.
 
 ## Out of Scope
 
-- Which day of the week gets cardio and which zone a section carries (plan creation spec)
-- Branch and exercise selection for the cardio skill (exercise selection spec)
-- Strength set structure, supersets, and rest tables (session set structure spec)
+- Which day of the week gets cardio and which zone a section carries: [Training Plan Creation](../planning/training-plan-creation-from-anamnesis.md)
+- Branch and exercise selection for the cardio skill: [Plan Workout Generation](./plan-workout-generation.md)
+- Strength set structure, supersets, and rest tables: [Session Set Structure](./session-set-structure.md)
 - Live heart-rate measurement, external sensors, and GPS tracking
 
 ## Algorithm
@@ -39,7 +39,7 @@ Zone numbering runs from hardest (1) to easiest (5). Zone 1 has two variants: sh
 | CARDIO_4 | Steady endurance | steady run | full budget | 60 s closing | 65 to 80% |
 | CARDIO_5 | Regeneration | steady run | full budget | 60 s closing | 55 to 65% |
 
-Keepers train short intervals instead of lactate intervals (substituted at plan creation).
+Goalkeepers train short sprint intervals in place of lactate intervals; plan creation makes the substitution.
 
 ### Building the block
 
@@ -81,7 +81,7 @@ The interval count is the ladder. Per zone and training level, authored start an
 Rules:
 
 - A cardio block writes its result once per session, taken from the main cardio entry (the last interval or run belonging to a real branch), not once per interval.
-- Cardio never changes a branch level, so reaching the target count raises nothing further: the count is capped by the target and by the minute budget.
+- Cardio never changes a branch level, so reaching the target count raises nothing further: the target and the minute budget cap the count.
 - Steady zones progress by duration through the same feedback mechanism, bounded by the skill's minute budget.
 
 ### Soreness and blocking
@@ -95,7 +95,7 @@ Rules:
 
 ## Structure
 
-A cardio skill in a plan carries one zone and a minute budget. Generation resolves the zone's branch to an exercise, then expands it into a set list of alternating work and pause entries; the pause entries are ordinary set-list entries, so the workout UI drives them with the same timer as strength rests. The heart-rate band is computed per entry from the athlete's birthday and the zone, and displayed alongside the timer. Progress is stored per exercise like any other exercise, holding the interval count.
+A cardio skill in a plan carries one zone and a minute budget. Generation resolves the zone's branch to an exercise, then expands it into a set list of alternating work and pause entries; the pause entries are ordinary set-list entries, so the workout UI drives them with the same timer as strength rests. Generation computes the heart-rate band per entry from the athlete's birthday and the zone, and the workout UI shows it beside the timer. Progress holds the interval count per exercise, like any other exercise.
 
 ```mermaid
 flowchart LR
@@ -112,7 +112,7 @@ flowchart LR
 
 ## Open Questions
 
-- Two heart-rate formulas exist: the per-zone fraction of `210 - age`, and a Karvonen calculation over a fixed resting rate of 65 with three coarse bands. The per-zone table is the one shown to athletes. Should the Karvonen path be dropped, or is it the intended model once resting heart rate is collected?
-- CARDIO_1_SHORT has no authored heart-rate band and falls back to 100% of max HR, which shows a single number instead of a band. Author a sprint band, or suppress the display for that zone?
-- The short-interval pause is 80 s in the block builder and 50 s in the generic skill pause table. The builder wins today. Which value is correct?
-- Cardio results run through the same start and target comparison as strength exercises, which can read a missing repetition value as below start. Should cardio have its own evaluation path, given that it never changes a branch level?
+- Two heart-rate formulas exist: the per-zone fraction of `210 - age`, and a Karvonen calculation over a fixed resting rate of 65 with three coarse bands. Athletes see the per-zone table. Should the Karvonen path go, or does it become the model once the app collects resting heart rate? Leaning toward dropping it until the anamnesis asks for a resting rate.
+- CARDIO_1_SHORT has no authored heart-rate band and falls back to 100% of max HR, so the athlete sees one number where every other zone shows a range. Author a sprint band, or hide the display for that zone? Leaning toward authoring a band.
+- The short-interval pause is 80 s in the block builder and 50 s in the generic skill pause table, and the builder wins today. Which value is correct? Leaning toward the builder's 80 s, the value the zone table above documents.
+- Cardio results run through the same start and target comparison as strength exercises, which can read a missing repetition value as below start. Should cardio get its own evaluation path, given that it never changes a branch level? Leaning yes.

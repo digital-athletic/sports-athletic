@@ -1,4 +1,4 @@
-# Max Strength Training System – Specification
+# Max Strength Training
 
 *Complete and self-contained set of rules for max strength training with free weights (barbell/dumbbell). All required information, including the repetition table, is contained in this document.*
 
@@ -8,7 +8,7 @@ Every percentage in this document refers to **F-Max**: the maximum load that app
 
 - F-Max is not measured per exercise. It is derived from the barbell 1RM of the exercise's **movement direction** (knee, hip, horizontal push, …) and then converted for the **equipment variant** of the exercise (barbell 100%, dumbbells 45% per hand, …). "The F-Max of the respective exercise" is therefore the equipment-adjusted max value for that exercise's direction.
 - The 1RM itself comes from a periodic **strength test**: a submaximal rep-out estimated with the Epley formula, `1RM = test weight × (1 + reps / 30)`. A true single-rep max attempt is never performed.
-- The full chain (test → 1RM → equipment conversion → training weight → rounding) is specified in [Weight Calculation from Strength Tests](./weight-calculation-strength-test.md).
+- The full chain (test → 1RM → equipment conversion → training weight → rounding) is specified in [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md).
 - F-Max is treated as constant while an exercise progresses. A new strength test replaces it; because progression is stored as percentages (Section 8), the ladder position is kept and only the resulting kg values change. The re-test cadence is not prescribed by this document.
 
 ## 1. Basic Rules
@@ -134,7 +134,7 @@ Both progression ratings clamp at the end of the ladder: a set advances as far a
 
 ## 6. End of the Exercise
 
-An exercise is left at either of its two ends, and both ends follow the same logic in opposite directions: move one level along the branch of the skill tree (see the branch, exercise, and level spec), harder at the top and easier at the bottom. In both cases the athlete's progression on the new exercise starts again at step 1 of every set's ladder, calculated from the F-Max of the new exercise. If no replacement exercise exists, nothing changes and the athlete stays at the current weight% / repetition level.
+An exercise is left at either of its two ends, and both ends follow the same logic in opposite directions: move one level along the branch of the skill tree (see [Branches, Exercises, and Levels](../foundations/branches-exercises-and-levels.md)), harder at the top and easier at the bottom. In both cases the athlete's progression on the new exercise starts again at step 1 of every set's ladder, calculated from the F-Max of the new exercise. If no replacement exercise exists, nothing changes and the athlete stays at the current weight% / repetition level.
 
 ### 6.1 Top: last set maxed out and rated "completed" or "too easy"
 

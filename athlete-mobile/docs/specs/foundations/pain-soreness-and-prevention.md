@@ -6,29 +6,29 @@ Two different health signals steer training. **Pain** is a lasting complaint the
 
 ## Problem
 
-Three existing specs consume pain and soreness (plan creation filters by blocked regions, exercise selection filters by soreness, cardio caps its duration) but none defines them. Their lifetimes, their mappings, and the abort rules are therefore scattered: nobody can state how long a soreness report lasts, why knee pain also blocks hip exercises, or why a sore athlete can still run a warm-up but not a strength test.
+Three specs already consume pain and soreness: plan creation filters by blocked regions, exercise selection filters by soreness, cardio caps its duration. None of them defines either signal. A trainer who asks how long a soreness report lasts, or why knee pain also blocks hip exercises, has to read the generator to find out, and the rules that abort a session outright are scattered the same way.
 
 ## Solution
 
-Keep the two signals strictly separate:
+Keep the two signals separate:
 
-- Pain is part of the athlete profile: it selects prevention skills, marks **blocked regions**, and switches plan creation to the pain variant of its skill priorities. It changes only when the anamnesis is answered again.
-- Soreness is a timestamped record that expires after 24 hours, is read once at generation time, and never touches the plan.
+- Pain is part of the athlete profile: it selects prevention skills, marks **blocked regions**, and switches plan creation to the pain variant of its skill priorities. Pain changes when the athlete answers the anamnesis again.
+- Soreness is a timestamped record that expires after 24 hours. Generation reads it once, and it never reaches the plan.
 
-Filtering is preferred over refusing: a sore or painful region removes candidate branches and the generator replaces them. A session is refused only when the signal makes the whole session unsafe or unbuildable.
+The generator filters before it refuses: a sore or painful region removes candidate branches and the generator replaces them. It refuses a session when the signal makes the whole session unsafe or unbuildable.
 
 ## Out of Scope
 
 - The anamnesis and soreness reporting screens
-- Branch replacement mechanics once a filter removes a branch (exercise selection spec)
-- Prevention slot placement and rotation inside a training day (plan creation spec)
+- Branch replacement mechanics once a filter removes a branch: [Plan Workout Generation](../session/plan-workout-generation.md)
+- Prevention slot placement and rotation inside a training day: [Training Plan Creation](../planning/training-plan-creation-from-anamnesis.md)
 - Injury diagnosis, rehabilitation programming, and any medical claim
 
 ## Algorithm
 
 ### Pain mappings
 
-Pain is reported per joint and side. Both mappings ignore the side: the prevention work and the exclusion apply bilaterally.
+The athlete reports pain per joint and side. Both mappings ignore the side: the prevention work and the exclusion apply to both sides.
 
 | Reported pain | Prevention skill | Blocked region |
 |---|---|---|
@@ -54,12 +54,12 @@ Effects of any pain at all:
 
 1. Plan creation uses the pain variant of the skill priorities, which injects a prevention slot and a special warm-up into each training day.
 2. The derived prevention skills rotate round-robin, at most one per day.
-3. Branches whose exercise carries a blocked-region tag are excluded, at plan creation and at every workout generation.
+3. Plan creation and every workout generation exclude branches whose exercise carries a blocked-region tag.
 4. During a session, the first exercise prescribed as a percentage of maximum load raises a one-time caution alert.
 
 ### Soreness lifetime
 
-1. Before generation the athlete marks sore muscles. Each mark is stored with its timestamp and an expiration 24 hours later.
+1. Before generation the athlete marks sore muscles. Each mark carries its timestamp and an expiration 24 hours later.
 2. Opening the soreness step drops every expired record, so a stale report never filters a later session.
 3. Marks are per muscle. Muscles map to three **areas**: upper body, core, lower body.
 
@@ -90,11 +90,11 @@ flowchart TD
 
 ## Structure
 
-Pain lives in the athlete's workout profile as tags and is read by both plan creation and every session generation. Soreness lives in a separate, short-lived record set on the device and is read only by generation. Both feed the same filter chain that also handles equipment, age, gender, and level, so a removed branch takes the ordinary replacement path regardless of which signal removed it. Prevention skills are ordinary skills with their own skill trees; the pain mapping only decides which of them enter a plan.
+Pain lives in the athlete's workout profile as tags, where plan creation and every session generation read it. Soreness lives in a separate, short-lived record set on the device that only generation reads. Both feed the same filter chain that also handles equipment, age, gender, and level, so a removed branch takes the ordinary replacement path regardless of which signal removed it. Prevention skills are ordinary skills with their own skill trees; the pain mapping only decides which of them enter a plan.
 
 ## Open Questions
 
-- An unrecognised pain tag falls back to shoulder prevention and a shoulder block. Should an unknown tag instead be ignored, so a content change cannot silently prescribe the wrong prevention work? Leaning toward ignoring it.
-- Pain is bilateral by design, so one painful knee excludes both-leg and other-leg exercises alike. Should side-specific pain narrow the exclusion to the affected side?
-- Soreness expires after a flat 24 hours regardless of the session that caused it. Should heavy Maxkraft sessions extend that window?
-- Hip pain maps to knee prevention rather than a hip-specific prevention skill. Is that a content gap worth its own skill tree?
+- An unrecognised pain tag falls back to shoulder prevention and a shoulder block. Should the generator ignore an unknown tag instead, so a content change cannot prescribe the wrong prevention work without anyone noticing? Leaning toward ignoring it.
+- Pain applies to both sides by design, so one painful knee excludes both-leg and other-leg exercises alike. Should side-specific pain narrow the exclusion to the affected side? Leaning toward keeping the bilateral rule until a physiotherapist reviews it.
+- Soreness expires after a flat 24 hours whatever session caused it. Should heavy Maxkraft sessions extend that window? Leaning toward keeping one flat window, since a longer one blocks the next session's whole region.
+- Hip pain maps to knee prevention, and the knee prevention skill already covers the HIP and KNEE_HIP region groups. Is a hip-specific skill tree worth authoring, or does that coverage make the mapping intentional? Leaning toward intentional.

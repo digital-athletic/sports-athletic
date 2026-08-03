@@ -5,7 +5,7 @@
  *
  * The golden-comparison tests are skipped: the tables under `__golden__/` now
  * encode the target values from
- * docs/specs/max-weight-training-progression-logic.md, which the current
+ * docs/specs/progression/max-strength-progression.md, which the current
  * generator does not produce yet. Drop the `.skip` once the generator
  * implements the spec.
  *

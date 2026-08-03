@@ -50,7 +50,7 @@ Training type, athlete profile (level, gender, birthday, pain tags), reported so
 
   Ties within a rank are broken uniformly at random. Excluded as partners: duplicate exercises, the same movement pattern (two horizontal presses), and the same primary muscle group (two shoulder exercises).
 
-  Without a partner the exercise runs on its own on the longer, authored single-set rest instead of the superset rest — double for most areas (hypertrophy 30 s → 60 s, basis 30 → 60, GKS 45 → 90, prevention 30 → 60, plyometrics 60 → 120 and 90 → 180) and longer still for speed strength (60 → 150) and strength endurance (75 → 180). Maxkraft, stability circuits, and cardio never pair.
+  Without a partner the exercise runs on its own and takes the longer after-set rest instead of the superset rest; the per-skill values are authored in the session set structure spec. Maxkraft, stability circuits, and cardio never pair.
 - **Ordering**: three levels, each independent of the order in which slots were filled.
   1. Skills: fixed section order, warm-up first, cool-down last.
   2. Exercises inside a skill: big muscle (chest, latissimus, glutes, inner thigh, outer thigh) before the rest, so the demanding work sits in the fresher part of the block. Inside a group no further rule applies. In superset skills the ordered unit is the pair: a partner follows its lead exercise directly.
@@ -129,8 +129,6 @@ flowchart TD
 | Stability bodyweight | 3 upper body plus 2 full body (falls back to any region when a quota cannot be met); one-sided handling as above, never as the last slot |
 | Prevention | 3 special warm-up exercises plus 3 superset pairs; a one-sided draw seeks an opposing-direction one-sided partner, else swaps itself for a both-sided branch; weighted pairs are ordered last |
 | Anything else | fill until 15 estimated minutes |
-
-4. Each drawn branch resolves through the shared branch to exercise resolution: per-branch progress first, then the athlete's level, then the next lower authored level.
 
 ### Flow 3: Test workout
 

@@ -50,7 +50,7 @@ Training type, athlete profile (level, gender, birthday, pain tags), reported so
 
   Ties within a rank are broken uniformly at random. Excluded as partners: duplicate exercises, the same movement pattern (two horizontal presses), and the same primary muscle group (two shoulder exercises).
 
-  Without a partner the exercise runs on its own and takes the longer after-set rest instead of the superset rest; the per-skill values are authored in the session set structure spec. Maxkraft, stability circuits, and cardio never pair.
+  Without a partner the exercise keeps the shorter superset rest between its sets rather than gaining the longer single-set rest; the session set structure spec carries the per-skill values and treats that as an open defect. Maxkraft, stability circuits, and cardio never pair.
 - **Ordering**: three levels, each independent of the order in which slots were filled.
   1. Skills: fixed section order, warm-up first, cool-down last.
   2. Exercises inside a skill: big muscle (chest, latissimus, glutes, inner thigh, outer thigh) before the rest, so the demanding work sits in the fresher part of the block. Inside a group no further rule applies. In superset skills the ordered unit is the pair: a partner follows its lead exercise directly.

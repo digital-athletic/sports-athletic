@@ -6,7 +6,7 @@ When an athlete starts a workout, the app generates that session's exercise sequ
 
 ## Problem
 
-The plan is authored days or weeks ahead. By start time the athlete may be sore, at another place with different equipment, or on a new level, so pre-selected branches can be unusable and a naive session would prescribe blocked exercises. Selection must also serve workouts outside the plan: on-demand short workouts (warm-up, mobility, foam roller, stability, cardio, prevention) and the Maxkraft strength test.
+The plan is authored days or weeks ahead. By start time the athlete may be sore, at another place with different equipment, or on a new level, so pre-selected branches can be unusable and a naive session would prescribe blocked exercises. Ordering is a second gap: nothing sequences a skill's exercises by body region, so the Maxkraft leg lift can land behind the upper-body lifts, where fatigue is already highest. Selection must also serve workouts outside the plan: on-demand short workouts (warm-up, mobility, foam roller, stability, cardio, prevention) and the Maxkraft strength test.
 
 ## Solution
 
@@ -16,7 +16,9 @@ One generator, three flows dispatched by training type:
 2. **Short workout**: build the pool fresh from the requested type's skill tree, filter by prevention target, pain, soreness, equipment, age, and gender, then draw branches at random until the type's quota is met.
 3. **Test workout (Maxkraft test)**: a randomized warm-up from the warm-up tree plus a fixed, authored list of test lifts per level and gender. Refused when any soreness is reported.
 
-Selection operates on branches (one exercise progression lane, authored levels 1 to 3); the concrete exercise is resolved last. Within a skill no resolved exercise ID may appear twice; across skills duplicates are accepted for now, since a session-wide check is a larger rework. Random picks are uniform and unseeded, but a generated session is kept for the current session (see Structure).
+Maxkraft opens with its lower-body main lifts; every other skill keeps the muscle-size ordering.
+
+Selection operates on branches (one exercise progression lane, authored levels 1 to 3); the concrete exercise is resolved last. Within a skill no resolved exercise ID may appear twice; across skills duplicates are accepted. Random picks are uniform and unseeded; a generated session is persisted, so reopening it never regenerates (see Structure).
 
 ## Out of Scope
 
@@ -34,6 +36,8 @@ Training type, athlete profile (level, gender, birthday, pain tags), reported so
 
 ### Common building blocks
 
+- **Skill**: the training quality one block of the session trains, for example Maxkraft, hypertrophy, core, warm-up, cardio, prevention. A skill owns its skill tree, its set count, its pause lengths, and its maximum minutes per athlete level. A training day is a list of skills.
+- **Slot**: the plan gives every skill of a training day a minute budget. An authored table per skill and athlete level maps that budget to a fixed number of exercise **slots**, for Maxkraft at 30 minutes: legs, push, pull. Every slot carries one pre-selected branch; the exercise filling a Maxkraft slot is its **main lift**, the heavy barbell lift that slot's sets are built around. Slots fill independently: a blocked slot takes a replacement from the same skill tree, and a slot that cannot be refilled frees its minutes.
 - **Branch to exercise resolution**: prefer the stored per-branch progress level; otherwise map BEGINNER/ADVANCED/PROFESSIONAL to branch level 1/2/3 and fall back downward to the highest authored level at or below it. A branch with no resolvable exercise counts as blocked. This applies to every flow.
 - **Filter chain**: each filter splits the pool into keep and replace. Soreness drops branches whose region matches a sore area (more than one sore area aborts with a soreness error). Equipment drops branches needing gear the place lacks. Level drops branches with no exercise at the athlete's level. Age and gender drop branches tagged for other groups.
 - **Uniqueness**: a resolved exercise ID is used at most once per skill; candidates resolving to an already used exercise are excluded, not merely deprioritized. Duplicates across skills are tolerated. Deliberate repeats are unaffected: a one-sided exercise appears as a left and right entry, and every exercise repeats across its own sets.
@@ -47,7 +51,44 @@ Training type, athlete profile (level, gender, birthday, pain tags), reported so
   Ties within a rank are broken uniformly at random. Excluded as partners: duplicate exercises, the same movement pattern (two horizontal presses), and the same primary muscle group (two shoulder exercises).
 
   Without a partner the exercise runs on its own on the longer, authored single-set rest instead of the superset rest — double for most areas (hypertrophy 30 s → 60 s, basis 30 → 60, GKS 45 → 90, prevention 30 → 60, plyometrics 60 → 120 and 90 → 180) and longer still for speed strength (60 → 150) and strength endurance (75 → 180). Maxkraft, stability circuits, and cardio never pair.
-- **Weighted vs bodyweight ratio**: target share of weighted exercises is 50% under 16, 80% in the gym, and 50% at other places with suitable equipment. A place without dumbbells or barbells is 0%: everything is bodyweight. Age beats place: under 16 in the gym stays at 50%, since athletes below 16 must not perform heavy exercises. Enforced per skill as a quota over its slots — `weighted = ceil(share × slots)`, the rest bodyweight; each slot draws its type at random while both quotas are open, then takes whichever quota remains. Soft targets, not minimums: only exercises surviving the age, level, pain, soreness, and equipment filters count, and any shortfall is filled with bodyweight exercises. The share counts selected exercises. It does not apply to Maxkraft support exercises, which balance their own share per draw.
+- **Ordering**: three levels, each independent of the order in which slots were filled.
+  1. Skills: fixed section order, warm-up first, cool-down last.
+  2. Exercises inside a skill: big muscle (chest, latissimus, glutes, inner thigh, outer thigh) before the rest, so the demanding work sits in the fresher part of the block. Inside a group no further rule applies. In superset skills the ordered unit is the pair: a partner follows its lead exercise directly.
+  3. Exercises inside Maxkraft, overriding rule 2: lower-body main lifts before upper-body main lifts, since they move the session's heaviest loads. Rule 2 then orders the lifts within each region. Support exercises stay in the breaks of their own main lift.
+- **Weighted vs bodyweight ratio**: target share of weighted exercises is 50% under 16, 80% in the gym, and 50% at other places with suitable equipment. A place without dumbbells or barbells is 0%: everything is bodyweight. Age beats place: under 16 in the gym stays at 50%, since athletes below 16 must not perform heavy exercises. Enforced per skill as a quota over its slots — `weighted = ceil(share × slots)`, the rest bodyweight; each slot draws its type at random while both quotas are open, then takes whichever quota remains. Soft targets, not minimums: the share is measured over the exercises actually selected, only those surviving the age, level, pain, soreness, and equipment filters count, and any shortfall is filled with bodyweight exercises. It does not apply to Maxkraft support exercises, which balance their own share per draw.
+
+How the blocks relate, with a Maxkraft session as the example:
+
+```mermaid
+erDiagram
+    TRAINING ||--|{ SKILL : "a day is a list of"
+    SKILL ||--|{ SLOT : "minute budget maps to"
+    SKILL ||--|| SKILL_TREE : "draws candidates from"
+    SKILL_TREE ||--|{ BRANCH : holds
+    SLOT ||--|| BRANCH : "carries one, swapped when blocked"
+    BRANCH ||--|{ EXERCISE : "one per authored level"
+    PROGRESS ||--o{ BRANCH : "pins the level to resolve"
+    SLOT ||--|{ SET_ENTRY : "emits sets, pauses, support work"
+
+    SKILL {
+        string name "Maxkraft"
+        int minuteBudget "30"
+    }
+    SLOT {
+        string liftGroup "legs, push, pull"
+        string outcome "filled, replaced, or freed"
+    }
+    BRANCH {
+        string tags "muscle, region, equipment, side"
+        string levels "1 to 3"
+    }
+    EXERCISE {
+        string resolved "barbell squat"
+    }
+    SET_ENTRY {
+        string order "lower body first, then big muscle"
+    }
+```
 
 ### Flow 1: Plan workout
 
@@ -105,6 +146,34 @@ flowchart TD
 - **Athlete progress**: per-branch current level and per-exercise history, feeding both resolution and start values.
 - **Set list**: the output; an ordered list of entries (exercise or pause) with set numbering, consumed by the active training session store that drives the workout UI.
 
-Generation runs entirely on-device between the soreness/place selection screens and the workout overview screen. The set list goes into the session store; starting a workout never mutates the plan.
+A session is a sequence of skill blocks; each block fills its slots, then orders what it filled, then emits sets. Maxkraft as the example:
+
+```text
+SESSION  ── skill blocks, fixed section order
+──────────────────────────────────────────────────────────────────
+  [ warm-up ] -> [ Maxkraft ] -> [ core ] -> [ cool-down ]
+
+
+MAXKRAFT BLOCK  ── 30 min, 3 slots
+──────────────────────────────────────────────────────────────────
+SLOTS      slot   pre-selected branch          filled with
+           legs   squat | deadlift        ->   deadlift
+           push   bench | shoulder press  ->   bench press
+           pull   row                     ->   row (replacement)
+
+SEQUENCE   after selection   bench press | deadlift | row
+                             incidental, follows how the slots filled
+           after ordering    deadlift | bench press | row
+                             lower body first, then big muscle
+
+EMISSION   per main lift     warm-up sets, working sets,
+                             support exercises inside the breaks
+```
+
+Generation runs between the soreness/place selection screens and the workout overview screen. The set list goes into the session store; starting a workout never mutates the plan.
 
 The generated session is persisted (set list, equipment, active exercise index) and survives an app restart, so reopening it never regenerates: a started workout resumes where it left off, and the overview only reads what is stored. It is cleared when the workout is finished, when the athlete runs generation again from the soreness screen, on logout, and when a generated but never started session is abandoned by leaving the pre-workout flow. There is no date-based expiry.
+
+## Open Questions
+
+None.

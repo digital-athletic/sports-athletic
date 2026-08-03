@@ -19,8 +19,8 @@ A **level change** must land on a level holding a different exercise, so it alwa
 
 ## Out of Scope
 
-- How branches are first selected into plans and workouts (plan creation and workout exercise selection specs)
-- Weight, repetition, and duration values, their start/target tables, and feedback-driven value adjustment (weight calculation spec). This spec covers the level decision, not the value changes around it
+- How branches are first selected into plans and workouts: [Training Plan Creation](../planning/training-plan-creation-from-anamnesis.md) and [Plan Workout Generation](../session/plan-workout-generation.md)
+- Weight, repetition, and duration values, their start/target tables, and feedback-driven value adjustment: [Weight Calculation from Strength Tests](../progression/weight-calculation-from-strength-tests.md) and [Standard Exercise Progression](../progression/standard-exercise-progression.md). This spec covers the level decision, not the value changes around it
 - Authoring workflow for skill trees and the exercise catalog
 - The XP level shown in the profile, which is unrelated to branch levels
 

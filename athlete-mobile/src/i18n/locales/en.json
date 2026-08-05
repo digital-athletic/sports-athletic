@@ -532,6 +532,12 @@
     },
     "contact": "Contact",
     "imprint": "Imprint",
+    "thirdPartyNotices": {
+      "menuItem": "Third-Party Licenses",
+      "title": "Third-Party Licenses",
+      "intro": "This app includes the following open source software.",
+      "versionAndLicense": "{{version}} · {{license}}"
+    },
     "deleteUser": "Delete User",
     "logout": "Logout",
     "testPersonas": "Test Personas",

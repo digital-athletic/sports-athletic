@@ -18,4 +18,9 @@ describe("<ListDivider />", () => {
     );
     expect(toJSON()).toBeTruthy();
   });
+
+  it("renders without a leading icon offset", () => {
+    const { toJSON } = render(<ListDivider hasLeadingIcon={false} />);
+    expect(toJSON()).toBeTruthy();
+  });
 });

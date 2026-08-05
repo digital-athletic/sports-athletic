@@ -390,10 +390,10 @@ function describeDirect(projectRoot, depName, inventoryByName) {
 }
 
 /**
- * Writes the human-readable notice file for the direct production dependencies.
+ * Direct production dependencies of a workspace project, with license text where available.
  * `supplements` adds bundled components as `{ name, version, license, text }`.
  */
-export function generateNotice({ projectRoot, output, supplements = [] }) {
+export function collectDirectDependencies({ projectRoot, supplements = [] }) {
   const manifest = JSON.parse(
     readFileSync(join(projectRoot, "package.json"), "utf8"),
   );
@@ -404,12 +404,20 @@ export function generateNotice({ projectRoot, output, supplements = [] }) {
     inventoryByName.set(entry.name, list);
   }
 
-  const deps = [
+  return [
     ...Object.keys(manifest.dependencies ?? {}).map((depName) =>
       describeDirect(projectRoot, depName, inventoryByName),
     ),
     ...supplements,
   ].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/**
+ * Writes the human-readable notice file for the direct production dependencies.
+ * `supplements` adds bundled components as `{ name, version, license, text }`.
+ */
+export function generateNotice({ projectRoot, output, supplements = [] }) {
+  const deps = collectDirectDependencies({ projectRoot, supplements });
 
   const lines = [
     "# Notice",
@@ -434,6 +442,21 @@ export function generateNotice({ projectRoot, output, supplements = [] }) {
   writeFileSync(output, `${lines.join("\n")}\n`);
   process.stdout.write(
     `Wrote NOTICE for ${deps.length} dependencies to ${output}\n`,
+  );
+}
+
+/**
+ * Writes a small `{ name, version, license }[]` JSON artifact for in-app display, omitting
+ * the full license texts that `generateNotice` embeds. `supplements` as in `generateNotice`.
+ */
+export function generateNoticeData({ projectRoot, output, supplements = [] }) {
+  const deps = collectDirectDependencies({ projectRoot, supplements }).map(
+    ({ name, version, license }) => ({ name, version, license }),
+  );
+
+  writeFileSync(output, `${JSON.stringify(deps, null, 2)}\n`);
+  process.stdout.write(
+    `Wrote notice data for ${deps.length} dependencies to ${output}\n`,
   );
 }
 

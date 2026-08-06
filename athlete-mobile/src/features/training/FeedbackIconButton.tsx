@@ -1,8 +1,8 @@
 import { Ionicon } from "@/common/Ionicon";
+import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 import { useTheme } from "@/theme/theme";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { type FC } from "react";
-import { type TrainingListItemFeedback } from "./trainingListItemFeedback";
 
 const FEEDBACK_ICON = {
   TOO_EASY: {
@@ -23,7 +23,7 @@ const FEEDBACK_ICON = {
 } as const;
 
 export type FeedbackIconButtonProps = {
-  feedback: TrainingListItemFeedback;
+  feedback: DifficultyFeedbackType;
   onPress: () => void;
   disabled?: boolean;
   accessibilityLabel?: string;

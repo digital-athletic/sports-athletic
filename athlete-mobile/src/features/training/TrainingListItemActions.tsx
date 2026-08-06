@@ -1,18 +1,18 @@
+import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { FeedbackIconButton } from "./FeedbackIconButton";
 import { SkipExerciseButton } from "./SkipExerciseButton";
-import { type TrainingListItemFeedback } from "./trainingListItemFeedback";
 
 export type TrainingListItemActionsProps = {
   isTest: boolean;
   isCompleted: boolean;
   isFeedbackEligible: boolean;
-  completedFeedback?: TrainingListItemFeedback | null;
+  completedFeedback?: DifficultyFeedbackType | null;
   repsValue: number;
-  onComplete: (feedback?: TrainingListItemFeedback) => void;
+  onComplete: (feedback?: DifficultyFeedbackType) => void;
   onSkip: () => void;
   testId: string;
 };

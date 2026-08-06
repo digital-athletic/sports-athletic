@@ -1,7 +1,7 @@
 import { type ListRow } from "@/features/training/hooks/useTrainingListRows";
 import { type UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { TrainingListItem } from "@/features/training/TrainingListItem";
-import { type TrainingListItemFeedback } from "@/features/training/trainingListItemFeedback";
+import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 import { Box } from "@/theme/Box";
 import { type FC } from "react";
 import { ScrollView } from "react-native";
@@ -11,7 +11,7 @@ export type TrainingListRowsProps = {
   exerciseList: UserExerciseDataType[] | null;
   completedExerciseIndices: number[];
   repsDraft: Record<number, number>;
-  onComplete: (row: ListRow, feedback?: TrainingListItemFeedback) => void;
+  onComplete: (row: ListRow, feedback?: DifficultyFeedbackType) => void;
   onSkip: (row: ListRow) => void;
   onSubmitReps: (row: ListRow) => void;
   onChangeReps: (index: number, value: string) => void;

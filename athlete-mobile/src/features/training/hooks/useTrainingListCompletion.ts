@@ -1,7 +1,7 @@
 import { type ListRow } from "@/features/training/hooks/useTrainingListRows";
 import { useExerciseCompletion } from "@/features/training/hooks/useExerciseCompletion";
 import { useTrainingStore } from "@/features/training/trainingStore";
-import { type TrainingListItemFeedback } from "@/features/training/trainingListItemFeedback";
+import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 
 /**
  * Complete/skip handlers for a checklist row, guarding against
@@ -17,10 +17,7 @@ export function useTrainingListCompletion() {
   const { saveExerciseAndBranchData, handleFeedback, handleExerciseSkipped } =
     useExerciseCompletion();
 
-  const handleComplete = (
-    row: ListRow,
-    feedback?: TrainingListItemFeedback,
-  ) => {
+  const handleComplete = (row: ListRow, feedback?: DifficultyFeedbackType) => {
     if (completedExerciseIndices.includes(row.index)) return;
 
     if (row.isLastInSet && !row.isTest) {

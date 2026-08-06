@@ -1,10 +1,10 @@
+import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { type FC } from "react";
 import { TrainingListItemActions } from "./TrainingListItemActions";
 import { TrainingRepetitionInput } from "./TrainingRepetitionInput";
-import { type TrainingListItemFeedback } from "./trainingListItemFeedback";
 
 export type TrainingListItemProps = {
   displayName: string;
@@ -13,11 +13,11 @@ export type TrainingListItemProps = {
   isFeedbackEligible: boolean;
   isCompleted: boolean;
   /** Which feedback (if any) was chosen when this row was completed. */
-  completedFeedback?: TrainingListItemFeedback | null;
+  completedFeedback?: DifficultyFeedbackType | null;
   repsValue: number;
   onChangeReps: (value: string) => void;
   onSubmitReps: () => void;
-  onComplete: (feedback?: TrainingListItemFeedback) => void;
+  onComplete: (feedback?: DifficultyFeedbackType) => void;
   onSkip: () => void;
   onShowInfo: () => void;
   /** Base identifier for this row, used to derive per-control testIDs (e2e). */

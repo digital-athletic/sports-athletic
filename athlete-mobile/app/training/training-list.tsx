@@ -27,6 +27,7 @@ const TrainingList: FC<TrainingListProps> = () => {
     repsDraft,
     rows,
     allCompleted,
+    isFinishing,
     handleFinish,
     handleComplete,
     handleSkip,
@@ -71,8 +72,8 @@ const TrainingList: FC<TrainingListProps> = () => {
         >
           <Button
             onPress={handleFinish}
-            disabled={!allCompleted}
-            style={{ opacity: allCompleted ? 1 : 0.5 }}
+            disabled={!allCompleted || isFinishing}
+            style={{ opacity: allCompleted && !isFinishing ? 1 : 0.5 }}
             testID="training-list-finish-button"
           >
             {t("training.list.finishTraining")}

@@ -388,6 +388,7 @@
       "equipmentNeeded": "Benötigte Ausrüstung",
       "exerciseList": "Übungsliste",
       "startTraining": "Training starten",
+      "startAsChecklist": "Ohne Anleitung starten",
       "oneSet": "1 Satz",
       "setCount": "{{count}} Sätze",
       "supportExercises": "Unterstützungsübungen",
@@ -396,6 +397,11 @@
       "seconds": "{{count}} Sekunden",
       "kilos": "{{weight}} kg",
       "cmHigh": "{{height}} cm"
+    },
+    "list": {
+      "title": "Trainings-Checkliste",
+      "skipExercise": "Übung überspringen",
+      "finishTraining": "Training beenden"
     },
     "active": {
       "title": {

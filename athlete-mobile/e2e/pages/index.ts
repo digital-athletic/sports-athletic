@@ -5,5 +5,6 @@ export { ManualStrengthTestPage } from "./ManualStrengthTestPage";
 export { ProfilePage } from "./ProfilePage";
 export { RegistrationPage } from "./RegistrationPage";
 export { StatisticsPage } from "./StatisticsPage";
+export { TrainingListPage } from "./TrainingListPage";
 export { TrainingOverviewPage } from "./TrainingOverviewPage";
 export { WorkoutPage } from "./WorkoutPage";

@@ -80,6 +80,7 @@ export default defineConfig({
         EXPO_PUBLIC_SERVER_SYNC_ENABLED: "true",
         EXPO_PUBLIC_SERVER_SYNC_ACTIVITY_ONLY_ENABLED: "true",
         EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED: "true",
+        EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED: "true",
       },
     },
   ],

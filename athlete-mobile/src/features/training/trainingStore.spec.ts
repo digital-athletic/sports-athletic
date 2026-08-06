@@ -29,6 +29,8 @@ describe("useTrainingStore", () => {
       activeTraining: null,
       activeExerciseIndex: 0,
       tempMaxValues: null,
+      trainingViewMode: null,
+      completedExerciseIndices: [],
     });
   });
 
@@ -911,6 +913,25 @@ describe("useTrainingStore", () => {
       expect(result.current.activeExerciseIndex).toBe(0);
       expect(result.current.tempMaxValues).toBeNull();
     });
+
+    it("should reset trainingViewMode and completedExerciseIndices", () => {
+      const { result } = renderHook(() => useTrainingStore());
+
+      act(() => {
+        result.current.setTrainingViewMode("LIST");
+        result.current.markExerciseCompleted(0);
+      });
+
+      expect(result.current.trainingViewMode).toBe("LIST");
+      expect(result.current.completedExerciseIndices).toEqual([0]);
+
+      act(() => {
+        result.current.clearTraining();
+      });
+
+      expect(result.current.trainingViewMode).toBeNull();
+      expect(result.current.completedExerciseIndices).toEqual([]);
+    });
   });
 
   // ============================================================================
@@ -981,6 +1002,94 @@ describe("useTrainingStore", () => {
         result.current.setTempMaxValues(null);
       });
       expect(result.current.tempMaxValues).toBeNull();
+    });
+  });
+
+  // ============================================================================
+  // Training View Mode Tests
+  // ============================================================================
+
+  describe("setTrainingViewMode", () => {
+    it("should default to null", () => {
+      const { result } = renderHook(() => useTrainingStore());
+
+      expect(result.current.trainingViewMode).toBeNull();
+    });
+
+    it("should set the mode to SEQUENTIAL", () => {
+      const { result } = renderHook(() => useTrainingStore());
+
+      act(() => {
+        result.current.setTrainingViewMode("SEQUENTIAL");
+      });
+
+      expect(result.current.trainingViewMode).toBe("SEQUENTIAL");
+    });
+
+    it("should set the mode to LIST", () => {
+      const { result } = renderHook(() => useTrainingStore());
+
+      act(() => {
+        result.current.setTrainingViewMode("LIST");
+      });
+
+      expect(result.current.trainingViewMode).toBe("LIST");
+    });
+
+    it("should reset the mode to null", () => {
+      const { result } = renderHook(() => useTrainingStore());
+
+      act(() => {
+        result.current.setTrainingViewMode("LIST");
+        result.current.setTrainingViewMode(null);
+      });
+
+      expect(result.current.trainingViewMode).toBeNull();
+    });
+  });
+
+  // ============================================================================
+  // Completed Exercise Indices Tests
+  // ============================================================================
+
+  describe("markExerciseCompleted", () => {
+    it("should default to an empty array", () => {
+      const { result } = renderHook(() => useTrainingStore());
+
+      expect(result.current.completedExerciseIndices).toEqual([]);
+    });
+
+    it("should add an index", () => {
+      const { result } = renderHook(() => useTrainingStore());
+
+      act(() => {
+        result.current.markExerciseCompleted(0);
+      });
+
+      expect(result.current.completedExerciseIndices).toEqual([0]);
+    });
+
+    it("should accumulate multiple indices in call order", () => {
+      const { result } = renderHook(() => useTrainingStore());
+
+      act(() => {
+        result.current.markExerciseCompleted(2);
+        result.current.markExerciseCompleted(0);
+        result.current.markExerciseCompleted(1);
+      });
+
+      expect(result.current.completedExerciseIndices).toEqual([2, 0, 1]);
+    });
+
+    it("should not add the same index twice", () => {
+      const { result } = renderHook(() => useTrainingStore());
+
+      act(() => {
+        result.current.markExerciseCompleted(1);
+        result.current.markExerciseCompleted(1);
+      });
+
+      expect(result.current.completedExerciseIndices).toEqual([1]);
     });
   });
 
@@ -1218,13 +1327,33 @@ describe("migrateTrainingStore: legacy version bridge", () => {
   it("preserves user data persisted at legacy version 0", () => {
     const result = migrateTrainingStore(persistedAtVersionZero, 0);
 
-    expect(result).toEqual(persistedAtVersionZero);
+    expect(result).toEqual({
+      ...persistedAtVersionZero,
+      trainingViewMode: null,
+      completedExerciseIndices: [],
+    });
+  });
+
+  it("applies the v14 -> v15 migration when persisted at v14", () => {
+    const result = migrateTrainingStore(persistedAtVersionZero, 14);
+
+    expect(result).toEqual({
+      ...persistedAtVersionZero,
+      trainingViewMode: null,
+      completedExerciseIndices: [],
+    });
   });
 
   it("returns state unchanged when already at the registered version", () => {
-    const result = migrateTrainingStore(persistedAtVersionZero, 14);
+    const persistedAtCurrentVersion = {
+      ...persistedAtVersionZero,
+      trainingViewMode: null,
+      completedExerciseIndices: [],
+    };
 
-    expect(result).toEqual(persistedAtVersionZero);
+    const result = migrateTrainingStore(persistedAtCurrentVersion, 15);
+
+    expect(result).toEqual(persistedAtCurrentVersion);
   });
 
   it("resets to defaults for unknown ancient versions", () => {

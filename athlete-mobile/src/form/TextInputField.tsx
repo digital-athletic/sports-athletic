@@ -13,6 +13,7 @@ interface TextInputFieldProps {
   keyboardType?: KeyboardTypeOptions;
   onFocus?: () => void;
   onBlur?: () => void;
+  testID?: string;
 }
 
 /**
@@ -26,6 +27,7 @@ export const TextInputField: FC<TextInputFieldProps> = ({
   keyboardType = "default",
   onFocus,
   onBlur,
+  testID,
 }) => {
   const { colors } = useTheme();
 
@@ -63,6 +65,7 @@ export const TextInputField: FC<TextInputFieldProps> = ({
         value={value}
         onFocus={onFocus}
         onBlur={onBlur}
+        testID={testID}
       />
     </Box>
   );

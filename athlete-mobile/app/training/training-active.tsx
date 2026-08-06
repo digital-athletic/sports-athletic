@@ -9,7 +9,7 @@ import { TrainingNavigation } from "@/features/training/TrainingNavigation";
 import { TrainingProgressBar } from "@/features/training/TrainingProgressBar";
 import { useActiveExerciseView } from "@/features/training/hooks/useActiveExerciseView";
 import { useExerciseProgression } from "@/features/training/hooks/useExerciseProgression";
-import { useTrainingScreenLifecycle } from "@/features/training/hooks/useTrainingScreenLifecycle";
+import { useTrainingActiveLifecycle } from "@/features/training/hooks/useTrainingActiveLifecycle";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
@@ -76,7 +76,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [videoIsPlaying, setVideoIsPlaying] = useState(false);
 
-  const { isScreenFocused } = useTrainingScreenLifecycle({
+  const { isScreenFocused } = useTrainingActiveLifecycle({
     onAbort: handleAbortTraining,
   });
 

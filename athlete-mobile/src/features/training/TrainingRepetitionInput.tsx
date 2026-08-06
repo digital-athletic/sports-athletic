@@ -9,6 +9,10 @@ export type TrainingRepetitionInputProps = {
   repsValue: number;
   changeReps: (value: string) => void;
   saveRepsInput: () => void;
+  /** Hides the title/description block for use in compact contexts (e.g. a list row). */
+  compact?: boolean;
+  inputTestID?: string;
+  saveTestID?: string;
 };
 
 /**
@@ -19,18 +23,23 @@ export const TrainingRepetitionInput: FC<TrainingRepetitionInputProps> = ({
   repsValue,
   changeReps,
   saveRepsInput,
+  compact = false,
+  inputTestID,
+  saveTestID,
 }) => {
   const { t } = useTranslation();
 
   return (
     <Box flex={1} justifyContent="space-evenly" padding="m">
       {/* Title and description */}
-      <Box alignSelf="stretch" justifyContent="flex-end">
-        <Text variant="title">{t("training.powerTest.title")}</Text>
-        <Text variant="body" textAlign="left">
-          {t("training.powerTest.description")}
-        </Text>
-      </Box>
+      {!compact && (
+        <Box alignSelf="stretch" justifyContent="flex-end">
+          <Text variant="title">{t("training.powerTest.title")}</Text>
+          <Text variant="body" textAlign="left">
+            {t("training.powerTest.description")}
+          </Text>
+        </Box>
+      )}
       <Box justifyContent="flex-end" marginTop="s">
         <TextInputField
           value={repsValue.toString()}
@@ -38,9 +47,15 @@ export const TrainingRepetitionInput: FC<TrainingRepetitionInputProps> = ({
           iconName="keypad"
           onChange={changeReps}
           keyboardType="number-pad"
+          testID={inputTestID}
         />
 
-        <Button onPress={saveRepsInput} variant="primary" marginTop="m">
+        <Button
+          onPress={saveRepsInput}
+          variant="primary"
+          marginTop="m"
+          testID={saveTestID}
+        >
           {t("common.save")}
         </Button>
       </Box>

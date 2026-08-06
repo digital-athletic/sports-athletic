@@ -5,7 +5,7 @@ import { Logger } from "@/services/Logger";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { useRouter } from "expo-router";
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
 
@@ -20,6 +20,7 @@ export function useFinishTraining() {
     useTrainingStore();
   const { addTestResult } = useExerciseProgressStore();
   const { saveMaxValues } = useUserWorkoutStore();
+  const hasFinishedRef = useRef(false);
 
   // strengthTestMaxValues is passed directly for strength tests to avoid React state batching issues.
   // For non-test workouts (PREV, FOCUS, PLAN), strengthTestMaxValues is undefined and the
@@ -29,6 +30,12 @@ export function useFinishTraining() {
       aborted: boolean = false,
       strengthTestMaxValues?: MaxValuesType | null,
     ) => {
+      // Guards against double-invocation (e.g. a fast double-tap on the
+      // finish button), which would otherwise duplicate XP/workout entries
+      // and, for TEST_WORKOUT, saved max values/test results.
+      if (hasFinishedRef.current) return;
+      hasFinishedRef.current = true;
+
       try {
         // Record end time
         setTrainingEndTime(Date.now());

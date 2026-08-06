@@ -1,5 +1,4 @@
 import { CenteredLoading } from "@/common/CenteredLoading";
-import { featureFlags } from "@/config/featureFlags";
 import { TrainingListHeader } from "@/features/training/TrainingListHeader";
 import { TrainingListRows } from "@/features/training/TrainingListRows";
 import { useTrainingListScreen } from "@/features/training/hooks/useTrainingListScreen";
@@ -36,10 +35,6 @@ const TrainingList: FC<TrainingListProps> = () => {
     handleShowInfo,
     handleAbort,
   } = useTrainingListScreen();
-
-  if (!featureFlags.trainingListViewEnabled) {
-    return null;
-  }
 
   if (!hasHydrated || !exerciseList || exerciseList.length === 0) {
     return <CenteredLoading />;

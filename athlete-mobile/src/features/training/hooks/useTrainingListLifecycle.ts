@@ -1,7 +1,5 @@
-import { featureFlags } from "@/config/featureFlags";
 import { useTrainingScreenLifecycle } from "@/features/training/hooks/useTrainingScreenLifecycle";
-import { useRouter } from "expo-router";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
 
@@ -10,23 +8,16 @@ type UseTrainingListLifecycleParams = {
 };
 
 /**
- * Screen-level lifecycle wiring for the list-view training flow: redirects
- * away if the feature flag is off, builds the abort confirmation, and
- * delegates back-button/keep-awake/focus wiring to useTrainingScreenLifecycle
- * (shared with the sequential flow).
+ * Screen-level lifecycle wiring for the list-view training flow: builds the
+ * abort confirmation and delegates back-button/keep-awake/focus wiring to
+ * useTrainingScreenLifecycle (shared with the sequential flow). Reachability
+ * of this screen behind the feature flag is enforced by Stack.Protected in
+ * app/training/_layout.tsx, not here.
  */
 export function useTrainingListLifecycle({
   onFinish,
 }: UseTrainingListLifecycleParams) {
   const { t } = useTranslation();
-  const router = useRouter();
-
-  // Deep-link/flag-flip guard: this screen only exists behind the flag.
-  useEffect(() => {
-    if (!featureFlags.trainingListViewEnabled) {
-      router.replace("/training/training-overview");
-    }
-  }, [router]);
 
   const handleAbort = useCallback(() => {
     Alert.alert(

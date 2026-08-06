@@ -1,5 +1,6 @@
 import type { ActiveTrainingType } from "../models/ActiveTraining";
 import type { TrainingTimeType } from "../models/Training";
+import type { TrainingViewMode } from "../trainingStore";
 
 /**
  * Returns true when a training session can be resumed:
@@ -25,4 +26,19 @@ export function hasStaleLeftovers(
   time: TrainingTimeType,
 ): boolean {
   return activeTraining !== null && !isResumableSession(activeTraining, time);
+}
+
+/**
+ * Picks the training route matching the persisted session mode, falling
+ * back to the sequential screen if list-view mode isn't currently
+ * available (e.g. the feature flag was rolled back after a checklist
+ * session was started) so resuming never targets an unreachable screen.
+ */
+export function getTrainingRouteForMode(
+  trainingViewMode: TrainingViewMode | null,
+  listViewEnabled: boolean,
+): "/training/training-list" | "/training/training-active" {
+  return trainingViewMode === "LIST" && listViewEnabled
+    ? "/training/training-list"
+    : "/training/training-active";
 }

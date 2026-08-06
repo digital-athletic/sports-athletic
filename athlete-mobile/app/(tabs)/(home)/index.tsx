@@ -1,6 +1,8 @@
+import { featureFlags } from "@/config/featureFlags";
 import { IndividualWorkoutDisplay } from "@/features/training/IndividualWorkoutDisplay";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import {
+  getTrainingRouteForMode,
   hasStaleLeftovers,
   isResumableSession,
 } from "@/features/training/utils/resumeUtils";
@@ -56,9 +58,10 @@ export default function HomeScreen() {
       // Runs after the anamnesis gate: a resumable workout implies completed anamnesis.
       if (isResumableSession(activeTraining, time)) {
         router.replace(
-          trainingViewMode === "LIST"
-            ? "/training/training-list"
-            : "/training/training-active",
+          getTrainingRouteForMode(
+            trainingViewMode,
+            featureFlags.trainingListViewEnabled,
+          ),
         );
       } else if (hasStaleLeftovers(activeTraining, time)) {
         clearTraining();

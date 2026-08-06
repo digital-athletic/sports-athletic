@@ -30,7 +30,7 @@ export const TrainingListRows: FC<TrainingListRowsProps> = ({
   onChangeReps,
   onShowInfo,
 }) => (
-  <ScrollView>
+  <ScrollView keyboardShouldPersistTaps="handled">
     <Box padding="l">
       {rows.map((row) => (
         <TrainingListItem

@@ -194,7 +194,12 @@
   },
   "footer": {
     "imprint": "Impressum",
-    "privacyPolicy": "Datenschutzerklärung"
+    "privacyPolicy": "Datenschutzerklärung",
+    "thirdPartyNotices": "Open-Source-Lizenzen"
+  },
+  "thirdPartyNotices": {
+    "title": "Open-Source-Lizenzen",
+    "description": "Diese App enthält die folgende Open-Source-Software."
   },
   "settings": {
     "exampleData": {

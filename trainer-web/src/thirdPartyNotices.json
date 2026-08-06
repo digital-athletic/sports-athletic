@@ -1,0 +1,37 @@
+[
+  {
+    "name": "@supabase/supabase-js",
+    "version": "2.110.7",
+    "license": "MIT"
+  },
+  {
+    "name": "express",
+    "version": "5.2.1",
+    "license": "MIT"
+  },
+  {
+    "name": "i18next",
+    "version": "25.6.2",
+    "license": "MIT"
+  },
+  {
+    "name": "react",
+    "version": "19.2.7",
+    "license": "MIT"
+  },
+  {
+    "name": "react-dom",
+    "version": "19.2.7",
+    "license": "MIT"
+  },
+  {
+    "name": "react-i18next",
+    "version": "16.3.2",
+    "license": "MIT"
+  },
+  {
+    "name": "react-router",
+    "version": "8.2.0",
+    "license": "MIT"
+  }
+]

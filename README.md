@@ -18,10 +18,12 @@ To run the full application locally, you need to start all three services.
 
 **Prerequisites:**
 
-- [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started) - install via Homebrew:
+- [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started) - on macOS via Homebrew:
   ```bash
   brew install supabase/tap/supabase
   ```
+
+  On Linux, use the packages from the [releases page](https://github.com/supabase/cli/releases). See the [Supabase README](supabase/README.md) for details.
 
 **Start the backend:**
 
@@ -56,7 +58,7 @@ supabase stop --no-backup
 
 **Prerequisites:**
 
-- [Node.js](https://nodejs.org/) v20+
+- [Node.js](https://nodejs.org/) v24 (see [.tool-versions](.tool-versions)). v22 is the technical minimum, 24 is what CI runs.
 - [pnpm](https://pnpm.io/installation)
 - [watchman](https://facebook.github.io/watchman/docs/install)
 
@@ -64,8 +66,11 @@ supabase stop --no-backup
 
 **Start the app:**
 
+Copy `athlete-mobile/.env.example` to `athlete-mobile/.env` first. The app throws on startup without `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY`; `supabase start` prints both.
+
 ```bash
 cd athlete-mobile
+cp .env.example .env
 pnpm install
 pnpm start
 ```
@@ -84,10 +89,12 @@ pnpm android
 
 **Testing the app:**
 
-You can register a new user directly through the app interface at http://localhost:8081.
+You can register a new user directly through the app interface at http://localhost:8081. Sign-in uses a one-time code sent by email. Locally, Supabase captures it in Mailpit at http://localhost:54324.
 
 **The Docker Way**
-You can also run pnpm completly within the container WITHOUT installing any npm packages on your host:
+You can also run pnpm completly within the container WITHOUT installing any npm packages on your host.
+
+Run `supabase start` first. The compose file declares the Supabase CLI network as external, so `docker compose up` exits with an error and starts nothing until that network exists.
 
 ```bash
 docker compose up -d
@@ -110,13 +117,16 @@ xcrun simctl openurl booted "exp://127.0.0.1:8081"
 
 **Prerequisites:**
 
-- [Node.js](https://nodejs.org/) v20+
+- [Node.js](https://nodejs.org/) v24 (see [.tool-versions](.tool-versions))
 - [pnpm](https://pnpm.io/installation)
 
 **Start the app:**
 
+Copy `trainer-web/.env.example` to `trainer-web/.env` first; `supabase start` prints the URL and key.
+
 ```bash
 cd trainer-web
+cp .env.example .env
 pnpm install
 pnpm dev
 ```

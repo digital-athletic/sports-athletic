@@ -66,7 +66,7 @@ supabase stop --no-backup
 
 **Start the app:**
 
-Copy `.env.example` to `.env` and fill in the values `supabase start` printed. The Docker route below does not use this file.
+Copy `.env.example` to `.env` and fill in the values `supabase start` printed. Not needed for the Docker route below, where compose supplies them.
 
 ```bash
 cd athlete-mobile
@@ -94,7 +94,7 @@ You can register a new user directly through the app interface at http://localho
 **The Docker Way**
 You can also run pnpm completly within the container WITHOUT installing any npm packages on your host.
 
-Two prerequisites. Run `supabase start` first: the compose file declares its network as external and fails to start without it. And copy `.env.default` to `.env` in the repository root, because compose reads the values from there and passes them into both containers. Without it they resolve to empty strings and both apps come up unconfigured.
+Two prerequisites. Run `supabase start` first: compose declares its network as external and fails without it. And copy `.env.default` to `.env` in the repository root, filling in the anon key, because compose reads the values from there and passes them into both containers.
 
 ```bash
 docker compose up -d
@@ -122,7 +122,7 @@ xcrun simctl openurl booted "exp://127.0.0.1:8081"
 
 **Start the app:**
 
-Copy `.env.example` to `.env` and fill in the values `supabase start` printed. The Docker route does not use this file either.
+Copy `.env.example` to `.env` and fill in the values `supabase start` printed. Not needed for the Docker route either.
 
 ```bash
 cd trainer-web

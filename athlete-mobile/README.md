@@ -167,6 +167,8 @@ Copy `.env.example` to `.env` and fill in the values:
 cp .env.example .env
 ```
 
+Only needed for the local setup. Under Docker, compose passes these in from the `.env` in the repository root.
+
 ### Required
 
 | Variable | Description |

@@ -18,10 +18,12 @@ To run the full application locally, you need to start all three services.
 
 **Prerequisites:**
 
-- [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started) - install via Homebrew:
+- [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started) - on macOS via Homebrew:
   ```bash
   brew install supabase/tap/supabase
   ```
+
+  On Linux, use the packages from the [releases page](https://github.com/supabase/cli/releases). See the [Supabase README](supabase/README.md) for details.
 
 **Start the backend:**
 
@@ -56,7 +58,7 @@ supabase stop --no-backup
 
 **Prerequisites:**
 
-- [Node.js](https://nodejs.org/) v20+
+- [Node.js](https://nodejs.org/) v24 (see [.tool-versions](.tool-versions)). v22 is the technical minimum, 24 is what CI runs.
 - [pnpm](https://pnpm.io/installation)
 - [watchman](https://facebook.github.io/watchman/docs/install)
 
@@ -64,8 +66,11 @@ supabase stop --no-backup
 
 **Start the app:**
 
+Copy `.env.example` to `.env` and fill in the values `supabase start` printed. Not needed for the Docker route below, where compose supplies them.
+
 ```bash
 cd athlete-mobile
+cp .env.example .env
 pnpm install
 pnpm start
 ```
@@ -84,10 +89,12 @@ pnpm android
 
 **Testing the app:**
 
-You can register a new user directly through the app interface at http://localhost:8081.
+You can register a new user directly through the app interface at http://localhost:8081. Sign-in uses a one-time code sent by email. Locally, Supabase captures it in Mailpit at http://localhost:54324.
 
 **The Docker Way**
-You can also run pnpm completly within the container WITHOUT installing any npm packages on your host:
+You can also run pnpm completly within the container WITHOUT installing any npm packages on your host.
+
+Two prerequisites. Run `supabase start` first: compose declares its network as external and fails without it. And copy `.env.default` to `.env` in the repository root, filling in the anon key, because compose reads the values from there and passes them into both containers.
 
 ```bash
 docker compose up -d
@@ -110,13 +117,16 @@ xcrun simctl openurl booted "exp://127.0.0.1:8081"
 
 **Prerequisites:**
 
-- [Node.js](https://nodejs.org/) v20+
+- [Node.js](https://nodejs.org/) v24 (see [.tool-versions](.tool-versions))
 - [pnpm](https://pnpm.io/installation)
 
 **Start the app:**
 
+Copy `.env.example` to `.env` and fill in the values `supabase start` printed. Not needed for the Docker route either.
+
 ```bash
 cd trainer-web
+cp .env.example .env
 pnpm install
 pnpm dev
 ```

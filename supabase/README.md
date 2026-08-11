@@ -15,6 +15,15 @@ The Supabase CLI is required to run the local development environment.
 brew install supabase/tap/supabase
 ```
 
+**Linux:** download the `.deb`, `.rpm` or `.apk` for your package manager from the
+[releases page](https://github.com/supabase/cli/releases):
+
+```bash
+sudo dpkg -i supabase_<version>_linux_amd64.deb
+```
+
+See the [official install instructions](https://supabase.com/docs/guides/local-development/cli/getting-started?queryGroups=platform&platform=linux) for the other package managers.
+
 **Verify installation:**
 ```bash
 supabase --version

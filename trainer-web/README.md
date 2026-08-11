@@ -6,7 +6,7 @@ A web application for trainers to manage teams, create workouts, and track athle
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) v20+
+- [Node.js](https://nodejs.org/) v24 (see [.tool-versions](../.tool-versions))
 - [pnpm](https://pnpm.io/installation)
 
 ## Environment Variables

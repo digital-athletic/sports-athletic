@@ -1,6 +1,8 @@
 # Supabase
 .branches
 .temp
+# Ad hoc queries saved by the Studio SQL editor
+/snippets
 /videos
 /images
 /exercise_videos

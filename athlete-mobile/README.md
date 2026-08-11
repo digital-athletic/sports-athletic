@@ -32,7 +32,7 @@ For more control of individual tool versions or if you prefer developing without
 
 **Prerequisites:**
 
-- [Node.js](https://nodejs.org/en/download) - v20+
+- [Node.js](https://nodejs.org/en/download) - v24, see [.tool-versions](.tool-versions). v22 is the technical minimum, 24 is what CI runs.
 - [pnpm](https://pnpm.io/installation) - for managing third-party node modules
 - [watchman](https://facebook.github.io/watchman/docs/install) - file watcher to support development server hot reloads
 
@@ -40,8 +40,9 @@ For more control of individual tool versions or if you prefer developing without
 
 **Steps:**
 
-1. Run `pnpm install` to download project dependencies
-2. Run `pnpm start` to start the development server (Metro)
+1. Run `cp .env.example .env` and adjust the values (see [Environment Variables](#environment-variables))
+2. Run `pnpm install` to download project dependencies
+3. Run `pnpm start` to start the development server (Metro)
 
 ## Backend (Supabase)
 
@@ -60,11 +61,20 @@ The Expo development server lets you preview changes to TypeScript components im
 
 **Requirements:**
 
-- Azul Zulu JDK 17.58.21 (OpenJDK 17.0.15) - Java Development Kit required to compile Java & Kotlin source files
-- [Android Studio](https://developer.android.com/studio) with:
-  - Android SDK Platform 35 (`VanillaIceCream`)
-  - Android SDK Build-Tools
-  - NDK `27.1.12297006`
+- JDK 17 - required to compile Java & Kotlin source files. Android Studio ships its own JDK for the IDE; the Gradle build uses the one `JAVA_HOME` points at.
+- [Android Studio](https://developer.android.com/studio) with these SDK components:
+  - Android SDK Command-line Tools
+  - CMake `3.22.1`
+- An emulator or device on API 35 or newer, with a system image matching your host architecture. See the [Expo emulator guide](https://docs.expo.dev/workflow/android-studio-emulator/).
+
+Gradle installs the SDK platform, build tools and the NDK itself on the first build, as long as the Command-line Tools are present.
+
+**Environment:**
+
+```bash
+export ANDROID_HOME="$HOME/Android/Sdk"
+export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/latest/bin"
+```
 
 **Generate, Build & Run:**
 
@@ -73,6 +83,19 @@ pnpm android
 ```
 
 This generates the native Android project files, builds the app with gradle and installs the generated build on your emulator.
+
+**Reaching the backend from the emulator:**
+
+Inside the emulator, `localhost` is the emulator itself, not your machine. Forward the two ports so the app finds Metro and Supabase:
+
+```bash
+adb reverse tcp:8081 tcp:8081
+adb reverse tcp:54321 tcp:54321
+```
+
+Both are cleared when the emulator restarts or the adb server is killed. Without them the app still starts, but login and sync fail with errors that point at Supabase rather than at the missing forward.
+
+> **Linux:** the emulator needs KVM. Without it, it falls back to software emulation and is unusably slow, and nothing reports an error. Check with `test -w /dev/kvm`.
 
 ### iOS
 
@@ -137,6 +160,23 @@ pnpm format-fix
 ```
 
 ## Environment Variables
+
+Copy `.env.example` to `.env` and fill in the values:
+
+```bash
+cp .env.example .env
+```
+
+Only needed for the local setup. Under Docker, compose passes these in from the `.env` in the repository root.
+
+### Required
+
+| Variable | Description |
+|----------|-------------|
+| `EXPO_PUBLIC_SUPABASE_URL` | URL of the Supabase instance. `http://localhost:54321` for local development. |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous/public API key. `supabase start` prints both values. |
+
+The app throws on startup when either is missing.
 
 ### Feature Flags
 

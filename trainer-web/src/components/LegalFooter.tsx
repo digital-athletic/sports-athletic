@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
 
 export function LegalFooter() {
   const { t } = useTranslation();
@@ -22,6 +23,13 @@ export function LegalFooter() {
       >
         {t("footer.privacyPolicy")}
       </a>
+      <span className="mx-2">·</span>
+      <Link
+        to="/third-party-notices"
+        className="hover:text-gray-600 hover:underline"
+      >
+        {t("footer.thirdPartyNotices")}
+      </Link>
     </footer>
   );
 }

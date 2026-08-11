@@ -1,12 +1,20 @@
 #!/usr/bin/env node
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { generateNotice } from "../../scripts/notice.mjs";
+import { generateNotice, generateNoticeData } from "../../scripts/notice.mjs";
 import { bundledFontNotices } from "./bundled-fonts.mjs";
 
 const projectRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
+const supplements = bundledFontNotices(projectRoot);
+
 generateNotice({
   projectRoot,
   output: join(projectRoot, "THIRD-PARTY-NOTICES.txt"),
-  supplements: bundledFontNotices(projectRoot),
+  supplements,
+});
+
+generateNoticeData({
+  projectRoot,
+  output: join(projectRoot, "assets/data/thirdPartyNotices.json"),
+  supplements,
 });

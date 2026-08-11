@@ -166,6 +166,12 @@ export default function MoreScreen() {
               iconBackground="darkGrey1"
             />
           )}
+          <ListItem
+            title={t("more.thirdPartyNotices.menuItem")}
+            navPath="/(tabs)/(more)/third-party-notices"
+            iconName="code-slash"
+            iconBackground="darkGrey1"
+          />
 
           <Box>
             <TouchableOpacity onPress={deleteAccount}>

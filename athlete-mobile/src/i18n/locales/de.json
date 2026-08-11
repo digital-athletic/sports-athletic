@@ -538,6 +538,12 @@
     },
     "contact": "Kontakt",
     "imprint": "Impressum",
+    "thirdPartyNotices": {
+      "menuItem": "Open-Source-Lizenzen",
+      "title": "Open-Source-Lizenzen",
+      "intro": "Diese App enthält die folgende Open-Source-Software.",
+      "versionAndLicense": "{{version}} · {{license}}"
+    },
     "deleteUser": "Nutzer löschen",
     "logout": "Abmelden",
     "testPersonas": "Test Personas",

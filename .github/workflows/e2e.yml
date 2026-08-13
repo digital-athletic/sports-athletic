@@ -30,3 +30,33 @@ jobs:
           name: playwright-report
           path: athlete-mobile/playwright/output
           retention-days: 30
+
+  e2e-trainer-web:
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'web-trainer-dashboard')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.18.0"
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install Playwright browsers
+        run: pnpm --filter trainer-web exec playwright install chromium --with-deps
+      - name: Run E2E tests
+        run: pnpm --filter trainer-web test:e2e
+        env:
+          CI: true
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-trainer-web
+          # The html reporter writes playwright-report/, traces and screenshots
+          # land in playwright/output/. Both are needed to debug a failure.
+          path: |
+            trainer-web/playwright-report
+            trainer-web/playwright/output
+          retention-days: 30

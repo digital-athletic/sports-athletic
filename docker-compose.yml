@@ -47,6 +47,8 @@ services:
     environment:
       - VITE_SUPABASE_URL=${SUPABASE_URL_EXTERNAL}
       - VITE_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - TESTING_PLAYWRIGHT_WS_ENDPOINT=ws://playwright:9323
+      - TESTING_PLAYWRIGHT_BASE_URL=http://trainer-web:5173
     ports:
       - 5173:5173
     stdin_open: true
@@ -57,7 +59,17 @@ services:
     container_name: playwright
     expose:
       - "9323"
-    command: ["npx", "playwright", "run-server", "--port=9323", "--host=0.0.0.0"]
+    # The image ships the browsers but not the Playwright package, so npx
+    # fetches it at start. Pin it: unpinned it resolves to the newest release
+    # and the server then refuses clients built against the image's version.
+    command:
+      [
+        "npx",
+        "playwright@1.61.1",
+        "run-server",
+        "--port=9323",
+        "--host=0.0.0.0",
+      ]
 
 volumes:
   root_node_modules:

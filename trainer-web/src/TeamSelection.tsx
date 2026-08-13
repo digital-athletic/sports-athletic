@@ -39,7 +39,10 @@ export const TeamSelection = () => {
     <PageLayout>
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1
+            data-testid="team-selection-title"
+            className="text-2xl font-bold text-gray-900"
+          >
             {t("teamSelection.title")}
           </h1>
           <p className="mt-1 text-gray-600">{t("teamSelection.description")}</p>
@@ -62,7 +65,10 @@ export const TeamSelection = () => {
       ) : !showCreateForm && !showJoinForm ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {teams.length === 0 && (
-            <p className="col-span-full text-gray-500">
+            <p
+              data-testid="team-selection-empty"
+              className="col-span-full text-gray-500"
+            >
               {t("teamSelection.noTeam")}
             </p>
           )}

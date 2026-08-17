@@ -18,6 +18,8 @@ applicable terms. These are covered in the THIRD-PARTY-NOTICES files.
 
 For reference, license URLs used in this project (where applicable):
 - CC BY-SA 4.0 — https://creativecommons.org/licenses/by-sa/4.0/
+- CC0 1.0 — https://creativecommons.org/publicdomain/zero/1.0/
+
 
 | Name | Path | Description | Author | License | Depicted Person | Consent |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -44,3 +46,7 @@ For reference, license URLs used in this project (where applicable):
 | sport-selection-volleyball | athlete-mobile/assets/img/sportSelection/volleyball.jpg |sport selection cover: volleyball | ChatGPT-8.7.2026 + Ingemar Pohl|CC BY-SA 4.0 |n/a | yes|
 | audio-pause-countdown | athlete-mobile/assets/audio/pause_3sec.mp3 | Workout pause countdown sound (3 seconds) | Ingemar Pohl | CC BY-SA 4.0 | n/a | n/a |
 | audio-start-countdown | athlete-mobile/assets/audio/start_5sec.mp3 | Workout start countdown sound (5 seconds) | Ingemar Pohl | CC BY-SA 4.0 | n/a | n/a |
+| muscle-silhouette-female-back | athlete-mobile/assets/img/muscle-silhouette-female-back.svg | Muscle Silhouette Female Back | Gipfelgold Werbeagentur GmbH | CC0 1.0 | n/a | n/a |
+| muscle-silhouette-female-front | athlete-mobile/assets/img/muscle-silhouette-female-front.svg | Muscle Silhouette Female Front | Gipfelgold Werbeagentur GmbH | CC0 1.0 | n/a | n/a |
+| muscle-silhouette-male-back | athlete-mobile/assets/img/muscle-silhouette-male-back.svg | Muscle Silhouette Male Back | Gipfelgold Werbeagentur GmbH | CC0 1.0 | n/a | n/a |
+| muscle-silhouette-male-front | athlete-mobile/assets/img/muscle-silhouette-male-front.svg | Muscle Silhouette Male Front | Gipfelgold Werbeagentur GmbH | CC0 1.0 | n/a | n/a |

@@ -12,7 +12,7 @@ An exercise carries no difficulty relative to other exercises, and the usable di
 
 A branch is that stable identity. The plan stores branch references, the athlete's per-branch level is stored separately, and workout generation joins the two. Progression is a one-number update. Levels carry two jobs:
 
-1. **Entry mapping**: an athlete with no progress on a branch enters at the level matching their overall training level (BEGINNER 1, ADVANCED 2, PROFESSIONAL 3). Levels 4 to 6 are headroom earned by training, so entry caps at 3 for every athlete.
+1. **Entry mapping**: an athlete with no progress on a branch enters at the level matching their overall training level (BEGINNER 1, ADVANCED 2, PROFESSIONAL 3). Levels 4 to 6 are headroom earned by training, so entry caps at 3 for every athlete. A training level above PROFESSIONAL would entry-map to level 4, but the mapping is deliberately not prepared in advance; it gets added only when that training level actually ships.
 2. **Progression ladder**: performance moves the per-branch level independently of the overall training level, so difficulty adapts per movement pattern instead of globally.
 
 A **level change** must land on a level holding a different exercise, so it always surfaces as a new movement with fresh values. A branch offering no such level in the required direction is **exhausted**, and the system swaps in a comparable branch from the same skill tree (**branch substitution**), the only progression event that edits the plan.
@@ -92,9 +92,19 @@ flowchart TD
 2. **On exhaustion**: plan workouts substitute, all other workout types leave everything unchanged. The candidate pool is the same skill tree (weighted and bodyweight variant when weights are available), scored against the old branch, and the plan's training day is rewritten to the winner.
    - Hard exclusions: the old branch, branches already used in the session, mismatched equipment, age, gender, or prevention region, and a switch from a both-sided to a one-sided movement.
    - Score penalties: no exercise at the target level (falling back at most two levels), different body region, switch from one-sided to both-sided, different movement direction. A different body region is the heaviest single penalty, factor 0.5 against 0.8 per soft mismatch, so the technically closest branch wins.
+   - The factors 0.5 and 0.8 are the accepted starting point. They change only if a sports-science review of real substitution rankings (top 3 substitutes for representative branches, with scores and reasons) shows repeated systematic misranking; individual disagreements do not move them.
    - Ties break by uniform random pick. A one-sided to both-sided switch adds a second substitute branch to replace the lost per-side volume.
    - A level down from level 1 runs the same search with target level 1, giving a different movement at entry difficulty.
    - The replaced branch keeps its progress, so the swap can be undone at the athlete's old level. The substitute enters through normal resolution; the old level does not transfer.
+
+### Manual exercise swapping (deferred)
+
+Athletes cannot swap exercises manually, and building this is currently not planned. The agreed design, should it be built later:
+
+- The athlete may pick any eligible exercise from the respective skill tree; there is no restriction to levels near the current one.
+- Guidance comes from labels instead: each exercise is labeled relative to the athlete's current level in its branch, for example "easier", "appropriate", "more challenging", "significantly more challenging". Exercises near the current level are listed first, but proximity is never a selection requirement.
+- A manual swap changes neither the stored branch progress nor the athlete's training level. Automatic level progression stays exclusive to the progression logic above.
+- The hard exclusions keep applying: unavailable equipment, exercises unsuitable for the athlete's age or gender, and every other mandatory filter.
 
 ### Example: bodyweight squat lane
 
@@ -128,6 +138,4 @@ erDiagram
 
 ## Open Questions
 
-- A training level above PROFESSIONAL is a candidate addition that would entry-map to level 4. Prepare the mapping now, or extend it when that training level ships?
-- Manual exercise swapping by the athlete is unbuilt. Should it offer every exercise in the skill tree, or only levels near the athlete's current one?
-- Which substitution examples validate the score factors, and who signs them off? The current values are the accepted starting point; the test is whether they pick the technically closest branch on real content.
+None.

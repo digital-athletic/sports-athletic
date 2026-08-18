@@ -27,7 +27,7 @@ Both reuse the filter chain and the branch to exercise resolution rule from [Pla
 ### Short workout
 
 1. Pick the requested type's skill tree: the weights-capable variant when the place has weights, the bodyweight variant otherwise. Foam roller sessions require a foam roller or foam ball, else generation fails.
-2. Filter by prevention target tag (prevention types only), pain blocks from the athlete's pain tags, soreness, equipment, age, and gender. An empty pool after the pain, soreness, or gender step aborts with a typed error naming the cause. The soreness filter is disabled by design for the leg axis stability focus, which lower-body soreness would otherwise block permanently.
+2. Filter by prevention target tag (prevention types only), pain blocks from the athlete's pain tags, soreness, equipment, age, and gender. An empty pool after the pain, soreness, or gender step aborts with a typed error naming the cause. The soreness filter is disabled by design for prevention workouts and the leg axis stability focus (the check was removed by sprint decision on August 10, 2026; lower-body soreness would otherwise block the stability focus permanently).
 3. Draw branches uniformly at random, repeating neither a branch nor a resolved exercise, per quota:
 
 | Type | Quota |

@@ -21,10 +21,8 @@ export function useExerciseProgression() {
   const {
     exerciseList,
     activeTraining,
-    setActiveExerciseIndex,
     addPauseTime,
     addSkillTime,
-    completedExerciseIndices,
     markExerciseCompleted,
   } = useTrainingStore();
   const {
@@ -54,19 +52,7 @@ export function useExerciseProgression() {
   const [isAborted, setIsAborted] = useState(false);
   const [isSkipped, setIsSkipped] = useState(false);
 
-  // strengthTestMaxValues only provided for strength test's last exercise
-  const advanceToNextExercise = (
-    strengthTestMaxValues?: MaxValuesType | null,
-  ) => {
-    if (!exerciseList) return;
-
-    // Skip re-saving if this index was already completed via the checklist
-    // (list-view) flow, to avoid double-applying weight/level progression.
-    if (!completedExerciseIndices.includes(safeExerciseIndex)) {
-      saveExerciseAndBranchData(safeExerciseIndex);
-      markExerciseCompleted(safeExerciseIndex);
-    }
-
+  const commitElapsedTime = () => {
     if (isPauseExercise) {
       // add time in pause to training stats
       const pauseDuration = getPauseElapsed();
@@ -74,18 +60,35 @@ export function useExerciseProgression() {
 
       maybeShowPainAlert(nextExercise);
       maybeShowBarbellAlert(nextExerciseData, activeTraining?.type);
-    } else if (currentExercise?.skill) {
-      // Add exercise time to the skill statistics
-      const exerciseDuration = getExerciseElapsed();
-      const focusArea = mapSkillCodeToFocusArea(currentExercise.skill);
-      if (focusArea) {
-        addSkillTime(focusArea, exerciseDuration);
-      }
+      return;
     }
 
-    if (safeExerciseIndex < exerciseList.length - 1) {
-      setActiveExerciseIndex(safeExerciseIndex + 1);
+    if (!currentExercise?.skill) return;
 
+    // Add exercise time to the skill statistics
+    const exerciseDuration = getExerciseElapsed();
+    const focusArea = mapSkillCodeToFocusArea(currentExercise.skill);
+    if (focusArea) {
+      addSkillTime(focusArea, exerciseDuration);
+    }
+  };
+
+  // strengthTestMaxValues only provided for strength test's last exercise
+  const advanceToNextExercise = (
+    strengthTestMaxValues?: MaxValuesType | null,
+  ) => {
+    if (!exerciseList) return;
+
+    // Skip re-saving if this entry was already completed via the checklist
+    // (list-view) flow, to avoid double-applying weight/level progression.
+    if (!currentExercise?.completed) {
+      saveExerciseAndBranchData(safeExerciseIndex);
+      markExerciseCompleted(safeExerciseIndex);
+    }
+
+    commitElapsedTime();
+
+    if (safeExerciseIndex < exerciseList.length - 1) {
       if (isNextExercisePause) {
         // set pause timer to new start
         markPauseStart();

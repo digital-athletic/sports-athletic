@@ -4,7 +4,6 @@ import { useTrainingListLifecycle } from "@/features/training/hooks/useTrainingL
 import { useTrainingListReps } from "@/features/training/hooks/useTrainingListReps";
 import { useTrainingListRows } from "@/features/training/hooks/useTrainingListRows";
 import { useTrainingStore } from "@/features/training/trainingStore";
-import { getIncompleteCount } from "@/features/training/utils/listCompletionUtils";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 
@@ -21,8 +20,7 @@ export function useTrainingListScreen() {
   const { finishTraining } = useFinishTraining();
 
   const { rows } = useTrainingListRows();
-  const { completedExerciseIndices, handleComplete, handleSkip } =
-    useTrainingListCompletion();
+  const { handleComplete, handleSkip } = useTrainingListCompletion();
   const { repsDraft, setRepsForRow, handleSubmitReps } = useTrainingListReps();
   const { handleAbort } = useTrainingListLifecycle({
     onFinish: finishTraining,
@@ -32,12 +30,7 @@ export function useTrainingListScreen() {
   // All visible rows completed -> enable the finish button, mirroring the
   // last exercise in the sequential flow, but requiring an explicit tap
   // instead of auto-navigating.
-  const allCompleted =
-    rows.length > 0 &&
-    getIncompleteCount(
-      rows.map((row) => row.index),
-      completedExerciseIndices,
-    ) === 0;
+  const allCompleted = rows.length > 0 && rows.every((row) => row.completed);
 
   const handleFinish = () => {
     // Visible feedback only — useFinishTraining itself guards against
@@ -56,7 +49,6 @@ export function useTrainingListScreen() {
   return {
     hasHydrated,
     exerciseList,
-    completedExerciseIndices,
     repsDraft,
     rows,
     allCompleted,

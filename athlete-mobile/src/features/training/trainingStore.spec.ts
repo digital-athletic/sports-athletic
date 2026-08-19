@@ -27,10 +27,8 @@ describe("useTrainingStore", () => {
         },
       },
       activeTraining: null,
-      activeExerciseIndex: 0,
       tempMaxValues: null,
       trainingViewMode: null,
-      completedExerciseIndices: [],
     });
   });
 
@@ -895,83 +893,36 @@ describe("useTrainingStore", () => {
       expect(result.current.activeTraining).toBeNull();
     });
 
-    it("should reset activeExerciseIndex and tempMaxValues", () => {
+    it("should reset tempMaxValues", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
-        result.current.setActiveExerciseIndex(3);
         result.current.setTempMaxValues(DEFAULT_MAX_VALUES);
       });
 
-      expect(result.current.activeExerciseIndex).toBe(3);
       expect(result.current.tempMaxValues).toEqual(DEFAULT_MAX_VALUES);
 
       act(() => {
         result.current.clearTraining();
       });
 
-      expect(result.current.activeExerciseIndex).toBe(0);
       expect(result.current.tempMaxValues).toBeNull();
     });
 
-    it("should reset trainingViewMode and completedExerciseIndices", () => {
+    it("should reset trainingViewMode", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
         result.current.setTrainingViewMode("LIST");
-        result.current.markExerciseCompleted(0);
       });
 
       expect(result.current.trainingViewMode).toBe("LIST");
-      expect(result.current.completedExerciseIndices).toEqual([0]);
 
       act(() => {
         result.current.clearTraining();
       });
 
       expect(result.current.trainingViewMode).toBeNull();
-      expect(result.current.completedExerciseIndices).toEqual([]);
-    });
-  });
-
-  // ============================================================================
-  // Active Exercise Index Tests
-  // ============================================================================
-
-  describe("useTrainingStore: setActiveExerciseIndex", () => {
-    it("should default to 0", () => {
-      const { result } = renderHook(() => useTrainingStore());
-
-      expect(result.current.activeExerciseIndex).toBe(0);
-    });
-
-    it("should set the active exercise index", () => {
-      const { result } = renderHook(() => useTrainingStore());
-
-      act(() => {
-        result.current.setActiveExerciseIndex(2);
-      });
-
-      expect(result.current.activeExerciseIndex).toBe(2);
-    });
-
-    it("should update the active exercise index multiple times", () => {
-      const { result } = renderHook(() => useTrainingStore());
-
-      act(() => {
-        result.current.setActiveExerciseIndex(1);
-      });
-      expect(result.current.activeExerciseIndex).toBe(1);
-
-      act(() => {
-        result.current.setActiveExerciseIndex(4);
-      });
-      expect(result.current.activeExerciseIndex).toBe(4);
-
-      act(() => {
-        result.current.setActiveExerciseIndex(0);
-      });
-      expect(result.current.activeExerciseIndex).toBe(0);
     });
   });
 
@@ -1049,39 +1000,44 @@ describe("useTrainingStore", () => {
   });
 
   // ============================================================================
-  // Completed Exercise Indices Tests
+  // Exercise Completed Tests
   // ============================================================================
 
   describe("markExerciseCompleted", () => {
-    it("should default to an empty array", () => {
-      const { result } = renderHook(() => useTrainingStore());
-
-      expect(result.current.completedExerciseIndices).toEqual([]);
+    beforeEach(() => {
+      useTrainingStore.setState({ exerciseList: mockExercises });
     });
 
-    it("should add an index", () => {
+    it("should leave entries uncompleted by default", () => {
+      const { result } = renderHook(() => useTrainingStore());
+
+      expect(result.current.exerciseList?.[0]?.completed).toBeUndefined();
+    });
+
+    it("should mark the exercise at the given index as completed", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
         result.current.markExerciseCompleted(0);
       });
 
-      expect(result.current.completedExerciseIndices).toEqual([0]);
+      expect(result.current.exerciseList?.[0]?.completed).toBe(true);
     });
 
-    it("should accumulate multiple indices in call order", () => {
+    it("should mark multiple indices independently of call order", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
         result.current.markExerciseCompleted(2);
         result.current.markExerciseCompleted(0);
-        result.current.markExerciseCompleted(1);
       });
 
-      expect(result.current.completedExerciseIndices).toEqual([2, 0, 1]);
+      expect(result.current.exerciseList?.[0]?.completed).toBe(true);
+      expect(result.current.exerciseList?.[1]?.completed).toBeUndefined();
+      expect(result.current.exerciseList?.[2]?.completed).toBe(true);
     });
 
-    it("should not add the same index twice", () => {
+    it("should be idempotent when marking the same index twice", () => {
       const { result } = renderHook(() => useTrainingStore());
 
       act(() => {
@@ -1089,7 +1045,18 @@ describe("useTrainingStore", () => {
         result.current.markExerciseCompleted(1);
       });
 
-      expect(result.current.completedExerciseIndices).toEqual([1]);
+      expect(result.current.exerciseList?.[1]?.completed).toBe(true);
+    });
+
+    it("should handle marking completed on a null exercise list gracefully", () => {
+      useTrainingStore.setState({ exerciseList: null });
+      const { result } = renderHook(() => useTrainingStore());
+
+      act(() => {
+        result.current.markExerciseCompleted(0);
+      });
+
+      expect(result.current.exerciseList).toBeNull();
     });
   });
 
@@ -1293,6 +1260,14 @@ describe("useTrainingStore", () => {
   });
 });
 
+function withoutActiveExerciseIndex<T extends { activeExerciseIndex?: number }>(
+  state: T,
+): Omit<T, "activeExerciseIndex"> {
+  const { activeExerciseIndex, ...rest } = state;
+  void activeExerciseIndex;
+  return rest;
+}
+
 describe("migrateTrainingStore: legacy version bridge", () => {
   const persistedAtVersionZero = {
     selection: "QUICK",
@@ -1300,6 +1275,12 @@ describe("migrateTrainingStore: legacy version bridge", () => {
       {
         skill: "SWR1",
         exerciseId: "10",
+        feedback: { difficulty: null },
+        skipped: false,
+      },
+      {
+        skill: "SWR1",
+        exerciseId: "20",
         feedback: { difficulty: null },
         skipped: false,
       },
@@ -1328,30 +1309,42 @@ describe("migrateTrainingStore: legacy version bridge", () => {
     const result = migrateTrainingStore(persistedAtVersionZero, 0);
 
     expect(result).toEqual({
-      ...persistedAtVersionZero,
+      ...withoutActiveExerciseIndex(persistedAtVersionZero),
       trainingViewMode: null,
-      completedExerciseIndices: [],
     });
   });
 
-  it("applies the v14 -> v15 migration when persisted at v14", () => {
+  it("applies the v14 -> v16 migrations when persisted at v14", () => {
     const result = migrateTrainingStore(persistedAtVersionZero, 14);
 
     expect(result).toEqual({
+      ...withoutActiveExerciseIndex(persistedAtVersionZero),
+      trainingViewMode: null,
+    });
+  });
+
+  it("folds completedExerciseIndices persisted at v15 into per-entry marks", () => {
+    const persistedAtV15 = {
       ...persistedAtVersionZero,
       trainingViewMode: null,
-      completedExerciseIndices: [],
-    });
+      completedExerciseIndices: [1],
+    };
+
+    const result = migrateTrainingStore(persistedAtV15, 15);
+
+    expect(result.exerciseList?.[0]?.completed).toBeUndefined();
+    expect(result.exerciseList?.[1]?.completed).toBe(true);
+    expect(result).not.toHaveProperty("completedExerciseIndices");
+    expect(result).not.toHaveProperty("activeExerciseIndex");
   });
 
   it("returns state unchanged when already at the registered version", () => {
     const persistedAtCurrentVersion = {
-      ...persistedAtVersionZero,
+      ...withoutActiveExerciseIndex(persistedAtVersionZero),
       trainingViewMode: null,
-      completedExerciseIndices: [],
     };
 
-    const result = migrateTrainingStore(persistedAtCurrentVersion, 15);
+    const result = migrateTrainingStore(persistedAtCurrentVersion, 16);
 
     expect(result).toEqual(persistedAtCurrentVersion);
   });
@@ -1360,7 +1353,7 @@ describe("migrateTrainingStore: legacy version bridge", () => {
     const result = migrateTrainingStore(persistedAtVersionZero, 5);
 
     expect(result.selection).toBeNull();
-    expect(result.activeExerciseIndex).toBe(0);
+    expect(result.trainingViewMode).toBeNull();
     expect(result.tempMaxValues).toBeNull();
     expect(result.time.start).toBeUndefined();
   });
@@ -1369,6 +1362,6 @@ describe("migrateTrainingStore: legacy version bridge", () => {
     const result = migrateTrainingStore(persistedAtVersionZero, Number.NaN);
 
     expect(result.selection).toBeNull();
-    expect(result.activeExerciseIndex).toBe(0);
+    expect(result.trainingViewMode).toBeNull();
   });
 });

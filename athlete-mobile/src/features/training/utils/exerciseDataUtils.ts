@@ -6,6 +6,7 @@ import type {
   IntensityData,
 } from "@/features/training/models/Intensity";
 import type { SkillCode } from "@/schemas/generator.schema";
+import { isPauseExercise } from "@/features/training/models/IdTypes";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import type { TrainingLevelType } from "@/schemas/common.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
@@ -89,6 +90,48 @@ export function isFeedbackEligibleSkill(
     );
   }
   return false;
+}
+
+/**
+ * Derives the sequential flow's active exercise index: the first entry
+ * without the `completed` mark. A pause row is only skipped over when a
+ * LATER entry is already completed — proof that progress happened past this
+ * pause without ever passing through it, which only a checklist session can
+ * cause (it never marks pause rows, since they're excluded from the checklist
+ * entirely). Genuine sequential progress can never produce that shape, since
+ * sequential marks every row — pause included — as it passes, so this only
+ * matters for the list-to-sequential fallback (see
+ * resumeUtils.getTrainingRouteForMode).
+ */
+export function deriveActiveExerciseIndex(
+  exerciseList: UserExerciseDataType[] | null,
+): number {
+  if (!exerciseList || exerciseList.length === 0) return 0;
+
+  const firstIncomplete = exerciseList.findIndex(
+    (exercise) => !exercise.completed,
+  );
+  if (firstIncomplete === -1) return exerciseList.length - 1;
+
+  const isStalePause =
+    isPauseExercise(exerciseList[firstIncomplete].exerciseId) &&
+    exerciseList.some(
+      (exercise, index) => index > firstIncomplete && exercise.completed,
+    );
+
+  if (isStalePause) {
+    const nextRealIncomplete = exerciseList.findIndex(
+      (exercise, index) =>
+        index > firstIncomplete &&
+        !exercise.completed &&
+        !isPauseExercise(exercise.exerciseId),
+    );
+    return nextRealIncomplete === -1
+      ? exerciseList.length - 1
+      : nextRealIncomplete;
+  }
+
+  return firstIncomplete;
 }
 
 /**

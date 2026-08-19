@@ -1,7 +1,10 @@
 import { isSkillTypes } from "@/constants/workoutConstants";
 import { getExerciseById } from "@/data/exerciseRegistry";
 import { useTrainingStore } from "@/features/training/trainingStore";
-import { isFeedbackEligibleSkill } from "@/features/training/utils/exerciseDataUtils";
+import {
+  deriveActiveExerciseIndex,
+  isFeedbackEligibleSkill,
+} from "@/features/training/utils/exerciseDataUtils";
 import { isPreventionSkill } from "@/features/training/utils/skillTreeUtils";
 import { isPauseExercise as checkIsPauseExercise } from "@/features/training/models/IdTypes";
 import { type TFunction } from "i18next";
@@ -36,17 +39,13 @@ function deriveHeaderTitle(type: string | undefined, t: TFunction): string {
  */
 export function useActiveExerciseView() {
   const { t } = useTranslation();
-  const { exerciseList, activeExerciseIndex, activeTraining } =
-    useTrainingStore();
+  const { exerciseList, activeTraining } = useTrainingStore();
 
   const headerTitle = deriveHeaderTitle(activeTraining?.type, t);
 
-  // Clamp guards against a persisted index that exceeds the current exercise list length
-  // (e.g. after a workout is regenerated with fewer exercises).
-  const safeExerciseIndex = Math.min(
-    activeExerciseIndex,
-    (exerciseList?.length ?? 1) - 1,
-  );
+  // Derived from each entry's `completed` mark rather than a stored pointer,
+  // so it's always in bounds and always reflects the latest completion state.
+  const safeExerciseIndex = deriveActiveExerciseIndex(exerciseList);
   const currentExercise = exerciseList?.[safeExerciseIndex];
   const exerciseId = currentExercise?.exerciseId ?? "-1";
   const isPauseExercise = checkIsPauseExercise(exerciseId);

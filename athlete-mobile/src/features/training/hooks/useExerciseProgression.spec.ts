@@ -179,9 +179,7 @@ describe("useExerciseProgression: advanceToNextExercise pause time accounting", 
       result.current.advanceToNextExercise();
     });
 
-    expect(useTrainingStore.getState().exerciseList?.[0]?.completed).toBe(
-      true,
-    );
+    expect(useTrainingStore.getState().exerciseList?.[0]?.completed).toBe(true);
   });
 
   it("saves exercise/branch data via useExerciseCompletion before advancing", () => {
@@ -490,9 +488,7 @@ describe("useExerciseProgression: handleExerciseSkipped", () => {
     });
 
     expect(mockCompletionHandleExerciseSkipped).toHaveBeenCalledWith(0);
-    expect(useTrainingStore.getState().exerciseList?.[0]?.completed).toBe(
-      true,
-    );
+    expect(useTrainingStore.getState().exerciseList?.[0]?.completed).toBe(true);
   });
 
   it("resets isSkipped back to false once skipping advances to a new exercise id", () => {

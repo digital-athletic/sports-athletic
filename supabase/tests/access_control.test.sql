@@ -6,7 +6,7 @@
 
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap;
-SELECT plan(12);
+SELECT plan(16);
 
 \set O '44444444-4444-4444-4444-444444444444'
 
@@ -27,6 +27,17 @@ SELECT is(has_function_privilege('authenticated', 'public.assert_admin()', 'EXEC
   'authenticated cannot EXECUTE internal helper assert_admin');
 SELECT is(has_function_privilege('authenticated', 'public.assert_visible_team_owner(uuid)', 'EXECUTE'), false,
   'authenticated cannot EXECUTE internal helper assert_visible_team_owner');
+SELECT is(has_function_privilege('anon', 'public.set_member_role(uuid,uuid,text)', 'EXECUTE'), false,
+  'anon cannot EXECUTE set_member_role');
+SELECT is(has_function_privilege('authenticated', 'public.set_member_role(uuid,uuid,text)', 'EXECUTE'), true,
+  'authenticated can EXECUTE set_member_role');
+
+-- can_view_athlete_data is a policy helper, not an RPC, but the policies are
+-- evaluated as the caller, so authenticated needs EXECUTE on it.
+SELECT is(has_function_privilege('authenticated', 'public.can_view_athlete_data(uuid)', 'EXECUTE'), true,
+  'authenticated can EXECUTE can_view_athlete_data (required by the SELECT policies)');
+SELECT is(has_function_privilege('anon', 'public.can_view_athlete_data(uuid)', 'EXECUTE'), false,
+  'anon cannot EXECUTE can_view_athlete_data');
 
 -- Direct writes and helper calls, as a real authenticated client.
 SET LOCAL ROLE authenticated;

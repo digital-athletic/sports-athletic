@@ -3,24 +3,8 @@ import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
 import { View } from "react-native";
 import { G, Path, Svg } from "react-native-svg";
-import { femaleBack } from "./paths/femaleBack";
-import { femaleFront } from "./paths/femaleFront";
-import { maleBack } from "./paths/maleBack";
-import { maleFront } from "./paths/maleFront";
-import {
-  type SilhouetteData,
-  type SilhouetteGender,
-  type SilhouetteRegionId,
-} from "./types";
-
-/** Unselected fills mirror the CC0 assets' greys (`.st1` body, `.st0` muscles). */
-const BODY_FILL = "#c9c9c9";
-const MUSCLE_FILL = "#7c7c7c";
-
-const SILHOUETTES: Record<SilhouetteGender, Record<Side, SilhouetteData>> = {
-  MALE: { FRONT: maleFront, BACK: maleBack },
-  FEMALE: { FRONT: femaleFront, BACK: femaleBack },
-};
+import { BODY_FILL, MUSCLE_FILL, SILHOUETTES } from "./silhouetteData";
+import { type SilhouetteGender, type SilhouetteRegionId } from "./types";
 
 type MuscleSilhouetteProps = {
   gender: SilhouetteGender;

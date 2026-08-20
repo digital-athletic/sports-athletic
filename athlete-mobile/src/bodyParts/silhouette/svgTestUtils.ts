@@ -16,9 +16,8 @@ export function regionFills(testID: string): unknown[] {
 }
 
 /**
- * Fill props of every `RNSVGPath` tagged with a thumbnail region testID.
- * The thumbnail wrapper is `aria-hidden`, so RNTL hides the whole subtree
- * from queries unless `includeHiddenElements` is set.
+ * The thumbnail wrapper is `aria-hidden`, so RNTL hides the subtree from
+ * queries unless `includeHiddenElements` is set.
  */
 export function thumbnailFills(regionId: string): unknown[] {
   return screen

@@ -24,18 +24,13 @@ function clamp(value: number, min: number, max: number): number {
 }
 
 /**
- * Whitespace between the tile slot edge and the artwork, as a fraction of the
- * tile size per side. Layout padding, not viewBox padding: the body artwork is
- * continuous above and below the crop window, so a larger window would show
- * more body instead of whitespace.
+ * Whitespace around the artwork, as a fraction of the tile size per side.
+ * Must be layout padding, not viewBox padding: the artwork is continuous above
+ * and below the crop window, so a larger window shows body, not whitespace.
  */
 export const THUMBNAIL_INSET = 0.1;
 
-/**
- * Crops the asset's own viewBox to a square window of width `W` (the asset
- * width), vertically centered on `centerY` (a fraction of `H`) and clamped so
- * the window never runs past the asset's top or bottom edge.
- */
+/** Square crop window of the asset's own width, centered on `centerY` (a fraction of viewBox height). */
 function cropViewBox(viewBox: string, centerY: number): string {
   const { minX, minY, width, height } = parseViewBox(viewBox);
   const top = clamp(centerY * height - width / 2, 0, height - width);
@@ -44,8 +39,8 @@ function cropViewBox(viewBox: string, centerY: number): string {
 
 /**
  * Non-interactive silhouette crop highlighting a fixed set of regions.
- * Sized by explicit width/height, never an aspectRatio wrapper (computes to
- * zero width under react-native-web, per MuscleSilhouette's JSDoc).
+ * Sized by explicit width/height, never an aspectRatio wrapper (that computes
+ * to zero width under react-native-web).
  *
  * Memoized: callers must pass a stable `regions` array reference (e.g. a
  * module-level constant) so this does not re-render on every parent render.

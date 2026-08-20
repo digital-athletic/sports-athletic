@@ -73,11 +73,6 @@ export async function processSingleItem(
     return;
   }
 
-  if (item.attemptCount > 0) {
-    const delay = getBackoffDelay(item.attemptCount);
-    await new Promise((resolve) => setTimeout(resolve, delay));
-  }
-
   store.markInProgress(item.id);
 
   try {

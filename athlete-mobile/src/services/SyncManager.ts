@@ -9,7 +9,7 @@ import type {
 import type { MaxValuesType } from "@/features/training/models/MaxValues";
 import { useAuthStore } from "@/store/authStore";
 import { useSyncQueueStore } from "@/store/syncQueueStore";
-import { processQueue } from "./SyncService";
+import { processQueue, resetProcessingFlag } from "./SyncService";
 import { Logger } from "./Logger";
 
 const RETRY_INTERVAL_MS = 60_000;
@@ -53,15 +53,11 @@ class SyncManager {
     }
     this.started = true;
 
+    // A mutex wedged by a hung request must not outlive a manager restart
+    resetProcessingFlag();
+
     this.registerHandlers();
     useSyncQueueStore.getState().resetStaleItems();
-
-    // Eagerly fetch current network state so isOnline is correct immediately
-    NetInfo.fetch().then((state) => {
-      this.online = !!(
-        state.isConnected && state.isInternetReachable !== false
-      );
-    });
 
     this.unsubscribeNetInfo = NetInfo.addEventListener((state) => {
       const wasOffline = !this.online;
@@ -78,18 +74,16 @@ class SyncManager {
       "change",
       (nextState) => {
         if (nextState === "active") {
-          this.triggerSync();
+          this.syncWithFreshConnectivity();
         }
       },
     );
 
     this.retryIntervalId = setInterval(() => {
-      if (this.online) {
-        this.triggerSync();
-      }
+      this.syncWithFreshConnectivity();
     }, RETRY_INTERVAL_MS);
 
-    this.triggerSync();
+    void this.checkConnectivityAndSync();
   }
 
   stop(): void {
@@ -157,6 +151,33 @@ class SyncManager {
       });
       this.triggerSync();
     };
+  }
+
+  // A missed NetInfo event leaves the cached flag stuck offline forever, so an
+  // offline flag is re-verified against real connectivity before giving up
+  private syncWithFreshConnectivity(): void {
+    if (this.online) {
+      this.triggerSync();
+      return;
+    }
+    void this.checkConnectivityAndSync();
+  }
+
+  private async checkConnectivityAndSync(): Promise<void> {
+    try {
+      const state = await NetInfo.fetch();
+      if (!this.started) {
+        return;
+      }
+      this.online = !!(
+        state.isConnected && state.isInternetReachable !== false
+      );
+      this.triggerSync();
+    } catch (error) {
+      Logger.logError(
+        error instanceof Error ? error : new Error("Connectivity check failed"),
+      );
+    }
   }
 
   triggerSync(): void {

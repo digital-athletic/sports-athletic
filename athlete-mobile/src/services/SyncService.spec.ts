@@ -37,6 +37,14 @@ jest.mock("./Logger", () => ({
 
 const TEST_USER_ID = "user-abc-123";
 
+// Rewinds an item's last attempt far past any retry backoff window
+function backdateLastAttempt(itemId: string): void {
+  useSyncQueueStore.setState((state) => {
+    const item = state.queue.find((i) => i.id === itemId);
+    if (item) item.lastAttemptAt = Date.now() - 60 * 60 * 1000;
+  });
+}
+
 beforeEach(() => {
   jest.clearAllMocks();
   mockUpsert.mockResolvedValue({ error: null });
@@ -535,6 +543,63 @@ describe("processQueue", () => {
     await Promise.all([processQueue(), processQueue()]);
 
     // Both should complete without error; only one processes items
+    expect(useSyncQueueStore.getState().queue).toHaveLength(0);
+  });
+});
+
+describe("processQueue: retry of failed items", () => {
+  it("retries a failed item on a later run and completes it", async () => {
+    mockUpsert.mockResolvedValueOnce({
+      error: { message: "Temporary server error" },
+    });
+
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "w1",
+      payload: { id: "w1", timestamp: 1000, exercises: [], duration: 100 },
+    });
+
+    await processQueue();
+
+    const failedItem = useSyncQueueStore.getState().queue[0];
+    expect(failedItem.status).toBe("FAILED");
+
+    backdateLastAttempt(failedItem.id);
+
+    await processQueue();
+
+    expect(useSyncQueueStore.getState().queue).toHaveLength(0);
+    expect(mockUpsert).toHaveBeenCalledTimes(2);
+  });
+
+  it("drains a queue holding only failed items with attempts left", async () => {
+    mockUpsert
+      .mockResolvedValueOnce({ error: { message: "Temporary server error" } })
+      .mockResolvedValueOnce({ error: { message: "Temporary server error" } });
+
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "w1",
+      payload: { id: "w1", timestamp: 1000, exercises: [], duration: 100 },
+    });
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "w2",
+      payload: { id: "w2", timestamp: 2000, exercises: [], duration: 200 },
+    });
+
+    await processQueue();
+
+    expect(
+      useSyncQueueStore.getState().queue.every((i) => i.status === "FAILED"),
+    ).toBe(true);
+
+    for (const item of useSyncQueueStore.getState().queue) {
+      backdateLastAttempt(item.id);
+    }
+
+    await processQueue();
+
     expect(useSyncQueueStore.getState().queue).toHaveLength(0);
   });
 });

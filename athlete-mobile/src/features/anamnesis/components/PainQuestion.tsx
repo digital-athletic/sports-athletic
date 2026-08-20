@@ -1,4 +1,4 @@
-import { BodyParts } from "@/bodyParts/BodyParts";
+import { PainChipSelector } from "@/bodyParts/PainChipSelector";
 import { type MuscleType } from "@/bodyParts/types";
 import { TagGroups } from "@/constants/tagGroups";
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
@@ -14,8 +14,7 @@ export function PainQuestion({ tags, onChangeTag }: AnamnesisQuestionProps) {
     <AnamnesisQuestionContainer
       title={{ default: t("anamnesisQuestions.pain.title") }}
     >
-      <BodyParts
-        type="PAIN"
+      <PainChipSelector
         tags={value as MuscleType[]}
         onChange={(value) => onChangeTag(TagGroups.PAIN, value as string[])}
       />

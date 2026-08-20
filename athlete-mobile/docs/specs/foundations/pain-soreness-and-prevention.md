@@ -40,6 +40,8 @@ The athlete reports pain per joint and side. Both mappings ignore the side: the 
 | Knee | Knee prevention | KNEE |
 | Ankle | Ankle prevention | ANKLE |
 
+A pain tag outside this table is ignored: it selects no prevention skill and blocks no region, so a content change can never prescribe the wrong prevention work unnoticed. Hip pain maps to knee prevention on purpose: hip and knee complaints are strongly related, and the knee prevention skill already covers the HIP and KNEE_HIP region groups, so no separate hip skill tree exists.
+
 Each prevention skill draws from the region group it covers, which is wider than the single reported joint:
 
 | Prevention skill | Target regions |
@@ -54,7 +56,7 @@ Effects of any pain at all:
 
 1. Plan creation uses the pain variant of the skill priorities, which injects a prevention slot and a special warm-up into each training day.
 2. The derived prevention skills rotate round-robin, at most one per day.
-3. Plan creation and every workout generation exclude branches whose exercise carries a blocked-region tag.
+3. Plan creation and every workout generation exclude branches whose exercise carries a blocked-region tag. The tag marks exercises that place particularly high stress on that region, not every exercise touching it. In the app this blocking is only prepared, not fully implemented: selecting a complaint in the anamnesis does not yet exclude any exercise.
 4. During a session, the first exercise prescribed as a percentage of maximum load raises a one-time caution alert.
 
 ### Soreness lifetime
@@ -70,10 +72,9 @@ Effects of any pain at all:
 | Sore muscles in more than one area | Generation aborts, naming the affected regions |
 | Branch region matches the sore area | Branch removed, its region requested for replacement |
 | Cardio skill with lower-body soreness | Whole skill replaced by steady regeneration cardio, capped at 20 minutes |
-| Short prevention workout whose own target area is sore | Generation aborts for that workout type |
 | Strength test workout, any soreness | Refused |
 | Warm-up, special warm-up for speed work, cool-down, mobility, foam roller | Soreness ignored, these skills always run |
-| Leg axis stability focus | Soreness ignored, since lower-body soreness would block it permanently |
+| Prevention workouts, leg axis stability focus | Soreness ignored, the check was removed by sprint decision on August 10, 2026 |
 
 ```mermaid
 flowchart TD
@@ -94,7 +95,4 @@ Pain lives in the athlete's workout profile as tags, where plan creation and eve
 
 ## Open Questions
 
-- An unrecognised pain tag falls back to shoulder prevention and a shoulder block. Should the generator ignore an unknown tag instead, so a content change cannot prescribe the wrong prevention work without anyone noticing? Leaning toward ignoring it.
-- Pain applies to both sides by design, so one painful knee excludes both-leg and other-leg exercises alike. Should side-specific pain narrow the exclusion to the affected side? Leaning toward keeping the bilateral rule until a physiotherapist reviews it.
-- Soreness expires after a flat 24 hours whatever session caused it. Should heavy Maxkraft sessions extend that window? Leaning toward keeping one flat window, since a longer one blocks the next session's whole region.
-- Hip pain maps to knee prevention, and the knee prevention skill already covers the HIP and KNEE_HIP region groups. Is a hip-specific skill tree worth authoring, or does that coverage make the mapping intentional? Leaning toward intentional.
+None.

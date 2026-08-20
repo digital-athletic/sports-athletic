@@ -4,6 +4,14 @@
 - Playwright browsers are installed in a different container, see ../playwright.config.ts => Do NOT install locally browsers
 - To run the tests, please use pnpm run test:e2e from the root of the athlete-mobile app directory
 
+## Run Only What You Need (IMPORTANT)
+- E2E runs are slow (serial, remote browser, Metro bundling). NEVER run the whole suite while iterating.
+- Scope every run as narrowly as possible: `pnpm test:e2e <file>` for one file, plus `-g "<test name substring>"` for a single test (e.g. `pnpm test:e2e muscle-soreness -g "renders coaching prompt"`).
+- To (re)generate a screenshot, run exactly the one test that captures it, nothing else.
+- Run the full suite at most once, as the very last verification step — and only when cross-cutting changes justify it.
+- Iterating on tests? Start the web server once yourself with the env block from `playwright.config.ts` `webServer` (see there) and keep it running; `reuseExistingServer` skips the per-run `--clear` re-bundle.
+- Beware: `pnpm test:e2e -- <filter>` does NOT work (the `--` swallows the filter and everything runs); pass the filter without `--`.
+
 ## Understanding Flows
 - Use chrome-devtools MCP to click through flows (ask user for real login creds)
 - Or analyze code: screens, Zustand stores, JSON files in `/assets`

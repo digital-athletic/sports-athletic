@@ -13,6 +13,9 @@
     },
     "back": "Back",
     "bodyParts": {
+      "flipToBack": "Show back side",
+      "flipToFront": "Show front side",
+      "selected": "selected",
       "selectHurtingParts": "Please select the areas that are hurting you",
       "whereAreAchingMuscles": "Where are the aching muscles?"
     },
@@ -669,7 +672,16 @@
     "LATISSIMUS": "latissimus",
     "QUADRICEPS": "front thigh",
     "INNER_THIGH": "inner thigh",
-    "OUTER_THIGH": "outer thigh"
+    "OUTER_THIGH": "outer thigh",
+    "ADDUCTORS_LEFT": "left inner thigh",
+    "ADDUCTORS_RIGHT": "right inner thigh",
+    "GLUTES_LEFT": "left buttock",
+    "GLUTES_RIGHT": "right buttock",
+    "SHIN_RIGHT": "right shin",
+    "SHOULDER_FRONT_LEFT": "left front shoulder",
+    "SHOULDER_FRONT_RIGHT": "right front shoulder",
+    "SHOULDER_REAR_LEFT": "left rear shoulder",
+    "SHOULDER_REAR_RIGHT": "right rear shoulder"
   },
   "region": {
     "UPPER_BODY": "Upper body",

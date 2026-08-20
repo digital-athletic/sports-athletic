@@ -3,43 +3,10 @@ import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile
 import { createIncompleteAnamnesisProfile } from "./mocks/stores/profiles/incompleteAnamnesisProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
 import { AnamnesisPage, BasePage } from "./pages";
-import { STORAGE_KEYS } from "./mocks/stores/constants";
-import { createUserProfileStore } from "./mocks/stores/data/userProfileStore";
 import { type Locator, type Page } from "@playwright/test";
 
-function createFemaleCompletedProfile() {
-  const profile = createCompletedProfile();
-  return {
-    ...profile,
-    [STORAGE_KEYS.USER_PROFILE]: createUserProfileStore({
-      gender: "FEMALE",
-      anamnesisCompleted: true,
-      isInInitialAnamnesis: false,
-    }),
-  };
-}
-
-function createMaleIncompleteProfile() {
-  return {
-    ...createIncompleteAnamnesisProfile(),
-    [STORAGE_KEYS.USER_PROFILE]: createUserProfileStore({
-      gender: "MALE",
-      anamnesisCompleted: false,
-      isInInitialAnamnesis: true,
-    }),
-  };
-}
-
-function createFemaleIncompleteProfile() {
-  return {
-    ...createIncompleteAnamnesisProfile(),
-    [STORAGE_KEYS.USER_PROFILE]: createUserProfileStore({
-      gender: "FEMALE",
-      anamnesisCompleted: false,
-      isInInitialAnamnesis: true,
-    }),
-  };
-}
+// The trip through login and training setup outgrows the 30s config default.
+test.describe.configure({ timeout: 60_000 });
 
 async function navigateToMuscleSoreness(page: Page) {
   const basePage = new BasePage(page);
@@ -89,135 +56,73 @@ async function navigateToPainScreen(page: Page) {
   });
 }
 
-// Chip background colours from the theme: lightGrey2 when unselected, primary
-// (red) when selected.
-const UNSELECTED = "rgb(232, 232, 232)";
-const SELECTED = "rgb(199, 27, 27)";
-
-function muscleChip(page: Page, name: string): Locator {
-  return page.getByRole("button", { name, exact: true });
+function silhouette(page: Page): Locator {
+  return page.getByTestId("muscle-silhouette");
 }
 
-async function navigateAndWaitForOptions(page: Page) {
-  await mockSupabaseAuth(page);
-  await navigateToMuscleSoreness(page);
-  await expect(muscleChip(page, "neck")).toBeVisible({ timeout: 5000 });
+// Regions are exposed as ARIA checkboxes (toggle semantics; role="button"
+// would make react-native-web render a real <button>, invalid inside <svg>).
+// Queries are scoped to the silhouette because central region names (e.g.
+// "neck") also appear as removable chips in the selected-muscles list.
+function region(page: Page, name: string): Locator {
+  return silhouette(page).getByRole("checkbox", { name, exact: true });
 }
 
-// Shared label selection behaviour, identical for male and female bodies since
-// both render the same option chips through BodyPartsSelector.
-function registerLabelSelectionTests() {
-  test("renders selectable muscle labels", async ({ page }) => {
-    test.setTimeout(60000);
-    await navigateAndWaitForOptions(page);
-
-    await expect(muscleChip(page, "neck")).toBeVisible();
-    await expect(muscleChip(page, "breast")).toBeVisible();
-  });
-
-  test("shows muscle labels unselected initially", async ({ page }) => {
-    test.setTimeout(60000);
-    await navigateAndWaitForOptions(page);
-
-    await expect(muscleChip(page, "neck")).toHaveCSS(
-      "background-color",
-      UNSELECTED,
-    );
-  });
-
-  test("selecting a muscle highlights its label", async ({ page }) => {
-    test.setTimeout(60000);
-    await navigateAndWaitForOptions(page);
-
-    await muscleChip(page, "neck").click();
-
-    await expect(muscleChip(page, "neck")).toHaveCSS(
-      "background-color",
-      SELECTED,
-      { timeout: 3000 },
-    );
-  });
-
-  test("deselecting a muscle removes the highlight", async ({ page }) => {
-    test.setTimeout(60000);
-    await navigateAndWaitForOptions(page);
-
-    await muscleChip(page, "neck").click();
-    await expect(muscleChip(page, "neck")).toHaveCSS(
-      "background-color",
-      SELECTED,
-      { timeout: 3000 },
-    );
-
-    await muscleChip(page, "neck").click();
-    await expect(muscleChip(page, "neck")).toHaveCSS(
-      "background-color",
-      UNSELECTED,
-      { timeout: 3000 },
-    );
-  });
-
-  test("selecting multiple muscles highlights each", async ({ page }) => {
-    test.setTimeout(60000);
-    await navigateAndWaitForOptions(page);
-
-    await muscleChip(page, "neck").click();
-    await muscleChip(page, "breast").click();
-
-    await expect(muscleChip(page, "neck")).toHaveCSS(
-      "background-color",
-      SELECTED,
-      { timeout: 3000 },
-    );
-    await expect(muscleChip(page, "breast")).toHaveCSS(
-      "background-color",
-      SELECTED,
-      { timeout: 3000 },
-    );
-  });
+// A coordinate click (locator.click) aims at the bounding-box center, which
+// misses these concave, overlapping muscle paths. Dispatching the click event
+// directly trades real hit-testing for stability.
+function clickRegion(page: Page, name: string) {
+  return region(page, name).dispatchEvent("click");
 }
 
-test.describe("Muscle Soreness: Male", () => {
+function selectedChips(page: Page): Locator {
+  return page.getByTestId("selected-muscles");
+}
+
+// Component behaviour (toggling, lateralization, gender artwork, chips) is
+// covered by the unit specs in src/bodyParts; e2e checks one happy path.
+test.describe("Muscle Soreness", () => {
   test.use({ profile: createCompletedProfile() });
 
-  registerLabelSelectionTests();
-});
-
-test.describe("Muscle Soreness: Female", () => {
-  test.use({ profile: createFemaleCompletedProfile() });
-
-  registerLabelSelectionTests();
-
-  test("renders coaching prompt", async ({ page }) => {
-    test.setTimeout(60000);
+  test("selects a muscle on each side and proceeds to the training", async ({
+    page,
+  }) => {
     await mockSupabaseAuth(page);
     await navigateToMuscleSoreness(page);
+    await expect(region(page, "neck")).toBeVisible({ timeout: 5000 });
 
-    await expect(page.getByText("Where are the aching muscles?")).toBeVisible({
-      timeout: 5000,
-    });
-  });
-});
+    // Both picks stay in one body area (lower body): soreness across several
+    // areas makes the generator refuse the workout by design.
+    await clickRegion(page, "left front thigh");
+    await expect(region(page, "left front thigh")).toHaveAttribute(
+      "aria-checked",
+      "true",
+    );
 
-test.describe("Pain Regions: Male", () => {
-  test.use({ profile: createMaleIncompleteProfile() });
+    await page.getByRole("button", { name: "Show back side" }).click();
+    await clickRegion(page, "left back thigh");
 
-  test("renders coaching prompt on pain screen", async ({ page }) => {
-    test.setTimeout(60000);
-    await mockSupabaseAuth(page);
-    await navigateToPainScreen(page);
-
+    const chips = selectedChips(page);
     await expect(
-      page.getByText("Please select the areas that are hurting you"),
-    ).toBeVisible({ timeout: 5000 });
+      chips.getByRole("button", { name: "left front thigh", exact: true }),
+    ).toBeVisible();
+    await expect(
+      chips.getByRole("button", { name: "left back thigh", exact: true }),
+    ).toBeVisible();
+
+    // Planned (Tuesday) workouts skip place selection and generate directly.
+    await page.getByRole("button", { name: "Go on" }).click();
+    await expect(
+      page.getByRole("heading", { name: "Training Overview" }),
+    ).toBeVisible({ timeout: 15000 });
   });
 });
 
-test.describe("Pain Regions: Female", () => {
-  test.use({ profile: createFemaleIncompleteProfile() });
+// The pain screen renders gender-independent chips, so one profile suffices.
+test.describe("Pain Regions", () => {
+  test.use({ profile: createIncompleteAnamnesisProfile() });
 
   test("renders coaching prompt on pain screen", async ({ page }) => {
-    test.setTimeout(60000);
     await mockSupabaseAuth(page);
     await navigateToPainScreen(page);
 

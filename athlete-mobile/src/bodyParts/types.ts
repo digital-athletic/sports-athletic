@@ -1,5 +1,3 @@
-export type BodyPartType = "MUSCLE" | "PAIN";
-export type Gender = "m" | "w";
 export type Side = "FRONT" | "BACK";
 
 export type RegionType = "UPPER_BODY" | "LOWER_BODY" | "FULL_BODY" | "CORE";
@@ -26,8 +24,11 @@ export type MuscleType =
   | "FOOT_RIGHT"
   | "RECTUS_ABDOMINIS"
   | "GLUTES"
+  | "GLUTES_LEFT"
+  | "GLUTES_RIGHT"
   | "LATISSIMUS_LEFT"
   | "LATISSIMUS_RIGHT"
+  | "LATISSIMUS"
   | "WRIST_LEFT"
   | "WRIST_RIGHT"
   | "WRIST_FLEXOR_LEFT"
@@ -42,6 +43,8 @@ export type MuscleType =
   | "HIP_LEFT"
   | "HIP_RIGHT"
   | "ADDUCTORS"
+  | "ADDUCTORS_LEFT"
+  | "ADDUCTORS_RIGHT"
   | "INNER_THIGH_REAR_LEFT"
   | "INNER_THIGH_REAR_RIGHT"
   | "KNEE_LEFT"
@@ -54,11 +57,16 @@ export type MuscleType =
   | "QUADRICEPS_LEFT"
   | "QUADRICEPS_RIGHT"
   | "SHIN_LEFT"
+  | "SHIN_RIGHT"
   | "SHIN"
   | "SHOULDER_REAR"
+  | "SHOULDER_REAR_LEFT"
+  | "SHOULDER_REAR_RIGHT"
   | "SHOULDER_LEFT"
   | "SHOULDER_RIGHT"
   | "SHOULDER_FRONT"
+  | "SHOULDER_FRONT_LEFT"
+  | "SHOULDER_FRONT_RIGHT"
   | "SCAPULAR_STABILIZER_FRONT"
   | "SCAPULAR_STABILIZER_REAR"
   | "OBLIQUES"

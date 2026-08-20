@@ -16,7 +16,7 @@ Compose supplies `TESTING_PLAYWRIGHT_WS_ENDPOINT` and `TESTING_PLAYWRIGHT_BASE_U
 
 On CI there is no container. `process.env.CI` switches the config to browsers installed in the runner and collapses both URLs to `localhost`.
 
-**Upgrading Playwright means three declarations.** The image tag in `docker-compose.yml` supplies the browsers, the start command right below it pins the server package, and `@playwright/test` in `package.json` is the client. Move all three together: a server newer than its client is refused outright, and a server newer than the image runs against browsers it was not built for.
+**Upgrading Playwright means four declarations.** The image tag in `docker-compose.yml` supplies the browsers, the start command right below it pins the server package, and `@playwright/test` is the client in both `trainer-web/package.json` and `athlete-mobile/package.json`. The server is shared, so both apps move together: a server newer than its client is refused outright, and a server newer than the image runs against browsers it was not built for.
 
 ## No backend
 

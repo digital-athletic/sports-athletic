@@ -13,6 +13,9 @@
     },
     "back": "Zurück",
     "bodyParts": {
+      "flipToBack": "Rückseite anzeigen",
+      "flipToFront": "Vorderseite anzeigen",
+      "selected": "ausgewählt",
       "selectHurtingParts": "Bitte wählen Sie die Bereiche, die Ihnen weh tun",
       "whereAreAchingMuscles": "Wo sind die schmerzenden Muskeln?"
     },
@@ -669,7 +672,16 @@
     "LATISSIMUS": "Latissimus",
     "QUADRICEPS": "Oberschenkelvorderseite",
     "INNER_THIGH": "innerer Oberschenkel",
-    "OUTER_THIGH": "äußerer Oberschenkel"
+    "OUTER_THIGH": "äußerer Oberschenkel",
+    "ADDUCTORS_LEFT": "linker innerer Oberschenkel",
+    "ADDUCTORS_RIGHT": "rechter innerer Oberschenkel",
+    "GLUTES_LEFT": "linke Gesäßhälfte",
+    "GLUTES_RIGHT": "rechte Gesäßhälfte",
+    "SHIN_RIGHT": "rechtes Schienbein",
+    "SHOULDER_FRONT_LEFT": "linke vordere Schulter",
+    "SHOULDER_FRONT_RIGHT": "rechte vordere Schulter",
+    "SHOULDER_REAR_LEFT": "linke hintere Schulter",
+    "SHOULDER_REAR_RIGHT": "rechte hintere Schulter"
   },
   "region": {
     "UPPER_BODY": "Oberkörper",

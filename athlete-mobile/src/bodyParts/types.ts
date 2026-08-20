@@ -1,5 +1,3 @@
-export type BodyPartType = "MUSCLE" | "PAIN";
-export type Gender = "m" | "w";
 export type Side = "FRONT" | "BACK";
 
 export type RegionType = "UPPER_BODY" | "LOWER_BODY" | "FULL_BODY" | "CORE";

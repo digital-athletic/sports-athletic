@@ -4,11 +4,11 @@ import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity } from "react-native";
-import { type BodyPartType, type MuscleType } from "./types";
+import { type MuscleType } from "./types";
 
 // Curated regions shown as selectable chips. Each value is a MuscleType the
-// generator recognises via getAreasFor, so selections still drive soreness
-// filtering without the proprietary body diagram.
+// generator recognises via getAreasFor, so selections still drive pain
+// filtering without a body diagram.
 const SELECTABLE_REGIONS: MuscleType[] = [
   "NECK",
   "CHEST",
@@ -25,18 +25,20 @@ const SELECTABLE_REGIONS: MuscleType[] = [
   "SHIN",
 ];
 
-type BodyPartsProps = {
-  type: BodyPartType;
+type PainChipSelectorProps = {
   tags: MuscleType[];
-  onChange?: (tags: string[]) => void;
+  onChange?: (tags: MuscleType[]) => void;
 };
 
 /**
- * Chip based stand in for the proprietary body diagram removed for the OSS
- * release. Users pick sore or hurting regions from labelled chips instead of
- * tapping an SVG; the resulting tags feed the generator exactly as before.
+ * Chip based selector for hurting body regions, kept for the anamnesis pain
+ * flow. The silhouette assets only depict muscle bellies, so the joint-region
+ * pain vocabulary stays on chips until dedicated artwork exists.
  */
-export const BodyParts: FC<BodyPartsProps> = ({ type, tags, onChange }) => {
+export const PainChipSelector: FC<PainChipSelectorProps> = ({
+  tags,
+  onChange,
+}) => {
   const { t } = useTranslation();
   const theme = useTheme();
 
@@ -47,15 +49,10 @@ export const BodyParts: FC<BodyPartsProps> = ({ type, tags, onChange }) => {
     onChange?.(next);
   };
 
-  const coaching =
-    type === "PAIN"
-      ? t("common.bodyParts.selectHurtingParts")
-      : t("common.bodyParts.whereAreAchingMuscles");
-
   return (
     <Box paddingVertical="l">
       <Text variant="body" marginBottom="m">
-        {coaching}
+        {t("common.bodyParts.selectHurtingParts")}
       </Text>
       <Box flexDirection="row" flexWrap="wrap">
         {SELECTABLE_REGIONS.map((tag) => {

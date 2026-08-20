@@ -1,4 +1,4 @@
-import { BodyParts } from "@/bodyParts/BodyParts";
+import { MuscleSorenessSelector } from "@/bodyParts/MuscleSorenessSelector";
 import { MuscleType } from "@/bodyParts/types";
 import { BackHeader } from "@/common/BackHeader";
 import { Loading } from "@/common/Loading";
@@ -35,7 +35,7 @@ import { parseBooleanParam, parseIntParam } from "@/utils/router";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, BackHandler, ScrollView } from "react-native";
+import { Alert, BackHandler } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type ScreenState = "SORENESS" | "PLACE";
@@ -304,25 +304,24 @@ export default function MuscleSorenessScreen() {
         paddingVertical="s"
         style={{ paddingBottom: insets.bottom }}
       >
-        {/* needs to be here so BodyParts isn't rendered at start while temp data is managed */}
+        {/* needs to be here so the selector isn't rendered at start while temp data is managed */}
         {loading ? (
           <Loading show={loading} text={t("training.muscleSoreness.loading")} />
         ) : (
           <>
             <Box flex={1} justifyContent="center" alignItems="stretch">
               {screenState === "SORENESS" ? (
-                <ScrollView style={{ flex: 1 }}>
+                <Box flex={1}>
                   {type === "PLAN" ? (
                     <Text variant="title">
                       {t("training.muscleSoreness.title")}
                     </Text>
                   ) : null}
-                  <BodyParts
-                    type={"MUSCLE"}
+                  <MuscleSorenessSelector
                     tags={muscleTags}
                     onChange={setMuscles}
                   />
-                </ScrollView>
+                </Box>
               ) : (
                 <PlaceSelection selectPlace={selectPlace} places={places} />
               )}

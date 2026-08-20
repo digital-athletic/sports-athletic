@@ -13,18 +13,15 @@ import { LoadingSpinner } from "./LoadingSpinner";
 
 interface EvaluationsTabProps {
   members: TeamMember[];
-  ownerId: string | null;
 }
 
-export function EvaluationsTab({ members, ownerId }: EvaluationsTabProps) {
+export function EvaluationsTab({ members }: EvaluationsTabProps) {
   const { t } = useTranslation();
-  const { athletes, athleteWorkouts, loading, error } = useTeamWorkouts(
-    members,
-    ownerId
-  );
+  const { athletes, athleteWorkouts, loading, error } =
+    useTeamWorkouts(members);
 
   const [selectedAthleteId, setSelectedAthleteId] = useState<string | null>(
-    null
+    null,
   );
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("lastWeek");
 
@@ -50,7 +47,7 @@ export function EvaluationsTab({ members, ownerId }: EvaluationsTabProps) {
 
   const summaryStats = useMemo(
     () => calculateSummaryStats(filteredWorkouts),
-    [filteredWorkouts]
+    [filteredWorkouts],
   );
 
   if (loading) {

@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import type { TeamMember } from "../types/team";
+import type { AssignableTeamRole, TeamMember, TeamRole } from "../types/team";
 
 interface TeamMemberListProps {
   members: TeamMember[];
@@ -7,7 +7,20 @@ interface TeamMemberListProps {
   currentUserDisplayName?: string | null;
   isOwner: boolean;
   onRemoveMember?: (userId: string) => void;
+  onSetMemberRole?: (userId: string, role: AssignableTeamRole) => void;
 }
+
+const ROLE_BADGE_CLASS: Record<TeamRole, string> = {
+  owner: "bg-red-100 text-red-700",
+  co_owner: "bg-amber-100 text-amber-700",
+  member: "bg-gray-100 text-gray-600",
+};
+
+const ROLE_LABEL_KEY: Record<TeamRole, string> = {
+  owner: "teamManagement.members.owner",
+  co_owner: "teamManagement.members.coOwner",
+  member: "teamManagement.members.member",
+};
 
 export function TeamMemberList({
   members,
@@ -15,6 +28,7 @@ export function TeamMemberList({
   currentUserDisplayName,
   isOwner,
   onRemoveMember,
+  onSetMemberRole,
 }: TeamMemberListProps) {
   const { t } = useTranslation();
 
@@ -49,15 +63,9 @@ export function TeamMemberList({
                     ` ${t("teamManagement.members.you")}`}
                 </span>
                 <span
-                  className={`ml-2 inline-block rounded px-2 py-0.5 text-xs ${
-                    member.role === "owner"
-                      ? "bg-red-100 text-red-700"
-                      : "bg-gray-100 text-gray-600"
-                  }`}
+                  className={`ml-2 inline-block rounded px-2 py-0.5 text-xs ${ROLE_BADGE_CLASS[member.role]}`}
                 >
-                  {member.role === "owner"
-                    ? t("teamManagement.members.owner")
-                    : t("teamManagement.members.member")}
+                  {t(ROLE_LABEL_KEY[member.role])}
                 </span>
               </div>
               <div className="flex items-center gap-3">
@@ -65,6 +73,23 @@ export function TeamMemberList({
                   {t("teamManagement.members.joined")}{" "}
                   {new Date(member.joined_at).toLocaleDateString()}
                 </span>
+                {/* The owner's own row is never editable: ownership lives in
+                    teams.owner_id, and set_member_role refuses it anyway. */}
+                {isOwner && member.role !== "owner" && onSetMemberRole && (
+                  <button
+                    onClick={() =>
+                      onSetMemberRole(
+                        member.user_id,
+                        member.role === "co_owner" ? "member" : "co_owner",
+                      )
+                    }
+                    className="rounded px-2 py-1 text-xs text-blue-600 transition-colors hover:bg-blue-50"
+                  >
+                    {member.role === "co_owner"
+                      ? t("teamManagement.members.demote")
+                      : t("teamManagement.members.promote")}
+                  </button>
+                )}
                 {isOwner &&
                   member.user_id !== currentUserId &&
                   onRemoveMember && (

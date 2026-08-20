@@ -7,6 +7,7 @@ import { SettingsTab } from "./components/SettingsTab";
 import { PageLayout } from "./components/PageLayout";
 import { TabBar } from "./components/TabBar";
 import { useTeam } from "./hooks/useTeam";
+import type { AssignableTeamRole } from "./types/team";
 
 export const Dashboard = () => {
   const { t } = useTranslation();
@@ -19,6 +20,7 @@ export const Dashboard = () => {
     members,
     inviteCodes,
     loading,
+    error,
     isOwner,
     currentUserId,
     currentUserDisplayName,
@@ -26,6 +28,7 @@ export const Dashboard = () => {
     leaveCurrentTeam,
     deleteCurrentTeam,
     removeMember,
+    setMemberRole,
   } = useTeam(teamId);
 
   useEffect(() => {
@@ -90,6 +93,18 @@ export const Dashboard = () => {
     }
   };
 
+  const handleSetMemberRole = async (
+    memberUserId: string,
+    role: AssignableTeamRole,
+  ) => {
+    setActionError(null);
+    try {
+      await setMemberRole(memberUserId, role);
+    } catch {
+      // useTeam has already put the translated message into `error`.
+    }
+  };
+
   const handleRemoveMember = async () => {
     if (!memberToRemove) return;
     setIsRemoving(true);
@@ -128,7 +143,7 @@ export const Dashboard = () => {
               isOwner={isOwner}
               currentUserId={currentUserId}
               currentUserDisplayName={currentUserDisplayName}
-              actionError={actionError}
+              actionError={actionError ?? error}
               showLeaveConfirm={showLeaveConfirm}
               isLeaving={isLeaving}
               memberToRemove={memberToRemove}
@@ -142,18 +157,14 @@ export const Dashboard = () => {
               onRemoveMember={setMemberToRemove}
               onRemoveConfirm={handleRemoveMember}
               onRemoveCancel={() => setMemberToRemove(null)}
+              onSetMemberRole={handleSetMemberRole}
               onDeleteClick={() => setShowDeleteConfirm(true)}
               onDeleteConfirm={handleDeleteTeam}
               onDeleteCancel={() => setShowDeleteConfirm(false)}
             />
           )}
 
-          {activeTab === "evaluations" && (
-            <EvaluationsTab
-              members={members}
-              ownerId={team?.owner_id ?? null}
-            />
-          )}
+          {activeTab === "evaluations" && <EvaluationsTab members={members} />}
 
           {activeTab === "settings" && settingsEnabled && <SettingsTab />}
         </div>

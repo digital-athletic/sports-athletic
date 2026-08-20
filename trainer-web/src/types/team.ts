@@ -8,11 +8,19 @@ export interface Team {
   updated_at?: string;
 }
 
+export type TeamRole = "owner" | "member" | "co_owner";
+
+/**
+ * Roles set_member_role accepts. Ownership lives in teams.owner_id and is not
+ * handed out through the role column, so "owner" is excluded here as well.
+ */
+export type AssignableTeamRole = Exclude<TeamRole, "owner">;
+
 export interface TeamMember {
   id: string;
   team_id: string;
   user_id: string;
-  role: "owner" | "member";
+  role: TeamRole;
   joined_at: string;
   display_name?: string | null;
 }
@@ -57,6 +65,13 @@ export interface RemoveMemberResponse {
   success: boolean;
   team_id: string;
   removed_user_id: string;
+}
+
+export interface SetMemberRoleResponse {
+  success: boolean;
+  team_id: string;
+  user_id: string;
+  role: AssignableTeamRole;
 }
 
 export interface TeamWithMemberCount extends Team {

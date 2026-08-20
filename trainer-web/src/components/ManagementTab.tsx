@@ -1,5 +1,9 @@
 import { useTranslation } from "react-i18next";
-import { type Team, type TeamMember } from "../types/team";
+import {
+  type AssignableTeamRole,
+  type Team,
+  type TeamMember,
+} from "../types/team";
 import { ConfirmModal } from "./ConfirmModal";
 import { ErrorMessage } from "./ErrorMessage";
 import { InviteCodeSection } from "./InviteCodeSection";
@@ -30,6 +34,7 @@ interface ManagementTabProps {
   onRemoveMember: (memberId: string) => void;
   onRemoveConfirm: () => void;
   onRemoveCancel: () => void;
+  onSetMemberRole: (memberId: string, role: AssignableTeamRole) => void;
   onDeleteClick: () => void;
   onDeleteConfirm: () => void;
   onDeleteCancel: () => void;
@@ -57,6 +62,7 @@ export function ManagementTab({
   onRemoveMember,
   onRemoveConfirm,
   onRemoveCancel,
+  onSetMemberRole,
   onDeleteClick,
   onDeleteConfirm,
   onDeleteCancel,
@@ -90,6 +96,7 @@ export function ManagementTab({
             currentUserDisplayName={currentUserDisplayName}
             isOwner={isOwner}
             onRemoveMember={onRemoveMember}
+            onSetMemberRole={onSetMemberRole}
           />
 
           <LeaveTeamSection

@@ -53,11 +53,11 @@ services:
     tty: true
 
   playwright:
-    image: mcr.microsoft.com/playwright:v1.61.0-noble
+    image: mcr.microsoft.com/playwright:v1.62.1-noble
     container_name: playwright
     expose:
       - "9323"
-    command: ["npx", "playwright", "run-server", "--port=9323", "--host=0.0.0.0"]
+    command: ["npx", "playwright@1.62.1", "run-server", "--port=9323", "--host=0.0.0.0"]
 
 volumes:
   root_node_modules:

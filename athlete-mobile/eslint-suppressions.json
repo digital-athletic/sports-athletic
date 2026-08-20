@@ -355,7 +355,7 @@
   },
   "src/features/training/ColumnList.tsx": {
     "max-lines-per-function": {
-      "count": 2
+      "count": 1
     }
   },
   "src/features/training/ExerciseInfoPanel.tsx": {

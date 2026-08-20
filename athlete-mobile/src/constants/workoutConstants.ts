@@ -1,3 +1,5 @@
+import { type SilhouetteRegionId } from "@/bodyParts/silhouette/types";
+import { type Side } from "@/bodyParts/types";
 import { I18nKey } from "@/i18n";
 import { type LevelTagSchemaType } from "@/schemas/common.schema";
 import { Route } from "expo-router";
@@ -318,8 +320,16 @@ const DAILY_TRAINING_FOCUS_IMAGES: Partial<
   COMBINED: require("../../assets/img/dailyTrainingFocuses/strength-endurance.jpg"),
 };
 
+export type TileSilhouette = {
+  side: Side;
+  regions: readonly SilhouetteRegionId[];
+  /** Vertical centre of the square crop window, as a fraction of viewBox height. */
+  centerY: number;
+};
+
 export type TileData = {
   picture?: ImageSourcePropType;
+  silhouette?: TileSilhouette;
   title: I18nKey;
   description?: {
     text: I18nKey;
@@ -384,6 +394,11 @@ export const QUICKSTART_TILES: TileData[] = [
 
 export const PREVENTION_TILES: TileData[] = [
   {
+    silhouette: {
+      side: "BACK",
+      regions: ["CALF_LEFT", "CALF_RIGHT"],
+      centerY: 0.83,
+    },
     title: "training.prevention.PREVENTION_TILE_ANKLE",
     navigate: {
       key: "/training/muscle-soreness",
@@ -391,6 +406,18 @@ export const PREVENTION_TILES: TileData[] = [
     },
   },
   {
+    silhouette: {
+      side: "FRONT",
+      regions: [
+        "QUADRICEPS_LEFT",
+        "QUADRICEPS_RIGHT",
+        "ABDUCTORS_LEFT",
+        "ABDUCTORS_RIGHT",
+        "ADDUCTORS_LEFT",
+        "ADDUCTORS_RIGHT",
+      ],
+      centerY: 0.58,
+    },
     title: "training.prevention.PREVENTION_TILE_KNEE",
     navigate: {
       key: "/training/muscle-soreness",
@@ -398,6 +425,11 @@ export const PREVENTION_TILES: TileData[] = [
     },
   },
   {
+    silhouette: {
+      side: "BACK",
+      regions: ["UPPER_BACK", "LOWER_BACK"],
+      centerY: 0.36,
+    },
     title: "training.prevention.PREVENTION_TILE_SPINE",
     navigate: {
       key: "/training/muscle-soreness",
@@ -405,6 +437,11 @@ export const PREVENTION_TILES: TileData[] = [
     },
   },
   {
+    silhouette: {
+      side: "BACK",
+      regions: ["SHOULDER_LEFT", "SHOULDER_RIGHT"],
+      centerY: 0.225,
+    },
     title: "training.prevention.PREVENTION_TILE_SHOULDER",
     navigate: {
       key: "/training/muscle-soreness",
@@ -412,6 +449,16 @@ export const PREVENTION_TILES: TileData[] = [
     },
   },
   {
+    silhouette: {
+      side: "FRONT",
+      regions: [
+        "WRIST_FLEXOR_LEFT",
+        "WRIST_FLEXOR_RIGHT",
+        "BICEPS_LEFT",
+        "BICEPS_RIGHT",
+      ],
+      centerY: 0.37,
+    },
     title: "training.prevention.PREVENTION_TILE_WRIST",
     navigate: {
       key: "/training/muscle-soreness",

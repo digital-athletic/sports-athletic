@@ -5,8 +5,10 @@ import { useSyncQueueStore } from "@/store/syncQueueStore";
 import { SyncManager } from "./SyncManager";
 
 const mockProcessQueue = jest.fn().mockResolvedValue(undefined);
+const mockResetProcessingFlag = jest.fn();
 jest.mock("./SyncService", () => ({
   processQueue: (...args: unknown[]) => mockProcessQueue(...args),
+  resetProcessingFlag: (...args: unknown[]) => mockResetProcessingFlag(...args),
 }));
 
 jest.mock("./Logger", () => ({
@@ -246,5 +248,59 @@ describe("periodic retry", () => {
     jest.advanceTimersByTime(60_000);
 
     expect(mockProcessQueue).toHaveBeenCalled();
+  });
+});
+
+describe("connectivity recovery: missed online event", () => {
+  // Manager starts offline with a queued item; connectivity then returns,
+  // but the NetInfo listener event is never delivered (cached flag stays stale)
+  async function startWithStaleOfflineFlag(): Promise<void> {
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "w1",
+      payload: {},
+    });
+
+    mockNetInfoFetch.mockResolvedValue({
+      isConnected: false,
+      isInternetReachable: false,
+    });
+    SyncManager.getInstance().start();
+    await jest.advanceTimersByTimeAsync(0);
+
+    mockNetInfoFetch.mockResolvedValue({
+      isConnected: true,
+      isInternetReachable: true,
+    });
+    mockProcessQueue.mockClear();
+  }
+
+  it("verifies real connectivity on the retry interval instead of trusting the cached flag", async () => {
+    await startWithStaleOfflineFlag();
+
+    await jest.advanceTimersByTimeAsync(60_000);
+
+    expect(mockProcessQueue).toHaveBeenCalled();
+  });
+
+  it("verifies real connectivity when the app comes to the foreground", async () => {
+    await startWithStaleOfflineFlag();
+
+    appStateCallback("active");
+    await jest.advanceTimersByTimeAsync(0);
+
+    expect(mockProcessQueue).toHaveBeenCalled();
+  });
+});
+
+describe("processing mutex: production recovery", () => {
+  it("resets the SyncService processing flag when the manager restarts", () => {
+    const manager = SyncManager.getInstance();
+
+    manager.start();
+    manager.stop();
+    manager.start();
+
+    expect(mockResetProcessingFlag).toHaveBeenCalled();
   });
 });

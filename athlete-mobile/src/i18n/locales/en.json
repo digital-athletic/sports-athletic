@@ -13,6 +13,9 @@
     },
     "back": "Back",
     "bodyParts": {
+      "flipToBack": "Show back side",
+      "flipToFront": "Show front side",
+      "selected": "selected",
       "selectHurtingParts": "Please select the areas that are hurting you",
       "whereAreAchingMuscles": "Where are the aching muscles?"
     },

@@ -22,6 +22,9 @@ export const BodyPartsTagChips: FC<BodyPartsTagChipsProps> = ({
   const renderTag = (tag: MuscleType) => (
     <TouchableWithoutFeedback
       key={`tag_${tag}`}
+      // Read-only usages (e.g. exercise info) must not announce as buttons.
+      accessibilityRole={onClick ? "button" : undefined}
+      accessibilityLabel={t(`muscles.${tag}`)}
       onPress={() => onClick?.(tag)}
       disabled={!onClick}
     >

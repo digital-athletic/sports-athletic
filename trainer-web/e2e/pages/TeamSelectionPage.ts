@@ -39,6 +39,17 @@ export class TeamSelectionPage {
     await this.page.getByTestId("join-team-submit").click();
   }
 
+  /**
+   * A rejected write keeps the user here and reports it. The raw ErrorCode must
+   * never reach the screen; only the translated message does.
+   */
+  async expectErrorWithoutCode(code: string) {
+    const alert = this.page.getByRole("alert");
+    await expect(alert).toBeVisible();
+    await expect(alert).not.toContainText(code);
+    await expect(this.page).toHaveURL(/\/teams/);
+  }
+
   /** Creating a group is only offered to a granted trainer. */
   async expectCreateUnavailable() {
     await expect(this.page.getByTestId("team-selection-create")).toHaveCount(0);

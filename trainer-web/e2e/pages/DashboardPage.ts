@@ -13,7 +13,13 @@ export class DashboardPage {
     );
   }
 
-  /** Member and athlete names come from the fixture, not from a translation. */
+  /** Names come from the fixture, not from a translation. */
+  async expectTeamName(name: string) {
+    await expect(
+      this.page.getByRole("heading", { name, level: 3 }),
+    ).toBeVisible();
+  }
+
   async expectMember(name: string) {
     await expect(this.page.getByText(name, { exact: false })).toBeVisible();
   }
@@ -58,9 +64,5 @@ export class DashboardPage {
 
   async expectNoAthletes() {
     await expect(this.page.getByTestId("evaluations-empty")).toBeVisible();
-  }
-
-  async expectError(message: string | RegExp) {
-    await expect(this.page.getByRole("alert")).toContainText(message);
   }
 }

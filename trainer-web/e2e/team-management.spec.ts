@@ -31,9 +31,19 @@ test.describe("Creating a group", () => {
     await teamSelection.expectNoTeams();
 
     await mockSupabase(page, { trainerGrantedAt: TRAINER, teams: [NEW_TEAM] });
+
+    // The dashboard reads the group back through getTeamById, so what the form
+    // sent is only visible on the request itself.
+    const created = page.waitForRequest((request) =>
+      request.url().includes("/rpc/create_team"),
+    );
     await teamSelection.createTeam(NEW_TEAM.name);
+    expect((await created).postDataJSON()).toMatchObject({
+      p_name: NEW_TEAM.name,
+    });
 
     await dashboard.expectVisible(NEW_TEAM.id);
+    await dashboard.expectTeamName(NEW_TEAM.name);
   });
 
   test("without a trainer grant the group cannot be created", async ({
@@ -50,6 +60,27 @@ test.describe("Creating a group", () => {
     await teamSelection.expectVisible();
     await teamSelection.expectCreateUnavailable();
   });
+
+  test("a rejected creation keeps the user on the selection", async ({
+    page,
+  }) => {
+    // The grant can be revoked between loading the page and submitting, which
+    // is the one way this button reaches a NOT_A_TRAINER.
+    await mockSupabase(page, {
+      trainerGrantedAt: TRAINER,
+      teams: [],
+      rpc: { create_team: { error: "NOT_A_TRAINER" } },
+    });
+
+    const login = new LoginPage(page);
+    const teamSelection = new TeamSelectionPage(page);
+
+    await login.goto();
+    await login.signIn(MOCK_USER.email);
+    await teamSelection.createTeam("U19 Handball");
+
+    await teamSelection.expectErrorWithoutCode("NOT_A_TRAINER");
+  });
 });
 
 test.describe("Joining a group", () => {
@@ -65,22 +96,18 @@ test.describe("Joining a group", () => {
     await teamSelection.expectNoTeams();
 
     await mockSupabase(page, { trainerGrantedAt: null, teams: [NEW_TEAM] });
-    await teamSelection.joinTeam("ABC123");
+    await teamSelection.joinTeam(NEW_TEAM.invite_code);
 
     await dashboard.expectVisible(NEW_TEAM.id);
   });
 
-  test("a rejected invite code keeps the user on the selection", async ({
+  test("a wrong invite code keeps the user on the selection", async ({
     page,
   }) => {
-    // The interesting failures of accept_invitation come from Postgres, and a
-    // test cannot provoke them any other way. Which codes exist and when they
-    // are raised is settled in supabase/tests/accept_invitation.test.sql.
-    await mockSupabase(page, {
-      trainerGrantedAt: null,
-      teams: [],
-      rpc: { accept_invitation: { error: "INVITE_CODE_INVALID" } },
-    });
+    // Unlike the group name, a code that does not match really is rejected by
+    // the backend, so the mock checks it rather than accepting anything. Which
+    // codes exist is settled in supabase/tests/accept_invitation.test.sql.
+    await mockSupabase(page, { trainerGrantedAt: null, teams: [NEW_TEAM] });
 
     const login = new LoginPage(page);
     const teamSelection = new TeamSelectionPage(page);
@@ -89,10 +116,6 @@ test.describe("Joining a group", () => {
     await login.signIn(MOCK_USER.email);
     await teamSelection.joinTeam("WRONG1");
 
-    const alert = page.getByRole("alert");
-    await expect(alert).toBeVisible();
-    // The message must be the translated one, never the raw error code.
-    await expect(alert).not.toContainText("INVITE_CODE_INVALID");
-    await expect(page).toHaveURL(/\/teams/);
+    await teamSelection.expectErrorWithoutCode("INVITE_CODE_INVALID");
   });
 });

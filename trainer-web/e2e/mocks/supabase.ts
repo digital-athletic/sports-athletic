@@ -49,7 +49,7 @@ export type MockTeam = {
   members?: MockMember[];
 };
 
-/** A Postgres error as PostgREST reports it; `message` carries the ErrorCode. */
+/** Makes an RPC fail; the string is the ErrorCode the app maps back. */
 export type MockRpcError = { error: string };
 
 export type MockOptions = {
@@ -92,6 +92,11 @@ function authSession(user: { id: string; email: string }) {
     expires_at: Math.floor(Date.now() / 1000) + 3600,
     user: authUser(user),
   };
+}
+
+/** The shape PostgREST returns for a RAISE, with the ErrorCode in `message`. */
+function postgrestError(code: string) {
+  return { code: "P0001", message: code, details: null, hint: null };
 }
 
 function json(body: unknown, status = 200) {
@@ -262,31 +267,42 @@ export async function mockSupabase(page: Page, options: MockOptions = {}) {
     const name = new URL(route.request().url()).pathname.split("/").pop() ?? "";
     const override = rpcOverrides[name];
     if (override) {
-      return route.fulfill(
-        json(
-          {
-            code: "P0001",
-            message: override.error,
-            details: null,
-            hint: null,
-          },
-          400,
-        ),
-      );
+      return route.fulfill(json(postgrestError(override.error), 400));
     }
 
-    if (name === "create_team") {
+    // The team the write is about is the last one the fixture names, which is
+    // the world after the write. Saying so beats a crash three frames deeper.
+    const written = () => {
       const team = teams[teams.length - 1];
+      if (!team) {
+        throw new Error(
+          `mockSupabase: ${name} needs the resulting team as the last entry of \`teams\``,
+        );
+      }
+      return team;
+    };
+
+    // Echoing the request rather than storing it keeps the mock stateless and
+    // still lets a test see that what was typed reached the backend.
+    const body = route.request().postDataJSON() ?? {};
+
+    if (name === "create_team") {
+      const team = written();
       return route.fulfill(
         json({
           ...teamRow(team),
+          name: body.p_name ?? team.name,
+          description: body.p_description ?? team.description ?? null,
           invite_code: team.invite_code ?? "ABC123",
         }),
       );
     }
 
     if (name === "accept_invitation") {
-      const team = teams[teams.length - 1];
+      const team = written();
+      if (team.invite_code && body.p_code !== team.invite_code) {
+        return route.fulfill(json(postgrestError("INVITE_CODE_INVALID"), 400));
+      }
       return route.fulfill(
         json({
           member_id: `${team.id}-member-joined`,

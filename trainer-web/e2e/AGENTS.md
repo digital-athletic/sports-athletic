@@ -31,9 +31,11 @@ That layer is the seam. Pointing the suite at a real Supabase later means not ca
 For a flow that writes, name both worlds instead. Routes registered later win, so a second `mockSupabase()` call describes what the backend would return afterwards:
 
 ```typescript
-await mockSupabase(page, { teams: [] }); // before
+const trainer = { trainerGrantedAt: new Date().toISOString() };
+
+await mockSupabase(page, { ...trainer, teams: [] }); // before
 await teamSelection.expectNoTeams();
-await mockSupabase(page, { teams: [created] }); // after the write
+await mockSupabase(page, { ...trainer, teams: [created] }); // after the write
 await teamSelection.createTeam(created.name);
 ```
 

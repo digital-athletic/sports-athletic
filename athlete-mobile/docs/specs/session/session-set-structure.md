@@ -10,7 +10,7 @@ A plan promises 30 minutes of Maxkraft. The time the athlete spends depends on s
 
 ## Solution
 
-Every strength and mobility skill expands through the same tables: set count from the skill, alternating work and rest entries, and three rest lengths used strictly by purpose: one inside a superset pair, one between the sets of an unpaired exercise, and one closing an exercise block before different muscle groups. Rest gets its own set-list entry, so the workout UI runs a single timer loop over one homogeneous list.
+Every strength and mobility skill expands through the same tables: set count from the skill, alternating work and rest entries, and three rest lengths, each with a single purpose (inside a superset pair, between the sets of an unpaired exercise, closing an exercise block before different muscle groups). Rest gets its own set-list entry, so the workout UI runs a single timer loop over one homogeneous list.
 
 Three structures sit outside that loop. Weighted hypertrophy and speed strength gain one reduced-weight leading set; Maxkraft brings its own warm-up ladder and fills its long breaks with support exercises; cardio builds intervals from its zone. The last two bypass the tables below.
 
@@ -42,8 +42,10 @@ Maxkraft and cardio appear here for completeness. Their own builders ignore this
 Three values per skill, each with its own purpose, never substituted for one another:
 
 - The **in-set pause** runs exclusively within a superset pair: between the two partner exercises, and between the rounds of the same pair.
-- The **single-exercise rest** runs between the sets of an exercise without a superset partner. It also closes a finished exercise block when the next block trains the same primary muscle group(s), so recovery is not shortened just because the generator moves on to a new exercise.
-- The **after-set pause** runs only after the final set of a complete exercise block (a superset pair or a solo exercise), and only when the next block trains different primary muscle group(s).
+- The **single-exercise rest** runs between the sets of an exercise without a superset partner.
+- The **after-set pause** closes a complete exercise block (a superset pair or a solo exercise).
+
+Which of the last two runs at a block boundary is decided by the transition rule below.
 
 | Skill | In-set pause | Single-exercise rest | After-set pause |
 |---|---|---|---|
@@ -73,7 +75,7 @@ After the final set of an exercise block, exactly one rule applies, checked in o
 2. The next block trains the same primary muscle group(s) → single-exercise rest.
 3. Otherwise → after-set pause.
 
-For a superset pair the closing rest follows the partner exercise of the final round; for a solo exercise, its final set. The rest length comes from the finished block's skill.
+Rule 2 keeps recovery from being shortened just because the generator moves on to a new exercise. For a superset pair the closing rest follows the partner exercise of the final round; for a solo exercise, its final set. The rest length comes from the finished block's skill.
 
 ### Expansion
 

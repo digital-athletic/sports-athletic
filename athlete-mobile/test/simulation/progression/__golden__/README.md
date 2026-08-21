@@ -81,3 +81,32 @@ They differ only by the feedback reported each session:
 | `p2-max-strength.tooEasy.*` | always "zu leicht" | every set advances 2 ladder steps per session, capped at its final step |
 | `p2-max-strength.succeeded.*` | always "passt" | every set advances 1 ladder step per session; set 1 parks at 70% × 6 |
 | `p2-max-strength.tooHard.*` | always "zu schwer" | all sets drop 2.5 percentage points per session, floored at 65%, keeping their buffer column |
+
+## Standard progression: `p2-hypertrophy.mixed.progression.md`
+
+Spec: `docs/specs/progression/standard-exercise-progression.md`.
+Generate from: `simulateProgression` once it drives a hypertrophy focus; every
+column is scripted input (`reps achieved`, `feedback given`) or prescribed
+state read off the generated sessions (`reps next` and `weight% next` come
+from generating one session further, like the max-strength runs). The
+simulator does not drive this focus yet, so there is no comparison test to
+skip. Unlike the max-strength runs, the script varies the achieved reps per
+session to hit all three zones of the decision tree.
+
+Inputs: persona p2 (MALE, ADVANCED), one weighted advance-by-reps hypertrophy
+exercise with the spec's worked-example bounds, start 12 reps at 65% of F-Max,
+target 20 reps at 80%. Because p2 is male and advanced, the repetition steps
+come from the gendered hypertrophy row (too easy +3, succeeded +2, too
+hard -2), not the base row the spec's own worked example uses. Weight steps
+are the F-Max row: +5 / +2.5 / -2.5.
+
+- Session 1: 14 reps lands between start and target, so nothing changes now;
+  the next generation applies SUCCEEDED to every quantity (reps 14+2, weight
+  65+2.5).
+- Session 2: 20 reps reaches the target with the weight below its target, so
+  the weight rises one step immediately and reps reset to the start value.
+  Immediate actions clear any feedback, so none is recorded.
+- Session 3: 10 reps falls below the start with the weight above its start,
+  so the weight drops one step and reps reset again.
+- Session 4: between zone with TOO_EASY, deferred: reps 15+3, weight 67.5+5.
+

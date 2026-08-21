@@ -15,7 +15,7 @@ Plan creation is a deterministic pipeline over authored content, with randomness
 1. Authored **section templates** (per season phase, age group, and level) decide the mesocycle sequence. This encodes sports-science periodization once, centrally, instead of computing it per user.
 2. Rule-based day layout assigns each training day a **focus** (PHASE, CARDIO, STABILITY, or COMBINED) from the shape of the week and the locations' equipment.
 3. Authored **skill priority** structures (per age group, pain status, and focus) decide which skills fill a session of a given length.
-4. Filtered random selection picks exercise branches from **skill trees**, respecting age, gender, equipment, and pain exclusions.
+4. Filtered random selection picks exercise branches from **skill trees**, respecting age, gender, and equipment.
 
 The plan stays a skeleton on purpose: sets, repetitions, and weights are computed per session at execution time, so day-to-day progression never requires regenerating the plan.
 
@@ -40,7 +40,7 @@ The anamnesis answers are stored as tag groups and copied into the workout confi
 | Level | LEVEL tag | BEGINNER, ADVANCED, or PROFESSIONAL. A PROFESSIONAL child is downgraded to ADVANCED. |
 | Pain status | PAIN tags | Any pain tag sets the pain variant of the skill priorities. |
 | Prevention skills | PAIN tags | Shoulder maps to shoulder prevention, elbow and wrist to wrist prevention, spine to spine prevention, hip and knee to knee prevention, ankle to ankle prevention. |
-| Blocked regions | PAIN tags | Pain locations become blocked body regions; branches whose exercise carries a matching block tag are excluded. |
+| Blocked regions | PAIN tags | Authored mapping only: pain exclusions do not exist, no branch is excluded for a blocked region ([Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md)). |
 | Position | POSITION tag | Defaults to FIELD. Currently every athlete is treated as a keeper (temporary override until speed endurance content is fixed). |
 | Season phase | Anamnesis season phase step | PAUSE, PREPARATORY, or COMPETITION, with a week count to the phase end date (minimum 1). Required; generation fails without it. |
 | Weights available | Equipment of active locations | True if any active training day's location has weights. |
@@ -80,10 +80,10 @@ Section types use German training vocabulary: SWR1 and SWR2 are hypertrophy (Mus
 ### 5. Branch selection per skill
 
 1. The skill and its allotted minutes select an authored region configuration: how many exercises, and which region or movement tags (upper body, lower body, core, or named barbell lifts for Maxkraft).
-2. Candidate branches come from the skill's skill tree, filtered by: not already in use that day, age tag, gender tag, equipment present at the day's location, and no blocked-region tag.
+2. Candidate branches come from the skill's skill tree, filtered by: not already in use that day, age tag, gender tag, and equipment present at the day's location. Blocked-region tags do not filter: pain exclusions do not exist.
 3. When weights are available, the target mix of weighted vs bodyweight exercises is: children 30% weighted, adults 80% in the studio (60% for non-strength skills), 50% elsewhere.
 4. Each exercise slot applies cascading filters, each falling back to the previous candidate set when it would empty: movement direction (from an authored priority sequence), side (the last slot avoids one-sided exercises), muscle (prefer untrained big muscles), involvement (70% complex, 30% isolated), equipment (Maxkraft prefers barbell), and the weighted/bodyweight mix. The final pick is random among the survivors.
-5. A branch with no exercise at the athlete's current level is skipped. Skills that end up with zero branches are removed from the day. Chosen branches are excluded for the rest of the day to avoid duplicates.
+5. Branches resolve to an exercise by the shared resolution rule in [Plan Workout Generation](../session/plan-workout-generation.md): an empty level falls back downward to the highest authored level below it, so the last valid exercise stays active until a higher level defines a new one (level 1 = exercise A, level 2 empty, level 3 = exercise B: an advanced athlete still trains exercise A). A branch is skipped only when no exercise resolves at or below the athlete's current level; an intentionally empty intermediate level never shrinks the pool. Only a skill left with zero usable branches after this check is removed from the day. Chosen branches are excluded for the rest of the day to avoid duplicates.
 
 ### 6. Lifecycle and regeneration
 

@@ -12,7 +12,7 @@ The plan is authored days or weeks ahead. By start time the athlete may be sore,
 
 Filter today's pre-selected branches by soreness, equipment, and level, replace the blocked ones from the skill tree, then resolve each branch to the athlete's level. Workouts the athlete starts without a plan run the same filters over a pool drawn straight from the skill trees: [Plan-Independent Workouts](./plan-independent-workouts.md).
 
-Maxkraft opens with its lower-body main lifts; every other skill keeps the muscle-size ordering.
+Maxkraft opens with its lower-body main lifts; every other skill orders big muscle groups first and rotates body regions as a soft priority.
 
 Selection operates on branches (one exercise progression lane, authored levels 1 to 3); the concrete exercise is resolved last. Within a skill no resolved exercise ID may appear twice; across skills duplicates are accepted. Random picks are uniform and unseeded; a generated session is persisted, so reopening it never regenerates (see Structure).
 
@@ -35,10 +35,11 @@ Athlete profile (level, gender, birthday, pain tags), reported soreness (sore mu
 
 - **Skill**: the training quality one block of the session trains, for example Maxkraft, hypertrophy, core, warm-up, cardio, prevention. A skill owns its skill tree, its set count, its pause lengths, and its maximum minutes per athlete level. A training day is a list of skills.
 - **Slot**: the plan gives every skill of a training day a minute budget. An authored table per skill and athlete level maps that budget to a fixed number of exercise **slots**, for Maxkraft at 30 minutes: legs, push, pull. Every slot carries one pre-selected branch; the exercise filling a Maxkraft slot is its **main lift**, the heavy barbell lift that slot's sets are built around. Slots fill independently: a blocked slot takes a replacement from the same skill tree, and a slot that cannot be refilled frees its minutes.
-- **Branch to exercise resolution**: prefer the stored per-branch progress level; otherwise map BEGINNER/ADVANCED/PROFESSIONAL to branch level 1/2/3 and fall back downward to the highest authored level at or below it. A branch with no resolvable exercise counts as blocked. [Plan-Independent Workouts](./plan-independent-workouts.md) reuses this rule.
+- **Branch to exercise resolution**: prefer the stored per-branch progress level; otherwise map BEGINNER/ADVANCED/PROFESSIONAL to branch level 1/2/3 and fall back downward to the highest authored level at or below it, so an intentionally empty intermediate level keeps the lower level's exercise active instead of blocking the branch. A branch counts as blocked only when nothing resolves at or below the athlete's level. [Training Plan Creation](../planning/training-plan-creation-from-anamnesis.md) and [Plan-Independent Workouts](./plan-independent-workouts.md) reuse this rule.
 - **Filter chain**: each filter splits the pool into keep and replace. Soreness drops branches whose region matches a sore area (more than one sore area aborts with a soreness error). Equipment drops branches needing gear the place lacks. Level drops branches with no exercise at the athlete's level. Age and gender drop branches tagged for other groups.
 - **Uniqueness**: a resolved exercise ID is used at most once per skill, and a candidate resolving to an exercise the skill already holds drops out of the pool. Duplicates across skills are tolerated. Deliberate repeats stand: a one-sided exercise appears as a left and right entry, and every exercise repeats across its own sets.
-- **Pairing (supersets)**: superset skills split their branches into big-muscle and small-muscle groups (big = chest, latissimus, glutes, inner thigh, outer thigh). Partners come only from the same skill, and the big-muscle group pairs out first. A one-sided exercise always pairs with its other-side counterpart; otherwise the partner is a both-sided exercise, preferred in this order:
+- **Big vs small muscle groups**: the big muscle groups are chest, upper back, latissimus, front thigh (quadriceps), glutes, and rear thigh (hamstrings), with side-specific muscles counting per side. Every other muscle group is small, explicitly including the inner thigh (adductors) and outer thigh (abductors). This one classification drives pairing, superset prioritization, and the ordering by muscle-group size below.
+- **Pairing (supersets)**: superset skills split their branches into big-muscle and small-muscle groups per the classification above. Partners come only from the same skill, and the big-muscle group pairs out first. A one-sided exercise always pairs with its other-side counterpart; otherwise the partner is a both-sided exercise, preferred in this order:
   1. an opposing or antagonistic muscle group,
   2. a big muscle group from a different body region,
   3. a big muscle group from the same region,
@@ -47,20 +48,26 @@ Athlete profile (level, gender, birthday, pain tags), reported soreness (sore mu
 
   The generator breaks ties within a rank uniformly at random. Excluded as partners: duplicate exercises, the same movement pattern (two horizontal presses), and the same primary muscle group (two shoulder exercises).
 
-  Without a partner the exercise keeps the shorter superset rest between its sets, where the longer single-set rest would fit better; [Session Set Structure](./session-set-structure.md) carries the per-skill values and treats that as an open defect. Maxkraft, stability circuits, and cardio never pair.
+  Without a partner the exercise rests on its skill's longer single-exercise rest between its sets, never the shorter superset pause; [Session Set Structure](./session-set-structure.md) carries the per-skill values. Maxkraft, stability circuits, and cardio never pair.
 - **Ordering**: three levels, each independent of the order in which slots were filled.
   1. Skills: fixed section order, warm-up first, cool-down last.
-  2. Exercises inside a skill: big muscle (chest, latissimus, glutes, inner thigh, outer thigh) before the rest, so the demanding work sits in the fresher part of the block. Inside a group no further rule applies. In superset skills the ordered unit is the pair: a partner follows its lead exercise directly.
+  2. Exercises inside a skill: big muscle groups (per the classification above) before the rest, so the demanding work sits in the fresher part of the block. In superset skills the ordered unit is the pair: a partner follows its lead exercise directly. Sequencing the resulting units (single exercises or formed pairs) follows soft priorities:
+     - Rotate body regions: full body (where the skill has it, full-body stability for example), then lower body, upper body, core, then start over.
+     - Prefer a different body region after each unit, and avoid training the same primary muscles in the directly following unit when an alternative exists.
+     - Break ties among equally suitable units uniformly at random, so the same sequences and combinations do not recur every session.
+     - When no unit matches the preferred region or a different primary muscle group, take the next-best one.
+
+     These are soft priorities, never exclusions: no exercise is removed and no pair discarded over ordering, and no further special-case logic applies. Prevention and leg-axis stability draw from deliberately small, region-limited pools, so there the same body region or the same primary muscles may follow back to back when no alternative exists.
   3. Exercises inside Maxkraft, overriding rule 2: lower-body main lifts before upper-body main lifts, since they move the session's heaviest loads. Rule 2 then orders the lifts within each region. Support exercises stay in the breaks of their own main lift.
 - **Weighted vs bodyweight ratio**: the target share of weighted exercises is 50% under 16, 80% in the gym, and 50% at other places with suitable equipment. A place without dumbbells or barbells is 0%: everything is bodyweight. Age beats place: under 16 in the gym stays at 50%, since athletes below 16 must not perform heavy exercises.
 
-  Each skill enforces the share as a quota over its slots, `weighted = ceil(share × slots)` with the rest bodyweight. A slot draws its type at random while both quotas are open, then takes whichever quota remains. These are soft targets: the share is measured over the exercises the generator selected, only those surviving the age, level, pain, soreness, and equipment filters count, and bodyweight exercises fill any shortfall. Maxkraft support exercises are exempt and balance their own share per draw.
+  Each skill enforces the share as a quota over its slots, `weighted = ceil(share × slots)` with the rest bodyweight. A slot draws its type at random while both quotas are open, then takes whichever quota remains. These are soft targets: the share is measured over the exercises the generator selected, only those surviving the age, level, soreness, and equipment filters count, and bodyweight exercises fill any shortfall. Maxkraft support exercises are exempt and balance their own share per draw.
 
 ### Generating the session
 
 ```mermaid
 flowchart TD
-    A[Today's training from current section, focus confirmed by athlete] --> B[Per skill: soreness, equipment, level filters]
+    A[Today's training from current section, by weekday] --> B[Per skill: soreness, equipment, level filters]
     B --> C{Blocked branches?}
     C -- no --> F[Resolve exercise per branch: progress, else athlete level]
     C -- cardio skill --> D[Replace whole skill with steady zone 5 cardio, max 20 min]
@@ -70,7 +77,7 @@ flowchart TD
 ```
 
 1. **Section and day**: take the section with the latest start date not after today; after a gap of 8 to 21 days, shift section starts forward by the missed weeks first. Beyond 21 days, prompt "You have not trained for more than three weeks. Do you want to create a new training plan?"; accepting hands over to plan creation (out of scope), declining continues with the existing plan.
-2. **Focus**: use the training matching today's weekday. When none matches, the athlete picks today's focus from the four authored focus types: PHASE (strength/prevention), STABILITY, CARDIO (endurance), COMBINED (strength & endurance). The app offers the choice on regular training days too, with the planned focus preselected as the recommendation. It applies to this session only and never changes the stored plan. A focus with no training in the section is served the way plan creation serves it: its skills and their minute budgets come from the authored skill priorities for that focus, keyed by age group and pain.
+2. **Training for today**: use the training matching today's weekday; when none matches, the generator falls back to the section's first training. A session-time focus choice, where the athlete picks one of the four focus types (PHASE strength/prevention, STABILITY, CARDIO endurance, COMBINED strength & endurance) for this session only, with the planned focus recommended and missing trainings served from the authored skill priorities per focus, age group, and pain, is neither defined nor implemented (see Open Questions). The focus types themselves exist: plan creation assigns one per training day. An athlete who wants a different emphasis today starts a focus training instead, one of the plan-independent short workouts ([Plan-Independent Workouts](./plan-independent-workouts.md)).
 3. **Filter** each skill's pre-selected branches by soreness, equipment, and level. Every removed branch records its body region as a replacement request.
 4. **Replace** blocked branches per skill:
    - A blocked cardio skill gives way wholesale to steady zone 5 cardio, capped at 20 minutes.
@@ -80,14 +87,16 @@ flowchart TD
 
      | Skill | Max minutes, beginner / advanced / professional |
      |---|---|
-     | Speed strength (SWR) | 35 / 45 / 60 |
+     | Hypertrophy (SWR) | 35 / 45 / 60 |
      | Maxkraft (MAX) | 0 / 45 / 55 |
      | Cardio | 45 / 60 / 60 |
      | Full-body stability (GKS) | 25 / 30 / 40 |
-     | Speed endurance (SA), stability (SK) | 30 / 35 / 35 |
+     | Speed endurance (SA), speed strength (SK) | 30 / 35 / 35 |
      | Prevention (PREV) | 15 |
      | Special warm-up (WUSPEZIAL) | 3 |
      | Everything else | 10 |
+
+     The SWR code belongs to hypertrophy: it originally stands for jump, throwing, and core strength (Sprung-, Wurf- und Rumpfkraft).
 5. **Resolve** every remaining branch to its level-matched exercise.
 6. **Assemble**: order skills by the fixed section order (warm-up first, cool-down last), build pairs per skill, and emit the set list with sets and pauses. Weighted hypertrophy and speed strength supersets gain one extra warm-up set at reduced weight.
 
@@ -131,4 +140,4 @@ The app persists the generated session (set list, equipment, active exercise ind
 
 ## Open Questions
 
-None.
+- The session-time focus choice (athlete picks PHASE, STABILITY, CARDIO, or COMBINED for a single session, planned focus recommended, missing trainings served from the skill priorities) is neither defined nor implemented; today a weekday without a training silently falls back to the section's first training, and the topic-for-today need is partly covered by the plan-independent focus trainings. Should the plan-session focus choice be specified and built, or do the weekday fallback and the focus trainings stay the model?

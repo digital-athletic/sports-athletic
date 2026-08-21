@@ -14,7 +14,10 @@ export function SummaryCards({ stats }: SummaryCardsProps) {
         <div className="mb-1 text-sm text-gray-500">
           {t("evaluations.summary.duration")}
         </div>
-        <div className="text-2xl font-bold text-gray-900">
+        <div
+          data-testid="summary-duration"
+          className="text-2xl font-bold text-gray-900"
+        >
           {stats.totalDuration}
         </div>
       </div>
@@ -22,7 +25,10 @@ export function SummaryCards({ stats }: SummaryCardsProps) {
         <div className="mb-1 text-sm text-gray-500">
           {t("evaluations.summary.trainingCount")}
         </div>
-        <div className="text-2xl font-bold text-gray-900">
+        <div
+          data-testid="summary-training-count"
+          className="text-2xl font-bold text-gray-900"
+        >
           {stats.trainingCount}
         </div>
       </div>
@@ -30,7 +36,10 @@ export function SummaryCards({ stats }: SummaryCardsProps) {
         <div className="mb-1 text-sm text-gray-500">
           {t("evaluations.summary.points")}
         </div>
-        <div className="text-2xl font-bold text-gray-900">
+        <div
+          data-testid="summary-points"
+          className="text-2xl font-bold text-gray-900"
+        >
           {stats.totalPoints}
         </div>
       </div>

@@ -59,6 +59,7 @@ export function TabBar({ tabs, activeTab, onTabChange }: TabBarProps) {
         {tabs.map((tab) => (
           <button
             key={tab.id}
+            data-testid={`tab-${tab.id}`}
             className={`px-6 py-3 text-sm font-medium transition-colors ${
               activeTab === tab.id
                 ? "border-b-2 border-red-600 text-red-600"

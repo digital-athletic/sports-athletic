@@ -1,4 +1,4 @@
-| entry | kind | exercise | set | reps | duration s |
+| entry | out: kind | out: exercise | out: set | out: reps | out: duration s |
 | --- | --- | --- | --- | --- | --- |
 | 1 | work | bench press | 1 of 3 | 12 |  |
 | 2 | pause |  |  |  | 30 |

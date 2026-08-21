@@ -1,4 +1,4 @@
-| scenario | unit | lead | partner |
+| scenario | out: unit | out: lead | out: partner |
 | --- | --- | --- | --- |
 | A | pair 1 | bench press | barbell row |
 | A | pair 2 | shoulder press | adductor squeeze |

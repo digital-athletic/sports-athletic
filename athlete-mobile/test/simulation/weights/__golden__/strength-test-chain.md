@@ -1,4 +1,4 @@
-| case | direction | test kg | test reps | 1RM kg | equipment key | adjusted max kg | intensity % | prescribed kg |
+| case | in: direction | in: test kg | in: test reps | out: 1RM kg | in: equipment key | out: adjusted max kg | in: intensity % | out: prescribed kg |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | epley | horizontal push | 80 | 8 | 101.33 | barbell | 101.33 | 70 | 71 |
 | epley single rep | horizontal pull | 90 | 1 | 90 | barbell | 90 | 60 | 54 |

@@ -8,6 +8,10 @@ per day` is the returned `FocusType[][]` flattened back onto the weekdays.
 The rules are fully deterministic, so no fixture crafting is needed; branch
 selection stays out of scope because it draws at random.
 
+Header prefixes: `in:` marks scripted or echoed inputs, `out:` marks
+values read from the implementation; unprefixed columns are row
+identifiers.
+
 **Status: hand-derived spec targets; the comparison test is not wired yet.**
 Do not regenerate with `UPDATE_GOLDEN=1` until a hand-check confirms the
 computed table.

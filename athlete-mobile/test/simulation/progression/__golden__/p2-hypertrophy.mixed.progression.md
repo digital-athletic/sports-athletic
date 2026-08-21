@@ -1,4 +1,4 @@
-| session | reps prescribed | weight% prescribed | reps achieved | feedback given | reps next | weight% next |
+| session | out: reps prescribed | out: weight% prescribed | in: reps achieved | in: feedback given | out: reps next | out: weight% next |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | 12 | 65 | 14 | SUCCEEDED | 16 | 67.5 |
 | 2 | 16 | 67.5 | 20 |  | 12 | 70 |

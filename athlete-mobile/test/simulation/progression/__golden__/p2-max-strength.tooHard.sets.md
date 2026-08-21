@@ -1,4 +1,4 @@
-| session | exercise | set | type | weight% | weight kg | reps | pause s |
+| session | in: exercise | set | out: type | out: weight% | out: weight kg | out: reps | out: pause s |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | LH-Kniebeuge (Max-K) | 1 | warmup | 50 | 42.5 | 6 | 60 |
 | 1 | LH-Kniebeuge (Max-K) | 2 | warmup | 75 | 62.5 | 5 | 60 |

@@ -1,4 +1,4 @@
-| case | athlete | schedule | focus per day |
+| case | in: athlete | in: schedule | out: focus per day |
 | --- | --- | --- | --- |
 | single day | adult, advanced | Mon studio 60 min run equipment | Mon PHASE |
 | two days, guarantee | adult, advanced | Mon studio 60 min run equipment, Tue home 45 min no run equipment | Mon COMBINED, Tue STABILITY |

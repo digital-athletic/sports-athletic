@@ -16,6 +16,9 @@ spec targets with the current (defective) generator output.
 
 ## Reading a file
 
+Header prefixes: `in:` marks scripted or echoed inputs, `out:` marks values
+read from the implementation; unprefixed columns are row identifiers.
+
 **progression** has one row per session:
 
 - `weight% before` / `after`: percentage of the last (top) working set seeding

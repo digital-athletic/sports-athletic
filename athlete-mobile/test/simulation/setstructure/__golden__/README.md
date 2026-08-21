@@ -16,6 +16,10 @@ Column mapping, all mechanical:
 The model has no pause-kind label, so which rest type each pause row asserts
 is documented here, by entry number, and enforced through the duration.
 
+Header prefixes: `in:` marks scripted or echoed inputs, `out:` marks
+values read from the implementation; unprefixed columns are row
+identifiers.
+
 **Status: hand-derived spec targets without a harness yet.** The current
 generator still applies the after-set override the spec removed, so it will
 not reproduce this table. Keep the comparison skipped until it does, and do

@@ -3,11 +3,17 @@
 Spec: `docs/specs/session/cardio-training-system.md` (zone table, building
 the block).
 Generate from: the cardio block of the set list (`GeneratedSetListEntry[]`)
-that `TrainingGenerator` emits for the scenario below. `kind` is `pause` when
-the entry carries the pause exercise id, else `work`; `duration s` is the
-entry's `duration` field. Nothing else in the table, because the entry model
-carries no zone label or heart-rate band; the block structure and the
-durations are the logic under test.
+that `TrainingGenerator` emits for the scenario below. The `in:` columns echo
+the scenario inputs (zone, minute budget, interval count) on every row, like
+the session and exercise columns of the max-strength sets tables. `out: kind`
+is `pause` when the entry carries the pause exercise id, else `work`;
+`out: duration s` is the entry's `duration` field. No zone label or
+heart-rate band, because the entry model carries neither; the block structure
+and the durations are the logic under test.
+
+Header prefixes: `in:` marks scripted or echoed inputs, `out:` marks
+values read from the implementation; unprefixed columns are row
+identifiers.
 
 **Status: hand-derived spec targets without a harness yet.** Keep the
 comparison skipped until the generator matches, and do not regenerate with

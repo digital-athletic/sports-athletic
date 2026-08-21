@@ -19,6 +19,10 @@ Numbers are printed to at most two decimals by the adapter; only
 `prescribed kg` is spec-rounded (0.5 kg up to 25 kg, 1 kg up to 100 kg,
 2.5 kg above).
 
+Header prefixes: `in:` marks scripted or echoed inputs, `out:` marks
+values read from the implementation; unprefixed columns are row
+identifiers.
+
 **Status: hand-derived spec targets; the comparison test is not wired yet.**
 Do not regenerate with `UPDATE_GOLDEN=1` until a hand-check confirms the
 computed table.

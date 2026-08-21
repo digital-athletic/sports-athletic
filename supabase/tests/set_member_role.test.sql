@@ -1,27 +1,31 @@
 -- set_member_role: owner-only, existence hiding for outsiders, the two
 -- escalation guards ('owner' is not assignable, the owner's row is untouchable),
--- target-must-exist, and both directions of the happy path.
+-- target-must-exist, both directions of the happy path, and the claim that a
+-- co-owner gains no rights beyond reading athlete data.
 --
 -- UUIDs are spelled out inside the $$ blocks because psql variables do not
 -- interpolate there.
 
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap;
-SELECT plan(12);
+SELECT plan(16);
 
 \set T    '11111111-1111-1111-1111-111111111111'
+\set C    '22222222-2222-2222-2222-222222222222'
 \set M    '33333333-3333-3333-3333-333333333333'
 \set O    '44444444-4444-4444-4444-444444444444'
 \set TEAM '55555555-5555-5555-5555-555555555551'
 
 INSERT INTO auth.users (id, email) VALUES
   (:'T', 'trainer.test@example.local'),
+  (:'C', 'coowner.test@example.local'),
   (:'M', 'member.test@example.local'),
   (:'O', 'outsider.test@example.local');
 INSERT INTO public.user_profiles (user_id, trainer_granted_at) VALUES (:'T', now());
 INSERT INTO public.teams (id, name, owner_id) VALUES (:'TEAM', 'Trainer Team', :'T');
 INSERT INTO public.team_members (team_id, user_id, role) VALUES
   (:'TEAM', :'T', 'owner'),
+  (:'TEAM', :'C', 'co_owner'),
   (:'TEAM', :'M', 'member');
 
 SET LOCAL ROLE authenticated;
@@ -37,6 +41,19 @@ SELECT throws_ok($$ SELECT public.set_member_role('55555555-5555-5555-5555-55555
 SET LOCAL "request.jwt.claim.sub" TO :'O';
 SELECT throws_ok($$ SELECT public.set_member_role('55555555-5555-5555-5555-555555555551','33333333-3333-3333-3333-333333333333','co_owner') $$,
   'P0001', 'TEAM_NOT_FOUND', 'set_member_role: outsider -> TEAM_NOT_FOUND (existence hidden)');
+
+-- A co-owner gains nothing beyond reading athlete data. Every owner-only RPC
+-- must still refuse them; assert_visible_team_owner only ever compares owner_id,
+-- so this is true by construction - these four pin it as a regression.
+SET LOCAL "request.jwt.claim.sub" TO :'C';
+SELECT throws_ok($$ SELECT public.set_member_role('55555555-5555-5555-5555-555555555551','33333333-3333-3333-3333-333333333333','co_owner') $$,
+  'P0001', 'NOT_TEAM_OWNER', 'set_member_role: co-owner cannot promote anyone');
+SELECT throws_ok($$ SELECT public.remove_member('55555555-5555-5555-5555-555555555551','33333333-3333-3333-3333-333333333333') $$,
+  'P0001', 'NOT_TEAM_OWNER', 'remove_member: co-owner cannot remove a member');
+SELECT throws_ok($$ SELECT public.generate_invite_code('55555555-5555-5555-5555-555555555551') $$,
+  'P0001', 'NOT_TEAM_OWNER', 'generate_invite_code: co-owner cannot rotate the invite code');
+SELECT throws_ok($$ SELECT public.delete_team('55555555-5555-5555-5555-555555555551') $$,
+  'P0001', 'NOT_TEAM_OWNER', 'delete_team: co-owner cannot delete the group');
 
 SET LOCAL "request.jwt.claim.sub" TO :'T';
 

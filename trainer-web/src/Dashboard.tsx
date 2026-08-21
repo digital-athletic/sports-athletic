@@ -39,7 +39,6 @@ export const Dashboard = () => {
 
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
-  const [actionError, setActionError] = useState<string | null>(null);
   const [memberToRemove, setMemberToRemove] = useState<string | null>(null);
   const [isRemoving, setIsRemoving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -57,22 +56,19 @@ export const Dashboard = () => {
   ];
 
   const handleRegenerateCode = async () => {
-    setActionError(null);
     try {
       await regenerateInviteCode();
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : t("common.error"));
+    } catch {
+      // Reported through useTeam's `error`, which holds the translated message.
     }
   };
 
   const handleLeaveTeam = async () => {
     setIsLeaving(true);
-    setActionError(null);
     try {
       await leaveCurrentTeam();
       navigate("/teams");
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : t("common.error"));
+    } catch {
       setShowLeaveConfirm(false);
     } finally {
       setIsLeaving(false);
@@ -81,12 +77,10 @@ export const Dashboard = () => {
 
   const handleDeleteTeam = async () => {
     setIsDeleting(true);
-    setActionError(null);
     try {
       await deleteCurrentTeam();
       navigate("/teams");
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : t("common.error"));
+    } catch {
       setShowDeleteConfirm(false);
     } finally {
       setIsDeleting(false);
@@ -97,23 +91,21 @@ export const Dashboard = () => {
     memberUserId: string,
     role: AssignableTeamRole,
   ) => {
-    setActionError(null);
     try {
       await setMemberRole(memberUserId, role);
     } catch {
-      // useTeam has already put the translated message into `error`.
+      // See handleRegenerateCode.
     }
   };
 
   const handleRemoveMember = async () => {
     if (!memberToRemove) return;
     setIsRemoving(true);
-    setActionError(null);
     try {
       await removeMember(memberToRemove);
       setMemberToRemove(null);
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : t("common.error"));
+    } catch {
+      // See handleRegenerateCode.
     } finally {
       setIsRemoving(false);
     }
@@ -143,7 +135,7 @@ export const Dashboard = () => {
               isOwner={isOwner}
               currentUserId={currentUserId}
               currentUserDisplayName={currentUserDisplayName}
-              actionError={actionError ?? error}
+              error={error}
               showLeaveConfirm={showLeaveConfirm}
               isLeaving={isLeaving}
               memberToRemove={memberToRemove}

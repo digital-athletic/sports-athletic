@@ -20,7 +20,7 @@ interface ManagementTabProps {
   isOwner: boolean;
   currentUserId: string | null;
   currentUserDisplayName: string | null;
-  actionError: string | null;
+  error: string | null;
   showLeaveConfirm: boolean;
   isLeaving: boolean;
   memberToRemove: string | null;
@@ -48,7 +48,7 @@ export function ManagementTab({
   isOwner,
   currentUserId,
   currentUserDisplayName,
-  actionError,
+  error,
   showLeaveConfirm,
   isLeaving,
   memberToRemove,
@@ -71,7 +71,7 @@ export function ManagementTab({
 
   return (
     <div className="space-y-6">
-      {actionError && <ErrorMessage message={actionError} />}
+      {error && <ErrorMessage message={error} />}
 
       {loading ? (
         <LoadingSpinner />

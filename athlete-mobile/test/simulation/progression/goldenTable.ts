@@ -28,41 +28,55 @@ interface SetRow {
   set: SetSnapshot;
 }
 
+/**
+ * Header convention for every golden table: `in:` marks scripted or echoed
+ * inputs, `out:` marks values read from the implementation, and unprefixed
+ * columns are row identifiers.
+ */
 const PROGRESSION_COLUMNS: ColumnSpec<ProgressionRow>[] = [
   { header: "session", value: ({ session }) => session.session },
-  { header: "exercise", value: ({ exercise }) => exercise.displayName },
-  { header: "max kg", value: ({ exercise }) => exercise.maxValue },
-  { header: "focus", value: ({ session }) => session.focus },
+  { header: "in: exercise", value: ({ exercise }) => exercise.displayName },
+  { header: "in: max kg", value: ({ exercise }) => exercise.maxValue },
+  { header: "in: focus", value: ({ session }) => session.focus },
   {
-    header: "weight% before",
+    header: "out: weight% before",
     value: ({ exercise }) => exercise.weightPercentageBefore,
   },
   {
-    header: "weight% after",
+    header: "out: weight% after",
     value: ({ exercise }) => exercise.weightPercentageAfter,
   },
-  { header: "level before", value: ({ exercise }) => exercise.levelBefore },
-  { header: "level after", value: ({ exercise }) => exercise.levelAfter },
-  { header: "feedback given", value: ({ exercise }) => exercise.feedbackGiven },
   {
-    header: "feedback applied",
+    header: "out: level before",
+    value: ({ exercise }) => exercise.levelBefore,
+  },
+  { header: "out: level after", value: ({ exercise }) => exercise.levelAfter },
+  {
+    header: "in: feedback given",
+    value: ({ exercise }) => exercise.feedbackGiven,
+  },
+  {
+    header: "out: feedback applied",
     value: ({ exercise }) => exercise.feedbackApplied,
   },
   {
-    header: "branch level",
+    header: "out: branch level",
     value: ({ exercise }) => exercise.branchLevelChange,
   },
 ];
 
 const SET_COLUMNS: ColumnSpec<SetRow>[] = [
   { header: "session", value: ({ session }) => session.session },
-  { header: "exercise", value: ({ exercise }) => exercise.displayName },
+  { header: "in: exercise", value: ({ exercise }) => exercise.displayName },
   { header: "set", value: ({ set }) => set.setNumber },
-  { header: "type", value: ({ set }) => (set.isWarmup ? "warmup" : "working") },
-  { header: "weight%", value: ({ set }) => set.percentage },
-  { header: "weight kg", value: ({ set }) => set.weightKg },
-  { header: "reps", value: ({ set }) => set.reps },
-  { header: "pause s", value: ({ set }) => set.pauseSeconds },
+  {
+    header: "out: type",
+    value: ({ set }) => (set.isWarmup ? "warmup" : "working"),
+  },
+  { header: "out: weight%", value: ({ set }) => set.percentage },
+  { header: "out: weight kg", value: ({ set }) => set.weightKg },
+  { header: "out: reps", value: ({ set }) => set.reps },
+  { header: "out: pause s", value: ({ set }) => set.pauseSeconds },
 ];
 
 /** One row per session: the inter-session weight/level progression. */

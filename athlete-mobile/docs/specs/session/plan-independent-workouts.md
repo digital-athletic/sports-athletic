@@ -2,7 +2,7 @@
 
 ## Why & What
 
-An athlete can start a workout with no training plan behind it: an on-demand **short workout** (warm-up, mobility, foam roller, cool-down, stability, cardio, prevention) or the Maxkraft **strength test**. Both build their candidate pool from the authored **skill trees** and draw at random to a per-type quota, then emit the same **set list** a plan workout emits. This spec defines the quotas, the draw rules, and the conditions under which each flow refuses to build a session.
+An athlete can start a workout with no training plan behind it: an on-demand **short workout** or the Maxkraft **strength test**. The short workouts are the app's **focus trainings** (10 to 20 minutes of topic-specific training: leg axis stability, full-body stability, mobility, foam roller, warm-up, cool-down), plus prevention workouts from their own entry point; there is no cardio short workout. Both flows build their candidate pool from the authored **skill trees** and draw at random to a per-type quota, then emit the same **set list** a plan workout emits. This spec defines the quotas, the draw rules, and the conditions under which each flow refuses to build a session.
 
 ## Problem
 
@@ -10,7 +10,7 @@ The plan covers the scheduled week. An athlete who wants ten minutes of mobility
 
 ## Solution
 
-Two flows draw straight from the skill trees. A short workout filters the requested type's tree, then draws branches at random until the type's quota is met. A strength test pairs a randomized warm-up with an authored list of test lifts per athlete level and gender.
+Two flows draw straight from the skill trees. A short workout filters the requested type's tree, then draws branches at random until the type's quota is met. A strength test pairs a randomized warm-up with an authored list of test lifts per athlete level.
 
 Both reuse the filter chain and the branch to exercise resolution rule from [Plan Workout Generation](./plan-workout-generation.md), so a blocked branch behaves the same way it does in a plan workout. The handling of an empty pool differs: a plan workout replaces the branch it cannot use, while these flows abort with a typed error naming the cause. Nothing here reads or writes the training plan.
 
@@ -27,7 +27,7 @@ Both reuse the filter chain and the branch to exercise resolution rule from [Pla
 ### Short workout
 
 1. Pick the requested type's skill tree: the weights-capable variant when the place has weights, the bodyweight variant otherwise. Foam roller sessions require a foam roller or foam ball, else generation fails.
-2. Filter by prevention target tag (prevention types only), pain blocks from the athlete's pain tags, soreness, equipment, age, and gender. An empty pool after the pain, soreness, or gender step aborts with a typed error naming the cause. The soreness filter is disabled by design for prevention workouts and the leg axis stability focus (the check was removed by sprint decision on August 10, 2026; lower-body soreness would otherwise block the stability focus permanently).
+2. Filter by prevention target tag (prevention types only), soreness, equipment, age, and gender. An empty pool after the soreness or gender step aborts with a typed error naming the cause. Pain blocks no branch here: pain exclusions do not exist ([Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md)). The soreness filter is disabled by design for prevention workouts and focus trainings such as leg axis stability (the check was removed by sprint decision on August 10, 2026; lower-body soreness would otherwise block the stability focus permanently).
 3. Draw branches uniformly at random, repeating neither a branch nor a resolved exercise, per quota:
 
 | Type | Quota |
@@ -36,13 +36,12 @@ Both reuse the filter chain and the branch to exercise resolution rule from [Pla
 | Stability with weights | 4 exercises, any region |
 | Stability bodyweight | 3 upper body plus 2 full body (falls back to any region when a quota cannot be met); one-sided handling as above, never as the last slot |
 | Prevention | 3 special warm-up exercises plus 3 superset pairs; a one-sided draw seeks an opposing-direction one-sided partner, else swaps itself for a both-sided branch; weighted pairs are ordered last |
-| Anything else | fill until 15 estimated minutes |
 
 ### Strength test
 
 1. Any reported soreness aborts with a soreness error.
 2. Warm-up: random branches from the warm-up tree per authored region quotas, without repeating a branch or a resolved exercise.
-3. Test lifts: a fixed, authored list per athlete level, with a gender-specific variant when authored. Each lift gets three ramp-up sets (40%, 60%, 85% of the reference weight) and one test set at 100%.
+3. Test lifts: a fixed, authored list per athlete level; there is no gender-specific variant. Each lift gets three ramp-up sets (40%, 60%, 85% of the reference weight) and one test set at 100%.
 
 ## Structure
 

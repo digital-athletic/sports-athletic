@@ -55,6 +55,7 @@ export function LoginForm({
         {error && <ErrorMessage message={error} />}
 
         <FormInput
+          data-testid="login-otp"
           type="text"
           inputMode="numeric"
           pattern="[0-9]*"
@@ -69,6 +70,7 @@ export function LoginForm({
         />
 
         <Button
+          data-testid="login-verify"
           type="submit"
           disabled={loading || otp.length !== 6}
           isLoading={loading}
@@ -116,6 +118,7 @@ export function LoginForm({
       {error && <ErrorMessage message={error} />}
 
       <FormInput
+        data-testid="login-email"
         type="email"
         value={email}
         onChange={(e) => onEmailChange(e.target.value)}
@@ -124,6 +127,7 @@ export function LoginForm({
       />
 
       <Button
+        data-testid="login-send-code"
         type="submit"
         disabled={loading}
         isLoading={loading}

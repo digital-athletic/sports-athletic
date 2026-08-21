@@ -15,6 +15,18 @@ export function regionFills(testID: string): unknown[] {
   return regionPathHosts(testID).map((node) => node.props.fill);
 }
 
+/**
+ * The thumbnail wrapper is `aria-hidden`, so RNTL hides the subtree from
+ * queries unless `includeHiddenElements` is set.
+ */
+export function thumbnailFills(regionId: string): unknown[] {
+  return screen
+    .getAllByTestId(`silhouette-thumbnail-region-${regionId}`, {
+      includeHiddenElements: true,
+    })
+    .map((node: RenderedNode) => node.props.fill);
+}
+
 /** Fill props as they appear on host nodes (processColor payload objects). */
 export const SELECTED_FILL = {
   type: 0,

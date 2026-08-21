@@ -1,5 +1,7 @@
+import { SilhouetteThumbnail } from "@/bodyParts/silhouette/SilhouetteThumbnail";
 import { Ionicon } from "@/common/Ionicon";
 import { TileData } from "@/constants/workoutConstants";
+import { useUserProfileStore } from "@/store/userProfileStore";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
@@ -16,6 +18,49 @@ import {
 
 export type ColumnListProps = {
   listItems: TileData[];
+};
+
+/** Owns the profile store subscription so a gender change re-renders only the thumbnail slot, not the whole row. */
+const TileThumbnail: FC<{ item: TileData; size: number }> = ({
+  item,
+  size,
+}) => {
+  const gender = useUserProfileStore((state) => state.personalData.gender);
+
+  if (item.silhouette) {
+    return (
+      <SilhouetteThumbnail
+        gender={gender}
+        side={item.silhouette.side}
+        regions={item.silhouette.regions}
+        centerY={item.silhouette.centerY}
+        size={size}
+      />
+    );
+  }
+
+  if (item.picture) {
+    return (
+      <Image
+        source={item.picture}
+        style={{ width: size, height: size }}
+        resizeMode="cover"
+        accessibilityIgnoresInvertColors
+        testID="tile-thumbnail-image"
+      />
+    );
+  }
+
+  return (
+    <Box
+      width={size}
+      height={size}
+      backgroundColor="white"
+      borderWidth={1}
+      borderColor="lightGrey2"
+      testID="tile-thumbnail-placeholder"
+    />
+  );
 };
 
 /**
@@ -62,22 +107,7 @@ export const ColumnList: FC<ColumnListProps> = ({ listItems }) => {
           flexDirection="row"
           alignItems="center"
         >
-          {item.picture ? (
-            <Image
-              source={item.picture}
-              style={{ width: imageSize, height: imageSize }}
-              resizeMode="cover"
-              accessibilityIgnoresInvertColors
-            />
-          ) : (
-            <Box
-              width={imageSize}
-              height={imageSize}
-              backgroundColor="white"
-              borderWidth={1}
-              borderColor="lightGrey2"
-            />
-          )}
+          <TileThumbnail item={item} size={imageSize} />
           <Box
             paddingHorizontal="m"
             paddingVertical="m"

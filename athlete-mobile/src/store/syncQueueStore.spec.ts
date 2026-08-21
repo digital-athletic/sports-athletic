@@ -5,6 +5,14 @@ import {
   MAX_QUEUE_SIZE,
 } from "./syncQueueStore";
 
+// Rewinds an item's last attempt far past any retry backoff window
+function backdateLastAttempt(itemId: string): void {
+  useSyncQueueStore.setState((state) => {
+    const item = state.queue.find((i) => i.id === itemId);
+    if (item) item.lastAttemptAt = Date.now() - 60 * 60 * 1000;
+  });
+}
+
 describe("syncQueueStore", () => {
   beforeEach(() => {
     const { result } = renderHook(() => useSyncQueueStore());
@@ -327,6 +335,118 @@ describe("syncQueueStore", () => {
 
       expect(result.current.queue).toHaveLength(0);
       expect(result.current.hasItemsToSync()).toBe(false);
+    });
+  });
+
+  describe("retrying failed items", () => {
+    it("getNextPending returns a failed item whose backoff window has long passed", () => {
+      const { result } = renderHook(() => useSyncQueueStore());
+
+      act(() => {
+        result.current.enqueue({
+          type: "COMPLETED_WORKOUT",
+          referenceId: "w1",
+          payload: {},
+        });
+      });
+
+      const itemId = result.current.queue[0].id;
+
+      act(() => {
+        result.current.markFailed(itemId, "Network error");
+        backdateLastAttempt(itemId);
+      });
+
+      expect(result.current.queue[0].attemptCount).toBeLessThan(
+        MAX_RETRY_ATTEMPTS,
+      );
+      expect(result.current.getNextPending()?.id).toBe(itemId);
+    });
+
+    it("getNextPending and hasItemsToSync agree so triggered syncs make progress", () => {
+      const { result } = renderHook(() => useSyncQueueStore());
+
+      act(() => {
+        result.current.enqueue({
+          type: "COMPLETED_WORKOUT",
+          referenceId: "w1",
+          payload: {},
+        });
+      });
+
+      const itemId = result.current.queue[0].id;
+
+      act(() => {
+        result.current.markFailed(itemId, "Network error");
+        backdateLastAttempt(itemId);
+      });
+
+      // If the queue reports syncable items but exposes none for processing,
+      // sync is triggered forever and never completes
+      expect(result.current.hasItemsToSync()).toBe(true);
+      expect(result.current.getNextPending()).toBeDefined();
+    });
+  });
+
+  describe("startup recovery of a wedged queue", () => {
+    it("makes a previously failed item processable again", () => {
+      const { result } = renderHook(() => useSyncQueueStore());
+
+      act(() => {
+        result.current.enqueue({
+          type: "COMPLETED_WORKOUT",
+          referenceId: "w1",
+          payload: {},
+        });
+      });
+
+      const itemId = result.current.queue[0].id;
+
+      act(() => {
+        result.current.markFailed(itemId, "Network error");
+        backdateLastAttempt(itemId);
+      });
+
+      act(() => {
+        result.current.resetStaleItems();
+      });
+
+      expect(result.current.getNextPending()).toBeDefined();
+    });
+  });
+
+  describe("queue capacity with exhausted items", () => {
+    it("accepts new items when the queue is full of retry exhausted items", () => {
+      const store = useSyncQueueStore.getState();
+
+      for (let i = 0; i < MAX_QUEUE_SIZE; i++) {
+        store.enqueue({
+          type: "EXERCISE_DATA",
+          referenceId: `exhausted${i}`,
+          payload: {},
+        });
+      }
+
+      const ids = useSyncQueueStore.getState().queue.map((i) => i.id);
+      for (const id of ids) {
+        for (let attempt = 0; attempt < MAX_RETRY_ATTEMPTS; attempt++) {
+          store.markFailed(id, "Network error");
+        }
+      }
+
+      // Every item is now unretryable dead weight; a new completed workout
+      // must not be silently dropped because of them
+      store.enqueue({
+        type: "COMPLETED_WORKOUT",
+        referenceId: "newWorkout",
+        payload: {},
+      });
+
+      expect(
+        useSyncQueueStore
+          .getState()
+          .queue.some((i) => i.referenceId === "newWorkout"),
+      ).toBe(true);
     });
   });
 });

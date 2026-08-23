@@ -12,7 +12,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { BodyPartsTagChips } from "./BodyPartsTagChips";
-import { MuscleSilhouette } from "./silhouette/MuscleSilhouette";
+import { BodySilhouette } from "./silhouette/BodySilhouette";
 import { regionsForTag, toMuscleTag } from "./silhouette/regionMapping";
 import { type SilhouetteRegionId } from "./silhouette/types";
 import { type MuscleType, type Side } from "./types";
@@ -106,10 +106,14 @@ export const MuscleSorenessSelector: FC<MuscleSorenessSelectorProps> = ({
             onFlip={() => setSide(side === "FRONT" ? "BACK" : "FRONT")}
           />
           <Box flex={1} alignSelf="stretch">
-            <MuscleSilhouette
+            <BodySilhouette
               gender={personalData.gender}
               side={side}
-              selectedRegions={selectedRegions}
+              highlights={[{ regions: selectedRegions, color: "primary" }]}
+              width="100%"
+              height="100%"
+              testID="muscle-silhouette"
+              regionTestIDPrefix="silhouette-region-"
               onRegionPress={toggleRegion}
               getRegionLabel={getRegionLabel}
             />

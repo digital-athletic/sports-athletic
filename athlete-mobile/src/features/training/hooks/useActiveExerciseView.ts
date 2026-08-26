@@ -7,7 +7,10 @@ import {
 } from "@/features/training/utils/exerciseDataUtils";
 import { isPreventionSkill } from "@/features/training/utils/skillTreeUtils";
 import { isPauseExercise as checkIsPauseExercise } from "@/features/training/models/IdTypes";
+import { type ActiveTrainingType } from "@/features/training/models/ActiveTraining";
+import { type UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { type TFunction } from "i18next";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 function deriveHeaderTitle(type: string | undefined, t: TFunction): string {
@@ -33,14 +36,44 @@ function deriveHeaderTitle(type: string | undefined, t: TFunction): string {
 }
 
 /**
- * Pure, store-derived view of the current/next exercise for the active training
- * screen: current/next exercise + registry data, display flags, name/video, header
- * title and progress.
+ * The entry the sequential flow would land on if `safeExerciseIndex` were
+ * marked completed right now. Reuses `deriveActiveExerciseIndex` so a stale
+ * pause is skipped the same way, instead of naively reading index + 1.
  */
-export function useActiveExerciseView() {
-  const { t } = useTranslation();
-  const { exerciseList, activeTraining } = useTrainingStore();
+function deriveNextExercise(
+  exerciseList: UserExerciseDataType[] | null,
+  safeExerciseIndex: number,
+) {
+  const hasNextExercise =
+    exerciseList?.some(
+      (exercise, index) => index !== safeExerciseIndex && !exercise.completed,
+    ) ?? false;
+  const nextExerciseIndex = hasNextExercise
+    ? deriveActiveExerciseIndex(exerciseList, safeExerciseIndex)
+    : -1;
+  const nextExercise = hasNextExercise
+    ? exerciseList?.[nextExerciseIndex]
+    : undefined;
+  const isNextExercisePause = nextExercise
+    ? checkIsPauseExercise(nextExercise.exerciseId)
+    : false;
+  const nextExerciseData = nextExercise
+    ? getExerciseById(nextExercise.exerciseId)
+    : undefined;
 
+  return {
+    hasNextExercise,
+    nextExercise,
+    isNextExercisePause,
+    nextExerciseData,
+  };
+}
+
+function buildActiveExerciseView(
+  exerciseList: UserExerciseDataType[] | null,
+  activeTraining: ActiveTrainingType | null,
+  t: TFunction,
+) {
   const headerTitle = deriveHeaderTitle(activeTraining?.type, t);
 
   // Derived from each entry's `completed` mark rather than a stored pointer,
@@ -51,17 +84,12 @@ export function useActiveExerciseView() {
   const isPauseExercise = checkIsPauseExercise(exerciseId);
   const currentExerciseData = getExerciseById(exerciseId);
 
-  const nextExerciseIndex = safeExerciseIndex + 1;
-  const hasNextExercise = nextExerciseIndex < (exerciseList?.length ?? 0);
-  const nextExercise = hasNextExercise
-    ? exerciseList?.[nextExerciseIndex]
-    : undefined;
-  const isNextExercisePause = nextExercise
-    ? checkIsPauseExercise(nextExercise.exerciseId)
-    : false;
-  const nextExerciseData = nextExercise
-    ? getExerciseById(nextExercise.exerciseId)
-    : undefined;
+  const {
+    hasNextExercise,
+    nextExercise,
+    isNextExercisePause,
+    nextExerciseData,
+  } = deriveNextExercise(exerciseList, safeExerciseIndex);
 
   const progress = safeExerciseIndex / (exerciseList?.length ?? 1);
   const isTestExercise = currentExercise?.repetition === -1;
@@ -112,4 +140,19 @@ export function useActiveExerciseView() {
     headerTitle,
     progress,
   };
+}
+
+/**
+ * Pure, store-derived view of the current/next exercise for the active training
+ * screen: current/next exercise + registry data, display flags, name/video, header
+ * title and progress.
+ */
+export function useActiveExerciseView() {
+  const { t } = useTranslation();
+  const { exerciseList, activeTraining } = useTrainingStore();
+
+  return useMemo(
+    () => buildActiveExerciseView(exerciseList, activeTraining, t),
+    [exerciseList, activeTraining, t],
+  );
 }

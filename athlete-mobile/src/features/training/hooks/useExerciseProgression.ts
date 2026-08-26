@@ -57,9 +57,6 @@ export function useExerciseProgression() {
       // add time in pause to training stats
       const pauseDuration = getPauseElapsed();
       addPauseTime(pauseDuration);
-
-      maybeShowPainAlert(nextExercise);
-      maybeShowBarbellAlert(nextExerciseData, activeTraining?.type);
       return;
     }
 
@@ -87,6 +84,11 @@ export function useExerciseProgression() {
     }
 
     commitElapsedTime();
+
+    if (isPauseExercise) {
+      maybeShowPainAlert(nextExercise);
+      maybeShowBarbellAlert(nextExerciseData, activeTraining?.type);
+    }
 
     if (safeExerciseIndex < exerciseList.length - 1) {
       if (isNextExercisePause) {

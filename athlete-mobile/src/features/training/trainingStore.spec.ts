@@ -1260,16 +1260,8 @@ describe("useTrainingStore", () => {
   });
 });
 
-function withoutActiveExerciseIndex<T extends { activeExerciseIndex?: number }>(
-  state: T,
-): Omit<T, "activeExerciseIndex"> {
-  const { activeExerciseIndex, ...rest } = state;
-  void activeExerciseIndex;
-  return rest;
-}
-
 describe("migrateTrainingStore: legacy version bridge", () => {
-  const persistedAtVersionZero = {
+  const migratedFixture = {
     selection: "QUICK",
     exerciseList: [
       {
@@ -1301,26 +1293,21 @@ describe("migrateTrainingStore: legacy version bridge", () => {
       },
     },
     activeTraining: null,
-    activeExerciseIndex: 2,
     tempMaxValues: null,
   };
+
+  const persistedAtVersionZero = { ...migratedFixture, activeExerciseIndex: 2 };
 
   it("preserves user data persisted at legacy version 0", () => {
     const result = migrateTrainingStore(persistedAtVersionZero, 0);
 
-    expect(result).toEqual({
-      ...withoutActiveExerciseIndex(persistedAtVersionZero),
-      trainingViewMode: null,
-    });
+    expect(result).toEqual({ ...migratedFixture, trainingViewMode: null });
   });
 
   it("applies the v14 -> v16 migrations when persisted at v14", () => {
     const result = migrateTrainingStore(persistedAtVersionZero, 14);
 
-    expect(result).toEqual({
-      ...withoutActiveExerciseIndex(persistedAtVersionZero),
-      trainingViewMode: null,
-    });
+    expect(result).toEqual({ ...migratedFixture, trainingViewMode: null });
   });
 
   it("folds completedExerciseIndices persisted at v15 into per-entry marks", () => {
@@ -1340,7 +1327,7 @@ describe("migrateTrainingStore: legacy version bridge", () => {
 
   it("returns state unchanged when already at the registered version", () => {
     const persistedAtCurrentVersion = {
-      ...withoutActiveExerciseIndex(persistedAtVersionZero),
+      ...migratedFixture,
       trainingViewMode: null,
     };
 

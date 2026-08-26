@@ -275,14 +275,44 @@ describe("exerciseDataUtils", () => {
       expect(deriveActiveExerciseIndex(exerciseList)).toBe(1);
     });
 
-    it("clamps to the last index when a stale pause has no remaining real exercise after it", () => {
+    it("returns the stale pause itself when no real exercise remains after it", () => {
       const exerciseList = [
         createExerciseListItem({ exerciseId: PAUSE_EXERCISE_ID }),
         createExerciseListItem({ exerciseId: "1", completed: true }),
         createExerciseListItem({ exerciseId: PAUSE_EXERCISE_ID }),
       ];
 
-      expect(deriveActiveExerciseIndex(exerciseList)).toBe(2);
+      expect(deriveActiveExerciseIndex(exerciseList)).toBe(0);
+    });
+
+    it("does not return an already completed exercise when no real exercise remains after a stale pause", () => {
+      const exerciseList = [
+        createExerciseListItem({ exerciseId: PAUSE_EXERCISE_ID }),
+        createExerciseListItem({ exerciseId: "1", completed: true }),
+        createExerciseListItem({ exerciseId: "2", completed: true }),
+      ];
+
+      expect(deriveActiveExerciseIndex(exerciseList)).toBe(0);
+    });
+
+    it("treats the given index as completed when deriving", () => {
+      const exerciseList = [
+        createExerciseListItem({ exerciseId: "1" }),
+        createExerciseListItem({ exerciseId: "2" }),
+      ];
+
+      expect(deriveActiveExerciseIndex(exerciseList, 0)).toBe(1);
+    });
+
+    it("returns a pause row as next when an earlier entry is treated as completed", () => {
+      const exerciseList = [
+        createExerciseListItem({ exerciseId: "1" }),
+        createExerciseListItem({ exerciseId: "2", completed: true }),
+        createExerciseListItem({ exerciseId: PAUSE_EXERCISE_ID }),
+        createExerciseListItem({ exerciseId: "3" }),
+      ];
+
+      expect(deriveActiveExerciseIndex(exerciseList, 0)).toBe(2);
     });
   });
 

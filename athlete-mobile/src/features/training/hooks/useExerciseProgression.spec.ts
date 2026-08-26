@@ -651,3 +651,46 @@ describe("useExerciseProgression: interleaved call order in advanceToNextExercis
     expect(markCompletedOrder).toBeLessThan(skillOrder);
   });
 });
+
+describe("useExerciseProgression: pause timing after out-of-order completion", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockNow = 9_000_000;
+    jest.spyOn(Date, "now").mockImplementation(() => mockNow);
+
+    useTrainingStore.setState(BASELINE_TRAINING_STATE);
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1", skill: "SWR1" }),
+        createExercise({ exerciseId: "2", skill: "SWR1", completed: true }),
+        createExercise({ exerciseId: PAUSE_EXERCISE_ID }),
+        createExercise({ exerciseId: "3", skill: "SWR1" }),
+      ],
+      activeTraining: { id: "training-1", type: "PLAN" },
+    });
+
+    seedUserStores();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+  });
+
+  it("starts the pause timer for the true next exercise, skipping an already completed entry", () => {
+    const addPauseTimeSpy = spyOnAddPauseTime();
+    const { result } = renderHook(() => useExerciseProgression());
+
+    mockNow += 5_000;
+    act(() => {
+      result.current.advanceToNextExercise();
+    });
+
+    mockNow += 3_000;
+    act(() => {
+      result.current.advanceToNextExercise();
+    });
+
+    expect(addPauseTimeSpy).toHaveBeenCalledWith(3_000);
+  });
+});

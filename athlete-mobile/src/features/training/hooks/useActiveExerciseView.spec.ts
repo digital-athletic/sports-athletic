@@ -102,6 +102,22 @@ describe("useActiveExerciseView: derived flags", () => {
     expect(result.current.hasNextExercise).toBe(false);
   });
 
+  it("derives the next pause past an already completed entry, not the literal next slot", () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1" }),
+        createExercise({ exerciseId: "2", completed: true }),
+        createExercise({ exerciseId: PAUSE_EXERCISE_ID }),
+        createExercise({ exerciseId: "3" }),
+      ],
+    });
+
+    const { result } = renderHook(() => useActiveExerciseView());
+
+    expect(result.current.nextExercise?.exerciseId).toBe(PAUSE_EXERCISE_ID);
+    expect(result.current.flags.isNextExercisePause).toBe(true);
+  });
+
   it("derives isCardioExercise true when the skill includes CARDIO", () => {
     useTrainingStore.setState({
       exerciseList: [createExercise({ exerciseId: "1", skill: "CARDIO_1" })],

@@ -93,42 +93,39 @@ export function isFeedbackEligibleSkill(
 }
 
 /**
- * Derives the sequential flow's active exercise index: the first entry
- * without the `completed` mark. A pause row is only skipped over when a
- * LATER entry is already completed — proof that progress happened past this
- * pause without ever passing through it, which only a checklist session can
- * cause (it never marks pause rows, since they're excluded from the checklist
- * entirely). Genuine sequential progress can never produce that shape, since
- * sequential marks every row — pause included — as it passes, so this only
- * matters for the list-to-sequential fallback (see
- * resumeUtils.getTrainingRouteForMode).
+ * Derives the sequential flow's active exercise index. Skips a pause row
+ * only if a later entry is already completed (checklist mode never marks
+ * pauses). `treatIndexAsCompleted` reuses this for "what's next" lookahead.
  */
 export function deriveActiveExerciseIndex(
   exerciseList: UserExerciseDataType[] | null,
+  treatIndexAsCompleted?: number,
 ): number {
   if (!exerciseList || exerciseList.length === 0) return 0;
 
+  const isCompleted = (exercise: UserExerciseDataType, index: number) =>
+    exercise.completed || index === treatIndexAsCompleted;
+
   const firstIncomplete = exerciseList.findIndex(
-    (exercise) => !exercise.completed,
+    (exercise, index) => !isCompleted(exercise, index),
   );
   if (firstIncomplete === -1) return exerciseList.length - 1;
 
   const isStalePause =
     isPauseExercise(exerciseList[firstIncomplete].exerciseId) &&
     exerciseList.some(
-      (exercise, index) => index > firstIncomplete && exercise.completed,
+      (exercise, index) =>
+        index > firstIncomplete && isCompleted(exercise, index),
     );
 
   if (isStalePause) {
     const nextRealIncomplete = exerciseList.findIndex(
       (exercise, index) =>
         index > firstIncomplete &&
-        !exercise.completed &&
+        !isCompleted(exercise, index) &&
         !isPauseExercise(exercise.exerciseId),
     );
-    return nextRealIncomplete === -1
-      ? exerciseList.length - 1
-      : nextRealIncomplete;
+    return nextRealIncomplete === -1 ? firstIncomplete : nextRealIncomplete;
   }
 
   return firstIncomplete;

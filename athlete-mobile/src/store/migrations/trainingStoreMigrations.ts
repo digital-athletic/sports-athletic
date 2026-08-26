@@ -18,8 +18,10 @@ export const trainingStoreMigrations: MigrationMap<State> = {
   15: (state) => {
     const legacy = state as LegacyTrainingState;
     const completedIndices = new Set(legacy.completedExerciseIndices ?? []);
-    const nextState: LegacyTrainingState = {
-      ...legacy,
+    const { activeExerciseIndex, completedExerciseIndices, ...rest } = legacy;
+
+    return {
+      ...rest,
       exerciseList: legacy.exerciseList
         ? legacy.exerciseList.map(
             (exercise, index): UserExerciseDataType =>
@@ -29,9 +31,5 @@ export const trainingStoreMigrations: MigrationMap<State> = {
           )
         : legacy.exerciseList,
     };
-    delete nextState.completedExerciseIndices;
-    delete nextState.activeExerciseIndex;
-
-    return nextState;
   },
 };

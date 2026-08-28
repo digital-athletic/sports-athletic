@@ -1,9 +1,8 @@
-import { BodyPartsTagChips } from "@/bodyParts/BodyPartsTagChips";
-import { expandMuscleTags } from "@/bodyParts/muscleTagMapping";
 import { Loading } from "@/common/Loading";
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { getExerciseById } from "@/data/exerciseRegistry";
+import { MusclesList } from "@/features/training/MusclesList";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { getTagValues } from "@/utils/tagUtils";
@@ -63,8 +62,8 @@ export default function ExerciseInformationScreen() {
           {exercise && (
             <>
               <EquipmentList tags={exercise.tags} />
-              <MusclesList tags={exercise.tags} />
               <DescriptionsList description={exercise.description} />
+              <MusclesList tags={exercise.tags} />
             </>
           )}
         </ScrollView>
@@ -116,43 +115,6 @@ const EquipmentList: FC<EquipmentListProps> = ({ tags }) => {
           {`\u2022 ${eq}`}
         </Text>
       ))}
-    </Box>
-  );
-};
-
-type MusclesListProps = {
-  tags: string[];
-};
-
-const MusclesList: FC<MusclesListProps> = ({ tags }) => {
-  const { t } = useTranslation();
-
-  const musclesRaw = getTagValues(tags, TagGroups.MUSCLE);
-  const musclesSecondaryRaw = getTagValues(tags, TagGroups.MUSCLE_SECONDARY);
-  const muscles = expandMuscleTags(musclesRaw);
-  const musclesSecondary = expandMuscleTags(musclesSecondaryRaw);
-
-  if (muscles.length === 0) return null;
-
-  return (
-    <Box padding="l" testID="muscles-trained-section">
-      <Text variant="cardTitle" marginBottom="s">
-        {t("training.exerciseInformation.musclesTrained")}
-      </Text>
-
-      <Text variant="body" color="primary" marginBottom="xs">
-        {t("training.exerciseInformation.legendActiveMuscles")}
-      </Text>
-      <BodyPartsTagChips tags={muscles} />
-
-      {musclesSecondary.length > 0 && (
-        <>
-          <Text variant="body" color="primary" opacity={0.5} marginTop="s">
-            {t("training.exerciseInformation.legendSupportingMuscles")}
-          </Text>
-          <BodyPartsTagChips tags={musclesSecondary} />
-        </>
-      )}
     </Box>
   );
 };

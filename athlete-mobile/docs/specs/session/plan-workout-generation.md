@@ -46,7 +46,7 @@ Athlete profile (level, gender, birthday, pain tags), reported soreness (sore mu
   4. a small muscle group from a different region,
   5. a small muscle group from the same region.
 
-  The generator breaks ties within a rank uniformly at random. Excluded as partners: duplicate exercises, the same movement pattern (two horizontal presses), and the same primary muscle group (two shoulder exercises).
+  The generator breaks ties within a rank uniformly at random. Excluded as partners: duplicate exercises, the same movement pattern (two horizontal presses), and the same primary muscle group (two front-shoulder exercises). Front and rear shoulder count as separate primary muscle groups, so a front-shoulder and a rear-shoulder exercise may pair.
 
   Without a partner the exercise rests on its skill's longer single-exercise rest between its sets, never the shorter superset pause; [Session Set Structure](./session-set-structure.md) carries the per-skill values. Maxkraft, stability circuits, and cardio never pair.
 - **Ordering**: three levels, each independent of the order in which slots were filled.
@@ -59,7 +59,7 @@ Athlete profile (level, gender, birthday, pain tags), reported soreness (sore mu
 
      These are soft priorities, never exclusions: no exercise is removed and no pair discarded over ordering, and no further special-case logic applies. Prevention and leg-axis stability draw from deliberately small, region-limited pools, so there the same body region or the same primary muscles may follow back to back when no alternative exists.
   3. Exercises inside Maxkraft, overriding rule 2: lower-body main lifts before upper-body main lifts, since they move the session's heaviest loads. Rule 2 then orders the lifts within each region. Support exercises stay in the breaks of their own main lift.
-- **Weighted vs bodyweight ratio**: the target share of weighted exercises is 50% under 16, 80% in the gym, and 50% at other places with suitable equipment. A place without dumbbells or barbells is 0%: everything is bodyweight. Age beats place: under 16 in the gym stays at 50%, since athletes below 16 must not perform heavy exercises.
+- **Weighted vs bodyweight ratio**: the target share of weighted exercises is 30% under 16 (the CHILD age group), 80% in the gym (60% for non-strength skills), and 50% at other places with suitable equipment. A place without dumbbells or barbells is 0%: everything is bodyweight. Age beats place: under 16 in the gym stays at 30%, since athletes below 16 must not perform heavy exercises. [Training Plan Creation](../planning/training-plan-creation-from-anamnesis.md) uses the same shares.
 
   Each skill enforces the share as a quota over its slots, `weighted = ceil(share × slots)` with the rest bodyweight. A slot draws its type at random while both quotas are open, then takes whichever quota remains. These are soft targets: the share is measured over the exercises the generator selected, only those surviving the age, level, soreness, and equipment filters count, and bodyweight exercises fill any shortfall. Maxkraft support exercises are exempt and balance their own share per draw.
 
@@ -77,7 +77,7 @@ flowchart TD
 ```
 
 1. **Section and day**: take the section with the latest start date not after today; after a gap of 8 to 21 days, shift section starts forward by the missed weeks first. Beyond 21 days, prompt "You have not trained for more than three weeks. Do you want to create a new training plan?"; accepting hands over to plan creation (out of scope), declining continues with the existing plan.
-2. **Training for today**: use the training matching today's weekday; when none matches, the generator falls back to the section's first training. A session-time focus choice, where the athlete picks one of the four focus types (PHASE strength/prevention, STABILITY, CARDIO endurance, COMBINED strength & endurance) for this session only, with the planned focus recommended and missing trainings served from the authored skill priorities per focus, age group, and pain, is neither defined nor implemented (see Open Questions). The focus types themselves exist: plan creation assigns one per training day. An athlete who wants a different emphasis today starts a focus training instead, one of the plan-independent short workouts ([Plan-Independent Workouts](./plan-independent-workouts.md)).
+2. **Training for today**: use the training matching today's weekday; when none matches, the generator falls back to the section's first training. This weekday fallback is the decided model: a session-time focus choice for planned workouts, where the athlete would pick one of the four focus types (PHASE strength/prevention, STABILITY, CARDIO endurance, COMBINED strength & endurance) for a single session, is deliberately not specified and not implemented. The focus types themselves exist: plan creation assigns one per training day. An athlete who wants a different emphasis today starts a focus training instead, one of the plan-independent short workouts ([Plan-Independent Workouts](./plan-independent-workouts.md)).
 3. **Filter** each skill's pre-selected branches by soreness, equipment, and level. Every removed branch records its body region as a replacement request.
 4. **Replace** blocked branches per skill:
    - A blocked cardio skill gives way wholesale to steady zone 5 cardio, capped at 20 minutes.
@@ -140,4 +140,4 @@ The app persists the generated session (set list, equipment, active exercise ind
 
 ## Open Questions
 
-- The session-time focus choice (athlete picks PHASE, STABILITY, CARDIO, or COMBINED for a single session, planned focus recommended, missing trainings served from the skill priorities) is neither defined nor implemented; today a weekday without a training silently falls back to the section's first training, and the topic-for-today need is partly covered by the plan-independent focus trainings. Should the plan-session focus choice be specified and built, or do the weekday fallback and the focus trainings stay the model?
+None.

@@ -27,14 +27,14 @@ Both reuse the filter chain and the branch to exercise resolution rule from [Pla
 ### Short workout
 
 1. Pick the requested type's skill tree: the weights-capable variant when the place has weights, the bodyweight variant otherwise. Foam roller sessions require a foam roller or foam ball, else generation fails.
-2. Filter by prevention target tag (prevention types only), soreness, equipment, age, and gender. An empty pool after the soreness or gender step aborts with a typed error naming the cause. Pain blocks no branch here: pain exclusions do not exist ([Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md)). The soreness filter is disabled by design for prevention workouts and focus trainings such as leg axis stability (the check was removed by sprint decision on August 10, 2026; lower-body soreness would otherwise block the stability focus permanently).
+2. Filter by prevention target tag (prevention types only), soreness, equipment, age, and gender. An empty pool after the soreness or gender step aborts with a typed error naming the cause. Pain blocks no branch here: pain exclusions do not exist ([Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md)). The soreness filter is disabled by design for all focus trainings and for prevention workouts (the check was removed by sprint decision on August 10, 2026). Leg axis stability is only one example: lower-body soreness would otherwise block that focus permanently.
 3. Draw branches uniformly at random, repeating neither a branch nor a resolved exercise, per quota:
 
 | Type | Quota |
 |---|---|
 | Warm-up, mobility, foam roller, cool-down | 10 exercises, 1 set each; a one-sided branch fills two slots |
 | Stability with weights | 4 exercises, any region |
-| Stability bodyweight | 3 upper body plus 2 full body (falls back to any region when a quota cannot be met); one-sided handling as above, never as the last slot |
+| Stability bodyweight | 3 upper body plus 2 full body (falls back to any region when a quota cannot be met); a one-sided branch fills two slots (left and right) and is never drawn into the last slot |
 | Prevention | 3 special warm-up exercises plus 3 superset pairs; a one-sided draw seeks an opposing-direction one-sided partner, else swaps itself for a both-sided branch; weighted pairs are ordered last |
 
 ### Strength test

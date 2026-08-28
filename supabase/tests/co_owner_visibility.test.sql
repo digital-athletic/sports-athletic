@@ -7,7 +7,7 @@
 
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap;
-SELECT plan(8);
+SELECT plan(11);
 
 -- Group A: T owns it, C is co-owner, M is a plain member.
 -- Group B: T2 owns it, X is a plain member. O belongs to neither.
@@ -83,6 +83,17 @@ SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claim.sub" TO :'C';
 SELECT is((SELECT count(*) FROM public.user_completed_workouts WHERE user_id = :'M'), 0::bigint,
   'co-owner sees nothing once the group owner loses their trainer grant');
+
+-- Nothing is readable without a session at all. anon holds no SELECT grant on
+-- these tables, so this fails on the grant before RLS is even consulted.
+RESET ROLE;
+SET LOCAL ROLE anon;
+SELECT throws_ok($$ SELECT count(*) FROM public.user_completed_workouts $$,
+  '42501', NULL, 'anon cannot read completed workouts');
+SELECT throws_ok($$ SELECT count(*) FROM public.user_exercises $$,
+  '42501', NULL, 'anon cannot read exercises');
+SELECT throws_ok($$ SELECT count(*) FROM public.strength_tests $$,
+  '42501', NULL, 'anon cannot read strength tests');
 
 SELECT * FROM finish();
 ROLLBACK;

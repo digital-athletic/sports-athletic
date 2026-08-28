@@ -694,3 +694,37 @@ describe("useExerciseProgression: pause timing after out-of-order completion", (
     expect(addPauseTimeSpy).toHaveBeenCalledWith(3_000);
   });
 });
+
+describe("useExerciseProgression: advanceToNextExercise finish decision when the last array slot is already completed out of order", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockNow = 10_000_000;
+    jest.spyOn(Date, "now").mockImplementation(() => mockNow);
+
+    useTrainingStore.setState(BASELINE_TRAINING_STATE);
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1", skill: "SWR1" }),
+        createExercise({ exerciseId: "2", skill: "SWR1", completed: true }),
+      ],
+      activeTraining: { id: "training-1", type: "PLAN" },
+    });
+
+    seedUserStores();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+  });
+
+  it("calls finishTraining instead of arming a timer when the only remaining incomplete exercise sits before the last array slot", () => {
+    const { result } = renderHook(() => useExerciseProgression());
+
+    act(() => {
+      result.current.advanceToNextExercise();
+    });
+
+    expect(mockFinishTraining).toHaveBeenCalledWith(false, undefined);
+  });
+});

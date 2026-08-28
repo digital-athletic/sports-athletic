@@ -31,6 +31,7 @@ export function useExerciseProgression() {
     exerciseId,
     nextExercise,
     nextExerciseData,
+    hasNextExercise,
     flags: { isPauseExercise, isNextExercisePause },
   } = useActiveExerciseView();
   const {
@@ -90,7 +91,7 @@ export function useExerciseProgression() {
       maybeShowBarbellAlert(nextExerciseData, activeTraining?.type);
     }
 
-    if (safeExerciseIndex < exerciseList.length - 1) {
+    if (hasNextExercise) {
       if (isNextExercisePause) {
         // set pause timer to new start
         markPauseStart();

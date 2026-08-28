@@ -1,9 +1,8 @@
 -- Who may read an athlete's training data.
 --
--- Covers both halves of can_view_athlete_data(): the trainer path that existed
--- before co-owners (regression - no test covered it until now) and the new
--- co-owner path. The cross-group case is the one that matters most: a co-owner
--- of one group must not reach into another, which manual testing would miss.
+-- Covers every role against can_view_athlete_data(): owner, co-owner, plain
+-- member, outsider and anon. The cross-group case is the one that matters most:
+-- being a co-owner of one group must grant nothing in another.
 
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap;
@@ -48,12 +47,12 @@ INSERT INTO public.strength_tests (user_id, test_at) VALUES (:'M', 1);
 
 SET LOCAL ROLE authenticated;
 
--- The path that existed before this feature.
+-- As the group's owner.
 SET LOCAL "request.jwt.claim.sub" TO :'T';
 SELECT is((SELECT count(*) FROM public.user_completed_workouts WHERE user_id = :'M'), 1::bigint,
   'owner with a trainer grant sees a member''s completed workouts');
 
--- The new path.
+-- As a co-owner.
 SET LOCAL "request.jwt.claim.sub" TO :'C';
 SELECT is((SELECT count(*) FROM public.user_completed_workouts WHERE user_id = :'M'), 1::bigint,
   'co-owner sees a member''s completed workouts without a trainer grant of their own');

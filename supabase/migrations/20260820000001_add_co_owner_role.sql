@@ -24,8 +24,7 @@ ALTER TABLE public.team_members
 -- Replaces is_trainer_of_user() in the three SELECT policies below. That
 -- function keeps its name and its meaning and is simply no longer referenced:
 -- a co-owner is not a trainer, so widening it in place would have made the name
--- lie. Naming the capability instead of the role is also what keeps a future
--- role cheap - it is one branch in here, not a search through the schema.
+-- lie.
 --
 -- The user_profiles join deliberately hangs off t.owner_id, not auth.uid(): it
 -- asserts that the GROUP belongs to a granted trainer, which is what lets a
@@ -130,9 +129,8 @@ BEGIN
     RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'INVALID_REQUEST_BODY';
   END IF;
 
-  -- 'owner' is deliberately not assignable. Ownership lives in teams.owner_id;
-  -- accepting it here would let an owner mint a second one, and a future caller
-  -- bug could not escalate anyone by accident.
+  -- 'owner' is not assignable here: ownership is defined by teams.owner_id, and
+  -- writing it into the role column as well would let the two disagree.
   IF p_role NOT IN ('member', 'co_owner') THEN
     RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'INVALID_REQUEST_BODY';
   END IF;

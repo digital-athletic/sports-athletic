@@ -181,6 +181,64 @@ describe("useCountdown", () => {
     });
   });
 
+  describe("Suspended app", () => {
+    // iOS and Android suspend a backgrounded app, so no timer runs while time
+    // passes. Moving the clock without running timers reproduces that.
+    it("accounts for time that passed while no tick fired", () => {
+      const { result } = renderHook(() =>
+        useCountdown({
+          autoAdvance: false,
+          duration: 10,
+          exerciseId: "1",
+          isActive: true,
+          timeoutMs: 100,
+        }),
+      );
+
+      act(() => {
+        jest.setSystemTime(Date.now() + 500);
+      });
+
+      act(() => {
+        jest.advanceTimersByTime(100);
+      });
+
+      // 600ms of real time have passed, which is six units of 100ms.
+      expect(result.current).toBe(4);
+    });
+
+    it("stays where it was when the app was suspended while paused", () => {
+      const { result, rerender } = renderHook(
+        ({ isActive }: { isActive: boolean }) =>
+          useCountdown({
+            autoAdvance: false,
+            duration: 10,
+            exerciseId: "1",
+            isActive,
+            timeoutMs: 100,
+          }),
+        { initialProps: { isActive: true } },
+      );
+
+      act(() => {
+        jest.advanceTimersByTime(200);
+      });
+      expect(result.current).toBe(8);
+
+      rerender({ isActive: false });
+
+      act(() => {
+        jest.setSystemTime(Date.now() + 5000);
+      });
+
+      act(() => {
+        jest.advanceTimersByTime(100);
+      });
+
+      expect(result.current).toBe(8);
+    });
+  });
+
   describe("Callbacks", () => {
     it("fires 'complete' event when countdown reaches 0", () => {
       const onEvent = jest.fn();

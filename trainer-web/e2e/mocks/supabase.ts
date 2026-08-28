@@ -6,11 +6,10 @@ import { type Page } from "@playwright/test";
  * seam between the tests and Supabase: pointing the suite at a real instance
  * later means not calling this, rather than rewriting the tests.
  *
- * Deliberately NOT a fake backend. Nothing here keeps state: a call returns what
- * the fixture says and nothing else. Whether a write really persists, and which
- * errors Postgres raises, is settled by the pgTAP suite in `supabase/tests/`
- * against real Postgres. Growing this file into a second implementation of those
- * rules would only prove that the tests agree with themselves.
+ * Keep it free of state: a call answers from the fixture and remembers nothing.
+ * A test that writes describes the world before and the world after instead.
+ * Whether a write persists, and which errors Postgres raises, belongs to the
+ * pgTAP suite in `supabase/tests/`.
  *
  * Note that `getSession` is not mocked. supabase-js keeps the session in
  * localStorage and reads it from there, so a test signs in through the real
@@ -60,11 +59,7 @@ export type MockOptions = {
   teams?: MockTeam[];
   /** Completed workouts per athlete user id. */
   workouts?: Record<string, MockWorkout[]>;
-  /**
-   * Overrides per RPC name. A string makes the call fail with that ErrorCode,
-   * which is the case worth mocking: the failures come from the database and a
-   * test cannot provoke them any other way.
-   */
+  /** Keyed by RPC function name, e.g. `create_team`. */
   rpc?: Record<string, MockRpcError>;
 };
 
@@ -107,7 +102,6 @@ function json(body: unknown, status = 200) {
   };
 }
 
-/** Reads a PostgREST `column=eq.<value>` filter off the request URL. */
 function equalsFilter(url: string, column: string): string | null {
   const value = new URL(url).searchParams.get(column);
   return value?.startsWith("eq.") ? value.slice(3) : null;
@@ -149,12 +143,11 @@ export async function mockSupabase(page: Page, options: MockOptions = {}) {
   // failing where the test can see it.
   await page.route("**/rest/v1/**", (route) => route.fulfill(json([])));
 
-  // Requesting a one time code. The app only checks for an error.
+  // The app only checks for an error, so the body can be anything.
   await page.route("**/auth/v1/otp**", (route) =>
     route.fulfill(json({ data: null, error: null })),
   );
 
-  // Redeeming the code. supabase-js stores the returned session itself.
   await page.route("**/auth/v1/verify**", (route) =>
     route.fulfill(json(authSession(user))),
   );
@@ -177,8 +170,6 @@ export async function mockSupabase(page: Page, options: MockOptions = {}) {
     ),
   );
 
-  // Two different queries land here. getUserTeams filters by user and reads only
-  // team_id; getTeamMembers filters by team and reads whole rows.
   await page.route("**/rest/v1/team_members**", (route) => {
     const teamId = equalsFilter(route.request().url(), "team_id");
     if (teamId === null) {
@@ -261,8 +252,6 @@ export async function mockSupabase(page: Page, options: MockOptions = {}) {
     );
   });
 
-  // One handler for every RPC, dispatching on the function name. An override
-  // turns the call into the Postgres error the app maps back to an ErrorCode.
   await page.route("**/rest/v1/rpc/**", (route) => {
     const name = new URL(route.request().url()).pathname.split("/").pop() ?? "";
     const override = rpcOverrides[name];
@@ -270,8 +259,7 @@ export async function mockSupabase(page: Page, options: MockOptions = {}) {
       return route.fulfill(json(postgrestError(override.error), 400));
     }
 
-    // The team the write is about is the last one the fixture names, which is
-    // the world after the write. Saying so beats a crash three frames deeper.
+    // The team a write results in is the last entry of `teams`.
     const written = () => {
       const team = teams[teams.length - 1];
       if (!team) {
@@ -282,8 +270,6 @@ export async function mockSupabase(page: Page, options: MockOptions = {}) {
       return team;
     };
 
-    // Echoing the request rather than storing it keeps the mock stateless and
-    // still lets a test see that what was typed reached the backend.
     const body = route.request().postDataJSON() ?? {};
 
     if (name === "create_team") {

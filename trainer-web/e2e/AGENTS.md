@@ -26,9 +26,7 @@ That layer is the seam. Pointing the suite at a real Supabase later means not ca
 
 **Know what this cannot prove.** Authorisation in this app lives in row level security policies in Postgres. A mocked test can show that the UI handles a rejection, never that the rejection would actually happen. Tests about who may see or do what need a real instance.
 
-**The mock keeps no state, and should not start to.** A call returns what the fixture says, nothing more. Whether a write persists, and which errors Postgres raises, belongs to the pgTAP suite in `supabase/tests/`. Growing this file into a second implementation of those rules would only prove that the tests agree with themselves, while drifting from the real thing without ever going red.
-
-For a flow that writes, name both worlds instead. Routes registered later win, so a second `mockSupabase()` call describes what the backend would return afterwards:
+**Do not give the mock a memory.** It answers from the fixture and stores nothing. A test that writes describes the world before and the world after instead, since a later `mockSupabase()` call wins:
 
 ```typescript
 const trainer = { trainerGrantedAt: new Date().toISOString() };
@@ -39,7 +37,7 @@ await mockSupabase(page, { ...trainer, teams: [created] }); // after the write
 await teamSelection.createTeam(created.name);
 ```
 
-A catch-all on `**/rest/v1/**` answers everything no fixture covers with an empty array. It is registered first so every specific route takes priority. Without it an unmocked call would leave the page and the test would hang instead of failing where it can be read.
+A catch-all on `**/rest/v1/**` answers anything no fixture covers with an empty array, registered first so specific routes win. Without it an unmocked call leaves the page and the test hangs instead of failing where it can be read.
 
 ## Writing tests
 
@@ -60,6 +58,7 @@ test("...", async ({ page }) => {
 - Data is different: team names, member names and numbers come from the fixture, not from a translation, so match them by role or text. `getByRole("heading", { name })` beats a testid there.
 - `rpc: { accept_invitation: { error: "INVITE_CODE_INVALID" } }` makes an RPC fail with that ErrorCode. Those failures come from the database and a test cannot provoke them any other way, which is exactly what a mock is good for.
 - Avoid fixed timeouts; rely on auto-waiting, with a timeout on the individual call when needed.
+- Make invented people obviously invented - "Max Mustermann", "Erika Mustermann", "Firstname Lastname", "Testname Testlastname", ... In the future, nobody should have to work out whether a name in a fixture is real data or not.
 
 ## Key files
 

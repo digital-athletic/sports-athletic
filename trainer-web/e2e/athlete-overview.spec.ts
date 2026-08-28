@@ -4,8 +4,8 @@ import { LoginPage } from "./pages/LoginPage";
 import { TeamSelectionPage } from "./pages/TeamSelectionPage";
 import { DashboardPage } from "./pages/DashboardPage";
 
-const ANNA = "11111111-1111-4111-8111-11111111aaaa";
-const BEN = "11111111-1111-4111-8111-11111111bbbb";
+const ERIKA = "11111111-1111-4111-8111-11111111aaaa";
+const MAX = "11111111-1111-4111-8111-11111111bbbb";
 
 const TEAM = {
   id: "33333333-3333-4333-8333-333333333333",
@@ -13,8 +13,8 @@ const TEAM = {
   invite_code: "JOIN01",
   members: [
     { user_id: MOCK_USER.id, role: "owner" as const, display_name: "Trainer" },
-    { user_id: ANNA, display_name: "Anna Schmidt" },
-    { user_id: BEN, display_name: "Ben Weber" },
+    { user_id: ERIKA, display_name: "Erika Mustermann" },
+    { user_id: MAX, display_name: "Max Mustermann" },
   ],
 };
 
@@ -30,12 +30,12 @@ test.describe("Athlete overview", () => {
       trainerGrantedAt: new Date().toISOString(),
       teams: [TEAM],
       workouts: {
-        [ANNA]: [
+        [ERIKA]: [
           { workout_date: recently(1) },
           { workout_date: recently(2) },
           { workout_date: recently(3) },
         ],
-        [BEN]: [{ workout_date: recently(1) }],
+        [MAX]: [{ workout_date: recently(1) }],
       },
     });
 
@@ -48,17 +48,17 @@ test.describe("Athlete overview", () => {
 
     await teamSelection.openTeam(TEAM.name);
     await dashboard.expectVisible(TEAM.id);
-    await dashboard.expectMember("Anna Schmidt");
+    await dashboard.expectMember("Erika Mustermann");
 
     await dashboard.openEvaluations();
 
     // The owner runs the group and is not one of its athletes.
-    await dashboard.expectAthletes(["Anna Schmidt", "Ben Weber"]);
+    await dashboard.expectAthletes(["Erika Mustermann", "Max Mustermann"]);
 
-    await dashboard.selectAthlete("Anna Schmidt");
+    await dashboard.selectAthlete("Erika Mustermann");
     await dashboard.expectTrainingCount(3);
 
-    await dashboard.selectAthlete("Ben Weber");
+    await dashboard.selectAthlete("Max Mustermann");
     await dashboard.expectTrainingCount(1);
   });
 

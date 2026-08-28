@@ -1,6 +1,7 @@
 export const colors = {
   // Primary colors
   primary: "#C71B1B",
+  primaryMuted: "#E38D8D",
   secondary: "#2ebcb8",
 
   // Neutral colors

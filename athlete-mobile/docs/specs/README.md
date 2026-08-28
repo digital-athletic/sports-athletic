@@ -24,7 +24,7 @@ What the app builds when the athlete presses start.
 | Spec | Covers |
 |---|---|
 | [Plan Workout Generation](./session/plan-workout-generation.md) | Filtering and replacing today's pre-selected branches, pairing, ordering, and the weighted ratio |
-| [Plan-Independent Workouts](./session/plan-independent-workouts.md) | On-demand short workouts and the Maxkraft strength test, drawn straight from the skill trees |
+| [Plan-Independent Workouts](./session/plan-independent-workouts.md) | On-demand focus trainings (short workouts) and the Maxkraft strength test, drawn straight from the skill trees |
 | [Session Set Structure](./session/session-set-structure.md) | Set counts, rest lengths, warm-up sets, and how a skill block expands into the set list |
 | [Cardio Training System](./session/cardio-training-system.md) | The six zones, interval and steady blocks, heart-rate bands, and interval-count progression |
 

@@ -1,4 +1,4 @@
-| session | exercise | max kg | focus | weight% before | weight% after | level before | level after | feedback given | feedback applied | branch level |
+| session | in: exercise | in: max kg | in: focus | out: weight% before | out: weight% after | out: level before | out: level after | in: feedback given | out: feedback applied | out: branch level |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | LH-Kniebeuge (Max-K) | 121 | MAX_KRAFT |  | 72.5 | EASY | EASY | TOO_HARD | TOO_HARD |  |
 | 2 | LH-Kniebeuge (Max-K) | 121 | MAX_KRAFT | 72.5 | 70 | EASY | EASY | TOO_HARD | TOO_HARD |  |

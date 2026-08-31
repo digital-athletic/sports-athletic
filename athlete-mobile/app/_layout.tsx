@@ -51,7 +51,10 @@ export default function RootLayout() {
   return (
     <ThemeProvider theme={theme}>
       <KeyboardProvider>
-        <Stack screenOptions={{ headerShown: false }}>
+        {/* Screens without an orientation of their own fall back to free
+            rotation, not to the manifest, so this default is what keeps the
+            app upright once any screen opts into landscape. */}
+        <Stack screenOptions={{ headerShown: false, orientation: "portrait" }}>
           <Stack.Protected guard={auth != null && consentStatus === "accepted"}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="(anamnesis)" options={{ headerShown: false }} />

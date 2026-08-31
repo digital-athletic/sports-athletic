@@ -12,6 +12,7 @@ import { useUserProfileStore } from "@/store/userProfileStore";
 import { Ionicon } from "@/common/Ionicon";
 import { Box } from "@/theme/Box";
 import { Card } from "@/theme/Card";
+import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { Stack, router, useFocusEffect } from "expo-router";
@@ -111,11 +112,16 @@ export default function HomeScreen() {
         options={{
           title: t("screens.home.greeting", { name: username }),
           headerShown: true,
+          orientation: "all",
         }}
       />
-      <Box flex={1} backgroundColor="lightGrey1">
+      <ScrollBox
+        flex={1}
+        backgroundColor="lightGrey1"
+        contentContainerStyle={{ flexGrow: 1 }}
+      >
         <Box flex={1} padding="l">
-          <Card variant="elevated" flex={1}>
+          <Card variant="elevated" flex={1} minHeight={400}>
             <IndividualWorkoutDisplay
               goToTraining={goToTraining}
               goToAnamnesis={goToAnamnesis}
@@ -190,7 +196,7 @@ export default function HomeScreen() {
             </Box>
           </TouchableOpacity>
         </Box>
-      </Box>
+      </ScrollBox>
     </>
   );
 }

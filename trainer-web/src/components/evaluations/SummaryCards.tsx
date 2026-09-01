@@ -22,7 +22,10 @@ export function SummaryCards({ stats }: SummaryCardsProps) {
         <div className="mb-1 text-sm text-gray-500">
           {t("evaluations.summary.trainingCount")}
         </div>
-        <div className="text-2xl font-bold text-gray-900">
+        <div
+          data-testid="summary-training-count"
+          className="text-2xl font-bold text-gray-900"
+        >
           {stats.trainingCount}
         </div>
       </div>

@@ -20,11 +20,11 @@ export function EvaluationsTab({ members, ownerId }: EvaluationsTabProps) {
   const { t } = useTranslation();
   const { athletes, athleteWorkouts, loading, error } = useTeamWorkouts(
     members,
-    ownerId
+    ownerId,
   );
 
   const [selectedAthleteId, setSelectedAthleteId] = useState<string | null>(
-    null
+    null,
   );
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("lastWeek");
 
@@ -50,7 +50,7 @@ export function EvaluationsTab({ members, ownerId }: EvaluationsTabProps) {
 
   const summaryStats = useMemo(
     () => calculateSummaryStats(filteredWorkouts),
-    [filteredWorkouts]
+    [filteredWorkouts],
   );
 
   if (loading) {
@@ -67,7 +67,10 @@ export function EvaluationsTab({ members, ownerId }: EvaluationsTabProps) {
 
   if (athletes.length === 0) {
     return (
-      <div className="py-8 text-center text-sm text-gray-500">
+      <div
+        data-testid="evaluations-empty"
+        className="py-8 text-center text-sm text-gray-500"
+      >
         {t("evaluations.noAthletes")}
       </div>
     );

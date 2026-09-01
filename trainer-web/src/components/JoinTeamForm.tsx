@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "./Button";
-import { ErrorMessage } from "./ErrorMessage";
 import { FormInput } from "./FormInput";
 
 interface JoinTeamFormProps {
@@ -12,7 +11,6 @@ interface JoinTeamFormProps {
 export function JoinTeamForm({ onSubmit, onCancel }: JoinTeamFormProps) {
   const { t } = useTranslation();
   const [inviteCode, setInviteCode] = useState("");
-  const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,13 +18,12 @@ export function JoinTeamForm({ onSubmit, onCancel }: JoinTeamFormProps) {
     if (!inviteCode.trim()) return;
 
     setIsSubmitting(true);
-    setFormError(null);
     try {
+      // The caller translates the error code and renders the message above the
+      // form, so repeating it here only duplicated it - with the raw code.
       await onSubmit(inviteCode.trim().toUpperCase());
-    } catch (err) {
-      setFormError(
-        err instanceof Error ? err.message : t("teamManagement.joinTeam.error"),
-      );
+    } catch {
+      // handled by the caller
     } finally {
       setIsSubmitting(false);
     }
@@ -37,9 +34,9 @@ export function JoinTeamForm({ onSubmit, onCancel }: JoinTeamFormProps) {
       <h2 className="mb-4 text-lg font-semibold text-gray-900">
         {t("teamManagement.joinTeam.title")}
       </h2>
-      {formError && <ErrorMessage message={formError} className="mb-4" />}
       <form onSubmit={handleSubmit} className="space-y-4">
         <FormInput
+          data-testid="join-team-code"
           label={t("teamManagement.joinTeam.codeLabel")}
           type="text"
           value={inviteCode}
@@ -51,6 +48,7 @@ export function JoinTeamForm({ onSubmit, onCancel }: JoinTeamFormProps) {
         />
         <div className="flex gap-3">
           <Button
+            data-testid="join-team-submit"
             type="submit"
             disabled={inviteCode.length !== 6}
             isLoading={isSubmitting}

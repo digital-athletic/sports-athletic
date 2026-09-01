@@ -18,6 +18,7 @@ export function CreateTeamCard({
     <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-6 transition-all hover:border-red-400 hover:shadow-md">
       {isTrainer ? (
         <button
+          data-testid="team-selection-create"
           onClick={onCreateClick}
           className="group flex w-full flex-col items-center justify-center py-4"
         >
@@ -43,6 +44,7 @@ export function CreateTeamCard({
           {t("teamSelection.or")}
         </p>
         <Button
+          data-testid="team-selection-join"
           variant="secondary"
           onClick={onJoinClick}
           className="w-full bg-gray-50"

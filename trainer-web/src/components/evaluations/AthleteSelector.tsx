@@ -27,6 +27,7 @@ export function AthleteSelector({
 
   return (
     <details
+      data-testid="athlete-selector"
       ref={detailsRef}
       className="group rounded-lg border border-gray-200 bg-white"
     >
@@ -66,6 +67,7 @@ export function AthleteSelector({
             {athletes.map((athlete) => (
               <tr
                 key={athlete.id}
+                data-testid="athlete-option"
                 onClick={() => handleAthleteSelect(athlete.id)}
                 className={`border-b border-gray-100 transition-colors hover:cursor-pointer hover:bg-gray-200 ${
                   selectedAthleteId === athlete.id

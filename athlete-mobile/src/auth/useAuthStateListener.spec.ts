@@ -170,6 +170,20 @@ jest.mock("../store/userDataBackupStore", () => ({
   ) => selector({ restoreSnapshot: mockRestoreSnapshot }),
 }));
 
+let mockPendingConsent: {
+  analyticsAccepted: boolean;
+  termsAccepted: boolean;
+} | null = null;
+jest.mock("../store/registrationConsentStore", () => ({
+  useRegistrationConsentStore: {
+    getState: () => ({
+      get pendingConsent() {
+        return mockPendingConsent;
+      },
+    }),
+  },
+}));
+
 let mockPrivacyEnabled = true;
 let mockAnalyticsConsentEnabled = true;
 let mockIsReviewUserId = false;
@@ -193,6 +207,7 @@ beforeEach(() => {
   mockPrivacyEnabled = true;
   mockAnalyticsConsentEnabled = true;
   mockIsReviewUserId = false;
+  mockPendingConsent = null;
   mockInitializeFromSupabase.mockReturnValue(Promise.resolve());
   mockAuthValue = null;
   mockGetStateAuth = undefined; // mirror mode: getState().auth tracks mockAuthValue
@@ -775,6 +790,43 @@ describe("useAuthStateListener — consent gate", () => {
     await Promise.resolve();
 
     // The sticky guard must prevent overwriting "accepted" with "missing"
+    expect(mockSetConsentStatus).not.toHaveBeenCalledWith("missing");
+  });
+
+  // R3 — registration consent-save in flight
+  it("does not set consentStatus to missing when a registration consent save is in flight", async () => {
+    mockAuthValue = { userId: "user-1" };
+    mockConsentStatus = "loading";
+    mockPendingConsent = { analyticsAccepted: true, termsAccepted: true };
+    mockFetchConsentFromProfile.mockResolvedValue({
+      privacyAccepted: false,
+      analyticsAccepted: false,
+    });
+
+    renderHook(() => useAuthStateListener());
+
+    await waitFor(() => {
+      expect(mockFetchConsentFromProfile).toHaveBeenCalled();
+    });
+    await Promise.resolve();
+
+    expect(mockSetConsentStatus).not.toHaveBeenCalledWith("missing");
+  });
+
+  // R3-catch — registration consent-save in flight, background fetch throws
+  it("does not set consentStatus to missing on fetch error when a registration consent save is in flight", async () => {
+    mockAuthValue = { userId: "user-1" };
+    mockConsentStatus = "loading";
+    mockPendingConsent = { analyticsAccepted: true, termsAccepted: true };
+    mockFetchConsentFromProfile.mockRejectedValue(new Error("network"));
+
+    renderHook(() => useAuthStateListener());
+
+    await waitFor(() => {
+      expect(mockFetchConsentFromProfile).toHaveBeenCalled();
+    });
+    await Promise.resolve();
+
     expect(mockSetConsentStatus).not.toHaveBeenCalledWith("missing");
   });
 

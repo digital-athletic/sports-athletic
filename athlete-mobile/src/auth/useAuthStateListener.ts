@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { AppState, type AppStateStatus } from "react-native";
 import NetInfo from "@react-native-community/netinfo";
 import { supabase } from "@/services/supabaseClient";
+import { Logger } from "@/services/Logger";
 import { useAuthStore } from "@/store/authStore";
 import { useUserSettingsStore } from "@/store/userSettingsStore";
 import {
@@ -10,6 +11,7 @@ import {
 } from "@/services/AuthService";
 import { useUserDataBackupStore } from "@/store/userDataBackupStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
+import { useRegistrationConsentStore } from "@/store/registrationConsentStore";
 import { featureFlags } from "@/config/featureFlags";
 
 /**
@@ -75,6 +77,11 @@ export function useAuthStateListener() {
       const shouldPreserveInSessionAccept = () =>
         statusBeforeFetch !== "accepted" &&
         useUserSettingsStore.getState().consentStatus === "accepted";
+      // Registration's saveConsentToProfile write resolves after this read and
+      // owns the final accepted/missing outcome — skip downgrading here while
+      // that write is still in flight, to avoid flashing ConsentScreen.
+      const isRegistrationConsentSaveInFlight = () =>
+        useRegistrationConsentStore.getState().pendingConsent !== null;
 
       try {
         const record = await fetchConsentFromProfile();
@@ -87,6 +94,7 @@ export function useAuthStateListener() {
           record?.analyticsAccepted !== true;
         if (privacyMissing || analyticsMissing) {
           if (shouldPreserveInSessionAccept()) return;
+          if (isRegistrationConsentSaveInFlight()) return;
           setConsentStatus("missing");
         } else {
           // Defense-in-depth: verify the auth user hasn't changed since the fetch started.
@@ -95,9 +103,15 @@ export function useAuthStateListener() {
           acceptConsent();
           lastVerifiedUserIdRef.current = userId;
         }
-      } catch {
+      } catch (error: unknown) {
         if (checkEpochRef.current !== epoch) return;
         if (shouldPreserveInSessionAccept()) return;
+        if (isRegistrationConsentSaveInFlight()) return;
+        Logger.logError(
+          error instanceof Error
+            ? error
+            : new Error("fetchConsentFromProfile failed"),
+        );
         // Fail closed — a network error must not bypass the consent gate.
         setConsentStatus("missing");
       }

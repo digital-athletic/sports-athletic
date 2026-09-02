@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type CountdownArgs = {
   autoAdvance: boolean;
@@ -9,6 +9,14 @@ type CountdownArgs = {
   timeoutMs?: number;
 };
 
+const unitsLeft = (endsAt: number, timeoutMs: number) =>
+  Math.max(0, Math.ceil((endsAt - Date.now()) / timeoutMs));
+
+/**
+ * Counts down to a deadline. The remaining value comes from the clock, not from
+ * the number of ticks, so time that passed without a tick still counts. Pausing
+ * shifts the deadline by the pause duration.
+ */
 export const useCountdown = ({
   autoAdvance,
   duration,
@@ -21,26 +29,41 @@ export const useCountdown = ({
   const [countdown, setCountdown] = useState<number | undefined>(duration);
 
   const intervalRef = useRef<ReturnType<typeof setInterval>>(undefined);
+  const endsAtRef = useRef<number | undefined>(undefined);
+  const pausedAtRef = useRef<number | undefined>(undefined);
 
-  const tick = useCallback(() => {
-    setCountdown((previous) =>
-      Math.max(
-        0,
-        typeof previous === "number" ? previous - 1 : (duration ?? 0),
-      ),
-    );
-  }, [duration]);
+  // Declared before the timer below, so a new exercise clears the old deadline
+  // before it is read.
+  useEffect(() => {
+    if (typeof duration !== "number") return;
+    setCountdown(duration);
+    endsAtRef.current = undefined;
+    pausedAtRef.current = undefined;
+  }, [duration, exerciseId]);
 
   useEffect(() => {
     if (!isActive || typeof duration !== "number") {
-      clearInterval(intervalRef.current);
+      if (endsAtRef.current !== undefined) pausedAtRef.current = Date.now();
       return;
     }
 
-    intervalRef.current = setInterval(tick, timeoutMs);
+    if (endsAtRef.current === undefined) {
+      endsAtRef.current = Date.now() + duration * timeoutMs;
+    } else if (pausedAtRef.current !== undefined) {
+      endsAtRef.current += Date.now() - pausedAtRef.current;
+      pausedAtRef.current = undefined;
+    }
+
+    const endsAt = endsAtRef.current;
+    setCountdown(unitsLeft(endsAt, timeoutMs));
+
+    intervalRef.current = setInterval(
+      () => setCountdown(unitsLeft(endsAt, timeoutMs)),
+      timeoutMs,
+    );
 
     return () => clearInterval(intervalRef.current);
-  }, [duration, isActive, tick, timeoutMs]);
+  }, [duration, exerciseId, isActive, timeoutMs]);
 
   useEffect(() => {
     if (countdown === 0) {
@@ -54,13 +77,6 @@ export const useCountdown = ({
       setCountdown(undefined);
     }
   }, [autoAdvance, countdown, onEvent]);
-
-  useEffect(() => {
-    // Reset countdown when duration or exerciseId changes
-    if (typeof duration === "number") {
-      setCountdown(duration);
-    }
-  }, [duration, exerciseId]);
 
   return countdown;
 };

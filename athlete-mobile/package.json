@@ -4,7 +4,6 @@
   "private": true,
   "license": "Apache-2.0",
   "main": "index.ts",
-  "engines": { "node": ">=24.18.0" },
   "scripts": {
     "start": "expo start",
     "start:docker": "expo start --lan",

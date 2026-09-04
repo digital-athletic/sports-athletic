@@ -28,6 +28,9 @@ describe("PainQuestion: stored pain tags", () => {
       />,
     );
     fireEvent.press(screen.getByLabelText("right knee"));
-    expect(onChangeTag).toHaveBeenCalledWith("PAIN", ["KNEE_LEFT", "KNEE_RIGHT"]);
+    expect(onChangeTag).toHaveBeenCalledWith("PAIN", [
+      "KNEE_LEFT",
+      "KNEE_RIGHT",
+    ]);
   });
 });

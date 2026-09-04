@@ -10,6 +10,7 @@ import { useTheme } from "@/theme/theme";
 import { ISODateToDate } from "@/utils/date";
 import { useMemo, type FC } from "react";
 import { useTranslation } from "react-i18next";
+import { useWindowDimensions } from "react-native";
 import { TrainingPlanStatusWidget } from "./TrainingPlanStatusWidget";
 import { TrainingPlanType } from "./models/TrainingPlan";
 
@@ -67,6 +68,8 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
   const { t } = useTranslation();
   const { colors } = useTheme();
   const { trainingPlan } = useUserWorkoutStore();
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
   const { anamnesisCompleted } = useUserProfileStore();
 
   const planState = useMemo(
@@ -74,10 +77,19 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
     [anamnesisCompleted, trainingPlan],
   );
 
+  const startButton = (
+    <Button onPress={() => goToTraining("PLAN")}>
+      {t("screens.home.startTraining")}
+    </Button>
+  );
+
   const renderRunningPlan = () => {
     return (
-      <Box flex={1}>
-        <Box marginBottom="l" flex={1}>
+      <Box flex={1} gap="m">
+        {/* In landscape the tiles are taller than the screen, so the button
+            goes on top to stay in view without scrolling. */}
+        {isLandscape && startButton}
+        <Box marginBottom={isLandscape ? "none" : "l"} flex={1}>
           {trainingPlan && (
             <TrainingPlanStatusWidget
               trainingSections={trainingPlan.sections}
@@ -85,9 +97,7 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
             />
           )}
         </Box>
-        <Button onPress={() => goToTraining("PLAN")}>
-          {t("screens.home.startTraining")}
-        </Button>
+        {!isLandscape && startButton}
       </Box>
     );
   };
@@ -122,7 +132,11 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
 
   return (
     <Box flex={1} justifyContent="space-between">
-      <Text variant="title" paddingHorizontal="m" paddingTop="m">
+      <Text
+        variant={isLandscape ? "cardTitle" : "title"}
+        paddingHorizontal="m"
+        paddingTop="m"
+      >
         {t("screens.home.workoutWithOwnPlan")}
       </Text>
       {planState === PLAN_STATES.RUNNING ? renderRunningPlan() : renderNoPlan()}

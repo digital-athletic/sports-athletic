@@ -9,25 +9,58 @@ describe("PainChipSelector: chip behavior", () => {
     ).toBeTruthy();
   });
 
-  it("renders the 13 curated region chips with translated labels", () => {
+  it("renders the 12 joint chips from shoulders down to ankles", () => {
     render(<PainChipSelector tags={[]} />);
-    expect(screen.getAllByRole("button")).toHaveLength(13);
-    expect(screen.getByLabelText("neck")).toBeTruthy();
-    expect(screen.getByLabelText("breast")).toBeTruthy();
-    expect(screen.getByLabelText("upper back")).toBeTruthy();
+    const chips = screen.getAllByRole("button");
+    expect(chips).toHaveLength(12);
+    expect(chips[0]).toHaveAccessibleName("left shoulder");
+    expect(chips[11]).toHaveAccessibleName("right ankle");
   });
 
-  it("adds a tag when an unselected chip is tapped", () => {
+  it("does not offer muscle regions", () => {
+    render(<PainChipSelector tags={[]} />);
+    expect(screen.queryByLabelText("neck")).toBeNull();
+    expect(screen.queryByLabelText("buttock")).toBeNull();
+  });
+
+  it("adds the lateralized value when an unselected chip is tapped", () => {
     const onChange = jest.fn();
     render(<PainChipSelector tags={[]} onChange={onChange} />);
-    fireEvent.press(screen.getByLabelText("neck"));
-    expect(onChange).toHaveBeenCalledWith(["NECK"]);
+    fireEvent.press(screen.getByLabelText("left knee"));
+    expect(onChange).toHaveBeenCalledWith(["KNEE_LEFT"]);
   });
 
-  it("removes a tag when a selected chip is tapped", () => {
+  it("removes the value when a selected chip is tapped", () => {
     const onChange = jest.fn();
-    render(<PainChipSelector tags={["NECK"]} onChange={onChange} />);
-    fireEvent.press(screen.getByLabelText("neck"));
+    render(<PainChipSelector tags={["KNEE_LEFT"]} onChange={onChange} />);
+    expect(screen.getByLabelText("left knee")).toBeSelected();
+    fireEvent.press(screen.getByLabelText("left knee"));
     expect(onChange).toHaveBeenCalledWith([]);
+  });
+});
+
+describe("PainChipSelector: hip chip", () => {
+  it("stores both hip sides behind one chip", () => {
+    const onChange = jest.fn();
+    render(<PainChipSelector tags={["SPINE"]} onChange={onChange} />);
+    fireEvent.press(screen.getByLabelText("hip"));
+    expect(onChange).toHaveBeenCalledWith(["SPINE", "HIP_LEFT", "HIP_RIGHT"]);
+  });
+
+  it("shows the chip selected only when both sides are stored", () => {
+    render(<PainChipSelector tags={["HIP_LEFT"]} onChange={jest.fn()} />);
+    expect(screen.getByLabelText("hip")).not.toBeSelected();
+  });
+
+  it("removes both hip sides when the selected chip is tapped", () => {
+    const onChange = jest.fn();
+    render(
+      <PainChipSelector
+        tags={["HIP_LEFT", "HIP_RIGHT", "SPINE"]}
+        onChange={onChange}
+      />,
+    );
+    fireEvent.press(screen.getByLabelText("hip"));
+    expect(onChange).toHaveBeenCalledWith(["SPINE"]);
   });
 });

@@ -568,11 +568,6 @@
       "count": 1
     }
   },
-  "src/features/training/utils/painUtils.ts": {
-    "complexity": {
-      "count": 2
-    }
-  },
   "src/features/training/utils/skillTreeUtils.ts": {
     "complexity": {
       "count": 5

@@ -29,6 +29,7 @@ import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
+import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { formatDateToISO, ISODateToDate } from "@/utils/date";
 import { parseBooleanParam, parseIntParam } from "@/utils/router";
@@ -290,10 +291,12 @@ export default function MuscleSorenessScreen() {
 
   return (
     <>
+      {/* The silhouette regions get too small to tap in landscape. */}
       <Stack.Screen
         options={{
           title,
           headerLeft: () => <BackHeader onBack={handleBack} />,
+          orientation: screenState === "SORENESS" ? "portrait" : "all",
         }}
       />
       <Box
@@ -323,7 +326,14 @@ export default function MuscleSorenessScreen() {
                   />
                 </Box>
               ) : (
-                <PlaceSelection selectPlace={selectPlace} places={places} />
+                <ScrollBox
+                  contentContainerStyle={{
+                    flexGrow: 1,
+                    justifyContent: "center",
+                  }}
+                >
+                  <PlaceSelection selectPlace={selectPlace} places={places} />
+                </ScrollBox>
               )}
             </Box>
             {screenState === "SORENESS" ? (

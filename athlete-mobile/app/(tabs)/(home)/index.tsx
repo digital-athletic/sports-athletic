@@ -112,7 +112,6 @@ export default function HomeScreen() {
         options={{
           title: t("screens.home.greeting", { name: username }),
           headerShown: true,
-          orientation: "all",
         }}
       />
       <ScrollBox

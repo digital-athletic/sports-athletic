@@ -8,9 +8,6 @@ import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
  * double-applying progression for an already-completed row.
  */
 export function useTrainingListCompletion() {
-  const completedExerciseIndices = useTrainingStore(
-    (s) => s.completedExerciseIndices,
-  );
   const markExerciseCompleted = useTrainingStore(
     (s) => s.markExerciseCompleted,
   );
@@ -18,7 +15,7 @@ export function useTrainingListCompletion() {
     useExerciseCompletion();
 
   const handleComplete = (row: ListRow, feedback?: DifficultyFeedbackType) => {
-    if (completedExerciseIndices.includes(row.index)) return;
+    if (row.completed) return;
 
     if (row.isLastInSet && !row.isTest) {
       handleFeedback(row.index, feedback ?? "SUCCEEDED");
@@ -28,12 +25,12 @@ export function useTrainingListCompletion() {
   };
 
   const handleSkip = (row: ListRow) => {
-    if (completedExerciseIndices.includes(row.index)) return;
+    if (row.completed) return;
 
     handleExerciseSkipped(row.index);
     saveExerciseAndBranchData(row.index);
     markExerciseCompleted(row.index);
   };
 
-  return { completedExerciseIndices, handleComplete, handleSkip };
+  return { handleComplete, handleSkip };
 }

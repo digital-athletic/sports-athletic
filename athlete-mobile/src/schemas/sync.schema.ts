@@ -26,6 +26,7 @@ export const UserExerciseDataSchema = v.looseObject({
   height: v.optional(v.number()),
   weightType: v.optional(v.string()),
   skipped: v.optional(v.boolean()),
+  completed: v.optional(v.boolean()),
   set: v.optional(SetTupleSchema),
   skill: GeneratorSkillTypeSchema,
   feedback: v.optional(

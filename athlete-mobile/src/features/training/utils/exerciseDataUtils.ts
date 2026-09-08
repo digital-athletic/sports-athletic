@@ -6,6 +6,7 @@ import type {
   IntensityData,
 } from "@/features/training/models/Intensity";
 import type { SkillCode } from "@/schemas/generator.schema";
+import { isPauseExercise } from "@/features/training/models/IdTypes";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import type { TrainingLevelType } from "@/schemas/common.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
@@ -89,6 +90,45 @@ export function isFeedbackEligibleSkill(
     );
   }
   return false;
+}
+
+/**
+ * Derives the sequential flow's active exercise index. Skips a pause row
+ * only if a later entry is already completed (checklist mode never marks
+ * pauses). `treatIndexAsCompleted` reuses this for "what's next" lookahead.
+ */
+export function deriveActiveExerciseIndex(
+  exerciseList: UserExerciseDataType[] | null,
+  treatIndexAsCompleted?: number,
+): number {
+  if (!exerciseList || exerciseList.length === 0) return 0;
+
+  const isCompleted = (exercise: UserExerciseDataType, index: number) =>
+    exercise.completed || index === treatIndexAsCompleted;
+
+  const firstIncomplete = exerciseList.findIndex(
+    (exercise, index) => !isCompleted(exercise, index),
+  );
+  if (firstIncomplete === -1) return exerciseList.length - 1;
+
+  const isStalePause =
+    isPauseExercise(exerciseList[firstIncomplete].exerciseId) &&
+    exerciseList.some(
+      (exercise, index) =>
+        index > firstIncomplete && isCompleted(exercise, index),
+    );
+
+  if (isStalePause) {
+    const nextRealIncomplete = exerciseList.findIndex(
+      (exercise, index) =>
+        index > firstIncomplete &&
+        !isCompleted(exercise, index) &&
+        !isPauseExercise(exercise.exerciseId),
+    );
+    return nextRealIncomplete === -1 ? firstIncomplete : nextRealIncomplete;
+  }
+
+  return firstIncomplete;
 }
 
 /**

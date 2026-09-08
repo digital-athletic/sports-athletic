@@ -21,10 +21,8 @@ export function useExerciseProgression() {
   const {
     exerciseList,
     activeTraining,
-    setActiveExerciseIndex,
     addPauseTime,
     addSkillTime,
-    completedExerciseIndices,
     markExerciseCompleted,
   } = useTrainingStore();
   const {
@@ -33,6 +31,7 @@ export function useExerciseProgression() {
     exerciseId,
     nextExercise,
     nextExerciseData,
+    hasNextExercise,
     flags: { isPauseExercise, isNextExercisePause },
   } = useActiveExerciseView();
   const {
@@ -54,38 +53,45 @@ export function useExerciseProgression() {
   const [isAborted, setIsAborted] = useState(false);
   const [isSkipped, setIsSkipped] = useState(false);
 
+  const commitElapsedTime = () => {
+    if (isPauseExercise) {
+      // add time in pause to training stats
+      const pauseDuration = getPauseElapsed();
+      addPauseTime(pauseDuration);
+      return;
+    }
+
+    if (!currentExercise?.skill) return;
+
+    // Add exercise time to the skill statistics
+    const exerciseDuration = getExerciseElapsed();
+    const focusArea = mapSkillCodeToFocusArea(currentExercise.skill);
+    if (focusArea) {
+      addSkillTime(focusArea, exerciseDuration);
+    }
+  };
+
   // strengthTestMaxValues only provided for strength test's last exercise
   const advanceToNextExercise = (
     strengthTestMaxValues?: MaxValuesType | null,
   ) => {
     if (!exerciseList) return;
 
-    // Skip re-saving if this index was already completed via the checklist
+    // Skip re-saving if this entry was already completed via the checklist
     // (list-view) flow, to avoid double-applying weight/level progression.
-    if (!completedExerciseIndices.includes(safeExerciseIndex)) {
+    if (!currentExercise?.completed) {
       saveExerciseAndBranchData(safeExerciseIndex);
       markExerciseCompleted(safeExerciseIndex);
     }
 
-    if (isPauseExercise) {
-      // add time in pause to training stats
-      const pauseDuration = getPauseElapsed();
-      addPauseTime(pauseDuration);
+    commitElapsedTime();
 
+    if (isPauseExercise) {
       maybeShowPainAlert(nextExercise);
       maybeShowBarbellAlert(nextExerciseData, activeTraining?.type);
-    } else if (currentExercise?.skill) {
-      // Add exercise time to the skill statistics
-      const exerciseDuration = getExerciseElapsed();
-      const focusArea = mapSkillCodeToFocusArea(currentExercise.skill);
-      if (focusArea) {
-        addSkillTime(focusArea, exerciseDuration);
-      }
     }
 
-    if (safeExerciseIndex < exerciseList.length - 1) {
-      setActiveExerciseIndex(safeExerciseIndex + 1);
-
+    if (hasNextExercise) {
       if (isNextExercisePause) {
         // set pause timer to new start
         markPauseStart();

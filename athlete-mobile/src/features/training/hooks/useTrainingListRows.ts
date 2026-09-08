@@ -13,6 +13,7 @@ export type ListRow = {
   isTest: boolean;
   isLastInSet: boolean;
   isFeedbackSkill: boolean;
+  completed: boolean;
 };
 
 /** Builds the visible checklist rows (pause exercises excluded) for the list view. */
@@ -50,6 +51,7 @@ export function useTrainingListRows() {
           activeTraining,
           exercise.skill,
         ),
+        completed: Boolean(exercise.completed),
       });
       return acc;
     }, []);

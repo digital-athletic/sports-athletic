@@ -61,7 +61,6 @@ describe("useActiveExerciseView: derived flags", () => {
   it("derives isPauseExercise true for the pause exercise id", () => {
     useTrainingStore.setState({
       exerciseList: [createExercise({ exerciseId: PAUSE_EXERCISE_ID })],
-      activeExerciseIndex: 0,
     });
 
     const { result } = renderHook(() => useActiveExerciseView());
@@ -72,7 +71,6 @@ describe("useActiveExerciseView: derived flags", () => {
   it("derives isPauseExercise false for a non pause exercise id", () => {
     useTrainingStore.setState({
       exerciseList: [createExercise({ exerciseId: "1" })],
-      activeExerciseIndex: 0,
     });
 
     const { result } = renderHook(() => useActiveExerciseView());
@@ -86,7 +84,6 @@ describe("useActiveExerciseView: derived flags", () => {
         createExercise({ exerciseId: "1" }),
         createExercise({ exerciseId: PAUSE_EXERCISE_ID }),
       ],
-      activeExerciseIndex: 0,
     });
 
     const { result } = renderHook(() => useActiveExerciseView());
@@ -97,7 +94,6 @@ describe("useActiveExerciseView: derived flags", () => {
   it("derives isNextExercisePause false when there is no next exercise", () => {
     useTrainingStore.setState({
       exerciseList: [createExercise({ exerciseId: "1" })],
-      activeExerciseIndex: 0,
     });
 
     const { result } = renderHook(() => useActiveExerciseView());
@@ -106,10 +102,25 @@ describe("useActiveExerciseView: derived flags", () => {
     expect(result.current.hasNextExercise).toBe(false);
   });
 
+  it("derives the next pause past an already completed entry, not the literal next slot", () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1" }),
+        createExercise({ exerciseId: "2", completed: true }),
+        createExercise({ exerciseId: PAUSE_EXERCISE_ID }),
+        createExercise({ exerciseId: "3" }),
+      ],
+    });
+
+    const { result } = renderHook(() => useActiveExerciseView());
+
+    expect(result.current.nextExercise?.exerciseId).toBe(PAUSE_EXERCISE_ID);
+    expect(result.current.flags.isNextExercisePause).toBe(true);
+  });
+
   it("derives isCardioExercise true when the skill includes CARDIO", () => {
     useTrainingStore.setState({
       exerciseList: [createExercise({ exerciseId: "1", skill: "CARDIO_1" })],
-      activeExerciseIndex: 0,
     });
 
     const { result } = renderHook(() => useActiveExerciseView());
@@ -120,7 +131,6 @@ describe("useActiveExerciseView: derived flags", () => {
   it("derives isCardioExercise false for a non cardio skill", () => {
     useTrainingStore.setState({
       exerciseList: [createExercise({ exerciseId: "1", skill: "SWR1" })],
-      activeExerciseIndex: 0,
     });
 
     const { result } = renderHook(() => useActiveExerciseView());
@@ -131,7 +141,6 @@ describe("useActiveExerciseView: derived flags", () => {
   it("derives isEnduranceExercise true for CARDIO_4", () => {
     useTrainingStore.setState({
       exerciseList: [createExercise({ exerciseId: "1", skill: "CARDIO_4" })],
-      activeExerciseIndex: 0,
     });
 
     const { result } = renderHook(() => useActiveExerciseView());
@@ -141,7 +150,6 @@ describe("useActiveExerciseView: derived flags", () => {
   it("derives isEnduranceExercise true for CARDIO_5", () => {
     useTrainingStore.setState({
       exerciseList: [createExercise({ exerciseId: "1", skill: "CARDIO_5" })],
-      activeExerciseIndex: 0,
     });
 
     const { result } = renderHook(() => useActiveExerciseView());
@@ -151,7 +159,6 @@ describe("useActiveExerciseView: derived flags", () => {
   it("derives isEnduranceExercise false for other cardio skills", () => {
     useTrainingStore.setState({
       exerciseList: [createExercise({ exerciseId: "1", skill: "CARDIO_1" })],
-      activeExerciseIndex: 0,
     });
 
     const { result } = renderHook(() => useActiveExerciseView());
@@ -162,7 +169,6 @@ describe("useActiveExerciseView: derived flags", () => {
   it("derives isTestExercise true when repetition is -1", () => {
     useTrainingStore.setState({
       exerciseList: [createExercise({ exerciseId: "1", repetition: -1 })],
-      activeExerciseIndex: 0,
     });
 
     const { result } = renderHook(() => useActiveExerciseView());
@@ -173,7 +179,6 @@ describe("useActiveExerciseView: derived flags", () => {
   it("derives isLastInSet true when set bounds are equal", () => {
     useTrainingStore.setState({
       exerciseList: [createExercise({ exerciseId: "1", set: [3, 3] })],
-      activeExerciseIndex: 0,
     });
 
     const { result } = renderHook(() => useActiveExerciseView());
@@ -184,7 +189,6 @@ describe("useActiveExerciseView: derived flags", () => {
   it("derives isLastInSet false when set bounds differ", () => {
     useTrainingStore.setState({
       exerciseList: [createExercise({ exerciseId: "1", set: [1, 3] })],
-      activeExerciseIndex: 0,
     });
 
     const { result } = renderHook(() => useActiveExerciseView());
@@ -195,7 +199,6 @@ describe("useActiveExerciseView: derived flags", () => {
   it("derives isFeedbackSkill true for a feedback eligible skill on a PLAN training", () => {
     useTrainingStore.setState({
       exerciseList: [createExercise({ exerciseId: "1", skill: "SWR1" })],
-      activeExerciseIndex: 0,
       activeTraining: { id: "training-1", type: "PLAN" },
     });
 
@@ -207,7 +210,6 @@ describe("useActiveExerciseView: derived flags", () => {
   it("derives isFeedbackSkill false for a non increase skill on a PLAN training", () => {
     useTrainingStore.setState({
       exerciseList: [createExercise({ exerciseId: "1", skill: "WU" })],
-      activeExerciseIndex: 0,
       activeTraining: { id: "training-1", type: "PLAN" },
     });
 
@@ -232,7 +234,6 @@ describe("useActiveExerciseView: name and video selection", () => {
   it("selects the current exercise data when not a pause exercise", () => {
     useTrainingStore.setState({
       exerciseList: [createExercise({ exerciseId: "1" })],
-      activeExerciseIndex: 0,
     });
 
     const { result } = renderHook(() => useActiveExerciseView());
@@ -247,7 +248,6 @@ describe("useActiveExerciseView: name and video selection", () => {
         createExercise({ exerciseId: PAUSE_EXERCISE_ID }),
         createExercise({ exerciseId: "2" }),
       ],
-      activeExerciseIndex: 0,
     });
 
     const { result } = renderHook(() => useActiveExerciseView());
@@ -313,7 +313,7 @@ describe("useActiveExerciseView: header title", () => {
   });
 });
 
-describe("useActiveExerciseView: safe exercise index clamping", () => {
+describe("useActiveExerciseView: derived active exercise index", () => {
   beforeEach(() => {
     useTrainingStore.setState(BASELINE);
     mockGetExerciseById.mockImplementation(
@@ -325,13 +325,12 @@ describe("useActiveExerciseView: safe exercise index clamping", () => {
     mockGetExerciseById.mockReset();
   });
 
-  it("clamps the active index to the last exercise when it exceeds the list length", () => {
+  it("falls back to the last exercise when every entry is completed", () => {
     useTrainingStore.setState({
       exerciseList: [
-        createExercise({ exerciseId: "1" }),
-        createExercise({ exerciseId: "2" }),
+        createExercise({ exerciseId: "1", completed: true }),
+        createExercise({ exerciseId: "2", completed: true }),
       ],
-      activeExerciseIndex: 5,
     });
 
     const { result } = renderHook(() => useActiveExerciseView());
@@ -340,13 +339,12 @@ describe("useActiveExerciseView: safe exercise index clamping", () => {
     expect(result.current.exerciseId).toBe("2");
   });
 
-  it("uses the persisted index when it is within bounds", () => {
+  it("derives the first entry without the completed mark", () => {
     useTrainingStore.setState({
       exerciseList: [
-        createExercise({ exerciseId: "1" }),
+        createExercise({ exerciseId: "1", completed: true }),
         createExercise({ exerciseId: "2" }),
       ],
-      activeExerciseIndex: 1,
     });
 
     const { result } = renderHook(() => useActiveExerciseView());

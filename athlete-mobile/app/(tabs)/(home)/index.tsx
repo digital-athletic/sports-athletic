@@ -12,12 +12,18 @@ import { useUserProfileStore } from "@/store/userProfileStore";
 import { Ionicon } from "@/common/Ionicon";
 import { Box } from "@/theme/Box";
 import { Card } from "@/theme/Card";
+import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { Stack, router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  useWindowDimensions,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
@@ -35,6 +41,8 @@ export default function HomeScreen() {
   const clearTraining = useTrainingStore((s) => s.clearTraining);
 
   const username = personalData?.username || "Mr. Anderson";
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
 
   useEffect(() => {
     Logger.logEvent("home_opened");
@@ -113,84 +121,98 @@ export default function HomeScreen() {
           headerShown: true,
         }}
       />
-      <Box flex={1} backgroundColor="lightGrey1">
-        <Box flex={1} padding="l">
-          <Card variant="elevated" flex={1}>
-            <IndividualWorkoutDisplay
-              goToTraining={goToTraining}
-              goToAnamnesis={goToAnamnesis}
-              goToSeasonPhase={goToSeasonPhase}
-              goToSectionDetails={goToSectionDetails}
-            />
-          </Card>
-        </Box>
-
-        <Box
-          flexDirection="row"
-          paddingHorizontal="l"
-          paddingTop="none"
-          gap="m"
-          style={{
-            paddingBottom: Platform.OS === "ios" ? insets.bottom : spacing.l,
-          }}
-        >
-          <TouchableOpacity
-            style={[styles.quickstartButton, { backgroundColor: colors.white }]}
-            onPress={() => goToTraining("QUICK")}
-            accessibilityRole="button"
-            accessibilityLabel={t("screens.home.focusTraining.title")}
-          >
-            <Box alignItems="center" justifyContent="space-between" gap="s">
-              <Ionicon
-                name="scan-outline"
-                size={48}
-                color={colors.primary}
-                accessibilityLabel={t(
-                  "screens.home.imageAlt.focusTrainingIcon",
-                )}
+      <ScrollBox
+        flex={1}
+        backgroundColor="lightGrey1"
+        contentContainerStyle={{ flexGrow: 1 }}
+      >
+        <Box flex={1} flexDirection={isLandscape ? "row" : "column"}>
+          <Box flex={isLandscape ? 2 : 1} padding="l">
+            <Card variant="elevated" flex={1} minHeight={400}>
+              <IndividualWorkoutDisplay
+                goToTraining={goToTraining}
+                goToAnamnesis={goToAnamnesis}
+                goToSeasonPhase={goToSeasonPhase}
+                goToSectionDetails={goToSectionDetails}
               />
-              <Text variant="cardTitle" textAlign="center" fontSize={14}>
-                {t("screens.home.focusTraining.title")}
-              </Text>
-              <Text
-                variant="description"
-                textAlign="center"
-                fontSize={12}
-                color="darkGrey1"
-              >
-                {t("screens.home.focusTraining.subtitle")}
-              </Text>
-            </Box>
-          </TouchableOpacity>
+            </Card>
+          </Box>
 
-          <TouchableOpacity
-            style={[styles.quickstartButton, { backgroundColor: colors.white }]}
-            onPress={() => goToTraining("PREV")}
-            accessibilityRole="button"
-            accessibilityLabel={t("screens.home.preventionTraining.title")}
+          <Box
+            flex={isLandscape ? 1 : undefined}
+            flexDirection={isLandscape ? "column" : "row"}
+            paddingHorizontal="l"
+            paddingTop={isLandscape ? "l" : "none"}
+            paddingLeft={isLandscape ? "none" : "l"}
+            gap="m"
+            style={{
+              paddingBottom: Platform.OS === "ios" ? insets.bottom : spacing.l,
+            }}
           >
-            <Box alignItems="center" justifyContent="space-between" gap="s">
-              <Ionicon
-                name="calendar-outline"
-                size={48}
-                color={colors.primary}
-                accessibilityLabel={t("screens.home.imageAlt.preventionIcon")}
-              />
-              <Text variant="cardTitle" textAlign="center" fontSize={14}>
-                {t("screens.home.preventionTraining.title")}
-              </Text>
-              <Text
-                variant="description"
-                textAlign="center"
-                fontSize={12}
-                color="darkGrey1"
-              >
-                {t("screens.home.preventionTraining.subtitle")}
-              </Text>
-            </Box>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.quickstartButton,
+                { backgroundColor: colors.white },
+              ]}
+              onPress={() => goToTraining("QUICK")}
+              accessibilityRole="button"
+              accessibilityLabel={t("screens.home.focusTraining.title")}
+            >
+              <Box alignItems="center" justifyContent="space-between" gap="s">
+                <Ionicon
+                  name="scan-outline"
+                  size={48}
+                  color={colors.primary}
+                  accessibilityLabel={t(
+                    "screens.home.imageAlt.focusTrainingIcon",
+                  )}
+                />
+                <Text variant="cardTitle" textAlign="center" fontSize={14}>
+                  {t("screens.home.focusTraining.title")}
+                </Text>
+                <Text
+                  variant="description"
+                  textAlign="center"
+                  fontSize={12}
+                  color="darkGrey1"
+                >
+                  {t("screens.home.focusTraining.subtitle")}
+                </Text>
+              </Box>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.quickstartButton,
+                { backgroundColor: colors.white },
+              ]}
+              onPress={() => goToTraining("PREV")}
+              accessibilityRole="button"
+              accessibilityLabel={t("screens.home.preventionTraining.title")}
+            >
+              <Box alignItems="center" justifyContent="space-between" gap="s">
+                <Ionicon
+                  name="calendar-outline"
+                  size={48}
+                  color={colors.primary}
+                  accessibilityLabel={t("screens.home.imageAlt.preventionIcon")}
+                />
+                <Text variant="cardTitle" textAlign="center" fontSize={14}>
+                  {t("screens.home.preventionTraining.title")}
+                </Text>
+                <Text
+                  variant="description"
+                  textAlign="center"
+                  fontSize={12}
+                  color="darkGrey1"
+                >
+                  {t("screens.home.preventionTraining.subtitle")}
+                </Text>
+              </Box>
+            </TouchableOpacity>
+          </Box>
         </Box>
-      </Box>
+      </ScrollBox>
     </>
   );
 }

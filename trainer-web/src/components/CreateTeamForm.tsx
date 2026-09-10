@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "./Button";
-import { ErrorMessage } from "./ErrorMessage";
 import { FormInput } from "./FormInput";
 
 interface CreateTeamFormProps {
@@ -13,7 +12,6 @@ export function CreateTeamForm({ onSubmit, onCancel }: CreateTeamFormProps) {
   const { t } = useTranslation();
   const [teamName, setTeamName] = useState("");
   const [teamDescription, setTeamDescription] = useState("");
-  const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,15 +19,12 @@ export function CreateTeamForm({ onSubmit, onCancel }: CreateTeamFormProps) {
     if (!teamName.trim()) return;
 
     setIsSubmitting(true);
-    setFormError(null);
     try {
+      // The caller translates the error code and renders the message above the
+      // form, so repeating it here only duplicated it - with the raw code.
       await onSubmit(teamName.trim(), teamDescription.trim() || undefined);
-    } catch (err) {
-      setFormError(
-        err instanceof Error
-          ? err.message
-          : t("teamManagement.createTeam.error"),
-      );
+    } catch {
+      // handled by the caller
     } finally {
       setIsSubmitting(false);
     }
@@ -40,9 +35,9 @@ export function CreateTeamForm({ onSubmit, onCancel }: CreateTeamFormProps) {
       <h2 className="mb-4 text-lg font-semibold text-gray-900">
         {t("teamManagement.createTeam.title")}
       </h2>
-      {formError && <ErrorMessage message={formError} className="mb-4" />}
       <form onSubmit={handleSubmit} className="space-y-4">
         <FormInput
+          data-testid="create-team-name"
           label={t("teamManagement.createTeam.nameLabel")}
           type="text"
           value={teamName}
@@ -64,6 +59,7 @@ export function CreateTeamForm({ onSubmit, onCancel }: CreateTeamFormProps) {
         </div>
         <div className="flex gap-3">
           <Button
+            data-testid="create-team-submit"
             type="submit"
             disabled={!teamName.trim()}
             isLoading={isSubmitting}

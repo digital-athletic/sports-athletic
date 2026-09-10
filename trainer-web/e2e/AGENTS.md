@@ -26,6 +26,19 @@ That layer is the seam. Pointing the suite at a real Supabase later means not ca
 
 **Know what this cannot prove.** Authorisation in this app lives in row level security policies in Postgres. A mocked test can show that the UI handles a rejection, never that the rejection would actually happen. Tests about who may see or do what need a real instance.
 
+**Do not give the mock a memory.** It answers from the fixture and stores nothing. A test that writes describes the world before and the world after instead, since a later `mockSupabase()` call wins:
+
+```typescript
+const trainer = { trainerGrantedAt: new Date().toISOString() };
+
+await mockSupabase(page, { ...trainer, teams: [] }); // before
+await teamSelection.expectNoTeams();
+await mockSupabase(page, { ...trainer, teams: [created] }); // after the write
+await teamSelection.createTeam(created.name);
+```
+
+A catch-all on `**/rest/v1/**` answers anything no fixture covers with an empty array, registered first so specific routes win. Without it an unmocked call leaves the page and the test hangs instead of failing where it can be read.
+
 ## Writing tests
 
 ```typescript
@@ -41,8 +54,11 @@ test("...", async ({ page }) => {
 
 - `mockSupabase(page, options)` takes the user, the trainer and admin grants and a list of teams. Sign in through `LoginPage` rather than seeding a session: supabase-js writes the session to localStorage itself once the mocked verify call returns.
 - Put selectors and flows in `pages/`, never in the spec.
-- Select by `data-testid`. The app is hardcoded to German (`lng: "de"` in `src/i18n/index.ts`), so asserting on visible text ties a test to a translation. Add the attribute to the component when it is missing; `FormInput` and `Button` forward unknown props, so no change to the shared components is needed.
+- Select translated chrome by `data-testid`. The app is hardcoded to German (`lng: "de"` in `src/i18n/index.ts`), so asserting on such text ties a test to a translation. Add the attribute to the component when it is missing; `FormInput` and `Button` forward unknown props, so no change to the shared components is needed.
+- Data is different: team names, member names and numbers come from the fixture, not from a translation, so match them by role or text. `getByRole("heading", { name })` beats a testid there.
+- `rpc: { accept_invitation: { error: "INVITE_CODE_INVALID" } }` makes an RPC fail with that ErrorCode. Those failures come from the database and a test cannot provoke them any other way, which is exactly what a mock is good for.
 - Avoid fixed timeouts; rely on auto-waiting, with a timeout on the individual call when needed.
+- Make invented people obviously invented - "Max Mustermann", "Erika Mustermann", "Firstname Lastname", "Testname Testlastname", ... In the future, nobody should have to work out whether a name in a fixture is real data or not.
 
 ## Key files
 

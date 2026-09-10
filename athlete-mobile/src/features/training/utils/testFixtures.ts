@@ -51,7 +51,5 @@ export const BASELINE_TRAINING_STATE = {
     },
   },
   activeTraining: null,
-  activeExerciseIndex: 0,
   tempMaxValues: null,
-  completedExerciseIndices: [],
 };

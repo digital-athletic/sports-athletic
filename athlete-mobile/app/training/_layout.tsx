@@ -21,9 +21,18 @@ export default function TrainingLayout() {
     >
       <Stack.Screen name="index" />
       <Stack.Screen name="training-overview" />
-      <Stack.Screen name="training-active" />
+      {/* In landscape the video fills the height and pushes the timer, set and
+          exercise name out of view; a list based rework is planned (#40). */}
+      <Stack.Screen
+        name="training-active"
+        options={{ orientation: "portrait" }}
+      />
       <Stack.Screen name="training-success" />
-      <Stack.Screen name="exercise-information" />
+      {/* Same video height problem as training-active. */}
+      <Stack.Screen
+        name="exercise-information"
+        options={{ orientation: "portrait" }}
+      />
       <Stack.Screen name="manual-strength-test" />
       <Stack.Screen name="muscle-soreness" />
       <Stack.Protected guard={featureFlags.trainingListViewEnabled}>

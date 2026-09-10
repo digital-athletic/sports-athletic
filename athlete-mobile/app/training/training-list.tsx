@@ -22,7 +22,6 @@ const TrainingList: FC<TrainingListProps> = () => {
   const {
     hasHydrated,
     exerciseList,
-    completedExerciseIndices,
     repsDraft,
     rows,
     allCompleted,
@@ -51,7 +50,6 @@ const TrainingList: FC<TrainingListProps> = () => {
         <TrainingListRows
           rows={rows}
           exerciseList={exerciseList}
-          completedExerciseIndices={completedExerciseIndices}
           repsDraft={repsDraft}
           onComplete={handleComplete}
           onSkip={handleSkip}

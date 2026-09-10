@@ -64,7 +64,10 @@ export function EvaluationsTab({ members }: EvaluationsTabProps) {
 
   if (athletes.length === 0) {
     return (
-      <div className="py-8 text-center text-sm text-gray-500">
+      <div
+        data-testid="evaluations-empty"
+        className="py-8 text-center text-sm text-gray-500"
+      >
         {t("evaluations.noAthletes")}
       </div>
     );

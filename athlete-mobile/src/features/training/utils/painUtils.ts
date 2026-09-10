@@ -1,19 +1,27 @@
-// Pain location constants
-const PAIN = {
-  SHOULDER_LEFT: "SHOULDER_LEFT",
-  SHOULDER_RIGHT: "SHOULDER_RIGHT",
-  ELBOW_LEFT: "ELBOW_LEFT",
-  ELBOW_RIGHT: "ELBOW_RIGHT",
-  WRIST_LEFT: "WRIST_LEFT",
-  WRIST_RIGHT: "WRIST_RIGHT",
-  SPINE: "SPINE",
-  HIP_LEFT: "HIP_LEFT",
-  HIP_RIGHT: "HIP_RIGHT",
-  KNEE_LEFT: "KNEE_LEFT",
-  KNEE_RIGHT: "KNEE_RIGHT",
-  ANKLE_LEFT: "ANKLE_LEFT",
-  ANKLE_RIGHT: "ANKLE_RIGHT",
-} as const;
+import { type MuscleType } from "@/bodyParts/types";
+
+/**
+ * Pain regions the anamnesis can store and the generator understands. The
+ * order is top to bottom, left before right, and doubles as the chip order.
+ * Pinned to MuscleType so every region keeps its `muscles.*` translation.
+ */
+export const PAIN_REGIONS = [
+  "SHOULDER_LEFT",
+  "SHOULDER_RIGHT",
+  "ELBOW_LEFT",
+  "ELBOW_RIGHT",
+  "WRIST_LEFT",
+  "WRIST_RIGHT",
+  "SPINE",
+  "HIP_LEFT",
+  "HIP_RIGHT",
+  "KNEE_LEFT",
+  "KNEE_RIGHT",
+  "ANKLE_LEFT",
+  "ANKLE_RIGHT",
+] as const satisfies readonly MuscleType[];
+
+export type PainRegion = (typeof PAIN_REGIONS)[number];
 
 // Prevention exercise types
 const PREVENTION = {
@@ -35,98 +43,73 @@ const BODY_BLOCKS = {
   ANKLE: "ANKLE",
 } as const;
 
+type PreventionSkill = (typeof PREVENTION)[keyof typeof PREVENTION];
+type BodyBlock = (typeof BODY_BLOCKS)[keyof typeof BODY_BLOCKS];
+
+// Hip and knee share one prevention program on purpose (product decision).
+const PREVENTION_BY_REGION: Record<PainRegion, PreventionSkill> = {
+  SHOULDER_LEFT: PREVENTION.SHOULDER,
+  SHOULDER_RIGHT: PREVENTION.SHOULDER,
+  ELBOW_LEFT: PREVENTION.WRIST,
+  ELBOW_RIGHT: PREVENTION.WRIST,
+  WRIST_LEFT: PREVENTION.WRIST,
+  WRIST_RIGHT: PREVENTION.WRIST,
+  SPINE: PREVENTION.SPINE,
+  HIP_LEFT: PREVENTION.KNEE,
+  HIP_RIGHT: PREVENTION.KNEE,
+  KNEE_LEFT: PREVENTION.KNEE,
+  KNEE_RIGHT: PREVENTION.KNEE,
+  ANKLE_LEFT: PREVENTION.ANKLE,
+  ANKLE_RIGHT: PREVENTION.ANKLE,
+};
+
+const BLOCK_BY_REGION: Record<PainRegion, BodyBlock> = {
+  SHOULDER_LEFT: BODY_BLOCKS.SHOULDER,
+  SHOULDER_RIGHT: BODY_BLOCKS.SHOULDER,
+  ELBOW_LEFT: BODY_BLOCKS.ELBOW,
+  ELBOW_RIGHT: BODY_BLOCKS.ELBOW,
+  WRIST_LEFT: BODY_BLOCKS.WRIST,
+  WRIST_RIGHT: BODY_BLOCKS.WRIST,
+  SPINE: BODY_BLOCKS.SPINE,
+  HIP_LEFT: BODY_BLOCKS.HIP,
+  HIP_RIGHT: BODY_BLOCKS.HIP,
+  KNEE_LEFT: BODY_BLOCKS.KNEE,
+  KNEE_RIGHT: BODY_BLOCKS.KNEE,
+  ANKLE_LEFT: BODY_BLOCKS.ANKLE,
+  ANKLE_RIGHT: BODY_BLOCKS.ANKLE,
+};
+
+export function isPainRegion(value: string): value is PainRegion {
+  return (PAIN_REGIONS as readonly string[]).includes(value);
+}
+
+/**
+ * Maps stored pain values through a region table, dropping unknown values
+ * instead of guessing a region for them and de-duplicating the result.
+ */
+function mapKnownPains<T extends string>(
+  pains: string[],
+  table: Record<PainRegion, T>,
+): T[] {
+  const result: T[] = [];
+  for (const pain of pains) {
+    if (!isPainRegion(pain)) continue;
+    const mapped = table[pain];
+    if (!result.includes(mapped)) result.push(mapped);
+  }
+  return result;
+}
+
 /**
  * Maps pain locations to prevention exercise types
  */
 export function getPreventionsFromPains(pains: string[]): string[] {
-  const preventions: string[] = [];
-
-  for (const pain of pains) {
-    let prev: string;
-
-    switch (pain) {
-      case PAIN.SHOULDER_LEFT:
-      case PAIN.SHOULDER_RIGHT:
-        prev = PREVENTION.SHOULDER;
-        break;
-      case PAIN.ELBOW_LEFT:
-      case PAIN.ELBOW_RIGHT:
-      case PAIN.WRIST_LEFT:
-      case PAIN.WRIST_RIGHT:
-        prev = PREVENTION.WRIST;
-        break;
-      case PAIN.SPINE:
-        prev = PREVENTION.SPINE;
-        break;
-      case PAIN.HIP_LEFT:
-      case PAIN.HIP_RIGHT:
-      case PAIN.KNEE_LEFT:
-      case PAIN.KNEE_RIGHT:
-        prev = PREVENTION.KNEE;
-        break;
-      case PAIN.ANKLE_LEFT:
-      case PAIN.ANKLE_RIGHT:
-        prev = PREVENTION.ANKLE;
-        break;
-      default:
-        prev = PREVENTION.SHOULDER;
-        break;
-    }
-
-    if (!preventions.includes(prev)) {
-      preventions.push(prev);
-    }
-  }
-
-  return preventions;
+  return mapKnownPains(pains, PREVENTION_BY_REGION);
 }
 
 /**
  * Maps pain locations to blocked body regions
  */
 export function getBlocksFromPains(pains: string[]): string[] {
-  const blocks: string[] = [];
-
-  for (const pain of pains) {
-    let block: string;
-
-    switch (pain) {
-      case PAIN.SHOULDER_LEFT:
-      case PAIN.SHOULDER_RIGHT:
-        block = BODY_BLOCKS.SHOULDER;
-        break;
-      case PAIN.ELBOW_LEFT:
-      case PAIN.ELBOW_RIGHT:
-        block = BODY_BLOCKS.ELBOW;
-        break;
-      case PAIN.WRIST_LEFT:
-      case PAIN.WRIST_RIGHT:
-        block = BODY_BLOCKS.WRIST;
-        break;
-      case PAIN.SPINE:
-        block = BODY_BLOCKS.SPINE;
-        break;
-      case PAIN.HIP_LEFT:
-      case PAIN.HIP_RIGHT:
-        block = BODY_BLOCKS.HIP;
-        break;
-      case PAIN.KNEE_LEFT:
-      case PAIN.KNEE_RIGHT:
-        block = BODY_BLOCKS.KNEE;
-        break;
-      case PAIN.ANKLE_LEFT:
-      case PAIN.ANKLE_RIGHT:
-        block = BODY_BLOCKS.ANKLE;
-        break;
-      default:
-        block = BODY_BLOCKS.SHOULDER;
-        break;
-    }
-
-    if (!blocks.includes(block)) {
-      blocks.push(block);
-    }
-  }
-
-  return blocks;
+  return mapKnownPains(pains, BLOCK_BY_REGION);
 }

@@ -9,7 +9,6 @@ import { ScrollView } from "react-native";
 export type TrainingListRowsProps = {
   rows: ListRow[];
   exerciseList: UserExerciseDataType[] | null;
-  completedExerciseIndices: number[];
   repsDraft: Record<number, number>;
   onComplete: (row: ListRow, feedback?: DifficultyFeedbackType) => void;
   onSkip: (row: ListRow) => void;
@@ -22,7 +21,6 @@ export type TrainingListRowsProps = {
 export const TrainingListRows: FC<TrainingListRowsProps> = ({
   rows,
   exerciseList,
-  completedExerciseIndices,
   repsDraft,
   onComplete,
   onSkip,
@@ -40,7 +38,7 @@ export const TrainingListRows: FC<TrainingListRowsProps> = ({
           setLabel={row.setLabel}
           isTest={row.isTest}
           isFeedbackEligible={row.isFeedbackSkill && row.isLastInSet}
-          isCompleted={completedExerciseIndices.includes(row.index)}
+          isCompleted={row.completed}
           completedFeedback={exerciseList?.[row.index]?.feedback?.difficulty}
           repsValue={repsDraft[row.index] ?? 0}
           onChangeReps={(value) => onChangeReps(row.index, value)}

@@ -8,9 +8,6 @@ import { useState } from "react";
  * handler that persists the drafted value and marks the row complete.
  */
 export function useTrainingListReps() {
-  const completedExerciseIndices = useTrainingStore(
-    (s) => s.completedExerciseIndices,
-  );
   const markExerciseCompleted = useTrainingStore(
     (s) => s.markExerciseCompleted,
   );
@@ -23,7 +20,7 @@ export function useTrainingListReps() {
   };
 
   const handleSubmitReps = (row: ListRow) => {
-    if (completedExerciseIndices.includes(row.index)) return;
+    if (row.completed) return;
 
     saveRepsInput(row.index, repsDraft[row.index] ?? 0);
     saveExerciseAndBranchData(row.index);

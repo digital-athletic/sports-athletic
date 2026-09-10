@@ -17,8 +17,8 @@ import { useExerciseProgression } from "./useExerciseProgression";
 // top-level state object) that delegates to the captured original.
 const ORIGINAL_ADD_PAUSE_TIME = useTrainingStore.getState().addPauseTime;
 const ORIGINAL_ADD_SKILL_TIME = useTrainingStore.getState().addSkillTime;
-const ORIGINAL_SET_ACTIVE_EXERCISE_INDEX =
-  useTrainingStore.getState().setActiveExerciseIndex;
+const ORIGINAL_MARK_EXERCISE_COMPLETED =
+  useTrainingStore.getState().markExerciseCompleted;
 
 function spyOnAddPauseTime() {
   const spy = jest.fn((pauseTime: number) =>
@@ -36,11 +36,11 @@ function spyOnAddSkillTime() {
   return spy;
 }
 
-function spyOnSetActiveExerciseIndex() {
+function spyOnMarkExerciseCompleted() {
   const spy = jest.fn((index: number) =>
-    ORIGINAL_SET_ACTIVE_EXERCISE_INDEX(index),
+    ORIGINAL_MARK_EXERCISE_COMPLETED(index),
   );
-  useTrainingStore.setState({ setActiveExerciseIndex: spy });
+  useTrainingStore.setState({ markExerciseCompleted: spy });
   return spy;
 }
 
@@ -92,7 +92,7 @@ const BASELINE_TRAINING_STATE = {
   ...SHARED_BASELINE_TRAINING_STATE,
   addPauseTime: ORIGINAL_ADD_PAUSE_TIME,
   addSkillTime: ORIGINAL_ADD_SKILL_TIME,
-  setActiveExerciseIndex: ORIGINAL_SET_ACTIVE_EXERCISE_INDEX,
+  markExerciseCompleted: ORIGINAL_MARK_EXERCISE_COMPLETED,
 };
 
 const BASELINE_MAX_VALUES: MaxValuesType = {
@@ -148,7 +148,6 @@ describe("useExerciseProgression: advanceToNextExercise pause time accounting", 
         createExercise({ exerciseId: "2", skill: "SWR1" }),
         createExercise({ exerciseId: "3", skill: "SWR1" }),
       ],
-      activeExerciseIndex: 0,
       activeTraining: { id: "training-1", type: "PLAN" },
     });
 
@@ -173,16 +172,14 @@ describe("useExerciseProgression: advanceToNextExercise pause time accounting", 
     expect(addPauseTimeSpy).toHaveBeenCalledWith(5_000);
   });
 
-  it("advances the active exercise index via setActiveExerciseIndex", () => {
-    const setActiveExerciseIndexSpy = spyOnSetActiveExerciseIndex();
-
+  it("marks the current exercise completed so the pointer derives past it", () => {
     const { result } = renderHook(() => useExerciseProgression());
 
     act(() => {
       result.current.advanceToNextExercise();
     });
 
-    expect(setActiveExerciseIndexSpy).toHaveBeenCalledWith(1);
+    expect(useTrainingStore.getState().exerciseList?.[0]?.completed).toBe(true);
   });
 
   it("saves exercise/branch data via useExerciseCompletion before advancing", () => {
@@ -208,7 +205,6 @@ describe("useExerciseProgression: advanceToNextExercise skill time accounting", 
         createExercise({ exerciseId: "1", skill: "SWR1" }),
         createExercise({ exerciseId: "2", skill: "SWR1" }),
       ],
-      activeExerciseIndex: 0,
       activeTraining: { id: "training-1", type: "PLAN" },
     });
 
@@ -243,7 +239,6 @@ describe("useExerciseProgression: advanceToNextExercise training completion", ()
     useTrainingStore.setState(BASELINE_TRAINING_STATE);
     useTrainingStore.setState({
       exerciseList: [createExercise({ exerciseId: "1", skill: "SWR1" })],
-      activeExerciseIndex: 0,
       activeTraining: { id: "training-1", type: "TEST_WORKOUT" },
     });
 
@@ -278,7 +273,6 @@ describe("useExerciseProgression: pain alert", () => {
           weightType: "weightFMax",
         }),
       ],
-      activeExerciseIndex: 0,
       activeTraining: { id: "training-1", type: "PLAN" },
     });
 
@@ -349,7 +343,6 @@ describe("useExerciseProgression: pain alert", () => {
             weightType: "weightFMax",
           }),
         ],
-        activeExerciseIndex: 0,
       });
     });
 
@@ -369,7 +362,6 @@ describe("useExerciseProgression: barbell alert", () => {
         createExercise({ exerciseId: PAUSE_EXERCISE_ID }),
         createExercise({ exerciseId: BARBELL_EXERCISE_ID, skill: "SWR1" }),
       ],
-      activeExerciseIndex: 0,
       activeTraining: { id: "training-1", type: trainingType },
     });
 
@@ -433,7 +425,6 @@ describe("useExerciseProgression: barbell alert", () => {
           createExercise({ exerciseId: PAUSE_EXERCISE_ID }),
           createExercise({ exerciseId: BARBELL_EXERCISE_ID, skill: "SWR1" }),
         ],
-        activeExerciseIndex: 0,
       });
     });
 
@@ -466,7 +457,6 @@ describe("useExerciseProgression: handleExerciseSkipped", () => {
     useTrainingStore.setState(BASELINE_TRAINING_STATE);
     useTrainingStore.setState({
       exerciseList: [createExercise({ exerciseId: "1", skill: "SWR1" })],
-      activeExerciseIndex: 0,
       activeTraining: { id: "training-1", type: "PLAN" },
     });
 
@@ -481,17 +471,15 @@ describe("useExerciseProgression: handleExerciseSkipped", () => {
     expect(mockCompletionHandleExerciseSkipped).toHaveBeenCalledWith(0);
   });
 
-  it("advances the index via setActiveExerciseIndex when a next exercise exists", () => {
+  it("marks the exercise completed so the pointer derives to the next one", () => {
     useTrainingStore.setState(BASELINE_TRAINING_STATE);
     useTrainingStore.setState({
       exerciseList: [
         createExercise({ exerciseId: "1", skill: "SWR1" }),
         createExercise({ exerciseId: "2", skill: "SWR1" }),
       ],
-      activeExerciseIndex: 0,
       activeTraining: { id: "training-1", type: "PLAN" },
     });
-    const setActiveExerciseIndexSpy = spyOnSetActiveExerciseIndex();
 
     const { result } = renderHook(() => useExerciseProgression());
 
@@ -500,7 +488,7 @@ describe("useExerciseProgression: handleExerciseSkipped", () => {
     });
 
     expect(mockCompletionHandleExerciseSkipped).toHaveBeenCalledWith(0);
-    expect(setActiveExerciseIndexSpy).toHaveBeenCalledWith(1);
+    expect(useTrainingStore.getState().exerciseList?.[0]?.completed).toBe(true);
   });
 
   it("resets isSkipped back to false once skipping advances to a new exercise id", () => {
@@ -510,7 +498,6 @@ describe("useExerciseProgression: handleExerciseSkipped", () => {
         createExercise({ exerciseId: "1", skill: "SWR1" }),
         createExercise({ exerciseId: "2", skill: "SWR1" }),
       ],
-      activeExerciseIndex: 0,
       activeTraining: { id: "training-1", type: "PLAN" },
     });
 
@@ -533,7 +520,6 @@ describe("useExerciseProgression: handleAbortTraining", () => {
     useTrainingStore.setState(BASELINE_TRAINING_STATE);
     useTrainingStore.setState({
       exerciseList: [createExercise({ exerciseId: "1", skill: "SWR1" })],
-      activeExerciseIndex: 0,
       activeTraining: { id: "training-1", type: "PLAN" },
     });
 
@@ -601,7 +587,7 @@ describe("useExerciseProgression: interleaved call order in advanceToNextExercis
     jest.restoreAllMocks();
   });
 
-  it("orders pause commit, then alert checks, then index advance for a pause exercise", () => {
+  it("orders save, then mark-completed, then pause commit, then alert checks for a pause exercise", () => {
     useTrainingStore.setState(BASELINE_TRAINING_STATE);
     useTrainingStore.setState({
       exerciseList: [
@@ -612,13 +598,12 @@ describe("useExerciseProgression: interleaved call order in advanceToNextExercis
           weightType: "weightFMax",
         }),
       ],
-      activeExerciseIndex: 0,
       activeTraining: { id: "training-1", type: "PLAN" },
     });
     seedUserStores({ PAIN: ["KNEE"] });
 
     const addPauseTimeSpy = spyOnAddPauseTime();
-    const setActiveExerciseIndexSpy = spyOnSetActiveExerciseIndex();
+    const markExerciseCompletedSpy = spyOnMarkExerciseCompleted();
 
     const { result } = renderHook(() => useExerciseProgression());
 
@@ -627,29 +612,29 @@ describe("useExerciseProgression: interleaved call order in advanceToNextExercis
     });
 
     const saveOrder = mockSaveExerciseAndBranchData.mock.invocationCallOrder[0];
+    const markCompletedOrder =
+      markExerciseCompletedSpy.mock.invocationCallOrder[0];
     const pauseOrder = addPauseTimeSpy.mock.invocationCallOrder[0];
     const alertOrder = (Alert.alert as jest.Mock).mock.invocationCallOrder[0];
-    const indexOrder = setActiveExerciseIndexSpy.mock.invocationCallOrder[0];
 
-    expect(saveOrder).toBeLessThan(pauseOrder);
+    expect(saveOrder).toBeLessThan(markCompletedOrder);
+    expect(markCompletedOrder).toBeLessThan(pauseOrder);
     expect(pauseOrder).toBeLessThan(alertOrder);
-    expect(alertOrder).toBeLessThan(indexOrder);
   });
 
-  it("orders skill commit before index advance for a non pause exercise", () => {
+  it("orders save, then mark-completed, then skill commit for a non pause exercise", () => {
     useTrainingStore.setState(BASELINE_TRAINING_STATE);
     useTrainingStore.setState({
       exerciseList: [
         createExercise({ exerciseId: "1", skill: "SWR1" }),
         createExercise({ exerciseId: "2", skill: "SWR1" }),
       ],
-      activeExerciseIndex: 0,
       activeTraining: { id: "training-1", type: "PLAN" },
     });
     seedUserStores();
 
     const addSkillTimeSpy = spyOnAddSkillTime();
-    const setActiveExerciseIndexSpy = spyOnSetActiveExerciseIndex();
+    const markExerciseCompletedSpy = spyOnMarkExerciseCompleted();
 
     const { result } = renderHook(() => useExerciseProgression());
 
@@ -657,9 +642,89 @@ describe("useExerciseProgression: interleaved call order in advanceToNextExercis
       result.current.advanceToNextExercise();
     });
 
+    const saveOrder = mockSaveExerciseAndBranchData.mock.invocationCallOrder[0];
+    const markCompletedOrder =
+      markExerciseCompletedSpy.mock.invocationCallOrder[0];
     const skillOrder = addSkillTimeSpy.mock.invocationCallOrder[0];
-    const indexOrder = setActiveExerciseIndexSpy.mock.invocationCallOrder[0];
 
-    expect(skillOrder).toBeLessThan(indexOrder);
+    expect(saveOrder).toBeLessThan(markCompletedOrder);
+    expect(markCompletedOrder).toBeLessThan(skillOrder);
+  });
+});
+
+describe("useExerciseProgression: pause timing after out-of-order completion", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockNow = 9_000_000;
+    jest.spyOn(Date, "now").mockImplementation(() => mockNow);
+
+    useTrainingStore.setState(BASELINE_TRAINING_STATE);
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1", skill: "SWR1" }),
+        createExercise({ exerciseId: "2", skill: "SWR1", completed: true }),
+        createExercise({ exerciseId: PAUSE_EXERCISE_ID }),
+        createExercise({ exerciseId: "3", skill: "SWR1" }),
+      ],
+      activeTraining: { id: "training-1", type: "PLAN" },
+    });
+
+    seedUserStores();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+  });
+
+  it("starts the pause timer for the true next exercise, skipping an already completed entry", () => {
+    const addPauseTimeSpy = spyOnAddPauseTime();
+    const { result } = renderHook(() => useExerciseProgression());
+
+    mockNow += 5_000;
+    act(() => {
+      result.current.advanceToNextExercise();
+    });
+
+    mockNow += 3_000;
+    act(() => {
+      result.current.advanceToNextExercise();
+    });
+
+    expect(addPauseTimeSpy).toHaveBeenCalledWith(3_000);
+  });
+});
+
+describe("useExerciseProgression: advanceToNextExercise finish decision when the last array slot is already completed out of order", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockNow = 10_000_000;
+    jest.spyOn(Date, "now").mockImplementation(() => mockNow);
+
+    useTrainingStore.setState(BASELINE_TRAINING_STATE);
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1", skill: "SWR1" }),
+        createExercise({ exerciseId: "2", skill: "SWR1", completed: true }),
+      ],
+      activeTraining: { id: "training-1", type: "PLAN" },
+    });
+
+    seedUserStores();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+  });
+
+  it("calls finishTraining instead of arming a timer when the only remaining incomplete exercise sits before the last array slot", () => {
+    const { result } = renderHook(() => useExerciseProgression());
+
+    act(() => {
+      result.current.advanceToNextExercise();
+    });
+
+    expect(mockFinishTraining).toHaveBeenCalledWith(false, undefined);
   });
 });

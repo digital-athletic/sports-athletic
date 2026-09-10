@@ -1,4 +1,21 @@
-import { getBlocksFromPains, getPreventionsFromPains } from "./painUtils";
+import {
+  getBlocksFromPains,
+  getPreventionsFromPains,
+  isPainRegion,
+  PAIN_REGIONS,
+} from "./painUtils";
+
+describe("painUtils: pain region vocabulary", () => {
+  it("accepts every offered region", () => {
+    const rejected = PAIN_REGIONS.filter((region) => !isPainRegion(region));
+    expect(rejected).toEqual([]);
+  });
+
+  it("rejects muscle values and side neutral joint names", () => {
+    expect(isPainRegion("GLUTES")).toBe(false);
+    expect(isPainRegion("KNEE")).toBe(false);
+  });
+});
 
 describe("painUtils", () => {
   describe("getPreventionsFromPains", () => {
@@ -71,14 +88,14 @@ describe("painUtils", () => {
       expect(result).toEqual([]);
     });
 
-    it("should handle unknown pain location with shoulder default", () => {
-      const result = getPreventionsFromPains(["UNKNOWN_PAIN"]);
-      expect(result).toEqual(["PREVSHOULDER"]);
+    it("should ignore unknown pain locations", () => {
+      const result = getPreventionsFromPains(["UNKNOWN_PAIN", "GLUTES"]);
+      expect(result).toEqual([]);
     });
 
-    it("should handle mixed known and unknown pain locations", () => {
-      const result = getPreventionsFromPains(["SHOULDER_LEFT", "UNKNOWN_PAIN"]);
-      expect(result).toEqual(["PREVSHOULDER"]);
+    it("should keep known pain locations next to unknown ones", () => {
+      const result = getPreventionsFromPains(["KNEE_LEFT", "UNKNOWN_PAIN"]);
+      expect(result).toEqual(["PREVKNEE"]);
     });
   });
 
@@ -149,14 +166,14 @@ describe("painUtils", () => {
       expect(result).toEqual([]);
     });
 
-    it("should handle unknown pain location with shoulder default", () => {
-      const result = getBlocksFromPains(["UNKNOWN_PAIN"]);
-      expect(result).toEqual(["SHOULDER"]);
+    it("should ignore unknown pain locations", () => {
+      const result = getBlocksFromPains(["UNKNOWN_PAIN", "GLUTES"]);
+      expect(result).toEqual([]);
     });
 
-    it("should handle mixed known and unknown pain locations", () => {
-      const result = getBlocksFromPains(["SHOULDER_LEFT", "UNKNOWN_PAIN"]);
-      expect(result).toEqual(["SHOULDER"]);
+    it("should keep known pain locations next to unknown ones", () => {
+      const result = getBlocksFromPains(["KNEE_LEFT", "UNKNOWN_PAIN"]);
+      expect(result).toEqual(["KNEE"]);
     });
 
     it("should map all body parts correctly", () => {

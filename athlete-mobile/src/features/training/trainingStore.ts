@@ -22,11 +22,9 @@ export type State = {
   equipment: string[];
   time: TrainingTimeType;
   activeTraining: ActiveTrainingType | null;
-  activeExerciseIndex: number;
   tempMaxValues: MaxValuesType | null;
   _hasHydrated: boolean;
   trainingViewMode: TrainingViewMode | null;
-  completedExerciseIndices: number[];
 };
 
 const createInitialTrainingTime = (): TrainingTimeType => ({
@@ -50,11 +48,9 @@ const createInitialState = (): State => ({
   equipment: [],
   time: createInitialTrainingTime(),
   activeTraining: null,
-  activeExerciseIndex: 0,
   tempMaxValues: null,
   _hasHydrated: false,
   trainingViewMode: null,
-  completedExerciseIndices: [],
 });
 
 type Actions = {
@@ -76,7 +72,6 @@ type Actions = {
   setProgressBefore: (progress: UserProgressType | null) => void;
   setEquipment: (equipment: string[]) => void;
   setActiveTraining: (training: ActiveTrainingType | null) => void;
-  setActiveExerciseIndex: (index: number) => void;
   setTempMaxValues: (values: MaxValuesType | null) => void;
   setTrainingStartTime: (time: number) => void;
   setTrainingEndTime: (time: number) => void;
@@ -178,10 +173,6 @@ export const useTrainingStore = create<TrainingState>()(
         set((state) => {
           state.activeTraining = training;
         }),
-      setActiveExerciseIndex: (index) =>
-        set((state) => {
-          state.activeExerciseIndex = index;
-        }),
       setTempMaxValues: (values) =>
         set((state) => {
           state.tempMaxValues = values;
@@ -210,11 +201,8 @@ export const useTrainingStore = create<TrainingState>()(
           state.equipment = initialState.equipment;
           state.time = initialState.time;
           state.activeTraining = initialState.activeTraining;
-          state.activeExerciseIndex = initialState.activeExerciseIndex;
           state.tempMaxValues = initialState.tempMaxValues;
           state.trainingViewMode = initialState.trainingViewMode;
-          state.completedExerciseIndices =
-            initialState.completedExerciseIndices;
         }),
       setHasHydrated: (hydrated) =>
         set((state) => {
@@ -226,8 +214,9 @@ export const useTrainingStore = create<TrainingState>()(
         }),
       markExerciseCompleted: (index) =>
         set((state) => {
-          if (!state.completedExerciseIndices.includes(index)) {
-            state.completedExerciseIndices.push(index);
+          const exercise = state.exerciseList?.[index];
+          if (exercise) {
+            exercise.completed = true;
           }
         }),
     })),
@@ -243,10 +232,8 @@ export const useTrainingStore = create<TrainingState>()(
         equipment: state.equipment,
         time: state.time,
         activeTraining: state.activeTraining,
-        activeExerciseIndex: state.activeExerciseIndex,
         tempMaxValues: state.tempMaxValues,
         trainingViewMode: state.trainingViewMode,
-        completedExerciseIndices: state.completedExerciseIndices,
       }),
       onRehydrateStorage: () => (_state, error) => {
         if (error) {

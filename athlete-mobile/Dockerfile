@@ -7,8 +7,7 @@ ENV EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
 ENV REACT_NATIVE_PACKAGER_HOSTNAME=0.0.0.0
 
 # Install pnpm (runs as root, writes to /usr/local)
-RUN corepack enable && \
-    corepack prepare pnpm@11.13.0 --activate
+RUN corepack enable
 
 # Pre-create the named-volume mount points owned by node
 RUN mkdir -p /workspace/node_modules \

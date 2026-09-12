@@ -32,11 +32,9 @@ For more control of individual tool versions or if you prefer developing without
 
 **Prerequisites:**
 
-- [Node.js](https://nodejs.org/en/download) - v24, see [.tool-versions](.tool-versions). v22 is the technical minimum, 24 is what CI runs.
+- [Node.js](https://nodejs.org/en/download) - v24.18.0. v22 is the technical minimum, 24.18.0 is what CI runs.
 - [pnpm](https://pnpm.io/installation) - for managing third-party node modules
 - [watchman](https://facebook.github.io/watchman/docs/install) - file watcher to support development server hot reloads
-
-> 💡 **Pro tip:** Use [asdf](https://asdf-vm.com/) to manage tool versions automatically. Check [.tool-versions](.tool-versions) for required versions.
 
 **Steps:**
 

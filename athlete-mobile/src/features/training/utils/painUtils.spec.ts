@@ -3,6 +3,7 @@ import {
   getPreventionsFromPains,
   isPainRegion,
   PAIN_REGIONS,
+  shouldShowPainAlert,
 } from "./painUtils";
 
 describe("painUtils: pain region vocabulary", () => {
@@ -197,5 +198,36 @@ describe("painUtils", () => {
         "ANKLE",
       ]);
     });
+  });
+});
+
+describe("painUtils: shouldShowPainAlert", () => {
+  const pains = { PAIN: ["KNEE_LEFT"] };
+  const withMax = [
+    { weightType: "weightAbsolute" },
+    { weightType: "weightFMax" },
+  ];
+  const withoutMax = [{ weightType: "weightAbsolute" }, {}];
+
+  it("stays silent without pain tags, even for the strength test", () => {
+    expect(shouldShowPainAlert("TEST_WORKOUT", [], {})).toBe(false);
+    expect(shouldShowPainAlert("PLAN", withMax, undefined)).toBe(false);
+  });
+
+  it("fires for the strength test with pain tags", () => {
+    expect(shouldShowPainAlert("TEST_WORKOUT", [], pains)).toBe(true);
+  });
+
+  it("fires for a plan training that contains a max strength exercise", () => {
+    expect(shouldShowPainAlert("PLAN", withMax, pains)).toBe(true);
+  });
+
+  it("stays silent for a plan training without max strength exercises", () => {
+    expect(shouldShowPainAlert("PLAN", withoutMax, pains)).toBe(false);
+  });
+
+  it("stays silent for focus and prevention trainings", () => {
+    expect(shouldShowPainAlert("BAS", withMax, pains)).toBe(false);
+    expect(shouldShowPainAlert("PREVKNEE", withMax, pains)).toBe(false);
   });
 });

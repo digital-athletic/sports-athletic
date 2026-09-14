@@ -13,16 +13,24 @@ async function completeStrengthTestWorkout(page: Page, reps: number) {
   const repsInput = page.locator("input").first();
   const saveButton = page.locator("button", { hasText: /save|speichern/i });
   const resultsPage = page.getByText("Training Evaluation");
+  // The barbell notice is a modal; nothing behind it takes clicks until OK.
+  const noticeOk = page.getByText("OK", { exact: true });
 
   for (let i = 0; i < 50; i++) {
     await Promise.race([
       resultsPage.waitFor({ state: "visible", timeout: 5000 }),
+      noticeOk.waitFor({ state: "visible", timeout: 5000 }),
       repsInput.waitFor({ state: "visible", timeout: 5000 }),
       skipButton.waitFor({ state: "visible", timeout: 5000 }),
     ]).catch(() => {});
 
     if (await resultsPage.isVisible().catch(() => false)) {
       break;
+    }
+
+    if (await noticeOk.isVisible().catch(() => false)) {
+      await noticeOk.click();
+      continue;
     }
 
     if (await repsInput.isVisible().catch(() => false)) {

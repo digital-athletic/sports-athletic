@@ -43,8 +43,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type ScreenState = "SORENESS" | "PLACE";
 
-// Only plan and strength test trainings check for soreness; focus and
-// prevention trainings start at the place selection.
+// The soreness blocker points users to focus and prevention trainings, so
+// those skip the check.
 const screenStateFor = (type: TrainingType): ScreenState =>
   type === "PLAN" || type === "TEST_WORKOUT" ? "SORENESS" : "PLACE";
 
@@ -154,7 +154,8 @@ export default function MuscleSorenessScreen() {
       userId: userId ?? "test-user",
       personalData,
       workoutData,
-      temporalData: temporalData ?? [],
+      // Soreness from an earlier training must not block a type that skips the check.
+      temporalData: screenState === "SORENESS" ? (temporalData ?? []) : [],
       trainingPlan,
     };
 
@@ -235,7 +236,7 @@ export default function MuscleSorenessScreen() {
     return exerciseList;
   };
 
-  const generateTraining = async (place: PlaceType) => {
+  const generateTraining = (place: PlaceType) => {
     // generate training
     setLoading(true);
 

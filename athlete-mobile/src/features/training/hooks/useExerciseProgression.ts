@@ -14,7 +14,7 @@ type FeedbackCategory = "TOO_EASY" | "TOO_HARD" | "SUCCEEDED";
 
 /**
  * Sequences the active training: exercise advancement, pause/skill-time
- * accounting, one-shot pain/barbell alerts, skip/feedback/abort, completion.
+ * accounting, the one-shot barbell alert, skip/feedback/abort, completion.
  */
 export function useExerciseProgression() {
   const { t } = useTranslation();
@@ -29,7 +29,6 @@ export function useExerciseProgression() {
     safeExerciseIndex,
     currentExercise,
     exerciseId,
-    nextExercise,
     nextExerciseData,
     hasNextExercise,
     flags: { isPauseExercise, isNextExercisePause },
@@ -48,7 +47,7 @@ export function useExerciseProgression() {
     markPauseStart,
     resetExerciseStart,
   } = useExerciseTiming();
-  const { maybeShowPainAlert, maybeShowBarbellAlert } = useTrainingAlerts();
+  const { maybeShowBarbellAlert } = useTrainingAlerts();
 
   const [isAborted, setIsAborted] = useState(false);
   const [isSkipped, setIsSkipped] = useState(false);
@@ -87,7 +86,6 @@ export function useExerciseProgression() {
     commitElapsedTime();
 
     if (isPauseExercise) {
-      maybeShowPainAlert(nextExercise);
       maybeShowBarbellAlert(nextExerciseData, activeTraining?.type);
     }
 

@@ -261,99 +261,6 @@ describe("useExerciseProgression: advanceToNextExercise training completion", ()
   });
 });
 
-describe("useExerciseProgression: pain alert", () => {
-  const buildState = (hasPain: boolean) => {
-    useTrainingStore.setState(BASELINE_TRAINING_STATE);
-    useTrainingStore.setState({
-      exerciseList: [
-        createExercise({ exerciseId: PAUSE_EXERCISE_ID }),
-        createExercise({
-          exerciseId: "1",
-          skill: "SWR1",
-          weightType: "weightFMax",
-        }),
-      ],
-      activeTraining: { id: "training-1", type: "PLAN" },
-    });
-
-    seedUserStores(hasPain ? { PAIN: ["KNEE"] } : {});
-  };
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockNow = 4_000_000;
-    jest.spyOn(Date, "now").mockImplementation(() => mockNow);
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-    jest.restoreAllMocks();
-  });
-
-  it("shows the pain alert when the next exercise is weightFMax and the user has PAIN tags", () => {
-    buildState(true);
-    const { result } = renderHook(() => useExerciseProgression());
-
-    act(() => {
-      result.current.advanceToNextExercise();
-    });
-
-    expect(Alert.alert).toHaveBeenCalledWith(
-      "training.active.strengthTestAlert.title",
-      "training.active.strengthTestAlert.message",
-      expect.any(Array),
-    );
-  });
-
-  it("does not show the pain alert when the user has no PAIN tags", () => {
-    buildState(false);
-    const { result } = renderHook(() => useExerciseProgression());
-
-    act(() => {
-      result.current.advanceToNextExercise();
-    });
-
-    expect(Alert.alert).not.toHaveBeenCalled();
-  });
-
-  it("one shot: suppresses the pain alert on a second advance after acknowledging it (fresh instance)", () => {
-    buildState(true);
-    const { result } = renderHook(() => useExerciseProgression());
-
-    act(() => {
-      result.current.advanceToNextExercise();
-    });
-    expect(Alert.alert).toHaveBeenCalledTimes(1);
-
-    // Acknowledge the alert (taps "OK"), which flips the one shot flag off.
-    const [, , buttons] = (Alert.alert as jest.Mock).mock.calls[0];
-    act(() => {
-      buttons[0].onPress();
-    });
-
-    // Re-seed a pause exercise as current again so the predicate could
-    // re-trigger were the flag not one shot.
-    act(() => {
-      useTrainingStore.setState({
-        exerciseList: [
-          createExercise({ exerciseId: PAUSE_EXERCISE_ID }),
-          createExercise({
-            exerciseId: "1",
-            skill: "SWR1",
-            weightType: "weightFMax",
-          }),
-        ],
-      });
-    });
-
-    act(() => {
-      result.current.advanceToNextExercise();
-    });
-
-    expect(Alert.alert).toHaveBeenCalledTimes(1);
-  });
-});
-
 describe("useExerciseProgression: barbell alert", () => {
   const buildState = (trainingType: string) => {
     useTrainingStore.setState(BASELINE_TRAINING_STATE);
@@ -592,15 +499,11 @@ describe("useExerciseProgression: interleaved call order in advanceToNextExercis
     useTrainingStore.setState({
       exerciseList: [
         createExercise({ exerciseId: PAUSE_EXERCISE_ID }),
-        createExercise({
-          exerciseId: "1",
-          skill: "SWR1",
-          weightType: "weightFMax",
-        }),
+        createExercise({ exerciseId: BARBELL_EXERCISE_ID, skill: "SWR1" }),
       ],
-      activeTraining: { id: "training-1", type: "PLAN" },
+      activeTraining: { id: "training-1", type: "TEST_WORKOUT" },
     });
-    seedUserStores({ PAIN: ["KNEE"] });
+    seedUserStores();
 
     const addPauseTimeSpy = spyOnAddPauseTime();
     const markExerciseCompletedSpy = spyOnMarkExerciseCompleted();

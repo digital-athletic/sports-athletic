@@ -46,8 +46,10 @@ type ScreenState = "SORENESS" | "PLACE";
 
 // The soreness blocker points users to focus and prevention trainings, so
 // those skip the check.
+const checksSoreness = (type: TrainingType) =>
+  type === "PLAN" || type === "TEST_WORKOUT";
 const screenStateFor = (type: TrainingType): ScreenState =>
-  type === "PLAN" || type === "TEST_WORKOUT" ? "SORENESS" : "PLACE";
+  checksSoreness(type) ? "SORENESS" : "PLACE";
 
 type ScreenParams = {
   type: TrainingType;
@@ -96,8 +98,6 @@ export default function MuscleSorenessScreen() {
     useUserWorkoutStore();
   const muscleTags =
     temporalData?.map<MuscleType>((data) => data.tag as MuscleType) ?? [];
-
-  const { type } = params;
 
   const handleBack = useCallback(() => {
     router.back();
@@ -156,7 +156,7 @@ export default function MuscleSorenessScreen() {
       personalData,
       workoutData,
       // Soreness from an earlier training must not block a type that skips the check.
-      temporalData: screenState === "SORENESS" ? (temporalData ?? []) : [],
+      temporalData: checksSoreness(trainingType) ? (temporalData ?? []) : [],
       trainingPlan,
     };
 
@@ -279,12 +279,6 @@ export default function MuscleSorenessScreen() {
     }
   };
 
-  const goOn = () => generateTraining("STUDIO");
-
-  const selectPlace = (value: PlaceType) => {
-    generateTraining(value);
-  };
-
   let title =
     screenState === "SORENESS"
       ? t("training.muscleSoreness.title")
@@ -316,7 +310,7 @@ export default function MuscleSorenessScreen() {
             <Box flex={1} justifyContent="center" alignItems="stretch">
               {screenState === "SORENESS" ? (
                 <Box flex={1}>
-                  {type === "PLAN" ? (
+                  {params.type === "PLAN" ? (
                     <Text variant="title">
                       {t("training.muscleSoreness.title")}
                     </Text>
@@ -333,12 +327,15 @@ export default function MuscleSorenessScreen() {
                     justifyContent: "center",
                   }}
                 >
-                  <PlaceSelection selectPlace={selectPlace} places={places} />
+                  <PlaceSelection
+                    selectPlace={generateTraining}
+                    places={places}
+                  />
                 </ScrollBox>
               )}
             </Box>
             {screenState === "SORENESS" ? (
-              <Button onPress={goOn}>
+              <Button onPress={() => generateTraining("STUDIO")}>
                 {t("training.muscleSoreness.continue")}
               </Button>
             ) : (

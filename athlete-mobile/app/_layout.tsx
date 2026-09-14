@@ -51,11 +51,10 @@ export default function RootLayout() {
   return (
     <ThemeProvider theme={theme}>
       <KeyboardProvider>
-        {/* Rotation is allowed everywhere; screens that do not hold up in
-            landscape mark themselves portrait. Stating "all" rather than
-            leaving it out also keeps the value stable while a screen
-            transition is still resolving, which otherwise flickers. */}
-        <Stack screenOptions={{ headerShown: false, orientation: "all" }}>
+        {/* "default" leaves rotation to the system, so the user's rotation
+            lock applies; screens that do not hold up in landscape mark
+            themselves portrait. */}
+        <Stack screenOptions={{ headerShown: false, orientation: "default" }}>
           <Stack.Protected guard={auth != null && consentStatus === "accepted"}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="(anamnesis)" options={{ headerShown: false }} />

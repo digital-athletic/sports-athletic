@@ -1,4 +1,6 @@
 import { expect, test } from "./fixtures";
+import { STORAGE_KEYS } from "./mocks/stores/constants";
+import { createUserWorkoutStore } from "./mocks/stores/data/userWorkoutStore";
 import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile";
 import { createIncompleteAnamnesisProfile } from "./mocks/stores/profiles/incompleteAnamnesisProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
@@ -129,5 +131,41 @@ test.describe("Pain Regions", () => {
     await expect(
       page.getByText("Please select the areas that are hurting you"),
     ).toBeVisible({ timeout: 5000 });
+  });
+});
+
+test.describe("Pain warning", () => {
+  test.use({
+    profile: {
+      ...createCompletedProfile(),
+      [STORAGE_KEYS.USER_WORKOUT]: createUserWorkoutStore({
+        tags: { POSITION: ["FIELD"], LEVEL: ["BEGINNER"], PAIN: ["KNEE_LEFT"] },
+      }),
+    },
+  });
+
+  test("warns about declared pains before a strength test starts", async ({
+    page,
+  }) => {
+    await mockSupabaseAuth(page);
+    const basePage = new BasePage(page);
+    await basePage.login("test@example.com");
+    await basePage.expectLoggedIn();
+
+    await basePage.navigateToTab("Profile");
+    await page.getByText("Start Strength Test").click();
+    await basePage.skipMuscleSoreness();
+
+    await expect(page.getByText("Attention for pain")).toBeVisible({
+      timeout: 15000,
+    });
+    await expect(
+      page.getByRole("heading", { name: "Training Overview" }),
+    ).not.toBeVisible();
+
+    await page.getByText("OK", { exact: true }).click();
+    await expect(
+      page.getByRole("heading", { name: "Training Overview" }),
+    ).toBeVisible({ timeout: 15000 });
   });
 });

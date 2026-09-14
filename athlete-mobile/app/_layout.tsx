@@ -51,9 +51,8 @@ export default function RootLayout() {
   return (
     <ThemeProvider theme={theme}>
       <KeyboardProvider>
-        {/* "default" leaves rotation to the system, so the user's rotation
-            lock applies; screens that do not hold up in landscape mark
-            themselves portrait. */}
+        {/* Rotation follows the system; screens that do not hold up in
+            landscape mark themselves portrait. */}
         <Stack screenOptions={{ headerShown: false, orientation: "default" }}>
           <Stack.Protected guard={auth != null && consentStatus === "accepted"}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

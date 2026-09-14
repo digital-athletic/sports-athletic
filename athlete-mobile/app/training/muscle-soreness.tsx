@@ -296,7 +296,7 @@ export default function MuscleSorenessScreen() {
         options={{
           title,
           headerLeft: () => <BackHeader onBack={handleBack} />,
-          orientation: screenState === "SORENESS" ? "portrait" : "all",
+          orientation: screenState === "SORENESS" ? "portrait" : "default",
         }}
       />
       <Box

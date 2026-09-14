@@ -1,3 +1,4 @@
+import { Alert } from "@/common/Alert";
 import { PAUSE_EXERCISE_ID } from "@/features/training/models/IdTypes";
 import { type FocusArea } from "@/features/training/models/Training";
 import { useTrainingStore } from "@/features/training/trainingStore";
@@ -7,7 +8,6 @@ import { type MaxValuesType } from "@/schemas/user.schema";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { act, renderHook } from "@testing-library/react-native";
-import { Alert } from "react-native";
 import { useExerciseProgression } from "./useExerciseProgression";
 
 // Immer freezes produced store state objects, so `jest.spyOn` cannot patch an

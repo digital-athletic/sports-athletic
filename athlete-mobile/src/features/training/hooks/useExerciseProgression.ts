@@ -1,3 +1,4 @@
+import { Alert } from "@/common/Alert";
 import { useActiveExerciseView } from "@/features/training/hooks/useActiveExerciseView";
 import { useExerciseCompletion } from "@/features/training/hooks/useExerciseCompletion";
 import { useExerciseTiming } from "@/features/training/hooks/useExerciseTiming";
@@ -8,7 +9,6 @@ import { useTrainingStore } from "@/features/training/trainingStore";
 import { mapSkillCodeToFocusArea } from "@/features/training/utils/skillTreeUtils";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert } from "react-native";
 
 type FeedbackCategory = "TOO_EASY" | "TOO_HARD" | "SUCCEEDED";
 

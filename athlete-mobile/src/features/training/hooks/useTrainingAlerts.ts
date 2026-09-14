@@ -1,9 +1,9 @@
+import { Alert } from "@/common/Alert";
 import { TagGroups } from "@/constants/tagGroups";
 import { type ExerciseType } from "@/schemas/exercise.schema";
 import { getTagValues } from "@/utils/tagUtils";
 import { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert } from "react-native";
 
 /**
  * Training alerts. The pain alert is shown once before a training starts, the

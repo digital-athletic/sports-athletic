@@ -1,4 +1,5 @@
 import { MuscleSorenessSelector } from "@/bodyParts/MuscleSorenessSelector";
+import { Alert } from "@/common/Alert";
 import { MuscleType } from "@/bodyParts/types";
 import { BackHeader } from "@/common/BackHeader";
 import { Loading } from "@/common/Loading";
@@ -38,7 +39,7 @@ import { parseBooleanParam, parseIntParam } from "@/utils/router";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, BackHandler } from "react-native";
+import { BackHandler } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type ScreenState = "SORENESS" | "PLACE";

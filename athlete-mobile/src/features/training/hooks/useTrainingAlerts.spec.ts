@@ -1,5 +1,5 @@
+import { Alert } from "@/common/Alert";
 import { act, renderHook } from "@testing-library/react-native";
-import { Alert } from "react-native";
 import { useTrainingAlerts } from "./useTrainingAlerts";
 
 jest.mock("react-i18next", () => ({

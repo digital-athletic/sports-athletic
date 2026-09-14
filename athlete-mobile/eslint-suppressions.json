@@ -478,11 +478,6 @@
       "count": 1
     }
   },
-  "src/features/training/hooks/useTrainingAlerts.ts": {
-    "max-lines-per-function": {
-      "count": 1
-    }
-  },
   "src/features/training/hooks/useVoiceCoach.ts": {
     "max-lines-per-function": {
       "count": 1

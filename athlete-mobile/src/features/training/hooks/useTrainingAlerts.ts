@@ -6,15 +6,27 @@ import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
 
 /**
- * One-shot barbell alert shown while advancing between exercises. It fires at
- * most once per training; acknowledging it (OK) flips its showable flag off
- * for the rest of the training.
+ * Training alerts. The pain alert is shown once before a training starts, the
+ * caller decides whether it applies. The barbell alert fires while advancing
+ * between exercises, at most once per training; acknowledging it (OK) flips
+ * its showable flag off for the rest of the training.
  */
 export function useTrainingAlerts() {
   const { t } = useTranslation();
 
   // A ref, not state: the flag is a write-only guard that never affects render output.
   const barbellAlertShowableRef = useRef(true);
+
+  const showPainAlert = useCallback(
+    (onAcknowledge: () => void) => {
+      Alert.alert(
+        t("training.active.strengthTestAlert.title"),
+        t("training.active.strengthTestAlert.message"),
+        [{ text: t("common.ok"), onPress: onAcknowledge }],
+      );
+    },
+    [t],
+  );
 
   const maybeShowBarbellAlert = useCallback(
     (
@@ -48,6 +60,7 @@ export function useTrainingAlerts() {
   );
 
   return {
+    showPainAlert,
     maybeShowBarbellAlert,
   };
 }

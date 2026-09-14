@@ -16,6 +16,30 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
+describe("useTrainingAlerts: showPainAlert", () => {
+  it("shows the pain alert and runs the callback on OK", () => {
+    const onAcknowledge = jest.fn();
+    const { result } = renderHook(() => useTrainingAlerts());
+
+    act(() => {
+      result.current.showPainAlert(onAcknowledge);
+    });
+
+    expect(Alert.alert).toHaveBeenCalledWith(
+      "training.active.strengthTestAlert.title",
+      "training.active.strengthTestAlert.message",
+      expect.any(Array),
+    );
+    expect(onAcknowledge).not.toHaveBeenCalled();
+
+    const [, , buttons] = (Alert.alert as jest.Mock).mock.calls[0];
+    act(() => {
+      buttons[0].onPress();
+    });
+    expect(onAcknowledge).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe("useTrainingAlerts: maybeShowBarbellAlert", () => {
   it("shows the barbell alert for a TEST_WORKOUT whose next exercise carries barbell equipment", () => {
     const { result } = renderHook(() => useTrainingAlerts());

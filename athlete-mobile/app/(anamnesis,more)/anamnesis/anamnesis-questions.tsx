@@ -8,13 +8,13 @@ import { AnamnesisGroup2 } from "@/features/anamnesis/AnamnesisGroup2";
 import { AnamnesisGroup3 } from "@/features/anamnesis/AnamnesisGroup3";
 import { useAnamnesisCompletion } from "@/features/anamnesis/useAnamnesisCompletion";
 import { useShowSeasonPhaseAfterAnamnesis } from "@/features/anamnesis/useShowSeasonPhaseAfterAnamnesis";
+import { useHardwareBackHandler } from "@/hooks/useHardwareBackHandler";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { Box } from "@/theme/Box";
 import { ScrollBox } from "@/theme/ScrollBox";
 import { Stack, useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { BackHandler } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTrainingScheduleStore } from "../../../src/store/trainingScheduleStore";
 import { useUserProfileStore } from "../../../src/store/userProfileStore";
@@ -125,11 +125,7 @@ export default function AnamnesisQuestions() {
     [setTag, resetTrainingSchedule],
   );
 
-  // Setup hardware back button handler
-  useEffect(() => {
-    const handler = BackHandler.addEventListener("hardwareBackPress", onBack);
-    return () => handler.remove();
-  }, [onBack]);
+  useHardwareBackHandler(onBack);
 
   const maxSteps = showSeasonPhaseAfterAnamnesis ? 6 : 4;
   const progress = 2 + groupIndex;

@@ -11,6 +11,7 @@ import { ColumnList } from "@/features/training/ColumnList";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { getSectionForDate } from "@/features/training/trainingUtils";
 import { hasAnyBarbell } from "@/features/training/utils/equipmentUtils";
+import { useHardwareBackHandler } from "@/hooks/useHardwareBackHandler";
 import { Logger } from "@/services/Logger";
 import { usePlacesStore } from "@/store/placesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
@@ -19,7 +20,6 @@ import { Box } from "@/theme/Box";
 import { router, Stack } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { BackHandler } from "react-native";
 
 type ScreenState = "SELECT" | "TEST";
 
@@ -51,14 +51,7 @@ export default function SelectTraining() {
     return true;
   }, [setTrainingSelection]);
 
-  // Setup hardware back button
-  useEffect(() => {
-    const handler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      handleBack,
-    );
-    return () => handler.remove();
-  }, [handleBack]);
+  useHardwareBackHandler(handleBack);
 
   // Title based on screen state
   const title = t(

@@ -210,6 +210,15 @@ export async function mockSupabaseAuth(page: Page) {
     });
   });
 
+  // Mock updateUser (PUT /auth/v1/user), used by saveDisplayName
+  await page.route(`**/auth/v1/user**`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ user: mockUser }),
+    });
+  });
+
   // Mock Supabase REST API calls (sync tables + catch-all)
   await mockRestApi(page);
 

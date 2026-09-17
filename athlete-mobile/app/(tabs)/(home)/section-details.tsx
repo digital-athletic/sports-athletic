@@ -209,10 +209,13 @@ const SectionDetailsScreen: FC = () => {
 
   return (
     <>
+      {/* A full width 16:9 player is taller than the landscape screen;
+          fullscreen covers watching sideways. */}
       <Stack.Screen
         options={{
           title: t("training.sectionDetails.title"),
           headerShown: true,
+          orientation: "portrait",
         }}
       />
       <ScrollBox flex={1} backgroundColor="white">

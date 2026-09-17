@@ -78,9 +78,12 @@ const TutorialsScreen: FC = () => {
 
   return (
     <>
+      {/* A full width 16:9 player is taller than the landscape screen;
+          fullscreen covers watching sideways. */}
       <Stack.Screen
         options={{
           title: t("more.technicalVideos"),
+          orientation: "portrait",
         }}
       />
       <Box flex={1} backgroundColor="lightGrey2">

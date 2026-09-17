@@ -36,7 +36,7 @@ export default (): ExpoConfig => ({
   scheme: "digitalathletic",
   version: "0.0.1",
   primaryColor: "#C71B1B",
-  orientation: "portrait",
+  orientation: "default",
   icon,
   userInterfaceStyle: "light",
   newArchEnabled: true,

@@ -108,7 +108,7 @@ export const TrainingCountdown: FC<Props> = ({
         zIndex={99}
         style={{ backgroundColor: "transparent" }}
       >
-        {labelText && (
+        {labelText.length > 0 && (
           <Text color={countdownColorKey} variant="body" marginBottom="s">
             {labelText}
           </Text>

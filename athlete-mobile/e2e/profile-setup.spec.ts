@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 import { mockSupabaseAuth } from "./mocks/supabase";
 import { AnamnesisPage } from "./pages";
 import { addDays, formatDateToISO } from "@/utils/date";

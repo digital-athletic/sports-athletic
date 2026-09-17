@@ -1,7 +1,5 @@
-import { useUserWorkoutStore } from "@/store/userWorkoutStore";
-import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
+import { Alert } from "@/common/Alert";
 import { act, renderHook } from "@testing-library/react-native";
-import { Alert } from "react-native";
 import { useTrainingAlerts } from "./useTrainingAlerts";
 
 jest.mock("react-i18next", () => ({
@@ -10,37 +8,21 @@ jest.mock("react-i18next", () => ({
   }),
 }));
 
-const seedWorkoutTags = (hasPain: boolean) => {
-  useUserWorkoutStore.setState({
-    workoutData: {
-      sport: "OTHER_SPORT",
-      tags: {
-        POSITION: ["FIELD"],
-        LEVEL: ["BEGINNER"],
-        ...(hasPain ? { PAIN: ["KNEE"] } : {}),
-      },
-      seasonPhase: { type: null, endDate: "2026-01-01" },
-      maxValues: DEFAULT_MAX_VALUES,
-    },
-  });
-};
-
 beforeEach(() => {
   jest.spyOn(Alert, "alert");
-  seedWorkoutTags(false);
 });
 
 afterEach(() => {
   jest.restoreAllMocks();
 });
 
-describe("useTrainingAlerts: maybeShowPainAlert", () => {
-  it("shows the pain alert when the next exercise is weightFMax and the user has PAIN tags", () => {
-    seedWorkoutTags(true);
+describe("useTrainingAlerts: showPainAlert", () => {
+  it("shows the pain alert and runs the callback on OK", () => {
+    const onAcknowledge = jest.fn();
     const { result } = renderHook(() => useTrainingAlerts());
 
     act(() => {
-      result.current.maybeShowPainAlert({ weightType: "weightFMax" });
+      result.current.showPainAlert(onAcknowledge);
     });
 
     expect(Alert.alert).toHaveBeenCalledWith(
@@ -48,49 +30,13 @@ describe("useTrainingAlerts: maybeShowPainAlert", () => {
       "training.active.strengthTestAlert.message",
       expect.any(Array),
     );
-  });
-
-  it("does not show the pain alert when the user has no PAIN tags", () => {
-    seedWorkoutTags(false);
-    const { result } = renderHook(() => useTrainingAlerts());
-
-    act(() => {
-      result.current.maybeShowPainAlert({ weightType: "weightFMax" });
-    });
-
-    expect(Alert.alert).not.toHaveBeenCalled();
-  });
-
-  it("does not show the pain alert when the next exercise is not weightFMax", () => {
-    seedWorkoutTags(true);
-    const { result } = renderHook(() => useTrainingAlerts());
-
-    act(() => {
-      result.current.maybeShowPainAlert({ weightType: "weightAbsolute" });
-    });
-
-    expect(Alert.alert).not.toHaveBeenCalled();
-  });
-
-  it("one shot: suppresses the pain alert after acknowledging it once", () => {
-    seedWorkoutTags(true);
-    const { result } = renderHook(() => useTrainingAlerts());
-
-    act(() => {
-      result.current.maybeShowPainAlert({ weightType: "weightFMax" });
-    });
-    expect(Alert.alert).toHaveBeenCalledTimes(1);
+    expect(onAcknowledge).not.toHaveBeenCalled();
 
     const [, , buttons] = (Alert.alert as jest.Mock).mock.calls[0];
     act(() => {
       buttons[0].onPress();
     });
-
-    act(() => {
-      result.current.maybeShowPainAlert({ weightType: "weightFMax" });
-    });
-
-    expect(Alert.alert).toHaveBeenCalledTimes(1);
+    expect(onAcknowledge).toHaveBeenCalledTimes(1);
   });
 });
 

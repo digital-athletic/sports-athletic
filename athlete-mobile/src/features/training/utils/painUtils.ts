@@ -1,4 +1,9 @@
 import { type MuscleType } from "@/bodyParts/types";
+import { TagGroups } from "@/constants/tagGroups";
+import { getUserTagValues } from "@/utils/tagUtils";
+import { type TagsByGroup } from "../models/Tags";
+import { type TrainingType } from "../models/Training";
+import { type UserExerciseDataType } from "../models/UserExerciseData";
 
 /**
  * Pain regions the anamnesis can store and the generator understands. The
@@ -112,4 +117,20 @@ export function getPreventionsFromPains(pains: string[]): string[] {
  */
 export function getBlocksFromPains(pains: string[]): string[] {
   return mapKnownPains(pains, BLOCK_BY_REGION);
+}
+
+/**
+ * Whether the pain warning belongs in front of this training. Its text refers
+ * to max strength exercises; the strength test measures those maxima, so its
+ * exercises carry no weightType and it always qualifies.
+ */
+export function shouldShowPainAlert(
+  trainingType: TrainingType,
+  exerciseList: Pick<UserExerciseDataType, "weightType">[],
+  tags: TagsByGroup | undefined,
+): boolean {
+  if (getUserTagValues(tags, TagGroups.PAIN).length === 0) return false;
+  if (trainingType === "TEST_WORKOUT") return true;
+  if (trainingType !== "PLAN") return false;
+  return exerciseList.some((exercise) => exercise.weightType === "weightFMax");
 }

@@ -1,4 +1,5 @@
 import { MuscleSorenessSelector } from "@/bodyParts/MuscleSorenessSelector";
+import { Alert } from "@/common/Alert";
 import { MuscleType } from "@/bodyParts/types";
 import { BackHeader } from "@/common/BackHeader";
 import { Loading } from "@/common/Loading";
@@ -16,7 +17,9 @@ import { isGeneratorError } from "@/features/training/generators/GeneratorError"
 import { buildGeneratorErrorMessage } from "@/features/training/generators/generatorErrorUtils";
 import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
 import { TrainingType } from "@/features/training/models/Training";
+import { useTrainingAlerts } from "@/features/training/hooks/useTrainingAlerts";
 import { useTrainingStore } from "@/features/training/trainingStore";
+import { shouldShowPainAlert } from "@/features/training/utils/painUtils";
 import { toUserExerciseDataList } from "@/schemas/generator.schema";
 import { type UserType, parseUserType } from "@/schemas/user.schema";
 import { Logger } from "@/services/Logger";
@@ -36,10 +39,17 @@ import { parseBooleanParam, parseIntParam } from "@/utils/router";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, BackHandler } from "react-native";
+import { BackHandler } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type ScreenState = "SORENESS" | "PLACE";
+
+// The soreness blocker points users to focus and prevention trainings, so
+// those skip the check.
+const checksSoreness = (type: TrainingType) =>
+  type === "PLAN" || type === "TEST_WORKOUT";
+const screenStateFor = (type: TrainingType): ScreenState =>
+  checksSoreness(type) ? "SORENESS" : "PLACE";
 
 type ScreenParams = {
   type: TrainingType;
@@ -70,7 +80,8 @@ export default function MuscleSorenessScreen() {
   const insets = useSafeAreaInsets();
 
   const [loading, setLoading] = useState(true);
-  const [screenState, setScreenState] = useState<ScreenState>("SORENESS");
+  const screenState = screenStateFor(params.type);
+  const { showPainAlert } = useTrainingAlerts();
 
   const skillTrees = getAllSkillTrees();
   const exercises = getAllExercises();
@@ -88,16 +99,10 @@ export default function MuscleSorenessScreen() {
   const muscleTags =
     temporalData?.map<MuscleType>((data) => data.tag as MuscleType) ?? [];
 
-  const { type } = params;
-
   const handleBack = useCallback(() => {
-    if (screenState === "PLACE") {
-      setScreenState("SORENESS");
-    } else {
-      router.back();
-    }
+    router.back();
     return true;
-  }, [screenState, router]);
+  }, [router]);
 
   useEffect(() => {
     const handler = BackHandler.addEventListener(
@@ -150,7 +155,8 @@ export default function MuscleSorenessScreen() {
       userId: userId ?? "test-user",
       personalData,
       workoutData,
-      temporalData: temporalData ?? [],
+      // Soreness from an earlier training must not block a type that skips the check.
+      temporalData: checksSoreness(trainingType) ? (temporalData ?? []) : [],
       trainingPlan,
     };
 
@@ -228,23 +234,29 @@ export default function MuscleSorenessScreen() {
       sectionCardioType: params.sectionCardioType,
       trainingFocus: params.trainingFocus,
     });
+    return exerciseList;
   };
 
-  const generateTraining = async (place: PlaceType) => {
+  const generateTraining = (place: PlaceType) => {
     // generate training
     setLoading(true);
 
     try {
-      // generate exercise list
-      await generateExerciseList(place);
+      const exerciseList = generateExerciseList(place);
 
-      //start training
-      router.navigate({
-        pathname: "/training/training-overview",
-        params: { ...params, place }, // pass on params including place
-      });
+      const startTraining = () => {
+        router.navigate({
+          pathname: "/training/training-overview",
+          params: { ...params, place }, // pass on params including place
+        });
+        setLoading(false);
+      };
 
-      setLoading(false);
+      if (shouldShowPainAlert(params.type, exerciseList, workoutData.tags)) {
+        showPainAlert(startTraining);
+      } else {
+        startTraining();
+      }
     } catch (e) {
       let message = t("common.error");
 
@@ -265,23 +277,6 @@ export default function MuscleSorenessScreen() {
         },
       ]);
     }
-  };
-
-  const goOn = async () => {
-    if (
-      params.type !== "PLAN" &&
-      params.type !== "TEST_WORKOUT" &&
-      screenState === "SORENESS"
-    ) {
-      // switch to place selection
-      setScreenState("PLACE");
-    } else {
-      generateTraining("STUDIO");
-    }
-  };
-
-  const selectPlace = (value: PlaceType) => {
-    generateTraining(value);
   };
 
   let title =
@@ -315,7 +310,7 @@ export default function MuscleSorenessScreen() {
             <Box flex={1} justifyContent="center" alignItems="stretch">
               {screenState === "SORENESS" ? (
                 <Box flex={1}>
-                  {type === "PLAN" ? (
+                  {params.type === "PLAN" ? (
                     <Text variant="title">
                       {t("training.muscleSoreness.title")}
                     </Text>
@@ -332,12 +327,15 @@ export default function MuscleSorenessScreen() {
                     justifyContent: "center",
                   }}
                 >
-                  <PlaceSelection selectPlace={selectPlace} places={places} />
+                  <PlaceSelection
+                    selectPlace={generateTraining}
+                    places={places}
+                  />
                 </ScrollBox>
               )}
             </Box>
             {screenState === "SORENESS" ? (
-              <Button onPress={goOn}>
+              <Button onPress={() => generateTraining("STUDIO")}>
                 {t("training.muscleSoreness.continue")}
               </Button>
             ) : (

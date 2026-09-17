@@ -42,26 +42,9 @@ function toStorageState(stores: StoreDataMap, origin: string = DEFAULT_ORIGIN) {
 }
 
 /**
- * Expo web's dev-only error overlay (`@expo/log-box`) renders a click-blocking
- * `#error-toast` on any console.error, even ones that are harmless in this
- * dev-only context (e.g. a third-party library's DOM-prop warning). This
- * neutralizes just that toast for e2e runs so a stray warning can't cause
- * unrelated `.click()` calls to time out.
- *
- * Deliberately NOT touched: `#error-overlay`, log-box's separate full-page
- * overlay reserved for `fatal`-classified errors (e.g. React hydration
- * mismatches) - a real signal worth keeping loud, and not a cause we've seen
- * fire in this suite.
- *
- * The toast is rendered inside an open shadow root (see @expo/log-box's
- * `renderInShadowRoot`, which also resets the host with `:host { all: initial }`),
- * so a plain light-DOM stylesheet targeting the host is not enough on its own:
- * this also patches `attachShadow` to inject a matching rule inside the shadow
- * root itself, in case any inner element sets its own `pointer-events`.
- *
- * This is passed to `page.addInitScript` directly, so it must not close over
- * any outer variables — Playwright serializes it via `Function#toString` and
- * runs it fresh in the browser; only the explicit `arg` survives the trip.
+ * Neutralizes Expo web's `#error-toast` (not the `fatal`-only `#error-overlay`)
+ * so a harmless console.error can't block `.click()` calls in e2e. Patches
+ * `attachShadow` too since the toast renders inside its own shadow root.
  */
 function disableErrorToast(cssText: string) {
   const inject = (root: ParentNode) => {
@@ -107,6 +90,8 @@ export const test = base.extend<{ profile: StoreDataMap | undefined }>({
   },
 
   page: async ({ page }, use) => {
+    // disableErrorToast runs via Function#toString in the browser, so it
+    // must not close over outer variables; pass values as this second arg.
     await page.addInitScript(
       disableErrorToast,
       "#error-toast, :host { pointer-events: none !important; }",

@@ -113,11 +113,8 @@
     }
   },
   "app/training/muscle-soreness.tsx": {
-    "complexity": {
-      "count": 1
-    },
     "max-lines-per-function": {
-      "count": 2
+      "count": 1
     }
   },
   "app/training/training-active.tsx": {

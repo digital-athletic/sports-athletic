@@ -1,9 +1,11 @@
 import type {
+  AssignableTeamRole,
   CreateTeamResponse,
   AcceptInvitationResponse,
   DeleteTeamResponse,
   LeaveTeamResponse,
   RemoveMemberResponse,
+  SetMemberRoleResponse,
   InviteCode,
   Team,
   TeamMember,
@@ -183,5 +185,17 @@ export async function removeMember(
   return callRpc<RemoveMemberResponse>("remove_member", {
     p_team_id: teamId,
     p_member_user_id: memberUserId,
+  });
+}
+
+export async function setMemberRole(
+  teamId: string,
+  memberUserId: string,
+  role: AssignableTeamRole,
+): Promise<SetMemberRoleResponse> {
+  return callRpc<SetMemberRoleResponse>("set_member_role", {
+    p_team_id: teamId,
+    p_member_user_id: memberUserId,
+    p_role: role,
   });
 }

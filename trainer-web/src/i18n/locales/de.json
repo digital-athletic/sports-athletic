@@ -71,10 +71,13 @@
     "members": {
       "title": "Teammitglieder",
       "owner": "Eigentümer",
+      "coOwner": "Co-Eigentümer",
       "member": "Mitglied",
       "you": "(Sie)",
       "joined": "Beigetreten",
       "noMembers": "Noch keine Teammitglieder",
+      "promote": "Zum Co-Eigentümer machen",
+      "demote": "Zu Mitglied machen",
       "remove": "Entfernen",
       "removeConfirmTitle": "Mitglied entfernen?",
       "removeConfirmMessage": "Sind Sie sicher, dass Sie dieses Mitglied aus dem Team entfernen möchten?"
@@ -113,6 +116,7 @@
     "USER_NOT_FOUND": "Kein Benutzer mit dieser E-Mail-Adresse gefunden.",
     "OWNER_CANNOT_LEAVE": "Teameigentümer können das Team nicht verlassen. Löschen Sie stattdessen das Team.",
     "CANNOT_REMOVE_SELF": "Sie können sich nicht selbst entfernen. Nutzen Sie stattdessen Team verlassen.",
+    "CANNOT_CHANGE_OWNER_ROLE": "Die Rolle des Teameigentümers kann nicht geändert werden.",
     "MEMBER_NOT_FOUND": "Mitglied nicht in diesem Team gefunden",
     "INTERNAL_ERROR": "Ein interner Fehler ist aufgetreten"
   },

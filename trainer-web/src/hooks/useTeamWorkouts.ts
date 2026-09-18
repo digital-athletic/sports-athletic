@@ -14,7 +14,7 @@ interface TeamWorkoutsData {
   athleteWorkouts: Record<string, { workouts: WorkoutData[] }>;
 }
 
-export function useTeamWorkouts(members: TeamMember[], ownerId: string | null) {
+export function useTeamWorkouts(members: TeamMember[]) {
   const { t } = useTranslation();
   const [data, setData] = useState<TeamWorkoutsData>({
     athletes: [],
@@ -24,17 +24,12 @@ export function useTeamWorkouts(members: TeamMember[], ownerId: string | null) {
   const [error, setError] = useState<string | null>(null);
 
   const loadWorkouts = useCallback(async () => {
-    if (!ownerId) {
-      setData({ athletes: [], athleteWorkouts: {} });
-      setLoading(false);
-      return;
-    }
-
     setLoading(true);
     setError(null);
 
     try {
-      const athleteMembers = members.filter((m) => m.user_id !== ownerId);
+      // Owners and co-owners manage the group, they are not athletes in it.
+      const athleteMembers = members.filter((m) => m.role === "member");
 
       if (athleteMembers.length === 0) {
         setData({ athletes: [], athleteWorkouts: {} });
@@ -74,7 +69,7 @@ export function useTeamWorkouts(members: TeamMember[], ownerId: string | null) {
     } finally {
       setLoading(false);
     }
-  }, [members, ownerId, t]);
+  }, [members, t]);
 
   useEffect(() => {
     loadWorkouts();

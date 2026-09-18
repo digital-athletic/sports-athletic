@@ -1,5 +1,9 @@
 import { useTranslation } from "react-i18next";
-import { type Team, type TeamMember } from "../types/team";
+import {
+  type AssignableTeamRole,
+  type Team,
+  type TeamMember,
+} from "../types/team";
 import { ConfirmModal } from "./ConfirmModal";
 import { ErrorMessage } from "./ErrorMessage";
 import { InviteCodeSection } from "./InviteCodeSection";
@@ -16,7 +20,7 @@ interface ManagementTabProps {
   isOwner: boolean;
   currentUserId: string | null;
   currentUserDisplayName: string | null;
-  actionError: string | null;
+  error: string | null;
   showLeaveConfirm: boolean;
   isLeaving: boolean;
   memberToRemove: string | null;
@@ -30,6 +34,7 @@ interface ManagementTabProps {
   onRemoveMember: (memberId: string) => void;
   onRemoveConfirm: () => void;
   onRemoveCancel: () => void;
+  onSetMemberRole: (memberId: string, role: AssignableTeamRole) => void;
   onDeleteClick: () => void;
   onDeleteConfirm: () => void;
   onDeleteCancel: () => void;
@@ -43,7 +48,7 @@ export function ManagementTab({
   isOwner,
   currentUserId,
   currentUserDisplayName,
-  actionError,
+  error,
   showLeaveConfirm,
   isLeaving,
   memberToRemove,
@@ -57,6 +62,7 @@ export function ManagementTab({
   onRemoveMember,
   onRemoveConfirm,
   onRemoveCancel,
+  onSetMemberRole,
   onDeleteClick,
   onDeleteConfirm,
   onDeleteCancel,
@@ -65,7 +71,7 @@ export function ManagementTab({
 
   return (
     <div className="space-y-6">
-      {actionError && <ErrorMessage message={actionError} />}
+      {error && <ErrorMessage message={error} />}
 
       {loading ? (
         <LoadingSpinner />
@@ -90,6 +96,7 @@ export function ManagementTab({
             currentUserDisplayName={currentUserDisplayName}
             isOwner={isOwner}
             onRemoveMember={onRemoveMember}
+            onSetMemberRole={onSetMemberRole}
           />
 
           <LeaveTeamSection

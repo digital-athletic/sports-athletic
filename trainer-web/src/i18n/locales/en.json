@@ -71,10 +71,13 @@
     "members": {
       "title": "Team Members",
       "owner": "Owner",
+      "coOwner": "Co-owner",
       "member": "Member",
       "you": "(You)",
       "joined": "Joined",
       "noMembers": "No team members yet",
+      "promote": "Make co-owner",
+      "demote": "Make member",
       "remove": "Remove",
       "removeConfirmTitle": "Remove Member?",
       "removeConfirmMessage": "Are you sure you want to remove this member from the team?"
@@ -113,6 +116,7 @@
     "USER_NOT_FOUND": "No user found with that email address.",
     "OWNER_CANNOT_LEAVE": "Team owners cannot leave. Delete the team instead.",
     "CANNOT_REMOVE_SELF": "Cannot remove yourself. Use leave team instead.",
+    "CANNOT_CHANGE_OWNER_ROLE": "The team owner's role cannot be changed.",
     "MEMBER_NOT_FOUND": "Member not found in this team",
     "INTERNAL_ERROR": "An internal error occurred"
   },

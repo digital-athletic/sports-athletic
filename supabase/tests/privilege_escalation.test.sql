@@ -10,7 +10,7 @@
 
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap;
-SELECT plan(13);
+SELECT plan(17);
 
 -- X = attacker (a normal user),  V = another user
 \set X 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1'
@@ -20,6 +20,19 @@ INSERT INTO auth.users (id, email) VALUES
   (:'X', 'attacker.test@example.local'),
   (:'V', 'victim.test@example.local');
 INSERT INTO public.user_profiles (user_id) VALUES (:'V');  -- victim has a profile row
+
+-- X and V are members of the same group. The team checks below must run as a
+-- real member: an outsider would be refused with TEAM_NOT_FOUND, and the test
+-- would prove nothing.
+\set T    'cccccccc-cccc-cccc-cccc-cccccccccccc'
+\set TEAM 'dddddddd-dddd-dddd-dddd-dddddddddddd'
+INSERT INTO auth.users (id, email) VALUES (:'T', 'trainer.test@example.local');
+INSERT INTO public.user_profiles (user_id, trainer_granted_at) VALUES (:'T', now());
+INSERT INTO public.teams (id, name, owner_id) VALUES (:'TEAM', 'Escalation Team', :'T');
+INSERT INTO public.team_members (team_id, user_id, role) VALUES
+  (:'TEAM', :'T', 'owner'),
+  (:'TEAM', :'X', 'member'),
+  (:'TEAM', :'V', 'member');
 
 -- auth.users must not be readable by client roles at all (no SELECT grant).
 SELECT is(has_table_privilege('authenticated', 'auth.users', 'SELECT'), false,
@@ -61,6 +74,21 @@ SELECT is((SELECT count(*) FROM public.user_profiles WHERE user_id = :'V'), 0::b
 SELECT throws_ok($$ SELECT public.admin_set_trainer('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1', true) $$,
   'P0001', 'NOT_AN_ADMIN', 'user cannot self-grant trainer via admin_set_trainer');
 
+-- A member tries to promote themselves by writing team_members directly,
+-- bypassing set_member_role. authenticated has no UPDATE grant on the table,
+-- so this raises 42501 instead of updating zero rows.
+SELECT throws_ok($$ UPDATE public.team_members SET role = 'co_owner'
+                    WHERE user_id = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1' $$,
+  '42501', NULL, 'member cannot promote themselves by writing team_members');
+
+-- A member tries to delete another member's row. RLS hides the row instead of
+-- raising, so the DELETE succeeds and deletes nothing. lives_ok alone would
+-- prove nothing; the assertion that the victim is still a member is the real
+-- test.
+SELECT lives_ok($$ DELETE FROM public.team_members
+                   WHERE user_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1' $$,
+  'member deleting a foreign membership is filtered, not rejected');
+
 -- The one sanctioned write path persists consent but cannot escalate privileges.
 SELECT lives_ok($$ SELECT public.save_user_consent(true, true) $$,
   'save_user_consent is the allowed self-write path');
@@ -70,6 +98,12 @@ SELECT is((SELECT admin_granted_at FROM public.user_profiles WHERE user_id = :'X
   'save_user_consent never sets admin_granted_at');
 SELECT is((SELECT trainer_granted_at FROM public.user_profiles WHERE user_id = :'X'), NULL,
   'save_user_consent never sets trainer_granted_at');
+
+SELECT is((SELECT role FROM public.team_members WHERE team_id = :'TEAM' AND user_id = :'X'), 'member',
+  'the attempted self-promotion left the role untouched');
+SELECT ok(
+  EXISTS (SELECT 1 FROM public.team_members WHERE team_id = :'TEAM' AND user_id = :'V'),
+  'the victim is still a member of the group');
 
 SELECT * FROM finish();
 ROLLBACK;

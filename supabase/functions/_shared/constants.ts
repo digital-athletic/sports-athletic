@@ -14,6 +14,7 @@ export const ErrorCodes = {
   // Member errors
   OWNER_CANNOT_LEAVE: "OWNER_CANNOT_LEAVE",
   CANNOT_REMOVE_SELF: "CANNOT_REMOVE_SELF",
+  CANNOT_CHANGE_OWNER_ROLE: "CANNOT_CHANGE_OWNER_ROLE",
   MEMBER_NOT_FOUND: "MEMBER_NOT_FOUND",
   MEMBER_USER_ID_REQUIRED: "MEMBER_USER_ID_REQUIRED",
 
@@ -44,6 +45,7 @@ export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
 export const Roles = {
   OWNER: "owner",
   MEMBER: "member",
+  CO_OWNER: "co_owner",
 } as const;
 
 export type Role = (typeof Roles)[keyof typeof Roles];

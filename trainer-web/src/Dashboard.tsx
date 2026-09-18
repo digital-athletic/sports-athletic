@@ -7,6 +7,7 @@ import { SettingsTab } from "./components/SettingsTab";
 import { PageLayout } from "./components/PageLayout";
 import { TabBar } from "./components/TabBar";
 import { useTeam } from "./hooks/useTeam";
+import type { AssignableTeamRole } from "./types/team";
 
 export const Dashboard = () => {
   const { t } = useTranslation();
@@ -19,6 +20,7 @@ export const Dashboard = () => {
     members,
     inviteCodes,
     loading,
+    error,
     isOwner,
     currentUserId,
     currentUserDisplayName,
@@ -26,6 +28,7 @@ export const Dashboard = () => {
     leaveCurrentTeam,
     deleteCurrentTeam,
     removeMember,
+    setMemberRole,
   } = useTeam(teamId);
 
   useEffect(() => {
@@ -36,7 +39,6 @@ export const Dashboard = () => {
 
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
-  const [actionError, setActionError] = useState<string | null>(null);
   const [memberToRemove, setMemberToRemove] = useState<string | null>(null);
   const [isRemoving, setIsRemoving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -54,22 +56,20 @@ export const Dashboard = () => {
   ];
 
   const handleRegenerateCode = async () => {
-    setActionError(null);
     try {
       await regenerateInviteCode();
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : t("common.error"));
+    } catch {
+      // The failure is shown through useTeam's `error`, which already holds
+      // the translated message.
     }
   };
 
   const handleLeaveTeam = async () => {
     setIsLeaving(true);
-    setActionError(null);
     try {
       await leaveCurrentTeam();
       navigate("/teams");
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : t("common.error"));
+    } catch {
       setShowLeaveConfirm(false);
     } finally {
       setIsLeaving(false);
@@ -78,27 +78,35 @@ export const Dashboard = () => {
 
   const handleDeleteTeam = async () => {
     setIsDeleting(true);
-    setActionError(null);
     try {
       await deleteCurrentTeam();
       navigate("/teams");
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : t("common.error"));
+    } catch {
       setShowDeleteConfirm(false);
     } finally {
       setIsDeleting(false);
     }
   };
 
+  const handleSetMemberRole = async (
+    memberUserId: string,
+    role: AssignableTeamRole,
+  ) => {
+    try {
+      await setMemberRole(memberUserId, role);
+    } catch {
+      // Same as handleRegenerateCode: useTeam's `error` shows the failure.
+    }
+  };
+
   const handleRemoveMember = async () => {
     if (!memberToRemove) return;
     setIsRemoving(true);
-    setActionError(null);
     try {
       await removeMember(memberToRemove);
       setMemberToRemove(null);
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : t("common.error"));
+    } catch {
+      // Same as handleRegenerateCode: useTeam's `error` shows the failure.
     } finally {
       setIsRemoving(false);
     }
@@ -128,7 +136,7 @@ export const Dashboard = () => {
               isOwner={isOwner}
               currentUserId={currentUserId}
               currentUserDisplayName={currentUserDisplayName}
-              actionError={actionError}
+              error={error}
               showLeaveConfirm={showLeaveConfirm}
               isLeaving={isLeaving}
               memberToRemove={memberToRemove}
@@ -142,18 +150,14 @@ export const Dashboard = () => {
               onRemoveMember={setMemberToRemove}
               onRemoveConfirm={handleRemoveMember}
               onRemoveCancel={() => setMemberToRemove(null)}
+              onSetMemberRole={handleSetMemberRole}
               onDeleteClick={() => setShowDeleteConfirm(true)}
               onDeleteConfirm={handleDeleteTeam}
               onDeleteCancel={() => setShowDeleteConfirm(false)}
             />
           )}
 
-          {activeTab === "evaluations" && (
-            <EvaluationsTab
-              members={members}
-              ownerId={team?.owner_id ?? null}
-            />
-          )}
+          {activeTab === "evaluations" && <EvaluationsTab members={members} />}
 
           {activeTab === "settings" && settingsEnabled && <SettingsTab />}
         </div>

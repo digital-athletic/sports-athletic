@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import type { Team, TeamMember } from "../types/team";
+import type { AssignableTeamRole, Team, TeamMember } from "../types/team";
 import {
   getTeamById,
   getTeamMembers,
@@ -11,6 +11,7 @@ import {
   leaveTeam as leaveTeamApi,
   deleteTeam as deleteTeamApi,
   removeMember as removeMemberApi,
+  setMemberRole as setMemberRoleApi,
   ApiError,
 } from "../services/teamsApi";
 import { supabase } from "../services/supabase";
@@ -181,6 +182,25 @@ export function useTeam(teamId: string | null) {
     }
   };
 
+  const setMemberRole = async (
+    memberUserId: string,
+    role: AssignableTeamRole,
+  ) => {
+    if (!team) throw new Error("No team selected");
+    setError(null);
+    try {
+      const result = await setMemberRoleApi(team.id, memberUserId, role);
+      setMembers((prev) =>
+        prev.map((m) => (m.user_id === memberUserId ? { ...m, role } : m)),
+      );
+      return result;
+    } catch (err) {
+      const message = translateError(err, "common.error");
+      setError(message);
+      throw err;
+    }
+  };
+
   const isOwner = team?.owner_id === currentUserId;
 
   return {
@@ -198,6 +218,7 @@ export function useTeam(teamId: string | null) {
     leaveCurrentTeam,
     deleteCurrentTeam,
     removeMember,
+    setMemberRole,
     refresh: loadTeam,
   };
 }

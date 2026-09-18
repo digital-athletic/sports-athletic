@@ -9,10 +9,10 @@ BEGIN;
 -- ============================================================================
 -- 1. Allow the new role value
 -- ============================================================================
--- Plain DROP, not DROP IF EXISTS: the name is Postgres' deterministic default
--- for the inline CHECK in 20251209000001 and is identical in every environment.
--- If it ever is not, failing here beats silently leaving the old CHECK in place
--- and rejecting 'co_owner' at runtime instead.
+-- The constraint name is the default Postgres gave the inline CHECK in
+-- 20251209000001, so it is the same in every environment. No IF EXISTS on
+-- purpose: if the name does not match, this migration must fail. Otherwise the
+-- old CHECK would stay and reject 'co_owner' at runtime.
 ALTER TABLE public.team_members
   DROP CONSTRAINT team_members_role_check,
   ADD  CONSTRAINT team_members_role_check
@@ -22,14 +22,13 @@ ALTER TABLE public.team_members
 -- 2. Who may see an athlete's training data
 -- ============================================================================
 -- Replaces is_trainer_of_user() in the three SELECT policies below. A co-owner
--- is not a trainer, so widening that function would have made its name wrong.
--- Section 3 drops it once the policies no longer use it.
+-- is not a trainer, so that function would have been the wrong name for the
+-- new rule. Section 3 drops it.
 --
--- The user_profiles join deliberately hangs off t.owner_id, not auth.uid(): it
--- asserts that the GROUP belongs to a granted trainer, which is what lets a
--- co-owner see the data without holding a grant of their own. In the previous
--- version the two were indistinguishable, because the WHERE clause forced
--- t.owner_id = auth.uid().
+-- The trainer grant is checked on the group owner (t.owner_id), not on the
+-- caller. That is what lets a co-owner without a grant of their own see the
+-- data: the group must belong to a granted trainer. Do not change the join to
+-- auth.uid(), that would lock co-owners out again.
 CREATE OR REPLACE FUNCTION public.can_view_athlete_data(p_target_user_id UUID)
 RETURNS BOOLEAN
 LANGUAGE sql
@@ -58,8 +57,9 @@ AS $$
   );
 $$;
 
--- Used from RLS policies only; not intended as a public RPC. Supabase adds
--- per-role grants on creation, so each has to be revoked individually.
+-- Only the RLS policies call this function; it is not a public RPC. Supabase
+-- grants EXECUTE to every role when a function is created, so each grant is
+-- revoked one by one.
 REVOKE EXECUTE ON FUNCTION public.can_view_athlete_data(UUID) FROM PUBLIC;
 REVOKE EXECUTE ON FUNCTION public.can_view_athlete_data(UUID) FROM anon;
 REVOKE EXECUTE ON FUNCTION public.can_view_athlete_data(UUID) FROM service_role;
@@ -68,7 +68,8 @@ GRANT  EXECUTE ON FUNCTION public.can_view_athlete_data(UUID) TO   authenticated
 -- ============================================================================
 -- 3. Point the three visibility policies at the new predicate
 -- ============================================================================
--- Renamed along the way: "as trainer" would be wrong once co-owners qualify.
+-- The policies get new names: "as trainer" would be wrong now that co-owners
+-- qualify too.
 
 DROP POLICY IF EXISTS "Users can view own data or as trainer" ON public.user_exercises;
 
@@ -109,8 +110,10 @@ DROP FUNCTION IF EXISTS public.is_trainer_of_user(UUID);
 -- One function for both directions: promoting a member and demoting a co-owner
 -- are the same write, and the UI offers them as a single toggle.
 --
--- Check order follows remove_member: input validation first, then the owner
--- gate, which reports TEAM_NOT_FOUND to anyone who cannot see the team at all.
+-- Only the team owner may call this (assert_visible_team_owner below). A
+-- caller who cannot see the team gets TEAM_NOT_FOUND instead of
+-- NOT_TEAM_OWNER, so the function does not reveal that the team exists. The
+-- checks run in the same order as in remove_member.
 CREATE OR REPLACE FUNCTION public.set_member_role(
   p_team_id        uuid,
   p_member_user_id uuid,
@@ -131,16 +134,17 @@ BEGIN
     RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'INVALID_REQUEST_BODY';
   END IF;
 
-  -- 'owner' is not assignable here: ownership is defined by teams.owner_id, and
-  -- writing it into the role column as well would let the two disagree.
+  -- 'owner' cannot be assigned here. Ownership is stored in teams.owner_id;
+  -- writing it into the role column as well would create two places that can
+  -- contradict each other.
   IF p_role NOT IN ('member', 'co_owner') THEN
     RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'INVALID_REQUEST_BODY';
   END IF;
 
   v_team := public.assert_visible_team_owner(p_team_id);
 
-  -- The owner's own row is never touched, which keeps "the owner can never be
-  -- removed" true for the role column as well.
+  -- The owner's own row cannot be changed. An owner can never be removed from
+  -- a team, and the role column follows the same rule.
   IF p_member_user_id = v_team.owner_id THEN
     RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'CANNOT_CHANGE_OWNER_ROLE';
   END IF;

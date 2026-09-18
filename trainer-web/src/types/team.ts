@@ -11,8 +11,8 @@ export interface Team {
 export type TeamRole = "owner" | "member" | "co_owner";
 
 /**
- * Roles set_member_role accepts. Ownership lives in teams.owner_id and is not
- * handed out through the role column, so "owner" is excluded here as well.
+ * The roles set_member_role accepts. Ownership is stored in teams.owner_id and
+ * cannot be assigned through the role column, so "owner" is not in this type.
  */
 export type AssignableTeamRole = Exclude<TeamRole, "owner">;
 

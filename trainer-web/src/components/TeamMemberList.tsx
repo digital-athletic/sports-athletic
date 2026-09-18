@@ -73,8 +73,9 @@ export function TeamMemberList({
                   {t("teamManagement.members.joined")}{" "}
                   {new Date(member.joined_at).toLocaleDateString()}
                 </span>
-                {/* The owner's own row is never editable: ownership lives in
-                    teams.owner_id, and set_member_role refuses it anyway. */}
+                {/* The owner's row has no role button. Ownership is stored in
+                    teams.owner_id, and set_member_role rejects the owner as a
+                    target. */}
                 {isOwner && member.role !== "owner" && onSetMemberRole && (
                   <button
                     onClick={() =>

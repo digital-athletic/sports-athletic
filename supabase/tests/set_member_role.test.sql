@@ -1,10 +1,13 @@
--- set_member_role: owner-only, existence hiding for outsiders, the two
--- escalation guards ('owner' is not assignable, the owner's row is untouchable),
--- target-must-exist, both directions of the happy path, and the claim that a
--- co-owner gains no rights beyond reading athlete data.
+-- Covers set_member_role:
+--   * only the owner may call it
+--   * outsiders get TEAM_NOT_FOUND, so the team's existence stays hidden
+--   * 'owner' cannot be assigned, and the owner's own row cannot be changed
+--   * the target must already be a member
+--   * promote and demote both work
+--   * a co-owner gains no rights beyond reading athlete data
 --
--- UUIDs are spelled out inside the $$ blocks because psql variables do not
--- interpolate there.
+-- UUIDs are written out inside the $$ blocks because psql variables are not
+-- replaced there.
 
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap;
@@ -42,9 +45,9 @@ SET LOCAL "request.jwt.claim.sub" TO :'O';
 SELECT throws_ok($$ SELECT public.set_member_role('55555555-5555-5555-5555-555555555551','33333333-3333-3333-3333-333333333333','co_owner') $$,
   'P0001', 'TEAM_NOT_FOUND', 'set_member_role: outsider -> TEAM_NOT_FOUND (existence hidden)');
 
--- A co-owner gains nothing beyond reading athlete data. Every owner-only RPC
--- must still refuse them; assert_visible_team_owner only ever compares owner_id,
--- so this is true by construction - these four pin it as a regression.
+-- A co-owner gains nothing beyond reading athlete data: every owner-only RPC
+-- must still refuse them. assert_visible_team_owner compares owner_id only, so
+-- these four calls fail today. The tests make sure that stays so.
 SET LOCAL "request.jwt.claim.sub" TO :'C';
 SELECT throws_ok($$ SELECT public.set_member_role('55555555-5555-5555-5555-555555555551','33333333-3333-3333-3333-333333333333','co_owner') $$,
   'P0001', 'NOT_TEAM_OWNER', 'set_member_role: co-owner cannot promote anyone');
@@ -57,7 +60,7 @@ SELECT throws_ok($$ SELECT public.delete_team('55555555-5555-5555-5555-555555555
 
 SET LOCAL "request.jwt.claim.sub" TO :'T';
 
--- Escalation guard 1: ownership is not something this function can hand out.
+-- 'owner' cannot be assigned through this function.
 SELECT throws_ok($$ SELECT public.set_member_role('55555555-5555-5555-5555-555555555551','33333333-3333-3333-3333-333333333333','owner') $$,
   'P0001', 'INVALID_REQUEST_BODY', 'set_member_role: p_role = owner -> INVALID_REQUEST_BODY');
 
@@ -67,7 +70,7 @@ SELECT throws_ok($$ SELECT public.set_member_role('55555555-5555-5555-5555-55555
 SELECT throws_ok($$ SELECT public.set_member_role(NULL, NULL, NULL) $$,
   'P0001', 'INVALID_REQUEST_BODY', 'set_member_role: null args -> INVALID_REQUEST_BODY');
 
--- Escalation guard 2: the owner's own row stays as it is.
+-- The owner's own row cannot be changed.
 SELECT throws_ok($$ SELECT public.set_member_role('55555555-5555-5555-5555-555555555551','11111111-1111-1111-1111-111111111111','member') $$,
   'P0001', 'CANNOT_CHANGE_OWNER_ROLE', 'set_member_role: owner as target -> CANNOT_CHANGE_OWNER_ROLE');
 

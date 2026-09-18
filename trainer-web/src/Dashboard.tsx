@@ -59,7 +59,8 @@ export const Dashboard = () => {
     try {
       await regenerateInviteCode();
     } catch {
-      // Reported through useTeam's `error`, which holds the translated message.
+      // The failure is shown through useTeam's `error`, which already holds
+      // the translated message.
     }
   };
 
@@ -94,7 +95,7 @@ export const Dashboard = () => {
     try {
       await setMemberRole(memberUserId, role);
     } catch {
-      // See handleRegenerateCode.
+      // Same as handleRegenerateCode: useTeam's `error` shows the failure.
     }
   };
 
@@ -105,7 +106,7 @@ export const Dashboard = () => {
       await removeMember(memberToRemove);
       setMemberToRemove(null);
     } catch {
-      // See handleRegenerateCode.
+      // Same as handleRegenerateCode: useTeam's `error` shows the failure.
     } finally {
       setIsRemoving(false);
     }

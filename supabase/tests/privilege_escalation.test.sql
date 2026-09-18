@@ -21,8 +21,9 @@ INSERT INTO auth.users (id, email) VALUES
   (:'V', 'victim.test@example.local');
 INSERT INTO public.user_profiles (user_id) VALUES (:'V');  -- victim has a profile row
 
--- X and V share a group, so the team paths below are attempted as a real member
--- rather than as an outsider, which would be refused for the wrong reason.
+-- X and V are members of the same group. The team checks below must run as a
+-- real member: an outsider would be refused with TEAM_NOT_FOUND, and the test
+-- would prove nothing.
 \set T    'cccccccc-cccc-cccc-cccc-cccccccccccc'
 \set TEAM 'dddddddd-dddd-dddd-dddd-dddddddddddd'
 INSERT INTO auth.users (id, email) VALUES (:'T', 'trainer.test@example.local');
@@ -73,15 +74,17 @@ SELECT is((SELECT count(*) FROM public.user_profiles WHERE user_id = :'V'), 0::b
 SELECT throws_ok($$ SELECT public.admin_set_trainer('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1', true) $$,
   'P0001', 'NOT_AN_ADMIN', 'user cannot self-grant trainer via admin_set_trainer');
 
--- Promoting yourself past set_member_role. Blocked by the missing UPDATE grant,
--- so it raises rather than silently affecting no rows.
+-- A member tries to promote themselves by writing team_members directly,
+-- bypassing set_member_role. authenticated has no UPDATE grant on the table,
+-- so this raises 42501 instead of updating zero rows.
 SELECT throws_ok($$ UPDATE public.team_members SET role = 'co_owner'
                     WHERE user_id = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1' $$,
   '42501', NULL, 'member cannot promote themselves by writing team_members');
 
--- Removing someone else's membership. RLS filters the row out instead of
--- raising, so the call SUCCEEDS and deletes nothing. Asserting only that it
--- lives would pass without testing anything; the row check below is the test.
+-- A member tries to delete another member's row. RLS hides the row instead of
+-- raising, so the DELETE succeeds and deletes nothing. lives_ok alone would
+-- prove nothing; the assertion that the victim is still a member is the real
+-- test.
 SELECT lives_ok($$ DELETE FROM public.team_members
                    WHERE user_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1' $$,
   'member deleting a foreign membership is filtered, not rejected');

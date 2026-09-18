@@ -74,8 +74,8 @@ SET LOCAL "request.jwt.claim.sub" TO :'O';
 SELECT is((SELECT count(*) FROM public.user_completed_workouts WHERE user_id = :'M'), 0::bigint,
   'outsider sees nothing');
 
--- Visibility hangs on the group owner's grant, so revoking it blinds the
--- co-owner too.
+-- Visibility depends on the group owner's trainer grant. When that grant is
+-- revoked, the co-owner loses access as well.
 RESET ROLE;
 UPDATE public.user_profiles SET trainer_granted_at = NULL WHERE user_id = :'T';
 SET LOCAL ROLE authenticated;
@@ -83,8 +83,8 @@ SET LOCAL "request.jwt.claim.sub" TO :'C';
 SELECT is((SELECT count(*) FROM public.user_completed_workouts WHERE user_id = :'M'), 0::bigint,
   'co-owner sees nothing once the group owner loses their trainer grant');
 
--- Nothing is readable without a session at all. anon holds no SELECT grant on
--- these tables, so this fails on the grant before RLS is even consulted.
+-- Without a session nothing is readable. anon has no SELECT grant on these
+-- tables, so the query fails on the missing grant before RLS is checked.
 RESET ROLE;
 SET LOCAL ROLE anon;
 SELECT throws_ok($$ SELECT count(*) FROM public.user_completed_workouts $$,
@@ -94,7 +94,8 @@ SELECT throws_ok($$ SELECT count(*) FROM public.user_exercises $$,
 SELECT throws_ok($$ SELECT count(*) FROM public.strength_tests $$,
   '42501', NULL, 'anon cannot read strength tests');
 
--- The policies above were the only callers of the old trainer-only predicate.
+-- is_trainer_of_user() is dropped in the co-owner migration. The policies
+-- tested above were its only callers.
 RESET ROLE;
 SELECT hasnt_function('public', 'is_trainer_of_user', ARRAY['uuid'],
   'is_trainer_of_user() is dropped');

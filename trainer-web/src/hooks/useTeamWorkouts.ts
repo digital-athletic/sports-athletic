@@ -28,8 +28,7 @@ export function useTeamWorkouts(members: TeamMember[]) {
     setError(null);
 
     try {
-      // Owners and co-owners run the group, they are not its athletes. The
-      // owner was already excluded before co-owners existed.
+      // Owners and co-owners manage the group, they are not athletes in it.
       const athleteMembers = members.filter((m) => m.role === "member");
 
       if (athleteMembers.length === 0) {

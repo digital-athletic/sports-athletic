@@ -21,10 +21,9 @@ ALTER TABLE public.team_members
 -- ============================================================================
 -- 2. Who may see an athlete's training data
 -- ============================================================================
--- Replaces is_trainer_of_user() in the three SELECT policies below. That
--- function keeps its name and its meaning and is simply no longer referenced:
--- a co-owner is not a trainer, so widening it in place would have made the name
--- lie.
+-- Replaces is_trainer_of_user() in the three SELECT policies below. A co-owner
+-- is not a trainer, so widening that function would have made its name wrong.
+-- Section 3 drops it once the policies no longer use it.
 --
 -- The user_profiles join deliberately hangs off t.owner_id, not auth.uid(): it
 -- asserts that the GROUP belongs to a granted trainer, which is what lets a
@@ -100,6 +99,9 @@ CREATE POLICY "Users can view own strength tests or as team staff"
     user_id = auth.uid()
     OR can_view_athlete_data(user_id)
   );
+
+-- No policy, function, client or test uses is_trainer_of_user() any more.
+DROP FUNCTION IF EXISTS public.is_trainer_of_user(UUID);
 
 -- ============================================================================
 -- 4. set_member_role

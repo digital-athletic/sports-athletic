@@ -6,7 +6,7 @@
 
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap;
-SELECT plan(11);
+SELECT plan(12);
 
 -- Group A: T owns it, C is co-owner, M is a plain member.
 -- Group B: T2 owns it, X is a plain member. O belongs to neither.
@@ -93,6 +93,11 @@ SELECT throws_ok($$ SELECT count(*) FROM public.user_exercises $$,
   '42501', NULL, 'anon cannot read exercises');
 SELECT throws_ok($$ SELECT count(*) FROM public.strength_tests $$,
   '42501', NULL, 'anon cannot read strength tests');
+
+-- The policies above were the only callers of the old trainer-only predicate.
+RESET ROLE;
+SELECT hasnt_function('public', 'is_trainer_of_user', ARRAY['uuid'],
+  'is_trainer_of_user() is dropped');
 
 SELECT * FROM finish();
 ROLLBACK;

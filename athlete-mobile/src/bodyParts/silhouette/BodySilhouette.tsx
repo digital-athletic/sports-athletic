@@ -1,7 +1,7 @@
 import { type Side } from "@/bodyParts/types";
 import { type ThemeColor, useTheme } from "@/theme/theme";
 import { type FC, memo } from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import { G, Path, Svg } from "react-native-svg";
 import { BODY_FILL, MUSCLE_FILL, SILHOUETTES } from "./silhouetteData";
 import {
@@ -95,10 +95,10 @@ const InteractiveRegions: FC<RegionLayerProps & Interactive> = ({
         return (
           <G
             key={region.id}
-            accessible
+            {...(Platform.OS !== "web" ? { accessible: true } : null)}
             accessibilityLabel={getRegionLabel(region.id, highlighted)}
             role="checkbox"
-            aria-checked={highlighted}
+            aria-checked={highlighted ? "true" : "false"}
             testID={`${regionTestIDPrefix}${region.id}`}
             onPress={() => onRegionPress(region.id)}
           >

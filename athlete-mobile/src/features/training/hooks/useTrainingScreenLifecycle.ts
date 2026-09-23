@@ -3,7 +3,7 @@ import { logTrainingEvent } from "@/features/training/utils/trainingEventUtils";
 import { useKeepAwake } from "expo-keep-awake";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { BackHandler } from "react-native";
+import { BackHandler, Platform } from "react-native";
 
 interface UseTrainingScreenLifecycleParams {
   onAbort: () => void;
@@ -24,6 +24,7 @@ export function useTrainingScreenLifecycle({
   // Handle back button to prevent accidental exit
   useFocusEffect(
     useCallback(() => {
+      if (Platform.OS === "web") return;
       const subscription = BackHandler.addEventListener(
         "hardwareBackPress",
         () => {

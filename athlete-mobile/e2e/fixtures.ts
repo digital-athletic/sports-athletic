@@ -42,6 +42,40 @@ function toStorageState(stores: StoreDataMap, origin: string = DEFAULT_ORIGIN) {
 }
 
 /**
+ * Neutralizes Expo web's `#error-toast` (not the `fatal`-only `#error-overlay`)
+ * so a harmless console.error can't block `.click()` calls in e2e. Patches
+ * `attachShadow` too since the toast renders inside its own shadow root.
+ */
+function disableErrorToast(cssText: string) {
+  const inject = (root: ParentNode) => {
+    const el = document.createElement("style");
+    el.textContent = cssText;
+    root.appendChild(el);
+  };
+
+  const injectIntoHead = () => {
+    if (!document.head) {
+      requestAnimationFrame(injectIntoHead);
+      return;
+    }
+    inject(document.head);
+  };
+  injectIntoHead();
+
+  const originalAttachShadow = Element.prototype.attachShadow;
+  Element.prototype.attachShadow = function (
+    this: Element,
+    init: ShadowRootInit,
+  ) {
+    const root = originalAttachShadow.call(this, init);
+    if (this.id === "error-toast") {
+      inject(root);
+    }
+    return root;
+  };
+}
+
+/**
  * Extended test with profile factory support.
  */
 export const test = base.extend<{ profile: StoreDataMap | undefined }>({
@@ -53,6 +87,16 @@ export const test = base.extend<{ profile: StoreDataMap | undefined }>({
     } else {
       await use(undefined);
     }
+  },
+
+  page: async ({ page }, use) => {
+    // disableErrorToast runs via Function#toString in the browser, so it
+    // must not close over outer variables; pass values as this second arg.
+    await page.addInitScript(
+      disableErrorToast,
+      "#error-toast, :host { pointer-events: none !important; }",
+    );
+    await use(page);
   },
 });
 

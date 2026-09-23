@@ -1,12 +1,13 @@
 import { Route, Stack, router, useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, BackHandler } from "react-native";
+import { Alert } from "react-native";
 
 import { BackHeader } from "@/common/BackHeader";
 import { SkipHeader } from "@/common/SkipHeader";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { SportListItem } from "@/features/anamnesis/SportListItem";
+import { useHardwareBackHandler } from "@/hooks/useHardwareBackHandler";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Button } from "@/theme/Button";
@@ -57,13 +58,7 @@ export default function SportScreen() {
     return false; // Allow default back behavior
   }, [originPath, showClosePopup]);
 
-  useEffect(() => {
-    const subscription = BackHandler.addEventListener(
-      "hardwareBackPress",
-      handleHardwareBackPress,
-    );
-    return () => subscription.remove();
-  }, [handleHardwareBackPress]);
+  useHardwareBackHandler(handleHardwareBackPress);
 
   const goOn = () => {
     router.push({

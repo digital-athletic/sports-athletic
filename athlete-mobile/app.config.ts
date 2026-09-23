@@ -39,7 +39,6 @@ export default (): ExpoConfig => ({
   orientation: "default",
   icon,
   userInterfaceStyle: "light",
-  newArchEnabled: true,
   ios: {
     supportsTablet: true,
     bundleIdentifier,
@@ -48,7 +47,6 @@ export default (): ExpoConfig => ({
     },
   },
   android: {
-    edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
     package: packageName,
     blockedPermissions: [

@@ -2,6 +2,8 @@
 
 The training domain, from the athlete's anamnesis to the set list they execute. Folders follow the lifecycle: the model everything reads, then plan creation, then what happens when a workout starts, then how values move between sessions.
 
+The [Glossary](./glossary.md) defines the terms the specs use.
+
 ## foundations
 
 The shared model. Read these first.

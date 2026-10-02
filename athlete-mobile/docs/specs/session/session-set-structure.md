@@ -28,7 +28,7 @@ Three structures sit outside that loop. Weighted hypertrophy and speed strength 
 | Skill | Sets per exercise |
 |---|---|
 | Maxkraft | 4 |
-| Hypertrophy, speed strength, speed endurance, basis, stability, full-body stability, prevention | 2 |
+| Hypertrophy, speed strength, speed endurance, stability, full-body stability, prevention | 2 |
 | Warm-up, special warm-up, cool-down, mobility, foam roller | 1 |
 | Steady cardio | 1 |
 | Interval cardio | interval count, per [Cardio Training System](./cardio-training-system.md) |
@@ -49,33 +49,45 @@ Which of the last two runs at a block boundary is decided by the transition rule
 
 | Skill | In-set pause | Single-exercise rest | After-set pause |
 |---|---|---|---|
-| Hypertrophy (all variants), basis | 30 s | 90 s | 60 s |
+| Hypertrophy (all variants) | 30 s | 90 s | 60 s |
 | Prevention | 30 s | 60 s | 60 s |
 | Stability, joint-specific prevention | 30 s | 60 s | 60 s |
 | Full-body stability, weighted | 45 s | 90 s | 60 s |
 | Full-body stability, bodyweight | 45 s | 90 s | 60 s |
-| Speed strength, weighted | 60 s | 180 s | 150 s |
+| Speed strength, weighted | 60 s | 180 s | 60 s |
 | Speed strength, bodyweight | 60 s | 180 s | 60 s |
-| Speed endurance, weighted | 75 s | 180 s | 180 s |
-| Speed endurance, bodyweight | 75 s | 180 s | 180 s |
+| Speed endurance, weighted | 75 s | 180 s | 75 s |
+| Speed endurance, bodyweight | 75 s | 180 s | 75 s |
 | Plyometrics | 60 s | 180 s | 60 s |
-| Special warm-up for speed work | 30 s | | 30 s |
-| Warm-up | 10 s | | 30 s |
-| Special warm-up, cool-down, mobility, foam roller | 10 s | | 10 s |
+| Special warm-up for speed work | 30 s | 30 s | 30 s |
+| Warm-up | 10 s | 10 s | 30 s |
+| Special warm-up, cool-down, mobility, foam roller | 10 s | 10 s | 10 s |
 
-Speed endurance is not yet implemented in the training logic; its rows stay in the tables untouched. The weighted speed strength after-set pause keeps its authored 150 s: it was not part of the 60 s adjustment that the other strength skills received.
+Speed endurance is not yet implemented in the training logic; its rest values are specified here for future implementation.
 
-Short workouts skip the lookup and use a flat 10 s after-set pause.
+Focus and short workouts use workout-specific fixed rest durations instead of a flat after-set pause: 10 s for warm-up, cool-down, mobility, and foam roller; 30 s for leg-axis stability; and 45 s for full-body stability with or without additional weight.
 
 ### Transition after an exercise block
 
 After the final set of an exercise block, exactly one rule applies, checked in order:
 
 1. Last block of the session → no pause; the set list ends on work.
-2. The next block trains the same primary muscle group(s) → single-exercise rest.
+2. The next block trains the same muscle-group category/region (for example, lower body) **and the same primary trained muscle(s)** → single-exercise rest.
 3. Otherwise → after-set pause.
 
-Rule 2 keeps recovery from being shortened just because the generator moves on to a new exercise. For a superset pair the closing rest follows the partner exercise of the final round; for a solo exercise, its final set. The rest length comes from the finished block's skill.
+Rule 2 applies only when both conditions match: the same muscle-group category/region and the same primary trained muscle(s). A match on the broad region alone is not sufficient. If either the region or the primary trained muscle(s) changes, the regular after-set pause applies. This keeps recovery from being shortened just because the generator moves on to a new exercise. For a superset pair the closing rest follows the partner exercise of the final round; for a solo exercise, its final set. The rest length comes from the finished block's skill.
+
+The transition check is therefore testable as follows:
+
+| Finished block vs. next block | Pause type |
+|---|---|
+| Same muscle-group category/region **and** same primary trained muscle(s) | Single-exercise rest |
+| Same muscle-group category/region, but different primary trained muscle(s) | After-set pause |
+| Different muscle-group category/region | After-set pause |
+| No next block | No pause |
+
+The check is based on the muscle-group category/region and the primary trained muscle(s), not on the exercise name alone.
+
 
 ### Expansion
 
@@ -83,8 +95,8 @@ Per exercise or superset pair, in order:
 
 1. Emit the leading warm-up set when the rules below apply.
 2. Superset pair, per round: emit the lead exercise and the in-set pause, then the partner and the in-set pause. After the final round, the transition rule above replaces that closing in-set pause.
-3. Solo exercise, per set: emit the exercise and the single-exercise rest. After the final set, the transition rule applies. The in-set pause never appears outside a superset pair, so an exercise that failed to find a partner rests on its skill's single-exercise value, not the short superset pause.
-4. A one-sided exercise emits a left and a right entry per set, and counts as two exercises against its skill's slot quota.
+3. Solo exercise, per set: emit the exercise and the single-exercise rest. On the final set, the transition rule replaces the regular single-exercise rest. The in-set pause never appears outside a superset pair, so an exercise that failed to find a partner rests on its skill's single-exercise value, not the short superset pause.
+4. A one-sided exercise is emitted in the following order for each set: left → rest → right → rest, and counts as two exercises against its skill's slot quota.
 
 Time budgeting counts a repetition as 4 seconds.
 
@@ -128,7 +140,3 @@ set 2 | 90 s   <- single-exercise rest again, not the shorter after-set pause
 ## Structure
 
 A skill block owns a set count and its three rest lengths; expansion walks its ordered exercises or pairs and appends entries to the session's set list. Every entry carries its skill, its set index and total, and its prescribed values, which lets the workout UI show progress, drive the timer, and attribute elapsed time to the right skill without consulting the plan. Pause entries reference a placeholder branch, marking them as non-progressing. Unlike the skill trees and start values, these set counts and rest lengths are not authored content: the generator holds them per skill.
-
-## Open Questions
-
-- The single-exercise rest is defined only for the training skills. Warm-up, special warm-up, cool-down, mobility, and foam roller exercises never pair, so the transition rule would ask for a single-exercise rest these skills do not carry when the next exercise trains the same muscles. Do they keep their after-set pause in every transition?

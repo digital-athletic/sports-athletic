@@ -84,13 +84,13 @@ The following ranges are **informational only** and must not be used to choose, 
 |---|---|---:|---|
 | Max strength | Max-Kraft | 70–90% | Peak force production |
 | Hypertrophy | Muskelaufbau | 60–80% | Muscle growth |
-| Speed strength | Schnellkraft | 50–70% | Explosive power |
-| Speed endurance | Schnelligkeitsausdauer | 30–50% | Sustained high-speed output |
+| Explosive power | Schnellkraft | 50–70% | Explosive power |
+| Power endurance | Schnellkraftausdauer | 30–50% | Sustained high-speed output |
 For normal test-based weighted exercises:
 > **Unrounded training weight = authored intensity % × equipment-adjusted max**
 The ranges above are not fallback values, minimums, or maximums.
 **Max strength:** starting intensities, ladders, and floors are defined exclusively in [Max Strength Training](./max-strength-progression.md). Max-strength percentages/floors apply to the **equipment-adjusted max value**.
-**Speed endurance:** the calculation logic remains valid but is currently not selected by active workout generation.
+**Power endurance:** the calculation logic remains valid but is currently not selected by active workout generation.
 
 ### 5. Exercise-specific adjustments
 

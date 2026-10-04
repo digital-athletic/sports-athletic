@@ -2,7 +2,7 @@
 
 ## Why & What
 
-App content sits in three layers: one **skill tree** per **skill** (the training components a session is built from: warm-up, mobility, stability, hypertrophy, Maxkraft, speed strength, prevention, cardio zones, support work), each tree made of **branches**, each branch an ordered set of **levels** that reference exercises from the flat **exercise catalog** (roughly 1200 entries with tags and value configurations). Plans and workouts reference branches only; the exercise an athlete performs is resolved from the branch at workout start using that athlete's level for it. This spec defines the three layers and the rules that move an athlete up and down levels.
+App content sits in three layers: one **skill tree** per **skill** (the training components a session is built from: warm-up, mobility, stability, hypertrophy, Maxkraft, explosive power, prevention, cardio zones, support work), each tree made of **branches**, each branch an ordered set of **levels** that reference exercises from the flat **exercise catalog** (roughly 1200 entries with tags and value configurations). Plans and workouts reference branches only; the exercise an athlete performs is resolved from the branch at workout start using that athlete's level for it. This spec defines the three layers and the rules that move an athlete up and down levels.
 
 ## Problem
 
@@ -71,7 +71,7 @@ Both steps persist their result, so each correction happens once. Neither moves 
 
 The owning progression specification decides whether a level change is earned. This file does **not** independently derive a level change from raw achieved repetitions, duration, weight, or feedback.
 
-**Standard Exercise Progression** owns the progression outcome for hypertrophy, speed strength, speed endurance, stability, and prevention:
+**Standard Exercise Progression** owns the progression outcome for hypertrophy, explosive power, power endurance, stability, and prevention:
 
 - `LEVEL_UP` is emitted only after the applicable final upper boundary has been prescribed, performed, and positively evaluated according to that specification.
 - `LEVEL_DOWN` is emitted only after the applicable final lower boundary has been prescribed, performed, and evaluated as `too hard` according to that specification.
@@ -122,7 +122,7 @@ Athletes cannot swap exercises manually, and building this is currently not plan
 
 ### Example: bodyweight squat lane
 
-Speed strength (Schnellkraft, code SK) has the trees SK and SKKG; training at home without weights uses SKKG. Branch 253 there is the two-legged squat lane, tagged knee movement direction, lower body, both-sided, glutes and quadriceps as complex movers.
+Explosive power (Schnellkraft, code SK) has the trees SK and SKKG; training at home without weights uses SKKG. Branch 253 there is the two-legged squat lane, tagged knee movement direction, lower body, both-sided, glutes and quadriceps as complex movers.
 
 | **Level** | **Exercise** |
 | ---: | --- |

@@ -41,7 +41,7 @@ The anamnesis answers are stored as tag groups and copied into the workout confi
 | Pain status | PAIN tags | Any pain tag sets the pain variant of the skill priorities. |
 | Prevention skills | PAIN tags | Shoulder maps to shoulder prevention, elbow and wrist to wrist prevention, spine to spine prevention, hip and knee to knee prevention, ankle to ankle prevention. |
 | Blocked regions | PAIN tags | Authored mapping only: pain exclusions do not exist, no branch is excluded for a blocked region ([Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md)). |
-| Position | POSITION tag | Defaults to FIELD. Currently every athlete is treated as a keeper (temporary override until speed endurance content is fixed). |
+| Position | POSITION tag | Defaults to FIELD. Currently every athlete is treated as a keeper (temporary override until power endurance content is fixed). |
 | Season phase | Anamnesis season phase step | PAUSE, PREPARATORY, or COMPETITION, with a week count to the phase end date (minimum 1). Required; generation fails without it. |
 | Weights available | Equipment of active locations | True if any active training day's location has weights. |
 
@@ -50,14 +50,14 @@ Note on age groups: the app's fitness area is currently restricted to users aged
 ### 2. Section layout (periodization)
 
 1. Look up the section template by season phase, age group (child or adult; per the terms and conditions the fitness area is 16+, so the child templates are normally not reached), and level. Unknown combinations fall back to the preparatory adult advanced template.
-2. Templates are keyed by phase length in weeks (1 to 20). Each entry is an ordered list of sections, each with a type, week count, and cardio type. Example (preparatory, adult, beginner, 8 weeks): hypertrophy stage 1 for 3 weeks, hypertrophy stage 2 for 3 weeks, then speed strength for 2 weeks.
+2. Templates are keyed by phase length in weeks (1 to 20). Each entry is an ordered list of sections, each with a type, week count, and cardio type. Example (preparatory, adult, beginner, 8 weeks): hypertrophy stage 1 for 3 weeks, hypertrophy stage 2 for 3 weeks, then explosive power for 2 weeks.
 3. Phases longer than 20 weeks start from the 20-week entry and append from the template's repeat list cyclically; an appended section merges into the previous one when type and cardio type match.
 4. Substitutions after template selection:
    - No weights available, or level BEGINNER: every **Maxkraft** (max strength) section becomes hypertrophy stage 2.
-   - Keeper: speed endurance becomes speed strength, and lactate cardio becomes short-interval cardio.
+   - Keeper: power endurance becomes explosive power, and lactate cardio becomes short-interval cardio.
 5. The plan start snaps forward to the next Monday; each section starts where the previous one ends, giving strictly sequential blocks.
 
-Section types use German training vocabulary: SWR1 and SWR2 are hypertrophy (Muskelaufbau) stages, MAX and MAX_KRAFT are Maxkraft, SK is speed strength (Schnellkraft), SA is speed endurance (Schnelligkeitsausdauer). A KG suffix marks the bodyweight (Körpergewicht) variant of a type. Cardio types CARDIO_1 to CARDIO_5 are heart-rate intensity zones.
+Section types use German training vocabulary: SWR1 and SWR2 are hypertrophy (Muskelaufbau) stages, MAX and MAX_KRAFT are Maxkraft, SK is explosive power (Schnellkraft), SA is power endurance (Schnellkraftausdauer). A KG suffix marks the bodyweight (Körpergewicht) variant of a type. Cardio types CARDIO_1 to CARDIO_5 are heart-rate intensity zones.
 
 ### 3. Day grouping and focus
 
@@ -120,7 +120,7 @@ Entity relationships: a plan has ordered sections; a section has one training pe
 
 ## Open Questions
 
-- Every athlete is currently treated as a keeper, removing speed endurance sections for everyone. When speed endurance content is fixed, should existing plans regenerate automatically?
+- Every athlete is currently treated as a keeper, removing power endurance sections for everyone. When power endurance content is fixed, should existing plans regenerate automatically?
 - Branch selection is random, so any regeneration (e.g. an equipment tweak) reshuffles most exercises. Should selection be seeded or should regeneration preserve unaffected days? Leaning toward preserving.
 - Overwritten plans vanish without archiving (marked as a TODO in the flow). Should the old plan be archived locally and on the backend before replacement?
 - Minimum skill durations can overshoot a short session's target length. Should the skill list shrink instead when the budget does not fit?

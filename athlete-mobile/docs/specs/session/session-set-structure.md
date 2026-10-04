@@ -12,7 +12,7 @@ A plan promises 30 minutes of Maxkraft. The time the athlete spends depends on s
 
 Every strength and mobility skill expands through the same tables: set count from the skill, alternating work and rest entries, and three rest lengths, each with a single purpose (inside a superset pair, between the sets of an unpaired exercise, closing an exercise block before different muscle groups). Rest gets its own set-list entry, so the workout UI runs a single timer loop over one homogeneous list.
 
-Three structures sit outside that loop. Weighted hypertrophy and speed strength gain one reduced-weight leading set; Maxkraft brings its own warm-up ladder and fills its long breaks with support exercises; cardio builds intervals from its zone. The last two bypass the tables below.
+Three structures sit outside that loop. Weighted hypertrophy and explosive power gain one reduced-weight leading set; Maxkraft brings its own warm-up ladder and fills its long breaks with support exercises; cardio builds intervals from its zone. The last two bypass the tables below.
 
 ## Out of Scope
 
@@ -28,7 +28,7 @@ Three structures sit outside that loop. Weighted hypertrophy and speed strength 
 | Skill | Sets per exercise |
 |---|---|
 | Maxkraft | 4 |
-| Hypertrophy, speed strength, speed endurance, stability, full-body stability, prevention | 2 |
+| Hypertrophy, explosive power, power endurance, stability, full-body stability, prevention | 2 |
 | Warm-up, special warm-up, cool-down, mobility, foam roller | 1 |
 | Steady cardio | 1 |
 | Interval cardio | interval count, per [Cardio Training System](./cardio-training-system.md) |
@@ -54,16 +54,16 @@ Which of the last two runs at a block boundary is decided by the transition rule
 | Stability, joint-specific prevention | 30 s | 60 s | 60 s |
 | Full-body stability, weighted | 45 s | 90 s | 60 s |
 | Full-body stability, bodyweight | 45 s | 90 s | 60 s |
-| Speed strength, weighted | 60 s | 180 s | 60 s |
-| Speed strength, bodyweight | 60 s | 180 s | 60 s |
-| Speed endurance, weighted | 75 s | 180 s | 75 s |
-| Speed endurance, bodyweight | 75 s | 180 s | 75 s |
+| Explosive power, weighted | 60 s | 180 s | 60 s |
+| Explosive power, bodyweight | 60 s | 180 s | 60 s |
+| Power endurance, weighted | 75 s | 180 s | 75 s |
+| Power endurance, bodyweight | 75 s | 180 s | 75 s |
 | Plyometrics | 60 s | 180 s | 60 s |
 | Special warm-up for speed work | 30 s | 30 s | 30 s |
 | Warm-up | 10 s | 10 s | 30 s |
 | Special warm-up, cool-down, mobility, foam roller | 10 s | 10 s | 10 s |
 
-Speed endurance is not yet implemented in the training logic; its rest values are specified here for future implementation.
+Power endurance is not yet implemented in the training logic; its rest values are specified here for future implementation.
 
 Focus and short workouts use workout-specific fixed rest durations instead of a flat after-set pause: 10 s for warm-up, cool-down, mobility, and foam roller; 30 s for leg-axis stability; and 45 s for full-body stability with or without additional weight.
 
@@ -105,11 +105,11 @@ Time budgeting counts a repetition as 4 seconds.
 | Case | Leading set |
 |---|---|
 | Hypertrophy pair with at least one weighted exercise | One extra set at 70% of the working weight, working repetitions, rest 30 s paired or 60 s alone |
-| Speed strength pair with at least one weighted exercise | One extra set at 65% of the working weight, 8 repetitions, rest 60 s paired or 180 s alone (the skill's single-exercise rest) |
+| Explosive power pair with at least one weighted exercise | One extra set at 65% of the working weight, 8 repetitions, rest 60 s paired or 180 s alone (the skill's single-exercise rest) |
 | Maxkraft | Two ladder sets at 50% and 75% of the first working weight, 60 s rest ([Max Strength Training](../progression/max-strength-progression.md)) |
 | Everything else | None |
 
-No other skill gains a warm-up set: weighted full-body stability deliberately trains without one, and speed endurance is not yet implemented. Whether these deserve one is a later review, not part of the model.
+No other skill gains a warm-up set: weighted full-body stability deliberately trains without one, and power endurance is not yet implemented. Whether these deserve one is a later review, not part of the model.
 
 The extra set raises the pair's set count by one, so its numbering runs 1 of 3 rather than warm-up plus 2.
 

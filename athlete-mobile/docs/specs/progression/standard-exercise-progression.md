@@ -5,8 +5,8 @@
 This specification defines standard progression for:
 
 - hypertrophy,
-- speed strength,
-- speed endurance,
+- explosive power,
+- power endurance,
 - stability,
 - prevention.
 
@@ -260,9 +260,9 @@ These are the current general values where the authored content resolves to the 
 
 | Training area | Start | Target | Load / notes |
 |---|---:|---:|---|
-| Speed strength with adjustable weight | 4 reps | 6 reps | Beginner 52.5-65% F-Max; Advanced 55-67.5%; Professional 55-70%; lowest load 50% |
-| Loaded jumping speed strength | 4 reps | 6 reps | Default ~10-20% squat F-Max; selected authored configurations may use up to 25% |
-| Speed strength without adjustable weight | 4 reps | 6 reps | General default |
+| Explosive power with adjustable weight | 4 reps | 6 reps | Beginner 52.5-65% F-Max; Advanced 55-67.5%; Professional 55-70%; lowest load 50% |
+| Loaded jumping explosive power | 4 reps | 6 reps | Default ~10-20% squat F-Max; selected authored configurations may use up to 25% |
+| Explosive power without adjustable weight | 4 reps | 6 reps | General default |
 | Plyometrics | 4 reps | 6 reps | General default; lighter authored content may use higher targets |
 | Hypertrophy, adjustable weight, reps | 8 reps | 12 reps | Beginner 67.5-75%; Advanced 70-77.5%; Professional 70-77.5%; lowest load 65% |
 | Hypertrophy, adjustable weight, duration | 30 s | 50 s | Same weight-boundary logic |

@@ -59,7 +59,7 @@ CARDIO_1_SHORT displays **MAX.** instead of a heart-rate range because the 10-se
 
 For the current implementation, CARDIO_1_LAKTAT is not inserted into training plans. All athletes currently use the baseline logic that was originally used for goalkeepers, so CARDIO_1_SHORT is used instead of CARDIO_1_LAKTAT.
 
-Position-specific differentiation between CARDIO_1_SHORT and CARDIO_1_LAKTAT is only relevant once the corresponding lactate / speed-endurance logic is implemented.
+Position-specific differentiation between CARDIO_1_SHORT and CARDIO_1_LAKTAT is only relevant once the corresponding lactate / power-endurance logic is implemented.
 
 ### Building the block
 

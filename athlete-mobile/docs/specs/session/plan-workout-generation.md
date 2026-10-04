@@ -91,14 +91,14 @@ flowchart TD
      | Maxkraft (MAX) | 0 / 45 / 55 |
      | Cardio | 45 / 60 / 60 |
      | Full-body stability (GKS) | 25 / 30 / 40 |
-     | Speed endurance (SA), speed strength (SK) | 30 / 35 / 35 |
+     | Power endurance (SA), explosive power (SK) | 30 / 35 / 35 |
      | Prevention (PREV) | 15 |
      | Special warm-up (WUSPEZIAL) | 3 |
      | Everything else | 10 |
 
      The SWR code belongs to hypertrophy: it originally stands for jump, throwing, and core strength (Sprung-, Wurf- und Rumpfkraft).
 5. **Resolve** every remaining branch to its level-matched exercise.
-6. **Assemble**: order skills by the fixed section order (warm-up first, cool-down last), build pairs per skill, and emit the set list with sets and pauses. Weighted hypertrophy and speed strength supersets gain one extra warm-up set at reduced weight.
+6. **Assemble**: order skills by the fixed section order (warm-up first, cool-down last), build pairs per skill, and emit the set list with sets and pauses. Weighted hypertrophy and explosive power supersets gain one extra warm-up set at reduced weight.
 
    **Support exercises (Maxkraft only)**: the generator draws support-tagged catalog exercises at random into the breaks between main-lift sets, skipping those that target sore areas, need unavailable equipment, hit the muscles the main lift works as primaries, or already appear in this skill. Once the filtered pool runs out the remaining breaks stay empty, as does any break with no suitable candidate. The general weighted ratio does not apply here.
 

@@ -2,7 +2,7 @@
 
 ## Why & What
 
-An athlete can start a workout with no training plan behind it: an on-demand **short workout** or the Maxkraft **strength test**. The short workouts are the app's **focus trainings** (10 to 20 minutes of topic-specific training: leg axis stability, full-body stability, mobility, foam roller, warm-up, cool-down), plus prevention workouts from their own entry point; there is no cardio short workout. Both flows build their candidate pool from the authored **skill trees** and draw at random to a per-type quota, then emit the same **set list** a plan workout emits. This spec defines the quotas, the draw rules, and the conditions under which each flow refuses to build a session.
+An athlete can start a workout with no training plan behind it: an on-demand **short workout** or the **strength test**. The short workouts are the app's **focus trainings** (10 to 20 minutes of topic-specific training: leg axis stability, full-body stability, mobility, foam roller, warm-up, cool-down), plus prevention workouts from their own entry point; there is no cardio short workout. Both flows build their candidate pool from the authored **skill trees** and draw at random to a per-type quota, then emit the same **set list** a plan workout emits. This spec defines the quotas, the draw rules, and the conditions under which each flow refuses to build a session.
 
 ## Problem
 

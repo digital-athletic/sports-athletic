@@ -34,7 +34,7 @@ Always 2 warm-up sets, calculated from the actually displayed (rounded) weight o
 The warm-up weights are then rounded according to the rounding rules in Section 8.
 
 - Between the warm-up sets: 60 s rest. Also 60 s between the 2nd warm-up set and the 1st working set.
-- Warm-up sets run without a supporting exercise / superset (Section 7 applies only to working sets).
+- Warm-up sets run without a support exercise (Section 7 applies only to working sets).
 ## 3. Set Structure
 
 Each working set has a fixed starting weight and a fixed maximum weight. The starting values come exclusively from the following tables. The starting weight is the entry point of a new exercise, the maximum weight the ceiling of its ladder. Neither is a hard bound downward: a "too heavy" rating can push a set below its starting weight, down to the 65% floor (Section 5.1).
@@ -161,7 +161,7 @@ Effect, in this order:
 
 The rating at the bottom applies to the exercise as a whole, exactly as at the top: a single "too heavy" at the floor is enough, no repeated confirmation over several sessions is required.
 
-## 7. Superset Between the Sets
+## 7. Support Exercise Between the Sets
 
 A supporting block is inserted between each working set. The final rest differs by level.
 
@@ -170,9 +170,9 @@ A supporting block is inserted between each working set. The final rest differs 
 | Step | Sequence |
 |---|---|
 | 1 | 30 s rest |
-| 2 | Supporting exercise – set 1 |
+| 2 | Support exercise – set 1 |
 | 3 | 60 s rest |
-| 4 | Supporting exercise – set 2 |
+| 4 | Support exercise – set 2 |
 | 5 | 30 s rest |
 
 **Pro (adjusted – longer final rest due to higher loads)**
@@ -180,12 +180,12 @@ A supporting block is inserted between each working set. The final rest differs 
 | Step | Sequence |
 |---|---|
 | 1 | 30 s rest |
-| 2 | Supporting exercise – set 1 |
+| 2 | Support exercise – set 1 |
 | 3 | 60 s rest |
-| 4 | Supporting exercise – set 2 |
+| 4 | Support exercise – set 2 |
 | 5 | 90 s rest (instead of 30 s) |
 
-For the supporting exercise: 2 sets of the same exercise; bilateral exercise 8 repetitions or 30 s duration; left/right exercise 1 set per side per round. The specific exercise is freely selectable. Warm-up sets are excluded (Section 2).
+For the support exercise: 2 sets of the same exercise; bilateral exercise 8 repetitions or 30 s duration; left/right exercise 1 set per side per round. The specific exercise is freely selectable. Warm-up sets are excluded (Section 2).
 
 **Pause between two working sets** is the whole block above, support sets included, counted from the end of one working set to the start of the next:
 

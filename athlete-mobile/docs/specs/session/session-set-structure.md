@@ -6,19 +6,19 @@ Once the generator has selected a session's exercises, it expands them into the 
 
 ## Problem
 
-A plan promises 30 minutes of Maxkraft. The time the athlete spends depends on sets per exercise, rest between sets, rest between pairs, and warm-up sets, and no spec records those four numbers. Each skill carries several rest values with no written rule for which one applies where, so a trainer cannot predict a session's real duration, and a reviewer has no intended structure to check a content change against.
+A plan promises 30 minutes of max strength. The time the athlete spends depends on sets per exercise, rest between sets, rest between pairs, and warm-up sets, and no spec records those four numbers. Each skill carries several rest values with no written rule for which one applies where, so a trainer cannot predict a session's real duration, and a reviewer has no intended structure to check a content change against.
 
 ## Solution
 
 Every strength and mobility skill expands through the same tables: set count from the skill, alternating work and rest entries, and three rest lengths, each with a single purpose (inside a superset pair, between the sets of an unpaired exercise, closing an exercise block before different muscle groups). Rest gets its own set-list entry, so the workout UI runs a single timer loop over one homogeneous list.
 
-Three structures sit outside that loop. Weighted hypertrophy and explosive power gain one reduced-weight leading set; Maxkraft brings its own warm-up ladder and fills its long breaks with support exercises; cardio builds intervals from its zone. The last two bypass the tables below.
+Three structures sit outside that loop. Weighted hypertrophy and explosive power gain one reduced-weight leading set; max strength brings its own warm-up ladder and fills its long breaks with support exercises; cardio builds intervals from its zone. The last two bypass the tables below.
 
 ## Out of Scope
 
 - Which exercises are chosen, how they are paired, and in what order they run: [Plan Workout Generation](./plan-workout-generation.md)
 - The prescribed weights, repetitions, and durations themselves: [Weight Calculation from Strength Tests](../progression/weight-calculation-from-strength-tests.md) and [Standard Exercise Progression](../progression/standard-exercise-progression.md)
-- Maxkraft's ladder, its reps per weight, and its support-exercise rules: [Max Strength Training](../progression/max-strength-progression.md)
+- Max strength's ladder, its reps per weight, and its support-exercise rules: [Max Strength Training](../progression/max-strength-progression.md)
 - Cardio interval and pause structure: [Cardio Training System](./cardio-training-system.md)
 
 ## Algorithm
@@ -27,7 +27,7 @@ Three structures sit outside that loop. Weighted hypertrophy and explosive power
 
 | Skill | Sets per exercise |
 |---|---|
-| Maxkraft | 4 |
+| Max strength | 4 |
 | Hypertrophy, explosive power, power endurance, stability, full-body stability, prevention | 2 |
 | Warm-up, special warm-up, cool-down, mobility, foam roller | 1 |
 | Steady cardio | 1 |
@@ -35,7 +35,7 @@ Three structures sit outside that loop. Weighted hypertrophy and explosive power
 
 Set counts deliberately do not vary by training level: beginners, advanced athletes, and professionals perform the same sets per exercise, and the higher minute budget (more exercise slots) is the mechanism that differentiates the levels. A level-dependent set count may be reviewed later, but is not part of the model.
 
-Maxkraft and cardio appear here for completeness. Their own builders ignore this count and the rest table below, and derive their structure from the ladder and the zone instead.
+Max strength and cardio appear here for completeness. Their own builders ignore this count and the rest table below, and derive their structure from the ladder and the zone instead.
 
 ### Rest types
 
@@ -59,7 +59,7 @@ Which of the last two runs at a block boundary is decided by the transition rule
 | Power endurance, weighted | 75 s | 180 s | 75 s |
 | Power endurance, bodyweight | 75 s | 180 s | 75 s |
 | Plyometrics | 60 s | 180 s | 60 s |
-| Special warm-up for speed work | 30 s | 30 s | 30 s |
+| Speed warm-up | 30 s | 30 s | 30 s |
 | Warm-up | 10 s | 10 s | 30 s |
 | Special warm-up, cool-down, mobility, foam roller | 10 s | 10 s | 10 s |
 
@@ -106,7 +106,7 @@ Time budgeting counts a repetition as 4 seconds.
 |---|---|
 | Hypertrophy pair with at least one weighted exercise | One extra set at 70% of the working weight, working repetitions, rest 30 s paired or 60 s alone |
 | Explosive power pair with at least one weighted exercise | One extra set at 65% of the working weight, 8 repetitions, rest 60 s paired or 180 s alone (the skill's single-exercise rest) |
-| Maxkraft | Two ladder sets at 50% and 75% of the first working weight, 60 s rest ([Max Strength Training](../progression/max-strength-progression.md)) |
+| Max strength | Two ladder sets at 50% and 75% of the first working weight, 60 s rest ([Max Strength Training](../progression/max-strength-progression.md)) |
 | Everything else | None |
 
 No other skill gains a warm-up set: weighted full-body stability deliberately trains without one, and power endurance is not yet implemented. Whether these deserve one is a later review, not part of the model.

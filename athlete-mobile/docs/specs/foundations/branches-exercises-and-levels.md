@@ -2,7 +2,7 @@
 
 ## Why & What
 
-App content sits in three layers: one **skill tree** per **skill** (the training components a session is built from: warm-up, mobility, stability, hypertrophy, Maxkraft, explosive power, prevention, cardio zones, support work), each tree made of **branches**, each branch an ordered set of **levels** that reference exercises from the flat **exercise catalog** (roughly 1200 entries with tags and value configurations). Plans and workouts reference branches only; the exercise an athlete performs is resolved from the branch at workout start using that athlete's level for it. This spec defines the three layers and the rules that move an athlete up and down levels.
+App content sits in three layers: one **skill tree** per **skill** (the training components a session is built from: warm-up, mobility, stability, hypertrophy, max strength, explosive power, prevention, cardio zones, support work), each tree made of **branches**, each branch an ordered set of **levels** that reference exercises from the flat **exercise catalog** (roughly 1200 entries with tags and value configurations). Plans and workouts reference branches only; the exercise an athlete performs is resolved from the branch at workout start using that athlete's level for it. This spec defines the three layers and the rules that move an athlete up and down levels.
 
 ## Problem
 
@@ -42,7 +42,7 @@ A **level change** must land on a level holding a different exercise, so it al
   For the current age model, age-specific exercise values may distinguish U16 from athletes aged 16 and above.
 
   An exercise also defines one progression mode, for example `advance-by-reps` or `advance-by-duration`, and may define an optional other-side counterpart for one-sided movements.
-- **Branch**: belongs to exactly one skill tree; carries the branch tags every selection filter and substitution score reads, plus a map from level number to one exercise. Authored levels run 1 to 6, most branches define 3, and the map may skip numbers. An exercise may appear in several branches (about a quarter do, for example the same lift in a hypertrophy and a Maxkraft branch), and about 80% of branches repeat one exercise across adjacent levels so that every entry level resolves.
+- **Branch**: belongs to exactly one skill tree; carries the branch tags every selection filter and substitution score reads, plus a map from level number to one exercise. Authored levels run 1 to 6, most branches define 3, and the map may skip numbers. An exercise may appear in several branches (about a quarter do, for example the same lift in a hypertrophy and a max strength branch), and about 80% of branches repeat one exercise across adjacent levels so that every entry level resolves.
 - **Athlete branch progress**: a map from branch ID to current level, absent until the first level change on that branch. It persists independently of any plan, so it survives plan regeneration, applies wherever the branch reappears, and outlives substitution of the branch.
 
 ### Resolving the level at workout start
@@ -79,7 +79,7 @@ The owning progression specification decides whether a level change is earned. T
 - For hypertrophy, the global repetition/duration boundaries from Standard Exercise Progression override exercise-specific authored repetition/duration values.
 - Warm-up, special warm-up, cool-down, mobility, foam roller, and strength-test exercises do not use this standard progression and do not earn branch-level changes through it.
 
-**Maxkraft** receives its level-change trigger from [Max Strength Training](../progression/max-strength-progression.md).
+**Max strength** receives its level-change trigger from [Max Strength Training](../progression/max-strength-progression.md).
 
 **Cardio** exercises never change branch levels.
 

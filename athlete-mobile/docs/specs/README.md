@@ -26,7 +26,7 @@ What the app builds when the athlete presses start.
 | Spec | Covers |
 |---|---|
 | [Plan Workout Generation](./session/plan-workout-generation.md) | Filtering and replacing today's pre-selected branches, pairing, ordering, and the weighted ratio |
-| [Plan-Independent Workouts](./session/plan-independent-workouts.md) | On-demand focus trainings (short workouts) and the Maxkraft strength test, drawn straight from the skill trees |
+| [Plan-Independent Workouts](./session/plan-independent-workouts.md) | On-demand focus trainings (short workouts) and the strength test, drawn straight from the skill trees |
 | [Session Set Structure](./session/session-set-structure.md) | Set counts, rest lengths, warm-up sets, and how a skill block expands into the set list |
 | [Cardio Training System](./session/cardio-training-system.md) | The six zones, interval and steady blocks, heart-rate bands, and interval-count progression |
 
@@ -36,8 +36,8 @@ How prescribed values move from one session to the next.
 
 | Spec | Covers |
 |---|---|
-| [Standard Exercise Progression](./progression/standard-exercise-progression.md) | The everyday loop for every skill except Maxkraft and cardio: reps, duration, weight, then level |
-| [Max Strength Training](./progression/max-strength-progression.md) | Maxkraft: the F-Max ladder, warm-up sets, repetition tables, and support exercises |
+| [Standard Exercise Progression](./progression/standard-exercise-progression.md) | The everyday loop for every skill except max strength and cardio: reps, duration, weight, then level |
+| [Max Strength Training](./progression/max-strength-progression.md) | Max strength: the F-Max ladder, warm-up sets, repetition tables, and support exercises |
 | [Weight Calculation from Strength Tests](./progression/weight-calculation-from-strength-tests.md) | Strength test to 1RM to equipment conversion to training weight to plate rounding |
 
 ## Conventions

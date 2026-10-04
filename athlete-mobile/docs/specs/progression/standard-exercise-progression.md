@@ -10,7 +10,7 @@ This specification defines standard progression for:
 - stability,
 - prevention.
 
-Maxkraft and cardio use their own progression specifications.
+Max strength and cardio use their own progression specifications.
 
 Per exercise, progression may use:
 
@@ -29,7 +29,7 @@ Exercise-specific history is stored per athlete and survives plan regeneration. 
 
 ## Out of scope
 
-- Maxkraft progression: [Max Strength Training](./max-strength-progression.md)
+- Max strength progression: [Max Strength Training](./max-strength-progression.md)
 - Cardio progression: [Cardio Training System](../session/cardio-training-system.md)
 - Branch/level changes and substitution rules: [Branches, Exercises, and Levels](../foundations/branches-exercises-and-levels.md)
 - Initial weight derivation, equipment conversion, and rounding rules: [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md)
@@ -268,7 +268,7 @@ These are the current general values where the authored content resolves to the 
 | Hypertrophy, adjustable weight, duration | 30 s | 50 s | Same weight-boundary logic |
 | Hypertrophy, no adjustable weight, reps | 8 reps | 12 reps | Standard hypertrophy range |
 | Hypertrophy, no adjustable weight, duration | 30 s | 60 s | Standard hypertrophy range |
-| Whole-body stability | 8 reps / 30 s | 15 reps / 60 s | Weight exercise-specific where applicable |
+| Full-body stability | 8 reps / 30 s | 15 reps / 60 s | Weight exercise-specific where applicable |
 | Leg-axis stability | 5 reps / 30 s | 8 reps / 45 s | Exercise-specific |
 | Prevention with adjustable weight | 10 reps / 40 s | 15 reps / 60 s | Weight exercise-specific |
 | U16 weighted exercises | per training area | per training area | Fixed authored **weight** values; no F-Max calculation. Repetition/duration follows the applicable training-area rules; for hypertrophy use 8-12 reps or 30-50 s for weighted duration. |

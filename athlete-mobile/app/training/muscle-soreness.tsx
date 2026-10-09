@@ -15,6 +15,7 @@ import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { ScrollBox } from "@/theme/ScrollBox";
+import { useTheme } from "@/theme/theme";
 import { Text } from "@/theme/Text";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -42,6 +43,7 @@ export default function MuscleSorenessScreen() {
 
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { spacing } = useTheme();
 
   const [loading, setLoading] = useState(true);
   const screenState = screenStateFor(params.type);
@@ -99,21 +101,22 @@ export default function MuscleSorenessScreen() {
 
   return (
     <>
-      {/* The silhouette regions get too small to tap in landscape. */}
       <Stack.Screen
         options={{
           title,
           headerLeft: () => <BackHeader onBack={handleBack} />,
-          orientation: screenState === "SORENESS" ? "portrait" : "default",
         }}
       />
       <Box
         flex={1}
         justifyContent="center"
         alignItems="stretch"
-        paddingHorizontal="m"
         paddingVertical="s"
-        style={{ paddingBottom: insets.bottom }}
+        style={{
+          paddingBottom: insets.bottom,
+          paddingLeft: Math.max(spacing.m, insets.left),
+          paddingRight: Math.max(spacing.m, insets.right),
+        }}
       >
         {/* needs to be here so the selector isn't rendered at start while temp data is managed */}
         {loading || generating ? (

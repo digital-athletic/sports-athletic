@@ -9,6 +9,7 @@ import {
   UNSELECTED_FILL,
 } from "./silhouette/svgTestUtils";
 import { type MuscleType } from "./types";
+import { Dimensions } from "react-native";
 
 function setGender(gender: "MALE" | "FEMALE") {
   useUserProfileStore.setState({
@@ -146,5 +147,28 @@ describe("MuscleSorenessSelector: gender awareness", () => {
     const neck = femaleFront.regions.find((region) => region.id === "NECK");
     const renderedNeckPaths = regionPathHosts("silhouette-region-NECK");
     expect(renderedNeckPaths.map((node) => node.props.d)).toEqual(neck?.paths);
+  });
+});
+
+describe("MuscleSorenessSelector: figure size", () => {
+  const portrait = { width: 750, height: 1334, scale: 2, fontScale: 2 };
+  // Not the portrait size turned: a different number proves the window changed.
+  const landscape = { width: 1000, height: 600, scale: 2, fontScale: 2 };
+
+  afterEach(() => {
+    Dimensions.set({ window: portrait, screen: portrait });
+  });
+
+  it("sizes the figure by the longer screen side in both orientations", () => {
+    setGender("MALE");
+    Dimensions.set({ window: portrait, screen: portrait });
+    const first = render(<MuscleSorenessSelector tags={[]} />);
+    expect(first.getByTestId("soreness-figure")).toHaveStyle({ height: 800 });
+    first.unmount();
+
+    Dimensions.set({ window: landscape, screen: landscape });
+    const second = render(<MuscleSorenessSelector tags={[]} />);
+    expect(second.getByTestId("soreness-figure")).toHaveStyle({ height: 600 });
+    second.unmount();
   });
 });

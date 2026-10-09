@@ -129,14 +129,14 @@ describe("workoutUtils", () => {
       expect(result).toBe(100);
     });
 
-    it("should handle missing exercise direction by using region", () => {
+    it("should return undefined when the exercise has no movement direction", () => {
       (getTagValues as jest.Mock).mockImplementation((tags, group) => {
         if (group === TagGroups.REGION) return ["LOWER_BODY"];
         return [];
       });
 
       const result = getMaxValueForExercise(mockExercise, mockMaxValues);
-      expect(typeof result === "number" || result === undefined).toBe(true);
+      expect(result).toBeUndefined();
     });
   });
 

@@ -1,6 +1,10 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { XP_PER_MINUTE } from "@/constants/userProgressConstants";
-import { type LevelTag, WorkoutConstants } from "@/constants/workoutConstants";
+import {
+  type LevelTag,
+  type MaxValueTypeName,
+  WorkoutConstants,
+} from "@/constants/workoutConstants";
 import type { MaxValueType, UserType } from "@/schemas/user.schema";
 import {
   type TrainingLevelType,
@@ -49,54 +53,70 @@ export const getUserLevel = (user: UserType): LevelTag => {
   return (level as LevelTag) ?? WorkoutConstants.LEVELS.BEGINNER;
 };
 
+const getMaxValueType = (exercise: ExerciseType): MaxValueTypeName => {
+  const { MAX_VALUE_TYPES, SUPPORTED_SINGLE_LEG_EXERCISE_IDS } =
+    WorkoutConstants;
+  const isOneSided = getTagValues(exercise.tags, TagGroups.SIDE).includes(
+    "ONE",
+  );
+  const isUpperBody =
+    getTagValues(exercise.tags, TagGroups.REGION)[0] === "UPPER_BODY";
+  const isSupported = SUPPORTED_SINGLE_LEG_EXERCISE_IDS.includes(exercise.id);
+  const isDumbbell = getTagValues(exercise.tags, TagGroups.EQUIPMENT).includes(
+    WorkoutConstants.EQUIPMENT.DUMBBELL,
+  );
+  if (!isOneSided) {
+    return isDumbbell ? MAX_VALUE_TYPES.DUMBBELLS : MAX_VALUE_TYPES.BARBELL;
+  }
+  if (isDumbbell) {
+    if (isUpperBody) return MAX_VALUE_TYPES.ONE_SIDED_UPPER;
+    return isSupported
+      ? MAX_VALUE_TYPES.ONE_SIDED_LOWER_SUPPORTED
+      : MAX_VALUE_TYPES.ONE_SIDED_LOWER;
+  }
+  return isSupported && !isUpperBody
+    ? MAX_VALUE_TYPES.ONE_SIDED_BARBELL_SUPPORTED
+    : MAX_VALUE_TYPES.ONE_SIDED_BARBELL;
+};
+
+/** Share of the movement direction's barbell 1RM that applies to the exercise. */
+const getConversionFactor = (exercise: ExerciseType) => {
+  const equipment = getTagValues(exercise.tags, TagGroups.EQUIPMENT);
+  const isDumbbell = equipment.includes(WorkoutConstants.EQUIPMENT.DUMBBELL);
+  if (WorkoutConstants.JUMP_SQUAT_EXERCISE_IDS.includes(exercise.id)) {
+    const factors = WorkoutConstants.JUMP_SQUAT_CONVERSION_FACTORS;
+    return isDumbbell ? factors.dumbbellPerHand : factors.barbell;
+  }
+  const directions = getTagValues(exercise.tags, TagGroups.EXERCISE_DIRECTION);
+  if (isInclineBenchPress(equipment, directions)) {
+    const factors = WorkoutConstants.INCLINE_BENCH_CONVERSION_FACTORS;
+    return isDumbbell ? factors.dumbbellPerHand : factors.barbell;
+  }
+  return WorkoutConstants.MAX_VALUE_CONVERSION_FACTORS[
+    getMaxValueType(exercise)
+  ];
+};
+
+/**
+ * Returns the equipment adjusted max of the exercise, derived from the barbell
+ * 1RM of its tested movement direction, or undefined without such a 1RM.
+ */
 export const getMaxValueForExercise = (
   exercise: ExerciseType,
   maxValues: MaxValuesType,
 ) => {
-  const exerciseDirections = getTagValues(
+  const exerciseDirection = getTagValues(
     exercise.tags,
     TagGroups.EXERCISE_DIRECTION,
-  );
-  let exerciseDirection =
-    exerciseDirections.length > 0 ? exerciseDirections[0] : null;
-  const exerciseRegion = getTagValues(exercise.tags, TagGroups.REGION)[0];
-  if (exerciseDirection === null) {
-    exerciseDirection =
-      exerciseRegion === "LOWER_BODY" ? "LOWER_BODY" : "VERTICAL_PULL";
+  )[0];
+  const directionKey = exerciseDirection
+    ? EXERCISE_DIRECTIONS_VALUES_MAP[exerciseDirection]
+    : undefined;
+  const oneRepMax = directionKey ? maxValues[directionKey]?.barbell : undefined;
+  if (typeof oneRepMax !== "number" || !isFinite(oneRepMax)) {
+    return undefined;
   }
-  if (exerciseDirection === "SIDE") {
-    exerciseDirection = "LOWER_BODY";
-  }
-  const isOneSided = getTagValues(exercise.tags, TagGroups.SIDE).includes(
-    "ONE",
-  );
-  const equipment = getTagValues(exercise.tags, TagGroups.EQUIPMENT);
-  const isDumbbellExercise = equipment.includes("DUMBBELL");
-  let maxType: (typeof WorkoutConstants.MAX_VALUE_TYPES)[keyof typeof WorkoutConstants.MAX_VALUE_TYPES] =
-    WorkoutConstants.MAX_VALUE_TYPES.BARBELL;
-  if (isDumbbellExercise) {
-    if (isOneSided) {
-      maxType =
-        exerciseRegion === "UPPER_BODY"
-          ? WorkoutConstants.MAX_VALUE_TYPES.ONE_SIDED_UPPER
-          : WorkoutConstants.MAX_VALUE_TYPES.ONE_SIDED_LOWER;
-    } else {
-      maxType = WorkoutConstants.MAX_VALUE_TYPES.DUMBBELLS;
-    }
-  } else if (isOneSided) {
-    maxType = WorkoutConstants.MAX_VALUE_TYPES.ONE_SIDED_BARBELL;
-  }
-  const directionKey = EXERCISE_DIRECTIONS_VALUES_MAP[exerciseDirection];
-  if (directionKey) {
-    const directionValues = maxValues[directionKey];
-    if (directionValues) {
-      const maxValue = directionValues[maxType];
-      if (typeof maxValue === "number" && isFinite(maxValue)) {
-        return maxValue;
-      }
-    }
-  }
-  return undefined;
+  return oneRepMax * getConversionFactor(exercise);
 };
 
 export const getRoundedResultForValueAndStep = (
@@ -634,25 +654,25 @@ export const calculateAdjustedMaxValues = (maxValue: number): MaxValueType => {
       oneSidedUpper: undefined,
       oneSidedBarbell: undefined,
       oneSidedLower: undefined,
+      oneSidedBarbellSupported: undefined,
       oneSidedLowerSupported: undefined,
     };
   }
 
   const MAX_VALUE_DIGITS = 4;
-  const roundDownTo = (value: number, digits: number) => {
-    return Number.parseFloat(value.toFixed(digits));
-  };
+  const factors = WorkoutConstants.MAX_VALUE_CONVERSION_FACTORS;
+  const convert = (type: MaxValueTypeName) =>
+    Number.parseFloat((factors[type] * maxValue).toFixed(MAX_VALUE_DIGITS));
 
-  const result: MaxValueType = {
-    barbell: roundDownTo(maxValue, MAX_VALUE_DIGITS),
-    dumbbells: roundDownTo(0.45 * maxValue, MAX_VALUE_DIGITS),
-    oneSidedUpper: roundDownTo(0.45 * maxValue, MAX_VALUE_DIGITS),
-    oneSidedBarbell: roundDownTo(0.45 * maxValue, MAX_VALUE_DIGITS),
-    oneSidedLower: roundDownTo(0.5 * 0.45 * maxValue, MAX_VALUE_DIGITS), // 0.5 for weight on one KH, 0.45 for one leg
-    oneSidedLowerSupported: roundDownTo(0.5 * 0.6 * maxValue, MAX_VALUE_DIGITS), // 0.5 for weight on one KH, 0.6 for exercise with one supported leg
+  return {
+    barbell: convert("barbell"),
+    dumbbells: convert("dumbbells"),
+    oneSidedUpper: convert("oneSidedUpper"),
+    oneSidedBarbell: convert("oneSidedBarbell"),
+    oneSidedLower: convert("oneSidedLower"),
+    oneSidedBarbellSupported: convert("oneSidedBarbellSupported"),
+    oneSidedLowerSupported: convert("oneSidedLowerSupported"),
   };
-
-  return result;
 };
 
 export const deriveWeightForExercise = (

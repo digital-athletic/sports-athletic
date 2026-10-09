@@ -32,7 +32,6 @@ const user: UserType = {
 
 const weights = {
   trainingWeights: [70, 72.5, 75],
-  inclineBenchWeightDifference: 0,
 };
 
 function appliedLevel(

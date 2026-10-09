@@ -269,13 +269,13 @@ describe("jump squat: load from the squat 1RM", () => {
     "$level: starts at $start% and targets $target% of the squat 1RM",
     ({ level, start, target }) => {
       for (const id of ["292", "294"]) {
-        const weight = getExerciseById(id)!.values.weight;
+        const weight = getExerciseById(id)?.values?.weight;
         for (const gender of ["m", "w"] as const) {
           expect(
-            getValueByGenderAndLevel(weight.startValue, gender, level),
+            getValueByGenderAndLevel(weight?.startValue, gender, level),
           ).toBe(start);
           expect(
-            getValueByGenderAndLevel(weight.targetValue, gender, level),
+            getValueByGenderAndLevel(weight?.targetValue, gender, level),
           ).toBe(target);
         }
       }
@@ -313,8 +313,8 @@ describe("applyMaxValueToDirections", () => {
    */
   const newCalculatedResult = {
     barbell: 100, // 1RM for barbell exercises
-    dumbbells: 45, // ~45% of barbell for dumbbell exercises
-    oneSidedUpper: 45, // single-arm upper body
+    dumbbells: 42.5, // 42.5% of barbell per dumbbell
+    oneSidedUpper: 42.5, // single-arm upper body
     oneSidedBarbell: 45, // single-leg barbell
     oneSidedLower: 22.5, // single-leg dumbbell
     oneSidedLowerSupported: 30, // single-leg with support
@@ -338,27 +338,34 @@ describe("applyMaxValueToDirections", () => {
   });
 
   it("should apply max value to multiple directions", () => {
-    // User completes Shoulder Press test (exercise ID 54)
-    // TEST_EXERCISES_DIRECTIONS[54] = ["VERTICAL_PUSH", "VERTICAL_PULL"]
-    // → Same result applies to both vertical directions
     const result = applyMaxValueToDirections(
       DEFAULT_MAX_VALUES,
-      ["VERTICAL_PUSH", "VERTICAL_PULL"],
+      ["VERTICAL_PUSH", "HORIZONTAL_PUSH"],
       newCalculatedResult,
     );
 
     // Both directions get the same new result
     expect(result.verticalPush).toEqual(newCalculatedResult);
-    expect(result.verticalPull).toEqual(newCalculatedResult);
+    expect(result.horizontalPush).toEqual(newCalculatedResult);
     expect(result.testAt).toBe(MOCK_TIMESTAMP);
     // Unrelated directions remain unchanged
-    expect(result.horizontalPush).toEqual(DEFAULT_MAX_VALUES.horizontalPush);
+    expect(result.horizontalPull).toEqual(DEFAULT_MAX_VALUES.horizontalPull);
+  });
+
+  it("writes each strength test only to its own movement direction", () => {
+    expect(WorkoutConstants.STRENGTH_TEST_DIRECTIONS).toEqual({
+      squad: ["KNEE"],
+      deadlift: ["HIP"],
+      shoulder_press: ["VERTICAL_PUSH"],
+      rowing: ["HORIZONTAL_PULL"],
+      bench_press: ["HORIZONTAL_PUSH"],
+    });
   });
 
   it("should not overwrite the deadlift (hipHinge) max when only squat is tested", () => {
     // Regression: squat and deadlift previously shared the HIP direction, so a
     // squat-only test leaked the squat value into the deadlift max display.
-    // Squat now maps to KNEE + LOWER_BODY only and must leave hipHinge untouched.
+    // Squat now maps to KNEE only and must leave hipHinge untouched.
     const existingDeadliftMax = {
       barbell: 140,
       dumbbells: 63,
@@ -378,9 +385,8 @@ describe("applyMaxValueToDirections", () => {
       newCalculatedResult,
     );
 
-    // Squat writes its own directions...
+    // Squat writes its own direction...
     expect(result.kneeDominant).toEqual(newCalculatedResult);
-    expect(result.lowerBody).toEqual(newCalculatedResult);
     // ...but the previously recorded deadlift max is preserved.
     expect(result.hipHinge).toEqual(existingDeadliftMax);
   });

@@ -130,10 +130,7 @@ import {
   getUserLevel,
   roundWeightValue,
 } from "../utils/workoutUtils";
-import {
-  computeWarmupTrainingWeights,
-  WARMUP_REST_SECONDS,
-} from "./warmupDerivation";
+import { computeWarmupWeights, WARMUP_REST_SECONDS } from "./warmupDerivation";
 
 export default class TrainingGenerator {
   static DEBUG = false;
@@ -1640,12 +1637,17 @@ export default class TrainingGenerator {
           userExerciseData,
         );
         let trainingReps = this.getMaxTrainingReps(user, maxTrainingWeights);
-        const warmUpWeights = computeWarmupTrainingWeights(
-          maxTrainingWeights.trainingWeights[0],
+        const workingWeights = maxTrainingWeights.trainingWeights.map(
+          (weightPercentage) =>
+            deriveWeightForExercise(
+              weightPercentage,
+              "weightFMax",
+              exercise,
+              maxValues,
+            ) ?? 0,
         );
-        let trainingWeights = warmUpWeights.concat(
-          maxTrainingWeights.trainingWeights,
-        );
+        const warmUpWeights = computeWarmupWeights(workingWeights[0], exercise);
+        let trainingWeights = warmUpWeights.concat(workingWeights);
         // get soreness areas for filtering support ex
         const soreRegions = getAreasFor(
           temporalData.map((element) => element.tag),
@@ -1675,13 +1677,7 @@ export default class TrainingGenerator {
             tags: first.branchTags,
             set: [w + 1, trainingWeights.length],
             skill: skill.skill,
-            weight:
-              deriveWeightForExercise(
-                trainingWeights[w],
-                "weightFMax",
-                exercise,
-                maxValues,
-              ) ?? 0,
+            weight: trainingWeights[w],
             repetition: trainingReps[w].repetitions,
             repetitionMAX: trainingReps[w],
           });
@@ -1721,13 +1717,7 @@ export default class TrainingGenerator {
             tags: first.branchTags,
             set: [trainingSet + 1, trainingWeights.length],
             skill: skill.skill,
-            weight:
-              deriveWeightForExercise(
-                trainingWeights[trainingSet],
-                "weightFMax",
-                exercise,
-                maxValues,
-              ) ?? 0,
+            weight: trainingWeights[trainingSet],
             repetition: trainingReps[trainingSet].repetitions,
             repetitionMAX: trainingReps[trainingSet],
           });

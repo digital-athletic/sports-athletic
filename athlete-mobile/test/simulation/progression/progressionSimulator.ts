@@ -15,7 +15,6 @@
  * The harness stays on a single exercise and records the flag instead, so any
  * session following a flagged one no longer mirrors the app.
  */
-import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { ExerciseDifficultyType } from "@/constants/workoutConstants";
 import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
 import { WARMUP_WEIGHT_PERCENTAGES } from "@/features/training/generators/warmupDerivation";
@@ -36,14 +35,9 @@ import {
   toUserExerciseDataList,
 } from "@/schemas/generator.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import type { TrainingLevelType } from "@/schemas/common.schema";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import type { FeedbackScript } from "./feedbackScripts";
-import {
-  personaGenderTag,
-  personaToUser,
-  type LegacyPersona,
-} from "./personaAdapter";
+import { personaToUser, type LegacyPersona } from "./personaAdapter";
 
 const SIMULATED_BRANCH_ID = "progression-simulator-branch";
 
@@ -53,11 +47,7 @@ const SETS_PER_EXERCISE = 3;
 export interface SetSnapshot {
   setNumber: number;
   isWarmup: boolean;
-  /**
-   * Working sets: percent of F-Max. Warm-ups: the nominal percentage of the 1st
-   * working set, which the applied load only approximates because
-   * `computeWarmupTrainingWeights` floors it.
-   */
+  /** Working sets: percent of F-Max. Warm-ups: percent of the 1st working set. */
   percentage: number | null;
   weightKg: number;
   reps: number;
@@ -175,13 +165,7 @@ export function simulateProgression(
   const generator = new TrainingGenerator();
   const user = personaToUser(persona, maxValues);
   const ageGroup = ageGroupFor(getUserBirthday(user));
-  // Production tags children "k" regardless of gender (useExerciseCompletion).
-  const genderTag =
-    ageGroup === WorkoutConstants.AGE_GROUPS.CHILD
-      ? "k"
-      : personaGenderTag(persona);
   const levelTag = getUserLevel(user);
-  const userLevel = levelTag.toLowerCase() as TrainingLevelType;
   const maxValue = getMaxValueForExercise(exercise, maxValues) ?? 0;
   const exercisePairs = [
     {
@@ -239,15 +223,10 @@ export function simulateProgression(
 
     const feedbackGiven = opts.feedback({ session });
     const adjustment = calculateMaxStrengthAdjustment({
-      weight: lastEntry?.weight ?? 0,
       adjustment: feedbackGiven,
-      exerciseData: exercise,
       userExerciseData: currentEntry,
-      maxValues,
       ageGroup,
-      genderTag,
       levelTag,
-      userLevel,
     });
 
     // Same write order as the screen; the store's streak counter depends on it.
@@ -267,7 +246,6 @@ export function simulateProgression(
       exerciseId: exercise.id,
       skill: focus,
       weight: lastEntry?.weight,
-      nextWeightPercentage: adjustment.nextWeightPercentage,
       maxFRepetitions: adjustment.maxFRepetitions,
       maxFLevelAdjustment: feedbackGiven,
     });

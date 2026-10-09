@@ -7,12 +7,9 @@ equality in `src/features/training/generators/progressionSimulation.spec.ts`.
 
 **These tables encode the values as they SHOULD be** according to
 `docs/specs/progression/max-strength-progression.md`, hand-derived from the
-spec's Advanced-level ladders. The current generator does not produce them
-yet, so the golden-comparison tests in the spec file are skipped
-(`it.skip.each`). Drop the `.skip` once the generator implements the spec —
-and do **not**
-regenerate with `UPDATE_GOLDEN=1` until then, since that would overwrite the
-spec targets with the current (defective) generator output.
+spec's Advanced-level ladders. Do not regenerate them with `UPDATE_GOLDEN=1`
+to make a failing comparison pass; a mismatch means the generator drifted
+from the spec.
 
 ## Reading a file
 
@@ -69,10 +66,7 @@ Warm-up loads derive from the rounded 1st working set (spec section 2), at 50%
 and 75% of it, rounded the same way: 85 kg → 42.5 and 62.5 kg (63.75 is an
 exact tie and rounds down); 82.5 kg (tooHard session 2) → 40 kg (41.25 ties
 down) and 62.5 kg; 77.5 kg (tooHard from session 3 on) → 37.5 kg (38.75 ties
-down) and 57.5 kg. The generator instead floors the two warm-up percentages
-against the 1st working percentage and converts afterwards
-(`computeWarmupTrainingWeights`), so today it yields 42 and 63 kg; that is one
-of the gaps these targets document.
+down) and 57.5 kg.
 
 The runs use the spec's Advanced structure (3 working sets starting at
 70 / 72.5 / 75%, maxing at 70 / 75 / 80%).

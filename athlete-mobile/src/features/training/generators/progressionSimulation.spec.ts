@@ -142,8 +142,7 @@ describe("progressionSimulation: p2 × MAX_KRAFT", () => {
     }
   });
 
-  // Spec section 2: `computeWarmupTrainingWeights` floors the applied load, so
-  // the ramp is what can be asserted, not an exact fraction.
+  // Spec section 2; the goldens pin the exact loads.
   it.each(RUNS)(
     "$name: warm-up sets ramp up to the first working set",
     ({ name }) => {

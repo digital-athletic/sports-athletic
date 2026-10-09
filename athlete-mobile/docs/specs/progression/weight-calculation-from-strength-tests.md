@@ -23,7 +23,7 @@ This specification therefore distinguishes between:
 For test-based exercises:
 > strength test → estimated barbell 1RM → movement-direction reference → equipment/exercise conversion → authored intensity → final rounding
 For exercises without a tested movement direction:
-> authored start/target values by training level, gender, and age group
+> authored start/target values by fitness level, gender, and age group
 A true direct 1RM attempt is not required. The app uses a submaximal AMRAP test set and estimates the theoretical 1RM with the **Epley formula**.
 
 ## Out of Scope
@@ -59,7 +59,7 @@ Strength-test-based calculation exists only for:
 There is currently **no vertical-pull strength test** and **no generic lower-body movement direction**.
 **Age gate:** athletes **under 16** always use authored age-specific start/target weight values, even if an exercise is assigned to a tested movement direction. Test-/1RM-based personal weight calculation applies from **age 16 onward**.
 Weighted exercises without a tested movement direction also use authored start/target values.
-Those values may depend on training level, gender, and age group (e.g. U16 vs 16+).
+Those values may depend on fitness level, gender, and age group (e.g. U16 vs 16+).
 Examples include weighted core exercises and other lower-body exercises such as barbell calf raises.
 
 ### 3. Equipment conversion
@@ -109,7 +109,7 @@ Do not apply another generic dumbbell factor.
 
 Reference: knee-dominant lower-body barbell squat 1RM.
 The previous bodyweight-relative formula and 25% cap no longer apply.
-| Athlete level | Start load | Target load |
+| Fitness level | Start load | Target load |
 |---|---:|---:|
 | Beginner | 5% of squat 1RM | 10% of squat 1RM |
 | Advanced | 10% of squat 1RM | 20% of squat 1RM |
@@ -178,7 +178,7 @@ Every strength test uses the same order:
 | 4 | Bent-over barbell row | Horizontal pull |
 | 5 | Barbell overhead press | Vertical push |
 There is no vertical-pull test.
-The exercise order does not change by gender or training level.
+The exercise order does not change by gender or fitness level.
 
 #### 8.2 First strength test: authored test-set loads
 
@@ -196,7 +196,7 @@ Gender affects only the first-test load values, not the test list or order.
 #### 8.3 Second and later strength tests
 
 If a previous valid estimated 1RM exists:
-| Athlete level | Test-set load |
+| Fitness level | Test-set load |
 |---|---:|
 | Beginner | 75% of previous estimated 1RM |
 | Advanced | 80% of previous estimated 1RM |
@@ -255,7 +255,7 @@ flowchart TD
 
         S0 -->|No: age 16+| S1{Previous valid estimated 1RM available?}
 
-        S1 -->|No| S2["First strength test:<br/>fixed test-set load from authored table<br/>by exercise × gender × training level"]
+        S1 -->|No| S2["First strength test:<br/>fixed test-set load from authored table<br/>by exercise × gender × fitness level"]
 
         S1 -->|Yes| S3["New test-set load from previous estimated 1RM:<br/>Beginner 75%<br/>Advanced 80%<br/>Professional 85%"]
 
@@ -274,7 +274,7 @@ flowchart TD
     subgraph TW["B. Training-weight calculation"]
         T0{Age under 16?}
 
-        T0 -->|Yes| T1["Authored start/target values<br/>by age × gender × training level"]
+        T0 -->|Yes| T1["Authored start/target values<br/>by age × gender × fitness level"]
 
         T0 -->|No: age 16+| T2{Jump squat?}
 

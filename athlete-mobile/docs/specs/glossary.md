@@ -6,8 +6,8 @@ Terms of the training model, with the meanings the coach uses.
 
 | Term | German | Code | Meaning |
 |---|---|---|---|
-| Anamnesis | Anamnese | | Onboarding questionnaire: sport, position, training level, pains, body data and season phase. |
-| Training level | Trainingslevel | BEGINNER, ADVANCED, PROFESSIONAL | The athlete's overall level: Beginner, Advanced or Pro. Set in the anamnesis. |
+| Anamnesis | Anamnese | | Onboarding questionnaire: sport, position, fitness level, pains, body data and season phase. |
+| Fitness level | Fitnesslevel | BEGINNER, ADVANCED, PROFESSIONAL | The athlete's overall level: Beginner, Advanced or Pro. Set in the anamnesis. |
 | Age group | Altersgruppe | CHILD, ADOLESCENT, ADULT | Child under 16, adolescent 16 and 17, adult from 18. Sections and repetition counts depend on it. |
 | Playing position | Spielposition | GOAL, FIELD, ... | Position in the sport, from the anamnesis, for example goalkeeper or field player. Goalkeepers get different intervals in cardio training. Currently every athlete gets the goalkeeper intervals. |
 | Season phase | Saisonphase | PAUSE, PREPARATORY, COMPETITION | Where the athlete is in the season: off-season, preparation or competition. Decides the order of the sections. |
@@ -35,7 +35,7 @@ Terms of the training model, with the meanings the coach uses.
 | Branch level | Branch-Level, Stufe | | Difficulty level within a branch, 1 to 6, stored per athlete. Entry: Beginner 1, Advanced 2, Pro 3. |
 | Level up, level down | Aufstieg, Abstieg | | Move to the next or previous level of the branch, which holds a different exercise. |
 | Branch substitution | Branch-Ersatz | | When a branch is exhausted upwards or downwards, the plan swaps in an equivalent branch from the same skill tree. |
-| Exercise | Übung | | Catalog entry with muscles, region, side, equipment, and start and target values per training level and gender. |
+| Exercise | Übung | | Catalog entry with muscles, region, side and equipment, plus start and target values per fitness level and gender. |
 | Exercise catalog | Übungskatalog | | The list of all exercises, roughly 1200. |
 | Warm-up | Warm-Up | WU, WUPREV | General warm-up at the start of the session. |
 | Special warm-up | Spezielles Warm-Up | WUSPEZIAL | Added only when the athlete has declared pains: extra exercises that warm up the affected body region and prepare it for the training. |
@@ -75,7 +75,7 @@ Terms of the training model, with the meanings the coach uses.
 | Movement direction | Bewegungsrichtung | | Family of a movement: knee, hip, horizontal push, horizontal pull, vertical push, vertical pull. The maximum is measured per direction, not per exercise. Vertical pull currently has no strength test. |
 | F-Max | F-Max | | The maximum for one specific exercise: the 1RM of its movement direction, converted to the equipment. The conversion is in [Weight Calculation from Strength Tests](./progression/weight-calculation-from-strength-tests.md). |
 | Weight type | Gewichtstyp | weightFMax, weightAbsolute | Whether an exercise sets its weight as a percentage of F-Max or in fixed kilograms. |
-| Start value, target value | Startwert, Zielwert | | Values stored per exercise, training level and gender. The exercise starts at the start value and counts as done when the target value is reached. |
+| Start value, target value | Startwert, Zielwert | | Values stored per exercise, fitness level and gender. The exercise starts at the start value and counts as done when the target value is reached. |
 | Rounding | Rundung | | Calculated weights are rounded to loadable increments, see [Weight Calculation from Strength Tests](./progression/weight-calculation-from-strength-tests.md). |
 | Buffer | Puffer | EASY, MEDIUM, HARD | Safety margin to the maximum in percent: Advanced 20, 15 or 10, Pro 15, 10 or 5. A smaller buffer means more repetitions at the same weight. |
 | Floor | Boden | | 65% of F-Max. No set drops below it. Another "too hard" at the floor switches to the easier exercise. |

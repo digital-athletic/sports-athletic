@@ -10,7 +10,7 @@ The plan covers the scheduled week. An athlete who wants ten minutes of mobility
 
 ## Solution
 
-Two flows draw straight from the skill trees. A short workout filters the requested type's tree, then draws branches at random until the type's quota is met. A strength test pairs a randomized warm-up with an authored list of test lifts per athlete level.
+Two flows draw straight from the skill trees. A short workout filters the requested type's tree, then draws branches at random until the type's quota is met. A strength test pairs a randomized warm-up with an authored list of test lifts per fitness level.
 
 Both reuse the filter chain and the branch to exercise resolution rule from [Plan Workout Generation](./plan-workout-generation.md), so a blocked branch behaves the same way it does in a plan workout. The handling of an empty pool differs: a plan workout replaces the branch it cannot use, while these flows abort with a typed error naming the cause. Nothing here reads or writes the training plan.
 
@@ -41,7 +41,7 @@ Both reuse the filter chain and the branch to exercise resolution rule from [Pla
 
 1. Any reported soreness aborts with a soreness error.
 2. Warm-up: random branches from the warm-up tree per authored region quotas, without repeating a branch or a resolved exercise.
-3. Test lifts: a fixed, authored list per athlete level; there is no gender-specific variant. Each lift gets three ramp-up sets (40%, 60%, 85% of the reference weight) and one test set at 100%.
+3. Test lifts: a fixed, authored list per fitness level; there is no gender-specific variant. Each lift gets three ramp-up sets (40%, 60%, 85% of the reference weight) and one test set at 100%.
 
 ## Structure
 

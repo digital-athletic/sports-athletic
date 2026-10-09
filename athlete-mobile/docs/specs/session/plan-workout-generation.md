@@ -33,8 +33,8 @@ Athlete profile (level, gender, birthday, pain tags), reported soreness (sore mu
 
 ### Building blocks
 
-- **Skill**: the training quality one block of the session trains, for example max strength, hypertrophy, core, warm-up, cardio, prevention. A skill owns its skill tree, its set count, its pause lengths, and its maximum minutes per athlete level. A training day is a list of skills.
-- **Slot**: the plan gives every skill of a training day a minute budget. An authored table per skill and athlete level maps that budget to a fixed number of exercise **slots**, for max strength at 30 minutes: legs, push, pull. Every slot carries one pre-selected branch; the exercise filling a max strength slot is its **main lift**, the heavy barbell lift that slot's sets are built around. Slots fill independently: a blocked slot takes a replacement from the same skill tree, and a slot that cannot be refilled frees its minutes.
+- **Skill**: the training quality one block of the session trains, for example max strength, hypertrophy, core, warm-up, cardio, prevention. A skill owns its skill tree, its set count, its pause lengths, and its maximum minutes per fitness level. A training day is a list of skills.
+- **Slot**: the plan gives every skill of a training day a minute budget. An authored table per skill and fitness level maps that budget to a fixed number of exercise **slots**, for max strength at 30 minutes: legs, push, pull. Every slot carries one pre-selected branch; the exercise filling a max strength slot is its **main lift**, the heavy barbell lift that slot's sets are built around. Slots fill independently: a blocked slot takes a replacement from the same skill tree, and a slot that cannot be refilled frees its minutes.
 - **Branch to exercise resolution**: prefer the stored per-branch progress level; otherwise map BEGINNER/ADVANCED/PROFESSIONAL to branch level 1/2/3 and fall back downward to the highest authored level at or below it, so an intentionally empty intermediate level keeps the lower level's exercise active instead of blocking the branch. A branch counts as blocked only when nothing resolves at or below the athlete's level. [Training Plan Creation](../planning/training-plan-creation-from-anamnesis.md) and [Plan-Independent Workouts](./plan-independent-workouts.md) reuse this rule.
 - **Filter chain**: each filter splits the pool into keep and replace. Soreness drops branches whose region matches a sore area (more than one sore area aborts with a soreness error). Equipment drops branches needing gear the place lacks. Level drops branches with no exercise at the athlete's level. Age and gender drop branches tagged for other groups.
 - **Uniqueness**: a resolved exercise ID is used at most once per skill, and a candidate resolving to an exercise the skill already holds drops out of the pool. Duplicates across skills are tolerated. Deliberate repeats stand: a one-sided exercise appears as a left and right entry, and every exercise repeats across its own sets.
@@ -69,7 +69,7 @@ Athlete profile (level, gender, birthday, pain tags), reported soreness (sore mu
 flowchart TD
     A[Today's training from current section, by weekday] --> B[Per skill: soreness, equipment, level filters]
     B --> C{Blocked branches?}
-    C -- no --> F[Resolve exercise per branch: progress, else athlete level]
+    C -- no --> F[Resolve exercise per branch: progress, else fitness level]
     C -- cardio skill --> D[Replace whole skill with steady zone 5 cardio, max 20 min]
     C -- other skill --> E[Draw replacements from skill tree]
     E --> F

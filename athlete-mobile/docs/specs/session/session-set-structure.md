@@ -33,7 +33,7 @@ Three structures sit outside that loop. Weighted hypertrophy and explosive power
 | Steady cardio | 1 |
 | Interval cardio | interval count, per [Cardio Training System](./cardio-training-system.md) |
 
-Set counts deliberately do not vary by training level: beginners, advanced athletes, and professionals perform the same sets per exercise, and the higher minute budget (more exercise slots) is the mechanism that differentiates the levels. A level-dependent set count may be reviewed later, but is not part of the model.
+Set counts deliberately do not vary by fitness level: beginners, advanced athletes, and professionals perform the same sets per exercise, and the higher minute budget (more exercise slots) is the mechanism that differentiates the levels. A level-dependent set count may be reviewed later, but is not part of the model.
 
 Max strength and cardio appear here for completeness. Their own builders ignore this count and the rest table below, and derive their structure from the ladder and the zone instead.
 

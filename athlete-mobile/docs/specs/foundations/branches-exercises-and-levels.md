@@ -12,8 +12,8 @@ An exercise carries no difficulty relative to other exercises, and the usable di
 
 A branch is that stable identity. The plan stores branch references, the athlete's per-branch level is stored separately, and workout generation joins the two. Progression is a one-number update. Levels carry two jobs:
 
-1. **Entry mapping**: an athlete with no progress on a branch enters at the level matching their overall training level (BEGINNER 1, ADVANCED 2, PROFESSIONAL 3). Levels 4 to 6 are headroom earned by training, so entry caps at 3 for every athlete. A training level above PROFESSIONAL would entry-map to level 4, but the mapping is deliberately not prepared in advance; it gets added only when that training level actually ships.
-2. **Progression ladder**: performance moves the per-branch level independently of the overall training level, so difficulty adapts per movement pattern instead of globally.
+1. **Entry mapping**: an athlete with no progress on a branch enters at the level matching their overall fitness level (BEGINNER 1, ADVANCED 2, PROFESSIONAL 3). Levels 4 to 6 are headroom earned by training, so entry caps at 3 for every athlete. A fitness level above PROFESSIONAL would entry-map to level 4, but the mapping is deliberately not prepared in advance; it gets added only when that fitness level actually ships.
+2. **Progression ladder**: performance moves the per-branch level independently of the overall fitness level, so difficulty adapts per movement pattern instead of globally.
 
 A **level change** must land on a level holding a different exercise, so it always surfaces as a new movement with fresh values. A branch offering no such level in the required direction is **exhausted**, and the system swaps in a comparable branch from the same skill tree (**branch substitution**), the only progression event that edits the plan.
 
@@ -31,11 +31,11 @@ A **level change** must land on a level holding a different exercise, so it al
 - **Skill tree**: the branch pool for one skill, keyed by branch ID. Skills trainable with and without weights have two trees, the weighted one and a bodyweight variant (suffix KG, for Körpergewicht); runtime lookup picks the variant matching the location's equipment. Trees define availability only, all difficulty lives in branch levels.
 - **Exercise**: catalog entry with tags such as muscle, region, side, equipment and blocks, plus its value configuration.
 
-  The value configuration contains authored start and target values where applicable. An owning progression specification may define a global override. In particular, hypertrophy repetition/duration uses the global ranges from [Standard Exercise Progression](../progression/standard-exercise-progression.md); exercise-specific load values may still vary by athlete level, gender, age group, or exercise.
+  The value configuration contains authored start and target values where applicable. An owning progression specification may define a global override. In particular, hypertrophy repetition/duration uses the global ranges from [Standard Exercise Progression](../progression/standard-exercise-progression.md); exercise-specific load values may still vary by fitness level, gender, age group, or exercise.
 
   Where exercise-specific values are applicable, they may be differentiated by:
 
-  - training level,
+  - fitness level,
   - gender,
   - age group where age-specific values are authored.
 
@@ -51,7 +51,7 @@ Per branch in the session, in this order:
 
 1. **Reconcile** the stored level against the shipped tree.
 2. **Decay** the stored level after long inactivity.
-3. **Resolve**: use the stored level, otherwise entry-map the overall training level to 1, 2, or 3 and fall back downward to the highest authored level at or below it.
+3. **Resolve**: use the stored level, otherwise entry-map the overall fitness level to 1, 2, or 3 and fall back downward to the highest authored level at or below it.
 
 A branch with no resolvable exercise counts as blocked and goes to the workout selection flow for replacement.
 
@@ -117,7 +117,7 @@ Athletes cannot swap exercises manually, and building this is currently not plan
 
 - The athlete may pick any eligible exercise from the respective skill tree; there is no restriction to levels near the current one.
 - Guidance comes from labels instead: each exercise is labeled relative to the athlete's current level in its branch, for example "easier", "appropriate", "more challenging", "significantly more challenging". Exercises near the current level are listed first, but proximity is never a selection requirement.
-- A manual swap changes neither the stored branch progress nor the athlete's training level. Automatic level progression stays exclusive to the progression logic above.
+- A manual swap changes neither the stored branch progress nor the athlete's fitness level. Automatic level progression stays exclusive to the progression logic above.
 - The hard exclusions keep applying: unavailable equipment, exercises unsuitable for the athlete's age or gender, and every other mandatory filter.
 
 ### Example: bodyweight squat lane
@@ -151,4 +151,4 @@ erDiagram
     ATHLETE_PROGRESS }o--o{ BRANCH : "stores current level per branch"
 ```
 
-Here, **LEVEL** means an authored branch-level slot (1–6), not the athlete's overall training level.
+Here, **LEVEL** means an authored branch-level slot (1–6), not the athlete's overall fitness level.

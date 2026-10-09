@@ -2,7 +2,7 @@
 
 ## Why & What
 
-After completing the **anamnesis** (the onboarding questionnaire covering training level, pains, position, sport, and body data), the athlete receives a personalized multi-week **training plan** without any trainer involvement. The plan is a periodized skeleton: a sequence of **sections** (mesocycles, each a multi-week block with one strength emphasis and one cardio intensity) containing per-weekday **trainings** that assign **skills** (training components such as strength work, warm-up, mobility, prevention), a minute budget per skill, and concrete exercise **branches**. Everything is generated on-device from the anamnesis profile, the weekly schedule, and the equipment available at each training location.
+After completing the **anamnesis** (the onboarding questionnaire covering fitness level, pains, position, sport, and body data), the athlete receives a personalized multi-week **training plan** without any trainer involvement. The plan is a periodized skeleton: a sequence of **sections** (mesocycles, each a multi-week block with one strength emphasis and one cardio intensity) containing per-weekday **trainings** that assign **skills** (training components such as strength work, warm-up, mobility, prevention), a minute budget per skill, and concrete exercise **branches**. Everything is generated on-device from the anamnesis profile, the weekly schedule, and the equipment available at each training location.
 
 ## Problem
 

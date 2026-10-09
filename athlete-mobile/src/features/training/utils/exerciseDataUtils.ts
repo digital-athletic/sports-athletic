@@ -1,5 +1,8 @@
 import { TagGroups } from "@/constants/tagGroups";
-import { WorkoutConstants } from "@/constants/workoutConstants";
+import {
+  type ExerciseDifficultyType,
+  WorkoutConstants,
+} from "@/constants/workoutConstants";
 import type { ActiveTrainingType } from "@/features/training/models/ActiveTraining";
 import type {
   GenderTag,
@@ -155,6 +158,8 @@ export function findMainCardioExercise(
 
 /**
  * Calculates adjustment for standard (non-MAX, non-cardio) exercises.
+ * A performed boundary only changes the level or weight when the feedback
+ * points past it; everything else is left to the feedback ladder step.
  */
 export function calculateStandardExerciseAdjustment(
   weight: number,
@@ -163,6 +168,7 @@ export function calculateStandardExerciseAdjustment(
   exerciseData: ExerciseType,
   context: ExerciseAdjustmentContext,
   intensity: IntensityData,
+  feedback: ExerciseDifficultyType,
 ): ExerciseAdjustmentResult {
   const { userLevel, genderTag } = context;
 
@@ -213,81 +219,72 @@ export function calculateStandardExerciseAdjustment(
     genderTag,
   );
 
-  let levelUp = false;
-  let levelDown = false;
-  let increaseWeight = false;
-  let decreaseWeight = false;
+  const isTooHard = feedback === "TOO_HARD";
+  const isPositive = feedback === "SUCCEEDED" || feedback === "TOO_EASY";
 
-  // Check duration-based progression
-  if (exerciseData.isAdvanceByDuration) {
-    if (!hasWeights) {
-      if (typeof targetDuration === "number" && duration >= targetDuration) {
-        levelUp = true;
-      }
-      if (typeof startDuration === "number" && duration < startDuration) {
-        levelDown = true;
-      }
-    } else {
-      if (typeof targetDuration === "number" && duration >= targetDuration) {
-        if (typeof targetWeight === "number" && weight >= targetWeight) {
-          levelUp = true;
-        } else {
-          increaseWeight = true;
-        }
-      }
-      if (typeof startDuration === "number" && duration < startDuration) {
-        if (typeof startWeight === "number" && weight < startWeight) {
-          levelDown = true;
-        } else {
-          decreaseWeight = true;
-        }
-      }
+  const checkBoundaries = (
+    value: number,
+    start: number | undefined,
+    target: number | undefined,
+  ): BoundaryChange | null => {
+    if (typeof target === "number" && value >= target && !isTooHard) {
+      if (!hasWeights) return "LEVEL_UP";
+      return typeof targetWeight === "number" && weight >= targetWeight
+        ? "LEVEL_UP"
+        : "INCREASE_WEIGHT";
     }
-  }
-
-  // Check repetition-based progression
-  if (exerciseData.isAdvanceByReps) {
-    if (!hasWeights) {
-      if (typeof targetReps === "number" && reps >= targetReps) {
-        levelUp = true;
-      }
-      if (typeof startReps === "number" && reps < startReps) {
-        levelDown = true;
-      }
-    } else {
-      if (typeof targetReps === "number" && reps >= targetReps) {
-        if (typeof targetWeight === "number" && weight >= targetWeight) {
-          levelUp = true;
-        } else {
-          increaseWeight = true;
-        }
-      }
-      if (typeof startReps === "number" && reps < startReps) {
-        if (typeof startWeight === "number" && weight < startWeight) {
-          levelDown = true;
-        } else {
-          decreaseWeight = true;
-        }
-      }
+    if (typeof start !== "number" || isPositive) return null;
+    if (!hasWeights && (value < start || (isTooHard && value === start))) {
+      return "LEVEL_DOWN";
     }
-  }
+    if (hasWeights && value < start) {
+      return typeof startWeight === "number" && weight < startWeight
+        ? "LEVEL_DOWN"
+        : "DECREASE_WEIGHT";
+    }
+    return null;
+  };
 
-  if (levelUp) return { type: "LEVEL_UP" };
-  if (levelDown) return { type: "LEVEL_DOWN" };
-  if (increaseWeight) return { type: "INCREASE_WEIGHT" };
-  if (decreaseWeight) return { type: "DECREASE_WEIGHT" };
+  const changes: (BoundaryChange | null)[] = [
+    exerciseData.isAdvanceByDuration
+      ? checkBoundaries(duration, startDuration, targetDuration)
+      : null,
+    exerciseData.isAdvanceByReps
+      ? checkBoundaries(reps, startReps, targetReps)
+      : null,
+  ];
+
+  const change = BOUNDARY_CHANGE_PRIORITY.find((candidate) =>
+    changes.includes(candidate),
+  );
+  if (change) return { type: change };
 
   return { type: "NO_CHANGE", reason: "in_between_zone" };
 }
 
+type BoundaryChange =
+  | "LEVEL_UP"
+  | "LEVEL_DOWN"
+  | "INCREASE_WEIGHT"
+  | "DECREASE_WEIGHT";
+
+const BOUNDARY_CHANGE_PRIORITY: BoundaryChange[] = [
+  "LEVEL_UP",
+  "LEVEL_DOWN",
+  "INCREASE_WEIGHT",
+  "DECREASE_WEIGHT",
+];
+
 /**
- * Calculates new weight value after adjustment.
+ * Calculates new weight value after adjustment. An absolute weight increase
+ * stops at `targetWeight`.
  */
 export function calculateNewWeight(
   currentWeight: number,
   adjustment: "SUCCEEDED" | "TOO_HARD",
   exerciseData: ExerciseType,
   intensity: IntensityData,
+  targetWeight?: number,
 ): number {
   const isWeightFMax =
     (exerciseData.values?.weight?.startValue.type &&
@@ -306,7 +303,10 @@ export function calculateNewWeight(
     const weightAbsoluteAdjustment =
       intensity.adjustment.weightAbsolute?.default?.default?.[adjustment];
     if (typeof weightAbsoluteAdjustment === "number") {
-      return currentWeight + weightAbsoluteAdjustment;
+      const newWeight = currentWeight + weightAbsoluteAdjustment;
+      return typeof targetWeight === "number" && adjustment === "SUCCEEDED"
+        ? Math.min(newWeight, targetWeight)
+        : newWeight;
     }
   }
 

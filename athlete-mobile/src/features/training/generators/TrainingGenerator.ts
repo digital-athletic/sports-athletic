@@ -58,6 +58,7 @@ import {
   getSkillTree,
   getUserExerciseFromBranch,
 } from "@/features/training/utils/skillTreeUtils";
+import { isTrainingLevel } from "@/schemas/common.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import {
   ExerciseLevelsSchema,
@@ -126,6 +127,8 @@ import {
 } from "../utils/userDataUtils";
 import {
   deriveWeightForExercise,
+  getExerciseStartValue,
+  getExerciseTargetValue,
   getMaxValueForExercise,
   getUserLevel,
   roundWeightValue,
@@ -3377,9 +3380,9 @@ export default class TrainingGenerator {
   };
 
   /**
-   * Applies difficulty-based adjustments to exercise values.
-   * Increases or decreases duration, reps, height, and weight based on
-   * user feedback from the previous workout with this exercise.
+   * Applies one feedback event to the exercise values. Weighted exercises
+   * change only the weight on TOO_HARD and only reps/duration otherwise;
+   * reps/duration stay within the resolved start and target values.
    */
   adjustExerciseValues = (
     dataInput: ExerciseValuesData,
@@ -3401,23 +3404,67 @@ export default class TrainingGenerator {
     // consider feedback TODO consider streak length
     const adjustString: DifficultyFeedbackType = difficultyFeedback;
 
-    //adjust
-    if (exercise.isAdvanceByDuration && data.duration && adjustment.duration) {
-      data.duration += adjustment.duration[adjustString];
+    const hasWeights =
+      getTagValues(exercise.tags, TagGroups.EQ_TYPE).indexOf("WEIGHTS") !==
+        -1 &&
+      data.weight !== undefined &&
+      data.weight !== null;
+    const changesWeight = hasWeights && adjustString === "TOO_HARD";
+
+    const clampToBoundaries = (
+      value: number,
+      valueName: "duration" | "repetition",
+    ): number => {
+      if (!intensity || !isTrainingLevel(userLevel)) return value;
+      const start = getExerciseStartValue(
+        intensity,
+        exercise,
+        valueName,
+        userLevel,
+        userGender,
+      );
+      const target = getExerciseTargetValue(
+        intensity,
+        exercise,
+        valueName,
+        userLevel,
+        userGender,
+      );
+      let clamped = value;
+      if (typeof target === "number") clamped = Math.min(clamped, target);
+      if (typeof start === "number") clamped = Math.max(clamped, start);
+      return clamped;
+    };
+
+    if (
+      !changesWeight &&
+      exercise.isAdvanceByDuration &&
+      data.duration &&
+      adjustment.duration
+    ) {
+      data.duration = clampToBoundaries(
+        data.duration + adjustment.duration[adjustString],
+        "duration",
+      );
     }
-    if (exercise.isAdvanceByReps && data.repetition && adjustment.repetition) {
-      data.repetition += adjustment.repetition[adjustString];
+    if (
+      !changesWeight &&
+      exercise.isAdvanceByReps &&
+      data.repetition &&
+      adjustment.repetition
+    ) {
+      data.repetition = clampToBoundaries(
+        data.repetition + adjustment.repetition[adjustString],
+        "repetition",
+      );
     }
     if (exercise.isJump && data.height && adjustment.height) {
       data.height += +adjustment.height[adjustString];
     }
-    // Adjust weight based on feedback, consistent with reps/duration/height above.
-    // This handles the "in between" zone where user didn't hit targets but also
-    // didn't fall below start values. In that case, training-active preserves
-    // feedback and TrainingGenerator adjusts all values here.
-    // When training-active does adjust weight (target hit), it clears feedback,
-    // so no double-adjustment occurs.
-    if (data.weight !== undefined && data.weight !== null) {
+    // Positive feedback at the performed rep/duration target raises the weight
+    // in useExerciseCompletion and clears the feedback, so only TOO_HARD
+    // changes the weight here.
+    if (changesWeight && data.weight !== undefined && data.weight !== null) {
       if (data.weightType === "weightFMax" && adjustment.weightFMax) {
         data.weight += adjustment.weightFMax[adjustString];
         // Clamp FMax percentage to valid range (50-100%)

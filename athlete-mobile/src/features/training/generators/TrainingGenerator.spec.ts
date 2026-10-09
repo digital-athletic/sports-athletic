@@ -670,7 +670,45 @@ describe("TrainingGenerator", () => {
       expect(result.repetition).toBe(12); // 10 + 2
     });
 
+    const weightedExercise: ExerciseType = {
+      ...mockExercise,
+      tags: [...mockExercise.tags, "EQ_TYPE_WEIGHTS"],
+    };
+
     it("decreases absolute weight on TOO_HARD feedback", () => {
+      const result = generator.adjustExerciseValues(
+        { ...baseData, weight: 20, weightType: "weightAbsolute" as const },
+        mockUserExercise,
+        weightedExercise,
+        null,
+        "m",
+        "intermediate",
+        "TOO_HARD",
+      );
+
+      expect(result.weight).toBe(19); // 20 - 1
+      expect(result.repetition).toBe(baseData.repetition);
+    });
+
+    it.each(["TOO_EASY", "SUCCEEDED"] as const)(
+      "keeps the weight and raises only repetitions on %s feedback",
+      (feedback) => {
+        const result = generator.adjustExerciseValues(
+          { ...baseData, weight: 20, weightType: "weightAbsolute" as const },
+          mockUserExercise,
+          weightedExercise,
+          null,
+          "m",
+          "intermediate",
+          feedback,
+        );
+
+        expect(result.weight).toBe(20);
+        expect(result.repetition).toBeGreaterThan(baseData.repetition);
+      },
+    );
+
+    it("keeps the weight of an exercise without adjustable weight", () => {
       const result = generator.adjustExerciseValues(
         { ...baseData, weight: 20, weightType: "weightAbsolute" as const },
         mockUserExercise,
@@ -681,42 +719,14 @@ describe("TrainingGenerator", () => {
         "TOO_HARD",
       );
 
-      expect(result.weight).toBe(19); // 20 - 1
-    });
-
-    it("increases absolute weight on TOO_EASY feedback", () => {
-      const result = generator.adjustExerciseValues(
-        { ...baseData, weight: 20, weightType: "weightAbsolute" as const },
-        mockUserExercise,
-        mockExercise,
-        null,
-        "m",
-        "intermediate",
-        "TOO_EASY",
-      );
-
-      expect(result.weight).toBe(22); // 20 + 2
-    });
-
-    it("increases absolute weight on SUCCEEDED feedback", () => {
-      const result = generator.adjustExerciseValues(
-        { ...baseData, weight: 20, weightType: "weightAbsolute" as const },
-        mockUserExercise,
-        mockExercise,
-        null,
-        "m",
-        "intermediate",
-        "SUCCEEDED",
-      );
-
-      expect(result.weight).toBe(21); // 20 + 1
+      expect(result.weight).toBe(20);
     });
 
     it("decreases FMax weight on TOO_HARD feedback", () => {
       const result = generator.adjustExerciseValues(
         { ...baseData, weight: 80, weightType: "weightFMax" as const },
         mockUserExercise,
-        mockExercise,
+        weightedExercise,
         null,
         "m",
         "intermediate",
@@ -726,25 +736,11 @@ describe("TrainingGenerator", () => {
       expect(result.weight).toBe(77.5); // 80 - 2.5
     });
 
-    it("increases FMax weight on TOO_EASY feedback", () => {
-      const result = generator.adjustExerciseValues(
-        { ...baseData, weight: 80, weightType: "weightFMax" as const },
-        mockUserExercise,
-        mockExercise,
-        null,
-        "m",
-        "intermediate",
-        "TOO_EASY",
-      );
-
-      expect(result.weight).toBe(85); // 80 + 5
-    });
-
     it("clamps absolute weight to minimum 0", () => {
       const result = generator.adjustExerciseValues(
         { ...baseData, weight: 0.5, weightType: "weightAbsolute" as const },
         mockUserExercise,
-        mockExercise,
+        weightedExercise,
         null,
         "m",
         "intermediate",
@@ -758,7 +754,7 @@ describe("TrainingGenerator", () => {
       const result = generator.adjustExerciseValues(
         { ...baseData, weight: 51, weightType: "weightFMax" as const },
         mockUserExercise,
-        mockExercise,
+        weightedExercise,
         null,
         "m",
         "intermediate",
@@ -766,20 +762,6 @@ describe("TrainingGenerator", () => {
       );
 
       expect(result.weight).toBe(50); // clamped from 48.5 to 50
-    });
-
-    it("clamps FMax weight to maximum 100%", () => {
-      const result = generator.adjustExerciseValues(
-        { ...baseData, weight: 98, weightType: "weightFMax" as const },
-        mockUserExercise,
-        mockExercise,
-        null,
-        "m",
-        "intermediate",
-        "TOO_EASY",
-      );
-
-      expect(result.weight).toBe(100); // clamped from 103 to 100
     });
 
     it("does not adjust weight when weight is undefined", () => {

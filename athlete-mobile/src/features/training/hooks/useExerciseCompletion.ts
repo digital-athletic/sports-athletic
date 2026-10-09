@@ -33,6 +33,7 @@ import { getSkillTree } from "@/features/training/utils/skillTreeUtils";
 import {
   applyMaxValueToDirections,
   calculateAdjustedMaxValues,
+  getExerciseTargetValue,
   getMaxValueForExercise,
   maxWeightByEpley,
 } from "@/features/training/utils/workoutUtils";
@@ -389,6 +390,11 @@ export function useExerciseCompletion() {
               levelTag,
             };
 
+            // Cardio follows its own progression specification and keeps the
+            // feedback independent boundary check.
+            const feedback = skill.includes("CARDIO")
+              ? null
+              : (currentExercise?.feedback?.difficulty ?? null);
             const adjustmentResult = calculateStandardExerciseAdjustment(
               weight,
               duration,
@@ -396,19 +402,16 @@ export function useExerciseCompletion() {
               currentExerciseData,
               adjustmentContext,
               intensity,
+              feedback,
             );
 
             const levelUp = adjustmentResult.type === "LEVEL_UP";
             const levelDown = adjustmentResult.type === "LEVEL_DOWN";
             const increaseWeight = adjustmentResult.type === "INCREASE_WEIGHT";
             const decreaseWeight = adjustmentResult.type === "DECREASE_WEIGHT";
-            // Target-based weight progression for weight exercises:
-            // - reps/duration hit target but weight below target → increase weight
-            // - reps/duration below start but weight above start → decrease weight
-            // Feedback is cleared after to prevent double-adjustment in TrainingGenerator.
-            // If user is in the "in between" zone (start <= reps < target), neither
-            // this block nor levelUp triggers, and feedback is preserved for
-            // TrainingGenerator to adjust all values (reps, duration, height, weight).
+            // Weight changes at a performed boundary clear the feedback, so
+            // TrainingGenerator does not apply it a second time. Only a weight
+            // increase resets reps/duration to the start value.
             if (increaseWeight || decreaseWeight) {
               const adjustment: ExerciseDifficultyType = increaseWeight
                 ? "SUCCEEDED"
@@ -418,23 +421,34 @@ export function useExerciseCompletion() {
                 adjustment,
                 currentExerciseData,
                 intensity,
+                getExerciseTargetValue(
+                  intensity,
+                  currentExerciseData,
+                  "weight",
+                  userLevel,
+                  genderTag,
+                ),
               );
               const nextWeightPercentage = weightPercentage || undefined;
               const newDuration =
-                getResetDuration(
-                  currentExerciseData,
-                  intensity,
-                  genderTag,
-                  userLevel,
-                ) ??
+                (increaseWeight
+                  ? getResetDuration(
+                      currentExerciseData,
+                      intensity,
+                      genderTag,
+                      userLevel,
+                    )
+                  : undefined) ??
                 (duration || undefined);
               const newRepetition =
-                getResetRepetition(
-                  currentExerciseData,
-                  intensity,
-                  genderTag,
-                  userLevel,
-                ) ??
+                (increaseWeight
+                  ? getResetRepetition(
+                      currentExerciseData,
+                      intensity,
+                      genderTag,
+                      userLevel,
+                    )
+                  : undefined) ??
                 (reps || undefined);
 
               // set new exercise values
@@ -492,9 +506,8 @@ export function useExerciseCompletion() {
               );
               updateBranchLevel(levelUp, branchId, id, skill, ageGroup);
             } else {
-              // "In between" zone: user didn't hit targets, didn't fall below start.
-              // No level or weight change here. Feedback is preserved so TrainingGenerator
-              // can adjust all values (reps, duration, height, weight) based on feedback.
+              // No boundary change: feedback is preserved so TrainingGenerator
+              // applies the ladder step or the weight step on the next generation.
               let maxValue = getMaxValueForExercise(
                 currentExerciseData,
                 workoutData.maxValues,

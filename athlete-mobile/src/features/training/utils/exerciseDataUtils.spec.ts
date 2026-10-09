@@ -335,6 +335,7 @@ describe("exerciseDataUtils", () => {
         exercise,
         createContext(),
         createIntensity(),
+        "SUCCEEDED",
       );
       expect(result.type).toBe("LEVEL_UP");
     });
@@ -357,6 +358,7 @@ describe("exerciseDataUtils", () => {
         exercise,
         createContext(),
         createIntensity(),
+        "TOO_HARD",
       );
       expect(result.type).toBe("LEVEL_DOWN");
     });
@@ -379,6 +381,7 @@ describe("exerciseDataUtils", () => {
         exercise,
         createContext(),
         createIntensity(),
+        "SUCCEEDED",
       );
       expect(result.type).toBe("LEVEL_UP");
     });
@@ -405,6 +408,7 @@ describe("exerciseDataUtils", () => {
         exercise,
         createContext(),
         createIntensity(),
+        "SUCCEEDED",
       );
       expect(result.type).toBe("INCREASE_WEIGHT");
     });
@@ -427,6 +431,7 @@ describe("exerciseDataUtils", () => {
         exercise,
         createContext(),
         createIntensity(),
+        "SUCCEEDED",
       );
       expect(result).toEqual({ type: "NO_CHANGE", reason: "in_between_zone" });
     });

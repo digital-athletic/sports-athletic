@@ -13,8 +13,7 @@ Terms of the training model, with the meanings the coach uses.
 | Season phase | Saisonphase | PAUSE, PREPARATORY, COMPETITION | Where the athlete is in the season: off-season, preparation or competition. Decides the order of the sections. |
 | Training plan | Trainingsplan | | Multi-week framework of sections and training days that the app generates from the anamnesis. |
 | Section | Abschnitt | | Multi-week block (mesocycle) with one strength emphasis and one cardio intensity. Shown as tiles on the home screen. |
-| Jump, throw and core strength | Sprung-, Wurf- und Rumpfkraft | SWR1, SWR2 | Section type. SWR1 and SWR2 do not differ in training goal yet. Later SWR1 becomes strength endurance and SWR2 hypertrophy. |
-| Hypertrophy | Muskelaufbau | | Training for muscle growth, in the range of 8 to 12 repetitions per set, or 30 to 50 seconds with weights and 30 to 60 seconds without. |
+| Hypertrophy | Muskelaufbau | SWR1, SWR2 | Section type for muscle growth: 8 to 12 repetitions per set, or 30 to 50 seconds with weights and 30 to 60 seconds without. SWR1 and SWR2 currently train the same way. SWR stands for Sprung-, Wurf- und Rumpfkraft. |
 | Max strength | Maximalkraft, Maxkraft | MAX, MAX_KRAFT | Section type with heavy weights and few repetitions, calculated as a percentage of the personal maximum. Advanced and Pro only, from 16. |
 | Explosive power | Schnellkraft | SK | Section type with explosive movements. |
 | Power endurance | Schnellkraftausdauer | SA | Section type. The plan currently replaces it with explosive power everywhere. |

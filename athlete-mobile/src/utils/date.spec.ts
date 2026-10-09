@@ -26,6 +26,17 @@ describe("date utils", () => {
       expect(isISODate("invalid")).toBe(false);
       expect(isISODate("")).toBe(false);
     });
+
+    it("returns false for dates that do not exist in the calendar", () => {
+      expect(isISODate("2010-13-45")).toBe(false);
+      expect(isISODate("1990-02-31")).toBe(false);
+      expect(isISODate("2023-02-29")).toBe(false);
+      expect(isISODate("2024-00-10")).toBe(false);
+    });
+
+    it("returns true for a leap day", () => {
+      expect(isISODate("2024-02-29")).toBe(true);
+    });
   });
 
   describe("formatDateToISO", () => {
@@ -53,6 +64,18 @@ describe("date utils", () => {
       expect(date.getDate()).toBe(15);
       expect(date.getHours()).toBe(0);
       expect(date.getMinutes()).toBe(0);
+    });
+
+    it("keeps the calendar date in a timezone west of UTC", () => {
+      const originalTimeZone = process.env.TZ;
+      process.env.TZ = "America/New_York";
+      try {
+        const date = ISODateToDate("2024-06-15");
+        expect(date.getDate()).toBe(15);
+        expect(date.getHours()).toBe(0);
+      } finally {
+        process.env.TZ = originalTimeZone;
+      }
     });
 
     it("handles year boundaries", () => {
@@ -177,6 +200,11 @@ describe("date utils", () => {
       expect(calculateAgeFromBirthday("invalid")).toBeNull();
       expect(calculateAgeFromBirthday("")).toBeNull();
       expect(calculateAgeFromBirthday("2024-06")).toBeNull();
+    });
+
+    it("returns null for dates that do not exist in the calendar", () => {
+      expect(calculateAgeFromBirthday("2010-13-45")).toBeNull();
+      expect(calculateAgeFromBirthday("1990-02-31")).toBeNull();
     });
   });
 

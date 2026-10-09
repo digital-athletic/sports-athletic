@@ -174,7 +174,6 @@ export default class PlanGenerator {
     if (!workoutData) {
       throw new Error("workoutData is required for plan generation");
     }
-    // birthday may be undefined - ageGroupFor handles this by defaulting to current date (adult)
     const dateOfBirth = getUserBirthday(user);
     let ageGroup = ageGroupFor(dateOfBirth);
     if (PlanGenerator.DEBUG) console.log("AgeGroup: ", ageGroup);
@@ -1400,7 +1399,7 @@ export default class PlanGenerator {
       prevSkills,
       HAS_WEIGHTS,
     );
-    const userAge = ageGroupFor(getUserBirthday(user) ?? "");
+    const userAge = ageGroupFor(getUserBirthday(user));
     const userLevel = getUserLevel(user);
     const pains = getBlocksFromPains(
       getUserTagValues(user.workoutData?.tags, TagGroups.PAIN),

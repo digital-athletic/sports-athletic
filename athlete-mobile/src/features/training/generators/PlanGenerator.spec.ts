@@ -1125,8 +1125,8 @@ describe("PlanGenerator", () => {
     it("should generate a complete training plan for an adult user", () => {
       const user = {
         userId: "test-user-1",
+        personalData: { gender: "MALE" as const, birthday: "1990-01-01" },
         workoutData: {
-          birthday: "1990-01-01",
           tags: {
             LEVEL: [WorkoutConstants.LEVELS.ADVANCED],
             POSITION: ["MIDFIELDER"],
@@ -1178,8 +1178,8 @@ describe("PlanGenerator", () => {
     it("should handle child users with adjusted level", () => {
       const user = {
         userId: "test-child-1",
+        personalData: { gender: "MALE" as const, birthday: "2015-01-01" },
         workoutData: {
-          birthday: "2015-01-01",
           tags: {
             LEVEL: [WorkoutConstants.LEVELS.PROFESSIONAL],
             POSITION: ["FORWARD"],
@@ -1229,8 +1229,8 @@ describe("PlanGenerator", () => {
     it("should handle users with pain and prevention needs", () => {
       const user = {
         userId: "test-user-pain",
+        personalData: { gender: "MALE" as const, birthday: "1985-01-01" },
         workoutData: {
-          birthday: "1985-01-01",
           tags: {
             LEVEL: [WorkoutConstants.LEVELS.BEGINNER],
             POSITION: ["DEFENDER"],
@@ -1309,6 +1309,83 @@ describe("PlanGenerator", () => {
       expect(Array.isArray(result.sections)).toBe(true);
     });
 
+    describe("generatePlan: age group from the birthday", () => {
+      const generateProfessionalPlan = (personalData?: {
+        gender: "MALE" | "FEMALE";
+        birthday: string;
+      }) => {
+        const skillTrees: Record<string, SkillTreeType> = {};
+        for (const name of ["MAX", "SWR1", "SK", "MOB", "WU", "CD"] as const) {
+          skillTrees[name] = loadSkillTree(name);
+        }
+        const user = {
+          userId: "test-user-age",
+          personalData,
+          workoutData: {
+            tags: {
+              LEVEL: [WorkoutConstants.LEVELS.PROFESSIONAL],
+              POSITION: ["FIELD"],
+            },
+            seasonPhase: {
+              type: SeasonPhase.PREPARATORY,
+              numOfWeeks: 20,
+              endDate: "2026-06-15",
+            },
+          },
+        };
+        const userTrainingDays: TrainingDayType[] = [0, 1, 2, 3, 4, 5, 6].map(
+          (weekday) => ({
+            active: weekday === 1,
+            weekday,
+            duration: minutes(60),
+            place: "STUDIO",
+          }),
+        );
+        const places = {
+          STUDIO: { equipment: ["BARBELL", "DUMBBELL", "BENCH", "MAT"] },
+        } as PlacesData;
+
+        return PlanGenerator.generatePlan(
+          user,
+          loadExercises(),
+          skillTrees,
+          {},
+          userTrainingDays,
+          places,
+          new Date(2026, 0, 19),
+        );
+      };
+      const sectionTypes = (plan: { sections: { type: string }[] }) =>
+        plan.sections.map((section) => section.type);
+
+      it("plans an athlete with an adult birthday as an adult and keeps the professional max strength sections", () => {
+        expect(
+          sectionTypes(
+            generateProfessionalPlan({
+              gender: "MALE",
+              birthday: "1990-01-01",
+            }),
+          ),
+        ).toContain("MAX");
+      });
+
+      it("plans an athlete without a birthday as a child without max strength", () => {
+        expect(sectionTypes(generateProfessionalPlan())).not.toContain("MAX");
+      });
+
+      it("plans an athlete with a child birthday as a child without max strength", () => {
+        const childBirthday = `${new Date().getFullYear() - 10}-01-01`;
+        expect(
+          sectionTypes(
+            generateProfessionalPlan({
+              gender: "MALE",
+              birthday: childBirthday,
+            }),
+          ),
+        ).not.toContain("MAX");
+      });
+    });
+
     it("should generate a valid plan for advanced fieldplayer with preparatory phase", () => {
       const skillTreeNames = [
         "BAS",
@@ -1346,8 +1423,8 @@ describe("PlanGenerator", () => {
 
       const user = {
         userId: "test-user-prep",
+        personalData: { gender: "MALE" as const, birthday: "1987-01-01" },
         workoutData: {
-          birthday: "1987-01-01",
           tags: {
             LEVEL: [WorkoutConstants.LEVELS.ADVANCED],
             POSITION: ["FIELD"],
@@ -1410,9 +1487,9 @@ describe("PlanGenerator", () => {
 
     const mockUser = {
       userId: "test-user",
+      personalData: { gender: "MALE" as const, birthday: "1990-01-01" },
       workoutData: {
         tags: { LEVEL: ["BEGINNER"], POSITION: ["FIELD"] },
-        birthday: "1990-01-01",
       },
     };
 
@@ -1693,7 +1770,8 @@ describe("PlanGenerator", () => {
     const emptyDirections = {};
     const mockUser = {
       userId: "test-user",
-      workoutData: { birthday: "1990-01-01", tags: {} },
+      personalData: { gender: "MALE" as const, birthday: "1990-01-01" },
+      workoutData: { tags: {} },
     };
 
     it("returns empty array when weightedTags is empty", () => {

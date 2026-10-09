@@ -3,11 +3,9 @@
  * It proves the framework runs end-to-end against the real generator and
  * asserts the intra-session invariants.
  *
- * The golden-comparison tests are skipped: the tables under `__golden__/` now
- * encode the target values from
- * docs/specs/progression/max-strength-progression.md, which the current
- * generator does not produce yet. Drop the `.skip` once the generator
- * implements the spec.
+ * The tables under `__golden__/` encode the target values from
+ * docs/specs/progression/max-strength-progression.md. The too heavy goldens
+ * stay skipped until the generator implements the spec fallback.
  *
  * The non-golden assertions are generator regression guards: the harness reads
  * the production set list, so there is no reimplementation left to drift.
@@ -90,9 +88,9 @@ describe("progressionSimulation: p2 × MAX_KRAFT", () => {
     for (const { name, feedback } of RUNS) results.set(name, run(feedback));
   });
 
-  // Skipped: the goldens now encode the spec-target values (see
-  // __golden__/README.md), which the current generator does not produce yet.
-  it.skip.each(RUNS)(
+  const PROGRESSING_RUNS = RUNS.filter(({ name }) => name !== "tooHard");
+
+  it.each(PROGRESSING_RUNS)(
     "$name: matches the committed progression golden",
     ({ name }) => {
       progressionGoldens.assertMatches(
@@ -102,10 +100,29 @@ describe("progressionSimulation: p2 × MAX_KRAFT", () => {
     },
   );
 
-  it.skip.each(RUNS)("$name: matches the committed sets golden", ({ name }) => {
+  it.each(PROGRESSING_RUNS)(
+    "$name: matches the committed sets golden",
+    ({ name }) => {
+      progressionGoldens.assertMatches(
+        `p2-max-strength.${name}.sets.md`,
+        serializeSets(results.get(name)!),
+      );
+    },
+  );
+
+  // Skipped: the too heavy goldens encode the spec fallback (minus 2.5 per
+  // set, 65% floor), which the generator does not produce yet.
+  it.skip("tooHard: matches the committed progression golden", () => {
     progressionGoldens.assertMatches(
-      `p2-max-strength.${name}.sets.md`,
-      serializeSets(results.get(name)!),
+      "p2-max-strength.tooHard.progression.md",
+      serializeProgression(results.get("tooHard")!),
+    );
+  });
+
+  it.skip("tooHard: matches the committed sets golden", () => {
+    progressionGoldens.assertMatches(
+      "p2-max-strength.tooHard.sets.md",
+      serializeSets(results.get("tooHard")!),
     );
   });
 

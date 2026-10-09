@@ -149,7 +149,7 @@ describe("getUserLevel", () => {
 describe("roundWeightValue: rounding by equipment", () => {
   it("rounds a barbell total load to the nearest 2.5 kg", () => {
     expect(roundWeightValue(41.3, barbellExercise)).toBe(42.5);
-    expect(roundWeightValue(26.3, barbellExercise)).toBe(25);
+    expect(roundWeightValue(26.2, barbellExercise)).toBe(25);
     expect(roundWeightValue(102.7, barbellExercise)).toBe(102.5);
   });
 

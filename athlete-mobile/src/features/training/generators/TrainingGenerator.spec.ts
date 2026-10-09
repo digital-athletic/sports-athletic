@@ -1955,6 +1955,29 @@ describe("TrainingGenerator", () => {
           expect(warmup3Weight).toBe(roundWeightValue(testWeight * 0.85));
         },
       );
+
+      it("derives ramp up loads from the rounded test set load with barbell rounding", () => {
+        const userWithMaxValues = {
+          ...testUser,
+          workoutData: {
+            ...testUser.workoutData,
+            tags: { LEVEL: ["BEGINNER"] },
+            gender: "MALE" as const,
+            maxValues: {
+              testAt: new Date("2024-01-01").getTime(),
+              kneeDominant: { barbell: 41.3 },
+            },
+          },
+        };
+
+        const result = generateTestWorkout(userWithMaxValues);
+        const squatWeights = result
+          .filter((entry) => entry.exerciseId === "25" && entry.skill === "TEST")
+          .map((entry) => entry.weight);
+
+        // 75% of 41.3 kg is 30.975 kg, rounded to a 30 kg test set load
+        expect(squatWeights).toEqual([12.5, 17.5, 25, 30]);
+      });
     });
 
     describe("Edge Cases", () => {

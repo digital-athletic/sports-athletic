@@ -1087,10 +1087,24 @@ const MAX_KRAFT_REPETITIONS_WARMUP = [
   { level: "WARMUP", repetitions: 5 },
 ];
 
-const MAX_KRAFT_WORKING_REPS_PER_USER_LEVEL = {
-  PROFESSIONAL: 3,
-  ADVANCED: 2,
-  BEGINNER: 2,
+type MaxKraftSet = { startWeight: number; maximumWeight: number };
+
+const MAX_KRAFT_ADVANCED_SETS: MaxKraftSet[] = [
+  { startWeight: 70, maximumWeight: 70 },
+  { startWeight: 72.5, maximumWeight: 75 },
+  { startWeight: 75, maximumWeight: 80 },
+];
+
+// Max strength is not meant for beginners; they get the Advanced sets.
+const MAX_KRAFT_SETS_PER_USER_LEVEL: Record<LevelTag, MaxKraftSet[]> = {
+  PROFESSIONAL: [
+    { startWeight: 75, maximumWeight: 75 },
+    { startWeight: 77.5, maximumWeight: 80 },
+    { startWeight: 80, maximumWeight: 85 },
+    { startWeight: 80, maximumWeight: 90 },
+  ],
+  ADVANCED: MAX_KRAFT_ADVANCED_SETS,
+  BEGINNER: MAX_KRAFT_ADVANCED_SETS,
 };
 
 const MAX_KRAFT_WEIGHT_ADJUSTMENT = {
@@ -1147,8 +1161,8 @@ export const WorkoutConstants = {
   MAX_KRAFT_MINIMAL_WEIGHT_PERCENTAGE_PER_USER_LEVEL,
   MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT,
   MAX_KRAFT_REPETITIONS_WARMUP,
+  MAX_KRAFT_SETS_PER_USER_LEVEL,
   MAX_KRAFT_WEIGHT_ADJUSTMENT,
-  MAX_KRAFT_WORKING_REPS_PER_USER_LEVEL,
   MAX_VALUE_CONVERSION_FACTORS,
   MAX_VALUE_TYPES,
   MAX_VALUES_EXPIRATION_TIME_IN_MS,

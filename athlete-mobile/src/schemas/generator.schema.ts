@@ -317,6 +317,7 @@ export const GeneratedSetListEntrySchema = v.object({
     v.object({
       level: v.string(),
       repetitions: v.number(),
+      weightPercentage: v.optional(v.number()),
     }),
   ),
 });
@@ -346,6 +347,7 @@ export type UserExerciseEntry = {
   maxFRepetitions?: {
     level: "WARMUP" | "EASY" | "MEDIUM" | "HARD";
     repetitions: number;
+    weightPercentage?: number;
   }[];
 };
 
@@ -371,6 +373,7 @@ export function toUserExerciseData(
           entry.repetitionMAX as {
             level: "WARMUP" | "EASY" | "MEDIUM" | "HARD";
             repetitions: number;
+            weightPercentage?: number;
           },
         ]
       : undefined,
@@ -545,8 +548,13 @@ export type ExerciseValuesData = {
  * Result of max training weight calculation.
  */
 export type MaxTrainingWeightsResult = {
+  /** Working set weights in percent of F-Max. */
   trainingWeights: number[];
+  /** Buffer of each working set, aligned with trainingWeights. */
+  levels: MaxStrengthBuffer[];
 };
+
+export type MaxStrengthBuffer = "EASY" | "MEDIUM" | "HARD";
 
 /**
  * Single entry in max training reps array with difficulty level.
@@ -554,6 +562,8 @@ export type MaxTrainingWeightsResult = {
 export type MaxTrainingRepsEntry = {
   level: string;
   repetitions: number;
+  /** Set only on working sets. */
+  weightPercentage?: number;
 };
 
 // ============================================================================

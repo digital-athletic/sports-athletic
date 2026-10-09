@@ -185,7 +185,12 @@ describe("TrainingGenerator: max strength ladder per working set", () => {
       },
     });
 
-    expect(describeSets(setList)).toEqual(["72.5x5", "77.5x6", "82.5x1", "85x2"]);
+    expect(describeSets(setList)).toEqual([
+      "72.5x5",
+      "77.5x6",
+      "82.5x1",
+      "85x2",
+    ]);
   });
 
   it("Pro: too heavy keeps the buffer of every set", () => {
@@ -213,6 +218,44 @@ describe("TrainingGenerator: max strength ladder per working set", () => {
     for (let i = 1; i < sets.length; i++) {
       expect(sets[i].weight).toBeGreaterThan(sets[i - 1].weight ?? 0);
     }
+  });
+
+  it("Pro: completed at 72.5% in the fallback column opens 75% in the first column", () => {
+    // The 5% column is empty at 72.5%, so every set used the 10% column.
+    const atFallback: MaxForceRepetitionsDataType = {
+      level: "MEDIUM",
+      repetitions: 5,
+      weightPercentage: 72.5,
+    };
+    const setList = generate(userWithLevel("PROFESSIONAL"), {
+      [squat.id]: {
+        exerciseId: squat.id,
+        skill: "MAX_KRAFT",
+        maxFRepetitions: [atFallback, atFallback, atFallback, atFallback],
+        feedback: { difficulty: "SUCCEEDED" },
+      },
+    });
+
+    expect(describeSets(setList)).toEqual(["75x3", "75x3", "75x3", "75x3"]);
+  });
+
+  it("Pro: a fallback in the last set does not move the lower sets past their next step", () => {
+    const setList = generate(userWithLevel("PROFESSIONAL"), {
+      [squat.id]: {
+        exerciseId: squat.id,
+        skill: "MAX_KRAFT",
+        // The 15% column is empty at 87.5%, so the last set used the 10% column.
+        maxFRepetitions: [
+          { level: "EASY", repetitions: 3, weightPercentage: 75 },
+          { level: "EASY", repetitions: 2, weightPercentage: 80 },
+          { level: "EASY", repetitions: 1, weightPercentage: 85 },
+          { level: "MEDIUM", repetitions: 1, weightPercentage: 87.5 },
+        ],
+        feedback: { difficulty: "SUCCEEDED" },
+      },
+    });
+
+    expect(describeSets(setList)).toEqual(["75x5", "80x3", "85x2", "87.5x2"]);
   });
 
   it("Advanced: reads the stored single entry of the last set", () => {

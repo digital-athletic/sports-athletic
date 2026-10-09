@@ -1,10 +1,8 @@
 /**
- * Ground-truth for the MAX rep-difficulty level state machine, asserted by
- * calling `getMaxTrainingReps` directly. This pins the transitions the
- * progression simulator depends on, so if the generator ever changes them this
- * breaks here rather than silently in a golden table. The `TOO_EASY` cycle
- * (EASY to HARD to MEDIUM back to EASY) is intentionally captured as-is: it is
- * the generator's behavior, however surprising, not a simulator artifact.
+ * Ground-truth for the MAX rep-difficulty level state machine applied to an
+ * entry stored before per set ladders, which holds only the last set and its
+ * already adjusted nextWeightPercentage. The `TOO_EASY` cycle (EASY to HARD to
+ * MEDIUM back to EASY) is intentionally captured as-is.
  */
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { ExerciseDifficultyType } from "@/constants/workoutConstants";
@@ -30,33 +28,25 @@ const user: UserType = {
   temporalData: [],
 };
 
-const weights = {
-  trainingWeights: [70, 72.5, 75],
-};
-
 function appliedLevel(
   lastLevel: Level,
   feedback: ExerciseDifficultyType,
-): string {
+): string | undefined {
   const userExerciseData: Record<string, UserExerciseDataType> = {
     "26": {
       exerciseId: "26",
       skill: "MAX_KRAFT",
+      nextWeightPercentage: 75,
       maxFRepetitions: [{ level: lastLevel, repetitions: 3 }],
       feedback: { difficulty: feedback },
     },
   };
-  const reps = new TrainingGenerator().getMaxTrainingReps(
-    user,
-    weights,
-    userExerciseData,
-    squat,
-    "w",
-  );
-  return reps.find((r) => r.level !== "WARMUP")!.level;
+  return new TrainingGenerator()
+    .getMaxTrainingWeights(squat, user, userExerciseData)
+    .levels.at(-1);
 }
 
-describe("getMaxTrainingReps: MAX level transition table", () => {
+describe("getMaxTrainingWeights: MAX level transition table of a stored last set", () => {
   const cases: [Level, ExerciseDifficultyType, string][] = [
     ["EASY", "TOO_EASY", "HARD"],
     ["MEDIUM", "TOO_EASY", "EASY"],

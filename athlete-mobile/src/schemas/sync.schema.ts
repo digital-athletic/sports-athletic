@@ -9,6 +9,8 @@ export const ExerciseDifficultySchema = v.nullable(
 export const MaxForceRepetitionsDataSchema = v.object({
   level: v.picklist(["WARMUP", "EASY", "MEDIUM", "HARD"]),
   repetitions: v.number(),
+  /** Percentage of F-Max of the working set; missing in entries stored before per set ladders. */
+  weightPercentage: v.optional(v.number()),
 });
 export type MaxForceRepetitionsDataType = v.InferOutput<
   typeof MaxForceRepetitionsDataSchema

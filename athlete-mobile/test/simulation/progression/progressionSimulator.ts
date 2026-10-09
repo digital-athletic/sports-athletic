@@ -22,6 +22,7 @@ import { WARMUP_WEIGHT_PERCENTAGES } from "@/features/training/generators/warmup
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { MaxValuesType } from "@/features/training/models/MaxValues";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
+import { getWorkingSetMaxFReps } from "@/features/training/utils/maxFRepetitionsUtils";
 import { calculateMaxStrengthAdjustment } from "@/features/training/utils/maxStrengthAdjustment";
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
 import { getUserBirthday } from "@/features/training/utils/userDataUtils";
@@ -30,7 +31,10 @@ import {
   getUserLevel,
 } from "@/features/training/utils/workoutUtils";
 import type { SkillCode } from "@/schemas/generator.schema";
-import { toUserExerciseData } from "@/schemas/generator.schema";
+import {
+  toUserExerciseData,
+  toUserExerciseDataList,
+} from "@/schemas/generator.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { TrainingLevelType } from "@/schemas/common.schema";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
@@ -221,7 +225,13 @@ export function simulateProgression(
 
     // What the screen reads: the exercise's last entry in the training list.
     const lastEntry = setList.findLast((e) => e.exerciseId === exercise.id);
-    const currentEntry = lastEntry ? toUserExerciseData(lastEntry) : undefined;
+    const currentEntry = lastEntry && {
+      ...toUserExerciseData(lastEntry),
+      maxFRepetitions: getWorkingSetMaxFReps(
+        toUserExerciseDataList(setList),
+        exercise.id,
+      ),
+    };
     const levelBefore = currentEntry?.maxFRepetitions?.at(-1)?.level ?? "EASY";
 
     const feedbackGiven = opts.feedback({ session });

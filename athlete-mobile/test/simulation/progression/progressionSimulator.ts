@@ -91,11 +91,16 @@ export interface SessionSnapshot {
   exercises: ExerciseSnapshot[];
 }
 
-/** A recorded session before `levelAfter` is known; see `simulateProgression`. */
+/** A recorded session before the next one is known; see `simulateProgression`. */
 interface PendingSession {
   session: number;
   focus: SkillCode;
-  exercise: Omit<ExerciseSnapshot, "levelAfter">;
+  /** Percentage of the last working set this session. */
+  topPercentage: number | null;
+  exercise: Omit<
+    ExerciseSnapshot,
+    "levelAfter" | "weightPercentageBefore" | "weightPercentageAfter"
+  >;
 }
 
 export interface SimulateOptions {
@@ -197,8 +202,6 @@ export function simulateProgression(
   // One session past the requested count: a session's `levelAfter` is only
   // observable by generating the next one. The extra row is dropped below.
   for (let session = 1; session <= opts.sessions + 1; session++) {
-    const weightPercentageBefore =
-      progressOf(exercise.id)?.nextWeightPercentage ?? null;
     const userExercisesData = useExerciseProgressStore.getState().exerciseData;
 
     const setList = generator.getSetListFromExercisePairs(
@@ -272,17 +275,15 @@ export function simulateProgression(
     pending.push({
       session,
       focus,
+      topPercentage: trainingWeights.at(-1) ?? null,
       exercise: {
         exerciseId: exercise.id,
         displayName: exercise.displayName ?? exercise.name ?? exercise.id,
         maxValue,
-        weightPercentageBefore,
         levelBefore,
         sets,
         feedbackGiven,
         feedbackApplied: progressOf(exercise.id)?.feedback?.difficulty ?? null,
-        weightPercentageAfter:
-          adjustment.nextWeightPercentage ?? weightPercentageBefore,
         branchLevelChange: adjustment.levelUp
           ? "up"
           : adjustment.levelDown
@@ -292,16 +293,21 @@ export function simulateProgression(
     });
   }
 
-  // levelAfter reads the next session's applied level off the real generator
+  // The values after a session are read off the next session's real generator
   // output, so no transition logic is duplicated here. The extra session that
-  // supplies it for the final row is discarded.
+  // supplies them for the final row is discarded. Session 1 has no stored state.
   return pending
     .slice(0, opts.sessions)
-    .map(({ session, focus, exercise }, i) => ({
+    .map(({ session, focus, topPercentage, exercise }, i) => ({
       session,
       focus,
       exercises: [
-        { ...exercise, levelAfter: pending[i + 1].exercise.levelBefore },
+        {
+          ...exercise,
+          weightPercentageBefore: i === 0 ? null : topPercentage,
+          weightPercentageAfter: pending[i + 1].topPercentage,
+          levelAfter: pending[i + 1].exercise.levelBefore,
+        },
       ],
     }));
 }

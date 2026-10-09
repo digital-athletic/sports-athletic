@@ -295,6 +295,82 @@ describe("TrainingGenerator: max strength ladder per working set", () => {
     expect(describeSets(setList)).toEqual(["70x5", "72.5x2", "75x2"]);
   });
 
+  it("Advanced: too heavy lowers each set by 2.5 down to the 65% floor", () => {
+    expect(runSessions(userWithLevel("ADVANCED"), 5, "TOO_HARD")).toEqual([
+      ["70x5", "72.5x2", "75x2"],
+      ["67.5x5", "70x3", "72.5x2"],
+      ["65x5", "67.5x3", "70x3"],
+      ["65x5", "65x3", "67.5x3"],
+      ["65x5", "65x3", "65x3"],
+    ]);
+  });
+
+  it("Pro: too heavy moves an empty buffer up and continues in it", () => {
+    const tooHeavy = generate(userWithLevel("PROFESSIONAL"), {
+      [squat.id]: {
+        exerciseId: squat.id,
+        skill: "MAX_KRAFT",
+        maxFRepetitions: [
+          { level: "HARD", repetitions: 6, weightPercentage: 75 },
+          { level: "HARD", repetitions: 6, weightPercentage: 77.5 },
+          { level: "HARD", repetitions: 5, weightPercentage: 80 },
+          { level: "HARD", repetitions: 5, weightPercentage: 80 },
+        ],
+        feedback: { difficulty: "TOO_HARD" },
+      },
+    });
+    const next = generate(
+      userWithLevel("PROFESSIONAL"),
+      progressAfter(tooHeavy, null),
+    );
+
+    expect(describeSets(tooHeavy)).toEqual([
+      "72.5x5",
+      "75x6",
+      "77.5x6",
+      "77.5x6",
+    ]);
+    expect(workingSets(next)[0].repetitionMAX?.level).toBe("MEDIUM");
+    expect(describeSets(next)[0]).toBe("72.5x5");
+  });
+
+  it("Advanced: warm-ups round 50% and 75% of the displayed first working set", () => {
+    const user = userWithLevel("ADVANCED");
+    const setList = generate(
+      {
+        ...user,
+        workoutData: {
+          ...user.workoutData,
+          maxValues: {
+            ...DEFAULT_MAX_VALUES,
+            kneeDominant: { ...DEFAULT_MAX_VALUE, barbell: 121 },
+          },
+        },
+      },
+      {
+        [squat.id]: {
+          exerciseId: squat.id,
+          skill: "MAX_KRAFT",
+          maxFRepetitions: [
+            { level: "MEDIUM", repetitions: 5, weightPercentage: 67.5 },
+            { level: "EASY", repetitions: 3, weightPercentage: 70 },
+            { level: "EASY", repetitions: 2, weightPercentage: 72.5 },
+          ],
+          feedback: { difficulty: null },
+        },
+      },
+    );
+    const warmups = setList.filter(
+      (entry) =>
+        entry.exerciseId === squat.id &&
+        entry.repetitionMAX?.level === "WARMUP",
+    );
+
+    // 82.5 kg first working set: 41.25 and 61.875 kg round to 40 and 62.5 kg.
+    expect(describeSets(setList)[0]).toBe("82.5x5");
+    expect(warmups.map((entry) => entry.weight)).toEqual([40, 62.5]);
+  });
+
   it("Advanced: reads the stored single entry of the last set", () => {
     const setList = generate(userWithLevel("ADVANCED"), {
       [squat.id]: {

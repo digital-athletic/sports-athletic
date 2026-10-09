@@ -3,9 +3,11 @@ import { WorkoutConstants } from "@/constants/workoutConstants";
 import { PAUSE_EXERCISE_ID } from "@/features/training/models/IdTypes";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
+import type { TemporalDataType } from "@/features/training/models/TemporalData";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import type { TemporalDataType, UserType } from "@/schemas/user.schema";
+import type { MaxForceRepetitionsDataType } from "@/schemas/sync.schema";
+import type { UserType } from "@/schemas/user.schema";
 import TrainingGenerator from "./TrainingGenerator";
 
 const exerciseById = (id: string): ExerciseType => {
@@ -161,6 +163,11 @@ describe("TrainingGenerator: max strength support exercises", () => {
 });
 
 describe("TrainingGenerator: max strength repetition table", () => {
+  const REP_LEVELS: MaxForceRepetitionsDataType["level"][] = [
+    "EASY",
+    "MEDIUM",
+    "HARD",
+  ];
   const seventeenYearsAgo = () => {
     const date = new Date();
     date.setFullYear(date.getFullYear() - 17);
@@ -202,7 +209,7 @@ describe("TrainingGenerator: max strength repetition table", () => {
       const generator = new TrainingGenerator();
       const user = userWithLevel("PROFESSIONAL");
       const weights = { trainingWeights: [72.5, 80, 85, weight] };
-      const nextSession = (level: string) =>
+      const nextSession = (level: MaxForceRepetitionsDataType["level"]) =>
         generator
           .getMaxTrainingReps(
             user,
@@ -222,7 +229,9 @@ describe("TrainingGenerator: max strength repetition table", () => {
 
       // HARD followed by "completed" opens a new weight in the first column.
       const first = nextSession("HARD");
-      const second = nextSession(first?.level ?? "");
+      const firstLevel = REP_LEVELS.find((level) => level === first?.level);
+      if (!firstLevel) throw new Error(`Unknown level ${first?.level}`);
+      const second = nextSession(firstLevel);
 
       expect(first?.repetitions).toBe(1);
       expect(second?.repetitions).toBe(2);

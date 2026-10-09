@@ -36,7 +36,7 @@ computed table.
 - `dumbbell per hand`: same 1RM through the 45% conversion.
 - `mid range rounding`: squat test 110 kg × 3 gives the exact 1RM 121 used by
   the max-strength goldens, tying the two golden sets to one athlete.
-- `small load rounding`: `oneSidedLowerSupported` (30%) at speed strength 50%
+- `small load rounding`: `oneSidedLowerSupported` (30%) at explosive power 50%
   falls below 25 kg, so the 0.5 kg step applies (18.15 rounds to 18).
 - `heavy load rounding`: 112 kg is above 100 kg, so the 2.5 kg step rounds up
   to 112.5.

@@ -50,9 +50,9 @@ rounded 1st working set load, rounded again per spec section 8. Warm-up reps
 are 6 and 5.
 
 `pause s` is the whole gap to the next set of the same exercise, support-set
-work included: 60 s between the warm-ups and the ≈3 min superset block between
-working sets (spec section 7). After the closing set it is the 2 min rest that
-follows a max strength exercise, before the next exercise starts.
+work included: 60 s between the warm-ups and the ≈3 min support exercise block
+between working sets (spec section 7). After the closing set it is the 2 min
+rest that follows a max strength exercise, before the next exercise starts.
 
 The `<feedback>` in the filename is the scripted difficulty reported every
 session: `tooEasy`, `succeeded` ("passt"), or `tooHard`.

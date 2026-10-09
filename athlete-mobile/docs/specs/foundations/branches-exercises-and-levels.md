@@ -2,7 +2,7 @@
 
 ## Why & What
 
-App content sits in three layers: one **skill tree** per **skill** (the training components a session is built from: warm-up, mobility, stability, hypertrophy, Maxkraft, speed strength, prevention, cardio zones, support work), each tree made of **branches**, each branch an ordered set of **levels** that reference exercises from the flat **exercise catalog** (roughly 1200 entries with tags and value configurations). Plans and workouts reference branches only; the exercise an athlete performs is resolved from the branch at workout start using that athlete's level for it. This spec defines the three layers and the rules that move an athlete up and down levels.
+App content sits in three layers: one **skill tree** per **skill** (the training components a session is built from: warm-up, mobility, stability, hypertrophy, max strength, explosive power, prevention, cardio zones, support work), each tree made of **branches**, each branch an ordered set of **levels** that reference exercises from the flat **exercise catalog** (roughly 1200 entries with tags and value configurations). Plans and workouts reference branches only; the exercise an athlete performs is resolved from the branch at workout start using that athlete's level for it. This spec defines the three layers and the rules that move an athlete up and down levels.
 
 ## Problem
 
@@ -12,8 +12,8 @@ An exercise carries no difficulty relative to other exercises, and the usable di
 
 A branch is that stable identity. The plan stores branch references, the athlete's per-branch level is stored separately, and workout generation joins the two. Progression is a one-number update. Levels carry two jobs:
 
-1. **Entry mapping**: an athlete with no progress on a branch enters at the level matching their overall training level (BEGINNER 1, ADVANCED 2, PROFESSIONAL 3). Levels 4 to 6 are headroom earned by training, so entry caps at 3 for every athlete. A training level above PROFESSIONAL would entry-map to level 4, but the mapping is deliberately not prepared in advance; it gets added only when that training level actually ships.
-2. **Progression ladder**: performance moves the per-branch level independently of the overall training level, so difficulty adapts per movement pattern instead of globally.
+1. **Entry mapping**: an athlete with no progress on a branch enters at the level matching their overall fitness level (BEGINNER 1, ADVANCED 2, PROFESSIONAL 3). Levels 4 to 6 are headroom earned by training, so entry caps at 3 for every athlete. A fitness level above PROFESSIONAL would entry-map to level 4, but the mapping is deliberately not prepared in advance; it gets added only when that fitness level actually ships.
+2. **Progression ladder**: performance moves the per-branch level independently of the overall fitness level, so difficulty adapts per movement pattern instead of globally.
 
 A **level change** must land on a level holding a different exercise, so it always surfaces as a new movement with fresh values. A branch offering no such level in the required direction is **exhausted**, and the system swaps in a comparable branch from the same skill tree (**branch substitution**), the only progression event that edits the plan.
 
@@ -31,18 +31,18 @@ A **level change** must land on a level holding a different exercise, so it al
 - **Skill tree**: the branch pool for one skill, keyed by branch ID. Skills trainable with and without weights have two trees, the weighted one and a bodyweight variant (suffix KG, for Körpergewicht); runtime lookup picks the variant matching the location's equipment. Trees define availability only, all difficulty lives in branch levels.
 - **Exercise**: catalog entry with tags such as muscle, region, side, equipment and blocks, plus its value configuration.
 
-  The value configuration contains authored start and target values where applicable. An owning progression specification may define a global override. In particular, hypertrophy repetition/duration uses the global ranges from [Standard Exercise Progression](../progression/standard-exercise-progression.md); exercise-specific load values may still vary by athlete level, gender, age group, or exercise.
+  The value configuration contains authored start and target values where applicable. An owning progression specification may define a global override. In particular, hypertrophy repetition/duration uses the global ranges from [Standard Exercise Progression](../progression/standard-exercise-progression.md); exercise-specific load values may still vary by fitness level, gender, age group, or exercise.
 
   Where exercise-specific values are applicable, they may be differentiated by:
 
-  - training level,
+  - fitness level,
   - gender,
   - age group where age-specific values are authored.
 
   For the current age model, age-specific exercise values may distinguish U16 from athletes aged 16 and above.
 
   An exercise also defines one progression mode, for example `advance-by-reps` or `advance-by-duration`, and may define an optional other-side counterpart for one-sided movements.
-- **Branch**: belongs to exactly one skill tree; carries the branch tags every selection filter and substitution score reads, plus a map from level number to one exercise. Authored levels run 1 to 6, most branches define 3, and the map may skip numbers. An exercise may appear in several branches (about a quarter do, for example the same lift in a hypertrophy and a Maxkraft branch), and about 80% of branches repeat one exercise across adjacent levels so that every entry level resolves.
+- **Branch**: belongs to exactly one skill tree; carries the branch tags every selection filter and substitution score reads, plus a map from level number to one exercise. Authored levels run 1 to 6, most branches define 3, and the map may skip numbers. An exercise may appear in several branches (about a quarter do, for example the same lift in a hypertrophy and a max strength branch), and about 80% of branches repeat one exercise across adjacent levels so that every entry level resolves.
 - **Athlete branch progress**: a map from branch ID to current level, absent until the first level change on that branch. It persists independently of any plan, so it survives plan regeneration, applies wherever the branch reappears, and outlives substitution of the branch.
 
 ### Resolving the level at workout start
@@ -51,7 +51,7 @@ Per branch in the session, in this order:
 
 1. **Reconcile** the stored level against the shipped tree.
 2. **Decay** the stored level after long inactivity.
-3. **Resolve**: use the stored level, otherwise entry-map the overall training level to 1, 2, or 3 and fall back downward to the highest authored level at or below it.
+3. **Resolve**: use the stored level, otherwise entry-map the overall fitness level to 1, 2, or 3 and fall back downward to the highest authored level at or below it.
 
 A branch with no resolvable exercise counts as blocked and goes to the workout selection flow for replacement.
 
@@ -71,7 +71,7 @@ Both steps persist their result, so each correction happens once. Neither moves 
 
 The owning progression specification decides whether a level change is earned. This file does **not** independently derive a level change from raw achieved repetitions, duration, weight, or feedback.
 
-**Standard Exercise Progression** owns the progression outcome for hypertrophy, speed strength, speed endurance, stability, and prevention:
+**Standard Exercise Progression** owns the progression outcome for hypertrophy, explosive power, power endurance, stability, and prevention:
 
 - `LEVEL_UP` is emitted only after the applicable final upper boundary has been prescribed, performed, and positively evaluated according to that specification.
 - `LEVEL_DOWN` is emitted only after the applicable final lower boundary has been prescribed, performed, and evaluated as `too hard` according to that specification.
@@ -79,7 +79,7 @@ The owning progression specification decides whether a level change is earned. T
 - For hypertrophy, the global repetition/duration boundaries from Standard Exercise Progression override exercise-specific authored repetition/duration values.
 - Warm-up, special warm-up, cool-down, mobility, foam roller, and strength-test exercises do not use this standard progression and do not earn branch-level changes through it.
 
-**Maxkraft** receives its level-change trigger from [Max Strength Training](../progression/max-strength-progression.md).
+**Max strength** receives its level-change trigger from [Max Strength Training](../progression/max-strength-progression.md).
 
 **Cardio** exercises never change branch levels.
 
@@ -117,12 +117,12 @@ Athletes cannot swap exercises manually, and building this is currently not plan
 
 - The athlete may pick any eligible exercise from the respective skill tree; there is no restriction to levels near the current one.
 - Guidance comes from labels instead: each exercise is labeled relative to the athlete's current level in its branch, for example "easier", "appropriate", "more challenging", "significantly more challenging". Exercises near the current level are listed first, but proximity is never a selection requirement.
-- A manual swap changes neither the stored branch progress nor the athlete's training level. Automatic level progression stays exclusive to the progression logic above.
+- A manual swap changes neither the stored branch progress nor the athlete's fitness level. Automatic level progression stays exclusive to the progression logic above.
 - The hard exclusions keep applying: unavailable equipment, exercises unsuitable for the athlete's age or gender, and every other mandatory filter.
 
 ### Example: bodyweight squat lane
 
-Speed strength (Schnellkraft, code SK) has the trees SK and SKKG; training at home without weights uses SKKG. Branch 253 there is the two-legged squat lane, tagged knee movement direction, lower body, both-sided, glutes and quadriceps as complex movers.
+Explosive power (Schnellkraft, code SK) has the trees SK and SKKG; training at home without weights uses SKKG. Branch 253 there is the two-legged squat lane, tagged knee movement direction, lower body, both-sided, glutes and quadriceps as complex movers.
 
 | **Level** | **Exercise** |
 | ---: | --- |
@@ -151,4 +151,4 @@ erDiagram
     ATHLETE_PROGRESS }o--o{ BRANCH : "stores current level per branch"
 ```
 
-Here, **LEVEL** means an authored branch-level slot (1–6), not the athlete's overall training level.
+Here, **LEVEL** means an authored branch-level slot (1–6), not the athlete's overall fitness level.

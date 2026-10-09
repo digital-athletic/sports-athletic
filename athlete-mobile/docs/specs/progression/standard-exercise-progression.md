@@ -5,12 +5,12 @@
 This specification defines standard progression for:
 
 - hypertrophy,
-- speed strength,
-- speed endurance,
+- explosive power,
+- power endurance,
 - stability,
 - prevention.
 
-Maxkraft and cardio use their own progression specifications.
+Max strength and cardio use their own progression specifications.
 
 Per exercise, progression may use:
 
@@ -21,7 +21,7 @@ Per exercise, progression may use:
 - whether the exercise uses adjustable external weight,
 - authored start, target, and load boundaries.
 
-Start/target values may depend on athlete level, gender, and age group unless this specification defines a global override. The authored value configuration is the source of truth for values not overridden here. For hypertrophy, the repetition and duration ranges defined in this specification override exercise-specific authored repetition/duration values.
+Start/target values may depend on fitness level, gender, and age group unless this specification defines a global override. The authored value configuration is the source of truth for values not overridden here. For hypertrophy, the repetition and duration ranges defined in this specification override exercise-specific authored repetition/duration values.
 
 Warm-up, special warm-up, cool-down, mobility, foam roller, and strength-test exercises do not use this progression and do not collect progression feedback.
 
@@ -29,7 +29,7 @@ Exercise-specific history is stored per athlete and survives plan regeneration. 
 
 ## Out of scope
 
-- Maxkraft progression: [Max Strength Training](./max-strength-progression.md)
+- Max strength progression: [Max Strength Training](./max-strength-progression.md)
 - Cardio progression: [Cardio Training System](../session/cardio-training-system.md)
 - Branch/level changes and substitution rules: [Branches, Exercises, and Levels](../foundations/branches-exercises-and-levels.md)
 - Initial weight derivation, equipment conversion, and rounding rules: [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md)
@@ -260,15 +260,15 @@ These are the current general values where the authored content resolves to the 
 
 | Training area | Start | Target | Load / notes |
 |---|---:|---:|---|
-| Speed strength with adjustable weight | 4 reps | 6 reps | Beginner 52.5-65% F-Max; Advanced 55-67.5%; Professional 55-70%; lowest load 50% |
-| Loaded jumping speed strength | 4 reps | 6 reps | Default ~10-20% squat F-Max; selected authored configurations may use up to 25% |
-| Speed strength without adjustable weight | 4 reps | 6 reps | General default |
+| Explosive power with adjustable weight | 4 reps | 6 reps | Beginner 52.5-65% F-Max; Advanced 55-67.5%; Professional 55-70%; lowest load 50% |
+| Loaded jumping explosive power | 4 reps | 6 reps | Default ~10-20% squat F-Max; selected authored configurations may use up to 25% |
+| Explosive power without adjustable weight | 4 reps | 6 reps | General default |
 | Plyometrics | 4 reps | 6 reps | General default; lighter authored content may use higher targets |
 | Hypertrophy, adjustable weight, reps | 8 reps | 12 reps | Beginner 67.5-75%; Advanced 70-77.5%; Professional 70-77.5%; lowest load 65% |
 | Hypertrophy, adjustable weight, duration | 30 s | 50 s | Same weight-boundary logic |
 | Hypertrophy, no adjustable weight, reps | 8 reps | 12 reps | Standard hypertrophy range |
 | Hypertrophy, no adjustable weight, duration | 30 s | 60 s | Standard hypertrophy range |
-| Whole-body stability | 8 reps / 30 s | 15 reps / 60 s | Weight exercise-specific where applicable |
+| Full-body stability | 8 reps / 30 s | 15 reps / 60 s | Weight exercise-specific where applicable |
 | Leg-axis stability | 5 reps / 30 s | 8 reps / 45 s | Exercise-specific |
 | Prevention with adjustable weight | 10 reps / 40 s | 15 reps / 60 s | Weight exercise-specific |
 | U16 weighted exercises | per training area | per training area | Fixed authored **weight** values; no F-Max calculation. Repetition/duration follows the applicable training-area rules; for hypertrophy use 8-12 reps or 30-50 s for weighted duration. |

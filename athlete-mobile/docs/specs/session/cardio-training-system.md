@@ -17,7 +17,7 @@ Previously, two heart-rate formulas coexisted. This specification resolves that 
 Six authored zones, split into two structures:
 
 - **Steady zones** (CARDIO_4, CARDIO_5): one continuous run for the full available budget.
-- **Interval zones** (CARDIO_1_SHORT, CARDIO_1_LAKTAT, CARDIO_2, CARDIO_3): a fixed work interval alternating with a fixed running pause, repeated according to the authored interval count for the athlete's training level and capped by the available minute budget. Remaining time is first used for a zone-4 warm-up and then, where applicable, for a zone-4 filler run.
+- **Interval zones** (CARDIO_1_SHORT, CARDIO_1_LAKTAT, CARDIO_2, CARDIO_3): a fixed work interval alternating with a fixed running pause, repeated according to the authored interval count for the athlete's fitness level and capped by the available minute budget. Remaining time is first used for a zone-4 warm-up and then, where applicable, for a zone-4 filler run.
 
 The heart-rate target comes from the athlete's age. Maximum heart rate is calculated as:
 
@@ -27,7 +27,7 @@ If no birthday is available, an age of **20 years** is used for the heart-rate c
 
 For interval zones, the **interval count** is the intended progression variable. The work interval and running pause define the zone and remain constant.
 
-Feedback-based cardio progression is not implemented yet. Therefore, the current implementation always uses the authored start count for the athlete's training level, limited by the available minute budget.
+Feedback-based cardio progression is not implemented yet. Therefore, the current implementation always uses the authored start count for the athlete's fitness level, limited by the available minute budget.
 
 ## Out of Scope
 
@@ -59,11 +59,11 @@ CARDIO_1_SHORT displays **MAX.** instead of a heart-rate range because the 10-se
 
 For the current implementation, CARDIO_1_LAKTAT is not inserted into training plans. All athletes currently use the baseline logic that was originally used for goalkeepers, so CARDIO_1_SHORT is used instead of CARDIO_1_LAKTAT.
 
-Position-specific differentiation between CARDIO_1_SHORT and CARDIO_1_LAKTAT is only relevant once the corresponding lactate / speed-endurance logic is implemented.
+Position-specific differentiation between CARDIO_1_SHORT and CARDIO_1_LAKTAT is only relevant once the corresponding lactate / power-endurance logic is implemented.
 
 ### Building the block
 
-Input: the zone, its minute budget, the selected cardio exercise, the athlete's training level, and today's soreness.
+Input: the zone, its minute budget, the selected cardio exercise, the athlete's fitness level, and today's soreness.
 
 1. **Steady zones**:
    1. Emit one continuous run over the full available budget.
@@ -71,7 +71,7 @@ Input: the zone, its minute budget, the selected cardio exercise, the athlete's 
    3. Lower-body soreness replaces the current cardio skill with CARDIO_5 and caps the budget at 20 minutes.
 
 2. **Interval zones**:
-   1. Take the authored start interval count for the athlete's training level.
+   1. Take the authored start interval count for the athlete's fitness level.
    2. Each interval consists of one complete pair of:
       - the zone-specific work interval, and
       - the zone-specific running pause.
@@ -104,9 +104,9 @@ If the requested interval count does not fit into the minute budget, only the ma
 
 ### Progression
 
-Interval zones have authored **start counts** and **target counts** for each training level.
+Interval zones have authored **start counts** and **target counts** for each fitness level.
 
-| Cardio zone | Training level | Start count | Target count |
+| Cardio zone | Fitness level | Start count | Target count |
 |---|---|---:|---:|
 | CARDIO_1_SHORT | BEGINNER | 3 | 5 |
 | CARDIO_1_SHORT | ADVANCED | 4 | 6 |
@@ -133,7 +133,7 @@ However, **feedback-based cardio progression is not implemented yet**.
 
 The current implementation therefore follows these rules:
 
-- The interval count always starts from the authored start value for the athlete's training level.
+- The interval count always starts from the authored start value for the athlete's fitness level.
 - If that start count does not fit into the available minute budget, only the number of complete intervals that fit is emitted.
 - No interval-count value is currently stored between sessions.
 - No feedback-based interval-count adjustment currently takes place.
@@ -149,7 +149,7 @@ For example, in CARDIO_2 one additional interval adds:
 
 The zone-4 filler must therefore be reduced by the same 120 seconds so that the total cardio minute budget remains unchanged.
 
-Once the target count of an interval exercise is reached, the intended progression behavior is to select another suitable exercise from the **same cardio zone**, provided that the required equipment is available at the training location. The replacement exercise starts again at the start count for the athlete's training level and can progress toward its own target count.
+Once the target count of an interval exercise is reached, the intended progression behavior is to select another suitable exercise from the **same cardio zone**, provided that the required equipment is available at the training location. The replacement exercise starts again at the start count for the athlete's fitness level and can progress toward its own target count.
 
 If no other suitable exercise is available, an exercise that has already reached its target count may be used again.
 
@@ -185,7 +185,7 @@ CARDIO_1_SHORT displays **MAX.** instead of a heart-rate range. All other zones 
 flowchart LR
     A[Zone + minute budget] --> B{Steady or interval?}
     B -- steady --> C[One run over the full budget]
-    B -- interval --> D[Start count for training level]
+    B -- interval --> D[Start count for fitness level]
     D --> E[Cap count by available budget]
     E --> F[count x work + running pause]
     F --> G[Use remaining time for zone-4 warm-up up to 5 min]

@@ -73,7 +73,7 @@ Effects of any pain at all:
 | Branch region matches the sore area | Branch removed, its region requested for replacement |
 | Cardio skill with lower-body soreness | Whole skill replaced by steady regeneration cardio, capped at 20 minutes |
 | Strength test workout, any soreness | Refused |
-| Warm-up, special warm-up for speed work, cool-down, mobility, foam roller | Soreness ignored, these skills always run |
+| Warm-up, speed warm-up, cool-down, mobility, foam roller | Soreness ignored, these skills always run |
 | Prevention workouts and focus trainings (the plan-independent short workouts, e.g. leg axis stability) | Soreness ignored, the check was removed by sprint decision on August 10, 2026 |
 
 ```mermaid

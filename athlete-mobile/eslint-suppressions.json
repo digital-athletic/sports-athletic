@@ -547,11 +547,6 @@
       "count": 1
     }
   },
-  "src/features/training/utils/maxStrengthAdjustment.test.ts": {
-    "max-lines-per-function": {
-      "count": 1
-    }
-  },
   "src/features/training/utils/maxStrengthAdjustment.ts": {
     "complexity": {
       "count": 1
@@ -580,11 +575,6 @@
   "src/features/training/utils/trainingSectionUtils.ts": {
     "complexity": {
       "count": 1
-    }
-  },
-  "src/features/training/utils/workoutUtils.test.ts": {
-    "max-lines-per-function": {
-      "count": 2
     }
   },
   "src/features/training/utils/workoutUtils.ts": {

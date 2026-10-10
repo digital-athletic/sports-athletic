@@ -19,11 +19,7 @@ import {
   getTargetWeight,
   getWeightType,
 } from "./weightAdjustmentUtils";
-import {
-  getExerciseStartValue,
-  getExerciseTargetValue,
-  getValueByGenderAndLevel,
-} from "./workoutUtils";
+import { getExerciseStartValue, getExerciseTargetValue } from "./workoutUtils";
 
 export interface ExerciseAdjustmentContext {
   userLevel: TrainingLevelType;
@@ -196,13 +192,7 @@ export function calculateStandardExerciseAdjustment(
   const performed: PerformedSet = {
     hasWeights,
     weight,
-    targetWeight: getTargetWeight(
-      intensity,
-      exerciseData,
-      context.userLevel,
-      context.genderTag,
-      context.maxValue,
-    ),
+    targetWeight: getTargetWeight(intensity, exerciseData, context),
     feedback,
   };
 
@@ -241,15 +231,14 @@ interface PerformedSet {
 const isAtLowestLoad = (
   weight: number,
   exerciseData: ExerciseType,
-  { userLevel, genderTag }: ExerciseAdjustmentContext,
+  context: ExerciseAdjustmentContext,
   intensity: IntensityData,
 ): boolean => {
   const lowestWeight = getLowestPermittedWeight(
     intensity,
     getWeightType(exerciseData, intensity),
     exerciseData,
-    userLevel,
-    genderTag,
+    context,
   );
   return typeof lowestWeight === "number" && weight <= lowestWeight;
 };
@@ -323,67 +312,3 @@ const BOUNDARY_CHANGE_PRIORITY: BoundaryChange[] = [
   "INCREASE_WEIGHT",
   "DECREASE_WEIGHT",
 ];
-
-/**
- * Gets reset value for duration when weight changes.
- */
-export function getResetDuration(
-  exerciseData: ExerciseType,
-  intensity: IntensityData,
-  genderTag: GenderTag,
-  userLevel: TrainingLevelType,
-): number | undefined {
-  if (!exerciseData.isAdvanceByDuration) return undefined;
-  if (intensity.overridesExerciseRepsAndDuration) {
-    return getExerciseStartValue(
-      intensity,
-      exerciseData,
-      "duration",
-      userLevel,
-      genderTag,
-    );
-  }
-
-  const exerciseStartValue = getValueByGenderAndLevel(
-    exerciseData.values?.duration?.startValue,
-    genderTag,
-    userLevel,
-  );
-
-  return (
-    exerciseStartValue ??
-    intensity.startValue.duration?.[genderTag]?.[userLevel]
-  );
-}
-
-/**
- * Gets reset value for repetition when weight changes.
- */
-export function getResetRepetition(
-  exerciseData: ExerciseType,
-  intensity: IntensityData,
-  genderTag: GenderTag,
-  userLevel: TrainingLevelType,
-): number | undefined {
-  if (!exerciseData.isAdvanceByReps) return undefined;
-  if (intensity.overridesExerciseRepsAndDuration) {
-    return getExerciseStartValue(
-      intensity,
-      exerciseData,
-      "repetition",
-      userLevel,
-      genderTag,
-    );
-  }
-
-  const exerciseStartValue = getValueByGenderAndLevel(
-    exerciseData.values?.repetition?.startValue,
-    genderTag,
-    userLevel,
-  );
-
-  return (
-    exerciseStartValue ??
-    intensity.startValue.repetition?.[genderTag]?.[userLevel]
-  );
-}

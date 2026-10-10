@@ -9,8 +9,6 @@ import {
   deriveActiveExerciseIndex,
   type ExerciseAdjustmentContext,
   findMainCardioExercise,
-  getResetDuration,
-  getResetRepetition,
   isFeedbackEligibleSkill,
   shouldProcessExerciseValues,
   shouldSkipExerciseSave,
@@ -18,6 +16,8 @@ import {
 import {
   calculateWeightStep,
   getLowestPermittedWeight,
+  getResetDuration,
+  getResetRepetition,
   getTargetWeight,
 } from "./weightAdjustmentUtils";
 
@@ -750,22 +750,25 @@ describe("exerciseDataUtils", () => {
   describe("calculateWeightStep", () => {
     const barbell = createExercise({ tags: ["EQ_BARBELL"] });
     const plain = createExercise();
+    const absolute = { weightType: "weightAbsolute" } as const;
+    const percent = { weightType: "weightFMax" } as const;
 
     it("raises the underlying weight by 2.5 percent", () => {
       expect(
-        calculateWeightStep(38, "INCREASE", barbell, "weightAbsolute", {}),
+        calculateWeightStep(38, "INCREASE", barbell, absolute),
       ).toBeCloseTo(38.95);
     });
 
     it("lowers the underlying weight by 2.5 percent", () => {
-      expect(
-        calculateWeightStep(40, "DECREASE", plain, "weightAbsolute", {}),
-      ).toBeCloseTo(39);
+      expect(calculateWeightStep(40, "DECREASE", plain, absolute)).toBeCloseTo(
+        39,
+      );
     });
 
     it("steps a percentage weight from the underlying percentage", () => {
       expect(
-        calculateWeightStep(70, "INCREASE", barbell, "weightFMax", {
+        calculateWeightStep(70, "INCREASE", barbell, {
+          ...percent,
           maxValue: 121,
         }),
       ).toBeCloseTo(71.75);
@@ -773,7 +776,8 @@ describe("exerciseDataUtils", () => {
 
     it("clamps an increase at the target weight", () => {
       expect(
-        calculateWeightStep(76, "INCREASE", barbell, "weightFMax", {
+        calculateWeightStep(76, "INCREASE", barbell, {
+          ...percent,
           maxValue: 121,
           targetWeight: 77.5,
         }),
@@ -782,7 +786,8 @@ describe("exerciseDataUtils", () => {
 
     it("clamps a reduction at the lowest permitted weight", () => {
       expect(
-        calculateWeightStep(66, "DECREASE", barbell, "weightFMax", {
+        calculateWeightStep(66, "DECREASE", barbell, {
+          ...percent,
           maxValue: 121,
           lowestWeight: 65,
         }),
@@ -796,7 +801,8 @@ describe("exerciseDataUtils", () => {
       "never raises a weight below the lowest permitted weight %s F-Max",
       (_, maxValue) => {
         expect(
-          calculateWeightStep(5, "DECREASE", barbell, "weightFMax", {
+          calculateWeightStep(5, "DECREASE", barbell, {
+            ...percent,
             maxValue,
             lowestWeight: 50,
           }),
@@ -811,14 +817,15 @@ describe("exerciseDataUtils", () => {
       "uses the next real load for %s when rounding hides the step",
       (direction, expected) => {
         expect(
-          calculateWeightStep(40, direction, barbell, "weightAbsolute", {}),
+          calculateWeightStep(40, direction, barbell, absolute),
         ).toBeCloseTo(expected);
       },
     );
 
     it("uses the next real load for a percentage weight", () => {
       expect(
-        calculateWeightStep(40, "INCREASE", barbell, "weightFMax", {
+        calculateWeightStep(40, "INCREASE", barbell, {
+          ...percent,
           maxValue: 100,
         }),
       ).toBeCloseTo(42.5);
@@ -845,13 +852,10 @@ describe("exerciseDataUtils", () => {
       ["70", 65],
     ])("authored start %s gives a lowest load of %s", (start, expected) => {
       expect(
-        getLowestPermittedWeight(
-          intensity,
-          "weightFMax",
-          withStart(start),
-          "beginner",
-          "m",
-        ),
+        getLowestPermittedWeight(intensity, "weightFMax", withStart(start), {
+          userLevel: "beginner",
+          genderTag: "m",
+        }),
       ).toBe(expected);
     });
   });
@@ -884,27 +888,24 @@ describe("exerciseDataUtils", () => {
 
     it("keeps an authored kg target for a kg exercise", () => {
       expect(
-        getTargetWeight(
-          percentIntensity,
-          kgExercise({ beginner: 70 }),
-          "beginner",
-          "m",
-        ),
+        getTargetWeight(percentIntensity, kgExercise({ beginner: 70 }), {
+          userLevel: "beginner",
+          genderTag: "m",
+        }),
       ).toBe(70);
     });
 
     it("skips the clamp when a kg exercise falls back to a % target", () => {
       const exercise = kgExercise();
-      const targetWeight = getTargetWeight(
-        percentIntensity,
-        exercise,
-        "beginner",
-        "m",
-      );
+      const targetWeight = getTargetWeight(percentIntensity, exercise, {
+        userLevel: "beginner",
+        genderTag: "m",
+      });
 
       expect(targetWeight).toBeUndefined();
       expect(
-        calculateWeightStep(60, "INCREASE", exercise, "weightAbsolute", {
+        calculateWeightStep(60, "INCREASE", exercise, {
+          weightType: "weightAbsolute",
           targetWeight,
         }),
       ).toBeGreaterThan(60);

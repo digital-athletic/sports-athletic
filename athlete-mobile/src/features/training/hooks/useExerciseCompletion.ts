@@ -18,8 +18,6 @@ import {
   calculateStandardExerciseAdjustment,
   type ExerciseAdjustmentContext,
   findMainCardioExercise,
-  getResetDuration,
-  getResetRepetition,
   shouldProcessExerciseValues,
 } from "@/features/training/utils/exerciseDataUtils";
 import { getWorkingSetMaxFReps } from "@/features/training/utils/maxFRepetitionsUtils";
@@ -27,6 +25,8 @@ import { calculateMaxStrengthAdjustment } from "@/features/training/utils/maxStr
 import {
   calculateWeightStep,
   getLowestPermittedWeight,
+  getResetDuration,
+  getResetRepetition,
   getTargetWeight,
   getWeightType,
 } from "@/features/training/utils/weightAdjustmentUtils";
@@ -337,21 +337,21 @@ export function useExerciseCompletion() {
           if (leftExercise) {
             // A later return to this exercise starts from its start values.
             resetExercise(id, { skill, branchId }, activeTraining?.id);
-          } else {
+          } else if (feedbackOverride) {
             // The level change found no other exercise: keep the sets, but
             // the feedback must not move them a step.
-            if (feedbackOverride) {
-              updateExercise(
-                id,
-                {
-                  exerciseId: id,
-                  skill,
-                  feedback: feedbackOverride,
-                },
-                activeTraining?.id,
-              );
-            }
+            updateExercise(
+              id,
+              {
+                exerciseId: id,
+                skill,
+                feedback: feedbackOverride,
+              },
+              activeTraining?.id,
+            );
+          }
 
+          if (!leftExercise) {
             let newWeight = weight;
             let newDuration = duration ? duration : undefined;
             let newRepetition = reps ? reps : undefined;
@@ -440,21 +440,18 @@ export function useExerciseCompletion() {
                 weight,
                 increaseWeight ? "INCREASE" : "DECREASE",
                 currentExerciseData,
-                weightType,
                 {
+                  weightType,
                   targetWeight: getTargetWeight(
                     intensity,
                     currentExerciseData,
-                    userLevel,
-                    genderTag,
-                    maxValue,
+                    adjustmentContext,
                   ),
                   lowestWeight: getLowestPermittedWeight(
                     intensity,
                     weightType,
                     currentExerciseData,
-                    userLevel,
-                    genderTag,
+                    adjustmentContext,
                   ),
                   maxValue,
                 },

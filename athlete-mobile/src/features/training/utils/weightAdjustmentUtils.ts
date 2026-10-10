@@ -13,6 +13,13 @@ import {
 
 export type WeightType = "weightFMax" | "weightAbsolute";
 
+export interface WeightAthlete {
+  userLevel: TrainingLevelType;
+  genderTag: GenderTag;
+  /** F-Max of the exercise in kg. */
+  maxValue?: number;
+}
+
 /** Percent of F-Max or kg, following the start value as the generator does. */
 export function getWeightType(
   exerciseData: ExerciseType,
@@ -24,18 +31,17 @@ export function getWeightType(
   return type === "weightFMax" ? "weightFMax" : "weightAbsolute";
 }
 
-// The unit of the target the exercise authors, else the intensity fallback.
-const getTargetWeightType = (
+// The unit of the value the exercise authors, else the intensity fallback.
+const getAuthoredWeightType = (
+  bound: "startValue" | "targetValue",
   intensity: IntensityData,
   exerciseData: ExerciseType,
-  userLevel: TrainingLevelType,
-  genderTag: GenderTag,
+  { userLevel, genderTag }: WeightAthlete,
 ) => {
-  const exerciseTarget = exerciseData.values?.weight?.targetValue;
-  return getValueByGenderAndLevel(exerciseTarget, genderTag, userLevel) !==
-    undefined
-    ? exerciseTarget?.type?.type
-    : intensity.targetValue.weight?.type?.type;
+  const authored = exerciseData.values?.weight?.[bound];
+  return getValueByGenderAndLevel(authored, genderTag, userLevel) !== undefined
+    ? authored?.type?.type
+    : intensity[bound].weight?.type?.type;
 };
 
 /**
@@ -45,10 +51,9 @@ const getTargetWeightType = (
 export function getTargetWeight(
   intensity: IntensityData,
   exerciseData: ExerciseType,
-  userLevel: TrainingLevelType,
-  genderTag: GenderTag,
-  maxValue?: number,
+  athlete: WeightAthlete,
 ): number | undefined {
+  const { userLevel, genderTag, maxValue } = athlete;
   const target = getExerciseTargetValue(
     intensity,
     exerciseData,
@@ -58,11 +63,11 @@ export function getTargetWeight(
   );
   if (typeof target !== "number") return undefined;
 
-  const targetType = getTargetWeightType(
+  const targetType = getAuthoredWeightType(
+    "targetValue",
     intensity,
     exerciseData,
-    userLevel,
-    genderTag,
+    athlete,
   );
   const weightType = getWeightType(exerciseData, intensity);
   if (targetType !== "weightFMax" && targetType !== "weightAbsolute") {
@@ -83,8 +88,11 @@ export function getLowestPermittedWeight(
   intensity: IntensityData,
   weightType: WeightType,
   exerciseData: ExerciseType,
-  userLevel: TrainingLevelType | undefined,
-  genderTag: GenderTag,
+  {
+    userLevel,
+    genderTag,
+  }: Partial<Pick<WeightAthlete, "userLevel">> &
+    Pick<WeightAthlete, "genderTag">,
 ): number | undefined {
   const areaLowest = intensity.lowestPermittedWeight;
   if (weightType !== "weightFMax" || typeof areaLowest !== "number") {
@@ -98,17 +106,18 @@ export function getLowestPermittedWeight(
     userLevel,
     genderTag,
   );
-  const exerciseStart = exerciseData.values?.weight?.startValue;
-  const startType =
-    getValueByGenderAndLevel(exerciseStart, genderTag, userLevel) !== undefined
-      ? exerciseStart?.type?.type
-      : intensity.startValue.weight?.type?.type;
-  return typeof start === "number" && startType === "weightFMax"
+  const startsInPercent =
+    getAuthoredWeightType("startValue", intensity, exerciseData, {
+      userLevel,
+      genderTag,
+    }) === "weightFMax";
+  return typeof start === "number" && startsInPercent
     ? Math.min(areaLowest, start)
     : areaLowest;
 }
 
-export interface WeightStepBounds {
+export interface WeightStepOptions {
+  weightType: WeightType;
   targetWeight?: number;
   lowestWeight?: number;
   /** F-Max of the exercise in kg, to round a percentage weight to a load. */
@@ -124,19 +133,18 @@ export function calculateWeightStep(
   currentWeight: number,
   direction: "INCREASE" | "DECREASE",
   exerciseData: ExerciseType,
-  weightType: WeightType,
-  bounds: WeightStepBounds,
+  options: WeightStepOptions,
 ): number {
   const sign = direction === "INCREASE" ? 1 : -1;
   // A weight already below the lowest load must not jump up to it on a decrease.
   const clamp = (weight: number) =>
     sign > 0
-      ? Math.min(weight, bounds.targetWeight ?? Infinity)
-      : Math.max(weight, Math.min(bounds.lowestWeight ?? 0, currentWeight));
+      ? Math.min(weight, options.targetWeight ?? Infinity)
+      : Math.max(weight, Math.min(options.lowestWeight ?? 0, currentWeight));
   const next = clamp(currentWeight * (1 + sign * 0.025));
 
-  const { maxValue } = bounds;
-  const isPercentage = weightType === "weightFMax";
+  const { maxValue } = options;
+  const isPercentage = options.weightType === "weightFMax";
   if (isPercentage && !maxValue) return next;
   const toLoad = (weight: number) =>
     isPercentage && maxValue ? (weight / 100) * maxValue : weight;
@@ -151,4 +159,68 @@ export function calculateWeightStep(
     }
   }
   return next;
+}
+
+/**
+ * Gets reset value for duration when weight changes.
+ */
+export function getResetDuration(
+  exerciseData: ExerciseType,
+  intensity: IntensityData,
+  genderTag: GenderTag,
+  userLevel: TrainingLevelType,
+): number | undefined {
+  if (!exerciseData.isAdvanceByDuration) return undefined;
+  if (intensity.overridesExerciseRepsAndDuration) {
+    return getExerciseStartValue(
+      intensity,
+      exerciseData,
+      "duration",
+      userLevel,
+      genderTag,
+    );
+  }
+
+  const exerciseStartValue = getValueByGenderAndLevel(
+    exerciseData.values?.duration?.startValue,
+    genderTag,
+    userLevel,
+  );
+
+  return (
+    exerciseStartValue ??
+    intensity.startValue.duration?.[genderTag]?.[userLevel]
+  );
+}
+
+/**
+ * Gets reset value for repetition when weight changes.
+ */
+export function getResetRepetition(
+  exerciseData: ExerciseType,
+  intensity: IntensityData,
+  genderTag: GenderTag,
+  userLevel: TrainingLevelType,
+): number | undefined {
+  if (!exerciseData.isAdvanceByReps) return undefined;
+  if (intensity.overridesExerciseRepsAndDuration) {
+    return getExerciseStartValue(
+      intensity,
+      exerciseData,
+      "repetition",
+      userLevel,
+      genderTag,
+    );
+  }
+
+  const exerciseStartValue = getValueByGenderAndLevel(
+    exerciseData.values?.repetition?.startValue,
+    genderTag,
+    userLevel,
+  );
+
+  return (
+    exerciseStartValue ??
+    intensity.startValue.repetition?.[genderTag]?.[userLevel]
+  );
 }

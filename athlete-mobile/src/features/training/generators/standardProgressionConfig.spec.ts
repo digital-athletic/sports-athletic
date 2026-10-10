@@ -6,7 +6,7 @@ import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import {
   getResetDuration,
   getResetRepetition,
-} from "@/features/training/utils/exerciseDataUtils";
+} from "@/features/training/utils/weightAdjustmentUtils";
 import {
   getExerciseStartValue,
   getExerciseTargetValue,

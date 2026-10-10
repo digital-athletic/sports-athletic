@@ -3400,64 +3400,26 @@ export default class TrainingGenerator {
     difficultyFeedback: DifficultyFeedbackType,
     maxValues: MaxValuesType = DEFAULT_MAX_VALUES,
   ): ExerciseValuesData => {
-    const data: ExerciseValuesData = { ...dataInput };
-    // use userExerciseData and adjust
-    const adjustment = this.getAdjustmentByUserData(
-      intensity,
-      userGender,
-      userLevel,
-    );
-
-    const hasWeights =
-      getTagValues(exercise.tags, TagGroups.EQ_TYPE).indexOf("WEIGHTS") !==
-        -1 &&
-      data.weight !== undefined &&
-      data.weight !== null;
-    const changesWeight = hasWeights && difficultyFeedback === "TOO_HARD";
     const boundaries = { intensity, exercise, userLevel, userGender };
-    const advances = {
-      duration: exercise.isAdvanceByDuration,
-      repetition: exercise.isAdvanceByReps,
-    };
-
-    for (const valueName of ["duration", "repetition"] as const) {
-      const value = data[valueName];
-      const step = adjustment[valueName];
-      if (!changesWeight && advances[valueName] && value && step) {
-        data[valueName] = clampToBoundaries(
-          value + step[difficultyFeedback],
-          valueName,
-          boundaries,
-        );
-      }
-    }
     // Height stays fixed: automatic height progression is not implemented.
     // Positive feedback at the performed rep/duration target raises the weight
     // in useExerciseCompletion and clears the feedback, so only TOO_HARD
     // changes the weight here.
-    if (changesWeight && data.weight !== undefined && data.weight !== null) {
-      const weightType =
-        data.weightType === "weightFMax" ? "weightFMax" : "weightAbsolute";
-      data.weight = calculateWeightStep(
-        data.weight,
-        "DECREASE",
-        exercise,
-        weightType,
-        {
-          lowestWeight: intensity
-            ? getLowestPermittedWeight(
-                intensity,
-                weightType,
-                exercise,
-                isTrainingLevel(userLevel) ? userLevel : undefined,
-                userGender,
-              )
-            : undefined,
-          maxValue: getMaxValueForExercise(exercise, maxValues),
-        },
-      );
+    if (
+      difficultyFeedback === "TOO_HARD" &&
+      hasWeightValue(exercise, dataInput)
+    ) {
+      return {
+        ...dataInput,
+        weight: stepWeightDown(dataInput, boundaries, maxValues),
+      };
     }
-    return data;
+    return stepRepsAndDuration(
+      dataInput,
+      this.getAdjustmentByUserData(intensity, userGender, userLevel),
+      difficultyFeedback,
+      boundaries,
+    );
   };
 
   /**
@@ -3705,6 +3667,60 @@ const clampToBoundaries = (
   if (typeof target === "number") clamped = Math.min(clamped, target);
   if (typeof start === "number") clamped = Math.max(clamped, start);
   return clamped;
+};
+
+const hasWeightValue = (
+  exercise: ExerciseType,
+  data: ExerciseValuesData,
+): data is ExerciseValuesData & { weight: number } =>
+  getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS") &&
+  typeof data.weight === "number";
+
+// One weight step down, not below the lowest permitted load.
+const stepWeightDown = (
+  data: ExerciseValuesData & { weight: number },
+  { intensity, exercise, userLevel, userGender }: BoundaryContext,
+  maxValues: MaxValuesType,
+): number => {
+  const weightType =
+    data.weightType === "weightFMax" ? "weightFMax" : "weightAbsolute";
+  return calculateWeightStep(data.weight, "DECREASE", exercise, {
+    weightType,
+    lowestWeight: intensity
+      ? getLowestPermittedWeight(intensity, weightType, exercise, {
+          userLevel: isTrainingLevel(userLevel) ? userLevel : undefined,
+          genderTag: userGender,
+        })
+      : undefined,
+    maxValue: getMaxValueForExercise(exercise, maxValues),
+  });
+};
+
+// Reps/duration take one feedback step within their start and target values.
+const stepRepsAndDuration = (
+  data: ExerciseValuesData,
+  adjustment: AdjustmentConfig,
+  feedback: DifficultyFeedbackType,
+  boundaries: BoundaryContext,
+): ExerciseValuesData => {
+  const { exercise } = boundaries;
+  const advances = {
+    duration: exercise.isAdvanceByDuration,
+    repetition: exercise.isAdvanceByReps,
+  };
+  const result = { ...data };
+  for (const valueName of ["duration", "repetition"] as const) {
+    const value = result[valueName];
+    const step = adjustment[valueName];
+    if (advances[valueName] && value && step) {
+      result[valueName] = clampToBoundaries(
+        value + step[feedback],
+        valueName,
+        boundaries,
+      );
+    }
+  }
+  return result;
 };
 
 const hasJumpBox = (equipment: string[]) => {

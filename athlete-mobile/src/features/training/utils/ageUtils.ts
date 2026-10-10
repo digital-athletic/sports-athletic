@@ -1,21 +1,20 @@
 import { WorkoutConstants } from "@/constants/workoutConstants";
-import { formatDateToISO, ISODateToDate } from "../../../utils/date";
+import { ISODateToDate, isISODate } from "../../../utils/date";
 
 /**
  * Returns the age group for the given date of birth
+ * A missing or invalid birthday (persisted birthdays may be empty) counts as CHILD.
  * @param dateOfBirth - Date string in ISO 8601 format (YYYY-MM-DD)
  */
 export function ageGroupFor(
   dateOfBirth: string,
 ): (typeof WorkoutConstants.AGE_GROUPS)[keyof typeof WorkoutConstants.AGE_GROUPS] {
-  const now = Date.now();
+  if (!isISODate(dateOfBirth)) {
+    return WorkoutConstants.AGE_GROUPS.CHILD;
+  }
 
-  // Fallback to current date in case of empty string.
-  // Note: Persisted user birthday may be empty string
-  // ISODateToDate expects ISO 8601 format (YYYY-MM-DD) only
-  const birthDate = ISODateToDate(
-    dateOfBirth ? dateOfBirth : formatDateToISO(new Date()),
-  );
+  const now = Date.now();
+  const birthDate = ISODateToDate(dateOfBirth);
 
   const ageToDate = (age: number, birthday: Date): Date => {
     const date = new Date(birthday);

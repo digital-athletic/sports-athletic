@@ -31,10 +31,6 @@ export const ExerciseHeartRateDisplay: FC<Props> = ({
 
   const heartRateInterval = heartRateBySkillAndBirthday(cardioSkill, birthday);
 
-  if (typeof heartRateInterval === "undefined") {
-    return null;
-  }
-
   return (
     <>
       <Text variant="largeTitle">

@@ -49,14 +49,21 @@ describe("ExerciseHeartRateDisplay: undefined cardioSkill", () => {
   });
 });
 
-describe("ExerciseHeartRateDisplay: undefined interval", () => {
-  it("renders nothing when the birthday is invalid and no interval can be derived", () => {
-    const { toJSON } = render(
-      <ExerciseHeartRateDisplay
-        exerciseData={createExerciseData({ tags: ["SKILL_CARDIO_2"] })}
-        birthday="invalid"
-      />,
-    );
-    expect(toJSON()).toBeNull();
-  });
+describe("ExerciseHeartRateDisplay: missing or invalid birthday", () => {
+  it.each([
+    ["missing", ""],
+    ["malformed", "invalid"],
+    ["not a calendar date", "2010-13-45"],
+  ])(
+    "renders the interval for age 20 when the birthday is %s",
+    (_, birthday) => {
+      render(
+        <ExerciseHeartRateDisplay
+          exerciseData={createExerciseData({ tags: ["SKILL_CARDIO_2"] })}
+          birthday={birthday}
+        />,
+      );
+      expect(screen.getByText("175 - 194")).toBeTruthy();
+    },
+  );
 });

@@ -18,9 +18,16 @@ export type ISODateString = string;
 
 const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
-/** Validates that a string matches ISO 8601 date format (YYYY-MM-DD) */
-export const isISODate = (value: string): value is ISODateString =>
-  ISO_DATE_REGEX.test(value);
+/** Validates that a string is an existing calendar date in ISO 8601 format (YYYY-MM-DD) */
+export const isISODate = (value: string): value is ISODateString => {
+  if (!ISO_DATE_REGEX.test(value)) {
+    return false;
+  }
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  // The Date constructor rolls over impossible dates such as 2010-02-31 into the next month
+  return date.getMonth() === month - 1 && date.getDate() === day;
+};
 
 /** Validates that a Date object is valid (not Invalid Date) */
 const isValidDate = (date: Date): boolean => !Number.isNaN(date.getTime());
@@ -40,7 +47,9 @@ export const ISODateToDate = (dateString: ISODateString): Date => {
       `Expected ISO 8601 date format (YYYY-MM-DD), got: ${dateString}`,
     );
   }
-  return new Date(dateString);
+  // new Date("YYYY-MM-DD") would parse as UTC midnight, so build the date from its local parts
+  const [year, month, day] = dateString.split("-").map(Number);
+  return new Date(year, month - 1, day);
 };
 
 /**

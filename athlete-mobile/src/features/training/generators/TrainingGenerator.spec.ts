@@ -24,9 +24,8 @@ describe("TrainingGenerator", () => {
 
   const mockUser: UserType = {
     userId: "test-user-id",
+    personalData: { gender: "MALE", birthday: "1990-01-01" },
     workoutData: {
-      birthday: "1990-01-01",
-      gender: "MALE",
       tags: { LEVEL: ["INTERMEDIATE"] },
       maxValues: DEFAULT_MAX_VALUES,
     },
@@ -800,6 +799,36 @@ describe("TrainingGenerator", () => {
   });
 
   describe("getExerciseStartValues", () => {
+    it.each([
+      ["child values when the birthday is missing", "", "k"],
+      ["male values for an adult male", "1990-01-01", "m"],
+    ])("uses %s", (_, birthday, expectedGenderTag) => {
+      const getExerciseValuesSpy = jest.spyOn(generator, "getExerciseValues");
+
+      generator.getExerciseStartValues(
+        "SA",
+        {
+          branchTags: mockExercise.tags,
+          exerciseId: "1",
+          branchId: "1",
+        },
+        { ...mockUser, personalData: { gender: "MALE", birthday } },
+        mockExercise,
+        {},
+        false,
+      );
+
+      expect(getExerciseValuesSpy).toHaveBeenCalledWith(
+        null,
+        mockExercise,
+        expect.anything(),
+        expectedGenderTag,
+        expect.any(String),
+        expect.anything(),
+      );
+      getExerciseValuesSpy.mockRestore();
+    });
+
     it("returns proper structure with all required fields", () => {
       const result = generator.getExerciseStartValues(
         "WU",
@@ -2358,9 +2387,8 @@ describe("TrainingGenerator", () => {
 
     const prevKneeUser: UserType = {
       userId: "prevknee-test-user",
+      personalData: { gender: "MALE", birthday: "1990-01-01" },
       workoutData: {
-        birthday: "1990-01-01",
-        gender: "MALE",
         tags: {
           LEVEL: ["INTERMEDIATE"],
           PAIN: ["KNEE_RIGHT"],

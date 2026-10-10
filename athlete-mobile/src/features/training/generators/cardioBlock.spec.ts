@@ -13,8 +13,11 @@ import type { SkillCode } from "@/schemas/generator.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { UserType } from "@/schemas/user.schema";
 import {
+  buildPlanUser,
   importTree,
   importTrees,
+  noExerciseData,
+  realExercises,
 } from "../../../../test/factories/planWorkout";
 import TrainingGenerator, { getIntensityBySkill } from "./TrainingGenerator";
 
@@ -157,6 +160,39 @@ describe("cardio block: closing pause", () => {
       expect(setList[0].duration).toBe(1800);
     },
   );
+
+  it("keeps the run that ends a plan workout", () => {
+    const user = buildPlanUser({
+      weekday: 1,
+      skills: {
+        CARDIO_4: [
+          {
+            branchId: "579",
+            tags: ["SKILL_CARDIO_4", "PLACE_STUDIO", "EQ_TREADMILL"],
+            exercises: { "1": { exerciseId: "38" } },
+          },
+        ],
+      },
+      lengths: { CARDIO_4: 30 },
+    });
+
+    const setList = new TrainingGenerator().generatePlanWorkout(
+      "PLAN",
+      user,
+      "STUDIO",
+      realExercises,
+      importTrees("WU", "CARDIO_3", "CARDIO_4", "CARDIO_5"),
+      1,
+      ["TREADMILL"],
+      undefined,
+      0,
+      noExerciseData,
+    );
+
+    expect(setList.at(-1)).toEqual(
+      expect.objectContaining({ exerciseId: "38", duration: 1800 }),
+    );
+  });
 });
 
 const AUTHORED_COUNTS: [SkillCode, TrainingLevelType, number, number][] = [

@@ -169,15 +169,15 @@ export class WorkoutPage extends BasePage {
   }
 
   /**
-   * Reads exercise progress data from localStorage for a specific exercise ID.
-   * Returns the raw persisted data including maxFRepetitions and feedback.
+   * Reads the accumulated totals of an exercise from localStorage. Cardio
+   * stores no progression values, only these totals.
    */
-  async getExerciseProgressData(exerciseId: string) {
+  async getExerciseTotals(exerciseId: string) {
     return this.page.evaluate((id) => {
       const raw = localStorage.getItem("exercise-progress-storage");
       if (!raw) return null;
       const parsed = JSON.parse(raw);
-      return parsed?.state?.exerciseData?.[id] ?? null;
+      return parsed?.state?.exerciseTotals?.[id] ?? null;
     }, exerciseId);
   }
 

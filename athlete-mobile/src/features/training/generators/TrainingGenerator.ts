@@ -115,7 +115,11 @@ import PauseSUPERSETS from "../../../../assets/data/generator/pause/SUPERSETS";
 import TEST_WORKOUTS from "../../../../assets/data/generator/TEST_WORKOUTS";
 import TEST_WORKOUTS_START_VALUES from "../../../../assets/data/generator/TEST_WORKOUTS_START_VALUES";
 import TEST_WORKOUTS_WU_REGION from "../../../../assets/data/generator/TEST_WORKOUTS_WU_REGION";
-import { PAUSE_EXERCISE_ID, PLACEHOLDER_BRANCH_ID } from "../models/IdTypes";
+import {
+  isPauseExercise,
+  PAUSE_EXERCISE_ID,
+  PLACEHOLDER_BRANCH_ID,
+} from "../models/IdTypes";
 import { createExerciseMap } from "../utils/exerciseAccessor";
 import {
   getTemporalData,
@@ -719,8 +723,7 @@ export default class TrainingGenerator {
       userExerciseData.exerciseData,
       isShortTraining,
     );
-    // remove last pause
-    exerciseList.pop();
+    dropTrailingPause(exerciseList);
 
     // handle PREV special warm-up
     if (type.indexOf("PREV") > -1) {
@@ -2180,8 +2183,7 @@ export default class TrainingGenerator {
         ),
       );
     }
-    //remove last pause
-    setList.pop();
+    dropTrailingPause(setList);
     return setList;
   };
 
@@ -3711,6 +3713,12 @@ const stepRepsAndDuration = (
     }
   }
   return result;
+};
+
+// Cardio blocks end without a pause, so only a trailing pause is removed.
+const dropTrailingPause = (setList: GeneratedSetListEntry[]) => {
+  const last = setList.at(-1);
+  if (last && isPauseExercise(last.exerciseId)) setList.pop();
 };
 
 const hasJumpBox = (equipment: string[]) => {

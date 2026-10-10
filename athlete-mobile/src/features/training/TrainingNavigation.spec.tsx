@@ -67,6 +67,33 @@ describe("TrainingNavigation: checkmark path (duration undefined)", () => {
     expect(screen.getByText("too easy")).toBeTruthy();
     expect(screen.getByText("too hard")).toBeTruthy();
   });
+
+  it("sends no feedback from the checkmark when feedback is hidden", () => {
+    const feedback = jest.fn();
+    render(
+      <TrainingNavigation
+        {...defaultProps}
+        duration={undefined}
+        feedback={feedback}
+      />,
+    );
+    fireEvent.press(screen.getByLabelText("checkmark"));
+    expect(feedback).not.toHaveBeenCalled();
+  });
+
+  it("sends SUCCEEDED from the checkmark next to the feedback buttons", () => {
+    const feedback = jest.fn();
+    render(
+      <TrainingNavigation
+        {...defaultProps}
+        duration={undefined}
+        feedback={feedback}
+        isFeedbackSkill={true}
+      />,
+    );
+    fireEvent.press(screen.getByLabelText("checkmark"));
+    expect(feedback).toHaveBeenCalledWith("SUCCEEDED");
+  });
 });
 
 describe("TrainingNavigation: timer path (duration number)", () => {

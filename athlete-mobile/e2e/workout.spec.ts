@@ -155,7 +155,7 @@ test.describe("Workout Flow", () => {
   test.describe("MAX exercise level progression", () => {
     test.use({ profile: createMaxExerciseProfile() });
 
-    test("TOO_EASY on MAX exercise produces HARD level in next workout", async ({
+    test("TOO_EASY on MAX exercise moves the last set two ladder steps", async ({
       page,
     }) => {
       test.setTimeout(120000);
@@ -174,7 +174,7 @@ test.describe("Workout Flow", () => {
       await workoutPage.completeWorkout({ lastSetFeedback: "too_easy" });
       await workoutPage.returnToHome();
 
-      // Second workout: verify generator produced HARD level
+      // Second workout: verify the last set moved two steps up its ladder
       await workoutPage.startWorkout("Tuesday");
       await workoutPage.beginWorkout();
 
@@ -184,10 +184,12 @@ test.describe("Workout Flow", () => {
         exerciseList?.filter((e: any) => e.exerciseId === "8") ?? [];
       // Last entry is the working set (not warmup)
       const lastSet = maxExercises[maxExercises.length - 1];
-      // Verify level is HARD (EASY + TOO_EASY feedback = HARD per level progression rules)
+      // Advanced set 3 starts at 75% x 2; TOO_EASY moves it two steps to 75% x 5
       const lastMaxFRep =
         lastSet?.maxFRepetitions?.[lastSet.maxFRepetitions.length - 1];
-      expect(lastMaxFRep).toEqual(expect.objectContaining({ level: "HARD" }));
+      expect(lastMaxFRep).toEqual(
+        expect.objectContaining({ weightPercentage: 75, repetitions: 5 }),
+      );
     });
   });
 });

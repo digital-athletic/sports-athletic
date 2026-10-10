@@ -9,6 +9,7 @@ import { STORAGE_KEYS, PLAN_START_DATE } from "../constants";
 import type { StoreDataMap } from "../types";
 import { createCompletedProfile } from "./completedProfile";
 import { createUserWorkoutStore } from "../data/userWorkoutStore";
+import { createAnamnesisStore } from "../data/anamnesisStore";
 import {
   createPlacesStore,
   DEFAULT_STUDIO_EQUIPMENT,
@@ -16,10 +17,11 @@ import {
 
 /**
  * Creates a profile with WU + SWR1 + MAX training plan:
+ * - Advanced athlete, since beginners do not train max strength
  * - Standard warmup and SWR1 exercise (same as completedProfile)
  * - MAX branch 133 (KH-Bankdrücken / dumbbell bench press) at default level 2
  * - Exercise ID 8
- * - No prior exercise data → generator defaults to EASY level
+ * - No prior exercise data → every working set starts its ladder
  * - Tuesday schedule
  */
 export function createMaxExerciseProfile(): StoreDataMap {
@@ -27,6 +29,9 @@ export function createMaxExerciseProfile(): StoreDataMap {
 
   return {
     ...baseProfile,
+    [STORAGE_KEYS.ANAMNESIS]: createAnamnesisStore({
+      tags: { LEVEL: ["ADVANCED"], POSITION: ["FIELD"], PAIN: [] },
+    }),
     [STORAGE_KEYS.PLACES]: createPlacesStore({
       studioEquipment: [
         ...DEFAULT_STUDIO_EQUIPMENT,
@@ -34,6 +39,7 @@ export function createMaxExerciseProfile(): StoreDataMap {
       ],
     }),
     [STORAGE_KEYS.USER_WORKOUT]: createUserWorkoutStore({
+      tags: { POSITION: ["FIELD"], LEVEL: ["ADVANCED"] },
       trainingPlan: {
         start: PLAN_START_DATE.toISOString(),
         sections: [

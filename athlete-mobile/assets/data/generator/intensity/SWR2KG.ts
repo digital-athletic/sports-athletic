@@ -1,27 +1,28 @@
 import { IntensityData } from "@/features/training/models/Intensity";
 
 export const IntensitySWR_2_KG: IntensityData = {
+  usesHypertrophyRange: true,
   adjustment: {
     duration: {
       default: {
         default: {
           TOO_EASY: 10,
-          SUCCEEDED: 10,
+          SUCCEEDED: 5,
           TOO_HARD: -10,
         },
         beginner: {
           TOO_EASY: 10,
-          SUCCEEDED: 10,
+          SUCCEEDED: 5,
           TOO_HARD: -10,
         },
         advanced: {
-          TOO_EASY: 15,
-          SUCCEEDED: 10,
+          TOO_EASY: 10,
+          SUCCEEDED: 5,
           TOO_HARD: -10,
         },
         professional: {
-          TOO_EASY: 20,
-          SUCCEEDED: 10,
+          TOO_EASY: 10,
+          SUCCEEDED: 5,
           TOO_HARD: -10,
         },
       },
@@ -29,7 +30,7 @@ export const IntensitySWR_2_KG: IntensityData = {
         default: {
           TOO_EASY: 10,
           SUCCEEDED: 5,
-          TOO_HARD: -15,
+          TOO_HARD: -10,
         },
       },
     },
@@ -55,13 +56,13 @@ export const IntensitySWR_2_KG: IntensityData = {
           TOO_HARD: -2,
         },
         advanced: {
-          TOO_EASY: 3,
-          SUCCEEDED: 2,
+          TOO_EASY: 2,
+          SUCCEEDED: 1,
           TOO_HARD: -2,
         },
         professional: {
-          TOO_EASY: 4,
-          SUCCEEDED: 2,
+          TOO_EASY: 2,
+          SUCCEEDED: 1,
           TOO_HARD: -2,
         },
       },
@@ -69,7 +70,7 @@ export const IntensitySWR_2_KG: IntensityData = {
         default: {
           TOO_EASY: 2,
           SUCCEEDED: 1,
-          TOO_HARD: -3,
+          TOO_HARD: -2,
         },
       },
     },
@@ -97,17 +98,6 @@ export const IntensitySWR_2_KG: IntensityData = {
       default: {
         default: 30,
       },
-      k: {
-        default: 30,
-      },
-      m: {
-        default: 40,
-        advanced: 45,
-        professional: 45,
-      },
-      w: {
-        default: 30,
-      },
     },
     height: {
       default: {
@@ -116,19 +106,7 @@ export const IntensitySWR_2_KG: IntensityData = {
     },
     repetition: {
       default: {
-        default: 7,
-      },
-      k: {
-        default: 7,
-      },
-      m: {
-        default: 10,
-        advanced: 12,
-        professional: 12,
-      },
-      w: {
-        default: 7,
-        professional: 8,
+        default: 8,
       },
     },
     weight: {
@@ -140,7 +118,7 @@ export const IntensitySWR_2_KG: IntensityData = {
   targetValue: {
     duration: {
       default: {
-        default: 80,
+        default: 60,
       },
     },
     height: {
@@ -150,7 +128,7 @@ export const IntensitySWR_2_KG: IntensityData = {
     },
     repetition: {
       default: {
-        default: 20,
+        default: 12,
       },
     },
     weight: {

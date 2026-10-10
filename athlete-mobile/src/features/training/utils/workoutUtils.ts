@@ -288,6 +288,25 @@ export const isInclineBenchPress = (
   return false;
 };
 
+const HYPERTROPHY_RANGES = {
+  repetition: { start: 8, target: 12 },
+  durationWithWeights: { start: 30, target: 50 },
+  durationWithoutWeights: { start: 30, target: 60 },
+} as const;
+
+const getHypertrophyRange = (
+  skillIntensity: IntensityData,
+  exercise: ExerciseType,
+  valueName: TrainingParameterType,
+) => {
+  if (!skillIntensity.usesHypertrophyRange) return undefined;
+  if (valueName === "repetition") return HYPERTROPHY_RANGES.repetition;
+  if (valueName !== "duration") return undefined;
+  return getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS")
+    ? HYPERTROPHY_RANGES.durationWithWeights
+    : HYPERTROPHY_RANGES.durationWithoutWeights;
+};
+
 /**
  * Gets most specific value for given exercise, user and valueType
  *
@@ -305,6 +324,13 @@ export const getExerciseTargetValue = (
   level: TrainingLevelType,
   genderTag: GenderTag,
 ) => {
+  const hypertrophyRange = getHypertrophyRange(
+    skillIntensity,
+    branchExercise,
+    valueName,
+  );
+  if (hypertrophyRange) return hypertrophyRange.target;
+
   let value: number | undefined;
   if (
     skillIntensity.targetValue[valueName] &&
@@ -312,6 +338,7 @@ export const getExerciseTargetValue = (
   ) {
     // set default
     value = skillIntensity.targetValue[valueName].default?.default;
+    value = skillIntensity.targetValue[valueName].default?.[level] ?? value;
 
     if (skillIntensity.targetValue[valueName][genderTag]) {
       // more specific skill values
@@ -380,6 +407,13 @@ export const getExerciseStartValue = (
   level: TrainingLevelType,
   genderTag: GenderTag,
 ) => {
+  const hypertrophyRange = getHypertrophyRange(
+    skillIntensity,
+    branchExercise,
+    valueName,
+  );
+  if (hypertrophyRange) return hypertrophyRange.start;
+
   let value: number | undefined;
   if (
     skillIntensity.startValue[valueName] &&
@@ -387,6 +421,7 @@ export const getExerciseStartValue = (
   ) {
     // set default
     value = skillIntensity.startValue[valueName].default.default;
+    value = skillIntensity.startValue[valueName].default[level] ?? value;
 
     if (skillIntensity.startValue[valueName][genderTag]) {
       // more specific skill values

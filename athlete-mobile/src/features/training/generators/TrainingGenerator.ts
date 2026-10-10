@@ -3569,11 +3569,20 @@ export default class TrainingGenerator {
       let isWeightFMaxExercise =
         exerciseWeightType === "weightFMax" ||
         (!exerciseWeightType && intensityWeightType === "weightFMax");
+      const usesAuthoredRange = !intensity?.usesHypertrophyRange;
 
-      if (exercise.isAdvanceByReps && startValues.repetition) {
+      if (
+        usesAuthoredRange &&
+        exercise.isAdvanceByReps &&
+        startValues.repetition
+      ) {
         data.repetition = startValues.repetition; // not ternary could overwrite
       }
-      if (exercise.isAdvanceByDuration && startValues.duration) {
+      if (
+        usesAuthoredRange &&
+        exercise.isAdvanceByDuration &&
+        startValues.duration
+      ) {
         data.duration = startValues.duration; // not ternary could overwrite
       }
       // check for EQ_TYPE_ tag
@@ -3618,6 +3627,21 @@ export default class TrainingGenerator {
         data.weightType = "weightFMax";
       } else {
         data.weightType = "weightAbsolute";
+      }
+    }
+
+    // Stored hypertrophy values may predate the global range.
+    if (intensity?.usesHypertrophyRange) {
+      for (const valueName of ["repetition", "duration"] as const) {
+        const value = data[valueName];
+        if (typeof value === "number") {
+          data[valueName] = clampToBoundaries(value, valueName, {
+            intensity,
+            exercise,
+            userLevel,
+            userGender,
+          });
+        }
       }
     }
 

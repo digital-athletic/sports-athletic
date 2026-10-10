@@ -54,7 +54,7 @@ const authoredValues = (start: string, target: string) => ({
 const createExercise = (
   mode: "repetition" | "duration",
   withWeights: boolean,
-  values?: ExerciseType["values"],
+  values: ExerciseType["values"] = {},
 ): ExerciseType => ({
   id: "1",
   name: "Test Exercise",

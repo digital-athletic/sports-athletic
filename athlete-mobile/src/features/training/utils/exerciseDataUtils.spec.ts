@@ -15,7 +15,11 @@ import {
   shouldProcessExerciseValues,
   shouldSkipExerciseSave,
 } from "./exerciseDataUtils";
-import { calculateWeightStep, getTargetWeight } from "./weightAdjustmentUtils";
+import {
+  calculateWeightStep,
+  getLowestPermittedWeight,
+  getTargetWeight,
+} from "./weightAdjustmentUtils";
 
 // Minimal exercise data for testing
 const createExercise = (overrides: Partial<ExerciseType> = {}): ExerciseType =>
@@ -694,6 +698,31 @@ describe("exerciseDataUtils", () => {
       expect(result).toEqual(noChange);
     });
 
+    describe("authored start of 57.5% below a lowest load of 65%", () => {
+      const lowStartExercise = weightedExercise({
+        startValue: { m: { beginner: "57.5" }, type: { type: "weightFMax" } },
+        targetValue: {},
+      });
+      const tooHardAt = (weight: number) =>
+        calculateStandardExerciseAdjustment(
+          weight,
+          0,
+          10,
+          lowStartExercise,
+          createContext(),
+          createIntensity({ lowestPermittedWeight: 65 }),
+          "TOO_HARD",
+        );
+
+      it("levels down after TOO_HARD at the start weight", () => {
+        expect(tooHardAt(57.5).type).toBe("LEVEL_DOWN");
+      });
+
+      it("keeps the level after TOO_HARD between start and area lowest", () => {
+        expect(tooHardAt(60)).toEqual(noChange);
+      });
+    });
+
     it("compares a kg weight with a percentage target in kg", () => {
       const result = calculateStandardExerciseAdjustment(
         40,
@@ -793,6 +822,37 @@ describe("exerciseDataUtils", () => {
           maxValue: 100,
         }),
       ).toBeCloseTo(42.5);
+    });
+  });
+
+  describe("getLowestPermittedWeight", () => {
+    const withStart = (start: string) =>
+      createExercise({
+        values: {
+          weight: {
+            startValue: {
+              m: { beginner: start },
+              type: { type: "weightFMax" },
+            },
+            targetValue: {},
+          },
+        },
+      });
+    const intensity = createIntensity({ lowestPermittedWeight: 65 });
+
+    it.each([
+      ["57.5", 57.5],
+      ["70", 65],
+    ])("authored start %s gives a lowest load of %s", (start, expected) => {
+      expect(
+        getLowestPermittedWeight(
+          intensity,
+          "weightFMax",
+          withStart(start),
+          "beginner",
+          "m",
+        ),
+      ).toBe(expected);
     });
   });
 

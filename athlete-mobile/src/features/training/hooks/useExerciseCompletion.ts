@@ -431,7 +431,13 @@ export function useExerciseCompletion() {
                     genderTag,
                     maxValue,
                   ),
-                  lowestWeight: getLowestPermittedWeight(intensity, weightType),
+                  lowestWeight: getLowestPermittedWeight(
+                    intensity,
+                    weightType,
+                    currentExerciseData,
+                    userLevel,
+                    genderTag,
+                  ),
                   maxValue,
                 },
               );

@@ -3445,7 +3445,13 @@ export default class TrainingGenerator {
         weightType,
         {
           lowestWeight: intensity
-            ? getLowestPermittedWeight(intensity, weightType)
+            ? getLowestPermittedWeight(
+                intensity,
+                weightType,
+                exercise,
+                isTrainingLevel(userLevel) ? userLevel : undefined,
+                userGender,
+              )
             : undefined,
           maxValue: getMaxValueForExercise(exercise, maxValues),
         },

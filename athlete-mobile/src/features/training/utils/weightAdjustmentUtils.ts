@@ -5,6 +5,7 @@ import type {
 import type { TrainingLevelType } from "@/schemas/common.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import {
+  getExerciseStartValue,
   getExerciseTargetValue,
   getValueByGenderAndLevel,
   roundWeightValue,
@@ -74,14 +75,37 @@ export function getTargetWeight(
     : (target / 100) * maxValue;
 }
 
-/** The lowest permitted load is authored in percent of F-Max. */
+/**
+ * The lowest permitted load is authored in percent of F-Max. A start weight in
+ * percent of F-Max below it lowers it to that start weight.
+ */
 export function getLowestPermittedWeight(
   intensity: IntensityData,
   weightType: WeightType,
+  exerciseData: ExerciseType,
+  userLevel: TrainingLevelType | undefined,
+  genderTag: GenderTag,
 ): number | undefined {
-  return weightType === "weightFMax"
-    ? intensity.lowestPermittedWeight
-    : undefined;
+  const areaLowest = intensity.lowestPermittedWeight;
+  if (weightType !== "weightFMax" || typeof areaLowest !== "number") {
+    return undefined;
+  }
+  if (!userLevel) return areaLowest;
+  const start = getExerciseStartValue(
+    intensity,
+    exerciseData,
+    "weight",
+    userLevel,
+    genderTag,
+  );
+  const exerciseStart = exerciseData.values?.weight?.startValue;
+  const startType =
+    getValueByGenderAndLevel(exerciseStart, genderTag, userLevel) !== undefined
+      ? exerciseStart?.type?.type
+      : intensity.startValue.weight?.type?.type;
+  return typeof start === "number" && startType === "weightFMax"
+    ? Math.min(areaLowest, start)
+    : areaLowest;
 }
 
 export interface WeightStepBounds {

@@ -186,7 +186,7 @@ export function calculateStandardExerciseAdjustment(
   if (
     hasWeights &&
     feedback === "TOO_HARD" &&
-    isAtLowestLoad(weight, exerciseData, intensity)
+    isAtLowestLoad(weight, exerciseData, context, intensity)
   ) {
     return { type: "LEVEL_DOWN" };
   }
@@ -241,11 +241,15 @@ interface PerformedSet {
 const isAtLowestLoad = (
   weight: number,
   exerciseData: ExerciseType,
+  { userLevel, genderTag }: ExerciseAdjustmentContext,
   intensity: IntensityData,
 ): boolean => {
   const lowestWeight = getLowestPermittedWeight(
     intensity,
     getWeightType(exerciseData, intensity),
+    exerciseData,
+    userLevel,
+    genderTag,
   );
   return typeof lowestWeight === "number" && weight <= lowestWeight;
 };

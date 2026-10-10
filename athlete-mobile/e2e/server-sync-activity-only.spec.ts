@@ -11,10 +11,10 @@ import { WorkoutPage } from "./pages";
  * EXPO_PUBLIC_SERVER_SYNC_ENABLED=true and EXPO_PUBLIC_SERVER_SYNC_ACTIVITY_ONLY_ENABLED=true
  * are set in playwright.config.ts for all E2E tests.
  */
-test.describe("Server Sync — activity-only mode", () => {
-  test.use({ profile: createCompletedProfile() });
+test.describe("Server sync: activity-only mode", () => {
+  test.use({ profile: createCompletedProfile(), signedIn: true });
 
-  test("sends workout summary to Supabase with sensitive fields stripped", async ({
+  test("athlete completes a workout and only the activity summary reaches Supabase", async ({
     page,
   }) => {
     test.setTimeout(60000);
@@ -22,7 +22,7 @@ test.describe("Server Sync — activity-only mode", () => {
     await mockWakeLock(page);
 
     const workoutPage = new WorkoutPage(page);
-    await workoutPage.login("test@example.com");
+    await page.goto("/");
     await workoutPage.expectLoggedIn();
     await workoutPage.startWorkout("Tuesday");
 
@@ -33,6 +33,15 @@ test.describe("Server Sync — activity-only mode", () => {
         req.method() === "POST",
       { timeout: 15000 },
     );
+    let exerciseSyncAttempted = false;
+    page.on("request", (req) => {
+      if (
+        req.url().includes("/rest/v1/user_exercises") &&
+        req.method() === "POST"
+      ) {
+        exerciseSyncAttempted = true;
+      }
+    });
 
     await workoutPage.beginWorkout();
     await workoutPage.completeWorkout();
@@ -51,36 +60,20 @@ test.describe("Server Sync — activity-only mode", () => {
       exercise_count: expect.any(Number),
       duration: expect.any(Number),
     });
-  });
 
-  test("does not sync exercise-level data in activity-only mode", async ({
-    page,
-  }) => {
-    test.setTimeout(60000);
-    await mockSupabaseAuth(page);
-    await mockWakeLock(page);
-
-    const workoutPage = new WorkoutPage(page);
-    await workoutPage.login("test@example.com");
-    await workoutPage.expectLoggedIn();
-    await workoutPage.startWorkout("Tuesday");
-
-    let exerciseSyncAttempted = false;
-    page.on("request", (req) => {
-      if (
-        req.url().includes("/rest/v1/user_exercises") &&
-        req.method() === "POST"
-      ) {
-        exerciseSyncAttempted = true;
-      }
-    });
-
-    await workoutPage.beginWorkout();
-    await workoutPage.completeWorkout();
-
-    // Give the sync queue time to flush before asserting silence
-    await page.waitForTimeout(3000);
-
+    // The queue is FIFO and EXERCISE_DATA items precede the workout item, so an
+    // empty queue means every exercise item was processed without a request.
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const raw = localStorage.getItem("sync-queue-storage");
+          const queue: unknown[] = raw
+            ? (JSON.parse(raw)?.state?.queue ?? [])
+            : [];
+          return queue.length;
+        }),
+      )
+      .toBe(0);
     expect(exerciseSyncAttempted).toBe(false);
   });
 });

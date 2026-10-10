@@ -13,251 +13,69 @@ import {
 import { BasePage } from "./pages";
 
 /**
- * Consent Gate E2E Tests
- *
- * Tests the consent gate that blocks authenticated users without a
- * privacy policy acceptance from accessing protected routes.
- *
- * Stack.Protected guards in root layout:
- * - auth + consent accepted  → (tabs), (anamnesis), training
- * - auth + consent missing   → consent screen only (non-bypassable)
- * - auth + consent loading   → spinner (fetch in progress)
+ * The consent gate blocks signed in users without a privacy policy
+ * acceptance from every protected route (Stack.Protected in the root layout):
+ * - signed in, consent accepted: tabs, anamnesis, training
+ * - signed in, consent missing: consent screen only
+ * - signed in, consent loading: spinner
  */
 
 const OTP_CODE = "123456";
 
-const AUTH_STORAGE = {
-  state: {
-    auth: { userId: "mock-user-id-123", token: "mock-access-token" },
-    isInitialized: true,
-    _hasHydrated: true,
-  },
-  version: 14,
-};
-
-// Supabase derives the storage key as `sb-${hostname}-auth-token` (here: sb-localhost-auth-token).
-// Without this entry getSession() returns null, overwriting the seeded Zustand auth to null.
-const SUPABASE_SESSION = {
-  access_token: "mock-access-token",
-  refresh_token: "mock-refresh-token",
-  expires_in: 3600,
-  expires_at: Math.floor(Date.now() / 1000) + 3600,
-  token_type: "bearer",
-  user: {
-    id: "mock-user-id-123",
-    email: "test@example.com",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    aud: "authenticated",
-    role: "authenticated",
-  },
-};
-
-async function seedAuthStore(page: Page) {
-  await page.addInitScript(
-    (args) => {
-      localStorage.setItem("auth-storage", JSON.stringify(args.authStorage));
-      localStorage.setItem(
-        "sb-localhost-auth-token",
-        JSON.stringify(args.supabaseSession),
-      );
-    },
-    { authStorage: AUTH_STORAGE, supabaseSession: SUPABASE_SESSION },
-  );
+async function acceptAllConsents(page: Page) {
+  for (const checkbox of await page.getByRole("checkbox").all()) {
+    await checkbox.click();
+  }
+  await page.getByRole("button", { name: "Continue" }).click();
 }
 
-test.describe("Consent Gate — Missing Consent", () => {
-  test.use({ profile: createMissingConsentProfile() });
+test.describe("Consent Gate: missing consent at app start", () => {
+  test.use({ profile: createMissingConsentProfile(), signedIn: true });
 
-  async function setup(page: Parameters<typeof mockSupabaseAuth>[0]) {
+  test("consent screen blocks the app until the privacy policy is accepted", async ({
+    page,
+  }) => {
     await mockSupabaseAuth(page);
     // LIFO priority: overrides the accepted-consent default from mockSupabaseAuth
     await mockMissingConsentUserProfile(page);
-    await seedAuthStore(page);
-  }
+    const consentTitle = page.getByText("Data Protection");
 
-  test("authenticated user with missing consent sees consent screen", async ({
-    page,
-  }) => {
-    await setup(page);
     await page.goto("/");
-
-    await expect(page.getByText("Data Protection")).toBeVisible({
-      timeout: 5000,
-    });
+    await expect(consentTitle).toBeVisible({ timeout: 5000 });
     await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
-
-    const sendCodeButton = page.getByRole("button", { name: "Send code" });
-    await expect(sendCodeButton).not.toBeVisible({ timeout: 3000 });
-  });
-
-  test("consent screen blocks navigation to protected routes", async ({
-    page,
-  }) => {
-    await setup(page);
-    await page.goto("/");
-
-    await expect(page.getByText("Data Protection")).toBeVisible({
-      timeout: 5000,
-    });
-
-    await page.goto("/(tabs)/(home)");
-
-    await expect(page.getByText("Data Protection")).toBeVisible({
-      timeout: 5000,
-    });
-    await expect(page.getByText("Your Training Plan")).not.toBeVisible({
-      timeout: 3000,
-    });
-  });
-
-  test("submitting without accepting privacy shows validation error", async ({
-    page,
-  }) => {
-    await setup(page);
-    await page.goto("/");
-
-    await expect(page.getByText("Data Protection")).toBeVisible({
-      timeout: 5000,
-    });
+    await expect(
+      page.getByRole("button", { name: "Send code" }),
+    ).not.toBeVisible({ timeout: 3000 });
 
     await page.getByRole("button", { name: "Continue" }).click();
-
     await expect(
       page.getByRole("alert").filter({ hasText: /terms and conditions/i }),
     ).toBeVisible({ timeout: 3000 });
-    await expect(page.getByText("Data Protection")).toBeVisible();
-  });
+    await expect(consentTitle).toBeVisible();
 
-  test("accepting consent removes gate and grants access to the app", async ({
-    page,
-  }) => {
-    await setup(page);
-    await page.goto("/");
-
-    await expect(page.getByText("Data Protection")).toBeVisible({
-      timeout: 5000,
-    });
-
-    for (const checkbox of await page.getByRole("checkbox").all()) {
-      await checkbox.click();
-    }
-    await page.getByRole("button", { name: "Continue" }).click();
-
-    await expect(page.getByText("Data Protection")).not.toBeVisible({
-      timeout: 5000,
-    });
-
-    const sendCodeButton = page.getByRole("button", { name: "Send code" });
-    await expect(sendCodeButton).not.toBeVisible({ timeout: 3000 });
-  });
-});
-
-test.describe("Consent Gate — Accepted Consent", () => {
-  test.use({ profile: createAcceptedConsentProfile() });
-
-  test("authenticated user with accepted consent goes directly to app", async ({
-    page,
-  }) => {
-    await mockSupabaseAuth(page);
-    await seedAuthStore(page);
-    await page.goto("/");
-
-    const consentTitle = page.getByText("Data Protection");
-    await expect(consentTitle).not.toBeVisible({ timeout: 5000 });
-
-    const sendCodeButton = page.getByRole("button", { name: "Send code" });
-    await expect(sendCodeButton).not.toBeVisible({ timeout: 3000 });
-  });
-});
-
-test.describe("Consent Gate — Unauthenticated", () => {
-  test("unauthenticated user sees onboarding, not consent screen", async ({
-    page,
-  }) => {
-    await mockSupabaseAuth(page);
-    await page.goto("/");
-
-    await expect(page.getByRole("button", { name: "Send code" })).toBeVisible({
-      timeout: 5000,
-    });
-
-    await expect(page.getByText("Data Protection")).not.toBeVisible({
-      timeout: 3000,
-    });
-  });
-});
-
-test.describe("Consent Gate — Login Flow", () => {
-  test("user with analytics consent missing sees consent gate after login", async ({
-    page,
-  }) => {
-    await mockOtpFlow(page, "test@example.com", OTP_CODE);
-    // LIFO priority: overrides the accepted-consent default from mockOtpFlow
-    await mockAnalyticsMissingConsentUserProfile(page);
-
-    await new BasePage(page).login("test@example.com");
-
-    await expect(page.getByText("Data Protection")).toBeVisible({
-      timeout: 5000,
-    });
-    await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
+    await page.goto("/(tabs)/(home)");
+    await expect(consentTitle).toBeVisible({ timeout: 5000 });
     await expect(page.getByText("Your Training Plan")).not.toBeVisible({
       timeout: 3000,
     });
-  });
 
-  test("user with full existing consent bypasses consent gate after login", async ({
-    page,
-  }) => {
-    await mockOtpFlow(page, "test@example.com", OTP_CODE);
-
-    await new BasePage(page).login("test@example.com");
-
-    await expect(page.getByText("Data Protection")).not.toBeVisible({
-      timeout: 5000,
-    });
-    await expect(
-      page.getByRole("button", { name: "Send code" }),
-    ).not.toBeVisible({ timeout: 3000 });
-  });
-
-  test("user with analytics missing can complete consent and access app", async ({
-    page,
-  }) => {
-    await mockOtpFlow(page, "test@example.com", OTP_CODE);
-    await mockAnalyticsMissingConsentUserProfile(page);
-
-    await new BasePage(page).login("test@example.com");
-
-    await expect(page.getByText("Data Protection")).toBeVisible({
-      timeout: 5000,
-    });
-
-    for (const checkbox of await page.getByRole("checkbox").all()) {
-      await checkbox.click();
-    }
-    await page.getByRole("button", { name: "Continue" }).click();
-
-    await expect(page.getByText("Data Protection")).not.toBeVisible({
-      timeout: 5000,
-    });
+    await acceptAllConsents(page);
+    await new BasePage(page).expectTrainingPlanVisible();
+    await expect(consentTitle).not.toBeVisible({ timeout: 5000 });
     await expect(
       page.getByRole("button", { name: "Send code" }),
     ).not.toBeVisible({ timeout: 3000 });
   });
 });
 
-test.describe("Consent Gate — Cold Start", () => {
-  test.use({ profile: createAcceptedConsentProfile() });
+test.describe("Consent Gate: accepted consent", () => {
+  test.use({ profile: createAcceptedConsentProfile(), signedIn: true });
 
-  test("stale 'accepted' in localStorage does not bypass server check on cold start", async ({
+  test("stale accepted status in localStorage does not bypass the server check on cold start", async ({
     page,
   }) => {
     await mockSupabaseAuth(page);
-    // LIFO priority: overrides the accepted-consent default from mockSupabaseAuth
     await mockMissingConsentUserProfile(page);
-    await seedAuthStore(page);
     await page.goto("/");
 
     await expect(page.getByText("Data Protection")).toBeVisible({
@@ -265,23 +83,22 @@ test.describe("Consent Gate — Cold Start", () => {
     });
     await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
   });
-});
 
-test.describe("Consent Gate — Cross-User Logout", () => {
-  test.use({ profile: createAcceptedConsentProfile() });
-
-  test("consent gate appears for second user with missing consent after first user logs out", async ({
+  test("user with accepted consent enters the app, then a second user with missing consent sees the gate after logout", async ({
     page,
   }) => {
     await mockSupabaseAuth(page);
-    await seedAuthStore(page);
+    const basePage = new BasePage(page);
     await page.goto("/");
 
+    await basePage.expectLoggedIn();
     await expect(page.getByText("Data Protection")).not.toBeVisible({
       timeout: 5000,
     });
+    await expect(
+      page.getByRole("button", { name: "Send code" }),
+    ).not.toBeVisible({ timeout: 3000 });
 
-    const basePage = new BasePage(page);
     await basePage.logout();
     await expect(page.getByRole("button", { name: "Send code" })).toBeVisible({
       timeout: 5000,
@@ -291,8 +108,7 @@ test.describe("Consent Gate — Cross-User Logout", () => {
     await mockOtpVerifyAsUser(page, "mock-user-id-456", "userb@example.com");
     await mockMissingConsentUserProfile(page);
 
-    // navigate: false — already on onboarding after logout; a page reload
-    // would restore User A's session from localStorage before User B logs in.
+    // navigate: false, because the app is already on the login screen after logout.
     await basePage.login("userb@example.com", { navigate: false });
 
     await expect(page.getByText("Data Protection")).toBeVisible({
@@ -302,16 +118,62 @@ test.describe("Consent Gate — Cross-User Logout", () => {
   });
 });
 
-test.describe("Consent Gate — No Profile Row", () => {
-  test("user with no server profile row sees consent gate on login", async ({
+test.describe("Consent Gate: login", () => {
+  test("user with analytics consent missing sees the gate at login, then completes it", async ({
+    page,
+  }) => {
+    await mockOtpFlow(page, "test@example.com", OTP_CODE);
+    // LIFO priority: overrides the accepted-consent default from mockOtpFlow
+    await mockAnalyticsMissingConsentUserProfile(page);
+
+    await new BasePage(page).login("test@example.com");
+
+    await expect(page.getByText("Data Protection")).toBeVisible({
+      timeout: 5000,
+    });
+    await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
+    await expect(page.getByText("Your Training Plan")).not.toBeVisible({
+      timeout: 3000,
+    });
+
+    await acceptAllConsents(page);
+    await expect(page.getByText(/let's get started/i)).toBeVisible({
+      timeout: 5000,
+    });
+    await expect(page.getByText("Data Protection")).not.toBeVisible({
+      timeout: 5000,
+    });
+    await expect(
+      page.getByRole("button", { name: "Send code" }),
+    ).not.toBeVisible({ timeout: 3000 });
+  });
+
+  test("user with full existing consent bypasses the gate at login", async ({
+    page,
+  }) => {
+    await mockOtpFlow(page, "test@example.com", OTP_CODE);
+
+    await new BasePage(page).login("test@example.com");
+
+    await expect(page.getByText(/let's get started/i)).toBeVisible({
+      timeout: 5000,
+    });
+    await expect(page.getByText("Data Protection")).not.toBeVisible({
+      timeout: 5000,
+    });
+    await expect(
+      page.getByRole("button", { name: "Send code" }),
+    ).not.toBeVisible({ timeout: 3000 });
+  });
+
+  test("user without a server profile row sees the gate at login", async ({
     page,
   }) => {
     await mockOtpFlow(page, "test@example.com", OTP_CODE);
     // LIFO priority: overrides the accepted-consent default from mockOtpFlow
     await mockEmptyUserProfiles(page);
 
-    const basePage = new BasePage(page);
-    await basePage.login("test@example.com");
+    await new BasePage(page).login("test@example.com");
 
     await expect(page.getByText("Data Protection")).toBeVisible({
       timeout: 5000,

@@ -6,12 +6,13 @@ import { addDays, formatDateToISO } from "@/utils/date";
 const weeksFromNow = (weeks: number): string =>
   formatDateToISO(addDays(new Date(), weeks * 7));
 
-test.describe("Profile Setup", () => {
+test.describe("Profile Setup: anamnesis", () => {
   test.slow();
 
-  test("complete profile setup flow (anamnesis)", async ({ page }) => {
+  test("new athlete signs in and completes the anamnesis", async ({ page }) => {
     await mockSupabaseAuth(page);
 
+    // The first time setup starts with the sign in of a new athlete, so no seeded session.
     const anamnesisPage = new AnamnesisPage(page);
     await anamnesisPage.login("test@example.com");
 

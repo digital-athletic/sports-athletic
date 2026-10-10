@@ -7,12 +7,9 @@ import { mockSupabaseAuth } from "./mocks/supabase";
 import { AnamnesisPage, BasePage } from "./pages";
 import { type Locator, type Page } from "@playwright/test";
 
-// The trip through login and training setup outgrows the 30s config default.
-test.describe.configure({ timeout: 60_000 });
-
 async function navigateToMuscleSoreness(page: Page) {
   const basePage = new BasePage(page);
-  await basePage.login("test@example.com");
+  await page.goto("/");
   await basePage.expectLoggedIn();
 
   await page
@@ -31,7 +28,7 @@ async function navigateToMuscleSoreness(page: Page) {
 
 async function navigateToPainScreen(page: Page) {
   const anamnesisPage = new AnamnesisPage(page);
-  await anamnesisPage.login("test@example.com");
+  await page.goto("/");
 
   await expect(page.getByText(/I am Ingemar/)).toBeVisible({ timeout: 10000 });
   await page.getByRole("button", { name: /let's go/i }).click();
@@ -83,8 +80,8 @@ function selectedChips(page: Page): Locator {
 
 // Component behaviour (toggling, lateralization, gender artwork, chips) is
 // covered by the unit specs in src/bodyParts; e2e checks one happy path.
-test.describe("Muscle Soreness", () => {
-  test.use({ profile: createCompletedProfile() });
+test.describe("Muscle Soreness: selection", () => {
+  test.use({ profile: createCompletedProfile(), signedIn: true });
 
   test("selects a muscle on each side and proceeds to the training", async ({
     page,
@@ -121,8 +118,8 @@ test.describe("Muscle Soreness", () => {
 });
 
 // The pain screen renders gender-independent chips, so one profile suffices.
-test.describe("Pain Regions", () => {
-  test.use({ profile: createIncompleteAnamnesisProfile() });
+test.describe("Pain Regions: anamnesis pain screen", () => {
+  test.use({ profile: createIncompleteAnamnesisProfile(), signedIn: true });
 
   test("renders coaching prompt on pain screen", async ({ page }) => {
     await mockSupabaseAuth(page);
@@ -134,7 +131,7 @@ test.describe("Pain Regions", () => {
   });
 });
 
-test.describe("Pain warning", () => {
+test.describe("Pain Warning: strength test start", () => {
   test.use({
     profile: {
       ...createCompletedProfile(),
@@ -142,6 +139,7 @@ test.describe("Pain warning", () => {
         tags: { POSITION: ["FIELD"], LEVEL: ["BEGINNER"], PAIN: ["KNEE_LEFT"] },
       }),
     },
+    signedIn: true,
   });
 
   test("warns about declared pains before a strength test starts", async ({
@@ -149,7 +147,7 @@ test.describe("Pain warning", () => {
   }) => {
     await mockSupabaseAuth(page);
     const basePage = new BasePage(page);
-    await basePage.login("test@example.com");
+    await page.goto("/");
     await basePage.expectLoggedIn();
 
     await basePage.navigateToTab("Profile");

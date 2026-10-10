@@ -6,7 +6,7 @@ import { mockSupabaseAuth } from "./mocks/supabase";
 import { mockWakeLock } from "./mocks/wakeLock";
 import { WorkoutPage } from "./pages";
 
-test.describe("Workout Flow", () => {
+test.describe("Workout: progression after completing a workout", () => {
   const EXERCISE_NAME = "KH-Frontkniebeuge";
   // Hypertrophy starts at 8 of its binding 8 to 12 repetitions
   const EXPECTED_INITIAL_REPS = 8;
@@ -16,30 +16,29 @@ test.describe("Workout Flow", () => {
   const EXPECTED_AFTER_WEIGHT = 14;
 
   test.describe("Standard progression", () => {
-    test.use({ profile: createCompletedProfile() });
+    test.use({ profile: createCompletedProfile(), signedIn: true });
 
-    test("complete workout and verify weight progression", async ({ page }) => {
+    test("athlete completes a workout and sees more repetitions", async ({
+      page,
+    }) => {
       test.setTimeout(60000);
       await mockSupabaseAuth(page);
       await mockWakeLock(page);
 
       const workoutPage = new WorkoutPage(page);
 
-      await workoutPage.login("test@example.com");
+      await page.goto("/");
       await workoutPage.expectLoggedIn();
       await workoutPage.startWorkout("Tuesday");
 
-      // Verify initial exercise values before workout
       const initialValues = await workoutPage.getExerciseValues(EXERCISE_NAME);
       expect(initialValues.reps).toBe(EXPECTED_INITIAL_REPS);
       expect(initialValues.weight).toBe(EXPECTED_INITIAL_WEIGHT);
 
-      // Complete the workout
       await workoutPage.beginWorkout();
       await workoutPage.completeWorkout();
       await workoutPage.returnToHome();
 
-      // Start workout again and verify progression
       await workoutPage.startWorkout("Tuesday");
 
       const afterValues = await workoutPage.getExerciseValues(EXERCISE_NAME);
@@ -47,7 +46,7 @@ test.describe("Workout Flow", () => {
       expect(afterValues.weight).toBe(EXPECTED_AFTER_WEIGHT);
     });
 
-    test("clicking 'too easy' on last set increases repetitions more", async ({
+    test("athlete rates the last set too easy and sees a larger repetition increase", async ({
       page,
     }) => {
       test.setTimeout(60000);
@@ -60,21 +59,18 @@ test.describe("Workout Flow", () => {
 
       const workoutPage = new WorkoutPage(page);
 
-      await workoutPage.login("test@example.com");
+      await page.goto("/");
       await workoutPage.expectLoggedIn();
       await workoutPage.startWorkout("Tuesday");
 
-      // Verify initial values
       const initialValues = await workoutPage.getExerciseValues(EXERCISE_NAME);
       expect(initialValues.reps).toBe(EXPECTED_INITIAL_REPS);
       expect(initialValues.weight).toBe(EXPECTED_INITIAL_WEIGHT);
 
-      // Complete workout clicking "too easy" on last set
       await workoutPage.beginWorkout();
       await workoutPage.completeWorkout({ lastSetFeedback: "too_easy" });
       await workoutPage.returnToHome();
 
-      // Start workout again and verify larger progression
       await workoutPage.startWorkout("Tuesday");
 
       const afterValues = await workoutPage.getExerciseValues(EXERCISE_NAME);
@@ -82,7 +78,7 @@ test.describe("Workout Flow", () => {
       expect(afterValues.weight).toBe(EXPECTED_TOO_EASY_WEIGHT);
     });
 
-    test("clicking 'too hard' on last set decreases weight", async ({
+    test("athlete rates the last set too hard and keeps the repetitions", async ({
       page,
     }) => {
       test.setTimeout(60000);
@@ -97,21 +93,18 @@ test.describe("Workout Flow", () => {
 
       const workoutPage = new WorkoutPage(page);
 
-      await workoutPage.login("test@example.com");
+      await page.goto("/");
       await workoutPage.expectLoggedIn();
       await workoutPage.startWorkout("Tuesday");
 
-      // Verify initial values
       const initialValues = await workoutPage.getExerciseValues(EXERCISE_NAME);
       expect(initialValues.reps).toBe(EXPECTED_INITIAL_REPS);
       expect(initialValues.weight).toBe(EXPECTED_INITIAL_WEIGHT);
 
-      // Complete workout clicking "too hard" on last set
       await workoutPage.beginWorkout();
       await workoutPage.completeWorkout({ lastSetFeedback: "too_hard" });
       await workoutPage.returnToHome();
 
-      // Start workout again and verify decreased weight
       await workoutPage.startWorkout("Tuesday");
 
       const afterValues = await workoutPage.getExerciseValues(EXERCISE_NAME);
@@ -121,9 +114,9 @@ test.describe("Workout Flow", () => {
   });
 
   test.describe("Branch level up", () => {
-    test.use({ profile: createBranchThresholdProfile() });
+    test.use({ profile: createBranchThresholdProfile(), signedIn: true });
 
-    test("completing workout at max threshold triggers branch level up to new exercise", async ({
+    test("athlete at the max threshold levels up to the barbell variant", async ({
       page,
     }) => {
       test.setTimeout(60000);
@@ -136,19 +129,16 @@ test.describe("Workout Flow", () => {
 
       const workoutPage = new WorkoutPage(page);
 
-      await workoutPage.login("test@example.com");
+      await page.goto("/");
       await workoutPage.expectLoggedIn();
       await workoutPage.startWorkout("Tuesday");
 
-      // Verify initial exercise is KH-Frontkniebeuge (dumbbell)
       await expect(page.getByText(INITIAL_EXERCISE)).toBeVisible();
 
-      // Complete workout - should trigger level up since at target values
       await workoutPage.beginWorkout();
       await workoutPage.completeWorkout();
       await workoutPage.returnToHome();
 
-      // Start workout again and verify exercise changed to LH-Frontkniebeuge (barbell)
       await workoutPage.startWorkout("Tuesday");
 
       await expect(page.getByText(UPGRADED_EXERCISE)).toBeVisible();
@@ -156,10 +146,10 @@ test.describe("Workout Flow", () => {
     });
   });
 
-  test.describe("MAX exercise level progression", () => {
-    test.use({ profile: createMaxExerciseProfile() });
+  test.describe("MAX exercise ladder progression", () => {
+    test.use({ profile: createMaxExerciseProfile(), signedIn: true });
 
-    test("TOO_EASY on MAX exercise moves the last set two ladder steps", async ({
+    test("athlete rates a MAX exercise too easy and its last set moves two ladder steps", async ({
       page,
     }) => {
       test.setTimeout(120000);
@@ -168,30 +158,20 @@ test.describe("Workout Flow", () => {
 
       const workoutPage = new WorkoutPage(page);
 
-      await workoutPage.login("test@example.com");
+      await page.goto("/");
       await workoutPage.expectLoggedIn();
 
-      // First workout: complete with TOO_EASY feedback
       await workoutPage.startWorkout("Tuesday");
       await expect(page.getByText("KH-Bankdrücken (Max-K)")).toBeVisible();
       await workoutPage.beginWorkout();
       await workoutPage.completeWorkout({ lastSetFeedback: "too_easy" });
       await workoutPage.returnToHome();
 
-      // Second workout: verify the last set moved two steps up its ladder
       await workoutPage.startWorkout("Tuesday");
       await workoutPage.beginWorkout();
 
-      const exerciseList = await workoutPage.getGeneratedExerciseList();
-      // Filter to MAX exercise entries (exerciseId "8")
-      const maxExercises =
-        exerciseList?.filter((e: any) => e.exerciseId === "8") ?? [];
-      // Last entry is the working set (not warmup)
-      const lastSet = maxExercises[maxExercises.length - 1];
       // Advanced set 3 starts at 75% x 2; TOO_EASY moves it two steps to 75% x 5
-      const lastMaxFRep =
-        lastSet?.maxFRepetitions?.[lastSet.maxFRepetitions.length - 1];
-      expect(lastMaxFRep).toEqual(
+      expect(await workoutPage.getLastMaxRepetition("8")).toEqual(
         expect.objectContaining({ weightPercentage: 75, repetitions: 5 }),
       );
     });

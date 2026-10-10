@@ -7,34 +7,24 @@ import {
   TrainingOverviewPage,
 } from "./pages";
 
-test.describe("Exercise Detail View", () => {
-  test.use({ profile: createCompletedProfile() });
+test.describe("Exercise Information: strength test overview", () => {
+  test.use({ profile: createCompletedProfile(), signedIn: true });
 
-  test("displays muscle regions on exercise information page from strength test overview", async ({
-    page,
-  }) => {
-    test.setTimeout(60000);
-
+  test("athlete inspects exercise information", async ({ page }) => {
     await mockSupabaseAuth(page);
 
     const basePage = new BasePage(page);
-    await basePage.login("test@example.com");
+    await page.goto("/");
     await basePage.expectLoggedIn();
 
-    // Navigate to Profile tab and start strength test
     await basePage.navigateToTab("Profile");
     await page.getByText("Start Strength Test").click();
-
-    // Skip muscle soreness selection
     await basePage.skipMuscleSoreness();
 
-    // Verify training overview and open first exercise
     const overviewPage = new TrainingOverviewPage(page);
     await overviewPage.expectVisible();
-
     await overviewPage.openExerciseInfo(0);
 
-    // Verify exercise information page shows muscle regions
     const exerciseInfoPage = new ExerciseInformationPage(page);
     await exerciseInfoPage.expectVisible();
 
@@ -55,38 +45,12 @@ test.describe("Exercise Detail View", () => {
 
     await exerciseInfoPage.expectExerciseHintsVisible();
 
+    // Exercise 25 (LH-Kniebeuge / barbell squat) has EQ_BARBELL and EQ_POWER_RACK
+    await exerciseInfoPage.expectEquipmentItems(["Barbell", "Power Rack"]);
+
     await page.screenshot({
       path: "playwright/screenshots/exercise-detail-complete.png",
       fullPage: true,
     });
-  });
-
-  test("displays equipment tags correctly on exercise information page", async ({
-    page,
-  }) => {
-    await mockSupabaseAuth(page);
-
-    const basePage = new BasePage(page);
-    await basePage.login("test@example.com");
-    await basePage.expectLoggedIn();
-
-    // Navigate to Profile tab and start strength test
-    await basePage.navigateToTab("Profile");
-    await page.getByText("Start Strength Test").click();
-
-    // Skip muscle soreness selection
-    await basePage.skipMuscleSoreness();
-
-    // Verify training overview and open first exercise
-    const overviewPage = new TrainingOverviewPage(page);
-    await overviewPage.expectVisible();
-    await overviewPage.openExerciseInfo(0);
-
-    // Verify exercise information page shows equipment correctly
-    const exerciseInfoPage = new ExerciseInformationPage(page);
-    await exerciseInfoPage.expectVisible();
-
-    // Exercise 25 (LH-Kniebeuge / barbell squat) has EQ_BARBELL and EQ_POWER_RACK
-    await exerciseInfoPage.expectEquipmentItems(["Barbell", "Power Rack"]);
   });
 });

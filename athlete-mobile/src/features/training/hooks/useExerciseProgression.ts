@@ -70,8 +70,9 @@ export function useExerciseProgression() {
     }
   };
 
-  // strengthTestMaxValues only provided for strength test's last exercise
-  const advanceToNextExercise = (
+  // A skipped exercise runs no progression.
+  const advance = (
+    saveProgress: boolean,
     strengthTestMaxValues?: MaxValuesType | null,
   ) => {
     if (!exerciseList) return;
@@ -79,7 +80,7 @@ export function useExerciseProgression() {
     // Skip re-saving if this entry was already completed via the checklist
     // (list-view) flow, to avoid double-applying weight/level progression.
     if (!currentExercise?.completed) {
-      saveExerciseAndBranchData(safeExerciseIndex);
+      if (saveProgress) saveExerciseAndBranchData(safeExerciseIndex);
       markExerciseCompleted(safeExerciseIndex);
     }
 
@@ -101,6 +102,11 @@ export function useExerciseProgression() {
       finishTraining(false, strengthTestMaxValues);
     }
   };
+
+  // strengthTestMaxValues only provided for strength test's last exercise
+  const advanceToNextExercise = (
+    strengthTestMaxValues?: MaxValuesType | null,
+  ) => advance(true, strengthTestMaxValues);
 
   const handleAbortTraining = useCallback(() => {
     Alert.alert(
@@ -124,7 +130,7 @@ export function useExerciseProgression() {
   const handleExerciseSkipped = () => {
     setIsSkipped(true);
     markExerciseSkipped(safeExerciseIndex);
-    advanceToNextExercise();
+    advance(false);
   };
 
   useEffect(() => {

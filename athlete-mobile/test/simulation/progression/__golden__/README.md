@@ -88,22 +88,20 @@ state read off the generated sessions (`reps next` and `weight% next` come
 from generating one session further, like the max-strength runs). The
 simulator does not drive this focus yet, so there is no comparison test to
 skip. Unlike the max-strength runs, the script varies the achieved reps per
-session to hit all three zones of the decision tree.
+session to walk the spec's worked example.
 
 Inputs: persona p2 (MALE, ADVANCED), one weighted advance-by-reps hypertrophy
-exercise with the spec's worked-example bounds, start 12 reps at 65% of F-Max,
-target 20 reps at 80%. Because p2 is male and advanced, the repetition steps
-come from the gendered hypertrophy row (too easy +3, succeeded +2, too
-hard -2), not the base row the spec's own worked example uses. Weight steps
-are the F-Max row: +5 / +2.5 / -2.5.
+exercise (SWR2) with the spec's ranges: 8 to 12 reps, 70% up to 77.5% of
+F-Max, lowest permitted load 65%. Ladder steps: succeeded +1, too easy +2,
+too hard -2 reps. A weight step multiplies the underlying percentage by 1.025
+or 0.975. With the 121 kg squat F-Max every step below changes the barbell
+load (85, 87.5, 85 kg), so no step moves to the next available load.
 
-- Session 1: 14 reps lands between start and target, so nothing changes now;
-  the next generation applies SUCCEEDED to every quantity (reps 14+2, weight
-  65+2.5).
-- Session 2: 20 reps reaches the target with the weight below its target, so
-  the weight rises one step immediately and reps reset to the start value.
-  Immediate actions clear any feedback, so none is recorded.
-- Session 3: 10 reps falls below the start with the weight above its start,
-  so the weight drops one step and reps reset again.
-- Session 4: between zone with TOO_EASY, deferred: reps 15+3, weight 67.5+5.
+- Sessions 1 to 3: below the rep target, so only reps rise (9, 11, then 12,
+  capped at the target).
+- Session 4: positive feedback at the performed rep target raises the weight
+  one step (70 × 1.025 = 71.75) and resets reps to 8.
+- Session 5: TOO_HARD lowers only the weight one step (71.75 × 0.975 =
+  69.95625), which may go below the start load down to 65%.
+- Session 6: no feedback, no change.
 

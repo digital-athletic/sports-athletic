@@ -99,7 +99,8 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
 
   const handleClickNormalButton = useCallback(
     async (identification?: "too_easy" | "too_hard") => {
-      if (isLastInSet && !isTest) {
+      // The checkmark only means SUCCEEDED next to the feedback buttons.
+      if (isFeedbackSkill && isLastInSet && !isTest) {
         if (identification === "too_easy") {
           feedback("TOO_EASY");
         } else if (identification === "too_hard") {
@@ -110,7 +111,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
       }
       handleClickNext();
     },
-    [isLastInSet, isTest, handleClickNext, feedback],
+    [isFeedbackSkill, isLastInSet, isTest, handleClickNext, feedback],
   );
 
   const handleChangeReps = (value: string) => {

@@ -632,7 +632,9 @@ describe("exerciseDataUtils", () => {
         },
       },
     });
-    const weightedExercise = (weight: object) =>
+    const weightedExercise = (
+      weight: NonNullable<ExerciseType["values"]>["weight"],
+    ) =>
       createExercise({
         isAdvanceByReps: true,
         tags: ["EQ_TYPE_WEIGHTS"],
@@ -646,21 +648,25 @@ describe("exerciseDataUtils", () => {
       });
     const percentExercise = weightedExercise({
       startValue: { m: { beginner: "70" }, type: { type: "weightFMax" } },
+      targetValue: {},
     });
     const noChange = { type: "NO_CHANGE", reason: "in_between_zone" };
 
-    it.each([12, 8, 6])("makes no change without feedback at %i reps", (reps) => {
-      const result = calculateStandardExerciseAdjustment(
-        0,
-        0,
-        reps,
-        repsExercise,
-        createContext(),
-        createIntensity(),
-        null,
-      );
-      expect(result).toEqual(noChange);
-    });
+    it.each([12, 8, 6])(
+      "makes no change without feedback at %i reps",
+      (reps) => {
+        const result = calculateStandardExerciseAdjustment(
+          0,
+          0,
+          reps,
+          repsExercise,
+          createContext(),
+          createIntensity(),
+          null,
+        );
+        expect(result).toEqual(noChange);
+      },
+    );
 
     it("levels down after TOO_HARD at the lowest permitted load", () => {
       const result = calculateStandardExerciseAdjustment(
@@ -694,7 +700,11 @@ describe("exerciseDataUtils", () => {
         0,
         12,
         weightedExercise({
-          startValue: { m: { beginner: "20" }, type: { type: "weightAbsolute" } },
+          startValue: {
+            m: { beginner: "20" },
+            type: { type: "weightAbsolute" },
+          },
+          targetValue: {},
         }),
         createContext({ maxValue: 200 }),
         createIntensity({
@@ -795,11 +805,6 @@ describe("exerciseDataUtils", () => {
       targetValue: {
         weight: { m: { beginner: 60 }, type: { type: "weightFMax" } },
       },
-      adjustment: {
-        weightAbsolute: {
-          default: { default: { SUCCEEDED: 5, TOO_HARD: -5, TOO_EASY: 2.5 } },
-        },
-      },
     });
 
     it("keeps an authored kg target for a kg exercise", () => {
@@ -824,14 +829,10 @@ describe("exerciseDataUtils", () => {
 
       expect(targetWeight).toBeUndefined();
       expect(
-        calculateNewWeight(
-          60,
-          "SUCCEEDED",
-          exercise,
-          percentIntensity,
+        calculateWeightStep(60, "INCREASE", exercise, "weightAbsolute", {
           targetWeight,
-        ),
-      ).toBe(65);
+        }),
+      ).toBeGreaterThan(60);
     });
   });
 

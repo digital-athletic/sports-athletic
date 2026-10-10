@@ -1,9 +1,5 @@
 import { TagGroups } from "@/constants/tagGroups";
-import {
-  ExerciseDifficultyType,
-  isLevelTag,
-  WorkoutConstants,
-} from "@/constants/workoutConstants";
+import { isLevelTag, WorkoutConstants } from "@/constants/workoutConstants";
 import { getExerciseById } from "@/data/exerciseRegistry";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { getIntensityBySkill } from "@/features/training/generators/TrainingGenerator";
@@ -29,8 +25,10 @@ import {
 import { getWorkingSetMaxFReps } from "@/features/training/utils/maxFRepetitionsUtils";
 import { calculateMaxStrengthAdjustment } from "@/features/training/utils/maxStrengthAdjustment";
 import {
-  calculateNewWeight,
+  calculateWeightStep,
+  getLowestPermittedWeight,
   getTargetWeight,
+  getWeightType,
 } from "@/features/training/utils/weightAdjustmentUtils";
 import { getSkillTree } from "@/features/training/utils/skillTreeUtils";
 import {
@@ -385,15 +383,19 @@ export function useExerciseCompletion() {
                   ? "m"
                   : "w";
 
+            const maxValue = getMaxValueForExercise(
+              currentExerciseData,
+              workoutData.maxValues,
+            );
             const adjustmentContext: ExerciseAdjustmentContext = {
               userLevel,
               genderTag,
               ageGroup,
               levelTag,
+              maxValue,
             };
 
-            // Cardio follows its own progression specification and keeps the
-            // feedback independent boundary check.
+            // Cardio has no feedback based progression.
             const feedback = skill.includes("CARDIO")
               ? null
               : (currentExercise?.feedback?.difficulty ?? null);
@@ -415,21 +417,22 @@ export function useExerciseCompletion() {
             // TrainingGenerator does not apply it a second time. Only a weight
             // increase resets reps/duration to the start value.
             if (increaseWeight || decreaseWeight) {
-              const adjustment: ExerciseDifficultyType = increaseWeight
-                ? "SUCCEEDED"
-                : "TOO_HARD";
-              const newWeight = calculateNewWeight(
+              const weightType = getWeightType(currentExerciseData, intensity);
+              const newWeight = calculateWeightStep(
                 weight,
-                adjustment,
+                increaseWeight ? "INCREASE" : "DECREASE",
                 currentExerciseData,
+                weightType,
                 {
-                  intensity,
                   targetWeight: getTargetWeight(
                     intensity,
                     currentExerciseData,
                     userLevel,
                     genderTag,
+                    maxValue,
                   ),
+                  lowestWeight: getLowestPermittedWeight(intensity, weightType),
+                  maxValue,
                 },
               );
               const nextWeightPercentage = weightPercentage || undefined;
@@ -511,10 +514,14 @@ export function useExerciseCompletion() {
             } else {
               // No boundary change: feedback is preserved so TrainingGenerator
               // applies the ladder step or the weight step on the next generation.
-              let maxValue = getMaxValueForExercise(
-                currentExerciseData,
-                workoutData.maxValues,
-              );
+              // Without feedback the stored one from an earlier session is dropped.
+              if (feedback === null) {
+                updateExercise(
+                  id,
+                  { exerciseId: id, skill, feedback: { difficulty: null } },
+                  activeTraining?.id,
+                );
+              }
               let weightPercentage =
                 typeof maxValue === "number"
                   ? (weight / maxValue) * 100

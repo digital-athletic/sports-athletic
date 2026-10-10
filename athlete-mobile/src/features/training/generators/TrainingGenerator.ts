@@ -126,6 +126,10 @@ import {
   requireWorkoutData,
 } from "../utils/userDataUtils";
 import {
+  calculateWeightStep,
+  getLowestPermittedWeight,
+} from "../utils/weightAdjustmentUtils";
+import {
   deriveWeightForExercise,
   getExerciseStartValue,
   getExerciseTargetValue,
@@ -2988,6 +2992,7 @@ export default class TrainingGenerator {
           userGender,
           userLevel,
           difficultyFeedback,
+          user.workoutData?.maxValues ?? DEFAULT_MAX_VALUES,
         );
       }
     }
@@ -3393,6 +3398,7 @@ export default class TrainingGenerator {
     userGender: GenderTag,
     userLevel: string,
     difficultyFeedback: DifficultyFeedbackType,
+    maxValues: MaxValuesType = DEFAULT_MAX_VALUES,
   ): ExerciseValuesData => {
     const data: ExerciseValuesData = { ...dataInput };
     // use userExerciseData and adjust
@@ -3425,18 +3431,24 @@ export default class TrainingGenerator {
         );
       }
     }
-    if (exercise.isJump && data.height && adjustment.height) {
-      data.height += +adjustment.height[difficultyFeedback];
-    }
+    // Height stays fixed: automatic height progression is not implemented.
     // Positive feedback at the performed rep/duration target raises the weight
     // in useExerciseCompletion and clears the feedback, so only TOO_HARD
     // changes the weight here.
     if (changesWeight && data.weight !== undefined && data.weight !== null) {
-      data.weight = applyWeightFeedback(
+      const weightType =
+        data.weightType === "weightFMax" ? "weightFMax" : "weightAbsolute";
+      data.weight = calculateWeightStep(
         data.weight,
-        data.weightType,
-        adjustment,
-        difficultyFeedback,
+        "DECREASE",
+        exercise,
+        weightType,
+        {
+          lowestWeight: intensity
+            ? getLowestPermittedWeight(intensity, weightType)
+            : undefined,
+          maxValue: getMaxValueForExercise(exercise, maxValues),
+        },
       );
     }
     return data;
@@ -3464,90 +3476,38 @@ export default class TrainingGenerator {
     if (intensity) {
       // use default skill data for new exercise
       const startValue = intensity.startValue as unknown as {
-        [skill: string]: {
-          [gender: string]: { [level: string]: number };
-        };
+        [skill: string]:
+          | { [gender: string]: { [level: string]: number } | undefined }
+          | undefined;
+      };
+      // Same precedence as getExerciseStartValue: gender and level first.
+      const intensityStart = (valueName: string) => {
+        const values = startValue[valueName];
+        const value =
+          values?.[userGender]?.[userLevel] ||
+          values?.[userGender]?.default ||
+          values?.default?.[userLevel] ||
+          values?.default?.default;
+        return value ? +value : undefined;
       };
 
-      // set default by skill and exercise type
-
-      // Duration
       if (exercise.isAdvanceByDuration) {
-        data.duration = startValue.duration
-          ? +startValue.duration.default.default
-          : undefined;
-        if (startValue.duration && startValue.duration.default[userLevel]) {
-          data.duration = +startValue.duration.default[userLevel];
-        }
-        if (
-          startValue.duration &&
-          startValue.duration[userGender] &&
-          startValue.duration[userGender][userLevel]
-        ) {
-          data.duration = +startValue.duration[userGender][userLevel];
-        }
+        data.duration = intensityStart("duration");
       }
-
-      // Repetition
       if (exercise.isAdvanceByReps) {
-        data.repetition = startValue.repetition
-          ? +startValue.repetition.default.default
-          : undefined;
-        if (startValue.repetition && startValue.repetition.default[userLevel]) {
-          data.repetition = +startValue.repetition.default[userLevel];
-        }
-        if (
-          startValue.repetition &&
-          startValue.repetition[userGender] &&
-          startValue.repetition[userGender][userLevel]
-        ) {
-          data.repetition = +startValue.repetition[userGender][userLevel];
-        }
+        data.repetition = intensityStart("repetition");
       }
-
-      // Weight
       if (EQ_TYPES.indexOf("WEIGHTS") > -1) {
-        data.weight = startValue.weight
-          ? +startValue.weight.default.default
-          : undefined;
-        if (startValue.weight && startValue.weight.default[userLevel]) {
-          data.weight = +startValue.weight.default[userLevel];
-        }
-        if (
-          startValue.weight &&
-          startValue.weight[userGender] &&
-          startValue.weight[userGender][userLevel]
-        ) {
-          data.weight = +startValue.weight[userGender][userLevel];
-        }
-
-        const weightTypeObj = (startValue.weight as Record<string, unknown>)
-          ?.type as { type?: string } | undefined;
-        if (weightTypeObj?.type === "weightFMax") {
-          // value is percentage of Fmax
-          data.weight = data.weight;
+        data.weight = intensityStart("weight");
+        if (intensity.startValue.weight?.type?.type === "weightFMax") {
           data.weightType = "weightFMax";
         }
       }
-
-      // Height
-      if (exercise.isJump) {
-        let equip = getTagValues(exercise.tags, TagGroups.EQUIPMENT);
-        if (hasJumpBox(equip)) {
-          data.height = startValue.height
-            ? +startValue.height.default.default
-            : undefined;
-          if (startValue.height && startValue.height.default[userLevel]) {
-            data.height = +startValue.height.default[userLevel];
-          }
-          if (
-            startValue.height &&
-            startValue.height[userGender] &&
-            startValue.height[userGender][userLevel]
-          ) {
-            data.height = +startValue.height[userGender][userLevel];
-          }
-        }
+      if (
+        exercise.isJump &&
+        hasJumpBox(getTagValues(exercise.tags, TagGroups.EQUIPMENT))
+      ) {
+        data.height = intensityStart("height");
       }
     }
 
@@ -3739,26 +3699,6 @@ const clampToBoundaries = (
   if (typeof target === "number") clamped = Math.min(clamped, target);
   if (typeof start === "number") clamped = Math.max(clamped, start);
   return clamped;
-};
-
-const applyWeightFeedback = (
-  weight: number,
-  weightType: ExerciseValuesData["weightType"],
-  adjustment: AdjustmentConfig,
-  feedback: DifficultyFeedbackType,
-): number => {
-  if (weightType === "weightFMax" && adjustment.weightFMax) {
-    // Clamp FMax percentage to valid range (50-100%)
-    return Math.min(
-      100,
-      Math.max(50, weight + adjustment.weightFMax[feedback]),
-    );
-  }
-  if (adjustment.weightAbsolute) {
-    // Prevent negative weight
-    return Math.max(0, weight + adjustment.weightAbsolute[feedback]);
-  }
-  return weight;
 };
 
 const hasJumpBox = (equipment: string[]) => {

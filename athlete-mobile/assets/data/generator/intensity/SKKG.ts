@@ -47,10 +47,7 @@ export const IntensitySK_KG: IntensityData = {
   startValue: {
     repetition: {
       default: {
-        default: 3,
-      },
-      m: {
-        default: 5,
+        default: 4,
       },
     },
     weight: {
@@ -69,9 +66,6 @@ export const IntensitySK_KG: IntensityData = {
     repetition: {
       default: {
         default: 6,
-      },
-      m: {
-        default: 8,
       },
     },
     weight: {

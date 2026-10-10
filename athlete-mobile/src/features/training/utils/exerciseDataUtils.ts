@@ -15,6 +15,11 @@ import type { TrainingLevelType } from "@/schemas/common.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import { getTagValues } from "@/utils/tagUtils";
 import {
+  getLowestPermittedWeight,
+  getTargetWeight,
+  getWeightType,
+} from "./weightAdjustmentUtils";
+import {
   getExerciseStartValue,
   getExerciseTargetValue,
   getValueByGenderAndLevel,
@@ -25,6 +30,8 @@ export interface ExerciseAdjustmentContext {
   genderTag: GenderTag;
   ageGroup: string;
   levelTag?: string;
+  /** F-Max of the exercise in kg. */
+  maxValue?: number;
 }
 
 export type ExerciseAdjustmentResult =
@@ -160,6 +167,7 @@ export function findMainCardioExercise(
  * Calculates adjustment for standard (non-MAX, non-cardio) exercises.
  * A performed boundary only changes the level or weight when the feedback
  * points past it; everything else is left to the feedback ladder step.
+ * Without feedback nothing changes.
  */
 export function calculateStandardExerciseAdjustment(
   weight: number,
@@ -170,14 +178,31 @@ export function calculateStandardExerciseAdjustment(
   intensity: IntensityData,
   feedback: ExerciseDifficultyType,
 ): ExerciseAdjustmentResult {
+  if (feedback === null)
+    return { type: "NO_CHANGE", reason: "in_between_zone" };
+  const hasWeights =
+    getTagValues(exerciseData.tags, TagGroups.EQ_TYPE).indexOf("WEIGHTS") !==
+    -1;
+  if (
+    hasWeights &&
+    feedback === "TOO_HARD" &&
+    isAtLowestLoad(weight, exerciseData, intensity)
+  ) {
+    return { type: "LEVEL_DOWN" };
+  }
+
   const boundsOf = (valueName: BoundedValue) =>
     getBounds(valueName, exerciseData, context, intensity);
   const performed: PerformedSet = {
-    hasWeights:
-      getTagValues(exerciseData.tags, TagGroups.EQ_TYPE).indexOf("WEIGHTS") !==
-      -1,
+    hasWeights,
     weight,
-    weightBounds: boundsOf("weight"),
+    targetWeight: getTargetWeight(
+      intensity,
+      exerciseData,
+      context.userLevel,
+      context.genderTag,
+      context.maxValue,
+    ),
     feedback,
   };
 
@@ -198,7 +223,7 @@ export function calculateStandardExerciseAdjustment(
   return { type: "NO_CHANGE", reason: "in_between_zone" };
 }
 
-type BoundedValue = "duration" | "repetition" | "weight";
+type BoundedValue = "duration" | "repetition";
 
 interface Bounds {
   start: number | undefined;
@@ -208,9 +233,22 @@ interface Bounds {
 interface PerformedSet {
   hasWeights: boolean;
   weight: number;
-  weightBounds: Bounds;
+  targetWeight: number | undefined;
   feedback: ExerciseDifficultyType;
 }
+
+// TOO_HARD at the lowest permitted load leads to an easier exercise.
+const isAtLowestLoad = (
+  weight: number,
+  exerciseData: ExerciseType,
+  intensity: IntensityData,
+): boolean => {
+  const lowestWeight = getLowestPermittedWeight(
+    intensity,
+    getWeightType(exerciseData, intensity),
+  );
+  return typeof lowestWeight === "number" && weight <= lowestWeight;
+};
 
 const getBounds = (
   valueName: BoundedValue,
@@ -238,35 +276,28 @@ const getBounds = (
 const checkTarget = (
   value: number,
   target: number | undefined,
-  { hasWeights, weight, weightBounds, feedback }: PerformedSet,
+  { hasWeights, weight, targetWeight, feedback }: PerformedSet,
 ): BoundaryChange | null => {
   if (typeof target !== "number" || value < target || feedback === "TOO_HARD")
     return null;
   if (!hasWeights) return "LEVEL_UP";
-  const targetWeight = weightBounds.target;
   return typeof targetWeight === "number" && weight >= targetWeight
     ? "LEVEL_UP"
     : "INCREASE_WEIGHT";
 };
 
 // Falling below the start, or TOO_HARD at the start without weights, moves
-// down unless the feedback was positive.
+// down unless the feedback was positive. With weights it lowers the weight.
 const checkStart = (
   value: number,
   start: number | undefined,
-  { hasWeights, weight, weightBounds, feedback }: PerformedSet,
+  { hasWeights, feedback }: PerformedSet,
 ): BoundaryChange | null => {
   const isPositive = feedback === "SUCCEEDED" || feedback === "TOO_EASY";
   if (typeof start !== "number" || isPositive) return null;
-  if (!hasWeights) {
-    const atStartTooHard = feedback === "TOO_HARD" && value === start;
-    return value < start || atStartTooHard ? "LEVEL_DOWN" : null;
-  }
-  if (value >= start) return null;
-  const startWeight = weightBounds.start;
-  return typeof startWeight === "number" && weight < startWeight
-    ? "LEVEL_DOWN"
-    : "DECREASE_WEIGHT";
+  if (hasWeights) return value < start ? "DECREASE_WEIGHT" : null;
+  const atStartTooHard = feedback === "TOO_HARD" && value === start;
+  return value < start || atStartTooHard ? "LEVEL_DOWN" : null;
 };
 
 const checkBoundaries = (

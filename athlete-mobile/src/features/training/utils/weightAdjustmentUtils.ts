@@ -7,6 +7,7 @@ import type { ExerciseType } from "@/schemas/exercise.schema";
 import {
   getExerciseTargetValue,
   getValueByGenderAndLevel,
+  roundWeightValue,
 } from "./workoutUtils";
 
 export type WeightType = "weightFMax" | "weightAbsolute";
@@ -37,15 +38,15 @@ const getTargetWeightType = (
 };
 
 /**
- * Resolves the target weight in the unit of the exercise weight. A target in
- * the other unit, such as a % of F-Max intensity fallback for a kg exercise,
- * resolves to undefined.
+ * Resolves the target weight in the unit of the exercise weight. Authored
+ * targets may use the other unit; they convert through the exercise F-Max.
  */
 export function getTargetWeight(
   intensity: IntensityData,
   exerciseData: ExerciseType,
   userLevel: TrainingLevelType,
   genderTag: GenderTag,
+  maxValue?: number,
 ): number | undefined {
   const target = getExerciseTargetValue(
     intensity,
@@ -62,43 +63,67 @@ export function getTargetWeight(
     userLevel,
     genderTag,
   );
+  const weightType = getWeightType(exerciseData, intensity);
   if (targetType !== "weightFMax" && targetType !== "weightAbsolute") {
     return target;
   }
-  return targetType === getWeightType(exerciseData, intensity)
-    ? target
+  if (targetType === weightType) return target;
+  if (!maxValue) return undefined;
+  return weightType === "weightFMax"
+    ? (target / maxValue) * 100
+    : (target / 100) * maxValue;
+}
+
+/** The lowest permitted load is authored in percent of F-Max. */
+export function getLowestPermittedWeight(
+  intensity: IntensityData,
+  weightType: WeightType,
+): number | undefined {
+  return weightType === "weightFMax"
+    ? intensity.lowestPermittedWeight
     : undefined;
 }
 
-export interface WeightAdjustmentSource {
-  intensity: IntensityData;
-  /** An absolute weight increase stops at this weight. */
+export interface WeightStepBounds {
   targetWeight?: number;
+  lowestWeight?: number;
+  /** F-Max of the exercise in kg, to round a percentage weight to a load. */
+  maxValue?: number;
 }
 
-const weightStep = (
-  intensity: IntensityData,
-  weightType: WeightType,
-  adjustment: "SUCCEEDED" | "TOO_HARD",
-) => intensity.adjustment[weightType]?.default?.default?.[adjustment];
-
 /**
- * Calculates new weight value after adjustment.
+ * One weight step changes the underlying weight by x1.025 or x0.975 within the
+ * load bounds. When rounding would hide the step, the underlying weight moves
+ * to the next available load in that direction.
  */
-export function calculateNewWeight(
+export function calculateWeightStep(
   currentWeight: number,
-  adjustment: "SUCCEEDED" | "TOO_HARD",
+  direction: "INCREASE" | "DECREASE",
   exerciseData: ExerciseType,
-  { intensity, targetWeight }: WeightAdjustmentSource,
+  weightType: WeightType,
+  bounds: WeightStepBounds,
 ): number {
-  const weightType = getWeightType(exerciseData, intensity);
-  const step = weightStep(intensity, weightType, adjustment);
-  if (typeof step !== "number") return currentWeight;
+  const sign = direction === "INCREASE" ? 1 : -1;
+  const clamp = (weight: number) =>
+    sign > 0
+      ? Math.min(weight, bounds.targetWeight ?? Infinity)
+      : Math.max(weight, bounds.lowestWeight ?? 0);
+  const next = clamp(currentWeight * (1 + sign * 0.025));
 
-  const newWeight = currentWeight + step;
-  const stopsAtTarget =
-    weightType === "weightAbsolute" &&
-    adjustment === "SUCCEEDED" &&
-    typeof targetWeight === "number";
-  return stopsAtTarget ? Math.min(newWeight, targetWeight) : newWeight;
+  const { maxValue } = bounds;
+  const isPercentage = weightType === "weightFMax";
+  if (isPercentage && !maxValue) return next;
+  const toLoad = (weight: number) =>
+    isPercentage && maxValue ? (weight / 100) * maxValue : weight;
+  const currentLoad = roundWeightValue(toLoad(currentWeight), exerciseData);
+  if (roundWeightValue(toLoad(next), exerciseData) !== currentLoad) return next;
+
+  // 0.5 kg divides every equipment rounding step.
+  for (let offset = 0.5; offset <= 10; offset += 0.5) {
+    const load = roundWeightValue(currentLoad + sign * offset, exerciseData);
+    if (load !== currentLoad && load >= 0) {
+      return clamp(isPercentage && maxValue ? (load / maxValue) * 100 : load);
+    }
+  }
+  return next;
 }

@@ -63,7 +63,7 @@ export const TrainingListItemActions: FC<TrainingListItemActionsProps> = ({
             />
             <FeedbackIconButton
               feedback="SUCCEEDED"
-              onPress={() => onComplete()}
+              onPress={() => onComplete("SUCCEEDED")}
               testId={`${testId}-checkmark`}
             />
             <FeedbackIconButton

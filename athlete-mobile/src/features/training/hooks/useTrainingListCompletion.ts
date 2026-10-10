@@ -5,7 +5,8 @@ import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 
 /**
  * Complete/skip handlers for a checklist row, guarding against
- * double-applying progression for an already-completed row.
+ * double-applying progression for an already-completed row. A skipped row
+ * runs no progression.
  */
 export function useTrainingListCompletion() {
   const markExerciseCompleted = useTrainingStore(
@@ -17,8 +18,8 @@ export function useTrainingListCompletion() {
   const handleComplete = (row: ListRow, feedback?: DifficultyFeedbackType) => {
     if (row.completed) return;
 
-    if (row.isLastInSet && !row.isTest) {
-      handleFeedback(row.index, feedback ?? "SUCCEEDED");
+    if (feedback && row.isLastInSet && !row.isTest) {
+      handleFeedback(row.index, feedback);
     }
     saveExerciseAndBranchData(row.index);
     markExerciseCompleted(row.index);
@@ -28,7 +29,6 @@ export function useTrainingListCompletion() {
     if (row.completed) return;
 
     handleExerciseSkipped(row.index);
-    saveExerciseAndBranchData(row.index);
     markExerciseCompleted(row.index);
   };
 

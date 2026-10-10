@@ -43,6 +43,8 @@ export type IntensityValueType = Partial<
 export type IntensityData = {
   /** Repetition and duration start/target of this config win over exercise values. */
   overridesExerciseRepsAndDuration?: boolean;
+  /** Lowest permitted load in percent of F-Max. */
+  lowestPermittedWeight?: number;
   adjustment: IntensityAdjustment;
   startValue: IntensityValueType;
   targetValue: IntensityValueType;

@@ -452,7 +452,9 @@ describe("standard progression config: load ranges", () => {
   it("starts a new exercise at the gender default of the intensity", () => {
     const intensity = {
       ...getIntensityBySkill("SK"),
-      startValue: { repetition: { default: { default: 3 }, m: { default: 5 } } },
+      startValue: {
+        repetition: { default: { default: 3 }, m: { default: 5 } },
+      },
     };
 
     const values = generator.getExerciseValues(

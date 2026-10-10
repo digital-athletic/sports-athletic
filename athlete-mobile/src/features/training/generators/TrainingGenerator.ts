@@ -127,7 +127,6 @@ import {
 import {
   deriveWeightForExercise,
   getMaxValueForExercise,
-  getRoundedResultForValueAndStep,
   getUserLevel,
   roundWeightValue,
 } from "../utils/workoutUtils";

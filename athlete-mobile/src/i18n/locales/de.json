@@ -425,6 +425,7 @@
       "noWeights": "Keine Gewichte",
       "cmHigh": "cm hoch",
       "heartRateInterval": "Pulsbereich",
+      "heartRateMax": "MAX.",
       "a11y": {
         "showExerciseInfo": "Übungsinformationen anzeigen",
         "abortTraining": "Training abbrechen"

@@ -1510,13 +1510,6 @@ export default class TrainingGenerator {
               skill: skill.skill,
               duration: length * 60, // skill.length is minutes, make seconds
             },
-            {
-              branchId: PLACEHOLDER_BRANCH_ID,
-              exerciseId: "999999",
-              set: [1, 1],
-              skill: skill.skill,
-              duration: 60,
-            },
           ];
         case "CARDIO_3":
           break;
@@ -1543,16 +1536,20 @@ export default class TrainingGenerator {
       const result: GeneratedSetListEntry[] = [];
       const firstExercise = exerciseMap.get(exercisePairs[0].first.exerciseId);
       if (!firstExercise) return result;
+      // Cardio has no feedback progression yet: always the authored start count.
       const exercise = this.getExerciseStartValues(
         skill.skill,
         exercisePairs[0].first,
         user,
         firstExercise,
-        userExerciseData as { [id: string]: UserExerciseDataType },
+        null,
         isShortTraining,
       );
-      const repetition =
-        (exercise as { repetition?: number }).repetition ?? startRepetition;
+      const intervalTime = intervalLength + pauseLength;
+      const repetition = Math.min(
+        exercise.repetition ?? startRepetition,
+        Math.floor(timeRemaining / intervalTime),
+      );
       for (let i = 0; i < repetition; i++) {
         // add intervall and running pause
         result.push({
@@ -1569,35 +1566,28 @@ export default class TrainingGenerator {
           skill: skill.skill,
           duration: pauseLength,
         });
-        timeRemaining -= intervalLength + pauseLength;
+        timeRemaining -= intervalTime;
       }
-      if (timeRemaining > 5 * 60) {
-        // add 5 min warm-up at start
+      const warmUpLength = Math.min(timeRemaining, 5 * 60);
+      if (warmUpLength > 0) {
+        // add warm-up of up to 5 min at start
         result.unshift({
           branchId: PLACEHOLDER_BRANCH_ID,
           exerciseId: fillExerciseId,
           set: [1, 1],
           skill: skill.skill,
-          duration: 5 * 60,
+          duration: warmUpLength,
         });
-        timeRemaining -= 5 * 60;
+        timeRemaining -= warmUpLength;
       }
-      if (timeRemaining > 60) {
-        // if more than a minute left fill time
+      if (timeRemaining >= 60) {
+        // fill the remaining time when at least a minute is left
         result.push({
           branchId: PLACEHOLDER_BRANCH_ID,
           exerciseId: fillExerciseId,
           set: [1, 1],
           skill: skill.skill,
           duration: timeRemaining,
-        });
-        // add pause to end cardio
-        result.push({
-          branchId: PLACEHOLDER_BRANCH_ID,
-          exerciseId: "999999",
-          set: [1, 1],
-          skill: skill.skill,
-          duration: pauseLength,
         });
       }
       return result;

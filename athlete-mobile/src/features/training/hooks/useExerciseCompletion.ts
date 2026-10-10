@@ -17,7 +17,6 @@ import {
 import {
   calculateStandardExerciseAdjustment,
   type ExerciseAdjustmentContext,
-  findMainCardioExercise,
   shouldProcessExerciseValues,
 } from "@/features/training/utils/exerciseDataUtils";
 import { getWorkingSetMaxFReps } from "@/features/training/utils/maxFRepetitionsUtils";
@@ -232,20 +231,10 @@ export function useExerciseCompletion() {
       return;
     }
 
-    const nextExerciseIndex = index + 1;
-    const hasNextExercise =
-      nextExerciseIndex < (latestExerciseList?.length ?? 0);
-    const nextExercise = hasNextExercise
-      ? latestExerciseList?.[nextExerciseIndex]
-      : undefined;
-    const isNextExercisePause = nextExercise
-      ? checkIsPauseExercise(nextExercise.exerciseId)
-      : false;
-
     const skill = currentExercise?.skill;
-    let branchId = currentExercise?.branchId;
-    let id = exerciseId;
-    let currentExerciseData = getExerciseById(id);
+    const branchId = currentExercise?.branchId;
+    const id = exerciseId;
+    const currentExerciseData = getExerciseById(id);
 
     if (skill && typeof branchId === "string" && !isPauseExercise) {
       saveBranchData(skill, branchId, exerciseId);
@@ -275,26 +264,8 @@ export function useExerciseCompletion() {
 
     if (shouldProcessExerciseValues(type, skill)) {
       let doSave = false;
-      // check target values after last of all cardio exercises
-      if (skill?.includes("CARDIO")) {
-        // save data after last cardio in training
-        if (
-          !isPauseExercise &&
-          (!hasNextExercise ||
-            isNextExercisePause ||
-            !nextExercise?.skill?.includes("CARDIO"))
-        ) {
-          const mainCardio = findMainCardioExercise(latestExerciseList, index);
-          if (mainCardio) {
-            branchId = mainCardio.branchId;
-            id = mainCardio.exerciseId;
-            currentExerciseData = getExerciseById(id);
-            doSave = true;
-          }
-        }
-      }
       // check target values after last set of max exercises
-      else if (skill?.includes("MAX")) {
+      if (skill?.includes("MAX")) {
         if (
           currentExercise?.set &&
           currentExercise.set[0] === currentExercise.set[1]
@@ -413,10 +384,7 @@ export function useExerciseCompletion() {
               maxValue,
             };
 
-            // Cardio has no feedback based progression.
-            const feedback = skill.includes("CARDIO")
-              ? null
-              : (currentExercise?.feedback?.difficulty ?? null);
+            const feedback = currentExercise?.feedback?.difficulty ?? null;
             const adjustmentResult = calculateStandardExerciseAdjustment(
               weight,
               duration,

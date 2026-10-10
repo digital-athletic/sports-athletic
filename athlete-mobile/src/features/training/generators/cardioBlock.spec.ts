@@ -12,7 +12,10 @@ import type { TrainingLevelType } from "@/schemas/common.schema";
 import type { SkillCode } from "@/schemas/generator.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { UserType } from "@/schemas/user.schema";
-import { importTree, importTrees } from "../../../../test/factories/planWorkout";
+import {
+  importTree,
+  importTrees,
+} from "../../../../test/factories/planWorkout";
 import TrainingGenerator, { getIntensityBySkill } from "./TrainingGenerator";
 
 const exerciseById = (id: string): ExerciseType => {

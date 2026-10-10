@@ -16,7 +16,7 @@ export const IntensityCARDIO_3: IntensityData = {
     repetition: {
       default: {
         default: 3,
-        advanced: 3,
+        advanced: 4,
         professional: 5,
       },
     },
@@ -26,7 +26,7 @@ export const IntensityCARDIO_3: IntensityData = {
       default: {
         default: 6,
         advanced: 8,
-        professional: 10,
+        professional: 8,
       },
     },
   },

@@ -30,12 +30,15 @@ export const ExerciseHeartRateDisplay: FC<Props> = ({
   }
 
   const heartRateInterval = heartRateBySkillAndBirthday(cardioSkill, birthday);
+  // Heart rate cannot rise within a 10 s sprint, so sprints show no range.
+  const heartRateLabel =
+    cardioSkill === "CARDIO_1_SHORT"
+      ? t("training.active.heartRateMax")
+      : `${heartRateInterval.low} - ${heartRateInterval.high}`;
 
   return (
     <>
-      <Text variant="largeTitle">
-        {`${heartRateInterval.low} - ${heartRateInterval.high}`}
-      </Text>
+      <Text variant="largeTitle">{heartRateLabel}</Text>
       <Text variant="small" color="darkGrey1">
         {t("training.active.heartRateInterval")}
       </Text>

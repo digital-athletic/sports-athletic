@@ -55,6 +55,11 @@ type Actions = {
     data: UserExerciseDataType,
     workoutId?: string,
   ) => void;
+  resetExercise: (
+    exerciseId: string,
+    data: Pick<UserExerciseDataType, "skill" | "branchId">,
+    workoutId?: string,
+  ) => void;
   setBranchLevel: (branchId: string, level: number) => void;
 
   // Exercise Totals
@@ -227,6 +232,22 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
             : updatedData;
           syncManager.notifyExerciseUpdated(exerciseId, payload);
         }
+      },
+
+      // updateExercise merges and cannot drop fields; the completed workouts
+      // keep the history, so the record may start over.
+      resetExercise: (exerciseId, { skill, branchId }, workoutId) => {
+        const record: UserExerciseDataType = { exerciseId, skill };
+        if (typeof branchId === "string") {
+          record.branchId = branchId;
+        }
+        set((state) => {
+          state.exerciseData[exerciseId] = record;
+        });
+        syncManager.notifyExerciseUpdated(
+          exerciseId,
+          workoutId ? { ...record, workoutId } : record,
+        );
       },
 
       setBranchLevel: (branchId, level) =>

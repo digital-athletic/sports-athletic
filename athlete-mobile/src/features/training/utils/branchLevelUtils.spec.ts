@@ -215,6 +215,7 @@ describe("branchLevelUtils", () => {
         type: "SAME_BRANCH",
         branchId: "25",
         newLevel: 3,
+        exerciseId: "103",
       });
     });
 
@@ -238,6 +239,7 @@ describe("branchLevelUtils", () => {
         type: "SAME_BRANCH",
         branchId: "25",
         newLevel: 2,
+        exerciseId: "102",
       });
     });
 
@@ -284,6 +286,7 @@ describe("branchLevelUtils", () => {
         type: "SAME_BRANCH",
         branchId: "50",
         newLevel: 3,
+        exerciseId: "602",
       });
     });
   });

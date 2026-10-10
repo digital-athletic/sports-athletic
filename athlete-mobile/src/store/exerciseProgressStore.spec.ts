@@ -507,6 +507,47 @@ describe("exerciseProgressStore", () => {
     });
   });
 
+  describe("resetExercise", () => {
+    it("keeps only exerciseId, skill and branchId and notifies sync", () => {
+      const { result } = renderHook(() => useExerciseProgressStore());
+
+      act(() => {
+        result.current.updateExercise("ex1", {
+          exerciseId: "ex1",
+          skill: "MAX_KRAFT",
+          branchId: "branch-1",
+          weight: 80,
+          repetition: 5,
+          nextWeightPercentage: 70,
+          maxFRepetitions: [{ level: "HARD", repetitions: 3 }],
+          maxFLevelAdjustment: "SUCCEEDED",
+          feedback: { difficulty: "SUCCEEDED" },
+        });
+      });
+      jest.clearAllMocks();
+
+      act(() => {
+        result.current.resetExercise(
+          "ex1",
+          { skill: "MAX_KRAFT", branchId: "branch-1" },
+          "workout-42",
+        );
+      });
+
+      expect(result.current.exerciseData["ex1"]).toEqual({
+        exerciseId: "ex1",
+        skill: "MAX_KRAFT",
+        branchId: "branch-1",
+      });
+      expect(syncManager.notifyExerciseUpdated).toHaveBeenCalledWith("ex1", {
+        exerciseId: "ex1",
+        skill: "MAX_KRAFT",
+        branchId: "branch-1",
+        workoutId: "workout-42",
+      });
+    });
+  });
+
   describe("setBranchLevel", () => {
     it("creates branch with level", () => {
       const { result } = renderHook(() => useExerciseProgressStore());

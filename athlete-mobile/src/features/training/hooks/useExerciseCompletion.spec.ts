@@ -22,6 +22,24 @@ jest.mock("@/data/exerciseRegistry", () => ({
   }),
 }));
 
+jest.mock("@/data/skillTreeRegistry", () => {
+  const branch = {
+    tags: [],
+    levels: {
+      1: { exerciseId: "899" },
+      2: { exerciseId: "900" },
+      3: { exerciseId: "901" },
+    },
+  };
+  return {
+    ...jest.requireActual("@/data/skillTreeRegistry"),
+    getAllSkillTrees: () => ({
+      SWR2: { "77": branch },
+      MAX_KRAFT: { "78": branch },
+    }),
+  };
+});
+
 const seed = (entry: Partial<UserExerciseDataType>) => {
   useTrainingStore.setState(BASELINE_TRAINING_STATE);
   useTrainingStore.setState({
@@ -61,6 +79,16 @@ const seed = (entry: Partial<UserExerciseDataType>) => {
   });
 };
 
+const storeValues = () =>
+  useExerciseProgressStore.getState().updateExercise(EXERCISE_ID, {
+    exerciseId: EXERCISE_ID,
+    skill: "SWR2",
+    weight: 50,
+    repetition: 9,
+    nextWeightPercentage: 40,
+    maxFRepetitions: [{ level: "HARD", repetitions: 3 }],
+  });
+
 const stored = () =>
   useExerciseProgressStore.getState().exerciseData[EXERCISE_ID];
 
@@ -84,5 +112,61 @@ describe("useExerciseCompletion: standard progression", () => {
     expect(stored()?.weight).toBeCloseTo(71.75);
     expect(stored()?.repetition).toBe(8);
     expect(stored()?.feedback?.difficulty).toBeNull();
+  });
+
+  it("resets the record when TOO_HARD at the lowest load levels down", () => {
+    seed({
+      branchId: "77",
+      repetition: 10,
+      weight: 40,
+      feedback: { difficulty: "TOO_HARD" },
+    });
+    storeValues();
+    const { result } = renderHook(() => useExerciseCompletion());
+
+    act(() => result.current.saveExerciseAndBranchData(0));
+
+    expect(useExerciseProgressStore.getState().getBranchLevel("77")).toBe(1);
+    expect(stored()).toEqual({
+      exerciseId: EXERCISE_ID,
+      skill: "SWR2",
+      branchId: "77",
+    });
+  });
+
+  it("keeps the values but clears the feedback when no easier exercise exists", () => {
+    seed({ repetition: 10, weight: 40, feedback: { difficulty: "TOO_HARD" } });
+    const { result } = renderHook(() => useExerciseCompletion());
+
+    act(() => result.current.saveExerciseAndBranchData(0));
+
+    expect(stored()?.weight).toBe(40);
+    expect(stored()?.feedback?.difficulty).toBeNull();
+  });
+});
+
+describe("useExerciseCompletion: max strength", () => {
+  it("resets the record when the final value switches to the harder exercise", () => {
+    seed({
+      skill: "MAX_KRAFT",
+      branchId: "78",
+      feedback: { difficulty: "SUCCEEDED" },
+      maxFRepetitions: [
+        { level: "HARD", repetitions: 6, weightPercentage: 70 },
+        { level: "HARD", repetitions: 5, weightPercentage: 75 },
+        { level: "HARD", repetitions: 3, weightPercentage: 80 },
+      ],
+    });
+    storeValues();
+    const { result } = renderHook(() => useExerciseCompletion());
+
+    act(() => result.current.saveExerciseAndBranchData(0));
+
+    expect(useExerciseProgressStore.getState().getBranchLevel("78")).toBe(3);
+    expect(stored()).toEqual({
+      exerciseId: EXERCISE_ID,
+      skill: "MAX_KRAFT",
+      branchId: "78",
+    });
   });
 });

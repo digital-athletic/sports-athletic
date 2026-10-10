@@ -284,6 +284,26 @@ describe("standard progression config: hypertrophy range", () => {
     expect(values.repetition).toBe(8);
   });
 
+  it("starts a reset record at the start values", () => {
+    const exercise = createExercise("repetition", true, {
+      repetition: authoredValues("10", "15"),
+    });
+    const valuesFor = (record: { branchId: string } | null) =>
+      generator.getExerciseValues(
+        record && { exerciseId: "1", skill: "SWR2", ...record },
+        exercise,
+        getIntensityBySkill("SWR2"),
+        "m",
+        "advanced",
+        DEFAULT_MAX_VALUES,
+      );
+
+    const values = valuesFor({ branchId: "77" });
+
+    expect(values).toEqual(valuesFor(null));
+    expect(values.repetition).toBe(8);
+  });
+
   it.each([
     ["repetition", true, 18, 12],
     ["repetition", false, 5, 8],

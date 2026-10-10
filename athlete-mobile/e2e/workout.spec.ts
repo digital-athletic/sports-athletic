@@ -8,9 +8,10 @@ import { WorkoutPage } from "./pages";
 
 test.describe("Workout Flow", () => {
   const EXERCISE_NAME = "KH-Frontkniebeuge";
-  const EXPECTED_INITIAL_REPS = 10;
+  // Hypertrophy starts at 8 of its binding 8 to 12 repetitions
+  const EXPECTED_INITIAL_REPS = 8;
   const EXPECTED_INITIAL_WEIGHT = 14;
-  const EXPECTED_AFTER_REPS = 11;
+  const EXPECTED_AFTER_REPS = 9;
   // Positive feedback raises only the repetitions until the target is reached
   const EXPECTED_AFTER_WEIGHT = 14;
 
@@ -51,7 +52,7 @@ test.describe("Workout Flow", () => {
     }) => {
       test.setTimeout(60000);
 
-      const EXPECTED_TOO_EASY_REPS = 12;
+      const EXPECTED_TOO_EASY_REPS = 10;
       const EXPECTED_TOO_EASY_WEIGHT = 14;
 
       await mockSupabaseAuth(page);
@@ -87,7 +88,7 @@ test.describe("Workout Flow", () => {
       test.setTimeout(60000);
 
       // On a weighted exercise TOO_HARD lowers only the weight
-      const EXPECTED_TOO_HARD_REPS = 10;
+      const EXPECTED_TOO_HARD_REPS = 8;
       const EXPECTED_TOO_HARD_WEIGHT = 14;
 
       await mockSupabaseAuth(page);

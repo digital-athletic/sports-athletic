@@ -427,7 +427,7 @@
       "count": 1
     },
     "max-lines-per-function": {
-      "count": 22
+      "count": 21
     },
     "max-params": {
       "count": 13
@@ -589,7 +589,7 @@
   },
   "src/features/training/utils/workoutUtils.ts": {
     "complexity": {
-      "count": 5
+      "count": 4
     },
     "max-depth": {
       "count": 4

@@ -117,14 +117,19 @@ describe("standard progression config: hypertrophy range", () => {
 
   it.each(
     everyCombination(HYPERTROPHY_SKILLS).flatMap(([skill, gender, level]) =>
-      cases.map(
-        ([mode, withWeights, start, target]) =>
-          [skill, gender, level, mode, withWeights, start, target] as const,
-      ),
+      cases.map(([mode, withWeights, start, target]) => ({
+        skill,
+        gender,
+        level,
+        mode,
+        withWeights,
+        start,
+        target,
+      })),
     ),
   )(
-    "%s for gender %s and level %s resolves %s with weights %s to %i up to %i",
-    (skill, gender, level, mode, withWeights, start, target) => {
+    "$skill for gender $gender and level $level resolves $mode with weights $withWeights to $start up to $target",
+    ({ skill, gender, level, mode, withWeights, start, target }) => {
       const exercise = createExercise(mode, withWeights, {
         [mode]: authoredValues("15", "80"),
       });

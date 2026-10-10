@@ -3969,6 +3969,19 @@ const getStartValues = (
  * Hypertrophy trees mix weighted and bodyweight exercises, so a known exercise
  * picks the config by its EQ_TYPE instead of by the skill.
  */
+const getHypertrophyIntensity = (
+  skill: SkillCode,
+  exercise?: Pick<ExerciseType, "tags">,
+) => {
+  if (!exercise) {
+    // use SWR2 till exercises can be distinguished between SWR1 and SWR2
+    return skill === "SWR2KG" ? IntensitySWR_2_KG : IntensitySWR_2;
+  }
+  return getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS")
+    ? IntensitySWR_2
+    : IntensitySWR_2_KG;
+};
+
 export const getIntensityBySkill = (
   skill: SkillCode,
   exercise?: Pick<ExerciseType, "tags">,
@@ -3978,15 +3991,7 @@ export const getIntensityBySkill = (
     case "SWR1KG":
     case "SWR2":
     case "SWR2KG":
-      if (exercise) {
-        return getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes(
-          "WEIGHTS",
-        )
-          ? IntensitySWR_2
-          : IntensitySWR_2_KG;
-      }
-      // use SWR2 till exercises can be distinguished between SWR1 and SWR2
-      return skill === "SWR2KG" ? IntensitySWR_2_KG : IntensitySWR_2;
+      return getHypertrophyIntensity(skill, exercise);
     case "CARDIO_3":
       return IntensityCARDIO_3;
     case "CARDIO_2":

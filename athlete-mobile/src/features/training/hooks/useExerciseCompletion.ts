@@ -19,17 +19,19 @@ import {
   type TrainingPlanContext,
 } from "@/features/training/utils/branchLevelUtils";
 import {
-  calculateNewWeight,
   calculateStandardExerciseAdjustment,
   type ExerciseAdjustmentContext,
   findMainCardioExercise,
   getResetDuration,
   getResetRepetition,
-  getTargetWeight,
   shouldProcessExerciseValues,
 } from "@/features/training/utils/exerciseDataUtils";
 import { getWorkingSetMaxFReps } from "@/features/training/utils/maxFRepetitionsUtils";
 import { calculateMaxStrengthAdjustment } from "@/features/training/utils/maxStrengthAdjustment";
+import {
+  calculateNewWeight,
+  getTargetWeight,
+} from "@/features/training/utils/weightAdjustmentUtils";
 import { getSkillTree } from "@/features/training/utils/skillTreeUtils";
 import {
   applyMaxValueToDirections,
@@ -420,13 +422,15 @@ export function useExerciseCompletion() {
                 weight,
                 adjustment,
                 currentExerciseData,
-                intensity,
-                getTargetWeight(
+                {
                   intensity,
-                  currentExerciseData,
-                  userLevel,
-                  genderTag,
-                ),
+                  targetWeight: getTargetWeight(
+                    intensity,
+                    currentExerciseData,
+                    userLevel,
+                    genderTag,
+                  ),
+                },
               );
               const nextWeightPercentage = weightPercentage || undefined;
               const newDuration =

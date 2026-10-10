@@ -5,18 +5,17 @@ import { PAUSE_EXERCISE_ID } from "@/features/training/models/IdTypes";
 import type { SkillCode } from "@/schemas/generator.schema";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import {
-  calculateNewWeight,
   calculateStandardExerciseAdjustment,
   deriveActiveExerciseIndex,
   type ExerciseAdjustmentContext,
   findMainCardioExercise,
   getResetDuration,
   getResetRepetition,
-  getTargetWeight,
   isFeedbackEligibleSkill,
   shouldProcessExerciseValues,
   shouldSkipExerciseSave,
 } from "./exerciseDataUtils";
+import { calculateNewWeight, getTargetWeight } from "./weightAdjustmentUtils";
 
 // Minimal exercise data for testing
 const createExercise = (overrides: Partial<ExerciseType> = {}): ExerciseType =>
@@ -634,7 +633,9 @@ describe("exerciseDataUtils", () => {
           },
         },
       });
-      const result = calculateNewWeight(50, "SUCCEEDED", exercise, intensity);
+      const result = calculateNewWeight(50, "SUCCEEDED", exercise, {
+        intensity,
+      });
       expect(result).toBe(55);
     });
 
@@ -646,7 +647,9 @@ describe("exerciseDataUtils", () => {
           },
         },
       });
-      const result = calculateNewWeight(50, "TOO_HARD", exercise, intensity);
+      const result = calculateNewWeight(50, "TOO_HARD", exercise, {
+        intensity,
+      });
       expect(result).toBe(45);
     });
 
@@ -658,19 +661,18 @@ describe("exerciseDataUtils", () => {
           },
         },
       });
-      const result = calculateNewWeight(
-        48,
-        "SUCCEEDED",
-        exercise,
+      const result = calculateNewWeight(48, "SUCCEEDED", exercise, {
         intensity,
-        50,
-      );
+        targetWeight: 50,
+      });
       expect(result).toBe(50);
     });
 
     it("returns current weight when no adjustment configured", () => {
       const intensity = createIntensity({ adjustment: {} });
-      const result = calculateNewWeight(50, "SUCCEEDED", exercise, intensity);
+      const result = calculateNewWeight(50, "SUCCEEDED", exercise, {
+        intensity,
+      });
       expect(result).toBe(50);
     });
   });
@@ -728,13 +730,10 @@ describe("exerciseDataUtils", () => {
 
       expect(targetWeight).toBeUndefined();
       expect(
-        calculateNewWeight(
-          60,
-          "SUCCEEDED",
-          exercise,
-          percentIntensity,
+        calculateNewWeight(60, "SUCCEEDED", exercise, {
+          intensity: percentIntensity,
           targetWeight,
-        ),
+        }),
       ).toBe(65);
     });
   });

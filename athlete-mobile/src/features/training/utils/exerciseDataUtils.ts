@@ -170,87 +170,23 @@ export function calculateStandardExerciseAdjustment(
   intensity: IntensityData,
   feedback: ExerciseDifficultyType,
 ): ExerciseAdjustmentResult {
-  const { userLevel, genderTag } = context;
-
-  const eqTypes = getTagValues(exerciseData.tags, TagGroups.EQ_TYPE);
-  const hasWeights = eqTypes.indexOf("WEIGHTS") !== -1;
-
-  // Get target and start values
-  const targetDuration = getExerciseTargetValue(
-    intensity,
-    exerciseData,
-    "duration",
-    userLevel,
-    genderTag,
-  );
-  const startDuration = getExerciseStartValue(
-    intensity,
-    exerciseData,
-    "duration",
-    userLevel,
-    genderTag,
-  );
-  const targetReps = getExerciseTargetValue(
-    intensity,
-    exerciseData,
-    "repetition",
-    userLevel,
-    genderTag,
-  );
-  const startReps = getExerciseStartValue(
-    intensity,
-    exerciseData,
-    "repetition",
-    userLevel,
-    genderTag,
-  );
-  const targetWeight = getExerciseTargetValue(
-    intensity,
-    exerciseData,
-    "weight",
-    userLevel,
-    genderTag,
-  );
-  const startWeight = getExerciseStartValue(
-    intensity,
-    exerciseData,
-    "weight",
-    userLevel,
-    genderTag,
-  );
-
-  const isTooHard = feedback === "TOO_HARD";
-  const isPositive = feedback === "SUCCEEDED" || feedback === "TOO_EASY";
-
-  const checkBoundaries = (
-    value: number,
-    start: number | undefined,
-    target: number | undefined,
-  ): BoundaryChange | null => {
-    if (typeof target === "number" && value >= target && !isTooHard) {
-      if (!hasWeights) return "LEVEL_UP";
-      return typeof targetWeight === "number" && weight >= targetWeight
-        ? "LEVEL_UP"
-        : "INCREASE_WEIGHT";
-    }
-    if (typeof start !== "number" || isPositive) return null;
-    if (!hasWeights && (value < start || (isTooHard && value === start))) {
-      return "LEVEL_DOWN";
-    }
-    if (hasWeights && value < start) {
-      return typeof startWeight === "number" && weight < startWeight
-        ? "LEVEL_DOWN"
-        : "DECREASE_WEIGHT";
-    }
-    return null;
+  const boundsOf = (valueName: BoundedValue) =>
+    getBounds(valueName, exerciseData, context, intensity);
+  const performed: PerformedSet = {
+    hasWeights:
+      getTagValues(exerciseData.tags, TagGroups.EQ_TYPE).indexOf("WEIGHTS") !==
+      -1,
+    weight,
+    weightBounds: boundsOf("weight"),
+    feedback,
   };
 
   const changes: (BoundaryChange | null)[] = [
     exerciseData.isAdvanceByDuration
-      ? checkBoundaries(duration, startDuration, targetDuration)
+      ? checkBoundaries(duration, boundsOf("duration"), performed)
       : null,
     exerciseData.isAdvanceByReps
-      ? checkBoundaries(reps, startReps, targetReps)
+      ? checkBoundaries(reps, boundsOf("repetition"), performed)
       : null,
   ];
 
@@ -261,6 +197,84 @@ export function calculateStandardExerciseAdjustment(
 
   return { type: "NO_CHANGE", reason: "in_between_zone" };
 }
+
+type BoundedValue = "duration" | "repetition" | "weight";
+
+interface Bounds {
+  start: number | undefined;
+  target: number | undefined;
+}
+
+interface PerformedSet {
+  hasWeights: boolean;
+  weight: number;
+  weightBounds: Bounds;
+  feedback: ExerciseDifficultyType;
+}
+
+const getBounds = (
+  valueName: BoundedValue,
+  exerciseData: ExerciseType,
+  { userLevel, genderTag }: ExerciseAdjustmentContext,
+  intensity: IntensityData,
+): Bounds => ({
+  start: getExerciseStartValue(
+    intensity,
+    exerciseData,
+    valueName,
+    userLevel,
+    genderTag,
+  ),
+  target: getExerciseTargetValue(
+    intensity,
+    exerciseData,
+    valueName,
+    userLevel,
+    genderTag,
+  ),
+});
+
+// Reaching the target moves up unless the feedback was TOO_HARD.
+const checkTarget = (
+  value: number,
+  target: number | undefined,
+  { hasWeights, weight, weightBounds, feedback }: PerformedSet,
+): BoundaryChange | null => {
+  if (typeof target !== "number" || value < target || feedback === "TOO_HARD")
+    return null;
+  if (!hasWeights) return "LEVEL_UP";
+  const targetWeight = weightBounds.target;
+  return typeof targetWeight === "number" && weight >= targetWeight
+    ? "LEVEL_UP"
+    : "INCREASE_WEIGHT";
+};
+
+// Falling below the start, or TOO_HARD at the start without weights, moves
+// down unless the feedback was positive.
+const checkStart = (
+  value: number,
+  start: number | undefined,
+  { hasWeights, weight, weightBounds, feedback }: PerformedSet,
+): BoundaryChange | null => {
+  const isPositive = feedback === "SUCCEEDED" || feedback === "TOO_EASY";
+  if (typeof start !== "number" || isPositive) return null;
+  if (!hasWeights) {
+    const atStartTooHard = feedback === "TOO_HARD" && value === start;
+    return value < start || atStartTooHard ? "LEVEL_DOWN" : null;
+  }
+  if (value >= start) return null;
+  const startWeight = weightBounds.start;
+  return typeof startWeight === "number" && weight < startWeight
+    ? "LEVEL_DOWN"
+    : "DECREASE_WEIGHT";
+};
+
+const checkBoundaries = (
+  value: number,
+  { start, target }: Bounds,
+  performed: PerformedSet,
+): BoundaryChange | null =>
+  checkTarget(value, target, performed) ?? checkStart(value, start, performed);
 
 type BoundaryChange =
   | "LEVEL_UP"
@@ -274,90 +288,6 @@ const BOUNDARY_CHANGE_PRIORITY: BoundaryChange[] = [
   "INCREASE_WEIGHT",
   "DECREASE_WEIGHT",
 ];
-
-export type WeightType = "weightFMax" | "weightAbsolute";
-
-/** Percent of F-Max or kg, following the start value as the generator does. */
-export function getWeightType(
-  exerciseData: ExerciseType,
-  intensity: IntensityData,
-): WeightType {
-  const type =
-    exerciseData.values?.weight?.startValue?.type?.type ??
-    intensity.startValue.weight?.type?.type;
-  return type === "weightFMax" ? "weightFMax" : "weightAbsolute";
-}
-
-/**
- * Resolves the target weight in the unit of the exercise weight. A target in
- * the other unit, such as a % of F-Max intensity fallback for a kg exercise,
- * resolves to undefined.
- */
-export function getTargetWeight(
-  intensity: IntensityData,
-  exerciseData: ExerciseType,
-  userLevel: TrainingLevelType,
-  genderTag: GenderTag,
-): number | undefined {
-  const target = getExerciseTargetValue(
-    intensity,
-    exerciseData,
-    "weight",
-    userLevel,
-    genderTag,
-  );
-  if (typeof target !== "number") return undefined;
-
-  const exerciseTarget = exerciseData.values?.weight?.targetValue;
-  const targetType =
-    getValueByGenderAndLevel(exerciseTarget, genderTag, userLevel) !== undefined
-      ? exerciseTarget?.type?.type
-      : intensity.targetValue.weight?.type?.type;
-  if (targetType !== "weightFMax" && targetType !== "weightAbsolute") {
-    return target;
-  }
-  return targetType === getWeightType(exerciseData, intensity)
-    ? target
-    : undefined;
-}
-
-/**
- * Calculates new weight value after adjustment. An absolute weight increase
- * stops at `targetWeight`.
- */
-export function calculateNewWeight(
-  currentWeight: number,
-  adjustment: "SUCCEEDED" | "TOO_HARD",
-  exerciseData: ExerciseType,
-  intensity: IntensityData,
-  targetWeight?: number,
-): number {
-  const isWeightFMax =
-    (exerciseData.values?.weight?.startValue.type &&
-      exerciseData.values.weight.startValue.type.type === "weightFMax") ||
-    (!exerciseData.values?.weight?.startValue.type &&
-      intensity.startValue.weight?.type &&
-      intensity.startValue.weight.type.type === "weightFMax");
-
-  if (isWeightFMax) {
-    const weightFMaxAdjustment =
-      intensity.adjustment.weightFMax?.default?.default?.[adjustment];
-    if (typeof weightFMaxAdjustment === "number") {
-      return currentWeight + weightFMaxAdjustment;
-    }
-  } else {
-    const weightAbsoluteAdjustment =
-      intensity.adjustment.weightAbsolute?.default?.default?.[adjustment];
-    if (typeof weightAbsoluteAdjustment === "number") {
-      const newWeight = currentWeight + weightAbsoluteAdjustment;
-      return typeof targetWeight === "number" && adjustment === "SUCCEEDED"
-        ? Math.min(newWeight, targetWeight)
-        : newWeight;
-    }
-  }
-
-  return currentWeight;
-}
 
 /**
  * Gets reset value for duration when weight changes.

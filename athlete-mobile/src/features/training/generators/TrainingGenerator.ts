@@ -3401,80 +3401,42 @@ export default class TrainingGenerator {
       userLevel,
     );
 
-    // consider feedback TODO consider streak length
-    const adjustString: DifficultyFeedbackType = difficultyFeedback;
-
     const hasWeights =
       getTagValues(exercise.tags, TagGroups.EQ_TYPE).indexOf("WEIGHTS") !==
         -1 &&
       data.weight !== undefined &&
       data.weight !== null;
-    const changesWeight = hasWeights && adjustString === "TOO_HARD";
-
-    const clampToBoundaries = (
-      value: number,
-      valueName: "duration" | "repetition",
-    ): number => {
-      if (!intensity || !isTrainingLevel(userLevel)) return value;
-      const start = getExerciseStartValue(
-        intensity,
-        exercise,
-        valueName,
-        userLevel,
-        userGender,
-      );
-      const target = getExerciseTargetValue(
-        intensity,
-        exercise,
-        valueName,
-        userLevel,
-        userGender,
-      );
-      let clamped = value;
-      if (typeof target === "number") clamped = Math.min(clamped, target);
-      if (typeof start === "number") clamped = Math.max(clamped, start);
-      return clamped;
+    const changesWeight = hasWeights && difficultyFeedback === "TOO_HARD";
+    const boundaries = { intensity, exercise, userLevel, userGender };
+    const advances = {
+      duration: exercise.isAdvanceByDuration,
+      repetition: exercise.isAdvanceByReps,
     };
 
-    if (
-      !changesWeight &&
-      exercise.isAdvanceByDuration &&
-      data.duration &&
-      adjustment.duration
-    ) {
-      data.duration = clampToBoundaries(
-        data.duration + adjustment.duration[adjustString],
-        "duration",
-      );
-    }
-    if (
-      !changesWeight &&
-      exercise.isAdvanceByReps &&
-      data.repetition &&
-      adjustment.repetition
-    ) {
-      data.repetition = clampToBoundaries(
-        data.repetition + adjustment.repetition[adjustString],
-        "repetition",
-      );
+    for (const valueName of ["duration", "repetition"] as const) {
+      const value = data[valueName];
+      const step = adjustment[valueName];
+      if (!changesWeight && advances[valueName] && value && step) {
+        data[valueName] = clampToBoundaries(
+          value + step[difficultyFeedback],
+          valueName,
+          boundaries,
+        );
+      }
     }
     if (exercise.isJump && data.height && adjustment.height) {
-      data.height += +adjustment.height[adjustString];
+      data.height += +adjustment.height[difficultyFeedback];
     }
     // Positive feedback at the performed rep/duration target raises the weight
     // in useExerciseCompletion and clears the feedback, so only TOO_HARD
     // changes the weight here.
     if (changesWeight && data.weight !== undefined && data.weight !== null) {
-      if (data.weightType === "weightFMax" && adjustment.weightFMax) {
-        data.weight += adjustment.weightFMax[adjustString];
-        // Clamp FMax percentage to valid range (50-100%)
-        if (data.weight < 50) data.weight = 50;
-        if (data.weight > 100) data.weight = 100;
-      } else if (adjustment.weightAbsolute) {
-        data.weight += adjustment.weightAbsolute[adjustString];
-        // Prevent negative weight
-        if (data.weight < 0) data.weight = 0;
-      }
+      data.weight = applyWeightFeedback(
+        data.weight,
+        data.weightType,
+        adjustment,
+        difficultyFeedback,
+      );
     }
     return data;
   };
@@ -3719,6 +3681,60 @@ export default class TrainingGenerator {
 }
 
 TrainingGenerator.DEBUG = false;
+
+interface BoundaryContext {
+  intensity: IntensityData | null;
+  exercise: ExerciseType;
+  userLevel: string;
+  userGender: GenderTag;
+}
+
+// Keeps reps/duration within the resolved start and target values.
+const clampToBoundaries = (
+  value: number,
+  valueName: "duration" | "repetition",
+  { intensity, exercise, userLevel, userGender }: BoundaryContext,
+): number => {
+  if (!intensity || !isTrainingLevel(userLevel)) return value;
+  const start = getExerciseStartValue(
+    intensity,
+    exercise,
+    valueName,
+    userLevel,
+    userGender,
+  );
+  const target = getExerciseTargetValue(
+    intensity,
+    exercise,
+    valueName,
+    userLevel,
+    userGender,
+  );
+  let clamped = value;
+  if (typeof target === "number") clamped = Math.min(clamped, target);
+  if (typeof start === "number") clamped = Math.max(clamped, start);
+  return clamped;
+};
+
+const applyWeightFeedback = (
+  weight: number,
+  weightType: ExerciseValuesData["weightType"],
+  adjustment: AdjustmentConfig,
+  feedback: DifficultyFeedbackType,
+): number => {
+  if (weightType === "weightFMax" && adjustment.weightFMax) {
+    // Clamp FMax percentage to valid range (50-100%)
+    return Math.min(
+      100,
+      Math.max(50, weight + adjustment.weightFMax[feedback]),
+    );
+  }
+  if (adjustment.weightAbsolute) {
+    // Prevent negative weight
+    return Math.max(0, weight + adjustment.weightAbsolute[feedback]);
+  }
+  return weight;
+};
 
 const hasJumpBox = (equipment: string[]) => {
   const { BOX_LOW, BOX_HIGH } = WorkoutConstants.EQUIPMENT;

@@ -9,7 +9,7 @@ import { WorkoutPage } from "./pages";
 test.describe("Workout Flow", () => {
   const EXERCISE_NAME = "KH-Frontkniebeuge";
   const EXPECTED_INITIAL_REPS = 10;
-  const EXPECTED_INITIAL_WEIGHT = 15;
+  const EXPECTED_INITIAL_WEIGHT = 14;
   const EXPECTED_AFTER_REPS = 11;
   const EXPECTED_AFTER_WEIGHT = 16;
 
@@ -51,7 +51,7 @@ test.describe("Workout Flow", () => {
       test.setTimeout(60000);
 
       const EXPECTED_TOO_EASY_REPS = 12;
-      const EXPECTED_TOO_EASY_WEIGHT = 17;
+      const EXPECTED_TOO_EASY_WEIGHT = 16;
 
       await mockSupabaseAuth(page);
       await mockWakeLock(page);

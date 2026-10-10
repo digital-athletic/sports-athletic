@@ -258,6 +258,43 @@ describe("TrainingGenerator: max strength ladder per working set", () => {
     expect(describeSets(setList)).toEqual(["75x5", "80x3", "85x2", "87.5x2"]);
   });
 
+  it("Advanced to Pro: starts the Pro ladder at its first step", () => {
+    const setList = generate(userWithLevel("PROFESSIONAL"), {
+      [squat.id]: {
+        exerciseId: squat.id,
+        skill: "MAX_KRAFT",
+        nextWeightPercentage: 77.5,
+        maxFRepetitions: [
+          { level: "HARD", repetitions: 6, weightPercentage: 70 },
+          { level: "HARD", repetitions: 5, weightPercentage: 75 },
+          { level: "HARD", repetitions: 5, weightPercentage: 77.5 },
+        ],
+        feedback: { difficulty: "SUCCEEDED" },
+      },
+    });
+
+    expect(describeSets(setList)).toEqual(["75x3", "77.5x3", "80x2", "80x2"]);
+  });
+
+  it("Pro to Advanced: starts the Advanced ladder at its first step", () => {
+    const setList = generate(userWithLevel("ADVANCED"), {
+      [squat.id]: {
+        exerciseId: squat.id,
+        skill: "MAX_KRAFT",
+        nextWeightPercentage: 90,
+        maxFRepetitions: [
+          { level: "HARD", repetitions: 6, weightPercentage: 75 },
+          { level: "HARD", repetitions: 5, weightPercentage: 80 },
+          { level: "HARD", repetitions: 3, weightPercentage: 85 },
+          { level: "HARD", repetitions: 2, weightPercentage: 90 },
+        ],
+        feedback: { difficulty: "SUCCEEDED" },
+      },
+    });
+
+    expect(describeSets(setList)).toEqual(["70x5", "72.5x2", "75x2"]);
+  });
+
   it("Advanced: reads the stored single entry of the last set", () => {
     const setList = generate(userWithLevel("ADVANCED"), {
       [squat.id]: {

@@ -169,7 +169,9 @@ export function getNextMaxStrengthSetStates(
   }
   const last = stored.at(-1);
   const nextWeightPercentage = userExerciseData?.nextWeightPercentage;
-  if (last && typeof nextWeightPercentage === "number") {
+  // Per set entries of another set count stem from a level change, so the
+  // new level's ladder starts over.
+  if (perSet.length === 0 && last && typeof nextWeightPercentage === "number") {
     return fromLastSet(table, levelTag, last, nextWeightPercentage, difficulty);
   }
   return sets.map((_, i) => firstStep(table, levelTag, i));

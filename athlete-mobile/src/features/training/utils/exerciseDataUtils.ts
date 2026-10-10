@@ -275,6 +275,52 @@ const BOUNDARY_CHANGE_PRIORITY: BoundaryChange[] = [
   "DECREASE_WEIGHT",
 ];
 
+export type WeightType = "weightFMax" | "weightAbsolute";
+
+/** Percent of F-Max or kg, following the start value as the generator does. */
+export function getWeightType(
+  exerciseData: ExerciseType,
+  intensity: IntensityData,
+): WeightType {
+  const type =
+    exerciseData.values?.weight?.startValue?.type?.type ??
+    intensity.startValue.weight?.type?.type;
+  return type === "weightFMax" ? "weightFMax" : "weightAbsolute";
+}
+
+/**
+ * Resolves the target weight in the unit of the exercise weight. A target in
+ * the other unit, such as a % of F-Max intensity fallback for a kg exercise,
+ * resolves to undefined.
+ */
+export function getTargetWeight(
+  intensity: IntensityData,
+  exerciseData: ExerciseType,
+  userLevel: TrainingLevelType,
+  genderTag: GenderTag,
+): number | undefined {
+  const target = getExerciseTargetValue(
+    intensity,
+    exerciseData,
+    "weight",
+    userLevel,
+    genderTag,
+  );
+  if (typeof target !== "number") return undefined;
+
+  const exerciseTarget = exerciseData.values?.weight?.targetValue;
+  const targetType =
+    getValueByGenderAndLevel(exerciseTarget, genderTag, userLevel) !== undefined
+      ? exerciseTarget?.type?.type
+      : intensity.targetValue.weight?.type?.type;
+  if (targetType !== "weightFMax" && targetType !== "weightAbsolute") {
+    return target;
+  }
+  return targetType === getWeightType(exerciseData, intensity)
+    ? target
+    : undefined;
+}
+
 /**
  * Calculates new weight value after adjustment. An absolute weight increase
  * stops at `targetWeight`.

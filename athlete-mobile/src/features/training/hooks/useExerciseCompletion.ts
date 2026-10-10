@@ -25,6 +25,7 @@ import {
   findMainCardioExercise,
   getResetDuration,
   getResetRepetition,
+  getTargetWeight,
   shouldProcessExerciseValues,
 } from "@/features/training/utils/exerciseDataUtils";
 import { getWorkingSetMaxFReps } from "@/features/training/utils/maxFRepetitionsUtils";
@@ -33,7 +34,6 @@ import { getSkillTree } from "@/features/training/utils/skillTreeUtils";
 import {
   applyMaxValueToDirections,
   calculateAdjustedMaxValues,
-  getExerciseTargetValue,
   getMaxValueForExercise,
   maxWeightByEpley,
 } from "@/features/training/utils/workoutUtils";
@@ -421,10 +421,9 @@ export function useExerciseCompletion() {
                 adjustment,
                 currentExerciseData,
                 intensity,
-                getExerciseTargetValue(
+                getTargetWeight(
                   intensity,
                   currentExerciseData,
-                  "weight",
                   userLevel,
                   genderTag,
                 ),

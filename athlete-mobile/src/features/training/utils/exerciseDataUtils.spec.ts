@@ -12,6 +12,7 @@ import {
   findMainCardioExercise,
   getResetDuration,
   getResetRepetition,
+  getTargetWeight,
   isFeedbackEligibleSkill,
   shouldProcessExerciseValues,
   shouldSkipExerciseSave,
@@ -671,6 +672,70 @@ describe("exerciseDataUtils", () => {
       const intensity = createIntensity({ adjustment: {} });
       const result = calculateNewWeight(50, "SUCCEEDED", exercise, intensity);
       expect(result).toBe(50);
+    });
+  });
+
+  describe("getTargetWeight", () => {
+    const kgExercise = (target: Record<string, number> = {}) =>
+      createExercise({
+        values: {
+          weight: {
+            startValue: {
+              default: { beginner: 40 },
+              type: { type: "weightAbsolute" },
+            },
+            targetValue: {
+              default: target,
+              type: { type: "weightAbsolute" },
+            },
+          },
+        },
+      });
+    // The intensity config authors its weights in % of F-Max.
+    const percentIntensity = createIntensity({
+      startValue: {
+        weight: { m: { beginner: 50 }, type: { type: "weightFMax" } },
+      },
+      targetValue: {
+        weight: { m: { beginner: 60 }, type: { type: "weightFMax" } },
+      },
+      adjustment: {
+        weightAbsolute: {
+          default: { default: { SUCCEEDED: 5, TOO_HARD: -5, TOO_EASY: 2.5 } },
+        },
+      },
+    });
+
+    it("keeps an authored kg target for a kg exercise", () => {
+      expect(
+        getTargetWeight(
+          percentIntensity,
+          kgExercise({ beginner: 70 }),
+          "beginner",
+          "m",
+        ),
+      ).toBe(70);
+    });
+
+    it("skips the clamp when a kg exercise falls back to a % target", () => {
+      const exercise = kgExercise();
+      const targetWeight = getTargetWeight(
+        percentIntensity,
+        exercise,
+        "beginner",
+        "m",
+      );
+
+      expect(targetWeight).toBeUndefined();
+      expect(
+        calculateNewWeight(
+          60,
+          "SUCCEEDED",
+          exercise,
+          percentIntensity,
+          targetWeight,
+        ),
+      ).toBe(65);
     });
   });
 

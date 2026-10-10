@@ -106,6 +106,25 @@ describe("calculateMaxStrengthAdjustment", () => {
     expect(result.maxFRepetitions).toEqual(reps);
   });
 
+  it("Pro: completed in the fallback column at an authored 72.5% target levels up", () => {
+    const result = calculateMaxStrengthAdjustment({
+      ...baseInput,
+      weight: 72.5,
+      maxValues: maxValuesWith(100),
+      exerciseData: {
+        ...kneeExercise,
+        values: {
+          weight: { targetValue: { default: { professional: 72.5 } } },
+        },
+      } as ExerciseType,
+      userExerciseData: userExerciseWith([{ level: "MEDIUM", repetitions: 5 }]),
+      levelTag: "PROFESSIONAL",
+      userLevel: "professional",
+    });
+
+    expect(result.levelUp).toBe(true);
+  });
+
   it("returns undefined nextWeightPercentage when the max value is unknown", () => {
     const result = calculateMaxStrengthAdjustment({
       ...baseInput,

@@ -44,6 +44,10 @@ import {
   getOpposingExerciseDirection,
 } from "@/features/training/utils/exerciseUtils";
 import {
+  getMaxStrengthWeightPercentage,
+  isLastBufferColumn,
+} from "@/features/training/utils/maxStrengthAdjustment";
+import {
   getBlocksFromPains,
   getPreventionsFromPains,
 } from "@/features/training/utils/painUtils";
@@ -1641,6 +1645,7 @@ export default class TrainingGenerator {
           userExerciseData,
           exercise,
           genderTag,
+          maxValues,
         );
         const warmUpWeights = computeWarmupTrainingWeights(
           maxTrainingWeights.trainingWeights[0],
@@ -3704,6 +3709,7 @@ export default class TrainingGenerator {
     userExercisesData: Record<string, UserExerciseDataType | undefined> | null,
     exercise: ExerciseType,
     genderTag: GenderTag,
+    maxValues?: MaxValuesType,
   ): MaxTrainingRepsEntry[] => {
     const maxTrainingWeights = maxTrainingWeightsObject.trainingWeights;
     const userLevel = getUserLevel(user);
@@ -3747,19 +3753,36 @@ export default class TrainingGenerator {
           // only weight decreases
           level = lastLevel;
         } else {
+          // A fallback column that is the last one at its weight steps like
+          // HARD, matching the weight raise in calculateMaxStrengthAdjustment.
+          const lastWeightPercentage =
+            maxValues && typeof userExerciseData.weight === "number"
+              ? getMaxStrengthWeightPercentage(
+                  userExerciseData.weight,
+                  exercise,
+                  maxValues,
+                )
+              : null;
+          const stepLevel = isLastBufferColumn(
+            levelReps,
+            lastWeightPercentage,
+            lastLevel,
+          )
+            ? "HARD"
+            : lastLevel;
           // upgrade reps level
           if (userExerciseData.feedback.difficulty === "SUCCEEDED") {
             level =
-              lastLevel === "EASY"
+              stepLevel === "EASY"
                 ? "MEDIUM"
-                : lastLevel === "MEDIUM"
+                : stepLevel === "MEDIUM"
                   ? "HARD"
                   : "EASY";
           } else {
             level =
-              lastLevel === "EASY"
+              stepLevel === "EASY"
                 ? "HARD"
-                : lastLevel === "MEDIUM"
+                : stepLevel === "MEDIUM"
                   ? "EASY"
                   : "MEDIUM";
           }

@@ -1,10 +1,15 @@
 import { getExerciseById } from "@/data/exerciseRegistry";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { PAUSE_EXERCISE_ID } from "@/features/training/models/IdTypes";
-import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
+import {
+  DEFAULT_MAX_VALUE,
+  DEFAULT_MAX_VALUES,
+  type MaxValuesType,
+} from "@/features/training/models/MaxValues";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { TemporalDataType } from "@/features/training/models/TemporalData";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
+import { calculateMaxStrengthAdjustment } from "@/features/training/utils/maxStrengthAdjustment";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { MaxForceRepetitionsDataType } from "@/schemas/sync.schema";
 import type { UserType } from "@/schemas/user.schema";
@@ -237,4 +242,52 @@ describe("TrainingGenerator: max strength repetition table", () => {
       expect(second?.repetitions).toBe(2);
     },
   );
+
+  it("Pro: completed at 72.5% in the fallback column opens 75% in the first column", () => {
+    const maxValues: MaxValuesType = {
+      ...DEFAULT_MAX_VALUES,
+      kneeDominant: { ...DEFAULT_MAX_VALUE, barbell: 100 },
+    };
+    const weight = 72.5;
+    // The 5% column is empty at 72.5%, so the set used the 10% column.
+    const stored: MaxForceRepetitionsDataType = {
+      level: "MEDIUM",
+      repetitions: 5,
+    };
+    const adjustment = calculateMaxStrengthAdjustment({
+      weight,
+      adjustment: "SUCCEEDED",
+      exerciseData: squat,
+      userExerciseData: {
+        exerciseId: squat.id,
+        skill: "MAX_KRAFT",
+        maxFRepetitions: [stored],
+      },
+      maxValues,
+      ageGroup: "ADULT",
+      genderTag: "m",
+      levelTag: "PROFESSIONAL",
+      userLevel: "professional",
+    });
+    const reps = new TrainingGenerator().getMaxTrainingReps(
+      userWithLevel("PROFESSIONAL"),
+      { trainingWeights: [72.5, 72.5, 72.5, 75] },
+      {
+        [squat.id]: {
+          exerciseId: squat.id,
+          skill: "MAX_KRAFT",
+          weight,
+          nextWeightPercentage: adjustment.nextWeightPercentage,
+          maxFRepetitions: [stored],
+          feedback: { difficulty: "SUCCEEDED" },
+        },
+      },
+      squat,
+      "m",
+      maxValues,
+    );
+
+    expect(adjustment.nextWeightPercentage).toBe(75);
+    expect(reps.at(-1)).toEqual({ level: "EASY", repetitions: 3 });
+  });
 });

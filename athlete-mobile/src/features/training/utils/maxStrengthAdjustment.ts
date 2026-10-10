@@ -45,6 +45,47 @@ export interface MaxStrengthAdjustmentResult {
   feedbackOverride?: { difficulty: ExerciseDifficultyType };
 }
 
+const BUFFER_COLUMNS = ["EASY", "MEDIUM", "HARD"];
+
+/**
+ * True when no buffer column after `level` has repetitions at the weight, so
+ * the next step raises the weight. Pro below 75% has no 5% (HARD) column.
+ */
+export function isLastBufferColumn(
+  levelReps: Record<string, Record<number, number>> | undefined,
+  weightPercentage: number | null,
+  level: string | undefined,
+): boolean {
+  if (level === "HARD") return true;
+  const index = BUFFER_COLUMNS.indexOf(level ?? "");
+  if (
+    !level ||
+    index === -1 ||
+    !levelReps ||
+    weightPercentage === null ||
+    levelReps[level]?.[weightPercentage] === undefined
+  ) {
+    return false;
+  }
+  return BUFFER_COLUMNS.slice(index + 1).every(
+    (column) => levelReps[column]?.[weightPercentage] === undefined,
+  );
+}
+
+/** F-Max percentage of a weight, rounded to the 2.5 ladder step. */
+export function getMaxStrengthWeightPercentage(
+  weight: number,
+  exerciseData: ExerciseType | undefined,
+  maxValues: MaxValuesType,
+): number | null {
+  const maxValue = exerciseData
+    ? getMaxValueForExercise(exerciseData, maxValues)
+    : null;
+  return typeof maxValue === "number"
+    ? getRoundedResultForValueAndStep((weight / maxValue) * 100, 2.5)
+    : null;
+}
+
 /**
  * Pure inter-session progression for MAX (Maximalkraft) exercises. Side effects
  * (store writes, branch level changes) remain the caller's responsibility,
@@ -65,13 +106,11 @@ export function calculateMaxStrengthAdjustment(
     userLevel,
   } = input;
 
-  const maxValue = exerciseData
-    ? getMaxValueForExercise(exerciseData, maxValues)
-    : null;
-  const weightPercentage =
-    typeof maxValue === "number"
-      ? getRoundedResultForValueAndStep((weight / maxValue) * 100, 2.5)
-      : null;
+  const weightPercentage = getMaxStrengthWeightPercentage(
+    weight,
+    exerciseData,
+    maxValues,
+  );
   const maxFRepetitions = userExerciseData?.maxFRepetitions ?? [];
   const lastMaxFRep = getLastMaxFRep(userExerciseData?.maxFRepetitions);
 
@@ -79,12 +118,18 @@ export function calculateMaxStrengthAdjustment(
   let decreaseWeight = false;
   let levelUp = false;
   let levelDown = false;
-  const maxFRepsHard =
+  const levelReps =
     ageGroup !== "CHILD" && levelTag
       ? WorkoutConstants.MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT[
           ageGroup
-        ]?.[levelTag]?.HARD
-      : null;
+        ]?.[levelTag]
+      : undefined;
+  const maxFRepsHard = levelReps?.HARD ?? null;
+  const atLastColumn = isLastBufferColumn(
+    levelReps,
+    weightPercentage,
+    lastMaxFRep?.level,
+  );
 
   let maximumWeightPercentage =
     ageGroup !== "CHILD" && maxFRepsHard
@@ -133,7 +178,7 @@ export function calculateMaxStrengthAdjustment(
     (typeof weightPercentage === "number" &&
       typeof maximumWeightPercentage === "number" &&
       weightPercentage >= maximumWeightPercentage &&
-      lastMaxFRep?.level === "HARD" &&
+      atLastColumn &&
       adjustment !== "TOO_HARD") ||
     (lastMaxFRep?.level === "MEDIUM" && adjustment === "TOO_EASY")
   ) {
@@ -161,10 +206,10 @@ export function calculateMaxStrengthAdjustment(
   } else {
     // adjust weight if needed
     if (
-      (lastMaxFRep?.level === "HARD" && adjustment !== "TOO_HARD") ||
+      (atLastColumn && adjustment !== "TOO_HARD") ||
       (lastMaxFRep?.level === "MEDIUM" && adjustment === "TOO_EASY")
     ) {
-      // adjust weight up if jumping over HARD lvl
+      // adjust weight up if jumping over the last column of this weight
       increaseWeight = true;
     } else if (adjustment === "TOO_HARD") {
       // adjust only weight down if is TOO_HARD

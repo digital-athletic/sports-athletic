@@ -761,6 +761,21 @@ describe("exerciseDataUtils", () => {
     });
 
     it.each([
+      ["without", undefined],
+      ["with", 100],
+    ])(
+      "never raises a weight below the lowest permitted weight %s F-Max",
+      (_, maxValue) => {
+        expect(
+          calculateWeightStep(5, "DECREASE", barbell, "weightFMax", {
+            maxValue,
+            lowestWeight: 50,
+          }),
+        ).toBeLessThanOrEqual(5);
+      },
+    );
+
+    it.each([
       ["INCREASE", 42.5],
       ["DECREASE", 37.5],
     ] as const)(

@@ -104,10 +104,11 @@ export function calculateWeightStep(
   bounds: WeightStepBounds,
 ): number {
   const sign = direction === "INCREASE" ? 1 : -1;
+  // A weight already below the lowest load must not jump up to it on a decrease.
   const clamp = (weight: number) =>
     sign > 0
       ? Math.min(weight, bounds.targetWeight ?? Infinity)
-      : Math.max(weight, bounds.lowestWeight ?? 0);
+      : Math.max(weight, Math.min(bounds.lowestWeight ?? 0, currentWeight));
   const next = clamp(currentWeight * (1 + sign * 0.025));
 
   const { maxValue } = bounds;

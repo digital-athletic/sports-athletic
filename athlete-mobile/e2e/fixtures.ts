@@ -18,6 +18,7 @@
  */
 
 import { test as base } from "@playwright/test";
+import { signedInStores } from "./mocks/auth";
 import type { StoreDataMap } from "./mocks/stores/types";
 
 const DEFAULT_ORIGIN =
@@ -26,7 +27,10 @@ const DEFAULT_ORIGIN =
 /**
  * Converts factory output to Playwright's storageState format.
  */
-function toStorageState(stores: StoreDataMap, origin: string = DEFAULT_ORIGIN) {
+function toStorageState(
+  stores: Record<string, unknown>,
+  origin: string = DEFAULT_ORIGIN,
+) {
   return {
     cookies: [] as never[],
     origins: [
@@ -78,15 +82,21 @@ function disableErrorToast(cssText: string) {
 /**
  * Extended test with profile factory support.
  */
-export const test = base.extend<{ profile: StoreDataMap | undefined }>({
+export const test = base.extend<{
+  profile: StoreDataMap | undefined;
+  signedIn: boolean;
+}>({
   profile: [undefined, { option: true }],
+  signedIn: [false, { option: true }],
 
-  storageState: async ({ profile }, use) => {
-    if (profile) {
-      await use(toStorageState(profile));
-    } else {
+  storageState: async ({ profile, signedIn }, use) => {
+    if (!profile && !signedIn) {
       await use(undefined);
+      return;
     }
+    await use(
+      toStorageState({ ...profile, ...(signedIn ? signedInStores() : {}) }),
+    );
   },
 
   page: async ({ page }, use) => {

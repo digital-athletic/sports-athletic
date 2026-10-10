@@ -62,15 +62,18 @@ export default defineConfig({
   ],
   outputDir: "./playwright/output",
 
-  /* Run your local dev server before starting the tests */
+  /* E2E_STATIC=1 serves a production export (built once) instead of the Metro dev server */
   webServer: [
     {
       url: process.env.TESTING_PLAYWRIGHT_BASE_URL ?? "http://localhost:8081",
-      command: "pnpm run web --clear",
+      command: process.env.E2E_STATIC
+        ? "pnpm run e2e:static"
+        : "pnpm run web --clear",
       reuseExistingServer: !process.env.CI,
       stdout: "pipe",
       stderr: "pipe",
-      timeout: 120 * 1000, // 2 minutes timeout
+      // The static mode builds the export before serving it
+      timeout: (process.env.E2E_STATIC ? 300 : 120) * 1000,
       env: {
         EXPO_PUBLIC_SUPABASE_URL:
           process.env.TESTING_SUPABASE_BASE_URL ?? "http://localhost:54321",

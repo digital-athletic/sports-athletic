@@ -4,9 +4,14 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, labeled]
 
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   e2e:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     if: contains(github.event.pull_request.labels.*.name, 'app-mobile-app-athlete')
     steps:
       - uses: actions/checkout@v4
@@ -17,18 +22,37 @@ jobs:
           cache: "pnpm"
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Read Playwright version
+        id: playwright
+        run: echo "version=$(pnpm --filter athlete-mobile exec playwright --version)" >> "$GITHUB_OUTPUT"
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-webkit-${{ runner.os }}-${{ steps.playwright.outputs.version }}
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm --filter athlete-mobile exec playwright install webkit --with-deps
+      - name: Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm --filter athlete-mobile exec playwright install-deps webkit
       - name: Run E2E tests
         run: pnpm --filter athlete-mobile test:e2e
         env:
           CI: true
+          # Serve a production export instead of the Metro dev server
+          E2E_STATIC: 1
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: athlete-mobile/playwright/output
+          # The html reporter writes playwright-report/, traces and screenshots
+          # land in playwright/output/. Both are needed to debug a failure.
+          path: |
+            athlete-mobile/playwright-report
+            athlete-mobile/playwright/output
           retention-days: 30
 
   e2e-trainer-web:

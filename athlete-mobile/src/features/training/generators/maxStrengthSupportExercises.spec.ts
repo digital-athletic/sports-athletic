@@ -290,4 +290,61 @@ describe("TrainingGenerator: max strength repetition table", () => {
     expect(adjustment.nextWeightPercentage).toBe(75);
     expect(reps.at(-1)).toEqual({ level: "EASY", repetitions: 3 });
   });
+
+  it("Pro: a fallback in the last set does not move the lower sets past their next step", () => {
+    const generator = new TrainingGenerator();
+    const user = userWithLevel("PROFESSIONAL");
+    const maxValues: MaxValuesType = {
+      ...DEFAULT_MAX_VALUES,
+      kneeDominant: { ...DEFAULT_MAX_VALUE, barbell: 100 },
+    };
+    const weights = { trainingWeights: [72.5, 80, 85, 87.5] };
+    const workingSets = (
+      reps: ReturnType<typeof generator.getMaxTrainingReps>,
+    ) => reps.filter((entry) => entry.level !== "WARMUP").slice(1);
+
+    const first = generator.getMaxTrainingReps(
+      user,
+      weights,
+      null,
+      squat,
+      "m",
+      maxValues,
+    );
+    // The 15% column is empty at 87.5%, so the last set uses the 10% column.
+    expect(workingSets(first)).toEqual([
+      { level: "EASY", repetitions: 2 },
+      { level: "EASY", repetitions: 1 },
+      { level: "MEDIUM", repetitions: 1 },
+    ]);
+
+    const second = generator.getMaxTrainingReps(
+      user,
+      weights,
+      {
+        [squat.id]: {
+          exerciseId: squat.id,
+          skill: "MAX_KRAFT",
+          weight: 87.5,
+          maxFRepetitions: first
+            .filter((entry) => entry.level !== "WARMUP")
+            .map(({ level, repetitions }) => {
+              const known = REP_LEVELS.find((rep) => rep === level);
+              if (!known) throw new Error(`Unknown level ${level}`);
+              return { level: known, repetitions };
+            }),
+          feedback: { difficulty: "SUCCEEDED" },
+        },
+      },
+      squat,
+      "m",
+      maxValues,
+    );
+
+    expect(workingSets(second)).toEqual([
+      { level: "MEDIUM", repetitions: 3 },
+      { level: "MEDIUM", repetitions: 2 },
+      { level: "HARD", repetitions: 2 },
+    ]);
+  });
 });

@@ -3741,45 +3741,49 @@ export default class TrainingGenerator {
         maximumWeightPercentage = parseFloat(defaultValue[levelLower]);
       }
     }
-    let level = "EASY";
-    if (userExerciseData && userExerciseData.maxFRepetitions) {
-      if (userExerciseData.feedback?.difficulty) {
-        //adjust level
-        const lastLevel =
-          userExerciseData.maxFRepetitions[
-            userExerciseData.maxFRepetitions.length - 1
-          ].level;
-        if (userExerciseData.feedback.difficulty === "TOO_HARD") {
-          // only weight decreases
-          level = lastLevel;
-        } else {
-          // A fallback column that is the last one at its weight steps like
-          // HARD, matching the weight raise in calculateMaxStrengthAdjustment.
-          const lastWeightPercentage =
-            maxValues && typeof userExerciseData.weight === "number"
-              ? getMaxStrengthWeightPercentage(
-                  userExerciseData.weight,
-                  exercise,
-                  maxValues,
-                )
-              : null;
-          const stepLevel = isLastBufferColumn(
-            levelReps,
-            lastWeightPercentage,
-            lastLevel,
-          )
-            ? "HARD"
-            : lastLevel;
+    const levels = maxTrainingWeights.map(() => "EASY");
+    const storedReps = userExerciseData?.maxFRepetitions ?? [];
+    if (userExerciseData && storedReps.length > 0) {
+      const difficulty = userExerciseData.feedback?.difficulty;
+      if (difficulty) {
+        // A fallback column that is the last one at its weight steps like
+        // HARD, matching the weight raise in calculateMaxStrengthAdjustment.
+        const lastWeightPercentage =
+          maxValues && typeof userExerciseData.weight === "number"
+            ? getMaxStrengthWeightPercentage(
+                userExerciseData.weight,
+                exercise,
+                maxValues,
+              )
+            : null;
+        // Entries stored before one entry per working set hold only the last set.
+        const isPerSet = storedReps.length === maxTrainingWeights.length;
+        for (let w = 0; w < levels.length; w++) {
+          const isLastSet = w === levels.length - 1;
+          const lastLevel = (
+            isPerSet ? storedReps[w] : storedReps[storedReps.length - 1]
+          ).level;
+          if (difficulty === "TOO_HARD") {
+            // only weight decreases
+            levels[w] = lastLevel;
+            continue;
+          }
+          // The stored weight belongs to the last set only.
+          const stepLevel =
+            (isLastSet || !isPerSet) &&
+            isLastBufferColumn(levelReps, lastWeightPercentage, lastLevel)
+              ? "HARD"
+              : lastLevel;
           // upgrade reps level
-          if (userExerciseData.feedback.difficulty === "SUCCEEDED") {
-            level =
+          if (difficulty === "SUCCEEDED") {
+            levels[w] =
               stepLevel === "EASY"
                 ? "MEDIUM"
                 : stepLevel === "MEDIUM"
                   ? "HARD"
                   : "EASY";
           } else {
-            level =
+            levels[w] =
               stepLevel === "EASY"
                 ? "HARD"
                 : stepLevel === "MEDIUM"
@@ -3787,23 +3791,22 @@ export default class TrainingGenerator {
                   : "MEDIUM";
           }
         }
-      } else {
+      } else if (
         // feedback.difficulty is not set if levelUp should be done but no other branch exercise is found
-        if (
-          userExerciseData.nextWeightPercentage &&
-          userExerciseData.nextWeightPercentage === maximumWeightPercentage
-        ) {
-          // level stays HARD for branch exercises that are finished but can't be replaced
-          level = "HARD";
-        }
+        userExerciseData.nextWeightPercentage &&
+        userExerciseData.nextWeightPercentage === maximumWeightPercentage
+      ) {
+        // level stays HARD for branch exercises that are finished but can't be replaced
+        levels.fill("HARD");
       }
     }
     const firstMaxTrainingReps =
       userLevel === WorkoutConstants.LEVELS.PROFESSIONAL ? 3 : 4;
     const maxTrainingReps: MaxTrainingRepsEntry[] = [
-      { level: level, repetitions: firstMaxTrainingReps },
+      { level: levels[0], repetitions: firstMaxTrainingReps },
     ];
     for (let w = 1; w < maxTrainingWeights.length; w++) {
+      const level = levels[w];
       const levelKey = level as keyof typeof levelReps;
       const weightKey = maxTrainingWeights[w].toString();
       let repetitions = (

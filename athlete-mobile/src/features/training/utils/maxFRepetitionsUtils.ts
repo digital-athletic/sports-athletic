@@ -12,3 +12,19 @@ export const getLastMaxFRep = (
   const arr = maxFRepetitions ?? [];
   return arr.length > 0 ? arr[arr.length - 1] : undefined;
 };
+
+/**
+ * Working set entries of a max strength exercise in set order, one per set,
+ * so the next session can continue every set on its own ladder.
+ */
+export const getWorkingSetMaxFReps = (
+  exerciseList: {
+    exerciseId: string;
+    maxFRepetitions?: MaxForceRepetitionsDataType[];
+  }[],
+  exerciseId: string,
+): MaxForceRepetitionsDataType[] =>
+  exerciseList
+    .filter((entry) => entry.exerciseId === exerciseId)
+    .flatMap((entry) => entry.maxFRepetitions ?? [])
+    .filter((entry) => entry.level !== "WARMUP");

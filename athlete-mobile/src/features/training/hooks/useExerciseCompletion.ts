@@ -220,7 +220,9 @@ export function useExerciseCompletion() {
    * Checks if the branch level needs to increase and changes exercise in training plan.
    */
   const saveExerciseAndBranchData = (index: number) => {
-    const currentExercise = exerciseList?.[index];
+    // Feedback given in the same tick is not yet in the rendered list.
+    const latestExerciseList = useTrainingStore.getState().exerciseList;
+    const currentExercise = latestExerciseList?.[index];
     const exerciseId = currentExercise?.exerciseId ?? "-1";
     const isPauseExercise = checkIsPauseExercise(exerciseId);
 
@@ -231,9 +233,10 @@ export function useExerciseCompletion() {
     }
 
     const nextExerciseIndex = index + 1;
-    const hasNextExercise = nextExerciseIndex < (exerciseList?.length ?? 0);
+    const hasNextExercise =
+      nextExerciseIndex < (latestExerciseList?.length ?? 0);
     const nextExercise = hasNextExercise
-      ? exerciseList?.[nextExerciseIndex]
+      ? latestExerciseList?.[nextExerciseIndex]
       : undefined;
     const isNextExercisePause = nextExercise
       ? checkIsPauseExercise(nextExercise.exerciseId)
@@ -281,7 +284,7 @@ export function useExerciseCompletion() {
             isNextExercisePause ||
             !nextExercise?.skill?.includes("CARDIO"))
         ) {
-          const mainCardio = findMainCardioExercise(exerciseList, index);
+          const mainCardio = findMainCardioExercise(latestExerciseList, index);
           if (mainCardio) {
             branchId = mainCardio.branchId;
             id = mainCardio.exerciseId;
@@ -300,7 +303,7 @@ export function useExerciseCompletion() {
           const ageGroup = ageGroupFor(personalData.birthday);
 
           // get adjustment of exercise
-          const exercise = exerciseList?.findLast(
+          const exercise = latestExerciseList?.findLast(
             (item) => item.exerciseId === exerciseId,
           );
           let adjustment = null;
@@ -318,7 +321,7 @@ export function useExerciseCompletion() {
             userExerciseData: exercise && {
               ...exercise,
               maxFRepetitions: getWorkingSetMaxFReps(
-                exerciseList ?? [],
+                latestExerciseList ?? [],
                 exerciseId,
               ),
             },

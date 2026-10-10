@@ -103,6 +103,18 @@ describe("useExerciseCompletion: standard progression", () => {
     expect(stored()?.repetition).toBe(10);
   });
 
+  it("keeps feedback given in the same tick as the save", () => {
+    seed({ repetition: 10 });
+    const { result } = renderHook(() => useExerciseCompletion());
+
+    act(() => {
+      result.current.handleFeedback(0, "SUCCEEDED");
+      result.current.saveExerciseAndBranchData(0);
+    });
+
+    expect(stored()?.feedback?.difficulty).toBe("SUCCEEDED");
+  });
+
   it("raises the weight by one weight step after TOO_EASY at the rep target", () => {
     seed({ repetition: 12, feedback: { difficulty: "TOO_EASY" } });
     const { result } = renderHook(() => useExerciseCompletion());

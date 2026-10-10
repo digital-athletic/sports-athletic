@@ -288,24 +288,12 @@ export const isInclineBenchPress = (
   return false;
 };
 
-const HYPERTROPHY_RANGES = {
-  repetition: { start: 8, target: 12 },
-  durationWithWeights: { start: 30, target: 50 },
-  durationWithoutWeights: { start: 30, target: 60 },
-} as const;
-
-const getHypertrophyRange = (
+const overridesExerciseValue = (
   skillIntensity: IntensityData,
-  exercise: ExerciseType,
   valueName: TrainingParameterType,
-) => {
-  if (!skillIntensity.usesHypertrophyRange) return undefined;
-  if (valueName === "repetition") return HYPERTROPHY_RANGES.repetition;
-  if (valueName !== "duration") return undefined;
-  return getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS")
-    ? HYPERTROPHY_RANGES.durationWithWeights
-    : HYPERTROPHY_RANGES.durationWithoutWeights;
-};
+) =>
+  !!skillIntensity.overridesExerciseRepsAndDuration &&
+  (valueName === "repetition" || valueName === "duration");
 
 /**
  * Gets most specific value for given exercise, user and valueType
@@ -324,13 +312,6 @@ export const getExerciseTargetValue = (
   level: TrainingLevelType,
   genderTag: GenderTag,
 ) => {
-  const hypertrophyRange = getHypertrophyRange(
-    skillIntensity,
-    branchExercise,
-    valueName,
-  );
-  if (hypertrophyRange) return hypertrophyRange.target;
-
   let value: number | undefined;
   if (
     skillIntensity.targetValue[valueName] &&
@@ -350,6 +331,7 @@ export const getExerciseTargetValue = (
     }
   }
   if (
+    !overridesExerciseValue(skillIntensity, valueName) &&
     branchExercise.values &&
     branchExercise.values[valueName] &&
     branchExercise.values[valueName].targetValue
@@ -407,13 +389,6 @@ export const getExerciseStartValue = (
   level: TrainingLevelType,
   genderTag: GenderTag,
 ) => {
-  const hypertrophyRange = getHypertrophyRange(
-    skillIntensity,
-    branchExercise,
-    valueName,
-  );
-  if (hypertrophyRange) return hypertrophyRange.start;
-
   let value: number | undefined;
   if (
     skillIntensity.startValue[valueName] &&
@@ -432,6 +407,7 @@ export const getExerciseStartValue = (
     }
   }
   if (
+    !overridesExerciseValue(skillIntensity, valueName) &&
     branchExercise.values &&
     branchExercise.values[valueName] &&
     branchExercise.values[valueName].startValue

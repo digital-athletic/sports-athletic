@@ -1,4 +1,7 @@
-import type { GenderTag } from "@/features/training/models/Intensity";
+import type {
+  GenderTag,
+  IntensityData,
+} from "@/features/training/models/Intensity";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import {
   getResetDuration,
@@ -37,7 +40,7 @@ const STANDARD_SKILLS: SkillCode[] = [
   "PREVKNEE",
 ];
 
-const HYPERTROPHY_SKILLS: SkillCode[] = ["SWR2", "SWR2KG"];
+const HYPERTROPHY_SKILLS: SkillCode[] = ["SWR1", "SWR1KG", "SWR2", "SWR2KG"];
 
 const everyCombination = <T>(values: T[]) =>
   values.flatMap((value) =>
@@ -122,10 +125,10 @@ describe("standard progression config: hypertrophy range", () => {
   )(
     "%s for gender %s and level %s resolves %s with weights %s to %i up to %i",
     (skill, gender, level, mode, withWeights, start, target) => {
-      const intensity = getIntensityBySkill(skill);
       const exercise = createExercise(mode, withWeights, {
         [mode]: authoredValues("15", "80"),
       });
+      const intensity = getIntensityBySkill(skill, exercise);
 
       expect(
         getExerciseStartValue(intensity, exercise, mode, level, gender),
@@ -135,6 +138,129 @@ describe("standard progression config: hypertrophy range", () => {
       ).toBe(target);
     },
   );
+
+  it("weighted exercise under skill SWR2KG reads the SWR2 config", () => {
+    const exercise = createExercise("duration", true);
+    const intensity = getIntensityBySkill("SWR2KG", exercise);
+
+    expect(intensity).toBe(getIntensityBySkill("SWR2"));
+    expect(
+      getExerciseTargetValue(intensity, exercise, "duration", "advanced", "m"),
+    ).toBe(50);
+  });
+
+  it("bodyweight exercise under skill SWR1 reads the SWR2KG config", () => {
+    const exercise = createExercise("duration", false);
+    const intensity = getIntensityBySkill("SWR1", exercise);
+
+    expect(intensity).toBe(getIntensityBySkill("SWR2KG"));
+    expect(
+      getExerciseTargetValue(intensity, exercise, "duration", "advanced", "m"),
+    ).toBe(60);
+  });
+
+  it("ignores authored exercise repetitions only while the flag is set", () => {
+    const exercise = createExercise("repetition", true, {
+      repetition: authoredValues("15", "20"),
+    });
+    const intensity = getIntensityBySkill("SWR2", exercise);
+    const withoutFlag: IntensityData = {
+      ...intensity,
+      overridesExerciseRepsAndDuration: false,
+    };
+
+    expect(intensity.overridesExerciseRepsAndDuration).toBe(true);
+    expect(
+      getExerciseStartValue(intensity, exercise, "repetition", "advanced", "m"),
+    ).toBe(8);
+    expect(
+      getExerciseTargetValue(
+        intensity,
+        exercise,
+        "repetition",
+        "advanced",
+        "m",
+      ),
+    ).toBe(12);
+    expect(
+      getExerciseStartValue(
+        withoutFlag,
+        exercise,
+        "repetition",
+        "advanced",
+        "m",
+      ),
+    ).toBe(15);
+    expect(
+      getExerciseTargetValue(
+        withoutFlag,
+        exercise,
+        "repetition",
+        "advanced",
+        "m",
+      ),
+    ).toBe(20);
+  });
+
+  it("reads repetition and duration from the config start and target", () => {
+    const base = getIntensityBySkill("SWR2");
+    const intensity: IntensityData = {
+      ...base,
+      startValue: {
+        ...base.startValue,
+        repetition: { default: { default: 6 } },
+        duration: { default: { default: 20 }, m: { advanced: 25 } },
+      },
+      targetValue: {
+        ...base.targetValue,
+        repetition: { default: { default: 10 } },
+        duration: { default: { default: 40 }, m: { advanced: 45 } },
+      },
+    };
+    const repsExercise = createExercise("repetition", true, {
+      repetition: authoredValues("15", "20"),
+    });
+    const durationExercise = createExercise("duration", true, {
+      duration: authoredValues("40", "80"),
+    });
+
+    expect(
+      getExerciseStartValue(
+        intensity,
+        repsExercise,
+        "repetition",
+        "advanced",
+        "m",
+      ),
+    ).toBe(6);
+    expect(
+      getExerciseTargetValue(
+        intensity,
+        repsExercise,
+        "repetition",
+        "advanced",
+        "m",
+      ),
+    ).toBe(10);
+    expect(
+      getExerciseStartValue(
+        intensity,
+        durationExercise,
+        "duration",
+        "advanced",
+        "m",
+      ),
+    ).toBe(25);
+    expect(
+      getExerciseTargetValue(
+        intensity,
+        durationExercise,
+        "duration",
+        "advanced",
+        "w",
+      ),
+    ).toBe(40);
+  });
 
   it("starts a new exercise at the hypertrophy start despite authored values", () => {
     const exercise = createExercise("repetition", true, {

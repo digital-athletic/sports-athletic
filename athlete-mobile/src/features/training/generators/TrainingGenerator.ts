@@ -2950,6 +2950,7 @@ export default class TrainingGenerator {
     // from data/generator/TestIntensity
     let intensity: IntensityData | null = getIntensityBySkill(
       skillName as SkillCode,
+      exercise,
     );
 
     let exerciseValues = this.getExerciseValues(
@@ -3569,7 +3570,7 @@ export default class TrainingGenerator {
       let isWeightFMaxExercise =
         exerciseWeightType === "weightFMax" ||
         (!exerciseWeightType && intensityWeightType === "weightFMax");
-      const usesAuthoredRange = !intensity?.usesHypertrophyRange;
+      const usesAuthoredRange = !intensity?.overridesExerciseRepsAndDuration;
 
       if (
         usesAuthoredRange &&
@@ -3630,8 +3631,8 @@ export default class TrainingGenerator {
       }
     }
 
-    // Stored hypertrophy values may predate the global range.
-    if (intensity?.usesHypertrophyRange) {
+    // Stored hypertrophy values may predate the config start and target.
+    if (intensity?.overridesExerciseRepsAndDuration) {
       for (const valueName of ["repetition", "duration"] as const) {
         const value = data[valueName];
         if (typeof value === "number") {
@@ -3964,15 +3965,28 @@ const getStartValues = (
   return result;
 };
 
-export const getIntensityBySkill = (skill: SkillCode) => {
+/**
+ * Hypertrophy trees mix weighted and bodyweight exercises, so a known exercise
+ * picks the config by its EQ_TYPE instead of by the skill.
+ */
+export const getIntensityBySkill = (
+  skill: SkillCode,
+  exercise?: Pick<ExerciseType, "tags">,
+) => {
   switch (skill) {
-    // use SWR2 till exercises can be distinguished between SWR1 and SWR2
     case "SWR1":
     case "SWR1KG":
     case "SWR2":
-      return IntensitySWR_2;
     case "SWR2KG":
-      return IntensitySWR_2_KG;
+      if (exercise) {
+        return getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes(
+          "WEIGHTS",
+        )
+          ? IntensitySWR_2
+          : IntensitySWR_2_KG;
+      }
+      // use SWR2 till exercises can be distinguished between SWR1 and SWR2
+      return skill === "SWR2KG" ? IntensitySWR_2_KG : IntensitySWR_2;
     case "CARDIO_3":
       return IntensityCARDIO_3;
     case "CARDIO_2":

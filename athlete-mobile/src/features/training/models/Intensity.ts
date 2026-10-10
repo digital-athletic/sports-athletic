@@ -41,8 +41,8 @@ export type IntensityValueType = Partial<
 >;
 
 export type IntensityData = {
-  /** Hypertrophy: the global rep/duration range replaces exercise values. */
-  usesHypertrophyRange?: boolean;
+  /** Repetition and duration start/target of this config win over exercise values. */
+  overridesExerciseRepsAndDuration?: boolean;
   adjustment: IntensityAdjustment;
   startValue: IntensityValueType;
   targetValue: IntensityValueType;

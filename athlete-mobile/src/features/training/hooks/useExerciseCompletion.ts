@@ -372,7 +372,7 @@ export function useExerciseCompletion() {
         // do not increase values for pause/support exercises/others
         if (typeof branchId === "string" && skill) {
           // from data/generator/TestIntensity
-          let intensity = getIntensityBySkill(skill);
+          let intensity = getIntensityBySkill(skill, currentExerciseData);
 
           // go on if exercise data found
           if (currentExerciseData && userLevel) {

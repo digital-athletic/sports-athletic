@@ -299,7 +299,7 @@ export function getResetDuration(
   userLevel: TrainingLevelType,
 ): number | undefined {
   if (!exerciseData.isAdvanceByDuration) return undefined;
-  if (intensity.usesHypertrophyRange) {
+  if (intensity.overridesExerciseRepsAndDuration) {
     return getExerciseStartValue(
       intensity,
       exerciseData,
@@ -331,7 +331,7 @@ export function getResetRepetition(
   userLevel: TrainingLevelType,
 ): number | undefined {
   if (!exerciseData.isAdvanceByReps) return undefined;
-  if (intensity.usesHypertrophyRange) {
+  if (intensity.overridesExerciseRepsAndDuration) {
     return getExerciseStartValue(
       intensity,
       exerciseData,

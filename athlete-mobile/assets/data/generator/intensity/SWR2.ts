@@ -1,7 +1,7 @@
 import { IntensityData } from "@/features/training/models/Intensity";
 
 export const IntensitySWR_2: IntensityData = {
-  usesHypertrophyRange: true,
+  overridesExerciseRepsAndDuration: true,
   adjustment: {
     duration: {
       default: {

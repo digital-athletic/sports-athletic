@@ -54,14 +54,12 @@ export const getUserLevel = (user: UserType): LevelTag => {
 };
 
 const getMaxValueType = (exercise: ExerciseType): MaxValueTypeName => {
-  const { MAX_VALUE_TYPES, SUPPORTED_SINGLE_LEG_EXERCISE_IDS } =
-    WorkoutConstants;
+  const { MAX_VALUE_TYPES } = WorkoutConstants;
   const isOneSided = getTagValues(exercise.tags, TagGroups.SIDE).includes(
     "ONE",
   );
   const isUpperBody =
     getTagValues(exercise.tags, TagGroups.REGION)[0] === "UPPER_BODY";
-  const isSupported = SUPPORTED_SINGLE_LEG_EXERCISE_IDS.includes(exercise.id);
   const isDumbbell = getTagValues(exercise.tags, TagGroups.EQUIPMENT).includes(
     WorkoutConstants.EQUIPMENT.DUMBBELL,
   );
@@ -69,24 +67,17 @@ const getMaxValueType = (exercise: ExerciseType): MaxValueTypeName => {
     return isDumbbell ? MAX_VALUE_TYPES.DUMBBELLS : MAX_VALUE_TYPES.BARBELL;
   }
   if (isDumbbell) {
-    if (isUpperBody) return MAX_VALUE_TYPES.ONE_SIDED_UPPER;
-    return isSupported
-      ? MAX_VALUE_TYPES.ONE_SIDED_LOWER_SUPPORTED
+    return isUpperBody
+      ? MAX_VALUE_TYPES.ONE_SIDED_UPPER
       : MAX_VALUE_TYPES.ONE_SIDED_LOWER;
   }
-  return isSupported && !isUpperBody
-    ? MAX_VALUE_TYPES.ONE_SIDED_BARBELL_SUPPORTED
-    : MAX_VALUE_TYPES.ONE_SIDED_BARBELL;
+  return MAX_VALUE_TYPES.ONE_SIDED_BARBELL;
 };
 
 /** Share of the movement direction's barbell 1RM that applies to the exercise. */
 const getConversionFactor = (exercise: ExerciseType) => {
   const equipment = getTagValues(exercise.tags, TagGroups.EQUIPMENT);
   const isDumbbell = equipment.includes(WorkoutConstants.EQUIPMENT.DUMBBELL);
-  if (WorkoutConstants.JUMP_SQUAT_EXERCISE_IDS.includes(exercise.id)) {
-    const factors = WorkoutConstants.JUMP_SQUAT_CONVERSION_FACTORS;
-    return isDumbbell ? factors.dumbbellPerHand : factors.barbell;
-  }
   const directions = getTagValues(exercise.tags, TagGroups.EXERCISE_DIRECTION);
   if (isInclineBenchPress(equipment, directions)) {
     const factors = WorkoutConstants.INCLINE_BENCH_CONVERSION_FACTORS;
@@ -654,7 +645,6 @@ export const calculateAdjustedMaxValues = (maxValue: number): MaxValueType => {
       oneSidedUpper: undefined,
       oneSidedBarbell: undefined,
       oneSidedLower: undefined,
-      oneSidedBarbellSupported: undefined,
       oneSidedLowerSupported: undefined,
     };
   }
@@ -670,7 +660,6 @@ export const calculateAdjustedMaxValues = (maxValue: number): MaxValueType => {
     oneSidedUpper: convert("oneSidedUpper"),
     oneSidedBarbell: convert("oneSidedBarbell"),
     oneSidedLower: convert("oneSidedLower"),
-    oneSidedBarbellSupported: convert("oneSidedBarbellSupported"),
     oneSidedLowerSupported: convert("oneSidedLowerSupported"),
   };
 };

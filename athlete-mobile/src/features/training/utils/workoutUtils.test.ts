@@ -209,12 +209,8 @@ describe("getMaxValueForExercise: equipment conversion of the barbell 1RM", () =
     { id: "509", exercise: "single arm dumbbell row", expected: 42.5 },
     { id: "362", exercise: "single leg barbell squat", expected: 45 },
     { id: "359", exercise: "single leg dumbbell squat", expected: 22.5 },
-    { id: "70", exercise: "supported single leg barbell squat", expected: 60 },
-    { id: "67", exercise: "supported single leg dumbbell squat", expected: 30 },
     { id: "346", exercise: "barbell incline bench press", expected: 90 },
     { id: "350", exercise: "dumbbell incline bench press", expected: 38.25 },
-    { id: "292", exercise: "barbell jump squat", expected: 100 },
-    { id: "294", exercise: "dumbbell jump squat", expected: 50 },
   ])("$exercise ($id): $expected kg", ({ id, expected }) => {
     const exercise = getExerciseById(id);
     expect(exercise).toBeDefined();
@@ -249,18 +245,12 @@ describe("calculateAdjustedMaxValues: equipment conversion", () => {
       oneSidedUpper: 42.5,
       oneSidedBarbell: 45,
       oneSidedLower: 22.5,
-      oneSidedBarbellSupported: 60,
       oneSidedLowerSupported: 30,
     });
   });
 });
 
-describe("jump squat: load from the squat 1RM", () => {
-  const maxValues: MaxValuesType = {
-    ...DEFAULT_MAX_VALUES,
-    kneeDominant: { ...DEFAULT_MAX_VALUE, barbell: 100 },
-  };
-
+describe("jump squat: authored loads from the squat 1RM", () => {
   it.each([
     { level: "beginner", start: 5, target: 10 },
     { level: "advanced", start: 10, target: 20 },
@@ -281,26 +271,6 @@ describe("jump squat: load from the squat 1RM", () => {
       }
     },
   );
-
-  it("splits the total load over two dumbbells without dumbbell conversion", () => {
-    // 10% of a 100 kg squat 1RM is 10 kg total, 5 kg per dumbbell
-    expect(
-      deriveWeightForExercise(
-        10,
-        "weightFMax",
-        getExerciseById("294")!,
-        maxValues,
-      ),
-    ).toBe(5);
-    expect(
-      deriveWeightForExercise(
-        10,
-        "weightFMax",
-        getExerciseById("292")!,
-        maxValues,
-      ),
-    ).toBe(10);
-  });
 });
 
 describe("applyMaxValueToDirections", () => {

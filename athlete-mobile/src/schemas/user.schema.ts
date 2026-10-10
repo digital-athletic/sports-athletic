@@ -44,7 +44,6 @@ export const MaxValueSchema = v.object({
   oneSidedUpper: v.optional(v.number()),
   oneSidedBarbell: v.optional(v.number()),
   oneSidedLower: v.optional(v.number()),
-  oneSidedBarbellSupported: v.optional(v.number()),
   oneSidedLowerSupported: v.optional(v.number()),
 });
 export type MaxValueType = v.InferOutput<typeof MaxValueSchema>;

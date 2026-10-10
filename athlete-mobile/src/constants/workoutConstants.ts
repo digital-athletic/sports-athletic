@@ -939,7 +939,6 @@ const MAX_VALUE_TYPES = {
   ONE_SIDED_UPPER: "oneSidedUpper",
   ONE_SIDED_BARBELL: "oneSidedBarbell",
   ONE_SIDED_LOWER: "oneSidedLower",
-  ONE_SIDED_BARBELL_SUPPORTED: "oneSidedBarbellSupported",
   ONE_SIDED_LOWER_SUPPORTED: "oneSidedLowerSupported",
 } as const;
 
@@ -953,7 +952,6 @@ const MAX_VALUE_CONVERSION_FACTORS: Record<MaxValueTypeName, number> = {
   oneSidedUpper: 0.425,
   oneSidedBarbell: 0.45,
   oneSidedLower: 0.225,
-  oneSidedBarbellSupported: 0.6,
   oneSidedLowerSupported: 0.3,
 };
 
@@ -961,26 +959,6 @@ const INCLINE_BENCH_CONVERSION_FACTORS = {
   barbell: 0.9,
   dumbbellPerHand: 0.3825,
 } as const;
-
-/** Jump squat loads are total external load, split evenly over two dumbbells. */
-const JUMP_SQUAT_CONVERSION_FACTORS = {
-  barbell: 1,
-  dumbbellPerHand: 0.5,
-} as const;
-
-const JUMP_SQUAT_EXERCISE_IDS = ["291", "292", "293", "294"];
-
-/** Single leg exercises with the rear foot on a bench. */
-const SUPPORTED_SINGLE_LEG_EXERCISE_IDS = [
-  "67",
-  "68",
-  "70",
-  "71",
-  "795",
-  "796",
-  "798",
-  "799",
-];
 
 const NO_INCREASE_WORKOUT_PLAN_TYPE = ["WU", "CD", "MOB", "BR", "TEST_WORKOUT"];
 
@@ -1220,8 +1198,6 @@ export const WorkoutConstants = {
   EXERCISING_BENCH_EXERCISES,
   HEART_RATE_DEFAULT_AGE,
   INCLINE_BENCH_CONVERSION_FACTORS,
-  JUMP_SQUAT_CONVERSION_FACTORS,
-  JUMP_SQUAT_EXERCISE_IDS,
   IGNORE_SORENESS_SKILLS,
   LEVELS,
   MAX_KRAFT_MINIMAL_WEIGHT_PERCENTAGE_PER_USER_LEVEL,
@@ -1249,7 +1225,6 @@ export const WorkoutConstants = {
   SPORTS,
   SPORTS_SORTED,
   STRENGTH_TEST_DIRECTIONS,
-  SUPPORTED_SINGLE_LEG_EXERCISE_IDS,
   TEST_EXERCISES,
   TEST_EXERCISES_DIRECTIONS,
   TEST_EXERCISES_REPETITIONS_PERCENTAGE,

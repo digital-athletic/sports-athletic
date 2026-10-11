@@ -35412,10 +35412,10 @@
       "weight": {
         "startValue": {
           "default": {
-            "default": 15,
-            "beginner": "",
-            "advanced": "",
-            "professional": 15
+            "default": 10,
+            "beginner": 5,
+            "advanced": 10,
+            "professional": 10
           },
           "m": {
             "advanced": "",
@@ -35431,8 +35431,10 @@
         },
         "targetValue": {
           "default": {
-            "default": 25,
-            "professional": 25
+            "default": 20,
+            "beginner": 10,
+            "advanced": 20,
+            "professional": 20
           },
           "m": {
             "default": "",
@@ -35683,9 +35685,10 @@
       "weight": {
         "startValue": {
           "default": {
-            "default": "",
-            "advanced": 15,
-            "professional": 15
+            "default": 10,
+            "beginner": 5,
+            "advanced": 10,
+            "professional": 10
           },
           "m": {
             "advanced": "",
@@ -35702,9 +35705,10 @@
         },
         "targetValue": {
           "default": {
-            "default": "",
+            "default": 20,
+            "beginner": 10,
             "advanced": 20,
-            "professional": 25
+            "professional": 20
           },
           "m": {
             "default": "",

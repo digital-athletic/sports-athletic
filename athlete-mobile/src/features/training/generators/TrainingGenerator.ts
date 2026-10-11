@@ -3678,23 +3678,10 @@ export default class TrainingGenerator {
     userExercisesData: Record<string, UserExerciseDataType | undefined> | null,
   ): MaxTrainingWeightsResult => {
     const userLevel = getUserLevel(user);
-    const equipment = getTagValues(exercise.tags, TagGroups.EQUIPMENT);
-    const exerciseDirections = getTagValues(
-      exercise.tags,
-      TagGroups.EXERCISE_DIRECTION,
-    );
-    let firstWeightPercentage =
+    const firstWeightPercentage =
       WorkoutConstants.MAX_KRAFT_MINIMAL_WEIGHT_PERCENTAGE_PER_USER_LEVEL[
         userLevel
       ];
-    let inclineBenchWeightDifference = 0;
-    if (isInclineBenchPress(equipment, exerciseDirections)) {
-      //  reduce weight for inclined press
-      firstWeightPercentage =
-        userLevel === WorkoutConstants.LEVELS.PROFESSIONAL ? 65 : 60;
-      inclineBenchWeightDifference =
-        WorkoutConstants.MAX_KRAFT_INCLINE_BENCH_WEIGHT_DIFFERENCE;
-    }
     const userExerciseData = userExercisesData
       ? userExercisesData[exercise.id]
       : undefined;
@@ -3733,10 +3720,7 @@ export default class TrainingGenerator {
       percentage -= 2.5;
     }
     trainingWeights.unshift(firstWeightPercentage);
-    return {
-      trainingWeights: trainingWeights,
-      inclineBenchWeightDifference: inclineBenchWeightDifference,
-    };
+    return { trainingWeights: trainingWeights };
   };
 
   /**
@@ -3751,14 +3735,7 @@ export default class TrainingGenerator {
     exercise: ExerciseType,
     genderTag: GenderTag,
   ): MaxTrainingRepsEntry[] => {
-    let maxTrainingWeights = maxTrainingWeightsObject.trainingWeights;
-    const inclineBenchWeightDifference =
-      maxTrainingWeightsObject.inclineBenchWeightDifference;
-    if (inclineBenchWeightDifference > 0) {
-      maxTrainingWeights = maxTrainingWeights.map(
-        (w) => w + inclineBenchWeightDifference,
-      );
-    }
+    const maxTrainingWeights = maxTrainingWeightsObject.trainingWeights;
     const userLevel = getUserLevel(user);
     const birthday = getUserBirthday(user);
     const userAge = ageGroupFor(birthday);
@@ -3877,29 +3854,6 @@ TrainingGenerator.DEBUG = false;
 const hasJumpBox = (equipment: string[]) => {
   const { BOX_LOW, BOX_HIGH } = WorkoutConstants.EQUIPMENT;
   return equipment.some((eq) => eq === BOX_LOW || eq === BOX_HIGH);
-};
-
-const isInclineBenchPress = (
-  equipment: string[],
-  exerciseDirections: string[],
-) => {
-  const { INCLINE_BENCH, ADJUSTABLE_BENCH } = WorkoutConstants.EQUIPMENT;
-  if (equipment.indexOf(INCLINE_BENCH) === -1) {
-    return false;
-  }
-  const hasOtherBenches = equipment
-    .filter((eq) => eq.indexOf("BENCH") > -1)
-    .filter(
-      (bench) => bench !== INCLINE_BENCH && bench !== ADJUSTABLE_BENCH,
-    ).length;
-  if (hasOtherBenches > 0) {
-    return false;
-  }
-  return (
-    exerciseDirections.indexOf(
-      WorkoutConstants.EXERCISE_DIRECTIONS.HORIZONTAL_PUSH,
-    ) > -1
-  );
 };
 
 const getOpposingMuscles = (muscles: string[]): string[] => {

@@ -6,7 +6,7 @@
 
 Every percentage in this document refers to **F-Max**: the maximum load that applies to the exercise being performed.
 
-- F-Max is not measured per exercise. It is derived from the barbell 1RM of the exercise's **movement direction** (knee, hip, horizontal push, …) and then converted for the **equipment variant** of the exercise (barbell 100%, dumbbells 45% per hand, …). "The F-Max of the respective exercise" is therefore the equipment-adjusted max value for that exercise's direction.
+- F-Max is not measured per exercise. It is derived from the barbell 1RM of the exercise's **movement direction** (knee, hip, horizontal push, …) and then converted for the **equipment variant** of the exercise (barbell 100%, dumbbells 42.5% per hand, …; see [Equipment conversion](./weight-calculation-from-strength-tests.md#3-equipment-conversion)). "The F-Max of the respective exercise" is therefore the equipment-adjusted max value for that exercise's direction.
 - The 1RM itself comes from a periodic **strength test**: a submaximal rep-out estimated with the Epley formula, `1RM = test weight × (1 + reps / 30)`. A true single-rep max attempt is never performed.
 - The full chain (test → 1RM → equipment conversion → training weight → rounding) is specified in [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md).
 - F-Max is treated as constant while an exercise progresses. A new strength test replaces it; because progression is stored as percentages (Section 8), the ladder position is kept and only the resulting kg values change. The re-test cadence is not prescribed by this document.

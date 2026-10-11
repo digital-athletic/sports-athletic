@@ -906,12 +906,12 @@ const TEST_EXERCISES_DIRECTIONS: Record<string, string[] | undefined> = {
    * 297: LH Rudern mit Untergriff SWR (Bent-over Row)
    * 342: LH Bankdruecken SWR (Bench Press)
    */
-  // Squat measures knee-dominant / lower-body strength only. It must NOT write
+  // Squat measures knee-dominant strength only. It must NOT write
   // the hip-hinge direction, which is owned exclusively by the deadlift (50) so
   // a squat-only test does not overwrite the displayed deadlift max.
-  "25": ["KNEE", "LOWER_BODY"],
+  "25": ["KNEE"],
   "50": ["HIP"],
-  "54": ["VERTICAL_PUSH", "VERTICAL_PULL"],
+  "54": ["VERTICAL_PUSH"],
   "297": ["HORIZONTAL_PULL"],
   "342": ["HORIZONTAL_PUSH"],
 };
@@ -940,6 +940,24 @@ const MAX_VALUE_TYPES = {
   ONE_SIDED_BARBELL: "oneSidedBarbell",
   ONE_SIDED_LOWER: "oneSidedLower",
   ONE_SIDED_LOWER_SUPPORTED: "oneSidedLowerSupported",
+} as const;
+
+export type MaxValueTypeName =
+  (typeof MAX_VALUE_TYPES)[keyof typeof MAX_VALUE_TYPES];
+
+/** Share of the barbell 1RM per equipment variant; dumbbell values are per hand. */
+const MAX_VALUE_CONVERSION_FACTORS: Record<MaxValueTypeName, number> = {
+  barbell: 1,
+  dumbbells: 0.425,
+  oneSidedUpper: 0.425,
+  oneSidedBarbell: 0.45,
+  oneSidedLower: 0.225,
+  oneSidedLowerSupported: 0.3,
+};
+
+const INCLINE_BENCH_CONVERSION_FACTORS = {
+  barbell: 0.9,
+  dumbbellPerHand: 0.3825,
 } as const;
 
 const NO_INCREASE_WORKOUT_PLAN_TYPE = ["WU", "CD", "MOB", "BR", "TEST_WORKOUT"];
@@ -1143,8 +1161,6 @@ const MAX_KRAFT_MINIMAL_WEIGHT_PERCENTAGE_PER_USER_LEVEL = {
   BEGINNER: 70,
 };
 
-const MAX_KRAFT_INCLINE_BENCH_WEIGHT_DIFFERENCE = 7.5;
-
 const SPORTS_SORTED = [
   "HANDBALL_SPORT",
   "FOOTBALL_SPORT",
@@ -1181,14 +1197,15 @@ export const WorkoutConstants = {
   EXERCISE_DIRECTIONS,
   EXERCISING_BENCH_EXERCISES,
   HEART_RATE_DEFAULT_AGE,
+  INCLINE_BENCH_CONVERSION_FACTORS,
   IGNORE_SORENESS_SKILLS,
   LEVELS,
-  MAX_KRAFT_INCLINE_BENCH_WEIGHT_DIFFERENCE,
   MAX_KRAFT_MINIMAL_WEIGHT_PERCENTAGE_PER_USER_LEVEL,
   MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT,
   MAX_KRAFT_REPETITIONS_WARMUP,
   MAX_KRAFT_WEIGHT_ADJUSTMENT,
   MAX_KRAFT_WORKING_REPS_PER_USER_LEVEL,
+  MAX_VALUE_CONVERSION_FACTORS,
   MAX_VALUE_TYPES,
   MAX_VALUES_EXPIRATION_TIME_IN_MS,
   MUSCLES,

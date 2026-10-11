@@ -34,10 +34,8 @@ export const EXERCISE_DIRECTIONS_VALUES_MAP: Record<
   Exclude<keyof MaxValuesType, "testAt">
 > = {
   VERTICAL_PUSH: "verticalPush",
-  VERTICAL_PULL: "verticalPull",
   HORIZONTAL_PUSH: "horizontalPush",
   HORIZONTAL_PULL: "horizontalPull",
   KNEE: "kneeDominant",
   HIP: "hipHinge",
-  LOWER_BODY: "lowerBody",
 };

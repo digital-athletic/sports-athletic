@@ -14,12 +14,15 @@ import type { MaxForceRepetitionsDataType } from "@/schemas/sync.schema";
 // while the min is 70%, so a weight adjustment always lands on the 65% cap.
 // Update these deliberately once those bugs are fixed.
 
-// A LOWER_BODY barbell exercise resolves to maxValues.lowerBody.barbell.
-const lowerBodyExercise = { tags: ["REGION_LOWER_BODY"] } as ExerciseType;
+// A knee dominant barbell exercise resolves to maxValues.kneeDominant.barbell.
+const kneeExercise = {
+  id: "knee",
+  tags: ["EQ_BARBELL", "EXERCISE_DIRECTION_KNEE", "REGION_LOWER_BODY"],
+} as ExerciseType;
 
 const maxValuesWith = (barbell: number): MaxValuesType => ({
   ...DEFAULT_MAX_VALUES,
-  lowerBody: { ...DEFAULT_MAX_VALUE, barbell },
+  kneeDominant: { ...DEFAULT_MAX_VALUE, barbell },
 });
 
 const userExerciseWith = (
@@ -31,7 +34,7 @@ const userExerciseWith = (
 const baseInput: MaxStrengthAdjustmentInput = {
   weight: 120,
   adjustment: "SUCCEEDED",
-  exerciseData: lowerBodyExercise,
+  exerciseData: kneeExercise,
   userExerciseData: userExerciseWith([{ level: "HARD", repetitions: 3 }]),
   maxValues: maxValuesWith(200), // 120/200 => 60% weight percentage
   ageGroup: "ADULT",

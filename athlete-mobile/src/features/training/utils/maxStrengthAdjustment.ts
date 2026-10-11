@@ -1,4 +1,3 @@
-import { TagGroups } from "@/constants/tagGroups";
 import {
   type AgeGroupTag,
   type ExerciseDifficultyType,
@@ -11,12 +10,10 @@ import type { UserExerciseDataType } from "@/features/training/models/UserExerci
 import type { TrainingLevelType } from "@/schemas/common.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { MaxForceRepetitionsDataType } from "@/schemas/sync.schema";
-import { getTagValues } from "@/utils/tagUtils";
 import { getLastMaxFRep } from "./maxFRepetitionsUtils";
 import {
   getMaxValueForExercise,
   getRoundedResultForValueAndStep,
-  isInclineBenchPress,
 } from "./workoutUtils";
 
 export interface MaxStrengthAdjustmentInput {
@@ -112,20 +109,6 @@ export function calculateMaxStrengthAdjustment(
         levelTag
       ]
     : null;
-  const equipment = getTagValues(exerciseData?.tags ?? [], TagGroups.EQUIPMENT);
-  const exerciseDirections = getTagValues(
-    exerciseData?.tags ?? [],
-    TagGroups.EXERCISE_DIRECTION,
-  );
-  if (
-    isInclineBenchPress(equipment, exerciseDirections) &&
-    typeof minimumWeightPercentage === "number"
-  ) {
-    // reduce minimumWeightPercentage for inclined press
-    minimumWeightPercentage =
-      minimumWeightPercentage -
-      WorkoutConstants.MAX_KRAFT_INCLINE_BENCH_WEIGHT_DIFFERENCE;
-  }
   // set exercise startValue if entered from webTool
   if (exerciseData?.values?.weight?.startValue) {
     if (

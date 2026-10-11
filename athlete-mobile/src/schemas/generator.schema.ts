@@ -546,7 +546,6 @@ export type ExerciseValuesData = {
  */
 export type MaxTrainingWeightsResult = {
   trainingWeights: number[];
-  inclineBenchWeightDifference: number;
 };
 
 /**

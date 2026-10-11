@@ -1078,15 +1078,16 @@ describe("TrainingGenerator", () => {
       expect(result.trainingWeights.length).toBeGreaterThan(0);
     });
 
-    it("returns incline bench weight difference", () => {
-      const result = generator.getMaxTrainingWeights(
-        weightExercise,
-        mockUser,
-        {},
-      );
+    it("uses the same percentages for an incline bench press as for a flat one", () => {
+      // the incline factor already lowers the adjusted max of the exercise
+      const inclineExercise: ExerciseType = {
+        ...weightExercise,
+        tags: [...weightExercise.tags, "EQ_INCLINE_BENCH"],
+      };
 
-      expect(result).toHaveProperty("inclineBenchWeightDifference");
-      expect(typeof result.inclineBenchWeightDifference).toBe("number");
+      expect(
+        generator.getMaxTrainingWeights(inclineExercise, mockUser, {}),
+      ).toEqual(generator.getMaxTrainingWeights(weightExercise, mockUser, {}));
     });
 
     it("generates appropriate training weights array", () => {

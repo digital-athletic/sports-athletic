@@ -16,6 +16,25 @@ const PersistedExerciseProgressStorageSchema = v.object({
   }),
 });
 
+const GeneratedExerciseListStorageSchema = v.object({
+  state: v.object({
+    exerciseList: v.array(
+      v.object({
+        exerciseId: v.string(),
+        maxFRepetitions: v.optional(
+          v.array(
+            v.object({
+              level: v.optional(v.string()),
+              repetitions: v.optional(v.number()),
+              weightPercentage: v.optional(v.number()),
+            }),
+          ),
+        ),
+      }),
+    ),
+  }),
+});
+
 export class WorkoutPage extends BasePage {
   private get skipButton() {
     return this.page.locator('[aria-label="play-forward"]').first();
@@ -195,16 +214,24 @@ export class WorkoutPage extends BasePage {
   }
 
   /**
-   * Reads the generated training exercise list from the training store.
-   * Returns exercises with their maxFRepetitions (level + repetitions).
+   * Reads the last MAX ladder step of the last generated entry for an exercise
+   * from the training store. The last entry is the working set, not a warmup.
    */
-  async getGeneratedExerciseList() {
-    return this.page.evaluate(() => {
-      const raw = localStorage.getItem("training-storage");
-      if (!raw) return null;
-      const parsed = JSON.parse(raw);
-      return parsed?.state?.exerciseList ?? null;
-    });
+  async getLastMaxRepetition(exerciseId: string) {
+    const raw = await this.page.evaluate(() =>
+      localStorage.getItem("training-storage"),
+    );
+    if (!raw) return undefined;
+    const result = v.safeParse(
+      GeneratedExerciseListStorageSchema,
+      JSON.parse(raw),
+    );
+    if (!result.success) return undefined;
+    const entries = result.output.state.exerciseList.filter(
+      (e) => e.exerciseId === exerciseId,
+    );
+    const maxFRepetitions = entries[entries.length - 1]?.maxFRepetitions;
+    return maxFRepetitions?.[maxFRepetitions.length - 1];
   }
 
   async returnToHome() {

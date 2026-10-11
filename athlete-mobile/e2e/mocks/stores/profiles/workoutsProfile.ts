@@ -49,53 +49,6 @@ export function createWorkoutsProfile(workoutCount: number = 1): StoreDataMap {
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
- * Creates a profile with workouts at specific time intervals for testing
- * time scale filtering (week/month/year/total).
- *
- * Workouts created:
- * - "recent": 1 day ago (shows in all filters)
- * - "two-weeks-old": 10 days ago (shows in month, year, total - NOT week)
- * - "two-months-old": 45 days ago (shows in year, total - NOT week or month)
- *
- * Each workout has: 1800s duration, 50 XP, 450kg moved weight
- *
- * Expected totals by filter:
- * - Week: 1 workout (1800s, 50 XP, 450kg)
- * - Month: 2 workouts (3600s, 100 XP, 900kg)
- * - Year/Total: 3 workouts (5400s, 150 XP, 1350kg)
- */
-export function createTimeFilteredWorkoutsProfile(): StoreDataMap {
-  const baseProfile = createCompletedProfile();
-
-  const workouts: Record<string, CompletedWorkout> = {};
-
-  // Recent workout - 1 day ago (visible in all filters)
-  const recentWorkout = createSampleWorkout("recent", ONE_DAY_MS);
-  workouts[recentWorkout.id] = recentWorkout;
-
-  // 10 days old workout (visible in month, year, total - NOT week)
-  const twoWeeksOldWorkout = createSampleWorkout(
-    "two-weeks-old",
-    10 * ONE_DAY_MS,
-  );
-  workouts[twoWeeksOldWorkout.id] = twoWeeksOldWorkout;
-
-  // 45 days old workout (visible in year, total - NOT week or month)
-  const twoMonthsOldWorkout = createSampleWorkout(
-    "two-months-old",
-    45 * ONE_DAY_MS,
-  );
-  workouts[twoMonthsOldWorkout.id] = twoMonthsOldWorkout;
-
-  return {
-    ...baseProfile,
-    [STORAGE_KEYS.COMPLETED_WORKOUTS]: createCompletedWorkoutsStore({
-      workouts,
-    }),
-  };
-}
-
-/**
  * Creates a profile with workouts that have xpEarned: 0.
  * Used to test the bug where workouts with 0 XP were incorrectly
  * marked as "test workouts" and had their summary hidden.

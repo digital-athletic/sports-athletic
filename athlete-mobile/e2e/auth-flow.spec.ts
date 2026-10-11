@@ -5,350 +5,127 @@ import { mockSupabaseAuth } from "./mocks/supabase";
 import { BasePage } from "./pages";
 
 /**
- * Auth Flow E2E Tests
- *
- * Tests the authentication flow using Stack.Protected guards:
- *
- * Root layout uses symmetric Stack.Protected guards:
- * - Protected routes (tabs, anamnesis, training): guard={user != null}
- * - Onboarding route: guard={user == null}
- *
- * Test scenarios:
- * 1. Unauthenticated user can access onboarding
- * 2. Authenticated user CANNOT access onboarding (Stack.Protected blocks it)
- * 3. Unauthenticated user cannot access protected routes
- * 4. Authenticated user can access protected routes
- * 5. Loading screen shown while auth initializes
+ * Root layout guards (Stack.Protected): protected routes need a signed in
+ * user, the onboarding route needs a signed out user.
  */
-test.describe("Auth Flow", () => {
-  test.describe("Unauthenticated User", () => {
-    // No profile = empty localStorage = unauthenticated state
+test.describe("Auth Flow: signed out user", () => {
+  test("is sent to the login screen from every route", async ({ page }) => {
+    await mockSupabaseAuth(page);
+    const sendCodeButton = page.getByRole("button", { name: "Send code" });
 
-    test("sees onboarding/login screen when visiting root", async ({
-      page,
-    }) => {
-      await page.goto("/");
-
-      // Should see the login screen (part of onboarding)
-      // Stack.Protected with guard={user == null} allows access when not authenticated
-      await expect(page.getByRole("button", { name: "Send code" })).toBeVisible(
-        {
-          timeout: 5000,
-        },
-      );
-      await expect(page.getByPlaceholder("E-Mail")).toBeVisible();
-
-      // Should also have signup option
-      await expect(page.getByText(/sign up/i)).toBeVisible();
+    await page.goto("/");
+    await expect(sendCodeButton).toBeVisible({ timeout: 5000 });
+    await expect(page.getByPlaceholder("E-Mail")).toBeVisible();
+    await expect(page.getByText(/sign up/i)).toBeVisible();
+    await expect(page.getByText("Data Protection")).not.toBeVisible({
+      timeout: 3000,
     });
 
-    test("can access onboarding screen when visiting /onboarding", async ({
-      page,
-    }) => {
-      await page.goto("/onboarding");
-
-      // Should see the login screen
-      // Stack.Protected with guard={user == null} allows onboarding access when not authenticated
-      await expect(
-        page.getByRole("button", { name: "Send code" }),
-      ).toBeVisible();
-    });
-
-    test("cannot access protected /tabs route - blocked by Stack.Protected", async ({
-      page,
-    }) => {
-      // Attempt to navigate to protected tabs route
-      await page.goto("/(tabs)/(home)");
-
-      // Stack.Protected with guard={user != null} blocks access when user is null
-      // User should be shown onboarding/login instead
-      await expect(
-        page.getByRole("button", { name: "Send code" }),
-      ).toBeVisible();
-    });
-
-    test("cannot access protected /anamnesis route - blocked by Stack.Protected", async ({
-      page,
-    }) => {
-      // Attempt to navigate to protected anamnesis route
-      await page.goto("/(anamnesis)/anamnesis");
-
-      // Stack.Protected with guard={user != null} blocks access when user is null
-      await expect(
-        page.getByRole("button", { name: "Send code" }),
-      ).toBeVisible();
-    });
-
-    test("cannot access protected /training route - blocked by Stack.Protected", async ({
-      page,
-    }) => {
-      // Attempt to navigate to protected training route
-      await page.goto("/training");
-
-      // Stack.Protected with guard={user != null} blocks access when user is null
-      await expect(
-        page.getByRole("button", { name: "Send code" }),
-      ).toBeVisible();
-    });
+    for (const route of [
+      "/onboarding",
+      "/(tabs)/(home)",
+      "/(anamnesis)/anamnesis",
+      "/training",
+    ]) {
+      await page.goto(route);
+      await expect(sendCodeButton).toBeVisible();
+    }
   });
 
-  test.describe("Authenticated User", () => {
-    test.use({ profile: createCompletedProfile() });
+  test("signs in with an emailed code and lands on the anamnesis start", async ({
+    page,
+  }) => {
+    await mockSupabaseAuth(page);
 
-    test("cannot access onboarding - blocked by Stack.Protected", async ({
-      page,
-    }) => {
-      await mockSupabaseAuth(page);
+    await new BasePage(page).login("test@example.com");
 
-      // Login to establish auth session
-      const basePage = new BasePage(page);
-      await basePage.login("test@example.com");
-      await basePage.expectLoggedIn();
-
-      // Now try to navigate to onboarding route
-      await page.goto("/onboarding");
-
-      // Stack.Protected with guard={user == null} blocks onboarding when user is authenticated
-      // User should NOT see the login screen - they should see protected content instead
-      const sendCodeButton = page.getByRole("button", { name: "Send code" });
-      await expect(sendCodeButton).not.toBeVisible({ timeout: 5000 });
-    });
-
-    test("can access protected /tabs route after login", async ({ page }) => {
-      await mockSupabaseAuth(page);
-
-      // Login to establish auth session
-      const basePage = new BasePage(page);
-      await basePage.login("test@example.com");
-      await basePage.expectLoggedIn();
-
-      // Navigate to tabs route
-      await page.goto("/(tabs)/(home)");
-
-      // Stack.Protected with guard={user != null} allows access when authenticated
-      await basePage.expectTrainingPlanVisible();
-    });
-
-    test("can access tabs and sees correct content after login", async ({
-      page,
-    }) => {
-      await mockSupabaseAuth(page);
-
-      // Login to establish auth session
-      const basePage = new BasePage(page);
-      await basePage.login("test@example.com");
-      await basePage.expectLoggedIn();
-
-      // Verify we're on the home screen with training plan
-      await basePage.expectTrainingPlanVisible();
-
-      // Verify tab navigation works
-      await expect(page.getByRole("tab", { name: /training/i })).toBeVisible();
-      await expect(
-        page.getByRole("tab", { name: /statistics/i }),
-      ).toBeVisible();
-      await expect(page.getByRole("tab", { name: /profile/i })).toBeVisible();
+    await expect(page.getByText(/let's get started/i)).toBeVisible({
+      timeout: 5000,
     });
   });
+});
 
-  test.describe("Authenticated User - Incomplete Anamnesis", () => {
-    test.use({ profile: createIncompleteAnamnesisProfile() });
+test.describe("Auth Flow: signed in user", () => {
+  test.use({ profile: createCompletedProfile(), signedIn: true });
 
-    test("can access protected /anamnesis route when authenticated", async ({
-      page,
-    }) => {
-      await mockSupabaseAuth(page);
+  test("reaches the tabs and is kept off the onboarding route", async ({
+    page,
+  }) => {
+    await mockSupabaseAuth(page);
+    const basePage = new BasePage(page);
 
-      // Login to establish auth session
-      const basePage = new BasePage(page);
-      await basePage.login("test@example.com");
+    await page.goto("/");
+    await expect(page).toHaveURL("/");
+    await basePage.expectLoggedIn();
+    await basePage.expectTrainingPlanVisible();
+    await expect(page.getByRole("tab", { name: /training/i })).toBeVisible();
+    await expect(page.getByRole("tab", { name: /statistics/i })).toBeVisible();
+    await expect(page.getByRole("tab", { name: /profile/i })).toBeVisible();
 
-      // Navigate to anamnesis route
-      await page.goto("/(anamnesis)/anamnesis");
+    await page.goto("/(tabs)/(home)");
+    await basePage.expectTrainingPlanVisible();
 
-      // Stack.Protected with guard={user != null} allows access when authenticated
-      // Should see anamnesis content (not login screen)
-      const sendCodeButton = page.getByRole("button", { name: "Send code" });
-      await expect(sendCodeButton).not.toBeVisible({ timeout: 5000 });
-    });
+    await page.goto("/onboarding");
+    await basePage.expectTrainingPlanVisible();
+    await expect(
+      page.getByRole("button", { name: "Send code" }),
+    ).not.toBeVisible({ timeout: 5000 });
   });
+});
 
-  test.describe("Loading State", () => {
-    test("shows loading screen while auth initializes", async ({ page }) => {
-      // This test verifies the loading screen behavior during auth initialization.
-      // We need to intercept before the page loads and slow down the auth check.
+test.describe("Auth Flow: signed in user without stored consent", () => {
+  // No seeded settings store, so the consent status starts as "loading"
+  // and stays there until the held profile request is released.
+  test.use({ signedIn: true });
 
-      // Mock a slow auth response to observe loading state
-      await page.route("**/auth/v1/session", async (route) => {
-        // Delay the response to make loading state observable
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        await route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify({
-            data: { session: null },
-            error: null,
-          }),
-        });
-      });
-
-      // Navigate and check for loading indicator
-      // The LoadingScreen component renders an ActivityIndicator
-      const loadingPromise = page.goto("/");
-
-      // Check for ActivityIndicator (loading spinner)
-      // React Native's ActivityIndicator renders as a specific element
-      // We check for any loading indicator that might be visible
-      const activityIndicator = page.locator('[role="progressbar"]');
-
-      // Wait briefly to allow component to mount
-      await page.waitForTimeout(100);
-
-      // The loading screen may or may not be visible depending on timing
-      // If it's visible, verify it; otherwise the auth initialized quickly
-      const isLoadingVisible = await activityIndicator
-        .isVisible()
-        .catch(() => false);
-
-      if (isLoadingVisible) {
-        await expect(activityIndicator).toBeVisible();
-      }
-
-      // Wait for navigation to complete
-      await loadingPromise;
-
-      // After auth initializes with null session, should see onboarding
-      // Stack.Protected with guard={user == null} shows onboarding for unauthenticated users
-      await expect(page.getByRole("button", { name: "Send code" })).toBeVisible(
-        {
-          timeout: 5000,
-        },
-      );
+  test("shows a spinner while the consent status loads", async ({ page }) => {
+    await mockSupabaseAuth(page);
+    let releaseProfile = () => {};
+    const profileHeld = new Promise<void>((resolve) => {
+      releaseProfile = resolve;
     });
+    await page.route("**/rest/v1/user_profiles**", async (route) => {
+      await profileHeld;
+      await route.fallback();
+    });
+
+    await page.goto("/");
+    await expect(page.locator('[role="progressbar"]')).toBeVisible();
+
+    releaseProfile();
+    await expect(page.getByText(/let's get started/i)).toBeVisible();
+    await expect(page.locator('[role="progressbar"]')).not.toBeVisible();
   });
+});
 
-  test.describe("Login Flow", () => {
-    // No profile = fresh user experience
+test.describe("Auth Flow: signed in user without anamnesis", () => {
+  test.use({ profile: createIncompleteAnamnesisProfile(), signedIn: true });
 
-    test("successful login redirects to home", async ({ page }) => {
-      await mockSupabaseAuth(page);
+  test("can open the anamnesis route", async ({ page }) => {
+    await mockSupabaseAuth(page);
 
-      await page.goto("/");
+    await page.goto("/(anamnesis)/anamnesis");
 
-      // Fill login form (email only, passwordless)
-      await page.getByPlaceholder("E-Mail").fill("test@example.com");
-
-      // Click send code
-      await page.getByRole("button", { name: "Send code" }).click();
-
-      // Enter OTP on verification screen
-      await expect(
-        page.getByText("Confirm your email", { exact: true }),
-      ).toBeVisible({ timeout: 5000 });
-      await page.getByRole("textbox").fill("123456");
-      await page.getByRole("button", { name: "Verify" }).click();
-
-      // After successful login, Stack.Protected guards update:
-      // - guard={user != null} now passes for protected routes
-      // - guard={user == null} now fails for onboarding
-      // User should see anamnesis CTA (new user without profile) or home screen
-      await expect(page.getByText(/let's get started/i)).toBeVisible({
-        timeout: 5000,
-      });
+    await expect(page.getByText(/I am Ingemar/)).toBeVisible({
+      timeout: 5000,
     });
+    await expect(
+      page.getByRole("button", { name: "Send code" }),
+    ).not.toBeVisible({ timeout: 5000 });
   });
+});
 
-  test.describe("Auth State Persistence", () => {
-    test("authenticated state persists across page reload", async ({
-      page,
-      context,
-    }) => {
-      // Use the pre-authenticated storage state
-      await context.clearCookies();
+test.describe("Auth Flow: session persistence", () => {
+  test.use({ signedIn: true });
 
-      // Seed auth state directly via evaluate (before navigation)
-      await page.addInitScript(() => {
-        localStorage.setItem(
-          "auth-storage",
-          JSON.stringify({
-            state: {
-              auth: {
-                userId: "test-user-id",
-                token: "mock-access-token",
-              },
-              isInitialized: true,
-            },
-          }),
-        );
-      });
+  test("stays signed in after a page reload", async ({ page }) => {
+    await mockSupabaseAuth(page);
 
-      // Also need to mock Supabase auth endpoint
-      await mockSupabaseAuth(page);
+    await page.goto("/");
+    await expect(page.getByText(/let's get started/i)).toBeVisible();
+    await page.reload();
 
-      await page.goto("/");
-
-      // Wait for page to load
-      await page.waitForLoadState("networkidle");
-
-      // Should still be authenticated after reload
-      // Stack.Protected guards should allow protected content
-      const sendCodeButton = page.getByRole("button", { name: "Send code" });
-      const isSendCodeVisible = await sendCodeButton
-        .isVisible()
-        .catch(() => false);
-
-      // If send code is not visible, user is authenticated
-      if (!isSendCodeVisible) {
-        // Verify we see authenticated content
-        await expect(page.locator("body")).not.toContainText("Send code");
-      }
-    });
-  });
-
-  test.describe("Stack.Protected Symmetry", () => {
-    test("both auth states are handled symmetrically via guards", async ({
-      page,
-    }) => {
-      // This test verifies that both authenticated and unauthenticated states
-      // are handled via Stack.Protected guards in the root layout
-
-      // Test 1: Unauthenticated - onboarding accessible, tabs blocked
-      await page.goto("/onboarding");
-      await expect(
-        page.getByRole("button", { name: "Send code" }),
-      ).toBeVisible();
-
-      await page.goto("/(tabs)/(home)");
-      // Should still see send code button (tabs blocked)
-      await expect(
-        page.getByRole("button", { name: "Send code" }),
-      ).toBeVisible();
-
-      // Test 2: Authenticate via login and verify guards flip
-      await mockSupabaseAuth(page);
-
-      // Seed profile data for authenticated experience
-      const profileData = createCompletedProfile();
-      await page.evaluate((stores) => {
-        for (const [key, value] of Object.entries(stores)) {
-          localStorage.setItem(key, JSON.stringify(value));
-        }
-      }, profileData);
-
-      // Go to login page and authenticate
-      await page.goto("/");
-      const basePage = new BasePage(page);
-      await basePage.login("test@example.com");
-      await basePage.expectLoggedIn();
-
-      // Now tabs should be accessible
-      await page.goto("/(tabs)/(home)");
-      await basePage.expectTrainingPlanVisible();
-
-      // And onboarding should be blocked - verify send code is NOT visible
-      await page.goto("/onboarding");
-      const sendCodeButton = page.getByRole("button", { name: "Send code" });
-      await expect(sendCodeButton).not.toBeVisible({ timeout: 5000 });
-    });
+    await expect(page.getByText(/let's get started/i)).toBeVisible();
+    await expect(page.locator("body")).not.toContainText("Send code");
   });
 });

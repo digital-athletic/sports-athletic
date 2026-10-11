@@ -16,45 +16,46 @@ async function completeStrengthTestWorkout(page: Page, reps: number) {
   // The barbell notice is a modal; nothing behind it takes clicks until OK.
   const noticeOk = page.getByText("OK", { exact: true });
 
-  for (let i = 0; i < 50; i++) {
-    await Promise.race([
-      resultsPage.waitFor({ state: "visible", timeout: 5000 }),
-      noticeOk.waitFor({ state: "visible", timeout: 5000 }),
-      repsInput.waitFor({ state: "visible", timeout: 5000 }),
-      skipButton.waitFor({ state: "visible", timeout: 5000 }),
-    ]).catch(() => {});
+  const nextStep = resultsPage
+    .or(noticeOk)
+    .or(repsInput)
+    .or(skipButton)
+    .first();
 
-    if (await resultsPage.isVisible().catch(() => false)) {
+  for (let i = 0; i < 50; i++) {
+    await nextStep.waitFor({ state: "visible" });
+
+    if (await resultsPage.isVisible()) {
       break;
     }
 
-    if (await noticeOk.isVisible().catch(() => false)) {
+    if (await noticeOk.isVisible()) {
       await noticeOk.click();
       continue;
     }
 
-    if (await repsInput.isVisible().catch(() => false)) {
+    if (await repsInput.isVisible()) {
       await repsInput.fill(String(reps));
       await saveButton.click();
-      await repsInput.waitFor({ state: "hidden", timeout: 5000 });
+      await repsInput.waitFor({ state: "hidden" });
       continue;
     }
 
-    if (await skipButton.isVisible().catch(() => false)) {
-      await skipButton.click({ force: true });
-    }
+    await skipButton.click({ force: true });
   }
 }
 
-test.describe("Strength Test", () => {
-  test.use({ profile: createFreshAnamnesisProfile() });
+test.describe("Strength Test: workout and results", () => {
+  test.use({ profile: createFreshAnamnesisProfile(), signedIn: true });
 
-  test("complete strength test workflow", async ({ page }) => {
+  test("athlete completes the strength test and sees the results", async ({
+    page,
+  }) => {
     await mockSupabaseAuth(page);
     await mockWakeLock(page);
 
     const basePage = new BasePage(page);
-    await basePage.login("test@example.com");
+    await page.goto("/");
     await basePage.expectLoggedIn();
 
     // Navigate to Profile > Start Strength Test

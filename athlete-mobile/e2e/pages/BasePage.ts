@@ -51,6 +51,10 @@ export class BasePage {
 
   async logout() {
     await this.navigateToTab("Profile");
+    await this.confirmLogout();
+  }
+
+  async confirmLogout() {
     const logoutButton = this.page.getByText("Logout", { exact: true });
     await logoutButton.scrollIntoViewIfNeeded();
     await logoutButton.click();

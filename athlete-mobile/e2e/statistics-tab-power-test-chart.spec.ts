@@ -6,69 +6,30 @@ import {
   createSinglePowerTestProfile,
 } from "./mocks/stores/profiles/powerTestChartProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
-import { BasePage, StatisticsPage, WorkoutPage } from "./pages";
+import { StatisticsPage } from "./pages";
 
-test.describe("Power Test LineChart - Multiple Test Results", () => {
-  test.use({ profile: createPowerTestChartProfile() });
+test.describe("Power test line chart: multiple test results", () => {
+  test.use({ profile: createPowerTestChartProfile(), signedIn: true });
 
-  test("displays line chart with 4 test results showing progression", async ({
+  test("shows the progression of 4 test results and expands the latest one", async ({
     page,
   }) => {
-    test.setTimeout(30000);
     await mockSupabaseAuth(page);
+    const statsPage = new StatisticsPage(page);
 
-    const workoutPage = new WorkoutPage(page);
-    const basePage = new BasePage(page);
+    await statsPage.openStatisticsTab();
+    await statsPage.clickTestsTab();
+    await statsPage.expectTestsTabVisible();
 
-    await workoutPage.login("test@example.com");
-    await workoutPage.expectLoggedIn();
-
-    // Navigate to Statistics tab
-    await basePage.navigateToTab("Statistics");
-    const statisticsPage = new StatisticsPage(page);
-
-    // Click on Tests tab
-    await statisticsPage.clickTestsTab();
-    await statisticsPage.expectTestsTabVisible();
-
-    // Verify the line chart is visible
-    await statisticsPage.expectPowerTestLineChartVisible();
-
-    // Verify the legend is visible with all 4 exercise labels
-    await statisticsPage.expectPowerTestLegendVisible();
-
-    // Verify we have 4 test result entries in the history list
-    const testCount = await statisticsPage.getTestResultsCount();
-    expect(testCount).toBe(4);
-
-    // Take screenshot for visual verification
-    await statisticsPage.screenshotPowerTestChart(
+    await statsPage.expectPowerTestLineChartVisible();
+    await statsPage.expectPowerTestLegendVisible();
+    expect(await statsPage.getTestResultsCount()).toBe(4);
+    await statsPage.screenshotPowerTestChart(
       "power-test-line-chart-multiple-results.png",
     );
-  });
 
-  test("test results list entries can be expanded", async ({ page }) => {
-    test.setTimeout(30000);
-    await mockSupabaseAuth(page);
-
-    const workoutPage = new WorkoutPage(page);
-    const basePage = new BasePage(page);
-
-    await workoutPage.login("test@example.com");
-    await workoutPage.expectLoggedIn();
-
-    await basePage.navigateToTab("Statistics");
-    const statisticsPage = new StatisticsPage(page);
-
-    await statisticsPage.clickTestsTab();
-    await statisticsPage.expectTestsTabVisible();
-
-    // Click on first test entry to expand it
-    const firstEntry = page.getByTestId("power-test-entry-0");
-    await firstEntry.click();
-
-    // Verify expanded content shows exercise values
-    // The profile has: knee=115, benchPress=75, rowing=65, shoulderPress=50 for most recent
+    // Most recent result: knee=115, benchPress=75, rowing=65, shoulderPress=50
+    await page.getByTestId("power-test-entry-0").click();
     await expect(page.getByText("115 kg")).toBeVisible();
     await expect(page.getByText("75 kg")).toBeVisible();
     await expect(page.getByText("65 kg")).toBeVisible();
@@ -76,150 +37,88 @@ test.describe("Power Test LineChart - Multiple Test Results", () => {
   });
 });
 
-test.describe("Power Test LineChart - Single Test Result", () => {
-  test.use({ profile: createSinglePowerTestProfile() });
+test.describe("Power test line chart: single test result", () => {
+  test.use({ profile: createSinglePowerTestProfile(), signedIn: true });
 
-  test("displays line chart with single test result (line from origin)", async ({
+  test("draws the line from the origin for one test result", async ({
     page,
   }) => {
-    test.setTimeout(30000);
     await mockSupabaseAuth(page);
+    const statsPage = new StatisticsPage(page);
 
-    const workoutPage = new WorkoutPage(page);
-    const basePage = new BasePage(page);
+    await statsPage.openStatisticsTab();
+    await statsPage.clickTestsTab();
+    await statsPage.expectTestsTabVisible();
 
-    await workoutPage.login("test@example.com");
-    await workoutPage.expectLoggedIn();
-
-    await basePage.navigateToTab("Statistics");
-    const statisticsPage = new StatisticsPage(page);
-
-    await statisticsPage.clickTestsTab();
-    await statisticsPage.expectTestsTabVisible();
-
-    // Verify the line chart is visible even with a single data point
-    await statisticsPage.expectPowerTestLineChartVisible();
-
-    // Verify legend is visible
-    await statisticsPage.expectPowerTestLegendVisible();
-
-    // Verify we have 1 test result entry
-    const testCount = await statisticsPage.getTestResultsCount();
-    expect(testCount).toBe(1);
-
-    // Take screenshot for visual verification
-    await statisticsPage.screenshotPowerTestChart(
+    await statsPage.expectPowerTestLineChartVisible();
+    await statsPage.expectPowerTestLegendVisible();
+    expect(await statsPage.getTestResultsCount()).toBe(1);
+    await statsPage.screenshotPowerTestChart(
       "power-test-line-chart-single-result.png",
     );
   });
 });
 
-test.describe("Power Test LineChart - Empty State", () => {
-  test.use({ profile: createCompletedProfileWithoutTestHistory() });
+test.describe("Power test line chart: no test history", () => {
+  test.use({
+    profile: createCompletedProfileWithoutTestHistory(),
+    signedIn: true,
+  });
 
-  test("does not display line chart when no test results exist", async ({
+  test("shows the empty state without a chart and offers a new test", async ({
     page,
   }) => {
-    test.setTimeout(30000);
     await mockSupabaseAuth(page);
+    const statsPage = new StatisticsPage(page);
 
-    const workoutPage = new WorkoutPage(page);
-    const basePage = new BasePage(page);
+    await statsPage.openStatisticsTab();
+    await statsPage.clickTestsTab();
+    await statsPage.expectTestsTabVisible();
 
-    await workoutPage.login("test@example.com");
-    await workoutPage.expectLoggedIn();
+    await statsPage.expectNoTestResults();
+    await statsPage.expectPowerTestLineChartNotVisible();
+    await statsPage.expectStartTestButtonVisible();
 
-    await basePage.navigateToTab("Statistics");
-    const statisticsPage = new StatisticsPage(page);
-
-    await statisticsPage.clickTestsTab();
-    await statisticsPage.expectTestsTabVisible();
-
-    // Verify empty state is shown
-    await statisticsPage.expectNoTestResults();
-
-    // Verify the line chart is NOT visible (empty state shows coaching message)
-    await statisticsPage.expectPowerTestLineChartNotVisible();
-
-    // Start test button should still be visible
-    await statisticsPage.expectStartTestButtonVisible();
-
-    // Take screenshot for visual verification of empty state
+    // Both captures show the same empty Tests tab
+    await page.screenshot({
+      path: "playwright/screenshots/statistics-tests-tab-empty.png",
+    });
     await page.screenshot({
       path: "playwright/screenshots/power-test-line-chart-empty-state.png",
     });
   });
 });
 
-test.describe("Power Test LineChart - Many Data Points (Label Crowding)", () => {
-  test.use({ profile: createManyPowerTestsProfile() });
+test.describe("Power test line chart: many test results", () => {
+  test.use({ profile: createManyPowerTestsProfile(), signedIn: true });
 
-  test("displays chart with 9 test results - tests x-axis label handling", async ({
+  test("shows 9 test results with crowded x axis labels and expands the latest one", async ({
     page,
   }) => {
-    test.setTimeout(30000);
     await mockSupabaseAuth(page);
+    const statsPage = new StatisticsPage(page);
 
-    const workoutPage = new WorkoutPage(page);
-    const basePage = new BasePage(page);
+    await statsPage.openStatisticsTab();
+    await statsPage.clickTestsTab();
+    await statsPage.expectTestsTabVisible();
 
-    await workoutPage.login("test@example.com");
-    await workoutPage.expectLoggedIn();
+    await statsPage.expectPowerTestLineChartVisible();
+    await statsPage.expectPowerTestLegendVisible();
+    expect(await statsPage.getTestResultsCount()).toBe(9);
 
-    await basePage.navigateToTab("Statistics");
-    const statisticsPage = new StatisticsPage(page);
-
-    await statisticsPage.clickTestsTab();
-    await statisticsPage.expectTestsTabVisible();
-
-    // Verify the line chart is visible with many data points
-    await statisticsPage.expectPowerTestLineChartVisible();
-
-    // Verify the legend is visible
-    await statisticsPage.expectPowerTestLegendVisible();
-
-    // Verify we have 9 test result entries in the history list
-    const testCount = await statisticsPage.getTestResultsCount();
-    expect(testCount).toBe(9);
-
-    // Take screenshot for visual verification of label crowding behavior
-    // This screenshot is key to inspect how the chart handles many x-axis labels
-    await statisticsPage.screenshotPowerTestChart(
+    // Screenshots show how the chart handles many x axis labels
+    await statsPage.screenshotPowerTestChart(
       "power-test-line-chart-many-data-points.png",
     );
-
-    // Also take a full-page screenshot to see overall layout
     await page.screenshot({
       path: "playwright/screenshots/power-test-line-chart-many-data-points-full.png",
       fullPage: true,
     });
-  });
 
-  test("most recent entry shows highest values after progression", async ({
-    page,
-  }) => {
-    test.setTimeout(30000);
-    await mockSupabaseAuth(page);
-
-    const workoutPage = new WorkoutPage(page);
-    const basePage = new BasePage(page);
-
-    await workoutPage.login("test@example.com");
-    await workoutPage.expectLoggedIn();
-
-    await basePage.navigateToTab("Statistics");
-    const statisticsPage = new StatisticsPage(page);
-
-    await statisticsPage.clickTestsTab();
-    await statisticsPage.expectTestsTabVisible();
-
-    // Click on first (most recent) test entry to expand it
+    // Most recent result: knee=140, benchPress=100, rowing=85, shoulderPress=65.
+    // Scoped to the entry to avoid matching y axis labels.
     const firstEntry = page.getByTestId("power-test-entry-0");
     await firstEntry.click();
-
-    // Verify expanded content shows the highest values from the progression
-    // Most recent: knee=140, benchPress=100, rowing=85, shoulderPress=65
-    // Use scoped locators to avoid matching Y-axis labels
     await expect(firstEntry.getByText("140 kg")).toBeVisible();
     await expect(firstEntry.getByText("100 kg")).toBeVisible();
     await expect(firstEntry.getByText("85 kg")).toBeVisible();

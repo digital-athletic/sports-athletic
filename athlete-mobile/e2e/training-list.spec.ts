@@ -5,31 +5,11 @@ import { mockSupabaseAuth } from "./mocks/supabase";
 import { mockWakeLock } from "./mocks/wakeLock";
 import { TrainingListPage, TrainingOverviewPage, WorkoutPage } from "./pages";
 
-test.describe("Training List Flow", () => {
+test.describe("Training list: checklist session", () => {
   test.describe("Standard progression", () => {
-    test.use({ profile: createCompletedProfile() });
+    test.use({ profile: createCompletedProfile(), signedIn: true });
 
-    test("complete a checklist session end to end", async ({ page }) => {
-      test.setTimeout(60000);
-      await mockSupabaseAuth(page);
-      await mockWakeLock(page);
-
-      const workoutPage = new WorkoutPage(page);
-      const trainingOverviewPage = new TrainingOverviewPage(page);
-      const trainingListPage = new TrainingListPage(page);
-
-      await workoutPage.login("test@example.com");
-      await workoutPage.expectLoggedIn();
-      await workoutPage.startWorkout("Tuesday");
-
-      await trainingOverviewPage.startAsChecklist();
-      await trainingListPage.expectVisible();
-      await trainingListPage.completeAll();
-
-      await workoutPage.returnToHome();
-    });
-
-    test("skipping a row still allows the session to complete", async ({
+    test("athlete completes every row of a checklist session", async ({
       page,
     }) => {
       test.setTimeout(60000);
@@ -40,17 +20,37 @@ test.describe("Training List Flow", () => {
       const trainingOverviewPage = new TrainingOverviewPage(page);
       const trainingListPage = new TrainingListPage(page);
 
-      await workoutPage.login("test@example.com");
+      await page.goto("/");
+      await workoutPage.expectLoggedIn();
+      await workoutPage.startWorkout("Tuesday");
+
+      await trainingOverviewPage.startAsChecklist();
+      await trainingListPage.expectVisible();
+      await trainingListPage.completeAll();
+
+      await workoutPage.returnToHome();
+    });
+
+    test("athlete skips the first row and still completes the session", async ({
+      page,
+    }) => {
+      test.setTimeout(60000);
+      await mockSupabaseAuth(page);
+      await mockWakeLock(page);
+
+      const workoutPage = new WorkoutPage(page);
+      const trainingOverviewPage = new TrainingOverviewPage(page);
+      const trainingListPage = new TrainingListPage(page);
+
+      await page.goto("/");
       await workoutPage.expectLoggedIn();
       await workoutPage.startWorkout("Tuesday");
 
       await trainingOverviewPage.startAsChecklist();
       await trainingListPage.expectVisible();
 
-      // NOTE: assumes row 0 (first exercise in the generated Tuesday plan) is a
-      // normal, skippable exercise, not a strength-test row (which has no skip
-      // control). Verify against the actual rendered plan on first run and
-      // adjust the index if needed.
+      // Assumes row 0 of the Tuesday plan is a skippable exercise, not a
+      // strength test row (which has no skip control).
       await trainingListPage.skipRow("training-list-row-0");
       await trainingListPage.completeAll();
 
@@ -59,9 +59,9 @@ test.describe("Training List Flow", () => {
   });
 
   test.describe("MAX exercise feedback via checklist", () => {
-    test.use({ profile: createMaxExerciseProfile() });
+    test.use({ profile: createMaxExerciseProfile(), signedIn: true });
 
-    test("selecting 'too easy' on the last MAX set moves it two ladder steps", async ({
+    test("athlete rates a MAX exercise too easy in the checklist and its last set moves two ladder steps", async ({
       page,
     }) => {
       test.setTimeout(60000);
@@ -72,7 +72,7 @@ test.describe("Training List Flow", () => {
       const trainingOverviewPage = new TrainingOverviewPage(page);
       const trainingListPage = new TrainingListPage(page);
 
-      await workoutPage.login("test@example.com");
+      await page.goto("/");
       await workoutPage.expectLoggedIn();
       await workoutPage.startWorkout("Tuesday");
       await expect(page.getByText("KH-Bankdrücken (Max-K)")).toBeVisible();
@@ -80,10 +80,7 @@ test.describe("Training List Flow", () => {
       await trainingOverviewPage.startAsChecklist();
       await trainingListPage.expectVisible();
 
-      // Rows render in the same order the generator produced them, so the
-      // LAST row named "KH-Bankdrücken (Max-K)" is always the final/working
-      // set (matching the assumption workout.spec.ts's own MAX test already
-      // relies on for this same profile) — no need to guess a numeric index.
+      // Rows follow generator order, so the last matching row is the working set
       const maxRow = trainingListPage.lastRowByExerciseName(
         "KH-Bankdrücken (Max-K)",
       );
@@ -92,16 +89,10 @@ test.describe("Training List Flow", () => {
 
       await workoutPage.returnToHome();
 
-      // Second workout: same assertion workout.spec.ts makes for the
-      // sequential flow, 75% x 2 two ladder steps up to 75% x 5.
+      // Same assertion workout.spec.ts makes for the sequential flow:
+      // 75% x 2 moves two ladder steps up to 75% x 5
       await workoutPage.startWorkout("Tuesday");
-      const exerciseList = await workoutPage.getGeneratedExerciseList();
-      const maxExercises =
-        exerciseList?.filter((e: any) => e.exerciseId === "8") ?? [];
-      const lastSet = maxExercises[maxExercises.length - 1];
-      const lastMaxFRep =
-        lastSet?.maxFRepetitions?.[lastSet.maxFRepetitions.length - 1];
-      expect(lastMaxFRep).toEqual(
+      expect(await workoutPage.getLastMaxRepetition("8")).toEqual(
         expect.objectContaining({ weightPercentage: 75, repetitions: 5 }),
       );
     });

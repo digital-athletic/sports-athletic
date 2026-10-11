@@ -34,6 +34,15 @@ export interface SummaryExpectations {
 
 export class StatisticsPage extends BasePage {
   /**
+   * Opens the app with a seeded signed in session and navigates to Statistics.
+   */
+  async openStatisticsTab(): Promise<void> {
+    await this.page.goto("/");
+    await this.expectLoggedIn();
+    await this.navigateToTab("Statistics");
+  }
+
+  /**
    * Extracts text value from a summary section by label.
    * The TrainingSummary component shows label and value in a column layout.
    * Uses parent traversal to find the value element adjacent to the label.
@@ -104,23 +113,23 @@ export class StatisticsPage extends BasePage {
    * Only provided fields are verified.
    */
   async expectSummaryValues(expected: SummaryExpectations): Promise<void> {
-    if (expected.duration) {
+    if (expected.duration !== undefined) {
       const actual = await this.getDurationSeconds();
       expect(actual, `Duration should be ${expected.duration}s`).toBe(
         expected.duration,
       );
     }
-    if (expected.xp) {
+    if (expected.xp !== undefined) {
       const actual = await this.getXp();
       expect(actual, `XP should be ${expected.xp}`).toBe(expected.xp);
     }
-    if (expected.weight) {
+    if (expected.weight !== undefined) {
       const actual = await this.getMovedWeightKg();
       expect(actual, `Weight should be ${expected.weight}kg`).toBe(
         expected.weight,
       );
     }
-    if (expected.exerciseCount) {
+    if (expected.exerciseCount !== undefined) {
       const actual = await this.getExerciseCount();
       expect(actual, `Exercise count should be ${expected.exerciseCount}`).toBe(
         expected.exerciseCount,

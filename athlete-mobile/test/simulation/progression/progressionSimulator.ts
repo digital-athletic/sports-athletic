@@ -15,7 +15,6 @@
  * The harness stays on a single exercise and records the flag instead, so any
  * session following a flagged one no longer mirrors the app.
  */
-import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { ExerciseDifficultyType } from "@/constants/workoutConstants";
 import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
 import { WARMUP_WEIGHT_PERCENTAGES } from "@/features/training/generators/warmupDerivation";
@@ -36,14 +35,9 @@ import {
   toUserExerciseDataList,
 } from "@/schemas/generator.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import type { TrainingLevelType } from "@/schemas/common.schema";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import type { FeedbackScript } from "./feedbackScripts";
-import {
-  personaGenderTag,
-  personaToUser,
-  type LegacyPersona,
-} from "./personaAdapter";
+import { personaToUser, type LegacyPersona } from "./personaAdapter";
 
 const SIMULATED_BRANCH_ID = "progression-simulator-branch";
 
@@ -53,11 +47,7 @@ const SETS_PER_EXERCISE = 3;
 export interface SetSnapshot {
   setNumber: number;
   isWarmup: boolean;
-  /**
-   * Working sets: percent of F-Max. Warm-ups: the nominal percentage of the 1st
-   * working set, which the applied load only approximates because
-   * `computeWarmupTrainingWeights` floors it.
-   */
+  /** Working sets: percent of F-Max. Warm-ups: percent of the 1st working set. */
   percentage: number | null;
   weightKg: number;
   reps: number;
@@ -91,11 +81,16 @@ export interface SessionSnapshot {
   exercises: ExerciseSnapshot[];
 }
 
-/** A recorded session before `levelAfter` is known; see `simulateProgression`. */
+/** A recorded session before the next one is known; see `simulateProgression`. */
 interface PendingSession {
   session: number;
   focus: SkillCode;
-  exercise: Omit<ExerciseSnapshot, "levelAfter">;
+  /** Percentage of the last working set this session. */
+  topPercentage: number | null;
+  exercise: Omit<
+    ExerciseSnapshot,
+    "levelAfter" | "weightPercentageBefore" | "weightPercentageAfter"
+  >;
 }
 
 export interface SimulateOptions {
@@ -170,13 +165,7 @@ export function simulateProgression(
   const generator = new TrainingGenerator();
   const user = personaToUser(persona, maxValues);
   const ageGroup = ageGroupFor(getUserBirthday(user));
-  // Production tags children "k" regardless of gender (useExerciseCompletion).
-  const genderTag =
-    ageGroup === WorkoutConstants.AGE_GROUPS.CHILD
-      ? "k"
-      : personaGenderTag(persona);
   const levelTag = getUserLevel(user);
-  const userLevel = levelTag.toLowerCase() as TrainingLevelType;
   const maxValue = getMaxValueForExercise(exercise, maxValues) ?? 0;
   const exercisePairs = [
     {
@@ -197,8 +186,6 @@ export function simulateProgression(
   // One session past the requested count: a session's `levelAfter` is only
   // observable by generating the next one. The extra row is dropped below.
   for (let session = 1; session <= opts.sessions + 1; session++) {
-    const weightPercentageBefore =
-      progressOf(exercise.id)?.nextWeightPercentage ?? null;
     const userExercisesData = useExerciseProgressStore.getState().exerciseData;
 
     const setList = generator.getSetListFromExercisePairs(
@@ -236,15 +223,10 @@ export function simulateProgression(
 
     const feedbackGiven = opts.feedback({ session });
     const adjustment = calculateMaxStrengthAdjustment({
-      weight: lastEntry?.weight ?? 0,
       adjustment: feedbackGiven,
-      exerciseData: exercise,
       userExerciseData: currentEntry,
-      maxValues,
       ageGroup,
-      genderTag,
       levelTag,
-      userLevel,
     });
 
     // Same write order as the screen; the store's streak counter depends on it.
@@ -264,7 +246,6 @@ export function simulateProgression(
       exerciseId: exercise.id,
       skill: focus,
       weight: lastEntry?.weight,
-      nextWeightPercentage: adjustment.nextWeightPercentage,
       maxFRepetitions: adjustment.maxFRepetitions,
       maxFLevelAdjustment: feedbackGiven,
     });
@@ -272,17 +253,15 @@ export function simulateProgression(
     pending.push({
       session,
       focus,
+      topPercentage: trainingWeights.at(-1) ?? null,
       exercise: {
         exerciseId: exercise.id,
         displayName: exercise.displayName ?? exercise.name ?? exercise.id,
         maxValue,
-        weightPercentageBefore,
         levelBefore,
         sets,
         feedbackGiven,
         feedbackApplied: progressOf(exercise.id)?.feedback?.difficulty ?? null,
-        weightPercentageAfter:
-          adjustment.nextWeightPercentage ?? weightPercentageBefore,
         branchLevelChange: adjustment.levelUp
           ? "up"
           : adjustment.levelDown
@@ -292,16 +271,21 @@ export function simulateProgression(
     });
   }
 
-  // levelAfter reads the next session's applied level off the real generator
+  // The values after a session are read off the next session's real generator
   // output, so no transition logic is duplicated here. The extra session that
-  // supplies it for the final row is discarded.
+  // supplies them for the final row is discarded. Session 1 has no stored state.
   return pending
     .slice(0, opts.sessions)
-    .map(({ session, focus, exercise }, i) => ({
+    .map(({ session, focus, topPercentage, exercise }, i) => ({
       session,
       focus,
       exercises: [
-        { ...exercise, levelAfter: pending[i + 1].exercise.levelBefore },
+        {
+          ...exercise,
+          weightPercentageBefore: i === 0 ? null : topPercentage,
+          weightPercentageAfter: pending[i + 1].topPercentage,
+          levelAfter: pending[i + 1].exercise.levelBefore,
+        },
       ],
     }));
 }

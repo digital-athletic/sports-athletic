@@ -30,11 +30,7 @@ const setsFor = (levelTag: LevelTag) =>
   WorkoutConstants.MAX_KRAFT_SETS_PER_USER_LEVEL[levelTag] ??
   WorkoutConstants.MAX_KRAFT_SETS_PER_USER_LEVEL.ADVANCED;
 
-const minimumWeightFor = (levelTag: LevelTag) =>
-  WorkoutConstants.MAX_KRAFT_MINIMAL_WEIGHT_PERCENTAGE_PER_USER_LEVEL[
-    levelTag
-  ] ??
-  WorkoutConstants.MAX_KRAFT_MINIMAL_WEIGHT_PERCENTAGE_PER_USER_LEVEL.ADVANCED;
+const FLOOR_WEIGHT = WorkoutConstants.MAX_KRAFT_FLOOR_WEIGHT_PERCENTAGE;
 
 const buffersAt = (table: BufferTable, weight: number) =>
   BUFFERS.filter((buffer) => table[buffer]?.[weight] !== undefined);
@@ -70,15 +66,10 @@ const step = (
   };
 };
 
-interface WeightBounds {
-  maximumWeight: number;
-  minimumWeight: number;
-}
-
 const advance = (
   table: BufferTable,
   state: MaxStrengthSetState,
-  { maximumWeight, minimumWeight }: WeightBounds,
+  maximumWeight: number,
   difficulty: ExerciseDifficultyType,
 ): MaxStrengthSetState => {
   switch (difficulty) {
@@ -90,9 +81,8 @@ const advance = (
       return {
         ...state,
         weightPercentage: Math.max(
-          state.weightPercentage -
-            WorkoutConstants.MAX_KRAFT_WEIGHT_ADJUSTMENT.TOO_HARD,
-          Math.min(state.weightPercentage, minimumWeight),
+          state.weightPercentage - WEIGHT_STEP,
+          Math.min(state.weightPercentage, FLOOR_WEIGHT),
         ),
       };
     default:
@@ -156,25 +146,42 @@ const storedLastSet = (
     : undefined;
 };
 
-const advancePerSet = (
+const toSetState = (
+  entry: MaxForceRepetitionsDataType & { weightPercentage: number },
+): MaxStrengthSetState => ({
+  weightPercentage: entry.weightPercentage,
+  level: isBuffer(entry.level) ? entry.level : "EASY",
+});
+
+/**
+ * End of the exercise a rating of the stored last working set reaches: the
+ * final value on "succeeded" or "too easy", the floor on "too hard". Entries
+ * stored without their weight percentage never reach an end.
+ */
+export function getMaxStrengthExerciseEnd(
   table: BufferTable,
   levelTag: LevelTag,
-  perSet: (MaxForceRepetitionsDataType & { weightPercentage: number })[],
+  lastSet: MaxForceRepetitionsDataType | undefined,
   difficulty: ExerciseDifficultyType,
-): MaxStrengthSetState[] => {
-  const minimumWeight = minimumWeightFor(levelTag);
-  return setsFor(levelTag).map(({ maximumWeight }, i) =>
-    advance(
-      table,
-      {
-        weightPercentage: perSet[i].weightPercentage,
-        level: isBuffer(perSet[i].level) ? perSet[i].level : "EASY",
-      },
-      { maximumWeight, minimumWeight },
-      difficulty,
-    ),
-  );
-};
+): "FINAL_VALUE" | "FLOOR" | null {
+  if (!lastSet || !hasWeightPercentage(lastSet)) return null;
+  const state = toSetState(lastSet);
+  const sets = setsFor(levelTag);
+  const { maximumWeight } = sets[sets.length - 1];
+  const next = step(table, state, maximumWeight);
+  if (
+    (difficulty === "SUCCEEDED" || difficulty === "TOO_EASY") &&
+    state.weightPercentage >= maximumWeight &&
+    next.level === state.level &&
+    next.weightPercentage === state.weightPercentage
+  ) {
+    return "FINAL_VALUE";
+  }
+  if (difficulty === "TOO_HARD" && state.weightPercentage <= FLOOR_WEIGHT) {
+    return "FLOOR";
+  }
+  return null;
+}
 
 /**
  * State of every working set for the next session. Each set moves along its
@@ -191,7 +198,9 @@ export function getNextMaxStrengthSetStates(
   const perSet = stored.filter(hasWeightPercentage);
 
   if (perSet.length === sets.length) {
-    return advancePerSet(table, levelTag, perSet, difficulty);
+    return sets.map(({ maximumWeight }, i) =>
+      advance(table, toSetState(perSet[i]), maximumWeight, difficulty),
+    );
   }
   // Per set entries of another set count stem from a level change, so the
   // new level's ladder starts over.

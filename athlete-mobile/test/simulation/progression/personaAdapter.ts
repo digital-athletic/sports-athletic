@@ -6,7 +6,6 @@
  */
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { MaxValuesType } from "@/features/training/models/MaxValues";
-import type { GenderTag } from "@/features/training/models/Intensity";
 import type { UserType } from "@/schemas/user.schema";
 
 export interface LegacyPersona {
@@ -20,11 +19,6 @@ export interface LegacyPersona {
     };
   };
 }
-
-const GENDER_TO_TAG: Record<"MALE" | "FEMALE", GenderTag> = {
-  MALE: "m",
-  FEMALE: "w",
-};
 
 /** Legacy persona birthdays are `D-M-YYYY`; the schema wants ISO `YYYY-MM-DD`. */
 function toISOBirthday(birthday: string | undefined): string {
@@ -40,11 +34,6 @@ function toISOBirthday(birthday: string | undefined): string {
 function levelFromTags(tags: string[] | undefined): string {
   const level = (tags ?? []).find((t) => t.startsWith("LEVEL_"));
   return level ? level.replace("LEVEL_", "") : "BEGINNER";
-}
-
-export function personaGenderTag(persona: LegacyPersona): GenderTag {
-  const gender = persona.value.workoutData.gender ?? "FEMALE";
-  return GENDER_TO_TAG[gender];
 }
 
 function personaDisplayName(persona: LegacyPersona): string {

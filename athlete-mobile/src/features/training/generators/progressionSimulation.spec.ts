@@ -4,9 +4,7 @@
  * asserts the intra-session invariants.
  *
  * The tables under `__golden__/` encode the target values from
- * docs/specs/progression/max-strength-progression.md. The "too easy" and
- * "too heavy" goldens stay skipped until the progression implements the spec
- * switch at the final value and the spec fallback.
+ * docs/specs/progression/max-strength-progression.md.
  *
  * The non-golden assertions are generator regression guards: the harness reads
  * the production set list, so there is no reimplementation left to drift.
@@ -89,11 +87,6 @@ describe("progressionSimulation: p2 × MAX_KRAFT", () => {
     for (const { name, feedback } of RUNS) results.set(name, run(feedback));
   });
 
-  const MATCHING_RUNS = RUNS.filter(({ name }) => name === "succeeded");
-  // Skipped: "too easy" switches the exercise before the final value and the
-  // "too heavy" fallback differs from the spec.
-  const PENDING_RUNS = RUNS.filter(({ name }) => name !== "succeeded");
-
   const assertProgressionGolden = ({ name }: { name: string }) =>
     progressionGoldens.assertMatches(
       `p2-max-strength.${name}.progression.md`,
@@ -105,22 +98,11 @@ describe("progressionSimulation: p2 × MAX_KRAFT", () => {
       serializeSets(results.get(name)!),
     );
 
-  it.each(MATCHING_RUNS)(
+  it.each(RUNS)(
     "$name: matches the committed progression golden",
     assertProgressionGolden,
   );
-  it.skip.each(PENDING_RUNS)(
-    "$name: matches the committed progression golden",
-    assertProgressionGolden,
-  );
-  it.each(MATCHING_RUNS)(
-    "$name: matches the committed sets golden",
-    assertSetsGolden,
-  );
-  it.skip.each(PENDING_RUNS)(
-    "$name: matches the committed sets golden",
-    assertSetsGolden,
-  );
+  it.each(RUNS)("$name: matches the committed sets golden", assertSetsGolden);
 
   // Guards the invariant loops below, which pass vacuously on an empty set list.
   it("runs four sessions that each produce working sets", () => {
@@ -160,8 +142,7 @@ describe("progressionSimulation: p2 × MAX_KRAFT", () => {
     }
   });
 
-  // Spec section 2: `computeWarmupTrainingWeights` floors the applied load, so
-  // the ramp is what can be asserted, not an exact fraction.
+  // Spec section 2; the goldens pin the exact loads.
   it.each(RUNS)(
     "$name: warm-up sets ramp up to the first working set",
     ({ name }) => {

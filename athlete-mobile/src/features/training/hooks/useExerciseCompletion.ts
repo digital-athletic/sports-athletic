@@ -300,24 +300,13 @@ export function useExerciseCompletion() {
             adjustment = exercise?.feedback.difficulty;
           }
 
-          const genderTag =
-            ageGroup === WorkoutConstants.AGE_GROUPS.CHILD
-              ? "k"
-              : personalData.gender === "MALE"
-                ? "m"
-                : "w";
-
           const {
-            nextWeightPercentage,
             maxFRepetitions: maxFRepetitionsNew,
             levelUp,
             levelDown,
-            weightAdjusted,
             feedbackOverride,
           } = calculateMaxStrengthAdjustment({
-            weight,
             adjustment,
-            exerciseData: currentExerciseData,
             userExerciseData: exercise && {
               ...exercise,
               maxFRepetitions: getWorkingSetMaxFReps(
@@ -325,11 +314,8 @@ export function useExerciseCompletion() {
                 exerciseId,
               ),
             },
-            maxValues: workoutData.maxValues,
             ageGroup,
-            genderTag,
             levelTag,
-            userLevel,
           });
 
           // persist intermediate feedback override before the main update
@@ -344,11 +330,7 @@ export function useExerciseCompletion() {
               activeTraining?.id,
             );
           }
-          if (
-            !weightAdjusted &&
-            typeof branchId === "string" &&
-            (levelUp || levelDown)
-          ) {
+          if (typeof branchId === "string" && (levelUp || levelDown)) {
             updateBranchLevel(levelUp, branchId, id, skill, ageGroup);
           }
 
@@ -362,7 +344,6 @@ export function useExerciseCompletion() {
               exerciseId: id,
               skill,
               weight: newWeight,
-              nextWeightPercentage,
               maxFRepetitions: maxFRepetitionsNew,
               maxFLevelAdjustment: adjustment,
               duration: newDuration,

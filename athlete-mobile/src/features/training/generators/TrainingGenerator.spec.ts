@@ -1,3 +1,4 @@
+import type { IntensityData } from "@/features/training/models/Intensity";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { SetListEntryType } from "@/features/training/models/SetListEntry";
 import type { ExerciseType } from "@/schemas/exercise.schema";
@@ -669,7 +670,45 @@ describe("TrainingGenerator", () => {
       expect(result.repetition).toBe(12); // 10 + 2
     });
 
+    const weightedExercise: ExerciseType = {
+      ...mockExercise,
+      tags: [...mockExercise.tags, "EQ_TYPE_WEIGHTS"],
+    };
+
     it("decreases absolute weight on TOO_HARD feedback", () => {
+      const result = generator.adjustExerciseValues(
+        { ...baseData, weight: 20, weightType: "weightAbsolute" as const },
+        mockUserExercise,
+        weightedExercise,
+        null,
+        "m",
+        "intermediate",
+        "TOO_HARD",
+      );
+
+      expect(result.weight).toBe(19); // 20 - 1
+      expect(result.repetition).toBe(baseData.repetition);
+    });
+
+    it.each(["TOO_EASY", "SUCCEEDED"] as const)(
+      "keeps the weight and raises only repetitions on %s feedback",
+      (feedback) => {
+        const result = generator.adjustExerciseValues(
+          { ...baseData, weight: 20, weightType: "weightAbsolute" as const },
+          mockUserExercise,
+          weightedExercise,
+          null,
+          "m",
+          "intermediate",
+          feedback,
+        );
+
+        expect(result.weight).toBe(20);
+        expect(result.repetition).toBeGreaterThan(baseData.repetition);
+      },
+    );
+
+    it("keeps the weight of an exercise without adjustable weight", () => {
       const result = generator.adjustExerciseValues(
         { ...baseData, weight: 20, weightType: "weightAbsolute" as const },
         mockUserExercise,
@@ -680,42 +719,14 @@ describe("TrainingGenerator", () => {
         "TOO_HARD",
       );
 
-      expect(result.weight).toBe(19); // 20 - 1
-    });
-
-    it("increases absolute weight on TOO_EASY feedback", () => {
-      const result = generator.adjustExerciseValues(
-        { ...baseData, weight: 20, weightType: "weightAbsolute" as const },
-        mockUserExercise,
-        mockExercise,
-        null,
-        "m",
-        "intermediate",
-        "TOO_EASY",
-      );
-
-      expect(result.weight).toBe(22); // 20 + 2
-    });
-
-    it("increases absolute weight on SUCCEEDED feedback", () => {
-      const result = generator.adjustExerciseValues(
-        { ...baseData, weight: 20, weightType: "weightAbsolute" as const },
-        mockUserExercise,
-        mockExercise,
-        null,
-        "m",
-        "intermediate",
-        "SUCCEEDED",
-      );
-
-      expect(result.weight).toBe(21); // 20 + 1
+      expect(result.weight).toBe(20);
     });
 
     it("decreases FMax weight on TOO_HARD feedback", () => {
       const result = generator.adjustExerciseValues(
         { ...baseData, weight: 80, weightType: "weightFMax" as const },
         mockUserExercise,
-        mockExercise,
+        weightedExercise,
         null,
         "m",
         "intermediate",
@@ -725,25 +736,11 @@ describe("TrainingGenerator", () => {
       expect(result.weight).toBe(77.5); // 80 - 2.5
     });
 
-    it("increases FMax weight on TOO_EASY feedback", () => {
-      const result = generator.adjustExerciseValues(
-        { ...baseData, weight: 80, weightType: "weightFMax" as const },
-        mockUserExercise,
-        mockExercise,
-        null,
-        "m",
-        "intermediate",
-        "TOO_EASY",
-      );
-
-      expect(result.weight).toBe(85); // 80 + 5
-    });
-
     it("clamps absolute weight to minimum 0", () => {
       const result = generator.adjustExerciseValues(
         { ...baseData, weight: 0.5, weightType: "weightAbsolute" as const },
         mockUserExercise,
-        mockExercise,
+        weightedExercise,
         null,
         "m",
         "intermediate",
@@ -757,7 +754,7 @@ describe("TrainingGenerator", () => {
       const result = generator.adjustExerciseValues(
         { ...baseData, weight: 51, weightType: "weightFMax" as const },
         mockUserExercise,
-        mockExercise,
+        weightedExercise,
         null,
         "m",
         "intermediate",
@@ -765,20 +762,6 @@ describe("TrainingGenerator", () => {
       );
 
       expect(result.weight).toBe(50); // clamped from 48.5 to 50
-    });
-
-    it("clamps FMax weight to maximum 100%", () => {
-      const result = generator.adjustExerciseValues(
-        { ...baseData, weight: 98, weightType: "weightFMax" as const },
-        mockUserExercise,
-        mockExercise,
-        null,
-        "m",
-        "intermediate",
-        "TOO_EASY",
-      );
-
-      expect(result.weight).toBe(100); // clamped from 103 to 100
     });
 
     it("does not adjust weight when weight is undefined", () => {
@@ -795,6 +778,127 @@ describe("TrainingGenerator", () => {
       );
 
       expect(result.weight).toBeUndefined();
+    });
+  });
+
+  describe("adjustExerciseValues: one change per feedback within the boundaries", () => {
+    const ladderIntensity = {
+      startValue: {},
+      targetValue: {},
+      adjustment: {
+        repetition: {
+          default: { default: { SUCCEEDED: 1, TOO_EASY: 2, TOO_HARD: -2 } },
+        },
+        duration: {
+          default: { default: { SUCCEEDED: 5, TOO_EASY: 10, TOO_HARD: -10 } },
+        },
+        weightAbsolute: {
+          default: { default: { SUCCEEDED: 1, TOO_EASY: 2, TOO_HARD: -1 } },
+        },
+      },
+    } as unknown as IntensityData;
+
+    const weightedRepsExercise: ExerciseType = {
+      ...mockExercise,
+      tags: [...mockExercise.tags, "EQ_TYPE_WEIGHTS"],
+      isAdvanceByReps: true,
+      isAdvanceByDuration: false,
+      values: {
+        repetition: {
+          startValue: { m: { intermediate: "8" } },
+          targetValue: { m: { intermediate: "12" } },
+        },
+      },
+    };
+    const unweightedRepsExercise: ExerciseType = {
+      ...weightedRepsExercise,
+      tags: mockExercise.tags,
+    };
+    const weightedDurationExercise: ExerciseType = {
+      ...weightedRepsExercise,
+      isAdvanceByReps: false,
+      isAdvanceByDuration: true,
+      values: {
+        duration: {
+          startValue: { m: { intermediate: "30" } },
+          targetValue: { m: { intermediate: "50" } },
+        },
+      },
+    };
+
+    const adjust = (
+      exercise: ExerciseType,
+      values: { repetition?: number; duration?: number; weight?: number },
+      feedback: "SUCCEEDED" | "TOO_EASY" | "TOO_HARD",
+    ) =>
+      generator.adjustExerciseValues(
+        { ...values, weightType: "weightAbsolute" },
+        null,
+        exercise,
+        ladderIntensity,
+        "m",
+        "intermediate",
+        feedback,
+      );
+
+    it.each([
+      [8, "SUCCEEDED", 9],
+      [9, "TOO_EASY", 11],
+      [11, "TOO_EASY", 12],
+    ] as const)(
+      "worked example: %i reps with %s gives %i reps at the same weight",
+      (repetition, feedback, expectedRepetition) => {
+        const result = adjust(
+          weightedRepsExercise,
+          { repetition, weight: 38 },
+          feedback,
+        );
+
+        expect(result.repetition).toBe(expectedRepetition);
+        expect(result.weight).toBe(38);
+      },
+    );
+
+    it("worked example: TOO_HARD on a weighted exercise reduces only the weight", () => {
+      const result = adjust(
+        weightedRepsExercise,
+        { repetition: 8, weight: 39 },
+        "TOO_HARD",
+      );
+
+      expect(result.repetition).toBe(8);
+      expect(result.weight).toBe(38);
+    });
+
+    it("clamps weighted duration at the target", () => {
+      const result = adjust(
+        weightedDurationExercise,
+        { duration: 45, weight: 38 },
+        "TOO_EASY",
+      );
+
+      expect(result.duration).toBe(50);
+      expect(result.weight).toBe(38);
+    });
+
+    it("clamps unweighted repetitions at the target", () => {
+      const result = adjust(
+        unweightedRepsExercise,
+        { repetition: 11 },
+        "TOO_EASY",
+      );
+
+      expect(result.repetition).toBe(12);
+    });
+
+    it("clamps unweighted repetitions at the start value on TOO_HARD", () => {
+      const result = adjust(
+        unweightedRepsExercise,
+        { repetition: 9 },
+        "TOO_HARD",
+      );
+
+      expect(result.repetition).toBe(8);
     });
   });
 

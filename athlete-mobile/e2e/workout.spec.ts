@@ -11,7 +11,8 @@ test.describe("Workout Flow", () => {
   const EXPECTED_INITIAL_REPS = 10;
   const EXPECTED_INITIAL_WEIGHT = 14;
   const EXPECTED_AFTER_REPS = 11;
-  const EXPECTED_AFTER_WEIGHT = 16;
+  // Positive feedback raises only the repetitions until the target is reached
+  const EXPECTED_AFTER_WEIGHT = 14;
 
   test.describe("Standard progression", () => {
     test.use({ profile: createCompletedProfile() });
@@ -45,13 +46,13 @@ test.describe("Workout Flow", () => {
       expect(afterValues.weight).toBe(EXPECTED_AFTER_WEIGHT);
     });
 
-    test("clicking 'too easy' on last set increases weight more", async ({
+    test("clicking 'too easy' on last set increases repetitions more", async ({
       page,
     }) => {
       test.setTimeout(60000);
 
       const EXPECTED_TOO_EASY_REPS = 12;
-      const EXPECTED_TOO_EASY_WEIGHT = 16;
+      const EXPECTED_TOO_EASY_WEIGHT = 14;
 
       await mockSupabaseAuth(page);
       await mockWakeLock(page);
@@ -85,7 +86,8 @@ test.describe("Workout Flow", () => {
     }) => {
       test.setTimeout(60000);
 
-      const EXPECTED_TOO_HARD_REPS = 9;
+      // On a weighted exercise TOO_HARD lowers only the weight
+      const EXPECTED_TOO_HARD_REPS = 10;
       const EXPECTED_TOO_HARD_WEIGHT = 14;
 
       await mockSupabaseAuth(page);

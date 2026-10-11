@@ -5,7 +5,6 @@ import { PAUSE_EXERCISE_ID } from "@/features/training/models/IdTypes";
 import type { SkillCode } from "@/schemas/generator.schema";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import {
-  calculateNewWeight,
   calculateStandardExerciseAdjustment,
   deriveActiveExerciseIndex,
   type ExerciseAdjustmentContext,
@@ -16,6 +15,7 @@ import {
   shouldProcessExerciseValues,
   shouldSkipExerciseSave,
 } from "./exerciseDataUtils";
+import { calculateNewWeight, getTargetWeight } from "./weightAdjustmentUtils";
 
 // Minimal exercise data for testing
 const createExercise = (overrides: Partial<ExerciseType> = {}): ExerciseType =>
@@ -335,6 +335,7 @@ describe("exerciseDataUtils", () => {
         exercise,
         createContext(),
         createIntensity(),
+        "SUCCEEDED",
       );
       expect(result.type).toBe("LEVEL_UP");
     });
@@ -357,6 +358,7 @@ describe("exerciseDataUtils", () => {
         exercise,
         createContext(),
         createIntensity(),
+        "TOO_HARD",
       );
       expect(result.type).toBe("LEVEL_DOWN");
     });
@@ -379,6 +381,7 @@ describe("exerciseDataUtils", () => {
         exercise,
         createContext(),
         createIntensity(),
+        "SUCCEEDED",
       );
       expect(result.type).toBe("LEVEL_UP");
     });
@@ -405,6 +408,7 @@ describe("exerciseDataUtils", () => {
         exercise,
         createContext(),
         createIntensity(),
+        "SUCCEEDED",
       );
       expect(result.type).toBe("INCREASE_WEIGHT");
     });
@@ -427,8 +431,194 @@ describe("exerciseDataUtils", () => {
         exercise,
         createContext(),
         createIntensity(),
+        "SUCCEEDED",
       );
       expect(result).toEqual({ type: "NO_CHANGE", reason: "in_between_zone" });
+    });
+  });
+
+  describe("calculateStandardExerciseAdjustment: feedback at the boundaries", () => {
+    const repsExercise = createExercise({
+      isAdvanceByReps: true,
+      values: {
+        repetition: {
+          startValue: { m: { beginner: "8" } },
+          targetValue: { m: { beginner: "12" } },
+        },
+      },
+    });
+    const durationExercise = createExercise({
+      isAdvanceByDuration: true,
+      values: {
+        duration: {
+          startValue: { m: { beginner: "30" } },
+          targetValue: { m: { beginner: "60" } },
+        },
+      },
+    });
+    const weightedRepsExercise = createExercise({
+      isAdvanceByReps: true,
+      tags: ["EQ_TYPE_WEIGHTS"],
+      values: {
+        repetition: {
+          startValue: { m: { beginner: "8" } },
+          targetValue: { m: { beginner: "12" } },
+        },
+        weight: {
+          startValue: { m: { beginner: "20" } },
+          targetValue: { m: { beginner: "50" } },
+        },
+      },
+    });
+    const inBetween = { type: "NO_CHANGE", reason: "in_between_zone" };
+
+    it.each(["SUCCEEDED", "TOO_EASY"] as const)(
+      "levels up after the performed rep target with %s",
+      (feedback) => {
+        const result = calculateStandardExerciseAdjustment(
+          0,
+          0,
+          12,
+          repsExercise,
+          createContext(),
+          createIntensity(),
+          feedback,
+        );
+        expect(result.type).toBe("LEVEL_UP");
+      },
+    );
+
+    it("does not level up after the performed rep target with TOO_HARD", () => {
+      const result = calculateStandardExerciseAdjustment(
+        0,
+        0,
+        12,
+        repsExercise,
+        createContext(),
+        createIntensity(),
+        "TOO_HARD",
+      );
+      expect(result).toEqual(inBetween);
+    });
+
+    it("does not level up after the performed duration target with TOO_HARD", () => {
+      const result = calculateStandardExerciseAdjustment(
+        0,
+        60,
+        0,
+        durationExercise,
+        createContext(),
+        createIntensity(),
+        "TOO_HARD",
+      );
+      expect(result).toEqual(inBetween);
+    });
+
+    it("levels down after the performed rep start value with TOO_HARD", () => {
+      const result = calculateStandardExerciseAdjustment(
+        0,
+        0,
+        8,
+        repsExercise,
+        createContext(),
+        createIntensity(),
+        "TOO_HARD",
+      );
+      expect(result.type).toBe("LEVEL_DOWN");
+    });
+
+    it("levels down after the performed duration start value with TOO_HARD", () => {
+      const result = calculateStandardExerciseAdjustment(
+        0,
+        30,
+        0,
+        durationExercise,
+        createContext(),
+        createIntensity(),
+        "TOO_HARD",
+      );
+      expect(result.type).toBe("LEVEL_DOWN");
+    });
+
+    it.each(["SUCCEEDED", "TOO_EASY"] as const)(
+      "progresses normally from the rep start value with %s",
+      (feedback) => {
+        const result = calculateStandardExerciseAdjustment(
+          0,
+          0,
+          8,
+          repsExercise,
+          createContext(),
+          createIntensity(),
+          feedback,
+        );
+        expect(result).toEqual(inBetween);
+      },
+    );
+
+    it("does not level down below the rep start value with SUCCEEDED", () => {
+      const result = calculateStandardExerciseAdjustment(
+        0,
+        0,
+        6,
+        repsExercise,
+        createContext(),
+        createIntensity(),
+        "SUCCEEDED",
+      );
+      expect(result).toEqual(inBetween);
+    });
+
+    it("increases weight after the performed rep target with SUCCEEDED", () => {
+      const result = calculateStandardExerciseAdjustment(
+        30,
+        0,
+        12,
+        weightedRepsExercise,
+        createContext(),
+        createIntensity(),
+        "SUCCEEDED",
+      );
+      expect(result.type).toBe("INCREASE_WEIGHT");
+    });
+
+    it("does not increase weight after the performed rep target with TOO_HARD", () => {
+      const result = calculateStandardExerciseAdjustment(
+        30,
+        0,
+        12,
+        weightedRepsExercise,
+        createContext(),
+        createIntensity(),
+        "TOO_HARD",
+      );
+      expect(result).toEqual(inBetween);
+    });
+
+    it("does not level up after the complete weighted target with TOO_HARD", () => {
+      const result = calculateStandardExerciseAdjustment(
+        50,
+        0,
+        12,
+        weightedRepsExercise,
+        createContext(),
+        createIntensity(),
+        "TOO_HARD",
+      );
+      expect(result).toEqual(inBetween);
+    });
+
+    it("does not decrease weight below the rep start value with SUCCEEDED", () => {
+      const result = calculateStandardExerciseAdjustment(
+        30,
+        0,
+        6,
+        weightedRepsExercise,
+        createContext(),
+        createIntensity(),
+        "SUCCEEDED",
+      );
+      expect(result).toEqual(inBetween);
     });
   });
 
@@ -443,7 +633,9 @@ describe("exerciseDataUtils", () => {
           },
         },
       });
-      const result = calculateNewWeight(50, "SUCCEEDED", exercise, intensity);
+      const result = calculateNewWeight(50, "SUCCEEDED", exercise, {
+        intensity,
+      });
       expect(result).toBe(55);
     });
 
@@ -455,14 +647,94 @@ describe("exerciseDataUtils", () => {
           },
         },
       });
-      const result = calculateNewWeight(50, "TOO_HARD", exercise, intensity);
+      const result = calculateNewWeight(50, "TOO_HARD", exercise, {
+        intensity,
+      });
       expect(result).toBe(45);
+    });
+
+    it("clamps an absolute weight increase at the target weight", () => {
+      const intensity = createIntensity({
+        adjustment: {
+          weightAbsolute: {
+            default: { default: { SUCCEEDED: 5, TOO_HARD: -5, TOO_EASY: 2.5 } },
+          },
+        },
+      });
+      const result = calculateNewWeight(48, "SUCCEEDED", exercise, {
+        intensity,
+        targetWeight: 50,
+      });
+      expect(result).toBe(50);
     });
 
     it("returns current weight when no adjustment configured", () => {
       const intensity = createIntensity({ adjustment: {} });
-      const result = calculateNewWeight(50, "SUCCEEDED", exercise, intensity);
+      const result = calculateNewWeight(50, "SUCCEEDED", exercise, {
+        intensity,
+      });
       expect(result).toBe(50);
+    });
+  });
+
+  describe("getTargetWeight", () => {
+    const kgExercise = (target: Record<string, number> = {}) =>
+      createExercise({
+        values: {
+          weight: {
+            startValue: {
+              default: { beginner: 40 },
+              type: { type: "weightAbsolute" },
+            },
+            targetValue: {
+              default: target,
+              type: { type: "weightAbsolute" },
+            },
+          },
+        },
+      });
+    // The intensity config authors its weights in % of F-Max.
+    const percentIntensity = createIntensity({
+      startValue: {
+        weight: { m: { beginner: 50 }, type: { type: "weightFMax" } },
+      },
+      targetValue: {
+        weight: { m: { beginner: 60 }, type: { type: "weightFMax" } },
+      },
+      adjustment: {
+        weightAbsolute: {
+          default: { default: { SUCCEEDED: 5, TOO_HARD: -5, TOO_EASY: 2.5 } },
+        },
+      },
+    });
+
+    it("keeps an authored kg target for a kg exercise", () => {
+      expect(
+        getTargetWeight(
+          percentIntensity,
+          kgExercise({ beginner: 70 }),
+          "beginner",
+          "m",
+        ),
+      ).toBe(70);
+    });
+
+    it("skips the clamp when a kg exercise falls back to a % target", () => {
+      const exercise = kgExercise();
+      const targetWeight = getTargetWeight(
+        percentIntensity,
+        exercise,
+        "beginner",
+        "m",
+      );
+
+      expect(targetWeight).toBeUndefined();
+      expect(
+        calculateNewWeight(60, "SUCCEEDED", exercise, {
+          intensity: percentIntensity,
+          targetWeight,
+        }),
+      ).toBe(65);
     });
   });
 

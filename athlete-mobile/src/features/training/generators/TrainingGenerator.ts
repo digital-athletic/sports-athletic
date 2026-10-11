@@ -39,9 +39,14 @@ import {
   hasWeights,
 } from "@/features/training/utils/equipmentUtils";
 import {
+  areaToRegion,
   getAreasFor,
   getOpposingExerciseDirection,
 } from "@/features/training/utils/exerciseUtils";
+import {
+  getMaxStrengthWeightPercentage,
+  isLastBufferColumn,
+} from "@/features/training/utils/maxStrengthAdjustment";
 import {
   getBlocksFromPains,
   getPreventionsFromPains,
@@ -1607,8 +1612,8 @@ export default class TrainingGenerator {
       const setList: GeneratedSetListEntry[] = [];
       const maxValues: MaxValuesType =
         workoutData.maxValues ?? DEFAULT_MAX_VALUES;
-      // try not to reuse sup exercises
-      let usedSupExercisesIds: string[] = [];
+      // a support exercise appears at most once per skill
+      const usedSupExercisesIds: string[] = [];
 
       // distribute weight/kg of support exercises by age and place
       let weightPercentage = 0.3; // child is default
@@ -1640,6 +1645,7 @@ export default class TrainingGenerator {
           userExerciseData,
           exercise,
           genderTag,
+          maxValues,
         );
         const warmUpWeights = computeWarmupTrainingWeights(
           maxTrainingWeights.trainingWeights[0],
@@ -1648,15 +1654,19 @@ export default class TrainingGenerator {
           maxTrainingWeights.trainingWeights,
         );
         // get soreness areas for filtering support ex
-        const tempTags = temporalData.map((element) => element.tag);
-        let areas = getAreasFor(tempTags);
-        areas = areas.map((a) => a.toUpperCase());
+        const soreRegions = getAreasFor(
+          temporalData.map((element) => element.tag),
+        ).map(areaToRegion);
+        const mainLiftMuscles = getTagValues(exercise.tags, TagGroups.MUSCLE);
         const supportExercises = exercises.filter(
           (e) =>
             getTagValues(e.tags, TagGroups.SKILL).indexOf("SUPPORT") > -1 &&
             getTagValues(e.tags, TagGroups.SIDE).indexOf("RIGHT") === -1 &&
-            !getTagValues(e.tags, TagGroups.REGION).some((e) =>
-              areas.includes(e),
+            !getTagValues(e.tags, TagGroups.REGION).some((region) =>
+              soreRegions.includes(region),
+            ) &&
+            !getTagValues(e.tags, TagGroups.MUSCLE).some((muscle) =>
+              mainLiftMuscles.includes(muscle),
             ) &&
             e.displayName &&
             e.displayName.length > 0 &&
@@ -1691,27 +1701,53 @@ export default class TrainingGenerator {
           });
         });
         // build training
-        // training scheme: ex - 30s pause - 8rep/30s supEx - 60s pause - 8rep/30s supEx - 30s pause
-        // sup ex change after every rep
+        // training scheme: ex - 30s pause - 8rep/30s supEx - 60s pause - 8rep/30s supEx - 30s (Pro 90s) pause
         const supportExerciseDuration = 30;
-        const supportExerciseRepetition = 10;
+        const supportExerciseRepetition = 8;
+        const isPro =
+          getUserLevel(user) === WorkoutConstants.LEVELS.PROFESSIONAL;
+        const finalSupportRest = isPro ? 90 : 30;
+        const emptyBreakRest = isPro ? 240 : 180;
 
         for (
           let trainingSet = warmUpWeights.length;
           trainingSet < trainingWeights.length;
           trainingSet++
         ) {
-          let isLastSet = trainingSet === trainingWeights.length - 1;
-          if (!isLastSet) {
-            // get sup exercise
-            if (usedSupExercisesIds.length === supportExercises.length) {
-              // reset if all in use
-              usedSupExercisesIds = [];
-            }
-
-            let unusedSupExercises = supportExercises.filter(
+          const isLastSet = trainingSet === trainingWeights.length - 1;
+          const pauseOf = (duration: number): GeneratedSetListEntry => ({
+            branchId: PLACEHOLDER_BRANCH_ID,
+            exerciseId: PAUSE_EXERCISE_ID,
+            set: [trainingSet + 1, trainingWeights.length],
+            skill: skill.skill,
+            duration,
+          });
+          setList.push({
+            branchId: first.branchId,
+            exerciseId: first.exerciseId,
+            tags: first.branchTags,
+            set: [trainingSet + 1, trainingWeights.length],
+            skill: skill.skill,
+            weight:
+              deriveWeightForExercise(
+                trainingWeights[trainingSet],
+                "weightFMax",
+                exercise,
+                maxValues,
+              ) ?? 0,
+            repetition: trainingReps[trainingSet].repetitions,
+            repetitionMAX: trainingReps[trainingSet],
+          });
+          if (isLastSet) {
+            setList.push(pauseOf(120));
+          } else {
+            const unusedSupExercises = supportExercises.filter(
               (ex) => usedSupExercisesIds.indexOf(ex.id) === -1,
             );
+            if (unusedSupExercises.length === 0) {
+              setList.push(pauseOf(emptyBreakRest));
+              continue;
+            }
 
             // check if weight or kg is to be used
             let nextType: "kg" | "weight" = "weight";
@@ -1744,10 +1780,7 @@ export default class TrainingGenerator {
               if (TrainingGenerator.DEBUG) {
                 console.log("No sup exercises for any type found");
               }
-              nextTypeSupExercises =
-                unusedSupExercises.length === 0
-                  ? supportExercises
-                  : unusedSupExercises;
+              nextTypeSupExercises = unusedSupExercises;
             }
 
             const supExercise =
@@ -1831,71 +1864,13 @@ export default class TrainingGenerator {
                 };
               }
             }
-            // build rep
-            setList.push({
-              branchId: first.branchId,
-              exerciseId: first.exerciseId,
-              tags: first.branchTags,
-              set: [trainingSet + 1, trainingWeights.length],
-              skill: skill.skill,
-              weight:
-                deriveWeightForExercise(
-                  trainingWeights[trainingSet],
-                  "weightFMax",
-                  exercise,
-                  maxValues,
-                ) ?? 0,
-              repetition: trainingReps[trainingSet].repetitions,
-              repetitionMAX: trainingReps[trainingSet],
-            });
-            setList.push({
-              branchId: PLACEHOLDER_BRANCH_ID,
-              exerciseId: "999999",
-              set: [trainingSet + 1, trainingWeights.length],
-              skill: skill.skill,
-              duration: 30,
-            });
-            setList.push(supExerciseEntryFirst);
-            setList.push({
-              branchId: PLACEHOLDER_BRANCH_ID,
-              exerciseId: "999999",
-              set: [trainingSet + 1, trainingWeights.length],
-              skill: skill.skill,
-              duration: 60,
-            });
-            setList.push(supExerciseEntrySecond);
-            setList.push({
-              branchId: PLACEHOLDER_BRANCH_ID,
-              exerciseId: "999999",
-              set: [trainingSet + 1, trainingWeights.length],
-              skill: skill.skill,
-              duration: 30,
-            });
-          } else {
-            // last rep and last 60s pause
-            setList.push({
-              branchId: first.branchId,
-              exerciseId: first.exerciseId,
-              tags: first.branchTags,
-              set: [trainingSet + 1, trainingWeights.length],
-              skill: skill.skill,
-              weight:
-                deriveWeightForExercise(
-                  trainingWeights[trainingSet],
-                  "weightFMax",
-                  exercise,
-                  maxValues,
-                ) ?? 0,
-              repetition: trainingReps[trainingSet].repetitions,
-              repetitionMAX: trainingReps[trainingSet],
-            });
-            setList.push({
-              branchId: PLACEHOLDER_BRANCH_ID,
-              exerciseId: "999999",
-              set: [trainingSet + 1, trainingWeights.length],
-              skill: skill.skill,
-              duration: 120,
-            });
+            setList.push(
+              pauseOf(30),
+              supExerciseEntryFirst,
+              pauseOf(60),
+              supExerciseEntrySecond,
+              pauseOf(finalSupportRest),
+            );
           }
         }
       }
@@ -3734,6 +3709,7 @@ export default class TrainingGenerator {
     userExercisesData: Record<string, UserExerciseDataType | undefined> | null,
     exercise: ExerciseType,
     genderTag: GenderTag,
+    maxValues?: MaxValuesType,
   ): MaxTrainingRepsEntry[] => {
     const maxTrainingWeights = maxTrainingWeightsObject.trainingWeights;
     const userLevel = getUserLevel(user);
@@ -3765,52 +3741,72 @@ export default class TrainingGenerator {
         maximumWeightPercentage = parseFloat(defaultValue[levelLower]);
       }
     }
-    let level = "EASY";
-    if (userExerciseData && userExerciseData.maxFRepetitions) {
-      if (userExerciseData.feedback?.difficulty) {
-        //adjust level
-        const lastLevel =
-          userExerciseData.maxFRepetitions[
-            userExerciseData.maxFRepetitions.length - 1
-          ].level;
-        if (userExerciseData.feedback.difficulty === "TOO_HARD") {
-          // only weight decreases
-          level = lastLevel;
-        } else {
+    const levels = maxTrainingWeights.map(() => "EASY");
+    const storedReps = userExerciseData?.maxFRepetitions ?? [];
+    if (userExerciseData && storedReps.length > 0) {
+      const difficulty = userExerciseData.feedback?.difficulty;
+      if (difficulty) {
+        // A fallback column that is the last one at its weight steps like
+        // HARD, matching the weight raise in calculateMaxStrengthAdjustment.
+        const lastWeightPercentage =
+          maxValues && typeof userExerciseData.weight === "number"
+            ? getMaxStrengthWeightPercentage(
+                userExerciseData.weight,
+                exercise,
+                maxValues,
+              )
+            : null;
+        // Entries stored before one entry per working set hold only the last set.
+        const isPerSet = storedReps.length === maxTrainingWeights.length;
+        for (let w = 0; w < levels.length; w++) {
+          const isLastSet = w === levels.length - 1;
+          const lastLevel = (
+            isPerSet ? storedReps[w] : storedReps[storedReps.length - 1]
+          ).level;
+          if (difficulty === "TOO_HARD") {
+            // only weight decreases
+            levels[w] = lastLevel;
+            continue;
+          }
+          // The stored weight belongs to the last set only.
+          const stepLevel =
+            (isLastSet || !isPerSet) &&
+            isLastBufferColumn(levelReps, lastWeightPercentage, lastLevel)
+              ? "HARD"
+              : lastLevel;
           // upgrade reps level
-          if (userExerciseData.feedback.difficulty === "SUCCEEDED") {
-            level =
-              lastLevel === "EASY"
+          if (difficulty === "SUCCEEDED") {
+            levels[w] =
+              stepLevel === "EASY"
                 ? "MEDIUM"
-                : lastLevel === "MEDIUM"
+                : stepLevel === "MEDIUM"
                   ? "HARD"
                   : "EASY";
           } else {
-            level =
-              lastLevel === "EASY"
+            levels[w] =
+              stepLevel === "EASY"
                 ? "HARD"
-                : lastLevel === "MEDIUM"
+                : stepLevel === "MEDIUM"
                   ? "EASY"
                   : "MEDIUM";
           }
         }
-      } else {
+      } else if (
         // feedback.difficulty is not set if levelUp should be done but no other branch exercise is found
-        if (
-          userExerciseData.nextWeightPercentage &&
-          userExerciseData.nextWeightPercentage === maximumWeightPercentage
-        ) {
-          // level stays HARD for branch exercises that are finished but can't be replaced
-          level = "HARD";
-        }
+        userExerciseData.nextWeightPercentage &&
+        userExerciseData.nextWeightPercentage === maximumWeightPercentage
+      ) {
+        // level stays HARD for branch exercises that are finished but can't be replaced
+        levels.fill("HARD");
       }
     }
     const firstMaxTrainingReps =
       userLevel === WorkoutConstants.LEVELS.PROFESSIONAL ? 3 : 4;
     const maxTrainingReps: MaxTrainingRepsEntry[] = [
-      { level: level, repetitions: firstMaxTrainingReps },
+      { level: levels[0], repetitions: firstMaxTrainingReps },
     ];
     for (let w = 1; w < maxTrainingWeights.length; w++) {
+      const level = levels[w];
       const levelKey = level as keyof typeof levelReps;
       const weightKey = maxTrainingWeights[w].toString();
       let repetitions = (
@@ -3833,14 +3829,16 @@ export default class TrainingGenerator {
       }
       // handle corrupt data by using min or max repetition count for high or low weight
       if (typeof repetitions === "undefined") {
+        checkableLevel = level;
         if (maxTrainingWeights[w] > 80) {
           repetitions = 1;
         } else {
           repetitions = 6;
         }
       }
+      // Record the column actually used, so the next step leaves it instead of repeating it.
       maxTrainingReps[w] = {
-        level: level,
+        level: checkableLevel,
         repetitions: repetitions,
       };
     }

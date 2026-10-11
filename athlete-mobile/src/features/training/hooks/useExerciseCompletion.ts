@@ -27,6 +27,7 @@ import {
   getResetRepetition,
   shouldProcessExerciseValues,
 } from "@/features/training/utils/exerciseDataUtils";
+import { getWorkingSetMaxFReps } from "@/features/training/utils/maxFRepetitionsUtils";
 import { calculateMaxStrengthAdjustment } from "@/features/training/utils/maxStrengthAdjustment";
 import { getSkillTree } from "@/features/training/utils/skillTreeUtils";
 import {
@@ -317,7 +318,13 @@ export function useExerciseCompletion() {
             weight,
             adjustment,
             exerciseData: currentExerciseData,
-            userExerciseData: exercise,
+            userExerciseData: exercise && {
+              ...exercise,
+              maxFRepetitions: getWorkingSetMaxFReps(
+                exerciseList ?? [],
+                exerciseId,
+              ),
+            },
             maxValues: workoutData.maxValues,
             ageGroup,
             genderTag,

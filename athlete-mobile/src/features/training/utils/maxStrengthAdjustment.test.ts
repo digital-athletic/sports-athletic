@@ -5,14 +5,15 @@ import {
   calculateMaxStrengthAdjustment,
   type MaxStrengthAdjustmentInput,
 } from "./maxStrengthAdjustment";
-import type { ExerciseType } from "@/schemas/exercise.schema";
+import type {
+  ExerciseType,
+  ExerciseValuesType,
+} from "@/schemas/exercise.schema";
 import type { MaxForceRepetitionsDataType } from "@/schemas/sync.schema";
+import { createExerciseData } from "./testFixtures";
 
-// Locks the current behavior of the logic extracted verbatim from
-// training-active.tsx. Expectations encode a known quirk: for ADULT/ADVANCED
-// the max weight percentage collapses to 65% (a `.map(parseInt)` radix bug)
-// while the min is 70%, so a weight adjustment always lands on the 65% cap.
-// Update these deliberately once those bugs are fixed.
+// For ADULT/ADVANCED without catalog values the final weight is 80% (the
+// highest weight in the repetition table) and the minimum is 70%.
 
 // A LOWER_BODY barbell exercise resolves to maxValues.lowerBody.barbell.
 const lowerBodyExercise = { tags: ["REGION_LOWER_BODY"] } as ExerciseType;
@@ -40,19 +41,48 @@ const baseInput: MaxStrengthAdjustmentInput = {
   userLevel: "advanced",
 };
 
+// The ladder tests below follow the Advanced level in
+// docs/specs/progression/max-strength-progression.md.
+// F-Max is 100 kg, so the lifted weight in kg equals the percentage of F-Max.
+const exerciseWith = (weightValues: Partial<ExerciseValuesType>) =>
+  createExerciseData({
+    tags: ["REGION_LOWER_BODY"],
+    values: { weight: { startValue: {}, targetValue: {}, ...weightValues } },
+  });
+
+// Same target value as the barbell squat (id 26): Advanced ends at 80%.
+const squatLike = exerciseWith({
+  targetValue: { default: { advanced: 80 } },
+});
+
+const adjust = (
+  weight: number,
+  level: MaxForceRepetitionsDataType["level"],
+  adjustment: MaxStrengthAdjustmentInput["adjustment"],
+  exerciseData: ExerciseType = squatLike,
+) =>
+  calculateMaxStrengthAdjustment({
+    ...baseInput,
+    weight,
+    adjustment,
+    exerciseData,
+    maxValues: maxValuesWith(100),
+    userExerciseData: userExerciseWith([{ level, repetitions: 3 }]),
+  });
+
 describe("calculateMaxStrengthAdjustment", () => {
-  it("increases weight below the max, clamped to the capped max percentage", () => {
+  it("raises a weight below the minimum to the minimum", () => {
     const result = calculateMaxStrengthAdjustment(baseInput);
 
     expect(result.weightAdjusted).toBe(true);
-    expect(result.nextWeightPercentage).toBe(65);
+    expect(result.nextWeightPercentage).toBe(70);
   });
 
   it("levels up instead of adjusting weight once the max percentage is reached", () => {
     const result = calculateMaxStrengthAdjustment({
       ...baseInput,
-      weight: 70,
-      maxValues: maxValuesWith(100), // 70% >= 65% max
+      weight: 80,
+      maxValues: maxValuesWith(100), // 80% is the final Advanced weight
     });
 
     expect(result.levelUp).toBe(true);
@@ -62,22 +92,12 @@ describe("calculateMaxStrengthAdjustment", () => {
   it("levels down when TOO_HARD at or below the minimum percentage", () => {
     const result = calculateMaxStrengthAdjustment({
       ...baseInput,
-      adjustment: "TOO_HARD", // 60% <= 70% min
+      adjustment: "TOO_HARD", // 60% is below the 70% minimum
       userExerciseData: userExerciseWith([{ level: "EASY", repetitions: 6 }]),
     });
 
     expect(result.levelDown).toBe(true);
     expect(result.feedbackOverride).toEqual({ difficulty: null });
-  });
-
-  it("levels up on MEDIUM reps with TOO_EASY feedback regardless of weight", () => {
-    const result = calculateMaxStrengthAdjustment({
-      ...baseInput,
-      adjustment: "TOO_EASY",
-      userExerciseData: userExerciseWith([{ level: "MEDIUM", repetitions: 5 }]),
-    });
-
-    expect(result.levelUp).toBe(true);
   });
 
   it("makes no change on neutral feedback below the minimum at EASY level", () => {
@@ -110,5 +130,68 @@ describe("calculateMaxStrengthAdjustment", () => {
     });
 
     expect(result.nextWeightPercentage).toBeUndefined();
+  });
+});
+
+describe("calculateMaxStrengthAdjustment: upper end of the Advanced ladder", () => {
+  it("advances two steps on TOO_EASY below the final value and keeps the exercise", () => {
+    const result = adjust(75, "MEDIUM", "TOO_EASY");
+
+    expect(result.levelUp).toBe(false);
+    expect(result.nextWeightPercentage).toBe(77.5);
+  });
+
+  it("stops at the final value on TOO_EASY from the MEDIUM column at 80%", () => {
+    const result = adjust(80, "MEDIUM", "TOO_EASY");
+
+    expect(result.levelUp).toBe(false);
+    expect(result.nextWeightPercentage).toBe(80);
+    expect(result.feedbackOverride).toEqual({ difficulty: "SUCCEEDED" });
+  });
+
+  it("swaps to the harder exercise on SUCCEEDED at the final value", () => {
+    const result = adjust(80, "HARD", "SUCCEEDED");
+
+    expect(result.levelUp).toBe(true);
+  });
+
+  it("takes the final weight from the repetition table without a target value", () => {
+    const result = adjust(77.5, "HARD", "SUCCEEDED", exerciseWith({}));
+
+    expect(result.levelUp).toBe(false);
+    expect(result.nextWeightPercentage).toBe(80);
+  });
+});
+
+describe("calculateMaxStrengthAdjustment: lower end of the Advanced ladder", () => {
+  it("lowers the weight by 2.5 percentage points on TOO_HARD", () => {
+    const result = adjust(77.5, "HARD", "TOO_HARD");
+
+    expect(result.levelDown).toBe(false);
+    expect(result.nextWeightPercentage).toBe(75);
+  });
+
+  it("lowers the weight to the 70% minimum on TOO_HARD instead of swapping", () => {
+    const result = adjust(72.5, "EASY", "TOO_HARD");
+
+    expect(result.levelDown).toBe(false);
+    expect(result.nextWeightPercentage).toBe(70);
+  });
+
+  it("swaps to the easier exercise on TOO_HARD at the 70% minimum", () => {
+    const result = adjust(70, "EASY", "TOO_HARD");
+
+    expect(result.levelDown).toBe(true);
+  });
+
+  it("lowers the weight below the start value on TOO_HARD", () => {
+    const withStart = exerciseWith({
+      startValue: { default: { advanced: 72.5 } },
+      targetValue: { default: { advanced: 80 } },
+    });
+    const result = adjust(72.5, "EASY", "TOO_HARD", withStart);
+
+    expect(result.levelDown).toBe(false);
+    expect(result.nextWeightPercentage).toBe(70);
   });
 });

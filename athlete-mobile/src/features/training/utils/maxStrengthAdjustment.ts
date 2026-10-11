@@ -93,7 +93,7 @@ export function calculateMaxStrengthAdjustment(
     ageGroup !== "CHILD" && maxFRepsHard
       ? Math.max(
           Object.keys(maxFRepsHard)
-            .map(parseInt)
+            .map(Number)
             .filter((v) => !isNaN(v))
             .sort((a, b) => b - a)[0],
         )
@@ -107,6 +107,10 @@ export function calculateMaxStrengthAdjustment(
       maximumWeightPercentage = Number(targetValue.default[userLevel]);
     }
   }
+  // The floor stays at this minimum (70% for Advanced), not at the 65% from
+  // the max strength spec. TrainingGenerator never builds a set below it, so
+  // with a lower floor the athlete would get the same weight after every
+  // TOO_HARD and never swap to the easier exercise.
   let minimumWeightPercentage = levelTag
     ? WorkoutConstants.MAX_KRAFT_MINIMAL_WEIGHT_PERCENTAGE_PER_USER_LEVEL[
         levelTag
@@ -126,33 +130,14 @@ export function calculateMaxStrengthAdjustment(
       minimumWeightPercentage -
       WorkoutConstants.MAX_KRAFT_INCLINE_BENCH_WEIGHT_DIFFERENCE;
   }
-  // set exercise startValue if entered from webTool
-  if (exerciseData?.values?.weight?.startValue) {
-    if (
-      userLevel &&
-      exerciseData?.values.weight?.startValue?.[genderTag]?.[userLevel]
-    ) {
-      minimumWeightPercentage = Number(
-        exerciseData?.values.weight.startValue[genderTag][userLevel],
-      );
-    } else if (
-      userLevel &&
-      exerciseData?.values.weight?.startValue?.default?.[userLevel]
-    ) {
-      minimumWeightPercentage = Number(
-        exerciseData?.values.weight.startValue.default[userLevel],
-      );
-    }
-  }
 
   let feedbackOverride: { difficulty: ExerciseDifficultyType } | undefined;
   if (
-    (typeof weightPercentage === "number" &&
-      typeof maximumWeightPercentage === "number" &&
-      weightPercentage >= maximumWeightPercentage &&
-      lastMaxFRep?.level === "HARD" &&
-      adjustment !== "TOO_HARD") ||
-    (lastMaxFRep?.level === "MEDIUM" && adjustment === "TOO_EASY")
+    typeof weightPercentage === "number" &&
+    typeof maximumWeightPercentage === "number" &&
+    weightPercentage >= maximumWeightPercentage &&
+    lastMaxFRep?.level === "HARD" &&
+    adjustment !== "TOO_HARD"
   ) {
     // No adjustment if max lvl and max weight is already reached
     feedbackOverride = { difficulty: null };

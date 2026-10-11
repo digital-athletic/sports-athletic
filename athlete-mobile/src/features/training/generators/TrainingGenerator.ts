@@ -2950,6 +2950,7 @@ export default class TrainingGenerator {
     // from data/generator/TestIntensity
     let intensity: IntensityData | null = getIntensityBySkill(
       skillName as SkillCode,
+      exercise,
     );
 
     let exerciseValues = this.getExerciseValues(
@@ -3569,11 +3570,20 @@ export default class TrainingGenerator {
       let isWeightFMaxExercise =
         exerciseWeightType === "weightFMax" ||
         (!exerciseWeightType && intensityWeightType === "weightFMax");
+      const usesAuthoredRange = !intensity?.overridesExerciseRepsAndDuration;
 
-      if (exercise.isAdvanceByReps && startValues.repetition) {
+      if (
+        usesAuthoredRange &&
+        exercise.isAdvanceByReps &&
+        startValues.repetition
+      ) {
         data.repetition = startValues.repetition; // not ternary could overwrite
       }
-      if (exercise.isAdvanceByDuration && startValues.duration) {
+      if (
+        usesAuthoredRange &&
+        exercise.isAdvanceByDuration &&
+        startValues.duration
+      ) {
         data.duration = startValues.duration; // not ternary could overwrite
       }
       // check for EQ_TYPE_ tag
@@ -3618,6 +3628,21 @@ export default class TrainingGenerator {
         data.weightType = "weightFMax";
       } else {
         data.weightType = "weightAbsolute";
+      }
+    }
+
+    // Stored hypertrophy values may predate the config start and target.
+    if (intensity?.overridesExerciseRepsAndDuration) {
+      for (const valueName of ["repetition", "duration"] as const) {
+        const value = data[valueName];
+        if (typeof value === "number") {
+          data[valueName] = clampToBoundaries(value, valueName, {
+            intensity,
+            exercise,
+            userLevel,
+            userGender,
+          });
+        }
       }
     }
 
@@ -3940,15 +3965,33 @@ const getStartValues = (
   return result;
 };
 
-export const getIntensityBySkill = (skill: SkillCode) => {
-  switch (skill) {
+/**
+ * Hypertrophy trees mix weighted and bodyweight exercises, so a known exercise
+ * picks the config by its EQ_TYPE instead of by the skill.
+ */
+const getHypertrophyIntensity = (
+  skill: SkillCode,
+  exercise?: Pick<ExerciseType, "tags">,
+) => {
+  if (!exercise) {
     // use SWR2 till exercises can be distinguished between SWR1 and SWR2
+    return skill === "SWR2KG" ? IntensitySWR_2_KG : IntensitySWR_2;
+  }
+  return getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS")
+    ? IntensitySWR_2
+    : IntensitySWR_2_KG;
+};
+
+export const getIntensityBySkill = (
+  skill: SkillCode,
+  exercise?: Pick<ExerciseType, "tags">,
+) => {
+  switch (skill) {
     case "SWR1":
     case "SWR1KG":
     case "SWR2":
-      return IntensitySWR_2;
     case "SWR2KG":
-      return IntensitySWR_2_KG;
+      return getHypertrophyIntensity(skill, exercise);
     case "CARDIO_3":
       return IntensityCARDIO_3;
     case "CARDIO_2":

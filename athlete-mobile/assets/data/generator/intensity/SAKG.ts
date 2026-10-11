@@ -5,16 +5,16 @@ export const IntensitySA_KG: IntensityData = {
     repetition: {
       default: {
         default: {
-          TOO_EASY: 1,
+          TOO_EASY: 2,
           SUCCEEDED: 1,
-          TOO_HARD: -1,
+          TOO_HARD: -2,
         },
       },
       m: {
         default: {
           TOO_EASY: 2,
           SUCCEEDED: 1,
-          TOO_HARD: -1,
+          TOO_HARD: -2,
         },
       },
     },

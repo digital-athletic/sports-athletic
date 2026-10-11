@@ -1,6 +1,7 @@
 import { IntensityData } from "@/features/training/models/Intensity";
 
 export const IntensitySWR_2: IntensityData = {
+  overridesExerciseRepsAndDuration: true,
   adjustment: {
     duration: {
       default: {
@@ -12,13 +13,13 @@ export const IntensitySWR_2: IntensityData = {
       },
       m: {
         advanced: {
-          TOO_EASY: 15,
-          SUCCEEDED: 10,
+          TOO_EASY: 10,
+          SUCCEEDED: 5,
           TOO_HARD: -10,
         },
         professional: {
-          TOO_EASY: 15,
-          SUCCEEDED: 10,
+          TOO_EASY: 10,
+          SUCCEEDED: 5,
           TOO_HARD: -10,
         },
       },
@@ -38,12 +39,12 @@ export const IntensitySWR_2: IntensityData = {
         default: {
           TOO_EASY: 2,
           SUCCEEDED: 1,
-          TOO_HARD: -1,
+          TOO_HARD: -2,
         },
         beginner: {
           TOO_EASY: 2,
           SUCCEEDED: 1,
-          TOO_HARD: -1,
+          TOO_HARD: -2,
         },
         advanced: {
           TOO_EASY: 2,
@@ -53,8 +54,8 @@ export const IntensitySWR_2: IntensityData = {
       },
       m: {
         professional: {
-          TOO_EASY: 4,
-          SUCCEEDED: 2,
+          TOO_EASY: 2,
+          SUCCEEDED: 1,
           TOO_HARD: -2,
         },
       },
@@ -103,7 +104,10 @@ export const IntensitySWR_2: IntensityData = {
     },
     weight: {
       default: {
-        default: 70,
+        default: 67.5,
+        beginner: 67.5,
+        advanced: 70,
+        professional: 70,
       },
       type: {
         type: "weightFMax",
@@ -130,8 +134,8 @@ export const IntensitySWR_2: IntensityData = {
       default: {
         default: 75,
         beginner: 75,
-        advanced: 80,
-        professional: 90,
+        advanced: 77.5,
+        professional: 77.5,
       },
       type: {
         type: "weightFMax",

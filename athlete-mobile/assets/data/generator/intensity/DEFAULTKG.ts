@@ -7,7 +7,7 @@ export const IntensityDEFAULT_KG: IntensityData = {
         default: {
           TOO_EASY: 10,
           SUCCEEDED: 5,
-          TOO_HARD: -5,
+          TOO_HARD: -10,
         },
       },
     },

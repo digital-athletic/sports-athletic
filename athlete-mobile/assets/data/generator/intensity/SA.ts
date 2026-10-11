@@ -5,7 +5,7 @@ export const IntensitySA: IntensityData = {
     repetition: {
       default: {
         default: {
-          TOO_EASY: 1,
+          TOO_EASY: 2,
           SUCCEEDED: 1,
           TOO_HARD: -2,
         },

@@ -288,6 +288,13 @@ export const isInclineBenchPress = (
   return false;
 };
 
+const overridesExerciseValue = (
+  skillIntensity: IntensityData,
+  valueName: TrainingParameterType,
+) =>
+  !!skillIntensity.overridesExerciseRepsAndDuration &&
+  (valueName === "repetition" || valueName === "duration");
+
 /**
  * Gets most specific value for given exercise, user and valueType
  *
@@ -312,6 +319,7 @@ export const getExerciseTargetValue = (
   ) {
     // set default
     value = skillIntensity.targetValue[valueName].default?.default;
+    value = skillIntensity.targetValue[valueName].default?.[level] ?? value;
 
     if (skillIntensity.targetValue[valueName][genderTag]) {
       // more specific skill values
@@ -323,6 +331,7 @@ export const getExerciseTargetValue = (
     }
   }
   if (
+    !overridesExerciseValue(skillIntensity, valueName) &&
     branchExercise.values &&
     branchExercise.values[valueName] &&
     branchExercise.values[valueName].targetValue
@@ -387,6 +396,7 @@ export const getExerciseStartValue = (
   ) {
     // set default
     value = skillIntensity.startValue[valueName].default.default;
+    value = skillIntensity.startValue[valueName].default[level] ?? value;
 
     if (skillIntensity.startValue[valueName][genderTag]) {
       // more specific skill values
@@ -397,6 +407,7 @@ export const getExerciseStartValue = (
     }
   }
   if (
+    !overridesExerciseValue(skillIntensity, valueName) &&
     branchExercise.values &&
     branchExercise.values[valueName] &&
     branchExercise.values[valueName].startValue

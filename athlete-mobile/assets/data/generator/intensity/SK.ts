@@ -5,7 +5,7 @@ export const IntensitySK: IntensityData = {
     repetition: {
       default: {
         default: {
-          TOO_EASY: 1,
+          TOO_EASY: 2,
           SUCCEEDED: 1,
           TOO_HARD: -2,
         },
@@ -33,16 +33,13 @@ export const IntensitySK: IntensityData = {
   startValue: {
     repetition: {
       default: {
-        default: 3,
-      },
-      m: {
-        default: 5,
+        default: 4,
       },
     },
     weight: {
       default: {
-        default: 50,
-        beginner: 50,
+        default: 52.5,
+        beginner: 52.5,
         advanced: 55,
         professional: 55,
       },
@@ -56,15 +53,12 @@ export const IntensitySK: IntensityData = {
       default: {
         default: 6,
       },
-      m: {
-        default: 8,
-      },
     },
     weight: {
       default: {
         default: 65,
         beginner: 65,
-        advanced: 65,
+        advanced: 67.5,
         professional: 70,
       },
       type: {

@@ -11,6 +11,9 @@ import {
   roundWeightValue,
 } from "./workoutUtils";
 
+// workoutUtils.spec.ts mocks the constants and tag utils for the whole file;
+// these tests need the real ones.
+
 const emptyValue: ExerciseValuesType = {
   startValue: { default: {}, m: {}, w: {}, k: {} },
   targetValue: { default: {}, m: {}, w: {}, k: {} },

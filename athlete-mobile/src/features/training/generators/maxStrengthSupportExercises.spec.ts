@@ -1,17 +1,10 @@
 import { getExerciseById } from "@/data/exerciseRegistry";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { PAUSE_EXERCISE_ID } from "@/features/training/models/IdTypes";
-import {
-  DEFAULT_MAX_VALUE,
-  DEFAULT_MAX_VALUES,
-  type MaxValuesType,
-} from "@/features/training/models/MaxValues";
+import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { TemporalDataType } from "@/features/training/models/TemporalData";
-import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
-import { calculateMaxStrengthAdjustment } from "@/features/training/utils/maxStrengthAdjustment";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import type { MaxForceRepetitionsDataType } from "@/schemas/sync.schema";
 import type { UserType } from "@/schemas/user.schema";
 import TrainingGenerator from "./TrainingGenerator";
 
@@ -168,11 +161,6 @@ describe("TrainingGenerator: max strength support exercises", () => {
 });
 
 describe("TrainingGenerator: max strength repetition table", () => {
-  const REP_LEVELS: MaxForceRepetitionsDataType["level"][] = [
-    "EASY",
-    "MEDIUM",
-    "HARD",
-  ];
   const seventeenYearsAgo = () => {
     const date = new Date();
     date.setFullYear(date.getFullYear() - 17);
@@ -188,163 +176,30 @@ describe("TrainingGenerator: max strength repetition table", () => {
   });
 
   it("gives an adolescent Pro 2 repetitions at 90% in the hardest column", () => {
-    const generator = new TrainingGenerator();
-    const userExerciseData: Record<string, UserExerciseDataType> = {
-      [squat.id]: {
-        exerciseId: squat.id,
-        skill: "MAX_KRAFT",
-        maxFRepetitions: [{ level: "MEDIUM", repetitions: 1 }],
-        feedback: { difficulty: "SUCCEEDED" },
-      },
-    };
-    const reps = generator.getMaxTrainingReps(
+    const reps = new TrainingGenerator().getMaxTrainingReps(
       userWithLevel("PROFESSIONAL", seventeenYearsAgo()),
-      { trainingWeights: [72.5, 80, 85, 90] },
-      userExerciseData,
-      squat,
-      "m",
+      {
+        trainingWeights: [75, 80, 85, 90],
+        levels: ["HARD", "HARD", "HARD", "HARD"],
+      },
     );
 
     expect(reps.at(-1)?.repetitions).toBe(2);
   });
 
-  it.each([87.5, 90])(
-    "Pro: steps at %s%% advance without repeating",
-    (weight) => {
-      const generator = new TrainingGenerator();
-      const user = userWithLevel("PROFESSIONAL");
-      const weights = { trainingWeights: [72.5, 80, 85, weight] };
-      const nextSession = (level: MaxForceRepetitionsDataType["level"]) =>
-        generator
-          .getMaxTrainingReps(
-            user,
-            weights,
-            {
-              [squat.id]: {
-                exerciseId: squat.id,
-                skill: "MAX_KRAFT",
-                maxFRepetitions: [{ level, repetitions: 1 }],
-                feedback: { difficulty: "SUCCEEDED" },
-              },
-            },
-            squat,
-            "m",
-          )
-          .at(-1);
-
-      // HARD followed by "completed" opens a new weight in the first column.
-      const first = nextSession("HARD");
-      const firstLevel = REP_LEVELS.find((level) => level === first?.level);
-      if (!firstLevel) throw new Error(`Unknown level ${first?.level}`);
-      const second = nextSession(firstLevel);
-
-      expect(first?.repetitions).toBe(1);
-      expect(second?.repetitions).toBe(2);
-    },
-  );
-
-  it("Pro: completed at 72.5% in the fallback column opens 75% in the first column", () => {
-    const maxValues: MaxValuesType = {
-      ...DEFAULT_MAX_VALUES,
-      kneeDominant: { ...DEFAULT_MAX_VALUE, barbell: 100 },
-    };
-    const weight = 72.5;
-    // The 5% column is empty at 72.5%, so the set used the 10% column.
-    const stored: MaxForceRepetitionsDataType = {
-      level: "MEDIUM",
-      repetitions: 5,
-    };
-    const adjustment = calculateMaxStrengthAdjustment({
-      weight,
-      adjustment: "SUCCEEDED",
-      exerciseData: squat,
-      userExerciseData: {
-        exerciseId: squat.id,
-        skill: "MAX_KRAFT",
-        maxFRepetitions: [stored],
-      },
-      maxValues,
-      ageGroup: "ADULT",
-      genderTag: "m",
-      levelTag: "PROFESSIONAL",
-      userLevel: "professional",
-    });
+  it("Pro: an empty buffer at 90% falls back to the 10% buffer", () => {
     const reps = new TrainingGenerator().getMaxTrainingReps(
       userWithLevel("PROFESSIONAL"),
-      { trainingWeights: [72.5, 72.5, 72.5, 75] },
       {
-        [squat.id]: {
-          exerciseId: squat.id,
-          skill: "MAX_KRAFT",
-          weight,
-          nextWeightPercentage: adjustment.nextWeightPercentage,
-          maxFRepetitions: [stored],
-          feedback: { difficulty: "SUCCEEDED" },
-        },
+        trainingWeights: [75, 80, 85, 90],
+        levels: ["EASY", "EASY", "EASY", "EASY"],
       },
-      squat,
-      "m",
-      maxValues,
     );
 
-    expect(adjustment.nextWeightPercentage).toBe(75);
-    expect(reps.at(-1)).toEqual({ level: "EASY", repetitions: 3 });
-  });
-
-  it("Pro: a fallback in the last set does not move the lower sets past their next step", () => {
-    const generator = new TrainingGenerator();
-    const user = userWithLevel("PROFESSIONAL");
-    const maxValues: MaxValuesType = {
-      ...DEFAULT_MAX_VALUES,
-      kneeDominant: { ...DEFAULT_MAX_VALUE, barbell: 100 },
-    };
-    const weights = { trainingWeights: [72.5, 80, 85, 87.5] };
-    const workingSets = (
-      reps: ReturnType<typeof generator.getMaxTrainingReps>,
-    ) => reps.filter((entry) => entry.level !== "WARMUP").slice(1);
-
-    const first = generator.getMaxTrainingReps(
-      user,
-      weights,
-      null,
-      squat,
-      "m",
-      maxValues,
-    );
-    // The 15% column is empty at 87.5%, so the last set uses the 10% column.
-    expect(workingSets(first)).toEqual([
-      { level: "EASY", repetitions: 2 },
-      { level: "EASY", repetitions: 1 },
-      { level: "MEDIUM", repetitions: 1 },
-    ]);
-
-    const second = generator.getMaxTrainingReps(
-      user,
-      weights,
-      {
-        [squat.id]: {
-          exerciseId: squat.id,
-          skill: "MAX_KRAFT",
-          weight: 87.5,
-          maxFRepetitions: first
-            .filter((entry) => entry.level !== "WARMUP")
-            .map(({ level, repetitions }) => {
-              const known = REP_LEVELS.find((rep) => rep === level);
-              if (!known) throw new Error(`Unknown level ${level}`);
-              return { level: known, repetitions };
-            }),
-          feedback: { difficulty: "SUCCEEDED" },
-        },
-      },
-      squat,
-      "m",
-      maxValues,
-    );
-
-    expect(workingSets(second)).toEqual([
-      { level: "MEDIUM", repetitions: 3 },
-      { level: "MEDIUM", repetitions: 2 },
-      { level: "HARD", repetitions: 2 },
-    ]);
+    expect(reps.at(-1)).toEqual({
+      level: "MEDIUM",
+      repetitions: 1,
+      weightPercentage: 90,
+    });
   });
 });

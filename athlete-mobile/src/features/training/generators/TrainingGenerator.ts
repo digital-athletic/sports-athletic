@@ -26,6 +26,11 @@ import type { UserExerciseDataType } from "@/features/training/models/UserExerci
 import type { UserTrainingType } from "@/features/training/models/UserTraining";
 import { getSectionForDate } from "@/features/training/trainingUtils";
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
+import {
+  type BufferTable,
+  getMaxStrengthRepetitions,
+  getNextMaxStrengthSetStates,
+} from "@/features/training/utils/maxStrengthLadder";
 import { extendSectionsForMissedWeeks } from "@/features/training/utils/trainingSectionUtils";
 import {
   filterByAge,
@@ -43,10 +48,6 @@ import {
   getAreasFor,
   getOpposingExerciseDirection,
 } from "@/features/training/utils/exerciseUtils";
-import {
-  getMaxStrengthWeightPercentage,
-  isLastBufferColumn,
-} from "@/features/training/utils/maxStrengthAdjustment";
 import {
   getBlocksFromPains,
   getPreventionsFromPains,
@@ -126,7 +127,6 @@ import {
 import {
   deriveWeightForExercise,
   getMaxValueForExercise,
-  getRoundedResultForValueAndStep,
   getUserLevel,
   roundWeightValue,
 } from "../utils/workoutUtils";
@@ -1639,14 +1639,7 @@ export default class TrainingGenerator {
           user,
           userExerciseData,
         );
-        let trainingReps = this.getMaxTrainingReps(
-          user,
-          maxTrainingWeights,
-          userExerciseData,
-          exercise,
-          genderTag,
-          maxValues,
-        );
+        let trainingReps = this.getMaxTrainingReps(user, maxTrainingWeights);
         const warmUpWeights = computeWarmupTrainingWeights(
           maxTrainingWeights.trainingWeights[0],
         );
@@ -3642,208 +3635,49 @@ export default class TrainingGenerator {
     return data;
   };
 
+  private getMaxStrengthBufferTable = (user: UserType): BufferTable => {
+    const ageReps =
+      WorkoutConstants.MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT[
+        ageGroupFor(getUserBirthday(user))
+      ];
+    return ageReps?.[getUserLevel(user)] ?? {};
+  };
+
   /**
-   * Calculates the weight percentages for max strength training sets.
-   * Returns progressive weights starting from minimum (based on user level)
-   * up to the target percentage, with special handling for incline bench press.
+   * Weight percentage and buffer of every max strength working set. Each set
+   * follows its own ladder between its starting and maximum weight.
    */
   getMaxTrainingWeights = (
     exercise: ExerciseType,
     user: UserType,
     userExercisesData: Record<string, UserExerciseDataType | undefined> | null,
   ): MaxTrainingWeightsResult => {
-    const userLevel = getUserLevel(user);
-    const firstWeightPercentage =
-      WorkoutConstants.MAX_KRAFT_MINIMAL_WEIGHT_PERCENTAGE_PER_USER_LEVEL[
-        userLevel
-      ];
-    const userExerciseData = userExercisesData
-      ? userExercisesData[exercise.id]
-      : undefined;
-    const trainingWeights: number[] = [];
-    const numOfSets =
-      WorkoutConstants.MAX_KRAFT_WORKING_REPS_PER_USER_LEVEL[userLevel];
-    const exerciseWeightStartValue = exercise.values?.weight?.startValue
-      ?.default as Record<string, string> | undefined;
-    let percentage = parseFloat(
-      exerciseWeightStartValue?.[userLevel.toLowerCase()] ?? "75",
+    const states = getNextMaxStrengthSetStates(
+      this.getMaxStrengthBufferTable(user),
+      getUserLevel(user),
+      userExercisesData?.[exercise.id],
     );
-    if (userExerciseData && userExerciseData.nextWeightPercentage) {
-      percentage = getRoundedResultForValueAndStep(
-        userExerciseData.nextWeightPercentage,
-        2.5,
-      );
-    }
-    while (trainingWeights.length < numOfSets) {
-      // maximum weight percentage per set
-      if (trainingWeights.length === numOfSets - 2) {
-        if (percentage > 85) percentage = 85;
-      }
-      if (trainingWeights.length === numOfSets - 1) {
-        if (percentage > 80) percentage = 80;
-      }
-      // professional level maximum weight in 6. set
-      if (numOfSets === 3) {
-        if (trainingWeights.length === 0) {
-          if (percentage > 90) percentage = 90;
-        }
-      }
-      // minimum weight is firstWeightPercentage
-      if (percentage < firstWeightPercentage)
-        percentage = firstWeightPercentage;
-      trainingWeights.unshift(percentage);
-      percentage -= 2.5;
-    }
-    trainingWeights.unshift(firstWeightPercentage);
-    return { trainingWeights: trainingWeights };
+    return {
+      trainingWeights: states.map((state) => state.weightPercentage),
+      levels: states.map((state) => state.level),
+    };
   };
 
   /**
-   * Calculates the repetition count for each set in max strength training.
-   * Uses lookup tables based on user age, level, weight percentage, and difficulty level.
-   * Returns warm-up reps followed by working set reps.
+   * Repetitions of the warm-up sets followed by those of each working set.
+   * Working set entries record the buffer actually used and their weight
+   * percentage, so the next session continues each set's own ladder.
    */
   getMaxTrainingReps = (
     user: UserType,
-    maxTrainingWeightsObject: MaxTrainingWeightsResult,
-    userExercisesData: Record<string, UserExerciseDataType | undefined> | null,
-    exercise: ExerciseType,
-    genderTag: GenderTag,
-    maxValues?: MaxValuesType,
+    { trainingWeights, levels }: MaxTrainingWeightsResult,
   ): MaxTrainingRepsEntry[] => {
-    const maxTrainingWeights = maxTrainingWeightsObject.trainingWeights;
-    const userLevel = getUserLevel(user);
-    const birthday = getUserBirthday(user);
-    const userAge = ageGroupFor(birthday);
-    const warmupTrainingReps = WorkoutConstants.MAX_KRAFT_REPETITIONS_WARMUP;
-    const userExerciseData = userExercisesData
-      ? userExercisesData[exercise.id]
-      : undefined;
-    const ageReps =
-      WorkoutConstants.MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT[
-        userAge as keyof typeof WorkoutConstants.MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT
-      ];
-    const levelReps = ageReps?.[userLevel as keyof typeof ageReps];
-    let maximumWeightPercentage = Math.max(
-      ...Object.keys(levelReps?.HARD ?? { "75": 8 }).map(Number),
-    );
-    // set exercise targetValue if entered from webTool
-    const weightTargetValue = exercise.values?.weight?.targetValue as
-      | Record<string, Record<string, string> | undefined>
-      | undefined;
-    if (weightTargetValue) {
-      const levelLower = userLevel.toLowerCase();
-      const genderValue = weightTargetValue[genderTag];
-      const defaultValue = weightTargetValue.default;
-      if (genderValue?.[levelLower]) {
-        maximumWeightPercentage = parseFloat(genderValue[levelLower]);
-      } else if (defaultValue?.[levelLower]) {
-        maximumWeightPercentage = parseFloat(defaultValue[levelLower]);
-      }
-    }
-    const levels = maxTrainingWeights.map(() => "EASY");
-    const storedReps = userExerciseData?.maxFRepetitions ?? [];
-    if (userExerciseData && storedReps.length > 0) {
-      const difficulty = userExerciseData.feedback?.difficulty;
-      if (difficulty) {
-        // A fallback column that is the last one at its weight steps like
-        // HARD, matching the weight raise in calculateMaxStrengthAdjustment.
-        const lastWeightPercentage =
-          maxValues && typeof userExerciseData.weight === "number"
-            ? getMaxStrengthWeightPercentage(
-                userExerciseData.weight,
-                exercise,
-                maxValues,
-              )
-            : null;
-        // Entries stored before one entry per working set hold only the last set.
-        const isPerSet = storedReps.length === maxTrainingWeights.length;
-        for (let w = 0; w < levels.length; w++) {
-          const isLastSet = w === levels.length - 1;
-          const lastLevel = (
-            isPerSet ? storedReps[w] : storedReps[storedReps.length - 1]
-          ).level;
-          if (difficulty === "TOO_HARD") {
-            // only weight decreases
-            levels[w] = lastLevel;
-            continue;
-          }
-          // The stored weight belongs to the last set only.
-          const stepLevel =
-            (isLastSet || !isPerSet) &&
-            isLastBufferColumn(levelReps, lastWeightPercentage, lastLevel)
-              ? "HARD"
-              : lastLevel;
-          // upgrade reps level
-          if (difficulty === "SUCCEEDED") {
-            levels[w] =
-              stepLevel === "EASY"
-                ? "MEDIUM"
-                : stepLevel === "MEDIUM"
-                  ? "HARD"
-                  : "EASY";
-          } else {
-            levels[w] =
-              stepLevel === "EASY"
-                ? "HARD"
-                : stepLevel === "MEDIUM"
-                  ? "EASY"
-                  : "MEDIUM";
-          }
-        }
-      } else if (
-        // feedback.difficulty is not set if levelUp should be done but no other branch exercise is found
-        userExerciseData.nextWeightPercentage &&
-        userExerciseData.nextWeightPercentage === maximumWeightPercentage
-      ) {
-        // level stays HARD for branch exercises that are finished but can't be replaced
-        levels.fill("HARD");
-      }
-    }
-    const firstMaxTrainingReps =
-      userLevel === WorkoutConstants.LEVELS.PROFESSIONAL ? 3 : 4;
-    const maxTrainingReps: MaxTrainingRepsEntry[] = [
-      { level: levels[0], repetitions: firstMaxTrainingReps },
-    ];
-    for (let w = 1; w < maxTrainingWeights.length; w++) {
-      const level = levels[w];
-      const levelKey = level as keyof typeof levelReps;
-      const weightKey = maxTrainingWeights[w].toString();
-      let repetitions = (
-        levelReps?.[levelKey] as Record<string, number> | undefined
-      )?.[weightKey];
-      let checkableLevel = level;
-      // look for undefined repetitionLevels and if found check if other levels would not be undefined
-      for (let i = 0; i < 2; i++) {
-        if (typeof repetitions === "undefined") {
-          if (checkableLevel === "EASY" || checkableLevel === "HARD") {
-            checkableLevel = "MEDIUM";
-          } else if (checkableLevel === "MEDIUM") {
-            checkableLevel = "HARD";
-          }
-          const checkKey = checkableLevel as keyof typeof levelReps;
-          repetitions = (
-            levelReps?.[checkKey] as Record<string, number> | undefined
-          )?.[weightKey];
-        }
-      }
-      // handle corrupt data by using min or max repetition count for high or low weight
-      if (typeof repetitions === "undefined") {
-        checkableLevel = level;
-        if (maxTrainingWeights[w] > 80) {
-          repetitions = 1;
-        } else {
-          repetitions = 6;
-        }
-      }
-      // Record the column actually used, so the next step leaves it instead of repeating it.
-      maxTrainingReps[w] = {
-        level: checkableLevel,
-        repetitions: repetitions,
-      };
-    }
-    const trainingReps = warmupTrainingReps.concat(maxTrainingReps);
-    return trainingReps;
+    const table = this.getMaxStrengthBufferTable(user);
+    const workingReps = trainingWeights.map((weightPercentage, i) => ({
+      ...getMaxStrengthRepetitions(table, weightPercentage, levels[i]),
+      weightPercentage,
+    }));
+    return [...WorkoutConstants.MAX_KRAFT_REPETITIONS_WARMUP, ...workingReps];
   };
 }
 

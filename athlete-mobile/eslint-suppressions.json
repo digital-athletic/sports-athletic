@@ -418,7 +418,7 @@
   },
   "src/features/training/generators/TrainingGenerator.ts": {
     "complexity": {
-      "count": 21
+      "count": 19
     },
     "max-depth": {
       "count": 38
@@ -427,10 +427,10 @@
       "count": 1
     },
     "max-lines-per-function": {
-      "count": 21
+      "count": 20
     },
     "max-params": {
-      "count": 13
+      "count": 12
     }
   },
   "src/features/training/generators/generatorErrorUtils.ts": {

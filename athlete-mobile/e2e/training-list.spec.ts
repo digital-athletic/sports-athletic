@@ -61,7 +61,7 @@ test.describe("Training List Flow", () => {
   test.describe("MAX exercise feedback via checklist", () => {
     test.use({ profile: createMaxExerciseProfile() });
 
-    test("selecting 'too easy' on the last MAX set produces HARD level in next workout", async ({
+    test("selecting 'too easy' on the last MAX set moves it two ladder steps", async ({
       page,
     }) => {
       test.setTimeout(60000);
@@ -92,8 +92,8 @@ test.describe("Training List Flow", () => {
 
       await workoutPage.returnToHome();
 
-      // Second workout: verify the generator produced HARD level, same
-      // assertion workout.spec.ts already makes for the sequential flow.
+      // Second workout: same assertion workout.spec.ts makes for the
+      // sequential flow, 75% x 2 two ladder steps up to 75% x 5.
       await workoutPage.startWorkout("Tuesday");
       const exerciseList = await workoutPage.getGeneratedExerciseList();
       const maxExercises =
@@ -101,7 +101,9 @@ test.describe("Training List Flow", () => {
       const lastSet = maxExercises[maxExercises.length - 1];
       const lastMaxFRep =
         lastSet?.maxFRepetitions?.[lastSet.maxFRepetitions.length - 1];
-      expect(lastMaxFRep).toEqual(expect.objectContaining({ level: "HARD" }));
+      expect(lastMaxFRep).toEqual(
+        expect.objectContaining({ weightPercentage: 75, repetitions: 5 }),
+      );
     });
   });
 });

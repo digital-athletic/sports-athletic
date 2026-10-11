@@ -3,11 +3,10 @@
  * It proves the framework runs end-to-end against the real generator and
  * asserts the intra-session invariants.
  *
- * The golden-comparison tests are skipped: the tables under `__golden__/` now
- * encode the target values from
- * docs/specs/progression/max-strength-progression.md, which the current
- * generator does not produce yet. Drop the `.skip` once the generator
- * implements the spec.
+ * The tables under `__golden__/` encode the target values from
+ * docs/specs/progression/max-strength-progression.md. The "too easy" and
+ * "too heavy" goldens stay skipped until the progression implements the spec
+ * switch at the final value and the spec fallback.
  *
  * The non-golden assertions are generator regression guards: the harness reads
  * the production set list, so there is no reimplementation left to drift.
@@ -90,24 +89,38 @@ describe("progressionSimulation: p2 × MAX_KRAFT", () => {
     for (const { name, feedback } of RUNS) results.set(name, run(feedback));
   });
 
-  // Skipped: the goldens now encode the spec-target values (see
-  // __golden__/README.md), which the current generator does not produce yet.
-  it.skip.each(RUNS)(
-    "$name: matches the committed progression golden",
-    ({ name }) => {
-      progressionGoldens.assertMatches(
-        `p2-max-strength.${name}.progression.md`,
-        serializeProgression(results.get(name)!),
-      );
-    },
-  );
+  const MATCHING_RUNS = RUNS.filter(({ name }) => name === "succeeded");
+  // Skipped: "too easy" switches the exercise before the final value and the
+  // "too heavy" fallback differs from the spec.
+  const PENDING_RUNS = RUNS.filter(({ name }) => name !== "succeeded");
 
-  it.skip.each(RUNS)("$name: matches the committed sets golden", ({ name }) => {
+  const assertProgressionGolden = ({ name }: { name: string }) =>
+    progressionGoldens.assertMatches(
+      `p2-max-strength.${name}.progression.md`,
+      serializeProgression(results.get(name)!),
+    );
+  const assertSetsGolden = ({ name }: { name: string }) =>
     progressionGoldens.assertMatches(
       `p2-max-strength.${name}.sets.md`,
       serializeSets(results.get(name)!),
     );
-  });
+
+  it.each(MATCHING_RUNS)(
+    "$name: matches the committed progression golden",
+    assertProgressionGolden,
+  );
+  it.skip.each(PENDING_RUNS)(
+    "$name: matches the committed progression golden",
+    assertProgressionGolden,
+  );
+  it.each(MATCHING_RUNS)(
+    "$name: matches the committed sets golden",
+    assertSetsGolden,
+  );
+  it.skip.each(PENDING_RUNS)(
+    "$name: matches the committed sets golden",
+    assertSetsGolden,
+  );
 
   // Guards the invariant loops below, which pass vacuously on an empty set list.
   it("runs four sessions that each produce working sets", () => {

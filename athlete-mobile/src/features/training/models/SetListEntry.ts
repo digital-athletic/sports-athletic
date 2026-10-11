@@ -34,5 +34,9 @@ export type GeneratedSetListEntry = {
   /** Branch tags - used during MAX training generation */
   tags?: string[];
   /** Max force repetition data - used during MAX training generation */
-  repetitionMAX?: { level: string; repetitions: number };
+  repetitionMAX?: {
+    level: string;
+    repetitions: number;
+    weightPercentage?: number;
+  };
 };

@@ -4921,23 +4921,23 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 6,
-            "advanced": 8,
-            "professional": 10
+            "beginner": 5,
+            "advanced": 6,
+            "professional": 8
           },
           "m": {
-            "beginner": 6,
-            "advanced": 8,
-            "professional": 10
+            "beginner": 5,
+            "advanced": 6,
+            "professional": 8
           },
           "w": {
-            "beginner": 6,
-            "advanced": 8,
-            "professional": 10
+            "beginner": 5,
+            "advanced": 6,
+            "professional": 8
           },
           "k": {
-            "beginner": 6,
-            "advanced": 7,
+            "beginner": 5,
+            "advanced": 6,
             "professional": 8
           }
         }
@@ -5095,24 +5095,24 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 5,
-            "advanced": 6,
-            "professional": 7
+            "beginner": 4,
+            "advanced": 5,
+            "professional": 6
           },
           "m": {
-            "beginner": 5,
-            "advanced": 6,
-            "professional": 7
+            "beginner": 4,
+            "advanced": 5,
+            "professional": 6
           },
           "w": {
-            "beginner": 5,
-            "advanced": 6,
-            "professional": 7
+            "beginner": 4,
+            "advanced": 5,
+            "professional": 6
           },
           "k": {
-            "beginner": 5,
-            "advanced": 6,
-            "professional": 7
+            "beginner": 4,
+            "advanced": 5,
+            "professional": 6
           }
         }
       },
@@ -5389,22 +5389,22 @@
           "default": {
             "beginner": 6,
             "advanced": 8,
-            "professional": 10
+            "professional": 8
           },
           "m": {
             "beginner": 6,
             "advanced": 8,
-            "professional": 10
+            "professional": 8
           },
           "w": {
             "beginner": 6,
             "advanced": 8,
-            "professional": 10
+            "professional": 8
           },
           "k": {
             "beginner": 6,
             "advanced": 8,
-            "professional": 10
+            "professional": 8
           }
         }
       },
@@ -90221,9 +90221,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 5,
-            "advanced": 6,
-            "professional": 7
+            "beginner": 4,
+            "advanced": 5,
+            "professional": 6
           },
           "m": {},
           "w": {},
@@ -90474,9 +90474,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 5,
-            "advanced": 6,
-            "professional": 7
+            "beginner": 4,
+            "advanced": 5,
+            "professional": 6
           },
           "m": {},
           "w": {},
@@ -90735,9 +90735,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 5,
-            "advanced": 6,
-            "professional": 7
+            "beginner": 4,
+            "advanced": 5,
+            "professional": 6
           },
           "m": {},
           "w": {},
@@ -91003,9 +91003,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 6,
-            "advanced": 8,
-            "professional": 10
+            "beginner": 5,
+            "advanced": 6,
+            "professional": 8
           },
           "m": {},
           "w": {},
@@ -91266,9 +91266,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 5,
-            "advanced": 6,
-            "professional": 7
+            "beginner": 4,
+            "advanced": 5,
+            "professional": 6
           },
           "m": {},
           "w": {},
@@ -91540,9 +91540,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 6,
-            "advanced": 8,
-            "professional": 10
+            "beginner": 5,
+            "advanced": 6,
+            "professional": 8
           },
           "m": {},
           "w": {},
@@ -91800,9 +91800,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 5,
-            "advanced": 6,
-            "professional": 7
+            "beginner": 4,
+            "advanced": 5,
+            "professional": 6
           },
           "m": {},
           "w": {},
@@ -91934,9 +91934,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 6,
-            "advanced": 8,
-            "professional": 10
+            "beginner": 5,
+            "advanced": 6,
+            "professional": 8
           },
           "m": {},
           "w": {},
@@ -92069,9 +92069,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 5,
-            "advanced": 6,
-            "professional": 7
+            "beginner": 4,
+            "advanced": 5,
+            "professional": 6
           },
           "m": {},
           "w": {},
@@ -92208,9 +92208,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 6,
-            "advanced": 8,
-            "professional": 10
+            "beginner": 5,
+            "advanced": 6,
+            "professional": 8
           },
           "m": {},
           "w": {},
@@ -92471,9 +92471,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 5,
-            "advanced": 6,
-            "professional": 7
+            "beginner": 4,
+            "advanced": 5,
+            "professional": 6
           },
           "m": {},
           "w": {},
@@ -92607,9 +92607,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 6,
-            "advanced": 8,
-            "professional": 10
+            "beginner": 5,
+            "advanced": 6,
+            "professional": 8
           },
           "m": {},
           "w": {},
@@ -92742,9 +92742,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 5,
-            "advanced": 6,
-            "professional": 7
+            "beginner": 4,
+            "advanced": 5,
+            "professional": 6
           },
           "m": {},
           "w": {},
@@ -93279,9 +93279,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 5,
-            "advanced": 6,
-            "professional": 7
+            "beginner": 4,
+            "advanced": 5,
+            "professional": 6
           },
           "m": {},
           "w": {},
@@ -93685,9 +93685,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 6,
-            "advanced": 8,
-            "professional": 10
+            "beginner": 5,
+            "advanced": 6,
+            "professional": 8
           },
           "m": {},
           "w": {},
@@ -93888,9 +93888,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 6,
-            "advanced": 8,
-            "professional": 10
+            "beginner": 5,
+            "advanced": 6,
+            "professional": 8
           },
           "m": {},
           "w": {},
@@ -94021,9 +94021,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 6,
-            "advanced": 8,
-            "professional": 10
+            "beginner": 5,
+            "advanced": 6,
+            "professional": 8
           },
           "m": {},
           "w": {},
@@ -94151,9 +94151,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 6,
-            "advanced": 8,
-            "professional": 10
+            "beginner": 5,
+            "advanced": 6,
+            "professional": 8
           },
           "m": {},
           "w": {},
@@ -122428,9 +122428,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 6,
-            "advanced": 8,
-            "professional": 10
+            "beginner": 5,
+            "advanced": 6,
+            "professional": 8
           },
           "m": {},
           "w": {},
@@ -122560,9 +122560,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 6,
-            "advanced": 8,
-            "professional": 10
+            "beginner": 5,
+            "advanced": 6,
+            "professional": 8
           },
           "m": {},
           "w": {},
@@ -122693,9 +122693,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 6,
-            "advanced": 8,
-            "professional": 10
+            "beginner": 5,
+            "advanced": 6,
+            "professional": 8
           },
           "m": {},
           "w": {},
@@ -122832,9 +122832,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 6,
-            "advanced": 8,
-            "professional": 10
+            "beginner": 5,
+            "advanced": 6,
+            "professional": 8
           },
           "m": {},
           "w": {},
@@ -122967,9 +122967,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 5,
-            "advanced": 6,
-            "professional": 7
+            "beginner": 4,
+            "advanced": 5,
+            "professional": 6
           },
           "m": {},
           "w": {},
@@ -123208,9 +123208,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 6,
-            "advanced": 8,
-            "professional": 10
+            "beginner": 5,
+            "advanced": 6,
+            "professional": 8
           },
           "m": {},
           "w": {},
@@ -123471,9 +123471,9 @@
         },
         "targetValue": {
           "default": {
-            "beginner": 5,
-            "advanced": 6,
-            "professional": 7
+            "beginner": 4,
+            "advanced": 5,
+            "professional": 6
           },
           "m": {},
           "w": {},

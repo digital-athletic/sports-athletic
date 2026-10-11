@@ -59,12 +59,14 @@ export function shouldSkipExerciseSave(
 
 /**
  * Determines if exercise values should be increased based on workout type and skill.
+ * Cardio has no feedback progression yet, so nothing is stored for it.
  */
 export function shouldProcessExerciseValues(
   type: string | undefined,
   skill: SkillCode | undefined,
 ): boolean {
   if (!type || !skill) return false;
+  if (skill.includes("CARDIO")) return false;
   if (WorkoutConstants.NO_INCREASE_WORKOUT_PLAN_TYPE.indexOf(type) !== -1)
     return false;
   if (
@@ -135,28 +137,6 @@ export function deriveActiveExerciseIndex(
   }
 
   return firstIncomplete;
-}
-
-/**
- * Finds the main cardio exercise by walking back through the exercise list.
- */
-export function findMainCardioExercise(
-  exerciseList: UserExerciseDataType[] | null,
-  startIndex: number,
-): { branchId: string; exerciseId: string } | null {
-  if (!exerciseList) return null;
-
-  let pointer = startIndex;
-  while (pointer > -1) {
-    const exercise = exerciseList[pointer];
-    if (exercise && exercise.skill?.includes("CARDIO")) {
-      if (typeof exercise.branchId === "string" && exercise.branchId !== "-1") {
-        return { branchId: exercise.branchId, exerciseId: exercise.exerciseId };
-      }
-    }
-    pointer--;
-  }
-  return null;
 }
 
 /**

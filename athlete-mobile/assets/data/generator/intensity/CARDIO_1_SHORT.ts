@@ -24,9 +24,9 @@ export const IntensityCARDIO_1_SHORT: IntensityData = {
   targetValue: {
     repetition: {
       default: {
-        default: 6,
-        advanced: 8,
-        professional: 10,
+        default: 5,
+        advanced: 6,
+        professional: 8,
       },
     },
   },

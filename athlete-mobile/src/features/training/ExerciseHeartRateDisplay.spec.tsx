@@ -16,6 +16,17 @@ describe("ExerciseHeartRateDisplay: cardio skill filter", () => {
     expect(screen.getByText("Heart rate interval")).toBeTruthy();
   });
 
+  it("shows MAX. instead of a heart rate range for sprint intervals", () => {
+    render(
+      <ExerciseHeartRateDisplay
+        exerciseData={createExerciseData({ tags: ["SKILL_CARDIO_1_SHORT"] })}
+        birthday={adultBirthday}
+      />,
+    );
+    expect(screen.getByText("MAX.")).toBeTruthy();
+    expect(screen.getByText("Heart rate interval")).toBeTruthy();
+  });
+
   it("ignores the plain CARDIO tag itself and renders nothing without a specific cardio skill", () => {
     const { toJSON } = render(
       <ExerciseHeartRateDisplay

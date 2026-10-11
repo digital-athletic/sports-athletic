@@ -425,6 +425,7 @@
       "noWeights": "No weights",
       "cmHigh": "cm high",
       "heartRateInterval": "Heart rate interval",
+      "heartRateMax": "MAX.",
       "a11y": {
         "showExerciseInfo": "Show exercise information",
         "abortTraining": "Abort training"

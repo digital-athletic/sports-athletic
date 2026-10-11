@@ -182,3 +182,22 @@ describe("useExerciseCompletion: max strength", () => {
     });
   });
 });
+
+describe("useExerciseCompletion: cardio", () => {
+  it("stores no interval count after the last cardio interval", () => {
+    seed({
+      skill: "CARDIO_2",
+      branchId: "b1",
+      set: [4, 4],
+      repetition: 4,
+      duration: 60,
+      weight: undefined,
+    });
+    const { result } = renderHook(() => useExerciseCompletion());
+
+    act(() => result.current.saveExerciseAndBranchData(0));
+
+    expect(stored()?.repetition).toBeUndefined();
+    expect(stored()?.duration).toBeUndefined();
+  });
+});

@@ -8,7 +8,6 @@ import {
   calculateStandardExerciseAdjustment,
   deriveActiveExerciseIndex,
   type ExerciseAdjustmentContext,
-  findMainCardioExercise,
   isFeedbackEligibleSkill,
   shouldProcessExerciseValues,
   shouldSkipExerciseSave,
@@ -129,6 +128,13 @@ describe("exerciseDataUtils", () => {
     it("returns true for valid type and skill", () => {
       expect(shouldProcessExerciseValues("PLAN", "SWR1")).toBe(true);
     });
+
+    it.each<SkillCode>(["CARDIO_1_SHORT", "CARDIO_2", "CARDIO_5"])(
+      "returns false for cardio skill %s",
+      (skill) => {
+        expect(shouldProcessExerciseValues("PLAN", skill)).toBe(false);
+      },
+    );
   });
 
   describe("isFeedbackEligibleSkill", () => {
@@ -163,62 +169,6 @@ describe("exerciseDataUtils", () => {
       expect(
         isFeedbackEligibleSkill(withType("QUICK"), "WU" as SkillCode),
       ).toBe(true);
-    });
-  });
-
-  describe("findMainCardioExercise", () => {
-    it("returns null for null exercise list", () => {
-      expect(findMainCardioExercise(null, 0)).toBeNull();
-    });
-
-    it("finds cardio exercise by walking back", () => {
-      const exerciseList = [
-        createExerciseListItem({
-          exerciseId: "1",
-          branchId: "10",
-          skill: "CARDIO_1",
-        }),
-        createExerciseListItem({
-          exerciseId: "2",
-          branchId: "-1",
-          skill: "CARDIO_1",
-        }),
-        createExerciseListItem({
-          exerciseId: "3",
-          branchId: "20",
-          skill: "SWR1",
-        }),
-      ];
-      const result = findMainCardioExercise(exerciseList, 2);
-      expect(result).toEqual({ branchId: "10", exerciseId: "1" });
-    });
-
-    it("skips exercises with branchId -1", () => {
-      const exerciseList = [
-        createExerciseListItem({
-          exerciseId: "1",
-          branchId: "10",
-          skill: "CARDIO_1",
-        }),
-        createExerciseListItem({
-          exerciseId: "2",
-          branchId: "-1",
-          skill: "CARDIO_1",
-        }),
-      ];
-      const result = findMainCardioExercise(exerciseList, 1);
-      expect(result).toEqual({ branchId: "10", exerciseId: "1" });
-    });
-
-    it("returns null when no cardio found", () => {
-      const exerciseList = [
-        createExerciseListItem({
-          exerciseId: "1",
-          branchId: "10",
-          skill: "SWR1",
-        }),
-      ];
-      expect(findMainCardioExercise(exerciseList, 0)).toBeNull();
     });
   });
 

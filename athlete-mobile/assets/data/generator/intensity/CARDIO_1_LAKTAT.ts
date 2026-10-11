@@ -16,7 +16,7 @@ export const IntensityCARDIO_1_LAKTAT: IntensityData = {
     repetition: {
       default: {
         default: 2,
-        advanced: 2,
+        advanced: 3,
         professional: 3,
       },
     },

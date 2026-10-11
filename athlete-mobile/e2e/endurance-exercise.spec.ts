@@ -78,10 +78,13 @@ test.describe("Endurance exercise (CARDIO_4)", () => {
 
     // Press the checkmark (not skip) to complete
     await page.getByLabel("checkmark").click();
-    await workoutPage.returnToHome();
 
     // Suggested duration must be recorded even though no timer ran
-    const exerciseData = await workoutPage.getExerciseProgressData(EXERCISE_ID);
-    expect(exerciseData?.duration).toBe(CARDIO_4_DURATION_S);
+    await expect
+      .poll(
+        async () =>
+          (await workoutPage.getExerciseTotals(EXERCISE_ID))?.duration,
+      )
+      .toBe(CARDIO_4_DURATION_S);
   });
 });

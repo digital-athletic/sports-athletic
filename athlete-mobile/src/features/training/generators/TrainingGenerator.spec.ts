@@ -1948,13 +1948,48 @@ describe("TrainingGenerator", () => {
           const warmup3Weight = testSets[2].weight!;
           const testSetWeight = testSets[3].weight!;
 
-          const testWeight = maxKneeValue * expectedPercentage;
-          expect(testSetWeight).toBe(roundWeightValue(testWeight * 1.0));
-          expect(warmup1Weight).toBe(roundWeightValue(testWeight * 0.4));
-          expect(warmup2Weight).toBe(roundWeightValue(testWeight * 0.6));
-          expect(warmup3Weight).toBe(roundWeightValue(testWeight * 0.85));
+          const barbell = { tags: ["EQ_BARBELL"] };
+          const testWeight = roundWeightValue(
+            maxKneeValue * expectedPercentage,
+            barbell,
+          );
+          expect(testSetWeight).toBe(testWeight);
+          expect(warmup1Weight).toBe(
+            roundWeightValue(testWeight * 0.4, barbell),
+          );
+          expect(warmup2Weight).toBe(
+            roundWeightValue(testWeight * 0.6, barbell),
+          );
+          expect(warmup3Weight).toBe(
+            roundWeightValue(testWeight * 0.85, barbell),
+          );
         },
       );
+
+      it("derives ramp up loads from the rounded test set load with barbell rounding", () => {
+        const userWithMaxValues = {
+          ...testUser,
+          workoutData: {
+            ...testUser.workoutData,
+            tags: { LEVEL: ["BEGINNER"] },
+            gender: "MALE" as const,
+            maxValues: {
+              testAt: new Date("2024-01-01").getTime(),
+              kneeDominant: { barbell: 41.3 },
+            },
+          },
+        };
+
+        const result = generateTestWorkout(userWithMaxValues);
+        const squatWeights = result
+          .filter(
+            (entry) => entry.exerciseId === "25" && entry.skill === "TEST",
+          )
+          .map((entry) => entry.weight);
+
+        // 75% of 41.3 kg is 30.975 kg, rounded to a 30 kg test set load
+        expect(squatWeights).toEqual([12.5, 17.5, 25, 30]);
+      });
     });
 
     describe("Edge Cases", () => {

@@ -107,20 +107,43 @@ export const getRoundedResultForValueAndStep = (
   return remainder < step / 2 ? value - remainder : value + step - remainder;
 };
 
-export const roundWeightValue = (value: number) => {
+// Tolerates floating point noise so that computed exact ties still round down.
+const ROUNDING_TOLERANCE = 1e-9;
+
+const roundToStepTiesDown = (value: number, step: number) => {
+  const lower = Math.floor(value / step + ROUNDING_TOLERANCE) * step;
+  return value - lower > step / 2 + ROUNDING_TOLERANCE ? lower + step : lower;
+};
+
+const getWeightRoundingStep = (
+  value: number,
+  exercise: Pick<ExerciseType, "tags"> | undefined,
+) => {
+  const equipment = getTagValues(exercise?.tags ?? [], TagGroups.EQUIPMENT);
+  if (equipment.includes(WorkoutConstants.EQUIPMENT.DUMBBELL)) {
+    return value > 10 ? 2 : 1;
+  }
+  if (equipment.includes(WorkoutConstants.EQUIPMENT.BARBELL)) {
+    return 2.5;
+  }
+  return 1;
+};
+
+/**
+ * Rounds a load by the exercise's equipment: dumbbell per hand 1 kg (2 kg above
+ * 10 kg), barbell total load 2.5 kg, other weights 1 kg. Exact ties round down.
+ */
+export const roundWeightValue = (
+  value: number,
+  exercise: Pick<ExerciseType, "tags"> | undefined,
+) => {
   if (!isFinite(value)) {
     Logger.logError(
       new Error(`f:roundWeightValue ~ input: ${value} is not a finite number`),
     );
     return 0;
   }
-  if (value > 100) {
-    return getRoundedResultForValueAndStep(value, 2.5);
-  }
-  if (value > 25) {
-    return getRoundedResultForValueAndStep(value, 1);
-  }
-  return getRoundedResultForValueAndStep(value, 0.5);
+  return roundToStepTiesDown(value, getWeightRoundingStep(value, exercise));
 };
 
 export const calculateWorkoutTotals = (
@@ -175,10 +198,11 @@ export const calculateWorkoutTotals = (
                 getMaxValueForExercise(exerciseData, maxValues) ?? 0;
               exerciseWeight = roundWeightValue(
                 (exerciseWeight / 100) * maxValue,
+                exerciseData,
               );
             } else {
               // given weight is absolute, so just round it
-              exerciseWeight = roundWeightValue(exerciseWeight);
+              exerciseWeight = roundWeightValue(exerciseWeight, exerciseData);
             }
             weight += exerciseWeight * exercise.repetition;
           }
@@ -654,11 +678,11 @@ export const deriveWeightForExercise = (
       return undefined;
     }
 
-    return roundWeightValue((weight / 100) * maxValue);
+    return roundWeightValue((weight / 100) * maxValue, exercise);
   }
 
   // given weight is absolute, so just round it
-  return roundWeightValue(weight);
+  return roundWeightValue(weight, exercise);
 };
 
 /**

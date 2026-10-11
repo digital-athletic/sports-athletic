@@ -13,7 +13,6 @@ import {
   deriveWeightForExercise,
   getMaxValueForExercise,
   getRoundedResultForValueAndStep,
-  roundWeightValue,
 } from "./workoutUtils";
 
 // Mock the imported modules
@@ -115,38 +114,6 @@ describe("workoutUtils", () => {
     it("should handle small values", () => {
       expect(getRoundedResultForValueAndStep(0.3, 0.5)).toBe(0.5);
       expect(getRoundedResultForValueAndStep(0.8, 0.5)).toBe(1);
-    });
-  });
-
-  describe("roundWeightValue", () => {
-    it("should round by 0.5 for values <= 25", () => {
-      expect(roundWeightValue(10.2)).toBe(10);
-      expect(roundWeightValue(10.3)).toBe(10.5);
-      expect(roundWeightValue(25)).toBe(25);
-    });
-
-    it("should round by 1 for values > 25 and <= 100", () => {
-      expect(roundWeightValue(26.3)).toBe(26);
-      expect(roundWeightValue(26.6)).toBe(27);
-      expect(roundWeightValue(100)).toBe(100);
-    });
-
-    it("should round by 2.5 for values > 100", () => {
-      expect(roundWeightValue(101.2)).toBe(100);
-      expect(roundWeightValue(102.7)).toBe(102.5);
-      expect(roundWeightValue(150)).toBe(150);
-    });
-
-    it("should handle boundary values correctly", () => {
-      expect(roundWeightValue(24.9)).toBe(25);
-      expect(roundWeightValue(25.1)).toBe(25);
-      expect(roundWeightValue(99.1)).toBe(99);
-      expect(roundWeightValue(99.9)).toBe(100);
-      expect(roundWeightValue(100.6)).toBe(100);
-    });
-
-    it("should handle zero", () => {
-      expect(roundWeightValue(0)).toBe(0);
     });
   });
 
@@ -478,34 +445,23 @@ describe("workoutUtils", () => {
       expect(result).toBe(50);
     });
 
-    it("should round to nearest 0.5 for values <= 25", () => {
-      const result = deriveWeightForExercise(
-        10.3,
-        "weightAbsolute",
-        mockExercise,
-        mockMaxValues,
-      );
-      expect(result).toBe(10.5);
-    });
-
-    it("should round to nearest integer for values > 25 and <= 100", () => {
-      const result = deriveWeightForExercise(
-        26.6,
-        "weightAbsolute",
-        mockExercise,
-        mockMaxValues,
-      );
-      expect(result).toBe(27);
-    });
-
-    it("should round to nearest 2.5 for values > 100", () => {
-      const result = deriveWeightForExercise(
-        102.7,
-        "weightAbsolute",
-        mockExercise,
-        mockMaxValues,
-      );
-      expect(result).toBe(102.5);
+    it("should round to the nearest 1 kg when the exercise uses neither dumbbell nor barbell", () => {
+      expect(
+        deriveWeightForExercise(
+          10.3,
+          "weightAbsolute",
+          mockExercise,
+          mockMaxValues,
+        ),
+      ).toBe(10);
+      expect(
+        deriveWeightForExercise(
+          102.7,
+          "weightAbsolute",
+          mockExercise,
+          mockMaxValues,
+        ),
+      ).toBe(103);
     });
 
     it("should return undefined when weightFMax is used but maxValue cannot be determined", () => {

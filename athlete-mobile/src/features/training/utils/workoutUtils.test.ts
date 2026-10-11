@@ -1,7 +1,44 @@
 import { WorkoutConstants } from "@/constants/workoutConstants";
+import type {
+  ExerciseType,
+  ExerciseValuesType,
+} from "@/schemas/exercise.schema";
 import type { UserType } from "@/schemas/user.schema";
 import { DEFAULT_MAX_VALUES } from "../models/MaxValues";
-import { applyMaxValueToDirections, getUserLevel } from "./workoutUtils";
+import {
+  applyMaxValueToDirections,
+  getUserLevel,
+  roundWeightValue,
+} from "./workoutUtils";
+
+const emptyValue: ExerciseValuesType = {
+  startValue: { default: {}, m: {}, w: {}, k: {} },
+  targetValue: { default: {}, m: {}, w: {}, k: {} },
+};
+
+const exerciseWithTags = (id: string, tags: string[]): ExerciseType => ({
+  id,
+  level: { m: 1, w: 1 },
+  name: `Exercise ${id}`,
+  displayName: `Exercise ${id}`,
+  description: "",
+  picture: "",
+  video: "",
+  tags,
+  values: {
+    duration: emptyValue,
+    repetition: emptyValue,
+    height: emptyValue,
+    weight: emptyValue,
+  },
+  isAdvanceByReps: false,
+  isAdvanceByDuration: false,
+  isJump: false,
+});
+
+const barbellExercise = exerciseWithTags("b", ["EQ_BARBELL", "EQ_POWER_RACK"]);
+const dumbbellExercise = exerciseWithTags("d", ["EQ_DUMBBELL", "EQ_BENCH"]);
+const kettlebellExercise = exerciseWithTags("k", ["EQ_KETTLEBELL"]);
 
 const MOCK_TIMESTAMP = 1736294400000; // 2026-01-08T00:00:00.000Z
 
@@ -106,6 +143,45 @@ describe("getUserLevel", () => {
     const result = getUserLevel(user);
     // Should return the first LEVEL value found
     expect(result).toBe(WorkoutConstants.LEVELS.ADVANCED);
+  });
+});
+
+describe("roundWeightValue: rounding by equipment", () => {
+  it("rounds a barbell total load to the nearest 2.5 kg", () => {
+    expect(roundWeightValue(41.3, barbellExercise)).toBe(42.5);
+    expect(roundWeightValue(26.2, barbellExercise)).toBe(25);
+    expect(roundWeightValue(102.7, barbellExercise)).toBe(102.5);
+  });
+
+  it("rounds a dumbbell up to 10 kg to the nearest 1 kg", () => {
+    expect(roundWeightValue(7.4, dumbbellExercise)).toBe(7);
+    expect(roundWeightValue(7.6, dumbbellExercise)).toBe(8);
+    expect(roundWeightValue(10.2, dumbbellExercise)).toBe(10);
+  });
+
+  it("rounds a dumbbell above 10 kg to the nearest 2 kg", () => {
+    expect(roundWeightValue(13.1, dumbbellExercise)).toBe(14);
+    expect(roundWeightValue(12.9, dumbbellExercise)).toBe(12);
+    expect(roundWeightValue(10.6, dumbbellExercise)).toBe(10);
+  });
+
+  it("rounds other weighted exercises to the nearest 1 kg", () => {
+    expect(roundWeightValue(7.3, kettlebellExercise)).toBe(7);
+    expect(roundWeightValue(26.6, kettlebellExercise)).toBe(27);
+    expect(roundWeightValue(26.6, undefined)).toBe(27);
+  });
+
+  it("rounds an exact tie down", () => {
+    // max strength example: 75% of a 75 kg working set is 56.25 kg
+    expect(roundWeightValue(56.25, barbellExercise)).toBe(55);
+    expect(roundWeightValue(27.5 / 2, barbellExercise)).toBe(12.5);
+    expect(roundWeightValue(9.5, dumbbellExercise)).toBe(9);
+    expect(roundWeightValue(11, dumbbellExercise)).toBe(10);
+    expect(roundWeightValue(26.5, kettlebellExercise)).toBe(26);
+  });
+
+  it("returns 0 for a non finite value", () => {
+    expect(roundWeightValue(Number.NaN, barbellExercise)).toBe(0);
   });
 });
 

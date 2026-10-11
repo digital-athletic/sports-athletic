@@ -3210,7 +3210,6 @@ export default class TrainingGenerator {
     for (let setIndex = 0; setIndex < setProtocol.length; setIndex++) {
       const { percentage, repetitions, pauseSeconds } = setProtocol[setIndex];
       const setNumber = setIndex + 1;
-      const isTestSet = setIndex === setProtocol.length - 1;
 
       for (let i = 0; i < sortedExercises.length; i++) {
         const entry = this.getTestSetExercise(
@@ -3225,11 +3224,6 @@ export default class TrainingGenerator {
           skill as SkillCode,
           i,
         );
-
-        // Round warmup weights to whole kg
-        if (!isTestSet && entry.weight !== undefined) {
-          entry.weight = Math.round(entry.weight);
-        }
 
         // Update set tuple to reflect 4 total sets
         entry.set = [setNumber, totalSets];
@@ -3291,7 +3285,7 @@ export default class TrainingGenerator {
     }
     const exerciseStartValues = startValues[sortedExercise.id];
     const genderWeights = exerciseStartValues?.[gender];
-    let weight = genderWeights?.[level] ?? 0;
+    let testSetLoad = genderWeights?.[level] ?? 0;
     // use previous max value if set
     const maxValue = getMaxValueForExercise(sortedExercise, maxValues);
     if (maxValue) {
@@ -3310,16 +3304,16 @@ export default class TrainingGenerator {
           maxValuePercentage = 0.75;
           break;
       }
-      weight = roundWeightValue(maxValue * maxValuePercentage * percentage);
-    } else {
-      weight = roundWeightValue(weight * percentage);
+      testSetLoad = maxValue * maxValuePercentage;
     }
+    // ramp up loads refer to the rounded test set load
+    const roundedTestSetLoad = roundWeightValue(testSetLoad, sortedExercise);
 
     return {
       branchId: PLACEHOLDER_BRANCH_ID,
       exerciseId: sortedExercise.id,
       set: [set, 4] as [number, number],
-      weight: weight,
+      weight: roundWeightValue(roundedTestSetLoad * percentage, sortedExercise),
       repetition: repetitions,
       skill: skill,
     };

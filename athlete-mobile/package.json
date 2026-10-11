@@ -19,6 +19,7 @@
     "type-check": "tsc --noEmit",
     "test": "jest",
     "test:e2e": "playwright test",
+    "e2e:static": "expo export --platform web && node scripts/serve-e2e-static.mjs dist",
     "generate:sbom": "node scripts/generate-sbom.mjs",
     "generate:notice": "node scripts/generate-notice.mjs",
     "prepare:build": "pnpm generate:notice && pnpm clean:build",

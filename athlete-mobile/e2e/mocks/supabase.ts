@@ -16,7 +16,7 @@ const mockUser = {
   role: "authenticated",
 };
 
-const mockSession = {
+export const mockSession = {
   access_token: "mock-access-token",
   refresh_token: "mock-refresh-token",
   expires_in: 3600,

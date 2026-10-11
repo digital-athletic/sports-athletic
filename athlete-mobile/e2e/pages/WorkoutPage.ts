@@ -55,6 +55,17 @@ export class WorkoutPage extends BasePage {
     return false;
   }
 
+  /** Identifies the current workout step: set counters plus the visible controls. */
+  private async stepSignature(): Promise<string> {
+    const counters = await this.page.getByText(/\d+ of \d+/).allTextContents();
+    const [goOn, checkmark, skip] = await Promise.all([
+      this.goOnButton.isVisible(),
+      this.checkmarkButton.isVisible(),
+      this.skipButton.isVisible(),
+    ]);
+    return [...counters, goOn, checkmark, skip].join("|");
+  }
+
   async startWorkout(weekday: string) {
     await this.startTrainingButton.click({ timeout: 15000 });
     await expect(
@@ -146,6 +157,7 @@ export class WorkoutPage extends BasePage {
 
       if (await this.checkmarkButton.isVisible().catch(() => false)) {
         const isLastSet = await this.isLastSet();
+        const stepBefore = await this.stepSignature();
 
         if (isLastSet && lastSetFeedback === "too_easy") {
           await this.tooEasyButton.click({ timeout: 3000 });
@@ -154,9 +166,10 @@ export class WorkoutPage extends BasePage {
         } else {
           await this.checkmarkButton.click({ force: true });
         }
-        // Brief pause for UI state transition between workout steps (set completion animation,
-        // rest screen transition). The deterministic persistence wait happens in returnToHome().
-        await this.page.waitForTimeout(200);
+        // A second click during the set transition would confirm the next set too.
+        await expect
+          .poll(() => this.stepSignature(), { intervals: [50] })
+          .not.toBe(stepBefore);
         continue;
       }
 

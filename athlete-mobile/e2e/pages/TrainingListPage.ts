@@ -6,12 +6,29 @@ export class TrainingListPage extends BasePage {
     return this.page.getByText("Training Checklist");
   }
 
+  private get uncompletedCheckmarks() {
+    return this.page.locator('[aria-label="checkmark-circle-outline"]');
+  }
+
   private get firstUncompletedCheckmark() {
-    return this.page.locator('[aria-label="checkmark-circle-outline"]').first();
+    return this.uncompletedCheckmarks.first();
+  }
+
+  private get repsSaveButtons() {
+    return this.page.getByRole("button", { name: "Save" });
   }
 
   private get firstVisibleRepsSaveButton() {
-    return this.page.getByRole("button", { name: "Save" }).first();
+    return this.repsSaveButtons.first();
+  }
+
+  /** Clicks the first match and waits until the row it belonged to is done. */
+  private async clickAndWaitForFewer(rows: Locator) {
+    const before = await rows.count();
+    await rows.first().click({ force: true });
+    await expect
+      .poll(() => rows.count(), { intervals: [50] })
+      .toBeLessThan(before);
   }
 
   private get finishButton() {
@@ -102,13 +119,12 @@ export class TrainingListPage extends BasePage {
 
       if (await this.finishButton.isEnabled().catch(() => false)) {
         await this.finishButton.click({ force: true });
-        await this.page.waitForTimeout(200);
+        await expect(this.goOnButton).toBeVisible();
         continue;
       }
 
       if (await this.firstUncompletedCheckmark.isVisible().catch(() => false)) {
-        await this.firstUncompletedCheckmark.click({ force: true });
-        await this.page.waitForTimeout(200);
+        await this.clickAndWaitForFewer(this.uncompletedCheckmarks);
         continue;
       }
 
@@ -119,8 +135,7 @@ export class TrainingListPage extends BasePage {
         if (!(await input.inputValue().catch(() => ""))) {
           await input.fill("10");
         }
-        await this.firstVisibleRepsSaveButton.click({ force: true });
-        await this.page.waitForTimeout(200);
+        await this.clickAndWaitForFewer(this.repsSaveButtons);
         continue;
       }
 

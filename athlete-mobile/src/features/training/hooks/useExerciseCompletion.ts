@@ -1,9 +1,5 @@
 import { TagGroups } from "@/constants/tagGroups";
-import {
-  ExerciseDifficultyType,
-  isLevelTag,
-  WorkoutConstants,
-} from "@/constants/workoutConstants";
+import { isLevelTag, WorkoutConstants } from "@/constants/workoutConstants";
 import { getExerciseById } from "@/data/exerciseRegistry";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { getIntensityBySkill } from "@/features/training/generators/TrainingGenerator";
@@ -22,15 +18,17 @@ import {
   calculateStandardExerciseAdjustment,
   type ExerciseAdjustmentContext,
   findMainCardioExercise,
-  getResetDuration,
-  getResetRepetition,
   shouldProcessExerciseValues,
 } from "@/features/training/utils/exerciseDataUtils";
 import { getWorkingSetMaxFReps } from "@/features/training/utils/maxFRepetitionsUtils";
 import { calculateMaxStrengthAdjustment } from "@/features/training/utils/maxStrengthAdjustment";
 import {
-  calculateNewWeight,
+  calculateWeightStep,
+  getLowestPermittedWeight,
+  getResetDuration,
+  getResetRepetition,
   getTargetWeight,
+  getWeightType,
 } from "@/features/training/utils/weightAdjustmentUtils";
 import { getSkillTree } from "@/features/training/utils/skillTreeUtils";
 import {
@@ -71,6 +69,7 @@ export function useExerciseCompletion() {
     branchData,
     setBranchLevel,
     updateExercise,
+    resetExercise,
     updateUserExerciseTotals,
   } = useExerciseProgressStore();
   const { personalData } = useUserProfileStore();
@@ -139,13 +138,14 @@ export function useExerciseCompletion() {
     }
   };
 
+  /** Returns true when the athlete moves off `exerciseId`. */
   const updateBranchLevel = (
     levelUp: boolean,
     branchId: string,
     exerciseId: string,
     skill: SkillCode,
     ageGroup: string,
-  ) => {
+  ): boolean => {
     const context: BranchLevelContext = {
       skillTrees,
       branchData,
@@ -206,6 +206,11 @@ export function useExerciseCompletion() {
       setBranchLevel,
       replaceBranchInTrainingPlan,
     });
+
+    return (
+      result.type === "BRANCH_SUBSTITUTION" ||
+      (result.type === "SAME_BRANCH" && result.exerciseId !== exerciseId)
+    );
   };
 
   /**
@@ -215,7 +220,9 @@ export function useExerciseCompletion() {
    * Checks if the branch level needs to increase and changes exercise in training plan.
    */
   const saveExerciseAndBranchData = (index: number) => {
-    const currentExercise = exerciseList?.[index];
+    // Feedback given in the same tick is not yet in the rendered list.
+    const latestExerciseList = useTrainingStore.getState().exerciseList;
+    const currentExercise = latestExerciseList?.[index];
     const exerciseId = currentExercise?.exerciseId ?? "-1";
     const isPauseExercise = checkIsPauseExercise(exerciseId);
 
@@ -226,9 +233,10 @@ export function useExerciseCompletion() {
     }
 
     const nextExerciseIndex = index + 1;
-    const hasNextExercise = nextExerciseIndex < (exerciseList?.length ?? 0);
+    const hasNextExercise =
+      nextExerciseIndex < (latestExerciseList?.length ?? 0);
     const nextExercise = hasNextExercise
-      ? exerciseList?.[nextExerciseIndex]
+      ? latestExerciseList?.[nextExerciseIndex]
       : undefined;
     const isNextExercisePause = nextExercise
       ? checkIsPauseExercise(nextExercise.exerciseId)
@@ -276,7 +284,7 @@ export function useExerciseCompletion() {
             isNextExercisePause ||
             !nextExercise?.skill?.includes("CARDIO"))
         ) {
-          const mainCardio = findMainCardioExercise(exerciseList, index);
+          const mainCardio = findMainCardioExercise(latestExerciseList, index);
           if (mainCardio) {
             branchId = mainCardio.branchId;
             id = mainCardio.exerciseId;
@@ -295,7 +303,7 @@ export function useExerciseCompletion() {
           const ageGroup = ageGroupFor(personalData.birthday);
 
           // get adjustment of exercise
-          const exercise = exerciseList?.findLast(
+          const exercise = latestExerciseList?.findLast(
             (item) => item.exerciseId === exerciseId,
           );
           let adjustment = null;
@@ -313,7 +321,7 @@ export function useExerciseCompletion() {
             userExerciseData: exercise && {
               ...exercise,
               maxFRepetitions: getWorkingSetMaxFReps(
-                exerciseList ?? [],
+                latestExerciseList ?? [],
                 exerciseId,
               ),
             },
@@ -321,8 +329,17 @@ export function useExerciseCompletion() {
             levelTag,
           });
 
-          // persist intermediate feedback override before the main update
-          if (feedbackOverride) {
+          const leftExercise =
+            typeof branchId === "string" &&
+            (levelUp || levelDown) &&
+            updateBranchLevel(levelUp, branchId, id, skill, ageGroup);
+
+          if (leftExercise) {
+            // A later return to this exercise starts from its start values.
+            resetExercise(id, { skill, branchId }, activeTraining?.id);
+          } else if (feedbackOverride) {
+            // The level change found no other exercise: keep the sets, but
+            // the feedback must not move them a step.
             updateExercise(
               id,
               {
@@ -333,31 +350,30 @@ export function useExerciseCompletion() {
               activeTraining?.id,
             );
           }
-          if (typeof branchId === "string" && (levelUp || levelDown)) {
-            updateBranchLevel(levelUp, branchId, id, skill, ageGroup);
-          }
 
-          let newWeight = weight;
-          let newDuration = duration ? duration : undefined;
-          let newRepetition = reps ? reps : undefined;
-          // set new exercise values
-          updateExercise(
-            id,
-            {
-              exerciseId: id,
-              skill,
-              weight: newWeight,
-              maxFRepetitions: maxFRepetitionsNew,
-              maxFLevelAdjustment: adjustment,
-              duration: newDuration,
-              repetition: newRepetition,
-              height,
-              weightType: currentExercise.weightType,
-              branchId,
-              set: currentExercise.set,
-            },
-            activeTraining?.id,
-          );
+          if (!leftExercise) {
+            let newWeight = weight;
+            let newDuration = duration ? duration : undefined;
+            let newRepetition = reps ? reps : undefined;
+            // set new exercise values
+            updateExercise(
+              id,
+              {
+                exerciseId: id,
+                skill,
+                weight: newWeight,
+                maxFRepetitions: maxFRepetitionsNew,
+                maxFLevelAdjustment: adjustment,
+                duration: newDuration,
+                repetition: newRepetition,
+                height,
+                weightType: currentExercise.weightType,
+                branchId,
+                set: currentExercise.set,
+              },
+              activeTraining?.id,
+            );
+          }
         }
       }
       // check target values after last set of non cardio and max exercise
@@ -385,15 +401,19 @@ export function useExerciseCompletion() {
                   ? "m"
                   : "w";
 
+            const maxValue = getMaxValueForExercise(
+              currentExerciseData,
+              workoutData.maxValues,
+            );
             const adjustmentContext: ExerciseAdjustmentContext = {
               userLevel,
               genderTag,
               ageGroup,
               levelTag,
+              maxValue,
             };
 
-            // Cardio follows its own progression specification and keeps the
-            // feedback independent boundary check.
+            // Cardio has no feedback based progression.
             const feedback = skill.includes("CARDIO")
               ? null
               : (currentExercise?.feedback?.difficulty ?? null);
@@ -415,21 +435,25 @@ export function useExerciseCompletion() {
             // TrainingGenerator does not apply it a second time. Only a weight
             // increase resets reps/duration to the start value.
             if (increaseWeight || decreaseWeight) {
-              const adjustment: ExerciseDifficultyType = increaseWeight
-                ? "SUCCEEDED"
-                : "TOO_HARD";
-              const newWeight = calculateNewWeight(
+              const weightType = getWeightType(currentExerciseData, intensity);
+              const newWeight = calculateWeightStep(
                 weight,
-                adjustment,
+                increaseWeight ? "INCREASE" : "DECREASE",
                 currentExerciseData,
                 {
-                  intensity,
+                  weightType,
                   targetWeight: getTargetWeight(
                     intensity,
                     currentExerciseData,
-                    userLevel,
-                    genderTag,
+                    adjustmentContext,
                   ),
+                  lowestWeight: getLowestPermittedWeight(
+                    intensity,
+                    weightType,
+                    currentExerciseData,
+                    adjustmentContext,
+                  ),
+                  maxValue,
                 },
               );
               const nextWeightPercentage = weightPercentage || undefined;
@@ -491,30 +515,41 @@ export function useExerciseCompletion() {
                 },
               );
             } else if (levelUp || levelDown) {
-              updateExercise(
-                id,
-                {
-                  exerciseId: id,
-                  skill,
-                  weight,
-                  maxFRepetitions,
-                  duration,
-                  repetition: reps,
-                  height,
-                  weightType: currentExercise?.weightType,
-                  branchId,
-                  set: currentExercise?.set,
-                },
-                activeTraining?.id,
-              );
-              updateBranchLevel(levelUp, branchId, id, skill, ageGroup);
+              if (updateBranchLevel(levelUp, branchId, id, skill, ageGroup)) {
+                // A later return to this exercise starts from its start values.
+                resetExercise(id, { skill, branchId }, activeTraining?.id);
+              } else {
+                // No other exercise found: keep the values, but the feedback
+                // must not trigger a second level change.
+                updateExercise(
+                  id,
+                  {
+                    exerciseId: id,
+                    skill,
+                    weight,
+                    maxFRepetitions,
+                    duration,
+                    repetition: reps,
+                    height,
+                    weightType: currentExercise?.weightType,
+                    branchId,
+                    set: currentExercise?.set,
+                    feedback: { difficulty: null },
+                  },
+                  activeTraining?.id,
+                );
+              }
             } else {
               // No boundary change: feedback is preserved so TrainingGenerator
               // applies the ladder step or the weight step on the next generation.
-              let maxValue = getMaxValueForExercise(
-                currentExerciseData,
-                workoutData.maxValues,
-              );
+              // Without feedback the stored one from an earlier session is dropped.
+              if (feedback === null) {
+                updateExercise(
+                  id,
+                  { exerciseId: id, skill, feedback: { difficulty: null } },
+                  activeTraining?.id,
+                );
+              }
               let weightPercentage =
                 typeof maxValue === "number"
                   ? (weight / maxValue) * 100

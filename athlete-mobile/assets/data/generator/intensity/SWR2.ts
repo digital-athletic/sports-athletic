@@ -2,6 +2,7 @@ import { IntensityData } from "@/features/training/models/Intensity";
 
 export const IntensitySWR_2: IntensityData = {
   overridesExerciseRepsAndDuration: true,
+  lowestPermittedWeight: 65,
   adjustment: {
     duration: {
       default: {

@@ -1,6 +1,7 @@
 import { IntensityData } from "@/features/training/models/Intensity";
 
 export const IntensitySWR_1: IntensityData = {
+  lowestPermittedWeight: 65,
   adjustment: {
     duration: {
       default: {

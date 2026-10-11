@@ -244,6 +244,41 @@ describe("syncExerciseData", () => {
       { onConflict: "user_id,exercise_id,workout_id" },
     );
   });
+
+  it("maps a reset record to null value columns", async () => {
+    const payload: UserExerciseDataType = {
+      exerciseId: "ex-5",
+      workoutId: "workout-7",
+      skill: "MAX_KRAFT",
+      branchId: "branch-2",
+    };
+
+    await syncExerciseData(payload, TEST_USER_ID);
+
+    expect(mockUpsert).toHaveBeenCalledWith(
+      {
+        user_id: TEST_USER_ID,
+        exercise_id: "ex-5",
+        workout_id: "workout-7",
+        repetition: null,
+        weight: null,
+        duration: null,
+        height: null,
+        weight_type: null,
+        next_weight_percentage: null,
+        set_active_run: null,
+        set_num_of_sets: null,
+        skipped: null,
+        skill: "MAX_KRAFT",
+        branch_id: "branch-2",
+        feedback_difficulty: null,
+        feedback_streak_counter: null,
+        max_f_level_adjustment: null,
+        max_f_repetitions: null,
+      },
+      { onConflict: "user_id,exercise_id,workout_id" },
+    );
+  });
 });
 
 describe("syncStrengthTest", () => {

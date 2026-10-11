@@ -6,7 +6,7 @@ import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import {
   getResetDuration,
   getResetRepetition,
-} from "@/features/training/utils/exerciseDataUtils";
+} from "@/features/training/utils/weightAdjustmentUtils";
 import {
   getExerciseStartValue,
   getExerciseTargetValue,
@@ -284,6 +284,26 @@ describe("standard progression config: hypertrophy range", () => {
     expect(values.repetition).toBe(8);
   });
 
+  it("starts a reset record at the start values", () => {
+    const exercise = createExercise("repetition", true, {
+      repetition: authoredValues("10", "15"),
+    });
+    const valuesFor = (record: { branchId: string } | null) =>
+      generator.getExerciseValues(
+        record && { exerciseId: "1", skill: "SWR2", ...record },
+        exercise,
+        getIntensityBySkill("SWR2"),
+        "m",
+        "advanced",
+        DEFAULT_MAX_VALUES,
+      );
+
+    const values = valuesFor({ branchId: "77" });
+
+    expect(values).toEqual(valuesFor(null));
+    expect(values.repetition).toBe(8);
+  });
+
   it.each([
     ["repetition", true, 18, 12],
     ["repetition", false, 5, 8],
@@ -417,4 +437,120 @@ describe("standard progression config: load ranges", () => {
       ).toBe(4);
     },
   );
+
+  it.each(
+    (["SKKG", "SAKG"] as const).flatMap((skill) =>
+      (["m", "w"] as const).map((gender) => [skill, gender] as const),
+    ),
+  )(
+    "%s without adjustable weight for gender %s uses 4 up to 6 reps",
+    (skill, gender) => {
+      const intensity = getIntensityBySkill(skill);
+      const exercise = createExercise("repetition", false);
+
+      expect(
+        getExerciseStartValue(
+          intensity,
+          exercise,
+          "repetition",
+          "advanced",
+          gender,
+        ),
+      ).toBe(4);
+      expect(
+        getExerciseTargetValue(
+          intensity,
+          exercise,
+          "repetition",
+          "advanced",
+          gender,
+        ),
+      ).toBe(6);
+    },
+  );
+
+  it("starts a new exercise at the gender default of the intensity", () => {
+    const intensity = {
+      ...getIntensityBySkill("SK"),
+      startValue: {
+        repetition: { default: { default: 3 }, m: { default: 5 } },
+      },
+    };
+
+    const values = generator.getExerciseValues(
+      null,
+      createExercise("repetition", false),
+      intensity,
+      "m",
+      "advanced",
+      DEFAULT_MAX_VALUES,
+    );
+
+    expect(values.repetition).toBe(5);
+  });
+});
+
+describe("standard progression config: weight steps", () => {
+  const generator = new TrainingGenerator();
+  const tooHard = (
+    skill: SkillCode,
+    weight: number,
+    exercise = createExercise("repetition", true),
+    maxValues = DEFAULT_MAX_VALUES,
+  ) =>
+    generator.adjustExerciseValues(
+      { repetition: 10, weight, weightType: "weightFMax" },
+      null,
+      exercise,
+      getIntensityBySkill(skill),
+      "m",
+      "advanced",
+      "TOO_HARD",
+      maxValues,
+    );
+
+  it.each([
+    ["SWR2", 70, 68.25],
+    ["SWR2", 66, 65],
+    ["SK", 52, 50.7],
+    ["SK", 51, 50],
+  ] as const)(
+    "%s lowers %d percent of F-Max on TOO_HARD to %d",
+    (skill, weight, expected) => {
+      const values = tooHard(skill, weight);
+
+      expect(values.weight).toBeCloseTo(expected);
+      expect(values.repetition).toBe(10);
+    },
+  );
+
+  it("lowers the load to the next real barbell load", () => {
+    const exercise = {
+      ...createExercise("repetition", true),
+      tags: ["EQ_TYPE_WEIGHTS", "EQ_BARBELL", "EXERCISE_DIRECTION_HIP"],
+    };
+    const maxValues = {
+      ...DEFAULT_MAX_VALUES,
+      hipHinge: { ...DEFAULT_MAX_VALUES.hipHinge, barbell: 100 },
+    };
+
+    expect(tooHard("SWR2", 73.5, exercise, maxValues).weight).toBeCloseTo(70);
+  });
+
+  it("keeps the authored height of a jump exercise", () => {
+    const exercise = { ...createExercise("repetition", false), isJump: true };
+
+    const values = generator.adjustExerciseValues(
+      { repetition: 8, height: 20, weightType: "weightAbsolute" },
+      null,
+      exercise,
+      getIntensityBySkill("SWR2KG"),
+      "m",
+      "advanced",
+      "SUCCEEDED",
+    );
+
+    expect(values.height).toBe(20);
+    expect(values.repetition).toBe(9);
+  });
 });

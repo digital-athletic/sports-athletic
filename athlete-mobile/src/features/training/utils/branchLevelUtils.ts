@@ -39,6 +39,7 @@ export type BranchLevelResult =
       type: "SAME_BRANCH";
       branchId: string;
       newLevel: number;
+      exerciseId: string;
     }
   | {
       type: "BRANCH_SUBSTITUTION";
@@ -223,6 +224,7 @@ export function calculateBranchLevelUpdate(
       type: "SAME_BRANCH",
       branchId,
       newLevel: nextInBranch.level,
+      exerciseId: nextInBranch.exerciseId,
     };
   }
 

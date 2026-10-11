@@ -396,6 +396,7 @@ describe("useExerciseProgression: handleExerciseSkipped", () => {
 
     expect(mockCompletionHandleExerciseSkipped).toHaveBeenCalledWith(0);
     expect(useTrainingStore.getState().exerciseList?.[0]?.completed).toBe(true);
+    expect(mockSaveExerciseAndBranchData).not.toHaveBeenCalled();
   });
 
   it("resets isSkipped back to false once skipping advances to a new exercise id", () => {

@@ -89,7 +89,8 @@ test.describe("Workout Flow", () => {
 
       // On a weighted exercise TOO_HARD lowers only the weight
       const EXPECTED_TOO_HARD_REPS = 8;
-      const EXPECTED_TOO_HARD_WEIGHT = 14;
+      // A weight step always changes the shown load: 14 x 0.975 drops to 12
+      const EXPECTED_TOO_HARD_WEIGHT = 12;
 
       await mockSupabaseAuth(page);
       await mockWakeLock(page);

@@ -35335,6 +35335,7 @@
   },
   {
     "id": "292",
+    "conversionFactor": 1,
     "name": "Sprungkniebeuge mit LH SK",
     "displayName": "LH-Sprungkniebeuge (SK)",
     "level": {
@@ -35603,6 +35604,7 @@
   },
   {
     "id": "294",
+    "conversionFactor": 0.5,
     "name": "Sprungkniebeuge mit 2 KH SK",
     "displayName": "KH-Sprungkniebeuge (SK)",
     "level": {
@@ -41815,6 +41817,7 @@
   },
   {
     "id": "346",
+    "conversionFactor": 0.9,
     "name": "LH Schrägbankdrücken SWR",
     "displayName": "LH-Schrägbankdrücken",
     "level": {
@@ -41949,6 +41952,7 @@
   },
   {
     "id": "347",
+    "conversionFactor": 0.9,
     "name": "LH Schrägbankdrücken Max-K",
     "displayName": "LH-Schrägbankdrücken (Max-K)",
     "level": {
@@ -42053,6 +42057,7 @@
   },
   {
     "id": "348",
+    "conversionFactor": 0.9,
     "name": "LH Schrägbankdrücken SK",
     "displayName": "LH-Schrägbankdrücken (SK)",
     "level": {
@@ -42185,6 +42190,7 @@
   },
   {
     "id": "349",
+    "conversionFactor": 0.9,
     "name": "LH Schrägbankdrücken SA",
     "displayName": "LH-Schrägbankdrücken (SA)",
     "level": {
@@ -42280,6 +42286,7 @@
   },
   {
     "id": "350",
+    "conversionFactor": 0.3825,
     "name": "KH Schrägbankdrücken SWR",
     "displayName": "KH-Schrägbankdrücken",
     "level": {
@@ -42415,6 +42422,7 @@
   },
   {
     "id": "351",
+    "conversionFactor": 0.3825,
     "name": "KH Schrägbankdrücken Max-K",
     "displayName": "KH-Schrägbankdrücken (Max-K)",
     "level": {
@@ -42523,6 +42531,7 @@
   },
   {
     "id": "352",
+    "conversionFactor": 0.3825,
     "name": "KH Schrägbankdrücken SK",
     "displayName": "KH-Schrägbankdrücken (SK)",
     "level": {
@@ -42656,6 +42665,7 @@
   },
   {
     "id": "353",
+    "conversionFactor": 0.3825,
     "name": "KH Schrägbankdrücken SA",
     "displayName": "KH-Schrägbankdrücken (SA)",
     "level": {
@@ -42752,6 +42762,7 @@
   },
   {
     "id": "354",
+    "conversionFactor": 0.3825,
     "name": "KH Schrägbankdrücken eng SWR (Präv)",
     "displayName": "enges KH-Schrägbankdrücken",
     "level": {
@@ -46588,6 +46599,7 @@
   },
   {
     "id": "382",
+    "conversionFactor": 0.3825,
     "name": "KH Butterfly auf Schrägbank SWR",
     "displayName": "KH-Butterfly auf Schrägbank",
     "level": {
@@ -48055,6 +48067,7 @@
   },
   {
     "id": "393",
+    "conversionFactor": 0.3825,
     "name": "KH Schrägbankdrücken eng Präv  SK",
     "displayName": "enges KH-Schrägbankdrücken (SK)",
     "level": {
@@ -48173,6 +48186,7 @@
   },
   {
     "id": "394",
+    "conversionFactor": 0.3825,
     "name": "KH Schrägbankdrücken eng Präv SA",
     "displayName": "enges KH-Schrägbankdrücken (SA)",
     "level": {

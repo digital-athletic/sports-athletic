@@ -110,6 +110,18 @@ describe("skillTreeUtils", () => {
       );
     });
 
+    it("draws the low plyometric branches for a medium plyometric slot", () => {
+      const plyoTrees = {
+        PLYO: {
+          high: { ...createMockSkillBranch(), tags: ["SKILL_PLYO_HIGH"] },
+          low: { ...createMockSkillBranch(), tags: ["SKILL_PLYO_LOW"] },
+        },
+      };
+      expect(
+        Object.keys(getSkillTree(plyoTrees, "PLYO_MEDIUM", [], false)),
+      ).toEqual(["low"]);
+    });
+
     it("should return PREV when skill is PREVKNEE and hasWeights is true", () => {
       const result = getSkillTree(mockSkillTrees, "PREVKNEE", [], true);
       expect(result).toEqual(mockSkillTrees.PREV);

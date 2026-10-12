@@ -114,4 +114,30 @@ describe("exerciseProgressStoreMigrations", () => {
       });
     });
   });
+
+  // Branch 576 is the zone 5 cardio run, branch 253 bodyweight explosive power
+  describe("v18 to v19: resets stored cardio branch levels to the entry level", () => {
+    const migrated = () =>
+      exerciseProgressStoreMigrations[18](
+        stateWith(
+          {},
+          {
+            "576": { branchId: "576", level: 3, exerciseId: "39" },
+            "253": { branchId: "253", level: 2, exerciseId: "516" },
+          },
+        ),
+      ).branchData;
+
+    it("removes the stored level of a cardio branch", () => {
+      expect(migrated()["576"]).toBeUndefined();
+    });
+
+    it("keeps the stored level of other branches", () => {
+      expect(migrated()["253"]).toEqual({
+        branchId: "253",
+        level: 2,
+        exerciseId: "516",
+      });
+    });
+  });
 });

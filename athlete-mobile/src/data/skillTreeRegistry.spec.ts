@@ -96,6 +96,18 @@ describe("skillTreeRegistry", () => {
       );
       expect(malformed).toEqual([]);
     });
+
+    it("holds no branch with the German lower body region tag", () => {
+      const german = Object.entries(getAllSkillTrees()).flatMap(
+        ([treeName, tree]) =>
+          Object.entries(tree)
+            .filter(([, branch]) =>
+              branch.tags.includes("REGION_UNTERRKOERPER"),
+            )
+            .map(([branchId]) => `${treeName}/${branchId}`),
+      );
+      expect(german).toEqual([]);
+    });
   });
 
   describe("clearSkillTreeRegistry", () => {

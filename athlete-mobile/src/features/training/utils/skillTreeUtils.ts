@@ -498,7 +498,6 @@ function filterBySoreness(
   branches: SkillTreeType,
   temporalData: TemporalDataType[] | undefined,
   skill: string,
-  isShortWorkout = false,
 ): { keep: SkillTreeType; replace: string[] } {
   if (
     !temporalData ||
@@ -512,32 +511,6 @@ function filterBySoreness(
   }
 
   const areas = getAreasFor(temporalData.map((entry) => entry.tag));
-
-  if (isShortWorkout && isPreventionSkill(skill)) {
-    let soreInArea = false;
-    switch (skill) {
-      case "PREVSHOULDER":
-      case "PREVWRIST":
-        soreInArea = areas.includes("upperBody");
-        break;
-      case "PREVSPINE":
-        soreInArea = areas.includes("core");
-        break;
-      case "PREVKNEE":
-      case "PREVANKLE":
-        soreInArea = areas.includes("lowerBody");
-        break;
-      default:
-        break;
-    }
-    if (soreInArea) {
-      throw {
-        type: "TOO_MUCH_SORENESS",
-        subtype: "PREV_SHORT_TRAINING_SORENESS",
-        params: areas.map(areaToRegion),
-      };
-    }
-  }
 
   if (areas.length > 1) {
     throw {

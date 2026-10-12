@@ -3,6 +3,7 @@
  * These functions filter exercise branches based on various criteria.
  */
 
+import { WorkoutConstants } from "@/constants/workoutConstants";
 import type {
   Branch,
   FilterResult,
@@ -10,7 +11,6 @@ import type {
 import { getTagValues } from "../../../utils/tagUtils";
 import { TemporalDataType } from "../models/TemporalData";
 import { areaToRegion, getAreasFor } from "./exerciseUtils";
-import { isPreventionSkill } from "./skillTreeUtils";
 
 /**
  * Filter branches by age group (child vs adult).
@@ -128,9 +128,8 @@ export function filterByPrevention<T extends Branch>(
  *
  * @param branches - Object with branch IDs as keys
  * @param temporalData - Array of temporal muscle soreness data
- * @param skill - Training skill being generated
- * @param isShortWorkout - Whether this is a short workout
- * @param ignoreSorenessSkills - Skills that should ignore soreness
+ * @param skill - Training skill being generated; warm-up, speed warm-up,
+ *   cool-down, mobility and foam roller ignore soreness
  * @returns FilterResult with kept and replaced branches
  * @throws Error if there's too much soreness for the workout type
  */
@@ -138,39 +137,13 @@ export function filterBySoreness<T extends Branch>(
   branches: Record<string, T>,
   temporalData: TemporalDataType[] | null,
   skill: string,
-  isShortWorkout: boolean = false,
-  ignoreSorenessSkills: string[] = [],
 ): FilterResult<T> {
-  if (temporalData && !ignoreSorenessSkills.includes(skill)) {
+  if (
+    temporalData &&
+    !WorkoutConstants.IGNORE_SORENESS_SKILLS.includes(skill)
+  ) {
     const tempTags = temporalData.map((element) => element.tag);
     const areas = getAreasFor(tempTags);
-
-    // Check for muscle soreness in area of short workout prevention
-    if (isShortWorkout && isPreventionSkill(skill)) {
-      let hasSorenessInArea = false;
-      switch (skill) {
-        case "PREVSHOULDER":
-        case "PREVWRIST":
-          hasSorenessInArea = areas.includes("upperBody");
-          break;
-        case "PREVSPINE":
-          hasSorenessInArea = areas.includes("core");
-          break;
-        case "PREVKNEE":
-        case "PREVANKLE":
-          hasSorenessInArea = areas.includes("lowerBody");
-          break;
-        default:
-          break;
-      }
-      if (hasSorenessInArea) {
-        throw {
-          type: "TOO_MUCH_SORENESS",
-          subtype: "PREV_SHORT_TRAINING_SORENESS",
-          params: areas.map(areaToRegion),
-        };
-      }
-    }
 
     if (areas.length > 1) {
       throw {

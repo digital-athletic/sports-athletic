@@ -1031,71 +1031,15 @@ export default class TrainingGenerator {
           ) {
             firstUnfilledSkillError ??= unfilledSkillError;
           }
-          // Change used skill from former prevention to new PREV skill if needed
-          if (skill.indexOf("PREV") !== -1 && replacement.length !== 0) {
-            let prevRegion = getRegionsForPreventionSkills([skill]);
-            // check if prevention region is still the same
-            let regionReplacement = replacement.filter((r) =>
+          // a prevention skill refills only from its own region, all slots or none
+          if (skill.indexOf("PREV") !== -1) {
+            const prevRegion = getRegionsForPreventionSkills([skill]);
+            const fromOwnRegion = replacement.every((r) =>
               getTagValues(r.tags, TagGroups.PREVENTION).some((p) =>
                 prevRegion.includes(p),
               ),
             );
-            const prevSkillsSecondary = prevSkills.filter((s) => s !== skill);
-            if (regionReplacement.length === 0) {
-              // change to new PREV skill
-              let otherPrevSkill: SkillTypes = skill;
-              for (let p = 0; p < prevSkillsSecondary.length; p++) {
-                let secondaryPrevRegion = getRegionsForPreventionSkills([
-                  prevSkillsSecondary[p],
-                ]);
-                let secondaryRegionReplacement = replacement.filter((r) =>
-                  getTagValues(r.tags, TagGroups.PREVENTION).some((p) =>
-                    secondaryPrevRegion.includes(p),
-                  ),
-                );
-                if (secondaryRegionReplacement.length === replacement.length) {
-                  otherPrevSkill = prevSkillsSecondary[p] as SkillTypes;
-                  break;
-                }
-              }
-              // Check if skill already has branches (not null/undefined AND has content)
-              if (exerciseBranches[otherPrevSkill]?.length > 0) {
-                exerciseBranches[otherPrevSkill] =
-                  exerciseBranches[otherPrevSkill]!.concat(replacement);
-                lengths[otherPrevSkill] =
-                  (lengths[otherPrevSkill] ?? 0) + (lengths[skill] ?? 0);
-              } else {
-                exerciseBranches[otherPrevSkill] = replacement;
-                lengths[otherPrevSkill] = lengths[skill] ?? 0;
-              }
-              // select exercise for updated userLevel
-              exerciseBranches[otherPrevSkill] = exerciseBranches[
-                otherPrevSkill
-              ]!.map((branchData) => {
-                if (branchData && branchData.branchId) {
-                  const branchId = branchData.branchId;
-                  const levels =
-                    branchData.exercises ?? branchData.levels ?? {};
-                  const branchTags = branchData.tags ?? [];
-                  const exercise = getUserExerciseFromBranch(
-                    {
-                      levels: levels as Record<number, { exerciseId: string }>,
-                      tags: branchTags,
-                    },
-                    userLevel,
-                    exercises,
-                    userExerciseData.branchData[branchId] ?? null,
-                  );
-                  return {
-                    branchId,
-                    branchTags: exercise ? exercise.tags : branchTags,
-                    exerciseId: exercise?.id ?? "-1",
-                  };
-                }
-                return null;
-              }).filter(
-                (item): item is NonNullable<typeof item> => item !== null,
-              );
+            if (!fromOwnRegion || replacement.length < replace.length) {
               replacement = [];
             }
           }

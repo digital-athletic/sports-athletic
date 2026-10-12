@@ -130,9 +130,9 @@ describe("generatePlanWorkout: prevention replacements", () => {
       noExerciseData,
     );
 
-    expect(
-      result.filter((entry) => entry.skill?.startsWith("PREV")),
-    ).toEqual([]);
+    expect(result.filter((entry) => entry.skill?.startsWith("PREV"))).toEqual(
+      [],
+    );
   });
 });
 

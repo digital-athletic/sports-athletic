@@ -42,9 +42,7 @@ Feedback-based cardio progression is not implemented yet. Therefore, the current
 
 Zone numbering runs from hardest (1) to easiest (5). Zone 1 has two variants: short sprint intervals and lactate intervals.
 
-The heart-rate bands are fractions of the age-based maximum:
-
-`max HR = 208 - (0.7 × age)`
+The heart-rate bands are fractions of the age-based maximum heart rate from the Solution.
 
 | Zone | Purpose | Structure | Work | Running pause | Heart-rate band |
 |---|---|---|---|---|---|
@@ -68,7 +66,6 @@ Input: the zone, its minute budget, the selected cardio exercise, the athlete's 
 1. **Steady zones**:
    1. Emit one continuous run over the full available budget.
    2. Do not add a closing pause.
-   3. Lower-body soreness replaces the current cardio skill with CARDIO_5 and caps the budget at 20 minutes.
 
 2. **Interval zones**:
    1. Take the authored start interval count for the athlete's fitness level.
@@ -140,6 +137,7 @@ The current implementation therefore follows these rules:
 - Reaching a target count does not currently trigger an automatic exercise change because the progression and persistence path is not yet implemented.
 - A different cardio exercise may currently be selected when the training plan is regenerated.
 - CARDIO_4 and CARDIO_5 do not progress by duration. They always use their full available minute budget.
+- Older app versions changed stored cardio levels from feedback, lowering most of them. A one-time migration resets every athlete's cardio level to the entry level, the only cardio level in use.
 
 Once interval-count progression is implemented, additional intervals must replace the corresponding amount of zone-4 filler time rather than increasing the total cardio duration.
 
@@ -157,13 +155,7 @@ Cardio feedback-based progression is not implemented yet. No interval-count eval
 
 ### Soreness and blocking
 
-| Condition | Effect |
-|---|---|
-| Lower-body soreness, any cardio zone | Whole cardio skill replaced by steady zone 5, capped at 20 minutes |
-| More than one sore area | Generation aborts with a soreness error (all skills) |
-| Place without run equipment | The day loses cardio at plan creation and trains stability instead |
-
-Lower-body soreness therefore does not preserve the originally planned cardio zone. Regardless of whether the planned zone is steady or interval-based, the current cardio skill becomes CARDIO_5 with a maximum duration of 20 minutes.
+[Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md) owns the soreness rules: lower-body soreness replaces any planned zone with CARDIO_5, capped at 20 minutes. [Training Plan Creation](../planning/training-plan-creation-from-anamnesis.md) decides which days lose cardio for lack of run equipment.
 
 ## Structure
 
@@ -173,13 +165,7 @@ For interval zones, the set list alternates work intervals and running pauses. R
 
 For steady zones, one continuous running entry uses the full available budget.
 
-Generation computes the heart-rate target from the athlete's birthday and the zone using:
-
-`max HR = 208 - (0.7 × age)`
-
-If no birthday is available, the calculation uses an age of **20 years**.
-
-CARDIO_1_SHORT displays **MAX.** instead of a heart-rate range. All other zones use the authored percentage range.
+Generation computes the heart-rate target from the athlete's birthday and the zone.
 
 ```mermaid
 flowchart LR

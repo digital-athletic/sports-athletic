@@ -13,7 +13,7 @@ Periodizing a season (which training emphasis to run in which weeks, how to lay 
 Plan creation is a deterministic pipeline over authored content, with randomness only in the final exercise pick:
 
 1. Authored **section templates** (per season phase, age group, and level) decide the mesocycle sequence. This encodes sports-science periodization once, centrally, instead of computing it per user.
-2. Rule-based day layout assigns each training day a **focus** (PHASE, CARDIO, STABILITY, or COMBINED) from the shape of the week and the locations' equipment.
+2. Rule-based day layout assigns each training day a **focus** (PHASE, CARDIO, STABILITY, or COMBINED) from the shape of the week and the locations' equipment. Strength is the app's focus: cardio goes only to days where strength is not the focus, and COMBINED stays rare.
 3. Authored **skill priority** structures (per age group, pain status, and focus) decide which skills fill a session of a given length.
 4. Filtered random selection picks exercise branches from **skill trees**, respecting age, gender, and equipment.
 
@@ -25,7 +25,7 @@ The plan stays a skeleton on purpose: sets, repetitions, and weights are compute
 - Progression between sessions and feedback handling (too easy, succeeded, too hard)
 - Weight derivation from strength tests: [Weight Calculation from Strength Tests](../progression/weight-calculation-from-strength-tests.md)
 - Manual single-branch replacement inside an existing plan
-- Backend persistence of plans (plans are currently device-local)
+- Future work: archiving replaced plans, and backend persistence of plans (plans are currently device-local)
 - The anamnesis questionnaire UI itself
 
 ## Algorithm
@@ -36,28 +36,27 @@ The anamnesis answers are stored as tag groups and copied into the workout confi
 
 | Profile fact | Source | Rule |
 |---|---|---|
-| Age group | Birthday | CHILD up to 16, ADOLESCENT up to 18 (treated as adult everywhere), otherwise ADULT. Missing birthday defaults to ADULT. |
+| Age group | Birthday | Per the [Glossary](../glossary.md): CHILD under 16, otherwise adult rules. A missing birthday counts as ADULT. |
 | Level | LEVEL tag | BEGINNER, ADVANCED, or PROFESSIONAL. A PROFESSIONAL child is downgraded to ADVANCED. |
 | Pain status | PAIN tags | Any pain tag sets the pain variant of the skill priorities. |
-| Prevention skills | PAIN tags | Shoulder maps to shoulder prevention, elbow and wrist to wrist prevention, spine to spine prevention, hip and knee to knee prevention, ankle to ankle prevention. |
-| Blocked regions | PAIN tags | Authored mapping only: pain exclusions do not exist, no branch is excluded for a blocked region ([Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md)). |
-| Position | POSITION tag | Defaults to FIELD. Currently every athlete is treated as a goalkeeper (temporary override until power endurance content is fixed). |
+| Prevention skills | PAIN tags | Mapping in [Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md). |
+| Position | POSITION tag | Two groups: goalkeeper (handball, football, ice hockey, hockey) and everyone else. A missing position counts as everyone else. Every athlete currently counts as a goalkeeper for section types and cardio zones (temporary override until power endurance content is fixed). Goalkeeper-specific exercises read the stored position, so the override does not unlock them. |
 | Season phase | Anamnesis season phase step | PAUSE, PREPARATORY, or COMPETITION, with a week count to the phase end date (minimum 1). Required; generation fails without it. |
 | Weights available | Equipment of active locations | True if any active training day's location has weights. |
 
-Note on age groups: the app's fitness area is currently restricted to users aged 16 and older via the terms and conditions. The CHILD age group and all child-specific rules below therefore only apply when a birthday under 16 is entered despite that restriction; the code paths remain in place.
+The terms and conditions restrict the fitness area to users aged 16 and older. The CHILD rules below therefore apply only when someone enters a birthday under 16 despite that restriction; the code paths remain in place.
 
 ### 2. Section layout (periodization)
 
-1. Look up the section template by season phase, age group (child or adult; per the terms and conditions the fitness area is 16+, so the child templates are normally not reached), and level. Unknown combinations fall back to the preparatory adult advanced template.
+1. Look up the section template by season phase, age group (child or adult), and level. Unknown combinations fall back to the preparatory adult advanced template.
 2. Templates are keyed by phase length in weeks (1 to 20). Each entry is an ordered list of sections, each with a type, week count, and cardio type. Example (preparatory, adult, beginner, 8 weeks): hypertrophy stage 1 for 3 weeks, hypertrophy stage 2 for 3 weeks, then explosive power for 2 weeks.
 3. Phases longer than 20 weeks start from the 20-week entry and append from the template's repeat list cyclically; an appended section merges into the previous one when type and cardio type match.
 4. Substitutions after template selection:
-   - No weights available, or level BEGINNER: every **max strength** section becomes hypertrophy stage 2.
+   - No weights available, level BEGINNER, or age group CHILD: every **max strength** section becomes hypertrophy stage 2. Explosive power stays in the child templates as authored.
    - Goalkeeper: power endurance becomes explosive power, and lactate intervals become sprint intervals.
 5. The plan start snaps forward to the next Monday; each section starts where the previous one ends, giving strictly sequential blocks.
 
-Section types use German training vocabulary: SWR1 and SWR2 are hypertrophy (Muskelaufbau) stages, MAX and MAX_KRAFT are max strength, SK is explosive power (Schnellkraft), SA is power endurance (Schnellkraftausdauer). A KG suffix marks the bodyweight (Körpergewicht) variant of a type. Cardio types CARDIO_1 to CARDIO_5 are heart-rate intensity zones.
+The [Glossary](../glossary.md) lists the section type and cardio zone codes.
 
 ### 3. Day grouping and focus
 
@@ -68,22 +67,36 @@ Section types use German training vocabulary: SWR1 and SWR2 are hypertrophy (Mus
    - Adults, 2 days: PHASE goes to the studio day, the longer day, or the non-home day (in that order of applicable rules); the other day gets CARDIO with run equipment, otherwise STABILITY.
    - Adults, 3 days: assign PHASE, CARDIO, STABILITY preferring the longest studio day for PHASE, then non-home over home; CARDIO downgrades to STABILITY at home without run equipment. If no day received CARDIO, PHASE days upgrade to COMBINED.
    - More than 3 days: cycle PHASE, CARDIO, STABILITY.
-3. Week-wide cardio guarantee: an adult training more than once with no CARDIO day anywhere gets their most suitable long PHASE day converted to CARDIO, or to COMBINED when the day is at least 45 minutes with run equipment.
+3. Week-wide cardio guarantee: an adult training more than once with no CARDIO day anywhere gets one PHASE day converted:
+   1. Candidates: every PHASE day except a home day without run equipment.
+   2. Pick the longest candidate.
+   3. The day becomes COMBINED when it lasts at least 45 minutes and its place has run equipment, otherwise CARDIO.
 
 ### 4. Skill selection and time budgeting per day
 
-1. Pick the skill priority structure for age group, pain status, and focus. It maps minute thresholds to skill lists, e.g. adult, no pain, PHASE focus: from minute 0 the main phase work plus mobility, from 30 warm-up, from 45 cool-down, from 60 stretching. Pain variants inject a prevention slot and a special warm-up.
+1. Pick the skill priority structure for age group, pain status, and focus. It maps minute thresholds to skill lists, e.g. adult, no pain, PHASE focus: from minute 0 the main phase work plus mobility, from 30 warm-up, from 45 cool-down, from 60 foam roller. Pain variants inject a prevention slot and a special warm-up.
 2. Resolve placeholders: the PHASE slot becomes the section's type (or its KG variant when no weights are available; max strength without weights becomes hypertrophy stage 2 KG); the cardio slot becomes the section's cardio type; the warm-up variant follows the section type.
-3. Prevention slots rotate round-robin through the athlete's derived prevention skills, at most one per day. The special warm-up is kept only on days that have a prevention skill. Children always train bodyweight variants and receive stability and foundation skills in place of adult prevention slots (normally unreachable under the 16+ terms restriction, see Profile derivation).
-4. Each selected skill gets its minimum duration first; leftover session time is distributed by priority, capped per skill by level-dependent maximum times (max strength for example allows 0 minutes for beginners, 45 for advanced, 55 for professionals). Time below a skill's minimum still uses the minimum, so short sessions can overshoot their target duration.
+3. Prevention slots rotate round-robin through the athlete's derived prevention skills, at most one per day. The special warm-up is kept only on days that have a prevention skill. Children get the same prevention slots and special warm-up as adults.
+4. Each selected skill gets its minimum duration first; leftover session time is distributed by priority, capped per skill by the maximum minutes below. Time below a skill's minimum still uses the minimum, so short sessions can overshoot their target duration.
+
+| Skill | Max minutes, beginner / advanced / professional |
+|---|---|
+| Hypertrophy (SWR) | 35 / 45 / 60 |
+| Max strength (MAX) | 0 / 45 / 55 |
+| Cardio | 45 / 60 / 60 |
+| Full-body stability (GKS) | 25 / 30 / 40 |
+| Power endurance (SA), explosive power (SK) | 30 / 35 / 35 |
+| Prevention (PREV) | 15 |
+| Special warm-up (WUSPEZIAL) | 3 |
+| Everything else | 10 |
 
 ### 5. Branch selection per skill
 
 1. The skill and its allotted minutes select an authored region configuration: how many exercises, and which region or movement tags (upper body, lower body, core, or named barbell lifts for max strength).
-2. Candidate branches come from the skill's skill tree, filtered by: not already in use that day, age tag, gender tag, and equipment present at the day's location. Blocked-region tags do not filter: pain exclusions do not exist.
-3. When weights are available, the target mix of weighted vs bodyweight exercises is: children (the CHILD age group, under 16, see Profile derivation) 30% weighted, adults 80% in the studio (60% for non-strength skills), 50% elsewhere.
-4. Each exercise slot applies cascading filters, each falling back to the previous candidate set when it would empty: movement direction (from an authored priority sequence), side (the last slot avoids one-sided exercises), muscle (prefer untrained big muscles), involvement (70% complex, 30% isolated), equipment (max strength prefers barbell), and the weighted/bodyweight mix. The final pick is random among the survivors.
-5. Branches resolve to an exercise by the shared resolution rule in [Plan Workout Generation](../session/plan-workout-generation.md): an empty level falls back downward to the highest authored level below it, so the last valid exercise stays active until a higher level defines a new one (level 1 = exercise A, level 2 empty, level 3 = exercise B: an advanced athlete still trains exercise A). A branch is skipped only when no exercise resolves at or below the athlete's current level; an intentionally empty intermediate level never shrinks the pool. Only a skill left with zero usable branches after this check is removed from the day. Chosen branches are excluded for the rest of the day to avoid duplicates.
+2. Candidate branches come from the skill's skill tree, filtered by: not already in use that day, age tag, gender tag, equipment present at the day's location, and the pain exclusion described in [Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md). Children may receive every branch their age tag allows, weighted ones included.
+3. When weights are available, the weighted vs bodyweight share follows [Plan Workout Generation](../session/plan-workout-generation.md).
+4. Each exercise slot applies cascading filters, each falling back to the previous candidate set when it would empty: movement direction (from an authored priority sequence), side (the last slot avoids one-sided exercises), muscle (prefer untrained big muscles), involvement (70% complex, 30% isolated), equipment (max strength prefers barbell), and the weighted/bodyweight share. The final pick is random among the survivors.
+5. Branches resolve to an exercise by the resolution rule in [Branches, Exercises, and Levels](../foundations/branches-exercises-and-levels.md). A branch is skipped only when nothing resolves at or below the athlete's level. Only a skill left with zero usable branches after this check is removed from the day. Chosen branches are excluded for the rest of the day to avoid duplicates.
 
 ### 6. Lifecycle and regeneration
 
@@ -92,9 +105,25 @@ Section types use German training vocabulary: SWR1 and SWR2 are hypertrophy (Mus
 | Anamnesis completed (first plan) | Next Monday from today | none |
 | Anamnesis re-run, same season phase type | Preserved from existing plan | Overwritten |
 | Anamnesis re-run, season phase changed | Next Monday from today | Overwritten |
+| New plan accepted after a training gap of more than 21 days | Next Monday from today | Overwritten |
 | Equipment change at a location used by an active training day | Preserved | Overwritten |
 
-The active section on any given day is computed from weeks elapsed since the plan start, so the passage of time never triggers regeneration. When more than a week passes without a workout, section start dates shift forward by the missed time, so the athlete resumes where they left off instead of skipping ahead in the periodization. Plans are stored locally only; archiving and backend sync are open TODOs.
+Regeneration with a preserved start date keeps unaffected days. The app runs the full pipeline, then compares each training day of each section with the old plan:
+
+1. A day keeps its old branches when its focus, its skill list, its minute budgets, and the equipment at its place all stayed the same.
+2. Every other day gets a fresh draw.
+
+Example: the athlete adds a kettlebell at home. The home days get new exercises, and the gym days keep theirs. Per-branch progress survives both cases, since it lives outside the plan. A changed fitness level, pain, or age group changes the skill lists, so the affected days redraw by rule 1.
+
+The active section on any given day is computed from weeks elapsed since the plan start, so the passage of time never triggers regeneration. Training gaps, measured at workout start as days since the last completed workout:
+
+| Gap | Action |
+|---|---|
+| Up to 7 days | None |
+| 8 to 21 days | Shift section starts forward by the missed weeks |
+| More than 21 days | Ask: "You have not trained for more than three weeks. Do you want to create a new training plan?" Accepting opens plan creation, declining shifts section starts forward by the missed weeks. |
+
+The shift lets the athlete resume where they left off instead of skipping ahead in the periodization. The app never deletes a plan for inactivity. Plans are stored on the device only, and a replaced plan is overwritten without an archive.
 
 ## Structure
 
@@ -120,8 +149,4 @@ Entity relationships: a plan has ordered sections; a section has one training pe
 
 ## Open Questions
 
-- Every athlete is currently treated as a goalkeeper, removing power endurance sections for everyone. When power endurance content is fixed, should existing plans regenerate automatically?
-- Branch selection is random, so any regeneration (e.g. an equipment tweak) reshuffles most exercises. Should selection be seeded or should regeneration preserve unaffected days? Leaning toward preserving.
-- Overwritten plans vanish without archiving (marked as a TODO in the flow). Should the old plan be archived locally and on the backend before replacement?
-- Minimum skill durations can overshoot a short session's target length. Should the skill list shrink instead when the budget does not fit?
-- Adolescents (17 to 18) are treated as adults everywhere, including weighted-exercise ratios. Since the terms and conditions limit the fitness area to 16+, adolescents are the youngest users the app actually serves. Is the adult treatment the intended sports-science rule?
+None.

@@ -6,9 +6,8 @@
 
 Every percentage in this document refers to **F-Max**: the maximum load that applies to the exercise being performed.
 
-- F-Max is not measured per exercise. It is derived from the barbell 1RM of the exercise's **movement direction** (knee, hip, horizontal push, …) and then converted for the **equipment variant** of the exercise (barbell 100%, dumbbells 42.5% per hand, …; see [Equipment conversion](./weight-calculation-from-strength-tests.md#3-equipment-conversion)). "The F-Max of the respective exercise" is therefore the equipment-adjusted max value for that exercise's direction.
-- The 1RM itself comes from a periodic **strength test**: a submaximal rep-out estimated with the Epley formula, `1RM = test weight × (1 + reps / 30)`. A true single-rep max attempt is never performed.
-- The full chain (test → 1RM → equipment conversion → training weight → rounding) is specified in [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md).
+- F-Max is not measured per exercise. It is derived from the barbell 1RM of the exercise's **movement direction** (knee, hip, horizontal push, …) and then converted for the **equipment variant** of the exercise. "The F-Max of the respective exercise" is therefore the equipment-adjusted max value for that exercise's direction.
+- The strength test, the 1RM estimate, the equipment conversion factors, and the rounding rules are specified in [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md).
 - F-Max is treated as constant while an exercise progresses. A new strength test replaces it; because progression is stored as percentages (Section 8), the ladder position is kept and only the resulting kg values change. The re-test cadence is not prescribed by this document.
 
 ## 1. Basic Rules
@@ -31,7 +30,7 @@ Always 2 warm-up sets, calculated from the actually displayed (rounded) weight o
 | 1 | 50% of the 1st working set | 6 |
 | 2 | 75% of the 1st working set | 5 |
 
-The warm-up weights are then rounded according to the rounding rules in Section 8.
+The warm-up weights are then rounded per Section 8.
 
 - Between the warm-up sets: 60 s rest. Also 60 s between the 2nd warm-up set and the 1st working set.
 - Warm-up sets run without a support exercise (Section 7 applies only to working sets).
@@ -199,9 +198,7 @@ After the last working set of an exercise no supporting block follows. The pause
 ## 8. Rounding to Loadable Weights
 
 - The progression is tracked internally as exact percentages of F-Max. Each set value is calculated independently from F-Max and the intended percentage.
-- Barbell: rounding to the nearest 2.5 kg total weight including the barbell bar.
-- Dumbbell: rounding to the nearest full kilogram per dumbbell.
-- If the distance between two possible weights is exactly equal, round down.
+- Rounding follows the general rules in [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md); max strength has no rounding rule of its own.
 - Further progression does not continue calculating with the rounded kg value, but based on the stored percentage step.
 - Warm-up weights are calculated from the displayed, rounded weight of the 1st working set and rounded in the same way.
 ## 9. Complete Examples (F-Max = 100 kg)

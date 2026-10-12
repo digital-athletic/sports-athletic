@@ -95,35 +95,7 @@ The ranges above are not fallback values, minimums, or maximums.
 
 ### 5. Exercise-specific adjustments
 
-#### Incline bench press
-
-Reference: horizontal-push barbell bench-press 1RM.
-**Barbell incline bench press**
-> **Adjusted max = bench-press 1RM × 90%**
-**Dumbbell incline bench press**
-> **Adjusted max per hand = bench-press 1RM × 38.25%**
-The 38.25% already includes:
-> 90% incline factor × 85% dumbbell factor ÷ 2 hands
-Do not apply another generic dumbbell factor.
-
-#### Jump squat
-
-Reference: knee-dominant lower-body barbell squat 1RM.
-The previous bodyweight-relative formula and 25% cap no longer apply.
-| Fitness level | Start load | Target load |
-|---|---:|---:|
-| Beginner | 5% of squat 1RM | 10% of squat 1RM |
-| Advanced | 10% of squat 1RM | 20% of squat 1RM |
-| Professional | 10% of squat 1RM | 20% of squat 1RM |
-These percentages define **total external load**.
-For a barbell jump squat, use that total barbell load.
-For a two-dumbbell jump squat:
-1. calculate total external load,
-2. split equally across both dumbbells,
-3. apply final dumbbell-per-hand rounding.
-No 85% dumbbell conversion and no 42.5% per-hand conversion applies to jump squats.
-Example:
-> total load 10 kg → 5 kg per dumbbell before rounding
+The exercise catalog holds every exercise-specific conversion factor and load limit, for example for incline bench press or loaded jumps; this spec names no single exercise. An authored exercise rule replaces the generic conversion above, and an authored load limit takes priority over the skill's load range.
 
 ### 6. Weight rounding
 
@@ -147,21 +119,9 @@ The value refers to **total load including the bar**.
 
 Max strength uses the **same equipment-specific rounding rules as all other training phases**. There is no separate Max-strength rounding increment.
 
-Further Max-strength progression is based on the **stored percentage/ladder step**, not the rounded kilogram value.
-The rounded kilogram value is only the execution value shown to the athlete.
-
 ### 7. Max-strength progression
 
-Max-strength progression is **not defined here**.
-Do not apply fixed kilogram changes from this file.
-The following are owned by [Max Strength Training](./max-strength-progression.md):
-- set-specific percentage/repetition ladders,
-- feedback-driven ladder movement,
-- starting intensities,
-- intensity floors,
-- level-specific rules,
-- completion and progression state.
-This document only defines the final load rounding after the max-strength percentage step is resolved.
+[Max Strength Training](./max-strength-progression.md) owns ladders, starting intensities, floors, and progression state. This document only defines the final load rounding after the max-strength percentage step is resolved.
 
 ### 8. Strength-test reference load and 1RM update
 
@@ -241,8 +201,15 @@ The new estimated 1RM becomes the reference for later weight calculations and th
 
 #### 8.7 Re-test cadence
 
-A new strength test becomes due automatically **8 weeks / 56 days after the last completed strength test**.
-The due-state belongs to training logic; the message/screen presentation is a UI concern.
+A new strength test becomes due automatically **8 weeks / 56 days after the last completed strength test**. An athlete without a completed strength test is due at once.
+
+The app shows the reminder only when all three conditions hold:
+
+1. The athlete opens the plan training screen.
+2. The current section uses weights based on the strength test.
+3. At least one training place has a barbell.
+
+Athletes under 16 never become due.
 
 ## Structure
 
@@ -277,15 +244,11 @@ flowchart TD
 
         T0 -->|Yes| T1["Authored start/target values<br/>by age × gender × fitness level"]
 
-        T0 -->|No: age 16+| T2{Jump squat?}
-
-        T2 -->|Yes| T3["Calculate from squat 1RM:<br/>Beginner 5–10%<br/>Advanced / Professional 10–20%<br/>DB: split total load across two dumbbells"]
-
-        T2 -->|No| T4{Tested movement direction available?}
+        T0 -->|No: age 16+| T4{Tested movement direction available?}
 
         T4 -->|No| T1
 
-        T4 -->|Yes| T5["Equipment and exercise-specific conversion<br/>→ equipment-adjusted max"]
+        T4 -->|Yes| T5["Authored exercise rule from the catalog,<br/>else generic equipment conversion<br/>→ equipment-adjusted max"]
 
         T5 --> T6{Max strength?}
 
@@ -294,7 +257,6 @@ flowchart TD
         T6 -->|Yes| T8["Use stored Max-strength<br/>percentage / ladder step"]
 
         T1 --> R["Final equipment-specific rounding"]
-        T3 --> R
         T7 --> R
         T8 --> R
 
@@ -314,7 +276,7 @@ flowchart TD
         F4 --> T0
     end
 
-    S7 -.->|"1RM is used as reference from age 16+"| T2
+    S7 -.->|"1RM is used as reference from age 16+"| T4
 ```
 
 ### Persistent state

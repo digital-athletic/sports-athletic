@@ -12,7 +12,7 @@ Three specs already consume pain and soreness: plan creation selects prevention 
 
 Keep the two signals separate:
 
-- Pain is part of the athlete profile: it selects prevention skills and switches plan creation to the pain variant of its skill priorities. The **blocked regions** it maps to are authored preparation; pain exclusions do not exist today. Pain changes when the athlete answers the anamnesis again.
+- Pain is part of the athlete profile: it selects prevention skills and the special warm-up, and switches plan creation to the pain variant of its skill priorities. Children and adults get the same prevention work. Each pain maps to a **blocked region**, and exercises with high stress on that region stay out of the athlete's training. Pain changes when the athlete answers the anamnesis again.
 - Soreness is a timestamped record that expires after 24 hours. Generation reads it once, and it never reaches the plan.
 
 The generator filters before it refuses: a sore region removes candidate branches and the generator replaces them. It refuses a session when the signal makes the whole session unsafe or unbuildable.
@@ -54,10 +54,14 @@ Each prevention skill draws from the region group it covers, which is wider than
 
 Effects of any pain at all:
 
-1. Plan creation uses the pain variant of the skill priorities, which injects a prevention slot and a special warm-up into each training day.
+1. Plan creation uses the pain variant of the skill priorities, which injects a prevention slot and a special warm-up into each training day, for children and adults alike.
 2. The derived prevention skills rotate round-robin, at most one per day.
-3. Pain exclusions do not exist: no branch is excluded for a blocked region, in plan creation or in any workout generation. The blocked-region column above and the block tags on exercises (marking particularly high stress on a region) are authored preparation with no consumer today.
-4. During a session, the first exercise prescribed as a percentage of maximum load raises a one-time caution alert.
+3. **Pain exclusion**: some exercises put particularly high stress on one body region, and the exercise catalog marks that region on them. When the region matches a blocked region from the table above, the athlete never gets that exercise:
+   - Plan creation skips such branches when it picks exercises for the plan, in every skill. A knee complaint therefore keeps exercises with high knee stress out of the plan from the start.
+   - Short workouts (focus and prevention trainings) skip such branches when they draw. When the pain leaves no exercise for the requested training, the app refuses it and names the affected region.
+   - Plan workout generation adds no pain check of its own: it starts from branches plan creation already cleared.
+4. Knee, ankle, hip, or spine pain excludes high-intensity plyometrics. The exercise catalog tags carry this rule.
+5. During a session, the first exercise prescribed as a percentage of maximum load raises a one-time caution alert.
 
 ### Soreness lifetime
 
@@ -90,7 +94,7 @@ flowchart TD
 
 ## Structure
 
-Pain lives in the athlete's workout profile as tags, where plan creation and every session generation read it, today only to pick prevention skills and the pain variant of the skill priorities. Soreness lives in a separate, short-lived record set on the device that only generation reads. Soreness feeds the same filter chain that also handles equipment, age, gender, and level, so a removed branch takes the ordinary replacement path regardless of which filter removed it. Prevention skills are ordinary skills with their own skill trees; the pain mapping only decides which of them enter a plan.
+Pain lives in the athlete's workout profile as tags, where plan creation and every session generation read it to pick prevention skills, the pain variant of the skill priorities, and the exercises to keep out. Soreness lives in a separate, short-lived record set on the device that only generation reads. Soreness feeds the same filter chain that also handles equipment, age, gender, and level, so a removed branch takes the ordinary replacement path regardless of which filter removed it. Prevention skills are ordinary skills with their own skill trees; the pain mapping only decides which of them enter a plan.
 
 ## Open Questions
 

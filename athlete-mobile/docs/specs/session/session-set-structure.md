@@ -28,7 +28,7 @@ Three structures sit outside that loop. Weighted hypertrophy and explosive power
 | Skill | Sets per exercise |
 |---|---|
 | Max strength | 4 |
-| Hypertrophy, explosive power, power endurance, stability, full-body stability, prevention | 2 |
+| Hypertrophy, explosive power, plyometrics, power endurance, stability, full-body stability, prevention | 2 |
 | Warm-up, special warm-up, cool-down, mobility, foam roller | 1 |
 | Steady cardio | 1 |
 | Interval cardio | interval count, per [Cardio Training System](./cardio-training-system.md) |
@@ -96,9 +96,9 @@ Per exercise or superset pair, in order:
 1. Emit the leading warm-up set when the rules below apply.
 2. Superset pair, per round: emit the lead exercise and the in-set pause, then the partner and the in-set pause. After the final round, the transition rule above replaces that closing in-set pause.
 3. Solo exercise, per set: emit the exercise and the single-exercise rest. On the final set, the transition rule replaces the regular single-exercise rest. The in-set pause never appears outside a superset pair, so an exercise that failed to find a partner rests on its skill's single-exercise value, not the short superset pause.
-4. A one-sided exercise is emitted in the following order for each set: left → rest → right → rest, and counts as two exercises against its skill's slot quota.
+4. A one-sided exercise runs as a superset of its two sides, per set: left → in-set pause → right → in-set pause, with the transition rule replacing the final pause. It counts as two exercises against its skill's slot quota.
 
-Time budgeting counts a repetition as 4 seconds.
+Time budgeting counts slots, never seconds per repetition: [Plan Workout Generation](./plan-workout-generation.md) maps a skill's minute budget to exercise slots.
 
 ### Warm-up sets
 
@@ -106,7 +106,7 @@ Time budgeting counts a repetition as 4 seconds.
 |---|---|
 | Hypertrophy pair with at least one weighted exercise | One extra set at 70% of the working weight, working repetitions, rest 30 s paired or 60 s alone |
 | Explosive power pair with at least one weighted exercise | One extra set at 65% of the working weight, 8 repetitions, rest 60 s paired or 180 s alone (the skill's single-exercise rest) |
-| Max strength | Two ladder sets at 50% and 75% of the first working weight, 60 s rest ([Max Strength Training](../progression/max-strength-progression.md)) |
+| Max strength | Two ladder sets per [Max Strength Training](../progression/max-strength-progression.md) |
 | Everything else | None |
 
 No other skill gains a warm-up set: weighted full-body stability deliberately trains without one, and power endurance is not yet implemented. Whether these deserve one is a later review, not part of the model.

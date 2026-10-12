@@ -1,0 +1,23 @@
+[extend]
+useDefault = true
+
+[allowlist]
+paths = [
+  '''(^|/)\.jest-cache/''',
+  '''(^|/)dist/''',
+  '''(^|/)\.pnpm-store/''',
+  '''(^|/)\.pnpm/''',
+]
+
+[[rules]]
+id = "supabase-key"
+description = "Supabase API key (sb_secret_ / sb_publishable_)"
+regex = '''\b(sb_(?:secret|publishable)_[A-Za-z0-9_-]{20,})'''
+keywords = ["sb_secret_", "sb_publishable_"]
+
+[[rules]]
+id = "connection-string-password"
+description = "Database/service URI with embedded password"
+regex = '''\b(?:postgres(?:ql)?|mysql|mariadb|mongodb(?:\+srv)?|redis|rediss|amqps?)://[^:/\s"'@]+:([^@\s"'/]{6,})@'''
+secretGroup = 1
+keywords = ["postgres", "mysql", "mariadb", "mongodb", "redis", "amqp"]

@@ -149,22 +149,23 @@ describe("branchFilterUtils", () => {
       expect(result.keep).toEqual(branches);
     });
 
-    it("returns all branches for ignored soreness skills", () => {
-      const branches = {
-        "1": createBranch(["REGION_UPPER_BODY"]),
-      };
-      const temporalData: TemporalDataType[] = [
-        {
-          tag: "CHEST",
-          date: "2024-01-01T00:00:00.000Z",
-          expiration: "2024-01-03T00:00:00.000Z",
-        },
-      ];
-      const result = filterBySoreness(branches, temporalData, "MOB", false, [
-        "MOB",
-      ]);
-      expect(result.keep).toEqual(branches);
-    });
+    it.each(["WU", "WUSKSA", "CD", "MOB", "BR"])(
+      "keeps every branch of %s in the sore area",
+      (skill) => {
+        const branches = {
+          "1": createBranch(["REGION_UPPER_BODY"]),
+        };
+        const temporalData: TemporalDataType[] = [
+          {
+            tag: "CHEST",
+            date: "2024-01-01T00:00:00.000Z",
+            expiration: "2024-01-03T00:00:00.000Z",
+          },
+        ];
+        const result = filterBySoreness(branches, temporalData, skill);
+        expect(result.keep).toEqual(branches);
+      },
+    );
 
     it("filters out branches in sore areas", () => {
       const branches = {
@@ -218,22 +219,6 @@ describe("branchFilterUtils", () => {
         },
       ];
       expect(() => filterBySoreness(branches, temporalData, "SWR1")).toThrow();
-    });
-
-    it("throws error for PREV short workout with soreness in area", () => {
-      const branches = {
-        "1": createBranch(["REGION_UPPER_BODY"]),
-      };
-      const temporalData: TemporalDataType[] = [
-        {
-          tag: "SHOULDER",
-          date: "2024-01-01T00:00:00.000Z",
-          expiration: "2024-01-03T00:00:00.000Z",
-        },
-      ];
-      expect(() =>
-        filterBySoreness(branches, temporalData, "PREVSHOULDER", true),
-      ).toThrow();
     });
 
     it("returns empty keep for CARDIO with lowerBody soreness", () => {

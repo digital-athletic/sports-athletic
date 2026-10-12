@@ -63,6 +63,7 @@ import {
   isBigMuscleExercise,
   pickSupersetPartner,
 } from "@/features/training/utils/supersetPairingUtils";
+import { trainsSameRegionAndPrimaryMuscle } from "@/features/training/utils/exerciseBlockUtils";
 import { isTrainingLevel } from "@/schemas/common.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import {
@@ -114,7 +115,6 @@ import { IntensitySWR_2 } from "../../../../assets/data/generator/intensity/SWR2
 import { IntensitySWR_2_KG } from "../../../../assets/data/generator/intensity/SWR2KG";
 
 // Pause
-import PauseSUPERSETS from "../../../../assets/data/generator/pause/SUPERSETS";
 
 // Test workouts
 import TEST_WORKOUTS from "../../../../assets/data/generator/TEST_WORKOUTS";
@@ -743,6 +743,7 @@ export default class TrainingGenerator {
       temporalData,
       userExerciseData.exerciseData,
       isShortTraining,
+      true,
     );
     dropTrailingPause(exerciseList);
 
@@ -774,15 +775,6 @@ export default class TrainingGenerator {
         userExerciseData.exerciseData,
         isShortTraining,
       );
-      // replace last pause to WUSPEZIAL lastPause duration
-      exerciseListWU.pop();
-      exerciseListWU.push({
-        branchId: PLACEHOLDER_BRANCH_ID,
-        exerciseId: PAUSE_EXERCISE_ID,
-        set: [1, 1],
-        skill: "WUSPEZIAL",
-        duration: 30,
-      });
       exerciseList = exerciseListWU.concat(exerciseList);
     }
 
@@ -1472,6 +1464,7 @@ export default class TrainingGenerator {
     temporalData: TemporalDataType[],
     userExerciseData: Record<string, UserExerciseDataType | undefined> | null,
     isShortTraining: boolean = false,
+    isFocusWorkout: boolean = false,
   ): GeneratedSetListEntry[] => {
     // Create exercise map for O(1) lookup by ID
     const exerciseMap = createExerciseMap(exercises);
@@ -1886,14 +1879,19 @@ export default class TrainingGenerator {
         );
         // calc pause
         const inSetPauseLength = this.getInSetPauseBySkill(skill.skill);
-        let afterSetPauseLength = isShortTraining
-          ? 10
-          : this.getAfterSetPauseBySkill(skill.skill);
-        // always use 10 in short trainings
-        const pauseForSkill =
-          PauseSUPERSETS[skill.skill as keyof typeof PauseSUPERSETS];
-        if (!isShortTraining && pauseForSkill)
-          afterSetPauseLength = pauseForSkill; // TODO check if single/super set
+        const singleRestLength = this.getSingleExerciseRestBySkill(skill.skill);
+        const afterSetPauseLength =
+          (isFocusWorkout
+            ? this.getFocusAfterSetPause(skill.skill)
+            : undefined) ?? this.getAfterSetPauseBySkill(skill.skill);
+        const nextPair = exercisePairs
+          .slice(i + 1)
+          .find((pair) => isBuildablePair(pair, exerciseMap));
+        const closingPauseLength =
+          nextPair &&
+          trainsSameRegionAndPrimaryMuscle(exercisePairs[i], nextPair)
+            ? singleRestLength
+            : afterSetPauseLength;
 
         let second: ReturnType<typeof this.getExerciseStartValues> | undefined;
         const secondPair = exercisePairs[i].second;
@@ -1943,14 +1941,16 @@ export default class TrainingGenerator {
           ) {
             // build one additional set for warm-up
             setsToBuild++;
-            let warmUpWeightFactor =
-              skill.skill.indexOf("SK") > -1 ? 0.65 : 0.7;
-            let warmUpPauseDuration = second ? 30 : 60;
+            const isExplosivePower = skill.skill.indexOf("SK") > -1;
+            let warmUpWeightFactor = isExplosivePower ? 0.65 : 0.7;
+            let warmUpPauseDuration = second
+              ? inSetPauseLength
+              : isExplosivePower
+                ? singleRestLength
+                : 60;
 
             // add warm-up set
             set = [j, setsToBuild];
-            let firstWarmUpRepetition =
-              skill.skill.indexOf("SK") > -1 ? 8 : first.repetition;
             let firstWarmUp = cloneWithValidation(
               first,
               SetListEntrySchema,
@@ -1959,6 +1959,9 @@ export default class TrainingGenerator {
             if (firstWarmUp.weight !== undefined) {
               firstWarmUp.weight = firstWarmUp.weight * warmUpWeightFactor;
             }
+            firstWarmUp.repetition = isExplosivePower
+              ? 8
+              : firstWarmUp.repetition;
             setList.push({
               branchId: firstWarmUp.branchId,
               exerciseId: firstWarmUp.exerciseId,
@@ -1977,7 +1980,6 @@ export default class TrainingGenerator {
               set: set,
               skill: skill.skill,
               duration: warmUpPauseDuration,
-              repetition: firstWarmUpRepetition,
             });
             if (second) {
               let secondWarmUp = cloneWithValidation(
@@ -1985,12 +1987,13 @@ export default class TrainingGenerator {
                 SetListEntrySchema,
                 "second",
               ) as ExerciseStartValues;
-              let secondWarmUpRepetition =
-                skill.skill.indexOf("SK") > -1 ? 8 : second.repetition;
               if (secondWarmUp.weight) {
                 // reduce weight for warmup set
                 secondWarmUp.weight = secondWarmUp.weight * warmUpWeightFactor;
               }
+              secondWarmUp.repetition = isExplosivePower
+                ? 8
+                : secondWarmUp.repetition;
               // add second exercise to set anyway
               setList.push({
                 branchId: secondWarmUp.branchId,
@@ -2010,7 +2013,6 @@ export default class TrainingGenerator {
                 set: set,
                 skill: skill.skill,
                 duration: warmUpPauseDuration,
-                repetition: secondWarmUpRepetition,
               });
             }
             // increase set count
@@ -2019,8 +2021,11 @@ export default class TrainingGenerator {
         }
 
         for (; j <= setsToBuild; j++) {
-          let pauseLength = inSetPauseLength;
           set = [j, setsToBuild];
+          // the in-set pause only runs inside a superset pair
+          const roundRest = second ? inSetPauseLength : singleRestLength;
+          const pauseLength =
+            j === setsToBuild ? closingPauseLength : roundRest;
 
           setList.push({
             ...first,
@@ -2032,10 +2037,9 @@ export default class TrainingGenerator {
             exerciseId: "999999",
             set: set,
             skill: skill.skill,
-            duration: pauseLength,
+            duration: second ? inSetPauseLength : pauseLength,
           });
           if (second) {
-            if (j === setsToBuild) pauseLength = afterSetPauseLength;
             setList.push({
               ...second,
               set: set,
@@ -2547,7 +2551,7 @@ export default class TrainingGenerator {
   /**
    * Returns the pause duration (in seconds) after completing all sets of an exercise.
    * This is the rest period before moving to the next exercise pair.
-   * MAX/SA skills have longer recovery (3 min), while warm-up skills use minimal rest.
+   * MAX has the longest recovery (3 min), while warm-up skills use minimal rest.
    */
   getAfterSetPauseBySkill = (skill: string): number => {
     let pause: number;
@@ -2574,25 +2578,25 @@ export default class TrainingGenerator {
       case "PREVSPINE":
         pause = 60;
         break;
-      case "MAX":
-      case "MAX_KRAFT":
-      case "PLYO":
-      case "SA":
-      case "SAKG":
-        pause = 3 * 60;
-        break;
       case "GKS":
       case "GKSKG":
-        pause = 90;
-        break;
       case "SK":
       case "SKKG":
-        pause = 2.5 * 60;
+      case "PLYO":
+        pause = 60;
+        break;
+      case "SA":
+      case "SAKG":
+        pause = 75;
+        break;
+      case "MAX":
+      case "MAX_KRAFT":
+        pause = 3 * 60;
         break;
       case "WUSKSA":
+      case "WU":
         pause = 30;
         break;
-      case "WU":
       case "WUSPEZIAL":
       case "CARDIO_4":
       case "CARDIO_5":
@@ -2605,6 +2609,20 @@ export default class TrainingGenerator {
     }
     return pause;
   };
+
+  /**
+   * Returns the rest (in seconds) between the sets of an exercise without a
+   * superset partner.
+   */
+  getSingleExerciseRestBySkill = (skill: string): number =>
+    SINGLE_EXERCISE_REST_BY_SKILL[skill] ?? 10;
+
+  /**
+   * Returns the fixed rest (in seconds) closing an exercise block in a focus
+   * workout, or undefined when the focus workout uses the skill's after-set pause.
+   */
+  getFocusAfterSetPause = (skill: string): number | undefined =>
+    FOCUS_AFTER_SET_PAUSE_BY_SKILL[skill];
 
   /**
    * Returns the default number of repetitions for a skill type.
@@ -3540,6 +3558,48 @@ const stepRepsAndDuration = (
 };
 
 // Cardio blocks end without a pause, so only a trailing pause is removed.
+const SINGLE_EXERCISE_REST_BY_SKILL: Record<string, number> = {
+  SWR1: 90,
+  SWR2: 90,
+  SWR1KG: 90,
+  SWR2KG: 90,
+  GKS: 90,
+  GKSKG: 90,
+  BAS: 60,
+  STABILITY: 60,
+  PREV: 60,
+  PREVSHOULDER: 60,
+  PREVKNEE: 60,
+  PREVWRIST: 60,
+  PREVANKLE: 60,
+  PREVSPINE: 60,
+  SK: 180,
+  SKKG: 180,
+  SA: 180,
+  SAKG: 180,
+  PLYO: 180,
+  WUSKSA: 30,
+};
+
+const FOCUS_AFTER_SET_PAUSE_BY_SKILL: Record<string, number> = {
+  WU: 10,
+  CD: 10,
+  MOB: 10,
+  BR: 10,
+  BAS: 30,
+  GKS: 45,
+  GKSKG: 45,
+};
+
+// Mirrors the skip checks of the default set list builder
+const isBuildablePair = (
+  pair: ExercisePair,
+  exerciseMap: Map<string, ExerciseType>,
+): boolean =>
+  pair.first.exerciseId !== "-1" &&
+  exerciseMap.has(pair.first.exerciseId) &&
+  pair.second?.exerciseId !== "-1";
+
 const dropTrailingPause = (setList: GeneratedSetListEntry[]) => {
   const last = setList.at(-1);
   if (last && isPauseExercise(last.exerciseId)) setList.pop();

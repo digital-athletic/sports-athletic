@@ -343,11 +343,11 @@ describe("TrainingGenerator", () => {
 
   describe("getAfterSetPauseBySkill", () => {
     it("returns correct pause for WU", () => {
-      expect(generator.getAfterSetPauseBySkill("WU")).toBe(10);
+      expect(generator.getAfterSetPauseBySkill("WU")).toBe(30);
     });
 
     it("returns correct pause for SA", () => {
-      expect(generator.getAfterSetPauseBySkill("SA")).toBe(180);
+      expect(generator.getAfterSetPauseBySkill("SA")).toBe(75);
     });
 
     it("returns correct pause for MAX", () => {

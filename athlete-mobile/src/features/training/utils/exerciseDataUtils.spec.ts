@@ -166,9 +166,15 @@ describe("exerciseDataUtils", () => {
     });
 
     it("returns true for a non-PLAN, non-NO_INCREASE workout type", () => {
-      expect(
-        isFeedbackEligibleSkill(withType("QUICK"), "WU" as SkillCode),
-      ).toBe(true);
+      expect(isFeedbackEligibleSkill(withType("PREVKNEE"), "PREVKNEE")).toBe(
+        true,
+      );
+    });
+
+    it("returns false for the special warm-up inside a prevention workout", () => {
+      expect(isFeedbackEligibleSkill(withType("PREVKNEE"), "WUSPEZIAL")).toBe(
+        false,
+      );
     });
   });
 

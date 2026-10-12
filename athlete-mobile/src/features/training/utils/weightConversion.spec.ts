@@ -65,6 +65,28 @@ describe("getMaxValueForExercise: equipment conversion of the barbell 1RM", () =
     );
   });
 
+  it("applies the conversion factor the catalog authors for the exercise", () => {
+    const exercise = {
+      ...exerciseWithTags("x", [
+        "EQ_DUMBBELL",
+        "EXERCISE_DIRECTION_KNEE",
+        "SIDE_BOTH",
+      ]),
+      conversionFactor: 0.5,
+    };
+    expect(getMaxValueForExercise(exercise, maxValues)).toBeCloseTo(50, 6);
+  });
+
+  it("applies the generic rule to incline bench tags without an authored factor", () => {
+    const exercise = exerciseWithTags("x", [
+      "EQ_DUMBBELL",
+      "EQ_INCLINE_BENCH",
+      "EXERCISE_DIRECTION_HORIZONTAL_PUSH",
+      "SIDE_BOTH",
+    ]);
+    expect(getMaxValueForExercise(exercise, maxValues)).toBeCloseTo(42.5, 6);
+  });
+
   it("returns undefined for an exercise without a tested movement direction", () => {
     const lowerBodyExercise = exerciseWithTags("x", [
       "EQ_BARBELL",
@@ -92,6 +114,20 @@ describe("calculateAdjustedMaxValues: equipment conversion", () => {
       oneSidedLower: 22.5,
       oneSidedLowerSupported: 30,
     });
+  });
+});
+
+describe("catalog conversion factors", () => {
+  it.each([
+    ...["346", "347", "348", "349"].map((id) => ({ id, factor: 0.9 })),
+    ...["350", "351", "352", "353", "354", "382", "393", "394"].map((id) => ({
+      id,
+      factor: 0.3825,
+    })),
+    { id: "292", factor: 1 },
+    { id: "294", factor: 0.5 },
+  ])("exercise $id carries the factor $factor", ({ id, factor }) => {
+    expect(getExerciseById(id)?.conversionFactor).toBe(factor);
   });
 });
 

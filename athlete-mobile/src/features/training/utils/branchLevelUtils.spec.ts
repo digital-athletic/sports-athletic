@@ -41,6 +41,46 @@ const DUPLICATE_ID_BRANCH: SkillBranchType = {
   },
 };
 
+// Top levels repeat the exercise of level 2
+const REPEATED_TOP_BRANCH: SkillBranchType = {
+  tags: ["REGION_CORE", "SIDE_BOTH"],
+  levels: {
+    1: { exerciseId: "701" },
+    2: { exerciseId: "702" },
+    3: { exerciseId: "702" },
+  },
+};
+
+// Level 3 is not authored
+const GAP_BRANCH: SkillBranchType = {
+  tags: ["REGION_LOWER_BODY", "SIDE_BOTH"],
+  levels: {
+    1: { exerciseId: "801" },
+    2: { exerciseId: "802" },
+    4: { exerciseId: "804" },
+  },
+};
+
+// Lowest levels repeat the same exercise
+const REPEATED_BOTTOM_BRANCH: SkillBranchType = {
+  tags: ["REGION_CORE", "SIDE_BOTH"],
+  levels: {
+    1: { exerciseId: "901" },
+    2: { exerciseId: "901" },
+    3: { exerciseId: "903" },
+  },
+};
+
+// Level 2 is not authored, levels 3 and 4 repeat the same exercise
+const GAP_AT_BOTTOM_BRANCH: SkillBranchType = {
+  tags: ["REGION_CORE", "SIDE_BOTH"],
+  levels: {
+    1: { exerciseId: "951" },
+    3: { exerciseId: "952" },
+    4: { exerciseId: "952" },
+  },
+};
+
 describe("branchLevelUtils", () => {
   describe("findCurrentBranchLevel", () => {
     it("returns level from branchData when available", () => {
@@ -97,6 +137,41 @@ describe("branchLevelUtils", () => {
       const emptyBranch: SkillBranchType = { tags: [], levels: {} };
       const result = findNextExerciseInBranch(emptyBranch, "100", 1, true);
       expect(result).toBeNull();
+    });
+
+    it("returns null on level up when the top levels repeat the current exercise", () => {
+      const result = findNextExerciseInBranch(
+        REPEATED_TOP_BRANCH,
+        "702",
+        3,
+        true,
+      );
+      expect(result).toBeNull();
+    });
+
+    it("passes over a missing level on level up", () => {
+      const result = findNextExerciseInBranch(GAP_BRANCH, "802", 3, true);
+      expect(result).toEqual({ exerciseId: "804", level: 4 });
+    });
+
+    it("returns null on level down when the lower levels repeat the current exercise", () => {
+      const result = findNextExerciseInBranch(
+        REPEATED_BOTTOM_BRANCH,
+        "901",
+        1,
+        false,
+      );
+      expect(result).toBeNull();
+    });
+
+    it("passes over repeated exercises and missing levels on level down", () => {
+      const result = findNextExerciseInBranch(
+        GAP_AT_BOTTOM_BRANCH,
+        "952",
+        3,
+        false,
+      );
+      expect(result).toEqual({ exerciseId: "951", level: 1 });
     });
   });
 
@@ -287,6 +362,53 @@ describe("branchLevelUtils", () => {
         branchId: "50",
         newLevel: 3,
         exerciseId: "602",
+      });
+    });
+
+    it("saves no level above the top when the top levels repeat the exercise", () => {
+      const context = createContext({
+        skillTrees: { ALL: { "70": REPEATED_TOP_BRANCH } },
+        branchData: { "70": { branchId: "70", level: 2 } },
+      });
+      const result = calculateBranchLevelUpdate(
+        {
+          levelUp: true,
+          branchId: "70",
+          exerciseId: "702",
+          skill: "BAS",
+          ageGroup: "ADULT",
+        },
+        context,
+        createPlanContext({ type: "BAS" }),
+      );
+      expect(result).toEqual({
+        type: "NO_CHANGE",
+        reason: "no_matching_branch_found",
+        branchId: "70",
+      });
+    });
+
+    it("levels up across a missing level", () => {
+      const context = createContext({
+        skillTrees: { ALL: { "253": GAP_BRANCH } },
+        branchData: { "253": { branchId: "253", level: 2 } },
+      });
+      const result = calculateBranchLevelUpdate(
+        {
+          levelUp: true,
+          branchId: "253",
+          exerciseId: "802",
+          skill: "SKKG",
+          ageGroup: "ADULT",
+        },
+        context,
+        createPlanContext(),
+      );
+      expect(result).toEqual({
+        type: "SAME_BRANCH",
+        branchId: "253",
+        newLevel: 4,
+        exerciseId: "804",
       });
     });
   });

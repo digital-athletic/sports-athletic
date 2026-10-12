@@ -5,6 +5,8 @@ export type GeneratorError = {
     | "SORENESS"
     | "PAIN"
     | "EQUIPMENT"
+    | "AGE"
+    | "GENDER"
     | "OTHER"
     | "TEST_WORKOUT"
     | "MULTIPLE_REGIONS"

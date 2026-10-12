@@ -93,8 +93,9 @@ export function findCurrentBranchLevel(
 }
 
 /**
- * Find the next exercise in the same branch, skipping levels with the same exercise ID.
- * Returns the new exercise ID and level, or null if not found.
+ * Walks from targetLevel in the earned direction to the first authored level
+ * holding a different exercise, passing over missing levels and repeated exercises.
+ * Returns null when the branch is exhausted in that direction.
  */
 export function findNextExerciseInBranch(
   branch: SkillBranchType,
@@ -102,37 +103,24 @@ export function findNextExerciseInBranch(
   targetLevel: number,
   levelUp: boolean,
 ): { exerciseId: string; level: number } | null {
-  if (!branch.levels || !branch.levels[targetLevel]) {
+  const authoredLevels = Object.keys(branch.levels ?? {}).map(Number);
+  if (authoredLevels.length === 0) {
     return null;
   }
 
-  let newLevel = targetLevel;
-  let newExerciseId = branch.levels[newLevel]?.exerciseId;
+  const lowest = Math.min(...authoredLevels);
+  const highest = Math.max(...authoredLevels);
+  const step = levelUp ? 1 : -1;
 
-  // Skip levels with the same exercise
-  while (
-    newLevel > 1 &&
-    branch.levels[newLevel] &&
-    newExerciseId &&
-    newExerciseId === currentExerciseId
+  for (
+    let level = targetLevel;
+    level >= lowest && level <= highest;
+    level += step
   ) {
-    if (levelUp) {
-      newLevel++;
-    } else {
-      newLevel--;
+    const exerciseId = branch.levels[level]?.exerciseId;
+    if (exerciseId && exerciseId !== currentExerciseId) {
+      return { exerciseId, level };
     }
-    if (branch.levels[newLevel]) {
-      newExerciseId = branch.levels[newLevel].exerciseId;
-    }
-  }
-
-  if (newExerciseId && newExerciseId !== currentExerciseId) {
-    return { exerciseId: newExerciseId, level: newLevel };
-  }
-
-  // If we still have the same exercise after skipping, check if there's a valid exercise
-  if (newExerciseId) {
-    return { exerciseId: newExerciseId, level: newLevel };
   }
 
   return null;

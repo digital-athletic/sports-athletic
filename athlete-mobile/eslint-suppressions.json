@@ -421,7 +421,7 @@
       "count": 19
     },
     "max-depth": {
-      "count": 38
+      "count": 37
     },
     "max-lines": {
       "count": 1
@@ -506,7 +506,7 @@
   },
   "src/features/training/utils/branchLevelUtils.ts": {
     "complexity": {
-      "count": 2
+      "count": 1
     },
     "max-lines-per-function": {
       "count": 1
@@ -543,7 +543,7 @@
   },
   "src/features/training/utils/skillTreeUtils.ts": {
     "complexity": {
-      "count": 5
+      "count": 4
     },
     "max-depth": {
       "count": 2

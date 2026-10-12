@@ -107,6 +107,28 @@ describe("getSetListFromExercisePairs: solo exercise", () => {
     ).toEqual([90, 90, 90, 60]);
   });
 
+  it("compares with the next block that is built, not with an unresolved one", () => {
+    const unresolvedChest = { ...chestAgain, exerciseId: "-1" };
+    expect(
+      pausesOf(
+        buildSetList("SWR2", [
+          { first: chest },
+          { first: unresolvedChest },
+          { first: quads },
+        ]),
+      ),
+    ).toEqual([90, 60, 90, 60]);
+  });
+
+  it("closes the last built block on the after set pause when an unresolved block follows", () => {
+    const unresolvedChest = { ...chestAgain, exerciseId: "-1" };
+    expect(
+      pausesOf(
+        buildSetList("SWR2", [{ first: chest }, { first: unresolvedChest }]),
+      ),
+    ).toEqual([90, 60]);
+  });
+
   it("closes on the after set pause when the next block shares only the region", () => {
     expect(
       pausesOf(buildSetList("SWR2", [{ first: chest }, { first: biceps }])),

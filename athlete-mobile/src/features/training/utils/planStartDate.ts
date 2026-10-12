@@ -12,6 +12,10 @@ export interface PlanStartInput {
   today: Date;
 }
 
+export const preservesPlanStart = (_input: PlanStartInput): boolean => {
+  throw new Error("not implemented");
+};
+
 /**
  * A rerun with the same season phase keeps the plan start, unless the training
  * gap asks for a new plan. Plan creation snaps any other start to the next Monday.

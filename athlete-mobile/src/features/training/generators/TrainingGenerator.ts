@@ -227,7 +227,7 @@ export default class TrainingGenerator {
 
   /**
    * Generates exercise lists for short workout types (WU, MOB, BR, CD, BAS, GKS, PREV*).
-   * Filters available branches by pain, soreness, equipment, age, and gender,
+   * Filters available branches by pain, equipment, age, and gender,
    * then builds exercise pairs with appropriate sets and durations.
    */
   generateShortWorkout = (
@@ -366,31 +366,8 @@ export default class TrainingGenerator {
     // Get temporal data with proper Date handling
     const temporalData = getTemporalData(user);
 
-    const sorenessFiltered = filterBySoreness(
-      painFiltered,
-      temporalData.length > 0 ? temporalData : null,
-      type,
-      true,
-    ).keep;
-
-    if (TrainingGenerator.DEBUG) {
-      console.log("soreness filtered", sorenessFiltered);
-    }
-
-    if (Object.keys(sorenessFiltered).length === 0) {
-      throw {
-        type: "NO_EXERCISES",
-        subtype: "SORENESS",
-        params:
-          getAreasFor(getTemporalTags(user)).map((a) => a.toUpperCase()) || [],
-      };
-    }
-
-    // equipment
-    const equipmentFilterResult = filterByEquipment(
-      sorenessFiltered,
-      equipment,
-    );
+    // focus and prevention trainings ignore muscle soreness
+    const equipmentFilterResult = filterByEquipment(painFiltered, equipment);
     const equipmentFiltered = equipmentFilterResult.keep;
 
     if (TrainingGenerator.DEBUG) {
@@ -435,20 +412,35 @@ export default class TrainingGenerator {
 
     const userLevel = getUserLevel(user);
 
-    // Branches without a resolvable exercise count as blocked and are never drawn
+    const resolveExerciseId = (
+      branches: SkillTreeType,
+      branchId: string,
+    ): string | null =>
+      branches[branchId]
+        ? resolveBranchExerciseId(
+            branches[branchId],
+            userLevel,
+            userExerciseData.branchData[branchId],
+          )
+        : null;
+
+    // Branches without a resolvable exercise count as blocked and are never drawn;
+    // neither a branch nor a resolved exercise repeats
     const getResolvedBranches = (
       branches: SkillTreeType,
       usedBranchIds: string[],
-    ): { branchId: string; exerciseId: string }[] =>
-      Object.keys(branches).flatMap((branchId) => {
+    ): { branchId: string; exerciseId: string }[] => {
+      const usedExerciseIds = usedBranchIds.map((branchId) =>
+        resolveExerciseId(genderFiltered, branchId),
+      );
+      return Object.keys(branches).flatMap((branchId) => {
         if (usedBranchIds.indexOf(branchId) > -1) return [];
-        const exerciseId = resolveBranchExerciseId(
-          branches[branchId],
-          userLevel,
-          userExerciseData.branchData[branchId],
-        );
-        return exerciseId ? [{ branchId, exerciseId }] : [];
+        const exerciseId = resolveExerciseId(branches, branchId);
+        return exerciseId && !usedExerciseIds.includes(exerciseId)
+          ? [{ branchId, exerciseId }]
+          : [];
       });
+    };
 
     const getBranchAndId = (
       branches: SkillTreeType,
@@ -474,16 +466,15 @@ export default class TrainingGenerator {
       if (candidates.length === 0) return null;
       const branchKeys = candidates.map((candidate) => candidate.branchId);
       const picked = candidates[Math.floor(Math.random() * candidates.length)];
-      let id = picked.branchId;
+      const id = picked.branchId;
       const exerciseId = picked.exerciseId;
-      let branch = {
+      const branch = {
         branchId: id,
         branchTags: branches[id].tags,
         exerciseId: exerciseId,
       };
       let fillUpBranchAndId: BranchSelectionResult | undefined = undefined;
-      const replacementBranchesAndIds: BranchSelectionResult[] = [];
-      // if found branch gives both sided exercise fill up for super set
+      // a both sided exercise seeks a both sided partner and trains alone without one
       const exercise = exerciseMap.get(exerciseId);
       if (exercise?.tags.includes("SIDE_BOTH")) {
         // searching for oppositeDirection exercise
@@ -508,35 +499,11 @@ export default class TrainingGenerator {
             if (resultExercise?.tags.includes("SIDE_BOTH")) {
               fillUpBranchAndId = result;
               if (resultExercise.tags.includes(oppositeDirection)) break;
-            } else {
-              // used if no second SIDE_BOTH exercise is found
-              replacementBranchesAndIds.push(result);
             }
           }
         }
       }
-      if (
-        fillUpBranchAndId === undefined &&
-        replacementBranchesAndIds.length !== 0
-      ) {
-        // use 1 ONE_SIDE branch in exchange of single BOTH_SIDE branch
-        const randomBranchAndId =
-          replacementBranchesAndIds[
-            Math.floor(Math.random() * replacementBranchesAndIds.length)
-          ];
-        branch = randomBranchAndId.branch;
-        id = randomBranchAndId.branchId;
-        fillUpBranchAndId = undefined;
-      }
-      return {
-        branch,
-        branchId: id,
-        fillUpBranchAndId,
-        replacementBranchesAndIds:
-          replacementBranchesAndIds.length > 0
-            ? replacementBranchesAndIds
-            : undefined,
-      };
+      return { branch, branchId: id, fillUpBranchAndId };
     };
 
     let duration = 0;
@@ -544,26 +511,27 @@ export default class TrainingGenerator {
     let isShortTraining = false; // does map to following skills, not all short trainings like prev and stability
     if (["WU", "MOB", "BR", "CD"].indexOf(type) > -1) {
       isShortTraining = true;
-      // set these short trainings to 10 exercises, 1 set, 60 secs, 10 secs pause
-      let numOfExercises = 10;
+      // set these short trainings to 10 slots, 1 set, 60 secs, 10 secs pause
+      const numOfSlots = 10;
+      let slots = 0;
       setsPerExercise = 1;
-      while (branches.main.length < numOfExercises) {
+      while (slots < numOfSlots) {
         let result = getBranchAndId(genderFiltered, branchesIds);
         // end if no more branches
         if (result === null) break;
+        branchesIds.push(result.branchId);
+        // one sided exercises fill two slots, left and right
         let side = getTagValues(result.branch.branchTags, TagGroups.SIDE);
-        if (side.indexOf("ONE") > -1) {
-          // one sided exercises used left and right, so we need one branch less
-          numOfExercises--;
-        }
+        const branchSlots = side.indexOf("ONE") > -1 ? 2 : 1;
+        if (slots + branchSlots > numOfSlots) continue;
 
         branches.main.push(result.branch);
-        branchesIds.push(result.branchId);
+        slots += branchSlots;
       }
     } else if (["BAS", "GKS"].indexOf(type) > -1) {
-      // set these short trainings to 10 exercises, 1 set, 60 secs, 10 secs pause
+      // stability with weights: 4 from any region; bodyweight: 3 upper body plus 2 full body
       let regions =
-        type === "GKS"
+        type === "GKS" && !HAS_WEIGHTS
           ? [
               { tags: ["REGION_UPPER_BODY"], count: 3 },
               { tags: ["REGION_FULL_BODY"], count: 2 },

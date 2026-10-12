@@ -1,4 +1,5 @@
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
+import type { TrainingType } from "@/features/training/models/Training";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
@@ -46,7 +47,7 @@ const exerciseWithTags = (id: string, tags: string[]): ExerciseType => ({
 });
 
 const selectedBranches = (
-  type: string,
+  type: TrainingType,
   skillTrees: { [skillName: string]: SkillTreeType },
   options: {
     user?: UserType;

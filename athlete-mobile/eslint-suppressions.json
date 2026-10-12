@@ -427,7 +427,7 @@
       "count": 1
     },
     "max-lines-per-function": {
-      "count": 20
+      "count": 19
     },
     "max-params": {
       "count": 12

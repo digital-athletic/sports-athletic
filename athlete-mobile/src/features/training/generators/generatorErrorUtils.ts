@@ -22,6 +22,9 @@ export const buildGeneratorErrorMessage = (
       message = t("training.generator.errorTitleNoExercisesSubtypeX", {
         subtype: t(`training.generator.errorSubtype.${e.subtype}`),
       });
+      if (e.params.length === 0) {
+        break;
+      }
       message +=
         "\n" +
         t("training.generator.errorTitleNoExercisesParamsX", {

@@ -408,7 +408,7 @@ export default class TrainingGenerator {
     }
 
     if (Object.keys(ageFiltered).length === 0) {
-      throw { type: "NO_EXERCISES", subtype: "AGE", params: [ageGroup] };
+      throw { type: "NO_EXERCISES", subtype: "AGE", params: [] };
     }
 
     // gender
@@ -420,7 +420,7 @@ export default class TrainingGenerator {
     }
 
     if (Object.keys(genderFiltered).length === 0) {
-      throw { type: "NO_EXERCISES", subtype: "GENDER", params: [userGender] };
+      throw { type: "NO_EXERCISES", subtype: "GENDER", params: [] };
     }
 
     // Build exercise list
@@ -565,17 +565,13 @@ export default class TrainingGenerator {
           : [{ tags: [], count: 4 }];
       for (let region of regions) {
         for (let i = 0; i < region.count; i++) {
-          let regionFiltered = filterByRegion(
+          const regionFiltered = filterByRegion(
             genderFiltered,
             getTagValues(region.tags, TagGroups.REGION),
           ).keep;
-          if (Object.keys(regionFiltered).length === 0) {
-            regionFiltered = genderFiltered;
-            if (TrainingGenerator.DEBUG) {
-              console.log("no matching branches found for region", region);
-            }
-          }
-          let result = getBranchAndId(regionFiltered, branchesIds);
+          let result =
+            getBranchAndId(regionFiltered, branchesIds) ??
+            getBranchAndId(genderFiltered, branchesIds);
           // end if no more branches
           if (result === null) break;
           let side = getTagValues(result.branch.branchTags, TagGroups.SIDE);

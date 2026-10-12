@@ -29,6 +29,17 @@ describe("exerciseRegistry", () => {
     });
   });
 
+  describe("tags", () => {
+    it("holds no exercise with a doubled muscle prefix", () => {
+      const malformed = getAllExercises()
+        .filter((exercise) =>
+          exercise.tags.some((tag) => tag.startsWith("MUSCLE_MUSCLE_")),
+        )
+        .map((exercise) => exercise.id);
+      expect(malformed).toEqual([]);
+    });
+  });
+
   describe("getExerciseById", () => {
     it("returns the Pause exercise for id 999999", () => {
       const pause = getExerciseById("999999");

@@ -64,6 +64,7 @@ import {
   pickSupersetPartner,
 } from "@/features/training/utils/supersetPairingUtils";
 import { trainsSameRegionAndPrimaryMuscle } from "@/features/training/utils/exerciseBlockUtils";
+import { orderExerciseUnits } from "@/features/training/utils/exerciseOrderUtils";
 import { isTrainingLevel } from "@/schemas/common.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import {
@@ -2159,12 +2160,15 @@ export default class TrainingGenerator {
         let prevs = skillList
           .filter((e) => e && e.skill.indexOf("PREV") > -1)
           .map((prev) => prev.skill);
-        exercisePairs = this.getExercisePairs(
-          skillList[i].skill,
-          branches,
-          exercises,
-          PAINS,
-          prevs,
+        exercisePairs = orderExerciseUnits(
+          this.getExercisePairs(
+            skillList[i].skill,
+            branches,
+            exercises,
+            PAINS,
+            prevs,
+          ),
+          skillList[i].skill.indexOf("MAX") > -1,
         );
       }
 

@@ -25,5 +25,6 @@ export const planStartDateFor = ({
   if (!trainingPlan?.start || !sameSeasonPhase) return today;
   const gapDays = daysSinceLastTraining(workoutTimestamps, trainingPlan, today);
   if (getTrainingGapAction(gapDays) === "PROMPT_NEW_PLAN") return today;
-  return ISODateToDate(trainingPlan.start);
+  // older plans store the start with a time
+  return ISODateToDate(trainingPlan.start.split("T")[0]);
 };

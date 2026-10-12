@@ -15,6 +15,8 @@ export type TrainingPlanType = {
   /** Training plan start date in ISO 8601 format (YYYY-MM-DD) */
   start: string;
   sections: TrainingSectionType[];
+  /** Day (YYYY-MM-DD) the sections were last shifted for a training gap */
+  gapShiftedOn?: string;
 };
 
 // Intermediate type: plan before trainings are generated for each section

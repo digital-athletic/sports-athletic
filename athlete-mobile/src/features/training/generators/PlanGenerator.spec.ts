@@ -1440,8 +1440,8 @@ describe("PlanGenerator", () => {
         ).toContain("MAX");
       });
 
-      it("plans an athlete without a birthday as a child without max strength", () => {
-        expect(sectionTypes(generateProfessionalPlan())).not.toContain("MAX");
+      it("plans an athlete without a birthday as an adult and keeps the professional max strength sections", () => {
+        expect(sectionTypes(generateProfessionalPlan())).toContain("MAX");
       });
 
       it("plans an athlete with a child birthday as a child without max strength", () => {

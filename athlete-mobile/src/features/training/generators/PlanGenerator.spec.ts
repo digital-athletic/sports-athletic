@@ -229,6 +229,68 @@ describe("PlanGenerator", () => {
       expect(focuses[0]).toContain("CARDIO");
     });
 
+    describe("week-wide cardio guarantee", () => {
+      const places: PlacesData = {
+        HOME: { equipment: ["DUMBBELL"] },
+        STUDIO: { equipment: ["BARBELL"] },
+        HALL: { equipment: ["TRACK_20"] },
+        OUTSIDE: { equipment: [] },
+      };
+      const singleDayGroups = (
+        days: [TrainingDayType["place"], number][],
+      ): TrainingDayType[][] =>
+        days.map(([place, duration], index) => [
+          {
+            active: true,
+            weekday: index * 2,
+            duration: minutes(duration),
+            place,
+          },
+        ]);
+      const focusesFor = (days: [TrainingDayType["place"], number][]) =>
+        PlanGenerator.getTrainingDayGroupsFocuses(
+          singleDayGroups(days),
+          WorkoutConstants.AGE_GROUPS.ADULT,
+          places,
+        ).flat();
+
+      it("converts the longest PHASE day to CARDIO when its place has no run equipment", () => {
+        expect(
+          focusesFor([
+            ["STUDIO", 60],
+            ["HALL", 45],
+          ]),
+        ).toEqual(["CARDIO", "PHASE"]);
+      });
+
+      it("converts the longest PHASE day to COMBINED when it lasts 45 minutes with run equipment", () => {
+        expect(
+          focusesFor([
+            ["STUDIO", 40],
+            ["HALL", 60],
+          ]),
+        ).toEqual(["PHASE", "COMBINED"]);
+      });
+
+      it("converts a day shorter than 45 minutes with run equipment to CARDIO", () => {
+        expect(
+          focusesFor([
+            ["STUDIO", 30],
+            ["HALL", 40],
+          ]),
+        ).toEqual(["PHASE", "CARDIO"]);
+      });
+
+      it("passes over a home day without run equipment", () => {
+        expect(
+          focusesFor([
+            ["HOME", 90],
+            ["STUDIO", 45],
+          ]),
+        ).toEqual(["PHASE", "CARDIO"]);
+      });
+    });
+
     it("should return PHASE for single-day adult training group", () => {
       const trainingDayGroups: TrainingDayType[][] = [
         [{ active: true, weekday: 3, duration: minutes(60), place: "HOME" }],
@@ -243,6 +305,46 @@ describe("PlanGenerator", () => {
       expect(focuses).toHaveLength(1);
       expect(focuses[0]).toEqual(["PHASE"]);
     });
+  });
+
+  describe("addToSkillTree: goalkeeper exercises", () => {
+    const goalkeeperBranch: SkillTreeType = {
+      "900": {
+        tags: ["REGION_LOWER_BODY", "SIDE_BOTH"],
+        levels: { 1: { exerciseId: "661" } },
+      },
+    };
+    const branchIdsFor = (position: string | undefined) =>
+      Object.keys(
+        PlanGenerator.addToSkillTree(
+          {},
+          goalkeeperBranch,
+          [],
+          WorkoutConstants.AGE_GROUPS.ADULT,
+          "MALE",
+          WorkoutConstants.LEVELS.BEGINNER,
+          ["HANDBALL_GOAL"],
+          [],
+          {},
+          loadExercises(),
+          [],
+          position,
+        ),
+      );
+
+    it.each(["GOAL", "GOALKEEPER"])(
+      "keeps a goalkeeper exercise for position %s",
+      (position) => {
+        expect(branchIdsFor(position)).toEqual(["900"]);
+      },
+    );
+
+    it.each(["FIELD", undefined])(
+      "drops a goalkeeper exercise for position %s",
+      (position) => {
+        expect(branchIdsFor(position)).toEqual([]);
+      },
+    );
   });
 
   /**

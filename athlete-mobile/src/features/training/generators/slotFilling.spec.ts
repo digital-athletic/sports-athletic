@@ -74,6 +74,68 @@ describe("generatePlanWorkout: slots that cannot be refilled", () => {
   });
 });
 
+describe("generatePlanWorkout: prevention replacements", () => {
+  const preventionBranch = (
+    branchId: string,
+    region: string,
+    equipment: string,
+  ) => ({
+    tags: [
+      `PREVENTION_${region}`,
+      "SKILL_PREVENTION",
+      "REGION_LOWER_BODY",
+      equipment,
+    ],
+    levels: {
+      "1": { exerciseId: "431" },
+      "2": { exerciseId: "432" },
+      "3": { exerciseId: "432" },
+    },
+    branchId,
+  });
+
+  it("drops a prevention skill whose slots only refill from another prevention region", () => {
+    const user = buildPlanUser({
+      weekday: 1,
+      skills: {
+        PREVKNEE: [
+          {
+            ...preventionBranch("800", "KNEE", "EQ_BOTTLE"),
+            exercises: preventionBranch("800", "KNEE", "EQ_BOTTLE").levels,
+          },
+        ],
+      },
+      lengths: { PREVKNEE: 10 },
+    });
+    user.workoutData!.tags = {
+      ...user.workoutData!.tags,
+      PAIN: ["KNEE_LEFT", "SHOULDER_LEFT"],
+    };
+    const shoulderOnly = preventionBranch("810", "SHOULDER", "EQ_TYPE_KG");
+
+    const result = new TrainingGenerator().generatePlanWorkout(
+      "PLAN",
+      user,
+      "HALL",
+      realExercises,
+      {
+        ...importTrees("WU", "CARDIO_4", "CARDIO_5"),
+        PREV: {},
+        PREVKG: { "810": shoulderOnly },
+      },
+      1,
+      [],
+      undefined,
+      0,
+      noExerciseData,
+    );
+
+    expect(
+      result.filter((entry) => entry.skill?.startsWith("PREV")),
+    ).toEqual([]);
+  });
+});
+
 describe("generatePlanWorkout: blocked zone 5 cardio", () => {
   it("resolves the replacement run to its exercise", () => {
     const user = buildPlanUser({

@@ -1,6 +1,8 @@
 import { IntensityData } from "@/features/training/models/Intensity";
 
+// Weights come from the exercise only.
 export const IntensityPREV: IntensityData = {
+  overridesExerciseRepsAndDuration: true,
   adjustment: {
     duration: {
       default: {
@@ -64,14 +66,6 @@ export const IntensityPREV: IntensityData = {
         default: 20,
       },
     },
-    weight: {
-      default: {
-        default: 40,
-      },
-      type: {
-        type: "weightFMax",
-      },
-    },
   },
   targetValue: {
     duration: {
@@ -87,14 +81,6 @@ export const IntensityPREV: IntensityData = {
     height: {
       default: {
         default: 40,
-      },
-    },
-    weight: {
-      default: {
-        default: 60,
-      },
-      type: {
-        type: "weightFMax",
       },
     },
   },

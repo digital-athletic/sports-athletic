@@ -712,6 +712,21 @@ describe("PlanGenerator", () => {
       expect(typeof result).toBe("number");
       expect(result).toBeGreaterThan(0);
     });
+
+    it.each([
+      "PREVKNEE",
+      "PREVSHOULDER",
+      "PREVWRIST",
+      "PREVANKLE",
+      "PREVSPINE",
+    ])("allows 15 minutes for the prevention skill %s", (skill) => {
+      expect(
+        PlanGenerator.getMaxTimeForSkillAndLevel(
+          skill,
+          WorkoutConstants.LEVELS.ADVANCED,
+        ),
+      ).toBe(15);
+    });
   });
 
   /**

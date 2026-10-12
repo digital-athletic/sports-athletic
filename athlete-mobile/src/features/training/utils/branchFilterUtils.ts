@@ -193,7 +193,8 @@ export function filterBySoreness<T extends Branch>(
     for (const id in branches) {
       const branchRegions = getTagValues(branches[id].tags ?? [], "REGION");
       if (areas.some((area) => branchRegions.includes(areaToRegion(area)))) {
-        replace.push(...branchRegions);
+        // one replacement request per removed branch
+        replace.push(...branchRegions.slice(0, 1));
       } else {
         keep[id] = branches[id];
       }

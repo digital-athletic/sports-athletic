@@ -65,6 +65,7 @@ import {
 } from "@/features/training/utils/supersetPairingUtils";
 import { trainsSameRegionAndPrimaryMuscle } from "@/features/training/utils/exerciseBlockUtils";
 import { orderExerciseUnits } from "@/features/training/utils/exerciseOrderUtils";
+import type { GeneratorError } from "./GeneratorError";
 import { isTrainingLevel } from "@/schemas/common.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import {
@@ -923,6 +924,7 @@ export default class TrainingGenerator {
         };
      */
 
+    let firstUnfilledSkillError: GeneratorError | undefined;
     for (const skill of Object.keys(exerciseBranches) as SkillTypes[]) {
       let replace: string[] = [];
       let branches = exerciseBranches[skill]!.reduce<
@@ -949,15 +951,19 @@ export default class TrainingGenerator {
 
       replace = replace.concat(levelFiltered.replace);
 
+      // A skill that cannot be filled frees its time; the session gets shorter
+      const unfilledSkillError: GeneratorError = {
+        type: "NO_EXERCISES",
+        subtype: "EQUIPMENT",
+        params: equipmentFiltered.missingEquipment || [],
+      };
       if (
         Object.keys(levelFiltered.keep).length === 0 &&
         replace.length === 0
       ) {
-        throw {
-          type: "NO_EXERCISES",
-          subtype: "EQUIPMENT",
-          params: equipmentFiltered.missingEquipment || [],
-        };
+        firstUnfilledSkillError ??= unfilledSkillError;
+        exerciseBranches[skill] = [];
+        continue;
       }
 
       let keep = Object.keys(levelFiltered.keep).map((id) => {
@@ -1015,6 +1021,8 @@ export default class TrainingGenerator {
               exerciseId: cardioExercise?.id ?? "-1",
             },
           ];
+          // a blocked CARDIO_5 replaced itself with the resolved run above
+          if (skill === cardioSkill) continue;
         } else {
           const PAINS = getUserTagValues(
             user.workoutData?.tags,
@@ -1050,11 +1058,7 @@ export default class TrainingGenerator {
             skill.indexOf("PREV") === -1 &&
             skill !== "WUSPEZIAL"
           ) {
-            throw {
-              type: "NO_EXERCISES",
-              subtype: "EQUIPMENT",
-              params: equipmentFiltered.missingEquipment || [],
-            };
+            firstUnfilledSkillError ??= unfilledSkillError;
           }
           // Change used skill from former prevention to new PREV skill if needed
           if (skill.indexOf("PREV") !== -1 && replacement.length !== 0) {
@@ -1200,6 +1204,10 @@ export default class TrainingGenerator {
 
     if (TrainingGenerator.DEBUG) {
       console.log("FINAL SET LIST:", setList);
+    }
+
+    if (setList.length === 0 && firstUnfilledSkillError) {
+      throw firstUnfilledSkillError;
     }
 
     return setList;
@@ -3753,8 +3761,9 @@ const filterByUserLevel = (
       userBranchData?.[id] ?? null,
     );
     if (exercise === null) {
+      // one replacement request per removed branch
       const exerciseRegions = getTagValues(branchTags, TagGroups.REGION);
-      replace = replace.concat(exerciseRegions);
+      replace = replace.concat(exerciseRegions.slice(0, 1));
     } else {
       keep[id] = branchData;
     }

@@ -1027,6 +1027,11 @@ export default class PlanGenerator {
         maxTimeObj = MaxTimeMAX;
         break;
       case "PREV":
+      case "PREVKNEE":
+      case "PREVSHOULDER":
+      case "PREVWRIST":
+      case "PREVANKLE":
+      case "PREVSPINE":
         maxTimeObj = MaxTimePREV;
         break;
       case "SA":

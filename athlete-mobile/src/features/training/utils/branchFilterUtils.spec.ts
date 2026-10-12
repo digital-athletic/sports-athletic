@@ -186,6 +186,21 @@ describe("branchFilterUtils", () => {
       expect(result.replace).toContain("UPPER_BODY");
     });
 
+    it("requests one replacement per removed branch with several region tags", () => {
+      const branches = {
+        "1": createBranch(["REGION_UPPER_BODY", "REGION_CORE"]),
+      };
+      const temporalData: TemporalDataType[] = [
+        {
+          tag: "CHEST",
+          date: "2024-01-01T00:00:00.000Z",
+          expiration: "2024-01-03T00:00:00.000Z",
+        },
+      ];
+      const result = filterBySoreness(branches, temporalData, "SWR1");
+      expect(result.replace).toEqual(["UPPER_BODY"]);
+    });
+
     it("throws error for multiple sore regions", () => {
       const branches = {
         "1": createBranch(["REGION_CORE"]),

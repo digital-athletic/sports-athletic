@@ -5,7 +5,11 @@ import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import PlanGenerator from "@/features/training/generators/PlanGenerator";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { keepUnchangedTrainingDays } from "@/features/training/utils/planRegeneration";
-import { planStartDateFor } from "@/features/training/utils/planStartDate";
+import {
+  type PlanStartInput,
+  planStartDateFor,
+  preservesPlanStart,
+} from "@/features/training/utils/planStartDate";
 import { Logger } from "@/services/Logger";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useAuthStore } from "@/store/authStore";
@@ -56,18 +60,17 @@ export default function Generating() {
   const { places } = usePlacesStore();
   const { workoutsList } = useCompletedWorkoutsStore();
 
-  const startDateFor = (sameSeasonPhase: boolean) =>
-    planStartDateFor({
-      trainingPlan: trainingPlan ?? undefined,
-      sameSeasonPhase,
-      workoutTimestamps: workoutsList.map((workout) => workout.timestamp),
-      today: new Date(),
-    });
+  const startInputFor = (sameSeasonPhase: boolean): PlanStartInput => ({
+    trainingPlan: trainingPlan ?? undefined,
+    sameSeasonPhase,
+    workoutTimestamps: workoutsList.map((workout) => workout.timestamp),
+    today: new Date(),
+  });
 
   // a regeneration with the preserved start keeps the unaffected training days
-  const savePlan = (plan: TrainingPlanType) =>
+  const savePlan = (plan: TrainingPlanType, startInput: PlanStartInput) =>
     setTrainingPlan(
-      trainingPlan && plan.start === trainingPlan.start.split("T")[0]
+      trainingPlan && preservesPlanStart(startInput)
         ? keepUnchangedTrainingDays(trainingPlan, plan)
         : plan,
     );
@@ -84,7 +87,8 @@ export default function Generating() {
         // TODO: Archive the existing plan on the backend before replacing it
       }
 
-      const startDate = startDateFor(Boolean(shouldUpdateExisting));
+      const startInput = startInputFor(Boolean(shouldUpdateExisting));
+      const startDate = planStartDateFor(startInput);
 
       // Save season phase to workoutData (calculates numOfWeeks with startDate)
       if (!seasonPhase) {
@@ -121,7 +125,7 @@ export default function Generating() {
         startDate,
       );
 
-      savePlan(plan);
+      savePlan(plan, startInput);
 
       // TODO: Persist the active plan to the backend
 

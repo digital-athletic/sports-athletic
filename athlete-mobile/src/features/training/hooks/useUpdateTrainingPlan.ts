@@ -18,7 +18,6 @@ import { useCallback } from "react";
 export function useUpdateTrainingPlan() {
   const { branchData } = useExerciseProgressStore();
   const { trainingDays } = useTrainingScheduleStore();
-  const { places } = usePlacesStore();
   const { auth } = useAuthStore();
   const userId = auth?.userId;
   const { personalData } = useUserProfileStore();
@@ -49,7 +48,8 @@ export function useUpdateTrainingPlan() {
         skillTrees,
         branchData,
         trainingDays,
-        places,
+        // callers save equipment right before, so read it fresh, not from the render
+        usePlacesStore.getState().places,
         ISODateToDate(oldStartDate),
       );
 
@@ -61,7 +61,6 @@ export function useUpdateTrainingPlan() {
     [
       branchData,
       trainingDays,
-      places,
       userId,
       personalData,
       workoutData,

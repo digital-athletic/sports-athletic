@@ -1,5 +1,25 @@
+import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import type { MigrationMap } from "./createMigrate";
 import type { State } from "../exerciseProgressStore";
+
+// Older versions could save a level above the top or in a gap of a branch.
+// Such a level moves to the next lower existing level, else to the lowest.
+const existingLevel = (level: number, levels: number[]): number => {
+  if (levels.includes(level)) return level;
+  const lower = levels.filter((candidate) => candidate < level);
+  return lower.length > 0 ? Math.max(...lower) : Math.min(...levels);
+};
+
+const authoredLevelsByBranch = (): Record<string, number[]> => {
+  const result: Record<string, number[]> = {};
+  for (const tree of Object.values(getAllSkillTrees())) {
+    for (const [branchId, branch] of Object.entries(tree)) {
+      const levels = Object.keys(branch.levels ?? {}).map(Number);
+      if (levels.length > 0) result[branchId] = levels;
+    }
+  }
+  return result;
+};
 
 // Jump squats with authored test-based weights. Their stored weights were
 // 15-25% of the old base and would override the new 5-20% squat 1RM range.
@@ -36,5 +56,18 @@ export const exerciseProgressStoreMigrations: MigrationMap<State> = {
       exerciseData[exerciseId] = withoutWeight;
     }
     return { ...state, exerciseData };
+  },
+  16: (state) => {
+    const levelsByBranch = authoredLevelsByBranch();
+    const branchData = { ...state.branchData };
+    for (const [branchId, entry] of Object.entries(branchData)) {
+      const levels = levelsByBranch[branchId];
+      if (!entry || !levels) continue;
+      branchData[branchId] = {
+        ...entry,
+        level: existingLevel(entry.level, levels),
+      };
+    }
+    return { ...state, branchData };
   },
 };

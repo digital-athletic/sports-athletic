@@ -85,11 +85,7 @@ const pausesOf = (setList: ReturnType<typeof buildSetList>) =>
     .map((entry) => entry.duration);
 
 const chest = ref("c", ["MUSCLE_CHEST", "REGION_UPPER_BODY", BODYWEIGHT]);
-const chestAgain = ref("c2", [
-  "MUSCLE_CHEST",
-  "REGION_UPPER_BODY",
-  BODYWEIGHT,
-]);
+const chestAgain = ref("c2", ["MUSCLE_CHEST", "REGION_UPPER_BODY", BODYWEIGHT]);
 const biceps = ref("b", ["MUSCLE_BICEPS", "REGION_UPPER_BODY", BODYWEIGHT]);
 const quads = ref("q", ["MUSCLE_QUADRICEPS", "REGION_LOWER_BODY", BODYWEIGHT]);
 const calf = ref("k", ["MUSCLE_CALF", "REGION_LOWER_BODY", BODYWEIGHT]);
@@ -196,7 +192,11 @@ describe("getSetListFromExercisePairs: focus workouts", () => {
 });
 
 describe("getSetListFromExercisePairs: warm-up sets", () => {
-  const weightedChest = ref("w", ["MUSCLE_CHEST", "REGION_UPPER_BODY", WEIGHTED]);
+  const weightedChest = ref("w", [
+    "MUSCLE_CHEST",
+    "REGION_UPPER_BODY",
+    WEIGHTED,
+  ]);
 
   it("gives an explosive power warm-up set 8 repetitions", () => {
     const [warmUp] = buildSetList("SK", [{ first: weightedChest }]);
@@ -222,9 +222,9 @@ describe("getSetListFromExercisePairs: warm-up sets", () => {
   });
 
   it("rests 60 s after a solo hypertrophy warm-up set", () => {
-    expect(
-      pausesOf(buildSetList("SWR2", [{ first: weightedChest }]))[0],
-    ).toBe(60);
+    expect(pausesOf(buildSetList("SWR2", [{ first: weightedChest }]))[0]).toBe(
+      60,
+    );
   });
 
   it("puts no repetitions on a warm-up pause", () => {

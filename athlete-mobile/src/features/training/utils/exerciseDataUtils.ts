@@ -94,7 +94,7 @@ export function isFeedbackEligibleSkill(
     return (
       WorkoutConstants.NO_INCREASE_WORKOUT_PLAN_TYPE.indexOf(
         activeTraining.type,
-      ) === -1
+      ) === -1 && WorkoutConstants.NO_INCREASE_SKILL_TYPE.indexOf(skill) === -1
     );
   }
   return false;

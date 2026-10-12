@@ -23,6 +23,16 @@ describe("planStartDateFor", () => {
     expect(start).toEqual(new Date(2026, 7, 3));
   });
 
+  it("keeps the start of an older plan that stores the start with a time", () => {
+    const start = planStartDateFor({
+      trainingPlan: { ...plan, start: "2026-08-03T00:00:00.000Z" },
+      sameSeasonPhase: true,
+      workoutTimestamps: workoutDaysAgo(3),
+      today,
+    });
+    expect(start).toEqual(new Date(2026, 7, 3));
+  });
+
   it("starts from today for a changed season phase", () => {
     const start = planStartDateFor({
       trainingPlan: plan,

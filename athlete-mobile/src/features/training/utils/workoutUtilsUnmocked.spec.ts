@@ -3,10 +3,16 @@ import type {
   ExerciseType,
   ExerciseValuesType,
 } from "@/schemas/exercise.schema";
+import type { SkillCode } from "@/schemas/generator.schema";
+import type {
+  SkillBranchType,
+  SkillTreeType,
+} from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
 import { DEFAULT_MAX_VALUES } from "../models/MaxValues";
 import {
   applyMaxValueToDirections,
+  getEquivalentBranchWithGivenLevel,
   getUserLevel,
   roundWeightValue,
 } from "./workoutUtils";
@@ -274,5 +280,70 @@ describe("applyMaxValueToDirections", () => {
     expect(result.kneeDominant).toEqual(newCalculatedResult);
     // ...but the previously recorded deadlift max is preserved.
     expect(result.hipHinge).toEqual(existingDeadliftMax);
+  });
+});
+
+describe("getEquivalentBranchWithGivenLevel: substitution score", () => {
+  const branch = (tags: string[], levels: number[]): SkillBranchType => ({
+    tags,
+    levels: Object.fromEntries(
+      levels.map((level) => [level, { exerciseId: `${level}` }]),
+    ),
+  });
+
+  const findSubstitute = (
+    tree: SkillTreeType,
+    oldBranch: SkillBranchType,
+    level: number,
+    skill: SkillCode = "SKKG",
+    prevRegions: string[] = [],
+  ) =>
+    getEquivalentBranchWithGivenLevel(
+      tree,
+      "1",
+      oldBranch,
+      level,
+      [],
+      [],
+      "ADULT",
+      "MALE",
+      prevRegions,
+      skill,
+    )?.branchId;
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  const CORE_BOTH = ["REGION_CORE", "SIDE_BOTH"];
+
+  it("penalizes a fallback of one and of two levels alike", () => {
+    jest.spyOn(Math, "random").mockReturnValue(0.99);
+    const result = findSubstitute(
+      { "20": branch(CORE_BOTH, [2]), "30": branch(CORE_BOTH, [1]) },
+      branch(CORE_BOTH, [3]),
+      3,
+    );
+    expect(result).toBe("30");
+  });
+
+  it("excludes a branch that needs a fallback of more than two levels", () => {
+    const result = findSubstitute(
+      { "20": branch(CORE_BOTH, [1]) },
+      branch(CORE_BOTH, [4]),
+      4,
+    );
+    expect(result).toBeUndefined();
+  });
+
+  it("never switches a both sided prevention branch to a one sided one", () => {
+    const result = findSubstitute(
+      { "20": branch(["REGION_LOWER_BODY", "SIDE_ONE", "PREVENTION_KNEE"], [1]) },
+      branch(["REGION_LOWER_BODY", "SIDE_BOTH", "PREVENTION_KNEE"], [1]),
+      1,
+      "PREVKNEE",
+      ["KNEE"],
+    );
+    expect(result).toBeUndefined();
   });
 });

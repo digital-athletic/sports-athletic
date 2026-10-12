@@ -122,6 +122,40 @@ describe("generateShortWorkout: branch level resolution", () => {
   });
 });
 
+describe("generateShortWorkout: region quota fallback", () => {
+  const branchAt = (
+    region: string,
+    levels: SkillTreeType[string]["levels"],
+  ): SkillTreeType[string] => ({
+    tags: ["SKILL_GKS", region, "SIDE_BOTH"],
+    levels,
+  });
+
+  it("falls back to any region when the region's branches resolve no exercise", () => {
+    const generator = new TrainingGenerator();
+    const spy = jest.spyOn(generator, "getExercisePairs").mockReturnValue([]);
+    generator.generateShortWorkout(
+      "GKS",
+      userWithLevel("BEGINNER"),
+      "HOME",
+      [],
+      {
+        GKSKG: {
+          "1": branchAt("REGION_UPPER_BODY", { 1: { exerciseId: "11" } }),
+          "2": branchAt("REGION_UPPER_BODY", { 1: { exerciseId: "12" } }),
+          "3": branchAt("REGION_UPPER_BODY", { 1: { exerciseId: "13" } }),
+          "4": branchAt("REGION_UPPER_BODY", { 1: { exerciseId: "14" } }),
+          "5": branchAt("REGION_FULL_BODY", { 3: { exerciseId: "53" } }),
+        },
+      },
+      [],
+      { exerciseData: {}, branchData: {} },
+    );
+    const [, branches] = spy.mock.calls[0];
+    expect(branches).toHaveLength(4);
+  });
+});
+
 describe("generateShortWorkout: cause of an empty pool", () => {
   let generator: TrainingGenerator;
 
@@ -141,7 +175,7 @@ describe("generateShortWorkout: cause of an empty pool", () => {
     expect(error).toEqual({
       type: "NO_EXERCISES",
       subtype: "AGE",
-      params: ["ADULT"],
+      params: [],
     });
   });
 
@@ -157,7 +191,7 @@ describe("generateShortWorkout: cause of an empty pool", () => {
     expect(error).toEqual({
       type: "NO_EXERCISES",
       subtype: "GENDER",
-      params: ["MALE"],
+      params: [],
     });
   });
 

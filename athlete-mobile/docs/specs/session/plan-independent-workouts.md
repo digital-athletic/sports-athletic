@@ -27,21 +27,24 @@ Both reuse the filter chain and the branch to exercise resolution rule from [Pla
 ### Short workout
 
 1. Pick the requested type's skill tree: the weights-capable variant when the place has weights, the bodyweight variant otherwise. Foam roller sessions require a foam roller or foam ball, else generation fails.
-2. Filter by prevention target tag (prevention types only), soreness, equipment, age, and gender. An empty pool after the soreness or gender step aborts with a typed error naming the cause. Pain blocks no branch here: pain exclusions do not exist ([Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md)). The soreness filter is disabled by design for all focus trainings and for prevention workouts (the check was removed by sprint decision on August 10, 2026). Leg axis stability is only one example: lower-body soreness would otherwise block that focus permanently.
-3. Draw branches uniformly at random, repeating neither a branch nor a resolved exercise, per quota:
+2. Filter by prevention target tag (prevention types only), equipment, age, gender, and the pain exclusion from [Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md). Soreness filters nothing here, per the same spec. An empty pool after the equipment, age, gender, or pain filter aborts with a typed error naming the cause.
+3. Draw branches uniformly at random, repeating neither a branch nor a resolved exercise, per quota. The quotas are soft targets and may vary with the available pool.
 
 | Type | Quota |
 |---|---|
 | Warm-up, mobility, foam roller, cool-down | 10 exercises, 1 set each; a one-sided branch fills two slots |
 | Stability with weights | 4 exercises, any region |
 | Stability bodyweight | 3 upper body plus 2 full body (falls back to any region when a quota cannot be met); a one-sided branch fills two slots (left and right) and is never drawn into the last slot |
-| Prevention | 3 special warm-up exercises plus 3 superset pairs; a one-sided draw seeks an opposing-direction one-sided partner, else swaps itself for a both-sided branch; weighted pairs are ordered last |
+| Prevention | 3 special warm-up exercises plus 3 superset pairs; weighted pairs are ordered last |
+
+Prevention and focus trainings skip the superset rules of [Plan Workout Generation](./plan-workout-generation.md): their authored structure fixes the supersets.
 
 ### Strength test
 
-1. Any reported soreness aborts with a soreness error.
-2. Warm-up: random branches from the warm-up tree per authored region quotas, without repeating a branch or a resolved exercise.
-3. Test lifts: a fixed, authored list per fitness level; there is no gender-specific variant. Each lift gets three ramp-up sets (40%, 60%, 85% of the reference weight) and one test set at 100%.
+1. Athletes under 16 get no strength test; the app offers no menu entry for it.
+2. Any reported soreness aborts with a soreness error.
+3. Warm-up: random branches from the warm-up tree per authored region quotas, without repeating a branch or a resolved exercise.
+4. Test lifts, their order, the ramp-up sets, and the test set: [Weight Calculation from Strength Tests](../progression/weight-calculation-from-strength-tests.md).
 
 ## Structure
 

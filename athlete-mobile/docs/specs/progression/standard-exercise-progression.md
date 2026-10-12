@@ -21,7 +21,7 @@ Per exercise, progression may use:
 - whether the exercise uses adjustable external weight,
 - authored start, target, and load boundaries.
 
-Start/target values may depend on fitness level, gender, and age group unless this specification defines a global override. The authored value configuration is the source of truth for values not overridden here. For hypertrophy, the repetition and duration ranges defined in this specification override exercise-specific authored repetition/duration values.
+Start/target values may depend on fitness level, gender, and age group unless this specification defines a global override. The authored value configuration is the source of truth for values not overridden here. For hypertrophy, full-body stability, and prevention, the training-area-specific repetition and duration ranges defined in this specification override exercise-specific authored repetition/duration values. Exercise-specific weight rules remain unchanged.
 
 Warm-up, special warm-up, cool-down, mobility, foam roller, and strength-test exercises do not use this progression and do not collect progression feedback.
 
@@ -205,6 +205,10 @@ Only after the lowest permitted load has been performed and is still `too hard` 
 
 For weighted hypertrophy, repetitions remain 8-12 and duration remains 30-50 s during weight regression.
 
+Pure explosive exercises, for example loaded jumps, carry authored load limits in the exercise catalog. Those limits take priority over the skill's load range, so the explosive power floor of 50% F-Max does not apply to them.
+
+The two jump exercises, jump squats and jumped lunges, add one exit: the third `too hard` in a row moves the athlete off the exercise, as a level down does. Every other exercise follows the rules above. The count of consecutive `too hard` ratings is part of the stored exercise progress.
+
 ## Progression flow
 
 ```mermaid
@@ -261,32 +265,27 @@ These are the current general values where the authored content resolves to the 
 | Training area | Start | Target | Load / notes |
 |---|---:|---:|---|
 | Explosive power with adjustable weight | 4 reps | 6 reps | Beginner 52.5-65% F-Max; Advanced 55-67.5%; Professional 55-70%; lowest load 50% |
-| Loaded jumping explosive power | 4 reps | 6 reps | Default ~10-20% squat F-Max; selected authored configurations may use up to 25% |
+| Pure explosive exercises with an authored load limit | 4 reps | 6 reps | The exercise catalog's load limits replace the skill's load range, see Lower boundary with adjustable weight |
 | Explosive power without adjustable weight | 4 reps | 6 reps | General default |
 | Plyometrics | 4 reps | 6 reps | General default; lighter authored content may use higher targets |
 | Hypertrophy, adjustable weight, reps | 8 reps | 12 reps | Beginner 67.5-75%; Advanced 70-77.5%; Professional 70-77.5%; lowest load 65% |
 | Hypertrophy, adjustable weight, duration | 30 s | 50 s | Same weight-boundary logic |
 | Hypertrophy, no adjustable weight, reps | 8 reps | 12 reps | Standard hypertrophy range |
 | Hypertrophy, no adjustable weight, duration | 30 s | 60 s | Standard hypertrophy range |
-| Full-body stability | 8 reps / 30 s | 15 reps / 60 s | Weight exercise-specific where applicable |
+| Full-body stability, adjustable weight, reps | 8 reps | 12 reps | Exercise-specific start/target weights; no F-Max calculation |
+| Full-body stability, adjustable weight, duration | 30 s | 50 s | Exercise-specific start/target weights; no F-Max calculation |
+| Full-body stability, no adjustable weight, reps | 8 reps | 12 reps | standard Full-body stability range |
+| Full-body stability, no adjustable weight, duration | 30 s | 60 s | standard Full-body stability range |
 | Leg-axis stability | 5 reps / 30 s | 8 reps / 45 s | Exercise-specific |
-| Prevention with adjustable weight | 10 reps / 40 s | 15 reps / 60 s | Weight exercise-specific |
+| Prevention | 10 reps / 40 s | 15 reps / 60 s | Same range with and without weights; weighted exercises use exercise-specific start/target weights, no F-Max calculation |
 | U16 weighted exercises | per training area | per training area | Fixed authored **weight** values; no F-Max calculation. Repetition/duration follows the applicable training-area rules; for hypertrophy use 8-12 reps or 30-50 s for weighted duration. |
+
+**Full-body stability – exercise-specific weights:**
+For weighted exercises, use the existing exercise-specific start and target weights. These weights are not calculated from strength tests or F-Max. No general weight values apply to this training area.
 
 ## Deferred feedback
 
-When progression is deferred to the next generation, stored feedback is applied exactly once using the same rules above.
-
-- no adjustable weight:
-  - `succeeded` → +1 ladder step;
-  - `too easy` → +2 ladder steps;
-  - `too hard` → -2 ladder steps.
-- adjustable weight:
-  - positive feedback below target → repetitions/duration only;
-  - positive feedback after the rep/duration target was performed → one weight step + reset to start;
-  - `too hard` → one negative weight step, repetitions/duration unchanged.
-
-After application, the stored feedback is consumed.
+When progression is deferred to the next generation, stored feedback is applied exactly once using the feedback rules above. After application, the stored feedback is consumed.
 
 ## Worked example
 
@@ -337,21 +336,3 @@ After a level change:
 - the new exercise starts with its resolved start values; for hypertrophy repetitions/duration, use the global hypertrophy start values from this specification rather than exercise-specific authored repetition/duration values.
 
 This preserves history for a future manual exercise-swap feature.
-
-## Current implementation summary
-
-- feedback streaks remain linear;
-- missing feedback = no progression;
-- `succeeded` = +1 ladder step;
-- `too easy` = +2 ladder steps;
-- `too hard` without adjustable weight = -2 ladder steps;
-- `too hard` with adjustable weight = -1 weight step, repetitions/duration unchanged;
-- one weight step = ±2.5% of the underlying unrounded weight;
-- every intended weight change must create a real load change after rounding;
-- a single feedback event never increases repetitions/duration and weight together;
-- automatic height progression is not implemented;
-- U16 weighted exercises use fixed authored weights;
-- final upper/lower boundaries must be performed before branch-level change;
-- weighted regression uses weight down to the lowest permitted load;
-- hypertrophy = 8-12 reps, 30-50 s weighted duration, 30-60 s unweighted duration;
-- a separate strength-endurance / Kraftausdauer logic is planned for later but is not currently implemented; current muscle-building work remains hypertrophy.

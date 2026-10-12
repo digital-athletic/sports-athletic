@@ -256,7 +256,8 @@ export function filterByEquipment<T extends Branch>(
     keep: Object.fromEntries(
       kept.map((item) => [item.id, item.entry]),
     ) as Record<string, T>,
-    replace: [...new Set(filtered.flatMap((item) => item.regions))],
+    // one replacement request per removed branch
+    replace: filtered.flatMap((item) => item.regions.slice(0, 1)),
     missingEquipment: [...new Set(filtered.flatMap((item) => item.missing))],
   };
 }

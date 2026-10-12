@@ -10,7 +10,13 @@ import TrainingGenerator from "./TrainingGenerator";
 
 const bottleBranch = (branchId: string, skillTag: string) => ({
   branchId,
-  tags: ["EQ_BOTTLE", "EQ_TYPE_EQUIPMENT", "PLACE_HALL", "REGION_CORE", skillTag],
+  tags: [
+    "EQ_BOTTLE",
+    "EQ_TYPE_EQUIPMENT",
+    "PLACE_HALL",
+    "REGION_CORE",
+    skillTag,
+  ],
   exercises: {
     "1": { exerciseId: "223" },
     "2": { exerciseId: "224" },

@@ -295,8 +295,7 @@ describe("getEquivalentBranchWithGivenLevel: substitution score", () => {
     tree: SkillTreeType,
     oldBranch: SkillBranchType,
     level: number,
-    skill: SkillCode = "SKKG",
-    prevRegions: string[] = [],
+    prevention?: { skill: SkillCode; regions: string[] },
   ) =>
     getEquivalentBranchWithGivenLevel(
       tree,
@@ -307,8 +306,8 @@ describe("getEquivalentBranchWithGivenLevel: substitution score", () => {
       [],
       "ADULT",
       "MALE",
-      prevRegions,
-      skill,
+      prevention?.regions ?? [],
+      prevention?.skill ?? "SKKG",
     )?.branchId;
 
   afterEach(() => {
@@ -338,11 +337,12 @@ describe("getEquivalentBranchWithGivenLevel: substitution score", () => {
 
   it("never switches a both sided prevention branch to a one sided one", () => {
     const result = findSubstitute(
-      { "20": branch(["REGION_LOWER_BODY", "SIDE_ONE", "PREVENTION_KNEE"], [1]) },
+      {
+        "20": branch(["REGION_LOWER_BODY", "SIDE_ONE", "PREVENTION_KNEE"], [1]),
+      },
       branch(["REGION_LOWER_BODY", "SIDE_BOTH", "PREVENTION_KNEE"], [1]),
       1,
-      "PREVKNEE",
-      ["KNEE"],
+      { skill: "PREVKNEE", regions: ["KNEE"] },
     );
     expect(result).toBeUndefined();
   });

@@ -542,24 +542,9 @@ export const getEquivalentBranchWithGivenLevel = (
       let tags = availableBranches[id].tags;
       let levels = availableBranches[id].levels;
       let matchValue = 1;
-      // has matching level
+      // no exercise at the target level: fall back at most two levels
       if (!levels[level]) {
-        let downgrade = 0.8;
-        let availableLevel = level;
-        let lowerLevelFound = false;
-        while (availableLevel > 1 && downgrade > 0) {
-          availableLevel--;
-          if (levels[availableLevel]) {
-            lowerLevelFound = true;
-            break;
-          }
-          downgrade -= 0.2;
-        }
-        if (lowerLevelFound) {
-          matchValue = matchValue * downgrade;
-        } else {
-          matchValue = 0;
-        }
+        matchValue = levels[level - 1] || levels[level - 2] ? 0.8 : 0;
       }
       // matches age and gender
       if (id === previousBranchId || branchIdsInUse.includes(id)) {
@@ -577,8 +562,7 @@ export const getEquivalentBranchWithGivenLevel = (
       }
       // side
       let branchSide = getTagValues(tags, TagGroups.SIDE);
-      if (side.length > 0 && prevRegions.length === 0) {
-        // switching allowed for prevention
+      if (side.length > 0) {
         if (side.indexOf("ONE") > -1 && branchSide.indexOf("BOTH") > -1) {
           // switch from one to both
           matchValue = matchValue * 0.8;

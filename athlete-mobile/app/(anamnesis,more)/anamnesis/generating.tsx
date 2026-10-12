@@ -3,9 +3,11 @@ import { SpeechBubble } from "@/common/SpeechBubble";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import PlanGenerator from "@/features/training/generators/PlanGenerator";
+import { planStartDateFor } from "@/features/training/utils/planStartDate";
 import { Logger } from "@/services/Logger";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useAuthStore } from "@/store/authStore";
+import { useCompletedWorkoutsStore } from "@/store/completedWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { usePlacesStore } from "@/store/placesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
@@ -13,7 +15,6 @@ import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
-import { ISODateToDate } from "@/utils/date";
 import { Route, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -51,6 +52,15 @@ export default function Generating() {
   const { branchData } = useExerciseProgressStore();
   const { trainingDays } = useTrainingScheduleStore();
   const { places } = usePlacesStore();
+  const { workoutsList } = useCompletedWorkoutsStore();
+
+  const startDateFor = (sameSeasonPhase: boolean) =>
+    planStartDateFor({
+      trainingPlan: trainingPlan ?? undefined,
+      sameSeasonPhase,
+      workoutTimestamps: workoutsList.map((workout) => workout.timestamp),
+      today: new Date(),
+    });
 
   const createTrainingPlan = async () => {
     try {
@@ -64,11 +74,7 @@ export default function Generating() {
         // TODO: Archive the existing plan on the backend before replacing it
       }
 
-      // Determine start date: use existing plan start or current date
-      const startDate =
-        shouldUpdateExisting && trainingPlan?.start
-          ? ISODateToDate(trainingPlan.start)
-          : new Date();
+      const startDate = startDateFor(Boolean(shouldUpdateExisting));
 
       // Save season phase to workoutData (calculates numOfWeeks with startDate)
       if (!seasonPhase) {

@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 /**
  * Applies the training gap rule once per screen visit: after 8 to 21 days the
  * plan sections move forward and are saved; after more than 21 days the
- * athlete chooses between a new plan and the existing one.
+ * athlete chooses between a new plan and the existing one, which then moves forward.
  */
 export function useTrainingGapCheck(enabled: boolean): void {
   const { t } = useTranslation();
@@ -44,7 +44,16 @@ export function useTrainingGapCheck(enabled: boolean): void {
           t("training.selectTraining.trainingGap.title"),
           t("training.selectTraining.trainingGap.message"),
           [
-            { text: t("common.no"), style: "cancel" },
+            {
+              text: t("common.no"),
+              style: "cancel",
+              onPress: () => {
+                Logger.logEvent("training_plan_shifted_for_gap", { days });
+                setTrainingPlan(
+                  shiftPlanForTrainingGap(trainingPlan, days, today),
+                );
+              },
+            },
             {
               text: t("common.yes"),
               onPress: () => router.push("/(more)/anamnesis/season-phase"),

@@ -8,6 +8,7 @@ import {
   SEASON_END_DATE,
 } from "../constants";
 import type { UserWorkoutState, StoreState } from "../types";
+import { STORE_VERSIONS } from "@/store/storeVersions";
 
 /**
  * Default training plan with Tuesday/Friday schedule.
@@ -125,7 +126,8 @@ export function createUserWorkoutStore(
   } = options;
 
   return {
-    version: 16,
+    // seeds describe the current app state, so no migration runs on them
+    version: STORE_VERSIONS.USER_WORKOUT,
     state: {
       workoutData: {
         sport,

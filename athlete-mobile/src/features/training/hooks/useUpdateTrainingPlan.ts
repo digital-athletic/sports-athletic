@@ -23,12 +23,14 @@ export function useUpdateTrainingPlan() {
   const { personalData } = useUserProfileStore();
   const { workoutData, trainingPlan, setTrainingPlan } = useUserWorkoutStore();
 
-  const updateTrainingPlan = useCallback(() => {
+  // Returns whether a plan was regenerated
+  const updateTrainingPlan = useCallback((): boolean => {
     if (!trainingPlan || !userId) {
-      return;
+      return false;
     }
 
-    const oldStartDate = trainingPlan.start;
+    // older plans store the start with a time
+    const oldStartDate = trainingPlan.start.split("T")[0];
 
     const user = {
       userId,
@@ -50,6 +52,7 @@ export function useUpdateTrainingPlan() {
     );
 
     setTrainingPlan(plan);
+    return true;
   }, [
     branchData,
     trainingDays,

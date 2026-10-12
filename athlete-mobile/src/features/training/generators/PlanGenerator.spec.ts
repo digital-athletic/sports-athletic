@@ -290,6 +290,62 @@ describe("PlanGenerator", () => {
       expect(focuses[1]).toBe("PHASE");
     });
 
+    describe("rule order without a studio day", () => {
+      const places: PlacesData = {
+        HOME: { equipment: ["DUMBBELL"] },
+        STUDIO: { equipment: ["BARBELL"] },
+        HALL: { equipment: ["TRACK_20"] },
+        OUTSIDE: { equipment: [] },
+      };
+
+      it("puts PHASE on the longer day before checking the place", () => {
+        const focuses = PlanGenerator.getFocusForTrainingDayGroup(
+          [
+            { active: true, weekday: 1, duration: minutes(45), place: "HOME" },
+            { active: true, weekday: 2, duration: minutes(90), place: "HALL" },
+          ],
+          WorkoutConstants.AGE_GROUPS.ADULT,
+          places,
+        );
+        expect(focuses).toEqual(["STABILITY", "PHASE"]);
+      });
+
+      it("puts PHASE on the non-home day when both days are equally long", () => {
+        const focuses = PlanGenerator.getFocusForTrainingDayGroup(
+          [
+            { active: true, weekday: 1, duration: minutes(60), place: "HOME" },
+            {
+              active: true,
+              weekday: 2,
+              duration: minutes(60),
+              place: "OUTSIDE",
+            },
+          ],
+          WorkoutConstants.AGE_GROUPS.ADULT,
+          places,
+        );
+        expect(focuses).toEqual(["STABILITY", "PHASE"]);
+      });
+    });
+
+    it("assigns 3 days studio first, then non-home, then home, also without run equipment", () => {
+      const focuses = PlanGenerator.getFocusForTrainingDayGroup(
+        [
+          { active: true, weekday: 1, duration: minutes(60), place: "STUDIO" },
+          { active: true, weekday: 2, duration: minutes(60), place: "HALL" },
+          { active: true, weekday: 3, duration: minutes(60), place: "HOME" },
+        ],
+        WorkoutConstants.AGE_GROUPS.ADULT,
+        {
+          HOME: { equipment: [] },
+          STUDIO: { equipment: ["BARBELL"] },
+          HALL: { equipment: [] },
+          OUTSIDE: { equipment: [] },
+        },
+      );
+      expect(focuses).toEqual(["PHASE", "CARDIO", "STABILITY"]);
+    });
+
     it("should return PHASE for all days in child age group regardless of places", () => {
       const groupTrainingDays: TrainingDayType[] = [
         { active: true, weekday: 1, duration: minutes(60), place: "STUDIO" },

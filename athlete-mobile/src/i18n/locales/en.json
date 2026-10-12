@@ -300,6 +300,10 @@
     },
     "selectTraining": {
       "title": "Start training",
+      "trainingGap": {
+        "title": "Welcome back",
+        "message": "You have not trained for more than three weeks. Do you want to create a new training plan?"
+      },
       "workoutNowMsg": "Start your workout now!",
       "workoutNowSpeedMsg": "Get ready for a powerful training session!",
       "coachSportProhibitionMsg": "Make sure you're not injured before starting!",

@@ -75,8 +75,8 @@ describe("exerciseProgressStoreMigrations", () => {
       expect(levelAfterMigration(3)).toBe(2);
     });
 
-    it("moves a level below the lowest to the lowest level", () => {
-      expect(levelAfterMigration(0)).toBe(1);
+    it("keeps a level below the lowest, which falls back to the entry level", () => {
+      expect(levelAfterMigration(0)).toBe(0);
     });
 
     it("keeps a level that exists", () => {

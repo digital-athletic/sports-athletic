@@ -289,6 +289,8 @@
         "SORENESS": "Muskelkater",
         "PAIN": "Beschwerden",
         "EQUIPMENT": "Ausrüstung",
+        "AGE": "Alter",
+        "GENDER": "Geschlecht",
         "OTHER": "Anderer",
         "TEST_WORKOUT": "Krafttest",
         "MULTIPLE_REGIONS": "Muskelkater in mehreren Regionen",

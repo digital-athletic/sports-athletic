@@ -355,6 +355,41 @@ export function getBranchIdsByNames(
 }
 
 /**
+ * Resolves the exercise ID of a branch from the stored branch level, otherwise
+ * from the entry level of the user's fitness level, falling back downward.
+ */
+export function resolveBranchExerciseId(
+  branchData: SkillBranchType,
+  userLevel: string,
+  userBranchData?: UserExerciseBranchDataType | null,
+): string | null {
+  const exerciseIdAt = (level: number): string | null => {
+    const levelData: { exerciseId?: string; id?: string } =
+      branchData.levels[level];
+    return levelData.exerciseId || levelData.id || null;
+  };
+
+  if (userBranchData?.level && branchData.levels[userBranchData.level]) {
+    return exerciseIdAt(userBranchData.level);
+  }
+
+  let level = 1; // BEGINNER
+  if (userLevel === "ADVANCED") {
+    level = 2;
+  }
+  if (userLevel === "PROFESSIONAL") {
+    level = 3;
+  }
+
+  for (; level > 0; level--) {
+    if (branchData.levels[level]) {
+      return exerciseIdAt(level);
+    }
+  }
+  return null;
+}
+
+/**
  * Gets the appropriate exercise from a skill branch based on user level/progress
  */
 export function getUserExerciseFromBranch(
@@ -364,31 +399,11 @@ export function getUserExerciseFromBranch(
   userBranchData?: UserExerciseBranchDataType | null,
   log = false,
 ): ExerciseType | null {
-  let exerciseId: string | null = null;
-
-  // First try user's specific progress level
-  if (userBranchData?.level && branchData.levels[userBranchData.level]) {
-    const levelData = branchData.levels[userBranchData.level] as any;
-    exerciseId = levelData.exerciseId ? levelData.exerciseId : levelData.id;
-  } else {
-    // Fall back to user's general skill level
-    let level = 1; // BEGINNER
-    if (userLevel === "ADVANCED") {
-      level = 2;
-    }
-    if (userLevel === "PROFESSIONAL") {
-      level = 3;
-    }
-
-    // Use most specific available level
-    for (; level > 0; level--) {
-      if (branchData.levels[level]) {
-        const levelData = branchData.levels[level] as any;
-        exerciseId = levelData.exerciseId ? levelData.exerciseId : levelData.id;
-        break;
-      }
-    }
-  }
+  const exerciseId = resolveBranchExerciseId(
+    branchData,
+    userLevel,
+    userBranchData,
+  );
 
   if (exerciseId === null) {
     if (log) {

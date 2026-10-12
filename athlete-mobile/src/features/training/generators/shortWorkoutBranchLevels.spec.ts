@@ -4,7 +4,10 @@ import type { UserType } from "@/schemas/user.schema";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
 import TrainingGenerator from "./TrainingGenerator";
 
-const userWithLevel = (level: string, gender = "MALE"): UserType => ({
+const userWithLevel = (
+  level: string,
+  gender: "MALE" | "FEMALE" = "MALE",
+): UserType => ({
   userId: "short-workout-user",
   personalData: { gender, birthday: "1990-01-01" },
   workoutData: {

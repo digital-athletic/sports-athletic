@@ -57,6 +57,7 @@ import {
   getNextTypeFiltered,
   getSkillTree,
   getUserExerciseFromBranch,
+  resolveBranchExerciseId,
 } from "@/features/training/utils/skillTreeUtils";
 import { isTrainingLevel } from "@/schemas/common.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
@@ -390,12 +391,24 @@ export default class TrainingGenerator {
       console.log("equipment filtered", equipmentFiltered);
     }
 
+    if (Object.keys(equipmentFiltered).length === 0) {
+      throw {
+        type: "NO_EXERCISES",
+        subtype: "EQUIPMENT",
+        params: equipmentFilterResult.missingEquipment || [],
+      };
+    }
+
     // age
     const ageGroup = ageGroupFor(getUserBirthday(user));
     let ageFiltered = filterByAge(equipmentFiltered, ageGroup).keep;
 
     if (TrainingGenerator.DEBUG) {
       console.log("age filtered", ageFiltered);
+    }
+
+    if (Object.keys(ageFiltered).length === 0) {
+      throw { type: "NO_EXERCISES", subtype: "AGE", params: [ageGroup] };
     }
 
     // gender
@@ -407,32 +420,42 @@ export default class TrainingGenerator {
     }
 
     if (Object.keys(genderFiltered).length === 0) {
-      throw {
-        type: "NO_EXERCISES",
-        subtype: "EQUIPMENT",
-        params: equipmentFilterResult.missingEquipment || [],
-      };
+      throw { type: "NO_EXERCISES", subtype: "GENDER", params: [userGender] };
     }
 
     // Build exercise list
     let branches: Record<string, BranchExerciseReference[]> = { main: [] };
     let branchesIds: string[] = [];
 
+    const userLevel = getUserLevel(user);
+
+    // Branches without a resolvable exercise count as blocked and are never drawn
+    const getResolvedBranches = (
+      branches: SkillTreeType,
+      usedBranchIds: string[],
+    ): { branchId: string; exerciseId: string }[] =>
+      Object.keys(branches).flatMap((branchId) => {
+        if (usedBranchIds.indexOf(branchId) > -1) return [];
+        const exerciseId = resolveBranchExerciseId(
+          branches[branchId],
+          userLevel,
+          userExerciseData.branchData[branchId],
+        );
+        return exerciseId ? [{ branchId, exerciseId }] : [];
+      });
+
     const getBranchAndId = (
       branches: SkillTreeType,
       usedBranchIds: string[],
     ): BranchSelectionResult | null => {
-      const branchKeys = Object.keys(branches).filter(
-        (key) => usedBranchIds.indexOf(key) === -1,
-      );
-      if (branchKeys.length === 0) return null;
-      const id = branchKeys[Math.floor(Math.random() * branchKeys.length)];
-      const levelKeys = Object.keys(branches[id].levels).map(Number);
-      const level = Math.min(...levelKeys);
+      const candidates = getResolvedBranches(branches, usedBranchIds);
+      if (candidates.length === 0) return null;
+      const { branchId: id, exerciseId } =
+        candidates[Math.floor(Math.random() * candidates.length)];
       const branch = {
         branchId: id,
         branchTags: branches[id].tags,
-        exerciseId: branches[id].levels[level].exerciseId,
+        exerciseId,
       };
       return { branch, branchId: id };
     };
@@ -441,14 +464,12 @@ export default class TrainingGenerator {
       branches: SkillTreeType,
       usedBranchIds: string[],
     ): SuperSetBranchSelectionResult | null => {
-      const branchKeys = Object.keys(branches).filter(
-        (key) => usedBranchIds.indexOf(key) === -1,
-      );
-      if (branchKeys.length === 0) return null;
-      let id = branchKeys[Math.floor(Math.random() * branchKeys.length)];
-      const levelKeys = Object.keys(branches[id].levels).map(Number);
-      const level = Math.min(...levelKeys);
-      const exerciseId = branches[id].levels[level].exerciseId;
+      const candidates = getResolvedBranches(branches, usedBranchIds);
+      if (candidates.length === 0) return null;
+      const branchKeys = candidates.map((candidate) => candidate.branchId);
+      const picked = candidates[Math.floor(Math.random() * candidates.length)];
+      let id = picked.branchId;
+      const exerciseId = picked.exerciseId;
       let branch = {
         branchId: id,
         branchTags: branches[id].tags,

@@ -1884,7 +1884,9 @@ export default class TrainingGenerator {
           (isFocusWorkout
             ? this.getFocusAfterSetPause(skill.skill)
             : undefined) ?? this.getAfterSetPauseBySkill(skill.skill);
-        const nextPair = exercisePairs[i + 1];
+        const nextPair = exercisePairs
+          .slice(i + 1)
+          .find((pair) => isBuildablePair(pair, exerciseMap));
         const closingPauseLength =
           nextPair &&
           trainsSameRegionAndPrimaryMuscle(exercisePairs[i], nextPair)
@@ -3588,6 +3590,15 @@ const FOCUS_AFTER_SET_PAUSE_BY_SKILL: Record<string, number> = {
   GKS: 45,
   GKSKG: 45,
 };
+
+// Mirrors the skip checks of the default set list builder
+const isBuildablePair = (
+  pair: ExercisePair,
+  exerciseMap: Map<string, ExerciseType>,
+): boolean =>
+  pair.first.exerciseId !== "-1" &&
+  exerciseMap.has(pair.first.exerciseId) &&
+  pair.second?.exerciseId !== "-1";
 
 const dropTrailingPause = (setList: GeneratedSetListEntry[]) => {
   const last = setList.at(-1);

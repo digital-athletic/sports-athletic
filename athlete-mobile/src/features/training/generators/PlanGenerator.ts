@@ -156,6 +156,51 @@ import DirectionCORE from "../../../../assets/data/generator/directions/CORE";
 import DirectionLOWER_BODY from "../../../../assets/data/generator/directions/LOWER_BODY";
 import DirectionLOWER_BODY_GKS from "../../../../assets/data/generator/directions/LOWER_BODY_GKS";
 
+// Strength skills per the section types: hypertrophy, max strength,
+// explosive power and power endurance
+const STRENGTH_SKILLS = [
+  "SWR1",
+  "SWR2",
+  "SWR1KG",
+  "SWR2KG",
+  "MAX",
+  "MAX_KRAFT",
+  "SK",
+  "SKKG",
+  "SA",
+  "SAKG",
+];
+const isStrengthSkill = (skill: string): boolean =>
+  STRENGTH_SKILLS.includes(skill);
+
+// the first of equally long days wins
+const indexOfLongestDay = (days: { duration: number }[]): number =>
+  days.reduce(
+    (longest, day, index) =>
+      day.duration > days[longest].duration ? index : longest,
+    0,
+  );
+
+/**
+ * PHASE goes to the only studio day, else the longer day, else the only
+ * non-home day, else the first day.
+ */
+const getTwoDayPhaseIndex = (
+  days: { place: string; duration: number }[],
+): number => {
+  const onlyIndexWhere = (matches: (day: (typeof days)[number]) => boolean) => {
+    const indices = days.flatMap((day, index) => (matches(day) ? [index] : []));
+    return indices.length === 1 ? indices[0] : -1;
+  };
+  const studioIndex = onlyIndexWhere((day) => day.place === "STUDIO");
+  if (studioIndex > -1) return studioIndex;
+  if (days[0].duration !== days[1].duration) {
+    return days[0].duration > days[1].duration ? 0 : 1;
+  }
+  const nonHomeIndex = onlyIndexWhere((day) => day.place !== "HOME");
+  return nonHomeIndex > -1 ? nonHomeIndex : 0;
+};
+
 export default class PlanGenerator {
   static DEBUG = false;
 
@@ -1415,20 +1460,21 @@ export default class PlanGenerator {
 
     //filter branches
     if (PlanGenerator.DEBUG) console.log("full skillTree", fullSkillTree);
-    let skillTree: SkillTreeType = {};
-    skillTree = this.addToSkillTree(
-      skillTree,
-      fullSkillTree,
-      workout,
-      userAge,
-      getUserGender(user) ?? "MALE",
-      userLevel,
-      equipment,
-      pains,
-      exerciseBranchData,
-      exercises,
-      branchIdsInUse,
-    );
+    const filterTree = (tree: SkillTreeType): SkillTreeType =>
+      this.addToSkillTree(
+        {},
+        tree,
+        workout,
+        userAge,
+        getUserGender(user) ?? "MALE",
+        userLevel,
+        equipment,
+        pains,
+        exerciseBranchData,
+        exercises,
+        branchIdsInUse,
+      );
+    let skillTree: SkillTreeType = filterTree(fullSkillTree);
 
     if (PlanGenerator.DEBUG)
       console.log(
@@ -1571,23 +1617,41 @@ export default class PlanGenerator {
         ),
       );
     } else if (skillTags.length > 0) {
-      // get branches by skill type
-      // need the corresponding skill tree later
-      // if multiple take one randomly
-      skillTree = getSkillTree(
+      // get branches by skill type, filtered like every other slot;
+      // if multiple take one randomly among those with usable branches
+      const usableTrees = skillTags
+        .map((skillTag) =>
+          filterTree(
+            getSkillTree(skillTrees, skillTag, prevSkills, HAS_WEIGHTS),
+          ),
+        )
+        .filter((tree) => Object.keys(tree).length > 0);
+      skillTree =
+        usableTrees.length > 0
+          ? usableTrees[Math.floor(Math.random() * usableTrees.length)]
+          : {};
+      possibleExercises = [...Object.keys(skillTree)];
+    } else if (exNameTags.length > 0) {
+      // TODO: add TAGS instead of hardcoded branch ids
+      // get branches for exercises set, filtered like every other slot
+      possibleExercises = [...getBranchIdsByNames(exNameTags, skill)];
+      const allBranches = getSkillTree(
         skillTrees,
-        skillTags[Math.floor(Math.random() * skillTags.length)],
+        "ALL",
         prevSkills,
         HAS_WEIGHTS,
       );
-      // get skill tree for skill to use, there should be only one
-      possibleExercises = [...Object.keys(skillTree)];
-    } else if (exNameTags.length > 0) {
-      // get branch for exersice name, need all skill branches later
-      skillTree = getSkillTree(skillTrees, "ALL", prevSkills, HAS_WEIGHTS);
-      // TODO: add TAGS instead of hardcoded branch ids
-      // get branches for exercises set
-      possibleExercises = [...getBranchIdsByNames(exNameTags, skill)];
+      // 142 stands in for 141, see the mapping below
+      const namedBranchIds = possibleExercises.concat(
+        possibleExercises.includes("141") ? ["142"] : [],
+      );
+      skillTree = filterTree(
+        Object.fromEntries(
+          namedBranchIds
+            .filter((id) => allBranches[id])
+            .map((id) => [id, allBranches[id]]),
+        ),
+      );
     }
     if (PlanGenerator.DEBUG)
       console.log("possibleExercises for " + skill, possibleExercises);
@@ -1638,6 +1702,10 @@ export default class PlanGenerator {
         levels: {} as Record<number, { exerciseId: string }>,
       };
     });
+    // named branches the filters removed leave nothing to pick
+    possibleBranches = possibleBranches.filter(
+      (branch) => branch.branchId !== "-1",
+    );
     if (PlanGenerator.DEBUG || log)
       console.log(
         "num of possible Branches for skill " + skill,
@@ -1659,7 +1727,7 @@ export default class PlanGenerator {
         weightPercentage = 0.3;
       } else {
         if (place === "STUDIO") {
-          if (skill.indexOf("SWR") > -1 || skill === "GKS") {
+          if (isStrengthSkill(skill)) {
             weightPercentage = 0.8;
           } else {
             weightPercentage = 0.6;
@@ -1854,11 +1922,11 @@ export default class PlanGenerator {
       // filter by type for weight/kg distribution only if not MAX
       let nextTypeFiltered: typeof possibleBranches = [];
       if (skill.indexOf("MAX") === -1) {
-        nextTypeFiltered = getNextTypeFiltered(nextType, involvementFiltered);
+        nextTypeFiltered = getNextTypeFiltered(nextType, equipmentFiltered);
         if (nextTypeFiltered.length < 1) {
           // no more found for type, take other
           nextType = nextType === "kg" ? "weight" : "kg";
-          nextTypeFiltered = getNextTypeFiltered(nextType, involvementFiltered);
+          nextTypeFiltered = getNextTypeFiltered(nextType, equipmentFiltered);
         }
         if (nextType === "kg") {
           kgExercisesToUse--;
@@ -1871,7 +1939,7 @@ export default class PlanGenerator {
         nextTypeFiltered = equipmentFiltered;
       }
 
-      let remainingPossibilities = equipmentFiltered;
+      let remainingPossibilities = nextTypeFiltered;
       let exerciseBranch: SkillBranchWithId | null = null;
 
       if (remainingPossibilities.length > 0) {
@@ -2497,94 +2565,18 @@ export default class PlanGenerator {
         case 1:
           //use PHASE
           return ["PHASE"];
-        case 2:
-          if (
-            (trainingPossibilities[0].place === "STUDIO" &&
-              trainingPossibilities[1].place !== "STUDIO") ||
-            (trainingPossibilities[0].place !== "STUDIO" &&
-              trainingPossibilities[1].place === "STUDIO")
-          ) {
-            // only one studio day and other is not home (see above) put phase there
-            return trainingPossibilities.map((e) =>
-              e.place === "STUDIO"
-                ? "PHASE"
-                : e.hasRunEquipment
-                  ? "CARDIO"
-                  : "STABILITY",
-            );
-          } else if (
-            (trainingPossibilities[0].hasRunEquipment &&
-              !trainingPossibilities[1].hasRunEquipment) ||
-            (!trainingPossibilities[0].hasRunEquipment &&
-              trainingPossibilities[1].hasRunEquipment)
-          ) {
-            // only one home day put phase there to have cardio somewhere else
-            return trainingPossibilities.map((e) =>
-              !e.hasRunEquipment ? "PHASE" : "CARDIO",
-            );
-          } else if (
-            !trainingPossibilities[0].hasRunEquipment &&
-            !trainingPossibilities[1].hasRunEquipment
-          ) {
-            // both home
-            if (
-              trainingPossibilities[1].duration >
-              trainingPossibilities[0].duration
-            ) {
-              return ["STABILITY", "PHASE"];
-            } else {
-              return ["PHASE", "STABILITY"];
-            }
-          } else {
-            // both or none is studio day
-            // none is home day
-            // put PHASE to longer training day
-            if (
-              trainingPossibilities[0].duration <
-              trainingPossibilities[1].duration
-            ) {
-              // first day STABILITY/CARDIO depending on place
-              return [
-                trainingPossibilities[0].hasRunEquipment
-                  ? "CARDIO"
-                  : "STABILITY",
-                "PHASE",
-              ];
-            }
-            // otherway round
-            return [
-              "PHASE",
-              trainingPossibilities[0].hasRunEquipment ? "CARDIO" : "STABILITY",
-            ];
-          }
+        case 2: {
+          const phaseIndex = getTwoDayPhaseIndex(trainingPossibilities);
+          return trainingPossibilities.map((e, index) =>
+            index === phaseIndex
+              ? "PHASE"
+              : e.hasRunEquipment
+                ? "CARDIO"
+                : "STABILITY",
+          );
+        }
         case 3:
-          // no run eq => no cardio
-          if (
-            trainingPossibilities.filter((e) => !e.hasRunEquipment).length === 3
-          ) {
-            return ["PHASE", "STABILITY", "PHASE"];
-          }
-          // when HOME-GYM-HOME exactly as defined
-          if (
-            trainingPossibilities[0].place === "HOME" &&
-            trainingPossibilities[1].place === "STUDIO" &&
-            trainingPossibilities[2].place === "HOME"
-          ) {
-            const firstHome: FocusType = trainingPossibilities[0]
-              .hasRunEquipment
-              ? "CARDIO"
-              : "STABILITY";
-            let secondHome: FocusType = "STABILITY";
-            if (
-              firstHome !== "CARDIO" &&
-              trainingPossibilities[2].hasRunEquipment
-            ) {
-              secondHome = "CARDIO";
-            }
-            return [firstHome, "PHASE", secondHome];
-          }
-
-          // else match best
+          // studio days first, then non-home days, then home days
           const sorting: Record<number, FocusType> = {};
           const focuses: FocusType[] = ["PHASE", "CARDIO", "STABILITY"];
           let studioDays: TrainingPossibility[] = trainingPossibilities.filter(
@@ -2598,15 +2590,7 @@ export default class PlanGenerator {
           );
           // 1 - STUDIO
           while (focuses.length > 0 && studioDays.length > 0) {
-            let longestStudioDayIndex = 0;
-            for (let i = 0; i < studioDays.length; i++) {
-              if (
-                studioDays[i].duration >
-                studioDays[longestStudioDayIndex].duration
-              ) {
-                longestStudioDayIndex = i;
-              }
-            }
+            const longestStudioDayIndex = indexOfLongestDay(studioDays);
             sorting[studioDays[longestStudioDayIndex].weekday] = focuses.splice(
               0,
               1,
@@ -2615,14 +2599,7 @@ export default class PlanGenerator {
           }
           // 2 - NOT HOME
           while (focuses.length > 0 && otherDays.length > 0) {
-            let longestOtherDayIndex = 0;
-            for (let i = 0; i < otherDays.length; i++) {
-              if (
-                otherDays[i].duration > otherDays[longestOtherDayIndex].duration
-              ) {
-                longestOtherDayIndex = i;
-              }
-            }
+            const longestOtherDayIndex = indexOfLongestDay(otherDays);
             sorting[otherDays[longestOtherDayIndex].weekday] = focuses.splice(
               0,
               1,
@@ -2631,14 +2608,7 @@ export default class PlanGenerator {
           }
           // 3 - HOME
           while (focuses.length > 0 && homeDays.length > 0) {
-            let longestHomeDayIndex = 0;
-            for (let i = 0; i < homeDays.length; i++) {
-              if (
-                homeDays[i].duration > homeDays[longestHomeDayIndex].duration
-              ) {
-                longestHomeDayIndex = i;
-              }
-            }
+            const longestHomeDayIndex = indexOfLongestDay(homeDays);
             let focus: FocusType = focuses.splice(0, 1)[0];
             if (
               focus === "CARDIO" &&

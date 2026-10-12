@@ -39,6 +39,17 @@ export function getSkillTree(
       result = skillTrees["PLYO"];
       break;
 
+    // plyometric intensities are tags inside the PLYO tree
+    case "PLYO_HIGH":
+    case "PLYO_MEDIUM":
+    case "PLYO_LOW":
+      result = Object.fromEntries(
+        Object.entries(skillTrees["PLYO"] ?? {}).filter(([, branch]) =>
+          branch.tags.includes(`SKILL_${skill}`),
+        ),
+      );
+      break;
+
     case "PREVKNEE":
     case "PREVSHOULDER":
     case "PREVANKLE":

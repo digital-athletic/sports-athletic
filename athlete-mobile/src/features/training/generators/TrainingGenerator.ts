@@ -1147,11 +1147,9 @@ export default class TrainingGenerator {
     isShortWorkout: boolean,
   ): ExerciseBranchType[] => {
     const replacement: ExerciseBranchType[] = [];
-    // no weights for kids
     requireWorkoutData(user);
     const ageGroup = ageGroupFor(getUserBirthday(user));
-    const HAS_WEIGHTS =
-      ageGroup !== WorkoutConstants.AGE_GROUPS.CHILD && hasWeights(equipment);
+    const HAS_WEIGHTS = hasWeights(equipment);
 
     let skillTree = getSkillTree(
       skillTrees,

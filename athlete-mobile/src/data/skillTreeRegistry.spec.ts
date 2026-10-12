@@ -84,6 +84,20 @@ describe("skillTreeRegistry", () => {
     });
   });
 
+  describe("tags", () => {
+    it("holds no branch with a doubled muscle prefix", () => {
+      const malformed = Object.entries(getAllSkillTrees()).flatMap(
+        ([treeName, tree]) =>
+          Object.entries(tree)
+            .filter(([, branch]) =>
+              branch.tags.some((tag) => tag.startsWith("MUSCLE_MUSCLE_")),
+            )
+            .map(([branchId]) => `${treeName}/${branchId}`),
+      );
+      expect(malformed).toEqual([]);
+    });
+  });
+
   describe("clearSkillTreeRegistry", () => {
     it("creates a new object instance after clearing", () => {
       const before = getAllSkillTrees();

@@ -10,9 +10,8 @@ import { Ionicon } from "@/common/Ionicon";
 import { featureFlags } from "@/config/featureFlags";
 import { LINK_AGB, LINK_IMPRINT, LINK_PRIVACY } from "@/constants/AppConstants";
 import { ListDivider } from "@/common/ListDivider";
-import { useAgeGroup } from "@/features/anamnesis/useAgeGroup";
 import { ListItem } from "@/features/more/ListItem";
-import { canTakeStrengthTest } from "@/features/training/utils/strengthTestUtils";
+import { StrengthTestMenuItems } from "@/features/more/StrengthTestMenuItems";
 import { Box } from "@/theme/Box";
 import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
@@ -33,7 +32,6 @@ export default function MoreScreen() {
 
   const { logout, isLoading: isLoggingOut } = useLogout();
   const { deleteAccount, isLoading: isDeleting } = useDeleteAccount();
-  const strengthTestAllowed = canTakeStrengthTest(useAgeGroup());
 
   // Check if user has test access
   const hasTestAccess = false;
@@ -99,24 +97,7 @@ export default function MoreScreen() {
             iconName="stats-chart"
             iconBackground="primary"
           />
-          {strengthTestAllowed && (
-            <ListItem
-              title={t("more.startNewTestWorkout")}
-              navPath="/training/muscle-soreness"
-              navParams={{
-                type: "TEST_WORKOUT",
-                originPath: "/(tabs)/(more)/more",
-              }}
-              iconName="barbell"
-              iconBackground="primary"
-            />
-          )}
-          <ListItem
-            title={t("more.enterTestManually")}
-            navPath="/training/manual-strength-test"
-            iconName="create"
-            iconBackground="primary"
-          />
+          <StrengthTestMenuItems />
           <ListItem
             title={t("more.technicalVideos")}
             navPath="/(tabs)/(more)/tutorials"

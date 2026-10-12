@@ -152,7 +152,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
   }, [anamnesisCompleted, router, t]);
 
   const renderManualInputButton = () => {
-    if (isSuccessScreen) return null;
+    if (isSuccessScreen || !strengthTestAllowed) return null;
 
     return (
       <TouchableOpacity

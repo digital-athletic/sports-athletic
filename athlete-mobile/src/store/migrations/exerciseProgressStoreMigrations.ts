@@ -86,4 +86,15 @@ export const exerciseProgressStoreMigrations: MigrationMap<State> = {
     }
     return { ...state, branchData };
   },
+  // The old standard progression changed cardio levels; cardio has entry levels only.
+  18: (state) => {
+    const cardioBranchIds = Object.entries(getAllSkillTrees())
+      .filter(([treeName]) => treeName.startsWith("CARDIO"))
+      .flatMap(([, tree]) => Object.keys(tree));
+    const branchData = { ...state.branchData };
+    for (const branchId of cardioBranchIds) {
+      delete branchData[branchId];
+    }
+    return { ...state, branchData };
+  },
 };

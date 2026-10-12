@@ -40,7 +40,12 @@ describe("exerciseRegistry", () => {
     });
 
     it("blocks knee, ankle, hip and spine on every high intensity plyometric exercise", () => {
-      const required = ["BLOCK_KNEE", "BLOCK_ANKLE", "BLOCK_HIP", "BLOCK_SPINE"];
+      const required = [
+        "BLOCK_KNEE",
+        "BLOCK_ANKLE",
+        "BLOCK_HIP",
+        "BLOCK_SPINE",
+      ];
       const unblocked = getAllExercises()
         .filter((exercise) => exercise.tags.includes("SKILL_PLYO_HIGH"))
         .filter((exercise) =>

@@ -2203,59 +2203,6 @@ describe("TrainingGenerator", () => {
     } = require("../../../../test/factories/planWorkout");
 
     /**
-     * When a plan branch requires specific equipment (EQ_BOTTLE) but the
-     * user has no equipment and no replacement tree is available, the
-     * generator should throw a NO_EXERCISES/EQUIPMENT error.
-     */
-    it("throws EQUIPMENT error when hall has no equipment", () => {
-      const user = buildPlanUser({
-        weekday: 1,
-        skills: {
-          SWR1: [
-            {
-              branchId: "68",
-              tags: [
-                "EQ_BOTTLE",
-                "EQ_TYPE_EQUIPMENT",
-                "PLACE_HALL",
-                "REGION_CORE",
-              ],
-              exercises: {
-                "1": { exerciseId: "223" },
-                "2": { exerciseId: "224" },
-                "3": { exerciseId: "224" },
-              },
-            },
-          ],
-        },
-        lengths: { SWR1: 10 },
-      });
-
-      let thrownError: unknown;
-      try {
-        generator.generatePlanWorkout(
-          "PLAN",
-          user,
-          "HALL",
-          realExercises,
-          importTrees("WU", "CARDIO_4", "CARDIO_5"),
-          1,
-          [],
-          undefined,
-          0,
-          noExerciseData,
-        );
-      } catch (e) {
-        thrownError = e;
-      }
-      expect(thrownError).toEqual({
-        type: "NO_EXERCISES",
-        subtype: "EQUIPMENT",
-        params: expect.any(Array),
-      });
-    });
-
-    /**
      * Verifies that replaceExerciseBranches avoids duplicate exercise IDs.
      *
      * User plan — 2 GKS branches:

@@ -2,6 +2,7 @@ import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { PlacesData } from "@/store/placesStore";
 import {
   equipmentExists,
+  filterByEquipment,
   hasAnyBarbell,
   hasBarbell,
   hasRunEquipment,
@@ -18,6 +19,32 @@ const makePlaces = (overrides: Partial<PlacesData> = {}): PlacesData => ({
 
 describe("equipmentUtils", () => {
   const { EQUIPMENT } = WorkoutConstants;
+
+  describe("filterByEquipment: replacement requests", () => {
+    const blocked = (regions: string[]) => ({
+      tags: ["EQ_BOTTLE", ...regions],
+      exercises: { "1": { exerciseId: "1" } },
+    });
+
+    it("requests one replacement per blocked branch in the same region", () => {
+      const result = filterByEquipment(
+        {
+          "1": blocked(["REGION_LOWER_BODY"]),
+          "2": blocked(["REGION_LOWER_BODY"]),
+        },
+        [],
+      );
+      expect(result.replace).toEqual(["LOWER_BODY", "LOWER_BODY"]);
+    });
+
+    it("requests one replacement for a blocked branch with several region tags", () => {
+      const result = filterByEquipment(
+        { "1": blocked(["REGION_UPPER_BODY", "REGION_CORE"]) },
+        [],
+      );
+      expect(result.replace).toEqual(["UPPER_BODY"]);
+    });
+  });
 
   describe("hasBarbell", () => {
     it("returns true when equipment includes BARBELL", () => {

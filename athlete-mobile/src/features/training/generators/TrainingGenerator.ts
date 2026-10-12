@@ -59,6 +59,10 @@ import {
   getUserExerciseFromBranch,
   resolveBranchExerciseId,
 } from "@/features/training/utils/skillTreeUtils";
+import {
+  isBigMuscleExercise,
+  pickSupersetPartner,
+} from "@/features/training/utils/supersetPairingUtils";
 import { isTrainingLevel } from "@/schemas/common.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import {
@@ -1273,12 +1277,37 @@ export default class TrainingGenerator {
         userExerciseData.branchData,
       ).keep;
       filteredBranches = filterByAge(filteredBranches, ageGroup).keep;
+      filteredBranches = filterByGender(
+        filteredBranches,
+        getUserGender(user) ?? "FEMALE",
+      ).keep;
+
+      const userLevel = getUserLevel(user);
+      const resolveExerciseId = (branchId: string): string | null =>
+        resolveBranchExerciseId(
+          skillTree[branchId],
+          userLevel,
+          userExerciseData.branchData[branchId],
+        );
+
+      const usedExerciseIds = new Set<string>();
+      for (const branchId of usedBranchIds) {
+        const exerciseId = skillTree[branchId]
+          ? resolveExerciseId(branchId)
+          : null;
+        if (exerciseId) {
+          usedExerciseIds.add(exerciseId);
+        }
+      }
 
       let possibleBranches = Object.keys(filteredBranches).filter(
         (branchId) => usedBranchIds.indexOf(branchId) === -1,
       );
-
-      const userLevel = getUserLevel(user);
+      // A candidate resolving to an exercise the skill already holds drops out
+      const isUnusedExercise = (branchId: string): boolean => {
+        const exerciseId = resolveExerciseId(branchId);
+        return exerciseId === null || !usedExerciseIds.has(exerciseId);
+      };
       const maxCountPerRegion = userLevel === "PROFESSIONAL" ? 6 : 5;
       const branchesByRegion: Record<string, number> = {
         LOWER_BODY: 0,
@@ -1299,23 +1328,8 @@ export default class TrainingGenerator {
         }
       }
 
-      const usedExerciseIds = new Set<string>();
-      const levelNum =
-        userLevel === "PROFESSIONAL" ? 3 : userLevel === "ADVANCED" ? 2 : 1;
-
-      for (const branchId of usedBranchIds) {
-        if (skillTree[branchId]) {
-          const levels = skillTree[branchId].levels;
-          for (let l = levelNum; l > 0; l--) {
-            if (levels[l]) {
-              usedExerciseIds.add(levels[l].exerciseId);
-              break;
-            }
-          }
-        }
-      }
-
       for (let i = 0; i < replace.length; i++) {
+        possibleBranches = possibleBranches.filter(isUnusedExercise);
         if (possibleBranches.length < 1) {
           // skip for now
           //TODO discuss possible alternatives to skipping
@@ -1338,29 +1352,11 @@ export default class TrainingGenerator {
             );
             return branchRegions.includes(regionToReplace);
           });
-          // Filter for branches with unique exercise IDs (not already used)
-          const filterUniqueExercises = (branches: string[]): string[] =>
-            branches.filter((branchId) => {
-              const levels = skillTree[branchId].levels;
-              for (let l = levelNum; l > 0; l--) {
-                if (levels[l]) {
-                  return !usedExerciseIds.has(levels[l].exerciseId);
-                }
-              }
-              return true;
-            });
-
-          // Prefer branches with unique exercise IDs in the exact region
-          const uniqueExactRegion = filterUniqueExercises(regionBranches);
-          if (uniqueExactRegion.length > 0) {
-            regionBranches = uniqueExactRegion;
-          } else {
-            // Try less-used regions, preferring those with unique exercises
+          if (regionBranches.length === 0) {
+            // Try less-used regions
             let arrayOfLessUsedRegions = Object.keys(branchesByRegion).sort(
               (a, b) => branchesByRegion[a] - branchesByRegion[b],
             );
-            let fallbackRegionBranches: string[] = [];
-            regionBranches = [];
             for (let l = 0; l < arrayOfLessUsedRegions.length; l++) {
               if (
                 branchesByRegion[arrayOfLessUsedRegions[l]] >= maxCountPerRegion
@@ -1391,20 +1387,9 @@ export default class TrainingGenerator {
                 });
               }
               if (candidatesForRegion.length > 0) {
-                if (fallbackRegionBranches.length === 0) {
-                  fallbackRegionBranches = candidatesForRegion;
-                }
-                const uniqueInRegion =
-                  filterUniqueExercises(candidatesForRegion);
-                if (uniqueInRegion.length > 0) {
-                  regionBranches = uniqueInRegion;
-                  break;
-                }
+                regionBranches = candidatesForRegion;
+                break;
               }
-            }
-            // If no region had unique exercises, accept duplicates as last resort
-            if (regionBranches.length === 0) {
-              regionBranches = fallbackRegionBranches;
             }
           }
           if (regionBranches.length === 0) {
@@ -1441,10 +1426,7 @@ export default class TrainingGenerator {
               exerciseId: levelData.exerciseId,
             };
           }
-          const resolvedId =
-            exerciseLevels[levelNum]?.exerciseId ??
-            exerciseLevels[levelNum - 1]?.exerciseId ??
-            "";
+          const resolvedId = resolveExerciseId(branchId);
           if (resolvedId) {
             usedExerciseIds.add(resolvedId);
           }
@@ -2265,11 +2247,7 @@ export default class TrainingGenerator {
     let smallMuscleExercises: BranchExerciseReference[] = [];
     // sort branches into big and small muscle branches
     for (let b = 0; b < branches.length; b++) {
-      let muscles = getTagValues(branches[b].branchTags, TagGroups.MUSCLE);
-      if (
-        muscles.filter((e, i) => WorkoutConstants.BIG_MUSCLES.indexOf(e) > -1)
-          .length > 0
-      ) {
+      if (isBigMuscleExercise(branches[b])) {
         bigMuscleExercises.push(branches[b]);
       } else {
         smallMuscleExercises.push(branches[b]);
@@ -2360,230 +2338,59 @@ export default class TrainingGenerator {
       console.log("Use default exercise pairing for PREV", skill);
     }
 
-    // use big muscle exercises
-    while (bigMuscleExercises.length > 0) {
-      const first = bigMuscleExercises.pop();
+    // big muscle exercises lead first; a lead missing from the catalog is
+    // dropped only in the big group, as before
+    const leadGroups = [
+      { leads: bigMuscleExercises, requireCatalogEntry: true },
+      { leads: smallMuscleExercises, requireCatalogEntry: false },
+    ];
+    for (const { leads, requireCatalogEntry } of leadGroups) {
+      while (leads.length > 0) {
+        const first = leads.pop();
 
-      // safety check here because sometimes exerciseId is not set ?!?
-      if (
-        !first ||
-        typeof first.exerciseId === "undefined" ||
-        first.exerciseId === null
-      )
-        continue;
+        // safety check here because sometimes exerciseId is not set ?!?
+        if (
+          !first ||
+          typeof first.exerciseId === "undefined" ||
+          first.exerciseId === null
+        )
+          continue;
 
-      const pair: ExercisePair = { first };
-
-      const exercise = exercises.filter(
-        (entry) => entry.id === first.exerciseId,
-      )[0];
-      if (!exercise) {
-        Logger.logEvent("exercise_data_in_pair_not_found", first);
-        continue;
-      }
-      const sides: string[] = getTagValues(first.branchTags, TagGroups.SIDE);
-      if (TrainingGenerator.DEBUG) {
-        console.log("found sides", sides, "for exercise", exercise);
-      }
-
-      if (
-        sides.length > 0 &&
-        sides.indexOf("ONE") > -1 &&
-        exercise.otherSideExerciseId
-      ) {
-        // use other side in superset
-        pair.second = {
-          branchId: first.branchId,
-          branchTags: first.branchTags,
-          exerciseId: exercise.otherSideExerciseId,
-        };
-        if (TrainingGenerator.DEBUG) {
-          console.log("found other side exercise", pair.second.exerciseId);
-        }
-      } else if (isSuperset) {
-        const oppMuscles = getOpposingMuscles(
-          getTagValues(first.branchTags, TagGroups.MUSCLE),
+        const pair: ExercisePair = { first };
+        const exercise = exercises.find(
+          (entry) => entry.id === first.exerciseId,
         );
-        // do not use one sided exercises to complete superset
-        const bothSideBigMuscleExercises = bigMuscleExercises.filter((e) => {
-          return (
-            getTagValues(e.branchTags, TagGroups.SIDE).filter((e2) => {
-              return e2 === "ONE" || e2 === "LEFT" || e2 === "RIGHT";
-            }).length === 0
+        if (!exercise && requireCatalogEntry) {
+          Logger.logEvent("exercise_data_in_pair_not_found", first);
+          continue;
+        }
+        const sides = getTagValues(first.branchTags, TagGroups.SIDE);
+
+        if (sides.indexOf("ONE") > -1 && exercise?.otherSideExerciseId) {
+          // use other side in superset
+          pair.second = {
+            branchId: first.branchId,
+            branchTags: first.branchTags,
+            exerciseId: exercise.otherSideExerciseId,
+          };
+        } else if (isSuperset) {
+          const partner = pickSupersetPartner(
+            first,
+            [...bigMuscleExercises, ...smallMuscleExercises],
+            getOpposingMuscles(
+              getTagValues(first.branchTags, TagGroups.MUSCLE),
+            ),
           );
-        });
-        const bothSideSmallMuscleExercises = smallMuscleExercises.filter(
-          (e) => {
-            return (
-              getTagValues(e.branchTags, TagGroups.SIDE).filter((e2) => {
-                return e2 === "ONE" || e2 === "LEFT" || e2 === "RIGHT";
-              }).length === 0
-            );
-          },
-        );
-
-        // find exercise with opposing muscle
-        let oppBigExercises: BranchExerciseReference[] = [];
-        let oppSmallExercises: BranchExerciseReference[] = [];
-        if (bothSideBigMuscleExercises.length > 0) {
-          oppBigExercises = bothSideBigMuscleExercises.filter((e) => {
-            return (
-              // use opposing muscles
-              getTagValues(e.branchTags, TagGroups.MUSCLE).filter((e3) => {
-                return oppMuscles.indexOf(e3) > -1;
-              }).length > 0
-            );
-          });
+          if (partner) {
+            const pool = bigMuscleExercises.includes(partner)
+              ? bigMuscleExercises
+              : smallMuscleExercises;
+            pool.splice(pool.indexOf(partner), 1);
+            pair.second = partner;
+          }
         }
-        if (oppBigExercises.length === 0) {
-          // no big muscle opponent found, look for small one
-          oppSmallExercises = bothSideSmallMuscleExercises.filter((e) => {
-            return (
-              // use opposing muscles
-              getTagValues(e.branchTags, TagGroups.MUSCLE).filter((e3) => {
-                return oppMuscles.indexOf(e3) > -1;
-              }).length > 0
-            );
-          });
-        }
-        if (oppBigExercises.length > 0) {
-          // use opposing big muscle
-          const exId = oppBigExercises[0].exerciseId;
-          for (let i = 0; i < bigMuscleExercises.length; i++) {
-            if (bigMuscleExercises[i].exerciseId === exId) {
-              pair.second = bigMuscleExercises.splice(i, 1)[0];
-              break;
-            }
-          }
-        } else if (oppSmallExercises.length > 0) {
-          // use opposing big muscle
-          const exId = oppSmallExercises[0].exerciseId;
-          for (let i = 0; i < smallMuscleExercises.length; i++) {
-            if (smallMuscleExercises[i].exerciseId === exId) {
-              pair.second = smallMuscleExercises.splice(i, 1)[0];
-              break;
-            }
-          }
-        } else if (bothSideBigMuscleExercises.length > 0) {
-          // use any big muscle
-          const exId = bothSideBigMuscleExercises[0].exerciseId;
-          for (let i = 0; i < bigMuscleExercises.length; i++) {
-            if (bigMuscleExercises[i].exerciseId === exId) {
-              pair.second = bigMuscleExercises.splice(i, 1)[0];
-              break;
-            }
-          }
-        } else if (bothSideSmallMuscleExercises.length > 0) {
-          // use any small muscle
-          const exId = bothSideSmallMuscleExercises[0].exerciseId;
-          for (let i = 0; i < smallMuscleExercises.length; i++) {
-            if (smallMuscleExercises[i].exerciseId === exId) {
-              pair.second = smallMuscleExercises.splice(i, 1)[0];
-              break;
-            }
-          }
-        } else {
-          if (TrainingGenerator.DEBUG)
-            console.log("No second exercise found for super set with: ", first);
-        }
+        exercisePairs.push(pair);
       }
-      exercisePairs.push(pair);
-    }
-
-    // use small muscle exercises
-    while (smallMuscleExercises.length > 0) {
-      const first = smallMuscleExercises.pop();
-
-      // safety check here because sometimes exerciseId is not set ?!?
-      if (
-        !first ||
-        typeof first.exerciseId === "undefined" ||
-        first.exerciseId === null
-      )
-        continue;
-
-      const pair: ExercisePair = { first };
-
-      const exercise = exercises.filter(
-        (entry) => entry.id === first.exerciseId,
-      )[0];
-      const sides: string[] = getTagValues(first.branchTags, TagGroups.SIDE);
-
-      if (TrainingGenerator.DEBUG) {
-        console.log("found sides", sides, "for exercise", exercise);
-      }
-
-      if (
-        sides.length > 0 &&
-        sides.indexOf("ONE") > -1 &&
-        exercise.otherSideExerciseId
-      ) {
-        // use other side in superset
-        pair.second = {
-          branchId: first.branchId,
-          branchTags: first.branchTags,
-          exerciseId: exercise.otherSideExerciseId,
-        };
-        if (TrainingGenerator.DEBUG) {
-          console.log("found other side exercise", pair.second.exerciseId);
-        }
-      } else if (isSuperset) {
-        // TODO filter complex before isolated
-        // TODO opp direction first
-        const oppMuscles = getOpposingMuscles(
-          getTagValues(first.branchTags, TagGroups.MUSCLE),
-        );
-
-        const bothSideSmallMuscleExercises = smallMuscleExercises.filter(
-          (e) => {
-            return (
-              getTagValues(e.branchTags, TagGroups.SIDE).filter((e2) => {
-                return e2 === "ONE" || e2 === "LEFT" || e2 === "RIGHT";
-              }).length === 0
-            );
-          },
-        );
-
-        let oppExercises: BranchExerciseReference[] = [];
-        if (bothSideSmallMuscleExercises.length > 0) {
-          oppExercises = bothSideSmallMuscleExercises.filter((e) => {
-            return (
-              getTagValues(e.branchTags, TagGroups.MUSCLE).filter((e2) => {
-                return oppMuscles.indexOf(e2) > -1;
-              }).length > 0
-            );
-          });
-        }
-
-        if (oppExercises.length > 0) {
-          // use opposing small muscle
-          const exId =
-            oppExercises[Math.floor(Math.random() * oppExercises.length)]
-              .exerciseId;
-          for (let i = 0; i < smallMuscleExercises.length; i++) {
-            if (smallMuscleExercises[i].exerciseId === exId) {
-              pair.second = smallMuscleExercises.splice(i, 1)[0];
-              break;
-            }
-          }
-        } else if (bothSideSmallMuscleExercises.length > 0) {
-          // use any small muscle
-          const exId =
-            bothSideSmallMuscleExercises[
-              Math.floor(Math.random() * bothSideSmallMuscleExercises.length)
-            ].exerciseId;
-          for (let i = 0; i < smallMuscleExercises.length; i++) {
-            if (smallMuscleExercises[i].exerciseId === exId) {
-              pair.second = smallMuscleExercises.splice(i, 1)[0];
-              break;
-            }
-          }
-        } else {
-          if (TrainingGenerator.DEBUG)
-            console.log("No second exercise found for super set with: ", first);
-        }
-      }
-      exercisePairs.push(pair);
     }
 
     //TODO Equipment Kombinationen Prios beachten

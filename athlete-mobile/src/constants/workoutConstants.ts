@@ -153,10 +153,11 @@ const MUSCLES = [
 
 const BIG_MUSCLES = [
   "CHEST",
+  "UPPER_BACK",
   "LATISSIMUS",
+  "QUADRICEPS",
   "GLUTES",
-  "INNER_THIGH",
-  "OUTER_THIGH",
+  "HAMSTRINGS",
 ];
 
 export type WorkoutRegion = "UPPER_BODY" | "LOWER_BODY" | "CORE";

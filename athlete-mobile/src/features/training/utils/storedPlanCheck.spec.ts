@@ -37,7 +37,8 @@ const planWith = (skills: UserSkills): TrainingPlanType => ({
   ],
 });
 
-type UserSkills = TrainingPlanType["sections"][number]["trainings"][number]["skills"];
+type UserSkills =
+  TrainingPlanType["sections"][number]["trainings"][number]["skills"];
 
 const trainingDays = (place: TrainingDayType["place"]): TrainingDayType[] => [
   { active: true, weekday: 1, duration: minutes(60), place },
@@ -68,9 +69,9 @@ const twelveYearsAgo = `${new Date().getFullYear() - 12}-01-01`;
 
 describe("isStoredPlanBroken", () => {
   it("flags an adult-only branch in the plan of a child", () => {
-    expect(check(planWith({ SWR1: [adultOnly] }), { birthday: twelveYearsAgo })).toBe(
-      true,
-    );
+    expect(
+      check(planWith({ SWR1: [adultOnly] }), { birthday: twelveYearsAgo }),
+    ).toBe(true);
   });
 
   it("accepts an adult-only branch in the plan of an adult", () => {
@@ -78,15 +79,21 @@ describe("isStoredPlanBroken", () => {
   });
 
   it("accepts an adult-only branch when the birthday is missing", () => {
-    expect(check(planWith({ SWR1: [adultOnly] }), { birthday: "" })).toBe(false);
+    expect(check(planWith({ SWR1: [adultOnly] }), { birthday: "" })).toBe(
+      false,
+    );
   });
 
   it("flags a max strength lift whose equipment the day's place lacks", () => {
-    expect(check(planWith({ MAX_KRAFT: [squat] }), { place: "HOME" })).toBe(true);
+    expect(check(planWith({ MAX_KRAFT: [squat] }), { place: "HOME" })).toBe(
+      true,
+    );
   });
 
   it("accepts a max strength lift at a place with its equipment", () => {
-    expect(check(planWith({ MAX_KRAFT: [squat] }), { place: "STUDIO" })).toBe(false);
+    expect(check(planWith({ MAX_KRAFT: [squat] }), { place: "STUDIO" })).toBe(
+      false,
+    );
   });
 
   it("accepts other skills with missing equipment, which workouts replace", () => {

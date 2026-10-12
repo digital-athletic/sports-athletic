@@ -4,6 +4,11 @@ import type { State } from "../userWorkoutStore";
 import { migratePositionTags } from "./positionMigration";
 
 export const userWorkoutStoreMigrations: MigrationMap<State> = {
+  // Older plan creation let adult-only branches into a child's plan and max
+  // strength lifts into days without their equipment. The plan itself stays;
+  // the app checks it once at start and rebuilds it only when it is broken.
+  16: (state) =>
+    state.trainingPlan ? { ...state, planCheckPending: true } : state,
   15: (state) => ({
     ...state,
     workoutData: {

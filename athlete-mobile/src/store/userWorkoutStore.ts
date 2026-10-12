@@ -29,6 +29,8 @@ export type State = {
   workoutData: UserWorkoutDataType;
   trainingPlan: TrainingPlanType | null;
   temporalData?: TemporalDataType[];
+  // Set by a store migration: check the stored plan once at app start
+  planCheckPending?: boolean;
 };
 
 const createInitialWorkoutData = (): UserWorkoutDataType => ({
@@ -59,6 +61,7 @@ type Actions = {
   setTags: (tags: TagsByGroup) => void;
   setTrainingPlan: (plan: TrainingPlanType | null) => void;
   setTemporalData: (data: TemporalDataType[]) => void;
+  setPlanCheckPending: (pending: boolean) => void;
   resetUserWorkoutData: () => void;
   replaceBranchInTrainingPlan: (
     sectionIndex: number,
@@ -134,12 +137,18 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
           state.temporalData = data;
         }),
 
+      setPlanCheckPending: (pending) =>
+        set((state) => {
+          state.planCheckPending = pending;
+        }),
+
       resetUserWorkoutData: () =>
         set((state) => {
           const initialState = createInitialState();
           state.workoutData = initialState.workoutData;
           state.trainingPlan = initialState.trainingPlan;
           state.temporalData = initialState.temporalData;
+          state.planCheckPending = false;
         }),
 
       /**

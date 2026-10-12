@@ -553,7 +553,7 @@ describe("exerciseProgressStore", () => {
       const { result } = renderHook(() => useExerciseProgressStore());
 
       act(() => {
-        result.current.setBranchLevel("branch1", 3);
+        result.current.setBranchLevel("branch1", 3, "301");
       });
 
       expect(result.current.branchData["branch1"]?.level).toBe(3);
@@ -563,11 +563,38 @@ describe("exerciseProgressStore", () => {
       const { result } = renderHook(() => useExerciseProgressStore());
 
       act(() => {
-        result.current.setBranchLevel("branch1", 2);
-        result.current.setBranchLevel("branch1", 5);
+        result.current.setBranchLevel("branch1", 2, "201");
+        result.current.setBranchLevel("branch1", 5, "501");
       });
 
       expect(result.current.branchData["branch1"]?.level).toBe(5);
+    });
+
+    it("stores the exercise of the new level", () => {
+      const { result } = renderHook(() => useExerciseProgressStore());
+
+      act(() => {
+        result.current.setBranchLevel("branch1", 2, "201");
+        result.current.setBranchLevel("branch1", 5, "501");
+      });
+
+      expect(result.current.branchData["branch1"]?.exerciseId).toBe("501");
+    });
+  });
+
+  describe("setBranchData", () => {
+    it("replaces the stored branch data", () => {
+      const { result } = renderHook(() => useExerciseProgressStore());
+      const branchData = {
+        branch2: { branchId: "branch2", level: 4, exerciseId: "401" },
+      };
+
+      act(() => {
+        result.current.setBranchLevel("branch1", 2, "201");
+        result.current.setBranchData(branchData);
+      });
+
+      expect(result.current.branchData).toEqual(branchData);
     });
   });
 

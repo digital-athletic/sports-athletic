@@ -87,4 +87,31 @@ describe("exerciseProgressStoreMigrations", () => {
       expect(levelAfterMigration(7, "unknown-branch")).toBe(7);
     });
   });
+
+  // Branch 253 holds exercise 516 at level 2
+  describe("v17 to v18: stores the exercise of each stored branch level", () => {
+    const entryAfterMigration = (level: number, branchId = "253") =>
+      exerciseProgressStoreMigrations[17](
+        stateWith({}, { [branchId]: { branchId, level } }),
+      ).branchData[branchId];
+
+    it("stores the exercise the branch holds at the stored level", () => {
+      expect(entryAfterMigration(2)).toEqual({
+        branchId: "253",
+        level: 2,
+        exerciseId: "516",
+      });
+    });
+
+    it("stores no exercise for a level the branch does not hold", () => {
+      expect(entryAfterMigration(3)).toEqual({ branchId: "253", level: 3 });
+    });
+
+    it("keeps the entry of a branch that no skill tree holds", () => {
+      expect(entryAfterMigration(2, "unknown-branch")).toEqual({
+        branchId: "unknown-branch",
+        level: 2,
+      });
+    });
+  });
 });

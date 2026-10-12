@@ -1,9 +1,12 @@
 import type { State } from "../exerciseProgressStore";
 import { exerciseProgressStoreMigrations } from "./exerciseProgressStoreMigrations";
 
-const stateWith = (exerciseData: State["exerciseData"]): State => ({
+const stateWith = (
+  exerciseData: State["exerciseData"],
+  branchData: State["branchData"] = {},
+): State => ({
   exerciseData,
-  branchData: {},
+  branchData,
   exerciseTotals: {},
   xp: 0,
   level: 1,
@@ -54,6 +57,34 @@ describe("exerciseProgressStoreMigrations", () => {
       const result = exerciseProgressStoreMigrations[15](state);
 
       expect(result.exerciseData).toEqual({});
+    });
+  });
+
+  // Branch 253 (bodyweight explosive power) has the levels 1, 2 and 4
+  describe("v16 to v17: moves stored branch levels that do not exist", () => {
+    const levelAfterMigration = (level: number, branchId = "253") =>
+      exerciseProgressStoreMigrations[16](
+        stateWith({}, { [branchId]: { branchId, level } }),
+      ).branchData[branchId]?.level;
+
+    it("moves a level above the top to the highest level", () => {
+      expect(levelAfterMigration(5)).toBe(4);
+    });
+
+    it("moves a level in a gap to the next lower level", () => {
+      expect(levelAfterMigration(3)).toBe(2);
+    });
+
+    it("moves a level below the lowest to the lowest level", () => {
+      expect(levelAfterMigration(0)).toBe(1);
+    });
+
+    it("keeps a level that exists", () => {
+      expect(levelAfterMigration(2)).toBe(2);
+    });
+
+    it("keeps the level of a branch that no skill tree holds", () => {
+      expect(levelAfterMigration(7, "unknown-branch")).toBe(7);
     });
   });
 });

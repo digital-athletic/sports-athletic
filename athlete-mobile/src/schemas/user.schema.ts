@@ -164,6 +164,7 @@ export const TrainingPlanSchema = v.object({
   /** Training plan start date in ISO 8601 format (YYYY-MM-DD) */
   start: v.string(),
   sections: v.array(TrainingSectionSchema),
+  gapShiftedOn: v.optional(v.string()),
 });
 
 export type TrainingPlanSchemaType = v.InferOutput<typeof TrainingPlanSchema>;

@@ -1,5 +1,4 @@
 import { Alert } from "@/common/Alert";
-import { SharedConstants } from "@/constants/sharedConstants";
 import {
   CardioTypes,
   FocusType,
@@ -16,6 +15,7 @@ import { TrainingType } from "@/features/training/models/Training";
 import { type TrainingDayType } from "@/features/training/models/TrainingDay";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { shouldShowPainAlert } from "@/features/training/utils/painUtils";
+import { daysSinceLastTraining } from "@/features/training/utils/trainingGapUtils";
 import { toUserExerciseDataList } from "@/schemas/generator.schema";
 import { type UserType, parseUserType } from "@/schemas/user.schema";
 import { Logger } from "@/services/Logger";
@@ -26,7 +26,6 @@ import { usePlacesStore } from "@/store/placesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
-import { formatDateToISO, ISODateToDate } from "@/utils/date";
 import { parseBooleanParam, parseIntParam } from "@/utils/router";
 import { useRouter } from "expo-router";
 import { type TFunction } from "i18next";
@@ -130,23 +129,15 @@ function buildUser(
 
 function calculateDaysSinceLastWorkout(
   trainingType: TrainingType,
-  workoutsList: ReturnType<
-    typeof useCompletedWorkoutsStore.getState
-  >["workoutsList"],
+  ctx: GenerationContext,
 ): number {
-  if (trainingType !== "PLAN" || !workoutsList || workoutsList.length === 0) {
+  if (trainingType !== "PLAN" || !ctx.trainingPlan) {
     return 0;
   }
-
-  const lastWorkout = workoutsList[workoutsList.length - 1];
-  const lastDate = ISODateToDate(
-    formatDateToISO(new Date(lastWorkout.timestamp)),
-  );
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  return Math.round(
-    (today.getTime() - lastDate.getTime()) / SharedConstants.TIME_IN_MS.DAY,
+  return daysSinceLastTraining(
+    ctx.workoutsList.map((workout) => workout.timestamp),
+    ctx.trainingPlan,
+    new Date(),
   );
 }
 
@@ -198,10 +189,7 @@ function generateExerciseList(
   const equipment = ctx.places[selectedPlace]?.equipment ?? [];
   const user = buildUser(params, ctx);
 
-  const daysSinceLastWorkout = calculateDaysSinceLastWorkout(
-    trainingType,
-    ctx.workoutsList,
-  );
+  const daysSinceLastWorkout = calculateDaysSinceLastWorkout(trainingType, ctx);
   const sectionIndex = parseIntParam(params.sectionIndex);
 
   const tg = new TrainingGenerator();

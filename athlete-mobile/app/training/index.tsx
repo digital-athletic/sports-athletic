@@ -8,9 +8,11 @@ import {
 } from "@/constants/workoutConstants";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { ColumnList } from "@/features/training/ColumnList";
+import { useTrainingGapCheck } from "@/features/training/hooks/useTrainingGapCheck";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { getSectionForDate } from "@/features/training/trainingUtils";
 import { hasAnyBarbell } from "@/features/training/utils/equipmentUtils";
+import { isStrengthTestDue } from "@/features/training/utils/strengthTestUtils";
 import { useHardwareBackHandler } from "@/hooks/useHardwareBackHandler";
 import { Logger } from "@/services/Logger";
 import { usePlacesStore } from "@/store/placesStore";
@@ -44,6 +46,8 @@ export default function SelectTraining() {
   const [screenState, setScreenState] = useState<ScreenState>("SELECT");
   const [tiles, setTiles] = useState<TileData[]>([]);
 
+  useTrainingGapCheck(selection === "PLAN");
+
   // Back handler
   const handleBack = useCallback(() => {
     setTrainingSelection(null);
@@ -73,11 +77,10 @@ export default function SelectTraining() {
     const sectionIndex = sections.findIndex((s) => s.start === section.start);
     const sectionTrainings = section.trainings;
 
-    // check if power test is needed
-    const lastTestExpired =
-      workoutData.maxValues.testAt +
-        WorkoutConstants.MAX_VALUES_EXPIRATION_TIME_IN_MS <
-      Date.now();
+    const lastTestExpired = isStrengthTestDue(
+      workoutData.maxValues.testAt,
+      Date.now(),
+    );
     // look if exercises with Fmax used
     let needsFmaxValues = false;
     if (lastTestExpired) {

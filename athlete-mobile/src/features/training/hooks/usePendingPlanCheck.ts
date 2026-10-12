@@ -68,7 +68,7 @@ export function usePendingPlanCheck() {
           branchData,
         });
       if (broken) {
-        updateTrainingPlan();
+        updateTrainingPlan({ redrawAllDays: true });
       }
     } catch (error) {
       // the athlete keeps the stored plan

@@ -3,6 +3,8 @@ import { SpeechBubble } from "@/common/SpeechBubble";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import PlanGenerator from "@/features/training/generators/PlanGenerator";
+import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
+import { keepUnchangedTrainingDays } from "@/features/training/utils/planRegeneration";
 import { planStartDateFor } from "@/features/training/utils/planStartDate";
 import { Logger } from "@/services/Logger";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
@@ -62,6 +64,14 @@ export default function Generating() {
       today: new Date(),
     });
 
+  // a regeneration with the preserved start keeps the unaffected training days
+  const savePlan = (plan: TrainingPlanType) =>
+    setTrainingPlan(
+      trainingPlan && plan.start === trainingPlan.start.split("T")[0]
+        ? keepUnchangedTrainingDays(trainingPlan, plan)
+        : plan,
+    );
+
   const createTrainingPlan = async () => {
     try {
       const shouldUpdateExisting =
@@ -111,8 +121,7 @@ export default function Generating() {
         startDate,
       );
 
-      // Save generated plan
-      setTrainingPlan(plan);
+      savePlan(plan);
 
       // TODO: Persist the active plan to the backend
 

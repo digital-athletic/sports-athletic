@@ -3,11 +3,12 @@ import type { MigrationMap } from "./createMigrate";
 import type { State } from "../exerciseProgressStore";
 
 // Older versions could save a level above the top or in a gap of a branch.
-// Such a level moves to the next lower existing level, else to the lowest.
+// Such a level moves to the next lower existing level. A level below the
+// lowest stays: it already falls back to the athlete's entry level.
 const existingLevel = (level: number, levels: number[]): number => {
   if (levels.includes(level)) return level;
   const lower = levels.filter((candidate) => candidate < level);
-  return lower.length > 0 ? Math.max(...lower) : Math.min(...levels);
+  return lower.length > 0 ? Math.max(...lower) : level;
 };
 
 const authoredLevelsByBranch = (): Record<string, number[]> => {

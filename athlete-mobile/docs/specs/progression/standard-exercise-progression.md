@@ -21,7 +21,7 @@ Per exercise, progression may use:
 - whether the exercise uses adjustable external weight,
 - authored start, target, and load boundaries.
 
-Start/target values may depend on fitness level, gender, and age group unless this specification defines a global override. The authored value configuration is the source of truth for values not overridden here. For hypertrophy, the repetition and duration ranges defined in this specification override exercise-specific authored repetition/duration values.
+Start/target values may depend on fitness level, gender, and age group unless this specification defines a global override. The authored value configuration is the source of truth for values not overridden here. For hypertrophy, full-body stability, and prevention, the training-area-specific repetition and duration ranges defined in this specification override exercise-specific authored repetition/duration values. Exercise-specific weight rules remain unchanged.
 
 Warm-up, special warm-up, cool-down, mobility, foam roller, and strength-test exercises do not use this progression and do not collect progression feedback.
 
@@ -268,10 +268,17 @@ These are the current general values where the authored content resolves to the 
 | Hypertrophy, adjustable weight, duration | 30 s | 50 s | Same weight-boundary logic |
 | Hypertrophy, no adjustable weight, reps | 8 reps | 12 reps | Standard hypertrophy range |
 | Hypertrophy, no adjustable weight, duration | 30 s | 60 s | Standard hypertrophy range |
-| Full-body stability | 8 reps / 30 s | 15 reps / 60 s | Weight exercise-specific where applicable |
+| Full-body stability, adjustable weight, reps | 8 reps | 12 reps | Exercise-specific start/target weights; no F-Max calculation |
+| Full-body stability, adjustable weight, duration | 30 s | 50 s | Exercise-specific start/target weights; no F-Max calculation |
+| Full-body stability, no adjustable weight, reps | 8 reps | 12 reps | standard Full-body stability range |
+| Full-body stability, no adjustable weight, duration | 30 s | 60 s | standard Full-body stability range |
 | Leg-axis stability | 5 reps / 30 s | 8 reps / 45 s | Exercise-specific |
-| Prevention with adjustable weight | 10 reps / 40 s | 15 reps / 60 s | Weight exercise-specific |
+| Prevention with adjustable weight | 10 reps / 40 s | 15 reps / 60 s | Exercise-specific start/target weights; no F-Max calculation |
+| Prevention no adjustable weight | 10 reps / 40 s | 15 reps / 60 s | Standard prevention range |
 | U16 weighted exercises | per training area | per training area | Fixed authored **weight** values; no F-Max calculation. Repetition/duration follows the applicable training-area rules; for hypertrophy use 8-12 reps or 30-50 s for weighted duration. |
+
+**Full-body stability – exercise-specific weights:**
+For weighted exercises, use the existing exercise-specific start and target weights. These weights are not calculated from strength tests or F-Max. No general weight values apply to this training area.
 
 ## Deferred feedback
 

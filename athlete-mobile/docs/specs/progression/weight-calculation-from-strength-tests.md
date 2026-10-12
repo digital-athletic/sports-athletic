@@ -59,6 +59,7 @@ Strength-test-based calculation exists only for:
 There is currently **no vertical-pull strength test** and **no generic lower-body movement direction**.
 **Age gate:** athletes **under 16** always use authored age-specific start/target weight values, even if an exercise is assigned to a tested movement direction. Test-/1RM-based personal weight calculation applies from **age 16 onward**.
 Weighted exercises without a tested movement direction also use authored start/target values.
+**Full-body stability exception:** Weighted full-body stability exercises always use their exercise-specific authored start and target weights, regardless of movement-direction assignment. No strength-test, 1RM, or F-Max calculation applies.
 Those values may depend on fitness level, gender, and age group (e.g. U16 vs 16+).
 Examples include weighted core exercises and other lower-body exercises such as barbell calf raises.
 

@@ -17,6 +17,10 @@ import { STORE_VERSIONS } from "./storeVersions";
 export interface UserExerciseBranchDataType {
   branchId: string;
   level: number;
+  /** Exercise at `level` when it was stored; reconciliation reads it after content updates. */
+  exerciseId?: string;
+  /** Decay steps already applied for the pause after the session at `since`. */
+  decay?: { since: number; steps: number };
 }
 
 export type BranchDataMapType = Record<
@@ -60,7 +64,8 @@ type Actions = {
     data: Pick<UserExerciseDataType, "skill" | "branchId">,
     workoutId?: string,
   ) => void;
-  setBranchLevel: (branchId: string, level: number) => void;
+  setBranchLevel: (branchId: string, level: number, exerciseId: string) => void;
+  setBranchData: (branchData: BranchDataMapType) => void;
 
   // Exercise Totals
   updateUserExerciseTotals: (
@@ -250,14 +255,20 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
         );
       },
 
-      setBranchLevel: (branchId, level) =>
+      setBranchLevel: (branchId, level, exerciseId) =>
         set((state) => {
           const branch = state.branchData[branchId];
           if (branch) {
             branch.level = level;
+            branch.exerciseId = exerciseId;
           } else {
-            state.branchData[branchId] = { branchId, level };
+            state.branchData[branchId] = { branchId, level, exerciseId };
           }
+        }),
+
+      setBranchData: (branchData) =>
+        set((state) => {
+          state.branchData = branchData;
         }),
 
       updateUserExerciseTotals: (

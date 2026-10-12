@@ -1,4 +1,5 @@
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
+import type { SkillBranchType } from "@/schemas/skillTree.schema";
 import type { MigrationMap } from "./createMigrate";
 import type { State } from "../exerciseProgressStore";
 
@@ -11,13 +12,14 @@ const existingLevel = (level: number, levels: number[]): number => {
   return lower.length > 0 ? Math.max(...lower) : level;
 };
 
+const branchesById = (): Record<string, SkillBranchType> =>
+  Object.assign({}, ...Object.values(getAllSkillTrees()));
+
 const authoredLevelsByBranch = (): Record<string, number[]> => {
   const result: Record<string, number[]> = {};
-  for (const tree of Object.values(getAllSkillTrees())) {
-    for (const [branchId, branch] of Object.entries(tree)) {
-      const levels = Object.keys(branch.levels ?? {}).map(Number);
-      if (levels.length > 0) result[branchId] = levels;
-    }
+  for (const [branchId, branch] of Object.entries(branchesById())) {
+    const levels = Object.keys(branch.levels ?? {}).map(Number);
+    if (levels.length > 0) result[branchId] = levels;
   }
   return result;
 };
@@ -68,6 +70,19 @@ export const exerciseProgressStoreMigrations: MigrationMap<State> = {
         ...entry,
         level: existingLevel(entry.level, levels),
       };
+    }
+    return { ...state, branchData };
+  },
+  // Reconciliation compares the stored exercise with later content, so each
+  // stored level records the exercise the branch holds there today.
+  17: (state) => {
+    const branches = branchesById();
+    const branchData = { ...state.branchData };
+    for (const [branchId, entry] of Object.entries(branchData)) {
+      const exerciseId =
+        entry && branches[branchId]?.levels[entry.level]?.exerciseId;
+      if (!entry || !exerciseId) continue;
+      branchData[branchId] = { ...entry, exerciseId };
     }
     return { ...state, branchData };
   },

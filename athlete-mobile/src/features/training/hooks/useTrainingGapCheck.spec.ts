@@ -108,6 +108,19 @@ describe("useTrainingGapCheck", () => {
     expect(mockPush).not.toHaveBeenCalled();
   });
 
+  it("shifts the existing plan by the missed weeks when the athlete declines", () => {
+    lastWorkoutDaysAgo(22);
+    renderHook(() => useTrainingGapCheck(true));
+    act(() => {
+      promptButtons()
+        .find((b) => b.text === "common.no")
+        ?.onPress?.();
+    });
+    expect(useUserWorkoutStore.getState().trainingPlan?.sections[0].start).toBe(
+      "2026-08-24",
+    );
+  });
+
   it("checks nothing when disabled", () => {
     lastWorkoutDaysAgo(22);
     renderHook(() => useTrainingGapCheck(false));

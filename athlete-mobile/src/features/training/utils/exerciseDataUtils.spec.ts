@@ -158,6 +158,17 @@ describe("exerciseDataUtils", () => {
       expect(isFeedbackEligibleSkill(withType("PLAN"), "SWR1")).toBe(true);
     });
 
+    it.each([
+      "CARDIO_1_SHORT",
+      "CARDIO_1_LAKTAT",
+      "CARDIO_2",
+      "CARDIO_3",
+      "CARDIO_4",
+      "CARDIO_5",
+    ] as const)("returns false for the cardio skill %s", (skill) => {
+      expect(isFeedbackEligibleSkill(withType("PLAN"), skill)).toBe(false);
+    });
+
     it("returns false for a NO_INCREASE workout type", () => {
       // TEST_WORKOUT is in NO_INCREASE_WORKOUT_PLAN_TYPE list
       expect(isFeedbackEligibleSkill(withType("TEST_WORKOUT"), "SWR1")).toBe(

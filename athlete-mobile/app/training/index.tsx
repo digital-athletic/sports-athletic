@@ -7,6 +7,7 @@ import {
   WorkoutConstants,
 } from "@/constants/workoutConstants";
 import { getAllExercises } from "@/data/exerciseRegistry";
+import { useAgeGroup } from "@/features/anamnesis/useAgeGroup";
 import { ColumnList } from "@/features/training/ColumnList";
 import { useTrainingGapCheck } from "@/features/training/hooks/useTrainingGapCheck";
 import { useTrainingStore } from "@/features/training/trainingStore";
@@ -42,6 +43,7 @@ export default function SelectTraining() {
   const { trainingDays } = useTrainingScheduleStore();
   const exercises = getAllExercises();
   const barbellAvailable = usePlacesStore((s) => hasAnyBarbell(s.places));
+  const ageGroup = useAgeGroup();
 
   const [screenState, setScreenState] = useState<ScreenState>("SELECT");
   const [tiles, setTiles] = useState<TileData[]>([]);
@@ -80,6 +82,7 @@ export default function SelectTraining() {
     const lastTestExpired = isStrengthTestDue(
       workoutData.maxValues.testAt,
       Date.now(),
+      ageGroup,
     );
     // look if exercises with Fmax used
     let needsFmaxValues = false;
@@ -186,6 +189,7 @@ export default function SelectTraining() {
     exercises,
     t,
     barbellAvailable,
+    ageGroup,
   ]);
 
   // Initialize tile data

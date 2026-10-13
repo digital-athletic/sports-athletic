@@ -1,7 +1,9 @@
 import { PowerTest as Chart } from "@/charts/PowerTest";
 import { Coaching } from "@/common/Coaching";
 import { Ionicon } from "@/common/Ionicon";
+import { useAgeGroup } from "@/features/anamnesis/useAgeGroup";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
+import { canTakeStrengthTest } from "@/features/training/utils/strengthTestUtils";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
@@ -25,6 +27,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
+  const strengthTestAllowed = canTakeStrengthTest(useAgeGroup());
 
   const {
     sortedHistory,
@@ -103,7 +106,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
   };
 
   const renderStartTestButton = () => {
-    if (isSuccessScreen) return null;
+    if (isSuccessScreen || !strengthTestAllowed) return null;
 
     return (
       <TouchableOpacity
@@ -149,7 +152,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
   }, [anamnesisCompleted, router, t]);
 
   const renderManualInputButton = () => {
-    if (isSuccessScreen) return null;
+    if (isSuccessScreen || !strengthTestAllowed) return null;
 
     return (
       <TouchableOpacity

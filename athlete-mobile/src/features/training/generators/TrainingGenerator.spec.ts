@@ -904,7 +904,12 @@ describe("TrainingGenerator", () => {
 
   describe("getExerciseStartValues", () => {
     it.each([
-      ["child values when the birthday is missing", "", "k"],
+      ["male values for a male without a birthday", "", "m"],
+      [
+        "child values for a child",
+        `${new Date().getFullYear() - 10}-01-01`,
+        "k",
+      ],
       ["male values for an adult male", "1990-01-01", "m"],
     ])("uses %s", (_, birthday, expectedGenderTag) => {
       const getExerciseValuesSpy = jest.spyOn(generator, "getExerciseValues");

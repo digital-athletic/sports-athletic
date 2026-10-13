@@ -92,13 +92,13 @@ describe("ageUtils", () => {
       expect(result).toBe(WorkoutConstants.AGE_GROUPS.CHILD);
     });
 
-    it("returns CHILD when the birthday is missing", () => {
-      expect(ageGroupFor("")).toBe(WorkoutConstants.AGE_GROUPS.CHILD);
+    it("returns ADULT when the birthday is missing", () => {
+      expect(ageGroupFor("")).toBe(WorkoutConstants.AGE_GROUPS.ADULT);
     });
 
-    it("returns CHILD when the birthday is not a valid ISO date", () => {
-      expect(ageGroupFor("15-06-1990")).toBe(WorkoutConstants.AGE_GROUPS.CHILD);
-      expect(ageGroupFor("1990-02-31")).toBe(WorkoutConstants.AGE_GROUPS.CHILD);
+    it("returns ADULT when the birthday is not a valid ISO date", () => {
+      expect(ageGroupFor("15-06-1990")).toBe(WorkoutConstants.AGE_GROUPS.ADULT);
+      expect(ageGroupFor("1990-02-31")).toBe(WorkoutConstants.AGE_GROUPS.ADULT);
     });
 
     it("handles birthday already passed in current year", () => {

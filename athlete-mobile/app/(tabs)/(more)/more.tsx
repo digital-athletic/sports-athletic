@@ -11,6 +11,7 @@ import { featureFlags } from "@/config/featureFlags";
 import { LINK_AGB, LINK_IMPRINT, LINK_PRIVACY } from "@/constants/AppConstants";
 import { ListDivider } from "@/common/ListDivider";
 import { ListItem } from "@/features/more/ListItem";
+import { StrengthTestMenuItems } from "@/features/more/StrengthTestMenuItems";
 import { Box } from "@/theme/Box";
 import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
@@ -96,22 +97,7 @@ export default function MoreScreen() {
             iconName="stats-chart"
             iconBackground="primary"
           />
-          <ListItem
-            title={t("more.startNewTestWorkout")}
-            navPath="/training/muscle-soreness"
-            navParams={{
-              type: "TEST_WORKOUT",
-              originPath: "/(tabs)/(more)/more",
-            }}
-            iconName="barbell"
-            iconBackground="primary"
-          />
-          <ListItem
-            title={t("more.enterTestManually")}
-            navPath="/training/manual-strength-test"
-            iconName="create"
-            iconBackground="primary"
-          />
+          <StrengthTestMenuItems />
           <ListItem
             title={t("more.technicalVideos")}
             navPath="/(tabs)/(more)/tutorials"

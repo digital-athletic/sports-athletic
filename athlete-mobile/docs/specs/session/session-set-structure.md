@@ -27,13 +27,13 @@ Three structures sit outside that loop. Weighted hypertrophy and explosive power
 
 | Skill | Sets per exercise |
 |---|---|
-| Max strength | 4 |
+| Max strength | 3 for advanced, 4 for professional |
 | Hypertrophy, explosive power, plyometrics, power endurance, stability, full-body stability, prevention | 2 |
 | Warm-up, special warm-up, cool-down, mobility, foam roller | 1 |
 | Steady cardio | 1 |
 | Interval cardio | interval count, per [Cardio Training System](./cardio-training-system.md) |
 
-Set counts deliberately do not vary by fitness level: beginners, advanced athletes, and professionals perform the same sets per exercise, and the higher minute budget (more exercise slots) is the mechanism that differentiates the levels. A level-dependent set count may be reviewed later, but is not part of the model.
+Apart from max strength, set counts deliberately do not vary by fitness level: beginners, advanced athletes, and professionals perform the same sets per exercise, and the higher minute budget (more exercise slots) is the mechanism that differentiates the levels. A level-dependent set count may be reviewed later, but is not part of the model.
 
 Max strength and cardio appear here for completeness. Their own builders ignore this count and the rest table below, and derive their structure from the ladder and the zone instead.
 
@@ -105,7 +105,7 @@ Time budgeting counts slots, never seconds per repetition: [Plan Workout Generat
 | Case | Leading set |
 |---|---|
 | Hypertrophy pair with at least one weighted exercise | One extra set at 70% of the working weight, working repetitions, rest 30 s paired or 60 s alone |
-| Explosive power pair with at least one weighted exercise | One extra set at 65% of the working weight, 8 repetitions, rest 60 s paired or 180 s alone (the skill's single-exercise rest) |
+| Explosive power pair with at least one weighted exercise | One extra set at 65% of the working weight, 6 repetitions, rest 60 s paired or 180 s alone (the skill's single-exercise rest) |
 | Max strength | Two ladder sets per [Max Strength Training](../progression/max-strength-progression.md) |
 | Everything else | None |
 

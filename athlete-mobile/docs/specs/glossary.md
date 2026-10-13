@@ -54,7 +54,7 @@ Terms of the training model, with the meanings the coach uses. The glossary defi
 | Warm-up set | Aufwärmsatz | | Preparatory set with lighter weight that does not count towards the training. |
 | Repetition | Wiederholung, Wdh. | | Performing the movement once. |
 | Rest | Pause | | Time between two sets or exercises. |
-| Superset | Supersatz | | Two exercises trained together, alternating one set of each: the left and right side of one exercise, or a lower body with an upper body exercise. |
+| Superset | Supersatz | | Two exercises trained together, alternating one set of each: the left and right side of one exercise, a lower body with an upper body exercise, or two antagonistic exercises of the same body region, such as a horizontal push with a horizontal pull. |
 | Superset rules | Supersatzregeln | | The rules that pick a superset partner, defined in [Plan Workout Generation](./session/plan-workout-generation.md). Prevention and focus trainings skip them: their supersets are authored. |
 | Support exercise | Unterstützungsübung | SUPPORT | Exercise placed in the rest between the 3 or 4 working sets of max strength training, and only there. Not a superset. |
 | Muscle soreness | Muskelkater | | Marked on the body silhouette before each training, valid for 24 hours. Rules in [Pain, Soreness, and Prevention](./foundations/pain-soreness-and-prevention.md). |

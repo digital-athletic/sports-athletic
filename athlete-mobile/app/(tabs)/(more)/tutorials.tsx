@@ -78,8 +78,9 @@ const TutorialsScreen: FC = () => {
 
   return (
     <>
-      {/* A full width 16:9 player is taller than the landscape screen;
-          fullscreen covers watching sideways. */}
+      {/* Locked to portrait: a full width 16:9 video would be taller than a
+          landscape screen. To watch in landscape, open the player's fullscreen
+          and turn the device. */}
       <Stack.Screen
         options={{
           title: t("more.technicalVideos"),

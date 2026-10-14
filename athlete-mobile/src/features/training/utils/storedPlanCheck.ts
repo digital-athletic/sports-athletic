@@ -23,7 +23,7 @@ export interface StoredPlanCheckInput {
   branchData: BranchDataMapType;
 }
 
-const MAX_STRENGTH_SKILLS = ["MAX", "MAX_KRAFT"];
+const MAX_STRENGTH_SKILLS = ["MAX", "MAX_STRENGTH"];
 
 const isAdultOnly = (branch: ExerciseBranchType): boolean => {
   const ageTags = getTagValues(branch.tags, TagGroups.AGE);

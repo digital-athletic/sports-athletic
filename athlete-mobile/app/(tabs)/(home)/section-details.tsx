@@ -70,7 +70,7 @@ const SectionDetailsScreen: FC = () => {
       case "SWR1":
       case "SWR2":
         return "SWR";
-      case "MAX_KRAFT":
+      case "MAX_STRENGTH":
       case "MAX":
         return "MAX";
       case "SK":

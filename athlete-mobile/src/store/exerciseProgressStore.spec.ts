@@ -514,7 +514,7 @@ describe("exerciseProgressStore", () => {
       act(() => {
         result.current.updateExercise("ex1", {
           exerciseId: "ex1",
-          skill: "MAX_KRAFT",
+          skill: "MAX_STRENGTH",
           branchId: "branch-1",
           weight: 80,
           repetition: 5,
@@ -529,19 +529,19 @@ describe("exerciseProgressStore", () => {
       act(() => {
         result.current.resetExercise(
           "ex1",
-          { skill: "MAX_KRAFT", branchId: "branch-1" },
+          { skill: "MAX_STRENGTH", branchId: "branch-1" },
           "workout-42",
         );
       });
 
       expect(result.current.exerciseData["ex1"]).toEqual({
         exerciseId: "ex1",
-        skill: "MAX_KRAFT",
+        skill: "MAX_STRENGTH",
         branchId: "branch-1",
       });
       expect(syncManager.notifyExerciseUpdated).toHaveBeenCalledWith("ex1", {
         exerciseId: "ex1",
-        skill: "MAX_KRAFT",
+        skill: "MAX_STRENGTH",
         branchId: "branch-1",
         workoutId: "workout-42",
       });

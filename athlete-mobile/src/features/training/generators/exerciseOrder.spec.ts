@@ -75,7 +75,7 @@ afterEach(() => {
 
 describe("createSetList: max strength order", () => {
   it("puts the lower body main lifts before the upper body main lifts", () => {
-    const pairs = orderedPairs("MAX_KRAFT", [squat, deadlift, bench, row]);
+    const pairs = orderedPairs("MAX_STRENGTH", [squat, deadlift, bench, row]);
     expect(leadIds(pairs).slice(0, 2).sort()).toEqual(["deadlift", "squat"]);
   });
 });

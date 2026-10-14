@@ -105,7 +105,7 @@ describe("getBranchesForWorkout: weighted and bodyweight mix", () => {
 
 describe("getBranchesForWorkout: max strength and plyometric slots", () => {
   it("skips a max strength lift whose equipment the place lacks", () => {
-    const branches = select("MAX_KRAFT", 1, importTrees("MAX"), {
+    const branches = select("MAX_STRENGTH", 1, importTrees("MAX"), {
       equipment: ["DUMBBELL"],
       tags: ["EXERCISE_NAME_SQUAT"],
       exercises: realExercises,

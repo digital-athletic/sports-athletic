@@ -2011,7 +2011,7 @@ export default class TrainingGenerator {
         result = 1;
         break;
       case "MAX":
-      case "MAX_KRAFT":
+      case "MAX_STRENGTH":
         // do not use yet
         if (false && level === WorkoutConstants.LEVELS.PROFESSIONAL) {
         } else result = 4;
@@ -2350,7 +2350,7 @@ export default class TrainingGenerator {
         case "MOB":
         case "BR":
         case "MAX":
-        case "MAX_KRAFT":
+        case "MAX_STRENGTH":
         case "WUSPEZIAL":
           return false;
         case "BAS":
@@ -2384,7 +2384,7 @@ export default class TrainingGenerator {
       case "SAS":
       case "GKS":
       case "MAX":
-      case "MAX_KRAFT":
+      case "MAX_STRENGTH":
         return false;
       case "WU":
       case "CD":
@@ -2465,7 +2465,7 @@ export default class TrainingGenerator {
       case "MOB":
       case "BR":
       case "MAX":
-      case "MAX_KRAFT":
+      case "MAX_STRENGTH":
       default:
         pause = 10;
         break;
@@ -2515,7 +2515,7 @@ export default class TrainingGenerator {
         pause = 75;
         break;
       case "MAX":
-      case "MAX_KRAFT":
+      case "MAX_STRENGTH":
         pause = 3 * 60;
         break;
       case "WUSKSA":
@@ -2573,7 +2573,7 @@ export default class TrainingGenerator {
       case "GKS":
       case "GKSKG":
       case "MAX":
-      case "MAX_KRAFT":
+      case "MAX_STRENGTH":
       case "PREV":
       case "PREVSHOULDER":
       case "PREVKNEE":
@@ -2630,7 +2630,7 @@ export default class TrainingGenerator {
       case "GKS":
       case "GKSKG":
       case "MAX":
-      case "MAX_KRAFT":
+      case "MAX_STRENGTH":
       case "PREV":
       case "PREVSHOULDER":
       case "PREVKNEE":
@@ -3348,7 +3348,7 @@ export default class TrainingGenerator {
 
   private getMaxStrengthBufferTable = (user: UserType): BufferTable => {
     const ageReps =
-      WorkoutConstants.MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT[
+      WorkoutConstants.MAX_STRENGTH_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT[
         ageGroupFor(getUserBirthday(user))
       ];
     return ageReps?.[getUserLevel(user)] ?? {};
@@ -3388,7 +3388,10 @@ export default class TrainingGenerator {
       ...getMaxStrengthRepetitions(table, weightPercentage, levels[i]),
       weightPercentage,
     }));
-    return [...WorkoutConstants.MAX_KRAFT_REPETITIONS_WARMUP, ...workingReps];
+    return [
+      ...WorkoutConstants.MAX_STRENGTH_REPETITIONS_WARMUP,
+      ...workingReps,
+    ];
   };
 }
 
@@ -3793,7 +3796,7 @@ export const getIntensityBySkill = (
     case "SKKG":
       return IntensitySK_KG;
     case "MAX":
-    case "MAX_KRAFT":
+    case "MAX_STRENGTH":
       return IntensityDEFAULT;
     default:
       return IntensityDEFAULT_KG;

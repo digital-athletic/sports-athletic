@@ -699,7 +699,7 @@ export const mapSkillCodeToFocusArea = (
     case "SK":
     case "SKKG":
     case "MAX":
-    case "MAX_KRAFT":
+    case "MAX_STRENGTH":
     case "main":
     case "PHASE":
     case "TEST":
@@ -722,7 +722,7 @@ export const mapSkillCodeToFocusArea = (
 
     // Non-focus skill types (excluded from radar chart)
     case "SUPPORT":
-    case "SCHNELLIGKEITSAUSDAUER_SPECIAL":
+    case "POWER_ENDURANCE_SPECIAL":
       return undefined;
 
     default:

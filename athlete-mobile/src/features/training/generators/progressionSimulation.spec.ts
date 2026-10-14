@@ -1,5 +1,5 @@
 /**
- * Example test for the persona-driven progression simulator (p2 × MAX_KRAFT).
+ * Example test for the persona-driven progression simulator (p2 × MAX_STRENGTH).
  * It proves the framework runs end-to-end against the real generator and
  * asserts the intra-session invariants.
  *
@@ -72,7 +72,7 @@ const RUNS: { name: string; feedback: FeedbackScript }[] = [
 const exercisePool = [squat, exerciseById("137")];
 
 function run(feedback: FeedbackScript): SessionSnapshot[] {
-  return simulateProgression(personaP2, squat, "MAX_KRAFT", {
+  return simulateProgression(personaP2, squat, "MAX_STRENGTH", {
     sessions: 4,
     feedback,
     maxValues,
@@ -80,7 +80,7 @@ function run(feedback: FeedbackScript): SessionSnapshot[] {
   });
 }
 
-describe("progressionSimulation: p2 × MAX_KRAFT", () => {
+describe("progressionSimulation: p2 × MAX_STRENGTH", () => {
   const results = new Map<string, SessionSnapshot[]>();
 
   beforeAll(() => {

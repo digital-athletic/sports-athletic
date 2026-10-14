@@ -46,7 +46,7 @@ export const SECTIONS_DATA: Record<SectionPrefix, SectionData> = {
             default: {
                 normal: [
                     "",
-                    " als entscheidende Basis für Schnellkraft und Schnelligkeitsausdauer."
+                    " als entscheidende Basis für Schnellkraft und Schnellkraftausdauer."
                 ],
                 highlight: ["Kraftaufbau", ""]
             },

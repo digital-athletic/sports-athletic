@@ -176,8 +176,8 @@ describe("trainingSectionUtils", () => {
       expect(result).toBe(10);
     });
 
-    it("should return 10 for MAX_KRAFT section type", () => {
-      const result = getIntensityForSection("MAX_KRAFT");
+    it("should return 10 for MAX_STRENGTH section type", () => {
+      const result = getIntensityForSection("MAX_STRENGTH");
       expect(result).toBe(10);
     });
 
@@ -193,7 +193,7 @@ describe("trainingSectionUtils", () => {
         "SWR2",
         "SWR2KG",
         "MAX",
-        "MAX_KRAFT",
+        "MAX_STRENGTH",
         "SK",
         "SKKG",
         "SAKG",

@@ -1099,7 +1099,7 @@ describe("TrainingGenerator", () => {
       expect(generator.getSetCountBySkill("MAX", "INTERMEDIATE")).toBe(4);
       expect(generator.getSetCountBySkill("MAX", "ADVANCED")).toBe(4);
       expect(generator.getSetCountBySkill("MAX", "PROFESSIONAL")).toBe(4);
-      expect(generator.getSetCountBySkill("MAX_KRAFT", "BEGINNER")).toBe(4);
+      expect(generator.getSetCountBySkill("MAX_STRENGTH", "BEGINNER")).toBe(4);
     });
 
     it("returns 2 for standard strength skills (SA, SK, SWR)", () => {

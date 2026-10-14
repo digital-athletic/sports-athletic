@@ -30,7 +30,7 @@ const planWith = (skills: UserSkills): TrainingPlanType => ({
     {
       start: "2026-10-05",
       numOfWeeks: 4,
-      type: "MAX_KRAFT",
+      type: "MAX_STRENGTH",
       cardioType: "CARDIO_3",
       trainings: [{ weekday: 1, skills, lengths: {}, focus: "PHASE" }],
     },
@@ -85,15 +85,15 @@ describe("isStoredPlanBroken", () => {
   });
 
   it("flags a max strength lift whose equipment the day's place lacks", () => {
-    expect(check(planWith({ MAX_KRAFT: [squat] }), { place: "HOME" })).toBe(
+    expect(check(planWith({ MAX_STRENGTH: [squat] }), { place: "HOME" })).toBe(
       true,
     );
   });
 
   it("accepts a max strength lift at a place with its equipment", () => {
-    expect(check(planWith({ MAX_KRAFT: [squat] }), { place: "STUDIO" })).toBe(
-      false,
-    );
+    expect(
+      check(planWith({ MAX_STRENGTH: [squat] }), { place: "STUDIO" }),
+    ).toBe(false);
   });
 
   it("accepts other skills with missing equipment, which workouts replace", () => {

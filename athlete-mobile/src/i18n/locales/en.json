@@ -211,13 +211,13 @@
       "SWR2": "Muscle development",
       "SWR2KG": "Muscle development",
       "MAX": "Maximum power",
-      "MAX_KRAFT": "Maximum power",
+      "MAX_STRENGTH": "Maximum power",
       "SK": "Explosive power",
       "SKKG": "Explosive power",
-      "SA": "Speed perseverance",
-      "SAKG": "Speed perseverance",
-      "SAS": "Speed perseverance",
-      "SASKG": "Speed perseverance",
+      "SA": "Power endurance",
+      "SAKG": "Power endurance",
+      "SAS": "Power endurance special",
+      "SASKG": "Power endurance special",
       "PREV": "Prevention",
       "PREVKNEE": "Knee and hip prevention",
       "PREVSHOULDER": "Shoulder prevention",
@@ -353,11 +353,11 @@
       "SWR2": "Muscle development",
       "SWR2KG": "Muscle development",
       "MAX": "Maximum power",
-      "MAX_KRAFT": "Maximum power",
+      "MAX_STRENGTH": "Maximum power",
       "SK": "Explosive power",
       "SKKG": "Explosive power",
-      "SA": "Speed perseverance",
-      "SAKG": "Speed perseverance"
+      "SA": "Power endurance",
+      "SAKG": "Power endurance"
     },
     "sectionDetails": {
       "title": "Specialization",
@@ -369,7 +369,7 @@
         "SWR": "Jump, throw and body strength",
         "MAX": "Maximum force",
         "SK": "High-speed strength",
-        "SA": "Speed perseverance"
+        "SA": "Power endurance"
       },
       "captions": {
         "SWR": "Focus on correct execution",
@@ -381,7 +381,7 @@
         "SWR": "Info for muscle buildup",
         "MAX": "Info for max force",
         "SK": "Info for explosive power",
-        "SA": "Info for speed endurance"
+        "SA": "Info for power endurance"
       }
     },
     "exerciseInformation": {

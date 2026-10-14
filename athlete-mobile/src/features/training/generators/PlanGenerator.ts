@@ -164,7 +164,7 @@ const STRENGTH_SKILLS = [
   "SWR1KG",
   "SWR2KG",
   "MAX",
-  "MAX_KRAFT",
+  "MAX_STRENGTH",
   "SK",
   "SKKG",
   "SA",
@@ -988,7 +988,7 @@ export default class PlanGenerator {
         maxTimeObj = MaxTimeHBCARDIO;
         break;
       case "MAX":
-      case "MAX_KRAFT":
+      case "MAX_STRENGTH":
         maxTimeObj = MaxTimeMAX;
         break;
       case "PREV":
@@ -1308,7 +1308,7 @@ export default class PlanGenerator {
           if (hasWeights(placeEquipment)) {
             skills[entry][i] = section;
           } else {
-            if (section !== "MAX_KRAFT" && section !== "MAX") {
+            if (section !== "MAX_STRENGTH" && section !== "MAX") {
               skills[entry][i] = section + "KG";
             } else {
               skills[entry][i] = "SWR2KG";
@@ -2111,7 +2111,7 @@ export default class PlanGenerator {
         region = RegionGKS;
         break;
       case "MAX":
-      case "MAX_KRAFT":
+      case "MAX_STRENGTH":
         region = RegionMAX;
         break;
       case "MOB":
@@ -2424,7 +2424,7 @@ export default class PlanGenerator {
       if (PlanGenerator.DEBUG)
         console.log("Adjusting sections for no studio or beginner");
       for (let i = 0; i < sections.length; i++) {
-        if (sections[i].type === "MAX" || sections[i].type === "MAX_KRAFT") {
+        if (sections[i].type === "MAX" || sections[i].type === "MAX_STRENGTH") {
           sections[i].type = "SWR2";
         }
       }

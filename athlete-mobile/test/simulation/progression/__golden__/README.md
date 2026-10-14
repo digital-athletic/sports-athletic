@@ -2,7 +2,7 @@
 
 Target output of the progression simulator, one pair of files per run
 (`<persona>-<focus>.<feedback>.{progression,sets}.md`, with the focus as a
-readable slug, e.g. `max-strength` for `MAX_KRAFT`), compared by string
+readable slug, e.g. `max-strength` for `MAX_STRENGTH`), compared by string
 equality in `src/features/training/generators/progressionSimulation.spec.ts`.
 
 **These tables encode the values as they SHOULD be** according to

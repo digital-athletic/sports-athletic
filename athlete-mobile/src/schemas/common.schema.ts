@@ -54,7 +54,7 @@ export const SectionTypesSchema = v.picklist([
   "SWR2",
   "SWR2KG",
   "MAX",
-  "MAX_KRAFT",
+  "MAX_STRENGTH",
   "SK",
   "SKKG",
   "SAKG",

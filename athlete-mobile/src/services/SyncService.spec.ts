@@ -249,7 +249,7 @@ describe("syncExerciseData", () => {
     const payload: UserExerciseDataType = {
       exerciseId: "ex-5",
       workoutId: "workout-7",
-      skill: "MAX_KRAFT",
+      skill: "MAX_STRENGTH",
       branchId: "branch-2",
     };
 
@@ -269,7 +269,7 @@ describe("syncExerciseData", () => {
         set_active_run: null,
         set_num_of_sets: null,
         skipped: null,
-        skill: "MAX_KRAFT",
+        skill: "MAX_STRENGTH",
         branch_id: "branch-2",
         feedback_difficulty: null,
         feedback_streak_counter: null,

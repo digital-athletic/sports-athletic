@@ -21,7 +21,7 @@ describe("generator.schema", () => {
         "CARDIO",
         "SUPPORT",
         "FOAM_ROLLER",
-        "SCHNELLIGKEITSAUSDAUER_SPECIAL",
+        "POWER_ENDURANCE_SPECIAL",
       ];
 
       for (const skill of validSkills) {

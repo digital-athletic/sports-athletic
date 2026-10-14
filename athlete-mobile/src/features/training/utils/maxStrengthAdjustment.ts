@@ -39,9 +39,9 @@ export function calculateMaxStrengthAdjustment(
   const maxFRepetitions = userExerciseData?.maxFRepetitions ?? [];
   const level = levelTag ?? WorkoutConstants.LEVELS.ADVANCED;
   const table =
-    WorkoutConstants.MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT[ageGroup]?.[
-      level
-    ] ?? {};
+    WorkoutConstants.MAX_STRENGTH_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT[
+      ageGroup
+    ]?.[level] ?? {};
 
   const end = getMaxStrengthExerciseEnd(
     table,

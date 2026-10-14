@@ -51,6 +51,7 @@ import {
 import {
   getBlocksFromPains,
   getPreventionsFromPains,
+  isBranchBlocked,
 } from "@/features/training/utils/painUtils";
 import { getRegionsForPreventionSkills } from "@/features/training/utils/preventionUtils";
 import {
@@ -1214,8 +1215,20 @@ export default class TrainingGenerator {
         }
       }
 
+      const blockedRegions = getBlocksFromPains(
+        getUserTagValues(user.workoutData?.tags, TagGroups.PAIN),
+      );
       let possibleBranches = Object.keys(filteredBranches).filter(
-        (branchId) => usedBranchIds.indexOf(branchId) === -1,
+        (branchId) =>
+          usedBranchIds.indexOf(branchId) === -1 &&
+          !isBranchBlocked(
+            skillTree[branchId].tags,
+            Object.values(skillTree[branchId].levels).map(
+              (level) => level.exerciseId,
+            ),
+            exercises,
+            blockedRegions,
+          ),
       );
       // A candidate resolving to an exercise the skill already holds drops out
       const isUnusedExercise = (branchId: string): boolean => {

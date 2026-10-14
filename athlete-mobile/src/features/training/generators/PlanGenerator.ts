@@ -37,6 +37,7 @@ import {
 import {
   getBlocksFromPains,
   getPreventionsFromPains,
+  isBranchBlocked,
 } from "@/features/training/utils/painUtils";
 import {
   getBranchIdsByNames,
@@ -2623,7 +2624,9 @@ export default class PlanGenerator {
         );
         //filter by equipment available
         const eq = getTagValues(exercise.tags, TagGroups.EQUIPMENT);
-        const exerciseBlocks = getTagValues(exercise.tags, TagGroups.BLOCK);
+        const levelExerciseIds = Object.values(
+          additionalSkillTree[id].levels,
+        ).map((level) => level.exerciseId);
 
         // filter adolescents as adults
         let ageFilter =
@@ -2637,19 +2640,14 @@ export default class PlanGenerator {
         const matchesEquipment =
           eq.length === 0 ||
           eq.every((part) => {
-            return equipmentExists(
-              part,
-              equipment,
-              eq,
-              Object.keys(additionalSkillTree[id].levels).map(
-                (levelKey) =>
-                  additionalSkillTree[id].levels[Number(levelKey)].exerciseId,
-              ),
-            );
+            return equipmentExists(part, equipment, eq, levelExerciseIds);
           });
-        const matchesPains =
-          pains.length === 0 ||
-          pains.every((pain) => exerciseBlocks.indexOf(pain) === -1);
+        const matchesPains = !isBranchBlocked(
+          additionalSkillTree[id].tags,
+          levelExerciseIds,
+          exercises,
+          pains,
+        );
 
         if (
           isSet &&

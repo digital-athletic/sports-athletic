@@ -37,12 +37,20 @@ const kneePainUser: UserType = {
   },
 };
 
+interface ReplaceOptions {
+  branchData?: Record<string, UserExerciseBranchDataType | undefined>;
+  athlete?: UserType;
+  exercises?: ExerciseType[];
+}
+
 const replaceLowerBody = (
   tree: SkillTreeType,
   usedBranchIds: string[],
-  branchData: Record<string, UserExerciseBranchDataType | undefined> = {},
-  athlete: UserType = user,
-  exercises: ExerciseType[] = catalog(["e1", "e2", "e3"]),
+  {
+    branchData = {},
+    athlete = user,
+    exercises = catalog(["e1", "e2", "e3"]),
+  }: ReplaceOptions = {},
 ): string[] => {
   const generator = new TrainingGenerator();
   return generator
@@ -101,7 +109,7 @@ describe("replaceExerciseBranches", () => {
         "3": lowerBodyBranch({ 1: { exerciseId: "e3" } }),
       },
       ["1"],
-      { "1": { branchId: "1", level: 2 } },
+      { branchData: { "1": { branchId: "1", level: 2 } } },
     );
     expect(replacements).toEqual(["3"]);
   });
@@ -113,8 +121,7 @@ describe("replaceExerciseBranches", () => {
         "2": lowerBodyBranch({ 1: { exerciseId: "e2" } }),
       },
       [],
-      {},
-      kneePainUser,
+      { athlete: kneePainUser },
     );
     expect(replacements).toEqual(["2"]);
   });
@@ -133,9 +140,7 @@ describe("replaceExerciseBranches", () => {
         "2": lowerBodyBranch({ 1: { exerciseId: "e3" } }),
       },
       [],
-      {},
-      kneePainUser,
-      exercises,
+      { athlete: kneePainUser, exercises },
     );
     expect(replacements).toEqual(["2"]);
   });

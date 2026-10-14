@@ -141,7 +141,6 @@ import MaxTimeBAS from "../../../../assets/data/generator/maxTime/BAS";
 import MaxTimeCARDIO from "../../../../assets/data/generator/maxTime/CARDIO";
 import MaxTimeDEFAULT from "../../../../assets/data/generator/maxTime/DEFAULT";
 import MaxTimeGKS from "../../../../assets/data/generator/maxTime/GKS";
-import MaxTimeHBCARDIO from "../../../../assets/data/generator/maxTime/HBCARDIO";
 import MaxTimeMAX from "../../../../assets/data/generator/maxTime/MAX";
 import MaxTimePREV from "../../../../assets/data/generator/maxTime/PREV";
 import MaxTimeSA from "../../../../assets/data/generator/maxTime/SA";
@@ -975,18 +974,16 @@ export default class PlanGenerator {
       case "BAS":
         maxTimeObj = MaxTimeBAS;
         break;
+      case "CARDIO_1_SHORT":
+      case "CARDIO_1_LAKTAT":
+      case "CARDIO_2":
+      case "CARDIO_3":
       case "CARDIO_4":
       case "CARDIO_5":
         maxTimeObj = MaxTimeCARDIO;
         break;
       case "GKS":
         maxTimeObj = MaxTimeGKS;
-        break;
-      case "CARDIO_1_SHORT":
-      case "CARDIO_1_LAKTAT":
-      case "CARDIO_2":
-      case "CARDIO_3":
-        maxTimeObj = MaxTimeHBCARDIO;
         break;
       case "MAX":
       case "MAX_STRENGTH":

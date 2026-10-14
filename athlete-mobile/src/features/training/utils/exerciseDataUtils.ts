@@ -87,6 +87,8 @@ export function isFeedbackEligibleSkill(
   activeTraining: ActiveTrainingType | null,
   skill: SkillCode,
 ): boolean {
+  // cardio shows only the checkmark
+  if (skill.includes("CARDIO")) return false;
   if (activeTraining?.type === "PLAN") {
     return WorkoutConstants.NO_INCREASE_SKILL_TYPE.indexOf(skill) === -1;
   }

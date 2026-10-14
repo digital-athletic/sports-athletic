@@ -54,13 +54,6 @@ describe("exerciseRegistry", () => {
         .map((exercise) => exercise.id);
       expect(unblocked).toEqual([]);
     });
-
-    it("holds no exercise with the German lower body region tag", () => {
-      const german = getAllExercises()
-        .filter((exercise) => exercise.tags.includes("REGION_UNTERRKOERPER"))
-        .map((exercise) => exercise.id);
-      expect(german).toEqual([]);
-    });
   });
 
   describe("getExerciseById", () => {

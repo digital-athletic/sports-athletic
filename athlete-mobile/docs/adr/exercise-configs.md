@@ -8,7 +8,7 @@ The workout generator needs start values, target values and progression steps fo
 |---|---|---|
 | Skill trees | `assets/data/generator/skillTrees/` | Which exercises form a branch and at which level |
 | Intensity configs | `assets/data/generator/intensity/` | Defaults and rules for one training area (hypertrophy, explosive power, prevention, cardio zones): start and target per gender and fitness level, step sizes per feedback, lowest permitted load |
-| Exercise list | `assets/data/generator/Exercises.json` | One exercise: name, media, tags, equipment, and its own start and target values where it differs from the training area |
+| Exercise list | `assets/data/generator/Exercises.json` | One exercise: name, media, tags, equipment, its own start and target values where it differs from the training area, and its own conversion factor where the generic equipment conversion does not fit |
 | Athlete progress | the exercise progress store on the device | The athlete's last values and rating per exercise |
 
 Without a written rule, readers could not tell which source wins, and some values in the exercise list had no effect.
@@ -40,8 +40,10 @@ The generator resolves a value from the most general to the most specific source
 
 Two rules limit the overrides:
 
-- **Binding config values.** A config can make its repetition and duration start and target binding. Hypertrophy does, because the specs define one range for all hypertrophy exercises. Each hypertrophy exercise reads the config that matches its equipment (with or without weights).
+- **Binding config values.** A config can make its repetition and duration start and target binding. Hypertrophy, full-body stability and prevention do, because the specs define one central range for each of them. Hypertrophy and full-body stability exercises read the range that matches their equipment (with or without weights).
 - **Rules stay in the config.** Step sizes and the lowest permitted load exist only in the intensity config. An exercise contributes at most its start weight, which can lower its lowest permitted load.
+
+A weight given as a percentage of the strength test applies to the barbell 1RM of the exercise's movement direction, converted to the exercise's equipment. The generic factors per equipment sit in code (`MAX_VALUE_CONVERSION_FACTORS` in `src/constants/workoutConstants.ts`). An exercise that authors a `conversionFactor` in the exercise list replaces the generic factor with its own, for example 90% for the barbell incline bench press or 50% per dumbbell for the dumbbell jump squat.
 
 When an athlete moves to another exercise through a level change, the progress of the exercise they leave resets, so a later return starts from the resolved start values. The saved workouts keep the history.
 
@@ -56,7 +58,7 @@ When an athlete moves to another exercise through a level change, the progress o
 **Cons**
 
 - The precedence is not visible in the data; readers need this document.
-- Exercise values can sit in the list without effect when a binding config value overrides them. Exercises used only in hypertrophy still author repetitions and durations the app ignores.
+- Exercise values can sit in the list without effect when a binding config value overrides them. Exercises used only in hypertrophy, full-body stability or prevention still author repetitions and durations the app ignores.
 - The configs are code files while the exercise list is content, so changing a default needs a developer.
 
 ## More information

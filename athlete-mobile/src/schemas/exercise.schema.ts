@@ -47,6 +47,8 @@ export const ExerciseSchema = v.object({
   isJump: v.boolean(),
   otherSideExerciseId: v.optional(v.union([v.string(), v.null()])),
   equivalentExercises: v.optional(v.array(v.string())),
+  /** Share of the movement direction's barbell 1RM; replaces the generic equipment conversion. */
+  conversionFactor: v.optional(v.number()),
 });
 export type ExerciseType = v.InferOutput<typeof ExerciseSchema>;
 

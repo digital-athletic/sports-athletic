@@ -74,19 +74,13 @@ const getMaxValueType = (exercise: ExerciseType): MaxValueTypeName => {
   return MAX_VALUE_TYPES.ONE_SIDED_BARBELL;
 };
 
-/** Share of the movement direction's barbell 1RM that applies to the exercise. */
-const getConversionFactor = (exercise: ExerciseType) => {
-  const equipment = getTagValues(exercise.tags, TagGroups.EQUIPMENT);
-  const isDumbbell = equipment.includes(WorkoutConstants.EQUIPMENT.DUMBBELL);
-  const directions = getTagValues(exercise.tags, TagGroups.EXERCISE_DIRECTION);
-  if (isInclineBenchPress(equipment, directions)) {
-    const factors = WorkoutConstants.INCLINE_BENCH_CONVERSION_FACTORS;
-    return isDumbbell ? factors.dumbbellPerHand : factors.barbell;
-  }
-  return WorkoutConstants.MAX_VALUE_CONVERSION_FACTORS[
-    getMaxValueType(exercise)
-  ];
-};
+/**
+ * Share of the movement direction's barbell 1RM that applies to the exercise:
+ * the factor the catalog authors for it, else the generic equipment conversion.
+ */
+const getConversionFactor = (exercise: ExerciseType) =>
+  exercise.conversionFactor ??
+  WorkoutConstants.MAX_VALUE_CONVERSION_FACTORS[getMaxValueType(exercise)];
 
 /**
  * Returns the equipment adjusted max of the exercise, derived from the barbell
@@ -258,34 +252,6 @@ export const calculateWorkoutTotals = (
     weight: weight,
     height: height,
   };
-};
-
-export const isInclineBenchPress = (
-  equipment: string[],
-  exerciseDirections: string[],
-) => {
-  if (equipment.indexOf(WorkoutConstants.EQUIPMENT.INCLINE_BENCH) > -1) {
-    // possibly reduce weight for inclined press
-    if (
-      equipment
-        .filter((eq) => eq.indexOf("BENCH") > -1)
-        .filter(
-          (bench) =>
-            bench !== WorkoutConstants.EQUIPMENT.INCLINE_BENCH &&
-            bench !== WorkoutConstants.EQUIPMENT.ADJUSTABLE_BENCH,
-        ).length === 0
-    ) {
-      // no other banks
-      if (
-        exerciseDirections.indexOf(
-          WorkoutConstants.EXERCISE_DIRECTIONS.HORIZONTAL_PUSH,
-        ) > -1
-      ) {
-        return true;
-      }
-    }
-  }
-  return false;
 };
 
 const overridesExerciseValue = (

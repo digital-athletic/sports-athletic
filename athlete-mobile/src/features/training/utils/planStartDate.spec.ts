@@ -1,6 +1,6 @@
 import { SharedConstants } from "@/constants/sharedConstants";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
-import { planStartDateFor } from "./planStartDate";
+import { planStartDateFor, preservesPlanStart } from "./planStartDate";
 
 const DAY = SharedConstants.TIME_IN_MS.DAY;
 const today = new Date(2026, 9, 12, 10);
@@ -11,6 +11,30 @@ const plan = {
 } as unknown as TrainingPlanType;
 
 const workoutDaysAgo = (days: number) => [today.getTime() - days * DAY];
+
+describe("preservesPlanStart", () => {
+  it("is false for a changed season phase, even on the day the old plan started", () => {
+    expect(
+      preservesPlanStart({
+        trainingPlan: { ...plan, start: "2026-10-12" },
+        sameSeasonPhase: false,
+        workoutTimestamps: [],
+        today,
+      }),
+    ).toBe(false);
+  });
+
+  it("is true for the same season phase without a long training gap", () => {
+    expect(
+      preservesPlanStart({
+        trainingPlan: plan,
+        sameSeasonPhase: true,
+        workoutTimestamps: workoutDaysAgo(3),
+        today,
+      }),
+    ).toBe(true);
+  });
+});
 
 describe("planStartDateFor", () => {
   it("keeps the start of the existing plan for the same season phase", () => {

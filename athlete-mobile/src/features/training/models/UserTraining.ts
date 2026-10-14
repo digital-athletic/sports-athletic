@@ -10,4 +10,6 @@ export type UserTrainingType = {
     [skillKey in SkillTypes]?: number;
   };
   focus: FocusType;
+  /** Equipment of the day's place at plan creation; regeneration compares it. */
+  equipment?: string[];
 };

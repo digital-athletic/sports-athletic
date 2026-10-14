@@ -94,6 +94,7 @@ export const UserTrainingSchema = v.looseObject({
   ),
   lengths: v.optional(v.record(v.string(), v.number())),
   focus: v.optional(FocusTypeSchema),
+  equipment: v.optional(v.array(v.string())),
 });
 
 export const SeasonPhaseSchema = v.object({

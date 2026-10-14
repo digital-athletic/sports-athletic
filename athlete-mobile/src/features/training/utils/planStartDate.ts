@@ -14,17 +14,22 @@ export interface PlanStartInput {
 
 /**
  * A rerun with the same season phase keeps the plan start, unless the training
- * gap asks for a new plan. Plan creation snaps any other start to the next Monday.
+ * gap asks for a new plan.
  */
-export const planStartDateFor = ({
+export const preservesPlanStart = ({
   trainingPlan,
   sameSeasonPhase,
   workoutTimestamps,
   today,
-}: PlanStartInput): Date => {
-  if (!trainingPlan?.start || !sameSeasonPhase) return today;
+}: PlanStartInput): boolean => {
+  if (!trainingPlan?.start || !sameSeasonPhase) return false;
   const gapDays = daysSinceLastTraining(workoutTimestamps, trainingPlan, today);
-  if (getTrainingGapAction(gapDays) === "PROMPT_NEW_PLAN") return today;
-  // older plans store the start with a time
-  return ISODateToDate(trainingPlan.start.split("T")[0]);
+  return getTrainingGapAction(gapDays) !== "PROMPT_NEW_PLAN";
 };
+
+/** Plan creation snaps a start other than the preserved one to the next Monday. */
+export const planStartDateFor = (input: PlanStartInput): Date =>
+  input.trainingPlan && preservesPlanStart(input)
+    ? // older plans store the start with a time
+      ISODateToDate(input.trainingPlan.start.split("T")[0])
+    : input.today;

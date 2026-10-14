@@ -794,6 +794,7 @@ export default class PlanGenerator {
           skills: exercises,
           lengths: timePerSkill,
           focus: trainingFocus,
+          equipment: [...equipment],
         });
 
         if (PlanGenerator.DEBUG)

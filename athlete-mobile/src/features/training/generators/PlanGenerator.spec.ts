@@ -1569,6 +1569,20 @@ describe("PlanGenerator", () => {
         expect(sectionTypes(generateProfessionalPlan())).toContain("MAX");
       });
 
+      it("stores the equipment of each training day's place", () => {
+        const plan = generateProfessionalPlan({
+          gender: "MALE",
+          birthday: "1990-01-01",
+        });
+        const equipment = plan.sections.flatMap((section) =>
+          section.trainings.map((training) => training.equipment),
+        );
+
+        expect(equipment).toEqual(
+          equipment.map(() => ["BARBELL", "DUMBBELL", "BENCH", "MAT"]),
+        );
+      });
+
       it("plans an athlete with a child birthday as a child without max strength", () => {
         const childBirthday = `${new Date().getFullYear() - 10}-01-01`;
         expect(

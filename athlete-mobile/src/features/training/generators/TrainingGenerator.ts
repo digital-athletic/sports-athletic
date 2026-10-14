@@ -3390,7 +3390,10 @@ export default class TrainingGenerator {
       ...getMaxStrengthRepetitions(table, weightPercentage, levels[i]),
       weightPercentage,
     }));
-    return [...WorkoutConstants.MAX_STRENGTH_REPETITIONS_WARMUP, ...workingReps];
+    return [
+      ...WorkoutConstants.MAX_STRENGTH_REPETITIONS_WARMUP,
+      ...workingReps,
+    ];
   };
 }
 

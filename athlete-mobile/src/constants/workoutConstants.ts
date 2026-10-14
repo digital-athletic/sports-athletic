@@ -1010,72 +1010,73 @@ type LevelToDifficulty = Record<LevelTag, DifficultyToWeight>;
 type AgeGroupToLevel = Record<AgeGroupTag, Partial<LevelToDifficulty>>;
 
 // Max strength starts at 16, so adolescents and adults share one table.
-const MAX_STRENGTH_REPETITIONS_PER_LEVEL_AND_WEIGHT: Partial<LevelToDifficulty> = {
-  ADVANCED: {
-    EASY: {
-      65: 3,
-      67.5: 3,
-      70: 3,
-      72.5: 2,
-      75: 2,
-      77.5: 2,
-      80: 1,
+const MAX_STRENGTH_REPETITIONS_PER_LEVEL_AND_WEIGHT: Partial<LevelToDifficulty> =
+  {
+    ADVANCED: {
+      EASY: {
+        65: 3,
+        67.5: 3,
+        70: 3,
+        72.5: 2,
+        75: 2,
+        77.5: 2,
+        80: 1,
+      },
+      MEDIUM: {
+        65: 5,
+        67.5: 5,
+        70: 5,
+        72.5: 3,
+        75: 3,
+        77.5: 3,
+        80: 2,
+      },
+      HARD: {
+        65: 6,
+        67.5: 6,
+        70: 6,
+        72.5: 5,
+        75: 5,
+        77.5: 5,
+        80: 3,
+      },
     },
-    MEDIUM: {
-      65: 5,
-      67.5: 5,
-      70: 5,
-      72.5: 3,
-      75: 3,
-      77.5: 3,
-      80: 2,
+    PROFESSIONAL: {
+      EASY: {
+        65: 5,
+        67.5: 5,
+        70: 5,
+        72.5: 3,
+        75: 3,
+        77.5: 3,
+        80: 2,
+        82.5: 1,
+        85: 1,
+      },
+      MEDIUM: {
+        65: 6,
+        67.5: 6,
+        70: 6,
+        72.5: 5,
+        75: 5,
+        77.5: 5,
+        80: 3,
+        82.5: 2,
+        85: 2,
+        87.5: 1,
+        90: 1,
+      },
+      HARD: {
+        75: 6,
+        77.5: 6,
+        80: 5,
+        82.5: 3,
+        85: 3,
+        87.5: 2,
+        90: 2,
+      },
     },
-    HARD: {
-      65: 6,
-      67.5: 6,
-      70: 6,
-      72.5: 5,
-      75: 5,
-      77.5: 5,
-      80: 3,
-    },
-  },
-  PROFESSIONAL: {
-    EASY: {
-      65: 5,
-      67.5: 5,
-      70: 5,
-      72.5: 3,
-      75: 3,
-      77.5: 3,
-      80: 2,
-      82.5: 1,
-      85: 1,
-    },
-    MEDIUM: {
-      65: 6,
-      67.5: 6,
-      70: 6,
-      72.5: 5,
-      75: 5,
-      77.5: 5,
-      80: 3,
-      82.5: 2,
-      85: 2,
-      87.5: 1,
-      90: 1,
-    },
-    HARD: {
-      75: 6,
-      77.5: 6,
-      80: 5,
-      82.5: 3,
-      85: 3,
-      87.5: 2,
-      90: 2,
-    },
-  },
-};
+  };
 
 const MAX_STRENGTH_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT: Partial<AgeGroupToLevel> =
   {

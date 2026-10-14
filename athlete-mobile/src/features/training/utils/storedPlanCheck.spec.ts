@@ -91,9 +91,9 @@ describe("isStoredPlanBroken", () => {
   });
 
   it("accepts a max strength lift at a place with its equipment", () => {
-    expect(check(planWith({ MAX_STRENGTH: [squat] }), { place: "STUDIO" })).toBe(
-      false,
-    );
+    expect(
+      check(planWith({ MAX_STRENGTH: [squat] }), { place: "STUDIO" }),
+    ).toBe(false);
   });
 
   it("accepts other skills with missing equipment, which workouts replace", () => {

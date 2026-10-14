@@ -112,7 +112,7 @@ export function useExerciseCompletion() {
           }
         }
         if (newLevel > 0) {
-          setBranchLevel(branchId, newLevel);
+          setBranchLevel(branchId, newLevel, exerciseId);
           Logger.logEvent("save_initial_branch_data", {
             skill: skill,
             branchId: branchId,

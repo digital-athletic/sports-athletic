@@ -282,7 +282,7 @@ export function calculateBranchLevelUpdate(
 }
 
 export interface BranchLevelCallbacks {
-  setBranchLevel: (branchId: string, level: number) => void;
+  setBranchLevel: (branchId: string, level: number, exerciseId: string) => void;
   replaceBranchInTrainingPlan: (
     sectionIndex: number,
     weekday: number,
@@ -301,7 +301,11 @@ export function applyBranchLevelUpdate(
 ): void {
   switch (result.type) {
     case "SAME_BRANCH":
-      callbacks.setBranchLevel(result.branchId, result.newLevel);
+      callbacks.setBranchLevel(
+        result.branchId,
+        result.newLevel,
+        result.exerciseId,
+      );
       break;
     case "BRANCH_SUBSTITUTION":
       callbacks.replaceBranchInTrainingPlan(

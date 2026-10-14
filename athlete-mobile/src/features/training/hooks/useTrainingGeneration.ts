@@ -14,7 +14,9 @@ import { useTrainingAlerts } from "@/features/training/hooks/useTrainingAlerts";
 import { TrainingType } from "@/features/training/models/Training";
 import { type TrainingDayType } from "@/features/training/models/TrainingDay";
 import { useTrainingStore } from "@/features/training/trainingStore";
+import { maintainBranchLevels } from "@/features/training/utils/branchMaintenance";
 import { shouldShowPainAlert } from "@/features/training/utils/painUtils";
+import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import { daysSinceLastTraining } from "@/features/training/utils/trainingGapUtils";
 import { toUserExerciseDataList } from "@/schemas/generator.schema";
 import { type UserType, parseUserType } from "@/schemas/user.schema";
@@ -67,6 +69,9 @@ type GenerationContext = {
   branchData: ReturnType<
     typeof useExerciseProgressStore.getState
   >["branchData"];
+  setBranchData: ReturnType<
+    typeof useExerciseProgressStore.getState
+  >["setBranchData"];
   clearTraining: ReturnType<typeof useTrainingStore.getState>["clearTraining"];
   setExerciseList: ReturnType<
     typeof useTrainingStore.getState
@@ -141,6 +146,25 @@ function calculateDaysSinceLastWorkout(
   );
 }
 
+/** Reconciles and decays the stored branch levels once per generation and persists the result. */
+function maintainStoredBranchLevels(
+  user: UserType,
+  ctx: GenerationContext,
+): GenerationContext["branchData"] {
+  const timestamps = ctx.workoutsList.map((workout) => workout.timestamp);
+  const branchData = maintainBranchLevels({
+    branchData: ctx.branchData,
+    branches: Object.assign({}, ...Object.values(ctx.skillTrees)),
+    fitnessLevel: getUserLevel(user),
+    lastSessionAt: timestamps.length > 0 ? Math.max(...timestamps) : null,
+    now: Date.now(),
+  });
+  if (branchData !== ctx.branchData) {
+    ctx.setBranchData(branchData);
+  }
+  return branchData;
+}
+
 type GeneratedTrainingMeta = {
   trainingType: TrainingType;
   sectionIndex: number | undefined;
@@ -191,6 +215,7 @@ function generateExerciseList(
 
   const daysSinceLastWorkout = calculateDaysSinceLastWorkout(trainingType, ctx);
   const sectionIndex = parseIntParam(params.sectionIndex);
+  const branchData = maintainStoredBranchLevels(user, ctx);
 
   const tg = new TrainingGenerator();
   const generatedList = tg.generateTraining(
@@ -203,7 +228,7 @@ function generateExerciseList(
     equipment,
     sectionIndex,
     daysSinceLastWorkout,
-    { exerciseData: ctx.exerciseData, branchData: ctx.branchData },
+    { exerciseData: ctx.exerciseData, branchData },
   );
 
   return saveGeneratedTraining(
@@ -232,7 +257,8 @@ function showGenerationError(e: unknown, t: TFunction, onDismiss: () => void) {
 function useGenerationContext(): GenerationContext {
   const skillTrees = getAllSkillTrees();
   const exercises = getAllExercises();
-  const { branchData, exerciseData } = useExerciseProgressStore();
+  const { branchData, exerciseData, setBranchData } =
+    useExerciseProgressStore();
   const { trainingDays } = useTrainingScheduleStore();
   const { places } = usePlacesStore();
   const { workoutsList } = useCompletedWorkoutsStore();
@@ -255,6 +281,7 @@ function useGenerationContext(): GenerationContext {
     skillTrees,
     exerciseData,
     branchData,
+    setBranchData,
     clearTraining,
     setExerciseList,
     setEquipment,

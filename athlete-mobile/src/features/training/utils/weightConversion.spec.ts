@@ -10,6 +10,7 @@ import {
 } from "../models/MaxValues";
 import {
   calculateAdjustedMaxValues,
+  deriveWeightForExercise,
   getMaxValueForExercise,
   getValueByGenderAndLevel,
 } from "./workoutUtils";
@@ -152,4 +153,60 @@ describe("jump squat: authored loads from the squat 1RM", () => {
       }
     },
   );
+});
+
+describe("catalog conversion factors: prescribed weight end to end", () => {
+  const oneRepMax = { ...DEFAULT_MAX_VALUE, barbell: 100 };
+  const maxValues: MaxValuesType = {
+    ...DEFAULT_MAX_VALUES,
+    horizontalPush: oneRepMax,
+    kneeDominant: oneRepMax,
+  };
+
+  const prescribedWeight = (id: string, percentOfOneRepMax: number) =>
+    deriveWeightForExercise(
+      percentOfOneRepMax,
+      "weightFMax",
+      getExerciseById(id)!,
+      maxValues,
+    );
+
+  // 100 kg bench press 1RM: barbell 90 kg, dumbbell 38.25 kg per hand rounded to 2 kg steps
+  it.each([
+    { id: "346", expected: 90 },
+    { id: "350", expected: 38 },
+  ])(
+    "incline bench press $id at 100% of the adjusted max: $expected kg",
+    ({ id, expected }) => {
+      expect(prescribedWeight(id, 100)).toBe(expected);
+    },
+  );
+
+  // 100 kg squat 1RM: the barbell carries the total load, each dumbbell half of it
+  it.each([
+    { level: "beginner", start: 5, target: 10, perDumbbell: [2, 5] },
+    { level: "advanced", start: 10, target: 20, perDumbbell: [5, 10] },
+    { level: "professional", start: 10, target: 20, perDumbbell: [5, 10] },
+  ] as const)(
+    "$level jump squat: $start kg to $target kg on the barbell, $perDumbbell kg per dumbbell",
+    ({ level, start, target, perDumbbell }) => {
+      const load = (id: string, value: "startValue" | "targetValue") => {
+        const percent = getValueByGenderAndLevel(
+          getExerciseById(id)?.values?.weight?.[value],
+          "m",
+          level,
+        );
+        return prescribedWeight(id, Number(percent));
+      };
+
+      expect(load("292", "startValue")).toBe(start);
+      expect(load("292", "targetValue")).toBe(target);
+      expect(load("294", "startValue")).toBe(perDumbbell[0]);
+      expect(load("294", "targetValue")).toBe(perDumbbell[1]);
+    },
+  );
+
+  it("splits a total load of 10 kg into 5 kg per dumbbell", () => {
+    expect(prescribedWeight("294", 10)).toBe(5);
+  });
 });

@@ -78,7 +78,7 @@ export function createMaxExerciseProfile(): StoreDataMap {
                     {
                       branchId: "133",
                       tags: [
-                        "SKILL_MAX_KRAFT",
+                        "SKILL_MAX_STRENGTH",
                         "PLACE_STUDIO",
                         "EQ_DUMBBELL",
                         "EQ_ADJUSTABLE_BENCH",

@@ -26,7 +26,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -53,7 +53,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT",
       "GENDER_FEMALE"
     ],
@@ -84,7 +84,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT",
       "GENDER_MALE"
     ],
@@ -121,7 +121,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -153,7 +153,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -183,7 +183,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -218,7 +218,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -259,7 +259,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -295,7 +295,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -330,7 +330,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -359,7 +359,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_CHILD",
       "GENDER_MALE"
     ],
@@ -391,7 +391,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -428,7 +428,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -465,7 +465,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -502,7 +502,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -531,7 +531,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_CHILD",
       "GENDER_FEMALE"
     ],
@@ -563,7 +563,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -604,7 +604,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -635,7 +635,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_CHILD"
     ],
     "levels": {
@@ -669,7 +669,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -711,7 +711,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -749,7 +749,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -779,7 +779,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -816,7 +816,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -853,7 +853,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "BLOCK_SHOULDER",
       "AGE_ADULT"
     ],
@@ -887,7 +887,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "levels": {
       "1": {
@@ -922,7 +922,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -958,7 +958,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT",
       "GENDER_MALE"
     ],
@@ -992,7 +992,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT",
       "GENDER_FEMALE"
     ],
@@ -1022,7 +1022,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -1060,7 +1060,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -1094,7 +1094,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -1127,7 +1127,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT",
       "GENDER_FEMALE"
     ],
@@ -1155,7 +1155,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT",
       "GENDER_MALE"
     ],
@@ -1191,7 +1191,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -1227,7 +1227,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT",
       "GENDER_MALE"
     ],
@@ -1264,7 +1264,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT",
       "GENDER_FEMALE"
     ],
@@ -1299,7 +1299,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -1333,7 +1333,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -1365,7 +1365,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_ADULT"
     ],
     "levels": {
@@ -1396,7 +1396,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_CHILD"
     ],
     "levels": {
@@ -1425,7 +1425,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_LEFT",
       "SIDE_ONE",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_CHILD"
     ],
     "levels": {
@@ -1451,7 +1451,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_LEFT",
       "SIDE_ONE",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_CHILD"
     ],
     "levels": {
@@ -1480,7 +1480,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_LEFT",
       "SIDE_ONE",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_CHILD"
     ],
     "levels": {
@@ -1509,7 +1509,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_LEFT",
       "SIDE_ONE",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_CHILD"
     ],
     "levels": {
@@ -1538,7 +1538,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_CHILD",
       "GENDER_FEMALE"
     ],
@@ -1572,7 +1572,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_CHILD"
     ],
     "levels": {
@@ -1605,7 +1605,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_CHILD",
       "GENDER_MALE"
     ],
@@ -1635,7 +1635,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_CHILD",
       "GENDER_FEMALE"
     ],
@@ -1666,7 +1666,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_CHILD",
       "GENDER_MALE"
     ],
@@ -1700,7 +1700,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_CHILD",
       "GENDER_FEMALE"
     ],
@@ -1733,7 +1733,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_CHILD",
       "GENDER_MALE"
     ],
@@ -1766,7 +1766,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_CHILD",
       "GENDER_FEMALE"
     ],
@@ -1801,7 +1801,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_CHILD"
     ],
     "levels": {
@@ -1830,7 +1830,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "AGE_CHILD",
       "GENDER_MALE"
     ],

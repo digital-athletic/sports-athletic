@@ -47,7 +47,8 @@ describe("userWorkoutStoreMigrations", () => {
         stateWith(planWithMaxBranch),
       );
       expect(
-        result.trainingPlan?.sections[0].trainings[0].skills.MAX_STRENGTH?.[0].tags,
+        result.trainingPlan?.sections[0].trainings[0].skills.MAX_STRENGTH?.[0]
+          .tags,
       ).toEqual(["SKILL_MAX_STRENGTH", "PLACE_STUDIO"]);
     });
 

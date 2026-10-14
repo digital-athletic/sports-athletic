@@ -2,7 +2,6 @@ import { MuscleSorenessSelector } from "@/bodyParts/MuscleSorenessSelector";
 import { MuscleType } from "@/bodyParts/types";
 import { BackHeader } from "@/common/BackHeader";
 import { Loading } from "@/common/Loading";
-import { SharedConstants } from "@/constants/sharedConstants";
 import { PlaceSelection } from "@/features/equipment/PlaceSelection";
 import {
   checksSoreness,
@@ -10,6 +9,10 @@ import {
   useTrainingGeneration,
 } from "@/features/training/hooks/useTrainingGeneration";
 import { type TrainingType } from "@/features/training/models/Training";
+import {
+  dropExpiredMarks,
+  updateSorenessMarks,
+} from "@/features/training/utils/sorenessMarks";
 import { usePlacesStore } from "@/store/placesStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
@@ -66,30 +69,18 @@ export default function MuscleSorenessScreen() {
     return () => handler.remove();
   }, [handleBack]);
 
+  // runs once on open, so it reads the store directly instead of subscribing
   useEffect(() => {
-    if (temporalData) {
-      setTemporalData(
-        temporalData.filter(
-          (data) => new Date(data.expiration).valueOf() > Date.now(),
-        ),
-      );
+    const { temporalData: stored, setTemporalData: save } =
+      useUserWorkoutStore.getState();
+    if (stored) {
+      save(dropExpiredMarks(stored, Date.now()));
     }
     setLoading(false);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const setMuscles = (tags: string[]) => {
-    // save updated muscle soreness to temporal data
-    const temporalData = tags.map((tag) => ({
-      tag,
-      date: new Date(Date.now()).toISOString(),
-      expiration: new Date(
-        Date.now() + SharedConstants.TIME_IN_MS.DAY,
-      ).toISOString(),
-    }));
-
-    setTemporalData(temporalData);
+    setTemporalData(updateSorenessMarks(temporalData ?? [], tags, Date.now()));
   };
 
   let title =

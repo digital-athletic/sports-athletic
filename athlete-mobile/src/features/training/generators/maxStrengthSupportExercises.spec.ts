@@ -53,7 +53,7 @@ const generate = (
 ): GeneratedSetListEntry[] =>
   new TrainingGenerator().getSetListFromExercisePairs(
     [{ first: { branchId: "b1", branchTags: [], exerciseId: squat.id } }],
-    { skill: "MAX_KRAFT", length: 0 },
+    { skill: "MAX_STRENGTH", length: 0 },
     {},
     user,
     "HOME",
@@ -169,7 +169,7 @@ describe("TrainingGenerator: max strength repetition table", () => {
 
   it("gives athletes from 16 one table that reaches 90% for Pro", () => {
     const tables =
-      WorkoutConstants.MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT;
+      WorkoutConstants.MAX_STRENGTH_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT;
 
     expect(tables.ADOLESCENT).toEqual(tables.ADULT);
     expect(tables.ADOLESCENT?.PROFESSIONAL?.HARD?.[90]).toBe(2);

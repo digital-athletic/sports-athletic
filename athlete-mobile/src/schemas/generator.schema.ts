@@ -207,7 +207,7 @@ export const SkillTypeSchema = v.picklist([
   "CARDIO",
   "SUPPORT",
   "FOAM_ROLLER",
-  "SCHNELLIGKEITSAUSDAUER_SPECIAL",
+  "POWER_ENDURANCE_SPECIAL",
 ]);
 export type SkillTypeFromSchema = v.InferOutput<typeof SkillTypeSchema>;
 
@@ -248,7 +248,7 @@ export const GeneratorSkillTypeSchema = v.picklist([
 
   // MAX section types (-> SWR)
   "MAX",
-  "MAX_KRAFT",
+  "MAX_STRENGTH",
 
   // Stability types (-> STABILITY)
   "BAS",

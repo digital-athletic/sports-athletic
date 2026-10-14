@@ -14,9 +14,11 @@ Terms of the training model, with the meanings the coach uses. The glossary defi
 | Training plan | Trainingsplan | | Multi-week framework of sections and training days that the app generates from the anamnesis. |
 | Section | Abschnitt | | Multi-week block (mesocycle) with one strength emphasis and one cardio intensity. Shown as tiles on the home screen. |
 | Hypertrophy | Muskelaufbau | SWR1, SWR2 | Section type for muscle growth. Ranges in [Standard Exercise Progression](./progression/standard-exercise-progression.md). SWR1 and SWR2 currently train the same way. SWR stands for Sprung-, Wurf- und Rumpfkraft. |
-| Max strength | Maximalkraft, Maxkraft | MAX, MAX_KRAFT | Section type with heavy weights and few repetitions, calculated as a percentage of the personal maximum. Advanced and Pro only, from 16. |
-| Explosive power | Schnellkraft | SK | Section type with explosive movements. |
-| Power endurance | Schnellkraftausdauer | SA | Section type. The plan currently replaces it with explosive power everywhere. |
+| Max strength | Maximalkraft, Maxkraft | MAX, MAX_STRENGTH | Section type with heavy weights and few repetitions, calculated as a percentage of the personal maximum. Advanced and Pro only, from 16. |
+| Explosive power | Schnellkraft | SK | Section type with explosive movements. An explosive power session combines explosive power and plyometric exercises, which stay separate skill trees. Speed exercises can be part of it. |
+| Power endurance | Schnellkraftausdauer | SA, SAKG | Section type. Exercises are controlled by repetitions, with additional weights (SA) or bodyweight (SAKG). A power endurance session combines SA with power endurance special, which stay separate skill trees. Speed exercises can be part of it. The plan currently replaces it with explosive power everywhere. |
+| Power endurance special | Schnellkraftausdauer Spezial | SAS | Separate skill within power endurance training, with its own skill tree. Its exercises are controlled by duration instead of repetitions. |
+| Speed endurance | Schnelligkeitsausdauer | | A different training concept from power endurance. The app has no training category for it. |
 | Strength endurance | Kraftausdauer | | Planned training logic for higher repetition ranges. The exercise catalog holds its exercises, but no plan reaches them yet. |
 | Strength skill | Kraft-Skill | | Hypertrophy, max strength and explosive power. Strength endurance and power endurance join once the plan reaches them. Full-body stability is no strength skill. |
 | Bodyweight variant | Körpergewicht-Variante | KG suffix, e.g. SWR2KG | Exercises without additional weights such as dumbbells or a barbell. |
@@ -41,7 +43,7 @@ Terms of the training model, with the meanings the coach uses. The glossary defi
 | Exercise catalog | Übungskatalog, Übungsliste | | The list of all exercises, roughly 1200. Exercise-specific values and exceptions live here, not in the specs. |
 | Warm-up | Warm-Up | WU, WUPREV | General warm-up at the start of the session. |
 | Special warm-up | Spezielles Warm-Up | WUSPEZIAL | Added only when the athlete has declared pains: extra exercises that warm up the affected body region and prepare it for the training. |
-| Speed warm-up | Schnelligkeits-Warm-Up | WUSKSA | Warm-up before explosive power and speed work. |
+| Speed warm-up | Schnelligkeits-Warm-Up | WUSKSA | Warm-up before explosive power and power endurance. |
 | Cool-down | Cool-Down, Stretching | CD | Stretching at the end of the session. |
 | Foam roller | Muskeln triggern, Faszienrolle | BR | Self-massage with a foam roller or ball. A separate skill from the cool-down. |
 | Mobility | Mobilität | MOB | Exercises for joint mobility. |

@@ -27,10 +27,10 @@ const isBuffer = (level: string): level is MaxStrengthBuffer =>
 
 // The level comes from a user tag, so unknown values reach this point.
 const setsFor = (levelTag: LevelTag) =>
-  WorkoutConstants.MAX_KRAFT_SETS_PER_USER_LEVEL[levelTag] ??
-  WorkoutConstants.MAX_KRAFT_SETS_PER_USER_LEVEL.ADVANCED;
+  WorkoutConstants.MAX_STRENGTH_SETS_PER_USER_LEVEL[levelTag] ??
+  WorkoutConstants.MAX_STRENGTH_SETS_PER_USER_LEVEL.ADVANCED;
 
-const FLOOR_WEIGHT = WorkoutConstants.MAX_KRAFT_FLOOR_WEIGHT_PERCENTAGE;
+const FLOOR_WEIGHT = WorkoutConstants.MAX_STRENGTH_FLOOR_WEIGHT_PERCENTAGE;
 
 const buffersAt = (table: BufferTable, weight: number) =>
   BUFFERS.filter((buffer) => table[buffer]?.[weight] !== undefined);

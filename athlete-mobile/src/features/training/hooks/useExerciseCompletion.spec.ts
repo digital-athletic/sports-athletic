@@ -35,7 +35,7 @@ jest.mock("@/data/skillTreeRegistry", () => {
     ...jest.requireActual("@/data/skillTreeRegistry"),
     getAllSkillTrees: () => ({
       SWR2: { "77": branch },
-      MAX_KRAFT: { "78": branch },
+      MAX_STRENGTH: { "78": branch },
     }),
   };
 });
@@ -160,7 +160,7 @@ describe("useExerciseCompletion: standard progression", () => {
 describe("useExerciseCompletion: max strength", () => {
   it("resets the record when the final value switches to the harder exercise", () => {
     seed({
-      skill: "MAX_KRAFT",
+      skill: "MAX_STRENGTH",
       branchId: "78",
       feedback: { difficulty: "SUCCEEDED" },
       maxFRepetitions: [
@@ -177,7 +177,7 @@ describe("useExerciseCompletion: max strength", () => {
     expect(useExerciseProgressStore.getState().getBranchLevel("78")).toBe(3);
     expect(stored()).toEqual({
       exerciseId: EXERCISE_ID,
-      skill: "MAX_KRAFT",
+      skill: "MAX_STRENGTH",
       branchId: "78",
     });
   });

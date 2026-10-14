@@ -10,7 +10,7 @@ const userExerciseWith = (
   maxFRepetitions: MaxForceRepetitionsDataType[],
 ): UserExerciseDataType => ({
   exerciseId: "26",
-  skill: "MAX_KRAFT",
+  skill: "MAX_STRENGTH",
   maxFRepetitions,
 });
 

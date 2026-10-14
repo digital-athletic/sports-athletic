@@ -73,7 +73,7 @@ export const getIntensityForSection = (
     case "SKKG":
       return 9;
     case "MAX":
-    case "MAX_KRAFT":
+    case "MAX_STRENGTH":
       return 10;
     default:
       return 10;

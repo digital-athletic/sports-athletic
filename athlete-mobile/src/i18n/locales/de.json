@@ -211,13 +211,13 @@
       "SWR2": "Muskelaufbau",
       "SWR2KG": "Muskelaufbau",
       "MAX": "Maximalkraft",
-      "MAX_KRAFT": "Maximalkraft",
+      "MAX_STRENGTH": "Maximalkraft",
       "SK": "Schnellkraft",
       "SKKG": "Schnellkraft",
-      "SA": "Schnelligkeitsausdauer",
-      "SAKG": "Schnelligkeitsausdauer",
-      "SAS": "Schnelligkeitsausdauer",
-      "SASKG": "Schnelligkeitsausdauer",
+      "SA": "Schnellkraftausdauer",
+      "SAKG": "Schnellkraftausdauer",
+      "SAS": "Schnellkraftausdauer Spezial",
+      "SASKG": "Schnellkraftausdauer Spezial",
       "PREV": "Prävention",
       "PREVKNEE": "Knie- und Hüftprävention",
       "PREVSHOULDER": "Schulterprävention",
@@ -353,11 +353,11 @@
       "SWR2": "Muskelaufbau",
       "SWR2KG": "Muskelaufbau",
       "MAX": "Maximalkraft",
-      "MAX_KRAFT": "Maximalkraft",
+      "MAX_STRENGTH": "Maximalkraft",
       "SK": "Schnellkraft",
       "SKKG": "Schnellkraft",
-      "SA": "Schnelligkeitsausdauer",
-      "SAKG": "Schnelligkeitsausdauer"
+      "SA": "Schnellkraftausdauer",
+      "SAKG": "Schnellkraftausdauer"
     },
     "sectionDetails": {
       "title": "Schwerpunkte",
@@ -369,7 +369,7 @@
         "SWR": "Sprung-, Wurf- und Körperkraft",
         "MAX": "Maximalkraft",
         "SK": "Schnellkraft",
-        "SA": "Schnelligkeitsausdauer"
+        "SA": "Schnellkraftausdauer"
       },
       "captions": {
         "SWR": "Konzentriere dich auf saubere Ausführung",
@@ -381,7 +381,7 @@
         "SWR": "Infos zu Muskelaufbau",
         "MAX": "Infos zu Maximalkraft",
         "SK": "Infos zu Schnellkraft",
-        "SA": "Infos zu Schnelligkeitsausdauer"
+        "SA": "Infos zu Schnellkraftausdauer"
       }
     },
     "exerciseInformation": {

@@ -600,7 +600,7 @@ describe("skillTreeUtils", () => {
         ["SK", "SWR"],
         ["SKKG", "SWR"],
         ["MAX", "SWR"],
-        ["MAX_KRAFT", "SWR"],
+        ["MAX_STRENGTH", "SWR"],
         ["main", "SWR"],
         ["PHASE", "SWR"],
         ["TEST", "SWR"],
@@ -629,7 +629,7 @@ describe("skillTreeUtils", () => {
     });
 
     describe("Non-focus skill types", () => {
-      it.each([["SUPPORT"], ["SCHNELLIGKEITSAUSDAUER_SPECIAL"]])(
+      it.each([["SUPPORT"], ["POWER_ENDURANCE_SPECIAL"]])(
         "should return undefined for %s",
         (input) => {
           expect(mapSkillCodeToFocusArea(input)).toBeUndefined();

@@ -94,7 +94,7 @@ const SECTION_ORDER = [
   "SWR2",
   "SWR2KG",
   "MAX",
-  "MAX_KRAFT",
+  "MAX_STRENGTH",
   "SK",
   "SKKG",
   "SA",
@@ -263,7 +263,7 @@ export type SectionTypes =
   | "SWR2"
   | "SWR2KG"
   | "MAX"
-  | "MAX_KRAFT"
+  | "MAX_STRENGTH"
   | "SK"
   | "SKKG"
   | "SAKG"
@@ -274,7 +274,7 @@ const SKILL_TYPES = {
   SWR1KG: "SWR1KG",
   SWR2: "SWR2",
   SWR2KG: "SWR2KG",
-  MAX_KRAFT: "MAX_KRAFT",
+  MAX_STRENGTH: "MAX_STRENGTH",
   SK: "SK",
   SKKG: "SKKG",
   SA: "SA",
@@ -1010,7 +1010,7 @@ type LevelToDifficulty = Record<LevelTag, DifficultyToWeight>;
 type AgeGroupToLevel = Record<AgeGroupTag, Partial<LevelToDifficulty>>;
 
 // Max strength starts at 16, so adolescents and adults share one table.
-const MAX_KRAFT_REPETITIONS_PER_LEVEL_AND_WEIGHT: Partial<LevelToDifficulty> = {
+const MAX_STRENGTH_REPETITIONS_PER_LEVEL_AND_WEIGHT: Partial<LevelToDifficulty> = {
   ADVANCED: {
     EASY: {
       65: 3,
@@ -1077,38 +1077,38 @@ const MAX_KRAFT_REPETITIONS_PER_LEVEL_AND_WEIGHT: Partial<LevelToDifficulty> = {
   },
 };
 
-const MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT: Partial<AgeGroupToLevel> =
+const MAX_STRENGTH_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT: Partial<AgeGroupToLevel> =
   {
-    ADOLESCENT: MAX_KRAFT_REPETITIONS_PER_LEVEL_AND_WEIGHT,
-    ADULT: MAX_KRAFT_REPETITIONS_PER_LEVEL_AND_WEIGHT,
+    ADOLESCENT: MAX_STRENGTH_REPETITIONS_PER_LEVEL_AND_WEIGHT,
+    ADULT: MAX_STRENGTH_REPETITIONS_PER_LEVEL_AND_WEIGHT,
   };
 
-const MAX_KRAFT_REPETITIONS_WARMUP = [
+const MAX_STRENGTH_REPETITIONS_WARMUP = [
   { level: "WARMUP", repetitions: 6 },
   { level: "WARMUP", repetitions: 5 },
 ];
 
-type MaxKraftSet = { startWeight: number; maximumWeight: number };
+type MaxStrengthSet = { startWeight: number; maximumWeight: number };
 
-const MAX_KRAFT_ADVANCED_SETS: MaxKraftSet[] = [
+const MAX_STRENGTH_ADVANCED_SETS: MaxStrengthSet[] = [
   { startWeight: 70, maximumWeight: 70 },
   { startWeight: 72.5, maximumWeight: 75 },
   { startWeight: 75, maximumWeight: 80 },
 ];
 
 // Max strength is not meant for beginners; they get the Advanced sets.
-const MAX_KRAFT_SETS_PER_USER_LEVEL: Record<LevelTag, MaxKraftSet[]> = {
+const MAX_STRENGTH_SETS_PER_USER_LEVEL: Record<LevelTag, MaxStrengthSet[]> = {
   PROFESSIONAL: [
     { startWeight: 75, maximumWeight: 75 },
     { startWeight: 77.5, maximumWeight: 80 },
     { startWeight: 80, maximumWeight: 85 },
     { startWeight: 80, maximumWeight: 90 },
   ],
-  ADVANCED: MAX_KRAFT_ADVANCED_SETS,
-  BEGINNER: MAX_KRAFT_ADVANCED_SETS,
+  ADVANCED: MAX_STRENGTH_ADVANCED_SETS,
+  BEGINNER: MAX_STRENGTH_ADVANCED_SETS,
 };
 
-const MAX_KRAFT_FLOOR_WEIGHT_PERCENTAGE = 65;
+const MAX_STRENGTH_FLOOR_WEIGHT_PERCENTAGE = 65;
 
 const SPORTS_SORTED = [
   "HANDBALL_SPORT",
@@ -1149,10 +1149,10 @@ export const WorkoutConstants = {
   INCLINE_BENCH_CONVERSION_FACTORS,
   IGNORE_SORENESS_SKILLS,
   LEVELS,
-  MAX_KRAFT_FLOOR_WEIGHT_PERCENTAGE,
-  MAX_KRAFT_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT,
-  MAX_KRAFT_REPETITIONS_WARMUP,
-  MAX_KRAFT_SETS_PER_USER_LEVEL,
+  MAX_STRENGTH_FLOOR_WEIGHT_PERCENTAGE,
+  MAX_STRENGTH_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT,
+  MAX_STRENGTH_REPETITIONS_WARMUP,
+  MAX_STRENGTH_SETS_PER_USER_LEVEL,
   MAX_VALUE_CONVERSION_FACTORS,
   MAX_VALUE_TYPES,
   MAX_VALUES_EXPIRATION_TIME_IN_MS,

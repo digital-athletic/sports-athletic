@@ -146,7 +146,7 @@ function toSetSnapshots(
 
 /**
  * Simulate `opts.sessions` consecutive sessions of a single focus exercise for
- * a persona. Currently supports `MAX_KRAFT`; other focuses are a future
+ * a persona. Currently supports `MAX_STRENGTH`; other focuses are a future
  * data-only extension (add a branch, not a harness rewrite).
  */
 export function simulateProgression(
@@ -155,9 +155,9 @@ export function simulateProgression(
   focus: SkillCode,
   opts: SimulateOptions,
 ): SessionSnapshot[] {
-  if (focus !== "MAX_KRAFT") {
+  if (focus !== "MAX_STRENGTH") {
     throw new Error(
-      `simulateProgression: focus "${focus}" is not yet implemented; only MAX_KRAFT is supported.`,
+      `simulateProgression: focus "${focus}" is not yet implemented; only MAX_STRENGTH is supported.`,
     );
   }
 

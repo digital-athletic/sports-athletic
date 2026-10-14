@@ -35,7 +35,7 @@ function appliedLevel(
   const userExerciseData: Record<string, UserExerciseDataType> = {
     "26": {
       exerciseId: "26",
-      skill: "MAX_KRAFT",
+      skill: "MAX_STRENGTH",
       nextWeightPercentage: 75,
       maxFRepetitions: [{ level: lastLevel, repetitions: 3 }],
       feedback: { difficulty: feedback },

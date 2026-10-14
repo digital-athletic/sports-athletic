@@ -39,7 +39,7 @@ type Progress = Record<string, UserExerciseDataType>;
 const generate = (user: UserType, progress: Progress) =>
   new TrainingGenerator().getSetListFromExercisePairs(
     [{ first: { branchId: "b1", branchTags: [], exerciseId: squat.id } }],
-    { skill: "MAX_KRAFT", length: 0 },
+    { skill: "MAX_STRENGTH", length: 0 },
     {},
     user,
     "HOME",
@@ -76,7 +76,7 @@ const progressAfter = (
 ): Progress => ({
   [squat.id]: {
     exerciseId: squat.id,
-    skill: "MAX_KRAFT",
+    skill: "MAX_STRENGTH",
     maxFRepetitions: workingSets(setList).map(toStoredRepetition),
     feedback: { difficulty },
   },
@@ -179,7 +179,7 @@ describe("TrainingGenerator: max strength ladder per working set", () => {
     const setList = generate(userWithLevel("PROFESSIONAL"), {
       [squat.id]: {
         exerciseId: squat.id,
-        skill: "MAX_KRAFT",
+        skill: "MAX_STRENGTH",
         maxFRepetitions: stored,
         feedback: { difficulty: null },
       },
@@ -197,7 +197,7 @@ describe("TrainingGenerator: max strength ladder per working set", () => {
     const setList = generate(userWithLevel("PROFESSIONAL"), {
       [squat.id]: {
         exerciseId: squat.id,
-        skill: "MAX_KRAFT",
+        skill: "MAX_STRENGTH",
         maxFRepetitions: [
           { level: "EASY", repetitions: 3, weightPercentage: 75 },
           { level: "MEDIUM", repetitions: 3, weightPercentage: 80 },
@@ -230,7 +230,7 @@ describe("TrainingGenerator: max strength ladder per working set", () => {
     const setList = generate(userWithLevel("PROFESSIONAL"), {
       [squat.id]: {
         exerciseId: squat.id,
-        skill: "MAX_KRAFT",
+        skill: "MAX_STRENGTH",
         maxFRepetitions: [atFallback, atFallback, atFallback, atFallback],
         feedback: { difficulty: "SUCCEEDED" },
       },
@@ -243,7 +243,7 @@ describe("TrainingGenerator: max strength ladder per working set", () => {
     const setList = generate(userWithLevel("PROFESSIONAL"), {
       [squat.id]: {
         exerciseId: squat.id,
-        skill: "MAX_KRAFT",
+        skill: "MAX_STRENGTH",
         // The 15% column is empty at 87.5%, so the last set used the 10% column.
         maxFRepetitions: [
           { level: "EASY", repetitions: 3, weightPercentage: 75 },
@@ -262,7 +262,7 @@ describe("TrainingGenerator: max strength ladder per working set", () => {
     const setList = generate(userWithLevel("PROFESSIONAL"), {
       [squat.id]: {
         exerciseId: squat.id,
-        skill: "MAX_KRAFT",
+        skill: "MAX_STRENGTH",
         nextWeightPercentage: 77.5,
         maxFRepetitions: [
           { level: "HARD", repetitions: 6, weightPercentage: 70 },
@@ -280,7 +280,7 @@ describe("TrainingGenerator: max strength ladder per working set", () => {
     const setList = generate(userWithLevel("ADVANCED"), {
       [squat.id]: {
         exerciseId: squat.id,
-        skill: "MAX_KRAFT",
+        skill: "MAX_STRENGTH",
         nextWeightPercentage: 90,
         maxFRepetitions: [
           { level: "HARD", repetitions: 6, weightPercentage: 75 },
@@ -309,7 +309,7 @@ describe("TrainingGenerator: max strength ladder per working set", () => {
     const tooHeavy = generate(userWithLevel("PROFESSIONAL"), {
       [squat.id]: {
         exerciseId: squat.id,
-        skill: "MAX_KRAFT",
+        skill: "MAX_STRENGTH",
         maxFRepetitions: [
           { level: "HARD", repetitions: 6, weightPercentage: 75 },
           { level: "HARD", repetitions: 6, weightPercentage: 77.5 },
@@ -350,7 +350,7 @@ describe("TrainingGenerator: max strength ladder per working set", () => {
       {
         [squat.id]: {
           exerciseId: squat.id,
-          skill: "MAX_KRAFT",
+          skill: "MAX_STRENGTH",
           maxFRepetitions: [
             { level: "MEDIUM", repetitions: 5, weightPercentage: 67.5 },
             { level: "EASY", repetitions: 3, weightPercentage: 70 },
@@ -375,7 +375,7 @@ describe("TrainingGenerator: max strength ladder per working set", () => {
     const setList = generate(userWithLevel("ADVANCED"), {
       [squat.id]: {
         exerciseId: squat.id,
-        skill: "MAX_KRAFT",
+        skill: "MAX_STRENGTH",
         nextWeightPercentage: 77.5,
         maxFRepetitions: [{ level: "MEDIUM", repetitions: 3 }],
         feedback: { difficulty: "SUCCEEDED" },

@@ -1895,7 +1895,7 @@ export default class TrainingGenerator {
               firstWarmUp.weight = firstWarmUp.weight * warmUpWeightFactor;
             }
             firstWarmUp.repetition = isExplosivePower
-              ? 8
+              ? 6
               : firstWarmUp.repetition;
             setList.push({
               branchId: firstWarmUp.branchId,
@@ -1927,7 +1927,7 @@ export default class TrainingGenerator {
                 secondWarmUp.weight = secondWarmUp.weight * warmUpWeightFactor;
               }
               secondWarmUp.repetition = isExplosivePower
-                ? 8
+                ? 6
                 : secondWarmUp.repetition;
               // add second exercise to set anyway
               setList.push({

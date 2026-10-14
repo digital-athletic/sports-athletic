@@ -220,9 +220,16 @@ describe("getSetListFromExercisePairs: warm-up sets", () => {
     WEIGHTED,
   ]);
 
-  it("gives an explosive power warm-up set 8 repetitions", () => {
+  it("gives an explosive power warm-up set 6 repetitions", () => {
     const [warmUp] = buildSetList("SK", [{ first: weightedChest }]);
-    expect(warmUp.repetition).toBe(8);
+    expect(warmUp.repetition).toBe(6);
+  });
+
+  it("gives both paired explosive power warm-up sets 6 repetitions", () => {
+    const setList = buildSetList("SK", [
+      { first: weightedChest, second: quads },
+    ]);
+    expect([setList[0].repetition, setList[2].repetition]).toEqual([6, 6]);
   });
 
   it("rests 180 s after a solo explosive power warm-up set", () => {

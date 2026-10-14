@@ -51,6 +51,7 @@ import {
 import {
   getBlocksFromPains,
   getPreventionsFromPains,
+  isBranchBlocked,
 } from "@/features/training/utils/painUtils";
 import { getRegionsForPreventionSkills } from "@/features/training/utils/preventionUtils";
 import {
@@ -1214,8 +1215,20 @@ export default class TrainingGenerator {
         }
       }
 
+      const blockedRegions = getBlocksFromPains(
+        getUserTagValues(user.workoutData?.tags, TagGroups.PAIN),
+      );
       let possibleBranches = Object.keys(filteredBranches).filter(
-        (branchId) => usedBranchIds.indexOf(branchId) === -1,
+        (branchId) =>
+          usedBranchIds.indexOf(branchId) === -1 &&
+          !isBranchBlocked(
+            skillTree[branchId].tags,
+            Object.values(skillTree[branchId].levels).map(
+              (level) => level.exerciseId,
+            ),
+            exercises,
+            blockedRegions,
+          ),
       );
       // A candidate resolving to an exercise the skill already holds drops out
       const isUnusedExercise = (branchId: string): boolean => {
@@ -1882,7 +1895,7 @@ export default class TrainingGenerator {
               firstWarmUp.weight = firstWarmUp.weight * warmUpWeightFactor;
             }
             firstWarmUp.repetition = isExplosivePower
-              ? 8
+              ? 6
               : firstWarmUp.repetition;
             setList.push({
               branchId: firstWarmUp.branchId,
@@ -1914,7 +1927,7 @@ export default class TrainingGenerator {
                 secondWarmUp.weight = secondWarmUp.weight * warmUpWeightFactor;
               }
               secondWarmUp.repetition = isExplosivePower
-                ? 8
+                ? 6
                 : secondWarmUp.repetition;
               // add second exercise to set anyway
               setList.push({

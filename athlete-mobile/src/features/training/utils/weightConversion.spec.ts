@@ -78,6 +78,26 @@ describe("getMaxValueForExercise: equipment conversion of the barbell 1RM", () =
     expect(getMaxValueForExercise(exercise, maxValues)).toBeCloseTo(50, 6);
   });
 
+  it("converts a single arm upper body barbell exercise at 42.5%", () => {
+    const exercise = exerciseWithTags("x", [
+      "EQ_BARBELL",
+      "EXERCISE_DIRECTION_HORIZONTAL_PULL",
+      "REGION_UPPER_BODY",
+      "SIDE_ONE",
+    ]);
+    expect(getMaxValueForExercise(exercise, maxValues)).toBeCloseTo(42.5, 6);
+  });
+
+  it("converts a single leg barbell exercise at 45%", () => {
+    const exercise = exerciseWithTags("x", [
+      "EQ_BARBELL",
+      "EXERCISE_DIRECTION_KNEE",
+      "REGION_LOWER_BODY",
+      "SIDE_ONE",
+    ]);
+    expect(getMaxValueForExercise(exercise, maxValues)).toBeCloseTo(45, 6);
+  });
+
   it("applies the generic rule to incline bench tags without an authored factor", () => {
     const exercise = exerciseWithTags("x", [
       "EQ_DUMBBELL",

@@ -29,10 +29,28 @@ const lowerBodyBranch = (
 const catalog = (ids: string[]): ExerciseType[] =>
   ids.map((id) => ({ ...template, id, tags: ["REGION_LOWER_BODY"] }));
 
+const kneePainUser: UserType = {
+  ...user,
+  workoutData: {
+    tags: { LEVEL: ["BEGINNER"], PAIN: ["KNEE_LEFT"] },
+    maxValues: DEFAULT_MAX_VALUES,
+  },
+};
+
+interface ReplaceOptions {
+  branchData?: Record<string, UserExerciseBranchDataType | undefined>;
+  athlete?: UserType;
+  exercises?: ExerciseType[];
+}
+
 const replaceLowerBody = (
   tree: SkillTreeType,
   usedBranchIds: string[],
-  branchData: Record<string, UserExerciseBranchDataType | undefined> = {},
+  {
+    branchData = {},
+    athlete = user,
+    exercises = catalog(["e1", "e2", "e3"]),
+  }: ReplaceOptions = {},
 ): string[] => {
   const generator = new TrainingGenerator();
   return generator
@@ -41,8 +59,8 @@ const replaceLowerBody = (
       ["LOWER_BODY"],
       [],
       [],
-      user,
-      catalog(["e1", "e2", "e3"]),
+      athlete,
+      exercises,
       { BAS: tree },
       usedBranchIds,
       [],
@@ -91,8 +109,39 @@ describe("replaceExerciseBranches", () => {
         "3": lowerBodyBranch({ 1: { exerciseId: "e3" } }),
       },
       ["1"],
-      { "1": { branchId: "1", level: 2 } },
+      { branchData: { "1": { branchId: "1", level: 2 } } },
     );
     expect(replacements).toEqual(["3"]);
+  });
+
+  it("skips a branch whose branch tags block the athlete's pain region", () => {
+    const replacements = replaceLowerBody(
+      {
+        "1": lowerBodyBranch({ 1: { exerciseId: "e1" } }, ["BLOCK_KNEE"]),
+        "2": lowerBodyBranch({ 1: { exerciseId: "e2" } }),
+      },
+      [],
+      { athlete: kneePainUser },
+    );
+    expect(replacements).toEqual(["2"]);
+  });
+
+  it("skips a branch whose exercise on any level blocks the athlete's pain region", () => {
+    const exercises = [
+      ...catalog(["e1", "e3"]),
+      { ...template, id: "e2", tags: ["REGION_LOWER_BODY", "BLOCK_KNEE"] },
+    ];
+    const replacements = replaceLowerBody(
+      {
+        "1": lowerBodyBranch({
+          1: { exerciseId: "e1" },
+          2: { exerciseId: "e2" },
+        }),
+        "2": lowerBodyBranch({ 1: { exerciseId: "e3" } }),
+      },
+      [],
+      { athlete: kneePainUser, exercises },
+    );
+    expect(replacements).toEqual(["2"]);
   });
 });

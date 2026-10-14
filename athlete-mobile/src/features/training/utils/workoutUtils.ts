@@ -66,12 +66,12 @@ const getMaxValueType = (exercise: ExerciseType): MaxValueTypeName => {
   if (!isOneSided) {
     return isDumbbell ? MAX_VALUE_TYPES.DUMBBELLS : MAX_VALUE_TYPES.BARBELL;
   }
-  if (isDumbbell) {
-    return isUpperBody
-      ? MAX_VALUE_TYPES.ONE_SIDED_UPPER
-      : MAX_VALUE_TYPES.ONE_SIDED_LOWER;
+  if (isUpperBody) {
+    return MAX_VALUE_TYPES.ONE_SIDED_UPPER;
   }
-  return MAX_VALUE_TYPES.ONE_SIDED_BARBELL;
+  return isDumbbell
+    ? MAX_VALUE_TYPES.ONE_SIDED_LOWER
+    : MAX_VALUE_TYPES.ONE_SIDED_BARBELL;
 };
 
 /**

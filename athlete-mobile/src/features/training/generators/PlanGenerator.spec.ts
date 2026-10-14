@@ -347,6 +347,56 @@ describe("PlanGenerator", () => {
     );
   });
 
+  describe("addToSkillTree: pain exclusion", () => {
+    const [template] = loadExercises();
+    const exercises = [
+      { ...template, id: "p1", tags: ["REGION_LOWER_BODY"] },
+      { ...template, id: "p2", tags: ["REGION_LOWER_BODY", "BLOCK_KNEE"] },
+    ];
+    const branchIdsFor = (tree: SkillTreeType, pains: string[]) =>
+      Object.keys(
+        PlanGenerator.addToSkillTree(
+          {},
+          tree,
+          [],
+          WorkoutConstants.AGE_GROUPS.ADULT,
+          "MALE",
+          WorkoutConstants.LEVELS.BEGINNER,
+          [],
+          pains,
+          {},
+          exercises,
+          [],
+        ),
+      );
+    const branchUpToBlockedLevel: SkillTreeType = {
+      "950": {
+        tags: ["REGION_LOWER_BODY", "SIDE_BOTH"],
+        levels: { 1: { exerciseId: "p1" }, 2: { exerciseId: "p2" } },
+      },
+    };
+
+    it("drops a branch whose exercise on a higher level is blocked by the pain", () => {
+      expect(branchIdsFor(branchUpToBlockedLevel, ["KNEE"])).toEqual([]);
+    });
+
+    it("drops a branch whose branch tags block the pain region", () => {
+      const tree: SkillTreeType = {
+        "951": {
+          tags: ["REGION_LOWER_BODY", "SIDE_BOTH", "BLOCK_KNEE"],
+          levels: { 1: { exerciseId: "p1" } },
+        },
+      };
+      expect(branchIdsFor(tree, ["KNEE"])).toEqual([]);
+    });
+
+    it("keeps a branch whose blocked region differs from the pain", () => {
+      expect(branchIdsFor(branchUpToBlockedLevel, ["SHOULDER"])).toEqual([
+        "950",
+      ]);
+    });
+  });
+
   /**
    * Assigns a training focus (PHASE, CARDIO, STABILITY, COMBINED) to each day in a group.
    * Children always receive PHASE. For adults, assignment depends on place type, equipment
@@ -884,6 +934,22 @@ describe("PlanGenerator", () => {
           WorkoutConstants.LEVELS.ADVANCED,
         ),
       ).toBe(15);
+    });
+
+    it.each([
+      "CARDIO_1_SHORT",
+      "CARDIO_1_LAKTAT",
+      "CARDIO_2",
+      "CARDIO_3",
+      "CARDIO_4",
+      "CARDIO_5",
+    ])("caps the cardio skill %s at 45 / 60 / 60 minutes", (skill) => {
+      const { BEGINNER, ADVANCED, PROFESSIONAL } = WorkoutConstants.LEVELS;
+      expect(
+        [BEGINNER, ADVANCED, PROFESSIONAL].map((level) =>
+          PlanGenerator.getMaxTimeForSkillAndLevel(skill, level),
+        ),
+      ).toEqual([45, 60, 60]);
     });
   });
 

@@ -1,6 +1,7 @@
 import { type MuscleType } from "@/bodyParts/types";
 import { TagGroups } from "@/constants/tagGroups";
-import { getUserTagValues } from "@/utils/tagUtils";
+import { type ExerciseType } from "@/schemas/exercise.schema";
+import { getTagValues, getUserTagValues } from "@/utils/tagUtils";
 import { type TagsByGroup } from "../models/Tags";
 import { type TrainingType } from "../models/Training";
 import { type UserExerciseDataType } from "../models/UserExerciseData";
@@ -117,6 +118,32 @@ export function getPreventionsFromPains(pains: string[]): string[] {
  */
 export function getBlocksFromPains(pains: string[]): string[] {
   return mapKnownPains(pains, BLOCK_BY_REGION);
+}
+
+/**
+ * Whether the branch or the exercise on any of its levels blocks one of the
+ * regions. Every level counts, because a level change must never reach a
+ * blocked exercise.
+ */
+export function isBranchBlocked(
+  branchTags: string[],
+  levelExerciseIds: string[],
+  exercises: Pick<ExerciseType, "id" | "tags">[],
+  blockedRegions: string[],
+): boolean {
+  if (blockedRegions.length === 0) return false;
+  const tagLists = [
+    branchTags,
+    ...levelExerciseIds.map(
+      (exerciseId) =>
+        exercises.find((exercise) => exercise.id === exerciseId)?.tags ?? [],
+    ),
+  ];
+  return tagLists.some((tags) =>
+    getTagValues(tags, TagGroups.BLOCK).some((region) =>
+      blockedRegions.includes(region),
+    ),
+  );
 }
 
 /**

@@ -587,6 +587,7 @@ export default class TrainingGenerator {
           skills: ["PREVENTION"],
         },
       ];
+      const weightedMain: BranchExerciseReference[] = [];
       for (let set of sets) {
         // filter Object by skill of this set
         // Note: prev is guaranteed to be defined here since we're in type.indexOf("PREV") > -1 block
@@ -619,25 +620,16 @@ export default class TrainingGenerator {
             );
             // end if no more branches
             if (result === null) break;
-            // set branches for main skill ordered WEIGHTS last
-            const hasWeights =
-              result.branch.branchTags.includes("EQ_TYPE_WEIGHTS");
-            if (hasWeights) {
-              branches.main.unshift(result.branch);
-              branchesIds.unshift(result.branchId);
-              // add fill up branch for BOTH_SIDE
-              if (result.fillUpBranchAndId?.branch) {
-                branches.main.unshift(result.fillUpBranchAndId.branch);
-                branchesIds.unshift(result.fillUpBranchAndId.branch.branchId);
-              }
-            } else {
-              branches.main.push(result.branch);
-              branchesIds.push(result.branchId);
-              // add fill up branch for BOTH_SIDE
-              if (result.fillUpBranchAndId?.branch) {
-                branches.main.push(result.fillUpBranchAndId.branch);
-                branchesIds.push(result.fillUpBranchAndId.branch.branchId);
-              }
+            // weighted pairs are ordered last
+            const target = result.branch.branchTags.includes("EQ_TYPE_WEIGHTS")
+              ? weightedMain
+              : branches.main;
+            target.push(result.branch);
+            branchesIds.push(result.branchId);
+            // add fill up branch for BOTH_SIDE
+            if (result.fillUpBranchAndId?.branch) {
+              target.push(result.fillUpBranchAndId.branch);
+              branchesIds.push(result.fillUpBranchAndId.branch.branchId);
             }
           } else {
             const result = getBranchAndId(filteredBranches, branchesIds);
@@ -652,6 +644,7 @@ export default class TrainingGenerator {
           }
         }
       }
+      branches.main.push(...weightedMain);
     } else {
       // otherwise add till reaching 15 mins
       while (duration < 15 * 60) {
@@ -675,6 +668,8 @@ export default class TrainingGenerator {
 
     let prevs = type.indexOf("PREV") > -1 ? [type] : [];
     let exerciseTime = type.indexOf("PREV") > -1 ? 30 : 15;
+    // focus and prevention trainings keep the supersets of their draw
+    const authoredPairs = type === "BAS" || type.indexOf("PREV") > -1;
     let exercisePairs: ExercisePair[] = this.getExercisePairs(
       type,
       branches.main,
@@ -682,6 +677,7 @@ export default class TrainingGenerator {
       userPains,
       prevs,
       isShortTraining,
+      authoredPairs,
     );
     // delete single PREV sets and add them up to Super sets
     if (type.indexOf("PREV") > -1) {
@@ -2169,6 +2165,7 @@ export default class TrainingGenerator {
     pains: string[],
     thisDayPrevs: string[],
     isShortTraining: boolean = false,
+    authoredPairs: boolean = false,
   ): ExercisePair[] => {
     if (TrainingGenerator.DEBUG) {
       console.log("Get exercise pairs for skill", skill);
@@ -2235,6 +2232,18 @@ export default class TrainingGenerator {
         console.log("find exercises for prev regions", prevRegions);
         console.log("prev sides", prevSides);
       }
+    }
+
+    if (authoredPairs) {
+      const drawn =
+        prevSides.length > 0
+          ? (filterExercisesBySides(
+              branches,
+              exercises,
+              prevSides,
+            ) as BranchExerciseReference[])
+          : branches;
+      return pairInDrawOrder(drawn, exercises, prevSides.length === 0);
     }
 
     // if found use only side depending pains
@@ -2814,10 +2823,17 @@ export default class TrainingGenerator {
     const userLevelTags = getUserTagValues(workoutData.tags, TagGroups.LEVEL);
     const userLevel = userLevelTags[0] || WorkoutConstants.LEVELS.BEGINNER;
     // 5 min warm up to start
-    let wuBranches = getSkillTree(skillTrees, "WU", [], true);
+    const wuBranches = filterByGender(
+      filterByAge(
+        getSkillTree(skillTrees, "WU", [], true),
+        ageGroupFor(getUserBirthday(user)),
+      ).keep,
+      gender ?? "FEMALE",
+    ).keep;
     let wuRegions = TEST_WORKOUTS_WU_REGION;
     const allBranchIds = Object.keys(wuBranches);
     let usedBranches: string[] = [];
+    const usedExerciseIds: string[] = [];
     let wuSetList: GeneratedSetListEntry[] = [];
     wuRegions.forEach((region) => {
       for (
@@ -2826,8 +2842,15 @@ export default class TrainingGenerator {
         i++
       ) {
         let unusedBranches = allBranchIds.filter((branchId) => {
-          return usedBranches.indexOf(branchId) === -1;
+          if (usedBranches.indexOf(branchId) > -1) return false;
+          const exerciseId = resolveBranchExerciseId(
+            wuBranches[branchId],
+            userLevel,
+            userExerciseData.branchData[branchId],
+          );
+          return exerciseId === null || !usedExerciseIds.includes(exerciseId);
         });
+        if (unusedBranches.length === 0) break;
 
         let possibleBranches = unusedBranches.filter((branchId) => {
           if (region.tags.length === 0) return true;
@@ -2859,6 +2882,7 @@ export default class TrainingGenerator {
         );
         usedBranches.push(selectedBranchId);
         if (userLevelExercise) {
+          usedExerciseIds.push(userLevelExercise.id);
           const entry: GeneratedSetListEntry = {
             branchId: selectedBranchId,
             exerciseId: userLevelExercise.id,
@@ -3612,6 +3636,41 @@ const getOpposingMuscles = (muscles: string[]): string[] => {
   }
 
   return result;
+};
+
+/**
+ * Pairs branches in the order they were drawn: a one-sided exercise with its
+ * other side when `pairOtherSide` is set, any other exercise with the next one.
+ */
+const pairInDrawOrder = (
+  drawn: BranchExerciseReference[],
+  exercises: ExerciseType[],
+  pairOtherSide: boolean,
+): ExercisePair[] => {
+  const otherSideOf = (entry: BranchExerciseReference) =>
+    pairOtherSide &&
+    getTagValues(entry.branchTags, TagGroups.SIDE).includes("ONE")
+      ? exercises.find((exercise) => exercise.id === entry.exerciseId)
+          ?.otherSideExerciseId
+      : undefined;
+  const pairs: ExercisePair[] = [];
+  let index = 0;
+  while (index < drawn.length) {
+    const first = drawn[index];
+    const otherSide = otherSideOf(first);
+    const next = drawn[index + 1];
+    if (otherSide) {
+      pairs.push({ first, second: { ...first, exerciseId: otherSide } });
+      index += 1;
+    } else if (next && !otherSideOf(next)) {
+      pairs.push({ first, second: next });
+      index += 2;
+    } else {
+      pairs.push({ first });
+      index += 1;
+    }
+  }
+  return pairs;
 };
 
 const filterExercisesBySides = (

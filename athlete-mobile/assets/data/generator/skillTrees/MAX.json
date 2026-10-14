@@ -22,7 +22,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT",
+      "SKILL_MAX_STRENGTH",
       "AGE_ADULT"
     ],
     "levels": {
@@ -50,7 +50,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT",
+      "SKILL_MAX_STRENGTH",
       "AGE_ADULT"
     ],
     "levels": {
@@ -82,7 +82,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT",
+      "SKILL_MAX_STRENGTH",
       "AGE_ADULT"
     ],
     "levels": {
@@ -110,7 +110,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT",
+      "SKILL_MAX_STRENGTH",
       "AGE_ADULT",
       "GENDER_FEMALE"
     ],
@@ -136,7 +136,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT",
+      "SKILL_MAX_STRENGTH",
       "AGE_ADULT",
       "GENDER_MALE"
     ],
@@ -168,7 +168,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT",
+      "SKILL_MAX_STRENGTH",
       "AGE_ADULT",
       "GENDER_FEMALE"
     ],
@@ -197,7 +197,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT",
+      "SKILL_MAX_STRENGTH",
       "AGE_ADULT",
       "GENDER_MALE"
     ],
@@ -227,7 +227,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT",
+      "SKILL_MAX_STRENGTH",
       "AGE_ADULT"
     ],
     "levels": {
@@ -265,7 +265,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT",
+      "SKILL_MAX_STRENGTH",
       "AGE_ADULT"
     ],
     "levels": {
@@ -297,7 +297,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT",
+      "SKILL_MAX_STRENGTH",
       "AGE_ADULT"
     ],
     "levels": {
@@ -330,7 +330,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT",
+      "SKILL_MAX_STRENGTH",
       "AGE_ADULT"
     ],
     "levels": {
@@ -366,7 +366,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT",
+      "SKILL_MAX_STRENGTH",
       "AGE_ADULT"
     ],
     "levels": {
@@ -400,7 +400,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT",
+      "SKILL_MAX_STRENGTH",
       "AGE_ADULT"
     ],
     "levels": {

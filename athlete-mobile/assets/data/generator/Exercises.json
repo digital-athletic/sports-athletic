@@ -826,7 +826,7 @@
       "SEASON_PHASE_PAUSE",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT_TEST",
+      "SKILL_MAX_STRENGTH_TEST",
       "SKILL_SWR"
     ],
     "isAdvanceByReps": true,
@@ -974,7 +974,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT"
+      "SKILL_MAX_STRENGTH"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -1085,7 +1085,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -1183,7 +1183,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -2627,7 +2627,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -2768,7 +2768,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -3190,7 +3190,7 @@
       "SEASON_PHASE_PAUSE",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT_TEST",
+      "SKILL_MAX_STRENGTH_TEST",
       "SKILL_SWR"
     ],
     "isAdvanceByReps": true,
@@ -3325,7 +3325,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT"
+      "SKILL_MAX_STRENGTH"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -3433,7 +3433,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -3554,7 +3554,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -3989,7 +3989,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -4113,7 +4113,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -4437,7 +4437,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -4561,7 +4561,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -6321,7 +6321,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT"
+      "SKILL_MAX_STRENGTH"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -6435,7 +6435,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -6560,7 +6560,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -6657,7 +6657,7 @@
       "SEASON_PHASE_PAUSE",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT_TEST",
+      "SKILL_MAX_STRENGTH_TEST",
       "SKILL_SWR"
     ],
     "isAdvanceByReps": true,
@@ -6806,7 +6806,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT"
+      "SKILL_MAX_STRENGTH"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -6915,7 +6915,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -7035,7 +7035,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -7764,7 +7764,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -7885,7 +7885,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -8267,7 +8267,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -8394,7 +8394,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -8636,7 +8636,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -8887,7 +8887,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -9007,7 +9007,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -9232,7 +9232,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -9481,7 +9481,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -10938,7 +10938,7 @@
       "SEASON_PHASE_PAUSE",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT_TEST",
+      "SKILL_MAX_STRENGTH_TEST",
       "SKILL_SWR"
     ],
     "isAdvanceByReps": true,
@@ -11069,7 +11069,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT"
+      "SKILL_MAX_STRENGTH"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -11179,7 +11179,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -11299,7 +11299,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -11526,7 +11526,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -11645,7 +11645,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -11899,7 +11899,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -12044,7 +12044,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -12160,7 +12160,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -12300,7 +12300,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -13092,7 +13092,7 @@
       "SEASON_PHASE_PAUSE",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT_TEST",
+      "SKILL_MAX_STRENGTH_TEST",
       "SKILL_SWR"
     ],
     "isAdvanceByReps": true,
@@ -13219,7 +13219,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT"
+      "SKILL_MAX_STRENGTH"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -13328,7 +13328,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -13448,7 +13448,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -14819,7 +14819,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -14959,7 +14959,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -18984,7 +18984,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -19571,7 +19571,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -19704,7 +19704,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -19841,7 +19841,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -20349,7 +20349,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -20450,7 +20450,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -20560,7 +20560,7 @@
       "SEASON_PHASE_PAUSE",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -21655,7 +21655,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -21777,7 +21777,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -22008,7 +22008,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -22137,7 +22137,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -22366,7 +22366,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -22500,7 +22500,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -23180,7 +23180,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -28055,7 +28055,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -28171,7 +28171,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -28292,7 +28292,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -28410,7 +28410,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -28534,7 +28534,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -28673,7 +28673,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -30483,7 +30483,7 @@
       "SEASON_PHASE_PAUSE",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT_TEST",
+      "SKILL_MAX_STRENGTH_TEST",
       "SKILL_SWR"
     ],
     "isAdvanceByReps": true,
@@ -30632,7 +30632,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT"
+      "SKILL_MAX_STRENGTH"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -30741,7 +30741,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -30861,7 +30861,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -32768,7 +32768,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -32897,7 +32897,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -33265,7 +33265,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -33402,7 +33402,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -33615,7 +33615,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -33744,7 +33744,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -33988,7 +33988,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -34117,7 +34117,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -34341,7 +34341,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -34481,7 +34481,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -34583,7 +34583,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -34700,7 +34700,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -34777,7 +34777,7 @@
       "w": 2
     },
     "tags": [
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "EQ_TYPE_KG",
       "SIDE_ONE",
       "MUSCLE_INVOLVEMENT_COMPLEX",
@@ -34936,7 +34936,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -35033,7 +35033,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -35129,7 +35129,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -35252,7 +35252,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -35368,7 +35368,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -35519,7 +35519,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -35638,7 +35638,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -35792,7 +35792,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -35940,7 +35940,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -36054,7 +36054,7 @@
       "SEASON_PHASE_PAUSE",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT_TEST",
+      "SKILL_MAX_STRENGTH_TEST",
       "SKILL_SWR"
     ],
     "isAdvanceByReps": true,
@@ -36184,7 +36184,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT"
+      "SKILL_MAX_STRENGTH"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -36294,7 +36294,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -36415,7 +36415,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -37098,7 +37098,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -37228,7 +37228,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -38063,7 +38063,7 @@
       "SEASON_PHASE_PAUSE",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT_TEST",
+      "SKILL_MAX_STRENGTH_TEST",
       "SKILL_SWR"
     ],
     "isAdvanceByReps": true,
@@ -38321,7 +38321,7 @@
       "SEASON_PHASE_PAUSE",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT_TEST",
+      "SKILL_MAX_STRENGTH_TEST",
       "SKILL_SWR"
     ],
     "isAdvanceByReps": true,
@@ -38447,7 +38447,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT"
+      "SKILL_MAX_STRENGTH"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -38553,7 +38553,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -38670,7 +38670,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -38970,7 +38970,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -39090,7 +39090,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -41375,7 +41375,7 @@
       "SEASON_PHASE_PAUSE",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT_TEST",
+      "SKILL_MAX_STRENGTH_TEST",
       "SKILL_SWR"
     ],
     "isAdvanceByReps": true,
@@ -41508,7 +41508,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT"
+      "SKILL_MAX_STRENGTH"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -41614,7 +41614,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -41747,7 +41747,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -41975,7 +41975,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT"
+      "SKILL_MAX_STRENGTH"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -42082,7 +42082,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -42216,7 +42216,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -42449,7 +42449,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT"
+      "SKILL_MAX_STRENGTH"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -42557,7 +42557,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -42692,7 +42692,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -42931,7 +42931,7 @@
       "SEASON_PHASE_PAUSE",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_MAX_KRAFT_TEST",
+      "SKILL_MAX_STRENGTH_TEST",
       "SKILL_SWR"
     ],
     "isAdvanceByReps": true,
@@ -43641,7 +43641,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -43768,7 +43768,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -44015,7 +44015,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -44140,7 +44140,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -48094,7 +48094,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -48214,7 +48214,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -48309,7 +48309,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -48427,7 +48427,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -48527,7 +48527,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -48626,7 +48626,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -56987,7 +56987,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -57105,7 +57105,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -57325,7 +57325,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -57462,7 +57462,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -57839,7 +57839,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -57963,7 +57963,7 @@
       "REGION_LOWER_BODY",
       "SEASON_PHASE_COMPETITION",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -58220,7 +58220,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -58344,7 +58344,7 @@
       "REGION_LOWER_BODY",
       "SEASON_PHASE_COMPETITION",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -58596,7 +58596,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -58718,7 +58718,7 @@
       "REGION_LOWER_BODY",
       "SEASON_PHASE_COMPETITION",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -58966,7 +58966,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -59086,7 +59086,7 @@
       "REGION_LOWER_BODY",
       "SEASON_PHASE_COMPETITION",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -59338,7 +59338,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -59490,7 +59490,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -59619,7 +59619,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -62766,7 +62766,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -62897,7 +62897,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -63418,7 +63418,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -72845,7 +72845,7 @@
       "SEASON_PHASE_PAUSE",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -73087,7 +73087,7 @@
       "SEASON_PHASE_PAUSE",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -75509,7 +75509,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -75630,7 +75630,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -75724,7 +75724,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -75840,7 +75840,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -75940,7 +75940,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -76076,7 +76076,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -76171,7 +76171,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -76299,7 +76299,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -76390,7 +76390,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -76517,7 +76517,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -77548,7 +77548,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -77708,7 +77708,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -77823,7 +77823,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -77945,7 +77945,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -78102,7 +78102,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -78262,7 +78262,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -78422,7 +78422,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -78575,7 +78575,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -78689,7 +78689,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -78935,7 +78935,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -79090,7 +79090,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -79243,7 +79243,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -79399,7 +79399,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -79555,7 +79555,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -79707,7 +79707,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -79862,7 +79862,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -79977,7 +79977,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -80134,7 +80134,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -80252,7 +80252,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -80409,7 +80409,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -80606,7 +80606,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -80722,7 +80722,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -80915,7 +80915,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -81039,7 +81039,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -81138,7 +81138,7 @@
       "REGION_LOWER_BODY",
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -81274,7 +81274,7 @@
       "REGION_LOWER_BODY",
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -81403,7 +81403,7 @@
       "REGION_LOWER_BODY",
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -81531,7 +81531,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -87474,7 +87474,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -87619,7 +87619,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -87764,7 +87764,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -87893,7 +87893,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -88943,7 +88943,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -89061,7 +89061,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -89176,7 +89176,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -89294,7 +89294,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -89415,7 +89415,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -89529,7 +89529,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -89642,7 +89642,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -89760,7 +89760,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -89892,7 +89892,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -90088,7 +90088,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -90344,7 +90344,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -90601,7 +90601,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -91131,7 +91131,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -91668,7 +91668,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -92338,7 +92338,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_LEFT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -96581,7 +96581,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -97147,7 +97147,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -97268,7 +97268,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -97517,7 +97517,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -97644,7 +97644,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -97881,7 +97881,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -98132,7 +98132,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -98252,7 +98252,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -98477,7 +98477,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -98726,7 +98726,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -99143,7 +99143,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -99285,7 +99285,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -99401,7 +99401,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -99541,7 +99541,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -102638,7 +102638,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -102760,7 +102760,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -102989,7 +102989,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -103118,7 +103118,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -103347,7 +103347,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -103478,7 +103478,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -107839,7 +107839,7 @@
       "w": 2
     },
     "tags": [
-      "SKILL_SCHNELLKRAFT",
+      "SKILL_EXPLOSIVE_POWER",
       "EQ_TYPE_KG",
       "SIDE_ONE",
       "MUSCLE_INVOLVEMENT_COMPLEX",
@@ -107992,7 +107992,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -108138,7 +108138,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -110039,7 +110039,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -110166,7 +110166,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -110413,7 +110413,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -110538,7 +110538,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -113677,7 +113677,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -113795,7 +113795,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -114015,7 +114015,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -114152,7 +114152,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -118622,7 +118622,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -118755,7 +118755,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -118850,7 +118850,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -118978,7 +118978,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -119084,7 +119084,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -119237,7 +119237,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -119352,7 +119352,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -119507,7 +119507,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -119625,7 +119625,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -120371,7 +120371,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -120513,7 +120513,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -120658,7 +120658,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -121816,7 +121816,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -121940,7 +121940,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -122059,7 +122059,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -122175,7 +122175,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -122292,7 +122292,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -123088,7 +123088,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER"
+      "SKILL_POWER_ENDURANCE"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -123338,7 +123338,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL"
+      "SKILL_POWER_ENDURANCE_SPECIAL"
     ],
     "isAdvanceByReps": false,
     "isAdvanceByDuration": true,
@@ -127845,7 +127845,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -127966,7 +127966,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -128087,7 +128087,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -128220,7 +128220,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -128344,7 +128344,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_LEFT",
       "SIDE_ONE",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -128468,7 +128468,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -128587,7 +128587,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_LEFT",
       "SIDE_ONE",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -128710,7 +128710,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -128838,7 +128838,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_LEFT",
       "SIDE_ONE",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -128971,7 +128971,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -129104,7 +129104,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_LEFT",
       "SIDE_ONE",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -129228,7 +129228,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -129354,7 +129354,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -129489,7 +129489,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -129615,7 +129615,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -129741,7 +129741,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -129868,7 +129868,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -130001,7 +130001,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -130132,7 +130132,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -130264,7 +130264,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -130396,7 +130396,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -136175,7 +136175,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -143048,7 +143048,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_LEFT",
       "SIDE_ONE",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -143166,7 +143166,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -143286,7 +143286,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -143399,7 +143399,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -143512,7 +143512,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -143625,7 +143625,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -143742,7 +143742,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_LEFT",
       "SIDE_ONE",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -143861,7 +143861,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -143986,7 +143986,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_LEFT",
       "SIDE_ONE",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -144109,7 +144109,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -144236,7 +144236,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_LEFT",
       "SIDE_ONE",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -144373,7 +144373,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -144504,7 +144504,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -144625,7 +144625,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -144751,7 +144751,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -144869,7 +144869,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_LEFT",
       "SIDE_ONE",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -145011,7 +145011,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -145151,7 +145151,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -145292,7 +145292,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -145429,7 +145429,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -145569,7 +145569,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -145696,7 +145696,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_LEFT",
       "SIDE_ONE",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -145821,7 +145821,7 @@
       "SEASON_PHASE_PREPARATORY",
       "SIDE_ONE",
       "SIDE_RIGHT",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -146370,7 +146370,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,
@@ -146483,7 +146483,7 @@
       "SEASON_PHASE_COMPETITION",
       "SEASON_PHASE_PREPARATORY",
       "SIDE_BOTH",
-      "SKILL_SCHNELLKRAFT"
+      "SKILL_EXPLOSIVE_POWER"
     ],
     "isAdvanceByReps": true,
     "isAdvanceByDuration": false,

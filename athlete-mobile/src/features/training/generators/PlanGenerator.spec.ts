@@ -935,6 +935,22 @@ describe("PlanGenerator", () => {
         ),
       ).toBe(15);
     });
+
+    it.each([
+      "CARDIO_1_SHORT",
+      "CARDIO_1_LAKTAT",
+      "CARDIO_2",
+      "CARDIO_3",
+      "CARDIO_4",
+      "CARDIO_5",
+    ])("caps the cardio skill %s at 45 / 60 / 60 minutes", (skill) => {
+      const { BEGINNER, ADVANCED, PROFESSIONAL } = WorkoutConstants.LEVELS;
+      expect(
+        [BEGINNER, ADVANCED, PROFESSIONAL].map((level) =>
+          PlanGenerator.getMaxTimeForSkillAndLevel(skill, level),
+        ),
+      ).toEqual([45, 60, 60]);
+    });
   });
 
   /**

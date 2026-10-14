@@ -38,6 +38,22 @@ describe("exerciseRegistry", () => {
         .map((exercise) => exercise.id);
       expect(malformed).toEqual([]);
     });
+
+    it("blocks knee, ankle, hip and spine on every high intensity plyometric exercise", () => {
+      const required = [
+        "BLOCK_KNEE",
+        "BLOCK_ANKLE",
+        "BLOCK_HIP",
+        "BLOCK_SPINE",
+      ];
+      const unblocked = getAllExercises()
+        .filter((exercise) => exercise.tags.includes("SKILL_PLYO_HIGH"))
+        .filter((exercise) =>
+          required.some((tag) => !exercise.tags.includes(tag)),
+        )
+        .map((exercise) => exercise.id);
+      expect(unblocked).toEqual([]);
+    });
   });
 
   describe("getExerciseById", () => {

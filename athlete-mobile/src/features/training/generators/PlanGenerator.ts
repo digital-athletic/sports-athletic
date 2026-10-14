@@ -240,10 +240,9 @@ export default class PlanGenerator {
     }
     if (PlanGenerator.DEBUG) console.log("SeasonPhase: ", seasonPhase);
     const pains: string[] = getUserTagValues(tags, TagGroups.PAIN);
-
-    let hasPain: boolean = pains.length > 0 ? true : false;
-
     const prevention: string[] = getPreventionsFromPains(pains);
+    // unknown pain tags map to no prevention and count as no pain
+    const hasPain = prevention.length > 0;
 
     if (PlanGenerator.DEBUG) console.log("Prevention: ", prevention);
 

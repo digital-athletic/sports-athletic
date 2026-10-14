@@ -1,5 +1,15 @@
+import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import type { State } from "../exerciseProgressStore";
 import { exerciseProgressStoreMigrations } from "./exerciseProgressStoreMigrations";
+
+const CARDIO_TREE_NAMES = [
+  "CARDIO_1_LAKTAT",
+  "CARDIO_1_SHORT",
+  "CARDIO_2",
+  "CARDIO_3",
+  "CARDIO_4",
+  "CARDIO_5",
+];
 
 const stateWith = (
   exerciseData: State["exerciseData"],
@@ -138,6 +148,43 @@ describe("exerciseProgressStoreMigrations", () => {
         level: 2,
         exerciseId: "516",
       });
+    });
+
+    it("removes the stored level of every branch in every cardio tree", () => {
+      const skillTrees = getAllSkillTrees();
+      const cardioBranchIds = CARDIO_TREE_NAMES.flatMap((treeName) =>
+        Object.keys(skillTrees[treeName] ?? {}),
+      );
+      const branchData = Object.fromEntries(
+        cardioBranchIds.map((branchId) => [branchId, { branchId, level: 1 }]),
+      );
+
+      const result = exerciseProgressStoreMigrations[18](
+        stateWith({}, branchData),
+      );
+
+      for (const treeName of CARDIO_TREE_NAMES) {
+        expect(Object.keys(skillTrees[treeName] ?? {})).not.toHaveLength(0);
+      }
+      expect(result.branchData).toEqual({});
+    });
+
+    it("leaves the rest of the store unchanged", () => {
+      const state: State = {
+        ...stateWith(
+          { "100": { exerciseId: "100", skill: "SWR2", weight: 70 } },
+          { "576": { branchId: "576", level: 3, exerciseId: "39" } },
+        ),
+        exerciseTotals: {
+          "39": { weight: 0, duration: 1800, repetition: 0, height: 0 },
+        },
+        xp: 250,
+        level: 4,
+      };
+
+      const result = exerciseProgressStoreMigrations[18](state);
+
+      expect(result).toEqual({ ...state, branchData: {} });
     });
   });
 });

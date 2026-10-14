@@ -401,10 +401,10 @@
   },
   "src/features/training/generators/PlanGenerator.ts": {
     "complexity": {
-      "count": 12
+      "count": 11
     },
     "max-depth": {
-      "count": 16
+      "count": 14
     },
     "max-lines": {
       "count": 1
@@ -421,7 +421,7 @@
       "count": 19
     },
     "max-depth": {
-      "count": 32
+      "count": 29
     },
     "max-lines": {
       "count": 1

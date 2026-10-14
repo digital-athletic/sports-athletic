@@ -879,110 +879,30 @@ export default class PlanGenerator {
       numOfTrainingDays > 1 &&
       ageGroup !== WorkoutConstants.AGE_GROUPS.CHILD
     ) {
-      if (PlanGenerator.DEBUG)
-        console.log("No CARDIO set so try to change longest PHASE to COMBINED");
-      let numOfPhaseTrainings = 0;
-
-      // make longest PHASE training a combined (Logik Nr.6)
-      let groupToAdjustCardio = -1;
-      let trainingToAdjustCardio = -1;
-      let groupToAdjust = -1;
-      let trainingToAdjust = -1;
-      let trainingToAdjustHasWeights = false;
-      for (let groupIndex = 0; groupIndex < groupFocuses.length; groupIndex++) {
-        for (
-          let trainingIndex = 0;
-          trainingIndex < groupFocuses[groupIndex].length;
-          trainingIndex++
-        ) {
-          if (groupFocuses[groupIndex][trainingIndex] === "PHASE") {
-            numOfPhaseTrainings++;
-          }
-          // check for cardio
+      // the longest PHASE day, except a home day without run equipment
+      let longest: { group: number; training: number } | null = null;
+      groupFocuses.forEach((focuses, group) =>
+        focuses.forEach((focus, training) => {
+          const day = trainingDayGroups[group][training];
+          const homeWithoutRun =
+            day.place === "HOME" && !hasRunEquipment(places.HOME.equipment);
+          if (focus !== "PHASE" || homeWithoutRun) return;
           if (
-            groupFocuses[groupIndex][trainingIndex] === "PHASE" &&
-            (trainingDayGroups[groupIndex][trainingIndex].place !== "HOME" ||
-              hasRunEquipment(places["HOME"].equipment))
+            !longest ||
+            day.duration >
+              trainingDayGroups[longest.group][longest.training].duration
           ) {
-            // valid
-            if (groupToAdjustCardio === -1) {
-              // is first valid option
-              groupToAdjustCardio = groupIndex;
-              trainingToAdjustCardio = trainingIndex;
-              trainingToAdjustHasWeights = hasWeights(
-                places[trainingDayGroups[groupIndex][trainingIndex].place]
-                  .equipment,
-              );
-            } else {
-              if (
-                trainingToAdjustHasWeights &&
-                !hasWeights(
-                  places[trainingDayGroups[groupIndex][trainingIndex].place]
-                    .equipment,
-                )
-              ) {
-                // this training has no weights so better use it instead of the day with weights
-                groupToAdjustCardio = groupIndex;
-                trainingToAdjustCardio = trainingIndex;
-                trainingToAdjustHasWeights = false;
-              } else if (
-                trainingDayGroups[groupIndex][trainingIndex].duration <
-                trainingDayGroups[groupToAdjustCardio][trainingToAdjustCardio]
-                  .duration
-              ) {
-                // no place selection find shortest training to use for cardio
-                groupToAdjustCardio = groupIndex;
-                trainingToAdjustCardio = trainingIndex;
-                trainingToAdjustHasWeights = hasWeights(
-                  places[trainingDayGroups[groupIndex][trainingIndex].place]
-                    .equipment,
-                );
-              }
-            }
+            longest = { group, training };
           }
-          // check for combined
-          if (
-            groupFocuses[groupIndex][trainingIndex] === "PHASE" &&
-            (trainingDayGroups[groupIndex][trainingIndex].place !== "HOME" ||
-              hasRunEquipment(places["HOME"].equipment)) &&
-            trainingDayGroups[groupIndex][trainingIndex].duration >= 45
-          ) {
-            // valid for combined if is phase training with run eq and more than 45 minutes
-            if (
-              groupToAdjust === -1 ||
-              trainingDayGroups[groupIndex][trainingIndex].duration >
-                trainingDayGroups[groupToAdjust][trainingToAdjust].duration ||
-              (trainingToAdjustHasWeights &&
-                !hasWeights(
-                  places[trainingDayGroups[groupIndex][trainingIndex].place]
-                    .equipment,
-                ))
-            ) {
-              groupToAdjust = groupIndex;
-              trainingToAdjust = trainingIndex;
-            }
-          }
-        }
-      }
-
-      if (
-        groupToAdjustCardio > -1 &&
-        trainingToAdjustCardio > -1 &&
-        numOfPhaseTrainings > 1
-      ) {
-        // change to cardio
-        groupFocuses[groupToAdjustCardio][trainingToAdjustCardio] = "CARDIO";
-      } else if (groupToAdjust > -1 && trainingToAdjust > -1) {
-        // change to combined
-        groupFocuses[groupToAdjust][trainingToAdjust] = "COMBINED";
-      } else {
-        if (PlanGenerator.DEBUG)
-          console.log(
-            "Could not adjust PHASE training to be COMBINED with indices group:",
-            groupToAdjust,
-            "training:",
-            trainingToAdjust,
-          );
+        }),
+      );
+      if (longest) {
+        const { group, training } = longest;
+        const day = trainingDayGroups[group][training];
+        groupFocuses[group][training] =
+          day.duration >= 45 && hasRunEquipment(places[day.place].equipment)
+            ? "COMBINED"
+            : "CARDIO";
       }
     }
     if (PlanGenerator.DEBUG) console.log("Group focuses: ", groupFocuses);
@@ -1456,6 +1376,10 @@ export default class PlanGenerator {
     if (PlanGenerator.DEBUG && pains.length > 0) {
       console.log("filter pains ", pains);
     }
+    const position = getUserTagValue(
+      user.workoutData?.tags,
+      TagGroups.POSITION,
+    );
 
     //filter branches
     if (PlanGenerator.DEBUG) console.log("full skillTree", fullSkillTree);
@@ -1472,6 +1396,7 @@ export default class PlanGenerator {
         exerciseBranchData,
         exercises,
         branchIdsInUse,
+        position,
       );
     let skillTree: SkillTreeType = filterTree(fullSkillTree);
 
@@ -1501,6 +1426,7 @@ export default class PlanGenerator {
         exerciseBranchData,
         exercises,
         branchIdsInUse,
+        position,
       );
       if (PlanGenerator.DEBUG)
         console.log(
@@ -2656,13 +2582,15 @@ export default class PlanGenerator {
     exerciseBranchData: BranchDataMapType,
     exercises: ExerciseType[],
     branchIdsInUse: string[],
+    position?: string,
   ): SkillTreeType => {
-    // DEV do not use exercises in goal, as long as all users act like goalkeepers
+    // goalkeeper exercises only for goalkeepers; no position counts as field player
     const goalExercises = ["661", "662", "767", "768", "769"];
+    const isGoalkeeper = position === "GOAL" || position === "GOALKEEPER";
     for (let id in additionalSkillTree) {
       if (additionalSkillTree.hasOwnProperty(id) && additionalSkillTree[id]) {
-        // DEV
         if (
+          !isGoalkeeper &&
           Object.keys(additionalSkillTree[id].levels).some(
             (levelKey) =>
               goalExercises.indexOf(
@@ -2670,7 +2598,6 @@ export default class PlanGenerator {
               ) > -1,
           )
         ) {
-          // DEV skip goal exercise
           continue;
         }
         // isSet

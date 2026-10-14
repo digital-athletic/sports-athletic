@@ -5,6 +5,9 @@ const SKILL_TAG_RENAME_MAP: Record<string, string> = {
   SKILL_SCHNELLKRAFT: "SKILL_EXPLOSIVE_POWER",
   SKILL_MAX_KRAFT: "SKILL_MAX_STRENGTH",
   SKILL_MAX_KRAFT_TEST: "SKILL_MAX_STRENGTH_TEST",
+  // A correction, not a translation: these tags mark the power endurance
+  // (Schnellkraftausdauer) trees SA, SAKG and SASPEZIAL, but named speed
+  // endurance (Schnelligkeitsausdauer), a different training concept.
   SKILL_SCHNELLIGKEITSAUSDAUER: "SKILL_POWER_ENDURANCE",
   SKILL_SCHNELLIGKEITSAUSDAUER_SPECIAL: "SKILL_POWER_ENDURANCE_SPECIAL",
 };

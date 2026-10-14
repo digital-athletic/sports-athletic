@@ -171,3 +171,100 @@ describe("generateShortWorkout: selection", () => {
     expect(branches.map((b) => b.branchId)).toContain("10");
   });
 });
+
+const mainPairs = (
+  type: TrainingType,
+  skillTrees: { [skillName: string]: SkillTreeType },
+  exercises: ExerciseType[],
+  equipment: string[] = [],
+): string[][] => {
+  const generator = new TrainingGenerator();
+  const spy = jest
+    .spyOn(generator, "getSetListFromExercisePairs")
+    .mockReturnValue([]);
+  generator.generateShortWorkout(
+    type,
+    beginner,
+    "HOME",
+    exercises,
+    skillTrees,
+    equipment,
+    { exerciseData: {}, branchData: {} },
+  );
+  const [pairs] = spy.mock.calls[0];
+  return pairs.map(({ first, second }) =>
+    second ? [first.branchId, second.branchId] : [first.branchId],
+  );
+};
+
+describe("generateShortWorkout: authored supersets", () => {
+  beforeEach(() => {
+    jest.spyOn(Math, "random").mockReturnValue(0);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("pairs a leg axis stability training in draw order instead of by superset rank", () => {
+    const bas = (muscle: string) => [
+      "SKILL_BAS",
+      "REGION_LOWER_BODY",
+      "SIDE_BOTH",
+      muscle,
+    ];
+    const pairs = mainPairs(
+      "BAS",
+      {
+        BAS: {
+          "10": branch(bas("MUSCLE_QUADRICEPS"), "11"),
+          "20": branch(bas("MUSCLE_CALF"), "21"),
+          "30": branch(bas("MUSCLE_HAMSTRINGS"), "31"),
+          "40": branch(bas("MUSCLE_GLUTES"), "41"),
+        },
+      },
+      ["11", "21", "31", "41"].map((id) => exerciseWithTags(id, ["SIDE_BOTH"])),
+    );
+    expect(pairs).toEqual([
+      ["10", "20"],
+      ["30", "40"],
+    ]);
+  });
+
+  it("orders the weighted pairs of a prevention training last", () => {
+    const prevention = [
+      "SKILL_PREVENTION",
+      "PREVENTION_KNEE_HIP",
+      "REGION_LOWER_BODY",
+      "SIDE_BOTH",
+    ];
+    const weighted = [...prevention, "EQ_DUMBBELL", "EQ_TYPE_WEIGHTS"];
+    const pairs = mainPairs(
+      "PREVKNEE",
+      {
+        PREV: {
+          "10": branch([...weighted, "MUSCLE_GLUTES"], "11"),
+          "40": branch([...weighted, "MUSCLE_CALF"], "41"),
+        },
+        PREVKG: {
+          "20": branch([...prevention, "MUSCLE_CALF"], "21"),
+          "30": branch([...prevention, "MUSCLE_INNER_THIGH"], "31"),
+        },
+        WUSPEZIAL: {
+          "90": branch(
+            ["SKILL_WARM_UP_SPECIAL", "PREVENTION_KNEE_HIP", "SIDE_BOTH"],
+            "91",
+          ),
+        },
+      },
+      ["11", "21", "31", "41", "91"].map((id) =>
+        exerciseWithTags(id, ["SIDE_BOTH"]),
+      ),
+      ["DUMBBELL"],
+    );
+    expect(pairs).toEqual([
+      ["20", "30"],
+      ["10", "40"],
+    ]);
+  });
+});

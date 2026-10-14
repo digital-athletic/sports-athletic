@@ -1,6 +1,8 @@
 import { IntensityData } from "@/features/training/models/Intensity";
 
+// Full-body stability with weights; weights come from the exercise only.
 export const IntensityGKS: IntensityData = {
+  overridesExerciseRepsAndDuration: true,
   adjustment: {
     duration: {
       default: {
@@ -64,24 +66,16 @@ export const IntensityGKS: IntensityData = {
         default: 20,
       },
     },
-    weight: {
-      default: {
-        default: 40,
-      },
-      type: {
-        type: "weightFMax",
-      },
-    },
   },
   targetValue: {
     duration: {
       default: {
-        default: 60,
+        default: 50,
       },
     },
     repetition: {
       default: {
-        default: 15,
+        default: 12,
       },
     },
     height: {
@@ -89,12 +83,17 @@ export const IntensityGKS: IntensityData = {
         default: 40,
       },
     },
-    weight: {
+  },
+};
+
+// Full-body stability without weights holds durations up to 60 s.
+export const IntensityGKS_KG: IntensityData = {
+  ...IntensityGKS,
+  targetValue: {
+    ...IntensityGKS.targetValue,
+    duration: {
       default: {
         default: 60,
-      },
-      type: {
-        type: "weightFMax",
       },
     },
   },

@@ -107,7 +107,10 @@ import { IntensityCARDIO_2 } from "../../../../assets/data/generator/intensity/C
 import { IntensityCARDIO_3 } from "../../../../assets/data/generator/intensity/CARDIO_3";
 import { IntensityDEFAULT } from "../../../../assets/data/generator/intensity/DEFAULT";
 import { IntensityDEFAULT_KG } from "../../../../assets/data/generator/intensity/DEFAULTKG";
-import { IntensityGKS } from "../../../../assets/data/generator/intensity/GKS";
+import {
+  IntensityGKS,
+  IntensityGKS_KG,
+} from "../../../../assets/data/generator/intensity/GKS";
 import { IntensityPREV } from "../../../../assets/data/generator/intensity/PREV";
 import { IntensitySA } from "../../../../assets/data/generator/intensity/SA";
 import { IntensitySA_KG } from "../../../../assets/data/generator/intensity/SAKG";
@@ -3828,7 +3831,10 @@ export const getIntensityBySkill = (
     case "BAS":
       return IntensityBAS;
     case "GKS":
-      return IntensityGKS;
+      return exercise &&
+        !getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS")
+        ? IntensityGKS_KG
+        : IntensityGKS;
     case "PREV":
     case "PREVANKLE":
     case "PREVKNEE":

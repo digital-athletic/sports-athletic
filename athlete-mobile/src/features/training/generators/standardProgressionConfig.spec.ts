@@ -554,3 +554,65 @@ describe("standard progression config: weight steps", () => {
     expect(values.repetition).toBe(9);
   });
 });
+
+describe("standard progression config: full-body stability and prevention ranges", () => {
+  const cases = [
+    ["GKS", "repetition", true, 8, 12],
+    ["GKS", "repetition", false, 8, 12],
+    ["GKS", "duration", true, 30, 50],
+    ["GKS", "duration", false, 30, 60],
+    ["PREVKNEE", "repetition", true, 10, 15],
+    ["PREVKNEE", "repetition", false, 10, 15],
+    ["PREVKNEE", "duration", true, 40, 60],
+    ["PREVKNEE", "duration", false, 40, 60],
+  ] as const;
+
+  it.each(
+    cases.flatMap(([skill, mode, withWeights, start, target]) =>
+      GENDERS.flatMap((gender) =>
+        LEVELS.map((level) => ({
+          skill,
+          mode,
+          withWeights,
+          start,
+          target,
+          gender,
+          level,
+        })),
+      ),
+    ),
+  )(
+    "$skill for gender $gender and level $level resolves $mode with weights $withWeights to $start up to $target over authored values",
+    ({ skill, mode, withWeights, start, target, gender, level }) => {
+      const exercise = createExercise(mode, withWeights, {
+        [mode]: authoredValues("20", "80"),
+      });
+      const intensity = getIntensityBySkill(skill, exercise);
+
+      expect(
+        getExerciseStartValue(intensity, exercise, mode, level, gender),
+      ).toBe(start);
+      expect(
+        getExerciseTargetValue(intensity, exercise, mode, level, gender),
+      ).toBe(target);
+    },
+  );
+
+  it.each([
+    ["GKS", true],
+    ["GKS", false],
+    ["PREVKNEE", true],
+    ["PREVKNEE", false],
+  ] as const)(
+    "%s with weights %s has no weight in percent of F-Max to fall back on",
+    (skill, withWeights) => {
+      const intensity = getIntensityBySkill(
+        skill,
+        createExercise("repetition", withWeights),
+      );
+
+      expect(intensity.startValue.weight).toBeUndefined();
+      expect(intensity.targetValue.weight).toBeUndefined();
+    },
+  );
+});

@@ -81,6 +81,27 @@ const GAP_AT_BOTTOM_BRANCH: SkillBranchType = {
   },
 };
 
+// Every level holds the same exercise
+const REPEATED_EVERYWHERE_BRANCH: SkillBranchType = {
+  tags: ["REGION_CORE", "SIDE_BOTH"],
+  levels: {
+    1: { exerciseId: "611" },
+    2: { exerciseId: "611" },
+    3: { exerciseId: "611" },
+  },
+};
+
+const branchWithLevels = (
+  tags: string[],
+  levels: number[],
+  exercisePrefix: string,
+): SkillBranchType => ({
+  tags,
+  levels: Object.fromEntries(
+    levels.map((level) => [level, { exerciseId: `${exercisePrefix}${level}` }]),
+  ),
+});
+
 describe("branchLevelUtils", () => {
   describe("findCurrentBranchLevel", () => {
     it("returns level from branchData when available", () => {
@@ -89,21 +110,44 @@ describe("branchLevelUtils", () => {
       };
       const result = findCurrentBranchLevel(
         "25",
-        "103",
         SWR_BRANCH,
         branchData,
+        "BEGINNER",
       );
       expect(result).toBe(3);
     });
 
-    it("finds level by exercise ID when branchData is missing", () => {
-      const result = findCurrentBranchLevel("25", "102", SWR_BRANCH, {});
+    it.each([
+      ["BEGINNER", 1],
+      ["ADVANCED", 2],
+      ["PROFESSIONAL", 3],
+    ])(
+      "maps a %s athlete without stored progress to entry level %i",
+      (userLevel, expected) => {
+        expect(findCurrentBranchLevel("25", SWR_BRANCH, {}, userLevel)).toBe(
+          expected,
+        );
+      },
+    );
+
+    it("uses the entry level when the levels repeat the exercise", () => {
+      const result = findCurrentBranchLevel(
+        "61",
+        REPEATED_EVERYWHERE_BRANCH,
+        {},
+        "ADVANCED",
+      );
       expect(result).toBe(2);
     });
 
-    it("returns lowest level when exercise ID not found", () => {
-      const result = findCurrentBranchLevel("25", "999", SWR_BRANCH, {});
-      expect(result).toBe(1);
+    it("falls back from the entry level to the next lower authored level", () => {
+      const result = findCurrentBranchLevel(
+        "253",
+        GAP_BRANCH,
+        {},
+        "PROFESSIONAL",
+      );
+      expect(result).toBe(2);
     });
   });
 
@@ -263,6 +307,7 @@ describe("branchLevelUtils", () => {
           exerciseId: "100",
           skill: "SWR1",
           ageGroup: "ADULT",
+          userLevel: "BEGINNER",
         },
         context,
         createPlanContext(),
@@ -282,6 +327,7 @@ describe("branchLevelUtils", () => {
           exerciseId: "102",
           skill: "SWR1",
           ageGroup: "ADULT",
+          userLevel: "BEGINNER",
         },
         context,
         createPlanContext(),
@@ -306,6 +352,7 @@ describe("branchLevelUtils", () => {
           exerciseId: "103",
           skill: "SWR1",
           ageGroup: "ADULT",
+          userLevel: "BEGINNER",
         },
         context,
         createPlanContext(),
@@ -330,6 +377,7 @@ describe("branchLevelUtils", () => {
           exerciseId: "103",
           skill: "SWR1",
           ageGroup: "ADULT",
+          userLevel: "BEGINNER",
         },
         context,
         createPlanContext({ type: "MOB" }),
@@ -353,6 +401,7 @@ describe("branchLevelUtils", () => {
           exerciseId: "601",
           skill: "BAS",
           ageGroup: "ADULT",
+          userLevel: "BEGINNER",
         },
         context,
         createPlanContext(),
@@ -377,6 +426,7 @@ describe("branchLevelUtils", () => {
           exerciseId: "702",
           skill: "BAS",
           ageGroup: "ADULT",
+          userLevel: "BEGINNER",
         },
         context,
         createPlanContext({ type: "BAS" }),
@@ -400,6 +450,7 @@ describe("branchLevelUtils", () => {
           exerciseId: "802",
           skill: "SKKG",
           ageGroup: "ADULT",
+          userLevel: "BEGINNER",
         },
         context,
         createPlanContext(),
@@ -410,6 +461,106 @@ describe("branchLevelUtils", () => {
         newLevel: 4,
         exerciseId: "804",
       });
+    });
+  });
+
+  describe("calculateBranchLevelUpdate: branch substitution", () => {
+    const CORE_BOTH = ["REGION_CORE", "SIDE_BOTH"];
+    const LOWER_BOTH = ["REGION_LOWER_BODY", "SIDE_BOTH"];
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    const substituteIds = (
+      result: ReturnType<typeof calculateBranchLevelUpdate>,
+    ): string[] =>
+      result.type === "BRANCH_SUBSTITUTION"
+        ? result.equivalentBranches.map((branch) => branch.branchId)
+        : [];
+
+    const substitute = (
+      tree: Record<string, SkillBranchType>,
+      input: {
+        levelUp: boolean;
+        branchId: string;
+        exerciseId: string;
+        userLevel?: string;
+      },
+      branchData: BranchDataMapType = {},
+    ) =>
+      calculateBranchLevelUpdate(
+        {
+          skill: "SKKG",
+          ageGroup: "ADULT",
+          userLevel: "BEGINNER",
+          ...input,
+        },
+        {
+          skillTrees: { SKKG: tree } as SkillTreesState["skillTrees"],
+          branchData,
+          equipment: [],
+          gender: "MALE",
+          exerciseList: null,
+        },
+        { type: "PLAN", sectionIndex: 0, weekday: 1 },
+      );
+
+    it("searches the substitute at the current level on a level up", () => {
+      const result = substitute(
+        {
+          "70": REPEATED_TOP_BRANCH,
+          "80": branchWithLevels(CORE_BOTH, [3], "80"),
+          "81": branchWithLevels(CORE_BOTH, [4], "81"),
+        },
+        { levelUp: true, branchId: "70", exerciseId: "702" },
+        { "70": { branchId: "70", level: 3 } },
+      );
+      expect(substituteIds(result)).toEqual(["80"]);
+    });
+
+    it("searches the substitute at the current level on a level down", () => {
+      const result = substitute(
+        {
+          "90": REPEATED_BOTTOM_BRANCH,
+          "82": branchWithLevels(CORE_BOTH, [2], "82"),
+          "83": branchWithLevels(CORE_BOTH, [1], "83"),
+        },
+        { levelUp: false, branchId: "90", exerciseId: "901" },
+        { "90": { branchId: "90", level: 2 } },
+      );
+      expect(substituteIds(result)).toEqual(["82"]);
+    });
+
+    it("takes the entry level as the current level without stored progress", () => {
+      const result = substitute(
+        {
+          "61": REPEATED_EVERYWHERE_BRANCH,
+          "84": branchWithLevels(CORE_BOTH, [2], "84"),
+          "85": branchWithLevels(CORE_BOTH, [4], "85"),
+        },
+        {
+          levelUp: true,
+          branchId: "61",
+          exerciseId: "611",
+          userLevel: "ADVANCED",
+        },
+      );
+      expect(substituteIds(result)).toEqual(["84"]);
+    });
+
+    it("adds a second substitute that differs from the first for a one sided branch", () => {
+      jest.spyOn(Math, "random").mockReturnValue(0);
+      const result = substitute(
+        {
+          "26": ONE_SIDED_BRANCH,
+          "40": branchWithLevels(LOWER_BOTH, [2], "40"),
+          "41": branchWithLevels(LOWER_BOTH, [2], "41"),
+        },
+        { levelUp: true, branchId: "26", exerciseId: "202" },
+        { "26": { branchId: "26", level: 2 } },
+      );
+      expect(substituteIds(result)).toEqual(["40", "41"]);
     });
   });
 });

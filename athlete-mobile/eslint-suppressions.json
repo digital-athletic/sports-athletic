@@ -448,7 +448,7 @@
   },
   "src/features/training/hooks/useExerciseCompletion.ts": {
     "complexity": {
-      "count": 4
+      "count": 3
     },
     "max-lines": {
       "count": 1
@@ -568,7 +568,7 @@
       "count": 4
     },
     "max-depth": {
-      "count": 4
+      "count": 3
     },
     "max-lines": {
       "count": 1

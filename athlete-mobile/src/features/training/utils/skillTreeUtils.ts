@@ -366,22 +366,16 @@ export function getBranchIdsByNames(
 }
 
 /**
- * Resolves the exercise ID of a branch from the stored branch level, otherwise
- * from the entry level of the user's fitness level, falling back downward.
+ * Resolves the branch level from the stored branch level, otherwise from the
+ * entry level of the user's fitness level, falling back downward.
  */
-export function resolveBranchExerciseId(
+export function resolveBranchLevel(
   branchData: SkillBranchType,
   userLevel: string,
   userBranchData?: UserExerciseBranchDataType | null,
-): string | null {
-  const exerciseIdAt = (level: number): string | null => {
-    const levelData: { exerciseId?: string; id?: string } =
-      branchData.levels[level];
-    return levelData.exerciseId || levelData.id || null;
-  };
-
+): number | null {
   if (userBranchData?.level && branchData.levels[userBranchData.level]) {
-    return exerciseIdAt(userBranchData.level);
+    return userBranchData.level;
   }
 
   let level = 1; // BEGINNER
@@ -394,10 +388,27 @@ export function resolveBranchExerciseId(
 
   for (; level > 0; level--) {
     if (branchData.levels[level]) {
-      return exerciseIdAt(level);
+      return level;
     }
   }
   return null;
+}
+
+/**
+ * Resolves the exercise ID of a branch at its resolved level.
+ */
+export function resolveBranchExerciseId(
+  branchData: SkillBranchType,
+  userLevel: string,
+  userBranchData?: UserExerciseBranchDataType | null,
+): string | null {
+  const level = resolveBranchLevel(branchData, userLevel, userBranchData);
+  if (level === null) {
+    return null;
+  }
+  const levelData: { exerciseId?: string; id?: string } =
+    branchData.levels[level];
+  return levelData.exerciseId || levelData.id || null;
 }
 
 /**

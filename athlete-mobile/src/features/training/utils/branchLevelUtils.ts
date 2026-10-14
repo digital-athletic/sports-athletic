@@ -7,7 +7,10 @@ import type { SkillCode } from "@/schemas/generator.schema";
 import { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { hasWeights } from "@/features/training/utils/equipmentUtils";
 import { getRegionsForPreventionSkills } from "@/features/training/utils/preventionUtils";
-import { getSkillTree } from "@/features/training/utils/skillTreeUtils";
+import {
+  getSkillTree,
+  resolveBranchLevel,
+} from "@/features/training/utils/skillTreeUtils";
 import { getEquivalentBranchWithGivenLevel } from "@/features/training/utils/workoutUtils";
 import { BranchDataMapType } from "@/store/exerciseProgressStore";
 import { getTagValues } from "@/utils/tagUtils";
@@ -32,6 +35,7 @@ export interface BranchLevelUpdateInput {
   exerciseId: string;
   skill: SkillCode;
   ageGroup: string;
+  userLevel: string;
 }
 
 export type BranchLevelResult =
@@ -60,36 +64,24 @@ export type BranchLevelResult =
     };
 
 /**
- * Find the current level for a branch from branchData or as fallback from branch levels.
+ * Find the current level for a branch from branchData, otherwise from the
+ * entry level of the user's fitness level.
  */
 export function findCurrentBranchLevel(
   branchId: string,
-  exerciseId: string,
   branch: SkillBranchType,
   branchData: BranchDataMapType,
+  userLevel: string,
 ): number {
   const userBranchData = branchData[branchId];
   if (userBranchData) {
     return userBranchData.level;
   }
 
-  // Fallback: look for exercise id in branch levels
-  const levelKeys = Object.keys(branch.levels).map(Number);
-  return levelKeys.reduce<number>((currentLevel, level) => {
-    // Start with lowest level
-    if (currentLevel === -1) {
-      return level;
-    }
-    // If branchLevel is not matching yet, but level is
-    if (
-      currentLevel !== level &&
-      branch.levels[level] &&
-      branch.levels[level].exerciseId === exerciseId
-    ) {
-      return level;
-    }
-    return currentLevel;
-  }, -1);
+  return (
+    resolveBranchLevel(branch, userLevel) ??
+    Math.min(...Object.keys(branch.levels).map(Number))
+  );
 }
 
 /**
@@ -176,7 +168,7 @@ export function calculateBranchLevelUpdate(
   context: BranchLevelContext,
   planContext: TrainingPlanContext,
 ): BranchLevelResult {
-  const { levelUp, branchId, exerciseId, skill, ageGroup } = input;
+  const { levelUp, branchId, exerciseId, skill, ageGroup, userLevel } = input;
   const { skillTrees, branchData, equipment, gender, exerciseList } = context;
   const { type, sectionIndex, weekday } = planContext;
 
@@ -190,20 +182,18 @@ export function calculateBranchLevelUpdate(
     return { type: "BRANCH_NOT_FOUND", branchId };
   }
 
-  // Find current level
   const branchLevel = findCurrentBranchLevel(
     branchId,
-    exerciseId,
     branch,
     branchData,
+    userLevel,
   );
-  const newLevel = branchLevel + levelChange;
 
   // Try to find next exercise in same branch
   const nextInBranch = findNextExerciseInBranch(
     branch,
     exerciseId,
-    newLevel,
+    branchLevel + levelChange,
     levelUp,
   );
 
@@ -221,8 +211,8 @@ export function calculateBranchLevelUpdate(
     return { type: "NO_CHANGE", reason: "no_matching_branch_found", branchId };
   }
 
-  // Search for equivalent branch with new level
-  const searchLevel = Math.max(1, newLevel);
+  // the substitute keeps the difficulty the athlete has reached
+  const searchLevel = Math.max(1, branchLevel);
   const prevRegions = getRegionsForPreventionSkills([skill]);
 
   let skillTree = getSkillTree(skillTrees, skill, [], false);
@@ -262,7 +252,7 @@ export function calculateBranchLevelUpdate(
       branchId,
       match,
       searchLevel,
-      branchIdsInUse,
+      [...branchIdsInUse, match.branchId],
       equipment,
       ageGroup,
       gender,

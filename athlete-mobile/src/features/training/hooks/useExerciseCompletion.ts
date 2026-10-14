@@ -29,7 +29,10 @@ import {
   getTargetWeight,
   getWeightType,
 } from "@/features/training/utils/weightAdjustmentUtils";
-import { getSkillTree } from "@/features/training/utils/skillTreeUtils";
+import {
+  getSkillTree,
+  resolveBranchLevel,
+} from "@/features/training/utils/skillTreeUtils";
 import {
   applyMaxValueToDirections,
   calculateAdjustedMaxValues,
@@ -74,6 +77,10 @@ export function useExerciseCompletion() {
   const { personalData } = useUserProfileStore();
   const { workoutData, replaceBranchInTrainingPlan } = useUserWorkoutStore();
 
+  const getFitnessLevel = (): string =>
+    (workoutData && getUserTagValue(workoutData.tags, TagGroups.LEVEL)) ??
+    WorkoutConstants.LEVELS.ADVANCED;
+
   const saveBranchData = (
     skill: SkillCode,
     branchId: string,
@@ -89,22 +96,13 @@ export function useExerciseCompletion() {
       const newBranch = newSkillTree[branchId];
       if (newBranch) {
         const levels = newBranch.levels;
-
-        let userLevelString: string = WorkoutConstants.LEVELS.ADVANCED;
-        if (workoutData) {
-          userLevelString =
-            getUserTagValue(workoutData.tags, TagGroups.LEVEL) ??
-            WorkoutConstants.LEVELS.ADVANCED;
-        }
-        const userLevel =
-          userLevelString === WorkoutConstants.LEVELS.BEGINNER
-            ? 1
-            : userLevelString === WorkoutConstants.LEVELS.ADVANCED
-              ? 2
-              : 3;
+        const entryLevel = resolveBranchLevel(newBranch, getFitnessLevel());
         let newLevel = -1;
-        if (levels[userLevel] && levels[userLevel].exerciseId === exerciseId) {
-          newLevel = userLevel;
+        if (
+          entryLevel !== null &&
+          levels[entryLevel].exerciseId === exerciseId
+        ) {
+          newLevel = entryLevel;
         } else {
           const match = Object.entries(levels).find(
             ([_, v]) => v.exerciseId === exerciseId,
@@ -160,7 +158,14 @@ export function useExerciseCompletion() {
     };
 
     const result = calculateBranchLevelUpdate(
-      { levelUp, branchId, exerciseId, skill, ageGroup },
+      {
+        levelUp,
+        branchId,
+        exerciseId,
+        skill,
+        ageGroup,
+        userLevel: getFitnessLevel(),
+      },
       context,
       planContext,
     );

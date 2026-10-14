@@ -398,7 +398,7 @@
   },
   "src/features/training/generators/PlanGenerator.ts": {
     "complexity": {
-      "count": 11
+      "count": 10
     },
     "max-depth": {
       "count": 14

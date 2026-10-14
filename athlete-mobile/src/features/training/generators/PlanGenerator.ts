@@ -1083,8 +1083,7 @@ export default class PlanGenerator {
 
   /**
    * Replaces generic skill placeholders with user-specific skills based on age group and prevention needs.
-   * Handles PREV skill replacements (prevention exercises), WUSPEZIAL (special warm-up), and
-   * weight-based skill alternatives for children (SWR1->SWR1KG, SWR2->SWR2KG).
+   * Handles PREV skill replacements (prevention exercises) and WUSPEZIAL (special warm-up).
    */
   static replaceUserSpecificSkill = (
     skill: string | null,
@@ -1114,16 +1113,6 @@ export default class PlanGenerator {
         result = "WUSPEZIAL";
       } else {
         result = null;
-      }
-    }
-
-    // no weights for kids
-    if (ageGroup === WorkoutConstants.AGE_GROUPS.CHILD) {
-      if (skill === "SWR1") {
-        result = "SWR1KG";
-      }
-      if (skill === "SWR2") {
-        result = "SWR2KG";
       }
     }
     return result;
@@ -2425,8 +2414,12 @@ export default class PlanGenerator {
       console.log("Found sections for given numOfWeeks", numOfWeeks, sections);
     }
 
-    // if no studio or beginner => change max to swr2
-    if (!hasWeights || level === WorkoutConstants.LEVELS.BEGINNER) {
+    // without weights, for beginners and for children max strength becomes hypertrophy stage 2
+    if (
+      !hasWeights ||
+      level === WorkoutConstants.LEVELS.BEGINNER ||
+      ageGroup === WorkoutConstants.AGE_GROUPS.CHILD
+    ) {
       if (PlanGenerator.DEBUG)
         console.log("Adjusting sections for no studio or beginner");
       for (let i = 0; i < sections.length; i++) {

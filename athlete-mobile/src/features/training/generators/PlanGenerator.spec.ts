@@ -48,14 +48,14 @@ describe("PlanGenerator", () => {
       expect(typeof result).toBe("string");
     });
 
-    it("should replace SWR1 with SWR1KG for children", () => {
+    it("keeps the weighted hypertrophy stage 1 for children", () => {
       const result = PlanGenerator.replaceUserSpecificSkill("SWR1", "CHILD");
-      expect(result).toBe("SWR1KG");
+      expect(result).toBe("SWR1");
     });
 
-    it("should replace SWR2 with SWR2KG for children", () => {
+    it("keeps the weighted hypertrophy stage 2 for children", () => {
       const result = PlanGenerator.replaceUserSpecificSkill("SWR2", "CHILD");
-      expect(result).toBe("SWR2KG");
+      expect(result).toBe("SWR2");
     });
 
     it("should not replace SWR1 for adults", () => {
@@ -914,6 +914,29 @@ describe("PlanGenerator", () => {
       // The start field should be in YYYY-MM-DD format, NOT full ISO datetime
       expect(result.start).toBe("2025-01-06");
     });
+
+    it.each([4, 8, 12])(
+      "turns max strength into hypertrophy stage 2 for a child in a %i week competition phase",
+      (numOfWeeks) => {
+        const result = PlanGenerator.initializeTrainingPlan(
+          {
+            type: SeasonPhase.COMPETITION,
+            numOfWeeks,
+            endDate: "2025-06-06",
+          },
+          WorkoutConstants.AGE_GROUPS.CHILD,
+          "FIELD",
+          WorkoutConstants.LEVELS.ADVANCED,
+          true,
+          new Date(2025, 0, 6),
+          true,
+        );
+        const types = result.sections.map((section) => section.type);
+
+        expect(types).not.toContain("MAX");
+        expect(types).not.toContain("MAX_KRAFT");
+      },
+    );
 
     it("should create plan with correct start date and sections for competition adult", () => {
       const seasonPhase: SeasonPhaseType = {

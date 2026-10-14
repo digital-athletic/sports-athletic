@@ -45,7 +45,6 @@ export type SuperSetBranchSelectionResult = {
   branch: BranchExerciseReference;
   branchId: string;
   fillUpBranchAndId?: BranchSelectionResult;
-  replacementBranchesAndIds?: BranchSelectionResult[];
 };
 
 /**

@@ -23,6 +23,7 @@ import {
 } from "@/features/training/models/TrainingSection";
 import { loadDirections } from "@/data/loadDirections";
 import { loadMaxMinutes } from "@/data/loadMaxMinutes";
+import { loadRegionConfig } from "@/data/loadRegionConfig";
 import { loadSkillPriorities } from "@/data/loadSkillPriorities";
 import { type ExerciseType } from "@/schemas/exercise.schema";
 import { type SkillTreeType } from "@/schemas/skillTree.schema";
@@ -112,30 +113,6 @@ import TrainingSectionsCompetitionAdultAdvanced from "../../../../assets/data/ge
 import TrainingSectionsCompetitionAdultBeginner from "../../../../assets/data/generator/trainingSections/competition/adult/beginner";
 import TrainingSectionsCompetitionAdultProfessional from "../../../../assets/data/generator/trainingSections/competition/adult/professional";
 // END Training Sections
-
-// Regions
-import RegionBAS from "../../../../assets/data/generator/regions/BAS";
-import RegionBR from "../../../../assets/data/generator/regions/BR";
-import RegionCARDIO from "../../../../assets/data/generator/regions/CARDIO";
-import RegionCD from "../../../../assets/data/generator/regions/CD";
-import RegionGKS from "../../../../assets/data/generator/regions/GKS";
-import RegionMAX from "../../../../assets/data/generator/regions/MAX";
-import RegionMOB from "../../../../assets/data/generator/regions/MOB";
-import RegionPREVANKLE from "../../../../assets/data/generator/regions/PREVANKLE";
-import RegionPREVKNEE from "../../../../assets/data/generator/regions/PREVKNEE";
-import RegionPREVSHOULDER from "../../../../assets/data/generator/regions/PREVSHOULDER";
-import RegionPREVSPINE from "../../../../assets/data/generator/regions/PREVSPINE";
-import RegionPREVWRIST from "../../../../assets/data/generator/regions/PREVWRIST";
-import RegionSA from "../../../../assets/data/generator/regions/SA";
-import RegionSAKG from "../../../../assets/data/generator/regions/SAKG";
-import RegionSK from "../../../../assets/data/generator/regions/SK";
-import RegionSKKG from "../../../../assets/data/generator/regions/SKKG";
-import RegionSWR1 from "../../../../assets/data/generator/regions/SWR1";
-import RegionSWR1KG from "../../../../assets/data/generator/regions/SWR1KG";
-import RegionSWR2KG from "../../../../assets/data/generator/regions/SWR2KG";
-import RegionWU from "../../../../assets/data/generator/regions/WU";
-import RegionWUSKSA from "../../../../assets/data/generator/regions/WUSKSA";
-import RegionWUSPEZIAL from "../../../../assets/data/generator/regions/WUSPEZIAL";
 
 // Strength skills per the section types: hypertrophy, max strength,
 // explosive power and power endurance
@@ -2045,7 +2022,7 @@ export default class PlanGenerator {
     if (PlanGenerator.DEBUG) {
       console.log("get tags for skill", skill, age, level);
     }
-    let region: RegionConfig = RegionSWR1;
+    let regionName: string;
     switch (skill) {
       case "CARDIO_1_SHORT":
       case "CARDIO_1_LAKTAT":
@@ -2053,76 +2030,39 @@ export default class PlanGenerator {
       case "CARDIO_3":
       case "CARDIO_4":
       case "CARDIO_5":
-        region = RegionCARDIO;
-        break;
-      case "BAS":
-        region = RegionBAS;
-        break;
-      case "BR":
-        region = RegionBR;
-        break;
-      case "CD":
-        region = RegionCD;
-        break;
-      case "GKS":
-        region = RegionGKS;
+        regionName = "CARDIO";
         break;
       case "MAX":
       case "MAX_STRENGTH":
-        region = RegionMAX;
+        regionName = "MAX";
         break;
+      case "BAS":
+      case "BR":
+      case "CD":
+      case "GKS":
       case "MOB":
-        region = RegionMOB;
-        break;
       case "PREVANKLE":
-        region = RegionPREVANKLE;
-        break;
       case "PREVKNEE":
-        region = RegionPREVKNEE;
-        break;
       case "PREVSHOULDER":
-        region = RegionPREVSHOULDER;
-        break;
       case "PREVSPINE":
-        region = RegionPREVSPINE;
-        break;
       case "PREVWRIST":
-        region = RegionPREVWRIST;
-        break;
       case "SA":
-        region = RegionSA;
-        break;
       case "SAKG":
-        region = RegionSAKG;
-        break;
       case "SK":
-        region = RegionSK;
-        break;
       case "SKKG":
-        region = RegionSKKG;
-        break;
       case "SWR1":
-        region = RegionSWR1;
-        break;
       case "SWR1KG":
-        region = RegionSWR1KG;
-        break;
       case "SWR2KG":
-        region = RegionSWR2KG;
-        break;
       case "WU":
-        region = RegionWU;
-        break;
       case "WUSKSA":
-        region = RegionWUSKSA;
-        break;
       case "WUSPEZIAL":
-        region = RegionWUSPEZIAL;
+        regionName = skill;
         break;
       default:
         if (PlanGenerator.DEBUG) console.log("USED DEFAULT FOR SKILL", skill);
-        region = RegionSWR1;
+        regionName = "SWR1";
     }
+    const region: RegionConfig = loadRegionConfig(regionName);
     if (PlanGenerator.DEBUG) {
       console.log("selected region for skill " + skill, region);
     }

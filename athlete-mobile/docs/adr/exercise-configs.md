@@ -64,5 +64,5 @@ When an athlete moves to another exercise through a level change, the progress o
 ## More information
 
 - Specs: `docs/specs/progression/standard-exercise-progression.md`, `docs/specs/progression/weight-calculation-from-strength-tests.md`, `docs/specs/progression/max-strength-progression.md`, `docs/specs/foundations/branches-exercises-and-levels.md`
-- Data: `assets/data/generator/intensity/`, `assets/data/generator/skillTrees/`, `assets/data/generator/Exercises.json`
+- Data: `assets/data/generator/intensity/`, `assets/data/generator/skillTrees/`, `assets/data/generator/Exercises.json`, `assets/data/generator/skillPriorities.json` (skills per session length), `assets/data/generator/maxMinutes.json` (maximum minutes per skill group and fitness level)
 - Data model overview: `docs/data-model.md`

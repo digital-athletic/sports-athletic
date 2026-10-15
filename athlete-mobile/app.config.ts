@@ -72,6 +72,7 @@ export default (): ExpoConfig => ({
       },
     ],
     "expo-video",
+    "expo-image",
     "expo-router",
     [
       "expo-splash-screen",

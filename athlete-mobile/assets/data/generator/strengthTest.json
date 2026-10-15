@@ -1,0 +1,35 @@
+{
+  "lifts": {
+    "BEGINNER": { "default": ["25", "50", "342", "297", "54"] },
+    "ADVANCED": { "default": ["25", "50", "342", "297", "54"] },
+    "PROFESSIONAL": { "default": ["25", "50", "342", "297", "54"] }
+  },
+  "testSetLoads": {
+    "25": {
+      "w": { "beginner": 30, "advanced": 45, "professional": 60 },
+      "m": { "beginner": 40, "advanced": 60, "professional": 80 }
+    },
+    "50": {
+      "w": { "beginner": 30, "advanced": 45, "professional": 60 },
+      "m": { "beginner": 40, "advanced": 60, "professional": 80 }
+    },
+    "342": {
+      "w": { "beginner": 20, "advanced": 25, "professional": 30 },
+      "m": { "beginner": 35, "advanced": 50, "professional": 60 }
+    },
+    "297": {
+      "w": { "beginner": 20, "advanced": 30, "professional": 35 },
+      "m": { "beginner": 30, "advanced": 45, "professional": 55 }
+    },
+    "54": {
+      "w": { "beginner": 15, "advanced": 20, "professional": 25 },
+      "m": { "beginner": 25, "advanced": 30, "professional": 40 }
+    }
+  },
+  "warmUpRegionQuotas": [
+    { "tags": ["LOWER_BODY"], "count": 1 },
+    { "tags": ["FULL_BODY"], "count": 1 },
+    { "tags": ["UPPER_BODY"], "count": 1 },
+    { "tags": [], "count": 2 }
+  ]
+}

@@ -502,31 +502,47 @@ export type ExerciseStartValues = {
 // ============================================================================
 
 /**
- * Level-based weight values for test workouts.
- * Not all levels may be present for all exercises/genders.
+ * Lift exercise ids of one fitness level: a default list plus an optional
+ * list per gender (m, w) that replaces the default.
  */
-export type TestWorkoutLevelWeights = Partial<{
-  beginner: number;
-  advanced: number;
-  professional: number;
-}>;
+const LiftListSchema = v.strictObject({
+  default: v.array(v.string()),
+  m: v.optional(v.array(v.string())),
+  w: v.optional(v.array(v.string())),
+});
+
+const TestSetLoadByLevelSchema = v.object({
+  beginner: v.number(),
+  advanced: v.number(),
+  professional: v.number(),
+});
+
+const WarmUpRegionQuotaSchema = v.object({
+  tags: v.array(v.string()),
+  count: v.number(),
+});
 
 /**
- * Gender-based weight configuration for a single test workout exercise.
+ * Strength test data: lifts per fitness level, test set loads in kg per
+ * exercise id, gender and fitness level, and warm-up region quotas.
  */
-export type TestWorkoutGenderWeights = {
-  w?: TestWorkoutLevelWeights;
-  m?: TestWorkoutLevelWeights;
-};
-
-/**
- * Start values configuration for test workout exercises.
- * Maps exercise ID to gender-specific level-based weights.
- */
-export type TestWorkoutsStartValuesType = Record<
-  string,
-  TestWorkoutGenderWeights
->;
+export const StrengthTestSchema = v.object({
+  lifts: v.object({
+    BEGINNER: LiftListSchema,
+    ADVANCED: LiftListSchema,
+    PROFESSIONAL: LiftListSchema,
+  }),
+  testSetLoads: v.record(
+    v.string(),
+    v.strictObject({
+      w: v.optional(TestSetLoadByLevelSchema),
+      m: v.optional(TestSetLoadByLevelSchema),
+    }),
+  ),
+  warmUpRegionQuotas: v.array(WarmUpRegionQuotaSchema),
+});
+export type StrengthTest = v.InferOutput<typeof StrengthTestSchema>;
+export type TestSetLoads = StrengthTest["testSetLoads"];
 
 // ============================================================================
 // Adjustment Types (for getAdjustmentByUserData - Step 7)

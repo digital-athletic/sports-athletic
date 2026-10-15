@@ -1683,7 +1683,7 @@ describe("TrainingGenerator", () => {
       [skillName: string]: SkillTreeType;
     };
 
-    // Expected exercises by level and gender from TEST_WORKOUTS.ts
+    // Expected exercises by level and gender from strengthTest.json
     const EXPECTED_EXERCISES = {
       BEGINNER: { default: ["25", "50", "342", "297", "54"] },
       ADVANCED: {

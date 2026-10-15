@@ -46,6 +46,16 @@ Prevention and focus trainings skip the superset rules of [Plan Workout Generati
 3. Warm-up: random branches from the warm-up tree per authored region quotas, without repeating a branch or a resolved exercise.
 4. Test lifts, their order, the ramp-up sets, and the test set: [Weight Calculation from Strength Tests](../progression/weight-calculation-from-strength-tests.md).
 
+The authored lift list in `assets/data/generator/strengthTest.json` names the lifts by exercise id. All three fitness levels use the same five lifts, in this order:
+
+| Exercise id | Lift |
+|---|---|
+| 25 | Kniebeuge mit LH SWR Level 2 (Squat) |
+| 50 | LH Kreuzheben SWR (Deadlift) |
+| 342 | LH Bankdruecken SWR (Bench Press) |
+| 297 | LH Rudern mit Untergriff SWR (Bent-over Row) |
+| 54 | LH Schulterfrontdruecken SWR (Shoulder Press) |
+
 ## Structure
 
 These flows read the exercise catalog, the skill trees, and per-branch progress, and never the training plan. Their output is the same set list a plan workout produces, entering the same session store and persisting the same way, so a short workout survives an app restart and resumes where the athlete left it. A finished short workout writes per-exercise progress for the types that progress; [Standard Exercise Progression](../progression/standard-exercise-progression.md) names the ones that do not.

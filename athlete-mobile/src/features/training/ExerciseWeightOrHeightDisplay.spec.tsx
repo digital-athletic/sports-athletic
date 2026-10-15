@@ -30,6 +30,21 @@ describe("ExerciseWeightOrHeightDisplay: weight branch", () => {
     expect(screen.queryByText(/each/)).toBeNull();
     expect(screen.getByText("20")).toBeTruthy();
   });
+
+  it("renders the performed load instead of the rounded weight", () => {
+    render(
+      <ExerciseWeightOrHeightDisplay
+        exercise={createExercise({
+          weight: 41,
+          performedWeight: 42.5,
+          weightType: "weightAbsolute",
+        })}
+        exerciseData={createExerciseData({ tags: ["EQ_BARBELL"] })}
+        maxValues={DEFAULT_MAX_VALUES}
+      />,
+    );
+    expect(screen.getByText("42.5")).toBeTruthy();
+  });
 });
 
 describe("ExerciseWeightOrHeightDisplay: height branch", () => {

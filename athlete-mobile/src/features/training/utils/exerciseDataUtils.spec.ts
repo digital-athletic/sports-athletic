@@ -743,27 +743,32 @@ describe("exerciseDataUtils", () => {
       },
     });
     const percent = {
-      startValue: { m: { beginner: "70" }, type: { type: "weightFMax" as const } },
+      startValue: {
+        m: { beginner: "70" },
+        type: { type: "weightFMax" as const },
+      },
       targetValue: {},
     };
     const noChange = { type: "NO_CHANGE", reason: "in_between_zone" };
-    const adjust = (
-      exercise: ExerciseType,
-      weight: number,
-      feedback: "SUCCEEDED" | "TOO_HARD",
-      progress: { performedWeight?: number; tooHardCount?: number } = {},
-      intensity = createIntensity(),
-    ) =>
-      calculateStandardExerciseAdjustment(
-        weight,
-        0,
-        12,
-        exercise,
-        createContext({ maxValue: 100 }),
-        intensity,
-        feedback,
-        progress,
-      );
+    const adjustWith =
+      (intensity: IntensityData) =>
+      (
+        exercise: ExerciseType,
+        weight: number,
+        feedback: "SUCCEEDED" | "TOO_HARD",
+        progress: { performedWeight?: number; tooHardCount?: number } = {},
+      ) =>
+        calculateStandardExerciseAdjustment(
+          weight,
+          0,
+          12,
+          exercise,
+          createContext({ maxValue: 100 }),
+          intensity,
+          feedback,
+          progress,
+        );
+    const adjust = adjustWith(createIntensity());
 
     describe("target load", () => {
       const dumbbell = weighted(["EQ_DUMBBELL"], absoluteKg("15"));
@@ -809,13 +814,11 @@ describe("exerciseDataUtils", () => {
       });
 
       it("keeps a percentage weight above its lowest load after the second too hard", () => {
-        const result = adjust(
-          weighted(["EQ_BARBELL"], percent),
-          70,
-          "TOO_HARD",
-          { tooHardCount: 2 },
+        const result = adjustWith(
           createIntensity({ lowestPermittedWeight: 65 }),
-        );
+        )(weighted(["EQ_BARBELL"], percent), 70, "TOO_HARD", {
+          tooHardCount: 2,
+        });
 
         expect(result).toEqual(noChange);
       });
@@ -823,30 +826,35 @@ describe("exerciseDataUtils", () => {
 
     describe("consecutive too hard on loaded jumps", () => {
       const jump = weighted(["EQ_BARBELL"], percent, true);
-      const lowest = createIntensity({ lowestPermittedWeight: 70 });
+      const adjustJump = adjustWith(
+        createIntensity({ lowestPermittedWeight: 70 }),
+      );
 
-      it.each([1, 2])("keeps the exercise after %i too hard", (tooHardCount) => {
-        expect(adjust(jump, 80, "TOO_HARD", { tooHardCount }, lowest)).toEqual(
-          noChange,
+      it.each([1, 2])(
+        "keeps the exercise after %i too hard",
+        (tooHardCount) => {
+          expect(adjustJump(jump, 80, "TOO_HARD", { tooHardCount })).toEqual(
+            noChange,
+          );
+        },
+      );
+
+      it("levels down after the third too hard in a row", () => {
+        expect(adjustJump(jump, 80, "TOO_HARD", { tooHardCount: 3 }).type).toBe(
+          "LEVEL_DOWN",
         );
       });
 
-      it("levels down after the third too hard in a row", () => {
-        expect(
-          adjust(jump, 80, "TOO_HARD", { tooHardCount: 3 }, lowest).type,
-        ).toBe("LEVEL_DOWN");
-      });
-
       it("keeps the weight at the lowest load until the third too hard", () => {
-        expect(
-          adjust(jump, 70, "TOO_HARD", { tooHardCount: 1 }, lowest),
-        ).toEqual(noChange);
+        expect(adjustJump(jump, 70, "TOO_HARD", { tooHardCount: 1 })).toEqual(
+          noChange,
+        );
       });
     });
   });
 
   describe("calculateWeightStep", () => {
-    const barbell =createExercise({ tags: ["EQ_BARBELL"] });
+    const barbell = createExercise({ tags: ["EQ_BARBELL"] });
     const plain = createExercise();
     const absolute = { weightType: "weightAbsolute" } as const;
     const percent = { weightType: "weightFMax" } as const;

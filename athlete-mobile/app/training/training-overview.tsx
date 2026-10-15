@@ -508,12 +508,13 @@ const ExerciseValues: FC<ExerciseValuesProps> = ({
   const hasRepetition = typeof exercise.repetition !== "undefined";
 
   const derivedWeight = exercise?.weight
-    ? deriveWeightForExercise(
+    ? (exercise.performedWeight ??
+      deriveWeightForExercise(
         exercise.weight,
         exercise.weightType,
         exerciseData,
         workoutData.maxValues,
-      )
+      ))
     : undefined;
 
   return (

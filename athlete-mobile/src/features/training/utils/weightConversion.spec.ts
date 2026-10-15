@@ -202,13 +202,14 @@ describe("catalog conversion factors: prescribed weight end to end", () => {
     },
   );
 
-  // 100 kg squat 1RM: the barbell carries the total load, each dumbbell half of it
+  // 100 kg squat 1RM: the barbell carries the total load but never less than
+  // the empty bar, each dumbbell half of the calculated load
   it.each([
-    { level: "beginner", start: 5, target: 10, perDumbbell: [2, 5] },
-    { level: "advanced", start: 10, target: 20, perDumbbell: [5, 10] },
-    { level: "professional", start: 10, target: 20, perDumbbell: [5, 10] },
+    { level: "beginner", start: 20, target: 20, perDumbbell: [2, 5] },
+    { level: "advanced", start: 20, target: 20, perDumbbell: [5, 10] },
+    { level: "professional", start: 20, target: 20, perDumbbell: [5, 10] },
   ] as const)(
-    "$level jump squat: $start kg to $target kg on the barbell, $perDumbbell kg per dumbbell",
+    "$level jump squat: the empty bar of $start kg on the barbell, $perDumbbell kg per dumbbell",
     ({ level, start, target, perDumbbell }) => {
       const load = (id: string, value: "startValue" | "targetValue") => {
         const percent = getValueByGenderAndLevel(

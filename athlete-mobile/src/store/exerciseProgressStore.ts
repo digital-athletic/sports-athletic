@@ -42,6 +42,8 @@ export type State = {
   testHistory: MaxValuesType[];
 };
 
+const PROGRESS_KEYS = ["performedWeight", "tooHardCount"] as const;
+
 const createInitialState = (): State => ({
   exerciseData: {},
   branchData: {},
@@ -172,6 +174,10 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
             if (typeof data.weight === "number") {
               update.weight = data.weight;
             }
+            for (const key of PROGRESS_KEYS) {
+              const value = data[key];
+              if (typeof value === "number") update[key] = value;
+            }
             if (typeof data.weightType === "string") {
               update.weightType = data.weightType;
             }
@@ -225,6 +231,10 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
           }
           if (typeof data.weight === "number") {
             existing.weight = data.weight;
+          }
+          for (const key of PROGRESS_KEYS) {
+            const value = data[key];
+            if (typeof value === "number") existing[key] = value;
           }
           if (typeof data.weightType === "string") {
             existing.weightType = data.weightType;

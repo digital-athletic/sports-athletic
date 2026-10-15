@@ -21,6 +21,10 @@ export const UserExerciseDataSchema = v.looseObject({
   workoutId: v.optional(v.pipe(v.string(), v.minLength(1), v.maxLength(100))),
   repetition: v.optional(v.number()),
   weight: v.optional(v.number()),
+  /** Rounded load in kg the athlete last performed; `weight` stays the unrounded source. */
+  performedWeight: v.optional(v.number()),
+  /** Consecutive too hard ratings; a session without a rating leaves it unchanged. */
+  tooHardCount: v.optional(v.number()),
   nextWeightPercentage: v.optional(v.number()),
   maxFRepetitions: v.optional(v.array(MaxForceRepetitionsDataSchema)),
   maxFLevelAdjustment: v.optional(ExerciseDifficultySchema),

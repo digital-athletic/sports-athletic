@@ -21,6 +21,7 @@ import {
   type SectionWithStartType,
   type TrainingSectionType,
 } from "@/features/training/models/TrainingSection";
+import { loadDirections } from "@/data/loadDirections";
 import { loadMaxMinutes } from "@/data/loadMaxMinutes";
 import { loadSkillPriorities } from "@/data/loadSkillPriorities";
 import { type ExerciseType } from "@/schemas/exercise.schema";
@@ -53,7 +54,6 @@ import {
 } from "@/features/training/utils/userDataUtils";
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import {
-  DirectionsMapSchema,
   ExerciseBranchArraySchema,
   FallbackSectionSchema,
   PlanStructureSchema,
@@ -136,14 +136,6 @@ import RegionSWR2KG from "../../../../assets/data/generator/regions/SWR2KG";
 import RegionWU from "../../../../assets/data/generator/regions/WU";
 import RegionWUSKSA from "../../../../assets/data/generator/regions/WUSKSA";
 import RegionWUSPEZIAL from "../../../../assets/data/generator/regions/WUSPEZIAL";
-
-// Directions
-
-import DirectionFULL_BODY from "../../../../assets/data/generator/directions/FULL_BODY";
-import DirectionUPPER_BODY from "../../../../assets/data/generator/directions/UPPER_BODY";
-import DirectionCORE from "../../../../assets/data/generator/directions/CORE";
-import DirectionLOWER_BODY from "../../../../assets/data/generator/directions/LOWER_BODY";
-import DirectionLOWER_BODY_GKS from "../../../../assets/data/generator/directions/LOWER_BODY_GKS";
 
 // Strength skills per the section types: hypertrophy, max strength,
 // explosive power and power endurance
@@ -693,27 +685,12 @@ export default class PlanGenerator {
 
         const exercises: Record<string, ExerciseBranchType[]> = {};
 
-        const upperBodyDirections = cloneWithValidation(
-          DirectionUPPER_BODY,
-          DirectionsMapSchema,
-          "DirectionUPPER_BODY",
-        );
+        const directions = loadDirections();
+        const upperBodyDirections = directions.UPPER_BODY;
         // "FRONT" will be added as pair with "BACK" while for side and rotation there will always be two
-        const coreDirections = cloneWithValidation(
-          DirectionCORE,
-          DirectionsMapSchema,
-          "DirectionCORE",
-        );
-        const fullBodyDirections = cloneWithValidation(
-          DirectionFULL_BODY,
-          DirectionsMapSchema,
-          "DirectionFULL_BODY",
-        );
-        let lowerBodyDirections = cloneWithValidation(
-          DirectionLOWER_BODY,
-          DirectionsMapSchema,
-          "DirectionLOWER_BODY",
-        );
+        const coreDirections = directions.CORE;
+        const fullBodyDirections = directions.FULL_BODY;
+        let lowerBodyDirections = directions.LOWER_BODY;
         if (
           Object.keys(tagsPerSkill).includes("GKS") &&
           tagsPerSkill["GKS"].reduce((result, entry) => {
@@ -727,11 +704,7 @@ export default class PlanGenerator {
               tagsPerSkill["GKS"],
             );
           }
-          lowerBodyDirections = cloneWithValidation(
-            DirectionLOWER_BODY_GKS,
-            DirectionsMapSchema,
-            "DirectionLOWER_BODY_GKS",
-          );
+          lowerBodyDirections = directions.LOWER_BODY_GKS;
         }
 
         let prevSkills = Object.keys(tagsPerSkill).filter(

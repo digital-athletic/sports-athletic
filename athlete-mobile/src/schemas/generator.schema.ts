@@ -3,23 +3,44 @@ import type { UserExerciseDataType } from "@/features/training/models/UserExerci
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
 import { CardioTypesSchema, SectionTypesSchema } from "./common.schema";
 
-// Direction schemas - use string for direction values to accommodate all variants
+// Direction schemas
 export const SideTypeSchema = v.picklist(["BOTH", "ONE"]);
 
-// Some files use `direction`, others use `exercise_direction`
-export const DirectionEntrySchema = v.looseObject({
-  direction: v.optional(v.union([v.string(), v.null()])),
-  exercise_direction: v.optional(v.union([v.string(), v.null()])),
+// Matches the EXERCISE_DIRECTION_* tag suffixes of the exercise catalog.
+export const MovementDirectionSchema = v.picklist([
+  "SIDE",
+  "BACK",
+  "FRONT",
+  "ROTATION",
+  "HORIZONTAL_PUSH",
+  "HORIZONTAL_PULL",
+  "VERTICAL_PUSH",
+  "VERTICAL_PULL",
+  "HIP",
+  "KNEE",
+]);
+
+export const DirectionEntrySchema = v.strictObject({
+  direction: v.nullable(MovementDirectionSchema),
   side: SideTypeSchema,
 });
 export type DirectionEntry = v.InferOutput<typeof DirectionEntrySchema>;
 
-// Keys can be numeric (1, 2, 3...) which become strings in JSON
+// Keys are the number of exercises (1, 2, 3...), which become strings in JSON
 export const DirectionsMapSchema = v.record(
-  v.string(),
+  v.pipe(v.string(), v.regex(/^\d+$/, "Expected numeric string key")),
   v.array(DirectionEntrySchema),
 );
 export type DirectionsMap = v.InferOutput<typeof DirectionsMapSchema>;
+
+export const DirectionsByRegionSchema = v.strictObject({
+  CORE: DirectionsMapSchema,
+  FULL_BODY: DirectionsMapSchema,
+  LOWER_BODY: DirectionsMapSchema,
+  LOWER_BODY_GKS: DirectionsMapSchema,
+  UPPER_BODY: DirectionsMapSchema,
+});
+export type DirectionsByRegion = v.InferOutput<typeof DirectionsByRegionSchema>;
 
 // Training Section schemas
 export const SectionEntrySchema = v.object({

@@ -39,26 +39,6 @@ export type TrainingSectionsMap = v.InferOutput<
   typeof TrainingSectionsMapSchema
 >;
 
-// SkillPriorities schemas
-export const PhaseMapSchema = v.record(v.string(), v.array(v.string()));
-
-export const PainConfigSchema = v.looseObject({
-  phase: v.optional(PhaseMapSchema),
-  combined: v.optional(PhaseMapSchema),
-  cardio: v.optional(PhaseMapSchema),
-  stability: v.optional(PhaseMapSchema),
-});
-
-export const AgeGroupConfigSchema = v.object({
-  pain: PainConfigSchema,
-  noPain: PainConfigSchema,
-});
-
-export const SkillPrioritiesSchema = v.object({
-  CHILD: AgeGroupConfigSchema,
-  ADULT: AgeGroupConfigSchema,
-});
-
 // Exercise branch exercise reference - used in exercises and levels records
 // Uses exerciseId field (the id field is deprecated)
 export const BranchExerciseRefSchema = v.looseObject({
@@ -291,6 +271,62 @@ export type GeneratorSkillTypeFromSchema = v.InferOutput<
  * Re-exported as SkillCode for cleaner imports.
  */
 export type SkillCode = GeneratorSkillTypeFromSchema;
+
+// SkillPriorities schemas
+// PREV1 to PREV3 are placeholders the plan generator resolves to a prevention skill
+export const SkillPriorityCodeSchema = v.union([
+  GeneratorSkillTypeSchema,
+  v.picklist(["PREV1", "PREV2", "PREV3"]),
+]);
+
+// Keys are the session minutes from which the skills apply
+export const PhaseMapSchema = v.record(
+  v.pipe(v.string(), v.regex(/^\d+$/, "Expected numeric string key")),
+  v.array(SkillPriorityCodeSchema),
+);
+
+export const PainConfigSchema = v.strictObject({
+  phase: v.optional(PhaseMapSchema),
+  combined: v.optional(PhaseMapSchema),
+  cardio: v.optional(PhaseMapSchema),
+  stability: v.optional(PhaseMapSchema),
+});
+
+export const AgeGroupConfigSchema = v.object({
+  pain: PainConfigSchema,
+  noPain: PainConfigSchema,
+});
+
+export const SkillPrioritiesSchema = v.object({
+  CHILD: AgeGroupConfigSchema,
+  ADULT: AgeGroupConfigSchema,
+});
+export type SkillPriorities = v.InferOutput<typeof SkillPrioritiesSchema>;
+
+// MaxMinutes schemas: maximum minutes per skill group and fitness level
+// 0 is valid but the plan generator currently treats it as 200 minutes
+const MinutesSchema = v.pipe(v.number(), v.integer(), v.minValue(0));
+
+const LevelMinutesSchema = v.object({
+  BEGINNER: MinutesSchema,
+  ADVANCED: MinutesSchema,
+  PROFESSIONAL: MinutesSchema,
+});
+
+export const MaxMinutesSchema = v.object({
+  BAS: LevelMinutesSchema,
+  CARDIO: LevelMinutesSchema,
+  DEFAULT: LevelMinutesSchema,
+  GKS: LevelMinutesSchema,
+  MAX: LevelMinutesSchema,
+  PREV: LevelMinutesSchema,
+  SA: LevelMinutesSchema,
+  SK: LevelMinutesSchema,
+  SWR: LevelMinutesSchema,
+  WUSPEZIAL: LevelMinutesSchema,
+});
+export type MaxMinutes = v.InferOutput<typeof MaxMinutesSchema>;
+export type MaxMinutesGroup = keyof MaxMinutes;
 
 /**
  * Tuple representing [currentSet, totalSets] for exercise sets.

@@ -21,6 +21,8 @@ import {
   type SectionWithStartType,
   type TrainingSectionType,
 } from "@/features/training/models/TrainingSection";
+import { loadMaxMinutes } from "@/data/loadMaxMinutes";
+import { loadSkillPriorities } from "@/data/loadSkillPriorities";
 import { type ExerciseType } from "@/schemas/exercise.schema";
 import { type SkillTreeType } from "@/schemas/skillTree.schema";
 import { type UserType } from "@/schemas/user.schema";
@@ -56,13 +58,13 @@ import {
   FallbackSectionSchema,
   PlanStructureSchema,
   SkillBranchWithIdSchema,
-  SkillPrioritiesSchema,
   SkillsMapSchema,
   TrainingSectionsMapSchema,
   type DirectionEntry,
   type DirectionsMap,
   type DurationTagMap,
   type FallbackSection,
+  type MaxMinutesGroup,
   type PlanStructure,
   type RegionConfig,
   type RegionTagEntry,
@@ -81,7 +83,6 @@ import {
 } from "@/utils/tagUtils";
 
 // Assets
-import SkillPriorities from "../../../../assets/data/generator/SkillPriorities";
 // Training Sections
 // - Pause
 // - - Child
@@ -135,18 +136,6 @@ import RegionSWR2KG from "../../../../assets/data/generator/regions/SWR2KG";
 import RegionWU from "../../../../assets/data/generator/regions/WU";
 import RegionWUSKSA from "../../../../assets/data/generator/regions/WUSKSA";
 import RegionWUSPEZIAL from "../../../../assets/data/generator/regions/WUSPEZIAL";
-
-// Max time
-import MaxTimeBAS from "../../../../assets/data/generator/maxTime/BAS";
-import MaxTimeCARDIO from "../../../../assets/data/generator/maxTime/CARDIO";
-import MaxTimeDEFAULT from "../../../../assets/data/generator/maxTime/DEFAULT";
-import MaxTimeGKS from "../../../../assets/data/generator/maxTime/GKS";
-import MaxTimeMAX from "../../../../assets/data/generator/maxTime/MAX";
-import MaxTimePREV from "../../../../assets/data/generator/maxTime/PREV";
-import MaxTimeSA from "../../../../assets/data/generator/maxTime/SA";
-import MaxTimeSK from "../../../../assets/data/generator/maxTime/SK";
-import MaxTimeSWR from "../../../../assets/data/generator/maxTime/SWR";
-import MaxTimeWUSPEZIAL from "../../../../assets/data/generator/maxTime/WUSPEZIAL";
 
 // Directions
 
@@ -324,11 +313,7 @@ export default class PlanGenerator {
     skillTrees: Record<string, SkillTreeType>,
     exerciseBranchData: BranchDataMapType,
   ): TrainingSectionType => {
-    const skillPriorities = cloneWithValidation(
-      SkillPriorities,
-      SkillPrioritiesSchema,
-      "SkillPriorities",
-    ); // Do not write in imported file!
+    const skillPriorities = loadSkillPriorities();
     const trainings: TrainingSectionType["trainings"] = [];
     const section = sec.type;
     const cardioType = sec.cardioType;
@@ -969,10 +954,10 @@ export default class PlanGenerator {
     skill: string,
     level: LevelTag,
   ): number => {
-    let maxTimeObj: Record<LevelTag, number>;
+    let group: MaxMinutesGroup;
     switch (skill) {
       case "BAS":
-        maxTimeObj = MaxTimeBAS;
+        group = "BAS";
         break;
       case "CARDIO_1_SHORT":
       case "CARDIO_1_LAKTAT":
@@ -980,14 +965,14 @@ export default class PlanGenerator {
       case "CARDIO_3":
       case "CARDIO_4":
       case "CARDIO_5":
-        maxTimeObj = MaxTimeCARDIO;
+        group = "CARDIO";
         break;
       case "GKS":
-        maxTimeObj = MaxTimeGKS;
+        group = "GKS";
         break;
       case "MAX":
       case "MAX_STRENGTH":
-        maxTimeObj = MaxTimeMAX;
+        group = "MAX";
         break;
       case "PREV":
       case "PREVKNEE":
@@ -995,31 +980,32 @@ export default class PlanGenerator {
       case "PREVWRIST":
       case "PREVANKLE":
       case "PREVSPINE":
-        maxTimeObj = MaxTimePREV;
+        group = "PREV";
         break;
       case "SA":
       case "SAKG":
-        maxTimeObj = MaxTimeSA;
+        group = "SA";
         break;
       case "SK":
       case "SKKG":
-        maxTimeObj = MaxTimeSK;
+        group = "SK";
         break;
       case "SWR1":
       case "SWR1KG":
       case "SWR2":
       case "SWR2KG":
-        maxTimeObj = MaxTimeSWR;
+        group = "SWR";
         break;
       case "WUSPEZIAL":
-        maxTimeObj = MaxTimeWUSPEZIAL;
+        group = "WUSPEZIAL";
         break;
       default:
-        maxTimeObj = MaxTimeDEFAULT;
+        group = "DEFAULT";
         break;
     }
+    const maxMinutes = loadMaxMinutes()[group];
     let maxTime = 200; // better default here? Should never be used
-    if (maxTimeObj[level]) maxTime = maxTimeObj[level];
+    if (maxMinutes[level]) maxTime = maxMinutes[level];
     return maxTime;
   };
 

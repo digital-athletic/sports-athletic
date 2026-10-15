@@ -6,12 +6,7 @@ import CompetitionAdultProfessional from "../../assets/data/generator/trainingSe
 import CompetitionChildAdvanced from "../../assets/data/generator/trainingSections/competition/child/advanced";
 import CompetitionChildBeginner from "../../assets/data/generator/trainingSections/competition/child/beginner";
 import CompetitionChildProfessional from "../../assets/data/generator/trainingSections/competition/child/professional";
-import PrepatoryAdultAdvanced from "../../assets/data/generator/trainingSections/prepatory/adult/advanced";
-import PrepatoryAdultBeginner from "../../assets/data/generator/trainingSections/prepatory/adult/beginner";
-import PrepatoryAdultProfessional from "../../assets/data/generator/trainingSections/prepatory/adult/professional";
-import PrepatoryChildAdvanced from "../../assets/data/generator/trainingSections/prepatory/child/advanced";
-import PrepatoryChildBeginner from "../../assets/data/generator/trainingSections/prepatory/child/beginner";
-import PrepatoryChildProfessional from "../../assets/data/generator/trainingSections/prepatory/child/professional";
+import PreparatoryJson from "../../assets/data/generator/trainingSections/preparatory.json";
 import {
   TrainingSectionsMapSchema,
   type TrainingSectionsMap,
@@ -19,21 +14,10 @@ import {
 
 type PhaseTemplates = Record<string, Record<string, unknown>>;
 
-// Season phase -> age group -> fitness level. Only the pause phase is JSON so far.
+// Season phase -> age group -> fitness level. Only the competition phase is still TypeScript.
 const templates: Record<string, PhaseTemplates> = {
   pause: PauseJson,
-  preparatory: {
-    child: {
-      beginner: PrepatoryChildBeginner,
-      advanced: PrepatoryChildAdvanced,
-      professional: PrepatoryChildProfessional,
-    },
-    adult: {
-      beginner: PrepatoryAdultBeginner,
-      advanced: PrepatoryAdultAdvanced,
-      professional: PrepatoryAdultProfessional,
-    },
-  },
+  preparatory: PreparatoryJson,
   competition: {
     child: {
       beginner: CompetitionChildBeginner,
@@ -49,7 +33,7 @@ const templates: Record<string, PhaseTemplates> = {
 };
 
 const FALLBACK_KEY = "preparatory/adult/advanced";
-const FALLBACK_TEMPLATE = PrepatoryAdultAdvanced;
+const FALLBACK_TEMPLATE = PreparatoryJson.adult.advanced;
 
 export const parseSectionTemplate = (
   key: string,

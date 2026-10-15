@@ -1,4 +1,4 @@
-import * as v from "valibot";
+import { createDataLoader, parseData } from "./createDataLoader";
 import PauseJson from "../../assets/data/generator/trainingSections/pause.json";
 import CompetitionAdultAdvanced from "../../assets/data/generator/trainingSections/competition/adult/advanced";
 import CompetitionAdultBeginner from "../../assets/data/generator/trainingSections/competition/adult/beginner";
@@ -51,32 +51,22 @@ const templates: Record<string, PhaseTemplates> = {
 const FALLBACK_KEY = "preparatory/adult/advanced";
 const FALLBACK_TEMPLATE = PrepatoryAdultAdvanced;
 
-// Validated once per key. The generator changes the sections it gets, so callers receive a copy.
-const validated = new Map<string, TrainingSectionsMap>();
-
 export const parseSectionTemplate = (
   key: string,
   data: unknown,
-): TrainingSectionsMap => {
-  const result = v.safeParse(TrainingSectionsMapSchema, data);
-  if (!result.success) {
-    console.error(
-      `Validation failed for section template ${key}:`,
-      v.flatten(result.issues),
-    );
-    throw new Error(`Invalid data structure for section template ${key}`);
-  }
-  return result.output;
-};
+): TrainingSectionsMap =>
+  parseData(TrainingSectionsMapSchema, data, `section template ${key}`);
+
+// One loader per key, created on first use. The generator changes the sections it gets, so callers receive a copy.
+const loaders = new Map<string, () => TrainingSectionsMap>();
 
 const loadValidated = (key: string, data: unknown): TrainingSectionsMap => {
-  const cached = validated.get(key);
-  if (cached) {
-    return cached;
+  let load = loaders.get(key);
+  if (!load) {
+    load = createDataLoader(() => parseSectionTemplate(key, data), "clone");
+    loaders.set(key, load);
   }
-  const parsed = parseSectionTemplate(key, data);
-  validated.set(key, parsed);
-  return parsed;
+  return load();
 };
 
 export const loadSectionTemplate = (
@@ -91,7 +81,7 @@ export const loadSectionTemplate = (
   const lv = level.toLowerCase();
   const data = templates[sp]?.[ag]?.[lv];
   if (data === undefined) {
-    return structuredClone(loadValidated(FALLBACK_KEY, FALLBACK_TEMPLATE));
+    return loadValidated(FALLBACK_KEY, FALLBACK_TEMPLATE);
   }
-  return structuredClone(loadValidated(`${sp}/${ag}/${lv}`, data));
+  return loadValidated(`${sp}/${ag}/${lv}`, data);
 };

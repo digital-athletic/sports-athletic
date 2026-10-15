@@ -7,7 +7,7 @@ The workout generator needs start values, target values and progression steps fo
 | Source | Location | Holds |
 |---|---|---|
 | Skill trees | `assets/data/generator/skillTrees/` | Which exercises form a branch and at which level |
-| Intensity configs | `assets/data/generator/intensity/` | Defaults and rules for one training area (hypertrophy, explosive power, prevention, cardio zones): start and target per gender and fitness level, step sizes per feedback, lowest permitted load |
+| Intensity configs | `assets/data/generator/intensity.json` | Defaults and rules for one training area (hypertrophy, explosive power, prevention, cardio zones): start and target per gender and fitness level, step sizes per feedback, lowest permitted load |
 | Exercise list | `assets/data/generator/Exercises.json` | One exercise: name, media, tags, equipment, its own start and target values where it differs from the training area, and its own conversion factor where the generic equipment conversion does not fit |
 | Athlete progress | the exercise progress store on the device | The athlete's last values and rating per exercise |
 
@@ -61,11 +61,11 @@ Region configurations (`regions.json`) give each skill a count of exercises per 
 
 - The precedence is not visible in the data; readers need this document.
 - Exercise values can sit in the list without effect when a binding config value overrides them. Exercises used only in hypertrophy, full-body stability or prevention still author repetitions and durations the app ignores.
-- The configs are code files while the exercise list is content, so changing a default needs a developer.
+- Intensity configs are authored JSON that a schema validates at load, so a wrong key or missing feedback step fails at the first read. The mapping from skill to config name stays in code.
 
 ## More information
 
 - Specs: `docs/specs/progression/standard-exercise-progression.md`, `docs/specs/progression/weight-calculation-from-strength-tests.md`, `docs/specs/progression/max-strength-progression.md`, `docs/specs/foundations/branches-exercises-and-levels.md`
-- Data: `assets/data/generator/intensity.json` (cardio zone, default, leg axis stability, full-body stability, prevention and explosive power intensity configs by config name), `assets/data/generator/intensity/` (the intensity configs still in code), `assets/data/generator/skillTrees/`, `assets/data/generator/Exercises.json`, `assets/data/generator/skillPriorities.json` (skills per session length), `assets/data/generator/maxMinutes.json` (maximum minutes per skill group and fitness level), `assets/data/generator/strengthTest.json` (test lifts, test set loads, warm-up region quotas), `assets/data/generator/directions.json` (movement direction sequences per body region and exercise count), `assets/data/generator/regions.json` (region configurations per skill)
+- Data: `assets/data/generator/intensity.json` (all intensity configs by config name: cardio zones, defaults, hypertrophy, power endurance, stability, prevention and explosive power; the loader serves JSON only), `assets/data/generator/skillTrees/`, `assets/data/generator/Exercises.json`, `assets/data/generator/skillPriorities.json` (skills per session length), `assets/data/generator/maxMinutes.json` (maximum minutes per skill group and fitness level), `assets/data/generator/strengthTest.json` (test lifts, test set loads, warm-up region quotas), `assets/data/generator/directions.json` (movement direction sequences per body region and exercise count), `assets/data/generator/regions.json` (region configurations per skill)
 - Data model overview: `docs/data-model.md`
 - A maximum of 0 minutes in `maxMinutes.json` passes validation, but the plan generator treats it as unset and falls back to 200 minutes. `MAX` for beginners holds 0 today.

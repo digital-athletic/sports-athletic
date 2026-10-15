@@ -3054,13 +3054,25 @@ export default class TrainingGenerator {
       testSetLoad = maxValue * maxValuePercentage;
     }
     // ramp up loads refer to the rounded test set load
-    const roundedTestSetLoad = roundWeightValue(testSetLoad, sortedExercise);
+    const testRounding = { emptyBarMinimum: false };
+    const roundedTestSetLoad = roundWeightValue(
+      testSetLoad,
+      sortedExercise,
+      testRounding,
+    );
+    const weight = roundWeightValue(
+      roundedTestSetLoad * percentage,
+      sortedExercise,
+      testRounding,
+    );
 
+    // The performed load keeps the display from applying the empty bar minimum.
     return {
       branchId: PLACEHOLDER_BRANCH_ID,
       exerciseId: sortedExercise.id,
       set: [set, 4] as [number, number],
-      weight: roundWeightValue(roundedTestSetLoad * percentage, sortedExercise),
+      weight,
+      performedWeight: weight,
       repetition: repetitions,
       skill: skill,
     };

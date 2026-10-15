@@ -116,7 +116,7 @@ Applies to strength-test loads and normal weighted exercises unless a specific r
 The value refers to **one dumbbell per hand**.
 **Barbell, total load**
 - all weights: nearest **2.5 kg**
-- minimum: the empty bar (20 kg); a lighter calculated load prescribes the empty bar
+- minimum: the empty bar (20 kg); a lighter calculated load prescribes the empty bar. Strength-test loads (test set and ramp-up sets, section 8) skip this minimum and may lie below the empty bar.
 The value refers to **total load including the bar**.
 **Other weighted exercises**
 - all weights: nearest 1 kg

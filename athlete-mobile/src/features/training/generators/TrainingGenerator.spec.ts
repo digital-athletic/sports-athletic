@@ -1710,6 +1710,7 @@ describe("TrainingGenerator", () => {
     type TestSetListEntry = SetListEntryType & {
       skill: "WU" | "TEST";
       weightType?: string;
+      performedWeight?: number;
     };
 
     const realExercises = ExercisesData as { id: string }[];

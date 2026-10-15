@@ -141,11 +141,12 @@ const getWeightRoundingStep = (
 /**
  * Rounds a load by the exercise's equipment: dumbbell per hand 1 kg (2 kg above
  * 10 kg), barbell total load 2.5 kg and at least the empty bar, other weights
- * 1 kg. Exact ties round down.
+ * 1 kg. Exact ties round down. Strength test loads skip the empty bar minimum.
  */
 export const roundWeightValue = (
   value: number,
   exercise: Pick<ExerciseType, "tags"> | undefined,
+  { emptyBarMinimum = true }: { emptyBarMinimum?: boolean } = {},
 ) => {
   if (!isFinite(value)) {
     Logger.logError(
@@ -157,7 +158,9 @@ export const roundWeightValue = (
     value,
     getWeightRoundingStep(value, exercise),
   );
-  return isBarbell(exercise) ? Math.max(rounded, EMPTY_BAR_WEIGHT) : rounded;
+  return emptyBarMinimum && isBarbell(exercise)
+    ? Math.max(rounded, EMPTY_BAR_WEIGHT)
+    : rounded;
 };
 
 export const calculateWorkoutTotals = (

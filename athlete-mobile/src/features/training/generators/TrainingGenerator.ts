@@ -3,6 +3,7 @@ import {
   WorkoutConstants,
   type SkillTypes,
 } from "@/constants/workoutConstants";
+import { loadStrengthTest } from "@/data/loadStrengthTest";
 import type {
   BranchExerciseReference,
   BranchSelectionResult,
@@ -90,7 +91,8 @@ import {
   type SkillCode,
   type SkillWithLength,
   type StartValuesResult,
-  type TestWorkoutsStartValuesType,
+  type StrengthTest,
+  type TestSetLoads,
   type UserExerciseDataMapType,
 } from "@/schemas/generator.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
@@ -122,10 +124,6 @@ import { IntensitySWR_2_KG } from "../../../../assets/data/generator/intensity/S
 
 // Pause
 
-// Test workouts
-import TEST_WORKOUTS from "../../../../assets/data/generator/TEST_WORKOUTS";
-import TEST_WORKOUTS_START_VALUES from "../../../../assets/data/generator/TEST_WORKOUTS_START_VALUES";
-import TEST_WORKOUTS_WU_REGION from "../../../../assets/data/generator/TEST_WORKOUTS_WU_REGION";
 import {
   isPauseExercise,
   PAUSE_EXERCISE_ID,
@@ -2830,7 +2828,8 @@ export default class TrainingGenerator {
       ).keep,
       gender ?? "FEMALE",
     ).keep;
-    let wuRegions = TEST_WORKOUTS_WU_REGION;
+    const strengthTest = loadStrengthTest();
+    const wuRegions = strengthTest.warmUpRegionQuotas;
     const allBranchIds = Object.keys(wuBranches);
     let usedBranches: string[] = [];
     const usedExerciseIds: string[] = [];
@@ -2925,19 +2924,16 @@ export default class TrainingGenerator {
     // make last pause duration 30sec
     wuSetList[wuSetList.length - 1].duration = 30;
 
-    const testWorkout = TEST_WORKOUTS[userLevel as keyof typeof TEST_WORKOUTS];
+    const testWorkout =
+      strengthTest.lifts[userLevel as keyof StrengthTest["lifts"]];
     if (!testWorkout) {
       throw new Error(`Invalid userLevel for TEST_WORKOUT: ${userLevel}`);
     }
 
-    let sortedExerciseIds: readonly string[] = testWorkout.default;
     const genderKey = gender === "MALE" ? "m" : "w";
-    const genderSpecificExercises =
-      testWorkout[genderKey as keyof typeof testWorkout];
-    if (genderSpecificExercises) {
-      // use gender specific if exists
-      sortedExerciseIds = genderSpecificExercises as readonly string[];
-    }
+    // use gender specific if exists
+    const sortedExerciseIds: readonly string[] =
+      testWorkout[genderKey] ?? testWorkout.default;
     const sortedExercises = exercises
       .filter((entry) => {
         return sortedExerciseIds.indexOf(entry.id) > -1;
@@ -2980,7 +2976,7 @@ export default class TrainingGenerator {
           userLevel,
           sortedExercises[i],
           workoutData.maxValues ?? DEFAULT_MAX_VALUES,
-          TEST_WORKOUTS_START_VALUES,
+          strengthTest.testSetLoads,
           percentage,
           repetitions,
           setNumber,
@@ -3021,7 +3017,7 @@ export default class TrainingGenerator {
     userLevel: string,
     sortedExercise: ExerciseType,
     maxValues: MaxValuesType,
-    startValues: TestWorkoutsStartValuesType,
+    startValues: TestSetLoads,
     percentage: number,
     repetitions: number,
     set: number,

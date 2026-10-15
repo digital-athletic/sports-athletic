@@ -20,7 +20,7 @@ import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { getUserTagValue } from "@/utils/tagUtils";
-import { Route, Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { RoutePath, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Pressable, StyleSheet, View } from "react-native";
@@ -40,7 +40,7 @@ export default function TrainingDays() {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
-  const params = useLocalSearchParams<{ originPath?: Route }>();
+  const params = useLocalSearchParams<{ originPath?: RoutePath }>();
   const originPath = params.originPath;
   const [isLoading, setIsLoading] = useState(false);
 

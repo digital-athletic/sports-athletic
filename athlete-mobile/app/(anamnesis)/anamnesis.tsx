@@ -2,7 +2,7 @@ import { SkipHeader } from "@/common/SkipHeader";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { useTheme } from "@/theme/theme";
-import { Route, router, Stack } from "expo-router";
+import { RoutePath, router, Stack } from "expo-router";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, StyleSheet } from "react-native";
@@ -19,7 +19,7 @@ export default function WelcomeScreen() {
   const handleStartAnamnesis = useCallback(() => {
     router.push({
       pathname: "/(anamnesis)/anamnesis/sport",
-      params: { originPath: "/(anamnesis)/anamnesis" satisfies Route },
+      params: { originPath: "/(anamnesis)/anamnesis" satisfies RoutePath },
     });
   }, []);
 

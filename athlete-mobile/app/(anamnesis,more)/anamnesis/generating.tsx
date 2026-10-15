@@ -22,7 +22,7 @@ import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
-import { Route, Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { RoutePath, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Image, StyleSheet } from "react-native";
@@ -32,7 +32,7 @@ const TIME_PER_STAGE = 1000; // 1 second per stage
 export default function Generating() {
   const { t } = useTranslation();
   const router = useRouter();
-  const params = useLocalSearchParams<{ originPath?: Route }>();
+  const params = useLocalSearchParams<{ originPath?: RoutePath }>();
   const originPath = params.originPath;
 
   const [stage, setStage] = useState(0);

@@ -64,6 +64,6 @@ When an athlete moves to another exercise through a level change, the progress o
 ## More information
 
 - Specs: `docs/specs/progression/standard-exercise-progression.md`, `docs/specs/progression/weight-calculation-from-strength-tests.md`, `docs/specs/progression/max-strength-progression.md`, `docs/specs/foundations/branches-exercises-and-levels.md`
-- Data: `assets/data/generator/intensity/`, `assets/data/generator/skillTrees/`, `assets/data/generator/Exercises.json`, `assets/data/generator/skillPriorities.json` (skills per session length), `assets/data/generator/maxMinutes.json` (maximum minutes per skill group and fitness level), `assets/data/generator/strengthTest.json` (test lifts, test set loads, warm-up region quotas)
+- Data: `assets/data/generator/intensity/`, `assets/data/generator/skillTrees/`, `assets/data/generator/Exercises.json`, `assets/data/generator/skillPriorities.json` (skills per session length), `assets/data/generator/maxMinutes.json` (maximum minutes per skill group and fitness level), `assets/data/generator/strengthTest.json` (test lifts, test set loads, warm-up region quotas), `assets/data/generator/directions.json` (movement direction sequences per body region and exercise count)
 - Data model overview: `docs/data-model.md`
 - A maximum of 0 minutes in `maxMinutes.json` passes validation, but the plan generator treats it as unset and falls back to 200 minutes. `MAX` for beginners holds 0 today.

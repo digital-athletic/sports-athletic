@@ -1,0 +1,177 @@
+{
+  "CORE": {
+    "1": [
+      { "direction": "SIDE", "side": "BOTH" }
+    ],
+    "2": [
+      { "direction": "BACK", "side": "BOTH" },
+      { "direction": "FRONT", "side": "BOTH" }
+    ],
+    "3": [
+      { "direction": "SIDE", "side": "BOTH" },
+      { "direction": "BACK", "side": "BOTH" },
+      { "direction": "FRONT", "side": "BOTH" }
+    ],
+    "4": [
+      { "direction": "SIDE", "side": "BOTH" },
+      { "direction": "BACK", "side": "BOTH" },
+      { "direction": "FRONT", "side": "BOTH" },
+      { "direction": "ROTATION", "side": "BOTH" }
+    ],
+    "5": [
+      { "direction": "SIDE", "side": "BOTH" },
+      { "direction": "BACK", "side": "BOTH" },
+      { "direction": "FRONT", "side": "BOTH" },
+      { "direction": "ROTATION", "side": "BOTH" },
+      { "direction": null, "side": "BOTH" }
+    ],
+    "6": [
+      { "direction": "SIDE", "side": "BOTH" },
+      { "direction": "BACK", "side": "BOTH" },
+      { "direction": "FRONT", "side": "BOTH" },
+      { "direction": "ROTATION", "side": "BOTH" },
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" }
+    ]
+  },
+  "FULL_BODY": {
+    "1": [
+      { "direction": null, "side": "BOTH" }
+    ],
+    "2": [
+      { "direction": "HORIZONTAL_PUSH", "side": "BOTH" },
+      { "direction": "HORIZONTAL_PULL", "side": "BOTH" }
+    ],
+    "3": [
+      { "direction": "HORIZONTAL_PUSH", "side": "BOTH" },
+      { "direction": "HORIZONTAL_PULL", "side": "BOTH" },
+      { "direction": null, "side": "BOTH" }
+    ],
+    "4": [
+      { "direction": "HORIZONTAL_PUSH", "side": "BOTH" },
+      { "direction": "HORIZONTAL_PULL", "side": "BOTH" },
+      { "direction": "HIP", "side": "BOTH" },
+      { "direction": "KNEE", "side": "BOTH" }
+    ],
+    "5": [
+      { "direction": "HORIZONTAL_PUSH", "side": "BOTH" },
+      { "direction": "HORIZONTAL_PULL", "side": "BOTH" },
+      { "direction": "HIP", "side": "BOTH" },
+      { "direction": "KNEE", "side": "BOTH" },
+      { "direction": null, "side": "BOTH" }
+    ],
+    "6": [
+      { "direction": "HORIZONTAL_PUSH", "side": "BOTH" },
+      { "direction": "HORIZONTAL_PULL", "side": "BOTH" },
+      { "direction": "HIP", "side": "BOTH" },
+      { "direction": "KNEE", "side": "BOTH" },
+      { "direction": "VERTICAL_PUSH", "side": "BOTH" },
+      { "direction": "VERTICAL_PULL", "side": "BOTH" }
+    ]
+  },
+  "LOWER_BODY": {
+    "1": [
+      { "direction": "KNEE", "side": "BOTH" }
+    ],
+    "2": [
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" }
+    ],
+    "3": [
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" },
+      { "direction": "HIP", "side": "BOTH" }
+    ],
+    "4": [
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" }
+    ],
+    "5": [
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" },
+      { "direction": "HIP", "side": "BOTH" }
+    ],
+    "6": [
+      { "direction": "HIP", "side": "BOTH" },
+      { "direction": "KNEE", "side": "BOTH" },
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" }
+    ]
+  },
+  "LOWER_BODY_GKS": {
+    "1": [
+      { "direction": "KNEE", "side": "BOTH" }
+    ],
+    "2": [
+      { "direction": "KNEE", "side": "BOTH" },
+      { "direction": "HIP", "side": "BOTH" }
+    ],
+    "3": [
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" },
+      { "direction": "KNEE", "side": "BOTH" }
+    ],
+    "4": [
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" },
+      { "direction": "KNEE", "side": "BOTH" },
+      { "direction": "HIP", "side": "BOTH" }
+    ],
+    "5": [
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" },
+      { "direction": "KNEE", "side": "BOTH" }
+    ],
+    "6": [
+      { "direction": "HIP", "side": "BOTH" },
+      { "direction": "KNEE", "side": "BOTH" },
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" }
+    ]
+  },
+  "UPPER_BODY": {
+    "1": [
+      { "direction": "HORIZONTAL_PUSH", "side": "BOTH" }
+    ],
+    "2": [
+      { "direction": "HORIZONTAL_PUSH", "side": "BOTH" },
+      { "direction": "HORIZONTAL_PULL", "side": "BOTH" }
+    ],
+    "3": [
+      { "direction": "HORIZONTAL_PUSH", "side": "BOTH" },
+      { "direction": "HORIZONTAL_PULL", "side": "BOTH" },
+      { "direction": "VERTICAL_PUSH", "side": "BOTH" }
+    ],
+    "4": [
+      { "direction": "VERTICAL_PUSH", "side": "BOTH" },
+      { "direction": "VERTICAL_PULL", "side": "BOTH" },
+      { "direction": "HORIZONTAL_PUSH", "side": "BOTH" },
+      { "direction": "HORIZONTAL_PULL", "side": "BOTH" }
+    ],
+    "5": [
+      { "direction": "HORIZONTAL_PUSH", "side": "BOTH" },
+      { "direction": "HORIZONTAL_PULL", "side": "BOTH" },
+      { "direction": "VERTICAL_PUSH", "side": "BOTH" },
+      { "direction": "VERTICAL_PULL", "side": "BOTH" },
+      { "direction": null, "side": "BOTH" }
+    ],
+    "6": [
+      { "direction": "HORIZONTAL_PUSH", "side": "BOTH" },
+      { "direction": "HORIZONTAL_PULL", "side": "BOTH" },
+      { "direction": "VERTICAL_PUSH", "side": "BOTH" },
+      { "direction": "VERTICAL_PULL", "side": "BOTH" },
+      { "direction": null, "side": "ONE" },
+      { "direction": null, "side": "ONE" }
+    ]
+  }
+}

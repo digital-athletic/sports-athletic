@@ -126,6 +126,65 @@ describe("useExerciseCompletion: standard progression", () => {
     expect(stored()?.feedback?.difficulty).toBeNull();
   });
 
+  it("stores the unrounded weight and the forced load separately", () => {
+    // 33.06 % of 121 kg is 40 kg, the next step of 2.5 % rounds to 40 kg again
+    seed({
+      repetition: 12,
+      weight: 40 / 1.21,
+      feedback: { difficulty: "TOO_EASY" },
+    });
+    const { result } = renderHook(() => useExerciseCompletion());
+
+    act(() => result.current.saveExerciseAndBranchData(0));
+
+    expect(stored()?.weight).toBeCloseTo((40 / 1.21) * 1.025);
+    expect(stored()?.performedWeight).toBe(42.5);
+  });
+
+  it("keeps the performed load when nothing changes", () => {
+    seed({ repetition: 10, weight: 70, performedWeight: 87.5 });
+    const { result } = renderHook(() => useExerciseCompletion());
+
+    act(() => result.current.saveExerciseAndBranchData(0));
+
+    expect(stored()?.performedWeight).toBe(87.5);
+  });
+
+  describe("consecutive too hard count", () => {
+    const completeWith = (
+      difficulty: "TOO_HARD" | "TOO_EASY" | null,
+      previousCount: number,
+    ) => {
+      seed({ repetition: 10, feedback: { difficulty } });
+      useExerciseProgressStore.getState().updateExercise(EXERCISE_ID, {
+        exerciseId: EXERCISE_ID,
+        skill: "SWR2",
+        tooHardCount: previousCount,
+      });
+      const { result } = renderHook(() => useExerciseCompletion());
+
+      act(() => result.current.saveExerciseAndBranchData(0));
+    };
+
+    it("counts a too hard rating", () => {
+      completeWith("TOO_HARD", 1);
+
+      expect(stored()?.tooHardCount).toBe(2);
+    });
+
+    it("resets the count after another rating", () => {
+      completeWith("TOO_EASY", 1);
+
+      expect(stored()?.tooHardCount).toBe(0);
+    });
+
+    it("keeps the count when the athlete gives no rating", () => {
+      completeWith(null, 1);
+
+      expect(stored()?.tooHardCount).toBe(1);
+    });
+  });
+
   it("resets the record when TOO_HARD at the lowest load levels down", () => {
     seed({
       branchId: "77",

@@ -162,6 +162,17 @@ describe("roundWeightValue: rounding by equipment", () => {
     expect(roundWeightValue(102.7, barbellExercise)).toBe(102.5);
   });
 
+  it("prescribes the empty bar for a lighter barbell load", () => {
+    expect(roundWeightValue(12, barbellExercise)).toBe(20);
+    expect(roundWeightValue(18.7, barbellExercise)).toBe(20);
+    expect(roundWeightValue(20, barbellExercise)).toBe(20);
+  });
+
+  it("keeps the empty bar minimum off other equipment", () => {
+    expect(roundWeightValue(12, dumbbellExercise)).toBe(12);
+    expect(roundWeightValue(12, kettlebellExercise)).toBe(12);
+  });
+
   it("rounds a dumbbell up to 10 kg to the nearest 1 kg", () => {
     expect(roundWeightValue(7.4, dumbbellExercise)).toBe(7);
     expect(roundWeightValue(7.6, dumbbellExercise)).toBe(8);
@@ -183,7 +194,7 @@ describe("roundWeightValue: rounding by equipment", () => {
   it("rounds an exact tie down", () => {
     // max strength example: 75% of a 75 kg working set is 56.25 kg
     expect(roundWeightValue(56.25, barbellExercise)).toBe(55);
-    expect(roundWeightValue(27.5 / 2, barbellExercise)).toBe(12.5);
+    expect(roundWeightValue(41.25, barbellExercise)).toBe(40);
     expect(roundWeightValue(9.5, dumbbellExercise)).toBe(9);
     expect(roundWeightValue(11, dumbbellExercise)).toBe(10);
     expect(roundWeightValue(26.5, kettlebellExercise)).toBe(26);

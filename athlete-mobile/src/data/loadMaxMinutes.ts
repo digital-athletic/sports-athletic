@@ -1,14 +1,12 @@
-import * as v from "valibot";
 import MaxMinutesData from "../../assets/data/generator/maxMinutes.json";
+import { createDataLoader, parseData } from "./createDataLoader";
 import { MaxMinutesSchema, type MaxMinutes } from "@/schemas/generator.schema";
 
-export const loadMaxMinutes = (): MaxMinutes => {
-  const result = v.safeParse(MaxMinutesSchema, MaxMinutesData);
+export const parseMaxMinutes = (data: unknown): MaxMinutes =>
+  parseData(MaxMinutesSchema, data, "MaxMinutes");
 
-  if (!result.success) {
-    console.error("Max minutes validation failed:", v.flatten(result.issues));
-    throw new Error("Max minutes data validation failed");
-  }
-
-  return result.output;
-};
+// Read only data: every call returns the same deep frozen value.
+export const loadMaxMinutes = createDataLoader(
+  () => parseMaxMinutes(MaxMinutesData),
+  "frozen",
+);

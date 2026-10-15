@@ -285,7 +285,7 @@ export const PhaseMapSchema = v.record(
   v.array(SkillPriorityCodeSchema),
 );
 
-export const PainConfigSchema = v.looseObject({
+export const PainConfigSchema = v.strictObject({
   phase: v.optional(PhaseMapSchema),
   combined: v.optional(PhaseMapSchema),
   cardio: v.optional(PhaseMapSchema),
@@ -304,10 +304,13 @@ export const SkillPrioritiesSchema = v.object({
 export type SkillPriorities = v.InferOutput<typeof SkillPrioritiesSchema>;
 
 // MaxMinutes schemas: maximum minutes per skill group and fitness level
+// 0 is valid but the plan generator currently treats it as 200 minutes
+const MinutesSchema = v.pipe(v.number(), v.integer(), v.minValue(0));
+
 const LevelMinutesSchema = v.object({
-  BEGINNER: v.number(),
-  ADVANCED: v.number(),
-  PROFESSIONAL: v.number(),
+  BEGINNER: MinutesSchema,
+  ADVANCED: MinutesSchema,
+  PROFESSIONAL: MinutesSchema,
 });
 
 export const MaxMinutesSchema = v.object({

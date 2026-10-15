@@ -124,7 +124,7 @@ const RegionConfigTagSchema = v.pipe(
   v.check((tag) => REGION_CONFIG_TAGS.includes(tag), "Unknown region tag"),
 );
 
-// Region tag entry (used in skill tag configurations). The tags are or, not and.
+// Region tag entry (used in skill tag configurations).
 export const RegionTagEntrySchema = v.strictObject({
   tags: v.array(RegionConfigTagSchema),
   count: v.number(),

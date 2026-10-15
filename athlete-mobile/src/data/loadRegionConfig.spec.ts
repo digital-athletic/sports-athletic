@@ -2,22 +2,13 @@ import * as v from "valibot";
 import RegionsData from "../../assets/data/generator/regions.json";
 import { loadExercises } from "./loadExercises";
 import { loadRegionConfig, parseRegionConfig } from "./loadRegionConfig";
+import PlanGenerator from "@/features/training/generators/PlanGenerator";
 import { getBranchIdByNameAndSkill } from "@/features/training/utils/skillTreeUtils";
 import { RegionConfigSchema } from "@/schemas/generator.schema";
 
 const entry = { tags: ["REGION_UPPER_BODY"], count: 2 };
 
-const jsonConfigNames = Object.keys(RegionsData);
-const codeConfigNames = [
-  "MAX",
-  "SA",
-  "SAKG",
-  "SK",
-  "SKKG",
-  "SWR1",
-  "SWR1KG",
-  "SWR2KG",
-];
+const configNames = Object.keys(RegionsData);
 
 const allTags = (config: ReturnType<typeof loadRegionConfig>): string[] =>
   [config.default, config.child, config.professional].flatMap((variant) =>
@@ -36,7 +27,7 @@ describe("loadRegionConfig: real file", () => {
     ]);
   });
 
-  it("serves a config that is still defined in code", () => {
+  it("reads max strength with professional variant and support flags", () => {
     const config = loadRegionConfig("MAX");
 
     expect(config.default["20"][0]).toEqual({
@@ -44,7 +35,79 @@ describe("loadRegionConfig: real file", () => {
       count: 1,
       support: true,
     });
+    expect(Object.keys(config.professional ?? {})).toEqual([
+      "15",
+      "30",
+      "40",
+      "55",
+    ]);
     expect(config.professional?.["15"]).toHaveLength(1);
+  });
+
+  it("reads the child variant of a bodyweight strength config", () => {
+    const config = loadRegionConfig("SWR1KG");
+
+    expect(config.child?.["10"]).toEqual([
+      { tags: ["REGION_UPPER_BODY"], count: 1 },
+      { tags: ["REGION_LOWER_BODY"], count: 2 },
+      { tags: ["REGION_CORE"], count: 1 },
+    ]);
+  });
+
+  it("holds every strength section config in the real file", () => {
+    expect(Object.keys(RegionsData)).toEqual(
+      expect.arrayContaining([
+        "MAX",
+        "SA",
+        "SAKG",
+        "SK",
+        "SKKG",
+        "SWR1",
+        "SWR1KG",
+        "SWR2KG",
+      ]),
+    );
+  });
+
+  it.each([
+    "CARDIO_1_SHORT",
+    "CARDIO_1_LAKTAT",
+    "CARDIO_2",
+    "CARDIO_3",
+    "CARDIO_4",
+    "CARDIO_5",
+    "MAX",
+    "MAX_STRENGTH",
+    "BAS",
+    "BR",
+    "CD",
+    "GKS",
+    "MOB",
+    "PREVANKLE",
+    "PREVKNEE",
+    "PREVSHOULDER",
+    "PREVSPINE",
+    "PREVWRIST",
+    "SA",
+    "SAKG",
+    "SK",
+    "SKKG",
+    "SWR1",
+    "SWR1KG",
+    "SWR2KG",
+    "WU",
+    "WUSKSA",
+    "WUSPEZIAL",
+  ])("resolves the config for skill %s", (skill) => {
+    const tags = PlanGenerator.getTagsForSkill(skill);
+
+    expect(Object.keys(tags).length).toBeGreaterThan(0);
+  });
+
+  it("falls back to the first hypertrophy config for an unmapped skill", () => {
+    expect(PlanGenerator.getTagsForSkill("UNMAPPED_SKILL")).toEqual(
+      PlanGenerator.getTagsForSkill("SWR1"),
+    );
   });
 
   it("throws for an unknown name", () => {
@@ -63,7 +126,7 @@ describe("loadRegionConfig: real file", () => {
     expect(second.default["5"][0].count).toBe(2);
   });
 
-  it("returns a fresh deep copy of a config defined in code", () => {
+  it("returns a fresh deep copy of a strength config", () => {
     const first = loadRegionConfig("MAX");
     first.default["20"][0].tags.push("EXERCISE_NAME_ROWING");
 
@@ -72,7 +135,7 @@ describe("loadRegionConfig: real file", () => {
     );
   });
 
-  it.each([...jsonConfigNames, ...codeConfigNames])("loads %s", (name) => {
+  it.each(configNames)("loads %s", (name) => {
     expect(Object.keys(loadRegionConfig(name).default).length).toBeGreaterThan(
       0,
     );
@@ -81,7 +144,7 @@ describe("loadRegionConfig: real file", () => {
 
 describe("loadRegionConfig: tags against the exercise catalog", () => {
   const catalogTags = new Set(loadExercises().flatMap((item) => item.tags));
-  const configTags = [...jsonConfigNames, ...codeConfigNames].flatMap((name) =>
+  const configTags = configNames.flatMap((name) =>
     allTags(loadRegionConfig(name)),
   );
 

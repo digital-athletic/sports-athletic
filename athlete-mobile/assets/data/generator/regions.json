@@ -67,6 +67,65 @@
       ]
     }
   },
+  "MAX": {
+    "default": {
+      "10": [
+        {
+          "tags": [
+            "EXERCISE_NAME_SQUAT",
+            "EXERCISE_NAME_DEADLIFT",
+            "EXERCISE_NAME_BENCH_PRESS",
+            "EXERCISE_NAME_ROWING",
+            "EXERCISE_NAME_SHOULDER_PRESS"
+          ],
+          "count": 1
+        }
+      ],
+      "20": [
+        { "tags": ["EXERCISE_NAME_SQUAT", "EXERCISE_NAME_DEADLIFT"], "count": 1, "support": true },
+        { "tags": ["EXERCISE_NAME_BENCH_PRESS", "EXERCISE_NAME_SHOULDER_PRESS"], "count": 1, "support": true }
+      ],
+      "30": [
+        { "tags": ["EXERCISE_NAME_SQUAT", "EXERCISE_NAME_DEADLIFT"], "count": 1, "support": true },
+        { "tags": ["EXERCISE_NAME_BENCH_PRESS", "EXERCISE_NAME_SHOULDER_PRESS"], "count": 1, "support": true },
+        { "tags": ["EXERCISE_NAME_ROWING"], "count": 1, "support": true }
+      ],
+      "45": [
+        { "tags": ["EXERCISE_NAME_SQUAT", "EXERCISE_NAME_DEADLIFT"], "count": 2, "support": true },
+        { "tags": ["EXERCISE_NAME_BENCH_PRESS", "EXERCISE_NAME_SHOULDER_PRESS"], "count": 1, "support": true },
+        { "tags": ["EXERCISE_NAME_ROWING"], "count": 1, "support": true }
+      ]
+    },
+    "professional": {
+      "15": [
+        {
+          "tags": [
+            "EXERCISE_NAME_SQUAT",
+            "EXERCISE_NAME_DEADLIFT",
+            "EXERCISE_NAME_BENCH_PRESS",
+            "EXERCISE_NAME_ROWING",
+            "EXERCISE_NAME_SHOULDER_PRESS"
+          ],
+          "count": 1,
+          "support": true
+        }
+      ],
+      "30": [
+        { "tags": ["EXERCISE_NAME_SQUAT", "EXERCISE_NAME_DEADLIFT"], "count": 1, "support": true },
+        { "tags": ["EXERCISE_NAME_BENCH_PRESS", "EXERCISE_NAME_SHOULDER_PRESS"], "count": 1, "support": true }
+      ],
+      "40": [
+        { "tags": ["EXERCISE_NAME_SQUAT", "EXERCISE_NAME_DEADLIFT"], "count": 1, "support": true },
+        { "tags": ["EXERCISE_NAME_BENCH_PRESS", "EXERCISE_NAME_SHOULDER_PRESS"], "count": 1, "support": true },
+        { "tags": ["EXERCISE_NAME_ROWING"], "count": 1, "support": true }
+      ],
+      "55": [
+        { "tags": ["EXERCISE_NAME_SQUAT", "EXERCISE_NAME_DEADLIFT"], "count": 2, "support": true },
+        { "tags": ["EXERCISE_NAME_BENCH_PRESS", "EXERCISE_NAME_SHOULDER_PRESS"], "count": 1, "support": true },
+        { "tags": ["EXERCISE_NAME_ROWING"], "count": 1, "support": true }
+      ]
+    }
+  },
   "MOB": {
     "default": {
       "5": [
@@ -114,6 +173,283 @@
       "5": [{ "tags": [], "count": 2 }],
       "10": [{ "tags": [], "count": 4 }],
       "15": [{ "tags": [], "count": 6 }]
+    }
+  },
+  "SA": {
+    "default": {
+      "15": [
+        { "tags": ["REGION_UPPER_BODY", "REGION_LOWER_BODY"], "count": 2 },
+        { "tags": ["SKILL_SAS"], "count": 1 }
+      ],
+      "20": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 }
+      ],
+      "25": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 },
+        { "tags": ["SKILL_SAS"], "count": 2 }
+      ],
+      "30": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 },
+        { "tags": ["SKILL_SAS"], "count": 2 }
+      ],
+      "35": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["SKILL_SAS"], "count": 1 }
+      ]
+    }
+  },
+  "SAKG": {
+    "default": {
+      "15": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 }
+      ],
+      "20": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 },
+        { "tags": ["SKILL_SAS"], "count": 1 }
+      ],
+      "25": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["SKILL_SAS"], "count": 1 }
+      ],
+      "30": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 },
+        { "tags": ["SKILL_SAS"], "count": 3 }
+      ],
+      "35": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["SKILL_SAS"], "count": 3 }
+      ]
+    }
+  },
+  "SK": {
+    "default": {
+      "15": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 }
+      ],
+      "20": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 },
+        { "tags": ["SKILL_PLYO_HIGH", "SKILL_PLYO_MEDIUM"], "count": 1 }
+      ],
+      "25": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 },
+        { "tags": ["SKILL_PLYO_HIGH", "SKILL_PLYO_MEDIUM"], "count": 2 }
+      ],
+      "30": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["SKILL_PLYO_MEDIUM"], "count": 2 }
+      ],
+      "35": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["SKILL_PLYO_HIGH"], "count": 2 }
+      ]
+    }
+  },
+  "SKKG": {
+    "default": {
+      "15": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 1 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 1 },
+        { "tags": ["SKILL_PLYO_HIGH", "SKILL_PLYO_MEDIUM"], "count": 2 }
+      ],
+      "20": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 },
+        { "tags": ["SKILL_PLYO_HIGH", "SKILL_PLYO_MEDIUM"], "count": 2 }
+      ],
+      "25": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["SKILL_PLYO_HIGH", "SKILL_PLYO_MEDIUM"], "count": 2 }
+      ],
+      "30": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 4 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 4 },
+        { "tags": ["SKILL_PLYO_MEDIUM"], "count": 2 }
+      ],
+      "35": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 5 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 5 },
+        { "tags": ["SKILL_PLYO_MEDIUM", "SKILL_PLYO_HIGH"], "count": 1 }
+      ]
+    }
+  },
+  "SWR1": {
+    "default": {
+      "20": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 }
+      ],
+      "25": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 },
+        { "tags": ["REGION_CORE"], "count": 2 }
+      ],
+      "30": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 },
+        { "tags": ["REGION_CORE"], "count": 3 }
+      ],
+      "35": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["REGION_CORE"], "count": 2 }
+      ],
+      "40": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["REGION_CORE"], "count": 3 }
+      ],
+      "45": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["REGION_CORE"], "count": 4 }
+      ],
+      "50": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 4 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 4 },
+        { "tags": ["REGION_CORE"], "count": 3 }
+      ],
+      "55": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 4 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 4 },
+        { "tags": ["REGION_CORE"], "count": 4 }
+      ]
+    }
+  },
+  "SWR1KG": {
+    "default": {
+      "15": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 },
+        { "tags": ["REGION_CORE"], "count": 2 }
+      ],
+      "20": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["REGION_CORE"], "count": 2 }
+      ],
+      "25": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["REGION_CORE"], "count": 3 }
+      ],
+      "30": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["REGION_CORE"], "count": 4 }
+      ],
+      "35": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 4 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 4 },
+        { "tags": ["REGION_CORE"], "count": 4 }
+      ]
+    },
+    "child": {
+      "10": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 1 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 },
+        { "tags": ["REGION_CORE"], "count": 1 }
+      ],
+      "15": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 1 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 },
+        { "tags": ["REGION_CORE"], "count": 3 }
+      ],
+      "20": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["REGION_CORE"], "count": 3 }
+      ],
+      "25": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["REGION_CORE"], "count": 4 }
+      ],
+      "30": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["REGION_CORE"], "count": 4 }
+      ],
+      "35": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 4 },
+        { "tags": ["REGION_CORE"], "count": 5 }
+      ]
+    }
+  },
+  "SWR2KG": {
+    "default": {
+      "15": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 },
+        { "tags": ["REGION_CORE"], "count": 2 }
+      ],
+      "20": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["REGION_CORE"], "count": 2 }
+      ],
+      "25": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["REGION_CORE"], "count": 3 }
+      ],
+      "30": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["REGION_CORE"], "count": 4 }
+      ],
+      "35": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 4 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 4 },
+        { "tags": ["REGION_CORE"], "count": 4 }
+      ]
+    },
+    "child": {
+      "10": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 1 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 },
+        { "tags": ["REGION_CORE"], "count": 1 }
+      ],
+      "15": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 1 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 2 },
+        { "tags": ["REGION_CORE"], "count": 3 }
+      ],
+      "20": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["REGION_CORE"], "count": 3 }
+      ],
+      "25": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 2 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["REGION_CORE"], "count": 4 }
+      ],
+      "30": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 3 },
+        { "tags": ["REGION_CORE"], "count": 4 }
+      ],
+      "35": [
+        { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 4 },
+        { "tags": ["REGION_CORE"], "count": 5 }
+      ]
     }
   },
   "WU": {

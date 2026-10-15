@@ -9,7 +9,7 @@ import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { Box } from "@/theme/Box";
 import { ScrollBox } from "@/theme/ScrollBox";
 import { Stack, useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -25,18 +25,8 @@ export default function EquipmentScreen() {
   const { places, setPlaceEquipment, getPlaceEquipment } = usePlacesStore();
   const { trainingDays } = useTrainingScheduleStore();
 
-  const [trainingDaysAtPlaces, setTrainingDaysAtPlaces] = useState<
-    Record<PlaceType, I18nKey[]>
-  >({
-    HOME: [],
-    OUTSIDE: [],
-    HALL: [],
-    STUDIO: [],
-  });
-
-  // Initialize training days at places
+  // Remove deactivated equipment from all places
   useEffect(() => {
-    // Remove deactivated equipment from all places
     const placeIds: PlaceType[] = ["HOME", "STUDIO", "HALL", "OUTSIDE"];
     placeIds.forEach((placeId) => {
       const equipment = getPlaceEquipment(placeId);
@@ -48,8 +38,10 @@ export default function EquipmentScreen() {
         setPlaceEquipment(placeId, cleanedEquipment);
       }
     });
+  }, [getPlaceEquipment, setPlaceEquipment]);
 
-    // Map training days to places
+  // Map training days to places
+  const trainingDaysAtPlaces = useMemo(() => {
     const daysAtPlaces: Record<PlaceType, I18nKey[]> = {
       HOME: [],
       OUTSIDE: [],
@@ -65,8 +57,8 @@ export default function EquipmentScreen() {
       }
     });
 
-    setTrainingDaysAtPlaces(daysAtPlaces);
-  }, [trainingDays, getPlaceEquipment, setPlaceEquipment]);
+    return daysAtPlaces;
+  }, [trainingDays]);
 
   const handleSelectPlace = useCallback(
     (placeId: PlaceType) => {

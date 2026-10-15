@@ -2,7 +2,7 @@
 import { Ionicon } from "@/common/Ionicon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
-import { type FC, useEffect, useState } from "react";
+import { type FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, Modal, TouchableOpacity } from "react-native";
 
@@ -35,9 +35,15 @@ export const SelectionModal: FC<Props> = ({
   const { t } = useTranslation();
   const [selected, setSelected] = useState<string[]>(initialSelected);
 
-  useEffect(() => {
+  // Re-sync the selection whenever the modal is (re)opened with new items.
+  const [prevSync, setPrevSync] = useState({ initialSelected, visible });
+  if (
+    prevSync.initialSelected !== initialSelected ||
+    prevSync.visible !== visible
+  ) {
+    setPrevSync({ initialSelected, visible });
     setSelected(initialSelected);
-  }, [initialSelected, visible]);
+  }
 
   const toggleItem = (value: string) => {
     if (single) {

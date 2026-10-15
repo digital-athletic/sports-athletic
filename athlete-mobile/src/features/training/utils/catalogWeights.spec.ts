@@ -13,29 +13,38 @@ interface FixedWeight {
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
 
-// Every start and target entry of a weight authored in kilograms.
-const getFixedWeights = (exercise: ExerciseType): FixedWeight[] => {
+const getBoundWeights = (
+  exerciseId: string,
+  bound: string,
+  entries: Record<string, unknown>,
+): FixedWeight[] => {
   const result: FixedWeight[] = [];
-  const weight: unknown = exercise.values?.weight;
-  if (!isRecord(weight)) return result;
-  for (const bound of ["startValue", "targetValue"]) {
-    const entries = weight[bound];
-    if (!isRecord(entries)) continue;
-    const type = isRecord(entries.type) ? entries.type.type : undefined;
-    if (type !== "weightAbsolute") continue;
-    for (const [group, levels] of Object.entries(entries)) {
-      if (group === "type" || !isRecord(levels)) continue;
-      for (const [level, value] of Object.entries(levels)) {
-        if (value === "" || value === null) continue;
-        result.push({
-          exercise: exercise.id,
-          field: `${bound}.${group}.${level}`,
-          value,
-        });
-      }
+  for (const [group, levels] of Object.entries(entries)) {
+    if (group === "type" || !isRecord(levels)) continue;
+    for (const [level, value] of Object.entries(levels)) {
+      if (value === "" || value === null) continue;
+      result.push({
+        exercise: exerciseId,
+        field: `${bound}.${group}.${level}`,
+        value,
+      });
     }
   }
   return result;
+};
+
+// Every start and target entry of a weight authored in kilograms.
+const getFixedWeights = (exercise: ExerciseType): FixedWeight[] => {
+  const weight: unknown = exercise.values?.weight;
+  if (!isRecord(weight)) return [];
+  return ["startValue", "targetValue"].flatMap((bound) => {
+    const entries = weight[bound];
+    if (!isRecord(entries)) return [];
+    const type = isRecord(entries.type) ? entries.type.type : undefined;
+    return type === "weightAbsolute"
+      ? getBoundWeights(exercise.id, bound, entries)
+      : [];
+  });
 };
 
 describe("exercise catalog: fixed weights are loadable", () => {

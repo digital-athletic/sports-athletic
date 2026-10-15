@@ -154,12 +154,7 @@ describe("loaded jumps: equipment conversion of the knee 1RM", () => {
     "lunge $id, $level: $start kg up to $target kg per dumbbell",
     ({ id, level, start, target }) => {
       const load = (percent: number) =>
-        deriveWeightForExercise(
-          percent,
-          "weightFMax",
-          exercise(id),
-          maxValues,
-        );
+        deriveWeightForExercise(percent, "weightFMax", exercise(id), maxValues);
       const entry = LEVELS.find((l) => l.level === level);
 
       expect(load(entry?.start ?? 0)).toBe(start);

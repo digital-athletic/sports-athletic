@@ -276,8 +276,7 @@ export const usesLoadedJumpDefault = (
   exercise: ExerciseType,
   valueName: TrainingParameterType,
   bound: "startValue" | "targetValue",
-  level: TrainingLevelType,
-  genderTag: GenderTag,
+  { level, genderTag }: { level: TrainingLevelType; genderTag: GenderTag },
 ) =>
   valueName === "weight" &&
   isLoadedJump(exercise) &&
@@ -311,7 +310,12 @@ export const getExerciseTargetValue = (
   level: TrainingLevelType,
   genderTag: GenderTag,
 ) => {
-  if (usesLoadedJumpDefault(branchExercise, valueName, "targetValue", level, genderTag)) {
+  if (
+    usesLoadedJumpDefault(branchExercise, valueName, "targetValue", {
+      level,
+      genderTag,
+    })
+  ) {
     return getLoadedJumpDefault("target", level);
   }
   let value: number | undefined;
@@ -391,7 +395,12 @@ export const getExerciseStartValue = (
   level: TrainingLevelType,
   genderTag: GenderTag,
 ) => {
-  if (usesLoadedJumpDefault(branchExercise, valueName, "startValue", level, genderTag)) {
+  if (
+    usesLoadedJumpDefault(branchExercise, valueName, "startValue", {
+      level,
+      genderTag,
+    })
+  ) {
     return getLoadedJumpDefault("start", level);
   }
   let value: number | undefined;

@@ -934,6 +934,7 @@ describe("TrainingGenerator", () => {
         expectedGenderTag,
         expect.any(String),
         expect.anything(),
+        "SA",
       );
       getExerciseValuesSpy.mockRestore();
     });

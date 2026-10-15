@@ -2724,6 +2724,7 @@ export default class TrainingGenerator {
       userGender,
       userLevel,
       user.workoutData?.maxValues ?? DEFAULT_MAX_VALUES,
+      skillName,
     );
     let isNewDifficultySet = false;
     let difficultyFeedback: DifficultyFeedbackType | null = null;
@@ -3207,6 +3208,7 @@ export default class TrainingGenerator {
     userGender: GenderTag,
     userLevel: string,
     maxValues: MaxValuesType,
+    skill?: string,
   ): ExerciseValuesData => {
     const EQ_TYPES = getTagValues(exercise.tags, TagGroups.EQ_TYPE);
     const data: ExerciseValuesData = {
@@ -3332,8 +3334,13 @@ export default class TrainingGenerator {
       }
     }
 
-    // Stored hypertrophy values may predate the config start and target.
-    if (intensity?.overridesExerciseRepsAndDuration) {
+    // Stored values may predate the current start and target.
+    const isClamped =
+      skill === undefined ||
+      (skill !== "MAX" &&
+        skill !== "MAX_STRENGTH" &&
+        !WorkoutConstants.NO_INCREASE_SKILL_TYPE.includes(skill));
+    if (isClamped) {
       for (const valueName of ["repetition", "duration"] as const) {
         const value = data[valueName];
         if (typeof value === "number") {
@@ -3345,6 +3352,10 @@ export default class TrainingGenerator {
           });
         }
       }
+    }
+
+    if (skill === "WUSKSA" && data.duration !== undefined) {
+      data.duration = Math.min(data.duration, SPEED_WARM_UP_MAX_DURATION);
     }
 
     if (
@@ -3410,6 +3421,8 @@ export default class TrainingGenerator {
 }
 
 TrainingGenerator.DEBUG = false;
+
+const SPEED_WARM_UP_MAX_DURATION = 30;
 
 interface BoundaryContext {
   intensity: IntensityData | null;
@@ -3737,9 +3750,14 @@ const filterByUserLevel = (
   return { keep, replace };
 };
 
+// The catalog stores "" for values an author left empty.
+const isSetValue = (value: unknown): value is number | string =>
+  value !== undefined && value !== null && value !== "";
+
 /**
  * Retrieves a numeric value from a gender/level lookup structure.
  * Falls back through: gender+level -> gender+default -> default+level -> default+default.
+ * Empty entries count as not set.
  */
 const getValueByGenderAndLevel = (
   data: GenderLevelValueMap,
@@ -3750,13 +3768,13 @@ const getValueByGenderAndLevel = (
   if (data) {
     const defaultData = data.default;
     if (defaultData && typeof defaultData === "object") {
-      if (defaultData.default !== undefined) result = +defaultData.default;
-      if (defaultData[level] !== undefined) result = +defaultData[level];
+      if (isSetValue(defaultData.default)) result = +defaultData.default;
+      if (isSetValue(defaultData[level])) result = +defaultData[level];
     }
     const genderData = data[gender];
     if (genderData && typeof genderData === "object") {
-      if (genderData.default !== undefined) result = +genderData.default;
-      if (genderData[level] !== undefined) result = +genderData[level];
+      if (isSetValue(genderData.default)) result = +genderData.default;
+      if (isSetValue(genderData[level])) result = +genderData[level];
     }
   }
   return result;
@@ -3806,11 +3824,19 @@ const getHypertrophyIntensity = (
   );
 };
 
+// Plyometric tree keys, not part of the stored skill codes.
+type PlyometricSkill = "PLYO_HIGH" | "PLYO_MEDIUM";
+
 export const getIntensityBySkill = (
-  skill: SkillCode,
+  skill: SkillCode | PlyometricSkill,
   exercise?: Pick<ExerciseType, "tags">,
 ) => {
   switch (skill) {
+    case "WUSKSA":
+      return loadIntensityConfig("WUSKSA");
+    case "PLYO_HIGH":
+    case "PLYO_MEDIUM":
+      return loadIntensityConfig("PLYO");
     case "SWR1":
     case "SWR1KG":
     case "SWR2":

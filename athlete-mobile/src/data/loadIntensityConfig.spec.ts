@@ -1,5 +1,8 @@
 import * as v from "valibot";
-import { loadIntensityConfig } from "./loadIntensityConfig";
+import {
+  loadIntensityConfig,
+  parseIntensityConfig,
+} from "./loadIntensityConfig";
 import IntensityData from "../../assets/data/generator/intensity.json";
 import { IntensityConfigSchema } from "@/schemas/intensity.schema";
 
@@ -13,7 +16,9 @@ const validConfig = {
   targetValue: { repetition: { default: { default: 4, advanced: 5 } } },
 };
 
-describe("loadIntensityConfig", () => {
+type ValueType = "duration" | "height" | "repetition" | "weight";
+
+describe("loadIntensityConfig: real file", () => {
   it("returns a known entry from the real file", () => {
     const config = loadIntensityConfig("CARDIO_1_LAKTAT");
 
@@ -38,17 +43,36 @@ describe("loadIntensityConfig", () => {
     );
   });
 
-  it("validates every entry of the real file", () => {
-    for (const [name, data] of Object.entries(IntensityData)) {
-      expect({
-        name,
-        success: v.safeParse(IntensityConfigSchema, data).success,
-      }).toEqual({
-        name,
-        success: true,
-      });
-    }
-  });
+  it.each(Object.keys(IntensityData))(
+    "serves %s with a default start, target and adjustment per value type",
+    (name) => {
+      const config = loadIntensityConfig(name);
+
+      for (const valueType of Object.keys(config.startValue) as ValueType[]) {
+        // The weight value type adjusts through weightFMax and weightAbsolute.
+        const adjustmentKeys =
+          valueType === "weight"
+            ? (["weightFMax", "weightAbsolute"] as const)
+            : ([valueType] as const);
+
+        expect({
+          name,
+          valueType,
+          start: typeof config.startValue[valueType]?.default?.default,
+          target: typeof config.targetValue[valueType]?.default?.default,
+          adjustments: adjustmentKeys.map(
+            (key) => typeof config.adjustment[key]?.default?.default?.TOO_EASY,
+          ),
+        }).toEqual({
+          name,
+          valueType,
+          start: "number",
+          target: "number",
+          adjustments: adjustmentKeys.map(() => "number"),
+        });
+      }
+    },
+  );
 
   it.each([
     "BAS",
@@ -92,7 +116,27 @@ describe("loadIntensityConfig", () => {
   });
 });
 
-describe("IntensityConfigSchema", () => {
+describe("parseIntensityConfig: invalid data", () => {
+  it("logs and throws for a config that breaks the schema", () => {
+    const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    expect(() =>
+      parseIntensityConfig("BROKEN", { ...validConfig, startValue: 1 }),
+    ).toThrow("Invalid data structure for intensity configuration BROKEN");
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+
+    errorSpy.mockRestore();
+  });
+
+  it("returns a copy that keeps the source key order", () => {
+    const parsed = parseIntensityConfig("ORDER", validConfig);
+
+    expect(parsed).not.toBe(validConfig);
+    expect(Object.keys(parsed)).toEqual(Object.keys(validConfig));
+  });
+});
+
+describe("IntensityConfigSchema: validation", () => {
   it("accepts a config with partial fitness levels", () => {
     expect(v.safeParse(IntensityConfigSchema, validConfig).success).toBe(true);
   });

@@ -1,4 +1,4 @@
-import * as v from "valibot";
+import { createDataLoader, parseData } from "./createDataLoader";
 import IntensityJson from "../../assets/data/generator/intensity.json";
 import { IntensityBAS } from "../../assets/data/generator/intensity/BAS";
 import {
@@ -31,38 +31,24 @@ const codeConfigs: Record<string, unknown> = {
 
 const configs: Record<string, unknown> = { ...codeConfigs, ...IntensityJson };
 
-const deepFreeze = (value: unknown): void => {
-  if (typeof value === "object" && value !== null) {
-    Object.values(value).forEach(deepFreeze);
-    Object.freeze(value);
-  }
-};
+export const parseIntensityConfig = (
+  name: string,
+  data: unknown,
+): IntensityData =>
+  parseData(IntensityConfigSchema, data, `intensity configuration ${name}`);
 
-// Validated once per name. Callers share the frozen result.
-const validated = new Map<string, IntensityData>();
+// One loader per name: validated once, callers share the deep frozen result.
+const loaders = new Map<string, () => IntensityData>();
 
 export const loadIntensityConfig = (name: string): IntensityData => {
-  const cached = validated.get(name);
-  if (cached) {
-    return cached;
+  let loader = loaders.get(name);
+  if (!loader) {
+    const data = configs[name];
+    if (data === undefined) {
+      throw new Error(`Unknown intensity configuration: ${name}`);
+    }
+    loader = createDataLoader(() => parseIntensityConfig(name, data), "frozen");
+    loaders.set(name, loader);
   }
-  const data = configs[name];
-  if (data === undefined) {
-    throw new Error(`Unknown intensity configuration: ${name}`);
-  }
-  const copy: unknown = structuredClone(data);
-  if (!v.is(IntensityConfigSchema, copy)) {
-    const result = v.safeParse(IntensityConfigSchema, copy);
-    console.error(
-      `Validation failed for intensity configuration ${name}:`,
-      result.issues ? v.flatten(result.issues) : undefined,
-    );
-    throw new Error(
-      `Invalid data structure for intensity configuration ${name}`,
-    );
-  }
-  // The copy keeps the key order of the source, which the output snapshots rely on.
-  deepFreeze(copy);
-  validated.set(name, copy);
-  return copy;
+  return loader();
 };

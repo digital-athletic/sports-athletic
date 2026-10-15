@@ -34,23 +34,23 @@ export const LevelProgress: FC<LevelProgressProps> = ({
   const { t } = useTranslation();
   const { colors } = useTheme();
 
-  const [value, setValue] = useState(0);
-  const [level, setLevel] = useState(1);
-  const [levelMax, setLevelMax] = useState(1);
+  const [value, setValue] = useState(() => getXpInLevel(startValue));
+  const [level, setLevel] = useState(() => calculateUserLevel(startValue));
+  const [levelMax, setLevelMax] = useState(() => getXpForNextLevel(startValue));
+
+  // Reset to the start values whenever a new start/end pair comes in.
+  const [prevProps, setPrevProps] = useState({ startValue, endValue });
+  if (prevProps.startValue !== startValue || prevProps.endValue !== endValue) {
+    setPrevProps({ startValue, endValue });
+    setValue(getXpInLevel(startValue));
+    setLevel(calculateUserLevel(startValue));
+    setLevelMax(getXpForNextLevel(startValue));
+  }
 
   const elementHeight = useResponsiveProp({ phone: 48, tablet: 56 }) ?? 48;
   const fontSize = useResponsiveProp({ phone: 16, tablet: 18 });
 
   useEffect(() => {
-    // Initialize with start values
-    const startXpInLevel = getXpInLevel(startValue);
-    const startLevel = calculateUserLevel(startValue);
-    const startLevelMax = getXpForNextLevel(startValue);
-
-    setValue(startXpInLevel);
-    setLevel(startLevel);
-    setLevelMax(startLevelMax);
-
     // TODO: Animate to end values after 2 seconds
     const timer = setTimeout(() => {
       const endXpInLevel = getXpInLevel(endValue);

@@ -4,7 +4,7 @@ import { Text } from "@/theme/Text";
 import { type Theme } from "@/theme/theme";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { useTheme } from "@shopify/restyle";
-import { useCallback, useEffect, useRef, useState, type FC } from "react";
+import { useCallback, useState, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { isPauseExercise } from "./models/IdTypes";
 import { type MaxValuesType } from "./models/MaxValues";
@@ -52,21 +52,18 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
   // State
   const [exerciseEnded, setExerciseEnded] = useState(false);
   const [repsValue, setRepsValue] = useState(0);
-  const timerStartRef = useRef(0);
 
   const hasDuration = typeof duration === "number";
 
   const isPause = isPauseExercise(exerciseId);
 
-  const resetState = useCallback(() => {
+  // Reset exercise-scoped state whenever a new exercise starts.
+  const [prevExerciseId, setPrevExerciseId] = useState(exerciseId);
+  if (prevExerciseId !== exerciseId) {
+    setPrevExerciseId(exerciseId);
     setExerciseEnded(false);
     setRepsValue(0);
-    timerStartRef.current = 0;
-  }, []);
-
-  useEffect(() => {
-    resetState();
-  }, [exerciseId, resetState]);
+  }
 
   // Define handlers before effects
   const handleClickNext = useCallback(

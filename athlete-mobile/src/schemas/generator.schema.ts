@@ -99,24 +99,53 @@ export type StudioPreferencePlans = {
   nonStudio: PlanStructure[];
 };
 
-// Region tag entry (used in skill tag configurations)
-export type RegionTagEntry = {
-  readonly tags: readonly string[];
-  readonly count: number;
-  readonly support?: boolean;
-};
+// REGION tags are the catalog regions, SKILL tags the skill names the generator resolves
+// and EXERCISE_NAME tags the names that getBranchIdByNameAndSkill maps to branch ids.
+const REGION_CONFIG_TAGS: readonly string[] = [
+  "REGION_UPPER_BODY",
+  "REGION_LOWER_BODY",
+  "REGION_CORE",
+  "REGION_FULL_BODY",
+  "SKILL_SAS",
+  "SKILL_PLYO_HIGH",
+  "SKILL_PLYO_MEDIUM",
+  "SKILL_PLYO_LOW",
+  "EXERCISE_NAME_SQUAT",
+  "EXERCISE_NAME_DEADLIFT",
+  "EXERCISE_NAME_BENCH_PRESS",
+  "EXERCISE_NAME_ROWING",
+  "EXERCISE_NAME_SHOULDER_PRESS",
+  "EXERCISE_NAME_CALFLIFT",
+];
 
-// Duration-to-tags mapping (e.g., { 20: [...], 25: [...] })
-export type DurationTagMap = {
-  readonly [key: number]: readonly RegionTagEntry[];
-};
+// Stays a string type, so callers can still build entries from plain strings.
+const RegionConfigTagSchema = v.pipe(
+  v.string(),
+  v.check((tag) => REGION_CONFIG_TAGS.includes(tag), "Unknown region tag"),
+);
+
+// Region tag entry (used in skill tag configurations). The tags are or, not and.
+export const RegionTagEntrySchema = v.strictObject({
+  tags: v.array(RegionConfigTagSchema),
+  count: v.number(),
+  support: v.optional(v.boolean()),
+});
+export type RegionTagEntry = v.InferOutput<typeof RegionTagEntrySchema>;
+
+// Minutes (digit string keys in JSON) mapped to the entries for that duration
+export const DurationTagMapSchema = v.record(
+  v.pipe(v.string(), v.regex(/^\d+$/, "Expected minutes as digit string")),
+  v.array(RegionTagEntrySchema),
+);
+export type DurationTagMap = v.InferOutput<typeof DurationTagMapSchema>;
 
 // Region configuration with optional child/professional variants
-export type RegionConfig = {
-  readonly default: DurationTagMap;
-  readonly child?: DurationTagMap;
-  readonly professional?: DurationTagMap;
-};
+export const RegionConfigSchema = v.strictObject({
+  default: DurationTagMapSchema,
+  child: v.optional(DurationTagMapSchema),
+  professional: v.optional(DurationTagMapSchema),
+});
+export type RegionConfig = v.InferOutput<typeof RegionConfigSchema>;
 
 // Fallback section schema (used in mapFallbackSections)
 export const FallbackSectionSchema = v.looseObject({

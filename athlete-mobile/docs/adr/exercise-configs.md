@@ -47,6 +47,8 @@ A weight given as a percentage of the strength test applies to the barbell 1RM o
 
 When an athlete moves to another exercise through a level change, the progress of the exercise they leave resets, so a later return starts from the resolved start values. The saved workouts keep the history.
 
+Region configurations (`regions.json`) give each skill a count of exercises per tag group for its allotted minutes. Their matching rule is "tags are or, not and": a quota entry with several tags draws from any one of them, never from the intersection. The generator picks one region tag or one skill tag per entry at random, and exercise name tags pool the branches of all named exercises.
+
 ## Pros and cons of the outcome
 
 **Pros**
@@ -64,6 +66,6 @@ When an athlete moves to another exercise through a level change, the progress o
 ## More information
 
 - Specs: `docs/specs/progression/standard-exercise-progression.md`, `docs/specs/progression/weight-calculation-from-strength-tests.md`, `docs/specs/progression/max-strength-progression.md`, `docs/specs/foundations/branches-exercises-and-levels.md`
-- Data: `assets/data/generator/intensity/`, `assets/data/generator/skillTrees/`, `assets/data/generator/Exercises.json`, `assets/data/generator/skillPriorities.json` (skills per session length), `assets/data/generator/maxMinutes.json` (maximum minutes per skill group and fitness level), `assets/data/generator/strengthTest.json` (test lifts, test set loads, warm-up region quotas), `assets/data/generator/directions.json` (movement direction sequences per body region and exercise count)
+- Data: `assets/data/generator/intensity/`, `assets/data/generator/skillTrees/`, `assets/data/generator/Exercises.json`, `assets/data/generator/skillPriorities.json` (skills per session length), `assets/data/generator/maxMinutes.json` (maximum minutes per skill group and fitness level), `assets/data/generator/strengthTest.json` (test lifts, test set loads, warm-up region quotas), `assets/data/generator/directions.json` (movement direction sequences per body region and exercise count), `assets/data/generator/regions.json` (region configurations per skill for warm-up, recovery, stability, cardio and prevention; the strength section configurations stay in `assets/data/generator/regions/`)
 - Data model overview: `docs/data-model.md`
 - A maximum of 0 minutes in `maxMinutes.json` passes validation, but the plan generator treats it as unset and falls back to 200 minutes. `MAX` for beginners holds 0 today.

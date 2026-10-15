@@ -1,15 +1,7 @@
 import { createDataLoader, parseData } from "./createDataLoader";
 import IntensityJson from "../../assets/data/generator/intensity.json";
-import { IntensityBAS } from "../../assets/data/generator/intensity/BAS";
-import {
-  IntensityGKS,
-  IntensityGKS_KG,
-} from "../../assets/data/generator/intensity/GKS";
-import { IntensityPREV } from "../../assets/data/generator/intensity/PREV";
 import { IntensitySA } from "../../assets/data/generator/intensity/SA";
 import { IntensitySA_KG } from "../../assets/data/generator/intensity/SAKG";
-import { IntensitySK } from "../../assets/data/generator/intensity/SK";
-import { IntensitySK_KG } from "../../assets/data/generator/intensity/SKKG";
 import { IntensitySWR_2 } from "../../assets/data/generator/intensity/SWR2";
 import { IntensitySWR_2_KG } from "../../assets/data/generator/intensity/SWR2KG";
 import type { IntensityData } from "@/features/training/models/Intensity";
@@ -17,14 +9,8 @@ import { IntensityConfigSchema } from "@/schemas/intensity.schema";
 
 // Configs that have not moved to intensity.json yet.
 const codeConfigs: Record<string, unknown> = {
-  BAS: IntensityBAS,
-  GKS: IntensityGKS,
-  GKSKG: IntensityGKS_KG,
-  PREV: IntensityPREV,
   SA: IntensitySA,
   SAKG: IntensitySA_KG,
-  SK: IntensitySK,
-  SKKG: IntensitySK_KG,
   SWR2: IntensitySWR_2,
   SWR2KG: IntensitySWR_2_KG,
 };

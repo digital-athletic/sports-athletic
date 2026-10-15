@@ -112,5 +112,185 @@
       "repetition": { "default": { "default": 20 } },
       "weight": { "default": { "default": 20 } }
     }
+  },
+  "BAS": {
+    "adjustment": {
+      "duration": {
+        "default": { "default": { "TOO_EASY": 10, "SUCCEEDED": 5, "TOO_HARD": -10 } }
+      },
+      "repetition": {
+        "default": { "default": { "TOO_EASY": 2, "SUCCEEDED": 1, "TOO_HARD": -2 } }
+      },
+      "height": {
+        "default": { "default": { "TOO_EASY": 10, "SUCCEEDED": 5, "TOO_HARD": -5 } }
+      },
+      "weightFMax": {
+        "default": { "default": { "TOO_EASY": 5, "SUCCEEDED": 2.5, "TOO_HARD": -2.5 } }
+      },
+      "weightAbsolute": {
+        "default": { "default": { "TOO_EASY": 2, "SUCCEEDED": 1, "TOO_HARD": -1 } }
+      }
+    },
+    "startValue": {
+      "duration": { "default": { "default": 30 } },
+      "repetition": { "default": { "default": 5 } },
+      "height": { "default": { "default": 20 } },
+      "weight": { "default": { "default": 40 }, "type": { "type": "weightFMax" } }
+    },
+    "targetValue": {
+      "duration": { "default": { "default": 45 } },
+      "repetition": { "default": { "default": 8 } },
+      "height": { "default": { "default": 40 } },
+      "weight": { "default": { "default": 60 }, "type": { "type": "weightFMax" } }
+    }
+  },
+  "GKS": {
+    "overridesExerciseRepsAndDuration": true,
+    "adjustment": {
+      "duration": {
+        "default": { "default": { "TOO_EASY": 10, "SUCCEEDED": 5, "TOO_HARD": -10 } }
+      },
+      "repetition": {
+        "default": { "default": { "TOO_EASY": 2, "SUCCEEDED": 1, "TOO_HARD": -2 } }
+      },
+      "height": {
+        "default": { "default": { "TOO_EASY": 10, "SUCCEEDED": 5, "TOO_HARD": -5 } }
+      },
+      "weightFMax": {
+        "default": { "default": { "TOO_EASY": 5, "SUCCEEDED": 2.5, "TOO_HARD": -2.5 } }
+      },
+      "weightAbsolute": {
+        "default": { "default": { "TOO_EASY": 2, "SUCCEEDED": 1, "TOO_HARD": -1 } }
+      }
+    },
+    "startValue": {
+      "duration": { "default": { "default": 30 } },
+      "repetition": { "default": { "default": 8 } },
+      "height": { "default": { "default": 20 } }
+    },
+    "targetValue": {
+      "duration": { "default": { "default": 50 } },
+      "repetition": { "default": { "default": 12 } },
+      "height": { "default": { "default": 40 } }
+    }
+  },
+  "GKSKG": {
+    "overridesExerciseRepsAndDuration": true,
+    "adjustment": {
+      "duration": {
+        "default": { "default": { "TOO_EASY": 10, "SUCCEEDED": 5, "TOO_HARD": -10 } }
+      },
+      "repetition": {
+        "default": { "default": { "TOO_EASY": 2, "SUCCEEDED": 1, "TOO_HARD": -2 } }
+      },
+      "height": {
+        "default": { "default": { "TOO_EASY": 10, "SUCCEEDED": 5, "TOO_HARD": -5 } }
+      },
+      "weightFMax": {
+        "default": { "default": { "TOO_EASY": 5, "SUCCEEDED": 2.5, "TOO_HARD": -2.5 } }
+      },
+      "weightAbsolute": {
+        "default": { "default": { "TOO_EASY": 2, "SUCCEEDED": 1, "TOO_HARD": -1 } }
+      }
+    },
+    "startValue": {
+      "duration": { "default": { "default": 30 } },
+      "repetition": { "default": { "default": 8 } },
+      "height": { "default": { "default": 20 } }
+    },
+    "targetValue": {
+      "duration": { "default": { "default": 60 } },
+      "repetition": { "default": { "default": 12 } },
+      "height": { "default": { "default": 40 } }
+    }
+  },
+  "PREV": {
+    "overridesExerciseRepsAndDuration": true,
+    "adjustment": {
+      "duration": {
+        "default": { "default": { "TOO_EASY": 10, "SUCCEEDED": 5, "TOO_HARD": -10 } }
+      },
+      "repetition": {
+        "default": { "default": { "TOO_EASY": 2, "SUCCEEDED": 1, "TOO_HARD": -2 } }
+      },
+      "height": {
+        "default": { "default": { "TOO_EASY": 10, "SUCCEEDED": 5, "TOO_HARD": -5 } }
+      },
+      "weightFMax": {
+        "default": { "default": { "TOO_EASY": 5, "SUCCEEDED": 2.5, "TOO_HARD": -2.5 } }
+      },
+      "weightAbsolute": {
+        "default": { "default": { "TOO_EASY": 2, "SUCCEEDED": 1, "TOO_HARD": -1 } }
+      }
+    },
+    "startValue": {
+      "duration": { "default": { "default": 40 } },
+      "repetition": { "default": { "default": 10 } },
+      "height": { "default": { "default": 20 } }
+    },
+    "targetValue": {
+      "duration": { "default": { "default": 60 } },
+      "repetition": { "default": { "default": 15 } },
+      "height": { "default": { "default": 40 } }
+    }
+  },
+  "SK": {
+    "lowestPermittedWeight": 50,
+    "adjustment": {
+      "repetition": {
+        "default": { "default": { "TOO_EASY": 2, "SUCCEEDED": 1, "TOO_HARD": -2 } }
+      },
+      "weightFMax": {
+        "default": { "default": { "TOO_EASY": 5, "SUCCEEDED": 2.5, "TOO_HARD": -2.5 } }
+      },
+      "weightAbsolute": {
+        "default": { "default": { "TOO_EASY": 2, "SUCCEEDED": 1, "TOO_HARD": -1 } }
+      }
+    },
+    "startValue": {
+      "repetition": { "default": { "default": 4 } },
+      "weight": {
+        "default": { "default": 52.5, "beginner": 52.5, "advanced": 55, "professional": 55 },
+        "type": { "type": "weightFMax" }
+      }
+    },
+    "targetValue": {
+      "repetition": { "default": { "default": 6 } },
+      "weight": {
+        "default": { "default": 65, "beginner": 65, "advanced": 67.5, "professional": 70 },
+        "type": { "type": "weightFMax" }
+      }
+    }
+  },
+  "SKKG": {
+    "adjustment": {
+      "repetition": {
+        "default": { "default": { "TOO_EASY": 2, "SUCCEEDED": 1, "TOO_HARD": -2 } },
+        "m": { "default": { "TOO_EASY": 2, "SUCCEEDED": 1, "TOO_HARD": -2 } }
+      },
+      "weightFMax": {
+        "default": { "default": { "TOO_EASY": 5, "SUCCEEDED": 2.5, "TOO_HARD": -2.5 } }
+      },
+      "weightAbsolute": {
+        "default": { "default": { "TOO_EASY": 1, "SUCCEEDED": 0.5, "TOO_HARD": -1 } },
+        "m": { "default": { "TOO_EASY": 1, "SUCCEEDED": 0.5, "TOO_HARD": -1 } }
+      }
+    },
+    "startValue": {
+      "repetition": { "default": { "default": 4 } },
+      "weight": {
+        "default": { "default": 1 },
+        "m": { "default": 2 },
+        "type": { "type": "weightAbsolute" }
+      }
+    },
+    "targetValue": {
+      "repetition": { "default": { "default": 6 } },
+      "weight": {
+        "default": { "default": 3 },
+        "m": { "default": 5 },
+        "type": { "type": "weightAbsolute" }
+      }
+    }
   }
 }

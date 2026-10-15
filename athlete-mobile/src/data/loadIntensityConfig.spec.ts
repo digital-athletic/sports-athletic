@@ -74,30 +74,38 @@ describe("loadIntensityConfig: real file", () => {
     },
   );
 
-  it.each([
-    "BAS",
-    "GKS",
-    "GKSKG",
-    "PREV",
-    "SA",
-    "SAKG",
-    "SK",
-    "SKKG",
-    "SWR2",
-    "SWR2KG",
-  ])("serves the code config %s", (name) => {
-    const config = loadIntensityConfig(name);
+  it.each(["BAS", "GKS", "GKSKG", "PREV", "SK", "SKKG"])(
+    "serves %s from the real file",
+    (name) => {
+      const config = loadIntensityConfig(name);
 
-    expect(Object.keys(config.startValue).length).toBeGreaterThan(0);
-  });
+      expect(Object.keys(IntensityData)).toContain(name);
+      expect(Object.keys(config.startValue).length).toBeGreaterThan(0);
+    },
+  );
 
-  it("keeps the full body stability weight free spread", () => {
+  it.each(["SA", "SAKG", "SWR2", "SWR2KG"])(
+    "serves the code config %s",
+    (name) => {
+      const config = loadIntensityConfig(name);
+
+      expect(Object.keys(config.startValue).length).toBeGreaterThan(0);
+    },
+  );
+
+  it("differs between the full body stability configs only in the target duration", () => {
     const weighted = loadIntensityConfig("GKS");
     const bodyweight = loadIntensityConfig("GKSKG");
 
     expect(weighted.targetValue.duration?.default?.default).toBe(50);
     expect(bodyweight.targetValue.duration?.default?.default).toBe(60);
-    expect(bodyweight.startValue).toEqual(weighted.startValue);
+    expect({
+      ...bodyweight,
+      targetValue: { ...bodyweight.targetValue, duration: undefined },
+    }).toEqual({
+      ...weighted,
+      targetValue: { ...weighted.targetValue, duration: undefined },
+    });
   });
 
   it("returns the same frozen config on every call", () => {

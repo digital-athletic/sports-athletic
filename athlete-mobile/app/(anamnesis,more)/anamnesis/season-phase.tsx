@@ -14,7 +14,7 @@ import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { ScrollBox } from "@/theme/ScrollBox";
 import { formatDateToISO, getDateOneYearFromNow } from "@/utils/date";
-import { Route, Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { RoutePath, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
@@ -26,7 +26,7 @@ export default function SeasonPhase() {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
-  const params = useLocalSearchParams<{ originPath?: Route }>();
+  const params = useLocalSearchParams<{ originPath?: RoutePath }>();
   const originPath = params.originPath;
 
   const { seasonPhase, setSeasonPhase } = useAnamnesisStore();
@@ -74,7 +74,7 @@ export default function SeasonPhase() {
               router.navigate({
                 pathname: "/anamnesis/userprofile",
                 params: {
-                  backPath: "/more" satisfies Route,
+                  backPath: "/more" satisfies RoutePath,
                 },
               });
             },
@@ -91,7 +91,7 @@ export default function SeasonPhase() {
 
     // Check if user has workout data (would need to be added to store)
     // For now, proceed to training days
-    if (originPath === ("/(tabs)/(more)/more" satisfies Route)) {
+    if (originPath === ("/(tabs)/(more)/more" satisfies RoutePath)) {
       router.navigate({
         pathname: "/anamnesis/training-days",
         params: { originPath },

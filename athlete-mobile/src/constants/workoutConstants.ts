@@ -2,7 +2,7 @@ import { type SilhouetteRegionId } from "@/bodyParts/silhouette/types";
 import { type Side } from "@/bodyParts/types";
 import { I18nKey } from "@/i18n";
 import { type LevelTagSchemaType } from "@/schemas/common.schema";
-import { Route } from "expo-router";
+import { RoutePath } from "expo-router";
 import { ImageSourcePropType } from "react-native";
 import { SharedConstants } from "./sharedConstants";
 
@@ -341,7 +341,7 @@ export type TileData = {
     };
   };
   navigate: {
-    key: Route;
+    key: RoutePath;
     params?: {
       type: SkillTypes | "PLAN" | "TEST_WORKOUT";
       weekday?: number;

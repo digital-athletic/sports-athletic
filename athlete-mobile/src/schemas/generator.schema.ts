@@ -99,9 +99,34 @@ export type StudioPreferencePlans = {
   nonStudio: PlanStructure[];
 };
 
+// REGION tags are the catalog regions, SKILL tags the skill names the generator resolves
+// and EXERCISE_NAME tags the names that getBranchIdByNameAndSkill maps to branch ids.
+const REGION_CONFIG_TAGS: readonly string[] = [
+  "REGION_UPPER_BODY",
+  "REGION_LOWER_BODY",
+  "REGION_CORE",
+  "REGION_FULL_BODY",
+  "SKILL_SAS",
+  "SKILL_PLYO_HIGH",
+  "SKILL_PLYO_MEDIUM",
+  "SKILL_PLYO_LOW",
+  "EXERCISE_NAME_SQUAT",
+  "EXERCISE_NAME_DEADLIFT",
+  "EXERCISE_NAME_BENCH_PRESS",
+  "EXERCISE_NAME_ROWING",
+  "EXERCISE_NAME_SHOULDER_PRESS",
+  "EXERCISE_NAME_CALFLIFT",
+];
+
+// Stays a string type, so callers can still build entries from plain strings.
+const RegionConfigTagSchema = v.pipe(
+  v.string(),
+  v.check((tag) => REGION_CONFIG_TAGS.includes(tag), "Unknown region tag"),
+);
+
 // Region tag entry (used in skill tag configurations). The tags are or, not and.
 export const RegionTagEntrySchema = v.strictObject({
-  tags: v.array(v.string()),
+  tags: v.array(RegionConfigTagSchema),
   count: v.number(),
   support: v.optional(v.boolean()),
 });

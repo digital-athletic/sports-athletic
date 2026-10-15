@@ -1,11 +1,33 @@
 import * as v from "valibot";
-import { loadRegionConfig } from "./loadRegionConfig";
+import RegionsData from "../../assets/data/generator/regions.json";
+import { loadExercises } from "./loadExercises";
+import { loadRegionConfig, parseRegionConfig } from "./loadRegionConfig";
+import { getBranchIdByNameAndSkill } from "@/features/training/utils/skillTreeUtils";
 import { RegionConfigSchema } from "@/schemas/generator.schema";
 
 const entry = { tags: ["REGION_UPPER_BODY"], count: 2 };
 
-describe("loadRegionConfig", () => {
-  it("returns a known entry from the real file", () => {
+const jsonConfigNames = Object.keys(RegionsData);
+const codeConfigNames = [
+  "MAX",
+  "SA",
+  "SAKG",
+  "SK",
+  "SKKG",
+  "SWR1",
+  "SWR1KG",
+  "SWR2KG",
+];
+
+const allTags = (config: ReturnType<typeof loadRegionConfig>): string[] =>
+  [config.default, config.child, config.professional].flatMap((variant) =>
+    Object.values(variant ?? {}).flatMap((entries) =>
+      entries.flatMap((item) => item.tags),
+    ),
+  );
+
+describe("loadRegionConfig: real file", () => {
+  it("returns a known entry", () => {
     const config = loadRegionConfig("WU");
 
     expect(config.default["5"]).toEqual([
@@ -25,11 +47,88 @@ describe("loadRegionConfig", () => {
     expect(config.professional?.["15"]).toHaveLength(1);
   });
 
-  it("returns a fresh copy on every call", () => {
+  it("throws for an unknown name", () => {
+    expect(() => loadRegionConfig("UNKNOWN")).toThrow(
+      "Unknown region configuration: UNKNOWN",
+    );
+  });
+
+  it("returns a fresh deep copy on every call", () => {
     const first = loadRegionConfig("BR");
+    first.default["5"][0].tags.push("REGION_CORE");
     first.default["5"][0].count = 99;
 
-    expect(loadRegionConfig("BR").default["5"][0].count).toBe(2);
+    const second = loadRegionConfig("BR");
+    expect(second.default["5"][0].tags).not.toContain("REGION_CORE");
+    expect(second.default["5"][0].count).toBe(2);
+  });
+
+  it("returns a fresh deep copy of a config defined in code", () => {
+    const first = loadRegionConfig("MAX");
+    first.default["20"][0].tags.push("EXERCISE_NAME_ROWING");
+
+    expect(loadRegionConfig("MAX").default["20"][0].tags).not.toContain(
+      "EXERCISE_NAME_ROWING",
+    );
+  });
+
+  it.each([...jsonConfigNames, ...codeConfigNames])("loads %s", (name) => {
+    expect(Object.keys(loadRegionConfig(name).default).length).toBeGreaterThan(
+      0,
+    );
+  });
+});
+
+describe("loadRegionConfig: tags against the exercise catalog", () => {
+  const catalogTags = new Set(loadExercises().flatMap((item) => item.tags));
+  const configTags = [...jsonConfigNames, ...codeConfigNames].flatMap((name) =>
+    allTags(loadRegionConfig(name)),
+  );
+
+  it("every REGION tag in the configurations exists on an exercise", () => {
+    const missing = [
+      ...new Set(configTags.filter((tag) => tag.startsWith("REGION_"))),
+    ].filter((tag) => !catalogTags.has(tag));
+
+    expect(missing).toEqual([]);
+  });
+
+  it("every EXERCISE_NAME tag resolves to a branch id", () => {
+    const names = new Set(
+      configTags
+        .filter((tag) => tag.startsWith("EXERCISE_NAME_"))
+        .map((tag) => tag.replace("EXERCISE_NAME_", "")),
+    );
+
+    names.forEach((name) => {
+      const ids = ["SWR1", "MAX", "SK", "SA"].map((skill) =>
+        getBranchIdByNameAndSkill(name, skill),
+      );
+      expect(ids.some((id) => id !== "-1")).toBe(true);
+    });
+  });
+});
+
+describe("parseRegionConfig: invalid data", () => {
+  it("throws an error naming the data set", () => {
+    const consoleError = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+
+    expect(() => parseRegionConfig({}, "BAD")).toThrow(
+      "Region configuration BAD",
+    );
+    expect(consoleError).toHaveBeenCalled();
+    consoleError.mockRestore();
+  });
+
+  it("returns a clone of the source with the source key order", () => {
+    const source = RegionsData.WU;
+    const parsed = parseRegionConfig(source, "WU");
+
+    expect(parsed).toEqual(source);
+    expect(parsed).not.toBe(source);
+    expect(Object.keys(parsed.default)).toEqual(Object.keys(source.default));
   });
 });
 
@@ -52,6 +151,22 @@ describe("RegionConfigSchema", () => {
 
   it("rejects an entry without tags", () => {
     const invalid = { default: { "10": [{ count: 2 }] } };
+
+    expect(v.safeParse(RegionConfigSchema, invalid).success).toBe(false);
+  });
+
+  it("rejects a tag outside the tag vocabulary", () => {
+    const invalid = {
+      default: { "10": [{ tags: ["UPPER_BODY"], count: 2 }] },
+    };
+
+    expect(v.safeParse(RegionConfigSchema, invalid).success).toBe(false);
+  });
+
+  it("rejects a misspelled region tag", () => {
+    const invalid = {
+      default: { "10": [{ tags: ["REGION_UPER_BODY"], count: 2 }] },
+    };
 
     expect(v.safeParse(RegionConfigSchema, invalid).success).toBe(false);
   });

@@ -7,11 +7,11 @@ import RegionSKKG from "../../assets/data/generator/regions/SKKG";
 import RegionSWR1 from "../../assets/data/generator/regions/SWR1";
 import RegionSWR1KG from "../../assets/data/generator/regions/SWR1KG";
 import RegionSWR2KG from "../../assets/data/generator/regions/SWR2KG";
+import { createDataLoader, parseData } from "./createDataLoader";
 import {
   RegionConfigSchema,
   type RegionConfig,
 } from "@/schemas/generator.schema";
-import { cloneWithValidation } from "@/utils/cloneWithValidation";
 
 const jsonConfigs: Record<string, unknown> = RegionsData;
 
@@ -27,15 +27,21 @@ const codeConfigs: Record<string, unknown> = {
   SWR2KG: RegionSWR2KG,
 };
 
-// Returns a fresh validated copy, so callers may change it.
+export const parseRegionConfig = (data: unknown, name: string): RegionConfig =>
+  parseData(RegionConfigSchema, data, `Region configuration ${name}`);
+
+const loaders = new Map<string, () => RegionConfig>();
+
+// Validates each configuration once and returns a fresh copy, so callers may change it.
 export const loadRegionConfig = (name: string): RegionConfig => {
-  const data = jsonConfigs[name] ?? codeConfigs[name];
-  if (data === undefined) {
-    throw new Error(`Unknown region configuration: ${name}`);
+  let loader = loaders.get(name);
+  if (!loader) {
+    const data = jsonConfigs[name] ?? codeConfigs[name];
+    if (data === undefined) {
+      throw new Error(`Unknown region configuration: ${name}`);
+    }
+    loader = createDataLoader(() => parseRegionConfig(data, name), "clone");
+    loaders.set(name, loader);
   }
-  return cloneWithValidation(
-    data,
-    RegionConfigSchema,
-    `Region configuration ${name}`,
-  );
+  return loader();
 };

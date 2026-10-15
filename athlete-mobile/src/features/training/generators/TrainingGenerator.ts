@@ -3,6 +3,7 @@ import {
   WorkoutConstants,
   type SkillTypes,
 } from "@/constants/workoutConstants";
+import { loadIntensityConfig } from "@/data/loadIntensityConfig";
 import { loadStrengthTest } from "@/data/loadStrengthTest";
 import type {
   BranchExerciseReference,
@@ -101,26 +102,6 @@ import { Logger } from "@/services/Logger";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
 import { cloneWithValidation } from "@/utils/cloneWithValidation";
 import { getTagValue, getTagValues, getUserTagValues } from "@/utils/tagUtils";
-
-// Intensity
-import { IntensityBAS } from "../../../../assets/data/generator/intensity/BAS";
-import { IntensityCARDIO_1_LAKTAT } from "../../../../assets/data/generator/intensity/CARDIO_1_LAKTAT";
-import { IntensityCARDIO_1_SHORT } from "../../../../assets/data/generator/intensity/CARDIO_1_SHORT";
-import { IntensityCARDIO_2 } from "../../../../assets/data/generator/intensity/CARDIO_2";
-import { IntensityCARDIO_3 } from "../../../../assets/data/generator/intensity/CARDIO_3";
-import { IntensityDEFAULT } from "../../../../assets/data/generator/intensity/DEFAULT";
-import { IntensityDEFAULT_KG } from "../../../../assets/data/generator/intensity/DEFAULTKG";
-import {
-  IntensityGKS,
-  IntensityGKS_KG,
-} from "../../../../assets/data/generator/intensity/GKS";
-import { IntensityPREV } from "../../../../assets/data/generator/intensity/PREV";
-import { IntensitySA } from "../../../../assets/data/generator/intensity/SA";
-import { IntensitySA_KG } from "../../../../assets/data/generator/intensity/SAKG";
-import { IntensitySK } from "../../../../assets/data/generator/intensity/SK";
-import { IntensitySK_KG } from "../../../../assets/data/generator/intensity/SKKG";
-import { IntensitySWR_2 } from "../../../../assets/data/generator/intensity/SWR2";
-import { IntensitySWR_2_KG } from "../../../../assets/data/generator/intensity/SWR2KG";
 
 // Pause
 
@@ -3816,11 +3797,13 @@ const getHypertrophyIntensity = (
 ) => {
   if (!exercise) {
     // use SWR2 till exercises can be distinguished between SWR1 and SWR2
-    return skill === "SWR2KG" ? IntensitySWR_2_KG : IntensitySWR_2;
+    return loadIntensityConfig(skill === "SWR2KG" ? "SWR2KG" : "SWR2");
   }
-  return getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS")
-    ? IntensitySWR_2
-    : IntensitySWR_2_KG;
+  return loadIntensityConfig(
+    getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS")
+      ? "SWR2"
+      : "SWR2KG",
+  );
 };
 
 export const getIntensityBySkill = (
@@ -3834,39 +3817,37 @@ export const getIntensityBySkill = (
     case "SWR2KG":
       return getHypertrophyIntensity(skill, exercise);
     case "CARDIO_3":
-      return IntensityCARDIO_3;
     case "CARDIO_2":
-      return IntensityCARDIO_2;
     case "CARDIO_1_LAKTAT":
-      return IntensityCARDIO_1_LAKTAT;
     case "CARDIO_1_SHORT":
-      return IntensityCARDIO_1_SHORT;
     case "BAS":
-      return IntensityBAS;
+      return loadIntensityConfig(skill);
     case "GKS":
-      return exercise &&
-        !getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS")
-        ? IntensityGKS_KG
-        : IntensityGKS;
+      return loadIntensityConfig(
+        exercise &&
+          !getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS")
+          ? "GKSKG"
+          : "GKS",
+      );
     case "PREV":
     case "PREVANKLE":
     case "PREVKNEE":
     case "PREVSHOULDER":
     case "PREVSPINE":
     case "PREVWRIST":
-      return IntensityPREV;
+      return loadIntensityConfig("PREV");
     case "SA":
-      return IntensitySA;
+      return loadIntensityConfig("SA");
     case "SAKG":
-      return IntensitySA_KG;
+      return loadIntensityConfig("SAKG");
     case "SK":
-      return IntensitySK;
+      return loadIntensityConfig("SK");
     case "SKKG":
-      return IntensitySK_KG;
+      return loadIntensityConfig("SKKG");
     case "MAX":
     case "MAX_STRENGTH":
-      return IntensityDEFAULT;
+      return loadIntensityConfig("DEFAULT");
     default:
-      return IntensityDEFAULT_KG;
+      return loadIntensityConfig("DEFAULTKG");
   }
 };

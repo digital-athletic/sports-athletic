@@ -526,21 +526,34 @@ const WarmUpRegionQuotaSchema = v.object({
  * Strength test data: lifts per fitness level, test set loads in kg per
  * exercise id, gender and fitness level, and warm-up region quotas.
  */
-export const StrengthTestSchema = v.object({
-  lifts: v.object({
-    BEGINNER: LiftListSchema,
-    ADVANCED: LiftListSchema,
-    PROFESSIONAL: LiftListSchema,
-  }),
-  testSetLoads: v.record(
-    v.string(),
-    v.strictObject({
-      w: v.optional(TestSetLoadByLevelSchema),
-      m: v.optional(TestSetLoadByLevelSchema),
+export const StrengthTestSchema = v.pipe(
+  v.object({
+    lifts: v.object({
+      BEGINNER: LiftListSchema,
+      ADVANCED: LiftListSchema,
+      PROFESSIONAL: LiftListSchema,
     }),
+    testSetLoads: v.record(
+      v.string(),
+      v.strictObject({
+        w: v.optional(TestSetLoadByLevelSchema),
+        m: v.optional(TestSetLoadByLevelSchema),
+      }),
+    ),
+    warmUpRegionQuotas: v.array(WarmUpRegionQuotaSchema),
+  }),
+  v.check(
+    ({ lifts, testSetLoads }) =>
+      Object.values(lifts)
+        .flatMap((list) => [
+          ...list.default,
+          ...(list.m ?? []),
+          ...(list.w ?? []),
+        ])
+        .every((id) => testSetLoads[id]?.w && testSetLoads[id]?.m),
+    "Every lift needs test set loads for both genders",
   ),
-  warmUpRegionQuotas: v.array(WarmUpRegionQuotaSchema),
-});
+);
 export type StrengthTest = v.InferOutput<typeof StrengthTestSchema>;
 export type TestSetLoads = StrengthTest["testSetLoads"];
 

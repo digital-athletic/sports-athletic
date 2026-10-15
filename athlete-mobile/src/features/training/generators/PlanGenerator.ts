@@ -191,7 +191,7 @@ export default class PlanGenerator {
     }
 
     //create new training plan
-    const initialPlan = this.initializeTrainingPlan(
+    const initialPlan = PlanGenerator.initializeTrainingPlan(
       seasonPhase,
       ageGroup,
       position ?? "FIELD", // Default to FIELD if no position tag
@@ -206,7 +206,7 @@ export default class PlanGenerator {
     //for every trainingPlan section for all the user's training(day)s
     const sections: TrainingSectionType[] = initialPlan.sections.map(
       (section) =>
-        this.createSection(
+        PlanGenerator.createSection(
           section,
           userTrainingDays,
           places,
@@ -257,9 +257,10 @@ export default class PlanGenerator {
 
     // build training days
     // get days in groups
-    let trainingDayGroups = this.getTrainingDayGroups(userTrainingDays);
+    let trainingDayGroups =
+      PlanGenerator.getTrainingDayGroups(userTrainingDays);
 
-    let groupFocuses = this.getTrainingDayGroupsFocuses(
+    let groupFocuses = PlanGenerator.getTrainingDayGroupsFocuses(
       trainingDayGroups,
       ageGroup,
       places,
@@ -326,7 +327,7 @@ export default class PlanGenerator {
         //      '60': [ 'CD' ] }
         const skillTrainingplan = Object.assign(
           {},
-          this.getSkillTrainingplan(
+          PlanGenerator.getSkillTrainingplan(
             section,
             cardioType,
             { ...cloneWithValidation(skills, SkillsMapSchema, "skills") },
@@ -401,7 +402,7 @@ export default class PlanGenerator {
                   preventionsIndex = 0;
                 }
               }
-              const replacedSkill = this.replaceUserSpecificSkill(
+              const replacedSkill = PlanGenerator.replaceUserSpecificSkill(
                 item,
                 ageGroup,
                 prevSkill,
@@ -419,7 +420,11 @@ export default class PlanGenerator {
             durationForBlock
           ]
             .map((skill) => {
-              return this.replaceUserSpecificSkill(skill, ageGroup, prevSkill);
+              return PlanGenerator.replaceUserSpecificSkill(
+                skill,
+                ageGroup,
+                prevSkill,
+              );
             })
             .filter((skill): skill is string => skill !== null);
           // filter skills removed by replace fn
@@ -444,7 +449,7 @@ export default class PlanGenerator {
               blockDuration = +durationForBlock - prevDurationKey;
             }
             if (blockDuration > 0) {
-              let minDurs = this.getMinimumDurationsForBlock(
+              let minDurs = PlanGenerator.getMinimumDurationsForBlock(
                 block,
                 prevention,
                 seasonPhase.type?.toLowerCase() ?? "pause",
@@ -461,7 +466,7 @@ export default class PlanGenerator {
               ) {
                 if (duration > +durationForBlock) {
                   let block = skillTrainingplan[durationForBlock];
-                  let minDurs = this.getMinimumDurationsForBlock(
+                  let minDurs = PlanGenerator.getMinimumDurationsForBlock(
                     block,
                     prevention,
                     seasonPhase.type?.toLowerCase() ?? "pause",
@@ -491,7 +496,7 @@ export default class PlanGenerator {
 
         let timeLeft = duration - trainingDuration;
         if (timeLeft > 0) {
-          timePerSkill = this.addTimeLeftToSkills(
+          timePerSkill = PlanGenerator.addTimeLeftToSkills(
             timePerSkill,
             fillPriorities,
             timeLeft,
@@ -514,7 +519,7 @@ export default class PlanGenerator {
         for (let skill of fillPriorities) {
           // time info available for skill
           if (skill !== "" && typeof timePerSkill[skill] !== "undefined") {
-            let tagObj = this.getTagsForSkill(skill, ageGroup, level);
+            let tagObj = PlanGenerator.getTagsForSkill(skill, ageGroup, level);
 
             //get tags per skill and time
             time = timePerSkill[skill];
@@ -661,7 +666,7 @@ export default class PlanGenerator {
           const LOG = false && skill.indexOf("SWR1") > -1;
           if (LOG) console.log("tagsPerSkill", tagsPerSkill[skill]);
           exercises[skill] = cloneWithValidation(
-            this.chooseByTags(
+            PlanGenerator.chooseByTags(
               skill,
               tagsPerSkill[skill],
               upperBodyDirections,
@@ -769,7 +774,7 @@ export default class PlanGenerator {
       groupIndex++
     ) {
       //set focus for days
-      const focuses: FocusType[] = this.getFocusForTrainingDayGroup(
+      const focuses: FocusType[] = PlanGenerator.getFocusForTrainingDayGroup(
         trainingDayGroups[groupIndex],
         ageGroup,
         places,
@@ -826,7 +831,10 @@ export default class PlanGenerator {
       // fill up prio 2 to max
       if (fillPriorities[1] && result[fillPriorities[1]] > 0) {
         let skill = fillPriorities[1];
-        let maxPossible = this.getMaxTimeForSkillAndLevel(skill, level);
+        let maxPossible = PlanGenerator.getMaxTimeForSkillAndLevel(
+          skill,
+          level,
+        );
         let maxAdd = maxPossible - result[skill];
         let timeToAdd = Math.min(timeLeft, maxAdd);
         result[skill] += timeToAdd;
@@ -841,7 +849,7 @@ export default class PlanGenerator {
       fillPrio++
     ) {
       let skill = fillPriorities[fillPrio];
-      let maxPossible = this.getMaxTimeForSkillAndLevel(skill, level);
+      let maxPossible = PlanGenerator.getMaxTimeForSkillAndLevel(skill, level);
       let maxAdd = maxPossible - result[skill];
       let timeToAdd = Math.min(timeLeft, maxAdd);
       result[skill] += timeToAdd;
@@ -852,7 +860,7 @@ export default class PlanGenerator {
     /*
         if (timeLeft > 0) {
             let skill = fillPriorities[0];
-            let maxPossible = this.getMaxTimeForSkillAndLevel(skill, level);
+            let maxPossible = PlanGenerator.getMaxTimeForSkillAndLevel(skill, level);
             let maxAdd = maxPossible - result[skill];
             let timeToAdd = Math.min(timeLeft, maxAdd);
             result[skill] += timeToAdd;
@@ -1035,7 +1043,7 @@ export default class PlanGenerator {
     isKeeper: boolean,
   ): TrainingPlanInitialType => {
     //defines type and numOfWeeks for each section
-    const sectionConfigs = this.getWeightedSections(
+    const sectionConfigs = PlanGenerator.getWeightedSections(
       seasonPhase,
       ageGroup,
       position,
@@ -1047,7 +1055,7 @@ export default class PlanGenerator {
     const startDateStr = formatDateToISO(startDate);
 
     //calculate start for each section
-    const trainingSections = this.calculateStartingDates(
+    const trainingSections = PlanGenerator.calculateStartingDates(
       sectionConfigs,
       startDateStr,
     );
@@ -1079,14 +1087,15 @@ export default class PlanGenerator {
     const numOfWeeks = seasonPhase.numOfWeeks ?? 0;
     const phaseType = (seasonPhase.type ??
       SeasonPhase.PREPARATORY) as SeasonPhase;
-    const sections = this.getSectionsBySeasonPhaseAgeGroupLevelNumOfWeeks(
-      phaseType,
-      ageGroup,
-      level,
-      numOfWeeks,
-      hasWeights,
-      isKeeper,
-    );
+    const sections =
+      PlanGenerator.getSectionsBySeasonPhaseAgeGroupLevelNumOfWeeks(
+        phaseType,
+        ageGroup,
+        level,
+        numOfWeeks,
+        hasWeights,
+        isKeeper,
+      );
     // DEV check selected sections
     return sections;
   };
@@ -1276,7 +1285,7 @@ export default class PlanGenerator {
     //filter branches
     if (PlanGenerator.DEBUG) console.log("full skillTree", fullSkillTree);
     const filterTree = (tree: SkillTreeType): SkillTreeType =>
-      this.addToSkillTree(
+      PlanGenerator.addToSkillTree(
         {},
         tree,
         workout,
@@ -1306,7 +1315,7 @@ export default class PlanGenerator {
         console.log("add non weight skill tree for ", skill);
       // try skill tree without weights for more gender/age options
       let secondSkillTree = getSkillTree(skillTrees, skill, prevSkills, false);
-      skillTree = this.addToSkillTree(
+      skillTree = PlanGenerator.addToSkillTree(
         skillTree,
         secondSkillTree,
         workout,
@@ -1887,24 +1896,25 @@ export default class PlanGenerator {
         ExerciseBranchArraySchema,
         "workout",
       );
-      const branches: ExerciseBranchType[] = this.getBranchesForWorkout(
-        skill,
-        weightedTags[i],
-        upperBodyDirections,
-        lowerBodyDirections,
-        fullBodyDirections,
-        coreDirections,
-        equipment,
-        currentWorkout,
-        user,
-        place,
-        exercises,
-        skillTrees,
-        prevSkills,
-        exerciseBranchData,
-        branchIdsInUse,
-        log,
-      );
+      const branches: ExerciseBranchType[] =
+        PlanGenerator.getBranchesForWorkout(
+          skill,
+          weightedTags[i],
+          upperBodyDirections,
+          lowerBodyDirections,
+          fullBodyDirections,
+          coreDirections,
+          equipment,
+          currentWorkout,
+          user,
+          place,
+          exercises,
+          skillTrees,
+          prevSkills,
+          exerciseBranchData,
+          branchIdsInUse,
+          log,
+        );
       if (PlanGenerator.DEBUG || log) {
         console.log("branches for region", weightedTags[i].tags);
         console.log(branches.length + " branches found", branches);
@@ -1938,7 +1948,7 @@ export default class PlanGenerator {
       // DEV prevent Crash for incomplete mock data
       if (skill !== null) {
         // TODO get from assets
-        const tagObj: DurationTagMap = this.getTagsForSkill(
+        const tagObj: DurationTagMap = PlanGenerator.getTagsForSkill(
           skill,
           ageGroup,
           level,

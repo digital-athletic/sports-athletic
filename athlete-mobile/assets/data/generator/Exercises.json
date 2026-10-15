@@ -670,7 +670,7 @@
       "weight": {
         "startValue": {
           "default": {
-            "default": 2.5
+            "default": 2
           },
           "m": {},
           "w": {},
@@ -1796,8 +1796,8 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 12.5,
-            "advanced": 15,
+            "beginner": 12,
+            "advanced": 14,
             "professional": 20
           },
           "w": {
@@ -2290,14 +2290,14 @@
         "targetValue": {
           "default": {},
           "m": {
-            "beginner": 12.5,
-            "advanced": 15,
+            "beginner": 12,
+            "advanced": 14,
             "professional": 20
           },
           "w": {
             "beginner": 7,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           },
           "k": {},
           "type": {
@@ -2417,13 +2417,13 @@
         "targetValue": {
           "default": {},
           "m": {
-            "advanced": 15,
+            "advanced": 14,
             "professional": 20,
-            "beginner": 12.5
+            "beginner": 12
           },
           "w": {
             "advanced": 10,
-            "professional": 12.5,
+            "professional": 12,
             "beginner": 7
           },
           "k": {},
@@ -2554,13 +2554,13 @@
           "default": {},
           "m": {
             "beginner": 10,
-            "advanced": 15,
+            "advanced": 14,
             "professional": 20
           },
           "w": {
             "beginner": 8,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           },
           "k": {},
           "type": {
@@ -2696,13 +2696,13 @@
           "default": {},
           "m": {
             "default": "",
-            "advanced": 15,
-            "professional": 25
+            "advanced": 14,
+            "professional": 24
           },
           "w": {
             "default": "",
             "advanced": 10,
-            "professional": 15
+            "professional": 14
           },
           "k": {},
           "type": {
@@ -2832,12 +2832,12 @@
           "m": {
             "default": "",
             "advanced": "",
-            "professional": 25
+            "professional": 24
           },
           "w": {
             "default": "",
             "advanced": "",
-            "professional": 15
+            "professional": 14
           },
           "k": {},
           "type": {
@@ -8032,15 +8032,15 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 12.5,
-            "advanced": 17.5,
-            "professional": 25
+            "beginner": 12,
+            "advanced": 16,
+            "professional": 24
           },
           "w": {
             "default": "",
             "beginner": 10,
-            "advanced": 12.5,
-            "professional": 17.5
+            "advanced": 12,
+            "professional": 16
           },
           "k": {},
           "type": {
@@ -9644,7 +9644,7 @@
           "m": {
             "beginner": 8,
             "advanced": 10,
-            "professional": 15
+            "professional": 14
           },
           "w": {
             "beginner": 6,
@@ -9668,14 +9668,14 @@
           "m": {
             "default": "",
             "beginner": 10,
-            "advanced": 15,
+            "advanced": 14,
             "professional": 20
           },
           "w": {
             "default": "",
             "beginner": 10,
-            "advanced": 12.5,
-            "professional": 15
+            "advanced": 12,
+            "professional": 14
           },
           "k": {
             "beginner": 6,
@@ -9830,9 +9830,9 @@
           },
           "w": {
             "beginner": "",
-            "advanced": 15,
+            "advanced": 20,
             "professional": 20,
-            "default": 15
+            "default": 20
           },
           "k": {},
           "type": {
@@ -11797,14 +11797,14 @@
         "startValue": {
           "default": {},
           "m": {
-            "advanced": 17.5,
+            "advanced": 16,
             "professional": 20,
-            "beginner": 15
+            "beginner": 14
           },
           "w": {
-            "advanced": 12.5,
-            "professional": 15,
-            "beginner": 12.5
+            "advanced": 12,
+            "professional": 14,
+            "beginner": 12
           },
           "k": {},
           "type": {
@@ -11815,14 +11815,14 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 25,
+            "beginner": 24,
             "advanced": 30,
             "professional": 40
           },
           "w": {
             "default": "",
             "beginner": 20,
-            "advanced": 25,
+            "advanced": 24,
             "professional": 30
           },
           "k": {},
@@ -14719,13 +14719,13 @@
         "startValue": {
           "default": {},
           "m": {
-            "beginner": 15,
-            "advanced": 25,
+            "beginner": 14,
+            "advanced": 24,
             "professional": 30
           },
           "w": {
             "beginner": 10,
-            "advanced": 15,
+            "advanced": 14,
             "professional": 20
           },
           "k": {
@@ -14741,15 +14741,15 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 25,
+            "beginner": 24,
             "advanced": 30,
-            "professional": 35
+            "professional": 34
           },
           "w": {
             "default": "",
             "beginner": 20,
-            "advanced": 25,
-            "professional": 27.5
+            "advanced": 24,
+            "professional": 26
           },
           "k": {
             "beginner": 10,
@@ -14855,13 +14855,13 @@
         "startValue": {
           "default": {},
           "m": {
-            "beginner": 15,
+            "beginner": 14,
             "advanced": 20,
             "professional": 30
           },
           "w": {
             "beginner": 10,
-            "advanced": 15,
+            "advanced": 14,
             "professional": 20
           },
           "k": {
@@ -14878,19 +14878,19 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 25,
-            "advanced": 35,
+            "beginner": 24,
+            "advanced": 34,
             "professional": 40
           },
           "w": {
             "default": "",
             "beginner": 20,
-            "advanced": 25,
+            "advanced": 24,
             "professional": 30
           },
           "k": {
             "advanced": 10,
-            "professional": 15,
+            "professional": 14,
             "default": "",
             "beginner": 8
           },
@@ -15005,15 +15005,15 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 15,
-            "advanced": 25,
+            "beginner": 14,
+            "advanced": 24,
             "professional": 30
           },
           "w": {
             "default": "",
             "beginner": 10,
-            "advanced": 17.5,
-            "professional": 22.5
+            "advanced": 16,
+            "professional": 22
           },
           "k": {},
           "type": {
@@ -21131,7 +21131,7 @@
           },
           "m": {
             "advanced": 10,
-            "professional": 15,
+            "professional": 14,
             "beginner": "",
             "default": 6
           },
@@ -21423,19 +21423,19 @@
         },
         "targetValue": {
           "default": {
-            "default": 15
+            "default": 14
           },
           "m": {
             "default": "",
             "beginner": "",
-            "advanced": 15,
-            "professional": 25
+            "advanced": 14,
+            "professional": 24
           },
           "w": {
             "default": "",
             "beginner": "",
             "advanced": 10,
-            "professional": 15
+            "professional": 14
           },
           "k": {},
           "type": {
@@ -31720,7 +31720,7 @@
             "beginner": 7,
             "advanced": 10,
             "default": "",
-            "professional": 12.5
+            "professional": 12
           },
           "w": {
             "beginner": 5,
@@ -31736,15 +31736,15 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 15,
-            "advanced": 15,
-            "professional": 15
+            "beginner": 14,
+            "advanced": 14,
+            "professional": 14
           },
           "w": {
             "default": "",
-            "beginner": 12.5,
-            "advanced": 12.5,
-            "professional": 12.5
+            "beginner": 12,
+            "advanced": 12,
+            "professional": 12
           },
           "k": {},
           "type": {
@@ -31871,7 +31871,7 @@
           "default": {},
           "m": {
             "advanced": 10,
-            "professional": 12.5,
+            "professional": 12,
             "beginner": 8
           },
           "w": {
@@ -31889,14 +31889,14 @@
           "m": {
             "default": "",
             "advanced": 20,
-            "professional": 25,
-            "beginner": 15
+            "professional": 24,
+            "beginner": 14
           },
           "w": {
             "default": "",
-            "advanced": 15,
-            "professional": 17.5,
-            "beginner": 12.5
+            "advanced": 14,
+            "professional": 16,
+            "beginner": 12
           },
           "k": {},
           "type": {
@@ -32555,14 +32555,14 @@
           "m": {
             "default": "",
             "beginner": 8,
-            "advanced": 15,
+            "advanced": 14,
             "professional": 20
           },
           "w": {
             "default": "",
             "beginner": 5,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           },
           "k": {},
           "type": {
@@ -39657,13 +39657,13 @@
           "default": {},
           "m": {
             "beginner": 10,
-            "advanced": 15,
+            "advanced": 14,
             "professional": 20
           },
           "w": {
             "beginner": 8,
             "advanced": 10,
-            "professional": 15
+            "professional": 14
           },
           "k": {
             "beginner": 5,
@@ -39686,7 +39686,7 @@
           },
           "w": {
             "default": "",
-            "beginner": 15,
+            "beginner": 14,
             "advanced": 20,
             "professional": 30
           },
@@ -39784,12 +39784,12 @@
         "startValue": {
           "default": {},
           "m": {
-            "advanced": 15,
+            "advanced": 14,
             "professional": 20
           },
           "w": {
             "advanced": 10,
-            "professional": 15
+            "professional": 14
           },
           "k": {},
           "type": {
@@ -39802,13 +39802,13 @@
           },
           "m": {
             "default": "",
-            "advanced": 25,
+            "advanced": 24,
             "professional": 30
           },
           "w": {
             "default": "",
             "advanced": 20,
-            "professional": 25
+            "professional": 24
           },
           "k": {
             "default": ""
@@ -40063,7 +40063,7 @@
             "default": 6
           },
           "m": {
-            "professional": 12.5,
+            "professional": 12,
             "advanced": 8,
             "beginner": ""
           },
@@ -40079,18 +40079,18 @@
         },
         "targetValue": {
           "default": {
-            "default": 15
+            "default": 14
           },
           "m": {
             "default": "",
             "beginner": "",
             "professional": 30,
-            "advanced": 15
+            "advanced": 14
           },
           "w": {
             "default": "",
             "professional": 20,
-            "advanced": 12.5,
+            "advanced": 12,
             "beginner": ""
           },
           "k": {
@@ -40228,13 +40228,13 @@
           },
           "m": {
             "advanced": 10,
-            "professional": 15,
+            "professional": 14,
             "beginner": "",
             "default": 8
           },
           "w": {
             "advanced": 8,
-            "professional": 12.5,
+            "professional": 12,
             "beginner": "",
             "default": 8
           },
@@ -40252,15 +40252,15 @@
             "professional": ""
           },
           "m": {
-            "default": 15,
-            "advanced": 25,
-            "professional": 35,
+            "default": 14,
+            "advanced": 24,
+            "professional": 34,
             "beginner": ""
           },
           "w": {
-            "default": 12.5,
-            "advanced": 17.5,
-            "professional": 25,
+            "default": 12,
+            "advanced": 16,
+            "professional": 24,
             "beginner": ""
           },
           "k": {
@@ -40398,7 +40398,7 @@
           "m": {
             "beginner": 8,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           },
           "w": {
             "beginner": 5,
@@ -40813,14 +40813,14 @@
         "targetValue": {
           "default": {},
           "m": {
-            "beginner": 12.5,
-            "advanced": 15,
+            "beginner": 12,
+            "advanced": 14,
             "professional": 20
           },
           "w": {
             "beginner": 10,
-            "advanced": 12.5,
-            "professional": 15
+            "advanced": 12,
+            "professional": 14
           },
           "k": {
             "default": "",
@@ -40948,14 +40948,14 @@
         "targetValue": {
           "default": {},
           "m": {
-            "advanced": 15,
+            "advanced": 14,
             "professional": 20,
             "default": ""
           },
           "w": {
             "default": "",
-            "advanced": 12.5,
-            "professional": 15
+            "advanced": 12,
+            "professional": 14
           },
           "k": {
             "default": ""
@@ -44758,8 +44758,8 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 12.5,
-            "advanced": 15,
+            "beginner": 12,
+            "advanced": 14,
             "professional": 20
           },
           "w": {
@@ -45619,9 +45619,9 @@
           },
           "m": {
             "default": "",
-            "advanced": 15,
-            "beginner": 15,
-            "professional": 15
+            "advanced": 14,
+            "beginner": 14,
+            "professional": 14
           },
           "w": {
             "default": "",
@@ -45750,15 +45750,15 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 12.5,
-            "advanced": 15,
+            "beginner": 12,
+            "advanced": 14,
             "professional": 20
           },
           "w": {
             "default": "",
             "beginner": 10,
-            "advanced": 12.5,
-            "professional": 15
+            "advanced": 12,
+            "professional": 14
           },
           "k": {},
           "type": {
@@ -45769,7 +45769,7 @@
           "default": {},
           "m": {
             "default": "",
-            "professional": 25,
+            "professional": 24,
             "advanced": 20,
             "beginner": 20
           },
@@ -45909,15 +45909,15 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 12.5,
-            "advanced": 15,
-            "professional": 15
+            "beginner": 12,
+            "advanced": 14,
+            "professional": 14
           },
           "w": {
             "default": "",
             "beginner": 10,
-            "advanced": 12.5,
-            "professional": 12.5
+            "advanced": 12,
+            "professional": 12
           },
           "k": {
             "beginner": 10,
@@ -46178,13 +46178,13 @@
           "default": {},
           "m": {
             "beginner": 10,
-            "advanced": 15,
+            "advanced": 14,
             "professional": 20
           },
           "w": {
             "beginner": 6,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           },
           "k": {},
           "type": {
@@ -46196,13 +46196,13 @@
           "m": {
             "default": "",
             "beginner": 20,
-            "advanced": 27.5,
-            "professional": 35
+            "advanced": 26,
+            "professional": 34
           },
           "w": {
             "default": "",
-            "beginner": 12.5,
-            "advanced": 17.5,
+            "beginner": 12,
+            "advanced": 16,
             "professional": 20
           },
           "k": {
@@ -46324,7 +46324,7 @@
           "m": {
             "beginner": 6,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           },
           "w": {
             "beginner": 3,
@@ -46340,15 +46340,15 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 12.5,
-            "advanced": 17.5,
-            "professional": 25
+            "beginner": 12,
+            "advanced": 16,
+            "professional": 24
           },
           "w": {
             "default": "",
             "beginner": 7,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           },
           "k": {
             "default": ""
@@ -54263,8 +54263,8 @@
         "startValue": {
           "default": {},
           "m": {
-            "advanced": 12.5,
-            "professional": 15,
+            "advanced": 12,
+            "professional": 14,
             "beginner": 8
           },
           "w": {
@@ -54285,14 +54285,14 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 15,
-            "advanced": 25,
-            "professional": 35
+            "beginner": 14,
+            "advanced": 24,
+            "professional": 34
           },
           "w": {
             "default": "",
             "beginner": 10,
-            "advanced": 15,
+            "advanced": 14,
             "professional": 20
           },
           "k": {
@@ -54425,15 +54425,15 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 12.5,
-            "advanced": 15,
-            "professional": 17.5
+            "beginner": 12,
+            "advanced": 14,
+            "professional": 16
           },
           "w": {
             "default": "",
             "beginner": 8,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           },
           "k": {
             "default": "",
@@ -54577,15 +54577,15 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 12.5,
+            "beginner": 12,
             "advanced": 20,
             "professional": 30
           },
           "w": {
             "default": "",
             "beginner": 10,
-            "advanced": 12.5,
-            "professional": 17.5
+            "advanced": 12,
+            "professional": 16
           },
           "k": {
             "beginner": 6,
@@ -54718,14 +54718,14 @@
           "m": {
             "default": "",
             "beginner": 10,
-            "advanced": 12.5,
-            "professional": 15
+            "advanced": 12,
+            "professional": 14
           },
           "w": {
             "default": "",
             "beginner": 8,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           },
           "k": {
             "default": "",
@@ -55151,7 +55151,7 @@
           "default": {},
           "m": {
             "default": "",
-            "professional": 12.5,
+            "professional": 12,
             "advanced": 10,
             "beginner": 8
           },
@@ -56008,7 +56008,7 @@
             "default": "",
             "beginner": 8,
             "advanced": 10,
-            "professional": 15
+            "professional": 14
           },
           "w": {
             "default": "",
@@ -56134,8 +56134,8 @@
           "default": {},
           "m": {
             "default": "",
-            "advanced": 12.5,
-            "professional": 15
+            "advanced": 12,
+            "professional": 14
           },
           "w": {
             "default": "",
@@ -56304,14 +56304,14 @@
           "m": {
             "default": "",
             "beginner": 10,
-            "advanced": 17.5,
-            "professional": 25
+            "advanced": 16,
+            "professional": 24
           },
           "w": {
             "default": "",
             "beginner": 8,
             "advanced": 10,
-            "professional": 15
+            "professional": 14
           },
           "k": {
             "default": "",
@@ -56417,7 +56417,7 @@
           "default": {},
           "m": {
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           },
           "w": {
             "advanced": 7,
@@ -56433,10 +56433,10 @@
           "m": {
             "default": "",
             "professional": 20,
-            "advanced": 15
+            "advanced": 14
           },
           "w": {
-            "default": 12.5
+            "default": 12
           },
           "k": {},
           "type": {
@@ -66565,8 +66565,8 @@
           "m": {
             "default": "",
             "beginner": "",
-            "advanced": 15,
-            "professional": 25
+            "advanced": 14,
+            "professional": 24
           },
           "w": {
             "default": "",
@@ -66719,7 +66719,7 @@
           "m": {
             "default": "",
             "advanced": 10,
-            "professional": 15
+            "professional": 14
           },
           "w": {
             "default": "",
@@ -71920,7 +71920,7 @@
           "m": {
             "beginner": 6,
             "advanced": 10,
-            "professional": 15
+            "professional": 14
           },
           "w": {
             "beginner": 5,
@@ -74075,14 +74075,14 @@
           "m": {
             "default": "",
             "beginner": 10,
-            "advanced": 15,
+            "advanced": 14,
             "professional": 20
           },
           "w": {
             "default": "",
             "beginner": 10,
-            "advanced": 12.5,
-            "professional": 15
+            "advanced": 12,
+            "professional": 14
           },
           "k": {
             "default": "",
@@ -78263,7 +78263,7 @@
         "targetValue": {
           "default": {},
           "m": {
-            "default": "A"
+            "default": ""
           },
           "w": {},
           "k": {
@@ -79550,7 +79550,7 @@
         "targetValue": {
           "default": {},
           "m": {
-            "default": "A"
+            "default": ""
           },
           "w": {},
           "k": {
@@ -79822,7 +79822,7 @@
         "targetValue": {
           "default": {},
           "m": {
-            "default": "A"
+            "default": ""
           },
           "w": {},
           "k": {
@@ -95735,8 +95735,8 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 12.5,
-            "advanced": 15,
+            "beginner": 12,
+            "advanced": 14,
             "professional": 20
           },
           "w": {
@@ -96153,14 +96153,14 @@
         "targetValue": {
           "default": {},
           "m": {
-            "beginner": 12.5,
-            "advanced": 15,
-            "professional": 17.5
+            "beginner": 12,
+            "advanced": 14,
+            "professional": 16
           },
           "w": {
             "beginner": 8,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           },
           "k": {},
           "type": {
@@ -96292,13 +96292,13 @@
           "default": {},
           "m": {
             "default": "",
-            "advanced": 15,
-            "professional": 25
+            "advanced": 14,
+            "professional": 24
           },
           "w": {
             "default": "",
             "advanced": 10,
-            "professional": 15
+            "professional": 14
           },
           "k": {},
           "type": {
@@ -98687,14 +98687,14 @@
         "startValue": {
           "default": {},
           "m": {
-            "advanced": 17.5,
+            "advanced": 16,
             "professional": 20,
-            "beginner": 15
+            "beginner": 14
           },
           "w": {
-            "advanced": 12.5,
-            "professional": 15,
-            "beginner": 12.5
+            "advanced": 12,
+            "professional": 14,
+            "beginner": 12
           },
           "k": {},
           "type": {
@@ -98705,14 +98705,14 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 25,
+            "beginner": 24,
             "advanced": 30,
             "professional": 40
           },
           "w": {
             "default": "",
             "beginner": 20,
-            "advanced": 25,
+            "advanced": 24,
             "professional": 30
           },
           "k": {},
@@ -106461,7 +106461,7 @@
           "m": {
             "beginner": 7,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           },
           "w": {
             "beginner": 5,
@@ -106477,15 +106477,15 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 15,
-            "advanced": 15,
-            "professional": 15
+            "beginner": 14,
+            "advanced": 14,
+            "professional": 14
           },
           "w": {
             "default": "",
-            "beginner": 12.5,
-            "advanced": 12.5,
-            "professional": 12.5
+            "beginner": 12,
+            "advanced": 12,
+            "professional": 12
           },
           "k": {},
           "type": {
@@ -106612,7 +106612,7 @@
           "default": {},
           "m": {
             "advanced": 10,
-            "professional": 12.5,
+            "professional": 12,
             "beginner": 8
           },
           "w": {
@@ -106630,14 +106630,14 @@
           "m": {
             "default": "",
             "advanced": 20,
-            "professional": 25,
-            "beginner": 15
+            "professional": 24,
+            "beginner": 14
           },
           "w": {
             "default": "",
-            "advanced": 15,
-            "professional": 17.5,
-            "beginner": 12.5
+            "advanced": 14,
+            "professional": 16,
+            "beginner": 12
           },
           "k": {},
           "type": {
@@ -107288,14 +107288,14 @@
           "default": {},
           "m": {
             "default": "",
-            "advanced": 15,
+            "advanced": 14,
             "professional": 20,
             "beginner": 8
           },
           "w": {
             "default": "",
             "advanced": 10,
-            "professional": 12.5,
+            "professional": 12,
             "beginner": 5
           },
           "k": {},
@@ -108726,7 +108726,7 @@
             "default": 6
           },
           "m": {
-            "professional": 12.5,
+            "professional": 12,
             "beginner": "",
             "advanced": 8
           },
@@ -108742,19 +108742,19 @@
         },
         "targetValue": {
           "default": {
-            "default": 15
+            "default": 14
           },
           "m": {
             "default": "",
             "professional": 30,
             "beginner": "",
-            "advanced": 15
+            "advanced": 14
           },
           "w": {
             "default": "",
             "professional": 20,
             "beginner": "",
-            "advanced": 12.5
+            "advanced": 12
           },
           "k": {
             "default": ""
@@ -108891,13 +108891,13 @@
           },
           "m": {
             "advanced": 10,
-            "professional": 15,
+            "professional": 14,
             "beginner": "",
             "default": 8
           },
           "w": {
             "advanced": 8,
-            "professional": 12.5,
+            "professional": 12,
             "beginner": "",
             "default": 8
           },
@@ -108916,15 +108916,15 @@
             "beginner": ""
           },
           "m": {
-            "default": 15,
-            "advanced": 25,
-            "professional": 35,
+            "default": 14,
+            "advanced": 24,
+            "professional": 34,
             "beginner": ""
           },
           "w": {
-            "default": 12.5,
-            "advanced": 17.5,
-            "professional": 25,
+            "default": 12,
+            "advanced": 16,
+            "professional": 24,
             "beginner": ""
           },
           "k": {
@@ -109075,14 +109075,14 @@
         "targetValue": {
           "default": {},
           "m": {
-            "beginner": 12.5,
-            "advanced": 15,
+            "beginner": 12,
+            "advanced": 14,
             "professional": 20
           },
           "w": {
             "beginner": 10,
-            "advanced": 12.5,
-            "professional": 15
+            "advanced": 12,
+            "professional": 14
           },
           "k": {
             "default": "",
@@ -109209,12 +109209,12 @@
         "targetValue": {
           "default": {},
           "m": {
-            "advanced": 15,
+            "advanced": 14,
             "professional": 20
           },
           "w": {
-            "advanced": 12.5,
-            "professional": 15
+            "advanced": 12,
+            "professional": 14
           },
           "k": {
             "default": ""
@@ -110902,15 +110902,15 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 12.5,
-            "advanced": 15,
+            "beginner": 12,
+            "advanced": 14,
             "professional": 20
           },
           "w": {
             "default": "",
             "beginner": 10,
-            "advanced": 12.5,
-            "professional": 15
+            "advanced": 12,
+            "professional": 14
           },
           "k": {},
           "type": {
@@ -110921,7 +110921,7 @@
           "default": {},
           "m": {
             "default": "",
-            "professional": 25,
+            "professional": 24,
             "beginner": 20,
             "advanced": 20
           },
@@ -111061,15 +111061,15 @@
           "default": {},
           "m": {
             "default": "",
-            "beginner": 12.5,
-            "advanced": 15,
-            "professional": 15
+            "beginner": 12,
+            "advanced": 14,
+            "professional": 14
           },
           "w": {
             "default": "",
             "beginner": 10,
-            "advanced": 12.5,
-            "professional": 12.5
+            "advanced": 12,
+            "professional": 12
           },
           "k": {
             "beginner": 10,
@@ -112885,7 +112885,7 @@
             "default": "",
             "beginner": 8,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           },
           "w": {
             "default": "",
@@ -116431,8 +116431,8 @@
           "default": {},
           "m": {
             "default": "",
-            "professional": 25,
-            "advanced": 15,
+            "professional": 24,
+            "advanced": 14,
             "beginner": ""
           },
           "w": {
@@ -116580,7 +116580,7 @@
           "m": {
             "default": "",
             "advanced": 10,
-            "professional": 15
+            "professional": 14
           },
           "w": {
             "default": "",
@@ -117783,14 +117783,14 @@
           "m": {
             "default": "",
             "beginner": 10,
-            "advanced": 15,
+            "advanced": 14,
             "professional": 20
           },
           "w": {
             "default": "",
             "beginner": 10,
-            "advanced": 12.5,
-            "professional": 15
+            "advanced": 12,
+            "professional": 14
           },
           "k": {
             "default": "",
@@ -118808,7 +118808,7 @@
         "targetValue": {
           "default": {},
           "m": {
-            "default": "A"
+            "default": ""
           },
           "w": {},
           "k": {
@@ -119078,7 +119078,7 @@
         "targetValue": {
           "default": {},
           "m": {
-            "default": "A"
+            "default": ""
           },
           "w": {},
           "k": {
@@ -123863,14 +123863,14 @@
           "default": {
             "beginner": 8,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           },
           "m": {},
           "w": {},
           "k": {
             "beginner": 8,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           }
         }
       },
@@ -125650,14 +125650,14 @@
           "default": {
             "beginner": 8,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           },
           "m": {},
           "w": {},
           "k": {
             "beginner": 8,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           }
         }
       },
@@ -126153,14 +126153,14 @@
           "default": {
             "beginner": 8,
             "advanced": 10,
-            "professional": 15
+            "professional": 14
           },
           "m": {},
           "w": {},
           "k": {
             "beginner": 8,
             "advanced": 10,
-            "professional": 15
+            "professional": 14
           }
         }
       },
@@ -126430,12 +126430,12 @@
           },
           "default": {
             "default": 10,
-            "professional": 12.5
+            "professional": 12
           },
           "m": {},
           "w": {},
           "k": {
-            "professional": 12.5
+            "professional": 12
           }
         }
       },
@@ -127651,14 +127651,14 @@
           "default": {
             "default": 10,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           },
           "m": {},
           "w": {},
           "k": {
             "default": 10,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           }
         }
       },
@@ -129429,15 +129429,15 @@
           },
           "default": {
             "default": "",
-            "advanced": 12.5,
-            "professional": 15
+            "advanced": 12,
+            "professional": 14
           },
           "m": {},
           "w": {},
           "k": {
             "default": "",
-            "professional": 15,
-            "advanced": 12.5
+            "professional": 14,
+            "advanced": 12
           }
         }
       },
@@ -129694,14 +129694,14 @@
           "default": {
             "default": 10,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           },
           "m": {},
           "w": {},
           "k": {
             "default": 10,
             "advanced": 10,
-            "professional": 12.5
+            "professional": 12
           }
         }
       },
@@ -129956,14 +129956,14 @@
             "type": "weightAbsolute"
           },
           "default": {
-            "default": 12.5,
-            "professional": 12.5
+            "default": 12,
+            "professional": 12
           },
           "m": {},
           "w": {},
           "k": {
-            "default": 12.5,
-            "professional": 12.5
+            "default": 12,
+            "professional": 12
           }
         }
       },
@@ -130086,15 +130086,15 @@
           },
           "default": {
             "beginner": 10,
-            "advanced": 12.5,
-            "professional": 15
+            "advanced": 12,
+            "professional": 14
           },
           "m": {},
           "w": {},
           "k": {
             "beginner": 10,
-            "advanced": 12.5,
-            "professional": 15
+            "advanced": 12,
+            "professional": 14
           }
         }
       },
@@ -135736,14 +135736,14 @@
             "type": "weightAbsolute"
           },
           "default": {
-            "advanced": 12.5,
-            "professional": 15
+            "advanced": 12,
+            "professional": 14
           },
           "m": {},
           "w": {},
           "k": {
-            "advanced": 12.5,
-            "professional": 15
+            "advanced": 12,
+            "professional": 14
           }
         }
       },

@@ -1,6 +1,6 @@
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import ExercisesData from "../../../../assets/data/generator/Exercises.json";
-import { roundWeightValue } from "./workoutUtils";
+import { getValueByGenderAndLevel, roundWeightValue } from "./workoutUtils";
 
 const exercises = ExercisesData as unknown as ExerciseType[];
 
@@ -65,5 +65,35 @@ describe("exercise catalog: fixed weights are loadable", () => {
       })
       .map(({ exercise, field, value }) => `${exercise} ${field}: ${value}`);
     expect(notLoadable).toEqual([]);
+  });
+
+  it("never starts above the target weight", () => {
+    const genders = ["m", "w", "k"] as const;
+    const levels = ["beginner", "advanced", "professional"] as const;
+    const violations: string[] = [];
+    for (const exercise of exercises) {
+      const weight = exercise.values?.weight;
+      if (!weight) continue;
+      for (const gender of genders) {
+        for (const level of levels) {
+          const start = getValueByGenderAndLevel(
+            weight.startValue,
+            gender,
+            level,
+          );
+          const target = getValueByGenderAndLevel(
+            weight.targetValue,
+            gender,
+            level,
+          );
+          if (start !== undefined && target !== undefined && start > target) {
+            violations.push(
+              `${exercise.id} ${gender}.${level}: start ${start} above target ${target}`,
+            );
+          }
+        }
+      }
+    }
+    expect(violations).toEqual([]);
   });
 });

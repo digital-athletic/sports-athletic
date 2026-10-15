@@ -82,7 +82,7 @@ describe("generatePlanWorkout: kept branches with the same exercise", () => {
         (branchesPerExercise.get(exerciseId) ?? new Set()).add(branchId),
       );
     }
-    expect(pairs.length).toBeGreaterThan(0);
+    expect(branchesPerExercise.size).toBeGreaterThan(1);
     expect(
       [...branchesPerExercise.values()].every(
         (branches) => branches.size === 1,
@@ -235,11 +235,11 @@ describe("createSetList: skill transition", () => {
     generator.createSetList(
       [
         {
-          skill: "GKS",
+          skill: "MAX_STRENGTH",
           length: 10,
           branches: [ref("a", "shared", "UPPER_BODY")],
         },
-        { skill: "GKSKG", length: 10, branches: second },
+        { skill: "GKS", length: 10, branches: second },
       ],
       ["shared", "other"].map((id) => ({
         ...realExercises[0],

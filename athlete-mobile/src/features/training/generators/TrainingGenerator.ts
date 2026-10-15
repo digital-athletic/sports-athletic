@@ -67,7 +67,15 @@ import {
   pickSupersetPartner,
 } from "@/features/training/utils/supersetPairingUtils";
 import { trainsSameRegionAndPrimaryMuscle } from "@/features/training/utils/exerciseBlockUtils";
-import { orderExerciseUnits } from "@/features/training/utils/exerciseOrderUtils";
+import {
+  endingExerciseId,
+  orderExerciseUnits,
+} from "@/features/training/utils/exerciseOrderUtils";
+import {
+  popDistinctPartner,
+  refillSlots,
+  splitDuplicateBranches,
+} from "@/features/training/utils/duplicateExerciseUtils";
 import type { GeneratorError } from "./GeneratorError";
 import { isTrainingLevel } from "@/schemas/common.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
@@ -923,6 +931,69 @@ export default class TrainingGenerator {
           branchId: id,
         };
       });
+
+      // a kept branch resolving to an exercise an earlier kept branch holds counts as blocked
+      const isLimitedSkill =
+        skill.indexOf("PREV") !== -1 || skill === "WUSPEZIAL";
+      if (
+        skill.indexOf("CARDIO") === -1 &&
+        !(isLimitedSkill && replace.length > 0)
+      ) {
+        const split = splitDuplicateBranches(
+          keep,
+          (entry) =>
+            resolveBranchExerciseId(
+              {
+                levels: (entry.exercises ?? {}) as Record<
+                  number,
+                  { exerciseId: string }
+                >,
+                tags: entry.tags ?? [],
+              },
+              userLevel,
+              userExerciseData.branchData[entry.branchId],
+            ),
+          (entry) => getTagValues(entry.tags ?? [], TagGroups.REGION)[0],
+        );
+        keep = split.unique;
+        if (!isLimitedSkill) {
+          replace.push(...split.duplicateRegions);
+        } else if (split.duplicateRegions.length > 0) {
+          // only the duplicate slot goes when nothing fits; the skill keeps the rest
+          const prevRegions =
+            skill.indexOf("PREV") !== -1
+              ? getRegionsForPreventionSkills([skill])
+              : null;
+          const prevSkills = getPreventionsFromPains(
+            getUserTagValues(user.workoutData?.tags, TagGroups.PAIN),
+          );
+          const refilled = refillSlots(
+            split.duplicateRegions,
+            keep,
+            (usedBranchIds, region) => {
+              const [branch] = this.replaceExerciseBranches(
+                skill,
+                [region],
+                temporalData,
+                equipment,
+                user,
+                exercises,
+                skillTrees,
+                usedBranchIds,
+                prevSkills,
+                userExerciseData,
+                false,
+              );
+              const inOwnRegion = getTagValues(
+                branch?.tags ?? [],
+                TagGroups.PREVENTION,
+              ).some((prevention) => prevRegions?.includes(prevention));
+              return !prevRegions || inOwnRegion ? branch : undefined;
+            },
+          );
+          exerciseBranches[skill] = keep.concat(refilled);
+        }
+      }
 
       if (replace.length > 0) {
         if (TrainingGenerator.DEBUG) {
@@ -2050,6 +2121,7 @@ export default class TrainingGenerator {
     const PAINS = getUserTagValues(user.workoutData?.tags, TagGroups.PAIN);
 
     let setList: GeneratedSetListEntry[] = [];
+    let lastExerciseId: string | undefined;
 
     if (TrainingGenerator.DEBUG) console.log("exercises: ", exercises);
     for (let i = 0; i < skillList.length; i++) {
@@ -2081,8 +2153,10 @@ export default class TrainingGenerator {
             prevs,
           ),
           skillList[i].skill.indexOf("MAX") > -1,
+          lastExerciseId,
         );
       }
+      lastExerciseId = endingExerciseId(exercisePairs, lastExerciseId);
 
       setList.push(
         ...this.getSetListFromExercisePairs(
@@ -2247,21 +2321,22 @@ export default class TrainingGenerator {
       while (bigMuscleExercises.length > 0) {
         const first = bigMuscleExercises.pop();
         if (!first) continue;
-        const pair: ExercisePair = { first };
-        if (bigMuscleExercises.length > 0) {
-          pair.second = bigMuscleExercises.pop();
-        } else if (smallMuscleExercises.length > 0) {
-          pair.second = smallMuscleExercises.pop();
-        }
+        // never the same exercise as its own partner
+        const pair: ExercisePair = {
+          first,
+          second:
+            popDistinctPartner(bigMuscleExercises, first) ??
+            popDistinctPartner(smallMuscleExercises, first),
+        };
         exercisePairs.push(pair);
       }
       while (smallMuscleExercises.length > 0) {
         const first = smallMuscleExercises.pop();
         if (!first) continue;
-        const pair: ExercisePair = { first };
-        if (smallMuscleExercises.length > 0) {
-          pair.second = smallMuscleExercises.pop();
-        }
+        const pair: ExercisePair = {
+          first,
+          second: popDistinctPartner(smallMuscleExercises, first),
+        };
         exercisePairs.push(pair);
       }
       return exercisePairs;

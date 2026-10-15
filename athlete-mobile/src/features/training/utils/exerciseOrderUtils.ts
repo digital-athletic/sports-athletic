@@ -62,10 +62,32 @@ const rotateRegions = (
 };
 
 /**
- * Orders a skill's units: big muscle groups before the rest, each group
- * sequenced by region rotation. Max strength puts lower body main lifts first.
+ * Moves another unit to the front when the first unit starts with the exercise
+ * that ended the previous skill. Max strength keeps its lower body units first.
+ * Keeps the order when no other unit fits.
  */
-export const orderExerciseUnits = (
+const avoidRepeatedStart = (
+  units: ExercisePair[],
+  previousExerciseId: string | undefined,
+  lowerBodyFirst: boolean,
+): ExercisePair[] => {
+  if (units.length < 2 || units[0].first.exerciseId !== previousExerciseId) {
+    return units;
+  }
+  const isLowerBody = (unit: ExercisePair) =>
+    leadRegions(unit).includes("LOWER_BODY");
+  const index = units.findIndex(
+    (unit) =>
+      unit.first.exerciseId !== previousExerciseId &&
+      (!lowerBodyFirst || isLowerBody(unit) || !isLowerBody(units[0])),
+  );
+  if (index < 1) {
+    return units;
+  }
+  return [units[index], ...units.filter((_, i) => i !== index)];
+};
+
+const orderBySkill = (
   units: ExercisePair[],
   lowerBodyFirst: boolean,
 ): ExercisePair[] => {
@@ -92,3 +114,28 @@ export const orderExerciseUnits = (
     ...orderBySize(units.filter((unit) => !isLowerBody(unit))),
   ];
 };
+
+/** The exercise of the last set of the last unit, or the fallback without units. */
+export const endingExerciseId = (
+  units: ExercisePair[],
+  fallback: string | undefined,
+): string | undefined => {
+  const last = units.at(-1);
+  return (last?.second ?? last?.first)?.exerciseId ?? fallback;
+};
+
+/**
+ * Orders a skill's units: big muscle groups before the rest, each group
+ * sequenced by region rotation. Max strength puts lower body main lifts first.
+ * The first unit differs from the exercise that ended the previous skill.
+ */
+export const orderExerciseUnits = (
+  units: ExercisePair[],
+  lowerBodyFirst: boolean,
+  previousExerciseId?: string,
+): ExercisePair[] =>
+  avoidRepeatedStart(
+    orderBySkill(units, lowerBodyFirst),
+    previousExerciseId,
+    lowerBodyFirst,
+  );

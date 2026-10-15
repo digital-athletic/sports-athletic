@@ -168,36 +168,6 @@
       "count": 1
     }
   },
-  "assets/data/generator/trainingSections/prepatory/adult/advanced.ts": {
-    "max-lines": {
-      "count": 1
-    }
-  },
-  "assets/data/generator/trainingSections/prepatory/adult/beginner.ts": {
-    "max-lines": {
-      "count": 1
-    }
-  },
-  "assets/data/generator/trainingSections/prepatory/adult/professional.ts": {
-    "max-lines": {
-      "count": 1
-    }
-  },
-  "assets/data/generator/trainingSections/prepatory/child/advanced.ts": {
-    "max-lines": {
-      "count": 1
-    }
-  },
-  "assets/data/generator/trainingSections/prepatory/child/beginner.ts": {
-    "max-lines": {
-      "count": 1
-    }
-  },
-  "assets/data/generator/trainingSections/prepatory/child/professional.ts": {
-    "max-lines": {
-      "count": 1
-    }
-  },
   "assets/mockdata/TestIntensity.js": {
     "max-lines": {
       "count": 1

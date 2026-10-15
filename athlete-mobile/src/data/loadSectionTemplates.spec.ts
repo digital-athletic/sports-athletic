@@ -4,6 +4,7 @@ import {
   parseSectionTemplate,
 } from "./loadSectionTemplates";
 import PauseTemplates from "../../assets/data/generator/trainingSections/pause.json";
+import PreparatoryTemplates from "../../assets/data/generator/trainingSections/preparatory.json";
 import { TrainingSectionsMapSchema } from "@/schemas/generator.schema";
 
 const AGE_GROUPS = ["child", "adult"] as const;
@@ -104,6 +105,39 @@ describe("parseSectionTemplate: schema rules", () => {
       ...validTemplate(),
       "1": [{ type: "SWR1", numOfWeeks, cardioType: "CARDIO_4" }],
     });
+  });
+});
+
+describe("loadSectionTemplate: preparatory file", () => {
+  it("parses every preparatory template of the real file", () => {
+    for (const ageGroup of AGE_GROUPS) {
+      for (const level of LEVELS) {
+        expect({
+          ageGroup,
+          level,
+          success: v.safeParse(
+            TrainingSectionsMapSchema,
+            PreparatoryTemplates[ageGroup][level],
+          ).success,
+        }).toEqual({ ageGroup, level, success: true });
+      }
+    }
+  });
+
+  it("returns a known preparatory template for a known key", () => {
+    const template = loadSectionTemplate("PREPARATORY", "ADULT", "ADVANCED");
+
+    expect(template["7"]).toEqual([
+      { type: "SWR1", numOfWeeks: 3, cardioType: "CARDIO_3" },
+      { type: "SWR2", numOfWeeks: 2, cardioType: "CARDIO_2" },
+      { type: "MAX", numOfWeeks: 2, cardioType: "CARDIO_1_SHORT" },
+    ]);
+    expect(template.repeat).toEqual([
+      { type: "SWR2", numOfWeeks: 3, cardioType: "CARDIO_2" },
+      { type: "SA", numOfWeeks: 3, cardioType: "CARDIO_1_SHORT" },
+      { type: "SWR2", numOfWeeks: 3, cardioType: "CARDIO_2" },
+      { type: "MAX", numOfWeeks: 3, cardioType: "CARDIO_1_LAKTAT" },
+    ]);
   });
 });
 

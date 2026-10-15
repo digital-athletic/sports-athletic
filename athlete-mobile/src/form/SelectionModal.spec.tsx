@@ -54,7 +54,7 @@ describe("SelectionModal", () => {
       />,
     );
 
-    const item1 = getByText("Item One").parent;
+    const item1 = getByText("Item One").parent!;
     fireEvent.press(item1);
 
     const confirmButton = getByText("OK");
@@ -77,8 +77,8 @@ describe("SelectionModal", () => {
       />,
     );
 
-    const item1 = getByText("Item One").parent;
-    const item2 = getByText("Item Two").parent;
+    const item1 = getByText("Item One").parent!;
+    const item2 = getByText("Item Two").parent!;
 
     fireEvent.press(item1);
     fireEvent.press(item2);
@@ -104,8 +104,8 @@ describe("SelectionModal", () => {
       />,
     );
 
-    const item1 = getByText("Item One").parent;
-    const item2 = getByText("Item Two").parent;
+    const item1 = getByText("Item One").parent!;
+    const item2 = getByText("Item Two").parent!;
 
     fireEvent.press(item1);
     fireEvent.press(item2);
@@ -148,7 +148,7 @@ describe("SelectionModal", () => {
     );
 
     // Select item2
-    const item2 = getByText("Item Two").parent;
+    const item2 = getByText("Item Two").parent!;
     fireEvent.press(item2);
 
     // Cancel

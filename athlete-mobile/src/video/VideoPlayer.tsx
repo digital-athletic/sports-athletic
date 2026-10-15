@@ -10,6 +10,17 @@ import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
 
+type LoadParams = {
+  source: string;
+  isTutorial: boolean | undefined;
+  retryCount: number;
+};
+
+const loadParamsChanged = (prev: LoadParams, next: LoadParams) =>
+  prev.source !== next.source ||
+  prev.isTutorial !== next.isTutorial ||
+  prev.retryCount !== next.retryCount;
+
 type Props = {
   title?: string;
   source: string;
@@ -40,13 +51,19 @@ export const VideoPlayer: FC<Props> = ({
 
   const player = useVideoPlayer(videoUrl);
 
-  useEffect(() => {
-    setError(null);
-    setLoading(true);
+  const filename = source?.split("/").pop() ?? "";
 
+  // Reset for a new load whenever the source/tutorial-flag/retry changes.
+  const [prevLoad, setPrevLoad] = useState({ source, isTutorial, retryCount });
+  if (loadParamsChanged(prevLoad, { source, isTutorial, retryCount })) {
+    setPrevLoad({ source, isTutorial, retryCount });
+    setError(null);
+    setLoading(!!filename);
+  }
+
+  useEffect(() => {
     const filename = source?.split("/").pop() ?? "";
     if (!filename) {
-      setLoading(false);
       return;
     }
 

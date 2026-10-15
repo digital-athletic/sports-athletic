@@ -8,8 +8,14 @@ import { useCallback, useEffect, useRef } from "react";
  */
 export function useExerciseTiming() {
   const activeTraining = useTrainingStore((state) => state.activeTraining);
-  const exerciseStartTimeRef = useRef<number>(Date.now());
-  const pauseStartRef = useRef<number>(Date.now());
+  const exerciseStartTimeRef = useRef<number | null>(null);
+  const pauseStartRef = useRef<number | null>(null);
+  if (exerciseStartTimeRef.current === null) {
+    exerciseStartTimeRef.current = Date.now();
+  }
+  if (pauseStartRef.current === null) {
+    pauseStartRef.current = Date.now();
+  }
 
   const markPauseStart = useCallback(() => {
     pauseStartRef.current = Date.now();
@@ -19,8 +25,8 @@ export function useExerciseTiming() {
     (wasPaused: boolean) => {
       if (wasPaused) {
         // Resume: add pause duration to tracking
-        const pauseDuration = Date.now() - pauseStartRef.current;
-        exerciseStartTimeRef.current += pauseDuration;
+        const pauseDuration = Date.now() - pauseStartRef.current!;
+        exerciseStartTimeRef.current! += pauseDuration;
       } else {
         markPauseStart();
       }
@@ -29,12 +35,12 @@ export function useExerciseTiming() {
   );
 
   const getPauseElapsed = useCallback(
-    () => Date.now() - pauseStartRef.current,
+    () => Date.now() - pauseStartRef.current!,
     [],
   );
 
   const getExerciseElapsed = useCallback(
-    () => Date.now() - exerciseStartTimeRef.current,
+    () => Date.now() - exerciseStartTimeRef.current!,
     [],
   );
 

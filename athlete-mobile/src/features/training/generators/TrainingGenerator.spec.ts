@@ -1917,11 +1917,9 @@ describe("TrainingGenerator", () => {
               .filter((e) => e.exerciseId === exerciseId)
               .map((e) => e.weight!);
 
-            // Light ramp-up loads share the empty bar minimum.
-            expect(weights[0]).toBeLessThanOrEqual(weights[1]);
+            expect(weights[0]).toBeLessThan(weights[1]);
             expect(weights[1]).toBeLessThanOrEqual(weights[2]);
             expect(weights[2]).toBeLessThanOrEqual(weights[3]);
-            expect(weights[0]).toBeLessThan(weights[3]);
           });
         },
       );
@@ -2127,15 +2125,18 @@ describe("TrainingGenerator", () => {
         };
 
         const result = generateTestWorkout(userWithMaxValues);
-        const squatWeights = result
-          .filter(
-            (entry) => entry.exerciseId === "25" && entry.skill === "TEST",
-          )
-          .map((entry) => entry.weight);
+        const squatEntries = result.filter(
+          (entry) => entry.exerciseId === "25" && entry.skill === "TEST",
+        );
 
         // 75% of 41.3 kg is 30.975 kg, rounded to a 30 kg test set load; the
-        // 40% and 60% ramp-up loads of 12 kg and 18 kg use the empty bar
-        expect(squatWeights).toEqual([20, 20, 25, 30]);
+        // strength test keeps ramp-up loads below the empty bar
+        expect(squatEntries.map((entry) => entry.weight)).toEqual([
+          12.5, 17.5, 25, 30,
+        ]);
+        expect(squatEntries.map((entry) => entry.performedWeight)).toEqual([
+          12.5, 17.5, 25, 30,
+        ]);
       });
     });
 

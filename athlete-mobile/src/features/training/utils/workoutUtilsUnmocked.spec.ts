@@ -168,6 +168,12 @@ describe("roundWeightValue: rounding by equipment", () => {
     expect(roundWeightValue(20, barbellExercise)).toBe(20);
   });
 
+  it("skips the empty bar minimum for strength test loads", () => {
+    const options = { emptyBarMinimum: false };
+    expect(roundWeightValue(12, barbellExercise, options)).toBe(12.5);
+    expect(roundWeightValue(18.7, barbellExercise, options)).toBe(17.5);
+  });
+
   it("keeps the empty bar minimum off other equipment", () => {
     expect(roundWeightValue(12, dumbbellExercise)).toBe(12);
     expect(roundWeightValue(12, kettlebellExercise)).toBe(12);

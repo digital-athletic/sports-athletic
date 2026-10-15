@@ -168,36 +168,6 @@
       "count": 1
     }
   },
-  "assets/data/generator/trainingSections/pause/adult/advanced.ts": {
-    "max-lines": {
-      "count": 1
-    }
-  },
-  "assets/data/generator/trainingSections/pause/adult/beginner.ts": {
-    "max-lines": {
-      "count": 1
-    }
-  },
-  "assets/data/generator/trainingSections/pause/adult/professional.ts": {
-    "max-lines": {
-      "count": 1
-    }
-  },
-  "assets/data/generator/trainingSections/pause/child/advanced.ts": {
-    "max-lines": {
-      "count": 1
-    }
-  },
-  "assets/data/generator/trainingSections/pause/child/beginner.ts": {
-    "max-lines": {
-      "count": 1
-    }
-  },
-  "assets/data/generator/trainingSections/pause/child/professional.ts": {
-    "max-lines": {
-      "count": 1
-    }
-  },
   "assets/data/generator/trainingSections/prepatory/adult/advanced.ts": {
     "max-lines": {
       "count": 1

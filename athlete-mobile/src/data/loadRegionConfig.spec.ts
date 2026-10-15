@@ -98,11 +98,16 @@ describe("loadRegionConfig: real file", () => {
     "WU",
     "WUSKSA",
     "WUSPEZIAL",
-    "UNMAPPED_SKILL",
   ])("resolves the config for skill %s", (skill) => {
     const tags = PlanGenerator.getTagsForSkill(skill);
 
     expect(Object.keys(tags).length).toBeGreaterThan(0);
+  });
+
+  it("falls back to the first hypertrophy config for an unmapped skill", () => {
+    expect(PlanGenerator.getTagsForSkill("UNMAPPED_SKILL")).toEqual(
+      PlanGenerator.getTagsForSkill("SWR1"),
+    );
   });
 
   it("throws for an unknown name", () => {

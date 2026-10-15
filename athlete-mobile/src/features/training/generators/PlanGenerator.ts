@@ -24,6 +24,7 @@ import {
 import { loadDirections } from "@/data/loadDirections";
 import { loadMaxMinutes } from "@/data/loadMaxMinutes";
 import { loadRegionConfig } from "@/data/loadRegionConfig";
+import { loadSectionTemplate } from "@/data/loadSectionTemplates";
 import { loadSkillPriorities } from "@/data/loadSkillPriorities";
 import { type ExerciseType } from "@/schemas/exercise.schema";
 import { type SkillTreeType } from "@/schemas/skillTree.schema";
@@ -60,7 +61,6 @@ import {
   PlanStructureSchema,
   SkillBranchWithIdSchema,
   SkillsMapSchema,
-  TrainingSectionsMapSchema,
   type DirectionEntry,
   type DirectionsMap,
   type DurationTagMap,
@@ -72,7 +72,6 @@ import {
   type SectionEntry,
   type SkillBranchWithId,
   type StudioPreferencePlans,
-  type TrainingSectionsMap,
 } from "@/schemas/generator.schema";
 
 import { cloneWithValidation } from "@/utils/cloneWithValidation";
@@ -82,37 +81,6 @@ import {
   getUserTagValue,
   getUserTagValues,
 } from "@/utils/tagUtils";
-
-// Assets
-// Training Sections
-// - Pause
-// - - Child
-import TrainingSectionsPauseChildAdvanced from "../../../../assets/data/generator/trainingSections/pause/child/advanced";
-import TrainingSectionsPauseChildBeginner from "../../../../assets/data/generator/trainingSections/pause/child/beginner";
-import TrainingSectionsPauseChildProfessional from "../../../../assets/data/generator/trainingSections/pause/child/professional";
-// - - Adult
-import TrainingSectionsPauseAdultAdvanced from "../../../../assets/data/generator/trainingSections/pause/adult/advanced";
-import TrainingSectionsPauseAdultBeginner from "../../../../assets/data/generator/trainingSections/pause/adult/beginner";
-import TrainingSectionsPauseAdultProfessional from "../../../../assets/data/generator/trainingSections/pause/adult/professional";
-// - Prepatory
-// - - Child
-import TrainingSectionsPrepatoryChildAdvanced from "../../../../assets/data/generator/trainingSections/prepatory/child/advanced";
-import TrainingSectionsPrepatoryChildBeginner from "../../../../assets/data/generator/trainingSections/prepatory/child/beginner";
-import TrainingSectionsPrepatoryChildProfessional from "../../../../assets/data/generator/trainingSections/prepatory/child/professional";
-// - - Adult
-import TrainingSectionsPrepatoryAdultAdvanced from "../../../../assets/data/generator/trainingSections/prepatory/adult/advanced";
-import TrainingSectionsPrepatoryAdultBeginner from "../../../../assets/data/generator/trainingSections/prepatory/adult/beginner";
-import TrainingSectionsPrepatoryAdultProfessional from "../../../../assets/data/generator/trainingSections/prepatory/adult/professional";
-// - Competition
-// - - Child
-import TrainingSectionsCompetitionChildAdvanced from "../../../../assets/data/generator/trainingSections/competition/child/advanced";
-import TrainingSectionsCompetitionChildBeginner from "../../../../assets/data/generator/trainingSections/competition/child/beginner";
-import TrainingSectionsCompetitionChildProfessional from "../../../../assets/data/generator/trainingSections/competition/child/professional";
-// - - Adult
-import TrainingSectionsCompetitionAdultAdvanced from "../../../../assets/data/generator/trainingSections/competition/adult/advanced";
-import TrainingSectionsCompetitionAdultBeginner from "../../../../assets/data/generator/trainingSections/competition/adult/beginner";
-import TrainingSectionsCompetitionAdultProfessional from "../../../../assets/data/generator/trainingSections/competition/adult/professional";
-// END Training Sections
 
 // Strength skills per the section types: hypertrophy, max strength,
 // explosive power and power endurance
@@ -2092,182 +2060,16 @@ export default class PlanGenerator {
     hasWeights: boolean,
     isKeeper: boolean,
   ): SectionEntry[] => {
-    const sp = seasonPhase.toLowerCase();
-    const ag =
-      ageGroup.toLowerCase() === "adolescent"
-        ? "adult"
-        : ageGroup.toLowerCase(); // treat adolescents as adults
-    const lv = level.toLowerCase();
-    // sectionsGroup contains numeric keys (1-20) mapping to section arrays, plus optional repeat array
-    let sectionsGroup: TrainingSectionsMap | null = null;
     if (PlanGenerator.DEBUG) {
       console.log(
-        "Find training sections for " +
-          sp +
-          ag +
-          lv +
-          "\nwith " +
-          numOfWeeks +
-          " weeks.",
+        `Find training sections for ${seasonPhase} ${ageGroup} ${level}\nwith ${numOfWeeks} weeks.`,
       );
     }
-    switch (sp + ag + lv) {
-      // Pause
-      // - Child
-      case "pausechildbeginner":
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsPauseChildBeginner,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsPauseChildBeginner",
-        );
-        break;
-      case "pausechildadvanced":
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsPauseChildAdvanced,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsPauseChildAdvanced",
-        );
-        break;
-      case "pausechildprofessional":
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsPauseChildProfessional,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsPauseChildProfessional",
-        );
-        break;
-      // - Adult
-      case "pauseadultbeginner":
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsPauseAdultBeginner,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsPauseAdultBeginner",
-        );
-        break;
-      case "pauseadultadvanced":
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsPauseAdultAdvanced,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsPauseAdultAdvanced",
-        );
-        break;
-      case "pauseadultprofessional":
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsPauseAdultProfessional,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsPauseAdultProfessional",
-        );
-        break;
-      // Preparatory
-      // - Child
-      case "preparatorychildbeginner":
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsPrepatoryChildBeginner,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsPrepatoryChildBeginner",
-        );
-        break;
-      case "preparatorychildadvanced":
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsPrepatoryChildAdvanced,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsPrepatoryChildAdvanced",
-        );
-        break;
-      case "preparatorychildprofessional":
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsPrepatoryChildProfessional,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsPrepatoryChildProfessional",
-        );
-        break;
-      // - Adult
-      case "preparatoryadultbeginner":
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsPrepatoryAdultBeginner,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsPrepatoryAdultBeginner",
-        );
-        break;
-      case "preparatoryadultadvanced":
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsPrepatoryAdultAdvanced,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsPrepatoryAdultAdvanced",
-        );
-        break;
-      case "preparatoryadultprofessional":
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsPrepatoryAdultProfessional,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsPrepatoryAdultProfessional",
-        );
-        break;
-      // Competition
-      // - Child
-      case "competitionchildbeginner":
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsCompetitionChildBeginner,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsCompetitionChildBeginner",
-        );
-        break;
-      case "competitionchildadvanced":
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsCompetitionChildAdvanced,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsCompetitionChildAdvanced",
-        );
-        break;
-      case "competitionchildprofessional":
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsCompetitionChildProfessional,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsCompetitionChildProfessional",
-        );
-        break;
-      // - Adult
-      case "competitionadultbeginner":
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsCompetitionAdultBeginner,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsCompetitionAdultBeginner",
-        );
-        break;
-      case "competitionadultadvanced":
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsCompetitionAdultAdvanced,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsCompetitionAdultAdvanced",
-        );
-        break;
-      case "competitionadultprofessional":
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsCompetitionAdultProfessional,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsCompetitionAdultProfessional",
-        );
-        break;
-      default:
-        if (PlanGenerator.DEBUG) {
-          console.log(
-            "Couldn't find training sections for " + sp + ", " + ag + ", " + lv,
-          );
-        }
-        // Use default
-        sectionsGroup = cloneWithValidation(
-          TrainingSectionsPrepatoryAdultAdvanced,
-          TrainingSectionsMapSchema,
-          "TrainingSectionsPrepatoryAdultAdvanced",
-        );
-        break;
-    }
+    // Keys 1-20 map to section arrays, plus an optional repeat array
+    const sectionsGroup = loadSectionTemplate(seasonPhase, ageGroup, level);
 
     if (PlanGenerator.DEBUG) {
       console.log("Found training sections", sectionsGroup);
-    }
-
-    if (!sectionsGroup) {
-      return [];
     }
 
     let sections: SectionEntry[] = [...(sectionsGroup[20] ?? [])];

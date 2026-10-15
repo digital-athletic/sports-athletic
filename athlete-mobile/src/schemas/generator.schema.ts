@@ -45,16 +45,30 @@ export type DirectionsByRegion = v.InferOutput<typeof DirectionsByRegionSchema>;
 // Training Section schemas
 export const SectionEntrySchema = v.object({
   type: SectionTypesSchema,
-  numOfWeeks: v.number(),
+  numOfWeeks: v.pipe(v.number(), v.integer(), v.minValue(1)),
   cardioType: CardioTypesSchema,
 });
 export type SectionEntry = v.InferOutput<typeof SectionEntrySchema>;
 
+const WEEK_KEY = /^([1-9]|1\d|20)$/;
+const WEEK_KEYS = Array.from({ length: 20 }, (_, index) => String(index + 1));
+
 // Uses objectWithRest to type both the explicit 'repeat' property and
 // numeric week keys (1-20) which map to SectionEntry arrays
-export const TrainingSectionsMapSchema = v.objectWithRest(
-  { repeat: v.optional(v.array(SectionEntrySchema)) },
-  v.array(SectionEntrySchema),
+export const TrainingSectionsMapSchema = v.pipe(
+  v.objectWithRest(
+    { repeat: v.optional(v.array(SectionEntrySchema)) },
+    v.array(SectionEntrySchema),
+  ),
+  v.check(
+    (map) =>
+      Object.keys(map).every((key) => key === "repeat" || WEEK_KEY.test(key)),
+    "Only the keys 1 to 20 and repeat are allowed",
+  ),
+  v.check(
+    (map) => WEEK_KEYS.every((key) => key in map),
+    "Every key from 1 to 20 is required",
+  ),
 );
 export type TrainingSectionsMap = v.InferOutput<
   typeof TrainingSectionsMapSchema

@@ -173,9 +173,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                 exerciseId={exerciseId}
                 nextExerciseId={nextExercise?.exerciseId}
                 duration={
-                  isEnduranceExercise
-                    ? undefined
-                    : currentExercise.duration || 0
+                  isEnduranceExercise ? undefined : currentExercise.duration
                 }
                 next={advanceToNextExercise}
                 feedback={handleFeedback}

@@ -82,6 +82,12 @@ Exercise and skill tree data are bundled JSON, loaded once per launch into modul
 |----------|------|--------|--------|
 | exerciseRegistry | `src/data/exerciseRegistry.ts` | `assets/.../Exercises.json` | `getExerciseById`, `getExercisesByTag`, `getAllExercises` |
 | skillTreeRegistry | `src/data/skillTreeRegistry.ts` | 27 files in `assets/.../skillTrees/` | `getSkillTree`, `getAllSkillTrees`, `getSkillTreeNames` |
+| loadSkillPriorities | `src/data/loadSkillPriorities.ts` | `assets/.../skillPriorities.json` | `loadSkillPriorities` |
+| loadMaxMinutes | `src/data/loadMaxMinutes.ts` | `assets/.../maxMinutes.json` | `loadMaxMinutes` |
+| loadStrengthTest | `src/data/loadStrengthTest.ts` | `assets/.../strengthTest.json` | `loadStrengthTest` |
+| loadDirections | `src/data/loadDirections.ts` | `assets/.../directions.json` | `loadDirections` |
+| loadRegionConfig | `src/data/loadRegionConfig.ts` | `assets/.../regions.json` | `loadRegionConfig(name)` |
+| loadIntensityConfig | `src/data/loadIntensityConfig.ts` | `assets/.../intensity.json` | `loadIntensityConfig(name)` |
 
 A skill branch maps `levels[n] -> { exerciseId }` into the exercise registry. Training plans reference branches by `branchId`.
 

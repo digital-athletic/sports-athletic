@@ -74,24 +74,40 @@ describe("loadIntensityConfig: real file", () => {
     },
   );
 
-  it.each(["BAS", "GKS", "GKSKG", "PREV", "SK", "SKKG"])(
-    "serves %s from the real file",
-    (name) => {
-      const config = loadIntensityConfig(name);
+  // Every name getIntensityBySkill and getHypertrophyIntensity can produce.
+  it.each([
+    "CARDIO_3",
+    "CARDIO_2",
+    "CARDIO_1_LAKTAT",
+    "CARDIO_1_SHORT",
+    "BAS",
+    "GKS",
+    "GKSKG",
+    "PREV",
+    "SA",
+    "SAKG",
+    "SK",
+    "SKKG",
+    "DEFAULT",
+    "DEFAULTKG",
+    "SWR2",
+    "SWR2KG",
+  ])("serves %s from the real file", (name) => {
+    const config = loadIntensityConfig(name);
 
-      expect(Object.keys(IntensityData)).toContain(name);
-      expect(Object.keys(config.startValue).length).toBeGreaterThan(0);
-    },
-  );
+    expect(Object.keys(IntensityData)).toContain(name);
+    expect(Object.keys(config.startValue).length).toBeGreaterThan(0);
+  });
 
-  it.each(["SA", "SAKG", "SWR2", "SWR2KG"])(
-    "serves the code config %s",
-    (name) => {
-      const config = loadIntensityConfig(name);
+  it("keeps the hypertrophy weight limit and weight types", () => {
+    const weighted = loadIntensityConfig("SWR2");
 
-      expect(Object.keys(config.startValue).length).toBeGreaterThan(0);
-    },
-  );
+    expect(weighted.lowestPermittedWeight).toBe(65);
+    expect(weighted.startValue.weight?.type).toEqual({ type: "weightFMax" });
+    expect(loadIntensityConfig("SWR2KG").startValue.weight?.type).toBe(
+      undefined,
+    );
+  });
 
   it("differs between the full body stability configs only in the target duration", () => {
     const weighted = loadIntensityConfig("GKS");

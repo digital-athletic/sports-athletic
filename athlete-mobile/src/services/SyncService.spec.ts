@@ -201,6 +201,8 @@ describe("syncExerciseData", () => {
       branchId: "branch-1",
       maxFLevelAdjustment: null,
       maxFRepetitions: [{ level: "EASY", repetitions: 5 }],
+      performedWeight: 82.5,
+      tooHardCount: 1,
     };
 
     await syncExerciseData(payload, TEST_USER_ID);
@@ -226,6 +228,8 @@ describe("syncExerciseData", () => {
         feedback_streak_counter: null,
         max_f_level_adjustment: null,
         max_f_repetitions: [{ level: "EASY", repetitions: 5 }],
+        performed_weight: 82.5,
+        too_hard_count: 1,
       },
       { onConflict: "user_id,exercise_id,workout_id" },
     );
@@ -275,6 +279,8 @@ describe("syncExerciseData", () => {
         feedback_streak_counter: null,
         max_f_level_adjustment: null,
         max_f_repetitions: null,
+        performed_weight: null,
+        too_hard_count: null,
       },
       { onConflict: "user_id,exercise_id,workout_id" },
     );

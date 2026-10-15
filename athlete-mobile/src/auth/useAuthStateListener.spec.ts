@@ -3,7 +3,7 @@
  */
 
 import { renderHook, waitFor } from "@testing-library/react-native";
-import { type AppStateStatus } from "react-native";
+import { AppState, type AppStateStatus } from "react-native";
 import { useAuthStateListener } from "./useAuthStateListener";
 
 const mockUnsubscribeSupabase = jest.fn();
@@ -41,16 +41,14 @@ jest.mock("../services/supabaseClient", () => ({
 
 const mockAppStateRemove = jest.fn();
 let capturedAppStateListener: ((state: AppStateStatus) => void) | null = null;
-jest.mock("react-native", () => ({
-  AppState: {
-    addEventListener: jest.fn(
-      (event: string, listener: (state: AppStateStatus) => void) => {
-        capturedAppStateListener = listener;
-        return { remove: mockAppStateRemove };
-      },
-    ),
-  },
-}));
+jest
+  .spyOn(AppState, "addEventListener")
+  .mockImplementation((_event, listener) => {
+    capturedAppStateListener = listener as (state: AppStateStatus) => void;
+    return { remove: mockAppStateRemove } as ReturnType<
+      typeof AppState.addEventListener
+    >;
+  });
 
 const mockUnsubscribeNetInfo = jest.fn();
 let capturedNetInfoListener:

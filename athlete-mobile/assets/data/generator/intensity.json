@@ -1,0 +1,116 @@
+{
+  "CARDIO_1_LAKTAT": {
+    "adjustment": {
+      "repetition": {
+        "default": { "default": { "TOO_EASY": 1, "SUCCEEDED": 1, "TOO_HARD": -1 } }
+      }
+    },
+    "startValue": {
+      "repetition": { "default": { "default": 2, "advanced": 3, "professional": 3 } }
+    },
+    "targetValue": {
+      "repetition": { "default": { "default": 4, "advanced": 5, "professional": 6 } }
+    }
+  },
+  "CARDIO_1_SHORT": {
+    "adjustment": {
+      "repetition": {
+        "default": { "default": { "TOO_EASY": 1, "SUCCEEDED": 1, "TOO_HARD": -2 } }
+      }
+    },
+    "startValue": {
+      "repetition": { "default": { "default": 3, "advanced": 4, "professional": 5 } }
+    },
+    "targetValue": {
+      "repetition": { "default": { "default": 5, "advanced": 6, "professional": 8 } }
+    }
+  },
+  "CARDIO_2": {
+    "adjustment": {
+      "repetition": {
+        "default": { "default": { "TOO_EASY": 1, "SUCCEEDED": 1, "TOO_HARD": -2 } }
+      }
+    },
+    "startValue": {
+      "repetition": { "default": { "default": 3, "advanced": 4, "professional": 5 } }
+    },
+    "targetValue": {
+      "repetition": { "default": { "default": 7, "advanced": 8, "professional": 10 } }
+    }
+  },
+  "CARDIO_3": {
+    "adjustment": {
+      "repetition": {
+        "default": { "default": { "TOO_EASY": 1, "SUCCEEDED": 1, "TOO_HARD": -2 } }
+      }
+    },
+    "startValue": {
+      "repetition": { "default": { "default": 3, "advanced": 4, "professional": 5 } }
+    },
+    "targetValue": {
+      "repetition": { "default": { "default": 6, "advanced": 8, "professional": 8 } }
+    }
+  },
+  "DEFAULT": {
+    "adjustment": {
+      "duration": {
+        "default": { "default": { "TOO_EASY": 10, "SUCCEEDED": 5, "TOO_HARD": -5 } }
+      },
+      "height": {
+        "default": { "default": { "TOO_EASY": 10, "SUCCEEDED": 5, "TOO_HARD": -5 } }
+      },
+      "repetition": {
+        "default": { "default": { "TOO_EASY": 2, "SUCCEEDED": 1, "TOO_HARD": -2 } }
+      },
+      "weightFMax": {
+        "default": { "default": { "TOO_EASY": 5, "SUCCEEDED": 2.5, "TOO_HARD": -2.5 } }
+      },
+      "weightAbsolute": {
+        "default": { "default": { "TOO_EASY": 2, "SUCCEEDED": 1, "TOO_HARD": -1 } }
+      }
+    },
+    "startValue": {
+      "duration": { "default": { "default": 50 } },
+      "height": { "default": { "default": 20 } },
+      "repetition": { "default": { "default": 12 } },
+      "weight": { "default": { "default": 40 }, "type": { "type": "weightFMax" } }
+    },
+    "targetValue": {
+      "duration": { "default": { "default": 80 } },
+      "height": { "default": { "default": 40 } },
+      "repetition": { "default": { "default": 20 } },
+      "weight": { "default": { "default": 60 }, "type": { "type": "weightFMax" } }
+    }
+  },
+  "DEFAULTKG": {
+    "adjustment": {
+      "duration": {
+        "default": { "default": { "TOO_EASY": 10, "SUCCEEDED": 5, "TOO_HARD": -10 } }
+      },
+      "height": {
+        "default": { "default": { "TOO_EASY": 10, "SUCCEEDED": 5, "TOO_HARD": -5 } }
+      },
+      "repetition": {
+        "default": { "default": { "TOO_EASY": 2, "SUCCEEDED": 1, "TOO_HARD": -2 } }
+      },
+      "weightFMax": {
+        "default": { "default": { "TOO_EASY": 5, "SUCCEEDED": 2.5, "TOO_HARD": -2.5 } }
+      },
+      "weightAbsolute": {
+        "default": { "default": { "TOO_EASY": 2, "SUCCEEDED": 1, "TOO_HARD": -1 } }
+      }
+    },
+    "startValue": {
+      "duration": { "default": { "default": 50 } },
+      "height": { "default": { "default": 20 } },
+      "repetition": { "default": { "default": 12 } },
+      "weight": { "default": { "default": 10 } }
+    },
+    "targetValue": {
+      "duration": { "default": { "default": 80 } },
+      "height": { "default": { "default": 40 } },
+      "repetition": { "default": { "default": 20 } },
+      "weight": { "default": { "default": 20 } }
+    }
+  }
+}

@@ -74,10 +74,10 @@ The owning progression specification decides whether a level change is earned. T
 **Standard Exercise Progression** owns the progression outcome for hypertrophy, explosive power, power endurance, stability, and prevention:
 
 - `LEVEL_UP` is emitted only after the applicable final upper boundary has been prescribed, performed, and positively evaluated according to that specification.
-- `LEVEL_DOWN` is emitted only after the applicable final lower boundary has been prescribed, performed, and evaluated as `too hard` according to that specification.
+- `LEVEL_DOWN` is emitted only after the applicable final lower boundary has been prescribed, performed, and evaluated as `too hard` according to that specification. For exercises with fixed-kilogram weights, that specification emits `LEVEL_DOWN` on the second consecutive `too hard` instead.
 - Otherwise the result is `NO_CHANGE`, while any repetition/duration or weight progression remains owned by Standard Exercise Progression.
 - For hypertrophy, the global repetition/duration boundaries from Standard Exercise Progression override exercise-specific authored repetition/duration values.
-- Warm-up, special warm-up, cool-down, mobility, foam roller, and strength-test exercises do not use this standard progression and do not earn branch-level changes through it.
+- Warm-up, special warm-up, speed warm-up, cool-down, mobility, foam roller, and strength-test exercises do not use this standard progression and do not earn branch-level changes through it.
 
 **Max strength** receives its level-change trigger from [Max Strength Training](../progression/max-strength-progression.md).
 

@@ -23,7 +23,7 @@ Per exercise, progression may use:
 
 Start/target values may depend on fitness level, gender, and age group unless this specification defines a global override. The authored value configuration is the source of truth for values not overridden here. For hypertrophy, full-body stability, and prevention, the training-area-specific repetition and duration ranges defined in this specification override exercise-specific authored repetition/duration values. Exercise-specific weight rules remain unchanged.
 
-Warm-up, special warm-up, cool-down, mobility, foam roller, and strength-test exercises do not use this progression and do not collect progression feedback.
+Warm-up, special warm-up, speed warm-up, cool-down, mobility, foam roller, and strength-test exercises do not use this progression and do not collect progression feedback. Speed warm-up durations follow [Speed warm-up](#speed-warm-up).
 
 Exercise-specific history is stored per athlete and survives plan regeneration. One feedback event must be consumed only once.
 
@@ -83,6 +83,17 @@ There is currently only one hypertrophy training logic. A separate **strength-en
 
 Athletes under 16 currently do not use F-Max-based weight calculation. Weighted U16 exercises use fixed authored weight values, which may depend on exercise and gender.
 
+### Speed warm-up
+
+Speed warm-up (WUSKSA) exercises use fixed authored durations:
+
+- every duration is at most 30 s; a longer authored value is capped at 30 s;
+- a shorter authored duration stays unchanged;
+- an exercise without an authored duration uses 30 s;
+- durations never change between sessions, and the speed warm-up collects no feedback.
+
+The special warm-up (WUSPEZIAL) is not affected by this rule.
+
 ## Feedback rules
 
 ### Exercises without adjustable weight
@@ -134,16 +145,32 @@ The underlying progression value is calculated first. The final loadable prescri
 
 ### Guaranteed real load change
 
-Every intended weight increase/reduction must produce a real change in prescribed load.
+Every intended weight increase/reduction must produce a real change in prescribed load:
+
+- an increase compares with the rounded load of the previous underlying value;
+- a reduction compares with the load the athlete last performed.
 
 If ±2.5% rounds to the same usable load:
 
 - increase → use at least the next available higher load;
 - reduction → use at least the next available lower load.
 
-The rounded execution load must **not** replace the underlying unrounded progression value used for future ±2.5% calculations.
+The rounded execution load must **not** replace the underlying unrounded progression value used for future ±2.5% calculations. The next weight step always starts from the underlying value. If that step rounds to the load the athlete already performed, the athlete performs that load again; no second forced jump occurs.
+
+Example (barbell, 2.5 kg increments):
+
+| Step | Underlying value | Rounded load | Prescribed load |
+|---|---:|---:|---:|
+| Start | 40 kg | 40 kg | 40 kg |
+| +2.5% | 41 kg | 40 kg | 42.5 kg (forced jump) |
+| +2.5% | 42.03 kg | 42.5 kg | 42.5 kg (same load again) |
+| -2.5% after the forced jump (from 41 kg) | 39.98 kg | 40 kg | 40 kg (real change from the performed 42.5 kg) |
+
+If the next available load lies above the target load, the target load wins; see [Load boundaries](#load-boundaries).
 
 ### Load boundaries
+
+Authored start and target loads must be loadable increments according to [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md). If an authored load is not loadable, it is rounded with the same rules before it is used as a boundary.
 
 The underlying progression value is clamped to the authored load limits:
 
@@ -153,6 +180,10 @@ reduction: nextUnderlyingWeight = max(calculatedReduction, lowestPermittedWeight
 ```
 
 The equipment-specific rounded execution load is derived afterward.
+
+The target load takes priority over the guaranteed real load change: an increase never prescribes a load above the rounded target load. If the clamped increase produces no real load change, the target load counts as reached.
+
+A load boundary counts as reached as soon as the rounded execution load reaches the rounded target load or the rounded lowest permitted load.
 
 ## Boundary rules
 
@@ -181,7 +212,7 @@ After it has been performed:
 - `too hard` → reduce weight by one weight step; repetitions/duration unchanged;
 - no feedback → no change.
 
-Target-load checks treat the boundary as reached when the underlying value is **at or above** target, while the stored progression value remains clamped to target.
+Target-load checks treat the boundary as reached when the rounded execution load is **at or above** the rounded target load, or when the underlying value is at or above target, while the stored progression value remains clamped to target. When an increase cannot produce a real load change without exceeding the target load, the target load also counts as reached (see [Load boundaries](#load-boundaries)).
 
 ### Lower boundary without adjustable weight
 
@@ -205,7 +236,17 @@ Only after the lowest permitted load has been performed and is still `too hard` 
 
 For weighted hypertrophy, repetitions remain 8-12 and duration remains 30-50 s during weight regression.
 
-Pure explosive exercises, for example loaded jumps, carry authored load limits in the exercise catalog. Those limits take priority over the skill's load range, so the explosive power floor of 50% F-Max does not apply to them.
+**Fixed-kilogram weights:** exercises whose weight is authored in fixed kilograms (full-body stability, weighted prevention, U16 weighted exercises) have no lowest permitted load. The first `too hard` reduces the weight by one weight step. A second `too hard` in a row emits `LEVEL_DOWN` instead of another reduction. Any other feedback resets the count. The count of consecutive `too hard` ratings is part of the stored exercise progress.
+
+Pure explosive exercises, for example loaded jumps, carry authored load limits in the exercise catalog. Those limits take priority over the skill's load range, so the explosive power floor of 50% F-Max does not apply to them. When a loaded jump exercise has no authored load limits for the athlete's fitness level, it uses these defaults, as a share of the knee-direction 1RM converted to the equipment (see [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md)):
+
+| Fitness level | Start load | Target load |
+|---|---:|---:|
+| Beginner | 5% | 10% |
+| Advanced | 10% | 20% |
+| Professional | 10% | 20% |
+
+The lowest permitted load of a loaded jump exercise equals its start load. Reaching that load does not emit `LEVEL_DOWN` by itself: a `too hard` at the lowest permitted load keeps the load, and only the third `too hard` in a row emits `LEVEL_DOWN`, as described below.
 
 The two jump exercises, jump squats and jumped lunges, add one exit: the third `too hard` in a row moves the athlete off the exercise, as a level down does. Every other exercise follows the rules above. The count of consecutive `too hard` ratings is part of the stored exercise progress.
 
@@ -237,7 +278,7 @@ graph TD
     ML -->|No| MR["Reduce reps/duration by 2 steps; clamp at start"]
     MR --> S
 
-    M -->|Yes| MB{"Lowest permitted load already performed?"}
+    M -->|Yes| MB{"Lowest permitted load already performed (loaded jumps: third too hard in a row), or second too hard in a row with fixed-kilogram weight?"}
     MB -->|Yes| LD
     MB -->|No| MD["Reduce underlying weight 2.5%; keep reps/duration"]
     MD --> MC["Clamp load, round, guarantee real lower load"]
@@ -264,24 +305,25 @@ These are the current general values where the authored content resolves to the 
 
 | Training area | Start | Target | Load / notes |
 |---|---:|---:|---|
-| Explosive power with adjustable weight | 4 reps | 6 reps | Beginner 52.5-65% F-Max; Advanced 55-67.5%; Professional 55-70%; lowest load 50% |
-| Pure explosive exercises with an authored load limit | 4 reps | 6 reps | The exercise catalog's load limits replace the skill's load range, see Lower boundary with adjustable weight |
-| Explosive power without adjustable weight | 4 reps | 6 reps | General default |
-| Plyometrics | 4 reps | 6 reps | General default; lighter authored content may use higher targets |
+| Explosive power with adjustable weight | 4 reps | 6 reps | Beginner 52.5-65% F-Max; Advanced 55-67.5%; Professional 55-70%; lowest load 50%; authored targets at most 8 reps (catalog rule, no cap on stored values) |
+| Pure explosive exercises with an authored load limit | 4 reps | 6 reps | The exercise catalog's load limits replace the skill's load range; missing limits use the loaded jump defaults (Beginner 5-10%, Advanced and Professional 10-20% of the knee-direction 1RM), see Lower boundary with adjustable weight; authored targets at most 8 reps (catalog rule, no cap on stored values) |
+| Explosive power without adjustable weight | 4 reps | 6 reps | General default; authored targets at most 8 reps (catalog rule, no cap on stored values) |
+| Plyometrics | 4 reps | 12 reps | Authored values apply; these defaults apply only where values are missing; the 8-rep maximum of explosive power does not apply |
 | Hypertrophy, adjustable weight, reps | 8 reps | 12 reps | Beginner 67.5-75%; Advanced 70-77.5%; Professional 70-77.5%; lowest load 65% |
 | Hypertrophy, adjustable weight, duration | 30 s | 50 s | Same weight-boundary logic |
 | Hypertrophy, no adjustable weight, reps | 8 reps | 12 reps | Standard hypertrophy range |
 | Hypertrophy, no adjustable weight, duration | 30 s | 60 s | Standard hypertrophy range |
-| Full-body stability, adjustable weight, reps | 8 reps | 12 reps | Exercise-specific start/target weights; no F-Max calculation |
-| Full-body stability, adjustable weight, duration | 30 s | 50 s | Exercise-specific start/target weights; no F-Max calculation |
+| Full-body stability, adjustable weight, reps | 8 reps | 12 reps | Exercise-specific start/target weights; no F-Max calculation; second `too hard` in a row → level down |
+| Full-body stability, adjustable weight, duration | 30 s | 50 s | Exercise-specific start/target weights; no F-Max calculation; second `too hard` in a row → level down |
 | Full-body stability, no adjustable weight, reps | 8 reps | 12 reps | standard Full-body stability range |
 | Full-body stability, no adjustable weight, duration | 30 s | 60 s | standard Full-body stability range |
 | Leg-axis stability | 5 reps / 30 s | 8 reps / 45 s | Exercise-specific |
-| Prevention | 10 reps / 40 s | 15 reps / 60 s | Same range with and without weights; weighted exercises use exercise-specific start/target weights, no F-Max calculation |
-| U16 weighted exercises | per training area | per training area | Fixed authored **weight** values; no F-Max calculation. Repetition/duration follows the applicable training-area rules; for hypertrophy use 8-12 reps or 30-50 s for weighted duration. |
+| Prevention | 10 reps / 40 s | 15 reps / 60 s | Same range with and without weights; weighted exercises use exercise-specific start/target weights, no F-Max calculation; second `too hard` in a row → level down |
+| U16 weighted exercises | per training area | per training area | Fixed authored **weight** values; no F-Max calculation; second `too hard` in a row → level down. Repetition/duration follows the applicable training-area rules; for hypertrophy use 8-12 reps or 30-50 s for weighted duration. |
+| Speed warm-up | authored | authored | Fixed duration, at most 30 s, 30 s when missing; no progression, see [Speed warm-up](#speed-warm-up) |
 
 **Full-body stability – exercise-specific weights:**
-For weighted exercises, use the existing exercise-specific start and target weights. These weights are not calculated from strength tests or F-Max. No general weight values apply to this training area.
+For weighted exercises, use the existing exercise-specific start and target weights. These weights are not calculated from strength tests or F-Max. No general weight values apply to this training area. Authored weights must be loadable increments; see [Load boundaries](#load-boundaries).
 
 ## Deferred feedback
 
@@ -327,6 +369,8 @@ Store per exercise, where applicable:
 Per-branch levels are stored separately.
 
 The underlying unrounded weight remains the source for future ±2.5% calculations. The rounded value is only the execution prescription.
+
+Stored repetitions and durations always stay within the currently resolved start and target values. Each session generation clamps them, for every training area, so a later change to authored or global values takes effect for athletes with existing progress.
 
 Pending feedback is the handover token between session completion and next-generation application.
 

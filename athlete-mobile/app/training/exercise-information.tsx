@@ -1,4 +1,3 @@
-import { Loading } from "@/common/Loading";
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { getExerciseById } from "@/data/exerciseRegistry";
@@ -8,7 +7,7 @@ import { Text } from "@/theme/Text";
 import { getTagValues } from "@/utils/tagUtils";
 import { VideoPlayer } from "@/video/VideoPlayer";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { type FC, useEffect, useState } from "react";
+import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -25,14 +24,11 @@ type ScreenParams = {
  * Legacy: views/training/ExerciseInformation
  */
 export default function ExerciseInformationScreen() {
-  const { t } = useTranslation();
   const params = useLocalSearchParams<
     "/training/exercise-information",
     ScreenParams
   >();
   const insets = useSafeAreaInsets();
-
-  const [isLoading, setIsLoading] = useState(true);
 
   const exerciseIdParam = params.exerciseId;
   const exerciseId =
@@ -40,10 +36,6 @@ export default function ExerciseInformationScreen() {
   const exercise = exerciseId ? getExerciseById(exerciseId) : undefined;
   const displayName = (exercise?.displayName || exercise?.name) ?? "";
   const video = exercise?.video;
-
-  useEffect(() => {
-    setIsLoading(false);
-  }, []);
 
   return (
     <>
@@ -67,11 +59,6 @@ export default function ExerciseInformationScreen() {
             </>
           )}
         </ScrollView>
-
-        <Loading
-          show={isLoading}
-          text={t("training.exerciseInformation.loading")}
-        />
       </Box>
     </>
   );

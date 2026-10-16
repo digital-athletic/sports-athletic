@@ -55,7 +55,7 @@ export const EmailInputField: FC<EmailInputFieldProps> = ({
           name="mail"
           size={24}
           color={colors.lightGrey3}
-          accessibilityLabel="email-icon"
+          decorative
         />
       </Box>
       <BasicTextInput

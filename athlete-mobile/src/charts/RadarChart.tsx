@@ -53,8 +53,19 @@ export const RadarChart: FC<RadarChartProps> = ({ userSkills }) => {
     textAnchor: RADAR_CHART_LABEL_CONFIG.textAnchor,
   }));
 
+  const summary = t("statistics.workouts.radarChart.summary", {
+    values: labels.map((label) => label.replace("\n", " ")).join(", "),
+  });
+
   return (
-    <Box testID="radar-chart-container" alignItems="center" width="100%">
+    <Box
+      testID="radar-chart-container"
+      alignItems="center"
+      width="100%"
+      accessible
+      accessibilityRole="image"
+      accessibilityLabel={summary}
+    >
       <View style={styles.chartWrapper}>
         <GiftedRadarChart
           data={chartData}
@@ -111,7 +122,7 @@ export const RadarChart: FC<RadarChartProps> = ({ userSkills }) => {
               source={require("../../assets/img/logos/SA_dark.png")}
               style={styles.logo}
               contentFit="contain"
-              accessibilityLabel="Sports Athletic logo"
+              accessible={false}
             />
           </View>
         </View>

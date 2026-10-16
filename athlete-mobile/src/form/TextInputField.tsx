@@ -53,7 +53,7 @@ export const TextInputField: FC<TextInputFieldProps> = ({
             name={iconName}
             size={24}
             color={colors.lightGrey3}
-            accessibilityLabel="input-icon"
+            decorative
           />
         )}
       </Box>

@@ -1,3 +1,4 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
 import { fireEvent, render } from "../../utils/testUtils";
 import {
@@ -86,13 +87,12 @@ describe("<TrainingRepetitionInput />", () => {
     expect(getByDisplayValue("100")).toBeTruthy();
   });
 
-  it("renders with hashtag icon for repetitions input", () => {
-    const { getByLabelText } = render(
+  it("renders the keypad icon hidden from screen readers", () => {
+    const { UNSAFE_getByType } = render(
       <TrainingRepetitionInput {...mockProps} />,
     );
-    // The hashtag icon should have accessibility label
-    const icon = getByLabelText("input-icon");
-    expect(icon).toBeTruthy();
+    const icon = UNSAFE_getByType(Ionicons);
+    expect(icon.props.accessibilityElementsHidden).toBe(true);
   });
 
   it("uses keyboard type number-pad for input", () => {

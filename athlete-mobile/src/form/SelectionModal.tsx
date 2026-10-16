@@ -95,8 +95,12 @@ export const SelectionModal: FC<Props> = ({
             <Text variant="sectionTitle">
               {selectText || t("common.choose")}
             </Text>
-            <TouchableOpacity onPress={handleCancel}>
-              <Ionicon name="close" size={24} color="black" />
+            <TouchableOpacity
+              onPress={handleCancel}
+              accessibilityRole="button"
+              accessibilityLabel={t("common.close")}
+            >
+              <Ionicon name="close" size={24} color="black" decorative />
             </TouchableOpacity>
           </Box>
 
@@ -107,7 +111,11 @@ export const SelectionModal: FC<Props> = ({
             renderItem={({ item }) => {
               const isSelected = selected.includes(item.value);
               return (
-                <TouchableOpacity onPress={() => toggleItem(item.value)}>
+                <TouchableOpacity
+                  onPress={() => toggleItem(item.value)}
+                  accessibilityRole={single ? "radio" : "checkbox"}
+                  accessibilityState={{ selected: isSelected }}
+                >
                   <Box
                     padding="m"
                     flexDirection="row"
@@ -123,7 +131,12 @@ export const SelectionModal: FC<Props> = ({
                       {item.displayName}
                     </Text>
                     {isSelected && (
-                      <Ionicon name="checkmark" size={24} color="primary" />
+                      <Ionicon
+                        name="checkmark"
+                        size={24}
+                        color="primary"
+                        decorative
+                      />
                     )}
                   </Box>
                 </TouchableOpacity>

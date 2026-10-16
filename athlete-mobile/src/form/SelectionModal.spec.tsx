@@ -128,7 +128,7 @@ describe("SelectionModal", () => {
       />,
     );
 
-    const closeButton = getByLabelText("close");
+    const closeButton = getByLabelText("Close");
     fireEvent.press(closeButton);
 
     expect(onCancel).toHaveBeenCalled();
@@ -152,7 +152,7 @@ describe("SelectionModal", () => {
     fireEvent.press(item2);
 
     // Cancel
-    const closeButton = getByLabelText("close");
+    const closeButton = getByLabelText("Close");
     fireEvent.press(closeButton);
 
     expect(onCancel).toHaveBeenCalled();

@@ -133,8 +133,7 @@ describe("SelectionInputField", () => {
     fireEvent.press(chooseButtons[0].parent?.parent);
     expect(onToggle).toHaveBeenCalledWith(true);
 
-    // Close modal - use the close icon locator
-    const closeIcon = getByLabelText("close");
+    const closeIcon = getByLabelText("Close");
     fireEvent.press(closeIcon);
     expect(onToggle).toHaveBeenCalledWith(false);
   });

@@ -34,8 +34,10 @@ exports[`<EmailInputField /> renders correctly 1`] = `
     }
   >
     <Ionicons
-      accessibilityLabel="email-icon"
+      accessibilityElementsHidden={true}
+      accessible={false}
       color="#AAAAAA"
+      importantForAccessibility="no-hide-descendants"
       name="mail"
       size={24}
     />

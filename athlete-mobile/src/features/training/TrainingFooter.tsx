@@ -44,8 +44,15 @@ export const TrainingFooter: FC<Props> = ({
             justifyContent="center"
             alignItems="center"
             onPress={onSkipPress}
+            accessibilityRole="button"
+            accessibilityLabel={t("training.list.skipExercise")}
           >
-            <Ionicon name="play-forward" size={24} color={colors.primary} />
+            <Ionicon
+              name="play-forward"
+              size={24}
+              color={colors.primary}
+              decorative
+            />
           </TouchableBox>
         ) : (
           <Box height={24} />

@@ -85,7 +85,12 @@ export const SelectionInputField: FC<Props> = ({
               borderBottomLeftRadius="m"
               marginRight="s"
             >
-              <Ionicon name={iconName} size={24} color={colors.lightGrey3} />
+              <Ionicon
+                name={iconName}
+                size={24}
+                color={colors.lightGrey3}
+                decorative
+              />
             </Box>
           )}
           <Box flex={1} justifyContent="center">

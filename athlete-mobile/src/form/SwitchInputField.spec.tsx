@@ -26,7 +26,7 @@ describe("<SwitchInputField />", () => {
     const { getByLabelText } = render(
       <SwitchInputField {...defaultProps} value={true} />,
     );
-    const switchComponent = getByLabelText("switch-input");
+    const switchComponent = getByLabelText("Enable notifications");
     expect(switchComponent.props.value).toBe(true);
   });
 
@@ -35,7 +35,7 @@ describe("<SwitchInputField />", () => {
     const { getByLabelText } = render(
       <SwitchInputField {...defaultProps} onChange={onChange} />,
     );
-    const switchComponent = getByLabelText("switch-input");
+    const switchComponent = getByLabelText("Enable notifications");
 
     fireEvent(switchComponent, "valueChange", true);
 
@@ -48,7 +48,7 @@ describe("<SwitchInputField />", () => {
     const { getByLabelText } = render(
       <SwitchInputField {...defaultProps} onChange={onChange} />,
     );
-    const switchComponent = getByLabelText("switch-input");
+    const switchComponent = getByLabelText("Enable notifications");
 
     fireEvent(switchComponent, "valueChange", true);
     expect(onChange).toHaveBeenCalledWith(true);
@@ -61,7 +61,7 @@ describe("<SwitchInputField />", () => {
 
   it("applies normal size by default", () => {
     const { getByLabelText } = render(<SwitchInputField {...defaultProps} />);
-    const switchComponent = getByLabelText("switch-input");
+    const switchComponent = getByLabelText("Enable notifications");
     // Style includes alignSelf for positioning
     expect(switchComponent.props.style).toBeDefined();
   });
@@ -70,7 +70,7 @@ describe("<SwitchInputField />", () => {
     const { getByLabelText } = render(
       <SwitchInputField {...defaultProps} size="small" />,
     );
-    const switchComponent = getByLabelText("switch-input");
+    const switchComponent = getByLabelText("Enable notifications");
     // Check that transform is in the style array
     const hasTransform =
       Array.isArray(switchComponent.props.style) &&
@@ -84,7 +84,7 @@ describe("<SwitchInputField />", () => {
     const { getByLabelText } = render(
       <SwitchInputField {...defaultProps} color="#FF0000" />,
     );
-    const switchComponent = getByLabelText("switch-input");
+    const switchComponent = getByLabelText("Enable notifications");
     // trackColor is set via onTintColor prop on native switch
     expect(switchComponent.props.onTintColor).toBe("#FF0000");
   });
@@ -93,7 +93,7 @@ describe("<SwitchInputField />", () => {
     const { getByLabelText } = render(
       <SwitchInputField {...defaultProps} thumbColor="#00FF00" />,
     );
-    const switchComponent = getByLabelText("switch-input");
+    const switchComponent = getByLabelText("Enable notifications");
     // thumbColor is set via thumbTintColor prop on native switch
     expect(switchComponent.props.thumbTintColor).toBe("#00FF00");
   });

@@ -22,7 +22,12 @@ export const BackHeader: FC<BackHeaderProps> = ({ onBack }) => {
       accessibilityRole="button"
       accessibilityLabel={t("common.back")}
     >
-      <Ionicon name="arrow-back" size={30} color={theme.colors.black} />
+      <Ionicon
+        name="arrow-back"
+        size={30}
+        color={theme.colors.black}
+        decorative
+      />
     </TouchableOpacity>
   );
 };

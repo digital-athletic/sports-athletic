@@ -26,7 +26,12 @@ export const HeaderIconButton: FC<HeaderIconButtonProps> = ({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
     >
-      <Ionicon name={iconName} size={28} color={theme.colors.black} />
+      <Ionicon
+        name={iconName}
+        size={28}
+        color={theme.colors.black}
+        decorative
+      />
     </TouchableBox>
   );
 };

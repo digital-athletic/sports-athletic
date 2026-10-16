@@ -488,6 +488,9 @@
     "anonymisedDataUse": "I agree to help improve the App by sharing usage data.",
     "privacyFull": "On my registration I accept the <agb>terms and conditions</agb> and <privacy>privacy regulations</privacy> of Sports Athletic.",
     "privacySimple": "On my registration I accept the <privacy>privacy regulations</privacy>.",
+    "checkboxAnonymisedDataUse": "Share usage data to improve the app",
+    "checkboxPrivacyFull": "Accept terms and conditions and privacy regulations",
+    "checkboxPrivacySimple": "Accept privacy regulations",
     "healthConsent": "I accept that to create personalized training plans for me, my health data gets processed. <info>More information</info>",
     "errorInvalidMailAdressTitle": "Invalid e-mail address",
     "errorInvalidMailAdressMsg": "Please use a valid e-mail address.",
@@ -942,7 +945,8 @@
         "CARDIO": "Endurance",
         "STABILITY": "Stability",
         "WARMUP": "Warm-up",
-        "SWR": "Strength"
+        "SWR": "Strength",
+        "summary": "Skill profile: {{values}}"
       }
     }
   },

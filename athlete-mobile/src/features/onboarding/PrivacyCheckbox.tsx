@@ -30,6 +30,12 @@ export const PrivacyCheckbox: FC<Props> = ({
 }) => {
   const { t } = useTranslation();
 
+  const checkboxLabels = {
+    ANONYMISED_DATA_USE: t("onboarding.checkboxAnonymisedDataUse"),
+    PRIVACY_FULL: t("onboarding.checkboxPrivacyFull"),
+    PRIVACY_SIMPLE: t("onboarding.checkboxPrivacySimple"),
+  };
+
   const privacyComponents = {
     agb: <Text textDecorationLine="underline" onPress={onAgbPress} />,
     privacy: <Text textDecorationLine="underline" onPress={onPrivacyPress} />,
@@ -59,7 +65,11 @@ export const PrivacyCheckbox: FC<Props> = ({
           width: ELEMENT_SIZE - 2,
         }}
       >
-        <CheckBox checked={checked} changed={onCheck} />
+        <CheckBox
+          checked={checked}
+          changed={onCheck}
+          accessibilityLabel={checkboxLabels[label]}
+        />
       </Box>
       <Box flexShrink={1}>
         {label === "ANONYMISED_DATA_USE" ? (

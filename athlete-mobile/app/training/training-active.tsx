@@ -173,6 +173,9 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
                 exerciseId={exerciseId}
                 nextExerciseId={nextExercise?.exerciseId}
                 duration={
+                  // undefined shows the checkmark, a number starts a countdown.
+                  // The athlete tracks long endurance exercises elsewhere, so they
+                  // get no timer.
                   isEnduranceExercise ? undefined : currentExercise.duration
                 }
                 next={advanceToNextExercise}

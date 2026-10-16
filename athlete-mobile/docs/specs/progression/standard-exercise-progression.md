@@ -173,10 +173,8 @@ Authored start and target loads must be loadable increments according to [Weight
 
 The app clamps the exact value to the authored load limits before rounding:
 
-```text
-increase: exactWeight = min(currentWeight × 1.025, targetWeight)
-reduction: exactWeight = max(currentWeight × 0.975, lowestPermittedWeight)
-```
+- increase: current weight × 1.025, at most the target load;
+- reduction: current weight × 0.975, at least the lowest permitted load.
 
 The boundary check uses the exact value. Example: with a 14 kg target, an exact value of 14.1 kg exceeds the target, even though 14.1 kg rounds to 14 kg.
 
@@ -242,9 +240,9 @@ The branch-level system selects an easier exercise / level on a `too hard` at th
 
 For weighted hypertrophy, repetitions remain 8-12 and duration remains 30-50 s during weight regression.
 
-**Fixed-kilogram weights:** exercises whose weight is authored in fixed kilograms (full-body stability, weighted prevention, U16 weighted exercises) have no lowest permitted load. The first `too hard` reduces the weight by one weight step. A second `too hard` in a row emits `LEVEL_DOWN` instead of another reduction. Any other feedback resets the count.
+**Fixed-kilogram weights:** exercises whose weight is authored in fixed kilograms (full-body stability, weighted prevention, U16 weighted exercises) have no lowest permitted load. The first `too hard` reduces the weight by one weight step. A second `too hard` in a row leads to a level down instead of another reduction. Any other feedback resets the count.
 
-**Bottom of the load range:** when no lower load exists, the first `too hard` emits `LEVEL_DOWN`, for every weighted exercise and regardless of the `too hard` count. Examples: 0 kg additional weight on a bodyweight exercise, the empty barbell, or the lowest permitted load. Above the bottom, the count adds an earlier exit: the second `too hard` in a row for fixed-kilogram weights, the third for loaded jumps. The count of consecutive `too hard` ratings is part of the stored exercise progress.
+**Bottom of the load range:** when no lower load exists, the first `too hard` leads to a level down, for every weighted exercise and regardless of the `too hard` count. Examples: 0 kg additional weight on a bodyweight exercise, the empty barbell, or the lowest permitted load. Above the bottom, the count adds an earlier exit: the second `too hard` in a row for fixed-kilogram weights, the third for loaded jumps. The count of consecutive `too hard` ratings is part of the stored exercise progress.
 
 Pure explosive exercises, for example loaded jumps, carry authored load limits in the exercise catalog. Those limits take priority over the skill's load range, so the explosive power floor of 50% F-Max does not apply to them. The exercise catalog must author these load limits for every loaded jump exercise and fitness level, as a share of the knee-direction 1RM converted to the equipment (see [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md)):
 

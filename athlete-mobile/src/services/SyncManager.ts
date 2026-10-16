@@ -190,7 +190,7 @@ class SyncManager {
       return;
     }
 
-    const hasItems = useSyncQueueStore.getState().hasItemsToSync();
+    const hasItems = useSyncQueueStore.getState().hasItemsToSync(auth.userId);
     if (!hasItems) {
       return;
     }

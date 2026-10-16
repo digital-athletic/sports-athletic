@@ -13,6 +13,7 @@ import {
   syncStrengthTest,
   getBackoffDelay,
   resetProcessingFlag,
+  waitForProcessQueue,
 } from "./SyncService";
 
 const mockUpsert = jest.fn().mockResolvedValue({ error: null });
@@ -330,6 +331,7 @@ describe("processSingleItem", () => {
         exercises: [],
         duration: 100,
       },
+      ownerUserId: TEST_USER_ID,
       status: "PENDING",
       createdAt: Date.now(),
       attemptCount: 0,
@@ -582,6 +584,137 @@ describe("processQueue", () => {
 
     // Both should complete without error; only one processes items
     expect(useSyncQueueStore.getState().queue).toHaveLength(0);
+  });
+});
+
+describe("processQueue: item owner", () => {
+  const workoutPayload = {
+    id: "w1",
+    timestamp: 1000,
+    exercises: [],
+    duration: 100,
+  };
+
+  it("does not upload an item of A while B is logged in and uploads it after A logs in", async () => {
+    useAuthStore.getState().setAuth({ userId: "user-a" });
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "w1",
+      payload: workoutPayload,
+    });
+
+    useAuthStore.getState().setAuth({ userId: "user-b" });
+    await processQueue();
+
+    expect(mockUpsert).not.toHaveBeenCalled();
+    expect(useSyncQueueStore.getState().queue).toHaveLength(1);
+
+    useAuthStore.getState().setAuth({ userId: "user-a" });
+    await processQueue();
+
+    expect(mockUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({ user_id: "user-a" }),
+      expect.any(Object),
+    );
+    expect(useSyncQueueStore.getState().queue).toHaveLength(0);
+  });
+
+  it("claims an unowned item for the first user and uploads it under that user", async () => {
+    useAuthStore.getState().clearAuth();
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "w1",
+      payload: workoutPayload,
+    });
+    expect(useSyncQueueStore.getState().queue[0].ownerUserId).toBeNull();
+
+    useAuthStore.getState().setAuth({ userId: "user-a" });
+    await processQueue();
+
+    expect(mockUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({ user_id: "user-a" }),
+      expect.any(Object),
+    );
+    expect(useSyncQueueStore.getState().queue).toHaveLength(0);
+  });
+
+  it("keeps a claimed item with its first user", async () => {
+    useAuthStore.getState().clearAuth();
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "w1",
+      payload: workoutPayload,
+    });
+    mockUpsert.mockResolvedValueOnce({ error: { message: "offline" } });
+
+    useAuthStore.getState().setAuth({ userId: "user-a" });
+    await processQueue();
+    useAuthStore.getState().setAuth({ userId: "user-b" });
+    await processQueue();
+
+    expect(useSyncQueueStore.getState().queue[0].ownerUserId).toBe("user-a");
+    expect(mockUpsert).toHaveBeenCalledTimes(1);
+  });
+
+  it("stops the loop when the auth user changes during an upload", async () => {
+    useAuthStore.getState().setAuth({ userId: "user-a" });
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "w1",
+      payload: workoutPayload,
+    });
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "w2",
+      payload: { ...workoutPayload, id: "w2" },
+    });
+
+    let finishUpload: (value: { error: null }) => void = () => undefined;
+    mockUpsert.mockReturnValueOnce(
+      new Promise((resolve) => {
+        finishUpload = resolve;
+      }),
+    );
+
+    const run = processQueue();
+    useAuthStore.getState().setAuth({ userId: "user-b" });
+    finishUpload({ error: null });
+    await run;
+
+    expect(mockUpsert).toHaveBeenCalledTimes(1);
+    expect(useSyncQueueStore.getState().queue).toHaveLength(1);
+    expect(useSyncQueueStore.getState().queue[0].referenceId).toBe("w2");
+  });
+});
+
+describe("waitForProcessQueue", () => {
+  it("resolves immediately when idle", async () => {
+    await expect(waitForProcessQueue()).resolves.toBeUndefined();
+  });
+
+  it("resolves after the timeout when an upload never finishes", async () => {
+    jest.useFakeTimers();
+    try {
+      useSyncQueueStore.getState().enqueue({
+        type: "COMPLETED_WORKOUT",
+        referenceId: "w1",
+        payload: { id: "w1", timestamp: 1000, exercises: [], duration: 100 },
+      });
+      mockUpsert.mockReturnValueOnce(new Promise(() => undefined));
+
+      void processQueue();
+      const settled = jest.fn();
+      const waiting = waitForProcessQueue(5000).then(settled);
+
+      await jest.advanceTimersByTimeAsync(4999);
+      expect(settled).not.toHaveBeenCalled();
+
+      await jest.advanceTimersByTimeAsync(1);
+      await waiting;
+      expect(settled).toHaveBeenCalledTimes(1);
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });
 

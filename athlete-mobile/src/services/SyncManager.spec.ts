@@ -184,6 +184,25 @@ describe("triggerSync", () => {
     expect(mockProcessQueue).not.toHaveBeenCalled();
   });
 
+  it("does nothing when only another owner has items", () => {
+    useAuthStore.getState().setAuth({ userId: "user-2" });
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "w1",
+      payload: {},
+    });
+    useAuthStore.getState().setAuth({ userId: "user-1" });
+
+    const manager = SyncManager.getInstance();
+    manager.start();
+    netInfoCallback({ isConnected: true, isInternetReachable: true });
+    mockProcessQueue.mockClear();
+
+    manager.triggerSync();
+
+    expect(mockProcessQueue).not.toHaveBeenCalled();
+  });
+
   it("does nothing when queue is empty", () => {
     const manager = SyncManager.getInstance();
     manager.start();

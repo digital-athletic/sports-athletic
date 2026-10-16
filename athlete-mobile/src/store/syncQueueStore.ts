@@ -2,6 +2,7 @@ import { Logger } from "@/services/Logger";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
+import { useAuthStore } from "./authStore";
 import { asyncStorage } from "./middleware";
 import { createMigrate } from "./migrations/createMigrate";
 import { syncQueueStoreMigrations } from "./migrations/syncQueueStoreMigrations";
@@ -22,6 +23,7 @@ export interface SyncQueueItem {
   type: SyncItemType;
   referenceId: string;
   payload: unknown;
+  ownerUserId: string | null;
   status: SyncStatus;
   createdAt: number;
   lastAttemptAt?: number;
@@ -43,6 +45,7 @@ type Actions = {
     referenceId: string;
     payload: unknown;
   }) => void;
+  claimItem: (id: string, userId: string) => void;
   markInProgress: (id: string) => void;
   markCompleted: (id: string) => void;
   markFailed: (id: string, error: string) => void;
@@ -51,10 +54,10 @@ type Actions = {
 };
 
 type Selectors = {
-  getNextPending: () => SyncQueueItem | undefined;
+  getNextPending: (userId: string) => SyncQueueItem | undefined;
   getPendingCount: () => number;
   getFailedItems: () => SyncQueueItem[];
-  hasItemsToSync: () => boolean;
+  hasItemsToSync: (userId: string) => boolean;
 };
 
 export type SyncQueueState = State & Actions & Selectors;
@@ -67,7 +70,14 @@ function getRetryDelayMs(attemptCount: number): number {
   return 2 ** attemptCount * 60_000;
 }
 
-function isReadyToProcess(item: SyncQueueItem, now: number): boolean {
+function isReadyToProcess(
+  item: SyncQueueItem,
+  now: number,
+  userId: string,
+): boolean {
+  if (item.ownerUserId !== null && item.ownerUserId !== userId) {
+    return false;
+  }
   if (item.attemptCount >= MAX_RETRY_ATTEMPTS) {
     return false;
   }
@@ -103,12 +113,21 @@ export const useSyncQueueStore = create<SyncQueueState>()(
             type: item.type,
             referenceId: item.referenceId,
             payload: item.payload,
+            ownerUserId: useAuthStore.getState().auth?.userId ?? null,
             status: "PENDING",
             createdAt: Date.now(),
             attemptCount: 0,
           });
         });
       },
+
+      claimItem: (id, userId) =>
+        set((state) => {
+          const item = state.queue.find((i) => i.id === id);
+          if (item && item.ownerUserId === null) {
+            item.ownerUserId = userId;
+          }
+        }),
 
       markInProgress: (id) =>
         set((state) => {
@@ -169,10 +188,10 @@ export const useSyncQueueStore = create<SyncQueueState>()(
           state.queue = [];
         }),
 
-      getNextPending: () => {
+      getNextPending: (userId) => {
         const { queue } = get();
         const now = Date.now();
-        return queue.find((i) => isReadyToProcess(i, now));
+        return queue.find((i) => isReadyToProcess(i, now, userId));
       },
 
       getPendingCount: () => {
@@ -185,10 +204,10 @@ export const useSyncQueueStore = create<SyncQueueState>()(
         return queue.filter((i) => i.status === "FAILED");
       },
 
-      hasItemsToSync: () => {
+      hasItemsToSync: (userId) => {
         const { queue } = get();
         const now = Date.now();
-        return queue.some((i) => isReadyToProcess(i, now));
+        return queue.some((i) => isReadyToProcess(i, now, userId));
       },
     })),
     {

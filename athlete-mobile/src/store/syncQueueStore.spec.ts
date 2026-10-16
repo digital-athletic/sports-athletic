@@ -4,6 +4,10 @@ import {
   MAX_RETRY_ATTEMPTS,
   MAX_QUEUE_SIZE,
 } from "./syncQueueStore";
+import { useAuthStore } from "./authStore";
+import { syncQueueStoreMigrations } from "./migrations/syncQueueStoreMigrations";
+
+const TEST_USER_ID = "test-user";
 
 // Rewinds an item's last attempt far past any retry backoff window
 function backdateLastAttempt(itemId: string): void {
@@ -15,6 +19,7 @@ function backdateLastAttempt(itemId: string): void {
 
 describe("syncQueueStore", () => {
   beforeEach(() => {
+    useAuthStore.getState().clearAuth();
     const { result } = renderHook(() => useSyncQueueStore());
     act(() => {
       result.current.clearSyncQueue();
@@ -27,11 +32,40 @@ describe("syncQueueStore", () => {
 
       expect(result.current.queue).toHaveLength(0);
       expect(result.current.getPendingCount()).toBe(0);
-      expect(result.current.hasItemsToSync()).toBe(false);
+      expect(result.current.hasItemsToSync(TEST_USER_ID)).toBe(false);
     });
   });
 
   describe("enqueue", () => {
+    it("stamps the logged in user as owner", () => {
+      useAuthStore.getState().setAuth({ userId: "user-a" });
+      const { result } = renderHook(() => useSyncQueueStore());
+
+      act(() => {
+        result.current.enqueue({
+          type: "COMPLETED_WORKOUT",
+          referenceId: "w1",
+          payload: {},
+        });
+      });
+
+      expect(result.current.queue[0].ownerUserId).toBe("user-a");
+    });
+
+    it("stamps a null owner without auth", () => {
+      const { result } = renderHook(() => useSyncQueueStore());
+
+      act(() => {
+        result.current.enqueue({
+          type: "COMPLETED_WORKOUT",
+          referenceId: "w1",
+          payload: {},
+        });
+      });
+
+      expect(result.current.queue[0].ownerUserId).toBeNull();
+    });
+
     it("adds item with correct defaults", () => {
       const { result } = renderHook(() => useSyncQueueStore());
 
@@ -238,13 +272,45 @@ describe("syncQueueStore", () => {
         result.current.markInProgress(firstId);
       });
 
-      const next = result.current.getNextPending();
+      const next = result.current.getNextPending(TEST_USER_ID);
       expect(next?.referenceId).toBe("e1");
     });
 
     it("returns undefined when queue is empty", () => {
       const { result } = renderHook(() => useSyncQueueStore());
-      expect(result.current.getNextPending()).toBeUndefined();
+      expect(result.current.getNextPending(TEST_USER_ID)).toBeUndefined();
+    });
+
+    it("skips items of another owner and returns unowned items", () => {
+      const { result } = renderHook(() => useSyncQueueStore());
+
+      act(() => {
+        useAuthStore.getState().setAuth({ userId: "a" });
+        result.current.enqueue({
+          type: "COMPLETED_WORKOUT",
+          referenceId: "owned-by-a",
+          payload: {},
+        });
+        useAuthStore.getState().clearAuth();
+        result.current.enqueue({
+          type: "EXERCISE_DATA",
+          referenceId: "unowned",
+          payload: {},
+        });
+      });
+
+      expect(result.current.getNextPending("b")?.referenceId).toBe("unowned");
+      expect(result.current.getNextPending("a")?.referenceId).toBe(
+        "owned-by-a",
+      );
+      expect(result.current.hasItemsToSync("b")).toBe(true);
+
+      act(() => {
+        result.current.claimItem(result.current.queue[1].id, "a");
+      });
+
+      expect(result.current.getNextPending("b")).toBeUndefined();
+      expect(result.current.hasItemsToSync("b")).toBe(false);
     });
 
     it("skips items that exceeded max retry attempts", () => {
@@ -276,8 +342,64 @@ describe("syncQueueStore", () => {
         }
       });
 
-      const next = result.current.getNextPending();
+      const next = result.current.getNextPending(TEST_USER_ID);
       expect(next?.referenceId).toBe("e1");
+    });
+  });
+
+  describe("claimItem", () => {
+    it("sets the owner of an unowned item once", () => {
+      const { result } = renderHook(() => useSyncQueueStore());
+
+      act(() => {
+        result.current.enqueue({
+          type: "COMPLETED_WORKOUT",
+          referenceId: "w1",
+          payload: {},
+        });
+      });
+      const itemId = result.current.queue[0].id;
+
+      act(() => {
+        result.current.claimItem(itemId, "a");
+        result.current.claimItem(itemId, "b");
+      });
+
+      expect(result.current.queue[0].ownerUserId).toBe("a");
+    });
+  });
+
+  describe("migration", () => {
+    const legacyItem = {
+      id: "i1",
+      type: "COMPLETED_WORKOUT" as const,
+      referenceId: "w1",
+      payload: {},
+      status: "PENDING" as const,
+      createdAt: 1,
+      attemptCount: 0,
+    };
+
+    it("stamps the logged in user as owner of existing items", () => {
+      useAuthStore.getState().setAuth({ userId: "user-a" });
+
+      const migrated = syncQueueStoreMigrations[14]({
+        queue: [{ ...legacyItem, ownerUserId: null }],
+      });
+
+      expect(migrated.queue[0].ownerUserId).toBe("user-a");
+    });
+
+    it("stamps null without auth and keeps an existing owner", () => {
+      const migrated = syncQueueStoreMigrations[14]({
+        queue: [
+          { ...legacyItem, ownerUserId: null },
+          { ...legacyItem, id: "i2", ownerUserId: "user-b" },
+        ],
+      });
+
+      expect(migrated.queue[0].ownerUserId).toBeNull();
+      expect(migrated.queue[1].ownerUserId).toBe("user-b");
     });
   });
 
@@ -334,7 +456,7 @@ describe("syncQueueStore", () => {
       });
 
       expect(result.current.queue).toHaveLength(0);
-      expect(result.current.hasItemsToSync()).toBe(false);
+      expect(result.current.hasItemsToSync(TEST_USER_ID)).toBe(false);
     });
   });
 
@@ -360,7 +482,7 @@ describe("syncQueueStore", () => {
       expect(result.current.queue[0].attemptCount).toBeLessThan(
         MAX_RETRY_ATTEMPTS,
       );
-      expect(result.current.getNextPending()?.id).toBe(itemId);
+      expect(result.current.getNextPending(TEST_USER_ID)?.id).toBe(itemId);
     });
 
     it("getNextPending and hasItemsToSync agree so triggered syncs make progress", () => {
@@ -383,8 +505,8 @@ describe("syncQueueStore", () => {
 
       // If the queue reports syncable items but exposes none for processing,
       // sync is triggered forever and never completes
-      expect(result.current.hasItemsToSync()).toBe(true);
-      expect(result.current.getNextPending()).toBeDefined();
+      expect(result.current.hasItemsToSync(TEST_USER_ID)).toBe(true);
+      expect(result.current.getNextPending(TEST_USER_ID)).toBeDefined();
     });
   });
 
@@ -411,7 +533,7 @@ describe("syncQueueStore", () => {
         result.current.resetStaleItems();
       });
 
-      expect(result.current.getNextPending()).toBeDefined();
+      expect(result.current.getNextPending(TEST_USER_ID)).toBeDefined();
     });
   });
 

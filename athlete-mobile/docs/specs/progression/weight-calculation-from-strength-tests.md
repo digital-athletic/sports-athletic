@@ -96,7 +96,7 @@ For normal test-based weighted exercises:
 > **Unrounded training weight = authored intensity % × equipment-adjusted max**
 The ranges above are not fallback values, minimums, or maximums.
 **Max strength:** starting intensities, ladders, and floors are defined exclusively in [Max Strength Training](./max-strength-progression.md). Max-strength percentages/floors apply to the **equipment-adjusted max value**.
-**Power endurance:** the calculation logic remains valid but is currently not selected by active workout generation.
+**Power endurance:** field players train it, and their weights follow the calculation above. Goalkeepers get explosive power in its place.
 
 ### 5. Exercise-specific adjustments
 

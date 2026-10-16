@@ -86,6 +86,14 @@ const SPORT_POSITIONS: Record<Sport, PositionItem[] | null> = {
   OTHER_SPORT: null,
 };
 
+// GOAL for football, ice hockey and hockey, GOALKEEPER for handball
+const GOALKEEPER_POSITIONS: readonly string[] = ["GOAL", "GOALKEEPER"];
+
+/** Returns true for a goalkeeper position. A missing position counts as field player. */
+export function isGoalkeeperPosition(position: string | undefined): boolean {
+  return position !== undefined && GOALKEEPER_POSITIONS.includes(position);
+}
+
 /** Returns the list of positions for a given sport, or null if not applicable. */
 export function getPositionsForSport(sport: Sport): PositionItem[] | null {
   return SPORT_POSITIONS[sport];

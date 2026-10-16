@@ -532,7 +532,6 @@ describe("PlanGenerator", () => {
       const result = PlanGenerator.getWeightedSections(
         seasonPhase,
         WorkoutConstants.AGE_GROUPS.ADULT,
-        "MIDFIELDER",
         WorkoutConstants.LEVELS.ADVANCED,
         true,
         false,
@@ -566,7 +565,6 @@ describe("PlanGenerator", () => {
       const result = PlanGenerator.getWeightedSections(
         seasonPhase,
         WorkoutConstants.AGE_GROUPS.CHILD,
-        "FORWARD",
         WorkoutConstants.LEVELS.BEGINNER,
         false,
         false,
@@ -600,7 +598,6 @@ describe("PlanGenerator", () => {
       const result = PlanGenerator.getWeightedSections(
         seasonPhase,
         WorkoutConstants.AGE_GROUPS.ADULT,
-        "GOALKEEPER",
         WorkoutConstants.LEVELS.PROFESSIONAL,
         true,
         true,
@@ -970,7 +967,6 @@ describe("PlanGenerator", () => {
       const result = PlanGenerator.initializeTrainingPlan(
         seasonPhase,
         WorkoutConstants.AGE_GROUPS.ADULT,
-        "MIDFIELDER",
         WorkoutConstants.LEVELS.ADVANCED,
         true,
         startDate,
@@ -991,7 +987,6 @@ describe("PlanGenerator", () => {
             endDate: "2025-06-06",
           },
           WorkoutConstants.AGE_GROUPS.CHILD,
-          "FIELD",
           WorkoutConstants.LEVELS.ADVANCED,
           true,
           new Date(2025, 0, 6),
@@ -1015,7 +1010,6 @@ describe("PlanGenerator", () => {
       const result = PlanGenerator.initializeTrainingPlan(
         seasonPhase,
         WorkoutConstants.AGE_GROUPS.ADULT,
-        "MIDFIELDER",
         WorkoutConstants.LEVELS.ADVANCED,
         true,
         startDate,
@@ -1052,7 +1046,6 @@ describe("PlanGenerator", () => {
       const result = PlanGenerator.initializeTrainingPlan(
         seasonPhase,
         WorkoutConstants.AGE_GROUPS.CHILD,
-        "FORWARD",
         WorkoutConstants.LEVELS.BEGINNER,
         false,
         startDate,
@@ -1089,7 +1082,6 @@ describe("PlanGenerator", () => {
       const result = PlanGenerator.initializeTrainingPlan(
         seasonPhase,
         WorkoutConstants.AGE_GROUPS.ADULT,
-        "GOALKEEPER",
         WorkoutConstants.LEVELS.ADVANCED,
         true,
         startDate,
@@ -1437,6 +1429,83 @@ describe("PlanGenerator", () => {
       expect(result.sections.length).toBeGreaterThan(0);
     });
 
+    describe("generatePlan: playing position", () => {
+      const generateFor = (
+        position: string[] | undefined,
+        birthday = "1990-01-01",
+      ) =>
+        PlanGenerator.generatePlan(
+          {
+            userId: "test-position",
+            personalData: { gender: "MALE", birthday },
+            workoutData: {
+              tags: {
+                LEVEL: [WorkoutConstants.LEVELS.ADVANCED],
+                ...(position ? { POSITION: position } : {}),
+              },
+              seasonPhase: {
+                type: SeasonPhase.COMPETITION,
+                numOfWeeks: 14,
+                endDate: "2025-04-14",
+              },
+            },
+          },
+          [],
+          {},
+          {},
+          [0, 1, 2, 3, 4, 5, 6].map((weekday) => ({
+            active: weekday === 1 || weekday === 3,
+            weekday,
+            duration: minutes(60),
+            place: "HOME",
+          })),
+          { HOME: { equipment: ["WEIGHTS", "MAT"] } } as PlacesData,
+          new Date(2025, 0, 6),
+        );
+      const typesFor = (position: string[] | undefined, birthday?: string) => {
+        const { sections } = generateFor(position, birthday);
+        return {
+          sectionTypes: sections.map((section) => section.type),
+          cardioTypes: sections.map((section) => section.cardioType),
+        };
+      };
+
+      it.each(["GOAL", "GOALKEEPER"])(
+        "gives goalkeeper %s explosive power and sprint intervals",
+        (position) => {
+          const { sectionTypes, cardioTypes } = typesFor([position]);
+          expect(sectionTypes).not.toContain("SA");
+          expect(sectionTypes).toContain("SK");
+          expect(cardioTypes).not.toContain("CARDIO_1_LAKTAT");
+          expect(cardioTypes).toContain("CARDIO_1_SHORT");
+        },
+      );
+
+      it.each(["FIELD", "BACKCOURT", "REFEREE"])(
+        "gives position %s power endurance and lactate intervals",
+        (position) => {
+          const { sectionTypes, cardioTypes } = typesFor([position]);
+          expect(sectionTypes).toContain("SA");
+          expect(cardioTypes).toContain("CARDIO_1_LAKTAT");
+        },
+      );
+
+      it("treats an athlete without a position like a field player", () => {
+        expect(typesFor(undefined)).toEqual(typesFor(["FIELD"]));
+      });
+
+      it("splits children by position as well", () => {
+        const childBirthday = "2020-01-01";
+        const field = typesFor(["FIELD"], childBirthday);
+        const keeper = typesFor(["GOAL"], childBirthday);
+
+        expect(field.sectionTypes).toContain("SA");
+        expect(field.cardioTypes).toContain("CARDIO_1_LAKTAT");
+        expect(keeper.sectionTypes).not.toContain("SA");
+        expect(keeper.cardioTypes).not.toContain("CARDIO_1_LAKTAT");
+      });
+    });
+
     it("should handle child users with adjusted level", () => {
       const user = {
         userId: "test-child-1",
@@ -1682,7 +1751,7 @@ describe("PlanGenerator", () => {
         "PREVKG",
         "SA",
         "SAKG",
-        "SASPEZIAL",
+        "SAS",
         "SK",
         "SKKG",
         "SWR1",

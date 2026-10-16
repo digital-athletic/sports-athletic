@@ -9,21 +9,21 @@ Terms of the training model, with the meanings the coach uses. The glossary defi
 | Anamnesis | Anamnese | | Onboarding questionnaire: sport, position, fitness level, pains, body data and season phase. |
 | Fitness level | Fitnesslevel | BEGINNER, ADVANCED, PROFESSIONAL | The athlete's overall level: Beginner, Advanced or Pro. Set in the anamnesis. |
 | Age group | Altersgruppe | CHILD, ADOLESCENT, ADULT | Child under 16, adolescent 16 and 17, adult from 18. Adolescents and athletes without a birthday follow the adult rules. Sections and repetition counts depend on it. |
-| Playing position | Spielposition | GOAL, FIELD, ... | Position in the sport, from the anamnesis, for example goalkeeper or field player. Goalkeepers get different intervals in cardio training. Currently every athlete gets the goalkeeper intervals. |
+| Playing position | Spielposition | GOAL, GOALKEEPER, FIELD, ... | Position in the sport, from the anamnesis, for example goalkeeper or field player. GOAL and GOALKEEPER count as goalkeeper. Any other position, or none, counts as field player. Goalkeepers get explosive power in place of power endurance and sprint intervals in place of lactate intervals. |
 | Season phase | Saisonphase | PAUSE, PREPARATORY, COMPETITION | Where the athlete is in the season: off-season, preparation or competition. Decides the order of the sections. |
 | Training plan | Trainingsplan | | Multi-week framework of sections and training days that the app generates from the anamnesis. |
 | Section | Abschnitt | | Multi-week block (mesocycle) with one strength emphasis and one cardio intensity. Shown as tiles on the home screen. |
 | Hypertrophy | Muskelaufbau | SWR1, SWR2 | Section type for muscle growth. Ranges in [Standard Exercise Progression](./progression/standard-exercise-progression.md). SWR1 and SWR2 currently train the same way. SWR stands for Sprung-, Wurf- und Rumpfkraft. |
 | Max strength | Maximalkraft, Maxkraft | MAX, MAX_STRENGTH | Section type with heavy weights and few repetitions, calculated as a percentage of the personal maximum. Advanced and Pro only, from 16. |
 | Explosive power | Schnellkraft | SK | Section type with explosive movements. An explosive power session combines explosive power and plyometric exercises, which stay separate skill trees. Speed exercises can be part of it. |
-| Power endurance | Schnellkraftausdauer | SA, SAKG | Section type. Exercises are controlled by repetitions, with additional weights (SA) or bodyweight (SAKG). A power endurance session combines SA with power endurance special, which stay separate skill trees. Speed exercises can be part of it. The plan currently replaces it with explosive power everywhere. |
-| Power endurance special | Schnellkraftausdauer Spezial | SAS | Separate skill within power endurance training, with its own skill tree. Its exercises are controlled by duration instead of repetitions. |
+| Power endurance | Schnellkraftausdauer | SA, SAKG | Section type with three skill trees. A session combines SA (weights) or SAKG (bodyweight and other equipment, used when the place has no weights) with power endurance special. SA and SAKG exercises are controlled by repetitions. Speed exercises can be part of it. Goalkeepers get explosive power in its place. |
+| Power endurance special | Schnellkraftausdauer Spezial | SAS | Third skill of power endurance, with its own skill tree. Needs no weights, only small equipment such as a towel, bench, medicine ball or markers, so it joins SA and SAKG alike. Its exercises are controlled by duration instead of repetitions. |
 | Speed endurance | Schnelligkeitsausdauer | | A different training concept from power endurance. The app has no training category for it. |
 | Strength endurance | Kraftausdauer | | Planned training logic for higher repetition ranges. The exercise catalog holds its exercises, but no plan reaches them yet. |
-| Strength skill | Kraft-Skill | | Hypertrophy, max strength and explosive power. Strength endurance and power endurance join once the plan reaches them. Full-body stability is no strength skill. |
+| Strength skill | Kraft-Skill | | Hypertrophy, max strength, explosive power and power endurance. Strength endurance joins once the plan reaches it. Full-body stability is no strength skill. |
 | Bodyweight variant | Körpergewicht-Variante | KG suffix, e.g. SWR2KG | Exercises without additional weights such as dumbbells or a barbell. |
 | Training day | Trainingstag | | A weekday within a section, with duration and place. |
-| Focus | Fokus | PHASE, CARDIO, STABILITY, COMBINED | Orientation of a training day. PHASE trains the section's strength skill (hypertrophy, max strength or explosive power). CARDIO trains cardio. STABILITY trains full-body and leg axis stability. COMBINED splits strength and cardio 50/50. |
+| Focus | Fokus | PHASE, CARDIO, STABILITY, COMBINED | Orientation of a training day. PHASE trains the section's strength skill (hypertrophy, max strength, explosive power or power endurance). CARDIO trains cardio. STABILITY trains full-body and leg axis stability. COMBINED splits strength and cardio 50/50. |
 | Training place | Trainingsort | HOME, STUDIO, HALL, OUTSIDE | Place with its equipment: home, gym, hall, or outside/training ground. |
 | Short workout | | | Umbrella term for plan-independent workouts: focus trainings and prevention trainings. |
 | Focus training | Fokus-Training | | Plan-independent 10 to 20 minute workout for one focus, for example leg axis stability. |
@@ -93,6 +93,6 @@ Terms of the training model, with the meanings the coach uses. The glossary defi
 |---|---|---|---|
 | Cardio zone | Cardio-Stufe | CARDIO_1_SHORT, CARDIO_1_LAKTAT, CARDIO_2 to CARDIO_5 | Intensity zone of cardio training, from 1 (hardest) to 5 (easiest). Zones 1 to 3 run as intervals, 4 and 5 as a steady run. |
 | Lactate intervals | Laktatintervalle | CARDIO_1_LAKTAT | Zone 1 variant with long running rests. |
-| Sprint intervals | Sprintintervalle | CARDIO_1_SHORT | Zone 1 variant with short sprints. Goalkeepers get these instead of lactate intervals. Currently every athlete gets them. |
+| Sprint intervals | Sprintintervalle | CARDIO_1_SHORT | Zone 1 variant with short sprints. Goalkeepers get these instead of lactate intervals. |
 | Maximum heart rate | Maximalpuls | | Estimated from age, formula in [Cardio Training System](./session/cardio-training-system.md). |
 | Heart-rate band | Pulsbereich | | Target heart-rate range per cardio zone, as a share of the maximum heart rate. |

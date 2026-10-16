@@ -55,9 +55,7 @@ The heart-rate bands are fractions of the age-based maximum heart rate from the 
 
 CARDIO_1_SHORT displays **MAX.** instead of a heart-rate range because the 10-second work interval is too short for heart rate to rise quickly enough to make a conventional heart-rate range useful.
 
-For the current implementation, CARDIO_1_LAKTAT is not inserted into training plans. All athletes currently use the baseline logic that was originally used for goalkeepers, so CARDIO_1_SHORT is used instead of CARDIO_1_LAKTAT.
-
-Position-specific differentiation between CARDIO_1_SHORT and CARDIO_1_LAKTAT is only relevant once the corresponding lactate / power-endurance logic is implemented.
+The section templates contain CARDIO_1_LAKTAT. The plan generator replaces it with CARDIO_1_SHORT for goalkeepers (position GOAL or GOALKEEPER).
 
 ### Building the block
 

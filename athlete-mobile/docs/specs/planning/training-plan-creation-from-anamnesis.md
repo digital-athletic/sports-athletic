@@ -40,7 +40,7 @@ The anamnesis answers are stored as tag groups and copied into the workout confi
 | Level | LEVEL tag | BEGINNER, ADVANCED, or PROFESSIONAL. A PROFESSIONAL child is downgraded to ADVANCED. |
 | Pain status | PAIN tags | Any pain tag sets the pain variant of the skill priorities. |
 | Prevention skills | PAIN tags | Mapping in [Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md). |
-| Position | POSITION tag | Two groups: goalkeeper (handball, football, ice hockey, hockey) and everyone else. A missing position counts as everyone else. Every athlete currently counts as a goalkeeper for section types and cardio zones (temporary override until power endurance content is fixed). Goalkeeper-specific exercises read the stored position, so the override does not unlock them. |
+| Position | POSITION tag | Two groups: goalkeeper (GOAL in football, ice hockey and hockey, GOALKEEPER in handball) and everyone else, including a missing position. The plan generator applies this rule to section types, cardio zones and goalkeeper-specific exercises. |
 | Season phase | Anamnesis season phase step | PAUSE, PREPARATORY, or COMPETITION, with a week count to the phase end date (minimum 1). Required; generation fails without it. |
 | Weights available | Equipment of active locations | True if any active training day's location has weights. |
 

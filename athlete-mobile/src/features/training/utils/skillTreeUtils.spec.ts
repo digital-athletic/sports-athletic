@@ -61,6 +61,9 @@ describe("skillTreeUtils", () => {
     PLYO: {
       branch1: createMockSkillBranch(),
     },
+    SAS: {
+      sasBranch: createMockSkillBranch(),
+    },
     WUSPEZIAL: {
       wuBranch: { ...createMockSkillBranch(), tags: ["PAIN_SHOULDER"] },
     },
@@ -102,6 +105,12 @@ describe("skillTreeUtils", () => {
     it("should return GKSKG when skill is GKSKG and hasWeights is false", () => {
       const result = getSkillTree(mockSkillTrees, "GKSKG", [], false);
       expect(result).toEqual(mockSkillTrees.GKSKG);
+    });
+
+    it("should return the SAS tree for the SAS skill", () => {
+      expect(getSkillTree(mockSkillTrees, "SAS", [], true)).toEqual(
+        mockSkillTrees.SAS,
+      );
     });
 
     it("should return PLYO skill tree for PLYO skill", () => {

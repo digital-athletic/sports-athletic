@@ -26,7 +26,7 @@ describe("GlossaryScreen: terms", () => {
     expect(screen.getByText("Anamnesis")).toBeTruthy();
     expect(
       screen.getByText(
-        "These are the questions at the start. You tell us your sport, your level and whether you have pain.",
+        "These are the questions at the start. For example, you tell us your sport, your level and whether you have pain.",
       ),
     ).toBeTruthy();
   });

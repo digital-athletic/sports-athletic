@@ -633,15 +633,15 @@
         },
         "set": {
           "term": "Satz",
-          "explanation": "Das ist eine Runde einer Übung. Du machst mehrere Wiederholungen oder hältst eine feste Zeit. Danach machst du Pause."
+          "explanation": "Das ist eine Runde einer Übung, mit mehreren Wiederholungen oder fester Zeit. Danach machst du Pause."
         },
         "muscleSoreness": {
           "term": "Muskelkater",
-          "explanation": "Deine Muskeln tun nach dem Training weh. Du markierst die Stellen vor dem Training. Die Markierung gilt 24 Stunden."
+          "explanation": "Deine Muskeln tun nach dem Training weh. Du markierst die Stellen vor dem Training, die Markierung gilt 24 Stunden."
         },
         "strengthTest": {
           "term": "Krafttest",
-          "explanation": "Du hebst ein Gewicht so oft wie möglich. Die App schätzt daraus deine größte Kraft. Den Test gibt es ab 16 Jahren."
+          "explanation": "Du hebst ein Gewicht so oft wie möglich, und die App schätzt daraus deine größte Kraft. Den Test gibt es ab 16 Jahren."
         }
       }
     },

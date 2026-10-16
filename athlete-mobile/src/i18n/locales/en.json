@@ -557,7 +557,7 @@
       "terms": {
         "anamnesis": {
           "term": "Anamnesis",
-          "explanation": "These are the questions at the start. You tell us your sport, your level and whether you have pain."
+          "explanation": "These are the questions at the start. For example, you tell us your sport, your level and whether you have pain."
         },
         "fitnessLevel": {
           "term": "Fitness level",
@@ -633,15 +633,15 @@
         },
         "set": {
           "term": "Set",
-          "explanation": "This is one round of an exercise. You do several repetitions or hold for a fixed time. Then you rest."
+          "explanation": "This is one round of an exercise, with several repetitions or a fixed time. Then you rest."
         },
         "muscleSoreness": {
           "term": "Muscle soreness",
-          "explanation": "Your muscles hurt after training. You mark the spots before training. The mark is valid for 24 hours."
+          "explanation": "Your muscles hurt after training. You mark the spots before training, and the mark is valid for 24 hours."
         },
         "strengthTest": {
           "term": "Strength test",
-          "explanation": "You lift a weight as often as you can. The app estimates your maximum strength from it. The test is available from age 16."
+          "explanation": "You lift a weight as often as you can, and the app estimates your maximum strength from it. The test is available from age 16."
         }
       }
     },

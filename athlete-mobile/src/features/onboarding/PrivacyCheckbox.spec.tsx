@@ -18,9 +18,7 @@ const mount = (
 describe("PrivacyCheckbox: screen reader labels", () => {
   it("names the checkbox for anonymised data use", () => {
     const { getByLabelText } = mount("ANONYMISED_DATA_USE");
-    expect(
-      getByLabelText("Share usage data to improve the app"),
-    ).toBeTruthy();
+    expect(getByLabelText("Share usage data to improve the app")).toBeTruthy();
   });
 
   it("names the checkbox for terms and privacy", () => {

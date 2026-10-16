@@ -107,7 +107,9 @@ describe("RadarChart", () => {
 
       const { getByTestId } = render(<RadarChart userSkills={userSkills} />);
 
-      expect(getByTestId("radar-chart-container").props.accessibilityLabel).toBe(
+      expect(
+        getByTestId("radar-chart-container").props.accessibilityLabel,
+      ).toBe(
         "Skill profile: Mobility 30%, Prevention 25%, Endurance 15%, Stability 12%, Warm-up 10%, Strength 8%",
       );
     });

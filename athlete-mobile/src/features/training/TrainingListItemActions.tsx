@@ -36,9 +36,9 @@ export const TrainingListItemActions: FC<TrainingListItemActionsProps> = ({
   const { t } = useTranslation();
   const showFeedbackRow = !isCompleted && isFeedbackEligible;
   const completedLabels = {
-    TOO_EASY: t("training.active.feedback.tooEasy"),
-    TOO_HARD: t("training.active.feedback.tooHard"),
-    SUCCEEDED: t("training.active.a11y.finishExercise"),
+    TOO_EASY: t("training.active.a11y.completedTooEasy"),
+    TOO_HARD: t("training.active.a11y.completedTooHard"),
+    SUCCEEDED: t("training.active.a11y.completedSucceeded"),
   };
   const completedLabel = completedLabels[completedFeedback ?? "SUCCEEDED"];
 

@@ -114,7 +114,7 @@ export const SelectionModal: FC<Props> = ({
                 <TouchableOpacity
                   onPress={() => toggleItem(item.value)}
                   accessibilityRole={single ? "radio" : "checkbox"}
-                  accessibilityState={{ selected: isSelected }}
+                  accessibilityState={{ checked: isSelected }}
                 >
                   <Box
                     padding="m"

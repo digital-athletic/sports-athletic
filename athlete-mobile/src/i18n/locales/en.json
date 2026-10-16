@@ -3,7 +3,6 @@
     "altText": {
       "coachFace": "Coach face",
       "hintIcon": "Hint icon",
-      "icon": "{{title}} icon",
       "image": "{{title}} image",
       "listItem": "Exercise",
       "muscleLink": "Select {{muscleName}} muscle",
@@ -74,10 +73,6 @@
       "preventionTraining": {
         "title": "Imminent Pains",
         "subtitle": "Specifically improve imminent pains"
-      },
-      "imageAlt": {
-        "focusTrainingIcon": "Focus training icon",
-        "preventionIcon": "Prevention training icon"
       },
       "workoutWithOwnPlan": "Your Training Plan",
       "startTraining": "Start Training",
@@ -435,7 +430,10 @@
       "a11y": {
         "showExerciseInfo": "Show exercise information",
         "abortTraining": "Abort training",
-        "finishExercise": "Finish exercise"
+        "finishExercise": "Finish exercise",
+        "completedSucceeded": "Completed",
+        "completedTooEasy": "Completed: too easy",
+        "completedTooHard": "Completed: too hard"
       },
       "strengthTestAlert": {
         "title": "Attention for pain",

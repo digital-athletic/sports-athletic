@@ -3,7 +3,6 @@
     "altText": {
       "coachFace": "Gesicht des Coaches",
       "hintIcon": "Hinweis-Symbol",
-      "icon": "{{title}}-Symbol",
       "image": "{{title}}-Bild",
       "listItem": "Übung",
       "muscleLink": "{{muscleName}} Muskel auswählen",
@@ -74,10 +73,6 @@
       "preventionTraining": {
         "title": "Präventions-Trainings",
         "subtitle": "Beschwerden vorbeugen & verbessern"
-      },
-      "imageAlt": {
-        "focusTrainingIcon": "Fokus-Trainings-Symbol",
-        "preventionIcon": "Präventions-Symbol"
       },
       "workoutWithOwnPlan": "Dein Trainingsplan",
       "startTraining": "Training starten",
@@ -435,7 +430,10 @@
       "a11y": {
         "showExerciseInfo": "Übungsinformationen anzeigen",
         "abortTraining": "Training abbrechen",
-        "finishExercise": "Übung abschließen"
+        "finishExercise": "Übung abschließen",
+        "completedSucceeded": "Erledigt",
+        "completedTooEasy": "Erledigt: zu einfach",
+        "completedTooHard": "Erledigt: zu schwer"
       },
       "strengthTestAlert": {
         "title": "Achtung bei Beschwerden",

@@ -5,7 +5,7 @@ describe("PainChipSelector: chip behavior", () => {
   it("shows the coaching prompt", () => {
     render(<PainChipSelector tags={[]} />);
     expect(
-      screen.getByText("Please select the areas that are hurting you"),
+      screen.getByText("Select the areas that hurt"),
     ).toBeTruthy();
   });
 

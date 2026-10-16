@@ -18,25 +18,27 @@ const mount = (
 describe("PrivacyCheckbox: screen reader labels", () => {
   it("names the checkbox for anonymised data use", () => {
     const { getByLabelText } = mount("ANONYMISED_DATA_USE");
-    expect(getByLabelText("Share usage data to improve the app")).toBeTruthy();
+    expect(
+      getByLabelText("Agree: share usage data to improve the app"),
+    ).toBeTruthy();
   });
 
   it("names the checkbox for terms and privacy", () => {
     const { getByLabelText } = mount("PRIVACY_FULL");
     expect(
-      getByLabelText("Accept terms and conditions and privacy regulations"),
+      getByLabelText("Agree: terms and conditions and privacy policy"),
     ).toBeTruthy();
   });
 
   it("names the checkbox for privacy only", () => {
     const { getByLabelText } = mount("PRIVACY_SIMPLE");
-    expect(getByLabelText("Accept privacy regulations")).toBeTruthy();
+    expect(getByLabelText("Agree: privacy policy")).toBeTruthy();
   });
 
   it("reports the checked change when the labelled checkbox is pressed", () => {
     const onCheck = jest.fn();
     const { getByLabelText } = mount("PRIVACY_SIMPLE", onCheck);
-    fireEvent.press(getByLabelText("Accept privacy regulations"));
+    fireEvent.press(getByLabelText("Agree: privacy policy"));
     expect(onCheck).toHaveBeenCalledWith(true);
   });
 });

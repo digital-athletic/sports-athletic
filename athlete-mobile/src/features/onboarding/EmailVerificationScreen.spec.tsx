@@ -331,7 +331,7 @@ describe("<EmailVerificationScreen />", () => {
       <EmailVerificationScreen />,
     );
 
-    expect(queryByText(/code you entered is invalid/)).toBeNull();
+    expect(queryByText(/The code is wrong or has expired/)).toBeNull();
 
     fireEvent.changeText(getByLabelText("Verification code"), "999999");
 
@@ -339,7 +339,7 @@ describe("<EmailVerificationScreen />", () => {
       fireEvent.press(getByText("Verify"));
     });
 
-    expect(getByText(/code you entered is invalid/)).toBeTruthy();
+    expect(getByText(/The code is wrong or has expired/)).toBeTruthy();
     expect(getByLabelText("Verification code").props.value).toBe("");
   });
 
@@ -359,11 +359,11 @@ describe("<EmailVerificationScreen />", () => {
       fireEvent.press(getByText("Verify"));
     });
 
-    expect(queryByText(/code you entered is invalid/)).toBeTruthy();
+    expect(queryByText(/The code is wrong or has expired/)).toBeTruthy();
 
     fireEvent.changeText(getByLabelText("Verification code"), "1");
 
-    expect(queryByText(/code you entered is invalid/)).toBeNull();
+    expect(queryByText(/The code is wrong or has expired/)).toBeNull();
   });
 
   it("upserts consent and syncs local store after successful REGISTER verification", async () => {

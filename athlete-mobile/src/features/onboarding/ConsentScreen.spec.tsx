@@ -58,7 +58,7 @@ describe("ConsentScreen", () => {
     expect(screen.getByText("Data Protection")).toBeTruthy();
     expect(
       screen.getByText(
-        "To continue using the app, please accept our privacy policy.",
+        "Before you continue to use the app, you must agree to the privacy policy.",
       ),
     ).toBeTruthy();
   });
@@ -66,20 +66,20 @@ describe("ConsentScreen", () => {
   it("renders a continue button", () => {
     render(<ConsentScreen />);
 
-    expect(screen.getByRole("button", { name: "Continue" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Agree and continue" })).toBeTruthy();
   });
 
   it("shows error when submitting without accepting privacy", async () => {
     render(<ConsentScreen />);
 
-    fireEvent.press(screen.getByRole("button", { name: "Continue" }));
+    fireEvent.press(screen.getByRole("button", { name: "Agree and continue" }));
 
     await waitFor(() => {
       expect(mockSetConsentStatus).not.toHaveBeenCalled();
     });
     expect(
       screen.getByText(
-        "Please accept our terms and conditions and privacy regulations.",
+        "You cannot continue without your agreement. Tick the box to agree to the terms.",
       ),
     ).toBeTruthy();
   });
@@ -88,14 +88,14 @@ describe("ConsentScreen", () => {
     render(<ConsentScreen />);
 
     fireEvent.press(screen.getAllByRole("checkbox")[0]);
-    fireEvent.press(screen.getByRole("button", { name: "Continue" }));
+    fireEvent.press(screen.getByRole("button", { name: "Agree and continue" }));
 
     await waitFor(() => {
       expect(mockSetConsentStatus).not.toHaveBeenCalled();
     });
     expect(
       screen.getByText(
-        "Please agree to help improve the app by sharing usage data.",
+        "You cannot continue without your agreement. Tick the box for usage data.",
       ),
     ).toBeTruthy();
   });
@@ -107,7 +107,7 @@ describe("ConsentScreen", () => {
     const checkboxes = screen.getAllByRole("checkbox");
     fireEvent.press(checkboxes[0]);
     fireEvent.press(checkboxes[1]);
-    fireEvent.press(screen.getByRole("button", { name: "Continue" }));
+    fireEvent.press(screen.getByRole("button", { name: "Agree and continue" }));
 
     await waitFor(() => {
       expect(mockSaveConsentToProfile).toHaveBeenCalledWith({
@@ -127,14 +127,14 @@ describe("ConsentScreen", () => {
     const checkboxes = screen.getAllByRole("checkbox");
     fireEvent.press(checkboxes[0]);
     fireEvent.press(checkboxes[1]);
-    fireEvent.press(screen.getByRole("button", { name: "Continue" }));
+    fireEvent.press(screen.getByRole("button", { name: "Agree and continue" }));
 
     await waitFor(() => {
       expect(mockSetConsentStatus).not.toHaveBeenCalled();
     });
     expect(
       screen.getByText(
-        "Your consent could not be saved. Please check your connection and try again.",
+        "The app could not save your agreement. Check your internet connection and try again.",
       ),
     ).toBeTruthy();
   });
@@ -147,7 +147,7 @@ describe("ConsentScreen", () => {
     fireEvent.press(checkboxes[0]);
     fireEvent.press(checkboxes[1]);
 
-    const button = screen.getByRole("button", { name: "Continue" });
+    const button = screen.getByRole("button", { name: "Agree and continue" });
     fireEvent.press(button);
     fireEvent.press(button); // second press before re-render
 

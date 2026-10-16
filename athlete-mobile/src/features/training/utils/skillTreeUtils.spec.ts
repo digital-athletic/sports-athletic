@@ -61,7 +61,7 @@ describe("skillTreeUtils", () => {
     PLYO: {
       branch1: createMockSkillBranch(),
     },
-    SASPEZIAL: {
+    SAS: {
       sasBranch: createMockSkillBranch(),
     },
     WUSPEZIAL: {
@@ -107,9 +107,9 @@ describe("skillTreeUtils", () => {
       expect(result).toEqual(mockSkillTrees.GKSKG);
     });
 
-    it("should return the SASPEZIAL tree for the SAS skill", () => {
+    it("should return the SAS tree for the SAS skill", () => {
       expect(getSkillTree(mockSkillTrees, "SAS", [], true)).toEqual(
-        mockSkillTrees.SASPEZIAL,
+        mockSkillTrees.SAS,
       );
     });
 

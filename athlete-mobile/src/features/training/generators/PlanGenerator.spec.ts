@@ -1751,7 +1751,7 @@ describe("PlanGenerator", () => {
         "PREVKG",
         "SA",
         "SAKG",
-        "SASPEZIAL",
+        "SAS",
         "SK",
         "SKKG",
         "SWR1",

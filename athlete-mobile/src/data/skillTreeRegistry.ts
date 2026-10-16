@@ -32,7 +32,7 @@ const SKILL_TREE_NAMES: SkillTree[] = [
   "PREVKG",
   "SA",
   "SAKG",
-  "SASPEZIAL",
+  "SAS",
   "SK",
   "SKKG",
   "SUPPORT",

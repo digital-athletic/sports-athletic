@@ -27,7 +27,7 @@ import PREV from "../../assets/data/generator/skillTrees/PREV.json";
 import PREVKG from "../../assets/data/generator/skillTrees/PREVKG.json";
 import SA from "../../assets/data/generator/skillTrees/SA.json";
 import SAKG from "../../assets/data/generator/skillTrees/SAKG.json";
-import SASPEZIAL from "../../assets/data/generator/skillTrees/SASPEZIAL.json";
+import SAS from "../../assets/data/generator/skillTrees/SAS.json";
 import SK from "../../assets/data/generator/skillTrees/SK.json";
 import SKKG from "../../assets/data/generator/skillTrees/SKKG.json";
 import SUPPORT from "../../assets/data/generator/skillTrees/SUPPORT.json";
@@ -56,7 +56,7 @@ const SKILL_TREE_MAP: Record<SkillTree, RawSkillTree> = {
   PREVKG,
   SA,
   SAKG,
-  SASPEZIAL,
+  SAS,
   SK,
   SKKG,
   SUPPORT,

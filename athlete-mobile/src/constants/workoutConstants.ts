@@ -52,7 +52,7 @@ const SKILL_TREES = [
   "PREV",
   "PREVKG",
   "SA",
-  "SASPEZIAL",
+  "SAS",
   "SK",
   "SKKG",
   "SWR1",

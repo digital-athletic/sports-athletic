@@ -70,7 +70,7 @@ const powerEnduranceEntries = (birthday: string) => {
   );
 };
 
-const specialBranchIds = new Set(Object.keys(getAllSkillTrees().SASPEZIAL));
+const specialBranchIds = new Set(Object.keys(getAllSkillTrees().SAS));
 const usesSpecialBranch = (entries: { branchId: string }[]) =>
   entries.some((entry) => specialBranchIds.has(entry.branchId));
 

@@ -39,11 +39,6 @@ export function getSkillTree(
       result = skillTrees["PLYO"];
       break;
 
-    // the power endurance special tree is registered under its file name
-    case "SAS":
-      result = skillTrees["SASPEZIAL"];
-      break;
-
     // plyometric intensities are tags inside the PLYO tree; medium and low are one category
     case "PLYO_HIGH":
     case "PLYO_MEDIUM":

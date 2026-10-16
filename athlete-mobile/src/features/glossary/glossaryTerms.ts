@@ -1,0 +1,26 @@
+export const GLOSSARY_TERM_IDS = [
+  "anamnesis",
+  "fitnessLevel",
+  "seasonPhase",
+  "trainingPlan",
+  "trainingDay",
+  "trainingPlace",
+  "focusTraining",
+  "preventionTraining",
+  "hypertrophy",
+  "maxStrength",
+  "explosivePower",
+  "powerEndurance",
+  "warmUp",
+  "coolDown",
+  "mobility",
+  "foamRoller",
+  "legAxisStability",
+  "fullBodyStability",
+  "repetition",
+  "set",
+  "muscleSoreness",
+  "strengthTest",
+] as const;
+
+export type GlossaryTermId = (typeof GLOSSARY_TERM_IDS)[number];

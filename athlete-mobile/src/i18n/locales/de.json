@@ -550,6 +550,101 @@
     "imprint": "Impressum",
     "a11yStatement": "Erklärung zur Barrierefreiheit",
     "a11yFeedback": "Barriere melden",
+    "glossary": {
+      "menuItem": "Begriffe",
+      "title": "Begriffe",
+      "intro": "Hier erklären wir Wörter aus der App in einfachen Worten.",
+      "terms": {
+        "anamnesis": {
+          "term": "Anamnese",
+          "explanation": "Das sind die Fragen am Anfang. Du sagst uns zum Beispiel deine Sportart, dein Level und ob du Schmerzen hast."
+        },
+        "fitnessLevel": {
+          "term": "Fitnesslevel",
+          "explanation": "Das zeigt, wie fit du bist: Anfänger, Fortgeschritten oder Profi. Du wählst es bei den Fragen am Anfang."
+        },
+        "seasonPhase": {
+          "term": "Saisonphase",
+          "explanation": "Das ist der Abschnitt deiner Saison: Pause, Vorbereitung oder Wettkampf. Die App passt dein Training daran an."
+        },
+        "trainingPlan": {
+          "term": "Trainingsplan",
+          "explanation": "Das ist dein Plan für mehrere Wochen. Die App erstellt ihn aus deinen Antworten."
+        },
+        "trainingDay": {
+          "term": "Trainingstag",
+          "explanation": "Das ist ein Wochentag, an dem du trainierst. Du legst fest, wie lange und wo."
+        },
+        "trainingPlace": {
+          "term": "Trainingsort",
+          "explanation": "Hier trainierst du: zu Hause, im Studio, in der Halle oder draußen. Die App wählt Übungen, die zu den Geräten passen."
+        },
+        "focusTraining": {
+          "term": "Fokus-Training",
+          "explanation": "Das ist ein kurzes Training von 10 bis 20 Minuten. Es ist unabhängig von deinem Plan und übt eine Sache, zum Beispiel stabile Beine."
+        },
+        "preventionTraining": {
+          "term": "Präventionstraining",
+          "explanation": "Das ist ein kurzes Training gegen deine Beschwerden, zum Beispiel am Knie oder an der Schulter. Es hilft dir, Verletzungen zu vermeiden."
+        },
+        "hypertrophy": {
+          "term": "Muskelaufbau",
+          "explanation": "Hier wachsen deine Muskeln. Du trainierst mit mittlerem Gewicht und mehr Wiederholungen."
+        },
+        "maxStrength": {
+          "term": "Maximalkraft",
+          "explanation": "Hier trainierst du mit schweren Gewichten und wenigen Wiederholungen. Das gibt es ab 16 Jahren für Fortgeschrittene und Profis."
+        },
+        "explosivePower": {
+          "term": "Schnellkraft",
+          "explanation": "Hier trainierst du schnelle und kräftige Bewegungen, zum Beispiel Sprünge."
+        },
+        "powerEndurance": {
+          "term": "Schnellkraftausdauer",
+          "explanation": "Hier machst du kräftige Bewegungen besonders oft hintereinander. Du hältst die Kraft länger durch."
+        },
+        "warmUp": {
+          "term": "Warm-Up",
+          "explanation": "So wärmst du dich zu Beginn auf. Dein Körper wird warm und bereit für das Training."
+        },
+        "coolDown": {
+          "term": "Cool-Down",
+          "explanation": "Das ist das Dehnen am Ende. Dein Körper beruhigt sich wieder."
+        },
+        "mobility": {
+          "term": "Mobilität",
+          "explanation": "Das sind Übungen für bewegliche Gelenke. Du kannst dich danach freier bewegen."
+        },
+        "foamRoller": {
+          "term": "Faszienrolle",
+          "explanation": "Mit der Rolle oder einem Ball massierst du deine Muskeln selbst. Das löst Verspannungen."
+        },
+        "legAxisStability": {
+          "term": "Beinachsenstabilität",
+          "explanation": "Das ist die Kontrolle über deine Beine bei Sprüngen und Landungen. Deine Knie bleiben stabil."
+        },
+        "fullBodyStability": {
+          "term": "Ganzkörperstabilität",
+          "explanation": "Das sind Übungen für Rumpf und ganzen Körper. Du stehst und bewegst dich sicherer."
+        },
+        "repetition": {
+          "term": "Wiederholung",
+          "explanation": "Du machst die Bewegung einmal. Zum Beispiel ist eine Kniebeuge eine Wiederholung."
+        },
+        "set": {
+          "term": "Satz",
+          "explanation": "Das ist eine Runde einer Übung. Du machst mehrere Wiederholungen oder hältst eine feste Zeit. Danach machst du Pause."
+        },
+        "muscleSoreness": {
+          "term": "Muskelkater",
+          "explanation": "Deine Muskeln tun nach dem Training weh. Du markierst die Stellen vor dem Training. Die Markierung gilt 24 Stunden."
+        },
+        "strengthTest": {
+          "term": "Krafttest",
+          "explanation": "Du hebst ein Gewicht so oft wie möglich. Die App schätzt daraus deine größte Kraft. Den Test gibt es ab 16 Jahren."
+        }
+      }
+    },
     "thirdPartyNotices": {
       "menuItem": "Open-Source-Lizenzen",
       "title": "Open-Source-Lizenzen",

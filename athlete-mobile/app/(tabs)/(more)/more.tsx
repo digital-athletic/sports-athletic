@@ -104,6 +104,12 @@ export default function MoreScreen() {
             iconBackground="primary"
           />
           <ListItem
+            title={t("more.glossary.menuItem")}
+            navPath="/(tabs)/(more)/glossary"
+            iconName="book"
+            iconBackground="primary"
+          />
+          <ListItem
             title={t("more.joinTeam.menuItem")}
             navPath="/(tabs)/(more)/join-team"
             iconName="people"

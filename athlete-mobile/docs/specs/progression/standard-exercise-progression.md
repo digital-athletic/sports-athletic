@@ -246,7 +246,7 @@ Pure explosive exercises, for example loaded jumps, carry authored load limits i
 | Advanced | 10% | 20% |
 | Professional | 10% | 20% |
 
-The lowest permitted load of a loaded jump exercise equals its start load. This follows from the generic rule above: the skill's lowest permitted load is lowered to a start load below it, and the start loads of 5% and 10% lie below the skill's 50%. Reaching that load does not emit `LEVEL_DOWN` by itself: a `too hard` at the lowest permitted load keeps the load, and only the third `too hard` in a row emits `LEVEL_DOWN`, as described below.
+The lowest permitted load of a loaded jump exercise equals its start load. Reaching that load does not emit `LEVEL_DOWN` by itself: a `too hard` at the lowest permitted load keeps the load, and only the third `too hard` in a row emits `LEVEL_DOWN`, as described below.
 
 The two jump exercises, jump squats and jumped lunges, add one exit: the third `too hard` in a row moves the athlete off the exercise, as a level down does. Every other exercise follows the rules above. The count of consecutive `too hard` ratings is part of the stored exercise progress.
 

@@ -79,8 +79,8 @@ More specific exercise rules override these generic conversions.
 
 Loaded jump exercises use the knee-direction 1RM as reference:
 
-- dumbbell jump squats use the generic "Dumbbells, per hand" (42.5%);
-- jumped dumbbell lunges carry an exercise-specific catalog conversion factor of 0.3 (30%, equal to "Single-leg with support, dumbbell per hand"), because both feet stay on the ground.
+- dumbbell jump squats: "Dumbbells, per hand" (42.5%);
+- jumped dumbbell lunges: 30% per hand, like "Single-leg with support, dumbbell per hand", because both feet stay on the ground.
 
 ### 4. Training weight per phase
 
@@ -100,7 +100,7 @@ The ranges above are not fallback values, minimums, or maximums.
 
 ### 5. Exercise-specific adjustments
 
-The exercise catalog holds every exercise-specific conversion factor and load limit, for example for incline bench press or loaded jumps; this spec names no single exercise. An authored exercise rule replaces the generic conversion above, and an authored load limit takes priority over the skill's load range. Loaded jump exercises author their load limits in the catalog, as defined in [Standard Exercise Progression](./standard-exercise-progression.md). Dumbbell jump squats use the generic conversion of section 3; jumped dumbbell lunges carry the catalog conversion factor 0.3.
+The exercise catalog holds every exercise-specific conversion factor and load limit, for example for incline bench press or loaded jumps; this spec names no single exercise. An authored exercise rule replaces the generic conversion above, and an authored load limit takes priority over the skill's load range. The load limits of loaded jump exercises are defined in [Standard Exercise Progression](./standard-exercise-progression.md).
 
 ### 6. Weight rounding
 

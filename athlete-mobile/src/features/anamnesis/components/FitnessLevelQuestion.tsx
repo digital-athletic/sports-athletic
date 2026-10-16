@@ -46,6 +46,7 @@ export function FitnessLevelQuestion({
         startItem={valueIndex}
         sliderOptions={items}
         descriptionText=""
+        accessibilityLabel={t("anamnesisQuestions.fitnessLevel.title")}
         onChange={(value) => {
           const selectedValue = options[value as number]?.value;
           if (selectedValue) {

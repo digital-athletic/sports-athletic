@@ -20,6 +20,7 @@ export function WeightQuestion({
         value={value}
         placeholder={t("anamnesisQuestions.weight.placeholder")}
         iconName="scale"
+        accessibilityLabel={t("anamnesisQuestions.weight.title")}
         onChange={(value) => onChangeValue("weight", value)}
       />
     </AnamnesisQuestionContainer>

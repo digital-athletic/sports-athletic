@@ -110,6 +110,7 @@ export default function UserProfileScreen() {
             value={username}
             placeholder={t("screens.userProfile.usernamePlaceholder")}
             iconName="person"
+            accessibilityLabel={t("screens.userProfile.usernameTitle")}
             onChange={handleNameChange}
           />
         </AnamnesisQuestionContainer>

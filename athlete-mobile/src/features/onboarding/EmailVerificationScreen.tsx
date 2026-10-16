@@ -205,6 +205,9 @@ export function EmailVerificationScreen() {
             {email}
           </Text>
 
+          <Text variant="label" textAlign="center" marginBottom="xs">
+            {t("onboarding.verificationCodeInput")}
+          </Text>
           <Text variant="body" textAlign="center" marginBottom="s">
             {t("onboarding.enterVerificationCode")}
           </Text>

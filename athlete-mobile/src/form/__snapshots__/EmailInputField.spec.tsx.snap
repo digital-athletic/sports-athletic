@@ -4,14 +4,7 @@ exports[`<EmailInputField /> renders correctly 1`] = `
 <View
   style={
     [
-      {
-        "alignItems": "center",
-        "backgroundColor": "#E8E8E8",
-        "borderRadius": 8,
-        "borderWidth": 0,
-        "flexDirection": "row",
-        "height": 56,
-      },
+      {},
     ]
   }
 >
@@ -20,53 +13,68 @@ exports[`<EmailInputField /> renders correctly 1`] = `
       [
         {
           "alignItems": "center",
-          "backgroundColor": "#FAFAFA",
-          "borderBottomLeftRadius": 8,
-          "borderBottomWidth": 0,
-          "borderLeftWidth": 0,
-          "borderTopLeftRadius": 8,
-          "borderTopWidth": 0,
+          "backgroundColor": "#E8E8E8",
+          "borderRadius": 8,
+          "borderWidth": 0,
+          "flexDirection": "row",
           "height": 56,
-          "justifyContent": "center",
-          "width": 56,
         },
       ]
     }
   >
-    <Ionicons
-      accessibilityElementsHidden={true}
-      accessible={false}
-      color="#AAAAAA"
-      importantForAccessibility="no-hide-descendants"
-      name="mail"
-      size={24}
+    <View
+      style={
+        [
+          {
+            "alignItems": "center",
+            "backgroundColor": "#FAFAFA",
+            "borderBottomLeftRadius": 8,
+            "borderBottomWidth": 0,
+            "borderLeftWidth": 0,
+            "borderTopLeftRadius": 8,
+            "borderTopWidth": 0,
+            "height": 56,
+            "justifyContent": "center",
+            "width": 56,
+          },
+        ]
+      }
+    >
+      <Ionicons
+        accessibilityElementsHidden={true}
+        accessible={false}
+        color="#AAAAAA"
+        importantForAccessibility="no-hide-descendants"
+        name="mail"
+        size={24}
+      />
+    </View>
+    <TextInput
+      autoCapitalize="none"
+      autoComplete="email"
+      inputMode="email"
+      keyboardType="email-address"
+      onChangeText={[MockFunction]}
+      placeholder="E-Mail"
+      style={
+        [
+          {
+            "flex": 1,
+            "fontFamily": "System",
+            "fontSize": 16,
+            "letterSpacing": 0,
+          },
+          {
+            "color": "#333333",
+            "paddingHorizontal": 15,
+          },
+          {
+            "height": 56,
+          },
+        ]
+      }
+      value=""
     />
   </View>
-  <TextInput
-    autoCapitalize="none"
-    autoComplete="email"
-    inputMode="email"
-    keyboardType="email-address"
-    onChangeText={[MockFunction]}
-    placeholder="E-Mail"
-    style={
-      [
-        {
-          "flex": 1,
-          "fontFamily": "System",
-          "fontSize": 16,
-          "letterSpacing": 0,
-        },
-        {
-          "color": "#333333",
-          "paddingHorizontal": 15,
-        },
-        {
-          "height": 56,
-        },
-      ]
-    }
-    value=""
-  />
 </View>
 `;

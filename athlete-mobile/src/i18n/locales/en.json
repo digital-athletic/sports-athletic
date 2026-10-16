@@ -80,9 +80,9 @@
       "phaseEnded": "Your training phase has ended. Create a new plan."
     },
     "welcome": {
-      "title": "Personal data",
-      "greeting": "Hi!\nI am Ingemar. I am your personal athletics coach. Let's get started generating your personal workout plan right away.",
-      "letsGo": "Let's go",
+      "title": "Welcome",
+      "greeting": "Hi!\nI am Ingemar, your athletics coach. You answer a few questions. Then I create your training plan.",
+      "letsGo": "Get started",
       "abortQuestion": "Abort editing profile?",
       "abortIncomplete": "Your profile is incomplete.",
       "abortExplanation": "All your changes will be lost.",
@@ -106,10 +106,10 @@
       "usernameDescription": "How should we call you?",
       "usernamePlaceholder": "Enter your name",
       "genderTitle": "Gender",
-      "genderDescription": "Please select your gender",
+      "genderDescription": "Select your gender.",
       "male": "Male",
       "female": "Female",
-      "birthdayTitle": "Birthday",
+      "birthdayTitle": "Date of birth",
       "birthdayDescription": "When were you born?"
     },
     "anamnesis": {
@@ -122,17 +122,17 @@
     "seasonPhase": {
       "title": "Season phase",
       "seasonPhaseLabel": "Season phase",
-      "seasonPhaseDescription": "Which season phase are you in with your team?",
+      "seasonPhaseDescription": "Which part of your season are you in now? The app calls this the season phase.",
       "endOfSeasonPhaseLabel": "End of season phase",
       "endOfSeasonPhaseDescription": "When does this phase end?",
       "abortQuestion": "Abort editing season phase?",
       "abortIncomplete": "Your training data is incomplete.",
       "abortExplanation": "All your changes will be lost.",
       "noPhaseSelectedTitle": "No season phase chosen",
-      "noPhaseSelectedMessage": "Please select a season phase so I can create your training plan.",
-      "noWorkoutDataTitle": "Missing profile data",
-      "noWorkoutDataMessage": "To finish your training data, we need you to complete your profile.",
-      "goToProfile": "Go to profile",
+      "noPhaseSelectedMessage": "Select a season phase. Then I can create your training plan.",
+      "noWorkoutDataTitle": "Profile incomplete",
+      "noWorkoutDataMessage": "Your profile is missing some details. Complete your profile first.",
+      "goToProfile": "Complete profile",
       "phases": {
         "PAUSE": "Transition",
         "PREPARATORY": "Preparatory",
@@ -146,13 +146,13 @@
       "abortIncomplete": "Without training days we can not create a plan for you.",
       "abortExplanation": "We will not create a new plan for you.",
       "noDaySelectedTitle": "No training day chosen",
-      "noDaySelectedMessage": "Select at least one day to generate your training plan.",
-      "anamnesisIncompleteTitle": "Plan needs more Data",
-      "anamnesisIncompleteMessage": "Please complete your data in 'My profile' to generate your workouts.",
+      "noDaySelectedMessage": "Select at least one training day. Then the app can create your plan.",
+      "anamnesisIncompleteTitle": "Details missing",
+      "anamnesisIncompleteMessage": "Complete 'My profile' first. Then the app can create your training plan.",
       "daySelectionNotPossibleTitle": "Day can not be selected",
-      "daySelectionNotPossibleChild": "Regeneration is important!\nYou have to give your body a day of rest after training.",
-      "daySelectionNotPossibleAdult": "Regeneration is important!\nDo not workout on more than three consecutive days.",
-      "tooltipRecommendation": "I recommend {{days}} days with {{minutes}} minutes each for your {{phase}}.",
+      "daySelectionNotPossibleChild": "Rest is important!\nYour body needs a day off after each training.",
+      "daySelectionNotPossibleAdult": "Rest is important!\nTrain on 3 days in a row at most.",
+      "tooltipRecommendation": "For the phase {{phase}} I recommend {{days}} training days with {{minutes}} minutes each.",
       "coachingMessage": "If you have a good fitness level you can also train on days with team training. But please leave a day out before and after game days.",
       "mondayTraining": "Monday workout",
       "tuesdayTraining": "Tuesday workout",
@@ -162,17 +162,17 @@
       "saturdayTraining": "Saturday workout",
       "sundayTraining": "Sunday workout",
       "whereDoYouWorkOut": "Where do you work out?",
-      "howManyMinutes": "How many minutes do you work out?"
+      "howManyMinutes": "How long do you train? Enter minutes"
     },
     "generating": {
       "title": "Generating Plan",
-      "thanksMessage": "Thank you for your information. Now I will prepare your workouts.",
+      "thanksMessage": "Thank you for your answers. Now I create your training plan.",
       "errorTitle": "Plan not created",
       "errorMessage": "The app could not create a training plan with your answers. Our developers know about it. Tap OK and try again later.",
-      "stage1": "Partitioning training phases...",
-      "stage2": "Generating training days...",
-      "stage3": "Allocating 18 training focuses...",
-      "stage4": "Selecting from 900 training videos..."
+      "stage1": "The app splits your training into phases...",
+      "stage2": "The app plans your training days...",
+      "stage3": "The app spreads 18 training focuses...",
+      "stage4": "The app picks exercises from 900 videos..."
     },
     "more": {
       "title": "Profile"
@@ -437,14 +437,14 @@
       },
       "strengthTestAlert": {
         "title": "Attention for pain",
-        "message": "You declared pains. Pay special attention to your body during Max Force exercises.\nStop an exercise immediately if it does not feel good."
+        "message": "You declared pains. Pay special attention to your body during maximum strength exercises.\nStop an exercise right away if it does not feel good."
       },
       "weightCalculationAlert": {
         "title": "Weight Indication",
-        "message": "The weight indication for the barbell always includes barbell + weight plates."
+        "message": "For the barbell, the bar counts too. The weight is the bar plus the weight plates."
       },
       "controls": {
-        "clickToPause": "Click here to pause"
+        "clickToPause": "Tap to pause"
       },
       "pause": {
         "label": "Pause",
@@ -452,15 +452,15 @@
       },
       "abort": {
         "question": "Abort training?",
-        "explanation": "Better pull yourself together. You almost finished! Do you really want to stop?"
+        "explanation": "You are almost done. Do you really want to stop the training?"
       },
       "feedback": {
         "tooEasy": "too easy",
         "tooHard": "too hard"
       },
       "syncIndicator": {
-        "synchronizing": "Synchronizing...",
-        "synchronized": "Synchronized",
+        "synchronizing": "Sending data...",
+        "synchronized": "Data sent",
         "failed": "Data not sent",
         "failedTitle": "Data not sent",
         "failedMessage": "The app could not send your data. Check your internet connection and try again."
@@ -476,11 +476,12 @@
     "continue": "Continue",
     "back": "Back",
     "confirmEmailAddressTitle": "Confirm your email",
-    "confirmEmailAddressMessage": "Please check your inbox and confirm your email address to complete the registration.",
-    "resendEmail": "Resend verification email",
-    "emailResent": "A new verification email has been sent to your inbox.",
-    "emailNotConfirmed": "Your email address has not been confirmed yet. Please check your inbox and enter the verification code.",
-    "enterVerificationCode": "Enter the 6-digit code from the email:",
+    "emailLabel": "Email address",
+    "confirmEmailAddressMessage": "We sent you an email with a code. Look in your inbox.",
+    "resendEmail": "Send code again",
+    "emailResent": "The app sent you a new code.",
+    "emailNotConfirmed": "You have not confirmed your email address yet. Enter the code from the email.",
+    "enterVerificationCode": "Enter the 6-digit code from the email.",
     "verificationCodeInput": "Verification code",
     "verifyCode": "Verify",
     "invalidVerificationCode": "The code is wrong or has expired. Enter it again or request a new code.",
@@ -505,12 +506,12 @@
     "alertAnErrorOccuredTitle": "The app could not finish this. Try again.",
     "logoutButton": "Logout",
     "logoutQuestionTitle": "Logout",
-    "logoutQuestionMessage": "Are you sure you want to logout?",
+    "logoutQuestionMessage": "Do you want to log out?",
     "yesCaps": "YES",
     "noCaps": "NO",
     "noAccountYet": "No account yet?",
     "register": "Sign up",
-    "initializing": "Initializing",
+    "initializing": "The app is starting",
     "webContent": "Web Content",
     "consentTitle": "Data Protection",
     "consentSubtitle": "Before you continue to use the app, you must agree to the privacy policy.",
@@ -962,12 +963,12 @@
     },
     "height": {
       "title": "Height (cm)",
-      "description": "Your height influences the exercise selection.",
+      "description": "The app picks exercises that fit your height.",
       "placeholder": "175"
     },
     "weight": {
       "title": "Weight (kg)",
-      "description": "Your weight also influences the exercise selection.",
+      "description": "The app also picks exercises that fit your weight.",
       "placeholder": "75"
     },
     "position": {
@@ -976,7 +977,7 @@
       "options": {
         "field": "Fieldplayer",
         "goal": "Goalkeeper",
-        "other": "other",
+        "other": "Other",
         "backcourt": "Backcourt",
         "wing": "Wing",
         "pivot": "Pivot",
@@ -986,7 +987,7 @@
     },
     "fitnessLevel": {
       "title": "Fitness Level",
-      "description": "How often do you do weight training on top of team trainings?\n\nBeginner: Rarely\n\nAdvanced: Since 6 months at least once a week\n\nProfessional: Since 18 months at least twice a week",
+      "description": "How often do you do weight training on top of team trainings?\n\nBeginner: rarely\n\nAdvanced: for over 6 months, at least once a week\n\nProfessional: for 18 months, at least twice a week",
       "options": {
         "beginner": "Beginner",
         "advanced": "Advanced",

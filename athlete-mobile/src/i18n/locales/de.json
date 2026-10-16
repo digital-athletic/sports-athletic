@@ -80,9 +80,9 @@
       "phaseEnded": "Deine Trainingsphase ist vorbei. Erstelle einen neuen Plan."
     },
     "welcome": {
-      "title": "Persönliche Daten",
-      "greeting": "Hi!\nIch bin Ingemar, dein persönlicher Athletiktrainer. Lass uns gleich starten und deinen persönlichen Trainingsplan erstellen.",
-      "letsGo": "Los geht's",
+      "title": "Willkommen",
+      "greeting": "Hi!\nIch bin Ingemar, dein Athletiktrainer. Du beantwortest ein paar Fragen. Danach erstelle ich deinen Trainingsplan.",
+      "letsGo": "Loslegen",
       "abortQuestion": "Bearbeitung abbrechen?",
       "abortIncomplete": "Das Profil ist noch nicht vollständig.",
       "abortExplanation": "Deine bisherigen Änderungen gehen verloren.",
@@ -106,10 +106,10 @@
       "usernameDescription": "Wie sollen wir dich nennen?",
       "usernamePlaceholder": "Gib deinen Namen ein",
       "genderTitle": "Geschlecht",
-      "genderDescription": "Bitte wähle dein Geschlecht aus",
+      "genderDescription": "Wähle dein Geschlecht aus.",
       "male": "Männlich",
       "female": "Weiblich",
-      "birthdayTitle": "Geburtstag",
+      "birthdayTitle": "Geburtsdatum",
       "birthdayDescription": "Wann wurdest du geboren?"
     },
     "anamnesis": {
@@ -122,17 +122,17 @@
     "seasonPhase": {
       "title": "Saisonphase",
       "seasonPhaseLabel": "Saisonphase",
-      "seasonPhaseDescription": "In welcher Saisonphase befindest du dich gerade?",
+      "seasonPhaseDescription": "In welchem Abschnitt deiner Saison bist du gerade? Das nennt die App Saisonphase.",
       "endOfSeasonPhaseLabel": "Ende der Saisonphase",
       "endOfSeasonPhaseDescription": "Wann endet diese Saisonphase ungefähr?",
       "abortQuestion": "Bearbeitung abbrechen?",
       "abortIncomplete": "Deine Trainingsdaten sind nicht vollständig.",
       "abortExplanation": "Deine bisherigen Änderungen gehen verloren.",
       "noPhaseSelectedTitle": "Keine Saisonphase ausgewählt",
-      "noPhaseSelectedMessage": "Bitte wähle eine Saisonphase aus, damit ich deinen Trainingsplan erstellen kann.",
-      "noWorkoutDataTitle": "Nicht genügend Profildaten",
-      "noWorkoutDataMessage": "Damit wir deine Trainingsdaten komplettieren können, brauchen wir zuerst dein restliches Profil.",
-      "goToProfile": "Profil Daten angeben",
+      "noPhaseSelectedMessage": "Wähle eine Saisonphase aus. Dann kann ich deinen Trainingsplan erstellen.",
+      "noWorkoutDataTitle": "Profil unvollständig",
+      "noWorkoutDataMessage": "Dir fehlen noch Angaben im Profil. Fülle zuerst dein Profil aus.",
+      "goToProfile": "Profil ausfüllen",
       "phases": {
         "PAUSE": "Trainingsfrei",
         "PREPARATORY": "Vorbereitung",
@@ -146,13 +146,13 @@
       "abortIncomplete": "Ohne Trainingstage können wir keinen neuen Plan für dich erstellen.",
       "abortExplanation": "Es wird kein neuer Trainingsplan erstellt.",
       "noDaySelectedTitle": "Kein Trainingstag gewählt",
-      "noDaySelectedMessage": "Dein Plan kann nur erstellt werden, wenn du mindestens einen Trainingstag gewählt hast.",
-      "anamnesisIncompleteTitle": "Plan benötigt weitere Daten",
-      "anamnesisIncompleteMessage": "Bitte schließe die Angaben unter 'Mein Profil' ab, um den Trainingsplan zu generieren.",
+      "noDaySelectedMessage": "Wähle mindestens einen Trainingstag. Dann kann die App deinen Plan erstellen.",
+      "anamnesisIncompleteTitle": "Angaben fehlen",
+      "anamnesisIncompleteMessage": "Fülle zuerst 'Mein Profil' aus. Dann kann die App deinen Trainingsplan erstellen.",
       "daySelectionNotPossibleTitle": "Du kannst diesen Tag nicht wählen",
-      "daySelectionNotPossibleChild": "Regeneration ist wichtig!\nDu musst deinem Körper immer einen Tag Ruhe gönnen.",
-      "daySelectionNotPossibleAdult": "Regeneration ist wichtig!\nTrainiere maximal drei Tage hintereinander.",
-      "tooltipRecommendation": "Ich empfehle dir {{days}} Trainingstage zu je {{minutes}} Minuten für die {{phase}}.",
+      "daySelectionNotPossibleChild": "Erholung ist wichtig!\nDein Körper braucht nach jedem Training einen Tag Pause.",
+      "daySelectionNotPossibleAdult": "Erholung ist wichtig!\nTrainiere höchstens 3 Tage hintereinander.",
+      "tooltipRecommendation": "Für die Phase {{phase}} empfehle ich dir {{days}} Trainingstage mit je {{minutes}} Minuten.",
       "coachingMessage": "Bei gutem Fitnesslevel kannst du auch an Mannschaftstrainingstagen trainieren. Lass aber vor und nach einem Spieltag einen Tag Pause.",
       "mondayTraining": "Montagstraining",
       "tuesdayTraining": "Dienstagstraining",
@@ -162,17 +162,17 @@
       "saturdayTraining": "Samstagstraining",
       "sundayTraining": "Sonntagstraining",
       "whereDoYouWorkOut": "Wo trainierst du?",
-      "howManyMinutes": "Wie viele Minuten trainierst du?"
+      "howManyMinutes": "Wie lange trainierst du? Angabe in Minuten"
     },
     "generating": {
       "title": "Plan erstellen",
-      "thanksMessage": "Danke für deine Informationen. Jetzt erstelle ich deine persönlichen Trainingspläne.",
+      "thanksMessage": "Danke für deine Angaben. Jetzt erstelle ich deinen Trainingsplan.",
       "errorTitle": "Plan nicht erstellt",
       "errorMessage": "Die App konnte mit deinen Angaben keinen Trainingsplan erstellen. Unsere Entwickler wissen Bescheid. Tippe auf OK und versuche es später noch einmal.",
-      "stage1": "Einteilung in Trainingsphasen...",
-      "stage2": "Trainingstage werden generiert...",
-      "stage3": "Verteilung von 18 Trainingsschwerpunkten...",
-      "stage4": "Übungsauwahl aus 900 Trainingsvideos..."
+      "stage1": "Die App teilt dein Training in Phasen ein...",
+      "stage2": "Die App plant deine Trainingstage...",
+      "stage3": "Die App verteilt 18 Trainingsschwerpunkte...",
+      "stage4": "Die App wählt Übungen aus 900 Videos aus..."
     },
     "more": {
       "title": "Profil"
@@ -409,7 +409,7 @@
     },
     "active": {
       "title": {
-        "focus": "Fokustraining",
+        "focus": "Fokus-Training",
         "plan": "Training",
         "prevention": "Präventionstraining",
         "strengthTest": "Krafttest"
@@ -437,14 +437,14 @@
       },
       "strengthTestAlert": {
         "title": "Achtung bei Beschwerden",
-        "message": "Du hast Beschwerden angegeben. Achte bei Max-Kraft-Übungen besonders auf deinen Körper.\nBeende eine Übung sofort, wenn sich die Ausführung nicht gut anfühlt."
+        "message": "Du hast Beschwerden angegeben. Achte bei Übungen mit Maximalkraft besonders auf deinen Körper.\nBeende eine Übung sofort, wenn sie sich nicht gut anfühlt."
       },
       "weightCalculationAlert": {
         "title": "Gewichtsangaben",
-        "message": "Das angegebene Langhantel-Gewicht ist immer Hantelstange + Zusatzgewicht."
+        "message": "Bei der Langhantel zählt die Stange mit. Das Gewicht ist die Stange plus die Gewichtsscheiben."
       },
       "controls": {
-        "clickToPause": "Hier klicken zum Pausieren"
+        "clickToPause": "Tippe zum Pausieren"
       },
       "pause": {
         "label": "Pause",
@@ -452,15 +452,15 @@
       },
       "abort": {
         "question": "Training abbrechen?",
-        "explanation": "Gib dir einen Ruck und mach weiter. Du hast es bald geschafft! Willst du das Training wirklich abbrechen?"
+        "explanation": "Du hast es bald geschafft. Willst du das Training wirklich abbrechen?"
       },
       "feedback": {
         "tooEasy": "zu einfach",
         "tooHard": "zu schwer"
       },
       "syncIndicator": {
-        "synchronizing": "Synchronisierung läuft...",
-        "synchronized": "Synchronisiert",
+        "synchronizing": "Daten werden gesendet...",
+        "synchronized": "Daten gesendet",
         "failed": "Daten nicht gesendet",
         "failedTitle": "Daten nicht gesendet",
         "failedMessage": "Die App konnte deine Daten nicht senden. Prüfe deine Internetverbindung und versuche es noch einmal."
@@ -476,11 +476,12 @@
     "continue": "Weiter",
     "back": "Zurück",
     "confirmEmailAddressTitle": "E-Mail bestätigen",
-    "confirmEmailAddressMessage": "Bitte überprüfe deinen Posteingang und bestätige deine E-Mail-Adresse, um die Registrierung abzuschließen.",
-    "resendEmail": "Bestätigungs-E-Mail erneut senden",
-    "emailResent": "Eine neue Bestätigungs-E-Mail wurde an deinen Posteingang gesendet.",
-    "emailNotConfirmed": "Deine E-Mail-Adresse wurde noch nicht bestätigt. Bitte überprüfe deinen Posteingang und gib den Bestätigungscode ein.",
-    "enterVerificationCode": "Gib den 6-stelligen Code aus der E-Mail ein:",
+    "emailLabel": "E-Mail-Adresse",
+    "confirmEmailAddressMessage": "Wir haben dir eine E-Mail mit einem Code geschickt. Schau in deinen Posteingang.",
+    "resendEmail": "Code noch einmal senden",
+    "emailResent": "Die App hat dir einen neuen Code geschickt.",
+    "emailNotConfirmed": "Du hast deine E-Mail-Adresse noch nicht bestätigt. Gib den Code aus der E-Mail ein.",
+    "enterVerificationCode": "Gib den 6-stelligen Code aus der E-Mail ein.",
     "verificationCodeInput": "Bestätigungscode",
     "verifyCode": "Bestätigen",
     "invalidVerificationCode": "Der Code ist falsch oder abgelaufen. Gib ihn noch einmal ein oder fordere einen neuen Code an.",
@@ -505,12 +506,12 @@
     "alertAnErrorOccuredTitle": "Die App konnte das nicht abschließen. Versuche es noch einmal.",
     "logoutButton": "Abmelden",
     "logoutQuestionTitle": "Abmelden",
-    "logoutQuestionMessage": "Bist du sicher, dass du dich abmelden möchtest?",
+    "logoutQuestionMessage": "Möchtest du dich abmelden?",
     "yesCaps": "JA",
     "noCaps": "NEIN",
     "noAccountYet": "Noch kein Konto?",
     "register": "Registrieren",
-    "initializing": "Initialisierung",
+    "initializing": "Die App startet",
     "webContent": "Webinhalt",
     "consentTitle": "Datenschutz",
     "consentSubtitle": "Bevor du die App weiter nutzt, musst du den Datenschutzbestimmungen zustimmen.",
@@ -962,12 +963,12 @@
     },
     "height": {
       "title": "Größe (cm)",
-      "description": "Deine Körpergröße hat Einfluss auf die Übungsauswahl.",
+      "description": "Die App wählt Übungen passend zu deiner Größe.",
       "placeholder": "175"
     },
     "weight": {
       "title": "Gewicht (kg)",
-      "description": "Auch dein Gewicht beeinflusst die Übungsauswahl.",
+      "description": "Die App wählt Übungen auch passend zu deinem Gewicht.",
       "placeholder": "75"
     },
     "position": {
@@ -976,17 +977,17 @@
       "options": {
         "field": "Feldspieler/in",
         "goal": "Tor",
-        "other": "sonstige",
+        "other": "Sonstige",
         "backcourt": "Rückraum",
         "wing": "Außen",
         "pivot": "Kreis",
         "goalkeeper": "Tor",
-        "referee": "Schiri"
+        "referee": "Schiedsrichter/in"
       }
     },
     "fitnessLevel": {
       "title": "Fitnesslevel",
-      "description": "Wie oft machst du Krafttraining zusätzlich zum Mannschaftstraining?\n\nAnfänger: Selten\n\nFortgeschrittener: Seit über 6 Monaten mindestens 1x pro Woche\n\nProfi: Seit 1,5 Jahren mindestens 2x pro Woche",
+      "description": "Wie oft machst du Krafttraining zusätzlich zum Mannschaftstraining?\n\nAnfänger: selten\n\nFortgeschrittener: seit über 6 Monaten mindestens 1-mal pro Woche\n\nProfi: seit 1,5 Jahren mindestens 2-mal pro Woche",
       "options": {
         "beginner": "Anfänger",
         "advanced": "Fortgeschrittener",

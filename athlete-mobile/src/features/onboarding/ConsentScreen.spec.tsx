@@ -66,13 +66,13 @@ describe("ConsentScreen", () => {
   it("renders a continue button", () => {
     render(<ConsentScreen />);
 
-    expect(screen.getByRole("button", { name: "Agree and continue" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Continue" })).toBeTruthy();
   });
 
   it("shows error when submitting without accepting privacy", async () => {
     render(<ConsentScreen />);
 
-    fireEvent.press(screen.getByRole("button", { name: "Agree and continue" }));
+    fireEvent.press(screen.getByRole("button", { name: "Continue" }));
 
     await waitFor(() => {
       expect(mockSetConsentStatus).not.toHaveBeenCalled();
@@ -88,7 +88,7 @@ describe("ConsentScreen", () => {
     render(<ConsentScreen />);
 
     fireEvent.press(screen.getAllByRole("checkbox")[0]);
-    fireEvent.press(screen.getByRole("button", { name: "Agree and continue" }));
+    fireEvent.press(screen.getByRole("button", { name: "Continue" }));
 
     await waitFor(() => {
       expect(mockSetConsentStatus).not.toHaveBeenCalled();
@@ -107,7 +107,7 @@ describe("ConsentScreen", () => {
     const checkboxes = screen.getAllByRole("checkbox");
     fireEvent.press(checkboxes[0]);
     fireEvent.press(checkboxes[1]);
-    fireEvent.press(screen.getByRole("button", { name: "Agree and continue" }));
+    fireEvent.press(screen.getByRole("button", { name: "Continue" }));
 
     await waitFor(() => {
       expect(mockSaveConsentToProfile).toHaveBeenCalledWith({
@@ -127,7 +127,7 @@ describe("ConsentScreen", () => {
     const checkboxes = screen.getAllByRole("checkbox");
     fireEvent.press(checkboxes[0]);
     fireEvent.press(checkboxes[1]);
-    fireEvent.press(screen.getByRole("button", { name: "Agree and continue" }));
+    fireEvent.press(screen.getByRole("button", { name: "Continue" }));
 
     await waitFor(() => {
       expect(mockSetConsentStatus).not.toHaveBeenCalled();
@@ -147,7 +147,7 @@ describe("ConsentScreen", () => {
     fireEvent.press(checkboxes[0]);
     fireEvent.press(checkboxes[1]);
 
-    const button = screen.getByRole("button", { name: "Agree and continue" });
+    const button = screen.getByRole("button", { name: "Continue" });
     fireEvent.press(button);
     fireEvent.press(button); // second press before re-render
 

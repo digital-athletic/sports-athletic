@@ -4,9 +4,7 @@ import { PainChipSelector } from "./PainChipSelector";
 describe("PainChipSelector: chip behavior", () => {
   it("shows the coaching prompt", () => {
     render(<PainChipSelector tags={[]} />);
-    expect(
-      screen.getByText("Select the areas that hurt"),
-    ).toBeTruthy();
+    expect(screen.getByText("Select the areas that hurt")).toBeTruthy();
   });
 
   it("renders the 12 joint chips from shoulders down to ankles", () => {

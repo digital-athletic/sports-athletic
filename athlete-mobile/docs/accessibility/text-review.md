@@ -26,7 +26,7 @@ Die englischen Texte in `en.json` tragen die gleiche Bedeutung in einfachem Engl
 | `onboarding.errorInvalidMailAdressMsg` | WCAG 3.3.1 | Bitte gib eine valide E-Mail Adresse an. | Die E-Mail-Adresse ist ungültig. Prüfe sie auf Tippfehler und gib sie noch einmal ein. | Ja |
 | `onboarding.invalidEmail` | WCAG 3.3.1 | Bitte gib eine gültige E-Mail Adresse an! | Die E-Mail-Adresse ist ungültig. Prüfe sie auf Tippfehler. | Ja |
 | `onboarding.invalidVerificationCode` | WCAG 3.3.1 | Der eingegebene Code ist ungültig oder abgelaufen. Bitte versuche es erneut oder fordere einen neuen Code an. | Der Code ist falsch oder abgelaufen. Gib ihn noch einmal ein oder fordere einen neuen Code an. | Ja |
-| `onboarding.errorMessageTooManyRequests` | WCAG 3.3.1 | Zu viele Anfragen. Bitte warte einen Moment und versuche es erneut. | Du hast zu oft hintereinander angefragt. Warte einen Moment und versuche es dann noch einmal. | Ja |
+| `onboarding.errorMessageTooManyRequests` | WCAG 3.3.1 | Zu viele Anfragen. Bitte warte einen Moment und versuche es erneut. | Du hast es zu oft hintereinander versucht. Warte einen Moment und versuche es dann noch einmal. | Ja |
 | `onboarding.errorMessageNoInternetConnection` | WCAG 3.3.1 | Für die Registrierung benötigst du eine stabile Internetverbindung. (sichtbares \n\n) | Die App hat keine Internetverbindung. Du brauchst sie für die Registrierung. (Absatz) Verbinde dich mit dem Internet und versuche es noch einmal. | Ja |
 | `onboarding.errorUnknownMsgRetry` | WCAG 3.3.1 | Bitte versuche es noch einmal oder kontaktiere uns unter service@sports-athletic.com. (sichtbares \n\n) Vielen Dank | Die Registrierung hat nicht geklappt. Versuche es noch einmal. (Absatz) Hilft das nicht, schreibe uns an service@sports-athletic.com. Du kannst auch die App neu installieren. | Ja |
 | `onboarding.errorTitleAcceptPrivacyInfo` | WCAG 3.3.1 | AGBs akzeptieren | Zustimmung fehlt | Ja |
@@ -38,10 +38,10 @@ Die englischen Texte in `en.json` tragen die gleiche Bedeutung in einfachem Engl
 | `onboarding.consentSubtitle` | DSGVO Art. 7 | Um die App weiter zu nutzen, akzeptiere bitte unsere Datenschutzbestimmungen. | Bevor du die App weiter nutzt, musst du den Datenschutzbestimmungen zustimmen. | Ja |
 | `onboarding.privacyFull` | DSGVO Art. 7 | Mit der Anmeldung erkläre ich mich mit den AGB und Datenschutzbestimmungen von Sports Athletic einverstanden. | Ich stimme den Allgemeinen Geschäftsbedingungen (AGB) und den Datenschutzbestimmungen von Sports Athletic zu. | Ja |
 | `onboarding.privacySimple` | DSGVO Art. 7 | Mit der Anmeldung erkläre ich mich mit den Datenschutzbestimmungen einverstanden. | Ich stimme den Datenschutzbestimmungen von Sports Athletic zu. | Ja |
-| `onboarding.anonymisedDataUse` | DSGVO Art. 7 | Ich bin damit einverstanden, durch das Teilen von Nutzungsdaten zur Verbesserung der App beizutragen. | Ich stimme zu, dass die App anonymisierte Nutzungsdaten teilt. Damit wird die App besser. | Ja |
-| `onboarding.healthConsent` | DSGVO Art. 9 | Ich bin damit einverstanden, dass für die Erstellung persönlicher Trainingspläne meine Gesundheitsdaten verarbeitet werden. | Ich stimme zu, dass die App meine Gesundheitsdaten verarbeitet. Damit erstellt sie meine persönlichen Trainingspläne. | Ja |
-| `onboarding.consentAccept` | WCAG 2.4.6 (Button beginnt mit Verb) | Weiter | Zustimmen und weiter | Ja |
-| `onboarding.checkboxAnonymisedDataUse` | WCAG 4.1.2 | Nutzungsdaten zur Verbesserung der App teilen | Zustimmen: anonymisierte Nutzungsdaten teilen | Ja |
+| `onboarding.anonymisedDataUse` | DSGVO Art. 7 | Ich bin damit einverstanden, durch das Teilen von Nutzungsdaten zur Verbesserung der App beizutragen. | Ich stimme zu, dass ich Nutzungsdaten teile, um die App zu verbessern. | Ja |
+| `onboarding.healthConsent` | DSGVO Art. 9 | Ich bin damit einverstanden, dass für die Erstellung persönlicher Trainingspläne meine Gesundheitsdaten verarbeitet werden. | Ich stimme zu, dass die App meine Gesundheitsdaten verarbeitet, um meine persönlichen Trainingspläne zu erstellen. | Ja |
+| `onboarding.consentAccept` | WCAG 2.4.6 (Button beginnt mit Verb) | Weiter | unverändert | Ja |
+| `onboarding.checkboxAnonymisedDataUse` | WCAG 4.1.2 | Nutzungsdaten zur Verbesserung der App teilen | Zustimmen: Nutzungsdaten teilen, um die App zu verbessern | Ja |
 | `onboarding.checkboxPrivacyFull` | WCAG 4.1.2 | AGB und Datenschutzbestimmungen akzeptieren | Zustimmen: AGB und Datenschutzbestimmungen | Ja |
 | `onboarding.checkboxPrivacySimple` | WCAG 4.1.2 | Datenschutzbestimmungen akzeptieren | Zustimmen: Datenschutzbestimmungen | Ja |
 | `screens.generating.errorTitle` | WCAG 3.3.1 | Ein Fehler ist aufgetreten | Plan nicht erstellt | Ja |
@@ -51,12 +51,12 @@ Die englischen Texte in `en.json` tragen die gleiche Bedeutung in einfachem Engl
 | `training.active.syncIndicator.failedMessage` | Du-Form (Regel 2), WCAG 3.3.1 | Die Synchronisierung konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut. | Die App konnte deine Daten nicht senden. Prüfe deine Internetverbindung und versuche es noch einmal. | Ja |
 | `training.generator.errorMsgOther` | WCAG 3.3.1 | Ein unerwarteter Fehler ist aufgetreten. | Die App konnte das Training nicht erstellen. Versuche es noch einmal. | Ja |
 | `training.generator.errorTitleGenerator` | WCAG 3.3.1 | Es konnte kein Training erstellt werden | Die App konnte kein Training erstellen | Ja |
-| `training.generator.errorTitleNoExercisesParamsX` | WCAG 3.3.1 | Folgende Probleme traten auf: {{params}} | Betroffen: {{params}} | Ja |
+| `training.generator.errorTitleNoExercisesParamsX` | WCAG 3.3.1 | Folgende Probleme traten auf: {{params}} | Betroffen: {{params}} (Zeilenumbruch) Ändere unter Profil deine Ausrüstung oder deine Beschwerden, oder wähle ein anderes Training. | Ja |
 | `training.generator.errorTitleNoExercisesSubtypeX` | WCAG 3.3.1 | Aus folgendem Grund konnten keine Übungen gefunden werden: {{subtype}} | Die App hat keine passenden Übungen gefunden. Grund: {{subtype}} | Ja |
 | `training.generator.errorTitleTooMuchSorenessParamsX` | Fachwort Regeneration | Folgende Bereiche benötigen noch Regeneration: {{params}} (Zeilenumbruch) Du kannst stattdessen ein Fokus- oder Präventionstraining für die anderen Bereiche machen. | Diese Bereiche brauchen noch Erholung: {{params}} (Zeilenumbruch) Du kannst stattdessen ein Fokus-Training oder Präventionstraining für die anderen Bereiche machen. | Ja |
 | `training.generator.errorTitleTooMuchSorenessSubtypeX` | WCAG 3.3.1 | Momentan solltest du deinen Körper nicht belasten: {{subtype}} | Dein Körper braucht jetzt Erholung. Grund: {{subtype}} | Ja |
 | `training.generator.errorTitleTooMuchSorenessTestWorkout` | Fachwort regenerativ | Mit Muskelkater kannst du den Krafttest nicht machen. Absolviere stattdessen einen regenerativen Lauf oder ein Fokus-Training. | Mit Muskelkater kannst du den Krafttest nicht machen. Mache stattdessen einen lockeren Lauf oder ein Fokus-Training. | Ja |
-| `training.generator.errorTitleNoAnamnesisParamsX` | Fachwort Anamnese | Keine Anamnesedaten: {{params}} | Es fehlen Angaben aus den Fragen am Anfang: {{params}} | Ja |
+| `training.generator.errorTitleNoAnamnesisParamsX` | Fachwort Anamnese | Keine Anamnesedaten: {{params}} | Es fehlen Angaben aus den Fragen am Anfang: {{params}} (Zeilenumbruch) Beantworte sie unter Profil bei 'Mein Profil'. | Ja |
 | `training.generator.failedToLoadExerciseList` | WCAG 3.3.1 | Laden der Übungsliste fehlgeschlagen | Die App konnte die Übungsliste nicht laden. Versuche es noch einmal. | Ja |
 | `training.generator.errorSubtype.SKILL_TREE` | Fachwort Skillbaum | Skillbaum | Übungsauswahl | Ja |
 | `training.generator.errorSubtype.OTHER` | Verständlichkeit | Anderer | Sonstiges | Ja |

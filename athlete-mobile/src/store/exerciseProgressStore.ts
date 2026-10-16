@@ -42,7 +42,7 @@ export type State = {
   testHistory: MaxValuesType[];
 };
 
-const PROGRESS_KEYS = ["performedWeight", "tooHardCount"] as const;
+const PROGRESS_KEYS = ["tooHardCount"] as const;
 
 const createInitialState = (): State => ({
   exerciseData: {},

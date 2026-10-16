@@ -135,15 +135,6 @@ export interface WeightStepOptions {
   lowestWeight?: number;
   /** F-Max of the exercise in kg, to round a percentage weight to a load. */
   maxValue?: number;
-  /** Rounded load the athlete last performed; a reduction compares with it. */
-  performedLoad?: number;
-}
-
-export interface WeightStep {
-  /** Underlying unrounded weight, the source of the next step. */
-  weight: number;
-  /** Rounded load in kg to prescribe; missing for a percentage without F-Max. */
-  load?: number;
 }
 
 const toLoad = (
@@ -153,6 +144,12 @@ const toLoad = (
   if (weightType !== "weightFMax") return weight;
   return maxValue ? (weight / 100) * maxValue : undefined;
 };
+
+const toWeight = (
+  load: number,
+  { weightType, maxValue }: WeightStepOptions,
+): number =>
+  weightType === "weightFMax" && maxValue ? (load / maxValue) * 100 : load;
 
 // 0.5 kg divides every equipment rounding step.
 const getNeighbourLoad = (
@@ -168,65 +165,78 @@ const getNeighbourLoad = (
 };
 
 /**
- * One weight step changes the underlying weight by x1.025 or x0.975 within the
- * load bounds. The prescribed load must differ from the reference load: the
- * rounded load of the current weight for an increase, the performed load for a
- * reduction. Otherwise it moves to the next available load, unless the bound
- * forbids it. The forced load never enters the underlying weight.
+ * One weight step multiplies the rounded current load by 1.025 or 0.975, clamps
+ * the exact result to the bounds and rounds it. When rounding returns the
+ * current load, the step takes the next available load inside the bound.
  */
 export function calculateWeightStep(
   currentWeight: number,
   direction: "INCREASE" | "DECREASE",
   exerciseData: ExerciseType,
   options: WeightStepOptions,
-): WeightStep {
+): number {
   const sign = direction === "INCREASE" ? 1 : -1;
-  // A weight already below the lowest load must not jump up to it on a decrease.
-  const clamp = (weight: number) =>
-    sign > 0
-      ? Math.min(weight, options.targetWeight ?? Infinity)
-      : Math.max(weight, Math.min(options.lowestWeight ?? 0, currentWeight));
-  const next = clamp(currentWeight * (1 + sign * 0.025));
-
+  const factor = 1 + sign * 0.025;
   const currentLoad = toLoad(currentWeight, options);
-  const nextLoad = toLoad(next, options);
-  if (currentLoad === undefined || nextLoad === undefined)
-    return { weight: next };
+  // A percentage without F-Max has no load to round.
+  if (currentLoad === undefined) {
+    return clampToBounds(currentWeight * factor, currentWeight, sign, options);
+  }
 
-  const round = (load: number) => roundWeightValue(load, exerciseData);
-  const reference =
-    sign < 0 && options.performedLoad !== undefined
-      ? options.performedLoad
-      : round(currentLoad);
-  const load = round(nextLoad);
-  if ((load - reference) * sign > 0) return { weight: next, load };
-
-  const toWeight = (forcedLoad: number) =>
-    options.weightType === "weightFMax" && options.maxValue
-      ? (forcedLoad / options.maxValue) * 100
-      : forcedLoad;
-  const bound = (forcedLoad: number) =>
-    round(toLoad(clamp(toWeight(forcedLoad)), options) ?? forcedLoad);
-  return {
-    weight: next,
-    load: forceLoad(reference, sign, exerciseData, bound) ?? load,
+  const loadBounds: WeightStepOptions = {
+    ...options,
+    targetWeight: toLoad(options.targetWeight ?? Infinity, options),
+    lowestWeight: toLoad(options.lowestWeight ?? 0, options),
   };
+  const clamp = (load: number, from: number) =>
+    clampToBounds(load, from, sign, loadBounds);
+  const round = (load: number) => roundWeightValue(load, exerciseData);
+  const rounded = round(currentLoad);
+  const load = round(clamp(rounded * factor, rounded));
+  if ((load - rounded) * sign > 0) return toWeight(load, options);
+
+  // The bound wins over the forced load: the athlete stays on the rounded load.
+  const forced = getNeighbourLoad(rounded, sign, exerciseData);
+  return toWeight(
+    forced !== undefined && round(clamp(forced, rounded)) === forced
+      ? forced
+      : rounded,
+    options,
+  );
 }
 
-// A forced load that the bound would cut is dropped: the athlete stays on the load.
-const forceLoad = (
-  reference: number,
+// A value already below the lowest weight must not jump up to it on a decrease.
+const clampToBounds = (
+  value: number,
+  from: number,
   sign: 1 | -1,
+  { targetWeight, lowestWeight }: WeightStepOptions,
+): number =>
+  sign > 0
+    ? Math.min(value, targetWeight ?? Infinity)
+    : Math.max(value, Math.min(lowestWeight ?? 0, from));
+
+const isStepWithoutChange = (
+  weight: number,
+  direction: "INCREASE" | "DECREASE",
   exerciseData: ExerciseType,
-  bound: (load: number) => number,
-): number | undefined => {
-  const forced = getNeighbourLoad(reference, sign, exerciseData);
-  return forced !== undefined && bound(forced) === forced ? forced : undefined;
+  options: WeightStepOptions,
+): boolean => {
+  const load = toLoad(weight, options);
+  const nextLoad = toLoad(
+    calculateWeightStep(weight, direction, exerciseData, options),
+    options,
+  );
+  if (load === undefined || nextLoad === undefined) return false;
+  return (
+    roundWeightValue(nextLoad, exerciseData) ===
+    roundWeightValue(load, exerciseData)
+  );
 };
 
 /**
- * The load boundary counts as reached when the performed load reaches the
- * rounded target, or when an increase cannot change the load below the target.
+ * The target load counts as reached when the weight reaches it or when an
+ * increase cannot change the load.
  */
 export function isTargetLoadReached(
   weight: number,
@@ -236,39 +246,21 @@ export function isTargetLoadReached(
   const { targetWeight } = options;
   if (typeof targetWeight !== "number") return false;
   if (weight >= targetWeight) return true;
-  const load = toLoad(weight, options);
-  const targetLoad = toLoad(targetWeight, options);
-  if (load === undefined || targetLoad === undefined) return false;
-
-  const roundedLoad = roundWeightValue(load, exerciseData);
-  const performedLoad = options.performedLoad ?? roundedLoad;
-  if (performedLoad >= roundWeightValue(targetLoad, exerciseData)) return true;
-  return (
-    calculateWeightStep(weight, "INCREASE", exerciseData, options).load ===
-    roundedLoad
-  );
+  return isStepWithoutChange(weight, "INCREASE", exerciseData, options);
 }
 
 /**
- * A stored performed load only counts while it is the rounded load of the
- * weight or its direct neighbour; a new strength test makes it stale.
+ * The lowest load counts as reached when the weight reaches it or when a
+ * reduction cannot change the load, for example at the empty bar.
  */
-export function getValidPerformedLoad(
-  performedLoad: number | undefined,
+export function isLowestLoadReached(
   weight: number,
   exerciseData: ExerciseType,
   options: WeightStepOptions,
-): number | undefined {
-  const load = toLoad(weight, options);
-  if (performedLoad === undefined || load === undefined) return undefined;
-  const rounded = roundWeightValue(load, exerciseData);
-  return [
-    rounded,
-    getNeighbourLoad(rounded, 1, exerciseData),
-    getNeighbourLoad(rounded, -1, exerciseData),
-  ].includes(performedLoad)
-    ? performedLoad
-    : undefined;
+): boolean {
+  const { lowestWeight } = options;
+  if (typeof lowestWeight === "number" && weight <= lowestWeight) return true;
+  return isStepWithoutChange(weight, "DECREASE", exerciseData, options);
 }
 
 /**

@@ -121,12 +121,13 @@ describe("useExerciseCompletion: standard progression", () => {
 
     act(() => result.current.saveExerciseAndBranchData(0));
 
-    expect(stored()?.weight).toBeCloseTo(71.75);
+    // 70 % of 121 kg rounds to 85 kg, 85 kg x 1.025 rounds to 87.5 kg
+    expect(stored()?.weight).toBeCloseTo(87.5 / 1.21);
     expect(stored()?.repetition).toBe(8);
     expect(stored()?.feedback?.difficulty).toBeNull();
   });
 
-  it("stores the unrounded weight and the forced load separately", () => {
+  it("stores the forced load as the weight", () => {
     // 33.06 % of 121 kg is 40 kg, the next step of 2.5 % rounds to 40 kg again
     seed({
       repetition: 12,
@@ -137,17 +138,7 @@ describe("useExerciseCompletion: standard progression", () => {
 
     act(() => result.current.saveExerciseAndBranchData(0));
 
-    expect(stored()?.weight).toBeCloseTo((40 / 1.21) * 1.025);
-    expect(stored()?.performedWeight).toBe(42.5);
-  });
-
-  it("keeps the performed load when nothing changes", () => {
-    seed({ repetition: 10, weight: 70, performedWeight: 87.5 });
-    const { result } = renderHook(() => useExerciseCompletion());
-
-    act(() => result.current.saveExerciseAndBranchData(0));
-
-    expect(stored()?.performedWeight).toBe(87.5);
+    expect(stored()?.weight).toBeCloseTo(42.5 / 1.21);
   });
 
   describe("consecutive too hard count", () => {

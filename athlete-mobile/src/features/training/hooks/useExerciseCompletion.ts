@@ -36,7 +36,6 @@ import {
 import {
   applyMaxValueToDirections,
   calculateAdjustedMaxValues,
-  deriveWeightForExercise,
   getMaxValueForExercise,
   maxWeightByEpley,
 } from "@/features/training/utils/workoutUtils";
@@ -401,17 +400,6 @@ export function useExerciseCompletion() {
                 : feedback
                   ? 0
                   : previousTooHardCount;
-            // Data from before the performed load falls back to the rounded weight.
-            const performedLoad =
-              currentExercise?.performedWeight ??
-              (weight > 0
-                ? deriveWeightForExercise(
-                    weight,
-                    currentExercise?.weightType,
-                    currentExerciseData,
-                    workoutData.maxValues,
-                  )
-                : undefined);
             const adjustmentResult = calculateStandardExerciseAdjustment(
               weight,
               duration,
@@ -420,7 +408,7 @@ export function useExerciseCompletion() {
               adjustmentContext,
               intensity,
               feedback,
-              { performedWeight: performedLoad, tooHardCount },
+              { tooHardCount },
             );
 
             const levelUp = adjustmentResult.type === "LEVEL_UP";
@@ -450,7 +438,6 @@ export function useExerciseCompletion() {
                     adjustmentContext,
                   ),
                   maxValue,
-                  performedLoad,
                 },
               );
               const nextWeightPercentage = weightPercentage || undefined;
@@ -481,8 +468,7 @@ export function useExerciseCompletion() {
                 {
                   exerciseId: id,
                   skill,
-                  weight: newWeight.weight,
-                  performedWeight: newWeight.load,
+                  weight: newWeight,
                   tooHardCount,
                   nextWeightPercentage,
                   maxFRepetitions,
@@ -526,7 +512,6 @@ export function useExerciseCompletion() {
                     exerciseId: id,
                     skill,
                     weight,
-                    performedWeight: performedLoad,
                     tooHardCount,
                     maxFRepetitions,
                     duration,
@@ -562,7 +547,6 @@ export function useExerciseCompletion() {
                   exerciseId: id,
                   skill,
                   weight,
-                  performedWeight: performedLoad,
                   tooHardCount,
                   nextWeightPercentage: weightPercentage,
                   maxFRepetitions,

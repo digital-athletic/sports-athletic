@@ -31,19 +31,19 @@ describe("ExerciseWeightOrHeightDisplay: weight branch", () => {
     expect(screen.getByText("20")).toBeTruthy();
   });
 
-  it("renders the performed load instead of the rounded weight", () => {
+  it("renders a strength test load below the empty bar", () => {
     render(
       <ExerciseWeightOrHeightDisplay
         exercise={createExercise({
-          weight: 41,
-          performedWeight: 42.5,
+          weight: 12.5,
+          skill: "TEST",
           weightType: "weightAbsolute",
         })}
         exerciseData={createExerciseData({ tags: ["EQ_BARBELL"] })}
         maxValues={DEFAULT_MAX_VALUES}
       />,
     );
-    expect(screen.getByText("42.5")).toBeTruthy();
+    expect(screen.getByText("12.5")).toBeTruthy();
   });
 });
 

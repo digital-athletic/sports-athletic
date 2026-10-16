@@ -411,7 +411,6 @@ export const GeneratedSetListEntrySchema = v.object({
   duration: v.optional(v.number()),
   repetition: v.optional(v.number()),
   weight: v.optional(v.number()),
-  performedWeight: v.optional(v.number()),
   height: v.optional(v.number()),
   weightType: v.optional(v.string()),
   repetitionMAX: v.optional(
@@ -442,7 +441,6 @@ export type UserExerciseEntry = {
   duration?: number;
   repetition?: number;
   weight?: number;
-  performedWeight?: number;
   height?: number;
   weightType?: string;
   branchId?: string;
@@ -467,7 +465,6 @@ export function toUserExerciseData(
     duration: entry.duration,
     repetition: entry.repetition,
     weight: entry.weight,
-    performedWeight: entry.performedWeight,
     height: entry.height,
     weightType: entry.weightType,
     branchId: entry.branchId,
@@ -560,8 +557,6 @@ export type ExerciseStartValues = {
   repetition?: number;
   /** Weight value */
   weight?: number;
-  /** Rounded load in kg to prescribe when it differs from the rounded weight */
-  performedWeight?: number;
   /** Weight type - absolute kg or F-max percentage */
   weightType: WeightType;
 };
@@ -671,8 +666,6 @@ export type ExerciseValuesData = {
   height?: number;
   repetition?: number;
   weight?: number;
-  /** Rounded load in kg the athlete performed, next to the unrounded weight. */
-  performedWeight?: number;
   weightType?: WeightType;
 };
 

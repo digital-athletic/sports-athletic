@@ -161,7 +161,6 @@ export async function syncExerciseData(
     feedback_streak_counter: payload.feedback?.streakCounter ?? null,
     max_f_level_adjustment: payload.maxFLevelAdjustment ?? null,
     max_f_repetitions: payload.maxFRepetitions ?? null,
-    performed_weight: payload.performedWeight ?? null,
     too_hard_count: payload.tooHardCount ?? null,
   };
 

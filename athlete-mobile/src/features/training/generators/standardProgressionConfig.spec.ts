@@ -536,8 +536,8 @@ describe("standard progression config: weight steps", () => {
 
     const values = tooHard("SWR2", 73.5, exercise, maxValues);
 
-    expect(values.weight).toBeCloseTo(73.5 * 0.975);
-    expect(values.performedWeight).toBe(70);
+    // 73.5 % of 100 kg rounds to 72.5 kg, 72.5 kg x 0.975 rounds to 70 kg
+    expect(values.weight).toBeCloseTo(70);
   });
 
   it("keeps the authored height of a jump exercise", () => {

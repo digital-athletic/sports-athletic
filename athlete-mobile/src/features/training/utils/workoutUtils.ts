@@ -121,6 +121,7 @@ const roundToStepTiesDown = (value: number, step: number) => {
 };
 
 const EMPTY_BAR_WEIGHT = 20;
+export const STRENGTH_TEST_SKILL = "TEST";
 
 const isBarbell = (exercise: Pick<ExerciseType, "tags"> | undefined) =>
   getTagValues(exercise?.tags ?? [], TagGroups.EQUIPMENT).includes(
@@ -208,22 +209,16 @@ export const calculateWorkoutTotals = (
             let exerciseData = exercisesData.filter(
               (e) => e.id === exercise.exerciseId,
             )[0];
-            let exerciseWeight = exercise.weight;
-            if (exercise.performedWeight) {
-              exerciseWeight = exercise.performedWeight;
-            } else if (exercise.weightType === "weightFMax") {
-              // calculate weight value based on gven percentage in weight and max Value from test for given exercise
-              let maxValue =
-                getMaxValueForExercise(exerciseData, maxValues) ?? 0;
-              exerciseWeight = roundWeightValue(
-                (exerciseWeight / 100) * maxValue,
-                exerciseData,
-              );
-            } else {
-              // given weight is absolute, so just round it
-              exerciseWeight = roundWeightValue(exerciseWeight, exerciseData);
-            }
-            weight += exerciseWeight * exercise.repetition;
+            const exerciseWeight = deriveEntryWeight(
+              {
+                weight: exercise.weight,
+                weightType: exercise.weightType,
+                skill: exercise.skill,
+              },
+              exerciseData,
+              maxValues,
+            );
+            weight += (exerciseWeight ?? 0) * exercise.repetition;
           }
           //height
           if (exercise.height && exercise.repetition) {
@@ -668,6 +663,22 @@ export const deriveWeightForExercise = (
   // given weight is absolute, so just round it
   return roundWeightValue(weight, exercise);
 };
+
+/** Rounded load of a set list entry. */
+export const deriveEntryWeight = (
+  { weight, weightType, skill }: EntryWeight,
+  exercise: ExerciseType,
+  maxValues: MaxValuesType,
+) =>
+  skill === STRENGTH_TEST_SKILL
+    ? roundWeightValue(weight, exercise, { emptyBarMinimum: false })
+    : deriveWeightForExercise(weight, weightType, exercise, maxValues);
+
+interface EntryWeight {
+  weight: number;
+  weightType?: string;
+  skill?: string;
+}
 
 /**
  * Applies a calculated max value result to the appropriate directions in maxValues.

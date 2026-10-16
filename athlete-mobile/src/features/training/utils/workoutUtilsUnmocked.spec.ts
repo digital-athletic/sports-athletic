@@ -13,6 +13,8 @@ import { DEFAULT_MAX_VALUES } from "../models/MaxValues";
 import {
   applyMaxValueToDirections,
   getEquivalentBranchWithGivenLevel,
+  calculateWorkoutTotals,
+  deriveEntryWeight,
   getUserLevel,
   roundWeightValue,
 } from "./workoutUtils";
@@ -152,6 +154,62 @@ describe("getUserLevel", () => {
     const result = getUserLevel(user);
     // Should return the first LEVEL value found
     expect(result).toBe(WorkoutConstants.LEVELS.ADVANCED);
+  });
+});
+
+describe("deriveEntryWeight: empty bar minimum by skill", () => {
+  it("keeps a strength test load below the empty bar", () => {
+    expect(
+      deriveEntryWeight(
+        { weight: 12.5, weightType: "weightAbsolute", skill: "TEST" },
+        barbellExercise,
+        DEFAULT_MAX_VALUES,
+      ),
+    ).toBe(12.5);
+  });
+
+  it("prescribes the empty bar for a training load below it", () => {
+    expect(
+      deriveEntryWeight(
+        { weight: 12.5, weightType: "weightAbsolute", skill: "SWR2" },
+        barbellExercise,
+        DEFAULT_MAX_VALUES,
+      ),
+    ).toBe(20);
+  });
+});
+
+describe("calculateWorkoutTotals: strength test loads", () => {
+  it("counts a strength test load below the empty bar", () => {
+    const totals = calculateWorkoutTotals(
+      {
+        start: 0,
+        end: 60000,
+        pause: 0,
+        skill: {
+          PREVENTION: 0,
+          MOBILITY: 0,
+          SWR: 0,
+          WARMUP: 0,
+          STABILITY: 0,
+          CARDIO: 0,
+        },
+      },
+      [
+        {
+          exerciseId: barbellExercise.id,
+          set: [1, 1],
+          weight: 12.5,
+          repetition: 2,
+          weightType: "weightAbsolute",
+          skill: "TEST",
+        },
+      ],
+      [barbellExercise],
+      DEFAULT_MAX_VALUES,
+    );
+
+    expect(totals.weight).toBe(25);
   });
 });
 

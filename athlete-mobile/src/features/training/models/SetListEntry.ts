@@ -29,8 +29,6 @@ export type GeneratedSetListEntry = {
   duration?: number;
   repetition?: number;
   weight?: number;
-  /** Rounded load the athlete performs, see Standard Exercise Progression */
-  performedWeight?: number;
   height?: number;
   weightType?: string;
   /** Branch tags - used during MAX training generation */

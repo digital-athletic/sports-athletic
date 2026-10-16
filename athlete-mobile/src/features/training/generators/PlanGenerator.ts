@@ -1,3 +1,4 @@
+import { isGoalkeeperPosition } from "@/constants/sportPositions";
 import { TagGroups } from "@/constants/tagGroups";
 import {
   WorkoutConstants,
@@ -195,12 +196,10 @@ export default class PlanGenerator {
     const initialPlan = PlanGenerator.initializeTrainingPlan(
       seasonPhase,
       ageGroup,
-      position ?? "FIELD", // Default to FIELD if no position tag
       level,
       hasWeightsAvailable,
       startDate,
-      true, // treat all as GK till SA is fixed
-      // position === "GOAL"
+      isGoalkeeperPosition(position),
     );
     if (PlanGenerator.DEBUG) console.log("InitializedPlan: ", initialPlan);
 
@@ -1037,20 +1036,18 @@ export default class PlanGenerator {
   static initializeTrainingPlan = (
     seasonPhase: SeasonPhaseType,
     ageGroup: AgeGroupTag,
-    position: string,
     level: LevelTag,
     hasWeights: boolean,
     startDate: Date,
-    isKeeper: boolean,
+    isGoalkeeper: boolean,
   ): TrainingPlanInitialType => {
     //defines type and numOfWeeks for each section
     const sectionConfigs = PlanGenerator.getWeightedSections(
       seasonPhase,
       ageGroup,
-      position,
       level,
       hasWeights,
-      isKeeper,
+      isGoalkeeper,
     );
 
     const startDateStr = formatDateToISO(startDate);
@@ -1080,10 +1077,9 @@ export default class PlanGenerator {
   static getWeightedSections = (
     seasonPhase: SeasonPhaseType,
     ageGroup: AgeGroupTag,
-    position: string,
     level: LevelTag,
     hasWeights: boolean,
-    isKeeper: boolean,
+    isGoalkeeper: boolean,
   ): SectionEntry[] => {
     const numOfWeeks = seasonPhase.numOfWeeks ?? 0;
     const phaseType = (seasonPhase.type ??
@@ -1095,7 +1091,7 @@ export default class PlanGenerator {
         level,
         numOfWeeks,
         hasWeights,
-        isKeeper,
+        isGoalkeeper,
       );
     // DEV check selected sections
     return sections;
@@ -2094,7 +2090,7 @@ export default class PlanGenerator {
     level: LevelTag,
     numOfWeeks: number,
     hasWeights: boolean,
-    isKeeper: boolean,
+    isGoalkeeper: boolean,
   ): SectionEntry[] => {
     if (PlanGenerator.DEBUG) {
       console.log(
@@ -2164,11 +2160,8 @@ export default class PlanGenerator {
         }
       }
     }
-    // if keeper and not child => change sa to sk, change cardio 1L to 1K
-    // if (isKeeper && ageGroup !== WorkoutConstants.AGE_GROUPS.CHILD) {
-
-    // also change childs SA to SK for now TODO set back
-    if (isKeeper) {
+    // goalkeepers, children included, get SK for SA and sprint for lactate intervals
+    if (isGoalkeeper) {
       if (PlanGenerator.DEBUG) console.log("Adjusting sections for keepers");
       for (let i = 0; i < sections.length; i++) {
         if (sections[i].type === "SA") {
@@ -2313,9 +2306,9 @@ export default class PlanGenerator {
     branchIdsInUse: string[],
     position?: string,
   ): SkillTreeType => {
-    // goalkeeper exercises only for goalkeepers; no position counts as field player
+    // goalkeeper exercises only for goalkeepers
     const goalExercises = ["661", "662", "767", "768", "769"];
-    const isGoalkeeper = position === "GOAL" || position === "GOALKEEPER";
+    const isGoalkeeper = isGoalkeeperPosition(position);
     for (let id in additionalSkillTree) {
       if (additionalSkillTree.hasOwnProperty(id) && additionalSkillTree[id]) {
         if (

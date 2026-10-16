@@ -1,6 +1,7 @@
 import {
   getDefaultPositionForSport,
   getPositionsForSport,
+  isGoalkeeperPosition,
   shouldShowPositionQuestion,
 } from "./sportPositions";
 
@@ -83,5 +84,22 @@ describe("getDefaultPositionForSport", () => {
   it("returns empty array for multi-position sports", () => {
     expect(getDefaultPositionForSport("HANDBALL_SPORT")).toEqual([]);
     expect(getDefaultPositionForSport("FOOTBALL_SPORT")).toEqual([]);
+  });
+});
+
+describe("isGoalkeeperPosition", () => {
+  it.each(["GOAL", "GOALKEEPER"])("returns true for %s", (position) => {
+    expect(isGoalkeeperPosition(position)).toBe(true);
+  });
+
+  it.each(["FIELD", "BACKCOURT", "WING", "PIVOT", "REFEREE", "OTHER"])(
+    "returns false for %s",
+    (position) => {
+      expect(isGoalkeeperPosition(position)).toBe(false);
+    },
+  );
+
+  it("returns false without a position", () => {
+    expect(isGoalkeeperPosition(undefined)).toBe(false);
   });
 });

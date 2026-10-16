@@ -63,8 +63,6 @@ Which of the last two runs at a block boundary is decided by the transition rule
 | Warm-up | 10 s | 10 s | 30 s |
 | Special warm-up, cool-down, mobility, foam roller | 10 s | 10 s | 10 s |
 
-Power endurance is not yet implemented in the training logic; its rest values are specified here for future implementation.
-
 Focus and short workouts use workout-specific fixed rest durations instead of a flat after-set pause: 10 s for warm-up, cool-down, mobility, and foam roller; 30 s for leg-axis stability; and 45 s for full-body stability with or without additional weight.
 
 ### Transition after an exercise block
@@ -109,7 +107,7 @@ Time budgeting counts slots, never seconds per repetition: [Plan Workout Generat
 | Max strength | Two ladder sets per [Max Strength Training](../progression/max-strength-progression.md) |
 | Everything else | None |
 
-No other skill gains a warm-up set: weighted full-body stability deliberately trains without one, and power endurance is not yet implemented. Whether these deserve one is a later review, not part of the model.
+No other skill gains a warm-up set: weighted full-body stability and power endurance train without one. Whether these deserve one is a later review, not part of the model.
 
 The extra set raises the pair's set count by one, so its numbering runs 1 of 3 rather than warm-up plus 2.
 

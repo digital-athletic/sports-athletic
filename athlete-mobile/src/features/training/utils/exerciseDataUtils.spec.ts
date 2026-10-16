@@ -714,6 +714,145 @@ describe("exerciseDataUtils", () => {
     });
   });
 
+  describe("calculateStandardExerciseAdjustment: target load and consecutive too hard", () => {
+    const weighted = (
+      tags: string[],
+      weight: NonNullable<ExerciseType["values"]>["weight"],
+      isJump = false,
+    ) =>
+      createExercise({
+        isAdvanceByReps: true,
+        isJump,
+        tags: ["EQ_TYPE_WEIGHTS", ...tags],
+        values: {
+          repetition: {
+            startValue: { m: { beginner: "8" } },
+            targetValue: { m: { beginner: "12" } },
+          },
+          weight,
+        },
+      });
+    const absoluteKg = (target: string) => ({
+      startValue: {
+        m: { beginner: "10" },
+        type: { type: "weightAbsolute" as const },
+      },
+      targetValue: {
+        m: { beginner: target },
+        type: { type: "weightAbsolute" as const },
+      },
+    });
+    const percent = {
+      startValue: {
+        m: { beginner: "70" },
+        type: { type: "weightFMax" as const },
+      },
+      targetValue: {},
+    };
+    const noChange = { type: "NO_CHANGE", reason: "in_between_zone" };
+    const adjustWith =
+      (intensity: IntensityData) =>
+      (
+        exercise: ExerciseType,
+        weight: number,
+        feedback: "SUCCEEDED" | "TOO_HARD",
+        progress: { performedWeight?: number; tooHardCount?: number } = {},
+      ) =>
+        calculateStandardExerciseAdjustment(
+          weight,
+          0,
+          12,
+          exercise,
+          createContext({ maxValue: 100 }),
+          intensity,
+          feedback,
+          progress,
+        );
+    const adjust = adjustWith(createIntensity());
+
+    describe("target load", () => {
+      const dumbbell = weighted(["EQ_DUMBBELL"], absoluteKg("15"));
+
+      it("levels up when 14 kg performed meets a 15 kg target that rounds to 14 kg", () => {
+        expect(adjust(dumbbell, 14, "SUCCEEDED").type).toBe("LEVEL_UP");
+      });
+
+      it("levels up when the performed load reaches the rounded target", () => {
+        const barbell = weighted(["EQ_BARBELL"], absoluteKg("42.5"));
+
+        expect(
+          adjust(barbell, 41, "SUCCEEDED", { performedWeight: 42.5 }).type,
+        ).toBe("LEVEL_UP");
+      });
+
+      it("levels up when a clamped increase cannot change the load", () => {
+        const barbell = weighted(["EQ_BARBELL"], absoluteKg("40"));
+
+        expect(adjust(barbell, 39.5, "SUCCEEDED").type).toBe("LEVEL_UP");
+      });
+
+      it("increases the weight while the next load stays below the target", () => {
+        const barbell = weighted(["EQ_BARBELL"], absoluteKg("50"));
+
+        expect(adjust(barbell, 40, "SUCCEEDED").type).toBe("INCREASE_WEIGHT");
+      });
+    });
+
+    describe("consecutive too hard on fixed kilograms", () => {
+      const fixed = weighted(["EQ_DUMBBELL"], absoluteKg("20"));
+
+      it("keeps the exercise after the first too hard", () => {
+        expect(adjust(fixed, 12, "TOO_HARD", { tooHardCount: 1 })).toEqual(
+          noChange,
+        );
+      });
+
+      it("levels down after the second too hard in a row", () => {
+        expect(adjust(fixed, 12, "TOO_HARD", { tooHardCount: 2 }).type).toBe(
+          "LEVEL_DOWN",
+        );
+      });
+
+      it("keeps a percentage weight above its lowest load after the second too hard", () => {
+        const result = adjustWith(
+          createIntensity({ lowestPermittedWeight: 65 }),
+        )(weighted(["EQ_BARBELL"], percent), 70, "TOO_HARD", {
+          tooHardCount: 2,
+        });
+
+        expect(result).toEqual(noChange);
+      });
+    });
+
+    describe("consecutive too hard on loaded jumps", () => {
+      const jump = weighted(["EQ_BARBELL"], percent, true);
+      const adjustJump = adjustWith(
+        createIntensity({ lowestPermittedWeight: 70 }),
+      );
+
+      it.each([1, 2])(
+        "keeps the exercise after %i too hard",
+        (tooHardCount) => {
+          expect(adjustJump(jump, 80, "TOO_HARD", { tooHardCount })).toEqual(
+            noChange,
+          );
+        },
+      );
+
+      it("levels down after the third too hard in a row", () => {
+        expect(adjustJump(jump, 80, "TOO_HARD", { tooHardCount: 3 }).type).toBe(
+          "LEVEL_DOWN",
+        );
+      });
+
+      it("keeps the weight at the lowest load until the third too hard", () => {
+        expect(adjustJump(jump, 70, "TOO_HARD", { tooHardCount: 1 })).toEqual(
+          noChange,
+        );
+      });
+    });
+  });
+
   describe("calculateWeightStep", () => {
     const barbell = createExercise({ tags: ["EQ_BARBELL"] });
     const plain = createExercise();
@@ -722,14 +861,14 @@ describe("exerciseDataUtils", () => {
 
     it("raises the underlying weight by 2.5 percent", () => {
       expect(
-        calculateWeightStep(38, "INCREASE", barbell, absolute),
+        calculateWeightStep(38, "INCREASE", barbell, absolute).weight,
       ).toBeCloseTo(38.95);
     });
 
     it("lowers the underlying weight by 2.5 percent", () => {
-      expect(calculateWeightStep(40, "DECREASE", plain, absolute)).toBeCloseTo(
-        39,
-      );
+      expect(
+        calculateWeightStep(40, "DECREASE", plain, absolute).weight,
+      ).toBeCloseTo(39);
     });
 
     it("steps a percentage weight from the underlying percentage", () => {
@@ -737,7 +876,7 @@ describe("exerciseDataUtils", () => {
         calculateWeightStep(70, "INCREASE", barbell, {
           ...percent,
           maxValue: 121,
-        }),
+        }).weight,
       ).toBeCloseTo(71.75);
     });
 
@@ -747,7 +886,7 @@ describe("exerciseDataUtils", () => {
           ...percent,
           maxValue: 121,
           targetWeight: 77.5,
-        }),
+        }).weight,
       ).toBe(77.5);
     });
 
@@ -757,7 +896,7 @@ describe("exerciseDataUtils", () => {
           ...percent,
           maxValue: 121,
           lowestWeight: 65,
-        }),
+        }).weight,
       ).toBe(65);
     });
 
@@ -772,30 +911,89 @@ describe("exerciseDataUtils", () => {
             ...percent,
             maxValue,
             lowestWeight: 50,
-          }),
+          }).weight,
         ).toBeLessThanOrEqual(5);
       },
     );
 
     it.each([
-      ["INCREASE", 42.5],
-      ["DECREASE", 37.5],
+      ["INCREASE", 41, 42.5],
+      ["DECREASE", 39, 37.5],
     ] as const)(
-      "uses the next real load for %s when rounding hides the step",
-      (direction, expected) => {
-        expect(
-          calculateWeightStep(40, direction, barbell, absolute),
-        ).toBeCloseTo(expected);
+      "prescribes the next real load for %s without changing the underlying weight",
+      (direction, weight, load) => {
+        const step = calculateWeightStep(40, direction, barbell, absolute);
+
+        expect(step.weight).toBeCloseTo(weight);
+        expect(step.load).toBe(load);
       },
     );
 
-    it("uses the next real load for a percentage weight", () => {
-      expect(
-        calculateWeightStep(40, "INCREASE", barbell, {
-          ...percent,
-          maxValue: 100,
-        }),
-      ).toBeCloseTo(42.5);
+    it("prescribes the next real load for a percentage weight", () => {
+      const step = calculateWeightStep(40, "INCREASE", barbell, {
+        ...percent,
+        maxValue: 100,
+      });
+
+      expect(step.weight).toBeCloseTo(41);
+      expect(step.load).toBe(42.5);
+    });
+
+    describe("worked example: 40 kg barbell", () => {
+      it("repeats the forced load when the next step rounds to it", () => {
+        const step = calculateWeightStep(41, "INCREASE", barbell, absolute);
+
+        expect(step.weight).toBeCloseTo(42.025);
+        expect(step.load).toBe(42.5);
+      });
+
+      it("reduces from the performed load, not from the rounded underlying weight", () => {
+        const step = calculateWeightStep(41, "DECREASE", barbell, {
+          ...absolute,
+          performedLoad: 42.5,
+        });
+
+        expect(step.weight).toBeCloseTo(39.975);
+        expect(step.load).toBe(40);
+      });
+
+      it("forces a lower load when the reduction rounds to the performed load", () => {
+        const step = calculateWeightStep(41, "DECREASE", barbell, {
+          ...absolute,
+          performedLoad: 40,
+        });
+
+        expect(step.load).toBe(37.5);
+      });
+    });
+
+    it("lets the target win over the guaranteed load change", () => {
+      const step = calculateWeightStep(40, "INCREASE", barbell, {
+        ...absolute,
+        targetWeight: 40,
+      });
+
+      expect(step.weight).toBe(40);
+      expect(step.load).toBe(40);
+    });
+
+    it("forces the next load up to the rounded target", () => {
+      const step = calculateWeightStep(40, "INCREASE", barbell, {
+        ...absolute,
+        targetWeight: 42,
+      });
+
+      expect(step.load).toBe(42.5);
+    });
+
+    it("does not force a reduction below the lowest permitted load", () => {
+      const step = calculateWeightStep(40, "DECREASE", barbell, {
+        ...absolute,
+        lowestWeight: 40,
+      });
+
+      expect(step.weight).toBe(40);
+      expect(step.load).toBe(40);
     });
   });
 
@@ -874,8 +1072,22 @@ describe("exerciseDataUtils", () => {
         calculateWeightStep(60, "INCREASE", exercise, {
           weightType: "weightAbsolute",
           targetWeight,
-        }),
+        }).weight,
       ).toBeGreaterThan(60);
+    });
+
+    it("rounds an authored kg target to a loadable weight", () => {
+      const dumbbell = {
+        ...kgExercise({ beginner: 15 }),
+        tags: ["EQ_DUMBBELL"],
+      };
+
+      expect(
+        getTargetWeight(percentIntensity, dumbbell, {
+          userLevel: "beginner",
+          genderTag: "m",
+        }),
+      ).toBe(14);
     });
   });
 

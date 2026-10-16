@@ -120,6 +120,13 @@ const roundToStepTiesDown = (value: number, step: number) => {
   return value - lower > step / 2 + ROUNDING_TOLERANCE ? lower + step : lower;
 };
 
+const EMPTY_BAR_WEIGHT = 20;
+
+const isBarbell = (exercise: Pick<ExerciseType, "tags"> | undefined) =>
+  getTagValues(exercise?.tags ?? [], TagGroups.EQUIPMENT).includes(
+    WorkoutConstants.EQUIPMENT.BARBELL,
+  );
+
 const getWeightRoundingStep = (
   value: number,
   exercise: Pick<ExerciseType, "tags"> | undefined,
@@ -128,19 +135,18 @@ const getWeightRoundingStep = (
   if (equipment.includes(WorkoutConstants.EQUIPMENT.DUMBBELL)) {
     return value > 10 ? 2 : 1;
   }
-  if (equipment.includes(WorkoutConstants.EQUIPMENT.BARBELL)) {
-    return 2.5;
-  }
-  return 1;
+  return isBarbell(exercise) ? 2.5 : 1;
 };
 
 /**
  * Rounds a load by the exercise's equipment: dumbbell per hand 1 kg (2 kg above
- * 10 kg), barbell total load 2.5 kg, other weights 1 kg. Exact ties round down.
+ * 10 kg), barbell total load 2.5 kg and at least the empty bar, other weights
+ * 1 kg. Exact ties round down. Strength test loads skip the empty bar minimum.
  */
 export const roundWeightValue = (
   value: number,
   exercise: Pick<ExerciseType, "tags"> | undefined,
+  { emptyBarMinimum = true }: { emptyBarMinimum?: boolean } = {},
 ) => {
   if (!isFinite(value)) {
     Logger.logError(
@@ -148,7 +154,13 @@ export const roundWeightValue = (
     );
     return 0;
   }
-  return roundToStepTiesDown(value, getWeightRoundingStep(value, exercise));
+  const rounded = roundToStepTiesDown(
+    value,
+    getWeightRoundingStep(value, exercise),
+  );
+  return emptyBarMinimum && isBarbell(exercise)
+    ? Math.max(rounded, EMPTY_BAR_WEIGHT)
+    : rounded;
 };
 
 export const calculateWorkoutTotals = (
@@ -197,7 +209,9 @@ export const calculateWorkoutTotals = (
               (e) => e.id === exercise.exerciseId,
             )[0];
             let exerciseWeight = exercise.weight;
-            if (exercise.weightType && exercise.weightType === "weightFMax") {
+            if (exercise.performedWeight) {
+              exerciseWeight = exercise.performedWeight;
+            } else if (exercise.weightType === "weightFMax") {
               // calculate weight value based on gven percentage in weight and max Value from test for given exercise
               let maxValue =
                 getMaxValueForExercise(exerciseData, maxValues) ?? 0;

@@ -18,6 +18,8 @@ import {
   getLowestPermittedWeight,
   getTargetWeight,
   getWeightType,
+  isTargetLoadReached,
+  type WeightStepOptions,
 } from "./weightAdjustmentUtils";
 import { getExerciseStartValue, getExerciseTargetValue } from "./workoutUtils";
 
@@ -155,16 +157,18 @@ export function calculateStandardExerciseAdjustment(
   context: ExerciseAdjustmentContext,
   intensity: IntensityData,
   feedback: ExerciseDifficultyType,
+  progress: StoredProgress = {},
 ): ExerciseAdjustmentResult {
   if (feedback === null)
     return { type: "NO_CHANGE", reason: "in_between_zone" };
   const hasWeights =
     getTagValues(exerciseData.tags, TagGroups.EQ_TYPE).indexOf("WEIGHTS") !==
     -1;
+  const config: ExerciseConfig = { exerciseData, context, intensity };
   if (
     hasWeights &&
     feedback === "TOO_HARD" &&
-    isAtLowestLoad(weight, exerciseData, context, intensity)
+    isTooHardExit(weight, config, progress.tooHardCount)
   ) {
     return { type: "LEVEL_DOWN" };
   }
@@ -174,7 +178,8 @@ export function calculateStandardExerciseAdjustment(
   const performed: PerformedSet = {
     hasWeights,
     weight,
-    targetWeight: getTargetWeight(intensity, exerciseData, context),
+    performedLoad: progress.performedWeight,
+    config,
     feedback,
   };
 
@@ -202,28 +207,60 @@ interface Bounds {
   target: number | undefined;
 }
 
+/** Progress stored per exercise before this session. */
+export interface StoredProgress {
+  performedWeight?: number;
+  /** Consecutive too hard ratings including the current one. */
+  tooHardCount?: number;
+}
+
+interface ExerciseConfig {
+  exerciseData: ExerciseType;
+  context: ExerciseAdjustmentContext;
+  intensity: IntensityData;
+}
+
 interface PerformedSet {
   hasWeights: boolean;
   weight: number;
-  targetWeight: number | undefined;
+  performedLoad: number | undefined;
+  config: ExerciseConfig;
   feedback: ExerciseDifficultyType;
 }
 
-// TOO_HARD at the lowest permitted load leads to an easier exercise.
-const isAtLowestLoad = (
+const FIXED_KILOGRAM_TOO_HARD_EXIT = 2;
+const LOADED_JUMP_TOO_HARD_EXIT = 3;
+
+// TOO_HARD leads to an easier exercise at the lowest permitted load, on the
+// second one in a row for fixed kilograms and on the third for loaded jumps.
+const isTooHardExit = (
   weight: number,
-  exerciseData: ExerciseType,
-  context: ExerciseAdjustmentContext,
-  intensity: IntensityData,
+  { exerciseData, context, intensity }: ExerciseConfig,
+  tooHardCount = 0,
 ): boolean => {
+  const weightType = getWeightType(exerciseData, intensity);
+  if (exerciseData.isJump) return tooHardCount >= LOADED_JUMP_TOO_HARD_EXIT;
+  if (weightType === "weightAbsolute") {
+    return tooHardCount >= FIXED_KILOGRAM_TOO_HARD_EXIT;
+  }
   const lowestWeight = getLowestPermittedWeight(
     intensity,
-    getWeightType(exerciseData, intensity),
+    weightType,
     exerciseData,
     context,
   );
   return typeof lowestWeight === "number" && weight <= lowestWeight;
 };
+
+const getWeightOptions = (
+  { exerciseData, context, intensity }: ExerciseConfig,
+  performedLoad: number | undefined,
+): WeightStepOptions => ({
+  weightType: getWeightType(exerciseData, intensity),
+  targetWeight: getTargetWeight(intensity, exerciseData, context),
+  maxValue: context.maxValue,
+  performedLoad,
+});
 
 const getBounds = (
   valueName: BoundedValue,
@@ -251,12 +288,16 @@ const getBounds = (
 const checkTarget = (
   value: number,
   target: number | undefined,
-  { hasWeights, weight, targetWeight, feedback }: PerformedSet,
+  { hasWeights, weight, performedLoad, config, feedback }: PerformedSet,
 ): BoundaryChange | null => {
   if (typeof target !== "number" || value < target || feedback === "TOO_HARD")
     return null;
   if (!hasWeights) return "LEVEL_UP";
-  return typeof targetWeight === "number" && weight >= targetWeight
+  return isTargetLoadReached(
+    weight,
+    config.exerciseData,
+    getWeightOptions(config, performedLoad),
+  )
     ? "LEVEL_UP"
     : "INCREASE_WEIGHT";
 };

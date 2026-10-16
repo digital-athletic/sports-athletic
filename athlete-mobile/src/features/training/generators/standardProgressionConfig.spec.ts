@@ -534,7 +534,10 @@ describe("standard progression config: weight steps", () => {
       hipHinge: { ...DEFAULT_MAX_VALUES.hipHinge, barbell: 100 },
     };
 
-    expect(tooHard("SWR2", 73.5, exercise, maxValues).weight).toBeCloseTo(70);
+    const values = tooHard("SWR2", 73.5, exercise, maxValues);
+
+    expect(values.weight).toBeCloseTo(73.5 * 0.975);
+    expect(values.performedWeight).toBe(70);
   });
 
   it("keeps the authored height of a jump exercise", () => {

@@ -736,6 +736,39 @@ describe("TrainingGenerator", () => {
       expect(result.weight).toBe(78);
     });
 
+    const barbell: ExerciseType = {
+      ...weightedExercise,
+      tags: [...weightedExercise.tags, "EQ_BARBELL"],
+    };
+
+    it("reduces from the performed load and stores the new load next to the weight", () => {
+      const result = generator.adjustExerciseValues(
+        { ...baseData, weight: 41, weightType: "weightAbsolute" as const },
+        { ...mockUserExercise, weight: 41, performedWeight: 42.5 },
+        barbell,
+        null,
+        "m",
+        "intermediate",
+        "TOO_HARD",
+      );
+
+      expect(result.weight).toBeCloseTo(39.975);
+      expect(result.performedWeight).toBe(40);
+    });
+
+    it("reads the stored performed load into the exercise values", () => {
+      const values = generator.getExerciseValues(
+        { ...mockUserExercise, weight: 41, performedWeight: 42.5 },
+        barbell,
+        null,
+        "m",
+        "intermediate",
+        DEFAULT_MAX_VALUES,
+      );
+
+      expect(values.performedWeight).toBe(42.5);
+    });
+
     it("lowers a light absolute weight without going below zero", () => {
       const result = generator.adjustExerciseValues(
         { ...baseData, weight: 0.5, weightType: "weightAbsolute" as const },
@@ -1677,6 +1710,7 @@ describe("TrainingGenerator", () => {
     type TestSetListEntry = SetListEntryType & {
       skill: "WU" | "TEST";
       weightType?: string;
+      performedWeight?: number;
     };
 
     const realExercises = ExercisesData as { id: string }[];
@@ -2092,14 +2126,18 @@ describe("TrainingGenerator", () => {
         };
 
         const result = generateTestWorkout(userWithMaxValues);
-        const squatWeights = result
-          .filter(
-            (entry) => entry.exerciseId === "25" && entry.skill === "TEST",
-          )
-          .map((entry) => entry.weight);
+        const squatEntries = result.filter(
+          (entry) => entry.exerciseId === "25" && entry.skill === "TEST",
+        );
 
-        // 75% of 41.3 kg is 30.975 kg, rounded to a 30 kg test set load
-        expect(squatWeights).toEqual([12.5, 17.5, 25, 30]);
+        // 75% of 41.3 kg is 30.975 kg, rounded to a 30 kg test set load; the
+        // strength test keeps ramp-up loads below the empty bar
+        expect(squatEntries.map((entry) => entry.weight)).toEqual([
+          12.5, 17.5, 25, 30,
+        ]);
+        expect(squatEntries.map((entry) => entry.performedWeight)).toEqual([
+          12.5, 17.5, 25, 30,
+        ]);
       });
     });
 

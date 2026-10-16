@@ -39,12 +39,14 @@ export const ExerciseWeightOrHeightDisplay: FC<Props> = ({
       WorkoutConstants.EQUIPMENT.DUMBBELL,
     );
 
-    const exerciseWeight = deriveWeightForExercise(
-      weight,
-      exercise.weightType,
-      exerciseData,
-      maxValues,
-    );
+    const exerciseWeight =
+      exercise.performedWeight ??
+      deriveWeightForExercise(
+        weight,
+        exercise.weightType,
+        exerciseData,
+        maxValues,
+      );
 
     return (
       <>

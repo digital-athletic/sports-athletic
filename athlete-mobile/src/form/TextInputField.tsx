@@ -39,11 +39,11 @@ export const TextInputField: FC<TextInputFieldProps> = ({
 
   return (
     <Box>
-      {title && (
+      {title ? (
         <Text variant="label" marginBottom="xs">
           {title}
         </Text>
-      )}
+      ) : null}
       <Box
         flexDirection="row"
         alignItems="center"

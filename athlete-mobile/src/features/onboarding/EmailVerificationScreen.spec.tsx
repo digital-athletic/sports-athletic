@@ -183,17 +183,13 @@ describe("<EmailVerificationScreen />", () => {
   it("shows success message after resending email", async () => {
     const { getByText, queryByText } = render(<EmailVerificationScreen />);
 
-    expect(
-      queryByText("The app sent you a new code."),
-    ).toBeNull();
+    expect(queryByText("The app sent you a new code.")).toBeNull();
 
     await act(async () => {
       fireEvent.press(getByText("Send code again"));
     });
 
-    expect(
-      getByText("The app sent you a new code."),
-    ).toBeTruthy();
+    expect(getByText("The app sent you a new code.")).toBeTruthy();
   });
 
   it("navigates to onboarding when back button is pressed", () => {
@@ -213,9 +209,7 @@ describe("<EmailVerificationScreen />", () => {
       fireEvent.press(getByText("Send code again"));
     });
 
-    expect(
-      queryByText("The app sent you a new code."),
-    ).toBeNull();
+    expect(queryByText("The app sent you a new code.")).toBeNull();
     expect(Alert.alert).toHaveBeenCalled();
   });
 

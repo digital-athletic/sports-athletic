@@ -459,7 +459,7 @@
         "tooHard": "too hard"
       },
       "syncIndicator": {
-        "synchronizing": "Sending data...",
+        "synchronizing": "The app is sending your data...",
         "synchronized": "Data sent",
         "failed": "Data not sent",
         "failedTitle": "Data not sent",

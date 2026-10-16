@@ -459,7 +459,7 @@
         "tooHard": "zu schwer"
       },
       "syncIndicator": {
-        "synchronizing": "Daten werden gesendet...",
+        "synchronizing": "Die App sendet deine Daten...",
         "synchronized": "Daten gesendet",
         "failed": "Daten nicht gesendet",
         "failedTitle": "Daten nicht gesendet",

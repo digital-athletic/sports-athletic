@@ -31,7 +31,9 @@ export const AnamnesisQuestionContainer: FC<PropsWithChildren<Props>> = ({
   return (
     <Box paddingHorizontal="m" paddingVertical="s">
       <Box marginBottom="xs">
-        <Text variant="title" accessibilityRole="header">{getLocalizedText(title)}</Text>
+        <Text variant="title" accessibilityRole="header">
+          {getLocalizedText(title)}
+        </Text>
       </Box>
       {description && (
         <Box marginBottom="s">

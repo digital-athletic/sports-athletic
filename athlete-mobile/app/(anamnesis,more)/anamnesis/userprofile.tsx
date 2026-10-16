@@ -158,6 +158,7 @@ export default function UserProfileScreen() {
             dateTime={birthday}
             onChange={handleBirthdayChange}
             maximumDate={new Date()}
+            accessibilityLabel={t("screens.userProfile.birthdayTitle")}
           />
         </AnamnesisQuestionContainer>
 

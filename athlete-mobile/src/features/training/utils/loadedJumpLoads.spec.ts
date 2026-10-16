@@ -168,14 +168,14 @@ describe("loaded jumps: lowest permitted load equals the start load", () => {
       { userLevel: "beginner", genderTag: "m" },
     );
 
-    const step = calculateWeightStep(5, "DECREASE", exercise("295"), {
+    const maxValue = getMaxValueForExercise(exercise("295"), maxValues) ?? 0;
+    const weight = calculateWeightStep(5, "DECREASE", exercise("295"), {
       weightType: "weightFMax",
       lowestWeight: lowest,
-      maxValue: getMaxValueForExercise(exercise("295"), maxValues),
+      maxValue,
     });
 
-    expect(step.weight).toBe(5);
-    expect(step.load).toBe(1);
+    expect((weight / 100) * maxValue).toBeCloseTo(1);
   });
 });
 

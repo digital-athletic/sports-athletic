@@ -56,7 +56,7 @@ A **ladder step** changes repetitions/duration:
 | Repetitions | 1 rep | 2 reps |
 | Duration | 5 s | 10 s |
 
-A **weight step** changes the underlying unrounded training weight by **±2.5%**.
+A **weight step** changes the current rounded training weight by **±2.5%** and rounds the result to a loadable weight.
 
 A single feedback event must never simultaneously increase repetitions/duration and weight.
 
@@ -95,6 +95,10 @@ Speed warm-up (WUSKSA) exercises use fixed authored durations:
 The special warm-up (WUSPEZIAL) is not affected by this rule.
 
 ## Feedback rules
+
+Each feedback (`too easy`, `succeeded`, `too hard`) changes the next prescription: repetitions/duration, the load, or the exercise. If a boundary or the available loads block the intended change, the exercise changes instead. A session without feedback keeps all values.
+
+At the end of a branch, a level change triggers a branch substitution at the reached level (see [Branches, Exercises, and Levels](../foundations/branches-exercises-and-levels.md)). When no equivalent branch exists, or outside plan workouts, the athlete keeps the current exercise and values, and the app discards the feedback. This case is the one exception to the rule above.
 
 ### Exercises without adjustable weight
 
@@ -135,55 +139,57 @@ For no feedback:
 
 ## Weight progression
 
-One weight step is calculated from the **current underlying unrounded training weight**:
+A weight step starts from the **current rounded training weight**, the load the athlete performed:
 
-> increase = current underlying weight × 1.025
+> exact increase = current rounded weight × 1.025
 
-> reduction = current underlying weight × 0.975
+> exact reduction = current rounded weight × 0.975
 
-The underlying progression value is calculated first. The final loadable prescription is then rounded according to [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md).
+The app clamps the exact value to the load boundaries and rounds it according to [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md). The rounded value replaces the training weight: the athlete performs it, and the next weight step starts from it.
+
+A weight in percent of F-Max follows the same rule: the step converts the percentage to kg with the exercise F-Max, and the app stores the rounded load as a percentage of F-Max.
 
 ### Guaranteed real load change
 
-Every intended weight increase/reduction must produce a real change in prescribed load:
+Every intended weight increase/reduction must produce a real change in prescribed load. If ±2.5% rounds to the current load:
 
-- an increase compares with the rounded load of the previous underlying value;
-- a reduction compares with the load the athlete last performed.
-
-If ±2.5% rounds to the same usable load:
-
-- increase → use at least the next available higher load;
-- reduction → use at least the next available lower load.
-
-The rounded execution load must **not** replace the underlying unrounded progression value used for future ±2.5% calculations. The next weight step always starts from the underlying value. If that step rounds to the load the athlete already performed, the athlete performs that load again; no second forced jump occurs.
+- increase → use the next available higher load;
+- reduction → use the next available lower load.
 
 Example (barbell, 2.5 kg increments):
 
-| Step | Underlying value | Rounded load | Prescribed load |
+| Step | Exact value | Rounded load | Prescribed and stored load |
 |---|---:|---:|---:|
-| Start | 40 kg | 40 kg | 40 kg |
+| Start | | | 40 kg |
 | +2.5% | 41 kg | 40 kg | 42.5 kg (forced jump) |
-| +2.5% | 42.03 kg | 42.5 kg | 42.5 kg (same load again) |
-| -2.5% after the forced jump (from 41 kg) | 39.98 kg | 40 kg | 40 kg (real change from the performed 42.5 kg) |
+| +2.5% | 43.56 kg | 42.5 kg | 45 kg (forced jump) |
+| -2.5% | 43.88 kg | 45 kg | 42.5 kg (forced jump) |
 
-If the next available load lies above the target load, the target load wins; see [Load boundaries](#load-boundaries).
+If the next available load lies beyond a load boundary, the boundary wins; see [Load boundaries](#load-boundaries).
 
 ### Load boundaries
 
 Authored start and target loads must be loadable increments according to [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md). If an authored load is not loadable, it is rounded with the same rules before it is used as a boundary.
 
-The underlying progression value is clamped to the authored load limits:
+The app clamps the exact value to the authored load limits before rounding:
 
 ```text
-increase: nextUnderlyingWeight = min(calculatedIncrease, targetWeight)
-reduction: nextUnderlyingWeight = max(calculatedReduction, lowestPermittedWeight)
+increase: exactWeight = min(currentWeight × 1.025, targetWeight)
+reduction: exactWeight = max(currentWeight × 0.975, lowestPermittedWeight)
 ```
 
-The equipment-specific rounded execution load is derived afterward.
+The boundary check uses the exact value. Example: with a 14 kg target, an exact value of 14.1 kg exceeds the target, even though 14.1 kg rounds to 14 kg.
 
-The target load takes priority over the guaranteed real load change: an increase never prescribes a load above the rounded target load. If the clamped increase produces no real load change, the target load counts as reached.
+The boundaries take priority over the guaranteed real load change: an increase never prescribes a load above the rounded target load, and a reduction never prescribes a load below the rounded lowest permitted load.
 
-A load boundary counts as reached as soon as the rounded execution load reaches the rounded target load or the rounded lowest permitted load.
+When a step cannot change the load, the same feedback changes the exercise:
+
+- `succeeded` or `too easy` at the repetition/duration target, where an increase cannot produce a higher load, counts as reaching the target load and levels up;
+- `too hard`, where a reduction cannot produce a lower load, counts as reaching the lowest permitted load and levels down.
+
+Example: 65% of a 123 kg F-Max is 79.95 kg and rounds to 80 kg. 80 kg is 65.04% of F-Max, and the next lower barbell load, 77.5 kg, lies below the rounded lowest permitted load. The empty bar acts the same way: 20 kg is the lowest barbell load, whatever its share of F-Max.
+
+A load boundary counts as reached as soon as the training weight reaches it, or when a step in its direction cannot change the load.
 
 ## Boundary rules
 
@@ -212,7 +218,7 @@ After it has been performed:
 - `too hard` → reduce weight by one weight step; repetitions/duration unchanged;
 - no feedback → no change.
 
-Target-load checks treat the boundary as reached when the rounded execution load is **at or above** the rounded target load, or when the underlying value is at or above target, while the stored progression value remains clamped to target. When an increase cannot produce a real load change without exceeding the target load, the target load also counts as reached (see [Load boundaries](#load-boundaries)).
+Target-load checks follow [Load boundaries](#load-boundaries).
 
 ### Lower boundary without adjustable weight
 
@@ -232,11 +238,13 @@ Regression occurs through weight; repetitions/duration stay unchanged.
 
 Weight may be reduced step by step to the exercise's **lowest permitted load**, even when that load is below the normal start load.
 
-Only after the lowest permitted load has been performed and is still `too hard` does the branch-level system select an easier exercise / level.
+The branch-level system selects an easier exercise / level on a `too hard` at the bottom of the load range, or earlier on the consecutive `too hard` count.
 
 For weighted hypertrophy, repetitions remain 8-12 and duration remains 30-50 s during weight regression.
 
-**Fixed-kilogram weights:** exercises whose weight is authored in fixed kilograms (full-body stability, weighted prevention, U16 weighted exercises) have no lowest permitted load. The first `too hard` reduces the weight by one weight step. A second `too hard` in a row emits `LEVEL_DOWN` instead of another reduction. Any other feedback resets the count. The count of consecutive `too hard` ratings is part of the stored exercise progress.
+**Fixed-kilogram weights:** exercises whose weight is authored in fixed kilograms (full-body stability, weighted prevention, U16 weighted exercises) have no lowest permitted load. The first `too hard` reduces the weight by one weight step. A second `too hard` in a row emits `LEVEL_DOWN` instead of another reduction. Any other feedback resets the count.
+
+**Bottom of the load range:** when no lower load exists, the first `too hard` emits `LEVEL_DOWN`, for every weighted exercise and regardless of the `too hard` count. Examples: 0 kg additional weight on a bodyweight exercise, the empty barbell, or the lowest permitted load. Above the bottom, the count adds an earlier exit: the second `too hard` in a row for fixed-kilogram weights, the third for loaded jumps. The count of consecutive `too hard` ratings is part of the stored exercise progress.
 
 Pure explosive exercises, for example loaded jumps, carry authored load limits in the exercise catalog. Those limits take priority over the skill's load range, so the explosive power floor of 50% F-Max does not apply to them. The exercise catalog must author these load limits for every loaded jump exercise and fitness level, as a share of the knee-direction 1RM converted to the equipment (see [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md)):
 
@@ -246,9 +254,7 @@ Pure explosive exercises, for example loaded jumps, carry authored load limits i
 | Advanced | 10% | 20% |
 | Professional | 10% | 20% |
 
-The lowest permitted load of a loaded jump exercise equals its start load. Reaching that load does not emit `LEVEL_DOWN` by itself: a `too hard` at the lowest permitted load keeps the load, and only the third `too hard` in a row emits `LEVEL_DOWN`, as described below.
-
-The two jump exercises, jump squats and jumped lunges, add one exit: the third `too hard` in a row moves the athlete off the exercise, as a level down does. Every other exercise follows the rules above. The count of consecutive `too hard` ratings is part of the stored exercise progress.
+The lowest permitted load of a loaded jump exercise equals its start load. The loaded jumps are jump squats and jumped lunges.
 
 ## Progression flow
 
@@ -269,7 +275,7 @@ graph TD
     PW -->|Yes| LU
     PW -->|No| PT{"Rep/duration target already performed?"}
     PT -->|No| PR
-    PT -->|Yes| WI["Increase underlying weight 2.5%; reset reps/duration"]
+    PT -->|Yes| WI["Increase weight 2.5%; reset reps/duration"]
     WI --> WC["Clamp load, round, guarantee real higher load"]
     WC --> S
 
@@ -278,9 +284,9 @@ graph TD
     ML -->|No| MR["Reduce reps/duration by 2 steps; clamp at start"]
     MR --> S
 
-    M -->|Yes| MB{"Lowest permitted load already performed (loaded jumps: third too hard in a row), or second too hard in a row with fixed-kilogram weight?"}
+    M -->|Yes| MB{"No lower load possible, or second too hard in a row with fixed-kilogram weight, or third too hard in a row on a loaded jump?"}
     MB -->|Yes| LD
-    MB -->|No| MD["Reduce underlying weight 2.5%; keep reps/duration"]
+    MB -->|No| MD["Reduce weight 2.5%; keep reps/duration"]
     MD --> MC["Clamp load, round, guarantee real lower load"]
     MC --> S
 ```
@@ -335,15 +341,15 @@ Weighted hypertrophy, repetition-based:
 
 - start: 8 reps
 - target: 12 reps
-- underlying training weight: 38 kg
+- training weight: 38 kg
 
 | Session | Feedback | Next prescription |
 |---|---|---|
 | 1: 8 reps | `succeeded` | 9 reps, same weight |
 | 2: 9 reps | `too easy` | 11 reps, same weight |
 | 3: 11 reps | `too easy` | 12 reps, same weight |
-| 4: 12 reps | `succeeded` | +2.5% underlying weight, reset to 8 reps |
-| 5: new weight | `too hard` | -2.5% underlying weight, keep 8 reps |
+| 4: 12 reps | `succeeded` | +2.5% weight, reset to 8 reps |
+| 5: new weight | `too hard` | -2.5% weight, keep 8 reps |
 
 Session 3 stops at 12 reps even though `too easy` normally adds two ladder steps. The same feedback event does not also increase weight.
 
@@ -359,8 +365,7 @@ Store per exercise, where applicable:
 
 - last prescribed/achieved repetitions,
 - last prescribed/achieved duration,
-- underlying unrounded training weight,
-- rounded/loadable prescribed weight,
+- rounded training weight,
 - weight type,
 - authored height,
 - pending feedback,
@@ -368,7 +373,7 @@ Store per exercise, where applicable:
 
 Per-branch levels are stored separately.
 
-The underlying unrounded weight remains the source for future ±2.5% calculations. The rounded value is only the execution prescription.
+The rounded training weight is both the execution prescription and the source for future ±2.5% calculations. The app stores no unrounded weight.
 
 Stored repetitions and durations always stay within the currently resolved start and target values. Each session generation clamps them, for every training area, so a later change to authored or global values takes effect for athletes with existing progress.
 

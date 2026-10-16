@@ -18,6 +18,7 @@ import {
   getLowestPermittedWeight,
   getTargetWeight,
   getWeightType,
+  isLowestLoadReached,
   isTargetLoadReached,
   type WeightStepOptions,
 } from "./weightAdjustmentUtils";
@@ -178,7 +179,6 @@ export function calculateStandardExerciseAdjustment(
   const performed: PerformedSet = {
     hasWeights,
     weight,
-    performedLoad: progress.performedWeight,
     config,
     feedback,
   };
@@ -209,7 +209,6 @@ interface Bounds {
 
 /** Progress stored per exercise before this session. */
 export interface StoredProgress {
-  performedWeight?: number;
   /** Consecutive too hard ratings including the current one. */
   tooHardCount?: number;
 }
@@ -223,7 +222,6 @@ interface ExerciseConfig {
 interface PerformedSet {
   hasWeights: boolean;
   weight: number;
-  performedLoad: number | undefined;
   config: ExerciseConfig;
   feedback: ExerciseDifficultyType;
 }
@@ -231,36 +229,42 @@ interface PerformedSet {
 const FIXED_KILOGRAM_TOO_HARD_EXIT = 2;
 const LOADED_JUMP_TOO_HARD_EXIT = 3;
 
-// TOO_HARD leads to an easier exercise at the lowest permitted load, on the
-// second one in a row for fixed kilograms and on the third for loaded jumps.
+// TOO_HARD levels down when no lower load exists. Above the lowest load, the
+// second TOO_HARD in a row levels down for fixed kilograms, the third for loaded jumps.
 const isTooHardExit = (
   weight: number,
-  { exerciseData, context, intensity }: ExerciseConfig,
+  config: ExerciseConfig,
   tooHardCount = 0,
 ): boolean => {
-  const weightType = getWeightType(exerciseData, intensity);
-  if (exerciseData.isJump) return tooHardCount >= LOADED_JUMP_TOO_HARD_EXIT;
-  if (weightType === "weightAbsolute") {
-    return tooHardCount >= FIXED_KILOGRAM_TOO_HARD_EXIT;
+  const { exerciseData, intensity } = config;
+  if (isLowestLoadReached(weight, exerciseData, getWeightOptions(config))) {
+    return true;
   }
-  const lowestWeight = getLowestPermittedWeight(
-    intensity,
-    weightType,
-    exerciseData,
-    context,
+  if (exerciseData.isJump) return tooHardCount >= LOADED_JUMP_TOO_HARD_EXIT;
+  return (
+    getWeightType(exerciseData, intensity) === "weightAbsolute" &&
+    tooHardCount >= FIXED_KILOGRAM_TOO_HARD_EXIT
   );
-  return typeof lowestWeight === "number" && weight <= lowestWeight;
 };
 
-const getWeightOptions = (
-  { exerciseData, context, intensity }: ExerciseConfig,
-  performedLoad: number | undefined,
-): WeightStepOptions => ({
-  weightType: getWeightType(exerciseData, intensity),
-  targetWeight: getTargetWeight(intensity, exerciseData, context),
-  maxValue: context.maxValue,
-  performedLoad,
-});
+const getWeightOptions = ({
+  exerciseData,
+  context,
+  intensity,
+}: ExerciseConfig): WeightStepOptions => {
+  const weightType = getWeightType(exerciseData, intensity);
+  return {
+    weightType,
+    targetWeight: getTargetWeight(intensity, exerciseData, context),
+    lowestWeight: getLowestPermittedWeight(
+      intensity,
+      weightType,
+      exerciseData,
+      context,
+    ),
+    maxValue: context.maxValue,
+  };
+};
 
 const getBounds = (
   valueName: BoundedValue,
@@ -288,7 +292,7 @@ const getBounds = (
 const checkTarget = (
   value: number,
   target: number | undefined,
-  { hasWeights, weight, performedLoad, config, feedback }: PerformedSet,
+  { hasWeights, weight, config, feedback }: PerformedSet,
 ): BoundaryChange | null => {
   if (typeof target !== "number" || value < target || feedback === "TOO_HARD")
     return null;
@@ -296,7 +300,7 @@ const checkTarget = (
   return isTargetLoadReached(
     weight,
     config.exerciseData,
-    getWeightOptions(config, performedLoad),
+    getWeightOptions(config),
   )
     ? "LEVEL_UP"
     : "INCREASE_WEIGHT";

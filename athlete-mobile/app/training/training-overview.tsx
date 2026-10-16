@@ -7,7 +7,7 @@ import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { getEquipmentList } from "@/features/training/trainingUtils";
-import { deriveWeightForExercise } from "@/features/training/utils/workoutUtils";
+import { deriveEntryWeight } from "@/features/training/utils/workoutUtils";
 import { MediaSkeleton } from "@/media/MediaSkeleton";
 import { getExercisePictureUrl } from "@/services/StorageService";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
@@ -508,13 +508,15 @@ const ExerciseValues: FC<ExerciseValuesProps> = ({
   const hasRepetition = typeof exercise.repetition !== "undefined";
 
   const derivedWeight = exercise?.weight
-    ? (exercise.performedWeight ??
-      deriveWeightForExercise(
-        exercise.weight,
-        exercise.weightType,
+    ? deriveEntryWeight(
+        {
+          weight: exercise.weight,
+          weightType: exercise.weightType,
+          skill: exercise.skill,
+        },
         exerciseData,
         workoutData.maxValues,
-      ))
+      )
     : undefined;
 
   return (

@@ -1,7 +1,7 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { type MaxValuesType } from "@/features/training/models/MaxValues";
-import { deriveWeightForExercise } from "@/features/training/utils/workoutUtils";
+import { deriveEntryWeight } from "@/features/training/utils/workoutUtils";
 import { type ExerciseType } from "@/schemas/exercise.schema";
 import { type UserExerciseDataType } from "@/schemas/sync.schema";
 import { Text } from "@/theme/Text";
@@ -39,14 +39,11 @@ export const ExerciseWeightOrHeightDisplay: FC<Props> = ({
       WorkoutConstants.EQUIPMENT.DUMBBELL,
     );
 
-    const exerciseWeight =
-      exercise.performedWeight ??
-      deriveWeightForExercise(
-        weight,
-        exercise.weightType,
-        exerciseData,
-        maxValues,
-      );
+    const exerciseWeight = deriveEntryWeight(
+      { weight, weightType: exercise.weightType, skill: exercise.skill },
+      exerciseData,
+      maxValues,
+    );
 
     return (
       <>

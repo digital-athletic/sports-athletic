@@ -130,11 +130,9 @@ import {
 import {
   calculateWeightStep,
   getLowestPermittedWeight,
-  getValidPerformedLoad,
-  type WeightStep,
-  type WeightStepOptions,
 } from "../utils/weightAdjustmentUtils";
 import {
+  STRENGTH_TEST_SKILL,
   deriveWeightForExercise,
   getExerciseStartValue,
   getExerciseTargetValue,
@@ -2838,9 +2836,9 @@ export default class TrainingGenerator {
     if (exerciseValues.duration) data.duration = exerciseValues.duration;
     if (exerciseValues.height) data.height = exerciseValues.height;
     if (exerciseValues.repetition) data.repetition = exerciseValues.repetition;
-    if (exerciseValues.weight) data.weight = exerciseValues.weight;
-    if (exerciseValues.performedWeight) {
-      data.performedWeight = exerciseValues.performedWeight;
+    // 0 kg is a valid load at the bottom of the load range.
+    if (typeof exerciseValues.weight === "number") {
+      data.weight = exerciseValues.weight;
     }
     if (
       exerciseValues.weightType === "weightAbsolute" ||
@@ -3009,7 +3007,7 @@ export default class TrainingGenerator {
 
     let setList: GeneratedSetListEntry[] = wuSetList;
 
-    const skill = "TEST";
+    const skill = STRENGTH_TEST_SKILL;
 
     // build single lists to concat afterwards
     const singleExerciseLists = sortedExerciseIds.reduce<
@@ -3141,13 +3139,11 @@ export default class TrainingGenerator {
       testRounding,
     );
 
-    // The performed load keeps the display from applying the empty bar minimum.
     return {
       branchId: PLACEHOLDER_BRANCH_ID,
       exerciseId: sortedExercise.id,
       set: [set, 4] as [number, number],
       weight,
-      performedWeight: weight,
       repetition: repetitions,
       skill: skill,
     };
@@ -3276,13 +3272,10 @@ export default class TrainingGenerator {
       difficultyFeedback === "TOO_HARD" &&
       hasWeightValue(exercise, dataInput)
     ) {
-      const step = stepWeightDown(
-        dataInput,
-        boundaries,
-        maxValues,
-        userExercise?.performedWeight,
-      );
-      return { ...dataInput, weight: step.weight, performedWeight: step.load };
+      return {
+        ...dataInput,
+        weight: stepWeightDown(dataInput, boundaries, maxValues),
+      };
     }
     return stepRepsAndDuration(
       dataInput,
@@ -3414,7 +3407,12 @@ export default class TrainingGenerator {
       if (exercise.isJump && userExercise.height) {
         data.height = userExercise.height;
       }
-      if (userExercise.weight) {
+      // 0 kg is a valid stored load of a weighted exercise.
+      if (
+        userExercise.weight ||
+        (userExercise.weight === 0 &&
+          getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS"))
+      ) {
         data.weight = userExercise.weight;
       }
       const exerciseWeightType =
@@ -3427,17 +3425,6 @@ export default class TrainingGenerator {
         data.weightType = "weightFMax";
       } else {
         data.weightType = "weightAbsolute";
-      }
-      if (userExercise.weight) {
-        data.performedWeight = getValidPerformedLoad(
-          userExercise.performedWeight,
-          userExercise.weight,
-          exercise,
-          {
-            weightType: data.weightType,
-            maxValue: getMaxValueForExercise(exercise, maxValues),
-          },
-        );
       }
     }
 
@@ -3572,16 +3559,15 @@ const hasWeightValue = (
   getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS") &&
   typeof data.weight === "number";
 
-// One weight step down from the performed load, not below the lowest permitted load.
+// One weight step down, not below the lowest permitted load.
 const stepWeightDown = (
   data: ExerciseValuesData & { weight: number },
   { intensity, exercise, userLevel, userGender }: BoundaryContext,
   maxValues: MaxValuesType,
-  storedLoad: number | undefined,
-): WeightStep => {
+): number => {
   const weightType =
     data.weightType === "weightFMax" ? "weightFMax" : "weightAbsolute";
-  const options: WeightStepOptions = {
+  return calculateWeightStep(data.weight, "DECREASE", exercise, {
     weightType,
     lowestWeight: intensity
       ? getLowestPermittedWeight(intensity, weightType, exercise, {
@@ -3590,15 +3576,6 @@ const stepWeightDown = (
         })
       : undefined,
     maxValue: getMaxValueForExercise(exercise, maxValues),
-  };
-  return calculateWeightStep(data.weight, "DECREASE", exercise, {
-    ...options,
-    performedLoad: getValidPerformedLoad(
-      storedLoad,
-      data.weight,
-      exercise,
-      options,
-    ),
   });
 };
 

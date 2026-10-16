@@ -98,6 +98,7 @@ export const PlaceSelection: FC<PlaceSelectionProps> = ({
               name="chevron-forward"
               size={15}
               color={colors.darkGrey2}
+              decorative
             />
           </Box>
         </Box>

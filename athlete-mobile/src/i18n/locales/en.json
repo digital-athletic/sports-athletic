@@ -434,7 +434,8 @@
       "heartRateMax": "MAX.",
       "a11y": {
         "showExerciseInfo": "Show exercise information",
-        "abortTraining": "Abort training"
+        "abortTraining": "Abort training",
+        "finishExercise": "Finish exercise"
       },
       "strengthTestAlert": {
         "title": "Attention for pain",

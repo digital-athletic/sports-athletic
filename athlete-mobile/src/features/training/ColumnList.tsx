@@ -138,6 +138,7 @@ export const ColumnList: FC<ColumnListProps> = ({ listItems }) => {
               name="chevron-forward"
               size={20}
               color={colors.lightGrey3}
+              decorative
             />
           </Box>
         </Box>

@@ -53,6 +53,7 @@ export const BodyPartsTagChips: FC<BodyPartsTagChipsProps> = ({
               name="close-circle"
               size={20}
               color={theme.colors.darkGrey1}
+              decorative
             />
           </Box>
         )}

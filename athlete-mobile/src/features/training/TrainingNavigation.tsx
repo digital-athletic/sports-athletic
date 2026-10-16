@@ -129,11 +129,25 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
   const renderNextButton = () => {
     return (
       <Box justifyContent="center" alignItems="center">
-        <TouchableBox onPress={() => handleClickNormalButton()}>
-          <Ionicon name="checkmark" size={75} color={theme.colors.primary} />
+        <TouchableBox
+          onPress={() => handleClickNormalButton()}
+          accessibilityRole="button"
+          accessibilityLabel={t("training.active.a11y.finishExercise")}
+        >
+          <Ionicon
+            name="checkmark"
+            size={75}
+            color={theme.colors.primary}
+            decorative
+          />
         </TouchableBox>
         <Box opacity={0.2}>
-          <Ionicon name="arrow-up" size={22} color={theme.colors.darkGrey2} />
+          <Ionicon
+            name="arrow-up"
+            size={22}
+            color={theme.colors.darkGrey2}
+            decorative
+          />
         </Box>
       </Box>
     );
@@ -164,6 +178,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
                 name="arrow-back"
                 size={22}
                 color={theme.colors.darkGrey2}
+                decorative
               />
             </Box>
           </Box>
@@ -178,6 +193,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
                 name="arrow-forward"
                 size={22}
                 color={theme.colors.darkGrey2}
+                decorative
               />
             </Box>
             <TouchableBox

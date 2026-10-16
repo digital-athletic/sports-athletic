@@ -230,15 +230,14 @@ export const PowerTest: FC<PowerTestProps> = ({
             }}
             accessibilityLabel={t("statistics.powerTest.toggleEntry", { date })}
             accessibilityRole="button"
+            accessibilityState={{ expanded: visible }}
           >
             <Text variant="body">{date}</Text>
             <Ionicon
               name={iconName}
               size={20}
               color={colors.darkGrey3}
-              accessibilityLabel={
-                visible ? t("common.close") : t("common.open")
-              }
+              decorative
             />
           </TouchableOpacity>
 

@@ -147,9 +147,7 @@ export default function MoreScreen() {
                       name="trash"
                       size={iconSize}
                       color={colors.white}
-                      accessibilityLabel={t("common.altText.icon", {
-                        title: t("more.deleteUser"),
-                      })}
+                      decorative
                     />
                   </Box>
                 </Box>
@@ -183,9 +181,7 @@ export default function MoreScreen() {
                     name="exit"
                     size={iconSize}
                     color={colors.white}
-                    accessibilityLabel={t("common.altText.icon", {
-                      title: t("more.logout"),
-                    })}
+                    decorative
                   />
                 </Box>
               </Box>

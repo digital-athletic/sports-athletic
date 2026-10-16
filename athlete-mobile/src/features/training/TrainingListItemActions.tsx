@@ -35,6 +35,12 @@ export const TrainingListItemActions: FC<TrainingListItemActionsProps> = ({
 }) => {
   const { t } = useTranslation();
   const showFeedbackRow = !isCompleted && isFeedbackEligible;
+  const completedLabels = {
+    TOO_EASY: t("training.active.feedback.tooEasy"),
+    TOO_HARD: t("training.active.feedback.tooHard"),
+    SUCCEEDED: t("training.active.a11y.finishExercise"),
+  };
+  const completedLabel = completedLabels[completedFeedback ?? "SUCCEEDED"];
 
   return (
     <Box flexDirection="row" alignItems="center" gap="m">
@@ -64,6 +70,7 @@ export const TrainingListItemActions: FC<TrainingListItemActionsProps> = ({
             <FeedbackIconButton
               feedback="SUCCEEDED"
               onPress={() => onComplete("SUCCEEDED")}
+              accessibilityLabel={t("training.active.a11y.finishExercise")}
               testId={`${testId}-checkmark`}
             />
             <FeedbackIconButton
@@ -78,6 +85,7 @@ export const TrainingListItemActions: FC<TrainingListItemActionsProps> = ({
             feedback={completedFeedback ?? "SUCCEEDED"}
             onPress={() => onComplete()}
             disabled={isCompleted}
+            accessibilityLabel={completedLabel}
             testId={`${testId}-checkmark`}
           />
         ))}

@@ -434,7 +434,8 @@
       "heartRateMax": "MAX.",
       "a11y": {
         "showExerciseInfo": "Übungsinformationen anzeigen",
-        "abortTraining": "Training abbrechen"
+        "abortTraining": "Training abbrechen",
+        "finishExercise": "Übung abschließen"
       },
       "strengthTestAlert": {
         "title": "Achtung bei Beschwerden",

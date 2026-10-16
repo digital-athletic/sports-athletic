@@ -54,6 +54,7 @@ export const FeedbackIconButton: FC<FeedbackIconButtonProps> = ({
       minHeight={36}
       justifyContent="center"
       alignItems="center"
+      accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       testID={testId}
     >
@@ -61,6 +62,7 @@ export const FeedbackIconButton: FC<FeedbackIconButtonProps> = ({
         name={disabled ? icon.filled : icon.outline}
         size={32}
         color={colors[icon.color]}
+        decorative
       />
     </TouchableBox>
   );

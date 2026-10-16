@@ -94,6 +94,25 @@ describe("RadarChart", () => {
     });
   });
 
+  describe("screen reader summary", () => {
+    it("labels the chart with every skill and its percentage", () => {
+      const userSkills: UserSkills = {
+        MOBILITY: 30,
+        PREVENTION: 25,
+        CARDIO: 15,
+        STABILITY: 12,
+        WARMUP: 10,
+        SWR: 8,
+      };
+
+      const { getByTestId } = render(<RadarChart userSkills={userSkills} />);
+
+      expect(getByTestId("radar-chart-container").props.accessibilityLabel).toBe(
+        "Skill profile: Mobility 30%, Prevention 25%, Endurance 15%, Stability 12%, Warm-up 10%, Strength 8%",
+      );
+    });
+  });
+
   describe("chart configuration", () => {
     it("passes correct layout and styling configuration", () => {
       const userSkills: UserSkills = {

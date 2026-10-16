@@ -27,7 +27,7 @@ const defaultProps = {
 describe("TrainingNavigation: checkmark path (duration undefined)", () => {
   it("renders checkmark icon when duration is undefined", () => {
     render(<TrainingNavigation {...defaultProps} duration={undefined} />);
-    expect(screen.getByLabelText("checkmark")).toBeTruthy();
+    expect(screen.getByLabelText("Finish exercise")).toBeTruthy();
   });
 
   it("does not render countdown timer when duration is undefined", () => {
@@ -40,7 +40,7 @@ describe("TrainingNavigation: checkmark path (duration undefined)", () => {
     render(
       <TrainingNavigation {...defaultProps} duration={undefined} next={next} />,
     );
-    fireEvent.press(screen.getByLabelText("checkmark"));
+    fireEvent.press(screen.getByLabelText("Finish exercise"));
     expect(next).toHaveBeenCalledTimes(1);
   });
 
@@ -77,7 +77,7 @@ describe("TrainingNavigation: checkmark path (duration undefined)", () => {
         feedback={feedback}
       />,
     );
-    fireEvent.press(screen.getByLabelText("checkmark"));
+    fireEvent.press(screen.getByLabelText("Finish exercise"));
     expect(feedback).not.toHaveBeenCalled();
   });
 
@@ -91,7 +91,7 @@ describe("TrainingNavigation: checkmark path (duration undefined)", () => {
         isFeedbackSkill={true}
       />,
     );
-    fireEvent.press(screen.getByLabelText("checkmark"));
+    fireEvent.press(screen.getByLabelText("Finish exercise"));
     expect(feedback).toHaveBeenCalledWith("SUCCEEDED");
   });
 });
@@ -104,7 +104,7 @@ describe("TrainingNavigation: timer path (duration number)", () => {
 
   it("does not show checkmark while timer is active", () => {
     render(<TrainingNavigation {...defaultProps} duration={30} />);
-    expect(screen.queryByLabelText("checkmark")).toBeNull();
+    expect(screen.queryByLabelText("Finish exercise")).toBeNull();
   });
 
   it("hides feedback buttons until timer ends even when isFeedbackSkill is true", () => {

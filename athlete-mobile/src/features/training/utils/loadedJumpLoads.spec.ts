@@ -20,6 +20,7 @@ import {
   getExerciseStartValue,
   getExerciseTargetValue,
   getMaxValueForExercise,
+  getValueByGenderAndLevel,
 } from "./workoutUtils";
 
 const LEVELS = [
@@ -40,7 +41,51 @@ const exercise = (id: string): ExerciseType => {
   return found;
 };
 
-describe("loaded jumps: default load limits without catalog values", () => {
+describe("loaded jumps: the catalog authors complete weights", () => {
+  const catalog = ExercisesData as unknown as ExerciseType[];
+  const loadedJumps = catalog.filter(
+    (e) => e.isJump && e.tags.includes("EQ_TYPE_WEIGHTS"),
+  );
+
+  it("finds the loaded jumps 292, 294, 295 and 880", () => {
+    expect(loadedJumps.map((e) => e.id).sort()).toEqual([
+      "292",
+      "294",
+      "295",
+      "880",
+    ]);
+  });
+
+  it("authors a numeric weight start and target for every level and gender", () => {
+    const missing: string[] = [];
+    for (const { id, values } of loadedJumps) {
+      for (const gender of ["m", "w"] as const) {
+        for (const { level } of LEVELS) {
+          for (const bound of ["startValue", "targetValue"] as const) {
+            const value = getValueByGenderAndLevel(
+              values?.weight?.[bound],
+              gender,
+              level,
+            );
+            if (typeof value !== "number") {
+              missing.push(`${id} ${gender}.${level}.${bound}`);
+            }
+          }
+        }
+      }
+    }
+    expect(missing).toEqual([]);
+  });
+
+  it.each(["295", "880"])(
+    "the jumped dumbbell lunge %s carries the conversion factor 0.3",
+    (id) => {
+      expect(exercise(id).conversionFactor).toBe(0.3);
+    },
+  );
+});
+
+describe("loaded jumps: authored load limits", () => {
   describe.each(["295", "880"])("jumped dumbbell lunge %s", (id) => {
     it.each(LEVELS)(
       "$level starts at $start% and targets $target% of the knee 1RM",

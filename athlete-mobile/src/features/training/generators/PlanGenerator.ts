@@ -49,6 +49,7 @@ import {
   getNextTypeFiltered,
   getSkillTree,
   getUserExerciseFromBranch,
+  resolveBranchExerciseId,
 } from "@/features/training/utils/skillTreeUtils";
 import {
   getUserBirthday,
@@ -1568,9 +1569,34 @@ export default class PlanGenerator {
     let kgExercisesToUse = numOfBranchesToUse - weightExercisesToUse;
     let nextType: "kg" | "weight" = "kg";
 
+    const resolveExerciseId = (branch: {
+      branchId: string;
+      tags: string[];
+      levels?: Record<number, { exerciseId: string }>;
+      exercises?: Record<number, { exerciseId: string }>;
+    }): string | null =>
+      resolveBranchExerciseId(
+        {
+          levels: branch.levels ?? branch.exercises ?? {},
+          tags: branch.tags,
+        },
+        userLevel,
+        exerciseBranchData[branch.branchId] ?? null,
+      );
+
     // add by tags for count times
     for (let k = 0; k < numOfBranchesToUse; k++) {
       if (log) console.log("count", k + 1 + "/" + weightedTag.count);
+
+      // a branch whose exercise the skill already holds is not picked again
+      const heldExerciseIds = new Set(
+        [...workout, ...branches].map(resolveExerciseId),
+      );
+      heldExerciseIds.delete(null);
+      possibleBranches = possibleBranches.filter(
+        (branch) => !heldExerciseIds.has(resolveExerciseId(branch)),
+      );
+      if (possibleBranches.length === 0) break;
 
       // choose nextType
       if (weightExercisesToUse > 0 && kgExercisesToUse > 0) {

@@ -37,7 +37,6 @@ import {
   filterByPrevention,
 } from "./branchFilterUtils";
 import { filterByEquipment } from "./equipmentUtils";
-import { getLoadedJumpDefault, isLoadedJump } from "./loadedJumpDefaults";
 
 /**
  * Extracts the user's training level from their workout data tags.
@@ -70,11 +69,9 @@ const getMaxValueType = (exercise: ExerciseType): MaxValueTypeName => {
   if (isUpperBody) {
     return MAX_VALUE_TYPES.ONE_SIDED_UPPER;
   }
-  if (!isDumbbell) return MAX_VALUE_TYPES.ONE_SIDED_BARBELL;
-  // Jumped lunges land on the supported leg, like the single-leg lift with support.
-  return exercise.isJump
-    ? MAX_VALUE_TYPES.ONE_SIDED_LOWER_SUPPORTED
-    : MAX_VALUE_TYPES.ONE_SIDED_LOWER;
+  return isDumbbell
+    ? MAX_VALUE_TYPES.ONE_SIDED_LOWER
+    : MAX_VALUE_TYPES.ONE_SIDED_BARBELL;
 };
 
 /**
@@ -271,21 +268,6 @@ export const calculateWorkoutTotals = (
   };
 };
 
-/** A loaded jump without a catalog limit for the level uses the loaded jump default. */
-export const usesLoadedJumpDefault = (
-  exercise: ExerciseType,
-  valueName: TrainingParameterType,
-  bound: "startValue" | "targetValue",
-  { level, genderTag }: { level: TrainingLevelType; genderTag: GenderTag },
-) =>
-  valueName === "weight" &&
-  isLoadedJump(exercise) &&
-  getValueByGenderAndLevel(
-    exercise.values?.weight?.[bound],
-    genderTag,
-    level,
-  ) === undefined;
-
 const overridesExerciseValue = (
   skillIntensity: IntensityData,
   valueName: TrainingParameterType,
@@ -310,14 +292,6 @@ export const getExerciseTargetValue = (
   level: TrainingLevelType,
   genderTag: GenderTag,
 ) => {
-  if (
-    usesLoadedJumpDefault(branchExercise, valueName, "targetValue", {
-      level,
-      genderTag,
-    })
-  ) {
-    return getLoadedJumpDefault("target", level);
-  }
   let value: number | undefined;
   if (
     skillIntensity.targetValue[valueName] &&
@@ -395,14 +369,6 @@ export const getExerciseStartValue = (
   level: TrainingLevelType,
   genderTag: GenderTag,
 ) => {
-  if (
-    usesLoadedJumpDefault(branchExercise, valueName, "startValue", {
-      level,
-      genderTag,
-    })
-  ) {
-    return getLoadedJumpDefault("start", level);
-  }
   let value: number | undefined;
   if (
     skillIntensity.startValue[valueName] &&

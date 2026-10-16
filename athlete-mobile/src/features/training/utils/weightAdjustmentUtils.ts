@@ -10,7 +10,6 @@ import {
   getValueByGenderAndLevel,
   roundWeightValue,
 } from "./workoutUtils";
-import { isLoadedJump } from "./loadedJumpDefaults";
 
 export type WeightType = "weightFMax" | "weightAbsolute";
 
@@ -96,8 +95,7 @@ const convertTargetWeight = (
 
 /**
  * The lowest permitted load is authored in percent of F-Max. A start weight in
- * percent of F-Max below it lowers it to that start weight. A loaded jump never
- * goes below its start weight.
+ * percent of F-Max below it lowers it to that start weight.
  */
 export function getLowestPermittedWeight(
   intensity: IntensityData,
@@ -109,15 +107,6 @@ export function getLowestPermittedWeight(
   }: Partial<Pick<WeightAthlete, "userLevel">> &
     Pick<WeightAthlete, "genderTag">,
 ): number | undefined {
-  if (weightType === "weightFMax" && userLevel && isLoadedJump(exerciseData)) {
-    return getExerciseStartValue(
-      intensity,
-      exerciseData,
-      "weight",
-      userLevel,
-      genderTag,
-    );
-  }
   const areaLowest = intensity.lowestPermittedWeight;
   if (weightType !== "weightFMax" || typeof areaLowest !== "number") {
     return undefined;

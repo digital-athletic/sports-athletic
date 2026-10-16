@@ -112,10 +112,6 @@ import {
 } from "../models/IdTypes";
 import { createExerciseMap } from "../utils/exerciseAccessor";
 import {
-  getLoadedJumpDefault,
-  isLoadedJump,
-} from "../utils/loadedJumpDefaults";
-import {
   getTemporalData,
   getTemporalTags,
   getUserBirthday,
@@ -3265,10 +3261,7 @@ export default class TrainingGenerator {
       if (exercise.isAdvanceByReps) {
         data.repetition = intensityStart("repetition");
       }
-      if (isLoadedJump(exercise) && isTrainingLevel(userLevel)) {
-        data.weight = getLoadedJumpDefault("start", userLevel);
-        data.weightType = "weightFMax";
-      } else if (EQ_TYPES.indexOf("WEIGHTS") > -1) {
+      if (EQ_TYPES.indexOf("WEIGHTS") > -1) {
         data.weight = intensityStart("weight");
         if (intensity.startValue.weight?.type?.type === "weightFMax") {
           data.weightType = "weightFMax";

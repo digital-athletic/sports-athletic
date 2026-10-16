@@ -35523,6 +35523,7 @@
   },
   {
     "id": "295",
+    "conversionFactor": 0.3,
     "name": "gesprungener Ausfallschritt mit 2 KH li und re SK",
     "displayName": "gesprungener KH-Ausfallschritt li (SK)",
     "level": {
@@ -35601,7 +35602,8 @@
         "startValue": {
           "default": {
             "default": "",
-            "advanced": "",
+            "beginner": 5,
+            "advanced": 10,
             "professional": 10
           },
           "m": {
@@ -35620,7 +35622,8 @@
         "targetValue": {
           "default": {
             "default": "",
-            "advanced": "",
+            "beginner": 10,
+            "advanced": 20,
             "professional": 20
           },
           "m": {
@@ -107606,6 +107609,7 @@
   },
   {
     "id": "880",
+    "conversionFactor": 0.3,
     "name": "gesprungener Ausfallschritt mit 2 KH li und re SK",
     "displayName": "gesprungener KH-Ausfallschritt re (SK)",
     "level": {
@@ -107684,6 +107688,8 @@
         "startValue": {
           "default": {
             "default": "",
+            "beginner": 5,
+            "advanced": 10,
             "professional": 10
           },
           "m": {
@@ -107702,6 +107708,8 @@
         "targetValue": {
           "default": {
             "default": "",
+            "beginner": 10,
+            "advanced": 20,
             "professional": 20
           },
           "m": {

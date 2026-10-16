@@ -57,23 +57,23 @@ describe("loaded jumps: the catalog authors complete weights", () => {
   });
 
   it("authors a numeric weight start and target for every level and gender", () => {
-    const missing: string[] = [];
-    for (const { id, values } of loadedJumps) {
-      for (const gender of ["m", "w"] as const) {
-        for (const { level } of LEVELS) {
-          for (const bound of ["startValue", "targetValue"] as const) {
-            const value = getValueByGenderAndLevel(
-              values?.weight?.[bound],
+    const cases = loadedJumps.flatMap((jump) =>
+      (["m", "w"] as const).flatMap((gender) =>
+        LEVELS.flatMap(({ level }) =>
+          (["startValue", "targetValue"] as const).map((bound) => ({
+            label: `${jump.id} ${gender}.${level}.${bound}`,
+            value: getValueByGenderAndLevel(
+              jump.values?.weight?.[bound],
               gender,
               level,
-            );
-            if (typeof value !== "number") {
-              missing.push(`${id} ${gender}.${level}.${bound}`);
-            }
-          }
-        }
-      }
-    }
+            ),
+          })),
+        ),
+      ),
+    );
+    const missing = cases
+      .filter(({ value }) => typeof value !== "number")
+      .map(({ label }) => label);
     expect(missing).toEqual([]);
   });
 

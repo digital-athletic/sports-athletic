@@ -238,7 +238,7 @@ For weighted hypertrophy, repetitions remain 8-12 and duration remains 30-50 s d
 
 **Fixed-kilogram weights:** exercises whose weight is authored in fixed kilograms (full-body stability, weighted prevention, U16 weighted exercises) have no lowest permitted load. The first `too hard` reduces the weight by one weight step. A second `too hard` in a row emits `LEVEL_DOWN` instead of another reduction. Any other feedback resets the count. The count of consecutive `too hard` ratings is part of the stored exercise progress.
 
-Pure explosive exercises, for example loaded jumps, carry authored load limits in the exercise catalog. Those limits take priority over the skill's load range, so the explosive power floor of 50% F-Max does not apply to them. When a loaded jump exercise has no authored load limits for the athlete's fitness level, it uses these defaults, as a share of the knee-direction 1RM converted to the equipment (see [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md)):
+Pure explosive exercises, for example loaded jumps, carry authored load limits in the exercise catalog. Those limits take priority over the skill's load range, so the explosive power floor of 50% F-Max does not apply to them. The exercise catalog must author these load limits for every loaded jump exercise and fitness level, as a share of the knee-direction 1RM converted to the equipment (see [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md)):
 
 | Fitness level | Start load | Target load |
 |---|---:|---:|
@@ -306,7 +306,7 @@ These are the current general values where the authored content resolves to the 
 | Training area | Start | Target | Load / notes |
 |---|---:|---:|---|
 | Explosive power with adjustable weight | 4 reps | 6 reps | Beginner 52.5-65% F-Max; Advanced 55-67.5%; Professional 55-70%; lowest load 50%; authored targets at most 8 reps (catalog rule, no cap on stored values) |
-| Pure explosive exercises with an authored load limit | 4 reps | 6 reps | The exercise catalog's load limits replace the skill's load range; missing limits use the loaded jump defaults (Beginner 5-10%, Advanced and Professional 10-20% of the knee-direction 1RM), see Lower boundary with adjustable weight; authored targets at most 8 reps (catalog rule, no cap on stored values) |
+| Pure explosive exercises with an authored load limit | 4 reps | 6 reps | The exercise catalog's load limits replace the skill's load range; loaded jumps author Beginner 5-10%, Advanced and Professional 10-20% of the knee-direction 1RM, see Lower boundary with adjustable weight; authored targets at most 8 reps (catalog rule, no cap on stored values) |
 | Explosive power without adjustable weight | 4 reps | 6 reps | General default; authored targets at most 8 reps (catalog rule, no cap on stored values) |
 | Plyometrics | 4 reps | 12 reps | Authored values apply; these defaults apply only where values are missing; the 8-rep maximum of explosive power does not apply |
 | Hypertrophy, adjustable weight, reps | 8 reps | 12 reps | Beginner 67.5-75%; Advanced 70-77.5%; Professional 70-77.5%; lowest load 65% |

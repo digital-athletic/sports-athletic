@@ -24,8 +24,8 @@ describe("exerciseRegistry", () => {
   describe("getAllExercises", () => {
     it("returns the full exercise dataset", () => {
       const exercises = getAllExercises();
-      // Dataset contains 1210 exercises
-      expect(exercises.length).toBe(1210);
+      // Dataset contains 1206 exercises
+      expect(exercises.length).toBe(1206);
     });
   });
 
@@ -91,10 +91,10 @@ describe("exerciseRegistry", () => {
       expect(pauseExercises[0].id).toBe("999999");
     });
 
-    it("returns 418 exercises for MUSCLE_QUADRICEPS tag", () => {
+    it("returns 414 exercises for MUSCLE_QUADRICEPS tag", () => {
       const quadExercises = getExercisesByTag("MUSCLE_QUADRICEPS");
 
-      expect(quadExercises).toHaveLength(418);
+      expect(quadExercises).toHaveLength(414);
       expect(
         quadExercises.every((e) => e.tags.includes("MUSCLE_QUADRICEPS")),
       ).toBe(true);
@@ -106,10 +106,10 @@ describe("exerciseRegistry", () => {
   });
 
   describe("getExerciseRegistry", () => {
-    it("contains all 1210 exercises keyed by id", () => {
+    it("contains all 1206 exercises keyed by id", () => {
       const registry = getExerciseRegistry();
 
-      expect(registry.size).toBe(1210);
+      expect(registry.size).toBe(1206);
       expect(registry.get("999999")?.name).toBe("Pause");
       expect(registry.get("1")?.tags).toContain("EQ_DUMBBELL");
     });

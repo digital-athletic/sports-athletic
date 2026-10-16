@@ -169,81 +169,6 @@
       }
     }
   },
-  "317": {
-    "tags": [
-      "BLOCK_HIGH_BMI",
-      "BLOCK_HIP",
-      "BLOCK_KNEE",
-      "BLOCK_ANKLE",
-      "BLOCK_SPINE",
-      "EQ_BARBELL",
-      "EQ_POWER_RACK",
-      "EQ_TYPE_WEIGHTS",
-      "EXERCISE_DIRECTION_KNEE",
-      "MUSCLE_GLUTES",
-      "MUSCLE_HAMSTRINGS",
-      "MUSCLE_QUADRICEPS",
-      "MUSCLE_LOWER_BACK",
-      "MUSCLE_CALF",
-      "MUSCLE_INVOLVEMENT_COMPLEX",
-      "MUSCLE_SECONDARY_OUTER_THIGH",
-      "MUSCLE_SECONDARY_RECTUS_ABDOMINIS",
-      "MUSCLE_SECONDARY_INNER_THIGH",
-      "MUSCLE_SECONDARY_OBLIQUES",
-      "MUSCLE_SECONDARY_ANKLE",
-      "PLACE_STUDIO",
-      "POSITION_FIELD",
-      "REGION_LOWER_BODY",
-      "SEASON_PHASE_COMPETITION",
-      "SEASON_PHASE_PREPARATORY",
-      "SIDE_BOTH",
-      "SKILL_POWER_ENDURANCE",
-      "AGE_ADULT",
-      "GENDER_MALE"
-    ],
-    "levels": {
-      "3": {
-        "exerciseId": "291"
-      }
-    }
-  },
-  "318": {
-    "tags": [
-      "BLOCK_HIGH_BMI",
-      "BLOCK_HIP",
-      "BLOCK_KNEE",
-      "BLOCK_ANKLE",
-      "BLOCK_SPINE",
-      "EQ_DUMBBELL",
-      "EQ_TYPE_WEIGHTS",
-      "EXERCISE_DIRECTION_KNEE",
-      "MUSCLE_GLUTES",
-      "MUSCLE_QUADRICEPS",
-      "MUSCLE_LOWER_BACK",
-      "MUSCLE_CALF",
-      "MUSCLE_INVOLVEMENT_COMPLEX",
-      "MUSCLE_SECONDARY_OUTER_THIGH",
-      "MUSCLE_SECONDARY_FINGER_WRIST_MUSCLES",
-      "MUSCLE_SECONDARY_RECTUS_ABDOMINIS",
-      "MUSCLE_SECONDARY_HAMSTRINGS",
-      "MUSCLE_SECONDARY_INNER_THIGH",
-      "MUSCLE_SECONDARY_OBLIQUES",
-      "MUSCLE_SECONDARY_ANKLE",
-      "PLACE_STUDIO",
-      "POSITION_FIELD",
-      "REGION_LOWER_BODY",
-      "SEASON_PHASE_COMPETITION",
-      "SEASON_PHASE_PREPARATORY",
-      "SIDE_BOTH",
-      "SKILL_POWER_ENDURANCE",
-      "AGE_ADULT"
-    ],
-    "levels": {
-      "3": {
-        "exerciseId": "293"
-      }
-    }
-  },
   "319": {
     "tags": [
       "BLOCK_HIP",
@@ -590,41 +515,6 @@
       },
       "3": {
         "exerciseId": "69"
-      }
-    }
-  },
-  "328": {
-    "tags": [
-      "BLOCK_HIGH_BMI",
-      "BLOCK_HIP",
-      "BLOCK_KNEE",
-      "BLOCK_ANKLE",
-      "BLOCK_SPINE",
-      "EQ_DUMBBELL",
-      "EQ_TYPE_WEIGHTS",
-      "EXERCISE_DIRECTION_KNEE",
-      "MUSCLE_GLUTES",
-      "MUSCLE_QUADRICEPS",
-      "MUSCLE_CALF",
-      "MUSCLE_INVOLVEMENT_COMPLEX",
-      "MUSCLE_SECONDARY_OUTER_THIGH",
-      "MUSCLE_SECONDARY_RECTUS_ABDOMINIS",
-      "MUSCLE_SECONDARY_HAMSTRINGS",
-      "MUSCLE_SECONDARY_INNER_THIGH",
-      "MUSCLE_SECONDARY_OBLIQUES",
-      "MUSCLE_SECONDARY_LOWER_BACK",
-      "PLACE_STUDIO",
-      "REGION_LOWER_BODY",
-      "SEASON_PHASE_COMPETITION",
-      "SEASON_PHASE_PREPARATORY",
-      "SIDE_ONE",
-      "SIDE_LEFT",
-      "SKILL_POWER_ENDURANCE",
-      "AGE_ADULT"
-    ],
-    "levels": {
-      "3": {
-        "exerciseId": "296"
       }
     }
   },

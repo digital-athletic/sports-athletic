@@ -146,9 +146,12 @@ describe("catalog conversion factors", () => {
       factor: 0.3825,
     })),
     { id: "292", factor: 1 },
-    { id: "294", factor: 0.5 },
   ])("exercise $id carries the factor $factor", ({ id, factor }) => {
     expect(getExerciseById(id)?.conversionFactor).toBe(factor);
+  });
+
+  it("leaves the dumbbell jump squat 294 on the standard dumbbell conversion", () => {
+    expect(getExerciseById("294")?.conversionFactor).toBeUndefined();
   });
 });
 
@@ -203,11 +206,11 @@ describe("catalog conversion factors: prescribed weight end to end", () => {
   );
 
   // 100 kg squat 1RM: the barbell carries the total load but never less than
-  // the empty bar, each dumbbell half of the calculated load
+  // the empty bar, each dumbbell 42.5% of the 1RM
   it.each([
-    { level: "beginner", start: 20, target: 20, perDumbbell: [2, 5] },
-    { level: "advanced", start: 20, target: 20, perDumbbell: [5, 10] },
-    { level: "professional", start: 20, target: 20, perDumbbell: [5, 10] },
+    { level: "beginner", start: 20, target: 20, perDumbbell: [2, 4] },
+    { level: "advanced", start: 20, target: 20, perDumbbell: [4, 8] },
+    { level: "professional", start: 20, target: 20, perDumbbell: [4, 8] },
   ] as const)(
     "$level jump squat: the empty bar of $start kg on the barbell, $perDumbbell kg per dumbbell",
     ({ level, start, target, perDumbbell }) => {
@@ -227,7 +230,7 @@ describe("catalog conversion factors: prescribed weight end to end", () => {
     },
   );
 
-  it("splits a total load of 10 kg into 5 kg per dumbbell", () => {
-    expect(prescribedWeight("294", 10)).toBe(5);
+  it("converts 10% of a 100 kg squat 1RM into 4 kg per dumbbell", () => {
+    expect(prescribedWeight("294", 10)).toBe(4);
   });
 });

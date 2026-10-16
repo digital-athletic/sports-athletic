@@ -8,7 +8,13 @@
 import { useDeleteAccount, useLogout } from "@/auth/useAuthActions";
 import { Ionicon } from "@/common/Ionicon";
 import { featureFlags } from "@/config/featureFlags";
-import { LINK_AGB, LINK_IMPRINT, LINK_PRIVACY } from "@/constants/AppConstants";
+import {
+  LINK_A11Y_FEEDBACK,
+  LINK_A11Y_STATEMENT,
+  LINK_AGB,
+  LINK_IMPRINT,
+  LINK_PRIVACY,
+} from "@/constants/AppConstants";
 import { ListDivider } from "@/common/ListDivider";
 import { ListItem } from "@/features/more/ListItem";
 import { StrengthTestMenuItems } from "@/features/more/StrengthTestMenuItems";
@@ -149,6 +155,22 @@ export default function MoreScreen() {
               title={t("more.imprint")}
               externalUrl={LINK_IMPRINT}
               iconName="document-text"
+              iconBackground="darkGrey1"
+            />
+          )}
+          {featureFlags.a11yStatementEnabled && (
+            <ListItem
+              title={t("more.a11yStatement")}
+              externalUrl={LINK_A11Y_STATEMENT}
+              iconName="accessibility"
+              iconBackground="darkGrey1"
+            />
+          )}
+          {featureFlags.a11yFeedbackEnabled && (
+            <ListItem
+              title={t("more.a11yFeedback")}
+              externalUrl={LINK_A11Y_FEEDBACK}
+              iconName="chatbubble-ellipses"
               iconBackground="darkGrey1"
             />
           )}

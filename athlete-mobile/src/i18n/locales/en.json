@@ -548,6 +548,8 @@
     },
     "contact": "Contact",
     "imprint": "Imprint",
+    "a11yStatement": "Accessibility statement",
+    "a11yFeedback": "Report a barrier",
     "thirdPartyNotices": {
       "menuItem": "Third-Party Licenses",
       "title": "Third-Party Licenses",

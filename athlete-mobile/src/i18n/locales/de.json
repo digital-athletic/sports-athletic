@@ -548,6 +548,8 @@
     },
     "contact": "Kontakt",
     "imprint": "Impressum",
+    "a11yStatement": "Erklärung zur Barrierefreiheit",
+    "a11yFeedback": "Barriere melden",
     "thirdPartyNotices": {
       "menuItem": "Open-Source-Lizenzen",
       "title": "Open-Source-Lizenzen",

@@ -32,11 +32,13 @@ interface ExportTable {
   rows: CsvField[][];
 }
 
+interface ExportSource extends UseStatisticsExportParams {
+  workouts: CompleteWorkoutType[];
+  testHistory: MaxValuesType[];
+}
+
 const buildExportTable = (
-  kind: ExportKind,
-  scale: ScaleType,
-  workouts: CompleteWorkoutType[],
-  testHistory: MaxValuesType[],
+  { kind, scale, workouts, testHistory }: ExportSource,
   t: TFunction,
 ): ExportTable => {
   if (kind === "workouts") {
@@ -80,7 +82,11 @@ export const useStatisticsExport = ({
   const inFlight = useRef(false);
 
   const { header, rows } = useMemo(
-    () => buildExportTable(kind, scale, workouts, testHistory ?? [], t),
+    () =>
+      buildExportTable(
+        { kind, scale, workouts, testHistory: testHistory ?? [] },
+        t,
+      ),
     [kind, scale, workouts, testHistory, t],
   );
 

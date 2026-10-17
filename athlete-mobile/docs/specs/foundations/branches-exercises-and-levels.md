@@ -102,14 +102,41 @@ flowchart TD
 ```
 
 1. **Within the branch**: the search walks outward from the current level in the earned direction and takes the first level that exists and holds a different exercise, passing over skipped numbers and repeated exercises alike. Every real difficulty step in a branch is used before the branch counts as exhausted. Only the athlete's progress changes; the plan is untouched.
-2. **On exhaustion**: plan workouts substitute, all other workout types leave everything unchanged. The candidate pool is the same skill tree (weighted and bodyweight variant when weights are available), scored against the old branch, and the plan's training day is rewritten to the winner. The **target level** is the athlete's current level in the exhausted branch, for a level up and a level down alike, so the substitute keeps the difficulty the athlete has reached.
+2. **On exhaustion**: plan workouts substitute, all other workout types leave everything unchanged. The candidate pool is the same skill tree (weighted and bodyweight variant when weights are available), scored against the old branch, and the plan's training day is rewritten to the winner. Each candidate branch has its own **target level**, defined in [Target level for branch substitution](#target-level-for-branch-substitution).
    - Hard exclusions: the old branch, branches already used in the session, mismatched equipment, age, gender, or prevention region, and a switch from a both-sided to a one-sided movement.
-   - Score penalties: no exercise at the target level (falling back at most two levels), different body region, switch from one-sided to both-sided, different movement direction. A different body region is the heaviest single penalty, factor 0.5 against 0.8 per soft mismatch, so the technically closest branch wins.
+   - Score penalties: no exercise at the candidate's target level (falling back at most two levels), different body region, switch from one-sided to both-sided, different movement direction. A different body region is the heaviest single penalty, factor 0.5 against 0.8 per soft mismatch, so the technically closest branch wins.
    - The factors 0.5 and 0.8 are the accepted starting point. They change only if a sports-science review of real substitution rankings (top 3 substitutes for representative branches, with scores and reasons) shows repeated systematic misranking; individual disagreements do not move them.
    - **Validation procedure:** before changing the scoring factors, review approximately 10–15 representative branches using the existing content data. For each case, provide the relevant branch levels and tags plus the algorithm's top three substitute branches with scores and reasons. Use existing data, tests, debug output, or a simple CSV/Excel/Markdown export where possible; no new app interface is required. The sports-science owner reviews the rankings. Factors are adjusted only when repeated systematic misranking is identified.
    - Ties break by uniform random pick. A one-sided to both-sided switch adds a second substitute branch to replace the lost per-side volume.
-   - A level down from level 1 runs the same search with target level 1, giving a different movement at entry difficulty.
-   - The replaced branch keeps its progress, so the swap can be undone at the athlete's old level. The substitute enters through normal resolution; the old level does not transfer.
+   - A level down from level 1 runs the same search, giving a different movement at the replacement branch's target level.
+   - The replaced branch keeps its progress, so the swap can be undone at the athlete's old level. The substitute starts at its target level; the old level does not transfer.
+
+### Target level for branch substitution
+
+When an exhausted branch is replaced by another branch, the target level of the replacement branch is determined by the athlete's fitness level:
+
+- Beginner: Level 1
+- Advanced: Level 2
+- Professional: Level 3
+
+If the athlete has previously trained the selected replacement branch and already reached a higher level through training progression, that previously achieved and stored level is used instead.
+
+The current level of the exhausted branch is not automatically transferred to the replacement branch. The target level is always the higher of the athlete's fitness-level entry level and the previously achieved level in the selected replacement branch.
+
+This rule applies to both level-up and level-down substitutions.
+
+**Example: Target Level for Branch Substitution**
+
+An athlete with the fitness level "Advanced" has a default entry level of 2.
+
+| **Original Branch** | **Replacement Branch Progress** | **New Level** |
+| --- | --- | --- |
+| Level 4 | Never trained before       | Level 2 |
+| Level 4 | Previously reached Level 3 | Level 3 |
+| Level 4 | Previously reached Level 4 | Level 4 |
+| Level 5 | Previously reached Level 4 | Level 4 |
+
+**General rule:** When substituting a branch, the target level is the higher of the athlete's fitness-level entry level and the previously stored progression level of the replacement branch. The level of the original branch is not automatically transferred.
 
 ### Manual exercise swapping (deferred)
 
@@ -132,7 +159,7 @@ Explosive power (Schnellkraft, code SK) has the trees SK and SKKG; training at h
 
 - **Entry**: a beginner resolves level 1, an advanced athlete level 2, a professional maps to the missing level 3 and falls back to level 2.
 - **Level up**: once the target has been prescribed and performed and Standard Exercise Progression emits `LEVEL_UP` after the qualifying feedback, the beginner moves to level 2, the calf raise variant, with fresh resolved start values. From level 2 the search passes the missing level 3 and lands on level 4, the jump squat. The plan keeps referencing branch 253 throughout.
-- **Exhaustion**: from level 4 nothing higher is authored, so a plan workout scores the remaining SKKG branches (knee direction and lower body preferred, both-sided required, level 4 or at most two levels lower) and a winner such as a lunge lane takes over that training day. Branch 253 keeps its level 4 record. When Standard Exercise Progression emits `LEVEL_DOWN` at the lower boundary while the athlete is already at level 1, the same substitution search runs at level 1 instead of deriving an additional value reduction in this specification.
+- **Exhaustion**: from level 4 nothing higher is authored, so a plan workout scores the remaining SKKG branches (knee direction and lower body preferred, both-sided required, each candidate at its target level or at most two levels lower) and a winner such as a lunge lane takes over that training day. An advanced athlete who never trained the lunge lane starts there at level 2; a stored lunge lane level of 3 or higher is used instead. Branch 253 keeps its level 4 record. When Standard Exercise Progression emits `LEVEL_DOWN` at the lower boundary while the athlete is already at level 1, the same substitution search runs with the same target level rule instead of deriving an additional value reduction in this specification.
 
 ## Structure
 

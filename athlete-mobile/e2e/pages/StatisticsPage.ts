@@ -1,4 +1,4 @@
-import { expect, type Page } from "@playwright/test";
+import { expect, type Download, type Page } from "@playwright/test";
 import { parseTimeString, parseWeightString } from "../utils/storage";
 import { BasePage } from "./BasePage";
 
@@ -166,7 +166,7 @@ export class StatisticsPage extends BasePage {
   }
 
   /**
-   * Gets the screen header that holds the time scale buttons.
+   * Gets the screen header that holds the time scale buttons and the export button.
    */
   private getHeader() {
     return this.page.getByTestId("statistics-header");
@@ -188,6 +188,51 @@ export class StatisticsPage extends BasePage {
     await expect(header.getByText("Last month", { exact: true })).toBeVisible();
     await expect(header.getByText("Last year", { exact: true })).toBeVisible();
     await expect(header.getByText("Total", { exact: true })).toBeVisible();
+  }
+
+  /**
+   * Gets the CSV export button in the screen header.
+   */
+  getExportButton() {
+    return this.page.getByTestId("statistics-export-button");
+  }
+
+  /**
+   * Verifies the export button is visible and enabled.
+   */
+  async expectExportEnabled(): Promise<void> {
+    await expect(this.getExportButton()).toBeVisible();
+    await expect(this.getExportButton()).toBeEnabled();
+  }
+
+  /**
+   * Verifies the export button is visible and disabled.
+   */
+  async expectExportDisabled(): Promise<void> {
+    await expect(this.getExportButton()).toBeVisible();
+    await expect(this.getExportButton()).toBeDisabled();
+  }
+
+  /**
+   * Clicks the export button and returns the browser download (web only).
+   */
+  async exportCsv(): Promise<Download> {
+    const downloadPromise = this.page.waitForEvent("download");
+    await this.getExportButton().click();
+    return downloadPromise;
+  }
+
+  /**
+   * Reads a download as UTF-8 text, keeping the byte order mark.
+   * Uses the stream because path() is unavailable with a remote browser.
+   */
+  async readDownload(download: Download): Promise<string> {
+    const stream = await download.createReadStream();
+    const chunks: Buffer[] = [];
+    for await (const chunk of stream) {
+      chunks.push(Buffer.from(chunk));
+    }
+    return Buffer.concat(chunks).toString("utf8");
   }
 
   /**

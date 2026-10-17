@@ -31,7 +31,7 @@ const TABS = [
 /**
  * Statistics Screen
  * User statistics and progress tracking with tabbed navigation. The range
- * selector in the header applies to both tabs.
+ * selector and the CSV export in the header apply to both tabs.
  */
 export const StatisticsScreen: FC = () => {
   const { t } = useTranslation();
@@ -76,7 +76,11 @@ export const StatisticsScreen: FC = () => {
           );
         })}
       </Box>
-      <StatisticsHeader scale={scale} setScale={setScale} />
+      <StatisticsHeader
+        kind={view === View.WORKOUTS ? "workouts" : "strength-tests"}
+        scale={scale}
+        setScale={setScale}
+      />
       <Box
         flex={4}
         flexDirection="column"

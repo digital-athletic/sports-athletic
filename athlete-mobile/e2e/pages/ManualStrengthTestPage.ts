@@ -114,7 +114,7 @@ export class ManualStrengthTestPage extends BasePage {
   async saveAndExpectValidationError() {
     await this.saveButton.click();
     await expect(
-      this.page.getByText(/please enter at least one/i),
+      this.page.getByText(/did not complete any exercise/i),
     ).toBeVisible();
   }
 
@@ -124,7 +124,7 @@ export class ManualStrengthTestPage extends BasePage {
   async saveAndExpectIncompleteError() {
     await this.saveButton.click();
     await expect(
-      this.page.getByText(/please fill in both weight and reps/i),
+      this.page.getByText(/only the weight or only the reps/i),
     ).toBeVisible();
   }
 

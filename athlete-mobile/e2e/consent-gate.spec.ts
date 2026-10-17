@@ -49,7 +49,7 @@ test.describe("Consent Gate: missing consent at app start", () => {
 
     await page.getByRole("button", { name: "Continue" }).click();
     await expect(
-      page.getByRole("alert").filter({ hasText: /terms and conditions/i }),
+      page.getByRole("alert").filter({ hasText: /agree to the terms/i }),
     ).toBeVisible({ timeout: 3000 });
     await expect(consentTitle).toBeVisible();
 

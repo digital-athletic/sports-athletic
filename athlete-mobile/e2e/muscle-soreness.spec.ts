@@ -125,9 +125,9 @@ test.describe("Pain Regions: anamnesis pain screen", () => {
     await mockSupabaseAuth(page);
     await navigateToPainScreen(page);
 
-    await expect(
-      page.getByText("Please select the areas that are hurting you"),
-    ).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText("Select the areas that hurt")).toBeVisible({
+      timeout: 5000,
+    });
   });
 });
 

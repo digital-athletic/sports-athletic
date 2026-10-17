@@ -21,14 +21,14 @@ test.describe("Registration Flow", () => {
     await registration.submitRegistration();
 
     await expect(page.getByRole("alert")).toBeVisible();
-    await expect(page.getByText(/valid e-mail/i)).toBeVisible();
+    await expect(page.getByText(/e-mail address is not valid/i)).toBeVisible();
 
     // Fill email but don't accept privacy — should show privacy error
     await page.getByPlaceholder("E-Mail").fill("test@example.com");
     await registration.submitRegistration();
 
     await expect(
-      page.getByRole("alert").filter({ hasText: /accept.*terms/i }),
+      page.getByRole("alert").filter({ hasText: /agree to the terms/i }),
     ).toBeVisible();
 
     // Accept privacy but not analytics — should show analytics error
@@ -36,7 +36,7 @@ test.describe("Registration Flow", () => {
     await registration.submitRegistration();
 
     await expect(
-      page.getByRole("alert").filter({ hasText: /improve.*app/i }),
+      page.getByRole("alert").filter({ hasText: /box for usage data/i }),
     ).toBeVisible();
   });
 

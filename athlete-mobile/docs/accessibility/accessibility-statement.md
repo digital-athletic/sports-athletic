@@ -1,49 +1,49 @@
-# Erklärung zur Barrierefreiheit
+# Accessibility statement
 
-Entwurf nach dem EU-Muster für Erklärungen zur Barrierefreiheit. Der Betreiber füllt alle Angaben in `[[...]]` aus und veröffentlicht den Text unter `[[URL der Erklärung]]`. Diese URL steht in `EXPO_PUBLIC_LINK_A11Y_STATEMENT`.
+This draft follows the EU model accessibility statement. The operator fills in every entry in `[[...]]` and publishes the text at `[[URL of the statement]]`. This URL is stored in `EXPO_PUBLIC_LINK_A11Y_STATEMENT`.
 
-## Geltungsbereich
+## Scope
 
-[[Firmenname]], [[Straße und Hausnummer]], [[PLZ und Ort]] (im Folgenden "wir") will die App "[[App-Name]]" für alle Menschen nutzbar machen. Diese Erklärung gilt für die mobile App für Athletinnen und Athleten (iOS und Android).
+[[Company name]], [[Street and house number]], [[Postal code and city]] (hereinafter "we") wants to make the app "[[App name]]" usable for everyone. This statement applies to the mobile app for athletes (iOS and Android).
 
-Diese Erklärung gilt nicht für das Web-Dashboard für Trainerinnen und Trainer. Das Dashboard prüfen wir noch nicht.
+This statement does not apply to the web dashboard for trainers. We have not yet assessed the dashboard.
 
-## Stand der Vereinbarkeit mit den Anforderungen
+## Compliance status
 
-Die App ist **teilweise konform** mit den Anforderungen von WCAG 2.1 Level AA und EN 301 549 (Version [[Version der Norm]]). Die Gründe für die Einschränkungen stehen im nächsten Abschnitt.
+The app is **partially compliant** with WCAG 2.1 Level AA and EN 301 549 (version [[Version of the standard]]). The next section lists the reasons for the limitations.
 
-## Nicht barrierefreie Inhalte
+## Non-accessible content
 
-Folgende Inhalte sind noch nicht barrierefrei:
+The following content is not yet accessible:
 
-1. **Übungsbeschreibungen und Anleitungen.** Die rund 1.200 Beschreibungen enthalten Fachwörter. Das betrifft WCAG 3.1.3 (ungewöhnliche Wörter) und 3.1.5 (Leseniveau). Beide Kriterien liegen über Level AA. Wir überarbeiten die Texte nach dem Leitfaden für einfache Sprache, sobald es unsere Planung erlaubt.
-2. **Hinweistext zu Mitteilungen.** Die Abfrage für Push-Nachrichten verwendet Systemtexte und eigene Texte, die nicht nach dem Leitfaden für einfache Sprache geprüft sind. Dafür gilt kein Kriterium von WCAG 2.1 AA.
-3. **Weitere Bildschirme.** Wir überarbeiten nicht alle Texte gleichzeitig. Bildschirme, die wir nicht angefasst haben, folgen dem Leitfaden erst bei der nächsten Änderung.
-4. **Hinweise neben Fachwörtern.** Eine Erklärung direkt am Fachwort fehlt noch. Das Glossar in der App erklärt die wichtigsten Begriffe.
-5. **Technische Prüfung.** Wir haben Farbkontraste, Fokusreihenfolge und Größe der Tippflächen noch nicht vollständig mit Messwerkzeugen geprüft. Einzelne Abweichungen sind möglich.
-6. **Trainer-Web-Dashboard.** Das Dashboard ist nicht Teil dieser Erklärung (siehe Geltungsbereich).
+1. **Exercise descriptions and instructions.** The roughly 1,200 descriptions contain technical terms. This affects WCAG 3.1.3 (unusual words) and 3.1.5 (reading level). Both criteria are above Level AA. We will revise the texts according to the plain language style guide as soon as our planning allows.
+2. **Notification prompt text.** The prompt for push notifications uses system texts and our own texts that we have not checked against the plain language style guide. No WCAG 2.1 AA criterion applies.
+3. **Other screens.** We do not revise all texts at once. Screens we have not touched follow the style guide only at their next change.
+4. **Hints next to technical terms.** An explanation directly at the technical term is still missing. The glossary in the app explains the most important terms.
+5. **Technical assessment.** We have not yet fully assessed color contrast, focus order, and touch target size with measuring tools. Individual deviations are possible.
+6. **Trainer web dashboard.** The dashboard is not part of this statement (see Scope).
 
-## Erstellung dieser Erklärung
+## Preparation of this statement
 
-Wir haben diese Erklärung am [[Datum der Erstellung]] erstellt. Die Grundlage ist eine Selbstbewertung durch [[Name der bewertenden Stelle]]. Letzte Aktualisierung: [[Datum der letzten Aktualisierung]]. Wir aktualisieren sie bei jeder größeren Änderung der App.
+We prepared this statement on [[Date of preparation]]. It is based on a self-assessment by [[Name of the assessing body]]. Last update: [[Date of last update]]. We update it with every major change to the app.
 
-## Feedback und Kontakt
+## Feedback and contact information
 
-Du findest eine Barriere in der App? Melde sie uns. Wir antworten innerhalb von [[Anzahl]] Werktagen.
+Did you find a barrier in the app? Report it to us. We reply within [[Number]] working days.
 
-1. In der App: Bereich "Profil", Eintrag "Barriere melden"
-2. Webformular: [[URL des Feedback-Formulars]]
-3. E-Mail: service@sports-athletic.com
-4. Post: [[Firmenname]], [[Straße und Hausnummer]], [[PLZ und Ort]]
+1. In the app: section "Profile", entry "Report a barrier"
+2. Web form: [[URL of the feedback form]]
+3. Email: [[Contact email address]]
+4. Post: [[Company name]], [[Street and house number]], [[Postal code and city]]
 
-Die URL des Formulars steht in `EXPO_PUBLIC_LINK_A11Y_FEEDBACK`.
+The URL of the form is stored in `EXPO_PUBLIC_LINK_A11Y_FEEDBACK`.
 
-Bitte nenne in deiner Nachricht den Bildschirm, das Gerät und die Hilfstechnik, zum Beispiel VoiceOver oder TalkBack.
+Please name the screen, the device, and the assistive technology in your message, for example VoiceOver or TalkBack.
 
-## Durchsetzungsverfahren
+## Enforcement procedure
 
-Antworten wir nicht oder nicht zufriedenstellend, kannst du dich an die zuständige Durchsetzungsstelle wenden:
+If we do not reply, or if our reply does not satisfy you, you can contact the responsible enforcement body:
 
 Marktüberwachungsstelle der Länder für die Barrierefreiheit von Produkten und Dienstleistungen (MLBF)
-[[Anschrift der MLBF]]
-[[Website der MLBF]]
+[[Address of the MLBF]]
+[[Website of the MLBF]]

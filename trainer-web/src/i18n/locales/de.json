@@ -199,7 +199,9 @@
   "footer": {
     "imprint": "Impressum",
     "privacyPolicy": "Datenschutzerklärung",
-    "thirdPartyNotices": "Open-Source-Lizenzen"
+    "thirdPartyNotices": "Open-Source-Lizenzen",
+    "accessibilityStatement": "Barrierefreiheit",
+    "accessibilityFeedback": "Barriere melden"
   },
   "thirdPartyNotices": {
     "title": "Open-Source-Lizenzen",

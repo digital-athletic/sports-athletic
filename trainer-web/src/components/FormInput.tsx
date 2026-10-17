@@ -24,7 +24,7 @@ export function FormInput({
       )}
       <input
         id={inputId}
-        className={`w-full rounded-lg border border-gray-300 px-4 py-3 text-base transition-colors placeholder:text-gray-400 focus:border-red-600 focus:outline-none ${className}`}
+        className={`w-full rounded-lg border border-gray-500 px-4 py-3 text-base transition-colors placeholder:text-gray-400 focus:border-red-600 focus:outline-none ${className}`}
         {...props}
       />
     </div>

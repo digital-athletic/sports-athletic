@@ -43,8 +43,37 @@ export class DashboardPage {
     await this.openAthleteList();
     await this.page
       .getByTestId("athlete-option")
-      .filter({ hasText: name })
+      .getByRole("button", { name })
       .click();
+  }
+
+  /** Reaches the option by keyboard alone: focus the button, press Enter. */
+  async selectAthleteByKeyboard(name: string) {
+    await this.openAthleteList();
+    const option = this.page
+      .getByTestId("athlete-option")
+      .getByRole("button", { name });
+    await option.focus();
+    await expect(option).toBeFocused();
+    await this.page.keyboard.press("Enter");
+  }
+
+  async expectAthleteSelected(name: string) {
+    await this.openAthleteList();
+    await expect(
+      this.page
+        .getByTestId("athlete-option")
+        .getByRole("button", { name, pressed: true }),
+    ).toHaveCount(1);
+  }
+
+  async openDeleteTeamDialog() {
+    await this.page.getByTestId("tab-management").click();
+    await this.page.getByTestId("delete-team-open").click();
+  }
+
+  get dialog() {
+    return this.page.getByRole("dialog");
   }
 
   async expectAthletes(names: string[]) {

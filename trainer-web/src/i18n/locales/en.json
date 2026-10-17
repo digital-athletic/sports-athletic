@@ -199,7 +199,9 @@
   "footer": {
     "imprint": "Legal Notice",
     "privacyPolicy": "Privacy Policy",
-    "thirdPartyNotices": "Third-Party Licenses"
+    "thirdPartyNotices": "Third-Party Licenses",
+    "accessibilityStatement": "Accessibility",
+    "accessibilityFeedback": "Report a barrier"
   },
   "thirdPartyNotices": {
     "title": "Third-Party Licenses",

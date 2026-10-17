@@ -53,7 +53,7 @@ export function CreateTeamForm({ onSubmit, onCancel }: CreateTeamFormProps) {
             value={teamDescription}
             onChange={(e) => setTeamDescription(e.target.value)}
             placeholder={t("teamManagement.createTeam.descriptionPlaceholder")}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-base placeholder:text-gray-400 focus:border-red-600 focus:outline-none"
+            className="w-full rounded-lg border border-gray-500 px-4 py-3 text-base placeholder:text-gray-400 focus:border-red-600 focus:outline-none"
             rows={3}
           />
         </div>

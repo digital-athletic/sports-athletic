@@ -13,6 +13,30 @@ describe("featureFlags", () => {
     delete process.env.EXPO_PUBLIC_LINK_A11Y_STATEMENT;
     delete process.env.EXPO_PUBLIC_LINK_A11Y_FEEDBACK;
     delete process.env.EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED;
+    delete process.env.EXPO_PUBLIC_CONTACT_ENABLED;
+    delete process.env.EXPO_PUBLIC_SUPPORT_EMAIL;
+  });
+
+  describe("contactEnabled", () => {
+    it("is false when EXPO_PUBLIC_CONTACT_ENABLED and EXPO_PUBLIC_SUPPORT_EMAIL are unset", () => {
+      expect(featureFlags.contactEnabled).toBe(false);
+    });
+
+    it("is false when EXPO_PUBLIC_SUPPORT_EMAIL is unset", () => {
+      process.env.EXPO_PUBLIC_CONTACT_ENABLED = "true";
+      expect(featureFlags.contactEnabled).toBe(false);
+    });
+
+    it("is false when EXPO_PUBLIC_CONTACT_ENABLED is not 'true'", () => {
+      process.env.EXPO_PUBLIC_SUPPORT_EMAIL = "support@example.com";
+      expect(featureFlags.contactEnabled).toBe(false);
+    });
+
+    it("is true when EXPO_PUBLIC_CONTACT_ENABLED is 'true' and EXPO_PUBLIC_SUPPORT_EMAIL is set", () => {
+      process.env.EXPO_PUBLIC_CONTACT_ENABLED = "true";
+      process.env.EXPO_PUBLIC_SUPPORT_EMAIL = "support@example.com";
+      expect(featureFlags.contactEnabled).toBe(true);
+    });
   });
 
   describe("serverSyncEnabled", () => {

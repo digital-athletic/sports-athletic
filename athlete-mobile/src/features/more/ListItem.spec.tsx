@@ -8,6 +8,11 @@ jest.mock("expo-router", () => ({
   useRouter: () => ({ navigate: jest.fn() }),
 }));
 
+jest.mock("@/constants/AppConstants", () => ({
+  ...jest.requireActual("@/constants/AppConstants"),
+  SUPPORT_EMAIL: "support@example.com",
+}));
+
 describe("ListItem: external link", () => {
   const renderItem = (externalUrl: string) =>
     render(

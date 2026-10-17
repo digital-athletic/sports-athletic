@@ -15,6 +15,7 @@ import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
 import { getTimeString, getWeightString } from "@/utils/formatters";
 import { parseBooleanParam } from "@/utils/router";
+import { supportMessage } from "@/utils/supportMessage";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useRef, type FC } from "react";
 import { useTranslation } from "react-i18next";
@@ -150,7 +151,11 @@ const TrainingSuccessScreen: FC = () => {
           ) : (
             <Box flex={1} padding="l" justifyContent="center">
               <Text variant="body" textAlign="center">
-                {t("training.success.dataMissing", { email: SUPPORT_EMAIL })}
+                {supportMessage(
+                  t,
+                  "training.success.dataMissing",
+                  SUPPORT_EMAIL,
+                )}
               </Text>
             </Box>
           )}

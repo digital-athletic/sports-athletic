@@ -3,7 +3,6 @@
     "altText": {
       "coachFace": "Gesicht des Coaches",
       "hintIcon": "Hinweis-Symbol",
-      "icon": "{{title}}-Symbol",
       "image": "{{title}}-Bild",
       "listItem": "Übung",
       "muscleLink": "{{muscleName}} Muskel auswählen",
@@ -74,10 +73,6 @@
       "preventionTraining": {
         "title": "Präventions-Trainings",
         "subtitle": "Beschwerden vorbeugen & verbessern"
-      },
-      "imageAlt": {
-        "focusTrainingIcon": "Fokus-Trainings-Symbol",
-        "preventionIcon": "Präventions-Symbol"
       },
       "workoutWithOwnPlan": "Dein Trainingsplan",
       "startTraining": "Training starten",
@@ -434,7 +429,11 @@
       "heartRateMax": "MAX.",
       "a11y": {
         "showExerciseInfo": "Übungsinformationen anzeigen",
-        "abortTraining": "Training abbrechen"
+        "abortTraining": "Training abbrechen",
+        "finishExercise": "Übung abschließen",
+        "completedSucceeded": "Erledigt",
+        "completedTooEasy": "Erledigt: zu einfach",
+        "completedTooHard": "Erledigt: zu schwer"
       },
       "strengthTestAlert": {
         "title": "Achtung bei Beschwerden",
@@ -488,6 +487,9 @@
     "anonymisedDataUse": "Ich bin damit einverstanden, durch das Teilen von Nutzungsdaten zur Verbesserung der App beizutragen.",
     "privacyFull": "Mit der Anmeldung erkläre ich mich mit den <agb>AGB</agb> und <privacy>Datenschutzbestimmungen</privacy> von Sports Athletic einverstanden.",
     "privacySimple": "Mit der Anmeldung erkläre ich mich mit den <privacy>Datenschutzbestimmungen</privacy> einverstanden.",
+    "checkboxAnonymisedDataUse": "Nutzungsdaten zur Verbesserung der App teilen",
+    "checkboxPrivacyFull": "AGB und Datenschutzbestimmungen akzeptieren",
+    "checkboxPrivacySimple": "Datenschutzbestimmungen akzeptieren",
     "healthConsent": "Ich bin damit einverstanden, dass für die Erstellung persönlicher Trainingspläne meine Gesundheitsdaten verarbeitet werden. <info>Mehr Informationen</info>",
     "errorInvalidMailAdressTitle": "Ungültige E-Mail Adresse",
     "errorInvalidMailAdressMsg": "Bitte gib eine valide E-Mail Adresse an.",
@@ -942,7 +944,8 @@
         "CARDIO": "Ausdauer",
         "STABILITY": "Stabilität",
         "WARMUP": "Aufwärmen",
-        "SWR": "Kraft"
+        "SWR": "Kraft",
+        "summary": "Fähigkeitsprofil: {{values}}"
       }
     }
   },

@@ -8,6 +8,8 @@ interface IoniconProps {
   size?: number;
   color?: string;
   accessibilityLabel?: string;
+  /** Hides the icon from screen readers. Use for icons next to text. */
+  decorative?: boolean;
 }
 
 /**
@@ -18,7 +20,21 @@ export const Ionicon: FC<IoniconProps> = ({
   size,
   color,
   accessibilityLabel,
+  decorative = false,
 }) => {
+  if (decorative) {
+    return (
+      <Ionicons
+        name={name}
+        size={size}
+        color={color}
+        accessible={false}
+        accessibilityElementsHidden={true}
+        importantForAccessibility="no-hide-descendants"
+      />
+    );
+  }
+
   return (
     <Ionicons
       name={name}

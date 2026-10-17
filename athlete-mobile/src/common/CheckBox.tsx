@@ -8,9 +8,14 @@ import { Ionicon } from "./Ionicon";
 export type CheckBoxProps = {
   checked: boolean;
   changed: (next: boolean) => void;
+  accessibilityLabel?: string;
 };
 
-export const CheckBox: FC<CheckBoxProps> = ({ checked, changed }) => {
+export const CheckBox: FC<CheckBoxProps> = ({
+  checked,
+  changed,
+  accessibilityLabel,
+}) => {
   const theme = useTheme();
   const iconSize = useResponsiveProp({ phone: 36, tablet: 54 });
 
@@ -23,6 +28,7 @@ export const CheckBox: FC<CheckBoxProps> = ({ checked, changed }) => {
       onPress={handlePress}
       style={{ width: iconSize, height: iconSize }}
       accessibilityRole="checkbox"
+      accessibilityLabel={accessibilityLabel}
       accessibilityState={{ checked }}
       activeOpacity={0.8}
     >
@@ -41,6 +47,7 @@ export const CheckBox: FC<CheckBoxProps> = ({ checked, changed }) => {
             name="checkmark"
             size={iconSize}
             color={theme.colors.white}
+            decorative
           />
         )}
       </Box>

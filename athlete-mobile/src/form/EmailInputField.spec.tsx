@@ -1,3 +1,4 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { fireEvent, render } from "../utils/testUtils";
 import { EmailInputField } from "./EmailInputField";
 
@@ -16,9 +17,10 @@ describe("<EmailInputField />", () => {
     expect(toJSON()).toMatchSnapshot();
   });
 
-  it("displays the email icon", () => {
-    const { getByLabelText } = render(<EmailInputField {...defaultProps} />);
-    expect(getByLabelText("email-icon")).toBeTruthy();
+  it("hides the email icon from screen readers", () => {
+    const { UNSAFE_getByType } = render(<EmailInputField {...defaultProps} />);
+    const icon = UNSAFE_getByType(Ionicons);
+    expect(icon.props.accessibilityElementsHidden).toBe(true);
   });
 
   it("displays email placeholder", () => {

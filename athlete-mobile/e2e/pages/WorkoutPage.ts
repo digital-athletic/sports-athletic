@@ -37,11 +37,11 @@ const GeneratedExerciseListStorageSchema = v.object({
 
 export class WorkoutPage extends BasePage {
   private get skipButton() {
-    return this.page.locator('[aria-label="play-forward"]').first();
+    return this.page.getByRole("button", { name: "Skip exercise" }).first();
   }
 
   private get checkmarkButton() {
-    return this.page.locator('[aria-label="checkmark"]').first();
+    return this.page.getByRole("button", { name: "Finish exercise" }).first();
   }
 
   private get startTrainingButton() {

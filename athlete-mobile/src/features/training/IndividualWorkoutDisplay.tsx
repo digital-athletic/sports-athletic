@@ -117,7 +117,12 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
         paddingHorizontal="m"
         onPress={goTo}
       >
-        <Ionicon name="add-circle" size={64} color={colors.primary} />
+        <Ionicon
+          name="add-circle"
+          size={64}
+          color={colors.primary}
+          decorative
+        />
         <Text
           variant="description"
           textAlign="center"

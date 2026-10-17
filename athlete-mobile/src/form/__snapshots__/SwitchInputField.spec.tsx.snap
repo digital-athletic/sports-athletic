@@ -22,7 +22,7 @@ exports[`<SwitchInputField /> renders correctly 1`] = `
     }
   >
     <RCTSwitch
-      accessibilityLabel="switch-input"
+      accessibilityLabel="Enable notifications"
       accessibilityRole="switch"
       onChange={[Function]}
       onResponderTerminationRequest={[Function]}

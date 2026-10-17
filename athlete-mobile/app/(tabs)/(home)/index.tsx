@@ -163,9 +163,7 @@ export default function HomeScreen() {
                   name="scan-outline"
                   size={48}
                   color={colors.primary}
-                  accessibilityLabel={t(
-                    "screens.home.imageAlt.focusTrainingIcon",
-                  )}
+                  decorative
                 />
                 <Text variant="cardTitle" textAlign="center" fontSize={14}>
                   {t("screens.home.focusTraining.title")}
@@ -195,7 +193,7 @@ export default function HomeScreen() {
                   name="calendar-outline"
                   size={48}
                   color={colors.primary}
-                  accessibilityLabel={t("screens.home.imageAlt.preventionIcon")}
+                  decorative
                 />
                 <Text variant="cardTitle" textAlign="center" fontSize={14}>
                   {t("screens.home.preventionTraining.title")}

@@ -232,6 +232,7 @@ export default function TrainingDays() {
                 onChange={(value) => handleChangeDuration(weekday, value)}
                 sliderOptions={durationOptions}
                 descriptionText={t("screens.trainingDays.howManyMinutes")}
+                accessibilityLabel={t("screens.trainingDays.howManyMinutes")}
               />
             </View>
           </View>

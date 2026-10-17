@@ -26,6 +26,20 @@ describe("SelectionModal", () => {
     expect(getByText("Item Three")).toBeTruthy();
   });
 
+  it("exposes the selection as checked state on checkbox rows", () => {
+    const { getByRole } = render(
+      <SelectionModal
+        items={mockItems}
+        selectedItems={["item1"]}
+        visible={true}
+        onConfirm={jest.fn()}
+        onCancel={jest.fn()}
+      />,
+    );
+
+    expect(getByRole("checkbox", { checked: true })).toBeTruthy();
+  });
+
   it("renders select text in header", () => {
     const { getByText } = render(
       <SelectionModal
@@ -128,7 +142,7 @@ describe("SelectionModal", () => {
       />,
     );
 
-    const closeButton = getByLabelText("close");
+    const closeButton = getByLabelText("Close");
     fireEvent.press(closeButton);
 
     expect(onCancel).toHaveBeenCalled();
@@ -152,7 +166,7 @@ describe("SelectionModal", () => {
     fireEvent.press(item2);
 
     // Cancel
-    const closeButton = getByLabelText("close");
+    const closeButton = getByLabelText("Close");
     fireEvent.press(closeButton);
 
     expect(onCancel).toHaveBeenCalled();

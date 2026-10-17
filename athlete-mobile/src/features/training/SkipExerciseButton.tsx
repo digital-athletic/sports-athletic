@@ -32,7 +32,12 @@ export const SkipExerciseButton: FC<SkipExerciseButtonProps> = ({
       testID={testId}
     >
       <Box opacity={disabled ? 0 : 1}>
-        <Ionicon name="play-forward" size={20} color={colors.darkGrey2} />
+        <Ionicon
+          name="play-forward"
+          size={20}
+          color={colors.darkGrey2}
+          decorative
+        />
       </Box>
     </TouchableBox>
   );

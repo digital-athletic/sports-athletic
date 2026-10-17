@@ -1,3 +1,4 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { fireEvent, render } from "../utils/testUtils";
 import { TextInputField } from "./TextInputField";
 
@@ -19,11 +20,12 @@ describe("<TextInputField />", () => {
     expect(toJSON()).toMatchSnapshot();
   });
 
-  it("displays Ionicon when iconName is provided", () => {
-    const { getByLabelText } = render(
+  it("hides the Ionicon from screen readers", () => {
+    const { UNSAFE_getByType } = render(
       <TextInputField {...defaultProps} iconName="person" />,
     );
-    expect(getByLabelText("input-icon")).toBeTruthy();
+    const icon = UNSAFE_getByType(Ionicons);
+    expect(icon.props.accessibilityElementsHidden).toBe(true);
   });
 
   it("displays the placeholder text", () => {

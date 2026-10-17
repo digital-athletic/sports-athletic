@@ -5,7 +5,6 @@ import { type ThemeColor, useTheme } from "@/theme/theme";
 import { useResponsiveProp } from "@shopify/restyle";
 import { type Href, type Route, useRouter } from "expo-router";
 import { type FC } from "react";
-import { useTranslation } from "react-i18next";
 import { Linking, TouchableOpacity } from "react-native";
 import { ListDivider } from "../../common/ListDivider";
 
@@ -33,7 +32,6 @@ export const ListItem: FC<ListItemProps> = ({
   isLast = false,
   navParams,
 }) => {
-  const { t } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
 
@@ -82,7 +80,7 @@ export const ListItem: FC<ListItemProps> = ({
                 name={iconName}
                 size={iconSize}
                 color={colors.white}
-                accessibilityLabel={t("common.altText.icon", { title })}
+                decorative
               />
             </Box>
           </Box>

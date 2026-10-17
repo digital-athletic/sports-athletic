@@ -173,6 +173,7 @@ export default function EquipmentDetailsScreen() {
                     name="checkmark-circle"
                     size={28}
                     color={colors.primary}
+                    decorative
                   />
                 ) : (
                   <Box

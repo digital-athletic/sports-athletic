@@ -45,7 +45,12 @@ const FlipSideButton: FC<FlipSideButtonProps> = ({ side, onFlip }) => {
       onPress={onFlip}
     >
       <Box padding="s">
-        <Ionicon name="sync" size={28} color={theme.colors.darkGrey1} />
+        <Ionicon
+          name="sync"
+          size={28}
+          color={theme.colors.darkGrey1}
+          decorative
+        />
       </Box>
     </TouchableOpacity>
   );

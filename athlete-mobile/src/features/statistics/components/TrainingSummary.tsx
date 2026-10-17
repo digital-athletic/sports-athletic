@@ -78,7 +78,7 @@ export const TrainingSummary: FC<TrainingSummaryProps> = ({
           name={SUMMARY_ICONS[type]}
           size={ICON_SIZE}
           color={colors.primary}
-          accessibilityLabel={labels[type].alt}
+          decorative
         />
       </Box>
       <Box flex={1} justifyContent="center" alignItems="center">

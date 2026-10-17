@@ -51,12 +51,7 @@ export const EmailInputField: FC<EmailInputFieldProps> = ({
         borderBottomWidth={showError ? 1 : 0}
         borderColor={showError ? "error" : undefined}
       >
-        <Ionicon
-          name="mail"
-          size={24}
-          color={colors.lightGrey3}
-          accessibilityLabel="email-icon"
-        />
+        <Ionicon name="mail" size={24} color={colors.lightGrey3} decorative />
       </Box>
       <BasicTextInput
         onChangeText={onChange}

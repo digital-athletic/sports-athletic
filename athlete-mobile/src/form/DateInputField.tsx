@@ -95,7 +95,7 @@ export const DateInputField: FC<DateInputFieldProps> = ({
           name={iconName}
           size={24}
           color={colors.lightGrey3}
-          accessibilityLabel={`${type}-icon`}
+          decorative
         />
       </Box>
 

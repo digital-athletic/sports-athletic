@@ -53,6 +53,7 @@ export const Coaching: FC<CoachingProps> = ({ text, onDismiss }) => {
               name="close-circle"
               size={24}
               color={theme.colors.darkGrey1}
+              decorative
             />
           </Box>
         </TouchableOpacity>

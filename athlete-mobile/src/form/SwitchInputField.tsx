@@ -43,7 +43,7 @@ export const SwitchInputField: FC<SwitchInputFieldProps> = ({
           value={value}
           onValueChange={onChange}
           style={scaleStyle}
-          accessibilityLabel="switch-input"
+          accessibilityLabel={descriptionText}
         />
         <Box flex={1} marginLeft="m">
           <Text variant="body" color="darkGrey3">

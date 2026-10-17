@@ -47,7 +47,7 @@ beforeEach(() => {
   jest.useFakeTimers();
   mockProcessQueue.mockResolvedValue(undefined);
   SyncManager.resetForTesting();
-  useSyncQueueStore.getState().clearSyncQueue();
+  useSyncQueueStore.setState({ queue: [] });
   useAuthStore.getState().setAuth({ userId: "user-1" });
 });
 
@@ -86,7 +86,7 @@ describe("start", () => {
     expect(mockNetInfoFetch).toHaveBeenCalledTimes(1);
   });
 
-  it("is idempotent — calling twice does not duplicate subscriptions", () => {
+  it("does not duplicate subscriptions when called twice", () => {
     const manager = SyncManager.getInstance();
     manager.start();
     manager.start();

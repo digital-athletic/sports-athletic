@@ -50,7 +50,7 @@ beforeEach(() => {
   mockUpsert.mockResolvedValue({ error: null });
   mockInsert.mockResolvedValue({ error: null });
   resetProcessingFlag();
-  useSyncQueueStore.getState().clearSyncQueue();
+  useSyncQueueStore.setState({ queue: [] });
   useAuthStore.getState().setAuth({
     userId: TEST_USER_ID,
   });

@@ -50,7 +50,6 @@ type Actions = {
   markCompleted: (id: string) => void;
   markFailed: (id: string, error: string) => void;
   resetStaleItems: () => void;
-  clearSyncQueue: () => void;
   clearUserItems: (userId: string) => void;
 };
 
@@ -98,17 +97,14 @@ export const useSyncQueueStore = create<SyncQueueState>()(
       ...createInitialState(),
 
       enqueue: (item) => {
-        const oldest = get().queue[0];
-        if (oldest && get().queue.length >= MAX_QUEUE_SIZE) {
-          Logger.logError(
-            new Error(
-              `Sync queue full (${MAX_QUEUE_SIZE} items). Oldest item dropped: ${oldest.type} (${oldest.referenceId})`,
-            ),
-          );
-        }
         set((state) => {
           if (state.queue.length >= MAX_QUEUE_SIZE) {
-            state.queue.shift();
+            const dropped = state.queue.shift();
+            Logger.logError(
+              new Error(
+                `Sync queue full (${MAX_QUEUE_SIZE} items). Oldest item dropped: ${dropped?.type} (${dropped?.referenceId})`,
+              ),
+            );
           }
           state.queue.push({
             id: generateId(),
@@ -183,11 +179,6 @@ export const useSyncQueueStore = create<SyncQueueState>()(
               item.status = "PENDING";
             }
           }
-        }),
-
-      clearSyncQueue: () =>
-        set((state) => {
-          state.queue = [];
         }),
 
       clearUserItems: (userId) =>

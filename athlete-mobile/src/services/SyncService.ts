@@ -50,25 +50,21 @@ export async function processQueue(): Promise<void> {
   }
 }
 
-async function runQueue(startUserId: string): Promise<void> {
+async function runQueue(userId: string): Promise<void> {
   const attemptedIds = new Set<string>();
 
-  while (true) {
-    // Stop when the user changed; items upload only under their owner
-    const auth = useAuthStore.getState().auth;
-    if (!auth || auth.userId !== startUserId) {
-      break;
-    }
+  // Stop when the user changed; items upload only under their owner
+  while (useAuthStore.getState().auth?.userId === userId) {
     const store = useSyncQueueStore.getState();
-    const item = store.getNextPending(auth.userId);
+    const item = store.getNextPending(userId);
     if (!item || attemptedIds.has(item.id)) {
       break;
     }
     attemptedIds.add(item.id);
     if (item.ownerUserId === null) {
-      store.claimItem(item.id, auth.userId);
+      store.claimItem(item.id, userId);
     }
-    await processSingleItem(item, auth.userId);
+    await processSingleItem(item, userId);
   }
 }
 

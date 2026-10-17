@@ -18,10 +18,7 @@ function backdateLastAttempt(itemId: string): void {
 
 describe("syncQueueStore", () => {
   beforeEach(() => {
-    const { result } = renderHook(() => useSyncQueueStore());
-    act(() => {
-      result.current.clearSyncQueue();
-    });
+    useSyncQueueStore.setState({ queue: [] });
   });
 
   describe("initial state", () => {
@@ -415,36 +412,6 @@ describe("syncQueueStore", () => {
       });
 
       expect(migrated.queue[0].ownerUserId).toBe("user-b");
-    });
-  });
-
-  describe("clearSyncQueue", () => {
-    it("empties the queue", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
-
-      act(() => {
-        result.current.enqueue({
-          type: "COMPLETED_WORKOUT",
-          referenceId: "w1",
-          payload: {},
-          ownerUserId: TEST_USER_ID,
-        });
-        result.current.enqueue({
-          type: "EXERCISE_DATA",
-          referenceId: "e1",
-          payload: {},
-          ownerUserId: TEST_USER_ID,
-        });
-      });
-
-      expect(result.current.queue).toHaveLength(2);
-
-      act(() => {
-        result.current.clearSyncQueue();
-      });
-
-      expect(result.current.queue).toHaveLength(0);
-      expect(result.current.hasItemsToSync(TEST_USER_ID)).toBe(false);
     });
   });
 

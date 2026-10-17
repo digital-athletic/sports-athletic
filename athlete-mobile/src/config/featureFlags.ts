@@ -24,6 +24,12 @@ export const featureFlags = {
   get imprintEnabled(): boolean {
     return (process.env.EXPO_PUBLIC_LINK_IMPRINT ?? "") !== "";
   },
+  get a11yStatementEnabled(): boolean {
+    return (process.env.EXPO_PUBLIC_LINK_A11Y_STATEMENT ?? "") !== "";
+  },
+  get a11yFeedbackEnabled(): boolean {
+    return (process.env.EXPO_PUBLIC_LINK_A11Y_FEEDBACK ?? "") !== "";
+  },
   get contactEnabled(): boolean {
     return process.env.EXPO_PUBLIC_CONTACT_ENABLED === "true";
   },

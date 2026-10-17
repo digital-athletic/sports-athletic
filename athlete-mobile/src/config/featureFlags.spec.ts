@@ -10,6 +10,8 @@ describe("featureFlags", () => {
     delete process.env.EXPO_PUBLIC_LINK_AGB;
     delete process.env.EXPO_PUBLIC_LINK_PRIVACY;
     delete process.env.EXPO_PUBLIC_LINK_IMPRINT;
+    delete process.env.EXPO_PUBLIC_LINK_A11Y_STATEMENT;
+    delete process.env.EXPO_PUBLIC_LINK_A11Y_FEEDBACK;
     delete process.env.EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED;
   });
 
@@ -113,6 +115,28 @@ describe("featureFlags", () => {
     it("is true when EXPO_PUBLIC_LINK_IMPRINT is set", () => {
       process.env.EXPO_PUBLIC_LINK_IMPRINT = "https://example.com/imprint";
       expect(featureFlags.imprintEnabled).toBe(true);
+    });
+  });
+
+  describe("a11yStatementEnabled", () => {
+    it("is false when EXPO_PUBLIC_LINK_A11Y_STATEMENT is unset", () => {
+      expect(featureFlags.a11yStatementEnabled).toBe(false);
+    });
+
+    it("is true when EXPO_PUBLIC_LINK_A11Y_STATEMENT is set", () => {
+      process.env.EXPO_PUBLIC_LINK_A11Y_STATEMENT = "https://example.com/a11y";
+      expect(featureFlags.a11yStatementEnabled).toBe(true);
+    });
+  });
+
+  describe("a11yFeedbackEnabled", () => {
+    it("is false when EXPO_PUBLIC_LINK_A11Y_FEEDBACK is unset", () => {
+      expect(featureFlags.a11yFeedbackEnabled).toBe(false);
+    });
+
+    it("is true when EXPO_PUBLIC_LINK_A11Y_FEEDBACK is set", () => {
+      process.env.EXPO_PUBLIC_LINK_A11Y_FEEDBACK = "https://example.com/report";
+      expect(featureFlags.a11yFeedbackEnabled).toBe(true);
     });
   });
 

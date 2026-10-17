@@ -7,9 +7,8 @@
 
 import { useDeleteAccount, useLogout } from "@/auth/useAuthActions";
 import { Ionicon } from "@/common/Ionicon";
-import { featureFlags } from "@/config/featureFlags";
-import { LINK_AGB, LINK_IMPRINT, LINK_PRIVACY } from "@/constants/AppConstants";
 import { ListDivider } from "@/common/ListDivider";
+import { InfoMenuItems } from "@/features/more/InfoMenuItems";
 import { ListItem } from "@/features/more/ListItem";
 import { StrengthTestMenuItems } from "@/features/more/StrengthTestMenuItems";
 import { Box } from "@/theme/Box";
@@ -114,50 +113,7 @@ export default function MoreScreen() {
         </Box>
 
         <Box backgroundColor="white" paddingVertical="s">
-          {featureFlags.termsEnabled && (
-            <ListItem
-              title={t("more.agb")}
-              externalUrl={LINK_AGB}
-              iconName="information-circle"
-              iconBackground="darkGrey1"
-            />
-          )}
-          {featureFlags.privacyEnabled && (
-            <ListItem
-              title={t("more.privacy")}
-              externalUrl={LINK_PRIVACY}
-              iconName="shield-checkmark"
-              iconBackground="darkGrey1"
-            />
-          )}
-          <ListItem
-            title={t("more.notificationsSettings")}
-            navPath="/(tabs)/(more)/notifications"
-            iconName="settings"
-            iconBackground="darkGrey1"
-          />
-          {featureFlags.contactEnabled && (
-            <ListItem
-              title={t("more.contact")}
-              navPath="/contact"
-              iconName="mail"
-              iconBackground="darkGrey1"
-            />
-          )}
-          {featureFlags.imprintEnabled && (
-            <ListItem
-              title={t("more.imprint")}
-              externalUrl={LINK_IMPRINT}
-              iconName="document-text"
-              iconBackground="darkGrey1"
-            />
-          )}
-          <ListItem
-            title={t("more.thirdPartyNotices.menuItem")}
-            navPath="/(tabs)/(more)/third-party-notices"
-            iconName="code-slash"
-            iconBackground="darkGrey1"
-          />
+          <InfoMenuItems />
 
           <Box>
             <TouchableOpacity onPress={deleteAccount}>

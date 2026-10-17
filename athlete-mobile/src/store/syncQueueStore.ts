@@ -2,7 +2,6 @@ import { Logger } from "@/services/Logger";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { useAuthStore } from "./authStore";
 import { asyncStorage } from "./middleware";
 import { createMigrate } from "./migrations/createMigrate";
 import { syncQueueStoreMigrations } from "./migrations/syncQueueStoreMigrations";
@@ -44,6 +43,7 @@ type Actions = {
     type: SyncItemType;
     referenceId: string;
     payload: unknown;
+    ownerUserId: string | null;
   }) => void;
   claimItem: (id: string, userId: string) => void;
   markInProgress: (id: string) => void;
@@ -51,12 +51,11 @@ type Actions = {
   markFailed: (id: string, error: string) => void;
   resetStaleItems: () => void;
   clearSyncQueue: () => void;
+  clearUserItems: (userId: string) => void;
 };
 
 type Selectors = {
   getNextPending: (userId: string) => SyncQueueItem | undefined;
-  getPendingCount: () => number;
-  getFailedItems: () => SyncQueueItem[];
   hasItemsToSync: (userId: string) => boolean;
 };
 
@@ -99,21 +98,24 @@ export const useSyncQueueStore = create<SyncQueueState>()(
       ...createInitialState(),
 
       enqueue: (item) => {
-        if (get().queue.length >= MAX_QUEUE_SIZE) {
+        const oldest = get().queue[0];
+        if (oldest && get().queue.length >= MAX_QUEUE_SIZE) {
           Logger.logError(
             new Error(
-              `Sync queue full (${MAX_QUEUE_SIZE} items). Item dropped: ${item.type}`,
+              `Sync queue full (${MAX_QUEUE_SIZE} items). Oldest item dropped: ${oldest.type} (${oldest.referenceId})`,
             ),
           );
-          return;
         }
         set((state) => {
+          if (state.queue.length >= MAX_QUEUE_SIZE) {
+            state.queue.shift();
+          }
           state.queue.push({
             id: generateId(),
             type: item.type,
             referenceId: item.referenceId,
             payload: item.payload,
-            ownerUserId: useAuthStore.getState().auth?.userId ?? null,
+            ownerUserId: item.ownerUserId,
             status: "PENDING",
             createdAt: Date.now(),
             attemptCount: 0,
@@ -188,20 +190,17 @@ export const useSyncQueueStore = create<SyncQueueState>()(
           state.queue = [];
         }),
 
+      clearUserItems: (userId) =>
+        set((state) => {
+          state.queue = state.queue.filter(
+            (i) => i.ownerUserId !== null && i.ownerUserId !== userId,
+          );
+        }),
+
       getNextPending: (userId) => {
         const { queue } = get();
         const now = Date.now();
         return queue.find((i) => isReadyToProcess(i, now, userId));
-      },
-
-      getPendingCount: () => {
-        const { queue } = get();
-        return queue.filter((i) => i.status === "PENDING").length;
-      },
-
-      getFailedItems: () => {
-        const { queue } = get();
-        return queue.filter((i) => i.status === "FAILED");
       },
 
       hasItemsToSync: (userId) => {

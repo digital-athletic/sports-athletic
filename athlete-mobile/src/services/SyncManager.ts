@@ -124,12 +124,14 @@ class SyncManager {
 
   private registerHandlers(): void {
     const enqueue = useSyncQueueStore.getState().enqueue;
+    const currentUserId = () => useAuthStore.getState().auth?.userId ?? null;
 
     this.onWorkoutCompleted = (workout) => {
       enqueue({
         type: "COMPLETED_WORKOUT",
         referenceId: workout.id,
         payload: workout,
+        ownerUserId: currentUserId(),
       });
       this.triggerSync();
     };
@@ -139,6 +141,7 @@ class SyncManager {
         type: "EXERCISE_DATA",
         referenceId: exerciseId,
         payload: data,
+        ownerUserId: currentUserId(),
       });
       this.triggerSync();
     };
@@ -148,6 +151,7 @@ class SyncManager {
         type: "STRENGTH_TEST",
         referenceId: `test-${result.testAt}`,
         payload: result,
+        ownerUserId: currentUserId(),
       });
       this.triggerSync();
     };

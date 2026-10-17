@@ -4,7 +4,6 @@ import {
   MAX_RETRY_ATTEMPTS,
   MAX_QUEUE_SIZE,
 } from "./syncQueueStore";
-import { useAuthStore } from "./authStore";
 import { syncQueueStoreMigrations } from "./migrations/syncQueueStoreMigrations";
 
 const TEST_USER_ID = "test-user";
@@ -19,7 +18,6 @@ function backdateLastAttempt(itemId: string): void {
 
 describe("syncQueueStore", () => {
   beforeEach(() => {
-    useAuthStore.getState().clearAuth();
     const { result } = renderHook(() => useSyncQueueStore());
     act(() => {
       result.current.clearSyncQueue();
@@ -31,14 +29,12 @@ describe("syncQueueStore", () => {
       const { result } = renderHook(() => useSyncQueueStore());
 
       expect(result.current.queue).toHaveLength(0);
-      expect(result.current.getPendingCount()).toBe(0);
       expect(result.current.hasItemsToSync(TEST_USER_ID)).toBe(false);
     });
   });
 
   describe("enqueue", () => {
-    it("stamps the logged in user as owner", () => {
-      useAuthStore.getState().setAuth({ userId: "user-a" });
+    it("stores the given owner", () => {
       const { result } = renderHook(() => useSyncQueueStore());
 
       act(() => {
@@ -46,13 +42,14 @@ describe("syncQueueStore", () => {
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
           payload: {},
+          ownerUserId: "user-a",
         });
       });
 
       expect(result.current.queue[0].ownerUserId).toBe("user-a");
     });
 
-    it("stamps a null owner without auth", () => {
+    it("stores a null owner", () => {
       const { result } = renderHook(() => useSyncQueueStore());
 
       act(() => {
@@ -60,6 +57,7 @@ describe("syncQueueStore", () => {
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
           payload: {},
+          ownerUserId: null,
         });
       });
 
@@ -74,6 +72,7 @@ describe("syncQueueStore", () => {
           type: "COMPLETED_WORKOUT",
           referenceId: "workout-1",
           payload: { id: "workout-1", timestamp: 1000 },
+          ownerUserId: TEST_USER_ID,
         });
       });
 
@@ -99,16 +98,19 @@ describe("syncQueueStore", () => {
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
         result.current.enqueue({
           type: "EXERCISE_DATA",
           referenceId: "e1",
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
         result.current.enqueue({
           type: "STRENGTH_TEST",
           referenceId: "t1",
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
       });
 
@@ -118,20 +120,25 @@ describe("syncQueueStore", () => {
       expect(result.current.queue[2].referenceId).toBe("t1");
     });
 
-    it("rejects items when queue is at max capacity", () => {
+    it("drops the oldest items when queue is at max capacity", () => {
       const { result } = renderHook(() => useSyncQueueStore());
 
       act(() => {
         for (let i = 0; i < MAX_QUEUE_SIZE + 5; i++) {
           result.current.enqueue({
             type: "EXERCISE_DATA",
-            referenceId: `e-${i}`,
+            referenceId: `e${i}`,
             payload: {},
+            ownerUserId: TEST_USER_ID,
           });
         }
       });
 
       expect(result.current.queue).toHaveLength(MAX_QUEUE_SIZE);
+      expect(result.current.queue[0].referenceId).toBe("e5");
+      expect(result.current.queue[MAX_QUEUE_SIZE - 1].referenceId).toBe(
+        `e${MAX_QUEUE_SIZE + 4}`,
+      );
     });
   });
 
@@ -144,6 +151,7 @@ describe("syncQueueStore", () => {
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
       });
 
@@ -167,11 +175,13 @@ describe("syncQueueStore", () => {
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
         result.current.enqueue({
           type: "EXERCISE_DATA",
           referenceId: "e1",
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
       });
 
@@ -195,6 +205,7 @@ describe("syncQueueStore", () => {
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
       });
 
@@ -224,11 +235,13 @@ describe("syncQueueStore", () => {
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
         result.current.enqueue({
           type: "EXERCISE_DATA",
           referenceId: "e1",
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
       });
 
@@ -258,11 +271,13 @@ describe("syncQueueStore", () => {
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
         result.current.enqueue({
           type: "EXERCISE_DATA",
           referenceId: "e1",
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
       });
 
@@ -285,17 +300,17 @@ describe("syncQueueStore", () => {
       const { result } = renderHook(() => useSyncQueueStore());
 
       act(() => {
-        useAuthStore.getState().setAuth({ userId: "a" });
         result.current.enqueue({
           type: "COMPLETED_WORKOUT",
           referenceId: "owned-by-a",
           payload: {},
+          ownerUserId: "a",
         });
-        useAuthStore.getState().clearAuth();
         result.current.enqueue({
           type: "EXERCISE_DATA",
           referenceId: "unowned",
           payload: {},
+          ownerUserId: null,
         });
       });
 
@@ -321,11 +336,13 @@ describe("syncQueueStore", () => {
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
         result.current.enqueue({
           type: "EXERCISE_DATA",
           referenceId: "e1",
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
       });
 
@@ -356,6 +373,7 @@ describe("syncQueueStore", () => {
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
           payload: {},
+          ownerUserId: null,
         });
       });
       const itemId = result.current.queue[0].id;
@@ -380,55 +398,23 @@ describe("syncQueueStore", () => {
       attemptCount: 0,
     };
 
-    it("stamps the logged in user as owner of existing items", () => {
-      useAuthStore.getState().setAuth({ userId: "user-a" });
+    it("sets a legacy item without owner to a null owner", () => {
+      // Persisted legacy items lack the field, which the State type forbids
+      const legacyState = { queue: [legacyItem] } as unknown as Parameters<
+        (typeof syncQueueStoreMigrations)[14]
+      >[0];
 
-      const migrated = syncQueueStoreMigrations[14]({
-        queue: [{ ...legacyItem, ownerUserId: null }],
-      });
-
-      expect(migrated.queue[0].ownerUserId).toBe("user-a");
-    });
-
-    it("stamps null without auth and keeps an existing owner", () => {
-      const migrated = syncQueueStoreMigrations[14]({
-        queue: [
-          { ...legacyItem, ownerUserId: null },
-          { ...legacyItem, id: "i2", ownerUserId: "user-b" },
-        ],
-      });
+      const migrated = syncQueueStoreMigrations[14](legacyState);
 
       expect(migrated.queue[0].ownerUserId).toBeNull();
-      expect(migrated.queue[1].ownerUserId).toBe("user-b");
     });
-  });
 
-  describe("getFailedItems", () => {
-    it("returns only failed items", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
-
-      act(() => {
-        result.current.enqueue({
-          type: "COMPLETED_WORKOUT",
-          referenceId: "w1",
-          payload: {},
-        });
-        result.current.enqueue({
-          type: "EXERCISE_DATA",
-          referenceId: "e1",
-          payload: {},
-        });
+    it("keeps the existing owner of an item", () => {
+      const migrated = syncQueueStoreMigrations[14]({
+        queue: [{ ...legacyItem, ownerUserId: "user-b" }],
       });
 
-      const firstId = result.current.queue[0].id;
-
-      act(() => {
-        result.current.markFailed(firstId, "Network error");
-      });
-
-      const failed = result.current.getFailedItems();
-      expect(failed).toHaveLength(1);
-      expect(failed[0].referenceId).toBe("w1");
+      expect(migrated.queue[0].ownerUserId).toBe("user-b");
     });
   });
 
@@ -441,11 +427,13 @@ describe("syncQueueStore", () => {
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
         result.current.enqueue({
           type: "EXERCISE_DATA",
           referenceId: "e1",
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
       });
 
@@ -460,6 +448,66 @@ describe("syncQueueStore", () => {
     });
   });
 
+  describe("clearUserItems", () => {
+    function enqueueMixedOwners(): void {
+      const { enqueue } = useSyncQueueStore.getState();
+      act(() => {
+        enqueue({
+          type: "COMPLETED_WORKOUT",
+          referenceId: "owned-by-a",
+          payload: {},
+          ownerUserId: "a",
+        });
+        enqueue({
+          type: "COMPLETED_WORKOUT",
+          referenceId: "owned-by-b",
+          payload: {},
+          ownerUserId: "b",
+        });
+        enqueue({
+          type: "EXERCISE_DATA",
+          referenceId: "unowned",
+          payload: {},
+          ownerUserId: null,
+        });
+      });
+    }
+
+    function referenceIds(): string[] {
+      return useSyncQueueStore.getState().queue.map((i) => i.referenceId);
+    }
+
+    it("removes the items of the user", () => {
+      enqueueMixedOwners();
+
+      act(() => {
+        useSyncQueueStore.getState().clearUserItems("a");
+      });
+
+      expect(referenceIds()).not.toContain("owned-by-a");
+    });
+
+    it("removes unowned items", () => {
+      enqueueMixedOwners();
+
+      act(() => {
+        useSyncQueueStore.getState().clearUserItems("a");
+      });
+
+      expect(referenceIds()).not.toContain("unowned");
+    });
+
+    it("keeps the items of other owners", () => {
+      enqueueMixedOwners();
+
+      act(() => {
+        useSyncQueueStore.getState().clearUserItems("a");
+      });
+
+      expect(referenceIds()).toEqual(["owned-by-b"]);
+    });
+  });
+
   describe("retrying failed items", () => {
     it("getNextPending returns a failed item whose backoff window has long passed", () => {
       const { result } = renderHook(() => useSyncQueueStore());
@@ -469,6 +517,7 @@ describe("syncQueueStore", () => {
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
       });
 
@@ -493,6 +542,7 @@ describe("syncQueueStore", () => {
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
       });
 
@@ -519,6 +569,7 @@ describe("syncQueueStore", () => {
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
       });
 
@@ -546,6 +597,7 @@ describe("syncQueueStore", () => {
           type: "EXERCISE_DATA",
           referenceId: `exhausted${i}`,
           payload: {},
+          ownerUserId: TEST_USER_ID,
         });
       }
 
@@ -562,6 +614,7 @@ describe("syncQueueStore", () => {
         type: "COMPLETED_WORKOUT",
         referenceId: "newWorkout",
         payload: {},
+        ownerUserId: TEST_USER_ID,
       });
 
       expect(

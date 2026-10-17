@@ -13,7 +13,6 @@ import {
   syncStrengthTest,
   getBackoffDelay,
   resetProcessingFlag,
-  waitForProcessQueue,
 } from "./SyncService";
 
 const mockUpsert = jest.fn().mockResolvedValue({ error: null });
@@ -341,6 +340,7 @@ describe("processSingleItem", () => {
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: item.payload,
+      ownerUserId: TEST_USER_ID,
     });
 
     const queueItem = useSyncQueueStore.getState().queue[0];
@@ -363,6 +363,7 @@ describe("processSingleItem", () => {
         exercises: [],
         duration: 100,
       },
+      ownerUserId: TEST_USER_ID,
     });
 
     const queueItem = useSyncQueueStore.getState().queue[0];
@@ -389,6 +390,7 @@ describe("activity-only mode", () => {
       type: "EXERCISE_DATA",
       referenceId: "ex-1",
       payload: { exerciseId: "ex-1", skill: "SWR1" },
+      ownerUserId: TEST_USER_ID,
     });
 
     const item = useSyncQueueStore.getState().queue[0];
@@ -413,6 +415,7 @@ describe("activity-only mode", () => {
         kneeDominant: { barbell: 90 },
         lowerBody: { barbell: 120 },
       },
+      ownerUserId: TEST_USER_ID,
     });
 
     const item = useSyncQueueStore.getState().queue[0];
@@ -485,6 +488,7 @@ describe("activity-only mode", () => {
       type: "EXERCISE_DATA",
       referenceId: "ex-1",
       payload: { exerciseId: "ex-1", skill: "SWR1" },
+      ownerUserId: TEST_USER_ID,
     });
 
     await processQueue();
@@ -498,11 +502,13 @@ describe("activity-only mode", () => {
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: { id: "w1", timestamp: 1000, exercises: [], duration: 100 },
+      ownerUserId: TEST_USER_ID,
     });
     useSyncQueueStore.getState().enqueue({
       type: "EXERCISE_DATA",
       referenceId: "ex-1",
       payload: { exerciseId: "ex-1", skill: "SWR1" },
+      ownerUserId: TEST_USER_ID,
     });
 
     await processQueue();
@@ -517,16 +523,19 @@ describe("activity-only mode", () => {
       type: "EXERCISE_DATA",
       referenceId: "ex-1",
       payload: { exerciseId: "ex-1", skill: "SWR1" },
+      ownerUserId: TEST_USER_ID,
     });
     useSyncQueueStore.getState().enqueue({
       type: "EXERCISE_DATA",
       referenceId: "ex-2",
       payload: { exerciseId: "ex-2", skill: "SWR1" },
+      ownerUserId: TEST_USER_ID,
     });
     useSyncQueueStore.getState().enqueue({
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: { id: "w1", timestamp: 1000, exercises: [], duration: 100 },
+      ownerUserId: TEST_USER_ID,
     });
 
     await processQueue();
@@ -543,6 +552,7 @@ describe("processQueue", () => {
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: { id: "w1", timestamp: 1000, exercises: [], duration: 100 },
+      ownerUserId: TEST_USER_ID,
     });
 
     await processQueue();
@@ -556,11 +566,13 @@ describe("processQueue", () => {
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: { id: "w1", timestamp: 1000, exercises: [], duration: 100 },
+      ownerUserId: TEST_USER_ID,
     });
     useSyncQueueStore.getState().enqueue({
       type: "COMPLETED_WORKOUT",
       referenceId: "w2",
       payload: { id: "w2", timestamp: 2000, exercises: [], duration: 200 },
+      ownerUserId: TEST_USER_ID,
     });
 
     await processQueue();
@@ -578,6 +590,7 @@ describe("processQueue", () => {
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: { id: "w1", timestamp: 1000, exercises: [], duration: 100 },
+      ownerUserId: TEST_USER_ID,
     });
 
     await Promise.all([processQueue(), processQueue()]);
@@ -595,12 +608,12 @@ describe("processQueue: item owner", () => {
     duration: 100,
   };
 
-  it("does not upload an item of A while B is logged in and uploads it after A logs in", async () => {
-    useAuthStore.getState().setAuth({ userId: "user-a" });
+  it("does not upload an item of A while B is logged in", async () => {
     useSyncQueueStore.getState().enqueue({
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: workoutPayload,
+      ownerUserId: "user-a",
     });
 
     useAuthStore.getState().setAuth({ userId: "user-b" });
@@ -608,6 +621,15 @@ describe("processQueue: item owner", () => {
 
     expect(mockUpsert).not.toHaveBeenCalled();
     expect(useSyncQueueStore.getState().queue).toHaveLength(1);
+  });
+
+  it("uploads an item of A after A logs in", async () => {
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "w1",
+      payload: workoutPayload,
+      ownerUserId: "user-a",
+    });
 
     useAuthStore.getState().setAuth({ userId: "user-a" });
     await processQueue();
@@ -619,14 +641,28 @@ describe("processQueue: item owner", () => {
     expect(useSyncQueueStore.getState().queue).toHaveLength(0);
   });
 
-  it("claims an unowned item for the first user and uploads it under that user", async () => {
-    useAuthStore.getState().clearAuth();
+  it("claims an unowned item for the first user", async () => {
     useSyncQueueStore.getState().enqueue({
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: workoutPayload,
+      ownerUserId: null,
     });
-    expect(useSyncQueueStore.getState().queue[0].ownerUserId).toBeNull();
+    mockUpsert.mockResolvedValueOnce({ error: { message: "offline" } });
+
+    useAuthStore.getState().setAuth({ userId: "user-a" });
+    await processQueue();
+
+    expect(useSyncQueueStore.getState().queue[0].ownerUserId).toBe("user-a");
+  });
+
+  it("uploads an unowned item under the first user", async () => {
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "w1",
+      payload: workoutPayload,
+      ownerUserId: null,
+    });
 
     useAuthStore.getState().setAuth({ userId: "user-a" });
     await processQueue();
@@ -639,11 +675,11 @@ describe("processQueue: item owner", () => {
   });
 
   it("keeps a claimed item with its first user", async () => {
-    useAuthStore.getState().clearAuth();
     useSyncQueueStore.getState().enqueue({
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: workoutPayload,
+      ownerUserId: null,
     });
     mockUpsert.mockResolvedValueOnce({ error: { message: "offline" } });
 
@@ -662,11 +698,13 @@ describe("processQueue: item owner", () => {
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: workoutPayload,
+      ownerUserId: "user-a",
     });
     useSyncQueueStore.getState().enqueue({
       type: "COMPLETED_WORKOUT",
       referenceId: "w2",
       payload: { ...workoutPayload, id: "w2" },
+      ownerUserId: "user-a",
     });
 
     let finishUpload: (value: { error: null }) => void = () => undefined;
@@ -685,36 +723,59 @@ describe("processQueue: item owner", () => {
     expect(useSyncQueueStore.getState().queue).toHaveLength(1);
     expect(useSyncQueueStore.getState().queue[0].referenceId).toBe("w2");
   });
-});
 
-describe("waitForProcessQueue", () => {
-  it("resolves immediately when idle", async () => {
-    await expect(waitForProcessQueue()).resolves.toBeUndefined();
-  });
+  it("keeps the run of the new user exclusive when the run of the old user finishes late", async () => {
+    let finishUploadA: (value: { error: null }) => void = () => undefined;
+    let finishUploadB: (value: { error: null }) => void = () => undefined;
+    mockUpsert
+      .mockReturnValueOnce(
+        new Promise((resolve) => {
+          finishUploadA = resolve;
+        }),
+      )
+      .mockReturnValueOnce(
+        new Promise((resolve) => {
+          finishUploadB = resolve;
+        }),
+      );
 
-  it("resolves after the timeout when an upload never finishes", async () => {
-    jest.useFakeTimers();
-    try {
-      useSyncQueueStore.getState().enqueue({
-        type: "COMPLETED_WORKOUT",
-        referenceId: "w1",
-        payload: { id: "w1", timestamp: 1000, exercises: [], duration: 100 },
-      });
-      mockUpsert.mockReturnValueOnce(new Promise(() => undefined));
+    useAuthStore.getState().setAuth({ userId: "user-a" });
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "wA",
+      payload: { ...workoutPayload, id: "wA" },
+      ownerUserId: "user-a",
+    });
+    const runA = processQueue();
 
-      void processQueue();
-      const settled = jest.fn();
-      const waiting = waitForProcessQueue(5000).then(settled);
+    // A user switch restarts the SyncManager, which resets the flag
+    useAuthStore.getState().setAuth({ userId: "user-b" });
+    resetProcessingFlag();
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "wB1",
+      payload: { ...workoutPayload, id: "wB1" },
+      ownerUserId: "user-b",
+    });
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "wB2",
+      payload: { ...workoutPayload, id: "wB2" },
+      ownerUserId: "user-b",
+    });
+    const runB = processQueue();
 
-      await jest.advanceTimersByTimeAsync(4999);
-      expect(settled).not.toHaveBeenCalled();
+    finishUploadA({ error: null });
+    await runA;
+    await processQueue();
 
-      await jest.advanceTimersByTimeAsync(1);
-      await waiting;
-      expect(settled).toHaveBeenCalledTimes(1);
-    } finally {
-      jest.useRealTimers();
-    }
+    expect(mockUpsert).toHaveBeenCalledTimes(2);
+
+    finishUploadB({ error: null });
+    await runB;
+
+    expect(mockUpsert).toHaveBeenCalledTimes(3);
+    expect(useSyncQueueStore.getState().queue).toHaveLength(0);
   });
 });
 
@@ -728,6 +789,7 @@ describe("processQueue: retry of failed items", () => {
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: { id: "w1", timestamp: 1000, exercises: [], duration: 100 },
+      ownerUserId: TEST_USER_ID,
     });
 
     await processQueue();
@@ -752,11 +814,13 @@ describe("processQueue: retry of failed items", () => {
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: { id: "w1", timestamp: 1000, exercises: [], duration: 100 },
+      ownerUserId: TEST_USER_ID,
     });
     useSyncQueueStore.getState().enqueue({
       type: "COMPLETED_WORKOUT",
       referenceId: "w2",
       payload: { id: "w2", timestamp: 2000, exercises: [], duration: 200 },
+      ownerUserId: TEST_USER_ID,
     });
 
     await processQueue();

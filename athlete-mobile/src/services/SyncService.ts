@@ -21,7 +21,6 @@ function isActivityOnlyMode(): boolean {
   return featureFlags.serverSyncActivityOnlyEnabled;
 }
 
-let isProcessing = false;
 let runningQueue: Promise<void> | null = null;
 
 export function getBackoffDelay(attemptCount: number): number {
@@ -30,7 +29,7 @@ export function getBackoffDelay(attemptCount: number): number {
 }
 
 export async function processQueue(): Promise<void> {
-  if (isProcessing) {
+  if (runningQueue) {
     return;
   }
 
@@ -39,52 +38,37 @@ export async function processQueue(): Promise<void> {
     return;
   }
 
-  isProcessing = true;
-  runningQueue = runQueue(startUserId);
-  await runningQueue;
+  const run = runQueue(startUserId);
+  runningQueue = run;
+  try {
+    await run;
+  } finally {
+    // After a user switch a newer run may own the flag; leave it set
+    if (runningQueue === run) {
+      runningQueue = null;
+    }
+  }
 }
 
 async function runQueue(startUserId: string): Promise<void> {
-  try {
-    const attemptedIds = new Set<string>();
+  const attemptedIds = new Set<string>();
 
-    while (true) {
-      // Stop when the user changed; items upload only under their owner
-      const auth = useAuthStore.getState().auth;
-      if (!auth || auth.userId !== startUserId) {
-        break;
-      }
-      const store = useSyncQueueStore.getState();
-      const item = store.getNextPending(auth.userId);
-      if (!item || attemptedIds.has(item.id)) {
-        break;
-      }
-      attemptedIds.add(item.id);
-      if (item.ownerUserId === null) {
-        store.claimItem(item.id, auth.userId);
-      }
-      const ownerUserId: string = item.ownerUserId ?? auth.userId;
-      await processSingleItem(item, ownerUserId);
+  while (true) {
+    // Stop when the user changed; items upload only under their owner
+    const auth = useAuthStore.getState().auth;
+    if (!auth || auth.userId !== startUserId) {
+      break;
     }
-  } finally {
-    isProcessing = false;
-    runningQueue = null;
-  }
-}
-
-export async function waitForProcessQueue(timeoutMs = 5000): Promise<void> {
-  const running = runningQueue;
-  if (!running) {
-    return;
-  }
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const timeout = new Promise<void>((resolve) => {
-    timer = setTimeout(resolve, timeoutMs);
-  });
-  try {
-    await Promise.race([running.catch(() => undefined), timeout]);
-  } finally {
-    clearTimeout(timer);
+    const store = useSyncQueueStore.getState();
+    const item = store.getNextPending(auth.userId);
+    if (!item || attemptedIds.has(item.id)) {
+      break;
+    }
+    attemptedIds.add(item.id);
+    if (item.ownerUserId === null) {
+      store.claimItem(item.id, auth.userId);
+    }
+    await processSingleItem(item, auth.userId);
   }
 }
 
@@ -241,6 +225,5 @@ export async function syncStrengthTest(
 }
 
 export function resetProcessingFlag(): void {
-  isProcessing = false;
   runningQueue = null;
 }

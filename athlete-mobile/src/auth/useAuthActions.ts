@@ -86,6 +86,7 @@ export function useDeleteAccount() {
   const isOnline = useNetworkState();
   const router = useRouter();
   const clearAuth = useAuthStore((state) => state.clearAuth);
+  const userId = useAuthStore((state) => state.auth?.userId);
   const { resetProgress } = useExerciseProgressStore();
   const { resetAnamnesisData } = useAnamnesisStore();
   const { resetProfile } = useUserProfileStore();
@@ -94,7 +95,7 @@ export function useDeleteAccount() {
   const { resetTrainingSchedule } = useTrainingScheduleStore();
   const { resetPlaces } = usePlacesStore();
   const { resetSettings } = useUserSettingsStore();
-  const { clearSyncQueue } = useSyncQueueStore();
+  const { clearUserItems } = useSyncQueueStore();
   const { clearTraining } = useTrainingStore();
   const { resetSynchronization } = useSynchronizationStore();
 
@@ -121,7 +122,9 @@ export function useDeleteAccount() {
         resetTrainingSchedule();
         resetPlaces();
         resetSettings();
-        clearSyncQueue();
+        if (userId) {
+          clearUserItems(userId);
+        }
         clearTraining();
         resetSynchronization();
         router.replace("/onboarding");

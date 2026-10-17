@@ -131,10 +131,10 @@ jest.mock("@/store/userSettingsStore", () => ({
   },
 }));
 
-const mockClearSyncQueue = jest.fn();
+const mockClearUserItems = jest.fn();
 jest.mock("@/store/syncQueueStore", () => ({
   useSyncQueueStore: () => ({
-    clearSyncQueue: mockClearSyncQueue,
+    clearUserItems: mockClearUserItems,
   }),
 }));
 
@@ -163,7 +163,7 @@ function storeCallCounts() {
     resetTrainingSchedule: mockResetTrainingSchedule.mock.calls.length,
     resetPlaces: mockResetPlaces.mock.calls.length,
     resetSettings: mockResetSettings.mock.calls.length,
-    clearSyncQueue: mockClearSyncQueue.mock.calls.length,
+    clearUserItems: mockClearUserItems.mock.calls.length,
     clearTraining: mockClearTraining.mock.calls.length,
     resetSynchronization: mockResetSynchronization.mock.calls.length,
   };
@@ -179,7 +179,7 @@ const ALL_STORES_CALLED_ONCE = {
   resetTrainingSchedule: 1,
   resetPlaces: 1,
   resetSettings: 1,
-  clearSyncQueue: 1,
+  clearUserItems: 1,
   clearTraining: 1,
   resetSynchronization: 1,
 };
@@ -354,6 +354,7 @@ describe("useDeleteAccount", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockIsOnline = true;
+    mockAuthUserId = "user-abc";
     mockSupabaseDeleteAccount.mockResolvedValue(undefined);
     mockSupabaseLogout.mockResolvedValue(undefined);
   });
@@ -420,6 +421,14 @@ describe("useDeleteAccount", () => {
       expect(mockClearAuth).toHaveBeenCalled();
     });
     expect(storeCallCounts()).toEqual(ALL_STORES_CALLED_ONCE);
+  });
+
+  it("clears only the sync queue items of the deleted user", async () => {
+    await confirmDeleteAccount();
+
+    await waitFor(() => {
+      expect(mockClearUserItems).toHaveBeenCalledWith("user-abc");
+    });
   });
 
   it("should clear auth before navigating to onboarding when confirmed", async () => {

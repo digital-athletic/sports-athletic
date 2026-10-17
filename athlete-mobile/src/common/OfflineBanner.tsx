@@ -26,7 +26,7 @@ export function OfflineBanner() {
       paddingHorizontal="m"
       zIndex={999 as never}
     >
-      <Text color="white" textAlign="center" variant="small">
+      <Text color="darkGrey3" textAlign="center" variant="small">
         {t("common.offline")}
       </Text>
     </Box>

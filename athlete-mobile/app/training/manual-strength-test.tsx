@@ -191,13 +191,17 @@ const ManualStrengthTestScreen: FC = () => {
         marginBottom="l"
         testID={`manual-test-${exerciseKey}`}
       >
-        <Text
-          variant="subtitle"
-          marginBottom="s"
-          style={{ color: config.color }}
-        >
-          {config.label}
-        </Text>
+        <Box flexDirection="row" alignItems="center" marginBottom="s" gap="s">
+          <Box
+            width={12}
+            height={12}
+            borderRadius="round"
+            style={{ backgroundColor: config.color }}
+          />
+          <Text variant="subtitle" color="darkGrey3">
+            {config.label}
+          </Text>
+        </Box>
 
         <Box flexDirection="row" gap="s">
           <Box flex={1}>

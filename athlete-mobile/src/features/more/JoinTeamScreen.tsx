@@ -175,6 +175,7 @@ export default function JoinTeamScreen() {
             onChangeText={(text) => setCode(text.toUpperCase())}
             maxLength={6}
             placeholder={t("more.joinTeam.codePlaceholder")}
+            placeholderTextColor={colors.darkGrey2}
             autoCapitalize="characters"
             style={[
               styles.codeInput,
@@ -195,7 +196,7 @@ export default function JoinTeamScreen() {
           {joinState.status === "success" && (
             <Text
               variant="body"
-              color="success"
+              color="successText"
               textAlign="center"
               marginTop="m"
             >

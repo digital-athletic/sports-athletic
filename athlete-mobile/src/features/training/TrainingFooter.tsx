@@ -13,12 +13,14 @@ type Props = {
   isSkipHidden?: boolean;
   nextExerciseName: string | undefined;
   onSkipPress: () => void;
+  onHeightChange?: (height: number) => void;
 };
 
 export const TrainingFooter: FC<Props> = ({
   isSkipHidden = false,
   nextExerciseName,
   onSkipPress,
+  onHeightChange,
 }) => {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -37,6 +39,7 @@ export const TrainingFooter: FC<Props> = ({
       backgroundColor="lightGrey1"
       borderTopWidth={1}
       borderTopColor={"lightGrey2"}
+      onLayout={(event) => onHeightChange?.(event.nativeEvent.layout.height)}
     >
       <Box style={{ paddingBottom: insets.bottom }} padding="m">
         {!isSkipHidden ? (

@@ -56,6 +56,7 @@ exports[`<EmailInputField /> renders correctly 1`] = `
       keyboardType="email-address"
       onChangeText={[MockFunction]}
       placeholder="E-Mail"
+      placeholderTextColor="#555555"
       style={
         [
           {

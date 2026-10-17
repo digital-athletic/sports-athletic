@@ -19,6 +19,30 @@ export type ListItemProps = {
   navParams?: Record<string, string>;
 };
 
+const ListItemIcon: FC<{ name: IoniconName; background: ThemeColor }> = ({
+  name,
+  background,
+}) => {
+  const { colors } = useTheme();
+  const iconContainerSize = useResponsiveProp({ phone: 30, tablet: 38 });
+  const iconSize = useResponsiveProp({ phone: 16, tablet: 28 });
+
+  return (
+    <Box flex={1}>
+      <Box
+        width={iconContainerSize}
+        height={iconContainerSize}
+        borderRadius="round"
+        justifyContent="center"
+        alignItems="center"
+        backgroundColor={background || "primary"}
+      >
+        <Ionicon name={name} size={iconSize} color={colors.white} decorative />
+      </Box>
+    </Box>
+  );
+};
+
 /**
  * List item component for navigation menus.
  * Renders an Ionicon with text and handles navigation.
@@ -32,11 +56,8 @@ export const ListItem: FC<ListItemProps> = ({
   isLast = false,
   navParams,
 }) => {
-  const { colors } = useTheme();
   const router = useRouter();
 
-  const iconContainerSize = useResponsiveProp({ phone: 30, tablet: 38 });
-  const iconSize = useResponsiveProp({ phone: 16, tablet: 28 });
   const listItemHeight = useResponsiveProp({ phone: 40, tablet: 65 });
   const listItemMarginBottom = useResponsiveProp({ phone: 6, tablet: 16 });
 
@@ -65,26 +86,13 @@ export const ListItem: FC<ListItemProps> = ({
           paddingHorizontal="l"
           flexDirection="row"
           alignItems="center"
-          style={{ height: listItemHeight, marginBottom: listItemMarginBottom }}
+          style={{
+            minHeight: listItemHeight,
+            marginBottom: listItemMarginBottom,
+          }}
         >
-          <Box flex={1}>
-            <Box
-              width={iconContainerSize}
-              height={iconContainerSize}
-              borderRadius="round"
-              justifyContent="center"
-              alignItems="center"
-              backgroundColor={iconBackground || "primary"}
-            >
-              <Ionicon
-                name={iconName}
-                size={iconSize}
-                color={colors.white}
-                decorative
-              />
-            </Box>
-          </Box>
-          <Text flex={5} variant="body" numberOfLines={1}>
+          <ListItemIcon name={iconName} background={iconBackground} />
+          <Text flex={5} variant="body">
             {title}
           </Text>
         </Box>

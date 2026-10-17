@@ -50,6 +50,7 @@ exports[`<TextInputField /> renders correctly with Ionicon 1`] = `
       keyboardType="default"
       onChangeText={[MockFunction]}
       placeholder="Enter text"
+      placeholderTextColor="#555555"
       style={
         [
           {

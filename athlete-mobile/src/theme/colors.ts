@@ -12,7 +12,7 @@ export const colors = {
   lightGrey1: "#FAFAFA",
   lightGrey2: "#E8E8E8",
   lightGrey3: "#AAAAAA",
-  darkGrey1: "#777777",
+  darkGrey1: "#767676",
   darkGrey2: "#555555",
   darkGrey3: "#333333",
   iosTitleBorder: "#EFEFF4",
@@ -31,8 +31,9 @@ export const colors = {
 
   // Status colors
   success: "#34C759",
+  successText: "#1E7B34",
   warning: "#FF9500",
-  error: "#FF3B30",
+  error: "#D70015",
   info: "#007AFF",
 
   // Subtle status backgrounds (tints)

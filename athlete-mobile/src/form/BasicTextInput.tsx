@@ -22,6 +22,7 @@ export const BasicTextInput: FC<BasicTextInputProps> = ({
     <TextInput
       value={value}
       onChangeText={onChangeText}
+      placeholderTextColor={colors.darkGrey2}
       style={[
         styles.inputField,
         {

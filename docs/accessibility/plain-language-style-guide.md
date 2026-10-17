@@ -1,6 +1,6 @@
 # Plain language style guide for the app
 
-This guide applies to all UI texts of the athlete app in German and English. It is the template for new and revised texts in `src/i18n/locales/de.json` and `src/i18n/locales/en.json`. The German examples are the texts the app shows. The English examples show the same rules for `en.json`.
+This guide applies to all UI texts of the athlete app and the trainer web dashboard in German and English. It is the template for new and revised texts in `src/i18n/locales/de.json` and `src/i18n/locales/en.json`. The German examples are the texts the app shows. The English examples show the same rules for `en.json`.
 
 ## Goal
 

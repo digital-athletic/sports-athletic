@@ -15,6 +15,7 @@ export function AthleteSelector({
 }: AthleteSelectorProps) {
   const { t } = useTranslation();
   const detailsRef = useRef<HTMLDetailsElement>(null);
+  const summaryRef = useRef<HTMLElement>(null);
 
   const selectedAthlete = athletes.find((a) => a.id === selectedAthleteId);
 
@@ -23,6 +24,7 @@ export function AthleteSelector({
     if (detailsRef.current) {
       detailsRef.current.open = false;
     }
+    summaryRef.current?.focus();
   };
 
   return (
@@ -32,6 +34,7 @@ export function AthleteSelector({
       className="group rounded-lg border border-gray-200 bg-white"
     >
       <summary
+        ref={summaryRef}
         className="flex list-none items-center px-4 py-3
                    transition-colors
                    [&::-webkit-details-marker]:hidden"

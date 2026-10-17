@@ -46,6 +46,7 @@ test.describe("Dashboard accessibility", () => {
     await dashboard.openEvaluations();
 
     await dashboard.selectAthleteByKeyboard("Max Mustermann");
+    await dashboard.expectAthleteListClosedWithFocusOnSummary();
     await dashboard.expectAthleteSelected("Max Mustermann");
   });
 

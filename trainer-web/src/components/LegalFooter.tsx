@@ -29,7 +29,7 @@ export function LegalFooter() {
   return (
     <footer className="py-4 text-center text-xs text-gray-600">
       {externalLinks.map((link) => (
-        <Fragment key={link.href}>
+        <Fragment key={link.label}>
           <a
             href={link.href}
             target="_blank"

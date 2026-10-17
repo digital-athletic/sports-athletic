@@ -58,6 +58,13 @@ export class DashboardPage {
     await this.page.keyboard.press("Enter");
   }
 
+  /** After a selection the list closes and focus returns to its summary. */
+  async expectAthleteListClosedWithFocusOnSummary() {
+    const selector = this.page.getByTestId("athlete-selector");
+    await expect(selector).not.toHaveAttribute("open");
+    await expect(selector.locator("summary")).toBeFocused();
+  }
+
   async expectAthleteSelected(name: string) {
     await this.openAthleteList();
     await expect(

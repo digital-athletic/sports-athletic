@@ -22,10 +22,20 @@ describe("TrainingCountdown: pause toggle", () => {
       />,
     );
 
-  it("exposes a button with the pause label and the remaining time", () => {
+  it("exposes a button with the pause label and the remaining time in 10 second buckets", () => {
     const { getByRole } = renderCountdown();
     const toggle = getByRole("button", { name: "Pause" });
-    expect(toggle.props.accessibilityValue).toEqual({ text: "01:15" });
+    expect(toggle.props.accessibilityValue).toEqual({
+      text: "80 seconds left",
+    });
+  });
+
+  it("exposes the exact remaining time while paused", () => {
+    const { getByRole } = renderCountdown();
+    fireEvent.press(getByRole("button", { name: "Pause" }));
+    expect(
+      getByRole("button", { name: "Resume" }).props.accessibilityValue,
+    ).toEqual({ text: "75 seconds left" });
   });
 
   it("switches the label to resume after a tap", () => {

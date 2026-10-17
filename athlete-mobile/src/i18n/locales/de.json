@@ -453,7 +453,8 @@
         "label": "Pause",
         "goOn": "Weiter",
         "pauseAction": "Pausieren",
-        "resumeAction": "Fortsetzen"
+        "resumeAction": "Fortsetzen",
+        "secondsLeft": "noch {{seconds}} Sekunden"
       },
       "abort": {
         "question": "Training abbrechen?",

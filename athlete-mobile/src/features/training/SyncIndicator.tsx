@@ -7,6 +7,13 @@ import { useTranslation } from "react-i18next";
 import { Alert, StyleSheet } from "react-native";
 import { useSynchronizationStore } from "./synchronizationStore";
 
+// The failure Alert already speaks, so the failed state stays silent here.
+const getSpokenText = (
+  isVisible: boolean,
+  failed: boolean,
+  text: string,
+): string | null => (isVisible && !failed ? text : null);
+
 /**
  * Overlay component that displays training data synchronization progress.
  * Shows loading bar, success, or error states during async operations.
@@ -104,7 +111,12 @@ export const SyncIndicator: FC = () => {
       ? t("training.active.syncIndicator.synchronized")
       : t("training.active.syncIndicator.synchronizing");
 
-  useAnnounce(synchronization.isVisible ? displayText : null);
+  const spokenText = getSpokenText(
+    synchronization.isVisible,
+    synchronization.failed,
+    displayText,
+  );
+  useAnnounce(spokenText);
 
   if (!synchronization.isVisible) {
     return null;
@@ -141,7 +153,10 @@ export const SyncIndicator: FC = () => {
             ]}
           />
         )}
-        <Text style={styles.updateText} {...liveRegionProps}>
+        <Text
+          style={styles.updateText}
+          {...(spokenText === null ? {} : liveRegionProps)}
+        >
           {displayText}
         </Text>
       </Box>

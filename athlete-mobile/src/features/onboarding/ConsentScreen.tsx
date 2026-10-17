@@ -1,3 +1,4 @@
+import { liveRegionProps, useAnnounce } from "@/common/announce";
 import { saveConsentToProfile } from "@/services/AuthService";
 import { featureFlags } from "@/config/featureFlags";
 import { LINK_AGB, LINK_PRIVACY } from "@/constants/AppConstants";
@@ -26,6 +27,16 @@ export function ConsentScreen() {
   const acceptConsent = useUserSettingsStore((state) => state.acceptConsent);
   const setAnonymisedDataUse = useUserSettingsStore(
     (state) => state.setAnonymisedDataUse,
+  );
+
+  useAnnounce(
+    showPrivacyError ? t("onboarding.errorMessageAcceptPrivacyInfo") : null,
+  );
+  useAnnounce(
+    showAnalyticsError ? t("onboarding.errorMessageAcceptAnalytics") : null,
+  );
+  useAnnounce(
+    showSaveError ? t("onboarding.errorMessageConsentSaveFailed") : null,
   );
 
   const handlePrivacyPress = () => {
@@ -105,6 +116,7 @@ export function ConsentScreen() {
             textAlign="center"
             marginTop="s"
             accessibilityRole="alert"
+            {...liveRegionProps}
           >
             {t("onboarding.errorMessageAcceptPrivacyInfo")}
           </Text>
@@ -131,6 +143,7 @@ export function ConsentScreen() {
             textAlign="center"
             marginTop="s"
             accessibilityRole="alert"
+            {...liveRegionProps}
           >
             {t("onboarding.errorMessageAcceptAnalytics")}
           </Text>
@@ -143,6 +156,7 @@ export function ConsentScreen() {
             textAlign="center"
             marginTop="s"
             accessibilityRole="alert"
+            {...liveRegionProps}
           >
             {t("onboarding.errorMessageConsentSaveFailed")}
           </Text>

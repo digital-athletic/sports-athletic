@@ -1,3 +1,4 @@
+import { liveRegionProps, useAnnounce } from "@/common/announce";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@shopify/restyle";
@@ -97,6 +98,14 @@ export const SyncIndicator: FC = () => {
     resetSynchronization,
   ]);
 
+  const displayText = synchronization.failed
+    ? t("training.active.syncIndicator.failed")
+    : synchronization.finished
+      ? t("training.active.syncIndicator.synchronized")
+      : t("training.active.syncIndicator.synchronizing");
+
+  useAnnounce(synchronization.isVisible ? displayText : null);
+
   if (!synchronization.isVisible) {
     return null;
   }
@@ -104,12 +113,6 @@ export const SyncIndicator: FC = () => {
   const statusColor = synchronization.failed
     ? theme.colors.primary
     : theme.colors.success;
-
-  const displayText = synchronization.failed
-    ? t("training.active.syncIndicator.failed")
-    : synchronization.finished
-      ? t("training.active.syncIndicator.synchronized")
-      : t("training.active.syncIndicator.synchronizing");
 
   const progressPercent = synchronization.updating ? 50 : 100;
 
@@ -138,7 +141,9 @@ export const SyncIndicator: FC = () => {
             ]}
           />
         )}
-        <Text style={styles.updateText}>{displayText}</Text>
+        <Text style={styles.updateText} {...liveRegionProps}>
+          {displayText}
+        </Text>
       </Box>
     </Box>
   );

@@ -1,3 +1,4 @@
+import { liveRegionProps, useAnnounce } from "@/common/announce";
 import { featureFlags } from "@/config/featureFlags";
 import { LINK_AGB, LINK_PRIVACY } from "@/constants/AppConstants";
 import { DividerWithText } from "@/features/onboarding/DividerWithText";
@@ -52,6 +53,8 @@ export const RegistrationScreen: FC<Props> = ({
   const theme = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+
+  useAnnounce(registrationError);
 
   const handlePrivacyPress = () => {
     router.push(`/onboarding/webview?url=${encodeURIComponent(LINK_PRIVACY)}`);
@@ -115,7 +118,12 @@ export const RegistrationScreen: FC<Props> = ({
 
       {registrationError && (
         <Box paddingHorizontal="m" paddingVertical="xs">
-          <Text variant="description" color="error" accessibilityRole="alert">
+          <Text
+            variant="description"
+            color="error"
+            accessibilityRole="alert"
+            {...liveRegionProps}
+          >
             {registrationError}
           </Text>
         </Box>

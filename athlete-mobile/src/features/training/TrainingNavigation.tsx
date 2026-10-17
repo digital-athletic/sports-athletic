@@ -14,6 +14,7 @@ import { TrainingRepetitionInput } from "./TrainingRepetitionInput";
 export interface TrainingNavigationProps {
   duration: number | undefined;
   exerciseId: string;
+  exerciseName?: string;
   feedback: (type: "TOO_EASY" | "TOO_HARD" | "SUCCEEDED") => void;
   isCardioExercise: boolean;
   isCountdownActive: boolean;
@@ -43,6 +44,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
   onSubmitReps,
   pauseToggled,
   exerciseId,
+  exerciseName,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme<Theme>();
@@ -168,6 +170,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
               justifyContent="center"
               alignItems="center"
               onPress={() => handleClickNormalButton("too_easy")}
+              accessibilityRole="button"
             >
               <Text color="primary">
                 {t("training.active.feedback.tooEasy")}
@@ -201,6 +204,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
               justifyContent="center"
               alignItems="center"
               onPress={() => handleClickNormalButton("too_hard")}
+              accessibilityRole="button"
             >
               <Text color="primary">
                 {t("training.active.feedback.tooHard")}
@@ -218,6 +222,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
       if (isTest) {
         return (
           <TrainingRepetitionInput
+            exerciseName={exerciseName}
             repsValue={repsValue}
             changeReps={handleChangeReps}
             saveRepsInput={handleSubmitStrengthTestReps}

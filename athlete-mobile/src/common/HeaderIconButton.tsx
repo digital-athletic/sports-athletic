@@ -9,6 +9,8 @@ interface HeaderIconButtonProps {
   accessibilityLabel: string;
 }
 
+const HIT_SLOP = { top: 4, bottom: 4, left: 4, right: 4 };
+
 export const HeaderIconButton: FC<HeaderIconButtonProps> = ({
   iconName,
   onPress,
@@ -21,6 +23,7 @@ export const HeaderIconButton: FC<HeaderIconButtonProps> = ({
       onPress={onPress}
       minWidth={36}
       minHeight={36}
+      hitSlop={HIT_SLOP}
       alignItems="center"
       justifyContent="center"
       accessibilityRole="button"

@@ -310,6 +310,7 @@
       "title": "Power test",
       "description": "Do as many repetitions as you can do with good technique.",
       "placeholder": "Repetitions",
+      "inputLabel": "{{exercise}}, repetitions",
       "todayIsPowerTest": "Today is your power test! Let's see how strong you are.",
       "startPowerTest": "Start power test",
       "skipPowerTest": "Skip power test"
@@ -326,6 +327,8 @@
       "weightPlaceholder": "Weight",
       "repsPlaceholder": "Reps",
       "weightUnit": "kg",
+      "weightLabel": "{{exercise}}, weight in kg",
+      "repsLabel": "{{exercise}}, repetitions",
       "save": "Save Results",
       "success": "Results saved successfully",
       "validationError": "You did not complete any exercise. Enter weight in kg and reps for at least one exercise. Both numbers must be greater than 0.",
@@ -448,7 +451,9 @@
       },
       "pause": {
         "label": "Pause",
-        "goOn": "Go on"
+        "goOn": "Go on",
+        "pauseAction": "Pause",
+        "resumeAction": "Resume"
       },
       "abort": {
         "question": "Abort training?",

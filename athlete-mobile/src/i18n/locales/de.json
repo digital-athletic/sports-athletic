@@ -310,6 +310,7 @@
       "title": "Krafttest",
       "description": "Mach so viele Wiederholungen, wie du mit sauberer Technik schaffst.",
       "placeholder": "Wiederholungen",
+      "inputLabel": "{{exercise}}, Wiederholungen",
       "todayIsPowerTest": "Heute ist dein Krafttest! Lass uns sehen, wie stark du bist.",
       "startPowerTest": "Krafttest starten",
       "skipPowerTest": "Krafttest überspringen"
@@ -326,6 +327,8 @@
       "weightPlaceholder": "Gewicht",
       "repsPlaceholder": "Wdh.",
       "weightUnit": "kg",
+      "weightLabel": "{{exercise}}, Gewicht in kg",
+      "repsLabel": "{{exercise}}, Wiederholungen",
       "save": "Ergebnisse speichern",
       "success": "Ergebnisse erfolgreich gespeichert",
       "validationError": "Du hast keine Übung vollständig ausgefüllt. Gib bei mindestens einer Übung Gewicht in kg und Wiederholungen ein. Beide Zahlen müssen größer als 0 sein.",
@@ -448,7 +451,9 @@
       },
       "pause": {
         "label": "Pause",
-        "goOn": "Weiter"
+        "goOn": "Weiter",
+        "pauseAction": "Pausieren",
+        "resumeAction": "Fortsetzen"
       },
       "abort": {
         "question": "Training abbrechen?",

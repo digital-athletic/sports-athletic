@@ -93,7 +93,18 @@ export const TrainingCountdown: FC<Props> = ({
   }
 
   return (
-    <TouchableBox flex={1} flexDirection="row" onPress={handleTogglePause}>
+    <TouchableBox
+      flex={1}
+      flexDirection="row"
+      onPress={handleTogglePause}
+      accessibilityRole="button"
+      accessibilityLabel={
+        isPausedState
+          ? t("training.active.pause.resumeAction")
+          : t("training.active.pause.pauseAction")
+      }
+      accessibilityValue={{ text: timeText }}
+    >
       <Box flex={elapsed} backgroundColor="lightGrey3" zIndex={2} />
       <Box flex={remainingInt} backgroundColor={backgroundColor} zIndex={2} />
       <Box

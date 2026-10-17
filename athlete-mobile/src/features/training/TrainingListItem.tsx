@@ -79,6 +79,7 @@ export const TrainingListItem: FC<TrainingListItemProps> = ({
         <Box marginTop="s">
           <TrainingRepetitionInput
             compact
+            exerciseName={displayName}
             repsValue={repsValue}
             changeReps={onChangeReps}
             saveRepsInput={onSubmitReps}

@@ -122,7 +122,10 @@ export default function MoreScreen() {
           <InfoMenuItems />
 
           <Box>
-            <TouchableOpacity onPress={deleteAccount}>
+            <TouchableOpacity
+              onPress={deleteAccount}
+              accessibilityRole="button"
+            >
               <Box
                 justifyContent="center"
                 alignSelf="stretch"
@@ -159,7 +162,7 @@ export default function MoreScreen() {
             <ListDivider />
           </Box>
 
-          <TouchableOpacity onPress={logout}>
+          <TouchableOpacity onPress={logout} accessibilityRole="button">
             <Box
               justifyContent="center"
               alignSelf="stretch"

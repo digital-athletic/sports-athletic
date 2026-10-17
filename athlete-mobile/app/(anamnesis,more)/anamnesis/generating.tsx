@@ -1,3 +1,4 @@
+import { liveRegionProps, useAnnounce } from "@/common/announce";
 import { Loading } from "@/common/Loading";
 import { SpeechBubble } from "@/common/SpeechBubble";
 import { getAllExercises } from "@/data/exerciseRegistry";
@@ -228,6 +229,9 @@ export default function Generating() {
     }
   };
 
+  const stageText = getStageText();
+  useAnnounce(stageText);
+
   return (
     <>
       <Stack.Screen
@@ -247,8 +251,13 @@ export default function Generating() {
             accessibilityLabel={t("screens.welcome.coachImageAlt")}
           />
 
-          <Text variant="body" marginTop="m" textAlign="center">
-            {getStageText()}
+          <Text
+            variant="body"
+            marginTop="m"
+            textAlign="center"
+            {...liveRegionProps}
+          >
+            {stageText}
           </Text>
         </Box>
 

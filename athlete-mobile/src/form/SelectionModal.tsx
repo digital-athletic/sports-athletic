@@ -97,6 +97,7 @@ export const SelectionModal: FC<Props> = ({
             </Text>
             <TouchableOpacity
               onPress={handleCancel}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               accessibilityRole="button"
               accessibilityLabel={t("common.close")}
             >

@@ -22,6 +22,13 @@ describe("<TrainingRepetitionInput />", () => {
     expect(toJSON()).toBeTruthy();
   });
 
+  it("labels the input with the exercise name and the field", () => {
+    const { getByLabelText } = render(
+      <TrainingRepetitionInput {...mockProps} exerciseName="Squat" />,
+    );
+    expect(getByLabelText("Squat, repetitions")).toBeTruthy();
+  });
+
   it("renders with default props", () => {
     const { getByText } = render(<TrainingRepetitionInput {...mockProps} />);
     // Should render the title from translation

@@ -11,6 +11,8 @@ export type TrainingRepetitionInputProps = {
   saveRepsInput: () => void;
   /** Hides the title/description block for use in compact contexts (e.g. a list row). */
   compact?: boolean;
+  /** Names the field for screen readers, e.g. "Kniebeuge, Wiederholungen". */
+  exerciseName?: string;
   inputTestID?: string;
   saveTestID?: string;
 };
@@ -24,6 +26,7 @@ export const TrainingRepetitionInput: FC<TrainingRepetitionInputProps> = ({
   changeReps,
   saveRepsInput,
   compact = false,
+  exerciseName,
   inputTestID,
   saveTestID,
 }) => {
@@ -44,6 +47,11 @@ export const TrainingRepetitionInput: FC<TrainingRepetitionInputProps> = ({
         <TextInputField
           value={repsValue.toString()}
           placeholder={t("training.powerTest.placeholder")}
+          accessibilityLabel={
+            exerciseName
+              ? t("training.powerTest.inputLabel", { exercise: exerciseName })
+              : t("training.powerTest.placeholder")
+          }
           iconName="keypad"
           onChange={changeReps}
           keyboardType="number-pad"

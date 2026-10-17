@@ -192,8 +192,8 @@
       "WARMUP": "Aufwärmen",
       "STABILITY": "Stabilität",
       "CARDIO": "Ausdauer",
-      "FOAM_ROLLER": "Hartschaumrolle",
-      "BR": "Muskeln triggern",
+      "FOAM_ROLLER": "Faszienrolle",
+      "BR": "Muskeln lockern",
       "MOB": "Mobilität",
       "WUPREV": "Warm-Up",
       "WUSPEZIAL": "Spezielles Warm-Up",
@@ -237,7 +237,7 @@
     "success": {
       "title": "Trainingsauswertung",
       "calculating": "Ergebnis wird berechnet",
-      "dataMissing": "Die App hat deine Trainingsdaten nicht vollständig erfasst. Unsere Entwickler wissen Bescheid.\n\nTritt das Problem wieder auf, melde dich bei uns. Du findest den Punkt \"Kontakt\" im Bereich \"Profil\".",
+      "dataMissing": "Die App hat deine Trainingsdaten nicht vollständig erfasst. Unsere Entwickler wissen Bescheid.\n\nTritt das Problem wieder auf, melde dich bei uns. Schreibe uns eine E-Mail an service@sports-athletic.com.",
       "goOn": "Weiter",
       "summaryDuration": "Dauer",
       "summaryCount": "Übungszahl",
@@ -360,9 +360,9 @@
     "sectionDetails": {
       "title": "Schwerpunkte",
       "target": "Ziel",
-      "speed": "Takt der Ausführung",
+      "speed": "Tempo der Übung",
       "chooseSection": "Bitte wähle einen Trainingsschwerpunkt",
-      "noVideo": "Es existiert kein Video zu diesem Schwerpunkt",
+      "noVideo": "Zu diesem Schwerpunkt gibt es kein Video",
       "sectionTitles": {
         "SWR": "Sprung-, Wurf- und Körperkraft",
         "MAX": "Maximalkraft",
@@ -383,7 +383,7 @@
       }
     },
     "exerciseInformation": {
-      "loading": "Ergebnis wird berechnet",
+      "loading": "Übung wird geladen",
       "musclesTrained": "Trainierte Muskeln",
       "legendActiveMuscles": "Aktiv arbeitende Muskeln",
       "legendSupportingMuscles": "Unterstützend arbeitende Muskeln",
@@ -513,8 +513,6 @@
     "logoutButton": "Abmelden",
     "logoutQuestionTitle": "Abmelden",
     "logoutQuestionMessage": "Möchtest du dich abmelden?",
-    "yesCaps": "JA",
-    "noCaps": "NEIN",
     "noAccountYet": "Noch kein Konto?",
     "register": "Registrieren",
     "initializing": "Die App startet",
@@ -551,9 +549,9 @@
       "settings": "Nachrichten-Einstellungen",
       "settingsTitle": "Erhalte Benachrichtigungen",
       "settingsText": "Damit ich kein Training verpasse, möchte ich an meinen Trainingstagen mit einer Nachricht daran erinnert werden.",
-      "systemSettingsTitle": "Berechtigungen für Notifications nicht vorhanden",
+      "systemSettingsTitle": "Benachrichtigungen sind nicht erlaubt",
       "systemSettingsButtonText": "Zu den Systemeinstellungen",
-      "systemSettingsText": "Ändere deine Notification-Preferenzen in den Systemeinstellungen"
+      "systemSettingsText": "Ändere die Einstellungen für Benachrichtigungen in den Systemeinstellungen"
     },
     "contact": "Kontakt",
     "imprint": "Impressum",
@@ -660,13 +658,11 @@
       "intro": "Diese App enthält die folgende Open-Source-Software.",
       "versionAndLicense": "{{version}} · {{license}}"
     },
-    "deleteUser": "Nutzer löschen",
+    "deleteUser": "Konto löschen",
     "logout": "Abmelden",
     "testPersonas": "Test Personas",
-    "trainingPlans": "Trainingspläne",
-    "exercises": "Übungen",
-    "deleteQuestionTitle": "Nutzer löschen?",
-    "deleteQuestionMessage": "Bist du sicher, dass du deinen Account unwiderruflich löschen möchtest?",
+    "deleteQuestionTitle": "Konto löschen?",
+    "deleteQuestionMessage": "Bist du sicher, dass du dein Konto unwiderruflich löschen möchtest?",
     "logoutQuestionTitle": "Abmelden?",
     "logoutQuestionMessage": "Bist du sicher, dass du dich abmelden möchtest?",
     "deleteFailed": "Die App konnte dein Konto nicht löschen. Prüfe deine Internetverbindung und versuche es noch einmal.",
@@ -708,7 +704,7 @@
     "ABDUCTORS_LEFT": "linker äußerer Oberschenkel",
     "ABDUCTORS_RIGHT": "rechter äußerer Oberschenkel",
     "ABDUCTORS": "äußerer Oberschenkel",
-    "OUTER_THIGH_REAR_LEFT": "linker äußer hinterer Oberschenkel",
+    "OUTER_THIGH_REAR_LEFT": "linker äußerer hinterer Oberschenkel",
     "OUTER_THIGH_REAR_RIGHT": "rechter äußerer hinterer Oberschenkel",
     "TRICEPS": "Armstrecker",
     "TRICEPS_LEFT": "linker Armstrecker",
@@ -801,7 +797,7 @@
     "UPPER_BODY": "Oberkörper",
     "LOWER_BODY": "Unterkörper",
     "FULL_BODY": "Ganzkörper",
-    "CORE": "Core"
+    "CORE": "Rumpf"
   },
   "equipment": {
     "title": "Ausrüstung",
@@ -815,7 +811,7 @@
     "xPieces": "{{count}} Stück",
     "leavePageQuestion": "Seite verlassen?",
     "changesWillBeLost": "Deine Änderungen gehen verloren",
-    "planWillBeUpdated": "Dein Plan wird aktualisiert",
+    "planWillBeUpdated": "Die App aktualisiert deinen Plan",
     "leave": "Verlassen",
     "abort": "Abbrechen",
     "items": {
@@ -873,8 +869,8 @@
       "MINIBANDS_NORMAL": "Normale Minibänder",
       "MINIBANDS_STRONG": "Starke Minibänder",
       "MINIBANDS_SUPER": "Superstarke Minibänder",
-      "TUBE": "Tube",
-      "MINIBAND": "Miniband",
+      "TUBE": "Widerstandsband mit Griffen",
+      "MINIBAND": "Kleines Widerstandsband",
       "TRACK": "Laufstrecke",
       "AREA": "Lauffläche"
     }
@@ -933,7 +929,7 @@
         "total": "Gesamt"
       },
       "noWorkoutYet": "Keine Trainings bisher",
-      "recentWorkouts": "Letzte Workouts",
+      "recentWorkouts": "Letzte Trainings",
       "testWorkout": "Krafttest",
       "summary": {
         "duration": "Dauer",

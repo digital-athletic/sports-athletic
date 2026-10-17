@@ -143,14 +143,6 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
             decorative
           />
         </TouchableBox>
-        <Box opacity={0.2}>
-          <Ionicon
-            name="arrow-up"
-            size={22}
-            color={theme.colors.darkGrey2}
-            decorative
-          />
-        </Box>
       </Box>
     );
   };
@@ -166,7 +158,7 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
         <Box flexDirection="row" paddingVertical="m">
           <Box flex={1} flexDirection="row">
             <TouchableBox
-              flex={3}
+              flex={1}
               justifyContent="center"
               alignItems="center"
               onPress={() => handleClickNormalButton("too_easy")}
@@ -176,31 +168,10 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
                 {t("training.active.feedback.tooEasy")}
               </Text>
             </TouchableBox>
-            <Box flex={2} justifyContent="center" opacity={0.2}>
-              <Ionicon
-                name="arrow-back"
-                size={22}
-                color={theme.colors.darkGrey2}
-                decorative
-              />
-            </Box>
           </Box>
           <Box flex={1} flexDirection="row">
-            <Box
-              flex={2}
-              justifyContent="center"
-              alignItems="flex-end"
-              opacity={0.2}
-            >
-              <Ionicon
-                name="arrow-forward"
-                size={22}
-                color={theme.colors.darkGrey2}
-                decorative
-              />
-            </Box>
             <TouchableBox
-              flex={3}
+              flex={1}
               justifyContent="center"
               alignItems="center"
               onPress={() => handleClickNormalButton("too_hard")}

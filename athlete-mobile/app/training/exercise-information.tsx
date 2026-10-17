@@ -126,14 +126,18 @@ type DescriptionsListProps = {
 const DescriptionsList: FC<DescriptionsListProps> = ({ description }) => {
   const { t } = useTranslation();
 
-  const descriptions = description?.split("\n");
+  const descriptions = description
+    ?.split("\n")
+    .filter((line) => line.trim() !== "");
+
+  if (!descriptions || descriptions.length === 0) return null;
 
   return (
     <Box padding="l" borderTopWidth={1} borderTopColor="lightGrey1">
       <Text variant="cardTitle" marginBottom="s">
         {t("training.exerciseInformation.exerciseHints")}
       </Text>
-      {descriptions?.map((desc, i) => (
+      {descriptions.map((desc, i) => (
         <Text key={`description_${i}`} variant="body" marginBottom="xs">
           {/* \u2022 is unicode for bullet point */}
           {`\u2022 ${desc}`}

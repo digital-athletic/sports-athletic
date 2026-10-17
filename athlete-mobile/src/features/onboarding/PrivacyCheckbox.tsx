@@ -20,6 +20,39 @@ type Props = {
  */
 const ELEMENT_SIZE = 48;
 
+const PrivacyCheckboxText: FC<
+  Pick<Props, "label" | "onPrivacyPress" | "onAgbPress">
+> = ({ label, onPrivacyPress, onAgbPress }) => {
+  const { t } = useTranslation();
+
+  if (label === "ANONYMISED_DATA_USE") {
+    return (
+      <Text color="darkGrey2" fontSize={14}>
+        {t("onboarding.anonymisedDataUse")}
+      </Text>
+    );
+  }
+
+  const privacyComponents = {
+    agb: <Text textDecorationLine="underline" onPress={onAgbPress} />,
+    privacy: <Text textDecorationLine="underline" onPress={onPrivacyPress} />,
+    info: <Text textDecorationLine="underline" onPress={onPrivacyPress} />,
+  };
+
+  return (
+    <Text color="darkGrey2" fontSize={14}>
+      <Trans
+        i18nKey={
+          label === "PRIVACY_FULL"
+            ? "onboarding.privacyFull"
+            : "onboarding.privacySimple"
+        }
+        components={privacyComponents}
+      />
+    </Text>
+  );
+};
+
 export const PrivacyCheckbox: FC<Props> = ({
   checked,
   showError,
@@ -34,12 +67,6 @@ export const PrivacyCheckbox: FC<Props> = ({
     ANONYMISED_DATA_USE: t("onboarding.checkboxAnonymisedDataUse"),
     PRIVACY_FULL: t("onboarding.checkboxPrivacyFull"),
     PRIVACY_SIMPLE: t("onboarding.checkboxPrivacySimple"),
-  };
-
-  const privacyComponents = {
-    agb: <Text textDecorationLine="underline" onPress={onAgbPress} />,
-    privacy: <Text textDecorationLine="underline" onPress={onPrivacyPress} />,
-    info: <Text textDecorationLine="underline" onPress={onPrivacyPress} />,
   };
 
   return (
@@ -72,22 +99,11 @@ export const PrivacyCheckbox: FC<Props> = ({
         />
       </Box>
       <Box flexShrink={1}>
-        {label === "ANONYMISED_DATA_USE" ? (
-          <Text color="darkGrey2" fontSize={14}>
-            {t("onboarding.anonymisedDataUse")}
-          </Text>
-        ) : (
-          <Text color="darkGrey2" fontSize={14}>
-            <Trans
-              i18nKey={
-                label === "PRIVACY_FULL"
-                  ? "onboarding.privacyFull"
-                  : "onboarding.privacySimple"
-              }
-              components={privacyComponents}
-            />
-          </Text>
-        )}
+        <PrivacyCheckboxText
+          label={label}
+          onPrivacyPress={onPrivacyPress}
+          onAgbPress={onAgbPress}
+        />
       </Box>
     </Box>
   );

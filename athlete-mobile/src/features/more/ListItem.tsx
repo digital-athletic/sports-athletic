@@ -65,7 +65,10 @@ export const ListItem: FC<ListItemProps> = ({
           paddingHorizontal="l"
           flexDirection="row"
           alignItems="center"
-          style={{ height: listItemHeight, marginBottom: listItemMarginBottom }}
+          style={{
+            minHeight: listItemHeight,
+            marginBottom: listItemMarginBottom,
+          }}
         >
           <Box flex={1}>
             <Box
@@ -84,7 +87,7 @@ export const ListItem: FC<ListItemProps> = ({
               />
             </Box>
           </Box>
-          <Text flex={5} variant="body" numberOfLines={1}>
+          <Text flex={5} variant="body">
             {title}
           </Text>
         </Box>

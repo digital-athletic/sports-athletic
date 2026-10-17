@@ -130,7 +130,7 @@ export default function MoreScreen() {
                 flexDirection="row"
                 alignItems="center"
                 style={{
-                  height: listItemHeight,
+                  minHeight: listItemHeight,
                   marginBottom: listItemMarginBottom,
                 }}
               >
@@ -151,7 +151,7 @@ export default function MoreScreen() {
                     />
                   </Box>
                 </Box>
-                <Text flex={5} variant="body" numberOfLines={1}>
+                <Text flex={5} variant="body">
                   {t("more.deleteUser")}
                 </Text>
               </Box>
@@ -166,7 +166,7 @@ export default function MoreScreen() {
               paddingHorizontal="l"
               flexDirection="row"
               alignItems="center"
-              style={{ height: listItemHeight, marginBottom: 15 }}
+              style={{ minHeight: listItemHeight, marginBottom: 15 }}
             >
               <Box flex={1}>
                 <Box
@@ -185,7 +185,7 @@ export default function MoreScreen() {
                   />
                 </Box>
               </Box>
-              <Text flex={5} variant="body" numberOfLines={1}>
+              <Text flex={5} variant="body">
                 {t("more.logout")}
               </Text>
             </Box>

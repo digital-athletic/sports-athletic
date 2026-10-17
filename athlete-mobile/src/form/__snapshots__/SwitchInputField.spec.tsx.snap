@@ -34,7 +34,7 @@ exports[`<SwitchInputField /> renders correctly 1`] = `
         }
       }
       thumbTintColor="#AAAAAA"
-      tintColor="#777777"
+      tintColor="#767676"
       value={false}
     />
     <View

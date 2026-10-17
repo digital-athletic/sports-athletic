@@ -107,7 +107,7 @@ export default function NotificationsScreen() {
               flexDirection="row"
               justifyContent="space-between"
               alignItems="center"
-              height={56}
+              minHeight={56}
             >
               <Text variant="sectionTitle" color="darkGrey3">
                 {t("more.notifications.settingsTitle")}
@@ -127,7 +127,7 @@ export default function NotificationsScreen() {
           </Box>
         ) : (
           <Box flex={1} paddingHorizontal="l">
-            <Box height={56} justifyContent="center">
+            <Box minHeight={56} justifyContent="center">
               <Text variant="sectionTitle" color="darkGrey3">
                 {t("more.notifications.systemSettingsTitle")}
               </Text>

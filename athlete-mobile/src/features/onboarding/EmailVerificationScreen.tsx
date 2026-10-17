@@ -223,6 +223,7 @@ export function EmailVerificationScreen() {
             textContentType="oneTimeCode"
             autoComplete="one-time-code"
             placeholder="_ _ _ _ _ _"
+            placeholderTextColor={colors.darkGrey2}
             accessibilityLabel={t("onboarding.verificationCodeInput")}
             style={[
               styles.otpInput,
@@ -264,7 +265,7 @@ export function EmailVerificationScreen() {
               variant="description"
               textAlign="center"
               marginBottom="m"
-              color="success"
+              color="successText"
             >
               {t("onboarding.emailResent")}
             </Text>

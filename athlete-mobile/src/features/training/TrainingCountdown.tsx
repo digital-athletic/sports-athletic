@@ -108,19 +108,27 @@ export const TrainingCountdown: FC<Props> = ({
         zIndex={99}
         style={{ backgroundColor: "transparent" }}
       >
-        {labelText.length > 0 && (
-          <Text color={countdownColorKey} variant="body" marginBottom="s">
-            {labelText}
-          </Text>
-        )}
-        <Text
-          color={countdownColorKey}
-          fontSize={32}
-          fontWeight="300"
-          textAlign="center"
+        <Box
+          backgroundColor={backgroundColor}
+          borderRadius="l"
+          paddingHorizontal="l"
+          paddingVertical="s"
+          alignItems="center"
         >
-          {timeText}
-        </Text>
+          {labelText.length > 0 && (
+            <Text color={countdownColorKey} variant="body" marginBottom="s">
+              {labelText}
+            </Text>
+          )}
+          <Text
+            color={countdownColorKey}
+            fontSize={32}
+            fontWeight="300"
+            textAlign="center"
+          >
+            {timeText}
+          </Text>
+        </Box>
       </Box>
     </TouchableBox>
   );

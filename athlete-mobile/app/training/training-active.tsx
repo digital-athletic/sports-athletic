@@ -75,6 +75,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
   // Local state
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [videoIsPlaying, setVideoIsPlaying] = useState(false);
+  const [footerHeight, setFooterHeight] = useState(FOOTER_HEIGHT);
 
   const { isScreenFocused } = useTrainingActiveLifecycle({
     onAbort: handleAbortTraining,
@@ -193,7 +194,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
             )}
 
             {/* Avoids content being hidden behind TrainingFooter */}
-            <Box height={FOOTER_HEIGHT} />
+            <Box height={footerHeight} />
           </Box>
         </KeyboardAwareScrollView>
         {/* Skip button & next exercise preview */}
@@ -205,6 +206,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
             nextExerciseData?.displayName ?? nextExerciseData?.name
           }
           onSkipPress={handleExerciseSkipped}
+          onHeightChange={setFooterHeight}
         />
       </Box>
     </>

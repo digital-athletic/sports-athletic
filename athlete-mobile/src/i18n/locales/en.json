@@ -550,6 +550,101 @@
     "imprint": "Imprint",
     "a11yStatement": "Accessibility statement",
     "a11yFeedback": "Report a barrier",
+    "glossary": {
+      "menuItem": "Glossary",
+      "title": "Glossary",
+      "intro": "Here we explain words from the app in plain language.",
+      "terms": {
+        "anamnesis": {
+          "term": "Anamnesis",
+          "explanation": "These are the questions at the start. For example, you tell us your sport, your level and whether you have pain."
+        },
+        "fitnessLevel": {
+          "term": "Fitness level",
+          "explanation": "This shows how fit you are: Beginner, Advanced or Pro. You choose it in the questions at the start."
+        },
+        "seasonPhase": {
+          "term": "Season phase",
+          "explanation": "This is the part of your season: off-season, preparation or competition. The app adapts your training to it."
+        },
+        "trainingPlan": {
+          "term": "Training plan",
+          "explanation": "This is your plan for several weeks. The app creates it from your answers."
+        },
+        "trainingDay": {
+          "term": "Training day",
+          "explanation": "This is a weekday on which you train. You set how long and where."
+        },
+        "trainingPlace": {
+          "term": "Training place",
+          "explanation": "This is where you train: at home, in the gym, in the hall or outside. The app picks exercises that fit the equipment."
+        },
+        "focusTraining": {
+          "term": "Focus training",
+          "explanation": "This is a short workout of 10 to 20 minutes. It is independent of your plan and practices one thing, such as stable legs."
+        },
+        "preventionTraining": {
+          "term": "Prevention training",
+          "explanation": "This is a short workout for your pains, for example in the knee or shoulder. It helps you avoid injuries."
+        },
+        "hypertrophy": {
+          "term": "Muscle building",
+          "explanation": "Here your muscles grow. You train with medium weight and more repetitions."
+        },
+        "maxStrength": {
+          "term": "Max strength",
+          "explanation": "Here you train with heavy weights and few repetitions. It is available from age 16 for Advanced and Pro athletes."
+        },
+        "explosivePower": {
+          "term": "Explosive power",
+          "explanation": "Here you train fast and strong movements, such as jumps."
+        },
+        "powerEndurance": {
+          "term": "Power endurance",
+          "explanation": "Here you repeat strong movements many times in a row. You hold your strength for longer."
+        },
+        "warmUp": {
+          "term": "Warm-up",
+          "explanation": "This is how you warm up at the start. Your body gets warm and ready for training."
+        },
+        "coolDown": {
+          "term": "Cool-down",
+          "explanation": "This is the stretching at the end. Your body calms down again."
+        },
+        "mobility": {
+          "term": "Mobility",
+          "explanation": "These are exercises for flexible joints. Afterwards you can move more freely."
+        },
+        "foamRoller": {
+          "term": "Foam roller",
+          "explanation": "You massage your muscles yourself with the roller or a ball. This loosens tension."
+        },
+        "legAxisStability": {
+          "term": "Leg axis stability",
+          "explanation": "This is the control over your legs in jumps and landings. Your knees stay stable."
+        },
+        "fullBodyStability": {
+          "term": "Full-body stability",
+          "explanation": "These are exercises for your trunk and your whole body. You stand and move more safely."
+        },
+        "repetition": {
+          "term": "Repetition",
+          "explanation": "You do the movement once. For example, one squat is one repetition."
+        },
+        "set": {
+          "term": "Set",
+          "explanation": "This is one round of an exercise, with several repetitions or a fixed time. Then you rest."
+        },
+        "muscleSoreness": {
+          "term": "Muscle soreness",
+          "explanation": "Your muscles hurt after training. You mark the spots before training, and the mark is valid for 24 hours."
+        },
+        "strengthTest": {
+          "term": "Strength test",
+          "explanation": "You lift a weight as often as you can, and the app estimates your maximum strength from it. The test is available from age 16."
+        }
+      }
+    },
     "thirdPartyNotices": {
       "menuItem": "Third-Party Licenses",
       "title": "Third-Party Licenses",

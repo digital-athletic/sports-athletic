@@ -21,7 +21,7 @@ function isActivityOnlyMode(): boolean {
   return featureFlags.serverSyncActivityOnlyEnabled;
 }
 
-let isProcessing = false;
+let runningQueue: Promise<void> | null = null;
 
 export function getBackoffDelay(attemptCount: number): number {
   const baseDelay = 1000;
@@ -29,32 +29,42 @@ export function getBackoffDelay(attemptCount: number): number {
 }
 
 export async function processQueue(): Promise<void> {
-  if (isProcessing) {
+  if (runningQueue) {
     return;
   }
 
-  const auth = useAuthStore.getState().auth;
-  if (!auth) {
+  const startUserId = useAuthStore.getState().auth?.userId;
+  if (!startUserId) {
     return;
   }
 
-  isProcessing = true;
-
+  const run = runQueue(startUserId);
+  runningQueue = run;
   try {
-    const store = useSyncQueueStore.getState();
-    const attemptedIds = new Set<string>();
-    let nextItem = store.getNextPending();
-
-    while (nextItem) {
-      if (attemptedIds.has(nextItem.id)) {
-        break;
-      }
-      attemptedIds.add(nextItem.id);
-      await processSingleItem(nextItem, auth.userId);
-      nextItem = useSyncQueueStore.getState().getNextPending();
-    }
+    await run;
   } finally {
-    isProcessing = false;
+    // After a user switch a newer run may own the flag; leave it set
+    if (runningQueue === run) {
+      runningQueue = null;
+    }
+  }
+}
+
+async function runQueue(userId: string): Promise<void> {
+  const attemptedIds = new Set<string>();
+
+  // Stop when the user changed; items upload only under their owner
+  while (useAuthStore.getState().auth?.userId === userId) {
+    const store = useSyncQueueStore.getState();
+    const item = store.getNextPending(userId);
+    if (!item || attemptedIds.has(item.id)) {
+      break;
+    }
+    attemptedIds.add(item.id);
+    if (item.ownerUserId === null) {
+      store.claimItem(item.id, userId);
+    }
+    await processSingleItem(item, userId);
   }
 }
 
@@ -211,5 +221,5 @@ export async function syncStrengthTest(
 }
 
 export function resetProcessingFlag(): void {
-  isProcessing = false;
+  runningQueue = null;
 }

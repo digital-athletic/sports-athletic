@@ -47,7 +47,7 @@ beforeEach(() => {
   jest.useFakeTimers();
   mockProcessQueue.mockResolvedValue(undefined);
   SyncManager.resetForTesting();
-  useSyncQueueStore.getState().clearSyncQueue();
+  useSyncQueueStore.setState({ queue: [] });
   useAuthStore.getState().setAuth({ userId: "user-1" });
 });
 
@@ -86,7 +86,7 @@ describe("start", () => {
     expect(mockNetInfoFetch).toHaveBeenCalledTimes(1);
   });
 
-  it("is idempotent — calling twice does not duplicate subscriptions", () => {
+  it("does not duplicate subscriptions when called twice", () => {
     const manager = SyncManager.getInstance();
     manager.start();
     manager.start();
@@ -100,6 +100,7 @@ describe("start", () => {
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: {},
+      ownerUserId: "user-1",
     });
     const itemId = useSyncQueueStore.getState().queue[0].id;
     useSyncQueueStore.getState().markInProgress(itemId);
@@ -140,6 +141,7 @@ describe("triggerSync", () => {
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: {},
+      ownerUserId: "user-1",
     });
 
     const manager = SyncManager.getInstance();
@@ -154,6 +156,7 @@ describe("triggerSync", () => {
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: {},
+      ownerUserId: "user-1",
     });
 
     const manager = SyncManager.getInstance();
@@ -172,6 +175,25 @@ describe("triggerSync", () => {
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: {},
+      ownerUserId: "user-1",
+    });
+
+    const manager = SyncManager.getInstance();
+    manager.start();
+    netInfoCallback({ isConnected: true, isInternetReachable: true });
+    mockProcessQueue.mockClear();
+
+    manager.triggerSync();
+
+    expect(mockProcessQueue).not.toHaveBeenCalled();
+  });
+
+  it("does nothing when only another owner has items", () => {
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "w1",
+      payload: {},
+      ownerUserId: "user-2",
     });
 
     const manager = SyncManager.getInstance();
@@ -202,6 +224,7 @@ describe("connectivity change triggers sync", () => {
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: {},
+      ownerUserId: "user-1",
     });
 
     SyncManager.getInstance().start();
@@ -221,6 +244,7 @@ describe("app foregrounding triggers sync", () => {
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: {},
+      ownerUserId: "user-1",
     });
 
     SyncManager.getInstance().start();
@@ -239,6 +263,7 @@ describe("periodic retry", () => {
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: {},
+      ownerUserId: "user-1",
     });
 
     SyncManager.getInstance().start();
@@ -259,6 +284,7 @@ describe("connectivity recovery: missed online event", () => {
       type: "COMPLETED_WORKOUT",
       referenceId: "w1",
       payload: {},
+      ownerUserId: "user-1",
     });
 
     mockNetInfoFetch.mockResolvedValue({
@@ -290,6 +316,22 @@ describe("connectivity recovery: missed online event", () => {
     await jest.advanceTimersByTimeAsync(0);
 
     expect(mockProcessQueue).toHaveBeenCalled();
+  });
+});
+
+describe("notifyWorkoutCompleted", () => {
+  it("enqueues the workout with the logged in user as owner", () => {
+    const manager = SyncManager.getInstance();
+    manager.start();
+
+    manager.notifyWorkoutCompleted({
+      id: "w1",
+      timestamp: 1000,
+      exercises: [],
+      duration: 100,
+    });
+
+    expect(useSyncQueueStore.getState().queue[0].ownerUserId).toBe("user-1");
   });
 });
 

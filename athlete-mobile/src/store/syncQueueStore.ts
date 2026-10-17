@@ -22,6 +22,7 @@ export interface SyncQueueItem {
   type: SyncItemType;
   referenceId: string;
   payload: unknown;
+  ownerUserId: string | null;
   status: SyncStatus;
   createdAt: number;
   lastAttemptAt?: number;
@@ -42,19 +43,19 @@ type Actions = {
     type: SyncItemType;
     referenceId: string;
     payload: unknown;
+    ownerUserId: string | null;
   }) => void;
+  claimItem: (id: string, userId: string) => void;
   markInProgress: (id: string) => void;
   markCompleted: (id: string) => void;
   markFailed: (id: string, error: string) => void;
   resetStaleItems: () => void;
-  clearSyncQueue: () => void;
+  clearUserItems: (userId: string) => void;
 };
 
 type Selectors = {
-  getNextPending: () => SyncQueueItem | undefined;
-  getPendingCount: () => number;
-  getFailedItems: () => SyncQueueItem[];
-  hasItemsToSync: () => boolean;
+  getNextPending: (userId: string) => SyncQueueItem | undefined;
+  hasItemsToSync: (userId: string) => boolean;
 };
 
 export type SyncQueueState = State & Actions & Selectors;
@@ -67,7 +68,14 @@ function getRetryDelayMs(attemptCount: number): number {
   return 2 ** attemptCount * 60_000;
 }
 
-function isReadyToProcess(item: SyncQueueItem, now: number): boolean {
+function isReadyToProcess(
+  item: SyncQueueItem,
+  now: number,
+  userId: string,
+): boolean {
+  if (item.ownerUserId !== null && item.ownerUserId !== userId) {
+    return false;
+  }
   if (item.attemptCount >= MAX_RETRY_ATTEMPTS) {
     return false;
   }
@@ -89,26 +97,35 @@ export const useSyncQueueStore = create<SyncQueueState>()(
       ...createInitialState(),
 
       enqueue: (item) => {
-        if (get().queue.length >= MAX_QUEUE_SIZE) {
-          Logger.logError(
-            new Error(
-              `Sync queue full (${MAX_QUEUE_SIZE} items). Item dropped: ${item.type}`,
-            ),
-          );
-          return;
-        }
         set((state) => {
+          if (state.queue.length >= MAX_QUEUE_SIZE) {
+            const dropped = state.queue.shift();
+            Logger.logError(
+              new Error(
+                `Sync queue full (${MAX_QUEUE_SIZE} items). Oldest item dropped: ${dropped?.type} (${dropped?.referenceId})`,
+              ),
+            );
+          }
           state.queue.push({
             id: generateId(),
             type: item.type,
             referenceId: item.referenceId,
             payload: item.payload,
+            ownerUserId: item.ownerUserId,
             status: "PENDING",
             createdAt: Date.now(),
             attemptCount: 0,
           });
         });
       },
+
+      claimItem: (id, userId) =>
+        set((state) => {
+          const item = state.queue.find((i) => i.id === id);
+          if (item && item.ownerUserId === null) {
+            item.ownerUserId = userId;
+          }
+        }),
 
       markInProgress: (id) =>
         set((state) => {
@@ -164,31 +181,23 @@ export const useSyncQueueStore = create<SyncQueueState>()(
           }
         }),
 
-      clearSyncQueue: () =>
+      clearUserItems: (userId) =>
         set((state) => {
-          state.queue = [];
+          state.queue = state.queue.filter(
+            (i) => i.ownerUserId !== null && i.ownerUserId !== userId,
+          );
         }),
 
-      getNextPending: () => {
+      getNextPending: (userId) => {
         const { queue } = get();
         const now = Date.now();
-        return queue.find((i) => isReadyToProcess(i, now));
+        return queue.find((i) => isReadyToProcess(i, now, userId));
       },
 
-      getPendingCount: () => {
-        const { queue } = get();
-        return queue.filter((i) => i.status === "PENDING").length;
-      },
-
-      getFailedItems: () => {
-        const { queue } = get();
-        return queue.filter((i) => i.status === "FAILED");
-      },
-
-      hasItemsToSync: () => {
+      hasItemsToSync: (userId) => {
         const { queue } = get();
         const now = Date.now();
-        return queue.some((i) => isReadyToProcess(i, now));
+        return queue.some((i) => isReadyToProcess(i, now, userId));
       },
     })),
     {

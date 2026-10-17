@@ -9,7 +9,9 @@ import { BasePage } from "./pages";
  * Completes the strength test workout by skipping warm-ups and entering reps.
  */
 async function completeStrengthTestWorkout(page: Page, reps: number) {
-  const skipButton = page.locator('[aria-label="play-forward"]').first();
+  const skipButton = page
+    .getByRole("button", { name: "Skip exercise" })
+    .first();
   const repsInput = page.locator("input").first();
   const saveButton = page.locator("button", { hasText: /save|speichern/i });
   const resultsPage = page.getByText("Training Evaluation");

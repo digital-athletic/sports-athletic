@@ -24,7 +24,8 @@ test.describe("Endurance exercise: CARDIO_4", () => {
     await workoutPage.beginWorkout();
 
     // CARDIO_4 is the only exercise in this profile
-    await expect(page.getByLabel("checkmark")).toBeVisible({ timeout: 10000 });
+    const finishButton = page.getByRole("button", { name: "Finish exercise" });
+    await expect(finishButton).toBeVisible({ timeout: 10000 });
     await expect(page.getByText(/^\d{2}:\d{2}$/)).not.toBeVisible();
 
     await expect(
@@ -35,7 +36,7 @@ test.describe("Endurance exercise: CARDIO_4", () => {
     await expect(page.getByText("too easy")).not.toBeVisible();
     await expect(page.getByText("too hard")).not.toBeVisible();
 
-    await page.getByLabel("checkmark").click();
+    await finishButton.click();
 
     // The suggested duration is recorded although no timer ran
     await expect

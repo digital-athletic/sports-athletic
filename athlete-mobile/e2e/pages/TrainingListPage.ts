@@ -7,7 +7,7 @@ export class TrainingListPage extends BasePage {
   }
 
   private get uncompletedCheckmarks() {
-    return this.page.locator('[aria-label="checkmark-circle-outline"]');
+    return this.page.getByRole("button", { name: "Finish exercise" });
   }
 
   private get firstUncompletedCheckmark() {

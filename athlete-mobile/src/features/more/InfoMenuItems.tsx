@@ -5,6 +5,7 @@ import {
   LINK_AGB,
   LINK_IMPRINT,
   LINK_PRIVACY,
+  SUPPORT_EMAIL,
 } from "@/constants/AppConstants";
 import { ListItem } from "@/features/more/ListItem";
 import { type FC } from "react";
@@ -66,7 +67,7 @@ export const InfoMenuItems: FC = () => {
       {featureFlags.contactEnabled && (
         <ListItem
           title={t("more.contact")}
-          navPath="/contact"
+          externalUrl={`mailto:${SUPPORT_EMAIL}`}
           iconName="mail"
           iconBackground="darkGrey1"
         />

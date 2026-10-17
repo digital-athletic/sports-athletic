@@ -22,7 +22,7 @@ export class ProfilePage extends BasePage {
 
   private get deleteUserButton() {
     // Use first() to handle cases where screens are stacked (a known bug)
-    return this.page.getByText("Delete User").first();
+    return this.page.getByRole("button", { name: "Delete account" }).first();
   }
 
   async navigateToProfile() {
@@ -87,13 +87,14 @@ export class ProfilePage extends BasePage {
     await profileTab.click();
     await expect(this.profileHeading).toBeVisible({ timeout: 5000 });
 
-    // Find the Delete User button by its icon (more specific selector)
+    // Find the Delete account button by its icon (more specific selector)
     // and click it directly using evaluate to bypass visibility issues from stacked screens
     const clicked = await this.page.evaluate(() => {
-      // Find all elements containing "Delete User" text
+      // Find all elements containing "Delete account" text
       const elements = Array.from(document.querySelectorAll("*")).filter(
         (el) =>
-          el.textContent?.trim() === "Delete User" && el.children.length === 0,
+          el.textContent?.trim() === "Delete account" &&
+          el.children.length === 0,
       );
 
       for (const el of elements) {
@@ -113,15 +114,14 @@ export class ProfilePage extends BasePage {
 
     if (!clicked) {
       // Fallback: try the standard approach with force click
-      const deleteButton = this.page.getByText("Delete User").first();
-      await deleteButton.click({ force: true });
+      await this.deleteUserButton.click({ force: true });
     }
 
-    await expect(this.page.getByText("Delete User?")).toBeVisible({
+    await expect(this.page.getByText("Delete account?")).toBeVisible({
       timeout: 10000,
     });
     await this.page.getByText("YES").first().click();
-    await expect(this.page.getByText("Delete User?")).not.toBeVisible();
+    await expect(this.page.getByText("Delete account?")).not.toBeVisible();
   }
 
   async expectLoginPage() {

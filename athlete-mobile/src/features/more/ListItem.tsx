@@ -1,10 +1,13 @@
+import { Alert } from "@/common/Alert";
 import { Ionicon, type IoniconName } from "@/common/Ionicon";
+import { SUPPORT_EMAIL } from "@/constants/AppConstants";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { type ThemeColor, useTheme } from "@/theme/theme";
 import { useResponsiveProp } from "@shopify/restyle";
 import { type Href, type Route, useRouter } from "expo-router";
 import { type FC } from "react";
+import { useTranslation } from "react-i18next";
 import { Linking, TouchableOpacity } from "react-native";
 import { ListDivider } from "../../common/ListDivider";
 
@@ -57,13 +60,21 @@ export const ListItem: FC<ListItemProps> = ({
   navParams,
 }) => {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const listItemHeight = useResponsiveProp({ phone: 40, tablet: 65 });
   const listItemMarginBottom = useResponsiveProp({ phone: 6, tablet: 16 });
 
   const handlePress = () => {
     if (externalUrl) {
-      Linking.openURL(externalUrl);
+      Linking.openURL(externalUrl).catch(() => {
+        Alert.alert(
+          t("more.linkError.title"),
+          externalUrl.startsWith("mailto:")
+            ? t("more.linkError.mailMessage", { email: SUPPORT_EMAIL })
+            : t("more.linkError.message"),
+        );
+      });
       return;
     }
 

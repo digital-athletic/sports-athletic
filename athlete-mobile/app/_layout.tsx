@@ -74,14 +74,6 @@ export default function RootLayout() {
             options={{ headerShown: false, presentation: "fullScreenModal" }}
           />
           <Stack.Screen name="test" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="contact"
-            options={{
-              headerShown: true,
-              presentation: "modal",
-              title: "Contact",
-            }}
-          />
         </Stack>
         <OfflineBanner />
         {Platform.OS === "web" && <AlertHost />}

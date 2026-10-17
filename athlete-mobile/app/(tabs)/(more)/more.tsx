@@ -54,18 +54,6 @@ export default function MoreScreen() {
               navPath="/test"
               iconName="help-circle"
               iconBackground="primary"
-            />
-            <ListItem
-              title={t("more.trainingPlans")}
-              navPath="/(tabs)/(more)/exercises"
-              iconName="clipboard"
-              iconBackground="primary"
-            />
-            <ListItem
-              title={t("more.exercises")}
-              navPath="/(tabs)/(more)/exercises"
-              iconName="list"
-              iconBackground="primary"
               isLast
             />
           </Box>

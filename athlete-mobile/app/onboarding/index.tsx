@@ -2,6 +2,8 @@ import { LoginScreen } from "@/features/onboarding/LoginScreen";
 import { RegistrationScreen } from "@/features/onboarding/RegisterScreen";
 import { Box } from "@/theme/Box";
 import { featureFlags } from "@/config/featureFlags";
+import { SUPPORT_EMAIL } from "@/constants/AppConstants";
+import { supportMessage } from "@/utils/supportMessage";
 import { useRouter } from "expo-router";
 import { useReducer } from "react";
 import { useTranslation } from "react-i18next";
@@ -207,7 +209,11 @@ export default function OnboardingScreen() {
       const code = getErrorCode(error);
       // Silently proceed for email-already-in-use to prevent user enumeration
       if (code !== "auth/email-already-in-use") {
-        let message = t("onboarding.errorUnknownMsgRetry");
+        let message = supportMessage(
+          t,
+          "onboarding.errorUnknownMsgRetry",
+          SUPPORT_EMAIL,
+        );
         let fields: ErrorField[] = [];
 
         if (code === "auth/invalid-email") {

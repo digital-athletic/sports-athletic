@@ -80,7 +80,7 @@ export default function IndexScreen() {
           <Card variant="elevated">
             <Text variant="cardTitle">🧪 Other Flows</Text>
             <Text variant="body" marginBottom="s" lineHeight={20}>
-              Access test screens, web view, video player, and contact modal.
+              Access test screens, web view and video player.
             </Text>
             <Box flexDirection="row" flexWrap="wrap" gap="s">
               <Link href="/test">
@@ -103,17 +103,6 @@ export default function IndexScreen() {
                   alignItems="center"
                 >
                   <Text variant="link">WebView</Text>
-                </Box>
-              </Link>
-              <Link href="/contact">
-                <Box
-                  backgroundColor="lightGrey2"
-                  padding="s"
-                  borderRadius="m"
-                  minWidth={80}
-                  alignItems="center"
-                >
-                  <Text variant="link">Contact</Text>
                 </Box>
               </Link>
             </Box>

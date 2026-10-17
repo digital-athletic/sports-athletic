@@ -70,11 +70,6 @@
       "count": 1
     }
   },
-  "app/contact.tsx": {
-    "max-lines-per-function": {
-      "count": 1
-    }
-  },
   "app/demo.tsx": {
     "max-lines-per-function": {
       "count": 1

@@ -31,7 +31,10 @@ export const featureFlags = {
     return (process.env.EXPO_PUBLIC_LINK_A11Y_FEEDBACK ?? "") !== "";
   },
   get contactEnabled(): boolean {
-    return process.env.EXPO_PUBLIC_CONTACT_ENABLED === "true";
+    return (
+      process.env.EXPO_PUBLIC_CONTACT_ENABLED === "true" &&
+      (process.env.EXPO_PUBLIC_SUPPORT_EMAIL ?? "") !== ""
+    );
   },
   /**
    * When true, athletes can start a training session in an alternative

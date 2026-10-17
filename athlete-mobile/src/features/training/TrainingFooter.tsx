@@ -47,6 +47,7 @@ export const TrainingFooter: FC<Props> = ({
             justifyContent="center"
             alignItems="center"
             onPress={onSkipPress}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             accessibilityRole="button"
             accessibilityLabel={t("training.list.skipExercise")}
           >

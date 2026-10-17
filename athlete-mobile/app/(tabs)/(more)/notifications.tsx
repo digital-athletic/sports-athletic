@@ -115,6 +115,7 @@ export default function NotificationsScreen() {
               <SwitchInputField
                 value={notificationsAllowedApp}
                 descriptionText=""
+                accessibilityLabel={t("more.notifications.settingsTitle")}
                 onChange={handleToggleNotifications}
                 size="small"
                 color={colors.settingsSwitchGreen}

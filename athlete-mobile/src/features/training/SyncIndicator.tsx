@@ -1,3 +1,4 @@
+import { liveRegionProps, useAnnounce } from "@/common/announce";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@shopify/restyle";
@@ -5,6 +6,13 @@ import { useEffect, useRef, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, StyleSheet } from "react-native";
 import { useSynchronizationStore } from "./synchronizationStore";
+
+// The failure Alert already speaks, so the failed state stays silent here.
+const getSpokenText = (
+  isVisible: boolean,
+  failed: boolean,
+  text: string,
+): string | null => (isVisible && !failed ? text : null);
 
 /**
  * Overlay component that displays training data synchronization progress.
@@ -97,6 +105,19 @@ export const SyncIndicator: FC = () => {
     resetSynchronization,
   ]);
 
+  const displayText = synchronization.failed
+    ? t("training.active.syncIndicator.failed")
+    : synchronization.finished
+      ? t("training.active.syncIndicator.synchronized")
+      : t("training.active.syncIndicator.synchronizing");
+
+  const spokenText = getSpokenText(
+    synchronization.isVisible,
+    synchronization.failed,
+    displayText,
+  );
+  useAnnounce(spokenText);
+
   if (!synchronization.isVisible) {
     return null;
   }
@@ -104,12 +125,6 @@ export const SyncIndicator: FC = () => {
   const statusColor = synchronization.failed
     ? theme.colors.primary
     : theme.colors.success;
-
-  const displayText = synchronization.failed
-    ? t("training.active.syncIndicator.failed")
-    : synchronization.finished
-      ? t("training.active.syncIndicator.synchronized")
-      : t("training.active.syncIndicator.synchronizing");
 
   const progressPercent = synchronization.updating ? 50 : 100;
 
@@ -138,7 +153,12 @@ export const SyncIndicator: FC = () => {
             ]}
           />
         )}
-        <Text style={styles.updateText}>{displayText}</Text>
+        <Text
+          style={styles.updateText}
+          {...(spokenText === null ? {} : liveRegionProps)}
+        >
+          {displayText}
+        </Text>
       </Box>
     </Box>
   );

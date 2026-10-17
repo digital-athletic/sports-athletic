@@ -73,6 +73,13 @@ export const TrainingCountdown: FC<Props> = ({
   const minText = remainingInt < 0 ? "--" : ("0" + min).slice(-2);
   const secText = remainingInt < 0 ? "--" : ("0" + sec).slice(-2);
   const timeText = `${minText}:${secText}`;
+  // Buckets of 10 seconds keep the screen reader from announcing every tick.
+  const spokenSeconds = isPausedState
+    ? remainingInt
+    : Math.ceil(remainingInt / 10) * 10;
+  const spokenText = t("training.active.pause.secondsLeft", {
+    seconds: Math.max(spokenSeconds, 0),
+  });
 
   let countdownColorKey: "primary" | "white" = "primary";
   let labelText = "";
@@ -93,7 +100,18 @@ export const TrainingCountdown: FC<Props> = ({
   }
 
   return (
-    <TouchableBox flex={1} flexDirection="row" onPress={handleTogglePause}>
+    <TouchableBox
+      flex={1}
+      flexDirection="row"
+      onPress={handleTogglePause}
+      accessibilityRole="button"
+      accessibilityLabel={
+        isPausedState
+          ? t("training.active.pause.resumeAction")
+          : t("training.active.pause.pauseAction")
+      }
+      accessibilityValue={{ text: spokenText }}
+    >
       <Box flex={elapsed} backgroundColor="lightGrey3" zIndex={2} />
       <Box flex={remainingInt} backgroundColor={backgroundColor} zIndex={2} />
       <Box

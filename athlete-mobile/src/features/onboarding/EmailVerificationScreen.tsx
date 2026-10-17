@@ -25,6 +25,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackHeader } from "@/common/BackHeader";
+import { liveRegionProps, useAnnounce } from "@/common/announce";
 
 const RESEND_COOLDOWN_SECONDS = 60;
 const OTP_LENGTH = 6;
@@ -71,6 +72,9 @@ export function EmailVerificationScreen() {
       if (cooldownRef.current) clearInterval(cooldownRef.current);
     };
   }, []);
+
+  useAnnounce(verificationError);
+  useAnnounce(resent ? t("onboarding.emailResent") : null);
 
   const startCooldown = useCallback(() => {
     setCooldown(RESEND_COOLDOWN_SECONDS);
@@ -246,6 +250,7 @@ export function EmailVerificationScreen() {
               marginBottom="s"
               color="error"
               accessibilityRole="alert"
+              {...liveRegionProps}
             >
               {verificationError}
             </Text>
@@ -266,6 +271,7 @@ export function EmailVerificationScreen() {
               textAlign="center"
               marginBottom="m"
               color="successText"
+              {...liveRegionProps}
             >
               {t("onboarding.emailResent")}
             </Text>

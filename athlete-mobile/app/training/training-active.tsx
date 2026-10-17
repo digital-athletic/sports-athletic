@@ -172,6 +172,7 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
             {currentExercise && (
               <TrainingNavigation
                 exerciseId={exerciseId}
+                exerciseName={name}
                 nextExerciseId={nextExercise?.exerciseId}
                 duration={
                   // undefined shows the checkmark, a number starts a countdown.

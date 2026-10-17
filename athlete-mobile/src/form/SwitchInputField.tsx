@@ -7,6 +7,7 @@ import { StyleSheet, Switch } from "react-native";
 interface SwitchInputFieldProps {
   value: boolean;
   descriptionText: string;
+  accessibilityLabel?: string;
   onChange: (value: boolean) => void;
   showError?: boolean;
   size?: "small" | "normal";
@@ -20,6 +21,7 @@ interface SwitchInputFieldProps {
 export const SwitchInputField: FC<SwitchInputFieldProps> = ({
   value,
   descriptionText,
+  accessibilityLabel,
   onChange,
   size = "normal",
   color,
@@ -43,7 +45,7 @@ export const SwitchInputField: FC<SwitchInputFieldProps> = ({
           value={value}
           onValueChange={onChange}
           style={scaleStyle}
-          accessibilityLabel={descriptionText}
+          accessibilityLabel={accessibilityLabel ?? descriptionText}
         />
         <Box flex={1} marginLeft="m">
           <Text variant="body" color="darkGrey3">

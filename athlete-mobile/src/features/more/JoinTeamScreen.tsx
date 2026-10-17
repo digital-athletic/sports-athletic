@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ActivityIndicator, StyleSheet, TextInput } from "react-native";
 import { Stack } from "expo-router";
+import { type TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/store/authStore";
 import { type I18nKey } from "@/i18n";
@@ -10,6 +11,7 @@ import { Text } from "@/theme/Text";
 import { Button } from "@/theme/Button";
 import { useTheme } from "@/theme/theme";
 import { Alert } from "@/common/Alert";
+import { liveRegionProps, useAnnounce } from "@/common/announce";
 import { ListDivider } from "@/common/ListDivider";
 import { Logger } from "@/services/Logger";
 import {
@@ -25,6 +27,23 @@ function errorKeyFrom(err: unknown): I18nKey {
     : "more.joinTeam.errorGeneric";
 }
 
+type JoinState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "success"; teamName: string }
+  | { status: "error"; errorKey: I18nKey };
+
+function joinMessage(state: JoinState, t: TFunction): string | null {
+  if (state.status === "success") {
+    return t("more.joinTeam.successMessage", { teamName: state.teamName });
+  }
+  return state.status === "error" ? t(state.errorKey) : null;
+}
+
+function translateOrNull(key: I18nKey | null, t: TFunction): string | null {
+  return key ? t(key) : null;
+}
+
 export default function JoinTeamScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -36,12 +55,7 @@ export default function JoinTeamScreen() {
   const [leavingTeamId, setLeavingTeamId] = useState<string | null>(null);
   const [leaveErrorKey, setLeaveErrorKey] = useState<I18nKey | null>(null);
   const [code, setCode] = useState("");
-  const [joinState, setJoinState] = useState<
-    | { status: "idle" }
-    | { status: "loading" }
-    | { status: "success"; teamName: string }
-    | { status: "error"; errorKey: I18nKey }
-  >({ status: "idle" });
+  const [joinState, setJoinState] = useState<JoinState>({ status: "idle" });
 
   useEffect(() => {
     let cancelled = false;
@@ -107,6 +121,9 @@ export default function JoinTeamScreen() {
 
   const isSubmitDisabled = code.length !== 6 || joinState.status === "loading";
 
+  useAnnounce(joinMessage(joinState, t));
+  useAnnounce(translateOrNull(leaveErrorKey, t));
+
   return (
     <>
       <Stack.Screen options={{ title: t("more.joinTeam.title") }} />
@@ -158,7 +175,13 @@ export default function JoinTeamScreen() {
             ))
           )}
           {leaveErrorKey !== null && (
-            <Text variant="small" color="error" marginTop="s">
+            <Text
+              variant="small"
+              color="error"
+              marginTop="s"
+              accessibilityRole="alert"
+              {...liveRegionProps}
+            >
               {t(leaveErrorKey)}
             </Text>
           )}
@@ -172,6 +195,7 @@ export default function JoinTeamScreen() {
           <TextInput
             testID="invite-code-input"
             value={code}
+            accessibilityLabel={t("more.joinTeam.codeLabel")}
             onChangeText={(text) => setCode(text.toUpperCase())}
             maxLength={6}
             placeholder={t("more.joinTeam.codePlaceholder")}
@@ -199,10 +223,9 @@ export default function JoinTeamScreen() {
               color="successText"
               textAlign="center"
               marginTop="m"
+              {...liveRegionProps}
             >
-              {t("more.joinTeam.successMessage", {
-                teamName: joinState.teamName,
-              })}
+              {joinMessage(joinState, t)}
             </Text>
           )}
           {joinState.status === "error" && (
@@ -211,6 +234,8 @@ export default function JoinTeamScreen() {
               color="error"
               textAlign="center"
               marginTop="s"
+              accessibilityRole="alert"
+              {...liveRegionProps}
             >
               {t(joinState.errorKey)}
             </Text>

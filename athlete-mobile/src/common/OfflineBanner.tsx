@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { liveRegionProps, useAnnounce } from "@/common/announce";
 import { useNetworkState } from "@/hooks/useNetworkState";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
@@ -9,6 +10,8 @@ export function OfflineBanner() {
   const { t } = useTranslation();
   const isOnline = useNetworkState();
   const insets = useSafeAreaInsets();
+
+  useAnnounce(isOnline ? null : t("common.offline"));
 
   if (isOnline) {
     return null;
@@ -26,7 +29,12 @@ export function OfflineBanner() {
       paddingHorizontal="m"
       zIndex={999 as never}
     >
-      <Text color="darkGrey3" textAlign="center" variant="small">
+      <Text
+        color="darkGrey3"
+        textAlign="center"
+        variant="small"
+        {...liveRegionProps}
+      >
         {t("common.offline")}
       </Text>
     </Box>

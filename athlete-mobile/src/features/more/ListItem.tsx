@@ -79,7 +79,10 @@ export const ListItem: FC<ListItemProps> = ({
 
   return (
     <Box>
-      <TouchableOpacity onPress={handlePress}>
+      <TouchableOpacity
+        onPress={handlePress}
+        accessibilityRole={externalUrl ? "link" : "button"}
+      >
         <Box
           justifyContent="center"
           alignSelf="stretch"

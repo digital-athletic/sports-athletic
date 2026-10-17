@@ -1,3 +1,4 @@
+import { liveRegionProps, useAnnounce } from "@/common/announce";
 import {
   getExerciseVideoUrl,
   getTutorialVideoUrl,
@@ -87,6 +88,8 @@ export const VideoPlayer: FC<Props> = ({
     }
   }, [disabled, isPlaying, player]);
 
+  useAnnounce(error);
+
   if (error) {
     return (
       <Box
@@ -95,10 +98,20 @@ export const VideoPlayer: FC<Props> = ({
         justifyContent="center"
         alignItems="center"
       >
-        <Text color="lightGrey3" textAlign="center" marginBottom="s">
+        <Text
+          color="lightGrey3"
+          textAlign="center"
+          marginBottom="s"
+          accessibilityRole="alert"
+          {...liveRegionProps}
+        >
           {error}
         </Text>
-        <TouchableOpacity onPress={() => setRetryCount((c) => c + 1)}>
+        <TouchableOpacity
+          onPress={() => setRetryCount((c) => c + 1)}
+          accessibilityRole="button"
+          accessibilityLabel={t("common.retry")}
+        >
           <Box
             borderRadius="m"
             paddingHorizontal="m"

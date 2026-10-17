@@ -1,12 +1,14 @@
 # Accessibility statement
 
-This draft follows the EU model accessibility statement. The operator fills in every entry in `[[...]]` and publishes the text at `[[URL of the statement]]`. This URL is stored in `EXPO_PUBLIC_LINK_A11Y_STATEMENT`.
+This draft follows the EU model accessibility statement. The operator fills in every entry in `[[...]]` and publishes the text at `[[URL of the statement]]`. This URL is stored in `EXPO_PUBLIC_LINK_A11Y_STATEMENT` (app) and `VITE_LINK_A11Y_STATEMENT` (dashboard).
 
 ## Scope
 
-[[Company name]], [[Street and house number]], [[Postal code and city]] (hereinafter "we") wants to make the app "[[App name]]" usable for everyone. This statement applies to the mobile app for athletes (iOS and Android).
+[[Company name]], [[Street and house number]], [[Postal code and city]] (hereinafter "we") wants to make the app "[[App name]]" usable for everyone. This statement applies to the mobile app for athletes (iOS and Android) and to the web dashboard for trainers.
 
-This statement does not apply to the web dashboard for trainers. We have not yet assessed the dashboard.
+## Description of the service
+
+The app creates a personal training plan for athletes. After questions about the person, the sport, and the equipment, the app selects matching exercises. The person trains exercise by exercise, sees a video and a written instruction for each exercise, and saves their training data. The person operates the app by touch on a smartphone or tablet, also with VoiceOver and TalkBack. Trainers use the web dashboard in the browser to manage their teams and view the training data of their athletes. They operate it by mouse, keyboard or screen reader.
 
 ## Compliance status
 
@@ -14,14 +16,11 @@ The app is **partially compliant** with WCAG 2.1 Level AA and EN 301 549 (versio
 
 ## Non-accessible content
 
-The following content is not yet accessible:
+The following content is not fully accessible:
 
-1. **Exercise descriptions and instructions.** The roughly 1,200 descriptions contain technical terms. This affects WCAG 3.1.3 (unusual words) and 3.1.5 (reading level). Both criteria are above Level AA. We will revise the texts according to the plain language style guide as soon as our planning allows.
-2. **Notification prompt text.** The prompt for push notifications uses system texts and our own texts that we have not checked against the plain language style guide. No WCAG 2.1 AA criterion applies.
-3. **Other screens.** We do not revise all texts at once. Screens we have not touched follow the style guide only at their next change.
-4. **Hints next to technical terms.** An explanation directly at the technical term is still missing. The glossary in the app explains the most important terms.
-5. **Technical assessment.** We have not yet fully assessed color contrast, focus order, and touch target size with measuring tools. Individual deviations are possible.
-6. **Trainer web dashboard.** The dashboard is not part of this statement (see Scope).
+- **Videos without subtitles.** The exercise videos have sound but no subtitles (WCAG 1.2.2). Each video shows which exercise to perform. Every exercise with a video also has a written step-by-step description, so the full instruction is available as text.
+
+The app explains training terms in the section "Glossary" in the profile.
 
 ## Preparation of this statement
 
@@ -29,14 +28,15 @@ We prepared this statement on [[Date of preparation]]. It is based on a self-ass
 
 ## Feedback and contact information
 
-Did you find a barrier in the app? Report it to us. We reply within [[Number]] working days.
+Did you find a barrier in the app or the dashboard? Report it to us. We reply within [[Number]] working days.
 
 1. In the app: section "Profile", entry "Report a barrier"
-2. Web form: [[URL of the feedback form]]
-3. Email: [[Contact email address]]
-4. Post: [[Company name]], [[Street and house number]], [[Postal code and city]]
+2. In the dashboard: link "Barriere melden" in the footer
+3. Web form: [[URL of the feedback form]]
+4. Email: [[Contact email address]]
+5. Post: [[Company name]], [[Street and house number]], [[Postal code and city]]
 
-The URL of the form is stored in `EXPO_PUBLIC_LINK_A11Y_FEEDBACK`.
+The URL of the form is stored in `EXPO_PUBLIC_LINK_A11Y_FEEDBACK` (app) and `VITE_LINK_A11Y_FEEDBACK` (dashboard).
 
 Please name the screen, the device, and the assistive technology in your message, for example VoiceOver or TalkBack.
 

@@ -20,6 +20,8 @@ test.describe("Statistics tabs: athlete with workouts and a strength test", () =
     await statsPage.expectHasTestResults();
     await statsPage.expectStartTestButtonVisible();
     await statsPage.expectWorkoutsContainerNotVisible();
+    // The range selector in the header stays on both tabs
+    await statsPage.expectTimeScaleButtonsVisible();
     // The completed profile seeds one strength test result
     expect(await statsPage.getTestResultsCount()).toBeGreaterThan(0);
 

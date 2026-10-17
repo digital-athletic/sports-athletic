@@ -2,6 +2,7 @@ import { PowerTest as Chart } from "@/charts/PowerTest";
 import { Coaching } from "@/common/Coaching";
 import { Ionicon } from "@/common/Ionicon";
 import { useAgeGroup } from "@/features/anamnesis/useAgeGroup";
+import type { ScaleType } from "@/features/statistics/models/WorkoutsData";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
 import { canTakeStrengthTest } from "@/features/training/utils/strengthTestUtils";
 import { Box } from "@/theme/Box";
@@ -16,6 +17,8 @@ import { usePowerTestData } from "../hooks/usePowerTestData";
 
 interface PowerTestProps {
   isSuccessScreen?: boolean;
+  /** Undefined shows the whole history. */
+  scale?: ScaleType;
 }
 
 /**
@@ -23,7 +26,10 @@ interface PowerTestProps {
  *
  * Displays power test history with chart visualization and results list.
  */
-export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
+export const PowerTest: FC<PowerTestProps> = ({
+  isSuccessScreen = false,
+  scale,
+}) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
@@ -36,7 +42,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
     anamnesisCompleted,
     toggleHistoryEntry,
     isEntryExpanded,
-  } = usePowerTestData({ expandFirstEntry: isSuccessScreen });
+  } = usePowerTestData({ expandFirstEntry: isSuccessScreen, scale });
 
   const startTestWorkout = useCallback(() => {
     if (anamnesisCompleted) {
@@ -68,7 +74,7 @@ export const PowerTest: FC<PowerTestProps> = ({ isSuccessScreen = false }) => {
       );
     }
 
-    return <Chart />;
+    return <Chart scale={scale} />;
   };
 
   const renderLegend = () => {

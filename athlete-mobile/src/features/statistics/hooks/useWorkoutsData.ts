@@ -1,12 +1,10 @@
 import {
-  type ScaleType,
   type UseWorkoutsDataParams,
   UserSkills,
   type WorkoutsSummary,
 } from "@/features/statistics/models/WorkoutsData";
-import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
+import { filterWorkoutsByRange } from "@/features/statistics/models/rangeFilter";
 import { useUserProfileStore } from "@/store/userProfileStore";
-import { ISODateToDate } from "@/utils/date";
 import { useMemo } from "react";
 
 const INITIAL_USER_SKILLS: UserSkills = {
@@ -16,38 +14,6 @@ const INITIAL_USER_SKILLS: UserSkills = {
   WARMUP: 0,
   STABILITY: 0,
   CARDIO: 0,
-};
-
-/**
- * Gets start date timestamp based on scale.
- */
-const getStartDate = (
-  scale: ScaleType,
-  trainingPlan: TrainingPlanType | null,
-): number => {
-  const now = Date.now();
-  const DAY = 1000 * 60 * 60 * 24;
-
-  switch (scale) {
-    case "week":
-      return now - DAY * 7;
-    case "month":
-      return now - DAY * 30;
-    case "year":
-      return now - DAY * 365;
-    case "total":
-    default:
-      if (trainingPlan?.sections && trainingPlan.sections.length > 0) {
-        for (let i = 0; i < trainingPlan.sections.length; i++) {
-          const sectionStart = trainingPlan.sections[i].start;
-          const startTime = ISODateToDate(sectionStart).getTime();
-          if (startTime < now) {
-            return startTime;
-          }
-        }
-      }
-      return 0;
-  }
 };
 
 /**
@@ -62,10 +28,10 @@ export const useWorkoutsData = ({
     (state) => state.anamnesisCompleted,
   );
 
-  const filteredWorkouts = useMemo(() => {
-    const startDate = getStartDate(scale, trainingPlan);
-    return workouts.filter((workout) => workout.timestamp > startDate);
-  }, [workouts, scale, trainingPlan]);
+  const filteredWorkouts = useMemo(
+    () => filterWorkoutsByRange(workouts, scale, trainingPlan),
+    [workouts, scale, trainingPlan],
+  );
 
   const summaryData = useMemo((): WorkoutsSummary => {
     return filteredWorkouts.reduce(

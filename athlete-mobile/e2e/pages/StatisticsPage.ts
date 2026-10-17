@@ -166,20 +166,28 @@ export class StatisticsPage extends BasePage {
   }
 
   /**
-   * Selects a time scale filter button.
+   * Gets the screen header that holds the time scale buttons.
    */
-  async selectTimeScale(scale: TimeScale): Promise<void> {
-    await this.page.getByText(scale).click();
+  private getHeader() {
+    return this.page.getByTestId("statistics-header");
   }
 
   /**
-   * Verifies all time scale buttons are visible.
+   * Selects a time scale filter button in the screen header.
+   */
+  async selectTimeScale(scale: TimeScale): Promise<void> {
+    await this.getHeader().getByText(scale, { exact: true }).click();
+  }
+
+  /**
+   * Verifies all time scale buttons are visible in the screen header.
    */
   async expectTimeScaleButtonsVisible(): Promise<void> {
-    await expect(this.page.getByText("Last week")).toBeVisible();
-    await expect(this.page.getByText("Last month")).toBeVisible();
-    await expect(this.page.getByText("Last year")).toBeVisible();
-    await expect(this.page.getByText("Total")).toBeVisible();
+    const header = this.getHeader();
+    await expect(header.getByText("Last week", { exact: true })).toBeVisible();
+    await expect(header.getByText("Last month", { exact: true })).toBeVisible();
+    await expect(header.getByText("Last year", { exact: true })).toBeVisible();
+    await expect(header.getByText("Total", { exact: true })).toBeVisible();
   }
 
   /**

@@ -137,9 +137,11 @@ test.describe("Consent Gate: login", () => {
     });
 
     await acceptAllConsents(page);
-    await expect(page.getByText(/let's get started/i)).toBeVisible({
-      timeout: 5000,
-    });
+    await expect(page.getByRole("button", { name: "Get started" })).toBeVisible(
+      {
+        timeout: 5000,
+      },
+    );
     await expect(page.getByText("Data Protection")).not.toBeVisible({
       timeout: 5000,
     });
@@ -155,9 +157,11 @@ test.describe("Consent Gate: login", () => {
 
     await new BasePage(page).login("test@example.com");
 
-    await expect(page.getByText(/let's get started/i)).toBeVisible({
-      timeout: 5000,
-    });
+    await expect(page.getByRole("button", { name: "Get started" })).toBeVisible(
+      {
+        timeout: 5000,
+      },
+    );
     await expect(page.getByText("Data Protection")).not.toBeVisible({
       timeout: 5000,
     });

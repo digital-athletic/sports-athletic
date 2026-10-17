@@ -7,7 +7,9 @@ export class ProfilePage extends BasePage {
   }
 
   private get seasonPhaseHeading() {
-    return this.page.getByRole("heading", { name: "Season Phase" });
+    return this.page
+      .getByRole("heading", { name: "Season phase", exact: true })
+      .first();
   }
 
   private get trainingDaysHeading() {

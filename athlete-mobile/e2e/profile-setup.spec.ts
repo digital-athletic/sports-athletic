@@ -18,11 +18,9 @@ test.describe("Profile Setup: anamnesis", () => {
 
     // Should see anamnesis CTA on first login
     await expect(
-      page.getByText(
-        "Hi! I am Ingemar. I am your personal athletics coach. Let's get started generating your personal workout plan right away.",
-      ),
+      page.getByText(/I am Ingemar, your athletics coach/),
     ).toBeVisible();
-    await page.getByRole("button", { name: /let's go/i }).click();
+    await page.getByRole("button", { name: "Get started" }).click();
 
     // Select sport
     await anamnesisPage.selectSport("Handball");

@@ -28,6 +28,21 @@ describe("<TextInputField />", () => {
     expect(icon.props.accessibilityElementsHidden).toBe(true);
   });
 
+  it("shows a visible label that also names the input", () => {
+    const { getByText, getByLabelText } = render(
+      <TextInputField {...defaultProps} title="Weight in kg" />,
+    );
+    expect(getByText("Weight in kg")).toBeTruthy();
+    expect(getByLabelText("Weight in kg")).toBeTruthy();
+  });
+
+  it("names the input with accessibilityLabel when no title is given", () => {
+    const { getByLabelText } = render(
+      <TextInputField {...defaultProps} accessibilityLabel="Name" />,
+    );
+    expect(getByLabelText("Name")).toBeTruthy();
+  });
+
   it("displays the placeholder text", () => {
     const { getByPlaceholderText } = render(
       <TextInputField {...defaultProps} placeholder="Enter your name" />,

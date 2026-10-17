@@ -54,8 +54,8 @@ export class RegistrationPage extends BasePage {
   }
 
   async expectAnamnesisScreen() {
-    await expect(this.page.getByText(/let's get started/i)).toBeVisible({
-      timeout: 5000,
-    });
+    await expect(
+      this.page.getByRole("button", { name: "Get started" }),
+    ).toBeVisible({ timeout: 5000 });
   }
 }

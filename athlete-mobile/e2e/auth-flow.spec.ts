@@ -39,9 +39,11 @@ test.describe("Auth Flow: signed out user", () => {
 
     await new BasePage(page).login("test@example.com");
 
-    await expect(page.getByText(/let's get started/i)).toBeVisible({
-      timeout: 5000,
-    });
+    await expect(page.getByRole("button", { name: "Get started" })).toBeVisible(
+      {
+        timeout: 5000,
+      },
+    );
   });
 });
 
@@ -93,7 +95,9 @@ test.describe("Auth Flow: signed in user without stored consent", () => {
     await expect(page.locator('[role="progressbar"]')).toBeVisible();
 
     releaseProfile();
-    await expect(page.getByText(/let's get started/i)).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Get started" }),
+    ).toBeVisible();
     await expect(page.locator('[role="progressbar"]')).not.toBeVisible();
   });
 });
@@ -122,10 +126,14 @@ test.describe("Auth Flow: session persistence", () => {
     await mockSupabaseAuth(page);
 
     await page.goto("/");
-    await expect(page.getByText(/let's get started/i)).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Get started" }),
+    ).toBeVisible();
     await page.reload();
 
-    await expect(page.getByText(/let's get started/i)).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Get started" }),
+    ).toBeVisible();
     await expect(page.locator("body")).not.toContainText("Send code");
   });
 });

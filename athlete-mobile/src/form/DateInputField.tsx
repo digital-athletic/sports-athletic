@@ -22,6 +22,7 @@ interface DateInputFieldProps {
   onChange: (value: string) => void;
   maximumDate?: Date;
   minimumDate?: Date;
+  accessibilityLabel?: string;
 }
 
 /**
@@ -40,6 +41,7 @@ export const DateInputField: FC<DateInputFieldProps> = ({
   onChange,
   maximumDate,
   minimumDate,
+  accessibilityLabel,
 }) => {
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
@@ -109,6 +111,7 @@ export const DateInputField: FC<DateInputFieldProps> = ({
             locale={i18n.language}
             maximumDate={maximumDate}
             minimumDate={effectiveMinimumDate}
+            accessibilityLabel={accessibilityLabel}
           />
         ),
         android: (
@@ -121,6 +124,8 @@ export const DateInputField: FC<DateInputFieldProps> = ({
             <TouchableOpacity
               style={styles.datePicker}
               onPress={openAndroidPicker}
+              accessibilityRole="button"
+              accessibilityLabel={accessibilityLabel}
             >
               <Text variant="body" color="darkGrey3">
                 {dateTime || t("common.choose")}

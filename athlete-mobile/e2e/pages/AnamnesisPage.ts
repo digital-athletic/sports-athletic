@@ -37,11 +37,15 @@ export class AnamnesisPage extends BasePage {
   }
 
   private get painsHeading() {
-    return this.page.getByRole("heading", { name: "Pains" });
+    return this.page
+      .getByRole("heading", { name: "Pains", exact: true })
+      .first();
   }
 
   private get seasonPhaseHeading() {
-    return this.page.getByRole("heading", { name: "Season Phase" });
+    return this.page
+      .getByRole("heading", { name: "Season phase", exact: true })
+      .first();
   }
 
   private get trainingDaysHeading() {

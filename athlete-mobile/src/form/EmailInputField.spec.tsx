@@ -23,6 +23,14 @@ describe("<EmailInputField />", () => {
     expect(icon.props.accessibilityElementsHidden).toBe(true);
   });
 
+  it("shows a visible label that also names the input", () => {
+    const { getByText, getByLabelText } = render(
+      <EmailInputField {...defaultProps} title="Email address" />,
+    );
+    expect(getByText("Email address")).toBeTruthy();
+    expect(getByLabelText("Email address")).toBeTruthy();
+  });
+
   it("displays email placeholder", () => {
     const { getByPlaceholderText } = render(
       <EmailInputField {...defaultProps} />,

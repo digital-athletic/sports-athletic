@@ -82,6 +82,7 @@ export const RegistrationScreen: FC<Props> = ({
         <Box alignSelf="stretch" paddingHorizontal="m" paddingVertical="s">
           <EmailInputField
             email={email}
+            title={t("onboarding.emailLabel")}
             onChange={onEmailChange}
             showError={errorFields.includes("email")}
           />

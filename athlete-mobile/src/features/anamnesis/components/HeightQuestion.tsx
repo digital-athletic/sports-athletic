@@ -20,6 +20,7 @@ export function HeightQuestion({
         value={value}
         placeholder={t("anamnesisQuestions.height.placeholder")}
         iconName="resize"
+        accessibilityLabel={t("anamnesisQuestions.height.title")}
         onChange={(value) => onChangeValue("height", value)}
       />
     </AnamnesisQuestionContainer>

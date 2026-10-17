@@ -209,6 +209,9 @@ export default function SeasonPhase() {
                 type="date"
                 dateTime={seasonPhase?.endDate}
                 onChange={handlePhaseEndChange}
+                accessibilityLabel={t(
+                  "screens.seasonPhase.endOfSeasonPhaseLabel",
+                )}
                 maximumDate={
                   seasonPhase?.endDate ? getDateOneYearFromNow() : undefined
                 }

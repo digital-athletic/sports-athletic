@@ -123,9 +123,7 @@ describe("<EmailVerificationScreen />", () => {
   it("renders the confirmation message", () => {
     const { getByText } = render(<EmailVerificationScreen />);
     expect(
-      getByText(
-        "Please check your inbox and confirm your email address to complete the registration.",
-      ),
+      getByText("We sent you an email with a code. Look in your inbox."),
     ).toBeTruthy();
   });
 
@@ -136,7 +134,7 @@ describe("<EmailVerificationScreen />", () => {
 
   it("renders the resend email button", () => {
     const { getByText } = render(<EmailVerificationScreen />);
-    expect(getByText("Resend verification email")).toBeTruthy();
+    expect(getByText("Send code again")).toBeTruthy();
   });
 
   it("renders the back button", () => {
@@ -148,7 +146,7 @@ describe("<EmailVerificationScreen />", () => {
     const { getByText } = render(<EmailVerificationScreen />);
 
     await act(async () => {
-      fireEvent.press(getByText("Resend verification email"));
+      fireEvent.press(getByText("Send code again"));
     });
 
     expect(mockRequestRegistrationOtp).toHaveBeenCalledWith(
@@ -162,7 +160,7 @@ describe("<EmailVerificationScreen />", () => {
     const { getByText } = render(<EmailVerificationScreen />);
 
     await act(async () => {
-      fireEvent.press(getByText("Resend verification email"));
+      fireEvent.press(getByText("Send code again"));
     });
 
     expect(mockRequestRegistrationOtp).toHaveBeenCalledWith(
@@ -176,7 +174,7 @@ describe("<EmailVerificationScreen />", () => {
     const { getByText } = render(<EmailVerificationScreen />);
 
     await act(async () => {
-      fireEvent.press(getByText("Resend verification email"));
+      fireEvent.press(getByText("Send code again"));
     });
 
     expect(mockRequestLoginOtp).toHaveBeenCalledWith("user@example.com");
@@ -185,17 +183,13 @@ describe("<EmailVerificationScreen />", () => {
   it("shows success message after resending email", async () => {
     const { getByText, queryByText } = render(<EmailVerificationScreen />);
 
-    expect(
-      queryByText("A new verification email has been sent to your inbox."),
-    ).toBeNull();
+    expect(queryByText("The app sent you a new code.")).toBeNull();
 
     await act(async () => {
-      fireEvent.press(getByText("Resend verification email"));
+      fireEvent.press(getByText("Send code again"));
     });
 
-    expect(
-      getByText("A new verification email has been sent to your inbox."),
-    ).toBeTruthy();
+    expect(getByText("The app sent you a new code.")).toBeTruthy();
   });
 
   it("navigates to onboarding when back button is pressed", () => {
@@ -212,12 +206,10 @@ describe("<EmailVerificationScreen />", () => {
     const { getByText, queryByText } = render(<EmailVerificationScreen />);
 
     await act(async () => {
-      fireEvent.press(getByText("Resend verification email"));
+      fireEvent.press(getByText("Send code again"));
     });
 
-    expect(
-      queryByText("A new verification email has been sent to your inbox."),
-    ).toBeNull();
+    expect(queryByText("The app sent you a new code.")).toBeNull();
     expect(Alert.alert).toHaveBeenCalled();
   });
 
@@ -227,19 +219,19 @@ describe("<EmailVerificationScreen />", () => {
     const { getByText } = render(<EmailVerificationScreen />);
 
     await act(async () => {
-      fireEvent.press(getByText("Resend verification email"));
+      fireEvent.press(getByText("Send code again"));
     });
 
-    expect(getByText(/Resend verification email \(\d+s\)/)).toBeTruthy();
+    expect(getByText(/Send code again \(\d+s\)/)).toBeTruthy();
 
-    fireEvent.press(getByText(/Resend verification email \(\d+s\)/));
+    fireEvent.press(getByText(/Send code again \(\d+s\)/));
     expect(mockRequestRegistrationOtp).toHaveBeenCalledTimes(1);
 
     act(() => {
       jest.advanceTimersByTime(61000);
     });
 
-    expect(getByText("Resend verification email")).toBeTruthy();
+    expect(getByText("Send code again")).toBeTruthy();
 
     jest.useRealTimers();
   });

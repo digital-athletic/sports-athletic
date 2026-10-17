@@ -31,7 +31,7 @@ async function navigateToPainScreen(page: Page) {
   await page.goto("/");
 
   await expect(page.getByText(/I am Ingemar/)).toBeVisible({ timeout: 10000 });
-  await page.getByRole("button", { name: /let's go/i }).click();
+  await page.getByRole("button", { name: "Get started" }).click();
 
   await anamnesisPage.selectSport("Handball");
 
@@ -50,9 +50,9 @@ async function navigateToPainScreen(page: Page) {
   ).toBeVisible();
   await page.getByRole("button", { name: "Go on" }).click();
 
-  await expect(page.getByRole("heading", { name: "Pains" })).toBeVisible({
-    timeout: 10000,
-  });
+  await expect(
+    page.getByRole("heading", { name: "Pains", exact: true }).first(),
+  ).toBeVisible({ timeout: 10000 });
 }
 
 function silhouette(page: Page): Locator {

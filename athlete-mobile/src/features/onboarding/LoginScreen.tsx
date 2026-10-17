@@ -60,6 +60,7 @@ export const LoginScreen: FC<Props> = ({
         <Box alignSelf="stretch" paddingHorizontal="m" paddingVertical="s">
           <EmailInputField
             email={email}
+            title={t("onboarding.emailLabel")}
             onChange={onEmailChange}
             onSubmitEditing={onLogin}
           />

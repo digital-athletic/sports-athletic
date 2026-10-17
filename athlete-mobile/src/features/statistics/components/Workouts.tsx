@@ -6,16 +6,16 @@ import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { formatDateForDisplay, dateToHHMM } from "@/utils/date";
 import { getTimeString, getWeightString } from "@/utils/formatters";
-import { useCallback, useState, type FC } from "react";
+import { useCallback, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 import { useStatisticsWorkouts } from "../hooks/useStatisticsWorkouts";
 import { useWorkoutsData } from "../hooks/useWorkoutsData";
 import type { ScaleType } from "../models/WorkoutsData";
-import { ScaleButton } from "./ScaleButton";
 import { TrainingSummary } from "./TrainingSummary";
 
 interface WorkoutsProps {
+  scale: ScaleType;
   workouts?: CompleteWorkoutType[];
   trainingPlan?: TrainingPlanType | null;
 }
@@ -25,6 +25,7 @@ interface WorkoutsProps {
  * Displays workout history with radar chart, summary, and workouts list.
  */
 export const Workouts: FC<WorkoutsProps> = ({
+  scale,
   workouts: propWorkouts,
   trainingPlan = null,
 }) => {
@@ -32,8 +33,6 @@ export const Workouts: FC<WorkoutsProps> = ({
   const workouts = propWorkouts ?? hookWorkouts;
   const { t } = useTranslation();
   const { colors } = useTheme();
-
-  const [scale, setScale] = useState<ScaleType>("total");
 
   const { summaryData, userSkills, sortedWorkouts, hasWorkouts } =
     useWorkoutsData({ workouts, trainingPlan, scale });
@@ -87,33 +86,6 @@ export const Workouts: FC<WorkoutsProps> = ({
 
   return (
     <Box flex={1} justifyContent="flex-start" alignItems="center">
-      <Box
-        flexDirection="row"
-        justifyContent="center"
-        alignItems="center"
-        padding="l"
-      >
-        <ScaleButton
-          isActive={scale === "week"}
-          scale="week"
-          setScale={setScale}
-        />
-        <ScaleButton
-          isActive={scale === "month"}
-          scale="month"
-          setScale={setScale}
-        />
-        <ScaleButton
-          isActive={scale === "year"}
-          scale="year"
-          setScale={setScale}
-        />
-        <ScaleButton
-          isActive={scale === "total"}
-          scale="total"
-          setScale={setScale}
-        />
-      </Box>
       <Box alignSelf="stretch" alignItems="center">
         <RadarChart userSkills={userSkills} />
         <TrainingSummary

@@ -1,4 +1,5 @@
 import { usePowerTestData } from "@/features/statistics/hooks/usePowerTestData";
+import type { ScaleType } from "@/features/statistics/models/WorkoutsData";
 import { Box } from "@/theme/Box";
 import { type FC, useMemo } from "react";
 import { useWindowDimensions } from "react-native";
@@ -17,12 +18,17 @@ import {
   transformToLineData,
 } from "./lineChartUtils";
 
+interface PowerTestChartProps {
+  /** Undefined shows the whole history. */
+  scale?: ScaleType;
+}
+
 /**
  * LineChart component for Power Test statistics.
  * Displays 5 exercise metrics (Squat, Deadlift, Bench Press, Rowing, Shoulder Press) over time.
  */
-export const PowerTest: FC = () => {
-  const { chartData } = usePowerTestData();
+export const PowerTest: FC<PowerTestChartProps> = ({ scale }) => {
+  const { chartData } = usePowerTestData({ scale });
   const { width: screenWidth } = useWindowDimensions();
 
   // Chart width with right margin

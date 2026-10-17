@@ -6,30 +6,37 @@ import {
   processTestHistory,
   sortTestHistoryByDate,
 } from "../models/ChartData";
+import { filterStrengthTestsByRange } from "../models/rangeFilter";
+import type { ScaleType } from "../models/WorkoutsData";
 
 interface UsePowerTestDataOptions {
   expandFirstEntry?: boolean;
+  /** Undefined skips range filtering. */
+  scale?: ScaleType;
 }
 
 /**
  * Custom hook for PowerTest data and logic
  */
 export const usePowerTestData = (options: UsePowerTestDataOptions = {}) => {
-  const { expandFirstEntry = false } = options;
-  const testHistory = useExerciseProgressStore((state) => state.testHistory);
+  const { expandFirstEntry = false, scale } = options;
+  const storedHistory = useExerciseProgressStore((state) => state.testHistory);
+  const testHistory = useMemo(
+    () =>
+      scale && storedHistory
+        ? filterStrengthTestsByRange(storedHistory, scale)
+        : storedHistory,
+    [storedHistory, scale],
+  );
 
   const anamnesisCompleted = useUserProfileStore(
     (state) => state.anamnesisCompleted,
   );
 
   // Initialize with first entry expanded if on success screen
-  const [expandedEntries, setExpandedEntries] = useState<boolean[]>(() => {
-    const entries =
-      testHistory?.map((_, index) =>
-        index === 0 && expandFirstEntry ? true : false,
-      ) ?? [];
-    return entries;
-  });
+  const [expandedEntries, setExpandedEntries] = useState<boolean[]>(
+    () => testHistory?.map((_, index) => index === 0 && expandFirstEntry) ?? [],
+  );
 
   const chartData: PowerTestChartData = useMemo(
     () => processTestHistory(testHistory),
@@ -47,9 +54,7 @@ export const usePowerTestData = (options: UsePowerTestDataOptions = {}) => {
   const toggleHistoryEntry = useCallback((index: number) => {
     setExpandedEntries((prev) => {
       const updated = [...prev];
-      if (typeof updated[index] !== "undefined") {
-        updated[index] = !updated[index];
-      }
+      updated[index] = !updated[index];
       return updated;
     });
   }, []);

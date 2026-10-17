@@ -779,6 +779,22 @@
       "workouts": "Training",
       "powerTest": "Krafttest"
     },
+    "export": {
+      "label": "Auswertung als CSV herunterladen",
+      "button": "CSV exportieren",
+      "headers": {
+        "date": "Datum",
+        "durationMinutes": "Dauer (Min.)",
+        "exerciseCount": "Übungszahl",
+        "xp": "Punkte",
+        "movedWeightKg": "Bewegtes Gewicht (kg)",
+        "squat": "Kniebeuge (kg)",
+        "deadlift": "Kreuzheben (kg)",
+        "benchPress": "Bankdrücken (kg)",
+        "rowing": "Rudern (kg)",
+        "shoulderPress": "Schulterdrücken (kg)"
+      }
+    },
     "powerTest": {
       "title": "Krafttest",
       "testNotPossible": "Krafttest nicht möglich",

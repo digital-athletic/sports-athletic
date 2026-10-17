@@ -110,3 +110,66 @@ describe("StatisticsScreen: range selector", () => {
     expect(queryByTestId("power-test-entry-1")).not.toBeNull();
   });
 });
+
+describe("StatisticsScreen: export button", () => {
+  afterEach(() => {
+    act(() => {
+      useAuthStore.setState({ auth: null });
+      useCompletedWorkoutsStore.getState().clearWorkoutHistory();
+      useExerciseProgressStore.setState({ testHistory: [] });
+    });
+  });
+
+  it("is present and disabled with empty stores", () => {
+    act(() => {
+      useAuthStore.setState({ auth: { userId: "u1" } });
+      useCompletedWorkoutsStore.getState().clearWorkoutHistory();
+      useExerciseProgressStore.setState({ testHistory: [] });
+    });
+    const { getByTestId } = render(<StatisticsScreen />);
+
+    const button = getByTestId("statistics-export-button");
+    expect(button.props.accessibilityState).toMatchObject({ disabled: true });
+    expect(button.props.accessibilityLabel).toBe(
+      i18n.t("statistics.export.label"),
+    );
+  });
+
+  it("is enabled when the workouts range holds rows", () => {
+    seedData();
+    const { getByTestId } = render(<StatisticsScreen />);
+
+    expect(
+      getByTestId("statistics-export-button").props.accessibilityState,
+    ).toMatchObject({ disabled: false });
+  });
+
+  it("follows the active sub tab and the range", () => {
+    seedData();
+    act(() => {
+      useCompletedWorkoutsStore.getState().clearWorkoutHistory();
+    });
+    const { getByTestId, getByLabelText } = render(<StatisticsScreen />);
+
+    expect(
+      getByTestId("statistics-export-button").props.accessibilityState,
+    ).toMatchObject({ disabled: true });
+
+    fireEvent.press(getByTestId("statistics-tab-tests"));
+
+    expect(
+      getByTestId("statistics-export-button").props.accessibilityState,
+    ).toMatchObject({ disabled: false });
+
+    act(() => {
+      useExerciseProgressStore.setState({
+        testHistory: [{ ...DEFAULT_MAX_VALUES, testAt: Date.now() - 60 * DAY }],
+      });
+    });
+    fireEvent.press(getByLabelText(scaleLabel("week")));
+
+    expect(
+      getByTestId("statistics-export-button").props.accessibilityState,
+    ).toMatchObject({ disabled: true });
+  });
+});

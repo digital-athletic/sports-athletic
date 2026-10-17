@@ -779,6 +779,22 @@
       "workouts": "Training",
       "powerTest": "Power test"
     },
+    "export": {
+      "label": "Download statistics as CSV",
+      "button": "Export CSV",
+      "headers": {
+        "date": "Date",
+        "durationMinutes": "Duration (min)",
+        "exerciseCount": "Exercise count",
+        "xp": "Points",
+        "movedWeightKg": "Moved weight (kg)",
+        "squat": "Squat (kg)",
+        "deadlift": "Deadlift (kg)",
+        "benchPress": "Bench press (kg)",
+        "rowing": "Rowing (kg)",
+        "shoulderPress": "Shoulder press (kg)"
+      }
+    },
     "powerTest": {
       "title": "Power Test",
       "testNotPossible": "Power test not possible",

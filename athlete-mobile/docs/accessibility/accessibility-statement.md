@@ -31,7 +31,7 @@ Wir haben diese Erklärung am [[Datum der Erstellung]] erstellt. Die Grundlage i
 
 Du findest eine Barriere in der App? Melde sie uns. Wir antworten innerhalb von [[Anzahl]] Werktagen.
 
-1. In der App: Menü "Mehr", Eintrag "Barriere melden"
+1. In der App: Bereich "Profil", Eintrag "Barriere melden"
 2. Webformular: [[URL des Feedback-Formulars]]
 3. E-Mail: service@sports-athletic.com
 4. Post: [[Firmenname]], [[Straße und Hausnummer]], [[PLZ und Ort]]

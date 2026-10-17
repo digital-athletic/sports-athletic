@@ -548,6 +548,8 @@ describe("branchLevelUtils", () => {
     });
 
     it("targets the stored level of a substitute equal to the exhausted level", () => {
+      // The exhausted level as target ties 80 and 81; the last tie wins.
+      jest.spyOn(Math, "random").mockReturnValue(0.99);
       const result = substitute(
         {
           "70": branchWithLevels(CORE_BOTH, [4], "70"),
@@ -642,6 +644,7 @@ describe("branchLevelUtils", () => {
     });
 
     it("keeps the progress of the exhausted branch", () => {
+      const setBranchLevel = jest.fn();
       const result = substitute(
         {
           "70": branchWithLevels(CORE_BOTH, [4], "70"),
@@ -653,9 +656,15 @@ describe("branchLevelUtils", () => {
           "80": { branchId: "80", level: 1 },
         },
       );
-      expect(
-        substituteLevels(result).some(({ branchId }) => branchId === "70"),
-      ).toBe(false);
+      applyBranchLevelUpdate(result, {
+        setBranchLevel,
+        replaceBranchInTrainingPlan: jest.fn(),
+      });
+      expect(setBranchLevel).not.toHaveBeenCalledWith(
+        "70",
+        expect.anything(),
+        expect.anything(),
+      );
     });
 
     it("adds a second substitute that differs from the first for a one sided branch", () => {

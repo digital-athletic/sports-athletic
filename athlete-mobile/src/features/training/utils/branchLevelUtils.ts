@@ -54,7 +54,7 @@ export type BranchLevelResult =
       type: "BRANCH_SUBSTITUTION";
       previousBranchId: string;
       equivalentBranches: ExerciseBranchType[];
-      /** Substitutes whose stored level is raised to their target level */
+      /** Substitutes whose stored level lies below their target level */
       substituteLevels: SubstituteLevel[];
       sectionIndex: number;
       weekday: number;

@@ -23,19 +23,10 @@ test.describe("Statistics export: athlete with workouts", () => {
     await statsPage.openStatisticsTab();
     await statsPage.expectHasWorkouts();
     await statsPage.expectExportEnabled();
-    await page.screenshot({
-      path: "playwright/screenshots/statistics-export-enabled.png",
-    });
-    await page.getByTestId("statistics-header").screenshot({
-      path: "playwright/screenshots/statistics-export-header.png",
-    });
 
     const download = await statsPage.exportCsv();
     expect(download.suggestedFilename()).toBe(
       `workouts_total_${localDate()}.csv`,
-    );
-    await download.saveAs(
-      `playwright/screenshots/${download.suggestedFilename()}`,
     );
 
     const content = await statsPage.readDownload(download);
@@ -60,9 +51,6 @@ test.describe("Statistics export: athlete with workouts", () => {
     await statsPage.expectHasTestResults();
     await statsPage.selectTimeScale("Last year");
     await statsPage.expectExportEnabled();
-    await page.screenshot({
-      path: "playwright/screenshots/statistics-export-tests-tab.png",
-    });
 
     const download = await statsPage.exportCsv();
     expect(download.suggestedFilename()).toBe(
@@ -82,8 +70,5 @@ test.describe("Statistics export: athlete without workouts", () => {
     await statsPage.expectEmptyState();
 
     await statsPage.expectExportDisabled();
-    await page.screenshot({
-      path: "playwright/screenshots/statistics-export-disabled.png",
-    });
   });
 });

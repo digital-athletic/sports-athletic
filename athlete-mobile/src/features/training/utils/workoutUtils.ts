@@ -474,7 +474,7 @@ export const getStartValues = (
  * @param skillTree
  * @param previousBranchId - the branch to replace OR the first both side branch to replace a single sided branch
  * @param oldBranch
- * @param level
+ * @param targetLevelFor - target level of each candidate branch
  * @param branchIdsInUse - all branch ids in training to prevent doubles
  * @param equipment - available on given training day
  * @param ageGroup - of active user
@@ -486,7 +486,7 @@ export const getEquivalentBranchWithGivenLevel = (
   skillTree: SkillTreeType,
   previousBranchId: string,
   oldBranch: ExerciseBranchType | SkillBranchType,
-  level: number,
+  targetLevelFor: (branchId: string) => number,
   branchIdsInUse: string[],
   equipment: string[],
   ageGroup: string,
@@ -516,6 +516,7 @@ export const getEquivalentBranchWithGivenLevel = (
     if (availableBranches.hasOwnProperty(id)) {
       let tags = availableBranches[id].tags;
       let levels = availableBranches[id].levels;
+      const level = targetLevelFor(id);
       let matchValue = 1;
       // no exercise at the target level: fall back at most two levels
       if (!levels[level]) {

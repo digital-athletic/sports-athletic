@@ -2,6 +2,7 @@ import type { SkillTreesState } from "@/data/skillTreeRegistry";
 import type { SkillBranchType } from "@/schemas/skillTree.schema";
 import type { BranchDataMapType } from "@/store/exerciseProgressStore";
 import {
+  applyBranchLevelUpdate,
   type BranchLevelContext,
   calculateBranchLevelUpdate,
   findCurrentBranchLevel,
@@ -506,47 +507,155 @@ describe("branchLevelUtils", () => {
         { type: "PLAN", sectionIndex: 0, weekday: 1 },
       );
 
-    it("searches the substitute at the current level on a level up", () => {
+    const substituteLevels = (
+      result: ReturnType<typeof calculateBranchLevelUpdate>,
+    ) => (result.type === "BRANCH_SUBSTITUTION" ? result.substituteLevels : []);
+
+    const advancedLevelUp = (branchId: string, exerciseId: string) => ({
+      levelUp: true,
+      branchId,
+      exerciseId,
+      userLevel: "ADVANCED",
+    });
+
+    it("targets the entry level for a never trained substitute instead of the exhausted level", () => {
       const result = substitute(
         {
-          "70": REPEATED_TOP_BRANCH,
-          "80": branchWithLevels(CORE_BOTH, [3], "80"),
+          "70": branchWithLevels(CORE_BOTH, [4], "70"),
+          "80": branchWithLevels(CORE_BOTH, [2], "80"),
           "81": branchWithLevels(CORE_BOTH, [4], "81"),
         },
-        { levelUp: true, branchId: "70", exerciseId: "702" },
-        { "70": { branchId: "70", level: 3 } },
+        advancedLevelUp("70", "704"),
+        { "70": { branchId: "70", level: 4 } },
       );
       expect(substituteIds(result)).toEqual(["80"]);
     });
 
-    it("searches the substitute at the current level on a level down", () => {
+    it("targets the stored level of a substitute above the entry level", () => {
+      const result = substitute(
+        {
+          "70": branchWithLevels(CORE_BOTH, [4], "70"),
+          "80": branchWithLevels(CORE_BOTH, [3], "80"),
+          "81": branchWithLevels(CORE_BOTH, [4], "81"),
+        },
+        advancedLevelUp("70", "704"),
+        {
+          "70": { branchId: "70", level: 4 },
+          "80": { branchId: "80", level: 3 },
+        },
+      );
+      expect(substituteIds(result)).toEqual(["80"]);
+    });
+
+    it("targets the stored level of a substitute equal to the exhausted level", () => {
+      const result = substitute(
+        {
+          "70": branchWithLevels(CORE_BOTH, [4], "70"),
+          "80": branchWithLevels(CORE_BOTH, [4], "80"),
+          "81": branchWithLevels(CORE_BOTH, [4], "81"),
+        },
+        advancedLevelUp("70", "704"),
+        {
+          "70": { branchId: "70", level: 4 },
+          "80": { branchId: "80", level: 4 },
+        },
+      );
+      expect(substituteIds(result)).toEqual(["80"]);
+    });
+
+    it("targets the stored level of a substitute below the exhausted level", () => {
+      const result = substitute(
+        {
+          "70": branchWithLevels(CORE_BOTH, [5], "70"),
+          "80": branchWithLevels(CORE_BOTH, [4], "80"),
+          "81": branchWithLevels(CORE_BOTH, [5], "81"),
+        },
+        advancedLevelUp("70", "705"),
+        {
+          "70": { branchId: "70", level: 5 },
+          "80": { branchId: "80", level: 4 },
+        },
+      );
+      expect(substituteIds(result)).toEqual(["80"]);
+    });
+
+    it("targets the entry level on a level down from level 1", () => {
       const result = substitute(
         {
           "90": REPEATED_BOTTOM_BRANCH,
           "82": branchWithLevels(CORE_BOTH, [2], "82"),
           "83": branchWithLevels(CORE_BOTH, [1], "83"),
         },
-        { levelUp: false, branchId: "90", exerciseId: "901" },
-        { "90": { branchId: "90", level: 2 } },
+        {
+          levelUp: false,
+          branchId: "90",
+          exerciseId: "901",
+          userLevel: "ADVANCED",
+        },
+        { "90": { branchId: "90", level: 1 } },
       );
       expect(substituteIds(result)).toEqual(["82"]);
     });
 
-    it("takes the entry level as the current level without stored progress", () => {
+    it("raises the stored level of a substitute below the entry level", () => {
       const result = substitute(
         {
-          "61": REPEATED_EVERYWHERE_BRANCH,
-          "84": branchWithLevels(CORE_BOTH, [2], "84"),
-          "85": branchWithLevels(CORE_BOTH, [4], "85"),
+          "70": branchWithLevels(CORE_BOTH, [4], "70"),
+          "80": branchWithLevels(CORE_BOTH, [1, 2], "80"),
         },
+        advancedLevelUp("70", "704"),
         {
-          levelUp: true,
-          branchId: "61",
-          exerciseId: "611",
-          userLevel: "ADVANCED",
+          "70": { branchId: "70", level: 4 },
+          "80": { branchId: "80", level: 1 },
         },
       );
-      expect(substituteIds(result)).toEqual(["84"]);
+      expect(substituteLevels(result)).toEqual([
+        { branchId: "80", level: 2, exerciseId: "802" },
+      ]);
+    });
+
+    it("keeps the stored level of a substitute at or above the entry level", () => {
+      const result = substitute(
+        {
+          "70": branchWithLevels(CORE_BOTH, [4], "70"),
+          "80": branchWithLevels(CORE_BOTH, [3], "80"),
+        },
+        advancedLevelUp("70", "704"),
+        {
+          "70": { branchId: "70", level: 4 },
+          "80": { branchId: "80", level: 3 },
+        },
+      );
+      expect(substituteLevels(result)).toEqual([]);
+    });
+
+    it("stores no level for a never trained substitute", () => {
+      const result = substitute(
+        {
+          "70": branchWithLevels(CORE_BOTH, [4], "70"),
+          "80": branchWithLevels(CORE_BOTH, [2], "80"),
+        },
+        advancedLevelUp("70", "704"),
+        { "70": { branchId: "70", level: 4 } },
+      );
+      expect(substituteLevels(result)).toEqual([]);
+    });
+
+    it("keeps the progress of the exhausted branch", () => {
+      const result = substitute(
+        {
+          "70": branchWithLevels(CORE_BOTH, [4], "70"),
+          "80": branchWithLevels(CORE_BOTH, [1, 2], "80"),
+        },
+        advancedLevelUp("70", "704"),
+        {
+          "70": { branchId: "70", level: 4 },
+          "80": { branchId: "80", level: 1 },
+        },
+      );
+      expect(
+        substituteLevels(result).some(({ branchId }) => branchId === "70"),
+      ).toBe(false);
     });
 
     it("adds a second substitute that differs from the first for a one sided branch", () => {
@@ -554,13 +663,32 @@ describe("branchLevelUtils", () => {
       const result = substitute(
         {
           "26": ONE_SIDED_BRANCH,
-          "40": branchWithLevels(LOWER_BOTH, [2], "40"),
-          "41": branchWithLevels(LOWER_BOTH, [2], "41"),
+          "40": branchWithLevels(LOWER_BOTH, [1], "40"),
+          "41": branchWithLevels(LOWER_BOTH, [1], "41"),
         },
         { levelUp: true, branchId: "26", exerciseId: "202" },
         { "26": { branchId: "26", level: 2 } },
       );
       expect(substituteIds(result)).toEqual(["40", "41"]);
+    });
+  });
+
+  describe("applyBranchLevelUpdate: branch substitution", () => {
+    it("persists the raised level of each substitute", () => {
+      const setBranchLevel = jest.fn();
+      applyBranchLevelUpdate(
+        {
+          type: "BRANCH_SUBSTITUTION",
+          previousBranchId: "70",
+          equivalentBranches: [],
+          substituteLevels: [{ branchId: "80", level: 2, exerciseId: "802" }],
+          sectionIndex: 0,
+          weekday: 1,
+          skill: "SKKG",
+        },
+        { setBranchLevel, replaceBranchInTrainingPlan: jest.fn() },
+      );
+      expect(setBranchLevel).toHaveBeenCalledWith("80", 2, "802");
     });
   });
 });

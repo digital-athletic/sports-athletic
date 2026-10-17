@@ -369,14 +369,14 @@ describe("getEquivalentBranchWithGivenLevel: substitution score", () => {
   const findSubstitute = (
     tree: SkillTreeType,
     oldBranch: SkillBranchType,
-    level: number,
+    level: number | ((branchId: string) => number),
     prevention?: { skill: SkillCode; regions: string[] },
   ) =>
     getEquivalentBranchWithGivenLevel(
       tree,
       "1",
       oldBranch,
-      level,
+      typeof level === "number" ? () => level : level,
       [],
       [],
       "ADULT",
@@ -399,6 +399,15 @@ describe("getEquivalentBranchWithGivenLevel: substitution score", () => {
       3,
     );
     expect(result).toBe("30");
+  });
+
+  it("scores each candidate at its own target level", () => {
+    const result = findSubstitute(
+      { "20": branch(CORE_BOTH, [4]), "30": branch(CORE_BOTH, [4]) },
+      branch(CORE_BOTH, [5]),
+      (branchId) => (branchId === "20" ? 4 : 2),
+    );
+    expect(result).toBe("20");
   });
 
   it("excludes a branch that needs a fallback of more than two levels", () => {

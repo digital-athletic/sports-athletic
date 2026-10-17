@@ -371,6 +371,19 @@ export function getBranchIdsByNames(
 }
 
 /**
+ * Maps the user's fitness level to the branch entry level.
+ */
+export function getEntryLevel(userLevel: string): number {
+  if (userLevel === "PROFESSIONAL") {
+    return 3;
+  }
+  if (userLevel === "ADVANCED") {
+    return 2;
+  }
+  return 1; // BEGINNER
+}
+
+/**
  * Resolves the branch level from the stored branch level, otherwise from the
  * entry level of the user's fitness level, falling back downward.
  */
@@ -383,15 +396,7 @@ export function resolveBranchLevel(
     return userBranchData.level;
   }
 
-  let level = 1; // BEGINNER
-  if (userLevel === "ADVANCED") {
-    level = 2;
-  }
-  if (userLevel === "PROFESSIONAL") {
-    level = 3;
-  }
-
-  for (; level > 0; level--) {
+  for (let level = getEntryLevel(userLevel); level > 0; level--) {
     if (branchData.levels[level]) {
       return level;
     }

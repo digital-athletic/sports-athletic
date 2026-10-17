@@ -11,6 +11,11 @@ import {
   getSkillTree,
   resolveBranchLevel,
 } from "@/features/training/utils/skillTreeUtils";
+import {
+  getRaisedSubstituteLevel,
+  getSubstitutionTargetLevel,
+  type SubstituteLevel,
+} from "@/features/training/utils/substitutionLevelUtils";
 import { getEquivalentBranchWithGivenLevel } from "@/features/training/utils/workoutUtils";
 import { BranchDataMapType } from "@/store/exerciseProgressStore";
 import { getTagValues } from "@/utils/tagUtils";
@@ -49,6 +54,8 @@ export type BranchLevelResult =
       type: "BRANCH_SUBSTITUTION";
       previousBranchId: string;
       equivalentBranches: ExerciseBranchType[];
+      /** Substitutes whose stored level is raised to their target level */
+      substituteLevels: SubstituteLevel[];
       sectionIndex: number;
       weekday: number;
       skill: SkillCode;
@@ -211,8 +218,8 @@ export function calculateBranchLevelUpdate(
     return { type: "NO_CHANGE", reason: "no_matching_branch_found", branchId };
   }
 
-  // the substitute keeps the difficulty the athlete has reached
-  const searchLevel = Math.max(1, branchLevel);
+  const targetLevelFor = (candidateId: string) =>
+    getSubstitutionTargetLevel(candidateId, branchData, userLevel);
   const prevRegions = getRegionsForPreventionSkills([skill]);
 
   let skillTree = getSkillTree(skillTrees, skill, [], false);
@@ -230,7 +237,7 @@ export function calculateBranchLevelUpdate(
     skillTree,
     branchId,
     branch,
-    searchLevel,
+    targetLevelFor,
     branchIdsInUse,
     equipment,
     ageGroup,
@@ -251,7 +258,7 @@ export function calculateBranchLevelUpdate(
       skillTree,
       branchId,
       match,
-      searchLevel,
+      targetLevelFor,
       [...branchIdsInUse, match.branchId],
       equipment,
       ageGroup,
@@ -270,6 +277,10 @@ export function calculateBranchLevelUpdate(
         type: "BRANCH_SUBSTITUTION",
         previousBranchId: branchId,
         equivalentBranches,
+        substituteLevels: equivalentBranches.flatMap(
+          (substitute) =>
+            getRaisedSubstituteLevel(substitute, branchData, userLevel) ?? [],
+        ),
         sectionIndex,
         weekday,
         skill,
@@ -308,6 +319,9 @@ export function applyBranchLevelUpdate(
       );
       break;
     case "BRANCH_SUBSTITUTION":
+      for (const { branchId, level, exerciseId } of result.substituteLevels) {
+        callbacks.setBranchLevel(branchId, level, exerciseId);
+      }
       callbacks.replaceBranchInTrainingPlan(
         result.sectionIndex,
         result.weekday,

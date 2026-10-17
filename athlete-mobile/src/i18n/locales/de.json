@@ -237,7 +237,7 @@
     "success": {
       "title": "Trainingsauswertung",
       "calculating": "Ergebnis wird berechnet",
-      "dataMissing": "Die App hat deine Trainingsdaten nicht vollständig erfasst. Unsere Entwickler wissen Bescheid.\n\nTritt das Problem wieder auf, melde dich bei uns. Schreibe uns eine E-Mail an service@sports-athletic.com.",
+      "dataMissing": "Die App hat deine Trainingsdaten nicht vollständig erfasst. Unsere Entwickler wissen Bescheid.\n\nTritt das Problem wieder auf, schreibe uns eine E-Mail an {{email}}.",
       "goOn": "Weiter",
       "summaryDuration": "Dauer",
       "summaryCount": "Übungszahl",
@@ -383,7 +383,7 @@
       }
     },
     "exerciseInformation": {
-      "loading": "Übung wird geladen",
+      "loading": "Die App lädt die Übung",
       "musclesTrained": "Trainierte Muskeln",
       "legendActiveMuscles": "Aktiv arbeitende Muskeln",
       "legendSupportingMuscles": "Unterstützend arbeitende Muskeln",
@@ -535,6 +535,11 @@
   },
   "more": {
     "title": "Profil",
+    "linkError": {
+      "title": "Der Link ließ sich nicht öffnen",
+      "message": "Die App konnte den Link nicht öffnen. Prüfe, ob dein Gerät einen Browser hat, und versuche es noch einmal.",
+      "mailMessage": "Die App konnte kein E-Mail-Programm öffnen. Schreibe uns an {{email}}."
+    },
     "myProfile": "Mein Profil",
     "mySport": "Meine Sportart",
     "myEquipment": "Meine Ausrüstung",
@@ -865,10 +870,10 @@
       "MARKERS": "Hütchen/Pylonen",
       "HURDELS": "Hürden",
       "HURDELS_TALL": "Hohe Hürden",
-      "MINIBANDS_WEAK": "Leichte Minibänder",
-      "MINIBANDS_NORMAL": "Normale Minibänder",
-      "MINIBANDS_STRONG": "Starke Minibänder",
-      "MINIBANDS_SUPER": "Superstarke Minibänder",
+      "MINIBANDS_WEAK": "Leichte kleine Widerstandsbänder",
+      "MINIBANDS_NORMAL": "Normale kleine Widerstandsbänder",
+      "MINIBANDS_STRONG": "Starke kleine Widerstandsbänder",
+      "MINIBANDS_SUPER": "Superstarke kleine Widerstandsbänder",
       "TUBE": "Widerstandsband mit Griffen",
       "MINIBAND": "Kleines Widerstandsband",
       "TRACK": "Laufstrecke",

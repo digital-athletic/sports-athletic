@@ -8,7 +8,6 @@ This directory contains the Expo Router-based navigation hierarchy for the Sport
 app/
 ├── _layout.tsx                      # Root layout (auth/consent gating)
 ├── consent.tsx                      # GDPR consent screen
-├── contact.tsx                      # Contact modal
 ├── demo.tsx                         # Dev navigation demo (links to every flow)
 │
 ├── onboarding/                      # Onboarding flow
@@ -55,17 +54,11 @@ app/
 │   └── (more)/                      # More tab (stack)
 │       ├── _layout.tsx
 │       ├── more.tsx                 # Menu
-│       ├── settings.tsx
-│       ├── exercises.tsx
-│       ├── exercise-information.tsx
 │       ├── tutorials.tsx
 │       ├── equipment.tsx
 │       ├── equipment-details.tsx
 │       ├── join-team.tsx
-│       ├── imprint.tsx
-│       ├── privacy.tsx
-│       ├── notifications.tsx
-│       └── webview.tsx
+│       └── notifications.tsx
 │
 ├── webview/                         # Full-screen modal
 │   ├── _layout.tsx
@@ -83,6 +76,6 @@ app/
 | ------------------ | ----------------------------------------------------------------------- |
 | `(tabs)`           | Main tab navigator; guarded in `_layout.tsx` by signed-in auth + accepted consent |
 | `(tabs)/(home)`    | Home tab stack (training entry point and section details)               |
-| `(tabs)/(more)`    | "More" tab stack (menu, settings, exercises, tutorials, equipment, join team, legal) |
+| `(tabs)/(more)`    | "More" tab stack (menu, tutorials, equipment, join team, notifications) |
 | `(anamnesis)`      | First-run profile setup welcome                                         |
 | `(anamnesis,more)` | Anamnesis question screens reachable from both initial setup and "More" |

@@ -57,15 +57,9 @@
                   "children": [
                     { "type": "screen", "name": "More" },
                     { "type": "screen", "name": "Profile" },
-                    { "type": "screen", "name": "Settings" },
-                    { "type": "screen", "name": "Exercises" },
-                    { "type": "screen", "name": "ExerciseInformationMore" },
                     { "type": "screen", "name": "Tutorials" },
                     { "type": "screen", "name": "Equipment" },
-                    { "type": "screen", "name": "Imprint" },
-                    { "type": "screen", "name": "Privacy" },
                     { "type": "screen", "name": "Notifications" },
-                    { "type": "screen", "name": "WebView" },
                     { "type": "screen", "name": "Subscribe" },
                     { "type": "screen", "name": "SubscriptionStatus" }
                   ]
@@ -116,8 +110,7 @@
               ]
             }
           ]
-        },
-        { "type": "screen", "name": "Contact" }
+        }
       ]
     }
   ]

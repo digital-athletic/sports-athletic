@@ -237,7 +237,7 @@
     "success": {
       "title": "Training evaluation",
       "calculating": "calculating result",
-      "dataMissing": "The app did not record all of your training data. Our developers know about it.\n\nIf the problem happens again, email us at service@sports-athletic.com.",
+      "dataMissing": "The app did not record all of your training data. Our developers know about it.\n\nIf the problem happens again, email us at {{email}}.",
       "goOn": "Go on",
       "summaryDuration": "Duration",
       "summaryCount": "Exercise count",
@@ -535,6 +535,11 @@
   },
   "more": {
     "title": "Profile",
+    "linkError": {
+      "title": "The link did not open",
+      "message": "The app could not open the link. Check that your device has a browser and try again.",
+      "mailMessage": "The app could not open an email app. Write to us at {{email}}."
+    },
     "myProfile": "My Profile",
     "mySport": "My Sport",
     "myEquipment": "My Equipment",
@@ -658,10 +663,10 @@
       "intro": "This app includes the following open source software.",
       "versionAndLicense": "{{version}} · {{license}}"
     },
-    "deleteUser": "Delete User",
+    "deleteUser": "Delete account",
     "logout": "Logout",
     "testPersonas": "Test Personas",
-    "deleteQuestionTitle": "Delete User?",
+    "deleteQuestionTitle": "Delete account?",
     "deleteQuestionMessage": "Are you sure you want to permanently delete your account?",
     "logoutQuestionTitle": "Logout?",
     "logoutQuestionMessage": "Are you sure you want to logout?",

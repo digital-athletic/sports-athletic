@@ -1,4 +1,5 @@
 import { RadarChart } from "@/charts/RadarChart";
+import { SUPPORT_EMAIL } from "@/constants/AppConstants";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { PowerTest } from "@/features/statistics/components/PowerTest";
 import { TrainingSummary } from "@/features/statistics/components/TrainingSummary";
@@ -149,7 +150,7 @@ const TrainingSuccessScreen: FC = () => {
           ) : (
             <Box flex={1} padding="l" justifyContent="center">
               <Text variant="body" textAlign="center">
-                {t("training.success.dataMissing")}
+                {t("training.success.dataMissing", { email: SUPPORT_EMAIL })}
               </Text>
             </Box>
           )}

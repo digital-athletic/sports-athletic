@@ -16,11 +16,13 @@ test.describe("User Deletion", () => {
     await new BasePage(page).navigateToTab("Profile");
     await expect(page.getByRole("heading", { name: "Profile" })).toBeVisible();
 
-    const deleteUserButton = page.getByText("Delete User");
+    const deleteUserButton = page.getByRole("button", {
+      name: "Delete account",
+    });
     await deleteUserButton.scrollIntoViewIfNeeded();
     await deleteUserButton.click();
 
-    await expect(page.getByText("Delete User?")).toBeVisible();
+    await expect(page.getByText("Delete account?")).toBeVisible();
     await page.getByText("YES").first().click();
 
     await expect(page.getByRole("button", { name: "Send code" })).toBeVisible();

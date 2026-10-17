@@ -15,6 +15,7 @@ export function AthleteSelector({
 }: AthleteSelectorProps) {
   const { t } = useTranslation();
   const detailsRef = useRef<HTMLDetailsElement>(null);
+  const summaryRef = useRef<HTMLElement>(null);
 
   const selectedAthlete = athletes.find((a) => a.id === selectedAthleteId);
 
@@ -23,6 +24,7 @@ export function AthleteSelector({
     if (detailsRef.current) {
       detailsRef.current.open = false;
     }
+    summaryRef.current?.focus();
   };
 
   return (
@@ -32,6 +34,7 @@ export function AthleteSelector({
       className="group rounded-lg border border-gray-200 bg-white"
     >
       <summary
+        ref={summaryRef}
         className="flex list-none items-center px-4 py-3
                    transition-colors
                    [&::-webkit-details-marker]:hidden"
@@ -68,15 +71,27 @@ export function AthleteSelector({
               <tr
                 key={athlete.id}
                 data-testid="athlete-option"
-                onClick={() => handleAthleteSelect(athlete.id)}
-                className={`border-b border-gray-100 transition-colors hover:cursor-pointer hover:bg-gray-200 ${
+                className={`border-b border-gray-100 transition-colors hover:bg-gray-200 ${
                   selectedAthleteId === athlete.id
                     ? "bg-gray-200"
                     : "odd:bg-gray-50"
                 }`}
               >
-                <td className="py-2 text-sm text-gray-900">
-                  {athlete.displayName}
+                <td className="text-sm text-gray-900">
+                  <button
+                    type="button"
+                    aria-pressed={selectedAthleteId === athlete.id}
+                    onClick={() => handleAthleteSelect(athlete.id)}
+                    className="flex w-full items-center gap-2 py-2 text-left hover:cursor-pointer focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-red-600"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="inline-block w-4 font-bold"
+                    >
+                      {selectedAthleteId === athlete.id ? "✓" : ""}
+                    </span>
+                    {athlete.displayName}
+                  </button>
                 </td>
               </tr>
             ))}

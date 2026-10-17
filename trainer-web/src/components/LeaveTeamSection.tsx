@@ -18,7 +18,11 @@ export function LeaveTeamSection({
     <div className="rounded-lg border border-red-200 bg-red-50 p-4">
       <div className="flex flex-wrap gap-3">
         {isOwner ? (
-          <Button variant="danger" onClick={onDeleteClick}>
+          <Button
+            variant="danger"
+            onClick={onDeleteClick}
+            data-testid="delete-team-open"
+          >
             {t("teamManagement.deleteTeam.button")}
           </Button>
         ) : (

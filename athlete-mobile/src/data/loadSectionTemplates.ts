@@ -1,8 +1,6 @@
 import { createDataLoader, parseData } from "./createDataLoader";
 import PauseJson from "../../assets/data/generator/trainingSections/pause.json";
-import CompetitionAdultAdvanced from "../../assets/data/generator/trainingSections/competition/adult/advanced";
-import CompetitionAdultBeginner from "../../assets/data/generator/trainingSections/competition/adult/beginner";
-import CompetitionAdultProfessional from "../../assets/data/generator/trainingSections/competition/adult/professional";
+import CompetitionJson from "../../assets/data/generator/trainingSections/competition.json";
 import CompetitionChildAdvanced from "../../assets/data/generator/trainingSections/competition/child/advanced";
 import CompetitionChildBeginner from "../../assets/data/generator/trainingSections/competition/child/beginner";
 import CompetitionChildProfessional from "../../assets/data/generator/trainingSections/competition/child/professional";
@@ -24,11 +22,7 @@ const templates: Record<string, PhaseTemplates> = {
       advanced: CompetitionChildAdvanced,
       professional: CompetitionChildProfessional,
     },
-    adult: {
-      beginner: CompetitionAdultBeginner,
-      advanced: CompetitionAdultAdvanced,
-      professional: CompetitionAdultProfessional,
-    },
+    adult: CompetitionJson.adult,
   },
 };
 

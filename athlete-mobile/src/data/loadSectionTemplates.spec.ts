@@ -3,6 +3,7 @@ import {
   loadSectionTemplate,
   parseSectionTemplate,
 } from "./loadSectionTemplates";
+import CompetitionTemplates from "../../assets/data/generator/trainingSections/competition.json";
 import PauseTemplates from "../../assets/data/generator/trainingSections/pause.json";
 import PreparatoryTemplates from "../../assets/data/generator/trainingSections/preparatory.json";
 import { TrainingSectionsMapSchema } from "@/schemas/generator.schema";
@@ -137,6 +138,36 @@ describe("loadSectionTemplate: preparatory file", () => {
       { type: "SA", numOfWeeks: 3, cardioType: "CARDIO_1_SHORT" },
       { type: "SWR2", numOfWeeks: 3, cardioType: "CARDIO_2" },
       { type: "MAX", numOfWeeks: 3, cardioType: "CARDIO_1_LAKTAT" },
+    ]);
+  });
+});
+
+describe("loadSectionTemplate: competition file", () => {
+  it("parses every adult competition template of the real file", () => {
+    for (const level of LEVELS) {
+      expect({
+        level,
+        success: v.safeParse(
+          TrainingSectionsMapSchema,
+          CompetitionTemplates.adult[level],
+        ).success,
+      }).toEqual({ level, success: true });
+    }
+  });
+
+  it("returns a known competition template for a known key", () => {
+    const template = loadSectionTemplate("COMPETITION", "ADULT", "ADVANCED");
+
+    expect(template["7"]).toEqual([
+      { type: "SWR2", numOfWeeks: 4, cardioType: "CARDIO_2" },
+      { type: "MAX", numOfWeeks: 3, cardioType: "CARDIO_1_SHORT" },
+    ]);
+    expect(template.repeat).toEqual([
+      { type: "SK", numOfWeeks: 1, cardioType: "CARDIO_2" },
+      { type: "MAX", numOfWeeks: 3, cardioType: "CARDIO_1_LAKTAT" },
+      { type: "SA", numOfWeeks: 3, cardioType: "CARDIO_2" },
+      { type: "MAX", numOfWeeks: 3, cardioType: "CARDIO_1_SHORT" },
+      { type: "SK", numOfWeeks: 2, cardioType: "CARDIO_2" },
     ]);
   });
 });

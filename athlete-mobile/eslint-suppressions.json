@@ -133,21 +133,6 @@
       "count": 1
     }
   },
-  "assets/data/generator/trainingSections/competition/adult/advanced.ts": {
-    "max-lines": {
-      "count": 1
-    }
-  },
-  "assets/data/generator/trainingSections/competition/adult/beginner.ts": {
-    "max-lines": {
-      "count": 1
-    }
-  },
-  "assets/data/generator/trainingSections/competition/adult/professional.ts": {
-    "max-lines": {
-      "count": 1
-    }
-  },
   "assets/data/generator/trainingSections/competition/child/advanced.ts": {
     "max-lines": {
       "count": 1

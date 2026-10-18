@@ -2,12 +2,12 @@ import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { getExerciseById } from "@/data/exerciseRegistry";
 import { type MaxValuesType } from "@/features/training/models/MaxValues";
-import { type UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { isFeedbackEligibleSkill } from "@/features/training/utils/exerciseDataUtils";
-import { deriveWeightForExercise } from "@/features/training/utils/workoutUtils";
+import { deriveEntryWeight } from "@/features/training/utils/workoutUtils";
 import { isPauseExercise as checkIsPauseExercise } from "@/features/training/models/IdTypes";
 import { type ExerciseType } from "@/schemas/exercise.schema";
+import { type UserExerciseDataType } from "@/schemas/sync.schema";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { getTagValues } from "@/utils/tagUtils";
 import { type TFunction } from "i18next";
@@ -34,9 +34,12 @@ function buildWeightPart(
 ): string | undefined {
   if (!exercise.weight || !exerciseData) return undefined;
 
-  const derivedWeight = deriveWeightForExercise(
-    exercise.weight,
-    exercise.weightType,
+  const derivedWeight = deriveEntryWeight(
+    {
+      weight: exercise.weight,
+      weightType: exercise.weightType,
+      skill: exercise.skill,
+    },
     exerciseData,
     maxValues,
   );
@@ -52,15 +55,12 @@ function buildWeightPart(
   return isDumbbellExercise ? `${t("training.active.2x")}${kilos}` : kilos;
 }
 
-/** Combines set progress, target reps, and target weight into one subtitle line. */
 function buildSetLabel(
   exercise: UserExerciseDataType,
   exerciseData: ExerciseType | undefined,
   maxValues: MaxValuesType,
   t: TFunction,
 ): string | undefined {
-  const isTest = exercise.repetition === -1;
-
   const setPart =
     exercise.set && exercise.set[1] > 1
       ? t("training.active.set", {
@@ -69,10 +69,9 @@ function buildSetLabel(
         })
       : undefined;
 
+  // Strength tests mark reps as -1, which this check also excludes.
   const repsPart =
-    !isTest &&
-    typeof exercise.repetition === "number" &&
-    exercise.repetition > 0
+    typeof exercise.repetition === "number" && exercise.repetition > 0
       ? t("training.overview.repetitions", { count: exercise.repetition })
       : undefined;
 
@@ -88,7 +87,7 @@ export function useTrainingListRows() {
   const { t } = useTranslation();
   const exerciseList = useTrainingStore((s) => s.exerciseList);
   const activeTraining = useTrainingStore((s) => s.activeTraining);
-  const { workoutData } = useUserWorkoutStore();
+  const maxValues = useUserWorkoutStore((s) => s.workoutData.maxValues);
 
   const rows = useMemo(() => {
     if (!exerciseList) return [];
@@ -97,7 +96,6 @@ export function useTrainingListRows() {
       if (checkIsPauseExercise(exercise.exerciseId)) return acc;
 
       const exerciseData = getExerciseById(exercise.exerciseId);
-      const isTest = exercise.repetition === -1;
 
       acc.push({
         index,
@@ -106,13 +104,8 @@ export function useTrainingListRows() {
           exerciseData?.displayName ??
           exerciseData?.name ??
           exercise.exerciseId,
-        setLabel: buildSetLabel(
-          exercise,
-          exerciseData,
-          workoutData.maxValues,
-          t,
-        ),
-        isTest,
+        setLabel: buildSetLabel(exercise, exerciseData, maxValues, t),
+        isTest: exercise.repetition === -1,
         isLastInSet: exercise.set?.[0] === exercise.set?.[1],
         isFeedbackSkill: isFeedbackEligibleSkill(
           activeTraining,
@@ -122,7 +115,7 @@ export function useTrainingListRows() {
       });
       return acc;
     }, []);
-  }, [exerciseList, activeTraining, workoutData.maxValues, t]);
+  }, [exerciseList, activeTraining, maxValues, t]);
 
   return { rows };
 }

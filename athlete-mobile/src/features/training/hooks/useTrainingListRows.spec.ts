@@ -1,11 +1,14 @@
 import { getExerciseById } from "@/data/exerciseRegistry";
+import {
+  DEFAULT_MAX_VALUES,
+  type MaxValuesType,
+} from "@/features/training/models/MaxValues";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import {
   BASELINE_TRAINING_STATE as BASELINE,
   createExercise,
   createExerciseData,
 } from "@/features/training/utils/testFixtures";
-import { type MaxValuesType } from "@/schemas/user.schema";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { renderHook } from "@testing-library/react-native";
 import { useTrainingListRows } from "./useTrainingListRows";
@@ -35,16 +38,11 @@ jest.mock("react-i18next", () => ({
 
 const mockGetExerciseById = getExerciseById as jest.Mock;
 
-const BASELINE_MAX_VALUES = {
-  testAt: 0,
-  verticalPush: {},
-  verticalPull: {},
-  horizontalPush: {},
-  horizontalPull: {},
-  hipHinge: {},
-  kneeDominant: {},
-  lowerBody: {},
-} as unknown as MaxValuesType;
+const BARBELL_HIP_TAGS = [
+  "EQ_BARBELL",
+  "EQ_TYPE_WEIGHTS",
+  "EXERCISE_DIRECTION_HIP",
+];
 
 const seedMaxValues = (overrides: Partial<MaxValuesType> = {}) => {
   useUserWorkoutStore.setState({
@@ -52,7 +50,7 @@ const seedMaxValues = (overrides: Partial<MaxValuesType> = {}) => {
       sport: "OTHER_SPORT",
       tags: { POSITION: ["FIELD"], LEVEL: ["BEGINNER"] },
       seasonPhase: { type: null, endDate: "2026-01-01" },
-      maxValues: { ...BASELINE_MAX_VALUES, ...overrides },
+      maxValues: { ...DEFAULT_MAX_VALUES, ...overrides },
     },
   });
 };
@@ -104,9 +102,9 @@ describe("useTrainingListRows: subtitle composition", () => {
 
   it("derives weight as a percentage of the user's max for weightFMax", () => {
     mockGetExerciseById.mockReturnValue(
-      createExerciseData({ id: "1", tags: [] }),
+      createExerciseData({ id: "1", tags: BARBELL_HIP_TAGS }),
     );
-    seedMaxValues({ verticalPull: { barbell: 100 } });
+    seedMaxValues({ hipHinge: { barbell: 80 } });
     useTrainingStore.setState({
       exerciseList: [
         createExercise({
@@ -119,7 +117,35 @@ describe("useTrainingListRows: subtitle composition", () => {
 
     const { result } = renderHook(() => useTrainingListRows());
 
-    expect(result.current.rows[0].setLabel).toBe("50.00 kg");
+    expect(result.current.rows[0].setLabel).toBe("40.00 kg");
+  });
+
+  it("keeps a strength test barbell load below the empty bar", () => {
+    mockGetExerciseById.mockReturnValue(
+      createExerciseData({ id: "1", tags: BARBELL_HIP_TAGS }),
+    );
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1", skill: "TEST", weight: 12.5 }),
+      ],
+    });
+
+    const { result } = renderHook(() => useTrainingListRows());
+
+    expect(result.current.rows[0].setLabel).toBe("12.50 kg");
+  });
+
+  it("raises a training barbell load below the empty bar to 20 kg", () => {
+    mockGetExerciseById.mockReturnValue(
+      createExerciseData({ id: "1", tags: BARBELL_HIP_TAGS }),
+    );
+    useTrainingStore.setState({
+      exerciseList: [createExercise({ exerciseId: "1", weight: 12.5 })],
+    });
+
+    const { result } = renderHook(() => useTrainingListRows());
+
+    expect(result.current.rows[0].setLabel).toBe("20.00 kg");
   });
 
   it("omits the reps segment for strength-test rows", () => {

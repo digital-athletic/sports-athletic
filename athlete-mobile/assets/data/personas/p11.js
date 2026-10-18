@@ -1,7 +1,5 @@
-import HOME from "../generator/places/HOME";
-import HALL from "../generator/places/HALL";
-import OUTSIDE from "../../../assets/data/generator/places/OUTSIDE";
-import STUDIO from "../../../assets/data/generator/places/STUDIO";
+import PLACES from "../generator/places.json";
+const { HOME, HALL, OUTSIDE, STUDIO } = PLACES;
 
 /**
  * Warum Audauer am DO? Einzelne Tage starten immer mit PHASE

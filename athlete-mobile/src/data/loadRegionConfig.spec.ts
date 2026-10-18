@@ -104,6 +104,27 @@ describe("loadRegionConfig: real file", () => {
     expect(Object.keys(tags).length).toBeGreaterThan(0);
   });
 
+  it("parses the SWR2 config with named exercises", () => {
+    const config = loadRegionConfig("SWR2");
+
+    expect(Object.keys(config.default)).toEqual([
+      "20",
+      "25",
+      "30",
+      "35",
+      "40",
+      "45",
+    ]);
+    expect(config.default["20"][0]).toEqual({
+      tags: ["EXERCISE_NAME_SQUAT"],
+      count: 1,
+    });
+    expect(config.default["45"].at(-1)).toEqual({
+      tags: ["REGION_CORE"],
+      count: 4,
+    });
+  });
+
   it("falls back to the first hypertrophy config for an unmapped skill", () => {
     expect(PlanGenerator.getTagsForSkill("UNMAPPED_SKILL")).toEqual(
       PlanGenerator.getTagsForSkill("SWR1"),

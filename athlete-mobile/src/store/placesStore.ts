@@ -2,10 +2,7 @@ import { PlaceType } from "@/constants/workoutConstants";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import HALL from "../../assets/data/generator/places/HALL";
-import HOME from "../../assets/data/generator/places/HOME";
-import OUTSIDE from "../../assets/data/generator/places/OUTSIDE";
-import STUDIO from "../../assets/data/generator/places/STUDIO";
+import { loadPlaces } from "@/data/loadPlaces";
 import { asyncStorage } from "./middleware";
 import { createMigrate } from "./migrations/createMigrate";
 import { placesStoreMigrations } from "./migrations/placesStoreMigrations";
@@ -26,20 +23,15 @@ export type State = {
   places: PlacesData;
 };
 
-const createInitialPlaces = (): PlacesData => ({
-  HOME: {
-    equipment: HOME.EQUIPMENT,
-  },
-  STUDIO: {
-    equipment: STUDIO.EQUIPMENT,
-  },
-  HALL: {
-    equipment: HALL.EQUIPMENT,
-  },
-  OUTSIDE: {
-    equipment: OUTSIDE.EQUIPMENT,
-  },
-});
+const createInitialPlaces = (): PlacesData => {
+  const { HOME, STUDIO, HALL, OUTSIDE } = loadPlaces();
+  return {
+    HOME: { equipment: HOME.EQUIPMENT },
+    STUDIO: { equipment: STUDIO.EQUIPMENT },
+    HALL: { equipment: HALL.EQUIPMENT },
+    OUTSIDE: { equipment: OUTSIDE.EQUIPMENT },
+  };
+};
 
 const createInitialState = (): State => ({
   places: createInitialPlaces(),

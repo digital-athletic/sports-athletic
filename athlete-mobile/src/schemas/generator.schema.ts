@@ -42,6 +42,19 @@ export const DirectionsByRegionSchema = v.strictObject({
 });
 export type DirectionsByRegion = v.InferOutput<typeof DirectionsByRegionSchema>;
 
+// Place schemas: equipment ids per training location
+export const PlaceDataSchema = v.strictObject({
+  EQUIPMENT: v.array(v.string()),
+});
+
+export const PlacesDataSchema = v.strictObject({
+  HOME: PlaceDataSchema,
+  STUDIO: PlaceDataSchema,
+  HALL: PlaceDataSchema,
+  OUTSIDE: PlaceDataSchema,
+});
+export type PlacesJson = v.InferOutput<typeof PlacesDataSchema>;
+
 // Training Section schemas
 export const SectionEntrySchema = v.object({
   type: SectionTypesSchema,

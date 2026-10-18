@@ -1,0 +1,63 @@
+{
+  "HOME": {
+    "EQUIPMENT": ["BOTTLE", "CHAIR", "SLIPPERY_GROUND", "TOWEL", "WALL"]
+  },
+  "STUDIO": {
+    "EQUIPMENT": [
+      "ADJUSTABLE_BENCH",
+      "BARBELL",
+      "BARBELL_BENCH",
+      "BARBELL_MULTIPLE",
+      "BENCH",
+      "BOX_HIGH",
+      "BOX_LOW",
+      "CROSS_BAR",
+      "DUMBBELL",
+      "FOAM_BALL",
+      "FOAM_ROLLER",
+      "MEDICINE_BALL",
+      "MEDICINE_BALL_JUMPING",
+      "POWER_RACK",
+      "TREADMILL",
+      "WALL"
+    ]
+  },
+  "HALL": {
+    "EQUIPMENT": [
+      "AREA_10",
+      "AREA_20",
+      "AREA_5",
+      "BOX_HIGH",
+      "BOX_LOW",
+      "CEILING",
+      "EXERCISING_BENCH",
+      "FOAM_BALL",
+      "FOAM_ROLLER",
+      "HANDBALL",
+      "HANDBALL_GOAL",
+      "MARKERS",
+      "MEDICINE_BALL",
+      "MEDICINE_BALL_JUMPING",
+      "MULTIPLE_EXERCISING_BENCHES",
+      "SLIPPERY_GROUND",
+      "SPEED_LADDER",
+      "TOWEL",
+      "TRACK_20",
+      "TRACK_5",
+      "WALL",
+      "WALL_BAR"
+    ]
+  },
+  "OUTSIDE": {
+    "EQUIPMENT": [
+      "AREA_10",
+      "AREA_20",
+      "AREA_5",
+      "CEILING",
+      "PARK_BENCH",
+      "TRACK_20",
+      "TRACK_5",
+      "TRACK_LONG"
+    ]
+  }
+}

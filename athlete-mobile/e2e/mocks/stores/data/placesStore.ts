@@ -3,10 +3,9 @@
  */
 
 import type { PlacesState, StoreState } from "../types";
-import STUDIO from "../../../../assets/data/generator/places/STUDIO";
-import HOME from "../../../../assets/data/generator/places/HOME";
-import HALL from "../../../../assets/data/generator/places/HALL";
-import OUTSIDE from "../../../../assets/data/generator/places/OUTSIDE";
+import PLACES from "../../../../assets/data/generator/places.json";
+
+const { HOME, STUDIO, HALL, OUTSIDE } = PLACES;
 
 export const DEFAULT_HOME_EQUIPMENT = HOME.EQUIPMENT;
 export const DEFAULT_STUDIO_EQUIPMENT = STUDIO.EQUIPMENT;

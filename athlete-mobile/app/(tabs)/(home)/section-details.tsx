@@ -13,7 +13,7 @@ import { useResponsiveProp } from "@shopify/restyle";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { type FC, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { SECTIONS_DATA, SECTIONS_VIDEOS } from "../../../assets/data/sections";
+import { loadSections } from "@/data/loadSections";
 
 /**
  * Section Details Screen
@@ -26,6 +26,7 @@ const SectionDetailsScreen: FC = () => {
   const { t, i18n } = useTranslation();
   const { trainingPlan } = useUserWorkoutStore();
   const params = useLocalSearchParams<{ activeSection?: string }>();
+  const { SECTIONS_DATA, SECTIONS_VIDEOS } = loadSections();
 
   const [activeSection, setActiveSection] = useState(0);
 

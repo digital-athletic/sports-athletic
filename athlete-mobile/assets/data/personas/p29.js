@@ -1,6 +1,5 @@
-import HOME from "../generator/places/HOME";
-import HALL from "../generator/places/HALL";
-import STUDIO from "../../../assets/data/generator/places/STUDIO";
+import PLACES from "../generator/places.json";
+const { HOME, HALL, STUDIO } = PLACES;
 
 /**
  * 23 oder 22 Wochen?

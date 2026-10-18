@@ -1,5 +1,5 @@
-import HOME from "../generator/places/HOME";
-import HALL from "../generator/places/HALL";
+import PLACES from "../generator/places.json";
+const { HOME, HALL } = PLACES;
 /**
  * Sonderfall für Torhüter mit 5 statt 4 Sections?!?
  */

@@ -1,5 +1,5 @@
 /**
- * Adapts a legacy persona (assets/data/personas/pN.js) into the inputs the
+ * Adapts a legacy persona (test/fixtures/personas/pN.js) into the inputs the
  * training generator expects. Personas carry `workoutData` in a legacy shape
  * (flat tag strings, `D-M-YYYY` birthdays) that predates the current
  * UserType/PersonalData schema, so this is the single translation layer.

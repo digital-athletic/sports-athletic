@@ -33,11 +33,11 @@ import {
   type SessionSnapshot,
 } from "../../../../test/simulation/progression/progressionSimulator";
 
-// Legacy persona assets are untyped `.js`; cast at the boundary. p2 is tagged
+// Legacy persona fixtures are untyped `.js`; cast at the boundary. p2 is tagged
 // LEVEL_ADVANCED, matching the spec's restriction of max strength training to
 // the Advanced/Pro levels.
 const personaP2 = (
-  require("../../../../assets/data/personas/p2.js") as {
+  require("../../../../test/fixtures/personas/p2.js") as {
     default: LegacyPersona;
   }
 ).default;

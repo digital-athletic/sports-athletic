@@ -6,14 +6,7 @@ import { Stack } from "expo-router";
 import { type FC, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
-import TUTORIALS from "../../../assets/data/tutorials/TUTORIALS"; // legacy data file
-
-type TutorialItem = {
-  ordering: number;
-  title: { default: string; en?: string };
-  picture: string;
-  video: string;
-};
+import { loadTutorials } from "@/data/loadTutorials";
 
 type MappedTutorial = {
   id: string;
@@ -29,7 +22,7 @@ const useTutorials = () => {
 
   const tutorials = useMemo(() => {
     const locale = i18n.language.startsWith("en") ? "en" : "default";
-    return (TUTORIALS as TutorialItem[])
+    return [...loadTutorials()]
       .sort((a, b) => a.ordering - b.ordering)
       .map((tutorial) => ({
         id: `${tutorial.ordering}`,

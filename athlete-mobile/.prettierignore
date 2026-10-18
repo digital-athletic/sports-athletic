@@ -10,6 +10,9 @@ pnpm-lock.yaml
 #Assets
 assets/*
 
+# Legacy test fixtures
+test/fixtures/personas/*
+
 # Legacy code
 legacy/*
 flow/*

@@ -143,19 +143,22 @@ describe("loadSectionTemplate: preparatory file", () => {
 });
 
 describe("loadSectionTemplate: competition file", () => {
-  it("parses every adult competition template of the real file", () => {
-    for (const level of LEVELS) {
-      expect({
-        level,
-        success: v.safeParse(
-          TrainingSectionsMapSchema,
-          CompetitionTemplates.adult[level],
-        ).success,
-      }).toEqual({ level, success: true });
+  it("parses every competition template of the real file", () => {
+    for (const ageGroup of AGE_GROUPS) {
+      for (const level of LEVELS) {
+        expect({
+          ageGroup,
+          level,
+          success: v.safeParse(
+            TrainingSectionsMapSchema,
+            CompetitionTemplates[ageGroup][level],
+          ).success,
+        }).toEqual({ ageGroup, level, success: true });
+      }
     }
   });
 
-  it("returns a known competition template for a known key", () => {
+  it("returns a known adult competition template for a known key", () => {
     const template = loadSectionTemplate("COMPETITION", "ADULT", "ADVANCED");
 
     expect(template["7"]).toEqual([
@@ -168,6 +171,39 @@ describe("loadSectionTemplate: competition file", () => {
       { type: "SA", numOfWeeks: 3, cardioType: "CARDIO_2" },
       { type: "MAX", numOfWeeks: 3, cardioType: "CARDIO_1_SHORT" },
       { type: "SK", numOfWeeks: 2, cardioType: "CARDIO_2" },
+    ]);
+  });
+
+  it("returns a known child competition template for a known key", () => {
+    const template = loadSectionTemplate("COMPETITION", "CHILD", "BEGINNER");
+
+    expect(template["8"]).toEqual([
+      { type: "SWR1", numOfWeeks: 2, cardioType: "CARDIO_3" },
+      { type: "SK", numOfWeeks: 2, cardioType: "CARDIO_2" },
+      { type: "SWR1", numOfWeeks: 2, cardioType: "CARDIO_3" },
+      { type: "SA", numOfWeeks: 2, cardioType: "CARDIO_2" },
+    ]);
+    expect(template.repeat).toEqual([
+      { type: "SK", numOfWeeks: 1, cardioType: "CARDIO_2" },
+      { type: "SWR1", numOfWeeks: 4, cardioType: "CARDIO_3" },
+      { type: "SA", numOfWeeks: 3, cardioType: "CARDIO_2" },
+      { type: "SWR1", numOfWeeks: 4, cardioType: "CARDIO_3" },
+      { type: "SK", numOfWeeks: 2, cardioType: "CARDIO_2" },
+    ]);
+  });
+
+  it("returns the child professional repeat block without a leading SK", () => {
+    const template = loadSectionTemplate(
+      "COMPETITION",
+      "CHILD",
+      "PROFESSIONAL",
+    );
+
+    expect(template.repeat).toEqual([
+      { type: "SWR1", numOfWeeks: 4, cardioType: "CARDIO_2" },
+      { type: "SA", numOfWeeks: 3, cardioType: "CARDIO_1_LAKTAT" },
+      { type: "SWR1", numOfWeeks: 4, cardioType: "CARDIO_2" },
+      { type: "SK", numOfWeeks: 3, cardioType: "CARDIO_1_SHORT" },
     ]);
   });
 });

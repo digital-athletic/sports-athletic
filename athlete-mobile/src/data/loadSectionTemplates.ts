@@ -1,9 +1,6 @@
 import { createDataLoader, parseData } from "./createDataLoader";
 import PauseJson from "../../assets/data/generator/trainingSections/pause.json";
 import CompetitionJson from "../../assets/data/generator/trainingSections/competition.json";
-import CompetitionChildAdvanced from "../../assets/data/generator/trainingSections/competition/child/advanced";
-import CompetitionChildBeginner from "../../assets/data/generator/trainingSections/competition/child/beginner";
-import CompetitionChildProfessional from "../../assets/data/generator/trainingSections/competition/child/professional";
 import PreparatoryJson from "../../assets/data/generator/trainingSections/preparatory.json";
 import {
   TrainingSectionsMapSchema,
@@ -12,18 +9,11 @@ import {
 
 type PhaseTemplates = Record<string, Record<string, unknown>>;
 
-// Season phase -> age group -> fitness level. Only the competition phase is still TypeScript.
+// Season phase -> age group -> fitness level.
 const templates: Record<string, PhaseTemplates> = {
   pause: PauseJson,
   preparatory: PreparatoryJson,
-  competition: {
-    child: {
-      beginner: CompetitionChildBeginner,
-      advanced: CompetitionChildAdvanced,
-      professional: CompetitionChildProfessional,
-    },
-    adult: CompetitionJson.adult,
-  },
+  competition: CompetitionJson,
 };
 
 const FALLBACK_KEY = "preparatory/adult/advanced";

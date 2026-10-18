@@ -133,21 +133,6 @@
       "count": 1
     }
   },
-  "assets/data/generator/trainingSections/competition/child/advanced.ts": {
-    "max-lines": {
-      "count": 1
-    }
-  },
-  "assets/data/generator/trainingSections/competition/child/beginner.ts": {
-    "max-lines": {
-      "count": 1
-    }
-  },
-  "assets/data/generator/trainingSections/competition/child/professional.ts": {
-    "max-lines": {
-      "count": 1
-    }
-  },
   "assets/mockdata/TestIntensity.js": {
     "max-lines": {
       "count": 1

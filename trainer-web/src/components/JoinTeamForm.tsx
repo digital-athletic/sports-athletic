@@ -44,6 +44,10 @@ export function JoinTeamForm({ onSubmit, onCancel }: JoinTeamFormProps) {
           placeholder={t("teamManagement.joinTeam.codePlaceholder")}
           className="font-mono uppercase tracking-wider"
           maxLength={6}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="characters"
+          spellCheck={false}
           required
         />
         <div className="flex gap-3">

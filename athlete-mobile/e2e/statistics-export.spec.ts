@@ -44,7 +44,7 @@ test.describe("Statistics export: athlete with workouts", () => {
       "workout-1",
     ]);
     expect(lines[1]).toMatch(
-      /^workout-2,[\dT:-]+,118,KH-Frontkniebeuge,SWR1,3,3,10,14,PER_DUMBBELL,,,,$/,
+      /^workout-2,[\dT:-]+,118,KH-Frontkniebeuge,SWR1,3,3,10,14,Per dumbbell,,,,$/,
     );
     expect(lines[5]).toBe("");
   });

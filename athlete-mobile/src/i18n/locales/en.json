@@ -905,6 +905,15 @@
         "benchPress": "Bench press (kg)",
         "rowing": "Rowing (kg)",
         "shoulderPress": "Shoulder press (kg)"
+      },
+      "weightType": {
+        "perDumbbell": "Per dumbbell",
+        "total": "Total"
+      },
+      "difficulty": {
+        "tooEasy": "Too easy",
+        "tooHard": "Too hard",
+        "succeeded": "Just right"
       }
     },
     "powerTest": {

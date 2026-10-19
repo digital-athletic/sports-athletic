@@ -905,6 +905,15 @@
         "benchPress": "Bankdrücken (kg)",
         "rowing": "Rudern (kg)",
         "shoulderPress": "Schulterdrücken (kg)"
+      },
+      "weightType": {
+        "perDumbbell": "Pro Kurzhantel",
+        "total": "Gesamt"
+      },
+      "difficulty": {
+        "tooEasy": "Zu einfach",
+        "tooHard": "Zu schwer",
+        "succeeded": "Passend"
       }
     },
     "powerTest": {

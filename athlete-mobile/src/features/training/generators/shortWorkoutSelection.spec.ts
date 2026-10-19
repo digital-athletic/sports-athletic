@@ -66,7 +66,9 @@ const selectedBranches = (
     options.equipment ?? [],
     { exerciseData: {}, branchData: {} },
   );
-  const [, branches] = spy.mock.calls[0];
+  // a prevention training also draws a special warm up block
+  const [, branches] =
+    spy.mock.calls.find(([skill]) => skill === type) ?? spy.mock.calls[0];
   return branches;
 };
 
@@ -191,7 +193,8 @@ const mainPairs = (
     equipment,
     { exerciseData: {}, branchData: {} },
   );
-  const [pairs] = spy.mock.calls[0];
+  const [pairs] =
+    spy.mock.calls.find(([, { skill }]) => skill === type) ?? spy.mock.calls[0];
   return pairs.map(({ first, second }) =>
     second ? [first.branchId, second.branchId] : [first.branchId],
   );

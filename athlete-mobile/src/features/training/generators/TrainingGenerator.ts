@@ -3,6 +3,7 @@ import {
   WorkoutConstants,
   type SkillTypes,
 } from "@/constants/workoutConstants";
+import { loadFocusTraining } from "@/data/loadFocusTrainings";
 import { loadIntensityConfig } from "@/data/loadIntensityConfig";
 import { loadStrengthTest } from "@/data/loadStrengthTest";
 import type {
@@ -37,7 +38,6 @@ import { extendSectionsForMissedWeeks } from "@/features/training/utils/training
 import {
   filterByAge,
   filterByGender,
-  filterByRegion,
   filterBySoreness,
 } from "@/features/training/utils/branchFilterUtils";
 import {
@@ -140,6 +140,12 @@ import {
   getUserLevel,
   roundWeightValue,
 } from "../utils/workoutUtils";
+import {
+  drawBlock,
+  requireFocusEquipment,
+  resolveFocusPool,
+  type DrawContext,
+} from "./focusTrainingSelection";
 import { computeWarmupWeights, WARMUP_REST_SECONDS } from "./warmupDerivation";
 
 export default class TrainingGenerator {
@@ -237,87 +243,18 @@ export default class TrainingGenerator {
     // Create exercise lookup map for type-safe access
     const exerciseMap = createExerciseMap(exercises);
 
-    // get skill tree
+    const template = loadFocusTraining(type);
+    if (!template) {
+      throw { type: "NO_EXERCISES", subtype: "SKILL_TREE", params: [type] };
+    }
     const HAS_WEIGHTS = hasWeights(equipment);
-    const skillTree = getSkillTree(skillTrees, type, [], HAS_WEIGHTS, true);
+    requireFocusEquipment(template, equipment);
+    const pool = resolveFocusPool(type, template, skillTrees, HAS_WEIGHTS);
 
     if (TrainingGenerator.DEBUG) {
       console.log("generate short training for " + type);
       console.log("HAS_WEIGHTS", HAS_WEIGHTS);
-      console.log("skillTree", skillTree);
-    }
-
-    // check foam roller (Faszienrolle) equipment if chosen type is BR
-    if (
-      type === "BR" &&
-      !equipment.includes("FOAM_ROLLER") &&
-      !equipment.includes("FOAM_BALL")
-    ) {
-      throw {
-        type: "NO_EXERCISES",
-        subtype: "EQUIPMENT",
-        params: ["FOAM_ROLLER", "FOAM_BALL"],
-      };
-    }
-
-    // get branches matching
-    // prevention tag
-    let preventionFiltered: SkillTreeType = skillTree;
-    let prev: string | undefined;
-    if (type.indexOf("PREV") > -1) {
-      switch (type) {
-        case "PREVSHOULDER":
-          prev = "SHOULDER";
-          break;
-        case "PREVKNEE":
-          prev = "KNEE_HIP";
-          break;
-        case "PREVWRIST":
-          prev = "WRIST_ELBOW";
-          break;
-        case "PREVANKLE":
-          prev = "ANKLE";
-          break;
-        case "PREVSPINE":
-          prev = "SPINE";
-          break;
-        default:
-          prev = "SHOULDER";
-          break;
-      }
-
-      const specificPrevention: SkillTreeType = {};
-      for (const id in skillTree) {
-        let preventions = getTagValues(
-          skillTree[id].tags,
-          TagGroups.PREVENTION,
-        );
-        if (preventions.indexOf(prev) > -1) {
-          specificPrevention[id] = skillTree[id];
-        }
-      }
-      preventionFiltered = specificPrevention;
-
-      if (Object.keys(preventionFiltered).length === 0) {
-        throw {
-          type: "NO_EXERCISES",
-          subtype: "SKILL_TREE",
-          params: [prev],
-        };
-      }
-
-      // Add special warm up
-      let skillTreeWUSPEZ = getSkillTree(
-        skillTrees,
-        "WUSPEZIAL",
-        [type],
-        HAS_WEIGHTS,
-      );
-      preventionFiltered = { ...preventionFiltered, ...skillTreeWUSPEZ };
-    }
-
-    if (TrainingGenerator.DEBUG) {
-      console.log("prevention filtered", preventionFiltered);
+      console.log("pool", pool);
     }
 
     // pain
@@ -328,8 +265,8 @@ export default class TrainingGenerator {
 
     const painFiltered: SkillTreeType = {};
     const painList: string[] = [];
-    for (const id in preventionFiltered) {
-      const entry = preventionFiltered[id];
+    for (const id in pool) {
+      const entry = pool[id];
       const blocked = getTagValues(entry.tags, TagGroups.BLOCK);
 
       let isBlocked = false;
@@ -397,10 +334,6 @@ export default class TrainingGenerator {
     if (Object.keys(genderFiltered).length === 0) {
       throw { type: "NO_EXERCISES", subtype: "GENDER", params: [] };
     }
-
-    // Build exercise list
-    let branches: Record<string, BranchExerciseReference[]> = { main: [] };
-    let branchesIds: string[] = [];
 
     const userLevel = getUserLevel(user);
 
@@ -498,243 +431,51 @@ export default class TrainingGenerator {
       return { branch, branchId: id, fillUpBranchAndId };
     };
 
-    let duration = 0;
-    let setsPerExercise = 2;
-    let isShortTraining = false; // does map to following skills, not all short trainings like prev and stability
-    if (["WU", "MOB", "BR", "CD"].indexOf(type) > -1) {
-      isShortTraining = true;
-      // set these short trainings to 10 slots, 1 set, 60 secs, 10 secs pause
-      const numOfSlots = 10;
-      let slots = 0;
-      setsPerExercise = 1;
-      while (slots < numOfSlots) {
-        let result = getBranchAndId(genderFiltered, branchesIds);
-        // end if no more branches
-        if (result === null) break;
-        branchesIds.push(result.branchId);
-        // one sided exercises fill two slots, left and right
-        let side = getTagValues(result.branch.branchTags, TagGroups.SIDE);
-        const branchSlots = side.indexOf("ONE") > -1 ? 2 : 1;
-        if (slots + branchSlots > numOfSlots) continue;
-
-        branches.main.push(result.branch);
-        slots += branchSlots;
-      }
-    } else if (["BAS", "GKS"].indexOf(type) > -1) {
-      // stability with weights: 4 from any region; bodyweight: 3 upper body plus 2 full body
-      let regions =
-        type === "GKS" && !HAS_WEIGHTS
-          ? [
-              { tags: ["REGION_UPPER_BODY"], count: 3 },
-              { tags: ["REGION_FULL_BODY"], count: 2 },
-            ]
-          : [{ tags: [], count: 4 }];
-      for (let region of regions) {
-        for (let i = 0; i < region.count; i++) {
-          const regionFiltered = filterByRegion(
-            genderFiltered,
-            getTagValues(region.tags, TagGroups.REGION),
-          ).keep;
-          let result =
-            getBranchAndId(regionFiltered, branchesIds) ??
-            getBranchAndId(genderFiltered, branchesIds);
-          // end if no more branches
-          if (result === null) break;
-          let side = getTagValues(result.branch.branchTags, TagGroups.SIDE);
-          // do not use again
-          branchesIds.push(result.branchId);
-
-          if (side.indexOf("ONE") > -1) {
-            if (i === region.count - 1) {
-              i--;
-              // do not use one sided exercises as last because it would be one too many
-              continue;
-            }
-            // one sided exercises used left and right, so we need one branch less
-            i++;
-          }
-
-          branches.main.push(result.branch);
-        }
-      }
-    } else if (type.indexOf("PREV") > -1) {
-      // set PREV short trainings to 3 WUSPEZ (1 set, 10 secs pause) + 6 PREV (3x2 superSets, 2 sets, 30 secs pause)
-      let sets: {
-        skill: string;
-        count: number;
-        skills: string[];
-      }[] = [
-        {
-          skill: "WUSPEZIAL",
-          count: 3,
-          skills: ["WU", "WARM_UP", "WARM_UP_SPECIAL"],
-        },
-        {
-          skill: "main",
-          count: 3, // results in one super set pair each 3 => 6
-          skills: ["PREVENTION"],
-        },
-      ];
-      const weightedMain: BranchExerciseReference[] = [];
-      for (let set of sets) {
-        // filter Object by skill of this set
-        // Note: prev is guaranteed to be defined here since we're in type.indexOf("PREV") > -1 block
-        const filteredBranches = Object.keys(
-          genderFiltered,
-        ).reduce<SkillTreeType>((acc, branchKey) => {
-          const skillTags = getTagValues(
-            genderFiltered[branchKey].tags,
-            TagGroups.SKILL,
-          );
-          const prevTags = getTagValues(
-            genderFiltered[branchKey].tags,
-            TagGroups.PREVENTION,
-          );
-          if (
-            skillTags.some((st) => set.skills.includes(st)) &&
-            prevTags.includes(prev!)
-          ) {
-            acc[branchKey] = genderFiltered[branchKey];
-          }
-          return acc;
-        }, {});
-
-        const isMainSkill = set.skill === "main";
-        for (let i = 0; i < set.count; i++) {
-          if (isMainSkill) {
-            const result = getSuperSetPairBranchAndId(
-              filteredBranches,
-              branchesIds,
-            );
-            // end if no more branches
-            if (result === null) break;
-            // weighted pairs are ordered last
-            const target = result.branch.branchTags.includes("EQ_TYPE_WEIGHTS")
-              ? weightedMain
-              : branches.main;
-            target.push(result.branch);
-            branchesIds.push(result.branchId);
-            // add fill up branch for BOTH_SIDE
-            if (result.fillUpBranchAndId?.branch) {
-              target.push(result.fillUpBranchAndId.branch);
-              branchesIds.push(result.fillUpBranchAndId.branch.branchId);
-            }
-          } else {
-            const result = getBranchAndId(filteredBranches, branchesIds);
-            // end if no more branches
-            if (result === null) break;
-            // set branches for secondary sets skill
-            if (!branches[set.skill]) {
-              branches[set.skill] = [];
-            }
-            branches[set.skill].push(result.branch);
-            branchesIds.push(result.branchId);
-          }
-        }
-      }
-      branches.main.push(...weightedMain);
-    } else {
-      // otherwise add till reaching 15 mins
-      while (duration < 15 * 60) {
-        let result = getBranchAndId(genderFiltered, branchesIds);
-        // end if no more branches
-        if (result === null) break;
-        branches.main.push(result.branch);
-        branchesIds.push(result.branchId);
-
-        //calc length
-        let exDur = setsPerExercise * 60; // TODO is 60 sec a good guess?
-        let pauseDur = setsPerExercise * 15; // TODO is 15 sec a good guess for pause
-        duration += exDur;
-        duration += pauseDur;
-      }
-    }
+    const drawContext: DrawContext = {
+      pool: genderFiltered,
+      draw: { single: getBranchAndId, pair: getSuperSetPairBranchAndId },
+      usedBranchIds: [],
+    };
+    const drawnBlocks = template.blocks.map((block) =>
+      drawBlock(block, HAS_WEIGHTS, drawContext),
+    );
 
     if (TrainingGenerator.DEBUG) {
-      console.log("branches selected", branches);
+      console.log("branches selected", drawnBlocks);
     }
 
-    let prevs = type.indexOf("PREV") > -1 ? [type] : [];
-    let exerciseTime = type.indexOf("PREV") > -1 ? 30 : 15;
-    // focus and prevention trainings keep the supersets of their draw
-    const authoredPairs = type === "BAS" || type.indexOf("PREV") > -1;
-    let exercisePairs: ExercisePair[] = this.getExercisePairs(
-      type,
-      branches.main,
-      exercises,
-      userPains,
-      prevs,
-      isShortTraining,
-      authoredPairs,
-    );
-    // delete single PREV sets and add them up to Super sets
-    if (type.indexOf("PREV") > -1) {
-      let singlePairIndex = exercisePairs.findIndex((e) => !e.second);
-      while (singlePairIndex !== -1) {
-        let secondSinglePair: BranchExerciseReference | undefined;
-        let secondSinglePairIndex = -1;
-        for (let i = 0; i < exercisePairs.length; i++) {
-          if (!exercisePairs[i].second && i !== singlePairIndex) {
-            secondSinglePair = exercisePairs[i].first;
-            secondSinglePairIndex = i;
-          }
-        }
-        if (secondSinglePairIndex !== -1 && secondSinglePair) {
-          exercisePairs[singlePairIndex].second = secondSinglePair;
-          exercisePairs.splice(secondSinglePairIndex, 1);
-        }
-        let nextSinglePairIndex = exercisePairs.findIndex((e) => !e.second);
-        singlePairIndex =
-          nextSinglePairIndex !== singlePairIndex ? nextSinglePairIndex : -1;
-      }
-    }
-
-    let exerciseList = this.getSetListFromExercisePairs(
-      exercisePairs,
-      { skill: type as SkillCode, length: exerciseTime },
-      skillTrees,
-      user,
-      place,
-      equipment,
-      exercises,
-      setsPerExercise,
-      temporalData,
-      userExerciseData.exerciseData,
-      isShortTraining,
-      true,
-    );
-    dropTrailingPause(exerciseList);
-
-    // handle PREV special warm-up
-    if (type.indexOf("PREV") > -1) {
-      setsPerExercise = 1;
-      let exercisePairsWU: ExercisePair[] = this.getExercisePairs(
-        "WUSPEZIAL",
-        branches["WUSPEZIAL"],
+    const setLists = template.blocks.map((block, index) => {
+      const skill = block.skill ?? (type as SkillCode);
+      const isShortTraining = block.work !== undefined;
+      const exercisePairs = this.getExercisePairs(
+        skill,
+        drawnBlocks[index],
         exercises,
         userPains,
-        [type],
+        [],
         isShortTraining,
+        block.superset === "drawOrder" || block.superset === "drawOrderAll",
       );
-
-      let exerciseListWU = this.getSetListFromExercisePairs(
-        exercisePairsWU,
-        {
-          skill: "WUSPEZIAL",
-          length: 4,
-        },
+      if (block.superset === "drawOrderAll") pairLeftoverSingles(exercisePairs);
+      return this.getSetListFromExercisePairs(
+        exercisePairs,
+        // only cardio set lists read the length
+        { skill, length: 0 },
         skillTrees,
         user,
         place,
         equipment,
         exercises,
-        setsPerExercise,
+        block.sets,
         temporalData,
         userExerciseData.exerciseData,
         isShortTraining,
+        true,
       );
-      exerciseList = exerciseListWU.concat(exerciseList);
-    }
+    });
+    // the pause closing a block leads into the next one
+    dropTrailingPause(setLists[setLists.length - 1]);
+    const exerciseList = setLists.flat();
 
     if (TrainingGenerator.DEBUG) {
       console.log("final short training list", exerciseList);
@@ -3755,6 +3496,28 @@ const pairInDrawOrder = (
     }
   }
   return pairs;
+};
+
+// Joins exercises without a partner into supersets, in place.
+const pairLeftoverSingles = (exercisePairs: ExercisePair[]) => {
+  let singlePairIndex = exercisePairs.findIndex((e) => !e.second);
+  while (singlePairIndex !== -1) {
+    let secondSinglePair: BranchExerciseReference | undefined;
+    let secondSinglePairIndex = -1;
+    for (let i = 0; i < exercisePairs.length; i++) {
+      if (!exercisePairs[i].second && i !== singlePairIndex) {
+        secondSinglePair = exercisePairs[i].first;
+        secondSinglePairIndex = i;
+      }
+    }
+    if (secondSinglePairIndex !== -1 && secondSinglePair) {
+      exercisePairs[singlePairIndex].second = secondSinglePair;
+      exercisePairs.splice(secondSinglePairIndex, 1);
+    }
+    const nextSinglePairIndex = exercisePairs.findIndex((e) => !e.second);
+    singlePairIndex =
+      nextSinglePairIndex !== singlePairIndex ? nextSinglePairIndex : -1;
+  }
 };
 
 const filterExercisesBySides = (

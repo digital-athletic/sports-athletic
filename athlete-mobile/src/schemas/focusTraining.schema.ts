@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { GeneratorSkillTypeSchema } from "./generator.schema";
 
 const SecondsSchema = v.pipe(v.number(), v.integer(), v.minValue(0));
 const CountSchema = v.pipe(v.number(), v.integer(), v.minValue(1));
@@ -11,7 +12,7 @@ const PickSchema = v.strictObject({
 
 export const FocusTrainingBlockSchema = v.strictObject({
   // Skill code of the generated entries, defaults to the training type.
-  skill: v.optional(v.string()),
+  skill: v.optional(GeneratorSkillTypeSchema),
   // Adds this skill tree to the branches the blocks draw from.
   skillTree: v.optional(v.string()),
   // slots: a one sided exercise fills two slots; pairs: count superset pairs.

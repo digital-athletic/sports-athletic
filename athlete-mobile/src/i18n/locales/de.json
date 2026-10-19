@@ -300,11 +300,6 @@
         "title": "Willkommen zurück",
         "message": "Du hast seit mehr als drei Wochen nicht trainiert. Möchtest du einen neuen Trainingsplan erstellen?"
       },
-      "workoutNowMsg": "Starte jetzt dein Training!",
-      "workoutNowSpeedMsg": "Mach dich bereit für eine kraftvolle Trainingseinheit!",
-      "coachSportProhibitionMsg": "Achte darauf, dass du nicht verletzt bist, bevor du startest!",
-      "coachSportPreventionMsg": "Präventionsübungen helfen dir, verletzungsfrei zu bleiben.",
-      "coachSportStabilityMsg": "Baue eine starke Grundlage mit Stabilitätsübungen.",
       "timeAndPlace": "{{focus}}, {{time}} Minuten"
     },
     "powerTest": {

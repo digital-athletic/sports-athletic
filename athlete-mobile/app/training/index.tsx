@@ -1,6 +1,5 @@
 import { BackHeader } from "@/common/BackHeader";
 import { FullScreenCoaching } from "@/common/FullScreenCoaching";
-import { Hint } from "@/common/Hint";
 import {
   isSkillTypes,
   TileData,
@@ -229,23 +228,6 @@ export default function SelectTraining() {
     setScreenState("SELECT");
   }, []);
 
-  const renderTrainingAdvice = useCallback(() => {
-    let message: string = t("training.selectTraining.workoutNowMsg");
-
-    switch (selection) {
-      case "PLAN":
-        message = t("training.selectTraining.workoutNowSpeedMsg");
-        break;
-      case "PREV":
-      case "QUICK":
-      default:
-        message = t("training.selectTraining.workoutNowMsg");
-        break;
-    }
-
-    return <Hint type="HINT" message={message} />;
-  }, [selection, t]);
-
   const renderTiles = useCallback(() => {
     let listItems = tiles;
     if (selection === "PREV") {
@@ -267,27 +249,6 @@ export default function SelectTraining() {
       </Box>
     );
   }, [tiles, selection]);
-
-  const renderCoaching = useCallback(() => {
-    let message: string = t("training.selectTraining.coachSportProhibitionMsg");
-
-    switch (selection) {
-      case "PLAN":
-        message = t("training.selectTraining.coachSportProhibitionMsg");
-        break;
-      case "PREV":
-        message = t("training.selectTraining.coachSportPreventionMsg");
-        break;
-      case "QUICK":
-        message = t("training.selectTraining.coachSportStabilityMsg");
-        break;
-      default:
-        message = t("training.selectTraining.coachSportProhibitionMsg");
-        break;
-    }
-
-    return <Hint type="WARNING" message={message} />;
-  }, [selection, t]);
 
   const renderTestCoaching = useCallback(() => {
     return (
@@ -313,10 +274,6 @@ export default function SelectTraining() {
       {screenState === "SELECT" ? (
         <Box flex={1} backgroundColor="lightGrey1">
           {renderTiles()}
-          <Box paddingHorizontal="m" paddingTop="s" paddingBottom="m" gap="s">
-            {renderTrainingAdvice()}
-            {renderCoaching()}
-          </Box>
         </Box>
       ) : (
         renderTestCoaching()

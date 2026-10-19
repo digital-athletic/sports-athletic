@@ -1,74 +1,604 @@
+import type { ExerciseType } from "@/schemas/exercise.schema";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { MaxValuesType } from "@/features/training/models/MaxValues";
+import { PAUSE_EXERCISE_ID } from "@/features/training/models/IdTypes";
+import type { UserExerciseDataType } from "@/schemas/sync.schema";
 import type { CompleteWorkoutType } from "@/store/completedWorkoutsStore";
 import {
   buildExportFileName,
+  toExerciseSetRows,
   toStrengthTestRows,
-  toWorkoutRows,
 } from "./statisticsCsv";
 
 const at = (day: number, hour = 8, minute = 5, second = 9): number =>
   new Date(2026, 0, day, hour, minute, second).getTime();
 
-describe("statisticsCsv: toWorkoutRows", () => {
-  it("maps one row per workout with a local ISO timestamp", () => {
-    const workouts: CompleteWorkoutType[] = [
-      {
-        id: "w1",
-        timestamp: at(3),
-        exercises: [],
-        duration: 1800,
-        exerciseCount: 6,
-        xpEarned: 120,
-        movedWeight: 2500.5,
-      },
-    ];
+const COLUMN = {
+  workoutId: 0,
+  date: 1,
+  exerciseId: 2,
+  exercise: 3,
+  skill: 4,
+  set: 5,
+  setCount: 6,
+  repetitions: 7,
+  weightKg: 8,
+  weightType: 9,
+  weightPercentFMax: 10,
+  durationSeconds: 11,
+  heightCm: 12,
+  difficulty: 13,
+} as const;
 
-    expect(toWorkoutRows(workouts)).toEqual([
-      ["2026-01-03T08:05:09", 30, 6, 120, 2500.5],
+const emptyValue = {
+  startValue: { default: {}, m: {}, w: {}, k: {} },
+  targetValue: { default: {}, m: {}, w: {}, k: {} },
+};
+
+const makeExercise = (
+  id: string,
+  name: string,
+  displayName: string | null,
+  tags: string[],
+): ExerciseType => ({
+  id,
+  level: { m: 1, w: 1 },
+  name,
+  displayName,
+  description: "",
+  picture: "",
+  video: "",
+  tags,
+  values: {
+    duration: emptyValue,
+    repetition: emptyValue,
+    height: emptyValue,
+    weight: emptyValue,
+  },
+  isAdvanceByReps: false,
+  isAdvanceByDuration: false,
+  isJump: false,
+  conversionFactor: 1,
+});
+
+const BENCH_TAGS = ["EQ_BARBELL", "EXERCISE_DIRECTION_HORIZONTAL_PUSH"];
+const BENCH = makeExercise("100", "bench_press", "Bench Press", BENCH_TAGS);
+const UNNAMED = makeExercise("101", "plain_name", null, BENCH_TAGS);
+const DUMBBELL_PRESS = makeExercise("102", "dumbbell_press", "Dumbbell Press", [
+  "EQ_DUMBBELL",
+  "EQ_BENCH",
+]);
+
+const registry: Record<string, ExerciseType> = {
+  [BENCH.id]: BENCH,
+  [UNNAMED.id]: UNNAMED,
+  [DUMBBELL_PRESS.id]: DUMBBELL_PRESS,
+};
+const getExercise = (id: string): ExerciseType | undefined => registry[id];
+
+const entry = (
+  overrides: Partial<UserExerciseDataType> = {},
+): UserExerciseDataType => ({
+  exerciseId: BENCH.id,
+  skill: "SWR1",
+  ...overrides,
+});
+
+const workout = (
+  exercises: UserExerciseDataType[],
+  overrides: Partial<CompleteWorkoutType> = {},
+): CompleteWorkoutType => ({
+  id: "w1",
+  timestamp: at(3),
+  exercises,
+  duration: 1800,
+  ...overrides,
+});
+
+const pushTest = (
+  testAt: number,
+  barbell: number | undefined,
+): MaxValuesType => ({
+  ...DEFAULT_MAX_VALUES,
+  testAt,
+  horizontalPush: { barbell },
+});
+
+describe("statisticsCsv: toExerciseSetRows", () => {
+  it("maps all 14 columns of a performed set in spec order", () => {
+    const rows = toExerciseSetRows(
+      [
+        workout(
+          [
+            entry({
+              set: [2, 4],
+              repetition: 8,
+              weight: 60,
+              weightType: "weightAbsolute",
+              duration: 45,
+              height: 30,
+              feedback: { difficulty: "TOO_EASY" },
+            }),
+          ],
+          { id: "w7", timestamp: at(3) },
+        ),
+      ],
+      [],
+      getExercise,
+    );
+
+    expect(rows).toEqual([
+      [
+        "w7",
+        "2026-01-03T08:05:09",
+        "100",
+        "Bench Press",
+        "SWR1",
+        2,
+        4,
+        8,
+        60,
+        "TOTAL",
+        null,
+        45,
+        30,
+        "TOO_EASY",
+      ],
     ]);
   });
 
-  it("rounds the moved weight to two decimals", () => {
-    const rows = toWorkoutRows([
-      {
-        id: "w1",
-        timestamp: at(3),
-        exercises: [],
-        duration: 60,
-        movedWeight: 12.300000000000001,
-      },
-    ]);
+  describe("weight type", () => {
+    const weightTypeOf = (overrides: Partial<UserExerciseDataType>) =>
+      toExerciseSetRows([workout([entry(overrides)])], [], getExercise)[0][
+        COLUMN.weightType
+      ];
 
-    expect(rows[0][4]).toBe(12.3);
+    it("marks the weight of a dumbbell exercise as per dumbbell", () => {
+      expect(weightTypeOf({ exerciseId: DUMBBELL_PRESS.id, weight: 22 })).toBe(
+        "PER_DUMBBELL",
+      );
+    });
+
+    it("marks the weight of a barbell exercise as total", () => {
+      expect(weightTypeOf({ weight: 60 })).toBe("TOTAL");
+    });
+
+    it("marks the weight of an exercise unknown to the registry as total", () => {
+      expect(weightTypeOf({ exerciseId: "424242", weight: 12 })).toBe("TOTAL");
+    });
+
+    it("gives null without a weight", () => {
+      expect(weightTypeOf({ exerciseId: DUMBBELL_PRESS.id })).toBeNull();
+    });
+
+    it("gives null when the kg value cannot be derived", () => {
+      expect(weightTypeOf({ weight: 50, weightType: "weightFMax" })).toBeNull();
+    });
   });
 
-  it("rounds the duration to minutes with one decimal", () => {
-    const rows = toWorkoutRows([
-      { id: "w1", timestamp: at(3), exercises: [], duration: 100 },
-    ]);
+  it("writes one row per performed set across several sets and workouts", () => {
+    const rows = toExerciseSetRows(
+      [
+        workout([entry({ set: [1, 2] }), entry({ set: [2, 2] })], { id: "a" }),
+        workout([entry({ set: [1, 1] })], { id: "b", timestamp: at(4) }),
+      ],
+      [],
+      getExercise,
+    );
 
-    expect(rows[0][1]).toBe(1.7);
+    expect(rows.map((row) => row[COLUMN.workoutId])).toEqual(["a", "a", "b"]);
   });
 
-  it("falls back to 0 for missing optional numbers", () => {
-    const rows = toWorkoutRows([
-      { id: "w1", timestamp: at(3), exercises: [], duration: 60 },
-    ]);
-
-    expect(rows[0].slice(2)).toEqual([0, 0, 0]);
+  it("gives no row for a workout without exercise entries", () => {
+    expect(toExerciseSetRows([workout([])], [], getExercise)).toEqual([]);
   });
 
-  it("sorts oldest first", () => {
-    const rows = toWorkoutRows([
-      { id: "new", timestamp: at(9), exercises: [], duration: 60 },
-      { id: "old", timestamp: at(2), exercises: [], duration: 60 },
-    ]);
+  describe("exercise name", () => {
+    it("uses the display name when the registry has one", () => {
+      const rows = toExerciseSetRows([workout([entry()])], [], getExercise);
 
-    expect(rows.map((row) => row[0])).toEqual([
-      "2026-01-02T08:05:09",
-      "2026-01-09T08:05:09",
-    ]);
+      expect(rows[0][COLUMN.exercise]).toBe("Bench Press");
+    });
+
+    it("falls back to the registry name without a display name", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ exerciseId: UNNAMED.id })])],
+        [],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.exercise]).toBe("plain_name");
+    });
+
+    it("falls back to the exercise id for an exercise unknown to the registry", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ exerciseId: "424242" })])],
+        [],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.exercise]).toBe("424242");
+    });
+
+    it("writes the raw exercise id and skill code", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ exerciseId: "424242", skill: "WU" })])],
+        [],
+        getExercise,
+      );
+
+      expect(rows[0].slice(COLUMN.exerciseId, COLUMN.skill + 1)).toEqual([
+        "424242",
+        "424242",
+        "WU",
+      ]);
+    });
+  });
+
+  describe("performed sets", () => {
+    it("drops pause entries", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ exerciseId: PAUSE_EXERCISE_ID }), entry()])],
+        [],
+        getExercise,
+      );
+
+      expect(rows.map((row) => row[COLUMN.exerciseId])).toEqual(["100"]);
+    });
+
+    it("drops skipped entries", () => {
+      const rows = toExerciseSetRows(
+        [
+          workout([
+            entry({ skipped: true, set: [1, 2] }),
+            entry({ set: [2, 2] }),
+          ]),
+        ],
+        [],
+        getExercise,
+      );
+
+      expect(rows.map((row) => row[COLUMN.set])).toEqual([2]);
+    });
+
+    it("drops a skipped entry even when it carries completed true", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ skipped: true, completed: true })])],
+        [],
+        getExercise,
+      );
+
+      expect(rows).toEqual([]);
+    });
+
+    it("keeps only completed true entries once one entry carries a completed flag", () => {
+      const rows = toExerciseSetRows(
+        [
+          workout([
+            entry({ set: [1, 3], completed: true }),
+            entry({ set: [2, 3], completed: false }),
+            entry({ set: [3, 3] }),
+          ]),
+        ],
+        [],
+        getExercise,
+      );
+
+      expect(rows.map((row) => row[COLUMN.set])).toEqual([1]);
+    });
+
+    it("gives no row when every flagged entry has completed false", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ completed: false }), entry({ completed: false })])],
+        [],
+        getExercise,
+      );
+
+      expect(rows).toEqual([]);
+    });
+
+    it("keeps all remaining entries of a workout without any completed flag", () => {
+      const rows = toExerciseSetRows(
+        [
+          workout([
+            entry({ set: [1, 3] }),
+            entry({ exerciseId: PAUSE_EXERCISE_ID }),
+            entry({ set: [2, 3], skipped: true }),
+            entry({ set: [3, 3] }),
+          ]),
+        ],
+        [],
+        getExercise,
+      );
+
+      expect(rows.map((row) => row[COLUMN.set])).toEqual([1, 3]);
+    });
+
+    it("applies the completed filter per workout", () => {
+      const rows = toExerciseSetRows(
+        [
+          workout([entry({ set: [1, 1], completed: false })], { id: "new" }),
+          workout([entry({ set: [1, 1] })], { id: "legacy", timestamp: at(1) }),
+        ],
+        [],
+        getExercise,
+      );
+
+      expect(rows.map((row) => row[COLUMN.workoutId])).toEqual(["legacy"]);
+    });
+  });
+
+  describe("null cells", () => {
+    it("gives null for set and set count without a set tuple", () => {
+      const rows = toExerciseSetRows([workout([entry()])], [], getExercise);
+
+      expect(rows[0].slice(COLUMN.set, COLUMN.setCount + 1)).toEqual([
+        null,
+        null,
+      ]);
+    });
+
+    it("gives null for repetitions of 0", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ repetition: 0 })])],
+        [],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.repetitions]).toBeNull();
+    });
+
+    it("gives null for the strength test marker repetitions of minus 1", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ repetition: -1 })])],
+        [],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.repetitions]).toBeNull();
+    });
+
+    it("gives null for repetitions, duration, height and difficulty when missing", () => {
+      const rows = toExerciseSetRows([workout([entry()])], [], getExercise);
+
+      expect([
+        rows[0][COLUMN.repetitions],
+        rows[0][COLUMN.durationSeconds],
+        rows[0][COLUMN.heightCm],
+        rows[0][COLUMN.difficulty],
+      ]).toEqual([null, null, null, null]);
+    });
+
+    it("gives null for a feedback without a difficulty rating", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ feedback: { difficulty: null } })])],
+        [],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.difficulty]).toBeNull();
+    });
+
+    it("keeps the raw difficulty code", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ feedback: { difficulty: "TOO_HARD" } })])],
+        [],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.difficulty]).toBe("TOO_HARD");
+    });
+  });
+
+  describe("weight percent of F-Max", () => {
+    it("writes the entry weight for a weightFMax entry", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ weight: 75, weightType: "weightFMax" })])],
+        [],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.weightPercentFMax]).toBe(75);
+    });
+
+    it("gives null for an absolute weight entry", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ weight: 75, weightType: "weightAbsolute" })])],
+        [],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.weightPercentFMax]).toBeNull();
+    });
+
+    it("gives null for an entry without a weight type", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ weight: 75 })])],
+        [],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.weightPercentFMax]).toBeNull();
+    });
+  });
+
+  describe("weight in kg", () => {
+    it("gives null when the entry has no weight", () => {
+      const rows = toExerciseSetRows([workout([entry()])], [], getExercise);
+
+      expect(rows[0][COLUMN.weightKg]).toBeNull();
+    });
+
+    it("gives null when the weight is 0", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ weight: 0 })])],
+        [],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.weightKg]).toBeNull();
+    });
+
+    it("rounds the absolute weight to 2 decimals for an unknown exercise", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ exerciseId: "424242", weight: 12.3004 })])],
+        [],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.weightKg]).toBe(12.3);
+    });
+
+    it("gives null for a weightFMax entry of an unknown exercise", () => {
+      const rows = toExerciseSetRows(
+        [
+          workout([
+            entry({
+              exerciseId: "424242",
+              weight: 50,
+              weightType: "weightFMax",
+            }),
+          ]),
+        ],
+        [pushTest(at(1), 100)],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.weightKg]).toBeNull();
+    });
+
+    it("derives an absolute weight with the equipment rounding of a known exercise", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ weight: 21, weightType: "weightAbsolute" })])],
+        [],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.weightKg]).toBe(20);
+    });
+
+    it("resolves a weightFMax entry from the strength test before the workout", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ weight: 50, weightType: "weightFMax" })])],
+        [pushTest(at(1), 100)],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.weightKg]).toBe(50);
+    });
+
+    it("uses the latest strength test at or before each workout", () => {
+      const rows = toExerciseSetRows(
+        [
+          workout([entry({ weight: 50, weightType: "weightFMax" })], {
+            id: "early",
+            timestamp: at(3),
+          }),
+          workout([entry({ weight: 50, weightType: "weightFMax" })], {
+            id: "late",
+            timestamp: at(8),
+          }),
+        ],
+        [pushTest(at(5), 140), pushTest(at(1), 100)],
+        getExercise,
+      );
+
+      expect(rows.map((row) => row[COLUMN.weightKg])).toEqual([50, 70]);
+    });
+
+    it("includes a strength test taken at the exact workout timestamp", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ weight: 50, weightType: "weightFMax" })])],
+        [pushTest(at(3), 140)],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.weightKg]).toBe(70);
+    });
+
+    it("ignores a strength test taken after the workout", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ weight: 50, weightType: "weightFMax" })])],
+        [pushTest(at(9), 140)],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.weightKg]).toBeNull();
+    });
+
+    it("gives null for a weightFMax entry without any strength test", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ weight: 50, weightType: "weightFMax" })])],
+        [],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.weightKg]).toBeNull();
+    });
+
+    it("gives null for a weightFMax entry when the tested direction has no barbell value", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ weight: 50, weightType: "weightFMax" })])],
+        [pushTest(at(1), undefined)],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.weightKg]).toBeNull();
+    });
+
+    it("still resolves an absolute weight without any strength test", () => {
+      const rows = toExerciseSetRows(
+        [workout([entry({ weight: 60, weightType: "weightAbsolute" })])],
+        [],
+        getExercise,
+      );
+
+      expect(rows[0][COLUMN.weightKg]).toBe(60);
+    });
+  });
+
+  describe("order", () => {
+    it("sorts workouts oldest first", () => {
+      const rows = toExerciseSetRows(
+        [
+          workout([entry()], { id: "new", timestamp: at(9) }),
+          workout([entry()], { id: "old", timestamp: at(2) }),
+        ],
+        [],
+        getExercise,
+      );
+
+      expect(rows.map((row) => row[COLUMN.date])).toEqual([
+        "2026-01-02T08:05:09",
+        "2026-01-09T08:05:09",
+      ]);
+    });
+
+    it("keeps the stored order of the sets inside a workout", () => {
+      const rows = toExerciseSetRows(
+        [
+          workout([
+            entry({ set: [2, 2] }),
+            entry({ exerciseId: UNNAMED.id, set: [1, 2] }),
+          ]),
+        ],
+        [],
+        getExercise,
+      );
+
+      expect(rows.map((row) => row[COLUMN.set])).toEqual([2, 1]);
+    });
+
+    it("does not mutate the input arrays", () => {
+      const workouts = [
+        workout([entry()], { id: "new", timestamp: at(9) }),
+        workout([entry()], { id: "old", timestamp: at(2) }),
+      ];
+
+      toExerciseSetRows(workouts, [], getExercise);
+
+      expect(workouts.map((w) => w.id)).toEqual(["new", "old"]);
+    });
   });
 });
 

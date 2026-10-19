@@ -1,5 +1,6 @@
 import i18n from "@/i18n";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
+import type { UserExerciseDataType } from "@/schemas/sync.schema";
 import { useAuthStore } from "@/store/authStore";
 import { useCompletedWorkoutsStore } from "@/store/completedWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
@@ -22,6 +23,14 @@ const SCALES = ["week", "month", "year", "total"] as const;
 const scaleLabel = (scale: (typeof SCALES)[number]): string =>
   i18n.t(`statistics.workouts.scales.${scale}`);
 
+const PERFORMED_SET: UserExerciseDataType = {
+  exerciseId: "342",
+  skill: "SWR1",
+  set: [1, 1],
+  repetition: 8,
+  completed: true,
+};
+
 const seedData = (): void => {
   act(() => {
     useAuthStore.setState({ auth: { userId: "u1" } });
@@ -30,14 +39,14 @@ const seedData = (): void => {
     workouts.addCompletedWorkout({
       id: "old",
       timestamp: Date.now() - 60 * DAY,
-      exercises: [],
+      exercises: [PERFORMED_SET],
       duration: 600,
       exerciseCount: 3,
     });
     workouts.addCompletedWorkout({
       id: "recent",
       timestamp: Date.now() - DAY,
-      exercises: [],
+      exercises: [PERFORMED_SET],
       duration: 600,
       exerciseCount: 5,
     });

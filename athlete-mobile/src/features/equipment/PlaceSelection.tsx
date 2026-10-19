@@ -3,7 +3,7 @@ import { I18nKey } from "@/i18n";
 import { PlaceEquipment } from "@/store/placesStore";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { Ionicon } from "../../common/Ionicon";
 import { Box } from "../../theme/Box";
 import { Text } from "../../theme/Text";
@@ -36,10 +36,7 @@ export const PlaceSelection: FC<PlaceSelectionProps> = ({
     { id: "OUTSIDE", name: t("training.place.OUTSIDE") },
   ];
 
-  const renderPlace = (
-    place: { id: PlaceType; name: string },
-    isLast: boolean,
-  ) => {
+  const renderPlace = (place: { id: PlaceType; name: string }) => {
     const placeData = places[place.id];
     const equipment = placeData?.equipment || [];
 
@@ -48,56 +45,54 @@ export const PlaceSelection: FC<PlaceSelectionProps> = ({
       (eq) => !WorkoutConstants.DEACTIVATED_EQUIPMENT.includes(eq),
     );
 
-    const trainingDays = trainingDaysAtPlaces?.[place.id] || [];
+    const trainingDays = (trainingDaysAtPlaces?.[place.id] || [])
+      .map((day) => t(day))
+      .join(", ");
+    const equipmentCount = t("equipment.xPieces", {
+      count: activeEquipment.length,
+    });
 
     return (
       <TouchableOpacity
         key={`place_${place.id}`}
         onPress={() => selectPlace(place.id)}
-        style={[
-          styles.placeEntry,
-          {
-            borderTopColor: colors.darkGrey1,
-          },
-          isLast && {
-            borderBottomWidth: 0.5,
-            borderBottomColor: colors.darkGrey1,
-          },
-        ]}
         accessibilityRole="button"
-        accessibilityLabel={`${place.name}, ${activeEquipment.length} ${t("equipment.xPieces", { count: activeEquipment.length })}`}
+        accessibilityLabel={[place.name, equipmentCount, trainingDays]
+          .filter(Boolean)
+          .join(", ")}
+        activeOpacity={0.7}
       >
         <Box
-          flex={1}
+          width="100%"
+          backgroundColor="white"
+          borderBottomWidth={1}
+          borderBottomColor="lightGrey2"
           flexDirection="row"
-          justifyContent="space-between"
           alignItems="center"
         >
-          <Box flex={1}>
-            <Text variant="title" color="darkGrey3">
+          <Box
+            paddingHorizontal="m"
+            paddingVertical="m"
+            justifyContent="center"
+            flex={1}
+          >
+            <Text variant="cardTitle" marginBottom="xs">
               {place.name}
             </Text>
-            {trainingDays.length > 0 ? (
-              <Text variant="small" color="darkGrey2" marginTop="xs">
-                {trainingDays.map((day) => t(day)).join(", ")}
+            <Text variant="body" color="darkGrey1">
+              {equipmentCount}
+            </Text>
+            {trainingDays ? (
+              <Text variant="body" color="darkGrey1" marginTop="xs">
+                {trainingDays}
               </Text>
             ) : null}
           </Box>
-          <Box
-            flexDirection="row"
-            alignItems="center"
-            backgroundColor="lightGrey2"
-            borderRadius="xl"
-            paddingHorizontal="s"
-            paddingVertical="xs"
-          >
-            <Text variant="body" color="darkGrey2" marginRight="xs">
-              {t("equipment.xPieces", { count: activeEquipment.length })}
-            </Text>
+          <Box paddingRight="m">
             <Ionicon
               name="chevron-forward"
-              size={15}
-              color={colors.darkGrey2}
+              size={20}
+              color={colors.lightGrey3}
               decorative
             />
           </Box>
@@ -107,24 +102,16 @@ export const PlaceSelection: FC<PlaceSelectionProps> = ({
   };
 
   return (
-    <Box padding="m">
-      <Text variant="title" color="darkGrey3" marginBottom="s">
+    <Box>
+      <Text
+        variant="body"
+        color="darkGrey3"
+        padding="m"
+        accessibilityRole="header"
+      >
         {t("equipment.trainingLocation")}
       </Text>
-      {placesList.map((place, index) =>
-        renderPlace(place, index === placesList.length - 1),
-      )}
+      {placesList.map(renderPlace)}
     </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  placeEntry: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "stretch",
-    minHeight: 78,
-    paddingVertical: 12,
-    borderTopWidth: 0.5,
-  },
-});

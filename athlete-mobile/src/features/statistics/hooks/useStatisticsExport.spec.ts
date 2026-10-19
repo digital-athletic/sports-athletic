@@ -154,7 +154,9 @@ describe("useStatisticsExport: workouts", () => {
     expect(exercise).toBeDefined();
     expect(row).toMatch(/^w1,\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2},342,/);
     expect(row).toContain(`,${exercise?.displayName ?? exercise?.name},`);
-    expect(row.endsWith(",SWR1,1,2,8,60,TOTAL,,,,")).toBe(true);
+    expect(
+      row.endsWith(",SWR1,1,2,8,60,statistics.export.weightType.total,,,,"),
+    ).toBe(true);
   });
 
   it("cannot export a range whose workouts have no performed sets", async () => {

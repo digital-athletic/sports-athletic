@@ -101,17 +101,5 @@ export const PlaceSelection: FC<PlaceSelectionProps> = ({
     );
   };
 
-  return (
-    <Box>
-      <Text
-        variant="body"
-        color="darkGrey3"
-        padding="m"
-        accessibilityRole="header"
-      >
-        {t("equipment.trainingLocation")}
-      </Text>
-      {placesList.map(renderPlace)}
-    </Box>
-  );
+  return <Box>{placesList.map(renderPlace)}</Box>;
 };

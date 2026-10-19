@@ -62,6 +62,7 @@ const buildExportTable = (
       rows: toExerciseSetRows(
         filterWorkoutsByRange(workouts, scale),
         testHistory,
+        t,
       ),
     };
   }

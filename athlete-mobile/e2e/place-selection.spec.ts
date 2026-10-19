@@ -15,7 +15,7 @@ test.describe("Place Selection: training location list", () => {
 
     await page.goto("/equipment");
     await expect(
-      page.getByRole("heading", { name: "Training location" }),
+      page.getByRole("heading", { name: "Equipment", exact: true }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: /^At home, \d+ pieces$/ }),
@@ -23,7 +23,7 @@ test.describe("Place Selection: training location list", () => {
 
     await page.goto("/training/muscle-soreness?type=MOB");
     await expect(
-      page.getByRole("heading", { name: "Training location" }),
+      page.getByRole("heading", { name: "Place & Equipment" }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: /^At home, \d+ pieces$/ }),

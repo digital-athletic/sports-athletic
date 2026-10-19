@@ -803,7 +803,6 @@
   },
   "equipment": {
     "title": "Ausrüstung",
-    "trainingLocation": "Trainingsort",
     "coachMessage": "Verrate mir, welche Trainingsgeräte du zur Verfügung hast, damit ich deine Übungen entsprechend auswählen kann.",
     "equipmentAtHome": "Ausrüstung zu Hause",
     "equipmentAtStudio": "Ausrüstung im Fitnessstudio",
@@ -906,6 +905,15 @@
         "benchPress": "Bankdrücken (kg)",
         "rowing": "Rudern (kg)",
         "shoulderPress": "Schulterdrücken (kg)"
+      },
+      "weightType": {
+        "perDumbbell": "Pro Kurzhantel",
+        "total": "Gesamt"
+      },
+      "difficulty": {
+        "tooEasy": "Zu einfach",
+        "tooHard": "Zu schwer",
+        "succeeded": "Passend"
       }
     },
     "powerTest": {

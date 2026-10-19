@@ -15,15 +15,6 @@ const places = {
 const noDays = { HOME: [], STUDIO: [], HALL: [], OUTSIDE: [] };
 
 describe("PlaceSelection: place rows", () => {
-  it("renders the intro as a header", () => {
-    const { getByRole } = render(
-      <PlaceSelection selectPlace={jest.fn()} places={places} />,
-    );
-    expect(
-      getByRole("header", { name: i18n.t("equipment.trainingLocation") }),
-    ).toBeTruthy();
-  });
-
   it("renders one button per place", () => {
     const { getAllByRole } = render(
       <PlaceSelection selectPlace={jest.fn()} places={places} />,

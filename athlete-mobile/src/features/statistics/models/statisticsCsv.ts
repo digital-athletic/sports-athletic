@@ -14,6 +14,7 @@ import type { UserExerciseDataType } from "@/schemas/sync.schema";
 import type { CompleteWorkoutType } from "@/store/completedWorkoutsStore";
 import { dateToHHMM, formatDateToISO } from "@/utils/date";
 import { getTagValues } from "@/utils/tagUtils";
+import type { TFunction } from "i18next";
 
 export type ExportKind = "workouts" | "strength-tests";
 
@@ -86,10 +87,17 @@ const repetitionsOrNull = (entry: UserExerciseDataType): number | null =>
 const fMaxPercentOrNull = (entry: UserExerciseDataType): number | null =>
   entry.weightType === WEIGHT_F_MAX ? entry.weight || null : null;
 
+const DIFFICULTY_LABEL_KEYS = {
+  TOO_EASY: "statistics.export.difficulty.tooEasy",
+  TOO_HARD: "statistics.export.difficulty.tooHard",
+  SUCCEEDED: "statistics.export.difficulty.succeeded",
+} as const;
+
 /** Dumbbell exercises show the load of one dumbbell, as in the training screen. */
 const toWeightType = (
   exercise: ExerciseType | undefined,
   weightKg: number | null,
+  t: TFunction,
 ): string | null => {
   if (weightKg === null) return null;
   const isDumbbell =
@@ -97,14 +105,29 @@ const toWeightType = (
     getTagValues(exercise.tags, TagGroups.EQUIPMENT).includes(
       WorkoutConstants.EQUIPMENT.DUMBBELL,
     );
-  return isDumbbell ? "PER_DUMBBELL" : "TOTAL";
+  return isDumbbell
+    ? t("statistics.export.weightType.perDumbbell")
+    : t("statistics.export.weightType.total");
 };
 
+const toDifficulty = (
+  entry: UserExerciseDataType,
+  t: TFunction,
+): string | null => {
+  const difficulty = entry.feedback?.difficulty;
+  return difficulty ? t(DIFFICULTY_LABEL_KEYS[difficulty]) : null;
+};
+
+interface SetRowContext {
+  workout: CompleteWorkoutType;
+  strengthTest: MaxValuesType | undefined;
+  t: TFunction;
+}
+
 const toSetRow = (
-  workout: CompleteWorkoutType,
+  { workout, strengthTest, t }: SetRowContext,
   entry: UserExerciseDataType,
   exercise: ExerciseType | undefined,
-  strengthTest: MaxValuesType | undefined,
 ): CsvField[] => {
   const weightKg = toWeightKg(entry, exercise, strengthTest);
   return [
@@ -116,11 +139,11 @@ const toSetRow = (
     ...(entry.set ?? [null, null]),
     repetitionsOrNull(entry),
     weightKg,
-    toWeightType(exercise, weightKg),
+    toWeightType(exercise, weightKg, t),
     fMaxPercentOrNull(entry),
     entry.duration ?? null,
     entry.height ?? null,
-    entry.feedback?.difficulty ?? null,
+    toDifficulty(entry, t),
   ];
 };
 
@@ -128,6 +151,7 @@ const toSetRow = (
 export const toExerciseSetRows = (
   workouts: CompleteWorkoutType[],
   testHistory: MaxValuesType[],
+  t: TFunction,
   getExercise: (id: string) => ExerciseType | undefined = getExerciseById,
 ): CsvField[][] => {
   const tests = [...testHistory].sort((a, b) => a.testAt - b.testAt);
@@ -138,7 +162,11 @@ export const toExerciseSetRows = (
         (test) => test.testAt <= workout.timestamp,
       );
       return performedSets(workout.exercises).map((entry) =>
-        toSetRow(workout, entry, getExercise(entry.exerciseId), strengthTest),
+        toSetRow(
+          { workout, strengthTest, t },
+          entry,
+          getExercise(entry.exerciseId),
+        ),
       );
     });
 };

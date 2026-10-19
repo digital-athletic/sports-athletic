@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { MaxValuesType } from "@/features/training/models/MaxValues";
@@ -124,6 +125,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
         ),
       ],
       [],
+      i18n.t,
       getExercise,
     );
 
@@ -138,33 +140,40 @@ describe("statisticsCsv: toExerciseSetRows", () => {
         4,
         8,
         60,
-        "TOTAL",
+        i18n.t("statistics.export.weightType.total"),
         null,
         45,
         30,
-        "TOO_EASY",
+        i18n.t("statistics.export.difficulty.tooEasy"),
       ],
     ]);
   });
 
   describe("weight type", () => {
     const weightTypeOf = (overrides: Partial<UserExerciseDataType>) =>
-      toExerciseSetRows([workout([entry(overrides)])], [], getExercise)[0][
-        COLUMN.weightType
-      ];
+      toExerciseSetRows(
+        [workout([entry(overrides)])],
+        [],
+        i18n.t,
+        getExercise,
+      )[0][COLUMN.weightType];
 
     it("marks the weight of a dumbbell exercise as per dumbbell", () => {
       expect(weightTypeOf({ exerciseId: DUMBBELL_PRESS.id, weight: 22 })).toBe(
-        "PER_DUMBBELL",
+        i18n.t("statistics.export.weightType.perDumbbell"),
       );
     });
 
     it("marks the weight of a barbell exercise as total", () => {
-      expect(weightTypeOf({ weight: 60 })).toBe("TOTAL");
+      expect(weightTypeOf({ weight: 60 })).toBe(
+        i18n.t("statistics.export.weightType.total"),
+      );
     });
 
     it("marks the weight of an exercise unknown to the registry as total", () => {
-      expect(weightTypeOf({ exerciseId: "424242", weight: 12 })).toBe("TOTAL");
+      expect(weightTypeOf({ exerciseId: "424242", weight: 12 })).toBe(
+        i18n.t("statistics.export.weightType.total"),
+      );
     });
 
     it("gives null without a weight", () => {
@@ -183,6 +192,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
         workout([entry({ set: [1, 1] })], { id: "b", timestamp: at(4) }),
       ],
       [],
+      i18n.t,
       getExercise,
     );
 
@@ -190,12 +200,19 @@ describe("statisticsCsv: toExerciseSetRows", () => {
   });
 
   it("gives no row for a workout without exercise entries", () => {
-    expect(toExerciseSetRows([workout([])], [], getExercise)).toEqual([]);
+    expect(toExerciseSetRows([workout([])], [], i18n.t, getExercise)).toEqual(
+      [],
+    );
   });
 
   describe("exercise name", () => {
     it("uses the display name when the registry has one", () => {
-      const rows = toExerciseSetRows([workout([entry()])], [], getExercise);
+      const rows = toExerciseSetRows(
+        [workout([entry()])],
+        [],
+        i18n.t,
+        getExercise,
+      );
 
       expect(rows[0][COLUMN.exercise]).toBe("Bench Press");
     });
@@ -204,6 +221,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ exerciseId: UNNAMED.id })])],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -214,6 +232,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ exerciseId: "424242" })])],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -224,6 +243,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ exerciseId: "424242", skill: "WU" })])],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -240,6 +260,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ exerciseId: PAUSE_EXERCISE_ID }), entry()])],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -255,6 +276,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
           ]),
         ],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -265,6 +287,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ skipped: true, completed: true })])],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -281,6 +304,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
           ]),
         ],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -291,6 +315,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ completed: false }), entry({ completed: false })])],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -308,6 +333,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
           ]),
         ],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -321,6 +347,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
           workout([entry({ set: [1, 1] })], { id: "legacy", timestamp: at(1) }),
         ],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -330,7 +357,12 @@ describe("statisticsCsv: toExerciseSetRows", () => {
 
   describe("null cells", () => {
     it("gives null for set and set count without a set tuple", () => {
-      const rows = toExerciseSetRows([workout([entry()])], [], getExercise);
+      const rows = toExerciseSetRows(
+        [workout([entry()])],
+        [],
+        i18n.t,
+        getExercise,
+      );
 
       expect(rows[0].slice(COLUMN.set, COLUMN.setCount + 1)).toEqual([
         null,
@@ -342,6 +374,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ repetition: 0 })])],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -352,6 +385,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ repetition: -1 })])],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -359,7 +393,12 @@ describe("statisticsCsv: toExerciseSetRows", () => {
     });
 
     it("gives null for repetitions, duration, height and difficulty when missing", () => {
-      const rows = toExerciseSetRows([workout([entry()])], [], getExercise);
+      const rows = toExerciseSetRows(
+        [workout([entry()])],
+        [],
+        i18n.t,
+        getExercise,
+      );
 
       expect([
         rows[0][COLUMN.repetitions],
@@ -373,20 +412,26 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ feedback: { difficulty: null } })])],
         [],
+        i18n.t,
         getExercise,
       );
 
       expect(rows[0][COLUMN.difficulty]).toBeNull();
     });
 
-    it("keeps the raw difficulty code", () => {
+    it.each([
+      ["TOO_EASY", "statistics.export.difficulty.tooEasy"],
+      ["TOO_HARD", "statistics.export.difficulty.tooHard"],
+      ["SUCCEEDED", "statistics.export.difficulty.succeeded"],
+    ] as const)("translates the difficulty %s", (difficulty, key) => {
       const rows = toExerciseSetRows(
-        [workout([entry({ feedback: { difficulty: "TOO_HARD" } })])],
+        [workout([entry({ feedback: { difficulty } })])],
         [],
+        i18n.t,
         getExercise,
       );
 
-      expect(rows[0][COLUMN.difficulty]).toBe("TOO_HARD");
+      expect(rows[0][COLUMN.difficulty]).toBe(i18n.t(key));
     });
   });
 
@@ -395,6 +440,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ weight: 75, weightType: "weightFMax" })])],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -405,6 +451,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ weight: 75, weightType: "weightAbsolute" })])],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -415,6 +462,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ weight: 75 })])],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -424,7 +472,12 @@ describe("statisticsCsv: toExerciseSetRows", () => {
 
   describe("weight in kg", () => {
     it("gives null when the entry has no weight", () => {
-      const rows = toExerciseSetRows([workout([entry()])], [], getExercise);
+      const rows = toExerciseSetRows(
+        [workout([entry()])],
+        [],
+        i18n.t,
+        getExercise,
+      );
 
       expect(rows[0][COLUMN.weightKg]).toBeNull();
     });
@@ -433,6 +486,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ weight: 0 })])],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -443,6 +497,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ exerciseId: "424242", weight: 12.3004 })])],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -461,6 +516,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
           ]),
         ],
         [pushTest(at(1), 100)],
+        i18n.t,
         getExercise,
       );
 
@@ -471,6 +527,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ weight: 21, weightType: "weightAbsolute" })])],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -481,6 +538,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ weight: 50, weightType: "weightFMax" })])],
         [pushTest(at(1), 100)],
+        i18n.t,
         getExercise,
       );
 
@@ -500,6 +558,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
           }),
         ],
         [pushTest(at(5), 140), pushTest(at(1), 100)],
+        i18n.t,
         getExercise,
       );
 
@@ -510,6 +569,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ weight: 50, weightType: "weightFMax" })])],
         [pushTest(at(3), 140)],
+        i18n.t,
         getExercise,
       );
 
@@ -520,6 +580,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ weight: 50, weightType: "weightFMax" })])],
         [pushTest(at(9), 140)],
+        i18n.t,
         getExercise,
       );
 
@@ -530,6 +591,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ weight: 50, weightType: "weightFMax" })])],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -540,6 +602,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ weight: 50, weightType: "weightFMax" })])],
         [pushTest(at(1), undefined)],
+        i18n.t,
         getExercise,
       );
 
@@ -550,6 +613,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
       const rows = toExerciseSetRows(
         [workout([entry({ weight: 60, weightType: "weightAbsolute" })])],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -565,6 +629,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
           workout([entry()], { id: "old", timestamp: at(2) }),
         ],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -583,6 +648,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
           ]),
         ],
         [],
+        i18n.t,
         getExercise,
       );
 
@@ -595,7 +661,7 @@ describe("statisticsCsv: toExerciseSetRows", () => {
         workout([entry()], { id: "old", timestamp: at(2) }),
       ];
 
-      toExerciseSetRows(workouts, [], getExercise);
+      toExerciseSetRows(workouts, [], i18n.t, getExercise);
 
       expect(workouts.map((w) => w.id)).toEqual(["new", "old"]);
     });

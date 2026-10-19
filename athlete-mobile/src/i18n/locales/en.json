@@ -803,7 +803,6 @@
   },
   "equipment": {
     "title": "Equipment",
-    "trainingLocation": "Training location",
     "coachMessage": "Tell me which training equipment you have available so I can select your exercises accordingly.",
     "equipmentAtHome": "Equipment at home",
     "equipmentAtStudio": "Equipment at fitness studio",

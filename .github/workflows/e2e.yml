@@ -13,18 +13,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: contains(github.event.pull_request.labels.*.name, 'app-mobile-app-athlete')
+    defaults:
+      run:
+        working-directory: athlete-mobile
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: athlete-mobile/package.json
       - uses: actions/setup-node@v4
         with:
           node-version: "24.18.0"
           cache: "pnpm"
+          cache-dependency-path: athlete-mobile/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Read Playwright version
         id: playwright
-        run: echo "version=$(pnpm --filter athlete-mobile exec playwright --version)" >> "$GITHUB_OUTPUT"
+        run: echo "version=$(pnpm exec playwright --version)" >> "$GITHUB_OUTPUT"
       - name: Cache Playwright browsers
         id: playwright-cache
         uses: actions/cache@v4
@@ -33,12 +39,12 @@ jobs:
           key: playwright-webkit-${{ runner.os }}-${{ steps.playwright.outputs.version }}
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: pnpm --filter athlete-mobile exec playwright install webkit --with-deps
+        run: pnpm exec playwright install webkit --with-deps
       - name: Install Playwright system dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: pnpm --filter athlete-mobile exec playwright install-deps webkit
+        run: pnpm exec playwright install-deps webkit
       - name: Run E2E tests
-        run: pnpm --filter athlete-mobile test:e2e
+        run: pnpm test:e2e
         env:
           CI: true
           # Serve a production export instead of the Metro dev server
@@ -58,19 +64,25 @@ jobs:
   e2e-trainer-web:
     runs-on: ubuntu-latest
     if: contains(github.event.pull_request.labels.*.name, 'web-trainer-dashboard')
+    defaults:
+      run:
+        working-directory: trainer-web
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: trainer-web/package.json
       - uses: actions/setup-node@v4
         with:
           node-version: "24.18.0"
           cache: "pnpm"
+          cache-dependency-path: trainer-web/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Install Playwright browsers
-        run: pnpm --filter trainer-web exec playwright install chromium --with-deps
+        run: pnpm exec playwright install chromium --with-deps
       - name: Run E2E tests
-        run: pnpm --filter trainer-web test:e2e
+        run: pnpm test:e2e
         env:
           CI: true
       - name: Upload test results

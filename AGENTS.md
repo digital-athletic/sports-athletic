@@ -19,7 +19,7 @@ Fitness training platform monorepo with mobile app, web dashboard, and Supabase 
 - **Mobile**: React Native, Expo, Zustand, Zod
 - **Web**: React, Vite, TypeScript
 - **Backend**: Supabase (Postgres, Edge Functions)
-- **Package Manager**: pnpm workspaces
+- **Package Manager**: pnpm, one independent project per app folder (own `pnpm-lock.yaml` and `pnpm-workspace.yaml`)
 
 ## Important Constraints
 

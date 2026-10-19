@@ -1,0 +1,26 @@
+# Isolated node_modules with symlinks to the pnpm store
+nodeLinker: isolated
+
+# Packages can only access their explicitly declared dependencies
+strictPeerDependencies: true
+
+# Only install versions published at least 7 days ago, so compromised releases are
+# pulled from the registry before they reach us.
+minimumReleaseAge: 10080
+
+overrides:
+  "@babel/core": ">=7.29.6 <8"
+  "brace-expansion@5": ">=5.0.12"
+  "esbuild": ">=0.28.1"
+  "js-yaml": ">=4.3.2 <5"
+  # minimatch <10 depends on brace-expansion 1.x/2.x, which have no fix for
+  # GHSA-mh99-v99m-4gvg (patched only in >=5.0.8). v9 -> v10 is API-compatible.
+  "minimatch@9": ">=10.2.5"
+  "postcss": ">=8.5.23"
+  "qs": ">=6.16.0"
+  "shell-quote": ">=1.11.0"
+  "ws@7": ">=7.5.11 <8"
+
+allowBuilds:
+  esbuild: false
+  unrs-resolver: false

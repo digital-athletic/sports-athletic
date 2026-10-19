@@ -7,7 +7,6 @@ services:
     user: node
     volumes:
       - ./:/workspace
-      - root_node_modules:/workspace/node_modules
       - pnpm_store:/workspace/.pnpm-store
       - athlete_mobile_node_modules:/workspace/athlete-mobile/node_modules
     ports:
@@ -44,7 +43,6 @@ services:
     user: node
     volumes:
       - ./:/workspace
-      - root_node_modules:/workspace/node_modules
       - pnpm_store:/workspace/.pnpm-store
       - web_trainer_node_modules:/workspace/trainer-web/node_modules
     environment:
@@ -67,7 +65,6 @@ services:
     command: ["npx", "playwright@1.62.1", "run-server", "--port=9323", "--host=0.0.0.0"]
 
 volumes:
-  root_node_modules:
   pnpm_store:
   athlete_mobile_node_modules:
   web_trainer_node_modules:

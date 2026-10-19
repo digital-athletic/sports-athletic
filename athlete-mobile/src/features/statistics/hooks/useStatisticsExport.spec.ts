@@ -1,3 +1,5 @@
+import { getExerciseById } from "@/data/exerciseRegistry";
+import type { UserExerciseDataType } from "@/schemas/sync.schema";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import { Logger } from "@/services/Logger";
 import { useAuthStore } from "@/store/authStore";
@@ -23,14 +25,46 @@ jest.mock("react-i18next", () => ({
 
 const DAY = 1000 * 60 * 60 * 24;
 
-const addWorkout = (id: string, timestamp: number, duration = 600): void => {
+const BENCH_PRESS_ID = "342";
+
+const performedSet: UserExerciseDataType = {
+  exerciseId: BENCH_PRESS_ID,
+  skill: "SWR1",
+  set: [1, 2],
+  repetition: 8,
+  weight: 60,
+  weightType: "weightAbsolute",
+};
+
+const addWorkout = (
+  id: string,
+  timestamp: number,
+  exercises: UserExerciseDataType[] = [performedSet],
+): void => {
   useCompletedWorkoutsStore.getState().addCompletedWorkout({
     id,
     timestamp,
-    exercises: [],
-    duration,
+    exercises,
+    duration: 600,
   });
 };
+
+const WORKOUT_HEADER_KEYS = [
+  "workoutId",
+  "date",
+  "exerciseId",
+  "exercise",
+  "skill",
+  "set",
+  "setCount",
+  "repetitions",
+  "weightKg",
+  "weightType",
+  "weightPercentFMax",
+  "durationSeconds",
+  "heightCm",
+  "difficulty",
+];
 
 describe("useStatisticsExport: workouts", () => {
   beforeEach(() => {
@@ -77,8 +111,8 @@ describe("useStatisticsExport: workouts", () => {
 
   it("exports only the workouts of the selected range, oldest first", async () => {
     addWorkout("old", Date.now() - 60 * DAY);
-    addWorkout("mid", Date.now() - 3 * DAY, 1800);
-    addWorkout("new", Date.now() - DAY, 900);
+    addWorkout("mid", Date.now() - 3 * DAY);
+    addWorkout("new", Date.now() - DAY);
     const { result } = renderHook(() =>
       useStatisticsExport({ kind: "workouts", scale: "week" }),
     );
@@ -94,12 +128,53 @@ describe("useStatisticsExport: workouts", () => {
     expect(csv.charCodeAt(0)).toBe(0xfeff);
     const lines = csv.slice(1).split("\r\n");
     expect(lines[0]).toBe(
-      "statistics.export.headers.date,statistics.export.headers.durationMinutes,statistics.export.headers.exerciseCount,statistics.export.headers.xp,statistics.export.headers.movedWeightKg",
+      WORKOUT_HEADER_KEYS.map((key) => `statistics.export.headers.${key}`).join(
+        ",",
+      ),
     );
     expect(lines).toHaveLength(4);
-    expect(lines[1]).toMatch(/,30,0,0,0$/);
-    expect(lines[2]).toMatch(/,15,0,0,0$/);
+    expect(lines[1].startsWith("mid,")).toBe(true);
+    expect(lines[2].startsWith("new,")).toBe(true);
     expect(lines[3]).toBe("");
+  });
+
+  it("writes one row per performed set with exercise, reps and kg", async () => {
+    addWorkout("w1", Date.now() - DAY);
+    const exercise = getExerciseById(BENCH_PRESS_ID);
+    const { result } = renderHook(() =>
+      useStatisticsExport({ kind: "workouts", scale: "total" }),
+    );
+
+    await act(async () => {
+      await result.current.exportCsv();
+    });
+
+    const [, csv] = mockShareCsv.mock.calls[0] as [string, string];
+    const [, row] = csv.slice(1).split("\r\n");
+    expect(exercise).toBeDefined();
+    expect(row).toMatch(/^w1,\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2},342,/);
+    expect(row).toContain(`,${exercise?.displayName ?? exercise?.name},`);
+    expect(row.endsWith(",SWR1,1,2,8,60,TOTAL,,,,")).toBe(true);
+  });
+
+  it("cannot export a range whose workouts have no performed sets", async () => {
+    addWorkout("empty", Date.now() - 2 * DAY, []);
+    addWorkout("pause", Date.now() - DAY, [
+      { exerciseId: "999999", skill: "SWR1" },
+    ]);
+    addWorkout("skipped", Date.now() - DAY, [
+      { ...performedSet, skipped: true },
+    ]);
+    const { result } = renderHook(() =>
+      useStatisticsExport({ kind: "workouts", scale: "total" }),
+    );
+
+    expect(result.current.canExport).toBe(false);
+    await act(async () => {
+      await result.current.exportCsv();
+    });
+
+    expect(mockShareCsv).not.toHaveBeenCalled();
   });
 
   it("shares once when the export runs twice before the first ends", async () => {

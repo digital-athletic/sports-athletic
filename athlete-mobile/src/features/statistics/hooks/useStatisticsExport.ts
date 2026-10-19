@@ -6,8 +6,8 @@ import {
 } from "@/features/statistics/models/rangeFilter";
 import {
   buildExportFileName,
+  toExerciseSetRows,
   toStrengthTestRows,
-  toWorkoutRows,
   type ExportKind,
 } from "@/features/statistics/models/statisticsCsv";
 import type { ScaleType } from "@/features/statistics/models/WorkoutsData";
@@ -44,13 +44,25 @@ const buildExportTable = (
   if (kind === "workouts") {
     return {
       header: [
+        t("statistics.export.headers.workoutId"),
         t("statistics.export.headers.date"),
-        t("statistics.export.headers.durationMinutes"),
-        t("statistics.export.headers.exerciseCount"),
-        t("statistics.export.headers.xp"),
-        t("statistics.export.headers.movedWeightKg"),
+        t("statistics.export.headers.exerciseId"),
+        t("statistics.export.headers.exercise"),
+        t("statistics.export.headers.skill"),
+        t("statistics.export.headers.set"),
+        t("statistics.export.headers.setCount"),
+        t("statistics.export.headers.repetitions"),
+        t("statistics.export.headers.weightKg"),
+        t("statistics.export.headers.weightType"),
+        t("statistics.export.headers.weightPercentFMax"),
+        t("statistics.export.headers.durationSeconds"),
+        t("statistics.export.headers.heightCm"),
+        t("statistics.export.headers.difficulty"),
       ],
-      rows: toWorkoutRows(filterWorkoutsByRange(workouts, scale)),
+      rows: toExerciseSetRows(
+        filterWorkoutsByRange(workouts, scale),
+        testHistory,
+      ),
     };
   }
   return {

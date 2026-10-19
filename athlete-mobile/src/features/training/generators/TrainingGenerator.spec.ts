@@ -288,38 +288,26 @@ describe("TrainingGenerator", () => {
   });
 
   describe("isSuperset", () => {
-    it("returns false for short training WU", () => {
-      expect(generator.isSuperset("WU", true)).toBe(false);
-    });
-
-    it("returns false for short training MOB", () => {
-      expect(generator.isSuperset("MOB", true)).toBe(false);
-    });
-
-    it("returns true for short training SA", () => {
-      expect(generator.isSuperset("SA", true)).toBe(true);
-    });
-
     it("returns false for CARDIO skills", () => {
-      expect(generator.isSuperset("CARDIO_1_SHORT", false)).toBe(false);
-      expect(generator.isSuperset("CARDIO_2", false)).toBe(false);
-      expect(generator.isSuperset("CARDIO_3", false)).toBe(false);
+      expect(generator.isSuperset("CARDIO_1_SHORT")).toBe(false);
+      expect(generator.isSuperset("CARDIO_2")).toBe(false);
+      expect(generator.isSuperset("CARDIO_3")).toBe(false);
     });
 
     it("returns true for SA skill", () => {
-      expect(generator.isSuperset("SA", false)).toBe(true);
+      expect(generator.isSuperset("SA")).toBe(true);
     });
 
     it("returns true for SK skill", () => {
-      expect(generator.isSuperset("SK", false)).toBe(true);
+      expect(generator.isSuperset("SK")).toBe(true);
     });
 
     it("returns true for SWR2 skill", () => {
-      expect(generator.isSuperset("SWR2", false)).toBe(true);
+      expect(generator.isSuperset("SWR2")).toBe(true);
     });
 
     it("returns true for WU skill", () => {
-      expect(generator.isSuperset("WU", false)).toBe(true);
+      expect(generator.isSuperset("WU")).toBe(true);
     });
   });
 
@@ -959,7 +947,6 @@ describe("TrainingGenerator", () => {
         { ...mockUser, personalData: { gender: "MALE", birthday } },
         mockExercise,
         {},
-        false,
       );
 
       expect(getExerciseValuesSpy).toHaveBeenCalledWith(
@@ -985,7 +972,6 @@ describe("TrainingGenerator", () => {
         mockUser,
         mockExercise,
         {},
-        false,
       );
 
       expect(result).toHaveProperty("tags");
@@ -1011,7 +997,6 @@ describe("TrainingGenerator", () => {
         mockUser,
         durationExercise,
         {},
-        false,
       );
 
       expect(result).toHaveProperty("duration");
@@ -1031,7 +1016,6 @@ describe("TrainingGenerator", () => {
         mockUser,
         mockExercise,
         {},
-        false,
       );
 
       expect(result).toHaveProperty("repetition");
@@ -1051,14 +1035,13 @@ describe("TrainingGenerator", () => {
         mockUser,
         mockExercise,
         {},
-        false,
       );
 
       expect(result).toHaveProperty("tags");
       expect(result).toHaveProperty("exerciseId");
     });
 
-    it("handles short training mode", () => {
+    it("trains a fixed work duration without reps or weight", () => {
       const result = generator.getExerciseStartValues(
         "WU",
         {
@@ -1069,11 +1052,15 @@ describe("TrainingGenerator", () => {
         mockUser,
         mockExercise,
         {},
-        true,
+        45,
       );
 
-      expect(result).toBeDefined();
-      expect(result).toHaveProperty("exerciseId");
+      expect(result).toMatchObject({
+        exerciseId: "1",
+        duration: 45,
+        repetition: undefined,
+        weight: undefined,
+      });
     });
   });
 
@@ -1375,7 +1362,6 @@ describe("TrainingGenerator", () => {
         exercises,
         [],
         [],
-        false,
       );
 
       expect(Array.isArray(result)).toBe(true);
@@ -1389,7 +1375,6 @@ describe("TrainingGenerator", () => {
         exercises,
         [],
         [],
-        false,
       );
 
       result.forEach((pair) => {
@@ -1406,7 +1391,6 @@ describe("TrainingGenerator", () => {
         exercises,
         [],
         [],
-        false,
       );
 
       const hasSuperset = result.some((pair) => pair.second !== undefined);
@@ -1434,21 +1418,13 @@ describe("TrainingGenerator", () => {
         [oneSidedExercise],
         [],
         [],
-        false,
       );
 
       expect(result.length).toBeGreaterThan(0);
     });
 
     it("returns empty array when no branches provided", () => {
-      const result = generator.getExercisePairs(
-        "SA",
-        [],
-        exercises,
-        [],
-        [],
-        false,
-      );
+      const result = generator.getExercisePairs("SA", [], exercises, [], []);
 
       expect(Array.isArray(result)).toBe(true);
       expect(result.length).toBe(0);

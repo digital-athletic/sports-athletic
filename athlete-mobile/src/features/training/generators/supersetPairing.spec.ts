@@ -1,5 +1,6 @@
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
 import type { ExerciseType } from "@/schemas/exercise.schema";
+import type { FocusTrainingBlock } from "@/schemas/focusTraining.schema";
 import ExercisesData from "../../../../assets/data/generator/Exercises.json";
 import TrainingGenerator from "./TrainingGenerator";
 
@@ -109,6 +110,77 @@ describe("getExercisePairs: big muscle groups", () => {
       [],
     );
     expect(pairs[0].first.branchId).toBe("c");
+  });
+});
+
+describe("getExercisePairs: focus block pairing", () => {
+  const chest = branch("c", ["MUSCLE_CHEST", "REGION_UPPER_BODY"]);
+  const lats = branch("l", ["MUSCLE_LATISSIMUS", "REGION_UPPER_BODY"]);
+
+  const pairIds = (
+    skill: string,
+    branches: BranchExerciseReference[],
+    pairing: FocusTrainingBlock["superset"],
+    catalog = catalogFor(branches),
+  ) =>
+    new TrainingGenerator()
+      .getExercisePairs(skill, [...branches], catalog, [], [], pairing)
+      .map(({ first, second }) =>
+        second ? [first.exerciseId, second.exerciseId] : [first.exerciseId],
+      );
+
+  beforeEach(() => {
+    jest.spyOn(Math, "random").mockReturnValue(0);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("keeps every exercise single without superset pairing", () => {
+    expect(pairIds("SWR2", [chest, lats], "none")).toEqual([["el"], ["ec"]]);
+  });
+
+  it("pairs opposing muscles with muscle pairing", () => {
+    expect(pairIds("GKS", [chest, lats], "muscles")).toEqual([["el", "ec"]]);
+  });
+
+  it("pairs in draw order with draw order pairing", () => {
+    const branches = [
+      branch("b", ["MUSCLE_BICEPS"]),
+      branch("k", ["MUSCLE_CALF"]),
+      branch("q", ["MUSCLE_QUADRICEPS"]),
+    ];
+
+    expect(pairIds("BAS", branches, "drawOrder")).toEqual([
+      ["eb", "ek"],
+      ["eq"],
+    ]);
+  });
+
+  it("pairs the leftover singles with each other only with full draw order pairing", () => {
+    const oneSided = branch("o", ["MUSCLE_CALF"]);
+    oneSided.branchTags = ["SIDE_ONE", "MUSCLE_CALF"];
+    const branches = [
+      branch("x", ["MUSCLE_BICEPS"]),
+      oneSided,
+      branch("y", []),
+    ];
+    const catalog = catalogFor(branches).map((exercise) =>
+      exercise.id === "eo"
+        ? { ...exercise, otherSideExerciseId: "eo2" }
+        : exercise,
+    );
+
+    expect(pairIds("BAS", branches, "drawOrder", catalog)).toEqual([
+      ["ex"],
+      ["eo", "eo2"],
+      ["ey"],
+    ]);
+    expect(pairIds("PREVKNEE", branches, "drawOrderAll", catalog)).toEqual([
+      ["ex", "ey"],
+      ["eo", "eo2"],
+    ]);
   });
 });
 

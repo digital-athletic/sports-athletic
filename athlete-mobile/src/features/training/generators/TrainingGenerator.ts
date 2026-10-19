@@ -56,6 +56,7 @@ import {
   isBranchBlocked,
 } from "@/features/training/utils/painUtils";
 import { getRegionsForPreventionSkills } from "@/features/training/utils/preventionUtils";
+import { isNoIncreaseSkill } from "@/features/training/utils/exerciseDataUtils";
 import {
   getNextTypeFiltered,
   getSkillTree,
@@ -446,7 +447,7 @@ export default class TrainingGenerator {
     }
 
     const setLists = template.blocks.map((block, index) => {
-      const skill = block.skill ?? (type as SkillCode);
+      const skill: SkillCode = block.skill ?? type;
       const exercisePairs = this.getExercisePairs(
         skill,
         drawnBlocks[index],
@@ -1987,18 +1988,11 @@ export default class TrainingGenerator {
 
     // if set use only pain side in prevention
     let prevSides: string[] = [];
-    let regionPains: string[] = [];
-    let prevRegions: string[] = [];
-    if (skill.indexOf("PREV") > -1) {
-      prevRegions = getRegionsForPreventionSkills([skill]);
-      //filter for pains matching given skill
-      regionPains = pains.filter((pain) => {
-        for (let reg = 0; reg < prevRegions.length; reg++) {
-          if (pain.indexOf(prevRegions[reg]) > -1) return true;
-        }
-        return false;
-      });
-    }
+    const prevRegions = getRegionsForPreventionSkills([skill]);
+    //filter for pains matching given skill
+    const regionPains = pains.filter((pain) =>
+      prevRegions.some((region) => pain.indexOf(region) > -1),
+    );
 
     if (regionPains.length > 0) {
       for (let pain = 0; pain < regionPains.length; pain++) {
@@ -2504,11 +2498,7 @@ export default class TrainingGenerator {
       }
     }
 
-    if (
-      WorkoutConstants.NO_INCREASE_SKILL_TYPE.indexOf(skillName) === -1 &&
-      userExercise &&
-      isNewDifficultySet
-    ) {
+    if (!isNoIncreaseSkill(skillName) && userExercise && isNewDifficultySet) {
       if (userExercise.feedback?.difficulty) {
         difficultyFeedback = userExercise.feedback
           .difficulty as DifficultyFeedbackType;
@@ -3127,7 +3117,7 @@ export default class TrainingGenerator {
       skill === undefined ||
       (skill !== "MAX" &&
         skill !== "MAX_STRENGTH" &&
-        !WorkoutConstants.NO_INCREASE_SKILL_TYPE.includes(skill));
+        !isNoIncreaseSkill(skill));
     if (isClamped) {
       for (const valueName of ["repetition", "duration"] as const) {
         const value = data[valueName];
@@ -3632,6 +3622,17 @@ export const getIntensityBySkill = (
   skill: SkillCode | PlyometricSkill,
   exercise?: Pick<ExerciseType, "tags">,
 ) => {
+  const template = loadFocusTraining(skill);
+  if (template) {
+    const withoutWeights =
+      exercise &&
+      !getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS");
+    return loadIntensityConfig(
+      (withoutWeights && template.intensityWithoutWeights) ||
+        template.intensity ||
+        "DEFAULTKG",
+    );
+  }
   switch (skill) {
     case "WUSKSA":
       return loadIntensityConfig("WUSKSA");
@@ -3647,22 +3648,7 @@ export const getIntensityBySkill = (
     case "CARDIO_2":
     case "CARDIO_1_LAKTAT":
     case "CARDIO_1_SHORT":
-    case "BAS":
       return loadIntensityConfig(skill);
-    case "GKS":
-      return loadIntensityConfig(
-        exercise &&
-          !getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS")
-          ? "GKSKG"
-          : "GKS",
-      );
-    case "PREV":
-    case "PREVANKLE":
-    case "PREVKNEE":
-    case "PREVSHOULDER":
-    case "PREVSPINE":
-    case "PREVWRIST":
-      return loadIntensityConfig("PREV");
     case "SA":
       return loadIntensityConfig("SA");
     case "SAKG":

@@ -8,6 +8,7 @@ import type {
   GenderTag,
   IntensityData,
 } from "@/features/training/models/Intensity";
+import { loadFocusTraining } from "@/data/loadFocusTrainings";
 import type { SkillCode } from "@/schemas/generator.schema";
 import { isPauseExercise } from "@/features/training/models/IdTypes";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
@@ -60,6 +61,14 @@ export function shouldSkipExerciseSave(
   return { skip: false };
 }
 
+const progressesValues = (type: string): boolean =>
+  type !== "TEST_WORKOUT" && loadFocusTraining(type)?.progression !== false;
+
+/** Exercises of these skills keep their values and ask for no feedback. */
+export const isNoIncreaseSkill = (skill: SkillCode): boolean =>
+  WorkoutConstants.NO_INCREASE_SKILL_TYPE.includes(skill) ||
+  loadFocusTraining(skill)?.progression === false;
+
 /**
  * Determines if exercise values should be increased based on workout type and skill.
  * Cardio has no feedback progression yet, so nothing is stored for it.
@@ -70,15 +79,7 @@ export function shouldProcessExerciseValues(
 ): boolean {
   if (!type || !skill) return false;
   if (skill.includes("CARDIO")) return false;
-  if (WorkoutConstants.NO_INCREASE_WORKOUT_PLAN_TYPE.indexOf(type) !== -1)
-    return false;
-  if (
-    WorkoutConstants.NO_INCREASE_SKILL_TYPE.indexOf(
-      skill as (typeof WorkoutConstants.NO_INCREASE_SKILL_TYPE)[number],
-    ) !== -1
-  )
-    return false;
-  return true;
+  return progressesValues(type) && !isNoIncreaseSkill(skill);
 }
 
 /**
@@ -93,14 +94,10 @@ export function isFeedbackEligibleSkill(
   // cardio shows only the checkmark
   if (skill.includes("CARDIO")) return false;
   if (activeTraining?.type === "PLAN") {
-    return WorkoutConstants.NO_INCREASE_SKILL_TYPE.indexOf(skill) === -1;
+    return !isNoIncreaseSkill(skill);
   }
   if (activeTraining?.type) {
-    return (
-      WorkoutConstants.NO_INCREASE_WORKOUT_PLAN_TYPE.indexOf(
-        activeTraining.type,
-      ) === -1 && WorkoutConstants.NO_INCREASE_SKILL_TYPE.indexOf(skill) === -1
-    );
+    return progressesValues(activeTraining.type) && !isNoIncreaseSkill(skill);
   }
   return false;
 }

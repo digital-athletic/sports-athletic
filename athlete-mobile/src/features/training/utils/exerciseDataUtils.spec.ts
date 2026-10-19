@@ -121,10 +121,12 @@ describe("exerciseDataUtils", () => {
     });
 
     it("returns false for NO_INCREASE skill types", () => {
-      // WU is in NO_INCREASE_SKILL_TYPE list
-      expect(shouldProcessExerciseValues("PLAN", "WU" as SkillCode)).toBe(
-        false,
-      );
+      expect(shouldProcessExerciseValues("PLAN", "WUSPEZIAL")).toBe(false);
+    });
+
+    it("returns false for a skill whose template has no progression", () => {
+      // the WU template sets progression to false
+      expect(shouldProcessExerciseValues("PLAN", "WU")).toBe(false);
     });
 
     it("returns true for valid type and skill", () => {
@@ -150,10 +152,8 @@ describe("exerciseDataUtils", () => {
     });
 
     it("returns false for PLAN training with a NO_INCREASE skill", () => {
-      // WU is in NO_INCREASE_SKILL_TYPE list
-      expect(isFeedbackEligibleSkill(withType("PLAN"), "WU" as SkillCode)).toBe(
-        false,
-      );
+      // the WU template sets progression to false
+      expect(isFeedbackEligibleSkill(withType("PLAN"), "WU")).toBe(false);
     });
 
     it("returns true for PLAN training with an eligible skill", () => {

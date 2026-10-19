@@ -15,17 +15,12 @@ jest.mock("@/data/exerciseRegistry", () => ({
   getExerciseById: jest.fn(),
 }));
 
+let mockLanguage = "en";
+
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, options?: { defaultValue?: string }) => {
-      if (key === "training.skill.SWR1") {
-        return "Muscle development";
-      }
-      if (options?.defaultValue !== undefined) {
-        return options.defaultValue;
-      }
-      return key;
-    },
+    t: (key: string) => key,
+    i18n: { resolvedLanguage: mockLanguage },
   }),
 }));
 
@@ -260,6 +255,7 @@ describe("useActiveExerciseView: name and video selection", () => {
 describe("useActiveExerciseView: header title", () => {
   beforeEach(() => {
     useTrainingStore.setState(BASELINE);
+    mockLanguage = "en";
   });
 
   it("falls back to the plan title when there is no active training", () => {
@@ -282,34 +278,35 @@ describe("useActiveExerciseView: header title", () => {
     );
   });
 
-  it("shows the translated skill title when a translation exists", () => {
-    useTrainingStore.setState({
-      activeTraining: { id: "training-1", type: "SWR1" },
-    });
-
-    const { result } = renderHook(() => useActiveExerciseView());
-
-    expect(result.current.headerTitle).toBe("Muscle development");
-  });
-
-  it("falls back to the focus title for a non prevention skill without a translation", () => {
-    useTrainingStore.setState({
-      activeTraining: { id: "training-1", type: "HBCARDIO" },
-    });
-
-    const { result } = renderHook(() => useActiveExerciseView());
-
-    expect(result.current.headerTitle).toBe("training.active.title.focus");
-  });
-
-  it("falls back to the prevention title for a prevention skill without a translation", () => {
+  it("shows the template title of a short workout", () => {
     useTrainingStore.setState({
       activeTraining: { id: "training-1", type: "PREVSHOULDER" },
     });
 
     const { result } = renderHook(() => useActiveExerciseView());
 
-    expect(result.current.headerTitle).toBe("training.active.title.prevention");
+    expect(result.current.headerTitle).toBe("Shoulder prevention");
+  });
+
+  it("shows the template title in the app language", () => {
+    mockLanguage = "de";
+    useTrainingStore.setState({
+      activeTraining: { id: "training-1", type: "STABILITY" },
+    });
+
+    const { result } = renderHook(() => useActiveExerciseView());
+
+    expect(result.current.headerTitle).toBe("Stabilität");
+  });
+
+  it("falls back to the plan title for a type without a template", () => {
+    useTrainingStore.setState({
+      activeTraining: { id: "training-1", type: "HBCARDIO" },
+    });
+
+    const { result } = renderHook(() => useActiveExerciseView());
+
+    expect(result.current.headerTitle).toBe("training.active.title.plan");
   });
 });
 

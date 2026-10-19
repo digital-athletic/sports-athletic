@@ -16,6 +16,17 @@ export const loadFocusTrainings = createDataLoader(
   "frozen",
 );
 
+// Object.hasOwn keeps prototype keys like "constructor" from matching.
 export const loadFocusTraining = (
   type: TrainingType,
-): FocusTraining | undefined => loadFocusTrainings()[type];
+): FocusTraining | undefined => {
+  const templates = loadFocusTrainings();
+  return Object.hasOwn(templates, type) ? templates[type] : undefined;
+};
+
+// Languages without a template text read English, the fallback language.
+export const loadFocusTrainingTitle = (
+  type: TrainingType,
+  language: string | undefined,
+): string | undefined =>
+  loadFocusTraining(type)?.title[language === "de" ? "de" : "en"];

@@ -82,7 +82,7 @@ export const requireFocusEquipment = (
 };
 
 /**
- * Collects the branches a focus training draws from: its skill tree limited
+ * Collects the branches a focus training draws from: its skill trees limited
  * to the template tags, plus the skill trees its blocks name.
  */
 export const resolveFocusPool = (
@@ -92,10 +92,14 @@ export const resolveFocusPool = (
   hasWeights: boolean,
 ): SkillTreeType => {
   const tags = template.tags ?? [];
-  const pool = filterByTags(
-    getSkillTree(skillTrees, template.skillTree, [], hasWeights, true),
-    tags,
-  );
+  const trees: SkillTreeType = {};
+  for (const skillTree of template.skillTrees) {
+    Object.assign(
+      trees,
+      getSkillTree(skillTrees, skillTree, [], hasWeights, true),
+    );
+  }
+  const pool = filterByTags(trees, tags);
   if (tags.length > 0 && Object.keys(pool).length === 0) {
     throw {
       type: "NO_EXERCISES",

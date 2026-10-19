@@ -344,10 +344,15 @@ export type GeneratorSkillTypeFromSchema = v.InferOutput<
 >;
 
 /**
- * Canonical type for all skill codes used during training generation.
- * Re-exported as SkillCode for cleaner imports.
+ * Canonical type for all skill codes used during training generation: a
+ * generator skill code or the key of the short workout template that
+ * generated the exercise. Templates can come without an app release, so any
+ * key is accepted; the literals keep autocompletion.
  */
-export type SkillCode = GeneratorSkillTypeFromSchema;
+export type SkillCode =
+  | GeneratorSkillTypeFromSchema
+  | (string & Record<never, never>);
+export const SkillCodeSchema = v.pipe(v.string(), v.minLength(1));
 
 // SkillPriorities schemas
 // PREV1 to PREV3 are placeholders the plan generator resolves to a prevention skill
@@ -414,13 +419,12 @@ export type SetTuple = v.InferOutput<typeof SetTupleSchema>;
 
 /**
  * Generated set list entry with required branchId (used during training generation).
- * Uses GeneratorSkillTypeSchema for type-safe skill values.
  */
 export const GeneratedSetListEntrySchema = v.object({
   branchId: v.string(),
   exerciseId: v.string(),
   set: SetTupleSchema,
-  skill: GeneratorSkillTypeSchema,
+  skill: SkillCodeSchema,
   duration: v.optional(v.number()),
   repetition: v.optional(v.number()),
   weight: v.optional(v.number()),
@@ -450,7 +454,7 @@ export type GeneratedSetListEntryFromSchema = v.InferOutput<
 export type UserExerciseEntry = {
   exerciseId: string;
   set: SetTuple;
-  skill: GeneratorSkillTypeFromSchema;
+  skill: SkillCode;
   duration?: number;
   repetition?: number;
   weight?: number;

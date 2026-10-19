@@ -36,7 +36,10 @@ const block = (change: Partial<FocusTrainingBlock>): FocusTrainingBlock => ({
 });
 
 const template = (change: Partial<FocusTraining>): FocusTraining => ({
-  skillTree: "MOB",
+  title: { en: "Mobility", de: "Mobilität" },
+  focusArea: "MOBILITY",
+  progression: false,
+  skillTrees: ["MOB"],
   blocks: [block({})],
   ...change,
 });
@@ -134,7 +137,7 @@ describe("resolveFocusPool: skill trees", () => {
   };
 
   it("picks the skill tree variant from the weights", () => {
-    const gks = template({ skillTree: "GKS" });
+    const gks = template({ skillTrees: ["GKS"] });
 
     expect(Object.keys(resolveFocusPool("GKS", gks, skillTrees, true))).toEqual(
       ["weighted"],
@@ -144,9 +147,9 @@ describe("resolveFocusPool: skill trees", () => {
     ).toEqual(["bodyweight"]);
   });
 
-  it("limits the skill tree to the template tags and adds the block skill trees", () => {
+  it("merges the skill trees, limits them to the template tags and adds the block skill trees", () => {
     const knee = template({
-      skillTree: "PREVKNEE",
+      skillTrees: ["PREV", "PREVKG"],
       tags: ["PREVENTION_KNEE_HIP"],
       blocks: [block({ skillTree: "WUSPEZIAL" }), block({})],
     });
@@ -157,7 +160,10 @@ describe("resolveFocusPool: skill trees", () => {
   });
 
   it("throws the tag values when no branch carries the template tags", () => {
-    const spine = template({ skillTree: "PREV", tags: ["PREVENTION_SPINE"] });
+    const spine = template({
+      skillTrees: ["PREV"],
+      tags: ["PREVENTION_SPINE"],
+    });
 
     expect(() => resolveFocusPool("PREV", spine, skillTrees, true)).toThrow(
       expect.objectContaining({

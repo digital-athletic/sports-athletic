@@ -1,11 +1,10 @@
-import { isSkillTypes } from "@/constants/workoutConstants";
 import { getExerciseById } from "@/data/exerciseRegistry";
+import { loadFocusTrainingTitle } from "@/data/loadFocusTrainings";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import {
   deriveActiveExerciseIndex,
   isFeedbackEligibleSkill,
 } from "@/features/training/utils/exerciseDataUtils";
-import { isPreventionSkill } from "@/features/training/utils/skillTreeUtils";
 import { isPauseExercise as checkIsPauseExercise } from "@/features/training/models/IdTypes";
 import { type ActiveTrainingType } from "@/features/training/models/ActiveTraining";
 import { type UserExerciseDataType } from "@/features/training/models/UserExerciseData";
@@ -13,7 +12,11 @@ import { type TFunction } from "i18next";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-function deriveHeaderTitle(type: string | undefined, t: TFunction): string {
+function deriveHeaderTitle(
+  type: string | undefined,
+  t: TFunction,
+  language: string | undefined,
+): string {
   if (!type) {
     return t("training.active.title.plan");
   }
@@ -23,16 +26,9 @@ function deriveHeaderTitle(type: string | undefined, t: TFunction): string {
     return t("training.active.title.strengthTest");
   }
 
-  // Focus or Prevention training
-  if (isSkillTypes(type)) {
-    return t(`training.skill.${type}`, {
-      defaultValue: isPreventionSkill(type)
-        ? t("training.active.title.prevention")
-        : t("training.active.title.focus"),
-    });
-  }
-
-  return t("training.active.title.plan");
+  return (
+    loadFocusTrainingTitle(type, language) ?? t("training.active.title.plan")
+  );
 }
 
 /**
@@ -73,8 +69,9 @@ function buildActiveExerciseView(
   exerciseList: UserExerciseDataType[] | null,
   activeTraining: ActiveTrainingType | null,
   t: TFunction,
+  language: string | undefined,
 ) {
-  const headerTitle = deriveHeaderTitle(activeTraining?.type, t);
+  const headerTitle = deriveHeaderTitle(activeTraining?.type, t, language);
 
   // Derived from each entry's `completed` mark rather than a stored pointer,
   // so it's always in bounds and always reflects the latest completion state.
@@ -148,11 +145,12 @@ function buildActiveExerciseView(
  * title and progress.
  */
 export function useActiveExerciseView() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { exerciseList, activeTraining } = useTrainingStore();
+  const language = i18n.resolvedLanguage;
 
   return useMemo(
-    () => buildActiveExerciseView(exerciseList, activeTraining, t),
-    [exerciseList, activeTraining, t],
+    () => buildActiveExerciseView(exerciseList, activeTraining, t, language),
+    [exerciseList, activeTraining, t, language],
   );
 }

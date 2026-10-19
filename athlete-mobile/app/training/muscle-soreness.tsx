@@ -50,6 +50,8 @@ export default function MuscleSorenessScreen() {
 
   const [loading, setLoading] = useState(true);
   const screenState = screenStateFor(params.type);
+  // List rows carry their own inset, so only the soreness step pads the sides.
+  const sidePadding = screenState === "PLACE" ? 0 : spacing.m;
 
   const { places } = usePlacesStore();
   const { temporalData, setTemporalData } = useUserWorkoutStore();
@@ -102,11 +104,10 @@ export default function MuscleSorenessScreen() {
         flex={1}
         justifyContent="center"
         alignItems="stretch"
-        paddingVertical="s"
         style={{
           paddingBottom: insets.bottom,
-          paddingLeft: Math.max(spacing.m, insets.left),
-          paddingRight: Math.max(spacing.m, insets.right),
+          paddingLeft: Math.max(sidePadding, insets.left),
+          paddingRight: Math.max(sidePadding, insets.right),
         }}
       >
         {/* needs to be here so the selector isn't rendered at start while temp data is managed */}
@@ -116,7 +117,7 @@ export default function MuscleSorenessScreen() {
           <>
             <Box flex={1} justifyContent="center" alignItems="stretch">
               {screenState === "SORENESS" ? (
-                <Box flex={1}>
+                <Box flex={1} paddingTop="s">
                   {params.type === "PLAN" ? (
                     <Text variant="title">
                       {t("training.muscleSoreness.title")}
@@ -128,12 +129,7 @@ export default function MuscleSorenessScreen() {
                   />
                 </Box>
               ) : (
-                <ScrollBox
-                  contentContainerStyle={{
-                    flexGrow: 1,
-                    justifyContent: "center",
-                  }}
-                >
+                <ScrollBox backgroundColor="white">
                   <PlaceSelection
                     selectPlace={generateTraining}
                     places={places}

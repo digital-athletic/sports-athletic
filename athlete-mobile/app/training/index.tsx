@@ -9,11 +9,13 @@ import { getAllExercises } from "@/data/exerciseRegistry";
 import { useAgeGroup } from "@/features/anamnesis/useAgeGroup";
 import { ColumnList } from "@/features/training/ColumnList";
 import { useTrainingGapCheck } from "@/features/training/hooks/useTrainingGapCheck";
+import type { TrainingSelectionType } from "@/features/training/models/Training";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { getSectionForDate } from "@/features/training/trainingUtils";
 import { hasAnyBarbell } from "@/features/training/utils/equipmentUtils";
 import { isStrengthTestDue } from "@/features/training/utils/strengthTestUtils";
 import { useHardwareBackHandler } from "@/hooks/useHardwareBackHandler";
+import type { I18nKey } from "@/i18n";
 import { Logger } from "@/services/Logger";
 import { usePlacesStore } from "@/store/placesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
@@ -24,6 +26,16 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 type ScreenState = "SELECT" | "TEST";
+
+const titleKeyFor = (
+  screenState: ScreenState,
+  selection: TrainingSelectionType | null,
+): I18nKey => {
+  if (screenState === "TEST") return "training.powerTest.title";
+  if (selection === "QUICK") return "training.active.title.focus";
+  if (selection === "PREV") return "training.active.title.prevention";
+  return "training.selectTraining.title";
+};
 
 /**
  * Select Training Screen
@@ -58,12 +70,7 @@ export default function SelectTraining() {
 
   useHardwareBackHandler(handleBack);
 
-  // Title based on screen state
-  const title = t(
-    screenState === "TEST"
-      ? "training.powerTest.title"
-      : "training.selectTraining.title",
-  );
+  const title = t(titleKeyFor(screenState, selection));
 
   const getTrainingDays = useCallback((): TileData[] => {
     if (!workoutData || !selection || selection !== "PLAN" || !trainingPlan) {

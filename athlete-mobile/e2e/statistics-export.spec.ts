@@ -32,12 +32,21 @@ test.describe("Statistics export: athlete with workouts", () => {
     const content = await statsPage.readDownload(download);
     expect(content.charCodeAt(0)).toBe(0xfeff);
     const lines = content.slice(1).split("\r\n");
-    // Header, one row per workout, trailing line end
-    expect(lines).toHaveLength(4);
+    // Header, one row per performed set of both workouts, trailing line end
+    expect(lines).toHaveLength(6);
     expect(lines[0]).toBe(
-      "Date,Duration (min),Exercise count,Points,Moved weight (kg)",
+      "Workout ID,Date,Exercise ID,Exercise,Skill,Set,Sets,Repetitions,Weight (kg),Weight type,Weight (% F-Max),Duration (s),Height (cm),Difficulty",
     );
-    expect(lines[3]).toBe("");
+    expect(lines.slice(1, 5).map((line) => line.split(",")[0])).toEqual([
+      "workout-2",
+      "workout-2",
+      "workout-1",
+      "workout-1",
+    ]);
+    expect(lines[1]).toMatch(
+      /^workout-2,[\dT:-]+,118,KH-Frontkniebeuge,SWR1,3,3,10,14,PER_DUMBBELL,,,,$/,
+    );
+    expect(lines[5]).toBe("");
   });
 
   test("names the strength test file after the active tab and range", async ({

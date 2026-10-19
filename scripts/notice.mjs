@@ -1,5 +1,5 @@
 /**
- * Shared license tooling for the workspace packages
+ * Shared license tooling for the projects (athlete-mobile, trainer-web)
  *
  * - `generateSbom` writes an SPDX 2.3 SBOM (`SPDX_<artifact>.spdx.json`) with
  *   SPDX license identifiers where available, full original license texts,
@@ -10,41 +10,14 @@
  * Both read the pnpm tree that is actually installed (lockfile + virtual
  * store).
  *
- * CLI usage (from anywhere inside the workspace):
- *   node scripts/notice.mjs --filter athlete-mobile [--name <artifact>] [--output <file>]
+ * CLI usage (from inside a project folder):
+ *   node ../scripts/notice.mjs [--name <artifact>] [--output <file>]
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { randomUUID } from "node:crypto";
-
-// --- Workspace layout ----------------------------------------------------------
-function findWorkspaceRoot(start) {
-  let dir = start;
-  while (!existsSync(join(dir, "pnpm-workspace.yaml"))) {
-    const parent = dirname(dir);
-    if (parent === dir) throw new Error("pnpm-workspace.yaml not found");
-    dir = parent;
-  }
-  return dir;
-}
-
-/** Resolve the directory of the workspace package with the given name. */
-function resolveProjectDir(workspaceRoot, name) {
-  if (!name) return workspaceRoot;
-  const yaml = readFileSync(join(workspaceRoot, "pnpm-workspace.yaml"), "utf8");
-  const entries = [...yaml.matchAll(/^\s*-\s+["']?([^"'\n]+)["']?\s*$/gm)]
-    .map((m) => m[1].trim())
-    .filter((entry) => !/[*{}!]/.test(entry));
-  for (const entry of entries) {
-    const manifestPath = join(workspaceRoot, entry, "package.json");
-    if (!existsSync(manifestPath)) continue;
-    const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-    if (manifest.name === name) return join(workspaceRoot, entry);
-  }
-  throw new Error(`workspace package "${name}" not found`);
-}
 
 // --- License identifier handling ----------------------------------------------
 // pnpm reports whatever package.json declares, which is not always valid SPDX.
@@ -127,12 +100,10 @@ function readLicenseArtifacts(pkgPath) {
 }
 
 // --- pnpm inventory --------------------------------------------------------------
-/** All production packages of the given workspace project, one entry per version. */
-function collectInventory(filter) {
-  const pnpmArgs = filter ? ["--filter", filter] : [];
-  pnpmArgs.push("licenses", "list", "--prod", "--json");
-
-  const raw = execFileSync("pnpm", pnpmArgs, {
+/** All production packages of the given project, one entry per version. */
+function collectInventory(projectRoot) {
+  const raw = execFileSync("pnpm", ["licenses", "list", "--prod", "--json"], {
+    cwd: projectRoot,
     encoding: "utf8",
     maxBuffer: 256 * 1024 * 1024,
   });
@@ -157,12 +128,11 @@ function collectInventory(filter) {
 
 // --- SPDX SBOM -------------------------------------------------------------------
 /**
- * Writes `SPDX_<artifact>.spdx.json` for a workspace project. `supplements`
+ * Writes `SPDX_<artifact>.spdx.json` for a project. `supplements`
  * lists bundled components pnpm cannot see (e.g. vendored icon fonts) as
  * `{ name, version, license, text }`.
  */
 export function generateSbom({ projectRoot, name, output, supplements = [] }) {
-  const workspaceRoot = findWorkspaceRoot(projectRoot);
   const manifest = JSON.parse(
     readFileSync(join(projectRoot, "package.json"), "utf8"),
   );
@@ -263,7 +233,7 @@ export function generateSbom({ projectRoot, name, output, supplements = [] }) {
     });
   };
 
-  for (const pkg of collectInventory(manifest.name)) {
+  for (const pkg of collectInventory(projectRoot)) {
     const { texts, copyrights } = readLicenseArtifacts(pkg.path);
     addComponent({
       pkgName: pkg.name,
@@ -291,7 +261,8 @@ export function generateSbom({ projectRoot, name, output, supplements = [] }) {
   }
 
   // The project itself must appear as the described root component.
-  const rootNotice = join(workspaceRoot, "NOTICE");
+  // Projects sit one level below the repository root, which holds the NOTICE.
+  const rootNotice = join(projectRoot, "..", "NOTICE");
   const rootCopyrights = new Set();
   if (existsSync(rootNotice)) {
     extractCopyrights(readFileSync(rootNotice, "utf8"), rootCopyrights);
@@ -390,7 +361,7 @@ function describeDirect(projectRoot, depName, inventoryByName) {
 }
 
 /**
- * Direct production dependencies of a workspace project, with license text where available.
+ * Direct production dependencies of a project, with license text where available.
  * `supplements` adds bundled components as `{ name, version, license, text }`.
  */
 export function collectDirectDependencies({ projectRoot, supplements = [] }) {
@@ -398,7 +369,7 @@ export function collectDirectDependencies({ projectRoot, supplements = [] }) {
     readFileSync(join(projectRoot, "package.json"), "utf8"),
   );
   const inventoryByName = new Map();
-  for (const entry of collectInventory(manifest.name)) {
+  for (const entry of collectInventory(projectRoot)) {
     const list = inventoryByName.get(entry.name) ?? [];
     list.push(entry);
     inventoryByName.set(entry.name, list);
@@ -471,9 +442,8 @@ if (
       return acc;
     }, []),
   );
-  const workspaceRoot = findWorkspaceRoot(process.cwd());
   generateSbom({
-    projectRoot: resolveProjectDir(workspaceRoot, args.filter),
+    projectRoot: process.cwd(),
     name: args.name,
     output: args.output,
   });

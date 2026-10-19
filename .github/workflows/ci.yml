@@ -6,61 +6,77 @@ on:
   push:
     branches: [main]
 
+defaults:
+  run:
+    working-directory: athlete-mobile
+
 jobs:
   typecheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: athlete-mobile/package.json
       - uses: actions/setup-node@v4
         with:
           node-version: "24.18.0"
           cache: "pnpm"
+          cache-dependency-path: athlete-mobile/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Generate Expo Router types
-        run: pnpm --filter athlete-mobile expo-router-generate-types
+        run: pnpm expo-router-generate-types
       - name: Type check
-        run: pnpm --filter athlete-mobile type-check
+        run: pnpm type-check
 
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: athlete-mobile/package.json
       - uses: actions/setup-node@v4
         with:
           node-version: "24.18.0"
           cache: "pnpm"
+          cache-dependency-path: athlete-mobile/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Lint
-        run: pnpm --filter athlete-mobile lint
+        run: pnpm lint
 
   format:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: athlete-mobile/package.json
       - uses: actions/setup-node@v4
         with:
           node-version: "24.18.0"
           cache: "pnpm"
+          cache-dependency-path: athlete-mobile/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Format check
-        run: pnpm --filter athlete-mobile format-check
+        run: pnpm format-check
 
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: athlete-mobile/package.json
       - uses: actions/setup-node@v4
         with:
           node-version: "24.18.0"
           cache: "pnpm"
+          cache-dependency-path: athlete-mobile/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Test
-        run: pnpm --filter athlete-mobile test
+        run: pnpm test

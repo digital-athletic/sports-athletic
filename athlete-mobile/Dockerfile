@@ -10,8 +10,7 @@ ENV REACT_NATIVE_PACKAGER_HOSTNAME=0.0.0.0
 RUN corepack enable
 
 # Pre-create the named-volume mount points owned by node
-RUN mkdir -p /workspace/node_modules \
-             /workspace/.pnpm-store \
+RUN mkdir -p /workspace/.pnpm-store \
              /workspace/athlete-mobile/node_modules && \
     chown -R node:node /workspace
 

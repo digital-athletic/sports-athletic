@@ -956,15 +956,8 @@ const MAX_VALUE_CONVERSION_FACTORS: Record<MaxValueTypeName, number> = {
   oneSidedLowerSupported: 0.3,
 };
 
-const NO_INCREASE_SKILL_TYPE = [
-  "WU",
-  "WUSKSA",
-  "WUSPEZIAL",
-  "CD",
-  "MOB",
-  "BR",
-  "TEST",
-];
+// Short workout templates set this with their progression field.
+const NO_INCREASE_SKILL_TYPE = ["WUSKSA", "WUSPEZIAL", "TEST"];
 
 const IGNORE_SORENESS_SKILLS = ["WU", "WUSKSA", "CD", "MOB", "BR"];
 

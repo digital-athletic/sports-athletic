@@ -26,7 +26,6 @@ function deriveHeaderTitle(
     return t("training.active.title.strengthTest");
   }
 
-  // Focus or Prevention training
   return (
     loadFocusTrainingTitle(type, language) ?? t("training.active.title.plan")
   );

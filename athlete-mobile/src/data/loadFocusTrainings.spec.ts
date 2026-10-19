@@ -7,6 +7,8 @@ import {
   parseFocusTrainings,
 } from "./loadFocusTrainings";
 import { loadIntensityConfig } from "./loadIntensityConfig";
+import { getAllSkillTrees } from "./skillTreeRegistry";
+import { getSkillTree } from "@/features/training/utils/skillTreeUtils";
 import type { TrainingType } from "@/features/training/models/Training";
 import { FocusTrainingsSchema } from "@/schemas/focusTraining.schema";
 
@@ -197,13 +199,25 @@ describe("loadFocusTrainings: real file", () => {
       regions: ["WRIST", "ELBOW", "WRIST_ELBOW"],
     },
   ])(
-    "credits $type to $focusArea",
+    "reads focus area, progression and regions of $type",
     ({ type, focusArea, progression, regions }) => {
       const template = loadFocusTraining(type);
 
       expect(template?.focusArea).toBe(focusArea);
       expect(template?.progression).toBe(progression);
       expect(template?.regions).toEqual(regions);
+    },
+  );
+
+  it.each([true, false])(
+    "names only skill trees with branches, with weights %s",
+    (hasWeights) => {
+      for (const template of Object.values(loadFocusTrainings())) {
+        for (const name of template.skillTrees) {
+          const tree = getSkillTree(getAllSkillTrees(), name, [], hasWeights);
+          expect(Object.keys(tree ?? {}).length).toBeGreaterThan(0);
+        }
+      }
     },
   );
 

@@ -61,7 +61,6 @@ export function shouldSkipExerciseSave(
   return { skip: false };
 }
 
-// The strength test and short workout templates without progression keep the values.
 const progressesValues = (type: string): boolean =>
   type !== "TEST_WORKOUT" && loadFocusTraining(type)?.progression !== false;
 

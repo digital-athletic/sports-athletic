@@ -1,11 +1,13 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { isLevelTag, WorkoutConstants } from "@/constants/workoutConstants";
 import { getExerciseById } from "@/data/exerciseRegistry";
+import { loadFocusTraining } from "@/data/loadFocusTrainings";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { getIntensityBySkill } from "@/features/training/generators/TrainingGenerator";
 import { isPauseExercise as checkIsPauseExercise } from "@/features/training/models/IdTypes";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
 import type { SkillCode } from "@/schemas/generator.schema";
+import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
 import {
@@ -48,6 +50,23 @@ import { getTagValues, getUserTagValue } from "@/utils/tagUtils";
 
 type FeedbackCategory = "TOO_EASY" | "TOO_HARD" | "SUCCEEDED";
 
+// A short workout template draws from the skill trees it lists, with and without weights.
+const branchesOfSkill = (
+  skillTrees: Record<string, SkillTreeType>,
+  skill: SkillCode,
+): SkillTreeType => {
+  const branches: SkillTreeType = {};
+  for (const treeName of loadFocusTraining(skill)?.skillTrees ?? [skill]) {
+    for (const hasWeights of [true, false]) {
+      Object.assign(
+        branches,
+        getSkillTree(skillTrees, treeName, [], hasWeights),
+      );
+    }
+  }
+  return branches;
+};
+
 /**
  * Persists exercise/branch progression, strength-test reps, feedback, and
  * skip state for a single `exerciseList` entry identified by array index.
@@ -89,10 +108,7 @@ export function useExerciseCompletion() {
     const userExerciseBranch = branchData[branchId];
     if (branchId !== "-1" && !userExerciseBranch) {
       // first time an exercise of this branch was completed => save level
-      const newSkillTree = Object.assign(
-        getSkillTree(skillTrees, skill, [], true),
-        getSkillTree(skillTrees, skill, [], false),
-      );
+      const newSkillTree = branchesOfSkill(skillTrees, skill);
       const newBranch = newSkillTree[branchId];
       if (newBranch) {
         const levels = newBranch.levels;

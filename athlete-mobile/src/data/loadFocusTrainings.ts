@@ -16,7 +16,7 @@ export const loadFocusTrainings = createDataLoader(
   "frozen",
 );
 
-// Every skill code or training type can ask; only template keys find one.
+// Object.hasOwn keeps prototype keys like "constructor" from matching.
 export const loadFocusTraining = (
   type: TrainingType,
 ): FocusTraining | undefined => {

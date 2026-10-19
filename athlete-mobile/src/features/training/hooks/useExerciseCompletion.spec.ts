@@ -36,6 +36,7 @@ jest.mock("@/data/skillTreeRegistry", () => {
     getAllSkillTrees: () => ({
       SWR2: { "77": branch },
       MAX_STRENGTH: { "78": branch },
+      PREVKG: { "79": branch },
     }),
   };
 });
@@ -230,6 +231,26 @@ describe("useExerciseCompletion: max strength", () => {
       skill: "MAX_STRENGTH",
       branchId: "78",
     });
+  });
+});
+
+describe("useExerciseCompletion: short workout branch level", () => {
+  it("saves the level of a branch from a skill tree the template lists", () => {
+    seed({ skill: "PREVKNEE", branchId: "79", repetition: 10 });
+    const { result } = renderHook(() => useExerciseCompletion());
+
+    act(() => result.current.saveExerciseAndBranchData(0));
+
+    expect(useExerciseProgressStore.getState().getBranchLevel("79")).toBe(2);
+  });
+
+  it("completes an exercise whose skill has no skill tree", () => {
+    seed({ skill: "PREVHIP", branchId: "80", repetition: 10 });
+    const { result } = renderHook(() => useExerciseCompletion());
+
+    expect(() =>
+      act(() => result.current.saveExerciseAndBranchData(0)),
+    ).not.toThrow();
   });
 });
 

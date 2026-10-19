@@ -2,7 +2,10 @@ import * as v from "valibot";
 import { loadFocusTrainingTitle } from "@/data/loadFocusTrainings";
 import { loadIntensityConfig } from "@/data/loadIntensityConfig";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
-import { shouldProcessExerciseValues } from "@/features/training/utils/exerciseDataUtils";
+import {
+  isFeedbackEligibleSkill,
+  shouldProcessExerciseValues,
+} from "@/features/training/utils/exerciseDataUtils";
 import { getRegionsForPreventionSkills } from "@/features/training/utils/preventionUtils";
 import {
   isPreventionTraining,
@@ -39,6 +42,23 @@ jest.mock("../../../../assets/data/generator/focusTrainings.json", () => {
           sets: 1,
           pause: { superset: 30, sets: 60, exercise: 60 },
           superset: "drawOrderAll",
+        },
+      ],
+    },
+    STRETCH: {
+      title: { en: "Stretching", de: "Dehnen" },
+      focusArea: "MOBILITY",
+      progression: false,
+      skillTrees: ["MOB"],
+      blocks: [
+        {
+          draw: "slots",
+          picks: [{ tags: [], count: 4 }],
+          fallback: false,
+          sets: 1,
+          work: 60,
+          pause: { superset: 10, sets: 10, exercise: 10 },
+          superset: "none",
         },
       ],
     },
@@ -85,7 +105,7 @@ const hipBranch = (exerciseId: string): SkillTreeType[string] => ({
   levels: { 1: { exerciseId } },
 });
 
-describe("new focus training: template without code changes", () => {
+describe("new short workout: template without code changes", () => {
   it("generates a workout from the merged skill trees", () => {
     const skillTrees = {
       PREV: { hip: hipBranch("101") },
@@ -123,5 +143,14 @@ describe("new focus training: template without code changes", () => {
     expect(isPreventionTraining("PREVHIP")).toBe(true);
     expect(shouldProcessExerciseValues("PREVHIP", "PREVHIP")).toBe(true);
     expect(loadFocusTrainingTitle("PREVHIP", "de")).toBe("Hüftprävention");
+  });
+
+  it("keeps the values of a template without progression", () => {
+    expect(shouldProcessExerciseValues("STRETCH", "STRETCH")).toBe(false);
+    expect(
+      isFeedbackEligibleSkill({ id: "training-1", type: "STRETCH" }, "STRETCH"),
+    ).toBe(false);
+    expect(mapSkillCodeToFocusArea("STRETCH")).toBe("MOBILITY");
+    expect(isPreventionTraining("STRETCH")).toBe(false);
   });
 });

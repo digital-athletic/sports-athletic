@@ -352,10 +352,7 @@ export type GeneratorSkillTypeFromSchema = v.InferOutput<
 export type SkillCode =
   | GeneratorSkillTypeFromSchema
   | (string & Record<never, never>);
-export const SkillCodeSchema = v.custom<SkillCode>(
-  (value) => typeof value === "string" && value.length > 0,
-  "Expected a skill code",
-);
+export const SkillCodeSchema = v.pipe(v.string(), v.minLength(1));
 
 // SkillPriorities schemas
 // PREV1 to PREV3 are placeholders the plan generator resolves to a prevention skill

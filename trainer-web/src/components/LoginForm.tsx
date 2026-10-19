@@ -66,6 +66,9 @@ export function LoginForm({
           placeholder="_ _ _ _ _ _"
           className="text-center text-2xl tracking-widest"
           autoComplete="one-time-code"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
           autoFocus
         />
 

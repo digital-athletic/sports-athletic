@@ -226,6 +226,8 @@ export function EmailVerificationScreen() {
             keyboardType="number-pad"
             textContentType="oneTimeCode"
             autoComplete="one-time-code"
+            autoCorrect={false}
+            spellCheck={false}
             placeholder="_ _ _ _ _ _"
             placeholderTextColor={colors.darkGrey2}
             accessibilityLabel={t("onboarding.verificationCodeInput")}

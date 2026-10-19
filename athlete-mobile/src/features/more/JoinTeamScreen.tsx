@@ -201,6 +201,8 @@ export default function JoinTeamScreen() {
             placeholder={t("more.joinTeam.codePlaceholder")}
             placeholderTextColor={colors.darkGrey2}
             autoCapitalize="characters"
+            autoCorrect={false}
+            spellCheck={false}
             style={[
               styles.codeInput,
               {

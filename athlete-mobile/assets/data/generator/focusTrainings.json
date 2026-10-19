@@ -1,0 +1,318 @@
+{
+  "WU": {
+    "skillTree": "WU",
+    "blocks": [
+      {
+        "draw": "slots",
+        "picks": [{ "tags": [], "count": 10 }],
+        "fallback": false,
+        "sets": 1,
+        "work": 60,
+        "pause": { "superset": 10, "sets": 10, "exercise": 10 },
+        "superset": "none"
+      }
+    ]
+  },
+  "MOB": {
+    "skillTree": "MOB",
+    "blocks": [
+      {
+        "draw": "slots",
+        "picks": [{ "tags": [], "count": 10 }],
+        "fallback": false,
+        "sets": 1,
+        "work": 60,
+        "pause": { "superset": 10, "sets": 10, "exercise": 10 },
+        "superset": "none"
+      }
+    ]
+  },
+  "BR": {
+    "skillTree": "BR",
+    "requiredEquipment": ["FOAM_ROLLER", "FOAM_BALL"],
+    "blocks": [
+      {
+        "draw": "slots",
+        "picks": [{ "tags": [], "count": 10 }],
+        "fallback": false,
+        "sets": 1,
+        "work": 60,
+        "pause": { "superset": 10, "sets": 10, "exercise": 10 },
+        "superset": "none"
+      }
+    ]
+  },
+  "CD": {
+    "skillTree": "CD",
+    "blocks": [
+      {
+        "draw": "slots",
+        "picks": [{ "tags": [], "count": 10 }],
+        "fallback": false,
+        "sets": 1,
+        "work": 60,
+        "pause": { "superset": 10, "sets": 10, "exercise": 10 },
+        "superset": "none"
+      }
+    ]
+  },
+  "BAS": {
+    "skillTree": "BAS",
+    "blocks": [
+      {
+        "draw": "slots",
+        "picks": [{ "tags": [], "count": 4 }],
+        "fallback": true,
+        "sets": 2,
+        "pause": { "superset": 30, "sets": 60, "exercise": 30 },
+        "superset": "drawOrder"
+      }
+    ]
+  },
+  "GKS": {
+    "skillTree": "GKS",
+    "blocks": [
+      {
+        "draw": "slots",
+        "picks": [{ "tags": [], "count": 4 }],
+        "picksWithoutWeights": [
+          { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+          { "tags": ["REGION_FULL_BODY"], "count": 2 }
+        ],
+        "fallback": true,
+        "sets": 2,
+        "pause": { "superset": 45, "sets": 90, "exercise": 45 },
+        "superset": "none"
+      }
+    ]
+  },
+  "STABILITY": {
+    "skillTree": "STABILITY",
+    "blocks": [
+      {
+        "draw": "exercises",
+        "picks": [{ "tags": [], "count": 6 }],
+        "fallback": false,
+        "sets": 2,
+        "pause": { "superset": 30, "sets": 60, "exercise": 60 },
+        "superset": "muscles"
+      }
+    ]
+  },
+  "PREV": {
+    "skillTree": "PREV",
+    "tags": ["PREVENTION_SHOULDER"],
+    "blocks": [
+      {
+        "skill": "WUSPEZIAL",
+        "skillTree": "WUSPEZIAL",
+        "draw": "exercises",
+        "picks": [
+          {
+            "tags": [
+              "SKILL_WU",
+              "SKILL_WARM_UP",
+              "SKILL_WARM_UP_SPECIAL",
+              "PREVENTION_SHOULDER"
+            ],
+            "count": 3
+          }
+        ],
+        "fallback": false,
+        "sets": 1,
+        "pause": { "superset": 10, "sets": 10, "exercise": 10 },
+        "superset": "muscles"
+      },
+      {
+        "draw": "pairs",
+        "picks": [
+          { "tags": ["SKILL_PREVENTION", "PREVENTION_SHOULDER"], "count": 3 }
+        ],
+        "fallback": false,
+        "sets": 2,
+        "pause": { "superset": 30, "sets": 60, "exercise": 60 },
+        "superset": "drawOrderAll"
+      }
+    ]
+  },
+  "PREVSHOULDER": {
+    "skillTree": "PREVSHOULDER",
+    "tags": ["PREVENTION_SHOULDER"],
+    "blocks": [
+      {
+        "skill": "WUSPEZIAL",
+        "skillTree": "WUSPEZIAL",
+        "draw": "exercises",
+        "picks": [
+          {
+            "tags": [
+              "SKILL_WU",
+              "SKILL_WARM_UP",
+              "SKILL_WARM_UP_SPECIAL",
+              "PREVENTION_SHOULDER"
+            ],
+            "count": 3
+          }
+        ],
+        "fallback": false,
+        "sets": 1,
+        "pause": { "superset": 10, "sets": 10, "exercise": 10 },
+        "superset": "muscles"
+      },
+      {
+        "draw": "pairs",
+        "picks": [
+          { "tags": ["SKILL_PREVENTION", "PREVENTION_SHOULDER"], "count": 3 }
+        ],
+        "fallback": false,
+        "sets": 2,
+        "pause": { "superset": 30, "sets": 60, "exercise": 60 },
+        "superset": "drawOrderAll"
+      }
+    ]
+  },
+  "PREVKNEE": {
+    "skillTree": "PREVKNEE",
+    "tags": ["PREVENTION_KNEE_HIP"],
+    "blocks": [
+      {
+        "skill": "WUSPEZIAL",
+        "skillTree": "WUSPEZIAL",
+        "draw": "exercises",
+        "picks": [
+          {
+            "tags": [
+              "SKILL_WU",
+              "SKILL_WARM_UP",
+              "SKILL_WARM_UP_SPECIAL",
+              "PREVENTION_KNEE_HIP"
+            ],
+            "count": 3
+          }
+        ],
+        "fallback": false,
+        "sets": 1,
+        "pause": { "superset": 10, "sets": 10, "exercise": 10 },
+        "superset": "muscles"
+      },
+      {
+        "draw": "pairs",
+        "picks": [
+          { "tags": ["SKILL_PREVENTION", "PREVENTION_KNEE_HIP"], "count": 3 }
+        ],
+        "fallback": false,
+        "sets": 2,
+        "pause": { "superset": 30, "sets": 60, "exercise": 60 },
+        "superset": "drawOrderAll"
+      }
+    ]
+  },
+  "PREVWRIST": {
+    "skillTree": "PREVWRIST",
+    "tags": ["PREVENTION_WRIST_ELBOW"],
+    "blocks": [
+      {
+        "skill": "WUSPEZIAL",
+        "skillTree": "WUSPEZIAL",
+        "draw": "exercises",
+        "picks": [
+          {
+            "tags": [
+              "SKILL_WU",
+              "SKILL_WARM_UP",
+              "SKILL_WARM_UP_SPECIAL",
+              "PREVENTION_WRIST_ELBOW"
+            ],
+            "count": 3
+          }
+        ],
+        "fallback": false,
+        "sets": 1,
+        "pause": { "superset": 10, "sets": 10, "exercise": 10 },
+        "superset": "muscles"
+      },
+      {
+        "draw": "pairs",
+        "picks": [
+          { "tags": ["SKILL_PREVENTION", "PREVENTION_WRIST_ELBOW"], "count": 3 }
+        ],
+        "fallback": false,
+        "sets": 2,
+        "pause": { "superset": 30, "sets": 60, "exercise": 60 },
+        "superset": "drawOrderAll"
+      }
+    ]
+  },
+  "PREVANKLE": {
+    "skillTree": "PREVANKLE",
+    "tags": ["PREVENTION_ANKLE"],
+    "blocks": [
+      {
+        "skill": "WUSPEZIAL",
+        "skillTree": "WUSPEZIAL",
+        "draw": "exercises",
+        "picks": [
+          {
+            "tags": [
+              "SKILL_WU",
+              "SKILL_WARM_UP",
+              "SKILL_WARM_UP_SPECIAL",
+              "PREVENTION_ANKLE"
+            ],
+            "count": 3
+          }
+        ],
+        "fallback": false,
+        "sets": 1,
+        "pause": { "superset": 10, "sets": 10, "exercise": 10 },
+        "superset": "muscles"
+      },
+      {
+        "draw": "pairs",
+        "picks": [
+          { "tags": ["SKILL_PREVENTION", "PREVENTION_ANKLE"], "count": 3 }
+        ],
+        "fallback": false,
+        "sets": 2,
+        "pause": { "superset": 30, "sets": 60, "exercise": 60 },
+        "superset": "drawOrderAll"
+      }
+    ]
+  },
+  "PREVSPINE": {
+    "skillTree": "PREVSPINE",
+    "tags": ["PREVENTION_SPINE"],
+    "blocks": [
+      {
+        "skill": "WUSPEZIAL",
+        "skillTree": "WUSPEZIAL",
+        "draw": "exercises",
+        "picks": [
+          {
+            "tags": [
+              "SKILL_WU",
+              "SKILL_WARM_UP",
+              "SKILL_WARM_UP_SPECIAL",
+              "PREVENTION_SPINE"
+            ],
+            "count": 3
+          }
+        ],
+        "fallback": false,
+        "sets": 1,
+        "pause": { "superset": 10, "sets": 10, "exercise": 10 },
+        "superset": "muscles"
+      },
+      {
+        "draw": "pairs",
+        "picks": [
+          { "tags": ["SKILL_PREVENTION", "PREVENTION_SPINE"], "count": 3 }
+        ],
+        "fallback": false,
+        "sets": 2,
+        "pause": { "superset": 30, "sets": 60, "exercise": 60 },
+        "superset": "drawOrderAll"
+      }
+    ]
+  }
+}

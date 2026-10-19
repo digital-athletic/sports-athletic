@@ -1,13 +1,33 @@
 version: 2
+# One block per project so each project gets its own grouped pull request.
+# "npm" also covers pnpm projects.
 updates:
-  # "npm" also covers pnpm projects
   - package-ecosystem: "npm"
-    directories:
-      - "/athlete-mobile"
-      - "/trainer-web"
+    directory: "/athlete-mobile"
     schedule:
       interval: "weekly"
-    # Matches minimumReleaseAge in each pnpm-workspace.yaml. Cooldown applies
-    # to version updates only; GitHub opens security updates immediately.
+    # Matches minimumReleaseAge in pnpm-workspace.yaml. Cooldown applies to
+    # version updates only; GitHub opens security updates immediately.
     cooldown:
       default-days: 7
+    groups:
+      athlete-mobile:
+        applies-to: version-updates
+        patterns: ["*"]
+      athlete-mobile-security:
+        applies-to: security-updates
+        patterns: ["*"]
+
+  - package-ecosystem: "npm"
+    directory: "/trainer-web"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+    groups:
+      trainer-web:
+        applies-to: version-updates
+        patterns: ["*"]
+      trainer-web-security:
+        applies-to: security-updates
+        patterns: ["*"]

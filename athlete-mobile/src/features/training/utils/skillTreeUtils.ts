@@ -1,5 +1,7 @@
 import { TagGroups } from "@/constants/tagGroups";
+import { loadFocusTraining } from "@/data/loadFocusTrainings";
 import { areaToRegion } from "./exerciseUtils";
+import { getRegionsForPreventionSkills } from "./preventionUtils";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { SkillTreesState } from "@/data/skillTreeRegistry";
 import type { ExerciseType } from "@/schemas/exercise.schema";
@@ -475,33 +477,6 @@ export function getNextTypeFiltered<T extends { tags: string[] }>(
 }
 
 /**
- * Returns regions for given prevention skills
- */
-function getRegionsForPreventionSkills(preventionSkills: string[]): string[] {
-  let prevRegions: string[] = [];
-  for (const skill of preventionSkills) {
-    switch (skill) {
-      case "PREVANKLE":
-        prevRegions = prevRegions.concat(["ANKLE"]);
-        break;
-      case "PREVKNEE":
-        prevRegions = prevRegions.concat(["KNEE", "HIP", "KNEE_HIP"]);
-        break;
-      case "PREVSHOULDER":
-        prevRegions = prevRegions.concat(["SHOULDER"]);
-        break;
-      case "PREVSPINE":
-        prevRegions = prevRegions.concat(["SPINE"]);
-        break;
-      case "PREVWRIST":
-        prevRegions = prevRegions.concat(["WRIST", "ELBOW", "WRIST_ELBOW"]);
-        break;
-    }
-  }
-  return prevRegions;
-}
-
-/**
  * Filters branches by soreness/temporal data
  */
 function filterBySoreness(
@@ -651,7 +626,8 @@ function getAreasFor(muscles: string[]): string[] {
  *
  * Handles:
  * - FocusArea pass-through (e.g., "MOBILITY" -> "MOBILITY")
- * - SkillCode conversion (e.g., "MOB" -> "MOBILITY")
+ * - Short workout template keys, by their focusArea (e.g., "MOB" -> "MOBILITY")
+ * - SkillCode conversion (e.g., "WUSPEZIAL" -> "WARMUP")
  * - Legacy SkillType (e.g., "FOAM_ROLLER" -> "MOBILITY")
  */
 export const mapSkillCodeToFocusArea = (
@@ -666,33 +642,23 @@ export const mapSkillCodeToFocusArea = (
     case "STABILITY":
     case "CARDIO":
       return skillCode;
+  }
 
-    // Prevention codes
-    case "PREV":
-    case "PREVKNEE":
-    case "PREVSHOULDER":
-    case "PREVWRIST":
-    case "PREVANKLE":
-    case "PREVSPINE":
-      return "PREVENTION";
+  const template = loadFocusTraining(skillCode);
+  if (template) return template.focusArea;
 
-    // Warmup codes (including cooldown)
-    case "WU":
+  switch (skillCode) {
+    // Warmup codes
     case "WUPREV":
     case "WUSPEZIAL":
     case "WUSKSA":
-    case "CD":
       return "WARMUP";
 
-    // Mobility codes (including foam roller)
-    case "MOB":
-    case "BR":
+    // Mobility codes
     case "FOAM_ROLLER":
       return "MOBILITY";
 
     // Stability codes
-    case "BAS":
-    case "GKS":
     case "GKSKG":
       return "STABILITY";
 
@@ -735,7 +701,5 @@ export const mapSkillCodeToFocusArea = (
   }
 };
 
-const PREVENTION_PREFIX = "PREV";
-
-export const isPreventionSkill = (skill: string): boolean =>
-  skill.startsWith(PREVENTION_PREFIX);
+export const isPreventionTraining = (type: string): boolean =>
+  loadFocusTraining(type)?.focusArea === "PREVENTION";

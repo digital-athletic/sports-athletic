@@ -1,10 +1,10 @@
 import { Logger } from "@/services/Logger";
 import type { ActiveTrainingType } from "../models/ActiveTraining";
-import { isPreventionSkill } from "./skillTreeUtils";
+import { isPreventionTraining } from "./skillTreeUtils";
 
 /**
  * Logs a training analytics event, additionally logging a `prevention_`-prefixed
- * variant when the active training is a prevention skill.
+ * variant when the active training is a prevention training.
  */
 export function logTrainingEvent(
   activeTraining: ActiveTrainingType | null,
@@ -18,7 +18,7 @@ export function logTrainingEvent(
     ...data,
   };
 
-  if (isPreventionSkill(activeTraining.type)) {
+  if (isPreventionTraining(activeTraining.type)) {
     Logger.logEvent(`prevention_${eventName}`, eventData);
   }
   Logger.logEvent(eventName, eventData);

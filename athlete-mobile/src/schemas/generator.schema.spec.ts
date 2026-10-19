@@ -70,9 +70,13 @@ describe("generator.schema", () => {
       }
     });
 
-    it("rejects user-facing skill types", () => {
-      const userFacingSkills = ["WARMUP", "MOBILITY", "PREVENTION", "CARDIO"];
-      for (const skill of userFacingSkills) {
+    it("accepts the key of a short workout template the app does not list", () => {
+      const entry = { ...validEntry, skill: "PREVHIP" };
+      expect(v.is(GeneratedSetListEntrySchema, entry)).toBe(true);
+    });
+
+    it("rejects an empty or missing skill", () => {
+      for (const skill of ["", undefined, 1]) {
         const entry = { ...validEntry, skill };
         expect(v.is(GeneratedSetListEntrySchema, entry)).toBe(false);
       }

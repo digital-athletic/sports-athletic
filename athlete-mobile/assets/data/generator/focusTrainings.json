@@ -1,6 +1,9 @@
 {
   "WU": {
-    "skillTree": "WU",
+    "title": { "en": "Warm-Up", "de": "Warm-Up" },
+    "focusArea": "WARMUP",
+    "progression": false,
+    "skillTrees": ["WU"],
     "blocks": [
       {
         "draw": "slots",
@@ -14,7 +17,10 @@
     ]
   },
   "MOB": {
-    "skillTree": "MOB",
+    "title": { "en": "Mobility", "de": "Mobilität" },
+    "focusArea": "MOBILITY",
+    "progression": false,
+    "skillTrees": ["MOB"],
     "blocks": [
       {
         "draw": "slots",
@@ -28,7 +34,10 @@
     ]
   },
   "BR": {
-    "skillTree": "BR",
+    "title": { "en": "Loosen muscles", "de": "Muskeln lockern" },
+    "focusArea": "MOBILITY",
+    "progression": false,
+    "skillTrees": ["BR"],
     "requiredEquipment": ["FOAM_ROLLER", "FOAM_BALL"],
     "blocks": [
       {
@@ -43,7 +52,10 @@
     ]
   },
   "CD": {
-    "skillTree": "CD",
+    "title": { "en": "Cool-Down", "de": "Cool-Down" },
+    "focusArea": "WARMUP",
+    "progression": false,
+    "skillTrees": ["CD"],
     "blocks": [
       {
         "draw": "slots",
@@ -57,7 +69,11 @@
     ]
   },
   "BAS": {
-    "skillTree": "BAS",
+    "title": { "en": "Leg axis stability", "de": "Beinachsenstabilität" },
+    "focusArea": "STABILITY",
+    "intensity": "BAS",
+    "progression": true,
+    "skillTrees": ["BAS"],
     "blocks": [
       {
         "draw": "slots",
@@ -70,7 +86,12 @@
     ]
   },
   "GKS": {
-    "skillTree": "GKS",
+    "title": { "en": "Full body stability", "de": "Ganzkörperstabilität" },
+    "focusArea": "STABILITY",
+    "intensity": "GKS",
+    "intensityWithoutWeights": "GKSKG",
+    "progression": true,
+    "skillTrees": ["GKS"],
     "blocks": [
       {
         "draw": "slots",
@@ -87,7 +108,10 @@
     ]
   },
   "STABILITY": {
-    "skillTree": "STABILITY",
+    "title": { "en": "Stability", "de": "Stabilität" },
+    "focusArea": "STABILITY",
+    "progression": true,
+    "skillTrees": ["STABILITY"],
     "blocks": [
       {
         "draw": "exercises",
@@ -100,7 +124,11 @@
     ]
   },
   "PREV": {
-    "skillTree": "PREV",
+    "title": { "en": "Prevention", "de": "Prävention" },
+    "focusArea": "PREVENTION",
+    "intensity": "PREV",
+    "progression": true,
+    "skillTrees": ["PREV"],
     "tags": ["PREVENTION_SHOULDER"],
     "blocks": [
       {
@@ -136,7 +164,12 @@
     ]
   },
   "PREVSHOULDER": {
-    "skillTree": "PREVSHOULDER",
+    "title": { "en": "Shoulder prevention", "de": "Schulterprävention" },
+    "focusArea": "PREVENTION",
+    "intensity": "PREV",
+    "progression": true,
+    "regions": ["SHOULDER"],
+    "skillTrees": ["PREV", "PREVKG"],
     "tags": ["PREVENTION_SHOULDER"],
     "blocks": [
       {
@@ -172,7 +205,12 @@
     ]
   },
   "PREVKNEE": {
-    "skillTree": "PREVKNEE",
+    "title": { "en": "Knee and hip prevention", "de": "Knie- und Hüftprävention" },
+    "focusArea": "PREVENTION",
+    "intensity": "PREV",
+    "progression": true,
+    "regions": ["KNEE", "HIP", "KNEE_HIP"],
+    "skillTrees": ["PREV", "PREVKG"],
     "tags": ["PREVENTION_KNEE_HIP"],
     "blocks": [
       {
@@ -208,7 +246,15 @@
     ]
   },
   "PREVWRIST": {
-    "skillTree": "PREVWRIST",
+    "title": {
+      "en": "Elbow and wrist prevention",
+      "de": "Ellbogen- und Handgelenksprävention"
+    },
+    "focusArea": "PREVENTION",
+    "intensity": "PREV",
+    "progression": true,
+    "regions": ["WRIST", "ELBOW", "WRIST_ELBOW"],
+    "skillTrees": ["PREV", "PREVKG"],
     "tags": ["PREVENTION_WRIST_ELBOW"],
     "blocks": [
       {
@@ -244,7 +290,12 @@
     ]
   },
   "PREVANKLE": {
-    "skillTree": "PREVANKLE",
+    "title": { "en": "Ankle prevention", "de": "Sprunggelenksprävention" },
+    "focusArea": "PREVENTION",
+    "intensity": "PREV",
+    "progression": true,
+    "regions": ["ANKLE"],
+    "skillTrees": ["PREV", "PREVKG"],
     "tags": ["PREVENTION_ANKLE"],
     "blocks": [
       {
@@ -280,7 +331,12 @@
     ]
   },
   "PREVSPINE": {
-    "skillTree": "PREVSPINE",
+    "title": { "en": "Spine prevention", "de": "Wirbelsäulenprävention" },
+    "focusArea": "PREVENTION",
+    "intensity": "PREV",
+    "progression": true,
+    "regions": ["SPINE"],
+    "skillTrees": ["PREV", "PREVKG"],
     "tags": ["PREVENTION_SPINE"],
     "blocks": [
       {

@@ -1,5 +1,5 @@
 import * as v from "valibot";
-import { GeneratorSkillTypeSchema, SetTupleSchema } from "./generator.schema";
+import { SetTupleSchema, SkillCodeSchema } from "./generator.schema";
 
 // ExerciseDifficulty: null | "TOO_HARD" | "TOO_EASY" | "SUCCEEDED"
 export const ExerciseDifficultySchema = v.nullable(
@@ -32,7 +32,7 @@ export const UserExerciseDataSchema = v.looseObject({
   skipped: v.optional(v.boolean()),
   completed: v.optional(v.boolean()),
   set: v.optional(SetTupleSchema),
-  skill: GeneratorSkillTypeSchema,
+  skill: SkillCodeSchema,
   feedback: v.optional(
     v.object({
       difficulty: ExerciseDifficultySchema,

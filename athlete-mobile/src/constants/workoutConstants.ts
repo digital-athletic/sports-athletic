@@ -956,8 +956,6 @@ const MAX_VALUE_CONVERSION_FACTORS: Record<MaxValueTypeName, number> = {
   oneSidedLowerSupported: 0.3,
 };
 
-const NO_INCREASE_WORKOUT_PLAN_TYPE = ["WU", "CD", "MOB", "BR", "TEST_WORKOUT"];
-
 const NO_INCREASE_SKILL_TYPE = [
   "WU",
   "WUSKSA",
@@ -1153,7 +1151,6 @@ export const WorkoutConstants = {
   MAX_VALUES_EXPIRATION_TIME_IN_MS,
   MUSCLES,
   NO_INCREASE_SKILL_TYPE,
-  NO_INCREASE_WORKOUT_PLAN_TYPE,
   PAUSE_EXERCISE_ID,
   PREVENTION_TILES,
   QUICKSTART_TILES,

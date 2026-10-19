@@ -73,6 +73,7 @@ jest.mock("@/features/training/hooks/useFinishTraining", () => ({
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
+    i18n: { resolvedLanguage: "en" },
   }),
 }));
 

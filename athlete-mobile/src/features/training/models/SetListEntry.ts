@@ -1,4 +1,4 @@
-import type { GeneratorSkillTypeFromSchema } from "@/schemas/generator.schema";
+import type { SkillCode } from "@/schemas/generator.schema";
 import type { SetTuple } from "@/common/types/SetTuple";
 
 export type SetListEntryType = {
@@ -23,8 +23,7 @@ export type GeneratedSetListEntry = {
   exerciseId: string;
   /** Tuple of [currentSet, totalSets] */
   set: SetTuple;
-  /** Skill identifier - uses GeneratorSkillTypeFromSchema for type safety */
-  skill: GeneratorSkillTypeFromSchema;
+  skill: SkillCode;
   /** Duration in seconds for timed exercises */
   duration?: number;
   repetition?: number;

@@ -408,9 +408,7 @@
     },
     "active": {
       "title": {
-        "focus": "Focus Training",
         "plan": "Training",
-        "prevention": "Prevention Training",
         "strengthTest": "Strength Test"
       },
       "set": "{{current}} of {{total}}",

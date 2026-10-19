@@ -3,8 +3,10 @@ import FocusTrainingsJson from "../../assets/data/generator/focusTrainings.json"
 import {
   loadFocusTraining,
   loadFocusTrainings,
+  loadFocusTrainingTitle,
   parseFocusTrainings,
 } from "./loadFocusTrainings";
+import { loadIntensityConfig } from "./loadIntensityConfig";
 import type { TrainingType } from "@/features/training/models/Training";
 import { FocusTrainingsSchema } from "@/schemas/focusTraining.schema";
 
@@ -163,6 +165,79 @@ describe("loadFocusTrainings: real file", () => {
   it("returns undefined for a type without a template", () => {
     expect(loadFocusTraining("PLAN")).toBeUndefined();
   });
+
+  it("returns undefined for an object prototype key", () => {
+    expect(loadFocusTraining("constructor")).toBeUndefined();
+  });
+
+  it.each<{
+    type: TrainingType;
+    focusArea: string;
+    progression: boolean;
+    regions?: string[];
+  }>([
+    { type: "WU", focusArea: "WARMUP", progression: false },
+    { type: "CD", focusArea: "WARMUP", progression: false },
+    { type: "MOB", focusArea: "MOBILITY", progression: false },
+    { type: "BR", focusArea: "MOBILITY", progression: false },
+    { type: "BAS", focusArea: "STABILITY", progression: true },
+    { type: "GKS", focusArea: "STABILITY", progression: true },
+    { type: "STABILITY", focusArea: "STABILITY", progression: true },
+    { type: "PREV", focusArea: "PREVENTION", progression: true },
+    {
+      type: "PREVKNEE",
+      focusArea: "PREVENTION",
+      progression: true,
+      regions: ["KNEE", "HIP", "KNEE_HIP"],
+    },
+    {
+      type: "PREVWRIST",
+      focusArea: "PREVENTION",
+      progression: true,
+      regions: ["WRIST", "ELBOW", "WRIST_ELBOW"],
+    },
+  ])(
+    "credits $type to $focusArea",
+    ({ type, focusArea, progression, regions }) => {
+      const template = loadFocusTraining(type);
+
+      expect(template?.focusArea).toBe(focusArea);
+      expect(template?.progression).toBe(progression);
+      expect(template?.regions).toEqual(regions);
+    },
+  );
+
+  it("names only existing intensity configurations", () => {
+    for (const template of Object.values(loadFocusTrainings())) {
+      for (const name of [
+        template.intensity,
+        template.intensityWithoutWeights,
+      ]) {
+        if (name) expect(() => loadIntensityConfig(name)).not.toThrow();
+      }
+    }
+  });
+});
+
+describe("loadFocusTrainingTitle", () => {
+  it("returns the German title for German", () => {
+    expect(loadFocusTrainingTitle("PREVKNEE", "de")).toBe(
+      "Knie- und Hüftprävention",
+    );
+  });
+
+  it("returns the English title for every other language", () => {
+    expect(loadFocusTrainingTitle("PREVKNEE", "fr")).toBe(
+      "Knee and hip prevention",
+    );
+    expect(loadFocusTrainingTitle("PREVKNEE", undefined)).toBe(
+      "Knee and hip prevention",
+    );
+  });
+
+  it("returns undefined without a template", () => {
+    expect(loadFocusTrainingTitle("PLAN", "en")).toBeUndefined();
+  });
 });
 
 describe("parseFocusTrainings: invalid data", () => {
@@ -202,6 +277,26 @@ describe("FocusTrainingsSchema", () => {
     Object.assign(data.WU, { blocks: [] });
 
     expect(v.safeParse(FocusTrainingsSchema, data).success).toBe(false);
+  });
+
+  it.each<[string, Record<string, unknown>]>([
+    ["without skill trees", { skillTrees: [] }],
+    ["with an unknown focus area", { focusArea: "STRENGTH" }],
+    ["without a German title", { title: { en: "Warm-Up" } }],
+  ])("rejects a template %s", (_, change) => {
+    const data = structuredClone(FocusTrainingsJson);
+    Object.assign(data.WU, change);
+
+    expect(v.safeParse(FocusTrainingsSchema, data).success).toBe(false);
+  });
+
+  it("accepts a new template key", () => {
+    const data = {
+      ...structuredClone(FocusTrainingsJson),
+      PREVHIP: FocusTrainingsJson.PREVKNEE,
+    };
+
+    expect(v.safeParse(FocusTrainingsSchema, data).success).toBe(true);
   });
 
   it("rejects an unknown draw mode", () => {

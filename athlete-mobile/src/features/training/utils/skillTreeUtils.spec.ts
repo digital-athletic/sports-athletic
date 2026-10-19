@@ -7,7 +7,7 @@ import {
   getNextTypeFiltered,
   getSkillTree,
   getUserExerciseFromBranch,
-  isPreventionSkill,
+  isPreventionTraining,
   mapSkillCodeToFocusArea,
 } from "./skillTreeUtils";
 
@@ -668,61 +668,30 @@ describe("skillTreeUtils", () => {
     });
   });
 
-  describe("isPreventionSkill", () => {
-    it("returns true for PREVKNEE", () => {
-      expect(isPreventionSkill("PREVKNEE")).toBeTruthy();
+  describe("isPreventionTraining", () => {
+    it.each([
+      "PREV",
+      "PREVKNEE",
+      "PREVSHOULDER",
+      "PREVANKLE",
+      "PREVSPINE",
+      "PREVWRIST",
+    ])("returns true for the prevention template %s", (type) => {
+      expect(isPreventionTraining(type)).toBe(true);
     });
 
-    it("returns true for PREVSHOULDER", () => {
-      expect(isPreventionSkill("PREVSHOULDER")).toBeTruthy();
-    });
+    it.each(["GKS", "MOB", "PLAN"])(
+      "returns false for the training %s",
+      (type) => {
+        expect(isPreventionTraining(type)).toBe(false);
+      },
+    );
 
-    it("returns true for PREVANKLE", () => {
-      expect(isPreventionSkill("PREVANKLE")).toBeTruthy();
-    });
-
-    it("returns true for PREVSPINE", () => {
-      expect(isPreventionSkill("PREVSPINE")).toBeTruthy();
-    });
-
-    it("should return true for PREVWRIST", () => {
-      expect(isPreventionSkill("PREVWRIST")).toBeTruthy();
-    });
-
-    it("returns true for PREV (base prevention skill)", () => {
-      expect(isPreventionSkill("PREV")).toBeTruthy();
-    });
-
-    it("returns true for PREVKG (prevention with bodyweight)", () => {
-      expect(isPreventionSkill("PREVKG")).toBeTruthy();
-    });
-
-    it("returns false for GKS", () => {
-      expect(isPreventionSkill("GKS")).toBeFalsy();
-    });
-
-    it("returns false for PLYO", () => {
-      expect(isPreventionSkill("PLYO")).toBeFalsy();
-    });
-
-    it("returns false for SA", () => {
-      expect(isPreventionSkill("SA")).toBeFalsy();
-    });
-
-    it("returns false for empty string", () => {
-      expect(isPreventionSkill("")).toBeFalsy();
-    });
-
-    it("returns false for random skill name", () => {
-      expect(isPreventionSkill("UNKNOWN_SKILL")).toBeFalsy();
-    });
-
-    it("returns false for skill containing PREV in the middle", () => {
-      expect(isPreventionSkill("SOMEPREVSKILL")).toBeFalsy();
-    });
-
-    it("returns false for skill containing PREV at the end", () => {
-      expect(isPreventionSkill("SKILLPREV")).toBeFalsy();
-    });
+    it.each(["PREVKG", "", "UNKNOWN_SKILL", "constructor"])(
+      "returns false for %s without a template",
+      (type) => {
+        expect(isPreventionTraining(type)).toBe(false);
+      },
+    );
   });
 });

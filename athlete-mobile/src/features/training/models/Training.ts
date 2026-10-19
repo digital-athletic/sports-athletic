@@ -51,6 +51,11 @@ export type TrainingTimeType = {
   };
 };
 
+/**
+ * PLAN, TEST_WORKOUT or the key of a short workout template. Templates can
+ * come without an app release, so any key is accepted; the literals keep
+ * autocompletion for the bundled ones.
+ */
 export type TrainingType =
   | "PLAN"
   | "MOB"
@@ -66,4 +71,5 @@ export type TrainingType =
   | "PREVWRIST"
   | "PREVANKLE"
   | "PREVSPINE"
-  | "TEST_WORKOUT";
+  | "TEST_WORKOUT"
+  | (string & Record<never, never>);

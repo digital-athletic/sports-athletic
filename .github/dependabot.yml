@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # "npm" also covers pnpm projects
+  - package-ecosystem: "npm"
+    directories:
+      - "/athlete-mobile"
+      - "/trainer-web"
+    schedule:
+      interval: "weekly"
+    # Matches minimumReleaseAge in each pnpm-workspace.yaml. Cooldown applies
+    # to version updates only; GitHub opens security updates immediately.
+    cooldown:
+      default-days: 7

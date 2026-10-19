@@ -104,6 +104,7 @@ import {
   type TestSetLoads,
   type UserExerciseDataMapType,
 } from "@/schemas/generator.schema";
+import type { FocusTrainingBlock } from "@/schemas/focusTraining.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
 import { Logger } from "@/services/Logger";
@@ -446,17 +447,14 @@ export default class TrainingGenerator {
 
     const setLists = template.blocks.map((block, index) => {
       const skill = block.skill ?? (type as SkillCode);
-      const isShortTraining = block.work !== undefined;
       const exercisePairs = this.getExercisePairs(
         skill,
         drawnBlocks[index],
         exercises,
         userPains,
         [],
-        isShortTraining,
-        block.superset === "drawOrder" || block.superset === "drawOrderAll",
+        block.superset,
       );
-      if (block.superset === "drawOrderAll") pairLeftoverSingles(exercisePairs);
       return this.getSetListFromExercisePairs(
         exercisePairs,
         // only cardio set lists read the length
@@ -469,8 +467,7 @@ export default class TrainingGenerator {
         block.sets,
         temporalData,
         userExerciseData.exerciseData,
-        isShortTraining,
-        true,
+        block,
       );
     });
     // the pause closing a block leads into the next one
@@ -1186,8 +1183,7 @@ export default class TrainingGenerator {
     setsPerExercise: number,
     temporalData: TemporalDataType[],
     userExerciseData: Record<string, UserExerciseDataType | undefined> | null,
-    isShortTraining: boolean = false,
-    isFocusWorkout: boolean = false,
+    focusBlock?: Pick<FocusTrainingBlock, "work" | "pause">,
   ): GeneratedSetListEntry[] => {
     // Create exercise map for O(1) lookup by ID
     const exerciseMap = createExerciseMap(exercises);
@@ -1261,7 +1257,7 @@ export default class TrainingGenerator {
         user,
         firstExercise,
         null,
-        isShortTraining,
+        focusBlock?.work,
       );
       const intervalTime = intervalLength + pauseLength;
       const repetition = Math.min(
@@ -1598,15 +1594,17 @@ export default class TrainingGenerator {
           user,
           firstExerciseData,
           userExerciseData,
-          isShortTraining,
+          focusBlock?.work,
         );
         // calc pause
-        const inSetPauseLength = this.getInSetPauseBySkill(skill.skill);
-        const singleRestLength = this.getSingleExerciseRestBySkill(skill.skill);
+        const inSetPauseLength =
+          focusBlock?.pause.superset ?? this.getInSetPauseBySkill(skill.skill);
+        const singleRestLength =
+          focusBlock?.pause.sets ??
+          this.getSingleExerciseRestBySkill(skill.skill);
         const afterSetPauseLength =
-          (isFocusWorkout
-            ? this.getFocusAfterSetPause(skill.skill)
-            : undefined) ?? this.getAfterSetPauseBySkill(skill.skill);
+          focusBlock?.pause.exercise ??
+          this.getAfterSetPauseBySkill(skill.skill);
         const nextPair = exercisePairs
           .slice(i + 1)
           .find((pair) => isBuildablePair(pair, exerciseMap));
@@ -1639,7 +1637,7 @@ export default class TrainingGenerator {
             user,
             secondExerciseData!,
             userExerciseData,
-            isShortTraining,
+            focusBlock?.work,
           );
         } else {
           if (
@@ -1959,8 +1957,7 @@ export default class TrainingGenerator {
     exercises: ExerciseType[],
     pains: string[],
     thisDayPrevs: string[],
-    isShortTraining: boolean = false,
-    authoredPairs: boolean = false,
+    pairing?: FocusTrainingBlock["superset"],
   ): ExercisePair[] => {
     if (TrainingGenerator.DEBUG) {
       console.log("Get exercise pairs for skill", skill);
@@ -1975,7 +1972,7 @@ export default class TrainingGenerator {
       return [];
     }
 
-    const isSuperset = this.isSuperset(skill, isShortTraining);
+    const isSuperset = pairing ? pairing === "muscles" : this.isSuperset(skill);
     let exercisePairs: ExercisePair[] = [];
     let bigMuscleExercises: BranchExerciseReference[] = [];
     let smallMuscleExercises: BranchExerciseReference[] = [];
@@ -2029,7 +2026,7 @@ export default class TrainingGenerator {
       }
     }
 
-    if (authoredPairs) {
+    if (pairing === "drawOrder" || pairing === "drawOrderAll") {
       const drawn =
         prevSides.length > 0
           ? (filterExercisesBySides(
@@ -2038,7 +2035,9 @@ export default class TrainingGenerator {
               prevSides,
             ) as BranchExerciseReference[])
           : branches;
-      return pairInDrawOrder(drawn, exercises, prevSides.length === 0);
+      const pairs = pairInDrawOrder(drawn, exercises, prevSides.length === 0);
+      if (pairing === "drawOrderAll") pairLeftoverSingles(pairs);
+      return pairs;
     }
 
     // if found use only side depending pains
@@ -2147,50 +2146,10 @@ export default class TrainingGenerator {
   };
 
   /**
-   * Determines if a skill type should use superset pairing (two exercises alternating).
-   * Short training versions have different rules - some skills like BAS become supersets
-   * while MAX and cardio skills never use supersets regardless of training length.
+   * Determines if a skill type should use superset pairing (two exercises alternating)
+   * in a plan workout. MAX and cardio skills never use supersets.
    */
-  isSuperset = (skill: string, shortTraining: boolean = false): boolean => {
-    if (shortTraining) {
-      switch (skill) {
-        case "CARDIO_1_SHORT":
-        case "CARDIO_1_LAKTAT":
-        case "CARDIO_2":
-        case "CARDIO_3":
-        case "CARDIO_4":
-        case "CARDIO_5":
-        case "GKSKG":
-        case "SAS":
-        case "GKS":
-        case "WU":
-        case "CD":
-        case "MOB":
-        case "BR":
-        case "MAX":
-        case "MAX_STRENGTH":
-        case "WUSPEZIAL":
-          return false;
-        case "BAS":
-        case "PREV":
-        case "PREVSHOULDER":
-        case "PREVKNEE":
-        case "PREVWRIST":
-        case "PREVANKLE":
-        case "PREVSPINE":
-        case "SA":
-        case "SAKG":
-        case "SK":
-        case "SKKG":
-        case "SWR1":
-        case "SWR2":
-        case "SWR1KG":
-        case "SWR2KG":
-        case "STABILITY":
-        default:
-          return true;
-      }
-    }
+  isSuperset = (skill: string): boolean => {
     switch (skill) {
       case "CARDIO_1_SHORT":
       case "CARDIO_1_LAKTAT":
@@ -2361,13 +2320,6 @@ export default class TrainingGenerator {
     SINGLE_EXERCISE_REST_BY_SKILL[skill] ?? 10;
 
   /**
-   * Returns the fixed rest (in seconds) closing an exercise block in a focus
-   * workout, or undefined when the focus workout uses the skill's after-set pause.
-   */
-  getFocusAfterSetPause = (skill: string): number | undefined =>
-    FOCUS_AFTER_SET_PAUSE_BY_SKILL[skill];
-
-  /**
    * Returns the default number of repetitions for a skill type.
    * Cardio skills use 3 reps (intervals), while most strength and
    * mobility skills default to 8 reps per set.
@@ -2475,6 +2427,7 @@ export default class TrainingGenerator {
    * Determines the starting values (weight, reps, duration, height) for an exercise.
    * Priority order: user's previous exercise data > exercise-specific defaults >
    * skill-based defaults. Applies difficulty adjustments based on user feedback.
+   * A given work duration replaces all of these with a plain timed set.
    */
   getExerciseStartValues = (
     skillName: string,
@@ -2482,14 +2435,14 @@ export default class TrainingGenerator {
     user: UserType,
     exercise: ExerciseType,
     userExerciseData: Record<string, UserExerciseDataType | undefined> | null,
-    isShortTraining = false,
+    workDuration?: number,
   ): ExerciseStartValues => {
-    if (isShortTraining) {
+    if (workDuration !== undefined) {
       return {
         tags: skill.branchTags,
         exerciseId: skill.exerciseId,
         branchId: skill.branchId,
-        duration: 60,
+        duration: workDuration,
         height: undefined,
         repetition: undefined,
         weight: undefined,
@@ -2702,7 +2655,7 @@ export default class TrainingGenerator {
             user,
             exerciseById!,
             userExerciseData.exerciseData,
-            true,
+            TEST_WARM_UP_DURATION,
           );
           if (startValue.duration) entry.duration = startValue.duration;
           if (startValue.height) entry.height = startValue.height;
@@ -3258,6 +3211,7 @@ export default class TrainingGenerator {
 TrainingGenerator.DEBUG = false;
 
 const SPEED_WARM_UP_MAX_DURATION = 30;
+const TEST_WARM_UP_DURATION = 60;
 
 interface BoundaryContext {
   intensity: IntensityData | null;
@@ -3369,16 +3323,6 @@ const SINGLE_EXERCISE_REST_BY_SKILL: Record<string, number> = {
   SAKG: 180,
   PLYO: 180,
   WUSKSA: 30,
-};
-
-const FOCUS_AFTER_SET_PAUSE_BY_SKILL: Record<string, number> = {
-  WU: 10,
-  CD: 10,
-  MOB: 10,
-  BR: 10,
-  BAS: 30,
-  GKS: 45,
-  GKSKG: 45,
 };
 
 // Mirrors the skip checks of the default set list builder

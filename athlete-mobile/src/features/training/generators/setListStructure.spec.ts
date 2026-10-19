@@ -4,6 +4,7 @@ import type {
   ExercisePair,
 } from "@/features/training/models/ExerciseBranch";
 import type { ExerciseType } from "@/schemas/exercise.schema";
+import type { FocusTrainingBlock } from "@/schemas/focusTraining.schema";
 import type { SkillCode } from "@/schemas/generator.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
@@ -42,7 +43,7 @@ const WEIGHTED = "EQ_TYPE_WEIGHTS";
 const buildSetList = (
   skill: SkillCode,
   pairs: ExercisePair[],
-  options: { isShortTraining?: boolean; isFocusWorkout?: boolean } = {},
+  focusBlock?: FocusTrainingBlock,
 ) => {
   const generator = new TrainingGenerator();
   jest
@@ -74,8 +75,7 @@ const buildSetList = (
     2,
     [],
     null,
-    options.isShortTraining ?? false,
-    options.isFocusWorkout ?? false,
+    focusBlock,
   );
 };
 
@@ -194,23 +194,41 @@ describe("getSetListFromExercisePairs: superset pair", () => {
   );
 });
 
-describe("getSetListFromExercisePairs: focus workouts", () => {
-  it.each([
-    ["BAS", 30],
-    ["GKS", 45],
-    ["MOB", 10],
-  ] as [SkillCode, number][])(
-    "closes a %s focus block on its fixed rest",
-    (skill, pause) => {
-      const pauses = pausesOf(
-        buildSetList(skill, [{ first: chest }, { first: quads }], {
-          isShortTraining: skill === "MOB",
-          isFocusWorkout: true,
-        }),
-      );
-      expect(pauses[1]).toBe(pause);
-    },
-  );
+describe("getSetListFromExercisePairs: focus blocks", () => {
+  const focusBlock = (
+    pause: FocusTrainingBlock["pause"],
+  ): FocusTrainingBlock => ({
+    draw: "exercises",
+    picks: [{ tags: [], count: 2 }],
+    fallback: false,
+    sets: 2,
+    pause,
+    superset: "none",
+  });
+
+  it("rests between sets and after an exercise as the block says", () => {
+    expect(
+      pausesOf(
+        buildSetList(
+          "SWR2",
+          [{ first: chest }, { first: quads }],
+          focusBlock({ superset: 5, sets: 15, exercise: 25 }),
+        ),
+      ),
+    ).toEqual([15, 25, 15, 25]);
+  });
+
+  it("rests inside a superset pair as the block says", () => {
+    expect(
+      pausesOf(
+        buildSetList(
+          "SWR2",
+          [{ first: chest, second: quads }],
+          focusBlock({ superset: 5, sets: 15, exercise: 25 }),
+        ),
+      ).slice(0, 4),
+    ).toEqual([5, 5, 5, 25]);
+  });
 });
 
 describe("getSetListFromExercisePairs: warm-up sets", () => {

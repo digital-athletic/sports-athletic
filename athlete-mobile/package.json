@@ -80,7 +80,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
-    "@secretlint/secretlint-rule-preset-recommend": "^11.4.1",
+    "@secretlint/secretlint-rule-preset-recommend": "^13.0.7",
     "@testing-library/react-native": "^13.3.3",
     "@types/jest": "29.5.14",
     "@types/node": "24.13.3",

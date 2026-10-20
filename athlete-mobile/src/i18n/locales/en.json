@@ -291,7 +291,8 @@
         "TEST_WORKOUT": "Power test",
         "MULTIPLE_REGIONS": "Muscle soreness in multiple regions",
         "MISSING_WORKOUT_DATA": "Missing workout data",
-        "PREV_SHORT_TRAINING_SORENESS": "No prevention training with muscle soreness in this area."
+        "PREV_SHORT_TRAINING_SORENESS": "No prevention training with muscle soreness in this area.",
+        "BLOCK_KIND": "Unsupported workout block"
       }
     },
     "selectTraining": {

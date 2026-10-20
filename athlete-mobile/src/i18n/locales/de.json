@@ -291,7 +291,8 @@
         "TEST_WORKOUT": "Krafttest",
         "MULTIPLE_REGIONS": "Muskelkater in mehreren Regionen",
         "MISSING_WORKOUT_DATA": "Keine Trainingsdaten",
-        "PREV_SHORT_TRAINING_SORENESS": "Kein Präventions-Training mit Muskelkater in dieser Region möglich."
+        "PREV_SHORT_TRAINING_SORENESS": "Kein Präventions-Training mit Muskelkater in dieser Region möglich.",
+        "BLOCK_KIND": "Nicht unterstützter Trainingsblock"
       }
     },
     "selectTraining": {

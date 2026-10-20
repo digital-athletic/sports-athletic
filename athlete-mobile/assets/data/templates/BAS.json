@@ -1,0 +1,14 @@
+{
+  "aiwl": 1,
+  "id": "BAS",
+  "name": { "en": "Leg axis stability", "de": "Beinachsenstabilität" },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "BAS",
+      "picks": [{ "tags": [], "count": 4 }],
+      "superset": "drawOrder",
+      "rest": { "afterExercise": 30 }
+    }
+  ]
+}

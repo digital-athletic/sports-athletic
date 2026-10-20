@@ -1,0 +1,19 @@
+{
+  "aiwl": 1,
+  "id": "GKS",
+  "name": { "en": "Full body stability", "de": "Ganzkörperstabilität" },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "GKS",
+      "picks": {
+        "withWeights": [{ "tags": [], "count": 4 }],
+        "withoutWeights": [
+          { "tags": ["REGION_UPPER_BODY"], "count": 3 },
+          { "tags": ["REGION_FULL_BODY"], "count": 2 }
+        ]
+      },
+      "rest": { "afterExercise": 45 }
+    }
+  ]
+}

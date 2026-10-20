@@ -1,5 +1,5 @@
 import { getExerciseById } from "@/data/exerciseRegistry";
-import { loadFocusTrainingTitle } from "@/data/loadFocusTrainings";
+import { loadTemplateName } from "@/data/loadTemplates";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import {
   deriveActiveExerciseIndex,
@@ -26,9 +26,7 @@ function deriveHeaderTitle(
     return t("training.active.title.strengthTest");
   }
 
-  return (
-    loadFocusTrainingTitle(type, language) ?? t("training.active.title.plan")
-  );
+  return loadTemplateName(type, language) ?? t("training.active.title.plan");
 }
 
 /**

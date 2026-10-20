@@ -1,0 +1,12 @@
+{
+  "aiwl": 1,
+  "id": "STABILITY",
+  "name": { "en": "Stability", "de": "Stabilität" },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "STABILITY",
+      "picks": [{ "tags": [], "count": 6 }]
+    }
+  ]
+}

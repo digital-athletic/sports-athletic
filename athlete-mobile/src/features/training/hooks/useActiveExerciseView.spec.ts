@@ -10,6 +10,7 @@ import { renderHook } from "@testing-library/react-native";
 import { useActiveExerciseView } from "./useActiveExerciseView";
 
 import { getExerciseById } from "@/data/exerciseRegistry";
+import { loadTemplateName } from "@/data/loadTemplates";
 
 jest.mock("@/data/exerciseRegistry", () => ({
   getExerciseById: jest.fn(),
@@ -24,7 +25,20 @@ jest.mock("react-i18next", () => ({
   }),
 }));
 
+jest.mock("@/data/loadTemplates", () => ({
+  ...jest.requireActual<typeof import("@/data/loadTemplates")>(
+    "@/data/loadTemplates",
+  ),
+  loadTemplateName: jest.fn(),
+}));
+
 const mockGetExerciseById = getExerciseById as jest.Mock;
+const mockLoadTemplateName = loadTemplateName as jest.MockedFunction<
+  typeof loadTemplateName
+>;
+const { loadTemplateName: actualLoadTemplateName } = jest.requireActual<
+  typeof import("@/data/loadTemplates")
+>("@/data/loadTemplates");
 
 const exerciseDataById: Record<string, ExerciseType> = {
   "1": createExerciseData({
@@ -256,6 +270,20 @@ describe("useActiveExerciseView: header title", () => {
   beforeEach(() => {
     useTrainingStore.setState(BASELINE);
     mockLanguage = "en";
+    mockLoadTemplateName.mockImplementation(actualLoadTemplateName);
+  });
+
+  it("reads the title of a short workout from the templates", () => {
+    mockLoadTemplateName.mockImplementation((id, language) =>
+      id === "PREVSHOULDER" ? `Template only name ${language}` : undefined,
+    );
+    useTrainingStore.setState({
+      activeTraining: { id: "training-1", type: "PREVSHOULDER" },
+    });
+
+    const { result } = renderHook(() => useActiveExerciseView());
+
+    expect(result.current.headerTitle).toBe("Template only name en");
   });
 
   it("falls back to the plan title when there is no active training", () => {

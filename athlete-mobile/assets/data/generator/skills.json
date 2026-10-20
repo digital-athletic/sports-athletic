@@ -166,5 +166,105 @@
     "superset": "muscles",
     "sets": 1,
     "rest": { "withinSuperset": 10, "betweenSets": 10, "afterExercise": 10 }
+  },
+  "WUSKSA": {
+    "intensity": "WUSKSA",
+    "superset": "muscles",
+    "sets": 1,
+    "rest": { "withinSuperset": 30, "betweenSets": 30, "afterExercise": 30 }
+  },
+  "SWR1": {
+    "superset": "muscles",
+    "sets": 2,
+    "rest": { "withinSuperset": 30, "betweenSets": 90, "afterExercise": 60 }
+  },
+  "SWR1KG": {
+    "superset": "muscles",
+    "sets": 2,
+    "rest": { "withinSuperset": 30, "betweenSets": 90, "afterExercise": 60 }
+  },
+  "SWR2": {
+    "superset": "muscles",
+    "sets": 2,
+    "rest": { "withinSuperset": 30, "betweenSets": 90, "afterExercise": 60 }
+  },
+  "SWR2KG": {
+    "superset": "muscles",
+    "sets": 2,
+    "rest": { "withinSuperset": 30, "betweenSets": 90, "afterExercise": 60 }
+  },
+  "SK": {
+    "intensity": "SK",
+    "superset": "muscles",
+    "sets": 2,
+    "rest": { "withinSuperset": 60, "betweenSets": 180, "afterExercise": 60 }
+  },
+  "SKKG": {
+    "intensity": "SKKG",
+    "superset": "muscles",
+    "sets": 2,
+    "rest": { "withinSuperset": 60, "betweenSets": 180, "afterExercise": 60 }
+  },
+  "SA": {
+    "intensity": "SA",
+    "superset": "muscles",
+    "sets": 2,
+    "rest": { "withinSuperset": 75, "betweenSets": 180, "afterExercise": 75 }
+  },
+  "SAKG": {
+    "intensity": "SAKG",
+    "superset": "muscles",
+    "sets": 2,
+    "rest": { "withinSuperset": 75, "betweenSets": 180, "afterExercise": 75 }
+  },
+  "SAS": {
+    "intensity": "DEFAULTKG",
+    "superset": "none",
+    "sets": 2,
+    "rest": { "withinSuperset": 10, "betweenSets": 10, "afterExercise": 10 }
+  },
+  "GKSKG": {
+    "intensity": "DEFAULTKG",
+    "superset": "none",
+    "sets": 2,
+    "rest": { "withinSuperset": 45, "betweenSets": 90, "afterExercise": 60 }
+  },
+  "MAX": {
+    "intensity": "DEFAULT",
+    "superset": "none"
+  },
+  "MAX_STRENGTH": {
+    "intensity": "DEFAULT",
+    "superset": "none"
+  },
+  "CARDIO_1_SHORT": {
+    "intensity": "CARDIO_1_SHORT",
+    "startRepetitions": 3,
+    "startDuration": 10
+  },
+  "CARDIO_1_LAKTAT": {
+    "intensity": "CARDIO_1_LAKTAT",
+    "startRepetitions": 3,
+    "startDuration": 30
+  },
+  "CARDIO_2": {
+    "intensity": "CARDIO_2",
+    "startRepetitions": 3,
+    "startDuration": 60
+  },
+  "CARDIO_3": {
+    "intensity": "CARDIO_3",
+    "startRepetitions": 3,
+    "startDuration": 120
+  },
+  "CARDIO_4": {
+    "intensity": "DEFAULTKG",
+    "startRepetitions": 3,
+    "startDuration": 1800
+  },
+  "CARDIO_5": {
+    "intensity": "DEFAULTKG",
+    "startRepetitions": 3,
+    "startDuration": 600
   }
 }

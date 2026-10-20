@@ -6,14 +6,18 @@ import { createMigrate } from "./migrations/createMigrate";
 import { userDataBackupStoreMigrations } from "./migrations/userDataBackupStoreMigrations";
 import { STORE_VERSIONS } from "./storeVersions";
 import {
+  createInitialWarnings,
   useUserProfileStore,
   type UserPersonalDataType,
+  type WarningsType,
 } from "./userProfileStore";
 
 interface ProfileSnapshot {
   personalData: UserPersonalDataType;
   anamnesisCompleted: boolean;
   teamId: string | null;
+  /** Optional: snapshots taken before this field existed lack it. */
+  warnings?: WarningsType;
 }
 
 export interface UserDataSnapshot {
@@ -43,13 +47,14 @@ export const useUserDataBackupStore = create<UserDataBackupState>()(
 
       takeSnapshot: (userId) =>
         set((state) => {
-          const { personalData, anamnesisCompleted, teamId } =
+          const { personalData, anamnesisCompleted, teamId, warnings } =
             useUserProfileStore.getState();
           state.snapshots[userId] = {
             profile: {
               personalData: { ...personalData },
               anamnesisCompleted,
               teamId,
+              warnings: { ...warnings },
             },
           };
         }),
@@ -62,6 +67,11 @@ export const useUserDataBackupStore = create<UserDataBackupState>()(
         setPersonalData(backup.profile.personalData);
         setAnamnesisCompleted(backup.profile.anamnesisCompleted);
         setTeamId(backup.profile.teamId);
+        useUserProfileStore.setState({
+          warnings: { ...createInitialWarnings(), ...backup.profile.warnings },
+        });
+        // SIGNED_IN also fires on cold start; a kept snapshot would overwrite newer profile data.
+        get().purgeSnapshot(userId);
       },
 
       purgeSnapshot: (userId) =>

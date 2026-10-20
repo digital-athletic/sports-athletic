@@ -1,32 +1,69 @@
 import { Alert } from "@/common/Alert";
 import { TagGroups } from "@/constants/tagGroups";
 import { type ExerciseType } from "@/schemas/exercise.schema";
+import { useUserProfileStore } from "@/store/userProfileStore";
 import { getTagValues } from "@/utils/tagUtils";
+import { type TagsByGroup } from "../models/Tags";
+import { type TrainingType } from "../models/Training";
+import { type UserExerciseDataType } from "../models/UserExerciseData";
+import { shouldShowPainAlert } from "../utils/painUtils";
 import { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
- * Training alerts. The pain alert is shown once before a training starts, the
- * caller decides whether it applies. The barbell alert fires while advancing
- * between exercises, at most once per training; acknowledging it (OK) flips
- * its showable flag off for the rest of the training.
+ * Shows the pain alert before a qualifying training until the user confirms
+ * it with OK. Saving the anamnesis with changed pains clears the seen flag.
  */
-export function useTrainingAlerts() {
+function usePainAlert() {
   const { t } = useTranslation();
 
-  // A ref, not state: the flag is a write-only guard that never affects render output.
-  const barbellAlertShowableRef = useRef(true);
+  return useCallback(
+    (
+      trainingType: TrainingType,
+      exerciseList: Pick<UserExerciseDataType, "weightType">[],
+      tags: TagsByGroup | undefined,
+      onContinue: () => void,
+    ) => {
+      // Read at call time: the store changes between trainings without a rerender of the caller.
+      const { warnings, setWarningSeen } = useUserProfileStore.getState();
+      if (
+        warnings.painAlertSeen ||
+        !shouldShowPainAlert(trainingType, exerciseList, tags)
+      ) {
+        onContinue();
+        return;
+      }
 
-  const showPainAlert = useCallback(
-    (onAcknowledge: () => void) => {
       Alert.alert(
         t("training.active.strengthTestAlert.title"),
         t("training.active.strengthTestAlert.message"),
-        [{ text: t("common.ok"), onPress: onAcknowledge }],
+        [
+          {
+            text: t("common.ok"),
+            onPress: () => {
+              setWarningSeen("painAlertSeen", true);
+              onContinue();
+            },
+          },
+        ],
       );
     },
     [t],
   );
+}
+
+/**
+ * Training alerts. The pain alert is shown before a training, see
+ * usePainAlert. The barbell alert fires while advancing between exercises, at
+ * most once per training; acknowledging it (OK) flips its showable flag off
+ * for the rest of the training.
+ */
+export function useTrainingAlerts() {
+  const { t } = useTranslation();
+  const maybeShowPainAlert = usePainAlert();
+
+  // A ref, not state: the flag is a write-only guard that never affects render output.
+  const barbellAlertShowableRef = useRef(true);
 
   const maybeShowBarbellAlert = useCallback(
     (
@@ -60,7 +97,7 @@ export function useTrainingAlerts() {
   );
 
   return {
-    showPainAlert,
+    maybeShowPainAlert,
     maybeShowBarbellAlert,
   };
 }

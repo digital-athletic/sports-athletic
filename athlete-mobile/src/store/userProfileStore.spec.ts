@@ -50,6 +50,31 @@ describe("userProfileStore", () => {
     expect(store()._hasHydrated).toBe(true);
   });
 
+  it("starts with the pain alert not seen", () => {
+    expect(store().warnings).toEqual({ painAlertSeen: false });
+  });
+
+  it("marks a warning as seen through its setter", () => {
+    act(() => store().setWarningSeen("painAlertSeen", true));
+    expect(store().warnings.painAlertSeen).toBe(true);
+  });
+
+  it("marks a seen warning as unseen again", () => {
+    act(() => {
+      store().setWarningSeen("painAlertSeen", true);
+      store().setWarningSeen("painAlertSeen", false);
+    });
+    expect(store().warnings.painAlertSeen).toBe(false);
+  });
+
+  it("clears seen warnings on reset", () => {
+    act(() => {
+      store().setWarningSeen("painAlertSeen", true);
+      store().resetProfile();
+    });
+    expect(store().warnings.painAlertSeen).toBe(false);
+  });
+
   it("derives age in whole years from the birthday", () => {
     const today = new Date();
     const year = today.getFullYear() - 28;

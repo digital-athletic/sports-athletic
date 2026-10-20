@@ -2,6 +2,8 @@ import type { MigrationMap } from "./createMigrate";
 import type { State } from "../userProfileStore";
 
 export const userProfileStoreMigrations: MigrationMap<State> = {
-  // Future migrations go here, e.g.:
-  // 14: (state) => ({ ...state, newField: defaultValue }),
+  14: (state) => ({
+    ...state,
+    warnings: (state as Partial<State>).warnings ?? { painAlertSeen: false },
+  }),
 };

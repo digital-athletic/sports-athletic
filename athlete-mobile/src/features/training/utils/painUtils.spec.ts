@@ -2,6 +2,7 @@ import {
   getBlocksFromPains,
   getPreventionsFromPains,
   isPainRegion,
+  isSamePainSet,
   PAIN_REGIONS,
   shouldShowPainAlert,
 } from "./painUtils";
@@ -229,5 +230,29 @@ describe("painUtils: shouldShowPainAlert", () => {
   it("stays silent for focus and prevention trainings", () => {
     expect(shouldShowPainAlert("BAS", withMax, pains)).toBe(false);
     expect(shouldShowPainAlert("PREVKNEE", withMax, pains)).toBe(false);
+  });
+});
+
+describe("painUtils: isSamePainSet", () => {
+  it("treats the same pains in another order as equal", () => {
+    expect(isSamePainSet(["SPINE", "KNEE_LEFT"], ["KNEE_LEFT", "SPINE"])).toBe(
+      true,
+    );
+  });
+
+  it("treats two empty pain lists as equal", () => {
+    expect(isSamePainSet([], [])).toBe(true);
+  });
+
+  it("detects an added pain", () => {
+    expect(isSamePainSet(["KNEE_LEFT"], ["KNEE_LEFT", "SPINE"])).toBe(false);
+  });
+
+  it("detects a removed pain", () => {
+    expect(isSamePainSet(["KNEE_LEFT", "SPINE"], ["KNEE_LEFT"])).toBe(false);
+  });
+
+  it("detects a replaced pain", () => {
+    expect(isSamePainSet(["KNEE_LEFT"], ["SPINE"])).toBe(false);
   });
 });

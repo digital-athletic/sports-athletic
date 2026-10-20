@@ -81,6 +81,15 @@ const tree = (entries: Record<string, string[]>): SkillTreeType =>
     Object.entries(entries).map(([id, tags]) => [id, branch(tags)]),
   );
 
+const fullEntry: SkillCatalogEntry = {
+  skillTree: { withWeights: ["WU"], withoutWeights: ["WU"] },
+  countBy: "entries",
+  fallbackToWholeTree: false,
+  superset: "none",
+  sets: 2,
+  rest: { withinSuperset: 1, betweenSets: 1, afterExercise: 1 },
+};
+
 const picksBlock = (change: Partial<PicksBlock> = {}): PicksBlock => ({
   kind: "picks",
   skill: "WU",
@@ -205,8 +214,12 @@ describe("resolveTemplate: block pool", () => {
     );
   });
 
-  it("gives an empty pool for a missing tree", () => {
-    expect(planOf("STABILITY", false, {}).blocks[0].pool).toEqual({});
+  it("throws SKILL_TREE for a missing tree", () => {
+    expect(thrown(() => planOf("STABILITY", false, {}))).toEqual({
+      type: "NO_EXERCISES",
+      subtype: "SKILL_TREE",
+      params: ["STABILITY"],
+    });
   });
 
   it("drops branches without levels", () => {
@@ -344,6 +357,92 @@ describe("resolveTemplate: errors", () => {
     expect(thrown(() => planOf("SYN_DEFAULT"))).toEqual(
       new Error("SYN_DEFAULT.blocks[1].sets: skill NOSETS sets no default"),
     );
+  });
+
+  it("throws with the path when the catalog sets no rest.betweenSets", () => {
+    mockExtraCatalog.NOBETWEEN = {
+      ...fullEntry,
+      rest: {
+        withinSuperset: 1,
+        afterExercise: 1,
+      } as SkillCatalogEntry["rest"],
+    };
+    addTemplate("SYN_REST_DEFAULT", [picksBlock({ skill: "NOBETWEEN" })]);
+    expect(thrown(() => planOf("SYN_REST_DEFAULT"))).toEqual(
+      new Error(
+        "SYN_REST_DEFAULT.blocks[0].rest.betweenSets: skill NOBETWEEN sets no default",
+      ),
+    );
+  });
+
+  it("throws with the path when neither block nor catalog sets countBy", () => {
+    mockExtraCatalog.NOCOUNTBY = { ...fullEntry, countBy: undefined };
+    addTemplate("SYN_COUNT_DEFAULT", [picksBlock({ skill: "NOCOUNTBY" })]);
+    expect(thrown(() => planOf("SYN_COUNT_DEFAULT"))).toEqual(
+      new Error(
+        "SYN_COUNT_DEFAULT.blocks[0].countBy: skill NOCOUNTBY sets no default",
+      ),
+    );
+  });
+
+  it("throws SKILL_TREE when the catalog names a tree that does not exist", () => {
+    mockExtraCatalog.NOTREE = {
+      ...fullEntry,
+      skillTree: { withWeights: ["MISSING"], withoutWeights: ["MISSING"] },
+    };
+    addTemplate("SYN_NOTREE", [picksBlock({ skill: "NOTREE" })]);
+    expect(thrown(() => planOf("SYN_NOTREE"))).toEqual({
+      type: "NO_EXERCISES",
+      subtype: "SKILL_TREE",
+      params: ["NOTREE"],
+    });
+  });
+
+  it("throws SKILL_TREE when the picks match no branch", () => {
+    addTemplate("SYN_NOMATCH", [
+      picksBlock({
+        picks: [{ tags: ["T_NONE"], count: 1 }],
+        fallbackToWholeTree: false,
+      }),
+    ]);
+    const from = { WU: tree({ 1: ["T_A"] }) };
+    expect(thrown(() => planOf("SYN_NOMATCH", false, from))).toEqual({
+      type: "NO_EXERCISES",
+      subtype: "SKILL_TREE",
+      params: ["WU"],
+    });
+  });
+});
+
+describe("resolveTemplate: block overrides", () => {
+  it("overrides the catalog countBy, superset, sets and fallback per block", () => {
+    mockExtraCatalog.BASEENTRY = fullEntry;
+    addTemplate("SYN_OVERRIDE", [
+      picksBlock({
+        skill: "BASEENTRY",
+        countBy: "pairs",
+        superset: "drawOrder",
+        sets: 5,
+        fallbackToWholeTree: true,
+      }),
+    ]);
+    expect(planOf("SYN_OVERRIDE").blocks[0]).toMatchObject({
+      countBy: "pairs",
+      superset: "drawOrder",
+      sets: 5,
+      fallbackToWholeTree: true,
+    });
+  });
+
+  it("keeps the catalog values without a block override", () => {
+    mockExtraCatalog.BASEENTRY = fullEntry;
+    addTemplate("SYN_BASE", [picksBlock({ skill: "BASEENTRY" })]);
+    expect(planOf("SYN_BASE").blocks[0]).toMatchObject({
+      countBy: "entries",
+      superset: "none",
+      sets: 2,
+      fallbackToWholeTree: false,
+    });
   });
 });
 

@@ -70,7 +70,12 @@ const resolved = (
 
 const timed = (afterExercise: number) =>
   resolved(
-    { countBy: "entries", fallbackToWholeTree: false, sets: 1, superset: "none" },
+    {
+      countBy: "entries",
+      fallbackToWholeTree: false,
+      sets: 1,
+      superset: "none",
+    },
     [10, 10, afterExercise],
     60,
   );
@@ -102,19 +107,34 @@ const RESOLVED: Record<string, Resolved[]> = {
   CD: [timed(10)],
   BAS: [
     resolved(
-      { countBy: "entries", fallbackToWholeTree: true, sets: 2, superset: "drawOrder" },
+      {
+        countBy: "entries",
+        fallbackToWholeTree: true,
+        sets: 2,
+        superset: "drawOrder",
+      },
       [30, 60, 30],
     ),
   ],
   GKS: [
     resolved(
-      { countBy: "entries", fallbackToWholeTree: true, sets: 2, superset: "none" },
+      {
+        countBy: "entries",
+        fallbackToWholeTree: true,
+        sets: 2,
+        superset: "none",
+      },
       [45, 90, 45],
     ),
   ],
   STABILITY: [
     resolved(
-      { countBy: "exercises", fallbackToWholeTree: false, sets: 2, superset: "muscles" },
+      {
+        countBy: "exercises",
+        fallbackToWholeTree: false,
+        sets: 2,
+        superset: "muscles",
+      },
       [30, 60, 60],
     ),
   ],
@@ -282,6 +302,7 @@ describe("loadTemplates: no redundant block override", () => {
   });
 });
 
+// These tests pin the migrated data: a deliberate data change updates them.
 describe("loadTemplates: bundled values", () => {
   it.each(IDS)("names %s", (id) => {
     expect(templateOf(id).name).toEqual(NAMES[id]);
@@ -290,11 +311,7 @@ describe("loadTemplates: bundled values", () => {
   it.each(IDS)("names the block skills of %s", (id) => {
     const skills = blocksOf(id).map((block) => block.skill);
 
-    expect(skills).toEqual(
-      id.startsWith("PREV")
-        ? ["WUSPEZIAL", id]
-        : [id],
-    );
+    expect(skills).toEqual(id.startsWith("PREV") ? ["WUSPEZIAL", id] : [id]);
   });
 
   it.each(IDS)("resolves the block values of %s", (id) => {
@@ -339,9 +356,22 @@ describe("parseTemplates: error paths", () => {
     jest.spyOn(console, "error").mockImplementation(() => undefined);
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("accepts a valid file", () => {
     expect(parseTemplates({ GKS: validGks }).GKS.id).toBe("GKS");
   });
+
+  it.each(["constructor", "__proto__"])(
+    "rejects an own %s key from JSON.parse",
+    (key) => {
+      const files = JSON.parse(`{"${key}": ${JSON.stringify(validGks)}}`);
+
+      expect(() => parseTemplates(files)).toThrow("file key and id differ");
+    },
+  );
 
   it("throws when the file key and the id differ", () => {
     expect(() => parseTemplates({ GKS: { ...validGks, id: "WU" } })).toThrow(

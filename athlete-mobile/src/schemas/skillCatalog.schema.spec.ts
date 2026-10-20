@@ -34,6 +34,10 @@ describe("SkillCatalogEntrySchema: accepts", () => {
   it.each<[string, unknown]>([
     ["the GKS entry without title and description", gksEntry],
     ["an entry with only skillTree", { skillTree }],
+    [
+      "an entry with painRegions",
+      { ...gksEntry, painRegions: ["KNEE", "HIP"] },
+    ],
   ])("%s", (_label, data) => {
     expect(v.safeParse(SkillCatalogEntrySchema, data).success).toBe(true);
   });
@@ -58,6 +62,18 @@ describe("SkillCatalogEntrySchema: rejects", () => {
       "rest.withinSuperset",
     ],
     ["focusArea STRENGTH", { ...gksEntry, focusArea: "STRENGTH" }, "focusArea"],
+    ["an empty intensity", { ...gksEntry, intensity: "" }, "intensity"],
+    [
+      "an empty painRegions entry",
+      { ...gksEntry, painRegions: [""] },
+      "painRegions.0",
+    ],
+    [
+      "an empty string in a skillTree list",
+      { skillTree: { withWeights: [""], withoutWeights: ["GKSKG"] } },
+      "skillTree.withWeights.0",
+    ],
+    ["sets 0", { ...gksEntry, sets: 0 }, "sets"],
     ["the unknown key minutes", { ...gksEntry, minutes: 10 }, "minutes"],
     [
       "the key title",

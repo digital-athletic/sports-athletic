@@ -105,6 +105,18 @@ describe("filterByTags: tag groups", () => {
     ).toEqual(["knee", "warmUp"]);
   });
 
+  it("matches only branches carrying a tag outside every tag group", () => {
+    const custom = tree({
+      carrier: ["CUSTOM_X", "SKILL_PREVENTION"],
+      other: ["SKILL_PREVENTION"],
+      untagged: [],
+    });
+
+    expect(Object.keys(filterByTags(custom, ["CUSTOM_X"]))).toEqual([
+      "carrier",
+    ]);
+  });
+
   it("lets a branch without a region tag match every region", () => {
     expect(Object.keys(filterByTags(branches, ["REGION_UPPER_BODY"]))).toEqual([
       "shoulder",
@@ -225,6 +237,41 @@ describe("drawBlock: pairs", () => {
     expect(
       drawnIds({ countBy: "pairs", picks: [{ tags: [], count: 3 }] }, pool),
     ).toEqual(["a"]);
+  });
+});
+
+describe("drawBlock: used branch ids", () => {
+  const usedAfter = (change: Partial<DrawBlock>, pool: SkillTreeType) => {
+    const usedBranchIds: string[] = [];
+    drawBlock(block(pool, change), { pool, draw: firstUnused, usedBranchIds });
+    return usedBranchIds;
+  };
+
+  it("holds the drawn ids of an exercises block", () => {
+    const pool = tree({ a: [], b: [], c: [] });
+
+    expect(usedAfter({ picks: [{ tags: [], count: 2 }] }, pool)).toEqual([
+      "a",
+      "b",
+    ]);
+  });
+
+  it("holds both branches of a drawn pair", () => {
+    const pool = tree({ a: [], b: [], c: [] });
+
+    expect(
+      usedAfter({ countBy: "pairs", picks: [{ tags: [], count: 1 }] }, pool),
+    ).toEqual(["a", "b"]);
+  });
+
+  // The draw marks the skipped branch used before the size check, so no
+  // later pick of the training draws a one sided overflow branch again.
+  it("holds a one sided branch that overflowed the last side", () => {
+    const pool = tree({ a: ["SIDE_BOTH"], b: ["SIDE_ONE"], c: ["SIDE_BOTH"] });
+
+    expect(
+      usedAfter({ countBy: "entries", picks: [{ tags: [], count: 2 }] }, pool),
+    ).toEqual(["a", "b", "c"]);
   });
 });
 

@@ -126,4 +126,11 @@ describe("parseData: valid input", () => {
     expect(result).toEqual(data);
     expect(result).not.toBe(data);
   });
+
+  it("keeps the source key order", () => {
+    const schema = v.record(v.string(), v.object({ id: v.string() }));
+    const data = JSON.parse('{"B": {"id": "b"}, "A": {"id": "a"}}');
+
+    expect(Object.keys(parseData(schema, data, "fixture"))).toEqual(["B", "A"]);
+  });
 });

@@ -40,7 +40,9 @@ export interface ShortWorkoutPlan {
   blocks: ResolvedBlock[];
 }
 
-export const readBlockSkillTree = (
+// Only WUSPEZIAL narrows to the prevention pain regions: it is the special
+// warm up that prepares the pain regions of the prevention blocks.
+const readBlockSkillTree = (
   skillTrees: Record<string, SkillTreeType>,
   name: string,
   preventionSkills: string[],
@@ -154,7 +156,7 @@ const poolFor = (
   );
 };
 
-export const resolveBlock = (
+const resolveBlock = (
   templateId: string,
   index: number,
   block: PicksBlock,
@@ -165,9 +167,11 @@ export const resolveBlock = (
 
   const defaults = defaultsOf(`${templateId}.blocks[${index}]`, block, entry);
   const picks = picksFor(block, context.hasWeights);
+  const pool = poolFor(entry, picks, defaults.fallbackToWholeTree, context);
+  if (Object.keys(pool).length === 0) throw skillError(block.skill);
   return {
     skill: block.skill,
-    pool: poolFor(entry, picks, defaults.fallbackToWholeTree, context),
+    pool,
     picks,
     setDuration: block.setDuration,
     ...defaults,

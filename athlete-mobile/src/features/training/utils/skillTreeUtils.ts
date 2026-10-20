@@ -641,7 +641,6 @@ export const mapSkillCodeToFocusArea = (
   switch (skillCode) {
     // Warmup codes
     case "WUPREV":
-    case "WUSPEZIAL":
     case "WUSKSA":
       return "WARMUP";
 
@@ -699,7 +698,10 @@ export const isPreventionTraining = (type: string): boolean =>
 export const readLiteralSkillTree = (
   skillTrees: Record<string, SkillTreeType>,
   name: string,
-): SkillTreeType => keepBranchesWithLevels(skillTrees[name] ?? {});
+): SkillTreeType =>
+  keepBranchesWithLevels(
+    Object.hasOwn(skillTrees, name) ? skillTrees[name] : {},
+  );
 
 export const getSkillBranchesForProgress = (
   skillTrees: Record<string, SkillTreeType>,

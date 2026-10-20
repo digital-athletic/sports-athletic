@@ -209,6 +209,10 @@ describe("loadSkillCatalog: WUSPEZIAL keeps the plan workout behavior", () => {
 });
 
 describe("parseSkillCatalog: error paths", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("names the path of an empty skill tree list", () => {
     jest.spyOn(console, "error").mockImplementation(() => undefined);
 

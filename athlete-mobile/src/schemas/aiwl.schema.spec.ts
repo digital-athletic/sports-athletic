@@ -171,6 +171,45 @@ describe("TemplateSchema: accepts", () => {
   });
 });
 
+describe("TemplateSchema: accepts every setting value", () => {
+  it.each(["none", "muscles", "drawOrder", "drawOrderWithLeftovers"])(
+    "superset %s",
+    (superset) => {
+      expect(
+        v.safeParse(TemplateSchema, template(picksBlock({ superset }))).success,
+      ).toBe(true);
+    },
+  );
+
+  it.each(["exercises", "entries", "pairs"])("countBy %s", (countBy) => {
+    expect(
+      v.safeParse(TemplateSchema, template(picksBlock({ countBy }))).success,
+    ).toBe(true);
+  });
+
+  it.each(["asDrawn", "muscleGroups"])("order %s", (order) => {
+    expect(
+      v.safeParse(TemplateSchema, template(picksBlock({ order }))).success,
+    ).toBe(true);
+  });
+
+  it.each([true, false])("fallbackToWholeTree %s", (fallbackToWholeTree) => {
+    expect(
+      v.safeParse(TemplateSchema, template(picksBlock({ fallbackToWholeTree })))
+        .success,
+    ).toBe(true);
+  });
+
+  it("bodyParts with muscles", () => {
+    expect(
+      v.safeParse(
+        TemplateSchema,
+        template(durationBlock({ bodyParts: { muscles: ["biceps"] } })),
+      ).success,
+    ).toBe(true);
+  });
+});
+
 describe("TemplateSchema: rejects at the template level", () => {
   it.each<[string, unknown, string]>([
     ["aiwl 2", { ...template(picksBlock()), aiwl: 2 }, "aiwl"],
@@ -229,6 +268,11 @@ describe("TemplateSchema: rejects wrong block kinds and keys", () => {
       branchesBlock({ branches: [] }),
       "blocks.0.branches",
     ],
+    [
+      "an empty string in branches",
+      branchesBlock({ branches: [""] }),
+      "blocks.0.branches.0",
+    ],
   ])("%s", (_label, block, path) => {
     expect(firstIssuePath(template(block))).toBe(path);
   });
@@ -262,6 +306,21 @@ describe("TemplateSchema: rejects wrong picks and body parts", () => {
       "blocks.0.picks",
     ],
     ["empty picks", picksBlock({ picks: [] }), "blocks.0.picks"],
+    [
+      "an empty string tag",
+      picksBlock({ picks: [{ tags: [""], count: 1 }] }),
+      "blocks.0.picks",
+    ],
+    [
+      "an empty muscle",
+      durationBlock({ bodyParts: { muscles: [""] } }),
+      "blocks.0.bodyParts.muscles.0",
+    ],
+    [
+      "an unknown bodyParts key",
+      durationBlock({ bodyParts: { limbs: [] } }),
+      "blocks.0.bodyParts.limbs",
+    ],
   ])("%s", (_label, block, path) => {
     expect(firstIssuePath(template(block))?.startsWith(path)).toBe(true);
   });
@@ -296,6 +355,12 @@ describe("TemplateSchema: rejects wrong block settings", () => {
     ],
     ["setDuration 0", picksBlock({ setDuration: 0 }), "blocks.0.setDuration"],
     ["sets 0", picksBlock({ sets: 0 }), "blocks.0.sets"],
+    ["sets 1.5", picksBlock({ sets: 1.5 }), "blocks.0.sets"],
+    [
+      "an unknown rest key",
+      picksBlock({ rest: { afterSet: 5 } }),
+      "blocks.0.rest.afterSet",
+    ],
     ["order random", picksBlock({ order: "random" }), "blocks.0.order"],
   ])("%s", (_label, block, path) => {
     expect(firstIssuePath(template(block))).toBe(path);

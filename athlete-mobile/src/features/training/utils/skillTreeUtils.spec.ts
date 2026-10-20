@@ -714,6 +714,13 @@ describe("skillTreeUtils", () => {
     it("drops branches without levels", () => {
       expect(Object.keys(readLiteralSkillTree(trees, "GKS"))).toEqual(["a"]);
     });
+
+    it.each(["constructor", "__proto__"])(
+      "returns an empty tree for the inherited name %s",
+      (name) => {
+        expect(readLiteralSkillTree(trees, name)).toEqual({});
+      },
+    );
   });
 
   describe("getSkillBranchesForProgress", () => {

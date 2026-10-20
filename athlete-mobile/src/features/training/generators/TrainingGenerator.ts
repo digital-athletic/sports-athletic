@@ -458,7 +458,7 @@ export default class TrainingGenerator {
         block.sets,
         temporalData,
         userExerciseData.exerciseData,
-        { setDuration: block.setDuration, rest: block.rest },
+        block,
       );
     });
     // the pause closing a block leads into the next one

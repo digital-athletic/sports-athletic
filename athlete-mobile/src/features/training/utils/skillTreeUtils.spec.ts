@@ -5,10 +5,12 @@ import {
   getBranchIdByNameAndSkill,
   getBranchIdsByNames,
   getNextTypeFiltered,
+  getSkillBranchesForProgress,
   getSkillTree,
   getUserExerciseFromBranch,
   isPreventionTraining,
   mapSkillCodeToFocusArea,
+  readLiteralSkillTree,
 } from "./skillTreeUtils";
 
 describe("skillTreeUtils", () => {
@@ -693,5 +695,70 @@ describe("skillTreeUtils", () => {
         expect(isPreventionTraining(type)).toBe(false);
       },
     );
+  });
+
+  describe("readLiteralSkillTree", () => {
+    const branch = (exerciseId: string): SkillBranchType => ({
+      tags: [],
+      levels: { 1: { exerciseId } },
+    });
+    const trees = {
+      GKS: { a: branch("1"), noLevels: { tags: [], levels: {} } },
+      GKSKG: { b: branch("2") },
+    };
+
+    it("returns the tree named GKS and not GKSKG for GKS", () => {
+      expect(readLiteralSkillTree(trees, "GKS")).toEqual({ a: branch("1") });
+    });
+
+    it("returns the tree named GKSKG for GKSKG", () => {
+      expect(readLiteralSkillTree(trees, "GKSKG")).toEqual({ b: branch("2") });
+    });
+
+    it("returns an empty tree for a missing name", () => {
+      expect(readLiteralSkillTree(trees, "MISSING")).toEqual({});
+    });
+
+    it("drops branches without levels", () => {
+      expect(Object.keys(readLiteralSkillTree(trees, "GKS"))).toEqual(["a"]);
+    });
+  });
+
+  describe("getSkillBranchesForProgress", () => {
+    const branch = (exerciseId: string): SkillBranchType => ({
+      tags: [],
+      levels: { 1: { exerciseId } },
+    });
+    const trees = {
+      BAS: { bas: branch("1") },
+      GKS: { gks: branch("2") },
+      GKSKG: { gkskg: branch("3") },
+      SWR1: { swr1: branch("4") },
+      SWR1KG: { swr1kg: branch("5") },
+      WUSPEZIAL: { wu1: branch("6"), wu2: branch("7") },
+    };
+
+    it.each([
+      ["STABILITY", ["bas", "gks"]],
+      ["GKS", ["gks", "gkskg"]],
+      ["SWR1", ["swr1", "swr1kg"]],
+      ["WUSPEZIAL", ["wu1", "wu2"]],
+    ])("gives the branches of %s", (skill, expected) => {
+      expect(
+        Object.keys(getSkillBranchesForProgress(trees, skill)).sort(),
+      ).toEqual([...expected].sort());
+    });
+
+    it("keeps GKSKG out of the STABILITY branches", () => {
+      expect(
+        getSkillBranchesForProgress(trees, "STABILITY"),
+      ).not.toHaveProperty("gkskg");
+    });
+  });
+
+  describe("mapSkillCodeToFocusArea: catalog entries", () => {
+    it("returns WARMUP for WUSPEZIAL", () => {
+      expect(mapSkillCodeToFocusArea("WUSPEZIAL")).toBe("WARMUP");
+    });
   });
 });

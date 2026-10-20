@@ -1,4 +1,4 @@
-import type { FocusArea } from "@/features/training/models/Training";
+import type { FocusArea } from "@/schemas/sync.schema";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import type { CompleteWorkoutType } from "@/store/completedWorkoutsStore";
 

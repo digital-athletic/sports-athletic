@@ -1,4 +1,4 @@
-import { loadFocusTraining } from "@/data/loadFocusTrainings";
+import { loadSkillCatalogEntry } from "@/data/loadSkillCatalog";
 
 /**
  * Collects the pain regions of the given prevention trainings, read from
@@ -11,6 +11,6 @@ export function getRegionsForPreventionSkills(
   preventionSkills: string[],
 ): string[] {
   return preventionSkills.flatMap(
-    (skill) => loadFocusTraining(skill)?.regions ?? [],
+    (skill) => loadSkillCatalogEntry(skill)?.painRegions ?? [],
   );
 }

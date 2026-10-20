@@ -1,9 +1,11 @@
 import { Alert } from "@/common/Alert";
 import { PAUSE_EXERCISE_ID } from "@/features/training/models/IdTypes";
-import { type FocusArea } from "@/features/training/models/Training";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { BASELINE_TRAINING_STATE as SHARED_BASELINE_TRAINING_STATE } from "@/features/training/utils/testFixtures";
-import { type UserExerciseDataType } from "@/schemas/sync.schema";
+import {
+  type FocusArea,
+  type UserExerciseDataType,
+} from "@/schemas/sync.schema";
 import { type MaxValuesType } from "@/schemas/user.schema";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";

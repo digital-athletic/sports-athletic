@@ -1,10 +1,12 @@
 import { TagGroups } from "@/constants/tagGroups";
-import { loadFocusTraining } from "@/data/loadFocusTrainings";
+import { loadSkillCatalogEntry } from "@/data/loadSkillCatalog";
 import { areaToRegion } from "./exerciseUtils";
 import { getRegionsForPreventionSkills } from "./preventionUtils";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { SkillTreesState } from "@/data/skillTreeRegistry";
 import type { ExerciseType } from "@/schemas/exercise.schema";
+import type { SkillCode } from "@/schemas/generator.schema";
+import type { FocusArea } from "@/schemas/sync.schema";
 import type {
   SkillBranchType,
   SkillTreeType,
@@ -12,8 +14,18 @@ import type {
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
 import { getTagValues } from "../../../utils/tagUtils";
 import { TemporalDataType } from "../models/TemporalData";
-import type { FocusArea } from "../models/Training";
 import { hasWeights } from "./equipmentUtils";
+
+const keepBranchesWithLevels = (tree: SkillTreeType): SkillTreeType =>
+  Object.keys(tree).reduce<SkillTreeType>((acc, branchId) => {
+    if (
+      tree[branchId].levels &&
+      Object.keys(tree[branchId].levels).length > 0
+    ) {
+      acc[branchId] = tree[branchId];
+    }
+    return acc;
+  }, {});
 
 /**
  * Gets the appropriate skill tree based on skill and context
@@ -275,21 +287,7 @@ export function getSkillTree(
     result = {};
   }
 
-  // Remove branches without levels
-  const filtered = Object.keys(result).reduce<SkillTreeType>(
-    (acc, branchId) => {
-      if (
-        result[branchId].levels &&
-        Object.keys(result[branchId].levels).length > 0
-      ) {
-        acc[branchId] = result[branchId];
-      }
-      return acc;
-    },
-    {},
-  );
-
-  return filtered;
+  return keepBranchesWithLevels(result);
 }
 
 /**
@@ -644,8 +642,8 @@ export const mapSkillCodeToFocusArea = (
       return skillCode;
   }
 
-  const template = loadFocusTraining(skillCode);
-  if (template) return template.focusArea;
+  const entry = loadSkillCatalogEntry(skillCode);
+  if (entry?.focusArea) return entry.focusArea;
 
   switch (skillCode) {
     // Warmup codes
@@ -702,4 +700,35 @@ export const mapSkillCodeToFocusArea = (
 };
 
 export const isPreventionTraining = (type: string): boolean =>
-  loadFocusTraining(type)?.focusArea === "PREVENTION";
+  loadSkillCatalogEntry(type)?.focusArea === "PREVENTION";
+
+// Unlike getSkillTree, no name remapping: STABILITY without weights reads GKS, not GKSKG.
+export const readLiteralSkillTree = (
+  skillTrees: Record<string, SkillTreeType>,
+  name: string,
+): SkillTreeType => keepBranchesWithLevels(skillTrees[name] ?? {});
+
+export const getSkillBranchesForProgress = (
+  skillTrees: Record<string, SkillTreeType>,
+  skill: SkillCode,
+): SkillTreeType => {
+  const entry = loadSkillCatalogEntry(skill);
+  const branches: SkillTreeType = {};
+  if (entry) {
+    const names = [
+      ...entry.skillTree.withWeights,
+      ...entry.skillTree.withoutWeights,
+    ];
+    for (const name of names) {
+      Object.assign(branches, readLiteralSkillTree(skillTrees, name));
+    }
+    return branches;
+  }
+  for (const hasWeightsFlag of [true, false]) {
+    Object.assign(
+      branches,
+      getSkillTree(skillTrees, skill, [], hasWeightsFlag),
+    );
+  }
+  return branches;
+};

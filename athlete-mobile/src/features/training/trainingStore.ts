@@ -8,7 +8,7 @@ import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { ActiveTrainingType } from "./models/ActiveTraining";
 import { type MaxValuesType } from "./models/MaxValues";
-import type { FocusArea } from "./models/Training";
+import type { FocusArea } from "@/schemas/sync.schema";
 import { TrainingSelectionType, TrainingTimeType } from "./models/Training";
 import { UserExerciseDataType } from "./models/UserExerciseData";
 import { UserProgressType } from "./models/UserProgress";

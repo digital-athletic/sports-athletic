@@ -1,5 +1,5 @@
 import type { UserSkills } from "@/features/statistics/models/WorkoutsData";
-import type { FocusArea } from "@/features/training/models/Training";
+import type { FocusArea } from "@/schemas/sync.schema";
 import { Box } from "@/theme/Box";
 import { getHexagonPoints } from "@/utils/geometry";
 import { Image } from "expo-image";

@@ -151,6 +151,23 @@ const RESOLVED: Record<string, Resolved[]> = {
   PREVSPINE: preventionBlocks(),
 };
 
+const preventionValues = [undefined, "exercise"];
+const VALUES: Record<string, (string | undefined)[]> = {
+  WU: [undefined],
+  MOB: [undefined],
+  BR: [undefined],
+  CD: [undefined],
+  BAS: [undefined],
+  GKS: ["exercise"],
+  STABILITY: [undefined],
+  PREV: preventionValues,
+  PREVSHOULDER: preventionValues,
+  PREVKNEE: preventionValues,
+  PREVWRIST: preventionValues,
+  PREVANKLE: preventionValues,
+  PREVSPINE: preventionValues,
+};
+
 const bothPlaces = (blocks: BlockPick[][]): Record<Place, BlockPick[][]> => ({
   withWeights: blocks,
   withoutWeights: blocks,
@@ -321,6 +338,10 @@ describe("loadTemplates: bundled values", () => {
 
   it.each(IDS)("resolves the block values of %s", (id) => {
     expect(blocksOf(id).map(effective)).toEqual(RESOLVED[id]);
+  });
+
+  it.each(IDS)("sets the block values mode of %s", (id) => {
+    expect(blocksOf(id).map((block) => block.values)).toEqual(VALUES[id]);
   });
 
   it.each(IDS.flatMap((id) => PLACES.map((place) => [id, place] as const)))(

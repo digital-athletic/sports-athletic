@@ -472,6 +472,23 @@ describe("resolveTemplate: block overrides", () => {
     addTemplate("SYN_NO_AFTER_BLOCK", [picksBlock({ skill: "BASEENTRY" })]);
     expect(planOf("SYN_NO_AFTER_BLOCK").blocks[0].afterBlock).toBeUndefined();
   });
+
+  it.each(["skill", "exercise"] as const)(
+    "passes values %s into the block timing",
+    (values) => {
+      mockExtraCatalog.BASEENTRY = fullEntry;
+      addTemplate(`SYN_VALUES_${values}`, [
+        picksBlock({ skill: "BASEENTRY", values }),
+      ]);
+      expect(planOf(`SYN_VALUES_${values}`).blocks[0].values).toBe(values);
+    },
+  );
+
+  it("leaves values undefined without a block value", () => {
+    mockExtraCatalog.BASEENTRY = fullEntry;
+    addTemplate("SYN_NO_VALUES", [picksBlock({ skill: "BASEENTRY" })]);
+    expect(planOf("SYN_NO_VALUES").blocks[0].values).toBeUndefined();
+  });
 });
 
 describe("resolveTemplate: determinism", () => {

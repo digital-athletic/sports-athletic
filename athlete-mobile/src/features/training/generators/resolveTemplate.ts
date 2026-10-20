@@ -9,6 +9,7 @@ import {
 import type {
   Block,
   BlockPicks,
+  BlockValues,
   CountBy,
   PicksBlock,
   Rest,
@@ -23,6 +24,7 @@ import { filterByTags } from "./focusTrainingSelection";
 export interface BlockTiming {
   setDuration?: number;
   afterBlock?: number;
+  values?: BlockValues;
   rest: Rest;
 }
 
@@ -176,6 +178,7 @@ const resolveBlock = (
     picks,
     setDuration: block.setDuration,
     afterBlock: block.rest?.afterBlock,
+    values: block.values,
     ...defaults,
   };
 };

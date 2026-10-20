@@ -10,6 +10,8 @@ import { useExerciseCompletion } from "./useExerciseCompletion";
 
 const EXERCISE_ID = "900";
 
+let mockExerciseValues: object = {};
+
 jest.mock("@/data/exerciseRegistry", () => ({
   getExerciseById: () => ({
     id: "900",
@@ -18,7 +20,7 @@ jest.mock("@/data/exerciseRegistry", () => ({
     isAdvanceByReps: true,
     isAdvanceByDuration: false,
     isJump: false,
-    values: {},
+    values: mockExerciseValues,
   }),
 }));
 
@@ -205,6 +207,40 @@ describe("useExerciseCompletion: standard progression", () => {
 
     expect(stored()?.weight).toBe(40);
     expect(stored()?.feedback?.difficulty).toBeNull();
+  });
+});
+
+describe("useExerciseCompletion: block values after a weight increase", () => {
+  const authored = {
+    repetition: {
+      startValue: { default: { advanced: 5 } },
+      targetValue: { default: { advanced: 6 } },
+    },
+  };
+
+  const completeGksAt = (type: string, repetition: number) => {
+    mockExerciseValues = authored;
+    seed({ skill: "GKS", repetition, feedback: { difficulty: "TOO_EASY" } });
+    useTrainingStore.setState({ activeTraining: { id: "training-1", type } });
+    const { result } = renderHook(() => useExerciseCompletion());
+
+    act(() => result.current.saveExerciseAndBranchData(0));
+  };
+
+  afterEach(() => {
+    mockExerciseValues = {};
+  });
+
+  it("resets the repetitions to the exercise start in a template block with values exercise", () => {
+    completeGksAt("GKS", 6);
+
+    expect(stored()?.repetition).toBe(5);
+  });
+
+  it("resets the repetitions to the skill range start outside the template", () => {
+    completeGksAt("PLAN", 12);
+
+    expect(stored()?.repetition).toBe(8);
   });
 });
 

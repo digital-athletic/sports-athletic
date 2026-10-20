@@ -22,6 +22,7 @@
     {
       "kind": "picks",
       "skill": "PREVSPINE",
+      "values": "exercise",
       "picks": [{ "tags": ["SKILL_PREVENTION", "PREVENTION_SPINE"], "count": 3 }],
       "superset": "drawOrderWithLeftovers"
     }

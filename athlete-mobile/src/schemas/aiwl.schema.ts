@@ -22,6 +22,8 @@ export const SupersetSchema = v.picklist([
 ]);
 export type Superset = v.InferOutput<typeof SupersetSchema>;
 const BlockOrderSchema = v.picklist(["asDrawn", "muscleGroups"]);
+export const BlockValuesSchema = v.picklist(["skill", "exercise"]);
+export type BlockValues = v.InferOutput<typeof BlockValuesSchema>;
 
 // Named BlockPick because Pick shadows the TypeScript utility type.
 const BlockPickSchema = v.strictObject({
@@ -65,6 +67,7 @@ const blockBase = {
   superset: v.optional(SupersetSchema),
   sets: v.optional(CountSchema),
   setDuration: v.optional(PositiveSecondsSchema),
+  values: v.optional(BlockValuesSchema),
   rest: v.optional(BlockRestSchema),
 };
 const PicksBlockSchema = v.strictObject({

@@ -105,7 +105,7 @@ import {
   type TestSetLoads,
   type UserExerciseDataMapType,
 } from "@/schemas/generator.schema";
-import type { Superset } from "@/schemas/aiwl.schema";
+import type { BlockValues, Superset } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
 import { Logger } from "@/services/Logger";
@@ -141,6 +141,7 @@ import {
   getMaxValueForExercise,
   getUserLevel,
   roundWeightValue,
+  withValuesMode,
 } from "../utils/workoutUtils";
 import { drawBlock, type DrawContext } from "./focusTrainingSelection";
 import { resolveShortWorkoutPlan, type BlockTiming } from "./resolveTemplate";
@@ -1245,6 +1246,7 @@ export default class TrainingGenerator {
         firstExercise,
         null,
         timing?.setDuration,
+        timing?.values,
       );
       const intervalTime = intervalLength + pauseLength;
       const repetition = Math.min(
@@ -1582,6 +1584,7 @@ export default class TrainingGenerator {
           firstExerciseData,
           userExerciseData,
           timing?.setDuration,
+          timing?.values,
         );
         // calc pause
         const inSetPauseLength =
@@ -1625,6 +1628,7 @@ export default class TrainingGenerator {
             secondExerciseData!,
             userExerciseData,
             timing?.setDuration,
+            timing?.values,
           );
         } else {
           if (
@@ -2416,6 +2420,7 @@ export default class TrainingGenerator {
     exercise: ExerciseType,
     userExerciseData: Record<string, UserExerciseDataType | undefined> | null,
     workDuration?: number,
+    values?: BlockValues,
   ): ExerciseStartValues => {
     if (workDuration !== undefined) {
       return {
@@ -2462,9 +2467,9 @@ export default class TrainingGenerator {
       : null;
 
     // from data/generator/TestIntensity
-    let intensity: IntensityData | null = getIntensityBySkill(
-      skillName as SkillCode,
-      exercise,
+    const intensity: IntensityData | null = withValuesMode(
+      getIntensityBySkill(skillName as SkillCode, exercise),
+      values,
     );
 
     let exerciseValues = this.getExerciseValues(

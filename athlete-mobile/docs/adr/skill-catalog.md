@@ -133,6 +133,7 @@ Entries copied from `assets/data/generator/skills.json`:
 - The bundled GKS template overrides `afterExercise` to 45 s and draws its bodyweight picks by region tags.
 - `STABILITY` draws leg axis stability with weights and full body stability without. Its tree names are literal, so the bodyweight variant reads `GKS`.
 - `PREVSHOULDER` pairs by muscles like plan workouts. The bundled shoulder prevention training overrides `superset` to `drawOrderWithLeftovers` in its template block.
+- The catalog has no `values` field. The block field `values` switches the source of repetitions and durations between the skill's intensity range and the exercise's own values. The bundled GKS and prevention blocks set it to `exercise`. Plan workouts of the same skills keep the range.
 - `WUSPEZIAL` is the special warm-up of a prevention training. It has no intensity and no `progression`, so it keeps the plan workout behavior: progression on, and focus area `WARMUP`. The generator narrows its tree by the pain regions of the prevention skills in the template.
 
 ### Set list builder

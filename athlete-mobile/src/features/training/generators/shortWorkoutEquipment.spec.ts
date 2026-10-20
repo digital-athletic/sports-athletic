@@ -22,20 +22,8 @@ const adult: UserType = {
   temporalData: [],
 };
 
-// Mulberry32: small seeded PRNG so Math.random stays reproducible.
-const mulberry32 = (seed: number): (() => number) => {
-  let state = seed;
-  return () => {
-    state = (state + 0x6d2b79f5) | 0;
-    let t = Math.imul(state ^ (state >>> 15), 1 | state);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-};
-
-const generateBrAtHome = (seed: number): GeneratedSetListEntry[] => {
-  jest.spyOn(Math, "random").mockImplementation(mulberry32(seed));
-  return new TrainingGenerator().generateTraining(
+const generateBrAtHome = (): GeneratedSetListEntry[] =>
+  new TrainingGenerator().generateTraining(
     "BR",
     adult,
     "HOME",
@@ -47,16 +35,6 @@ const generateBrAtHome = (seed: number): GeneratedSetListEntry[] => {
     0,
     noExerciseData,
   );
-};
-
-beforeEach(() => {
-  jest.useFakeTimers({ now: new Date("2026-01-01T00:00:00Z") });
-});
-
-afterEach(() => {
-  jest.restoreAllMocks();
-  jest.useRealTimers();
-});
 
 describe("shortWorkoutEquipment: BR at HOME", () => {
   const homeEquipment: string[] = PlacesData.HOME.EQUIPMENT;
@@ -74,7 +52,7 @@ describe("shortWorkoutEquipment: BR at HOME", () => {
     .map(([branchId]) => branchId);
 
   const drawnBranchIds = (): string[] =>
-    generateBrAtHome(42)
+    generateBrAtHome()
       .filter((entry) => entry.exerciseId !== PAUSE_ID)
       .map((entry) => entry.branchId);
 

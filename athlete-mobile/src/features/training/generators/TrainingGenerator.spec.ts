@@ -193,29 +193,6 @@ describe("TrainingGenerator", () => {
   });
 
   describe("generateShortWorkout", () => {
-    it("throws EQUIPMENT error for BR type when foam equipment is missing", () => {
-      const equipment: string[] = [];
-
-      try {
-        generator.generateShortWorkout(
-          "BR",
-          mockUser,
-          "HOME",
-          [mockExercise],
-          mockSkillTrees,
-          equipment,
-          { exerciseData: {}, branchData: {} },
-        );
-        fail("Expected GeneratorError to be thrown");
-      } catch (e) {
-        expect(e).toEqual({
-          type: "NO_EXERCISES",
-          subtype: "EQUIPMENT",
-          params: ["FOAM_ROLLER", "FOAM_BALL"],
-        });
-      }
-    });
-
     it("returns exercise list with correct structure when successful", () => {
       const mockResult = [
         {

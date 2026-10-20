@@ -10,6 +10,7 @@ import {
   isPreventionTraining,
   mapSkillCodeToFocusArea,
 } from "@/features/training/utils/skillTreeUtils";
+import type { Template } from "@/schemas/aiwl.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { UserExerciseDataSchema } from "@/schemas/sync.schema";
@@ -17,55 +18,58 @@ import type { UserType } from "@/schemas/user.schema";
 import TrainingGenerator, { getIntensityBySkill } from "./TrainingGenerator";
 
 // A template the app code has never seen, as a backend sync could deliver it.
-jest.mock("../../../../assets/data/generator/focusTrainings.json", () => {
-  const bundled = jest.requireActual(
-    "../../../../assets/data/generator/focusTrainings.json",
+jest.mock("@/data/loadTemplates", () => {
+  const actual = jest.requireActual<typeof import("@/data/loadTemplates")>(
+    "@/data/loadTemplates",
   );
-  return {
-    ...bundled,
+  const extra: Record<string, Template> = {
     PREVHIP: {
-      title: { en: "Hip prevention", de: "Hüftprävention" },
-      focusArea: "PREVENTION",
-      intensity: "PREV",
-      progression: true,
-      regions: ["HIP"],
-      skillTrees: ["PREV", "PREVKG"],
-      tags: ["PREVENTION_KNEE_HIP"],
+      aiwl: 1,
+      id: "PREVHIP",
+      name: { en: "Hip prevention", de: "Hüftprävention" },
       blocks: [
         {
-          draw: "pairs",
+          kind: "picks",
+          skill: "PREVHIP",
           picks: [
             { tags: ["SKILL_PREVENTION", "PREVENTION_KNEE_HIP"], count: 1 },
           ],
-          fallback: false,
+          countBy: "pairs",
+          fallbackToWholeTree: false,
           sets: 1,
-          pause: { superset: 30, sets: 60, exercise: 60 },
-          superset: "drawOrderAll",
+          rest: { withinSuperset: 30, betweenSets: 60, afterExercise: 60 },
+          superset: "drawOrderWithLeftovers",
         },
       ],
     },
     STRETCH: {
-      title: { en: "Stretching", de: "Dehnen" },
-      focusArea: "MOBILITY",
-      progression: false,
-      skillTrees: ["MOB"],
+      aiwl: 1,
+      id: "STRETCH",
+      name: { en: "Stretching", de: "Dehnen" },
       blocks: [
         {
-          draw: "slots",
+          kind: "picks",
+          skill: "STRETCH",
           picks: [{ tags: [], count: 4 }],
-          fallback: false,
+          countBy: "sides",
+          fallbackToWholeTree: false,
           sets: 1,
-          work: 60,
-          pause: { superset: 10, sets: 10, exercise: 10 },
+          setDuration: 60,
+          rest: { withinSuperset: 10, betweenSets: 10, afterExercise: 10 },
           superset: "none",
         },
       ],
     },
   };
+  return {
+    ...actual,
+    loadTemplates: () => ({ ...actual.loadTemplates(), ...extra }),
+    loadTemplate: (id: string) =>
+      Object.hasOwn(extra, id) ? extra[id] : actual.loadTemplate(id),
+  };
 });
 
-// The skill catalog facts differ from the focusTrainings mock on purpose, so a
-// passing fact assertion proves which file the consumers read.
+// The skill catalog carries the per training facts of the new templates.
 jest.mock("../../../../assets/data/generator/skills.json", () => {
   const bundled = jest.requireActual(
     "../../../../assets/data/generator/skills.json",
@@ -73,7 +77,10 @@ jest.mock("../../../../assets/data/generator/skills.json", () => {
   return {
     ...bundled,
     PREVHIP: {
-      skillTree: { withWeights: ["PREV", "PREVKG"], withoutWeights: ["PREV"] },
+      skillTree: {
+        withWeights: ["PREV", "PREVKG"],
+        withoutWeights: ["PREV", "PREVKG"],
+      },
       intensity: "BAS",
       focusArea: "MOBILITY",
       progression: false,

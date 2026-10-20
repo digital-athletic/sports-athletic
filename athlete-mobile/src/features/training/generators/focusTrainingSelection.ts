@@ -4,15 +4,9 @@ import type {
   BranchSelectionResult,
   SuperSetBranchSelectionResult,
 } from "@/features/training/models/ExerciseBranch";
-import type { TrainingType } from "@/features/training/models/Training";
-import { getSkillTree } from "@/features/training/utils/skillTreeUtils";
-import type {
-  FocusTraining,
-  FocusTrainingBlock,
-} from "@/schemas/focusTraining.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { getTagValues, isTagInGroup } from "@/utils/tagUtils";
-import type { GeneratorError } from "./GeneratorError";
+import type { ResolvedBlock } from "./resolveTemplate";
 
 export interface BranchDraw {
   single: (
@@ -32,11 +26,6 @@ const tagGroupOf = (tag: string): string =>
   TAG_GROUPS.filter((group) => isTagInGroup(tag, group)).sort(
     (a, b) => b.length - a.length,
   )[0] ?? tag;
-
-const tagValueOf = (tag: string): string => {
-  const group = tagGroupOf(tag);
-  return group === tag ? tag : tag.slice(group.length + 1);
-};
 
 const matchesTags = (branchTags: string[], tags: string[]): boolean => {
   const tagsByGroup = new Map<string, string[]>();
@@ -65,57 +54,6 @@ export const filterByTags = (
     if (matchesTags(branches[id].tags, tags)) kept[id] = branches[id];
   }
   return kept;
-};
-
-export const requireFocusEquipment = (
-  template: FocusTraining,
-  equipment: string[],
-): void => {
-  const required = template.requiredEquipment ?? [];
-  if (required.length > 0 && !required.some((eq) => equipment.includes(eq))) {
-    throw {
-      type: "NO_EXERCISES",
-      subtype: "EQUIPMENT",
-      params: required,
-    } satisfies GeneratorError;
-  }
-};
-
-/**
- * Collects the branches a focus training draws from: its skill trees limited
- * to the template tags, plus the skill trees its blocks name.
- */
-export const resolveFocusPool = (
-  type: TrainingType,
-  template: FocusTraining,
-  skillTrees: { [skillName: string]: SkillTreeType },
-  hasWeights: boolean,
-): SkillTreeType => {
-  const tags = template.tags ?? [];
-  const trees: SkillTreeType = {};
-  for (const skillTree of template.skillTrees) {
-    Object.assign(
-      trees,
-      getSkillTree(skillTrees, skillTree, [], hasWeights, true),
-    );
-  }
-  const pool = filterByTags(trees, tags);
-  if (tags.length > 0 && Object.keys(pool).length === 0) {
-    throw {
-      type: "NO_EXERCISES",
-      subtype: "SKILL_TREE",
-      params: tags.map(tagValueOf),
-    } satisfies GeneratorError;
-  }
-  for (const { skillTree } of template.blocks) {
-    if (skillTree) {
-      Object.assign(
-        pool,
-        getSkillTree(skillTrees, skillTree, [type], hasWeights),
-      );
-    }
-  }
-  return pool;
 };
 
 export interface DrawContext {
@@ -184,30 +122,34 @@ const drawSingles = (
  * its weighted pairs last.
  */
 export const drawBlock = (
-  block: FocusTrainingBlock,
-  hasWeights: boolean,
+  block: Pick<
+    ResolvedBlock,
+    "pool" | "picks" | "countBy" | "fallbackToWholeTree"
+  >,
   context: DrawContext,
 ): BranchExerciseReference[] => {
-  const picks =
-    !hasWeights && block.picksWithoutWeights
-      ? block.picksWithoutWeights
-      : block.picks;
+  // iterating the context pool keeps its key order
+  const pool: SkillTreeType = {};
+  for (const id in context.pool) {
+    if (Object.hasOwn(block.pool, id)) pool[id] = context.pool[id];
+  }
   const drawn: BranchExerciseReference[] = [];
   const weighted: BranchExerciseReference[] = [];
-  for (const pick of picks) {
+  for (const pick of block.picks) {
     const pickDraw: PickDraw = {
       ...context,
-      matching: filterByTags(context.pool, pick.tags),
+      pool,
+      matching: filterByTags(pool, pick.tags),
       count: pick.count,
-      fallback: block.fallback,
+      fallback: block.fallbackToWholeTree,
     };
-    if (block.draw === "pairs") {
+    if (block.countBy === "pairs") {
       const [pairs, weightedPairs] = drawPairs(pickDraw);
       drawn.push(...pairs);
       weighted.push(...weightedPairs);
     } else {
       // a one sided exercise fills two slots, left and right
-      drawn.push(...drawSingles(pickDraw, block.draw === "slots" ? 2 : 1));
+      drawn.push(...drawSingles(pickDraw, block.countBy === "sides" ? 2 : 1));
     }
   }
   return [...drawn, ...weighted];

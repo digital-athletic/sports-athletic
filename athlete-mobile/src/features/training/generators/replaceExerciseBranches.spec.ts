@@ -65,7 +65,6 @@ const replaceLowerBody = (
       usedBranchIds,
       [],
       { exerciseData: {}, branchData },
-      false,
     )
     .map((replacement) => replacement.branchId);
 };

@@ -1,4 +1,3 @@
-import { loadFocusTraining } from "./loadFocusTrainings";
 import { loadSkillCatalogEntry } from "./loadSkillCatalog";
 import {
   loadTemplate,
@@ -10,14 +9,11 @@ import { getAllSkillTrees } from "./skillTreeRegistry";
 import { filterByTags } from "@/features/training/generators/focusTrainingSelection";
 import type {
   BlockPick,
-  CountBy,
   PicksBlock,
   PlacePicks,
   Rest,
-  Superset,
   Template,
 } from "@/schemas/aiwl.schema";
-import type { FocusTrainingBlock } from "@/schemas/focusTraining.schema";
 import type { SkillCatalogEntry } from "@/schemas/skillCatalog.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 
@@ -39,16 +35,140 @@ const IDS = [
 const PLACES = ["withWeights", "withoutWeights"] as const;
 type Place = (typeof PLACES)[number];
 
-const COUNT_BY_OF_DRAW: Record<string, CountBy> = {
-  slots: "entries",
-  exercises: "exercises",
-  pairs: "pairs",
+const NAMES: Record<string, { en: string; de: string }> = {
+  WU: { en: "Warm-Up", de: "Warm-Up" },
+  MOB: { en: "Mobility", de: "Mobilität" },
+  BR: { en: "Loosen muscles", de: "Muskeln lockern" },
+  CD: { en: "Cool-Down", de: "Cool-Down" },
+  BAS: { en: "Leg axis stability", de: "Beinachsenstabilität" },
+  GKS: { en: "Full body stability", de: "Ganzkörperstabilität" },
+  STABILITY: { en: "Stability", de: "Stabilität" },
+  PREV: { en: "Prevention", de: "Prävention" },
+  PREVSHOULDER: { en: "Shoulder prevention", de: "Schulterprävention" },
+  PREVKNEE: { en: "Knee and hip prevention", de: "Knie- und Hüftprävention" },
+  PREVWRIST: {
+    en: "Elbow and wrist prevention",
+    de: "Ellbogen- und Handgelenksprävention",
+  },
+  PREVANKLE: { en: "Ankle prevention", de: "Sprunggelenksprävention" },
+  PREVSPINE: { en: "Spine prevention", de: "Wirbelsäulenprävention" },
 };
-const SUPERSET_OF_OLD: Record<string, Superset> = {
-  none: "none",
-  muscles: "muscles",
-  drawOrder: "drawOrder",
-  drawOrderAll: "drawOrderWithLeftovers",
+
+type Resolved = ReturnType<typeof effective>;
+
+type Shape = Omit<Resolved, "rest" | "setDuration">;
+
+const resolved = (
+  shape: Shape,
+  [withinSuperset, betweenSets, afterExercise]: [number, number, number],
+  setDuration?: number,
+): Resolved => ({
+  ...shape,
+  setDuration,
+  rest: { withinSuperset, betweenSets, afterExercise },
+});
+
+const timed = (afterExercise: number) =>
+  resolved(
+    { countBy: "entries", fallbackToWholeTree: false, sets: 1, superset: "none" },
+    [10, 10, afterExercise],
+    60,
+  );
+const preventionBlocks = (): Resolved[] => [
+  resolved(
+    {
+      countBy: "exercises",
+      fallbackToWholeTree: false,
+      sets: 1,
+      superset: "muscles",
+    },
+    [10, 10, 10],
+  ),
+  resolved(
+    {
+      countBy: "pairs",
+      fallbackToWholeTree: false,
+      sets: 2,
+      superset: "drawOrderWithLeftovers",
+    },
+    [30, 60, 60],
+  ),
+];
+
+const RESOLVED: Record<string, Resolved[]> = {
+  WU: [timed(10)],
+  MOB: [timed(10)],
+  BR: [timed(10)],
+  CD: [timed(10)],
+  BAS: [
+    resolved(
+      { countBy: "entries", fallbackToWholeTree: true, sets: 2, superset: "drawOrder" },
+      [30, 60, 30],
+    ),
+  ],
+  GKS: [
+    resolved(
+      { countBy: "entries", fallbackToWholeTree: true, sets: 2, superset: "none" },
+      [45, 90, 45],
+    ),
+  ],
+  STABILITY: [
+    resolved(
+      { countBy: "exercises", fallbackToWholeTree: false, sets: 2, superset: "muscles" },
+      [30, 60, 60],
+    ),
+  ],
+  PREV: preventionBlocks(),
+  PREVSHOULDER: preventionBlocks(),
+  PREVKNEE: preventionBlocks(),
+  PREVWRIST: preventionBlocks(),
+  PREVANKLE: preventionBlocks(),
+  PREVSPINE: preventionBlocks(),
+};
+
+const bothPlaces = (blocks: BlockPick[][]): Record<Place, BlockPick[][]> => ({
+  withWeights: blocks,
+  withoutWeights: blocks,
+});
+const anyExercises = (count: number) => bothPlaces([[{ tags: [], count }]]);
+const preventionPicks = (region: string) =>
+  bothPlaces([
+    [
+      {
+        tags: [
+          "SKILL_WU",
+          "SKILL_WARM_UP",
+          "SKILL_WARM_UP_SPECIAL",
+          `PREVENTION_${region}`,
+        ],
+        count: 3,
+      },
+    ],
+    [{ tags: ["SKILL_PREVENTION", `PREVENTION_${region}`], count: 3 }],
+  ]);
+
+const PICKS: Record<string, Record<Place, BlockPick[][]>> = {
+  WU: anyExercises(10),
+  MOB: anyExercises(10),
+  BR: anyExercises(10),
+  CD: anyExercises(10),
+  BAS: anyExercises(4),
+  GKS: {
+    withWeights: [[{ tags: [], count: 4 }]],
+    withoutWeights: [
+      [
+        { tags: ["REGION_UPPER_BODY"], count: 3 },
+        { tags: ["REGION_FULL_BODY"], count: 2 },
+      ],
+    ],
+  },
+  STABILITY: anyExercises(6),
+  PREV: preventionPicks("SHOULDER"),
+  PREVSHOULDER: preventionPicks("SHOULDER"),
+  PREVKNEE: preventionPicks("KNEE_HIP"),
+  PREVWRIST: preventionPicks("WRIST_ELBOW"),
+  PREVANKLE: preventionPicks("ANKLE"),
+  PREVSPINE: preventionPicks("SPINE"),
 };
 
 const templateOf = (id: string): Template => {
@@ -70,27 +190,8 @@ const entryOf = (code: string): SkillCatalogEntry => {
   return entry;
 };
 
-const oldOf = (id: string) => {
-  const old = loadFocusTraining(id);
-  if (!old) throw new Error(`no old template ${id}`);
-  return old;
-};
-
 const picksAt = (picks: PlacePicks, place: Place): BlockPick[] =>
   Array.isArray(picks) ? picks : picks[place];
-
-const oldPicksAt = (
-  block: FocusTrainingBlock,
-  place: Place,
-  templateTags: string[],
-): BlockPick[] =>
-  (place === "withoutWeights"
-    ? (block.picksWithoutWeights ?? block.picks)
-    : block.picks
-  ).map((pick) => ({
-    ...pick,
-    tags: [...pick.tags, ...templateTags.filter((t) => !pick.tags.includes(t))],
-  }));
 
 const effective = (block: PicksBlock) => {
   const entry = entryOf(block.skill);
@@ -181,49 +282,33 @@ describe("loadTemplates: no redundant block override", () => {
   });
 });
 
-// Temporary until the slice that deletes focusTrainings.json.
-describe("loadTemplates: parity with the old focus trainings", () => {
-  it.each(IDS)("keeps the old title of %s", (id) => {
-    expect(templateOf(id).name).toMatchObject(oldOf(id).title);
+describe("loadTemplates: bundled values", () => {
+  it.each(IDS)("names %s", (id) => {
+    expect(templateOf(id).name).toEqual(NAMES[id]);
   });
 
-  it.each(IDS)("keeps the old block count of %s", (id) => {
-    expect(blocksOf(id)).toHaveLength(oldOf(id).blocks.length);
-  });
+  it.each(IDS)("names the block skills of %s", (id) => {
+    const skills = blocksOf(id).map((block) => block.skill);
 
-  it.each(IDS)("keeps the old skill of every block in %s", (id) => {
-    expect(blocksOf(id).map((block) => block.skill)).toEqual(
-      oldOf(id).blocks.map((block) => block.skill ?? id),
+    expect(skills).toEqual(
+      id.startsWith("PREV")
+        ? ["WUSPEZIAL", id]
+        : [id],
     );
+  });
+
+  it.each(IDS)("resolves the block values of %s", (id) => {
+    expect(blocksOf(id).map(effective)).toEqual(RESOLVED[id]);
   });
 
   it.each(IDS.flatMap((id) => PLACES.map((place) => [id, place] as const)))(
-    "keeps the old picks of %s %s",
+    "holds the picks of %s %s",
     (id, place) => {
-      const tags = oldOf(id).tags ?? [];
-
       expect(blocksOf(id).map((block) => picksAt(block.picks, place))).toEqual(
-        oldOf(id).blocks.map((block) => oldPicksAt(block, place, tags)),
+        PICKS[id][place],
       );
     },
   );
-
-  it.each(IDS)("resolves the old block values of %s", (id) => {
-    expect(blocksOf(id).map(effective)).toEqual(
-      oldOf(id).blocks.map((old) => ({
-        countBy: COUNT_BY_OF_DRAW[old.draw],
-        fallbackToWholeTree: old.fallback,
-        sets: old.sets,
-        superset: SUPERSET_OF_OLD[old.superset],
-        setDuration: old.work,
-        rest: {
-          withinSuperset: old.pause.superset,
-          betweenSets: old.pause.sets,
-          afterExercise: old.pause.exercise,
-        },
-      })),
-    );
-  });
 });
 
 describe("loadTemplates: pool guard", () => {

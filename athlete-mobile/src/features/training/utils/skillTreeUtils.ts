@@ -35,7 +35,6 @@ export function getSkillTree(
   skill: string,
   prevSkills: string[] = [],
   hasWeightsFlag: boolean = false,
-  isShortWorkout?: boolean,
   temporalData?: TemporalDataType[],
   replacementCount?: number,
 ): SkillTreeType {
@@ -77,12 +76,6 @@ export function getSkillTree(
       let prevSkillTree = hasWeightsFlag
         ? skillTrees["PREV"]
         : skillTrees["PREVKG"];
-      if (isShortWorkout) {
-        prevSkillTree = {
-          ...skillTrees["PREV"],
-          ...skillTrees["PREVKG"],
-        };
-      }
       if (temporalData && replacementCount) {
         if (prevSkills.length > 0) {
           const prevRegion = getRegionsForPreventionSkills([skill]);

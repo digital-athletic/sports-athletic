@@ -1,4 +1,3 @@
-import { loadFocusTraining } from "./loadFocusTrainings";
 import { loadIntensityConfig } from "./loadIntensityConfig";
 import {
   loadSkillCatalog,
@@ -27,25 +26,74 @@ const TEMPLATE_IDS = [
 ];
 const CODES = [...TEMPLATE_IDS, "WUSPEZIAL"];
 
-const COUNT_BY_OF_DRAW: Record<string, CountBy> = {
-  slots: "entries",
-  exercises: "exercises",
-  pairs: "pairs",
+interface Facts {
+  focusArea: SkillCatalogEntry["focusArea"];
+  intensity?: string;
+  intensityWithoutWeights?: string;
+  progression?: boolean;
+  painRegions?: string[];
+  countBy: CountBy;
+  fallbackToWholeTree: boolean;
+}
+
+const prevention = (painRegions?: string[]): Facts => ({
+  focusArea: "PREVENTION",
+  intensity: "PREV",
+  progression: true,
+  painRegions,
+  countBy: "pairs",
+  fallbackToWholeTree: false,
+});
+const timed = (focusArea: Facts["focusArea"]): Facts => ({
+  focusArea,
+  progression: false,
+  countBy: "entries",
+  fallbackToWholeTree: false,
+});
+
+const FACTS: Record<string, Facts> = {
+  WU: timed("WARMUP"),
+  MOB: timed("MOBILITY"),
+  BR: timed("MOBILITY"),
+  CD: timed("WARMUP"),
+  BAS: {
+    focusArea: "STABILITY",
+    intensity: "BAS",
+    progression: true,
+    countBy: "entries",
+    fallbackToWholeTree: true,
+  },
+  GKS: {
+    focusArea: "STABILITY",
+    intensity: "GKS",
+    intensityWithoutWeights: "GKSKG",
+    progression: true,
+    countBy: "entries",
+    fallbackToWholeTree: true,
+  },
+  STABILITY: {
+    focusArea: "STABILITY",
+    progression: true,
+    countBy: "exercises",
+    fallbackToWholeTree: false,
+  },
+  PREV: prevention(),
+  PREVSHOULDER: prevention(["SHOULDER"]),
+  PREVKNEE: prevention(["KNEE", "HIP", "KNEE_HIP"]),
+  PREVWRIST: prevention(["WRIST", "ELBOW", "WRIST_ELBOW"]),
+  PREVANKLE: prevention(["ANKLE"]),
+  PREVSPINE: prevention(["SPINE"]),
+  WUSPEZIAL: {
+    focusArea: "WARMUP",
+    countBy: "exercises",
+    fallbackToWholeTree: false,
+  },
 };
 
 const entryOf = (code: string): SkillCatalogEntry => {
   const entry = loadSkillCatalogEntry(code);
   if (!entry) throw new Error(`no catalog entry for ${code}`);
   return entry;
-};
-
-// The old block that generates the skill: a block names its skill or defaults to the training key.
-const oldBlockOf = (id: string, code: string) => {
-  const block = loadFocusTraining(id)?.blocks.find(
-    (candidate) => (candidate.skill ?? id) === code,
-  );
-  if (!block) throw new Error(`no old block for ${code} in ${id}`);
-  return block;
 };
 
 const treeNamesOf = (entry: SkillCatalogEntry): string[] => [
@@ -125,33 +173,17 @@ describe("loadSkillCatalog: parity with the plan workout defaults", () => {
   });
 });
 
-// Temporary until the slice that deletes focusTrainings.json.
-describe("loadSkillCatalog: parity with the old focus training templates", () => {
-  it.each(TEMPLATE_IDS)("matches the template facts for %s", (id) => {
-    const entry = entryOf(id);
-    const old = loadFocusTraining(id);
+describe("loadSkillCatalog: bundled facts", () => {
+  it.each(Object.entries(FACTS))("holds the facts of %s", (code, facts) => {
+    const entry = entryOf(code);
 
-    expect(entry.focusArea).toBe(old?.focusArea);
-    expect(entry.intensity).toBe(old?.intensity);
-    expect(entry.intensityWithoutWeights).toBe(old?.intensityWithoutWeights);
-    expect(entry.progression).toBe(old?.progression);
-    expect(entry.painRegions).toEqual(old?.regions);
-  });
-
-  it.each(TEMPLATE_IDS)("matches the block draw facts for %s", (id) => {
-    const entry = entryOf(id);
-    const block = oldBlockOf(id, id);
-
-    expect(entry.countBy).toBe(COUNT_BY_OF_DRAW[block.draw]);
-    expect(entry.fallbackToWholeTree).toBe(block.fallback);
-  });
-
-  it("matches the draw facts of the special warm up block", () => {
-    const entry = entryOf("WUSPEZIAL");
-    const block = oldBlockOf("PREVKNEE", "WUSPEZIAL");
-
-    expect(entry.countBy).toBe(COUNT_BY_OF_DRAW[block.draw]);
-    expect(entry.fallbackToWholeTree).toBe(block.fallback);
+    expect(entry.focusArea).toBe(facts.focusArea);
+    expect(entry.intensity).toBe(facts.intensity);
+    expect(entry.intensityWithoutWeights).toBe(facts.intensityWithoutWeights);
+    expect(entry.progression).toBe(facts.progression);
+    expect(entry.painRegions).toEqual(facts.painRegions);
+    expect(entry.countBy).toBe(facts.countBy);
+    expect(entry.fallbackToWholeTree).toBe(facts.fallbackToWholeTree);
   });
 });
 

@@ -143,14 +143,6 @@ describe("skillTreeUtils", () => {
       expect(result).toEqual(mockSkillTrees.PREVKG);
     });
 
-    it("should merge PREV and PREVKG when isShortWorkout is true", () => {
-      const result = getSkillTree(mockSkillTrees, "PREVKNEE", [], false, true);
-      expect(result).toEqual({
-        ...mockSkillTrees.PREV,
-        ...mockSkillTrees.PREVKG,
-      });
-    });
-
     it("should return SA when skill is SA and hasWeights is true", () => {
       const result = getSkillTree(mockSkillTrees, "SA", [], true);
       expect(result).toEqual(mockSkillTrees.SA);

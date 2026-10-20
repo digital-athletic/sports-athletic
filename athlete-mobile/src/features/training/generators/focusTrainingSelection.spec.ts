@@ -114,25 +114,30 @@ describe("filterByTags: tag groups", () => {
   });
 });
 
-describe("drawBlock: sides", () => {
+// With countBy "sides", count is the number of exercise executions per set round:
+// a two sided exercise is one execution, a one sided exercise is two (left and right).
+// drawBlock returns a one sided exercise once; the set list adds its left and right.
+describe("drawBlock: count by sides", () => {
   const pool = tree({
-    a: ["SIDE_BOTH", "REGION_UPPER_BODY"],
-    b: ["SIDE_ONE", "REGION_UPPER_BODY"],
-    c: ["SIDE_BOTH", "REGION_FULL_BODY"],
-    d: ["SIDE_ONE", "REGION_FULL_BODY"],
-    e: ["SIDE_BOTH", "REGION_LOWER_BODY"],
+    pushUp: ["SIDE_BOTH", "REGION_UPPER_BODY"],
+    singleArmRow: ["SIDE_ONE", "REGION_UPPER_BODY"],
+    burpee: ["SIDE_BOTH", "REGION_FULL_BODY"],
+    sidePlank: ["SIDE_ONE", "REGION_FULL_BODY"],
+    squat: ["SIDE_BOTH", "REGION_LOWER_BODY"],
   });
 
-  it("fills two sides with a one sided exercise", () => {
+  it("with count 3 takes a two sided exercise and a one sided exercise for left and right", () => {
+    // push up (1 execution) + single arm row left and right (2 executions) = 3
     expect(
       drawnIds({ countBy: "sides", picks: [{ tags: [], count: 3 }] }, pool),
-    ).toEqual(["a", "b"]);
+    ).toEqual(["pushUp", "singleArmRow"]);
   });
 
-  it("skips a one sided exercise that does not fit the last side", () => {
+  it("with count 2 skips the one sided exercise because only one execution is left and it needs two", () => {
+    // push up (1 execution); single arm row would need 2 more, so burpee (1 execution) follows
     expect(
       drawnIds({ countBy: "sides", picks: [{ tags: [], count: 2 }] }, pool),
-    ).toEqual(["a", "c"]);
+    ).toEqual(["pushUp", "burpee"]);
   });
 
   it("draws the picks the block carries in several lists in order", () => {
@@ -144,7 +149,7 @@ describe("drawBlock: sides", () => {
       ],
     } satisfies Partial<DrawBlock>;
 
-    expect(drawnIds(regions, pool)).toEqual(["c", "e"]);
+    expect(drawnIds(regions, pool)).toEqual(["burpee", "squat"]);
   });
 
   it("falls back to the whole pool when the picks run out", () => {
@@ -155,8 +160,10 @@ describe("drawBlock: sides", () => {
         { countBy: "sides", picks: [lower], fallbackToWholeTree: true },
         pool,
       ),
-    ).toEqual(["e", "a"]);
-    expect(drawnIds({ countBy: "sides", picks: [lower] }, pool)).toEqual(["e"]);
+    ).toEqual(["squat", "pushUp"]);
+    expect(drawnIds({ countBy: "sides", picks: [lower] }, pool)).toEqual([
+      "squat",
+    ]);
   });
 });
 

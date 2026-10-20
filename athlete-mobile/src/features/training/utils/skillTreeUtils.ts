@@ -707,13 +707,10 @@ export const getSkillBranchesForProgress = (
   skillTrees: Record<string, SkillTreeType>,
   skill: SkillCode,
 ): SkillTreeType => {
-  const entry = loadSkillCatalogEntry(skill);
+  const skillTree = loadSkillCatalogEntry(skill)?.skillTree;
   const branches: SkillTreeType = {};
-  if (entry) {
-    const names = [
-      ...entry.skillTree.withWeights,
-      ...entry.skillTree.withoutWeights,
-    ];
+  if (skillTree) {
+    const names = [...skillTree.withWeights, ...skillTree.withoutWeights];
     for (const name of names) {
       Object.assign(branches, readLiteralSkillTree(skillTrees, name));
     }

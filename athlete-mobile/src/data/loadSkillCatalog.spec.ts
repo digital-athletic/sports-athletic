@@ -7,7 +7,10 @@ import {
 import { getAllSkillTrees } from "./skillTreeRegistry";
 import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
 import type { CountBy } from "@/schemas/aiwl.schema";
-import type { SkillCatalogEntry } from "@/schemas/skillCatalog.schema";
+import {
+  hasSkillTree,
+  type SkillCatalogEntry,
+} from "@/schemas/skillCatalog.schema";
 
 const TEMPLATE_IDS = [
   "WU",
@@ -96,10 +99,10 @@ const entryOf = (code: string): SkillCatalogEntry => {
   return entry;
 };
 
-const treeNamesOf = (entry: SkillCatalogEntry): string[] => [
-  ...entry.skillTree.withWeights,
-  ...entry.skillTree.withoutWeights,
-];
+const treeNamesOf = (entry: SkillCatalogEntry): string[] => {
+  if (!hasSkillTree(entry)) throw new Error("entry names no skill tree");
+  return [...entry.skillTree.withWeights, ...entry.skillTree.withoutWeights];
+};
 
 describe("loadSkillCatalog: real file", () => {
   it("lists exactly the 14 skill codes", () => {
@@ -206,6 +209,84 @@ describe("loadSkillCatalog: WUSPEZIAL keeps the plan workout behavior", () => {
   it("sets no pain regions", () => {
     expect(entryOf("WUSPEZIAL").painRegions).toBeUndefined();
   });
+});
+
+describe("parseSkillCatalog: entry kinds", () => {
+  const timing = {
+    sets: 2,
+    rest: { withinSuperset: 30, betweenSets: 90, afterExercise: 60 },
+    superset: "muscles",
+    intensity: "SK",
+  };
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("accepts a timing-only entry without a skill tree", () => {
+    expect(parseSkillCatalog({ SK: timing }).SK).toEqual(timing);
+  });
+
+  it("accepts a timing-only entry without sets and rest", () => {
+    expect(parseSkillCatalog({ MAX: { superset: "none" } }).MAX).toEqual({
+      superset: "none",
+    });
+  });
+
+  it("accepts start values on a timing-only entry", () => {
+    const entry = { ...timing, startRepetitions: 3, startDuration: 120 };
+
+    expect(parseSkillCatalog({ CARDIO_3: entry }).CARDIO_3).toEqual(entry);
+  });
+
+  it("accepts start values on an entry with a skill tree", () => {
+    const entry = {
+      skillTree: { withWeights: ["WU"], withoutWeights: ["WU"] },
+      startRepetitions: 8,
+      startDuration: 30,
+    };
+
+    expect(parseSkillCatalog({ WU: entry }).WU).toEqual(entry);
+  });
+
+  it.each([
+    ["focusArea", { focusArea: "SWR" }],
+    ["progression", { progression: true }],
+    ["painRegions", { painRegions: ["KNEE"] }],
+    ["countBy", { countBy: "entries" }],
+    ["fallbackToWholeTree", { fallbackToWholeTree: false }],
+  ])("rejects %s on a timing-only entry", (_field, extra) => {
+    jest.spyOn(console, "error").mockImplementation(() => undefined);
+
+    expect(() => parseSkillCatalog({ SK: { ...timing, ...extra } })).toThrow();
+  });
+
+  it.each([0, 1.5])("rejects a start duration of %s", (startDuration) => {
+    jest.spyOn(console, "error").mockImplementation(() => undefined);
+
+    expect(() =>
+      parseSkillCatalog({ SK: { ...timing, startDuration } }),
+    ).toThrow();
+  });
+
+  it("rejects a start repetition count of 0", () => {
+    jest.spyOn(console, "error").mockImplementation(() => undefined);
+
+    expect(() =>
+      parseSkillCatalog({ SK: { ...timing, startRepetitions: 0 } }),
+    ).toThrow();
+  });
+});
+
+describe("loadSkillCatalog: timing invariant", () => {
+  it.each(Object.keys(loadSkillCatalog()))(
+    "defines sets and rest together or neither for %s",
+    (code) => {
+      const entry = entryOf(code);
+
+      expect(entry.sets === undefined).toBe(entry.rest === undefined);
+    },
+  );
 });
 
 describe("parseSkillCatalog: error paths", () => {

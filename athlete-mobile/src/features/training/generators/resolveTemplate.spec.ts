@@ -398,6 +398,26 @@ describe("resolveTemplate: errors", () => {
     });
   });
 
+  it("throws SKILL_TREE for a picks block on a timing-only skill", () => {
+    mockExtraCatalog.TIMINGONLY = {
+      superset: "none",
+      sets: 2,
+      rest: { withinSuperset: 1, betweenSets: 1, afterExercise: 1 },
+    };
+    addTemplate("SYN_TIMING_ONLY", [
+      picksBlock({
+        skill: "TIMINGONLY",
+        countBy: "entries",
+        fallbackToWholeTree: true,
+      }),
+    ]);
+    expect(thrown(() => planOf("SYN_TIMING_ONLY"))).toEqual({
+      type: "NO_EXERCISES",
+      subtype: "SKILL_TREE",
+      params: ["TIMINGONLY"],
+    });
+  });
+
   it("throws SKILL_TREE when the picks match no branch", () => {
     addTemplate("SYN_NOMATCH", [
       picksBlock({

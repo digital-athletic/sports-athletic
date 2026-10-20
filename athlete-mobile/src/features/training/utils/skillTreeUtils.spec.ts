@@ -1,4 +1,5 @@
 import type { ExerciseType } from "@/schemas/exercise.schema";
+import type { SkillCatalogEntry } from "@/schemas/skillCatalog.schema";
 import type { SkillBranchType } from "@/schemas/skillTree.schema";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
 import {
@@ -12,6 +13,21 @@ import {
   mapSkillCodeToFocusArea,
   readLiteralSkillTree,
 } from "./skillTreeUtils";
+
+const mockExtraCatalog: Record<string, SkillCatalogEntry> = {};
+
+jest.mock("@/data/loadSkillCatalog", () => {
+  const actual = jest.requireActual<typeof import("@/data/loadSkillCatalog")>(
+    "@/data/loadSkillCatalog",
+  );
+  return {
+    ...actual,
+    loadSkillCatalogEntry: (code: string) =>
+      Object.hasOwn(mockExtraCatalog, code)
+        ? mockExtraCatalog[code]
+        : actual.loadSkillCatalogEntry(code),
+  };
+});
 
 describe("skillTreeUtils", () => {
   const mockExercises = [
@@ -724,6 +740,11 @@ describe("skillTreeUtils", () => {
   });
 
   describe("getSkillBranchesForProgress", () => {
+    afterEach(() => {
+      for (const key of Object.keys(mockExtraCatalog))
+        delete mockExtraCatalog[key];
+    });
+
     const branch = (exerciseId: string): SkillBranchType => ({
       tags: [],
       levels: { 1: { exerciseId } },
@@ -752,6 +773,14 @@ describe("skillTreeUtils", () => {
       expect(
         getSkillBranchesForProgress(trees, "STABILITY"),
       ).not.toHaveProperty("gkskg");
+    });
+
+    it("reads the skill trees of a skill whose catalog entry names none", () => {
+      mockExtraCatalog.SWR1 = { superset: "muscles" };
+
+      expect(
+        Object.keys(getSkillBranchesForProgress(trees, "SWR1")).sort(),
+      ).toEqual(["swr1", "swr1kg"]);
     });
   });
 

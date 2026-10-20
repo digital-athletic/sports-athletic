@@ -61,6 +61,11 @@ describe("SkillCatalogEntrySchema: rejects", () => {
       { ...gksEntry, rest: { afterExercise: 60 } },
       "rest.withinSuperset",
     ],
+    [
+      "afterBlock in the catalog rest",
+      { ...gksEntry, rest: { ...(gksEntry.rest as Json), afterBlock: 30 } },
+      "rest.afterBlock",
+    ],
     ["focusArea STRENGTH", { ...gksEntry, focusArea: "STRENGTH" }, "focusArea"],
     ["an empty intensity", { ...gksEntry, intensity: "" }, "intensity"],
     [

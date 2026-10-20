@@ -16,13 +16,15 @@
           ],
           "count": 3
         }
-      ]
+      ],
+      "rest": { "afterBlock": 30 }
     },
     {
       "kind": "picks",
       "skill": "PREV",
       "picks": [{ "tags": ["SKILL_PREVENTION", "PREVENTION_SHOULDER"], "count": 3 }],
-      "superset": "drawOrderWithLeftovers"
+      "superset": "drawOrderWithLeftovers",
+      "rest": { "afterExercise": 30, "betweenSets": 30 }
     }
   ]
 }

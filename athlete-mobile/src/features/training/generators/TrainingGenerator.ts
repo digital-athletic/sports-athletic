@@ -1595,9 +1595,9 @@ export default class TrainingGenerator {
         const nextPair = exercisePairs
           .slice(i + 1)
           .find((pair) => isBuildablePair(pair, exerciseMap));
-        const closingPauseLength =
-          nextPair &&
-          trainsSameRegionAndPrimaryMuscle(exercisePairs[i], nextPair)
+        const closingPauseLength = !nextPair
+          ? (timing?.afterBlock ?? afterSetPauseLength)
+          : trainsSameRegionAndPrimaryMuscle(exercisePairs[i], nextPair)
             ? singleRestLength
             : afterSetPauseLength;
 

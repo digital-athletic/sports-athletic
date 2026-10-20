@@ -8,7 +8,7 @@
       "skill": "BAS",
       "picks": [{ "tags": [], "count": 4 }],
       "superset": "drawOrder",
-      "rest": { "afterExercise": 30 }
+      "rest": { "afterExercise": 30, "betweenSets": 30 }
     }
   ]
 }

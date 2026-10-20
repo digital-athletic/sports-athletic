@@ -321,14 +321,15 @@ The workout runs 30 minutes as planned. The mobility estimate is 10 × 60 s per 
 
 ## Conformance
 
-`src/features/training/generators/shortWorkoutGolden.spec.ts` checks that the AIWL path reproduces the set lists the app generated for the 13 bundled trainings before the switch. The golden files in `__golden__/` hold those set lists:
+Three specs pin the bundled trainings:
 
-- `shortWorkouts.md`: the main matrix, 13 trainings × the places STUDIO, HOME, and HALL × three athletes × seeds 1, 7, and 42. The athletes are an adult beginner, a child born 2016, and an adult with pains `KNEE_RIGHT` and `SHOULDER_LEFT`.
-- `shortWorkoutsPainSweep.md`: the six prevention trainings with each pain region alone, at STUDIO, seed 42.
+- `src/data/loadTemplates.spec.ts` pins the resolved values and pools of the 13 bundled templates.
+- `src/features/training/generators/resolveTemplate.spec.ts` pins how the resolver turns template blocks into pools and values.
+- `src/features/training/generators/shortWorkoutEquipment.spec.ts` pins the foam roller training (BR) at a place without foam roller or foam ball.
 
-Every row matches its recording except one accepted difference, BR at HOME. Before the switch, an athlete without foam roller and foam ball got the error `NO_EXERCISES/EQUIPMENT`. Now the generator draws the BR branches that the athlete's equipment allows, for example branch 565. The golden records those rows as the new behavior.
+The bundled trainings reproduce the set lists of the old `focusTrainings.json` file, with one exception: the foam roller training at a place without foam roller or foam ball. Before the switch, an athlete in that situation got the error `NO_EXERCISES/EQUIPMENT`. Now the generator draws the BR branches that the athlete's equipment allows, for example branch 565.
 
-Plan profiles and duration blocks remain future work. They need their own golden rows once the generator supports them.
+Plan profiles and duration blocks remain future work. They need their own specs once the generator supports them.
 
 ## Related standards
 
@@ -344,7 +345,7 @@ AIWL follows none of them. The set list the generator produces fits fixed steps 
 ## Pros and cons
 
 - Pro: one format for bundled trainings, training days, and trainer workouts. The generator reads the bundled trainings through it today.
-- Pro: the golden spec records the 13 bundled trainings, and the AIWL path reproduces them except BR at HOME.
+- Pro: the AIWL path reproduces the 13 bundled trainings, except BR at a place without foam roller or foam ball.
 - Pro: templates stay short, since the skill catalog supplies the skill values.
 - Con: the generator supports picks blocks only. Duration and branches blocks, and the `order` and `bodyParts` fields, fail with `BLOCK_KIND` until a follow-up implements them.
 - Con: training days still read their stored branches and minutes until a follow-up switches them to AIWL.

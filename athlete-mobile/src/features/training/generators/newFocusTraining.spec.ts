@@ -51,7 +51,7 @@ jest.mock("@/data/loadTemplates", () => {
           kind: "picks",
           skill: "STRETCH",
           picks: [{ tags: [], count: 4 }],
-          countBy: "sides",
+          countBy: "entries",
           fallbackToWholeTree: false,
           sets: 1,
           setDuration: 60,

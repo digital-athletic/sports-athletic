@@ -40,7 +40,7 @@ const PLACES = ["withWeights", "withoutWeights"] as const;
 type Place = (typeof PLACES)[number];
 
 const COUNT_BY_OF_DRAW: Record<string, CountBy> = {
-  slots: "sides",
+  slots: "entries",
   exercises: "exercises",
   pairs: "pairs",
 };

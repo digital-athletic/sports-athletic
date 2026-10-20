@@ -148,8 +148,8 @@ export const drawBlock = (
       drawn.push(...pairs);
       weighted.push(...weightedPairs);
     } else {
-      // a one sided exercise fills two slots, left and right
-      drawn.push(...drawSingles(pickDraw, block.countBy === "sides" ? 2 : 1));
+      // a one sided exercise adds two entries, left and right
+      drawn.push(...drawSingles(pickDraw, block.countBy === "entries" ? 2 : 1));
     }
   }
   return [...drawn, ...weighted];

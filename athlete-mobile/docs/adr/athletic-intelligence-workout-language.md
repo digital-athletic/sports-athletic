@@ -63,7 +63,7 @@ type BodyParts = {
 type BlockBase = {
   skill: SkillCode;
   order?: "asDrawn" | "muscleGroups";
-  countBy?: "exercises" | "sides" | "pairs";
+  countBy?: "exercises" | "entries" | "pairs";
   fallbackToWholeTree?: boolean;
   superset?: "none" | "muscles" | "drawOrder" | "drawOrderWithLeftovers";
   sets?: number;
@@ -105,14 +105,14 @@ The workout has no total time field. Its length is the sum of the block duration
 |---|---|---|---|---|
 | `kind` | yes | | Block type: `picks`, `duration`, or `branches`. | The app checks the block's keys against its type and reports a wrong key by name. |
 | `skill` | yes | | Skill code of the skill catalog. Selects skill tree, intensity, set list builder, and defaults. | A block trains one skill, and the skill code names it. The catalog supplies the values the block omits. |
-| `picks` | in a picks block | | Branches to draw from the skill tree, by tags and count. A list applies at every training place. `{ withWeights, withoutWeights }` gives a training place with weights and one without its own list, with the same keys as the catalog's `skillTree`. | All 13 bundled trainings draw by tags and counts. Full-body stability uses the two-list form: 4 sides with weights, 3 upper body + 2 full body sides without. |
+| `picks` | in a picks block | | Branches to draw from the skill tree, by tags and count. A list applies at every training place. `{ withWeights, withoutWeights }` gives a training place with weights and one without its own list, with the same keys as the catalog's `skillTree`. | All 13 bundled trainings draw by tags and counts. Full-body stability uses the two-list form: 4 entries with weights, 3 upper body + 2 full body entries without. |
 | `duration` | in a duration block; optional in a branches block | | Cardio duration block: the length the cardio builder fills. Any other duration block: the length whose minutes the [minutes table](#minutes-table) chooser reads. Branches block: the planned length, which the preview shows. | Plan creation stores minutes per skill, a trainer sets minutes per skill, and the cardio builder fills a length. |
 | `order` | no | `asDrawn` | Order of the block's exercises. `asDrawn` keeps the order in which the block drew them. `muscleGroups` sorts them: big muscle groups first, rotating body regions, max strength lower body first. The blocks themselves always run in template order. | Training days sort by muscle groups, and focus trainings keep the drawn order. One skill appears in both, so the catalog cannot store one value. |
 | `bodyParts` | no, in a picks or duration block | all | The body parts the block trains, at two levels of detail. See [generation](#generation), step 3. | A trainer restricts a block to parts of the body, so three blocks of one workout can train three different muscles. One field holds both levels, so one filter rule covers them. |
 | `bodyParts.regions` | no | all | Body regions. `upperBody`, `lowerBody`, `core`, and `fullBody` stand for the region tags `REGION_UPPER_BODY`, `REGION_LOWER_BODY`, `REGION_CORE`, and `REGION_FULL_BODY`. | The trainer picks body regions. |
 | `bodyParts.muscles` | no | all | Muscles, for example glutes and hamstrings. | A trainer can build a block for single muscles. No bundled training sets it. |
 | `branches` | in a branches block | | The block trains these branches. With `order: "asDrawn"` they keep the listed order, with `muscleGroups` the block sorts them. | Plan creation stores the branches of a training day. A fixed list replays them. |
-| `countBy` | no | catalog | What one unit of a pick's `count` is. `exercises`: one exercise. `sides`: one side, so a one-sided exercise counts twice (left and right) and a two-sided exercise once. `pairs`: one superset pair. | The catalog default matches every bundled training. A template overrides it to count differently for the same skill. |
+| `countBy` | no | catalog | What one unit of a pick's `count` is. `exercises`: one exercise. `entries`: one exercise entry. A two sided exercise is one entry, a one sided exercise two entries (its left and its right execution). `pairs`: one superset pair. | The catalog default matches every bundled training. A template overrides it to count differently for the same skill. |
 | `fallbackToWholeTree` | no | catalog | `true`: when the picks find too few matching branches, the block draws the rest from its whole skill tree. `false`: the block stays short. | Same as `countBy`. |
 | `sets` | no | catalog | Sets per exercise. | Same as `countBy`. No bundled training overrides it. |
 | `setDuration` | no | intensity | Every set of the block lasts this many seconds. The set has no repetitions, weight, or height. | Warm-up, mobility, foam roller, and cool-down trainings work 60 s per set. Training days take repetitions or durations from the intensity. One skill appears in both, so the catalog cannot store one value. |
@@ -196,7 +196,7 @@ The preview estimates a block's length from the generated set list: all work and
 
 ### Example 1: focus training and prevention training
 
-The bundled full-body stability training draws 4 sides with weights, and 3 upper body + 2 full body sides without weights:
+The bundled full-body stability training draws 4 entries with weights, and 3 upper body + 2 full body entries without weights:
 
 ```json
 {
@@ -303,7 +303,7 @@ Generation for an adult athlete at a training place with weights:
 |---|---|---|
 | Pool | `MOB` skill tree | `GKS` skill tree |
 | Minutes table | `MOB.default["10"]`: upper body 4, lower body 4, full body 2 | `GKS.default["20"]`: full body 4, upper body 2 |
-| Body regions | one pick of 10 sides from upper body branches and branches without region tag | one pick of 6 sides from the same kind of branches |
+| Body regions | one pick of 10 entries from upper body branches and branches without region tag | one pick of 6 entries from the same kind of branches |
 | Set list | 1 set; 60 s per set; 10 s rests | 2 sets; rests 45, 90, 60 s; no supersets |
 
 The workout runs 30 minutes as planned. The mobility estimate is 10 × 60 s per set + 10 × 10 s rest = 700 s, about 12 minutes. As the last block, the mobility block would lose its final rest and take 690 s. The preview shows the estimate next to the planned 10 minutes.

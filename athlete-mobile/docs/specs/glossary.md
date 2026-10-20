@@ -51,6 +51,8 @@ Terms of the training model, with the meanings the coach uses. The glossary defi
 | Level up, level down | Aufstieg, Abstieg | | Move to the next or previous level of the branch, which holds a different exercise. |
 | Branch substitution | Branch-Ersatz | | When a branch is exhausted upwards or downwards, the plan swaps in an equivalent branch from the same skill tree. |
 | Exercise | Übung | | Catalog entry with muscles, region, side and equipment, plus start and target values per fitness level and gender. |
+| One-sided exercise | Einseitige Übung | | Exercise trained one side at a time; the workout lists it twice, left and right. |
+| Two-sided exercise | Beidseitige Übung | | Exercise trained with both sides at once; the workout lists it once. |
 | Exercise catalog | Übungskatalog, Übungsliste | | The list of all exercises, roughly 1200. Exercise-specific values and exceptions live here, not in the specs. |
 | Warm-up | Warm-Up | WU, WUPREV | General warm-up at the start of the session. |
 | Special warm-up | Spezielles Warm-Up | WUSPEZIAL | Added only when the athlete has declared pains: extra exercises that warm up the affected body region and prepare it for the training. |

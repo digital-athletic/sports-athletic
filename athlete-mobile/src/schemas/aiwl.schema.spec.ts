@@ -280,6 +280,11 @@ describe("TemplateSchema: rejects wrong block settings", () => {
       "blocks.0.countBy",
     ],
     [
+      "the old countBy name sides",
+      picksBlock({ countBy: "sides" }),
+      "blocks.0.countBy",
+    ],
+    [
       "rest.superset",
       picksBlock({ rest: { superset: 5 } }),
       "blocks.0.rest.superset",

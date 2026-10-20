@@ -28,7 +28,7 @@ const TEMPLATE_IDS = [
 const CODES = [...TEMPLATE_IDS, "WUSPEZIAL"];
 
 const COUNT_BY_OF_DRAW: Record<string, CountBy> = {
-  slots: "sides",
+  slots: "entries",
   exercises: "exercises",
   pairs: "pairs",
 };

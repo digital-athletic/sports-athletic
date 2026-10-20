@@ -88,6 +88,8 @@ Exercise and skill tree data are bundled JSON, loaded once per launch into modul
 | loadDirections | `src/data/loadDirections.ts` | `assets/.../directions.json` | `loadDirections` |
 | loadRegionConfig | `src/data/loadRegionConfig.ts` | `assets/.../regions.json` | `loadRegionConfig(name)` |
 | loadIntensityConfig | `src/data/loadIntensityConfig.ts` | `assets/.../intensity.json` | `loadIntensityConfig(name)` |
+| loadTemplates | `src/data/loadTemplates.ts` | 13 AIWL files in `assets/data/templates/<ID>.json`, imported by name | `loadTemplates`, `loadTemplate(id)`, `loadTemplateName(id, language)` |
+| loadSkillCatalog | `src/data/loadSkillCatalog.ts` | `assets/data/generator/skills.json` | `loadSkillCatalog`, `loadSkillCatalogEntry(code)` |
 
 A skill branch maps `levels[n] -> { exerciseId }` into the exercise registry. Training plans reference branches by `branchId`.
 

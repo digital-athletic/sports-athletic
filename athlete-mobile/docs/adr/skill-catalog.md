@@ -2,14 +2,9 @@
 
 ## Context
 
-An [AIWL](./athletic-intelligence-workout-language.md) block names a skill, for example `GKS` or `PREVSHOULDER`. The generator needs more about that skill than its code: the skill tree to draw from, the intensity, the focus area for the stats, and the sets, rests, and supersets of its blocks.
+An [AIWL](./athletic-intelligence-workout-language.md) block names a skill, for example `GKS` or `PREVSHOULDER`. The generator needs more about that skill than its code: the skill trees to draw from, the intensity, the focus area for the stats, and the sets, rests, and supersets of its blocks.
 
-Today the app keeps these values in two places:
-
-- `focusTrainings.json` stores skill tree, intensity, focus area, progression, and pain regions on every bundled training.
-- Plan workouts read sets, rests, and supersets from `TrainingGenerator` methods such as `getSetCountBySkill` and `getAfterSetPauseBySkill`.
-
-One skill appears in both places, for example full body stability in a plan day and in the bundled GKS training. Without one source per skill, a template has to repeat the skill's values, and the two places drift apart.
+Each bundled training repeated these values for its skill. Plan workouts read the sets, rests, and supersets from `TrainingGenerator` methods such as `getSetCountBySkill` and `getAfterSetPauseBySkill`. One skill appears in both places, for example full body stability in a plan day and in the bundled GKS training. Without one source per skill, a template has to repeat the skill's values, and the two places drift apart.
 
 ## Decision drivers
 
@@ -20,28 +15,25 @@ One skill appears in both places, for example full body stability in a plan day 
 
 ## Options
 
-1. Every template carries all skill values, as `focusTrainings.json` does today.
+1. Every template carries all skill values.
 2. The generator code decides everything, as plan workouts do today.
 3. A skill catalog: one data entry per skill code holds the skill properties and block defaults, and a block overrides only the defaults.
 
 ## Outcome
 
-Option 3, a skill catalog. A new data file, `assets/data/generator/skills.json`, holds one entry per skill code. A block inherits every value of its skill's entry.
+Option 3, a skill catalog. The data file `assets/data/generator/skills.json` holds one entry per skill code. The loader `src/data/loadSkillCatalog.ts` validates the file with `SkillCatalogSchema`, and the schema rejects unknown keys. A block inherits every value of its skill's entry that it does not override.
 
 ```ts
 type SkillCatalog = { [skillCode: string]: SkillCatalogEntry };
 
 type SkillCatalogEntry = {
   // Skill properties: a template cannot set them.
-  title: LocalizedText;
-  description: LocalizedText;
   skillTree: { withWeights: string[]; withoutWeights: string[] };
   intensity?: string;
   intensityWithoutWeights?: string;
-  focusArea?: string;
+  focusArea?: FocusArea;
   progression?: boolean;
   painRegions?: string[];
-  regionFilter?: boolean;
   // Block defaults: a block overrides them with fields of the same name.
   countBy?: "exercises" | "entries" | "pairs";
   fallbackToWholeTree?: boolean;
@@ -51,19 +43,21 @@ type SkillCatalogEntry = {
 };
 ```
 
+`FocusArea` comes from `src/schemas/sync.schema.ts`. `rest` sets all three values, so a partial rest fails the load.
+
 ### Skill properties
 
 A template cannot set these fields.
 
 | Field | Content |
 |---|---|
-| `title`, `description` | German and English, one sentence each |
-| `skillTree` | The trees the skill draws from at a training place with weights and at one without |
+| `skillTree` | The tree names the skill draws from at a training place with weights (`withWeights`) and without (`withoutWeights`). The names are literal: `STABILITY` without weights reads `GKS`. A name without a tree reads as an empty tree. |
 | `intensity`, `intensityWithoutWeights` | Intensity configuration. An exercise tagged as bodyweight uses `intensityWithoutWeights`. |
 | `focusArea` | The area the stats credit the training time to |
-| `progression` | `false`: exercises keep their values and ask for no feedback |
+| `progression` | `false`: exercises keep their values and ask for no feedback. Unset means on. |
 | `painRegions` | Prevention skills: the pain regions the skill protects |
-| `regionFilter` | Whether the template's `bodyRegions` applies to the skill. Leg axis stability: `false`. |
+
+The pain regions of a `WUSPEZIAL` block come from the prevention skills of its template. The `WUSPEZIAL` entry has no `painRegions`.
 
 ### Block defaults
 
@@ -75,34 +69,71 @@ A block field of the same name overrides these defaults. The [AIWL ADR](./athlet
 | `superset`, `sets` | The values plan workouts use today |
 | `rest` | The rests plan workouts use today |
 
+### Left out of the catalog
+
+- **Title and description.** Skill names stay in the i18n keys `training.skill.<code>` (`src/i18n/locales/en.json` and `de.json`), as before. The [glossary](../specs/glossary.md) lists no title or description either.
+- **Required equipment.** The per exercise equipment filter decides alone. A template does not name the equipment a block needs. A block at a training place without the equipment draws the branches the equipment allows, and fails only when no exercise is left. The bundled BR training at HOME shows this. The [AIWL ADR](./athletic-intelligence-workout-language.md#conformance) records the accepted difference.
+- **`regionFilter`.** Not shipped. Bundled entries leave it unset until the generator supports `bodyParts`.
+
 ### Examples
 
-Entries shortened to the fields that matter here:
+Entries copied from `assets/data/generator/skills.json`:
 
 ```json
 {
   "GKS": {
     "skillTree": { "withWeights": ["GKS"], "withoutWeights": ["GKSKG"] },
-    "intensity": "GKS", "intensityWithoutWeights": "GKSKG",
-    "focusArea": "STABILITY", "progression": true, "regionFilter": true,
-    "countBy": "entries", "fallbackToWholeTree": true, "superset": "none", "sets": 2,
+    "intensity": "GKS",
+    "intensityWithoutWeights": "GKSKG",
+    "focusArea": "STABILITY",
+    "progression": true,
+    "countBy": "entries",
+    "fallbackToWholeTree": true,
+    "superset": "none",
+    "sets": 2,
     "rest": { "withinSuperset": 45, "betweenSets": 90, "afterExercise": 60 }
   },
   "STABILITY": {
-    "skillTree": { "withWeights": ["BAS"], "withoutWeights": ["GKS"] }
+    "skillTree": { "withWeights": ["BAS"], "withoutWeights": ["GKS"] },
+    "focusArea": "STABILITY",
+    "progression": true,
+    "countBy": "exercises",
+    "fallbackToWholeTree": false,
+    "superset": "muscles",
+    "sets": 2,
+    "rest": { "withinSuperset": 30, "betweenSets": 60, "afterExercise": 60 }
   },
   "PREVSHOULDER": {
-    "skillTree": { "withWeights": ["PREV", "PREVKG"], "withoutWeights": ["PREV", "PREVKG"] },
-    "intensity": "PREV", "focusArea": "PREVENTION", "painRegions": ["SHOULDER"],
-    "countBy": "pairs", "superset": "muscles", "sets": 2
+    "skillTree": {
+      "withWeights": ["PREV", "PREVKG"],
+      "withoutWeights": ["PREV", "PREVKG"]
+    },
+    "intensity": "PREV",
+    "focusArea": "PREVENTION",
+    "progression": true,
+    "painRegions": ["SHOULDER"],
+    "countBy": "pairs",
+    "fallbackToWholeTree": false,
+    "superset": "muscles",
+    "sets": 2,
+    "rest": { "withinSuperset": 30, "betweenSets": 60, "afterExercise": 60 }
   },
-  "PREV": {
-    "skillTree": { "withWeights": ["PREV"], "withoutWeights": ["PREV"] }
+  "WUSPEZIAL": {
+    "skillTree": { "withWeights": ["WUSPEZIAL"], "withoutWeights": ["WUSPEZIAL"] },
+    "focusArea": "WARMUP",
+    "countBy": "exercises",
+    "fallbackToWholeTree": false,
+    "superset": "muscles",
+    "sets": 1,
+    "rest": { "withinSuperset": 10, "betweenSets": 10, "afterExercise": 10 }
   }
 }
 ```
 
-`STABILITY` draws leg axis stability with weights and full body stability without. `PREVSHOULDER` pairs by muscles like plan workouts, so the bundled shoulder prevention training overrides `superset`.
+- The bundled GKS template overrides `afterExercise` to 45 s and draws its bodyweight picks by region tags.
+- `STABILITY` draws leg axis stability with weights and full body stability without. Its tree names are literal, so the bodyweight variant reads `GKS`.
+- `PREVSHOULDER` pairs by muscles like plan workouts. The bundled shoulder prevention training overrides `superset` to `drawOrderWithLeftovers` in its template block.
+- `WUSPEZIAL` is the special warm-up of a prevention training. It has no intensity and no `progression`, so it keeps the plan workout behavior: progression on, and focus area `WARMUP`. The generator narrows its tree by the pain regions of the prevention skills in the template.
 
 ### Set list builder
 
@@ -116,12 +147,11 @@ The skill code also selects the builder that turns the chosen exercises into a s
 
 ## Pros and cons
 
-- Pro: a skill value changes in one place for plan days, bundled trainings, and trainer workouts.
+- Pro: a skill value changes in one place for the bundled trainings. Plan days and trainer workouts reach it once plan workouts read the catalog.
 - Pro: templates stay short. The bundled GKS training overrides one rest.
 - Pro: a trainer workout cannot carry a wrong skill tree or intensity.
 - Con: a reader of a template needs the catalog to know the sets, rests, and supersets of a block.
-- Con: the block defaults copy values that `TrainingGenerator` holds today, until plan workouts read the catalog too.
-- Con: `skills.json` does not exist yet. The equivalence test builds the catalog from the bundled templates and the generator code (`test/factories/aiwlAdapter.ts`).
+- Con: the block defaults copy values that `TrainingGenerator` holds today. The parity test `loadSkillCatalog.spec.ts` ("parity with the plan workout defaults") checks each of the 14 skill codes against those methods, and it fails when the two sets of values differ. The test stays until plan workouts read the catalog.
 
 ## More information
 

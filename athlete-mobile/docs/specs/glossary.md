@@ -25,9 +25,20 @@ Terms of the training model, with the meanings the coach uses. The glossary defi
 | Training day | Trainingstag | | A weekday within a section, with duration and place. |
 | Focus | Fokus | PHASE, CARDIO, STABILITY, COMBINED | Orientation of a training day. PHASE trains the section's strength skill (hypertrophy, max strength, explosive power or power endurance). CARDIO trains cardio. STABILITY trains full-body and leg axis stability. COMBINED splits strength and cardio 50/50. |
 | Training place | Trainingsort | HOME, STUDIO, HALL, OUTSIDE | Place with its equipment: home, gym, hall, or outside/training ground. |
-| Short workout | | | Umbrella term for plan-independent workouts: focus trainings and prevention trainings. |
+| Short workout | | | Umbrella term for plan-independent workouts: focus trainings, prevention trainings and imported templates. |
 | Focus training | Fokus-Training | | Plan-independent 10 to 20 minute workout for one focus, for example leg axis stability. |
 | Prevention training | Präventionstraining | | Plan-independent workout against declared pains, for example knee or shoulder. |
+
+## Workout templates
+
+| Term | German | Code | Meaning |
+|---|---|---|---|
+| Athletic Intelligence Template Language | Athletic Intelligence Template Language | AITL | JSON format that describes one workout: a focus training, a prevention training, the workout of one plan training day, or a custom workout a trainer wrote. Describes no training strategy such as sections, weekdays or minute splits, and no athlete rule such as pains, muscle soreness or max strength eligibility. Defined in [Athletic Intelligence Template Language](./session/athletic-intelligence-template-language.md). |
+| Template | Vorlage, Template | | One workout written in AITL. The generator turns it into a set list per athlete. |
+| Block | Block | | One part of a template, for example one focus. Names its skill and sets its branches, sets, rests, supersets and order. |
+| Skill catalog | Skill-Katalog | | Data with one entry per skill: skill tree, intensity, focus area, progression, pain regions and block defaults. A block inherits the entry of its skill. |
+| Pick | Auswahl | | Part of a block: how many branches to draw, and which tags they must carry. |
+| Minutes table | Minutentabelle | | Data that maps a skill and a number of minutes to picks. Plan creation and templates read the same table. |
 
 ## Training session
 

@@ -56,9 +56,10 @@ export function usePendingPlanCheck() {
   useEffect(() => {
     if (!hydrated || !planCheckPending || !userId) return;
     try {
-      const broken =
-        trainingPlan !== null &&
-        isStoredPlanBroken({
+      // Nested ifs instead of &&: the React Compiler skips a try block that
+      // contains a logical expression.
+      if (trainingPlan !== null) {
+        const broken = isStoredPlanBroken({
           plan: trainingPlan,
           birthday,
           userLevel: getUserLevel({ userId, workoutData }),
@@ -67,8 +68,9 @@ export function usePendingPlanCheck() {
           exercises: getAllExercises(),
           branchData,
         });
-      if (broken) {
-        updateTrainingPlan({ redrawAllDays: true });
+        if (broken) {
+          updateTrainingPlan({ redrawAllDays: true });
+        }
       }
     } catch (error) {
       // the athlete keeps the stored plan

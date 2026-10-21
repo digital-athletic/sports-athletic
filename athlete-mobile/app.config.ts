@@ -118,5 +118,6 @@ export default (): ExpoConfig => ({
   },
   experiments: {
     typedRoutes: true,
+    reactCompiler: true,
   },
 });

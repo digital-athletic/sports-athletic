@@ -208,7 +208,7 @@
   },
   "src/features/onboarding/EmailVerificationScreen.tsx": {
     "complexity": {
-      "count": 2
+      "count": 1
     },
     "max-lines-per-function": {
       "count": 1
@@ -363,11 +363,6 @@
     }
   },
   "src/features/training/hooks/useExerciseProgression.ts": {
-    "max-lines-per-function": {
-      "count": 1
-    }
-  },
-  "src/features/training/hooks/useFinishTraining.ts": {
     "max-lines-per-function": {
       "count": 1
     }

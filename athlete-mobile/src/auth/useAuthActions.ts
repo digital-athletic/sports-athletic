@@ -35,7 +35,7 @@ export function useLogout() {
   const resetProfile = useUserProfileStore((state) => state.resetProfile);
   const takeSnapshot = useUserDataBackupStore((state) => state.takeSnapshot);
 
-  const logout = async () => {
+  const logout = () => {
     setIsLoading(true);
     if (userId) {
       takeSnapshot(userId);
@@ -44,15 +44,15 @@ export function useLogout() {
     // Order matters, otherwise user is stuck on the wrong screen
     clearAuth();
     router.replace("/onboarding");
-    try {
-      await supabaseLogout();
-    } catch {
-      Alert.alert(t("onboarding.alertErrorTitle"), t("more.logoutFailed"));
-    } finally {
-      setConsentStatus("loading");
-      resetProfile();
-      setIsLoading(false);
-    }
+    return supabaseLogout()
+      .catch(() => {
+        Alert.alert(t("onboarding.alertErrorTitle"), t("more.logoutFailed"));
+      })
+      .finally(() => {
+        setConsentStatus("loading");
+        resetProfile();
+        setIsLoading(false);
+      });
   };
 
   const confirmLogout = () => {
@@ -99,38 +99,40 @@ export function useDeleteAccount() {
   const { clearTraining } = useTrainingStore();
   const { resetSynchronization } = useSynchronizationStore();
 
-  const deleteAccount = async () => {
+  const deleteAccount = () => {
     setIsLoading(true);
     let deletionSucceeded = false;
-    try {
-      await supabaseDeleteAccount();
-      deletionSucceeded = true;
-      await supabaseLogout();
-    } catch {
-      Alert.alert(t("onboarding.alertErrorTitle"), t("more.deleteFailed"));
-    } finally {
-      // Clear stores and navigate only when the account was actually deleted.
-      // This runs even if supabaseLogout throws, preventing a stale session
-      // from persisting after a successful server-side deletion.
-      if (deletionSucceeded) {
-        clearAuth();
-        resetUserWorkoutData();
-        resetProgress();
-        resetAnamnesisData();
-        resetProfile();
-        clearWorkoutHistory();
-        resetTrainingSchedule();
-        resetPlaces();
-        resetSettings();
-        if (userId) {
-          clearUserItems(userId);
+    return supabaseDeleteAccount()
+      .then(() => {
+        deletionSucceeded = true;
+        return supabaseLogout();
+      })
+      .catch(() => {
+        Alert.alert(t("onboarding.alertErrorTitle"), t("more.deleteFailed"));
+      })
+      .finally(() => {
+        // Clear stores and navigate only when the account was actually deleted.
+        // This runs even if supabaseLogout throws, preventing a stale session
+        // from persisting after a successful server-side deletion.
+        if (deletionSucceeded) {
+          clearAuth();
+          resetUserWorkoutData();
+          resetProgress();
+          resetAnamnesisData();
+          resetProfile();
+          clearWorkoutHistory();
+          resetTrainingSchedule();
+          resetPlaces();
+          resetSettings();
+          if (userId) {
+            clearUserItems(userId);
+          }
+          clearTraining();
+          resetSynchronization();
+          router.replace("/onboarding");
         }
-        clearTraining();
-        resetSynchronization();
-        router.replace("/onboarding");
-      }
-      setIsLoading(false);
-    }
+        setIsLoading(false);
+      });
   };
 
   const confirmDelete = () => {

@@ -23,7 +23,7 @@ import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { RoutePath, Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Image, StyleSheet } from "react-native";
 
@@ -76,33 +76,65 @@ export default function Generating() {
         : plan,
     );
 
+  const failPlanGeneration = (error: unknown) => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    console.error("Error generating plan:", error);
+    Logger.logError(error as Error);
+
+    Alert.alert(
+      t("screens.generating.errorTitle"),
+      t("screens.generating.errorMessage"),
+      [
+        {
+          text: t("common.ok"),
+          onPress: () => {
+            if (originPath === "/more") {
+              router.navigate("/more");
+            } else {
+              router.navigate("/(tabs)/(home)");
+            }
+          },
+        },
+      ],
+    );
+    return false;
+  };
+
   const createTrainingPlan = async (): Promise<boolean> => {
-    try {
-      const shouldUpdateExisting =
-        trainingPlan &&
-        seasonPhase &&
+    // Guards and conditions stay outside the try: the React Compiler skips a
+    // try block that contains a throw or a conditional expression.
+    if (!seasonPhase) {
+      return failPlanGeneration(
+        new Error("seasonPhase is required for plan generation"),
+      );
+    }
+    if (!userId) {
+      return failPlanGeneration(
+        new Error("userId is required for plan generation"),
+      );
+    }
+
+    const shouldUpdateExisting = Boolean(
+      trainingPlan &&
         workoutData.seasonPhase &&
-        workoutData.seasonPhase.type === seasonPhase.type;
+        workoutData.seasonPhase.type === seasonPhase.type,
+    );
 
-      if (trainingPlan && !shouldUpdateExisting) {
-        // TODO: Archive the existing plan on the backend before replacing it
-      }
+    if (trainingPlan && !shouldUpdateExisting) {
+      // TODO: Archive the existing plan on the backend before replacing it
+    }
 
-      const startInput = startInputFor(Boolean(shouldUpdateExisting));
+    try {
+      const startInput = startInputFor(shouldUpdateExisting);
       const startDate = planStartDateFor(startInput);
 
       // Save season phase to workoutData (calculates numOfWeeks with startDate)
-      if (!seasonPhase) {
-        throw new Error("seasonPhase is required for plan generation");
-      }
       saveSeasonPhaseToWorkoutData(seasonPhase, startDate);
 
       // Get fresh workoutData from store (not stale closure data)
       const freshWorkoutData = useUserWorkoutStore.getState().workoutData;
-
-      if (!userId) {
-        throw new Error("userId is required for plan generation");
-      }
 
       // Prepare data for PlanGenerator
       // Build user object matching legacy structure
@@ -139,31 +171,26 @@ export default function Generating() {
 
       return true;
     } catch (error) {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-      console.error("Error generating plan:", error);
-      Logger.logError(error as Error);
-
-      Alert.alert(
-        t("screens.generating.errorTitle"),
-        t("screens.generating.errorMessage"),
-        [
-          {
-            text: t("common.ok"),
-            onPress: () => {
-              if (originPath === "/more") {
-                router.navigate("/more");
-              } else {
-                router.navigate("/(tabs)/(home)");
-              }
-            },
-          },
-        ],
-      );
-      return false;
+      return failPlanGeneration(error);
     }
   };
+
+  const startCreatingTrainingPlan = useEffectEvent(() => {
+    createTrainingPlan().then((succeeded) => {
+      if (succeeded) setGeneratingEnded(true);
+    });
+  });
+
+  const finishGenerating = useEffectEvent(() => {
+    Logger.logEvent("anamnesis_create_training_plan_completed");
+    if (!anamnesisCompleted) {
+      setAnamnesisCompleted(true);
+    }
+    // Dismiss all anamnesis screens from the stack before navigating to home
+    // This prevents them from remaining in memory and causing navigation issues
+    router.dismissAll();
+    router.replace("/(tabs)/(home)");
+  });
 
   useEffect(() => {
     Logger.logEvent("anamnesis_create_training_plan_start");
@@ -180,41 +207,23 @@ export default function Generating() {
       });
     }, TIME_PER_STAGE);
 
-    // Start creating the training plan
-    createTrainingPlan().then((succeeded) => {
-      if (succeeded) setGeneratingEnded(true);
-    });
+    startCreatingTrainingPlan();
 
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
     };
-
-    // we only want this effect to run once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    const goOn = () => {
-      Logger.logEvent("anamnesis_create_training_plan_completed");
-      if (!anamnesisCompleted) {
-        setAnamnesisCompleted(true);
-      }
-      // Dismiss all anamnesis screens from the stack before navigating to home
-      // This prevents them from remaining in memory and causing navigation issues
-      router.dismissAll();
-      router.replace("/(tabs)/(home)");
-    };
-
     // When both stages and generation are complete, navigate away
     if (stagesEnded && generatingEnded) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
-      goOn();
+      finishGenerating();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stagesEnded, generatingEnded]);
 
   const getStageText = () => {

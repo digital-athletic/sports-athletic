@@ -7,7 +7,7 @@ import {
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
 import { SelectionInputField } from "@/form/SelectionInputField";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
-import { useEffect } from "react";
+import { useEffect, useEffectEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { type AnamnesisQuestionProps } from "./AnamnesisQuestionProps";
 
@@ -23,7 +23,7 @@ export function PositionQuestion({
   const currentPositions = tags[TagGroups.POSITION] ?? [];
 
   // Auto-set position for OTHER_SPORT or if nothing is selected for a single-position sport
-  useEffect(() => {
+  const setDefaultPosition = useEffectEvent(() => {
     if (!showSelector) {
       onChangeTag(TagGroups.POSITION, getDefaultPositionForSport(sport));
       return;
@@ -35,11 +35,10 @@ export function PositionQuestion({
     ) {
       onChangeTag(TagGroups.POSITION, getDefaultPositionForSport(sport));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sport]);
+  });
 
   // Clear invalid position when sport changes
-  useEffect(() => {
+  const clearInvalidPosition = useEffectEvent(() => {
     if (!showSelector || !sportPositions) return;
     const validValues = sportPositions.map((p) => p.value);
     const hasInvalidSelection = currentPositions.some(
@@ -48,7 +47,11 @@ export function PositionQuestion({
     if (hasInvalidSelection) {
       onChangeTag(TagGroups.POSITION, []);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  });
+
+  useEffect(() => {
+    setDefaultPosition();
+    clearInvalidPosition();
   }, [sport]);
 
   if (!showSelector) {

@@ -15,7 +15,7 @@ import { Button } from "@/theme/Button";
 import { ScrollBox } from "@/theme/ScrollBox";
 import { formatDateToISO, getDateOneYearFromNow } from "@/utils/date";
 import { RoutePath, Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -33,25 +33,25 @@ export default function SeasonPhase() {
   const { workoutData, trainingPlan } = useUserWorkoutStore();
   const hasPhaseType = Boolean(seasonPhase?.type);
 
+  const readInitialSeasonPhase = useEffectEvent(() => {
+    const lastSectionInPlan = trainingPlan?.sections
+      ? trainingPlan.sections[trainingPlan.sections.length - 1]
+      : undefined;
+
+    return {
+      type: workoutData.seasonPhase?.type ?? null,
+      endDate: deriveSeasonPhaseEndDate(lastSectionInPlan),
+    };
+  });
+
   useEffect(() => {
     const initializeSeasonPhase = async () => {
-      const lastSectionInPlan = trainingPlan?.sections
-        ? trainingPlan.sections[trainingPlan.sections.length - 1]
-        : undefined;
-
-      const endDate = deriveSeasonPhaseEndDate(lastSectionInPlan);
-
-      // Set the phase with type from workoutData and calculated endDate
-      setSeasonPhase({
-        type: workoutData.seasonPhase?.type ?? null,
-        endDate: endDate,
-      });
+      setSeasonPhase(readInitialSeasonPhase());
       setIsLoading(false);
     };
 
     initializeSeasonPhase();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setSeasonPhase]);
 
   const handleGoOn = () => {
     if (!seasonPhase?.type) {

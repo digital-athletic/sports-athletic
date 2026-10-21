@@ -83,38 +83,39 @@ export function useAuthStateListener() {
       const isRegistrationConsentSaveInFlight = () =>
         useRegistrationConsentStore.getState().pendingConsent !== null;
 
-      try {
-        const record = await fetchConsentFromProfile();
-        if (checkEpochRef.current !== epoch) return;
+      await fetchConsentFromProfile()
+        .then((record) => {
+          if (checkEpochRef.current !== epoch) return;
 
-        const privacyMissing =
-          featureFlags.privacyEnabled && record?.privacyAccepted !== true;
-        const analyticsMissing =
-          featureFlags.analyticsConsentEnabled &&
-          record?.analyticsAccepted !== true;
-        if (privacyMissing || analyticsMissing) {
+          const privacyMissing =
+            featureFlags.privacyEnabled && record?.privacyAccepted !== true;
+          const analyticsMissing =
+            featureFlags.analyticsConsentEnabled &&
+            record?.analyticsAccepted !== true;
+          if (privacyMissing || analyticsMissing) {
+            if (shouldPreserveInSessionAccept()) return;
+            if (isRegistrationConsentSaveInFlight()) return;
+            setConsentStatus("missing");
+          } else {
+            // Defense-in-depth: verify the auth user hasn't changed since the fetch started.
+            if (userId !== useAuthStore.getState().auth?.userId) return;
+            setAnonymisedDataUse(record?.analyticsAccepted ?? false);
+            acceptConsent();
+            lastVerifiedUserIdRef.current = userId;
+          }
+        })
+        .catch((error: unknown) => {
+          if (checkEpochRef.current !== epoch) return;
           if (shouldPreserveInSessionAccept()) return;
           if (isRegistrationConsentSaveInFlight()) return;
+          Logger.logError(
+            error instanceof Error
+              ? error
+              : new Error("fetchConsentFromProfile failed"),
+          );
+          // Fail closed: a network error must not bypass the consent gate.
           setConsentStatus("missing");
-        } else {
-          // Defense-in-depth: verify the auth user hasn't changed since the fetch started.
-          if (userId !== useAuthStore.getState().auth?.userId) return;
-          setAnonymisedDataUse(record?.analyticsAccepted ?? false);
-          acceptConsent();
-          lastVerifiedUserIdRef.current = userId;
-        }
-      } catch (error: unknown) {
-        if (checkEpochRef.current !== epoch) return;
-        if (shouldPreserveInSessionAccept()) return;
-        if (isRegistrationConsentSaveInFlight()) return;
-        Logger.logError(
-          error instanceof Error
-            ? error
-            : new Error("fetchConsentFromProfile failed"),
-        );
-        // Fail closed — a network error must not bypass the consent gate.
-        setConsentStatus("missing");
-      }
+        });
     },
     [setConsentStatus, acceptConsent, setAnonymisedDataUse],
   );

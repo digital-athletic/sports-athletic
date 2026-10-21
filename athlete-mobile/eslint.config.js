@@ -19,6 +19,9 @@ module.exports = defineConfig([
   {
     rules: {
       "@typescript-eslint/no-require-imports": "off",
+      // The React Compiler silently skips code these rules flag, leaving it unmemoized.
+      "react-hooks/todo": "error",
+      "react-hooks/unsupported-syntax": "error",
     },
   },
   {

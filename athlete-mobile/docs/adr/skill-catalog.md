@@ -26,24 +26,42 @@ Option 3, a skill catalog. The data file `assets/data/generator/skills.json` hol
 ```ts
 type SkillCatalog = { [skillCode: string]: SkillCatalogEntry };
 
-type SkillCatalogEntry = {
+type SkillCatalogEntry = SkillTreeEntry | TimingEntry;
+
+type TimingFields = {
   // Skill properties: a template cannot set them.
-  skillTree: { withWeights: string[]; withoutWeights: string[] };
   intensity?: string;
   intensityWithoutWeights?: string;
+  startRepetitions?: number;
+  startDuration?: number;
+  // Block defaults: a block overrides them with fields of the same name.
+  superset?: "none" | "muscles" | "drawOrder" | "drawOrderWithLeftovers";
+  sets?: number;
+  rest?: { withinSuperset: number; betweenSets: number; afterExercise: number };
+};
+
+type SkillTreeEntry = TimingFields & {
+  // Skill properties: a template cannot set them.
+  skillTree: { withWeights: string[]; withoutWeights: string[] };
   focusArea?: FocusArea;
   progression?: boolean;
   painRegions?: string[];
   // Block defaults: a block overrides them with fields of the same name.
   countBy?: "exercises" | "entries" | "pairs";
   fallbackToWholeTree?: boolean;
-  superset?: "none" | "muscles" | "drawOrder" | "drawOrderWithLeftovers";
-  sets?: number;
-  rest?: { withinSuperset: number; betweenSets: number; afterExercise: number };
 };
+
+type TimingEntry = TimingFields;
 ```
 
 `FocusArea` comes from `src/schemas/sync.schema.ts`. `rest` sets all three values, so a partial rest fails the load.
+
+A skill catalog entry either names a skill tree or is timing-only:
+
+- **With a skill tree.** The 14 skills of the bundled trainings. A picks block accepts only these skills; a picks block on any other skill fails with `NO_EXERCISES/SKILL_TREE`.
+- **Timing-only.** The 19 training day skills without a bundled training, for example `SWR1`, `SK`, `MAX`, and the cardio zones. Their skill trees stay with `getSkillTree`, which filters them per training place in ways no literal tree list expresses. A timing-only entry sets none of `skillTree`, `focusArea`, `progression`, `painRegions`, `countBy`, and `fallbackToWholeTree`.
+
+An entry defines `sets` and `rest` together or neither. The cardio and max strength entries leave both out, because their set list builders bring their own sets and rests.
 
 ### Skill properties
 
@@ -52,7 +70,8 @@ A template cannot set these fields.
 | Field | Content |
 |---|---|
 | `skillTree` | The tree names the skill draws from at a training place with weights (`withWeights`) and without (`withoutWeights`). The names are literal: `STABILITY` without weights reads `GKS`. A name without a tree reads as an empty tree. |
-| `intensity`, `intensityWithoutWeights` | Intensity configuration. An exercise tagged as bodyweight uses `intensityWithoutWeights`. |
+| `intensity`, `intensityWithoutWeights` | Intensity configuration. An exercise tagged as bodyweight uses `intensityWithoutWeights`. Without either, the skill reads `DEFAULTKG`. Hypertrophy (`SWR*`) and plyometrics keep a code rule that picks the configuration by the exercise. |
+| `startRepetitions`, `startDuration` | Repetitions and seconds an exercise starts with when it advances by repetitions or by duration. Unset means 8 repetitions and 30 s. The cardio zones set 3 repetitions and their zone's duration. |
 | `focusArea` | The area the stats credit the training time to |
 | `progression` | `false`: exercises keep their values and ask for no feedback. Unset means on. |
 | `painRegions` | Prevention skills: the pain regions the skill protects |
@@ -152,7 +171,8 @@ The skill code also selects the builder that turns the chosen exercises into a s
 - Pro: templates stay short. The bundled GKS training overrides one rest.
 - Pro: a trainer workout cannot carry a wrong skill tree or intensity.
 - Con: a reader of a template needs the catalog to know the sets, rests, and supersets of a block.
-- Con: the block defaults copy values that `TrainingGenerator` holds today. The parity test `loadSkillCatalog.spec.ts` ("parity with the plan workout defaults") checks each of the 14 skill codes against those methods, and it fails when the two sets of values differ. The test stays until plan workouts read the catalog.
+- Con: the block defaults copy values that `TrainingGenerator` holds today. The parity test `loadSkillCatalog.spec.ts` ("parity with the plan workout defaults") checks each of the 33 skill codes against those methods, and it fails when the two sets of values differ. A literal table in the same spec pins every entry's timing, intensity, and start values. The parity test stays until plan workouts read the catalog.
+- Con: code that needs a skill tree calls `hasSkillTree` first.
 
 ## More information
 

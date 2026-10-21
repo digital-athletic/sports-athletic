@@ -49,7 +49,7 @@ const TREE_ONLY_KEYS = [
   "fallbackToWholeTree",
 ] as const;
 
-// The never fields let readers ask any entry for them and read undefined.
+// Optional never fields let code read entry.skillTree on any entry and get undefined.
 const TimingCatalogEntrySchema = v.strictObject({
   ...timingEntries,
   skillTree: v.optional(v.never()),

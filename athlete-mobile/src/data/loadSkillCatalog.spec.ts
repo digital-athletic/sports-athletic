@@ -71,7 +71,8 @@ interface Timing {
   startDuration?: number;
 }
 
-// rest reads withinSuperset / betweenSets / afterExercise
+// rest holds [withinSuperset, betweenSets, afterExercise]. No value depends on
+// the fitness level.
 const TIMING: Record<string, Timing> = {
   WU: { sets: 1, rest: [10, 10, 30], superset: "muscles" },
   MOB: { sets: 1, rest: [10, 10, 10], superset: "muscles" },
@@ -176,7 +177,6 @@ const TIMING: Record<string, Timing> = {
 
 interface Facts {
   focusArea: SkillCatalogEntry["focusArea"];
-  intensity?: string;
   intensityWithoutWeights?: string;
   progression?: boolean;
   painRegions?: string[];
@@ -186,7 +186,6 @@ interface Facts {
 
 const prevention = (painRegions?: string[]): Facts => ({
   focusArea: "PREVENTION",
-  intensity: "PREV",
   progression: true,
   painRegions,
   countBy: "pairs",
@@ -206,14 +205,12 @@ const FACTS: Record<string, Facts> = {
   CD: timed("WARMUP"),
   BAS: {
     focusArea: "STABILITY",
-    intensity: "BAS",
     progression: true,
     countBy: "entries",
     fallbackToWholeTree: true,
   },
   GKS: {
     focusArea: "STABILITY",
-    intensity: "GKS",
     intensityWithoutWeights: "GKSKG",
     progression: true,
     countBy: "entries",
@@ -250,7 +247,7 @@ const treeNamesOf = (entry: SkillCatalogEntry): string[] => {
 };
 
 describe("loadSkillCatalog: real file", () => {
-  it("lists exactly the 33 skill codes", () => {
+  it("lists the 33 skill codes", () => {
     expect(Object.keys(loadSkillCatalog()).sort()).toEqual([...CODES].sort());
   });
 
@@ -386,7 +383,6 @@ describe("loadSkillCatalog: bundled facts", () => {
     const entry = entryOf(code);
 
     expect(entry.focusArea).toBe(facts.focusArea);
-    expect(entry.intensity).toBe(facts.intensity);
     expect(entry.intensityWithoutWeights).toBe(facts.intensityWithoutWeights);
     expect(entry.progression).toBe(facts.progression);
     expect(entry.painRegions).toEqual(facts.painRegions);

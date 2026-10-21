@@ -7,7 +7,7 @@ import { type TagsByGroup } from "../models/Tags";
 import { type TrainingType } from "../models/Training";
 import { type UserExerciseDataType } from "../models/UserExerciseData";
 import { shouldShowPainAlert } from "../utils/painUtils";
-import { useCallback, useRef } from "react";
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -17,39 +17,36 @@ import { useTranslation } from "react-i18next";
 function usePainAlert() {
   const { t } = useTranslation();
 
-  return useCallback(
-    (
-      trainingType: TrainingType,
-      exerciseList: Pick<UserExerciseDataType, "weightType">[],
-      tags: TagsByGroup | undefined,
-      onContinue: () => void,
-    ) => {
-      // Read at call time: the store changes between trainings without a rerender of the caller.
-      const { warnings, setWarningSeen } = useUserProfileStore.getState();
-      if (
-        warnings.painAlertSeen ||
-        !shouldShowPainAlert(trainingType, exerciseList, tags)
-      ) {
-        onContinue();
-        return;
-      }
+  return (
+    trainingType: TrainingType,
+    exerciseList: Pick<UserExerciseDataType, "weightType">[],
+    tags: TagsByGroup | undefined,
+    onContinue: () => void,
+  ) => {
+    // Read at call time: the store changes between trainings without a rerender of the caller.
+    const { warnings, setWarningSeen } = useUserProfileStore.getState();
+    if (
+      warnings.painAlertSeen ||
+      !shouldShowPainAlert(trainingType, exerciseList, tags)
+    ) {
+      onContinue();
+      return;
+    }
 
-      Alert.alert(
-        t("training.active.strengthTestAlert.title"),
-        t("training.active.strengthTestAlert.message"),
-        [
-          {
-            text: t("common.ok"),
-            onPress: () => {
-              setWarningSeen("painAlertSeen", true);
-              onContinue();
-            },
+    Alert.alert(
+      t("training.active.strengthTestAlert.title"),
+      t("training.active.strengthTestAlert.message"),
+      [
+        {
+          text: t("common.ok"),
+          onPress: () => {
+            setWarningSeen("painAlertSeen", true);
+            onContinue();
           },
-        ],
-      );
-    },
-    [t],
-  );
+        },
+      ],
+    );
+  };
 }
 
 /**
@@ -65,36 +62,33 @@ export function useTrainingAlerts() {
   // A ref, not state: the flag is a write-only guard that never affects render output.
   const barbellAlertShowableRef = useRef(true);
 
-  const maybeShowBarbellAlert = useCallback(
-    (
-      nextExerciseData: Pick<ExerciseType, "tags"> | undefined,
-      trainingType?: string,
-    ) => {
-      if (
-        !barbellAlertShowableRef.current ||
-        trainingType !== "TEST_WORKOUT" ||
-        !getTagValues(nextExerciseData?.tags ?? [], TagGroups.EQUIPMENT).some(
-          (item) => item.includes("BARBELL"),
-        )
-      ) {
-        return;
-      }
+  const maybeShowBarbellAlert = (
+    nextExerciseData: Pick<ExerciseType, "tags"> | undefined,
+    trainingType?: string,
+  ) => {
+    if (
+      !barbellAlertShowableRef.current ||
+      trainingType !== "TEST_WORKOUT" ||
+      !getTagValues(nextExerciseData?.tags ?? [], TagGroups.EQUIPMENT).some(
+        (item) => item.includes("BARBELL"),
+      )
+    ) {
+      return;
+    }
 
-      Alert.alert(
-        t("training.active.weightCalculationAlert.title"),
-        t("training.active.weightCalculationAlert.message"),
-        [
-          {
-            text: t("common.ok"),
-            onPress: () => {
-              barbellAlertShowableRef.current = false;
-            },
+    Alert.alert(
+      t("training.active.weightCalculationAlert.title"),
+      t("training.active.weightCalculationAlert.message"),
+      [
+        {
+          text: t("common.ok"),
+          onPress: () => {
+            barbellAlertShowableRef.current = false;
           },
-        ],
-      );
-    },
-    [t],
-  );
+        },
+      ],
+    );
+  };
 
   return {
     maybeShowPainAlert,

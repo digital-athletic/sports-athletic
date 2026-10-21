@@ -2,7 +2,7 @@ import { I18nKey } from "@/i18n";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { Text } from "@/theme/Text";
 import { useRouter } from "expo-router";
-import { FC, useCallback } from "react";
+import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, TouchableOpacity } from "react-native";
 
@@ -23,7 +23,7 @@ export const SkipHeader: FC<SkipHeaderProps> = ({
   const { t } = useTranslation();
   const { setIsSkipped } = useAnamnesisStore();
 
-  const showSkipAlert = useCallback(() => {
+  const showSkipAlert = () => {
     Alert.alert(t(alertTitle), t(alertMessage), [
       {
         text: t(confirmText || "common.yes"),
@@ -37,15 +37,7 @@ export const SkipHeader: FC<SkipHeaderProps> = ({
         text: t(cancelText || "common.no"),
       },
     ]);
-  }, [
-    alertMessage,
-    alertTitle,
-    cancelText,
-    confirmText,
-    router,
-    setIsSkipped,
-    t,
-  ]);
+  };
 
   return (
     <TouchableOpacity

@@ -6,7 +6,7 @@ import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { formatDateForDisplay, dateToHHMM } from "@/utils/date";
 import { getTimeString, getWeightString } from "@/utils/formatters";
-import { useCallback, type FC } from "react";
+import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 import { useStatisticsWorkouts } from "../hooks/useStatisticsWorkouts";
@@ -37,52 +37,49 @@ export const Workouts: FC<WorkoutsProps> = ({
   const { summaryData, userSkills, sortedWorkouts, hasWorkouts } =
     useWorkoutsData({ workouts, trainingPlan, scale });
 
-  const renderListItem = useCallback(
-    ({ item }: { item: CompleteWorkoutType }) => {
-      if (
-        !item.duration &&
-        !item.exerciseCount &&
-        !item.xpEarned &&
-        !item.movedWeight
-      ) {
-        return null;
-      }
+  const renderListItem = ({ item }: { item: CompleteWorkoutType }) => {
+    if (
+      !item.duration &&
+      !item.exerciseCount &&
+      !item.xpEarned &&
+      !item.movedWeight
+    ) {
+      return null;
+    }
 
-      const date = new Date(item.timestamp);
-      const formattedDate = `${formatDateForDisplay(date)} - ${dateToHHMM(date)}`;
+    const date = new Date(item.timestamp);
+    const formattedDate = `${formatDateForDisplay(date)} - ${dateToHHMM(date)}`;
 
-      return (
-        <Box
-          flexDirection="row"
-          alignItems="stretch"
-          borderBottomWidth={1}
-          borderColor="darkGrey1"
-          testID={`workout-row-${item.id}`}
-        >
-          <Box width="100%" justifyContent="center" alignItems="center">
-            <Text
-              variant="body"
-              flex={1}
-              alignSelf="stretch"
-              paddingHorizontal="l"
-              paddingTop="s"
-              style={{ color: colors.darkGrey2 }}
-            >
-              {formattedDate}
-            </Text>
-            <TrainingSummary
-              duration={getTimeString(item.duration)}
-              count={String(item.exerciseCount ?? 0)}
-              xp={String(item.xpEarned ?? 0)}
-              weight={getWeightString(item.movedWeight ?? 0)}
-              testID={`workout-row-${item.id}-summary`}
-            />
-          </Box>
+    return (
+      <Box
+        flexDirection="row"
+        alignItems="stretch"
+        borderBottomWidth={1}
+        borderColor="darkGrey1"
+        testID={`workout-row-${item.id}`}
+      >
+        <Box width="100%" justifyContent="center" alignItems="center">
+          <Text
+            variant="body"
+            flex={1}
+            alignSelf="stretch"
+            paddingHorizontal="l"
+            paddingTop="s"
+            style={{ color: colors.darkGrey2 }}
+          >
+            {formattedDate}
+          </Text>
+          <TrainingSummary
+            duration={getTimeString(item.duration)}
+            count={String(item.exerciseCount ?? 0)}
+            xp={String(item.xpEarned ?? 0)}
+            weight={getWeightString(item.movedWeight ?? 0)}
+            testID={`workout-row-${item.id}-summary`}
+          />
         </Box>
-      );
-    },
-    [colors.darkGrey2],
-  );
+      </Box>
+    );
+  };
 
   return (
     <Box flex={1} justifyContent="flex-start" alignItems="center">

@@ -9,7 +9,7 @@ import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { Box } from "@/theme/Box";
 import { ScrollBox } from "@/theme/ScrollBox";
 import { Stack, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -41,34 +41,27 @@ export default function EquipmentScreen() {
   }, [getPlaceEquipment, setPlaceEquipment]);
 
   // Map training days to places
-  const trainingDaysAtPlaces = useMemo(() => {
-    const daysAtPlaces: Record<PlaceType, I18nKey[]> = {
-      HOME: [],
-      OUTSIDE: [],
-      HALL: [],
-      STUDIO: [],
-    };
+  const trainingDaysAtPlaces: Record<PlaceType, I18nKey[]> = {
+    HOME: [],
+    OUTSIDE: [],
+    HALL: [],
+    STUDIO: [],
+  };
 
-    trainingDays.forEach((day) => {
-      if (day.active) {
-        daysAtPlaces[day.place].push(
-          WorkoutConstants.WEEKDAY_TRAINING_KEYS[day.weekday],
-        );
-      }
+  trainingDays.forEach((day) => {
+    if (day.active) {
+      trainingDaysAtPlaces[day.place].push(
+        WorkoutConstants.WEEKDAY_TRAINING_KEYS[day.weekday],
+      );
+    }
+  });
+
+  const handleSelectPlace = (placeId: PlaceType) => {
+    router.push({
+      pathname: "/(tabs)/(more)/equipment-details",
+      params: { placeId },
     });
-
-    return daysAtPlaces;
-  }, [trainingDays]);
-
-  const handleSelectPlace = useCallback(
-    (placeId: PlaceType) => {
-      router.push({
-        pathname: "/(tabs)/(more)/equipment-details",
-        params: { placeId },
-      });
-    },
-    [router],
-  );
+  };
 
   // Save handled in equipmentDetails screen; keep screen simple here
 

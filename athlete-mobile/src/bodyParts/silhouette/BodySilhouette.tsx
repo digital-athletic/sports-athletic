@@ -1,6 +1,6 @@
 import { type Side } from "@/bodyParts/types";
 import { type ThemeColor, useTheme } from "@/theme/theme";
-import { type FC, memo } from "react";
+import { type FC } from "react";
 import { Platform, View } from "react-native";
 import { G, Path, Svg } from "react-native-svg";
 import { BODY_FILL, MUSCLE_FILL, SILHOUETTES } from "./silhouetteData";
@@ -149,12 +149,8 @@ const NonInteractiveRegions: FC<RegionLayerProps> = ({
  * groups, optional interactivity. Sized by explicit numeric or percentage
  * width/height; never wrap in an aspectRatio container — that computes to
  * zero width under react-native-web.
- *
- * Memoized: callers must pass stable prop references for this to pay off.
  */
-export const BodySilhouette = memo(function BodySilhouette(
-  props: BodySilhouetteProps,
-) {
+export function BodySilhouette(props: BodySilhouetteProps) {
   const {
     gender,
     side,
@@ -191,4 +187,4 @@ export const BodySilhouette = memo(function BodySilhouette(
       </Svg>
     </View>
   );
-});
+}

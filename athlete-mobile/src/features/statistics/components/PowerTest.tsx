@@ -10,7 +10,7 @@ import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { formatDateForDisplay } from "@/utils/date";
 import { useRouter } from "expo-router";
-import { type FC, useCallback } from "react";
+import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, FlatList, TouchableOpacity } from "react-native";
 import { usePowerTestData } from "../hooks/usePowerTestData";
@@ -44,7 +44,7 @@ export const PowerTest: FC<PowerTestProps> = ({
     isEntryExpanded,
   } = usePowerTestData({ expandFirstEntry: isSuccessScreen, scale });
 
-  const startTestWorkout = useCallback(() => {
+  const startTestWorkout = () => {
     if (anamnesisCompleted) {
       router.push({
         pathname: "/training/muscle-soreness",
@@ -63,7 +63,7 @@ export const PowerTest: FC<PowerTestProps> = ({
         ],
       );
     }
-  }, [anamnesisCompleted, router, t]);
+  };
 
   const renderChart = () => {
     if (!hasChartData) {
@@ -139,7 +139,7 @@ export const PowerTest: FC<PowerTestProps> = ({
     );
   };
 
-  const navigateToManualInput = useCallback(() => {
+  const navigateToManualInput = () => {
     if (anamnesisCompleted) {
       router.push("/training/manual-strength-test");
     } else {
@@ -155,7 +155,7 @@ export const PowerTest: FC<PowerTestProps> = ({
         ],
       );
     }
-  }, [anamnesisCompleted, router, t]);
+  };
 
   const renderManualInputButton = () => {
     if (isSuccessScreen || !strengthTestAllowed) return null;

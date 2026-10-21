@@ -17,10 +17,82 @@ import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
 import { Image } from "expo-image";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { FC, useCallback, useMemo } from "react";
+import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+// Build exercise list grouped by skill
+function buildTrainingExerciseList(
+  exerciseList: UserExerciseDataType[] | null,
+  exercises: ExerciseType[],
+): SkillGroup[] {
+  if (!exerciseList) return [];
+
+  // Filter valid exercises for display
+  const processedExercises: UserExerciseDataType[] = exerciseList.filter(
+    (userExercise) =>
+      userExercise.exerciseId !== "999999" &&
+      exercises.some((e) => e.id === userExercise.exerciseId),
+  );
+
+  const exList: SkillGroup[] = [];
+  let currentSkill: string | undefined;
+
+  for (let i = 0; i < processedExercises.length; i++) {
+    const exercise = processedExercises[i];
+    const previousExercise = i > 0 ? processedExercises[i - 1] : null;
+
+    // Group by skill
+    if (!currentSkill || exercise.skill !== currentSkill) {
+      currentSkill = exercise.skill;
+      exList.push({
+        skill: currentSkill,
+        sets: [],
+      });
+    }
+
+    const previousExerciseData = previousExercise
+      ? exercises.find((e) => e.id === previousExercise.exerciseId)
+      : null;
+
+    const previousOtherSideExerciseId =
+      previousExerciseData?.otherSideExerciseId;
+
+    // Check if new set
+    if (
+      i === 0 ||
+      (exercise.set?.[0] === 1 &&
+        previousExercise?.set?.[0] === previousExercise?.set?.[1] &&
+        !(
+          previousOtherSideExerciseId &&
+          previousOtherSideExerciseId === exercise.exerciseId
+        ))
+    ) {
+      exList[exList.length - 1].sets.push({
+        length: exercise.set?.[1] || 1,
+        exercises: [],
+      });
+    }
+
+    const skillGroupIndex = exList.length - 1;
+    const setIndex = exList[skillGroupIndex].sets.length - 1;
+
+    if (setIndex !== -1) {
+      const setExercises = exList[skillGroupIndex].sets[setIndex].exercises;
+      const existingIndex = setExercises.findIndex(
+        (e) => e.exerciseId === exercise.exerciseId,
+      );
+
+      if (existingIndex === -1) {
+        setExercises.push(exercise);
+      } else {
+        setExercises[existingIndex] = exercise;
+      }
+    }
+  }
+  return exList;
+}
 
 /**
  * Training Overview Screen
@@ -48,114 +120,45 @@ export default function TrainingOverviewScreen() {
       ? (trainingDays[weekdayNumber]?.place ?? "HOME")
       : "HOME");
 
-  const handleBack = useCallback(() => {
+  const handleBack = () => {
     router.back();
     return true;
-  }, [router]);
+  };
 
   // Collect equipment using utility function
-  const trainingEquipment = useMemo(
-    () =>
-      exerciseList ? getEquipmentList(exerciseList, exercises, place) : [],
-    [exerciseList, exercises, place],
+  const trainingEquipment = exerciseList
+    ? getEquipmentList(exerciseList, exercises, place)
+    : [];
+
+  const trainingExerciseList = buildTrainingExerciseList(
+    exerciseList,
+    exercises,
   );
 
-  // Build exercise list grouped by skill
-  const trainingExerciseList = useMemo<SkillGroup[]>(() => {
-    if (!exerciseList) return [];
-
-    // Filter valid exercises for display
-    const processedExercises: UserExerciseDataType[] = exerciseList.filter(
-      (userExercise) =>
-        userExercise.exerciseId !== "999999" &&
-        exercises.some((e) => e.id === userExercise.exerciseId),
-    );
-
-    const exList: SkillGroup[] = [];
-    let currentSkill: string | undefined;
-
-    for (let i = 0; i < processedExercises.length; i++) {
-      const exercise = processedExercises[i];
-      const previousExercise = i > 0 ? processedExercises[i - 1] : null;
-
-      // Group by skill
-      if (!currentSkill || exercise.skill !== currentSkill) {
-        currentSkill = exercise.skill;
-        exList.push({
-          skill: currentSkill,
-          sets: [],
-        });
-      }
-
-      const previousExerciseData = previousExercise
-        ? exercises.find((e) => e.id === previousExercise.exerciseId)
-        : null;
-
-      const previousOtherSideExerciseId =
-        previousExerciseData?.otherSideExerciseId;
-
-      // Check if new set
-      if (
-        i === 0 ||
-        (exercise.set?.[0] === 1 &&
-          previousExercise?.set?.[0] === previousExercise?.set?.[1] &&
-          !(
-            previousOtherSideExerciseId &&
-            previousOtherSideExerciseId === exercise.exerciseId
-          ))
-      ) {
-        exList[exList.length - 1].sets.push({
-          length: exercise.set?.[1] || 1,
-          exercises: [],
-        });
-      }
-
-      const skillGroupIndex = exList.length - 1;
-      const setIndex = exList[skillGroupIndex].sets.length - 1;
-
-      if (setIndex !== -1) {
-        const setExercises = exList[skillGroupIndex].sets[setIndex].exercises;
-        const existingIndex = setExercises.findIndex(
-          (e) => e.exerciseId === exercise.exerciseId,
-        );
-
-        if (existingIndex === -1) {
-          setExercises.push(exercise);
-        } else {
-          setExercises[existingIndex] = exercise;
-        }
-      }
-    }
-    return exList;
-  }, [exerciseList, exercises]);
-
-  const handleStartTraining = useCallback(() => {
+  const handleStartTraining = () => {
     setTrainingStartTime(Date.now());
     setTrainingViewMode("SEQUENTIAL");
     router.push({
       pathname: "/training/training-active",
       params: params,
     });
-  }, [router, params, setTrainingStartTime, setTrainingViewMode]);
+  };
 
-  const handleStartTrainingAsChecklist = useCallback(() => {
+  const handleStartTrainingAsChecklist = () => {
     setTrainingStartTime(Date.now());
     setTrainingViewMode("LIST");
     router.push({
       pathname: "/training/training-list",
       params: params,
     });
-  }, [router, params, setTrainingStartTime, setTrainingViewMode]);
+  };
 
-  const handleShowExerciseInfo = useCallback(
-    (exerciseId: string) => {
-      router.push({
-        pathname: "/training/exercise-information",
-        params: { exerciseId },
-      });
-    },
-    [router],
-  );
+  const handleShowExerciseInfo = (exerciseId: string) => {
+    router.push({
+      pathname: "/training/exercise-information",
+      params: { exerciseId },
+    });
+  };
 
   // Show loading state when data isn't ready
   if (!exerciseList) {
@@ -439,11 +442,10 @@ const ExerciseItem: FC<ExerciseItemProps> = ({
 }) => {
   const exerciseData = exercises.find((e) => e.id === exercise.exerciseId);
 
-  const imageUrl = useMemo(() => {
-    const pictureFilename = exerciseData?.picture?.split("/").pop() ?? "";
-    if (!pictureFilename) return null;
-    return getExercisePictureUrl(pictureFilename);
-  }, [exerciseData?.picture]);
+  const pictureFilename = exerciseData?.picture?.split("/").pop() ?? "";
+  const imageUrl = pictureFilename
+    ? getExercisePictureUrl(pictureFilename)
+    : null;
 
   if (!exerciseData) return null;
 

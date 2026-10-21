@@ -2,7 +2,6 @@ import {
   useCompletedWorkoutsStore,
   type CompleteWorkoutType,
 } from "@/store/completedWorkoutsStore";
-import { useMemo } from "react";
 
 /**
  * Hook to get completed workouts for statistics display.
@@ -11,7 +10,5 @@ import { useMemo } from "react";
 export const useStatisticsWorkouts = (): CompleteWorkoutType[] => {
   const { workouts } = useCompletedWorkoutsStore();
 
-  return useMemo(() => {
-    return Object.values(workouts).sort((a, b) => b.timestamp - a.timestamp);
-  }, [workouts]);
+  return Object.values(workouts).sort((a, b) => b.timestamp - a.timestamp);
 };

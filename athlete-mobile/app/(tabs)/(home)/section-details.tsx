@@ -11,7 +11,7 @@ import { SectionPrefix } from "@/features/training/models/SectionPrefix";
 import { VideoPlayer } from "@/video/VideoPlayer";
 import { useResponsiveProp } from "@shopify/restyle";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { type FC, useMemo, useState } from "react";
+import { type FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { loadSections } from "@/data/loadSections";
 
@@ -45,10 +45,7 @@ const SectionDetailsScreen: FC = () => {
 
   const titleFontSize = useResponsiveProp({ phone: 20, tablet: 24 });
 
-  const trainingSections: TrainingSectionType[] = useMemo(
-    () => trainingPlan?.sections ?? [],
-    [trainingPlan],
-  );
+  const trainingSections: TrainingSectionType[] = trainingPlan?.sections ?? [];
 
   // Calculate current phase - preserved for future use (e.g., test user skip phase buttons)
   // const currentPhase = useMemo(() => {
@@ -120,9 +117,8 @@ const SectionDetailsScreen: FC = () => {
       SECTIONS_DATA[prefix].target.default;
 
     const messageElements: React.ReactNode[] = [];
-    let i = 0;
 
-    for (; i < targetData.normal.length; i++) {
+    for (let i = 0; i < targetData.normal.length; i++) {
       messageElements.push(
         <Text key={`normal_${i}`} variant="body">
           {targetData.normal[i]}
@@ -135,10 +131,11 @@ const SectionDetailsScreen: FC = () => {
       );
     }
 
-    if (targetData.highlight[i]) {
+    const lastIndex = targetData.normal.length;
+    if (targetData.highlight[lastIndex]) {
       messageElements.push(
-        <Text key={`highlight_${i}`} variant="body" fontWeight="bold">
-          {targetData.highlight[i]}
+        <Text key={`highlight_${lastIndex}`} variant="body" fontWeight="bold">
+          {targetData.highlight[lastIndex]}
         </Text>,
       );
     }

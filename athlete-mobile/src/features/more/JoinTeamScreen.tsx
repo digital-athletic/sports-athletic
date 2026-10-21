@@ -83,17 +83,19 @@ export default function JoinTeamScreen() {
         {
           text: t("more.joinTeam.leaveConfirmButton"),
           style: "destructive",
-          onPress: async () => {
+          onPress: () => {
             setLeavingTeamId(teamId);
             setLeaveErrorKey(null);
-            try {
-              await leaveTeam(teamId);
-              setTeams((prev) => prev.filter((team) => team.id !== teamId));
-            } catch (err) {
-              setLeaveErrorKey(errorKeyFrom(err));
-            } finally {
-              setLeavingTeamId(null);
-            }
+            return leaveTeam(teamId)
+              .then(() => {
+                setTeams((prev) => prev.filter((team) => team.id !== teamId));
+              })
+              .catch((err: unknown) => {
+                setLeaveErrorKey(errorKeyFrom(err));
+              })
+              .finally(() => {
+                setLeavingTeamId(null);
+              });
           },
         },
       ],

@@ -64,11 +64,14 @@ export default function AnamnesisQuestions() {
     }
   }, [groupIndex, router]);
 
-  const finishAnamnesis = useCallback(async () => {
+  const finishAnamnesis = async () => {
     setLoading(true);
+    // Computed before the try: the React Compiler skips a try block that
+    // contains a logical expression.
+    const hasPains = tags[TagGroups.PAIN] && tags[TagGroups.PAIN].length !== 0;
     try {
       // Track prevention tag
-      if (tags[TagGroups.PAIN] && tags[TagGroups.PAIN].length !== 0) {
+      if (hasPains) {
         console.log("Anamnesis pains added:", tags[TagGroups.PAIN]);
       }
 
@@ -87,43 +90,27 @@ export default function AnamnesisQuestions() {
       console.error("finish anamnesis error", e);
     }
     setLoading(false);
-  }, [
-    tags,
-    setAnamnesisCompleted,
-    setCompleted,
-    saveData,
-    saveAnamnesisData,
-    showSeasonPhaseAfterAnamnesis,
-    setSeasonPhase,
-    workoutData.seasonPhase,
-    router,
-  ]);
+  };
 
-  const goOn = useCallback(async () => {
+  const goOn = async () => {
     if (groupIndex + 1 < 3) {
       setGroupIndex(groupIndex + 1);
     } else {
       await finishAnamnesis();
     }
-  }, [groupIndex, finishAnamnesis]);
+  };
 
-  const onChangeValue = useCallback(
-    (field: string, value: unknown) => {
-      setValue(field, value as string | number | boolean);
-    },
-    [setValue],
-  );
+  const onChangeValue = (field: string, value: unknown) => {
+    setValue(field, value as string | number | boolean);
+  };
 
-  const onChangeTag = useCallback(
-    (tag: string, values: string[]) => {
-      // Reset training days if level changed
-      if (tag === TagGroups.LEVEL) {
-        resetTrainingSchedule();
-      }
-      setTag(tag, values);
-    },
-    [setTag, resetTrainingSchedule],
-  );
+  const onChangeTag = (tag: string, values: string[]) => {
+    // Reset training days if level changed
+    if (tag === TagGroups.LEVEL) {
+      resetTrainingSchedule();
+    }
+    setTag(tag, values);
+  };
 
   useHardwareBackHandler(onBack);
 

@@ -1,7 +1,7 @@
 import { Box } from "@/theme/Box";
 import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
-import { type FC, useMemo } from "react";
+import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { useActiveSectionIndex } from "./hooks";
 import { type TrainingSectionType } from "./models/TrainingSection";
@@ -26,11 +26,10 @@ export const TrainingPlanStatusWidget: FC<TrainingPlanStatusWidgetProps> = ({
   const { t } = useTranslation();
   const calculatedActiveSection = useActiveSectionIndex(trainingSections);
 
-  const scrollOffset = useMemo(() => {
-    const sectionToHighlight =
-      activeSection !== undefined ? activeSection : calculatedActiveSection;
-    return sectionToHighlight > 0 ? sectionToHighlight * SECTION_TILE_WIDTH : 0;
-  }, [activeSection, calculatedActiveSection]);
+  const sectionToHighlight =
+    activeSection !== undefined ? activeSection : calculatedActiveSection;
+  const scrollOffset =
+    sectionToHighlight > 0 ? sectionToHighlight * SECTION_TILE_WIDTH : 0;
 
   if (trainingSections.length === 0) {
     return (
@@ -47,26 +46,23 @@ export const TrainingPlanStatusWidget: FC<TrainingPlanStatusWidgetProps> = ({
     );
   }
 
-  const sections: React.ReactElement[] = [];
-  let weekCount = 1;
-
-  for (let i = 0; i < trainingSections.length; i++) {
-    const isActive =
-      (activeSection !== undefined
-        ? activeSection
-        : calculatedActiveSection) === i;
-    sections.push(
-      <TrainingSectionTile
-        key={`section_${i}`}
-        section={trainingSections[i]}
-        sectionIndex={i}
-        weekCount={weekCount}
-        isActive={isActive}
-        onPress={() => goToSectionDetails(i)}
-      />,
-    );
-    weekCount += trainingSections[i].numOfWeeks;
+  const sectionStartWeeks: number[] = [];
+  let nextStartWeek = 1;
+  for (const section of trainingSections) {
+    sectionStartWeeks.push(nextStartWeek);
+    nextStartWeek += section.numOfWeeks;
   }
+
+  const sections = trainingSections.map((section, i) => (
+    <TrainingSectionTile
+      key={`section_${i}`}
+      section={section}
+      sectionIndex={i}
+      weekCount={sectionStartWeeks[i]}
+      isActive={sectionToHighlight === i}
+      onPress={() => goToSectionDetails(i)}
+    />
+  ));
 
   return (
     <ScrollBox

@@ -51,7 +51,7 @@ export function ConsentScreen() {
     }
   };
 
-  const handleAccept = async () => {
+  const handleAccept = () => {
     if (submitting) return;
     if (!privacyAccepted) {
       setShowPrivacyError(true);
@@ -63,18 +63,20 @@ export function ConsentScreen() {
     }
     setShowSaveError(false);
     setSubmitting(true);
-    try {
-      await saveConsentToProfile({
-        privacyAccepted: true,
-        analyticsAccepted,
+    return saveConsentToProfile({
+      privacyAccepted: true,
+      analyticsAccepted,
+    })
+      .then(() => {
+        setAnonymisedDataUse(analyticsAccepted);
+        acceptConsent();
+      })
+      .catch(() => {
+        setShowSaveError(true);
+      })
+      .finally(() => {
+        setSubmitting(false);
       });
-      setAnonymisedDataUse(analyticsAccepted);
-      acceptConsent();
-    } catch {
-      setShowSaveError(true);
-    } finally {
-      setSubmitting(false);
-    }
   };
 
   const privacyLabel = featureFlags.termsEnabled

@@ -14,7 +14,7 @@ import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -76,7 +76,7 @@ export function EmailVerificationScreen() {
   useAnnounce(verificationError);
   useAnnounce(resent ? t("onboarding.emailResent") : null);
 
-  const startCooldown = useCallback(() => {
+  const startCooldown = () => {
     setCooldown(RESEND_COOLDOWN_SECONDS);
     cooldownRef.current = setInterval(() => {
       setCooldown((prev) => {
@@ -88,34 +88,36 @@ export function EmailVerificationScreen() {
         return prev - 1;
       });
     }, 1000);
-  }, []);
+  };
 
-  const handleResend = async () => {
+  const handleResend = () => {
     if (resending || cooldown > 0) return;
     setResending(true);
     setResent(false);
 
-    try {
-      if (mode === "REGISTER") {
-        await requestRegistrationOtp(email ?? "", analyticsConsent);
-      } else {
-        await requestLoginOtp(email ?? "");
-      }
-      setResent(true);
-      startCooldown();
-    } catch (error: unknown) {
-      const code = getErrorCode(error);
-      const message =
-        code === "auth/too-many-requests"
-          ? t("onboarding.errorMessageTooManyRequests")
-          : t("onboarding.alertAnErrorOccuredTitle");
-      Alert.alert(t("onboarding.alertErrorTitle"), message);
-    } finally {
-      setResending(false);
-    }
+    const request =
+      mode === "REGISTER"
+        ? requestRegistrationOtp(email ?? "", analyticsConsent)
+        : requestLoginOtp(email ?? "");
+    return request
+      .then(() => {
+        setResent(true);
+        startCooldown();
+      })
+      .catch((error: unknown) => {
+        const code = getErrorCode(error);
+        const message =
+          code === "auth/too-many-requests"
+            ? t("onboarding.errorMessageTooManyRequests")
+            : t("onboarding.alertAnErrorOccuredTitle");
+        Alert.alert(t("onboarding.alertErrorTitle"), message);
+      })
+      .finally(() => {
+        setResending(false);
+      });
   };
 
-  const handleVerifyOtp = async () => {
+  const handleVerifyOtp = () => {
     if (verifying || otpCode.length !== OTP_LENGTH) return;
     setVerifying(true);
     setVerificationError(null);
@@ -134,7 +136,7 @@ export function EmailVerificationScreen() {
       return;
     }
 
-    try {
+    const verify = async () => {
       const { data, error } = await supabase.auth.verifyOtp({
         email: email ?? "",
         token: otpCode,
@@ -148,35 +150,37 @@ export function EmailVerificationScreen() {
       }
 
       if (data.session) {
-        try {
-          await initializeFromSupabase();
-        } catch {
-          // Session is valid but local store init failed — auth listener will recover.
-        }
+        await initializeFromSupabase().catch(() => {
+          // Session is valid but local store init failed. The auth listener will recover.
+        });
         if (mode === "REGISTER") {
-          try {
-            await saveConsentToProfile({
-              privacyAccepted: termsConsent,
-              analyticsAccepted: analyticsConsent,
+          await saveConsentToProfile({
+            privacyAccepted: termsConsent,
+            analyticsAccepted: analyticsConsent,
+          })
+            .then(() => {
+              setAnonymisedDataUse(analyticsConsent);
+              acceptConsent();
+            })
+            .catch(() => {
+              // Fail closed: without a server consent record we must not grant access.
+              // The consent gate (Stack.Protected) will intercept the navigation below
+              // and route the user to ConsentScreen where they can retry.
+              setConsentStatus("missing");
+            })
+            .finally(() => {
+              clearPendingConsent();
             });
-            setAnonymisedDataUse(analyticsConsent);
-            acceptConsent();
-          } catch {
-            // Fail closed: without a server consent record we must not grant access.
-            // The consent gate (Stack.Protected) will intercept the navigation below
-            // and route the user to ConsentScreen where they can retry.
-            setConsentStatus("missing");
-          } finally {
-            clearPendingConsent();
-          }
           router.replace("/anamnesis");
         }
       } else {
         setVerificationError(t("onboarding.alertAnErrorOccuredTitle"));
       }
-    } finally {
+    };
+
+    return verify().finally(() => {
       setVerifying(false);
-    }
+    });
   };
 
   return (

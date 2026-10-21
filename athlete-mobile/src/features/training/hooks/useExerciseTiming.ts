@@ -1,5 +1,5 @@
 import { useTrainingStore } from "@/features/training/trainingStore";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * Owns the exercise-start and pause-start timestamps behind the pause/skill
@@ -8,14 +8,9 @@ import { useCallback, useEffect, useRef } from "react";
  */
 export function useExerciseTiming() {
   const activeTraining = useTrainingStore((state) => state.activeTraining);
-  const exerciseStartTimeRef = useRef<number | null>(null);
-  const pauseStartRef = useRef<number | null>(null);
-  if (exerciseStartTimeRef.current === null) {
-    exerciseStartTimeRef.current = Date.now();
-  }
-  if (pauseStartRef.current === null) {
-    pauseStartRef.current = Date.now();
-  }
+  const [mountTime] = useState(() => Date.now());
+  const exerciseStartTimeRef = useRef(mountTime);
+  const pauseStartRef = useRef(mountTime);
 
   const markPauseStart = useCallback(() => {
     pauseStartRef.current = Date.now();
@@ -25,8 +20,8 @@ export function useExerciseTiming() {
     (wasPaused: boolean) => {
       if (wasPaused) {
         // Resume: add pause duration to tracking
-        const pauseDuration = Date.now() - pauseStartRef.current!;
-        exerciseStartTimeRef.current! += pauseDuration;
+        const pauseDuration = Date.now() - pauseStartRef.current;
+        exerciseStartTimeRef.current += pauseDuration;
       } else {
         markPauseStart();
       }
@@ -34,15 +29,9 @@ export function useExerciseTiming() {
     [markPauseStart],
   );
 
-  const getPauseElapsed = useCallback(
-    () => Date.now() - pauseStartRef.current!,
-    [],
-  );
+  const getPauseElapsed = () => Date.now() - pauseStartRef.current;
 
-  const getExerciseElapsed = useCallback(
-    () => Date.now() - exerciseStartTimeRef.current!,
-    [],
-  );
+  const getExerciseElapsed = () => Date.now() - exerciseStartTimeRef.current;
 
   const resetExerciseStart = useCallback(() => {
     exerciseStartTimeRef.current = Date.now();

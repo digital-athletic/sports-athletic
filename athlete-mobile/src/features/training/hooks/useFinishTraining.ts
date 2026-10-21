@@ -5,7 +5,7 @@ import { Logger } from "@/services/Logger";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { useRouter } from "expo-router";
-import { useCallback, useRef } from "react";
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
 
@@ -24,65 +24,55 @@ export function useFinishTraining() {
 
   // strengthTestMaxValues is passed directly for strength tests to avoid React state batching issues.
   // For non-test workouts (PREV, FOCUS, PLAN), strengthTestMaxValues is undefined and the
-  // TEST_WORKOUT check below ensures no max values are saved.
-  const finishTraining = useCallback(
-    (
-      aborted: boolean = false,
-      strengthTestMaxValues?: MaxValuesType | null,
-    ) => {
-      // Guards against double-invocation (e.g. a fast double-tap on the
-      // finish button), which would otherwise duplicate XP/workout entries
-      // and, for TEST_WORKOUT, saved max values/test results.
-      if (hasFinishedRef.current) return;
-      hasFinishedRef.current = true;
+  // TEST_WORKOUT check in testMaxValues ensures no max values are saved.
+  const finishTraining = (
+    aborted: boolean = false,
+    strengthTestMaxValues?: MaxValuesType | null,
+  ) => {
+    // Guards against double-invocation (e.g. a fast double-tap on the
+    // finish button), which would otherwise duplicate XP/workout entries
+    // and, for TEST_WORKOUT, saved max values/test results.
+    if (hasFinishedRef.current) return;
+    hasFinishedRef.current = true;
 
-      try {
-        // Record end time
-        setTrainingEndTime(Date.now());
+    // Computed before the try: the React Compiler skips a try block that
+    // contains a conditional expression.
+    const testMaxValues =
+      activeTraining?.type === "TEST_WORKOUT" && !aborted
+        ? strengthTestMaxValues
+        : null;
 
-        // Log completion/abortion
-        if (aborted) {
-          logTrainingEvent(activeTraining, "training_aborted");
-        } else {
-          logTrainingEvent(activeTraining, "training_finished");
-        }
+    try {
+      // Record end time
+      setTrainingEndTime(Date.now());
 
-        // Save test results if this is a test workout and not aborted
-        if (
-          activeTraining?.type === "TEST_WORKOUT" &&
-          !aborted &&
-          strengthTestMaxValues
-        ) {
-          Logger.logEvent("saving_max_values", {
-            maxValues: strengthTestMaxValues,
-          });
-          saveMaxValues(strengthTestMaxValues);
-          addTestResult(strengthTestMaxValues);
-        }
-
-        // Clear temporary test results (committed or discarded)
-        setTempMaxValues(null);
-
-        // Navigate to success screen
-        router.push({
-          pathname: "/training/training-success",
-          params: { aborted: aborted.toString() },
-        });
-      } catch (error) {
-        Logger.logError(error as Error);
-        Alert.alert(t("common.error"), t("common.error"));
+      // Log completion/abortion
+      if (aborted) {
+        logTrainingEvent(activeTraining, "training_aborted");
+      } else {
+        logTrainingEvent(activeTraining, "training_finished");
       }
-    },
-    [
-      activeTraining,
-      addTestResult,
-      saveMaxValues,
-      router,
-      setTempMaxValues,
-      setTrainingEndTime,
-      t,
-    ],
-  );
+
+      // Save test results if this is a test workout and not aborted
+      if (testMaxValues) {
+        Logger.logEvent("saving_max_values", { maxValues: testMaxValues });
+        saveMaxValues(testMaxValues);
+        addTestResult(testMaxValues);
+      }
+
+      // Clear temporary test results (committed or discarded)
+      setTempMaxValues(null);
+
+      // Navigate to success screen
+      router.push({
+        pathname: "/training/training-success",
+        params: { aborted: aborted.toString() },
+      });
+    } catch (error) {
+      Logger.logError(error as Error);
+      Alert.alert(t("common.error"), t("common.error"));
+    }
+  };
 
   return { finishTraining };
 }

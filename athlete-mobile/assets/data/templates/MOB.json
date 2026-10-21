@@ -1,0 +1,14 @@
+{
+  "aiwl": 1,
+  "id": "MOB",
+  "name": { "en": "Mobility", "de": "Mobilität" },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "MOB",
+      "picks": [{ "tags": [], "count": 10 }],
+      "superset": "none",
+      "setDuration": 60
+    }
+  ]
+}

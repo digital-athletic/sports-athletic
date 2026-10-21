@@ -1,0 +1,28 @@
+{
+  "aiwl": 1,
+  "id": "PREV",
+  "name": { "en": "Prevention", "de": "Prävention" },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "WUSPEZIAL",
+      "picks": [
+        {
+          "tags": [
+            "SKILL_WU",
+            "SKILL_WARM_UP",
+            "SKILL_WARM_UP_SPECIAL",
+            "PREVENTION_SHOULDER"
+          ],
+          "count": 3
+        }
+      ]
+    },
+    {
+      "kind": "picks",
+      "skill": "PREV",
+      "picks": [{ "tags": ["SKILL_PREVENTION", "PREVENTION_SHOULDER"], "count": 3 }],
+      "superset": "drawOrderWithLeftovers"
+    }
+  ]
+}

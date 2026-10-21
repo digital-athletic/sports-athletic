@@ -1,0 +1,28 @@
+{
+  "aiwl": 1,
+  "id": "PREVSHOULDER",
+  "name": { "en": "Shoulder prevention", "de": "Schulterprävention" },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "WUSPEZIAL",
+      "picks": [
+        {
+          "tags": [
+            "SKILL_WU",
+            "SKILL_WARM_UP",
+            "SKILL_WARM_UP_SPECIAL",
+            "PREVENTION_SHOULDER"
+          ],
+          "count": 3
+        }
+      ]
+    },
+    {
+      "kind": "picks",
+      "skill": "PREVSHOULDER",
+      "picks": [{ "tags": ["SKILL_PREVENTION", "PREVENTION_SHOULDER"], "count": 3 }],
+      "superset": "drawOrderWithLeftovers"
+    }
+  ]
+}

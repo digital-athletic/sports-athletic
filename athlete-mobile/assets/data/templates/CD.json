@@ -1,0 +1,14 @@
+{
+  "aiwl": 1,
+  "id": "CD",
+  "name": { "en": "Cool-Down", "de": "Cool-Down" },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "CD",
+      "picks": [{ "tags": [], "count": 10 }],
+      "superset": "none",
+      "setDuration": 60
+    }
+  ]
+}

@@ -1,5 +1,4 @@
 import * as v from "valibot";
-import { loadFocusTrainingTitle } from "@/data/loadFocusTrainings";
 import { loadIntensityConfig } from "@/data/loadIntensityConfig";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import {
@@ -181,10 +180,6 @@ describe("new short workout: template without code changes", () => {
   it("reads the progression flag from the skill catalog", () => {
     expect(shouldProcessExerciseValues("PREVHIP", "PREVHIP")).toBe(false);
     expect(shouldProcessExerciseValues("STRETCH", "STRETCH")).toBe(true);
-  });
-
-  it("reads the title from the template", () => {
-    expect(loadFocusTrainingTitle("PREVHIP", "de")).toBe("Hüftprävention");
   });
 
   it("asks no feedback for a skill without progression", () => {

@@ -1,0 +1,28 @@
+{
+  "aiwl": 1,
+  "id": "PREVSPINE",
+  "name": { "en": "Spine prevention", "de": "Wirbelsäulenprävention" },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "WUSPEZIAL",
+      "picks": [
+        {
+          "tags": [
+            "SKILL_WU",
+            "SKILL_WARM_UP",
+            "SKILL_WARM_UP_SPECIAL",
+            "PREVENTION_SPINE"
+          ],
+          "count": 3
+        }
+      ]
+    },
+    {
+      "kind": "picks",
+      "skill": "PREVSPINE",
+      "picks": [{ "tags": ["SKILL_PREVENTION", "PREVENTION_SPINE"], "count": 3 }],
+      "superset": "drawOrderWithLeftovers"
+    }
+  ]
+}

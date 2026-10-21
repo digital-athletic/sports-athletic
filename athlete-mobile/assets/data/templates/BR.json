@@ -1,0 +1,14 @@
+{
+  "aiwl": 1,
+  "id": "BR",
+  "name": { "en": "Loosen muscles", "de": "Muskeln lockern" },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "BR",
+      "picks": [{ "tags": [], "count": 10 }],
+      "superset": "none",
+      "setDuration": 60
+    }
+  ]
+}

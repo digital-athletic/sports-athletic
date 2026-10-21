@@ -3,7 +3,6 @@ import { CenteredLoading } from "@/common/CenteredLoading";
 import { featureFlags } from "@/config/featureFlags";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { getAllExercises } from "@/data/exerciseRegistry";
-import { loadFocusTrainingTitle } from "@/data/loadFocusTrainings";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { useTrainingStore } from "@/features/training/trainingStore";
@@ -319,17 +318,16 @@ const SkillGroupItem: FC<SkillGroupItemProps> = ({
   exercises,
   onShowExerciseInfo,
 }) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const isMaxSkill = skillGroup.skill.includes("MAX");
 
   return (
     <Box marginBottom="l">
       <Text variant="subtitle" marginBottom="m">
-        {loadFocusTrainingTitle(skillGroup.skill, i18n.resolvedLanguage) ??
-          t(`training.skill.${skillGroup.skill}`, {
-            defaultValue: skillGroup.skill,
-          })}
+        {t(`training.skill.${skillGroup.skill}`, {
+          defaultValue: skillGroup.skill,
+        })}
       </Text>
       {skillGroup.sets.map((set, setIndex) => (
         <ExerciseSetItem

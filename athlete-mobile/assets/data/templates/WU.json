@@ -1,0 +1,15 @@
+{
+  "aiwl": 1,
+  "id": "WU",
+  "name": { "en": "Warm-Up", "de": "Warm-Up" },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "WU",
+      "picks": [{ "tags": [], "count": 10 }],
+      "superset": "none",
+      "setDuration": 60,
+      "rest": { "afterExercise": 10 }
+    }
+  ]
+}

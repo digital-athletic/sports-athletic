@@ -1,0 +1,28 @@
+{
+  "aiwl": 1,
+  "id": "PREVANKLE",
+  "name": { "en": "Ankle prevention", "de": "Sprunggelenksprävention" },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "WUSPEZIAL",
+      "picks": [
+        {
+          "tags": [
+            "SKILL_WU",
+            "SKILL_WARM_UP",
+            "SKILL_WARM_UP_SPECIAL",
+            "PREVENTION_ANKLE"
+          ],
+          "count": 3
+        }
+      ]
+    },
+    {
+      "kind": "picks",
+      "skill": "PREVANKLE",
+      "picks": [{ "tags": ["SKILL_PREVENTION", "PREVENTION_ANKLE"], "count": 3 }],
+      "superset": "drawOrderWithLeftovers"
+    }
+  ]
+}

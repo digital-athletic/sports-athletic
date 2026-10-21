@@ -1,0 +1,33 @@
+{
+  "aiwl": 1,
+  "id": "PREVWRIST",
+  "name": {
+    "en": "Elbow and wrist prevention",
+    "de": "Ellbogen- und Handgelenksprävention"
+  },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "WUSPEZIAL",
+      "picks": [
+        {
+          "tags": [
+            "SKILL_WU",
+            "SKILL_WARM_UP",
+            "SKILL_WARM_UP_SPECIAL",
+            "PREVENTION_WRIST_ELBOW"
+          ],
+          "count": 3
+        }
+      ]
+    },
+    {
+      "kind": "picks",
+      "skill": "PREVWRIST",
+      "picks": [
+        { "tags": ["SKILL_PREVENTION", "PREVENTION_WRIST_ELBOW"], "count": 3 }
+      ],
+      "superset": "drawOrderWithLeftovers"
+    }
+  ]
+}

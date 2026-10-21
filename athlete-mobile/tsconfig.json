@@ -5,7 +5,8 @@
     "moduleSuffixes": ["", ".android", ".ios", ".native", ".web"],
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["jest", "node", "react"]
   },
   "exclude": [
     ".tmp/**/*",

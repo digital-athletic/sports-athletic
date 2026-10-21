@@ -22,7 +22,7 @@ import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { router, Stack } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 type ScreenState = "SELECT" | "TEST";
@@ -57,7 +57,6 @@ export default function SelectTraining() {
   const ageGroup = useAgeGroup();
 
   const [screenState, setScreenState] = useState<ScreenState>("SELECT");
-  const [tiles, setTiles] = useState<TileData[]>([]);
 
   useTrainingGapCheck(selection === "PLAN");
 
@@ -198,27 +197,19 @@ export default function SelectTraining() {
     ageGroup,
   ]);
 
-  // Initialize tile data
-  useEffect(() => {
-    if (!selection) return;
-    let tiles: TileData[] = [];
-
+  // Tile data for the current selection
+  const tiles = useMemo<TileData[]>(() => {
     switch (selection) {
       case "PLAN":
-        tiles = getTrainingDays();
-        break;
+        return getTrainingDays();
       case "PREV":
-        tiles = WorkoutConstants.PREVENTION_TILES;
-        break;
+        return WorkoutConstants.PREVENTION_TILES;
       case "QUICK":
-        tiles = WorkoutConstants.QUICKSTART_TILES;
-        break;
+        return WorkoutConstants.QUICKSTART_TILES;
       default:
         // probably just passing through when entering TrainingStack
-        break;
+        return [];
     }
-
-    setTiles(tiles);
   }, [getTrainingDays, selection]);
 
   const startPowerTest = useCallback(() => {

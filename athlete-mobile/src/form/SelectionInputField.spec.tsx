@@ -83,7 +83,7 @@ describe("SelectionInputField", () => {
       />,
     );
 
-    const selectButton = getByText("Choose").parent?.parent;
+    const selectButton = getByText("Choose").parent?.parent!;
     fireEvent.press(selectButton);
 
     // Modal items should be visible
@@ -103,11 +103,11 @@ describe("SelectionInputField", () => {
     );
 
     // Open modal
-    const selectButton = getByText("Choose").parent?.parent;
+    const selectButton = getByText("Choose").parent?.parent!;
     fireEvent.press(selectButton);
 
     // Select item
-    const footballItem = getByText("Football").parent;
+    const footballItem = getByText("Football").parent!;
     fireEvent.press(footballItem);
 
     // Confirm
@@ -130,7 +130,7 @@ describe("SelectionInputField", () => {
 
     // Open modal
     const chooseButtons = getAllByText("Choose");
-    fireEvent.press(chooseButtons[0].parent?.parent);
+    fireEvent.press(chooseButtons[0].parent?.parent!);
     expect(onToggle).toHaveBeenCalledWith(true);
 
     const closeIcon = getByLabelText("Close");
@@ -150,11 +150,11 @@ describe("SelectionInputField", () => {
     );
 
     // Open modal
-    const selectButton = getByText("Choose").parent?.parent;
+    const selectButton = getByText("Choose").parent?.parent!;
     fireEvent.press(selectButton);
 
     // Select football
-    const footballItem = getByText("Football").parent;
+    const footballItem = getByText("Football").parent!;
     fireEvent.press(footballItem);
 
     // Confirm
@@ -176,12 +176,12 @@ describe("SelectionInputField", () => {
     );
 
     // Open modal
-    const selectButton = getByText("Choose").parent?.parent;
+    const selectButton = getByText("Choose").parent?.parent!;
     fireEvent.press(selectButton);
 
     // Select multiple items
-    const footballItem = getByText("Football").parent;
-    const basketballItem = getByText("Basketball").parent;
+    const footballItem = getByText("Football").parent!;
+    const basketballItem = getByText("Basketball").parent!;
     fireEvent.press(footballItem);
     fireEvent.press(basketballItem);
 
@@ -202,7 +202,7 @@ describe("SelectionInputField", () => {
     );
 
     // Open modal
-    const selectButton = getByText("Choose").parent?.parent;
+    const selectButton = getByText("Choose").parent?.parent!;
     fireEvent.press(selectButton);
 
     // Should display localized name

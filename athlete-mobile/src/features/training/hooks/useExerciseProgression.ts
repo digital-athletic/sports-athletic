@@ -7,7 +7,7 @@ import { useTrainingAlerts } from "@/features/training/hooks/useTrainingAlerts";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { mapSkillCodeToFocusArea } from "@/features/training/utils/skillTreeUtils";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 type FeedbackCategory = "TOO_EASY" | "TOO_HARD" | "SUCCEEDED";
@@ -51,6 +51,13 @@ export function useExerciseProgression() {
 
   const [isAborted, setIsAborted] = useState(false);
   const [isSkipped, setIsSkipped] = useState(false);
+
+  // Reset the skip flag whenever a new exercise starts.
+  const [prevExerciseId, setPrevExerciseId] = useState(exerciseId);
+  if (prevExerciseId !== exerciseId) {
+    setPrevExerciseId(exerciseId);
+    setIsSkipped(false);
+  }
 
   const commitElapsedTime = () => {
     if (isPauseExercise) {
@@ -132,10 +139,6 @@ export function useExerciseProgression() {
     markExerciseSkipped(safeExerciseIndex);
     advance(false);
   };
-
-  useEffect(() => {
-    setIsSkipped(false);
-  }, [exerciseId]);
 
   const handleFeedback = (category: FeedbackCategory) => {
     completeFeedback(safeExerciseIndex, category);

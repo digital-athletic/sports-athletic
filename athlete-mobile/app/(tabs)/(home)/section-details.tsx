@@ -11,7 +11,7 @@ import { SectionPrefix } from "@/features/training/models/SectionPrefix";
 import { VideoPlayer } from "@/video/VideoPlayer";
 import { useResponsiveProp } from "@shopify/restyle";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { type FC, useEffect, useMemo, useState } from "react";
+import { type FC, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { loadSections } from "@/data/loadSections";
 
@@ -28,7 +28,20 @@ const SectionDetailsScreen: FC = () => {
   const params = useLocalSearchParams<{ activeSection?: string }>();
   const { SECTIONS_DATA, SECTIONS_VIDEOS } = loadSections();
 
-  const [activeSection, setActiveSection] = useState(0);
+  const [activeSection, setActiveSection] = useState(
+    params.activeSection ? Number(params.activeSection) : 0,
+  );
+
+  // Follow the route param whenever it changes to a new section.
+  const [prevParamSection, setPrevParamSection] = useState(
+    params.activeSection,
+  );
+  if (prevParamSection !== params.activeSection) {
+    setPrevParamSection(params.activeSection);
+    if (params.activeSection) {
+      setActiveSection(Number(params.activeSection));
+    }
+  }
 
   const titleFontSize = useResponsiveProp({ phone: 20, tablet: 24 });
 
@@ -36,12 +49,6 @@ const SectionDetailsScreen: FC = () => {
     () => trainingPlan?.sections ?? [],
     [trainingPlan],
   );
-
-  useEffect(() => {
-    if (params.activeSection) {
-      setActiveSection(Number(params.activeSection));
-    }
-  }, [params.activeSection]);
 
   // Calculate current phase - preserved for future use (e.g., test user skip phase buttons)
   // const currentPhase = useMemo(() => {

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { type MutableRefObject, useEffect, useRef, useState } from "react";
 
 type CountdownArgs = {
   autoAdvance: boolean;
@@ -11,6 +11,53 @@ type CountdownArgs = {
 
 const unitsLeft = (endsAt: number, timeoutMs: number) =>
   Math.max(0, Math.ceil((endsAt - Date.now()) / timeoutMs));
+
+type StartTimerArgs = {
+  duration: number;
+  timeoutMs: number;
+  autoAdvance: boolean;
+  onEvent?: (event: "advance" | "complete") => void;
+  endsAtRef: MutableRefObject<number | undefined>;
+  pausedAtRef: MutableRefObject<number | undefined>;
+  intervalRef: MutableRefObject<ReturnType<typeof setInterval> | undefined>;
+  setCountdown: (value: number | undefined) => void;
+};
+
+// Advances the deadline (accounting for any pause), then starts ticking.
+const startCountdownTimer = ({
+  duration,
+  timeoutMs,
+  autoAdvance,
+  onEvent,
+  endsAtRef,
+  pausedAtRef,
+  intervalRef,
+  setCountdown,
+}: StartTimerArgs) => {
+  if (endsAtRef.current === undefined) {
+    endsAtRef.current = Date.now() + duration * timeoutMs;
+  } else if (pausedAtRef.current !== undefined) {
+    endsAtRef.current += Date.now() - pausedAtRef.current;
+    pausedAtRef.current = undefined;
+  }
+
+  const endsAt = endsAtRef.current;
+
+  const tick = () => {
+    const remaining = unitsLeft(endsAt, timeoutMs);
+    setCountdown(remaining);
+
+    if (remaining === 0) {
+      onEvent?.("complete");
+      if (autoAdvance) onEvent?.("advance");
+      clearInterval(intervalRef.current);
+      setCountdown(undefined);
+    }
+  };
+
+  tick();
+  intervalRef.current = setInterval(tick, timeoutMs);
+};
 
 /**
  * Counts down to a deadline. The remaining value comes from the clock, not from
@@ -32,11 +79,20 @@ export const useCountdown = ({
   const endsAtRef = useRef<number | undefined>(undefined);
   const pausedAtRef = useRef<number | undefined>(undefined);
 
-  // Declared before the timer below, so a new exercise clears the old deadline
-  // before it is read.
+  // Reset the countdown whenever a new exercise/duration comes in.
+  const [prevReset, setPrevReset] = useState({ duration, exerciseId });
+  if (
+    typeof duration === "number" &&
+    (prevReset.duration !== duration || prevReset.exerciseId !== exerciseId)
+  ) {
+    setPrevReset({ duration, exerciseId });
+    setCountdown(duration);
+  }
+
+  // Declared before the timer effect below, so a new exercise clears the old
+  // deadline before it is read.
   useEffect(() => {
     if (typeof duration !== "number") return;
-    setCountdown(duration);
     endsAtRef.current = undefined;
     pausedAtRef.current = undefined;
   }, [duration, exerciseId]);
@@ -47,36 +103,20 @@ export const useCountdown = ({
       return;
     }
 
-    if (endsAtRef.current === undefined) {
-      endsAtRef.current = Date.now() + duration * timeoutMs;
-    } else if (pausedAtRef.current !== undefined) {
-      endsAtRef.current += Date.now() - pausedAtRef.current;
-      pausedAtRef.current = undefined;
-    }
-
-    const endsAt = endsAtRef.current;
-    setCountdown(unitsLeft(endsAt, timeoutMs));
-
-    intervalRef.current = setInterval(
-      () => setCountdown(unitsLeft(endsAt, timeoutMs)),
+    startCountdownTimer({
+      duration,
       timeoutMs,
-    );
+      autoAdvance,
+      onEvent,
+      endsAtRef,
+      pausedAtRef,
+      intervalRef,
+      setCountdown,
+    });
+    const interval = intervalRef.current;
 
-    return () => clearInterval(intervalRef.current);
-  }, [duration, exerciseId, isActive, timeoutMs]);
-
-  useEffect(() => {
-    if (countdown === 0) {
-      onEvent?.("complete");
-
-      if (autoAdvance) {
-        onEvent?.("advance");
-      }
-
-      clearInterval(intervalRef.current);
-      setCountdown(undefined);
-    }
-  }, [autoAdvance, countdown, onEvent]);
+    return () => clearInterval(interval);
+  }, [duration, exerciseId, isActive, timeoutMs, autoAdvance, onEvent]);
 
   return countdown;
 };

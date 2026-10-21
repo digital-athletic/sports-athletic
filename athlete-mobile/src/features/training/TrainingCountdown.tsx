@@ -1,7 +1,7 @@
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { TouchableBox } from "@/theme/TouchableBox";
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCountdown } from "./hooks/useCountdown";
 import { useVoiceCoach } from "./hooks/useVoiceCoach";
@@ -32,6 +32,13 @@ export const TrainingCountdown: FC<Props> = ({
 
   const [isPausedState, setIsPausedState] = useState(false);
 
+  // Reset the manual pause whenever a new exercise starts.
+  const [prevExerciseId, setPrevExerciseId] = useState(exerciseId);
+  if (prevExerciseId !== exerciseId) {
+    setPrevExerciseId(exerciseId);
+    setIsPausedState(false);
+  }
+
   const isPause = isPauseExercise(exerciseId);
   const isCountdownActive = isActive && !isPausedState;
 
@@ -60,10 +67,6 @@ export const TrainingCountdown: FC<Props> = ({
     }
     setIsPausedState(!isPausedState);
   }, [isPause, isPausedState, onEvent]);
-
-  useEffect(() => {
-    setIsPausedState(false);
-  }, [exerciseId]);
 
   const remainingInt =
     typeof countdown === "number" ? Math.floor(countdown) : -1;

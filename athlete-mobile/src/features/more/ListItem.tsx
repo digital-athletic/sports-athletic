@@ -5,7 +5,7 @@ import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { type ThemeColor, useTheme } from "@/theme/theme";
 import { useResponsiveProp } from "@shopify/restyle";
-import { type Href, type Route, useRouter } from "expo-router";
+import { type Href, type RoutePath, useRouter } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Linking, TouchableOpacity } from "react-native";
@@ -13,7 +13,7 @@ import { ListDivider } from "../../common/ListDivider";
 
 export type ListItemProps = {
   title: string;
-  navPath?: Route;
+  navPath?: RoutePath;
   externalUrl?: string;
   iconName: IoniconName;
   iconBackground: ThemeColor;
@@ -81,10 +81,10 @@ export const ListItem: FC<ListItemProps> = ({
     if (!navPath) return;
 
     // Typed routes reject a dynamic `pathname` in the object form, so assert
-    // the correlated pathname/params object as Href. navPath is a valid Route.
+    // the correlated pathname/params object as Href. navPath is a valid RoutePath.
     router.navigate({
       pathname: navPath,
-      params: { originPath: "/(tabs)/more" as Route, ...navParams },
+      params: { originPath: "/(tabs)/more" as RoutePath, ...navParams },
     } as Href);
   };
 

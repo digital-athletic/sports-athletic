@@ -21,7 +21,7 @@ import { ScrollBox } from "@/theme/ScrollBox";
 import { useTheme } from "@/theme/theme";
 import { Text } from "@/theme/Text";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { BackHandler } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -30,6 +30,13 @@ type ScreenState = "SORENESS" | "PLACE";
 
 const screenStateFor = (type: TrainingType): ScreenState =>
   checksSoreness(type) ? "SORENESS" : "PLACE";
+
+const dropStoredExpiredMarks = () => {
+  const { temporalData, setTemporalData } = useUserWorkoutStore.getState();
+  if (temporalData) {
+    setTemporalData(dropExpiredMarks(temporalData, Date.now()));
+  }
+};
 
 /**
  * Muscle Soreness Screen
@@ -48,10 +55,15 @@ export default function MuscleSorenessScreen() {
   const insets = useSafeAreaInsets();
   const { spacing } = useTheme();
 
-  const [loading, setLoading] = useState(true);
   const screenState = screenStateFor(params.type);
   // List rows carry their own inset, so only the soreness step pads the sides.
   const sidePadding = screenState === "PLACE" ? 0 : spacing.m;
+
+  const hasDroppedExpiredMarksRef = useRef<true | null>(null);
+  if (hasDroppedExpiredMarksRef.current == null) {
+    hasDroppedExpiredMarksRef.current = true;
+    dropStoredExpiredMarks();
+  }
 
   const { places } = usePlacesStore();
   const { temporalData, setTemporalData } = useUserWorkoutStore();
@@ -72,16 +84,6 @@ export default function MuscleSorenessScreen() {
     );
     return () => handler.remove();
   }, [handleBack]);
-
-  // runs once on open, so it reads the store directly instead of subscribing
-  useEffect(() => {
-    const { temporalData: stored, setTemporalData: save } =
-      useUserWorkoutStore.getState();
-    if (stored) {
-      save(dropExpiredMarks(stored, Date.now()));
-    }
-    setLoading(false);
-  }, []);
 
   const setMuscles = (tags: string[]) => {
     setTemporalData(updateSorenessMarks(temporalData ?? [], tags, Date.now()));
@@ -110,8 +112,7 @@ export default function MuscleSorenessScreen() {
           paddingRight: Math.max(sidePadding, insets.right),
         }}
       >
-        {/* needs to be here so the selector isn't rendered at start while temp data is managed */}
-        {loading || generating ? (
+        {generating ? (
           <Loading show text={t("training.muscleSoreness.loading")} />
         ) : (
           <>

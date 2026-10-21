@@ -17,7 +17,7 @@ import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
 import { Image } from "expo-image";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -33,11 +33,6 @@ export default function TrainingOverviewScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ weekday?: string; place?: string }>();
   const insets = useSafeAreaInsets();
-
-  const [trainingEquipment, setTrainingEquipment] = useState<string[]>([]);
-  const [trainingExerciseList, setTrainingExerciseList] = useState<
-    SkillGroup[]
-  >([]);
 
   // Get store data
   const { exerciseList, setTrainingStartTime, setTrainingViewMode } =
@@ -58,13 +53,16 @@ export default function TrainingOverviewScreen() {
     return true;
   }, [router]);
 
-  // Process exercise data on mount
-  const processExerciseData = useCallback(() => {
-    if (!exerciseList) return;
+  // Collect equipment using utility function
+  const trainingEquipment = useMemo(
+    () =>
+      exerciseList ? getEquipmentList(exerciseList, exercises, place) : [],
+    [exerciseList, exercises, place],
+  );
 
-    // Collect equipment using utility function
-    const equipment = getEquipmentList(exerciseList, exercises, place);
-    setTrainingEquipment(equipment);
+  // Build exercise list grouped by skill
+  const trainingExerciseList = useMemo<SkillGroup[]>(() => {
+    if (!exerciseList) return [];
 
     // Filter valid exercises for display
     const processedExercises: UserExerciseDataType[] = exerciseList.filter(
@@ -73,7 +71,6 @@ export default function TrainingOverviewScreen() {
         exercises.some((e) => e.id === userExercise.exerciseId),
     );
 
-    // Build exercise list grouped by skill
     const exList: SkillGroup[] = [];
     let currentSkill: string | undefined;
 
@@ -129,8 +126,8 @@ export default function TrainingOverviewScreen() {
         }
       }
     }
-    setTrainingExerciseList(exList);
-  }, [exerciseList, exercises, place]);
+    return exList;
+  }, [exerciseList, exercises]);
 
   const handleStartTraining = useCallback(() => {
     setTrainingStartTime(Date.now());
@@ -159,15 +156,6 @@ export default function TrainingOverviewScreen() {
     },
     [router],
   );
-
-  // Build exercise overview on mount
-  useEffect(() => {
-    if (!exerciseList) {
-      return;
-    }
-
-    processExerciseData();
-  }, [exerciseList, processExerciseData]);
 
   // Show loading state when data isn't ready
   if (!exerciseList) {

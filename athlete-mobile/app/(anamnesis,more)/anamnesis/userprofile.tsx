@@ -1,4 +1,4 @@
-import { Route, router, Stack, useLocalSearchParams } from "expo-router";
+import { RoutePath, router, Stack, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 
 import { BackHeader } from "@/common/BackHeader";
@@ -27,7 +27,7 @@ import { ScrollBox } from "@/theme/ScrollBox";
  */
 export default function UserProfileScreen() {
   const { t } = useTranslation();
-  const params = useLocalSearchParams<{ originPath?: Route }>();
+  const params = useLocalSearchParams<{ originPath?: RoutePath }>();
   const originPath = params.originPath;
 
   const {
@@ -50,7 +50,7 @@ export default function UserProfileScreen() {
     router.push({
       pathname: "/(anamnesis)/anamnesis/anamnesis-questions",
       params: {
-        originPath: "/(anamnesis)/anamnesis/userprofile" satisfies Route,
+        originPath: "/(anamnesis)/anamnesis/userprofile" satisfies RoutePath,
       },
     });
   };

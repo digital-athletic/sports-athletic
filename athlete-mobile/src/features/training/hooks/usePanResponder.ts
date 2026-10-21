@@ -19,8 +19,8 @@ export const usePanResponder = ({
   onLeftSwipe,
   onRightSwipe,
 }: PanResponderConfig) => {
-  const dxRef = useRef(new Animated.Value(0));
-  const dyRef = useRef(new Animated.Value(0));
+  const [dx] = useState(() => new Animated.Value(0));
+  const [dy] = useState(() => new Animated.Value(0));
   const lastNavEventFiredRef = useRef(0);
   const [panResponder, setPanResponder] = useState<ReturnType<
     typeof PanResponder.create
@@ -36,8 +36,8 @@ export const usePanResponder = ({
       onPanResponderMove: (evt, gestureState) => {
         // do not handle move if this identifier already triggered a navigation
         if (evt.nativeEvent.timestamp - lastNavEventFiredRef.current > 1000) {
-          dxRef.current.setValue(gestureState.dx);
-          dyRef.current.setValue(gestureState.dy);
+          dx.setValue(gestureState.dx);
+          dy.setValue(gestureState.dy);
 
           if (!isTest) {
             if (gestureState.dy < -100) {
@@ -54,21 +54,21 @@ export const usePanResponder = ({
         }
       },
       onPanResponderRelease: () => {
-        dxRef.current.setValue(0);
-        dyRef.current.setValue(0);
+        dx.setValue(0);
+        dy.setValue(0);
       },
     });
     setPanResponder(responder);
-  }, [isTest, isLastInSet, onUpSwipe, onLeftSwipe, onRightSwipe]);
+  }, [isTest, isLastInSet, onUpSwipe, onLeftSwipe, onRightSwipe, dx, dy]);
 
   return {
     panResponder,
-    dx: dxRef.current,
-    dy: dyRef.current,
+    dx,
+    dy,
     initializePanResponder,
     resetGestureValues: () => {
-      dxRef.current.setValue(0);
-      dyRef.current.setValue(0);
+      dx.setValue(0);
+      dy.setValue(0);
     },
   };
 };

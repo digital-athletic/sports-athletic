@@ -55,11 +55,12 @@ export const TrainingCountdown: FC<Props> = ({
     ? isPauseExercise(nextExerciseId)
     : false;
 
-  useVoiceCoach(
-    isNextExercisePause,
-    hasNextExercise && isCountdownActive,
+  useVoiceCoach({
     countdown,
-  );
+    exerciseId,
+    isActive: hasNextExercise && isCountdownActive,
+    isPauseNext: isNextExercisePause,
+  });
 
   const handleTogglePause = () => {
     if (!isPause) {

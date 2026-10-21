@@ -367,11 +367,6 @@
       "count": 1
     }
   },
-  "src/features/training/hooks/useVoiceCoach.ts": {
-    "max-lines-per-function": {
-      "count": 1
-    }
-  },
   "src/features/training/models/ExerciseTotals.ts": {
     "max-params": {
       "count": 1

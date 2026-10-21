@@ -3,7 +3,6 @@ import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { useTheme } from "@/theme/theme";
 import { RoutePath, router, Stack } from "expo-router";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,12 +15,12 @@ export default function WelcomeScreen() {
   const { anamnesisCompleted } = useUserProfileStore();
   const insets = useSafeAreaInsets();
 
-  const handleStartAnamnesis = useCallback(() => {
+  const handleStartAnamnesis = () => {
     router.push({
       pathname: "/(anamnesis)/anamnesis/sport",
       params: { originPath: "/(anamnesis)/anamnesis" satisfies RoutePath },
     });
-  }, []);
+  };
 
   return (
     <>

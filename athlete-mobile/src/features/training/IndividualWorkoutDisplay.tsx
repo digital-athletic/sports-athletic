@@ -8,7 +8,7 @@ import { Text } from "@/theme/Text";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { useTheme } from "@/theme/theme";
 import { ISODateToDate } from "@/utils/date";
-import { useMemo, type FC } from "react";
+import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { useWindowDimensions } from "react-native";
 import { TrainingPlanStatusWidget } from "./TrainingPlanStatusWidget";
@@ -72,10 +72,7 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
   const isLandscape = width > height;
   const { anamnesisCompleted } = useUserProfileStore();
 
-  const planState = useMemo(
-    () => getPlanState(anamnesisCompleted, trainingPlan),
-    [anamnesisCompleted, trainingPlan],
-  );
+  const planState = getPlanState(anamnesisCompleted, trainingPlan);
 
   const startButton = (
     <Button onPress={() => goToTraining("PLAN")}>

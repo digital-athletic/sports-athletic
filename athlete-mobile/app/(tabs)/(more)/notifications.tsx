@@ -8,7 +8,7 @@ import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { Stack, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -52,26 +52,23 @@ export default function NotificationsScreen() {
     loadNotificationSettings();
   }, [userId, asyncStorageService, pushNotificationService]);
 
-  const handleToggleNotifications = useCallback(
-    async (newValue: boolean) => {
-      if (!userId) return;
+  const handleToggleNotifications = async (newValue: boolean) => {
+    if (!userId) return;
 
-      setNotificationsAllowedApp(newValue);
+    setNotificationsAllowedApp(newValue);
 
-      await asyncStorageService.setAllowNotifications(newValue, userId);
+    await asyncStorageService.setAllowNotifications(newValue, userId);
 
-      if (newValue && trainingPlan) {
-        pushNotificationService.createWorkoutRemindersFromTrainingPlan(
-          trainingPlan,
-        );
-      } else {
-        pushNotificationService.cancelAllWorkoutReminderNotifications();
-      }
-    },
-    [userId, trainingPlan, asyncStorageService, pushNotificationService],
-  );
+    if (newValue && trainingPlan) {
+      pushNotificationService.createWorkoutRemindersFromTrainingPlan(
+        trainingPlan,
+      );
+    } else {
+      pushNotificationService.cancelAllWorkoutReminderNotifications();
+    }
+  };
 
-  const handleOpenSettings = useCallback(async () => {
+  const handleOpenSettings = async () => {
     if (!userId) return;
 
     pushNotificationService.openSystemNotificationSettings();
@@ -85,13 +82,7 @@ export default function NotificationsScreen() {
     }
 
     router.back();
-  }, [
-    userId,
-    trainingPlan,
-    router,
-    asyncStorageService,
-    pushNotificationService,
-  ]);
+  };
 
   return (
     <>

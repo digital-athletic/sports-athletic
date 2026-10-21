@@ -9,7 +9,6 @@ import { isPauseExercise as checkIsPauseExercise } from "@/features/training/mod
 import { type ActiveTrainingType } from "@/features/training/models/ActiveTraining";
 import { type UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { type TFunction } from "i18next";
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 function deriveHeaderTitle(
@@ -147,8 +146,5 @@ export function useActiveExerciseView() {
   const { exerciseList, activeTraining } = useTrainingStore();
   const language = i18n.resolvedLanguage;
 
-  return useMemo(
-    () => buildActiveExerciseView(exerciseList, activeTraining, t, language),
-    [exerciseList, activeTraining, t, language],
-  );
+  return buildActiveExerciseView(exerciseList, activeTraining, t, language);
 }

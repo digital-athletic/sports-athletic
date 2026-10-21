@@ -1,7 +1,7 @@
 import { usePowerTestData } from "@/features/statistics/hooks/usePowerTestData";
 import type { ScaleType } from "@/features/statistics/models/WorkoutsData";
 import { Box } from "@/theme/Box";
-import { type FC, useMemo } from "react";
+import { type FC } from "react";
 import { useWindowDimensions } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
 import {
@@ -35,21 +35,17 @@ export const PowerTest: FC<PowerTestChartProps> = ({ scale }) => {
   const chartWidth = screenWidth - 100;
 
   // Transform data for LineChart (labels embedded in primary series, max 6 visible)
-  const lineData = useMemo(() => transformToLineData(chartData), [chartData]);
+  const lineData = transformToLineData(chartData);
 
   // Calculate Y-axis maximum
-  const yAxisMax = useMemo(() => calculateYAxisMax(chartData), [chartData]);
+  const yAxisMax = calculateYAxisMax(chartData);
 
   // Calculate spacing to fill the chart width
-  const spacing = useMemo(
-    () =>
-      calculateSpacing(
-        chartData.dates.length,
-        chartWidth,
-        LINE_CHART_SIZING.yAxisOffset,
-        LINE_CHART_LABELS.endSpacing,
-      ),
-    [chartData.dates.length, chartWidth],
+  const spacing = calculateSpacing(
+    chartData.dates.length,
+    chartWidth,
+    LINE_CHART_SIZING.yAxisOffset,
+    LINE_CHART_LABELS.endSpacing,
   );
 
   // Don't render chart if no data (parent component shows Coaching message)

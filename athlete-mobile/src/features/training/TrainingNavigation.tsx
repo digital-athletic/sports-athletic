@@ -96,22 +96,21 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
     [handleClickNext, isPause, pauseToggled],
   );
 
-  const handleClickNormalButton = useCallback(
-    async (identification?: "too_easy" | "too_hard") => {
-      // The checkmark only means SUCCEEDED next to the feedback buttons.
-      if (isFeedbackSkill && isLastInSet && !isTest) {
-        if (identification === "too_easy") {
-          feedback("TOO_EASY");
-        } else if (identification === "too_hard") {
-          feedback("TOO_HARD");
-        } else {
-          feedback("SUCCEEDED");
-        }
+  const handleClickNormalButton = async (
+    identification?: "too_easy" | "too_hard",
+  ) => {
+    // The checkmark only means SUCCEEDED next to the feedback buttons.
+    if (isFeedbackSkill && isLastInSet && !isTest) {
+      if (identification === "too_easy") {
+        feedback("TOO_EASY");
+      } else if (identification === "too_hard") {
+        feedback("TOO_HARD");
+      } else {
+        feedback("SUCCEEDED");
       }
-      handleClickNext();
-    },
-    [isFeedbackSkill, isLastInSet, isTest, handleClickNext, feedback],
-  );
+    }
+    handleClickNext();
+  };
 
   const handleChangeReps = (value: string) => {
     const num = Number.parseInt(value) || 0;

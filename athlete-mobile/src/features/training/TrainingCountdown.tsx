@@ -1,7 +1,7 @@
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { TouchableBox } from "@/theme/TouchableBox";
-import { FC, useCallback, useState } from "react";
+import { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCountdown } from "./hooks/useCountdown";
 import { useVoiceCoach } from "./hooks/useVoiceCoach";
@@ -61,12 +61,12 @@ export const TrainingCountdown: FC<Props> = ({
     countdown,
   );
 
-  const handleTogglePause = useCallback(() => {
+  const handleTogglePause = () => {
     if (!isPause) {
       onEvent?.(isPausedState ? "play" : "pause");
     }
     setIsPausedState(!isPausedState);
-  }, [isPause, isPausedState, onEvent]);
+  };
 
   const remainingInt =
     typeof countdown === "number" ? Math.floor(countdown) : -1;

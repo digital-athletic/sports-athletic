@@ -1,6 +1,6 @@
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import {
   PowerTestChartData,
   processTestHistory,
@@ -21,13 +21,10 @@ interface UsePowerTestDataOptions {
 export const usePowerTestData = (options: UsePowerTestDataOptions = {}) => {
   const { expandFirstEntry = false, scale } = options;
   const storedHistory = useExerciseProgressStore((state) => state.testHistory);
-  const testHistory = useMemo(
-    () =>
-      scale && storedHistory
-        ? filterStrengthTestsByRange(storedHistory, scale)
-        : storedHistory,
-    [storedHistory, scale],
-  );
+  const testHistory =
+    scale && storedHistory
+      ? filterStrengthTestsByRange(storedHistory, scale)
+      : storedHistory;
 
   const anamnesisCompleted = useUserProfileStore(
     (state) => state.anamnesisCompleted,
@@ -38,31 +35,22 @@ export const usePowerTestData = (options: UsePowerTestDataOptions = {}) => {
     () => testHistory?.map((_, index) => index === 0 && expandFirstEntry) ?? [],
   );
 
-  const chartData: PowerTestChartData = useMemo(
-    () => processTestHistory(testHistory),
-    [testHistory],
-  );
+  const chartData: PowerTestChartData = processTestHistory(testHistory);
 
-  const sortedHistory = useMemo(
-    () => sortTestHistoryByDate(testHistory),
-    [testHistory],
-  );
+  const sortedHistory = sortTestHistoryByDate(testHistory);
 
   const hasHistory = testHistory && testHistory.length > 0;
   const hasChartData = chartData.dates.length > 0;
 
-  const toggleHistoryEntry = useCallback((index: number) => {
+  const toggleHistoryEntry = (index: number) => {
     setExpandedEntries((prev) => {
       const updated = [...prev];
       updated[index] = !updated[index];
       return updated;
     });
-  }, []);
+  };
 
-  const isEntryExpanded = useCallback(
-    (index: number) => expandedEntries[index] ?? false,
-    [expandedEntries],
-  );
+  const isEntryExpanded = (index: number) => expandedEntries[index] ?? false;
 
   return {
     testHistory,

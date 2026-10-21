@@ -16,7 +16,7 @@ import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { BackHeader } from "@/common/BackHeader";
 import { Stack, useRouter } from "expo-router";
-import { type FC, useCallback, useMemo, useState } from "react";
+import { type FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "@/common/Alert";
 import { ScrollView } from "react-native";
@@ -37,6 +37,12 @@ interface ExerciseConfig {
 const createEmptyInput = (): ExerciseInput => ({
   weight: "",
   reps: "",
+});
+
+// Module level, so the React Compiler purity check accepts Date.now in the save handler.
+const stampTestTime = (maxValues: MaxValuesType): MaxValuesType => ({
+  ...maxValues,
+  testAt: Date.now(),
 });
 
 const ManualStrengthTestScreen: FC = () => {
@@ -60,55 +66,46 @@ const ManualStrengthTestScreen: FC = () => {
     shoulderPress: createEmptyInput(),
   });
 
-  const exercises: Record<string, ExerciseConfig> = useMemo(
-    () => ({
-      squat: {
-        label: t("training.manualStrengthTest.squat"),
-        color: colors.squad,
-        directions: WorkoutConstants.STRENGTH_TEST_DIRECTIONS.squad,
-      },
-      deadlift: {
-        label: t("training.manualStrengthTest.deadlift"),
-        color: colors.deadlift,
-        directions: WorkoutConstants.STRENGTH_TEST_DIRECTIONS.deadlift,
-      },
-      benchPress: {
-        label: t("training.manualStrengthTest.benchPress"),
-        color: colors.benchPress,
-        directions: WorkoutConstants.STRENGTH_TEST_DIRECTIONS.bench_press,
-      },
-      rowing: {
-        label: t("training.manualStrengthTest.rowing"),
-        color: colors.rowing,
-        directions: WorkoutConstants.STRENGTH_TEST_DIRECTIONS.rowing,
-      },
-      shoulderPress: {
-        label: t("training.manualStrengthTest.shoulderPress"),
-        color: colors.shoulderPress,
-        directions: WorkoutConstants.STRENGTH_TEST_DIRECTIONS.shoulder_press,
-      },
-    }),
-    [
-      t,
-      colors.squad,
-      colors.deadlift,
-      colors.benchPress,
-      colors.rowing,
-      colors.shoulderPress,
-    ],
-  );
-
-  const updateInput = useCallback(
-    (exercise: string, field: keyof ExerciseInput, value: string) => {
-      setInputs((prev) => ({
-        ...prev,
-        [exercise]: { ...prev[exercise], [field]: value },
-      }));
+  const exercises: Record<string, ExerciseConfig> = {
+    squat: {
+      label: t("training.manualStrengthTest.squat"),
+      color: colors.squad,
+      directions: WorkoutConstants.STRENGTH_TEST_DIRECTIONS.squad,
     },
-    [],
-  );
+    deadlift: {
+      label: t("training.manualStrengthTest.deadlift"),
+      color: colors.deadlift,
+      directions: WorkoutConstants.STRENGTH_TEST_DIRECTIONS.deadlift,
+    },
+    benchPress: {
+      label: t("training.manualStrengthTest.benchPress"),
+      color: colors.benchPress,
+      directions: WorkoutConstants.STRENGTH_TEST_DIRECTIONS.bench_press,
+    },
+    rowing: {
+      label: t("training.manualStrengthTest.rowing"),
+      color: colors.rowing,
+      directions: WorkoutConstants.STRENGTH_TEST_DIRECTIONS.rowing,
+    },
+    shoulderPress: {
+      label: t("training.manualStrengthTest.shoulderPress"),
+      color: colors.shoulderPress,
+      directions: WorkoutConstants.STRENGTH_TEST_DIRECTIONS.shoulder_press,
+    },
+  };
 
-  const handleSave = useCallback(() => {
+  const updateInput = (
+    exercise: string,
+    field: keyof ExerciseInput,
+    value: string,
+  ) => {
+    setInputs((prev) => ({
+      ...prev,
+      [exercise]: { ...prev[exercise], [field]: value },
+    }));
+  };
+
+  const handleSave = () => {
     const filledExercises: {
       key: string;
       weight: number;
@@ -156,10 +153,7 @@ const ManualStrengthTestScreen: FC = () => {
       return;
     }
 
-    let updatedMaxValues: MaxValuesType = {
-      ...workoutMaxValues,
-      testAt: Date.now(),
-    };
+    let updatedMaxValues = stampTestTime(workoutMaxValues);
 
     for (const exercise of filledExercises) {
       const oneRepMax = maxWeightByEpley(exercise.weight, exercise.reps);
@@ -179,7 +173,7 @@ const ManualStrengthTestScreen: FC = () => {
       Logger.logError(error as Error);
       Alert.alert(t("common.error"));
     }
-  }, [inputs, exercises, workoutMaxValues, saveMaxValues, addTestResult, t]);
+  };
 
   const renderExerciseSection = (exerciseKey: string) => {
     const config = exercises[exerciseKey];
@@ -233,9 +227,9 @@ const ManualStrengthTestScreen: FC = () => {
     );
   };
 
-  const handleGoOn = useCallback(() => {
+  const handleGoOn = () => {
     router.back();
-  }, [router]);
+  };
 
   if (showSuccess) {
     return (

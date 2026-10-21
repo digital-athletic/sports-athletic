@@ -12,7 +12,7 @@ import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, StyleSheet, TouchableOpacity } from "react-native";
 
@@ -21,7 +21,6 @@ export default function EquipmentDetailsScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const { colors } = useTheme();
-  const { getPlaceEquipment, setPlaceEquipment } = usePlacesStore();
   const { trainingDays } = useTrainingScheduleStore();
   const { trainingPlan } = useUserWorkoutStore();
   const { updateTrainingPlan } = useUpdateTrainingPlan();
@@ -29,34 +28,31 @@ export default function EquipmentDetailsScreen() {
   const placeParam = params.placeId as string | undefined;
   const placeId: PlaceType = (placeParam as PlaceType) ?? "STUDIO";
 
-  const [placeEquipment, setLocalPlaceEquipment] = useState<string[]>(
-    getPlaceEquipment(placeId),
+  const storedPlaceEquipment = usePlacesStore(
+    (state) => state.places[placeId].equipment,
   );
+  const setPlaceEquipment = usePlacesStore((state) => state.setPlaceEquipment);
 
-  const hasChanges = useMemo((): boolean => {
-    const currentEquipment = [...placeEquipment].sort();
-    const savedEquipment = [...getPlaceEquipment(placeId)].sort();
+  const [placeEquipment, setLocalPlaceEquipment] =
+    useState<string[]>(storedPlaceEquipment);
 
-    return (
-      currentEquipment.length !== savedEquipment.length ||
-      currentEquipment.some((eq, i) => eq !== savedEquipment[i])
-    );
-  }, [placeEquipment, placeId, getPlaceEquipment]);
+  const currentEquipment = [...placeEquipment].sort();
+  const savedEquipment = [...storedPlaceEquipment].sort();
+  const hasChanges =
+    currentEquipment.length !== savedEquipment.length ||
+    currentEquipment.some((eq, i) => eq !== savedEquipment[i]);
 
-  const handleToggleEquipment = useCallback(
-    (equipmentId: string, wasActive: boolean) => {
-      setLocalPlaceEquipment((prev) => {
-        if (wasActive) {
-          return prev.filter((eq) => eq !== equipmentId);
-        } else {
-          return [...prev, equipmentId];
-        }
-      });
-    },
-    [],
-  );
+  const handleToggleEquipment = (equipmentId: string, wasActive: boolean) => {
+    setLocalPlaceEquipment((prev) => {
+      if (wasActive) {
+        return prev.filter((eq) => eq !== equipmentId);
+      } else {
+        return [...prev, equipmentId];
+      }
+    });
+  };
 
-  const handleSaveChanges = useCallback(() => {
+  const handleSaveChanges = () => {
     setPlaceEquipment(placeId, placeEquipment);
 
     // Check if place is used in any active training day
@@ -71,15 +67,7 @@ export default function EquipmentDetailsScreen() {
     }
 
     router.back();
-  }, [
-    placeId,
-    placeEquipment,
-    setPlaceEquipment,
-    trainingDays,
-    trainingPlan,
-    updateTrainingPlan,
-    router,
-  ]);
+  };
 
   const equipmentKeys = (
     Object.keys(

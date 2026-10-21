@@ -212,21 +212,21 @@ export default function SelectTraining() {
     }
   }, [getTrainingDays, selection]);
 
-  const startPowerTest = useCallback(() => {
+  const startPowerTest = () => {
     setTrainingSelection(null);
     Logger.logEvent("test_coaching_selected_start");
     router.push({
       pathname: "/training/muscle-soreness",
       params: { type: "TEST_WORKOUT", originPath: "/training" },
     });
-  }, [setTrainingSelection]);
+  };
 
-  const skipPowerTest = useCallback(() => {
+  const skipPowerTest = () => {
     Logger.logEvent("test_coaching_selected_skip");
     setScreenState("SELECT");
-  }, []);
+  };
 
-  const renderTiles = useCallback(() => {
+  const renderTiles = () => {
     let listItems = tiles;
     if (selection === "PREV") {
       const sequence = [
@@ -246,9 +246,9 @@ export default function SelectTraining() {
         <ColumnList listItems={listItems} />
       </Box>
     );
-  }, [tiles, selection]);
+  };
 
-  const renderTestCoaching = useCallback(() => {
+  const renderTestCoaching = () => {
     return (
       <FullScreenCoaching
         text={t("training.powerTest.todayIsPowerTest")}
@@ -259,7 +259,7 @@ export default function SelectTraining() {
         skipFunction={skipPowerTest}
       />
     );
-  }, [startPowerTest, skipPowerTest, t]);
+  };
 
   return (
     <>

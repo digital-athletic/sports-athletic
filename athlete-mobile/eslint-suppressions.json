@@ -55,11 +55,6 @@
       "count": 1
     }
   },
-  "app/(tabs)/(more)/equipment.tsx": {
-    "max-lines-per-function": {
-      "count": 1
-    }
-  },
   "app/(tabs)/(more)/more.tsx": {
     "max-lines-per-function": {
       "count": 1

@@ -1,5 +1,5 @@
 import { useResponsiveProp } from "@shopify/restyle";
-import { type FC, useMemo } from "react";
+import { type FC } from "react";
 import { Box } from "../theme/Box";
 
 export type Props = {
@@ -25,34 +25,29 @@ export const ProgressBar: FC<Props> = ({
     desktop: 12,
   });
 
-  const filledBars = useMemo(
-    () =>
-      Array.from({ length: Math.max(0, progress) }, (_, i) => (
-        <Box
-          key={`filled_${i}`}
-          flex={1}
-          height={barHeight}
-          backgroundColor="primary"
-          borderRightWidth={1}
-          borderRightColor="lightGrey2"
-        />
-      )),
-    [progress, barHeight],
-  );
+  const filledBars = Array.from({ length: Math.max(0, progress) }, (_, i) => (
+    <Box
+      key={`filled_${i}`}
+      flex={1}
+      height={barHeight}
+      backgroundColor="primary"
+      borderRightWidth={1}
+      borderRightColor="lightGrey2"
+    />
+  ));
 
-  const emptyBars = useMemo(
-    () =>
-      Array.from({ length: Math.max(0, maximum - progress) }, (_, i) => (
-        <Box
-          key={`empty_${i}`}
-          flex={1}
-          height={barHeight}
-          backgroundColor="lightGrey1"
-          borderRightWidth={1}
-          borderRightColor="lightGrey2"
-        />
-      )),
-    [progress, maximum, barHeight],
+  const emptyBars = Array.from(
+    { length: Math.max(0, maximum - progress) },
+    (_, i) => (
+      <Box
+        key={`empty_${i}`}
+        flex={1}
+        height={barHeight}
+        backgroundColor="lightGrey1"
+        borderRightWidth={1}
+        borderRightColor="lightGrey2"
+      />
+    ),
   );
 
   return toHide ? (

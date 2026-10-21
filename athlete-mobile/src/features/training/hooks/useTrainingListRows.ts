@@ -11,7 +11,6 @@ import { type UserExerciseDataType } from "@/schemas/sync.schema";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { getTagValues } from "@/utils/tagUtils";
 import { type TFunction } from "i18next";
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 export type ListRow = {
@@ -89,10 +88,8 @@ export function useTrainingListRows() {
   const activeTraining = useTrainingStore((s) => s.activeTraining);
   const maxValues = useUserWorkoutStore((s) => s.workoutData.maxValues);
 
-  const rows = useMemo(() => {
-    if (!exerciseList) return [];
-
-    return exerciseList.reduce<ListRow[]>((acc, exercise, index) => {
+  const rows = (exerciseList ?? []).reduce<ListRow[]>(
+    (acc, exercise, index) => {
       if (checkIsPauseExercise(exercise.exerciseId)) return acc;
 
       const exerciseData = getExerciseById(exercise.exerciseId);
@@ -114,8 +111,9 @@ export function useTrainingListRows() {
         completed: Boolean(exercise.completed),
       });
       return acc;
-    }, []);
-  }, [exerciseList, activeTraining, maxValues, t]);
+    },
+    [],
+  );
 
   return { rows };
 }

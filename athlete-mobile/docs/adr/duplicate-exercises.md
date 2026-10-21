@@ -25,7 +25,7 @@ Option 3. The generator applies five rules:
 2. **Session, regular skills:** after the soreness, equipment and level filters, the first branch keeps its exercise. Each later branch with the same exercise counts as blocked, the same as a branch without equipment, and the generator replaces it with another branch of the same skill and region. When no branch fits, the skill trains one exercise less.
 3. **Session, prevention and special warm-up:** a blocked branch normally makes these skills replace all their branches or drop the whole skill. A duplicate refills its own slot only, and prevention takes the replacement from its own body region. When no branch fits, only that slot drops.
 4. **Superset:** the generator pairs an exercise only with a different exercise. Without a different partner, the exercise runs alone.
-5. **Skill boundary:** when the next skill would start with the exercise that ended the previous skill, the generator moves another superset or exercise of the next skill to the front. Max strength keeps its lower body exercises first. When no other order exists, the order stays.
+5. **Skill boundary:** the next skill opens with a superset or exercise that does not start with the exercise that ended the previous skill. Max strength keeps its lower body exercises first. When no other unit fits, the repeat stays. [Exercise order inside a skill](./exercise-order.md) places this rule among the other ordering rules.
 
 Exceptions:
 

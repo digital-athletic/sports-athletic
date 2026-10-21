@@ -2443,6 +2443,7 @@ export default class TrainingGenerator {
           ? "m"
           : "w";
     const userLevel = getUserLevel(user).toLowerCase();
+    const catalogEntry = loadSkillCatalogEntry(skillName);
 
     // Init result
     const data: ExerciseStartValues = {
@@ -2451,12 +2452,12 @@ export default class TrainingGenerator {
       branchId: skill.branchId,
       duration:
         exercise && exercise.isAdvanceByDuration
-          ? this.getDurationDefaultBySkill(skillName)
+          ? (catalogEntry?.startDuration ?? DEFAULT_START_DURATION)
           : undefined,
       height: undefined,
       repetition:
         exercise && exercise.isAdvanceByReps
-          ? this.getRepetitionDefaultBySkill(skillName)
+          ? (catalogEntry?.startRepetitions ?? DEFAULT_START_REPETITIONS)
           : undefined,
       weight: undefined,
       weightType: "weightAbsolute",
@@ -3283,6 +3284,10 @@ const stepRepsAndDuration = (
 };
 
 // Cardio blocks end without a pause, so only a trailing pause is removed.
+// Start values of a skill whose catalog entry sets none
+const DEFAULT_START_REPETITIONS = 8;
+const DEFAULT_START_DURATION = 30;
+
 const SINGLE_EXERCISE_REST_BY_SKILL: Record<string, number> = {
   SWR1: 90,
   SWR2: 90,
@@ -3613,20 +3618,7 @@ export const getIntensityBySkill = (
   skill: SkillCode | PlyometricSkill,
   exercise?: Pick<ExerciseType, "tags">,
 ) => {
-  const entry = loadSkillCatalogEntry(skill);
-  if (entry) {
-    const withoutWeights =
-      exercise &&
-      !getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS");
-    return loadIntensityConfig(
-      (withoutWeights && entry.intensityWithoutWeights) ||
-        entry.intensity ||
-        "DEFAULTKG",
-    );
-  }
   switch (skill) {
-    case "WUSKSA":
-      return loadIntensityConfig("WUSKSA");
     case "PLYO_HIGH":
     case "PLYO_MEDIUM":
       return loadIntensityConfig("PLYO");
@@ -3635,23 +3627,14 @@ export const getIntensityBySkill = (
     case "SWR2":
     case "SWR2KG":
       return getHypertrophyIntensity(skill, exercise);
-    case "CARDIO_3":
-    case "CARDIO_2":
-    case "CARDIO_1_LAKTAT":
-    case "CARDIO_1_SHORT":
-      return loadIntensityConfig(skill);
-    case "SA":
-      return loadIntensityConfig("SA");
-    case "SAKG":
-      return loadIntensityConfig("SAKG");
-    case "SK":
-      return loadIntensityConfig("SK");
-    case "SKKG":
-      return loadIntensityConfig("SKKG");
-    case "MAX":
-    case "MAX_STRENGTH":
-      return loadIntensityConfig("DEFAULT");
-    default:
-      return loadIntensityConfig("DEFAULTKG");
   }
+  const entry = loadSkillCatalogEntry(skill);
+  const withoutWeights =
+    exercise &&
+    !getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS");
+  return loadIntensityConfig(
+    (withoutWeights && entry?.intensityWithoutWeights) ||
+      entry?.intensity ||
+      "DEFAULTKG",
+  );
 };

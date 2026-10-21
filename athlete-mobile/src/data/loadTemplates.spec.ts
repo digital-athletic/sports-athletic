@@ -14,7 +14,10 @@ import type {
   Rest,
   Template,
 } from "@/schemas/aiwl.schema";
-import type { SkillCatalogEntry } from "@/schemas/skillCatalog.schema";
+import {
+  hasSkillTree,
+  type SkillTreeCatalogEntry,
+} from "@/schemas/skillCatalog.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 
 const IDS = [
@@ -226,9 +229,11 @@ const blocksOf = (id: string): PicksBlock[] =>
     return block;
   });
 
-const entryOf = (code: string): SkillCatalogEntry => {
+const entryOf = (code: string): SkillTreeCatalogEntry => {
   const entry = loadSkillCatalogEntry(code);
-  if (!entry) throw new Error(`no catalog entry for ${code}`);
+  if (!entry || !hasSkillTree(entry)) {
+    throw new Error(`no catalog entry with a skill tree for ${code}`);
+  }
   return entry;
 };
 
@@ -282,11 +287,14 @@ describe("loadTemplates: real files", () => {
     expect(() => blocksOf(id)).not.toThrow();
   });
 
-  it.each(IDS)("names catalog skills in the blocks of %s", (id) => {
-    blocksOf(id).forEach((block) =>
-      expect(loadSkillCatalogEntry(block.skill)).toBeDefined(),
-    );
-  });
+  it.each(IDS)(
+    "names catalog skills with a skill tree in the blocks of %s",
+    (id) => {
+      blocksOf(id).forEach((block) =>
+        expect(loadSkillCatalogEntry(block.skill)?.skillTree).toBeDefined(),
+      );
+    },
+  );
 });
 
 describe("loadTemplateName", () => {

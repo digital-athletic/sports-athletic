@@ -16,7 +16,11 @@ import type {
   Superset,
 } from "@/schemas/aiwl.schema";
 import type { SkillCode } from "@/schemas/generator.schema";
-import type { SkillCatalogEntry } from "@/schemas/skillCatalog.schema";
+import {
+  hasSkillTree,
+  type SkillCatalogEntry,
+  type SkillTreeCatalogEntry,
+} from "@/schemas/skillCatalog.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { GeneratorError } from "./GeneratorError";
 import { filterByTags } from "./focusTrainingSelection";
@@ -83,23 +87,25 @@ type BlockContext = {
   preventionSkills: string[];
 };
 
-type BlockDefaults = Pick<
-  ResolvedBlock,
-  "rest" | "countBy" | "fallbackToWholeTree" | "sets" | "superset"
->;
+type TimingDefaults = Pick<ResolvedBlock, "rest" | "sets" | "superset">;
+type PickDefaults = Pick<ResolvedBlock, "countBy" | "fallbackToWholeTree">;
 
-const defaultsOf = (
-  path: string,
-  block: PicksBlock,
-  entry: SkillCatalogEntry,
-): BlockDefaults => {
-  const withDefault = <T>(field: string, own?: T, base?: T): T => {
+const requireDefault =
+  (path: string, block: Block) =>
+  <T>(field: string, own?: T, base?: T): T => {
     const value = own ?? base;
     if (value === undefined) {
       throw new Error(`${path}.${field}: skill ${block.skill} sets no default`);
     }
     return value;
   };
+
+const timingDefaultsOf = (
+  path: string,
+  block: Block,
+  entry: SkillCatalogEntry,
+): TimingDefaults => {
+  const withDefault = requireDefault(path, block);
   return {
     rest: {
       withinSuperset: withDefault(
@@ -118,14 +124,24 @@ const defaultsOf = (
         entry.rest?.afterExercise,
       ),
     },
+    sets: withDefault("sets", block.sets, entry.sets),
+    superset: withDefault("superset", block.superset, entry.superset),
+  };
+};
+
+const pickDefaultsOf = (
+  path: string,
+  block: PicksBlock,
+  entry: SkillTreeCatalogEntry,
+): PickDefaults => {
+  const withDefault = requireDefault(path, block);
+  return {
     countBy: withDefault("countBy", block.countBy, entry.countBy),
     fallbackToWholeTree: withDefault(
       "fallbackToWholeTree",
       block.fallbackToWholeTree,
       entry.fallbackToWholeTree,
     ),
-    sets: withDefault("sets", block.sets, entry.sets),
-    superset: withDefault("superset", block.superset, entry.superset),
   };
 };
 
@@ -135,7 +151,7 @@ const picksFor = (block: PicksBlock, hasWeights: boolean): BlockPicks => {
 };
 
 const poolFor = (
-  entry: SkillCatalogEntry,
+  entry: SkillTreeCatalogEntry,
   picks: BlockPicks,
   fallbackToWholeTree: boolean,
   { skillTrees, hasWeights, preventionSkills }: BlockContext,
@@ -166,11 +182,13 @@ const resolveBlock = (
   context: BlockContext,
 ): ResolvedBlock => {
   const entry = loadSkillCatalogEntry(block.skill);
-  if (!entry) throw skillError(block.skill);
+  if (!entry || !hasSkillTree(entry)) throw skillError(block.skill);
 
-  const defaults = defaultsOf(`${templateId}.blocks[${index}]`, block, entry);
+  const path = `${templateId}.blocks[${index}]`;
+  const timing = timingDefaultsOf(path, block, entry);
+  const pickDefaults = pickDefaultsOf(path, block, entry);
   const picks = picksFor(block, context.hasWeights);
-  const pool = poolFor(entry, picks, defaults.fallbackToWholeTree, context);
+  const pool = poolFor(entry, picks, pickDefaults.fallbackToWholeTree, context);
   if (Object.keys(pool).length === 0) throw skillError(block.skill);
   return {
     skill: block.skill,
@@ -179,7 +197,8 @@ const resolveBlock = (
     setDuration: block.setDuration,
     afterBlock: block.rest?.afterBlock,
     values: block.values,
-    ...defaults,
+    ...timing,
+    ...pickDefaults,
   };
 };
 

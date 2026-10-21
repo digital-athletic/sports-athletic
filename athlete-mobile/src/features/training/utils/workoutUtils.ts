@@ -28,6 +28,7 @@ import {
   EXERCISE_DIRECTIONS_VALUES_MAP,
   MaxValuesType,
 } from "../models/MaxValues";
+import type { BlockValues } from "@/schemas/aiwl.schema";
 import type { SkillCode } from "@/schemas/generator.schema";
 import { TrainingTimeType } from "../models/Training";
 import { UserExerciseDataType } from "../models/UserExerciseData";
@@ -262,6 +263,27 @@ export const calculateWorkoutTotals = (
     height: height,
   };
 };
+
+/**
+ * Applies the values mode of an AIWL block to an intensity: "skill" takes
+ * repetitions and durations from the skill range, "exercise" from the
+ * exercise. Without a mode the intensity config decides.
+ */
+export function withValuesMode(
+  intensity: IntensityData,
+  values: BlockValues | undefined,
+): IntensityData;
+export function withValuesMode(
+  intensity: IntensityData | null,
+  values: BlockValues | undefined,
+): IntensityData | null;
+export function withValuesMode(
+  intensity: IntensityData | null,
+  values: BlockValues | undefined,
+): IntensityData | null {
+  if (!intensity || values === undefined) return intensity;
+  return { ...intensity, overridesExerciseRepsAndDuration: values === "skill" };
+}
 
 const overridesExerciseValue = (
   skillIntensity: IntensityData,

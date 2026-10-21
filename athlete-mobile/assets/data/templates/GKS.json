@@ -6,6 +6,7 @@
     {
       "kind": "picks",
       "skill": "GKS",
+      "values": "exercise",
       "picks": {
         "withWeights": [{ "tags": [], "count": 4 }],
         "withoutWeights": [

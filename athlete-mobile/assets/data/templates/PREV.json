@@ -22,6 +22,7 @@
     {
       "kind": "picks",
       "skill": "PREV",
+      "values": "exercise",
       "picks": [{ "tags": ["SKILL_PREVENTION", "PREVENTION_SHOULDER"], "count": 3 }],
       "superset": "drawOrderWithLeftovers",
       "rest": { "afterExercise": 30, "betweenSets": 30 }

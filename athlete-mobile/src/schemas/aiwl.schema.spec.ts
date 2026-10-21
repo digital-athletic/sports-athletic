@@ -166,6 +166,8 @@ describe("TemplateSchema: accepts", () => {
       "a rest with afterBlock 0",
       template(picksBlock({ rest: { afterBlock: 0 } })),
     ],
+    ["values skill", template(picksBlock({ values: "skill" }))],
+    ["values exercise", template(picksBlock({ values: "exercise" }))],
     [
       "an empty tags list in a pick",
       template(picksBlock({ picks: [{ tags: [], count: 1 }] })),
@@ -380,6 +382,8 @@ describe("TemplateSchema: rejects wrong block settings", () => {
       "blocks.0.rest.afterBlock",
     ],
     ["order random", picksBlock({ order: "random" }), "blocks.0.order"],
+    ["values range", picksBlock({ values: "range" }), "blocks.0.values"],
+    ["an empty values string", picksBlock({ values: "" }), "blocks.0.values"],
   ])("%s", (_label, block, path) => {
     expect(firstIssuePath(template(block))).toBe(path);
   });

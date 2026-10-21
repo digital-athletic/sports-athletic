@@ -65,6 +65,30 @@ jest.mock("../../../../assets/data/generator/focusTrainings.json", () => {
   };
 });
 
+// The skill catalog facts differ from the focusTrainings mock on purpose, so a
+// passing fact assertion proves which file the consumers read.
+jest.mock("../../../../assets/data/generator/skills.json", () => {
+  const bundled = jest.requireActual(
+    "../../../../assets/data/generator/skills.json",
+  );
+  return {
+    ...bundled,
+    PREVHIP: {
+      skillTree: { withWeights: ["PREV", "PREVKG"], withoutWeights: ["PREV"] },
+      intensity: "BAS",
+      focusArea: "MOBILITY",
+      progression: false,
+      painRegions: ["KNEE"],
+    },
+    STRETCH: {
+      skillTree: { withWeights: ["MOB"], withoutWeights: ["MOB"] },
+      intensity: "GKS",
+      focusArea: "WARMUP",
+      progression: true,
+    },
+  };
+});
+
 const user: UserType = {
   userId: "new-focus-training-user",
   personalData: { gender: "MALE", birthday: "1990-01-01" },
@@ -136,21 +160,36 @@ describe("new short workout: template without code changes", () => {
     );
   });
 
-  it("reads the per training facts from the template", () => {
-    expect(mapSkillCodeToFocusArea("PREVHIP")).toBe("PREVENTION");
-    expect(getIntensityBySkill("PREVHIP")).toBe(loadIntensityConfig("PREV"));
-    expect(getRegionsForPreventionSkills(["PREVHIP"])).toEqual(["HIP"]);
-    expect(isPreventionTraining("PREVHIP")).toBe(true);
-    expect(shouldProcessExerciseValues("PREVHIP", "PREVHIP")).toBe(true);
+  it("reads the focus area from the skill catalog", () => {
+    expect(mapSkillCodeToFocusArea("PREVHIP")).toBe("MOBILITY");
+    expect(mapSkillCodeToFocusArea("STRETCH")).toBe("WARMUP");
+  });
+
+  it("reads the intensity from the skill catalog", () => {
+    expect(getIntensityBySkill("PREVHIP")).toBe(loadIntensityConfig("BAS"));
+    expect(getIntensityBySkill("STRETCH")).toBe(loadIntensityConfig("GKS"));
+  });
+
+  it("reads the pain regions from the skill catalog", () => {
+    expect(getRegionsForPreventionSkills(["PREVHIP"])).toEqual(["KNEE"]);
+  });
+
+  it("reads the prevention check from the skill catalog focus area", () => {
+    expect(isPreventionTraining("PREVHIP")).toBe(false);
+  });
+
+  it("reads the progression flag from the skill catalog", () => {
+    expect(shouldProcessExerciseValues("PREVHIP", "PREVHIP")).toBe(false);
+    expect(shouldProcessExerciseValues("STRETCH", "STRETCH")).toBe(true);
+  });
+
+  it("reads the title from the template", () => {
     expect(loadFocusTrainingTitle("PREVHIP", "de")).toBe("Hüftprävention");
   });
 
-  it("keeps the values of a template without progression", () => {
-    expect(shouldProcessExerciseValues("STRETCH", "STRETCH")).toBe(false);
+  it("asks no feedback for a skill without progression", () => {
     expect(
-      isFeedbackEligibleSkill({ id: "training-1", type: "STRETCH" }, "STRETCH"),
+      isFeedbackEligibleSkill({ id: "training-1", type: "PREVHIP" }, "PREVHIP"),
     ).toBe(false);
-    expect(mapSkillCodeToFocusArea("STRETCH")).toBe("MOBILITY");
-    expect(isPreventionTraining("STRETCH")).toBe(false);
   });
 });

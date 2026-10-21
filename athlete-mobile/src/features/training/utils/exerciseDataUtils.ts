@@ -8,7 +8,7 @@ import type {
   GenderTag,
   IntensityData,
 } from "@/features/training/models/Intensity";
-import { loadFocusTraining } from "@/data/loadFocusTrainings";
+import { loadSkillCatalogEntry } from "@/data/loadSkillCatalog";
 import type { SkillCode } from "@/schemas/generator.schema";
 import { isPauseExercise } from "@/features/training/models/IdTypes";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
@@ -62,12 +62,12 @@ export function shouldSkipExerciseSave(
 }
 
 const progressesValues = (type: string): boolean =>
-  type !== "TEST_WORKOUT" && loadFocusTraining(type)?.progression !== false;
+  type !== "TEST_WORKOUT" && loadSkillCatalogEntry(type)?.progression !== false;
 
 /** Exercises of these skills keep their values and ask for no feedback. */
 export const isNoIncreaseSkill = (skill: SkillCode): boolean =>
   WorkoutConstants.NO_INCREASE_SKILL_TYPE.includes(skill) ||
-  loadFocusTraining(skill)?.progression === false;
+  loadSkillCatalogEntry(skill)?.progression === false;
 
 /**
  * Determines if exercise values should be increased based on workout type and skill.

@@ -4,6 +4,7 @@ import {
   type SkillTypes,
 } from "@/constants/workoutConstants";
 import { loadFocusTraining } from "@/data/loadFocusTrainings";
+import { loadSkillCatalogEntry } from "@/data/loadSkillCatalog";
 import { loadIntensityConfig } from "@/data/loadIntensityConfig";
 import { loadStrengthTest } from "@/data/loadStrengthTest";
 import type {
@@ -3622,14 +3623,14 @@ export const getIntensityBySkill = (
   skill: SkillCode | PlyometricSkill,
   exercise?: Pick<ExerciseType, "tags">,
 ) => {
-  const template = loadFocusTraining(skill);
-  if (template) {
+  const entry = loadSkillCatalogEntry(skill);
+  if (entry) {
     const withoutWeights =
       exercise &&
       !getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS");
     return loadIntensityConfig(
-      (withoutWeights && template.intensityWithoutWeights) ||
-        template.intensity ||
+      (withoutWeights && entry.intensityWithoutWeights) ||
+        entry.intensity ||
         "DEFAULTKG",
     );
   }

@@ -13,30 +13,6 @@ export type TrainingDataType = {
 
 export type TrainingSelectionType = "PLAN" | "PREV" | "QUICK";
 
-/**
- * The 6 focus areas displayed on the radar chart and used for statistics.
- * These are the canonical categories for aggregating training time.
- */
-export type FocusArea =
-  | "PREVENTION"
-  | "MOBILITY"
-  | "SWR"
-  | "WARMUP"
-  | "STABILITY"
-  | "CARDIO";
-
-/**
- * Array of all focus areas in radar chart display order.
- */
-export const FOCUS_AREAS: readonly FocusArea[] = [
-  "MOBILITY",
-  "PREVENTION",
-  "CARDIO",
-  "STABILITY",
-  "WARMUP",
-  "SWR",
-] as const;
-
 export type TrainingTimeType = {
   start?: number;
   end?: number;

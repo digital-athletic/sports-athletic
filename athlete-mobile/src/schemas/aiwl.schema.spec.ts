@@ -159,6 +159,14 @@ describe("TemplateSchema: accepts", () => {
     ],
     ["a partial rest", template(picksBlock({ rest: { afterExercise: 45 } }))],
     [
+      "a rest with afterBlock",
+      template(picksBlock({ rest: { afterBlock: 30 } })),
+    ],
+    [
+      "a rest with afterBlock 0",
+      template(picksBlock({ rest: { afterBlock: 0 } })),
+    ],
+    [
       "an empty tags list in a pick",
       template(picksBlock({ picks: [{ tags: [], count: 1 }] })),
     ],
@@ -360,6 +368,16 @@ describe("TemplateSchema: rejects wrong block settings", () => {
       "an unknown rest key",
       picksBlock({ rest: { afterSet: 5 } }),
       "blocks.0.rest.afterSet",
+    ],
+    [
+      "a negative afterBlock",
+      picksBlock({ rest: { afterBlock: -1 } }),
+      "blocks.0.rest.afterBlock",
+    ],
+    [
+      "a fractional afterBlock",
+      picksBlock({ rest: { afterBlock: 1.5 } }),
+      "blocks.0.rest.afterBlock",
     ],
     ["order random", picksBlock({ order: "random" }), "blocks.0.order"],
   ])("%s", (_label, block, path) => {

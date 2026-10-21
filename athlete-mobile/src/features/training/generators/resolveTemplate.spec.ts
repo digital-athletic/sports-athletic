@@ -136,7 +136,7 @@ describe("resolveTemplate: block defaults", () => {
   it("resolves the GKS rest from the template override and the catalog", () => {
     expect(gks().rest).toEqual({
       withinSuperset: 45,
-      betweenSets: 90,
+      betweenSets: 45,
       afterExercise: 45,
     });
   });
@@ -443,6 +443,34 @@ describe("resolveTemplate: block overrides", () => {
       sets: 2,
       fallbackToWholeTree: false,
     });
+  });
+
+  it("passes afterBlock into the block timing and keeps it out of the rest", () => {
+    mockExtraCatalog.BASEENTRY = fullEntry;
+    addTemplate("SYN_AFTER_BLOCK", [
+      picksBlock({ skill: "BASEENTRY", rest: { afterBlock: 30 } }),
+    ]);
+    const [block] = planOf("SYN_AFTER_BLOCK").blocks;
+    expect(block.afterBlock).toBe(30);
+    expect(block.rest).toEqual({
+      withinSuperset: 1,
+      betweenSets: 1,
+      afterExercise: 1,
+    });
+  });
+
+  it("passes an afterBlock of 0 through", () => {
+    mockExtraCatalog.BASEENTRY = fullEntry;
+    addTemplate("SYN_AFTER_BLOCK_ZERO", [
+      picksBlock({ skill: "BASEENTRY", rest: { afterBlock: 0 } }),
+    ]);
+    expect(planOf("SYN_AFTER_BLOCK_ZERO").blocks[0].afterBlock).toBe(0);
+  });
+
+  it("leaves afterBlock undefined without a block value", () => {
+    mockExtraCatalog.BASEENTRY = fullEntry;
+    addTemplate("SYN_NO_AFTER_BLOCK", [picksBlock({ skill: "BASEENTRY" })]);
+    expect(planOf("SYN_NO_AFTER_BLOCK").blocks[0].afterBlock).toBeUndefined();
   });
 });
 

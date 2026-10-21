@@ -13,7 +13,7 @@
           { "tags": ["REGION_FULL_BODY"], "count": 2 }
         ]
       },
-      "rest": { "afterExercise": 45 }
+      "rest": { "afterExercise": 45, "betweenSets": 45 }
     }
   ]
 }

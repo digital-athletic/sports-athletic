@@ -221,6 +221,67 @@ describe("getSetListFromExercisePairs: focus blocks", () => {
       ).slice(0, 4),
     ).toEqual([5, 5, 5, 25]);
   });
+
+  it("closes the last solo exercise on afterBlock and keeps the other rests", () => {
+    expect(
+      pausesOf(
+        buildSetList("SWR2", [{ first: chest }, { first: quads }], {
+          rest: blockRest,
+          afterBlock: 40,
+        }),
+      ),
+    ).toEqual([15, 25, 15, 40]);
+  });
+
+  it("closes the last pair on afterBlock and keeps the other rests", () => {
+    expect(
+      pausesOf(
+        buildSetList(
+          "SWR2",
+          [
+            { first: chest, second: quads },
+            { first: biceps, second: calf },
+          ],
+          { rest: blockRest, afterBlock: 40 },
+        ),
+      ),
+    ).toEqual([5, 5, 5, 25, 5, 5, 5, 40]);
+  });
+
+  it("closes on afterBlock even when the same muscle follows only an unresolved block", () => {
+    const unresolvedChest = { ...chestAgain, exerciseId: "-1" };
+    expect(
+      pausesOf(
+        buildSetList("SWR2", [{ first: chest }, { first: unresolvedChest }], {
+          rest: blockRest,
+          afterBlock: 40,
+        }),
+      ),
+    ).toEqual([15, 40]);
+  });
+
+  it("closes the last block on afterBlock 0", () => {
+    expect(
+      pausesOf(
+        buildSetList("SWR2", [{ first: chest }], {
+          rest: blockRest,
+          afterBlock: 0,
+        }),
+      ),
+    ).toEqual([15, 0]);
+  });
+
+  it("closes on the block rest without afterBlock", () => {
+    expect(
+      pausesOf(
+        buildSetList(
+          "SWR2",
+          [{ first: chest }, { first: quads }],
+          timing(blockRest),
+        ),
+      ),
+    ).toEqual([15, 25, 15, 25]);
+  });
 });
 
 describe("getSetListFromExercisePairs: warm-up sets", () => {
@@ -275,14 +336,14 @@ describe("getSetListFromExercisePairs: warm-up sets", () => {
 });
 
 describe("generateShortWorkout: special warm-up in prevention", () => {
-  it("closes the special warm-up on its 10 s rest", () => {
+  const generate = () => {
     const generator = new TrainingGenerator();
     const skillTrees = {
       PREV: transformSkillTree(PREV as RawSkillTree),
       PREVKG: transformSkillTree(PREVKG as RawSkillTree),
       WUSPEZIAL: transformSkillTree(WUSPEZIAL as RawSkillTree),
     } as { [skillName: string]: SkillTreeType };
-    const result = generator.generateShortWorkout(
+    return generator.generateShortWorkout(
       "PREVKNEE",
       user,
       "STUDIO",
@@ -291,12 +352,21 @@ describe("generateShortWorkout: special warm-up in prevention", () => {
       [],
       { exerciseData: {}, branchData: {} },
     );
+  };
+
+  it("closes the special warm-up on its 30 s afterBlock rest", () => {
+    const result = generate();
     const lastWarmUpIndex = result.findLastIndex(
       (entry) => entry.skill === "WUSPEZIAL",
     );
     expect(result[lastWarmUpIndex]).toMatchObject({
       exerciseId: PAUSE_ID,
-      duration: 10,
+      duration: 30,
     });
+  });
+
+  it("ends the workout on an exercise without a trailing rest", () => {
+    const result = generate();
+    expect(result[result.length - 1].exerciseId).not.toBe(PAUSE_ID);
   });
 });

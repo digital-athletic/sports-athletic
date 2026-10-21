@@ -62,10 +62,11 @@ const resolved = (
   shape: Shape,
   [withinSuperset, betweenSets, afterExercise]: [number, number, number],
   setDuration?: number,
+  afterBlock?: number,
 ): Resolved => ({
   ...shape,
   setDuration,
-  rest: { withinSuperset, betweenSets, afterExercise },
+  rest: { withinSuperset, betweenSets, afterExercise, afterBlock },
 });
 
 const timed = (afterExercise: number) =>
@@ -79,7 +80,9 @@ const timed = (afterExercise: number) =>
     [10, 10, afterExercise],
     60,
   );
-const preventionBlocks = (): Resolved[] => [
+const preventionBlocks = (
+  prevention: [number, number, number] = [30, 60, 60],
+): Resolved[] => [
   resolved(
     {
       countBy: "exercises",
@@ -88,6 +91,8 @@ const preventionBlocks = (): Resolved[] => [
       superset: "muscles",
     },
     [10, 10, 10],
+    undefined,
+    30,
   ),
   resolved(
     {
@@ -96,7 +101,7 @@ const preventionBlocks = (): Resolved[] => [
       sets: 2,
       superset: "drawOrderWithLeftovers",
     },
-    [30, 60, 60],
+    prevention,
   ),
 ];
 
@@ -113,7 +118,7 @@ const RESOLVED: Record<string, Resolved[]> = {
         sets: 2,
         superset: "drawOrder",
       },
-      [30, 60, 30],
+      [30, 30, 30],
     ),
   ],
   GKS: [
@@ -124,7 +129,7 @@ const RESOLVED: Record<string, Resolved[]> = {
         sets: 2,
         superset: "none",
       },
-      [45, 90, 45],
+      [45, 45, 45],
     ),
   ],
   STABILITY: [
@@ -133,12 +138,12 @@ const RESOLVED: Record<string, Resolved[]> = {
         countBy: "exercises",
         fallbackToWholeTree: false,
         sets: 2,
-        superset: "muscles",
+        superset: "drawOrder",
       },
-      [30, 60, 60],
+      [30, 30, 60],
     ),
   ],
-  PREV: preventionBlocks(),
+  PREV: preventionBlocks([30, 30, 30]),
   PREVSHOULDER: preventionBlocks(),
   PREVKNEE: preventionBlocks(),
   PREVWRIST: preventionBlocks(),

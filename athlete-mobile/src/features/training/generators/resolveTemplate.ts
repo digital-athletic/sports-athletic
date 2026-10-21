@@ -22,6 +22,7 @@ import { filterByTags } from "./focusTrainingSelection";
 
 export interface BlockTiming {
   setDuration?: number;
+  afterBlock?: number;
   rest: Rest;
 }
 
@@ -174,6 +175,7 @@ const resolveBlock = (
     pool,
     picks,
     setDuration: block.setDuration,
+    afterBlock: block.rest?.afterBlock,
     ...defaults,
   };
 };

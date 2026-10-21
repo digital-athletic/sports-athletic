@@ -6,7 +6,9 @@
     {
       "kind": "picks",
       "skill": "STABILITY",
-      "picks": [{ "tags": [], "count": 6 }]
+      "picks": [{ "tags": [], "count": 6 }],
+      "superset": "drawOrder",
+      "rest": { "betweenSets": 30 }
     }
   ]
 }

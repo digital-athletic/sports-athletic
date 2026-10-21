@@ -11,7 +11,8 @@ export type GeneratorError = {
     | "TEST_WORKOUT"
     | "MULTIPLE_REGIONS"
     | "MISSING_WORKOUT_DATA"
-    | "PREV_SHORT_TRAINING_SORENESS";
+    | "PREV_SHORT_TRAINING_SORENESS"
+    | "BLOCK_KIND";
   params: string[];
 };
 

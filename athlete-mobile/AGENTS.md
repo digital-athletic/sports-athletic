@@ -80,6 +80,8 @@ This file provides guidance to AI Agents for building high-quality React Native 
 - Ensure accessibility features are included in testing specs
 - Use a colon as separator in `describe` names (e.g. `"MyScreen: feature under test"`), never an em dash
 - Never use dashes (em dash or hyphen as separator) in test names or any raw text; dashes are only allowed in markdown list items
+- Readability and simplicity come first in tests. Call the code under test and build its input inside the test body, so a reader sees which real function runs. Do not hide those calls in mocks or helper functions
+- Name test data helpers explicitly (`generateCatalogExercise`, not `ref`) and give each one a comment with a small data example
 
 ## File & Directory Rules
 - Route files and navigation layouts belong in the `app/` directory (Expo Router file-based routing).

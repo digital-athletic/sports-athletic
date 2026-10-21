@@ -3,7 +3,6 @@ import {
   WorkoutConstants,
   type SkillTypes,
 } from "@/constants/workoutConstants";
-import { loadFocusTraining } from "@/data/loadFocusTrainings";
 import { loadSkillCatalogEntry } from "@/data/loadSkillCatalog";
 import { loadIntensityConfig } from "@/data/loadIntensityConfig";
 import { loadStrengthTest } from "@/data/loadStrengthTest";
@@ -106,7 +105,7 @@ import {
   type TestSetLoads,
   type UserExerciseDataMapType,
 } from "@/schemas/generator.schema";
-import type { FocusTrainingBlock } from "@/schemas/focusTraining.schema";
+import type { Superset } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
 import { Logger } from "@/services/Logger";
@@ -143,12 +142,8 @@ import {
   getUserLevel,
   roundWeightValue,
 } from "../utils/workoutUtils";
-import {
-  drawBlock,
-  requireFocusEquipment,
-  resolveFocusPool,
-  type DrawContext,
-} from "./focusTrainingSelection";
+import { drawBlock, type DrawContext } from "./focusTrainingSelection";
+import { resolveShortWorkoutPlan, type BlockTiming } from "./resolveTemplate";
 import { computeWarmupWeights, WARMUP_REST_SECONDS } from "./warmupDerivation";
 
 export default class TrainingGenerator {
@@ -246,17 +241,11 @@ export default class TrainingGenerator {
     // Create exercise lookup map for type-safe access
     const exerciseMap = createExerciseMap(exercises);
 
-    const template = loadFocusTraining(type);
-    if (!template) {
-      throw { type: "NO_EXERCISES", subtype: "SKILL_TREE", params: [type] };
-    }
-    const HAS_WEIGHTS = hasWeights(equipment);
-    requireFocusEquipment(template, equipment);
-    const pool = resolveFocusPool(type, template, skillTrees, HAS_WEIGHTS);
+    const plan = resolveShortWorkoutPlan(type, skillTrees, equipment);
+    const pool = plan.pool;
 
     if (TrainingGenerator.DEBUG) {
       console.log("generate short training for " + type);
-      console.log("HAS_WEIGHTS", HAS_WEIGHTS);
       console.log("pool", pool);
     }
 
@@ -439,16 +428,16 @@ export default class TrainingGenerator {
       draw: { single: getBranchAndId, pair: getSuperSetPairBranchAndId },
       usedBranchIds: [],
     };
-    const drawnBlocks = template.blocks.map((block) =>
-      drawBlock(block, HAS_WEIGHTS, drawContext),
+    const drawnBlocks = plan.blocks.map((block) =>
+      drawBlock(block, drawContext),
     );
 
     if (TrainingGenerator.DEBUG) {
       console.log("branches selected", drawnBlocks);
     }
 
-    const setLists = template.blocks.map((block, index) => {
-      const skill: SkillCode = block.skill ?? type;
+    const setLists = plan.blocks.map((block, index) => {
+      const skill: SkillCode = block.skill;
       const exercisePairs = this.getExercisePairs(
         skill,
         drawnBlocks[index],
@@ -469,7 +458,7 @@ export default class TrainingGenerator {
         block.sets,
         temporalData,
         userExerciseData.exerciseData,
-        block,
+        { setDuration: block.setDuration, rest: block.rest },
       );
     });
     // the pause closing a block leads into the next one
@@ -1185,7 +1174,7 @@ export default class TrainingGenerator {
     setsPerExercise: number,
     temporalData: TemporalDataType[],
     userExerciseData: Record<string, UserExerciseDataType | undefined> | null,
-    focusBlock?: Pick<FocusTrainingBlock, "work" | "pause">,
+    timing?: BlockTiming,
   ): GeneratedSetListEntry[] => {
     // Create exercise map for O(1) lookup by ID
     const exerciseMap = createExerciseMap(exercises);
@@ -1259,7 +1248,7 @@ export default class TrainingGenerator {
         user,
         firstExercise,
         null,
-        focusBlock?.work,
+        timing?.setDuration,
       );
       const intervalTime = intervalLength + pauseLength;
       const repetition = Math.min(
@@ -1596,16 +1585,16 @@ export default class TrainingGenerator {
           user,
           firstExerciseData,
           userExerciseData,
-          focusBlock?.work,
+          timing?.setDuration,
         );
         // calc pause
         const inSetPauseLength =
-          focusBlock?.pause.superset ?? this.getInSetPauseBySkill(skill.skill);
+          timing?.rest.withinSuperset ?? this.getInSetPauseBySkill(skill.skill);
         const singleRestLength =
-          focusBlock?.pause.sets ??
+          timing?.rest.betweenSets ??
           this.getSingleExerciseRestBySkill(skill.skill);
         const afterSetPauseLength =
-          focusBlock?.pause.exercise ??
+          timing?.rest.afterExercise ??
           this.getAfterSetPauseBySkill(skill.skill);
         const nextPair = exercisePairs
           .slice(i + 1)
@@ -1639,7 +1628,7 @@ export default class TrainingGenerator {
             user,
             secondExerciseData!,
             userExerciseData,
-            focusBlock?.work,
+            timing?.setDuration,
           );
         } else {
           if (
@@ -1959,7 +1948,7 @@ export default class TrainingGenerator {
     exercises: ExerciseType[],
     pains: string[],
     thisDayPrevs: string[],
-    pairing?: FocusTrainingBlock["superset"],
+    pairing?: Superset,
   ): ExercisePair[] => {
     if (TrainingGenerator.DEBUG) {
       console.log("Get exercise pairs for skill", skill);
@@ -2021,7 +2010,7 @@ export default class TrainingGenerator {
       }
     }
 
-    if (pairing === "drawOrder" || pairing === "drawOrderAll") {
+    if (pairing === "drawOrder" || pairing === "drawOrderWithLeftovers") {
       const drawn =
         prevSides.length > 0
           ? (filterExercisesBySides(
@@ -2031,7 +2020,7 @@ export default class TrainingGenerator {
             ) as BranchExerciseReference[])
           : branches;
       const pairs = pairInDrawOrder(drawn, exercises, prevSides.length === 0);
-      if (pairing === "drawOrderAll") pairLeftoverSingles(pairs);
+      if (pairing === "drawOrderWithLeftovers") pairLeftoverSingles(pairs);
       return pairs;
     }
 

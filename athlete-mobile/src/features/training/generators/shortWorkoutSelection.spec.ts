@@ -74,8 +74,8 @@ const selectedBranches = (
 
 const slotCount = (branches: { branchTags: string[] }[]): number =>
   branches.reduce(
-    (slots, { branchTags }) =>
-      slots + (branchTags.includes("SIDE_ONE") ? 2 : 1),
+    (entries, { branchTags }) =>
+      entries + (branchTags.includes("SIDE_ONE") ? 2 : 1),
     0,
   );
 
@@ -92,7 +92,7 @@ describe("generateShortWorkout: selection", () => {
     expect(branches.map((b) => b.exerciseId)).toEqual(["501"]);
   });
 
-  it("fills at most 10 slots in a warm up when a one sided branch comes last", () => {
+  it("fills at most 10 entries in a warm up when a one sided branch comes last", () => {
     jest.spyOn(Math, "random").mockReturnValue(0);
     const bothSided = ["SKILL_WU", "REGION_CORE", "SIDE_BOTH"];
     const tree: SkillTreeType = {};

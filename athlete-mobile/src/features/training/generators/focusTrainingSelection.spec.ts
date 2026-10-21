@@ -2,18 +2,18 @@ import type {
   BranchSelectionResult,
   SuperSetBranchSelectionResult,
 } from "@/features/training/models/ExerciseBranch";
-import type {
-  FocusTraining,
-  FocusTrainingBlock,
-} from "@/schemas/focusTraining.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import {
   drawBlock,
   filterByTags,
-  requireFocusEquipment,
-  resolveFocusPool,
   type BranchDraw,
 } from "./focusTrainingSelection";
+import type { ResolvedBlock } from "./resolveTemplate";
+
+type DrawBlock = Pick<
+  ResolvedBlock,
+  "pool" | "picks" | "countBy" | "fallbackToWholeTree"
+>;
 
 const branch = (tags: string[]): SkillTreeType[string] => ({
   tags,
@@ -25,22 +25,11 @@ const tree = (entries: Record<string, string[]>): SkillTreeType =>
     Object.entries(entries).map(([id, tags]) => [id, branch(tags)]),
   );
 
-const block = (change: Partial<FocusTrainingBlock>): FocusTrainingBlock => ({
-  draw: "exercises",
+const block = (pool: SkillTreeType, change: Partial<DrawBlock>): DrawBlock => ({
+  pool,
   picks: [{ tags: [], count: 1 }],
-  fallback: false,
-  sets: 1,
-  pause: { superset: 10, sets: 10, exercise: 10 },
-  superset: "none",
-  ...change,
-});
-
-const template = (change: Partial<FocusTraining>): FocusTraining => ({
-  title: { en: "Mobility", de: "Mobilität" },
-  focusArea: "MOBILITY",
-  progression: false,
-  skillTrees: ["MOB"],
-  blocks: [block({})],
+  countBy: "exercises",
+  fallbackToWholeTree: false,
   ...change,
 });
 
@@ -70,12 +59,13 @@ const firstUnused: BranchDraw = {
   },
 };
 
+// The block pool defaults to the context pool, as for a block without narrowing.
 const drawnIds = (
-  drawn: FocusTrainingBlock,
+  change: Partial<DrawBlock>,
   pool: SkillTreeType,
-  hasWeights = true,
+  blockPool: SkillTreeType = pool,
 ): string[] =>
-  drawBlock(drawn, hasWeights, {
+  drawBlock(block(blockPool, change), {
     pool,
     draw: firstUnused,
     usedBranchIds: [],
@@ -124,127 +114,72 @@ describe("filterByTags: tag groups", () => {
   });
 });
 
-describe("resolveFocusPool: skill trees", () => {
-  const skillTrees = {
-    GKS: tree({ weighted: ["REGION_CORE"] }),
-    GKSKG: tree({ bodyweight: ["REGION_CORE"] }),
-    PREV: tree({
-      knee: ["SKILL_PREVENTION", "PREVENTION_KNEE_HIP"],
-      shoulder: ["SKILL_PREVENTION", "PREVENTION_SHOULDER"],
-    }),
-    PREVKG: tree({ kneeKg: ["SKILL_PREVENTION", "PREVENTION_KNEE_HIP"] }),
-    WUSPEZIAL: tree({ special: ["SKILL_WARM_UP_SPECIAL"] }),
-  };
+// countBy "entries": a two sided exercise adds 1 entry, a one sided exercise adds 2 (left and right).
+// The test draw takes the exercises in the order the pool lists them.
+describe("drawBlock: count by entries", () => {
+  const twoSided = ["SIDE_BOTH"];
+  const oneSided = ["SIDE_ONE"];
+  const drawEntries = (count: number, pool: SkillTreeType): string[] =>
+    drawnIds({ countBy: "entries", picks: [{ tags: [], count }] }, pool);
 
-  it("picks the skill tree variant from the weights", () => {
-    const gks = template({ skillTrees: ["GKS"] });
+  it("counts a two sided exercise as 1 entry", () => {
+    const pool = tree({ pushUp: twoSided, squat: twoSided, burpee: twoSided });
 
-    expect(Object.keys(resolveFocusPool("GKS", gks, skillTrees, true))).toEqual(
-      ["weighted"],
-    );
-    expect(
-      Object.keys(resolveFocusPool("GKS", gks, skillTrees, false)),
-    ).toEqual(["bodyweight"]);
+    expect(drawEntries(2, pool)).toEqual(["pushUp", "squat"]);
   });
 
-  it("merges the skill trees, limits them to the template tags and adds the block skill trees", () => {
-    const knee = template({
-      skillTrees: ["PREV", "PREVKG"],
-      tags: ["PREVENTION_KNEE_HIP"],
-      blocks: [block({ skillTree: "WUSPEZIAL" }), block({})],
+  it("counts a one sided exercise as 2 entries", () => {
+    const pool = tree({ singleArmRow: oneSided, pushUp: twoSided });
+
+    expect(drawEntries(2, pool)).toEqual(["singleArmRow"]);
+  });
+
+  it("skips a one sided exercise when only 1 entry is missing", () => {
+    const pool = tree({
+      pushUp: twoSided,
+      singleArmRow: oneSided,
+      squat: twoSided,
     });
 
-    expect(
-      Object.keys(resolveFocusPool("PREVKNEE", knee, skillTrees, true)),
-    ).toEqual(["knee", "kneeKg", "special"]);
+    expect(drawEntries(2, pool)).toEqual(["pushUp", "squat"]);
   });
 
-  it("throws the tag values when no branch carries the template tags", () => {
-    const spine = template({
-      skillTrees: ["PREV"],
-      tags: ["PREVENTION_SPINE"],
+  it("draws one pick after the other", () => {
+    const pool = tree({
+      pushUp: ["SIDE_BOTH", "REGION_UPPER_BODY"],
+      burpee: ["SIDE_BOTH", "REGION_FULL_BODY"],
+      squat: ["SIDE_BOTH", "REGION_LOWER_BODY"],
     });
+    const picks = [
+      { tags: ["REGION_FULL_BODY"], count: 1 },
+      { tags: ["REGION_LOWER_BODY"], count: 1 },
+    ];
 
-    expect(() => resolveFocusPool("PREV", spine, skillTrees, true)).toThrow(
-      expect.objectContaining({
-        type: "NO_EXERCISES",
-        subtype: "SKILL_TREE",
-        params: ["SPINE"],
-      }),
-    );
-  });
-});
-
-describe("requireFocusEquipment", () => {
-  const foamRolling = template({
-    requiredEquipment: ["FOAM_ROLLER", "FOAM_BALL"],
-  });
-
-  it("accepts an athlete with one of the required equipment", () => {
-    expect(() =>
-      requireFocusEquipment(foamRolling, ["MAT", "FOAM_BALL"]),
-    ).not.toThrow();
-  });
-
-  it("throws the required equipment when the athlete has none of it", () => {
-    expect(() => requireFocusEquipment(foamRolling, ["MAT"])).toThrow(
-      expect.objectContaining({
-        type: "NO_EXERCISES",
-        subtype: "EQUIPMENT",
-        params: ["FOAM_ROLLER", "FOAM_BALL"],
-      }),
-    );
-  });
-
-  it("accepts any athlete when the template requires no equipment", () => {
-    expect(() => requireFocusEquipment(template({}), [])).not.toThrow();
-  });
-});
-
-describe("drawBlock: slots", () => {
-  const pool = tree({
-    a: ["SIDE_BOTH", "REGION_UPPER_BODY"],
-    b: ["SIDE_ONE", "REGION_UPPER_BODY"],
-    c: ["SIDE_BOTH", "REGION_FULL_BODY"],
-    d: ["SIDE_ONE", "REGION_FULL_BODY"],
-    e: ["SIDE_BOTH", "REGION_LOWER_BODY"],
-  });
-
-  it("fills two slots with a one sided exercise", () => {
-    expect(
-      drawnIds(block({ draw: "slots", picks: [{ tags: [], count: 3 }] }), pool),
-    ).toEqual(["a", "b"]);
-  });
-
-  it("skips a one sided exercise that does not fit the last slot", () => {
-    expect(
-      drawnIds(block({ draw: "slots", picks: [{ tags: [], count: 2 }] }), pool),
-    ).toEqual(["a", "c"]);
-  });
-
-  it("draws the picks for athletes without weights when the athlete has none", () => {
-    const regions = block({
-      draw: "slots",
-      picks: [{ tags: [], count: 1 }],
-      picksWithoutWeights: [
-        { tags: ["REGION_FULL_BODY"], count: 1 },
-        { tags: ["REGION_LOWER_BODY"], count: 1 },
-      ],
-    });
-
-    expect(drawnIds(regions, pool, false)).toEqual(["c", "e"]);
-    expect(drawnIds(regions, pool, true)).toEqual(["a"]);
-  });
-
-  it("falls back to the whole pool when the picks run out", () => {
-    const lower = { tags: ["REGION_LOWER_BODY"], count: 2 };
-
-    expect(
-      drawnIds(block({ draw: "slots", picks: [lower], fallback: true }), pool),
-    ).toEqual(["e", "a"]);
-    expect(drawnIds(block({ draw: "slots", picks: [lower] }), pool)).toEqual([
-      "e",
+    expect(drawnIds({ countBy: "entries", picks }, pool)).toEqual([
+      "burpee",
+      "squat",
     ]);
+  });
+
+  describe("when the matching exercises run out", () => {
+    const pool = tree({
+      squat: ["SIDE_BOTH", "REGION_LOWER_BODY"],
+      pushUp: ["SIDE_BOTH", "REGION_UPPER_BODY"],
+    });
+    const picks = [{ tags: ["REGION_LOWER_BODY"], count: 2 }];
+
+    it("fills up from the whole pool with fallback", () => {
+      expect(
+        drawnIds(
+          { countBy: "entries", picks, fallbackToWholeTree: true },
+          pool,
+        ),
+      ).toEqual(["squat", "pushUp"]);
+    });
+
+    it("stays short without fallback", () => {
+      expect(drawnIds({ countBy: "entries", picks }, pool)).toEqual(["squat"]);
+    });
   });
 });
 
@@ -252,7 +187,7 @@ describe("drawBlock: exercises", () => {
   it("counts a one sided exercise once", () => {
     const pool = tree({ a: ["SIDE_ONE"], b: ["SIDE_ONE"], c: ["SIDE_BOTH"] });
 
-    expect(drawnIds(block({ picks: [{ tags: [], count: 2 }] }), pool)).toEqual([
+    expect(drawnIds({ picks: [{ tags: [], count: 2 }] }, pool)).toEqual([
       "a",
       "b",
     ]);
@@ -260,7 +195,7 @@ describe("drawBlock: exercises", () => {
 
   it("never draws a branch the training already uses", () => {
     const pool = tree({ a: [], b: [] });
-    const drawn = drawBlock(block({ picks: [{ tags: [], count: 2 }] }), true, {
+    const drawn = drawBlock(block(pool, { picks: [{ tags: [], count: 2 }] }), {
       pool,
       draw: firstUnused,
       usedBranchIds: ["a"],
@@ -280,7 +215,7 @@ describe("drawBlock: pairs", () => {
     });
 
     expect(
-      drawnIds(block({ draw: "pairs", picks: [{ tags: [], count: 2 }] }), pool),
+      drawnIds({ countBy: "pairs", picks: [{ tags: [], count: 2 }] }, pool),
     ).toEqual(["c", "d", "a", "b"]);
   });
 
@@ -288,7 +223,54 @@ describe("drawBlock: pairs", () => {
     const pool = tree({ a: [] });
 
     expect(
-      drawnIds(block({ draw: "pairs", picks: [{ tags: [], count: 3 }] }), pool),
+      drawnIds({ countBy: "pairs", picks: [{ tags: [], count: 3 }] }, pool),
     ).toEqual(["a"]);
+  });
+});
+
+describe("drawBlock: block pool", () => {
+  const contextPool = tree({ a: [], b: [], c: [] });
+
+  it("never draws a branch outside the block pool", () => {
+    expect(
+      drawnIds(
+        { picks: [{ tags: [], count: 3 }], fallbackToWholeTree: true },
+        contextPool,
+        tree({ b: [] }),
+      ),
+    ).toEqual(["b"]);
+  });
+
+  it("never falls back to a branch outside the block pool", () => {
+    const outside = tree({ a: ["SKILL_X"], b: [], c: [] });
+
+    expect(
+      drawnIds(
+        {
+          picks: [{ tags: ["SKILL_X"], count: 2 }],
+          fallbackToWholeTree: true,
+        },
+        outside,
+        tree({ c: [] }),
+      ),
+    ).toEqual(["c"]);
+  });
+
+  it("keeps the key order of the context pool", () => {
+    const reordered = tree({ c: [], b: [], a: [] });
+
+    expect(
+      drawnIds({ picks: [{ tags: [], count: 2 }] }, contextPool, reordered),
+    ).toEqual(["a", "b"]);
+  });
+
+  it("draws nothing when the block pool shares no branch with the context pool", () => {
+    expect(
+      drawnIds(
+        { picks: [{ tags: [], count: 2 }], fallbackToWholeTree: true },
+        contextPool,
+        tree({ z: [] }),
+      ),
+    ).toEqual([]);
   });
 });

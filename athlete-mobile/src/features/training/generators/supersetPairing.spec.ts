@@ -1,6 +1,6 @@
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import type { FocusTrainingBlock } from "@/schemas/focusTraining.schema";
+import type { Superset } from "@/schemas/aiwl.schema";
 import ExercisesData from "../../../../assets/data/generator/Exercises.json";
 import TrainingGenerator from "./TrainingGenerator";
 
@@ -120,7 +120,7 @@ describe("getExercisePairs: focus block pairing", () => {
   const pairIds = (
     skill: string,
     branches: BranchExerciseReference[],
-    pairing: FocusTrainingBlock["superset"],
+    pairing: Superset,
     catalog = catalogFor(branches),
   ) =>
     new TrainingGenerator()
@@ -177,7 +177,9 @@ describe("getExercisePairs: focus block pairing", () => {
       ["eo", "eo2"],
       ["ey"],
     ]);
-    expect(pairIds("PREVKNEE", branches, "drawOrderAll", catalog)).toEqual([
+    expect(
+      pairIds("PREVKNEE", branches, "drawOrderWithLeftovers", catalog),
+    ).toEqual([
       ["ex", "ey"],
       ["eo", "eo2"],
     ]);

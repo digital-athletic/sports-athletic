@@ -13,7 +13,7 @@ const LocalizedTextSchema = v.objectWithRest(
 );
 export type LocalizedText = v.InferOutput<typeof LocalizedTextSchema>;
 
-export const CountBySchema = v.picklist(["exercises", "sides", "pairs"]);
+export const CountBySchema = v.picklist(["exercises", "entries", "pairs"]);
 export type CountBy = v.InferOutput<typeof CountBySchema>;
 export const SupersetSchema = v.picklist([
   "none",

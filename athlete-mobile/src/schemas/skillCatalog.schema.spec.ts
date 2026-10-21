@@ -15,7 +15,7 @@ const gksEntry: Json = {
   intensityWithoutWeights: "GKSKG",
   focusArea: "STABILITY",
   progression: true,
-  countBy: "sides",
+  countBy: "entries",
   fallbackToWholeTree: true,
   superset: "none",
   sets: 2,

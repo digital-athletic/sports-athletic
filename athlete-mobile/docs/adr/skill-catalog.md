@@ -43,7 +43,7 @@ type SkillCatalogEntry = {
   painRegions?: string[];
   regionFilter?: boolean;
   // Block defaults: a block overrides them with fields of the same name.
-  countBy?: "exercises" | "sides" | "pairs";
+  countBy?: "exercises" | "entries" | "pairs";
   fallbackToWholeTree?: boolean;
   superset?: "none" | "muscles" | "drawOrder" | "drawOrderWithLeftovers";
   sets?: number;
@@ -85,7 +85,7 @@ Entries shortened to the fields that matter here:
     "skillTree": { "withWeights": ["GKS"], "withoutWeights": ["GKSKG"] },
     "intensity": "GKS", "intensityWithoutWeights": "GKSKG",
     "focusArea": "STABILITY", "progression": true, "regionFilter": true,
-    "countBy": "sides", "fallbackToWholeTree": true, "superset": "none", "sets": 2,
+    "countBy": "entries", "fallbackToWholeTree": true, "superset": "none", "sets": 2,
     "rest": { "withinSuperset": 45, "betweenSets": 90, "afterExercise": 60 }
   },
   "STABILITY": {

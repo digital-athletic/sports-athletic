@@ -1,6 +1,5 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
-import { loadFocusTraining } from "@/data/loadFocusTrainings";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import {
   getSkillTree,
@@ -10,7 +9,7 @@ import type { Block, PicksBlock, Template } from "@/schemas/aiwl.schema";
 import type { SkillCatalogEntry } from "@/schemas/skillCatalog.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { getTagValues } from "@/utils/tagUtils";
-import { filterByTags, resolveFocusPool } from "./focusTrainingSelection";
+import { filterByTags } from "./focusTrainingSelection";
 import {
   resolveShortWorkoutPlan,
   type ShortWorkoutPlan,
@@ -138,7 +137,7 @@ describe("resolveTemplate: block defaults", () => {
       skill: "GKS",
       sets: 2,
       superset: "none",
-      countBy: "sides",
+      countBy: "entries",
       fallbackToWholeTree: true,
     });
   });
@@ -291,31 +290,6 @@ describe("resolveTemplate: block pool", () => {
   });
 });
 
-describe("resolveTemplate: parity with the old pool (remove with focusTrainings.json)", () => {
-  describe.each(TEMPLATE_IDS)("%s", (id) => {
-    it.each(PLACES)(
-      "draws the same pick matches as the old pool $label",
-      ({ equipment, hasWeights }) => {
-        const template = loadFocusTraining(id);
-        if (!template) throw new Error(`no old template ${id}`);
-        const oldPool = resolveFocusPool(id, template, trees, hasWeights);
-        const blocks = resolveShortWorkoutPlan(id, trees, equipment).blocks;
-        const actual = blocks.map((block) =>
-          block.picks.map((pick) =>
-            Object.keys(filterByTags(block.pool, pick.tags)),
-          ),
-        );
-        const expected = blocks.map((block) =>
-          block.picks.map((pick) =>
-            Object.keys(filterByTags(oldPool, pick.tags)),
-          ),
-        );
-        expect(actual).toEqual(expected);
-      },
-    );
-  });
-});
-
 describe("resolveTemplate: errors", () => {
   it("throws SKILL_TREE for an unknown template", () => {
     expect(thrown(() => planOf("NOPE"))).toEqual({
@@ -361,7 +335,7 @@ describe("resolveTemplate: errors", () => {
   it("throws with the block path when neither block nor catalog sets sets", () => {
     mockExtraCatalog.NOSETS = {
       skillTree: { withWeights: ["WU"], withoutWeights: ["WU"] },
-      countBy: "sides",
+      countBy: "entries",
       fallbackToWholeTree: false,
       superset: "none",
       rest: { withinSuperset: 1, betweenSets: 1, afterExercise: 1 },

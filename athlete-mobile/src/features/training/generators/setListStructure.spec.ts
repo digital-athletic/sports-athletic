@@ -4,7 +4,6 @@ import type {
   ExercisePair,
 } from "@/features/training/models/ExerciseBranch";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import type { FocusTrainingBlock } from "@/schemas/focusTraining.schema";
 import type { SkillCode } from "@/schemas/generator.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
@@ -16,6 +15,7 @@ import ExercisesData from "../../../../assets/data/generator/Exercises.json";
 import PREV from "../../../../assets/data/generator/skillTrees/PREV.json";
 import PREVKG from "../../../../assets/data/generator/skillTrees/PREVKG.json";
 import WUSPEZIAL from "../../../../assets/data/generator/skillTrees/WUSPEZIAL.json";
+import type { BlockTiming } from "./resolveTemplate";
 import TrainingGenerator from "./TrainingGenerator";
 
 const PAUSE_ID = "999999";
@@ -43,7 +43,7 @@ const WEIGHTED = "EQ_TYPE_WEIGHTS";
 const buildSetList = (
   skill: SkillCode,
   pairs: ExercisePair[],
-  focusBlock?: FocusTrainingBlock,
+  focusTiming?: BlockTiming,
 ) => {
   const generator = new TrainingGenerator();
   jest
@@ -75,7 +75,7 @@ const buildSetList = (
     2,
     [],
     null,
-    focusBlock,
+    focusTiming,
   );
 };
 
@@ -195,16 +195,8 @@ describe("getSetListFromExercisePairs: superset pair", () => {
 });
 
 describe("getSetListFromExercisePairs: focus blocks", () => {
-  const focusBlock = (
-    pause: FocusTrainingBlock["pause"],
-  ): FocusTrainingBlock => ({
-    draw: "exercises",
-    picks: [{ tags: [], count: 2 }],
-    fallback: false,
-    sets: 2,
-    pause,
-    superset: "none",
-  });
+  const timing = (rest: BlockTiming["rest"]): BlockTiming => ({ rest });
+  const blockRest = { withinSuperset: 5, betweenSets: 15, afterExercise: 25 };
 
   it("rests between sets and after an exercise as the block says", () => {
     expect(
@@ -212,7 +204,7 @@ describe("getSetListFromExercisePairs: focus blocks", () => {
         buildSetList(
           "SWR2",
           [{ first: chest }, { first: quads }],
-          focusBlock({ superset: 5, sets: 15, exercise: 25 }),
+          timing(blockRest),
         ),
       ),
     ).toEqual([15, 25, 15, 25]);
@@ -224,7 +216,7 @@ describe("getSetListFromExercisePairs: focus blocks", () => {
         buildSetList(
           "SWR2",
           [{ first: chest, second: quads }],
-          focusBlock({ superset: 5, sets: 15, exercise: 25 }),
+          timing(blockRest),
         ),
       ).slice(0, 4),
     ).toEqual([5, 5, 5, 25]);

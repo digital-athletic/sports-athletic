@@ -31,6 +31,13 @@ type ScreenState = "SORENESS" | "PLACE";
 const screenStateFor = (type: TrainingType): ScreenState =>
   checksSoreness(type) ? "SORENESS" : "PLACE";
 
+const dropStoredExpiredMarks = () => {
+  const { temporalData, setTemporalData } = useUserWorkoutStore.getState();
+  if (temporalData) {
+    setTemporalData(dropExpiredMarks(temporalData, Date.now()));
+  }
+};
+
 /**
  * Muscle Soreness Screen
  *
@@ -52,14 +59,10 @@ export default function MuscleSorenessScreen() {
   // List rows carry their own inset, so only the soreness step pads the sides.
   const sidePadding = screenState === "PLACE" ? 0 : spacing.m;
 
-  const hasDroppedExpiredMarksRef = useRef(false);
-  if (!hasDroppedExpiredMarksRef.current) {
+  const hasDroppedExpiredMarksRef = useRef<true | null>(null);
+  if (hasDroppedExpiredMarksRef.current == null) {
     hasDroppedExpiredMarksRef.current = true;
-    const { temporalData: stored, setTemporalData: save } =
-      useUserWorkoutStore.getState();
-    if (stored) {
-      save(dropExpiredMarks(stored, Date.now()));
-    }
+    dropStoredExpiredMarks();
   }
 
   const { places } = usePlacesStore();

@@ -76,7 +76,7 @@ export default function Generating() {
         : plan,
     );
 
-  const createTrainingPlan = async () => {
+  const createTrainingPlan = async (): Promise<boolean> => {
     try {
       const shouldUpdateExisting =
         trainingPlan &&
@@ -137,7 +137,7 @@ export default function Generating() {
       // Clean up anamnesis seasonPhase (matches legacy behavior)
       setAnamnesisSeasonPhase(null);
 
-      setGeneratingEnded(true);
+      return true;
     } catch (error) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -161,6 +161,7 @@ export default function Generating() {
           },
         ],
       );
+      return false;
     }
   };
 
@@ -180,7 +181,9 @@ export default function Generating() {
     }, TIME_PER_STAGE);
 
     // Start creating the training plan
-    createTrainingPlan();
+    createTrainingPlan().then((succeeded) => {
+      if (succeeded) setGeneratingEnded(true);
+    });
 
     return () => {
       if (intervalRef.current) {

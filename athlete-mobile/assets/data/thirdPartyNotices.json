@@ -11,17 +11,17 @@
   },
   {
     "name": "@react-native-community/datetimepicker",
-    "version": "8.4.4",
+    "version": "9.1.0",
     "license": "MIT"
   },
   {
     "name": "@react-native-community/netinfo",
-    "version": "11.5.2",
+    "version": "12.0.1",
     "license": "MIT"
   },
   {
     "name": "@react-native-community/slider",
-    "version": "5.0.1",
+    "version": "5.2.0",
     "license": "MIT"
   },
   {
@@ -36,87 +36,97 @@
   },
   {
     "name": "expo",
-    "version": "54.0.36",
+    "version": "57.0.28",
     "license": "MIT"
   },
   {
     "name": "expo-asset",
-    "version": "12.0.13",
+    "version": "57.0.19",
     "license": "MIT"
   },
   {
     "name": "expo-audio",
-    "version": "1.1.1",
+    "version": "57.0.5",
     "license": "MIT"
   },
   {
     "name": "expo-constants",
-    "version": "18.0.13",
+    "version": "57.0.21",
     "license": "MIT"
   },
   {
     "name": "expo-dev-client",
-    "version": "6.0.21",
+    "version": "57.0.20",
+    "license": "MIT"
+  },
+  {
+    "name": "expo-file-system",
+    "version": "57.0.7",
     "license": "MIT"
   },
   {
     "name": "expo-font",
-    "version": "14.0.12",
+    "version": "57.0.4",
     "license": "MIT"
   },
   {
     "name": "expo-image",
-    "version": "3.0.11",
+    "version": "57.0.5",
     "license": "MIT"
   },
   {
     "name": "expo-keep-awake",
-    "version": "15.0.8",
+    "version": "57.0.2",
     "license": "MIT"
   },
   {
     "name": "expo-linear-gradient",
-    "version": "15.0.8",
+    "version": "57.0.2",
     "license": "MIT"
   },
   {
     "name": "expo-linking",
-    "version": "8.0.12",
+    "version": "57.0.12",
     "license": "MIT"
   },
   {
     "name": "expo-localization",
-    "version": "17.0.9",
+    "version": "57.0.2",
     "license": "MIT"
   },
   {
     "name": "expo-router",
-    "version": "6.0.24",
+    "version": "57.0.26",
+    "license": "MIT"
+  },
+  {
+    "name": "expo-sharing",
+    "version": "57.0.23",
     "license": "MIT"
   },
   {
     "name": "expo-splash-screen",
-    "version": "31.0.13",
+    "version": "57.0.10",
     "license": "MIT"
   },
   {
     "name": "expo-status-bar",
-    "version": "3.0.9",
+    "version": "57.0.1",
     "license": "MIT"
   },
   {
     "name": "expo-system-ui",
-    "version": "6.0.9",
+    "version": "57.0.4",
     "license": "MIT"
   },
   {
     "name": "expo-updates",
-    "version": "29.0.19",
+    "version": "57.0.26",
     "license": "MIT"
   },
   {
     "name": "expo-video",
-    "version": "3.0.16",
+    "version": "57.0.5",
     "license": "MIT"
   },
   {
@@ -126,7 +136,7 @@
   },
   {
     "name": "i18next",
-    "version": "25.6.2",
+    "version": "26.4.2",
     "license": "MIT"
   },
   {
@@ -141,22 +151,22 @@
   },
   {
     "name": "react",
-    "version": "19.1.0",
+    "version": "19.2.3",
     "license": "MIT"
   },
   {
     "name": "react-dom",
-    "version": "19.1.0",
+    "version": "19.2.3",
     "license": "MIT"
   },
   {
     "name": "react-i18next",
-    "version": "16.3.2",
+    "version": "17.0.16",
     "license": "MIT"
   },
   {
     "name": "react-native",
-    "version": "0.81.5",
+    "version": "0.86.3",
     "license": "MIT"
   },
   {
@@ -166,27 +176,27 @@
   },
   {
     "name": "react-native-keyboard-controller",
-    "version": "1.18.5",
+    "version": "1.21.9",
     "license": "MIT"
   },
   {
     "name": "react-native-reanimated",
-    "version": "4.1.7",
+    "version": "4.5.1",
     "license": "MIT"
   },
   {
     "name": "react-native-safe-area-context",
-    "version": "5.6.2",
+    "version": "5.7.0",
     "license": "MIT"
   },
   {
     "name": "react-native-screens",
-    "version": "4.16.0",
+    "version": "4.26.2",
     "license": "MIT"
   },
   {
     "name": "react-native-svg",
-    "version": "15.15.5",
+    "version": "15.15.4",
     "license": "MIT"
   },
   {
@@ -201,12 +211,12 @@
   },
   {
     "name": "react-native-webview",
-    "version": "13.17.0",
+    "version": "13.16.1",
     "license": "MIT"
   },
   {
     "name": "react-native-worklets",
-    "version": "0.5.1",
+    "version": "0.10.1",
     "license": "MIT"
   },
   {

@@ -47,7 +47,10 @@ describe("useTrainingScreenLifecycle: hardware back handling", () => {
 
     let handledResult: boolean | null | undefined;
     act(() => {
-      handledResult = backPressHandler?.();
+      handledResult = backPressHandler?.({
+        type: "hardwareBackPress",
+        timeStamp: 0,
+      });
     });
 
     expect(onAbort).toHaveBeenCalledTimes(1);

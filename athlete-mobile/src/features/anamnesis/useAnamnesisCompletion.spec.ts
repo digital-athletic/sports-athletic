@@ -71,6 +71,42 @@ describe("useAnamnesisCompletion", () => {
       expect(workoutResult.current.workoutData.tags.POSITION).toEqual(["GOAL"]);
     });
 
+    it("resets the pain alert seen flag when the pains change", () => {
+      const { result: anamnesisResult } = renderHook(() => useAnamnesisStore());
+      const { result: hookResult } = renderHook(() => useAnamnesisCompletion());
+
+      act(() => {
+        useUserWorkoutStore.getState().setTags({ PAIN: ["KNEE_LEFT"] });
+        useUserProfileStore.getState().setWarningSeen("painAlertSeen", true);
+        anamnesisResult.current.setTag("PAIN", ["KNEE_LEFT", "SPINE"]);
+      });
+
+      act(() => {
+        hookResult.current.saveAnamnesisData();
+      });
+
+      expect(useUserProfileStore.getState().warnings.painAlertSeen).toBe(false);
+    });
+
+    it("keeps the pain alert seen flag when the pains stay the same", () => {
+      const { result: anamnesisResult } = renderHook(() => useAnamnesisStore());
+      const { result: hookResult } = renderHook(() => useAnamnesisCompletion());
+
+      act(() => {
+        useUserWorkoutStore
+          .getState()
+          .setTags({ PAIN: ["KNEE_LEFT", "SPINE"] });
+        useUserProfileStore.getState().setWarningSeen("painAlertSeen", true);
+        anamnesisResult.current.setTag("PAIN", ["SPINE", "KNEE_LEFT"]);
+      });
+
+      act(() => {
+        hookResult.current.saveAnamnesisData();
+      });
+
+      expect(useUserProfileStore.getState().warnings.painAlertSeen).toBe(true);
+    });
+
     it("handles undefined height gracefully", () => {
       const { result: profileResult } = renderHook(() => useUserProfileStore());
       const { result: hookResult } = renderHook(() => useAnamnesisCompletion());

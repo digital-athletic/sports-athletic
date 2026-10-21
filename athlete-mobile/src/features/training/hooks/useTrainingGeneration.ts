@@ -15,7 +15,6 @@ import { TrainingType } from "@/features/training/models/Training";
 import { type TrainingDayType } from "@/features/training/models/TrainingDay";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { maintainBranchLevels } from "@/features/training/utils/branchMaintenance";
-import { shouldShowPainAlert } from "@/features/training/utils/painUtils";
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import { daysSinceLastTraining } from "@/features/training/utils/trainingGapUtils";
 import { toUserExerciseDataList } from "@/schemas/generator.schema";
@@ -299,7 +298,7 @@ export function useTrainingGeneration(params: TrainingGenerationParams) {
   const [generating, setGenerating] = useState(false);
   const router = useRouter();
   const { t } = useTranslation();
-  const { showPainAlert } = useTrainingAlerts();
+  const { maybeShowPainAlert } = useTrainingAlerts();
   const context = useGenerationContext();
 
   const generateTraining = (place: PlaceType) => {
@@ -316,13 +315,12 @@ export function useTrainingGeneration(params: TrainingGenerationParams) {
         setGenerating(false);
       };
 
-      if (
-        shouldShowPainAlert(params.type, exerciseList, context.workoutData.tags)
-      ) {
-        showPainAlert(startTraining);
-      } else {
-        startTraining();
-      }
+      maybeShowPainAlert(
+        params.type,
+        exerciseList,
+        context.workoutData.tags,
+        startTraining,
+      );
     } catch (e) {
       showGenerationError(e, t, () => {
         setGenerating(false);

@@ -1,4 +1,5 @@
 import { Alert } from "@/common/Alert";
+import { useUserProfileStore } from "@/store/userProfileStore";
 import { act, renderHook } from "@testing-library/react-native";
 import { useTrainingAlerts } from "./useTrainingAlerts";
 
@@ -16,13 +17,31 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-describe("useTrainingAlerts: showPainAlert", () => {
-  it("shows the pain alert and runs the callback on OK", () => {
-    const onAcknowledge = jest.fn();
+describe("useTrainingAlerts: maybeShowPainAlert", () => {
+  const kneePain = { PAIN: ["KNEE_LEFT"] };
+
+  beforeEach(() => {
+    useUserProfileStore.setState({ warnings: { painAlertSeen: false } });
+  });
+
+  const pressOk = (callIndex: number) => {
+    const [, , buttons] = (Alert.alert as jest.Mock).mock.calls[callIndex];
+    act(() => {
+      buttons[0].onPress();
+    });
+  };
+
+  it("shows the pain alert and continues only on OK", () => {
+    const onContinue = jest.fn();
     const { result } = renderHook(() => useTrainingAlerts());
 
     act(() => {
-      result.current.showPainAlert(onAcknowledge);
+      result.current.maybeShowPainAlert(
+        "TEST_WORKOUT",
+        [],
+        kneePain,
+        onContinue,
+      );
     });
 
     expect(Alert.alert).toHaveBeenCalledWith(
@@ -30,13 +49,89 @@ describe("useTrainingAlerts: showPainAlert", () => {
       "training.active.strengthTestAlert.message",
       expect.any(Array),
     );
-    expect(onAcknowledge).not.toHaveBeenCalled();
+    expect(onContinue).not.toHaveBeenCalled();
 
-    const [, , buttons] = (Alert.alert as jest.Mock).mock.calls[0];
+    pressOk(0);
+    expect(onContinue).toHaveBeenCalledTimes(1);
+  });
+
+  it("continues without an alert when the training does not qualify", () => {
+    const onContinue = jest.fn();
+    const { result } = renderHook(() => useTrainingAlerts());
+
     act(() => {
-      buttons[0].onPress();
+      result.current.maybeShowPainAlert("BAS", [], kneePain, onContinue);
     });
-    expect(onAcknowledge).toHaveBeenCalledTimes(1);
+
+    expect(Alert.alert).not.toHaveBeenCalled();
+    expect(onContinue).toHaveBeenCalledTimes(1);
+  });
+
+  it("marks the pain alert as seen on OK", () => {
+    const { result } = renderHook(() => useTrainingAlerts());
+
+    act(() => {
+      result.current.maybeShowPainAlert(
+        "TEST_WORKOUT",
+        [],
+        kneePain,
+        jest.fn(),
+      );
+    });
+    pressOk(0);
+
+    expect(useUserProfileStore.getState().warnings.painAlertSeen).toBe(true);
+  });
+
+  it("skips the alert on the next training once acknowledged", () => {
+    const onContinue = jest.fn();
+    const { result } = renderHook(() => useTrainingAlerts());
+
+    act(() => {
+      result.current.maybeShowPainAlert(
+        "TEST_WORKOUT",
+        [],
+        kneePain,
+        jest.fn(),
+      );
+    });
+    pressOk(0);
+    act(() => {
+      result.current.maybeShowPainAlert(
+        "TEST_WORKOUT",
+        [],
+        kneePain,
+        onContinue,
+      );
+    });
+
+    expect(Alert.alert).toHaveBeenCalledTimes(1);
+    expect(onContinue).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows the alert again once the seen flag was reset", () => {
+    const { result } = renderHook(() => useTrainingAlerts());
+
+    act(() => {
+      result.current.maybeShowPainAlert(
+        "TEST_WORKOUT",
+        [],
+        kneePain,
+        jest.fn(),
+      );
+    });
+    pressOk(0);
+    useUserProfileStore.getState().setWarningSeen("painAlertSeen", false);
+    act(() => {
+      result.current.maybeShowPainAlert(
+        "TEST_WORKOUT",
+        [],
+        kneePain,
+        jest.fn(),
+      );
+    });
+
+    expect(Alert.alert).toHaveBeenCalledTimes(2);
   });
 });
 

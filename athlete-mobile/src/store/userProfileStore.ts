@@ -15,12 +15,22 @@ export interface UserPersonalDataType {
   weight?: number; // Weight in kg (20-300)
 }
 
+/** One-time popups the user has confirmed; a flag turns false again when its trigger changes. */
+export type WarningsType = {
+  painAlertSeen: boolean;
+};
+
 export type State = {
   personalData: UserPersonalDataType;
   anamnesisCompleted: boolean;
   teamId: string | null;
+  warnings: WarningsType;
   _hasHydrated: boolean;
 };
+
+export const createInitialWarnings = (): WarningsType => ({
+  painAlertSeen: false,
+});
 
 const createInitialPersonalData = (): UserPersonalDataType => ({
   username: "",
@@ -32,6 +42,7 @@ const createInitialState = (): State => ({
   personalData: createInitialPersonalData(),
   anamnesisCompleted: false,
   teamId: null,
+  warnings: createInitialWarnings(),
   _hasHydrated: false,
 });
 
@@ -46,6 +57,7 @@ type Actions = {
   setPersonalData: (data: Partial<UserPersonalDataType>) => void;
   setAnamnesisCompleted: (completed: boolean) => void;
   setTeamId: (teamId: string | null) => void;
+  setWarningSeen: (warning: keyof WarningsType, seen: boolean) => void;
   resetProfile: () => void;
   setHasHydrated: (hydrated: boolean) => void;
 };
@@ -123,12 +135,18 @@ export const useUserProfileStore = create<UserProfileState>()(
           state.teamId = teamId;
         }),
 
+      setWarningSeen: (warning, seen) =>
+        set((state) => {
+          state.warnings[warning] = seen;
+        }),
+
       resetProfile: () =>
         set((state) => {
           const initialState = createInitialState();
           state.personalData = initialState.personalData;
           state.anamnesisCompleted = initialState.anamnesisCompleted;
           state.teamId = initialState.teamId;
+          state.warnings = initialState.warnings;
         }),
 
       setHasHydrated: (hydrated) =>

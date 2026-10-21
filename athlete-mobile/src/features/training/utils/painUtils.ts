@@ -146,6 +146,15 @@ export function isBranchBlocked(
   );
 }
 
+/** Whether two pain lists name the same regions, in any order. */
+export function isSamePainSet(a: string[], b: string[]): boolean {
+  const sortedB = [...b].sort();
+  return (
+    a.length === b.length &&
+    [...a].sort().every((pain, index) => pain === sortedB[index])
+  );
+}
+
 /**
  * Whether the pain warning belongs in front of this training. Its text refers
  * to max strength exercises; the strength test measures those maxima, so its

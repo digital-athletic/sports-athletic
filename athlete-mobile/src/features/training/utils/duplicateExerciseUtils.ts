@@ -1,5 +1,3 @@
-import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
-
 /**
  * Splits branches into the first holder of each exercise and the later branches
  * resolving to an exercise that is already held. Returns one replacement
@@ -46,20 +44,4 @@ export const refillSlots = <T extends { branchId: string }>(
     if (branch) added.push(branch);
   }
   return added;
-};
-
-/**
- * Removes and returns the last pool entry that holds another exercise than the
- * lead, so no exercise becomes its own superset partner.
- */
-export const popDistinctPartner = (
-  pool: BranchExerciseReference[],
-  lead: BranchExerciseReference,
-): BranchExerciseReference | undefined => {
-  for (let i = pool.length - 1; i >= 0; i--) {
-    if (pool[i].exerciseId !== lead.exerciseId) {
-      return pool.splice(i, 1)[0];
-    }
-  }
-  return undefined;
 };

@@ -73,7 +73,7 @@ type BlockBase = {
     withinSuperset?: number;
     betweenSets?: number;
     afterExercise?: number;
-    afterBlock?: number; // template only, the catalog has no afterBlock
+    afterBlock?: number; // the catalog may set a default
   };
 };
 
@@ -122,11 +122,11 @@ The workout has no total time field. Its length is the sum of the block duration
 | `fallbackToWholeTree` | no | catalog | `true`: when the picks find too few matching branches, the block draws the rest from its whole skill tree. `false`: the block stays short. | Same as `countBy`. |
 | `sets` | no | catalog | Sets per exercise. | Same as `countBy`. No bundled training overrides it. |
 | `setDuration` | no | intensity | Every set of the block lasts this many seconds. The set has no repetitions, weight, or height. | Warm-up, mobility, foam roller, and cool-down trainings work 60 s per set. Training days take repetitions or durations from the intensity. One skill appears in both, so the catalog cannot store one value. |
-| `values` | no | intensity | Where the repetitions and durations come from. `skill`: the skill's intensity range. `exercise`: the exercise's own authored start and target values for the athlete's gender and level. Without the field, the skill's intensity decides. Weights and heights stay unchanged. The same mode applies when a completed exercise resets its repetitions after a weight increase. | Prevention and full-body stability trainings let each exercise set its own repetitions and durations, while training days with the same skill use the skill range. One skill appears in both, so the catalog cannot store one value. |
+| `values` | no | intensity | Where the repetitions and durations come from. `skill`: the skill's intensity range. `exercise`: the exercise's own authored start and target values for the athlete's gender and level. Without the field, the skill's intensity decides. Weights and heights stay unchanged. The same mode applies when a completed exercise resets its repetitions after a weight increase. | The full-body stability training lets each exercise set its own repetitions and durations, while training days with the same skill use the skill range. One skill appears in both, so the catalog cannot store one value. The `PREV` intensity sets `overridesExerciseRepsAndDuration` to `false`, so prevention blocks need no mode: they use the exercise start values and targets in short workouts and plan workouts, including the reset after a weight step and the target progression without weight change. |
 | `rest.withinSuperset` | no | catalog | Seconds of rest after each exercise of a superset pair, before its partner. | A block without it rests like a training day block of its skill. |
 | `rest.betweenSets` | no | catalog | Seconds of rest between the sets of a single exercise. | Same as `rest.withinSuperset`. |
 | `rest.afterExercise` | no | catalog | Seconds of rest after the last set of an exercise or pair. The generator uses `betweenSets` instead when the next exercise trains the same region and primary muscle. | Focus trainings rest less than training days: warm-up 10 s instead of 30 s, leg axis stability 30 s instead of 60 s, full-body stability 45 s instead of 60 s. |
-| `rest.afterBlock` | no | `rest.afterExercise` | Seconds of rest between this block and the next block. It replaces the closing rest of the block's last exercise or pair. The last block of a workout has no trailing rest. Only a template sets it; the catalog has no `afterBlock`. | The special warm-up of a prevention training rests 30 s before the prevention block, while its own exercises rest 10 s. No catalog value can express a rest that depends on the block's position. |
+| `rest.afterBlock` | no | catalog `rest.afterBlock`, then `rest.afterExercise` | Seconds of rest between this block and the next block. It replaces the closing rest of the block's last exercise or pair. The last block of a workout has no trailing rest. The `WUSPEZIAL` catalog entry sets 30 s, so the special warm-up ends with 30 s in prevention trainings and in plan workouts, whatever block follows. | The special warm-up rests 30 s before the next block, while its own exercises rest 10 s. Plan workouts pass no template, so the catalog carries the value for both paths. |
 | `superset` | no | catalog | `none`: no pairs. `muscles`: pairs opposing muscles. `drawOrder`: pairs neighbours in the order the block drew them; an exercise without a free neighbour trains alone. `drawOrderWithLeftovers`: pairs like `drawOrder`, then pairs the exercises that train alone with each other. A one-sided exercise always pairs with its other side. | Training days pair by muscles. Warm-up, mobility, foam roller, and cool-down trainings use `none`, prevention trainings `drawOrderWithLeftovers`, and leg axis stability `drawOrder`. |
 
 ### Picks and tags
@@ -253,13 +253,11 @@ The bundled shoulder prevention training:
       "skill": "WUSPEZIAL",
       "picks": [
         { "tags": ["SKILL_WU", "SKILL_WARM_UP", "SKILL_WARM_UP_SPECIAL", "PREVENTION_SHOULDER"], "count": 3 }
-      ],
-      "rest": { "afterBlock": 30 }
+      ]
     },
     {
       "kind": "picks",
       "skill": "PREVSHOULDER",
-      "values": "exercise",
       "picks": [{ "tags": ["SKILL_PREVENTION", "PREVENTION_SHOULDER"], "count": 3 }],
       "superset": "drawOrderWithLeftovers"
     }
@@ -267,7 +265,7 @@ The bundled shoulder prevention training:
 }
 ```
 
-The special warm-up block draws 3 exercises from `WUSPEZIAL`, narrowed to the shoulder. Its exercises rest 10 s, and `afterBlock` makes the rest before the prevention block 30 s. The prevention block draws 3 pairs from the prevention skill trees with and without weights (`PREV`, `PREVKG`) and trains 2 sets. It pairs in draw order, where training days pair by muscles, so it sets `superset`. It also sets `values` to `exercise`, so each exercise keeps its authored repetitions and durations. The other prevention trainings do the same, and leg axis stability (`BAS`) sets `"superset": "drawOrder"`.
+The special warm-up block draws 3 exercises from `WUSPEZIAL`, narrowed to the shoulder. Its exercises rest 10 s, and the catalog `afterBlock` of `WUSPEZIAL` makes the rest before the prevention block 30 s. The prevention block draws 3 pairs from the prevention skill trees with and without weights (`PREV`, `PREVKG`) and trains 2 sets. It pairs in draw order, where training days pair by muscles, so it sets `superset`. It sets no `values`: the `PREV` intensity of the prevention skills reads the exercise values, so each exercise keeps its authored repetitions and durations. The other prevention trainings do the same, and leg axis stability (`BAS`) sets `"superset": "drawOrder"`.
 
 ### Example 2: training day
 
@@ -340,7 +338,7 @@ Three specs pin the bundled trainings:
 
 The bundled trainings reproduce the set lists of the old `focusTrainings.json` file, with one exception: the foam roller training at a place without foam roller or foam ball. Before the switch, an athlete in that situation got the error `NO_EXERCISES/EQUIPMENT`. Now the generator draws the BR branches that the athlete's equipment allows, for example branch 565.
 
-`src/features/training/generators/bundledTemplateRests.spec.ts` pins the rests of the bundled templates: the special warm up, the PREV prevention entries, GKS, BAS and the STABILITY supersets. The plan workouts stay unchanged by these rests, because only the short workout path passes them to the generator.
+`src/features/training/generators/bundledTemplateRests.spec.ts` pins the rests of the bundled templates: the special warm up, the PREV prevention entries, GKS, BAS and the STABILITY supersets. The plan workouts keep the rests of the hard-coded plan maps, because only the short workout path passes template rests to the generator. Two values reach plan workouts through the catalog and the intensity instead: the special warm-up closes with the 30 s `afterBlock` of the `WUSPEZIAL` catalog entry, and prevention blocks start at the exercise values, since the `PREV` intensity no longer overrides them.
 
 Plan profiles and duration blocks remain future work. They need their own specs once the generator supports them.
 
@@ -364,8 +362,8 @@ AIWL follows none of them. The set list the generator produces fits fixed steps 
 - Con: training days still read their stored branches and minutes until a follow-up switches them to AIWL.
 - Con: `duration` means a length or a minutes table key, depending on the block type.
 - Con: the generator picks `afterExercise` or `betweenSets` for the rest after an exercise, by the next exercise. A template that wants one rest after every exercise sets both fields to the same value.
-- Con: the bundled templates deviate from the catalog rests. The special warm-up of the prevention trainings rests 30 s before the prevention block. `PREV` rests 30 s between sets and after each exercise. Full-body stability rests 45 s everywhere. Leg axis stability rests 30 s between sets and after each exercise. `STABILITY` rests 30 s between sets and pairs its exercises in draw order. The shoulder, knee, wrist, ankle, and spine trainings keep the catalog rests in their prevention block.
-- Con: the prevention blocks and the full-body stability block set `values` to `exercise`, so they ignore the intensity range of their skills. Plan workouts that use the same skills keep the range.
+- Con: the bundled templates deviate from the catalog rests. `PREV` rests 30 s between sets and after each exercise. Full-body stability rests 45 s everywhere. Leg axis stability rests 30 s between sets and after each exercise. `STABILITY` rests 30 s between sets and pairs its exercises in draw order. The shoulder, knee, wrist, ankle, and spine trainings keep the catalog rests in their prevention block.
+- Con: the full-body stability block sets `values` to `exercise`, so it ignores the intensity range of its skill. Plan workouts that use the same skill keep the range.
 
 ## Open questions
 

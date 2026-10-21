@@ -73,7 +73,6 @@ import {
   orderExerciseUnits,
 } from "@/features/training/utils/exerciseOrderUtils";
 import {
-  popDistinctPartner,
   refillSlots,
   splitDuplicateBranches,
 } from "@/features/training/utils/duplicateExerciseUtils";
@@ -443,8 +442,6 @@ export default class TrainingGenerator {
         skill,
         drawnBlocks[index],
         exercises,
-        userPains,
-        [],
         block.superset,
       );
       return this.getSetListFromExercisePairs(
@@ -1599,7 +1596,9 @@ export default class TrainingGenerator {
           .slice(i + 1)
           .find((pair) => isBuildablePair(pair, exerciseMap));
         const closingPauseLength = !nextPair
-          ? (timing?.afterBlock ?? afterSetPauseLength)
+          ? (timing?.afterBlock ??
+            loadSkillCatalogEntry(skill.skill)?.rest?.afterBlock ??
+            afterSetPauseLength)
           : trainsSameRegionAndPrimaryMuscle(exercisePairs[i], nextPair)
             ? singleRestLength
             : afterSetPauseLength;
@@ -1846,7 +1845,6 @@ export default class TrainingGenerator {
   ): GeneratedSetListEntry[] => {
     if (TrainingGenerator.DEBUG) console.log("skillList: ", skillList);
     const userLevel = getUserLevel(user);
-    const PAINS = getUserTagValues(user.workoutData?.tags, TagGroups.PAIN);
 
     let setList: GeneratedSetListEntry[] = [];
     let lastExerciseId: string | undefined;
@@ -1869,17 +1867,8 @@ export default class TrainingGenerator {
           },
         ];
       } else {
-        let prevs = skillList
-          .filter((e) => e && e.skill.indexOf("PREV") > -1)
-          .map((prev) => prev.skill);
         exercisePairs = orderExerciseUnits(
-          this.getExercisePairs(
-            skillList[i].skill,
-            branches,
-            exercises,
-            PAINS,
-            prevs,
-          ),
+          this.getExercisePairs(skillList[i].skill, branches, exercises),
           skillList[i].skill.indexOf("MAX") > -1,
           lastExerciseId,
         );
@@ -1946,14 +1935,11 @@ export default class TrainingGenerator {
     skill: string,
     branches: BranchExerciseReference[],
     exercises: ExerciseType[],
-    pains: string[],
-    thisDayPrevs: string[],
     pairing?: Superset,
   ): ExercisePair[] => {
     if (TrainingGenerator.DEBUG) {
       console.log("Get exercise pairs for skill", skill);
       console.log("with branches", branches);
-      console.log("and pains", pains);
     }
 
     if (!branches || branches.length === 0) {
@@ -1964,9 +1950,9 @@ export default class TrainingGenerator {
     }
 
     const isSuperset = pairing ? pairing === "muscles" : this.isSuperset(skill);
-    let exercisePairs: ExercisePair[] = [];
-    let bigMuscleExercises: BranchExerciseReference[] = [];
-    let smallMuscleExercises: BranchExerciseReference[] = [];
+    const exercisePairs: ExercisePair[] = [];
+    const bigMuscleExercises: BranchExerciseReference[] = [];
+    const smallMuscleExercises: BranchExerciseReference[] = [];
     // sort branches into big and small muscle branches
     for (let b = 0; b < branches.length; b++) {
       if (isBigMuscleExercise(branches[b])) {
@@ -1976,96 +1962,10 @@ export default class TrainingGenerator {
       }
     }
 
-    // if set use only pain side in prevention
-    let prevSides: string[] = [];
-    const prevRegions = getRegionsForPreventionSkills([skill]);
-    //filter for pains matching given skill
-    const regionPains = pains.filter((pain) =>
-      prevRegions.some((region) => pain.indexOf(region) > -1),
-    );
-
-    if (regionPains.length > 0) {
-      for (let pain = 0; pain < regionPains.length; pain++) {
-        if (
-          regionPains[pain].indexOf("LEFT") > -1 &&
-          prevSides.indexOf("LEFT") === -1
-        )
-          prevSides.push("LEFT");
-        if (
-          regionPains[pain].indexOf("RIGHT") > -1 &&
-          prevSides.indexOf("RIGHT") === -1
-        )
-          prevSides.push("RIGHT");
-        if (
-          regionPains[pain].indexOf("LEFT") === -1 &&
-          regionPains[pain].indexOf("RIGHT") === -1 &&
-          prevSides.indexOf("BOTH") === -1
-        )
-          prevSides.push("BOTH");
-      }
-
-      if (TrainingGenerator.DEBUG) {
-        console.log("find exercises for prev regions", prevRegions);
-        console.log("prev sides", prevSides);
-      }
-    }
-
     if (pairing === "drawOrder" || pairing === "drawOrderWithLeftovers") {
-      const drawn =
-        prevSides.length > 0
-          ? (filterExercisesBySides(
-              branches,
-              exercises,
-              prevSides,
-            ) as BranchExerciseReference[])
-          : branches;
-      const pairs = pairInDrawOrder(drawn, exercises, prevSides.length === 0);
+      const pairs = pairInDrawOrder(branches, exercises);
       if (pairing === "drawOrderWithLeftovers") pairLeftoverSingles(pairs);
       return pairs;
-    }
-
-    // if found use only side depending pains
-    if (prevSides.length > 0) {
-      // filter side big
-      bigMuscleExercises = filterExercisesBySides(
-        bigMuscleExercises,
-        exercises,
-        prevSides,
-      ) as BranchExerciseReference[];
-      // filter side small
-      smallMuscleExercises = filterExercisesBySides(
-        smallMuscleExercises,
-        exercises,
-        prevSides,
-      ) as BranchExerciseReference[];
-
-      // build exercise pairs
-      while (bigMuscleExercises.length > 0) {
-        const first = bigMuscleExercises.pop();
-        if (!first) continue;
-        // never the same exercise as its own partner
-        const pair: ExercisePair = {
-          first,
-          second:
-            popDistinctPartner(bigMuscleExercises, first) ??
-            popDistinctPartner(smallMuscleExercises, first),
-        };
-        exercisePairs.push(pair);
-      }
-      while (smallMuscleExercises.length > 0) {
-        const first = smallMuscleExercises.pop();
-        if (!first) continue;
-        const pair: ExercisePair = {
-          first,
-          second: popDistinctPartner(smallMuscleExercises, first),
-        };
-        exercisePairs.push(pair);
-      }
-      return exercisePairs;
-    }
-    // if no side depending pains use default pair building
-    if (TrainingGenerator.DEBUG && skill.indexOf("PREV") > -1) {
-      console.log("Use default exercise pairing for PREV", skill);
     }
 
     // big muscle exercises lead first; a lead missing from the catalog is
@@ -3395,15 +3295,13 @@ const getOpposingMuscles = (muscles: string[]): string[] => {
 
 /**
  * Pairs branches in the order they were drawn: a one-sided exercise with its
- * other side when `pairOtherSide` is set, any other exercise with the next one.
+ * other side, any other exercise with the next one.
  */
 const pairInDrawOrder = (
   drawn: BranchExerciseReference[],
   exercises: ExerciseType[],
-  pairOtherSide: boolean,
 ): ExercisePair[] => {
   const otherSideOf = (entry: BranchExerciseReference) =>
-    pairOtherSide &&
     getTagValues(entry.branchTags, TagGroups.SIDE).includes("ONE")
       ? exercises.find((exercise) => exercise.id === entry.exerciseId)
           ?.otherSideExerciseId
@@ -3448,43 +3346,6 @@ const pairLeftoverSingles = (exercisePairs: ExercisePair[]) => {
     singlePairIndex =
       nextSinglePairIndex !== singlePairIndex ? nextSinglePairIndex : -1;
   }
-};
-
-const filterExercisesBySides = (
-  exercises: { branchTags: string[]; exerciseId: string }[],
-  exerciseData: ExerciseType[],
-  prevSides: string[],
-) => {
-  return exercises.filter((entry, index, arr) => {
-    const exercise = exerciseData.filter((ex) => ex.id === entry.exerciseId)[0];
-    if (!exercise) {
-      return false;
-    }
-    const sideTags = getTagValues(exercise.tags, TagGroups.SIDE);
-    if (sideTags.some((tag) => tag === "BOTH")) {
-      return true;
-    }
-    if (sideTags.some((tag) => prevSides.indexOf(tag) > -1)) {
-      return true;
-    }
-    if (exercise.otherSideExerciseId) {
-      const otherSideExercise = exerciseData.filter(
-        (ex) => ex.id === exercise.otherSideExerciseId,
-      )[0];
-      if (!otherSideExercise) {
-        return false;
-      }
-      const otherSideTags = getTagValues(
-        otherSideExercise.tags,
-        TagGroups.SIDE,
-      );
-      if (otherSideTags.some((tag) => prevSides.indexOf(tag) > -1)) {
-        arr[index].exerciseId = otherSideExercise.id;
-        return true;
-      }
-    }
-    return false;
-  });
 };
 
 /**

@@ -165,7 +165,12 @@
     "fallbackToWholeTree": false,
     "superset": "muscles",
     "sets": 1,
-    "rest": { "withinSuperset": 10, "betweenSets": 10, "afterExercise": 10 }
+    "rest": {
+      "withinSuperset": 10,
+      "betweenSets": 10,
+      "afterExercise": 10,
+      "afterBlock": 30
+    }
   },
   "WUSKSA": {
     "intensity": "WUSKSA",

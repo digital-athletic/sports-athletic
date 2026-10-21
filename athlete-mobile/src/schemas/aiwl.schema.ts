@@ -48,9 +48,12 @@ export const RestSchema = v.strictObject({
   afterExercise: SecondsSchema,
 });
 export type Rest = v.InferOutput<typeof RestSchema>;
-const BlockRestSchema = v.partial(
-  v.strictObject({ ...RestSchema.entries, afterBlock: SecondsSchema }),
-);
+export const CatalogRestSchema = v.strictObject({
+  ...RestSchema.entries,
+  afterBlock: v.optional(SecondsSchema),
+});
+export type CatalogRest = v.InferOutput<typeof CatalogRestSchema>;
+const BlockRestSchema = v.partial(CatalogRestSchema);
 
 const BodyPartsSchema = v.strictObject({
   regions: v.optional(

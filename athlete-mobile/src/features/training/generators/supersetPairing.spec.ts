@@ -33,8 +33,6 @@ const partnerOf = (
     "SWR2",
     [...branches],
     catalogFor(branches),
-    [],
-    [],
   );
   const pair = pairs.find(
     (p) =>
@@ -57,8 +55,6 @@ describe("getExercisePairs: big muscle groups", () => {
       "SWR2",
       [...branches],
       catalogFor(branches),
-      [],
-      [],
     );
     expect(pairs[0].first.branchId).toBe("q");
   });
@@ -73,8 +69,6 @@ describe("getExercisePairs: big muscle groups", () => {
       "SWR2",
       [...branches],
       catalogFor(branches),
-      [],
-      [],
     );
     expect(pairs[0].first.branchId).toBe("h");
   });
@@ -89,8 +83,6 @@ describe("getExercisePairs: big muscle groups", () => {
       "SWR2",
       [...branches],
       catalogFor(branches),
-      [],
-      [],
     );
     expect(pairs[0].first.branchId).toBe("u");
   });
@@ -106,8 +98,6 @@ describe("getExercisePairs: big muscle groups", () => {
       "SWR2",
       [...branches],
       catalogFor(branches),
-      [],
-      [],
     );
     expect(pairs[0].first.branchId).toBe("c");
   });
@@ -124,7 +114,7 @@ describe("getExercisePairs: focus block pairing", () => {
     catalog = catalogFor(branches),
   ) =>
     new TrainingGenerator()
-      .getExercisePairs(skill, [...branches], catalog, [], [], pairing)
+      .getExercisePairs(skill, [...branches], catalog, pairing)
       .map(({ first, second }) =>
         second ? [first.exerciseId, second.exerciseId] : [first.exerciseId],
       );

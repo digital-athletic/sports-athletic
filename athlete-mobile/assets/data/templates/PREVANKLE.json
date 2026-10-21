@@ -16,13 +16,11 @@
           ],
           "count": 3
         }
-      ],
-      "rest": { "afterBlock": 30 }
+      ]
     },
     {
       "kind": "picks",
       "skill": "PREVANKLE",
-      "values": "exercise",
       "picks": [{ "tags": ["SKILL_PREVENTION", "PREVENTION_ANKLE"], "count": 3 }],
       "superset": "drawOrderWithLeftovers"
     }

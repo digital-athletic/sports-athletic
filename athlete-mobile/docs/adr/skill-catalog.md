@@ -37,7 +37,12 @@ type TimingFields = {
   // Block defaults: a block overrides them with fields of the same name.
   superset?: "none" | "muscles" | "drawOrder" | "drawOrderWithLeftovers";
   sets?: number;
-  rest?: { withinSuperset: number; betweenSets: number; afterExercise: number };
+  rest?: {
+    withinSuperset: number;
+    betweenSets: number;
+    afterExercise: number;
+    afterBlock?: number;
+  };
 };
 
 type SkillTreeEntry = TimingFields & {
@@ -54,7 +59,7 @@ type SkillTreeEntry = TimingFields & {
 type TimingEntry = TimingFields;
 ```
 
-`FocusArea` comes from `src/schemas/sync.schema.ts`. `rest` sets all three values, so a partial rest fails the load.
+`FocusArea` comes from `src/schemas/sync.schema.ts`. `rest` sets all three values, so a partial rest fails the load. `rest.afterBlock` is optional: it sets the closing rest of the skill's block in templates and plan workouts. Only `WUSPEZIAL` sets it, to 30 s.
 
 A skill catalog entry either names a skill tree or is timing-only:
 
@@ -86,7 +91,7 @@ A block field of the same name overrides these defaults. The [AIWL ADR](./athlet
 |---|---|
 | `countBy`, `fallbackToWholeTree` | The bundled templates. Plan workouts do not draw by picks. |
 | `superset`, `sets` | The values plan workouts use today |
-| `rest` | The rests plan workouts use today |
+| `rest` | The rests plan workouts use today. `afterBlock` of `WUSPEZIAL`: the 30 s rest before the prevention block of the bundled prevention trainings |
 
 ### Left out of the catalog
 
@@ -144,7 +149,12 @@ Entries copied from `assets/data/generator/skills.json`:
     "fallbackToWholeTree": false,
     "superset": "muscles",
     "sets": 1,
-    "rest": { "withinSuperset": 10, "betweenSets": 10, "afterExercise": 10 }
+    "rest": {
+      "withinSuperset": 10,
+      "betweenSets": 10,
+      "afterExercise": 10,
+      "afterBlock": 30
+    }
   }
 }
 ```
@@ -152,8 +162,8 @@ Entries copied from `assets/data/generator/skills.json`:
 - The bundled GKS template overrides `afterExercise` to 45 s and draws its bodyweight picks by region tags.
 - `STABILITY` draws leg axis stability with weights and full body stability without. Its tree names are literal, so the bodyweight variant reads `GKS`.
 - `PREVSHOULDER` pairs by muscles like plan workouts. The bundled shoulder prevention training overrides `superset` to `drawOrderWithLeftovers` in its template block.
-- The catalog has no `values` field. The block field `values` switches the source of repetitions and durations between the skill's intensity range and the exercise's own values. The bundled GKS and prevention blocks set it to `exercise`. Plan workouts of the same skills keep the range.
-- `WUSPEZIAL` is the special warm-up of a prevention training. It has no intensity and no `progression`, so it keeps the plan workout behavior: progression on, and focus area `WARMUP`. The generator narrows its tree by the pain regions of the prevention skills in the template.
+- The catalog has no `values` field. The block field `values` switches the source of repetitions and durations between the skill's intensity range and the exercise's own values. The bundled GKS block sets it to `exercise`. Plan workouts of `GKS` keep the range. The `PREV` intensity, which all six prevention skills use, sets `overridesExerciseRepsAndDuration` to `false`, so prevention blocks use the exercise values in templates and plan workouts without a mode.
+- `WUSPEZIAL` is the special warm-up of a prevention training. It has no intensity and no `progression`, so it keeps the plan workout behavior: progression on, and focus area `WARMUP`. Its `afterBlock` closes the block with 30 s in templates and plan workouts, while its own exercises rest 10 s. The generator narrows its tree by the pain regions of the prevention skills in the template.
 
 ### Set list builder
 

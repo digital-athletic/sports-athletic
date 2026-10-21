@@ -13,6 +13,8 @@ const unitTagValues = (unit: ExercisePair, tagGroup: string): string[] =>
 const leadRegions = (unit: ExercisePair): string[] =>
   getTagValues(unit.first.branchTags, TagGroups.REGION);
 
+const isBig = (unit: ExercisePair): boolean => isBigMuscleExercise(unit.first);
+
 const sharesPrimaryMuscle = (a: ExercisePair, b: ExercisePair): boolean => {
   const muscles = unitTagValues(a, TagGroups.MUSCLE);
   return unitTagValues(b, TagGroups.MUSCLE).some((muscle) =>
@@ -23,96 +25,88 @@ const sharesPrimaryMuscle = (a: ExercisePair, b: ExercisePair): boolean => {
 const pickRandom = <T>(items: T[]): T =>
   items[Math.floor(Math.random() * items.length)];
 
-/**
- * Sequences units by soft priorities: rotate body regions (full body, lower,
- * upper, core) and avoid the previous unit's primary muscles. Nothing is dropped.
- */
-const rotateRegions = (
+/** Narrows to the matching units, or keeps all when none match: a soft priority. */
+const prefer = (
   units: ExercisePair[],
-  state: { rotationIndex: number; previous?: ExercisePair },
+  matches: (unit: ExercisePair) => boolean,
+): ExercisePair[] => {
+  const matching = units.filter(matches);
+  return matching.length > 0 ? matching : units;
+};
+
+const inRegion = (region: string) => (unit: ExercisePair) =>
+  leadRegions(unit).includes(region);
+
+/**
+ * The next region in rotation that holds a candidate. The opening pick starts at
+ * the first region with a big muscle group unit, so a skill opens with one.
+ */
+const nextRegion = (
+  candidates: ExercisePair[],
+  rotationIndex: number,
+  opening: boolean,
+): string | undefined => {
+  const regions = REGION_ROTATION.map(
+    (_, offset) =>
+      REGION_ROTATION[(rotationIndex + offset) % REGION_ROTATION.length],
+  ).filter((region) => candidates.some(inRegion(region)));
+  const bigRegion = opening
+    ? regions.find((region) =>
+        candidates.some((unit) => inRegion(region)(unit) && isBig(unit)),
+      )
+    : undefined;
+  return bigRegion ?? regions[0];
+};
+
+/**
+ * Orders a skill's units by picking one unit at a time. Each pick applies these
+ * soft priorities in order, so no unit is ever dropped:
+ * 1. Max strength: lower body units while any are left.
+ * 2. Opening pick: not the exercise that ended the previous skill.
+ * 3. The next body region in rotation (full body, lower, upper, core); the
+ *    opening pick starts at the first region with a big muscle group unit.
+ *    Units without a region tag come last.
+ * 4. Big muscle groups before small ones inside that region.
+ * 5. No primary muscle shared with the previous unit.
+ * 6. Uniform random among the rest.
+ * The lead exercise of a unit sets its region and size.
+ */
+export const orderExerciseUnits = (
+  units: ExercisePair[],
+  lowerBodyFirst: boolean,
+  previousExerciseId?: string,
 ): ExercisePair[] => {
   const remaining = [...units];
   const ordered: ExercisePair[] = [];
+  let rotationIndex = 0;
   while (remaining.length > 0) {
-    const region = REGION_ROTATION.map(
-      (_, offset) =>
-        REGION_ROTATION[
-          (state.rotationIndex + offset) % REGION_ROTATION.length
-        ],
-    ).find((candidate) =>
-      remaining.some((unit) => leadRegions(unit).includes(candidate)),
-    );
-    const inRegion = region
-      ? remaining.filter((unit) => leadRegions(unit).includes(region))
+    const previous = ordered.at(-1);
+    let candidates = lowerBodyFirst
+      ? prefer(remaining, inRegion("LOWER_BODY"))
       : remaining;
-    const previous = state.previous;
-    const freshMuscles = previous
-      ? inRegion.filter((unit) => !sharesPrimaryMuscle(previous, unit))
-      : inRegion;
-    const next = pickRandom(freshMuscles.length > 0 ? freshMuscles : inRegion);
-
+    if (!previous) {
+      candidates = prefer(
+        candidates,
+        (unit) => unit.first.exerciseId !== previousExerciseId,
+      );
+    }
+    const region = nextRegion(candidates, rotationIndex, !previous);
+    if (region) {
+      candidates = candidates.filter(inRegion(region));
+      rotationIndex = REGION_ROTATION.indexOf(region) + 1;
+    }
+    candidates = prefer(candidates, isBig);
+    if (previous) {
+      candidates = prefer(
+        candidates,
+        (unit) => !sharesPrimaryMuscle(previous, unit),
+      );
+    }
+    const next = pickRandom(candidates);
     remaining.splice(remaining.indexOf(next), 1);
     ordered.push(next);
-    state.previous = next;
-    if (region) {
-      state.rotationIndex = REGION_ROTATION.indexOf(region) + 1;
-    }
   }
   return ordered;
-};
-
-/**
- * Moves another unit to the front when the first unit starts with the exercise
- * that ended the previous skill. Max strength keeps its lower body units first.
- * Keeps the order when no other unit fits.
- */
-const avoidRepeatedStart = (
-  units: ExercisePair[],
-  previousExerciseId: string | undefined,
-  lowerBodyFirst: boolean,
-): ExercisePair[] => {
-  if (units.length < 2 || units[0].first.exerciseId !== previousExerciseId) {
-    return units;
-  }
-  const isLowerBody = (unit: ExercisePair) =>
-    leadRegions(unit).includes("LOWER_BODY");
-  const index = units.findIndex(
-    (unit) =>
-      unit.first.exerciseId !== previousExerciseId &&
-      (!lowerBodyFirst || isLowerBody(unit) || !isLowerBody(units[0])),
-  );
-  if (index < 1) {
-    return units;
-  }
-  return [units[index], ...units.filter((_, i) => i !== index)];
-};
-
-const orderBySkill = (
-  units: ExercisePair[],
-  lowerBodyFirst: boolean,
-): ExercisePair[] => {
-  const state: { rotationIndex: number; previous?: ExercisePair } = {
-    rotationIndex: 0,
-  };
-  const orderBySize = (group: ExercisePair[]) => [
-    ...rotateRegions(
-      group.filter((unit) => isBigMuscleExercise(unit.first)),
-      state,
-    ),
-    ...rotateRegions(
-      group.filter((unit) => !isBigMuscleExercise(unit.first)),
-      state,
-    ),
-  ];
-  if (!lowerBodyFirst) {
-    return orderBySize(units);
-  }
-  const isLowerBody = (unit: ExercisePair) =>
-    leadRegions(unit).includes("LOWER_BODY");
-  return [
-    ...orderBySize(units.filter(isLowerBody)),
-    ...orderBySize(units.filter((unit) => !isLowerBody(unit))),
-  ];
 };
 
 /** The exercise of the last set of the last unit, or the fallback without units. */
@@ -123,19 +117,3 @@ export const endingExerciseId = (
   const last = units.at(-1);
   return (last?.second ?? last?.first)?.exerciseId ?? fallback;
 };
-
-/**
- * Orders a skill's units: big muscle groups before the rest, each group
- * sequenced by region rotation. Max strength puts lower body main lifts first.
- * The first unit differs from the exercise that ended the previous skill.
- */
-export const orderExerciseUnits = (
-  units: ExercisePair[],
-  lowerBodyFirst: boolean,
-  previousExerciseId?: string,
-): ExercisePair[] =>
-  avoidRepeatedStart(
-    orderBySkill(units, lowerBodyFirst),
-    previousExerciseId,
-    lowerBodyFirst,
-  );

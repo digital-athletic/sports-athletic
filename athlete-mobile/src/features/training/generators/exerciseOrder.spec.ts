@@ -4,6 +4,7 @@ import type {
   ExercisePair,
   SkillBranchList,
 } from "@/features/training/models/ExerciseBranch";
+import { orderExerciseUnits } from "@/features/training/utils/exerciseOrderUtils";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { UserType } from "@/schemas/user.schema";
 import { getTagValue } from "@/utils/tagUtils";
@@ -124,5 +125,195 @@ describe("createSetList: body region rotation", () => {
       ref("upper", ["REGION_UPPER_BODY", "MUSCLE_CHEST"]),
     ]);
     expect(leadIds(pairs)).toEqual(["upper", "core"]);
+  });
+});
+
+const REGION_TAGS = { L: "LOWER_BODY", U: "UPPER_BODY", C: "CORE" };
+type RegionKey = keyof typeof REGION_TAGS;
+
+const unit = (
+  id: string,
+  region: RegionKey | null,
+  ...muscles: string[]
+): ExercisePair => ({
+  first: ref(id, [
+    ...(region ? [`REGION_${REGION_TAGS[region]}`] : []),
+    ...muscles.map((muscle) => `MUSCLE_${muscle}`),
+  ]),
+});
+
+const regionKeys = (units: ExercisePair[]) =>
+  units
+    .map((entry) => getTagValue(entry.first.branchTags, "REGION"))
+    .map(
+      (region) =>
+        (Object.keys(REGION_TAGS) as RegionKey[]).find(
+          (key) => REGION_TAGS[key] === region,
+        ) ?? "X",
+    )
+    .join(" ");
+
+const bigLegs = [
+  unit("legs1", "L", "GLUTES"),
+  unit("legs2", "L", "QUADRICEPS"),
+  unit("legs3", "L", "HAMSTRINGS"),
+];
+const smallUpper = [
+  unit("arms1", "U", "BICEPS"),
+  unit("arms2", "U", "TRICEPS"),
+  unit("arms3", "U", "SHOULDER_FRONT"),
+];
+const bigUpper = [
+  unit("push", "U", "CHEST"),
+  unit("pull", "U", "LATISSIMUS"),
+  unit("back", "U", "UPPER_BACK"),
+];
+const core = (count: number) =>
+  Array.from({ length: count }, (_, index) =>
+    unit(`core${index}`, "C", index % 2 ? "OBLIQUES" : "RECTUS_ABDOMINIS"),
+  );
+
+describe("orderExerciseUnits: region alternation before muscle size", () => {
+  it.each([0, 0.5, 0.99])(
+    "alternates legs and core under upper body soreness with random %s",
+    (random) => {
+      jest.mocked(Math.random).mockReturnValue(random);
+      const units = [
+        ...bigLegs,
+        unit("legs4", "L", "GLUTES"),
+        unit("legs5", "L", "QUADRICEPS"),
+        unit("legs6", "L", "HAMSTRINGS"),
+        ...core(6),
+      ];
+      expect(regionKeys(orderExerciseUnits(units, false))).toBe(
+        "L C L C L C L C L C L C",
+      );
+    },
+  );
+
+  it.each([0, 0.5, 0.99])(
+    "alternates upper body and core under lower body soreness with random %s",
+    (random) => {
+      jest.mocked(Math.random).mockReturnValue(random);
+      const ordered = orderExerciseUnits(
+        [...smallUpper, ...bigUpper, ...core(6)],
+        false,
+      );
+      expect(regionKeys(ordered)).toBe("U C U C U C U C U C U C");
+      const upperIds = ordered
+        .filter((_, index) => index % 2 === 0)
+        .map((entry) => entry.first.branchId);
+      expect(upperIds.slice(0, 3).sort()).toEqual(["back", "pull", "push"]);
+    },
+  );
+
+  it("alternates regions even when one region holds only small muscle groups", () => {
+    expect(
+      regionKeys(orderExerciseUnits([...bigLegs, ...smallUpper], false)),
+    ).toBe("L U L U L U");
+  });
+
+  it("orders big muscle groups before small ones inside each region", () => {
+    const ordered = orderExerciseUnits(
+      [
+        unit("smallLegs1", "L", "CALVES"),
+        unit("smallLegs2", "L", "ADDUCTORS"),
+        ...smallUpper.slice(0, 2),
+        ...bigLegs.slice(0, 2),
+        ...bigUpper.slice(0, 2),
+      ],
+      false,
+    );
+    expect(regionKeys(ordered)).toBe("L U L U L U L U");
+    expect(ordered.map((entry) => entry.first.branchId)).toEqual([
+      "legs1",
+      "push",
+      "legs2",
+      "pull",
+      "smallLegs1",
+      "arms1",
+      "smallLegs2",
+      "arms2",
+    ]);
+  });
+
+  it("prefers a big muscle group over a fresh small one inside a region", () => {
+    const ordered = orderExerciseUnits(
+      [
+        unit("chest1", "U", "CHEST"),
+        unit("chest2", "U", "CHEST", "TRICEPS"),
+        unit("biceps", "U", "BICEPS"),
+      ],
+      false,
+    );
+    expect(ordered.map((entry) => entry.first.branchId)).toEqual([
+      "chest1",
+      "chest2",
+      "biceps",
+    ]);
+  });
+
+  it("opens the skill with a big muscle group", () => {
+    const ordered = orderExerciseUnits(
+      [
+        unit("calves", "L", "CALVES"),
+        unit("adductors", "L", "ADDUCTORS"),
+        ...bigUpper.slice(0, 2),
+      ],
+      false,
+    );
+    expect(regionKeys(ordered)).toBe("U L U L");
+  });
+
+  it("puts units without a body region last", () => {
+    const ordered = orderExerciseUnits(
+      [unit("untagged", null, "GLUTES"), ...bigLegs.slice(0, 2), smallUpper[0]],
+      false,
+    );
+    expect(regionKeys(ordered)).toBe("L U L X");
+  });
+
+  it("puts lower body units first in max strength", () => {
+    const ordered = orderExerciseUnits(
+      [bigUpper[0], unit("calves", "L", "CALVES"), ...bigLegs.slice(0, 2)],
+      true,
+    );
+    expect(ordered.map((entry) => entry.first.branchId)).toEqual([
+      "legs1",
+      "legs2",
+      "calves",
+      "push",
+    ]);
+  });
+
+  it("opens with another big unit when the first one ended the previous skill", () => {
+    const ordered = orderExerciseUnits(
+      [
+        unit("calves", "L", "CALVES"),
+        unit("adductors", "L", "ADDUCTORS"),
+        ...bigUpper.slice(0, 2),
+      ],
+      false,
+      "epush",
+    );
+    expect(ordered.map((entry) => entry.first.branchId)).toEqual([
+      "pull",
+      "calves",
+      "push",
+      "adductors",
+    ]);
+  });
+
+  it("opens with a small unit when the only big unit ended the previous skill", () => {
+    const ordered = orderExerciseUnits(
+      [
+        unit("calves", "L", "CALVES"),
+        unit("adductors", "L", "ADDUCTORS"),
+        bigUpper[0],
+      ],
+      false,
+      "epush",
+    );
+    expect(ordered[0].first.branchId).toBe("calves");
   });
 });

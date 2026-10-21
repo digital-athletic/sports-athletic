@@ -1,93 +1,90 @@
 import {
-  AudioPlayer,
-  AudioPlayerOptions,
+  type AudioPlayer,
+  type AudioPlayerOptions,
   useAudioPlayer,
-  useAudioPlayerStatus,
 } from "expo-audio";
-import { useCallback, useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const playerOptions: AudioPlayerOptions = {
   // Maintains audio session for seamless handoff to video playback
   keepAudioSessionActive: true,
 };
 
-const play = (player: AudioPlayer, position?: number) => {
-  if (typeof position === "number") {
-    player.seekTo(position);
-  }
+// Seconds left in the exercise when each clip starts.
+const START_CUE_LEAD_SECONDS = 6;
+const PAUSE_CUE_LEAD_SECONDS = 4;
+
+type StartedCue = {
+  exerciseId: string;
+  player: AudioPlayer;
+};
+
+type VoiceCoachArgs = {
+  countdown: number | undefined;
+  exerciseId: string;
+  isActive: boolean;
+  isPauseNext: boolean;
+};
+
+const isCountdownInCueWindow = (
+  countdown: number | undefined,
+  leadSeconds: number,
+): countdown is number => countdown !== undefined && countdown <= leadSeconds;
+
+const isCueStartedForExercise = (
+  startedCue: StartedCue | undefined,
+  exerciseId: string,
+  player: AudioPlayer,
+) => startedCue?.exerciseId === exerciseId && startedCue.player === player;
+
+// Seeks so that the clip ends together with the countdown.
+const playCueFromRemainingSeconds = (
+  player: AudioPlayer,
+  remaining: number,
+) => {
+  player.seekTo(Math.max(0, player.duration - remaining));
   player.play();
 };
 
 /**
- * Hook for managing voice coach audio playback during training.
- * Uses expo-audio for cross-platform audio support.
+ * Plays the countdown clip for the next exercise once per exercise. A ref
+ * records the started clip, because the player status updates asynchronously
+ * and would report a finished clip as playable again.
  */
-export const useVoiceCoach = (
-  isPauseNext: boolean,
-  isActive: boolean,
-  countdown: number | undefined,
-) => {
-  const hasCountdown = typeof countdown === "number";
-
+export const useVoiceCoach = ({
+  countdown,
+  exerciseId,
+  isActive,
+  isPauseNext,
+}: VoiceCoachArgs) => {
   const startPlayer = useAudioPlayer(
     require("../../../../assets/audio/start_5sec.mp3"),
     playerOptions,
   );
-  const { playing: startCoachPlaying, duration: startCoachDuration } =
-    useAudioPlayerStatus(startPlayer);
-
-  // Plays start exercise countdown audio clip if within the final 6 seconds
-  const playStartCoach = useCallback(
-    (remaining: number) => {
-      if (remaining <= 6 && !startCoachPlaying) {
-        play(startPlayer, Math.max(0, startCoachDuration - remaining));
-      }
-    },
-    [startCoachDuration, startCoachPlaying, startPlayer],
-  );
-
   const pausePlayer = useAudioPlayer(
     require("../../../../assets/audio/pause_3sec.mp3"),
     playerOptions,
   );
-  const { playing: pauseCoachPlaying, duration: pauseCoachDuration } =
-    useAudioPlayerStatus(pausePlayer);
 
-  // Plays pause countdown audio clip if within the final 4 seconds
-  const playPauseCoach = useCallback(
-    (remaining: number) => {
-      if (remaining <= 4 && !pauseCoachPlaying) {
-        play(pausePlayer, Math.max(0, pauseCoachDuration - remaining));
-      }
-    },
-    [pauseCoachDuration, pauseCoachPlaying, pausePlayer],
-  );
-
-  const playCountdown = useCallback(
-    (remaining: number) => {
-      if (isPauseNext) {
-        playPauseCoach(remaining);
-      } else {
-        playStartCoach(remaining);
-      }
-    },
-    [isPauseNext, playPauseCoach, playStartCoach],
-  );
-
-  const stopCountdown = useCallback(() => {
-    if (startCoachPlaying) {
-      startPlayer.pause();
-    }
-    if (pauseCoachPlaying) {
-      pausePlayer.pause();
-    }
-  }, [pauseCoachPlaying, pausePlayer, startCoachPlaying, startPlayer]);
+  const startedCueRef = useRef<StartedCue | undefined>(undefined);
 
   useEffect(() => {
-    if (isActive && hasCountdown) {
-      playCountdown(countdown!);
-    } else {
-      stopCountdown();
+    const player = isPauseNext ? pausePlayer : startPlayer;
+    const leadSeconds = isPauseNext
+      ? PAUSE_CUE_LEAD_SECONDS
+      : START_CUE_LEAD_SECONDS;
+    const startedCue = startedCueRef.current;
+
+    if (!isActive || !isCountdownInCueWindow(countdown, leadSeconds)) {
+      startedCue?.player.pause();
+      startedCueRef.current = undefined;
+      return;
     }
-  }, [countdown, hasCountdown, isActive, playCountdown, stopCountdown]);
+
+    if (isCueStartedForExercise(startedCue, exerciseId, player)) return;
+
+    startedCue?.player.pause();
+    playCueFromRemainingSeconds(player, countdown);
+    startedCueRef.current = { exerciseId, player };
+  }, [countdown, exerciseId, isActive, isPauseNext, pausePlayer, startPlayer]);
 };

@@ -35,7 +35,6 @@ export function getSkillTree(
   skill: string,
   prevSkills: string[] = [],
   hasWeightsFlag: boolean = false,
-  isShortWorkout?: boolean,
   temporalData?: TemporalDataType[],
   replacementCount?: number,
 ): SkillTreeType {
@@ -77,12 +76,6 @@ export function getSkillTree(
       let prevSkillTree = hasWeightsFlag
         ? skillTrees["PREV"]
         : skillTrees["PREVKG"];
-      if (isShortWorkout) {
-        prevSkillTree = {
-          ...skillTrees["PREV"],
-          ...skillTrees["PREVKG"],
-        };
-      }
       if (temporalData && replacementCount) {
         if (prevSkills.length > 0) {
           const prevRegion = getRegionsForPreventionSkills([skill]);
@@ -648,7 +641,6 @@ export const mapSkillCodeToFocusArea = (
   switch (skillCode) {
     // Warmup codes
     case "WUPREV":
-    case "WUSPEZIAL":
     case "WUSKSA":
       return "WARMUP";
 
@@ -706,7 +698,10 @@ export const isPreventionTraining = (type: string): boolean =>
 export const readLiteralSkillTree = (
   skillTrees: Record<string, SkillTreeType>,
   name: string,
-): SkillTreeType => keepBranchesWithLevels(skillTrees[name] ?? {});
+): SkillTreeType =>
+  keepBranchesWithLevels(
+    Object.hasOwn(skillTrees, name) ? skillTrees[name] : {},
+  );
 
 export const getSkillBranchesForProgress = (
   skillTrees: Record<string, SkillTreeType>,

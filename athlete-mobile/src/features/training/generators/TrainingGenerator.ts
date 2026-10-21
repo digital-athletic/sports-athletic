@@ -458,7 +458,7 @@ export default class TrainingGenerator {
         block.sets,
         temporalData,
         userExerciseData.exerciseData,
-        { setDuration: block.setDuration, rest: block.rest },
+        block,
       );
     });
     // the pause closing a block leads into the next one
@@ -709,7 +709,6 @@ export default class TrainingGenerator {
                 usedBranchIds,
                 prevSkills,
                 userExerciseData,
-                false,
               );
               const inOwnRegion = getTagValues(
                 branch?.tags ?? [],
@@ -798,7 +797,6 @@ export default class TrainingGenerator {
             ),
             prevSkills,
             userExerciseData,
-            false,
           );
           if (
             replacement.length === 0 &&
@@ -921,7 +919,6 @@ export default class TrainingGenerator {
     usedBranchIds: string[],
     prevSkills: string[],
     userExerciseData: UserExerciseDataMapType,
-    isShortWorkout: boolean,
   ): ExerciseBranchType[] => {
     const replacement: ExerciseBranchType[] = [];
     requireWorkoutData(user);
@@ -933,7 +930,6 @@ export default class TrainingGenerator {
       skill,
       prevSkills,
       HAS_WEIGHTS,
-      isShortWorkout,
       temporalData,
       replace.length,
     );

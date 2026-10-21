@@ -40,7 +40,6 @@ describe("replaceExerciseBranches: children", () => {
       [],
       [],
       noExerciseData,
-      false,
     );
 
     expect(replacement.map((branch) => branch.branchId)).toEqual(["1"]);

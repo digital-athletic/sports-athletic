@@ -11,7 +11,6 @@ const LocalizedTextSchema = v.objectWithRest(
   { en: NonEmptyStringSchema },
   NonEmptyStringSchema,
 );
-export type LocalizedText = v.InferOutput<typeof LocalizedTextSchema>;
 
 export const CountBySchema = v.picklist(["exercises", "entries", "pairs"]);
 export type CountBy = v.InferOutput<typeof CountBySchema>;
@@ -48,7 +47,6 @@ export const RestSchema = v.strictObject({
 });
 export type Rest = v.InferOutput<typeof RestSchema>;
 const BlockRestSchema = v.partial(RestSchema);
-export type BlockRest = v.InferOutput<typeof BlockRestSchema>;
 
 const BodyPartsSchema = v.strictObject({
   regions: v.optional(
@@ -56,7 +54,6 @@ const BodyPartsSchema = v.strictObject({
   ),
   muscles: v.optional(v.array(NonEmptyStringSchema)),
 });
-export type BodyParts = v.InferOutput<typeof BodyPartsSchema>;
 
 const blockBase = {
   skill: SkillCodeSchema,
@@ -92,8 +89,6 @@ const BlockSchema = v.variant("kind", [
   BranchesBlockSchema,
 ]);
 export type PicksBlock = v.InferOutput<typeof PicksBlockSchema>;
-export type DurationBlock = v.InferOutput<typeof DurationBlockSchema>;
-export type BranchesBlock = v.InferOutput<typeof BranchesBlockSchema>;
 export type Block = v.InferOutput<typeof BlockSchema>;
 
 export const TemplateSchema = v.strictObject({

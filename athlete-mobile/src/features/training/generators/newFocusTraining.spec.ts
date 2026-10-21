@@ -194,4 +194,10 @@ describe("new short workout: template without code changes", () => {
       isFeedbackEligibleSkill({ id: "training-1", type: "PREVHIP" }, "PREVHIP"),
     ).toBe(false);
   });
+
+  it("asks feedback for a skill with progression", () => {
+    expect(
+      isFeedbackEligibleSkill({ id: "training-2", type: "STRETCH" }, "STRETCH"),
+    ).toBe(true);
+  });
 });

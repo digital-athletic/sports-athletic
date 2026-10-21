@@ -86,6 +86,8 @@ export default (): ExpoConfig => ({
     "expo-localization",
     "expo-dev-client",
     "expo-system-ui",
+    "expo-sharing",
+    "expo-status-bar",
     [
       "@react-native-community/datetimepicker",
       {

@@ -558,16 +558,12 @@ describe("standard progression config: weight steps", () => {
   });
 });
 
-describe("standard progression config: full-body stability and prevention ranges", () => {
+describe("standard progression config: full body stability ranges and prevention exercise values", () => {
   const cases = [
     ["GKS", "repetition", true, 8, 12],
     ["GKS", "repetition", false, 8, 12],
     ["GKS", "duration", true, 30, 50],
     ["GKS", "duration", false, 30, 60],
-    ["PREVKNEE", "repetition", true, 10, 15],
-    ["PREVKNEE", "repetition", false, 10, 15],
-    ["PREVKNEE", "duration", true, 40, 60],
-    ["PREVKNEE", "duration", false, 40, 60],
   ] as const;
 
   it.each(
@@ -598,6 +594,27 @@ describe("standard progression config: full-body stability and prevention ranges
       expect(
         getExerciseTargetValue(intensity, exercise, mode, level, gender),
       ).toBe(target);
+    },
+  );
+
+  it.each(
+    (["repetition", "duration"] as const).flatMap((mode) =>
+      [true, false].map((withWeights) => ({ mode, withWeights })),
+    ),
+  )(
+    "PREVKNEE resolves $mode with weights $withWeights to the authored values",
+    ({ mode, withWeights }) => {
+      const exercise = createExercise(mode, withWeights, {
+        [mode]: authoredValues("20", "80"),
+      });
+      const intensity = getIntensityBySkill("PREVKNEE", exercise);
+
+      expect(
+        getExerciseStartValue(intensity, exercise, mode, "advanced", "m"),
+      ).toBe(20);
+      expect(
+        getExerciseTargetValue(intensity, exercise, mode, "advanced", "m"),
+      ).toBe(80);
     },
   );
 

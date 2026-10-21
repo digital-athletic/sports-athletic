@@ -154,7 +154,8 @@ const RESOLVED: Record<string, Resolved[]> = {
   PREVSPINE: preventionBlocks(),
 };
 
-const preventionValues = [undefined, "exercise"];
+// The PREV intensity reads exercise values, so prevention blocks set no mode.
+const preventionValues = [undefined, undefined];
 const VALUES: Record<string, (string | undefined)[]> = {
   WU: [undefined],
   MOB: [undefined],

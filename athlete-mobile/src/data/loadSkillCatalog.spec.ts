@@ -64,15 +64,15 @@ const FITNESS_LEVELS = ["BEGINNER", "ADVANCED", "PROFESSIONAL"];
 
 interface Timing {
   sets?: number;
-  rest?: [number, number, number];
+  rest?: [number, number, number, number?];
   superset?: SkillCatalogEntry["superset"];
   intensity?: string;
   startRepetitions?: number;
   startDuration?: number;
 }
 
-// rest holds [withinSuperset, betweenSets, afterExercise]. No value depends on
-// the fitness level.
+// rest holds [withinSuperset, betweenSets, afterExercise, afterBlock]. No value
+// depends on the fitness level.
 const TIMING: Record<string, Timing> = {
   WU: { sets: 1, rest: [10, 10, 30], superset: "muscles" },
   MOB: { sets: 1, rest: [10, 10, 10], superset: "muscles" },
@@ -112,7 +112,7 @@ const TIMING: Record<string, Timing> = {
     superset: "muscles",
     intensity: "PREV",
   },
-  WUSPEZIAL: { sets: 1, rest: [10, 10, 10], superset: "muscles" },
+  WUSPEZIAL: { sets: 1, rest: [10, 10, 10, 30], superset: "muscles" },
   WUSKSA: {
     sets: 1,
     rest: [30, 30, 30],
@@ -307,6 +307,7 @@ describe("loadSkillCatalog: timing and start values", () => {
       withinSuperset: rest[0],
       betweenSets: rest[1],
       afterExercise: rest[2],
+      afterBlock: rest[3],
     };
 
   it.each(CODES)("holds the timing and start values of %s", (code) => {
@@ -359,7 +360,13 @@ describe("loadSkillCatalog: parity with the plan workout defaults", () => {
   });
 
   it.each(withSets)("matches the plan rest times for %s", (code) => {
-    expect(entryOf(code).rest).toEqual({
+    const rest = entryOf(code).rest;
+
+    expect({
+      withinSuperset: rest?.withinSuperset,
+      betweenSets: rest?.betweenSets,
+      afterExercise: rest?.afterExercise,
+    }).toEqual({
       withinSuperset: generator.getInSetPauseBySkill(code),
       betweenSets: generator.getSingleExerciseRestBySkill(code),
       afterExercise: generator.getAfterSetPauseBySkill(code),

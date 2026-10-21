@@ -19,6 +19,7 @@ import TrainingGenerator from "./TrainingGenerator";
 const LANDING_ID = "1107";
 const LANDING_START_REPETITION = 4;
 const RANGE_START_REPETITION = 10;
+const GKS_RANGE_START_REPETITION = 8;
 
 const landing = ExercisesData.find(
   (exercise) => exercise.id === LANDING_ID,
@@ -77,15 +78,22 @@ describe("getSetListFromExercisePairs: block values", () => {
 
   it("lets the intensity config decide when values is omitted", () => {
     expect(workRepetitions("PREV", { rest })).toEqual([
-      RANGE_START_REPETITION,
-      RANGE_START_REPETITION,
+      LANDING_START_REPETITION,
+      LANDING_START_REPETITION,
     ]);
   });
 
-  it("keeps the skill range start in a plan workout without timing", () => {
-    expect(workRepetitions("PREV")).toEqual([
-      RANGE_START_REPETITION,
-      RANGE_START_REPETITION,
+  it("uses the exercise start value in a plan workout without timing", () => {
+    expect(workRepetitions("PREVKNEE")).toEqual([
+      LANDING_START_REPETITION,
+      LANDING_START_REPETITION,
+    ]);
+  });
+
+  it("keeps the skill range start of a skill that overrides exercise values", () => {
+    expect(workRepetitions("GKS")).toEqual([
+      GKS_RANGE_START_REPETITION,
+      GKS_RANGE_START_REPETITION,
     ]);
   });
 });

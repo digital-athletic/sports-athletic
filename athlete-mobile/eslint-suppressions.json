@@ -327,7 +327,7 @@
       "count": 18
     },
     "max-params": {
-      "count": 12
+      "count": 11
     }
   },
   "src/features/training/generators/generatorErrorUtils.ts": {

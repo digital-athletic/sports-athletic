@@ -1,9 +1,9 @@
 import * as v from "valibot";
 
 import {
+  CatalogRestSchema,
   CountBySchema,
   CountSchema,
-  RestSchema,
   SupersetSchema,
 } from "./aiwl.schema";
 import { SkillCodeSchema } from "./generator.schema";
@@ -19,7 +19,7 @@ const timingEntries = {
   intensityWithoutWeights: v.optional(v.pipe(v.string(), v.minLength(1))),
   superset: v.optional(SupersetSchema),
   sets: v.optional(CountSchema),
-  rest: v.optional(RestSchema),
+  rest: v.optional(CatalogRestSchema),
   startRepetitions: v.optional(CountSchema),
   startDuration: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1))),
 };

@@ -1333,26 +1333,14 @@ describe("TrainingGenerator", () => {
     ];
 
     it("returns array of exercise pairs", () => {
-      const result = generator.getExercisePairs(
-        "SA",
-        branches,
-        exercises,
-        [],
-        [],
-      );
+      const result = generator.getExercisePairs("SA", branches, exercises);
 
       expect(Array.isArray(result)).toBe(true);
       expect(result.length).toBeGreaterThan(0);
     });
 
     it("each pair has a first exercise", () => {
-      const result = generator.getExercisePairs(
-        "SA",
-        branches,
-        exercises,
-        [],
-        [],
-      );
+      const result = generator.getExercisePairs("SA", branches, exercises);
 
       result.forEach((pair) => {
         expect(pair).toHaveProperty("first");
@@ -1362,13 +1350,7 @@ describe("TrainingGenerator", () => {
     });
 
     it("creates supersets when appropriate", () => {
-      const result = generator.getExercisePairs(
-        "SA",
-        branches,
-        exercises,
-        [],
-        [],
-      );
+      const result = generator.getExercisePairs("SA", branches, exercises);
 
       const hasSuperset = result.some((pair) => pair.second !== undefined);
       expect(hasSuperset).toBe(true);
@@ -1389,19 +1371,15 @@ describe("TrainingGenerator", () => {
         },
       ];
 
-      const result = generator.getExercisePairs(
-        "SA",
-        oneSidedBranches,
-        [oneSidedExercise],
-        [],
-        [],
-      );
+      const result = generator.getExercisePairs("SA", oneSidedBranches, [
+        oneSidedExercise,
+      ]);
 
       expect(result.length).toBeGreaterThan(0);
     });
 
     it("returns empty array when no branches provided", () => {
-      const result = generator.getExercisePairs("SA", [], exercises, [], []);
+      const result = generator.getExercisePairs("SA", [], exercises);
 
       expect(Array.isArray(result)).toBe(true);
       expect(result.length).toBe(0);
@@ -2508,25 +2486,37 @@ describe("TrainingGenerator", () => {
       expect(prevEntries.length).toBeGreaterThanOrEqual(6);
     });
 
-    it("side detection uses English LEFT/RIGHT from original pain tags", () => {
-      // KNEE_RIGHT pain should produce RIGHT-side exercises, not BOTH (the broken default).
-      // With broken German string matching the exercises were filtered to 0-2.
-      // Correct English matching produces at least 6 exercises (3 super-set pairs).
-      const result = generator.generateShortWorkout(
-        "PREVKNEE",
-        prevKneeUser,
-        "STUDIO",
-        realExercises as Parameters<typeof generator.generateShortWorkout>[3],
-        prevSkillTrees,
-        [],
-        noExerciseData,
-      );
+    it("gives the same PREVKNEE exercises for a right knee pain as without pains", () => {
+      const prevKneeIds = (user: UserType) => {
+        jest.spyOn(Math, "random").mockReturnValue(0);
+        const ids = generator
+          .generateShortWorkout(
+            "PREVKNEE",
+            user,
+            "STUDIO",
+            realExercises as Parameters<
+              typeof generator.generateShortWorkout
+            >[3],
+            prevSkillTrees,
+            [],
+            noExerciseData,
+          )
+          .filter((e) => e.skill === "PREVKNEE" && e.exerciseId !== PAUSE_ID)
+          .map((e) => e.exerciseId);
+        jest.restoreAllMocks();
+        return ids;
+      };
+      const withoutPains: UserType = {
+        ...prevKneeUser,
+        workoutData: {
+          ...prevKneeUser.workoutData,
+          tags: { LEVEL: ["INTERMEDIATE"], PAIN: [] },
+        },
+      };
 
-      const exerciseEntries = result.filter(
-        (e) => e.skill === "PREVKNEE" && e.exerciseId !== PAUSE_ID,
-      );
-
-      expect(exerciseEntries.length).toBeGreaterThanOrEqual(6);
+      const ids = prevKneeIds(prevKneeUser);
+      expect(ids.length).toBeGreaterThanOrEqual(6);
+      expect(ids).toEqual(prevKneeIds(withoutPains));
     });
   });
 });

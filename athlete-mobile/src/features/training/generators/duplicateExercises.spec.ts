@@ -186,7 +186,7 @@ describe("getBranchesForWorkout: branches with the same exercise", () => {
   });
 });
 
-describe("getExercisePairs: prevention with declared pains", () => {
+describe("getExercisePairs: prevention branches of one exercise", () => {
   const reference = (branchId: string): BranchExerciseReference => ({
     branchId,
     branchTags: importTree("PREVKG")[branchId].tags,
@@ -198,8 +198,6 @@ describe("getExercisePairs: prevention with declared pains", () => {
       "PREVSPINE",
       [reference("103"), reference("634")],
       realExercises,
-      ["SPINE"],
-      ["PREVSPINE"],
     );
     expect(pairs.map((pair) => pair.second)).toEqual([undefined, undefined]);
   });

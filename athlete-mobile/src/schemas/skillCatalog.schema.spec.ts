@@ -38,6 +38,10 @@ describe("SkillCatalogEntrySchema: accepts", () => {
       "an entry with painRegions",
       { ...gksEntry, painRegions: ["KNEE", "HIP"] },
     ],
+    [
+      "afterBlock in the catalog rest",
+      { ...gksEntry, rest: { ...(gksEntry.rest as Json), afterBlock: 30 } },
+    ],
   ])("%s", (_label, data) => {
     expect(v.safeParse(SkillCatalogEntrySchema, data).success).toBe(true);
   });
@@ -62,8 +66,8 @@ describe("SkillCatalogEntrySchema: rejects", () => {
       "rest.withinSuperset",
     ],
     [
-      "afterBlock in the catalog rest",
-      { ...gksEntry, rest: { ...(gksEntry.rest as Json), afterBlock: 30 } },
+      "a negative afterBlock in the catalog rest",
+      { ...gksEntry, rest: { ...(gksEntry.rest as Json), afterBlock: -1 } },
       "rest.afterBlock",
     ],
     ["values in the catalog", { ...gksEntry, values: "exercise" }, "values"],

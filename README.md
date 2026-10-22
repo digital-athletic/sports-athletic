@@ -58,7 +58,7 @@ supabase stop --no-backup
 
 **Prerequisites:**
 
-- [Node.js](https://nodejs.org/) v24.18.0. v22 is the technical minimum, 24.18.0 is what CI runs.
+- [Node.js](https://nodejs.org/) v24.22.1. v22 is the technical minimum, 24.22.1 is what CI runs.
 - [pnpm](https://pnpm.io/installation)
 - [watchman](https://facebook.github.io/watchman/docs/install)
 
@@ -115,7 +115,7 @@ xcrun simctl openurl booted "exp://127.0.0.1:8081"
 
 **Prerequisites:**
 
-- [Node.js](https://nodejs.org/) v24.18.0
+- [Node.js](https://nodejs.org/) v24.22.1
 - [pnpm](https://pnpm.io/installation)
 
 **Start the app:**

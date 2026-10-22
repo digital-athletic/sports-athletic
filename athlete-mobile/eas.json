@@ -2,7 +2,7 @@
   "build": {
     "base": {
       "env": {},
-      "node": "24.18.0"
+      "node": "24.22.1"
     },
     "development-simulator": {
       "extends": "base",

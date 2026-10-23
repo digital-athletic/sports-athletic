@@ -95,9 +95,11 @@ const drawPairs = (pick: PickDraw): BranchExerciseReference[][] => {
   return [drawn, weighted];
 };
 
+// With closesBlock, a one sided branch never takes the last entry of the block.
 const drawSingles = (
   pick: PickDraw,
   oneSidedSize: number,
+  closesBlock: boolean,
 ): BranchExerciseReference[] => {
   const drawn: BranchExerciseReference[] = [];
   let filled = 0;
@@ -110,7 +112,8 @@ const drawSingles = (
       TagGroups.SIDE,
     ).includes("ONE");
     const size = isOneSided ? oneSidedSize : 1;
-    if (filled + size > pick.count) continue;
+    const takesLastEntry = closesBlock && filled + size === pick.count;
+    if (filled + size > pick.count || (isOneSided && takesLastEntry)) continue;
     drawn.push(result.branch);
     filled += size;
   }
@@ -135,7 +138,7 @@ export const drawBlock = (
   }
   const drawn: BranchExerciseReference[] = [];
   const weighted: BranchExerciseReference[] = [];
-  for (const pick of block.picks) {
+  for (const [index, pick] of block.picks.entries()) {
     const pickDraw: PickDraw = {
       ...context,
       pool,
@@ -149,7 +152,14 @@ export const drawBlock = (
       weighted.push(...weightedPairs);
     } else {
       // a one sided exercise adds two entries, left and right
-      drawn.push(...drawSingles(pickDraw, block.countBy === "entries" ? 2 : 1));
+      const countsEntries = block.countBy === "entries";
+      drawn.push(
+        ...drawSingles(
+          pickDraw,
+          countsEntries ? 2 : 1,
+          countsEntries && index === block.picks.length - 1,
+        ),
+      );
     }
   }
   return [...drawn, ...weighted];

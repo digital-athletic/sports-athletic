@@ -182,9 +182,9 @@ describe("resolveTemplate: block defaults", () => {
     },
   );
 
-  it("resolves the WU set duration, rest and superset", () => {
+  it("resolves the WU rest and superset without a set duration", () => {
     expect(planOf("WU").blocks[0]).toMatchObject({
-      setDuration: 60,
+      setDuration: undefined,
       superset: "none",
       rest: { withinSuperset: 10, betweenSets: 10, afterExercise: 10 },
     });

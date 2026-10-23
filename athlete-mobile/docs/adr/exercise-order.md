@@ -22,13 +22,14 @@ A skill trains several units. A unit is a single exercise or a superset pair. Th
 Option 3. The generator builds the order one pick at a time. Each pick starts with all units of the skill that are not placed yet and narrows them step by step. A step that would leave no unit keeps the units it received, so every step stays a soft priority.
 
 1. **Max strength, lower body first:** max strength keeps only lower body units while any remain. Its lower body main lifts move the heaviest loads of the session.
-2. **Skill boundary, opening pick only:** the first unit must not start with the exercise that ended the previous skill.
+2. **Skill boundary, opening pick only:** the first unit must not contain the exercise that ended the previous skill.
 3. **Body region:** the generator takes the next region in the rotation full body, lower body, upper body, core, and then starts over. Regions without units are skipped. The opening pick starts the rotation at the first region that holds a big muscle group unit, so the skill opens with one. After each pick the rotation continues behind the chosen region. Units without a body region tag stay until no tagged unit is left, so they come last.
-4. **Size:** inside the chosen region, big muscle group units come before small ones. Big muscle groups are chest, upper back, latissimus, quadriceps, glutes, and hamstrings.
-5. **Primary muscles:** the generator drops units that share a primary muscle with the previous unit.
-6. **Random:** the generator picks one of the remaining units uniformly at random, so sessions vary.
+4. **Region overlap:** the generator drops units that share a body region with the previous unit.
+5. **Size:** inside the chosen region, big muscle group units come before small ones. Big muscle groups are chest, upper back, latissimus, quadriceps, glutes, and hamstrings.
+6. **Primary muscles:** the generator drops units that share a primary muscle with the previous unit.
+7. **Random:** the generator picks one of the remaining units uniformly at random, so sessions vary.
 
-The lead exercise of a unit sets the unit's body region and size. A superset pair can mix regions, so two exercises of the same region can follow each other across the boundary of two pairs.
+Both exercises of a superset pair add their body regions, primary muscles, and size to the unit. A pair of an upper body and a lower body exercise therefore counts for both regions.
 
 Precedence follows the step order:
 
@@ -54,7 +55,7 @@ Option 1 fails because the size groups split the regions whenever one region hol
 - Pro: regions alternate for every soreness selection.
 - Pro: all priorities sit in one loop in a fixed order, so a change to one priority happens in one place.
 - Con: under upper body soreness, core units sit between heavy leg units and can tire the trunk before the next leg exercise.
-- Con: mixed superset pairs can place two exercises of the same region back to back.
+- Con: when only mixed superset pairs remain, two exercises of the same region can still follow each other.
 
 ## More information
 

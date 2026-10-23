@@ -141,9 +141,39 @@ describe("drawBlock: count by entries", () => {
   });
 
   it("counts a one sided exercise as 2 entries", () => {
-    const pool = tree({ singleArmRow: oneSided, pushUp: twoSided });
+    const pool = tree({
+      singleArmRow: oneSided,
+      pushUp: twoSided,
+      squat: twoSided,
+    });
 
-    expect(drawEntries(2, pool)).toEqual(["singleArmRow"]);
+    expect(drawEntries(3, pool)).toEqual(["singleArmRow", "pushUp"]);
+  });
+
+  it("never puts a one sided exercise into the last entry of the block", () => {
+    const pool = tree({
+      pushUp: twoSided,
+      singleArmRow: oneSided,
+      squat: twoSided,
+    });
+
+    expect(drawEntries(3, pool)).toEqual(["pushUp", "squat"]);
+  });
+
+  it("lets a one sided exercise fill the last entry of an earlier pick", () => {
+    const pool = tree({
+      singleArmRow: ["SIDE_ONE", "REGION_UPPER_BODY"],
+      burpee: ["SIDE_BOTH", "REGION_FULL_BODY"],
+    });
+    const picks = [
+      { tags: ["REGION_UPPER_BODY"], count: 2 },
+      { tags: ["REGION_FULL_BODY"], count: 1 },
+    ];
+
+    expect(drawnIds({ countBy: "entries", picks }, pool)).toEqual([
+      "singleArmRow",
+      "burpee",
+    ]);
   });
 
   it("skips a one sided exercise when only 1 entry is missing", () => {

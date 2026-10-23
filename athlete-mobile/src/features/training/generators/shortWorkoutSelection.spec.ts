@@ -227,7 +227,9 @@ describe("generateShortWorkout: authored exercise values", () => {
         { exerciseData: {}, branchData: {} },
       );
 
-      const exerciseSets = setList.filter((entry) => entry.exerciseId === "501");
+      const exerciseSets = setList.filter(
+        (entry) => entry.exerciseId === "501",
+      );
       expect(exerciseSets.map((entry) => entry.duration)).toEqual([45]);
     },
   );

@@ -5,15 +5,26 @@ import { getTagValues } from "@/utils/tagUtils";
 
 const REGION_ROTATION = ["FULL_BODY", "LOWER_BODY", "UPPER_BODY", "CORE"];
 
+const unitExercises = (unit: ExercisePair) =>
+  unit.second ? [unit.first, unit.second] : [unit.first];
+
 const unitTagValues = (unit: ExercisePair, tagGroup: string): string[] =>
-  [unit.first, unit.second].flatMap((entry) =>
-    entry ? getTagValues(entry.branchTags, tagGroup) : [],
+  unitExercises(unit).flatMap((entry) =>
+    getTagValues(entry.branchTags, tagGroup),
   );
 
-const leadRegions = (unit: ExercisePair): string[] =>
-  getTagValues(unit.first.branchTags, TagGroups.REGION);
+const isBig = (unit: ExercisePair): boolean =>
+  unitExercises(unit).some(isBigMuscleExercise);
 
-const isBig = (unit: ExercisePair): boolean => isBigMuscleExercise(unit.first);
+const containsExercise = (unit: ExercisePair, exerciseId?: string): boolean =>
+  unitExercises(unit).some((entry) => entry.exerciseId === exerciseId);
+
+const sharesRegion = (a: ExercisePair, b: ExercisePair): boolean => {
+  const regions = unitTagValues(a, TagGroups.REGION);
+  return unitTagValues(b, TagGroups.REGION).some((region) =>
+    regions.includes(region),
+  );
+};
 
 const sharesPrimaryMuscle = (a: ExercisePair, b: ExercisePair): boolean => {
   const muscles = unitTagValues(a, TagGroups.MUSCLE);
@@ -35,7 +46,7 @@ const prefer = (
 };
 
 const inRegion = (region: string) => (unit: ExercisePair) =>
-  leadRegions(unit).includes(region);
+  unitTagValues(unit, TagGroups.REGION).includes(region);
 
 /**
  * The next region in rotation that holds a candidate. The opening pick starts at
@@ -62,14 +73,15 @@ const nextRegion = (
  * Orders a skill's units by picking one unit at a time. Each pick applies these
  * soft priorities in order, so no unit is ever dropped:
  * 1. Max strength: lower body units while any are left.
- * 2. Opening pick: not the exercise that ended the previous skill.
+ * 2. Opening pick: no unit holding the exercise that ended the previous skill.
  * 3. The next body region in rotation (full body, lower, upper, core); the
  *    opening pick starts at the first region with a big muscle group unit.
  *    Units without a region tag come last.
- * 4. Big muscle groups before small ones inside that region.
- * 5. No primary muscle shared with the previous unit.
- * 6. Uniform random among the rest.
- * The lead exercise of a unit sets its region and size.
+ * 4. No body region shared with the previous unit.
+ * 5. Big muscle groups before small ones inside that region.
+ * 6. No primary muscle shared with the previous unit.
+ * 7. Uniform random among the rest.
+ * Both exercises of a pair add their regions, muscles and size to the unit.
  */
 export const orderExerciseUnits = (
   units: ExercisePair[],
@@ -87,13 +99,16 @@ export const orderExerciseUnits = (
     if (!previous) {
       candidates = prefer(
         candidates,
-        (unit) => unit.first.exerciseId !== previousExerciseId,
+        (unit) => !containsExercise(unit, previousExerciseId),
       );
     }
     const region = nextRegion(candidates, rotationIndex, !previous);
     if (region) {
       candidates = candidates.filter(inRegion(region));
       rotationIndex = REGION_ROTATION.indexOf(region) + 1;
+    }
+    if (previous) {
+      candidates = prefer(candidates, (unit) => !sharesRegion(previous, unit));
     }
     candidates = prefer(candidates, isBig);
     if (previous) {

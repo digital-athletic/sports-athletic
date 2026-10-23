@@ -305,7 +305,7 @@ A later implementation may add height progression analogous to weight progressio
 
 ## Default start, target, and load values
 
-These are the current general values where the authored content resolves to the corresponding training area.
+These are fallback values for plan-mode workouts only. Exercise-specific start and target values always take precedence, except for the explicit hypertrophy override. The prevention defaults (10–15 reps / 40–60 s) must not override authored exercise values.
 
 | Training area | Start | Target | Load / notes |
 |---|---:|---:|---|

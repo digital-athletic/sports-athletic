@@ -12,7 +12,7 @@ The plan is authored days or weeks ahead. By start time the athlete may be sore,
 
 Filter today's pre-selected branches by soreness, equipment, and level, replace the blocked ones from the skill tree, then resolve each branch to the athlete's level. Workouts the athlete starts without a plan run the same filters over a pool drawn straight from the skill trees: [Plan-Independent Workouts](./plan-independent-workouts.md).
 
-Max strength opens with its lower-body main lifts; every skill alternates body regions as a soft priority and orders big muscle groups before small ones inside a region.
+Max strength opens with its lower-body main lifts. Every other skill preferably starts with a large muscle group and then rotates body regions as a soft priority. Region changes take precedence over muscle-group size when ordering subsequent exercises or superset pairs.
 
 Selection operates on branches (one exercise progression lane, authored levels 1 to 6); the concrete exercise is resolved last. Within a skill no resolved exercise ID may appear twice; across skills duplicates are accepted, but the same exercise never ends one skill and directly starts the next when another order exists. Random picks are uniform and unseeded; a generated session is persisted, so reopening it never regenerates (see Structure).
 
@@ -40,7 +40,7 @@ Athlete profile (level, gender, birthday, pain tags), reported soreness (sore mu
 - **Branch to exercise resolution**: per the resolution rule in [Branches, Exercises, and Levels](../foundations/branches-exercises-and-levels.md). A branch counts as blocked only when nothing resolves at or below the athlete's level.
 - **Filter chain**: each filter splits the pool into keep and replace. Soreness drops branches whose region matches a sore area, per [Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md). Equipment drops branches needing gear the place lacks. Level drops branches with no exercise at the athlete's level. Age and gender drop branches tagged for other groups. Goalkeeper-specific exercises drop out unless the athlete's anamnesis position is goalkeeper.
 - **Uniqueness**: a resolved exercise ID is used at most once per skill, and a candidate resolving to an exercise the skill already holds drops out of the pool. The rule covers the plan's pre-selected branches too: when two kept branches of a skill resolve to the same exercise, the first keeps it and the second counts as blocked, so step 4 replaces it from the skill tree; if no replacement fits, its slot frees its time. Branches can converge after plan creation through level changes, so this check runs at every session. Duplicates across skills are tolerated, apart from the skill transition rule under Ordering. Deliberate repeats stand: a one-sided exercise appears as a left and right entry, and every exercise repeats across its own sets.
-- **Big vs small muscle groups**: the big muscle groups are chest, upper back, latissimus, front thigh (quadriceps), glutes, and rear thigh (hamstrings), with side-specific muscles counting per side. Every other muscle group is small, explicitly including the inner thigh (adductors) and outer thigh (abductors). This one classification drives the superset rules, superset prioritization, and the size order inside a body region below.
+- **Big vs small muscle groups**: the big muscle groups are chest, upper back, latissimus, front thigh (quadriceps), glutes, and rear thigh (hamstrings), with side-specific muscles counting per side. Every other muscle group is small, explicitly including the inner thigh (adductors) and outer thigh (abductors). This one classification drives the superset rules, superset prioritization, and the ordering by muscle-group size below.
 - **Superset rules**: superset skills split their branches into big-muscle and small-muscle groups per the classification above. Partners come only from the same skill, and the big-muscle group pairs out first. A one-sided exercise always pairs with its other-side counterpart; otherwise the partner is a both-sided exercise, preferred in this order:
   1. an opposing muscle group per the authored muscle tags (for example quadriceps with glutes),
   2. a big muscle group from a different body region,
@@ -57,18 +57,18 @@ Athlete profile (level, gender, birthday, pain tags), reported soreness (sore mu
 
   Without a partner the exercise trains alone, no superset, and rests on its skill's single-exercise rest; [Session Set Structure](./session-set-structure.md) carries the per-skill values. Max strength, full-body stability, and cardio never pair with another exercise. A one-sided full-body stability exercise still runs left and right as a superset.
 - **Ordering**: three levels, each independent of the order in which slots were filled.
-  1. Skills: fixed section order, warm-up first, cool-down last. At each skill transition, the first unit of the next skill must not start with the exercise that ended the previous skill; the generator opens the next skill with another unit. If no other unit fits, the repeat stays.
-  2. Exercises inside a skill: in superset skills the ordered unit is the pair: a partner follows its lead exercise directly. The lead exercise sets the unit's body region and size. The generator picks the units (single exercises or formed pairs) one at a time and applies these soft priorities to each pick, in order:
-     1. Opening pick only: not the exercise that ended the previous skill (rule 1).
-     2. Rotate body regions: full body (where the skill has it, full-body stability for example), then lower body, upper body, core, then start over, skipping regions without units. The opening pick starts at the first region that holds a big muscle group, so the skill opens with one.
-     3. Inside the chosen region, big muscle groups (per the classification above) before small ones, so the demanding work sits in the fresher part of the region's block.
-     4. Avoid training the same primary muscles in the directly following unit.
-     5. Break ties uniformly at random, so the same sequences and combinations do not recur every session.
+  1. Skills: fixed section order, warm-up first, cool-down last. At each skill transition, the first unit of the next skill must not contain the exercise that ended the previous skill; the generator reorders the next skill's units to avoid it. If no other order exists, the repeat stays.
+  2. Exercises inside a skill: Superset pairs are formed first using the existing superset rules. Each exercise or superset pair is then treated as one unit for ordering. Both exercises of a pair contribute their body regions and primary muscles.
 
-     A priority that no unit meets is skipped, and the pick takes the next-best unit. Precedence follows the list order: the transition rule beats the big muscle group opening, a small unit of the next region comes before a big unit of the region just trained, and a big unit sharing the previous primary muscles comes before a small unit of the same region. Mixed-region superset pairs can place two exercises of the same region back to back across the pair boundary, since only the lead exercise counts.
+   Ordering follows three soft priorities:
 
-     These are soft priorities, never exclusions: no exercise is removed and no pair discarded over ordering, and no further special-case logic applies. A single remaining region keeps its units back to back, and units without a body region tag come last and never open the skill. Prevention and leg-axis stability draw from deliberately small, region-limited pools, so there the same body region or the same primary muscles may follow back to back when no alternative exists. [Exercise order inside a skill](../../adr/exercise-order.md) records the decision with examples.
-  3. Exercises inside max strength, overriding rule 2: lower-body main lifts before upper-body main lifts, since they move the session's heaviest loads; this also beats the big muscle group opening. Rule 2 then orders the lifts within each group. Support exercises stay in the breaks of their own main lift.
+  - **Start with large muscles:** The first unit should train at least one large muscle group whenever available. Core muscles count as small muscle groups.
+  -  **Rotate body regions:** Subsequent units should minimize overlap with the body regions of the previous unit. Region changes take priority over muscle-group size.
+  -  **Prefer large and different muscles:** When region changes are equally suitable, prefer units training large muscle groups, then units avoiding the same primary muscles. Remaining ties are resolved randomly.
+
+   All priorities are soft. If no suitable alternative exists, select the next-best available unit. No exercises or superset pairs are removed due to ordering, and no special-case logic applies.
+  
+  3. Exercises inside max strength, overriding rule 2: lower-body main lifts before upper-body main lifts, since they move the session's heaviest loads. Rule 2 then orders the lifts within each region. Support exercises stay in the breaks of their own main lift.
 - **Weighted vs bodyweight ratio**: the target share of weighted exercises:
 
   | Athlete and place | Weighted share |
@@ -144,7 +144,7 @@ SLOTS      slot   pre-selected branch          filled with
 SEQUENCE   after selection   bench press | deadlift | row
                              incidental, follows how the slots filled
            after ordering    deadlift | bench press | row
-                             lower body first, then region and size
+                             lower body first, then big muscle
 
 EMISSION   per main lift     warm-up sets, working sets,
                              support exercises inside the breaks

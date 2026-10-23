@@ -3,7 +3,7 @@
 publiccodeYmlVersion: "0.4"
 
 name: Sports Athletic
-url: https://github.com/digital-athletic/sports-athletic
+url: https://gitlab.opencode.de/sh/digitalhub-sh/landesprogramm-offene-innovationen/sports-athletic
 logo: athlete-mobile/assets/img/logos/SA_dark.png
 
 platforms:

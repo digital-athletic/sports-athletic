@@ -421,3 +421,49 @@ describe("orderExerciseUnits: region alternation before muscle size", () => {
     expect(orderedUnits[0].first.branchId).toBe("calves");
   });
 });
+
+describe("orderExerciseUnits: both exercises of a superset pair count", () => {
+  it("opens with another unit when the second exercise of a pair ended the previous skill", () => {
+    const pushPullPair: ExercisePair = {
+      first: generateBranchReference("push", [
+        "REGION_UPPER_BODY",
+        "MUSCLE_CHEST",
+      ]),
+      second: generateBranchReference("pull", [
+        "REGION_UPPER_BODY",
+        "MUSCLE_LATISSIMUS",
+      ]),
+    };
+    const backUnit = generateUnit("back", "U", "UPPER_BACK");
+
+    const orderedUnits = orderExerciseUnits(
+      [pushPullPair, backUnit],
+      false,
+      "epull",
+    );
+
+    expect(toBranchIds(orderedUnits)).toEqual(["back", "push"]);
+  });
+
+  it("avoids a pair whose second exercise trains the body region just trained", () => {
+    const legsUnit = generateUnit("legs", "L", "QUADRICEPS");
+    const chestGlutesPair: ExercisePair = {
+      first: generateBranchReference("push", [
+        "REGION_UPPER_BODY",
+        "MUSCLE_CHEST",
+      ]),
+      second: generateBranchReference("bridge", [
+        "REGION_LOWER_BODY",
+        "MUSCLE_GLUTES",
+      ]),
+    };
+    const pullUnit = generateUnit("pull", "U", "LATISSIMUS");
+
+    const orderedUnits = orderExerciseUnits(
+      [legsUnit, chestGlutesPair, pullUnit],
+      false,
+    );
+
+    expect(toBranchIds(orderedUnits)).toEqual(["legs", "pull", "push"]);
+  });
+});

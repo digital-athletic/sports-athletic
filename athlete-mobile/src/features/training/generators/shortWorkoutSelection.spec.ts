@@ -126,6 +126,31 @@ describe("generateShortWorkout: selection", () => {
     expect(branches).toHaveLength(4);
   });
 
+  it("never draws a one sided exercise into the last slot of bodyweight full body stability", () => {
+    jest.spyOn(Math, "random").mockReturnValue(0);
+    const upperBody = ["SKILL_GKS", "REGION_UPPER_BODY", "SIDE_BOTH"];
+    const fullBody = ["SKILL_GKS", "REGION_FULL_BODY"];
+
+    const branches = selectedBranches("GKS", {
+      GKSKG: {
+        "10": branch(upperBody, "100"),
+        "11": branch(upperBody, "110"),
+        "12": branch(upperBody, "120"),
+        "20": branch([...fullBody, "SIDE_ONE"], "200"),
+        "21": branch([...fullBody, "SIDE_BOTH"], "210"),
+        "22": branch([...fullBody, "SIDE_BOTH"], "220"),
+      },
+    });
+
+    expect(branches.map((b) => b.branchId)).toEqual([
+      "10",
+      "11",
+      "12",
+      "21",
+      "22",
+    ]);
+  });
+
   it("ignores muscle soreness", () => {
     const sore: UserType = {
       ...beginner,
@@ -172,6 +197,40 @@ describe("generateShortWorkout: selection", () => {
     );
     expect(branches.map((b) => b.branchId)).toContain("10");
   });
+});
+
+describe("generateShortWorkout: authored exercise values", () => {
+  it.each(["WU", "MOB", "BR", "CD"] as const)(
+    "trains each %s exercise for its authored duration",
+    (type) => {
+      const stretch: ExerciseType = {
+        ...exerciseWithTags("501", ["SIDE_BOTH"]),
+        isAdvanceByDuration: true,
+        values: {
+          duration: {
+            startValue: { default: { default: 45 } },
+            targetValue: { default: { default: 45 } },
+          },
+          repetition: emptyValue,
+          height: emptyValue,
+          weight: emptyValue,
+        },
+      };
+
+      const setList = new TrainingGenerator().generateShortWorkout(
+        type,
+        beginner,
+        "HOME",
+        [stretch],
+        { [type]: { "500": branch(["REGION_CORE", "SIDE_BOTH"], "501") } },
+        [],
+        { exerciseData: {}, branchData: {} },
+      );
+
+      const exerciseSets = setList.filter((entry) => entry.exerciseId === "501");
+      expect(exerciseSets.map((entry) => entry.duration)).toEqual([45]);
+    },
+  );
 });
 
 const mainPairs = (

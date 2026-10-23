@@ -26,4 +26,5 @@ export const STORE_VERSIONS = {
   SYNC_QUEUE: 15,
   EXERCISE_PROGRESS: 19,
   TRAINING: 16,
+  CUSTOM_WORKOUTS: 14,
 } as const;

@@ -9,6 +9,7 @@ import {
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useAuthStore } from "@/store/authStore";
 import { useCompletedWorkoutsStore } from "@/store/completedWorkoutsStore";
+import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { usePlacesStore } from "@/store/placesStore";
 import { useSyncQueueStore } from "@/store/syncQueueStore";
@@ -92,6 +93,7 @@ export function useDeleteAccount() {
   const { resetProfile } = useUserProfileStore();
   const { resetUserWorkoutData } = useUserWorkoutStore();
   const { clearWorkoutHistory } = useCompletedWorkoutsStore();
+  const { clearCustomWorkouts } = useCustomWorkoutsStore();
   const { resetTrainingSchedule } = useTrainingScheduleStore();
   const { resetPlaces } = usePlacesStore();
   const { resetSettings } = useUserSettingsStore();
@@ -121,6 +123,7 @@ export function useDeleteAccount() {
           resetAnamnesisData();
           resetProfile();
           clearWorkoutHistory();
+          clearCustomWorkouts();
           resetTrainingSchedule();
           resetPlaces();
           resetSettings();

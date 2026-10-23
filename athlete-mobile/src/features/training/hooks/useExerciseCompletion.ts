@@ -1,8 +1,8 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { isLevelTag, WorkoutConstants } from "@/constants/workoutConstants";
 import { getExerciseById } from "@/data/exerciseRegistry";
-import { loadTemplate } from "@/data/loadTemplates";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
+import { lookupTemplate } from "@/features/customWorkouts/lookupTemplate";
 import { getIntensityBySkill } from "@/features/training/generators/TrainingGenerator";
 import { isPauseExercise as checkIsPauseExercise } from "@/features/training/models/IdTypes";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
@@ -365,8 +365,9 @@ export function useExerciseCompletion() {
           // from data/generator/TestIntensity
           // A template block can take repetitions and durations from the exercise.
           const blockValues = type
-            ? loadTemplate(type)?.blocks.find((block) => block.skill === skill)
-                ?.values
+            ? lookupTemplate(type)?.blocks.find(
+                (block) => block.skill === skill,
+              )?.values
             : undefined;
           const intensity = withValuesMode(
             getIntensityBySkill(skill, currentExerciseData),

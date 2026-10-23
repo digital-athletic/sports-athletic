@@ -13,6 +13,7 @@ import {
   dropExpiredMarks,
   updateSorenessMarks,
 } from "@/features/training/utils/sorenessMarks";
+import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { usePlacesStore } from "@/store/placesStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
@@ -30,6 +31,11 @@ type ScreenState = "SORENESS" | "PLACE";
 
 const screenStateFor = (type: TrainingType): ScreenState =>
   checksSoreness(type) ? "SORENESS" : "PLACE";
+
+const titleKeyFor = (screenState: ScreenState) =>
+  screenState === "SORENESS"
+    ? "training.muscleSoreness.title"
+    : "training.muscleSoreness.placeAndEquipment";
 
 const dropStoredExpiredMarks = () => {
   const { temporalData, setTemporalData } = useUserWorkoutStore.getState();
@@ -71,6 +77,10 @@ export default function MuscleSorenessScreen() {
     temporalData?.map<MuscleType>((data) => data.tag as MuscleType) ?? [];
 
   const { generating, generateTraining } = useTrainingGeneration(params);
+  // Generation reads imported templates, so it waits until their store has hydrated.
+  const customWorkoutsHydrated = useCustomWorkoutsStore(
+    (state) => state._hasHydrated,
+  );
 
   const handleBack = useCallback(() => {
     router.back();
@@ -89,10 +99,7 @@ export default function MuscleSorenessScreen() {
     setTemporalData(updateSorenessMarks(temporalData ?? [], tags, Date.now()));
   };
 
-  let title =
-    screenState === "SORENESS"
-      ? t("training.muscleSoreness.title")
-      : t("training.muscleSoreness.placeAndEquipment");
+  const title = t(titleKeyFor(screenState));
 
   return (
     <>
@@ -112,7 +119,7 @@ export default function MuscleSorenessScreen() {
           paddingRight: Math.max(sidePadding, insets.right),
         }}
       >
-        {generating ? (
+        {generating || !customWorkoutsHydrated ? (
           <Loading show text={t("training.muscleSoreness.loading")} />
         ) : (
           <>

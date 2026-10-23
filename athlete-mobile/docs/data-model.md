@@ -68,6 +68,7 @@ flowchart TD
 | placesStore | `places-storage` | Equipment lists for HOME, STUDIO, HALL, OUTSIDE. Equipment filters exercise selection during generation. |
 | exerciseProgressStore | `exercise-progress-storage` | Per-exercise data (reps, weight, feedback), per-branch level, cumulative totals, XP and derived level, and max-strength test history. |
 | completedWorkoutsStore | `completed-workouts-storage` | Workout history with full exercise snapshots and pre-calculated aggregates, a lightweight `workoutsList` index, and archived training plans. |
+| customWorkoutsStore | `custom-workouts-storage` | Imported AIWL templates keyed by app id, local only. |
 | syncQueueStore | `sync-queue-storage` | Persistent queue of sync operations to Supabase with status, retry count (max 5), and a 500-item cap. |
 | trainingStore | `training-storage` | In-progress session: live exercise list, feedback, timers, active index. Cleared when the session finishes. (`src/features/training/`) |
 | userDataBackupStore | `user-data-backup-storage` | Per-user profile snapshots keyed by userId. Saved on logout, restored on next sign-in. |
@@ -88,7 +89,7 @@ Exercise and skill tree data are bundled JSON, loaded once per launch into modul
 | loadDirections | `src/data/loadDirections.ts` | `assets/.../directions.json` | `loadDirections` |
 | loadRegionConfig | `src/data/loadRegionConfig.ts` | `assets/.../regions.json` | `loadRegionConfig(name)` |
 | loadIntensityConfig | `src/data/loadIntensityConfig.ts` | `assets/.../intensity.json` | `loadIntensityConfig(name)` |
-| loadTemplates | `src/data/loadTemplates.ts` | 13 AIWL files in `assets/data/templates/<ID>.json`, imported by name | `loadTemplates`, `loadTemplate(id)`, `loadTemplateName(id, language)` |
+| loadTemplates | `src/data/loadTemplates.ts` | 13 AIWL files in `assets/data/templates/<ID>.json`, imported by name | `loadTemplates`, `loadTemplate(id)`, `readLocalizedTemplateName(name, language)` |
 | loadSkillCatalog | `src/data/loadSkillCatalog.ts` | `assets/data/generator/skills.json` | `loadSkillCatalog`, `loadSkillCatalogEntry(code)` |
 
 A skill branch maps `levels[n] -> { exerciseId }` into the exercise registry. Training plans reference branches by `branchId`.

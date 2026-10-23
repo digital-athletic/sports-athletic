@@ -73,6 +73,7 @@ export function AlertHost() {
             {state.buttons.map((btn, i) => (
               <Pressable
                 key={i}
+                accessibilityRole="button"
                 style={styles.button}
                 onPress={() => {
                   hideAlert();

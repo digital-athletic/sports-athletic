@@ -7,6 +7,7 @@ interface HeaderIconButtonProps {
   iconName: IoniconName;
   onPress: () => void;
   accessibilityLabel: string;
+  disabled?: boolean;
 }
 
 const HIT_SLOP = { top: 4, bottom: 4, left: 4, right: 4 };
@@ -15,12 +16,15 @@ export const HeaderIconButton: FC<HeaderIconButtonProps> = ({
   iconName,
   onPress,
   accessibilityLabel,
+  disabled = false,
 }) => {
   const theme = useTheme();
 
   return (
     <TouchableBox
       onPress={onPress}
+      disabled={disabled}
+      accessibilityState={{ disabled }}
       minWidth={36}
       minHeight={36}
       hitSlop={HIT_SLOP}

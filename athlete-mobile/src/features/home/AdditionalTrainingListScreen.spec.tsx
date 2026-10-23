@@ -132,7 +132,7 @@ describe("AdditionalTrainingListScreen: navigation", () => {
     expect(mockPush).toHaveBeenCalledTimes(1);
     expect(mockPush).toHaveBeenCalledWith({
       pathname: "/additional-training-workouts",
-      params: { title: OWN_TRAININGS },
+      params: { title: OWN_TRAININGS, source: "own" },
     });
   });
 
@@ -146,7 +146,7 @@ describe("AdditionalTrainingListScreen: navigation", () => {
     expect(mockPush).toHaveBeenCalledTimes(1);
     expect(mockPush).toHaveBeenCalledWith({
       pathname: "/additional-training-workouts",
-      params: { title: "Team Alpha" },
+      params: { title: "Team Alpha", source: "team" },
     });
   });
 });

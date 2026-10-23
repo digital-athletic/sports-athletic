@@ -1,0 +1,12 @@
+{
+  "aiwl": 1,
+  "id": "MY_CORE",
+  "name": { "en": "My core v2", "de": "Mein Rumpf v2" },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "GKS",
+      "picks": [{ "tags": [], "count": 2 }]
+    }
+  ]
+}

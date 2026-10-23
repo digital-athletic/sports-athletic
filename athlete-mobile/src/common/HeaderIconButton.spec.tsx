@@ -36,4 +36,32 @@ describe("HeaderIconButton", () => {
     fireEvent.press(getByRole("button"));
     expect(onPress).toHaveBeenCalledTimes(1);
   });
+
+  it("ignores presses when disabled", () => {
+    const onPress = jest.fn();
+    const { getByRole } = render(
+      <HeaderIconButton
+        iconName="close-circle"
+        onPress={onPress}
+        accessibilityLabel="Abort training"
+        disabled
+      />,
+    );
+    fireEvent.press(getByRole("button"));
+    expect(onPress).not.toHaveBeenCalled();
+  });
+
+  it("reports the disabled state to screen readers when disabled", () => {
+    const { getByRole } = render(
+      <HeaderIconButton
+        iconName="close-circle"
+        onPress={jest.fn()}
+        accessibilityLabel="Abort training"
+        disabled
+      />,
+    );
+    expect(getByRole("button").props.accessibilityState).toMatchObject({
+      disabled: true,
+    });
+  });
 });

@@ -1,0 +1,12 @@
+{
+  "aiwl": 1,
+  "id": "BROKEN",
+  "name": { "en": "Broken", "de": "Kaputt" },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "NOPE",
+      "picks": [{ "tags": [], "count": 2 }]
+    }
+  ]
+}

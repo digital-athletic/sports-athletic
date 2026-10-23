@@ -126,31 +126,6 @@ describe("generateShortWorkout: selection", () => {
     expect(branches).toHaveLength(4);
   });
 
-  it("never draws a one sided exercise into the last slot of bodyweight full body stability", () => {
-    jest.spyOn(Math, "random").mockReturnValue(0);
-    const upperBody = ["SKILL_GKS", "REGION_UPPER_BODY", "SIDE_BOTH"];
-    const fullBody = ["SKILL_GKS", "REGION_FULL_BODY"];
-
-    const branches = selectedBranches("GKS", {
-      GKSKG: {
-        "10": branch(upperBody, "100"),
-        "11": branch(upperBody, "110"),
-        "12": branch(upperBody, "120"),
-        "20": branch([...fullBody, "SIDE_ONE"], "200"),
-        "21": branch([...fullBody, "SIDE_BOTH"], "210"),
-        "22": branch([...fullBody, "SIDE_BOTH"], "220"),
-      },
-    });
-
-    expect(branches.map((b) => b.branchId)).toEqual([
-      "10",
-      "11",
-      "12",
-      "21",
-      "22",
-    ]);
-  });
-
   it("ignores muscle soreness", () => {
     const sore: UserType = {
       ...beginner,

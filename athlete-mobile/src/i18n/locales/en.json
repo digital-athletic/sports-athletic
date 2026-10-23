@@ -74,6 +74,12 @@
         "title": "Imminent Pains",
         "subtitle": "Specifically improve imminent pains"
       },
+      "additionalTrainings": {
+        "title": "Additional trainings",
+        "ownTrainings": "Your trainings",
+        "loadingTeams": "Loading teams",
+        "noWorkouts": "Currently no workouts available"
+      },
       "workoutWithOwnPlan": "Your Training Plan",
       "startTraining": "Start Training",
       "incompleteAnamnesis": "Please complete your profile to get started",

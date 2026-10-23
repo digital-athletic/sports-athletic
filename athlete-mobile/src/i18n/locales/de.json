@@ -74,6 +74,12 @@
         "title": "Präventions-Trainings",
         "subtitle": "Beschwerden vorbeugen & verbessern"
       },
+      "additionalTrainings": {
+        "title": "Zusatztrainings",
+        "ownTrainings": "Deine Trainings",
+        "loadingTeams": "Teams werden geladen",
+        "noWorkouts": "Aktuell sind keine Workouts verfügbar"
+      },
       "workoutWithOwnPlan": "Dein Trainingsplan",
       "startTraining": "Training starten",
       "incompleteAnamnesis": "Bitte fülle dein Profil aus, um zu beginnen",

@@ -1,20 +1,13 @@
 import { SilhouetteThumbnail } from "@/bodyParts/silhouette/SilhouetteThumbnail";
-import { Ionicon } from "@/common/Ionicon";
 import { TileData } from "@/constants/workoutConstants";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { Box } from "@/theme/Box";
-import { Text } from "@/theme/Text";
-import { useTheme } from "@/theme/theme";
 import { useResponsiveProp } from "@shopify/restyle";
 import { type Href, useRouter } from "expo-router";
+import { ColumnListRow } from "./ColumnListRow";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  FlatList,
-  Image,
-  ListRenderItem,
-  TouchableOpacity,
-} from "react-native";
+import { FlatList, Image, ListRenderItem } from "react-native";
 
 export type ColumnListProps = {
   listItems: TileData[];
@@ -69,7 +62,6 @@ const TileThumbnail: FC<{ item: TileData; size: number }> = ({
  */
 export const ColumnList: FC<ColumnListProps> = ({ listItems }) => {
   const { t } = useTranslation();
-  const { colors } = useTheme();
   const router = useRouter();
   // useResponsiveProp can briefly return undefined on web, so fall back to a
   // compact fixed size to keep rows from rendering at the image's natural size.
@@ -93,56 +85,15 @@ export const ColumnList: FC<ColumnListProps> = ({ listItems }) => {
     const onPress = () => handleNavigate(item);
 
     return (
-      <TouchableOpacity
+      <ColumnListRow
+        title={t(item.title)}
+        description={
+          hasDescription ? t(description.text, description.params) : undefined
+        }
+        secondaryDescription={params.place?.toUpperCase()}
+        thumbnail={<TileThumbnail item={item} size={imageSize} />}
         onPress={onPress}
-        accessibilityRole="button"
-        activeOpacity={0.7}
-      >
-        <Box
-          position="relative"
-          width="100%"
-          backgroundColor="white"
-          borderBottomWidth={1}
-          borderBottomColor="lightGrey2"
-          flexDirection="row"
-          alignItems="center"
-        >
-          <TileThumbnail item={item} size={imageSize} />
-          <Box
-            paddingHorizontal="m"
-            paddingVertical="m"
-            justifyContent="center"
-            flex={1}
-          >
-            <Text
-              variant="cardTitle"
-              marginBottom={hasDescription ? "xs" : "none"}
-            >
-              {t(item.title)}
-            </Text>
-            {hasDescription && (
-              <Box>
-                <Text variant="body" color="darkGrey1">
-                  {t(description.text, description.params)}
-                </Text>
-                {params.place && (
-                  <Text variant="body" color="darkGrey1" marginTop="xs">
-                    {params.place.toUpperCase()}
-                  </Text>
-                )}
-              </Box>
-            )}
-          </Box>
-          <Box paddingRight="m">
-            <Ionicon
-              name="chevron-forward"
-              size={20}
-              color={colors.lightGrey3}
-              decorative
-            />
-          </Box>
-        </Box>
-      </TouchableOpacity>
+      />
     );
   };
 

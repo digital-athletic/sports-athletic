@@ -28,6 +28,7 @@ Terms of the training model, with the meanings the coach uses. The glossary defi
 | Short workout | | | Umbrella term for plan-independent workouts: focus trainings, prevention trainings and imported templates. |
 | Focus training | Fokus-Training | | Plan-independent 10 to 20 minute workout for one focus, for example leg axis stability. |
 | Prevention training | Präventionstraining | | Plan-independent workout against declared pains, for example knee or shoulder. |
+| Athletic Intelligence Workout Language | Athletic Intelligence Workout Language | AIWL | Template language to define workouts in a JSON format |
 
 ## Training session
 

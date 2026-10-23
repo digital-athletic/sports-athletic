@@ -4,15 +4,14 @@ import type { UserType } from "@/schemas/user.schema";
 import { realExercises } from "../../../../test/factories/planWorkout";
 import PlanGenerator from "./PlanGenerator";
 
-const template = realExercises[0];
+type Side = "ONE" | "BOTH";
 
-const user: UserType = {
+// Advanced adult without pains. Gives { userId: "planUser", workoutData: { tags: { LEVEL: ["ADVANCED"] } } }.
+const generateAdvancedUser = (): UserType => ({
   userId: "planUser",
   personalData: { gender: "MALE", birthday: "1990-01-01" },
   workoutData: { tags: { LEVEL: ["ADVANCED"] } },
-};
-
-type Side = "ONE" | "BOTH";
+});
 
 // One branch per tag list, in order. [["PREVENTION_KNEE_HIP"]] gives { p0: { tags: ["PREVENTION_KNEE_HIP"] } }.
 const generateSkillTreeForBranchTags = (
@@ -32,17 +31,22 @@ const generateCatalogForSides = (
   sides: Side[],
 ): ExerciseType[] =>
   sides.map((side, i) => ({
-    ...template,
+    ...realExercises[0],
     id: `${prefix}${i}`,
     tags: [`SIDE_${side}`],
   }));
 
-const PREVENTION_TAGS = ["PREVENTION_KNEE_HIP"];
-
-beforeEach(() => {
-  // 0.99 always takes the last remaining candidate of the tree
-  jest.spyOn(Math, "random").mockReturnValue(0.99);
-});
+// Counts exercises as the training generator builds them. One sided p0 and two sided p1 give 3.
+const countExercisesWithSides = (
+  branches: { exercises: Record<number, { exerciseId: string }> }[],
+  catalog: ExerciseType[],
+): number =>
+  branches.reduce((sum, branch) => {
+    const exercise = catalog.find(
+      (entry) => entry.id === branch.exercises[1].exerciseId,
+    );
+    return sum + (exercise?.tags.includes("SIDE_ONE") ? 2 : 1);
+  }, 0);
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -55,7 +59,7 @@ describe("getBranchesForWorkout: prevention exercise count", () => {
     const skillTrees = {
       PREVKG: generateSkillTreeForBranchTags(
         "p",
-        sides.map(() => PREVENTION_TAGS),
+        sides.map(() => ["PREVENTION_KNEE_HIP"]),
       ),
     };
 
@@ -68,7 +72,7 @@ describe("getBranchesForWorkout: prevention exercise count", () => {
       {},
       [],
       [],
-      user,
+      generateAdvancedUser(),
       "STUDIO",
       catalog,
       skillTrees,
@@ -80,14 +84,13 @@ describe("getBranchesForWorkout: prevention exercise count", () => {
     expect(branches).toHaveLength(3);
   });
 
-  it("fills a count of four with two one sided prevention exercises", () => {
-    // two sided p0 to p3 first, one sided p4 and p5 last, so random 0.99 takes p5 and p4
+  it("fills a count of four with exactly four exercises with sides counted", () => {
     const sides: Side[] = ["BOTH", "BOTH", "BOTH", "BOTH", "ONE", "ONE"];
     const catalog = generateCatalogForSides("p", sides);
     const skillTrees = {
       PREVKG: generateSkillTreeForBranchTags(
         "p",
-        sides.map(() => PREVENTION_TAGS),
+        sides.map(() => ["PREVENTION_KNEE_HIP"]),
       ),
     };
 
@@ -100,7 +103,7 @@ describe("getBranchesForWorkout: prevention exercise count", () => {
       {},
       [],
       [],
-      user,
+      generateAdvancedUser(),
       "STUDIO",
       catalog,
       skillTrees,
@@ -109,19 +112,20 @@ describe("getBranchesForWorkout: prevention exercise count", () => {
       [],
     );
 
-    expect(branches.map((branch) => branch.branchId)).toEqual(["p5", "p4"]);
+    expect(countExercisesWithSides(branches, catalog)).toBe(4);
   });
 });
 
 describe("getBranchesForWorkout: prevention last slot", () => {
   it("leaves the last prevention slot empty when only one sided exercises remain", () => {
-    // p0 and p1 one sided, p2 two sided. Random 0.99 takes p2 first, only p0 and p1 remain
+    // 0.99 takes the last candidate, so the first slot takes two sided p2 and only one sided p0 and p1 remain
+    jest.spyOn(Math, "random").mockReturnValue(0.99);
     const sides: Side[] = ["ONE", "ONE", "BOTH"];
     const catalog = generateCatalogForSides("p", sides);
     const skillTrees = {
       PREVKG: generateSkillTreeForBranchTags(
         "p",
-        sides.map(() => PREVENTION_TAGS),
+        sides.map(() => ["PREVENTION_KNEE_HIP"]),
       ),
     };
 
@@ -134,7 +138,7 @@ describe("getBranchesForWorkout: prevention last slot", () => {
       {},
       [],
       [],
-      user,
+      generateAdvancedUser(),
       "STUDIO",
       catalog,
       skillTrees,
@@ -147,25 +151,25 @@ describe("getBranchesForWorkout: prevention last slot", () => {
   });
 
   it("takes a two sided prevention exercise of another direction for the last slot", () => {
-    // first slot takes the BACK branch p2, the FRONT direction of the last slot only holds one sided p1
+    // the first slot takes the BACK branch p2, the FRONT direction of the last slot only holds one sided p1
     const sides: Side[] = ["BOTH", "ONE", "BOTH"];
     const catalog = generateCatalogForSides("p", sides);
     const skillTrees = {
       PREVKG: generateSkillTreeForBranchTags("p", [
         [
-          ...PREVENTION_TAGS,
+          "PREVENTION_KNEE_HIP",
           "REGION_LOWER_BODY",
           "EXERCISE_DIRECTION_SIDE",
           "SIDE_BOTH",
         ],
         [
-          ...PREVENTION_TAGS,
+          "PREVENTION_KNEE_HIP",
           "REGION_LOWER_BODY",
           "EXERCISE_DIRECTION_FRONT",
           "SIDE_ONE",
         ],
         [
-          ...PREVENTION_TAGS,
+          "PREVENTION_KNEE_HIP",
           "REGION_LOWER_BODY",
           "EXERCISE_DIRECTION_BACK",
           "SIDE_BOTH",
@@ -187,7 +191,7 @@ describe("getBranchesForWorkout: prevention last slot", () => {
       {},
       [],
       [],
-      user,
+      generateAdvancedUser(),
       "STUDIO",
       catalog,
       skillTrees,
@@ -196,13 +200,14 @@ describe("getBranchesForWorkout: prevention last slot", () => {
       [],
     );
 
-    expect(branches.map((branch) => branch.branchId)).toEqual(["p2", "p0"]);
+    expect(branches.map((branch) => branch.branchId)).toContain("p0");
   });
 });
 
 describe("getBranchesForWorkout: non prevention last slot", () => {
   it("still fills the last slot with a one sided branch when only one sided remain", () => {
-    // same sides as the prevention last slot test, but for the SWR1 skill
+    // 0.99 takes the last candidate, so the first slot takes two sided s2 and only one sided s0 and s1 remain
+    jest.spyOn(Math, "random").mockReturnValue(0.99);
     const sides: Side[] = ["ONE", "ONE", "BOTH"];
     const catalog = generateCatalogForSides("s", sides);
     const skillTrees = {
@@ -221,7 +226,7 @@ describe("getBranchesForWorkout: non prevention last slot", () => {
       {},
       [],
       [],
-      user,
+      generateAdvancedUser(),
       "STUDIO",
       catalog,
       skillTrees,

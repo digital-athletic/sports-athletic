@@ -174,6 +174,42 @@ describe("generateShortWorkout: selection", () => {
   });
 });
 
+describe("generateShortWorkout: authored exercise values", () => {
+  it.each(["WU", "MOB", "BR", "CD"] as const)(
+    "trains each %s exercise for its authored duration",
+    (type) => {
+      const stretch: ExerciseType = {
+        ...exerciseWithTags("501", ["SIDE_BOTH"]),
+        isAdvanceByDuration: true,
+        values: {
+          duration: {
+            startValue: { default: { default: 45 } },
+            targetValue: { default: { default: 45 } },
+          },
+          repetition: emptyValue,
+          height: emptyValue,
+          weight: emptyValue,
+        },
+      };
+
+      const setList = new TrainingGenerator().generateShortWorkout(
+        type,
+        beginner,
+        "HOME",
+        [stretch],
+        { [type]: { "500": branch(["REGION_CORE", "SIDE_BOTH"], "501") } },
+        [],
+        { exerciseData: {}, branchData: {} },
+      );
+
+      const exerciseSets = setList.filter(
+        (entry) => entry.exerciseId === "501",
+      );
+      expect(exerciseSets.map((entry) => entry.duration)).toEqual([45]);
+    },
+  );
+});
+
 const mainPairs = (
   type: TrainingType,
   skillTrees: { [skillName: string]: SkillTreeType },

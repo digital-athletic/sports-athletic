@@ -39,7 +39,7 @@ Both reuse the filter chain and the branch to exercise resolution rule from [Pla
 |---|---|
 | Warm-up, mobility, foam roller, cool-down | 10 exercises, 1 set each; a one-sided branch fills two slots |
 | Stability with weights | 4 exercises, any region |
-| Stability bodyweight | 3 upper body plus 2 full body (falls back to any region when a quota cannot be met); a one-sided branch fills two slots (left and right) and is never drawn into the last slot |
+| Stability bodyweight | 3 upper body plus 2 full body (falls back to any region when a quota cannot be met); a one-sided branch fills two slots (left and right) and is skipped when only one slot is left |
 | Prevention | 3 special warm-up exercises plus 3 superset pairs; weighted pairs are ordered last |
 
 Prevention and focus trainings skip the superset rules of [Plan Workout Generation](./plan-workout-generation.md): their authored structure fixes the supersets.

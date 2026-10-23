@@ -581,11 +581,9 @@ describe("standard progression config: full body stability ranges and prevention
       ),
     ),
   )(
-    "$skill for gender $gender and level $level resolves $mode with weights $withWeights to $start up to $target over authored values",
+    "$skill for gender $gender and level $level falls back to $start up to $target for $mode with weights $withWeights without authored values",
     ({ skill, mode, withWeights, start, target, gender, level }) => {
-      const exercise = createExercise(mode, withWeights, {
-        [mode]: authoredValues("20", "80"),
-      });
+      const exercise = createExercise(mode, withWeights);
       const intensity = getIntensityBySkill(skill, exercise);
 
       expect(
@@ -594,6 +592,27 @@ describe("standard progression config: full body stability ranges and prevention
       expect(
         getExerciseTargetValue(intensity, exercise, mode, level, gender),
       ).toBe(target);
+    },
+  );
+
+  it.each(
+    (["repetition", "duration"] as const).flatMap((mode) =>
+      [true, false].map((withWeights) => ({ mode, withWeights })),
+    ),
+  )(
+    "GKS resolves $mode with weights $withWeights to the authored values",
+    ({ mode, withWeights }) => {
+      const exercise = createExercise(mode, withWeights, {
+        [mode]: authoredValues("20", "80"),
+      });
+      const intensity = getIntensityBySkill("GKS", exercise);
+
+      expect(
+        getExerciseStartValue(intensity, exercise, mode, "advanced", "m"),
+      ).toBe(20);
+      expect(
+        getExerciseTargetValue(intensity, exercise, mode, "advanced", "m"),
+      ).toBe(80);
     },
   );
 

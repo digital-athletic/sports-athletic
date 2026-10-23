@@ -72,7 +72,8 @@ const resolved = (
   rest: { withinSuperset, betweenSets, afterExercise, afterBlock },
 });
 
-const timed = (afterExercise: number) =>
+// A one set block without supersets: generateOneSetBlock(10) → rests 10 s / 10 s / 10 s, no set duration
+const generateOneSetBlock = (afterExercise: number) =>
   resolved(
     {
       countBy: "entries",
@@ -81,7 +82,6 @@ const timed = (afterExercise: number) =>
       superset: "none",
     },
     [10, 10, afterExercise],
-    60,
   );
 const preventionBlocks = (
   prevention: [number, number, number] = [30, 60, 60],
@@ -109,10 +109,10 @@ const preventionBlocks = (
 ];
 
 const RESOLVED: Record<string, Resolved[]> = {
-  WU: [timed(10)],
-  MOB: [timed(10)],
-  BR: [timed(10)],
-  CD: [timed(10)],
+  WU: [generateOneSetBlock(10)],
+  MOB: [generateOneSetBlock(10)],
+  BR: [generateOneSetBlock(10)],
+  CD: [generateOneSetBlock(10)],
   BAS: [
     resolved(
       {

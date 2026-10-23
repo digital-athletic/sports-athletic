@@ -21,7 +21,7 @@ Per exercise, progression may use:
 - whether the exercise uses adjustable external weight,
 - authored start, target, and load boundaries.
 
-Start/target values may depend on fitness level, gender, and age group unless this specification defines a global override. The authored value configuration is the source of truth for values not overridden here. For hypertrophy, full-body stability, and prevention, the training-area-specific repetition and duration ranges defined in this specification override exercise-specific authored repetition/duration values. Exercise-specific weight rules remain unchanged.
+Start/target values may depend on fitness level, gender, and age group unless this specification defines a global override. The authored value configuration is the source of truth for values not overridden here. Only for hypertrophy do the training-area-specific repetition and duration ranges defined in this specification override exercise-specific authored repetition/duration values. Every other training area, full-body stability and prevention included, uses the authored values and falls back to these ranges only when an exercise has none. Exercise-specific weight rules remain unchanged.
 
 Warm-up, special warm-up, speed warm-up, cool-down, mobility, foam roller, and strength-test exercises do not use this progression and do not collect progression feedback. Speed warm-up durations follow [Speed warm-up](#speed-warm-up).
 

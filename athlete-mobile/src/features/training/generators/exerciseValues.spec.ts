@@ -19,7 +19,7 @@ import TrainingGenerator from "./TrainingGenerator";
 const LANDING_ID = "1107";
 const LANDING_START_REPETITION = 4;
 const RANGE_START_REPETITION = 10;
-const GKS_RANGE_START_REPETITION = 8;
+const HYPERTROPHY_RANGE_START_REPETITION = 8;
 
 const landing = ExercisesData.find(
   (exercise) => exercise.id === LANDING_ID,
@@ -91,9 +91,16 @@ describe("getSetListFromExercisePairs: block values", () => {
   });
 
   it("keeps the skill range start of a skill that overrides exercise values", () => {
+    expect(workRepetitions("SWR2KG")).toEqual([
+      HYPERTROPHY_RANGE_START_REPETITION,
+      HYPERTROPHY_RANGE_START_REPETITION,
+    ]);
+  });
+
+  it("uses the exercise start value for full body stability in a plan workout", () => {
     expect(workRepetitions("GKS")).toEqual([
-      GKS_RANGE_START_REPETITION,
-      GKS_RANGE_START_REPETITION,
+      LANDING_START_REPETITION,
+      LANDING_START_REPETITION,
     ]);
   });
 });

@@ -8,7 +8,6 @@
       "skill": "WU",
       "picks": [{ "tags": [], "count": 10 }],
       "superset": "none",
-      "setDuration": 60,
       "rest": { "afterExercise": 10 }
     }
   ]

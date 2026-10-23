@@ -1579,6 +1579,19 @@ export default class PlanGenerator {
         userLevel,
         exerciseBranchData[branch.branchId] ?? null,
       );
+    // check user level exercise tags, because only some of the given branch may be one sided
+    const isTwoSidedAtUserLevel = (branch: SkillBranchWithId): boolean => {
+      const userLevelExercise = getUserExerciseFromBranch(
+        branch,
+        userLevel,
+        exercises,
+        exerciseBranchData[branch.branchId] ?? null,
+      );
+      if (!userLevelExercise) return false;
+      return !getTagValues(userLevelExercise.tags, TagGroups.SIDE).includes(
+        "ONE",
+      );
+    };
 
     // add by tags for count times
     for (let k = 0; k < numOfBranchesToUse; k++) {
@@ -1671,24 +1684,14 @@ export default class PlanGenerator {
       let sideFiltered: typeof possibleBranches = [];
       if (k === numOfBranchesToUse - 1) {
         // is last exercise, do not use one sided exercises
-        sideFiltered = directionFiltered.filter((branch) => {
-          // check user level exercise tags, because only some of the given branch may be one sided
-          let userLevelExercise = getUserExerciseFromBranch(
-            branch,
-            userLevel,
-            exercises,
-            exerciseBranchData[branch.branchId]
-              ? exerciseBranchData[branch.branchId]
-              : null,
-          );
-          if (userLevelExercise) {
-            return !getTagValues(
-              userLevelExercise.tags,
-              TagGroups.SIDE,
-            ).includes("ONE");
-          }
-          return false;
-        });
+        sideFiltered = directionFiltered.filter(isTwoSidedAtUserLevel);
+        // both sides of a one sided prevention exercise would exceed the count, so leave the slot empty
+        if (skill.indexOf("PREV") > -1 && sideFiltered.length < 1) {
+          sideFiltered = possibleBranches.filter(isTwoSidedAtUserLevel);
+          if (sideFiltered.length < 1) break;
+          // the pick may have another direction, so keep the matched one for later blocks
+          directionIndex = exerciseDirection.length;
+        }
       }
       // wenn nicht alle Bedingungen möglich, pro nicht erfüllbarer Bedingung -> zufällig
       if (sideFiltered.length < 1) {
@@ -1863,9 +1866,8 @@ export default class PlanGenerator {
           console.log("isOneSided", isOneSided);
         }
         if (isOneSided) {
-          // will add other side in training generator
-          // if not a single side used prev exercise => reduce exercise number by one
-          if (skill.indexOf("PREV") === -1) k++;
+          // training generator adds the other side, which uses the next slot
+          k++;
         }
         const { levels, ...rest } = exerciseBranch;
         const exercisesMap: { [level: number]: { exerciseId: string } } = {};

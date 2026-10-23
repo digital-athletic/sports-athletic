@@ -28,7 +28,8 @@ export function useTrainingExerciseSheetProps({
   onSubmitReps,
   onComplete,
 }: Args) {
-  const { activeRow, openSheet, closeSheet } = useTrainingListSheet(rows);
+  const { activeRow, shownRow, session, openSheet, closeSheet } =
+    useTrainingListSheet(rows);
 
   const handleStart = (row: ListRow) => {
     timing.startExercise(exerciseList?.[row.index]?.skill);
@@ -40,10 +41,14 @@ export function useTrainingExerciseSheetProps({
     closeSheet();
   };
 
+  // shownRow outlives activeRow while the sheet animates closed; actions
+  // below still check activeRow so nothing fires during that animation.
   const sheetProps = {
-    row: activeRow,
-    duration: activeRow ? exerciseList?.[activeRow.index]?.duration : undefined,
-    repsValue: activeRow ? (repsDraft[activeRow.index] ?? 0) : 0,
+    row: shownRow,
+    isPresented: activeRow !== null,
+    sessionKey: session,
+    duration: shownRow ? exerciseList?.[shownRow.index]?.duration : undefined,
+    repsValue: shownRow ? (repsDraft[shownRow.index] ?? 0) : 0,
     onChangeReps: (value: string) => {
       if (activeRow) onChangeReps(activeRow.index, value);
     },

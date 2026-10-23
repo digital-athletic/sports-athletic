@@ -3,14 +3,10 @@ import { act, fireEvent, render } from "../../utils/testUtils";
 import { type ListRow } from "./hooks/useTrainingListRows";
 import { TrainingExerciseSheet } from "./TrainingExerciseSheet";
 
+// A real sheet keeps its children while it animates closed, so the mock
+// renders them regardless of isPresented.
 jest.mock("@expo/ui", () => ({
-  BottomSheet: ({
-    isPresented,
-    children,
-  }: {
-    isPresented: boolean;
-    children?: ReactNode;
-  }) => (isPresented ? children : null),
+  BottomSheet: ({ children }: { children?: ReactNode }) => children,
   RNHostView: ({ children }: { children: ReactNode }) => children,
 }));
 
@@ -39,6 +35,8 @@ describe("TrainingExerciseSheet", () => {
     const { queryByTestId } = render(
       <TrainingExerciseSheet
         row={null}
+        isPresented={false}
+        sessionKey={1}
         duration={undefined}
         isScreenFocused
         repsValue={0}
@@ -52,6 +50,25 @@ describe("TrainingExerciseSheet", () => {
     expect(queryByTestId("training-list-sheet-continue")).toBeNull();
   });
 
+  it("keeps showing the last row while the sheet animates closed", () => {
+    const { getByText } = render(
+      <TrainingExerciseSheet
+        row={generateChecklistRow()}
+        isPresented={false}
+        sessionKey={1}
+        duration={undefined}
+        isScreenFocused
+        repsValue={0}
+        onChangeReps={jest.fn()}
+        onSubmitReps={jest.fn()}
+        onComplete={jest.fn()}
+        onDismiss={jest.fn()}
+      />,
+    );
+
+    expect(getByText("Squat")).toBeTruthy();
+  });
+
   it("disables Continue until a timed row's countdown finishes, then completes", () => {
     const onComplete = jest.fn();
     const onDismiss = jest.fn();
@@ -59,6 +76,8 @@ describe("TrainingExerciseSheet", () => {
     const { getByTestId } = render(
       <TrainingExerciseSheet
         row={generateChecklistRow()}
+        isPresented
+        sessionKey={1}
         duration={2}
         isScreenFocused
         repsValue={0}
@@ -91,6 +110,8 @@ describe("TrainingExerciseSheet", () => {
     const { getByTestId } = render(
       <TrainingExerciseSheet
         row={generateChecklistRow()}
+        isPresented
+        sessionKey={1}
         duration={undefined}
         isScreenFocused
         repsValue={0}
@@ -114,6 +135,8 @@ describe("TrainingExerciseSheet", () => {
     const { getByTestId, queryByTestId } = render(
       <TrainingExerciseSheet
         row={generateChecklistRow({ isTest: true })}
+        isPresented
+        sessionKey={1}
         duration={undefined}
         isScreenFocused
         repsValue={8}
@@ -142,6 +165,8 @@ describe("TrainingExerciseSheet", () => {
           isFeedbackSkill: true,
           isLastInSet: true,
         })}
+        isPresented
+        sessionKey={1}
         duration={undefined}
         isScreenFocused
         repsValue={0}

@@ -4,15 +4,17 @@ import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
+import { secondsToMMSS } from "@/utils/date";
 import { BottomSheet, RNHostView } from "@expo/ui";
 import { type FC, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useWindowDimensions } from "react-native";
 import { FeedbackIconButton } from "./FeedbackIconButton";
 import { TrainingRepetitionInput } from "./TrainingRepetitionInput";
 
 export type TrainingExerciseSheetProps = {
   row: ListRow | null;
+  isPresented: boolean;
+  sessionKey: number;
   duration: number | undefined;
   isScreenFocused: boolean;
   repsValue: number;
@@ -22,14 +24,10 @@ export type TrainingExerciseSheetProps = {
   onDismiss: () => void;
 };
 
-type ContentProps = Omit<TrainingExerciseSheetProps, "row"> & { row: ListRow };
-
-const formatMMSS = (totalSeconds: number) => {
-  const safeSeconds = Math.max(0, Math.floor(totalSeconds));
-  const minutes = Math.floor(safeSeconds / 60);
-  const seconds = safeSeconds - minutes * 60;
-  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-};
+type ContentProps = Omit<
+  TrainingExerciseSheetProps,
+  "row" | "isPresented" | "sessionKey" | "isScreenFocused"
+> & { row: ListRow; isTimerActive: boolean };
 
 const TrainingExerciseFeedbackChoice: FC<{
   onSelect: (feedback: DifficultyFeedbackType) => void;
@@ -74,7 +72,7 @@ const SheetHeading: FC<{ title: string; seconds: number }> = ({
       {title}
     </Text>
     <Text fontSize={32} fontWeight="300" textAlign="center">
-      {formatMMSS(seconds)}
+      {secondsToMMSS(seconds)}
     </Text>
   </>
 );
@@ -82,7 +80,7 @@ const SheetHeading: FC<{ title: string; seconds: number }> = ({
 const TrainingExerciseSheetContent: FC<ContentProps> = ({
   row,
   duration,
-  isScreenFocused,
+  isTimerActive,
   repsValue,
   onChangeReps,
   onSubmitReps,
@@ -95,7 +93,7 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
   const { displayedSeconds, isCountingDown } = useExerciseSheetTimer({
     exerciseId: row.exerciseId,
     duration,
-    isScreenFocused,
+    isActive: isTimerActive,
   });
 
   const isFeedbackEligible = row.isFeedbackSkill && row.isLastInSet;
@@ -156,28 +154,26 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
  */
 export const TrainingExerciseSheet: FC<TrainingExerciseSheetProps> = ({
   row,
+  isPresented,
+  sessionKey,
+  isScreenFocused,
   ...contentProps
-}) => {
-  const { width } = useWindowDimensions();
-
-  return (
-    <BottomSheet
-      isPresented={row !== null}
-      onDismiss={contentProps.onDismiss}
-      contentPadding={0}
-      testID="training-list-sheet"
-    >
-      {row && (
-        <RNHostView matchContents>
-          <Box width={width}>
-            <TrainingExerciseSheetContent
-              key={row.exerciseId}
-              row={row}
-              {...contentProps}
-            />
-          </Box>
-        </RNHostView>
-      )}
-    </BottomSheet>
-  );
-};
+}) => (
+  <BottomSheet
+    isPresented={isPresented}
+    onDismiss={contentProps.onDismiss}
+    contentPadding={0}
+    testID="training-list-sheet"
+  >
+    {row && (
+      <RNHostView matchContents={{ vertical: true }}>
+        <TrainingExerciseSheetContent
+          key={sessionKey}
+          row={row}
+          isTimerActive={isPresented && isScreenFocused}
+          {...contentProps}
+        />
+      </RNHostView>
+    )}
+  </BottomSheet>
+);

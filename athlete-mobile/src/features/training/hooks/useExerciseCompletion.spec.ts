@@ -237,10 +237,10 @@ describe("useExerciseCompletion: block values after a weight increase", () => {
     expect(stored()?.repetition).toBe(5);
   });
 
-  it("resets the repetitions to the skill range start outside the template", () => {
+  it("resets the repetitions to the exercise start in a plan workout too", () => {
     completeGksAt("PLAN", 12);
 
-    expect(stored()?.repetition).toBe(8);
+    expect(stored()?.repetition).toBe(5);
   });
 });
 

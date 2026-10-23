@@ -1,5 +1,5 @@
 import { loadSkillCatalogEntry } from "@/data/loadSkillCatalog";
-import { loadTemplate } from "@/data/loadTemplates";
+import { lookupTemplate } from "@/features/customWorkouts/lookupTemplate";
 import type { TrainingType } from "@/features/training/models/Training";
 import { hasWeights as hasWeightEquipment } from "@/features/training/utils/equipmentUtils";
 import {
@@ -14,6 +14,7 @@ import type {
   PicksBlock,
   Rest,
   Superset,
+  Template,
 } from "@/schemas/aiwl.schema";
 import type { SkillCode } from "@/schemas/generator.schema";
 import {
@@ -202,16 +203,13 @@ const resolveBlock = (
   };
 };
 
-export const resolveShortWorkoutPlan = (
-  type: TrainingType,
+export const resolveTemplatePlan = (
+  template: Template,
   skillTrees: Record<string, SkillTreeType>,
   equipment: string[],
 ): ShortWorkoutPlan => {
-  const template = loadTemplate(type);
-  if (!template) throw skillError(type);
-
   const picksBlocks = template.blocks.map((block, index) =>
-    supportedBlock(type, index, block),
+    supportedBlock(template.id, index, block),
   );
   const preventionSkills = picksBlocks
     .map((block) => block.skill)
@@ -224,10 +222,20 @@ export const resolveShortWorkoutPlan = (
     preventionSkills,
   };
   const blocks = picksBlocks.map((block, index) =>
-    resolveBlock(type, index, block, context),
+    resolveBlock(template.id, index, block, context),
   );
   return {
     pool: Object.assign({}, ...blocks.map((block) => block.pool)),
     blocks,
   };
+};
+
+export const resolveShortWorkoutPlan = (
+  type: TrainingType,
+  skillTrees: Record<string, SkillTreeType>,
+  equipment: string[],
+): ShortWorkoutPlan => {
+  const template = lookupTemplate(type);
+  if (!template) throw skillError(type);
+  return resolveTemplatePlan(template, skillTrees, equipment);
 };

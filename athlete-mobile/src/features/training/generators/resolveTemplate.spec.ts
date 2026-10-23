@@ -1,5 +1,6 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
+import { loadTemplate } from "@/data/loadTemplates";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import {
   getSkillTree,
@@ -12,8 +13,10 @@ import { getTagValues } from "@/utils/tagUtils";
 import { filterByTags } from "./focusTrainingSelection";
 import {
   resolveShortWorkoutPlan,
+  resolveTemplatePlan,
   type ShortWorkoutPlan,
 } from "./resolveTemplate";
+import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 
 const mockExtraTemplates: Record<string, Template> = {};
 const mockExtraCatalog: Record<string, SkillCatalogEntry> = {};
@@ -431,6 +434,78 @@ describe("resolveTemplate: errors", () => {
       subtype: "SKILL_TREE",
       params: ["WU"],
     });
+  });
+});
+
+describe("resolveTemplate: resolveTemplatePlan", () => {
+  const loadPrevKnee = (): Template => {
+    const prevKnee = loadTemplate("PREVKNEE");
+    if (!prevKnee) throw new Error("PREVKNEE missing");
+    return prevKnee;
+  };
+  const shapeOf = (plan: ShortWorkoutPlan) => ({
+    skills: plan.blocks.map((block) => block.skill),
+    poolKeys: plan.blocks.map((block) => Object.keys(block.pool)),
+  });
+
+  it("resolves a loaded template to the same shape as its id lookup", () => {
+    expect(shapeOf(resolveTemplatePlan(loadPrevKnee(), trees, []))).toEqual(
+      shapeOf(resolveShortWorkoutPlan("PREVKNEE", trees, [])),
+    );
+  });
+
+  it("throws BLOCK_KIND for a template with a duration block", () => {
+    const template: Template = {
+      aiwl: 1,
+      id: "SYN_DURATION",
+      name: { en: "Duration" },
+      blocks: [{ kind: "duration", skill: "WU", duration: 30 }],
+    };
+    expect(thrown(() => resolveTemplatePlan(template, trees, []))).toEqual({
+      type: "OTHER",
+      subtype: "BLOCK_KIND",
+      params: ["SYN_DURATION.blocks[0]", "duration"],
+    });
+  });
+
+  it("throws SKILL_TREE for a template with an unknown skill", () => {
+    const template: Template = {
+      aiwl: 1,
+      id: "SYN_NOPE",
+      name: { en: "Nope" },
+      blocks: [picksBlock({ skill: "NOPE" })],
+    };
+    expect(thrown(() => resolveTemplatePlan(template, trees, []))).toEqual({
+      type: "NO_EXERCISES",
+      subtype: "SKILL_TREE",
+      params: ["NOPE"],
+    });
+  });
+});
+
+describe("resolveTemplate: imported templates", () => {
+  beforeEach(() => {
+    useCustomWorkoutsStore.getState().clearCustomWorkouts();
+  });
+
+  afterEach(() => {
+    useCustomWorkoutsStore.getState().clearCustomWorkouts();
+  });
+
+  it("resolves an imported template by app id", () => {
+    const template: Template = {
+      aiwl: 1,
+      id: "MY_CORE",
+      name: { en: "Core", de: "Rumpf" },
+      blocks: [picksBlock({ skill: "GKS" })],
+    };
+    const { id } = useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(template, null);
+
+    const plan = resolveShortWorkoutPlan(id, trees, []);
+
+    expect(plan.blocks.map((block) => block.skill)).toEqual(["GKS"]);
   });
 });
 

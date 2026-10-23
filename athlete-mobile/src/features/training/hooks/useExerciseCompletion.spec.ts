@@ -2,6 +2,7 @@ import { useTrainingStore } from "@/features/training/trainingStore";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import { BASELINE_TRAINING_STATE } from "@/features/training/utils/testFixtures";
 import { type UserExerciseDataType } from "@/schemas/sync.schema";
+import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
@@ -229,6 +230,7 @@ describe("useExerciseCompletion: block values after a weight increase", () => {
 
   afterEach(() => {
     mockExerciseValues = {};
+    useCustomWorkoutsStore.getState().clearCustomWorkouts();
   });
 
   it("resets the repetitions to the exercise start in a template block with values exercise", () => {
@@ -241,6 +243,42 @@ describe("useExerciseCompletion: block values after a weight increase", () => {
     completeGksAt("PLAN", 12);
 
     expect(stored()?.repetition).toBe(5);
+  });
+
+  describe("in an imported template", () => {
+    const saveImportedGks = (values: "skill" | "exercise", fileId: string) =>
+      useCustomWorkoutsStore.getState().saveCustomWorkout(
+        {
+          aiwl: 1,
+          id: fileId,
+          name: { en: "My core", de: "Mein Rumpf" },
+          blocks: [
+            {
+              kind: "picks",
+              skill: "GKS",
+              picks: [{ tags: [], count: 2 }],
+              values,
+            },
+          ],
+        },
+        null,
+      ).id;
+
+    it("resets the repetitions to the exercise start with values exercise", () => {
+      const exerciseType = saveImportedGks("exercise", "MY_EXERCISE");
+
+      completeGksAt(exerciseType, 6);
+
+      expect(stored()?.repetition).toBe(5);
+    });
+
+    it("keeps the repetitions from the skill values with values skill", () => {
+      const skillType = saveImportedGks("skill", "MY_SKILL");
+
+      completeGksAt(skillType, 6);
+
+      expect(stored()?.repetition).toBe(6);
+    });
   });
 });
 

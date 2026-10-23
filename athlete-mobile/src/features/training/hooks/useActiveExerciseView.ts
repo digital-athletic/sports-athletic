@@ -1,5 +1,5 @@
 import { getExerciseById } from "@/data/exerciseRegistry";
-import { loadTemplateName } from "@/data/loadTemplates";
+import { lookupTemplateName } from "@/features/customWorkouts/lookupTemplate";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import {
   deriveActiveExerciseIndex,
@@ -8,6 +8,10 @@ import {
 import { isPauseExercise as checkIsPauseExercise } from "@/features/training/models/IdTypes";
 import { type ActiveTrainingType } from "@/features/training/models/ActiveTraining";
 import { type UserExerciseDataType } from "@/features/training/models/UserExerciseData";
+import {
+  type CustomWorkoutsState,
+  useCustomWorkoutsStore,
+} from "@/store/customWorkoutsStore";
 import { type TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
@@ -15,6 +19,7 @@ function deriveHeaderTitle(
   type: string | undefined,
   t: TFunction,
   language: string | undefined,
+  workoutsById: CustomWorkoutsState["workoutsById"],
 ): string {
   if (!type) {
     return t("training.active.title.plan");
@@ -25,7 +30,10 @@ function deriveHeaderTitle(
     return t("training.active.title.strengthTest");
   }
 
-  return loadTemplateName(type, language) ?? t("training.active.title.plan");
+  return (
+    lookupTemplateName(type, language, workoutsById) ??
+    t("training.active.title.plan")
+  );
 }
 
 /**
@@ -67,8 +75,14 @@ function buildActiveExerciseView(
   activeTraining: ActiveTrainingType | null,
   t: TFunction,
   language: string | undefined,
+  workoutsById: CustomWorkoutsState["workoutsById"],
 ) {
-  const headerTitle = deriveHeaderTitle(activeTraining?.type, t, language);
+  const headerTitle = deriveHeaderTitle(
+    activeTraining?.type,
+    t,
+    language,
+    workoutsById,
+  );
 
   // Derived from each entry's `completed` mark rather than a stored pointer,
   // so it's always in bounds and always reflects the latest completion state.
@@ -144,7 +158,15 @@ function buildActiveExerciseView(
 export function useActiveExerciseView() {
   const { t, i18n } = useTranslation();
   const { exerciseList, activeTraining } = useTrainingStore();
+  // Subscribed so the imported title appears once the store finishes hydrating.
+  const workoutsById = useCustomWorkoutsStore((state) => state.workoutsById);
   const language = i18n.resolvedLanguage;
 
-  return buildActiveExerciseView(exerciseList, activeTraining, t, language);
+  return buildActiveExerciseView(
+    exerciseList,
+    activeTraining,
+    t,
+    language,
+    workoutsById,
+  );
 }

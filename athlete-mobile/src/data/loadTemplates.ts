@@ -56,13 +56,11 @@ export const loadTemplate = (id: string): Template | undefined => {
   return Object.hasOwn(templates, id) ? templates[id] : undefined;
 };
 
-export const loadTemplateName = (
-  id: string,
+/** The text in the language, falling back to en. */
+export const readLocalizedTemplateName = (
+  name: Template["name"],
   language: string | undefined,
-): string | undefined => {
-  const name = loadTemplate(id)?.name;
-  if (!name) return undefined;
-  return language !== undefined && Object.hasOwn(name, language)
+): string =>
+  language !== undefined && Object.hasOwn(name, language)
     ? name[language]
     : name.en;
-};

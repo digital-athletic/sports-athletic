@@ -6,11 +6,11 @@ import {
   createExerciseData,
 } from "@/features/training/utils/testFixtures";
 import { type ExerciseType } from "@/schemas/exercise.schema";
-import { renderHook } from "@testing-library/react-native";
+import { act, renderHook } from "@testing-library/react-native";
 import { useActiveExerciseView } from "./useActiveExerciseView";
 
 import { getExerciseById } from "@/data/exerciseRegistry";
-import { loadTemplateName } from "@/data/loadTemplates";
+import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 
 jest.mock("@/data/exerciseRegistry", () => ({
   getExerciseById: jest.fn(),
@@ -25,20 +25,7 @@ jest.mock("react-i18next", () => ({
   }),
 }));
 
-jest.mock("@/data/loadTemplates", () => ({
-  ...jest.requireActual<typeof import("@/data/loadTemplates")>(
-    "@/data/loadTemplates",
-  ),
-  loadTemplateName: jest.fn(),
-}));
-
 const mockGetExerciseById = getExerciseById as jest.Mock;
-const mockLoadTemplateName = loadTemplateName as jest.MockedFunction<
-  typeof loadTemplateName
->;
-const { loadTemplateName: actualLoadTemplateName } = jest.requireActual<
-  typeof import("@/data/loadTemplates")
->("@/data/loadTemplates");
 
 const exerciseDataById: Record<string, ExerciseType> = {
   "1": createExerciseData({
@@ -270,20 +257,87 @@ describe("useActiveExerciseView: header title", () => {
   beforeEach(() => {
     useTrainingStore.setState(BASELINE);
     mockLanguage = "en";
-    mockLoadTemplateName.mockImplementation(actualLoadTemplateName);
+    useCustomWorkoutsStore.getState().clearCustomWorkouts();
   });
 
-  it("reads the title of a short workout from the templates", () => {
-    mockLoadTemplateName.mockImplementation((id, language) =>
-      id === "PREVSHOULDER" ? `Template only name ${language}` : undefined,
+  afterEach(() => {
+    useCustomWorkoutsStore.getState().clearCustomWorkouts();
+  });
+
+  it("shows the custom name of an imported training", () => {
+    const { id } = useCustomWorkoutsStore.getState().saveCustomWorkout(
+      {
+        aiwl: 1,
+        id: "MY_CORE",
+        name: { en: "My core", de: "Mein Rumpf" },
+        blocks: [
+          { kind: "picks", skill: "GKS", picks: [{ tags: [], count: 2 }] },
+        ],
+      },
+      null,
     );
     useTrainingStore.setState({
-      activeTraining: { id: "training-1", type: "PREVSHOULDER" },
+      activeTraining: { id: "training-1", type: id },
     });
 
     const { result } = renderHook(() => useActiveExerciseView());
 
-    expect(result.current.headerTitle).toBe("Template only name en");
+    expect(result.current.headerTitle).toBe("My core");
+  });
+
+  it("shows the German custom name of an imported training in German", () => {
+    mockLanguage = "de";
+    const { id } = useCustomWorkoutsStore.getState().saveCustomWorkout(
+      {
+        aiwl: 1,
+        id: "MY_CORE",
+        name: { en: "My core", de: "Mein Rumpf" },
+        blocks: [
+          { kind: "picks", skill: "GKS", picks: [{ tags: [], count: 2 }] },
+        ],
+      },
+      null,
+    );
+    useTrainingStore.setState({
+      activeTraining: { id: "training-1", type: id },
+    });
+
+    const { result } = renderHook(() => useActiveExerciseView());
+
+    expect(result.current.headerTitle).toBe("Mein Rumpf");
+  });
+
+  it("shows the custom name once the imported training arrives after the first render", () => {
+    useTrainingStore.setState({
+      activeTraining: { id: "training-1", type: "custom-late" },
+    });
+    const { result } = renderHook(() => useActiveExerciseView());
+
+    act(() => {
+      useCustomWorkoutsStore.setState({
+        workoutsById: {
+          "custom-late": {
+            id: "custom-late",
+            teamId: null,
+            importedAt: 1,
+            template: {
+              aiwl: 1,
+              id: "MY_CORE",
+              name: { en: "My core" },
+              blocks: [
+                {
+                  kind: "picks",
+                  skill: "GKS",
+                  picks: [{ tags: [], count: 2 }],
+                },
+              ],
+            },
+          },
+        },
+      });
+    });
+
+    expect(result.current.headerTitle).toBe("My core");
   });
 
   it("falls back to the plan title when there is no active training", () => {

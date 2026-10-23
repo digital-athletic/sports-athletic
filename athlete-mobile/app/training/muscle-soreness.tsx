@@ -13,6 +13,7 @@ import {
   dropExpiredMarks,
   updateSorenessMarks,
 } from "@/features/training/utils/sorenessMarks";
+import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { usePlacesStore } from "@/store/placesStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
@@ -71,6 +72,10 @@ export default function MuscleSorenessScreen() {
     temporalData?.map<MuscleType>((data) => data.tag as MuscleType) ?? [];
 
   const { generating, generateTraining } = useTrainingGeneration(params);
+  // Generation reads imported templates, so it waits until their store has hydrated.
+  const customWorkoutsHydrated = useCustomWorkoutsStore(
+    (state) => state._hasHydrated,
+  );
 
   const handleBack = useCallback(() => {
     router.back();
@@ -112,7 +117,7 @@ export default function MuscleSorenessScreen() {
           paddingRight: Math.max(sidePadding, insets.right),
         }}
       >
-        {generating ? (
+        {generating || !customWorkoutsHydrated ? (
           <Loading show text={t("training.muscleSoreness.loading")} />
         ) : (
           <>

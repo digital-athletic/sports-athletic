@@ -1,9 +1,9 @@
 import { loadSkillCatalogEntry } from "./loadSkillCatalog";
 import {
   loadTemplate,
-  loadTemplateName,
   loadTemplates,
   parseTemplates,
+  readLocalizedTemplateName,
 } from "./loadTemplates";
 import { getAllSkillTrees } from "./skillTreeRegistry";
 import { filterByTags } from "@/features/training/generators/focusTrainingSelection";
@@ -298,20 +298,21 @@ describe("loadTemplates: real files", () => {
   );
 });
 
-describe("loadTemplateName", () => {
-  it("returns the German name for German", () => {
-    expect(loadTemplateName("PREVKNEE", "de")).toBe("Knie- und Hüftprävention");
-  });
-
-  it.each(["fr", undefined])("returns the English name for %s", (language) => {
-    expect(loadTemplateName("PREVKNEE", language)).toBe(
-      "Knee and hip prevention",
+describe("readLocalizedTemplateName", () => {
+  it("returns the German text for German", () => {
+    expect(readLocalizedTemplateName({ en: "Core", de: "Rumpf" }, "de")).toBe(
+      "Rumpf",
     );
   });
 
-  it("returns undefined for an unknown id", () => {
-    expect(loadTemplateName("PLAN", "en")).toBeUndefined();
-  });
+  it.each(["fr", undefined, "constructor"])(
+    "returns the English text for %s",
+    (language) => {
+      expect(
+        readLocalizedTemplateName({ en: "Core", de: "Rumpf" }, language),
+      ).toBe("Core");
+    },
+  );
 });
 
 describe("loadTemplates: no redundant block override", () => {

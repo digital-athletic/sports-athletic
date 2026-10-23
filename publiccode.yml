@@ -1,0 +1,103 @@
+# publiccode.yml for the openCode Softwareverzeichnis.
+# Spec: https://yml.publiccode.tools/  Editor: https://editor.opencode.de/
+publiccodeYmlVersion: "0.4"
+
+name: Sports Athletic
+url: https://github.com/digital-athletic/sports-athletic
+logo: athlete-mobile/assets/img/logos/SA_dark.png
+
+platforms:
+  - android
+  - ios
+  - web
+
+categories:
+  - learning-management-system
+  - data-visualization
+  - collaboration
+
+developmentStatus: beta
+softwareType: standalone/mobile
+
+description:
+  de:
+    genericName: Trainingsplattform
+    shortDescription: >-
+      Trainingsplattform für Sportvereine: App für Athletinnen und Athleten,
+      Web-Dashboard für Trainerinnen und Trainer, Supabase-Backend.
+    longDescription: >-
+      Sports Athletic ist eine offene Trainingsplattform für Sportvereine und
+      Verbände. Sie besteht aus drei Teilen, die zusammenarbeiten.
+
+      Die mobile App (React Native, Expo) richtet sich an Athletinnen und
+      Athleten. Sie führt durch tägliche Trainings, Kurztrainings wie
+      Aufwärmen, Mobilität oder Stabilität und eigene Trainings. Die App
+      zeigt Fortschritt und Leistungsdaten, etwa als Radar-Diagramm, und
+      unterstützt viele Sportarten wie Handball, Fußball, Basketball oder
+      Volleyball.
+
+      Das Web-Dashboard (React, Vite) richtet sich an Trainerinnen und
+      Trainer. Sie verwalten dort Teams, laden Athleten per Einladungscode ein
+      und sehen Auswertungen zum Trainingsstand.
+
+      Das Backend nutzt Supabase mit PostgreSQL und Edge Functions. Die
+      Anmeldung erfolgt per Einmal-Code per E-Mail. Die Plattform lässt sich
+      vollständig selbst betreiben.
+
+      Entwickelt im Auftrag des Handballverbands Schleswig-Holstein e.V. im
+      Rahmen des "Landesprogramm offene Innovation" in Schleswig-Holstein.
+    features:
+      - Mobile App für Athletinnen und Athleten (iOS, Android)
+      - Web-Dashboard für Trainerinnen und Trainer mit Teamverwaltung
+      - Tägliche Trainings und Kurztrainings
+      - Eigene Trainings anlegen und importieren
+      - Auswertung von Fortschritt und Leistung
+      - Unterstützung vieler Sportarten
+      - Selbst betreibbares Backend auf Basis von Supabase
+  en:
+    genericName: Training platform
+    shortDescription: >-
+      Training platform for sports clubs: mobile app for athletes, web
+      dashboard for trainers, Supabase backend.
+    longDescription: >-
+      Sports Athletic is an open training platform for sports clubs and
+      associations. It consists of three parts that work together.
+
+      The mobile app (React Native, Expo) is for athletes. It guides them
+      through daily trainings, short trainings such as warm up, mobility or
+      stability, and their own trainings. The app shows progress and
+      performance data, for example as a radar chart, and supports many
+      sports such as handball, soccer, basketball or volleyball.
+
+      The web dashboard (React, Vite) is for trainers. They manage teams,
+      invite athletes with an invite code and see evaluations of their
+      training status.
+
+      The backend uses Supabase with PostgreSQL and Edge Functions. Sign-in
+      uses a one-time code sent by email. The platform can be fully
+      self-hosted.
+
+      Developed on behalf of Handballverband Schleswig-Holstein e.V. under
+      the "Landesprogramm offene Innovation" in Schleswig-Holstein.
+    features:
+      - Mobile app for athletes (iOS, Android)
+      - Web dashboard for trainers with team management
+      - Daily trainings and short trainings
+      - Create and import own trainings
+      - Progress and performance analysis
+      - Support for many sports
+      - Self-hostable backend based on Supabase
+
+legal:
+  license: Apache-2.0
+
+maintenance:
+  type: internal
+  contacts:
+    - name: B310 Digital GmbH
+
+localisation:
+  localisationReady: true
+  availableLanguages:
+    - de
+    - en

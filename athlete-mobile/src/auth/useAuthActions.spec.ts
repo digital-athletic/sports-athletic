@@ -152,6 +152,13 @@ jest.mock("@/features/training/synchronizationStore", () => ({
   }),
 }));
 
+const mockClearCustomWorkouts = jest.fn();
+jest.mock("@/store/customWorkoutsStore", () => ({
+  useCustomWorkoutsStore: () => ({
+    clearCustomWorkouts: mockClearCustomWorkouts,
+  }),
+}));
+
 function storeCallCounts() {
   return {
     clearAuth: mockClearAuth.mock.calls.length,
@@ -166,6 +173,7 @@ function storeCallCounts() {
     clearUserItems: mockClearUserItems.mock.calls.length,
     clearTraining: mockClearTraining.mock.calls.length,
     resetSynchronization: mockResetSynchronization.mock.calls.length,
+    clearCustomWorkouts: mockClearCustomWorkouts.mock.calls.length,
   };
 }
 
@@ -182,6 +190,7 @@ const ALL_STORES_CALLED_ONCE = {
   clearUserItems: 1,
   clearTraining: 1,
   resetSynchronization: 1,
+  clearCustomWorkouts: 1,
 };
 
 const ALL_STORES_NOT_CALLED = Object.fromEntries(
@@ -330,6 +339,15 @@ describe("useLogout", () => {
       expect(mockResetProfile).toHaveBeenCalled();
     });
     expect(mockTakeSnapshot).not.toHaveBeenCalled();
+  });
+
+  it("keeps the imported trainings on logout", async () => {
+    await confirmLogout();
+
+    await waitFor(() => {
+      expect(mockClearAuth).toHaveBeenCalled();
+    });
+    expect(mockClearCustomWorkouts).not.toHaveBeenCalled();
   });
 
   it("navigates to onboarding when confirmed", async () => {

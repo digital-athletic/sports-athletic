@@ -88,7 +88,13 @@
         "title": "Additional trainings",
         "ownTrainings": "Your trainings",
         "loadingTeams": "Loading teams",
-        "noWorkouts": "Currently no workouts available"
+        "noWorkouts": "Currently no workouts available",
+        "importErrorTitle": "Import failed",
+        "importError": {
+          "invalidFormat": "The file is not a valid training file. Check that it is a complete AIWL file.",
+          "unsupportedContent": "The file contains skills or blocks that this app does not support yet.",
+          "readFailed": "The file could not be read or is too large. Choose a smaller file and try again."
+        }
       },
       "focusTrainings": {
         "title": "Focus & Prevention"

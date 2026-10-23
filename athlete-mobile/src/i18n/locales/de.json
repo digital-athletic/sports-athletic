@@ -88,7 +88,13 @@
         "title": "Zusatztrainings",
         "ownTrainings": "Deine Trainings",
         "loadingTeams": "Teams werden geladen",
-        "noWorkouts": "Aktuell sind keine Workouts verfügbar"
+        "noWorkouts": "Aktuell sind keine Workouts verfügbar",
+        "importErrorTitle": "Import fehlgeschlagen",
+        "importError": {
+          "invalidFormat": "Die Datei ist keine gültige Trainingsdatei. Prüfe, ob es eine vollständige AIWL Datei ist.",
+          "unsupportedContent": "Die Datei enthält Fähigkeiten oder Blöcke, die diese App noch nicht unterstützt.",
+          "readFailed": "Die Datei konnte nicht gelesen werden oder ist zu groß. Wähle eine kleinere Datei und versuche es erneut."
+        }
       },
       "focusTrainings": {
         "title": "Fokus & Prävention"

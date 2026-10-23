@@ -77,7 +77,7 @@ The [Glossary](../glossary.md) lists the section type and cardio zone codes.
 1. Pick the skill priority structure for age group, pain status, and focus. It maps minute thresholds to skill lists, e.g. adult, no pain, PHASE focus: from minute 0 the main phase work plus mobility, from 30 warm-up, from 45 cool-down, from 60 foam roller. Pain variants inject a prevention slot and a special warm-up.
 2. Resolve placeholders: the PHASE slot becomes the section's type (or its KG variant when no weights are available; max strength without weights becomes hypertrophy stage 2 KG); the cardio slot becomes the section's cardio type; the warm-up variant follows the section type.
 3. Prevention slots rotate round-robin through the athlete's derived prevention skills, at most one per day. The special warm-up is kept only on days that have a prevention skill. Children get the same prevention slots and special warm-up as adults.
-4. Each selected skill gets its minimum duration first; leftover session time is distributed by priority, capped per skill by the maximum minutes below. Sessions longer than 45 minutes first fill the second priority skill to its maximum, which gives a prevention slot its 15 minutes. Time below a skill's minimum still uses the minimum, so short sessions can overshoot their target duration.
+4. Each selected skill gets its minimum duration first; leftover session time is distributed by priority, capped per skill by the maximum minutes below. Time below a skill's minimum still uses the minimum, so short sessions can overshoot their target duration.
 
 | Skill | Max minutes, beginner / advanced / professional |
 |---|---|
@@ -92,7 +92,7 @@ The [Glossary](../glossary.md) lists the section type and cardio zone codes.
 
 ### 5. Branch selection per skill
 
-1. The skill and its allotted minutes select an authored region configuration: how many exercises, and which region or movement tags (upper body, lower body, core, or named barbell lifts for max strength). The count includes both sides: a one sided exercise trains left and right and uses two slots. A prevention slot that would only fit one side of a one sided exercise stays empty.
+1. The skill and its allotted minutes select an authored region configuration: how many exercises, and which region or movement tags (upper body, lower body, core, or named barbell lifts for max strength).
 2. Candidate branches come from the skill's skill tree, filtered by: not already in use that day, age tag, gender tag, equipment present at the day's location, and the pain exclusion described in [Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md). Children may receive every branch their age tag allows, weighted ones included.
 3. When weights are available, the weighted vs bodyweight share follows [Plan Workout Generation](../session/plan-workout-generation.md).
 4. Each exercise slot applies cascading filters, each falling back to the previous candidate set when it would empty: movement direction (from an authored priority sequence), side (the last slot avoids one-sided exercises), muscle (prefer untrained big muscles), involvement (70% complex, 30% isolated), equipment (max strength prefers barbell), and the weighted/bodyweight share. The final pick is random among the survivors.

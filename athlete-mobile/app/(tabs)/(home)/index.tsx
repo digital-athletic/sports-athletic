@@ -1,4 +1,5 @@
 import { featureFlags } from "@/config/featureFlags";
+import { HomeTrainingShortcuts } from "@/features/home/HomeTrainingShortcuts";
 import { IndividualWorkoutDisplay } from "@/features/training/IndividualWorkoutDisplay";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import {
@@ -9,27 +10,16 @@ import {
 import { Logger } from "@/services/Logger";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
-import { Ionicon } from "@/common/Ionicon";
 import { Box } from "@/theme/Box";
 import { Card } from "@/theme/Card";
 import { ScrollBox } from "@/theme/ScrollBox";
-import { Text } from "@/theme/Text";
-import { useTheme } from "@/theme/theme";
 import { Stack, router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  useWindowDimensions,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useWindowDimensions } from "react-native";
 
 export default function HomeScreen() {
   const { t } = useTranslation();
-  const { colors, spacing } = useTheme();
-  const insets = useSafeAreaInsets();
   const { personalData, anamnesisCompleted, _hasHydrated } =
     useUserProfileStore();
   const { isSkipped } = useAnamnesisStore();
@@ -138,92 +128,9 @@ export default function HomeScreen() {
             </Card>
           </Box>
 
-          <Box
-            flex={isLandscape ? 1 : undefined}
-            flexDirection={isLandscape ? "column" : "row"}
-            paddingHorizontal="l"
-            paddingTop={isLandscape ? "l" : "none"}
-            paddingLeft={isLandscape ? "none" : "l"}
-            gap="m"
-            style={{
-              paddingBottom: Platform.OS === "ios" ? insets.bottom : spacing.l,
-            }}
-          >
-            <TouchableOpacity
-              style={[
-                styles.quickstartButton,
-                { backgroundColor: colors.white },
-              ]}
-              onPress={() => goToTraining("QUICK")}
-              accessibilityRole="button"
-              accessibilityLabel={t("screens.home.focusTraining.title")}
-            >
-              <Box alignItems="center" justifyContent="space-between" gap="s">
-                <Ionicon
-                  name="scan-outline"
-                  size={48}
-                  color={colors.primary}
-                  decorative
-                />
-                <Text variant="cardTitle" textAlign="center" fontSize={14}>
-                  {t("screens.home.focusTraining.title")}
-                </Text>
-                <Text
-                  variant="description"
-                  textAlign="center"
-                  fontSize={12}
-                  color="darkGrey1"
-                >
-                  {t("screens.home.focusTraining.subtitle")}
-                </Text>
-              </Box>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.quickstartButton,
-                { backgroundColor: colors.white },
-              ]}
-              onPress={() => goToTraining("PREV")}
-              accessibilityRole="button"
-              accessibilityLabel={t("screens.home.preventionTraining.title")}
-            >
-              <Box alignItems="center" justifyContent="space-between" gap="s">
-                <Ionicon
-                  name="calendar-outline"
-                  size={48}
-                  color={colors.primary}
-                  decorative
-                />
-                <Text variant="cardTitle" textAlign="center" fontSize={14}>
-                  {t("screens.home.preventionTraining.title")}
-                </Text>
-                <Text
-                  variant="description"
-                  textAlign="center"
-                  fontSize={12}
-                  color="darkGrey1"
-                >
-                  {t("screens.home.preventionTraining.subtitle")}
-                </Text>
-              </Box>
-            </TouchableOpacity>
-          </Box>
+          <HomeTrainingShortcuts isLandscape={isLandscape} />
         </Box>
       </ScrollBox>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  quickstartButton: {
-    flex: 1,
-    padding: 16,
-    borderRadius: 12,
-    shadowColor: "#333",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-});

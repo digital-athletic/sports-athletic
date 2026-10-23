@@ -74,11 +74,24 @@
         "title": "Imminent Pains",
         "subtitle": "Specifically improve imminent pains"
       },
+      "trainingShortcuts": {
+        "focusAndPrevention": {
+          "title": "Focus & Prevention",
+          "subtitle": "Targeted trainings for stability, mobility and prevention"
+        },
+        "additionalTrainings": {
+          "title": "Additional trainings",
+          "subtitle": "My trainings or trainings created by the coaching team"
+        }
+      },
       "additionalTrainings": {
         "title": "Additional trainings",
         "ownTrainings": "Your trainings",
         "loadingTeams": "Loading teams",
         "noWorkouts": "Currently no workouts available"
+      },
+      "focusTrainings": {
+        "title": "Focus & Prevention"
       },
       "workoutWithOwnPlan": "Your Training Plan",
       "startTraining": "Start Training",

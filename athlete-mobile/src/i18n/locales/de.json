@@ -74,11 +74,24 @@
         "title": "Präventions-Trainings",
         "subtitle": "Beschwerden vorbeugen & verbessern"
       },
+      "trainingShortcuts": {
+        "focusAndPrevention": {
+          "title": "Fokus & Prävention",
+          "subtitle": "Gezielte Trainings für Stabilität, Mobilität und Prävention"
+        },
+        "additionalTrainings": {
+          "title": "Zusatztrainings",
+          "subtitle": "Meine oder vom Trainerteam erstellte Trainings"
+        }
+      },
       "additionalTrainings": {
         "title": "Zusatztrainings",
         "ownTrainings": "Deine Trainings",
         "loadingTeams": "Teams werden geladen",
         "noWorkouts": "Aktuell sind keine Workouts verfügbar"
+      },
+      "focusTrainings": {
+        "title": "Fokus & Prävention"
       },
       "workoutWithOwnPlan": "Dein Trainingsplan",
       "startTraining": "Training starten",

@@ -5,7 +5,6 @@ import { type TFunction } from "i18next";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { FeedbackIconButton } from "./FeedbackIconButton";
-import { InfoExerciseButton } from "./InfoExerciseButton";
 import { SkipExerciseButton } from "./SkipExerciseButton";
 import { StartExerciseButton } from "./StartExerciseButton";
 
@@ -15,7 +14,6 @@ export type TrainingListItemActionsProps = {
   completedFeedback?: DifficultyFeedbackType | null;
   repsValue: number;
   onStart: () => void;
-  onShowInfo: () => void;
   onSkip: () => void;
   testId: string;
 };
@@ -32,7 +30,7 @@ const checkLabel = (
 ): string => t(COMPLETED_LABEL_KEYS[feedback ?? "SUCCEEDED"]);
 
 /**
- * The info / skip / start-or-checkmark controls for a single checklist row.
+ * The skip / start-or-checkmark controls for a single checklist row.
  * Starting (and the timer/feedback/reps flow that follows) happens in the
  * TrainingExerciseSheet opened by onStart, not inline here.
  */
@@ -42,7 +40,6 @@ export const TrainingListItemActions: FC<TrainingListItemActionsProps> = ({
   completedFeedback,
   repsValue,
   onStart,
-  onShowInfo,
   onSkip,
   testId,
 }) => {
@@ -50,8 +47,6 @@ export const TrainingListItemActions: FC<TrainingListItemActionsProps> = ({
 
   return (
     <Box flexDirection="row" alignItems="center" gap="m">
-      <InfoExerciseButton onPress={onShowInfo} testId={`${testId}-info`} />
-
       {!isTest && !isCompleted && (
         <SkipExerciseButton onPress={onSkip} testId={`${testId}-skip`} />
       )}

@@ -62,7 +62,6 @@ export const TrainingListItem: FC<TrainingListItemProps> = ({
           completedFeedback={completedFeedback}
           repsValue={repsValue}
           onStart={onStart}
-          onShowInfo={onShowInfo}
           onSkip={onSkip}
           testId={testId}
         />

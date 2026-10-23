@@ -10,18 +10,9 @@ describe("TrainingListItemActions: accessible names", () => {
     isCompleted: false,
     repsValue: 0,
     onStart: jest.fn(),
-    onShowInfo: jest.fn(),
     onSkip: jest.fn(),
     testId: "row",
   };
-
-  it("always shows the info button", () => {
-    const { getByLabelText } = render(
-      <TrainingListItemActions {...baseProps} isCompleted />,
-    );
-
-    expect(getByLabelText("Show exercise information")).toBeTruthy();
-  });
 
   it("names the start button of a pending row Start exercise", () => {
     const { getByLabelText, queryByLabelText } = render(

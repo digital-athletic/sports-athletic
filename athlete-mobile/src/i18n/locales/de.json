@@ -89,6 +89,7 @@
         "ownTrainings": "Deine Trainings",
         "loadingTeams": "Teams werden geladen",
         "noWorkouts": "Aktuell sind keine Workouts verfügbar",
+        "importTraining": "Training importieren",
         "importErrorTitle": "Import fehlgeschlagen",
         "importError": {
           "invalidFormat": "Die Datei ist keine gültige Trainingsdatei. Prüfe, ob es eine vollständige AIWL Datei ist.",

@@ -2,6 +2,16 @@ import GKS from "../../../assets/data/templates/GKS.json";
 import PREVKNEE from "../../../assets/data/templates/PREVKNEE.json";
 import {
   isTemplateRunnable,
+  MAX_CUSTOM_WORKOUT_BLOCKS,
+  MAX_CUSTOM_WORKOUT_DURATION_SECONDS,
+  MAX_CUSTOM_WORKOUT_NAME_LANGUAGES,
+  MAX_CUSTOM_WORKOUT_NAME_LENGTH,
+  MAX_CUSTOM_WORKOUT_PICK_COUNT,
+  MAX_CUSTOM_WORKOUT_PICKS_PER_BLOCK,
+  MAX_CUSTOM_WORKOUT_REST_SECONDS,
+  MAX_CUSTOM_WORKOUT_SET_DURATION_SECONDS,
+  MAX_CUSTOM_WORKOUT_SETS,
+  MAX_CUSTOM_WORKOUT_TAGS_PER_PICK,
   validateCustomWorkoutText,
 } from "./validateCustomWorkout";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
@@ -284,6 +294,165 @@ describe("validateCustomWorkoutText: unsupported content", () => {
     );
 
     expect(result).toEqual({ success: false, error: "UNSUPPORTED_CONTENT" });
+  });
+});
+
+describe("validateCustomWorkoutText: import limits", () => {
+  it.each<[string, Template]>([
+    [
+      "the pick count",
+      generateTemplateWithBlock({
+        kind: "picks",
+        skill: "GKS",
+        picks: [{ tags: [], count: MAX_CUSTOM_WORKOUT_PICK_COUNT + 1 }],
+      }),
+    ],
+    [
+      "the sets",
+      generateTemplateWithBlock({
+        kind: "picks",
+        skill: "GKS",
+        sets: MAX_CUSTOM_WORKOUT_SETS + 1,
+        picks: [{ tags: [], count: 2 }],
+      }),
+    ],
+    [
+      "the set duration",
+      generateTemplateWithBlock({
+        kind: "picks",
+        skill: "GKS",
+        setDuration: MAX_CUSTOM_WORKOUT_SET_DURATION_SECONDS + 1,
+        picks: [{ tags: [], count: 2 }],
+      }),
+    ],
+    [
+      "the block duration",
+      generateTemplateWithBlock({
+        kind: "duration",
+        skill: "GKS",
+        duration: MAX_CUSTOM_WORKOUT_DURATION_SECONDS + 1,
+      }),
+    ],
+    [
+      "the rest",
+      generateTemplateWithBlock({
+        kind: "picks",
+        skill: "GKS",
+        rest: { betweenSets: MAX_CUSTOM_WORKOUT_REST_SECONDS + 1 },
+        picks: [{ tags: [], count: 2 }],
+      }),
+    ],
+    [
+      "the number of blocks",
+      generateCustomTemplate({
+        blocks: Array.from({ length: MAX_CUSTOM_WORKOUT_BLOCKS + 1 }, () => ({
+          kind: "picks" as const,
+          skill: "GKS",
+          picks: [{ tags: [], count: 1 }],
+        })),
+      }),
+    ],
+    [
+      "the number of picks entries",
+      generateTemplateWithBlock({
+        kind: "picks",
+        skill: "GKS",
+        picks: Array.from(
+          { length: MAX_CUSTOM_WORKOUT_PICKS_PER_BLOCK + 1 },
+          () => ({ tags: [], count: 1 }),
+        ),
+      }),
+    ],
+    [
+      "the number of weighted picks entries",
+      generateTemplateWithBlock({
+        kind: "picks",
+        skill: "GKS",
+        picks: {
+          withWeights: Array.from(
+            { length: MAX_CUSTOM_WORKOUT_PICKS_PER_BLOCK + 1 },
+            () => ({ tags: [], count: 1 }),
+          ),
+          withoutWeights: [{ tags: [], count: 1 }],
+        },
+      }),
+    ],
+    [
+      "the number of tags",
+      generateTemplateWithBlock({
+        kind: "picks",
+        skill: "GKS",
+        picks: [
+          {
+            tags: Array.from(
+              { length: MAX_CUSTOM_WORKOUT_TAGS_PER_PICK + 1 },
+              () => "REGION_UPPER_BODY",
+            ),
+            count: 1,
+          },
+        ],
+      }),
+    ],
+    [
+      "the name length",
+      generateCustomTemplate({
+        name: { en: "a".repeat(MAX_CUSTOM_WORKOUT_NAME_LENGTH + 1) },
+      }),
+    ],
+    [
+      "the number of name languages",
+      generateCustomTemplate({
+        name: {
+          en: "Core",
+          ...Object.fromEntries(
+            Array.from(
+              { length: MAX_CUSTOM_WORKOUT_NAME_LANGUAGES },
+              (_, index) => [`l${index}`, "Core"],
+            ),
+          ),
+        },
+      }),
+    ],
+  ])("returns UNSUPPORTED_CONTENT when %s exceeds its limit", (_, template) => {
+    const result = validateCustomWorkoutText(
+      JSON.stringify(template),
+      getAllSkillTrees(),
+    );
+
+    expect(result).toEqual({ success: false, error: "UNSUPPORTED_CONTENT" });
+  });
+
+  it("returns UNSUPPORTED_CONTENT for a huge sets value", () => {
+    const template = generateTemplateWithBlock({
+      kind: "picks",
+      skill: "GKS",
+      sets: 1_000_000_000,
+      picks: [{ tags: [], count: 2 }],
+    });
+
+    const result = validateCustomWorkoutText(
+      JSON.stringify(template),
+      getAllSkillTrees(),
+    );
+
+    expect(result).toEqual({ success: false, error: "UNSUPPORTED_CONTENT" });
+  });
+
+  it("accepts sets and rest exactly at their limits", () => {
+    const template = generateTemplateWithBlock({
+      kind: "picks",
+      skill: "GKS",
+      sets: MAX_CUSTOM_WORKOUT_SETS,
+      rest: { betweenSets: MAX_CUSTOM_WORKOUT_REST_SECONDS },
+      picks: [{ tags: [], count: 2 }],
+    });
+
+    const result = validateCustomWorkoutText(
+      JSON.stringify(template),
+      getAllSkillTrees(),
+    );
+
+    expect(result).toEqual({ success: true, template });
   });
 });
 

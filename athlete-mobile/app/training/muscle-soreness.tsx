@@ -32,6 +32,11 @@ type ScreenState = "SORENESS" | "PLACE";
 const screenStateFor = (type: TrainingType): ScreenState =>
   checksSoreness(type) ? "SORENESS" : "PLACE";
 
+const titleKeyFor = (screenState: ScreenState) =>
+  screenState === "SORENESS"
+    ? "training.muscleSoreness.title"
+    : "training.muscleSoreness.placeAndEquipment";
+
 const dropStoredExpiredMarks = () => {
   const { temporalData, setTemporalData } = useUserWorkoutStore.getState();
   if (temporalData) {
@@ -94,10 +99,7 @@ export default function MuscleSorenessScreen() {
     setTemporalData(updateSorenessMarks(temporalData ?? [], tags, Date.now()));
   };
 
-  let title =
-    screenState === "SORENESS"
-      ? t("training.muscleSoreness.title")
-      : t("training.muscleSoreness.placeAndEquipment");
+  const title = t(titleKeyFor(screenState));
 
   return (
     <>

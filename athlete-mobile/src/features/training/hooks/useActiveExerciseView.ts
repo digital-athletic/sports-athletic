@@ -73,17 +73,8 @@ function deriveNextExercise(
 function buildActiveExerciseView(
   exerciseList: UserExerciseDataType[] | null,
   activeTraining: ActiveTrainingType | null,
-  t: TFunction,
-  language: string | undefined,
-  workoutsById: CustomWorkoutsState["workoutsById"],
+  headerTitle: string,
 ) {
-  const headerTitle = deriveHeaderTitle(
-    activeTraining?.type,
-    t,
-    language,
-    workoutsById,
-  );
-
   // Derived from each entry's `completed` mark rather than a stored pointer,
   // so it's always in bounds and always reflects the latest completion state.
   const safeExerciseIndex = deriveActiveExerciseIndex(exerciseList);
@@ -160,13 +151,12 @@ export function useActiveExerciseView() {
   const { exerciseList, activeTraining } = useTrainingStore();
   // Subscribed so the imported title appears once the store finishes hydrating.
   const workoutsById = useCustomWorkoutsStore((state) => state.workoutsById);
-  const language = i18n.resolvedLanguage;
-
-  return buildActiveExerciseView(
-    exerciseList,
-    activeTraining,
+  const headerTitle = deriveHeaderTitle(
+    activeTraining?.type,
     t,
-    language,
+    i18n.resolvedLanguage,
     workoutsById,
   );
+
+  return buildActiveExerciseView(exerciseList, activeTraining, headerTitle);
 }

@@ -29,10 +29,10 @@ export default function AdditionalTrainingListScreen() {
     };
   }, []);
 
-  const openWorkouts = (title: string) => {
+  const openWorkouts = (title: string, source: "own" | "team") => {
     router.push({
       pathname: "/additional-training-workouts",
-      params: { title },
+      params: { title, source },
     });
   };
 
@@ -49,7 +49,7 @@ export default function AdditionalTrainingListScreen() {
       <ScrollBox flex={1} backgroundColor="lightGrey1">
         <ColumnListRow
           title={ownTrainingsTitle}
-          onPress={() => openWorkouts(ownTrainingsTitle)}
+          onPress={() => openWorkouts(ownTrainingsTitle, "own")}
         />
         {teamsLoading && (
           <ActivityIndicator
@@ -62,7 +62,7 @@ export default function AdditionalTrainingListScreen() {
           <ColumnListRow
             key={team.id}
             title={team.name}
-            onPress={() => openWorkouts(team.name)}
+            onPress={() => openWorkouts(team.name, "team")}
           />
         ))}
       </ScrollBox>

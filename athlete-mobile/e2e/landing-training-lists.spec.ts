@@ -81,6 +81,9 @@ test.describe("Home: training lists", () => {
     await expect(
       page.getByText("Currently no workouts available"),
     ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Import training" }),
+    ).toHaveCount(0);
     await page.screenshot({
       path: "playwright/screenshots/additional-training-workouts-empty.png",
       fullPage: true,

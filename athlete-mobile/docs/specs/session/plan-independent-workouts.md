@@ -28,9 +28,9 @@ Both reuse the filter chain and the branch to exercise resolution rule from [Pla
 
 ### Short workout
 
-1. Read the bundled AIWL-template of the requested type. Each block takes its skill tree names from its skill catalog entry.
-2. Filter the union of the block pools by pains (the exclusion from [Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md)), equipment, age, and gender, in this order. Soreness filters nothing here, per the same spec. Each filter drops the exercises it does not allow. Equipment decides per exercise, so a place without the equipment for a branch drops that branch alone. An empty pool after any of these filters aborts with a typed error naming the cause.
-3. Draw each block's picks in template order, uniformly at random, repeating neither a branch nor a resolved exercise. A pick draws defined units from the branches that match its tags. The unit is defined as follows:
+1. Read the bundled AIWL template of the requested type. Each block takes its skill tree names from its skill catalog entry, using the weights-capable variant when the place has weights and the bodyweight variant otherwise. Foam roller sessions require a foam roller or foam ball, else generation fails.
+2. Filter by prevention target tag (prevention types only), equipment, age, gender, and the pain exclusion from [Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md). Soreness filters nothing here, per the same spec. An empty pool after the equipment, age, gender, or pain filter aborts with a typed error naming the cause.
+3. Draw each block's picks in template order, uniformly at random, repeating neither a branch nor a resolved exercise. A pick draws defined units from the branches that match its tags. The counts are soft targets and may vary with the available pool. The unit is defined as follows:
    - `exercises`: one unit per exercise.
    - `entries`: one unit per exercise entry in the workout. A two-sided branch adds one entry, a one-sided branch two entries (left and right). A one-sided branch that would exceed the count is skipped.
    - `pairs`: a unit is a superset pair.

@@ -134,6 +134,20 @@ describe("branchResolution: resolveBranchExerciseId", () => {
       resolveBranchExerciseId({ tags: [], levels: {} }, "PROFESSIONAL"),
     ).toBeNull();
   });
+
+  it("reads a stored day entry whose level names no exercise", () => {
+    const storedLevels: Record<string, { exerciseId?: string }> = {
+      "1": {},
+      "2": { exerciseId: "516" },
+    };
+
+    expect(
+      resolveBranchExerciseId({ levels: storedLevels }, "BEGINNER"),
+    ).toBeNull();
+    expect(resolveBranchExerciseId({ levels: storedLevels }, "ADVANCED")).toBe(
+      "516",
+    );
+  });
 });
 
 describe("branchResolution: resolveBranchExercise", () => {

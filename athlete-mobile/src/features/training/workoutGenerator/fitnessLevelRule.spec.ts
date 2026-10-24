@@ -40,21 +40,23 @@ describe("fitnessLevelRule: filterBranchesByFitnessLevel", () => {
       level: "BEGINNER",
       exerciseCatalog: loadExercises(),
     });
-    const { tags, levels } = generateSkillTreeBranches("GKS", ["523"])["523"];
+    // a BEGINNER reaches level 1, which only the stored exercises author
     const storedEntry: ExerciseBranchEntry = {
       branchId: "523",
-      tags,
-      exercises: Object.fromEntries(Object.entries(levels)),
+      tags: ["REGION_FULL_BODY"],
+      exercises: { 1: { exerciseId: "375" } },
+      levels: {},
     };
 
     const result = filterBranchesByFitnessLevel({ "523": storedEntry }, input);
 
-    expect(result.keep).toEqual({});
+    expect(result.keep).toEqual({ "523": storedEntry });
+    expect(result.removals).toEqual([]);
   });
 
-  it("keeps a branch at the level of the athlete's branch progress", () => {
+  it("keeps a branch at the athlete's branch level", () => {
+    // GKS 523 authors levels 2 and 3, above the BEGINNER entry level 1
     const branches = generateSkillTreeBranches("GKS", ["523"]);
-    const progressLevel = Number(Object.keys(branches["523"].levels)[0]);
     const input = {
       ...generateRuleFamilyInput({
         level: "BEGINNER",
@@ -62,7 +64,7 @@ describe("fitnessLevelRule: filterBranchesByFitnessLevel", () => {
       }),
       exerciseData: {
         exerciseData: {},
-        branchData: { "523": { branchId: "523", level: progressLevel } },
+        branchData: { "523": { branchId: "523", level: 2 } },
       },
     };
 

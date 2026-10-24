@@ -13,7 +13,7 @@ const generateBranchReference = (branchTags: string[]) => ({
 });
 
 describe("muscleGroups: readPrimaryMuscleGroups", () => {
-  it("counts a side-specific muscle as its muscle group", () => {
+  it("counts a muscle of one side as its muscle group", () => {
     const entry = generateBranchReference([
       "REGION_LOWER_BODY",
       "MUSCLE_QUADRICEPS_LEFT",

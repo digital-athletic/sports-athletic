@@ -61,12 +61,45 @@ const generateCoreUnits = (count: number) =>
   );
 
 /**
+ * Builds three big lower body units.
+ *
+ * generateBigLegUnits() → [generateUnit("legs1", "L", "GLUTES"), generateUnit("legs2", "L", "QUADRICEPS"), generateUnit("legs3", "L", "HAMSTRINGS")]
+ */
+const generateBigLegUnits = () => [
+  generateUnit("legs1", "L", "GLUTES"),
+  generateUnit("legs2", "L", "QUADRICEPS"),
+  generateUnit("legs3", "L", "HAMSTRINGS"),
+];
+
+/**
+ * Builds three small upper body units.
+ *
+ * generateSmallUpperUnits() → [generateUnit("arms1", "U", "BICEPS"), generateUnit("arms2", "U", "TRICEPS"), generateUnit("arms3", "U", "SHOULDER_FRONT")]
+ */
+const generateSmallUpperUnits = () => [
+  generateUnit("arms1", "U", "BICEPS"),
+  generateUnit("arms2", "U", "TRICEPS"),
+  generateUnit("arms3", "U", "SHOULDER_FRONT"),
+];
+
+/**
+ * Builds three big upper body units.
+ *
+ * generateBigUpperUnits() → [generateUnit("push", "U", "CHEST"), generateUnit("pull", "U", "LATISSIMUS"), generateUnit("back", "U", "UPPER_BACK")]
+ */
+const generateBigUpperUnits = () => [
+  generateUnit("push", "U", "CHEST"),
+  generateUnit("pull", "U", "LATISSIMUS"),
+  generateUnit("back", "U", "UPPER_BACK"),
+];
+
+/**
  * Lists the region of each unit, "X" for a unit without a region.
  *
- * toRegionKeys([generateUnit("legs", "L", "GLUTES"), generateUnit("core", "C", "OBLIQUES")])
+ * listUnitRegionKeys([generateUnit("legs", "L", "GLUTES"), generateUnit("core", "C", "OBLIQUES")])
  * → "L C"
  */
-const toRegionKeys = (units: ExercisePair[]) =>
+const listUnitRegionKeys = (units: ExercisePair[]) =>
   units
     .map((unit) => getTagValue(unit.first.branchTags, "REGION"))
     .map(
@@ -77,41 +110,37 @@ const toRegionKeys = (units: ExercisePair[]) =>
     )
     .join(" ");
 
-const toBranchIds = (units: ExercisePair[]) =>
+/**
+ * Lists the branch ID of the first exercise of each unit.
+ *
+ * listUnitBranchIds([generateUnit("legs", "L"), generateUnit("core", "C")]) → ["legs", "core"]
+ */
+const listUnitBranchIds = (units: ExercisePair[]) =>
   units.map((unit) => unit.first.branchId);
 
 /**
- * Orders the units with one draw of the given value per unit.
+ * Orders the units with one draw of the given value per unit, without lower
+ * body first and without a previous exercise unless given.
  *
- * orderWithDraws([legs, core], { lowerBodyFirst: false }, 0) draws 0 twice
+ * orderExerciseUnitsWithDraws([legs, core], { draw: 0.99 }) draws 0.99 twice
  */
-const orderWithDraws = (
+const orderExerciseUnitsWithDraws = (
   units: ExercisePair[],
-  order: { lowerBodyFirst: boolean; previousExerciseId?: string },
-  draw = 0,
+  {
+    lowerBodyFirst = false,
+    previousExerciseId,
+    draw = 0,
+  }: {
+    lowerBodyFirst?: boolean;
+    previousExerciseId?: string;
+    draw?: number;
+  } = {},
 ) =>
   orderExerciseUnits(
     units,
-    order,
+    { lowerBodyFirst, previousExerciseId },
     generateSequenceRandom(units.map(() => draw)),
   );
-
-const generateBigLegUnits = () => [
-  generateUnit("legs1", "L", "GLUTES"),
-  generateUnit("legs2", "L", "QUADRICEPS"),
-  generateUnit("legs3", "L", "HAMSTRINGS"),
-];
-const generateSmallUpperUnits = () => [
-  generateUnit("arms1", "U", "BICEPS"),
-  generateUnit("arms2", "U", "TRICEPS"),
-  generateUnit("arms3", "U", "SHOULDER_FRONT"),
-];
-const generateBigUpperUnits = () => [
-  generateUnit("push", "U", "CHEST"),
-  generateUnit("pull", "U", "LATISSIMUS"),
-  generateUnit("back", "U", "UPPER_BACK"),
-];
-const noPrevious = { lowerBodyFirst: false };
 
 describe("exerciseOrder: random draw", () => {
   it("draws once per unit and picks among the remaining candidates by the draw", () => {
@@ -122,51 +151,42 @@ describe("exerciseOrder: random draw", () => {
         generateUnit("push", "U", "CHEST"),
         generateUnit("pull", "U", "LATISSIMUS"),
       ],
-      noPrevious,
+      { lowerBodyFirst: false },
       random,
     );
 
-    expect(toBranchIds(orderedUnits)).toEqual(["pull", "push"]);
+    expect(listUnitBranchIds(orderedUnits)).toEqual(["pull", "push"]);
     expect(random).toHaveBeenCalledTimes(2);
   });
 });
 
 describe("exerciseOrder: body region rotation", () => {
   it("rotates full body, lower body and upper body", () => {
-    const orderedUnits = orderWithDraws(
-      [
-        generateUnit("full", "F", "GLUTES"),
-        generateUnit("lower", "L", "QUADRICEPS"),
-        generateUnit("upper1", "U", "CHEST"),
-        generateUnit("upper2", "U", "LATISSIMUS"),
-      ],
-      noPrevious,
-    );
-    expect(toRegionKeys(orderedUnits)).toBe("F L U U");
+    const orderedUnits = orderExerciseUnitsWithDraws([
+      generateUnit("full", "F", "GLUTES"),
+      generateUnit("lower", "L", "QUADRICEPS"),
+      generateUnit("upper1", "U", "CHEST"),
+      generateUnit("upper2", "U", "LATISSIMUS"),
+    ]);
+    expect(listUnitRegionKeys(orderedUnits)).toBe("F L U U");
   });
 
   it("changes the body region after each unit when another region is left", () => {
-    const orderedUnits = orderWithDraws(
-      [
-        generateUnit("upper", "U", "CHEST"),
-        generateUnit("lower1", "L", "GLUTES"),
-        generateUnit("lower2", "L", "QUADRICEPS"),
-      ],
-      noPrevious,
-    );
-    expect(toRegionKeys(orderedUnits)).toBe("L U L");
+    const orderedUnits = orderExerciseUnitsWithDraws([
+      generateUnit("upper", "U", "CHEST"),
+      generateUnit("lower1", "L", "GLUTES"),
+      generateUnit("lower2", "L", "QUADRICEPS"),
+    ]);
+    expect(listUnitRegionKeys(orderedUnits)).toBe("L U L");
   });
 
   it("avoids the same primary muscle in the directly following unit", () => {
-    const orderedUnits = orderWithDraws(
-      [
-        generateUnit("lowerChest", "L", "CHEST"),
-        generateUnit("upperChest", "U", "CHEST"),
-        generateUnit("upperLat", "U", "LATISSIMUS"),
-      ],
-      noPrevious,
-    );
-    expect(toBranchIds(orderedUnits)).toEqual([
+    const orderedUnits = orderExerciseUnitsWithDraws([
+      generateUnit("lowerChest", "L", "CHEST"),
+      generateUnit("upperChest", "U", "CHEST"),
+      generateUnit("upperLat", "U", "LATISSIMUS"),
+    ]);
+    expect(listUnitBranchIds(orderedUnits)).toEqual([
       "lowerChest",
       "upperLat",
       "upperChest",
@@ -175,56 +195,58 @@ describe("exerciseOrder: body region rotation", () => {
 });
 
 describe("exerciseOrder: region alternation before muscle size", () => {
-  it("alternates legs and core under upper body soreness for any draw", () => {
-    const units = [
-      ...generateBigLegUnits(),
-      generateUnit("legs4", "L", "GLUTES"),
-      generateUnit("legs5", "L", "QUADRICEPS"),
-      generateUnit("legs6", "L", "HAMSTRINGS"),
-      ...generateCoreUnits(6),
-    ];
-    expect(toRegionKeys(orderWithDraws(units, noPrevious, 0.99))).toBe(
-      "L C L C L C L C L C L C",
-    );
-  });
-
-  it("alternates upper body and core under lower body soreness for any draw", () => {
-    const orderedUnits = orderWithDraws(
-      [
-        ...generateSmallUpperUnits(),
-        ...generateBigUpperUnits(),
+  it.each([0, 0.99])(
+    "alternates legs and core under upper body soreness with draw %s",
+    (draw) => {
+      const units = [
+        ...generateBigLegUnits(),
+        generateUnit("legs4", "L", "GLUTES"),
+        generateUnit("legs5", "L", "QUADRICEPS"),
+        generateUnit("legs6", "L", "HAMSTRINGS"),
         ...generateCoreUnits(6),
-      ],
-      noPrevious,
-      0.99,
-    );
-    expect(toRegionKeys(orderedUnits)).toBe("U C U C U C U C U C U C");
-    const upperIds = toBranchIds(
-      orderedUnits.filter((_, index) => index % 2 === 0),
-    );
-    expect(upperIds.slice(0, 3).sort()).toEqual(["back", "pull", "push"]);
-  });
+      ];
+      expect(
+        listUnitRegionKeys(orderExerciseUnitsWithDraws(units, { draw })),
+      ).toBe("L C L C L C L C L C L C");
+    },
+  );
+
+  it.each([0, 0.99])(
+    "alternates upper body and core under lower body soreness with draw %s",
+    (draw) => {
+      const orderedUnits = orderExerciseUnitsWithDraws(
+        [
+          ...generateSmallUpperUnits(),
+          ...generateBigUpperUnits(),
+          ...generateCoreUnits(6),
+        ],
+        { draw },
+      );
+      expect(listUnitRegionKeys(orderedUnits)).toBe("U C U C U C U C U C U C");
+      const upperIds = listUnitBranchIds(
+        orderedUnits.filter((_, index) => index % 2 === 0),
+      );
+      expect(upperIds.slice(0, 3).sort()).toEqual(["back", "pull", "push"]);
+    },
+  );
 
   it("alternates regions even when one region holds only small muscle groups", () => {
-    const orderedUnits = orderWithDraws(
-      [...generateBigLegUnits(), ...generateSmallUpperUnits()],
-      noPrevious,
-    );
-    expect(toRegionKeys(orderedUnits)).toBe("L U L U L U");
+    const orderedUnits = orderExerciseUnitsWithDraws([
+      ...generateBigLegUnits(),
+      ...generateSmallUpperUnits(),
+    ]);
+    expect(listUnitRegionKeys(orderedUnits)).toBe("L U L U L U");
   });
 
   it("orders big muscle groups before small ones inside each region", () => {
-    const orderedUnits = orderWithDraws(
-      [
-        generateUnit("smallLegs1", "L", "CALVES"),
-        generateUnit("smallLegs2", "L", "ADDUCTORS"),
-        ...generateSmallUpperUnits().slice(0, 2),
-        ...generateBigLegUnits().slice(0, 2),
-        ...generateBigUpperUnits().slice(0, 2),
-      ],
-      noPrevious,
-    );
-    expect(toBranchIds(orderedUnits)).toEqual([
+    const orderedUnits = orderExerciseUnitsWithDraws([
+      generateUnit("smallLegs1", "L", "CALVES"),
+      generateUnit("smallLegs2", "L", "ADDUCTORS"),
+      ...generateSmallUpperUnits().slice(0, 2),
+      ...generateBigLegUnits().slice(0, 2),
+      ...generateBigUpperUnits().slice(0, 2),
+    ]);
+    expect(listUnitBranchIds(orderedUnits)).toEqual([
       "legs1",
       "push",
       "legs2",
@@ -237,54 +259,46 @@ describe("exerciseOrder: region alternation before muscle size", () => {
   });
 
   it("prefers a big muscle group over a fresh small one inside a region", () => {
-    const orderedUnits = orderWithDraws(
-      [
-        generateUnit("chest1", "U", "CHEST"),
-        generateUnit("chest2", "U", "CHEST", "TRICEPS"),
-        generateUnit("biceps", "U", "BICEPS"),
-      ],
-      noPrevious,
-    );
-    expect(toBranchIds(orderedUnits)).toEqual(["chest1", "chest2", "biceps"]);
+    const orderedUnits = orderExerciseUnitsWithDraws([
+      generateUnit("chest1", "U", "CHEST"),
+      generateUnit("chest2", "U", "CHEST", "TRICEPS"),
+      generateUnit("biceps", "U", "BICEPS"),
+    ]);
+    expect(listUnitBranchIds(orderedUnits)).toEqual([
+      "chest1",
+      "chest2",
+      "biceps",
+    ]);
   });
 
   it("opens the skill with a big muscle group", () => {
-    const orderedUnits = orderWithDraws(
-      [
-        generateUnit("calves", "L", "CALVES"),
-        generateUnit("adductors", "L", "ADDUCTORS"),
-        ...generateBigUpperUnits().slice(0, 2),
-      ],
-      noPrevious,
-    );
-    expect(toRegionKeys(orderedUnits)).toBe("U L U L");
+    const orderedUnits = orderExerciseUnitsWithDraws([
+      generateUnit("calves", "L", "CALVES"),
+      generateUnit("adductors", "L", "ADDUCTORS"),
+      ...generateBigUpperUnits().slice(0, 2),
+    ]);
+    expect(listUnitRegionKeys(orderedUnits)).toBe("U L U L");
   });
 
   it("keeps big muscle groups before small ones across regions", () => {
-    const orderedUnits = orderWithDraws(
-      [
-        generateUnit("core", "C", "RECTUS_ABDOMINIS"),
-        generateUnit("upper", "U", "CHEST"),
-      ],
-      noPrevious,
-    );
-    expect(toBranchIds(orderedUnits)).toEqual(["upper", "core"]);
+    const orderedUnits = orderExerciseUnitsWithDraws([
+      generateUnit("core", "C", "RECTUS_ABDOMINIS"),
+      generateUnit("upper", "U", "CHEST"),
+    ]);
+    expect(listUnitBranchIds(orderedUnits)).toEqual(["upper", "core"]);
   });
 
   it("puts units without a body region last", () => {
-    const orderedUnits = orderWithDraws(
-      [
-        generateUnit("untagged", null, "GLUTES"),
-        ...generateBigLegUnits().slice(0, 2),
-        generateSmallUpperUnits()[0],
-      ],
-      noPrevious,
-    );
-    expect(toRegionKeys(orderedUnits)).toBe("L U L X");
+    const orderedUnits = orderExerciseUnitsWithDraws([
+      generateUnit("untagged", null, "GLUTES"),
+      ...generateBigLegUnits().slice(0, 2),
+      generateSmallUpperUnits()[0],
+    ]);
+    expect(listUnitRegionKeys(orderedUnits)).toBe("L U L X");
   });
 
   it("puts lower body units first in max strength", () => {
-    const orderedUnits = orderWithDraws(
+    const orderedUnits = orderExerciseUnitsWithDraws(
       [
         generateBigUpperUnits()[0],
         generateUnit("calves", "L", "CALVES"),
@@ -292,7 +306,7 @@ describe("exerciseOrder: region alternation before muscle size", () => {
       ],
       { lowerBodyFirst: true },
     );
-    expect(toBranchIds(orderedUnits)).toEqual([
+    expect(listUnitBranchIds(orderedUnits)).toEqual([
       "legs1",
       "legs2",
       "calves",
@@ -303,15 +317,15 @@ describe("exerciseOrder: region alternation before muscle size", () => {
 
 describe("exerciseOrder: skill boundary", () => {
   it("opens with another big unit when the first one ended the previous skill", () => {
-    const orderedUnits = orderWithDraws(
+    const orderedUnits = orderExerciseUnitsWithDraws(
       [
         generateUnit("calves", "L", "CALVES"),
         generateUnit("adductors", "L", "ADDUCTORS"),
         ...generateBigUpperUnits().slice(0, 2),
       ],
-      { lowerBodyFirst: false, previousExerciseId: "epush" },
+      { previousExerciseId: "epush" },
     );
-    expect(toBranchIds(orderedUnits)).toEqual([
+    expect(listUnitBranchIds(orderedUnits)).toEqual([
       "pull",
       "calves",
       "push",
@@ -320,13 +334,13 @@ describe("exerciseOrder: skill boundary", () => {
   });
 
   it("opens with a small unit when the only big unit ended the previous skill", () => {
-    const orderedUnits = orderWithDraws(
+    const orderedUnits = orderExerciseUnitsWithDraws(
       [
         generateUnit("calves", "L", "CALVES"),
         generateUnit("adductors", "L", "ADDUCTORS"),
         generateBigUpperUnits()[0],
       ],
-      { lowerBodyFirst: false, previousExerciseId: "epush" },
+      { previousExerciseId: "epush" },
     );
     expect(orderedUnits[0].first.branchId).toBe("calves");
   });
@@ -345,12 +359,12 @@ describe("exerciseOrder: both exercises of a superset pair count", () => {
       ]),
     };
 
-    const orderedUnits = orderWithDraws(
+    const orderedUnits = orderExerciseUnitsWithDraws(
       [pushPullPair, generateUnit("back", "U", "UPPER_BACK")],
-      { lowerBodyFirst: false, previousExerciseId: "epull" },
+      { previousExerciseId: "epull" },
     );
 
-    expect(toBranchIds(orderedUnits)).toEqual(["back", "push"]);
+    expect(listUnitBranchIds(orderedUnits)).toEqual(["back", "push"]);
   });
 
   it("avoids a pair whose second exercise trains the body region just trained", () => {
@@ -365,16 +379,13 @@ describe("exerciseOrder: both exercises of a superset pair count", () => {
       ]),
     };
 
-    const orderedUnits = orderWithDraws(
-      [
-        generateUnit("legs", "L", "QUADRICEPS"),
-        chestGlutesPair,
-        generateUnit("pull", "U", "LATISSIMUS"),
-      ],
-      noPrevious,
-    );
+    const orderedUnits = orderExerciseUnitsWithDraws([
+      generateUnit("legs", "L", "QUADRICEPS"),
+      chestGlutesPair,
+      generateUnit("pull", "U", "LATISSIMUS"),
+    ]);
 
-    expect(toBranchIds(orderedUnits)).toEqual(["legs", "pull", "push"]);
+    expect(listUnitBranchIds(orderedUnits)).toEqual(["legs", "pull", "push"]);
   });
 });
 

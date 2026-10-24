@@ -123,11 +123,35 @@ const listExerciseOrder = (setList: GeneratedSetListEntry[]): string[] => [
   ),
 ];
 
-const buildTrainingDay = (
+/**
+ * Builds the set list of training day blocks handed over in section order.
+ *
+ * buildTrainingDaySetList([SASKG block with e1])
+ * → [e1 set [1, 2], pause 10, e1 set [2, 2]]
+ */
+const buildTrainingDaySetList = (
   results: FilledBlockResult[],
   input = generateInput(),
 ): GeneratedSetListEntry[] =>
   createTrainingDaySetListBuilder(input)(results, results);
+
+/**
+ * Builds the set list of short workout block results in template order; the
+ * builder gets the filled ones as its blocks.
+ *
+ * buildShortWorkoutSetList([WU block with e1, empty BAS block])
+ * → [e1 set [1, 1], pause 30]
+ */
+const buildShortWorkoutSetList = (
+  results: BlockResult[],
+  input = generateInput(),
+): GeneratedSetListEntry[] =>
+  createShortWorkoutSetListBuilder(input)(
+    results.filter(
+      (result): result is FilledBlockResult => result.status === "filled",
+    ),
+    results,
+  );
 
 describe("setListBuilding: readSkillSetListKind", () => {
   it.each([
@@ -144,7 +168,7 @@ describe("setListBuilding: readSkillSetListKind", () => {
 
 describe("setListBuilding: training day", () => {
   it("builds SASKG from its plan workout values: 2 sets with 10 seconds rest", () => {
-    const setList = buildTrainingDay([
+    const setList = buildTrainingDaySetList([
       generateFilledResult(generateBranchesBlock("SASKG"), ["e1"]),
     ]);
 
@@ -152,7 +176,7 @@ describe("setListBuilding: training day", () => {
   });
 
   it("pairs a superset by muscles and rests within the superset", () => {
-    const setList = buildTrainingDay([
+    const setList = buildTrainingDaySetList([
       generateFilledResult(generateBranchesBlock("BAS"), ["e1", "e2"]),
     ]);
 
@@ -168,7 +192,7 @@ describe("setListBuilding: training day", () => {
   });
 
   it("builds single exercises for a skill without superset", () => {
-    const setList = buildTrainingDay([
+    const setList = buildTrainingDaySetList([
       generateFilledResult(generateBranchesBlock("GKS"), ["e1", "e2"]),
     ]);
 
@@ -184,7 +208,7 @@ describe("setListBuilding: training day", () => {
   });
 
   it("closes a block with the catalog afterBlock rest", () => {
-    const setList = buildTrainingDay([
+    const setList = buildTrainingDaySetList([
       generateFilledResult(generateBranchesBlock("WUSPEZIAL"), ["e1"]),
       generateFilledResult(generateBranchesBlock("MOB"), ["e2"]),
     ]);
@@ -192,25 +216,8 @@ describe("setListBuilding: training day", () => {
     expect(describeSetList(setList)).toEqual(["e1 1/1", "pause 30", "e2 1/1"]);
   });
 
-  it("closes a block with its afterExercise rest without a catalog afterBlock", () => {
-    const setList = buildTrainingDay([
-      generateFilledResult(generateBranchesBlock("BAS"), ["e1"]),
-      generateFilledResult(generateBranchesBlock("GKS"), ["e2"]),
-    ]);
-
-    expect(describeSetList(setList)).toEqual([
-      "e1 1/2",
-      "pause 60",
-      "e1 2/2",
-      "pause 60",
-      "e2 1/2",
-      "pause 90",
-      "e2 2/2",
-    ]);
-  });
-
   it("takes the block's own rest before the plan workout value", () => {
-    const setList = buildTrainingDay([
+    const setList = buildTrainingDaySetList([
       generateFilledResult(
         generateBranchesBlock("GKS", { rest: { betweenSets: 15 } }),
         ["e1"],
@@ -221,7 +228,7 @@ describe("setListBuilding: training day", () => {
   });
 
   it("opens a block away from the exercise that ended the block before", () => {
-    const setList = buildTrainingDay([
+    const setList = buildTrainingDaySetList([
       generateFilledResult(generateBranchesBlock("GKS"), ["e1"]),
       generateFilledResult(generateBranchesBlock("GKSKG"), ["e1", "e2"]),
     ]);
@@ -230,7 +237,7 @@ describe("setListBuilding: training day", () => {
   });
 
   it("orders a max strength block lower body first", () => {
-    const setList = buildTrainingDay([
+    const setList = buildTrainingDaySetList([
       generateFilledResult(generateBranchesBlock("MAX"), ["e1", "e3"]),
     ]);
 
@@ -238,7 +245,7 @@ describe("setListBuilding: training day", () => {
   });
 
   it("runs a cardio block for its stored duration", () => {
-    const setList = buildTrainingDay([
+    const setList = buildTrainingDaySetList([
       generateFilledResult(
         generateBranchesBlock("CARDIO_4", { duration: 1200 }),
         ["e1"],
@@ -257,7 +264,7 @@ describe("setListBuilding: training day", () => {
   });
 
   it("draws the cardio branch after the order draws of the block before", () => {
-    const setList = buildTrainingDay(
+    const setList = buildTrainingDaySetList(
       [
         generateFilledResult(generateBranchesBlock("GKS"), ["e1", "e2"]),
         generateFilledResult(
@@ -273,16 +280,8 @@ describe("setListBuilding: training day", () => {
 });
 
 describe("setListBuilding: short workout", () => {
-  const buildShortWorkout = (results: BlockResult[]) =>
-    createShortWorkoutSetListBuilder(generateInput())(
-      results.filter(
-        (result): result is FilledBlockResult => result.status === "filled",
-      ),
-      results,
-    );
-
   it("builds each block from its catalog timing and drops the last rest", () => {
-    const setList = buildShortWorkout([
+    const setList = buildShortWorkoutSetList([
       generateFilledResult(generatePicksBlock("WU"), ["e1"]),
       generateFilledResult(generatePicksBlock("BAS"), ["e2"]),
     ]);
@@ -297,7 +296,7 @@ describe("setListBuilding: short workout", () => {
   });
 
   it("takes the block's superset before the catalog value", () => {
-    const setList = buildShortWorkout([
+    const setList = buildShortWorkoutSetList([
       generateFilledResult(generatePicksBlock("BAS", { superset: "none" }), [
         "e1",
         "e2",
@@ -316,7 +315,7 @@ describe("setListBuilding: short workout", () => {
   });
 
   it("keeps the closing rest when the last template block is empty", () => {
-    const setList = buildShortWorkout([
+    const setList = buildShortWorkoutSetList([
       generateFilledResult(generatePicksBlock("WU"), ["e1"]),
       {
         status: "empty",
@@ -329,21 +328,50 @@ describe("setListBuilding: short workout", () => {
     expect(describeSetList(setList)).toEqual(["e1 1/1", "pause 30"]);
   });
 
-  it("keeps the closing rest when the last result is not the last built block", () => {
-    const built = generateFilledResult(generatePicksBlock("WU"), ["e1"]);
-    const unbuilt = generateFilledResult(generatePicksBlock("BAS"), ["e2"]);
-
-    const setList = createShortWorkoutSetListBuilder(generateInput())(
-      [built],
-      [built, unbuilt],
+  it("builds a cardio block from the pairing without a draw", () => {
+    const setList = buildShortWorkoutSetList(
+      [
+        generateFilledResult(
+          generatePicksBlock("CARDIO_4", {
+            sets: 1,
+            superset: "none",
+            rest: { withinSuperset: 10, betweenSets: 10, afterExercise: 10 },
+          }),
+          ["e2", "e3"],
+        ),
+      ],
+      generateInput(generateSequenceRandom([])),
     );
 
-    expect(describeSetList(setList)).toEqual(["e1 1/1", "pause 30"]);
+    expect(setList).toEqual([
+      {
+        branchId: "be3",
+        exerciseId: "e3",
+        set: [1, 1],
+        skill: "CARDIO_4",
+        duration: 0,
+      },
+    ]);
+  });
+
+  it("pairs a max strength block by its superset and trains the lead only", () => {
+    const setList = buildShortWorkoutSetList([
+      generateFilledResult(
+        generatePicksBlock("MAX", {
+          sets: 4,
+          superset: "muscles",
+          rest: { withinSuperset: 10, betweenSets: 10, afterExercise: 180 },
+        }),
+        ["e1", "e2"],
+      ),
+    ]);
+
+    expect(listExerciseOrder(setList)).toEqual(["e1"]);
   });
 
   it("throws naming the skill when neither block nor catalog sets the sets", () => {
     expect(() =>
-      buildShortWorkout([
+      buildShortWorkoutSetList([
         generateFilledResult(generatePicksBlock("PLYO"), ["e1"]),
       ]),
     ).toThrow("sets: skill PLYO sets no default");

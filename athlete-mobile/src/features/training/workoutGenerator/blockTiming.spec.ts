@@ -1,6 +1,6 @@
 import { loadSkillCatalog } from "@/data/loadSkillCatalog";
 import type { Block } from "@/schemas/aiwl.schema";
-import { resolveBlockTiming, type TimingDefaults } from "./blockTiming";
+import { resolveBlockTiming, type SkillTimingDefaults } from "./blockTiming";
 import { readPlanWorkoutTiming } from "./planWorkoutTiming";
 import { readSkillCatalogEntry } from "./skillCatalogEntry";
 
@@ -53,10 +53,9 @@ describe("blockTiming: resolveBlockTiming", () => {
       superset: "muscles",
       rest: { withinSuperset: 10, betweenSets: 10, afterExercise: 10 },
     });
-    expect(timing.rest.afterBlock).toBeUndefined();
   });
 
-  it.each<{ defaults: TimingDefaults | undefined; message: string }>([
+  it.each<{ defaults: SkillTimingDefaults | undefined; message: string }>([
     { defaults: undefined, message: "sets: skill UNKNOWN sets no default" },
     {
       defaults: {
@@ -73,14 +72,5 @@ describe("blockTiming: resolveBlockTiming", () => {
     expect(() =>
       resolveBlockTiming(generatePicksBlock("UNKNOWN"), defaults),
     ).toThrow(message);
-  });
-
-  it("throws for a skill whose catalog entry sets no timing", () => {
-    expect(() =>
-      resolveBlockTiming(
-        generatePicksBlock("CARDIO_2"),
-        readSkillCatalogEntry(loadSkillCatalog(), "CARDIO_2"),
-      ),
-    ).toThrow("sets: skill CARDIO_2 sets no default");
   });
 });

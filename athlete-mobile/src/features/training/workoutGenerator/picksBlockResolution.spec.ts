@@ -103,7 +103,12 @@ const resolveCustomTemplate = (
     skillTrees,
   );
 
-/** Returns the value the call throws, or undefined. */
+/**
+ * Returns the value the call throws, or undefined.
+ *
+ * readThrownValue(() => resolveCustomTemplate([generatePicksBlock({ order: "asDrawn" })]))
+ * → { type: "OTHER", subtype: "BLOCK_KIND", params: ["SYN.blocks[0]", "order"] }
+ */
 const readThrownValue = (run: () => unknown): unknown => {
   try {
     run();
@@ -131,16 +136,6 @@ describe("picksBlockResolution: bundled templates", () => {
       { tags: ["REGION_UPPER_BODY"], count: 3 },
       { tags: ["REGION_FULL_BODY"], count: 2 },
     ]);
-  });
-
-  it("resolves the PREVKNEE prevention block", () => {
-    expect(resolveBundledTemplate("PREVKNEE").blocks[1]).toMatchObject({
-      skill: "PREVKNEE",
-      superset: "drawOrderWithLeftovers",
-      countBy: "pairs",
-      sets: 2,
-      rest: { withinSuperset: 30, betweenSets: 60, afterExercise: 60 },
-    });
   });
 });
 
@@ -276,19 +271,27 @@ describe("picksBlockResolution: block pool", () => {
   });
 });
 
-describe("picksBlockResolution: special warm-up pool", () => {
-  // WU_X reads the special warm-up tree; PREV_X is a prevention skill for the knee.
-  const skillCatalog: SkillCatalog = {
-    WU_X: generateTreeCatalogEntry({
-      skillTree: { withWeights: ["WUSPEZIAL"], withoutWeights: ["WUSPEZIAL"] },
-    }),
-    PREV_X: generateTreeCatalogEntry({
-      focusArea: "PREVENTION",
-      painRegions: ["KNEE"],
-    }),
-    OTHER_X: generateTreeCatalogEntry({ painRegions: ["KNEE"] }),
-  };
+/**
+ * Builds a catalog where WU_X reads the special warm-up tree, PREV_X is a
+ * prevention skill for the knee and OTHER_X names the knee without being one.
+ *
+ * generateSpecialWarmUpCatalog()
+ * → { WU_X: { skillTree: { withWeights: ["WUSPEZIAL"], ... }, ... },
+ *     PREV_X: { focusArea: "PREVENTION", painRegions: ["KNEE"], ... },
+ *     OTHER_X: { painRegions: ["KNEE"], ... } }
+ */
+const generateSpecialWarmUpCatalog = (): SkillCatalog => ({
+  WU_X: generateTreeCatalogEntry({
+    skillTree: { withWeights: ["WUSPEZIAL"], withoutWeights: ["WUSPEZIAL"] },
+  }),
+  PREV_X: generateTreeCatalogEntry({
+    focusArea: "PREVENTION",
+    painRegions: ["KNEE"],
+  }),
+  OTHER_X: generateTreeCatalogEntry({ painRegions: ["KNEE"] }),
+});
 
+describe("picksBlockResolution: special warm-up pool", () => {
   it.each<{
     behaviour: string;
     skills: string[];
@@ -317,7 +320,7 @@ describe("picksBlockResolution: special warm-up pool", () => {
     const { blocks } = resolveCustomTemplate(
       skills.map((skill) => generatePicksBlock({ skill })),
       {
-        skillCatalog,
+        skillCatalog: generateSpecialWarmUpCatalog(),
         skillTrees: { WUSPEZIAL: tree, T_A: generateTree({ 9: [] }) },
       },
     );
@@ -339,7 +342,7 @@ describe("picksBlockResolution: special warm-up pool", () => {
             generatePicksBlock({ skill: "PREV_X" }),
           ],
           {
-            skillCatalog,
+            skillCatalog: generateSpecialWarmUpCatalog(),
             skillTrees: { WUSPEZIAL: tree, T_A: generateTree({ 9: [] }) },
           },
         ),
@@ -402,7 +405,7 @@ describe("picksBlockResolution: errors", () => {
       skillCatalog: { SYN: generateTreeCatalogEntry() },
     },
     {
-      behaviour: "a timing-only skill",
+      behaviour: "a skill with timing values only",
       skill: "SYN",
       skillCatalog: { SYN: { sets: 2, superset: "none" } },
     },

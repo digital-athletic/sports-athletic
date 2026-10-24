@@ -139,7 +139,10 @@ const overridesExerciseValue = (
 
 const readBoundValue = (
   bound: ValueBound,
-  { intensity, exercise }: Pick<ExerciseValueContext, "exercise"> & {
+  {
+    intensity,
+    exercise,
+  }: Pick<ExerciseValueContext, "exercise"> & {
     intensity: IntensityData;
   },
   valueName: TrainingParameterType,

@@ -1,3 +1,4 @@
+import { type AlertButton } from "@/common/Alert";
 import i18n from "@/i18n";
 import { type Template } from "@/schemas/aiwl.schema";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
@@ -7,6 +8,11 @@ import { OwnTrainingsList } from "./OwnTrainingsList";
 const mockNavigate = jest.fn();
 jest.mock("expo-router", () => ({
   router: { navigate: (...args: unknown[]) => mockNavigate(...args) },
+}));
+
+const mockAlert = jest.fn();
+jest.mock("@/common/Alert", () => ({
+  Alert: { alert: (...args: unknown[]) => mockAlert(...args) },
 }));
 
 // e.g. { aiwl: 1, id: "MY_CORE", name: { en: "My core", de: "Mein Rumpf" }, blocks: [{ kind: "picks", skill: "GKS", picks: [{ tags: [], count: 2 }] }] }
@@ -227,5 +233,224 @@ describe("OwnTrainingsList: navigation", () => {
       pathname: "/training/muscle-soreness",
       params: { type: saved.id },
     });
+  });
+});
+
+const DELETE_LABEL = "Delete";
+const DELETE_TITLE = "Delete training?";
+
+describe("OwnTrainingsList: delete", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+    jest.useRealTimers();
+  });
+
+  it("shows a delete button after a swipe to the left on a row", () => {
+    useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(generateCustomTemplate(), null);
+    const { getByTestId, getByRole } = render(
+      <OwnTrainingsList onImport={jest.fn()} importing={false} />,
+    );
+    const row = getByTestId("swipe-to-delete-row");
+
+    fireEvent(row, "startShouldSetResponderCapture", {
+      nativeEvent: { pageX: 300, pageY: 0 },
+    });
+    fireEvent(row, "responderMove", { nativeEvent: { pageX: 150, pageY: 0 } });
+    fireEvent(row, "responderRelease", {
+      nativeEvent: { pageX: 150, pageY: 0 },
+    });
+
+    expect(getByRole("button", { name: DELETE_LABEL })).toBeTruthy();
+  });
+
+  it("asks for confirmation with the training name when the delete button is pressed", () => {
+    useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(generateCustomTemplate(), null);
+    const { getByTestId, getByRole } = render(
+      <OwnTrainingsList onImport={jest.fn()} importing={false} />,
+    );
+    const row = getByTestId("swipe-to-delete-row");
+
+    fireEvent(row, "startShouldSetResponderCapture", {
+      nativeEvent: { pageX: 300, pageY: 0 },
+    });
+    fireEvent(row, "responderMove", { nativeEvent: { pageX: 150, pageY: 0 } });
+    fireEvent(row, "responderRelease", {
+      nativeEvent: { pageX: 150, pageY: 0 },
+    });
+    fireEvent.press(getByRole("button", { name: DELETE_LABEL }));
+
+    expect(mockAlert).toHaveBeenCalledTimes(1);
+    expect(mockAlert).toHaveBeenCalledWith(
+      DELETE_TITLE,
+      "My core will be removed from your trainings. You can import it again from its file.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: DELETE_LABEL,
+          style: "destructive",
+          onPress: expect.any(Function),
+        },
+      ],
+    );
+  });
+
+  it("offers a delete accessibility action on each row", () => {
+    useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(generateCustomTemplate(), null);
+    const { getByRole } = render(
+      <OwnTrainingsList onImport={jest.fn()} importing={false} />,
+    );
+
+    expect(
+      getByRole("button", { name: "My core" }).props.accessibilityActions,
+    ).toEqual([{ name: "delete", label: DELETE_LABEL }]);
+  });
+
+  it("asks for confirmation when the delete accessibility action runs", () => {
+    useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(generateCustomTemplate(), null);
+    const { getByRole } = render(
+      <OwnTrainingsList onImport={jest.fn()} importing={false} />,
+    );
+
+    fireEvent(getByRole("button", { name: "My core" }), "accessibilityAction", {
+      nativeEvent: { actionName: "delete" },
+    });
+
+    expect(mockAlert).toHaveBeenCalledTimes(1);
+    expect(mockAlert.mock.calls[0][0]).toBe(DELETE_TITLE);
+  });
+
+  it("removes the row and the stored training after the deletion is confirmed", () => {
+    const saved = useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(generateCustomTemplate(), null);
+    const { getByRole, queryByRole } = render(
+      <OwnTrainingsList onImport={jest.fn()} importing={false} />,
+    );
+
+    fireEvent(getByRole("button", { name: "My core" }), "accessibilityAction", {
+      nativeEvent: { actionName: "delete" },
+    });
+    const buttons: AlertButton[] = mockAlert.mock.calls[0][2];
+    act(() => {
+      buttons.find((button) => button.text === DELETE_LABEL)?.onPress?.();
+    });
+
+    expect(queryByRole("button", { name: "My core" })).toBeNull();
+    expect(
+      Object.hasOwn(useCustomWorkoutsStore.getState().workoutsById, saved.id),
+    ).toBe(false);
+  });
+
+  it("shows the empty message after the last training is deleted", () => {
+    useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(generateCustomTemplate(), null);
+    const { getByRole, getByText } = render(
+      <OwnTrainingsList onImport={jest.fn()} importing={false} />,
+    );
+
+    fireEvent(getByRole("button", { name: "My core" }), "accessibilityAction", {
+      nativeEvent: { actionName: "delete" },
+    });
+    const buttons: AlertButton[] = mockAlert.mock.calls[0][2];
+    act(() => {
+      buttons.find((button) => button.text === DELETE_LABEL)?.onPress?.();
+    });
+
+    expect(getByText(EMPTY_MESSAGE)).toBeTruthy();
+  });
+
+  it("keeps the other trainings after one is deleted", () => {
+    const { saveCustomWorkout } = useCustomWorkoutsStore.getState();
+    jest.spyOn(Date, "now").mockReturnValueOnce(1).mockReturnValueOnce(2);
+    saveCustomWorkout(
+      generateCustomTemplate({ id: "FIRST", name: { en: "First" } }),
+      null,
+    );
+    saveCustomWorkout(
+      generateCustomTemplate({ id: "SECOND", name: { en: "Second" } }),
+      null,
+    );
+    const { getByRole, getAllByRole } = render(
+      <OwnTrainingsList onImport={jest.fn()} importing={false} />,
+    );
+
+    fireEvent(getByRole("button", { name: "First" }), "accessibilityAction", {
+      nativeEvent: { actionName: "delete" },
+    });
+    const buttons: AlertButton[] = mockAlert.mock.calls[0][2];
+    act(() => {
+      buttons.find((button) => button.text === DELETE_LABEL)?.onPress?.();
+    });
+
+    const labels = getAllByRole("button").map(
+      (row) => row.props.accessibilityLabel,
+    );
+    expect(labels).toEqual(["Second"]);
+  });
+
+  it("keeps the row and the stored training after the deletion is cancelled", () => {
+    const saved = useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(generateCustomTemplate(), null);
+    const { getByRole } = render(
+      <OwnTrainingsList onImport={jest.fn()} importing={false} />,
+    );
+
+    fireEvent(getByRole("button", { name: "My core" }), "accessibilityAction", {
+      nativeEvent: { actionName: "delete" },
+    });
+    const buttons: AlertButton[] = mockAlert.mock.calls[0][2];
+    act(() => {
+      buttons.find((button) => button.text === "Cancel")?.onPress?.();
+    });
+
+    expect(getByRole("button", { name: "My core" })).toBeTruthy();
+    expect(
+      Object.hasOwn(useCustomWorkoutsStore.getState().workoutsById, saved.id),
+    ).toBe(true);
+  });
+
+  it("uses the german texts in german", async () => {
+    await act(() => i18n.changeLanguage("de"));
+    useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(generateCustomTemplate(), null);
+    const { getByRole } = render(
+      <OwnTrainingsList onImport={jest.fn()} importing={false} />,
+    );
+
+    fireEvent(
+      getByRole("button", { name: "Mein Rumpf" }),
+      "accessibilityAction",
+      { nativeEvent: { actionName: "delete" } },
+    );
+
+    expect(mockAlert).toHaveBeenCalledWith(
+      "Training löschen?",
+      "Mein Rumpf wird aus deinen Trainings entfernt. Du kannst es über die Datei erneut importieren.",
+      [
+        { text: "Abbrechen", style: "cancel" },
+        {
+          text: "Löschen",
+          style: "destructive",
+          onPress: expect.any(Function),
+        },
+      ],
+    );
   });
 });

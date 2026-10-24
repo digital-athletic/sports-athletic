@@ -341,6 +341,98 @@ describe("customWorkoutsStore: imported trainings", () => {
     });
   });
 
+  describe("deleteOwnCustomWorkout", () => {
+    it("removes an own entry by app id", () => {
+      const { result } = renderHook(() => useCustomWorkoutsStore());
+
+      let ownId = "";
+      act(() => {
+        ownId = result.current.saveCustomWorkout(
+          generateCustomTemplate(),
+          null,
+        ).id;
+      });
+      act(() => {
+        result.current.deleteOwnCustomWorkout(ownId);
+      });
+
+      expect(result.current.workoutsById).toEqual({});
+    });
+
+    it("keeps the other own entries", () => {
+      const { result } = renderHook(() => useCustomWorkoutsStore());
+
+      let firstId = "";
+      let secondId = "";
+      act(() => {
+        firstId = result.current.saveCustomWorkout(
+          generateCustomTemplate({ id: "A" }),
+          null,
+        ).id;
+        secondId = result.current.saveCustomWorkout(
+          generateCustomTemplate({ id: "B" }),
+          null,
+        ).id;
+      });
+      act(() => {
+        result.current.deleteOwnCustomWorkout(firstId);
+      });
+
+      expect(Object.keys(result.current.workoutsById)).toEqual([secondId]);
+    });
+
+    it("keeps a team entry with the given app id", () => {
+      const { result } = renderHook(() => useCustomWorkoutsStore());
+
+      let teamEntryId = "";
+      act(() => {
+        teamEntryId = result.current.saveCustomWorkout(
+          generateCustomTemplate(),
+          "team-1",
+        ).id;
+      });
+      act(() => {
+        result.current.deleteOwnCustomWorkout(teamEntryId);
+      });
+
+      expect(Object.keys(result.current.workoutsById)).toEqual([teamEntryId]);
+    });
+
+    it("leaves the store unchanged for an unknown app id", () => {
+      const { result } = renderHook(() => useCustomWorkoutsStore());
+
+      act(() => {
+        result.current.saveCustomWorkout(generateCustomTemplate(), null);
+      });
+      const before = result.current.workoutsById;
+      act(() => {
+        result.current.deleteOwnCustomWorkout("custom-unknown");
+      });
+
+      expect(result.current.workoutsById).toBe(before);
+    });
+
+    it("removes the entry from async storage", async () => {
+      const { result } = renderHook(() => useCustomWorkoutsStore());
+
+      let ownId = "";
+      act(() => {
+        ownId = result.current.saveCustomWorkout(
+          generateCustomTemplate(),
+          null,
+        ).id;
+      });
+      act(() => {
+        result.current.deleteOwnCustomWorkout(ownId);
+      });
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const raw = await AsyncStorage.getItem("custom-workouts-storage");
+      const persisted: unknown = raw ? JSON.parse(raw) : null;
+      expect(persisted).toMatchObject({ state: { workoutsById: {} } });
+    });
+  });
+
   describe("generateCustomWorkoutId", () => {
     it("returns a custom prefixed base36 id", () => {
       expect(generateCustomWorkoutId()).toMatch(/^custom-[0-9a-z]+$/);

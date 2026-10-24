@@ -37,6 +37,7 @@ type Actions = {
     template: Template,
     teamId: string | null,
   ) => CustomWorkout;
+  deleteOwnCustomWorkout: (id: string) => void;
   clearCustomWorkouts: () => void;
   setHasHydrated: (hydrated: boolean) => void;
 };
@@ -67,6 +68,20 @@ export const useCustomWorkoutsStore = create<CustomWorkoutsState>()(
           state.workoutsById[entry.id] = entry;
         });
         return entry;
+      },
+
+      deleteOwnCustomWorkout: (id) => {
+        const { workoutsById } = get();
+        const workout = Object.hasOwn(workoutsById, id)
+          ? workoutsById[id]
+          : undefined;
+        // Team trainings belong to the coaching team, so athletes can only delete their own.
+        if (workout?.teamId !== null) {
+          return;
+        }
+        set((state) => {
+          delete state.workoutsById[id];
+        });
       },
 
       clearCustomWorkouts: () =>

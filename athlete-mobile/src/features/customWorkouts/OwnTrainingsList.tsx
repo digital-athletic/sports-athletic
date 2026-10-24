@@ -1,3 +1,5 @@
+import { Alert } from "@/common/Alert";
+import { SwipeToDeleteRow } from "@/common/SwipeToDeleteRow";
 import { readLocalizedTemplateName } from "@/data/loadTemplates";
 import { EmptyTrainingListMessage } from "@/features/customWorkouts/EmptyTrainingListMessage";
 import { ColumnListRow } from "@/features/training/ColumnListRow";
@@ -47,31 +49,63 @@ export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
   onImport,
   importing,
 }) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const workoutsById = useCustomWorkoutsStore((state) => state.workoutsById);
+  const deleteOwnCustomWorkout = useCustomWorkoutsStore(
+    (state) => state.deleteOwnCustomWorkout,
+  );
   const workouts = listWorkoutsForTeam(workoutsById, null);
+  const deleteLabel = t("common.delete");
 
   if (workouts.length === 0) {
     return <EmptyOwnTrainings onImport={onImport} importing={importing} />;
   }
 
+  const confirmDeleteTraining = (id: string, name: string) =>
+    Alert.alert(
+      t("screens.home.additionalTrainings.deleteTrainingTitle"),
+      t("screens.home.additionalTrainings.deleteTrainingMessage", { name }),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: deleteLabel,
+          style: "destructive",
+          onPress: () => deleteOwnCustomWorkout(id),
+        },
+      ],
+    );
+
   return (
     <ScrollBox flex={1} backgroundColor="lightGrey1">
-      {workouts.map((workout) => (
-        <ColumnListRow
-          key={workout.id}
-          title={readLocalizedTemplateName(
-            workout.template.name,
-            i18n.language,
-          )}
-          onPress={() =>
-            router.navigate({
-              pathname: "/training/muscle-soreness",
-              params: { type: workout.id },
-            })
-          }
-        />
-      ))}
+      {workouts.map((workout) => {
+        const name = readLocalizedTemplateName(
+          workout.template.name,
+          i18n.language,
+        );
+        return (
+          <SwipeToDeleteRow
+            key={workout.id}
+            deleteLabel={deleteLabel}
+            onDelete={() => confirmDeleteTraining(workout.id, name)}
+          >
+            <ColumnListRow
+              title={name}
+              onPress={() =>
+                router.navigate({
+                  pathname: "/training/muscle-soreness",
+                  params: { type: workout.id },
+                })
+              }
+              accessibilityActions={[{ name: "delete", label: deleteLabel }]}
+              onAccessibilityAction={({ nativeEvent }) => {
+                if (nativeEvent.actionName === "delete") {
+                  confirmDeleteTraining(workout.id, name);
+                }
+              }}
+            />
+          </SwipeToDeleteRow>
+        );
+      })}
     </ScrollBox>
   );
 };

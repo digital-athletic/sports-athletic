@@ -5,12 +5,7 @@ import type {
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import { generateSequenceRandom } from "../../../../test/factories/sequenceRandom";
 import { generateValueExercise } from "../../../../test/factories/valueExercise";
-import {
-  isBuildablePair,
-  listOpposingMuscles,
-  pairBranchExercises,
-  pairCardioBranches,
-} from "./exercisePairing";
+import { listOpposingMuscles, pairBranchExercises } from "./exercisePairing";
 
 /**
  * Fakes a two sided branch reference with the exercise ID `e<id>`.
@@ -44,6 +39,22 @@ const generateOneSidedReference = (
 });
 
 /**
+ * Fakes three upper body references: chest and latissimus (big, opposing) and
+ * biceps (small).
+ *
+ * generateUpperBodyReferences().chest
+ * → { branchId: "c", exerciseId: "ec", branchTags: ["SIDE_BOTH", "MUSCLE_CHEST", "REGION_UPPER_BODY"] }
+ */
+const generateUpperBodyReferences = () => ({
+  chest: generateBranchReference("c", ["MUSCLE_CHEST", "REGION_UPPER_BODY"]),
+  latissimus: generateBranchReference("l", [
+    "MUSCLE_LATISSIMUS",
+    "REGION_UPPER_BODY",
+  ]),
+  biceps: generateBranchReference("b", ["MUSCLE_BICEPS", "REGION_UPPER_BODY"]),
+});
+
+/**
  * Builds a catalog exercise for each reference; a one sided one names its other
  * side `<exerciseId>Right`.
  *
@@ -60,23 +71,16 @@ const generateCatalog = (branches: BranchExerciseReference[]): ExerciseType[] =>
       : undefined,
   }));
 
-const toExerciseIds = (pairs: ExercisePair[]) =>
+/**
+ * Lists the exercise IDs of each pair.
+ *
+ * listPairExerciseIds([{ first: chest, second: latissimus }, { first: biceps }])
+ * → [["ec", "el"], ["eb"]]
+ */
+const listPairExerciseIds = (pairs: ExercisePair[]) =>
   pairs.map(({ first, second }) =>
     second ? [first.exerciseId, second.exerciseId] : [first.exerciseId],
   );
-
-const chest = generateBranchReference("c", [
-  "MUSCLE_CHEST",
-  "REGION_UPPER_BODY",
-]);
-const latissimus = generateBranchReference("l", [
-  "MUSCLE_LATISSIMUS",
-  "REGION_UPPER_BODY",
-]);
-const biceps = generateBranchReference("b", [
-  "MUSCLE_BICEPS",
-  "REGION_UPPER_BODY",
-]);
 
 describe("exercisePairing: listOpposingMuscles", () => {
   it.each([
@@ -94,6 +98,7 @@ describe("exercisePairing: listOpposingMuscles", () => {
 
 describe("exercisePairing: pairBranchExercises with muscle pairing", () => {
   it("pairs opposing muscles with one draw per partner", () => {
+    const { chest, latissimus } = generateUpperBodyReferences();
     const random = jest.fn(generateSequenceRandom([0]));
 
     const pairs = pairBranchExercises(
@@ -103,11 +108,12 @@ describe("exercisePairing: pairBranchExercises with muscle pairing", () => {
       random,
     );
 
-    expect(toExerciseIds(pairs)).toEqual([["el", "ec"]]);
+    expect(listPairExerciseIds(pairs)).toEqual([["el", "ec"]]);
     expect(random).toHaveBeenCalledTimes(1);
   });
 
   it("leads with big muscle groups and treats the inner thigh as small", () => {
+    const { chest, biceps } = generateUpperBodyReferences();
     const innerThigh = generateBranchReference("i", [
       "MUSCLE_INNER_THIGH",
       "REGION_LOWER_BODY",
@@ -121,7 +127,7 @@ describe("exercisePairing: pairBranchExercises with muscle pairing", () => {
       generateSequenceRandom([0]),
     );
 
-    expect(toExerciseIds(pairs)).toEqual([["ec", "ei"], ["eb"]]);
+    expect(listPairExerciseIds(pairs)).toEqual([["ec", "ei"], ["eb"]]);
   });
 
   it("pairs a one sided exercise with its other side and never as a partner", () => {
@@ -141,7 +147,7 @@ describe("exercisePairing: pairBranchExercises with muscle pairing", () => {
       generateSequenceRandom([]),
     );
 
-    expect(toExerciseIds(pairs)).toEqual([
+    expect(listPairExerciseIds(pairs)).toEqual([
       ["esquat"],
       ["elunge", "elungeRight"],
     ]);
@@ -151,6 +157,8 @@ describe("exercisePairing: pairBranchExercises with muscle pairing", () => {
 
 describe("exercisePairing: pairBranchExercises without muscle pairing", () => {
   it("keeps every exercise single, the last drawn first", () => {
+    const { chest, latissimus } = generateUpperBodyReferences();
+
     const pairs = pairBranchExercises(
       [chest, latissimus],
       generateCatalog([chest, latissimus]),
@@ -158,10 +166,12 @@ describe("exercisePairing: pairBranchExercises without muscle pairing", () => {
       generateSequenceRandom([]),
     );
 
-    expect(toExerciseIds(pairs)).toEqual([["el"], ["ec"]]);
+    expect(listPairExerciseIds(pairs)).toEqual([["el"], ["ec"]]);
   });
 
   it("drops a big muscle lead missing from the catalog and keeps a small one", () => {
+    const { chest, biceps } = generateUpperBodyReferences();
+
     const pairs = pairBranchExercises(
       [chest, biceps],
       [],
@@ -169,10 +179,11 @@ describe("exercisePairing: pairBranchExercises without muscle pairing", () => {
       generateSequenceRandom([]),
     );
 
-    expect(toExerciseIds(pairs)).toEqual([["eb"]]);
+    expect(listPairExerciseIds(pairs)).toEqual([["eb"]]);
   });
 
   it("drops a lead whose stored reference lacks an exercise ID", () => {
+    const { biceps } = generateUpperBodyReferences();
     const withoutExercise = {
       branchId: "x",
       branchTags: ["MUSCLE_BICEPS"],
@@ -185,7 +196,7 @@ describe("exercisePairing: pairBranchExercises without muscle pairing", () => {
       generateSequenceRandom([]),
     );
 
-    expect(toExerciseIds(pairs)).toEqual([["eb"]]);
+    expect(listPairExerciseIds(pairs)).toEqual([["eb"]]);
   });
 
   it("returns no pairs without branches", () => {
@@ -206,12 +217,12 @@ describe("exercisePairing: pairBranchExercises without muscle pairing", () => {
     const random = generateSequenceRandom([]);
 
     expect(
-      toExerciseIds(
+      listPairExerciseIds(
         pairBranchExercises(branches, catalog, "drawOrder", random),
       ),
     ).toEqual([["ea"], ["eo", "eoRight"], ["eb"], ["ep", "epRight"], ["ez"]]);
     expect(
-      toExerciseIds(
+      listPairExerciseIds(
         pairBranchExercises(
           branches,
           catalog,
@@ -223,10 +234,11 @@ describe("exercisePairing: pairBranchExercises without muscle pairing", () => {
   });
 
   it("pairs two exercises that follow each other in draw order", () => {
+    const { chest, latissimus, biceps } = generateUpperBodyReferences();
     const branches = [biceps, chest, latissimus];
 
     expect(
-      toExerciseIds(
+      listPairExerciseIds(
         pairBranchExercises(
           branches,
           generateCatalog(branches),
@@ -235,33 +247,5 @@ describe("exercisePairing: pairBranchExercises without muscle pairing", () => {
         ),
       ),
     ).toEqual([["eb", "ec"], ["el"]]);
-  });
-});
-
-describe("exercisePairing: pairCardioBranches", () => {
-  const run = { branchTags: ["CARDIO_RUN"], exerciseId: "run" };
-
-  it.each([
-    ["CARDIO_4", [{ first: run }]],
-    ["CARDIO_5", [{ first: run }]],
-    ["CARDIO_2", []],
-  ])("pairs the branches of %s", (skill, pairs) => {
-    expect(pairCardioBranches(skill, [run])).toEqual(pairs);
-  });
-});
-
-describe("exercisePairing: isBuildablePair", () => {
-  const exerciseMap = new Map(
-    generateCatalog([chest]).map((exercise) => [exercise.id, exercise]),
-  );
-  const pause = { ...latissimus, exerciseId: "-1" };
-
-  it.each<[string, ExercisePair, boolean]>([
-    ["a catalog exercise", { first: chest, second: latissimus }, true],
-    ["a pause lead", { first: pause }, false],
-    ["a lead missing from the catalog", { first: latissimus }, false],
-    ["a pause partner", { first: chest, second: pause }, false],
-  ])("reads %s", (_, pair, isBuildable) => {
-    expect(isBuildablePair(pair, exerciseMap)).toBe(isBuildable);
   });
 });

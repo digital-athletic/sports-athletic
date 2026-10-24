@@ -5,10 +5,6 @@ import type {
 } from "@/features/training/models/ExerciseBranch";
 import type { Superset } from "@/schemas/aiwl.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import type {
-  CardioBranchReference,
-  CardioExercisePair,
-} from "@/schemas/generator.schema";
 import { getTagValues } from "@/utils/tagUtils";
 import { isBigMuscleExercise } from "./muscleGroups";
 import { pickSupersetPartner } from "./supersetPartner";
@@ -211,6 +207,7 @@ const pairLeadsByMuscleSize = (pairing: LeadPairing): ExercisePair[] => {
  *   partner found.
  * - `none`: every exercise stays single.
  * A one sided lead always pairs with its other side.
+ * The caller resolves the block's `superset`, then the skill catalog entry's.
  */
 export const pairBranchExercises = (
   branches: BranchExerciseReference[],
@@ -234,19 +231,3 @@ export const pairBranchExercises = (
     small: branches.filter((entry) => !isBigMuscleExercise(entry)),
   });
 };
-
-/** CARDIO_4 and CARDIO_5 run their one given branch; other cardio skills pair nothing. */
-export const pairCardioBranches = (
-  skill: string,
-  branches: CardioBranchReference[],
-): CardioExercisePair[] =>
-  skill === "CARDIO_4" || skill === "CARDIO_5" ? [{ first: branches[0] }] : [];
-
-/** True when the set list builder builds the pair: no pause and a catalog lead. */
-export const isBuildablePair = (
-  pair: ExercisePair,
-  exerciseMap: Map<string, ExerciseType>,
-): boolean =>
-  pair.first.exerciseId !== "-1" &&
-  exerciseMap.has(pair.first.exerciseId) &&
-  pair.second?.exerciseId !== "-1";

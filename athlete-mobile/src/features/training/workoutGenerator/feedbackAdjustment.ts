@@ -1,13 +1,9 @@
-import { TagGroups } from "@/constants/tagGroups";
 import type { AdjustmentParameterType } from "@/features/training/models/AdjustmentParameter";
 import type {
   GenderTag,
   IntensityData,
 } from "@/features/training/models/Intensity";
-import {
-  DEFAULT_MAX_VALUES,
-  type MaxValuesType,
-} from "@/features/training/models/MaxValues";
+import type { MaxValuesType } from "@/features/training/models/MaxValues";
 import { isTrainingLevel } from "@/schemas/common.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type {
@@ -16,8 +12,8 @@ import type {
   ExerciseValuesData,
   FeedbackAdjustment,
 } from "@/schemas/generator.schema";
-import { getTagValues } from "@/utils/tagUtils";
 import { readExerciseFMax } from "./exerciseFMax";
+import { isWeightedExercise } from "./exerciseValues";
 import {
   clampValueToStartAndTarget,
   type ExerciseValueContext,
@@ -80,11 +76,10 @@ const hasWeightValue = (
   exercise: ExerciseType,
   values: ExerciseValuesData,
 ): values is ExerciseValuesData & { weight: number } =>
-  getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS") &&
-  typeof values.weight === "number";
+  isWeightedExercise(exercise) && typeof values.weight === "number";
 
 // One weight step down, not below the lowest permitted load.
-const stepWeightDown = (
+const lowerWeightByOneStep = (
   values: ExerciseValuesData & { weight: number },
   { intensity, exercise, gender, level }: ExerciseValueContext,
   maxValues: MaxValuesType,
@@ -140,8 +135,8 @@ export const adjustExerciseValuesByFeedback = (
   values: ExerciseValuesData,
   context: ExerciseValueContext,
   feedback: DifficultyFeedbackType,
-  maxValues: MaxValuesType = DEFAULT_MAX_VALUES,
+  maxValues: MaxValuesType,
 ): ExerciseValuesData =>
   feedback === "TOO_HARD" && hasWeightValue(context.exercise, values)
-    ? { ...values, weight: stepWeightDown(values, context, maxValues) }
+    ? { ...values, weight: lowerWeightByOneStep(values, context, maxValues) }
     : stepRangeValues(values, feedback, context);

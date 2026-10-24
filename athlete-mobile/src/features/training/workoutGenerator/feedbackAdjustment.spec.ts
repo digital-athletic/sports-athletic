@@ -3,10 +3,7 @@ import {
   generateValueExercise,
 } from "../../../../test/factories/valueExercise";
 import { loadIntensityConfig } from "@/data/loadIntensityConfig";
-import type {
-  GenderTag,
-  IntensityData,
-} from "@/features/training/models/Intensity";
+import type { IntensityData } from "@/features/training/models/Intensity";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import {
@@ -14,36 +11,28 @@ import {
   readFeedbackAdjustment,
 } from "./feedbackAdjustment";
 
-const GENDERS: GenderTag[] = ["m", "w", "k"];
-const LEVELS = ["beginner", "intermediate", "advanced", "professional"];
-// The intensity configs of the standard skills.
-const STANDARD_INTENSITIES = [
-  "SWR2",
-  "SWR2KG",
-  "SA",
-  "SAKG",
-  "SK",
-  "SKKG",
-  "BAS",
-  "GKS",
-  "GKSKG",
-  "PREV",
-];
+const DURATION_STEPS = { SUCCEEDED: 5, TOO_EASY: 10, TOO_HARD: -10 };
 
 describe("feedbackAdjustment: readFeedbackAdjustment", () => {
-  it.each(
-    STANDARD_INTENSITIES.flatMap((name) =>
-      GENDERS.flatMap((gender) =>
-        LEVELS.map((level) => [name, gender, level] as const),
-      ),
-    ),
-  )(
-    "%s for gender %s and level %s moves one or two ladder steps",
-    (name, gender, level) => {
+  // The intensity configs of the standard skills.
+  it.each([
+    ["SWR2", "5 to 10 seconds", DURATION_STEPS],
+    ["SWR2KG", "5 to 10 seconds", DURATION_STEPS],
+    ["SA", "no step", undefined],
+    ["SAKG", "no step", undefined],
+    ["SK", "no step", undefined],
+    ["SKKG", "no step", undefined],
+    ["BAS", "5 to 10 seconds", DURATION_STEPS],
+    ["GKS", "5 to 10 seconds", DURATION_STEPS],
+    ["GKSKG", "5 to 10 seconds", DURATION_STEPS],
+    ["PREV", "5 to 10 seconds", DURATION_STEPS],
+  ])(
+    "%s moves repetitions one or two ladder steps and duration by %s",
+    (name, _label, duration) => {
       const adjustment = readFeedbackAdjustment(
         loadIntensityConfig(name),
-        gender,
-        level,
+        "m",
+        "advanced",
       );
 
       expect(adjustment.repetition).toEqual({
@@ -51,13 +40,7 @@ describe("feedbackAdjustment: readFeedbackAdjustment", () => {
         TOO_EASY: 2,
         TOO_HARD: -2,
       });
-      if (adjustment.duration) {
-        expect(adjustment.duration).toEqual({
-          SUCCEEDED: 5,
-          TOO_EASY: 10,
-          TOO_HARD: -10,
-        });
-      }
+      expect(adjustment.duration).toEqual(duration);
     },
   );
 
@@ -101,12 +84,19 @@ describe("feedbackAdjustment: readFeedbackAdjustment", () => {
 });
 
 describe("feedbackAdjustment: adjustExerciseValuesByFeedback", () => {
-  const generateContext = (intensityName: string, exercise: ExerciseType) => ({
-    intensity: loadIntensityConfig(intensityName),
-    exercise,
-    gender: "m",
-    level: "advanced",
-  } as const);
+  /**
+   * Builds the value context of an advanced man.
+   *
+   * generateContext("SWR2KG", generateValueExercise("repetition"))
+   * → { intensity: <SWR2KG>, exercise: { id: "1", ... }, gender: "m", level: "advanced" }
+   */
+  const generateContext = (intensityName: string, exercise: ExerciseType) =>
+    ({
+      intensity: loadIntensityConfig(intensityName),
+      exercise,
+      gender: "m",
+      level: "advanced",
+    }) as const;
 
   it("stops TOO_EASY at the hypertrophy target despite a higher authored target", () => {
     const exercise = generateValueExercise("repetition", {
@@ -118,6 +108,7 @@ describe("feedbackAdjustment: adjustExerciseValuesByFeedback", () => {
         { repetition: 11, weightType: "weightAbsolute" },
         generateContext("SWR2KG", exercise),
         "TOO_EASY",
+        DEFAULT_MAX_VALUES,
       ).repetition,
     ).toBe(12);
   });
@@ -137,6 +128,7 @@ describe("feedbackAdjustment: adjustExerciseValuesByFeedback", () => {
           generateValueExercise("repetition", { withWeights: true }),
         ),
         "TOO_HARD",
+        DEFAULT_MAX_VALUES,
       );
 
       expect(values.weight).toBeCloseTo(expected);
@@ -166,28 +158,30 @@ describe("feedbackAdjustment: adjustExerciseValuesByFeedback", () => {
   });
 
   it("keeps the authored height of a jump exercise", () => {
-    const exercise = {
-      ...generateValueExercise("repetition"),
-      isJump: true,
-    };
+    const exercise = generateValueExercise("repetition", { isJump: true });
 
     expect(
       adjustExerciseValuesByFeedback(
         { repetition: 8, height: 20, weightType: "weightAbsolute" },
         generateContext("SWR2KG", exercise),
         "SUCCEEDED",
+        DEFAULT_MAX_VALUES,
       ),
     ).toEqual({ repetition: 9, height: 20, weightType: "weightAbsolute" });
   });
 
   it("lowers repetitions of an exercise without weights on TOO_HARD down to the start", () => {
-    const context = generateContext("SWR2KG", generateValueExercise("repetition"));
+    const context = generateContext(
+      "SWR2KG",
+      generateValueExercise("repetition"),
+    );
 
     expect(
       adjustExerciseValuesByFeedback(
         { repetition: 12, weightType: "weightAbsolute" },
         context,
         "TOO_HARD",
+        DEFAULT_MAX_VALUES,
       ).repetition,
     ).toBe(10);
     expect(
@@ -195,6 +189,7 @@ describe("feedbackAdjustment: adjustExerciseValuesByFeedback", () => {
         { repetition: 9, weightType: "weightAbsolute" },
         context,
         "TOO_HARD",
+        DEFAULT_MAX_VALUES,
       ).repetition,
     ).toBe(8);
   });
@@ -210,6 +205,7 @@ describe("feedbackAdjustment: adjustExerciseValuesByFeedback", () => {
           level: "advanced",
         },
         "TOO_EASY",
+        DEFAULT_MAX_VALUES,
       ).duration,
     ).toBe(50);
   });

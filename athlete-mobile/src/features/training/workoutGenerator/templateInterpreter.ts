@@ -24,7 +24,7 @@ export const interpretTemplate = <TEntry>(
   { handlers, finishRules, buildSetList }: TemplateInterpreterOptions<TEntry>,
 ): FinishedWorkout<TEntry> =>
   finishWorkout(
-    walkTemplateBlocks(template, setUpWorkout(input), handlers),
+    walkTemplateBlocks(template, setUpWorkout(input, template), handlers),
     finishRules,
     buildSetList,
   );

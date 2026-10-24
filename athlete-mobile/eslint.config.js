@@ -3,6 +3,88 @@ const { defineConfig } = require("eslint/config");
 const expoConfig = require("eslint-config-expo/flat");
 const eslintConfigPrettier = require("eslint-config-prettier/flat");
 
+// Old generator code that the new workout generator must not import. The
+// regexes anchor on the path segment, so they match the alias and every
+// relative path, with or without a ".ts" or "/index" suffix. A mixed utils
+// module allows only the listed exports, so a new export starts out banned.
+const OLD_GENERATOR_PATH = "(^|/)generators(/|$)";
+const BANNED_UTILS_MODULES = [
+  "branchFilterUtils",
+  "branchLevelUtils",
+  "branchMaintenance",
+  "duplicateExerciseUtils",
+  "exerciseBlockUtils",
+  "exerciseOrderUtils",
+  "heartRateUtils",
+  "maxStrengthAdjustment",
+  "maxStrengthLadder",
+  "substitutionLevelUtils",
+  "supersetPairingUtils",
+  "weightAdjustmentUtils",
+  "trainingSectionUtils",
+  "storedPlanCheck",
+];
+const ALLOWED_NAMES_BY_MIXED_UTILS_MODULE = {
+  skillTreeUtils: [
+    "readLiteralSkillTree",
+    "mapSkillCodeToFocusArea",
+    "isPreventionTraining",
+    "getBranchIdByNameAndSkill",
+    "getBranchIdsByNames",
+  ],
+  workoutUtils: [
+    "getUserLevel",
+    "STRENGTH_TEST_SKILL",
+    "calculateWorkoutTotals",
+    "maxWeightByEpley",
+    "calculateAdjustedMaxValues",
+    "applyMaxValueToDirections",
+  ],
+  equipmentUtils: [
+    "hasWeights",
+    "hasBarbell",
+    "hasAnyBarbell",
+    "hasRunEquipment",
+  ],
+  painUtils: [
+    "PAIN_REGIONS",
+    "PainRegion",
+    "isPainRegion",
+    "getBlocksFromPains",
+    "getPreventionsFromPains",
+    "isSamePainSet",
+    "shouldShowPainAlert",
+  ],
+  exerciseDataUtils: [
+    "isNoIncreaseSkill",
+    "shouldProcessExerciseValues",
+    "isFeedbackEligibleSkill",
+    "shouldSkipExerciseSave",
+    "deriveActiveExerciseIndex",
+  ],
+};
+const matchOldUtilsPath = (moduleNames) =>
+  `(^|/)utils/(${moduleNames.join("|")})(\\.ts|/index)?$`;
+// require, jest.requireActual, import() and import("...") types load a whole
+// module, so these ban the mixed utils modules as a whole too.
+const OLD_MODULE_PATH = `(${OLD_GENERATOR_PATH})|(${matchOldUtilsPath([
+  ...BANNED_UTILS_MODULES,
+  ...Object.keys(ALLOWED_NAMES_BY_MIXED_UTILS_MODULE),
+])})`;
+const PATH_FIELD_BY_IMPORT_SYNTAX = {
+  "CallExpression[callee.name='require']": "arguments.0.value",
+  "CallExpression[callee.object.name='jest'][callee.property.name='requireActual']":
+    "arguments.0.value",
+  ImportExpression: "source.value",
+  TSImportType: "argument.literal.value",
+};
+const OLD_GENERATOR_MESSAGE =
+  "The new generator imports nothing of the old one.";
+const OLD_UTILS_MESSAGE =
+  "Old generator logic: rewrite it in workoutGenerator/ instead.";
+const OLD_MODULE_MESSAGE =
+  "The new generator loads no module of the old generator or its utils.";
+
 module.exports = defineConfig([
   expoConfig,
   eslintConfigPrettier,
@@ -60,94 +142,41 @@ module.exports = defineConfig([
     },
   },
   // The new workout generator is a full rewrite and imports no code of the old
-  // generator. The regexes match the alias path and relative paths from the
-  // folder and from one subfolder below it. A mixed module allows only the
-  // listed exports, so a new export starts out banned.
+  // generator. See the constants above the config for the banned paths.
   {
     files: ["src/features/training/workoutGenerator/**"],
     rules: {
+      "@typescript-eslint/no-require-imports": "error",
       "no-restricted-imports": [
         "error",
         {
           patterns: [
             {
-              regex: "^(@/features/training/|(\\.\\./){1,2})generators(/|$)",
-              message: "The new generator imports nothing of the old one.",
+              regex: OLD_GENERATOR_PATH,
+              message: OLD_GENERATOR_MESSAGE,
             },
             {
-              regex:
-                "^(@/features/training/|(\\.\\./){1,2})utils/(branchFilterUtils|branchLevelUtils|branchMaintenance|duplicateExerciseUtils|exerciseBlockUtils|exerciseOrderUtils|heartRateUtils|maxStrengthAdjustment|maxStrengthLadder|substitutionLevelUtils|supersetPairingUtils|weightAdjustmentUtils|trainingSectionUtils|storedPlanCheck)$",
-              message:
-                "Old generator logic: rewrite it in workoutGenerator/ instead.",
+              regex: matchOldUtilsPath(BANNED_UTILS_MODULES),
+              message: OLD_UTILS_MESSAGE,
             },
-            {
-              regex:
-                "^(@/features/training/|(\\.\\./){1,2})utils/skillTreeUtils$",
-              allowImportNames: [
-                "readLiteralSkillTree",
-                "mapSkillCodeToFocusArea",
-                "isPreventionTraining",
-                "getBranchIdByNameAndSkill",
-                "getBranchIdsByNames",
-              ],
-              message:
-                "Old generator logic: rewrite it in workoutGenerator/ instead.",
-            },
-            {
-              regex:
-                "^(@/features/training/|(\\.\\./){1,2})utils/workoutUtils$",
-              allowImportNames: [
-                "getUserLevel",
-                "STRENGTH_TEST_SKILL",
-                "calculateWorkoutTotals",
-                "maxWeightByEpley",
-                "calculateAdjustedMaxValues",
-                "applyMaxValueToDirections",
-              ],
-              message:
-                "Old generator logic: rewrite it in workoutGenerator/ instead.",
-            },
-            {
-              regex:
-                "^(@/features/training/|(\\.\\./){1,2})utils/equipmentUtils$",
-              allowImportNames: [
-                "hasWeights",
-                "hasBarbell",
-                "hasAnyBarbell",
-                "hasRunEquipment",
-              ],
-              message:
-                "Old generator logic: rewrite it in workoutGenerator/ instead.",
-            },
-            {
-              regex: "^(@/features/training/|(\\.\\./){1,2})utils/painUtils$",
-              allowImportNames: [
-                "PAIN_REGIONS",
-                "PainRegion",
-                "isPainRegion",
-                "getBlocksFromPains",
-                "getPreventionsFromPains",
-                "isSamePainSet",
-                "shouldShowPainAlert",
-              ],
-              message:
-                "Old generator logic: rewrite it in workoutGenerator/ instead.",
-            },
-            {
-              regex:
-                "^(@/features/training/|(\\.\\./){1,2})utils/exerciseDataUtils$",
-              allowImportNames: [
-                "isNoIncreaseSkill",
-                "shouldProcessExerciseValues",
-                "isFeedbackEligibleSkill",
-                "shouldSkipExerciseSave",
-                "deriveActiveExerciseIndex",
-              ],
-              message:
-                "Old generator logic: rewrite it in workoutGenerator/ instead.",
-            },
+            ...Object.entries(ALLOWED_NAMES_BY_MIXED_UTILS_MODULE).map(
+              ([moduleName, allowImportNames]) => ({
+                regex: matchOldUtilsPath([moduleName]),
+                allowImportNames,
+                message: OLD_UTILS_MESSAGE,
+              }),
+            ),
           ],
         },
+      ],
+      "no-restricted-syntax": [
+        "error",
+        ...Object.entries(PATH_FIELD_BY_IMPORT_SYNTAX).map(
+          ([syntax, pathField]) => ({
+            selector: `${syntax}[${pathField}=/${OLD_MODULE_PATH.replaceAll("/", "\\/")}/]`,
+            message: OLD_MODULE_MESSAGE,
+          }),
+        ),
       ],
     },
   },

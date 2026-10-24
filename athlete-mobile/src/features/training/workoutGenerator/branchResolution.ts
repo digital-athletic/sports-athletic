@@ -22,7 +22,7 @@ export const mapFitnessLevelToEntryLevel = (fitnessLevel: string): number => {
 };
 
 /**
- * Resolves the branch level: the stored level when the branch authors it,
+ * Resolves the branch level: the athlete's stored branch level when the branch authors it,
  * otherwise the entry level of the fitness level, falling back downward to
  * the highest authored level. Returns null when no such level exists.
  *
@@ -31,10 +31,10 @@ export const mapFitnessLevelToEntryLevel = (fitnessLevel: string): number => {
 export const resolveBranchLevel = (
   branch: SkillBranchType,
   fitnessLevel: string,
-  branchProgress?: UserExerciseBranchDataType | null,
+  athleteBranchLevel?: UserExerciseBranchDataType | null,
 ): number | null => {
-  if (branchProgress?.level && branch.levels[branchProgress.level]) {
-    return branchProgress.level;
+  if (athleteBranchLevel?.level && branch.levels[athleteBranchLevel.level]) {
+    return athleteBranchLevel.level;
   }
   for (
     let level = mapFitnessLevelToEntryLevel(fitnessLevel);
@@ -54,9 +54,9 @@ export const resolveBranchLevel = (
 export const resolveBranchExerciseId = (
   branch: SkillBranchType,
   fitnessLevel: string,
-  branchProgress?: UserExerciseBranchDataType | null,
+  athleteBranchLevel?: UserExerciseBranchDataType | null,
 ): string | null => {
-  const level = resolveBranchLevel(branch, fitnessLevel, branchProgress);
+  const level = resolveBranchLevel(branch, fitnessLevel, athleteBranchLevel);
   if (level === null) {
     return null;
   }
@@ -72,12 +72,12 @@ export const resolveBranchExercise = (
   branch: SkillBranchType,
   fitnessLevel: string,
   exerciseCatalog: readonly ExerciseType[],
-  branchProgress?: UserExerciseBranchDataType | null,
+  athleteBranchLevel?: UserExerciseBranchDataType | null,
 ): ExerciseType | null => {
   const exerciseId = resolveBranchExerciseId(
     branch,
     fitnessLevel,
-    branchProgress,
+    athleteBranchLevel,
   );
   if (exerciseId === null) {
     return null;

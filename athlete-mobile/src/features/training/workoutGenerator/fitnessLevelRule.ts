@@ -12,7 +12,7 @@ import {
 
 /**
  * Removes the branches without an exercise at the athlete's fitness level or
- * branch progress, with one region request each. Keeps every branch for an
+ * branch level, with one region request each. Keeps every branch for an
  * athlete without workout data.
  */
 export const filterBranchesByFitnessLevel = <T extends CandidateBranch>(

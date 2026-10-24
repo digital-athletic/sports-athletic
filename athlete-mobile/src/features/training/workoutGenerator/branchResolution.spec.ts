@@ -29,12 +29,15 @@ const readShippedBranch = (
 const squatBranch = readShippedBranch("SKKG", "253");
 
 /**
- * Builds stored branch progress at the given level.
+ * Builds the athlete's stored branch level.
  *
- * generateBranchProgress(4)
+ * generateAthleteBranchLevel(4)
  * → { branchId: "253", level: 4 }
  */
-const generateBranchProgress = (level: number) => ({ branchId: "253", level });
+const generateAthleteBranchLevel = (level: number) => ({
+  branchId: "253",
+  level,
+});
 
 describe("branchResolution: mapFitnessLevelToEntryLevel", () => {
   it.each([
@@ -53,7 +56,7 @@ describe("branchResolution: resolveBranchLevel", () => {
     ["ADVANCED", 2],
     ["PROFESSIONAL", 2],
   ])(
-    "maps %p without branch progress to level %p, falling back downward",
+    "maps %p without an athlete branch level to level %p, falling back downward",
     (fitnessLevel, level) => {
       expect(resolveBranchLevel(squatBranch, fitnessLevel)).toBe(level);
       expect(resolveBranchLevel(squatBranch, fitnessLevel, null)).toBe(level);
@@ -62,7 +65,11 @@ describe("branchResolution: resolveBranchLevel", () => {
 
   it("uses an authored stored level", () => {
     expect(
-      resolveBranchLevel(squatBranch, "BEGINNER", generateBranchProgress(4)),
+      resolveBranchLevel(
+        squatBranch,
+        "BEGINNER",
+        generateAthleteBranchLevel(4),
+      ),
     ).toBe(4);
   });
 
@@ -71,11 +78,15 @@ describe("branchResolution: resolveBranchLevel", () => {
       resolveBranchLevel(
         squatBranch,
         "PROFESSIONAL",
-        generateBranchProgress(3),
+        generateAthleteBranchLevel(3),
       ),
     ).toBe(2);
     expect(
-      resolveBranchLevel(squatBranch, "ADVANCED", generateBranchProgress(0)),
+      resolveBranchLevel(
+        squatBranch,
+        "ADVANCED",
+        generateAthleteBranchLevel(0),
+      ),
     ).toBe(2);
   });
 
@@ -95,7 +106,7 @@ describe("branchResolution: resolveBranchExerciseId", () => {
       resolveBranchExerciseId(
         squatBranch,
         "BEGINNER",
-        generateBranchProgress(4),
+        generateAthleteBranchLevel(4),
       ),
     ).toBe("234");
   });
@@ -137,7 +148,7 @@ describe("branchResolution: resolveBranchExercise", () => {
         squatBranch,
         "BEGINNER",
         exerciseCatalog,
-        generateBranchProgress(4),
+        generateAthleteBranchLevel(4),
       )?.id,
     ).toBe("234");
   });

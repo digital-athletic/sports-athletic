@@ -4,6 +4,7 @@ import type {
 } from "@/features/training/models/ExerciseBranch";
 import { PLACEHOLDER_BRANCH_ID } from "@/features/training/models/IdTypes";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
+import type { SkillBranchType } from "@/schemas/skillTree.schema";
 import { createExerciseMap } from "@/features/training/utils/exerciseAccessor";
 import { getAreasFor } from "@/features/training/utils/exerciseUtils";
 import type { BranchLookupIndex } from "./branchLookupIndex";
@@ -43,7 +44,9 @@ const WARM_UP_MAX_SECONDS = 5 * 60;
 const FILLER_MIN_SECONDS = 60;
 
 /**
- * Draws the one branch a cardio block runs, with one draw.
+ * Draws the one branch a cardio block runs, with one draw. PR 4's dispatch
+ * calls it in place of pairing, at the old draw position before the block's
+ * set list.
  *
  * drawCardioExercisePair([run, bike], () => 0.6) → [{ first: bike }]
  */
@@ -55,20 +58,36 @@ export const drawCardioExercisePair = (
   return first ? [{ first }] : [];
 };
 
-// The running pause runs the first exercise of zone 5, warm-up and filler
-// the first exercise of zone 4.
-const readFirstZoneExerciseId = (
-  branchLookupIndex: BranchLookupIndex,
+interface ZoneExerciseIds {
+  runningPause: string;
+  zoneFour: string;
+}
+
+const readFirstExerciseIdOfZone = (
+  firstBranches: Map<string, SkillBranchType>,
   zone: string,
 ): string => {
+  const levels = firstBranches.get(zone)?.levels;
+  const exerciseId = levels?.[Number(Object.keys(levels)[0])]?.exerciseId;
+  if (!exerciseId) throw new Error(`Skill tree ${zone} has no first exercise`);
+  return exerciseId;
+};
+
+// The running pause runs the first exercise of zone 5, warm-up and filler
+// the first exercise of zone 4. One pass over the index finds both.
+const readZoneExerciseIds = (
+  branchLookupIndex: BranchLookupIndex,
+): ZoneExerciseIds => {
+  const firstBranches = new Map<string, SkillBranchType>();
   for (const { skillTreeName, branch } of branchLookupIndex.values()) {
-    if (skillTreeName !== zone) continue;
-    const exerciseId =
-      branch.levels[Number(Object.keys(branch.levels)[0])]?.exerciseId;
-    if (exerciseId) return exerciseId;
-    break;
+    if (!firstBranches.has(skillTreeName)) {
+      firstBranches.set(skillTreeName, branch);
+    }
   }
-  throw new Error(`Skill tree ${zone} has no first exercise`);
+  return {
+    runningPause: readFirstExerciseIdOfZone(firstBranches, "CARDIO_5"),
+    zoneFour: readFirstExerciseIdOfZone(firstBranches, "CARDIO_4"),
+  };
 };
 
 const buildCardioEntry = (
@@ -130,6 +149,12 @@ const readIntervalCount = (
   );
 };
 
+// The old builder loops while the index stays below the count, so a count of
+// 2.5 runs 3 intervals and a count that is not a number runs none.
+const countBuiltIntervals = (count: number): number =>
+  Number.isNaN(count) ? 0 : Math.max(0, Math.ceil(count));
+
+// Each set tuple carries the count itself, as the old builder writes it.
 const buildIntervals = (
   lead: BranchExerciseReference,
   skill: SetListBlock["skill"],
@@ -139,26 +164,29 @@ const buildIntervals = (
     pauseExerciseId,
   }: { profile: IntervalProfile; pauseExerciseId: string },
 ): GeneratedSetListEntry[] =>
-  Array.from({ length: count }, (_, index): GeneratedSetListEntry[] => [
-    {
-      ...buildCardioEntry(
-        skill,
-        lead.branchId,
-        lead.exerciseId,
-        profile.workSeconds,
-      ),
-      set: [index + 1, count],
-    },
-    {
-      ...buildCardioEntry(
-        skill,
-        PLACEHOLDER_BRANCH_ID,
-        pauseExerciseId,
-        profile.runningPauseSeconds,
-      ),
-      set: [index + 1, count],
-    },
-  ]).flat();
+  Array.from(
+    { length: countBuiltIntervals(count) },
+    (_, index): GeneratedSetListEntry[] => [
+      {
+        ...buildCardioEntry(
+          skill,
+          lead.branchId,
+          lead.exerciseId,
+          profile.workSeconds,
+        ),
+        set: [index + 1, count],
+      },
+      {
+        ...buildCardioEntry(
+          skill,
+          PLACEHOLDER_BRANCH_ID,
+          pauseExerciseId,
+          profile.runningPauseSeconds,
+        ),
+        set: [index + 1, count],
+      },
+    ],
+  ).flat();
 
 const buildIntervalRun = (
   lead: BranchExerciseReference,
@@ -169,23 +197,22 @@ const buildIntervalRun = (
     INTERVAL_PROFILE_BY_ZONE.get(block.skill) ?? DEFAULT_INTERVAL_PROFILE;
   const count = readIntervalCount(lead, block, input, profile);
   if (count === undefined) return [];
+  const exerciseIds = readZoneExerciseIds(input.branchLookupIndex);
   const intervals = buildIntervals(lead, block.skill, count, {
     profile,
-    pauseExerciseId: readFirstZoneExerciseId(
-      input.branchLookupIndex,
-      "CARDIO_5",
-    ),
+    pauseExerciseId: exerciseIds.runningPause,
   });
   const buildZoneFourRun = (seconds: number) =>
     buildCardioEntry(
       block.skill,
       PLACEHOLDER_BRANCH_ID,
-      readFirstZoneExerciseId(input.branchLookupIndex, "CARDIO_4"),
+      exerciseIds.zoneFour,
       seconds,
     );
   const remainingSeconds =
     block.minutes * 60 -
-    count * (profile.workSeconds + profile.runningPauseSeconds);
+    countBuiltIntervals(count) *
+      (profile.workSeconds + profile.runningPauseSeconds);
   const warmUpSeconds = Math.min(remainingSeconds, WARM_UP_MAX_SECONDS);
   const fillerSeconds = remainingSeconds - warmUpSeconds;
   return [
@@ -200,7 +227,9 @@ const buildIntervalRun = (
 /**
  * Builds a cardio block from its first pair: one steady run in zones 4 and 5,
  * otherwise intervals with running pauses, a zone 4 warm-up of up to 5 minutes
- * and a filler run of at least one minute. No cardio block ends on a pause.
+ * and a filler run of at least one minute. No cardio block ends on the pause
+ * exercise (999999). A block without pairs builds nothing, where the old
+ * builder throws a TypeError.
  */
 export const buildCardioSetList: SkillSetListBuilder = (
   pairs,

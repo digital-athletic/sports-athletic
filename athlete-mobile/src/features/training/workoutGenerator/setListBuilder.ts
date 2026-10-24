@@ -5,16 +5,15 @@ import type { BlockValues, CatalogRest } from "@/schemas/aiwl.schema";
 import type { SkillCode } from "@/schemas/generator.schema";
 import type { GenerationInput } from "./generationInput";
 
-/**
- * The resolved values of one block that a set list builder reads. Without
- * `rest.afterBlock` the standard builder reads the skill catalog entry's, then
- * closes the block on `rest.afterExercise`.
- */
+/** The resolved values of one block that a set list builder reads. */
 export interface SetListBlock {
   readonly skill: SkillCode;
-  // The minute budget of a cardio block.
+  // The minute budget of a cardio block; 0 outside cardio, as the old
+  // builder's length.
   readonly minutes: number;
   readonly sets: number;
+  // The caller passes only the block's own afterBlock, never the catalog's,
+  // because the builder applies the catalog fallback itself.
   readonly rest: CatalogRest;
   readonly setDuration?: number;
   readonly values?: BlockValues;

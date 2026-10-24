@@ -3,13 +3,13 @@ import type { SkillCatalogEntry } from "@/schemas/skillCatalog.schema";
 import type { SetListBlock } from "./setListBuilder";
 
 /** The values a block falls back to where it sets none of its own. */
-export type TimingDefaults = Pick<
+export type SkillTimingDefaults = Pick<
   SkillCatalogEntry,
   "sets" | "superset" | "rest"
 >;
 
 /** The sets, superset, rests and values a block builds its set list with. */
-export interface BlockTiming
+export interface ResolvedBlockTiming
   extends Pick<SetListBlock, "sets" | "rest" | "setDuration" | "values"> {
   readonly superset: Superset;
 }
@@ -39,8 +39,8 @@ const requireTimingValue = <T>(
  */
 export const resolveBlockTiming = (
   block: Block,
-  defaults: TimingDefaults | undefined,
-): BlockTiming => {
+  defaults: SkillTimingDefaults | undefined,
+): ResolvedBlockTiming => {
   const { skill } = block;
   const rest = block.rest ?? {};
   return {

@@ -1,7 +1,7 @@
 import type { ExercisePair } from "@/features/training/models/ExerciseBranch";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { Block } from "@/schemas/aiwl.schema";
-import { type BlockTiming, resolveBlockTiming } from "./blockTiming";
+import { type ResolvedBlockTiming, resolveBlockTiming } from "./blockTiming";
 import type { BlockResult } from "./blockWalk";
 import {
   buildCardioSetList,
@@ -32,8 +32,8 @@ const SKILL_SET_LIST_BUILDERS: Record<SkillSetListKind, SkillSetListBuilder> = {
 };
 
 /**
- * Names the set list builder of a skill by the old generator's substring
- * tests, in its order: cardio first, then max strength.
+ * Names the set list builder of a skill: cardio first, then max strength,
+ * else standard.
  *
  * readSkillSetListKind("CARDIO_5") → "cardio"
  * readSkillSetListKind("MAX_STRENGTH") → "maxStrength"
@@ -44,11 +44,12 @@ export const readSkillSetListKind = (skill: string): SkillSetListKind => {
   return "standard";
 };
 
-// A cardio block runs one drawn branch; max strength trains single exercises.
-const pairBlockExercises = (
+// A training day cardio block runs one drawn branch; max strength trains
+// single exercises.
+const pairTrainingDayExercises = (
   kind: SkillSetListKind,
   { exercises }: FilledBlockResult,
-  superset: BlockTiming["superset"],
+  superset: ResolvedBlockTiming["superset"],
   input: GenerationInput,
 ): ExercisePair[] => {
   switch (kind) {
@@ -83,16 +84,14 @@ const readBlockMinutes = (block: Block): number =>
 const buildBlockSetList = (
   kind: SkillSetListKind,
   pairs: ExercisePair[],
-  { block, timing }: { block: Block; timing: BlockTiming },
+  { block, timing }: { block: Block; timing: ResolvedBlockTiming },
   input: GenerationInput,
 ): GeneratedSetListEntry[] => {
+  const { superset, ...setListTiming } = timing;
   const setListBlock: SetListBlock = {
     skill: block.skill,
     minutes: readBlockMinutes(block),
-    sets: timing.sets,
-    rest: timing.rest,
-    setDuration: timing.setDuration,
-    values: timing.values,
+    ...setListTiming,
   };
   return SKILL_SET_LIST_BUILDERS[kind](pairs, setListBlock, input);
 };
@@ -114,7 +113,12 @@ export const createTrainingDaySetListBuilder =
         result.block,
         readPlanWorkoutTiming(result.block.skill),
       );
-      const pairs = pairBlockExercises(kind, result, timing.superset, input);
+      const pairs = pairTrainingDayExercises(
+        kind,
+        result,
+        timing.superset,
+        input,
+      );
       const orderedPairs =
         kind === "cardio"
           ? pairs
@@ -144,10 +148,10 @@ const isLastTemplateBlock = (
 
 /**
  * Builds the set list of a short workout from its filled blocks in template
- * order. Each block reads its own timing, then the skill catalog entry, and
- * keeps the draw order of its pairs. Only a filled last template block drops
- * its closing rest; an empty last block keeps the rest before it, as the old
- * generator does.
+ * order. Each block reads its own timing, then the skill catalog entry. Every
+ * block, cardio and max strength included, pairs by its superset and keeps
+ * the order of its pairs. Only a filled last template block drops its closing
+ * rest; an empty last block keeps the rest before it.
  */
 export const createShortWorkoutSetListBuilder =
   (input: GenerationInput): SetListBuilder<GeneratedSetListEntry> =>
@@ -160,7 +164,12 @@ export const createShortWorkoutSetListBuilder =
       );
       const setList = buildBlockSetList(
         kind,
-        pairBlockExercises(kind, result, timing.superset, input),
+        pairBranchExercises(
+          result.exercises,
+          input.exerciseCatalog,
+          timing.superset,
+          input.random,
+        ),
         { block: result.block, timing },
         input,
       );

@@ -161,6 +161,7 @@ describe("branchDraw: pair", () => {
     tags: Record<string, string[]>;
     lead: string;
     partner?: string;
+    branches?: SkillTreeType;
   }>([
     {
       behaviour: "draws no partner for an exercise that is not both sided",
@@ -169,7 +170,7 @@ describe("branchDraw: pair", () => {
       lead: "1",
     },
     {
-      behaviour: "stops the partner search at the opposite direction",
+      behaviour: "stops the partner search at a bare opposite direction tag",
       draws: [0, 0],
       tags: {
         e1: ["SIDE_BOTH", "EXERCISE_DIRECTION_HIP"],
@@ -178,6 +179,30 @@ describe("branchDraw: pair", () => {
       },
       lead: "1",
       partner: "2",
+    },
+    {
+      behaviour: "keeps searching past a prefixed opposite direction tag",
+      draws: [0, 0, 0],
+      tags: {
+        e1: ["SIDE_BOTH", "EXERCISE_DIRECTION_HIP"],
+        e2: ["SIDE_BOTH", "EXERCISE_DIRECTION_KNEE"],
+        e3: ["SIDE_BOTH"],
+      },
+      lead: "1",
+      partner: "3",
+    },
+    {
+      behaviour:
+        "skips a candidate that resolves to the lead's exercise without a draw",
+      draws: [0, 0],
+      tags: { e1: ["SIDE_BOTH"], e3: ["SIDE_BOTH"] },
+      lead: "1",
+      partner: "3",
+      branches: {
+        1: generateTreeBranch(["e1"]),
+        2: generateTreeBranch(["e1"]),
+        3: generateTreeBranch(["e3"]),
+      },
     },
     {
       behaviour:
@@ -194,15 +219,15 @@ describe("branchDraw: pair", () => {
       lead: "1",
       partner: "2",
     },
-  ])("$behaviour", ({ draws, tags, lead, partner }) => {
+  ])("$behaviour", ({ draws, tags, lead, partner, branches = pool }) => {
     const exerciseCatalog = Object.entries(tags).map(([id, exerciseTags]) =>
       generateCatalogExercise(id, exerciseTags),
     );
     const random = generateSequenceRandom([...draws, 0.99]);
 
     const result = createBranchDraw(
-      generateDrawSource(pool, [], { exerciseCatalog, random }),
-    ).pair(pool, []);
+      generateDrawSource(branches, [], { exerciseCatalog, random }),
+    ).pair(branches, []);
 
     expect(result?.lead.branchId).toBe(lead);
     expect(result?.partner?.branchId).toBe(partner);

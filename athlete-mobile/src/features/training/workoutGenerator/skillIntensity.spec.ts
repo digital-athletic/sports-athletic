@@ -2,55 +2,52 @@ import { generateValueExercise } from "../../../../test/factories/valueExercise"
 import { loadIntensityConfig } from "@/data/loadIntensityConfig";
 import { loadSkillCatalog } from "@/data/loadSkillCatalog";
 import type { SkillCatalog } from "@/schemas/skillCatalog.schema";
-import {
-  applyBlockValuesMode,
-  readSkillCatalogEntry,
-  readSkillIntensity,
-} from "./skillIntensity";
+import { applyBlockValuesMode, readSkillIntensity } from "./skillIntensity";
 
-const skillCatalog = loadSkillCatalog();
-const weighted = generateValueExercise("repetition", { withWeights: true });
-const bodyweight = generateValueExercise("repetition");
-
-describe("skillIntensity: readSkillCatalogEntry", () => {
-  it("reads an entry of the given catalog", () => {
-    expect(readSkillCatalogEntry(skillCatalog, "GKS")?.intensity).toBe("GKS");
-  });
-
-  it.each(["UNKNOWN", "constructor", "toString"])(
-    "reads no entry for %s",
-    (skill) => {
-      expect(readSkillCatalogEntry(skillCatalog, skill)).toBeUndefined();
-    },
-  );
-});
+/**
+ * Builds the exercise a label names, or none.
+ *
+ * generateLabelledExercise("weighted")
+ * → { id: "1", tags: [..., "EQ_TYPE_WEIGHTS"], ... }
+ */
+const generateLabelledExercise = (label: "weighted" | "bodyweight" | "none") =>
+  label === "none"
+    ? undefined
+    : generateValueExercise("repetition", {
+        withWeights: label === "weighted",
+      });
 
 describe("skillIntensity: readSkillIntensity", () => {
   it.each([
-    ["PLYO_HIGH", undefined, "PLYO"],
-    ["PLYO_MEDIUM", undefined, "PLYO"],
-    ["SWR1", undefined, "SWR2"],
-    ["SWR2KG", undefined, "SWR2KG"],
-    ["SWR2KG", weighted, "SWR2"],
-    ["SWR1", bodyweight, "SWR2KG"],
-    ["GKS", undefined, "GKS"],
-    ["GKS", weighted, "GKS"],
-    ["GKS", bodyweight, "GKSKG"],
-    ["PREVKNEE", bodyweight, "PREV"],
-    ["SK", weighted, "SK"],
-    ["MAX_STRENGTH", weighted, "DEFAULT"],
-    ["WU", bodyweight, "DEFAULTKG"],
-    ["constructor", undefined, "DEFAULTKG"],
+    ["PLYO_HIGH", "none", "PLYO"],
+    ["PLYO_MEDIUM", "none", "PLYO"],
+    ["SWR1", "none", "SWR2"],
+    ["SWR2KG", "none", "SWR2KG"],
+    ["SWR2KG", "weighted", "SWR2"],
+    ["SWR1", "bodyweight", "SWR2KG"],
+    ["GKS", "none", "GKS"],
+    ["GKS", "weighted", "GKS"],
+    ["GKS", "bodyweight", "GKSKG"],
+    ["PREVKNEE", "bodyweight", "PREV"],
+    ["SK", "weighted", "SK"],
+    ["MAX_STRENGTH", "weighted", "DEFAULT"],
+    ["WU", "bodyweight", "DEFAULTKG"],
+    ["constructor", "none", "DEFAULTKG"],
   ] as const)(
-    "reads skill %s with exercise %p from config %s",
-    (skill, exercise, name) => {
-      expect(readSkillIntensity(skillCatalog, skill, exercise)).toBe(
-        loadIntensityConfig(name),
-      );
+    "reads skill %s with a %s exercise from config %s",
+    (skill, label, name) => {
+      expect(
+        readSkillIntensity(
+          loadSkillCatalog(),
+          skill,
+          generateLabelledExercise(label),
+        ),
+      ).toBe(loadIntensityConfig(name));
     },
   );
 
   it("reads the intensity name from the given catalog", () => {
+    const skillCatalog = loadSkillCatalog();
     const customCatalog: SkillCatalog = {
       ...skillCatalog,
       BAS: { ...skillCatalog.BAS, intensity: "SK" },
@@ -63,9 +60,9 @@ describe("skillIntensity: readSkillIntensity", () => {
 });
 
 describe("skillIntensity: applyBlockValuesMode", () => {
-  const intensity = loadIntensityConfig("PREV");
-
   it("keeps the intensity without a values mode", () => {
+    const intensity = loadIntensityConfig("PREV");
+
     expect(applyBlockValuesMode(intensity, undefined)).toBe(intensity);
   });
 
@@ -75,6 +72,7 @@ describe("skillIntensity: applyBlockValuesMode", () => {
   ] as const)(
     "sets the skill range override for values %s to %p",
     (values, expected) => {
+      const intensity = loadIntensityConfig("PREV");
       const result = applyBlockValuesMode(intensity, values);
 
       expect(result.overridesExerciseRepsAndDuration).toBe(expected);

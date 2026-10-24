@@ -81,7 +81,10 @@ export const stepWeight = (
 
   const loadBounds: WeightStepOptions = {
     ...options,
-    targetWeight: convertWeightToLoad(options.targetWeight ?? Infinity, options),
+    targetWeight: convertWeightToLoad(
+      options.targetWeight ?? Infinity,
+      options,
+    ),
     lowestWeight: convertWeightToLoad(options.lowestWeight ?? 0, options),
   };
   const clamp = (load: number, from: number) =>

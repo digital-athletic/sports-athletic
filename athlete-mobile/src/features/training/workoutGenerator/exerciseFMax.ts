@@ -38,7 +38,10 @@ export const readExerciseFMax = (
   exercise: ExerciseType,
   maxValues: MaxValuesType,
 ): number | undefined => {
-  const direction = getTagValues(exercise.tags, TagGroups.EXERCISE_DIRECTION)[0];
+  const direction = getTagValues(
+    exercise.tags,
+    TagGroups.EXERCISE_DIRECTION,
+  )[0];
   const directionKey = direction
     ? EXERCISE_DIRECTIONS_VALUES_MAP[direction]
     : undefined;

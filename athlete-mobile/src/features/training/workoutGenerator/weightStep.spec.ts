@@ -2,18 +2,17 @@ import { generateValueExercise } from "../../../../test/factories/valueExercise"
 import { loadIntensityConfig } from "@/data/loadIntensityConfig";
 import { readLowestPermittedWeight, stepWeight } from "./weightStep";
 
-const barbellExercise = generateValueExercise("repetition", {
-  withWeights: true,
-  tags: ["EQ_BARBELL"],
-});
-const dumbbellExercise = generateValueExercise("repetition", {
-  withWeights: true,
-  tags: ["EQ_DUMBBELL"],
-});
-const kettlebellExercise = generateValueExercise("repetition", {
-  withWeights: true,
-  tags: ["EQ_KETTLEBELL"],
-});
+/**
+ * Builds a weighted exercise that uses the given equipment.
+ *
+ * generateWeightedExercise("BARBELL")
+ * → { id: "1", tags: [..., "EQ_TYPE_WEIGHTS", "EQ_BARBELL"], ... }
+ */
+const generateWeightedExercise = (equipment: string) =>
+  generateValueExercise("repetition", {
+    withWeights: true,
+    tags: [`EQ_${equipment}`],
+  });
 
 describe("weightStep: stepWeight", () => {
   it.each([
@@ -26,7 +25,7 @@ describe("weightStep: stepWeight", () => {
     "lowers %p percent of F-Max without an F-Max and a lowest weight of %p to %p",
     (weight, lowestWeight, expected) => {
       expect(
-        stepWeight(weight, "DECREASE", kettlebellExercise, {
+        stepWeight(weight, "DECREASE", generateWeightedExercise("KETTLEBELL"), {
           weightType: "weightFMax",
           lowestWeight,
         }),
@@ -38,10 +37,15 @@ describe("weightStep: stepWeight", () => {
     const options = { weightType: "weightFMax", targetWeight: 77.5 } as const;
 
     expect(
-      stepWeight(70, "INCREASE", kettlebellExercise, options),
+      stepWeight(
+        70,
+        "INCREASE",
+        generateWeightedExercise("KETTLEBELL"),
+        options,
+      ),
     ).toBeCloseTo(71.75);
     expect(
-      stepWeight(70, "INCREASE", kettlebellExercise, {
+      stepWeight(70, "INCREASE", generateWeightedExercise("KETTLEBELL"), {
         ...options,
         targetWeight: 71,
       }),
@@ -51,7 +55,7 @@ describe("weightStep: stepWeight", () => {
   it("lowers a percentage to the next real barbell load", () => {
     // 73.5 % of 100 kg rounds to 72.5 kg, 72.5 kg x 0.975 rounds to 70 kg.
     expect(
-      stepWeight(73.5, "DECREASE", barbellExercise, {
+      stepWeight(73.5, "DECREASE", generateWeightedExercise("BARBELL"), {
         weightType: "weightFMax",
         lowestWeight: 65,
         maxValue: 100,
@@ -61,7 +65,7 @@ describe("weightStep: stepWeight", () => {
 
   it("raises a load by 2.5 percent to the rounded load", () => {
     expect(
-      stepWeight(40, "INCREASE", kettlebellExercise, {
+      stepWeight(40, "INCREASE", generateWeightedExercise("KETTLEBELL"), {
         weightType: "weightAbsolute",
       }),
     ).toBe(41);
@@ -69,7 +73,7 @@ describe("weightStep: stepWeight", () => {
 
   it("takes the next available load when rounding keeps the current one", () => {
     expect(
-      stepWeight(8, "INCREASE", dumbbellExercise, {
+      stepWeight(8, "INCREASE", generateWeightedExercise("DUMBBELL"), {
         weightType: "weightAbsolute",
       }),
     ).toBe(9);
@@ -77,7 +81,7 @@ describe("weightStep: stepWeight", () => {
 
   it("keeps the rounded load when the target weight forbids the next one", () => {
     expect(
-      stepWeight(40, "INCREASE", kettlebellExercise, {
+      stepWeight(40, "INCREASE", generateWeightedExercise("KETTLEBELL"), {
         weightType: "weightAbsolute",
         targetWeight: 40.5,
       }),
@@ -86,7 +90,7 @@ describe("weightStep: stepWeight", () => {
 
   it("stays at the empty bar", () => {
     expect(
-      stepWeight(20, "DECREASE", barbellExercise, {
+      stepWeight(20, "DECREASE", generateWeightedExercise("BARBELL"), {
         weightType: "weightAbsolute",
       }),
     ).toBe(20);
@@ -104,7 +108,7 @@ describe("weightStep: readLowestPermittedWeight", () => {
       readLowestPermittedWeight(
         loadIntensityConfig(name),
         "weightFMax",
-        barbellExercise,
+        generateWeightedExercise("BARBELL"),
         athlete,
       ),
     ).toBe(expected);
@@ -115,7 +119,7 @@ describe("weightStep: readLowestPermittedWeight", () => {
       readLowestPermittedWeight(
         loadIntensityConfig("SWR2"),
         "weightAbsolute",
-        barbellExercise,
+        generateWeightedExercise("BARBELL"),
         athlete,
       ),
     ).toBeUndefined();
@@ -123,7 +127,7 @@ describe("weightStep: readLowestPermittedWeight", () => {
       readLowestPermittedWeight(
         loadIntensityConfig("GKS"),
         "weightFMax",
-        barbellExercise,
+        generateWeightedExercise("BARBELL"),
         athlete,
       ),
     ).toBeUndefined();
@@ -161,7 +165,10 @@ describe("weightStep: readLowestPermittedWeight", () => {
       withWeights: true,
       values: {
         weight: {
-          startValue: { default: { default: 60 }, type: { type: "weightFMax" } },
+          startValue: {
+            default: { default: 60 },
+            type: { type: "weightFMax" },
+          },
           targetValue: { default: { default: 80 } },
         },
       },

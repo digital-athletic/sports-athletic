@@ -25,8 +25,8 @@ const readShippedBranch = (
   return branch;
 };
 
-// The bodyweight squat lane of the branches spec: levels 1, 2 and 4.
-const squatLane = readShippedBranch("SKKG", "253");
+// The bodyweight squat branch, authored at levels 1, 2 and 4.
+const squatBranch = readShippedBranch("SKKG", "253");
 
 /**
  * Builds stored branch progress at the given level.
@@ -55,23 +55,27 @@ describe("branchResolution: resolveBranchLevel", () => {
   ])(
     "maps %p without branch progress to level %p, falling back downward",
     (fitnessLevel, level) => {
-      expect(resolveBranchLevel(squatLane, fitnessLevel)).toBe(level);
-      expect(resolveBranchLevel(squatLane, fitnessLevel, null)).toBe(level);
+      expect(resolveBranchLevel(squatBranch, fitnessLevel)).toBe(level);
+      expect(resolveBranchLevel(squatBranch, fitnessLevel, null)).toBe(level);
     },
   );
 
   it("uses an authored stored level", () => {
     expect(
-      resolveBranchLevel(squatLane, "BEGINNER", generateBranchProgress(4)),
+      resolveBranchLevel(squatBranch, "BEGINNER", generateBranchProgress(4)),
     ).toBe(4);
   });
 
   it("maps the fitness level when the stored level is unauthored or 0", () => {
     expect(
-      resolveBranchLevel(squatLane, "PROFESSIONAL", generateBranchProgress(3)),
+      resolveBranchLevel(
+        squatBranch,
+        "PROFESSIONAL",
+        generateBranchProgress(3),
+      ),
     ).toBe(2);
     expect(
-      resolveBranchLevel(squatLane, "ADVANCED", generateBranchProgress(0)),
+      resolveBranchLevel(squatBranch, "ADVANCED", generateBranchProgress(0)),
     ).toBe(2);
   });
 
@@ -85,10 +89,14 @@ describe("branchResolution: resolveBranchLevel", () => {
 
 describe("branchResolution: resolveBranchExerciseId", () => {
   it("returns the exercise ID at the resolved level", () => {
-    expect(resolveBranchExerciseId(squatLane, "BEGINNER")).toBe("290");
-    expect(resolveBranchExerciseId(squatLane, "PROFESSIONAL")).toBe("516");
+    expect(resolveBranchExerciseId(squatBranch, "BEGINNER")).toBe("290");
+    expect(resolveBranchExerciseId(squatBranch, "PROFESSIONAL")).toBe("516");
     expect(
-      resolveBranchExerciseId(squatLane, "BEGINNER", generateBranchProgress(4)),
+      resolveBranchExerciseId(
+        squatBranch,
+        "BEGINNER",
+        generateBranchProgress(4),
+      ),
     ).toBe("234");
   });
 
@@ -122,11 +130,11 @@ describe("branchResolution: resolveBranchExercise", () => {
 
   it("returns the catalog exercise at the resolved level", () => {
     expect(
-      resolveBranchExercise(squatLane, "BEGINNER", exerciseCatalog)?.id,
+      resolveBranchExercise(squatBranch, "BEGINNER", exerciseCatalog)?.id,
     ).toBe("290");
     expect(
       resolveBranchExercise(
-        squatLane,
+        squatBranch,
         "BEGINNER",
         exerciseCatalog,
         generateBranchProgress(4),
@@ -138,7 +146,7 @@ describe("branchResolution: resolveBranchExercise", () => {
     const withoutSquat = exerciseCatalog.filter(({ id }) => id !== "290");
 
     expect(
-      resolveBranchExercise(squatLane, "BEGINNER", withoutSquat),
+      resolveBranchExercise(squatBranch, "BEGINNER", withoutSquat),
     ).toBeNull();
     expect(
       resolveBranchExercise(

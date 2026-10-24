@@ -39,6 +39,7 @@ const TIMING_CODES = [
   "SA",
   "SAKG",
   "SAS",
+  "SASKG",
   "GKSKG",
   "MAX",
   "MAX_STRENGTH",
@@ -141,6 +142,12 @@ const TIMING: Record<string, Timing> = {
     sets: 2,
     rest: [10, 10, 10],
     superset: "none",
+    intensity: "DEFAULTKG",
+  },
+  SASKG: {
+    sets: 2,
+    rest: [10, 10, 10],
+    superset: "muscles",
     intensity: "DEFAULTKG",
   },
   GKSKG: {
@@ -247,7 +254,7 @@ const treeNamesOf = (entry: SkillCatalogEntry): string[] => {
 };
 
 describe("loadSkillCatalog: real file", () => {
-  it("lists the 33 skill codes", () => {
+  it("lists the 34 skill codes", () => {
     expect(Object.keys(loadSkillCatalog()).sort()).toEqual([...CODES].sort());
   });
 

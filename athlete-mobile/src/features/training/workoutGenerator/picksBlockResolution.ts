@@ -84,14 +84,16 @@ const readSpecialWarmUpTree = ({
   const authored = Object.hasOwn(skillTrees, SPECIAL_WARM_UP_TREE)
     ? skillTrees[SPECIAL_WARM_UP_TREE]
     : {};
-  const matchingIds = Object.keys(authored).filter((id) =>
-    getTagValues(authored[id].tags, TagGroups.PAIN).some((region) =>
-      preventionRegions.includes(region),
+  const matchingIds = new Set(
+    Object.keys(authored).filter((id) =>
+      getTagValues(authored[id].tags, TagGroups.PAIN).some((region) =>
+        preventionRegions.includes(region),
+      ),
     ),
   );
-  if (matchingIds.length === 0) return tree;
+  if (matchingIds.size === 0) return tree;
   return Object.fromEntries(
-    Object.entries(tree).filter(([id]) => matchingIds.includes(id)),
+    Object.entries(tree).filter(([id]) => matchingIds.has(id)),
   );
 };
 

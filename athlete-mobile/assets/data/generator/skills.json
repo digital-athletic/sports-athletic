@@ -228,6 +228,12 @@
     "sets": 2,
     "rest": { "withinSuperset": 10, "betweenSets": 10, "afterExercise": 10 }
   },
+  "SASKG": {
+    "intensity": "DEFAULTKG",
+    "superset": "muscles",
+    "sets": 2,
+    "rest": { "withinSuperset": 10, "betweenSets": 10, "afterExercise": 10 }
+  },
   "GKSKG": {
     "intensity": "DEFAULTKG",
     "superset": "none",

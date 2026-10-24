@@ -64,7 +64,7 @@ type TimingEntry = TimingFields;
 A skill catalog entry either names a skill tree or is timing-only:
 
 - **With a skill tree.** The 14 skills of the bundled trainings. A picks block accepts only these skills; a picks block on any other skill fails with `NO_EXERCISES/SKILL_TREE`.
-- **Timing-only.** The 19 training day skills without a bundled training, for example `SWR1`, `SK`, `MAX`, and the cardio zones. Their skill trees stay with `getSkillTree`, which filters them per training place in ways no literal tree list expresses. A timing-only entry sets none of `skillTree`, `focusArea`, `progression`, `painRegions`, `countBy`, and `fallbackToWholeTree`.
+- **Timing-only.** The 20 training day skills without a bundled training, for example `SWR1`, `SK`, `MAX`, and the cardio zones. Their skill trees stay with `getSkillTree`, which filters them per training place in ways no literal tree list expresses. A timing-only entry sets none of `skillTree`, `focusArea`, `progression`, `painRegions`, `countBy`, and `fallbackToWholeTree`.
 
 An entry defines `sets` and `rest` together or neither. The cardio and max strength entries leave both out, because their set list builders bring their own sets and rests.
 
@@ -181,7 +181,7 @@ The skill code also selects the builder that turns the chosen exercises into a s
 - Pro: templates stay short. The bundled GKS training overrides one rest.
 - Pro: a trainer workout cannot carry a wrong skill tree or intensity.
 - Con: a reader of a template needs the catalog to know the sets, rests, and supersets of a block.
-- Con: the block defaults copy values that `TrainingGenerator` holds today. The parity test `loadSkillCatalog.spec.ts` ("parity with the plan workout defaults") checks each of the 33 skill codes against those methods, and it fails when the two sets of values differ. A literal table in the same spec pins every entry's timing, intensity, and start values. The parity test stays until plan workouts read the catalog.
+- Con: the block defaults copy values that `TrainingGenerator` holds today. The parity test `loadSkillCatalog.spec.ts` ("parity with the plan workout defaults") checks each of the 34 skill codes against those methods, and it fails when the two sets of values differ. A literal table in the same spec pins every entry's timing, intensity, and start values. The parity test stays until plan workouts read the catalog.
 - Con: code that needs a skill tree calls `hasSkillTree` first.
 
 ## More information

@@ -10,7 +10,18 @@ import {
   readMaxTrainingWeights,
 } from "./maxStrengthLadder";
 
-const squat = { ...generateValueExercise("repetition"), id: "26" };
+const SQUAT_ID = "26";
+
+/**
+ * Builds the squat the ladder reads stored data for.
+ *
+ * generateSquat()
+ * → { id: "26", isAdvanceByReps: true, ... }
+ */
+const generateSquat = () => ({
+  ...generateValueExercise("repetition"),
+  id: SQUAT_ID,
+});
 
 /**
  * Builds an adult athlete of a fitness level.
@@ -18,10 +29,7 @@ const squat = { ...generateValueExercise("repetition"), id: "26" };
  * generateAthlete("ADVANCED")
  * → { userId: "ladder-athlete", workoutData: { tags: { LEVEL: ["ADVANCED"] }, ... }, ... }
  */
-const generateAthlete = (
-  level: string,
-  birthday = "1990-01-01",
-): UserType => ({
+const generateAthlete = (level: string, birthday = "1990-01-01"): UserType => ({
   userId: "ladder-athlete",
   personalData: { gender: "MALE", birthday },
   workoutData: { tags: { LEVEL: [level] }, maxValues: DEFAULT_MAX_VALUES },
@@ -38,31 +46,52 @@ const generateExerciseData = (
   values: Partial<UserExerciseDataType>,
   difficulty: ExerciseDifficultyType,
 ): Record<string, UserExerciseDataType> => ({
-  [squat.id]: {
-    exerciseId: squat.id,
+  [SQUAT_ID]: {
+    exerciseId: SQUAT_ID,
     skill: "MAX_STRENGTH",
     feedback: { difficulty },
     ...values,
   },
 });
 
+/**
+ * Reads the working sets of the squat, without the warm-up sets.
+ *
+ * readWorkingSets(generateAthlete("ADVANCED"), null)
+ * → [{ level: "MEDIUM", repetitions: 5, weightPercentage: 70 }, ...]
+ */
 const readWorkingSets = (
   athlete: UserType,
   exerciseData: Record<string, UserExerciseDataType> | null,
 ): MaxTrainingRepsEntry[] =>
   readMaxTrainingRepetitions(
     athlete,
-    readMaxTrainingWeights(squat, athlete, exerciseData),
+    readMaxTrainingWeights(generateSquat(), athlete, exerciseData),
   ).filter((entry) => entry.level !== "WARMUP");
 
+/**
+ * Writes each working set as weight percentage times repetitions.
+ *
+ * describeSets([{ level: "MEDIUM", repetitions: 5, weightPercentage: 70 }])
+ * → ["70x5"]
+ */
 const describeSets = (sets: MaxTrainingRepsEntry[]) =>
   sets.map((entry) => `${entry.weightPercentage}x${entry.repetitions}`);
 
+/**
+ * Describes the working sets after the given stored data and feedback.
+ *
+ * describeNextSets(generateAthlete("ADVANCED"), { nextWeightPercentage: 77.5, ... }, "SUCCEEDED")
+ * → ["70x6", "75x5", "77.5x5"]
+ */
 const describeNextSets = (
   athlete: UserType,
   values: Partial<UserExerciseDataType>,
   difficulty: ExerciseDifficultyType,
-) => describeSets(readWorkingSets(athlete, generateExerciseData(values, difficulty)));
+) =>
+  describeSets(
+    readWorkingSets(athlete, generateExerciseData(values, difficulty)),
+  );
 
 // Stores a working set the way the completion of the last set does.
 const convertToStoredSet = ({
@@ -76,7 +105,13 @@ const convertToStoredSet = ({
   return { level, repetitions, weightPercentage };
 };
 
-// Each row lists one session, each column one working set.
+/**
+ * Runs sessions with the same feedback. Each row lists one session, each
+ * column one working set.
+ *
+ * runSessions(generateAthlete("ADVANCED"), 2, "TOO_EASY")
+ * → [["70x5", "72.5x2", "75x2"], ["70x6", "72.5x5", "75x5"]]
+ */
 const runSessions = (
   athlete: UserType,
   sessions: number,
@@ -95,9 +130,21 @@ const runSessions = (
   return rows;
 };
 
-const readColumn = (rows: string[][], set: number) => rows.map((row) => row[set]);
+/**
+ * Reads one working set across all sessions.
+ *
+ * readColumn([["70x5", "72.5x2"], ["70x6", "72.5x5"]], 1)
+ * → ["72.5x2", "72.5x5"]
+ */
+const readColumn = (rows: string[][], set: number) =>
+  rows.map((row) => row[set]);
 
-// A set stays at its final value, so a ladder pads with its last step.
+/**
+ * A set stays at its final value, so a ladder pads with its last step.
+ *
+ * padLadder(["70x5", "70x6"], 4)
+ * → ["70x5", "70x6", "70x6", "70x6"]
+ */
 const padLadder = (ladder: string[], length: number) => [
   ...ladder,
   ...Array<string>(length - ladder.length).fill(ladder[ladder.length - 1]),
@@ -107,16 +154,23 @@ describe("maxStrengthLadder: first session", () => {
   it.each([
     ["PROFESSIONAL", ["75x3", "77.5x3", "80x2", "80x2"]],
     ["ADVANCED", ["70x5", "72.5x2", "75x2"]],
-  ])("starts every %s set at the first step of its own ladder", (level, expected) => {
-    expect(describeSets(readWorkingSets(generateAthlete(level), null))).toEqual(
-      expected,
-    );
-  });
+  ])(
+    "starts every %s set at the first step of its own ladder",
+    (level, expected) => {
+      expect(
+        describeSets(readWorkingSets(generateAthlete(level), null)),
+      ).toEqual(expected);
+    },
+  );
 
   it("lists the two warm-up sets before the working sets", () => {
     const entries = readMaxTrainingRepetitions(
       generateAthlete("ADVANCED"),
-      readMaxTrainingWeights(squat, generateAthlete("ADVANCED"), null),
+      readMaxTrainingWeights(
+        generateSquat(),
+        generateAthlete("ADVANCED"),
+        null,
+      ),
     );
 
     expect(entries.slice(0, 2)).toEqual([
@@ -181,7 +235,7 @@ describe("maxStrengthLadder: feedback", () => {
     ]);
   });
 
-  it("Advanced: too heavy lowers each set by 2.5 down to the 65% floor", () => {
+  it("Advanced: too hard lowers each set by 2.5 down to the 65% floor", () => {
     expect(runSessions(generateAthlete("ADVANCED"), 5, "TOO_HARD")).toEqual([
       ["70x5", "72.5x2", "75x2"],
       ["67.5x5", "70x3", "72.5x2"],
@@ -207,7 +261,7 @@ describe("maxStrengthLadder: feedback", () => {
     ]);
   });
 
-  it("Pro: too heavy keeps the buffer of every set and moves an empty buffer up", () => {
+  it("Pro: too hard keeps the buffer of every set and moves an empty buffer up", () => {
     const maxFRepetitions: MaxForceRepetitionsDataType[] = [
       { level: "HARD", repetitions: 6, weightPercentage: 75 },
       { level: "HARD", repetitions: 6, weightPercentage: 77.5 },
@@ -314,7 +368,7 @@ describe("maxStrengthLadder: stored entries of another shape", () => {
     "moves a stored last set at buffer %s with feedback %s to %s",
     (lastLevel, difficulty, expected) => {
       const weights = readMaxTrainingWeights(
-        squat,
+        generateSquat(),
         generateAthlete("BEGINNER"),
         generateExerciseData(
           {
@@ -331,15 +385,21 @@ describe("maxStrengthLadder: stored entries of another shape", () => {
 });
 
 describe("maxStrengthLadder: buffer table", () => {
+  beforeEach(() => {
+    jest.useFakeTimers({ now: new Date("2026-10-24T00:00:00Z") });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it("gives a child without a buffer table the fallback repetitions", () => {
     const child = generateAthlete("ADVANCED", "2018-05-01");
-    jest.useFakeTimers({ now: new Date("2026-10-24T00:00:00Z") });
 
     expect(describeSets(readWorkingSets(child, null))).toEqual([
       "70x6",
       "72.5x6",
       "75x6",
     ]);
-    jest.useRealTimers();
   });
 });

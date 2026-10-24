@@ -234,7 +234,9 @@ const readBufferTable = (athlete: UserType): BufferTable => {
 export const readMaxTrainingWeights = (
   exercise: ExerciseType,
   athlete: UserType,
-  exerciseData: Readonly<Record<string, UserExerciseDataType | undefined>> | null,
+  exerciseData: Readonly<
+    Record<string, UserExerciseDataType | undefined>
+  > | null,
 ): MaxTrainingWeightsResult => {
   const states = readNextSetStates(
     readBufferTable(athlete),

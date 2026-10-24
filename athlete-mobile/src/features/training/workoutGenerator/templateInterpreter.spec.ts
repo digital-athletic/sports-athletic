@@ -88,6 +88,41 @@ describe("templateInterpreter: interpretTemplate", () => {
     expect(workout.setList).toEqual(["BR", "GKS", "SWR2KG", "CD"]);
   });
 
+  it("hands each picks block the workout input that resolved it in workout setup", () => {
+    const template: Template = {
+      aiwl: 1,
+      id: "short",
+      name: { en: "Short" },
+      blocks: [{ kind: "picks", skill: "WU", picks: [{ tags: [], count: 2 }] }],
+    };
+    const resolvedSkills: (string | undefined)[] = [];
+    const handleEmptyBlock = (block: Template["blocks"][number]) => ({
+      status: "empty" as const,
+      block,
+      reason: undefined,
+      usedBranchIds: [],
+    });
+    const handlers: BlockHandlerRegistry = {
+      picks: {
+        usedBranchScope: "workout",
+        handleBlock: (block, input) => {
+          resolvedSkills.push(input.picksWorkout.blocks.get(block)?.skill);
+          return handleEmptyBlock(block);
+        },
+      },
+      branches: { usedBranchScope: "block", handleBlock: handleEmptyBlock },
+      duration: { usedBranchScope: "workout", handleBlock: handleEmptyBlock },
+    };
+
+    interpretTemplate(template, generateRuleFamilyInput(), {
+      handlers,
+      finishRules: TRAINING_DAY_FINISH_RULES,
+      buildSetList: buildSkillSetList,
+    });
+
+    expect(resolvedSkills).toEqual(["WU"]);
+  });
+
   it("names the first empty skill in stored order on a day where every skill empties", () => {
     const handlers: BlockHandlerRegistry = {
       picks: {

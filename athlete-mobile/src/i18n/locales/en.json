@@ -24,6 +24,7 @@
     "open": "Open",
     "comingSoon": "Coming soon",
     "confirm": "Confirm",
+    "delete": "Delete",
     "email": "E-Mail",
     "error": "The app could not finish this. Try again.",
     "goOn": "Go on",
@@ -90,6 +91,8 @@
         "loadingTeams": "Loading teams",
         "noWorkouts": "Currently no workouts available",
         "importTraining": "Import training",
+        "deleteTrainingTitle": "Delete training?",
+        "deleteTrainingMessage": "{{name}} will be removed from your trainings. You can import it again from its file.",
         "importErrorTitle": "Import failed",
         "importError": {
           "invalidFormat": "The file is not a valid training file. Check that it is a complete AIWL file.",

@@ -3,7 +3,7 @@ import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { type FC, type ReactNode } from "react";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, type TouchableOpacityProps } from "react-native";
 
 export type ColumnListRowProps = {
   /** Already translated. */
@@ -12,7 +12,10 @@ export type ColumnListRowProps = {
   secondaryDescription?: string;
   thumbnail?: ReactNode;
   onPress: () => void;
-};
+} & Pick<
+  TouchableOpacityProps,
+  "accessibilityActions" | "onAccessibilityAction"
+>;
 
 /** Full width list row with optional thumbnail, shared by ColumnList and the home list screens. */
 export const ColumnListRow: FC<ColumnListRowProps> = ({
@@ -21,6 +24,8 @@ export const ColumnListRow: FC<ColumnListRowProps> = ({
   secondaryDescription,
   thumbnail,
   onPress,
+  accessibilityActions,
+  onAccessibilityAction,
 }) => {
   const { colors } = useTheme();
   const hasDescription = description !== undefined;
@@ -30,6 +35,8 @@ export const ColumnListRow: FC<ColumnListRowProps> = ({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={hasDescription ? `${title}, ${description}` : title}
+      accessibilityActions={accessibilityActions}
+      onAccessibilityAction={onAccessibilityAction}
       activeOpacity={0.7}
     >
       <Box

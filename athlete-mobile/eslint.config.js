@@ -59,6 +59,98 @@ module.exports = defineConfig([
       ],
     },
   },
+  // The new workout generator is a full rewrite and imports no code of the old
+  // generator. The regexes match the alias path and relative paths from the
+  // folder and from one subfolder below it. A mixed module allows only the
+  // listed exports, so a new export starts out banned.
+  {
+    files: ["src/features/training/workoutGenerator/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              regex: "^(@/features/training/|(\\.\\./){1,2})generators(/|$)",
+              message: "The new generator imports nothing of the old one.",
+            },
+            {
+              regex:
+                "^(@/features/training/|(\\.\\./){1,2})utils/(branchFilterUtils|branchLevelUtils|branchMaintenance|duplicateExerciseUtils|exerciseBlockUtils|exerciseOrderUtils|heartRateUtils|maxStrengthAdjustment|maxStrengthLadder|substitutionLevelUtils|supersetPairingUtils|weightAdjustmentUtils|trainingSectionUtils|storedPlanCheck)$",
+              message:
+                "Old generator logic: rewrite it in workoutGenerator/ instead.",
+            },
+            {
+              regex:
+                "^(@/features/training/|(\\.\\./){1,2})utils/skillTreeUtils$",
+              allowImportNames: [
+                "readLiteralSkillTree",
+                "mapSkillCodeToFocusArea",
+                "isPreventionTraining",
+                "getBranchIdByNameAndSkill",
+                "getBranchIdsByNames",
+              ],
+              message:
+                "Old generator logic: rewrite it in workoutGenerator/ instead.",
+            },
+            {
+              regex:
+                "^(@/features/training/|(\\.\\./){1,2})utils/workoutUtils$",
+              allowImportNames: [
+                "getUserLevel",
+                "STRENGTH_TEST_SKILL",
+                "calculateWorkoutTotals",
+                "maxWeightByEpley",
+                "calculateAdjustedMaxValues",
+                "applyMaxValueToDirections",
+              ],
+              message:
+                "Old generator logic: rewrite it in workoutGenerator/ instead.",
+            },
+            {
+              regex:
+                "^(@/features/training/|(\\.\\./){1,2})utils/equipmentUtils$",
+              allowImportNames: [
+                "hasWeights",
+                "hasBarbell",
+                "hasAnyBarbell",
+                "hasRunEquipment",
+              ],
+              message:
+                "Old generator logic: rewrite it in workoutGenerator/ instead.",
+            },
+            {
+              regex: "^(@/features/training/|(\\.\\./){1,2})utils/painUtils$",
+              allowImportNames: [
+                "PAIN_REGIONS",
+                "PainRegion",
+                "isPainRegion",
+                "getBlocksFromPains",
+                "getPreventionsFromPains",
+                "isSamePainSet",
+                "shouldShowPainAlert",
+              ],
+              message:
+                "Old generator logic: rewrite it in workoutGenerator/ instead.",
+            },
+            {
+              regex:
+                "^(@/features/training/|(\\.\\./){1,2})utils/exerciseDataUtils$",
+              allowImportNames: [
+                "isNoIncreaseSkill",
+                "shouldProcessExerciseValues",
+                "isFeedbackEligibleSkill",
+                "shouldSkipExerciseSave",
+                "deriveActiveExerciseIndex",
+              ],
+              message:
+                "Old generator logic: rewrite it in workoutGenerator/ instead.",
+            },
+          ],
+        },
+      ],
+    },
+  },
   // Screen and component bodies carry a JSX tree, which inflates line count without
   // adding branching. Logic still belongs in hooks, so only the line budget is raised.
   {

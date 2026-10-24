@@ -1,7 +1,7 @@
 import { RegionType } from "@/bodyParts/types";
+import { GeneratorError } from "@/features/training/models/GeneratorError";
 import translations from "@/i18n/locales/en.json";
 import { TFunction } from "i18next";
-import { GeneratorError } from "./GeneratorError";
 
 type EquipmentItemKey = keyof typeof translations.equipment.items;
 

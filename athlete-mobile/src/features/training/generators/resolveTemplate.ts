@@ -1,5 +1,6 @@
 import { loadSkillCatalogEntry } from "@/data/loadSkillCatalog";
 import { lookupTemplate } from "@/features/customWorkouts/lookupTemplate";
+import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import type { TrainingType } from "@/features/training/models/Training";
 import { hasWeights as hasWeightEquipment } from "@/features/training/utils/equipmentUtils";
 import {
@@ -23,7 +24,6 @@ import {
   type SkillTreeCatalogEntry,
 } from "@/schemas/skillCatalog.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
-import type { GeneratorError } from "./GeneratorError";
 import { filterByTags } from "./focusTrainingSelection";
 
 export interface BlockTiming {

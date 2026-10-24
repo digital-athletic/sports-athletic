@@ -6,7 +6,7 @@ import {
 type EquipmentPartNeedRow = [
   part: string,
   equipment: string[],
-  otherParts: string[],
+  branchParts: string[],
   exerciseIds: string[],
 ];
 
@@ -48,11 +48,11 @@ const EQUIPMENT_PART_CASES: [EquipmentPartNeedRow, boolean][] = [
 describe("equipmentAvailability: isEquipmentPartAvailable", () => {
   it.each(EQUIPMENT_PART_CASES)(
     "part, place, branch parts and exercises %j: %s",
-    ([part, equipment, otherParts, exerciseIds], expected) => {
+    ([part, equipment, branchParts, exerciseIds], expected) => {
       const need: EquipmentPartNeed = {
         part,
         equipment,
-        otherParts,
+        branchParts,
         exerciseIds,
       };
 

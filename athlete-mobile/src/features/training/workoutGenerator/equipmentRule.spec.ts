@@ -64,13 +64,22 @@ describe("equipmentRule: filterBranchesByEquipment", () => {
 
   it("reads the exercising bench exercises of a stored branch", () => {
     const input = generateRuleFamilyInput({ equipment: ["BENCH"] });
-    const storedEntry = (exerciseId: string) => ({
+    /**
+     * Builds a stored day entry that needs an exercising bench.
+     *
+     * generateStoredBranchEntry("209")
+     * → { tags: ["EQ_EXERCISING_BENCH", "REGION_LOWER_BODY"], exercises: { 1: { exerciseId: "209" } } }
+     */
+    const generateStoredBranchEntry = (exerciseId: string) => ({
       tags: ["EQ_EXERCISING_BENCH", "REGION_LOWER_BODY"],
       exercises: { 1: { exerciseId } },
     });
 
     const result = filterBranchesByEquipment(
-      { "1": storedEntry("1"), "2": storedEntry("209") },
+      {
+        "1": generateStoredBranchEntry("1"),
+        "2": generateStoredBranchEntry("209"),
+      },
       input,
     );
 

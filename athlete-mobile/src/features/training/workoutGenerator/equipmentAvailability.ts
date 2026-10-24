@@ -7,7 +7,7 @@ export interface EquipmentPartNeed {
   part: string;
   equipment: readonly string[];
   /** Every equipment part the branch needs, the part itself included. */
-  otherParts: readonly string[];
+  branchParts: readonly string[];
   exerciseIds: readonly string[];
 }
 
@@ -28,11 +28,14 @@ const hasEquipmentContaining = (
   equipment.some((item) => names.some((name) => item.includes(name)));
 
 // Medicine ball and dumbbell stand in for each other when the branch needs both
-const checkBallSwap: EquipmentPartCheck = ({ part, otherParts }) =>
+const checkMedicineBallDumbbellSwap: EquipmentPartCheck = ({
+  part,
+  branchParts,
+}) =>
   (part.includes(EQUIPMENT.MEDICINE_BALL) &&
-    otherParts.includes(EQUIPMENT.DUMBBELL)) ||
+    branchParts.includes(EQUIPMENT.DUMBBELL)) ||
   (part === EQUIPMENT.DUMBBELL &&
-    otherParts.some((other) => other.includes(EQUIPMENT.MEDICINE_BALL)))
+    branchParts.some((other) => other.includes(EQUIPMENT.MEDICINE_BALL)))
     ? true
     : undefined;
 
@@ -54,9 +57,9 @@ const checkChairOrLowBox: EquipmentPartCheck = ({ part, equipment }) =>
       ])
     : undefined;
 
-const isOnlyInclineBenchNeeded = ({ part, otherParts }: EquipmentPartNeed) =>
+const isOnlyInclineBenchNeeded = ({ part, branchParts }: EquipmentPartNeed) =>
   part === EQUIPMENT.INCLINE_BENCH &&
-  otherParts
+  branchParts
     .filter((other) => other.includes(EQUIPMENT.BENCH))
     .every(
       (bench) =>
@@ -71,7 +74,7 @@ const checkExercisingBench: EquipmentPartCheck = ({ part, equipment }) =>
     : undefined;
 
 const checkBench: EquipmentPartCheck = (need) => {
-  const { part, equipment, otherParts, exerciseIds } = need;
+  const { part, equipment, branchParts, exerciseIds } = need;
   if (!part.includes(EQUIPMENT.BENCH)) {
     return undefined;
   }
@@ -91,7 +94,7 @@ const checkBench: EquipmentPartCheck = (need) => {
   // A chair the place has and the branch needs replaces every other bench
   if (
     hasEquipmentContaining(equipment, [EQUIPMENT.CHAIR]) &&
-    otherParts.includes(EQUIPMENT.CHAIR)
+    branchParts.includes(EQUIPMENT.CHAIR)
   ) {
     return true;
   }
@@ -117,7 +120,7 @@ const checkTreadmill: EquipmentPartCheck = ({ part }) =>
   part === EQUIPMENT.TREADMILL ? true : undefined;
 
 const EQUIPMENT_PART_CHECKS: EquipmentPartCheck[] = [
-  checkBallSwap,
+  checkMedicineBallDumbbellSwap,
   checkBarbell,
   checkChairOrLowBox,
   checkBench,
@@ -131,7 +134,7 @@ const EQUIPMENT_PART_CHECKS: EquipmentPartCheck[] = [
  * for it. The first check that applies decides; otherwise the place must list
  * the part itself.
  *
- * isEquipmentPartAvailable({ part: "CHAIR", equipment: ["BENCH"], otherParts: [], exerciseIds: [] }) → true
+ * isEquipmentPartAvailable({ part: "CHAIR", equipment: ["BENCH"], branchParts: [], exerciseIds: [] }) → true
  */
 export const isEquipmentPartAvailable = (need: EquipmentPartNeed): boolean => {
   for (const check of EQUIPMENT_PART_CHECKS) {

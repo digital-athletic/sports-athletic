@@ -23,22 +23,19 @@ const listMissingBranchEquipment = (
   levels: CandidateLevels,
   equipment: string[],
 ): string[] => {
-  const parts = getTagValues(tags, TagGroups.EQUIPMENT);
+  const branchParts = getTagValues(tags, TagGroups.EQUIPMENT);
   const exerciseIds = listBranchExerciseIds(levels);
-  return parts.filter(
+  return branchParts.filter(
     (part) =>
-      !isEquipmentPartAvailable({
-        part,
-        equipment,
-        otherParts: parts,
-        exerciseIds,
-      }),
+      !isEquipmentPartAvailable({ part, equipment, branchParts, exerciseIds }),
   );
 };
 
 /**
  * Removes the branches that need equipment the place lacks, with one region
- * request each, and the branches without levels, with no request.
+ * request each, and the branches without levels, with no request. A branch
+ * without levels gets empty removal details: it names no equipment, so
+ * listMissingEquipment adds nothing for it.
  */
 export const filterBranchesByEquipment = <T extends CandidateBranch>(
   branches: Record<string, T>,

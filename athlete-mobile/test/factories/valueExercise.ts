@@ -1,4 +1,17 @@
+import { loadExercises } from "@/data/loadExercises";
 import type { ExerciseType } from "@/schemas/exercise.schema";
+
+/**
+ * Finds an exercise of the bundled catalog and fails the spec when it is gone.
+ *
+ * findCatalogExerciseById("721")
+ * → { id: "721", isAdvanceByDuration: true, values: { duration: { startValue: ... } }, ... }
+ */
+export const findCatalogExerciseById = (id: string): ExerciseType => {
+  const exercise = loadExercises().find((entry) => entry.id === id);
+  if (!exercise) throw new Error(`Exercise ${id} missing from the catalog`);
+  return exercise;
+};
 
 export interface ValueExerciseOptions {
   withWeights?: boolean;

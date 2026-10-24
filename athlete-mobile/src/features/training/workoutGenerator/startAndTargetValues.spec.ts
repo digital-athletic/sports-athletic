@@ -1,15 +1,15 @@
 import {
+  findCatalogExerciseById,
   generateAuthoredValues,
   generateValueExercise,
+  type ValueExerciseOptions,
 } from "../../../../test/factories/valueExercise";
-import { loadExercises } from "@/data/loadExercises";
 import { loadIntensityConfig } from "@/data/loadIntensityConfig";
 import type {
   GenderTag,
   IntensityData,
 } from "@/features/training/models/Intensity";
 import type { TrainingLevelType } from "@/schemas/common.schema";
-import type { ExerciseType } from "@/schemas/exercise.schema";
 import {
   clampValueToStartAndTarget,
   readAuthoredExerciseValue,
@@ -19,47 +19,53 @@ import {
   readGenderLevelValue,
 } from "./startAndTargetValues";
 
-const GENDERS: GenderTag[] = ["m", "w", "k"];
-const LEVELS: TrainingLevelType[] = [
-  "beginner",
-  "intermediate",
-  "advanced",
-  "professional",
-];
+const advancedMan = { gender: "m", level: "advanced" } as const;
 
-const everyAthlete = GENDERS.flatMap((gender) =>
-  LEVELS.map((level) => ({ gender, level })),
-);
-
-const readCatalogExercise = (id: string): ExerciseType => {
-  const exercise = loadExercises().find((entry) => entry.id === id);
-  if (!exercise) throw new Error(`Exercise ${id} missing from the catalog`);
-  return exercise;
+/**
+ * Reads the start and target of one value of a generated exercise.
+ *
+ * readRange("SWR2", "duration", { withWeights: true })
+ * → { start: 30, target: 50 }
+ */
+const readRange = (
+  intensityName: string,
+  mode: "repetition" | "duration",
+  {
+    withWeights = false,
+    values = {},
+    athlete = advancedMan,
+  }: Pick<ValueExerciseOptions, "withWeights" | "values"> & {
+    athlete?: { gender: GenderTag; level: TrainingLevelType };
+  } = {},
+) => {
+  const intensity = loadIntensityConfig(intensityName);
+  const exercise = generateValueExercise(mode, { withWeights, values });
+  return {
+    start: readExerciseStartValue(intensity, exercise, mode, athlete),
+    target: readExerciseTargetValue(intensity, exercise, mode, athlete),
+  };
 };
 
 describe("startAndTargetValues: readGenderLevelValue", () => {
-  const data = {
-    default: { default: 1, advanced: 2 },
-    m: { default: 3, advanced: 4 },
-  };
-
   it.each([
     ["m", "advanced", 4],
     ["m", "beginner", 3],
     ["w", "advanced", 2],
     ["w", "beginner", 1],
   ])("reads gender %s and level %s as %p", (gender, level, expected) => {
+    const data = {
+      default: { default: 1, advanced: 2 },
+      m: { default: 3, advanced: 4 },
+    };
+
     expect(readGenderLevelValue(data, gender, level)).toBe(expected);
   });
 
-  it.each([[""], [null]])(
-    "treats a gender value %p as not set",
-    (genderValue) => {
-      const values = { default: { default: 25 }, m: { default: genderValue } };
+  it.each([[""], [null]])("treats a gender value %p as not set", (value) => {
+    const data = { default: { default: 25 }, m: { default: value } };
 
-      expect(readGenderLevelValue(values, "m", "advanced")).toBe(25);
-    },
-  );
+    expect(readGenderLevelValue(data, "m", "advanced")).toBe(25);
+  });
 
   it("keeps a value of 0 and converts strings", () => {
     expect(
@@ -77,61 +83,58 @@ describe("startAndTargetValues: readGenderLevelValue", () => {
 });
 
 describe("startAndTargetValues: readAuthoredExerciseValue", () => {
-  const athlete = { gender: "m", level: "advanced" } as const;
-
   it("treats a value of 0 as not set", () => {
     expect(
       readAuthoredExerciseValue(
         { default: { default: 25 }, m: { default: 0 } },
-        athlete,
+        advancedMan,
       ),
     ).toBe(25);
   });
 
   it("returns the fallback without an authored value", () => {
-    expect(readAuthoredExerciseValue(undefined, athlete, 7)).toBe(7);
-    expect(readAuthoredExerciseValue({ w: { default: 9 } }, athlete, 7)).toBe(
-      7,
-    );
+    expect(readAuthoredExerciseValue(undefined, advancedMan, 7)).toBe(7);
+    expect(
+      readAuthoredExerciseValue({ w: { default: 9 } }, advancedMan, 7),
+    ).toBe(7);
   });
 });
 
 describe("startAndTargetValues: hypertrophy range", () => {
-  const cases = [
+  it.each([
     ["repetition", true, 8, 12],
     ["repetition", false, 8, 12],
     ["duration", true, 30, 50],
     ["duration", false, 30, 60],
-  ] as const;
-
-  it.each(
-    everyAthlete.flatMap((athlete) =>
-      cases.map(([mode, withWeights, start, target]) => ({
-        ...athlete,
-        mode,
-        withWeights,
-        start,
-        target,
-      })),
-    ),
-  )(
-    "gender $gender, level $level: $mode with weights $withWeights runs $start up to $target",
-    ({ gender, level, mode, withWeights, start, target }) => {
-      const exercise = generateValueExercise(mode, {
-        withWeights,
-        values: { [mode]: generateAuthoredValues("15", "80") },
-      });
-      const intensity = loadIntensityConfig(withWeights ? "SWR2" : "SWR2KG");
-      const athlete = { gender, level };
-
-      expect(readExerciseStartValue(intensity, exercise, mode, athlete)).toBe(
-        start,
-      );
-      expect(readExerciseTargetValue(intensity, exercise, mode, athlete)).toBe(
-        target,
-      );
+  ] as const)(
+    "runs %s with weights %s from %p up to %p despite authored values",
+    (mode, withWeights, start, target) => {
+      expect(
+        readRange(withWeights ? "SWR2" : "SWR2KG", mode, {
+          withWeights,
+          values: { [mode]: generateAuthoredValues("15", "80") },
+        }),
+      ).toEqual({ start, target });
     },
   );
+
+  it("gives every gender and level the same range", () => {
+    for (const gender of ["m", "w", "k"] as const) {
+      for (const level of [
+        "beginner",
+        "intermediate",
+        "advanced",
+        "professional",
+      ] as const) {
+        expect(
+          readRange("SWR2", "duration", {
+            withWeights: true,
+            athlete: { gender, level },
+          }),
+        ).toEqual({ start: 30, target: 50 });
+      }
+    }
+  });
 
   it("reads authored repetitions only while the config does not override them", () => {
     const exercise = generateValueExercise("repetition", {
@@ -143,26 +146,34 @@ describe("startAndTargetValues: hypertrophy range", () => {
       ...intensity,
       overridesExerciseRepsAndDuration: false,
     };
-    const athlete = { gender: "m", level: "advanced" } as const;
 
     expect(
-      readExerciseStartValue(intensity, exercise, "repetition", athlete),
+      readExerciseStartValue(intensity, exercise, "repetition", advancedMan),
     ).toBe(8);
     expect(
-      readExerciseTargetValue(intensity, exercise, "repetition", athlete),
+      readExerciseTargetValue(intensity, exercise, "repetition", advancedMan),
     ).toBe(12);
     expect(
-      readExerciseStartValue(withoutOverride, exercise, "repetition", athlete),
+      readExerciseStartValue(
+        withoutOverride,
+        exercise,
+        "repetition",
+        advancedMan,
+      ),
     ).toBe(15);
     expect(
-      readExerciseTargetValue(withoutOverride, exercise, "repetition", athlete),
+      readExerciseTargetValue(
+        withoutOverride,
+        exercise,
+        "repetition",
+        advancedMan,
+      ),
     ).toBe(20);
   });
 
   it("reads the config start and target by gender and level", () => {
-    const base = loadIntensityConfig("SWR2");
     const intensity: IntensityData = {
-      ...base,
+      ...loadIntensityConfig("SWR2"),
       startValue: {
         repetition: { default: { default: 6 } },
         duration: { default: { default: 20 }, m: { advanced: 25 } },
@@ -173,30 +184,19 @@ describe("startAndTargetValues: hypertrophy range", () => {
       },
     };
     const exercise = generateValueExercise("repetition", { withWeights: true });
+    const advancedWoman = { gender: "w", level: "advanced" } as const;
 
     expect(
-      readExerciseStartValue(intensity, exercise, "repetition", {
-        gender: "m",
-        level: "advanced",
-      }),
+      readExerciseStartValue(intensity, exercise, "repetition", advancedMan),
     ).toBe(6);
     expect(
-      readExerciseTargetValue(intensity, exercise, "repetition", {
-        gender: "m",
-        level: "advanced",
-      }),
+      readExerciseTargetValue(intensity, exercise, "repetition", advancedMan),
     ).toBe(10);
     expect(
-      readExerciseStartValue(intensity, exercise, "duration", {
-        gender: "m",
-        level: "advanced",
-      }),
+      readExerciseStartValue(intensity, exercise, "duration", advancedMan),
     ).toBe(25);
     expect(
-      readExerciseTargetValue(intensity, exercise, "duration", {
-        gender: "w",
-        level: "advanced",
-      }),
+      readExerciseTargetValue(intensity, exercise, "duration", advancedWoman),
     ).toBe(40);
   });
 
@@ -212,7 +212,7 @@ describe("startAndTargetValues: hypertrophy range", () => {
         intensity,
         generateValueExercise("duration"),
         "duration",
-        { gender: "m", level: "advanced" },
+        advancedMan,
       ),
     ).toBeUndefined();
   });
@@ -253,53 +253,26 @@ describe("startAndTargetValues: load ranges", () => {
   ] as const)(
     "%s with weights %s uses 4 up to 6 repetitions",
     (intensityName, withWeights) => {
-      const intensity = loadIntensityConfig(intensityName);
-      const exercise = generateValueExercise("repetition", { withWeights });
-
-      for (const gender of ["m", "w"] as const) {
-        const athlete = { gender, level: "advanced" } as const;
-        expect(
-          readExerciseStartValue(intensity, exercise, "repetition", athlete),
-        ).toBe(4);
-        expect(
-          readExerciseTargetValue(intensity, exercise, "repetition", athlete),
-        ).toBe(6);
-      }
+      expect(readRange(intensityName, "repetition", { withWeights })).toEqual({
+        start: 4,
+        target: 6,
+      });
     },
   );
 });
 
 describe("startAndTargetValues: full body stability and prevention", () => {
-  const cases = [
+  it.each([
     ["repetition", true, 8, 12],
     ["repetition", false, 8, 12],
     ["duration", true, 30, 50],
     ["duration", false, 30, 60],
-  ] as const;
-
-  it.each(
-    everyAthlete.flatMap((athlete) =>
-      cases.map(([mode, withWeights, start, target]) => ({
-        ...athlete,
-        mode,
-        withWeights,
-        start,
-        target,
-      })),
-    ),
-  )(
-    "GKS for gender $gender and level $level falls back to $start up to $target for $mode with weights $withWeights",
-    ({ gender, level, mode, withWeights, start, target }) => {
-      const exercise = generateValueExercise(mode, { withWeights });
-      const intensity = loadIntensityConfig(withWeights ? "GKS" : "GKSKG");
-      const athlete = { gender, level };
-
-      expect(readExerciseStartValue(intensity, exercise, mode, athlete)).toBe(
-        start,
-      );
-      expect(readExerciseTargetValue(intensity, exercise, mode, athlete)).toBe(
-        target,
-      );
+  ] as const)(
+    "GKS falls back to %s with weights %s from %p up to %p",
+    (mode, withWeights, start, target) => {
+      expect(
+        readRange(withWeights ? "GKS" : "GKSKG", mode, { withWeights }),
+      ).toEqual({ start, target });
     },
   );
 
@@ -313,18 +286,11 @@ describe("startAndTargetValues: full body stability and prevention", () => {
   )(
     "$intensityName resolves $mode to the authored values",
     ({ intensityName, mode }) => {
-      const exercise = generateValueExercise(mode, {
-        values: { [mode]: generateAuthoredValues("20", "80") },
-      });
-      const intensity = loadIntensityConfig(intensityName);
-      const athlete = { gender: "m", level: "advanced" } as const;
-
-      expect(readExerciseStartValue(intensity, exercise, mode, athlete)).toBe(
-        20,
-      );
-      expect(readExerciseTargetValue(intensity, exercise, mode, athlete)).toBe(
-        80,
-      );
+      expect(
+        readRange(intensityName, mode, {
+          values: { [mode]: generateAuthoredValues("20", "80") },
+        }),
+      ).toEqual({ start: 20, target: 80 });
     },
   );
 
@@ -332,9 +298,9 @@ describe("startAndTargetValues: full body stability and prevention", () => {
     expect(
       readExerciseStartValue(
         loadIntensityConfig("WUSKSA"),
-        readCatalogExercise("721"),
+        findCatalogExerciseById("721"),
         "duration",
-        { gender: "m", level: "advanced" },
+        advancedMan,
       ),
     ).toBe(30);
   });
@@ -365,32 +331,40 @@ describe("startAndTargetValues: readAuthoredStartValues", () => {
 });
 
 describe("startAndTargetValues: clampValueToStartAndTarget", () => {
-  const context = {
+  /**
+   * Builds the value context of a weighted SWR2 exercise.
+   *
+   * generateContext()
+   * → { intensity: <SWR2>, exercise: { tags: [..., "EQ_TYPE_WEIGHTS"], ... }, gender: "m", level: "advanced" }
+   */
+  const generateContext = () => ({
     intensity: loadIntensityConfig("SWR2"),
     exercise: generateValueExercise("repetition", { withWeights: true }),
-    gender: "m",
-    level: "advanced",
-  } as const;
+    ...advancedMan,
+  });
 
   it.each([
     [18, 12],
     [5, 8],
     [10, 10],
   ])("clamps %p repetitions to %p", (value, expected) => {
-    expect(clampValueToStartAndTarget(value, "repetition", context)).toBe(
-      expected,
-    );
+    expect(
+      clampValueToStartAndTarget(value, "repetition", generateContext()),
+    ).toBe(expected);
   });
 
   it("keeps the value without an intensity or a training level", () => {
     expect(
       clampValueToStartAndTarget(18, "repetition", {
-        ...context,
+        ...generateContext(),
         intensity: null,
       }),
     ).toBe(18);
     expect(
-      clampValueToStartAndTarget(18, "repetition", { ...context, level: "" }),
+      clampValueToStartAndTarget(18, "repetition", {
+        ...generateContext(),
+        level: "",
+      }),
     ).toBe(18);
   });
 });

@@ -1,7 +1,6 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import { Logger } from "@/services/Logger";
 import { getTagValues } from "@/utils/tagUtils";
 
 const EMPTY_BAR_WEIGHT = 20;
@@ -41,16 +40,9 @@ export const roundWeight = (
   exercise: TaggedExercise,
   { emptyBarMinimum = true }: { emptyBarMinimum?: boolean } = {},
 ): number => {
-  if (!isFinite(value)) {
-    Logger.logError(
-      new Error(`f:roundWeight ~ input: ${value} is not a finite number`),
-    );
-    return 0;
-  }
-  const rounded = roundToStepTiesDown(
-    value,
-    readRoundingStep(value, exercise),
-  );
+  // A corrupt stored weight gives no load to round.
+  if (!isFinite(value)) return 0;
+  const rounded = roundToStepTiesDown(value, readRoundingStep(value, exercise));
   return emptyBarMinimum && isBarbell(exercise)
     ? Math.max(rounded, EMPTY_BAR_WEIGHT)
     : rounded;

@@ -1,10 +1,16 @@
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { LevelTag } from "@/constants/workoutConstants";
+import { getAllSkillTrees } from "@/data/skillTreeRegistry";
+import type { BlockValues } from "@/schemas/aiwl.schema";
 import type { SkillCode } from "@/schemas/generator.schema";
 import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
 import { generateSequenceRandom } from "../../../../test/factories/sequenceRandom";
-import { findCatalogExerciseById } from "../../../../test/factories/valueExercise";
+import {
+  findCatalogExerciseById,
+  generateAuthoredValues,
+} from "../../../../test/factories/valueExercise";
+import { buildBranchLookupIndex } from "./branchLookupIndex";
 import {
   buildCardioSetList,
   drawCardioExercisePair,
@@ -22,6 +28,7 @@ interface CardioOptions {
   level?: LevelTag;
   soreMuscles?: string[];
   setDuration?: number;
+  values?: BlockValues;
   input?: GenerationInput;
 }
 
@@ -41,6 +48,7 @@ const buildCardio = (
     level,
     soreMuscles,
     setDuration,
+    values,
     input,
   }: CardioOptions = {},
 ): GeneratedSetListEntry[] =>
@@ -52,6 +60,7 @@ const buildCardio = (
       sets: 1,
       rest: { withinSuperset: 10, betweenSets: 10, afterExercise: 10 },
       setDuration,
+      values,
     },
     input ??
       generateRuleFamilyInput({
@@ -69,7 +78,12 @@ const buildCardio = (
 const describeCardio = (setList: GeneratedSetListEntry[]): string[] =>
   setList.map((entry) => `${entry.exerciseId} ${entry.duration}`);
 
-const sumDurations = (setList: GeneratedSetListEntry[]) =>
+/**
+ * Adds up the seconds of every entry.
+ *
+ * sumSetListDurations([run 38 for 120 s, run 42 for 60 s]) → 180
+ */
+const sumSetListDurations = (setList: GeneratedSetListEntry[]) =>
   setList.reduce((sum, entry) => sum + (entry.duration ?? 0), 0);
 
 describe("cardioSetListBuilder: interval zones", () => {
@@ -162,7 +176,7 @@ describe("cardioSetListBuilder: zone 4 warm-up and filler", () => {
         setList.filter((entry) => entry.exerciseId === ZONE_FOUR_RUN),
       ),
     ).toEqual(zoneFourRuns);
-    expect(sumDurations(setList)).toBe(minutes * 60);
+    expect(sumSetListDurations(setList)).toBe(minutes * 60);
   });
 
   it("discards a filler below one minute", () => {
@@ -177,7 +191,7 @@ describe("cardioSetListBuilder: zone 4 warm-up and filler", () => {
         setList.filter((entry) => entry.exerciseId === ZONE_FOUR_RUN),
       ),
     ).toEqual(["38 300"]);
-    expect(sumDurations(setList)).toBe(570);
+    expect(sumSetListDurations(setList)).toBe(570);
   });
 
   it("runs only the intervals that fit and adds no warm-up without time left", () => {
@@ -187,6 +201,63 @@ describe("cardioSetListBuilder: zone 4 warm-up and filler", () => {
       `${ZONE_TWO_RUN} 120`,
       `${ZONE_FIVE_RUN} 60`,
     ]);
+  });
+});
+
+describe("cardioSetListBuilder: counts that are no whole number", () => {
+  it("runs a count of 2.5 as 3 intervals of 2.5, as the old builder's loop", () => {
+    const run = findCatalogExerciseById(ZONE_TWO_RUN);
+    const input = generateRuleFamilyInput({
+      exerciseCatalog: [
+        {
+          ...run,
+          values: {
+            ...run.values,
+            repetition: generateAuthoredValues("2.5", "5"),
+          },
+        },
+      ],
+    });
+
+    const setList = buildCardio("CARDIO_2", 30, { input, values: "exercise" });
+
+    expect(
+      setList
+        .filter((entry) => entry.branchId === "b1")
+        .map((entry) => entry.set),
+    ).toEqual([
+      [1, 2.5],
+      [2, 2.5],
+      [3, 2.5],
+    ]);
+    expect(describeCardio([setList[0], setList[setList.length - 1]])).toEqual([
+      "38 300",
+      "38 1140",
+    ]);
+  });
+
+  it("builds nothing for a minute budget that is not a number", () => {
+    expect(buildCardio("CARDIO_2", Number.NaN)).toEqual([]);
+  });
+});
+
+describe("cardioSetListBuilder: zone trees", () => {
+  it("throws for a zone tree without a first exercise", () => {
+    const skillTrees = getAllSkillTrees();
+    const [branchId, branch] = Object.entries(skillTrees.CARDIO_5)[0];
+    const input: GenerationInput = {
+      ...generateRuleFamilyInput({
+        exerciseCatalog: [findCatalogExerciseById(ZONE_TWO_RUN)],
+      }),
+      branchLookupIndex: buildBranchLookupIndex({
+        CARDIO_4: skillTrees.CARDIO_4,
+        CARDIO_5: { [branchId]: { ...branch, levels: {} } },
+      }),
+    };
+
+    expect(() => buildCardio("CARDIO_2", 30, { input })).toThrow(
+      "Skill tree CARDIO_5 has no first exercise",
+    );
   });
 });
 
@@ -220,6 +291,23 @@ describe("cardioSetListBuilder: nothing to build", () => {
       buildCardio("CARDIO_2", 30, {
         input: generateRuleFamilyInput({ exerciseCatalog: [] }),
       }),
+    ).toEqual([]);
+  });
+
+  it("builds nothing for a cardio skill without branches", () => {
+    const pairs = drawCardioExercisePair([], generateSequenceRandom([0]));
+
+    expect(
+      buildCardioSetList(
+        pairs,
+        {
+          skill: "CARDIO_2",
+          minutes: 30,
+          sets: 1,
+          rest: { withinSuperset: 10, betweenSets: 10, afterExercise: 10 },
+        },
+        generateRuleFamilyInput(),
+      ),
     ).toEqual([]);
   });
 

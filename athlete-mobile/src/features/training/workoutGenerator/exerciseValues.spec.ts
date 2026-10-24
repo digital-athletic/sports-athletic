@@ -1,3 +1,4 @@
+import { generateCatalogWithProgression } from "../../../../test/factories/skillCatalog";
 import {
   findCatalogExerciseById,
   generateAuthoredValues,
@@ -364,13 +365,14 @@ describe("exerciseValues: stored values", () => {
   );
 
   it("reads the progression flag of the given catalog", () => {
-    const skillCatalog = loadSkillCatalog();
-    const withProgression: SkillCatalog = {
-      ...skillCatalog,
-      WU: { ...skillCatalog.WU, progression: true },
-    };
-
-    expect(readStoredRepetition("SK", "WU", 100, withProgression)).toBe(8);
+    expect(
+      readStoredRepetition(
+        "SK",
+        "WU",
+        100,
+        generateCatalogWithProgression("WU", true),
+      ),
+    ).toBe(8);
   });
 
   it("keeps a stored load of 0 kg only on a weighted exercise", () => {

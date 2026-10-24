@@ -1,5 +1,5 @@
+import { generateCatalogWithProgression } from "../../../../test/factories/skillCatalog";
 import { loadSkillCatalog } from "@/data/loadSkillCatalog";
-import type { SkillCatalog } from "@/schemas/skillCatalog.schema";
 import {
   isSkillWithoutProgression,
   readSkillCatalogEntry,
@@ -38,14 +38,17 @@ describe("skillCatalogEntry: isSkillWithoutProgression", () => {
   });
 
   it("reads the progression flag of the given catalog", () => {
-    const skillCatalog = loadSkillCatalog();
-    const customCatalog: SkillCatalog = {
-      ...skillCatalog,
-      WU: { ...skillCatalog.WU, progression: true },
-      GKS: { ...skillCatalog.GKS, progression: false },
-    };
-
-    expect(isSkillWithoutProgression(customCatalog, "WU")).toBe(false);
-    expect(isSkillWithoutProgression(customCatalog, "GKS")).toBe(true);
+    expect(
+      isSkillWithoutProgression(
+        generateCatalogWithProgression("WU", true),
+        "WU",
+      ),
+    ).toBe(false);
+    expect(
+      isSkillWithoutProgression(
+        generateCatalogWithProgression("GKS", false),
+        "GKS",
+      ),
+    ).toBe(true);
   });
 });

@@ -431,6 +431,8 @@
     "list": {
       "title": "Training Checklist",
       "skipExercise": "Skip exercise",
+      "startExercise": "Start exercise",
+      "continueExercise": "Continue",
       "finishTraining": "Finish Training"
     },
     "active": {

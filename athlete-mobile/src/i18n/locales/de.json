@@ -431,6 +431,8 @@
     "list": {
       "title": "Trainings-Checkliste",
       "skipExercise": "Übung überspringen",
+      "startExercise": "Übung starten",
+      "continueExercise": "Weiter",
       "finishTraining": "Training beenden"
     },
     "active": {

@@ -1,3 +1,4 @@
+import { generateCatalogWithProgression } from "../../../../test/factories/skillCatalog";
 import {
   findCatalogExerciseById,
   generateValueExercise,
@@ -233,18 +234,12 @@ describe("exerciseStartValues: feedback", () => {
   });
 
   it("reads the progression flag of the given catalog", () => {
-    const skillCatalog = loadSkillCatalog();
-    const withProgression: SkillCatalog = {
-      ...skillCatalog,
-      WU: { ...skillCatalog.WU, progression: true },
-    };
-
     expect(
       readStartValues(
         { skill: "WU" },
         generateValueExercise("repetition"),
         generateSource({
-          skillCatalog: withProgression,
+          skillCatalog: generateCatalogWithProgression("WU", true),
           exerciseData: generateExerciseData("WU", 15),
         }),
       ).repetition,

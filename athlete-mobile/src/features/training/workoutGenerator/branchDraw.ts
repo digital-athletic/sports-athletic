@@ -31,7 +31,10 @@ export interface BranchDrawSource
   extends Pick<GenerationInput, "exerciseCatalog" | "exerciseData" | "random"> {
   /** The fitness level resolution starts from, e.g. "ADVANCED". */
   readonly fitnessLevel: string;
-  /** The workout pool; the exercises of used branches resolve against it. */
+  /**
+   * The workout pool; the exercises of used branches resolve against it. Must
+   * be the DrawContext.pool of the same workout.
+   */
   readonly pool: SkillTreeType;
 }
 
@@ -107,24 +110,25 @@ const readOppositeDirection = (exerciseTags: string[]): string => {
 };
 
 // Draws each candidate in turn: the last both sided one becomes the partner,
-// and one tagged with the opposite direction ends the search.
+// and one tagged with the bare opposite direction ends the search.
 const drawBothSidedPartner = (
   source: PairDrawSource,
   branches: SkillTreeType,
   candidates: DrawCandidate[],
-  lead: { usedBranchIds: string[]; oppositeDirection: string },
+  partnerSearch: { usedBranchIds: string[]; oppositeDirection: string },
 ): BranchExerciseReference | undefined => {
   let partner: BranchExerciseReference | undefined;
   for (const { branchId } of candidates) {
     const drawn = drawSingleBranch(
       source,
       { [branchId]: branches[branchId] },
-      lead.usedBranchIds,
+      partnerSearch.usedBranchIds,
     );
     const tags = drawn && source.exerciseMap.get(drawn.exerciseId)?.tags;
     if (!drawn || !tags?.includes("SIDE_BOTH")) continue;
     partner = drawn;
-    if (tags.includes(lead.oppositeDirection)) break;
+    // A bare direction never matches the prefixed catalog tags; kept for parity.
+    if (tags.includes(partnerSearch.oppositeDirection)) break;
   }
   return partner;
 };

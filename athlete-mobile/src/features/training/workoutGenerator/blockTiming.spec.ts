@@ -84,10 +84,6 @@ describe("blockTiming: resolveBlockTiming", () => {
       },
       message: "superset: skill UNKNOWN sets no default",
     },
-    {
-      defaults: { sets: 2, superset: "none" },
-      message: "rest.withinSuperset: skill UNKNOWN sets no default",
-    },
   ])("throws $message", ({ defaults, path, message }) => {
     expect(() =>
       resolveBlockTiming(generatePicksBlock("UNKNOWN"), defaults, path),

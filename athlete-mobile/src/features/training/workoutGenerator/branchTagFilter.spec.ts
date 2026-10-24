@@ -18,7 +18,7 @@ const generateBranches = (tagsById: Record<string, string[]>): SkillTreeType =>
 describe("branchTagFilter: filterBranchesByTags", () => {
   it.each<{ behaviour: string; tags: string[]; kept: string[] }>([
     {
-      behaviour: "keeps every branch without tags",
+      behaviour: "keeps every branch for an empty tag list",
       tags: [],
       kept: ["knee", "shoulder", "warmUp", "untagged"],
     },

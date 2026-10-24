@@ -181,7 +181,7 @@ The skill code also selects the builder that turns the chosen exercises into a s
 - Pro: templates stay short. The bundled GKS training overrides one rest.
 - Pro: a trainer workout cannot carry a wrong skill tree or intensity.
 - Con: a reader of a template needs the catalog to know the sets, rests, and supersets of a block.
-- Con: the block defaults copy values that `TrainingGenerator` holds today. The parity test `loadSkillCatalog.spec.ts` ("parity with the plan workout defaults") checks each of the 34 skill codes against those methods, and it fails when the two sets of values differ. A literal table in the same spec pins every entry's timing, intensity, and start values. The parity test stays until plan workouts read the catalog.
+- Con: the block defaults copy values that `TrainingGenerator` holds today.
 - Con: code that needs a skill tree calls `hasSkillTree` first.
 
 ## More information

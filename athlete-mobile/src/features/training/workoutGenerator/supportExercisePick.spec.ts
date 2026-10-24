@@ -3,6 +3,7 @@ import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { GenerationInput } from "./generationInput";
 import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
 import { generateSequenceRandom } from "../../../../test/factories/sequenceRandom";
+import { generateSupportExercise } from "../../../../test/factories/supportExercise";
 import { generateValueExercise } from "../../../../test/factories/valueExercise";
 import {
   buildSupportSets,
@@ -11,31 +12,6 @@ import {
   pickSupportExercise,
   readWeightedSupportShare,
 } from "./supportExercisePick";
-
-/**
- * Builds a two sided core support exercise advanced by duration. Extra tags
- * join the default tags; `tags` in the overrides replaces them.
- *
- * generateSupportExercise("s1", ["EQ_DUMBBELL"])
- * → { id: "s1", displayName: "Test Exercise", isAdvanceByReps: false,
- *     tags: ["SKILL_SUPPORT", "REGION_CORE", "MUSCLE_RECTUS_ABDOMINIS", "SIDE_BOTH", "EQ_DUMBBELL"], ... }
- */
-const generateSupportExercise = (
-  id: string,
-  extraTags: string[] = [],
-  overrides: Partial<ExerciseType> = {},
-): ExerciseType => ({
-  ...generateValueExercise("duration"),
-  id,
-  tags: [
-    "SKILL_SUPPORT",
-    "REGION_CORE",
-    "MUSCLE_RECTUS_ABDOMINIS",
-    "SIDE_BOTH",
-    ...extraTags,
-  ],
-  ...overrides,
-});
 
 /**
  * Builds a weighted support exercise: dumbbells as equipment and weights as
@@ -89,7 +65,7 @@ const generatePlaceInput = (
   birthday: string,
 ): GenerationInput => ({ ...generateRuleFamilyInput({ birthday }), place });
 
-describe("listSupportExercises", () => {
+describe("supportExercisePick: support pool", () => {
   it("keeps the support exercises in catalog order", () => {
     expect(
       listSupportExerciseIds([
@@ -149,7 +125,7 @@ describe("listSupportExercises", () => {
   });
 });
 
-describe("readWeightedSupportShare", () => {
+describe("supportExercisePick: weighted share", () => {
   beforeEach(() => {
     jest.useFakeTimers({ now: new Date("2026-10-24") });
   });
@@ -169,7 +145,7 @@ describe("readWeightedSupportShare", () => {
   });
 });
 
-describe("pickSupportExercise", () => {
+describe("supportExercisePick: pick", () => {
   it("draws the first pick among the weighted exercises", () => {
     const pick = pickSupportExercise(
       [
@@ -250,9 +226,17 @@ describe("pickSupportExercise", () => {
   });
 });
 
-describe("buildSupportSets", () => {
-  const athlete = () => generateRuleFamilyInput().athlete;
+/**
+ * Builds the default rule family athlete: an adult man at fitness level
+ * ADVANCED.
+ *
+ * generateAdultAthlete()
+ * → { userId: "athlete", personalData: { gender: "MALE", birthday: "1990-06-15" },
+ *     workoutData: { tags: { LEVEL: ["ADVANCED"], PAIN: [] } }, temporalData: [] }
+ */
+const generateAdultAthlete = () => generateRuleFamilyInput().athlete;
 
+describe("supportExercisePick: support sets", () => {
   it("builds two timed sets of 30 s for an exercise advanced by duration", () => {
     const exercise = generateSupportExercise("s1");
     const entry = {
@@ -266,7 +250,12 @@ describe("buildSupportSets", () => {
     };
 
     expect(
-      buildSupportSets(exercise, athlete(), [3, 5], "MAX_STRENGTH"),
+      buildSupportSets(
+        exercise,
+        generateAdultAthlete(),
+        [3, 5],
+        "MAX_STRENGTH",
+      ),
     ).toEqual([entry, entry]);
   });
 
@@ -276,7 +265,7 @@ describe("buildSupportSets", () => {
         isAdvanceByReps: true,
         isAdvanceByDuration: false,
       }),
-      athlete(),
+      generateAdultAthlete(),
       [3, 5],
       "MAX",
     );
@@ -291,7 +280,7 @@ describe("buildSupportSets", () => {
     const exercise = generateSupportExercise("s1");
     const [first, second] = buildSupportSets(
       exercise,
-      athlete(),
+      generateAdultAthlete(),
       [3, 5],
       "MAX",
     );
@@ -319,7 +308,7 @@ describe("buildSupportSets", () => {
   ])("trains %s", (_, overrides, exerciseIds) => {
     const setList = buildSupportSets(
       generateSupportExercise("s1", [], overrides),
-      athlete(),
+      generateAdultAthlete(),
       [3, 5],
       "MAX",
     );
@@ -373,10 +362,27 @@ describe("buildSupportSets", () => {
       expect(setList.map((entry) => entry.weight)).toEqual([weight, weight]);
     });
 
-    it("gives no weight without the weights equipment type", () => {
-      const setList = buildSupportSets(
+    it.each<[string, ExerciseType]>([
+      [
+        "without the weights equipment type",
         generateAuthoredWeightExercise([]),
-        athlete(),
+      ],
+      [
+        "for an authored weight of -1",
+        generateSupportExercise("w1", ["EQ_TYPE_WEIGHTS"], {
+          values: {
+            weight: { startValue: { m: { advanced: -1 } }, targetValue: {} },
+          },
+        }),
+      ],
+      [
+        "for the weights equipment type without an authored weight",
+        generateSupportExercise("w1", ["EQ_TYPE_WEIGHTS"]),
+      ],
+    ])("gives no weight %s", (_, exercise) => {
+      const setList = buildSupportSets(
+        exercise,
+        generateAdultAthlete(),
         [3, 5],
         "MAX",
       );

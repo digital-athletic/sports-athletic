@@ -4,13 +4,17 @@ import type { Block } from "@/schemas/aiwl.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
 import { generateSequenceRandom } from "../../../../test/factories/sequenceRandom";
+import { type ResolvedBlockTiming, resolveBlockTiming } from "./blockTiming";
 import type { BlockResult } from "./blockWalk";
 import type { GenerationInput } from "./generationInput";
+import type { ResolvedPicksBlock } from "./picksBlockResolution";
+import { createEmptyPicksWorkout } from "./picksWorkoutRules";
 import {
   createShortWorkoutSetListBuilder,
   createTrainingDaySetListBuilder,
   readSkillSetListKind,
 } from "./setListBuilding";
+import { readSkillCatalogEntry } from "./skillCatalogEntry";
 import type { FilledBlockResult } from "./workoutFinish";
 
 const EXERCISE_TAGS: Record<string, string[]> = {
@@ -136,8 +140,51 @@ const buildTrainingDaySetList = (
   createTrainingDaySetListBuilder(input)(results, results);
 
 /**
+ * Builds a resolved picks block with the given timing and an empty pool.
+ *
+ * generateResolvedPicksBlock("WU", { sets: 2, superset: "none", rest: {...} })
+ * → { skill: "WU", sets: 2, superset: "none", rest: {...}, pool: {}, picks: [], ... }
+ */
+const generateResolvedPicksBlock = (
+  skill: string,
+  timing: ResolvedBlockTiming,
+): ResolvedPicksBlock => ({
+  ...timing,
+  skill,
+  pool: {},
+  picks: [],
+  countBy: "exercises",
+  fallbackToWholeTree: false,
+});
+
+/**
+ * Resolves each block of the results as workout setup does: its own timing,
+ * then the skill catalog entry.
+ *
+ * resolveCatalogTimings([WU block with e1], input)
+ * → Map { WU block → { skill: "WU", sets: 1, superset: "muscles", ... } }
+ */
+const resolveCatalogTimings = (
+  results: BlockResult[],
+  input: GenerationInput,
+): ReadonlyMap<Block, ResolvedPicksBlock> =>
+  new Map(
+    results.map(({ block }) => [
+      block,
+      generateResolvedPicksBlock(
+        block.skill,
+        resolveBlockTiming(
+          block,
+          readSkillCatalogEntry(input.skillCatalog, block.skill),
+        ),
+      ),
+    ]),
+  );
+
+/**
  * Builds the set list of short workout block results in template order; the
- * builder gets the filled ones as its blocks.
+ * builder gets the filled ones as its blocks and reads the resolved blocks of
+ * the picks workout.
  *
  * buildShortWorkoutSetList([WU block with e1, empty BAS block])
  * → [e1 set [1, 1], pause 30]
@@ -145,8 +192,12 @@ const buildTrainingDaySetList = (
 const buildShortWorkoutSetList = (
   results: BlockResult[],
   input = generateInput(),
+  resolvedBlocks = resolveCatalogTimings(results, input),
 ): GeneratedSetListEntry[] =>
-  createShortWorkoutSetListBuilder(input)(
+  createShortWorkoutSetListBuilder({
+    ...input,
+    picksWorkout: { ...createEmptyPicksWorkout(), blocks: resolvedBlocks },
+  })(
     results.filter(
       (result): result is FilledBlockResult => result.status === "filled",
     ),
@@ -369,11 +420,38 @@ describe("setListBuilding: short workout", () => {
     expect(listExerciseOrder(setList)).toEqual(["e1"]);
   });
 
-  it("throws naming the skill and the first rest when the catalog has no entry", () => {
-    expect(() =>
-      buildShortWorkoutSetList([
-        generateFilledResult(generatePicksBlock("PLYO"), ["e1"]),
+  it("builds a block from the timing workout setup resolved", () => {
+    const result = generateFilledResult(generatePicksBlock("WU"), ["e1"]);
+
+    const setList = buildShortWorkoutSetList(
+      [result],
+      generateInput(),
+      new Map([
+        [
+          result.block,
+          generateResolvedPicksBlock("WU", {
+            sets: 2,
+            superset: "none",
+            rest: { withinSuperset: 10, betweenSets: 15, afterExercise: 30 },
+            setDuration: undefined,
+            values: undefined,
+          }),
+        ],
       ]),
-    ).toThrow(new Error("rest.withinSuperset: skill PLYO sets no default"));
+    );
+
+    expect(describeSetList(setList)).toEqual(["e1 1/2", "pause 15", "e1 2/2"]);
+  });
+
+  it("throws for a block that workout setup did not resolve", () => {
+    expect(() =>
+      buildShortWorkoutSetList(
+        [generateFilledResult(generatePicksBlock("PLYO"), ["e1"])],
+        generateInput(),
+        new Map(),
+      ),
+    ).toThrow(
+      new Error("Workout setup resolved no picks block for skill PLYO"),
+    );
   });
 });

@@ -111,3 +111,21 @@ export const resolvePicksWorkout = (
     }),
   };
 };
+
+/**
+ * Reads the block that workout setup resolved for a template block.
+ *
+ * readResolvedPicksBlock(picksWorkout, warmUpBlock) → { skill: "WU", sets: 1, pool: {...}, ... }
+ */
+export const readResolvedPicksBlock = (
+  picksWorkout: PicksWorkout,
+  block: Block,
+): ResolvedPicksBlock => {
+  const resolved = picksWorkout.blocks.get(block);
+  if (resolved === undefined) {
+    throw new Error(
+      `Workout setup resolved no picks block for skill ${block.skill}`,
+    );
+  }
+  return resolved;
+};

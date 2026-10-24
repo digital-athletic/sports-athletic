@@ -11,15 +11,16 @@ import { orderExerciseUnits, readEndingExerciseId } from "./exerciseOrder";
 import { pairBranchExercises } from "./exercisePairing";
 import type { GenerationInput } from "./generationInput";
 import { buildMaxStrengthSetList } from "./maxStrengthSetListBuilder";
+import { readResolvedPicksBlock } from "./picksWorkoutRules";
 import { readPlanWorkoutTiming } from "./planWorkoutTiming";
 import {
   removeTrailingPause,
   type SetListBlock,
   type SkillSetListBuilder,
 } from "./setListBuilder";
-import { readSkillCatalogEntry } from "./skillCatalogEntry";
 import { buildStandardSetList } from "./standardSetListBuilder";
 import type { FilledBlockResult, SetListBuilder } from "./workoutFinish";
+import type { WorkoutInput } from "./workoutSetup";
 
 export type SkillSetListKind = "cardio" | "maxStrength" | "standard";
 
@@ -148,20 +149,21 @@ const isLastTemplateBlock = (
 
 /**
  * Builds the set list of a short workout from its filled blocks in template
- * order. Each block reads its own timing, then the skill catalog entry. Every
+ * order. Each block reads the timing workout setup resolved for it. Every
  * block, cardio and max strength included, pairs by its superset and keeps
  * the order of its pairs. Only a filled last template block drops its closing
  * rest; an empty last block keeps the rest before it.
  */
 export const createShortWorkoutSetListBuilder =
-  (input: GenerationInput): SetListBuilder<GeneratedSetListEntry> =>
+  (
+    input: GenerationInput & Pick<WorkoutInput, "picksWorkout">,
+  ): SetListBuilder<GeneratedSetListEntry> =>
   (blocks, results) =>
     blocks.flatMap((result) => {
       const kind = readSkillSetListKind(result.block.skill);
-      const timing = resolveBlockTiming(
-        result.block,
-        readSkillCatalogEntry(input.skillCatalog, result.block.skill),
-      );
+      const { sets, superset, rest, setDuration, values } =
+        readResolvedPicksBlock(input.picksWorkout, result.block);
+      const timing = { sets, superset, rest, setDuration, values };
       const setList = buildBlockSetList(
         kind,
         pairBranchExercises(

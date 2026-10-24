@@ -126,8 +126,6 @@ export const drawPicksBlock = (
   }
   return {
     branches: [...drawn, ...weighted],
-    usedBranchIds: [
-      ...new Set(usedBranchIds.slice(context.usedBranchIds.length)),
-    ],
+    usedBranchIds: usedBranchIds.slice(context.usedBranchIds.length),
   };
 };

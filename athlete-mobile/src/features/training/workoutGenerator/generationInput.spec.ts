@@ -1,4 +1,7 @@
-import { loadSkillCatalog } from "@/data/loadSkillCatalog";
+import { loadSkillCatalog, parseSkillCatalog } from "@/data/loadSkillCatalog";
+import { filterBySoreness } from "@/features/training/utils/branchFilterUtils";
+import { filterByEquipment } from "@/features/training/utils/equipmentUtils";
+import { getUserExerciseFromBranch } from "@/features/training/utils/skillTreeUtils";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { UserType } from "@/schemas/user.schema";
 import {
@@ -39,7 +42,8 @@ describe("generationInput: createGenerationInput", () => {
     expect(input.athlete).toBe(athlete);
     expect(input.place).toBe("HOME");
     expect(input.equipment).toEqual(["DUMBBELL"]);
-    expect(input.exerciseCatalog).toBe(exerciseCatalog);
+    expect(input.exerciseCatalog).toEqual(exerciseCatalog);
+    expect(input.exerciseCatalog).not.toBe(exerciseCatalog);
     expect(input.exerciseData).toBe(exerciseData);
     expect(input.skillCatalog).toBe(loadSkillCatalog());
     expect(input.branchLookupIndex).toBe(loadBranchLookupIndex());
@@ -93,6 +97,21 @@ describe("generationInput: createGenerationInput", () => {
     expect(input.branchLookupIndex).toBe(branchLookupIndex);
   });
 
+  it("uses a given skill catalog", () => {
+    const skillCatalog = parseSkillCatalog({ SASKG: { sets: 3 } });
+
+    const input = createGenerationInput({
+      athlete: generateAthlete(),
+      place: "HALL",
+      equipment: [],
+      exerciseCatalog: [],
+      exerciseData: { exerciseData: {}, branchData: {} },
+      skillCatalog,
+    });
+
+    expect(input.skillCatalog).toBe(skillCatalog);
+  });
+
   it("returns a frozen object", () => {
     const input = createGenerationInput({
       athlete: generateAthlete(),
@@ -105,6 +124,7 @@ describe("generationInput: createGenerationInput", () => {
     expect(Object.isFrozen(input)).toBe(true);
     expect(Object.isFrozen(input.equipment)).toBe(true);
     expect(Object.isFrozen(input.muscleSoreness)).toBe(true);
+    expect(Object.isFrozen(input.exerciseCatalog)).toBe(true);
   });
 
   it("leaves the given equipment list unchanged and unfrozen", () => {
@@ -120,5 +140,25 @@ describe("generationInput: createGenerationInput", () => {
 
     expect(equipment).toEqual(["BARBELL"]);
     expect(Object.isFrozen(equipment)).toBe(false);
+  });
+
+  it("passes its lists straight to the shared filters and helpers", () => {
+    const input = createGenerationInput({
+      athlete: generateAthlete(),
+      place: "STUDIO",
+      equipment: ["DUMBBELL"],
+      exerciseCatalog: [],
+      exerciseData: { exerciseData: {}, branchData: {} },
+    });
+
+    expect(filterByEquipment({}, input.equipment).keep).toEqual({});
+    expect(filterBySoreness({}, input.muscleSoreness, "GKS").keep).toEqual({});
+    expect(
+      getUserExerciseFromBranch(
+        { tags: [], levels: { 1: { exerciseId: "10" } } },
+        "ADVANCED",
+        input.exerciseCatalog,
+      ),
+    ).toBeNull();
   });
 });

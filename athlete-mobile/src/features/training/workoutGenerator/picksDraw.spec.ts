@@ -1,19 +1,21 @@
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
-import type { BranchDraw } from "./branchDraw";
+import { generateSequenceRandom } from "../../../../test/factories/sequenceRandom";
+import { type BranchDraw, createBranchDraw } from "./branchDraw";
 import { drawPicksBlock, type PicksBlockDraw } from "./picksDraw";
 
 /**
- * Builds branches with the given tags and one level each.
+ * Builds branches with the given tags and one level each, whose exercise ID
+ * equals the branch ID.
  *
  * generateBranches({ a: ["SIDE_ONE"] })
- * → { a: { tags: ["SIDE_ONE"], levels: { 1: { exerciseId: "1" } } } }
+ * → { a: { tags: ["SIDE_ONE"], levels: { 1: { exerciseId: "a" } } } }
  */
 const generateBranches = (tagsById: Record<string, string[]>): SkillTreeType =>
   Object.fromEntries(
     Object.entries(tagsById).map(([id, tags]) => [
       id,
-      { tags, levels: { 1: { exerciseId: "1" } } },
+      { tags, levels: { 1: { exerciseId: id } } },
     ]),
   );
 
@@ -62,7 +64,10 @@ const FIRST_UNUSED_BRANCH_DRAW: BranchDraw = {
 const drawBlockWithFirstUnusedBranch = (
   change: Partial<PicksBlockDraw>,
   pool: SkillTreeType,
-  { blockPool = pool, usedBranchIds = [] as string[] } = {},
+  {
+    blockPool = pool,
+    usedBranchIds = [],
+  }: { blockPool?: SkillTreeType; usedBranchIds?: string[] } = {},
 ): { drawn: string[]; used: string[] } => {
   const block: PicksBlockDraw = {
     pool: blockPool,
@@ -195,6 +200,45 @@ describe("picksDraw: count by exercises and pairs", () => {
         generateBranches({ a: [] }),
       ).drawn,
     ).toEqual(["a"]);
+  });
+});
+
+describe("picksDraw: with the branch draws", () => {
+  it("skips an exercise an earlier pick drew and falls back to the block pool", () => {
+    const pool: SkillTreeType = {
+      a: { tags: ["REGION_LOWER_BODY"], levels: { 1: { exerciseId: "x" } } },
+      b: { tags: ["REGION_LOWER_BODY"], levels: { 1: { exerciseId: "y" } } },
+      c: { tags: ["REGION_UPPER_BODY"], levels: { 1: { exerciseId: "x" } } },
+      d: { tags: ["REGION_UPPER_BODY"], levels: { 1: { exerciseId: "z" } } },
+    };
+    const random = generateSequenceRandom([0, 0, 0, 0.99]);
+    const draw = createBranchDraw({
+      pool,
+      fitnessLevel: "ADVANCED",
+      exerciseCatalog: [],
+      exerciseData: { exerciseData: {}, branchData: {} },
+      random,
+    });
+    const block: PicksBlockDraw = {
+      pool,
+      picks: [
+        { tags: ["REGION_LOWER_BODY"], count: 1 },
+        { tags: ["REGION_UPPER_BODY"], count: 2 },
+      ],
+      countBy: "exercises",
+      fallbackToWholeTree: true,
+    };
+
+    const result = drawPicksBlock(block, { pool, draw, usedBranchIds: [] });
+
+    // c shares exercise x with a, so the upper body pick falls back to b
+    expect(result.branches.map(({ branchId }) => branchId)).toEqual([
+      "a",
+      "d",
+      "b",
+    ]);
+    expect(result.usedBranchIds).toEqual(["a", "d", "b"]);
+    expect(random()).toBe(0.99);
   });
 });
 

@@ -160,7 +160,7 @@ const buildWarmUpSet = (
           {
             branchId: entry.branchId,
             exerciseId: entry.exerciseId,
-            tags: entry.tags,
+            tags: [...entry.tags],
             set,
             skill,
             duration: entry.duration,
@@ -221,7 +221,9 @@ const buildPairSetList = (
 /**
  * Builds the sets of a standard block: per pair an optional warm-up set, then
  * the block's sets with their rests. Pairs with an unresolved exercise or a
- * lead missing from the catalog build nothing.
+ * lead missing from the catalog build nothing. Without `rest.afterBlock` the
+ * last pair closes on the skill catalog entry's afterBlock, then on
+ * `rest.afterExercise`.
  */
 export const buildStandardSetList: SkillSetListBuilder = (
   pairs,

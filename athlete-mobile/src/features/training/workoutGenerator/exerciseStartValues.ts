@@ -4,7 +4,6 @@ import type { GenderTag } from "@/features/training/models/Intensity";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
-import { isNoIncreaseSkill } from "@/features/training/utils/exerciseDataUtils";
 import {
   getUserBirthday,
   getUserGender,
@@ -22,10 +21,10 @@ import type { UserType } from "@/schemas/user.schema";
 import { readExerciseValues } from "./exerciseValues";
 import { adjustExerciseValuesByFeedback } from "./feedbackAdjustment";
 import {
-  applyBlockValuesMode,
+  isSkillWithoutProgression,
   readSkillCatalogEntry,
-  readSkillIntensity,
-} from "./skillIntensity";
+} from "./skillCatalogEntry";
+import { applyBlockValuesMode, readSkillIntensity } from "./skillIntensity";
 import type { ExerciseValueContext } from "./startAndTargetValues";
 
 // Start values of a skill whose catalog entry sets none.
@@ -73,10 +72,13 @@ const readTimedStartValues = (
 });
 
 const readFeedback = (
+  skillCatalog: SkillCatalog,
   skill: string,
   stored: UserExerciseDataType | null,
 ): DifficultyFeedbackType | null =>
-  isNoIncreaseSkill(skill) ? null : (stored?.feedback?.difficulty ?? null);
+  isSkillWithoutProgression(skillCatalog, skill)
+    ? null
+    : (stored?.feedback?.difficulty ?? null);
 
 const readCatalogStartValues = (
   source: ExerciseStartValueSource,
@@ -140,8 +142,8 @@ export const readExerciseStartValues = (
     gender: readGenderTag(athlete),
     level: getUserLevel(athlete).toLowerCase(),
   };
-  const values = readExerciseValues(context, stored, block.skill);
-  const feedback = readFeedback(block.skill, stored);
+  const values = readExerciseValues(context, stored, skillCatalog, block.skill);
+  const feedback = readFeedback(skillCatalog, block.skill, stored);
   return mergeExerciseValues(
     readCatalogStartValues(source, block, reference, exercise),
     feedback

@@ -1,34 +1,16 @@
-import { TagGroups } from "@/constants/tagGroups";
 import { loadIntensityConfig } from "@/data/loadIntensityConfig";
 import type { IntensityData } from "@/features/training/models/Intensity";
 import type { BlockValues } from "@/schemas/aiwl.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import type {
-  SkillCatalog,
-  SkillCatalogEntry,
-} from "@/schemas/skillCatalog.schema";
-import { getTagValues } from "@/utils/tagUtils";
+import type { SkillCatalog } from "@/schemas/skillCatalog.schema";
+import { isWeightedExercise } from "./exerciseValues";
+import { readSkillCatalogEntry } from "./skillCatalogEntry";
 
 type TaggedExercise = Pick<ExerciseType, "tags">;
 
 // Plyometric tree keys, not part of the stored skill codes.
 const PLYOMETRIC_SKILLS = ["PLYO_HIGH", "PLYO_MEDIUM"];
 const HYPERTROPHY_SKILLS = ["SWR1", "SWR1KG", "SWR2", "SWR2KG"];
-
-const hasWeights = (exercise: TaggedExercise) =>
-  getTagValues(exercise.tags, TagGroups.EQ_TYPE).includes("WEIGHTS");
-
-/**
- * Reads an entry of the given skill catalog. Object.hasOwn keeps prototype
- * keys like "constructor" from matching.
- */
-export const readSkillCatalogEntry = (
-  skillCatalog: SkillCatalog,
-  skill: string,
-): SkillCatalogEntry | undefined =>
-  Object.hasOwn(skillCatalog, skill)
-    ? skillCatalog[skill as keyof SkillCatalog]
-    : undefined;
 
 // Hypertrophy trees mix weighted and bodyweight exercises, so a known exercise
 // picks the config by its equipment type instead of by the skill.
@@ -39,7 +21,7 @@ const readHypertrophyIntensity = (
   if (!exercise) {
     return loadIntensityConfig(skill === "SWR2KG" ? "SWR2KG" : "SWR2");
   }
-  return loadIntensityConfig(hasWeights(exercise) ? "SWR2" : "SWR2KG");
+  return loadIntensityConfig(isWeightedExercise(exercise) ? "SWR2" : "SWR2KG");
 };
 
 /**
@@ -58,7 +40,7 @@ export const readSkillIntensity = (
     return readHypertrophyIntensity(skill, exercise);
   }
   const entry = readSkillCatalogEntry(skillCatalog, skill);
-  const withoutWeights = exercise && !hasWeights(exercise);
+  const withoutWeights = exercise && !isWeightedExercise(exercise);
   return loadIntensityConfig(
     (withoutWeights && entry?.intensityWithoutWeights) ||
       entry?.intensity ||

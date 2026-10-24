@@ -10,14 +10,16 @@ import {
   loadBranchLookupIndex,
 } from "./branchLookupIndex";
 
+// The lists keep the mutable array types the shared filters and builders take,
+// so stages pass them straight through. Freezing guards them at runtime.
 export interface GenerationInput {
   readonly athlete: UserType;
   readonly place: string;
-  readonly equipment: readonly string[];
-  readonly muscleSoreness: readonly TemporalDataType[];
+  readonly equipment: string[];
+  readonly muscleSoreness: TemporalDataType[];
   readonly skillCatalog: SkillCatalog;
   readonly branchLookupIndex: BranchLookupIndex;
-  readonly exerciseCatalog: readonly ExerciseType[];
+  readonly exerciseCatalog: ExerciseType[];
   readonly exerciseData: UserExerciseDataMapType;
   readonly random: () => number;
 }
@@ -30,7 +32,14 @@ export interface GenerationInputOptions {
   exerciseData: UserExerciseDataMapType;
   random?: () => number;
   branchLookupIndex?: BranchLookupIndex;
+  skillCatalog?: SkillCatalog;
 }
+
+const createFrozenListCopy = <T>(list: readonly T[]): T[] => {
+  const copy = [...list];
+  Object.freeze(copy);
+  return copy;
+};
 
 /**
  * Collects every input the generator stages read into one frozen object.
@@ -44,15 +53,16 @@ export const createGenerationInput = ({
   exerciseData,
   random = Math.random,
   branchLookupIndex = loadBranchLookupIndex(),
+  skillCatalog = loadSkillCatalog(),
 }: GenerationInputOptions): GenerationInput =>
   Object.freeze({
     athlete,
     place,
-    equipment: Object.freeze([...equipment]),
-    muscleSoreness: Object.freeze(getTemporalData(athlete)),
-    skillCatalog: loadSkillCatalog(),
+    equipment: createFrozenListCopy(equipment),
+    muscleSoreness: createFrozenListCopy(getTemporalData(athlete)),
+    skillCatalog,
     branchLookupIndex,
-    exerciseCatalog,
+    exerciseCatalog: createFrozenListCopy(exerciseCatalog),
     exerciseData,
     random,
   });

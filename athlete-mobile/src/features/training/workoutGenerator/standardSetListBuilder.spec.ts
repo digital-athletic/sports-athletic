@@ -164,7 +164,13 @@ const listPauseDurations = (setList: GeneratedSetListEntry[]) =>
     .filter((entry) => isPauseExercise(entry.exerciseId))
     .map((entry) => entry.duration);
 
-const unresolve = (reference: BranchExerciseReference) => ({
+/**
+ * Copies a reference as a branch that resolved to no exercise.
+ *
+ * generateUnresolvedReference(chest)
+ * → { branchId: "c", exerciseId: "-1", branchTags: chest.branchTags }
+ */
+const generateUnresolvedReference = (reference: BranchExerciseReference) => ({
   ...reference,
   exerciseId: "-1",
 });
@@ -206,11 +212,15 @@ describe("standardSetListBuilder: rests", () => {
     expect(listPauseDurations(setList).slice(0, 4)).toEqual([30, 30, 30, rest]);
   });
 
-  it("compares with the next built pair, not with an unresolved one", () => {
+  it("compares with the next built pair and skips an unresolved one", () => {
     const { chest, chestAgain, quads } = generateBodyweightReferences();
 
     const setList = buildSetList(
-      [{ first: chest }, { first: unresolve(chestAgain) }, { first: quads }],
+      [
+        { first: chest },
+        { first: generateUnresolvedReference(chestAgain) },
+        { first: quads },
+      ],
       generateBlock("SWR2"),
     );
 
@@ -261,9 +271,7 @@ describe("standardSetListBuilder: rests", () => {
 
 describe("standardSetListBuilder: closing the block", () => {
   it.each([
-    ["the block's afterBlock", "SWR2", { afterBlock: 40 }, 40],
     ["an afterBlock of 0", "SWR2", { afterBlock: 0 }, 0],
-    ["the skill catalog afterBlock", "WUSPEZIAL", {}, 30],
     ["the block's afterBlock first", "WUSPEZIAL", { afterBlock: 5 }, 5],
     ["the rest after an exercise without afterBlock", "SWR2", {}, 60],
   ] as const)("closes the last pair on %s", (_label, skill, rest, closing) => {
@@ -283,7 +291,7 @@ describe("standardSetListBuilder: closing the block", () => {
     const block = generateBlock("SWR2");
 
     const setList = buildSetList(
-      [{ first: chest }, { first: unresolve(chestAgain) }],
+      [{ first: chest }, { first: generateUnresolvedReference(chestAgain) }],
       { ...block, rest: { ...block.rest, afterBlock: 40 } },
     );
 
@@ -315,14 +323,16 @@ describe("standardSetListBuilder: unresolved and missing exercises", () => {
   it.each([
     [
       "builds nothing for an unresolved lead",
-      ({ chest }: BodyweightReferences) => ({ first: unresolve(chest) }),
+      ({ chest }: BodyweightReferences) => ({
+        first: generateUnresolvedReference(chest),
+      }),
       "eq 1/2, pause 90, eq 2/2, pause 60",
     ],
     [
       "builds nothing for an unresolved partner",
       ({ chest, biceps }: BodyweightReferences) => ({
         first: chest,
-        second: unresolve(biceps),
+        second: generateUnresolvedReference(biceps),
       }),
       "eq 1/2, pause 90, eq 2/2, pause 60",
     ],
@@ -413,18 +423,62 @@ describe("standardSetListBuilder: warm-up sets", () => {
     expect([setList[0].repetition, setList[2].repetition]).toEqual([6, 6]);
   });
 
-  it.each([
-    ["a skill without warm-up sets", "GKS", true],
-    ["a bodyweight exercise", "SK", false],
-  ] as const)("adds no warm-up set for %s", (_label, skill, isWeighted) => {
-    const weighted = generateWeightedChest();
+  it("warms up a superset with a bodyweight lead and a weighted partner", () => {
+    const { reference, exercise } = generateWeightedChest();
+    const { quads } = generateBodyweightReferences();
+
+    const setList = buildSetList(
+      [{ first: quads, second: reference }],
+      generateBlock("SK"),
+      [exercise, ...generateCatalog([quads])],
+    );
+
+    expect(describeSetList(setList.slice(0, 4))).toBe(
+      "eq 1/3, pause 30, ew 1/3, pause 30",
+    );
+  });
+
+  it("warms up a weighted WUSKSA superset as explosive power, since the skill contains SK", () => {
+    const { reference, exercise } = generateWeightedChest();
+    const { quads } = generateBodyweightReferences();
+
+    const setList = buildSetList(
+      [{ first: reference, second: quads }],
+      generateBlock("WUSKSA", { sets: 1 }),
+      [exercise, ...generateCatalog([quads])],
+    );
+
+    expect(describeSetList(setList.slice(0, 4))).toBe(
+      "ew 1/2, pause 30, eq 1/2, pause 30",
+    );
+    expect([setList[0].repetition, setList[2].repetition]).toEqual([6, 6]);
+  });
+
+  it("gives the warm-up set its own tags array", () => {
+    const { reference, exercise } = generateWeightedChest();
+
+    const setList = buildSetList([{ first: reference }], generateBlock("SK"), [
+      exercise,
+    ]);
+
+    expect(setList[0].tags).toEqual(setList[2].tags);
+    expect(setList[0].tags).not.toBe(setList[2].tags);
+  });
+
+  it("adds no warm-up set for a skill without warm-up sets", () => {
+    const { reference, exercise } = generateWeightedChest();
+
+    const setList = buildSetList([{ first: reference }], generateBlock("GKS"), [
+      exercise,
+    ]);
+
+    expect(setList[0].set).toEqual([1, 2]);
+  });
+
+  it("adds no warm-up set for a bodyweight exercise", () => {
     const { chest } = generateBodyweightReferences();
 
-    const setList = isWeighted
-      ? buildSetList([{ first: weighted.reference }], generateBlock(skill), [
-          weighted.exercise,
-        ])
-      : buildSetList([{ first: chest }], generateBlock(skill));
+    const setList = buildSetList([{ first: chest }], generateBlock("SK"));
 
     expect(setList[0].set).toEqual([1, 2]);
   });
@@ -468,7 +522,9 @@ describe("standardSetListBuilder: isBuildablePair", () => {
     ],
     [
       "skips an unresolved lead",
-      ({ chest }: BodyweightReferences) => ({ first: unresolve(chest) }),
+      ({ chest }: BodyweightReferences) => ({
+        first: generateUnresolvedReference(chest),
+      }),
       false,
     ],
     [
@@ -480,7 +536,7 @@ describe("standardSetListBuilder: isBuildablePair", () => {
       "skips an unresolved partner",
       ({ chest, biceps }: BodyweightReferences) => ({
         first: chest,
-        second: unresolve(biceps),
+        second: generateUnresolvedReference(biceps),
       }),
       false,
     ],

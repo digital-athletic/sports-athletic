@@ -5,6 +5,7 @@ import { getTagValues, getUserTagValues } from "@/utils/tagUtils";
 import type { GenerationInput } from "./generationInput";
 import {
   type CandidateBranch,
+  keepBranches,
   listBranchRemovals,
   type RuleFamilyResult,
 } from "./ruleFamily";
@@ -31,38 +32,32 @@ const readFirstBlockingRegion = (
 };
 
 /**
- * Whether the branch tags or the tags of any level exercise block one of the
- * regions. An exercise ID missing from the catalog adds no tags.
+ * Lists the blocked regions, in pain order, that the branch tags or the tags
+ * of any level exercise block. A level without an exercise ID or with an ID
+ * missing from the catalog adds no tags.
+ *
+ * listRegionsBlockedOnAnyLevel({ tags: [], levels: { 1: { exerciseId: "901" } } }, catalog, ["KNEE", "SPINE"])
+ * → ["KNEE"] when exercise 901 carries BLOCK_KNEE
  */
-const isBranchBlockedOnAnyLevel = (
-  branchTags: string[],
-  levelExerciseIds: string[],
+const listRegionsBlockedOnAnyLevel = (
+  branch: CandidateBranch,
   exerciseCatalog: readonly Pick<ExerciseType, "id" | "tags">[],
   blockedRegions: string[],
-): boolean => {
-  if (blockedRegions.length === 0) return false;
+): string[] => {
+  const levels = branch.levels ?? branch.exercises ?? {};
   const tagLists = [
-    branchTags,
-    ...levelExerciseIds.map(
-      (exerciseId) =>
-        exerciseCatalog.find((exercise) => exercise.id === exerciseId)?.tags ??
-        [],
+    branch.tags ?? [],
+    ...Object.values(levels).flatMap(({ exerciseId }) =>
+      exerciseId === undefined
+        ? []
+        : [exerciseCatalog.find(({ id }) => id === exerciseId)?.tags ?? []],
     ),
   ];
-  return tagLists.some((tags) =>
-    getTagValues(tags, TagGroups.BLOCK).some((region) =>
-      blockedRegions.includes(region),
-    ),
+  const branchBlocks = tagLists.flatMap((tags) =>
+    getTagValues(tags, TagGroups.BLOCK),
   );
+  return blockedRegions.filter((region) => branchBlocks.includes(region));
 };
-
-const keepBranches = <T extends CandidateBranch>(
-  branches: Record<string, T>,
-  isKept: (branch: T) => boolean,
-): Record<string, T> =>
-  Object.fromEntries(
-    Object.entries(branches).filter(([, branch]) => isKept(branch)),
-  );
 
 /**
  * Removes the branches whose own block tags name a region the athlete's pains
@@ -90,26 +85,24 @@ export const filterBranchesByPain = <T extends CandidateBranch>(
 /**
  * Removes the branches that block a pain region on the branch or on the
  * exercise of any level, so a level change never reaches a blocked exercise.
- * Removal details hold every region the athlete's pains block.
+ * Each removal names the regions that block that branch, in pain order.
  */
 export const filterBranchesByPainOnEveryLevel = <T extends CandidateBranch>(
   branches: Record<string, T>,
   input: GenerationInput,
 ): RuleFamilyResult<T> => {
   const blockedRegions = listBlockedRegions(input);
-  const keep = keepBranches(branches, (branch) => {
-    const levels = branch.levels ?? branch.exercises ?? {};
-    // A level without an exercise ID matches no catalog exercise, so it adds no block tags
-    return !isBranchBlockedOnAnyLevel(
-      branch.tags ?? [],
-      Object.values(levels).flatMap((level) => level.exerciseId ?? []),
-      input.exerciseCatalog,
-      blockedRegions,
-    );
-  });
+  const listBranchBlockingRegions = (branch: T): string[] =>
+    listRegionsBlockedOnAnyLevel(branch, input.exerciseCatalog, blockedRegions);
+  const keep = keepBranches(
+    branches,
+    (branch) => listBranchBlockingRegions(branch).length === 0,
+  );
   return {
     keep,
-    removals: listBranchRemovals(branches, keep, "pain", () => blockedRegions),
+    removals: listBranchRemovals(branches, keep, "pain", (branchId) =>
+      listBranchBlockingRegions(branches[branchId]),
+    ),
     replace: [],
   };
 };

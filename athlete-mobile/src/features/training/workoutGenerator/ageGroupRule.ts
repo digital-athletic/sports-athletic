@@ -6,6 +6,7 @@ import { getTagValues } from "@/utils/tagUtils";
 import type { GenerationInput } from "./generationInput";
 import {
   type CandidateBranch,
+  keepBranches,
   listBranchRemovals,
   type RuleFamilyResult,
 } from "./ruleFamily";
@@ -24,13 +25,10 @@ export const filterBranchesByAgeGroup = <T extends CandidateBranch>(
     ageGroup === WorkoutConstants.AGE_GROUPS.CHILD
       ? WorkoutConstants.AGE_GROUPS.CHILD
       : WorkoutConstants.AGE_GROUPS.ADULT;
-  const keep: Record<string, T> = {};
-  for (const [branchId, branch] of Object.entries(branches)) {
+  const keep = keepBranches(branches, (branch) => {
     const branchAgeTags = getTagValues(branch.tags ?? [], TagGroups.AGE);
-    if (branchAgeTags.length === 0 || branchAgeTags.includes(ageTag)) {
-      keep[branchId] = branch;
-    }
-  }
+    return branchAgeTags.length === 0 || branchAgeTags.includes(ageTag);
+  });
   return {
     keep,
     removals: listBranchRemovals(branches, keep, "ageGroup", () => [ageGroup]),

@@ -10,6 +10,7 @@ import {
 import { filterBranchesByFitnessLevel } from "./fitnessLevelRule";
 import { filterBranchesByMuscleSoreness } from "./muscleSorenessRule";
 import {
+  keepBranches,
   listBranchRemovals,
   readReplacementRegion,
   type RuleFamily,
@@ -42,6 +43,21 @@ describe("ruleFamily: listBranchRemovals", () => {
     expect(listBranchRemovals(branches, branches, "gender", () => [])).toEqual(
       [],
     );
+  });
+});
+
+describe("ruleFamily: keepBranches", () => {
+  it("keeps the candidates the check accepts, in candidate order, by identity", () => {
+    const branches = {
+      "1": { tags: ["AGE_CHILD"] },
+      "2": { tags: [] },
+      "3": { tags: [] },
+    };
+
+    const keep = keepBranches(branches, (branch) => branch.tags.length === 0);
+
+    expect(Object.keys(keep)).toEqual(["2", "3"]);
+    expect(keep["2"]).toBe(branches["2"]);
   });
 });
 

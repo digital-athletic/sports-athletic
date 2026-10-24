@@ -1,16 +1,16 @@
 import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
 import { filterBranchesByGender } from "./genderRule";
 
-const GENDER_TAGGED_BRANCHES = {
-  "1": { tags: ["GENDER_MALE"], levels: {} },
-  "2": { tags: ["GENDER_FEMALE"], levels: {} },
-  "3": { tags: [], levels: {} },
-};
-
 describe("genderRule: filterBranchesByGender", () => {
   it("keeps the branches of the athlete's gender and the untagged ones", () => {
+    const branches = {
+      "1": { tags: ["GENDER_MALE"], levels: {} },
+      "2": { tags: ["GENDER_FEMALE"], levels: {} },
+      "3": { tags: [], levels: {} },
+    };
+
     const result = filterBranchesByGender(
-      GENDER_TAGGED_BRANCHES,
+      branches,
       generateRuleFamilyInput({ gender: "MALE" }),
     );
 
@@ -22,8 +22,14 @@ describe("genderRule: filterBranchesByGender", () => {
   });
 
   it("keeps the branches of a female athlete and the untagged ones", () => {
+    const branches = {
+      "1": { tags: ["GENDER_MALE"], levels: {} },
+      "2": { tags: ["GENDER_FEMALE"], levels: {} },
+      "3": { tags: [], levels: {} },
+    };
+
     const result = filterBranchesByGender(
-      GENDER_TAGGED_BRANCHES,
+      branches,
       generateRuleFamilyInput({ gender: "FEMALE" }),
     );
 
@@ -34,15 +40,16 @@ describe("genderRule: filterBranchesByGender", () => {
   });
 
   it("follows the female rules for an athlete without a gender", () => {
+    const branches = {
+      "1": { tags: ["GENDER_MALE"], levels: {} },
+      "2": { tags: ["GENDER_FEMALE"], levels: {} },
+    };
     const input = generateRuleFamilyInput();
     const inputWithoutGender = { ...input, athlete: { userId: "athlete" } };
 
-    const result = filterBranchesByGender(
-      GENDER_TAGGED_BRANCHES,
-      inputWithoutGender,
-    );
+    const result = filterBranchesByGender(branches, inputWithoutGender);
 
-    expect(Object.keys(result.keep)).toEqual(["2", "3"]);
+    expect(Object.keys(result.keep)).toEqual(["2"]);
     expect(result.removals).toEqual([
       { branchId: "1", family: "gender", details: ["FEMALE"] },
     ]);

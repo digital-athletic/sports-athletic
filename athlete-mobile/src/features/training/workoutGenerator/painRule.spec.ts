@@ -138,4 +138,20 @@ describe("painRule: filterBranchesByPainOnEveryLevel", () => {
       branches,
     );
   });
+
+  it("names only the regions that block the removed branch", () => {
+    const input = generateRuleFamilyInput({
+      pains: ["KNEE_LEFT", "SPINE"],
+      exerciseCatalog: [generateCatalogExercise("901", ["BLOCK_KNEE"])],
+    });
+    const branches = {
+      "1": { tags: [], levels: { 1: { exerciseId: "901" } } },
+    };
+
+    const result = filterBranchesByPainOnEveryLevel(branches, input);
+
+    expect(result.removals).toEqual([
+      { branchId: "1", family: "pain", details: ["KNEE"] },
+    ]);
+  });
 });

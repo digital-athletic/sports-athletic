@@ -24,8 +24,7 @@ export const ColumnListRow: FC<ColumnListRowProps> = ({
   secondaryDescription,
   thumbnail,
   onPress,
-  accessibilityActions,
-  onAccessibilityAction,
+  ...accessibilityActionProps
 }) => {
   const { colors } = useTheme();
   const hasDescription = description !== undefined;
@@ -35,8 +34,7 @@ export const ColumnListRow: FC<ColumnListRowProps> = ({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={hasDescription ? `${title}, ${description}` : title}
-      accessibilityActions={accessibilityActions}
-      onAccessibilityAction={onAccessibilityAction}
+      {...accessibilityActionProps}
       activeOpacity={0.7}
     >
       <Box

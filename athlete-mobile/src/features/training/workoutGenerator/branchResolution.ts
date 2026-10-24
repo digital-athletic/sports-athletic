@@ -1,9 +1,14 @@
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import type { SkillBranchType } from "@/schemas/skillTree.schema";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
 
 // A level may name its exercise under `id`; resolution reads it after `exerciseId`.
 type StoredBranchLevel = { exerciseId?: string; id?: string };
+
+/** A branch as resolution reads it: from a skill tree or a stored day entry. */
+export interface ResolvableBranch {
+  tags?: string[];
+  levels: Record<number, StoredBranchLevel>;
+}
 
 /**
  * Maps the athlete's fitness level to the entry level of a branch.
@@ -22,14 +27,15 @@ export const mapFitnessLevelToEntryLevel = (fitnessLevel: string): number => {
 };
 
 /**
- * Resolves the branch level: the athlete's stored branch level when the branch authors it,
- * otherwise the entry level of the fitness level, falling back downward to
- * the highest authored level. Returns null when no such level exists.
+ * Resolves the branch level: the athlete's stored branch level when the
+ * branch authors it, otherwise the entry level of the fitness level, falling
+ * back downward to the highest authored level. Returns null when no such
+ * level exists.
  *
  * resolveBranchLevel({ levels: { 1: ..., 2: ..., 4: ... } }, "PROFESSIONAL") → 2
  */
 export const resolveBranchLevel = (
-  branch: SkillBranchType,
+  branch: ResolvableBranch,
   fitnessLevel: string,
   athleteBranchLevel?: UserExerciseBranchDataType | null,
 ): number | null => {
@@ -52,7 +58,7 @@ export const resolveBranchLevel = (
  * Resolves the exercise ID at the resolved branch level, or null.
  */
 export const resolveBranchExerciseId = (
-  branch: SkillBranchType,
+  branch: ResolvableBranch,
   fitnessLevel: string,
   athleteBranchLevel?: UserExerciseBranchDataType | null,
 ): string | null => {
@@ -69,7 +75,7 @@ export const resolveBranchExerciseId = (
  * when no level resolves or the catalog lacks the exercise.
  */
 export const resolveBranchExercise = (
-  branch: SkillBranchType,
+  branch: ResolvableBranch,
   fitnessLevel: string,
   exerciseCatalog: readonly ExerciseType[],
   athleteBranchLevel?: UserExerciseBranchDataType | null,

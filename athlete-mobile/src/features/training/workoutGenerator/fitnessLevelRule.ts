@@ -29,14 +29,10 @@ export const filterBranchesByFitnessLevel = <T extends CandidateBranch>(
   const removals: BranchRemoval[] = [];
   const replace: string[] = [];
   for (const [branchId, branch] of Object.entries(branches)) {
-    const tags = branch.tags ?? [];
-    // main narrows the stored level records the same way (TrainingGenerator.ts:3383)
-    const levels = (branch.exercises ?? branch.levels ?? {}) as Record<
-      number,
-      { exerciseId: string }
-    >;
+    // main never hands this filter a branch without levels: equipment runs first
+    const levels = branch.exercises ?? branch.levels ?? {};
     const exercise = resolveBranchExercise(
-      { tags, levels },
+      { levels },
       fitnessLevel,
       exerciseCatalog,
       exerciseData.branchData[branchId] ?? null,
@@ -47,7 +43,7 @@ export const filterBranchesByFitnessLevel = <T extends CandidateBranch>(
         family: "fitnessLevel",
         details: [fitnessLevel],
       });
-      replace.push(...readReplacementRegion(tags));
+      replace.push(...readReplacementRegion(branch.tags));
     } else {
       keep[branchId] = branch;
     }

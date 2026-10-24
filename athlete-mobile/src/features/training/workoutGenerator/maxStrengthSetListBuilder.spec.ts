@@ -12,10 +12,8 @@ import type { GeneratedSetListEntry } from "@/features/training/models/SetListEn
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import { generateSequenceRandom } from "../../../../test/factories/sequenceRandom";
-import {
-  findCatalogExerciseById,
-  generateValueExercise,
-} from "../../../../test/factories/valueExercise";
+import { generateSupportExercise } from "../../../../test/factories/supportExercise";
+import { findCatalogExerciseById } from "../../../../test/factories/valueExercise";
 import { createGenerationInput, type GenerationInput } from "./generationInput";
 import { buildMaxStrengthSetList } from "./maxStrengthSetListBuilder";
 import type { SetListBlock } from "./setListBuilder";
@@ -71,23 +69,6 @@ const generateMaxStrengthInput = ({
     exerciseData: { exerciseData, branchData: {} },
     random: generateSequenceRandom(draws),
   });
-
-/**
- * Builds a two sided core support exercise advanced by duration.
- *
- * generateSupportExercise("s1")
- * → { id: "s1", tags: ["SKILL_SUPPORT", "REGION_CORE", "MUSCLE_RECTUS_ABDOMINIS", "SIDE_BOTH"], ... }
- */
-const generateSupportExercise = (id: string): ExerciseType => ({
-  ...generateValueExercise("duration"),
-  id,
-  tags: [
-    "SKILL_SUPPORT",
-    "REGION_CORE",
-    "MUSCLE_RECTUS_ABDOMINIS",
-    "SIDE_BOTH",
-  ],
-});
 
 /**
  * Builds a max strength block. The builder reads only its skill.
@@ -151,12 +132,13 @@ const describeSquatSets = (setList: GeneratedSetListEntry[]): string[] =>
     .map((entry) => `${entry.weight}x${entry.repetition}`);
 
 /**
- * Lists the entries between two working sets, after the two warm-up sets.
+ * Lists the entries of each rest between two working sets, after the two
+ * warm-up sets.
  *
- * listBreaks([warm-ups, squat 3/5, pause 180, squat 4/5, pause 180, squat 5/5, pause 120])
+ * listRestsBetweenWorkingSets([warm-ups, squat 3/5, pause 180, squat 4/5, pause 180, squat 5/5, pause 120])
  * → [[pause 180], [pause 180]]
  */
-const listBreaks = (
+const listRestsBetweenWorkingSets = (
   setList: GeneratedSetListEntry[],
 ): GeneratedSetListEntry[][] => {
   const workingSetIndexes = setList
@@ -168,7 +150,22 @@ const listBreaks = (
     .map((start, i) => setList.slice(start + 1, workingSetIndexes[i + 1]));
 };
 
-describe("buildMaxStrengthSetList", () => {
+/**
+ * Runs the function and returns what it throws, or undefined. The workout
+ * data check throws a plain object, which `toThrow` cannot compare.
+ *
+ * readThrownValue(() => { throw { type: "NO_ANAMNESIS" }; }) → { type: "NO_ANAMNESIS" }
+ */
+const readThrownValue = (run: () => unknown): unknown => {
+  try {
+    run();
+  } catch (thrown) {
+    return thrown;
+  }
+  return undefined;
+};
+
+describe("maxStrengthSetListBuilder: set list", () => {
   it("builds two warm-up sets and the working sets of an Advanced squat", () => {
     const setList = buildSquatSetList({ oneRepMax: 100 });
 
@@ -272,10 +269,12 @@ describe("buildMaxStrengthSetList", () => {
   ])(
     "%s: builds %i sets and rests %i s between working sets without a support exercise",
     (level, sets, rest) => {
-      const breaks = listBreaks(buildSquatSetList({ level, oneRepMax: 100 }));
+      const rests = listRestsBetweenWorkingSets(
+        buildSquatSetList({ level, oneRepMax: 100 }),
+      );
 
-      expect(breaks).toHaveLength(sets - 3);
-      for (const entries of breaks) {
+      expect(rests).toHaveLength(sets - 3);
+      for (const entries of rests) {
         expect(describeSetList(entries)).toEqual([`pause ${rest}`]);
       }
     },
@@ -299,7 +298,7 @@ describe("buildMaxStrengthSetList", () => {
       });
       const sets = draws.length + 3;
 
-      expect(describeSetList(listBreaks(setList)[0])).toEqual([
+      expect(describeSetList(listRestsBetweenWorkingSets(setList)[0])).toEqual([
         "pause 30",
         `s1 3/${sets}`,
         "pause 60",
@@ -309,14 +308,14 @@ describe("buildMaxStrengthSetList", () => {
     },
   );
 
-  it("draws once per break and leaves the break empty once the pool runs out", () => {
+  it("draws once per rest and rests without a support exercise once the pool runs out", () => {
     const setList = buildSquatSetList({
       oneRepMax: 100,
       supportExercises: [generateSupportExercise("s1")],
       draws: [0.99],
     });
 
-    expect(listBreaks(setList).map(describeSetList)).toEqual([
+    expect(listRestsBetweenWorkingSets(setList).map(describeSetList)).toEqual([
       ["pause 30", "s1 3/5", "pause 60", "s1 3/5", "pause 30"],
       ["pause 180"],
     ]);
@@ -357,11 +356,17 @@ describe("buildMaxStrengthSetList", () => {
   it("throws for an athlete without workout data, even without pairs", () => {
     const input = generateMaxStrengthInput();
 
-    expect(() =>
-      buildMaxStrengthSetList([], generateBlock(), {
-        ...input,
-        athlete: { ...input.athlete, workoutData: undefined },
-      }),
-    ).toThrow();
+    expect(
+      readThrownValue(() =>
+        buildMaxStrengthSetList([], generateBlock(), {
+          ...input,
+          athlete: { ...input.athlete, workoutData: undefined },
+        }),
+      ),
+    ).toEqual({
+      type: "NO_ANAMNESIS",
+      subtype: "MISSING_WORKOUT_DATA",
+      params: [],
+    });
   });
 });

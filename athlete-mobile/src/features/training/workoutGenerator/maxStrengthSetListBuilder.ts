@@ -36,21 +36,22 @@ import {
 import { roundWeight } from "./weightRounding";
 
 const WARM_UP_WEIGHT_PERCENTAGES = [50, 75];
-const WARM_UP_REST = 60;
-const LAST_WORKING_SET_REST = 120;
-const BEFORE_SUPPORT_REST = 30;
-const BETWEEN_SUPPORT_SETS_REST = 60;
+const WARM_UP_REST_SECONDS = 60;
+const LAST_WORKING_SET_REST_SECONDS = 120;
+const BEFORE_SUPPORT_REST_SECONDS = 30;
+const BETWEEN_SUPPORT_SETS_REST_SECONDS = 60;
 
-interface BreakRests {
+/** The rests between two working sets, in seconds. */
+interface WorkingSetRests {
   afterSupport: number;
   withoutSupport: number;
 }
 
-const PROFESSIONAL_BREAK_RESTS: BreakRests = {
+const PROFESSIONAL_WORKING_SET_RESTS: WorkingSetRests = {
   afterSupport: 90,
   withoutSupport: 240,
 };
-const ADVANCED_BREAK_RESTS: BreakRests = {
+const DEFAULT_WORKING_SET_RESTS: WorkingSetRests = {
   afterSupport: 30,
   withoutSupport: 180,
 };
@@ -60,7 +61,7 @@ interface MaxStrengthContext {
   input: GenerationInput;
   maxValues: MaxValuesType;
   weightedShare: number;
-  breakRests: BreakRests;
+  workingSetRests: WorkingSetRests;
 }
 
 interface MaxStrengthSets {
@@ -137,16 +138,16 @@ const buildLiftSet = (
   repetitionMAX: { ...sets.repetitions[index] },
 });
 
-const buildBreak = (
+const buildRestBetweenWorkingSets = (
   pool: ExerciseType[],
   tally: SupportExerciseTally,
   set: SetTuple,
-  { skill, input, weightedShare, breakRests }: MaxStrengthContext,
+  { skill, input, weightedShare, workingSetRests }: MaxStrengthContext,
 ): BuiltSetList => {
   const pick = pickSupportExercise(pool, tally, weightedShare, input.random);
   if (!pick) {
     return {
-      setList: [buildPause(set, skill, breakRests.withoutSupport)],
+      setList: [buildPause(set, skill, workingSetRests.withoutSupport)],
       tally,
     };
   }
@@ -158,17 +159,17 @@ const buildBreak = (
   );
   return {
     setList: [
-      buildPause(set, skill, BEFORE_SUPPORT_REST),
+      buildPause(set, skill, BEFORE_SUPPORT_REST_SECONDS),
       firstSet,
-      buildPause(set, skill, BETWEEN_SUPPORT_SETS_REST),
+      buildPause(set, skill, BETWEEN_SUPPORT_SETS_REST_SECONDS),
       secondSet,
-      buildPause(set, skill, breakRests.afterSupport),
+      buildPause(set, skill, workingSetRests.afterSupport),
     ],
     tally: pick.tally,
   };
 };
 
-// The warm-up sets rest without support exercises; each break between two
+// The warm-up sets rest without support exercises; each rest between two
 // working sets draws its support exercise in set order.
 const buildExerciseSetList = (
   lead: BranchExerciseReference,
@@ -185,11 +186,16 @@ const buildExerciseSetList = (
     const set: SetTuple = [index + 1, sets.weights.length];
     setList.push(buildLiftSet(lead, sets, index, skill));
     if (index < sets.warmUpCount) {
-      setList.push(buildPause(set, skill, WARM_UP_REST));
+      setList.push(buildPause(set, skill, WARM_UP_REST_SECONDS));
     } else if (index === sets.weights.length - 1) {
-      setList.push(buildPause(set, skill, LAST_WORKING_SET_REST));
+      setList.push(buildPause(set, skill, LAST_WORKING_SET_REST_SECONDS));
     } else {
-      const built = buildBreak(pool, currentTally, set, context);
+      const built = buildRestBetweenWorkingSets(
+        pool,
+        currentTally,
+        set,
+        context,
+      );
       setList.push(...built.setList);
       currentTally = built.tally;
     }
@@ -216,10 +222,10 @@ export const buildMaxStrengthSetList: SkillSetListBuilder = (
     maxValues:
       requireWorkoutData(input.athlete).maxValues ?? DEFAULT_MAX_VALUES,
     weightedShare: readWeightedSupportShare(input),
-    breakRests:
+    workingSetRests:
       getUserLevel(input.athlete) === WorkoutConstants.LEVELS.PROFESSIONAL
-        ? PROFESSIONAL_BREAK_RESTS
-        : ADVANCED_BREAK_RESTS,
+        ? PROFESSIONAL_WORKING_SET_RESTS
+        : DEFAULT_WORKING_SET_RESTS,
   };
   const exerciseMap = createExerciseMap(input.exerciseCatalog);
   const setList: GeneratedSetListEntry[] = [];

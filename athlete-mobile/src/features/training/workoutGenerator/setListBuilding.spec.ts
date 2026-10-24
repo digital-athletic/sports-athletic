@@ -369,11 +369,11 @@ describe("setListBuilding: short workout", () => {
     expect(listExerciseOrder(setList)).toEqual(["e1"]);
   });
 
-  it("throws naming the skill when neither block nor catalog sets the sets", () => {
+  it("throws naming the skill and the first rest when the catalog has no entry", () => {
     expect(() =>
       buildShortWorkoutSetList([
         generateFilledResult(generatePicksBlock("PLYO"), ["e1"]),
       ]),
-    ).toThrow("sets: skill PLYO sets no default");
+    ).toThrow(new Error("rest.withinSuperset: skill PLYO sets no default"));
   });
 });

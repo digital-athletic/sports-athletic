@@ -10,16 +10,16 @@ import {
 } from "./stages/setListBuilding";
 import { TRAINING_DAY_FINISH_RULES } from "./stages/workoutFinish";
 import {
-  createStoredDayTemplate,
+  createStoredDayWorkout,
   type StoredTrainingDay,
-} from "./storedDayTemplate";
+} from "./storedDayWorkout";
 import { interpretTemplate } from "./templateInterpreter";
 
 const throwUnreachableTrainingDayBlock = (): never => {
   throw new Error("A training day runs branches blocks only");
 };
 
-// The stored day template holds branches blocks only, so the other two
+// The stored day workout holds branches blocks only, so the other two
 // handlers never run.
 const createTrainingDayHandlers = (
   training: StoredTrainingDay,
@@ -52,7 +52,7 @@ export const generateTrainingDayFromStoredDay = (
   input: GenerationInput,
 ): GeneratedSetListEntry[] => {
   requireWorkoutData(input.athlete);
-  return interpretTemplate(createStoredDayTemplate(training), input, {
+  return interpretTemplate(createStoredDayWorkout(training), input, {
     handlers: createTrainingDayHandlers(training),
     finishRules: TRAINING_DAY_FINISH_RULES,
     createSetListBuilder: (workoutInput) =>

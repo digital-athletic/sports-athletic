@@ -70,7 +70,7 @@ describe("storedBranchLookup: createStoredDayBranchLookup", () => {
     expect(lookUpStoredBranch("GKS", "900001", input)).toBe(entry);
   });
 
-  it("reads the last entry of a repeated ID, as main's branch record does", () => {
+  it("reads the last entry of a repeated ID", () => {
     const first = { branchId: "510", tags: ["REGION_CORE"] };
     const lookUpStoredBranch = createStoredDayBranchLookup({
       GKS: [first, STALE_GKS_ENTRY],

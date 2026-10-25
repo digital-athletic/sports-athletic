@@ -57,7 +57,7 @@ describe("branchesRuleChain: applyBranchesRuleChain", () => {
     expect(Object.keys(result.keep)).toEqual(["510", "547"]);
   });
 
-  it("keys the candidates by branch ID in ascending order, as main's branch record", () => {
+  it("keys the candidates by branch ID in ascending order", () => {
     const input = generateRuleFamilyInput({
       equipment: ["DUMBBELL", "BARBELL"],
       exerciseCatalog,

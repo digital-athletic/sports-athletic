@@ -50,9 +50,9 @@ export const createBranchesBlockHandler = (
     const keptBranches = Object.entries(chain.keep).map(
       ([branchId, branch]) => ({ branchId, branch }),
     );
-    // Without a region request the block keeps every stored branch, since the
-    // old generator never writes the filtered list back on that path.
-    // Replacement and the cardio, prevention, special warm-up and duplicate
+    // Without a region request the block keeps every stored branch, repeats
+    // and removed branches included; the rule chain only decides whether a
+    // region needs refilling. Replacement and the cardio, prevention, special warm-up and duplicate
     // exercise rules change the kept branches here.
     const keepsStoredBranches =
       keptBranches.length > 0 && chain.replace.length === 0;

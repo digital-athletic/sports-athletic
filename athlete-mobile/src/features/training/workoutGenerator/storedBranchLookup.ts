@@ -33,9 +33,8 @@ export const lookUpStoredBranchInCatalog: StoredBranchLookup = (
 
 /**
  * Reads a stored branch ID from the entries a stored training day saved at
- * plan creation, since the old generator generates from that snapshot and not
- * from the current catalog. A repeated ID reads its last entry, as a branch
- * record keyed by ID keeps the last write.
+ * plan creation. A training day generates from the snapshot its plan stored,
+ * not from the current catalog. A repeated ID reads its last entry.
  */
 export const createStoredDayBranchLookup =
   (

@@ -4,6 +4,8 @@
  * Provides minimal test data builders so specs stay focused on
  * the behaviour under test rather than setup boilerplate.
  */
+import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
+import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { UserType } from "@/schemas/user.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
@@ -59,9 +61,89 @@ const wuBranch = {
   },
 };
 
+/**
+ * Bottle branch of a core skill, reusable where a day needs equipment the
+ * place lacks.
+ *
+ * generateBottleBranch("68", "SKILL_HYPERTROPHY")
+ * → { branchId: "68", tags: ["EQ_BOTTLE", ..., "SKILL_HYPERTROPHY"], exercises: { "1": { exerciseId: "223" }, ... } }
+ */
+export function generateBottleBranch(branchId: string, skillTag: string) {
+  return {
+    branchId,
+    tags: [
+      "EQ_BOTTLE",
+      "EQ_TYPE_EQUIPMENT",
+      "PLACE_HALL",
+      "REGION_CORE",
+      skillTag,
+    ],
+    exercises: {
+      "1": { exerciseId: "223" },
+      "2": { exerciseId: "224" },
+      "3": { exerciseId: "224" },
+    },
+  };
+}
+
+/**
+ * Prevention branch with warm-up exercises on every level, as a catalog tree
+ * holds it (`levels`).
+ *
+ * generatePreventionBranch("810", "SHOULDER", "EQ_TYPE_KG")
+ * → { branchId: "810", tags: ["PREVENTION_SHOULDER", "SKILL_PREVENTION", "REGION_LOWER_BODY", "EQ_TYPE_KG"], levels: { "1": { exerciseId: "431" }, ... } }
+ */
+export function generatePreventionBranch(
+  branchId: string,
+  region: string,
+  equipment: string,
+) {
+  return {
+    tags: [
+      `PREVENTION_${region}`,
+      "SKILL_PREVENTION",
+      "REGION_LOWER_BODY",
+      equipment,
+    ],
+    levels: {
+      "1": { exerciseId: "431" },
+      "2": { exerciseId: "432" },
+      "3": { exerciseId: "432" },
+    },
+    branchId,
+  };
+}
+
+/**
+ * Stored day entries for the first knee-hip prevention branches of a real
+ * skill tree that hold at least one level.
+ *
+ * generateKneePreventionBranches("PREV", 2)
+ * → [{ branchId: "152", tags: ["PREVENTION_KNEE_HIP", ...], exercises: { "1": { exerciseId: "1149" }, ... } }, ...]
+ */
+export function generateKneePreventionBranches(tree: string, count: number) {
+  return Object.entries(importTree(tree))
+    .filter(
+      ([, branch]) =>
+        branch.tags.includes("PREVENTION_KNEE_HIP") &&
+        Object.keys(branch.levels).length > 0,
+    )
+    .slice(0, count)
+    .map(([branchId, branch]) => ({
+      branchId,
+      tags: branch.tags,
+      exercises: Object.fromEntries(
+        Object.entries(branch.levels).map(([level, data]) => [
+          level,
+          { exerciseId: data.exerciseId },
+        ]),
+      ),
+    }));
+}
+
 export interface PlanUserOverrides {
   weekday: number;
-  skills: Record<string, unknown[]>;
+  skills: Record<string, unknown>;
   lengths: Record<string, number>;
   temporalData?: { date: string; expiration: string; tag: string }[];
 }
@@ -97,4 +179,47 @@ export function buildPlanUser(overrides: PlanUserOverrides): UserType {
       ],
     },
   } as UserType;
+}
+
+/**
+ * Plan user whose Monday training holds the default warm-up and nothing else.
+ *
+ * generateWarmUpOnlyPlanUser()
+ * → user with skills { WU: [branch 410] } and lengths { WU: 5 } on weekday 1
+ */
+export function generateWarmUpOnlyPlanUser(): UserType {
+  return buildPlanUser({ weekday: 1, skills: {}, lengths: {} });
+}
+
+export interface PlanWorkoutOptions {
+  weekday?: number;
+  place?: string;
+  equipment?: string[];
+  skillTrees?: Record<string, SkillTreeType>;
+}
+
+/**
+ * Generates the set list of the user's training of one weekday (default
+ * Monday, 1) through `TrainingGenerator.generatePlanWorkout`, with no earlier
+ * progress. Defaults: place HALL, no equipment, trees WU, CARDIO_4, CARDIO_5.
+ *
+ * generatePlanWorkoutForWeekday(generateWarmUpOnlyPlanUser())
+ * → [{ skill: "WU", branchId: "410", exerciseId: "431", set: [1, 2], ... }, ...]
+ */
+export function generatePlanWorkoutForWeekday(
+  user: UserType,
+  options: PlanWorkoutOptions = {},
+): GeneratedSetListEntry[] {
+  return new TrainingGenerator().generatePlanWorkout(
+    "PLAN",
+    user,
+    options.place ?? "HALL",
+    realExercises,
+    options.skillTrees ?? importTrees("WU", "CARDIO_4", "CARDIO_5"),
+    options.weekday ?? 1,
+    options.equipment ?? [],
+    undefined,
+    0,
+    noExerciseData,
+  );
 }

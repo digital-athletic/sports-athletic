@@ -15,6 +15,7 @@ describe("featureFlags", () => {
     delete process.env.EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED;
     delete process.env.EXPO_PUBLIC_CONTACT_ENABLED;
     delete process.env.EXPO_PUBLIC_SUPPORT_EMAIL;
+    delete process.env.EXPO_PUBLIC_AIWL_GENERATOR_ENABLED;
   });
 
   describe("contactEnabled", () => {
@@ -177,6 +178,22 @@ describe("featureFlags", () => {
     it("is true when EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED is 'true'", () => {
       process.env.EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED = "true";
       expect(featureFlags.trainingListViewEnabled).toBe(true);
+    });
+  });
+
+  describe("aiwlGeneratorEnabled", () => {
+    it("defaults to false when EXPO_PUBLIC_AIWL_GENERATOR_ENABLED is unset", () => {
+      expect(featureFlags.aiwlGeneratorEnabled).toBe(false);
+    });
+
+    it("is false when EXPO_PUBLIC_AIWL_GENERATOR_ENABLED is 'false'", () => {
+      process.env.EXPO_PUBLIC_AIWL_GENERATOR_ENABLED = "false";
+      expect(featureFlags.aiwlGeneratorEnabled).toBe(false);
+    });
+
+    it("is true when EXPO_PUBLIC_AIWL_GENERATOR_ENABLED is 'true'", () => {
+      process.env.EXPO_PUBLIC_AIWL_GENERATOR_ENABLED = "true";
+      expect(featureFlags.aiwlGeneratorEnabled).toBe(true);
     });
   });
 

@@ -5,11 +5,12 @@ import type {
 } from "@/features/training/models/ExerciseBranch";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { UserType } from "@/schemas/user.schema";
+import { setUpAiwlGeneratorFlag } from "../../../../test/factories/aiwlGeneratorFlag";
 import {
   buildPlanUser,
+  generatePlanWorkoutForWeekday,
   importTree,
   importTrees,
-  noExerciseData,
   PAUSE_ID,
   realExercises,
 } from "../../../../test/factories/planWorkout";
@@ -36,18 +37,11 @@ const generate = (
   place = "HALL",
   equipment: string[] = [],
 ) =>
-  new TrainingGenerator().generatePlanWorkout(
-    "PLAN",
-    user,
+  generatePlanWorkoutForWeekday(user, {
     place,
-    realExercises,
-    importTrees("WU", "CARDIO_4", "CARDIO_5", ...trees),
-    1,
     equipment,
-    undefined,
-    0,
-    noExerciseData,
-  );
+    skillTrees: importTrees("WU", "CARDIO_4", "CARDIO_5", ...trees),
+  });
 
 const exerciseBranchPairs = (entries: GeneratedSetListEntry[], skill: string) =>
   entries
@@ -62,33 +56,44 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-describe("generatePlanWorkout: kept branches with the same exercise", () => {
-  it("replaces the second branch of SWR1KG 79 and 80, which both hold exercise 269", () => {
-    const user = buildPlanUser({
-      weekday: 1,
-      skills: {
-        SWR1KG: [planBranch("SWR1KG", "79"), planBranch("SWR1KG", "80")],
-      },
-      lengths: { SWR1KG: 10 },
-    });
-    const pairs = exerciseBranchPairs(
-      generate(user, ["SWR1KG"], "HALL", ["CHAIR"]),
-      "SWR1KG",
-    );
-    const branchesPerExercise = new Map<string, Set<string>>();
-    for (const [exerciseId, branchId] of pairs) {
-      branchesPerExercise.set(
-        exerciseId,
-        (branchesPerExercise.get(exerciseId) ?? new Set()).add(branchId),
+describe.each([false, true])("AIWL generator flag %s", (flagEnabled) => {
+  setUpAiwlGeneratorFlag(flagEnabled);
+
+  describe("generatePlanWorkout: kept branches with the same exercise", () => {
+    it("replaces the second branch of SWR1KG 79 and 80, which both hold exercise 269", () => {
+      const user = buildPlanUser({
+        weekday: 1,
+        skills: {
+          SWR1KG: [planBranch("SWR1KG", "79"), planBranch("SWR1KG", "80")],
+        },
+        lengths: { SWR1KG: 10 },
+      });
+      const pairs = exerciseBranchPairs(
+        generate(user, ["SWR1KG"], "HALL", ["CHAIR"]),
+        "SWR1KG",
       );
-    }
-    expect(branchesPerExercise.size).toBeGreaterThan(1);
-    expect(
-      [...branchesPerExercise.values()].every(
-        (branches) => branches.size === 1,
-      ),
-    ).toBe(true);
+      const branchesPerExercise = new Map<string, Set<string>>();
+      for (const [exerciseId, branchId] of pairs) {
+        branchesPerExercise.set(
+          exerciseId,
+          (branchesPerExercise.get(exerciseId) ?? new Set()).add(branchId),
+        );
+      }
+      expect(branchesPerExercise.size).toBeGreaterThan(1);
+      expect(
+        [...branchesPerExercise.values()].every(
+          (branches) => branches.size === 1,
+        ),
+      ).toBe(true);
+    });
   });
+});
+
+// The next two describe blocks hand the generator a reduced skill tree map to
+// make a refill impossible. Only the old path reads the map it is given, so
+// they stay flag off.
+describe("generatePlanWorkout: duplicate slots with a reduced skill tree map", () => {
+  setUpAiwlGeneratorFlag(false);
 
   it("drops the duplicate slot when the skill tree offers no other exercise", () => {
     const user = buildPlanUser({
@@ -102,18 +107,13 @@ describe("generatePlanWorkout: kept branches with the same exercise", () => {
       "79": importTree("SWR1KG")["79"],
       "80": importTree("SWR1KG")["80"],
     };
-    const result = new TrainingGenerator().generatePlanWorkout(
-      "PLAN",
-      user,
-      "HALL",
-      realExercises,
-      { ...importTrees("WU", "CARDIO_4", "CARDIO_5"), SWR1KG: only },
-      1,
-      ["CHAIR"],
-      undefined,
-      0,
-      noExerciseData,
-    );
+    const result = generatePlanWorkoutForWeekday(user, {
+      equipment: ["CHAIR"],
+      skillTrees: {
+        ...importTrees("WU", "CARDIO_4", "CARDIO_5"),
+        SWR1KG: only,
+      },
+    });
     const branchIds = new Set(
       exerciseBranchPairs(result, "SWR1KG").map(([, branchId]) => branchId),
     );
@@ -121,7 +121,9 @@ describe("generatePlanWorkout: kept branches with the same exercise", () => {
   });
 });
 
-describe("generatePlanWorkout: prevention with a duplicate slot", () => {
+describe("generatePlanWorkout: prevention with a duplicate slot and a reduced skill tree map", () => {
+  setUpAiwlGeneratorFlag(false);
+
   it("drops only the duplicate slot and keeps the skill", () => {
     const user = buildPlanUser({
       weekday: 1,
@@ -132,22 +134,13 @@ describe("generatePlanWorkout: prevention with a duplicate slot", () => {
     });
     user.workoutData!.tags = { ...user.workoutData!.tags, PAIN: ["SPINE"] };
     const tree = importTree("PREVKG");
-    const result = new TrainingGenerator().generatePlanWorkout(
-      "PLAN",
-      user,
-      "HALL",
-      realExercises,
-      {
+    const result = generatePlanWorkoutForWeekday(user, {
+      skillTrees: {
         ...importTrees("WU", "CARDIO_4", "CARDIO_5"),
         PREV: {},
         PREVKG: { "103": tree["103"], "634": tree["634"] },
       },
-      1,
-      [],
-      undefined,
-      0,
-      noExerciseData,
-    );
+    });
     const branchIds = new Set(
       exerciseBranchPairs(result, "PREVSPINE").map(([, branchId]) => branchId),
     );
@@ -267,32 +260,36 @@ describe("createSetList: skill transition", () => {
   });
 });
 
-describe("generatePlanWorkout: home place with foam roller and chair", () => {
-  it("never repeats an exercise right after itself", () => {
-    const user = buildPlanUser({
-      weekday: 1,
-      skills: {
-        SWR1KG: [planBranch("SWR1KG", "79"), planBranch("SWR1KG", "80")],
-        GKSKG: ["939", "940", "941", "942"].map((id) =>
-          planBranch("GKSKG", id),
-        ),
-      },
-      lengths: { SWR1KG: 10, GKSKG: 10 },
-    });
-    const result = generate(user, ["SWR1KG", "GKSKG"], "HOME", [
-      "FOAM_ROLLER",
-      "CHAIR",
-    ]).filter((entry) => entry.exerciseId !== PAUSE_ID);
+describe.each([false, true])("AIWL generator flag %s", (flagEnabled) => {
+  setUpAiwlGeneratorFlag(flagEnabled);
 
-    const repeats = result.filter((entry, index) => {
-      const previous = result[index - 1];
-      return (
-        previous !== undefined &&
-        previous.exerciseId === entry.exerciseId &&
-        entry.set[0] <= previous.set[0]
-      );
+  describe("generatePlanWorkout: home place with foam roller and chair", () => {
+    it("never repeats an exercise right after itself", () => {
+      const user = buildPlanUser({
+        weekday: 1,
+        skills: {
+          SWR1KG: [planBranch("SWR1KG", "79"), planBranch("SWR1KG", "80")],
+          GKSKG: ["939", "940", "941", "942"].map((id) =>
+            planBranch("GKSKG", id),
+          ),
+        },
+        lengths: { SWR1KG: 10, GKSKG: 10 },
+      });
+      const result = generate(user, ["SWR1KG", "GKSKG"], "HOME", [
+        "FOAM_ROLLER",
+        "CHAIR",
+      ]).filter((entry) => entry.exerciseId !== PAUSE_ID);
+
+      const repeats = result.filter((entry, index) => {
+        const previous = result[index - 1];
+        return (
+          previous !== undefined &&
+          previous.exerciseId === entry.exerciseId &&
+          entry.set[0] <= previous.set[0]
+        );
+      });
+      expect(result.length).toBeGreaterThan(0);
+      expect(repeats).toEqual([]);
     });
-    expect(result.length).toBeGreaterThan(0);
-    expect(repeats).toEqual([]);
   });
 });

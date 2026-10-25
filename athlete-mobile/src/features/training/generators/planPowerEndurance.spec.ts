@@ -5,6 +5,7 @@ import { SeasonPhase } from "@/features/training/models/SeasonPhase";
 import { minutes } from "@/features/training/models/TimeUnits";
 import type { TrainingDayType } from "@/features/training/models/TrainingDay";
 import type { PlacesData } from "@/store/placesStore";
+import { setUpAiwlGeneratorFlag } from "../../../../test/factories/aiwlGeneratorFlag";
 import PlanGenerator from "./PlanGenerator";
 import TrainingGenerator from "./TrainingGenerator";
 
@@ -74,17 +75,21 @@ const specialBranchIds = new Set(Object.keys(getAllSkillTrees().SAS));
 const usesSpecialBranch = (entries: { branchId: string }[]) =>
   entries.some((entry) => specialBranchIds.has(entry.branchId));
 
-describe("generatePlan: power endurance for field players", () => {
-  it.each([
-    ["an adult", "1990-01-01"],
-    ["a child", "2020-01-01"],
-  ])(
-    "fills power endurance and its special slots for %s",
-    (_label, birthday) => {
-      const entries = powerEnduranceEntries(birthday);
+describe.each([false, true])("AIWL generator flag %s", (flagEnabled) => {
+  setUpAiwlGeneratorFlag(flagEnabled);
 
-      expect(entries.some((entry) => entry.skill === "SA")).toBe(true);
-      expect(usesSpecialBranch(entries)).toBe(true);
-    },
-  );
+  describe("generatePlan: power endurance for field players", () => {
+    it.each([
+      ["an adult", "1990-01-01"],
+      ["a child", "2020-01-01"],
+    ])(
+      "fills power endurance and its special slots for %s",
+      (_label, birthday) => {
+        const entries = powerEnduranceEntries(birthday);
+
+        expect(entries.some((entry) => entry.skill === "SA")).toBe(true);
+        expect(usesSpecialBranch(entries)).toBe(true);
+      },
+    );
+  });
 });

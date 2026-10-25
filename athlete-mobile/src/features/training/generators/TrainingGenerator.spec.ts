@@ -22,6 +22,7 @@ import PREV from "../../../../assets/data/generator/skillTrees/PREV.json";
 import PREVKG from "../../../../assets/data/generator/skillTrees/PREVKG.json";
 import WU from "../../../../assets/data/generator/skillTrees/WU.json";
 import WUSPEZIAL from "../../../../assets/data/generator/skillTrees/WUSPEZIAL.json";
+import { setUpAiwlGeneratorFlag } from "../../../../test/factories/aiwlGeneratorFlag";
 import { roundWeightValue } from "../utils/workoutUtils";
 import TrainingGenerator, { getIntensityBySkill } from "./TrainingGenerator";
 
@@ -2258,243 +2259,253 @@ describe("TrainingGenerator", () => {
      *   357 — kept branch C1
      *   4   — replacement from FB1
      */
-    it("should not have duplicate exercise IDs within GKS skill after CHEST soreness replacement", () => {
-      const {
-        transformSkillTree,
-      } = require("../../../../src/utils/skillTreeTransform");
+    // Hands the generator a mock GKSKG tree. Only the old path reads the map
+    // it is given, so this case stays flag off.
+    describe("with a mock skill tree", () => {
+      setUpAiwlGeneratorFlag(false);
 
-      const mockGKSKG = transformSkillTree({
-        C1: {
-          tags: ["EQ_TYPE_KG", "REGION_CORE", "PLACE_HALL", "SIDE_BOTH"],
-          levels: { "1": { exerciseId: "357" }, "2": { exerciseId: "357" } },
-        },
-        C2: {
-          tags: ["EQ_TYPE_KG", "REGION_CORE", "PLACE_HALL", "SIDE_BOTH"],
-          levels: { "1": { exerciseId: "357" }, "2": { exerciseId: "357" } },
-        },
-        FB1: {
-          tags: ["EQ_TYPE_KG", "REGION_FULL_BODY", "PLACE_HALL", "SIDE_BOTH"],
-          levels: { "1": { exerciseId: "4" }, "2": { exerciseId: "4" } },
-        },
-      });
+      it("should not have duplicate exercise IDs within GKS skill after CHEST soreness replacement", () => {
+        const {
+          transformSkillTree,
+        } = require("../../../../src/utils/skillTreeTransform");
 
-      const user = buildPlanUser({
-        weekday: 2,
-        temporalData: [{ date: today, expiration: nextWeek, tag: "CHEST" }],
-        skills: {
-          GKS: [
-            {
-              branchId: "C1",
-              tags: ["EQ_TYPE_KG", "REGION_CORE", "PLACE_HALL"],
-              exercises: {
-                "1": { exerciseId: "357" },
-                "2": { exerciseId: "357" },
+        const mockGKSKG = transformSkillTree({
+          C1: {
+            tags: ["EQ_TYPE_KG", "REGION_CORE", "PLACE_HALL", "SIDE_BOTH"],
+            levels: { "1": { exerciseId: "357" }, "2": { exerciseId: "357" } },
+          },
+          C2: {
+            tags: ["EQ_TYPE_KG", "REGION_CORE", "PLACE_HALL", "SIDE_BOTH"],
+            levels: { "1": { exerciseId: "357" }, "2": { exerciseId: "357" } },
+          },
+          FB1: {
+            tags: ["EQ_TYPE_KG", "REGION_FULL_BODY", "PLACE_HALL", "SIDE_BOTH"],
+            levels: { "1": { exerciseId: "4" }, "2": { exerciseId: "4" } },
+          },
+        });
+
+        const user = buildPlanUser({
+          weekday: 2,
+          temporalData: [{ date: today, expiration: nextWeek, tag: "CHEST" }],
+          skills: {
+            GKS: [
+              {
+                branchId: "C1",
+                tags: ["EQ_TYPE_KG", "REGION_CORE", "PLACE_HALL"],
+                exercises: {
+                  "1": { exerciseId: "357" },
+                  "2": { exerciseId: "357" },
+                },
               },
-            },
-            {
-              branchId: "UB1",
-              tags: ["EQ_TYPE_KG", "REGION_UPPER_BODY", "PLACE_HALL"],
-              exercises: { "2": { exerciseId: "222" } },
-            },
-          ],
-        },
-        lengths: { GKS: 15 },
+              {
+                branchId: "UB1",
+                tags: ["EQ_TYPE_KG", "REGION_UPPER_BODY", "PLACE_HALL"],
+                exercises: { "2": { exerciseId: "222" } },
+              },
+            ],
+          },
+          lengths: { GKS: 15 },
+        });
+
+        const result = generator.generatePlanWorkout(
+          "PLAN",
+          user,
+          "HALL",
+          realExercises,
+          { ...importTrees("WU", "CARDIO_4", "CARDIO_5"), GKSKG: mockGKSKG },
+          2,
+          ["TOWEL", "FOAM_ROLLER"],
+          undefined,
+          0,
+          noExerciseData,
+        );
+
+        const gksExerciseIds = result
+          .filter(
+            (e: { skill: string; exerciseId: string }) =>
+              e.skill === "GKS" && e.exerciseId !== PAUSE_ID,
+          )
+          .map((e: { exerciseId: string }) => e.exerciseId);
+
+        // The set list repeats IDs across sets (multiple sets per exercise).
+        // Extract unique IDs to verify the two branch-level exercises.
+        const uniqueIds = [...new Set(gksExerciseIds)].sort();
+        expect(uniqueIds).toEqual(["357", "4"]);
       });
-
-      const result = generator.generatePlanWorkout(
-        "PLAN",
-        user,
-        "HALL",
-        realExercises,
-        { ...importTrees("WU", "CARDIO_4", "CARDIO_5"), GKSKG: mockGKSKG },
-        2,
-        ["TOWEL", "FOAM_ROLLER"],
-        undefined,
-        0,
-        noExerciseData,
-      );
-
-      const gksExerciseIds = result
-        .filter(
-          (e: { skill: string; exerciseId: string }) =>
-            e.skill === "GKS" && e.exerciseId !== PAUSE_ID,
-        )
-        .map((e: { exerciseId: string }) => e.exerciseId);
-
-      // The set list repeats IDs across sets (multiple sets per exercise).
-      // Extract unique IDs to verify the two branch-level exercises.
-      const uniqueIds = [...new Set(gksExerciseIds)].sort();
-      expect(uniqueIds).toEqual(["357", "4"]);
     });
 
-    it("does not throw when trainingPlan is frozen (immer store) and daysSinceLastWorkout > 7", () => {
-      function deepFreeze<T extends object>(obj: T): T {
-        Object.freeze(obj);
-        for (const value of Object.values(obj)) {
-          if (value && typeof value === "object" && !Object.isFrozen(value)) {
-            deepFreeze(value);
+    describe.each([false, true])("AIWL generator flag %s", (flagEnabled) => {
+      setUpAiwlGeneratorFlag(flagEnabled);
+
+      it("does not throw when trainingPlan is frozen (immer store) and daysSinceLastWorkout > 7", () => {
+        function deepFreeze<T extends object>(obj: T): T {
+          Object.freeze(obj);
+          for (const value of Object.values(obj)) {
+            if (value && typeof value === "object" && !Object.isFrozen(value)) {
+              deepFreeze(value);
+            }
           }
+          return obj;
         }
-        return obj;
-      }
 
-      const user = buildPlanUser({
-        weekday: 1,
-        skills: {
-          SWR1: [
-            {
-              branchId: "22",
-              tags: ["SKILL_SWR", "PLACE_STUDIO", "EQ_DUMBBELL"],
-              exercises: {
-                "1": { exerciseId: "118" },
-                "2": { exerciseId: "118" },
-                "3": { exerciseId: "261" },
+        const user = buildPlanUser({
+          weekday: 1,
+          skills: {
+            SWR1: [
+              {
+                branchId: "22",
+                tags: ["SKILL_SWR", "PLACE_STUDIO", "EQ_DUMBBELL"],
+                exercises: {
+                  "1": { exerciseId: "118" },
+                  "2": { exerciseId: "118" },
+                  "3": { exerciseId: "261" },
+                },
               },
-            },
-          ],
-        },
-        lengths: { SWR1: 10 },
-      });
-
-      // Simulate immer's recursive deep freeze (Zustand immer middleware freezes all store state)
-      deepFreeze(user.trainingPlan!);
-
-      const result = generator.generatePlanWorkout(
-        "PLAN",
-        user,
-        "STUDIO",
-        realExercises,
-        importTrees("WU", "SWR1", "CARDIO_3", "CARDIO_4", "CARDIO_5"),
-        1,
-        ["DUMBBELL", "BARBELL"],
-        undefined,
-        14, // > 7 days triggers extendSectionsForMissedWeeks
-        noExerciseData,
-      );
-      expect(result.length).toBeGreaterThan(0);
-    });
-
-    it("branch threshold profile: BEGINNER with branch level 2 does not throw", () => {
-      const user = buildPlanUser({
-        weekday: 1,
-        skills: {
-          SWR1: [
-            {
-              branchId: "22",
-              tags: ["SKILL_SWR", "PLACE_STUDIO", "EQ_DUMBBELL"],
-              exercises: {
-                "1": { exerciseId: "118" },
-                "2": { exerciseId: "118" },
-                "3": { exerciseId: "261" },
-              },
-            },
-          ],
-        },
-        lengths: { SWR1: 10 },
-      });
-      user.workoutData!.tags = { LEVEL: ["BEGINNER"], POSITION: ["FIELD"] };
-
-      const studioEquipment = [
-        "DUMBBELL",
-        "BARBELL",
-        "BENCH",
-        "ADJUSTABLE_BENCH",
-        "BARBELL_BENCH",
-        "EXERCISING_BENCH",
-        "POWER_RACK",
-      ];
-      const exerciseData = {
-        exerciseData: {
-          "118": {
-            exerciseId: "118",
-            skill: "SWR1",
-            weight: 25,
-            repetition: 15,
-            weightType: "weightAbsolute",
+            ],
           },
-        },
-        branchData: { "22": { level: 2 } },
-      };
+          lengths: { SWR1: 10 },
+        });
 
-      const result = generator.generatePlanWorkout(
-        "PLAN",
-        user,
-        "STUDIO",
-        realExercises,
-        importTrees("WU", "SWR1", "CARDIO_3", "CARDIO_4", "CARDIO_5"),
-        1,
-        studioEquipment,
-        0,
-        0,
-        exerciseData as any,
-      );
-      expect(result.length).toBeGreaterThan(0);
-    });
+        // Simulate immer's recursive deep freeze (Zustand immer middleware freezes all store state)
+        deepFreeze(user.trainingPlan!);
 
-    /**
-     * Reproduces crash: endurance training day + leg muscle soreness.
-     *
-     * When user has a CARDIO_3 training and reports leg soreness (e.g. QUADRICEPS_LEFT),
-     * filterBySoreness returns keep:{} for the CARDIO skill (all branches are LOWER_BODY).
-     * The generator replaces with CARDIO_5 but the replacement entries are added mid-loop
-     * and never go through exercise selection (lines 1098-1121), so they have
-     * {tags, exercises, branchId} instead of {branchTags, exerciseId, branchId}.
-     * This causes a crash when building the set list.
-     */
-    it("does not crash with leg soreness on endurance (CARDIO_3) training day", () => {
-      const user = buildPlanUser({
-        weekday: 1,
-        skills: {
-          CARDIO_3: [
-            {
-              branchId: "580",
-              tags: [
-                "EQ_TREADMILL",
-                "EQ_TYPE_EQUIPMENT",
-                "REGION_LOWER_BODY",
-                "SKILL_CARDIO",
-                "SKILL_CARDIO_3",
-                "PLACE_STUDIO",
-              ],
-              exercises: {
-                "1": { exerciseId: "43" },
-                "2": { exerciseId: "43" },
-                "3": { exerciseId: "43" },
-              },
-            },
-          ],
-        },
-        lengths: { CARDIO_3: 20 },
-        temporalData: [
-          {
-            tag: "QUADRICEPS_LEFT",
-            date: new Date().toISOString(),
-            expiration: new Date(
-              Date.now() + 24 * 60 * 60 * 1000,
-            ).toISOString(),
-          },
-        ],
+        const result = generator.generatePlanWorkout(
+          "PLAN",
+          user,
+          "STUDIO",
+          realExercises,
+          importTrees("WU", "SWR1", "CARDIO_3", "CARDIO_4", "CARDIO_5"),
+          1,
+          ["DUMBBELL", "BARBELL"],
+          undefined,
+          14, // > 7 days triggers extendSectionsForMissedWeeks
+          noExerciseData,
+        );
+        expect(result.length).toBeGreaterThan(0);
       });
 
-      const result = generator.generatePlanWorkout(
-        "PLAN",
-        user,
-        "STUDIO",
-        realExercises,
-        importTrees("WU", "CARDIO_3", "CARDIO_4", "CARDIO_5"),
-        1,
-        ["TREADMILL"],
-        undefined,
-        0,
-        noExerciseData,
-      );
+      it("branch threshold profile: BEGINNER with branch level 2 does not throw", () => {
+        const user = buildPlanUser({
+          weekday: 1,
+          skills: {
+            SWR1: [
+              {
+                branchId: "22",
+                tags: ["SKILL_SWR", "PLACE_STUDIO", "EQ_DUMBBELL"],
+                exercises: {
+                  "1": { exerciseId: "118" },
+                  "2": { exerciseId: "118" },
+                  "3": { exerciseId: "261" },
+                },
+              },
+            ],
+          },
+          lengths: { SWR1: 10 },
+        });
+        user.workoutData!.tags = { LEVEL: ["BEGINNER"], POSITION: ["FIELD"] };
 
-      expect(result.length).toBeGreaterThan(0);
-      // All entries should have valid exerciseId (not undefined)
-      for (const entry of result) {
-        expect(entry.exerciseId).toBeDefined();
-        expect(typeof entry.exerciseId).toBe("string");
-      }
+        const studioEquipment = [
+          "DUMBBELL",
+          "BARBELL",
+          "BENCH",
+          "ADJUSTABLE_BENCH",
+          "BARBELL_BENCH",
+          "EXERCISING_BENCH",
+          "POWER_RACK",
+        ];
+        const exerciseData = {
+          exerciseData: {
+            "118": {
+              exerciseId: "118",
+              skill: "SWR1",
+              weight: 25,
+              repetition: 15,
+              weightType: "weightAbsolute",
+            },
+          },
+          branchData: { "22": { level: 2 } },
+        };
+
+        const result = generator.generatePlanWorkout(
+          "PLAN",
+          user,
+          "STUDIO",
+          realExercises,
+          importTrees("WU", "SWR1", "CARDIO_3", "CARDIO_4", "CARDIO_5"),
+          1,
+          studioEquipment,
+          0,
+          0,
+          exerciseData as any,
+        );
+        expect(result.length).toBeGreaterThan(0);
+      });
+
+      /**
+       * Reproduces crash: endurance training day + leg muscle soreness.
+       *
+       * When user has a CARDIO_3 training and reports leg soreness (e.g. QUADRICEPS_LEFT),
+       * filterBySoreness returns keep:{} for the CARDIO skill (all branches are LOWER_BODY).
+       * The generator replaces with CARDIO_5 but the replacement entries are added mid-loop
+       * and never go through exercise selection (lines 1098-1121), so they have
+       * {tags, exercises, branchId} instead of {branchTags, exerciseId, branchId}.
+       * This causes a crash when building the set list.
+       */
+      it("does not crash with leg soreness on endurance (CARDIO_3) training day", () => {
+        const user = buildPlanUser({
+          weekday: 1,
+          skills: {
+            CARDIO_3: [
+              {
+                branchId: "580",
+                tags: [
+                  "EQ_TREADMILL",
+                  "EQ_TYPE_EQUIPMENT",
+                  "REGION_LOWER_BODY",
+                  "SKILL_CARDIO",
+                  "SKILL_CARDIO_3",
+                  "PLACE_STUDIO",
+                ],
+                exercises: {
+                  "1": { exerciseId: "43" },
+                  "2": { exerciseId: "43" },
+                  "3": { exerciseId: "43" },
+                },
+              },
+            ],
+          },
+          lengths: { CARDIO_3: 20 },
+          temporalData: [
+            {
+              tag: "QUADRICEPS_LEFT",
+              date: new Date().toISOString(),
+              expiration: new Date(
+                Date.now() + 24 * 60 * 60 * 1000,
+              ).toISOString(),
+            },
+          ],
+        });
+
+        const result = generator.generatePlanWorkout(
+          "PLAN",
+          user,
+          "STUDIO",
+          realExercises,
+          importTrees("WU", "CARDIO_3", "CARDIO_4", "CARDIO_5"),
+          1,
+          ["TREADMILL"],
+          undefined,
+          0,
+          noExerciseData,
+        );
+
+        expect(result.length).toBeGreaterThan(0);
+        // All entries should have valid exerciseId (not undefined)
+        for (const entry of result) {
+          expect(entry.exerciseId).toBeDefined();
+          expect(typeof entry.exerciseId).toBe("string");
+        }
+      });
     });
   });
 

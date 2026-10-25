@@ -44,6 +44,14 @@ export const featureFlags = {
   get trainingListViewEnabled(): boolean {
     return process.env.EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED === "true";
   },
+  /**
+   * When true, plan training days generate through the AIWL generator
+   * instead of the old training day path. Short workouts and the strength
+   * test are not affected. Env var: EXPO_PUBLIC_AIWL_GENERATOR_ENABLED
+   */
+  get aiwlGeneratorEnabled(): boolean {
+    return process.env.EXPO_PUBLIC_AIWL_GENERATOR_ENABLED === "true";
+  },
   get reviewEmail(): string | null {
     return process.env.EXPO_PUBLIC_REVIEW_EMAIL ?? null;
   },

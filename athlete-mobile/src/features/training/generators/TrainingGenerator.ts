@@ -1,3 +1,4 @@
+import { featureFlags } from "@/config/featureFlags";
 import { TagGroups } from "@/constants/tagGroups";
 import {
   WorkoutConstants,
@@ -77,6 +78,7 @@ import {
 import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import { createGenerationInput } from "@/features/training/workoutGenerator/generationInput";
 import { generateShortWorkoutFromTemplate } from "@/features/training/workoutGenerator/shortWorkoutGeneration";
+import { generateTrainingDayFromStoredDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import { isTrainingLevel } from "@/schemas/common.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import {
@@ -351,6 +353,22 @@ export default class TrainingGenerator {
       SkillBranchesSchema,
       "currTraining.skills",
     );
+
+    // The flag path ignores skillTrees: it reads the trees from the registry through input.branchLookupIndex.
+    if (featureFlags.aiwlGeneratorEnabled) {
+      return generateTrainingDayFromStoredDay(
+        { skills: exerciseBranches, lengths },
+        createGenerationInput({
+          athlete: user,
+          place,
+          equipment,
+          exerciseCatalog: exercises,
+          exerciseData: userExerciseData,
+          // every draw reads Math.random when it runs
+          random: () => Math.random(),
+        }),
+      );
+    }
 
     /** DEV for specific exercises
 

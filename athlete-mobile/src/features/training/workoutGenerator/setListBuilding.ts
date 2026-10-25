@@ -11,7 +11,7 @@ import { orderExerciseUnits, readEndingExerciseId } from "./exerciseOrder";
 import { pairBranchExercises } from "./exercisePairing";
 import type { GenerationInput } from "./generationInput";
 import { buildMaxStrengthSetList } from "./maxStrengthSetListBuilder";
-import { readResolvedPicksBlock } from "./picksWorkoutRules";
+import { readResolvedPicksBlockTiming } from "./picksWorkoutRules";
 import { readPlanWorkoutTiming } from "./planWorkoutTiming";
 import {
   removeTrailingPause,
@@ -161,9 +161,10 @@ export const createShortWorkoutSetListBuilder =
   (blocks, results) =>
     blocks.flatMap((result) => {
       const kind = readSkillSetListKind(result.block.skill);
-      const { sets, superset, rest, setDuration, values } =
-        readResolvedPicksBlock(input.picksWorkout, result.block);
-      const timing = { sets, superset, rest, setDuration, values };
+      const timing = readResolvedPicksBlockTiming(
+        input.picksWorkout,
+        result.block,
+      );
       const setList = buildBlockSetList(
         kind,
         pairBranchExercises(

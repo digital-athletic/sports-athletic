@@ -7,24 +7,31 @@ import {
   type SetListBuilder,
   type WorkoutFinishRules,
 } from "./workoutFinish";
-import { setUpWorkout } from "./workoutSetup";
+import { setUpWorkout, type WorkoutInput } from "./workoutSetup";
 
 export interface TemplateInterpreterOptions<TEntry> {
   handlers: BlockHandlerRegistry;
   finishRules: WorkoutFinishRules;
-  buildSetList: SetListBuilder<TEntry>;
+  createSetListBuilder: (input: WorkoutInput) => SetListBuilder<TEntry>;
 }
 
 /**
- * Runs the stages of one workout: workout setup, block walk and workout finish.
+ * Runs the stages of one workout: workout setup, block walk and workout
+ * finish. The handlers and the set list builder read one workout input.
  */
 export const interpretTemplate = <TEntry>(
   template: Template,
   input: GenerationInput,
-  { handlers, finishRules, buildSetList }: TemplateInterpreterOptions<TEntry>,
-): FinishedWorkout<TEntry> =>
-  finishWorkout(
-    walkTemplateBlocks(template, setUpWorkout(input, template), handlers),
+  {
+    handlers,
     finishRules,
-    buildSetList,
+    createSetListBuilder,
+  }: TemplateInterpreterOptions<TEntry>,
+): FinishedWorkout<TEntry> => {
+  const workoutInput = setUpWorkout(input, template);
+  return finishWorkout(
+    walkTemplateBlocks(template, workoutInput, handlers),
+    finishRules,
+    createSetListBuilder(workoutInput),
   );
+};

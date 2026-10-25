@@ -4,7 +4,9 @@ import {
   generateSkillTreeBranches,
 } from "../../../../test/factories/ruleFamilyInput";
 import {
+  createEmptyPicksWorkout,
   filterPoolByPicksWorkoutRules,
+  readResolvedPicksBlockTiming,
   resolvePicksWorkout,
 } from "./picksWorkoutRules";
 
@@ -249,5 +251,46 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
 
     expect(first.blocks).not.toBe(second.blocks);
     expect(first.pool).not.toBe(second.pool);
+  });
+});
+
+describe("picksWorkoutRules: readResolvedPicksBlockTiming", () => {
+  it("reads only the timing of the block workout setup resolved", () => {
+    const block: PicksBlock = {
+      kind: "picks",
+      skill: "MOB",
+      picks: [{ tags: [], count: 1 }],
+      sets: 2,
+    };
+    const picksWorkout = resolvePicksWorkout(
+      generateTemplate([block]),
+      { ...generateRuleFamilyInput(), athleteLevel: "ADVANCED" },
+      generateKneeSkillTrees(),
+    );
+
+    expect(readResolvedPicksBlockTiming(picksWorkout, block)).toEqual({
+      sets: 2,
+      superset: "muscles",
+      rest: {
+        withinSuperset: 10,
+        betweenSets: 10,
+        afterExercise: 10,
+        afterBlock: undefined,
+      },
+      setDuration: undefined,
+      values: undefined,
+    });
+  });
+
+  it("throws for a block that workout setup did not resolve", () => {
+    const block: PicksBlock = {
+      kind: "picks",
+      skill: "MOB",
+      picks: [{ tags: [], count: 1 }],
+    };
+
+    expect(() =>
+      readResolvedPicksBlockTiming(createEmptyPicksWorkout(), block),
+    ).toThrow(new Error("Workout setup resolved no picks block for skill MOB"));
   });
 });

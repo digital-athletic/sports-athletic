@@ -3,6 +3,7 @@ import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import type { Block, Template } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { filterBranchesByAgeGroup } from "./ageGroupRule";
+import type { ResolvedBlockTiming } from "./blockTiming";
 import { type BranchDraw, createBranchDraw } from "./branchDraw";
 import {
   filterBranchesByEquipment,
@@ -110,4 +111,40 @@ export const resolvePicksWorkout = (
       random: input.random,
     }),
   };
+};
+
+/**
+ * Reads the block that workout setup resolved for a template block.
+ *
+ * readResolvedPicksBlock(picksWorkout, warmUpBlock) → { skill: "WU", sets: 1, pool: {...}, ... }
+ */
+export const readResolvedPicksBlock = (
+  picksWorkout: PicksWorkout,
+  block: Block,
+): ResolvedPicksBlock => {
+  const resolved = picksWorkout.blocks.get(block);
+  if (resolved === undefined) {
+    throw new Error(
+      `Workout setup resolved no picks block for skill ${block.skill}`,
+    );
+  }
+  return resolved;
+};
+
+/**
+ * Reads the timing that workout setup resolved for a template block, without
+ * the pool and picks of the block.
+ *
+ * readResolvedPicksBlockTiming(picksWorkout, warmUpBlock)
+ * → { sets: 1, superset: "muscles", rest: {...}, setDuration: undefined, values: undefined }
+ */
+export const readResolvedPicksBlockTiming = (
+  picksWorkout: PicksWorkout,
+  block: Block,
+): ResolvedBlockTiming => {
+  const { sets, superset, rest, setDuration, values } = readResolvedPicksBlock(
+    picksWorkout,
+    block,
+  );
+  return { sets, superset, rest, setDuration, values };
 };

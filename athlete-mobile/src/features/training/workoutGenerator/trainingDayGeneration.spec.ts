@@ -25,6 +25,28 @@ describe("trainingDayGeneration: generateTrainingDayFromStoredDay", () => {
     ]);
   });
 
+  it("generates a branch the catalog removed from the stored day entry", () => {
+    // no skill tree holds the branch ID 900001
+    const setList = generateTrainingDayFromStoredDay(
+      generateStoredTrainingDay(
+        { CARDIO_5: ["900001"] },
+        { CARDIO_5: 25 },
+        "721",
+      ),
+      generateGenerationInput({ exerciseCatalog, random: () => 0 }),
+    );
+
+    expect(setList).toEqual([
+      {
+        branchId: "900001",
+        exerciseId: "721",
+        set: [1, 1],
+        skill: "CARDIO_5",
+        duration: 1500,
+      },
+    ]);
+  });
+
   it("runs fractional stored minutes as the same number of seconds", () => {
     const setList = generateTrainingDayFromStoredDay(
       generateStoredTrainingDay(

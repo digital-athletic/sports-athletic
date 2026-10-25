@@ -25,7 +25,7 @@ This ADR defines the structure the generator follows. The specs define the rules
 - One handler holds the rules of one block kind, and a reader can follow them top to bottom.
 - Each part can be tested on its own, with a repeatable random source.
 - The code uses plain TypeScript: modules, plain objects and pure functions. Every module stays within the lint limits without suppressions.
-- A stored workout references catalog data and holds no copies of it.
+- A stored workout references catalog data and holds no copies of it. Stored plans created before the migration still hold copies, as [Stored workouts](#stored-workouts) describes.
 
 ## Options
 
@@ -165,7 +165,17 @@ The index maps every branch ID to its branch across all skill trees. Skill tree 
 
 ### Stored workouts
 
-A training day stores an AIWL template. Its branches blocks hold branch IDs and durations. The branch lookup index supplies tags, levels and exercises at generation time, so a stored plan follows catalog changes.
+A training day stores an AIWL template. Its branches blocks hold branch IDs and durations.
+
+The target: the branch lookup index supplies tags, levels and exercises at generation time, so a stored plan follows catalog changes.
+
+Until a migration rewrites the stored plans, a temporary decision applies:
+
+1. Planned branches read the branch entries the training day saved at plan creation. A catalog update changes no planned branch, and a branch ID the catalog removed still generates from its saved entry.
+2. Replacement branches read the current catalog through the branch lookup index.
+3. A workout can therefore mix saved and current branch definitions. The decision accepts that mix so that no catalog update changes an athlete's planned workout without a migration.
+
+A follow-up issue defines the migration, its trigger, and what happens to a slot whose branch ID the catalog removed. After the migration, training day generation switches from the saved entries to the branch lookup index.
 
 ### Errors
 
@@ -205,7 +215,8 @@ The generator raises three classes of error:
 - Pro: each handler, each rule family and each stage has its own spec.
 - Con: four stages apply rules: workout setup, the handlers, workout finish and the builders. A reader has to know which stage applies a rule.
 - Con: the builders, not the block handlers, select support exercises and the strength test exercises.
-- Con: a catalog change that removes a branch ID drops that slot from every stored plan.
+- Con: until the stored plan migration, a workout can mix saved planned branches with current replacement branches.
+- Con: once stored plans read the catalog, a catalog change that removes a branch ID drops that slot from every stored plan.
 - Con: the generation input grows with every new input a rule needs.
 
 ## More information

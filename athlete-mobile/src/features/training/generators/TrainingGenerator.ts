@@ -354,6 +354,7 @@ export default class TrainingGenerator {
       "currTraining.skills",
     );
 
+    // The flag path ignores skillTrees: it reads the trees from the registry through input.branchLookupIndex.
     if (featureFlags.aiwlGeneratorEnabled) {
       return generateTrainingDayFromStoredDay(
         { skills: exerciseBranches, lengths },

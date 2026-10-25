@@ -1,5 +1,5 @@
 import { loadSkillCatalog } from "@/data/loadSkillCatalog";
-import type { ExerciseStartValueSource } from "@/features/training/workoutGenerator/exerciseStartValues";
+import type { ExerciseStartValueSource } from "@/features/training/workoutGenerator/exerciseValues/exerciseStartValues";
 import { generateAthleteWithMaxValues } from "./athlete";
 
 /**

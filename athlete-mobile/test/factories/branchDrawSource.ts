@@ -1,4 +1,4 @@
-import type { BranchDrawSource } from "@/features/training/workoutGenerator/branchDraw";
+import type { BranchDrawSource } from "@/features/training/workoutGenerator/blockHandlers/picks/branchDraw";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { generateSequenceRandom } from "./sequenceRandom";
 

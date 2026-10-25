@@ -11,7 +11,7 @@ import {
   generateTemplate,
 } from "@test/factories/templateBlock";
 import { catchThrownValue } from "@test/factories/thrownValue";
-import { PICKS_BLOCK_HANDLER } from "./picksHandler";
+import { PICKS_BLOCK_HANDLER } from "./blockHandlers/picks/picksHandler";
 import { generateShortWorkoutFromTemplate } from "./shortWorkoutGeneration";
 
 describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {

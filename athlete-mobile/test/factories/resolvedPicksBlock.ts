@@ -1,5 +1,5 @@
-import type { ResolvedBlockTiming } from "@/features/training/workoutGenerator/blockTiming";
-import type { ResolvedPicksBlock } from "@/features/training/workoutGenerator/picksBlockResolution";
+import type { ResolvedBlockTiming } from "@/features/training/workoutGenerator/setListBuilders/blockTiming";
+import type { ResolvedPicksBlock } from "@/features/training/workoutGenerator/blockHandlers/picks/picksBlockResolution";
 
 /**
  * Builds a resolved picks block with the given timing and an empty pool.

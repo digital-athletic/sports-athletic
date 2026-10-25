@@ -1,5 +1,5 @@
 import type { Block, Template } from "@/schemas/aiwl.schema";
-import type { StoredDaySkills } from "./storedBranchLookup";
+import type { StoredDaySkills } from "./blockHandlers/branches/storedBranchLookup";
 
 /** The part of a stored training day the generator reads. */
 export interface StoredTrainingDay {

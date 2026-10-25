@@ -2,13 +2,13 @@ import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { Template } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
-import type { BlockHandlerRegistry } from "./blockWalk";
-import type { GenerationInput } from "./generationInput";
-import { PICKS_BLOCK_HANDLER } from "./picksHandler";
-import { requirePicksBlock } from "./picksBlockResolution";
-import { createShortWorkoutSetListBuilder } from "./setListBuilding";
+import { requirePicksBlock } from "./blockHandlers/picks/picksBlockResolution";
+import { PICKS_BLOCK_HANDLER } from "./blockHandlers/picks/picksHandler";
+import type { GenerationInput } from "./generationInput/generationInput";
+import type { BlockHandlerRegistry } from "./stages/blockWalk";
+import { createShortWorkoutSetListBuilder } from "./stages/setListBuilding";
+import { SHORT_WORKOUT_FINISH_RULES } from "./stages/workoutFinish";
 import { interpretTemplate } from "./templateInterpreter";
-import { SHORT_WORKOUT_FINISH_RULES } from "./workoutFinish";
 
 const throwUnreachableShortWorkoutBlock = (): never => {
   throw new Error("A short workout runs picks blocks only");

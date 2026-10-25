@@ -1,9 +1,9 @@
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
-import { buildBranchLookupIndex } from "@/features/training/workoutGenerator/branchLookupIndex";
+import { buildBranchLookupIndex } from "@/features/training/workoutGenerator/generationInput/branchLookupIndex";
 import {
   createGenerationInput,
   type GenerationInput,
-} from "@/features/training/workoutGenerator/generationInput";
+} from "@/features/training/workoutGenerator/generationInput/generationInput";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { BranchDataMapType } from "@/store/exerciseProgressStore";

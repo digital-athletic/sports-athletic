@@ -1,8 +1,8 @@
 import type {
   BlockHandlerRegistry,
   BlockResult,
-} from "@/features/training/workoutGenerator/blockWalk";
-import type { WorkoutInput } from "@/features/training/workoutGenerator/workoutSetup";
+} from "@/features/training/workoutGenerator/stages/blockWalk";
+import type { WorkoutInput } from "@/features/training/workoutGenerator/stages/workoutSetup";
 import type { Block } from "@/schemas/aiwl.schema";
 import { generateEmptyBlockResult } from "./blockResult";
 

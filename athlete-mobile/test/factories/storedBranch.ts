@@ -1,5 +1,5 @@
-import type { StoredBranch } from "@/features/training/workoutGenerator/storedBranchLookup";
-import type { CandidateBranch } from "@/features/training/workoutGenerator/ruleFamily";
+import type { StoredBranch } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
+import type { CandidateBranch } from "@/features/training/workoutGenerator/ruleFamilies/ruleFamily";
 import type { ExerciseBranchEntry } from "@/schemas/generator.schema";
 import { generateSkillTreeBranches } from "./ruleFamilyInput";
 

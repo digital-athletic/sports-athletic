@@ -1,4 +1,4 @@
-import type { BlockResult } from "@/features/training/workoutGenerator/blockWalk";
+import type { BlockResult } from "@/features/training/workoutGenerator/stages/blockWalk";
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
 import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import type { Block } from "@/schemas/aiwl.schema";

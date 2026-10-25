@@ -76,7 +76,7 @@ import {
   splitDuplicateBranches,
 } from "@/features/training/utils/duplicateExerciseUtils";
 import type { GeneratorError } from "@/features/training/models/GeneratorError";
-import { createGenerationInput } from "@/features/training/workoutGenerator/generationInput";
+import { createGenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
 import { generateShortWorkoutFromTemplate } from "@/features/training/workoutGenerator/shortWorkoutGeneration";
 import { generateTrainingDayFromStoredDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import { isTrainingLevel } from "@/schemas/common.schema";

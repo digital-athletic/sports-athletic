@@ -1,11 +1,11 @@
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
-import type { GenerationInput } from "@/features/training/workoutGenerator/generationInput";
+import type { GenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
 import type { Template } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import {
   setUpWorkout,
   type WorkoutInput,
-} from "@/features/training/workoutGenerator/workoutSetup";
+} from "@/features/training/workoutGenerator/stages/workoutSetup";
 import {
   generateGenerationInput,
   type GenerationInputFactoryOptions,

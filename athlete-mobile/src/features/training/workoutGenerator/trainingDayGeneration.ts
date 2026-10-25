@@ -1,16 +1,16 @@
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import { requireWorkoutData } from "@/features/training/utils/userDataUtils";
-import type { BlockHandlerRegistry } from "./blockWalk";
-import { createBranchesBlockHandler } from "./branchesHandler";
-import type { GenerationInput } from "./generationInput";
-import { createTrainingDaySetListBuilder } from "./setListBuilding";
+import { createBranchesBlockHandler } from "./blockHandlers/branches/branchesHandler";
+import { createStoredDayBranchLookup } from "./blockHandlers/branches/storedBranchLookup";
+import type { GenerationInput } from "./generationInput/generationInput";
+import type { BlockHandlerRegistry } from "./stages/blockWalk";
+import { createTrainingDaySetListBuilder } from "./stages/setListBuilding";
+import { TRAINING_DAY_FINISH_RULES } from "./stages/workoutFinish";
 import {
   createStoredDayTemplate,
   type StoredTrainingDay,
 } from "./storedDayTemplate";
-import { createStoredDayBranchLookup } from "./storedBranchLookup";
 import { interpretTemplate } from "./templateInterpreter";
-import { TRAINING_DAY_FINISH_RULES } from "./workoutFinish";
 
 const throwUnreachableTrainingDayBlock = (): never => {
   throw new Error("A training day runs branches blocks only");

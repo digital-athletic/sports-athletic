@@ -12,12 +12,12 @@ import {
   generateShortTemplate,
   generateTemplate,
 } from "@test/factories/templateBlock";
-import { interpretTemplate } from "./templateInterpreter";
 import {
   type FilledBlockResult,
   TRAINING_DAY_FINISH_RULES,
-} from "./workoutFinish";
-import type { WorkoutInput } from "./workoutSetup";
+} from "./stages/workoutFinish";
+import type { WorkoutInput } from "./stages/workoutSetup";
+import { interpretTemplate } from "./templateInterpreter";
 
 /**
  * A stored training day in stored skill order, which differs from the

@@ -1,6 +1,10 @@
+import { loadExercises } from "@/data/loadExercises";
+import { loadTemplate } from "@/data/loadTemplates";
+import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import type { IntensityData } from "@/features/training/models/Intensity";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { SetListEntryType } from "@/features/training/models/SetListEntry";
+import { PICKS_BLOCK_HANDLER } from "@/features/training/workoutGenerator/picksHandler";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type {
   CardioBranchReference,
@@ -8,6 +12,7 @@ import type {
 } from "@/schemas/generator.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
+import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import {
   transformSkillTree,
   type RawSkillTree,
@@ -19,6 +24,15 @@ import WU from "../../../../assets/data/generator/skillTrees/WU.json";
 import WUSPEZIAL from "../../../../assets/data/generator/skillTrees/WUSPEZIAL.json";
 import { roundWeightValue } from "../utils/workoutUtils";
 import TrainingGenerator, { getIntensityBySkill } from "./TrainingGenerator";
+
+const readThrownValue = (run: () => unknown): unknown => {
+  try {
+    run();
+  } catch (thrown) {
+    return thrown;
+  }
+  throw new Error("Expected a throw");
+};
 
 describe("TrainingGenerator", () => {
   let generator: TrainingGenerator;
@@ -193,27 +207,84 @@ describe("TrainingGenerator", () => {
   });
 
   describe("generateShortWorkout", () => {
-    it("returns exercise list with correct structure when successful", () => {
-      const mockResult = [
+    const generateShortWorkoutOf = (type: string) =>
+      generator.generateShortWorkout(
+        type as never,
+        mockUser,
+        "HOME",
+        loadExercises(),
+        getAllSkillTrees(),
+        [],
+        { exerciseData: {}, branchData: {} },
+      );
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+      useCustomWorkoutsStore.getState().clearCustomWorkouts();
+    });
+
+    it("draws each template block through the picks block handler", () => {
+      const handleBlock = jest.spyOn(PICKS_BLOCK_HANDLER, "handleBlock");
+
+      const setList = generateShortWorkoutOf("MOB");
+
+      expect(handleBlock).toHaveBeenCalledTimes(
+        loadTemplate("MOB")?.blocks.length,
+      );
+      expect(setList.length).toBeGreaterThan(0);
+      expect(setList.every((entry) => entry.skill === "MOB")).toBe(true);
+    });
+
+    it("draws through Math.random when it runs", () => {
+      const random = jest.spyOn(Math, "random").mockReturnValue(0);
+
+      generateShortWorkoutOf("MOB");
+
+      expect(random).toHaveBeenCalled();
+    });
+
+    it("throws NO_EXERCISES with the type for a type without a template", () => {
+      expect(
+        readThrownValue(() => generateShortWorkoutOf("NO_SUCH_TYPE")),
+      ).toStrictEqual({
+        type: "NO_EXERCISES",
+        subtype: "SKILL_TREE",
+        params: ["NO_SUCH_TYPE"],
+      });
+    });
+
+    it("generates a custom workout of the store", () => {
+      const { id } = useCustomWorkoutsStore.getState().saveCustomWorkout(
         {
-          branchId: "test-branch",
-          exerciseId: "1",
-          set: [1, 2] as [number, number],
-          skill: "MOB" as const,
-          duration: 30,
+          aiwl: 1,
+          id: "own",
+          name: { en: "Own" },
+          blocks: [
+            { kind: "picks", skill: "WU", picks: [{ tags: [], count: 2 }] },
+          ],
         },
-      ];
-      const spy = jest.spyOn(generator, "getSetListFromExercisePairs");
-      spy.mockReturnValue(mockResult);
+        null,
+      );
 
-      // Verify the mock result structure matches GeneratedSetListEntry
-      expect(mockResult[0]).toHaveProperty("branchId");
-      expect(mockResult[0]).toHaveProperty("exerciseId");
-      expect(mockResult[0]).toHaveProperty("set");
-      expect(mockResult[0]).toHaveProperty("skill");
-      expect(Array.isArray(mockResult)).toBe(true);
+      const setList = generateShortWorkoutOf(id);
 
-      spy.mockRestore();
+      expect(setList.length).toBeGreaterThan(0);
+      expect(setList.every((entry) => entry.skill === "WU")).toBe(true);
+    });
+
+    it("throws the pain error with no regions for a custom workout without blocks", () => {
+      const { id } = useCustomWorkoutsStore
+        .getState()
+        .saveCustomWorkout(
+          { aiwl: 1, id: "empty", name: { en: "Empty" }, blocks: [] },
+          null,
+        );
+
+      expect(readThrownValue(() => generateShortWorkoutOf(id))).toStrictEqual({
+        type: "NO_EXERCISES",
+        subtype: "PAIN",
+        params: [],
+      });
     });
   });
 

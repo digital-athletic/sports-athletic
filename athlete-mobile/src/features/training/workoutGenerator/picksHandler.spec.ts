@@ -1,4 +1,4 @@
-import type { Block } from "@/schemas/aiwl.schema";
+import { generateHandlerRegistry } from "@test/factories/blockHandlers";
 import { generateSequenceRandom } from "@test/factories/sequenceRandom";
 import { generateTreeBranch } from "@test/factories/skillTree";
 import {
@@ -7,7 +7,7 @@ import {
 } from "@test/factories/templateBlock";
 import { generateTaggedExercise } from "@test/factories/valueExercise";
 import { generateWorkoutInput } from "@test/factories/workoutInput";
-import { type BlockHandlerRegistry, walkTemplateBlocks } from "./blockWalk";
+import { walkTemplateBlocks } from "./blockWalk";
 import { handlePicksBlock, PICKS_BLOCK_HANDLER } from "./picksHandler";
 
 // At ADVANCED, branch 1 resolves to its level 2 exercise e1x, as branch 3 does.
@@ -140,17 +140,9 @@ describe("picksHandler: handlePicksBlock", () => {
       pickTrees: BAS_SKILL_TREES,
       random: generateSequenceRandom([0, 0]),
     });
-    const handleEmptyBlock = (block: Block) => ({
-      status: "empty" as const,
-      block,
-      reason: undefined,
-      usedBranchIds: [],
-    });
-    const handlers: BlockHandlerRegistry = {
+    const handlers = generateHandlerRegistry(undefined, {
       picks: PICKS_BLOCK_HANDLER,
-      branches: { usedBranchScope: "block", handleBlock: handleEmptyBlock },
-      duration: { usedBranchScope: "workout", handleBlock: handleEmptyBlock },
-    };
+    });
 
     const results = walkTemplateBlocks(template, input, handlers);
 

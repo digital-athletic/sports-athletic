@@ -75,6 +75,56 @@ export const generateTaggedExercise = (
 });
 
 /**
+ * Builds the authored start and target entry of a value without any number.
+ *
+ * generateEmptyAuthoredValues()
+ * → { startValue: { default: {}, m: {}, w: {}, k: {} }, targetValue: { default: {}, m: {}, w: {}, k: {} } }
+ */
+export const generateEmptyAuthoredValues = () => ({
+  startValue: { default: {}, m: {}, w: {}, k: {} },
+  targetValue: { default: {}, m: {}, w: {}, k: {} },
+});
+
+/**
+ * Builds a named exercise with the given tags that authors no number for
+ * duration, repetitions, height or weight and advances by neither. The
+ * overrides replace any field.
+ *
+ * generateEmptyValueExercise("11", ["SIDE_BOTH"])
+ * → { id: "11", name: "Exercise 11", tags: ["SIDE_BOTH"], isAdvanceByReps: false,
+ *     values: { duration: <empty>, repetition: <empty>, height: <empty>, weight: <empty> }, ... }
+ */
+export const generateEmptyValueExercise = (
+  id: string,
+  tags: string[],
+  overrides: Partial<ExerciseType> = {},
+): ExerciseType =>
+  generateTaggedExercise(id, tags, {
+    name: `Exercise ${id}`,
+    displayName: `Exercise ${id}`,
+    description: "",
+    picture: "",
+    video: "",
+    values: {
+      duration: generateEmptyAuthoredValues(),
+      repetition: generateEmptyAuthoredValues(),
+      height: generateEmptyAuthoredValues(),
+      weight: generateEmptyAuthoredValues(),
+    },
+    isAdvanceByReps: false,
+    ...overrides,
+  });
+
+/**
+ * Builds a catalog of lower body exercises, one per ID.
+ *
+ * generateLowerBodyExercises(["e1"])
+ * → [{ id: "e1", tags: ["REGION_LOWER_BODY"], isAdvanceByReps: true, ... }]
+ */
+export const generateLowerBodyExercises = (ids: string[]): ExerciseType[] =>
+  ids.map((id) => generateTaggedExercise(id, ["REGION_LOWER_BODY"]));
+
+/**
  * Builds an exercise that advances by repetitions and uses the given
  * equipment. Weighted exercises carry the weights equipment type.
  *

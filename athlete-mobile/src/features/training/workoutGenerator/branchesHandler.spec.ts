@@ -1,18 +1,17 @@
 import { loadExercises } from "@/data/loadExercises";
-import { generateGenerationInput } from "@test/factories/generationInput";
 import { generateStoredDayEntry } from "@test/factories/storedBranch";
 import {
   generateBranchesBlock,
   generateCardioBlock,
 } from "@test/factories/templateBlock";
 import { catchThrownValue } from "@test/factories/thrownValue";
+import { generateWorkoutInput } from "@test/factories/workoutInput";
 import type { BlockResult } from "./blockWalk";
 import { createBranchesBlockHandler } from "./branchesHandler";
 import {
   createStoredDayBranchLookup,
   lookUpStoredBranchInCatalog,
 } from "./storedBranchLookup";
-import { setUpWorkout } from "./workoutSetup";
 
 const exerciseCatalog = loadExercises();
 const NO_BRANCHES = new Set<string>();
@@ -28,12 +27,10 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
   });
 
   it("resolves every stored branch in stored order at the athlete level", () => {
-    const input = setUpWorkout(
-      generateGenerationInput({
-        equipment: ["DUMBBELL", "BARBELL"],
-        exerciseCatalog,
-      }),
-    );
+    const input = generateWorkoutInput({
+      equipment: ["DUMBBELL", "BARBELL"],
+      exerciseCatalog,
+    });
     const block = generateBranchesBlock("GKS", ["523", "510", "523"]);
 
     const result = handleBlock(block, input, NO_BRANCHES);
@@ -58,13 +55,11 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
 
   // sore CHEST blocks every upper body branch of GKS, so 510 finds no replacement
   it("keeps the kept branches when no replacement fits the requested region", () => {
-    const input = setUpWorkout(
-      generateGenerationInput({
-        soreMuscles: ["CHEST"],
-        equipment: ["BARBELL"],
-        exerciseCatalog,
-      }),
-    );
+    const input = generateWorkoutInput({
+      soreMuscles: ["CHEST"],
+      equipment: ["BARBELL"],
+      exerciseCatalog,
+    });
 
     const result = handleBlock(
       generateBranchesBlock("GKS", ["523", "510"]),
@@ -80,13 +75,11 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
 
   // without weights GKS replaces from GKSKG; no upper body branch fits, so a less used region refills
   it("refills the requested regions from the skill tree the place selects", () => {
-    const input = setUpWorkout(
-      generateGenerationInput({
-        soreMuscles: ["CHEST"],
-        exerciseCatalog,
-        random: () => 0,
-      }),
-    );
+    const input = generateWorkoutInput({
+      soreMuscles: ["CHEST"],
+      exerciseCatalog,
+      random: () => 0,
+    });
 
     const result = handleBlock(
       generateBranchesBlock("GKS", ["510", "523"]),
@@ -101,14 +94,12 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
   });
 
   it("replaces every slot of a prevention skill, its kept branches included", () => {
-    const input = setUpWorkout(
-      generateGenerationInput({
-        soreMuscles: ["QUADRICEPS"],
-        pains: ["KNEE_LEFT", "SHOULDER_LEFT"],
-        exerciseCatalog,
-        random: () => 0,
-      }),
-    );
+    const input = generateWorkoutInput({
+      soreMuscles: ["QUADRICEPS"],
+      pains: ["KNEE_LEFT", "SHOULDER_LEFT"],
+      exerciseCatalog,
+      random: () => 0,
+    });
 
     // the first eight branches of the PREVKG tree
     const result = handleBlock(
@@ -134,14 +125,12 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
 
   // an emptied prevention or special warm-up skill records no error
   it("ends empty without a reason when a prevention skill finds no replacement", () => {
-    const input = setUpWorkout(
-      generateGenerationInput({
-        soreMuscles: ["QUADRICEPS"],
-        pains: ["KNEE_LEFT", "SHOULDER_LEFT"],
-        exerciseCatalog,
-        random: () => 0,
-      }),
-    );
+    const input = generateWorkoutInput({
+      soreMuscles: ["QUADRICEPS"],
+      pains: ["KNEE_LEFT", "SHOULDER_LEFT"],
+      exerciseCatalog,
+      random: () => 0,
+    });
     // the first eight branches of the PREVKG tree
     const block = generateBranchesBlock("PREVKNEE", [
       "102",
@@ -173,9 +162,10 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
   ])(
     "ends empty with the equipment reason when %s",
     (_, skill, ids, params) => {
-      const input = setUpWorkout(
-        generateGenerationInput({ soreMuscles: ["CHEST"], exerciseCatalog }),
-      );
+      const input = generateWorkoutInput({
+        soreMuscles: ["CHEST"],
+        exerciseCatalog,
+      });
       const block = generateBranchesBlock(skill, ids);
 
       expect(handleBlock(block, input, NO_BRANCHES)).toEqual({
@@ -202,7 +192,7 @@ describe("branchesHandler: stored day entries", () => {
         ],
       }),
     );
-    const input = setUpWorkout(generateGenerationInput({ exerciseCatalog }));
+    const input = generateWorkoutInput({ exerciseCatalog });
 
     const result = handleBlock(
       generateBranchesBlock("GKS", ["510", "900001"]),
@@ -235,7 +225,7 @@ describe("branchesHandler: stored day entries", () => {
         ],
       }),
     );
-    const input = setUpWorkout(generateGenerationInput({ exerciseCatalog }));
+    const input = generateWorkoutInput({ exerciseCatalog });
 
     const result = handleBlock(
       generateBranchesBlock("GKS", ["1", "2"]),
@@ -261,16 +251,15 @@ describe("branchesHandler: cardio swap", () => {
     lookUpStoredBranchInCatalog,
   );
   // sore quadriceps block every cardio skill, so each requests a lower body replacement
-  const soreInput = setUpWorkout(
-    generateGenerationInput({
-      soreMuscles: ["QUADRICEPS"],
-      equipment: ["TREADMILL"],
-      exerciseCatalog,
-    }),
-  );
-  const restedInput = setUpWorkout(
-    generateGenerationInput({ equipment: ["TREADMILL"], exerciseCatalog }),
-  );
+  const soreInput = generateWorkoutInput({
+    soreMuscles: ["QUADRICEPS"],
+    equipment: ["TREADMILL"],
+    exerciseCatalog,
+  });
+  const restedInput = generateWorkoutInput({
+    equipment: ["TREADMILL"],
+    exerciseCatalog,
+  });
 
   it("swaps a blocked cardio skill for the CARDIO_5 run", () => {
     const result = handleBlock(
@@ -369,9 +358,10 @@ describe("branchesHandler: cardio swap", () => {
 
     it("leaves another skill alone", () => {
       const block = generateBranchesBlock("GKS", ["523"]);
-      const input = setUpWorkout(
-        generateGenerationInput({ equipment: ["BARBELL"], exerciseCatalog }),
-      );
+      const input = generateWorkoutInput({
+        equipment: ["BARBELL"],
+        exerciseCatalog,
+      });
 
       expect(
         handleBlock(block, input, NO_BRANCHES, [swapResult]),
@@ -390,13 +380,11 @@ describe("branchesHandler: duplicate exercises", () => {
         ],
       }),
     );
-    const input = setUpWorkout(
-      generateGenerationInput({
-        equipment: ["DUMBBELL", "BARBELL"],
-        exerciseCatalog,
-        random: () => 0,
-      }),
-    );
+    const input = generateWorkoutInput({
+      equipment: ["DUMBBELL", "BARBELL"],
+      exerciseCatalog,
+      random: () => 0,
+    });
 
     const result = handleBlock(
       generateBranchesBlock("GKS", ["1", "2"]),
@@ -425,7 +413,7 @@ describe("branchesHandler: duplicate exercises", () => {
         ],
       }),
     );
-    const input = setUpWorkout(generateGenerationInput({ exerciseCatalog }));
+    const input = generateWorkoutInput({ exerciseCatalog });
 
     const result = handleBlock(
       generateBranchesBlock("GKS", ["1", "2"]),
@@ -456,9 +444,11 @@ describe("branchesHandler: duplicate exercises", () => {
           ],
         }),
       );
-      const input = setUpWorkout(
-        generateGenerationInput({ pains, exerciseCatalog, random: () => 0 }),
-      );
+      const input = generateWorkoutInput({
+        pains,
+        exerciseCatalog,
+        random: () => 0,
+      });
 
       const result = handleBlock(
         generateBranchesBlock(skill, ["1", "2", "3"]),

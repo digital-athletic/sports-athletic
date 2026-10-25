@@ -10,6 +10,7 @@ import {
   generateGenerationInput,
   type GenerationInputFactoryOptions,
 } from "./generationInput";
+import { generateLowerBodyExercises } from "./valueExercise";
 
 export interface WorkoutInputFactoryOptions
   extends GenerationInputFactoryOptions {
@@ -48,3 +49,23 @@ export const generateWorkoutInput = ({
   ...generationOptions
 }: WorkoutInputFactoryOptions = {}): WorkoutInput =>
   setUpWorkout(generateGenerationInput(generationOptions), template, pickTrees);
+
+/**
+ * Builds the workout input of the replacement specs: the workout input of a
+ * beginner whose catalog holds the lower body exercises e1, e2 and e3 and
+ * whose draws always return 0. The options replace any default.
+ *
+ * generateReplacementInput({ skillTrees: { BAS: { "1": branch } } })
+ * → beginner athlete, branch lookup index over BAS, random always 0
+ */
+export const generateReplacementInput = (
+  options: WorkoutInputFactoryOptions & {
+    skillTrees: Record<string, SkillTreeType>;
+  },
+): WorkoutInput =>
+  generateWorkoutInput({
+    level: "BEGINNER",
+    exerciseCatalog: generateLowerBodyExercises(["e1", "e2", "e3"]),
+    random: () => 0,
+    ...options,
+  });

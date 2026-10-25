@@ -1,3 +1,4 @@
+import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import type {
   SkillBranchType,
   SkillTreeType,
@@ -80,3 +81,99 @@ export const generateKneeSkillTrees = (): Record<string, SkillTreeType> => ({
   BAS: { "1": generateSkillBranch(["BLOCK_KNEE"]) },
   MOB: { "2": generateTreeBranch(["e2"]) },
 });
+
+/**
+ * Builds a MOB tree that holds the branch as branch "500".
+ *
+ * generateMobilityTree(generateTreeBranch(["501"], ["SKILL_MOB"]))
+ * → { MOB: { "500": { tags: ["SKILL_MOB"], levels: { 1: { exerciseId: "501" } } } } }
+ */
+export const generateMobilityTree = (
+  branch: SkillBranchType,
+): Record<string, SkillTreeType> => ({ MOB: { "500": branch } });
+
+/**
+ * Builds a lower body branch of the BAS tree with the given levels. The
+ * branch is two sided unless the extra tags say otherwise.
+ *
+ * generateLowerBodyBranch({ 1: { exerciseId: "e1" } }, ["SIDE_ONE"])
+ * → { tags: ["SKILL_BAS", "REGION_LOWER_BODY", "SIDE_ONE"], levels: { 1: { exerciseId: "e1" } } }
+ */
+export const generateLowerBodyBranch = (
+  levels: SkillBranchType["levels"],
+  extraTags: string[] = ["SIDE_BOTH"],
+): SkillBranchType =>
+  generateSkillBranch(["SKILL_BAS", "REGION_LOWER_BODY", ...extraTags], levels);
+
+/**
+ * Builds a two sided upper body branch on exercise 431 with the given extra
+ * tags.
+ *
+ * generateUpperBodyBranch(["EQ_TYPE_KG"])
+ * → { tags: ["REGION_UPPER_BODY", "SIDE_BOTH", "EQ_TYPE_KG"], levels: { 1: { exerciseId: "431" } } }
+ */
+export const generateUpperBodyBranch = (tags: string[]): SkillBranchType =>
+  generateSkillBranch(["REGION_UPPER_BODY", "SIDE_BOTH", ...tags], {
+    1: { exerciseId: "431" },
+  });
+
+/**
+ * Builds one single-branch tree per tree name, numbered in name order.
+ *
+ * generateNamedSkillTrees()
+ * → { BAS: { "1": { tags: ["SKILL_BAS"], ... } }, GKS: { "2": ... }, ..., CD: { "11": ... } }
+ * The trees are BAS, GKS, GKSKG, SA, SAKG, SWR1, SWR1KG, PREV, PREVKG, MOB and CD.
+ */
+export const generateNamedSkillTrees = (): Record<string, SkillTreeType> =>
+  Object.fromEntries(
+    [
+      "BAS",
+      "GKS",
+      "GKSKG",
+      "SA",
+      "SAKG",
+      "SWR1",
+      "SWR1KG",
+      "PREV",
+      "PREVKG",
+      "MOB",
+      "CD",
+    ].map((name, index) => [
+      name,
+      { [index + 1]: generateSkillBranch([`SKILL_${name}`]) },
+    ]),
+  );
+
+/**
+ * Builds a prevention tree with two knee and three shoulder branches.
+ *
+ * generatePreventionTree()
+ * → { "1": { tags: ["PREVENTION_KNEE", "REGION_LOWER_BODY"], ... }, "2": knee core,
+ *     "3" to "5": shoulder upper body }
+ */
+export const generatePreventionTree = (): SkillTreeType => ({
+  "1": generateSkillBranch(["PREVENTION_KNEE", "REGION_LOWER_BODY"]),
+  "2": generateSkillBranch(["PREVENTION_KNEE", "REGION_CORE"]),
+  "3": generateSkillBranch(["PREVENTION_SHOULDER", "REGION_UPPER_BODY"]),
+  "4": generateSkillBranch(["PREVENTION_SHOULDER", "REGION_UPPER_BODY"]),
+  "5": generateSkillBranch(["PREVENTION_SHOULDER", "REGION_UPPER_BODY"]),
+});
+
+/**
+ * Copies the real skill trees with the breathing tree replaced by the first
+ * two breathing branches, tagged with the given tags. Without tags no
+ * equipment rule removes them; with BLOCK_KNEE knee pain empties the pool.
+ *
+ * generateBreathingTrees(["BLOCK_KNEE"]).BR
+ * → { "990001": { tags: ["BLOCK_KNEE"], levels }, "990002": { ... } }
+ */
+export const generateBreathingTrees = (
+  tags: string[],
+): Record<string, SkillTreeType> => {
+  const skillTrees = getAllSkillTrees();
+  const [first, second] = Object.values(skillTrees.BR);
+  return {
+    ...skillTrees,
+    BR: { "990001": { ...first, tags }, "990002": { ...second, tags } },
+  };
+};

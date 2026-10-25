@@ -1,7 +1,17 @@
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
-import type { Template } from "@/schemas/aiwl.schema";
+import { generateHandlerRegistry } from "@test/factories/blockHandlers";
+import {
+  generateBlockResult,
+  generateEmptyBlockResult,
+} from "@test/factories/blockResult";
+import { generateEquipmentError } from "@test/factories/generatorError";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
-import type { BlockHandlerRegistry } from "./blockWalk";
+import {
+  generateBranchesBlock,
+  generatePicksBlock,
+  generateShortTemplate,
+  generateTemplate,
+} from "@test/factories/templateBlock";
 import { interpretTemplate } from "./templateInterpreter";
 import {
   type FilledBlockResult,
@@ -15,17 +25,12 @@ import type { WorkoutInput } from "./workoutSetup";
  *
  * { blocks: [SWR2KG ["79"], CD ["2"], GKS ["510"], BR ["1"]] }
  */
-const STORED_TRAINING_DAY: Template = {
-  aiwl: 1,
-  id: "day",
-  name: { en: "Day" },
-  blocks: [
-    { kind: "branches", skill: "SWR2KG", branches: ["79"] },
-    { kind: "branches", skill: "CD", branches: ["2"] },
-    { kind: "branches", skill: "GKS", branches: ["510"] },
-    { kind: "branches", skill: "BR", branches: ["1"] },
-  ],
-};
+const STORED_TRAINING_DAY = generateTemplate([
+  generateBranchesBlock("SWR2KG", ["79"]),
+  generateBranchesBlock("CD", ["2"]),
+  generateBranchesBlock("GKS", ["510"]),
+  generateBranchesBlock("BR", ["1"]),
+]);
 
 /**
  * Stub set list builder: one entry per filled block, named by its skill.
@@ -39,39 +44,20 @@ describe("templateInterpreter: interpretTemplate", () => {
   it("sets the workout up once, walks the stored order and builds in section order", () => {
     const receivedInputs: WorkoutInput[] = [];
     const visits: string[] = [];
-    const handlers: BlockHandlerRegistry = {
-      picks: {
-        usedBranchScope: "workout",
-        handleBlock: (block) => ({
-          status: "empty",
-          block,
-          reason: undefined,
-          usedBranchIds: [],
-        }),
-      },
+    const handlers = generateHandlerRegistry(undefined, {
       branches: {
         usedBranchScope: "block",
         handleBlock: (block, input) => {
           receivedInputs.push(input);
           visits.push(block.skill);
-          return {
-            status: "filled",
+          return generateBlockResult("filled", {
             block,
             usedBranchIds: block.branches,
             exercises: [],
-          };
+          });
         },
       },
-      duration: {
-        usedBranchScope: "workout",
-        handleBlock: (block) => ({
-          status: "empty",
-          block,
-          reason: undefined,
-          usedBranchIds: [],
-        }),
-      },
-    };
+    });
 
     const workout = interpretTemplate(
       STORED_TRAINING_DAY,
@@ -95,30 +81,19 @@ describe("templateInterpreter: interpretTemplate", () => {
   });
 
   it("hands each picks block the workout input that resolved it in workout setup", () => {
-    const template: Template = {
-      aiwl: 1,
-      id: "short",
-      name: { en: "Short" },
-      blocks: [{ kind: "picks", skill: "WU", picks: [{ tags: [], count: 2 }] }],
-    };
+    const template = generateShortTemplate([
+      generatePicksBlock("WU", { picks: [{ tags: [], count: 2 }] }),
+    ]);
     const resolvedSkills: (string | undefined)[] = [];
-    const handleEmptyBlock = (block: Template["blocks"][number]) => ({
-      status: "empty" as const,
-      block,
-      reason: undefined,
-      usedBranchIds: [],
-    });
-    const handlers: BlockHandlerRegistry = {
+    const handlers = generateHandlerRegistry(undefined, {
       picks: {
         usedBranchScope: "workout",
         handleBlock: (block, input) => {
           resolvedSkills.push(input.picksWorkout.blocks.get(block)?.skill);
-          return handleEmptyBlock(block);
+          return generateEmptyBlockResult(block);
         },
       },
-      branches: { usedBranchScope: "block", handleBlock: handleEmptyBlock },
-      duration: { usedBranchScope: "workout", handleBlock: handleEmptyBlock },
-    };
+    });
 
     interpretTemplate(template, generateRuleFamilyInput(), {
       handlers,
@@ -130,32 +105,19 @@ describe("templateInterpreter: interpretTemplate", () => {
   });
 
   it("resolves the picks blocks from the given skill trees", () => {
-    const template: Template = {
-      aiwl: 1,
-      id: "short",
-      name: { en: "Short" },
-      blocks: [{ kind: "picks", skill: "WU", picks: [{ tags: [], count: 1 }] }],
-    };
+    const template = generateShortTemplate([generatePicksBlock("WU")]);
     const skillTrees = getAllSkillTrees();
     const warmUpBranch = skillTrees.WU["409"];
     const poolKeys: string[][] = [];
-    const handleEmptyBlock = (block: Template["blocks"][number]) => ({
-      status: "empty" as const,
-      block,
-      reason: undefined,
-      usedBranchIds: [],
-    });
-    const handlers: BlockHandlerRegistry = {
+    const handlers = generateHandlerRegistry(undefined, {
       picks: {
         usedBranchScope: "workout",
         handleBlock: (block, input) => {
           poolKeys.push(Object.keys(input.picksWorkout.pool));
-          return handleEmptyBlock(block);
+          return generateEmptyBlockResult(block);
         },
       },
-      branches: { usedBranchScope: "block", handleBlock: handleEmptyBlock },
-      duration: { usedBranchScope: "workout", handleBlock: handleEmptyBlock },
-    };
+    });
 
     interpretTemplate(template, generateRuleFamilyInput(), {
       handlers,
@@ -168,39 +130,16 @@ describe("templateInterpreter: interpretTemplate", () => {
   });
 
   it("names the first empty skill in stored order on a day where every skill empties", () => {
-    const handlers: BlockHandlerRegistry = {
-      picks: {
-        usedBranchScope: "workout",
-        handleBlock: (block) => ({
-          status: "empty",
-          block,
-          reason: undefined,
-          usedBranchIds: [],
-        }),
-      },
+    const handlers = generateHandlerRegistry(undefined, {
       branches: {
         usedBranchScope: "block",
-        handleBlock: (block) => ({
-          status: "empty",
-          block,
-          reason: {
-            type: "NO_EXERCISES",
-            subtype: "EQUIPMENT",
-            params: [`missing for ${block.skill}`],
-          },
-          usedBranchIds: [],
-        }),
+        handleBlock: (block) =>
+          generateEmptyBlockResult(
+            block,
+            generateEquipmentError([`missing for ${block.skill}`]),
+          ),
       },
-      duration: {
-        usedBranchScope: "workout",
-        handleBlock: (block) => ({
-          status: "empty",
-          block,
-          reason: undefined,
-          usedBranchIds: [],
-        }),
-      },
-    };
+    });
 
     expect(() =>
       interpretTemplate(STORED_TRAINING_DAY, generateRuleFamilyInput(), {

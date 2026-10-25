@@ -1,37 +1,31 @@
-import type { Block } from "@/schemas/aiwl.schema";
-import { generateFilledBlockResult } from "@test/factories/blockResult";
-import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
-import { generateTemplate } from "@test/factories/templateBlock";
+import { generateHandlerRegistry } from "@test/factories/blockHandlers";
 import {
-  type BlockHandlerRegistry,
-  type BlockResult,
-  walkTemplateBlocks,
-} from "./blockWalk";
-import { setUpWorkout } from "./workoutSetup";
+  generateEmptyBlockResult,
+  generateFilledBlockResult,
+} from "@test/factories/blockResult";
+import {
+  generateBranchesBlock,
+  generatePicksBlock,
+  generateTemplate,
+} from "@test/factories/templateBlock";
+import { generateWorkoutInput } from "@test/factories/workoutInput";
+import { type BlockHandlerRegistry, walkTemplateBlocks } from "./blockWalk";
 
 describe("blockWalk: walkTemplateBlocks", () => {
   it("hands each block to the handler of its kind in template order and draws in that order", () => {
     const template = generateTemplate([
-      { kind: "branches", skill: "SWR2KG", branches: ["79"] },
-      { kind: "picks", skill: "WU", picks: [{ tags: ["SKILL_WU"], count: 2 }] },
-      { kind: "branches", skill: "GKS", branches: ["510"] },
+      generateBranchesBlock("SWR2KG", ["79"]),
+      generatePicksBlock("WU", { picks: [{ tags: ["SKILL_WU"], count: 2 }] }),
+      generateBranchesBlock("GKS", ["510"]),
       { kind: "duration", skill: "MOB", duration: 300 },
     ]);
     const draws = [0.2, 0.4, 0.6, 0.8];
-    const input = setUpWorkout({
-      ...generateRuleFamilyInput(),
-      random: () => draws.shift() ?? 0,
-    });
+    const input = generateWorkoutInput({ random: () => draws.shift() ?? 0 });
     const visits: string[] = [];
-    const handleBlock = (block: Block, blockInput: typeof input) => {
+    const handlers = generateHandlerRegistry((block, blockInput) => {
       visits.push(`${block.kind} ${block.skill} ${blockInput.random()}`);
       return generateFilledBlockResult(block, []);
-    };
-    const handlers: BlockHandlerRegistry = {
-      picks: { usedBranchScope: "workout", handleBlock },
-      branches: { usedBranchScope: "block", handleBlock },
-      duration: { usedBranchScope: "workout", handleBlock },
-    };
+    });
 
     const results = walkTemplateBlocks(template, input, handlers);
 
@@ -46,16 +40,12 @@ describe("blockWalk: walkTemplateBlocks", () => {
 
   it("threads used branches of filled and empty picks blocks across the workout and starts each branches block empty", () => {
     const template = generateTemplate([
-      { kind: "picks", skill: "WU", picks: [{ tags: ["SKILL_WU"], count: 2 }] },
-      { kind: "branches", skill: "GKS", branches: ["510", "523"] },
-      { kind: "picks", skill: "BR", picks: [{ tags: ["SKILL_BR"], count: 1 }] },
-      { kind: "branches", skill: "SWR2KG", branches: ["79"] },
-      {
-        kind: "picks",
-        skill: "MOB",
-        picks: [{ tags: ["SKILL_MOB"], count: 1 }],
-      },
-      { kind: "picks", skill: "CD", picks: [{ tags: ["SKILL_CD"], count: 1 }] },
+      generatePicksBlock("WU", { picks: [{ tags: ["SKILL_WU"], count: 2 }] }),
+      generateBranchesBlock("GKS", ["510", "523"]),
+      generatePicksBlock("BR", { picks: [{ tags: ["SKILL_BR"], count: 1 }] }),
+      generateBranchesBlock("SWR2KG", ["79"]),
+      generatePicksBlock("MOB", { picks: [{ tags: ["SKILL_MOB"], count: 1 }] }),
+      generatePicksBlock("CD", { picks: [{ tags: ["SKILL_CD"], count: 1 }] }),
     ]);
     const drawnBySkill: Record<string, string[]> = {
       WU: ["11", "12"],
@@ -71,12 +61,7 @@ describe("blockWalk: walkTemplateBlocks", () => {
           const drawn = drawnBySkill[block.skill] ?? [];
           // BR draws a branch and still ends empty
           return block.skill === "BR"
-            ? {
-                status: "empty",
-                block,
-                reason: undefined,
-                usedBranchIds: drawn,
-              }
+            ? generateEmptyBlockResult(block, undefined, drawn)
             : generateFilledBlockResult(block, drawn);
         },
       },
@@ -93,11 +78,7 @@ describe("blockWalk: walkTemplateBlocks", () => {
       },
     };
 
-    walkTemplateBlocks(
-      template,
-      setUpWorkout(generateRuleFamilyInput()),
-      handlers,
-    );
+    walkTemplateBlocks(template, generateWorkoutInput(), handlers);
 
     expect(receivedBySkill).toEqual({
       WU: [],
@@ -111,33 +92,21 @@ describe("blockWalk: walkTemplateBlocks", () => {
 
   it("hands each block the results of the blocks before it, whatever the used branch scope", () => {
     const template = generateTemplate([
-      { kind: "branches", skill: "GKS", branches: ["510"] },
-      { kind: "branches", skill: "SWR2KG", branches: ["79"] },
-      { kind: "branches", skill: "CD", branches: ["12"] },
+      generateBranchesBlock("GKS", ["510"]),
+      generateBranchesBlock("SWR2KG", ["79"]),
+      generateBranchesBlock("CD", ["12"]),
     ]);
     const earlierSkills: Record<string, string[]> = {};
-    const handleBlock = (
-      block: Block,
-      _input: unknown,
-      _usedBranches: ReadonlySet<string>,
-      earlierResults: readonly BlockResult[] = [],
-    ) => {
-      earlierSkills[block.skill] = earlierResults.map(
-        (result) => result.block.skill,
-      );
-      return generateFilledBlockResult(block, []);
-    };
-    const handlers: BlockHandlerRegistry = {
-      picks: { usedBranchScope: "workout", handleBlock },
-      branches: { usedBranchScope: "block", handleBlock },
-      duration: { usedBranchScope: "workout", handleBlock },
-    };
-
-    walkTemplateBlocks(
-      template,
-      setUpWorkout(generateRuleFamilyInput()),
-      handlers,
+    const handlers = generateHandlerRegistry(
+      (block, _input, _usedBranches, earlierResults = []) => {
+        earlierSkills[block.skill] = earlierResults.map(
+          (result) => result.block.skill,
+        );
+        return generateFilledBlockResult(block, []);
+      },
     );
+
+    walkTemplateBlocks(template, generateWorkoutInput(), handlers);
 
     expect(earlierSkills).toEqual({
       GKS: [],

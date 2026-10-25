@@ -1,6 +1,6 @@
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
-import { generateSequenceRandom } from "../../../../test/factories/sequenceRandom";
+import { generateSequenceRandom } from "@test/factories/sequenceRandom";
 import { type BranchDraw, createBranchDraw } from "./branchDraw";
 import { drawPicksBlock, type PicksBlockDraw } from "./picksDraw";
 

@@ -3,7 +3,7 @@ import type { ExerciseType } from "@/schemas/exercise.schema";
 import {
   generateRuleFamilyInput,
   generateSkillTreeBranches,
-} from "../../../../test/factories/ruleFamilyInput";
+} from "@test/factories/ruleFamilyInput";
 import {
   filterBranchesByPain,
   filterBranchesByPainOnEveryLevel,

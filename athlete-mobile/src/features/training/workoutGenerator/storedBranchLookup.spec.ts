@@ -1,6 +1,6 @@
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import type { ExerciseBranchEntry } from "@/schemas/generator.schema";
-import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
+import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { buildBranchLookupIndex } from "./branchLookupIndex";
 import {
   createStoredDayBranchLookup,

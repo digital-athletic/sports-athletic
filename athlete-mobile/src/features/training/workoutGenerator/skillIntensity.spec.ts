@@ -1,4 +1,4 @@
-import { generateValueExercise } from "../../../../test/factories/valueExercise";
+import { generateValueExercise } from "@test/factories/valueExercise";
 import { loadIntensityConfig } from "@/data/loadIntensityConfig";
 import { loadSkillCatalog } from "@/data/loadSkillCatalog";
 import type { SkillCatalog } from "@/schemas/skillCatalog.schema";

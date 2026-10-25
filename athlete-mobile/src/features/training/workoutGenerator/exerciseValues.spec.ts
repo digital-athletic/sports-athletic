@@ -1,9 +1,9 @@
-import { generateCatalogWithProgression } from "../../../../test/factories/skillCatalog";
+import { generateCatalogWithProgression } from "@test/factories/skillCatalog";
 import {
   findCatalogExerciseById,
   generateAuthoredValues,
   generateValueExercise,
-} from "../../../../test/factories/valueExercise";
+} from "@test/factories/valueExercise";
 import { loadIntensityConfig } from "@/data/loadIntensityConfig";
 import { loadSkillCatalog } from "@/data/loadSkillCatalog";
 import type {

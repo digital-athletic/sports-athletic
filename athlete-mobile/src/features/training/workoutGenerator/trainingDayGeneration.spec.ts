@@ -1,7 +1,7 @@
 import { loadExercises } from "@/data/loadExercises";
-import { generateGenerationInput } from "../../../../test/factories/generationInput";
-import { generateStoredTrainingDay } from "../../../../test/factories/storedTrainingDay";
-import { catchThrownValue } from "../../../../test/factories/thrownValue";
+import { generateGenerationInput } from "@test/factories/generationInput";
+import { generateStoredTrainingDay } from "@test/factories/storedTrainingDay";
+import { catchThrownValue } from "@test/factories/thrownValue";
 import { generateTrainingDayFromStoredDay } from "./trainingDayGeneration";
 
 const exerciseCatalog = loadExercises();

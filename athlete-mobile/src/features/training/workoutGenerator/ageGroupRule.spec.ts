@@ -1,4 +1,4 @@
-import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
+import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { filterBranchesByAgeGroup } from "./ageGroupRule";
 
 describe("ageGroupRule: filterBranchesByAgeGroup", () => {

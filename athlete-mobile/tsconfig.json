@@ -4,7 +4,8 @@
     "strict": true,
     "moduleSuffixes": ["", ".android", ".ios", ".native", ".web"],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@test/*": ["./test/*"]
     },
     "types": ["jest", "node", "react"]
   },

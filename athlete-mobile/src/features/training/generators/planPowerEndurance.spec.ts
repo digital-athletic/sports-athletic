@@ -5,7 +5,7 @@ import { SeasonPhase } from "@/features/training/models/SeasonPhase";
 import { minutes } from "@/features/training/models/TimeUnits";
 import type { TrainingDayType } from "@/features/training/models/TrainingDay";
 import type { PlacesData } from "@/store/placesStore";
-import { setUpAiwlGeneratorFlag } from "../../../../test/factories/aiwlGeneratorFlag";
+import { setUpAiwlGeneratorFlag } from "@test/factories/aiwlGeneratorFlag";
 import PlanGenerator from "./PlanGenerator";
 import TrainingGenerator from "./TrainingGenerator";
 

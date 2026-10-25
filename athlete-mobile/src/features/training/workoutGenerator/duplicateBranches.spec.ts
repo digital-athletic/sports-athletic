@@ -1,5 +1,5 @@
-import { generateGenerationInput } from "../../../../test/factories/generationInput";
-import { generateStoredBranch } from "../../../../test/factories/storedBranch";
+import { generateGenerationInput } from "@test/factories/generationInput";
+import { generateStoredBranch } from "@test/factories/storedBranch";
 import { refillBranchSlots, splitDuplicateBranches } from "./duplicateBranches";
 import { setUpWorkout } from "./workoutSetup";
 

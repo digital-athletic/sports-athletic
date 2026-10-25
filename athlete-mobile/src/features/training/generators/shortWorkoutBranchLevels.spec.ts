@@ -2,7 +2,7 @@ import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
-import { spyOnDrawnBranches } from "../../../../test/factories/drawnBranches";
+import { spyOnDrawnBranches } from "@test/factories/drawnBranches";
 import TrainingGenerator from "./TrainingGenerator";
 
 const userWithLevel = (

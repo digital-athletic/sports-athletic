@@ -1,8 +1,8 @@
-import { generateCatalogWithProgression } from "../../../../test/factories/skillCatalog";
+import { generateCatalogWithProgression } from "@test/factories/skillCatalog";
 import {
   findCatalogExerciseById,
   generateValueExercise,
-} from "../../../../test/factories/valueExercise";
+} from "@test/factories/valueExercise";
 import { loadSkillCatalog } from "@/data/loadSkillCatalog";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";

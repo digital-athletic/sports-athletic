@@ -1,7 +1,7 @@
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
-import { realExercises } from "../../../../test/factories/planWorkout";
+import { realExercises } from "@test/factories/planWorkout";
 import PlanGenerator from "./PlanGenerator";
 
 type Side = "ONE" | "BOTH";

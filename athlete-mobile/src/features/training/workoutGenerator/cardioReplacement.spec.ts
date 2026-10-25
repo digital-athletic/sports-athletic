@@ -1,7 +1,7 @@
 import { loadExercises } from "@/data/loadExercises";
-import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
-import { generateCardioBlock } from "../../../../test/factories/templateBlock";
-import { catchThrownValue } from "../../../../test/factories/thrownValue";
+import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
+import { generateCardioBlock } from "@test/factories/templateBlock";
+import { catchThrownValue } from "@test/factories/thrownValue";
 import { replaceCardioBlock } from "./cardioReplacement";
 import { setUpWorkout } from "./workoutSetup";
 

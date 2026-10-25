@@ -1,7 +1,7 @@
 import {
   generateRuleFamilyInput,
   generateSkillTreeBranches,
-} from "../../../../test/factories/ruleFamilyInput";
+} from "@test/factories/ruleFamilyInput";
 import {
   filterBranchesByEquipment,
   listMissingEquipment,

@@ -3,7 +3,7 @@ import type {
   SkillBranchType,
   SkillTreeType,
 } from "@/schemas/skillTree.schema";
-import { generateSequenceRandom } from "../../../../test/factories/sequenceRandom";
+import { generateSequenceRandom } from "@test/factories/sequenceRandom";
 import { type BranchDrawSource, createBranchDraw } from "./branchDraw";
 
 /**

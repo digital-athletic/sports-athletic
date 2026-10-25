@@ -1,7 +1,7 @@
 import type { Block } from "@/schemas/aiwl.schema";
-import { generateFilledBlockResult } from "../../../../test/factories/blockResult";
-import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
-import { generateTemplate } from "../../../../test/factories/templateBlock";
+import { generateFilledBlockResult } from "@test/factories/blockResult";
+import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
+import { generateTemplate } from "@test/factories/templateBlock";
 import {
   type BlockHandlerRegistry,
   type BlockResult,

@@ -1,9 +1,6 @@
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { UserType } from "@/schemas/user.schema";
-import {
-  noExerciseData,
-  realExercises,
-} from "../../../../test/factories/planWorkout";
+import { noExerciseData, realExercises } from "@test/factories/planWorkout";
 import TrainingGenerator from "./TrainingGenerator";
 
 const child: UserType = {

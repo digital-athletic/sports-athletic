@@ -6,7 +6,7 @@ import { getResetRepetition } from "@/features/training/utils/weightAdjustmentUt
 import { getExerciseTargetValue } from "@/features/training/utils/workoutUtils";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { UserType } from "@/schemas/user.schema";
-import { setUpAiwlGeneratorFlag } from "../../../../test/factories/aiwlGeneratorFlag";
+import { setUpAiwlGeneratorFlag } from "@test/factories/aiwlGeneratorFlag";
 import {
   buildPlanUser,
   generateKneePreventionBranches,
@@ -15,7 +15,7 @@ import {
   importTrees,
   PAUSE_ID,
   realExercises,
-} from "../../../../test/factories/planWorkout";
+} from "@test/factories/planWorkout";
 import TrainingGenerator, { getIntensityBySkill } from "./TrainingGenerator";
 
 const LANDING_ID = "1107";

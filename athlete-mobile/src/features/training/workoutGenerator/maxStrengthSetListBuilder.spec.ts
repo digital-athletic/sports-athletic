@@ -11,9 +11,9 @@ import {
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import { generateSequenceRandom } from "../../../../test/factories/sequenceRandom";
-import { generateSupportExercise } from "../../../../test/factories/supportExercise";
-import { findCatalogExerciseById } from "../../../../test/factories/valueExercise";
+import { generateSequenceRandom } from "@test/factories/sequenceRandom";
+import { generateSupportExercise } from "@test/factories/supportExercise";
+import { findCatalogExerciseById } from "@test/factories/valueExercise";
 import { createGenerationInput, type GenerationInput } from "./generationInput";
 import { buildMaxStrengthSetList } from "./maxStrengthSetListBuilder";
 import type { SetListBlock } from "./setListBuilder";

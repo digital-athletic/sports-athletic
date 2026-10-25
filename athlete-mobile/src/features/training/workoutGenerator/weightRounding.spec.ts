@@ -1,4 +1,4 @@
-import { generateValueExercise } from "../../../../test/factories/valueExercise";
+import { generateValueExercise } from "@test/factories/valueExercise";
 import { roundWeight } from "./weightRounding";
 
 /**

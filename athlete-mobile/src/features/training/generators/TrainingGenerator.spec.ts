@@ -22,7 +22,7 @@ import PREV from "../../../../assets/data/generator/skillTrees/PREV.json";
 import PREVKG from "../../../../assets/data/generator/skillTrees/PREVKG.json";
 import WU from "../../../../assets/data/generator/skillTrees/WU.json";
 import WUSPEZIAL from "../../../../assets/data/generator/skillTrees/WUSPEZIAL.json";
-import { setUpAiwlGeneratorFlag } from "../../../../test/factories/aiwlGeneratorFlag";
+import { setUpAiwlGeneratorFlag } from "@test/factories/aiwlGeneratorFlag";
 import { roundWeightValue } from "../utils/workoutUtils";
 import TrainingGenerator, { getIntensityBySkill } from "./TrainingGenerator";
 
@@ -2241,7 +2241,7 @@ describe("TrainingGenerator", () => {
       nextWeek,
       importTrees,
       buildPlanUser,
-    } = require("../../../../test/factories/planWorkout");
+    } = require("@test/factories/planWorkout");
 
     /**
      * Verifies that replaceExerciseBranches avoids duplicate exercise IDs.

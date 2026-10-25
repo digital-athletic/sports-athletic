@@ -3,7 +3,7 @@ import {
   generateAuthoredValues,
   generateValueExercise,
   type ValueExerciseOptions,
-} from "../../../../test/factories/valueExercise";
+} from "@test/factories/valueExercise";
 import { loadIntensityConfig } from "@/data/loadIntensityConfig";
 import type {
   GenderTag,

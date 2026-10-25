@@ -6,12 +6,12 @@ import { isPauseExercise } from "@/features/training/models/IdTypes";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { SkillCode } from "@/schemas/generator.schema";
-import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
+import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import {
   findCatalogExerciseById,
   generateAuthoredValues,
   generateValueExercise,
-} from "../../../../test/factories/valueExercise";
+} from "@test/factories/valueExercise";
 import type { GenerationInput } from "./generationInput";
 import type { SetListBlock } from "./setListBuilder";
 import {

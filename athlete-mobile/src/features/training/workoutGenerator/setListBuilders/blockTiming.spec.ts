@@ -1,7 +1,7 @@
 import { loadSkillCatalog } from "@/data/loadSkillCatalog";
 import {
   generateBranchesBlock,
-  generatePicksBlock,
+  generateSelectionsBlock,
 } from "@test/factories/templateBlock";
 import { resolveBlockTiming, type SkillTimingDefaults } from "./blockTiming";
 import { readPlanWorkoutTiming } from "./planWorkoutTiming";
@@ -33,7 +33,7 @@ describe("blockTiming: resolveBlockTiming", () => {
 
   it("reads the skill catalog values of a short workout block without its afterBlock", () => {
     const timing = resolveBlockTiming(
-      generatePicksBlock("WUSPEZIAL"),
+      generateSelectionsBlock("WUSPEZIAL"),
       readSkillCatalogEntry(loadSkillCatalog(), "WUSPEZIAL"),
     );
 
@@ -75,7 +75,7 @@ describe("blockTiming: resolveBlockTiming", () => {
     },
   ])("throws $message", ({ defaults, path, message }) => {
     expect(() =>
-      resolveBlockTiming(generatePicksBlock("UNKNOWN"), defaults, path),
+      resolveBlockTiming(generateSelectionsBlock("UNKNOWN"), defaults, path),
     ).toThrow(new Error(message));
   });
 });

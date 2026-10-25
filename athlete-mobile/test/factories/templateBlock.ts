@@ -1,6 +1,7 @@
-import type { Block, PicksBlock, Template } from "@/schemas/aiwl.schema";
+import type { Block, Template } from "@/schemas/aiwl.schema";
 
 type BranchesBlock = Extract<Block, { kind: "branches" }>;
+type SelectionsBlock = Extract<Block, { kind: "picks" }>;
 
 /**
  * Builds a branches block as a training day stores it, with a duration of 10
@@ -47,16 +48,16 @@ export const generateCardioBlock = (
 ): BranchesBlock => generateBranchesBlock(skill, ["580"], { duration });
 
 /**
- * Builds a short workout block that draws one branch from the whole tree of
- * its skill, without values of its own. The overrides replace any field.
+ * Builds a selections block that draws one branch from the whole tree of its
+ * skill, without values of its own. The overrides replace any field.
  *
- * generatePicksBlock("BAS", { sets: 5 })
+ * generateSelectionsBlock("BAS", { sets: 5 })
  * → { kind: "picks", skill: "BAS", picks: [{ tags: [], count: 1 }], sets: 5 }
  */
-export const generatePicksBlock = (
+export const generateSelectionsBlock = (
   skill = "BAS",
-  overrides: Partial<PicksBlock> = {},
-): PicksBlock => ({
+  overrides: Partial<SelectionsBlock> = {},
+): SelectionsBlock => ({
   kind: "picks",
   skill,
   picks: [{ tags: [], count: 1 }],
@@ -64,18 +65,18 @@ export const generatePicksBlock = (
 });
 
 /**
- * Builds a picks block that draws the given count from every branch of its
- * pool.
+ * Builds a selections block that draws the given count from every branch of
+ * its pool.
  *
- * generateCountedPicksBlock("BAS", 2, "exercises")
+ * generateCountedSelectionsBlock("BAS", 2, "exercises")
  * → { kind: "picks", skill: "BAS", picks: [{ tags: [], count: 2 }], countBy: "exercises" }
  */
-export const generateCountedPicksBlock = (
+export const generateCountedSelectionsBlock = (
   skill: string,
   count: number,
-  countBy: PicksBlock["countBy"],
-): PicksBlock =>
-  generatePicksBlock(skill, { picks: [{ tags: [], count }], countBy });
+  countBy: SelectionsBlock["countBy"],
+): SelectionsBlock =>
+  generateSelectionsBlock(skill, { picks: [{ tags: [], count }], countBy });
 
 /**
  * Wraps blocks into an AIWL template. The overrides replace any field of it.
@@ -97,7 +98,7 @@ export const generateTemplate = (
 /**
  * Wraps blocks into the AIWL template of a short workout.
  *
- * generateShortTemplate([generatePicksBlock("WU")])
+ * generateShortTemplate([generateSelectionsBlock("WU")])
  * → { aiwl: 1, id: "short", name: { en: "Short" }, blocks: [{ kind: "picks", ... }] }
  */
 export const generateShortTemplate = (blocks: Block[]): Template =>
@@ -107,8 +108,8 @@ export const generateShortTemplate = (blocks: Block[]): Template =>
  * Wraps blocks into the template of a short workout that opens with a
  * breathing block.
  *
- * generateShortTemplateWithBreathing([generatePicksBlock("MOB")])
- * → { aiwl: 1, id: "short", name: { en: "Short" }, blocks: [BR picks, MOB picks] }
+ * generateShortTemplateWithBreathing([generateSelectionsBlock("MOB")])
+ * → { aiwl: 1, id: "short", name: { en: "Short" }, blocks: [BR selections, MOB selections] }
  */
 export const generateShortTemplateWithBreathing = (blocks: Block[]): Template =>
-  generateShortTemplate([generatePicksBlock("BR"), ...blocks]);
+  generateShortTemplate([generateSelectionsBlock("BR"), ...blocks]);

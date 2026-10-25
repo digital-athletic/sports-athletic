@@ -12,7 +12,7 @@ The workout generator turns a workout description into the set list for one athl
 - the exercise catalog
 - the athlete's exercise data
 
-AIWL defines three block kinds: picks, duration and branches. Short workouts use picks blocks, training days use branches blocks, and a trainer workout uses duration blocks. The specs give each kind its own athlete rules and its own way to select branches.
+AIWL defines three block kinds: selections blocks (JSON kind `picks`), minutes blocks (JSON kind `duration`) and branches blocks. Short workouts use selections blocks, training days use branches blocks, and a trainer workout uses minutes blocks. The specs give each kind its own athlete rules and its own way to select branches.
 
 Some rules in the specs span more than one block, for example [duplicate exercises](./duplicate-exercises.md), the skill boundary in [exercise order](./exercise-order.md), and the special warm-up in [Pain, Soreness, and Prevention](../specs/foundations/pain-soreness-and-prevention.md#pain-mappings). Cardio, max strength and the remaining skills each need their own set list builder. The [strength test](../specs/session/plan-independent-workouts.md#strength-test) has no template.
 
@@ -48,11 +48,11 @@ Option 3.
 flowchart TD
     template[AIWL template] --> setup
     input[Generation input] --> setup
-    setup[Workout setup<br/>input checks, derived inputs, picks workout rules] --> walk[Block walk in template order]
-    walk -->|picks| picks[Picks handler]
+    setup[Workout setup<br/>input checks, derived inputs, selections workout rules] --> walk[Block walk in template order]
+    walk -->|selections| selections[Selections handler]
     walk -->|branches| branches[Branches handler]
-    walk -->|duration| duration[Duration handler]
-    picks & branches & duration --> finish[Workout finish<br/>rules across blocks]
+    walk -->|minutes| minutes[Minutes handler]
+    selections & branches & minutes --> finish[Workout finish<br/>rules across blocks]
     finish --> builder{Set list builder by skill}
     builder --> cardio[Cardio] & max[Max strength] & standard[Standard]
 ```
@@ -68,7 +68,7 @@ block-beta
     block:handlers
         columns 3
         handlersTitle["Block handlers (Strategy)"]:3
-        picks["Picks"] branches["Branches"] duration["Duration"]
+        selections["Selections"] branches["Branches"] minutes["Minutes"]
     end
     block:builders
         columns 3
@@ -103,7 +103,7 @@ Each box in a layer implements the contract the layer title names. The code defi
 1. **Workout setup** runs once per workout.
    - It runs the input checks the specs define.
    - It derives the inputs that several blocks share, such as the body regions blocked by soreness and the prevention skills.
-   - It applies the picks rules to the union of all picks block pools, as [Plan-Independent Workouts](../specs/session/plan-independent-workouts.md#short-workout) defines them.
+   - It applies the selections workout rules to the union of all selections block pools, as [Plan-Independent Workouts](../specs/session/plan-independent-workouts.md#short-workout) defines them.
 2. **Block walk** (Interpreter) visits the blocks in template order. An exhaustive `switch` over the block kind calls the block's handler.
 3. **Workout finish** applies the rules that need every block, such as the [exercise order](./exercise-order.md).
 4. **Set list building** (Strategy, Builder) picks a builder by skill:
@@ -121,15 +121,15 @@ A handler is one function. It takes the block, the generation input and the set 
 - the [resolution of a branch](../specs/foundations/branches-exercises-and-levels.md#resolving-the-level-at-workout-start) to the exercise at the athlete's branch level
 - the replacement of blocked branches
 
-Resolution runs inside selection, because the specs drop a candidate whose exercise already appears.
+Resolution runs inside the draw, because the specs drop a candidate whose exercise already appears.
 
 | Block kind | Rules                                                                                          | Scope of the used branches                                     |
 | ---------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| Picks      | [Plan-Independent Workouts](../specs/session/plan-independent-workouts.md#short-workout)       | Whole workout                                                  |
+| Selections | [Plan-Independent Workouts](../specs/session/plan-independent-workouts.md#short-workout)       | Whole workout                                                  |
 | Branches   | [Plan Workout Generation](../specs/session/plan-workout-generation.md#generating-the-session)  | One block, see [duplicate exercises](./duplicate-exercises.md) |
-| Duration   | The [minutes table](./athletic-intelligence-workout-language.md#minutes-table) of the AIWL ADR | Whole workout                                                  |
+| Minutes    | The [minutes table](./athletic-intelligence-workout-language.md#minutes-table) of the AIWL ADR | Whole workout                                                  |
 
-A training day stores its cardio skill as a branches block. The branches handler applies the cardio rules from [Soreness and blocking](../specs/session/cardio-training-system.md#soreness-and-blocking). This ADR amends AIWL rule 1, so the rule applies to duration blocks only.
+A training day stores its cardio skill as a branches block. The branches handler applies the cardio rules from [Soreness and blocking](../specs/session/cardio-training-system.md#soreness-and-blocking). This ADR amends AIWL rule 1, so the rule applies to minutes blocks only.
 
 ### Rule families (Pipes and Filters)
 
@@ -172,7 +172,7 @@ A training day stores an AIWL template. Its branches blocks hold branch IDs and 
 The generator raises three classes of error:
 
 1. **Input errors** come from workout setup, when an input check fails.
-2. **Workout rule errors** come from the picks workout rules, when a rule empties the union pool.
+2. **Workout rule errors** come from the selections workout rules, when a rule empties the union pool.
 3. **Empty workout** errors come from the block walk, when every block stayed empty. The generator raises the reason of the first empty block in template order.
 
 ### Conventions
@@ -185,7 +185,7 @@ The generator raises three classes of error:
   | Folder                    | Component                                | Modules                                                                                   |
   | ------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------- |
   | `stages/`                 | Stages of the template interpreter       | workout setup, block walk, workout finish, exercise order, set list building              |
-  | `blockHandlers/picks/`    | Picks handler                            | the handler, the picks workout rules, the picks draw                                      |
+  | `blockHandlers/selections/` | Selections handler                      | the handler, the block resolution, the selections workout rules, the selections draw      |
   | `blockHandlers/branches/` | Branches handler                         | the handler, its rule chain, duplicate branches, cardio replacement, stored branch lookup |
   | `blockHandlers/library/`  | Shared library steps                     | resolution, replacement of blocked branches                                               |
   | `ruleFamilies/`           | Rule chain                               | one module per rule family, plus the family contract                                      |
@@ -193,7 +193,7 @@ The generator raises three classes of error:
   | `exerciseValues/`         | Exercise values the builders read        | start, target and feedback values, weight steps                                           |
   | `generationInput/`        | Generation input and branch lookup index | the input, the index, the skill catalog entry                                             |
 
-  A duration handler goes in `blockHandlers/duration/`. Each module has its spec next to it. No index file only re-exports other modules.
+  A minutes handler goes in `blockHandlers/minutes/`. Each module has its spec next to it. No index file only re-exports other modules.
 
 - **Naming.** Modules and functions use the glossary terms. A function name is a verb plus a full noun.
 

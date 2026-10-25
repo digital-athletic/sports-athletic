@@ -11,7 +11,7 @@ import {
 import { selectReplacementSkillTree } from "./replacementSkillTree";
 
 /**
- * Lists the branch IDs of the tree the selection returns for the given input.
+ * Lists the branch IDs of the replacement tree chosen for the given input.
  *
  * listTreeBranchIds("GKS", 1, { skillTrees: { GKSKG: { "3": branch } } }) → ["3"]
  */

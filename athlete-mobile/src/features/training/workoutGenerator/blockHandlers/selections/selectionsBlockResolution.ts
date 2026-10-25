@@ -4,9 +4,9 @@ import { hasWeights } from "@/features/training/utils/equipmentUtils";
 import { readLiteralSkillTree } from "@/features/training/utils/skillTreeUtils";
 import type {
   Block,
-  BlockPicks,
+  BlockPicks as Selections,
   CountBy,
-  PicksBlock,
+  PicksBlock as SelectionsBlock,
   Template,
 } from "@/schemas/aiwl.schema";
 import type { SkillCode } from "@/schemas/generator.schema";
@@ -26,22 +26,22 @@ import { filterBranchesByTags } from "./branchTagFilter";
 import type { GenerationInput } from "../../generationInput/generationInput";
 import { readSkillCatalogEntry } from "../../generationInput/skillCatalogEntry";
 
-/** A picks block with its defaults, its place picks and its branch pool. */
-export interface ResolvedPicksBlock extends ResolvedBlockTiming {
+/** A selections block with its defaults, its place selections and its branch pool. */
+export interface ResolvedSelectionsBlock extends ResolvedBlockTiming {
   readonly skill: SkillCode;
   readonly pool: SkillTreeType;
-  readonly picks: BlockPicks;
+  readonly selections: Selections;
   readonly countBy: CountBy;
   readonly fallbackToWholeTree: boolean;
 }
 
-/** The resolved picks blocks of a template and the union of their pools. */
-export interface ResolvedPicksBlocks {
+/** The resolved selections blocks of a template and the union of their pools. */
+export interface ResolvedSelectionsBlocks {
   readonly pool: SkillTreeType;
-  readonly blocks: ResolvedPicksBlock[];
+  readonly blocks: ResolvedSelectionsBlock[];
 }
 
-interface PicksPoolSource {
+interface SelectionsPoolSource {
   readonly skillCatalog: SkillCatalog;
   readonly skillTrees: Readonly<Record<string, SkillTreeType>>;
   readonly hasWeights: boolean;
@@ -56,11 +56,11 @@ const createSkillTreeError = (skill: string): GeneratorError => ({
   params: [skill],
 });
 
-export const requirePicksBlock = (
+export const requireSelectionsBlock = (
   templateId: string,
   index: number,
   block: Block,
-): PicksBlock => {
+): SelectionsBlock => {
   const reject = (what: string): GeneratorError => ({
     type: "OTHER",
     subtype: "BLOCK_KIND",
@@ -79,7 +79,7 @@ export const requirePicksBlock = (
 const readSpecialWarmUpTree = ({
   skillTrees,
   preventionRegions,
-}: PicksPoolSource): SkillTreeType => {
+}: SelectionsPoolSource): SkillTreeType => {
   const tree = readLiteralSkillTree(skillTrees, SPECIAL_WARM_UP_TREE);
   const authored = Object.hasOwn(skillTrees, SPECIAL_WARM_UP_TREE)
     ? skillTrees[SPECIAL_WARM_UP_TREE]
@@ -97,19 +97,19 @@ const readSpecialWarmUpTree = ({
   );
 };
 
-const readPlacePicks = (
-  block: PicksBlock,
+const readPlaceSelections = (
+  block: SelectionsBlock,
   withWeights: boolean,
-): BlockPicks => {
+): Selections => {
   if (Array.isArray(block.picks)) return block.picks;
   return withWeights ? block.picks.withWeights : block.picks.withoutWeights;
 };
 
 const buildBlockPool = (
   entry: SkillTreeCatalogEntry,
-  picks: BlockPicks,
+  selections: Selections,
   fallbackToWholeTree: boolean,
-  source: PicksPoolSource,
+  source: SelectionsPoolSource,
 ): SkillTreeType => {
   const names = source.hasWeights
     ? entry.skillTree.withWeights
@@ -125,18 +125,20 @@ const buildBlockPool = (
   }
   if (fallbackToWholeTree) return union;
   const matchingIds = new Set(
-    picks.flatMap(({ tags }) => Object.keys(filterBranchesByTags(union, tags))),
+    selections.flatMap(({ tags }) =>
+      Object.keys(filterBranchesByTags(union, tags)),
+    ),
   );
   return Object.fromEntries(
     Object.entries(union).filter(([id]) => matchingIds.has(id)),
   );
 };
 
-const resolvePicksBlock = (
-  block: PicksBlock,
+const resolveSelectionsBlock = (
+  block: SelectionsBlock,
   path: string,
-  source: PicksPoolSource,
-): ResolvedPicksBlock => {
+  source: SelectionsPoolSource,
+): ResolvedSelectionsBlock => {
   const entry = readSkillCatalogEntry(source.skillCatalog, block.skill);
   if (!entry || !hasSkillTree(entry)) throw createSkillTreeError(block.skill);
   const timing = resolveBlockTiming(block, entry, path);
@@ -147,14 +149,14 @@ const resolvePicksBlock = (
     block.fallbackToWholeTree,
     entry.fallbackToWholeTree,
   );
-  const picks = readPlacePicks(block, source.hasWeights);
-  const pool = buildBlockPool(entry, picks, fallbackToWholeTree, source);
+  const selections = readPlaceSelections(block, source.hasWeights);
+  const pool = buildBlockPool(entry, selections, fallbackToWholeTree, source);
   if (Object.keys(pool).length === 0) throw createSkillTreeError(block.skill);
   return {
     ...timing,
     skill: block.skill,
     pool,
-    picks,
+    selections,
     countBy,
     fallbackToWholeTree,
   };
@@ -162,36 +164,36 @@ const resolvePicksBlock = (
 
 /**
  * Resolves every block of a short workout template before any rule or draw:
- * the defaults from the skill catalog of the input, the picks of the place
+ * the defaults from the skill catalog of the input, the selections of the place
  * and the pool from the skill trees of the catalog entry. Throws plain
  * GeneratorError objects: OTHER/BLOCK_KIND for a block that is not a plain
- * picks block, NO_EXERCISES/SKILL_TREE for a skill without a tree or an empty
- * pool, and an Error with the block path for a missing default.
+ * selections block, NO_EXERCISES/SKILL_TREE for a skill without a tree or an
+ * empty pool, and an Error with the block path for a missing default.
  *
- * resolvePicksBlocks(prevKneeTemplate, input, getAllSkillTrees())
+ * resolveSelectionsBlocks(prevKneeTemplate, input, getAllSkillTrees())
  * → { pool: { ...special warm-up and PREVKNEE branches },
  *     blocks: [{ skill: "WUSPEZIAL", countBy: "entries", ... }, { skill: "PREVKNEE", countBy: "pairs", ... }] }
  */
-export const resolvePicksBlocks = (
+export const resolveSelectionsBlocks = (
   template: Template,
   input: Pick<GenerationInput, "equipment" | "skillCatalog">,
   skillTrees: Readonly<Record<string, SkillTreeType>>,
-): ResolvedPicksBlocks => {
-  const picksBlocks = template.blocks.map((block, index) =>
-    requirePicksBlock(template.id, index, block),
+): ResolvedSelectionsBlocks => {
+  const selectionsBlocks = template.blocks.map((block, index) =>
+    requireSelectionsBlock(template.id, index, block),
   );
-  const preventionRegions = picksBlocks
+  const preventionRegions = selectionsBlocks
     .map(({ skill }) => readSkillCatalogEntry(input.skillCatalog, skill))
     .filter((entry) => entry?.focusArea === "PREVENTION")
     .flatMap((entry) => entry?.painRegions ?? []);
-  const source: PicksPoolSource = {
+  const source: SelectionsPoolSource = {
     skillCatalog: input.skillCatalog,
     skillTrees,
     hasWeights: hasWeights(input.equipment),
     preventionRegions,
   };
-  const blocks = picksBlocks.map((block, index) =>
-    resolvePicksBlock(block, `${template.id}.blocks[${index}]`, source),
+  const blocks = selectionsBlocks.map((block, index) =>
+    resolveSelectionsBlock(block, `${template.id}.blocks[${index}]`, source),
   );
   return {
     pool: blocks.reduce<SkillTreeType>(

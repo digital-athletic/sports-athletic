@@ -1,7 +1,7 @@
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { generateKneeSkillTrees } from "@test/factories/skillTree";
 import {
-  generatePicksBlock,
+  generateSelectionsBlock,
   generateShortTemplate,
 } from "@test/factories/templateBlock";
 import { setUpWorkout } from "./workoutSetup";
@@ -67,8 +67,8 @@ describe("workoutSetup: setUpWorkout", () => {
     expect(() => setUpWorkout(input)).not.toThrow();
   });
 
-  it("applies the picks workout rules of the template before any block runs", () => {
-    const template = generateShortTemplate([generatePicksBlock("BAS")]);
+  it("applies the selections workout rules of the template before any block runs", () => {
+    const template = generateShortTemplate([generateSelectionsBlock("BAS")]);
     const input = generateRuleFamilyInput({ pains: ["KNEE_LEFT"] });
 
     expect(() =>
@@ -82,18 +82,18 @@ describe("workoutSetup: setUpWorkout", () => {
     );
   });
 
-  it("holds an empty picks workout without a template", () => {
-    const { picksWorkout } = setUpWorkout(generateRuleFamilyInput());
+  it("holds an empty selections workout without a template", () => {
+    const { selectionsWorkout } = setUpWorkout(generateRuleFamilyInput());
 
-    expect(picksWorkout.pool).toEqual({});
-    expect(picksWorkout.blocks.size).toBe(0);
+    expect(selectionsWorkout.pool).toEqual({});
+    expect(selectionsWorkout.blocks.size).toBe(0);
   });
 
-  it("gives each setup its own picks workout maps", () => {
+  it("gives each setup its own selections workout maps", () => {
     const input = generateRuleFamilyInput();
 
-    expect(setUpWorkout(input).picksWorkout.blocks).not.toBe(
-      setUpWorkout(input).picksWorkout.blocks,
+    expect(setUpWorkout(input).selectionsWorkout.blocks).not.toBe(
+      setUpWorkout(input).selectionsWorkout.blocks,
     );
   });
 });

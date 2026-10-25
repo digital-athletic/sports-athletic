@@ -6,7 +6,10 @@ import {
   generateTreeBranch,
 } from "@test/factories/skillTree";
 import { type BranchDraw, createBranchDraw } from "./branchDraw";
-import { drawPicksBlock, type PicksBlockDraw } from "./picksDraw";
+import {
+  drawSelectionsBlock,
+  type SelectionsBlockDraw,
+} from "./selectionsDraw";
 
 // Draws the first unused branches, so the key order of the branches decides.
 const FIRST_UNUSED_BRANCH_DRAW: BranchDraw = {
@@ -31,28 +34,28 @@ const FIRST_UNUSED_BRANCH_DRAW: BranchDraw = {
 };
 
 /**
- * Draws one picks block with the first unused branch draw and returns the
+ * Draws one selections block with the first unused branch draw and returns the
  * drawn branch IDs and the IDs the block marked used.
  *
- * drawBlockWithFirstUnusedBranch({ picks: [{ tags: [], count: 2 }] }, generateSelfNamedBranches({ a: [], b: [], c: [] }))
+ * drawBlockWithFirstUnusedBranch({ selections: [{ tags: [], count: 2 }] }, generateSelfNamedBranches({ a: [], b: [], c: [] }))
  * → { drawn: ["a", "b"], used: ["a", "b"] }
  */
 const drawBlockWithFirstUnusedBranch = (
-  change: Partial<PicksBlockDraw>,
+  change: Partial<SelectionsBlockDraw>,
   pool: SkillTreeType,
   {
     blockPool = pool,
     usedBranchIds = [],
   }: { blockPool?: SkillTreeType; usedBranchIds?: string[] } = {},
 ): { drawn: string[]; used: string[] } => {
-  const block: PicksBlockDraw = {
+  const block: SelectionsBlockDraw = {
     pool: blockPool,
-    picks: [{ tags: [], count: 1 }],
+    selections: [{ tags: [], count: 1 }],
     countBy: "exercises",
     fallbackToWholeTree: false,
     ...change,
   };
-  const result = drawPicksBlock(block, {
+  const result = drawSelectionsBlock(block, {
     pool,
     draw: FIRST_UNUSED_BRANCH_DRAW,
     usedBranchIds,
@@ -63,7 +66,7 @@ const drawBlockWithFirstUnusedBranch = (
   };
 };
 
-describe("picksDraw: count by entries", () => {
+describe("selectionsDraw: count by entries", () => {
   it.each<{
     behaviour: string;
     count: number;
@@ -99,25 +102,26 @@ describe("picksDraw: count by entries", () => {
   ])("$behaviour", ({ count, tags, drawn }) => {
     expect(
       drawBlockWithFirstUnusedBranch(
-        { countBy: "entries", picks: [{ tags: [], count }] },
+        { countBy: "entries", selections: [{ tags: [], count }] },
         generateSelfNamedBranches(tags),
       ).drawn,
     ).toEqual(drawn);
   });
 
-  it("draws one pick after the other", () => {
+  it("draws one selection after the other", () => {
     const pool = generateSelfNamedBranches({
       pushUp: ["REGION_UPPER_BODY"],
       burpee: ["REGION_FULL_BODY"],
       squat: ["REGION_LOWER_BODY"],
     });
-    const picks = [
+    const selections = [
       { tags: ["REGION_FULL_BODY"], count: 1 },
       { tags: ["REGION_LOWER_BODY"], count: 1 },
     ];
 
     expect(
-      drawBlockWithFirstUnusedBranch({ countBy: "entries", picks }, pool).drawn,
+      drawBlockWithFirstUnusedBranch({ countBy: "entries", selections }, pool)
+        .drawn,
     ).toEqual(["burpee", "squat"]);
   });
 
@@ -131,11 +135,11 @@ describe("picksDraw: count by entries", () => {
         squat: ["REGION_LOWER_BODY"],
         pushUp: ["REGION_UPPER_BODY"],
       });
-      const picks = [{ tags: ["REGION_LOWER_BODY"], count: 2 }];
+      const selections = [{ tags: ["REGION_LOWER_BODY"], count: 2 }];
 
       expect(
         drawBlockWithFirstUnusedBranch(
-          { countBy: "entries", picks, fallbackToWholeTree },
+          { countBy: "entries", selections, fallbackToWholeTree },
           pool,
         ).drawn,
       ).toEqual(drawn);
@@ -143,7 +147,7 @@ describe("picksDraw: count by entries", () => {
   );
 });
 
-describe("picksDraw: count by exercises and pairs", () => {
+describe("selectionsDraw: count by exercises and pairs", () => {
   it("counts a one sided exercise once", () => {
     const pool = generateSelfNamedBranches({
       a: ["SIDE_ONE"],
@@ -152,8 +156,10 @@ describe("picksDraw: count by exercises and pairs", () => {
     });
 
     expect(
-      drawBlockWithFirstUnusedBranch({ picks: [{ tags: [], count: 2 }] }, pool)
-        .drawn,
+      drawBlockWithFirstUnusedBranch(
+        { selections: [{ tags: [], count: 2 }] },
+        pool,
+      ).drawn,
     ).toEqual(["a", "b"]);
   });
 
@@ -167,7 +173,7 @@ describe("picksDraw: count by exercises and pairs", () => {
 
     expect(
       drawBlockWithFirstUnusedBranch(
-        { countBy: "pairs", picks: [{ tags: [], count: 2 }] },
+        { countBy: "pairs", selections: [{ tags: [], count: 2 }] },
         pool,
       ).drawn,
     ).toEqual(["c", "d", "a", "b"]);
@@ -176,15 +182,15 @@ describe("picksDraw: count by exercises and pairs", () => {
   it("stops when no pair is left", () => {
     expect(
       drawBlockWithFirstUnusedBranch(
-        { countBy: "pairs", picks: [{ tags: [], count: 3 }] },
+        { countBy: "pairs", selections: [{ tags: [], count: 3 }] },
         generateSelfNamedBranches({ a: [] }),
       ).drawn,
     ).toEqual(["a"]);
   });
 });
 
-describe("picksDraw: with the branch draws", () => {
-  it("skips an exercise an earlier pick drew and falls back to the block pool", () => {
+describe("selectionsDraw: with the branch draws", () => {
+  it("skips an exercise an earlier selection drew and falls back to the block pool", () => {
     const pool: SkillTreeType = {
       a: generateTreeBranch(["x"], ["REGION_LOWER_BODY"]),
       b: generateTreeBranch(["y"], ["REGION_LOWER_BODY"]),
@@ -199,9 +205,9 @@ describe("picksDraw: with the branch draws", () => {
       exerciseData: { exerciseData: {}, branchData: {} },
       random,
     });
-    const block: PicksBlockDraw = {
+    const block: SelectionsBlockDraw = {
       pool,
-      picks: [
+      selections: [
         { tags: ["REGION_LOWER_BODY"], count: 1 },
         { tags: ["REGION_UPPER_BODY"], count: 2 },
       ],
@@ -209,9 +215,13 @@ describe("picksDraw: with the branch draws", () => {
       fallbackToWholeTree: true,
     };
 
-    const result = drawPicksBlock(block, { pool, draw, usedBranchIds: [] });
+    const result = drawSelectionsBlock(block, {
+      pool,
+      draw,
+      usedBranchIds: [],
+    });
 
-    // c shares exercise x with a, so the upper body pick falls back to b
+    // c shares exercise x with a, so the upper body selection falls back to b
     expect(result.branches.map(({ branchId }) => branchId)).toEqual([
       "a",
       "d",
@@ -222,12 +232,12 @@ describe("picksDraw: with the branch draws", () => {
   });
 });
 
-describe("picksDraw: used branches", () => {
+describe("selectionsDraw: used branches", () => {
   it("never draws a branch the workout already uses and leaves the given list unchanged", () => {
     const usedBranchIds = ["a"];
 
     const result = drawBlockWithFirstUnusedBranch(
-      { picks: [{ tags: [], count: 2 }] },
+      { selections: [{ tags: [], count: 2 }] },
       generateSelfNamedBranches({ a: [], b: [] }),
       { usedBranchIds },
     );
@@ -238,20 +248,20 @@ describe("picksDraw: used branches", () => {
 
   it.each<{
     behaviour: string;
-    change: Partial<PicksBlockDraw>;
+    change: Partial<SelectionsBlockDraw>;
     tags: Record<string, string[]>;
     used: string[];
   }>([
     {
       behaviour: "both branches of a drawn pair",
-      change: { countBy: "pairs", picks: [{ tags: [], count: 1 }] },
+      change: { countBy: "pairs", selections: [{ tags: [], count: 1 }] },
       tags: { a: [], b: [], c: [] },
       used: ["a", "b"],
     },
     {
-      // the next pick of the workout must not draw the skipped branch again
+      // the next selection of the workout must not draw the skipped branch again
       behaviour: "a one sided branch that overflowed the last entry",
-      change: { countBy: "entries", picks: [{ tags: [], count: 2 }] },
+      change: { countBy: "entries", selections: [{ tags: [], count: 2 }] },
       tags: { a: ["SIDE_BOTH"], b: ["SIDE_ONE"], c: ["SIDE_BOTH"] },
       used: ["a", "b", "c"],
     },
@@ -263,17 +273,20 @@ describe("picksDraw: used branches", () => {
   });
 });
 
-describe("picksDraw: block pool", () => {
+describe("selectionsDraw: block pool", () => {
   it.each<{
     behaviour: string;
-    change: Partial<PicksBlockDraw>;
+    change: Partial<SelectionsBlockDraw>;
     pool: SkillTreeType;
     blockPool: SkillTreeType;
     drawn: string[];
   }>([
     {
       behaviour: "never draws a branch outside the block pool",
-      change: { picks: [{ tags: [], count: 3 }], fallbackToWholeTree: true },
+      change: {
+        selections: [{ tags: [], count: 3 }],
+        fallbackToWholeTree: true,
+      },
       pool: generateSelfNamedBranches({ a: [], b: [], c: [] }),
       blockPool: generateSelfNamedBranches({ b: [] }),
       drawn: ["b"],
@@ -281,7 +294,7 @@ describe("picksDraw: block pool", () => {
     {
       behaviour: "never falls back to a branch outside the block pool",
       change: {
-        picks: [{ tags: ["SKILL_X"], count: 2 }],
+        selections: [{ tags: ["SKILL_X"], count: 2 }],
         fallbackToWholeTree: true,
       },
       pool: generateSelfNamedBranches({ a: ["SKILL_X"], b: [], c: [] }),
@@ -290,7 +303,7 @@ describe("picksDraw: block pool", () => {
     },
     {
       behaviour: "keeps the key order of the workout pool",
-      change: { picks: [{ tags: [], count: 2 }] },
+      change: { selections: [{ tags: [], count: 2 }] },
       pool: generateSelfNamedBranches({ a: [], b: [], c: [] }),
       blockPool: generateSelfNamedBranches({ c: [], b: [], a: [] }),
       drawn: ["a", "b"],
@@ -298,7 +311,10 @@ describe("picksDraw: block pool", () => {
     {
       behaviour:
         "draws nothing when the block pool shares no branch with the workout pool",
-      change: { picks: [{ tags: [], count: 2 }], fallbackToWholeTree: true },
+      change: {
+        selections: [{ tags: [], count: 2 }],
+        fallbackToWholeTree: true,
+      },
       pool: generateSelfNamedBranches({ a: [], b: [] }),
       blockPool: generateSelfNamedBranches({ z: [] }),
       drawn: [],

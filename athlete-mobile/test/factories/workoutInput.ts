@@ -14,15 +14,15 @@ import { generateLowerBodyExercises } from "./valueExercise";
 
 export interface WorkoutInputFactoryOptions
   extends GenerationInputFactoryOptions {
-  /** The template whose picks workout rules the setup applies. */
+  /** The template whose selections workout rules the setup applies. */
   template?: Template;
-  /** The skill trees the picks of the template draw from. */
-  pickTrees?: Record<string, SkillTreeType>;
+  /** The skill trees the selections of the template draw from. */
+  selectionsBlockSkillTrees?: Record<string, SkillTreeType>;
 }
 
 /**
- * Builds the input that workout setup hands to the picks workout rules: the
- * general generation input plus the athlete level that setup derives.
+ * Builds the input that workout setup hands to the selections workout rules:
+ * the general generation input plus the athlete level that setup derives.
  *
  * generateLeveledInput({ pains: ["KNEE_LEFT"] })
  * → { athlete: { workoutData: { tags: { LEVEL: ["ADVANCED"], PAIN: ["KNEE_LEFT"] } }, ... },
@@ -41,14 +41,18 @@ export const generateLeveledInput = (
  *
  * generateWorkoutInput({ pains: ["KNEE_LEFT"], skillTrees: { BAS: { "1": branch } } })
  * → { athleteLevel: "ADVANCED", blockedRegions: ["KNEE"], preventionSkills: ["PREVKNEE"],
- *     hasWeights: false, picksWorkout: { pool: {}, blocks: Map {} }, ... }
+ *     hasWeights: false, selectionsWorkout: { pool: {}, blocks: Map {} }, ... }
  */
 export const generateWorkoutInput = ({
   template,
-  pickTrees,
+  selectionsBlockSkillTrees,
   ...generationOptions
 }: WorkoutInputFactoryOptions = {}): WorkoutInput =>
-  setUpWorkout(generateGenerationInput(generationOptions), template, pickTrees);
+  setUpWorkout(
+    generateGenerationInput(generationOptions),
+    template,
+    selectionsBlockSkillTrees,
+  );
 
 /**
  * Builds the workout input of the replacement specs: the workout input of a

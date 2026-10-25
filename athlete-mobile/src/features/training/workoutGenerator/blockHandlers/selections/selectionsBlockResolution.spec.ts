@@ -1,7 +1,7 @@
 import { loadSkillCatalog } from "@/data/loadSkillCatalog";
 import { loadTemplate } from "@/data/loadTemplates";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
-import type { Block, PicksBlock } from "@/schemas/aiwl.schema";
+import type { Block } from "@/schemas/aiwl.schema";
 import type {
   SkillCatalog,
   SkillTreeCatalogEntry,
@@ -13,15 +13,17 @@ import {
 } from "@test/factories/skillCatalog";
 import { generateTaggedBranches } from "@test/factories/skillTree";
 import {
-  generatePicksBlock,
+  generateSelectionsBlock,
   generateTemplate,
   generateUntimedBranchesBlock,
 } from "@test/factories/templateBlock";
 import { catchThrownValue } from "@test/factories/thrownValue";
 import {
-  resolvePicksBlocks,
-  type ResolvedPicksBlocks,
-} from "./picksBlockResolution";
+  resolveSelectionsBlocks,
+  type ResolvedSelectionsBlocks,
+} from "./selectionsBlockResolution";
+
+type SelectionsBlock = Extract<Block, { kind: "picks" }>;
 
 const WEIGHTS = ["DUMBBELL"];
 
@@ -33,10 +35,10 @@ const WEIGHTS = ["DUMBBELL"];
 const resolveBundledTemplate = (
   id: string,
   equipment: string[] = [],
-): ResolvedPicksBlocks => {
+): ResolvedSelectionsBlocks => {
   const template = loadTemplate(id);
   if (!template) throw new Error(`Template ${id} missing`);
-  return resolvePicksBlocks(
+  return resolveSelectionsBlocks(
     template,
     { equipment, skillCatalog: loadSkillCatalog() },
     getAllSkillTrees(),
@@ -47,7 +49,7 @@ const resolveBundledTemplate = (
  * Resolves template SYN of the given blocks against the given catalog and
  * trees. The catalog defaults to SYN reading tree T_A, which holds branch 1.
  *
- * resolveCustomTemplate([generatePicksBlock("SYN")]).blocks[0].pool → { 1: { tags: [], ... } }
+ * resolveCustomTemplate([generateSelectionsBlock("SYN")]).blocks[0].pool → { 1: { tags: [], ... } }
  */
 const resolveCustomTemplate = (
   blocks: Block[],
@@ -60,14 +62,14 @@ const resolveCustomTemplate = (
     skillTrees?: Record<string, SkillTreeType>;
     equipment?: string[];
   } = {},
-): ResolvedPicksBlocks =>
-  resolvePicksBlocks(
+): ResolvedSelectionsBlocks =>
+  resolveSelectionsBlocks(
     generateTemplate(blocks, { id: "SYN", name: { en: "SYN" } }),
     { equipment, skillCatalog },
     skillTrees,
   );
 
-describe("picksBlockResolution: bundled templates", () => {
+describe("selectionsBlockResolution: bundled templates", () => {
   it("resolves GKS with weights from the template and the catalog", () => {
     expect(resolveBundledTemplate("GKS", WEIGHTS).blocks[0]).toMatchObject({
       skill: "GKS",
@@ -76,26 +78,26 @@ describe("picksBlockResolution: bundled templates", () => {
       countBy: "entries",
       fallbackToWholeTree: true,
       rest: { withinSuperset: 45, betweenSets: 45, afterExercise: 45 },
-      picks: [{ tags: [], count: 4 }],
+      selections: [{ tags: [], count: 4 }],
     });
   });
 
-  it("resolves the withoutWeights picks without weights", () => {
-    expect(resolveBundledTemplate("GKS").blocks[0].picks).toEqual([
+  it("resolves the withoutWeights selections without weights", () => {
+    expect(resolveBundledTemplate("GKS").blocks[0].selections).toEqual([
       { tags: ["REGION_UPPER_BODY"], count: 3 },
       { tags: ["REGION_FULL_BODY"], count: 2 },
     ]);
   });
 });
 
-describe("picksBlockResolution: block values", () => {
+describe("selectionsBlockResolution: block values", () => {
   it("reads the defaults from the given skill catalog", () => {
     expect(
-      resolveCustomTemplate([generatePicksBlock("SYN")]).blocks[0],
+      resolveCustomTemplate([generateSelectionsBlock("SYN")]).blocks[0],
     ).toEqual({
       skill: "SYN",
       pool: generateTaggedBranches({ 1: [] }),
-      picks: [{ tags: [], count: 1 }],
+      selections: [{ tags: [], count: 1 }],
       countBy: "entries",
       fallbackToWholeTree: false,
       sets: 2,
@@ -105,7 +107,7 @@ describe("picksBlockResolution: block values", () => {
   });
 
   it("takes the block's own values before the catalog's", () => {
-    const block = generatePicksBlock("SYN", {
+    const block = generateSelectionsBlock("SYN", {
       countBy: "pairs",
       superset: "drawOrder",
       sets: 5,
@@ -132,7 +134,7 @@ describe("picksBlockResolution: block values", () => {
   });
 });
 
-describe("picksBlockResolution: block pool", () => {
+describe("selectionsBlockResolution: block pool", () => {
   it.each<{ behaviour: string; equipment: string[]; pool: string[] }>([
     {
       behaviour: "reads the trees with weights",
@@ -148,7 +150,7 @@ describe("picksBlockResolution: block pool", () => {
     const entry = generateTreeCatalogEntry({
       skillTree: { withWeights: ["T_W"], withoutWeights: ["T_B", "T_A"] },
     });
-    const { blocks } = resolveCustomTemplate([generatePicksBlock("SYN")], {
+    const { blocks } = resolveCustomTemplate([generateSelectionsBlock("SYN")], {
       skillCatalog: { SYN: entry },
       skillTrees: {
         T_A: generateTaggedBranches({ 1: [] }),
@@ -169,7 +171,7 @@ describe("picksBlockResolution: block pool", () => {
       },
     };
 
-    const { blocks } = resolveCustomTemplate([generatePicksBlock("SYN")], {
+    const { blocks } = resolveCustomTemplate([generateSelectionsBlock("SYN")], {
       skillTrees,
     });
 
@@ -180,9 +182,9 @@ describe("picksBlockResolution: block pool", () => {
     { fallbackToWholeTree: false, pool: ["1", "3", "4"] },
     { fallbackToWholeTree: true, pool: ["1", "2", "3", "4"] },
   ])(
-    "keeps the branches a pick matches unless it falls back to the whole tree: $fallbackToWholeTree",
+    "keeps the branches a selection matches unless it falls back to the whole tree: $fallbackToWholeTree",
     ({ fallbackToWholeTree, pool }) => {
-      const block = generatePicksBlock("SYN", {
+      const block = generateSelectionsBlock("SYN", {
         fallbackToWholeTree,
         picks: [
           { tags: ["T_A"], count: 1 },
@@ -217,7 +219,7 @@ describe("picksBlockResolution: block pool", () => {
     };
 
     const { pool } = resolveCustomTemplate(
-      [generatePicksBlock("OTHER"), generatePicksBlock("SYN")],
+      [generateSelectionsBlock("OTHER"), generateSelectionsBlock("SYN")],
       { skillCatalog, skillTrees },
     );
 
@@ -225,7 +227,7 @@ describe("picksBlockResolution: block pool", () => {
   });
 });
 
-describe("picksBlockResolution: special warm-up pool", () => {
+describe("selectionsBlockResolution: special warm-up pool", () => {
   it.each<{
     behaviour: string;
     skills: string[];
@@ -256,7 +258,7 @@ describe("picksBlockResolution: special warm-up pool", () => {
     },
   ])("$behaviour", ({ skills, tree, pool }) => {
     const { blocks } = resolveCustomTemplate(
-      skills.map((skill) => generatePicksBlock(skill)),
+      skills.map((skill) => generateSelectionsBlock(skill)),
       {
         skillCatalog: generateSpecialWarmUpCatalog(),
         skillTrees: { WUSPEZIAL: tree, T_A: generateTaggedBranches({ 9: [] }) },
@@ -275,7 +277,7 @@ describe("picksBlockResolution: special warm-up pool", () => {
     expect(
       catchThrownValue(() =>
         resolveCustomTemplate(
-          [generatePicksBlock("WU_X"), generatePicksBlock("PREV_X")],
+          [generateSelectionsBlock("WU_X"), generateSelectionsBlock("PREV_X")],
           {
             skillCatalog: generateSpecialWarmUpCatalog(),
             skillTrees: {
@@ -293,12 +295,12 @@ describe("picksBlockResolution: special warm-up pool", () => {
   });
 });
 
-describe("picksBlockResolution: errors", () => {
+describe("selectionsBlockResolution: errors", () => {
   it.each<{ behaviour: string; blocks: Block[]; params: string[] }>([
     {
-      behaviour: "a duration block, before any block resolves",
+      behaviour: "a minutes block, before any block resolves",
       blocks: [
-        generatePicksBlock("UNKNOWN"),
+        generateSelectionsBlock("UNKNOWN"),
         { kind: "duration", skill: "SYN", duration: 30 },
       ],
       params: ["SYN.blocks[1]", "duration"],
@@ -310,12 +312,14 @@ describe("picksBlockResolution: errors", () => {
     },
     {
       behaviour: "the unsupported field bodyParts",
-      blocks: [generatePicksBlock("SYN", { bodyParts: { regions: ["core"] } })],
+      blocks: [
+        generateSelectionsBlock("SYN", { bodyParts: { regions: ["core"] } }),
+      ],
       params: ["SYN.blocks[0]", "bodyParts"],
     },
     {
       behaviour: "the unsupported field order",
-      blocks: [generatePicksBlock("SYN", { order: "asDrawn" })],
+      blocks: [generateSelectionsBlock("SYN", { order: "asDrawn" })],
       params: ["SYN.blocks[0]", "order"],
     },
   ])("throws BLOCK_KIND for $behaviour", ({ blocks, params }) => {
@@ -330,7 +334,7 @@ describe("picksBlockResolution: errors", () => {
     behaviour: string;
     skill: string;
     skillCatalog: SkillCatalog;
-    picks?: PicksBlock["picks"];
+    selections?: SelectionsBlock["picks"];
   }>([
     {
       behaviour: "a skill missing from the catalog",
@@ -357,20 +361,23 @@ describe("picksBlockResolution: errors", () => {
       },
     },
     {
-      behaviour: "picks that match no branch",
+      behaviour: "selections that match no branch",
       skill: "SYN",
       skillCatalog: { SYN: generateTreeCatalogEntry() },
-      picks: [{ tags: ["T_NONE"], count: 1 }],
+      selections: [{ tags: ["T_NONE"], count: 1 }],
     },
   ])(
     "throws SKILL_TREE for $behaviour",
-    ({ skill, skillCatalog, picks = [{ tags: [], count: 1 }] }) => {
+    ({ skill, skillCatalog, selections = [{ tags: [], count: 1 }] }) => {
       expect(
         catchThrownValue(() =>
-          resolveCustomTemplate([generatePicksBlock(skill, { picks })], {
-            skillCatalog,
-            skillTrees: { T_A: generateTaggedBranches({ 1: ["T_A"] }) },
-          }),
+          resolveCustomTemplate(
+            [generateSelectionsBlock(skill, { picks: selections })],
+            {
+              skillCatalog,
+              skillTrees: { T_A: generateTaggedBranches({ 1: ["T_A"] }) },
+            },
+          ),
         ),
       ).toEqual({
         type: "NO_EXERCISES",
@@ -404,7 +411,7 @@ describe("picksBlockResolution: errors", () => {
       expect(
         catchThrownValue(() =>
           resolveCustomTemplate(
-            [generatePicksBlock("FIRST"), generatePicksBlock("SYN")],
+            [generateSelectionsBlock("FIRST"), generateSelectionsBlock("SYN")],
             { skillCatalog },
           ),
         ),

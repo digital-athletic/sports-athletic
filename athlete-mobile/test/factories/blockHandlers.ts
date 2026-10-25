@@ -15,12 +15,12 @@ type HandleAnyBlock = (
 
 /**
  * Builds a block handler registry whose three handlers are the same function,
- * by default one that leaves every block empty. Picks and duration blocks
+ * by default one that leaves every block empty. Selections and minutes blocks
  * share their used branches across the workout, branches blocks start empty.
  * The overrides replace the handler of one kind.
  *
- * generateHandlerRegistry(handleBlock, { picks: PICKS_BLOCK_HANDLER })
- * → { picks: PICKS_BLOCK_HANDLER,
+ * generateHandlerRegistry(handleBlock, { picks: SELECTIONS_BLOCK_HANDLER })
+ * → { picks: SELECTIONS_BLOCK_HANDLER,
  *     branches: { usedBranchScope: "block", handleBlock },
  *     duration: { usedBranchScope: "workout", handleBlock } }
  */

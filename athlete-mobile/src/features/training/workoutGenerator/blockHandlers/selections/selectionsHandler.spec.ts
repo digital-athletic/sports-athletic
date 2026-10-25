@@ -2,13 +2,16 @@ import { generateHandlerRegistry } from "@test/factories/blockHandlers";
 import { generateSequenceRandom } from "@test/factories/sequenceRandom";
 import { generateTreeBranch } from "@test/factories/skillTree";
 import {
-  generateCountedPicksBlock,
+  generateCountedSelectionsBlock,
   generateShortTemplate,
 } from "@test/factories/templateBlock";
 import { generateTaggedExercise } from "@test/factories/valueExercise";
 import { generateWorkoutInput } from "@test/factories/workoutInput";
 import { walkTemplateBlocks } from "../../stages/blockWalk";
-import { handlePicksBlock, PICKS_BLOCK_HANDLER } from "./picksHandler";
+import {
+  handleSelectionsBlock,
+  SELECTIONS_BLOCK_HANDLER,
+} from "./selectionsHandler";
 
 // At ADVANCED, branch 1 resolves to its level 2 exercise e1x, as branch 3 does.
 const BAS_SKILL_TREES = {
@@ -19,16 +22,16 @@ const BAS_SKILL_TREES = {
   },
 };
 
-describe("picksHandler: handlePicksBlock", () => {
+describe("selectionsHandler: handleSelectionsBlock", () => {
   it("draws through input.random and resolves each branch at the athlete level", () => {
-    const block = generateCountedPicksBlock("BAS", 2, "exercises");
+    const block = generateCountedSelectionsBlock("BAS", 2, "exercises");
     const input = generateWorkoutInput({
       template: generateShortTemplate([block]),
-      pickTrees: BAS_SKILL_TREES,
+      selectionsBlockSkillTrees: BAS_SKILL_TREES,
       random: generateSequenceRandom([0.5, 0]),
     });
 
-    const result = handlePicksBlock(block, input, new Set());
+    const result = handleSelectionsBlock(block, input, new Set());
 
     expect(result).toEqual({
       status: "filled",
@@ -42,14 +45,14 @@ describe("picksHandler: handlePicksBlock", () => {
   });
 
   it("skips the branches and the exercises that earlier blocks used", () => {
-    const block = generateCountedPicksBlock("BAS", 2, "exercises");
+    const block = generateCountedSelectionsBlock("BAS", 2, "exercises");
     const input = generateWorkoutInput({
       template: generateShortTemplate([block]),
-      pickTrees: BAS_SKILL_TREES,
+      selectionsBlockSkillTrees: BAS_SKILL_TREES,
       random: generateSequenceRandom([0]),
     });
 
-    const result = handlePicksBlock(block, input, new Set(["1"]));
+    const result = handleSelectionsBlock(block, input, new Set(["1"]));
 
     expect(result).toMatchObject({
       status: "filled",
@@ -59,14 +62,18 @@ describe("picksHandler: handlePicksBlock", () => {
   });
 
   it("ends empty without a reason when earlier blocks used every branch", () => {
-    const block = generateCountedPicksBlock("BAS", 2, "exercises");
+    const block = generateCountedSelectionsBlock("BAS", 2, "exercises");
     const input = generateWorkoutInput({
       template: generateShortTemplate([block]),
-      pickTrees: BAS_SKILL_TREES,
+      selectionsBlockSkillTrees: BAS_SKILL_TREES,
       random: generateSequenceRandom([]),
     });
 
-    const result = handlePicksBlock(block, input, new Set(["1", "2", "3"]));
+    const result = handleSelectionsBlock(
+      block,
+      input,
+      new Set(["1", "2", "3"]),
+    );
 
     expect(result).toEqual({
       status: "empty",
@@ -76,11 +83,11 @@ describe("picksHandler: handlePicksBlock", () => {
     });
   });
 
-  it("draws only from the branches the picks workout rules kept", () => {
-    const block = generateCountedPicksBlock("BAS", 2, "exercises");
+  it("draws only from the branches the selections workout rules kept", () => {
+    const block = generateCountedSelectionsBlock("BAS", 2, "exercises");
     const input = generateWorkoutInput({
       template: generateShortTemplate([block]),
-      pickTrees: {
+      selectionsBlockSkillTrees: {
         BAS: {
           "1": generateTreeBranch(["e1"], ["GENDER_FEMALE"]),
           "2": generateTreeBranch(["e2"]),
@@ -89,7 +96,7 @@ describe("picksHandler: handlePicksBlock", () => {
       random: generateSequenceRandom([0]),
     });
 
-    const result = handlePicksBlock(block, input, new Set());
+    const result = handleSelectionsBlock(block, input, new Set());
 
     expect(result).toMatchObject({
       status: "filled",
@@ -98,10 +105,10 @@ describe("picksHandler: handlePicksBlock", () => {
   });
 
   it("pairs a both sided exercise with the both sided partner of the opposite direction", () => {
-    const block = generateCountedPicksBlock("PREVKNEE", 1, "pairs");
+    const block = generateCountedSelectionsBlock("PREVKNEE", 1, "pairs");
     const input = generateWorkoutInput({
       template: generateShortTemplate([block]),
-      pickTrees: {
+      selectionsBlockSkillTrees: {
         PREV: {
           "1": generateTreeBranch(["e1"]),
           "2": generateTreeBranch(["e2"]),
@@ -118,7 +125,7 @@ describe("picksHandler: handlePicksBlock", () => {
       random: generateSequenceRandom([0, 0, 0]),
     });
 
-    const result = handlePicksBlock(block, input, new Set());
+    const result = handleSelectionsBlock(block, input, new Set());
 
     expect(result).toMatchObject({
       status: "filled",
@@ -132,16 +139,16 @@ describe("picksHandler: handlePicksBlock", () => {
 
   it("hands a later block the branches and exercises of the blocks before it", () => {
     const template = generateShortTemplate([
-      generateCountedPicksBlock("BAS", 1, "exercises"),
-      generateCountedPicksBlock("BAS", 1, "exercises"),
+      generateCountedSelectionsBlock("BAS", 1, "exercises"),
+      generateCountedSelectionsBlock("BAS", 1, "exercises"),
     ]);
     const input = generateWorkoutInput({
       template,
-      pickTrees: BAS_SKILL_TREES,
+      selectionsBlockSkillTrees: BAS_SKILL_TREES,
       random: generateSequenceRandom([0, 0]),
     });
     const handlers = generateHandlerRegistry(undefined, {
-      picks: PICKS_BLOCK_HANDLER,
+      picks: SELECTIONS_BLOCK_HANDLER,
     });
 
     const results = walkTemplateBlocks(template, input, handlers);
@@ -153,15 +160,15 @@ describe("picksHandler: handlePicksBlock", () => {
   });
 
   it("throws for a block that workout setup did not resolve", () => {
-    const block = generateCountedPicksBlock("BAS", 2, "exercises");
+    const block = generateCountedSelectionsBlock("BAS", 2, "exercises");
 
     expect(() =>
-      handlePicksBlock(block, generateWorkoutInput(), new Set()),
-    ).toThrow("Workout setup resolved no picks block for skill BAS");
+      handleSelectionsBlock(block, generateWorkoutInput(), new Set()),
+    ).toThrow("Workout setup resolved no selections block for skill BAS");
   });
 
   it("shares the used branches across the whole workout", () => {
-    expect(PICKS_BLOCK_HANDLER.usedBranchScope).toBe("workout");
-    expect(PICKS_BLOCK_HANDLER.handleBlock).toBe(handlePicksBlock);
+    expect(SELECTIONS_BLOCK_HANDLER.usedBranchScope).toBe("workout");
+    expect(SELECTIONS_BLOCK_HANDLER.handleBlock).toBe(handleSelectionsBlock);
   });
 });

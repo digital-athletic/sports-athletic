@@ -5,7 +5,7 @@ import {
 } from "@test/factories/blockResult";
 import {
   generateBranchesBlock,
-  generatePicksBlock,
+  generateSelectionsBlock,
   generateTemplate,
 } from "@test/factories/templateBlock";
 import { generateWorkoutInput } from "@test/factories/workoutInput";
@@ -15,7 +15,9 @@ describe("blockWalk: walkTemplateBlocks", () => {
   it("hands each block to the handler of its kind in template order and draws in that order", () => {
     const template = generateTemplate([
       generateBranchesBlock("SWR2KG", ["79"]),
-      generatePicksBlock("WU", { picks: [{ tags: ["SKILL_WU"], count: 2 }] }),
+      generateSelectionsBlock("WU", {
+        picks: [{ tags: ["SKILL_WU"], count: 2 }],
+      }),
       generateBranchesBlock("GKS", ["510"]),
       { kind: "duration", skill: "MOB", duration: 300 },
     ]);
@@ -38,14 +40,22 @@ describe("blockWalk: walkTemplateBlocks", () => {
     expect(results.map((result) => result.block)).toEqual(template.blocks);
   });
 
-  it("threads used branches of filled and empty picks blocks across the workout and starts each branches block empty", () => {
+  it("threads used branches of filled and empty selections blocks across the workout and starts each branches block empty", () => {
     const template = generateTemplate([
-      generatePicksBlock("WU", { picks: [{ tags: ["SKILL_WU"], count: 2 }] }),
+      generateSelectionsBlock("WU", {
+        picks: [{ tags: ["SKILL_WU"], count: 2 }],
+      }),
       generateBranchesBlock("GKS", ["510", "523"]),
-      generatePicksBlock("BR", { picks: [{ tags: ["SKILL_BR"], count: 1 }] }),
+      generateSelectionsBlock("BR", {
+        picks: [{ tags: ["SKILL_BR"], count: 1 }],
+      }),
       generateBranchesBlock("SWR2KG", ["79"]),
-      generatePicksBlock("MOB", { picks: [{ tags: ["SKILL_MOB"], count: 1 }] }),
-      generatePicksBlock("CD", { picks: [{ tags: ["SKILL_CD"], count: 1 }] }),
+      generateSelectionsBlock("MOB", {
+        picks: [{ tags: ["SKILL_MOB"], count: 1 }],
+      }),
+      generateSelectionsBlock("CD", {
+        picks: [{ tags: ["SKILL_CD"], count: 1 }],
+      }),
     ]);
     const drawnBySkill: Record<string, string[]> = {
       WU: ["11", "12"],

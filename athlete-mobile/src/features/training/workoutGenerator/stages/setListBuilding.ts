@@ -1,7 +1,7 @@
 import type { ExercisePair } from "@/features/training/models/ExerciseBranch";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { Block } from "@/schemas/aiwl.schema";
-import { readResolvedPicksBlockTiming } from "../blockHandlers/picks/picksWorkoutRules";
+import { readResolvedSelectionsBlockTiming } from "../blockHandlers/selections/selectionsWorkoutRules";
 import type { GenerationInput } from "../generationInput/generationInput";
 import {
   type ResolvedBlockTiming,
@@ -159,13 +159,13 @@ const isLastTemplateBlock = (
  */
 export const createShortWorkoutSetListBuilder =
   (
-    input: GenerationInput & Pick<WorkoutInput, "picksWorkout">,
+    input: GenerationInput & Pick<WorkoutInput, "selectionsWorkout">,
   ): SetListBuilder<GeneratedSetListEntry> =>
   (blocks, results) =>
     blocks.flatMap((result) => {
       const kind = readSkillSetListKind(result.block.skill);
-      const timing = readResolvedPicksBlockTiming(
-        input.picksWorkout,
+      const timing = readResolvedSelectionsBlockTiming(
+        input.selectionsWorkout,
         result.block,
       );
       const setList = buildBlockSetList(

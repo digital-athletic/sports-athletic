@@ -129,13 +129,13 @@ describe("ruleFamily: families chained in the training day order of main", () =>
   });
 });
 
-describe("ruleFamily: the picks families as one RuleFamily chain", () => {
+describe("ruleFamily: the selections families as one RuleFamily chain", () => {
   it("lets pain, equipment, age group and gender each remove the branches it blocks", () => {
     const input = generateRuleFamilyInput({
       gender: "FEMALE",
       pains: ["KNEE_LEFT"],
     });
-    const picksFamilies: RuleFamily[] = [
+    const selectionsFamilies: RuleFamily[] = [
       filterBranchesByPain,
       filterBranchesByEquipment,
       filterBranchesByAgeGroup,
@@ -146,7 +146,7 @@ describe("ruleFamily: the picks families as one RuleFamily chain", () => {
       ...generateSkillTreeBranches("WU", ["1026"]),
     };
     const removals: [string, string][] = [];
-    for (const filterBranches of picksFamilies) {
+    for (const filterBranches of selectionsFamilies) {
       const result = filterBranches(branches, input, "WU");
       branches = result.keep;
       removals.push(

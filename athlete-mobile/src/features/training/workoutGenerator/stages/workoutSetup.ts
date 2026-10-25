@@ -10,10 +10,10 @@ import type { Template } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { getUserTagValues } from "@/utils/tagUtils";
 import {
-  createEmptyPicksWorkout,
-  type PicksWorkout,
-  resolvePicksWorkout,
-} from "../blockHandlers/picks/picksWorkoutRules";
+  createEmptySelectionsWorkout,
+  type SelectionsWorkout,
+  resolveSelectionsWorkout,
+} from "../blockHandlers/selections/selectionsWorkoutRules";
 import type { GenerationInput } from "../generationInput/generationInput";
 
 // The old generator derives these values per skill from the same athlete and
@@ -23,15 +23,15 @@ export interface WorkoutInput extends GenerationInput {
   readonly blockedRegions: readonly string[];
   readonly preventionSkills: readonly string[];
   readonly hasWeights: boolean;
-  readonly picksWorkout: PicksWorkout;
+  readonly selectionsWorkout: SelectionsWorkout;
 }
 
 const createFrozenList = (list: string[]): readonly string[] =>
   Object.freeze(list);
 
 /**
- * Adds the derived inputs that several blocks share and applies the picks
- * workout rules of the template. The muscle soreness check stays in its rule
+ * Adds the derived inputs that several blocks share and applies the
+ * selections workout rules of the template. The muscle soreness check stays in its rule
  * family, which throws only for a skill it filters.
  */
 export const setUpWorkout = (
@@ -50,8 +50,12 @@ export const setUpWorkout = (
     blockedRegions: createFrozenList(getBlocksFromPains(pains)),
     preventionSkills: createFrozenList(getPreventionsFromPains(pains)),
     hasWeights: hasWeights(input.equipment),
-    picksWorkout: template
-      ? resolvePicksWorkout(template, { ...input, athleteLevel }, skillTrees)
-      : createEmptyPicksWorkout(),
+    selectionsWorkout: template
+      ? resolveSelectionsWorkout(
+          template,
+          { ...input, athleteLevel },
+          skillTrees,
+        )
+      : createEmptySelectionsWorkout(),
   });
 };

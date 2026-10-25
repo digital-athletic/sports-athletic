@@ -8,20 +8,20 @@ import {
 } from "@test/factories/skillTree";
 import {
   generateBranchesBlock,
-  generatePicksBlock,
+  generateSelectionsBlock,
   generateShortTemplate,
 } from "@test/factories/templateBlock";
 import { generateLeveledInput } from "@test/factories/workoutInput";
 import {
-  createEmptyPicksWorkout,
-  filterPoolByPicksWorkoutRules,
-  readResolvedPicksBlockTiming,
-  resolvePicksWorkout,
-} from "./picksWorkoutRules";
+  createEmptySelectionsWorkout,
+  filterPoolBySelectionsWorkoutRules,
+  readResolvedSelectionsBlockTiming,
+  resolveSelectionsWorkout,
+} from "./selectionsWorkoutRules";
 
 const CHILD_BIRTHDAY = "2016-01-01";
 
-describe("picksWorkoutRules: filterPoolByPicksWorkoutRules", () => {
+describe("selectionsWorkoutRules: filterPoolBySelectionsWorkoutRules", () => {
   beforeEach(() => {
     jest.useFakeTimers({ now: new Date("2026-10-24") });
   });
@@ -37,17 +37,16 @@ describe("picksWorkoutRules: filterPoolByPicksWorkoutRules", () => {
       ...generateSkillTreeBranches("GKSKG", ["547"]),
     };
 
-    expect(Object.keys(filterPoolByPicksWorkoutRules(pool, input))).toEqual([
-      "510",
-      "547",
-    ]);
+    expect(
+      Object.keys(filterPoolBySelectionsWorkoutRules(pool, input)),
+    ).toEqual(["510", "547"]);
   });
 
   it("throws the pain error when pain and missing equipment both empty the pool", () => {
     const input = generateRuleFamilyInput({ pains: ["KNEE_LEFT"] });
     const pool = generateSkillTreeBranches("GKS", ["523"]);
 
-    expect(() => filterPoolByPicksWorkoutRules(pool, input)).toThrow(
+    expect(() => filterPoolBySelectionsWorkoutRules(pool, input)).toThrow(
       expect.objectContaining({
         type: "NO_EXERCISES",
         subtype: "PAIN",
@@ -60,7 +59,7 @@ describe("picksWorkoutRules: filterPoolByPicksWorkoutRules", () => {
     const input = generateRuleFamilyInput({ birthday: CHILD_BIRTHDAY });
     const pool = generateSkillTreeBranches("GKS", ["510"]);
 
-    expect(() => filterPoolByPicksWorkoutRules(pool, input)).toThrow(
+    expect(() => filterPoolBySelectionsWorkoutRules(pool, input)).toThrow(
       expect.objectContaining({
         type: "NO_EXERCISES",
         subtype: "EQUIPMENT",
@@ -76,7 +75,7 @@ describe("picksWorkoutRules: filterPoolByPicksWorkoutRules", () => {
     });
     const pool = generateSkillTreeBranches("WU", ["1026"]);
 
-    expect(() => filterPoolByPicksWorkoutRules(pool, input)).toThrow(
+    expect(() => filterPoolBySelectionsWorkoutRules(pool, input)).toThrow(
       expect.objectContaining({
         type: "NO_EXERCISES",
         subtype: "AGE",
@@ -89,7 +88,7 @@ describe("picksWorkoutRules: filterPoolByPicksWorkoutRules", () => {
     const input = generateRuleFamilyInput({ gender: "FEMALE" });
     const pool = generateSkillTreeBranches("WU", ["1026"]);
 
-    expect(() => filterPoolByPicksWorkoutRules(pool, input)).toThrow(
+    expect(() => filterPoolBySelectionsWorkoutRules(pool, input)).toThrow(
       expect.objectContaining({
         type: "NO_EXERCISES",
         subtype: "GENDER",
@@ -99,9 +98,9 @@ describe("picksWorkoutRules: filterPoolByPicksWorkoutRules", () => {
   });
 });
 
-describe("picksWorkoutRules: resolvePicksWorkout", () => {
-  it("resolves each picks block and filters the union pool", () => {
-    const warmUpBlock = generatePicksBlock("WU", {
+describe("selectionsWorkoutRules: resolveSelectionsWorkout", () => {
+  it("resolves each selections block and filters the union pool", () => {
+    const warmUpBlock = generateSelectionsBlock("WU", {
       picks: [{ tags: [], count: 10 }],
     });
     const input = generateLeveledInput({ gender: "FEMALE" });
@@ -112,52 +111,52 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
       },
     };
 
-    const picksWorkout = resolvePicksWorkout(
+    const selectionsWorkout = resolveSelectionsWorkout(
       generateShortTemplate([warmUpBlock]),
       input,
       skillTrees,
     );
 
-    expect(picksWorkout.blocks.size).toBe(1);
-    expect(picksWorkout.blocks.get(warmUpBlock)).toMatchObject({
+    expect(selectionsWorkout.blocks.size).toBe(1);
+    expect(selectionsWorkout.blocks.get(warmUpBlock)).toMatchObject({
       skill: "WU",
       sets: 1,
       countBy: "entries",
       fallbackToWholeTree: false,
-      picks: [{ tags: [], count: 10 }],
+      selections: [{ tags: [], count: 10 }],
     });
     expect(
-      Object.keys(picksWorkout.blocks.get(warmUpBlock)?.pool ?? {}),
+      Object.keys(selectionsWorkout.blocks.get(warmUpBlock)?.pool ?? {}),
     ).toEqual(["2", "1026"]);
-    expect(Object.keys(picksWorkout.pool)).toEqual(["2"]);
+    expect(Object.keys(selectionsWorkout.pool)).toEqual(["2"]);
   });
 
   it("keeps the union pool when the rules empty the pool of one block only", () => {
-    const stabilityBlock = generatePicksBlock("BAS");
+    const stabilityBlock = generateSelectionsBlock("BAS");
     const template = generateShortTemplate([
       stabilityBlock,
-      generatePicksBlock("MOB"),
+      generateSelectionsBlock("MOB"),
     ]);
     const input = generateLeveledInput({ pains: ["KNEE_LEFT"] });
 
-    const picksWorkout = resolvePicksWorkout(
+    const selectionsWorkout = resolveSelectionsWorkout(
       template,
       input,
       generateKneeSkillTrees(),
     );
 
-    expect(Object.keys(picksWorkout.pool)).toEqual(["2"]);
+    expect(Object.keys(selectionsWorkout.pool)).toEqual(["2"]);
     expect(
-      Object.keys(picksWorkout.blocks.get(stabilityBlock)?.pool ?? {}),
+      Object.keys(selectionsWorkout.blocks.get(stabilityBlock)?.pool ?? {}),
     ).toEqual(["1"]);
   });
 
   it("throws the rule error when the rules empty the union pool", () => {
-    const template = generateShortTemplate([generatePicksBlock("BAS")]);
+    const template = generateShortTemplate([generateSelectionsBlock("BAS")]);
     const input = generateLeveledInput({ pains: ["KNEE_LEFT"] });
 
     expect(() =>
-      resolvePicksWorkout(template, input, generateKneeSkillTrees()),
+      resolveSelectionsWorkout(template, input, generateKneeSkillTrees()),
     ).toThrow(
       expect.objectContaining({
         type: "NO_EXERCISES",
@@ -167,15 +166,15 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
     );
   });
 
-  it("rejects a branches block beside picks blocks at its template index before any rule", () => {
+  it("rejects a branches block beside selections blocks at its template index before any rule", () => {
     const template = generateShortTemplate([
-      generatePicksBlock("BAS"),
+      generateSelectionsBlock("BAS"),
       generateBranchesBlock("GKS", ["523"]),
     ]);
     const input = generateLeveledInput({ pains: ["KNEE_LEFT"] });
 
     expect(() =>
-      resolvePicksWorkout(template, input, generateKneeSkillTrees()),
+      resolveSelectionsWorkout(template, input, generateKneeSkillTrees()),
     ).toThrow(
       expect.objectContaining({
         type: "OTHER",
@@ -185,61 +184,65 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
     );
   });
 
-  it("runs no rule for a template without picks blocks", () => {
+  it("runs no rule for a template without selections blocks", () => {
     const template = generateShortTemplate([
       generateBranchesBlock("GKS", ["523"]),
     ]);
     const input = generateLeveledInput({ pains: ["KNEE_LEFT"] });
 
-    const picksWorkout = resolvePicksWorkout(template, input);
+    const selectionsWorkout = resolveSelectionsWorkout(template, input);
 
-    expect(picksWorkout.pool).toEqual({});
-    expect(picksWorkout.blocks.size).toBe(0);
-    expect(picksWorkout.draw.single({}, [])).toBeNull();
+    expect(selectionsWorkout.pool).toEqual({});
+    expect(selectionsWorkout.blocks.size).toBe(0);
+    expect(selectionsWorkout.draw.single({}, [])).toBeNull();
   });
 
-  it("returns a fresh empty picks workout on every call", () => {
+  it("returns a fresh empty selections workout on every call", () => {
     const template = generateShortTemplate([
       generateBranchesBlock("GKS", ["523"]),
     ]);
     const input = generateLeveledInput();
 
-    const first = resolvePicksWorkout(template, input);
-    const second = resolvePicksWorkout(template, input);
+    const first = resolveSelectionsWorkout(template, input);
+    const second = resolveSelectionsWorkout(template, input);
 
     expect(first.blocks).not.toBe(second.blocks);
     expect(first.pool).not.toBe(second.pool);
   });
 });
 
-describe("picksWorkoutRules: readResolvedPicksBlockTiming", () => {
+describe("selectionsWorkoutRules: readResolvedSelectionsBlockTiming", () => {
   it("reads only the timing of the block workout setup resolved", () => {
-    const block = generatePicksBlock("MOB", { sets: 2 });
-    const picksWorkout = resolvePicksWorkout(
+    const block = generateSelectionsBlock("MOB", { sets: 2 });
+    const selectionsWorkout = resolveSelectionsWorkout(
       generateShortTemplate([block]),
       generateLeveledInput(),
       generateKneeSkillTrees(),
     );
 
-    expect(readResolvedPicksBlockTiming(picksWorkout, block)).toEqual({
-      sets: 2,
-      superset: "muscles",
-      rest: {
-        withinSuperset: 10,
-        betweenSets: 10,
-        afterExercise: 10,
-        afterBlock: undefined,
+    expect(readResolvedSelectionsBlockTiming(selectionsWorkout, block)).toEqual(
+      {
+        sets: 2,
+        superset: "muscles",
+        rest: {
+          withinSuperset: 10,
+          betweenSets: 10,
+          afterExercise: 10,
+          afterBlock: undefined,
+        },
+        setDuration: undefined,
+        values: undefined,
       },
-      setDuration: undefined,
-      values: undefined,
-    });
+    );
   });
 
   it("throws for a block that workout setup did not resolve", () => {
-    const block = generatePicksBlock("MOB");
+    const block = generateSelectionsBlock("MOB");
 
     expect(() =>
-      readResolvedPicksBlockTiming(createEmptyPicksWorkout(), block),
-    ).toThrow(new Error("Workout setup resolved no picks block for skill MOB"));
+      readResolvedSelectionsBlockTiming(createEmptySelectionsWorkout(), block),
+    ).toThrow(
+      new Error("Workout setup resolved no selections block for skill MOB"),
+    );
   });
 });

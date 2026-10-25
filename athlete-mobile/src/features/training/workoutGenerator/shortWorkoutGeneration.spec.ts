@@ -6,21 +6,21 @@ import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { generateBreathingTrees } from "@test/factories/skillTree";
 import {
   generateBranchesBlock,
-  generatePicksBlock,
+  generateSelectionsBlock,
   generateShortTemplateWithBreathing,
   generateTemplate,
 } from "@test/factories/templateBlock";
 import { catchThrownValue } from "@test/factories/thrownValue";
-import { PICKS_BLOCK_HANDLER } from "./blockHandlers/picks/picksHandler";
+import { SELECTIONS_BLOCK_HANDLER } from "./blockHandlers/selections/selectionsHandler";
 import { generateShortWorkoutFromTemplate } from "./shortWorkoutGeneration";
 
 describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
   afterEach(jest.restoreAllMocks);
 
   it("draws the blocks in template order from the given skill trees and drops the last pause", () => {
-    const handleBlock = jest.spyOn(PICKS_BLOCK_HANDLER, "handleBlock");
+    const handleBlock = jest.spyOn(SELECTIONS_BLOCK_HANDLER, "handleBlock");
     const template = generateShortTemplateWithBreathing([
-      generatePicksBlock("BR"),
+      generateSelectionsBlock("BR"),
     ]);
 
     const setList = generateShortWorkoutFromTemplate(
@@ -41,11 +41,11 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     ["duration", { kind: "duration", skill: "MOB", duration: 300 }],
     [
       "bodyParts",
-      generatePicksBlock("MOB", { bodyParts: { regions: ["core"] } }),
+      generateSelectionsBlock("MOB", { bodyParts: { regions: ["core"] } }),
     ],
-    ["order", generatePicksBlock("MOB", { order: "asDrawn" })],
+    ["order", generateSelectionsBlock("MOB", { order: "asDrawn" })],
   ])(
-    "rejects a block with %s before the picks workout rules run",
+    "rejects a block with %s before the selections workout rules run",
     (unsupported, block) => {
       const template = generateShortTemplateWithBreathing([block]);
 
@@ -65,7 +65,7 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     },
   );
 
-  it("rejects a template without a picks block", () => {
+  it("rejects a template without a selections block", () => {
     const template = generateTemplate([generateBranchesBlock("GKS", ["510"])], {
       id: "own",
       name: { en: "Own" },

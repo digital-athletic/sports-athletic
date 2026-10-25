@@ -8,7 +8,7 @@ Focus and prevention workouts follow their own rules defined in this specificati
 
 ## Problem
 
-The plan covers the scheduled week. An athlete who wants ten minutes of mobility on a rest day, or who needs a strength test before the next plan exists, has no section, no training day, and no pre-selected branches, so plan-based selection has nothing to filter. The quotas that decide how many exercises such a session holds live in the generator, and so does the authored lift list a strength test runs, which means nobody can review either against an intended structure.
+The plan covers the scheduled week. An athlete who wants ten minutes of mobility on a rest day, or who needs a strength test before the next plan exists, has no section, no training day, and no pre-selected branches, so plan-based branch choice has nothing to filter. The quotas that decide how many exercises such a session holds live in the generator, and so does the authored lift list a strength test runs, which means nobody can review either against an intended structure.
 
 ## Solution
 
@@ -30,7 +30,7 @@ Both reuse the filter chain and the branch to exercise resolution rule from [Pla
 
 1. Read the bundled AIWL template of the requested type. Each block takes its skill tree names from its skill catalog entry, using the weights-capable variant when the place has weights and the bodyweight variant otherwise. Foam roller sessions require a foam roller or foam ball, else generation fails.
 2. Filter by prevention target tag (prevention types only), equipment, age, gender, and the pain exclusion from [Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md). Soreness filters nothing here, per the same spec. An empty pool after the equipment, age, gender, or pain filter aborts with a typed error naming the cause.
-3. Draw each block's picks in template order, uniformly at random, repeating neither a branch nor a resolved exercise. A pick draws defined units from the branches that match its tags. The counts are soft targets and may vary with the available pool. The unit is defined as follows:
+3. Draw each block's selections in template order, uniformly at random, repeating neither a branch nor a resolved exercise. A selection draws defined units from the branches that match its tags. The counts are soft targets and may vary with the available pool. The unit is defined as follows:
    - `exercises`: one unit per exercise.
    - `entries`: one unit per exercise entry in the workout. A two-sided branch adds one entry, a one-sided branch two entries (left and right). A one-sided branch that would exceed the count is skipped.
    - `pairs`: a unit is a superset pair.

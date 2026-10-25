@@ -2,17 +2,17 @@ import { isPauseExercise } from "@/features/training/models/IdTypes";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { Block } from "@/schemas/aiwl.schema";
 import { generateFilledResultFromCatalog } from "@test/factories/blockResult";
-import { generateResolvedPicksBlock } from "@test/factories/resolvedPicksBlock";
+import { generateResolvedSelectionsBlock } from "@test/factories/resolvedSelectionsBlock";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { generateSequenceRandom } from "@test/factories/sequenceRandom";
 import { describeSetListEntries } from "@test/factories/setListDescription";
 import {
-  generatePicksBlock,
+  generateSelectionsBlock,
   generateUntimedBranchesBlock,
 } from "@test/factories/templateBlock";
 import { generateTaggedExercise } from "@test/factories/valueExercise";
-import type { ResolvedPicksBlock } from "../blockHandlers/picks/picksBlockResolution";
-import { createEmptyPicksWorkout } from "../blockHandlers/picks/picksWorkoutRules";
+import type { ResolvedSelectionsBlock } from "../blockHandlers/selections/selectionsBlockResolution";
+import { createEmptySelectionsWorkout } from "../blockHandlers/selections/selectionsWorkoutRules";
 import type { GenerationInput } from "../generationInput/generationInput";
 import { readSkillCatalogEntry } from "../generationInput/skillCatalogEntry";
 import { resolveBlockTiming } from "../setListBuilders/blockTiming";
@@ -84,11 +84,11 @@ const buildTrainingDaySetList = (
 const resolveCatalogTimings = (
   results: BlockResult[],
   input: GenerationInput,
-): ReadonlyMap<Block, ResolvedPicksBlock> =>
+): ReadonlyMap<Block, ResolvedSelectionsBlock> =>
   new Map(
     results.map(({ block }) => [
       block,
-      generateResolvedPicksBlock(
+      generateResolvedSelectionsBlock(
         block.skill,
         resolveBlockTiming(
           block,
@@ -101,7 +101,7 @@ const resolveCatalogTimings = (
 /**
  * Builds the set list of short workout block results in template order; the
  * builder gets the filled ones as its blocks and reads the resolved blocks of
- * the picks workout.
+ * the selections workout.
  *
  * buildShortWorkoutSetList([WU block with e1, empty BAS block])
  * → [e1 set [1, 1], pause 30]
@@ -113,7 +113,10 @@ const buildShortWorkoutSetList = (
 ): GeneratedSetListEntry[] =>
   createShortWorkoutSetListBuilder({
     ...input,
-    picksWorkout: { ...createEmptyPicksWorkout(), blocks: resolvedBlocks },
+    selectionsWorkout: {
+      ...createEmptySelectionsWorkout(),
+      blocks: resolvedBlocks,
+    },
   })(
     results.filter(
       (result): result is FilledBlockResult => result.status === "filled",
@@ -306,12 +309,12 @@ describe("setListBuilding: short workout", () => {
     const setList = buildShortWorkoutSetList([
       generateFilledResultFromCatalog(
         EXERCISE_CATALOG,
-        generatePicksBlock("WU"),
+        generateSelectionsBlock("WU"),
         ["e1"],
       ),
       generateFilledResultFromCatalog(
         EXERCISE_CATALOG,
-        generatePicksBlock("BAS"),
+        generateSelectionsBlock("BAS"),
         ["e2"],
       ),
     ]);
@@ -329,7 +332,7 @@ describe("setListBuilding: short workout", () => {
     const setList = buildShortWorkoutSetList([
       generateFilledResultFromCatalog(
         EXERCISE_CATALOG,
-        generatePicksBlock("BAS", { superset: "none" }),
+        generateSelectionsBlock("BAS", { superset: "none" }),
         ["e1", "e2"],
       ),
     ]);
@@ -349,12 +352,12 @@ describe("setListBuilding: short workout", () => {
     const setList = buildShortWorkoutSetList([
       generateFilledResultFromCatalog(
         EXERCISE_CATALOG,
-        generatePicksBlock("WU"),
+        generateSelectionsBlock("WU"),
         ["e1"],
       ),
       {
         status: "empty",
-        block: generatePicksBlock("BAS"),
+        block: generateSelectionsBlock("BAS"),
         reason: undefined,
         usedBranchIds: [],
       },
@@ -368,7 +371,7 @@ describe("setListBuilding: short workout", () => {
       [
         generateFilledResultFromCatalog(
           EXERCISE_CATALOG,
-          generatePicksBlock("CARDIO_4", {
+          generateSelectionsBlock("CARDIO_4", {
             sets: 1,
             superset: "none",
             rest: { withinSuperset: 10, betweenSets: 10, afterExercise: 10 },
@@ -397,7 +400,7 @@ describe("setListBuilding: short workout", () => {
     const setList = buildShortWorkoutSetList([
       generateFilledResultFromCatalog(
         EXERCISE_CATALOG,
-        generatePicksBlock("MAX", {
+        generateSelectionsBlock("MAX", {
           sets: 4,
           superset: "muscles",
           rest: { withinSuperset: 10, betweenSets: 10, afterExercise: 180 },
@@ -412,7 +415,7 @@ describe("setListBuilding: short workout", () => {
   it("builds a block from the timing workout setup resolved", () => {
     const result = generateFilledResultFromCatalog(
       EXERCISE_CATALOG,
-      generatePicksBlock("WU"),
+      generateSelectionsBlock("WU"),
       ["e1"],
     );
 
@@ -422,7 +425,7 @@ describe("setListBuilding: short workout", () => {
       new Map([
         [
           result.block,
-          generateResolvedPicksBlock("WU", {
+          generateResolvedSelectionsBlock("WU", {
             sets: 2,
             superset: "none",
             rest: { withinSuperset: 10, betweenSets: 15, afterExercise: 30 },
@@ -446,7 +449,7 @@ describe("setListBuilding: short workout", () => {
         [
           generateFilledResultFromCatalog(
             EXERCISE_CATALOG,
-            generatePicksBlock("PLYO"),
+            generateSelectionsBlock("PLYO"),
             ["e1"],
           ),
         ],
@@ -454,7 +457,7 @@ describe("setListBuilding: short workout", () => {
         new Map(),
       ),
     ).toThrow(
-      new Error("Workout setup resolved no picks block for skill PLYO"),
+      new Error("Workout setup resolved no selections block for skill PLYO"),
     );
   });
 });

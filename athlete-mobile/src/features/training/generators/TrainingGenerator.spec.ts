@@ -4,7 +4,7 @@ import type { IntensityData } from "@/features/training/models/Intensity";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { TrainingType } from "@/features/training/models/Training";
 import type { SetListEntryType } from "@/features/training/models/SetListEntry";
-import { PICKS_BLOCK_HANDLER } from "@/features/training/workoutGenerator/blockHandlers/picks/picksHandler";
+import { SELECTIONS_BLOCK_HANDLER } from "@/features/training/workoutGenerator/blockHandlers/selections/selectionsHandler";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type {
   CardioBranchReference,
@@ -24,7 +24,7 @@ import WU from "../../../../assets/data/generator/skillTrees/WU.json";
 import WUSPEZIAL from "../../../../assets/data/generator/skillTrees/WUSPEZIAL.json";
 import { setUpAiwlGeneratorFlag } from "@test/factories/aiwlGeneratorFlag";
 import {
-  generatePicksBlock,
+  generateSelectionsBlock,
   generateTemplate,
 } from "@test/factories/templateBlock";
 import { catchThrownValue } from "@test/factories/thrownValue";
@@ -219,7 +219,7 @@ describe("TrainingGenerator", () => {
     afterEach(() => useCustomWorkoutsStore.getState().clearCustomWorkouts());
 
     it("draws the block of the MOB template through the picks block handler", () => {
-      const handleBlock = jest.spyOn(PICKS_BLOCK_HANDLER, "handleBlock");
+      const handleBlock = jest.spyOn(SELECTIONS_BLOCK_HANDLER, "handleBlock");
 
       const setList = generateShortWorkoutOf("MOB");
 
@@ -247,15 +247,17 @@ describe("TrainingGenerator", () => {
     });
 
     it("generates a custom workout of the store", () => {
-      const { id } = useCustomWorkoutsStore
-        .getState()
-        .saveCustomWorkout(
-          generateTemplate(
-            [generatePicksBlock("WU", { picks: [{ tags: [], count: 2 }] })],
-            { id: "own", name: { en: "Own" } },
-          ),
-          null,
-        );
+      const { id } = useCustomWorkoutsStore.getState().saveCustomWorkout(
+        generateTemplate(
+          [
+            generateSelectionsBlock("WU", {
+              picks: [{ tags: [], count: 2 }],
+            }),
+          ],
+          { id: "own", name: { en: "Own" } },
+        ),
+        null,
+      );
 
       const setList = generateShortWorkoutOf(id);
 

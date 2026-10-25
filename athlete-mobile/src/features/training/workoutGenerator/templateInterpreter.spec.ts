@@ -8,7 +8,7 @@ import { generateEquipmentError } from "@test/factories/generatorError";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import {
   generateBranchesBlock,
-  generatePicksBlock,
+  generateSelectionsBlock,
   generateShortTemplate,
   generateTemplate,
 } from "@test/factories/templateBlock";
@@ -80,16 +80,16 @@ describe("templateInterpreter: interpretTemplate", () => {
     expect(workout.setList).toEqual(["BR", "GKS", "SWR2KG", "CD"]);
   });
 
-  it("hands each picks block the workout input that resolved it in workout setup", () => {
+  it("hands each selections block the workout input that resolved it in workout setup", () => {
     const template = generateShortTemplate([
-      generatePicksBlock("WU", { picks: [{ tags: [], count: 2 }] }),
+      generateSelectionsBlock("WU", { picks: [{ tags: [], count: 2 }] }),
     ]);
     const resolvedSkills: (string | undefined)[] = [];
     const handlers = generateHandlerRegistry(undefined, {
       picks: {
         usedBranchScope: "workout",
         handleBlock: (block, input) => {
-          resolvedSkills.push(input.picksWorkout.blocks.get(block)?.skill);
+          resolvedSkills.push(input.selectionsWorkout.blocks.get(block)?.skill);
           return generateEmptyBlockResult(block);
         },
       },
@@ -104,8 +104,8 @@ describe("templateInterpreter: interpretTemplate", () => {
     expect(resolvedSkills).toEqual(["WU"]);
   });
 
-  it("resolves the picks blocks from the given skill trees", () => {
-    const template = generateShortTemplate([generatePicksBlock("WU")]);
+  it("resolves the selections blocks from the given skill trees", () => {
+    const template = generateShortTemplate([generateSelectionsBlock("WU")]);
     const skillTrees = getAllSkillTrees();
     const warmUpBranch = skillTrees.WU["409"];
     const poolKeys: string[][] = [];
@@ -113,7 +113,7 @@ describe("templateInterpreter: interpretTemplate", () => {
       picks: {
         usedBranchScope: "workout",
         handleBlock: (block, input) => {
-          poolKeys.push(Object.keys(input.picksWorkout.pool));
+          poolKeys.push(Object.keys(input.selectionsWorkout.pool));
           return generateEmptyBlockResult(block);
         },
       },

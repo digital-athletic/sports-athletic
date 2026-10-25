@@ -29,6 +29,10 @@ Terms of the training model, with the meanings the coach uses. The glossary defi
 | Focus training | Fokus-Training | | Plan-independent 10 to 20 minute workout for one focus, for example leg axis stability. |
 | Prevention training | Präventionstraining | | Plan-independent workout against declared pains, for example knee or shoulder. |
 | Athletic Intelligence Workout Language | Athletic Intelligence Workout Language | AIWL | Template language to define workouts in a JSON format |
+| Selection | Auswahl | `picks` entry `{ tags, count }` | Entry of a selections block. The generator keeps the skill tree branches that carry the tags and pass the rule families, and draws `count` of them at random. The JSON calls it a pick. |
+| Selections block | Auswahlblock | `kind: "picks"`, field `picks` | AIWL block whose author lists the selections. |
+| Minutes block | Minutenblock | `kind: "duration"`, field `duration` | AIWL block with a length. The minutes table reads the length as minutes, although the JSON `duration` counts seconds, and turns it into selections, which the generator draws like those of a selections block. A cardio minutes block uses the length as the time the cardio builder fills. |
+| Branches block | Branch-Block | `kind: "branches"`, field `branches` | AIWL block whose author lists the skill tree branches. |
 
 ## Training session
 

@@ -17,7 +17,7 @@ export interface TemplateInterpreterOptions<TEntry> {
   handlers: BlockHandlerRegistry;
   finishRules: WorkoutFinishRules;
   createSetListBuilder: (input: WorkoutInput) => SetListBuilder<TEntry>;
-  /** The skill trees picks blocks resolve from; the bundled trees when absent. */
+  /** The skill trees selections blocks resolve from; the bundled trees when absent. */
   skillTrees?: Readonly<Record<string, SkillTreeType>>;
 }
 

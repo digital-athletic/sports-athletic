@@ -63,7 +63,7 @@ type TimingEntry = TimingFields;
 
 A skill catalog entry either names a skill tree or is timing-only:
 
-- **With a skill tree.** The 14 skills of the bundled trainings. A picks block accepts only these skills; a picks block on any other skill fails with `NO_EXERCISES/SKILL_TREE`.
+- **With a skill tree.** The 14 skills of the bundled trainings. A selections block accepts only these skills; a selections block on any other skill fails with `NO_EXERCISES/SKILL_TREE`.
 - **Timing-only.** The 20 training day skills without a bundled training, for example `SWR1`, `SK`, `MAX`, and the cardio zones. Their skill trees stay with `getSkillTree`, which filters them per training place in ways no literal tree list expresses. A timing-only entry sets none of `skillTree`, `focusArea`, `progression`, `painRegions`, `countBy`, and `fallbackToWholeTree`.
 
 An entry defines `sets` and `rest` together or neither. The cardio and max strength entries leave both out, because their set list builders bring their own sets and rests.
@@ -89,7 +89,7 @@ A block field of the same name overrides these defaults. The [AIWL ADR](./athlet
 
 | Field | Source of the default |
 |---|---|
-| `countBy`, `fallbackToWholeTree` | The bundled templates. Plan workouts do not draw by picks. |
+| `countBy`, `fallbackToWholeTree` | The bundled templates. Plan workouts do not draw by selections. |
 | `superset`, `sets` | The values plan workouts use today |
 | `rest` | The rests plan workouts use today. `afterBlock` of `WUSPEZIAL`: the 30 s rest before the prevention block of the bundled prevention trainings |
 
@@ -159,7 +159,7 @@ Entries copied from `assets/data/generator/skills.json`:
 }
 ```
 
-- The bundled GKS template overrides `afterExercise` to 45 s and draws its bodyweight picks by region tags.
+- The bundled GKS template overrides `afterExercise` to 45 s and draws its bodyweight selections by region tags.
 - `STABILITY` draws leg axis stability with weights and full body stability without. Its tree names are literal, so the bodyweight variant reads `GKS`.
 - `PREVSHOULDER` pairs by muscles like plan workouts. The bundled shoulder prevention training overrides `superset` to `drawOrderWithLeftovers` in its template block.
 - The catalog has no `values` field. The block field `values` switches the source of repetitions and durations between the skill's intensity range and the exercise's own values. The bundled GKS block sets it to `exercise`. The `GKS` and `GKSKG` intensities set `overridesExerciseRepsAndDuration` to `false`, so plan workouts of `GKS` use the exercise values too. The `PREV` intensity, which all six prevention skills use, sets `overridesExerciseRepsAndDuration` to `false`, so prevention blocks use the exercise values in templates and plan workouts without a mode.

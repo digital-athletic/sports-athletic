@@ -13,26 +13,26 @@ import { filterBranchesByGender } from "../../ruleFamilies/genderRule";
 import type { GenerationInput } from "../../generationInput/generationInput";
 import { filterBranchesByPain } from "../../ruleFamilies/painRule";
 import {
-  type ResolvedPicksBlock,
-  resolvePicksBlocks,
-} from "./picksBlockResolution";
+  type ResolvedSelectionsBlock,
+  resolveSelectionsBlocks,
+} from "./selectionsBlockResolution";
 
-export interface PicksWorkout {
-  /** The union of every picks block pool after the picks workout rules. */
+export interface SelectionsWorkout {
+  /** The union of every selections block pool after the selections workout rules. */
   readonly pool: SkillTreeType;
-  /** The resolved picks block per template block; the block walk hands over the same objects. */
-  readonly blocks: ReadonlyMap<Block, ResolvedPicksBlock>;
-  /** The branch draws of every picks block, built once from the pool above. */
+  /** The resolved selections block per template block; the block walk hands over the same objects. */
+  readonly blocks: ReadonlyMap<Block, ResolvedSelectionsBlock>;
+  /** The branch draws of every selections block, built once from the pool above. */
   readonly draw: BranchDraw;
 }
 
-// A workout without picks blocks has nothing to draw from.
+// A workout without selections blocks has nothing to draw from.
 const NO_BRANCH_DRAW: BranchDraw = Object.freeze({
   single: () => null,
   pair: () => null,
 });
 
-export const createEmptyPicksWorkout = (): PicksWorkout =>
+export const createEmptySelectionsWorkout = (): SelectionsWorkout =>
   Object.freeze({ pool: {}, blocks: new Map(), draw: NO_BRANCH_DRAW });
 
 const throwWhenPoolEmpty = (
@@ -50,10 +50,10 @@ const throwWhenPoolEmpty = (
  * workout and throws the error of the first family that empties it. Short
  * workouts ignore muscle soreness.
  *
- * filterPoolByPicksWorkoutRules({ "523": <blocked on knee pain> }, kneePainInput)
+ * filterPoolBySelectionsWorkoutRules({ "523": <blocked on knee pain> }, kneePainInput)
  * → throws { type: "NO_EXERCISES", subtype: "PAIN", params: ["KNEE"] }
  */
-export const filterPoolByPicksWorkoutRules = (
+export const filterPoolBySelectionsWorkoutRules = (
   pool: SkillTreeType,
   input: GenerationInput,
 ): SkillTreeType => {
@@ -80,24 +80,24 @@ export const filterPoolByPicksWorkoutRules = (
 };
 
 /**
- * Resolves the picks blocks of a template, filters their union pool once and
- * builds the branch draws from that pool at the athlete level. A template
- * without picks blocks gets an empty picks workout; one that mixes picks
- * blocks with other kinds throws OTHER/BLOCK_KIND at resolution.
+ * Resolves the selections blocks of a template, filters their union pool once
+ * and builds the branch draws from that pool at the athlete level. A template
+ * without selections blocks gets an empty selections workout; one that mixes
+ * selections blocks with other kinds throws OTHER/BLOCK_KIND at resolution.
  *
- * resolvePicksWorkout({ blocks: [WU picks block] }, femaleInput)
+ * resolveSelectionsWorkout({ blocks: [WU selections block] }, femaleInput)
  * → { pool: { ...WU branches without 1026 }, blocks: Map { WU block → { skill: "WU", ... } }, draw }
  */
-export const resolvePicksWorkout = (
+export const resolveSelectionsWorkout = (
   template: Template,
   input: GenerationInput & { readonly athleteLevel: string },
   skillTrees: Readonly<Record<string, SkillTreeType>> = getAllSkillTrees(),
-): PicksWorkout => {
+): SelectionsWorkout => {
   if (!template.blocks.some((block) => block.kind === "picks")) {
-    return createEmptyPicksWorkout();
+    return createEmptySelectionsWorkout();
   }
-  const resolved = resolvePicksBlocks(template, input, skillTrees);
-  const pool = filterPoolByPicksWorkoutRules(resolved.pool, input);
+  const resolved = resolveSelectionsBlocks(template, input, skillTrees);
+  const pool = filterPoolBySelectionsWorkoutRules(resolved.pool, input);
   return {
     pool,
     blocks: new Map(
@@ -116,16 +116,16 @@ export const resolvePicksWorkout = (
 /**
  * Reads the block that workout setup resolved for a template block.
  *
- * readResolvedPicksBlock(picksWorkout, warmUpBlock) → { skill: "WU", sets: 1, pool: {...}, ... }
+ * readResolvedSelectionsBlock(selectionsWorkout, warmUpBlock) → { skill: "WU", sets: 1, pool: {...}, ... }
  */
-export const readResolvedPicksBlock = (
-  picksWorkout: PicksWorkout,
+export const readResolvedSelectionsBlock = (
+  selectionsWorkout: SelectionsWorkout,
   block: Block,
-): ResolvedPicksBlock => {
-  const resolved = picksWorkout.blocks.get(block);
+): ResolvedSelectionsBlock => {
+  const resolved = selectionsWorkout.blocks.get(block);
   if (resolved === undefined) {
     throw new Error(
-      `Workout setup resolved no picks block for skill ${block.skill}`,
+      `Workout setup resolved no selections block for skill ${block.skill}`,
     );
   }
   return resolved;
@@ -133,18 +133,16 @@ export const readResolvedPicksBlock = (
 
 /**
  * Reads the timing that workout setup resolved for a template block, without
- * the pool and picks of the block.
+ * the pool and selections of the block.
  *
- * readResolvedPicksBlockTiming(picksWorkout, warmUpBlock)
+ * readResolvedSelectionsBlockTiming(selectionsWorkout, warmUpBlock)
  * → { sets: 1, superset: "muscles", rest: {...}, setDuration: undefined, values: undefined }
  */
-export const readResolvedPicksBlockTiming = (
-  picksWorkout: PicksWorkout,
+export const readResolvedSelectionsBlockTiming = (
+  selectionsWorkout: SelectionsWorkout,
   block: Block,
 ): ResolvedBlockTiming => {
-  const { sets, superset, rest, setDuration, values } = readResolvedPicksBlock(
-    picksWorkout,
-    block,
-  );
+  const { sets, superset, rest, setDuration, values } =
+    readResolvedSelectionsBlock(selectionsWorkout, block);
   return { sets, superset, rest, setDuration, values };
 };

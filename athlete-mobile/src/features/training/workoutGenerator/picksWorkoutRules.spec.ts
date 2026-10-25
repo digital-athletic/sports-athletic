@@ -1,8 +1,17 @@
-import type { Block, PicksBlock, Template } from "@/schemas/aiwl.schema";
 import {
   generateRuleFamilyInput,
   generateSkillTreeBranches,
 } from "@test/factories/ruleFamilyInput";
+import {
+  generateKneeSkillTrees,
+  generateTreeBranch,
+} from "@test/factories/skillTree";
+import {
+  generateBranchesBlock,
+  generatePicksBlock,
+  generateShortTemplate,
+} from "@test/factories/templateBlock";
+import { generateLeveledInput } from "@test/factories/workoutInput";
 import {
   createEmptyPicksWorkout,
   filterPoolByPicksWorkoutRules,
@@ -11,31 +20,6 @@ import {
 } from "./picksWorkoutRules";
 
 const CHILD_BIRTHDAY = "2016-01-01";
-
-/**
- * Wraps blocks into an AIWL template.
- *
- * generateTemplate([{ kind: "picks", skill: "WU", picks: [{ tags: [], count: 2 }] }])
- * → { aiwl: 1, id: "short", name: { en: "Short" }, blocks: [{ kind: "picks", ... }] }
- */
-const generateTemplate = (blocks: Block[]): Template => ({
-  aiwl: 1,
-  id: "short",
-  name: { en: "Short" },
-  blocks,
-});
-
-/**
- * Builds skill trees with a BAS branch blocked on knee pain and a MOB branch
- * without tags.
- *
- * generateKneeSkillTrees()
- * → { BAS: { "1": { tags: ["BLOCK_KNEE"], ... } }, MOB: { "2": { tags: [], ... } } }
- */
-const generateKneeSkillTrees = () => ({
-  BAS: { "1": { tags: ["BLOCK_KNEE"], levels: { 1: { exerciseId: "e1" } } } },
-  MOB: { "2": { tags: [], levels: { 1: { exerciseId: "e2" } } } },
-});
 
 describe("picksWorkoutRules: filterPoolByPicksWorkoutRules", () => {
   beforeEach(() => {
@@ -117,27 +101,19 @@ describe("picksWorkoutRules: filterPoolByPicksWorkoutRules", () => {
 
 describe("picksWorkoutRules: resolvePicksWorkout", () => {
   it("resolves each picks block and filters the union pool", () => {
-    const warmUpBlock: PicksBlock = {
-      kind: "picks",
-      skill: "WU",
+    const warmUpBlock = generatePicksBlock("WU", {
       picks: [{ tags: [], count: 10 }],
-    };
-    const input = {
-      ...generateRuleFamilyInput({ gender: "FEMALE" }),
-      athleteLevel: "ADVANCED",
-    };
+    });
+    const input = generateLeveledInput({ gender: "FEMALE" });
     const skillTrees = {
       WU: {
-        "1026": {
-          tags: ["GENDER_MALE"],
-          levels: { 1: { exerciseId: "e1" } },
-        },
-        "2": { tags: [], levels: { 1: { exerciseId: "e2" } } },
+        "1026": generateTreeBranch(["e1"], ["GENDER_MALE"]),
+        "2": generateTreeBranch(["e2"]),
       },
     };
 
     const picksWorkout = resolvePicksWorkout(
-      generateTemplate([warmUpBlock]),
+      generateShortTemplate([warmUpBlock]),
       input,
       skillTrees,
     );
@@ -157,19 +133,12 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
   });
 
   it("keeps the union pool when the rules empty the pool of one block only", () => {
-    const stabilityBlock: PicksBlock = {
-      kind: "picks",
-      skill: "BAS",
-      picks: [{ tags: [], count: 1 }],
-    };
-    const template = generateTemplate([
+    const stabilityBlock = generatePicksBlock("BAS");
+    const template = generateShortTemplate([
       stabilityBlock,
-      { kind: "picks", skill: "MOB", picks: [{ tags: [], count: 1 }] },
+      generatePicksBlock("MOB"),
     ]);
-    const input = {
-      ...generateRuleFamilyInput({ pains: ["KNEE_LEFT"] }),
-      athleteLevel: "ADVANCED",
-    };
+    const input = generateLeveledInput({ pains: ["KNEE_LEFT"] });
 
     const picksWorkout = resolvePicksWorkout(
       template,
@@ -184,13 +153,8 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
   });
 
   it("throws the rule error when the rules empty the union pool", () => {
-    const template = generateTemplate([
-      { kind: "picks", skill: "BAS", picks: [{ tags: [], count: 1 }] },
-    ]);
-    const input = {
-      ...generateRuleFamilyInput({ pains: ["KNEE_LEFT"] }),
-      athleteLevel: "ADVANCED",
-    };
+    const template = generateShortTemplate([generatePicksBlock("BAS")]);
+    const input = generateLeveledInput({ pains: ["KNEE_LEFT"] });
 
     expect(() =>
       resolvePicksWorkout(template, input, generateKneeSkillTrees()),
@@ -204,14 +168,11 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
   });
 
   it("rejects a branches block beside picks blocks at its template index before any rule", () => {
-    const template = generateTemplate([
-      { kind: "picks", skill: "BAS", picks: [{ tags: [], count: 1 }] },
-      { kind: "branches", skill: "GKS", branches: ["523"] },
+    const template = generateShortTemplate([
+      generatePicksBlock("BAS"),
+      generateBranchesBlock("GKS", ["523"]),
     ]);
-    const input = {
-      ...generateRuleFamilyInput({ pains: ["KNEE_LEFT"] }),
-      athleteLevel: "ADVANCED",
-    };
+    const input = generateLeveledInput({ pains: ["KNEE_LEFT"] });
 
     expect(() =>
       resolvePicksWorkout(template, input, generateKneeSkillTrees()),
@@ -225,13 +186,10 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
   });
 
   it("runs no rule for a template without picks blocks", () => {
-    const template = generateTemplate([
-      { kind: "branches", skill: "GKS", branches: ["523"] },
+    const template = generateShortTemplate([
+      generateBranchesBlock("GKS", ["523"]),
     ]);
-    const input = {
-      ...generateRuleFamilyInput({ pains: ["KNEE_LEFT"] }),
-      athleteLevel: "ADVANCED",
-    };
+    const input = generateLeveledInput({ pains: ["KNEE_LEFT"] });
 
     const picksWorkout = resolvePicksWorkout(template, input);
 
@@ -241,10 +199,10 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
   });
 
   it("returns a fresh empty picks workout on every call", () => {
-    const template = generateTemplate([
-      { kind: "branches", skill: "GKS", branches: ["523"] },
+    const template = generateShortTemplate([
+      generateBranchesBlock("GKS", ["523"]),
     ]);
-    const input = { ...generateRuleFamilyInput(), athleteLevel: "ADVANCED" };
+    const input = generateLeveledInput();
 
     const first = resolvePicksWorkout(template, input);
     const second = resolvePicksWorkout(template, input);
@@ -256,15 +214,10 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
 
 describe("picksWorkoutRules: readResolvedPicksBlockTiming", () => {
   it("reads only the timing of the block workout setup resolved", () => {
-    const block: PicksBlock = {
-      kind: "picks",
-      skill: "MOB",
-      picks: [{ tags: [], count: 1 }],
-      sets: 2,
-    };
+    const block = generatePicksBlock("MOB", { sets: 2 });
     const picksWorkout = resolvePicksWorkout(
-      generateTemplate([block]),
-      { ...generateRuleFamilyInput(), athleteLevel: "ADVANCED" },
+      generateShortTemplate([block]),
+      generateLeveledInput(),
       generateKneeSkillTrees(),
     );
 
@@ -283,11 +236,7 @@ describe("picksWorkoutRules: readResolvedPicksBlockTiming", () => {
   });
 
   it("throws for a block that workout setup did not resolve", () => {
-    const block: PicksBlock = {
-      kind: "picks",
-      skill: "MOB",
-      picks: [{ tags: [], count: 1 }],
-    };
+    const block = generatePicksBlock("MOB");
 
     expect(() =>
       readResolvedPicksBlockTiming(createEmptyPicksWorkout(), block),

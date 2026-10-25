@@ -1,10 +1,17 @@
 import { isPauseExercise } from "@/features/training/models/IdTypes";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { Block } from "@/schemas/aiwl.schema";
-import type { ExerciseType } from "@/schemas/exercise.schema";
+import { generateFilledResultFromCatalog } from "@test/factories/blockResult";
+import { generateResolvedPicksBlock } from "@test/factories/resolvedPicksBlock";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { generateSequenceRandom } from "@test/factories/sequenceRandom";
-import { type ResolvedBlockTiming, resolveBlockTiming } from "./blockTiming";
+import { describeSetListEntries } from "@test/factories/setListDescription";
+import {
+  generatePicksBlock,
+  generateUntimedBranchesBlock,
+} from "@test/factories/templateBlock";
+import { generateTaggedExercise } from "@test/factories/valueExercise";
+import { resolveBlockTiming } from "./blockTiming";
 import type { BlockResult } from "./blockWalk";
 import type { GenerationInput } from "./generationInput";
 import type { ResolvedPicksBlock } from "./picksBlockResolution";
@@ -17,102 +24,30 @@ import {
 import { readSkillCatalogEntry } from "./skillCatalogEntry";
 import type { FilledBlockResult } from "./workoutFinish";
 
-const EXERCISE_TAGS: Record<string, string[]> = {
-  e1: ["REGION_UPPER_BODY", "MUSCLE_CHEST", "SIDE_BOTH"],
-  e2: ["REGION_UPPER_BODY", "MUSCLE_BICEPS", "SIDE_BOTH"],
-  e3: ["REGION_LOWER_BODY", "MUSCLE_CALF", "SIDE_BOTH"],
-};
+const EXERCISE_CATALOG = [
+  generateTaggedExercise("e1", [
+    "REGION_UPPER_BODY",
+    "MUSCLE_CHEST",
+    "SIDE_BOTH",
+  ]),
+  generateTaggedExercise("e2", [
+    "REGION_UPPER_BODY",
+    "MUSCLE_BICEPS",
+    "SIDE_BOTH",
+  ]),
+  generateTaggedExercise("e3", [
+    "REGION_LOWER_BODY",
+    "MUSCLE_CALF",
+    "SIDE_BOTH",
+  ]),
+];
 
-/**
- * Builds a catalog exercise advanced by repetitions with the tags of its ID.
- *
- * generateExercise("e1")
- * → { id: "e1", tags: ["REGION_UPPER_BODY", "MUSCLE_CHEST", "SIDE_BOTH"], isAdvanceByReps: true, ... }
- */
-const generateExercise = (id: string): ExerciseType => ({
-  id,
-  name: id,
-  displayName: id,
-  description: id,
-  picture: `${id}.jpg`,
-  video: `${id}.mp4`,
-  level: { m: 1, w: 1 },
-  tags: EXERCISE_TAGS[id],
-  isAdvanceByReps: true,
-  isAdvanceByDuration: false,
-  isJump: false,
-  values: {},
+// The advanced adult man of the rule family specs, whose catalog holds e1, e2
+// and e3 and whose draws always return 0.
+const DEFAULT_INPUT = generateRuleFamilyInput({
+  exerciseCatalog: EXERCISE_CATALOG,
+  random: () => 0,
 });
-
-/**
- * Builds the input of an advanced adult man whose catalog holds e1, e2 and e3.
- *
- * generateInput(() => 0.6) → { exerciseCatalog: [e1, e2, e3], random: () => 0.6, ... }
- */
-const generateInput = (random: () => number = () => 0): GenerationInput => ({
-  ...generateRuleFamilyInput({
-    exerciseCatalog: ["e1", "e2", "e3"].map(generateExercise),
-  }),
-  random,
-});
-
-/**
- * Builds a filled result whose branches resolve to the given exercise IDs.
- *
- * generateFilledResult({ kind: "branches", skill: "GKS", ... }, ["e1"])
- * → { status: "filled", block, usedBranchIds: ["be1"],
- *     exercises: [{ branchId: "be1", branchTags: [...], exerciseId: "e1" }] }
- */
-const generateFilledResult = (
-  block: Block,
-  exerciseIds: string[],
-): FilledBlockResult => ({
-  status: "filled",
-  block,
-  usedBranchIds: exerciseIds.map((id) => `b${id}`),
-  exercises: exerciseIds.map((id) => ({
-    branchId: `b${id}`,
-    branchTags: EXERCISE_TAGS[id],
-    exerciseId: id,
-  })),
-});
-
-/**
- * Builds a stored training day block of the skill.
- *
- * generateBranchesBlock("GKS", { sets: 3 }) → { kind: "branches", skill: "GKS", branches: ["1"], sets: 3 }
- */
-const generateBranchesBlock = (
-  skill: string,
-  values: Partial<Extract<Block, { kind: "branches" }>> = {},
-): Block => ({ kind: "branches", skill, branches: ["1"], ...values });
-
-/**
- * Builds a short workout block of the skill.
- *
- * generatePicksBlock("BAS") → { kind: "picks", skill: "BAS", picks: [{ tags: [], count: 1 }] }
- */
-const generatePicksBlock = (
-  skill: string,
-  values: Partial<Extract<Block, { kind: "picks" }>> = {},
-): Block => ({
-  kind: "picks",
-  skill,
-  picks: [{ tags: [], count: 1 }],
-  ...values,
-});
-
-/**
- * Lists each entry as "<exercise> <set>/<sets>" or "pause <seconds>".
- *
- * describeSetList([e1 set [1, 2], pause 90]) → ["e1 1/2", "pause 90"]
- */
-const describeSetList = (setList: GeneratedSetListEntry[]): string[] =>
-  setList.map((entry) =>
-    isPauseExercise(entry.exerciseId)
-      ? `pause ${entry.duration}`
-      : `${entry.exerciseId} ${entry.set.join("/")}`,
-  );
 
 /**
  * Lists the exercises of a set list in order of their first set.
@@ -135,27 +70,9 @@ const listExerciseOrder = (setList: GeneratedSetListEntry[]): string[] => [
  */
 const buildTrainingDaySetList = (
   results: FilledBlockResult[],
-  input = generateInput(),
+  input = DEFAULT_INPUT,
 ): GeneratedSetListEntry[] =>
   createTrainingDaySetListBuilder(input)(results, results);
-
-/**
- * Builds a resolved picks block with the given timing and an empty pool.
- *
- * generateResolvedPicksBlock("WU", { sets: 2, superset: "none", rest: {...} })
- * → { skill: "WU", sets: 2, superset: "none", rest: {...}, pool: {}, picks: [], ... }
- */
-const generateResolvedPicksBlock = (
-  skill: string,
-  timing: ResolvedBlockTiming,
-): ResolvedPicksBlock => ({
-  ...timing,
-  skill,
-  pool: {},
-  picks: [],
-  countBy: "exercises",
-  fallbackToWholeTree: false,
-});
 
 /**
  * Resolves each block of the results as workout setup does: its own timing,
@@ -191,7 +108,7 @@ const resolveCatalogTimings = (
  */
 const buildShortWorkoutSetList = (
   results: BlockResult[],
-  input = generateInput(),
+  input = DEFAULT_INPUT,
   resolvedBlocks = resolveCatalogTimings(results, input),
 ): GeneratedSetListEntry[] =>
   createShortWorkoutSetListBuilder({
@@ -220,18 +137,30 @@ describe("setListBuilding: readSkillSetListKind", () => {
 describe("setListBuilding: training day", () => {
   it("builds SASKG from its plan workout values: 2 sets with 10 seconds rest", () => {
     const setList = buildTrainingDaySetList([
-      generateFilledResult(generateBranchesBlock("SASKG"), ["e1"]),
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generateUntimedBranchesBlock("SASKG"),
+        ["e1"],
+      ),
     ]);
 
-    expect(describeSetList(setList)).toEqual(["e1 1/2", "pause 10", "e1 2/2"]);
+    expect(describeSetListEntries(setList)).toEqual([
+      "e1 1/2",
+      "pause 10",
+      "e1 2/2",
+    ]);
   });
 
   it("pairs a superset by muscles and rests within the superset", () => {
     const setList = buildTrainingDaySetList([
-      generateFilledResult(generateBranchesBlock("BAS"), ["e1", "e2"]),
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generateUntimedBranchesBlock("BAS"),
+        ["e1", "e2"],
+      ),
     ]);
 
-    expect(describeSetList(setList)).toEqual([
+    expect(describeSetListEntries(setList)).toEqual([
       "e1 1/2",
       "pause 30",
       "e2 1/2",
@@ -244,10 +173,14 @@ describe("setListBuilding: training day", () => {
 
   it("builds single exercises for a skill without superset", () => {
     const setList = buildTrainingDaySetList([
-      generateFilledResult(generateBranchesBlock("GKS"), ["e1", "e2"]),
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generateUntimedBranchesBlock("GKS"),
+        ["e1", "e2"],
+      ),
     ]);
 
-    expect(describeSetList(setList)).toEqual([
+    expect(describeSetListEntries(setList)).toEqual([
       "e1 1/2",
       "pause 90",
       "e1 2/2",
@@ -260,28 +193,53 @@ describe("setListBuilding: training day", () => {
 
   it("closes a block with the catalog afterBlock rest", () => {
     const setList = buildTrainingDaySetList([
-      generateFilledResult(generateBranchesBlock("WUSPEZIAL"), ["e1"]),
-      generateFilledResult(generateBranchesBlock("MOB"), ["e2"]),
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generateUntimedBranchesBlock("WUSPEZIAL"),
+        ["e1"],
+      ),
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generateUntimedBranchesBlock("MOB"),
+        ["e2"],
+      ),
     ]);
 
-    expect(describeSetList(setList)).toEqual(["e1 1/1", "pause 30", "e2 1/1"]);
+    expect(describeSetListEntries(setList)).toEqual([
+      "e1 1/1",
+      "pause 30",
+      "e2 1/1",
+    ]);
   });
 
   it("takes the block's own rest before the plan workout value", () => {
     const setList = buildTrainingDaySetList([
-      generateFilledResult(
-        generateBranchesBlock("GKS", { rest: { betweenSets: 15 } }),
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generateUntimedBranchesBlock("GKS", { rest: { betweenSets: 15 } }),
         ["e1"],
       ),
     ]);
 
-    expect(describeSetList(setList)).toEqual(["e1 1/2", "pause 15", "e1 2/2"]);
+    expect(describeSetListEntries(setList)).toEqual([
+      "e1 1/2",
+      "pause 15",
+      "e1 2/2",
+    ]);
   });
 
   it("opens a block away from the exercise that ended the block before", () => {
     const setList = buildTrainingDaySetList([
-      generateFilledResult(generateBranchesBlock("GKS"), ["e1"]),
-      generateFilledResult(generateBranchesBlock("GKSKG"), ["e1", "e2"]),
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generateUntimedBranchesBlock("GKS"),
+        ["e1"],
+      ),
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generateUntimedBranchesBlock("GKSKG"),
+        ["e1", "e2"],
+      ),
     ]);
 
     expect(listExerciseOrder(setList.slice(4))).toEqual(["e2", "e1"]);
@@ -289,7 +247,11 @@ describe("setListBuilding: training day", () => {
 
   it("orders a max strength block lower body first", () => {
     const setList = buildTrainingDaySetList([
-      generateFilledResult(generateBranchesBlock("MAX"), ["e1", "e3"]),
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generateUntimedBranchesBlock("MAX"),
+        ["e1", "e3"],
+      ),
     ]);
 
     expect(listExerciseOrder(setList)).toEqual(["e3", "e1"]);
@@ -297,8 +259,9 @@ describe("setListBuilding: training day", () => {
 
   it("runs a cardio block for its stored duration", () => {
     const setList = buildTrainingDaySetList([
-      generateFilledResult(
-        generateBranchesBlock("CARDIO_4", { duration: 1200 }),
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generateUntimedBranchesBlock("CARDIO_4", { duration: 1200 }),
         ["e1"],
       ),
     ]);
@@ -317,13 +280,21 @@ describe("setListBuilding: training day", () => {
   it("draws the cardio branch after the order draws of the block before", () => {
     const setList = buildTrainingDaySetList(
       [
-        generateFilledResult(generateBranchesBlock("GKS"), ["e1", "e2"]),
-        generateFilledResult(
-          generateBranchesBlock("CARDIO_4", { duration: 600 }),
+        generateFilledResultFromCatalog(
+          EXERCISE_CATALOG,
+          generateUntimedBranchesBlock("GKS"),
+          ["e1", "e2"],
+        ),
+        generateFilledResultFromCatalog(
+          EXERCISE_CATALOG,
+          generateUntimedBranchesBlock("CARDIO_4", { duration: 600 }),
           ["e1", "e2"],
         ),
       ],
-      generateInput(generateSequenceRandom([0, 0, 0.6])),
+      generateRuleFamilyInput({
+        exerciseCatalog: EXERCISE_CATALOG,
+        random: generateSequenceRandom([0, 0, 0.6]),
+      }),
     );
 
     expect(setList.at(-1)).toMatchObject({ exerciseId: "e2", duration: 600 });
@@ -333,11 +304,19 @@ describe("setListBuilding: training day", () => {
 describe("setListBuilding: short workout", () => {
   it("builds each block from its catalog timing and drops the last rest", () => {
     const setList = buildShortWorkoutSetList([
-      generateFilledResult(generatePicksBlock("WU"), ["e1"]),
-      generateFilledResult(generatePicksBlock("BAS"), ["e2"]),
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generatePicksBlock("WU"),
+        ["e1"],
+      ),
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generatePicksBlock("BAS"),
+        ["e2"],
+      ),
     ]);
 
-    expect(describeSetList(setList)).toEqual([
+    expect(describeSetListEntries(setList)).toEqual([
       "e1 1/1",
       "pause 30",
       "e2 1/2",
@@ -348,13 +327,14 @@ describe("setListBuilding: short workout", () => {
 
   it("takes the block's superset before the catalog value", () => {
     const setList = buildShortWorkoutSetList([
-      generateFilledResult(generatePicksBlock("BAS", { superset: "none" }), [
-        "e1",
-        "e2",
-      ]),
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generatePicksBlock("BAS", { superset: "none" }),
+        ["e1", "e2"],
+      ),
     ]);
 
-    expect(describeSetList(setList)).toEqual([
+    expect(describeSetListEntries(setList)).toEqual([
       "e1 1/2",
       "pause 60",
       "e1 2/2",
@@ -367,7 +347,11 @@ describe("setListBuilding: short workout", () => {
 
   it("keeps the closing rest when the last template block is empty", () => {
     const setList = buildShortWorkoutSetList([
-      generateFilledResult(generatePicksBlock("WU"), ["e1"]),
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generatePicksBlock("WU"),
+        ["e1"],
+      ),
       {
         status: "empty",
         block: generatePicksBlock("BAS"),
@@ -376,13 +360,14 @@ describe("setListBuilding: short workout", () => {
       },
     ]);
 
-    expect(describeSetList(setList)).toEqual(["e1 1/1", "pause 30"]);
+    expect(describeSetListEntries(setList)).toEqual(["e1 1/1", "pause 30"]);
   });
 
   it("builds a cardio block from the pairing without a draw", () => {
     const setList = buildShortWorkoutSetList(
       [
-        generateFilledResult(
+        generateFilledResultFromCatalog(
+          EXERCISE_CATALOG,
           generatePicksBlock("CARDIO_4", {
             sets: 1,
             superset: "none",
@@ -391,7 +376,10 @@ describe("setListBuilding: short workout", () => {
           ["e2", "e3"],
         ),
       ],
-      generateInput(generateSequenceRandom([])),
+      generateRuleFamilyInput({
+        exerciseCatalog: EXERCISE_CATALOG,
+        random: generateSequenceRandom([]),
+      }),
     );
 
     expect(setList).toEqual([
@@ -407,7 +395,8 @@ describe("setListBuilding: short workout", () => {
 
   it("pairs a max strength block by its superset and trains the lead only", () => {
     const setList = buildShortWorkoutSetList([
-      generateFilledResult(
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
         generatePicksBlock("MAX", {
           sets: 4,
           superset: "muscles",
@@ -421,11 +410,15 @@ describe("setListBuilding: short workout", () => {
   });
 
   it("builds a block from the timing workout setup resolved", () => {
-    const result = generateFilledResult(generatePicksBlock("WU"), ["e1"]);
+    const result = generateFilledResultFromCatalog(
+      EXERCISE_CATALOG,
+      generatePicksBlock("WU"),
+      ["e1"],
+    );
 
     const setList = buildShortWorkoutSetList(
       [result],
-      generateInput(),
+      DEFAULT_INPUT,
       new Map([
         [
           result.block,
@@ -440,14 +433,24 @@ describe("setListBuilding: short workout", () => {
       ]),
     );
 
-    expect(describeSetList(setList)).toEqual(["e1 1/2", "pause 15", "e1 2/2"]);
+    expect(describeSetListEntries(setList)).toEqual([
+      "e1 1/2",
+      "pause 15",
+      "e1 2/2",
+    ]);
   });
 
   it("throws for a block that workout setup did not resolve", () => {
     expect(() =>
       buildShortWorkoutSetList(
-        [generateFilledResult(generatePicksBlock("PLYO"), ["e1"])],
-        generateInput(),
+        [
+          generateFilledResultFromCatalog(
+            EXERCISE_CATALOG,
+            generatePicksBlock("PLYO"),
+            ["e1"],
+          ),
+        ],
+        DEFAULT_INPUT,
         new Map(),
       ),
     ).toThrow(

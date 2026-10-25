@@ -1,65 +1,12 @@
-import type { ExerciseType } from "@/schemas/exercise.schema";
-import type {
-  SkillBranchType,
-  SkillTreeType,
-} from "@/schemas/skillTree.schema";
+import type { SkillTreeType } from "@/schemas/skillTree.schema";
+import { generateBranchDrawSource } from "@test/factories/branchDrawSource";
 import { generateSequenceRandom } from "@test/factories/sequenceRandom";
-import { type BranchDrawSource, createBranchDraw } from "./branchDraw";
-
-/**
- * Builds a skill tree branch with one exercise per level, starting at level 1.
- *
- * generateTreeBranch(["e1", "e1x"])
- * → { tags: [], levels: { 1: { exerciseId: "e1" }, 2: { exerciseId: "e1x" } } }
- */
-const generateTreeBranch = (exerciseIds: string[]): SkillBranchType => ({
-  tags: [],
-  levels: Object.fromEntries(
-    exerciseIds.map((exerciseId, index) => [index + 1, { exerciseId }]),
-  ),
-});
-
-/**
- * Builds a catalog exercise with the given tags and no values.
- *
- * generateCatalogExercise("e1", ["SIDE_BOTH"])
- * → { id: "e1", name: "e1", tags: ["SIDE_BOTH"], level: { m: 1, w: 1 }, values: null, ... }
- */
-const generateCatalogExercise = (id: string, tags: string[]): ExerciseType => ({
-  id,
-  level: { m: 1, w: 1 },
-  name: id,
-  displayName: null,
-  description: null,
-  picture: null,
-  video: null,
-  values: null,
-  tags,
-  isAdvanceByReps: true,
-  isAdvanceByDuration: false,
-  isJump: false,
-});
-
-/**
- * Builds the draw source of an ADVANCED athlete without stored branch levels.
- * The pool doubles as the branches the specs draw from.
- *
- * generateDrawSource({ 1: generateTreeBranch(["e1"]) }, [0.5])
- * → { pool: { 1: ... }, fitnessLevel: "ADVANCED", exerciseCatalog: [],
- *     exerciseData: { exerciseData: {}, branchData: {} }, random: <0.5, then throws> }
- */
-const generateDrawSource = (
-  pool: SkillTreeType,
-  draws: number[],
-  change: Partial<BranchDrawSource> = {},
-): BranchDrawSource => ({
-  pool,
-  fitnessLevel: "ADVANCED",
-  exerciseCatalog: [],
-  exerciseData: { exerciseData: {}, branchData: {} },
-  random: generateSequenceRandom(draws),
-  ...change,
-});
+import {
+  generateSkillBranch,
+  generateTreeBranch,
+} from "@test/factories/skillTree";
+import { generateTaggedExercise } from "@test/factories/valueExercise";
+import { createBranchDraw } from "./branchDraw";
 
 describe("branchDraw: single", () => {
   it.each<{
@@ -94,10 +41,9 @@ describe("branchDraw: single", () => {
       3: generateTreeBranch(["e1x"]),
     };
 
-    const result = createBranchDraw(generateDrawSource(pool, draws)).single(
-      pool,
-      used,
-    );
+    const result = createBranchDraw(
+      generateBranchDrawSource(pool, draws),
+    ).single(pool, used);
 
     expect(result?.branchId ?? null).toBe(drawn);
   });
@@ -108,13 +54,13 @@ describe("branchDraw: single", () => {
     };
 
     expect(
-      createBranchDraw(generateDrawSource(pool, [0])).single(pool, []),
+      createBranchDraw(generateBranchDrawSource(pool, [0])).single(pool, []),
     ).toEqual({ branchId: "1", branchTags: ["SIDE_BOTH"], exerciseId: "e1x" });
   });
 
   it("resolves the stored branch level before the fitness level", () => {
     const pool = { 1: generateTreeBranch(["e1", "e1x", "e1y"]) };
-    const source = generateDrawSource(pool, [0], {
+    const source = generateBranchDrawSource(pool, [0], {
       exerciseData: {
         exerciseData: {},
         branchData: { 1: { branchId: "1", level: 3 } },
@@ -126,12 +72,12 @@ describe("branchDraw: single", () => {
 
   it("never draws a branch without a level at or below the entry level", () => {
     const pool = {
-      1: { tags: [], levels: { 3: { exerciseId: "e3" } } },
+      1: generateSkillBranch([], { 3: { exerciseId: "e3" } }),
       2: generateTreeBranch(["e2"]),
     };
 
     expect(
-      createBranchDraw(generateDrawSource(pool, [0])).single(pool, [])
+      createBranchDraw(generateBranchDrawSource(pool, [0])).single(pool, [])
         ?.branchId,
     ).toBe("2");
   });
@@ -141,9 +87,10 @@ describe("branchDraw: single", () => {
     const blockBranches = { 2: generateTreeBranch(["e1"]) };
 
     expect(
-      createBranchDraw(generateDrawSource(pool, [])).single(blockBranches, [
-        "1",
-      ]),
+      createBranchDraw(generateBranchDrawSource(pool, [])).single(
+        blockBranches,
+        ["1"],
+      ),
     ).toBeNull();
   });
 });
@@ -221,12 +168,12 @@ describe("branchDraw: pair", () => {
     },
   ])("$behaviour", ({ draws, tags, lead, partner, branches = pool }) => {
     const exerciseCatalog = Object.entries(tags).map(([id, exerciseTags]) =>
-      generateCatalogExercise(id, exerciseTags),
+      generateTaggedExercise(id, exerciseTags),
     );
     const random = generateSequenceRandom([...draws, 0.99]);
 
     const result = createBranchDraw(
-      generateDrawSource(branches, [], { exerciseCatalog, random }),
+      generateBranchDrawSource(branches, [], { exerciseCatalog, random }),
     ).pair(branches, []);
 
     expect(result?.lead.branchId).toBe(lead);
@@ -237,7 +184,7 @@ describe("branchDraw: pair", () => {
 
   it("returns null without a draw when no candidate is left", () => {
     expect(
-      createBranchDraw(generateDrawSource(pool, [])).pair(pool, [
+      createBranchDraw(generateBranchDrawSource(pool, [])).pair(pool, [
         "1",
         "2",
         "3",

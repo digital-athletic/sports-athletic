@@ -22,6 +22,19 @@ export const generateBranchesBlock = (
 });
 
 /**
+ * Builds a branches block of branch "1" without a duration, so the timing of
+ * the skill catalog entry applies. The overrides replace any field.
+ *
+ * generateUntimedBranchesBlock("GKS", { sets: 3 })
+ * → { kind: "branches", skill: "GKS", branches: ["1"], duration: undefined, sets: 3 }
+ */
+export const generateUntimedBranchesBlock = (
+  skill: string,
+  overrides: Partial<BranchesBlock> = {},
+): BranchesBlock =>
+  generateBranchesBlock(skill, ["1"], { duration: undefined, ...overrides });
+
+/**
  * Builds a stored cardio block with the duration in seconds, or without one.
  * A cardio tree holds one branch, so the block names it.
  *

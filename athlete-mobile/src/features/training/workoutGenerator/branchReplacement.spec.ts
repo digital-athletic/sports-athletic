@@ -1,90 +1,17 @@
-import type { LevelTag } from "@/constants/workoutConstants";
 import { loadExercises } from "@/data/loadExercises";
-import type { ExerciseType } from "@/schemas/exercise.schema";
-import type { SkillTreeType } from "@/schemas/skillTree.schema";
-import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
-import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
-import { buildBranchLookupIndex } from "./branchLookupIndex";
+import {
+  generateLowerBodyBranch,
+  generateUpperBodyBranch,
+} from "@test/factories/skillTree";
+import {
+  generateLowerBodyExercises,
+  generateTaggedExercise,
+} from "@test/factories/valueExercise";
+import { generateReplacementInput } from "@test/factories/workoutInput";
 import {
   isPreventionOrSpecialWarmUpSkill,
   replaceBlockedBranches,
 } from "./branchReplacement";
-import { setUpWorkout } from "./workoutSetup";
-
-const [exerciseTemplate] = loadExercises();
-
-/**
- * Builds a lower body branch of the BAS tree.
- *
- * generateLowerBodyBranch({ 1: { exerciseId: "e1" } }, ["SIDE_ONE"])
- * → { tags: ["SKILL_BAS", "REGION_LOWER_BODY", "SIDE_ONE"], levels: { 1: { exerciseId: "e1" } } }
- */
-const generateLowerBodyBranch = (
-  levels: Record<number, { exerciseId: string }>,
-  extraTags: string[] = ["SIDE_BOTH"],
-): SkillTreeType[string] => ({
-  tags: ["SKILL_BAS", "REGION_LOWER_BODY", ...extraTags],
-  levels,
-});
-
-/**
- * Builds an upper body branch on exercise 431 with the given tags.
- *
- * generateUpperBodyBranch(["EQ_TYPE_KG"])
- * → { tags: ["REGION_UPPER_BODY", "SIDE_BOTH", "EQ_TYPE_KG"], levels: { 1: { exerciseId: "431" } } }
- */
-const generateUpperBodyBranch = (tags: string[]): SkillTreeType[string] => ({
-  tags: ["REGION_UPPER_BODY", "SIDE_BOTH", ...tags],
-  levels: { 1: { exerciseId: "431" } },
-});
-
-/**
- * Builds catalog exercises with the given IDs from a real exercise.
- *
- * generateCatalogExercises(["e1"]) → [{ ...Exercises.json[0], id: "e1", tags: ["REGION_LOWER_BODY"] }]
- */
-const generateCatalogExercises = (ids: string[]): ExerciseType[] =>
-  ids.map((id) => ({ ...exerciseTemplate, id, tags: ["REGION_LOWER_BODY"] }));
-
-interface ReplacementInputOptions {
-  skillTrees: Record<string, SkillTreeType>;
-  level?: LevelTag;
-  birthday?: string;
-  pains?: string[];
-  equipment?: string[];
-  exerciseCatalog?: ExerciseType[];
-  branchData?: Record<string, UserExerciseBranchDataType | undefined>;
-  random?: () => number;
-}
-
-/**
- * Builds a workout input whose branch lookup index holds only the given trees.
- *
- * generateReplacementInput({ skillTrees: { BAS: { "1": branch } } })
- * → beginner athlete, index over BAS, random always 0
- */
-const generateReplacementInput = ({
-  skillTrees,
-  level = "BEGINNER",
-  birthday,
-  pains,
-  equipment,
-  exerciseCatalog = generateCatalogExercises(["e1", "e2", "e3"]),
-  branchData = {},
-  random = () => 0,
-}: ReplacementInputOptions) =>
-  setUpWorkout({
-    ...generateRuleFamilyInput({
-      level,
-      birthday,
-      pains,
-      equipment,
-      exerciseCatalog,
-    }),
-    branchLookupIndex: buildBranchLookupIndex(skillTrees),
-    exerciseData: { exerciseData: {}, branchData },
-    random,
-  });
 
 describe("branchReplacement: replaceBlockedBranches", () => {
   beforeAll(() => {
@@ -144,7 +71,7 @@ describe("branchReplacement: replaceBlockedBranches", () => {
           "3": generateLowerBodyBranch({ 1: { exerciseId: "e3" } }),
         },
       },
-      branchData: { "1": { branchId: "1", level: 2 } },
+      branchLevels: { "1": 2 },
     });
 
     const replacement = replaceBlockedBranches(
@@ -205,12 +132,8 @@ describe("branchReplacement: replaceBlockedBranches", () => {
       },
       pains: ["KNEE_LEFT"],
       exerciseCatalog: [
-        ...generateCatalogExercises(["e1", "e3"]),
-        {
-          ...exerciseTemplate,
-          id: "e2",
-          tags: ["REGION_LOWER_BODY", "BLOCK_KNEE"],
-        },
+        ...generateLowerBodyExercises(["e1", "e3"]),
+        generateTaggedExercise("e2", ["REGION_LOWER_BODY", "BLOCK_KNEE"]),
       ],
     });
 
@@ -281,7 +204,7 @@ describe("branchReplacement: replaceBlockedBranches", () => {
           ),
         },
         level,
-        exerciseCatalog: generateCatalogExercises([
+        exerciseCatalog: generateLowerBodyExercises([
           "e1",
           "e2",
           "e3",
@@ -320,7 +243,7 @@ describe("branchReplacement: replaceBlockedBranches", () => {
           "4": generateLowerBodyBranch({ 1: { exerciseId: "e4" } }),
         },
       },
-      exerciseCatalog: generateCatalogExercises(["e1", "e2", "e3", "e4"]),
+      exerciseCatalog: generateLowerBodyExercises(["e1", "e2", "e3", "e4"]),
     });
 
     const replacement = replaceBlockedBranches(

@@ -1,42 +1,14 @@
-import type { SkillBranchType } from "@/schemas/skillTree.schema";
-import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
-import { buildBranchLookupIndex } from "./branchLookupIndex";
+import {
+  generateNamedSkillTrees,
+  generatePreventionTree,
+  generateSkillBranch,
+} from "@test/factories/skillTree";
+import { catchThrownValue } from "@test/factories/thrownValue";
+import {
+  generateWorkoutInput,
+  type WorkoutInputFactoryOptions,
+} from "@test/factories/workoutInput";
 import { selectReplacementSkillTree } from "./replacementSkillTree";
-import { setUpWorkout } from "./workoutSetup";
-
-/**
- * Builds a branch with the given tags and one level.
- *
- * generateBranch(["PREVENTION_KNEE"]) → { tags: ["PREVENTION_KNEE"], levels: { 1: { exerciseId: "e1" } } }
- */
-const generateBranch = (
-  tags: string[],
-  levels: SkillBranchType["levels"] = { 1: { exerciseId: "e1" } },
-): SkillBranchType => ({ tags, levels });
-
-interface SelectionInputOptions {
-  skillTrees: Record<string, Record<string, SkillBranchType>>;
-  equipment?: string[];
-  pains?: string[];
-  soreMuscles?: string[];
-}
-
-/**
- * Builds a workout input whose branch lookup index holds only the given trees.
- *
- * generateSelectionInput({ skillTrees: { GKS: { "1": branch } }, equipment: ["DUMBBELL"] })
- * → adult athlete with weights at the place, index over GKS
- */
-const generateSelectionInput = ({
-  skillTrees,
-  equipment,
-  pains,
-  soreMuscles,
-}: SelectionInputOptions) =>
-  setUpWorkout({
-    ...generateRuleFamilyInput({ equipment, pains, soreMuscles }),
-    branchLookupIndex: buildBranchLookupIndex(skillTrees),
-  });
 
 /**
  * Lists the branch IDs of the tree the selection returns for the given input.
@@ -46,49 +18,11 @@ const generateSelectionInput = ({
 const listTreeBranchIds = (
   skill: string,
   slotCount: number,
-  options: SelectionInputOptions,
+  options: WorkoutInputFactoryOptions,
 ): string[] =>
   Object.keys(
-    selectReplacementSkillTree(
-      skill,
-      slotCount,
-      generateSelectionInput(options),
-    ),
+    selectReplacementSkillTree(skill, slotCount, generateWorkoutInput(options)),
   );
-
-/**
- * Builds one single-branch tree per tree name, numbered in name order.
- *
- * generateNamedSkillTrees() → { BAS: { "1": { tags: ["SKILL_BAS"], ... } }, GKS: { "2": ... }, ..., CD: { "11": ... } }
- */
-const generateNamedSkillTrees = () => ({
-  BAS: { "1": generateBranch(["SKILL_BAS"]) },
-  GKS: { "2": generateBranch(["SKILL_GKS"]) },
-  GKSKG: { "3": generateBranch(["SKILL_GKSKG"]) },
-  SA: { "4": generateBranch(["SKILL_SA"]) },
-  SAKG: { "5": generateBranch(["SKILL_SAKG"]) },
-  SWR1: { "6": generateBranch(["SKILL_SWR1"]) },
-  SWR1KG: { "7": generateBranch(["SKILL_SWR1KG"]) },
-  PREV: { "8": generateBranch(["SKILL_PREV"]) },
-  PREVKG: { "9": generateBranch(["SKILL_PREVKG"]) },
-  MOB: { "10": generateBranch(["SKILL_MOB"]) },
-  CD: { "11": generateBranch(["SKILL_CD"]) },
-});
-
-/**
- * Builds a prevention tree with two knee and three shoulder branches.
- *
- * generatePreventionTree()
- * → { "1": { tags: ["PREVENTION_KNEE", "REGION_LOWER_BODY"], ... }, "2": knee core,
- *     "3" to "5": shoulder upper body }
- */
-const generatePreventionTree = () => ({
-  "1": generateBranch(["PREVENTION_KNEE", "REGION_LOWER_BODY"]),
-  "2": generateBranch(["PREVENTION_KNEE", "REGION_CORE"]),
-  "3": generateBranch(["PREVENTION_SHOULDER", "REGION_UPPER_BODY"]),
-  "4": generateBranch(["PREVENTION_SHOULDER", "REGION_UPPER_BODY"]),
-  "5": generateBranch(["PREVENTION_SHOULDER", "REGION_UPPER_BODY"]),
-});
 
 describe("replacementSkillTree: selectReplacementSkillTree", () => {
   it.each([
@@ -125,10 +59,10 @@ describe("replacementSkillTree: selectReplacementSkillTree", () => {
   ])("narrows the PLYO tree to the intensity tags of %s", (skill, expected) => {
     const skillTrees = {
       PLYO: {
-        "1": generateBranch(["SKILL_PLYO_HIGH"]),
-        "2": generateBranch(["SKILL_PLYO_MEDIUM"]),
-        "3": generateBranch(["SKILL_PLYO_LOW"]),
-        "4": generateBranch(["SKILL_PLYO"]),
+        "1": generateSkillBranch(["SKILL_PLYO_HIGH"]),
+        "2": generateSkillBranch(["SKILL_PLYO_MEDIUM"]),
+        "3": generateSkillBranch(["SKILL_PLYO_LOW"]),
+        "4": generateSkillBranch(["SKILL_PLYO"]),
       },
     };
 
@@ -138,8 +72,8 @@ describe("replacementSkillTree: selectReplacementSkillTree", () => {
   it("drops branches without levels", () => {
     const skillTrees = {
       BAS: {
-        "1": generateBranch(["SKILL_BAS"]),
-        "2": generateBranch(["SKILL_BAS"], {}),
+        "1": generateSkillBranch(["SKILL_BAS"]),
+        "2": generateSkillBranch(["SKILL_BAS"], {}),
       },
     };
 
@@ -147,7 +81,7 @@ describe("replacementSkillTree: selectReplacementSkillTree", () => {
   });
 
   it("returns the selected tree's catalog branches", () => {
-    const input = generateSelectionInput({
+    const input = generateWorkoutInput({
       skillTrees: generateNamedSkillTrees(),
     });
 
@@ -243,19 +177,15 @@ describe("replacementSkillTree: selectReplacementSkillTree", () => {
   });
 
   it("throws for muscle soreness in two areas", () => {
-    const input = generateSelectionInput({
+    const input = generateWorkoutInput({
       skillTrees: { PREVKG: generatePreventionTree() },
       pains: ["KNEE_LEFT"],
       soreMuscles: ["CHEST", "QUADRICEPS"],
     });
 
-    let thrown: unknown;
-
-    try {
-      selectReplacementSkillTree("PREVKNEE", 1, input);
-    } catch (error) {
-      thrown = error;
-    }
+    const thrown = catchThrownValue(() =>
+      selectReplacementSkillTree("PREVKNEE", 1, input),
+    );
 
     expect(thrown).toEqual({
       type: "TOO_MUCH_SORENESS",
@@ -267,9 +197,9 @@ describe("replacementSkillTree: selectReplacementSkillTree", () => {
   describe("special warm-up", () => {
     const skillTrees = {
       WUSPEZIAL: {
-        "1": generateBranch(["PAIN_KNEE", "REGION_LOWER_BODY"]),
-        "2": generateBranch(["PAIN_SHOULDER", "REGION_UPPER_BODY"]),
-        "3": generateBranch(["PAIN_SHOULDER", "REGION_UPPER_BODY"]),
+        "1": generateSkillBranch(["PAIN_KNEE", "REGION_LOWER_BODY"]),
+        "2": generateSkillBranch(["PAIN_SHOULDER", "REGION_UPPER_BODY"]),
+        "3": generateSkillBranch(["PAIN_SHOULDER", "REGION_UPPER_BODY"]),
       },
     };
 

@@ -1,27 +1,9 @@
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
-import type { ExerciseType } from "@/schemas/exercise.schema";
-import ExercisesData from "../../../../assets/data/generator/Exercises.json";
+import {
+  generateBranchReference,
+  generateReferenceCatalog,
+} from "@test/factories/branchReference";
 import TrainingGenerator from "./TrainingGenerator";
-
-const template = ExercisesData[0] as ExerciseType;
-
-const branch = (
-  id: string,
-  tags: string[],
-  exerciseId = `e${id}`,
-): BranchExerciseReference => ({
-  branchId: id,
-  exerciseId,
-  branchTags: ["SIDE_BOTH", ...tags],
-});
-
-const catalogFor = (branches: BranchExerciseReference[]): ExerciseType[] =>
-  branches.map((entry) => ({
-    ...template,
-    id: entry.exerciseId,
-    tags: entry.branchTags,
-    otherSideExerciseId: undefined,
-  }));
 
 const partnerOf = (
   branches: BranchExerciseReference[],
@@ -31,7 +13,7 @@ const partnerOf = (
   const pairs = generator.getExercisePairs(
     "SWR2",
     [...branches],
-    catalogFor(branches),
+    generateReferenceCatalog(branches),
   );
   const pair = pairs.find(
     (p) =>
@@ -47,13 +29,13 @@ describe("getExercisePairs: big muscle groups", () => {
   it("leads with a quadriceps exercise before a small muscle exercise", () => {
     const generator = new TrainingGenerator();
     const branches = [
-      branch("q", ["MUSCLE_QUADRICEPS", "REGION_LOWER_BODY"]),
-      branch("b", ["MUSCLE_BICEPS", "REGION_UPPER_BODY"]),
+      generateBranchReference("q", ["MUSCLE_QUADRICEPS", "REGION_LOWER_BODY"]),
+      generateBranchReference("b", ["MUSCLE_BICEPS", "REGION_UPPER_BODY"]),
     ];
     const pairs = generator.getExercisePairs(
       "SWR2",
       [...branches],
-      catalogFor(branches),
+      generateReferenceCatalog(branches),
     );
     expect(pairs[0].first.branchId).toBe("q");
   });
@@ -61,13 +43,13 @@ describe("getExercisePairs: big muscle groups", () => {
   it("leads with a hamstrings exercise before a small muscle exercise", () => {
     const generator = new TrainingGenerator();
     const branches = [
-      branch("h", ["MUSCLE_HAMSTRINGS", "REGION_LOWER_BODY"]),
-      branch("b", ["MUSCLE_BICEPS", "REGION_UPPER_BODY"]),
+      generateBranchReference("h", ["MUSCLE_HAMSTRINGS", "REGION_LOWER_BODY"]),
+      generateBranchReference("b", ["MUSCLE_BICEPS", "REGION_UPPER_BODY"]),
     ];
     const pairs = generator.getExercisePairs(
       "SWR2",
       [...branches],
-      catalogFor(branches),
+      generateReferenceCatalog(branches),
     );
     expect(pairs[0].first.branchId).toBe("h");
   });
@@ -75,13 +57,13 @@ describe("getExercisePairs: big muscle groups", () => {
   it("leads with an upper back exercise before a small muscle exercise", () => {
     const generator = new TrainingGenerator();
     const branches = [
-      branch("u", ["MUSCLE_UPPER_BACK", "REGION_UPPER_BODY"]),
-      branch("b", ["MUSCLE_BICEPS", "REGION_UPPER_BODY"]),
+      generateBranchReference("u", ["MUSCLE_UPPER_BACK", "REGION_UPPER_BODY"]),
+      generateBranchReference("b", ["MUSCLE_BICEPS", "REGION_UPPER_BODY"]),
     ];
     const pairs = generator.getExercisePairs(
       "SWR2",
       [...branches],
-      catalogFor(branches),
+      generateReferenceCatalog(branches),
     );
     expect(pairs[0].first.branchId).toBe("u");
   });
@@ -89,14 +71,14 @@ describe("getExercisePairs: big muscle groups", () => {
   it("treats an inner thigh exercise as a small muscle group", () => {
     const generator = new TrainingGenerator();
     const branches = [
-      branch("b", ["MUSCLE_BICEPS", "REGION_UPPER_BODY"]),
-      branch("c", ["MUSCLE_CHEST", "REGION_UPPER_BODY"]),
-      branch("i", ["MUSCLE_INNER_THIGH", "REGION_LOWER_BODY"]),
+      generateBranchReference("b", ["MUSCLE_BICEPS", "REGION_UPPER_BODY"]),
+      generateBranchReference("c", ["MUSCLE_CHEST", "REGION_UPPER_BODY"]),
+      generateBranchReference("i", ["MUSCLE_INNER_THIGH", "REGION_LOWER_BODY"]),
     ];
     const pairs = generator.getExercisePairs(
       "SWR2",
       [...branches],
-      catalogFor(branches),
+      generateReferenceCatalog(branches),
     );
     expect(pairs[0].first.branchId).toBe("c");
   });
@@ -114,9 +96,15 @@ describe("getExercisePairs: superset partner ranking", () => {
   it("prefers a big muscle from another region over one from the same region", () => {
     const partner = partnerOf(
       [
-        branch("h", ["MUSCLE_HAMSTRINGS", "REGION_LOWER_BODY"]),
-        branch("c", ["MUSCLE_CHEST", "REGION_UPPER_BODY"]),
-        branch("q", ["MUSCLE_QUADRICEPS", "REGION_LOWER_BODY"]),
+        generateBranchReference("h", [
+          "MUSCLE_HAMSTRINGS",
+          "REGION_LOWER_BODY",
+        ]),
+        generateBranchReference("c", ["MUSCLE_CHEST", "REGION_UPPER_BODY"]),
+        generateBranchReference("q", [
+          "MUSCLE_QUADRICEPS",
+          "REGION_LOWER_BODY",
+        ]),
       ],
       "q",
     );
@@ -126,9 +114,12 @@ describe("getExercisePairs: superset partner ranking", () => {
   it("prefers a small muscle from another region over one from the same region", () => {
     const partner = partnerOf(
       [
-        branch("w", ["MUSCLE_WRIST_EXTENSOR", "REGION_UPPER_BODY"]),
-        branch("k", ["MUSCLE_CALF", "REGION_LOWER_BODY"]),
-        branch("b", ["MUSCLE_BICEPS", "REGION_UPPER_BODY"]),
+        generateBranchReference("w", [
+          "MUSCLE_WRIST_EXTENSOR",
+          "REGION_UPPER_BODY",
+        ]),
+        generateBranchReference("k", ["MUSCLE_CALF", "REGION_LOWER_BODY"]),
+        generateBranchReference("b", ["MUSCLE_BICEPS", "REGION_UPPER_BODY"]),
       ],
       "b",
     );
@@ -138,12 +129,12 @@ describe("getExercisePairs: superset partner ranking", () => {
   it("never pairs two exercises of the same movement direction", () => {
     const partner = partnerOf(
       [
-        branch("t", [
+        generateBranchReference("t", [
           "MUSCLE_TRICEPS",
           "REGION_UPPER_BODY",
           "EXERCISE_DIRECTION_HORIZONTAL_PUSH",
         ]),
-        branch("c", [
+        generateBranchReference("c", [
           "MUSCLE_CHEST",
           "REGION_UPPER_BODY",
           "EXERCISE_DIRECTION_HORIZONTAL_PUSH",
@@ -157,8 +148,14 @@ describe("getExercisePairs: superset partner ranking", () => {
   it("never pairs two exercises of the same primary muscle group", () => {
     const partner = partnerOf(
       [
-        branch("f2", ["MUSCLE_SHOULDER_FRONT", "REGION_UPPER_BODY"]),
-        branch("f1", ["MUSCLE_SHOULDER_FRONT", "REGION_UPPER_BODY"]),
+        generateBranchReference("f2", [
+          "MUSCLE_SHOULDER_FRONT",
+          "REGION_UPPER_BODY",
+        ]),
+        generateBranchReference("f1", [
+          "MUSCLE_SHOULDER_FRONT",
+          "REGION_UPPER_BODY",
+        ]),
       ],
       "f1",
     );
@@ -168,8 +165,14 @@ describe("getExercisePairs: superset partner ranking", () => {
   it("pairs a front shoulder exercise with a rear shoulder exercise", () => {
     const partner = partnerOf(
       [
-        branch("r", ["MUSCLE_SHOULDER_REAR", "REGION_UPPER_BODY"]),
-        branch("f", ["MUSCLE_SHOULDER_FRONT", "REGION_UPPER_BODY"]),
+        generateBranchReference("r", [
+          "MUSCLE_SHOULDER_REAR",
+          "REGION_UPPER_BODY",
+        ]),
+        generateBranchReference("f", [
+          "MUSCLE_SHOULDER_FRONT",
+          "REGION_UPPER_BODY",
+        ]),
       ],
       "f",
     );
@@ -179,8 +182,16 @@ describe("getExercisePairs: superset partner ranking", () => {
   it("never pairs an exercise with itself", () => {
     const partner = partnerOf(
       [
-        branch("k", ["MUSCLE_CALF", "REGION_LOWER_BODY"], "e1"),
-        branch("b", ["MUSCLE_BICEPS", "REGION_UPPER_BODY"], "e1"),
+        generateBranchReference(
+          "k",
+          ["MUSCLE_CALF", "REGION_LOWER_BODY"],
+          "e1",
+        ),
+        generateBranchReference(
+          "b",
+          ["MUSCLE_BICEPS", "REGION_UPPER_BODY"],
+          "e1",
+        ),
       ],
       "b",
     );

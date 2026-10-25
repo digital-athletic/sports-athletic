@@ -102,3 +102,13 @@ export const generateTemplate = (
  */
 export const generateShortTemplate = (blocks: Block[]): Template =>
   generateTemplate(blocks, { id: "short", name: { en: "Short" } });
+
+/**
+ * Wraps blocks into the template of a short workout that opens with a
+ * breathing block.
+ *
+ * generateShortTemplateWithBreathing([generatePicksBlock("MOB")])
+ * → { aiwl: 1, id: "short", name: { en: "Short" }, blocks: [BR picks, MOB picks] }
+ */
+export const generateShortTemplateWithBreathing = (blocks: Block[]): Template =>
+  generateShortTemplate([generatePicksBlock("BR"), ...blocks]);

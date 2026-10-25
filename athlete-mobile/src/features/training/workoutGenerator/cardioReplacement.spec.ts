@@ -1,14 +1,13 @@
 import { loadExercises } from "@/data/loadExercises";
-import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { generateCardioBlock } from "@test/factories/templateBlock";
 import { catchThrownValue } from "@test/factories/thrownValue";
+import { generateWorkoutInput } from "@test/factories/workoutInput";
 import { replaceCardioBlock } from "./cardioReplacement";
-import { setUpWorkout } from "./workoutSetup";
 
 const exerciseCatalog = loadExercises();
 
 describe("cardioReplacement: replaceCardioBlock", () => {
-  const input = setUpWorkout(generateRuleFamilyInput({ exerciseCatalog }));
+  const input = generateWorkoutInput({ exerciseCatalog });
 
   it("swaps the block for the CARDIO_5 branch and names the skill it replaces", () => {
     const result = replaceCardioBlock(

@@ -1,10 +1,9 @@
-import { generateGenerationInput } from "@test/factories/generationInput";
 import { generateStoredBranch } from "@test/factories/storedBranch";
+import { generateWorkoutInput } from "@test/factories/workoutInput";
 import { refillBranchSlots, splitDuplicateBranches } from "./duplicateBranches";
-import { setUpWorkout } from "./workoutSetup";
 
 describe("duplicateBranches: splitDuplicateBranches", () => {
-  const input = setUpWorkout(generateGenerationInput());
+  const input = generateWorkoutInput();
 
   it("keeps the first holder of an exercise and asks for the region of each later holder", () => {
     const kept = [
@@ -58,9 +57,7 @@ describe("duplicateBranches: splitDuplicateBranches", () => {
   });
 
   it("resolves each branch at the athlete's own branch level", () => {
-    const levelOneInput = setUpWorkout(
-      generateGenerationInput({ branchLevels: { "2": 1 } }),
-    );
+    const levelOneInput = generateWorkoutInput({ branchLevels: { "2": 1 } });
     const kept = [
       generateStoredBranch("1", ["REGION_CORE"], "336"),
       generateStoredBranch("2", ["REGION_CORE"], "336", {

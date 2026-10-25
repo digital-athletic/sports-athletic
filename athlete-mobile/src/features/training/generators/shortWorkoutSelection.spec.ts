@@ -1,53 +1,20 @@
-import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { TrainingType } from "@/features/training/models/Training";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
 import type { ExercisePair } from "@/features/training/models/ExerciseBranch";
 import * as exercisePairing from "@/features/training/workoutGenerator/exercisePairing";
+import { generateAthleteWithMaxValues } from "@test/factories/athlete";
 import { spyOnDrawnBranches } from "@test/factories/drawnBranches";
 import { nextWeek, today } from "@test/factories/planWorkout";
+import { generateTreeBranch } from "@test/factories/skillTree";
+import {
+  generateEmptyAuthoredValues,
+  generateEmptyValueExercise,
+} from "@test/factories/valueExercise";
 import TrainingGenerator from "./TrainingGenerator";
 
-const beginner: UserType = {
-  userId: "short-workout-user",
-  personalData: { gender: "MALE", birthday: "1990-01-01" },
-  workoutData: {
-    tags: { LEVEL: ["BEGINNER"] },
-    maxValues: DEFAULT_MAX_VALUES,
-  },
-  temporalData: [],
-};
-
-const branch = (tags: string[], exerciseId: string): SkillTreeType[string] => ({
-  tags,
-  levels: { 1: { exerciseId } },
-});
-
-const emptyValue = {
-  startValue: { default: {}, m: {}, w: {}, k: {} },
-  targetValue: { default: {}, m: {}, w: {}, k: {} },
-};
-
-const exerciseWithTags = (id: string, tags: string[]): ExerciseType => ({
-  id,
-  level: { m: 1, w: 1 },
-  name: `Exercise ${id}`,
-  displayName: `Exercise ${id}`,
-  description: "",
-  picture: "",
-  video: "",
-  tags,
-  values: {
-    duration: emptyValue,
-    repetition: emptyValue,
-    height: emptyValue,
-    weight: emptyValue,
-  },
-  isAdvanceByReps: false,
-  isAdvanceByDuration: false,
-  isJump: false,
-});
+const beginner = generateAthleteWithMaxValues();
 
 const selectedBranches = (
   type: TrainingType,
@@ -88,7 +55,10 @@ describe("generateShortWorkout: selection", () => {
   it("never draws the same exercise twice", () => {
     const tags = ["SKILL_MOB", "REGION_CORE", "SIDE_BOTH"];
     const branches = selectedBranches("MOB", {
-      MOB: { "500": branch(tags, "501"), "600": branch(tags, "501") },
+      MOB: {
+        "500": generateTreeBranch(["501"], tags),
+        "600": generateTreeBranch(["501"], tags),
+      },
     });
     expect(branches.map((b) => b.exerciseId)).toEqual(["501"]);
   });
@@ -98,9 +68,12 @@ describe("generateShortWorkout: selection", () => {
     const bothSided = ["SKILL_WU", "REGION_CORE", "SIDE_BOTH"];
     const tree: SkillTreeType = {};
     for (let id = 10; id < 19; id++) {
-      tree[`${id}`] = branch(bothSided, `${id}0`);
+      tree[`${id}`] = generateTreeBranch([`${id}0`], bothSided);
     }
-    tree["99"] = branch(["SKILL_WU", "REGION_CORE", "SIDE_ONE"], "990");
+    tree["99"] = generateTreeBranch(
+      ["990"],
+      ["SKILL_WU", "REGION_CORE", "SIDE_ONE"],
+    );
 
     const branches = selectedBranches("WU", { WU: tree });
     expect(slotCount(branches)).toBeLessThanOrEqual(10);
@@ -109,13 +82,13 @@ describe("generateShortWorkout: selection", () => {
   it("draws 4 exercises from any region for full body stability with weights", () => {
     const tree: SkillTreeType = {};
     for (let id = 10; id < 16; id++) {
-      tree[`${id}`] = branch(
+      tree[`${id}`] = generateTreeBranch(
+        [`${id}0`],
         ["SKILL_GKS", "REGION_UPPER_BODY", "SIDE_BOTH"],
-        `${id}0`,
       );
-      tree[`${id + 10}`] = branch(
+      tree[`${id + 10}`] = generateTreeBranch(
+        [`${id + 10}0`],
         ["SKILL_GKS", "REGION_LOWER_BODY", "SIDE_BOTH"],
-        `${id + 10}0`,
       );
     }
 
@@ -139,7 +112,10 @@ describe("generateShortWorkout: selection", () => {
       "MOB",
       {
         MOB: {
-          "500": branch(["SKILL_MOB", "REGION_LOWER_BODY", "SIDE_BOTH"], "501"),
+          "500": generateTreeBranch(
+            ["501"],
+            ["SKILL_MOB", "REGION_LOWER_BODY", "SIDE_BOTH"],
+          ),
         },
       },
       { user: sore },
@@ -154,20 +130,26 @@ describe("generateShortWorkout: selection", () => {
       "PREVKNEE",
       {
         PREVKG: {
-          "10": branch([...prevention, "REGION_LOWER_BODY", "SIDE_BOTH"], "11"),
-          "20": branch([...prevention, "REGION_LOWER_BODY", "SIDE_ONE"], "21"),
+          "10": generateTreeBranch(
+            ["11"],
+            [...prevention, "REGION_LOWER_BODY", "SIDE_BOTH"],
+          ),
+          "20": generateTreeBranch(
+            ["21"],
+            [...prevention, "REGION_LOWER_BODY", "SIDE_ONE"],
+          ),
         },
         WUSPEZIAL: {
-          "90": branch(
+          "90": generateTreeBranch(
+            ["91"],
             ["SKILL_WARM_UP_SPECIAL", "PREVENTION_KNEE_HIP", "SIDE_BOTH"],
-            "91",
           ),
         },
       },
       {
         exercises: [
-          exerciseWithTags("11", ["SIDE_BOTH"]),
-          exerciseWithTags("21", ["SIDE_ONE"]),
+          generateEmptyValueExercise("11", ["SIDE_BOTH"]),
+          generateEmptyValueExercise("21", ["SIDE_ONE"]),
         ],
       },
     );
@@ -180,16 +162,16 @@ describe("generateShortWorkout: authored exercise values", () => {
     "trains each %s exercise for its authored duration",
     (type) => {
       const stretch: ExerciseType = {
-        ...exerciseWithTags("501", ["SIDE_BOTH"]),
+        ...generateEmptyValueExercise("501", ["SIDE_BOTH"]),
         isAdvanceByDuration: true,
         values: {
           duration: {
             startValue: { default: { default: 45 } },
             targetValue: { default: { default: 45 } },
           },
-          repetition: emptyValue,
-          height: emptyValue,
-          weight: emptyValue,
+          repetition: generateEmptyAuthoredValues(),
+          height: generateEmptyAuthoredValues(),
+          weight: generateEmptyAuthoredValues(),
         },
       };
 
@@ -198,7 +180,11 @@ describe("generateShortWorkout: authored exercise values", () => {
         beginner,
         "HOME",
         [stretch],
-        { [type]: { "500": branch(["REGION_CORE", "SIDE_BOTH"], "501") } },
+        {
+          [type]: {
+            "500": generateTreeBranch(["501"], ["REGION_CORE", "SIDE_BOTH"]),
+          },
+        },
         [],
         { exerciseData: {}, branchData: {} },
       );
@@ -261,13 +247,15 @@ describe("generateShortWorkout: authored supersets", () => {
       "BAS",
       {
         BAS: {
-          "10": branch(bas("MUSCLE_QUADRICEPS"), "11"),
-          "20": branch(bas("MUSCLE_CALF"), "21"),
-          "30": branch(bas("MUSCLE_HAMSTRINGS"), "31"),
-          "40": branch(bas("MUSCLE_GLUTES"), "41"),
+          "10": generateTreeBranch(["11"], bas("MUSCLE_QUADRICEPS")),
+          "20": generateTreeBranch(["21"], bas("MUSCLE_CALF")),
+          "30": generateTreeBranch(["31"], bas("MUSCLE_HAMSTRINGS")),
+          "40": generateTreeBranch(["41"], bas("MUSCLE_GLUTES")),
         },
       },
-      ["11", "21", "31", "41"].map((id) => exerciseWithTags(id, ["SIDE_BOTH"])),
+      ["11", "21", "31", "41"].map((id) =>
+        generateEmptyValueExercise(id, ["SIDE_BOTH"]),
+      ),
     );
     expect(pairs).toEqual([
       ["10", "20"],
@@ -287,22 +275,25 @@ describe("generateShortWorkout: authored supersets", () => {
       "PREVKNEE",
       {
         PREV: {
-          "10": branch([...weighted, "MUSCLE_GLUTES"], "11"),
-          "40": branch([...weighted, "MUSCLE_CALF"], "41"),
+          "10": generateTreeBranch(["11"], [...weighted, "MUSCLE_GLUTES"]),
+          "40": generateTreeBranch(["41"], [...weighted, "MUSCLE_CALF"]),
         },
         PREVKG: {
-          "20": branch([...prevention, "MUSCLE_CALF"], "21"),
-          "30": branch([...prevention, "MUSCLE_INNER_THIGH"], "31"),
+          "20": generateTreeBranch(["21"], [...prevention, "MUSCLE_CALF"]),
+          "30": generateTreeBranch(
+            ["31"],
+            [...prevention, "MUSCLE_INNER_THIGH"],
+          ),
         },
         WUSPEZIAL: {
-          "90": branch(
+          "90": generateTreeBranch(
+            ["91"],
             ["SKILL_WARM_UP_SPECIAL", "PREVENTION_KNEE_HIP", "SIDE_BOTH"],
-            "91",
           ),
         },
       },
       ["11", "21", "31", "41", "91"].map((id) =>
-        exerciseWithTags(id, ["SIDE_BOTH"]),
+        generateEmptyValueExercise(id, ["SIDE_BOTH"]),
       ),
       ["DUMBBELL"],
     );

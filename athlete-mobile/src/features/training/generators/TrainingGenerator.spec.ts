@@ -23,17 +23,13 @@ import PREVKG from "../../../../assets/data/generator/skillTrees/PREVKG.json";
 import WU from "../../../../assets/data/generator/skillTrees/WU.json";
 import WUSPEZIAL from "../../../../assets/data/generator/skillTrees/WUSPEZIAL.json";
 import { setUpAiwlGeneratorFlag } from "@test/factories/aiwlGeneratorFlag";
+import {
+  generatePicksBlock,
+  generateTemplate,
+} from "@test/factories/templateBlock";
+import { catchThrownValue } from "@test/factories/thrownValue";
 import { roundWeightValue } from "../utils/workoutUtils";
 import TrainingGenerator, { getIntensityBySkill } from "./TrainingGenerator";
-
-const readThrownValue = (run: () => unknown): unknown => {
-  try {
-    run();
-  } catch (thrown) {
-    return thrown;
-  }
-  throw new Error("Expected a throw");
-};
 
 describe("TrainingGenerator", () => {
   let generator: TrainingGenerator;
@@ -242,7 +238,7 @@ describe("TrainingGenerator", () => {
 
     it("throws NO_EXERCISES with the type for a type without a template", () => {
       expect(
-        readThrownValue(() => generateShortWorkoutOf("NO_SUCH_TYPE")),
+        catchThrownValue(() => generateShortWorkoutOf("NO_SUCH_TYPE")),
       ).toStrictEqual({
         type: "NO_EXERCISES",
         subtype: "SKILL_TREE",
@@ -251,17 +247,15 @@ describe("TrainingGenerator", () => {
     });
 
     it("generates a custom workout of the store", () => {
-      const { id } = useCustomWorkoutsStore.getState().saveCustomWorkout(
-        {
-          aiwl: 1,
-          id: "own",
-          name: { en: "Own" },
-          blocks: [
-            { kind: "picks", skill: "WU", picks: [{ tags: [], count: 2 }] },
-          ],
-        },
-        null,
-      );
+      const { id } = useCustomWorkoutsStore
+        .getState()
+        .saveCustomWorkout(
+          generateTemplate(
+            [generatePicksBlock("WU", { picks: [{ tags: [], count: 2 }] })],
+            { id: "own", name: { en: "Own" } },
+          ),
+          null,
+        );
 
       const setList = generateShortWorkoutOf(id);
 
@@ -273,11 +267,11 @@ describe("TrainingGenerator", () => {
       const { id } = useCustomWorkoutsStore
         .getState()
         .saveCustomWorkout(
-          { aiwl: 1, id: "empty", name: { en: "Empty" }, blocks: [] },
+          generateTemplate([], { id: "empty", name: { en: "Empty" } }),
           null,
         );
 
-      expect(readThrownValue(() => generateShortWorkoutOf(id))).toStrictEqual({
+      expect(catchThrownValue(() => generateShortWorkoutOf(id))).toStrictEqual({
         type: "NO_EXERCISES",
         subtype: "PAIN",
         params: [],

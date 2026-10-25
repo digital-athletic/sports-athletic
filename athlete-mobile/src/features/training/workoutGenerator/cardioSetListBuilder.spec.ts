@@ -1,16 +1,16 @@
-import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { LevelTag } from "@/constants/workoutConstants";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import type { BlockValues } from "@/schemas/aiwl.schema";
 import type { SkillCode } from "@/schemas/generator.schema";
+import { generateBranchReference } from "@test/factories/branchReference";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { generateSequenceRandom } from "@test/factories/sequenceRandom";
+import { generateCardioSetListBlock } from "@test/factories/setListBlock";
 import {
   findCatalogExerciseById,
   generateAuthoredValues,
 } from "@test/factories/valueExercise";
-import { buildBranchLookupIndex } from "./branchLookupIndex";
 import {
   buildCardioSetList,
   drawCardioExercisePair,
@@ -54,14 +54,7 @@ const buildCardio = (
 ): GeneratedSetListEntry[] =>
   buildCardioSetList(
     [{ first: { branchId: "b1", branchTags: [], exerciseId } }],
-    {
-      skill,
-      minutes,
-      sets: 1,
-      rest: { withinSuperset: 10, betweenSets: 10, afterExercise: 10 },
-      setDuration,
-      values,
-    },
+    generateCardioSetListBlock(skill, minutes, { setDuration, values }),
     input ??
       generateRuleFamilyInput({
         level,
@@ -245,15 +238,13 @@ describe("cardioSetListBuilder: zone trees", () => {
   it("throws for a zone tree without a first exercise", () => {
     const skillTrees = getAllSkillTrees();
     const [branchId, branch] = Object.entries(skillTrees.CARDIO_5)[0];
-    const input: GenerationInput = {
-      ...generateRuleFamilyInput({
-        exerciseCatalog: [findCatalogExerciseById(ZONE_TWO_RUN)],
-      }),
-      branchLookupIndex: buildBranchLookupIndex({
+    const input = generateRuleFamilyInput({
+      exerciseCatalog: [findCatalogExerciseById(ZONE_TWO_RUN)],
+      skillTrees: {
         CARDIO_4: skillTrees.CARDIO_4,
         CARDIO_5: { [branchId]: { ...branch, levels: {} } },
-      }),
-    };
+      },
+    });
 
     expect(() => buildCardio("CARDIO_2", 30, { input })).toThrow(
       "Skill tree CARDIO_5 has no first exercise",
@@ -300,12 +291,7 @@ describe("cardioSetListBuilder: nothing to build", () => {
     expect(
       buildCardioSetList(
         pairs,
-        {
-          skill: "CARDIO_2",
-          minutes: 30,
-          sets: 1,
-          rest: { withinSuperset: 10, betweenSets: 10, afterExercise: 10 },
-        },
+        generateCardioSetListBlock("CARDIO_2", 30),
         generateRuleFamilyInput(),
       ),
     ).toEqual([]);
@@ -315,12 +301,7 @@ describe("cardioSetListBuilder: nothing to build", () => {
     expect(
       buildCardioSetList(
         [],
-        {
-          skill: "CARDIO_4",
-          minutes: 30,
-          sets: 1,
-          rest: { withinSuperset: 10, betweenSets: 10, afterExercise: 10 },
-        },
+        generateCardioSetListBlock("CARDIO_4", 30),
         generateRuleFamilyInput(),
       ),
     ).toEqual([]);
@@ -328,17 +309,6 @@ describe("cardioSetListBuilder: nothing to build", () => {
 });
 
 describe("cardioSetListBuilder: drawCardioExercisePair", () => {
-  /**
-   * Fakes a cardio branch reference with the exercise ID `e<id>`.
-   *
-   * generateCardioReference("run") → { branchId: "run", exerciseId: "erun", branchTags: [] }
-   */
-  const generateCardioReference = (id: string): BranchExerciseReference => ({
-    branchId: id,
-    exerciseId: `e${id}`,
-    branchTags: [],
-  });
-
   it.each([
     [0, "run"],
     [0.6, "bike"],
@@ -346,7 +316,7 @@ describe("cardioSetListBuilder: drawCardioExercisePair", () => {
     const random = jest.fn(generateSequenceRandom([draw]));
 
     const pairs = drawCardioExercisePair(
-      [generateCardioReference("run"), generateCardioReference("bike")],
+      [generateBranchReference("run"), generateBranchReference("bike")],
       random,
     );
 

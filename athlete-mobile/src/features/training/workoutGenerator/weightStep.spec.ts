@@ -1,18 +1,9 @@
-import { generateValueExercise } from "@test/factories/valueExercise";
+import {
+  generateEquipmentExercise,
+  generateValueExercise,
+} from "@test/factories/valueExercise";
 import { loadIntensityConfig } from "@/data/loadIntensityConfig";
 import { readLowestPermittedWeight, stepWeight } from "./weightStep";
-
-/**
- * Builds a weighted exercise that uses the given equipment.
- *
- * generateWeightedExercise("BARBELL")
- * → { id: "1", tags: [..., "EQ_TYPE_WEIGHTS", "EQ_BARBELL"], ... }
- */
-const generateWeightedExercise = (equipment: string) =>
-  generateValueExercise("repetition", {
-    withWeights: true,
-    tags: [`EQ_${equipment}`],
-  });
 
 describe("weightStep: stepWeight", () => {
   it.each([
@@ -25,10 +16,15 @@ describe("weightStep: stepWeight", () => {
     "lowers %p percent of F-Max without an F-Max and a lowest weight of %p to %p",
     (weight, lowestWeight, expected) => {
       expect(
-        stepWeight(weight, "DECREASE", generateWeightedExercise("KETTLEBELL"), {
-          weightType: "weightFMax",
-          lowestWeight,
-        }),
+        stepWeight(
+          weight,
+          "DECREASE",
+          generateEquipmentExercise("KETTLEBELL", { withWeights: true }),
+          {
+            weightType: "weightFMax",
+            lowestWeight,
+          },
+        ),
       ).toBeCloseTo(expected);
     },
   );
@@ -40,59 +36,89 @@ describe("weightStep: stepWeight", () => {
       stepWeight(
         70,
         "INCREASE",
-        generateWeightedExercise("KETTLEBELL"),
+        generateEquipmentExercise("KETTLEBELL", { withWeights: true }),
         options,
       ),
     ).toBeCloseTo(71.75);
     expect(
-      stepWeight(70, "INCREASE", generateWeightedExercise("KETTLEBELL"), {
-        ...options,
-        targetWeight: 71,
-      }),
+      stepWeight(
+        70,
+        "INCREASE",
+        generateEquipmentExercise("KETTLEBELL", { withWeights: true }),
+        {
+          ...options,
+          targetWeight: 71,
+        },
+      ),
     ).toBe(71);
   });
 
   it("lowers a percentage to the next real barbell load", () => {
     // 73.5 % of 100 kg rounds to 72.5 kg, 72.5 kg x 0.975 rounds to 70 kg.
     expect(
-      stepWeight(73.5, "DECREASE", generateWeightedExercise("BARBELL"), {
-        weightType: "weightFMax",
-        lowestWeight: 65,
-        maxValue: 100,
-      }),
+      stepWeight(
+        73.5,
+        "DECREASE",
+        generateEquipmentExercise("BARBELL", { withWeights: true }),
+        {
+          weightType: "weightFMax",
+          lowestWeight: 65,
+          maxValue: 100,
+        },
+      ),
     ).toBeCloseTo(70);
   });
 
   it("raises a load by 2.5 percent to the rounded load", () => {
     expect(
-      stepWeight(40, "INCREASE", generateWeightedExercise("KETTLEBELL"), {
-        weightType: "weightAbsolute",
-      }),
+      stepWeight(
+        40,
+        "INCREASE",
+        generateEquipmentExercise("KETTLEBELL", { withWeights: true }),
+        {
+          weightType: "weightAbsolute",
+        },
+      ),
     ).toBe(41);
   });
 
   it("takes the next available load when rounding keeps the current one", () => {
     expect(
-      stepWeight(8, "INCREASE", generateWeightedExercise("DUMBBELL"), {
-        weightType: "weightAbsolute",
-      }),
+      stepWeight(
+        8,
+        "INCREASE",
+        generateEquipmentExercise("DUMBBELL", { withWeights: true }),
+        {
+          weightType: "weightAbsolute",
+        },
+      ),
     ).toBe(9);
   });
 
   it("keeps the rounded load when the target weight forbids the next one", () => {
     expect(
-      stepWeight(40, "INCREASE", generateWeightedExercise("KETTLEBELL"), {
-        weightType: "weightAbsolute",
-        targetWeight: 40.5,
-      }),
+      stepWeight(
+        40,
+        "INCREASE",
+        generateEquipmentExercise("KETTLEBELL", { withWeights: true }),
+        {
+          weightType: "weightAbsolute",
+          targetWeight: 40.5,
+        },
+      ),
     ).toBe(40);
   });
 
   it("stays at the empty bar", () => {
     expect(
-      stepWeight(20, "DECREASE", generateWeightedExercise("BARBELL"), {
-        weightType: "weightAbsolute",
-      }),
+      stepWeight(
+        20,
+        "DECREASE",
+        generateEquipmentExercise("BARBELL", { withWeights: true }),
+        {
+          weightType: "weightAbsolute",
+        },
+      ),
     ).toBe(20);
   });
 });
@@ -108,7 +134,7 @@ describe("weightStep: readLowestPermittedWeight", () => {
       readLowestPermittedWeight(
         loadIntensityConfig(name),
         "weightFMax",
-        generateWeightedExercise("BARBELL"),
+        generateEquipmentExercise("BARBELL", { withWeights: true }),
         athlete,
       ),
     ).toBe(expected);
@@ -119,7 +145,7 @@ describe("weightStep: readLowestPermittedWeight", () => {
       readLowestPermittedWeight(
         loadIntensityConfig("SWR2"),
         "weightAbsolute",
-        generateWeightedExercise("BARBELL"),
+        generateEquipmentExercise("BARBELL", { withWeights: true }),
         athlete,
       ),
     ).toBeUndefined();
@@ -127,7 +153,7 @@ describe("weightStep: readLowestPermittedWeight", () => {
       readLowestPermittedWeight(
         loadIntensityConfig("GKS"),
         "weightFMax",
-        generateWeightedExercise("BARBELL"),
+        generateEquipmentExercise("BARBELL", { withWeights: true }),
         athlete,
       ),
     ).toBeUndefined();

@@ -1,21 +1,8 @@
-import { generateValueExercise } from "@test/factories/valueExercise";
+import { generateLabelledExercise } from "@test/factories/valueExercise";
 import { loadIntensityConfig } from "@/data/loadIntensityConfig";
 import { loadSkillCatalog } from "@/data/loadSkillCatalog";
 import type { SkillCatalog } from "@/schemas/skillCatalog.schema";
 import { applyBlockValuesMode, readSkillIntensity } from "./skillIntensity";
-
-/**
- * Builds the exercise a label names, or none.
- *
- * generateLabelledExercise("weighted")
- * → { id: "1", tags: [..., "EQ_TYPE_WEIGHTS"], ... }
- */
-const generateLabelledExercise = (label: "weighted" | "bodyweight" | "none") =>
-  label === "none"
-    ? undefined
-    : generateValueExercise("repetition", {
-        withWeights: label === "weighted",
-      });
 
 describe("skillIntensity: readSkillIntensity", () => {
   it.each([

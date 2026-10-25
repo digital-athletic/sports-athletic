@@ -1,31 +1,9 @@
-import { generateValueExercise } from "@test/factories/valueExercise";
-import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
-import type { MaxValuesType } from "@/features/training/models/MaxValues";
+import { generateMaxValues } from "@test/factories/maxValues";
+import { generateTaggedExercise } from "@test/factories/valueExercise";
 import { readExerciseFMax } from "./exerciseFMax";
 
-/**
- * Builds the 1RMs of a tested vertical push and knee movement.
- *
- * generateMaxValues()
- * → { ..., verticalPush: { barbell: 100, ... }, kneeDominant: { barbell: 200, ... } }
- */
-const generateMaxValues = (): MaxValuesType => ({
-  ...DEFAULT_MAX_VALUES,
-  verticalPush: { ...DEFAULT_MAX_VALUES.verticalPush, barbell: 100 },
-  kneeDominant: { ...DEFAULT_MAX_VALUES.kneeDominant, barbell: 200 },
-});
-
-/**
- * Builds an exercise with exactly the given tags.
- *
- * generateTaggedExercise(["EQ_BARBELL"])
- * → { id: "1", tags: ["EQ_BARBELL"], isAdvanceByReps: true, ... }
- */
-const generateTaggedExercise = (tags: string[], conversionFactor?: number) => ({
-  ...generateValueExercise("repetition"),
-  tags,
-  conversionFactor,
-});
+// The 1RMs of a tested vertical push and knee movement.
+const MAX_VALUES = generateMaxValues({ verticalPush: 100, kneeDominant: 200 });
 
 describe("exerciseFMax: readExerciseFMax", () => {
   it.each([
@@ -71,36 +49,35 @@ describe("exerciseFMax: readExerciseFMax", () => {
     ],
   ])("converts the 1RM for %s", (_title, tags, expected) => {
     expect(
-      readExerciseFMax(generateTaggedExercise(tags), generateMaxValues()),
+      readExerciseFMax(generateTaggedExercise("1", tags), MAX_VALUES),
     ).toBe(expected);
   });
 
   it("uses the conversion factor the catalog authors", () => {
     expect(
       readExerciseFMax(
-        generateTaggedExercise(["EXERCISE_DIRECTION_KNEE", "EQ_BARBELL"], 0.3),
-        generateMaxValues(),
+        generateTaggedExercise("1", ["EXERCISE_DIRECTION_KNEE", "EQ_BARBELL"], {
+          conversionFactor: 0.3,
+        }),
+        MAX_VALUES,
       ),
     ).toBe(60);
   });
 
   it("returns undefined without a movement direction or without its 1RM", () => {
     expect(
+      readExerciseFMax(generateTaggedExercise("1", ["EQ_BARBELL"]), MAX_VALUES),
+    ).toBeUndefined();
+    expect(
       readExerciseFMax(
-        generateTaggedExercise(["EQ_BARBELL"]),
-        generateMaxValues(),
+        generateTaggedExercise("1", ["EXERCISE_DIRECTION_HIP", "EQ_BARBELL"]),
+        MAX_VALUES,
       ),
     ).toBeUndefined();
     expect(
       readExerciseFMax(
-        generateTaggedExercise(["EXERCISE_DIRECTION_HIP", "EQ_BARBELL"]),
-        generateMaxValues(),
-      ),
-    ).toBeUndefined();
-    expect(
-      readExerciseFMax(
-        generateTaggedExercise(["EXERCISE_DIRECTION_VERTICAL_PUSH"]),
-        { ...generateMaxValues(), verticalPush: { barbell: Number.NaN } },
+        generateTaggedExercise("1", ["EXERCISE_DIRECTION_VERTICAL_PUSH"]),
+        { ...MAX_VALUES, verticalPush: { barbell: Number.NaN } },
       ),
     ).toBeUndefined();
   });

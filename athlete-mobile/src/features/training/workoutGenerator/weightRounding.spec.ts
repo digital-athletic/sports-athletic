@@ -1,14 +1,5 @@
-import { generateValueExercise } from "@test/factories/valueExercise";
+import { generateEquipmentExercise } from "@test/factories/valueExercise";
 import { roundWeight } from "./weightRounding";
-
-/**
- * Builds an exercise that uses the given equipment.
- *
- * generateEquipmentExercise("BARBELL")
- * → { id: "1", tags: ["REGION_UPPER_BODY", "SIDE_BOTH", "EQ_BARBELL"], ... }
- */
-const generateEquipmentExercise = (equipment: string) =>
-  generateValueExercise("repetition", { tags: [`EQ_${equipment}`] });
 
 describe("weightRounding: roundWeight", () => {
   it("rounds a barbell total load to the nearest 2.5 kg", () => {

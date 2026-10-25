@@ -1,26 +1,12 @@
 import { loadSkillCatalog, parseSkillCatalog } from "@/data/loadSkillCatalog";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import type { UserType } from "@/schemas/user.schema";
+import { generateAthlete } from "@test/factories/athlete";
+import { generateTreeBranch } from "@test/factories/skillTree";
 import {
   buildBranchLookupIndex,
   loadBranchLookupIndex,
 } from "./branchLookupIndex";
 import { createGenerationInput } from "./generationInput";
-
-/**
- * Builds an athlete with the given muscle soreness tags.
- *
- * generateAthlete(["CHEST"])
- * → { userId: "athlete", temporalData: [{ tag: "CHEST", date: "2026-10-24", expiration: "2026-10-25" }] }
- */
-const generateAthlete = (sorenessTags: string[] = []): UserType => ({
-  userId: "athlete",
-  temporalData: sorenessTags.map((tag) => ({
-    tag,
-    date: "2026-10-24",
-    expiration: "2026-10-25",
-  })),
-});
 
 describe("generationInput: createGenerationInput", () => {
   it("holds the given inputs and loads the catalogs and the index", () => {
@@ -49,7 +35,7 @@ describe("generationInput: createGenerationInput", () => {
 
   it("reads the muscle soreness from the athlete", () => {
     const input = createGenerationInput({
-      athlete: generateAthlete(["CHEST", "QUADRICEPS"]),
+      athlete: generateAthlete({ soreMuscles: ["CHEST", "QUADRICEPS"] }),
       place: "STUDIO",
       equipment: [],
       exerciseCatalog: [],
@@ -64,7 +50,10 @@ describe("generationInput: createGenerationInput", () => {
 
   it("holds no muscle soreness for an athlete without marks", () => {
     const input = createGenerationInput({
-      athlete: { userId: "athlete" },
+      athlete: generateAthlete({
+        withoutPersonalData: true,
+        withoutWorkoutData: true,
+      }),
       place: "STUDIO",
       equipment: [],
       exerciseCatalog: [],
@@ -77,7 +66,7 @@ describe("generationInput: createGenerationInput", () => {
   it("uses a given random source and branch lookup index", () => {
     const random = () => 0.5;
     const branchLookupIndex = buildBranchLookupIndex({
-      GKS: { "1": { tags: [], levels: { 1: { exerciseId: "10" } } } },
+      GKS: { "1": generateTreeBranch(["10"]) },
     });
 
     const input = createGenerationInput({

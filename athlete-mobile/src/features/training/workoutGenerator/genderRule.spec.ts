@@ -1,13 +1,13 @@
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
+import { generateTaggedBranches } from "@test/factories/skillTree";
 import { filterBranchesByGender } from "./genderRule";
 
 describe("genderRule: filterBranchesByGender", () => {
   it("keeps the branches of the athlete's gender and the untagged ones", () => {
-    const branches = {
-      "1": { tags: ["GENDER_MALE"], levels: {} },
-      "2": { tags: ["GENDER_FEMALE"], levels: {} },
-      "3": { tags: [], levels: {} },
-    };
+    const branches = generateTaggedBranches(
+      { "1": ["GENDER_MALE"], "2": ["GENDER_FEMALE"], "3": [] },
+      {},
+    );
 
     const result = filterBranchesByGender(
       branches,
@@ -22,11 +22,10 @@ describe("genderRule: filterBranchesByGender", () => {
   });
 
   it("keeps the branches of a female athlete and the untagged ones", () => {
-    const branches = {
-      "1": { tags: ["GENDER_MALE"], levels: {} },
-      "2": { tags: ["GENDER_FEMALE"], levels: {} },
-      "3": { tags: [], levels: {} },
-    };
+    const branches = generateTaggedBranches(
+      { "1": ["GENDER_MALE"], "2": ["GENDER_FEMALE"], "3": [] },
+      {},
+    );
 
     const result = filterBranchesByGender(
       branches,
@@ -40,12 +39,13 @@ describe("genderRule: filterBranchesByGender", () => {
   });
 
   it("follows the female rules for an athlete without a gender", () => {
-    const branches = {
-      "1": { tags: ["GENDER_MALE"], levels: {} },
-      "2": { tags: ["GENDER_FEMALE"], levels: {} },
-    };
-    const input = generateRuleFamilyInput();
-    const inputWithoutGender = { ...input, athlete: { userId: "athlete" } };
+    const branches = generateTaggedBranches(
+      { "1": ["GENDER_MALE"], "2": ["GENDER_FEMALE"] },
+      {},
+    );
+    const inputWithoutGender = generateRuleFamilyInput({
+      withoutPersonalData: true,
+    });
 
     const result = filterBranchesByGender(branches, inputWithoutGender);
 

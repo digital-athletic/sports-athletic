@@ -1,6 +1,7 @@
 import { loadExercises } from "@/data/loadExercises";
-import { getSkillTree } from "@/data/skillTreeRegistry";
-import type { SkillBranchType } from "@/schemas/skillTree.schema";
+import { generateBranchLevel } from "@test/factories/generationInput";
+import { generateSkillTreeBranches } from "@test/factories/ruleFamilyInput";
+import { generateSkillBranch } from "@test/factories/skillTree";
 import {
   mapFitnessLevelToEntryLevel,
   resolveBranchExercise,
@@ -8,36 +9,12 @@ import {
   resolveBranchLevel,
 } from "./branchResolution";
 
-/**
- * Reads a branch of a shipped skill tree and fails the spec when it is gone.
- *
- * readShippedBranch("SKKG", "253")
- * → { tags: [...], levels: { 1: { exerciseId: "290" }, 2: { exerciseId: "516" }, 4: { exerciseId: "234" } } }
- */
-const readShippedBranch = (
-  skillTreeName: "SKKG",
-  branchId: string,
-): SkillBranchType => {
-  const branch = getSkillTree(skillTreeName)?.[branchId];
-  if (!branch) {
-    throw new Error(`Unknown branch ${branchId} in ${skillTreeName}`);
-  }
-  return branch;
-};
+const SQUAT_BRANCH_ID = "253";
 
 // The bodyweight squat branch, authored at levels 1, 2 and 4.
-const squatBranch = readShippedBranch("SKKG", "253");
-
-/**
- * Builds the athlete's stored branch level.
- *
- * generateAthleteBranchLevel(4)
- * → { branchId: "253", level: 4 }
- */
-const generateAthleteBranchLevel = (level: number) => ({
-  branchId: "253",
-  level,
-});
+const squatBranch = generateSkillTreeBranches("SKKG", [SQUAT_BRANCH_ID])[
+  SQUAT_BRANCH_ID
+];
 
 describe("branchResolution: mapFitnessLevelToEntryLevel", () => {
   it.each([
@@ -68,7 +45,7 @@ describe("branchResolution: resolveBranchLevel", () => {
       resolveBranchLevel(
         squatBranch,
         "BEGINNER",
-        generateAthleteBranchLevel(4),
+        generateBranchLevel(SQUAT_BRANCH_ID, 4),
       ),
     ).toBe(4);
   });
@@ -78,23 +55,25 @@ describe("branchResolution: resolveBranchLevel", () => {
       resolveBranchLevel(
         squatBranch,
         "PROFESSIONAL",
-        generateAthleteBranchLevel(3),
+        generateBranchLevel(SQUAT_BRANCH_ID, 3),
       ),
     ).toBe(2);
     expect(
       resolveBranchLevel(
         squatBranch,
         "ADVANCED",
-        generateAthleteBranchLevel(0),
+        generateBranchLevel(SQUAT_BRANCH_ID, 0),
       ),
     ).toBe(2);
   });
 
   it("returns null when no level at or below the entry level exists", () => {
-    const branch = { tags: [], levels: { 3: { exerciseId: "10" } } };
+    const branch = generateSkillBranch([], { 3: { exerciseId: "10" } });
 
     expect(resolveBranchLevel(branch, "ADVANCED")).toBeNull();
-    expect(resolveBranchLevel({ tags: [], levels: {} }, "BEGINNER")).toBeNull();
+    expect(
+      resolveBranchLevel(generateSkillBranch([], {}), "BEGINNER"),
+    ).toBeNull();
   });
 });
 
@@ -106,7 +85,7 @@ describe("branchResolution: resolveBranchExerciseId", () => {
       resolveBranchExerciseId(
         squatBranch,
         "BEGINNER",
-        generateAthleteBranchLevel(4),
+        generateBranchLevel(SQUAT_BRANCH_ID, 4),
       ),
     ).toBe("234");
   });
@@ -117,13 +96,13 @@ describe("branchResolution: resolveBranchExerciseId", () => {
 
     expect(
       resolveBranchExerciseId(
-        { tags: [], levels: { 1: legacyLevel } },
+        generateSkillBranch([], { 1: legacyLevel }),
         "BEGINNER",
       ),
     ).toBe("77");
     expect(
       resolveBranchExerciseId(
-        { tags: [], levels: { 1: emptyLevel } },
+        generateSkillBranch([], { 1: emptyLevel }),
         "BEGINNER",
       ),
     ).toBeNull();
@@ -131,7 +110,7 @@ describe("branchResolution: resolveBranchExerciseId", () => {
 
   it("returns null without a resolvable level", () => {
     expect(
-      resolveBranchExerciseId({ tags: [], levels: {} }, "PROFESSIONAL"),
+      resolveBranchExerciseId(generateSkillBranch([], {}), "PROFESSIONAL"),
     ).toBeNull();
   });
 
@@ -162,7 +141,7 @@ describe("branchResolution: resolveBranchExercise", () => {
         squatBranch,
         "BEGINNER",
         exerciseCatalog,
-        generateAthleteBranchLevel(4),
+        generateBranchLevel(SQUAT_BRANCH_ID, 4),
       )?.id,
     ).toBe("234");
   });
@@ -175,7 +154,7 @@ describe("branchResolution: resolveBranchExercise", () => {
     ).toBeNull();
     expect(
       resolveBranchExercise(
-        { tags: [], levels: { 1: { exerciseId: "-1" } } },
+        generateSkillBranch([], { 1: { exerciseId: "-1" } }),
         "BEGINNER",
         exerciseCatalog,
       ),
@@ -185,7 +164,7 @@ describe("branchResolution: resolveBranchExercise", () => {
   it("returns null without a resolvable level", () => {
     expect(
       resolveBranchExercise(
-        { tags: [], levels: {} },
+        generateSkillBranch([], {}),
         "ADVANCED",
         exerciseCatalog,
       ),

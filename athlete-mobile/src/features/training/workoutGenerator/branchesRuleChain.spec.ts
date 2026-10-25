@@ -1,23 +1,7 @@
 import { loadExercises } from "@/data/loadExercises";
-import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
+import { generateStoredBranches } from "@test/factories/storedBranch";
 import { applyBranchesRuleChain } from "./branchesRuleChain";
-import type { StoredBranch } from "./storedBranchLookup";
-
-/**
- * Lists catalog branches of one skill tree as a branches block stores them.
- *
- * generateStoredBranches("GKS", ["523", "510"])
- * → [{ branchId: "523", branch: { tags: [...], levels: {...} } }, { branchId: "510", ... }]
- */
-const generateStoredBranches = (
-  treeName: string,
-  branchIds: string[],
-): StoredBranch[] =>
-  branchIds.map((branchId) => ({
-    branchId,
-    branch: getAllSkillTrees()[treeName][branchId],
-  }));
 
 const exerciseCatalog = loadExercises();
 

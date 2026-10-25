@@ -1,25 +1,16 @@
-import { loadExercises } from "@/data/loadExercises";
-import type { ExerciseType } from "@/schemas/exercise.schema";
 import {
   generateRuleFamilyInput,
   generateSkillTreeBranches,
 } from "@test/factories/ruleFamilyInput";
 import {
+  generateTaggedBranches,
+  generateTreeBranch,
+} from "@test/factories/skillTree";
+import { generateTaggedExercise } from "@test/factories/valueExercise";
+import {
   filterBranchesByPain,
   filterBranchesByPainOnEveryLevel,
 } from "./painRule";
-
-/**
- * Copies the first real catalog exercise with the given ID and tags.
- *
- * generateCatalogExercise("900", ["BLOCK_KNEE"])
- * → { ...first catalog exercise, id: "900", tags: ["BLOCK_KNEE"] }
- */
-const generateCatalogExercise = (id: string, tags: string[]): ExerciseType => ({
-  ...loadExercises()[0],
-  id,
-  tags,
-});
 
 describe("painRule: filterBranchesByPain", () => {
   it("removes a branch whose block tags name a region the pains block", () => {
@@ -37,10 +28,10 @@ describe("painRule: filterBranchesByPain", () => {
 
   it("names the first blocked region in pain order for each removal", () => {
     const input = generateRuleFamilyInput({ pains: ["SPINE", "KNEE_RIGHT"] });
-    const branches = {
-      "1": { tags: ["BLOCK_KNEE", "BLOCK_SPINE"], levels: {} },
-      "2": { tags: ["BLOCK_KNEE"], levels: {} },
-    };
+    const branches = generateTaggedBranches(
+      { "1": ["BLOCK_KNEE", "BLOCK_SPINE"], "2": ["BLOCK_KNEE"] },
+      {},
+    );
 
     const result = filterBranchesByPain(branches, input);
 
@@ -63,11 +54,9 @@ describe("painRule: filterBranchesByPain", () => {
   it("reads the branch tags only, not the tags of its level exercises", () => {
     const input = generateRuleFamilyInput({
       pains: ["KNEE_LEFT"],
-      exerciseCatalog: [generateCatalogExercise("901", ["BLOCK_KNEE"])],
+      exerciseCatalog: [generateTaggedExercise("901", ["BLOCK_KNEE"])],
     });
-    const branches = {
-      "1": { tags: [], levels: { 1: { exerciseId: "901" } } },
-    };
+    const branches = { "1": generateTreeBranch(["901"]) };
 
     expect(filterBranchesByPain(branches, input).keep).toEqual(branches);
   });
@@ -78,17 +67,14 @@ describe("painRule: filterBranchesByPainOnEveryLevel", () => {
     const input = generateRuleFamilyInput({
       pains: ["KNEE_LEFT"],
       exerciseCatalog: [
-        generateCatalogExercise("900", []),
-        generateCatalogExercise("901", ["BLOCK_KNEE"]),
+        generateTaggedExercise("900", []),
+        generateTaggedExercise("901", ["BLOCK_KNEE"]),
       ],
     });
     const branches = {
-      "1": { tags: [], levels: { 1: { exerciseId: "900" } } },
-      "2": {
-        tags: [],
-        levels: { 1: { exerciseId: "900" }, 2: { exerciseId: "901" } },
-      },
-      "3": { tags: ["BLOCK_KNEE"], levels: { 1: { exerciseId: "900" } } },
+      "1": generateTreeBranch(["900"]),
+      "2": generateTreeBranch(["900", "901"]),
+      "3": generateTreeBranch(["900"], ["BLOCK_KNEE"]),
     };
 
     const result = filterBranchesByPainOnEveryLevel(branches, input);
@@ -104,7 +90,7 @@ describe("painRule: filterBranchesByPainOnEveryLevel", () => {
   it("reads the levels of a stored branch from its exercises", () => {
     const input = generateRuleFamilyInput({
       pains: ["KNEE_LEFT"],
-      exerciseCatalog: [generateCatalogExercise("901", ["BLOCK_KNEE"])],
+      exerciseCatalog: [generateTaggedExercise("901", ["BLOCK_KNEE"])],
     });
     const branches = {
       "2": { tags: [], exercises: { 1: { exerciseId: "901" } } },
@@ -116,7 +102,7 @@ describe("painRule: filterBranchesByPainOnEveryLevel", () => {
   it("reads a level without an exercise ID as a level without block tags", () => {
     const input = generateRuleFamilyInput({
       pains: ["KNEE_LEFT"],
-      exerciseCatalog: [generateCatalogExercise("901", ["BLOCK_KNEE"])],
+      exerciseCatalog: [generateTaggedExercise("901", ["BLOCK_KNEE"])],
     });
     const branches = {
       "1": { tags: [], levels: { 1: {} } },
@@ -130,9 +116,7 @@ describe("painRule: filterBranchesByPainOnEveryLevel", () => {
 
   it("keeps a branch whose level exercise is missing from the catalog", () => {
     const input = generateRuleFamilyInput({ pains: ["KNEE_LEFT"] });
-    const branches = {
-      "1": { tags: [], levels: { 1: { exerciseId: "999" } } },
-    };
+    const branches = { "1": generateTreeBranch(["999"]) };
 
     expect(filterBranchesByPainOnEveryLevel(branches, input).keep).toEqual(
       branches,
@@ -142,11 +126,9 @@ describe("painRule: filterBranchesByPainOnEveryLevel", () => {
   it("names only the regions that block the removed branch", () => {
     const input = generateRuleFamilyInput({
       pains: ["KNEE_LEFT", "SPINE"],
-      exerciseCatalog: [generateCatalogExercise("901", ["BLOCK_KNEE"])],
+      exerciseCatalog: [generateTaggedExercise("901", ["BLOCK_KNEE"])],
     });
-    const branches = {
-      "1": { tags: [], levels: { 1: { exerciseId: "901" } } },
-    };
+    const branches = { "1": generateTreeBranch(["901"]) };
 
     const result = filterBranchesByPainOnEveryLevel(branches, input);
 

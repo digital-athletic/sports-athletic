@@ -28,6 +28,17 @@ const generateLowerBodyBranch = (
 });
 
 /**
+ * Builds an upper body branch on exercise 431 with the given tags.
+ *
+ * generateUpperBodyBranch(["EQ_TYPE_KG"])
+ * → { tags: ["REGION_UPPER_BODY", "SIDE_BOTH", "EQ_TYPE_KG"], levels: { 1: { exerciseId: "431" } } }
+ */
+const generateUpperBodyBranch = (tags: string[]): SkillTreeType[string] => ({
+  tags: ["REGION_UPPER_BODY", "SIDE_BOTH", ...tags],
+  levels: { 1: { exerciseId: "431" } },
+});
+
+/**
  * Builds catalog exercises with the given IDs from a real exercise.
  *
  * generateCatalogExercises(["e1"]) → [{ ...Exercises.json[0], id: "e1", tags: ["REGION_LOWER_BODY"] }]
@@ -212,14 +223,12 @@ describe("branchReplacement: replaceBlockedBranches", () => {
   });
 
   it("replaces from the weighted tree for a child when the place has weights", () => {
-    const upperBodyBranch = (tags: string[]) => ({
-      tags: ["REGION_UPPER_BODY", "SIDE_BOTH", ...tags],
-      levels: { 1: { exerciseId: "431" } },
-    });
     const input = generateReplacementInput({
       skillTrees: {
-        SWR1: { "1": upperBodyBranch(["EQ_DUMBBELL", "EQ_TYPE_WEIGHTS"]) },
-        SWR1KG: { "2": upperBodyBranch(["EQ_TYPE_KG"]) },
+        SWR1: {
+          "1": generateUpperBodyBranch(["EQ_DUMBBELL", "EQ_TYPE_WEIGHTS"]),
+        },
+        SWR1KG: { "2": generateUpperBodyBranch(["EQ_TYPE_KG"]) },
       },
       birthday: "2014-01-01",
       equipment: ["DUMBBELL"],
@@ -389,6 +398,38 @@ describe("branchReplacement: replaceBlockedBranches", () => {
       ),
     ).toEqual([]);
   });
+
+  // the third slot finds only branch 3, which has no region tag, so no region holds a branch
+  it("returns nothing for a prevention skill whose replacement stops without a region branch", () => {
+    const input = generateReplacementInput({
+      skillTrees: {
+        PREVKG: {
+          "1": generateLowerBodyBranch({ 1: { exerciseId: "e1" } }, [
+            "PREVENTION_KNEE",
+          ]),
+          "2": generateLowerBodyBranch({ 1: { exerciseId: "e2" } }, [
+            "PREVENTION_KNEE",
+          ]),
+          "3": {
+            tags: ["PREVENTION_KNEE", "SIDE_BOTH"],
+            levels: { 1: { exerciseId: "e3" } },
+          },
+        },
+      },
+      pains: ["KNEE_LEFT"],
+    });
+
+    expect(
+      replaceBlockedBranches(
+        {
+          skill: "PREVKNEE",
+          replace: ["LOWER_BODY", "LOWER_BODY", "LOWER_BODY"],
+          usedBranchIds: [],
+        },
+        input,
+      ),
+    ).toEqual([]);
+  });
 });
 
 describe("branchReplacement: isPreventionOrSpecialWarmUpSkill", () => {
@@ -398,7 +439,10 @@ describe("branchReplacement: isPreventionOrSpecialWarmUpSkill", () => {
     ["WUSPEZIAL", true],
     ["WU", false],
     ["GKS", false],
-  ])("returns %s as %s", (skill, expected) => {
-    expect(isPreventionOrSpecialWarmUpSkill(skill)).toBe(expected);
-  });
+  ])(
+    "reads %s as a skill that refills all slots or none: %s",
+    (skill, expected) => {
+      expect(isPreventionOrSpecialWarmUpSkill(skill)).toBe(expected);
+    },
+  );
 });

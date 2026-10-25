@@ -23,17 +23,6 @@ const generateBranchesBlock = (
 
 const exerciseCatalog = loadExercises();
 const NO_BRANCHES = new Set<string>();
-// the first eight branches of the PREVKG tree
-const PREVENTION_BRANCH_IDS = [
-  "102",
-  "103",
-  "104",
-  "146",
-  "147",
-  "148",
-  "149",
-  "150",
-];
 
 describe("branchesHandler: createBranchesBlockHandler", () => {
   const { handleBlock, usedBranchScope } = createBranchesBlockHandler(
@@ -125,8 +114,18 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
       random: () => 0,
     });
 
+    // the first eight branches of the PREVKG tree
     const result = handleBlock(
-      generateBranchesBlock("PREVSHOULDER", PREVENTION_BRANCH_IDS),
+      generateBranchesBlock("PREVSHOULDER", [
+        "102",
+        "103",
+        "104",
+        "146",
+        "147",
+        "148",
+        "149",
+        "150",
+      ]),
       input,
       NO_BRANCHES,
     );
@@ -147,7 +146,17 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
       }),
       random: () => 0,
     });
-    const block = generateBranchesBlock("PREVKNEE", PREVENTION_BRANCH_IDS);
+    // the first eight branches of the PREVKG tree
+    const block = generateBranchesBlock("PREVKNEE", [
+      "102",
+      "103",
+      "104",
+      "146",
+      "147",
+      "148",
+      "149",
+      "150",
+    ]);
 
     expect(handleBlock(block, input, NO_BRANCHES)).toEqual({
       status: "empty",

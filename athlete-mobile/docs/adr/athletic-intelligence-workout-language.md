@@ -40,7 +40,7 @@ The generator runs these workout sources:
 | Workout source | Generator | Template | Block kinds |
 |---|---|---|---|
 | Short workout (focus training, prevention training) | AIWL generator | Bundled template | `picks` and `branches`, alone or mixed |
-| Training day, AIWL generator flag on | AIWL generator | The generator writes the stored training day as a template at generation time | `branches`, one block per stored skill |
+| Training day, AIWL generator flag on | AIWL generator | The generator runs the stored training day as a [stored day workout](./workout-generator-architecture.md#stored-workouts), which is no AIWL document | `branches`, one block per stored skill |
 | Training day, flag off (default) | Old training day path | none | none |
 | Strength test | Old path | none | none |
 | Trainer workout | none | No editor exists | `duration` (planned) |
@@ -53,7 +53,7 @@ The schema accepts three parts the generator rejects with `OTHER/BLOCK_KIND` unt
 2. the `order` field of any block
 3. the `bodyParts` field of a picks block
 
-A stored training day template holds none of them, so the check fires for short workouts only.
+A stored day workout holds none of them, so the check fires for short workouts only.
 
 ## Schema
 
@@ -385,7 +385,7 @@ AIWL follows none of them. The set list the generator produces fits fixed steps 
 - Pro: the AIWL path reproduces the 13 bundled trainings, except BR at a place without foam roller or foam ball.
 - Pro: templates stay short, since the skill catalog supplies the skill values.
 - Con: the generator supports picks and branches blocks only. Duration blocks, and the `order` and `bodyParts` fields, fail with `BLOCK_KIND` until a follow-up implements them.
-- Con: training days still store branch entries and minutes. The generator writes them as a template at generation time, and only with the AIWL generator flag on. With the flag off, training days run the old path.
+- Con: training days still store branch entries and minutes. The generator runs them as a stored day workout, and only with the AIWL generator flag on. With the flag off, training days run the old path.
 - Con: `duration` means a length or a minutes table key, depending on the block type.
 - Con: the generator picks `afterExercise` or `betweenSets` for the rest after an exercise, by the next exercise. A template that wants one rest after every exercise sets both fields to the same value.
 - Con: the bundled templates deviate from the catalog rests. `PREV` rests 30 s between sets and after each exercise. Full-body stability rests 45 s everywhere. Leg axis stability rests 30 s between sets and after each exercise. `STABILITY` rests 30 s between sets and pairs its exercises in draw order. The shoulder, knee, wrist, ankle, and spine trainings keep the catalog rests in their prevention block.

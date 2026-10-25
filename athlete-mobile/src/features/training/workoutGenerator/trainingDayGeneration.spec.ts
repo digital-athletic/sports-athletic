@@ -63,6 +63,41 @@ describe("trainingDayGeneration: generateTrainingDayFromStoredDay", () => {
     expect(setList.map(({ duration }) => duration)).toEqual([750]);
   });
 
+  // the old generator runs stored minutes times 60 without rounding
+  it("runs 0.01 stored minutes as 0.6 seconds like the old generator", () => {
+    const setList = generateTrainingDayFromStoredDay(
+      generateStoredTrainingDay(
+        { CARDIO_5: ["576"] },
+        { CARDIO_5: 0.01 },
+        "721",
+      ),
+      generateGenerationInput({ exerciseCatalog, random: () => 0 }),
+    );
+
+    expect(setList.map(({ duration }) => duration)).toEqual([0.6]);
+  });
+
+  it("drops a skill without branches when another skill fills the day", () => {
+    const setList = generateTrainingDayFromStoredDay(
+      generateStoredTrainingDay(
+        { WU: [], CARDIO_5: ["576"] },
+        { WU: 5, CARDIO_5: 25 },
+        "721",
+      ),
+      generateGenerationInput({ exerciseCatalog, random: () => 0 }),
+    );
+
+    expect(setList).toEqual([
+      {
+        branchId: "576",
+        exerciseId: "721",
+        set: [1, 1],
+        skill: "CARDIO_5",
+        duration: 1500,
+      },
+    ]);
+  });
+
   it("swaps a cardio skill that lower body soreness blocks for CARDIO_5 of at most 20 minutes", () => {
     const setList = generateTrainingDayFromStoredDay(
       generateStoredTrainingDay({ CARDIO_3: ["580"] }, { CARDIO_3: 30 }, "721"),

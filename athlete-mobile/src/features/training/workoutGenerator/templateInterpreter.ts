@@ -1,8 +1,8 @@
-import type { Template } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { GenerationInput } from "./generationInput/generationInput";
 import {
   type BlockHandlerRegistry,
+  type InterpretedWorkout,
   walkTemplateBlocks,
 } from "./stages/blockWalk";
 import {
@@ -26,7 +26,7 @@ export interface TemplateInterpreterOptions<TEntry> {
  * finish. The handlers and the set list builder read one workout input.
  */
 export const interpretTemplate = <TEntry>(
-  template: Template,
+  template: InterpretedWorkout,
   input: GenerationInput,
   {
     handlers,

@@ -1,4 +1,4 @@
-import type { StoredTrainingDay } from "@/features/training/workoutGenerator/storedDayTemplate";
+import type { StoredTrainingDay } from "@/features/training/workoutGenerator/storedDayWorkout";
 import { generateStoredDayEntry } from "./storedBranch";
 
 /**

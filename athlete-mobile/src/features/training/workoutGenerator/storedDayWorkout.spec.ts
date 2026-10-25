@@ -1,40 +1,61 @@
+import * as v from "valibot";
+import { TemplateSchema } from "@/schemas/aiwl.schema";
 import { generateStoredTrainingDay } from "@test/factories/storedTrainingDay";
 import { generateStoredDayEntry } from "@test/factories/storedBranch";
-import { createStoredDayTemplate } from "./storedDayTemplate";
+import { createStoredDayWorkout } from "./storedDayWorkout";
 
-describe("storedDayTemplate: createStoredDayTemplate", () => {
+describe("storedDayWorkout: createStoredDayWorkout", () => {
   it("writes one branches block per stored skill in stored order, not section order", () => {
-    const template = createStoredDayTemplate(
+    const workout = createStoredDayWorkout(
       generateStoredTrainingDay({ CD: ["1"], WU: ["2"], GKS: ["3"] }),
     );
 
-    expect(template.blocks.map(({ skill }) => skill)).toEqual([
+    expect(workout.blocks.map(({ skill }) => skill)).toEqual([
       "CD",
       "WU",
       "GKS",
     ]);
   });
 
-  it("names the template as a training day", () => {
-    expect(createStoredDayTemplate(generateStoredTrainingDay())).toMatchObject({
-      aiwl: 1,
+  it("writes the training day ID and the blocks only", () => {
+    const workout = createStoredDayWorkout(
+      generateStoredTrainingDay({ GKS: ["510", "523"] }, { GKS: 15 }),
+    );
+
+    expect(workout).toStrictEqual({
       id: "TRAINING_DAY",
-      name: { en: "Training day" },
+      blocks: [
+        {
+          kind: "branches",
+          skill: "GKS",
+          branches: ["510", "523"],
+          duration: 900,
+        },
+      ],
     });
   });
 
+  // Even a stored day that follows the language rules lacks the document header.
+  it("never passes the workout document schema", () => {
+    const workout = createStoredDayWorkout(
+      generateStoredTrainingDay({ GKS: ["510"] }, { GKS: 15 }),
+    );
+
+    expect(v.is(TemplateSchema, workout)).toBe(false);
+  });
+
   it("lists the branch IDs of a skill in stored order, repeats included", () => {
-    const template = createStoredDayTemplate(
+    const workout = createStoredDayWorkout(
       generateStoredTrainingDay({ SWR1: ["30", "4", "30", "100"] }),
     );
 
-    expect(template.blocks[0]).toMatchObject({
+    expect(workout.blocks[0]).toMatchObject({
       branches: ["30", "4", "30", "100"],
     });
   });
 
   it("drops entries without a branch ID", () => {
-    const template = createStoredDayTemplate({
+    const workout = createStoredDayWorkout({
       ...generateStoredTrainingDay(),
       skills: {
         SWR1: [
@@ -46,17 +67,17 @@ describe("storedDayTemplate: createStoredDayTemplate", () => {
       },
     });
 
-    expect(template.blocks[0]).toMatchObject({ branches: ["30", "4"] });
+    expect(workout.blocks[0]).toMatchObject({ branches: ["30", "4"] });
   });
 
   // a skill without branches still runs through the rule chain and can name
-  // the error of an empty day
-  it("keeps a block for a skill without branches", () => {
-    const template = createStoredDayTemplate(
+  // the error of an empty day, as in the old generator
+  it("keeps a block with an empty branch list for a skill without branches", () => {
+    const workout = createStoredDayWorkout(
       generateStoredTrainingDay({ WU: [], GKS: ["510"] }),
     );
 
-    expect(template.blocks).toMatchObject([
+    expect(workout.blocks).toMatchObject([
       { skill: "WU", branches: [] },
       { skill: "GKS", branches: ["510"] },
     ]);
@@ -64,26 +85,27 @@ describe("storedDayTemplate: createStoredDayTemplate", () => {
 
   it("writes no block for a day without skills", () => {
     expect(
-      createStoredDayTemplate(generateStoredTrainingDay({}, { BR: 5 })).blocks,
+      createStoredDayWorkout(generateStoredTrainingDay({}, { BR: 5 })).blocks,
     ).toEqual([]);
   });
 
   it("writes the minutes of a skill as seconds", () => {
-    const template = createStoredDayTemplate(
+    const workout = createStoredDayWorkout(
       generateStoredTrainingDay(
         { WU: ["1"], SWR1: ["2"], CD: ["3"] },
         { WU: 5, SWR1: 25, CD: 10 },
       ),
     );
 
-    expect(template.blocks).toMatchObject([
+    expect(workout.blocks).toMatchObject([
       { duration: 300 },
       { duration: 1500 },
       { duration: 600 },
     ]);
   });
 
-  // Rounding to whole seconds would change a stored 0.01 minutes to 1 second.
+  // The old generator multiplies stored minutes by 60 without rounding, so a
+  // stored 0.01 minutes runs 0.6 seconds there too.
   it.each([
     [12.5, 750],
     [0.5, 30],
@@ -91,11 +113,11 @@ describe("storedDayTemplate: createStoredDayTemplate", () => {
   ])(
     "keeps %s fractional minutes as %s seconds without rounding",
     (minutes, seconds) => {
-      const template = createStoredDayTemplate(
+      const workout = createStoredDayWorkout(
         generateStoredTrainingDay({ CARDIO_2: ["1"] }, { CARDIO_2: minutes }),
       );
 
-      expect(template.blocks[0]).toMatchObject({ duration: seconds });
+      expect(workout.blocks[0]).toMatchObject({ duration: seconds });
     },
   );
 
@@ -105,33 +127,18 @@ describe("storedDayTemplate: createStoredDayTemplate", () => {
     ["missing minutes", {}],
     ["a minutes entry of another skill", { WU: 5 }],
   ])("writes no duration for %s", (_label, minutes) => {
-    const template = createStoredDayTemplate(
+    const workout = createStoredDayWorkout(
       generateStoredTrainingDay({ SK: ["1"] }, minutes),
     );
 
-    expect(template.blocks[0]).not.toHaveProperty("duration");
+    expect(workout.blocks[0]).not.toHaveProperty("duration");
   });
 
   it("reads the minutes of a skill by its own key only", () => {
-    const template = createStoredDayTemplate(
+    const workout = createStoredDayWorkout(
       generateStoredTrainingDay({ constructor: ["1"] }),
     );
 
-    expect(template.blocks[0]).not.toHaveProperty("duration");
-  });
-
-  it("writes only the kind, skill, branches and duration of a block", () => {
-    const template = createStoredDayTemplate(
-      generateStoredTrainingDay({ GKS: ["510", "523"] }, { GKS: 15 }),
-    );
-
-    expect(template.blocks).toStrictEqual([
-      {
-        kind: "branches",
-        skill: "GKS",
-        branches: ["510", "523"],
-        duration: 900,
-      },
-    ]);
+    expect(workout.blocks[0]).not.toHaveProperty("duration");
   });
 });

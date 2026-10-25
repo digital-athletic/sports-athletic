@@ -125,6 +125,22 @@ export const generateLowerBodyExercises = (ids: string[]): ExerciseType[] =>
   ids.map((id) => generateTaggedExercise(id, ["REGION_LOWER_BODY"]));
 
 /**
+ * Builds the catalog of the exercises e1 to e4 that generateMixedSkillTrees
+ * trains, each a two sided chest exercise.
+ *
+ * generateMixedExerciseCatalog()
+ * → [{ id: "e1", tags: ["REGION_UPPER_BODY", "MUSCLE_CHEST", "SIDE_BOTH"], ... }, ..., { id: "e4", ... }]
+ */
+export const generateMixedExerciseCatalog = (): ExerciseType[] =>
+  ["e1", "e2", "e3", "e4"].map((id) =>
+    generateTaggedExercise(id, [
+      "REGION_UPPER_BODY",
+      "MUSCLE_CHEST",
+      "SIDE_BOTH",
+    ]),
+  );
+
+/**
  * Builds an exercise that advances by repetitions and uses the given
  * equipment. Weighted exercises carry the weights equipment type.
  *

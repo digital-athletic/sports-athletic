@@ -6,15 +6,25 @@ import type { Block } from "@/schemas/aiwl.schema";
 import { generateGenerationInput } from "@test/factories/generationInput";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { generateSeededRandom } from "@test/factories/seededRandom";
-import { describeSetListEntries } from "@test/factories/setListDescription";
-import { generateBreathingTrees } from "@test/factories/skillTree";
 import {
-  generateBranchesBlock,
+  describeSetListEntries,
+  listTrainedExercises,
+  listTrainedSkills,
+} from "@test/factories/setListDescription";
+import {
+  generateBreathingTrees,
+  generateMixedSkillTrees,
+  generateTreeBranch,
+} from "@test/factories/skillTree";
+import {
   generatePicksBlock,
+  generateShortTemplate,
   generateShortTemplateWithBreathing,
   generateTemplate,
+  generateUntimedBranchesBlock,
 } from "@test/factories/templateBlock";
 import { catchThrownValue } from "@test/factories/thrownValue";
+import { generateMixedExerciseCatalog } from "@test/factories/valueExercise";
 import { PICKS_BLOCK_HANDLER } from "./blockHandlers/picks/picksHandler";
 import { generateShortWorkoutFromTemplate } from "./shortWorkoutGeneration";
 
@@ -155,17 +165,208 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     },
   );
 
-  it.each<[string, Block]>([
-    ["branches", generateBranchesBlock("GKS", ["510"])],
-    ["duration", { kind: "duration", skill: "MOB", duration: 300 }],
+  it("runs picks, branches and picks blocks and lists their skills in template order", () => {
+    const template = generateShortTemplate([
+      generatePicksBlock("MOB"),
+      generateUntimedBranchesBlock("BR", { branches: ["3"] }),
+      generatePicksBlock("CD"),
+    ]);
+    const skillTrees = generateMixedSkillTrees();
+
+    const setList = generateShortWorkoutFromTemplate(
+      template,
+      generateRuleFamilyInput({
+        exerciseCatalog: generateMixedExerciseCatalog(),
+        skillTrees,
+        random: () => 0,
+      }),
+      skillTrees,
+    );
+
+    expect(listTrainedSkills(setList)).toEqual(["MOB", "BR", "CD"]);
+  });
+
+  it("skips the branch a branches block trained when a later picks block draws", () => {
+    const template = generateShortTemplate([
+      generateUntimedBranchesBlock("MOB", { branches: ["1"] }),
+      generatePicksBlock("MOB"),
+    ]);
+    const skillTrees = generateMixedSkillTrees();
+
+    const setList = generateShortWorkoutFromTemplate(
+      template,
+      generateRuleFamilyInput({
+        exerciseCatalog: generateMixedExerciseCatalog(),
+        skillTrees,
+        random: () => 0,
+      }),
+      skillTrees,
+    );
+
+    expect(listTrainedExercises(setList)).toEqual(["e1", "e2"]);
+  });
+
+  it("skips the exercise a branches block of another skill trained when a later picks block draws", () => {
+    const template = generateShortTemplate([
+      generateUntimedBranchesBlock("BR", { branches: ["3"] }),
+      generatePicksBlock("MOB"),
+    ]);
+    const skillTrees = {
+      MOB: {
+        "1": generateTreeBranch(["e1"]),
+        "2": generateTreeBranch(["e2"]),
+      },
+      BR: { "3": generateTreeBranch(["e1"]) },
+    };
+
+    const setList = generateShortWorkoutFromTemplate(
+      template,
+      generateRuleFamilyInput({
+        exerciseCatalog: generateMixedExerciseCatalog(),
+        skillTrees,
+        random: () => 0,
+      }),
+      skillTrees,
+    );
+
+    expect(listTrainedExercises(setList)).toEqual(["e1", "e2"]);
+  });
+
+  it("drops a listed branch of a branches block that the athlete's pain blocks", () => {
+    const template = generateShortTemplate([
+      generateUntimedBranchesBlock("MOB", { branches: ["1", "2"] }),
+    ]);
+    const skillTrees = {
+      MOB: {
+        "1": generateTreeBranch(["e1"], ["BLOCK_KNEE"]),
+        "2": generateTreeBranch(["e2"]),
+      },
+    };
+
+    const setList = generateShortWorkoutFromTemplate(
+      template,
+      generateRuleFamilyInput({
+        exerciseCatalog: generateMixedExerciseCatalog(),
+        skillTrees,
+        pains: ["KNEE_LEFT"],
+        random: () => 0,
+      }),
+      skillTrees,
+    );
+
+    expect(listTrainedExercises(setList)).toEqual(["e2"]);
+  });
+
+  it("throws the pain error of the picks rules when pain blocks every listed branch of a branches block", () => {
+    const template = generateShortTemplate([
+      generateUntimedBranchesBlock("MOB", { branches: ["1"] }),
+    ]);
+    const skillTrees = {
+      MOB: { "1": generateTreeBranch(["e1"], ["BLOCK_KNEE"]) },
+    };
+
+    expect(
+      catchThrownValue(() =>
+        generateShortWorkoutFromTemplate(
+          template,
+          generateRuleFamilyInput({
+            exerciseCatalog: generateMixedExerciseCatalog(),
+            skillTrees,
+            pains: ["KNEE_LEFT"],
+          }),
+          skillTrees,
+        ),
+      ),
+    ).toStrictEqual({
+      type: "NO_EXERCISES",
+      subtype: "PAIN",
+      params: ["KNEE"],
+    });
+  });
+
+  it("runs a cardio branches block that sets only its duration", () => {
+    const template = generateShortTemplate([
+      {
+        kind: "branches",
+        skill: "CARDIO_5",
+        branches: ["576"],
+        duration: 1200,
+      },
+    ]);
+
+    const setList = generateShortWorkoutFromTemplate(
+      template,
+      generateRuleFamilyInput({ exerciseCatalog: loadExercises() }),
+      getAllSkillTrees(),
+    );
+
+    expect([...new Set(listTrainedSkills(setList))]).toEqual(["CARDIO_5"]);
+  });
+
+  it("runs a template of branches blocks only in template order", () => {
+    const template = generateShortTemplate([
+      generateUntimedBranchesBlock("CD", { branches: ["4"] }),
+      generateUntimedBranchesBlock("BR", { branches: ["3"] }),
+    ]);
+    const skillTrees = generateMixedSkillTrees();
+
+    const setList = generateShortWorkoutFromTemplate(
+      template,
+      generateRuleFamilyInput({
+        exerciseCatalog: generateMixedExerciseCatalog(),
+        skillTrees,
+        random: () => 0,
+      }),
+      skillTrees,
+    );
+
+    expect(listTrainedExercises(setList)).toEqual(["e4", "e3"]);
+  });
+
+  it("keeps the listed branch of a branches block that an earlier picks block drew", () => {
+    const template = generateShortTemplate([
+      generatePicksBlock("MOB"),
+      generateUntimedBranchesBlock("MOB", { branches: ["1"] }),
+    ]);
+    const skillTrees = { MOB: { "1": generateTreeBranch(["e1"]) } };
+
+    const setList = generateShortWorkoutFromTemplate(
+      template,
+      generateRuleFamilyInput({
+        exerciseCatalog: generateMixedExerciseCatalog(),
+        skillTrees,
+        random: () => 0,
+      }),
+      skillTrees,
+    );
+
+    expect(listTrainedExercises(setList)).toEqual(["e1", "e1"]);
+  });
+
+  it.each<[string, string, Block]>([
     [
+      "a duration block",
+      "duration",
+      { kind: "duration", skill: "MOB", duration: 300 },
+    ],
+    [
+      "bodyParts on a picks block",
       "bodyParts",
       generatePicksBlock("MOB", { bodyParts: { regions: ["core"] } }),
     ],
-    ["order", generatePicksBlock("MOB", { order: "asDrawn" })],
+    [
+      "order on a picks block",
+      "order",
+      generatePicksBlock("MOB", { order: "asDrawn" }),
+    ],
+    [
+      "order on a branches block",
+      "order",
+      generateUntimedBranchesBlock("MOB", { order: "muscleGroups" }),
+    ],
   ])(
-    "rejects a block with %s before the picks workout rules run",
-    (unsupported, block) => {
+    "rejects %s before the picks workout rules run",
+    (_label, unsupported, block) => {
       const template = generateShortTemplateWithBreathing([block]);
 
       expect(
@@ -184,11 +385,11 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     },
   );
 
-  it("rejects a template without a picks block", () => {
-    const template = generateTemplate([generateBranchesBlock("GKS", ["510"])], {
-      id: "own",
-      name: { en: "Own" },
-    });
+  it("names the template id in the path of a rejected block", () => {
+    const template = generateTemplate(
+      [{ kind: "duration", skill: "MOB", duration: 300 }],
+      { id: "own", name: { en: "Own" } },
+    );
 
     expect(
       catchThrownValue(() =>
@@ -201,7 +402,7 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     ).toStrictEqual({
       type: "OTHER",
       subtype: "BLOCK_KIND",
-      params: ["own.blocks[0]", "branches"],
+      params: ["own.blocks[0]", "duration"],
     });
   });
 

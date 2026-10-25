@@ -109,7 +109,7 @@ The workout has no total time field. Its length is the sum of the block duration
 
 | Field | Required | Default | Meaning | Why the schema has it |
 |---|---|---|---|---|
-| `kind` | yes | | Block type: `picks`, `duration`, or `branches`. The generator runs `picks` blocks only and rejects the other two with `BLOCK_KIND`. | The app checks the block's keys against its type and reports a wrong key by name. |
+| `kind` | yes | | Block type: `picks`, `duration`, or `branches`. The generator runs `picks` and `branches` blocks, also mixed in one template, and rejects `duration` with `BLOCK_KIND`. | The app checks the block's keys against its type and reports a wrong key by name. |
 | `skill` | yes | | Skill code of the skill catalog. Selects skill tree, intensity, set list builder, and defaults. | A block trains one skill, and the skill code names it. The catalog supplies the values the block omits. |
 | `picks` | in a picks block | | Branches to draw from the skill tree, by tags and count. A list applies at every training place. `{ withWeights, withoutWeights }` gives a training place with weights and one without its own list, with the same keys as the catalog's `skillTree`. | All 13 bundled trainings draw by tags and counts. Full-body stability uses the two-list form: 4 entries with weights, 3 upper body + 2 full body entries without. |
 | `duration` | in a duration block; optional in a branches block | | Cardio duration block: the length the cardio builder fills. Any other duration block: the length whose minutes the [minutes table](#minutes-table) chooser reads. Branches block: the planned length, which the preview shows. | Plan creation stores minutes per skill, a trainer sets minutes per skill, and the cardio builder fills a length. |
@@ -143,7 +143,7 @@ In the shoulder prevention example below, the warm-up pick names `SKILL_WU`, `SK
 
 ### Rules
 
-Rules 1 to 3 apply to duration and branches blocks. The generator rejects those kinds until a follow-up implements them.
+Rules 1 to 3 apply to duration and branches blocks. The generator rejects duration blocks until a follow-up implements them.
 
 1. A block whose skill starts with `CARDIO` is a duration block. `duration` sets its length.
 2. In any other duration block, `duration` / 60 is a minutes key of its [minutes table](#minutes-table) entry, `default` variant. For example, 600 seconds reads the key 10.
@@ -188,9 +188,9 @@ Minutes keys of the `default` variant:
 
 ## Generation
 
-The generator turns a template into a set list for one athlete. It resolves every block first, from the skill catalog and the training place. Then it applies the athlete's rules to the union of the block pools and draws the blocks in order. One set of used branches spans the whole workout, so no branch repeats across blocks.
+The generator turns a template into a set list for one athlete. It resolves every block first, from the skill catalog and the training place. Then it applies the athlete's rules to the union of the picks block pools and runs the blocks in template order. A picks block skips every branch an earlier block of the workout used, so a drawn branch repeats no earlier branch. A branches block keeps its list, even when an earlier block used one of its branches.
 
-Status: the generator runs `picks` blocks only. A duration block, a branches block, and the `order` and `bodyParts` fields of a picks block are accepted by the schema and rejected with error `OTHER/BLOCK_KIND`. The params name the block path and the kind or field, for example `["GKS.blocks[0]", "order"]`.
+Status: the generator runs `picks` and `branches` blocks, alone or mixed. A duration block, the `order` field of any block, and the `bodyParts` field of a picks block are accepted by the schema and rejected with error `OTHER/BLOCK_KIND`. The params name the block path and the kind or field, for example `["GKS.blocks[0]", "order"]`.
 
 1. **Pool.** Each block's pool holds the branches of its skill's trees for the training place: the `withWeights` names when the place has weights, the `withoutWeights` names otherwise. Tree names are literal. For example, `STABILITY` without weights reads `GKS`. A special warm-up block (`WUSPEZIAL`) narrows its tree to the pain regions of the workout's prevention skills, which are the skills of the blocks whose catalog focus area is `PREVENTION`. Without `fallbackToWholeTree`, the pool keeps only the branches that match at least one pick of the block. A block whose pool ends up empty aborts the workout with `NO_EXERCISES/SKILL_TREE` and the block's skill code.
    - A pick that matches no branch draws nothing. No runtime check throws for it. `loadTemplates.spec.ts` asserts that every bundled block matches a branch at both training places, so that guard applies to bundled data only.
@@ -204,7 +204,7 @@ Status: the generator runs `picks` blocks only. A duration block, a branches blo
 4. **Choose.**
    - A picks block draws its picks in template order. Each pick draws `count` units of the branches that match its tags. `countBy` sets the unit: `exercises` counts one exercise per unit, `entries` counts one exercise entry per unit (a one-sided exercise is two entries, left and right), and `pairs` draws superset pairs. With `fallbackToWholeTree`, a pick that finds too few matches draws the rest from the block pool. The weighted pairs of a `pairs` block come last.
    - A duration block runs the [minutes table](#minutes-table) chooser. Not yet supported.
-   - A branches block keeps its list. Not yet supported.
+   - A branches block keeps its list. The branch lookup index supplies each branch, and the generator drops a listed branch the athlete's pains, age group or gender rule out, as plan creation does before it stores a branch. When a rule drops every listed branch, the workout aborts with `NO_EXERCISES` and the subtype of that rule (`PAIN`, `AGE`, or `GENDER`), as for the picks pool in step 2. The block then runs the rules of [Plan Workout Generation](../specs/session/plan-workout-generation.md#generating-the-session): soreness, equipment and level filters, the [duplicate exercise](./duplicate-exercises.md) check inside the block, and the replacement of blocked branches. Each timing value comes from the block, else from the training day defaults of the skill, which fill the sets and rests that cardio and max strength entries leave out of the catalog.
 5. **Order.** The exercises keep the order in which the block drew them. `order: "muscleGroups"` is not yet supported.
 6. **Branch level.** Every branch resolves to the exercise of the athlete's branch level. A branch whose exercise the workout already holds is skipped, so no exercise repeats.
 7. **Set list.** The block's `superset` pairs its exercises: `none`, `muscles`, `drawOrder`, or `drawOrderWithLeftovers`. `sets` and `setDuration` come from the block, and a block's `rest` fields override the catalog's `rest` field by field. The set list builder then emits the sets.
@@ -271,7 +271,7 @@ The special warm-up block draws 3 exercises from `WUSPEZIAL`, narrowed to the sh
 
 ### Example 2: training day
 
-Training days do not use AIWL yet, and the generator rejects branches blocks until a follow-up implements them. This example shows the planned format: plan creation would store a training day as branches and minutes per skill, with one branches block per skill, in the plan's section order. The skill defaults supply sets, rests, and supersets.
+Training days do not store AIWL yet. A template runs branches blocks, but the generator rejects the `order` field below with `BLOCK_KIND` until a follow-up implements it. This example shows the planned format: plan creation would store a training day as branches and minutes per skill, with one branches block per skill, in the plan's section order. The skill defaults supply sets, rests, and supersets.
 
 ```json
 {
@@ -360,7 +360,7 @@ AIWL follows none of them. The set list the generator produces fits fixed steps 
 - Pro: one format for bundled trainings, training days, and trainer workouts. The generator reads the bundled trainings through it today.
 - Pro: the AIWL path reproduces the 13 bundled trainings, except BR at a place without foam roller or foam ball.
 - Pro: templates stay short, since the skill catalog supplies the skill values.
-- Con: the generator supports picks blocks only. Duration and branches blocks, and the `order` and `bodyParts` fields, fail with `BLOCK_KIND` until a follow-up implements them.
+- Con: the generator supports picks and branches blocks only. Duration blocks, and the `order` and `bodyParts` fields, fail with `BLOCK_KIND` until a follow-up implements them.
 - Con: training days still read their stored branches and minutes until a follow-up switches them to AIWL.
 - Con: `duration` means a length or a minutes table key, depending on the block type.
 - Con: the generator picks `afterExercise` or `betweenSets` for the rest after an exercise, by the next exercise. A template that wants one rest after every exercise sets both fields to the same value.

@@ -452,6 +452,123 @@ describe("setListBuilding: short workout", () => {
     ]);
   });
 
+  it("builds a branches block from the skill catalog timing without a resolved picks block", () => {
+    const setList = buildShortWorkoutSetList(
+      [
+        generateFilledResultFromCatalog(
+          EXERCISE_CATALOG,
+          generateUntimedBranchesBlock("BAS"),
+          ["e2"],
+        ),
+      ],
+      DEFAULT_INPUT,
+      new Map(),
+    );
+
+    expect(describeSetListEntries(setList)).toEqual([
+      "e2 1/2",
+      "pause 60",
+      "e2 2/2",
+    ]);
+  });
+
+  it("takes the values of a branches block before the skill catalog", () => {
+    const setList = buildShortWorkoutSetList(
+      [
+        generateFilledResultFromCatalog(
+          EXERCISE_CATALOG,
+          generateUntimedBranchesBlock("BAS", {
+            sets: 3,
+            rest: { betweenSets: 15 },
+          }),
+          ["e2"],
+        ),
+      ],
+      DEFAULT_INPUT,
+      new Map(),
+    );
+
+    expect(describeSetListEntries(setList)).toEqual([
+      "e2 1/3",
+      "pause 15",
+      "e2 2/3",
+      "pause 15",
+      "e2 3/3",
+    ]);
+  });
+
+  it("runs a cardio branches block without timing values for its stored duration", () => {
+    const setList = buildShortWorkoutSetList(
+      [
+        generateFilledResultFromCatalog(
+          EXERCISE_CATALOG,
+          generateUntimedBranchesBlock("CARDIO_4", { duration: 1200 }),
+          ["e2"],
+        ),
+      ],
+      DEFAULT_INPUT,
+      new Map(),
+    );
+
+    expect(setList).toEqual([
+      {
+        branchId: "be2",
+        exerciseId: "e2",
+        set: [1, 1],
+        skill: "CARDIO_4",
+        duration: 1200,
+      },
+    ]);
+  });
+
+  // The ladder sets the count: two warm up sets, then the working sets
+  it("builds a max strength branches block without timing values by its ladder", () => {
+    const setList = buildShortWorkoutSetList(
+      [
+        generateFilledResultFromCatalog(
+          EXERCISE_CATALOG,
+          generateUntimedBranchesBlock("MAX_STRENGTH"),
+          ["e2"],
+        ),
+      ],
+      DEFAULT_INPUT,
+      new Map(),
+    );
+
+    expect(
+      describeSetListEntries(setList).filter((entry) =>
+        entry.startsWith("e2 "),
+      ),
+    ).toEqual(["e2 1/5", "e2 2/5", "e2 3/5", "e2 4/5", "e2 5/5"]);
+  });
+
+  it("builds a picks block and a branches block of one workout from their own timing", () => {
+    const picksResult = generateFilledResultFromCatalog(
+      EXERCISE_CATALOG,
+      generatePicksBlock("WU"),
+      ["e1"],
+    );
+    const branchesResult = generateFilledResultFromCatalog(
+      EXERCISE_CATALOG,
+      generateUntimedBranchesBlock("BAS"),
+      ["e2"],
+    );
+
+    const setList = buildShortWorkoutSetList(
+      [picksResult, branchesResult],
+      DEFAULT_INPUT,
+      resolveCatalogTimings([picksResult], DEFAULT_INPUT),
+    );
+
+    expect(describeSetListEntries(setList)).toEqual([
+      "e1 1/1",
+      "pause 30",
+      "e2 1/2",
+      "pause 60",
+      "e2 2/2",
+    ]);
+  });
+
   it("throws for a block that workout setup did not resolve", () => {
     expect(() =>
       buildShortWorkoutSetList(
@@ -500,13 +617,13 @@ describe("setListBuilding: rules", () => {
     expect(describeSetListEntries(setList)).toEqual(["e1 1/1"]);
   });
 
-  it("reads the timing workout setup resolved for blockTiming workoutSetup", () => {
+  it("reads the timing workout setup resolved for a picks block with blockTiming workoutSetup", () => {
     expect(() =>
       buildTrainingDaySetList(
         [
           generateFilledResultFromCatalog(
             EXERCISE_CATALOG,
-            generateUntimedBranchesBlock("GKS"),
+            generatePicksBlock("GKS"),
             ["e1"],
           ),
         ],

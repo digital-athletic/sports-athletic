@@ -159,6 +159,8 @@ Resolution runs inside selection, because the specs drop a candidate whose exerc
 | Branches   | [Plan Workout Generation](../specs/session/plan-workout-generation.md#generating-the-session)  | One block, see [duplicate exercises](./duplicate-exercises.md) |
 | Duration   | The [minutes table](./athletic-intelligence-workout-language.md#minutes-table) of the AIWL ADR | Whole workout                                                  |
 
+A block of whole workout scope receives the branches every earlier block used, whatever the kind of that block. A block of one block scope starts with an empty set. One template can mix block kinds: a short workout runs picks and branches blocks in template order.
+
 A training day stores its cardio skill as a branches block. The branches handler applies the cardio rules from [Soreness and blocking](../specs/session/cardio-training-system.md#soreness-and-blocking). This ADR amends AIWL rule 1, so the rule applies to duration blocks only.
 
 ### Rule families (Pipes and Filters)

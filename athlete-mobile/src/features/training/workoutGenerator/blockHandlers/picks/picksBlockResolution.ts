@@ -56,22 +56,6 @@ const createSkillTreeError = (skill: string): GeneratorError => ({
   params: [skill],
 });
 
-export const requirePicksBlock = (
-  templateId: string,
-  index: number,
-  block: Block,
-): PicksBlock => {
-  const reject = (what: string): GeneratorError => ({
-    type: "OTHER",
-    subtype: "BLOCK_KIND",
-    params: [`${templateId}.blocks[${index}]`, what],
-  });
-  if (block.kind !== "picks") throw reject(block.kind);
-  if (block.bodyParts !== undefined) throw reject("bodyParts");
-  if (block.order !== undefined) throw reject("order");
-  return block;
-};
-
 // The special warm-up prepares the pain regions of the template's prevention
 // blocks, so it narrows to the branches tagged with one of them. The match
 // runs before branches without levels drop, so a match without levels leaves
@@ -160,13 +144,16 @@ const resolvePicksBlock = (
   };
 };
 
+export const isPicksBlock = (block: Block): block is PicksBlock =>
+  block.kind === "picks";
+
 /**
- * Resolves every block of a short workout template before any rule or draw:
- * the defaults from the skill catalog of the input, the picks of the place
- * and the pool from the skill trees of the catalog entry. Throws plain
- * GeneratorError objects: OTHER/BLOCK_KIND for a block that is not a plain
- * picks block, NO_EXERCISES/SKILL_TREE for a skill without a tree or an empty
- * pool, and an Error with the block path for a missing default.
+ * Resolves the picks blocks of a template before any rule or draw: the
+ * defaults from the skill catalog of the input, the picks of the place and
+ * the pool from the skill trees of the catalog entry. Other block kinds stay
+ * out, but a prevention skill of any block narrows the special warm-up.
+ * Throws NO_EXERCISES/SKILL_TREE for a skill without a tree or an empty pool,
+ * and an Error with the block path for a missing default.
  *
  * resolvePicksBlocks(prevKneeTemplate, input, getAllSkillTrees())
  * → { pool: { ...special warm-up and PREVKNEE branches },
@@ -177,10 +164,7 @@ export const resolvePicksBlocks = (
   input: Pick<GenerationInput, "equipment" | "skillCatalog">,
   skillTrees: Readonly<Record<string, SkillTreeType>>,
 ): ResolvedPicksBlocks => {
-  const picksBlocks = template.blocks.map((block, index) =>
-    requirePicksBlock(template.id, index, block),
-  );
-  const preventionRegions = picksBlocks
+  const preventionRegions = template.blocks
     .map(({ skill }) => readSkillCatalogEntry(input.skillCatalog, skill))
     .filter((entry) => entry?.focusArea === "PREVENTION")
     .flatMap((entry) => entry?.painRegions ?? []);
@@ -190,8 +174,10 @@ export const resolvePicksBlocks = (
     hasWeights: hasWeights(input.equipment),
     preventionRegions,
   };
-  const blocks = picksBlocks.map((block, index) =>
-    resolvePicksBlock(block, `${template.id}.blocks[${index}]`, source),
+  const blocks = template.blocks.flatMap((block, index) =>
+    isPicksBlock(block)
+      ? [resolvePicksBlock(block, `${template.id}.blocks[${index}]`, source)]
+      : [],
   );
   return {
     pool: blocks.reduce<SkillTreeType>(

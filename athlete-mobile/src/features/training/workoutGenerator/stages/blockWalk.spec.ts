@@ -38,7 +38,7 @@ describe("blockWalk: walkTemplateBlocks", () => {
     expect(results.map((result) => result.block)).toEqual(template.blocks);
   });
 
-  it("threads used branches of filled and empty picks blocks across the workout and starts each branches block empty", () => {
+  it("threads used branches of every earlier block to workout scope blocks and starts each block scope block empty", () => {
     const template = generateTemplate([
       generatePicksBlock("WU", { picks: [{ tags: ["SKILL_WU"], count: 2 }] }),
       generateBranchesBlock("GKS", ["510", "523"]),
@@ -83,11 +83,41 @@ describe("blockWalk: walkTemplateBlocks", () => {
     expect(receivedBySkill).toEqual({
       WU: [],
       GKS: [],
-      BR: ["11", "12"],
+      BR: ["11", "12", "510", "523"],
       SWR2KG: [],
-      MOB: ["11", "12", "14"],
-      CD: ["11", "12", "14", "13"],
+      MOB: ["11", "12", "510", "523", "14", "79"],
+      CD: ["11", "12", "510", "523", "14", "79", "13"],
     });
+  });
+
+  it("hands a workout scope block the branches of an earlier block scope block", () => {
+    const template = generateTemplate([
+      generateBranchesBlock("GKS", ["510"]),
+      generatePicksBlock("MOB", { picks: [{ tags: ["SKILL_MOB"], count: 1 }] }),
+    ]);
+    let receivedByPicks: string[] = [];
+    const handlers: BlockHandlerRegistry = {
+      picks: {
+        usedBranchScope: "workout",
+        handleBlock: (block, _input, usedBranches) => {
+          receivedByPicks = [...usedBranches];
+          return generateFilledBlockResult(block, []);
+        },
+      },
+      branches: {
+        usedBranchScope: "block",
+        handleBlock: (block) =>
+          generateFilledBlockResult(block, block.branches),
+      },
+      duration: {
+        usedBranchScope: "workout",
+        handleBlock: (block) => generateFilledBlockResult(block, []),
+      },
+    };
+
+    walkTemplateBlocks(template, generateWorkoutInput(), handlers);
+
+    expect(receivedByPicks).toEqual(["510"]);
   });
 
   it("hands each block the results of the blocks before it, whatever the used branch scope", () => {

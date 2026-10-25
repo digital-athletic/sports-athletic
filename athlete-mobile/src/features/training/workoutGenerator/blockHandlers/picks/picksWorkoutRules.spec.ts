@@ -167,22 +167,43 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
     );
   });
 
-  it("rejects a branches block beside picks blocks at its template index before any rule", () => {
+  it("maps each picks block to its resolved block and gives a branches block no entry", () => {
+    const stabilityBlock = generatePicksBlock("BAS");
+    const branchesBlock = generateBranchesBlock("GKS", ["523"]);
     const template = generateShortTemplate([
-      generatePicksBlock("BAS"),
+      branchesBlock,
+      stabilityBlock,
+      generatePicksBlock("MOB"),
+    ]);
+
+    const picksWorkout = resolvePicksWorkout(
+      template,
+      generateLeveledInput(),
+      generateKneeSkillTrees(),
+    );
+
+    expect(picksWorkout.blocks.size).toBe(2);
+    expect(picksWorkout.blocks.has(branchesBlock)).toBe(false);
+    expect(picksWorkout.blocks.get(stabilityBlock)).toMatchObject({
+      skill: "BAS",
+    });
+  });
+
+  it("filters the pool of the picks blocks beside a branches block", () => {
+    const template = generateShortTemplate([
       generateBranchesBlock("GKS", ["523"]),
+      generatePicksBlock("BAS"),
+      generatePicksBlock("MOB"),
     ]);
     const input = generateLeveledInput({ pains: ["KNEE_LEFT"] });
 
-    expect(() =>
-      resolvePicksWorkout(template, input, generateKneeSkillTrees()),
-    ).toThrow(
-      expect.objectContaining({
-        type: "OTHER",
-        subtype: "BLOCK_KIND",
-        params: ["short.blocks[1]", "branches"],
-      }),
+    const picksWorkout = resolvePicksWorkout(
+      template,
+      input,
+      generateKneeSkillTrees(),
     );
+
+    expect(Object.keys(picksWorkout.pool)).toEqual(["2"]);
   });
 
   it("runs no rule for a template without picks blocks", () => {

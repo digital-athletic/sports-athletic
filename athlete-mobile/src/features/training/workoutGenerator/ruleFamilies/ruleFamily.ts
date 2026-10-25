@@ -1,4 +1,5 @@
 import { TagGroups } from "@/constants/tagGroups";
+import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import { getTagValues } from "@/utils/tagUtils";
 import type { GenerationInput } from "../generationInput/generationInput";
 
@@ -63,6 +64,21 @@ export const listBranchRemovals = (
       family,
       details: readRemovalDetails(branchId),
     }));
+
+/**
+ * Throws the NO_EXERCISES error of a rule family that left no branch.
+ *
+ * throwWhenPoolEmpty({}, "AGE", []) → throws { type: "NO_EXERCISES", subtype: "AGE", params: [] }
+ */
+export const throwWhenPoolEmpty = (
+  pool: Record<string, CandidateBranch>,
+  subtype: GeneratorError["subtype"],
+  params: string[],
+): void => {
+  if (Object.keys(pool).length === 0) {
+    throw { type: "NO_EXERCISES", subtype, params } satisfies GeneratorError;
+  }
+};
 
 /**
  * Reads the region a removed branch asks to refill: its first region tag, or

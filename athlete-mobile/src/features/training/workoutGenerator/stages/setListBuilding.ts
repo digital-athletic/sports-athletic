@@ -54,8 +54,8 @@ export const readSkillSetListKind = (skill: string): SkillSetListKind => {
  */
 export interface SetListBuildingRules {
   // "workoutSetup" reads the timing that workout setup resolved from the skill
-  // catalog; "trainingDayDefaults" resolves the block against
-  // readTrainingDayTimingDefaults.
+  // catalog for a picks block; "trainingDayDefaults", and any other block,
+  // resolve the block against readTrainingDayTimingDefaults.
   readonly blockTiming: "workoutSetup" | "trainingDayDefaults";
   // "drawOne" runs one drawn cardio branch; "bySuperset" pairs cardio like
   // every other block.
@@ -91,12 +91,14 @@ export const SHORT_WORKOUT_SET_LIST_RULES: SetListBuildingRules = {
 type SetListBuildingInput = GenerationInput &
   Pick<WorkoutInput, "picksWorkout">;
 
+// Workout setup resolves picks blocks only, so a branches block of a short
+// workout resolves against the training day defaults too.
 const readBlockTiming = (
   block: Block,
   rules: SetListBuildingRules,
   input: SetListBuildingInput,
 ): ResolvedBlockTiming =>
-  rules.blockTiming === "workoutSetup"
+  rules.blockTiming === "workoutSetup" && block.kind === "picks"
     ? readResolvedPicksBlockTiming(input.picksWorkout, block)
     : resolveBlockTiming(
         block,

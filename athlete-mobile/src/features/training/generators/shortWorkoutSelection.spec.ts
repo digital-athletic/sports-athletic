@@ -227,8 +227,15 @@ const mainPairs = (
     equipment,
     { exerciseData: {}, branchData: {} },
   );
-  // a prevention training pairs its special warm up block first
-  const pairs: ExercisePair[] = pairBranches.mock.results.at(-1)?.value ?? [];
+  // a prevention training also pairs its special warm up block; skip it
+  const warmUpBranchIds = Object.keys(skillTrees.WUSPEZIAL ?? {});
+  const mainResult = pairBranches.mock.results.find(
+    (result) =>
+      result.type === "return" &&
+      result.value.length > 0 &&
+      !warmUpBranchIds.includes(result.value[0].first.branchId),
+  );
+  const pairs: ExercisePair[] = mainResult?.value ?? [];
   return pairs.map(({ first, second }) =>
     second ? [first.branchId, second.branchId] : [first.branchId],
   );

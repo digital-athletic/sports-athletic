@@ -21,7 +21,10 @@ export const spyOnDrawnBranches = (): ((
     );
     const result =
       results.find((candidate) => candidate.block.skill === skill) ??
-      results[0];
+      results.at(0);
+    if (result === undefined) {
+      throw new Error("The picks handler drew no block");
+    }
     return result.status === "filled" ? result.exercises : [];
   };
 };

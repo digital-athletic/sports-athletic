@@ -55,8 +55,28 @@ describe("blockTiming: resolveBlockTiming", () => {
     });
   });
 
-  it.each<{ defaults: SkillTimingDefaults | undefined; message: string }>([
-    { defaults: undefined, message: "sets: skill UNKNOWN sets no default" },
+  it.each<{
+    defaults: SkillTimingDefaults | undefined;
+    path?: string;
+    message: string;
+  }>([
+    {
+      defaults: undefined,
+      message: "rest.withinSuperset: skill UNKNOWN sets no default",
+    },
+    {
+      defaults: undefined,
+      path: "SYN.blocks[2]",
+      message:
+        "SYN.blocks[2].rest.withinSuperset: skill UNKNOWN sets no default",
+    },
+    {
+      defaults: {
+        superset: "none",
+        rest: { withinSuperset: 10, betweenSets: 10, afterExercise: 10 },
+      },
+      message: "sets: skill UNKNOWN sets no default",
+    },
     {
       defaults: {
         sets: 2,
@@ -64,13 +84,9 @@ describe("blockTiming: resolveBlockTiming", () => {
       },
       message: "superset: skill UNKNOWN sets no default",
     },
-    {
-      defaults: { sets: 2, superset: "none" },
-      message: "rest.withinSuperset: skill UNKNOWN sets no default",
-    },
-  ])("throws $message", ({ defaults, message }) => {
+  ])("throws $message", ({ defaults, path, message }) => {
     expect(() =>
-      resolveBlockTiming(generatePicksBlock("UNKNOWN"), defaults),
-    ).toThrow(message);
+      resolveBlockTiming(generatePicksBlock("UNKNOWN"), defaults, path),
+    ).toThrow(new Error(message));
   });
 });

@@ -1,14 +1,17 @@
 import type { Template } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
-import { type BlockHandlerRegistry, walkTemplateBlocks } from "./blockWalk";
-import type { GenerationInput } from "./generationInput";
+import type { GenerationInput } from "./generationInput/generationInput";
+import {
+  type BlockHandlerRegistry,
+  walkTemplateBlocks,
+} from "./stages/blockWalk";
 import {
   type FinishedWorkout,
   finishWorkout,
   type SetListBuilder,
   type WorkoutFinishRules,
-} from "./workoutFinish";
-import { setUpWorkout, type WorkoutInput } from "./workoutSetup";
+} from "./stages/workoutFinish";
+import { setUpWorkout, type WorkoutInput } from "./stages/workoutSetup";
 
 export interface TemplateInterpreterOptions<TEntry> {
   handlers: BlockHandlerRegistry;

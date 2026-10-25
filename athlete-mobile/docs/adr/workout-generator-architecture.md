@@ -123,11 +123,11 @@ A handler is one function. It takes the block, the generation input and the set 
 
 Resolution runs inside selection, because the specs drop a candidate whose exercise already appears.
 
-| Block kind | Rules | Scope of the used branches |
-|---|---|---|
-| Picks | [Plan-Independent Workouts](../specs/session/plan-independent-workouts.md#short-workout) | Whole workout |
-| Branches | [Plan Workout Generation](../specs/session/plan-workout-generation.md#generating-the-session) | One block, see [duplicate exercises](./duplicate-exercises.md) |
-| Duration | The [minutes table](./athletic-intelligence-workout-language.md#minutes-table) of the AIWL ADR | Whole workout |
+| Block kind | Rules                                                                                          | Scope of the used branches                                     |
+| ---------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Picks      | [Plan-Independent Workouts](../specs/session/plan-independent-workouts.md#short-workout)       | Whole workout                                                  |
+| Branches   | [Plan Workout Generation](../specs/session/plan-workout-generation.md#generating-the-session)  | One block, see [duplicate exercises](./duplicate-exercises.md) |
+| Duration   | The [minutes table](./athletic-intelligence-workout-language.md#minutes-table) of the AIWL ADR | Whole workout                                                  |
 
 A training day stores its cardio skill as a branches block. The branches handler applies the cardio rules from [Soreness and blocking](../specs/session/cardio-training-system.md#soreness-and-blocking). This ADR amends AIWL rule 1, so the rule applies to duration blocks only.
 
@@ -180,14 +180,21 @@ The generator raises three classes of error:
 - **Discriminated unions.** Block kinds, block results and errors are tagged unions, and every `switch` over them is exhaustive.
 - **No mutation.** Every stage returns new values and changes neither the template nor the generation input.
 - **Random source.** The generation input carries the random function, with `Math.random` as the default, and every component draws through it. Tests pass a fixed sequence. Each component draws in a fixed order.
-- **Module layout.** One folder holds the generator, with one module each for:
-  - each stage
-  - each handler
-  - each rule family
-  - the shared library steps
-  - the generation input
+- **Module layout.** The top level of the `workoutGenerator` folder holds the modules other code calls: one entry module per workout source, the stored day template, and the template interpreter they hand the template to. The interpreter delegates to one subfolder per component of the patterns diagram:
 
-  Each module has its spec next to it. No index file only re-exports other modules.
+  | Folder                    | Component                                | Modules                                                                                   |
+  | ------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------- |
+  | `stages/`                 | Stages of the template interpreter       | workout setup, block walk, workout finish, exercise order, set list building              |
+  | `blockHandlers/picks/`    | Picks handler                            | the handler, the picks workout rules, the picks draw                                      |
+  | `blockHandlers/branches/` | Branches handler                         | the handler, its rule chain, duplicate branches, cardio replacement, stored branch lookup |
+  | `blockHandlers/library/`  | Shared library steps                     | resolution, replacement of blocked branches                                               |
+  | `ruleFamilies/`           | Rule chain                               | one module per rule family, plus the family contract                                      |
+  | `setListBuilders/`        | Set list builders                        | the builder contract, one module per builder, their helpers                               |
+  | `exerciseValues/`         | Exercise values the builders read        | start, target and feedback values, weight steps                                           |
+  | `generationInput/`        | Generation input and branch lookup index | the input, the index, the skill catalog entry                                             |
+
+  A duration handler goes in `blockHandlers/duration/`. Each module has its spec next to it. No index file only re-exports other modules.
+
 - **Naming.** Modules and functions use the glossary terms. A function name is a verb plus a full noun.
 
 ## Pros and cons

@@ -1,6 +1,6 @@
 import type { LevelTag } from "@/constants/workoutConstants";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
-import type { GenerationInput } from "@/features/training/workoutGenerator/generationInput";
+import type { GenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import { generateGenerationInput } from "./generationInput";
 import { generateMaxValues } from "./maxValues";

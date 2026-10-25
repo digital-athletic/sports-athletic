@@ -1,5 +1,5 @@
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
-import type { GenerationInput } from "@/features/training/workoutGenerator/generationInput";
+import type { GenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import {
   generateGenerationInput,

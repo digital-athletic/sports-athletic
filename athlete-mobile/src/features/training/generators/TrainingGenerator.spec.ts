@@ -4,7 +4,7 @@ import type { IntensityData } from "@/features/training/models/Intensity";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { TrainingType } from "@/features/training/models/Training";
 import type { SetListEntryType } from "@/features/training/models/SetListEntry";
-import { PICKS_BLOCK_HANDLER } from "@/features/training/workoutGenerator/picksHandler";
+import { PICKS_BLOCK_HANDLER } from "@/features/training/workoutGenerator/blockHandlers/picks/picksHandler";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type {
   CardioBranchReference,

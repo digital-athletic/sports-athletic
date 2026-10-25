@@ -1,5 +1,5 @@
 import type { SkillCode } from "@/schemas/generator.schema";
-import type { SetListBlock } from "@/features/training/workoutGenerator/setListBuilder";
+import type { SetListBlock } from "@/features/training/workoutGenerator/setListBuilders/setListBuilder";
 
 /**
  * Builds a block of 2 sets resting 30 s within a superset, 90 s between sets

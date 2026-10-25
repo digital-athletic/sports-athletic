@@ -3,7 +3,7 @@ import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
 import type { ExercisePair } from "@/features/training/models/ExerciseBranch";
-import * as exercisePairing from "@/features/training/workoutGenerator/exercisePairing";
+import * as exercisePairing from "@/features/training/workoutGenerator/setListBuilders/exercisePairing";
 import { generateAthleteWithMaxValues } from "@test/factories/athlete";
 import { spyOnDrawnBranches } from "@test/factories/drawnBranches";
 import { nextWeek, today } from "@test/factories/planWorkout";

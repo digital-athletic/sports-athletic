@@ -12,6 +12,7 @@ import type { TrainingLevelType } from "@/schemas/common.schema";
 import type { SkillCode } from "@/schemas/generator.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { UserType } from "@/schemas/user.schema";
+import { setUpAiwlGeneratorFlag } from "../../../../test/factories/aiwlGeneratorFlag";
 import {
   buildPlanUser,
   importTree,
@@ -160,6 +161,10 @@ describe("cardio block: closing pause", () => {
       expect(setList[0].duration).toBe(1800);
     },
   );
+});
+
+describe.each([false, true])("AIWL generator flag %s", (flagEnabled) => {
+  setUpAiwlGeneratorFlag(flagEnabled);
 
   it("keeps the run that ends a plan workout", () => {
     const user = buildPlanUser({

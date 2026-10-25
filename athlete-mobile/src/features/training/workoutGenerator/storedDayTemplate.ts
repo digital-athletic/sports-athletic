@@ -1,11 +1,9 @@
 import type { Block, Template } from "@/schemas/aiwl.schema";
-import type { ExerciseBranchEntry } from "@/schemas/generator.schema";
+import type { StoredDaySkills } from "./storedBranchLookup";
 
 /** The part of a stored training day the generator reads. */
 export interface StoredTrainingDay {
-  readonly skills: Readonly<
-    Record<string, readonly ExerciseBranchEntry[] | undefined>
-  >;
+  readonly skills: StoredDaySkills;
   /** Minutes per skill. */
   readonly lengths: Readonly<Record<string, number | undefined>>;
 }

@@ -3,7 +3,7 @@ import {
   noExerciseData,
   PAUSE_ID,
   realExercises,
-} from "../../../../test/factories/planWorkout";
+} from "@test/factories/planWorkout";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { TrainingType } from "@/features/training/models/Training";

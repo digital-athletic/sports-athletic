@@ -1,5 +1,5 @@
-import { generateStoredTrainingDay } from "../../../../test/factories/storedTrainingDay";
-import { generateStoredDayEntry } from "../../../../test/factories/storedBranch";
+import { generateStoredTrainingDay } from "@test/factories/storedTrainingDay";
+import { generateStoredDayEntry } from "@test/factories/storedBranch";
 import { createStoredDayTemplate } from "./storedDayTemplate";
 
 describe("storedDayTemplate: createStoredDayTemplate", () => {

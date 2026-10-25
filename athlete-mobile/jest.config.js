@@ -23,6 +23,7 @@ module.exports = {
   setupFiles: ["<rootDir>/test/jestSetup.ts"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
+    "^@test/(.*)$": "<rootDir>/test/$1",
     "@react-native-community/netinfo": "<rootDir>/test/netinfoMock",
   },
 };

@@ -1,4 +1,4 @@
-import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
+import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { filterBranchesByMuscleSoreness } from "./muscleSorenessRule";
 
 const UPPER_AND_LOWER_BODY_BRANCHES = {

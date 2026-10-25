@@ -1,10 +1,10 @@
 import { PLACEHOLDER_BRANCH_ID } from "@/features/training/models/IdTypes";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { GenerationInput } from "./generationInput";
-import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
-import { generateSequenceRandom } from "../../../../test/factories/sequenceRandom";
-import { generateSupportExercise } from "../../../../test/factories/supportExercise";
-import { generateValueExercise } from "../../../../test/factories/valueExercise";
+import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
+import { generateSequenceRandom } from "@test/factories/sequenceRandom";
+import { generateSupportExercise } from "@test/factories/supportExercise";
+import { generateValueExercise } from "@test/factories/valueExercise";
 import {
   buildSupportSets,
   EMPTY_SUPPORT_EXERCISE_TALLY,

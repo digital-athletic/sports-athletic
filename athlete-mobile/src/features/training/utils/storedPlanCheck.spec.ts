@@ -3,10 +3,7 @@ import type { TrainingDayType } from "@/features/training/models/TrainingDay";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { minutes } from "@/features/training/models/TimeUnits";
 import type { PlacesData } from "@/store/placesStore";
-import {
-  importTree,
-  realExercises,
-} from "../../../../test/factories/planWorkout";
+import { importTree, realExercises } from "@test/factories/planWorkout";
 import { isStoredPlanBroken } from "./storedPlanCheck";
 
 const maxTree = importTree("MAX");

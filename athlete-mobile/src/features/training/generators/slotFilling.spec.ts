@@ -1,4 +1,4 @@
-import { setUpAiwlGeneratorFlag } from "../../../../test/factories/aiwlGeneratorFlag";
+import { setUpAiwlGeneratorFlag } from "@test/factories/aiwlGeneratorFlag";
 import {
   buildPlanUser,
   generateBottleBranch,
@@ -7,7 +7,7 @@ import {
   importTrees,
   nextWeek,
   today,
-} from "../../../../test/factories/planWorkout";
+} from "@test/factories/planWorkout";
 
 describe.each([false, true])("AIWL generator flag %s", (flagEnabled) => {
   setUpAiwlGeneratorFlag(flagEnabled);

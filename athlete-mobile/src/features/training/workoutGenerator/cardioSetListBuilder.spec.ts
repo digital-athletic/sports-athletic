@@ -4,12 +4,12 @@ import type { LevelTag } from "@/constants/workoutConstants";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import type { BlockValues } from "@/schemas/aiwl.schema";
 import type { SkillCode } from "@/schemas/generator.schema";
-import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
-import { generateSequenceRandom } from "../../../../test/factories/sequenceRandom";
+import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
+import { generateSequenceRandom } from "@test/factories/sequenceRandom";
 import {
   findCatalogExerciseById,
   generateAuthoredValues,
-} from "../../../../test/factories/valueExercise";
+} from "@test/factories/valueExercise";
 import { buildBranchLookupIndex } from "./branchLookupIndex";
 import {
   buildCardioSetList,

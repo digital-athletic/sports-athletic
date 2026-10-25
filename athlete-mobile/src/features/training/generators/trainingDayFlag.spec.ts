@@ -1,12 +1,12 @@
 import { generateTrainingDayFromStoredDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import type * as TrainingDayGeneration from "@/features/training/workoutGenerator/trainingDayGeneration";
-import { setUpAiwlGeneratorFlag } from "../../../../test/factories/aiwlGeneratorFlag";
+import { setUpAiwlGeneratorFlag } from "@test/factories/aiwlGeneratorFlag";
 import {
   buildPlanUser,
   generatePlanWorkoutForWeekday,
   generateWarmUpOnlyPlanUser,
-} from "../../../../test/factories/planWorkout";
-import { catchThrownValue } from "../../../../test/factories/thrownValue";
+} from "@test/factories/planWorkout";
+import { catchThrownValue } from "@test/factories/thrownValue";
 
 jest.mock("@/features/training/workoutGenerator/trainingDayGeneration", () => {
   const actual = jest.requireActual<typeof TrainingDayGeneration>(

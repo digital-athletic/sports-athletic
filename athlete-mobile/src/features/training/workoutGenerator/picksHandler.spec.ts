@@ -4,8 +4,8 @@ import type {
   SkillBranchType,
   SkillTreeType,
 } from "@/schemas/skillTree.schema";
-import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
-import { generateSequenceRandom } from "../../../../test/factories/sequenceRandom";
+import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
+import { generateSequenceRandom } from "@test/factories/sequenceRandom";
 import { type BlockHandlerRegistry, walkTemplateBlocks } from "./blockWalk";
 import type { GenerationInput } from "./generationInput";
 import { handlePicksBlock, PICKS_BLOCK_HANDLER } from "./picksHandler";

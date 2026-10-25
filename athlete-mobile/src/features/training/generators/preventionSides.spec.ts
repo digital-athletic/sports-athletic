@@ -8,7 +8,7 @@ import {
   noExerciseData,
   PAUSE_ID,
   realExercises,
-} from "../../../../test/factories/planWorkout";
+} from "@test/factories/planWorkout";
 import PlacesData from "../../../../assets/data/generator/places.json";
 import TrainingGenerator from "./TrainingGenerator";
 

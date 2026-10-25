@@ -1,4 +1,4 @@
-import { generateValueExercise } from "../../../../test/factories/valueExercise";
+import { generateValueExercise } from "@test/factories/valueExercise";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { MaxValuesType } from "@/features/training/models/MaxValues";
 import { readExerciseFMax } from "./exerciseFMax";

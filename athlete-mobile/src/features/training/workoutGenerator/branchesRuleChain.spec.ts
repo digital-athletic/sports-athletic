@@ -1,6 +1,6 @@
 import { loadExercises } from "@/data/loadExercises";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
-import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
+import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { applyBranchesRuleChain } from "./branchesRuleChain";
 import type { StoredBranch } from "./storedBranchLookup";
 

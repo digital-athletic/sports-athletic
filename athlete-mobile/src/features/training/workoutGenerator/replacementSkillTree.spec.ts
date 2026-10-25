@@ -1,5 +1,5 @@
 import type { SkillBranchType } from "@/schemas/skillTree.schema";
-import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
+import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { buildBranchLookupIndex } from "./branchLookupIndex";
 import { selectReplacementSkillTree } from "./replacementSkillTree";
 import { setUpWorkout } from "./workoutSetup";

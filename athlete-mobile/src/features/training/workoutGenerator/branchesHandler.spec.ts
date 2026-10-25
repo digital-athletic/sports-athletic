@@ -1,11 +1,11 @@
 import { loadExercises } from "@/data/loadExercises";
-import { generateGenerationInput } from "../../../../test/factories/generationInput";
-import { generateStoredDayEntry } from "../../../../test/factories/storedBranch";
+import { generateGenerationInput } from "@test/factories/generationInput";
+import { generateStoredDayEntry } from "@test/factories/storedBranch";
 import {
   generateBranchesBlock,
   generateCardioBlock,
-} from "../../../../test/factories/templateBlock";
-import { catchThrownValue } from "../../../../test/factories/thrownValue";
+} from "@test/factories/templateBlock";
+import { catchThrownValue } from "@test/factories/thrownValue";
 import type { BlockResult } from "./blockWalk";
 import { createBranchesBlockHandler } from "./branchesHandler";
 import {

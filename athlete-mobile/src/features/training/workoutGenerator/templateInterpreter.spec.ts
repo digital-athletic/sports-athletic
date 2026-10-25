@@ -1,6 +1,6 @@
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import type { Template } from "@/schemas/aiwl.schema";
-import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
+import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import type { BlockHandlerRegistry } from "./blockWalk";
 import { interpretTemplate } from "./templateInterpreter";
 import {

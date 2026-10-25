@@ -1,5 +1,5 @@
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
-import { generateSequenceRandom } from "../../../../test/factories/sequenceRandom";
+import { generateSequenceRandom } from "@test/factories/sequenceRandom";
 import { pickSupersetPartner, rankSupersetPartner } from "./supersetPartner";
 
 /**

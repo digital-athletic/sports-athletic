@@ -3,10 +3,7 @@ import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
 import { getTagValues } from "@/utils/tagUtils";
-import {
-  importTrees,
-  realExercises,
-} from "../../../../test/factories/planWorkout";
+import { importTrees, realExercises } from "@test/factories/planWorkout";
 import PlanGenerator from "./PlanGenerator";
 
 const template = realExercises[0];

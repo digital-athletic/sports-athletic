@@ -2,7 +2,7 @@ import { loadExercises } from "@/data/loadExercises";
 import {
   generateRuleFamilyInput,
   generateSkillTreeBranches,
-} from "../../../../test/factories/ruleFamilyInput";
+} from "@test/factories/ruleFamilyInput";
 import { filterBranchesByAgeGroup } from "./ageGroupRule";
 import {
   filterBranchesByEquipment,

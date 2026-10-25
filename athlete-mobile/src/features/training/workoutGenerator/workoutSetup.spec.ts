@@ -1,5 +1,5 @@
 import type { Template } from "@/schemas/aiwl.schema";
-import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
+import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { setUpWorkout } from "./workoutSetup";
 
 describe("workoutSetup: setUpWorkout", () => {

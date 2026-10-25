@@ -3,7 +3,7 @@ import type {
   ExercisePair,
 } from "@/features/training/models/ExerciseBranch";
 import { getTagValue } from "@/utils/tagUtils";
-import { generateSequenceRandom } from "../../../../test/factories/sequenceRandom";
+import { generateSequenceRandom } from "@test/factories/sequenceRandom";
 import { orderExerciseUnits, readEndingExerciseId } from "./exerciseOrder";
 
 /**

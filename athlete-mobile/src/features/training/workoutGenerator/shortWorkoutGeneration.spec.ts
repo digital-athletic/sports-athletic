@@ -2,7 +2,7 @@ import { loadExercises } from "@/data/loadExercises";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { isPauseExercise } from "@/features/training/models/IdTypes";
 import type { Block, Template } from "@/schemas/aiwl.schema";
-import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
+import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { PICKS_BLOCK_HANDLER } from "./picksHandler";
 import { generateShortWorkoutFromTemplate } from "./shortWorkoutGeneration";
 

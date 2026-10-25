@@ -5,8 +5,8 @@ import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
 import type { ExercisePair } from "@/features/training/models/ExerciseBranch";
 import * as exercisePairing from "@/features/training/workoutGenerator/exercisePairing";
-import { spyOnDrawnBranches } from "../../../../test/factories/drawnBranches";
-import { nextWeek, today } from "../../../../test/factories/planWorkout";
+import { spyOnDrawnBranches } from "@test/factories/drawnBranches";
+import { nextWeek, today } from "@test/factories/planWorkout";
 import TrainingGenerator from "./TrainingGenerator";
 
 const beginner: UserType = {

@@ -1,7 +1,7 @@
 import {
   generateAuthoredValues,
   generateValueExercise,
-} from "../../../../test/factories/valueExercise";
+} from "@test/factories/valueExercise";
 import { loadIntensityConfig } from "@/data/loadIntensityConfig";
 import type { IntensityData } from "@/features/training/models/Intensity";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";

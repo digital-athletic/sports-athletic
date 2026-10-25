@@ -3,8 +3,8 @@ import type {
   ExercisePair,
 } from "@/features/training/models/ExerciseBranch";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import { generateSequenceRandom } from "../../../../test/factories/sequenceRandom";
-import { generateValueExercise } from "../../../../test/factories/valueExercise";
+import { generateSequenceRandom } from "@test/factories/sequenceRandom";
+import { generateValueExercise } from "@test/factories/valueExercise";
 import { listOpposingMuscles, pairBranchExercises } from "./exercisePairing";
 
 /**

@@ -1,9 +1,9 @@
 import {
   generateEmptyBranchesResult,
   generateFilledBranchesResult,
-} from "../../../../test/factories/blockResult";
-import { generateEquipmentError } from "../../../../test/factories/generatorError";
-import { catchThrownValue } from "../../../../test/factories/thrownValue";
+} from "@test/factories/blockResult";
+import { generateEquipmentError } from "@test/factories/generatorError";
+import { catchThrownValue } from "@test/factories/thrownValue";
 import {
   type FilledBlockResult,
   finishWorkout,

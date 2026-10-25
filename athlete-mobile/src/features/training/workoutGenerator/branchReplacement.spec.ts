@@ -3,7 +3,7 @@ import { loadExercises } from "@/data/loadExercises";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
-import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
+import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { buildBranchLookupIndex } from "./branchLookupIndex";
 import {
   isPreventionOrSpecialWarmUpSkill,

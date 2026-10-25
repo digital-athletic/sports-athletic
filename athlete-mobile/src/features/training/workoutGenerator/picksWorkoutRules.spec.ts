@@ -2,7 +2,7 @@ import type { Block, PicksBlock, Template } from "@/schemas/aiwl.schema";
 import {
   generateRuleFamilyInput,
   generateSkillTreeBranches,
-} from "../../../../test/factories/ruleFamilyInput";
+} from "@test/factories/ruleFamilyInput";
 import {
   createEmptyPicksWorkout,
   filterPoolByPicksWorkoutRules,

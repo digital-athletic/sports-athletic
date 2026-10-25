@@ -1,4 +1,4 @@
-import { generateCatalogWithProgression } from "../../../../test/factories/skillCatalog";
+import { generateCatalogWithProgression } from "@test/factories/skillCatalog";
 import { loadSkillCatalog } from "@/data/loadSkillCatalog";
 import {
   isSkillWithoutProgression,

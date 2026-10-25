@@ -1,3 +1,4 @@
+import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import type { Template } from "@/schemas/aiwl.schema";
 import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
 import type { BlockHandlerRegistry } from "./blockWalk";
@@ -126,6 +127,44 @@ describe("templateInterpreter: interpretTemplate", () => {
     });
 
     expect(resolvedSkills).toEqual(["WU"]);
+  });
+
+  it("resolves the picks blocks from the given skill trees", () => {
+    const template: Template = {
+      aiwl: 1,
+      id: "short",
+      name: { en: "Short" },
+      blocks: [{ kind: "picks", skill: "WU", picks: [{ tags: [], count: 1 }] }],
+    };
+    const skillTrees = getAllSkillTrees();
+    const warmUpBranch = skillTrees.WU["409"];
+    const poolKeys: string[][] = [];
+    const handleEmptyBlock = (block: Template["blocks"][number]) => ({
+      status: "empty" as const,
+      block,
+      reason: undefined,
+      usedBranchIds: [],
+    });
+    const handlers: BlockHandlerRegistry = {
+      picks: {
+        usedBranchScope: "workout",
+        handleBlock: (block, input) => {
+          poolKeys.push(Object.keys(input.picksWorkout.pool));
+          return handleEmptyBlock(block);
+        },
+      },
+      branches: { usedBranchScope: "block", handleBlock: handleEmptyBlock },
+      duration: { usedBranchScope: "workout", handleBlock: handleEmptyBlock },
+    };
+
+    interpretTemplate(template, generateRuleFamilyInput(), {
+      handlers,
+      finishRules: TRAINING_DAY_FINISH_RULES,
+      createSetListBuilder: () => buildSkillSetList,
+      skillTrees: { ...skillTrees, WU: { "409": warmUpBranch } },
+    });
+
+    expect(poolKeys).toEqual([["409"]]);
   });
 
   it("names the first empty skill in stored order on a day where every skill empties", () => {

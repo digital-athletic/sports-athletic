@@ -38,6 +38,11 @@ const generateSelectionInput = ({
     branchLookupIndex: buildBranchLookupIndex(skillTrees),
   });
 
+/**
+ * Lists the branch IDs of the tree the selection returns for the given input.
+ *
+ * listTreeBranchIds("GKS", 1, { skillTrees: { GKSKG: { "3": branch } } }) → ["3"]
+ */
 const listTreeBranchIds = (
   skill: string,
   slotCount: number,
@@ -51,7 +56,12 @@ const listTreeBranchIds = (
     ),
   );
 
-const NAMED_TREES = {
+/**
+ * Builds one single-branch tree per tree name, numbered in name order.
+ *
+ * generateNamedSkillTrees() → { BAS: { "1": { tags: ["SKILL_BAS"], ... } }, GKS: { "2": ... }, ..., CD: { "11": ... } }
+ */
+const generateNamedSkillTrees = () => ({
   BAS: { "1": generateBranch(["SKILL_BAS"]) },
   GKS: { "2": generateBranch(["SKILL_GKS"]) },
   GKSKG: { "3": generateBranch(["SKILL_GKSKG"]) },
@@ -63,15 +73,22 @@ const NAMED_TREES = {
   PREVKG: { "9": generateBranch(["SKILL_PREVKG"]) },
   MOB: { "10": generateBranch(["SKILL_MOB"]) },
   CD: { "11": generateBranch(["SKILL_CD"]) },
-};
+});
 
-const PREVENTION_TREE = {
+/**
+ * Builds a prevention tree with two knee and three shoulder branches.
+ *
+ * generatePreventionTree()
+ * → { "1": { tags: ["PREVENTION_KNEE", "REGION_LOWER_BODY"], ... }, "2": knee core,
+ *     "3" to "5": shoulder upper body }
+ */
+const generatePreventionTree = () => ({
   "1": generateBranch(["PREVENTION_KNEE", "REGION_LOWER_BODY"]),
   "2": generateBranch(["PREVENTION_KNEE", "REGION_CORE"]),
   "3": generateBranch(["PREVENTION_SHOULDER", "REGION_UPPER_BODY"]),
   "4": generateBranch(["PREVENTION_SHOULDER", "REGION_UPPER_BODY"]),
   "5": generateBranch(["PREVENTION_SHOULDER", "REGION_UPPER_BODY"]),
-};
+});
 
 describe("replacementSkillTree: selectReplacementSkillTree", () => {
   it.each([
@@ -93,7 +110,10 @@ describe("replacementSkillTree: selectReplacementSkillTree", () => {
     ["UNKNOWN", [], []],
   ])("reads the tree of %s with equipment %j", (skill, equipment, expected) => {
     expect(
-      listTreeBranchIds(skill, 1, { skillTrees: NAMED_TREES, equipment }),
+      listTreeBranchIds(skill, 1, {
+        skillTrees: generateNamedSkillTrees(),
+        equipment,
+      }),
     ).toEqual(expected);
   });
 
@@ -127,7 +147,9 @@ describe("replacementSkillTree: selectReplacementSkillTree", () => {
   });
 
   it("returns the selected tree's catalog branches", () => {
-    const input = generateSelectionInput({ skillTrees: NAMED_TREES });
+    const input = generateSelectionInput({
+      skillTrees: generateNamedSkillTrees(),
+    });
 
     expect(selectReplacementSkillTree("BAS", 1, input)).toEqual({
       "1": input.branchLookupIndex.get("1")?.branch,
@@ -138,7 +160,7 @@ describe("replacementSkillTree: selectReplacementSkillTree", () => {
   it("selects nothing for a prevention skill whose tree the index lacks", () => {
     expect(
       listTreeBranchIds("PREVKNEE", 1, {
-        skillTrees: NAMED_TREES,
+        skillTrees: generateNamedSkillTrees(),
         pains: ["KNEE_LEFT"],
       }),
     ).toEqual([]);
@@ -147,8 +169,18 @@ describe("replacementSkillTree: selectReplacementSkillTree", () => {
   it("narrows a prevention skill to its own prevention region", () => {
     expect(
       listTreeBranchIds("PREVKNEE", 2, {
-        skillTrees: { PREVKG: PREVENTION_TREE },
+        skillTrees: { PREVKG: generatePreventionTree() },
         pains: ["KNEE_LEFT", "SHOULDER_LEFT"],
+      }),
+    ).toEqual(["1", "2"]);
+  });
+
+  // shoulder pain alone gives PREVSHOULDER; PREVKNEE still checks the knee region first
+  it("checks its own region first when the athlete's prevention skills lack the skill", () => {
+    expect(
+      listTreeBranchIds("PREVKNEE", 2, {
+        skillTrees: { PREVKG: generatePreventionTree() },
+        pains: ["SHOULDER_LEFT"],
       }),
     ).toEqual(["1", "2"]);
   });
@@ -156,7 +188,7 @@ describe("replacementSkillTree: selectReplacementSkillTree", () => {
   it("reads the weighted prevention tree when the place has weights", () => {
     expect(
       listTreeBranchIds("PREVSHOULDER", 1, {
-        skillTrees: { PREV: PREVENTION_TREE, PREVKG: {} },
+        skillTrees: { PREV: generatePreventionTree(), PREVKG: {} },
         equipment: ["DUMBBELL"],
         pains: ["SHOULDER_LEFT"],
       }),
@@ -166,7 +198,7 @@ describe("replacementSkillTree: selectReplacementSkillTree", () => {
   it("falls back to the region of another prevention skill when its own region holds too few branches", () => {
     expect(
       listTreeBranchIds("PREVKNEE", 3, {
-        skillTrees: { PREVKG: PREVENTION_TREE },
+        skillTrees: { PREVKG: generatePreventionTree() },
         pains: ["KNEE_LEFT", "SHOULDER_LEFT"],
       }),
     ).toEqual(["3", "4", "5"]);
@@ -175,7 +207,7 @@ describe("replacementSkillTree: selectReplacementSkillTree", () => {
   it("selects nothing when no prevention region holds enough branches", () => {
     expect(
       listTreeBranchIds("PREVKNEE", 4, {
-        skillTrees: { PREVKG: PREVENTION_TREE },
+        skillTrees: { PREVKG: generatePreventionTree() },
         pains: ["KNEE_LEFT", "SHOULDER_LEFT"],
       }),
     ).toEqual([]);
@@ -184,7 +216,7 @@ describe("replacementSkillTree: selectReplacementSkillTree", () => {
   it("selects nothing for a prevention skill without pains", () => {
     expect(
       listTreeBranchIds("PREVKNEE", 1, {
-        skillTrees: { PREVKG: PREVENTION_TREE },
+        skillTrees: { PREVKG: generatePreventionTree() },
       }),
     ).toEqual([]);
   });
@@ -193,7 +225,7 @@ describe("replacementSkillTree: selectReplacementSkillTree", () => {
   it("counts only the branches outside the sore region", () => {
     expect(
       listTreeBranchIds("PREVKNEE", 2, {
-        skillTrees: { PREVKG: PREVENTION_TREE },
+        skillTrees: { PREVKG: generatePreventionTree() },
         pains: ["KNEE_LEFT", "SHOULDER_LEFT"],
         soreMuscles: ["QUADRICEPS"],
       }),
@@ -203,7 +235,7 @@ describe("replacementSkillTree: selectReplacementSkillTree", () => {
   it("reads muscle soreness tags in any letter case", () => {
     expect(
       listTreeBranchIds("PREVKNEE", 1, {
-        skillTrees: { PREVKG: PREVENTION_TREE },
+        skillTrees: { PREVKG: generatePreventionTree() },
         pains: ["KNEE_LEFT"],
         soreMuscles: ["quadriceps"],
       }),
@@ -212,7 +244,7 @@ describe("replacementSkillTree: selectReplacementSkillTree", () => {
 
   it("throws for muscle soreness in two areas", () => {
     const input = generateSelectionInput({
-      skillTrees: { PREVKG: PREVENTION_TREE },
+      skillTrees: { PREVKG: generatePreventionTree() },
       pains: ["KNEE_LEFT"],
       soreMuscles: ["CHEST", "QUADRICEPS"],
     });

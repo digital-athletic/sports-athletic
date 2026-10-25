@@ -9,6 +9,9 @@ import {
 
 interface RuleFamilyInputOptions {
   level?: LevelTag;
+  birthday?: string;
+  gender?: "MALE" | "FEMALE";
+  pains?: string[];
   soreMuscles?: string[];
   equipment?: string[];
   exerciseCatalog?: ExerciseType[];
@@ -16,15 +19,19 @@ interface RuleFamilyInputOptions {
 
 /**
  * Builds the generation input of the rule family specs. The default athlete
- * has fitness level ADVANCED and no muscle soreness.
+ * is an adult man at fitness level ADVANCED without pains or muscle soreness.
  *
  * generateRuleFamilyInput({ soreMuscles: ["CHEST"], equipment: ["DUMBBELL"] })
- * → { athlete: { workoutData: { tags: { LEVEL: ["ADVANCED"] } },
+ * → { athlete: { personalData: { gender: "MALE", birthday: "1990-06-15" },
+ *       workoutData: { tags: { LEVEL: ["ADVANCED"], PAIN: [] } },
  *       temporalData: [{ tag: "CHEST", ... }] },
  *     muscleSoreness: [{ tag: "CHEST", ... }], equipment: ["DUMBBELL"], exerciseCatalog: [], ... }
  */
 export const generateRuleFamilyInput = ({
   level = "ADVANCED",
+  birthday = "1990-06-15",
+  gender = "MALE",
+  pains = [],
   soreMuscles = [],
   equipment = [],
   exerciseCatalog = [],
@@ -32,7 +39,8 @@ export const generateRuleFamilyInput = ({
   createGenerationInput({
     athlete: {
       userId: "athlete",
-      workoutData: { tags: { LEVEL: [level] } },
+      personalData: { gender, birthday },
+      workoutData: { tags: { LEVEL: [level], PAIN: pains } },
       temporalData: soreMuscles.map((tag) => ({
         tag,
         date: "2026-10-24",

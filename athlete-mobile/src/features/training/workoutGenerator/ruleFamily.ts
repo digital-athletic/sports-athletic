@@ -40,6 +40,15 @@ export type RuleFamily = <T extends CandidateBranch>(
   skill: string,
 ) => RuleFamilyResult<T>;
 
+/** Keeps the candidates the check accepts, in candidate order. */
+export const keepBranches = <T extends CandidateBranch>(
+  branches: Record<string, T>,
+  isKept: (branch: T) => boolean,
+): Record<string, T> =>
+  Object.fromEntries(
+    Object.entries(branches).filter(([, branch]) => isKept(branch)),
+  );
+
 /** Lists the candidates a filter left out of its keep record, in candidate order. */
 export const listBranchRemovals = (
   branches: Record<string, CandidateBranch>,

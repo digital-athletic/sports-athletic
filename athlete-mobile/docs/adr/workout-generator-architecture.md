@@ -12,7 +12,7 @@ The workout generator turns a workout description into the set list for one athl
 - the exercise catalog
 - the athlete's exercise data
 
-AIWL defines three block kinds: picks, duration and branches. Short workouts use picks blocks, training days use branches blocks, and a trainer workout uses duration blocks. The specs give each kind its own athlete rules and its own way to select branches.
+AIWL defines three block kinds: picks, duration and branches. Short workouts use picks blocks and can mix in branches blocks, training days use branches blocks, and a trainer workout will use duration blocks. The specs give each kind its own athlete rules and its own way to select branches. The [current support](./athletic-intelligence-workout-language.md#current-support) section of the AIWL ADR lists which source runs through this generator today.
 
 Some rules in the specs span more than one block, for example [duplicate exercises](./duplicate-exercises.md), the skill boundary in [exercise order](./exercise-order.md), and the special warm-up in [Pain, Soreness, and Prevention](../specs/foundations/pain-soreness-and-prevention.md#pain-mappings). Cardio, max strength and the remaining skills each need their own set list builder. The [strength test](../specs/session/plan-independent-workouts.md#strength-test) has no template.
 
@@ -197,7 +197,9 @@ The index maps every branch ID to its branch across all skill trees. Skill tree 
 
 ### Stored workouts
 
-A training day stores branches and minutes per skill. The generator runs it as a stored day workout: one branches block per skill, holding branch IDs and durations.
+The target: a training day stores an AIWL template whose branches blocks hold branch IDs and durations. The branch lookup index supplies tags, levels and exercises at generation time, so a stored plan follows catalog changes.
+
+Today a training day stores branches and minutes per skill. With the AIWL generator flag on, the generator runs it as a stored day workout: one branches block per skill, holding branch IDs and durations.
 
 A stored day workout is no AIWL document. Stored data may break the language rules, and the stored day workout keeps the results of the old generator for these cases:
 
@@ -207,8 +209,6 @@ A stored day workout is no AIWL document. Stored data may break the language rul
 
 The stored day workout carries no document header, so the type checker rejects it wherever a workout document is expected, such as import or export.
 
-The target: the branch lookup index supplies tags, levels and exercises at generation time, so a stored plan follows catalog changes.
-
 Until a migration rewrites the stored plans, a temporary decision applies:
 
 1. Planned branches read the branch entries the training day saved at plan creation. A catalog update changes no planned branch, and a branch ID the catalog removed still generates from its saved entry.
@@ -216,6 +216,27 @@ Until a migration rewrites the stored plans, a temporary decision applies:
 3. A workout can therefore mix saved and current branch definitions. The decision accepts that mix so that no catalog update changes an athlete's planned workout without a migration.
 
 A follow-up issue defines the migration, its trigger, and what happens to a slot whose branch ID the catalog removed. After the migration, training day generation switches from the saved entries to the branch lookup index.
+
+### Compatibility exceptions
+
+The generator deviates from the target architecture in these places, so that stored plans and existing set lists keep working:
+
+| Exception | Reason | Ends when |
+|---|---|---|
+| Training days store branch entries and minutes instead of a template | Stored plans predate AIWL | Stored plan migration |
+| Planned branches read the saved branch entries, replacements read the catalog | No catalog update changes a planned workout without a migration | Stored plan migration |
+| Training day overrides for MAX, MAX_STRENGTH, the cardio skills and PLYO | The skill catalog lacks these values | The catalog holds the values |
+| The set list rules differ by source | Each source keeps the set lists of its old path | A decision unifies or keeps each rule |
+| Training days store cardio as a branches block | Plan creation stores cardio branches, so this ADR amends AIWL rule 1 | Plan creation writes duration blocks |
+| The old training day path runs while the AIWL generator flag is off | The flag lets the team compare both paths | The flag defaults to on and the old path is deleted |
+
+### Remaining work
+
+1. The duration handler with the minutes table chooser.
+2. The `order` field and the `bodyParts` filter.
+3. The stored plan migration.
+4. The AIWL generator flag on by default, and deletion of the old training day path.
+5. The strength test through the template interpreter entry point.
 
 ### Errors
 

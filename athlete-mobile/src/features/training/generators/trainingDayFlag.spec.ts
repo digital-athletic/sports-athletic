@@ -3,12 +3,10 @@ import type * as TrainingDayGeneration from "@/features/training/workoutGenerato
 import { setUpAiwlGeneratorFlag } from "../../../../test/factories/aiwlGeneratorFlag";
 import {
   buildPlanUser,
-  importTrees,
-  noExerciseData,
-  realExercises,
+  generatePlanWorkoutForWeekday,
+  generateWarmUpOnlyPlanUser,
 } from "../../../../test/factories/planWorkout";
 import { catchThrownValue } from "../../../../test/factories/thrownValue";
-import TrainingGenerator from "./TrainingGenerator";
 
 jest.mock("@/features/training/workoutGenerator/trainingDayGeneration", () => {
   const actual = jest.requireActual<typeof TrainingDayGeneration>(
@@ -22,38 +20,21 @@ jest.mock("@/features/training/workoutGenerator/trainingDayGeneration", () => {
   };
 });
 
-const generateDay = (user: ReturnType<typeof buildPlanUser>) =>
-  new TrainingGenerator().generatePlanWorkout(
-    "PLAN",
-    user,
-    "HALL",
-    realExercises,
-    importTrees("WU", "CARDIO_4", "CARDIO_5"),
-    1,
-    [],
-    undefined,
-    0,
-    noExerciseData,
-  );
-
-const warmUpOnlyUser = () =>
-  buildPlanUser({ weekday: 1, skills: {}, lengths: {} });
-
 describe("generatePlanWorkout: AIWL generator flag", () => {
   beforeEach(() => {
     jest.mocked(generateTrainingDayFromStoredDay).mockClear();
     jest.spyOn(Math, "random").mockReturnValue(0);
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
+  afterEach(jest.restoreAllMocks);
 
   describe("flag off", () => {
     setUpAiwlGeneratorFlag(false);
 
     it("runs the old generator", () => {
-      const result = generateDay(warmUpOnlyUser());
+      const result = generatePlanWorkoutForWeekday(
+        generateWarmUpOnlyPlanUser(),
+      );
 
       expect(generateTrainingDayFromStoredDay).not.toHaveBeenCalled();
       expect(result.map((entry) => entry.skill)).toContain("WU");
@@ -64,7 +45,9 @@ describe("generatePlanWorkout: AIWL generator flag", () => {
     setUpAiwlGeneratorFlag(true);
 
     it("hands the stored day and the lengths to the new generator", () => {
-      const result = generateDay(warmUpOnlyUser());
+      const result = generatePlanWorkoutForWeekday(
+        generateWarmUpOnlyPlanUser(),
+      );
 
       expect(generateTrainingDayFromStoredDay).toHaveBeenCalledTimes(1);
       const [training] = jest.mocked(generateTrainingDayFromStoredDay).mock
@@ -76,7 +59,7 @@ describe("generatePlanWorkout: AIWL generator flag", () => {
     });
 
     it("reads Math.random when a draw runs, not when the input is built", () => {
-      generateDay(warmUpOnlyUser());
+      generatePlanWorkoutForWeekday(generateWarmUpOnlyPlanUser());
       const [, input] = jest.mocked(generateTrainingDayFromStoredDay).mock
         .calls[0];
       jest.spyOn(Math, "random").mockReturnValue(0.75);
@@ -85,9 +68,11 @@ describe("generatePlanWorkout: AIWL generator flag", () => {
     });
 
     it("throws the anamnesis error of main for an athlete without workout data", () => {
-      const user = { ...warmUpOnlyUser(), workoutData: undefined };
+      const user = { ...generateWarmUpOnlyPlanUser(), workoutData: undefined };
 
-      expect(catchThrownValue(() => generateDay(user))).toEqual({
+      expect(
+        catchThrownValue(() => generatePlanWorkoutForWeekday(user)),
+      ).toEqual({
         type: "NO_ANAMNESIS",
         subtype: "MISSING_WORKOUT_DATA",
         params: [],
@@ -99,15 +84,27 @@ describe("generatePlanWorkout: AIWL generator flag", () => {
   describe.each([false, true])("flag %s", (flagEnabled) => {
     setUpAiwlGeneratorFlag(flagEnabled);
 
-    it("rejects a stored skill entry that fails the schema before any generator runs", () => {
-      const user = buildPlanUser({
-        weekday: 1,
-        skills: { SWR1: ["not a list"] },
-        lengths: { SWR1: 10 },
-      });
-
-      expect(catchThrownValue(() => generateDay(user))).toBeDefined();
-      expect(generateTrainingDayFromStoredDay).not.toHaveBeenCalled();
+    beforeEach(() => {
+      jest.spyOn(console, "error").mockImplementation(() => undefined);
     });
+
+    it.each([
+      ["an entry that fails the schema", ["not a list"]],
+      ["a value that is not a list", "x"],
+    ])(
+      "rejects a stored skill with %s before any generator runs",
+      (_label, skillValue) => {
+        const user = buildPlanUser({
+          weekday: 1,
+          skills: { SWR1: skillValue },
+          lengths: { SWR1: 10 },
+        });
+
+        expect(
+          catchThrownValue(() => generatePlanWorkoutForWeekday(user)),
+        ).toEqual(new Error("Invalid data structure for currTraining.skills"));
+        expect(generateTrainingDayFromStoredDay).not.toHaveBeenCalled();
+      },
+    );
   });
 });

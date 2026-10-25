@@ -9,9 +9,10 @@ import type { UserType } from "@/schemas/user.schema";
 import { setUpAiwlGeneratorFlag } from "../../../../test/factories/aiwlGeneratorFlag";
 import {
   buildPlanUser,
+  generateKneePreventionBranches,
+  generatePlanWorkoutForWeekday,
   importTree,
   importTrees,
-  noExerciseData,
   PAUSE_ID,
   realExercises,
 } from "../../../../test/factories/planWorkout";
@@ -129,31 +130,12 @@ describe.each([false, true])("AIWL generator flag %s", (flagEnabled) => {
   setUpAiwlGeneratorFlag(flagEnabled);
 
   describe("generatePlanWorkout: special warm up before prevention", () => {
-    const kneeBranches = (tree: string, count: number) =>
-      Object.entries(importTree(tree))
-        .filter(
-          ([, branch]) =>
-            branch.tags.includes("PREVENTION_KNEE_HIP") &&
-            Object.keys(branch.levels).length > 0,
-        )
-        .slice(0, count)
-        .map(([branchId, branch]) => ({
-          branchId,
-          tags: branch.tags,
-          exercises: Object.fromEntries(
-            Object.entries(branch.levels).map(([level, data]) => [
-              level,
-              { exerciseId: data.exerciseId },
-            ]),
-          ),
-        }));
-
     it("closes the special warm up with 30 seconds before the prevention block", () => {
       const planUser = buildPlanUser({
         weekday: 1,
         skills: {
-          PREVKNEE: kneeBranches("PREV", 2),
-          WUSPEZIAL: kneeBranches("WUSPEZIAL", 3),
+          PREVKNEE: generateKneePreventionBranches("PREV", 2),
+          WUSPEZIAL: generateKneePreventionBranches("WUSPEZIAL", 3),
         },
         lengths: { PREVKNEE: 10, WUSPEZIAL: 5 },
       });
@@ -164,18 +146,9 @@ describe.each([false, true])("AIWL generator flag %s", (flagEnabled) => {
         },
       };
 
-      const result = new TrainingGenerator().generatePlanWorkout(
-        "PLAN",
-        user,
-        "HALL",
-        realExercises,
-        importTrees("WU", "WUSPEZIAL", "PREV", "PREVKG"),
-        1,
-        [],
-        undefined,
-        0,
-        noExerciseData,
-      );
+      const result = generatePlanWorkoutForWeekday(user, {
+        skillTrees: importTrees("WU", "WUSPEZIAL", "PREV", "PREVKG"),
+      });
       const skills = result.map((entry) => entry.skill);
       const pauses = pausesOf(result, "WUSPEZIAL");
 

@@ -3,7 +3,7 @@ import { getTagValues } from "@/utils/tagUtils";
 import type { GenerationInput } from "./generationInput";
 
 // String keys and an optional exerciseId, so stored day entries pass straight in
-type CandidateLevels = Record<string, { exerciseId?: string }>;
+export type CandidateLevels = Record<string, { exerciseId?: string }>;
 
 /** A branch as the rule families read it: from a skill tree or a stored day. */
 export interface CandidateBranch {

@@ -1,4 +1,19 @@
-import { listBranchRemovals, readReplacementRegion } from "./ruleFamily";
+import { loadExercises } from "@/data/loadExercises";
+import {
+  generateRuleFamilyInput,
+  generateSkillTreeBranches,
+} from "../../../../test/factories/ruleFamilyInput";
+import {
+  filterBranchesByEquipment,
+  listMissingEquipment,
+} from "./equipmentRule";
+import { filterBranchesByFitnessLevel } from "./fitnessLevelRule";
+import { filterBranchesByMuscleSoreness } from "./muscleSorenessRule";
+import {
+  listBranchRemovals,
+  readReplacementRegion,
+  type RuleFamily,
+} from "./ruleFamily";
 
 describe("ruleFamily: listBranchRemovals", () => {
   it("lists the candidates missing from keep, in candidate order, with their details", () => {
@@ -44,5 +59,53 @@ describe("ruleFamily: readReplacementRegion", () => {
   it("reads no region for a branch without region tags or tags", () => {
     expect(readReplacementRegion(["EQ_DUMBBELL"])).toEqual([]);
     expect(readReplacementRegion()).toEqual([]);
+  });
+});
+
+describe("ruleFamily: families chained in the training day order of main", () => {
+  it.each([
+    [
+      "soreness regions before equipment regions",
+      { soreMuscles: ["CHEST"], equipment: ["DUMBBELL"] },
+    ],
+    [
+      "equipment regions before fitness level regions",
+      { level: "BEGINNER" as const, equipment: ["BARBELL"] },
+    ],
+  ])("requests the %s", (_, athleteOptions) => {
+    const input = generateRuleFamilyInput({
+      ...athleteOptions,
+      exerciseCatalog: loadExercises(),
+    });
+    const trainingDayFamilies: RuleFamily[] = [
+      filterBranchesByMuscleSoreness,
+      filterBranchesByEquipment,
+      filterBranchesByFitnessLevel,
+    ];
+    let branches = generateSkillTreeBranches("GKS", ["510", "523"]);
+    const replace: string[] = [];
+    for (const filterBranches of trainingDayFamilies) {
+      const result = filterBranches(branches, input, "GKS");
+      branches = result.keep;
+      replace.push(...result.replace);
+    }
+
+    expect(branches).toEqual({});
+    expect(replace).toEqual(["UPPER_BODY", "FULL_BODY"]);
+  });
+
+  it("names only the equipment missing from the branches soreness kept", () => {
+    const input = generateRuleFamilyInput({ soreMuscles: ["CHEST"] });
+    const branches = generateSkillTreeBranches("GKS", ["510", "523"]);
+
+    const sorenessResult = filterBranchesByMuscleSoreness(
+      branches,
+      input,
+      "GKS",
+    );
+
+    const { removals } = filterBranchesByEquipment(sorenessResult.keep, input);
+
+    expect(listMissingEquipment(removals)).toEqual(["BARBELL"]);
   });
 });

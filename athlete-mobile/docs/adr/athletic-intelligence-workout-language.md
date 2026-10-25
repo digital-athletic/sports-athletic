@@ -8,7 +8,7 @@ The app generates three kinds of workout:
 2. a training day of the training plan, for example warm-up, hypertrophy, and full-body stability,
 3. a workout a trainer composes from skills, with minutes per skill, and body regions.
 
-The bundled trainings are AIWL templates in `assets/data/templates/`. Training days still use their own format: plan creation stores each training day as branches and minutes per skill. The trainer workout has no format yet. The generator reads each format on its own path, so a rule added for one kind of workout misses the others.
+The bundled trainings are AIWL templates in `assets/data/templates/`. Training days still use their own stored format: plan creation stores each training day as branch entries and minutes per skill. The trainer workout has no format yet. Before AIWL, the generator read each format on its own path, so a rule added for one kind of workout missed the others.
 
 This ADR uses the terms and skill codes of the [Glossary](../specs/glossary.md).
 
@@ -31,7 +31,29 @@ This ADR uses the terms and skill codes of the [Glossary](../specs/glossary.md).
 
 Option 3. The **Athletic Intelligence Workout Language** (AIWL) is the JSON format for one workout. A **template** is one workout written in AIWL and lists the **blocks** of the workout in order. Each block names a skill and where its branches come from. The generator turns a template into a set list for one athlete.
 
-Out of scope: importing templates at runtime, switching training days to AIWL, the trainer editor, and publishing the JSON Schema file that `$schema` points to.
+Out of scope: importing templates at runtime, storing training days as AIWL, the trainer editor, and publishing the JSON Schema file that `$schema` points to.
+
+## Current support
+
+The generator runs these workout sources:
+
+| Workout source | Generator | Template | Block kinds |
+|---|---|---|---|
+| Short workout (focus training, prevention training) | AIWL generator | Bundled template | `picks` and `branches`, alone or mixed |
+| Training day, AIWL generator flag on | AIWL generator | The generator writes the stored training day as a template at generation time | `branches`, one block per stored skill |
+| Training day, flag off (default) | Old training day path | none | none |
+| Strength test | Old path | none | none |
+| Trainer workout | none | No editor exists | `duration` (planned) |
+
+[ADR: Workout generator architecture](./workout-generator-architecture.md#stored-workouts) describes how a training day reads its stored branches and lists the compatibility exceptions.
+
+The schema accepts three parts the generator rejects with `OTHER/BLOCK_KIND` until a follow-up implements them:
+
+1. the `duration` block
+2. the `order` field of any block
+3. the `bodyParts` field of a picks block
+
+A stored training day template holds none of them, so the check fires for short workouts only.
 
 ## Schema
 
@@ -271,7 +293,9 @@ The special warm-up block draws 3 exercises from `WUSPEZIAL`, narrowed to the sh
 
 ### Example 2: training day
 
-Training days do not store AIWL yet. A template runs branches blocks, but the generator rejects the `order` field below with `BLOCK_KIND` until a follow-up implements it. This example shows the planned format: plan creation would store a training day as branches and minutes per skill, with one branches block per skill, in the plan's section order. The skill defaults supply sets, rests, and supersets.
+This example shows the target stored format: one branches block per skill, in the plan's section order. The skill defaults supply sets, rests, and supersets.
+
+Training days do not store AIWL yet. With the AIWL generator flag on, the generator writes the stored branch entries and minutes as branches blocks of this shape at generation time, without the `order` field. The training day finish rules sort the exercises by muscle groups instead. The generator rejects `order` with `BLOCK_KIND` until a follow-up implements it.
 
 ```json
 {
@@ -357,11 +381,11 @@ AIWL follows none of them. The set list the generator produces fits fixed steps 
 
 ## Pros and cons
 
-- Pro: one format for bundled trainings, training days, and trainer workouts. The generator reads the bundled trainings through it today.
+- Pro: one format for bundled trainings, training days, and trainer workouts. The generator reads the bundled trainings through it today, and training days behind the AIWL generator flag.
 - Pro: the AIWL path reproduces the 13 bundled trainings, except BR at a place without foam roller or foam ball.
 - Pro: templates stay short, since the skill catalog supplies the skill values.
 - Con: the generator supports picks and branches blocks only. Duration blocks, and the `order` and `bodyParts` fields, fail with `BLOCK_KIND` until a follow-up implements them.
-- Con: training days still read their stored branches and minutes until a follow-up switches them to AIWL.
+- Con: training days still store branch entries and minutes. The generator writes them as a template at generation time, and only with the AIWL generator flag on. With the flag off, training days run the old path.
 - Con: `duration` means a length or a minutes table key, depending on the block type.
 - Con: the generator picks `afterExercise` or `betweenSets` for the rest after an exercise, by the next exercise. A template that wants one rest after every exercise sets both fields to the same value.
 - Con: the bundled templates deviate from the catalog rests. `PREV` rests 30 s between sets and after each exercise. Full-body stability rests 45 s everywhere. Leg axis stability rests 30 s between sets and after each exercise. `STABILITY` rests 30 s between sets and pairs its exercises in draw order. The shoulder, knee, wrist, ankle, and spine trainings keep the catalog rests in their prevention block.

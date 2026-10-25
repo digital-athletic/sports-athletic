@@ -1,5 +1,6 @@
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
 import type { ExerciseType } from "@/schemas/exercise.schema";
+import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import {
   generateAuthoredValues,
   generateTaggedExercise,
@@ -36,6 +37,22 @@ export const generateOneSidedReference = (
   const reference = generateBranchReference(id, tags);
   return { ...reference, branchTags: ["SIDE_ONE", ...tags] };
 };
+
+/**
+ * References a branch of a self named tree by its ID, which also serves as
+ * its exercise ID.
+ *
+ * generateReferenceFromBranch({ a: { tags: ["SIDE_ONE"], ... } }, "a")
+ * → { branchId: "a", branchTags: ["SIDE_ONE"], exerciseId: "a" }
+ */
+export const generateReferenceFromBranch = (
+  branches: SkillTreeType,
+  id: string,
+): BranchExerciseReference => ({
+  branchId: id,
+  branchTags: branches[id].tags,
+  exerciseId: id,
+});
 
 /**
  * Copies a reference as a branch that resolved to no exercise.

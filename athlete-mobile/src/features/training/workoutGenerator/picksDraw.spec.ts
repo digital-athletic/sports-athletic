@@ -1,38 +1,12 @@
-import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
+import { generateReferenceFromBranch } from "@test/factories/branchReference";
 import { generateSequenceRandom } from "@test/factories/sequenceRandom";
+import {
+  generateSelfNamedBranches,
+  generateTreeBranch,
+} from "@test/factories/skillTree";
 import { type BranchDraw, createBranchDraw } from "./branchDraw";
 import { drawPicksBlock, type PicksBlockDraw } from "./picksDraw";
-
-/**
- * Builds branches with the given tags and one level each, whose exercise ID
- * equals the branch ID.
- *
- * generateBranches({ a: ["SIDE_ONE"] })
- * → { a: { tags: ["SIDE_ONE"], levels: { 1: { exerciseId: "a" } } } }
- */
-const generateBranches = (tagsById: Record<string, string[]>): SkillTreeType =>
-  Object.fromEntries(
-    Object.entries(tagsById).map(([id, tags]) => [
-      id,
-      { tags, levels: { 1: { exerciseId: id } } },
-    ]),
-  );
-
-/**
- * References a branch by its ID, which also serves as its exercise ID.
- *
- * generateReference({ a: { tags: ["SIDE_ONE"], ... } }, "a")
- * → { branchId: "a", branchTags: ["SIDE_ONE"], exerciseId: "a" }
- */
-const generateReference = (
-  branches: SkillTreeType,
-  id: string,
-): BranchExerciseReference => ({
-  branchId: id,
-  branchTags: branches[id].tags,
-  exerciseId: id,
-});
 
 // Draws the first unused branches, so the key order of the branches decides.
 const FIRST_UNUSED_BRANCH_DRAW: BranchDraw = {
@@ -40,7 +14,7 @@ const FIRST_UNUSED_BRANCH_DRAW: BranchDraw = {
     const id = Object.keys(branches).find(
       (key) => !usedBranchIds.includes(key),
     );
-    return id ? generateReference(branches, id) : null;
+    return id ? generateReferenceFromBranch(branches, id) : null;
   },
   pair: (branches, usedBranchIds) => {
     const [id, partnerId] = Object.keys(branches).filter(
@@ -48,8 +22,10 @@ const FIRST_UNUSED_BRANCH_DRAW: BranchDraw = {
     );
     if (!id) return null;
     return {
-      lead: generateReference(branches, id),
-      partner: partnerId ? generateReference(branches, partnerId) : undefined,
+      lead: generateReferenceFromBranch(branches, id),
+      partner: partnerId
+        ? generateReferenceFromBranch(branches, partnerId)
+        : undefined,
     };
   },
 };
@@ -58,7 +34,7 @@ const FIRST_UNUSED_BRANCH_DRAW: BranchDraw = {
  * Draws one picks block with the first unused branch draw and returns the
  * drawn branch IDs and the IDs the block marked used.
  *
- * drawBlockWithFirstUnusedBranch({ picks: [{ tags: [], count: 2 }] }, generateBranches({ a: [], b: [], c: [] }))
+ * drawBlockWithFirstUnusedBranch({ picks: [{ tags: [], count: 2 }] }, generateSelfNamedBranches({ a: [], b: [], c: [] }))
  * → { drawn: ["a", "b"], used: ["a", "b"] }
  */
 const drawBlockWithFirstUnusedBranch = (
@@ -124,13 +100,13 @@ describe("picksDraw: count by entries", () => {
     expect(
       drawBlockWithFirstUnusedBranch(
         { countBy: "entries", picks: [{ tags: [], count }] },
-        generateBranches(tags),
+        generateSelfNamedBranches(tags),
       ).drawn,
     ).toEqual(drawn);
   });
 
   it("draws one pick after the other", () => {
-    const pool = generateBranches({
+    const pool = generateSelfNamedBranches({
       pushUp: ["REGION_UPPER_BODY"],
       burpee: ["REGION_FULL_BODY"],
       squat: ["REGION_LOWER_BODY"],
@@ -151,7 +127,7 @@ describe("picksDraw: count by entries", () => {
   ])(
     "fills up from the whole pool only with fallback: $fallbackToWholeTree",
     ({ fallbackToWholeTree, drawn }) => {
-      const pool = generateBranches({
+      const pool = generateSelfNamedBranches({
         squat: ["REGION_LOWER_BODY"],
         pushUp: ["REGION_UPPER_BODY"],
       });
@@ -169,7 +145,11 @@ describe("picksDraw: count by entries", () => {
 
 describe("picksDraw: count by exercises and pairs", () => {
   it("counts a one sided exercise once", () => {
-    const pool = generateBranches({ a: ["SIDE_ONE"], b: ["SIDE_ONE"], c: [] });
+    const pool = generateSelfNamedBranches({
+      a: ["SIDE_ONE"],
+      b: ["SIDE_ONE"],
+      c: [],
+    });
 
     expect(
       drawBlockWithFirstUnusedBranch({ picks: [{ tags: [], count: 2 }] }, pool)
@@ -178,7 +158,7 @@ describe("picksDraw: count by exercises and pairs", () => {
   });
 
   it("draws each pair with its partner and orders weighted pairs last", () => {
-    const pool = generateBranches({
+    const pool = generateSelfNamedBranches({
       a: ["EQ_TYPE_WEIGHTS"],
       b: [],
       c: [],
@@ -197,7 +177,7 @@ describe("picksDraw: count by exercises and pairs", () => {
     expect(
       drawBlockWithFirstUnusedBranch(
         { countBy: "pairs", picks: [{ tags: [], count: 3 }] },
-        generateBranches({ a: [] }),
+        generateSelfNamedBranches({ a: [] }),
       ).drawn,
     ).toEqual(["a"]);
   });
@@ -206,10 +186,10 @@ describe("picksDraw: count by exercises and pairs", () => {
 describe("picksDraw: with the branch draws", () => {
   it("skips an exercise an earlier pick drew and falls back to the block pool", () => {
     const pool: SkillTreeType = {
-      a: { tags: ["REGION_LOWER_BODY"], levels: { 1: { exerciseId: "x" } } },
-      b: { tags: ["REGION_LOWER_BODY"], levels: { 1: { exerciseId: "y" } } },
-      c: { tags: ["REGION_UPPER_BODY"], levels: { 1: { exerciseId: "x" } } },
-      d: { tags: ["REGION_UPPER_BODY"], levels: { 1: { exerciseId: "z" } } },
+      a: generateTreeBranch(["x"], ["REGION_LOWER_BODY"]),
+      b: generateTreeBranch(["y"], ["REGION_LOWER_BODY"]),
+      c: generateTreeBranch(["x"], ["REGION_UPPER_BODY"]),
+      d: generateTreeBranch(["z"], ["REGION_UPPER_BODY"]),
     };
     const random = generateSequenceRandom([0, 0, 0, 0.99]);
     const draw = createBranchDraw({
@@ -248,7 +228,7 @@ describe("picksDraw: used branches", () => {
 
     const result = drawBlockWithFirstUnusedBranch(
       { picks: [{ tags: [], count: 2 }] },
-      generateBranches({ a: [], b: [] }),
+      generateSelfNamedBranches({ a: [], b: [] }),
       { usedBranchIds },
     );
 
@@ -277,7 +257,8 @@ describe("picksDraw: used branches", () => {
     },
   ])("marks used $behaviour", ({ change, tags, used }) => {
     expect(
-      drawBlockWithFirstUnusedBranch(change, generateBranches(tags)).used,
+      drawBlockWithFirstUnusedBranch(change, generateSelfNamedBranches(tags))
+        .used,
     ).toEqual(used);
   });
 });
@@ -293,8 +274,8 @@ describe("picksDraw: block pool", () => {
     {
       behaviour: "never draws a branch outside the block pool",
       change: { picks: [{ tags: [], count: 3 }], fallbackToWholeTree: true },
-      pool: generateBranches({ a: [], b: [], c: [] }),
-      blockPool: generateBranches({ b: [] }),
+      pool: generateSelfNamedBranches({ a: [], b: [], c: [] }),
+      blockPool: generateSelfNamedBranches({ b: [] }),
       drawn: ["b"],
     },
     {
@@ -303,23 +284,23 @@ describe("picksDraw: block pool", () => {
         picks: [{ tags: ["SKILL_X"], count: 2 }],
         fallbackToWholeTree: true,
       },
-      pool: generateBranches({ a: ["SKILL_X"], b: [], c: [] }),
-      blockPool: generateBranches({ c: [] }),
+      pool: generateSelfNamedBranches({ a: ["SKILL_X"], b: [], c: [] }),
+      blockPool: generateSelfNamedBranches({ c: [] }),
       drawn: ["c"],
     },
     {
       behaviour: "keeps the key order of the workout pool",
       change: { picks: [{ tags: [], count: 2 }] },
-      pool: generateBranches({ a: [], b: [], c: [] }),
-      blockPool: generateBranches({ c: [], b: [], a: [] }),
+      pool: generateSelfNamedBranches({ a: [], b: [], c: [] }),
+      blockPool: generateSelfNamedBranches({ c: [], b: [], a: [] }),
       drawn: ["a", "b"],
     },
     {
       behaviour:
         "draws nothing when the block pool shares no branch with the workout pool",
       change: { picks: [{ tags: [], count: 2 }], fallbackToWholeTree: true },
-      pool: generateBranches({ a: [], b: [] }),
-      blockPool: generateBranches({ z: [] }),
+      pool: generateSelfNamedBranches({ a: [], b: [] }),
+      blockPool: generateSelfNamedBranches({ z: [] }),
       drawn: [],
     },
   ])("$behaviour", ({ change, pool, blockPool, drawn }) => {

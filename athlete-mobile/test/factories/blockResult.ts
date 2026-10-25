@@ -2,6 +2,7 @@ import type { BlockResult } from "@/features/training/workoutGenerator/blockWalk
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
 import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import type { Block } from "@/schemas/aiwl.schema";
+import type { ExerciseType } from "@/schemas/exercise.schema";
 import { generateBranchesBlock } from "./templateBlock";
 
 type FilledBlockResult = Extract<BlockResult, { status: "filled" }>;
@@ -76,6 +77,30 @@ export const generateFilledBlockResult = (
       branchId,
       branchTags: [],
       exerciseId: readExerciseId(branchId),
+    })),
+  });
+
+/**
+ * Builds a filled result whose branches resolve to the given exercises of a
+ * catalog. The branch of exercise "e1" is "be1" and carries its tags.
+ *
+ * generateFilledResultFromCatalog(catalog, block, ["e1"])
+ * → { status: "filled", block, usedBranchIds: ["be1"],
+ *     exercises: [{ branchId: "be1", branchTags: [...tags of e1], exerciseId: "e1" }] }
+ */
+export const generateFilledResultFromCatalog = (
+  exerciseCatalog: ExerciseType[],
+  block: Block,
+  exerciseIds: string[],
+): FilledBlockResult =>
+  generateBlockResult("filled", {
+    block,
+    usedBranchIds: exerciseIds.map((id) => `b${id}`),
+    exercises: exerciseIds.map((id) => ({
+      branchId: `b${id}`,
+      branchTags:
+        exerciseCatalog.find((exercise) => exercise.id === id)?.tags ?? [],
+      exerciseId: id,
     })),
   });
 

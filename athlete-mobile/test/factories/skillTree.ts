@@ -53,6 +53,23 @@ export const generateTaggedBranches = (
   );
 
 /**
+ * Builds branches with the given tags and one level each, whose exercise ID
+ * equals the branch ID.
+ *
+ * generateSelfNamedBranches({ a: ["SIDE_ONE"] })
+ * → { a: { tags: ["SIDE_ONE"], levels: { 1: { exerciseId: "a" } } } }
+ */
+export const generateSelfNamedBranches = (
+  tagsById: Record<string, string[]>,
+): SkillTreeType =>
+  Object.fromEntries(
+    Object.entries(tagsById).map(([id, tags]) => [
+      id,
+      generateTreeBranch([id], tags),
+    ]),
+  );
+
+/**
  * Builds skill trees with a BAS branch blocked on knee pain and a MOB branch
  * without tags.
  *

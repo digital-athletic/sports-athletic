@@ -80,9 +80,24 @@ describe("workoutSetup: setUpWorkout", () => {
     };
 
     expect(() => setUpWorkout(input, template, skillTrees)).toThrow(
-      expect.objectContaining({ type: "NO_EXERCISES", subtype: "PAIN" }),
+      expect.objectContaining({
+        type: "NO_EXERCISES",
+        subtype: "PAIN",
+        params: ["KNEE"],
+      }),
     );
-    expect(setUpWorkout(input).picksWorkout.blocks.size).toBe(0);
+  });
+
+  it("holds an empty picks workout without a template", () => {
+    const { picksWorkout } = setUpWorkout(generateRuleFamilyInput());
+
+    expect(picksWorkout.pool).toEqual({});
+    expect(picksWorkout.blocks.size).toBe(0);
+  });
+
+  it("gives each setup its own picks workout maps", () => {
+    const input = generateRuleFamilyInput();
+
     expect(setUpWorkout(input).picksWorkout.blocks).not.toBe(
       setUpWorkout(input).picksWorkout.blocks,
     );

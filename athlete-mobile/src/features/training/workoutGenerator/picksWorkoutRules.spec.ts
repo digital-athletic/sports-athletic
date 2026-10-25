@@ -114,7 +114,7 @@ describe("picksWorkoutRules: filterPoolByPicksWorkoutRules", () => {
 });
 
 describe("picksWorkoutRules: resolvePicksWorkout", () => {
-  it("resolves each picks block and runs the rules once on the union pool", () => {
+  it("resolves each picks block and filters the union pool", () => {
     const warmUpBlock: PicksBlock = {
       kind: "picks",
       skill: "WU",
@@ -124,10 +124,20 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
       ...generateRuleFamilyInput({ gender: "FEMALE" }),
       athleteLevel: "ADVANCED",
     };
+    const skillTrees = {
+      WU: {
+        "1026": {
+          tags: ["GENDER_MALE"],
+          levels: { 1: { exerciseId: "e1" } },
+        },
+        "2": { tags: [], levels: { 1: { exerciseId: "e2" } } },
+      },
+    };
 
     const picksWorkout = resolvePicksWorkout(
       generateTemplate([warmUpBlock]),
       input,
+      skillTrees,
     );
 
     expect(picksWorkout.blocks.size).toBe(1);
@@ -138,9 +148,10 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
       fallbackToWholeTree: false,
       picks: [{ tags: [], count: 10 }],
     });
-    expect(picksWorkout.blocks.get(warmUpBlock)?.pool).toHaveProperty("1026");
-    expect(picksWorkout.pool).not.toHaveProperty("1026");
-    expect(Object.keys(picksWorkout.pool).length).toBeGreaterThan(0);
+    expect(
+      Object.keys(picksWorkout.blocks.get(warmUpBlock)?.pool ?? {}),
+    ).toEqual(["2", "1026"]);
+    expect(Object.keys(picksWorkout.pool)).toEqual(["2"]);
   });
 
   it("keeps the union pool when the rules empty the pool of one block only", () => {

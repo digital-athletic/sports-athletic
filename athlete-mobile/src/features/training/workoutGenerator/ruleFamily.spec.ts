@@ -129,8 +129,8 @@ describe("ruleFamily: families chained in the training day order of main", () =>
   });
 });
 
-describe("ruleFamily: families chained in the picks order of main", () => {
-  it("removes each branch with the first family that blocks it", () => {
+describe("ruleFamily: the picks families as one RuleFamily chain", () => {
+  it("lets pain, equipment, age group and gender each remove the branches it blocks", () => {
     const input = generateRuleFamilyInput({
       gender: "FEMALE",
       pains: ["KNEE_LEFT"],

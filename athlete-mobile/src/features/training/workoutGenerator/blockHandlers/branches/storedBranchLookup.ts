@@ -38,8 +38,9 @@ export const lookUpStoredBranchInCatalog: StoredBranchLookup = (
 
 /**
  * Reads a stored branch ID from the entries a stored training day saved at
- * plan creation. A training day generates from the snapshot its plan stored,
- * not from the current catalog. A repeated ID reads its last entry.
+ * plan creation. Training days use this lookup until the stored plan migration
+ * (see the stored workouts section of the architecture ADR). A repeated ID
+ * reads its last entry.
  */
 export const createStoredDayBranchLookup =
   (skills: StoredDaySkills): StoredBranchLookup =>

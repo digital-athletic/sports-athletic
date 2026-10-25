@@ -102,8 +102,7 @@ const refillRequestedRegions = (
   ];
 };
 
-// Picks the branches a block trains. The cardio swap and the duplicate
-// exercise step add further cases here.
+// Picks the branches a block trains, one case per rule
 const chooseBlockBranches = (
   skill: string,
   storedBranches: StoredBranch[],
@@ -120,7 +119,7 @@ const chooseBlockBranches = (
   if (chain.replace.length === 0) {
     return keptBranches.length > 0 ? storedBranches : [];
   }
-  // a cardio skill keeps its kept branches until the cardio swap
+  // a cardio skill keeps its kept branches
   if (skill.indexOf("CARDIO") !== -1) return keptBranches;
   return refillRequestedRegions(skill, keptBranches, chain.replace, input);
 };

@@ -163,7 +163,7 @@ const pickReplacementBranches = (
   const replacement: StoredBranch[] = [];
   for (const region of replace) {
     pool.candidates = pool.candidates.filter(isUnusedExercise);
-    // no branch left for this slot; the next slot tries again
+    // candidates only shrink, so this slot and every later one stay empty
     if (pool.candidates.length === 0) continue;
     const ownRegionBranches = listRegionBranches(pool, region);
     const regionBranches =

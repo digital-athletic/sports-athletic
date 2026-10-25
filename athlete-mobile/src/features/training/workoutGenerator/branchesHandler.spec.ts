@@ -63,7 +63,8 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
     ]);
   });
 
-  it("keeps only the kept branches when the rule chain requests a region, until replacement", () => {
+  // sore CHEST blocks every upper body branch of GKS, so 510 finds no replacement
+  it("keeps the kept branches when no replacement fits the requested region", () => {
     const input = setUpWorkout(
       generateRuleFamilyInput({
         soreMuscles: ["CHEST"],
@@ -84,8 +85,94 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
     ).toEqual(["523"]);
   });
 
+  // without weights GKS replaces from GKSKG; no upper body branch fits, so a less used region refills
+  it("refills the requested regions from the skill tree the place selects", () => {
+    const input = setUpWorkout({
+      ...generateRuleFamilyInput({ soreMuscles: ["CHEST"], exerciseCatalog }),
+      random: () => 0,
+    });
+
+    const result = handleBlock(
+      generateBranchesBlock("GKS", ["510", "523"]),
+      input,
+      NO_BRANCHES,
+    );
+
+    expect(result).toMatchObject({
+      status: "filled",
+      usedBranchIds: ["939", "547"],
+    });
+  });
+
+  it("replaces every slot of a prevention skill, its kept branches included", () => {
+    const input = setUpWorkout({
+      ...generateRuleFamilyInput({
+        soreMuscles: ["QUADRICEPS"],
+        pains: ["KNEE_LEFT", "SHOULDER_LEFT"],
+        exerciseCatalog,
+      }),
+      random: () => 0,
+    });
+
+    // the first eight branches of the PREVKG tree
+    const result = handleBlock(
+      generateBranchesBlock("PREVSHOULDER", [
+        "102",
+        "103",
+        "104",
+        "146",
+        "147",
+        "148",
+        "149",
+        "150",
+      ]),
+      input,
+      NO_BRANCHES,
+    );
+
+    expect(result).toMatchObject({
+      status: "filled",
+      usedBranchIds: ["152", "148", "619", "158", "163", "624", "620", "633"],
+    });
+  });
+
+  // an emptied prevention or special warm-up skill records no error
+  it("ends empty without a reason when a prevention skill finds no replacement", () => {
+    const input = setUpWorkout({
+      ...generateRuleFamilyInput({
+        soreMuscles: ["QUADRICEPS"],
+        pains: ["KNEE_LEFT", "SHOULDER_LEFT"],
+        exerciseCatalog,
+      }),
+      random: () => 0,
+    });
+    // the first eight branches of the PREVKG tree
+    const block = generateBranchesBlock("PREVKNEE", [
+      "102",
+      "103",
+      "104",
+      "146",
+      "147",
+      "148",
+      "149",
+      "150",
+    ]);
+
+    expect(handleBlock(block, input, NO_BRANCHES)).toEqual({
+      status: "empty",
+      block,
+      reason: undefined,
+      usedBranchIds: [],
+    });
+  });
+
   it.each([
-    ["the rule chain removes every branch", "GKS", ["510", "523"], ["BARBELL"]],
+    [
+      "the replacement finds no skill tree",
+      "SASKG",
+      ["510", "523"],
+      ["BARBELL"],
+    ],
     ["no stored ID resolves", "GKS", ["999999"], []],
   ])(
     "ends empty with the equipment reason when %s",

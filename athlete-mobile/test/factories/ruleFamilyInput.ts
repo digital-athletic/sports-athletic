@@ -1,25 +1,14 @@
-import type { LevelTag } from "@/constants/workoutConstants";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
-import type { ExerciseType } from "@/schemas/exercise.schema";
+import type { GenerationInput } from "@/features/training/workoutGenerator/generationInput";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import {
-  createGenerationInput,
-  type GenerationInput,
-} from "@/features/training/workoutGenerator/generationInput";
-
-interface RuleFamilyInputOptions {
-  level?: LevelTag;
-  birthday?: string;
-  gender?: "MALE" | "FEMALE";
-  pains?: string[];
-  soreMuscles?: string[];
-  equipment?: string[];
-  exerciseCatalog?: ExerciseType[];
-}
+  generateGenerationInput,
+  type GenerationInputFactoryOptions,
+} from "./generationInput";
 
 /**
- * Builds the generation input of the rule family specs. The default athlete
- * is an adult man at fitness level ADVANCED without pains or muscle soreness.
+ * Builds the generation input of the rule family specs: the general
+ * generation input with its defaults (adult man, ADVANCED, studio).
  *
  * generateRuleFamilyInput({ soreMuscles: ["CHEST"], equipment: ["DUMBBELL"] })
  * → { athlete: { personalData: { gender: "MALE", birthday: "1990-06-15" },
@@ -27,31 +16,9 @@ interface RuleFamilyInputOptions {
  *       temporalData: [{ tag: "CHEST", ... }] },
  *     muscleSoreness: [{ tag: "CHEST", ... }], equipment: ["DUMBBELL"], exerciseCatalog: [], ... }
  */
-export const generateRuleFamilyInput = ({
-  level = "ADVANCED",
-  birthday = "1990-06-15",
-  gender = "MALE",
-  pains = [],
-  soreMuscles = [],
-  equipment = [],
-  exerciseCatalog = [],
-}: RuleFamilyInputOptions = {}): GenerationInput =>
-  createGenerationInput({
-    athlete: {
-      userId: "athlete",
-      personalData: { gender, birthday },
-      workoutData: { tags: { LEVEL: [level], PAIN: pains } },
-      temporalData: soreMuscles.map((tag) => ({
-        tag,
-        date: "2026-10-24",
-        expiration: "2026-10-25",
-      })),
-    },
-    place: "STUDIO",
-    equipment,
-    exerciseCatalog,
-    exerciseData: { exerciseData: {}, branchData: {} },
-  });
+export const generateRuleFamilyInput = (
+  options: GenerationInputFactoryOptions = {},
+): GenerationInput => generateGenerationInput(options);
 
 /**
  * Cuts the named branches out of a real skill tree. Numeric branch IDs keep

@@ -1,59 +1,15 @@
-import type { GeneratorError } from "@/features/training/models/GeneratorError";
-import type { Block } from "@/schemas/aiwl.schema";
-import type { BlockResult } from "./blockWalk";
+import {
+  generateEmptyBranchesResult,
+  generateFilledBranchesResult,
+} from "../../../../test/factories/blockResult";
+import { generateEquipmentError } from "../../../../test/factories/generatorError";
+import { catchThrownValue } from "../../../../test/factories/thrownValue";
 import {
   type FilledBlockResult,
   finishWorkout,
   SHORT_WORKOUT_FINISH_RULES,
   TRAINING_DAY_FINISH_RULES,
 } from "./workoutFinish";
-
-/**
- * Builds a filled result for a branches block of the skill whose one branch
- * resolves to the given exercise ID.
- *
- * generateFilledBranchesResult("GKS", "10")
- * → { status: "filled", block: { kind: "branches", skill: "GKS", branches: ["1"] },
- *     usedBranchIds: ["1"], exercises: [{ branchId: "1", branchTags: [], exerciseId: "10" }] }
- */
-const generateFilledBranchesResult = (
-  skill: Block["skill"],
-  exerciseId = "10",
-): BlockResult => ({
-  status: "filled",
-  block: { kind: "branches", skill, branches: ["1"] },
-  usedBranchIds: ["1"],
-  exercises: [{ branchId: "1", branchTags: [], exerciseId }],
-});
-
-/**
- * Builds an empty result for a branches block of the skill.
- *
- * generateEmptyBranchesResult("GKS", equipmentError)
- * → { status: "empty", block: { kind: "branches", skill: "GKS", branches: ["1"] },
- *     reason: equipmentError, usedBranchIds: [] }
- */
-const generateEmptyBranchesResult = (
-  skill: Block["skill"],
-  reason: GeneratorError | undefined,
-): BlockResult => ({
-  status: "empty",
-  block: { kind: "branches", skill, branches: ["1"] },
-  reason,
-  usedBranchIds: [],
-});
-
-/**
- * Builds the equipment error the old generator records for an emptied skill.
- *
- * generateEquipmentError(["DUMBBELL"])
- * → { type: "NO_EXERCISES", subtype: "EQUIPMENT", params: ["DUMBBELL"] }
- */
-const generateEquipmentError = (params: string[]): GeneratorError => ({
-  type: "NO_EXERCISES",
-  subtype: "EQUIPMENT",
-  params,
-});
 
 /**
  * Stub set list builder: one entry per exercise, dropping the exercise ID
@@ -67,20 +23,6 @@ const buildStubSetList = (blocks: FilledBlockResult[]): string[] =>
       .filter((exercise) => exercise.exerciseId !== "-1")
       .map((exercise) => `${result.block.skill} ${exercise.exerciseId}`),
   );
-
-/**
- * Runs the function and returns the value it throws, or undefined.
- *
- * catchThrownValue(() => { throw gksError; }) → gksError
- */
-const catchThrownValue = (run: () => unknown): unknown => {
-  try {
-    run();
-  } catch (error) {
-    return error;
-  }
-  return undefined;
-};
 
 describe("workoutFinish: finishWorkout", () => {
   it("builds the filled blocks of a training day in section order", () => {

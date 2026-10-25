@@ -1,46 +1,9 @@
-import type { Block, Template } from "@/schemas/aiwl.schema";
+import type { Block } from "@/schemas/aiwl.schema";
+import { generateFilledBlockResult } from "../../../../test/factories/blockResult";
 import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
-import {
-  type BlockHandlerRegistry,
-  type BlockResult,
-  walkTemplateBlocks,
-} from "./blockWalk";
+import { generateTemplate } from "../../../../test/factories/templateBlock";
+import { type BlockHandlerRegistry, walkTemplateBlocks } from "./blockWalk";
 import { setUpWorkout } from "./workoutSetup";
-
-/**
- * Wraps blocks into an AIWL template.
- *
- * generateTemplate([{ kind: "branches", skill: "GKS", branches: ["510"] }])
- * → { aiwl: 1, id: "day", name: { en: "Day" }, blocks: [{ kind: "branches", ... }] }
- */
-const generateTemplate = (blocks: Block[]): Template => ({
-  aiwl: 1,
-  id: "day",
-  name: { en: "Day" },
-  blocks,
-});
-
-/**
- * Builds the result of a stub handler that filled the block with one
- * exercise per branch ID.
- *
- * generateFilledBlockResult(block, ["510"])
- * → { status: "filled", block, usedBranchIds: ["510"],
- *     exercises: [{ branchId: "510", branchTags: [], exerciseId: "exercise510" }] }
- */
-const generateFilledBlockResult = (
-  block: Block,
-  branchIds: string[],
-): BlockResult => ({
-  status: "filled",
-  block,
-  usedBranchIds: branchIds,
-  exercises: branchIds.map((branchId) => ({
-    branchId,
-    branchTags: [],
-    exerciseId: `exercise${branchId}`,
-  })),
-});
 
 describe("blockWalk: walkTemplateBlocks", () => {
   it("hands each block to the handler of its kind in template order and draws in that order", () => {

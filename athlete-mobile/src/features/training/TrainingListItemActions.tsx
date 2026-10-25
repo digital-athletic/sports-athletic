@@ -6,14 +6,14 @@ import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { FeedbackIconButton } from "./FeedbackIconButton";
 import { SkipExerciseButton } from "./SkipExerciseButton";
+import { StartExerciseButton } from "./StartExerciseButton";
 
 export type TrainingListItemActionsProps = {
   isTest: boolean;
   isCompleted: boolean;
-  isFeedbackEligible: boolean;
   completedFeedback?: DifficultyFeedbackType | null;
   repsValue: number;
-  onComplete: (feedback?: DifficultyFeedbackType) => void;
+  onStart: () => void;
   onSkip: () => void;
   testId: string;
 };
@@ -24,73 +24,31 @@ const COMPLETED_LABEL_KEYS = {
   SUCCEEDED: "training.active.a11y.completedSucceeded",
 } as const;
 
-/** Pending rows get the action name, completed rows the recorded result. */
 const checkLabel = (
   t: TFunction,
-  isCompleted: boolean,
   feedback: DifficultyFeedbackType | null | undefined,
-): string =>
-  isCompleted
-    ? t(COMPLETED_LABEL_KEYS[feedback ?? "SUCCEEDED"])
-    : t("training.active.a11y.finishExercise");
-
-const FeedbackRow: FC<{
-  onComplete: (feedback?: DifficultyFeedbackType) => void;
-  testId: string;
-}> = ({ onComplete, testId }) => {
-  const { t } = useTranslation();
-
-  return (
-    <Box flexDirection="row" alignItems="center" gap="m">
-      <FeedbackIconButton
-        feedback="TOO_EASY"
-        onPress={() => onComplete("TOO_EASY")}
-        accessibilityLabel={t("training.active.feedback.tooEasy")}
-        testId={`${testId}-too-easy`}
-      />
-      <FeedbackIconButton
-        feedback="SUCCEEDED"
-        onPress={() => onComplete("SUCCEEDED")}
-        accessibilityLabel={t("training.active.a11y.finishExercise")}
-        testId={`${testId}-checkmark`}
-      />
-      <FeedbackIconButton
-        feedback="TOO_HARD"
-        onPress={() => onComplete("TOO_HARD")}
-        accessibilityLabel={t("training.active.feedback.tooHard")}
-        testId={`${testId}-too-hard`}
-      />
-    </Box>
-  );
-};
+): string => t(COMPLETED_LABEL_KEYS[feedback ?? "SUCCEEDED"]);
 
 /**
- * The skip / reps-count / checkmark-or-feedback-icons controls for a single
- * checklist row, split out of TrainingListItem to keep its own branching
- * (test vs normal exercise, completed vs pending, feedback-eligible or not)
- * isolated from the row's layout.
+ * The skip / start-or-checkmark controls for a single checklist row.
+ * Starting (and the timer/feedback/reps flow that follows) happens in the
+ * TrainingExerciseSheet opened by onStart, not inline here.
  */
 export const TrainingListItemActions: FC<TrainingListItemActionsProps> = ({
   isTest,
   isCompleted,
-  isFeedbackEligible,
   completedFeedback,
   repsValue,
-  onComplete,
+  onStart,
   onSkip,
   testId,
 }) => {
   const { t } = useTranslation();
-  const showFeedbackRow = !isCompleted && isFeedbackEligible;
 
   return (
     <Box flexDirection="row" alignItems="center" gap="m">
-      {!isTest && (
-        <SkipExerciseButton
-          onPress={onSkip}
-          disabled={isCompleted}
-          testId={`${testId}-skip`}
-        />
+      {!isTest && !isCompleted && (
+        <SkipExerciseButton onPress={onSkip} testId={`${testId}-skip`} />
       )}
 
       {isTest && isCompleted && repsValue > 0 && (
@@ -99,18 +57,17 @@ export const TrainingListItemActions: FC<TrainingListItemActionsProps> = ({
         </Text>
       )}
 
-      {(!isTest || isCompleted) &&
-        (showFeedbackRow ? (
-          <FeedbackRow onComplete={onComplete} testId={testId} />
-        ) : (
-          <FeedbackIconButton
-            feedback={completedFeedback ?? "SUCCEEDED"}
-            onPress={() => onComplete()}
-            disabled={isCompleted}
-            accessibilityLabel={checkLabel(t, isCompleted, completedFeedback)}
-            testId={`${testId}-checkmark`}
-          />
-        ))}
+      {isCompleted ? (
+        <FeedbackIconButton
+          feedback={completedFeedback ?? "SUCCEEDED"}
+          onPress={() => {}}
+          disabled
+          accessibilityLabel={checkLabel(t, completedFeedback)}
+          testId={`${testId}-checkmark`}
+        />
+      ) : (
+        <StartExerciseButton onPress={onStart} testId={`${testId}-start`} />
+      )}
     </Box>
   );
 };

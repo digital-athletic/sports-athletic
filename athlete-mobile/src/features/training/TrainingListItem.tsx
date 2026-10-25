@@ -4,20 +4,16 @@ import { Text } from "@/theme/Text";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { type FC } from "react";
 import { TrainingListItemActions } from "./TrainingListItemActions";
-import { TrainingRepetitionInput } from "./TrainingRepetitionInput";
 
 export type TrainingListItemProps = {
   displayName: string;
   setLabel?: string;
   isTest: boolean;
-  isFeedbackEligible: boolean;
   isCompleted: boolean;
   /** Which feedback (if any) was chosen when this row was completed. */
   completedFeedback?: DifficultyFeedbackType | null;
   repsValue: number;
-  onChangeReps: (value: string) => void;
-  onSubmitReps: () => void;
-  onComplete: (feedback?: DifficultyFeedbackType) => void;
+  onStart: () => void;
   onSkip: () => void;
   onShowInfo: () => void;
   /** Base identifier for this row, used to derive per-control testIDs (e2e). */
@@ -26,20 +22,17 @@ export type TrainingListItemProps = {
 
 /**
  * A single row in the list-view training checklist: exercise name plus
- * either a checkmark (normal exercises) or a compact reps input (strength
- * tests), matching the completion controls used in the one-by-one flow.
+ * info/skip/start controls. Starting opens the TrainingExerciseSheet, which
+ * carries the timer, reps input, and feedback flow for this row.
  */
 export const TrainingListItem: FC<TrainingListItemProps> = ({
   displayName,
   setLabel,
   isTest,
-  isFeedbackEligible,
   isCompleted,
   completedFeedback,
   repsValue,
-  onChangeReps,
-  onSubmitReps,
-  onComplete,
+  onStart,
   onSkip,
   onShowInfo,
   testId,
@@ -66,28 +59,13 @@ export const TrainingListItem: FC<TrainingListItemProps> = ({
         <TrainingListItemActions
           isTest={isTest}
           isCompleted={isCompleted}
-          isFeedbackEligible={isFeedbackEligible}
           completedFeedback={completedFeedback}
           repsValue={repsValue}
-          onComplete={onComplete}
+          onStart={onStart}
           onSkip={onSkip}
           testId={testId}
         />
       </Box>
-
-      {!isCompleted && isTest && (
-        <Box marginTop="s">
-          <TrainingRepetitionInput
-            compact
-            exerciseName={displayName}
-            repsValue={repsValue}
-            changeReps={onChangeReps}
-            saveRepsInput={onSubmitReps}
-            inputTestID={`${testId}-reps-input`}
-            saveTestID={`${testId}-reps-save`}
-          />
-        </Box>
-      )}
     </Box>
   );
 };

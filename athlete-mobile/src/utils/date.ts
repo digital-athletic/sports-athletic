@@ -115,6 +115,14 @@ export const dateToHHMM = (date: Date): string => {
 };
 
 /**
+ * Formats a number of seconds as mm:ss, e.g. 75 -> "01:15". Negative values show as "00:00".
+ */
+export const secondsToMMSS = (totalSeconds: number): string => {
+  const seconds = Math.max(0, Math.floor(totalSeconds));
+  return `${pad2(Math.floor(seconds / 60))}:${pad2(seconds % 60)}`;
+};
+
+/**
  * Creates a Date with today's date and the specified time (HH:mm format).
  */
 export const HHMMToDate = (time: string): Date => {

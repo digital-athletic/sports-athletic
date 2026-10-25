@@ -1,4 +1,5 @@
 import { CenteredLoading } from "@/common/CenteredLoading";
+import { TrainingExerciseSheet } from "@/features/training/TrainingExerciseSheet";
 import { TrainingListHeader } from "@/features/training/TrainingListHeader";
 import { TrainingListRows } from "@/features/training/TrainingListRows";
 import { useTrainingListScreen } from "@/features/training/hooks/useTrainingListScreen";
@@ -27,12 +28,11 @@ const TrainingList: FC<TrainingListProps> = () => {
     allCompleted,
     isFinishing,
     handleFinish,
-    handleComplete,
     handleSkip,
-    handleSubmitReps,
-    setRepsForRow,
     handleShowInfo,
+    handleStart,
     handleAbort,
+    sheetProps,
   } = useTrainingListScreen();
 
   if (!hasHydrated || !exerciseList || exerciseList.length === 0) {
@@ -51,10 +51,8 @@ const TrainingList: FC<TrainingListProps> = () => {
           rows={rows}
           exerciseList={exerciseList}
           repsDraft={repsDraft}
-          onComplete={handleComplete}
+          onStart={handleStart}
           onSkip={handleSkip}
-          onSubmitReps={handleSubmitReps}
-          onChangeReps={setRepsForRow}
           onShowInfo={handleShowInfo}
         />
         <Box
@@ -73,6 +71,7 @@ const TrainingList: FC<TrainingListProps> = () => {
           </Button>
         </Box>
       </Box>
+      <TrainingExerciseSheet {...sheetProps} />
     </>
   );
 };

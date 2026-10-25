@@ -6,7 +6,10 @@ import { requirePicksBlock } from "./blockHandlers/picks/picksBlockResolution";
 import { PICKS_BLOCK_HANDLER } from "./blockHandlers/picks/picksHandler";
 import type { GenerationInput } from "./generationInput/generationInput";
 import type { BlockHandlerRegistry } from "./stages/blockWalk";
-import { createShortWorkoutSetListBuilder } from "./stages/setListBuilding";
+import {
+  createSetListBuilder,
+  SHORT_WORKOUT_SET_LIST_RULES,
+} from "./stages/setListBuilding";
 import { SHORT_WORKOUT_FINISH_RULES } from "./stages/workoutFinish";
 import { interpretTemplate } from "./templateInterpreter";
 
@@ -55,7 +58,8 @@ export const generateShortWorkoutFromTemplate = (
   return interpretTemplate(template, input, {
     handlers: SHORT_WORKOUT_HANDLERS,
     finishRules: SHORT_WORKOUT_FINISH_RULES,
-    createSetListBuilder: createShortWorkoutSetListBuilder,
+    createSetListBuilder: (workoutInput) =>
+      createSetListBuilder(workoutInput, SHORT_WORKOUT_SET_LIST_RULES),
     skillTrees,
   }).setList;
 };

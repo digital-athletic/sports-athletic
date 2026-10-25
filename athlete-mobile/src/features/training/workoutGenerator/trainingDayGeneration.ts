@@ -4,7 +4,10 @@ import { createBranchesBlockHandler } from "./blockHandlers/branches/branchesHan
 import { createStoredDayBranchLookup } from "./blockHandlers/branches/storedBranchLookup";
 import type { GenerationInput } from "./generationInput/generationInput";
 import type { BlockHandlerRegistry } from "./stages/blockWalk";
-import { createTrainingDaySetListBuilder } from "./stages/setListBuilding";
+import {
+  createSetListBuilder,
+  TRAINING_DAY_SET_LIST_RULES,
+} from "./stages/setListBuilding";
 import { TRAINING_DAY_FINISH_RULES } from "./stages/workoutFinish";
 import {
   createStoredDayTemplate,
@@ -52,6 +55,7 @@ export const generateTrainingDayFromStoredDay = (
   return interpretTemplate(createStoredDayTemplate(training), input, {
     handlers: createTrainingDayHandlers(training),
     finishRules: TRAINING_DAY_FINISH_RULES,
-    createSetListBuilder: createTrainingDaySetListBuilder,
+    createSetListBuilder: (workoutInput) =>
+      createSetListBuilder(workoutInput, TRAINING_DAY_SET_LIST_RULES),
   }).setList;
 };

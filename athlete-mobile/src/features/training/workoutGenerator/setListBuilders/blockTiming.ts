@@ -38,7 +38,7 @@ export const createBlockDefaultCheck =
  * reads the skill catalog's afterBlock itself. The rests resolve before sets
  * and superset, so a block missing several values names the first rest.
  *
- * resolveBlockTiming({ skill: "GKS", rest: { betweenSets: 15 }, ... }, readPlanWorkoutTiming("GKS"))
+ * resolveBlockTiming({ skill: "GKS", rest: { betweenSets: 15 }, ... }, readTrainingDayTimingDefaults("GKS", skillCatalog))
  * → { sets: 2, superset: "none",
  *     rest: { withinSuperset: 45, betweenSets: 15, afterExercise: 60, afterBlock: undefined },
  *     setDuration: undefined, values: undefined }

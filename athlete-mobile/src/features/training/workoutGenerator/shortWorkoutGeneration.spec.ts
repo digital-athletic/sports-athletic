@@ -1,8 +1,12 @@
 import { loadExercises } from "@/data/loadExercises";
+import { loadTemplates } from "@/data/loadTemplates";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { isPauseExercise } from "@/features/training/models/IdTypes";
 import type { Block } from "@/schemas/aiwl.schema";
+import { generateGenerationInput } from "@test/factories/generationInput";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
+import { generateSeededRandom } from "@test/factories/seededRandom";
+import { describeSetListEntries } from "@test/factories/setListDescription";
 import { generateBreathingTrees } from "@test/factories/skillTree";
 import {
   generateBranchesBlock,
@@ -35,6 +39,121 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     );
     expect(isPauseExercise(setList[setList.length - 1].exerciseId)).toBe(false);
   });
+
+  // Pins the bundled templates, exercises and skill trees: a data change
+  // fails these cases without a logic regression.
+  it.each<[string, string[]]>([
+    [
+      "WU",
+      [
+        "399 1/1",
+        "pause 10",
+        "407 1/1",
+        "pause 10",
+        "387 1/1",
+        "pause 10",
+        "402 1/1",
+        "pause 10",
+        "392 1/1",
+        "pause 10",
+        "401 1/1",
+        "pause 10",
+        "1112 1/1",
+        "pause 10",
+        "432 1/1",
+        "pause 10",
+        "135 1/1",
+        "pause 10",
+        "421 1/1",
+      ],
+    ],
+    [
+      "BAS",
+      [
+        "530 1/2",
+        "pause 30",
+        "533 1/2",
+        "pause 30",
+        "530 2/2",
+        "pause 30",
+        "533 2/2",
+        "pause 30",
+        "1082 1/2",
+        "pause 30",
+        "1083 1/2",
+        "pause 30",
+        "1082 2/2",
+        "pause 30",
+        "1083 2/2",
+      ],
+    ],
+    [
+      "GKS",
+      [
+        "357 1/2",
+        "pause 45",
+        "357 2/2",
+        "pause 45",
+        "242 1/2",
+        "pause 45",
+        "862 1/2",
+        "pause 45",
+        "242 2/2",
+        "pause 45",
+        "862 2/2",
+      ],
+    ],
+    [
+      "PREVKNEE",
+      [
+        "1131 1/1",
+        "pause 10",
+        "1132 1/1",
+        "pause 10",
+        "425 1/1",
+        "pause 10",
+        "389 1/1",
+        "pause 30",
+        "1149 1/2",
+        "pause 30",
+        "1150 1/2",
+        "pause 30",
+        "1149 2/2",
+        "pause 30",
+        "1150 2/2",
+        "pause 60",
+        "1001 1/2",
+        "pause 30",
+        "1192 1/2",
+        "pause 30",
+        "1001 2/2",
+        "pause 30",
+        "1192 2/2",
+        "pause 60",
+        "514 1/2",
+        "pause 30",
+        "1107 1/2",
+        "pause 30",
+        "514 2/2",
+        "pause 30",
+        "1107 2/2",
+      ],
+    ],
+  ])(
+    "keeps the exercises, sets and rests of the %s template",
+    (templateId, expected) => {
+      const setList = generateShortWorkoutFromTemplate(
+        loadTemplates()[templateId],
+        generateGenerationInput({
+          exerciseCatalog: loadExercises(),
+          random: generateSeededRandom(7),
+        }),
+        getAllSkillTrees(),
+      );
+
+      expect(describeSetListEntries(setList)).toEqual(expected);
+    },
+  );
 
   it.each<[string, Block]>([
     ["branches", generateBranchesBlock("GKS", ["510"])],

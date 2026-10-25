@@ -13,7 +13,7 @@ import {
 } from "../setListBuilders/cardioSetListBuilder";
 import { pairBranchExercises } from "../setListBuilders/exercisePairing";
 import { buildMaxStrengthSetList } from "../setListBuilders/maxStrengthSetListBuilder";
-import { readPlanWorkoutTiming } from "../setListBuilders/planWorkoutTiming";
+import { readTrainingDayTimingDefaults } from "../setListBuilders/trainingDayTiming";
 import {
   removeTrailingPause,
   type SetListBlock,
@@ -48,32 +48,78 @@ export const readSkillSetListKind = (skill: string): SkillSetListKind => {
   return "standard";
 };
 
-// A training day cardio block runs one drawn branch; max strength trains
-// single exercises.
-const pairTrainingDayExercises = (
+/**
+ * The intended differences between workout sources once their exercises are
+ * selected. Every source builds its set list through createSetListBuilder.
+ */
+export interface SetListBuildingRules {
+  // "workoutSetup" reads the timing that workout setup resolved from the skill
+  // catalog; "trainingDayDefaults" resolves the block against
+  // readTrainingDayTimingDefaults.
+  readonly blockTiming: "workoutSetup" | "trainingDayDefaults";
+  // "drawOne" runs one drawn cardio branch; "bySuperset" pairs cardio like
+  // every other block.
+  readonly cardioPairing: "drawOne" | "bySuperset";
+  // "singles" trains every max strength exercise on its own; "bySuperset"
+  // pairs it and trains the lead only.
+  readonly maxStrengthPairing: "singles" | "bySuperset";
+  // "awayFromPreviousBlock" orders the pairs of every block but cardio so the
+  // block opens away from the exercise that ended the block before, max
+  // strength lower body first; "asPaired" keeps the order of the pairs.
+  readonly exerciseOrder: "awayFromPreviousBlock" | "asPaired";
+  // "setListEnd" drops the rest closing the whole set list;
+  // "lastTemplateBlock" drops it only when the last template block is filled.
+  readonly closingRest: "setListEnd" | "lastTemplateBlock";
+}
+
+export const TRAINING_DAY_SET_LIST_RULES: SetListBuildingRules = {
+  blockTiming: "trainingDayDefaults",
+  cardioPairing: "drawOne",
+  maxStrengthPairing: "singles",
+  exerciseOrder: "awayFromPreviousBlock",
+  closingRest: "setListEnd",
+};
+
+export const SHORT_WORKOUT_SET_LIST_RULES: SetListBuildingRules = {
+  blockTiming: "workoutSetup",
+  cardioPairing: "bySuperset",
+  maxStrengthPairing: "bySuperset",
+  exerciseOrder: "asPaired",
+  closingRest: "lastTemplateBlock",
+};
+
+type SetListBuildingInput = GenerationInput &
+  Pick<WorkoutInput, "picksWorkout">;
+
+const readBlockTiming = (
+  block: Block,
+  rules: SetListBuildingRules,
+  input: SetListBuildingInput,
+): ResolvedBlockTiming =>
+  rules.blockTiming === "workoutSetup"
+    ? readResolvedPicksBlockTiming(input.picksWorkout, block)
+    : resolveBlockTiming(
+        block,
+        readTrainingDayTimingDefaults(block.skill, input.skillCatalog),
+      );
+
+const pairBlockExercises = (
   kind: SkillSetListKind,
   { exercises }: FilledBlockResult,
   superset: ResolvedBlockTiming["superset"],
-  input: GenerationInput,
+  { rules, input }: { rules: SetListBuildingRules; input: GenerationInput },
 ): ExercisePair[] => {
-  switch (kind) {
-    case "cardio":
-      return drawCardioExercisePair(exercises, input.random);
-    case "maxStrength":
-      return pairBranchExercises(
-        exercises,
-        input.exerciseCatalog,
-        "none",
-        input.random,
-      );
-    case "standard":
-      return pairBranchExercises(
-        exercises,
-        input.exerciseCatalog,
-        superset,
-        input.random,
-      );
+  if (kind === "cardio" && rules.cardioPairing === "drawOne") {
+    return drawCardioExercisePair(exercises, input.random);
   }
+  const singles =
+    kind === "maxStrength" && rules.maxStrengthPairing === "singles";
+  return pairBranchExercises(
+    exercises,
+    input.exerciseCatalog,
+    singles ? "none" : superset,
+    input.random,
+  );
 };
 
 /**
@@ -100,31 +146,33 @@ const buildBlockSetList = (
   return SKILL_SET_LIST_BUILDERS[kind](pairs, setListBlock, input);
 };
 
+const isLastTemplateBlock = (
+  block: FilledBlockResult,
+  results: readonly BlockResult[],
+): boolean => block === results.at(-1);
+
 /**
- * Builds the set list of a training day from its filled blocks in section
- * order. Each block reads its own timing, then the plan workout timing of its
- * skill. Except for cardio, the pairs are ordered so that a block opens away
- * from the exercise that ended the block before, max strength lower body
- * first. The rest closing the whole set list is dropped.
+ * Builds the set list of any workout source from its filled blocks in build
+ * order. Each block reads its timing, pairs its exercises, orders the pairs
+ * and runs the set list builder of its skill, as the rules of the source say.
+ * The draws of one block run in that order, before the next block.
  */
-export const createTrainingDaySetListBuilder =
-  (input: GenerationInput): SetListBuilder<GeneratedSetListEntry> =>
-  (blocks) => {
+export const createSetListBuilder =
+  (
+    input: SetListBuildingInput,
+    rules: SetListBuildingRules,
+  ): SetListBuilder<GeneratedSetListEntry> =>
+  (blocks, results) => {
     let previousExerciseId: string | undefined;
     const setList = blocks.flatMap((result) => {
       const kind = readSkillSetListKind(result.block.skill);
-      const timing = resolveBlockTiming(
-        result.block,
-        readPlanWorkoutTiming(result.block.skill),
-      );
-      const pairs = pairTrainingDayExercises(
-        kind,
-        result,
-        timing.superset,
+      const timing = readBlockTiming(result.block, rules, input);
+      const pairs = pairBlockExercises(kind, result, timing.superset, {
+        rules,
         input,
-      );
+      });
       const orderedPairs =
-        kind === "cardio"
+        rules.exerciseOrder === "asPaired" || kind === "cardio"
           ? pairs
           : orderExerciseUnits(
               pairs,
@@ -135,51 +183,18 @@ export const createTrainingDaySetListBuilder =
         orderedPairs,
         previousExerciseId,
       );
-      return buildBlockSetList(
+      const blockSetList = buildBlockSetList(
         kind,
         orderedPairs,
         { block: result.block, timing },
         input,
       );
+      return rules.closingRest === "lastTemplateBlock" &&
+        isLastTemplateBlock(result, results)
+        ? removeTrailingPause(blockSetList)
+        : blockSetList;
     });
-    return removeTrailingPause(setList);
+    return rules.closingRest === "setListEnd"
+      ? removeTrailingPause(setList)
+      : setList;
   };
-
-const isLastTemplateBlock = (
-  block: FilledBlockResult,
-  results: readonly BlockResult[],
-): boolean => block === results.at(-1);
-
-/**
- * Builds the set list of a short workout from its filled blocks in template
- * order. Each block reads the timing workout setup resolved for it. Every
- * block, cardio and max strength included, pairs by its superset and keeps
- * the order of its pairs. Only a filled last template block drops its closing
- * rest; an empty last block keeps the rest before it.
- */
-export const createShortWorkoutSetListBuilder =
-  (
-    input: GenerationInput & Pick<WorkoutInput, "picksWorkout">,
-  ): SetListBuilder<GeneratedSetListEntry> =>
-  (blocks, results) =>
-    blocks.flatMap((result) => {
-      const kind = readSkillSetListKind(result.block.skill);
-      const timing = readResolvedPicksBlockTiming(
-        input.picksWorkout,
-        result.block,
-      );
-      const setList = buildBlockSetList(
-        kind,
-        pairBranchExercises(
-          result.exercises,
-          input.exerciseCatalog,
-          timing.superset,
-          input.random,
-        ),
-        { block: result.block, timing },
-        input,
-      );
-      return isLastTemplateBlock(result, results)
-        ? removeTrailingPause(setList)
-        : setList;
-    });

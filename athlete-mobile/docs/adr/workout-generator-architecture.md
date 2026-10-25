@@ -113,6 +113,36 @@ Each box in a layer implements the contract the layer title names. The code defi
 
 The strength test enters through the same entry point. It skips the template stages and uses its own builder.
 
+### Set list building rules
+
+One function, `createSetListBuilder`, builds the set list of every workout source. For each filled block it reads the timing, pairs the exercises, orders the pairs and calls the set list builder of the skill. Each source passes a rules object. The rules object names every intended difference between the sources:
+
+| Rule                 | Short workout                                                       | Training day                                                                                                 |
+| -------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `blockTiming`        | `workoutSetup`: the timing that workout setup resolved                   | `trainingDayDefaults`: the block's own values, then the training day defaults                                |
+| `cardioPairing`      | `bySuperset`: pairs cardio like every other block                   | `drawOne`: draws one cardio branch                                                                           |
+| `maxStrengthPairing` | `bySuperset`: pairs by the superset and trains the lead             | `singles`: trains every max strength exercise on its own                                                     |
+| `exerciseOrder`      | `asPaired`: keeps the order of the pairs                            | `awayFromPreviousBlock`: opens each block away from the block before, max strength lower body first, cardio as drawn |
+| `closingRest`        | `lastTemplateBlock`: drops the closing rest of a filled last block  | `setListEnd`: drops the rest that closes the set list                                                        |
+
+A new difference between sources adds a rule to this object. A fix to a step reaches every source.
+
+#### Defaults
+
+The block's own values come first. The two sources differ in where their defaults come from:
+
+- **Short workouts** read the skill catalog (`skills.json`) during workout setup. A missing default throws an error that names the block.
+- **Training days** read `readTrainingDayTimingDefaults`. That function checks three layers in order for each field:
+  1. the training day overrides
+  2. the skill catalog
+  3. the fallback: 2 sets, a superset by muscles and 10 s rests
+
+The training day overrides keep stored plans as they were. They only hold the values the catalog lacks:
+
+- the sets and the rest after an exercise for MAX and MAX_STRENGTH
+- the sets, superset and rests of the cardio skills
+- the PLYO skill, which has no catalog entry
+
 ### Block handlers (Strategy)
 
 A handler is one function. It takes the block, the generation input and the set of used branches, and returns a block result: the resolved exercises, or the reason the block stayed empty. Handlers share library steps:

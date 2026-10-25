@@ -2,15 +2,18 @@ import { loadExercises } from "@/data/loadExercises";
 import { loadTemplates } from "@/data/loadTemplates";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { isPauseExercise } from "@/features/training/models/IdTypes";
-import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { Block } from "@/schemas/aiwl.schema";
-import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { generateGenerationInput } from "@test/factories/generationInput";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { generateSeededRandom } from "@test/factories/seededRandom";
-import { describeSetListEntries } from "@test/factories/setListDescription";
+import {
+  describeSetListEntries,
+  listTrainedExercises,
+  listTrainedSkills,
+} from "@test/factories/setListDescription";
 import {
   generateBreathingTrees,
+  generateMixedSkillTrees,
   generateTreeBranch,
 } from "@test/factories/skillTree";
 import {
@@ -21,53 +24,9 @@ import {
   generateUntimedBranchesBlock,
 } from "@test/factories/templateBlock";
 import { catchThrownValue } from "@test/factories/thrownValue";
-import { generateTaggedExercise } from "@test/factories/valueExercise";
+import { generateMixedExerciseCatalog } from "@test/factories/valueExercise";
 import { PICKS_BLOCK_HANDLER } from "./blockHandlers/picks/picksHandler";
 import { generateShortWorkoutFromTemplate } from "./shortWorkoutGeneration";
-
-const MIXED_EXERCISE_CATALOG = ["e1", "e2", "e3", "e4"].map((id) =>
-  generateTaggedExercise(id, [
-    "REGION_UPPER_BODY",
-    "MUSCLE_CHEST",
-    "SIDE_BOTH",
-  ]),
-);
-
-/**
- * Builds skill trees of one exercise per branch: MOB holds branches 1 and 2,
- * BR branch 3 and CD branch 4.
- *
- * generateMixedSkillTrees()
- * → { MOB: { "1": <e1>, "2": <e2> }, BR: { "3": <e3> }, CD: { "4": <e4> } }
- */
-const generateMixedSkillTrees = (): Record<string, SkillTreeType> => ({
-  MOB: {
-    "1": generateTreeBranch(["e1"]),
-    "2": generateTreeBranch(["e2"]),
-  },
-  BR: { "3": generateTreeBranch(["e3"]) },
-  CD: { "4": generateTreeBranch(["e4"]) },
-});
-
-/**
- * Lists the skill of every trained exercise of a set list, pauses left out.
- *
- * listTrainedSkills([MOB e1 1/1, pause, BR e3 1/1]) → ["MOB", "BR"]
- */
-const listTrainedSkills = (setList: GeneratedSetListEntry[]): string[] =>
-  setList
-    .filter((entry) => !isPauseExercise(entry.exerciseId))
-    .map((entry) => entry.skill);
-
-/**
- * Lists the exercise ID of every trained set of a set list, pauses left out.
- *
- * listTrainedExercises([MOB e1 1/1, pause, MOB e2 1/1]) → ["e1", "e2"]
- */
-const listTrainedExercises = (setList: GeneratedSetListEntry[]): string[] =>
-  setList
-    .filter((entry) => !isPauseExercise(entry.exerciseId))
-    .map((entry) => entry.exerciseId);
 
 describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
   afterEach(jest.restoreAllMocks);
@@ -217,7 +176,7 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     const setList = generateShortWorkoutFromTemplate(
       template,
       generateRuleFamilyInput({
-        exerciseCatalog: MIXED_EXERCISE_CATALOG,
+        exerciseCatalog: generateMixedExerciseCatalog(),
         skillTrees,
         random: () => 0,
       }),
@@ -237,7 +196,7 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     const setList = generateShortWorkoutFromTemplate(
       template,
       generateRuleFamilyInput({
-        exerciseCatalog: MIXED_EXERCISE_CATALOG,
+        exerciseCatalog: generateMixedExerciseCatalog(),
         skillTrees,
         random: () => 0,
       }),
@@ -263,7 +222,7 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     const setList = generateShortWorkoutFromTemplate(
       template,
       generateRuleFamilyInput({
-        exerciseCatalog: MIXED_EXERCISE_CATALOG,
+        exerciseCatalog: generateMixedExerciseCatalog(),
         skillTrees,
         random: () => 0,
       }),
@@ -287,7 +246,7 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     const setList = generateShortWorkoutFromTemplate(
       template,
       generateRuleFamilyInput({
-        exerciseCatalog: MIXED_EXERCISE_CATALOG,
+        exerciseCatalog: generateMixedExerciseCatalog(),
         skillTrees,
         pains: ["KNEE_LEFT"],
         random: () => 0,
@@ -311,19 +270,28 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
         generateShortWorkoutFromTemplate(
           template,
           generateRuleFamilyInput({
-            exerciseCatalog: MIXED_EXERCISE_CATALOG,
+            exerciseCatalog: generateMixedExerciseCatalog(),
             skillTrees,
             pains: ["KNEE_LEFT"],
           }),
           skillTrees,
         ),
       ),
-    ).toStrictEqual({ type: "NO_EXERCISES", subtype: "PAIN", params: ["KNEE"] });
+    ).toStrictEqual({
+      type: "NO_EXERCISES",
+      subtype: "PAIN",
+      params: ["KNEE"],
+    });
   });
 
   it("runs a cardio branches block that sets only its duration", () => {
     const template = generateShortTemplate([
-      { kind: "branches", skill: "CARDIO_5", branches: ["576"], duration: 1200 },
+      {
+        kind: "branches",
+        skill: "CARDIO_5",
+        branches: ["576"],
+        duration: 1200,
+      },
     ]);
 
     const setList = generateShortWorkoutFromTemplate(
@@ -345,7 +313,7 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     const setList = generateShortWorkoutFromTemplate(
       template,
       generateRuleFamilyInput({
-        exerciseCatalog: MIXED_EXERCISE_CATALOG,
+        exerciseCatalog: generateMixedExerciseCatalog(),
         skillTrees,
         random: () => 0,
       }),
@@ -365,7 +333,7 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     const setList = generateShortWorkoutFromTemplate(
       template,
       generateRuleFamilyInput({
-        exerciseCatalog: MIXED_EXERCISE_CATALOG,
+        exerciseCatalog: generateMixedExerciseCatalog(),
         skillTrees,
         random: () => 0,
       }),

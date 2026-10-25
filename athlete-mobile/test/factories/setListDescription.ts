@@ -22,3 +22,25 @@ export const describeSetListEntries = (
  */
 export const describeSetList = (setList: GeneratedSetListEntry[]): string =>
   describeSetListEntries(setList).join(", ");
+
+/**
+ * Lists the skill of every trained exercise of a set list, pauses left out.
+ *
+ * listTrainedSkills([MOB e1 1/1, pause, BR e3 1/1]) → ["MOB", "BR"]
+ */
+export const listTrainedSkills = (setList: GeneratedSetListEntry[]): string[] =>
+  setList
+    .filter((entry) => !isPauseExercise(entry.exerciseId))
+    .map((entry) => entry.skill);
+
+/**
+ * Lists the exercise ID of every trained set of a set list, pauses left out.
+ *
+ * listTrainedExercises([MOB e1 1/1, pause, MOB e2 1/1]) → ["e1", "e2"]
+ */
+export const listTrainedExercises = (
+  setList: GeneratedSetListEntry[],
+): string[] =>
+  setList
+    .filter((entry) => !isPauseExercise(entry.exerciseId))
+    .map((entry) => entry.exerciseId);

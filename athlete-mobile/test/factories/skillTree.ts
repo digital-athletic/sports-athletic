@@ -83,6 +83,22 @@ export const generateKneeSkillTrees = (): Record<string, SkillTreeType> => ({
 });
 
 /**
+ * Builds skill trees of one exercise per branch: MOB holds branches 1 and 2,
+ * BR branch 3 and CD branch 4.
+ *
+ * generateMixedSkillTrees()
+ * → { MOB: { "1": <e1>, "2": <e2> }, BR: { "3": <e3> }, CD: { "4": <e4> } }
+ */
+export const generateMixedSkillTrees = (): Record<string, SkillTreeType> => ({
+  MOB: {
+    "1": generateTreeBranch(["e1"]),
+    "2": generateTreeBranch(["e2"]),
+  },
+  BR: { "3": generateTreeBranch(["e3"]) },
+  CD: { "4": generateTreeBranch(["e4"]) },
+});
+
+/**
  * Builds a MOB tree that holds the branch as branch "500".
  *
  * generateMobilityTree(generateTreeBranch(["501"], ["SKILL_MOB"]))

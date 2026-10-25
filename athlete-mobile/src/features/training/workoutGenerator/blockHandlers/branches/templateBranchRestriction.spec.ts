@@ -33,9 +33,7 @@ describe("templateBranchRestriction: restrictTemplateBranchesBlock", () => {
       skillTrees: { GKS: generateTaggedBranches({ "1": [tag], "2": [] }) },
     });
 
-    expect(restrictTemplateBranchesBlock(block, input).branches).toEqual([
-      "2",
-    ]);
+    expect(restrictTemplateBranchesBlock(block, input).branches).toEqual(["2"]);
   });
 
   it.each<[string, string, GenerationInputFactoryOptions, unknown]>([

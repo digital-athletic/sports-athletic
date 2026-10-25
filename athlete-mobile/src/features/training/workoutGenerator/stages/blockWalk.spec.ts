@@ -106,7 +106,8 @@ describe("blockWalk: walkTemplateBlocks", () => {
       },
       branches: {
         usedBranchScope: "block",
-        handleBlock: (block) => generateFilledBlockResult(block, block.branches),
+        handleBlock: (block) =>
+          generateFilledBlockResult(block, block.branches),
       },
       duration: {
         usedBranchScope: "workout",

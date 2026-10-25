@@ -536,7 +536,9 @@ describe("setListBuilding: short workout", () => {
     );
 
     expect(
-      describeSetListEntries(setList).filter((entry) => entry.startsWith("e2 ")),
+      describeSetListEntries(setList).filter((entry) =>
+        entry.startsWith("e2 "),
+      ),
     ).toEqual(["e2 1/5", "e2 2/5", "e2 3/5", "e2 4/5", "e2 5/5"]);
   });
 

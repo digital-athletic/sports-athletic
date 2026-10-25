@@ -9,7 +9,8 @@ export type BlockKind = Block["kind"];
 // swapped for CARDIO_5. "filled" means the block kept a branch; an exercise
 // ID of "-1" still counts, and the set list builder drops it. An empty block
 // has no reason where the old generator records no error for the skill.
-// usedBranchIds lists every branch the block drew, kept or not.
+// usedBranchIds lists every branch a picks block drew, kept or not, and the
+// branches a branches block resolved.
 export type BlockResult =
   | {
       status: "filled";

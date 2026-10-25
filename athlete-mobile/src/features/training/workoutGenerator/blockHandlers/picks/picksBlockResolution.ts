@@ -7,7 +7,6 @@ import type {
   BlockPicks,
   CountBy,
   PicksBlock,
-  Template,
 } from "@/schemas/aiwl.schema";
 import type { SkillCode } from "@/schemas/generator.schema";
 import {
@@ -24,6 +23,7 @@ import {
 } from "../../setListBuilders/blockTiming";
 import { filterBranchesByTags } from "./branchTagFilter";
 import type { GenerationInput } from "../../generationInput/generationInput";
+import type { InterpretedWorkout } from "../../stages/blockWalk";
 import { readSkillCatalogEntry } from "../../generationInput/skillCatalogEntry";
 
 /** A picks block with its defaults, its place picks and its branch pool. */
@@ -160,7 +160,7 @@ export const isPicksBlock = (block: Block): block is PicksBlock =>
  *     blocks: [{ skill: "WUSPEZIAL", countBy: "entries", ... }, { skill: "PREVKNEE", countBy: "pairs", ... }] }
  */
 export const resolvePicksBlocks = (
-  template: Template,
+  template: InterpretedWorkout,
   input: Pick<GenerationInput, "equipment" | "skillCatalog">,
   skillTrees: Readonly<Record<string, SkillTreeType>>,
 ): ResolvedPicksBlocks => {

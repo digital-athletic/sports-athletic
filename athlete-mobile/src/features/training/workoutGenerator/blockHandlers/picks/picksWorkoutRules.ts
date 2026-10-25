@@ -1,8 +1,9 @@
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
-import type { Block, Template } from "@/schemas/aiwl.schema";
+import type { Block } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { filterBranchesByAgeGroup } from "../../ruleFamilies/ageGroupRule";
 import type { ResolvedBlockTiming } from "../../setListBuilders/blockTiming";
+import type { InterpretedWorkout } from "../../stages/blockWalk";
 import { type BranchDraw, createBranchDraw } from "./branchDraw";
 import {
   filterBranchesByEquipment,
@@ -80,7 +81,7 @@ export const filterPoolByPicksWorkoutRules = (
  * → { pool: { ...WU branches without 1026 }, blocks: Map { WU block → { skill: "WU", ... } }, draw }
  */
 export const resolvePicksWorkout = (
-  template: Template,
+  template: InterpretedWorkout,
   input: GenerationInput & { readonly athleteLevel: string },
   skillTrees: Readonly<Record<string, SkillTreeType>> = getAllSkillTrees(),
 ): PicksWorkout => {

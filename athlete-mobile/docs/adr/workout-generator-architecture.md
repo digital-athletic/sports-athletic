@@ -197,7 +197,15 @@ The index maps every branch ID to its branch across all skill trees. Skill tree 
 
 ### Stored workouts
 
-A training day stores an AIWL template. Its branches blocks hold branch IDs and durations.
+A training day stores branches and minutes per skill. The generator runs it as a stored day workout: one branches block per skill, holding branch IDs and durations.
+
+A stored day workout is no AIWL document. Stored data may break the language rules, and the stored day workout keeps the results of the old generator for these cases:
+
+1. A skill without branches keeps a block with an empty branch list. The block stays empty, and its reason counts for the empty workout error.
+2. A day without skills holds no block and generates an empty set list.
+3. Stored minutes become seconds without rounding, so fractional minutes run fractional seconds.
+
+The stored day workout carries no document header, so the type checker rejects it wherever a workout document is expected, such as import or export.
 
 The target: the branch lookup index supplies tags, levels and exercises at generation time, so a stored plan follows catalog changes.
 
@@ -222,7 +230,7 @@ The generator raises three classes of error:
 - **Discriminated unions.** Block kinds, block results and errors are tagged unions, and every `switch` over them is exhaustive.
 - **No mutation.** Every stage returns new values and changes neither the template nor the generation input.
 - **Random source.** The generation input carries the random function, with `Math.random` as the default, and every component draws through it. Tests pass a fixed sequence. Each component draws in a fixed order.
-- **Module layout.** The top level of the `workoutGenerator` folder holds the modules other code calls: one entry module per workout source, the stored day template, and the template interpreter they hand the template to. The interpreter delegates to one subfolder per component of the patterns diagram:
+- **Module layout.** The top level of the `workoutGenerator` folder holds the modules other code calls: one entry module per workout source, the stored day workout, and the template interpreter they hand the workout to. The interpreter delegates to one subfolder per component of the patterns diagram:
 
   | Folder                    | Component                                | Modules                                                                                   |
   | ------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------- |

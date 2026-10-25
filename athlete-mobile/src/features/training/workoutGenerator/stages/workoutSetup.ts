@@ -6,7 +6,6 @@ import {
   getPreventionsFromPains,
 } from "@/features/training/utils/painUtils";
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
-import type { Template } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { getUserTagValues } from "@/utils/tagUtils";
 import {
@@ -15,6 +14,7 @@ import {
   resolvePicksWorkout,
 } from "../blockHandlers/picks/picksWorkoutRules";
 import type { GenerationInput } from "../generationInput/generationInput";
+import type { InterpretedWorkout } from "./blockWalk";
 
 // The old generator derives these values per skill from the same athlete and
 // place, so one derivation per workout gives the same values.
@@ -36,7 +36,7 @@ const createFrozenList = (list: string[]): readonly string[] =>
  */
 export const setUpWorkout = (
   input: GenerationInput,
-  template?: Template,
+  template?: InterpretedWorkout,
   skillTrees?: Readonly<Record<string, SkillTreeType>>,
 ): WorkoutInput => {
   const pains = getUserTagValues(

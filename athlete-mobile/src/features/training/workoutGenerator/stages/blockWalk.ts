@@ -7,6 +7,12 @@ export type BlockKind = Block["kind"];
 
 export type BranchesBlock = Extract<Block, { kind: "branches" }>;
 
+/**
+ * The part of a workout the interpreter runs: a workout document, which passed
+ * TemplateSchema, or a stored day workout, which the language rules do not bind.
+ */
+export type InterpretedWorkout = Pick<Template, "id" | "blocks">;
+
 // A handler may return a changed block, for example a blocked cardio skill
 // swapped for CARDIO_5. "filled" means the block kept a branch; an exercise
 // ID of "-1" still counts, and the set list builder drops it. An empty block
@@ -91,7 +97,7 @@ const handleBlockByKind = (
  * source in that order, and returns one result per block.
  */
 export const walkTemplateBlocks = (
-  template: Template,
+  template: InterpretedWorkout,
   input: WorkoutInput,
   handlers: BlockHandlerRegistry,
 ): BlockResult[] => {

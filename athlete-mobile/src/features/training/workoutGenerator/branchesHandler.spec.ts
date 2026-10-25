@@ -1,25 +1,13 @@
 import { loadExercises } from "@/data/loadExercises";
-import type { Block } from "@/schemas/aiwl.schema";
-import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
+import { generateGenerationInput } from "../../../../test/factories/generationInput";
+import { generateStoredDayEntry } from "../../../../test/factories/storedBranch";
+import { generateBranchesBlock } from "../../../../test/factories/templateBlock";
 import { createBranchesBlockHandler } from "./branchesHandler";
 import {
   createStoredDayBranchLookup,
   lookUpStoredBranchInCatalog,
 } from "./storedBranchLookup";
 import { setUpWorkout } from "./workoutSetup";
-
-type BranchesBlock = Extract<Block, { kind: "branches" }>;
-
-/**
- * Builds a branches block as a training day stores it.
- *
- * generateBranchesBlock("GKS", ["510", "523"])
- * → { kind: "branches", skill: "GKS", branches: ["510", "523"], duration: 600 }
- */
-const generateBranchesBlock = (
-  skill: string,
-  branches: string[],
-): BranchesBlock => ({ kind: "branches", skill, branches, duration: 600 });
 
 const exerciseCatalog = loadExercises();
 const NO_BRANCHES = new Set<string>();
@@ -36,7 +24,7 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
 
   it("resolves every stored branch in stored order at the athlete level", () => {
     const input = setUpWorkout(
-      generateRuleFamilyInput({
+      generateGenerationInput({
         equipment: ["DUMBBELL", "BARBELL"],
         exerciseCatalog,
       }),
@@ -66,7 +54,7 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
   // sore CHEST blocks every upper body branch of GKS, so 510 finds no replacement
   it("keeps the kept branches when no replacement fits the requested region", () => {
     const input = setUpWorkout(
-      generateRuleFamilyInput({
+      generateGenerationInput({
         soreMuscles: ["CHEST"],
         equipment: ["BARBELL"],
         exerciseCatalog,
@@ -87,10 +75,13 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
 
   // without weights GKS replaces from GKSKG; no upper body branch fits, so a less used region refills
   it("refills the requested regions from the skill tree the place selects", () => {
-    const input = setUpWorkout({
-      ...generateRuleFamilyInput({ soreMuscles: ["CHEST"], exerciseCatalog }),
-      random: () => 0,
-    });
+    const input = setUpWorkout(
+      generateGenerationInput({
+        soreMuscles: ["CHEST"],
+        exerciseCatalog,
+        random: () => 0,
+      }),
+    );
 
     const result = handleBlock(
       generateBranchesBlock("GKS", ["510", "523"]),
@@ -105,14 +96,14 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
   });
 
   it("replaces every slot of a prevention skill, its kept branches included", () => {
-    const input = setUpWorkout({
-      ...generateRuleFamilyInput({
+    const input = setUpWorkout(
+      generateGenerationInput({
         soreMuscles: ["QUADRICEPS"],
         pains: ["KNEE_LEFT", "SHOULDER_LEFT"],
         exerciseCatalog,
+        random: () => 0,
       }),
-      random: () => 0,
-    });
+    );
 
     // the first eight branches of the PREVKG tree
     const result = handleBlock(
@@ -138,14 +129,14 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
 
   // an emptied prevention or special warm-up skill records no error
   it("ends empty without a reason when a prevention skill finds no replacement", () => {
-    const input = setUpWorkout({
-      ...generateRuleFamilyInput({
+    const input = setUpWorkout(
+      generateGenerationInput({
         soreMuscles: ["QUADRICEPS"],
         pains: ["KNEE_LEFT", "SHOULDER_LEFT"],
         exerciseCatalog,
+        random: () => 0,
       }),
-      random: () => 0,
-    });
+    );
     // the first eight branches of the PREVKG tree
     const block = generateBranchesBlock("PREVKNEE", [
       "102",
@@ -178,7 +169,7 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
     "ends empty with the equipment reason when %s",
     (_, skill, ids, params) => {
       const input = setUpWorkout(
-        generateRuleFamilyInput({ soreMuscles: ["CHEST"], exerciseCatalog }),
+        generateGenerationInput({ soreMuscles: ["CHEST"], exerciseCatalog }),
       );
       const block = generateBranchesBlock(skill, ids);
 
@@ -201,20 +192,12 @@ describe("branchesHandler: stored day entries", () => {
     const { handleBlock } = createBranchesBlockHandler(
       createStoredDayBranchLookup({
         GKS: [
-          {
-            branchId: "510",
-            tags: ["REGION_UPPER_BODY"],
-            exercises: { "2": { exerciseId: "336" } },
-          },
-          {
-            branchId: "900001",
-            tags: ["REGION_CORE"],
-            exercises: { "2": { exerciseId: "16" } },
-          },
+          generateStoredDayEntry("510", ["REGION_UPPER_BODY"], "336"),
+          generateStoredDayEntry("900001", ["REGION_CORE"], "16"),
         ],
       }),
     );
-    const input = setUpWorkout(generateRuleFamilyInput({ exerciseCatalog }));
+    const input = setUpWorkout(generateGenerationInput({ exerciseCatalog }));
 
     const result = handleBlock(
       generateBranchesBlock("GKS", ["510", "900001"]),
@@ -238,12 +221,16 @@ describe("branchesHandler: stored day entries", () => {
     const { handleBlock } = createBranchesBlockHandler(
       createStoredDayBranchLookup({
         GKS: [
-          { branchId: "1", tags: [], exercises: { "3": { exerciseId: "16" } } },
-          { branchId: "2", tags: [], exercises: { "2": { exerciseId: "20" } } },
+          // level 3 only, which the athlete level does not reach
+          {
+            ...generateStoredDayEntry("1"),
+            exercises: { "3": { exerciseId: "16" } },
+          },
+          generateStoredDayEntry("2", [], "20"),
         ],
       }),
     );
-    const input = setUpWorkout(generateRuleFamilyInput({ exerciseCatalog }));
+    const input = setUpWorkout(generateGenerationInput({ exerciseCatalog }));
 
     const result = handleBlock(
       generateBranchesBlock("GKS", ["1", "2"]),

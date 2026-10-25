@@ -56,7 +56,7 @@ const createSkillTreeError = (skill: string): GeneratorError => ({
   params: [skill],
 });
 
-const requirePicksBlock = (
+export const requirePicksBlock = (
   templateId: string,
   index: number,
   block: Block,

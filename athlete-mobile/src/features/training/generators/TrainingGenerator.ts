@@ -6,13 +6,12 @@ import {
 import { loadSkillCatalogEntry } from "@/data/loadSkillCatalog";
 import { loadIntensityConfig } from "@/data/loadIntensityConfig";
 import { loadStrengthTest } from "@/data/loadStrengthTest";
+import { lookupTemplate } from "@/features/customWorkouts/lookupTemplate";
 import type {
   BranchExerciseReference,
-  BranchSelectionResult,
   ExerciseBranchType,
   ExercisePair,
   SkillBranchList,
-  SuperSetBranchSelectionResult,
 } from "@/features/training/models/ExerciseBranch";
 import type {
   GenderTag,
@@ -48,7 +47,6 @@ import {
 import {
   areaToRegion,
   getAreasFor,
-  getOpposingExerciseDirection,
 } from "@/features/training/utils/exerciseUtils";
 import {
   getBlocksFromPains,
@@ -77,6 +75,8 @@ import {
   splitDuplicateBranches,
 } from "@/features/training/utils/duplicateExerciseUtils";
 import type { GeneratorError } from "@/features/training/models/GeneratorError";
+import { createGenerationInput } from "@/features/training/workoutGenerator/generationInput";
+import { generateShortWorkoutFromTemplate } from "@/features/training/workoutGenerator/shortWorkoutGeneration";
 import { isTrainingLevel } from "@/schemas/common.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import {
@@ -104,13 +104,13 @@ import {
   type TestSetLoads,
   type UserExerciseDataMapType,
 } from "@/schemas/generator.schema";
-import type { BlockValues, Superset } from "@/schemas/aiwl.schema";
+import type { BlockValues } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
 import { Logger } from "@/services/Logger";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
 import { cloneWithValidation } from "@/utils/cloneWithValidation";
-import { getTagValue, getTagValues, getUserTagValues } from "@/utils/tagUtils";
+import { getTagValues, getUserTagValues } from "@/utils/tagUtils";
 
 // Pause
 
@@ -142,8 +142,6 @@ import {
   roundWeightValue,
   withValuesMode,
 } from "../utils/workoutUtils";
-import { drawBlock, type DrawContext } from "./focusTrainingSelection";
-import { resolveShortWorkoutPlan, type BlockTiming } from "./resolveTemplate";
 import { computeWarmupWeights, WARMUP_REST_SECONDS } from "./warmupDerivation";
 
 export default class TrainingGenerator {
@@ -222,9 +220,8 @@ export default class TrainingGenerator {
   };
 
   /**
-   * Generates exercise lists for short workout types (WU, MOB, BR, CD, BAS, GKS, PREV*).
-   * Filters available branches by pain, equipment, age, and gender,
-   * then builds exercise pairs with appropriate sets and durations.
+   * Generates exercise lists for short workout types (WU, MOB, BR, CD, BAS, GKS, PREV*)
+   * and custom workouts from their template, through the AIWL generator.
    */
   generateShortWorkout = (
     type: TrainingType,
@@ -238,236 +235,27 @@ export default class TrainingGenerator {
       branchData: Record<string, UserExerciseBranchDataType | undefined>;
     },
   ): GeneratedSetListEntry[] => {
-    // Create exercise lookup map for type-safe access
-    const exerciseMap = createExerciseMap(exercises);
-
-    const plan = resolveShortWorkoutPlan(type, skillTrees, equipment);
-    const pool = plan.pool;
-
-    if (TrainingGenerator.DEBUG) {
-      console.log("generate short training for " + type);
-      console.log("pool", pool);
-    }
-
-    // pain
-    const userPains: string[] = user.workoutData?.tags
-      ? getUserTagValues(user.workoutData.tags, TagGroups.PAIN)
-      : [];
-    const painData: string[] = getBlocksFromPains(userPains);
-
-    const painFiltered: SkillTreeType = {};
-    const painList: string[] = [];
-    for (const id in pool) {
-      const entry = pool[id];
-      const blocked = getTagValues(entry.tags, TagGroups.BLOCK);
-
-      let isBlocked = false;
-      for (let p = 0; p < painData.length; p++) {
-        if (blocked.indexOf(painData[p]) > -1) {
-          isBlocked = true;
-          painList.push(painData[p]);
-          break;
-        }
-      }
-      if (!isBlocked) painFiltered[id] = entry;
-    }
-
-    if (TrainingGenerator.DEBUG) {
-      console.log("pain filtered", painFiltered);
-    }
-
-    if (Object.keys(painFiltered).length === 0) {
+    const template = lookupTemplate(type);
+    if (!template) {
       throw {
         type: "NO_EXERCISES",
-        subtype: "PAIN",
-        params: painList,
-      };
+        subtype: "SKILL_TREE",
+        params: [type],
+      } satisfies GeneratorError;
     }
-
-    // Get temporal data with proper Date handling
-    const temporalData = getTemporalData(user);
-
-    // focus and prevention trainings ignore muscle soreness
-    const equipmentFilterResult = filterByEquipment(painFiltered, equipment);
-    const equipmentFiltered = equipmentFilterResult.keep;
-
-    if (TrainingGenerator.DEBUG) {
-      console.log("equipment filtered", equipmentFiltered);
-    }
-
-    if (Object.keys(equipmentFiltered).length === 0) {
-      throw {
-        type: "NO_EXERCISES",
-        subtype: "EQUIPMENT",
-        params: equipmentFilterResult.missingEquipment || [],
-      };
-    }
-
-    // age
-    const ageGroup = ageGroupFor(getUserBirthday(user));
-    let ageFiltered = filterByAge(equipmentFiltered, ageGroup).keep;
-
-    if (TrainingGenerator.DEBUG) {
-      console.log("age filtered", ageFiltered);
-    }
-
-    if (Object.keys(ageFiltered).length === 0) {
-      throw { type: "NO_EXERCISES", subtype: "AGE", params: [] };
-    }
-
-    // gender
-    const userGender = getUserGender(user) ?? "FEMALE";
-    const genderFiltered = filterByGender(ageFiltered, userGender).keep;
-
-    if (TrainingGenerator.DEBUG) {
-      console.log("gender filtered", genderFiltered);
-    }
-
-    if (Object.keys(genderFiltered).length === 0) {
-      throw { type: "NO_EXERCISES", subtype: "GENDER", params: [] };
-    }
-
-    const userLevel = getUserLevel(user);
-
-    const resolveExerciseId = (
-      branches: SkillTreeType,
-      branchId: string,
-    ): string | null =>
-      branches[branchId]
-        ? resolveBranchExerciseId(
-            branches[branchId],
-            userLevel,
-            userExerciseData.branchData[branchId],
-          )
-        : null;
-
-    // Branches without a resolvable exercise count as blocked and are never drawn;
-    // neither a branch nor a resolved exercise repeats
-    const getResolvedBranches = (
-      branches: SkillTreeType,
-      usedBranchIds: string[],
-    ): { branchId: string; exerciseId: string }[] => {
-      const usedExerciseIds = usedBranchIds.map((branchId) =>
-        resolveExerciseId(genderFiltered, branchId),
-      );
-      return Object.keys(branches).flatMap((branchId) => {
-        if (usedBranchIds.indexOf(branchId) > -1) return [];
-        const exerciseId = resolveExerciseId(branches, branchId);
-        return exerciseId && !usedExerciseIds.includes(exerciseId)
-          ? [{ branchId, exerciseId }]
-          : [];
-      });
-    };
-
-    const getBranchAndId = (
-      branches: SkillTreeType,
-      usedBranchIds: string[],
-    ): BranchSelectionResult | null => {
-      const candidates = getResolvedBranches(branches, usedBranchIds);
-      if (candidates.length === 0) return null;
-      const { branchId: id, exerciseId } =
-        candidates[Math.floor(Math.random() * candidates.length)];
-      const branch = {
-        branchId: id,
-        branchTags: branches[id].tags,
-        exerciseId,
-      };
-      return { branch, branchId: id };
-    };
-
-    const getSuperSetPairBranchAndId = (
-      branches: SkillTreeType,
-      usedBranchIds: string[],
-    ): SuperSetBranchSelectionResult | null => {
-      const candidates = getResolvedBranches(branches, usedBranchIds);
-      if (candidates.length === 0) return null;
-      const branchKeys = candidates.map((candidate) => candidate.branchId);
-      const picked = candidates[Math.floor(Math.random() * candidates.length)];
-      const id = picked.branchId;
-      const exerciseId = picked.exerciseId;
-      const branch = {
-        branchId: id,
-        branchTags: branches[id].tags,
-        exerciseId: exerciseId,
-      };
-      let fillUpBranchAndId: BranchSelectionResult | undefined = undefined;
-      // a both sided exercise seeks a both sided partner and trains alone without one
-      const exercise = exerciseMap.get(exerciseId);
-      if (exercise?.tags.includes("SIDE_BOTH")) {
-        // searching for oppositeDirection exercise
-        let oppositeDirection = "noDirection";
-        const directionType = getTagValue(
-          exercise.tags,
-          TagGroups.EXERCISE_DIRECTION,
-        );
-        if (directionType) {
-          oppositeDirection = getOpposingExerciseDirection(directionType);
-          if (oppositeDirection === "") {
-            oppositeDirection = "noDirection";
-          }
-        }
-        usedBranchIds.push(id);
-        for (let k = 0; k < branchKeys.length; k++) {
-          const secondBranch: SkillTreeType = {};
-          secondBranch[branchKeys[k]] = branches[branchKeys[k]];
-          const result = getBranchAndId(secondBranch, usedBranchIds);
-          if (result !== null) {
-            const resultExercise = exerciseMap.get(result.branch.exerciseId);
-            if (resultExercise?.tags.includes("SIDE_BOTH")) {
-              fillUpBranchAndId = result;
-              if (resultExercise.tags.includes(oppositeDirection)) break;
-            }
-          }
-        }
-      }
-      return { branch, branchId: id, fillUpBranchAndId };
-    };
-
-    const drawContext: DrawContext = {
-      pool: genderFiltered,
-      draw: { single: getBranchAndId, pair: getSuperSetPairBranchAndId },
-      usedBranchIds: [],
-    };
-    const drawnBlocks = plan.blocks.map((block) =>
-      drawBlock(block, drawContext),
-    );
-
-    if (TrainingGenerator.DEBUG) {
-      console.log("branches selected", drawnBlocks);
-    }
-
-    const setLists = plan.blocks.map((block, index) => {
-      const skill: SkillCode = block.skill;
-      const exercisePairs = this.getExercisePairs(
-        skill,
-        drawnBlocks[index],
-        exercises,
-        block.superset,
-      );
-      return this.getSetListFromExercisePairs(
-        exercisePairs,
-        // only cardio set lists read the length
-        { skill, length: 0 },
-        skillTrees,
-        user,
+    return generateShortWorkoutFromTemplate(
+      template,
+      createGenerationInput({
+        athlete: user,
         place,
         equipment,
-        exercises,
-        block.sets,
-        temporalData,
-        userExerciseData.exerciseData,
-        block,
-      );
-    });
-    // the pause closing a block leads into the next one
-    dropTrailingPause(setLists[setLists.length - 1]);
-    const exerciseList = setLists.flat();
-
-    if (TrainingGenerator.DEBUG) {
-      console.log("final short training list", exerciseList);
-    }
-
-    return exerciseList;
+        exerciseCatalog: exercises,
+        exerciseData: userExerciseData,
+        // every draw reads Math.random when it runs
+        random: () => Math.random(),
+      }),
+      skillTrees,
+    );
   };
 
   /**
@@ -1168,7 +956,6 @@ export default class TrainingGenerator {
     setsPerExercise: number,
     temporalData: TemporalDataType[],
     userExerciseData: Record<string, UserExerciseDataType | undefined> | null,
-    timing?: BlockTiming,
   ): GeneratedSetListEntry[] => {
     // Create exercise map for O(1) lookup by ID
     const exerciseMap = createExerciseMap(exercises);
@@ -1242,8 +1029,6 @@ export default class TrainingGenerator {
         user,
         firstExercise,
         null,
-        timing?.setDuration,
-        timing?.values,
       );
       const intervalTime = intervalLength + pauseLength;
       const repetition = Math.min(
@@ -1580,24 +1365,16 @@ export default class TrainingGenerator {
           user,
           firstExerciseData,
           userExerciseData,
-          timing?.setDuration,
-          timing?.values,
         );
         // calc pause
-        const inSetPauseLength =
-          timing?.rest.withinSuperset ?? this.getInSetPauseBySkill(skill.skill);
-        const singleRestLength =
-          timing?.rest.betweenSets ??
-          this.getSingleExerciseRestBySkill(skill.skill);
-        const afterSetPauseLength =
-          timing?.rest.afterExercise ??
-          this.getAfterSetPauseBySkill(skill.skill);
+        const inSetPauseLength = this.getInSetPauseBySkill(skill.skill);
+        const singleRestLength = this.getSingleExerciseRestBySkill(skill.skill);
+        const afterSetPauseLength = this.getAfterSetPauseBySkill(skill.skill);
         const nextPair = exercisePairs
           .slice(i + 1)
           .find((pair) => isBuildablePair(pair, exerciseMap));
         const closingPauseLength = !nextPair
-          ? (timing?.afterBlock ??
-            loadSkillCatalogEntry(skill.skill)?.rest?.afterBlock ??
+          ? (loadSkillCatalogEntry(skill.skill)?.rest?.afterBlock ??
             afterSetPauseLength)
           : trainsSameRegionAndPrimaryMuscle(exercisePairs[i], nextPair)
             ? singleRestLength
@@ -1626,8 +1403,6 @@ export default class TrainingGenerator {
             user,
             secondExerciseData!,
             userExerciseData,
-            timing?.setDuration,
-            timing?.values,
           );
         } else {
           if (
@@ -1935,7 +1710,6 @@ export default class TrainingGenerator {
     skill: string,
     branches: BranchExerciseReference[],
     exercises: ExerciseType[],
-    pairing?: Superset,
   ): ExercisePair[] => {
     if (TrainingGenerator.DEBUG) {
       console.log("Get exercise pairs for skill", skill);
@@ -1949,7 +1723,7 @@ export default class TrainingGenerator {
       return [];
     }
 
-    const isSuperset = pairing ? pairing === "muscles" : this.isSuperset(skill);
+    const isSuperset = this.isSuperset(skill);
     const exercisePairs: ExercisePair[] = [];
     const bigMuscleExercises: BranchExerciseReference[] = [];
     const smallMuscleExercises: BranchExerciseReference[] = [];
@@ -1960,12 +1734,6 @@ export default class TrainingGenerator {
       } else {
         smallMuscleExercises.push(branches[b]);
       }
-    }
-
-    if (pairing === "drawOrder" || pairing === "drawOrderWithLeftovers") {
-      const pairs = pairInDrawOrder(branches, exercises);
-      if (pairing === "drawOrderWithLeftovers") pairLeftoverSingles(pairs);
-      return pairs;
     }
 
     // big muscle exercises lead first; a lead missing from the catalog is
@@ -3291,61 +3059,6 @@ const getOpposingMuscles = (muscles: string[]): string[] => {
   }
 
   return result;
-};
-
-/**
- * Pairs branches in the order they were drawn: a one-sided exercise with its
- * other side, any other exercise with the next one.
- */
-const pairInDrawOrder = (
-  drawn: BranchExerciseReference[],
-  exercises: ExerciseType[],
-): ExercisePair[] => {
-  const otherSideOf = (entry: BranchExerciseReference) =>
-    getTagValues(entry.branchTags, TagGroups.SIDE).includes("ONE")
-      ? exercises.find((exercise) => exercise.id === entry.exerciseId)
-          ?.otherSideExerciseId
-      : undefined;
-  const pairs: ExercisePair[] = [];
-  let index = 0;
-  while (index < drawn.length) {
-    const first = drawn[index];
-    const otherSide = otherSideOf(first);
-    const next = drawn[index + 1];
-    if (otherSide) {
-      pairs.push({ first, second: { ...first, exerciseId: otherSide } });
-      index += 1;
-    } else if (next && !otherSideOf(next)) {
-      pairs.push({ first, second: next });
-      index += 2;
-    } else {
-      pairs.push({ first });
-      index += 1;
-    }
-  }
-  return pairs;
-};
-
-// Joins exercises without a partner into supersets, in place.
-const pairLeftoverSingles = (exercisePairs: ExercisePair[]) => {
-  let singlePairIndex = exercisePairs.findIndex((e) => !e.second);
-  while (singlePairIndex !== -1) {
-    let secondSinglePair: BranchExerciseReference | undefined;
-    let secondSinglePairIndex = -1;
-    for (let i = 0; i < exercisePairs.length; i++) {
-      if (!exercisePairs[i].second && i !== singlePairIndex) {
-        secondSinglePair = exercisePairs[i].first;
-        secondSinglePairIndex = i;
-      }
-    }
-    if (secondSinglePairIndex !== -1 && secondSinglePair) {
-      exercisePairs[singlePairIndex].second = secondSinglePair;
-      exercisePairs.splice(secondSinglePairIndex, 1);
-    }
-    const nextSinglePairIndex = exercisePairs.findIndex((e) => !e.second);
-    singlePairIndex =
-      nextSinglePairIndex !== singlePairIndex ? nextSinglePairIndex : -1;
-  }
 };
 
 /**

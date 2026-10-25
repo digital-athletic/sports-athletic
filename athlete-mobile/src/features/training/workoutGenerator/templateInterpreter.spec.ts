@@ -137,7 +137,7 @@ describe("templateInterpreter: interpretTemplate", () => {
       blocks: [{ kind: "picks", skill: "WU", picks: [{ tags: [], count: 1 }] }],
     };
     const skillTrees = getAllSkillTrees();
-    const [warmUpBranch] = Object.values(skillTrees.WU);
+    const warmUpBranch = skillTrees.WU["409"];
     const poolKeys: string[][] = [];
     const handleEmptyBlock = (block: Template["blocks"][number]) => ({
       status: "empty" as const,
@@ -161,10 +161,10 @@ describe("templateInterpreter: interpretTemplate", () => {
       handlers,
       finishRules: TRAINING_DAY_FINISH_RULES,
       createSetListBuilder: () => buildSkillSetList,
-      skillTrees: { ...skillTrees, WU: { "990001": warmUpBranch } },
+      skillTrees: { ...skillTrees, WU: { "409": warmUpBranch } },
     });
 
-    expect(poolKeys).toEqual([["990001"]]);
+    expect(poolKeys).toEqual([["409"]]);
   });
 
   it("names the first empty skill in stored order on a day where every skill empties", () => {

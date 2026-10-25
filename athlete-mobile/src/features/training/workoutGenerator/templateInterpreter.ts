@@ -1,4 +1,5 @@
 import type { Template } from "@/schemas/aiwl.schema";
+import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { type BlockHandlerRegistry, walkTemplateBlocks } from "./blockWalk";
 import type { GenerationInput } from "./generationInput";
 import {
@@ -13,6 +14,8 @@ export interface TemplateInterpreterOptions<TEntry> {
   handlers: BlockHandlerRegistry;
   finishRules: WorkoutFinishRules;
   createSetListBuilder: (input: WorkoutInput) => SetListBuilder<TEntry>;
+  /** The skill trees picks blocks resolve from; the bundled trees when absent. */
+  skillTrees?: Readonly<Record<string, SkillTreeType>>;
 }
 
 /**
@@ -26,9 +29,10 @@ export const interpretTemplate = <TEntry>(
     handlers,
     finishRules,
     createSetListBuilder,
+    skillTrees,
   }: TemplateInterpreterOptions<TEntry>,
 ): FinishedWorkout<TEntry> => {
-  const workoutInput = setUpWorkout(input, template);
+  const workoutInput = setUpWorkout(input, template, skillTrees);
   return finishWorkout(
     walkTemplateBlocks(template, workoutInput, handlers),
     finishRules,

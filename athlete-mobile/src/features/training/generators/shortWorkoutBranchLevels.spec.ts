@@ -2,6 +2,7 @@ import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
+import { spyOnDrawnBranches } from "../../../../test/factories/drawnBranches";
 import TrainingGenerator from "./TrainingGenerator";
 
 const userWithLevel = (
@@ -36,13 +37,12 @@ const selectedExerciseIds = (
   skillTrees: { [skillName: string]: SkillTreeType },
   branchData: Record<string, UserExerciseBranchDataType | undefined> = {},
 ): string[] => {
-  const spy = jest.spyOn(generator, "getExercisePairs").mockReturnValue([]);
+  const readDrawnBranches = spyOnDrawnBranches();
   generator.generateShortWorkout("MOB", user, "HOME", [], skillTrees, [], {
     exerciseData: {},
     branchData,
   });
-  const [, branches] = spy.mock.calls[0];
-  return branches.map((branch) => branch.exerciseId);
+  return readDrawnBranches().map((branch) => branch.exerciseId);
 };
 
 const thrownError = (
@@ -60,6 +60,8 @@ const thrownError = (
   }
   return undefined;
 };
+
+afterEach(jest.restoreAllMocks);
 
 describe("generateShortWorkout: branch level resolution", () => {
   let generator: TrainingGenerator;
@@ -133,7 +135,7 @@ describe("generateShortWorkout: region quota fallback", () => {
 
   it("falls back to any region when the region's branches resolve no exercise", () => {
     const generator = new TrainingGenerator();
-    const spy = jest.spyOn(generator, "getExercisePairs").mockReturnValue([]);
+    const readDrawnBranches = spyOnDrawnBranches();
     generator.generateShortWorkout(
       "GKS",
       userWithLevel("BEGINNER"),
@@ -151,8 +153,7 @@ describe("generateShortWorkout: region quota fallback", () => {
       [],
       { exerciseData: {}, branchData: {} },
     );
-    const [, branches] = spy.mock.calls[0];
-    expect(branches).toHaveLength(4);
+    expect(readDrawnBranches()).toHaveLength(4);
   });
 });
 

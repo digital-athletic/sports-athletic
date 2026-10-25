@@ -3,6 +3,9 @@ import type { TrainingType } from "@/features/training/models/Training";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
+import type { ExercisePair } from "@/features/training/models/ExerciseBranch";
+import * as exercisePairing from "@/features/training/workoutGenerator/exercisePairing";
+import { spyOnDrawnBranches } from "../../../../test/factories/drawnBranches";
 import { nextWeek, today } from "../../../../test/factories/planWorkout";
 import TrainingGenerator from "./TrainingGenerator";
 
@@ -56,7 +59,7 @@ const selectedBranches = (
   } = {},
 ) => {
   const generator = new TrainingGenerator();
-  const spy = jest.spyOn(generator, "getExercisePairs").mockReturnValue([]);
+  const readDrawnBranches = spyOnDrawnBranches();
   generator.generateShortWorkout(
     type,
     options.user ?? beginner,
@@ -67,9 +70,7 @@ const selectedBranches = (
     { exerciseData: {}, branchData: {} },
   );
   // a prevention training also draws a special warm up block
-  const [, branches] =
-    spy.mock.calls.find(([skill]) => skill === type) ?? spy.mock.calls[0];
-  return branches;
+  return readDrawnBranches(type);
 };
 
 const slotCount = (branches: { branchTags: string[] }[]): number =>
@@ -216,11 +217,8 @@ const mainPairs = (
   exercises: ExerciseType[],
   equipment: string[] = [],
 ): string[][] => {
-  const generator = new TrainingGenerator();
-  const spy = jest
-    .spyOn(generator, "getSetListFromExercisePairs")
-    .mockReturnValue([]);
-  generator.generateShortWorkout(
+  const pairBranches = jest.spyOn(exercisePairing, "pairBranchExercises");
+  new TrainingGenerator().generateShortWorkout(
     type,
     beginner,
     "HOME",
@@ -229,8 +227,8 @@ const mainPairs = (
     equipment,
     { exerciseData: {}, branchData: {} },
   );
-  const [pairs] =
-    spy.mock.calls.find(([, { skill }]) => skill === type) ?? spy.mock.calls[0];
+  // a prevention training pairs its special warm up block first
+  const pairs: ExercisePair[] = pairBranches.mock.results.at(-1)?.value ?? [];
   return pairs.map(({ first, second }) =>
     second ? [first.branchId, second.branchId] : [first.branchId],
   );

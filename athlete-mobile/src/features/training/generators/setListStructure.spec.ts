@@ -15,7 +15,6 @@ import ExercisesData from "../../../../assets/data/generator/Exercises.json";
 import PREV from "../../../../assets/data/generator/skillTrees/PREV.json";
 import PREVKG from "../../../../assets/data/generator/skillTrees/PREVKG.json";
 import WUSPEZIAL from "../../../../assets/data/generator/skillTrees/WUSPEZIAL.json";
-import type { BlockTiming } from "./resolveTemplate";
 import TrainingGenerator from "./TrainingGenerator";
 
 const PAUSE_ID = "999999";
@@ -40,11 +39,7 @@ const ref = (id: string, tags: string[]): BranchExerciseReference => ({
 const BODYWEIGHT = "EQ_TYPE_KG";
 const WEIGHTED = "EQ_TYPE_WEIGHTS";
 
-const buildSetList = (
-  skill: SkillCode,
-  pairs: ExercisePair[],
-  focusTiming?: BlockTiming,
-) => {
+const buildSetList = (skill: SkillCode, pairs: ExercisePair[]) => {
   const generator = new TrainingGenerator();
   jest
     .spyOn(generator, "getExerciseStartValues")
@@ -75,7 +70,6 @@ const buildSetList = (
     2,
     [],
     null,
-    focusTiming,
   );
 };
 
@@ -192,96 +186,6 @@ describe("getSetListFromExercisePairs: superset pair", () => {
       expect(pauses[3]).toBe(pause);
     },
   );
-});
-
-describe("getSetListFromExercisePairs: focus blocks", () => {
-  const timing = (rest: BlockTiming["rest"]): BlockTiming => ({ rest });
-  const blockRest = { withinSuperset: 5, betweenSets: 15, afterExercise: 25 };
-
-  it("rests between sets and after an exercise as the block says", () => {
-    expect(
-      pausesOf(
-        buildSetList(
-          "SWR2",
-          [{ first: chest }, { first: quads }],
-          timing(blockRest),
-        ),
-      ),
-    ).toEqual([15, 25, 15, 25]);
-  });
-
-  it("rests inside a superset pair as the block says", () => {
-    expect(
-      pausesOf(
-        buildSetList(
-          "SWR2",
-          [{ first: chest, second: quads }],
-          timing(blockRest),
-        ),
-      ).slice(0, 4),
-    ).toEqual([5, 5, 5, 25]);
-  });
-
-  it("closes the last solo exercise on afterBlock and keeps the other rests", () => {
-    expect(
-      pausesOf(
-        buildSetList("SWR2", [{ first: chest }, { first: quads }], {
-          rest: blockRest,
-          afterBlock: 40,
-        }),
-      ),
-    ).toEqual([15, 25, 15, 40]);
-  });
-
-  it("closes the last pair on afterBlock and keeps the other rests", () => {
-    expect(
-      pausesOf(
-        buildSetList(
-          "SWR2",
-          [
-            { first: chest, second: quads },
-            { first: biceps, second: calf },
-          ],
-          { rest: blockRest, afterBlock: 40 },
-        ),
-      ),
-    ).toEqual([5, 5, 5, 25, 5, 5, 5, 40]);
-  });
-
-  it("closes on afterBlock even when the same muscle follows only an unresolved block", () => {
-    const unresolvedChest = { ...chestAgain, exerciseId: "-1" };
-    expect(
-      pausesOf(
-        buildSetList("SWR2", [{ first: chest }, { first: unresolvedChest }], {
-          rest: blockRest,
-          afterBlock: 40,
-        }),
-      ),
-    ).toEqual([15, 40]);
-  });
-
-  it("closes the last block on afterBlock 0", () => {
-    expect(
-      pausesOf(
-        buildSetList("SWR2", [{ first: chest }], {
-          rest: blockRest,
-          afterBlock: 0,
-        }),
-      ),
-    ).toEqual([15, 0]);
-  });
-
-  it("closes on the block rest without afterBlock", () => {
-    expect(
-      pausesOf(
-        buildSetList(
-          "SWR2",
-          [{ first: chest }, { first: quads }],
-          timing(blockRest),
-        ),
-      ),
-    ).toEqual([15, 25, 15, 25]);
-  });
 });
 
 describe("getSetListFromExercisePairs: warm-up sets", () => {

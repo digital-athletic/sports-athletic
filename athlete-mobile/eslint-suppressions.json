@@ -310,16 +310,16 @@
   },
   "src/features/training/generators/TrainingGenerator.ts": {
     "complexity": {
-      "count": 19
+      "count": 17
     },
     "max-depth": {
-      "count": 22
+      "count": 21
     },
     "max-lines": {
       "count": 1
     },
     "max-lines-per-function": {
-      "count": 18
+      "count": 17
     },
     "max-params": {
       "count": 11

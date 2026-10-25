@@ -1,5 +1,4 @@
 import { loadExercises } from "@/data/loadExercises";
-import { loadTemplate } from "@/data/loadTemplates";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import type { IntensityData } from "@/features/training/models/Intensity";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
@@ -218,19 +217,15 @@ describe("TrainingGenerator", () => {
         { exerciseData: {}, branchData: {} },
       );
 
-    afterEach(() => {
-      jest.restoreAllMocks();
-      useCustomWorkoutsStore.getState().clearCustomWorkouts();
-    });
+    afterEach(jest.restoreAllMocks);
+    afterEach(() => useCustomWorkoutsStore.getState().clearCustomWorkouts());
 
-    it("draws each template block through the picks block handler", () => {
+    it("draws the block of the MOB template through the picks block handler", () => {
       const handleBlock = jest.spyOn(PICKS_BLOCK_HANDLER, "handleBlock");
 
       const setList = generateShortWorkoutOf("MOB");
 
-      expect(handleBlock).toHaveBeenCalledTimes(
-        loadTemplate("MOB")?.blocks.length,
-      );
+      expect(handleBlock).toHaveBeenCalledTimes(1);
       expect(setList.length).toBeGreaterThan(0);
       expect(setList.every((entry) => entry.skill === "MOB")).toBe(true);
     });

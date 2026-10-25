@@ -76,7 +76,7 @@ import {
   refillSlots,
   splitDuplicateBranches,
 } from "@/features/training/utils/duplicateExerciseUtils";
-import type { GeneratorError } from "./GeneratorError";
+import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import { isTrainingLevel } from "@/schemas/common.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import {

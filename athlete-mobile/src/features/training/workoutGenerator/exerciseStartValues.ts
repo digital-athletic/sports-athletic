@@ -47,8 +47,8 @@ export interface ExerciseStartValueBlock {
   values?: BlockValues;
 }
 
-// Children read the child values, everyone else the values of their gender.
-const readGenderTag = (athlete: UserType): GenderTag => {
+/** Children read the child values, everyone else the values of their gender. */
+export const readGenderTag = (athlete: UserType): GenderTag => {
   if (
     ageGroupFor(getUserBirthday(athlete)) === WorkoutConstants.AGE_GROUPS.CHILD
   ) {

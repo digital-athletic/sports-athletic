@@ -5,6 +5,8 @@ import type { WorkoutInput } from "./workoutSetup";
 
 export type BlockKind = Block["kind"];
 
+export type BranchesBlock = Extract<Block, { kind: "branches" }>;
+
 // A handler may return a changed block, for example a blocked cardio skill
 // swapped for CARDIO_5. "filled" means the block kept a branch; an exercise
 // ID of "-1" still counts, and the set list builder drops it. An empty block
@@ -17,6 +19,8 @@ export type BlockResult =
       block: Block;
       exercises: BranchExerciseReference[];
       usedBranchIds: string[];
+      /** The skill of the stored block, set when a handler swapped the skill. */
+      swappedFromSkill?: string;
     }
   | {
       status: "empty";
@@ -25,10 +29,14 @@ export type BlockResult =
       usedBranchIds: string[];
     };
 
+// earlierResults holds the results of the blocks before this one, in template
+// order, for a rule that reads what an earlier block wrote. The walk always
+// passes it; a handler that ignores it may leave it out.
 export type BlockHandler<K extends BlockKind> = (
   block: Extract<Block, { kind: K }>,
   input: WorkoutInput,
   usedBranches: ReadonlySet<string>,
+  earlierResults?: readonly BlockResult[],
 ) => BlockResult;
 
 // "workout" hands each block the branches every earlier block of that scope
@@ -42,19 +50,39 @@ export type BlockHandlerRegistry = {
   };
 };
 
+interface BlockContext {
+  input: WorkoutInput;
+  usedBranches: ReadonlySet<string>;
+  earlierResults: readonly BlockResult[];
+}
+
 const handleBlockByKind = (
   block: Block,
-  input: WorkoutInput,
-  usedBranches: ReadonlySet<string>,
   handlers: BlockHandlerRegistry,
+  { input, usedBranches, earlierResults }: BlockContext,
 ): BlockResult => {
   switch (block.kind) {
     case "picks":
-      return handlers.picks.handleBlock(block, input, usedBranches);
+      return handlers.picks.handleBlock(
+        block,
+        input,
+        usedBranches,
+        earlierResults,
+      );
     case "branches":
-      return handlers.branches.handleBlock(block, input, usedBranches);
+      return handlers.branches.handleBlock(
+        block,
+        input,
+        usedBranches,
+        earlierResults,
+      );
     case "duration":
-      return handlers.duration.handleBlock(block, input, usedBranches);
+      return handlers.duration.handleBlock(
+        block,
+        input,
+        usedBranches,
+        earlierResults,
+      );
   }
 };
 
@@ -71,12 +99,11 @@ export const walkTemplateBlocks = (
   const results: BlockResult[] = [];
   for (const block of template.blocks) {
     const isWorkoutScope = handlers[block.kind].usedBranchScope === "workout";
-    const result = handleBlockByKind(
-      block,
+    const result = handleBlockByKind(block, handlers, {
       input,
-      isWorkoutScope ? workoutUsedBranches : new Set(),
-      handlers,
-    );
+      usedBranches: isWorkoutScope ? workoutUsedBranches : new Set(),
+      earlierResults: results,
+    });
     if (isWorkoutScope) {
       workoutUsedBranches = new Set([
         ...workoutUsedBranches,

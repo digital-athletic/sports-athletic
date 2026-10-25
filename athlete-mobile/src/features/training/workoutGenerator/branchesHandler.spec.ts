@@ -1,7 +1,12 @@
 import { loadExercises } from "@/data/loadExercises";
 import { generateGenerationInput } from "../../../../test/factories/generationInput";
 import { generateStoredDayEntry } from "../../../../test/factories/storedBranch";
-import { generateBranchesBlock } from "../../../../test/factories/templateBlock";
+import {
+  generateBranchesBlock,
+  generateCardioBlock,
+} from "../../../../test/factories/templateBlock";
+import { catchThrownValue } from "../../../../test/factories/thrownValue";
+import type { BlockResult } from "./blockWalk";
 import { createBranchesBlockHandler } from "./branchesHandler";
 import {
   createStoredDayBranchLookup,
@@ -248,5 +253,223 @@ describe("branchesHandler: stored day entries", () => {
       ["1", "-1"],
       ["2", "20"],
     ]);
+  });
+});
+
+describe("branchesHandler: cardio swap", () => {
+  const { handleBlock } = createBranchesBlockHandler(
+    lookUpStoredBranchInCatalog,
+  );
+  // sore quadriceps block every cardio skill, so each requests a lower body replacement
+  const soreInput = setUpWorkout(
+    generateGenerationInput({
+      soreMuscles: ["QUADRICEPS"],
+      equipment: ["TREADMILL"],
+      exerciseCatalog,
+    }),
+  );
+  const restedInput = setUpWorkout(
+    generateGenerationInput({ equipment: ["TREADMILL"], exerciseCatalog }),
+  );
+
+  it("swaps a blocked cardio skill for the CARDIO_5 run", () => {
+    const result = handleBlock(
+      generateCardioBlock("CARDIO_3", 1500),
+      soreInput,
+      NO_BRANCHES,
+    );
+
+    expect(result).toMatchObject({
+      status: "filled",
+      block: {
+        kind: "branches",
+        skill: "CARDIO_5",
+        branches: ["576"],
+        duration: 1200,
+      },
+      usedBranchIds: ["576"],
+      swappedFromSkill: "CARDIO_3",
+    });
+    expect(
+      result.status === "filled" &&
+        result.exercises.map(({ branchId, exerciseId }) => [
+          branchId,
+          exerciseId,
+        ]),
+    ).toEqual([["576", "39"]]);
+  });
+
+  it("keeps the stored cardio branch when no rule requests a replacement", () => {
+    const block = generateCardioBlock("CARDIO_3", 600);
+
+    const result = handleBlock(block, restedInput, NO_BRANCHES);
+
+    expect(result).toMatchObject({
+      status: "filled",
+      block,
+      usedBranchIds: ["580"],
+    });
+    expect(result).not.toHaveProperty("swappedFromSkill");
+  });
+
+  it("throws the raw error when the skill trees hold no CARDIO_5 branch", () => {
+    const thrown = catchThrownValue(() =>
+      handleBlock(
+        generateCardioBlock("CARDIO_3", 600),
+        { ...soreInput, branchLookupIndex: new Map() },
+        NO_BRANCHES,
+      ),
+    );
+
+    expect(thrown).toEqual({
+      type: "NO_EXERCISES",
+      subtype: "CARDIO_5_MISSING",
+      params: [],
+    });
+  });
+
+  describe("a stored CARDIO_5 block after a swap", () => {
+    // the swap wrote CARDIO_5 for a 25 minute CARDIO_3 block
+    let swapResult: BlockResult;
+    beforeAll(() => {
+      swapResult = handleBlock(
+        generateCardioBlock("CARDIO_3", 1500),
+        soreInput,
+        NO_BRANCHES,
+      );
+    });
+    const storedCardioFive = generateBranchesBlock("CARDIO_5", ["576"]);
+
+    it("ends empty with the equipment reason and no missing equipment when no rule requests a replacement", () => {
+      expect(
+        handleBlock(storedCardioFive, restedInput, NO_BRANCHES, [swapResult]),
+      ).toEqual({
+        status: "empty",
+        block: swapResult.block,
+        reason: { type: "NO_EXERCISES", subtype: "EQUIPMENT", params: [] },
+        usedBranchIds: [],
+      });
+    });
+
+    it("swaps again with the duration the first swap wrote when a rule requests a replacement", () => {
+      expect(
+        handleBlock(storedCardioFive, soreInput, NO_BRANCHES, [swapResult]),
+      ).toMatchObject({
+        status: "filled",
+        block: { skill: "CARDIO_5", branches: ["576"], duration: 1200 },
+        swappedFromSkill: "CARDIO_5",
+      });
+    });
+
+    it("reads its stored branch when no swap came before", () => {
+      expect(
+        handleBlock(storedCardioFive, restedInput, NO_BRANCHES),
+      ).toMatchObject({ status: "filled", block: storedCardioFive });
+    });
+
+    it("leaves another skill alone", () => {
+      const block = generateBranchesBlock("GKS", ["523"]);
+      const input = setUpWorkout(
+        generateGenerationInput({ equipment: ["BARBELL"], exerciseCatalog }),
+      );
+
+      expect(
+        handleBlock(block, input, NO_BRANCHES, [swapResult]),
+      ).toMatchObject({ status: "filled", block, usedBranchIds: ["523"] });
+    });
+  });
+});
+
+describe("branchesHandler: duplicate exercises", () => {
+  it("refills the region of a later branch that trains an exercise an earlier branch holds", () => {
+    const { handleBlock } = createBranchesBlockHandler(
+      createStoredDayBranchLookup({
+        GKS: [
+          generateStoredDayEntry("1", ["REGION_UPPER_BODY"], "336"),
+          generateStoredDayEntry("2", ["REGION_UPPER_BODY"], "336"),
+        ],
+      }),
+    );
+    const input = setUpWorkout(
+      generateGenerationInput({
+        equipment: ["DUMBBELL", "BARBELL"],
+        exerciseCatalog,
+        random: () => 0,
+      }),
+    );
+
+    const result = handleBlock(
+      generateBranchesBlock("GKS", ["1", "2"]),
+      input,
+      NO_BRANCHES,
+    );
+
+    expect(
+      result.status === "filled" &&
+        result.exercises.map(({ branchId, exerciseId }) => [
+          branchId,
+          exerciseId,
+        ]),
+    ).toEqual([
+      ["1", "336"],
+      ["510", "20"],
+    ]);
+  });
+
+  it("keeps both branches when the later duplicate has no region to refill", () => {
+    const { handleBlock } = createBranchesBlockHandler(
+      createStoredDayBranchLookup({
+        GKS: [
+          generateStoredDayEntry("1", [], "336"),
+          generateStoredDayEntry("2", [], "336"),
+        ],
+      }),
+    );
+    const input = setUpWorkout(generateGenerationInput({ exerciseCatalog }));
+
+    const result = handleBlock(
+      generateBranchesBlock("GKS", ["1", "2"]),
+      input,
+      NO_BRANCHES,
+    );
+
+    expect(
+      result.status === "filled" &&
+        result.exercises.map(({ branchId }) => branchId),
+    ).toEqual(["1", "2"]);
+  });
+
+  describe.each([
+    ["PREVKNEE", ["KNEE_LEFT"], ["1", "3", "153"]],
+    ["WUSPEZIAL", ["KNEE_LEFT"], ["1", "3", "448"]],
+    ["WUSPEZIAL", ["SHOULDER_LEFT"], ["1", "3", "454"]],
+    ["WUSPEZIAL", [], ["1", "3"]],
+  ])("%s with the pains %j", (skill, pains, expectedBranchIds) => {
+    // the stored duplicate "2" drops out and only its slot is refilled, after the kept branches
+    it("refills the duplicate slot after the kept branches", () => {
+      const { handleBlock } = createBranchesBlockHandler(
+        createStoredDayBranchLookup({
+          [skill]: [
+            generateStoredDayEntry("1", ["REGION_LOWER_BODY"], "336"),
+            generateStoredDayEntry("2", ["REGION_LOWER_BODY"], "336"),
+            generateStoredDayEntry("3", ["REGION_UPPER_BODY"], "16"),
+          ],
+        }),
+      );
+      const input = setUpWorkout(
+        generateGenerationInput({ pains, exerciseCatalog, random: () => 0 }),
+      );
+
+      const result = handleBlock(
+        generateBranchesBlock(skill, ["1", "2", "3"]),
+        input,
+        NO_BRANCHES,
+      );
+
+      expect(
+        result.status === "filled" &&
+          result.exercises.map(({ branchId }) => branchId),
+      ).toEqual(expectedBranchIds);
+    });
   });
 });

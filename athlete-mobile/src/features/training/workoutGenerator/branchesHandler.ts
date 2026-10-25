@@ -1,7 +1,11 @@
 import { TagGroups } from "@/constants/tagGroups";
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
 import { getTagValues } from "@/utils/tagUtils";
-import type { BlockHandlerRegistry, BlockResult } from "./blockWalk";
+import type {
+  BlockHandlerRegistry,
+  BlockResult,
+  BranchesBlock,
+} from "./blockWalk";
 import {
   isPreventionOrSpecialWarmUpSkill,
   replaceBlockedBranches,
@@ -11,6 +15,8 @@ import {
   applyBranchesRuleChain,
   type BranchesRuleChainResult,
 } from "./branchesRuleChain";
+import { replaceCardioBlock } from "./cardioReplacement";
+import { refillBranchSlots, splitDuplicateBranches } from "./duplicateBranches";
 import type { CandidateBranch } from "./ruleFamily";
 import { readSkillCatalogEntry } from "./skillCatalogEntry";
 import {
@@ -102,6 +108,70 @@ const refillRequestedRegions = (
   ];
 };
 
+// A prevention or special warm-up skill refills each duplicate slot on its
+// own: a slot without a fitting branch drops out and the others stay.
+const refillDuplicateSlots = (
+  skill: string,
+  keptBranches: StoredBranch[],
+  regions: string[],
+  input: WorkoutInput,
+): StoredBranch[] =>
+  refillBranchSlots(regions, keptBranches, (usedBranchIds, region) => {
+    const replacement = replaceBlockedBranches(
+      { skill, replace: [region], usedBranchIds },
+      input,
+    );
+    return keepOwnPreventionRegionReplacement(skill, 1, replacement, input)[0];
+  });
+
+interface DuplicateStep {
+  keptBranches: StoredBranch[];
+  replace: string[];
+  /** Set for a skill that refills every slot and found duplicates: the final refill. */
+  refilled?: StoredBranch[];
+}
+
+// A kept branch whose exercise an earlier kept branch holds counts as blocked,
+// except for a cardio skill and for a prevention or special warm-up skill that
+// already refills every slot. Another skill adds the duplicate regions to its
+// region requests; a skill that refills every slot refills only those slots.
+const splitDuplicateBranchesIntoReplace = (
+  skill: string,
+  chainBranches: StoredBranch[],
+  chainReplace: string[],
+  input: WorkoutInput,
+): DuplicateStep => {
+  const refillsEverySlot = isPreventionOrSpecialWarmUpSkill(skill);
+  const unchanged = { keptBranches: chainBranches, replace: chainReplace };
+  if (
+    skill.indexOf("CARDIO") !== -1 ||
+    (refillsEverySlot && chainReplace.length > 0)
+  ) {
+    return unchanged;
+  }
+  const split = splitDuplicateBranches(chainBranches, input);
+  const keptBranches = split.unique;
+  if (!refillsEverySlot) {
+    return {
+      keptBranches,
+      replace: [...chainReplace, ...split.duplicateRegions],
+    };
+  }
+  return {
+    keptBranches,
+    replace: chainReplace,
+    refilled:
+      split.duplicateRegions.length > 0
+        ? refillDuplicateSlots(
+            skill,
+            keptBranches,
+            split.duplicateRegions,
+            input,
+          )
+        : undefined,
+  };
+};
+
 // Picks the branches a block trains, one case per rule
 const chooseBlockBranches = (
   skill: string,
@@ -109,19 +179,40 @@ const chooseBlockBranches = (
   chain: BranchesRuleChainResult,
   input: WorkoutInput,
 ): StoredBranch[] => {
-  const keptBranches = Object.entries(chain.keep).map(([branchId, branch]) => ({
-    branchId,
-    branch,
-  }));
+  const chainBranches = Object.entries(chain.keep).map(
+    ([branchId, branch]) => ({
+      branchId,
+      branch,
+    }),
+  );
+  const { keptBranches, replace, refilled } = splitDuplicateBranchesIntoReplace(
+    skill,
+    chainBranches,
+    chain.replace,
+    input,
+  );
+  if (refilled) return [...keptBranches, ...refilled];
   // Without a region request the block keeps every stored branch, repeats and
   // removed branches included; the rule chain only decides whether a region
   // needs refilling.
-  if (chain.replace.length === 0) {
-    return keptBranches.length > 0 ? storedBranches : [];
+  if (replace.length === 0) {
+    return chainBranches.length > 0 ? storedBranches : [];
   }
-  // a cardio skill keeps its kept branches
-  if (skill.indexOf("CARDIO") !== -1) return keptBranches;
-  return refillRequestedRegions(skill, keptBranches, chain.replace, input);
+  return refillRequestedRegions(skill, keptBranches, replace, input);
+};
+
+// The last swapped block that took over the skill, in template order
+const findEarlierCardioSwap = (
+  skill: string,
+  earlierResults: readonly BlockResult[],
+): BranchesBlock | undefined => {
+  const swap = earlierResults.findLast(
+    (result) =>
+      result.status === "filled" &&
+      result.swappedFromSkill !== undefined &&
+      result.block.skill === skill,
+  );
+  return swap?.block.kind === "branches" ? swap.block : undefined;
 };
 
 /**
@@ -133,9 +224,27 @@ export const createBranchesBlockHandler = (
   lookUpStoredBranch: StoredBranchLookup,
 ): BlockHandlerRegistry["branches"] => ({
   usedBranchScope: "block",
-  handleBlock: (block, input): BlockResult => {
-    const storedBranches = listStoredBranches(block, input, lookUpStoredBranch);
+  handleBlock: (
+    storedBlock,
+    input,
+    _usedBranches,
+    earlierResults = [],
+  ): BlockResult => {
+    // A block whose skill an earlier cardio swap took over reads the swapped
+    // entry, which holds no tags and no levels, in place of its stored branches.
+    const earlierSwap = findEarlierCardioSwap(
+      storedBlock.skill,
+      earlierResults,
+    );
+    const block = earlierSwap ?? storedBlock;
+    const storedBranches = earlierSwap
+      ? block.branches.map((branchId) => ({ branchId, branch: {} }))
+      : listStoredBranches(block, input, lookUpStoredBranch);
     const chain = applyBranchesRuleChain(storedBranches, input, block.skill);
+    // a cardio skill with a region request runs the CARDIO_5 branch instead
+    if (block.skill.indexOf("CARDIO") !== -1 && chain.replace.length > 0) {
+      return replaceCardioBlock(block, input);
+    }
     const exercises = resolveBranchExercises(
       chooseBlockBranches(block.skill, storedBranches, chain, input),
       input,

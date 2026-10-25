@@ -124,6 +124,54 @@ const refillDuplicateSlots = (
     return keepOwnPreventionRegionReplacement(skill, 1, replacement, input)[0];
   });
 
+interface DuplicateStep {
+  keptBranches: StoredBranch[];
+  replace: string[];
+  /** Set for a skill that refills every slot and found duplicates: the final refill. */
+  refilled?: StoredBranch[];
+}
+
+// A kept branch whose exercise an earlier kept branch holds counts as blocked,
+// except for a cardio skill and for a prevention or special warm-up skill that
+// already refills every slot. Another skill adds the duplicate regions to its
+// region requests; a skill that refills every slot refills only those slots.
+const splitDuplicateBranchesIntoReplace = (
+  skill: string,
+  chainBranches: StoredBranch[],
+  chainReplace: string[],
+  input: WorkoutInput,
+): DuplicateStep => {
+  const refillsEverySlot = isPreventionOrSpecialWarmUpSkill(skill);
+  const unchanged = { keptBranches: chainBranches, replace: chainReplace };
+  if (
+    skill.indexOf("CARDIO") !== -1 ||
+    (refillsEverySlot && chainReplace.length > 0)
+  ) {
+    return unchanged;
+  }
+  const split = splitDuplicateBranches(chainBranches, input);
+  const keptBranches = split.unique;
+  if (!refillsEverySlot) {
+    return {
+      keptBranches,
+      replace: [...chainReplace, ...split.duplicateRegions],
+    };
+  }
+  return {
+    keptBranches,
+    replace: chainReplace,
+    refilled:
+      split.duplicateRegions.length > 0
+        ? refillDuplicateSlots(
+            skill,
+            keptBranches,
+            split.duplicateRegions,
+            input,
+          )
+        : undefined,
+  };
+};
+
 // Picks the branches a block trains, one case per rule
 const chooseBlockBranches = (
   skill: string,
@@ -137,32 +185,13 @@ const chooseBlockBranches = (
       branch,
     }),
   );
-  const isRefillingEverySlot = isPreventionOrSpecialWarmUpSkill(skill);
-  const replace = [...chain.replace];
-  let keptBranches = chainBranches;
-  // A kept branch whose exercise an earlier kept branch holds counts as
-  // blocked, except for a cardio skill and for a prevention or special warm-up
-  // skill that already refills every slot.
-  if (
-    skill.indexOf("CARDIO") === -1 &&
-    !(isRefillingEverySlot && replace.length > 0)
-  ) {
-    const split = splitDuplicateBranches(chainBranches, input);
-    keptBranches = split.unique;
-    if (!isRefillingEverySlot) {
-      replace.push(...split.duplicateRegions);
-    } else if (split.duplicateRegions.length > 0) {
-      return [
-        ...keptBranches,
-        ...refillDuplicateSlots(
-          skill,
-          keptBranches,
-          split.duplicateRegions,
-          input,
-        ),
-      ];
-    }
-  }
+  const { keptBranches, replace, refilled } = splitDuplicateBranchesIntoReplace(
+    skill,
+    chainBranches,
+    chain.replace,
+    input,
+  );
+  if (refilled) return [...keptBranches, ...refilled];
   // Without a region request the block keeps every stored branch, repeats and
   // removed branches included; the rule chain only decides whether a region
   // needs refilling.

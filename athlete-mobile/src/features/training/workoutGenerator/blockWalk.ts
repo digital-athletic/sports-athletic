@@ -50,24 +50,39 @@ export type BlockHandlerRegistry = {
   };
 };
 
-type HandlerContext = [
-  input: WorkoutInput,
-  usedBranches: ReadonlySet<string>,
-  earlierResults: readonly BlockResult[],
-];
+interface BlockContext {
+  input: WorkoutInput;
+  usedBranches: ReadonlySet<string>;
+  earlierResults: readonly BlockResult[];
+}
 
 const handleBlockByKind = (
   block: Block,
   handlers: BlockHandlerRegistry,
-  context: HandlerContext,
+  { input, usedBranches, earlierResults }: BlockContext,
 ): BlockResult => {
   switch (block.kind) {
     case "picks":
-      return handlers.picks.handleBlock(block, ...context);
+      return handlers.picks.handleBlock(
+        block,
+        input,
+        usedBranches,
+        earlierResults,
+      );
     case "branches":
-      return handlers.branches.handleBlock(block, ...context);
+      return handlers.branches.handleBlock(
+        block,
+        input,
+        usedBranches,
+        earlierResults,
+      );
     case "duration":
-      return handlers.duration.handleBlock(block, ...context);
+      return handlers.duration.handleBlock(
+        block,
+        input,
+        usedBranches,
+        earlierResults,
+      );
   }
 };
 
@@ -84,11 +99,11 @@ export const walkTemplateBlocks = (
   const results: BlockResult[] = [];
   for (const block of template.blocks) {
     const isWorkoutScope = handlers[block.kind].usedBranchScope === "workout";
-    const result = handleBlockByKind(block, handlers, [
+    const result = handleBlockByKind(block, handlers, {
       input,
-      isWorkoutScope ? workoutUsedBranches : new Set(),
-      [...results],
-    ]);
+      usedBranches: isWorkoutScope ? workoutUsedBranches : new Set(),
+      earlierResults: results,
+    });
     if (isWorkoutScope) {
       workoutUsedBranches = new Set([
         ...workoutUsedBranches,

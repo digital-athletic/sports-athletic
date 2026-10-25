@@ -39,8 +39,8 @@ export type BlockHandler<K extends BlockKind> = (
   earlierResults?: readonly BlockResult[],
 ) => BlockResult;
 
-// "workout" hands each block the branches every earlier block of that scope
-// used; "block" hands each block an empty set, as the old training day does.
+// "workout" hands each block the branches every earlier block used, whatever
+// its scope; "block" hands each block an empty set, as the old training day does.
 export type UsedBranchScope = "workout" | "block";
 
 export type BlockHandlerRegistry = {
@@ -104,12 +104,10 @@ export const walkTemplateBlocks = (
       usedBranches: isWorkoutScope ? workoutUsedBranches : new Set(),
       earlierResults: results,
     });
-    if (isWorkoutScope) {
-      workoutUsedBranches = new Set([
-        ...workoutUsedBranches,
-        ...result.usedBranchIds,
-      ]);
-    }
+    workoutUsedBranches = new Set([
+      ...workoutUsedBranches,
+      ...result.usedBranchIds,
+    ]);
     results.push(result);
   }
   return results;

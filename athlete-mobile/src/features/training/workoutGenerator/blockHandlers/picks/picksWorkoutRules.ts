@@ -1,5 +1,4 @@
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
-import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import type { Block, Template } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { filterBranchesByAgeGroup } from "../../ruleFamilies/ageGroupRule";
@@ -12,7 +11,9 @@ import {
 import { filterBranchesByGender } from "../../ruleFamilies/genderRule";
 import type { GenerationInput } from "../../generationInput/generationInput";
 import { filterBranchesByPain } from "../../ruleFamilies/painRule";
+import { throwWhenPoolEmpty } from "../../ruleFamilies/ruleFamily";
 import {
+  isPicksBlock,
   type ResolvedPicksBlock,
   resolvePicksBlocks,
 } from "./picksBlockResolution";
@@ -34,16 +35,6 @@ const NO_BRANCH_DRAW: BranchDraw = Object.freeze({
 
 export const createEmptyPicksWorkout = (): PicksWorkout =>
   Object.freeze({ pool: {}, blocks: new Map(), draw: NO_BRANCH_DRAW });
-
-const throwWhenPoolEmpty = (
-  pool: SkillTreeType,
-  subtype: GeneratorError["subtype"],
-  params: string[],
-): void => {
-  if (Object.keys(pool).length === 0) {
-    throw { type: "NO_EXERCISES", subtype, params } satisfies GeneratorError;
-  }
-};
 
 /**
  * Runs pain, equipment, age group and gender on the union pool of a short
@@ -82,8 +73,8 @@ export const filterPoolByPicksWorkoutRules = (
 /**
  * Resolves the picks blocks of a template, filters their union pool once and
  * builds the branch draws from that pool at the athlete level. A template
- * without picks blocks gets an empty picks workout; one that mixes picks
- * blocks with other kinds throws OTHER/BLOCK_KIND at resolution.
+ * without picks blocks gets an empty picks workout, and a block of another
+ * kind gets no entry.
  *
  * resolvePicksWorkout({ blocks: [WU picks block] }, femaleInput)
  * → { pool: { ...WU branches without 1026 }, blocks: Map { WU block → { skill: "WU", ... } }, draw }
@@ -98,10 +89,12 @@ export const resolvePicksWorkout = (
   }
   const resolved = resolvePicksBlocks(template, input, skillTrees);
   const pool = filterPoolByPicksWorkoutRules(resolved.pool, input);
+  // resolvePicksBlocks lists one resolved block per picks block, in this order
+  const picksBlocks = template.blocks.filter(isPicksBlock);
   return {
     pool,
     blocks: new Map(
-      template.blocks.map((block, index) => [block, resolved.blocks[index]]),
+      picksBlocks.map((block, index) => [block, resolved.blocks[index]]),
     ),
     draw: createBranchDraw({
       pool,

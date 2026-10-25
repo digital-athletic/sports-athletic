@@ -293,39 +293,92 @@ describe("picksBlockResolution: special warm-up pool", () => {
   });
 });
 
-describe("picksBlockResolution: errors", () => {
-  it.each<{ behaviour: string; blocks: Block[]; params: string[] }>([
-    {
-      behaviour: "a duration block, before any block resolves",
-      blocks: [
-        generatePicksBlock("UNKNOWN"),
-        { kind: "duration", skill: "SYN", duration: 30 },
+describe("picksBlockResolution: branches blocks", () => {
+  it("skips a branches block and lists the picks blocks in template order", () => {
+    const skillCatalog = {
+      SYN: generateTreeCatalogEntry(),
+      OTHER: generateTreeCatalogEntry(),
+    };
+
+    const { blocks } = resolveCustomTemplate(
+      [
+        generatePicksBlock("OTHER"),
+        generateUntimedBranchesBlock("SYN"),
+        generatePicksBlock("SYN"),
       ],
-      params: ["SYN.blocks[1]", "duration"],
-    },
-    {
-      behaviour: "a branches block",
-      blocks: [generateUntimedBranchesBlock("SYN")],
-      params: ["SYN.blocks[0]", "branches"],
-    },
-    {
-      behaviour: "the unsupported field bodyParts",
-      blocks: [generatePicksBlock("SYN", { bodyParts: { regions: ["core"] } })],
-      params: ["SYN.blocks[0]", "bodyParts"],
-    },
-    {
-      behaviour: "the unsupported field order",
-      blocks: [generatePicksBlock("SYN", { order: "asDrawn" })],
-      params: ["SYN.blocks[0]", "order"],
-    },
-  ])("throws BLOCK_KIND for $behaviour", ({ blocks, params }) => {
-    expect(catchThrownValue(() => resolveCustomTemplate(blocks))).toEqual({
-      type: "OTHER",
-      subtype: "BLOCK_KIND",
-      params,
-    });
+      { skillCatalog },
+    );
+
+    expect(blocks.map(({ skill }) => skill)).toEqual(["OTHER", "SYN"]);
   });
 
+  it("resolves a template of branches blocks only to no picks block and an empty pool", () => {
+    const resolved = resolveCustomTemplate([
+      generateUntimedBranchesBlock("SYN"),
+    ]);
+
+    expect(resolved).toEqual({ pool: {}, blocks: [] });
+  });
+
+  it("keeps the tree of a branches block skill out of the workout pool", () => {
+    const skillCatalog = {
+      SYN: generateTreeCatalogEntry(),
+      OTHER: generateTreeCatalogEntry({
+        skillTree: { withWeights: ["T_W"], withoutWeights: ["T_B"] },
+      }),
+    };
+    const skillTrees = {
+      T_A: generateTaggedBranches({ a: [] }),
+      T_B: generateTaggedBranches({ b: [] }),
+    };
+
+    const { pool } = resolveCustomTemplate(
+      [generateUntimedBranchesBlock("OTHER"), generatePicksBlock("SYN")],
+      { skillCatalog, skillTrees },
+    );
+
+    expect(Object.keys(pool)).toEqual(["a"]);
+  });
+
+  it("narrows the special warm-up to the pain regions of a prevention branches block", () => {
+    const { blocks } = resolveCustomTemplate(
+      [generatePicksBlock("WU_X"), generateUntimedBranchesBlock("PREV_X")],
+      {
+        skillCatalog: generateSpecialWarmUpCatalog(),
+        skillTrees: {
+          WUSPEZIAL: generateTaggedBranches({
+            1: ["PAIN_KNEE"],
+            2: ["PAIN_SHOULDER"],
+            3: [],
+          }),
+          T_A: generateTaggedBranches({ 9: [] }),
+        },
+      },
+    );
+
+    expect(Object.keys(blocks[0].pool)).toEqual(["1"]);
+  });
+
+  it("keeps the whole special warm-up for a branches block of a skill that is no prevention", () => {
+    const { blocks } = resolveCustomTemplate(
+      [generatePicksBlock("WU_X"), generateUntimedBranchesBlock("OTHER_X")],
+      {
+        skillCatalog: generateSpecialWarmUpCatalog(),
+        skillTrees: {
+          WUSPEZIAL: generateTaggedBranches({
+            1: ["PAIN_KNEE"],
+            2: ["PAIN_SHOULDER"],
+          }),
+          T_A: generateTaggedBranches({ 9: [] }),
+        },
+      },
+    );
+
+    expect(Object.keys(blocks[0].pool)).toEqual(["1", "2"]);
+  });
+});
+
+describe("picksBlockResolution: errors", () => {
   it.each<{
     behaviour: string;
     skill: string;

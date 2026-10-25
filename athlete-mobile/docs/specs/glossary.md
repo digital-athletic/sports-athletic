@@ -29,6 +29,8 @@ Terms of the training model, with the meanings the coach uses. The glossary defi
 | Focus training | Fokus-Training | | Plan-independent 10 to 20 minute workout for one focus, for example leg axis stability. |
 | Prevention training | Präventionstraining | | Plan-independent workout against declared pains, for example knee or shoulder. |
 | Athletic Intelligence Workout Language | Athletic Intelligence Workout Language | AIWL | Template language to define workouts in a JSON format |
+| Pick | Pick | | Picks a number of exercises by tags at random, for example 3 shoulder prevention exercises. |
+| Picks block | Picks-Block | | Part of a short workout made of one or more picks, for example 3 shoulder and then 2 knee prevention exercises. |
 
 ## Training session
 

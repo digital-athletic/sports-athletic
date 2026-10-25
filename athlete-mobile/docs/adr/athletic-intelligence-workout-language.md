@@ -131,6 +131,8 @@ The workout has no total time field. Its length is the sum of the block duration
 
 ### Picks and tags
 
+A pick means: pick `count` branches by `tags`. A picks block holds one or more picks and draws them in template order, so `[{ "tags": ["SKILL_PREVENTION", "PREVENTION_SHOULDER"], "count": 3 }, { "tags": ["SKILL_PREVENTION", "PREVENTION_KNEE_HIP"], "count": 2 }]` trains 3 shoulder prevention branches, then 2 knee and hip prevention branches. The [Glossary](../specs/glossary.md) defines pick and picks block.
+
 A pick lists `tags` and draws `count` units of matching branches. The app sorts the tags into tag groups. A tag group is the prefix the tag starts with, from the app's `TagGroups` constants, for example `SKILL` or `PREVENTION`. When two prefixes fit, the longer one wins, so `EQ_TYPE_WEIGHTS` belongs to `EQ_TYPE`.
 
 A branch matches a pick when, for every tag group the pick names, the branch carries at least one of the listed tags of that group. A branch without a region tag matches every `REGION` tag. A pick with no tags matches every branch.

@@ -1,6 +1,8 @@
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
-import type { ExerciseBranchEntry } from "@/schemas/generator.schema";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
+import { generateTaggedBranches } from "@test/factories/skillTree";
+import { generateStoredDayEntry } from "@test/factories/storedBranch";
+import { generateBranchesBlock } from "@test/factories/templateBlock";
 import { buildBranchLookupIndex } from "./branchLookupIndex";
 import {
   createStoredDayBranchLookup,
@@ -8,11 +10,11 @@ import {
   lookUpStoredBranchInCatalog,
 } from "./storedBranchLookup";
 
-const STALE_GKS_ENTRY: ExerciseBranchEntry = {
-  branchId: "510",
-  tags: ["EQ_BARBELL", "REGION_FULL_BODY"],
-  exercises: { "2": { exerciseId: "375" } },
-};
+const STALE_GKS_ENTRY = generateStoredDayEntry(
+  "510",
+  ["EQ_BARBELL", "REGION_FULL_BODY"],
+  "375",
+);
 
 describe("storedBranchLookup: lookUpStoredBranchInCatalog", () => {
   it.each([
@@ -44,7 +46,7 @@ describe("storedBranchLookup: lookUpStoredBranchInCatalog", () => {
     const input = {
       ...generateRuleFamilyInput(),
       branchLookupIndex: buildBranchLookupIndex({
-        GKS: { "1": { tags: ["REGION_CORE"], levels: {} } },
+        GKS: generateTaggedBranches({ "1": ["REGION_CORE"] }, {}),
       }),
     };
 
@@ -64,14 +66,14 @@ describe("storedBranchLookup: createStoredDayBranchLookup", () => {
   });
 
   it("reads an entry whose ID no skill tree holds", () => {
-    const entry = { branchId: "900001", tags: [], exercises: {} };
+    const entry = generateStoredDayEntry("900001", [], "10", { exercises: {} });
     const lookUpStoredBranch = createStoredDayBranchLookup({ GKS: [entry] });
 
     expect(lookUpStoredBranch("GKS", "900001", input)).toBe(entry);
   });
 
   it("reads the last entry of a repeated ID", () => {
-    const first = { branchId: "510", tags: ["REGION_CORE"] };
+    const first = generateStoredDayEntry("510", ["REGION_CORE"]);
     const lookUpStoredBranch = createStoredDayBranchLookup({
       GKS: [first, STALE_GKS_ENTRY],
     });
@@ -96,11 +98,7 @@ describe("storedBranchLookup: listStoredBranches", () => {
     const trees = getAllSkillTrees();
 
     const storedBranches = listStoredBranches(
-      {
-        kind: "branches",
-        skill: "GKS",
-        branches: ["523", "999999", "510", "523"],
-      },
+      generateBranchesBlock("GKS", ["523", "999999", "510", "523"]),
       generateRuleFamilyInput(),
       lookUpStoredBranchInCatalog,
     );

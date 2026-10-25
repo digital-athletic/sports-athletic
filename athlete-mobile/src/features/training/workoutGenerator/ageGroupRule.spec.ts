@@ -1,4 +1,5 @@
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
+import { generateTaggedBranches } from "@test/factories/skillTree";
 import { filterBranchesByAgeGroup } from "./ageGroupRule";
 
 describe("ageGroupRule: filterBranchesByAgeGroup", () => {
@@ -11,11 +12,10 @@ describe("ageGroupRule: filterBranchesByAgeGroup", () => {
   });
 
   it("keeps the branches of an adult and the untagged ones", () => {
-    const branches = {
-      "1": { tags: ["AGE_ADULT"], levels: {} },
-      "2": { tags: ["AGE_CHILD"], levels: {} },
-      "3": { tags: [], levels: {} },
-    };
+    const branches = generateTaggedBranches(
+      { "1": ["AGE_ADULT"], "2": ["AGE_CHILD"], "3": [] },
+      {},
+    );
 
     const result = filterBranchesByAgeGroup(
       branches,
@@ -30,11 +30,10 @@ describe("ageGroupRule: filterBranchesByAgeGroup", () => {
   });
 
   it("keeps the branches of a child and the untagged ones", () => {
-    const branches = {
-      "1": { tags: ["AGE_ADULT"], levels: {} },
-      "2": { tags: ["AGE_CHILD"], levels: {} },
-      "3": { tags: [], levels: {} },
-    };
+    const branches = generateTaggedBranches(
+      { "1": ["AGE_ADULT"], "2": ["AGE_CHILD"], "3": [] },
+      {},
+    );
 
     const result = filterBranchesByAgeGroup(
       branches,
@@ -48,10 +47,10 @@ describe("ageGroupRule: filterBranchesByAgeGroup", () => {
   });
 
   it("follows the adult rules for an adolescent and names the age group", () => {
-    const branches = {
-      "1": { tags: ["AGE_ADULT"], levels: {} },
-      "2": { tags: ["AGE_CHILD"], levels: {} },
-    };
+    const branches = generateTaggedBranches(
+      { "1": ["AGE_ADULT"], "2": ["AGE_CHILD"] },
+      {},
+    );
 
     const result = filterBranchesByAgeGroup(
       branches,
@@ -65,10 +64,10 @@ describe("ageGroupRule: filterBranchesByAgeGroup", () => {
   });
 
   it("follows the adult rules for an athlete without a birthday", () => {
-    const branches = {
-      "1": { tags: ["AGE_ADULT"], levels: {} },
-      "2": { tags: ["AGE_CHILD"], levels: {} },
-    };
+    const branches = generateTaggedBranches(
+      { "1": ["AGE_ADULT"], "2": ["AGE_CHILD"] },
+      {},
+    );
 
     const result = filterBranchesByAgeGroup(
       branches,
@@ -82,7 +81,10 @@ describe("ageGroupRule: filterBranchesByAgeGroup", () => {
   });
 
   it("keeps a branch tagged for both age groups", () => {
-    const branches = { "4": { tags: ["AGE_ADULT", "AGE_CHILD"], levels: {} } };
+    const branches = generateTaggedBranches(
+      { "4": ["AGE_ADULT", "AGE_CHILD"] },
+      {},
+    );
 
     const result = filterBranchesByAgeGroup(
       branches,

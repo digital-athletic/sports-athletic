@@ -14,6 +14,7 @@ export const findCatalogExerciseById = (id: string): ExerciseType => {
 };
 
 export interface ValueExerciseOptions {
+  id?: string;
   withWeights?: boolean;
   tags?: string[];
   values?: ExerciseType["values"];
@@ -30,13 +31,14 @@ export interface ValueExerciseOptions {
 export const generateValueExercise = (
   mode: "repetition" | "duration",
   {
+    id = "1",
     withWeights = false,
     tags = [],
     values = {},
     isJump = false,
   }: ValueExerciseOptions = {},
 ): ExerciseType => ({
-  id: "1",
+  id,
   name: "Test Exercise",
   displayName: "Test Exercise",
   description: "Test Description",
@@ -53,6 +55,23 @@ export const generateValueExercise = (
   isAdvanceByDuration: mode === "duration",
   isJump,
   values,
+});
+
+/**
+ * Builds a catalog exercise that advances by repetitions, with exactly the
+ * given tags. The overrides replace any field.
+ *
+ * generateTaggedExercise("e1", ["SIDE_BOTH"])
+ * → { id: "e1", tags: ["SIDE_BOTH"], isAdvanceByReps: true, values: {}, ... }
+ */
+export const generateTaggedExercise = (
+  id: string,
+  tags: string[],
+  overrides: Partial<ExerciseType> = {},
+): ExerciseType => ({
+  ...generateValueExercise("repetition", { id }),
+  tags,
+  ...overrides,
 });
 
 /**

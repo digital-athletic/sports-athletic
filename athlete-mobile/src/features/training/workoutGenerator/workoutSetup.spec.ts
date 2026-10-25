@@ -1,5 +1,9 @@
-import type { Template } from "@/schemas/aiwl.schema";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
+import { generateKneeSkillTrees } from "@test/factories/skillTree";
+import {
+  generatePicksBlock,
+  generateShortTemplate,
+} from "@test/factories/templateBlock";
 import { setUpWorkout } from "./workoutSetup";
 
 describe("workoutSetup: setUpWorkout", () => {
@@ -28,12 +32,12 @@ describe("workoutSetup: setUpWorkout", () => {
   });
 
   it("falls back to BEGINNER and no pain for an athlete without workout data", () => {
-    const input = generateRuleFamilyInput();
-
-    const workoutInput = setUpWorkout({
-      ...input,
-      athlete: { userId: "athlete" },
-    });
+    const workoutInput = setUpWorkout(
+      generateRuleFamilyInput({
+        withoutPersonalData: true,
+        withoutWorkoutData: true,
+      }),
+    );
 
     expect(workoutInput.athleteLevel).toBe("BEGINNER");
     expect(workoutInput.blockedRegions).toEqual([]);
@@ -64,22 +68,12 @@ describe("workoutSetup: setUpWorkout", () => {
   });
 
   it("applies the picks workout rules of the template before any block runs", () => {
-    const template: Template = {
-      aiwl: 1,
-      id: "short",
-      name: { en: "Short" },
-      blocks: [
-        { kind: "picks", skill: "BAS", picks: [{ tags: [], count: 1 }] },
-      ],
-    };
+    const template = generateShortTemplate([generatePicksBlock("BAS")]);
     const input = generateRuleFamilyInput({ pains: ["KNEE_LEFT"] });
-    const skillTrees = {
-      BAS: {
-        "1": { tags: ["BLOCK_KNEE"], levels: { 1: { exerciseId: "e1" } } },
-      },
-    };
 
-    expect(() => setUpWorkout(input, template, skillTrees)).toThrow(
+    expect(() =>
+      setUpWorkout(input, template, generateKneeSkillTrees()),
+    ).toThrow(
       expect.objectContaining({
         type: "NO_EXERCISES",
         subtype: "PAIN",

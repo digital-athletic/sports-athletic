@@ -1,19 +1,5 @@
-import type { SkillTreeType } from "@/schemas/skillTree.schema";
+import { generateTaggedBranches } from "@test/factories/skillTree";
 import { filterBranchesByTags } from "./branchTagFilter";
-
-/**
- * Builds branches with the given tags and one level each.
- *
- * generateBranches({ knee: ["PREVENTION_KNEE_HIP"] })
- * → { knee: { tags: ["PREVENTION_KNEE_HIP"], levels: { 1: { exerciseId: "1" } } } }
- */
-const generateBranches = (tagsById: Record<string, string[]>): SkillTreeType =>
-  Object.fromEntries(
-    Object.entries(tagsById).map(([id, tags]) => [
-      id,
-      { tags, levels: { 1: { exerciseId: "1" } } },
-    ]),
-  );
 
 describe("branchTagFilter: filterBranchesByTags", () => {
   it.each<{ behaviour: string; tags: string[]; kept: string[] }>([
@@ -43,7 +29,7 @@ describe("branchTagFilter: filterBranchesByTags", () => {
       kept: [],
     },
   ])("$behaviour", ({ tags, kept }) => {
-    const branches = generateBranches({
+    const branches = generateTaggedBranches({
       knee: ["SKILL_PREVENTION", "PREVENTION_KNEE_HIP", "REGION_LOWER_BODY"],
       shoulder: ["SKILL_PREVENTION", "PREVENTION_SHOULDER", "EQ_DUMBBELL"],
       warmUp: ["SKILL_WARM_UP", "PREVENTION_KNEE_HIP", "EQ_TYPE_WEIGHTS"],
@@ -54,7 +40,7 @@ describe("branchTagFilter: filterBranchesByTags", () => {
   });
 
   it("matches only branches carrying a tag outside every tag group", () => {
-    const branches = generateBranches({
+    const branches = generateTaggedBranches({
       carrier: ["CUSTOM_X", "SKILL_PREVENTION"],
       other: ["SKILL_PREVENTION"],
       untagged: [],
@@ -66,7 +52,7 @@ describe("branchTagFilter: filterBranchesByTags", () => {
   });
 
   it("keeps the branch values by identity", () => {
-    const branches = generateBranches({ a: ["SKILL_WARM_UP"] });
+    const branches = generateTaggedBranches({ a: ["SKILL_WARM_UP"] });
 
     expect(filterBranchesByTags(branches, ["SKILL_WARM_UP"]).a).toBe(
       branches.a,

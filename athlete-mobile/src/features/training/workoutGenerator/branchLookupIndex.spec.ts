@@ -1,21 +1,12 @@
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
-import type { SkillTreeType } from "@/schemas/skillTree.schema";
+import {
+  generateSkillBranch,
+  generateTreeBranch,
+} from "@test/factories/skillTree";
 import {
   buildBranchLookupIndex,
   loadBranchLookupIndex,
 } from "./branchLookupIndex";
-
-/**
- * Builds a skill tree branch with one level.
- *
- * generateSkillTreeBranch("1") → { tags: [], levels: { 1: { exerciseId: "1" } } }
- */
-const generateSkillTreeBranch = (
-  exerciseId: string,
-): SkillTreeType[string] => ({
-  tags: [],
-  levels: { 1: { exerciseId } },
-});
 
 describe("branchLookupIndex: branch IDs across all skill trees", () => {
   it("holds every branch ID in exactly one skill tree", () => {
@@ -85,7 +76,7 @@ describe("branchLookupIndex: buildBranchLookupIndex", () => {
 
   it("keeps a branch without levels", () => {
     const index = buildBranchLookupIndex({
-      GKS: { "1": { tags: [], levels: {} } },
+      GKS: { "1": generateSkillBranch([], {}) },
     });
 
     expect(index.get("1")).toEqual({
@@ -97,8 +88,8 @@ describe("branchLookupIndex: buildBranchLookupIndex", () => {
 
   it("throws when two skill trees hold the same branch ID", () => {
     const skillTrees = {
-      GKS: { "1": generateSkillTreeBranch("10") },
-      GKSKG: { "1": generateSkillTreeBranch("11") },
+      GKS: { "1": generateTreeBranch(["10"]) },
+      GKSKG: { "1": generateTreeBranch(["11"]) },
     };
 
     expect(() => buildBranchLookupIndex(skillTrees)).toThrow(
@@ -107,11 +98,11 @@ describe("branchLookupIndex: buildBranchLookupIndex", () => {
   });
 
   it("leaves the skill trees unchanged", () => {
-    const skillTrees = { GKS: { "1": generateSkillTreeBranch("10") } };
+    const skillTrees = { GKS: { "1": generateTreeBranch(["10"]) } };
 
     buildBranchLookupIndex(skillTrees);
 
-    expect(skillTrees).toEqual({ GKS: { "1": generateSkillTreeBranch("10") } });
+    expect(skillTrees).toEqual({ GKS: { "1": generateTreeBranch(["10"]) } });
   });
 });
 

@@ -2,6 +2,8 @@ import {
   generateRuleFamilyInput,
   generateSkillTreeBranches,
 } from "@test/factories/ruleFamilyInput";
+import { generateTaggedBranches } from "@test/factories/skillTree";
+import { generateStoredBranch } from "@test/factories/storedBranch";
 import {
   filterBranchesByEquipment,
   listMissingEquipment,
@@ -52,33 +54,21 @@ describe("equipmentRule: filterBranchesByEquipment", () => {
 
   it("keeps a branch whose dumbbell and medicine ball stand in for each other", () => {
     const input = generateRuleFamilyInput({ equipment: ["DUMBBELL"] });
-    const branches = {
-      "1": {
-        tags: ["EQ_DUMBBELL", "EQ_MEDICINE_BALL"],
-        levels: { 1: { exerciseId: "1" } },
-      },
-    };
+    const branches = generateTaggedBranches({
+      "1": ["EQ_DUMBBELL", "EQ_MEDICINE_BALL"],
+    });
 
     expect(filterBranchesByEquipment(branches, input).keep).toEqual(branches);
   });
 
   it("reads the exercising bench exercises of a stored branch", () => {
     const input = generateRuleFamilyInput({ equipment: ["BENCH"] });
-    /**
-     * Builds a stored day entry that needs an exercising bench.
-     *
-     * generateStoredBranchEntry("209")
-     * → { tags: ["EQ_EXERCISING_BENCH", "REGION_LOWER_BODY"], exercises: { 1: { exerciseId: "209" } } }
-     */
-    const generateStoredBranchEntry = (exerciseId: string) => ({
-      tags: ["EQ_EXERCISING_BENCH", "REGION_LOWER_BODY"],
-      exercises: { 1: { exerciseId } },
-    });
+    const benchTags = ["EQ_EXERCISING_BENCH", "REGION_LOWER_BODY"];
 
     const result = filterBranchesByEquipment(
       {
-        "1": generateStoredBranchEntry("1"),
-        "2": generateStoredBranchEntry("209"),
+        "1": generateStoredBranch("1", benchTags, "1").branch,
+        "2": generateStoredBranch("2", benchTags, "209").branch,
       },
       input,
     );
@@ -94,12 +84,11 @@ describe("equipmentRule: filterBranchesByEquipment", () => {
 describe("equipmentRule: listMissingEquipment", () => {
   it("lists each missing equipment once, in removal order", () => {
     const input = generateRuleFamilyInput();
-    const levels = { 1: { exerciseId: "1" } };
-    const branches = {
-      "1": { tags: ["EQ_BARBELL", "EQ_DUMBBELL"], levels },
-      "2": { tags: ["EQ_BARBELL"], levels },
-      "3": { tags: ["EQ_TUBE"], levels },
-    };
+    const branches = generateTaggedBranches({
+      "1": ["EQ_BARBELL", "EQ_DUMBBELL"],
+      "2": ["EQ_BARBELL"],
+      "3": ["EQ_TUBE"],
+    });
 
     const { removals } = filterBranchesByEquipment(branches, input);
 

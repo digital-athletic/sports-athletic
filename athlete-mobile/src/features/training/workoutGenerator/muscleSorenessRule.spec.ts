@@ -1,10 +1,12 @@
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
+import { generateTaggedBranches } from "@test/factories/skillTree";
+import { catchThrownValue } from "@test/factories/thrownValue";
 import { filterBranchesByMuscleSoreness } from "./muscleSorenessRule";
 
-const UPPER_AND_LOWER_BODY_BRANCHES = {
-  "1": { tags: ["REGION_UPPER_BODY"], levels: {} },
-  "2": { tags: ["REGION_LOWER_BODY"], levels: {} },
-};
+const UPPER_AND_LOWER_BODY_BRANCHES = generateTaggedBranches(
+  { "1": ["REGION_UPPER_BODY"], "2": ["REGION_LOWER_BODY"] },
+  {},
+);
 
 describe("muscleSorenessRule: filterBranchesByMuscleSoreness", () => {
   it("removes a branch of the sore region and requests its region", () => {
@@ -25,10 +27,13 @@ describe("muscleSorenessRule: filterBranchesByMuscleSoreness", () => {
 
   it("requests the first region of a removed branch and keeps a branch without regions", () => {
     const input = generateRuleFamilyInput({ soreMuscles: ["QUADRICEPS"] });
-    const branches = {
-      "1": { tags: ["REGION_FULL_BODY", "REGION_LOWER_BODY"], levels: {} },
-      "2": { tags: ["EQ_DUMBBELL"], levels: {} },
-    };
+    const branches = generateTaggedBranches(
+      {
+        "1": ["REGION_FULL_BODY", "REGION_LOWER_BODY"],
+        "2": ["EQ_DUMBBELL"],
+      },
+      {},
+    );
 
     const result = filterBranchesByMuscleSoreness(branches, input, "GKS");
 
@@ -83,17 +88,14 @@ describe("muscleSorenessRule: filterBranchesByMuscleSoreness", () => {
     const input = generateRuleFamilyInput({
       soreMuscles: ["CHEST", "QUADRICEPS"],
     });
-    let thrown: unknown;
 
-    try {
+    const thrown = catchThrownValue(() =>
       filterBranchesByMuscleSoreness(
         UPPER_AND_LOWER_BODY_BRANCHES,
         input,
         "GKS",
-      );
-    } catch (error) {
-      thrown = error;
-    }
+      ),
+    );
 
     expect(thrown).toEqual({
       type: "TOO_MUCH_SORENESS",

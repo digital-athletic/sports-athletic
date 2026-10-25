@@ -1,20 +1,9 @@
+import { generateBranchReference } from "@test/factories/branchReference";
 import { isBigMuscleExercise, readPrimaryMuscleGroups } from "./muscleGroups";
-
-/**
- * Fakes a branch reference with the given tags.
- *
- * generateBranchReference(["MUSCLE_CHEST"])
- * → { branchId: "1", exerciseId: "e1", branchTags: ["MUSCLE_CHEST"] }
- */
-const generateBranchReference = (branchTags: string[]) => ({
-  branchId: "1",
-  exerciseId: "e1",
-  branchTags,
-});
 
 describe("muscleGroups: readPrimaryMuscleGroups", () => {
   it("counts a muscle of one side as its muscle group", () => {
-    const entry = generateBranchReference([
+    const entry = generateBranchReference("1", [
       "REGION_LOWER_BODY",
       "MUSCLE_QUADRICEPS_LEFT",
       "MUSCLE_CALF",
@@ -31,6 +20,8 @@ describe("muscleGroups: isBigMuscleExercise", () => {
     ["MUSCLE_INNER_THIGH", false],
     ["REGION_CORE", false],
   ])("reads %s as big: %s", (tag, isBig) => {
-    expect(isBigMuscleExercise(generateBranchReference([tag]))).toBe(isBig);
+    expect(isBigMuscleExercise(generateBranchReference("1", [tag]))).toBe(
+      isBig,
+    );
   });
 });

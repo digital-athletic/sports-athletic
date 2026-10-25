@@ -1,6 +1,7 @@
 import type { StoredBranch } from "@/features/training/workoutGenerator/storedBranchLookup";
 import type { CandidateBranch } from "@/features/training/workoutGenerator/ruleFamily";
 import type { ExerciseBranchEntry } from "@/schemas/generator.schema";
+import { generateSkillTreeBranches } from "./ruleFamilyInput";
 
 /**
  * Builds a stored branch whose level 2 trains the exercise. The overrides
@@ -37,3 +38,19 @@ export const generateStoredDayEntry = (
   ...generateStoredBranch(branchId, tags, exerciseId).branch,
   ...overrides,
 });
+
+/**
+ * Lists branches of one real skill tree as a branches block stores them, in
+ * the order of the given branch IDs.
+ *
+ * generateStoredBranches("GKS", ["523", "510"])
+ * → [{ branchId: "523", branch: { tags: [...], levels: {...} } }, { branchId: "510", ... }]
+ */
+export const generateStoredBranches = (
+  treeName: string,
+  branchIds: string[],
+): StoredBranch[] =>
+  branchIds.map((branchId) => ({
+    branchId,
+    branch: generateSkillTreeBranches(treeName, [branchId])[branchId],
+  }));

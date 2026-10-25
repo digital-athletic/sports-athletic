@@ -1,20 +1,12 @@
-import type { LevelTag } from "@/constants/workoutConstants";
 import {
   createGenerationInput,
   type GenerationInput,
 } from "@/features/training/workoutGenerator/generationInput";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import type { UserType } from "@/schemas/user.schema";
 import type { BranchDataMapType } from "@/store/exerciseProgressStore";
+import { type AthleteOptions, generateAthlete } from "./athlete";
 
-export interface GenerationInputFactoryOptions {
-  level?: LevelTag;
-  birthday?: string;
-  gender?: "MALE" | "FEMALE";
-  pains?: string[];
-  soreMuscles?: string[];
-  /** Leaves out the workout data, as an athlete who skipped the anamnesis. */
-  withoutWorkoutData?: boolean;
+export interface GenerationInputFactoryOptions extends AthleteOptions {
   place?: string;
   equipment?: string[];
   exerciseCatalog?: ExerciseType[];
@@ -23,43 +15,14 @@ export interface GenerationInputFactoryOptions {
   random?: () => number;
 }
 
-type AthleteOptions = Pick<
-  GenerationInputFactoryOptions,
-  | "level"
-  | "birthday"
-  | "gender"
-  | "pains"
-  | "soreMuscles"
-  | "withoutWorkoutData"
->;
-
 /**
- * Builds the athlete of a generation input: an adult man at fitness level
- * ADVANCED without pains or muscle soreness.
+ * Builds the athlete's stored level of one branch.
  *
- * generateAthlete({ soreMuscles: ["CHEST"] })
- * → { userId: "athlete", personalData: { gender: "MALE", birthday: "1990-06-15" },
- *     workoutData: { tags: { LEVEL: ["ADVANCED"], PAIN: [] } },
- *     temporalData: [{ tag: "CHEST", date: "2026-10-24", expiration: "2026-10-25" }] }
+ * generateBranchLevel("253", 4) → { branchId: "253", level: 4 }
  */
-const generateAthlete = ({
-  level = "ADVANCED",
-  birthday = "1990-06-15",
-  gender = "MALE",
-  pains = [],
-  soreMuscles = [],
-  withoutWorkoutData = false,
-}: AthleteOptions): UserType => ({
-  userId: "athlete",
-  personalData: { gender, birthday },
-  ...(!withoutWorkoutData && {
-    workoutData: { tags: { LEVEL: [level], PAIN: pains } },
-  }),
-  temporalData: soreMuscles.map((tag) => ({
-    tag,
-    date: "2026-10-24",
-    expiration: "2026-10-25",
-  })),
+export const generateBranchLevel = (branchId: string, level: number) => ({
+  branchId,
+  level,
 });
 
 /**
@@ -73,7 +36,7 @@ const generateBranchData = (
   Object.fromEntries(
     Object.entries(branchLevels).map(([branchId, level]) => [
       branchId,
-      { branchId, level },
+      generateBranchLevel(branchId, level),
     ]),
   );
 

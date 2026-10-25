@@ -1,11 +1,10 @@
 import { loadExercises } from "@/data/loadExercises";
-import type { ExerciseBranchEntry } from "@/schemas/generator.schema";
 import {
   generateRuleFamilyInput,
   generateSkillTreeBranches,
 } from "@test/factories/ruleFamilyInput";
+import { generateStoredDayEntry } from "@test/factories/storedBranch";
 import { filterBranchesByFitnessLevel } from "./fitnessLevelRule";
-import { createGenerationInput } from "./generationInput";
 
 describe("fitnessLevelRule: filterBranchesByFitnessLevel", () => {
   it("keeps the branches with an exercise at the athlete's fitness level", () => {
@@ -41,12 +40,12 @@ describe("fitnessLevelRule: filterBranchesByFitnessLevel", () => {
       exerciseCatalog: loadExercises(),
     });
     // a BEGINNER reaches level 1, which only the stored exercises author
-    const storedEntry: ExerciseBranchEntry = {
-      branchId: "523",
-      tags: ["REGION_FULL_BODY"],
-      exercises: { 1: { exerciseId: "375" } },
-      levels: {},
-    };
+    const storedEntry = generateStoredDayEntry(
+      "523",
+      ["REGION_FULL_BODY"],
+      "375",
+      { exercises: { 1: { exerciseId: "375" } }, levels: {} },
+    );
 
     const result = filterBranchesByFitnessLevel({ "523": storedEntry }, input);
 
@@ -57,16 +56,11 @@ describe("fitnessLevelRule: filterBranchesByFitnessLevel", () => {
   it("keeps a branch at the athlete's branch level", () => {
     // GKS 523 authors levels 2 and 3, above the BEGINNER entry level 1
     const branches = generateSkillTreeBranches("GKS", ["523"]);
-    const input = {
-      ...generateRuleFamilyInput({
-        level: "BEGINNER",
-        exerciseCatalog: loadExercises(),
-      }),
-      exerciseData: {
-        exerciseData: {},
-        branchData: { "523": { branchId: "523", level: 2 } },
-      },
-    };
+    const input = generateRuleFamilyInput({
+      level: "BEGINNER",
+      exerciseCatalog: loadExercises(),
+      branchLevels: { "523": 2 },
+    });
 
     const result = filterBranchesByFitnessLevel(branches, input);
 
@@ -75,13 +69,7 @@ describe("fitnessLevelRule: filterBranchesByFitnessLevel", () => {
   });
 
   it("keeps every branch for an athlete without workout data", () => {
-    const input = createGenerationInput({
-      athlete: { userId: "athlete" },
-      place: "STUDIO",
-      equipment: [],
-      exerciseCatalog: [],
-      exerciseData: { exerciseData: {}, branchData: {} },
-    });
+    const input = generateRuleFamilyInput({ withoutWorkoutData: true });
     const branches = generateSkillTreeBranches("GKS", ["523"]);
 
     expect(filterBranchesByFitnessLevel(branches, input).keep).toBe(branches);

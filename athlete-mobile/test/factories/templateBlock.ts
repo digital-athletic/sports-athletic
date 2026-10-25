@@ -1,4 +1,4 @@
-import type { Block, Template } from "@/schemas/aiwl.schema";
+import type { Block, PicksBlock, Template } from "@/schemas/aiwl.schema";
 
 type BranchesBlock = Extract<Block, { kind: "branches" }>;
 
@@ -34,16 +34,58 @@ export const generateCardioBlock = (
 ): BranchesBlock => generateBranchesBlock(skill, ["580"], { duration });
 
 /**
- * Wraps blocks into an AIWL template.
+ * Builds a short workout block that draws one branch from the whole tree of
+ * its skill, without values of its own. The overrides replace any field.
+ *
+ * generatePicksBlock("BAS", { sets: 5 })
+ * → { kind: "picks", skill: "BAS", picks: [{ tags: [], count: 1 }], sets: 5 }
+ */
+export const generatePicksBlock = (
+  skill = "BAS",
+  overrides: Partial<PicksBlock> = {},
+): PicksBlock => ({
+  kind: "picks",
+  skill,
+  picks: [{ tags: [], count: 1 }],
+  ...overrides,
+});
+
+/**
+ * Builds a picks block that draws the given count from every branch of its
+ * pool.
+ *
+ * generateCountedPicksBlock("BAS", 2, "exercises")
+ * → { kind: "picks", skill: "BAS", picks: [{ tags: [], count: 2 }], countBy: "exercises" }
+ */
+export const generateCountedPicksBlock = (
+  skill: string,
+  count: number,
+  countBy: PicksBlock["countBy"],
+): PicksBlock =>
+  generatePicksBlock(skill, { picks: [{ tags: [], count }], countBy });
+
+/**
+ * Wraps blocks into an AIWL template. The overrides replace any field of it.
  *
  * generateTemplate([generateBranchesBlock("GKS", ["510"])])
  * → { aiwl: 1, id: "day", name: { en: "Day" }, blocks: [{ kind: "branches", ... }] }
  */
 export const generateTemplate = (
   blocks: Block[] = [generateBranchesBlock()],
+  overrides: Partial<Template> = {},
 ): Template => ({
   aiwl: 1,
   id: "day",
   name: { en: "Day" },
   blocks,
+  ...overrides,
 });
+
+/**
+ * Wraps blocks into the AIWL template of a short workout.
+ *
+ * generateShortTemplate([generatePicksBlock("WU")])
+ * → { aiwl: 1, id: "short", name: { en: "Short" }, blocks: [{ kind: "picks", ... }] }
+ */
+export const generateShortTemplate = (blocks: Block[]): Template =>
+  generateTemplate(blocks, { id: "short", name: { en: "Short" } });

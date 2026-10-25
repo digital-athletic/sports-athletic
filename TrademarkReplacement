@@ -6,6 +6,7 @@ The project name, the project logo, and all trademark-related branding assets co
 
 This includes, in particular, the following files (where present):
 
+* `logo.png` (unmodified copy of `SA_dark.png`, used as the GitLab project avatar)
 * `athlete-mobile/assets/img/logos/SA_dark.png`
 * `athlete-mobile/assets/img/logos/app-icon/app-icon.png`
 * `athlete-mobile/assets/img/logos/app-icon/dev-icon.png`

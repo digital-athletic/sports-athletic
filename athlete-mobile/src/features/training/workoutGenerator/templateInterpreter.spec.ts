@@ -78,12 +78,17 @@ describe("templateInterpreter: interpretTemplate", () => {
       {
         handlers,
         finishRules: TRAINING_DAY_FINISH_RULES,
-        buildSetList: buildSkillSetList,
+        createSetListBuilder: (input) => {
+          receivedInputs.push(input);
+          return buildSkillSetList;
+        },
       },
     );
 
     expect(visits).toEqual(["SWR2KG", "CD", "GKS", "BR"]);
     expect(receivedInputs[0].blockedRegions).toEqual(["KNEE"]);
+    // the four handlers and the set list builder share one workout input
+    expect(receivedInputs).toHaveLength(5);
     expect(new Set(receivedInputs).size).toBe(1);
     expect(workout.setList).toEqual(["BR", "GKS", "SWR2KG", "CD"]);
   });
@@ -117,7 +122,7 @@ describe("templateInterpreter: interpretTemplate", () => {
     interpretTemplate(template, generateRuleFamilyInput(), {
       handlers,
       finishRules: TRAINING_DAY_FINISH_RULES,
-      buildSetList: buildSkillSetList,
+      createSetListBuilder: () => buildSkillSetList,
     });
 
     expect(resolvedSkills).toEqual(["WU"]);
@@ -162,7 +167,7 @@ describe("templateInterpreter: interpretTemplate", () => {
       interpretTemplate(STORED_TRAINING_DAY, generateRuleFamilyInput(), {
         handlers,
         finishRules: TRAINING_DAY_FINISH_RULES,
-        buildSetList: buildSkillSetList,
+        createSetListBuilder: () => buildSkillSetList,
       }),
     ).toThrow(
       expect.objectContaining({

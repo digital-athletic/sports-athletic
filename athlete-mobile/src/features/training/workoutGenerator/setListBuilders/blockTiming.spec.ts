@@ -4,11 +4,11 @@ import {
   generatePicksBlock,
 } from "@test/factories/templateBlock";
 import { resolveBlockTiming, type SkillTimingDefaults } from "./blockTiming";
-import { readPlanWorkoutTiming } from "./planWorkoutTiming";
+import { readTrainingDayTimingDefaults } from "./trainingDayTiming";
 import { readSkillCatalogEntry } from "../generationInput/skillCatalogEntry";
 
 describe("blockTiming: resolveBlockTiming", () => {
-  it("takes the block's own values before the plan workout values", () => {
+  it("takes the block's own values before the training day defaults", () => {
     const block = generateBranchesBlock("GKS", ["1"], {
       sets: 3,
       superset: "drawOrder",
@@ -17,7 +17,12 @@ describe("blockTiming: resolveBlockTiming", () => {
       rest: { betweenSets: 15, afterBlock: 40 },
     });
 
-    expect(resolveBlockTiming(block, readPlanWorkoutTiming("GKS"))).toEqual({
+    expect(
+      resolveBlockTiming(
+        block,
+        readTrainingDayTimingDefaults("GKS", loadSkillCatalog()),
+      ),
+    ).toEqual({
       sets: 3,
       superset: "drawOrder",
       rest: {

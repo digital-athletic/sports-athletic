@@ -21,7 +21,8 @@ export const generateStoredBranch = (
 
 /**
  * Builds the entry a stored training day keeps for a branch: the stored
- * branch with its ID on the entry.
+ * branch with its ID on the entry. The overrides replace any field of the
+ * entry, for example to drop the branch ID.
  *
  * generateStoredDayEntry("1", ["REGION_UPPER_BODY"], "336")
  * → { branchId: "1", tags: ["REGION_UPPER_BODY"], exercises: { "2": { exerciseId: "336" } } }
@@ -30,7 +31,9 @@ export const generateStoredDayEntry = (
   branchId: string,
   tags: string[] = [],
   exerciseId = "10",
+  overrides: ExerciseBranchEntry = {},
 ): ExerciseBranchEntry => ({
   branchId,
   ...generateStoredBranch(branchId, tags, exerciseId).branch,
+  ...overrides,
 });

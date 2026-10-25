@@ -9,6 +9,11 @@ export interface StoredBranch {
   branch: CandidateBranch;
 }
 
+/** The branch entries a stored training day keeps per skill. */
+export type StoredDaySkills = Readonly<
+  Record<string, readonly ExerciseBranchEntry[] | undefined>
+>;
+
 export type StoredBranchLookup = (
   skill: string,
   branchId: string,
@@ -37,11 +42,7 @@ export const lookUpStoredBranchInCatalog: StoredBranchLookup = (
  * not from the current catalog. A repeated ID reads its last entry.
  */
 export const createStoredDayBranchLookup =
-  (
-    skills: Readonly<
-      Record<string, readonly ExerciseBranchEntry[] | undefined>
-    >,
-  ): StoredBranchLookup =>
+  (skills: StoredDaySkills): StoredBranchLookup =>
   (skill, branchId) =>
     Object.hasOwn(skills, skill)
       ? skills[skill]?.findLast((entry) => entry.branchId === branchId)

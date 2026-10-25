@@ -1,4 +1,5 @@
 import { generateCatalogWithProgression } from "@test/factories/skillCatalog";
+import { generateStoredExerciseData } from "@test/factories/storedExerciseData";
 import {
   findCatalogExerciseById,
   generateAuthoredValues,
@@ -16,16 +17,6 @@ import type { SkillCatalog } from "@/schemas/skillCatalog.schema";
 import { isWeightedExercise, readExerciseValues } from "./exerciseValues";
 
 const advancedMan = { gender: "m", level: "advanced" } as const;
-
-/**
- * Builds stored exercise data of one exercise.
- *
- * generateStoredValues({ repetition: 10 })
- * → { exerciseId: "1", skill: "SWR2", repetition: 10 }
- */
-const generateStoredValues = (
-  values: Partial<UserExerciseDataType>,
-): UserExerciseDataType => ({ exerciseId: "1", skill: "SWR2", ...values });
 
 describe("exerciseValues: isWeightedExercise", () => {
   it("reads the weights equipment type", () => {
@@ -94,7 +85,9 @@ describe("exerciseValues: speed warm-up", () => {
     expect(
       readDuration(
         exercise,
-        stored === null ? null : generateStoredValues({ duration: stored }),
+        stored === null
+          ? null
+          : generateStoredExerciseData({ duration: stored }),
       ),
     ).toBe(expected);
   });
@@ -149,7 +142,7 @@ describe("exerciseValues: authored values", () => {
     expect(
       readExerciseValues(
         context,
-        generateStoredValues({ branchId: "77" }),
+        generateStoredExerciseData({ branchId: "77" }),
         loadSkillCatalog(),
       ),
     ).toEqual(expected);
@@ -213,7 +206,7 @@ describe("exerciseValues: authored values", () => {
     expect(
       readExerciseValues(
         { intensity: null, exercise, ...advancedMan },
-        generateStoredValues({ weight: 12 }),
+        generateStoredExerciseData({ weight: 12 }),
         loadSkillCatalog(),
       ),
     ).toEqual({ weight: 12, weightType: "weightAbsolute" });
@@ -315,7 +308,7 @@ describe("exerciseValues: stored values", () => {
           exercise: generateValueExercise(mode, { withWeights }),
           ...advancedMan,
         },
-        generateStoredValues({ [mode]: stored }),
+        generateStoredExerciseData({ [mode]: stored }),
         loadSkillCatalog(),
       );
 
@@ -343,7 +336,7 @@ describe("exerciseValues: stored values", () => {
         }),
         ...advancedMan,
       },
-      generateStoredValues({ skill, repetition }),
+      generateStoredExerciseData({ skill, repetition }),
       skillCatalog,
       skill,
     ).repetition;
@@ -389,7 +382,7 @@ describe("exerciseValues: stored values", () => {
           exercise: generateValueExercise("repetition", { withWeights }),
           ...advancedMan,
         },
-        generateStoredValues({ weight: 0 }),
+        generateStoredExerciseData({ weight: 0 }),
         loadSkillCatalog(),
       ).weight;
 
@@ -404,7 +397,7 @@ describe("exerciseValues: stored values", () => {
         exercise: generateValueExercise("repetition", { withWeights: true }),
         ...advancedMan,
       },
-      generateStoredValues({ repetition: 10, weight: 72.5 }),
+      generateStoredExerciseData({ repetition: 10, weight: 72.5 }),
       loadSkillCatalog(),
     );
 

@@ -3,7 +3,6 @@ import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { generateTaggedBranches } from "@test/factories/skillTree";
 import { generateStoredDayEntry } from "@test/factories/storedBranch";
 import { generateBranchesBlock } from "@test/factories/templateBlock";
-import { buildBranchLookupIndex } from "./branchLookupIndex";
 import {
   createStoredDayBranchLookup,
   listStoredBranches,
@@ -43,12 +42,9 @@ describe("storedBranchLookup: lookUpStoredBranchInCatalog", () => {
   );
 
   it("finds no branch without levels, as plan creation never stores one", () => {
-    const input = {
-      ...generateRuleFamilyInput(),
-      branchLookupIndex: buildBranchLookupIndex({
-        GKS: generateTaggedBranches({ "1": ["REGION_CORE"] }, {}),
-      }),
-    };
+    const input = generateRuleFamilyInput({
+      skillTrees: { GKS: generateTaggedBranches({ "1": ["REGION_CORE"] }, {}) },
+    });
 
     expect(lookUpStoredBranchInCatalog("GKS", "1", input)).toBeUndefined();
   });

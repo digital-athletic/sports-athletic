@@ -1,8 +1,11 @@
+import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
+import { buildBranchLookupIndex } from "@/features/training/workoutGenerator/branchLookupIndex";
 import {
   createGenerationInput,
   type GenerationInput,
 } from "@/features/training/workoutGenerator/generationInput";
 import type { ExerciseType } from "@/schemas/exercise.schema";
+import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { BranchDataMapType } from "@/store/exerciseProgressStore";
 import { type AthleteOptions, generateAthlete } from "./athlete";
 
@@ -12,6 +15,10 @@ export interface GenerationInputFactoryOptions extends AthleteOptions {
   exerciseCatalog?: ExerciseType[];
   /** The athlete's own level per branch ID, as stored branch data. */
   branchLevels?: Record<string, number>;
+  /** The athlete's stored exercise data per exercise ID. */
+  exerciseData?: Record<string, UserExerciseDataType>;
+  /** Limits the branch lookup index to these skill trees. */
+  skillTrees?: Record<string, SkillTreeType>;
   random?: () => number;
 }
 
@@ -58,16 +65,19 @@ export const generateGenerationInput = ({
   equipment = [],
   exerciseCatalog = [],
   branchLevels = {},
+  exerciseData = {},
+  skillTrees,
   random,
   ...athleteOptions
 }: GenerationInputFactoryOptions = {}): GenerationInput =>
   createGenerationInput({
+    branchLookupIndex: skillTrees && buildBranchLookupIndex(skillTrees),
     athlete: generateAthlete(athleteOptions),
     place,
     equipment,
     exerciseCatalog,
     exerciseData: {
-      exerciseData: {},
+      exerciseData,
       branchData: generateBranchData(branchLevels),
     },
     random,

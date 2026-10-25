@@ -4,14 +4,16 @@ import type {
 } from "@/features/training/models/ExerciseBranch";
 import { isPauseExercise } from "@/features/training/models/IdTypes";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
-import type { ExerciseType } from "@/schemas/exercise.schema";
-import type { SkillCode } from "@/schemas/generator.schema";
-import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import {
-  findCatalogExerciseById,
-  generateAuthoredValues,
-  generateValueExercise,
-} from "@test/factories/valueExercise";
+  generateBodyweightReferences,
+  generateReferenceCatalog,
+  generateUnresolvedReference,
+  generateWeightedChestReference,
+} from "@test/factories/branchReference";
+import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
+import { generateSetListBlock } from "@test/factories/setListBlock";
+import { describeSetList } from "@test/factories/setListDescription";
+import { findCatalogExerciseById } from "@test/factories/valueExercise";
 import type { GenerationInput } from "./generationInput";
 import type { SetListBlock } from "./setListBuilder";
 import {
@@ -19,140 +21,23 @@ import {
   isBuildablePair,
 } from "./standardSetListBuilder";
 
-/**
- * Fakes a two sided branch reference with the exercise ID `e<id>`.
- *
- * generateBranchReference("c", ["MUSCLE_CHEST"])
- * → { branchId: "c", exerciseId: "ec", branchTags: ["SIDE_BOTH", "MUSCLE_CHEST"] }
- */
-const generateBranchReference = (
-  id: string,
-  tags: string[],
-): BranchExerciseReference => ({
-  branchId: id,
-  exerciseId: `e${id}`,
-  branchTags: ["SIDE_BOTH", ...tags],
-});
-
-/**
- * Fakes four bodyweight references: chest twice, biceps (same region as
- * chest) and quadriceps.
- *
- * generateBodyweightReferences().chest
- * → { branchId: "c", exerciseId: "ec",
- *     branchTags: ["SIDE_BOTH", "MUSCLE_CHEST", "REGION_UPPER_BODY", "EQ_TYPE_KG"] }
- */
-const generateBodyweightReferences = () => ({
-  chest: generateBranchReference("c", [
-    "MUSCLE_CHEST",
-    "REGION_UPPER_BODY",
-    "EQ_TYPE_KG",
-  ]),
-  chestAgain: generateBranchReference("c2", [
-    "MUSCLE_CHEST",
-    "REGION_UPPER_BODY",
-    "EQ_TYPE_KG",
-  ]),
-  biceps: generateBranchReference("b", [
-    "MUSCLE_BICEPS",
-    "REGION_UPPER_BODY",
-    "EQ_TYPE_KG",
-  ]),
-  quads: generateBranchReference("q", [
-    "MUSCLE_QUADRICEPS",
-    "REGION_LOWER_BODY",
-    "EQ_TYPE_KG",
-  ]),
-});
 type BodyweightReferences = ReturnType<typeof generateBodyweightReferences>;
-
-/**
- * Fakes a weighted chest reference whose catalog exercise starts at 40 kg and
- * 10 repetitions.
- *
- * generateWeightedChest().reference
- * → { branchId: "w", exerciseId: "ew", branchTags: [..., "EQ_TYPE_WEIGHTS"] }
- */
-const generateWeightedChest = () => {
-  const reference = generateBranchReference("w", [
-    "MUSCLE_CHEST",
-    "REGION_UPPER_BODY",
-    "EQ_TYPE_WEIGHTS",
-  ]);
-  const exercise: ExerciseType = {
-    ...generateValueExercise("repetition", { withWeights: true }),
-    id: reference.exerciseId,
-    tags: reference.branchTags,
-    values: {
-      weight: generateAuthoredValues("40", "80"),
-      repetition: generateAuthoredValues("10", "15"),
-    },
-  };
-  return { reference, exercise };
-};
-
-/**
- * Builds a catalog exercise advanced by repetitions for each reference.
- *
- * generateCatalog([chest]) → [{ id: "ec", tags: chest.branchTags, isAdvanceByReps: true, ... }]
- */
-const generateCatalog = (
-  references: BranchExerciseReference[],
-): ExerciseType[] =>
-  references.map((reference) => ({
-    ...generateValueExercise("repetition"),
-    id: reference.exerciseId,
-    tags: reference.branchTags,
-  }));
-
-/**
- * Builds a block of 2 sets resting 30 s within a superset, 90 s between sets
- * and 60 s after an exercise.
- *
- * generateBlock("SWR2", { sets: 1 })
- * → { skill: "SWR2", minutes: 30, sets: 1,
- *     rest: { withinSuperset: 30, betweenSets: 90, afterExercise: 60 } }
- */
-const generateBlock = (
-  skill: SkillCode,
-  values: Partial<SetListBlock> = {},
-): SetListBlock => ({
-  skill,
-  minutes: 30,
-  sets: 2,
-  rest: { withinSuperset: 30, betweenSets: 90, afterExercise: 60 },
-  ...values,
-});
 
 /**
  * Builds the set list of the pairs, by default with a catalog of every
  * exercise in them.
  *
- * buildSetList([{ first: chest }], generateBlock("SWR2"))
+ * buildSetList([{ first: chest }], generateSetListBlock("SWR2"))
  * → [{ exerciseId: "ec", set: [1, 2], ... }, { exerciseId: "999999", duration: 90, ... }, ...]
  */
 const buildSetList = (
   pairs: ExercisePair[],
   block: SetListBlock,
-  exerciseCatalog = generateCatalog(
+  exerciseCatalog = generateReferenceCatalog(
     pairs.flatMap(({ first, second }) => (second ? [first, second] : [first])),
   ),
   input: GenerationInput = generateRuleFamilyInput({ exerciseCatalog }),
 ): GeneratedSetListEntry[] => buildStandardSetList(pairs, block, input);
-
-/**
- * Describes each entry as "<exercise> <set>/<sets>" or "pause <seconds>".
- *
- * describeSetList([ec set [1, 2], pause 90]) → "ec 1/2, pause 90"
- */
-const describeSetList = (setList: GeneratedSetListEntry[]): string =>
-  setList
-    .map((entry) =>
-      isPauseExercise(entry.exerciseId)
-        ? `pause ${entry.duration}`
-        : `${entry.exerciseId} ${entry.set.join("/")}`,
-    )
-    .join(", ");
 
 /**
  * Lists the durations of the pauses.
@@ -164,17 +49,6 @@ const listPauseDurations = (setList: GeneratedSetListEntry[]) =>
     .filter((entry) => isPauseExercise(entry.exerciseId))
     .map((entry) => entry.duration);
 
-/**
- * Copies a reference as a branch that resolved to no exercise.
- *
- * generateUnresolvedReference(chest)
- * → { branchId: "c", exerciseId: "-1", branchTags: chest.branchTags }
- */
-const generateUnresolvedReference = (reference: BranchExerciseReference) => ({
-  ...reference,
-  exerciseId: "-1",
-});
-
 describe("standardSetListBuilder: rests", () => {
   it.each([
     ["the rest after an exercise for another muscle", "quads", 60],
@@ -185,7 +59,7 @@ describe("standardSetListBuilder: rests", () => {
 
     const setList = buildSetList(
       [{ first: references.chest }, { first: references[nextName] }],
-      generateBlock("SWR2"),
+      generateSetListBlock("SWR2"),
     );
 
     expect(listPauseDurations(setList)).toEqual([90, rest, 90, 60]);
@@ -206,7 +80,7 @@ describe("standardSetListBuilder: rests", () => {
         { first: references.quads, second: references.chest },
         { first: references[nextName] },
       ],
-      generateBlock("SWR2"),
+      generateSetListBlock("SWR2"),
     );
 
     expect(listPauseDurations(setList).slice(0, 4)).toEqual([30, 30, 30, rest]);
@@ -221,7 +95,7 @@ describe("standardSetListBuilder: rests", () => {
         { first: generateUnresolvedReference(chestAgain) },
         { first: quads },
       ],
-      generateBlock("SWR2"),
+      generateSetListBlock("SWR2"),
     );
 
     expect(describeSetList(setList)).toBe(
@@ -253,7 +127,7 @@ describe("standardSetListBuilder: rests", () => {
 
     const setList = buildSetList(
       [{ first: chest, second: quads }],
-      generateBlock("BAS", { setDuration: 40 }),
+      generateSetListBlock("BAS", { setDuration: 40 }),
     );
 
     expect(setList).toEqual([
@@ -276,7 +150,7 @@ describe("standardSetListBuilder: closing the block", () => {
     ["the rest after an exercise without afterBlock", "SWR2", {}, 60],
   ] as const)("closes the last pair on %s", (_label, skill, rest, closing) => {
     const { chest, quads } = generateBodyweightReferences();
-    const block = generateBlock(skill);
+    const block = generateSetListBlock(skill);
 
     const setList = buildSetList([{ first: chest }, { first: quads }], {
       ...block,
@@ -288,7 +162,7 @@ describe("standardSetListBuilder: closing the block", () => {
 
   it("closes the last built pair on afterBlock when an unresolved pair follows", () => {
     const { chest, chestAgain } = generateBodyweightReferences();
-    const block = generateBlock("SWR2");
+    const block = generateSetListBlock("SWR2");
 
     const setList = buildSetList(
       [{ first: chest }, { first: generateUnresolvedReference(chestAgain) }],
@@ -300,7 +174,7 @@ describe("standardSetListBuilder: closing the block", () => {
 
   it("reads afterBlock from the skill catalog of the generation input", () => {
     const { chest } = generateBodyweightReferences();
-    const exerciseCatalog = generateCatalog([chest]);
+    const exerciseCatalog = generateReferenceCatalog([chest]);
     const input = generateRuleFamilyInput({ exerciseCatalog });
     const rest = { withinSuperset: 1, betweenSets: 2, afterExercise: 3 };
     const skillCatalog = {
@@ -310,7 +184,7 @@ describe("standardSetListBuilder: closing the block", () => {
 
     const setList = buildSetList(
       [{ first: chest }],
-      generateBlock("SWR2"),
+      generateSetListBlock("SWR2"),
       exerciseCatalog,
       { ...input, skillCatalog },
     );
@@ -355,8 +229,8 @@ describe("standardSetListBuilder: unresolved and missing exercises", () => {
 
     const setList = buildSetList(
       [generatePair(references), { first: quads }],
-      generateBlock("SWR2"),
-      generateCatalog([chest, quads]),
+      generateSetListBlock("SWR2"),
+      generateReferenceCatalog([chest, quads]),
     );
 
     expect(describeSetList(setList)).toBe(expected);
@@ -365,11 +239,11 @@ describe("standardSetListBuilder: unresolved and missing exercises", () => {
 
 describe("standardSetListBuilder: warm-up sets", () => {
   it("opens a weighted explosive power exercise with 6 repetitions at 65 % and the rest between sets", () => {
-    const { reference, exercise } = generateWeightedChest();
+    const { reference, exercise } = generateWeightedChestReference();
 
     const setList = buildSetList(
       [{ first: reference }],
-      generateBlock("SK", {
+      generateSetListBlock("SK", {
         rest: { withinSuperset: 60, betweenSets: 180, afterExercise: 60 },
       }),
       [exercise],
@@ -390,11 +264,11 @@ describe("standardSetListBuilder: warm-up sets", () => {
   });
 
   it("opens a weighted power endurance exercise with its repetitions at 70 % and a 60 s rest", () => {
-    const { reference, exercise } = generateWeightedChest();
+    const { reference, exercise } = generateWeightedChestReference();
 
     const setList = buildSetList(
       [{ first: reference }],
-      generateBlock("SWR2"),
+      generateSetListBlock("SWR2"),
       [exercise],
     );
 
@@ -408,13 +282,13 @@ describe("standardSetListBuilder: warm-up sets", () => {
   });
 
   it("warms up both exercises of a superset with a weighted lead and rests within the superset", () => {
-    const { reference, exercise } = generateWeightedChest();
+    const { reference, exercise } = generateWeightedChestReference();
     const { quads } = generateBodyweightReferences();
 
     const setList = buildSetList(
       [{ first: reference, second: quads }],
-      generateBlock("SK"),
-      [exercise, ...generateCatalog([quads])],
+      generateSetListBlock("SK"),
+      [exercise, ...generateReferenceCatalog([quads])],
     );
 
     expect(describeSetList(setList.slice(0, 4))).toBe(
@@ -424,13 +298,13 @@ describe("standardSetListBuilder: warm-up sets", () => {
   });
 
   it("warms up a superset with a bodyweight lead and a weighted partner", () => {
-    const { reference, exercise } = generateWeightedChest();
+    const { reference, exercise } = generateWeightedChestReference();
     const { quads } = generateBodyweightReferences();
 
     const setList = buildSetList(
       [{ first: quads, second: reference }],
-      generateBlock("SK"),
-      [exercise, ...generateCatalog([quads])],
+      generateSetListBlock("SK"),
+      [exercise, ...generateReferenceCatalog([quads])],
     );
 
     expect(describeSetList(setList.slice(0, 4))).toBe(
@@ -439,13 +313,13 @@ describe("standardSetListBuilder: warm-up sets", () => {
   });
 
   it("warms up a weighted WUSKSA superset as explosive power, since the skill contains SK", () => {
-    const { reference, exercise } = generateWeightedChest();
+    const { reference, exercise } = generateWeightedChestReference();
     const { quads } = generateBodyweightReferences();
 
     const setList = buildSetList(
       [{ first: reference, second: quads }],
-      generateBlock("WUSKSA", { sets: 1 }),
-      [exercise, ...generateCatalog([quads])],
+      generateSetListBlock("WUSKSA", { sets: 1 }),
+      [exercise, ...generateReferenceCatalog([quads])],
     );
 
     expect(describeSetList(setList.slice(0, 4))).toBe(
@@ -455,22 +329,26 @@ describe("standardSetListBuilder: warm-up sets", () => {
   });
 
   it("gives the warm-up set its own tags array", () => {
-    const { reference, exercise } = generateWeightedChest();
+    const { reference, exercise } = generateWeightedChestReference();
 
-    const setList = buildSetList([{ first: reference }], generateBlock("SK"), [
-      exercise,
-    ]);
+    const setList = buildSetList(
+      [{ first: reference }],
+      generateSetListBlock("SK"),
+      [exercise],
+    );
 
     expect(setList[0].tags).toEqual(setList[2].tags);
     expect(setList[0].tags).not.toBe(setList[2].tags);
   });
 
   it("adds no warm-up set for a skill without warm-up sets", () => {
-    const { reference, exercise } = generateWeightedChest();
+    const { reference, exercise } = generateWeightedChestReference();
 
-    const setList = buildSetList([{ first: reference }], generateBlock("GKS"), [
-      exercise,
-    ]);
+    const setList = buildSetList(
+      [{ first: reference }],
+      generateSetListBlock("GKS"),
+      [exercise],
+    );
 
     expect(setList[0].set).toEqual([1, 2]);
   });
@@ -478,7 +356,10 @@ describe("standardSetListBuilder: warm-up sets", () => {
   it("adds no warm-up set for a bodyweight exercise", () => {
     const { chest } = generateBodyweightReferences();
 
-    const setList = buildSetList([{ first: chest }], generateBlock("SK"));
+    const setList = buildSetList(
+      [{ first: chest }],
+      generateSetListBlock("SK"),
+    );
 
     expect(setList[0].set).toEqual([1, 2]);
   });
@@ -497,7 +378,7 @@ describe("standardSetListBuilder: block values", () => {
 
     const setList = buildSetList(
       [{ first: landing }],
-      generateBlock("PREV", { values }),
+      generateSetListBlock("PREV", { values }),
       [findCatalogExerciseById("1107")],
     );
 
@@ -543,10 +424,9 @@ describe("standardSetListBuilder: isBuildablePair", () => {
   ])("%s", (_label, generatePair, expected) => {
     const references = generateBodyweightReferences();
     const exerciseMap = new Map(
-      generateCatalog([references.chest, references.biceps]).map((exercise) => [
-        exercise.id,
-        exercise,
-      ]),
+      generateReferenceCatalog([references.chest, references.biceps]).map(
+        (exercise) => [exercise.id, exercise],
+      ),
     );
 
     expect(isBuildablePair(generatePair(references), exerciseMap)).toBe(

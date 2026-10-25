@@ -1,98 +1,17 @@
 import type { LevelTag } from "@/constants/workoutConstants";
-import type { ExercisePair } from "@/features/training/models/ExerciseBranch";
-import {
-  isPauseExercise,
-  PLACEHOLDER_BRANCH_ID,
-} from "@/features/training/models/IdTypes";
-import {
-  DEFAULT_MAX_VALUE,
-  DEFAULT_MAX_VALUES,
-} from "@/features/training/models/MaxValues";
+import { PLACEHOLDER_BRANCH_ID } from "@/features/training/models/IdTypes";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
-import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
-import type { ExerciseType } from "@/schemas/exercise.schema";
-import { generateSequenceRandom } from "@test/factories/sequenceRandom";
+import { generateLeadPair } from "@test/factories/exercisePair";
+import {
+  generateMaxStrengthInput,
+  type MaxStrengthInputOptions,
+} from "@test/factories/maxStrengthInput";
+import { generateMaxStrengthBlock } from "@test/factories/setListBlock";
+import { describeSetListEntries } from "@test/factories/setListDescription";
 import { generateSupportExercise } from "@test/factories/supportExercise";
-import { findCatalogExerciseById } from "@test/factories/valueExercise";
-import { createGenerationInput, type GenerationInput } from "./generationInput";
+import { catchThrownValue } from "@test/factories/thrownValue";
+import { SQUAT_EXERCISE_ID } from "@test/factories/valueExercise";
 import { buildMaxStrengthSetList } from "./maxStrengthSetListBuilder";
-import type { SetListBlock } from "./setListBuilder";
-
-// The barbell back squat; with a 1RM of 100 kg every kg value equals its
-// weight percentage.
-const SQUAT_ID = "26";
-
-interface MaxStrengthInputOptions {
-  level?: LevelTag;
-  oneRepMax?: number;
-  supportExercises?: ExerciseType[];
-  exerciseData?: Record<string, UserExerciseDataType>;
-  draws?: number[];
-}
-
-/**
- * Builds the input of an adult man at home whose squat has the given 1RM,
- * with the squat and the support exercises as catalog. The random returns
- * the draws in order and fails on one draw more.
- *
- * generateMaxStrengthInput({ oneRepMax: 100, draws: [0] })
- * → { athlete: { workoutData: { tags: { LEVEL: ["ADVANCED"] },
- *       maxValues: { kneeDominant: { barbell: 100, ... }, ... } } },
- *     place: "HOME", exerciseCatalog: [squat], random: () => 0, ... }
- */
-const generateMaxStrengthInput = ({
-  level = "ADVANCED",
-  oneRepMax,
-  supportExercises = [],
-  exerciseData = {},
-  draws = [],
-}: MaxStrengthInputOptions = {}): GenerationInput =>
-  createGenerationInput({
-    athlete: {
-      userId: "max-strength-athlete",
-      personalData: { gender: "MALE", birthday: "1990-06-15" },
-      workoutData: {
-        tags: { LEVEL: [level] },
-        maxValues:
-          oneRepMax === undefined
-            ? DEFAULT_MAX_VALUES
-            : {
-                ...DEFAULT_MAX_VALUES,
-                kneeDominant: { ...DEFAULT_MAX_VALUE, barbell: oneRepMax },
-              },
-      },
-      temporalData: [],
-    },
-    place: "HOME",
-    equipment: [],
-    exerciseCatalog: [findCatalogExerciseById(SQUAT_ID), ...supportExercises],
-    exerciseData: { exerciseData, branchData: {} },
-    random: generateSequenceRandom(draws),
-  });
-
-/**
- * Builds a max strength block. The builder reads only its skill.
- *
- * generateBlock() → { skill: "MAX_STRENGTH", minutes: 0, sets: 4, rest: { ... } }
- */
-const generateBlock = (): SetListBlock => ({
-  skill: "MAX_STRENGTH",
-  minutes: 0,
-  sets: 4,
-  rest: { withinSuperset: 0, betweenSets: 180, afterExercise: 120 },
-});
-
-/**
- * Builds a pair whose lead is the exercise on the branch.
- *
- * generateLeadPair("b1") → { first: { branchId: "b1", exerciseId: "26", branchTags: ["SIDE_BOTH"] } }
- */
-const generateLeadPair = (
-  branchId: string,
-  exerciseId = SQUAT_ID,
-): ExercisePair => ({
-  first: { branchId, exerciseId, branchTags: ["SIDE_BOTH"] },
-});
 
 /**
  * Builds the set list of one squat pair.
@@ -104,21 +23,9 @@ const buildSquatSetList = (
   options: MaxStrengthInputOptions = {},
 ): GeneratedSetListEntry[] =>
   buildMaxStrengthSetList(
-    [generateLeadPair("b1")],
-    generateBlock(),
+    [generateLeadPair("b1", SQUAT_EXERCISE_ID)],
+    generateMaxStrengthBlock(),
     generateMaxStrengthInput(options),
-  );
-
-/**
- * Describes each entry as "<exercise> <set>/<sets>" or "pause <seconds>".
- *
- * describeSetList([squat set [1, 5], pause 60]) → ["26 1/5", "pause 60"]
- */
-const describeSetList = (setList: GeneratedSetListEntry[]): string[] =>
-  setList.map((entry) =>
-    isPauseExercise(entry.exerciseId)
-      ? `pause ${entry.duration}`
-      : `${entry.exerciseId} ${entry.set[0]}/${entry.set[1]}`,
   );
 
 /**
@@ -128,7 +35,7 @@ const describeSetList = (setList: GeneratedSetListEntry[]): string[] =>
  */
 const describeSquatSets = (setList: GeneratedSetListEntry[]): string[] =>
   setList
-    .filter((entry) => entry.exerciseId === SQUAT_ID)
+    .filter((entry) => entry.exerciseId === SQUAT_EXERCISE_ID)
     .map((entry) => `${entry.weight}x${entry.repetition}`);
 
 /**
@@ -142,7 +49,9 @@ const listRestsBetweenWorkingSets = (
   setList: GeneratedSetListEntry[],
 ): GeneratedSetListEntry[][] => {
   const workingSetIndexes = setList
-    .map((entry, index) => (entry.exerciseId === SQUAT_ID ? index : -1))
+    .map((entry, index) =>
+      entry.exerciseId === SQUAT_EXERCISE_ID ? index : -1,
+    )
     .filter((index) => index > -1)
     .slice(2);
   return workingSetIndexes
@@ -150,26 +59,11 @@ const listRestsBetweenWorkingSets = (
     .map((start, i) => setList.slice(start + 1, workingSetIndexes[i + 1]));
 };
 
-/**
- * Runs the function and returns what it throws, or undefined. The workout
- * data check throws a plain object, which `toThrow` cannot compare.
- *
- * readThrownValue(() => { throw { type: "NO_ANAMNESIS" }; }) → { type: "NO_ANAMNESIS" }
- */
-const readThrownValue = (run: () => unknown): unknown => {
-  try {
-    run();
-  } catch (thrown) {
-    return thrown;
-  }
-  return undefined;
-};
-
 describe("maxStrengthSetListBuilder: set list", () => {
   it("builds two warm-up sets and the working sets of an Advanced squat", () => {
     const setList = buildSquatSetList({ oneRepMax: 100 });
 
-    expect(describeSetList(setList)).toEqual([
+    expect(describeSetListEntries(setList)).toEqual([
       "26 1/5",
       "pause 60",
       "26 2/5",
@@ -194,13 +88,13 @@ describe("maxStrengthSetListBuilder: set list", () => {
     const pair = generateLeadPair("b1");
     const setList = buildMaxStrengthSetList(
       [pair],
-      generateBlock(),
+      generateMaxStrengthBlock(),
       generateMaxStrengthInput({ oneRepMax: 100 }),
     );
 
     expect(setList[0]).toEqual({
       branchId: "b1",
-      exerciseId: SQUAT_ID,
+      exerciseId: SQUAT_EXERCISE_ID,
       tags: ["SIDE_BOTH"],
       set: [1, 5],
       skill: "MAX_STRENGTH",
@@ -210,7 +104,7 @@ describe("maxStrengthSetListBuilder: set list", () => {
     });
     expect(setList[4]).toEqual({
       branchId: "b1",
-      exerciseId: SQUAT_ID,
+      exerciseId: SQUAT_EXERCISE_ID,
       tags: ["SIDE_BOTH"],
       set: [3, 5],
       skill: "MAX_STRENGTH",
@@ -232,8 +126,8 @@ describe("maxStrengthSetListBuilder: set list", () => {
     const setList = buildSquatSetList({
       oneRepMax: 121,
       exerciseData: {
-        [SQUAT_ID]: {
-          exerciseId: SQUAT_ID,
+        [SQUAT_EXERCISE_ID]: {
+          exerciseId: SQUAT_EXERCISE_ID,
           skill: "MAX_STRENGTH",
           maxFRepetitions: [
             { level: "MEDIUM", repetitions: 5, weightPercentage: 67.5 },
@@ -275,7 +169,7 @@ describe("maxStrengthSetListBuilder: set list", () => {
 
       expect(rests).toHaveLength(sets - 3);
       for (const entries of rests) {
-        expect(describeSetList(entries)).toEqual([`pause ${rest}`]);
+        expect(describeSetListEntries(entries)).toEqual([`pause ${rest}`]);
       }
     },
   );
@@ -298,7 +192,9 @@ describe("maxStrengthSetListBuilder: set list", () => {
       });
       const sets = draws.length + 3;
 
-      expect(describeSetList(listRestsBetweenWorkingSets(setList)[0])).toEqual([
+      expect(
+        describeSetListEntries(listRestsBetweenWorkingSets(setList)[0]),
+      ).toEqual([
         "pause 30",
         `s1 3/${sets}`,
         "pause 60",
@@ -315,7 +211,9 @@ describe("maxStrengthSetListBuilder: set list", () => {
       draws: [0.99],
     });
 
-    expect(listRestsBetweenWorkingSets(setList).map(describeSetList)).toEqual([
+    expect(
+      listRestsBetweenWorkingSets(setList).map(describeSetListEntries),
+    ).toEqual([
       ["pause 30", "s1 3/5", "pause 60", "s1 3/5", "pause 30"],
       ["pause 180"],
     ]);
@@ -324,7 +222,7 @@ describe("maxStrengthSetListBuilder: set list", () => {
   it("uses each support exercise once per block, across its exercises", () => {
     const setList = buildMaxStrengthSetList(
       [generateLeadPair("b1"), generateLeadPair("b2")],
-      generateBlock(),
+      generateMaxStrengthBlock(),
       generateMaxStrengthInput({
         oneRepMax: 100,
         supportExercises: [
@@ -346,7 +244,7 @@ describe("maxStrengthSetListBuilder: set list", () => {
   it("skips a pair whose lead is unresolved or missing from the catalog", () => {
     const setList = buildMaxStrengthSetList(
       [generateLeadPair("b1", "-1"), generateLeadPair("b2", "missing")],
-      generateBlock(),
+      generateMaxStrengthBlock(),
       generateMaxStrengthInput({ oneRepMax: 100 }),
     );
 
@@ -354,14 +252,11 @@ describe("maxStrengthSetListBuilder: set list", () => {
   });
 
   it("throws for an athlete without workout data, even without pairs", () => {
-    const input = generateMaxStrengthInput();
+    const input = generateMaxStrengthInput({ withoutWorkoutData: true });
 
     expect(
-      readThrownValue(() =>
-        buildMaxStrengthSetList([], generateBlock(), {
-          ...input,
-          athlete: { ...input.athlete, workoutData: undefined },
-        }),
+      catchThrownValue(() =>
+        buildMaxStrengthSetList([], generateMaxStrengthBlock(), input),
       ),
     ).toEqual({
       type: "NO_ANAMNESIS",

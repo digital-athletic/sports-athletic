@@ -1,58 +1,23 @@
+import { generateAthleteWithMaxValues } from "@test/factories/athlete";
+import { generateExerciseStartValueSource } from "@test/factories/exerciseStartValueSource";
 import { generateCatalogWithProgression } from "@test/factories/skillCatalog";
+import {
+  generateExerciseDataRecord,
+  generateFeedbackExerciseData,
+} from "@test/factories/storedExerciseData";
 import {
   findCatalogExerciseById,
   generateValueExercise,
 } from "@test/factories/valueExercise";
 import { loadSkillCatalog } from "@/data/loadSkillCatalog";
-import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
-import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { SkillCatalog } from "@/schemas/skillCatalog.schema";
-import type { UserType } from "@/schemas/user.schema";
 import {
   type ExerciseStartValueBlock,
-  type ExerciseStartValueSource,
   readExerciseStartValues,
 } from "./exerciseStartValues";
 
 const LANDING_ID = "1107";
-
-/**
- * Builds an athlete with a gender, a birthday and a fitness level.
- *
- * generateAthlete({ birthday: "2018-05-01" })
- * → { userId: "start-values-athlete", personalData: { gender: "MALE", birthday: "2018-05-01" }, ... }
- */
-const generateAthlete = ({
-  gender = "MALE",
-  birthday = "1990-01-01",
-  level = "BEGINNER",
-}: {
-  gender?: "MALE" | "FEMALE";
-  birthday?: string;
-  level?: string;
-} = {}): UserType => ({
-  userId: "start-values-athlete",
-  personalData: { gender, birthday },
-  workoutData: { tags: { LEVEL: [level] }, maxValues: DEFAULT_MAX_VALUES },
-  temporalData: [],
-});
-
-/**
- * Builds the inputs start values read: the bundled catalog, an adult male
- * beginner and no exercise data unless overridden.
- *
- * generateSource({ exerciseData: { "1": { ... } } })
- * → { skillCatalog: <bundled>, athlete: { userId: "start-values-athlete", ... }, exerciseData: { "1": { ... } } }
- */
-const generateSource = (
-  overrides: Partial<ExerciseStartValueSource> = {},
-): ExerciseStartValueSource => ({
-  skillCatalog: loadSkillCatalog(),
-  athlete: generateAthlete(),
-  exerciseData: null,
-  ...overrides,
-});
 
 /**
  * Reads the start values of an exercise in branch "landing".
@@ -63,7 +28,7 @@ const generateSource = (
 const readStartValues = (
   block: ExerciseStartValueBlock,
   exercise: ExerciseType,
-  source = generateSource(),
+  source = generateExerciseStartValueSource(),
 ) =>
   readExerciseStartValues(
     source,
@@ -71,24 +36,6 @@ const readStartValues = (
     { branchId: "landing", exerciseId: exercise.id, branchTags: [] },
     exercise,
   );
-
-/**
- * Builds the stored data of exercise "1" with a SUCCEEDED feedback.
- *
- * generateExerciseData("SWR2KG", 10)
- * → { "1": { exerciseId: "1", skill: "SWR2KG", repetition: 10, feedback: { difficulty: "SUCCEEDED" } } }
- */
-const generateExerciseData = (
-  skill: string,
-  repetition: number,
-): Record<string, UserExerciseDataType> => ({
-  "1": {
-    exerciseId: "1",
-    skill,
-    repetition,
-    feedback: { difficulty: "SUCCEEDED" },
-  },
-});
 
 beforeEach(() => {
   jest.useFakeTimers({ now: new Date("2026-10-24T00:00:00Z") });
@@ -157,14 +104,14 @@ describe("exerciseStartValues: catalog start values", () => {
       readStartValues(
         { skill: "CARDIO_2" },
         generateValueExercise("duration"),
-        generateSource({ skillCatalog: withStart }),
+        generateExerciseStartValueSource({ skillCatalog: withStart }),
       ).duration,
     ).toBe(90);
     expect(
       readStartValues(
         { skill: "CARDIO_2" },
         generateValueExercise("duration"),
-        generateSource({ skillCatalog: withoutStart }),
+        generateExerciseStartValueSource({ skillCatalog: withoutStart }),
       ).duration,
     ).toBe(30);
   });
@@ -174,7 +121,9 @@ describe("exerciseStartValues: catalog start values", () => {
       readStartValues(
         { skill: "CARDIO_2" },
         generateValueExercise("repetition"),
-        generateSource({ athlete: generateAthlete({ level: "ADVANCED" }) }),
+        generateExerciseStartValueSource({
+          athlete: generateAthleteWithMaxValues({ level: "ADVANCED" }),
+        }),
       ).repetition,
     ).toBe(4);
   });
@@ -205,7 +154,9 @@ describe("exerciseStartValues: athlete", () => {
         readStartValues(
           { skill: "PREV" },
           exercise,
-          generateSource({ athlete: generateAthlete(athleteOptions) }),
+          generateExerciseStartValueSource({
+            athlete: generateAthleteWithMaxValues(athleteOptions),
+          }),
         ).repetition,
       ).toBe(expected);
     },
@@ -218,7 +169,11 @@ describe("exerciseStartValues: feedback", () => {
       readStartValues(
         { skill: "SWR2KG" },
         generateValueExercise("repetition"),
-        generateSource({ exerciseData: generateExerciseData("SWR2KG", 10) }),
+        generateExerciseStartValueSource({
+          exerciseData: generateExerciseDataRecord(
+            generateFeedbackExerciseData({ skill: "SWR2KG", repetition: 10 }),
+          ),
+        }),
       ).repetition,
     ).toBe(11);
   });
@@ -228,7 +183,11 @@ describe("exerciseStartValues: feedback", () => {
       readStartValues(
         { skill: "WU" },
         generateValueExercise("repetition"),
-        generateSource({ exerciseData: generateExerciseData("WU", 15) }),
+        generateExerciseStartValueSource({
+          exerciseData: generateExerciseDataRecord(
+            generateFeedbackExerciseData({ skill: "WU", repetition: 15 }),
+          ),
+        }),
       ).repetition,
     ).toBe(15);
   });
@@ -238,29 +197,25 @@ describe("exerciseStartValues: feedback", () => {
       readStartValues(
         { skill: "WU" },
         generateValueExercise("repetition"),
-        generateSource({
+        generateExerciseStartValueSource({
           skillCatalog: generateCatalogWithProgression("WU", true),
-          exerciseData: generateExerciseData("WU", 15),
+          exerciseData: generateExerciseDataRecord(
+            generateFeedbackExerciseData({ skill: "WU", repetition: 15 }),
+          ),
         }),
       ).repetition,
     ).toBe(16);
   });
 
   it("starts a stored weight in percent of F-Max one step lower on TOO_HARD", () => {
-    const exerciseData: Record<string, UserExerciseDataType> = {
-      "1": {
-        exerciseId: "1",
-        skill: "SWR2",
-        repetition: 10,
-        weight: 70,
-        feedback: { difficulty: "TOO_HARD" },
-      },
-    };
+    const exerciseData = generateExerciseDataRecord(
+      generateFeedbackExerciseData({ repetition: 10, weight: 70 }, "TOO_HARD"),
+    );
 
     const values = readStartValues(
       { skill: "SWR2" },
       generateValueExercise("repetition", { withWeights: true }),
-      generateSource({ exerciseData }),
+      generateExerciseStartValueSource({ exerciseData }),
     );
 
     expect(values.weight).toBeCloseTo(68.25);

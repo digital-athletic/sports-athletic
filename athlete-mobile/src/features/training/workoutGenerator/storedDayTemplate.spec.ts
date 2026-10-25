@@ -84,8 +84,7 @@ describe("storedDayTemplate: createStoredDayTemplate", () => {
     ]);
   });
 
-  // The set list builders read seconds divided by 60, so an unrounded product
-  // gives back the stored minutes.
+  // Rounding to whole seconds would change a stored 0.01 minutes to 1 second.
   it.each([
     [12.5, 750],
     [0.5, 30],

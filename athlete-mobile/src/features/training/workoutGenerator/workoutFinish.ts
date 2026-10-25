@@ -22,7 +22,12 @@ export const SHORT_WORKOUT_FINISH_RULES: WorkoutFinishRules = {
   emptyWorkout: "returnEmpty",
 };
 
-export type SetListBuilder<TEntry> = (blocks: FilledBlockResult[]) => TEntry[];
+// Takes the filled blocks in build order and every block result in template
+// order, for rules that depend on an empty block.
+export type SetListBuilder<TEntry> = (
+  blocks: FilledBlockResult[],
+  results: readonly BlockResult[],
+) => TEntry[];
 
 export interface FinishedWorkout<TEntry> {
   blocks: FilledBlockResult[];
@@ -55,7 +60,7 @@ export const finishWorkout = <TEntry>(
     rules.blockOrder === "section"
       ? sortBlockResultsBySectionOrder(filledBlocks)
       : filledBlocks;
-  const setList = buildSetList(blocks);
+  const setList = buildSetList(blocks, results);
   if (setList.length === 0 && rules.emptyWorkout === "throwFirstReason") {
     for (const result of results) {
       if (result.status === "empty" && result.reason) throw result.reason;

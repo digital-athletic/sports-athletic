@@ -129,6 +129,23 @@ describe("workoutFinish: finishWorkout", () => {
     expect(workout.setList).toEqual(["CD 10", "WU 10"]);
   });
 
+  it("hands the builder every block result in template order", () => {
+    const results = [
+      generateFilledBranchesResult("CD"),
+      generateEmptyBranchesResult("WU", undefined),
+      generateFilledBranchesResult("BR"),
+    ];
+
+    const workout = finishWorkout(
+      results,
+      TRAINING_DAY_FINISH_RULES,
+      (_blocks, allResults) =>
+        allResults.map((result) => `${result.block.skill} ${result.status}`),
+    );
+
+    expect(workout.setList).toEqual(["CD filled", "WU empty", "BR filled"]);
+  });
+
   it("drops the empty blocks and throws nothing while the set list holds an entry", () => {
     const results = [
       generateEmptyBranchesResult("SWR2KG", generateEquipmentError(["BAR"])),

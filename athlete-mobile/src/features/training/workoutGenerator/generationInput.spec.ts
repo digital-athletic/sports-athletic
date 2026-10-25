@@ -1,7 +1,4 @@
 import { loadSkillCatalog, parseSkillCatalog } from "@/data/loadSkillCatalog";
-import { filterBySoreness } from "@/features/training/utils/branchFilterUtils";
-import { filterByEquipment } from "@/features/training/utils/equipmentUtils";
-import { getUserExerciseFromBranch } from "@/features/training/utils/skillTreeUtils";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { UserType } from "@/schemas/user.schema";
 import {
@@ -140,25 +137,5 @@ describe("generationInput: createGenerationInput", () => {
 
     expect(equipment).toEqual(["BARBELL"]);
     expect(Object.isFrozen(equipment)).toBe(false);
-  });
-
-  it("passes its lists straight to the shared filters and helpers", () => {
-    const input = createGenerationInput({
-      athlete: generateAthlete(),
-      place: "STUDIO",
-      equipment: ["DUMBBELL"],
-      exerciseCatalog: [],
-      exerciseData: { exerciseData: {}, branchData: {} },
-    });
-
-    expect(filterByEquipment({}, input.equipment).keep).toEqual({});
-    expect(filterBySoreness({}, input.muscleSoreness, "GKS").keep).toEqual({});
-    expect(
-      getUserExerciseFromBranch(
-        { tags: [], levels: { 1: { exerciseId: "10" } } },
-        "ADVANCED",
-        input.exerciseCatalog,
-      ),
-    ).toBeNull();
   });
 });

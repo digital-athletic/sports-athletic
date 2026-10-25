@@ -10,8 +10,8 @@ import {
   loadBranchLookupIndex,
 } from "./branchLookupIndex";
 
-// The lists keep the mutable array types the shared filters and builders take,
-// so stages pass them straight through. Freezing guards them at runtime.
+// The lists keep mutable array types, so stages pass them to functions that
+// take plain arrays. Freezing guards them at runtime.
 export interface GenerationInput {
   readonly athlete: UserType;
   readonly place: string;

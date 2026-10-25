@@ -3,12 +3,15 @@ import {
   generateRuleFamilyInput,
   generateSkillTreeBranches,
 } from "../../../../test/factories/ruleFamilyInput";
+import { filterBranchesByAgeGroup } from "./ageGroupRule";
 import {
   filterBranchesByEquipment,
   listMissingEquipment,
 } from "./equipmentRule";
 import { filterBranchesByFitnessLevel } from "./fitnessLevelRule";
+import { filterBranchesByGender } from "./genderRule";
 import { filterBranchesByMuscleSoreness } from "./muscleSorenessRule";
+import { filterBranchesByPain } from "./painRule";
 import {
   keepBranches,
   listBranchRemovals,
@@ -123,5 +126,42 @@ describe("ruleFamily: families chained in the training day order of main", () =>
     const { removals } = filterBranchesByEquipment(sorenessResult.keep, input);
 
     expect(listMissingEquipment(removals)).toEqual(["BARBELL"]);
+  });
+});
+
+describe("ruleFamily: the picks families as one RuleFamily chain", () => {
+  it("lets pain, equipment, age group and gender each remove the branches it blocks", () => {
+    const input = generateRuleFamilyInput({
+      gender: "FEMALE",
+      pains: ["KNEE_LEFT"],
+    });
+    const picksFamilies: RuleFamily[] = [
+      filterBranchesByPain,
+      filterBranchesByEquipment,
+      filterBranchesByAgeGroup,
+      filterBranchesByGender,
+    ];
+    let branches = {
+      ...generateSkillTreeBranches("GKS", ["510", "523"]),
+      ...generateSkillTreeBranches("WU", ["1026"]),
+    };
+    const removals: [string, string][] = [];
+    for (const filterBranches of picksFamilies) {
+      const result = filterBranches(branches, input, "WU");
+      branches = result.keep;
+      removals.push(
+        ...result.removals.map(({ branchId, family }): [string, string] => [
+          branchId,
+          family,
+        ]),
+      );
+    }
+
+    expect(branches).toEqual({});
+    expect(removals).toEqual([
+      ["523", "pain"],
+      ["510", "equipment"],
+      ["1026", "gender"],
+    ]);
   });
 });

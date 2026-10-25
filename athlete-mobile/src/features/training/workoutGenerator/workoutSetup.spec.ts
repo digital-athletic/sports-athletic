@@ -1,3 +1,4 @@
+import type { Template } from "@/schemas/aiwl.schema";
 import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
 import { setUpWorkout } from "./workoutSetup";
 
@@ -60,5 +61,45 @@ describe("workoutSetup: setUpWorkout", () => {
     });
 
     expect(() => setUpWorkout(input)).not.toThrow();
+  });
+
+  it("applies the picks workout rules of the template before any block runs", () => {
+    const template: Template = {
+      aiwl: 1,
+      id: "short",
+      name: { en: "Short" },
+      blocks: [
+        { kind: "picks", skill: "BAS", picks: [{ tags: [], count: 1 }] },
+      ],
+    };
+    const input = generateRuleFamilyInput({ pains: ["KNEE_LEFT"] });
+    const skillTrees = {
+      BAS: {
+        "1": { tags: ["BLOCK_KNEE"], levels: { 1: { exerciseId: "e1" } } },
+      },
+    };
+
+    expect(() => setUpWorkout(input, template, skillTrees)).toThrow(
+      expect.objectContaining({
+        type: "NO_EXERCISES",
+        subtype: "PAIN",
+        params: ["KNEE"],
+      }),
+    );
+  });
+
+  it("holds an empty picks workout without a template", () => {
+    const { picksWorkout } = setUpWorkout(generateRuleFamilyInput());
+
+    expect(picksWorkout.pool).toEqual({});
+    expect(picksWorkout.blocks.size).toBe(0);
+  });
+
+  it("gives each setup its own picks workout maps", () => {
+    const input = generateRuleFamilyInput();
+
+    expect(setUpWorkout(input).picksWorkout.blocks).not.toBe(
+      setUpWorkout(input).picksWorkout.blocks,
+    );
   });
 });

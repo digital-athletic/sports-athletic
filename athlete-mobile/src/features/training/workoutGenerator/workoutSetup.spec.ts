@@ -1,0 +1,64 @@
+import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
+import { setUpWorkout } from "./workoutSetup";
+
+describe("workoutSetup: setUpWorkout", () => {
+  it("derives the athlete level, pain regions, prevention skills and weights", () => {
+    const input = generateRuleFamilyInput({
+      level: "PROFESSIONAL",
+      pains: ["KNEE_LEFT", "HIP_RIGHT"],
+      equipment: ["DUMBBELL"],
+    });
+
+    const workoutInput = setUpWorkout(input);
+
+    expect(workoutInput.athleteLevel).toBe("PROFESSIONAL");
+    expect(workoutInput.blockedRegions).toEqual(["KNEE", "HIP"]);
+    expect(workoutInput.preventionSkills).toEqual(["PREVKNEE"]);
+    expect(workoutInput.hasWeights).toBe(true);
+  });
+
+  it("derives no pain regions and no weights for an athlete without pain at a place without weights", () => {
+    const workoutInput = setUpWorkout(generateRuleFamilyInput());
+
+    expect(workoutInput.athleteLevel).toBe("ADVANCED");
+    expect(workoutInput.blockedRegions).toEqual([]);
+    expect(workoutInput.preventionSkills).toEqual([]);
+    expect(workoutInput.hasWeights).toBe(false);
+  });
+
+  it("falls back to BEGINNER and no pain for an athlete without workout data", () => {
+    const input = generateRuleFamilyInput();
+
+    const workoutInput = setUpWorkout({
+      ...input,
+      athlete: { userId: "athlete" },
+    });
+
+    expect(workoutInput.athleteLevel).toBe("BEGINNER");
+    expect(workoutInput.blockedRegions).toEqual([]);
+    expect(workoutInput.preventionSkills).toEqual([]);
+  });
+
+  it("keeps the generation input and returns a new frozen object", () => {
+    const input = generateRuleFamilyInput({ pains: ["SHOULDER_LEFT"] });
+
+    const workoutInput = setUpWorkout(input);
+
+    expect(workoutInput).not.toBe(input);
+    expect(workoutInput.athlete).toBe(input.athlete);
+    expect(workoutInput.equipment).toBe(input.equipment);
+    expect(workoutInput.random).toBe(input.random);
+    expect(input).not.toHaveProperty("blockedRegions");
+    expect(Object.isFrozen(workoutInput)).toBe(true);
+    expect(Object.isFrozen(workoutInput.blockedRegions)).toBe(true);
+    expect(Object.isFrozen(workoutInput.preventionSkills)).toBe(true);
+  });
+
+  it("leaves the muscle soreness check to the rule family, so two sore areas do not throw", () => {
+    const input = generateRuleFamilyInput({
+      soreMuscles: ["CHEST", "QUADRICEPS"],
+    });
+
+    expect(() => setUpWorkout(input)).not.toThrow();
+  });
+});

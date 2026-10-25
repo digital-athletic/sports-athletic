@@ -22,6 +22,18 @@ export const generateBranchesBlock = (
 });
 
 /**
+ * Builds a stored cardio block with the duration in seconds, or without one.
+ * A cardio tree holds one branch, so the block names it.
+ *
+ * generateCardioBlock("CARDIO_3", 1500)
+ * → { kind: "branches", skill: "CARDIO_3", branches: ["580"], duration: 1500 }
+ */
+export const generateCardioBlock = (
+  skill = "CARDIO_3",
+  duration?: number,
+): BranchesBlock => generateBranchesBlock(skill, ["580"], { duration });
+
+/**
  * Wraps blocks into an AIWL template.
  *
  * generateTemplate([generateBranchesBlock("GKS", ["510"])])

@@ -2,7 +2,11 @@ import type { Block } from "@/schemas/aiwl.schema";
 import { generateFilledBlockResult } from "../../../../test/factories/blockResult";
 import { generateRuleFamilyInput } from "../../../../test/factories/ruleFamilyInput";
 import { generateTemplate } from "../../../../test/factories/templateBlock";
-import { type BlockHandlerRegistry, walkTemplateBlocks } from "./blockWalk";
+import {
+  type BlockHandlerRegistry,
+  type BlockResult,
+  walkTemplateBlocks,
+} from "./blockWalk";
 import { setUpWorkout } from "./workoutSetup";
 
 describe("blockWalk: walkTemplateBlocks", () => {
@@ -102,6 +106,43 @@ describe("blockWalk: walkTemplateBlocks", () => {
       SWR2KG: [],
       MOB: ["11", "12", "14"],
       CD: ["11", "12", "14", "13"],
+    });
+  });
+
+  it("hands each block the results of the blocks before it, whatever the used branch scope", () => {
+    const template = generateTemplate([
+      { kind: "branches", skill: "GKS", branches: ["510"] },
+      { kind: "branches", skill: "SWR2KG", branches: ["79"] },
+      { kind: "branches", skill: "CD", branches: ["12"] },
+    ]);
+    const earlierSkills: Record<string, string[]> = {};
+    const handleBlock = (
+      block: Block,
+      _input: unknown,
+      _usedBranches: ReadonlySet<string>,
+      earlierResults: readonly BlockResult[] = [],
+    ) => {
+      earlierSkills[block.skill] = earlierResults.map(
+        (result) => result.block.skill,
+      );
+      return generateFilledBlockResult(block, []);
+    };
+    const handlers: BlockHandlerRegistry = {
+      picks: { usedBranchScope: "workout", handleBlock },
+      branches: { usedBranchScope: "block", handleBlock },
+      duration: { usedBranchScope: "workout", handleBlock },
+    };
+
+    walkTemplateBlocks(
+      template,
+      setUpWorkout(generateRuleFamilyInput()),
+      handlers,
+    );
+
+    expect(earlierSkills).toEqual({
+      GKS: [],
+      SWR2KG: ["GKS"],
+      CD: ["GKS", "SWR2KG"],
     });
   });
 });

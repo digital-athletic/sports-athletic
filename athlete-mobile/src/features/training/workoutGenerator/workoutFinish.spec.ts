@@ -176,6 +176,68 @@ describe("workoutFinish: finishWorkout", () => {
     ).toEqual({ blocks: [], setList: [] });
   });
 
+  // a stored day holds one entry per skill, so a swapped CARDIO_5 replaces a stored one
+  it("builds only the last block of a skill on a training day", () => {
+    const results = [
+      generateFilledBranchesResult("CARDIO_5", "10"),
+      generateFilledBranchesResult("GKS"),
+      generateFilledBranchesResult("CARDIO_5", "11"),
+    ];
+
+    const workout = finishWorkout(
+      results,
+      TRAINING_DAY_FINISH_RULES,
+      buildStubSetList,
+    );
+
+    expect(workout.setList).toEqual(["GKS 10", "CARDIO_5 11"]);
+  });
+
+  it("drops an earlier filled block of a skill when a later block of it is empty", () => {
+    const results = [
+      generateFilledBranchesResult("CARDIO_5", "10"),
+      generateFilledBranchesResult("GKS"),
+      generateEmptyBranchesResult("CARDIO_5", generateEquipmentError([])),
+    ];
+
+    const workout = finishWorkout(
+      results,
+      TRAINING_DAY_FINISH_RULES,
+      buildStubSetList,
+    );
+
+    expect(workout.setList).toEqual(["GKS 10"]);
+  });
+
+  it("still throws the reason of a block that a later block of its skill replaced", () => {
+    const cardioError = generateEquipmentError(["TREADMILL"]);
+    const results = [
+      generateEmptyBranchesResult("CARDIO_5", cardioError),
+      generateFilledBranchesResult("CARDIO_5", "-1"),
+    ];
+
+    expect(
+      catchThrownValue(() =>
+        finishWorkout(results, TRAINING_DAY_FINISH_RULES, buildStubSetList),
+      ),
+    ).toBe(cardioError);
+  });
+
+  it("builds every block of a skill in a short workout", () => {
+    const results = [
+      generateFilledBranchesResult("MOB", "10"),
+      generateFilledBranchesResult("MOB", "11"),
+    ];
+
+    const workout = finishWorkout(
+      results,
+      SHORT_WORKOUT_FINISH_RULES,
+      buildStubSetList,
+    );
+
+    expect(workout.setList).toEqual(["MOB 10", "MOB 11"]);
+  });
+
   it("leaves the given results unchanged", () => {
     const results = [
       generateFilledBranchesResult("CD"),

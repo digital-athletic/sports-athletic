@@ -84,7 +84,6 @@ describe("trainingDayGeneration: generateTrainingDayFromStoredDay", () => {
   });
 
   it("throws the anamnesis error for an athlete without workout data", () => {
-    const input = generateGenerationInput({ exerciseCatalog });
     const thrown = catchThrownValue(() =>
       generateTrainingDayFromStoredDay(
         generateStoredTrainingDay(
@@ -92,7 +91,7 @@ describe("trainingDayGeneration: generateTrainingDayFromStoredDay", () => {
           { CARDIO_5: 25 },
           "721",
         ),
-        { ...input, athlete: { ...input.athlete, workoutData: undefined } },
+        generateGenerationInput({ exerciseCatalog, withoutWorkoutData: true }),
       ),
     );
 

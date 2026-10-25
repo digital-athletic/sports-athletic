@@ -13,6 +13,8 @@ export interface GenerationInputFactoryOptions {
   gender?: "MALE" | "FEMALE";
   pains?: string[];
   soreMuscles?: string[];
+  /** Leaves out the workout data, as an athlete who skipped the anamnesis. */
+  withoutWorkoutData?: boolean;
   place?: string;
   equipment?: string[];
   exerciseCatalog?: ExerciseType[];
@@ -23,7 +25,12 @@ export interface GenerationInputFactoryOptions {
 
 type AthleteOptions = Pick<
   GenerationInputFactoryOptions,
-  "level" | "birthday" | "gender" | "pains" | "soreMuscles"
+  | "level"
+  | "birthday"
+  | "gender"
+  | "pains"
+  | "soreMuscles"
+  | "withoutWorkoutData"
 >;
 
 /**
@@ -41,10 +48,13 @@ const generateAthlete = ({
   gender = "MALE",
   pains = [],
   soreMuscles = [],
+  withoutWorkoutData = false,
 }: AthleteOptions): UserType => ({
   userId: "athlete",
   personalData: { gender, birthday },
-  workoutData: { tags: { LEVEL: [level], PAIN: pains } },
+  ...(!withoutWorkoutData && {
+    workoutData: { tags: { LEVEL: [level], PAIN: pains } },
+  }),
   temporalData: soreMuscles.map((tag) => ({
     tag,
     date: "2026-10-24",

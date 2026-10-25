@@ -34,14 +34,13 @@ describe("storedDayTemplate: createStoredDayTemplate", () => {
   });
 
   it("drops entries without a branch ID", () => {
-    const day = generateStoredTrainingDay({ SWR1: ["30", "4"] });
     const template = createStoredDayTemplate({
-      ...day,
+      ...generateStoredTrainingDay(),
       skills: {
         SWR1: [
-          { tags: [] },
+          generateStoredDayEntry("0", [], "10", { branchId: undefined }),
           generateStoredDayEntry("30"),
-          { branchId: "", tags: [] },
+          generateStoredDayEntry("0", [], "10", { branchId: "" }),
           generateStoredDayEntry("4"),
         ],
       },

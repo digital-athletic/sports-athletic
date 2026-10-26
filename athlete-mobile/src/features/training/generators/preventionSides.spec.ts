@@ -1,6 +1,7 @@
 import type { SkillTypes } from "@/constants/workoutConstants";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
+import type { Superset } from "@/schemas/aiwl.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { UserType } from "@/schemas/user.schema";
 import {
@@ -8,7 +9,7 @@ import {
   noExerciseData,
   PAUSE_ID,
   realExercises,
-} from "@test/factories/planWorkout";
+} from "../../../../test/factories/planWorkout";
 import PlacesData from "../../../../assets/data/generator/places.json";
 import TrainingGenerator from "./TrainingGenerator";
 
@@ -99,11 +100,19 @@ afterEach(() => {
 });
 
 describe("getExercisePairs: prevention sides", () => {
-  it.each(["PREVKNEE", "WUSPEZIAL", "PREV"])(
-    "%s pairs each one sided exercise with its other side",
-    (skill) => {
+  it.each(
+    ["PREVKNEE", "WUSPEZIAL", "PREV"].flatMap((skill) =>
+      [undefined, "drawOrderWithLeftovers" as Superset].map((pairing) => ({
+        skill,
+        pairing,
+        label: pairing ?? "muscles default",
+      })),
+    ),
+  )(
+    "$skill pairs each one sided exercise with its other side for pairing $label",
+    ({ skill, pairing }) => {
       const pairs = new TrainingGenerator()
-        .getExercisePairs(skill, branches(), catalog)
+        .getExercisePairs(skill, branches(), catalog, pairing)
         .map(({ first, second }) => [first.exerciseId, second?.exerciseId]);
 
       expect(pairs).toEqual(expect.arrayContaining(MIRROR_PAIRS));

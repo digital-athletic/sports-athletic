@@ -1,19 +1,34 @@
+import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
-import { generateAthleteWithMaxValues } from "@test/factories/athlete";
-import { spyOnDrawnBranches } from "@test/factories/drawnBranches";
-import {
-  generateMobilityTree,
-  generateTreeBranch,
-} from "@test/factories/skillTree";
-import { catchThrownValue } from "@test/factories/thrownValue";
 import TrainingGenerator from "./TrainingGenerator";
 
-const THREE_LEVEL_BRANCH = generateTreeBranch(
-  ["501", "502", "503"],
-  ["SKILL_MOB", "REGION_LOWER_BODY", "SIDE_BOTH"],
-);
+const userWithLevel = (
+  level: string,
+  gender: "MALE" | "FEMALE" = "MALE",
+): UserType => ({
+  userId: "short-workout-user",
+  personalData: { gender, birthday: "1990-01-01" },
+  workoutData: {
+    tags: { LEVEL: [level] },
+    maxValues: DEFAULT_MAX_VALUES,
+  },
+  temporalData: [],
+});
+
+const mobilityTree = (branch: SkillTreeType[string]) => ({
+  MOB: { "500": branch },
+});
+
+const THREE_LEVEL_BRANCH: SkillTreeType[string] = {
+  tags: ["SKILL_MOB", "REGION_LOWER_BODY", "SIDE_BOTH"],
+  levels: {
+    1: { exerciseId: "501" },
+    2: { exerciseId: "502" },
+    3: { exerciseId: "503" },
+  },
+};
 
 const selectedExerciseIds = (
   generator: TrainingGenerator,
@@ -21,27 +36,30 @@ const selectedExerciseIds = (
   skillTrees: { [skillName: string]: SkillTreeType },
   branchData: Record<string, UserExerciseBranchDataType | undefined> = {},
 ): string[] => {
-  const readDrawnBranches = spyOnDrawnBranches();
+  const spy = jest.spyOn(generator, "getExercisePairs").mockReturnValue([]);
   generator.generateShortWorkout("MOB", user, "HOME", [], skillTrees, [], {
     exerciseData: {},
     branchData,
   });
-  return readDrawnBranches().map((branch) => branch.exerciseId);
+  const [, branches] = spy.mock.calls[0];
+  return branches.map((branch) => branch.exerciseId);
 };
 
 const thrownError = (
   generator: TrainingGenerator,
   user: UserType,
   skillTrees: { [skillName: string]: SkillTreeType },
-): unknown =>
-  catchThrownValue(() =>
+): unknown => {
+  try {
     generator.generateShortWorkout("MOB", user, "HOME", [], skillTrees, [], {
       exerciseData: {},
       branchData: {},
-    }),
-  );
-
-afterEach(jest.restoreAllMocks);
+    });
+  } catch (e) {
+    return e;
+  }
+  return undefined;
+};
 
 describe("generateShortWorkout: branch level resolution", () => {
   let generator: TrainingGenerator;
@@ -53,8 +71,8 @@ describe("generateShortWorkout: branch level resolution", () => {
   it("uses the stored branch level", () => {
     const ids = selectedExerciseIds(
       generator,
-      generateAthleteWithMaxValues({ level: "BEGINNER" }),
-      generateMobilityTree(THREE_LEVEL_BRANCH),
+      userWithLevel("BEGINNER"),
+      mobilityTree(THREE_LEVEL_BRANCH),
       { "500": { branchId: "500", level: 3 } },
     );
     expect(ids).toEqual(["503"]);
@@ -63,8 +81,8 @@ describe("generateShortWorkout: branch level resolution", () => {
   it("maps an advanced athlete without progress to level 2", () => {
     const ids = selectedExerciseIds(
       generator,
-      generateAthleteWithMaxValues({ level: "ADVANCED" }),
-      generateMobilityTree(THREE_LEVEL_BRANCH),
+      userWithLevel("ADVANCED"),
+      mobilityTree(THREE_LEVEL_BRANCH),
     );
     expect(ids).toEqual(["502"]);
   });
@@ -72,8 +90,8 @@ describe("generateShortWorkout: branch level resolution", () => {
   it("maps a professional athlete without progress to level 3", () => {
     const ids = selectedExerciseIds(
       generator,
-      generateAthleteWithMaxValues({ level: "PROFESSIONAL" }),
-      generateMobilityTree(THREE_LEVEL_BRANCH),
+      userWithLevel("PROFESSIONAL"),
+      mobilityTree(THREE_LEVEL_BRANCH),
     );
     expect(ids).toEqual(["503"]);
   });
@@ -81,8 +99,8 @@ describe("generateShortWorkout: branch level resolution", () => {
   it("falls back to the highest authored level below the entry level", () => {
     const ids = selectedExerciseIds(
       generator,
-      generateAthleteWithMaxValues({ level: "PROFESSIONAL" }),
-      generateMobilityTree({
+      userWithLevel("PROFESSIONAL"),
+      mobilityTree({
         tags: THREE_LEVEL_BRANCH.tags,
         levels: { 1: { exerciseId: "501" }, 2: { exerciseId: "502" } },
       }),
@@ -91,19 +109,15 @@ describe("generateShortWorkout: branch level resolution", () => {
   });
 
   it("skips a branch whose levels all lie above the entry level", () => {
-    const ids = selectedExerciseIds(
-      generator,
-      generateAthleteWithMaxValues({ level: "BEGINNER" }),
-      {
-        MOB: {
-          "500": THREE_LEVEL_BRANCH,
-          "600": {
-            tags: THREE_LEVEL_BRANCH.tags,
-            levels: { 3: { exerciseId: "603" } },
-          },
+    const ids = selectedExerciseIds(generator, userWithLevel("BEGINNER"), {
+      MOB: {
+        "500": THREE_LEVEL_BRANCH,
+        "600": {
+          tags: THREE_LEVEL_BRANCH.tags,
+          levels: { 3: { exerciseId: "603" } },
         },
       },
-    );
+    });
     expect(ids).toEqual(["501"]);
   });
 });
@@ -119,10 +133,10 @@ describe("generateShortWorkout: region quota fallback", () => {
 
   it("falls back to any region when the region's branches resolve no exercise", () => {
     const generator = new TrainingGenerator();
-    const readDrawnBranches = spyOnDrawnBranches();
+    const spy = jest.spyOn(generator, "getExercisePairs").mockReturnValue([]);
     generator.generateShortWorkout(
       "GKS",
-      generateAthleteWithMaxValues({ level: "BEGINNER" }),
+      userWithLevel("BEGINNER"),
       "HOME",
       [],
       {
@@ -137,7 +151,8 @@ describe("generateShortWorkout: region quota fallback", () => {
       [],
       { exerciseData: {}, branchData: {} },
     );
-    expect(readDrawnBranches()).toHaveLength(4);
+    const [, branches] = spy.mock.calls[0];
+    expect(branches).toHaveLength(4);
   });
 });
 
@@ -151,8 +166,8 @@ describe("generateShortWorkout: cause of an empty pool", () => {
   it("names the age filter when only child branches exist for an adult", () => {
     const error = thrownError(
       generator,
-      generateAthleteWithMaxValues({ level: "BEGINNER" }),
-      generateMobilityTree({
+      userWithLevel("BEGINNER"),
+      mobilityTree({
         ...THREE_LEVEL_BRANCH,
         tags: [...THREE_LEVEL_BRANCH.tags, "AGE_CHILD"],
       }),
@@ -167,8 +182,8 @@ describe("generateShortWorkout: cause of an empty pool", () => {
   it("names the gender filter when only female branches exist for a male athlete", () => {
     const error = thrownError(
       generator,
-      generateAthleteWithMaxValues({ level: "BEGINNER", gender: "MALE" }),
-      generateMobilityTree({
+      userWithLevel("BEGINNER", "MALE"),
+      mobilityTree({
         ...THREE_LEVEL_BRANCH,
         tags: [...THREE_LEVEL_BRANCH.tags, "GENDER_FEMALE"],
       }),
@@ -183,8 +198,8 @@ describe("generateShortWorkout: cause of an empty pool", () => {
   it("names the equipment filter when the place lacks the equipment", () => {
     const error = thrownError(
       generator,
-      generateAthleteWithMaxValues({ level: "BEGINNER" }),
-      generateMobilityTree({
+      userWithLevel("BEGINNER"),
+      mobilityTree({
         ...THREE_LEVEL_BRANCH,
         tags: [...THREE_LEVEL_BRANCH.tags, "EQ_BARBELL"],
       }),

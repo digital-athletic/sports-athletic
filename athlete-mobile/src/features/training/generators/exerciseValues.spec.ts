@@ -3,7 +3,7 @@ import {
   noExerciseData,
   PAUSE_ID,
   realExercises,
-} from "@test/factories/planWorkout";
+} from "../../../../test/factories/planWorkout";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { TrainingType } from "@/features/training/models/Training";
@@ -13,10 +13,12 @@ import type { SkillCode } from "@/schemas/generator.schema";
 import type { UserType } from "@/schemas/user.schema";
 import ExercisesData from "../../../../assets/data/generator/Exercises.json";
 import PlacesData from "../../../../assets/data/generator/places.json";
+import type { BlockTiming } from "./resolveTemplate";
 import TrainingGenerator from "./TrainingGenerator";
 
 const LANDING_ID = "1107";
 const LANDING_START_REPETITION = 4;
+const RANGE_START_REPETITION = 10;
 const HYPERTROPHY_RANGE_START_REPETITION = 8;
 
 const landing = ExercisesData.find(
@@ -33,7 +35,9 @@ const user: UserType = {
   temporalData: [],
 };
 
-const workRepetitions = (skill: SkillCode) => {
+const rest = { withinSuperset: 0, betweenSets: 30, afterExercise: 30 };
+
+const workRepetitions = (skill: SkillCode, timing?: BlockTiming) => {
   const entry = {
     branchId: "landing",
     exerciseId: LANDING_ID,
@@ -51,13 +55,35 @@ const workRepetitions = (skill: SkillCode) => {
       2,
       [],
       null,
+      timing,
     )
     .filter((setEntry) => setEntry.exerciseId === LANDING_ID)
     .map((setEntry) => setEntry.repetition);
 };
 
-describe("getSetListFromExercisePairs: start values", () => {
-  it("uses the exercise start value in a plan workout", () => {
+describe("getSetListFromExercisePairs: block values", () => {
+  it("uses the exercise start value for values exercise", () => {
+    expect(workRepetitions("PREV", { rest, values: "exercise" })).toEqual([
+      LANDING_START_REPETITION,
+      LANDING_START_REPETITION,
+    ]);
+  });
+
+  it("uses the skill range start for values skill", () => {
+    expect(workRepetitions("PREV", { rest, values: "skill" })).toEqual([
+      RANGE_START_REPETITION,
+      RANGE_START_REPETITION,
+    ]);
+  });
+
+  it("lets the intensity config decide when values is omitted", () => {
+    expect(workRepetitions("PREV", { rest })).toEqual([
+      LANDING_START_REPETITION,
+      LANDING_START_REPETITION,
+    ]);
+  });
+
+  it("uses the exercise start value in a plan workout without timing", () => {
     expect(workRepetitions("PREVKNEE")).toEqual([
       LANDING_START_REPETITION,
       LANDING_START_REPETITION,

@@ -34,6 +34,7 @@ type SwipeResponderHandlers = Pick<
 
 const useSwipeRowGesture = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isRowDisplaced, setIsRowDisplaced] = useState(false);
   const [rowOffset] = useState(() => new Animated.Value(0));
   const touchStart = useRef({ pageX: 0, pageY: 0 });
   const openOffset = isOpen ? -DELETE_BUTTON_WIDTH : 0;
@@ -44,7 +45,11 @@ const useSwipeRowGesture = () => {
       toValue: open ? -DELETE_BUTTON_WIDTH : 0,
       duration: SNAP_DURATION_MS,
       useNativeDriver: false,
-    }).start();
+    }).start(({ finished }) => {
+      if (finished && !open) {
+        setIsRowDisplaced(false);
+      }
+    });
   };
 
   const readSwipeDistance = ({ nativeEvent }: GestureResponderEvent) => ({
@@ -67,7 +72,10 @@ const useSwipeRowGesture = () => {
       return Math.abs(dx) > MIN_SWIPE_DISTANCE && Math.abs(dx) > Math.abs(dy);
     },
     // Returning true blocks the native Android scroll view from cancelling the swipe.
-    onResponderGrant: () => true,
+    onResponderGrant: () => {
+      setIsRowDisplaced(true);
+      return true;
+    },
     // Refuses JS responder transfers once the swipe started.
     onResponderTerminationRequest: () => false,
     onResponderMove: (event) => {
@@ -85,6 +93,9 @@ const useSwipeRowGesture = () => {
 
   return {
     isOpen,
+    // Keeps the delete button unmounted at rest, since the pressed row dims and
+    // would show it through.
+    isDeleteButtonMounted: isOpen || isRowDisplaced,
     rowOffset,
     closeRow: () => snapRow(false),
     responderHandlers,
@@ -97,8 +108,13 @@ export const SwipeToDeleteRow: FC<SwipeToDeleteRowProps> = ({
   onDelete,
   children,
 }) => {
-  const { isOpen, rowOffset, closeRow, responderHandlers } =
-    useSwipeRowGesture();
+  const {
+    isOpen,
+    isDeleteButtonMounted,
+    rowOffset,
+    closeRow,
+    responderHandlers,
+  } = useSwipeRowGesture();
 
   const pressDelete = () => {
     closeRow();
@@ -107,29 +123,32 @@ export const SwipeToDeleteRow: FC<SwipeToDeleteRowProps> = ({
 
   return (
     <Box position="relative" overflow="hidden">
-      <Box
-        position="absolute"
-        top={0}
-        bottom={0}
-        right={0}
-        width={DELETE_BUTTON_WIDTH}
-        backgroundColor="error"
-        aria-hidden={!isOpen}
-      >
-        <TouchableBox
-          flex={1}
-          justifyContent="center"
-          alignItems="center"
-          onPress={pressDelete}
-          disabled={!isOpen}
-          accessibilityRole="button"
-          accessibilityLabel={deleteLabel}
+      {isDeleteButtonMounted && (
+        <Box
+          testID="swipe-to-delete-background"
+          position="absolute"
+          top={0}
+          bottom={0}
+          right={0}
+          width={DELETE_BUTTON_WIDTH}
+          backgroundColor="error"
+          aria-hidden={!isOpen}
         >
-          <Text variant="body" color="white">
-            {deleteLabel}
-          </Text>
-        </TouchableBox>
-      </Box>
+          <TouchableBox
+            flex={1}
+            justifyContent="center"
+            alignItems="center"
+            onPress={pressDelete}
+            disabled={!isOpen}
+            accessibilityRole="button"
+            accessibilityLabel={deleteLabel}
+          >
+            <Text variant="body" color="white">
+              {deleteLabel}
+            </Text>
+          </TouchableBox>
+        </Box>
+      )}
       <Animated.View
         testID="swipe-to-delete-row"
         style={{ transform: [{ translateX: rowOffset }] }}

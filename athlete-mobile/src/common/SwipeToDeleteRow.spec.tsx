@@ -40,6 +40,7 @@ const callResponderHandler = async (
 
 const ROW_TEXT = "My core";
 const DELETE_LABEL = "Delete";
+const DELETE_BACKGROUND_ID = "swipe-to-delete-background";
 
 describe("SwipeToDeleteRow: content", () => {
   it("shows its children", async () => {
@@ -60,6 +61,194 @@ describe("SwipeToDeleteRow: content", () => {
     );
 
     expect(queryByRole("button", { name: DELETE_LABEL })).toBeNull();
+  });
+});
+
+describe("SwipeToDeleteRow: delete background", () => {
+  it("renders no delete background behind a resting row", () => {
+    const { queryByTestId } = render(
+      <SwipeToDeleteRow deleteLabel={DELETE_LABEL} onDelete={jest.fn()}>
+        <Text>{ROW_TEXT}</Text>
+      </SwipeToDeleteRow>,
+    );
+
+    expect(
+      queryByTestId(DELETE_BACKGROUND_ID, { includeHiddenElements: true }),
+    ).toBeNull();
+  });
+
+  it("renders no delete background when a closed row is tapped", () => {
+    const { getByText, queryByTestId } = render(
+      <SwipeToDeleteRow deleteLabel={DELETE_LABEL} onDelete={jest.fn()}>
+        <Text>{ROW_TEXT}</Text>
+      </SwipeToDeleteRow>,
+    );
+    const row = getByText(ROW_TEXT);
+
+    fireEvent(row, "startShouldSetResponderCapture", {
+      nativeEvent: { pageX: 300, pageY: 0 },
+    });
+    fireEvent(row, "responderRelease", {
+      nativeEvent: { pageX: 301, pageY: 0 },
+    });
+
+    expect(
+      queryByTestId(DELETE_BACKGROUND_ID, { includeHiddenElements: true }),
+    ).toBeNull();
+  });
+
+  it("renders the delete background once a swipe starts", () => {
+    const { getByText, getByTestId } = render(
+      <SwipeToDeleteRow deleteLabel={DELETE_LABEL} onDelete={jest.fn()}>
+        <Text>{ROW_TEXT}</Text>
+      </SwipeToDeleteRow>,
+    );
+    const row = getByText(ROW_TEXT);
+
+    fireEvent(row, "startShouldSetResponderCapture", {
+      nativeEvent: { pageX: 300, pageY: 0 },
+    });
+    fireEvent(row, "responderGrant", { nativeEvent: { pageX: 280, pageY: 0 } });
+    fireEvent(row, "responderMove", { nativeEvent: { pageX: 250, pageY: 0 } });
+
+    expect(
+      getByTestId(DELETE_BACKGROUND_ID, { includeHiddenElements: true }),
+    ).toBeTruthy();
+  });
+
+  it("removes the delete background after the row snaps back closed", () => {
+    const { getByText, queryByTestId } = render(
+      <SwipeToDeleteRow deleteLabel={DELETE_LABEL} onDelete={jest.fn()}>
+        <Text>{ROW_TEXT}</Text>
+      </SwipeToDeleteRow>,
+    );
+    const row = getByText(ROW_TEXT);
+
+    fireEvent(row, "startShouldSetResponderCapture", {
+      nativeEvent: { pageX: 300, pageY: 0 },
+    });
+    fireEvent(row, "responderGrant", { nativeEvent: { pageX: 280, pageY: 0 } });
+    fireEvent(row, "responderMove", { nativeEvent: { pageX: 270, pageY: 0 } });
+    fireEvent(row, "responderRelease", {
+      nativeEvent: { pageX: 270, pageY: 0 },
+    });
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    expect(
+      queryByTestId(DELETE_BACKGROUND_ID, { includeHiddenElements: true }),
+    ).toBeNull();
+  });
+
+  it("keeps the delete background while the row snaps closed after a delete press", () => {
+    const { getByText, getByRole, getByTestId } = render(
+      <SwipeToDeleteRow deleteLabel={DELETE_LABEL} onDelete={jest.fn()}>
+        <Text>{ROW_TEXT}</Text>
+      </SwipeToDeleteRow>,
+    );
+    const row = getByText(ROW_TEXT);
+
+    fireEvent(row, "startShouldSetResponderCapture", {
+      nativeEvent: { pageX: 300, pageY: 0 },
+    });
+    fireEvent(row, "responderGrant", { nativeEvent: { pageX: 280, pageY: 0 } });
+    fireEvent(row, "responderMove", { nativeEvent: { pageX: 150, pageY: 0 } });
+    fireEvent(row, "responderRelease", {
+      nativeEvent: { pageX: 150, pageY: 0 },
+    });
+    act(() => {
+      jest.runAllTimers();
+    });
+    fireEvent.press(getByRole("button", { name: DELETE_LABEL }));
+
+    expect(
+      getByTestId(DELETE_BACKGROUND_ID, { includeHiddenElements: true }),
+    ).toBeTruthy();
+  });
+
+  it("removes the delete background once the row finished closing after a delete press", () => {
+    const { getByText, getByRole, queryByTestId } = render(
+      <SwipeToDeleteRow deleteLabel={DELETE_LABEL} onDelete={jest.fn()}>
+        <Text>{ROW_TEXT}</Text>
+      </SwipeToDeleteRow>,
+    );
+    const row = getByText(ROW_TEXT);
+
+    fireEvent(row, "startShouldSetResponderCapture", {
+      nativeEvent: { pageX: 300, pageY: 0 },
+    });
+    fireEvent(row, "responderGrant", { nativeEvent: { pageX: 280, pageY: 0 } });
+    fireEvent(row, "responderMove", { nativeEvent: { pageX: 150, pageY: 0 } });
+    fireEvent(row, "responderRelease", {
+      nativeEvent: { pageX: 150, pageY: 0 },
+    });
+    act(() => {
+      jest.runAllTimers();
+    });
+    fireEvent.press(getByRole("button", { name: DELETE_LABEL }));
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    expect(
+      queryByTestId(DELETE_BACKGROUND_ID, { includeHiddenElements: true }),
+    ).toBeNull();
+  });
+
+  it("keeps the delete background when a new swipe interrupts the close", () => {
+    const { getByText, getByTestId } = render(
+      <SwipeToDeleteRow deleteLabel={DELETE_LABEL} onDelete={jest.fn()}>
+        <Text>{ROW_TEXT}</Text>
+      </SwipeToDeleteRow>,
+    );
+    const row = getByText(ROW_TEXT);
+
+    fireEvent(row, "startShouldSetResponderCapture", {
+      nativeEvent: { pageX: 300, pageY: 0 },
+    });
+    fireEvent(row, "responderGrant", { nativeEvent: { pageX: 280, pageY: 0 } });
+    fireEvent(row, "responderMove", { nativeEvent: { pageX: 270, pageY: 0 } });
+    fireEvent(row, "responderRelease", {
+      nativeEvent: { pageX: 270, pageY: 0 },
+    });
+    fireEvent(row, "startShouldSetResponderCapture", {
+      nativeEvent: { pageX: 300, pageY: 0 },
+    });
+    fireEvent(row, "responderGrant", { nativeEvent: { pageX: 280, pageY: 0 } });
+    fireEvent(row, "responderMove", { nativeEvent: { pageX: 250, pageY: 0 } });
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    expect(
+      getByTestId(DELETE_BACKGROUND_ID, { includeHiddenElements: true }),
+    ).toBeTruthy();
+  });
+
+  it("removes the delete background after another view takes over a started swipe", () => {
+    const { getByText, queryByTestId } = render(
+      <SwipeToDeleteRow deleteLabel={DELETE_LABEL} onDelete={jest.fn()}>
+        <Text>{ROW_TEXT}</Text>
+      </SwipeToDeleteRow>,
+    );
+    const row = getByText(ROW_TEXT);
+
+    fireEvent(row, "startShouldSetResponderCapture", {
+      nativeEvent: { pageX: 300, pageY: 0 },
+    });
+    fireEvent(row, "responderGrant", { nativeEvent: { pageX: 280, pageY: 0 } });
+    fireEvent(row, "responderMove", { nativeEvent: { pageX: 150, pageY: 0 } });
+    fireEvent(row, "responderTerminate", {
+      nativeEvent: { pageX: 150, pageY: 0 },
+    });
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    expect(
+      queryByTestId(DELETE_BACKGROUND_ID, { includeHiddenElements: true }),
+    ).toBeNull();
   });
 });
 

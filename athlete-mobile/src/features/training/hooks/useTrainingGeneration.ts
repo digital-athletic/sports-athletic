@@ -8,12 +8,12 @@ import {
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { buildGeneratorErrorMessage } from "@/features/training/generators/generatorErrorUtils";
-import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
 import { useTrainingAlerts } from "@/features/training/hooks/useTrainingAlerts";
 import { isGeneratorError } from "@/features/training/models/GeneratorError";
 import { TrainingType } from "@/features/training/models/Training";
 import { type TrainingDayType } from "@/features/training/models/TrainingDay";
 import { useTrainingStore } from "@/features/training/trainingStore";
+import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
 import { maintainBranchLevels } from "@/features/training/utils/branchMaintenance";
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import { daysSinceLastTraining } from "@/features/training/utils/trainingGapUtils";
@@ -216,19 +216,18 @@ function generateExerciseList(
   const sectionIndex = parseIntParam(params.sectionIndex);
   const branchData = maintainStoredBranchLevels(user, ctx);
 
-  const tg = new TrainingGenerator();
-  const generatedList = tg.generateTraining(
-    trainingType,
+  const generatedList = generateWorkout({
+    type: trainingType,
     user,
-    selectedPlace,
-    ctx.exercises,
-    ctx.skillTrees,
-    weekdayNumber ?? 0,
+    place: selectedPlace,
+    exercises: ctx.exercises,
+    skillTrees: ctx.skillTrees,
+    weekday: weekdayNumber ?? 0,
     equipment,
-    sectionIndex,
+    givenSection: sectionIndex,
     daysSinceLastWorkout,
-    { exerciseData: ctx.exerciseData, branchData },
-  );
+    userExerciseData: { exerciseData: ctx.exerciseData, branchData },
+  });
 
   return saveGeneratedTraining(
     generatedList,

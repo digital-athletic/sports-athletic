@@ -8,7 +8,7 @@ This file provides guidance to AI Agents for building high-quality React Native 
 ## Project Context
 - `react` version 19.2.3
 - `react-native` version 0.86.3
-- `expo` version 57.0.28
+- `expo` version 57.0.30
 - `typescript` version 6.0.3 for type safety
 - Follow React and React Native's official style guide and best practices
 

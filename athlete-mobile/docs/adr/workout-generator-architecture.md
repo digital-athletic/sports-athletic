@@ -217,6 +217,18 @@ Until a migration rewrites the stored plans, a temporary decision applies:
 
 A follow-up issue defines the migration, its trigger, and what happens to a slot whose branch ID the catalog removed. After the migration, training day generation switches from the saved entries to the branch lookup index.
 
+### Routing
+
+The router `src/features/training/workoutGeneratorRouter.ts` picks the generator per training type:
+
+1. Short workouts and custom workouts run on the AIWL generator.
+2. The strength test runs on the old generator.
+3. Plan training days run on the AIWL generator while the AIWL generator flag is on, and on the old generator otherwise.
+
+The old generator in `generators/` stays as it was before the AIWL generator work and knows nothing of the router, the flag or the AIWL generator. Each generator throws its own `GeneratorError` type; both types share one shape, so the training generation hook reads either.
+
+The router selects the stored training day of the plan with its own copy of the old section and weekday selection, so the AIWL path imports nothing from `generators/`.
+
 ### Compatibility exceptions
 
 The generator deviates from the target architecture in these places, so that stored plans and existing set lists keep working:
@@ -228,14 +240,14 @@ The generator deviates from the target architecture in these places, so that sto
 | Training day overrides for MAX, MAX_STRENGTH, the cardio skills and PLYO | The skill catalog lacks these values | The catalog holds the values |
 | The set list rules differ by source | Each source keeps the set lists of its old path | A decision unifies or keeps each rule |
 | Training days store cardio as a branches block | Plan creation stores cardio branches, so this ADR amends AIWL rule 1 | Plan creation writes duration blocks |
-| The old training day path runs while the AIWL generator flag is off | The flag lets the team compare both paths | The flag defaults to on and the old path is deleted |
+| The router sends training days to the old generator while the AIWL generator flag is off | The flag lets the team compare both paths | The flag defaults to on and the old generator is deleted |
 
 ### Remaining work
 
 1. The duration handler with the minutes table chooser.
 2. The `order` field and the `bodyParts` filter.
 3. The stored plan migration.
-4. The AIWL generator flag on by default, and deletion of the old training day path.
+4. The AIWL generator flag on by default, and deletion of the old generator in `generators/`.
 5. The strength test through the template interpreter entry point.
 
 ### Errors

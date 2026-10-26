@@ -1,0 +1,37 @@
+{
+  "aiwl": 1,
+  "id": "TEST",
+  "name": { "en": "Strength test", "de": "Krafttest" },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "WU",
+      "picks": [
+        { "tags": ["LOWER_BODY"], "count": 1 },
+        { "tags": ["FULL_BODY"], "count": 1 },
+        { "tags": ["UPPER_BODY"], "count": 1 },
+        { "tags": [], "count": 2 }
+      ],
+      "sets": 1,
+      "superset": "none",
+      "setDuration": 60,
+      "rest": {
+        "withinSuperset": 10,
+        "betweenSets": 10,
+        "afterExercise": 10,
+        "afterBlock": 30
+      }
+    },
+    {
+      "kind": "exercises",
+      "skill": "TEST",
+      "exercises": ["25", "50", "342", "297", "54"],
+      "testSets": [
+        { "share": 0.4, "repetitions": 6, "rest": 60 },
+        { "share": 0.6, "repetitions": 4, "rest": 60 },
+        { "share": 0.85, "repetitions": 2, "rest": 120 },
+        { "share": 1, "repetitions": "amrap", "rest": 180 }
+      ]
+    }
+  ]
+}

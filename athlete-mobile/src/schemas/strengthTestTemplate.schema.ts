@@ -9,8 +9,21 @@ import {
 } from "./aiwl.schema";
 import { SkillCodeSchema } from "./generator.schema";
 
+const SecondsSchema = v.pipe(v.number(), v.integer(), v.minValue(0));
 const PositiveSecondsSchema = v.pipe(v.number(), v.integer(), v.minValue(1));
 const NonEmptyStringSchema = v.pipe(v.string(), v.minLength(1));
+
+/** A part of a load: above 0, at most the whole load. */
+export const ShareSchema = v.pipe(v.number(), v.gtValue(0), v.maxValue(1));
+
+// share is the part of the test set load a set lifts; "amrap" marks the set
+// the athlete lifts as often as possible.
+const TestSetSchema = v.strictObject({
+  share: ShareSchema,
+  repetitions: v.union([CountSchema, v.literal("amrap")]),
+  rest: SecondsSchema,
+});
+export type TestSet = v.InferOutput<typeof TestSetSchema>;
 
 // The list fixes selection and order, so an ID twice would change neither;
 // repeated sets belong to the builder.
@@ -33,6 +46,7 @@ const ExercisesBlockSchema = v.strictObject({
   setDuration: v.optional(PositiveSecondsSchema),
   values: v.optional(BlockValuesSchema),
   rest: v.optional(v.partial(CatalogRestSchema)),
+  testSets: v.optional(v.pipe(v.array(TestSetSchema), v.minLength(1))),
 });
 export type ExercisesBlock = v.InferOutput<typeof ExercisesBlockSchema>;
 

@@ -8,6 +8,7 @@ import {
   dateToHHMM,
   HHMMToDate,
   getDateOneYearFromNow,
+  secondsToMMSS,
 } from "./date";
 
 describe("date utils", () => {
@@ -227,6 +228,24 @@ describe("date utils", () => {
     it("handles end of day", () => {
       const date = new Date(2024, 0, 1, 23, 59);
       expect(dateToHHMM(date)).toBe("23:59");
+    });
+  });
+
+  describe("secondsToMMSS", () => {
+    it("formats zero as 00:00", () => {
+      expect(secondsToMMSS(0)).toBe("00:00");
+    });
+
+    it("splits seconds into minutes and seconds", () => {
+      expect(secondsToMMSS(75)).toBe("01:15");
+    });
+
+    it("drops fractions of a second", () => {
+      expect(secondsToMMSS(9.9)).toBe("00:09");
+    });
+
+    it("shows negative values as 00:00", () => {
+      expect(secondsToMMSS(-5)).toBe("00:00");
     });
   });
 

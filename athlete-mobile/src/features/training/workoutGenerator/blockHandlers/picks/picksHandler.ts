@@ -10,7 +10,8 @@ import { drawPicksBlock } from "./picksDraw";
 import { readResolvedPicksBlock } from "./picksWorkoutRules";
 
 // A branches block can train an exercise through a branch the picks pool
-// lacks, so the draw's own check by used branch would miss it.
+// lacks, and an exercises block uses no branch, so the draw's own check by
+// used branch would miss both.
 const dropTrainedExercises = (
   pool: SkillTreeType,
   earlierResults: readonly BlockResult[],
@@ -18,9 +19,9 @@ const dropTrainedExercises = (
 ): SkillTreeType => {
   const trainedExerciseIds = new Set(
     earlierResults.flatMap((result) =>
-      result.status === "filled"
-        ? result.exercises.map(({ exerciseId }) => exerciseId)
-        : [],
+      result.status === "empty"
+        ? []
+        : result.exercises.map(({ exerciseId }) => exerciseId),
     ),
   );
   const { branchData } = input.exerciseData;
@@ -46,13 +47,13 @@ export const handlePicksBlock: BlockHandler<"picks"> = (
   block,
   input,
   usedBranches,
-  earlierResults = [],
+  walk,
 ) => {
   const { pool, draw } = input.picksWorkout;
   const drawn = drawPicksBlock(
     readResolvedPicksBlock(input.picksWorkout, block),
     {
-      pool: dropTrainedExercises(pool, earlierResults, input),
+      pool: dropTrainedExercises(pool, walk?.earlierResults ?? [], input),
       draw,
       usedBranchIds: [...usedBranches],
     },

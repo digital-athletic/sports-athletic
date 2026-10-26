@@ -93,16 +93,22 @@ const resolveCatalogTimings = (
   input: GenerationInput,
 ): ReadonlyMap<Block, ResolvedPicksBlock> =>
   new Map(
-    results.map(({ block }) => [
-      block,
-      generateResolvedPicksBlock(
-        block.skill,
-        resolveBlockTiming(
-          block,
-          readSkillCatalogEntry(input.skillCatalog, block.skill),
-        ),
-      ),
-    ]),
+    results.flatMap(({ block }) =>
+      block.kind === "exercises"
+        ? []
+        : [
+            [
+              block,
+              generateResolvedPicksBlock(
+                block.skill,
+                resolveBlockTiming(
+                  block,
+                  readSkillCatalogEntry(input.skillCatalog, block.skill),
+                ),
+              ),
+            ] as const,
+          ],
+    ),
   );
 
 /**

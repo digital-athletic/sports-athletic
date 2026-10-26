@@ -224,17 +224,12 @@ export const createBranchesBlockHandler = (
   lookUpStoredBranch: StoredBranchLookup,
 ): BlockHandlerRegistry["branches"] => ({
   usedBranchScope: "block",
-  handleBlock: (
-    storedBlock,
-    input,
-    _usedBranches,
-    earlierResults = [],
-  ): BlockResult => {
+  handleBlock: (storedBlock, input, _usedBranches, walk): BlockResult => {
     // A block whose skill an earlier cardio swap took over reads the swapped
     // entry, which holds no tags and no levels, in place of its stored branches.
     const earlierSwap = findEarlierCardioSwap(
       storedBlock.skill,
-      earlierResults,
+      walk?.earlierResults ?? [],
     );
     const block = earlierSwap ?? storedBlock;
     const storedBranches = earlierSwap

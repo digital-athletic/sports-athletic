@@ -4,6 +4,11 @@ import {
   generateFilledBlockResult,
 } from "@test/factories/blockResult";
 import {
+  generateExercisesBlock,
+  generatePrescribedBlockResult,
+  generateWorkoutWithExercises,
+} from "@test/factories/exercisesBlock";
+import {
   generateBranchesBlock,
   generatePicksBlock,
   generateTemplate,
@@ -76,6 +81,10 @@ describe("blockWalk: walkTemplateBlocks", () => {
         usedBranchScope: "workout",
         handleBlock: (block) => generateFilledBlockResult(block, []),
       },
+      exercises: {
+        usedBranchScope: "workout",
+        handleBlock: (block) => generateEmptyBlockResult(block),
+      },
     };
 
     walkTemplateBlocks(template, generateWorkoutInput(), handlers);
@@ -113,6 +122,10 @@ describe("blockWalk: walkTemplateBlocks", () => {
         usedBranchScope: "workout",
         handleBlock: (block) => generateFilledBlockResult(block, []),
       },
+      exercises: {
+        usedBranchScope: "workout",
+        handleBlock: (block) => generateEmptyBlockResult(block),
+      },
     };
 
     walkTemplateBlocks(template, generateWorkoutInput(), handlers);
@@ -128,8 +141,8 @@ describe("blockWalk: walkTemplateBlocks", () => {
     ]);
     const earlierSkills: Record<string, string[]> = {};
     const handlers = generateHandlerRegistry(
-      (block, _input, _usedBranches, earlierResults = []) => {
-        earlierSkills[block.skill] = earlierResults.map(
+      (block, _input, _usedBranches, walk) => {
+        earlierSkills[block.skill] = (walk?.earlierResults ?? []).map(
           (result) => result.block.skill,
         );
         return generateFilledBlockResult(block, []);
@@ -143,5 +156,99 @@ describe("blockWalk: walkTemplateBlocks", () => {
       SWR2KG: ["GKS"],
       CD: ["GKS", "SWR2KG"],
     });
+  });
+
+  it("hands an exercises block to the exercises handler in template order with the other kinds", () => {
+    const template = generateWorkoutWithExercises([
+      generatePicksBlock("WU", { picks: [{ tags: ["SKILL_WU"], count: 2 }] }),
+      generateExercisesBlock(["25", "50"]),
+      generateBranchesBlock("GKS", ["510"]),
+    ]);
+    const visits: string[] = [];
+    const handlers = generateHandlerRegistry((block) => {
+      visits.push(`${block.kind} ${block.skill}`);
+      return block.kind === "exercises"
+        ? generatePrescribedBlockResult(block)
+        : generateFilledBlockResult(block, []);
+    });
+
+    const results = walkTemplateBlocks(
+      template,
+      generateWorkoutInput(),
+      handlers,
+    );
+
+    expect(visits).toEqual(["picks WU", "exercises TEST", "branches GKS"]);
+    expect(results.map((result) => result.status)).toEqual([
+      "filled",
+      "prescribed",
+      "filled",
+    ]);
+  });
+
+  it("hands every handler the block path of the template id and the block index", () => {
+    const template = generateWorkoutWithExercises(
+      [
+        generateBranchesBlock("GKS", ["510"]),
+        generatePicksBlock("WU", { picks: [{ tags: ["SKILL_WU"], count: 1 }] }),
+        { kind: "duration", skill: "MOB", duration: 300 },
+        generateExercisesBlock(["25"]),
+      ],
+      "TESTDAY",
+    );
+    const paths: (string | undefined)[] = [];
+    const handlers = generateHandlerRegistry(
+      (block, _input, _usedBranches, walk) => {
+        paths.push(walk?.blockPath);
+        return block.kind === "exercises"
+          ? generatePrescribedBlockResult(block)
+          : generateFilledBlockResult(block, []);
+      },
+    );
+
+    walkTemplateBlocks(template, generateWorkoutInput(), handlers);
+
+    expect(paths).toEqual([
+      "TESTDAY.blocks[0]",
+      "TESTDAY.blocks[1]",
+      "TESTDAY.blocks[2]",
+      "TESTDAY.blocks[3]",
+    ]);
+  });
+
+  it("adds no used branch IDs for a prescribed result and still hands a later workout scope block the earlier branches", () => {
+    const template = generateWorkoutWithExercises([
+      generateBranchesBlock("GKS", ["510"]),
+      generateExercisesBlock(["25", "50"]),
+      generatePicksBlock("MOB", { picks: [{ tags: ["SKILL_MOB"], count: 1 }] }),
+    ]);
+    let receivedByPicks: string[] = [];
+    const handlers = generateHandlerRegistry(
+      (block) =>
+        block.kind === "exercises"
+          ? generatePrescribedBlockResult(block)
+          : generateFilledBlockResult(
+              block,
+              block.kind === "branches" ? block.branches : [],
+            ),
+      {
+        picks: {
+          usedBranchScope: "workout",
+          handleBlock: (block, _input, usedBranches) => {
+            receivedByPicks = [...usedBranches];
+            return generateFilledBlockResult(block, []);
+          },
+        },
+      },
+    );
+
+    const results = walkTemplateBlocks(
+      template,
+      generateWorkoutInput(),
+      handlers,
+    );
+
+    expect(results[1].usedBranchIds).toEqual([]);
+    expect(receivedByPicks).toEqual(["510"]);
   });
 });

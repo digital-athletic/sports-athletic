@@ -331,7 +331,10 @@ describe("branchesHandler: cardio swap", () => {
 
     it("ends empty with the equipment reason and no missing equipment when no rule requests a replacement", () => {
       expect(
-        handleBlock(storedCardioFive, restedInput, NO_BRANCHES, [swapResult]),
+        handleBlock(storedCardioFive, restedInput, NO_BRANCHES, {
+          earlierResults: [swapResult],
+          blockPath: "day.blocks[1]",
+        }),
       ).toEqual({
         status: "empty",
         block: swapResult.block,
@@ -342,7 +345,10 @@ describe("branchesHandler: cardio swap", () => {
 
     it("swaps again with the duration the first swap wrote when a rule requests a replacement", () => {
       expect(
-        handleBlock(storedCardioFive, soreInput, NO_BRANCHES, [swapResult]),
+        handleBlock(storedCardioFive, soreInput, NO_BRANCHES, {
+          earlierResults: [swapResult],
+          blockPath: "day.blocks[1]",
+        }),
       ).toMatchObject({
         status: "filled",
         block: { skill: "CARDIO_5", branches: ["576"], duration: 1200 },
@@ -364,7 +370,10 @@ describe("branchesHandler: cardio swap", () => {
       });
 
       expect(
-        handleBlock(block, input, NO_BRANCHES, [swapResult]),
+        handleBlock(block, input, NO_BRANCHES, {
+          earlierResults: [swapResult],
+          blockPath: "day.blocks[1]",
+        }),
       ).toMatchObject({ status: "filled", block, usedBranchIds: ["523"] });
     });
   });

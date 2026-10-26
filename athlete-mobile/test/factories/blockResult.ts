@@ -3,6 +3,7 @@ import type { BranchExerciseReference } from "@/features/training/models/Exercis
 import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import type { Block } from "@/schemas/aiwl.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
+import type { WorkoutBlock } from "@/schemas/strengthTestTemplate.schema";
 import { generateBranchesBlock } from "./templateBlock";
 
 type FilledBlockResult = Extract<BlockResult, { status: "filled" }>;
@@ -13,6 +14,14 @@ interface FilledBlockResultOptions {
   usedBranchIds?: string[];
   exercises?: BranchExerciseReference[];
 }
+
+// Handler stubs receive any block; an exercises block never ends filled.
+const requireBranchSelectingBlock = (block: WorkoutBlock): Block => {
+  if (block.kind === "exercises") {
+    throw new Error("An exercises block ends prescribed, never filled");
+  }
+  return block;
+};
 
 interface EmptyBlockResultOptions {
   block?: Block;
@@ -66,12 +75,12 @@ export function generateBlockResult(
  *     exercises: [{ branchId: "510", branchTags: [], exerciseId: "exercise510" }] }
  */
 export const generateFilledBlockResult = (
-  block: Block,
+  block: WorkoutBlock,
   branchIds: string[],
   readExerciseId = (branchId: string) => `exercise${branchId}`,
 ): FilledBlockResult =>
   generateBlockResult("filled", {
-    block,
+    block: requireBranchSelectingBlock(block),
     usedBranchIds: branchIds,
     exercises: branchIds.map((branchId) => ({
       branchId,
@@ -111,11 +120,10 @@ export const generateFilledResultFromCatalog = (
  * → { status: "empty", block, reason: equipmentError, usedBranchIds: [] }
  */
 export const generateEmptyBlockResult = (
-  block: Block,
+  block: WorkoutBlock,
   reason?: GeneratorError,
   usedBranchIds: string[] = [],
-): EmptyBlockResult =>
-  generateBlockResult("empty", { block, reason, usedBranchIds });
+): EmptyBlockResult => ({ status: "empty", block, reason, usedBranchIds });
 
 /**
  * Builds a filled result for a branches block of the skill whose one branch

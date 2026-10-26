@@ -33,7 +33,7 @@ describe("ListItem: external link", () => {
   });
 
   it("opens the url", async () => {
-    const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(true);
+    const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
     const { getByRole } = await renderItem("https://example.com");
     await fireEvent.press(getByRole("link"));
     expect(openURL).toHaveBeenCalledWith("https://example.com");

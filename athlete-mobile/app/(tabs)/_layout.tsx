@@ -13,13 +13,18 @@ import { Platform } from "react-native";
 export default function TabLayout() {
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const activeTintColor = colors.primary;
+  const inactiveTintColor = colors.darkGrey1;
+  // Ionicons rejects the numeric and null colors the tab bar callback may pass.
+  const iconColor = (focused: boolean) =>
+    focused ? activeTintColor : inactiveTintColor;
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.darkGrey1,
+        tabBarActiveTintColor: activeTintColor,
+        tabBarInactiveTintColor: inactiveTintColor,
         tabBarStyle: {
           backgroundColor: colors.white,
         },
@@ -33,8 +38,8 @@ export default function TabLayout() {
         name="(home)"
         options={{
           title: t("tabs.training"),
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="walk" size={size} color={color} />
+          tabBarIcon: ({ focused, size }) => (
+            <Ionicons name="walk" size={size} color={iconColor(focused)} />
           ),
         }}
       />
@@ -42,8 +47,12 @@ export default function TabLayout() {
         name="statistics"
         options={{
           title: t("tabs.statistics"),
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="stats-chart" size={size} color={color} />
+          tabBarIcon: ({ focused, size }) => (
+            <Ionicons
+              name="stats-chart"
+              size={size}
+              color={iconColor(focused)}
+            />
           ),
         }}
       />
@@ -51,8 +60,8 @@ export default function TabLayout() {
         name="(more)"
         options={{
           title: t("tabs.profile"),
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
+          tabBarIcon: ({ focused, size }) => (
+            <Ionicons name="person" size={size} color={iconColor(focused)} />
           ),
         }}
       />

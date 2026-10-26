@@ -36,5 +36,6 @@ overrides:
   "ws@8": ">=8.21.0 <9"
 
 allowBuilds:
+  "@parcel/watcher": false
   esbuild: false
   unrs-resolver: false

@@ -3,16 +3,14 @@ import {
   BackgroundColorProps,
   border,
   BorderProps,
-  composeRestyleFunctions,
+  createRestyleComponent,
   layout,
   LayoutProps,
   shadow,
   ShadowProps,
   spacing,
   SpacingProps,
-  useRestyle,
 } from "@shopify/restyle";
-import { FC } from "react";
 import { TouchableOpacity, TouchableOpacityProps } from "react-native";
 import { Theme } from "./theme";
 
@@ -22,18 +20,7 @@ type RestyleProps = BackgroundColorProps<Theme> &
   ShadowProps<Theme> &
   SpacingProps<Theme>;
 
-const restyleFunctions = composeRestyleFunctions<Theme, RestyleProps>([
-  backgroundColor,
-  border,
-  layout,
-  shadow,
-  spacing,
-]);
-
-export const TouchableBox: FC<TouchableOpacityProps & RestyleProps> = (
-  props,
-) => {
-  const stylingProps = useRestyle(restyleFunctions, props);
-
-  return <TouchableOpacity {...stylingProps} {...props} />;
-};
+export const TouchableBox = createRestyleComponent<
+  TouchableOpacityProps & RestyleProps,
+  Theme
+>([backgroundColor, border, layout, shadow, spacing], TouchableOpacity);

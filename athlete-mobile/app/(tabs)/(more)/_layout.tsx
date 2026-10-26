@@ -6,6 +6,10 @@ import { Stack } from "expo-router";
  * Profile hub with settings, exercises, tutorials, and more.
  * Legacy: MoreStack (Stack Navigator)
  */
+export const unstable_settings = {
+  anchor: "more",
+};
+
 export default function ProfileStackLayout() {
   return (
     <Stack
@@ -13,7 +17,6 @@ export default function ProfileStackLayout() {
         headerShown: true,
         headerBackButtonDisplayMode: "minimal",
       }}
-      initialRouteName="more"
     />
   );
 }

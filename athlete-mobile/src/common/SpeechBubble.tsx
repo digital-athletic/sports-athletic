@@ -1,6 +1,6 @@
 import { useResponsiveProp } from "@shopify/restyle";
 import { useLayoutEffect, useRef, useState, type FC } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, type HostInstance } from "react-native";
 import { Box } from "../theme/Box";
 import { Text } from "../theme/Text";
 import { useTheme } from "../theme/theme";
@@ -19,7 +19,7 @@ export const SpeechBubble: FC<SpeechBubbleProps> = ({ text, centered }) => {
     centered ? { phone: 20, tablet: 32 } : { phone: 16, tablet: 28 },
   );
 
-  const containerRef = useRef<View>(null);
+  const containerRef = useRef<HostInstance>(null);
   const [height, setHeight] = useState(0);
 
   useLayoutEffect(() => {

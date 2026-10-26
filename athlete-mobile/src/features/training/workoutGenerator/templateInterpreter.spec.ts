@@ -13,7 +13,7 @@ import {
   generateTemplate,
 } from "@test/factories/templateBlock";
 import {
-  type FilledBlockResult,
+  type BuiltBlockResult,
   TRAINING_DAY_FINISH_RULES,
 } from "./stages/workoutFinish";
 import type { WorkoutInput } from "./stages/workoutSetup";
@@ -37,7 +37,7 @@ const STORED_TRAINING_DAY = generateTemplate([
  *
  * buildSkillSetList([BR block, GKS block]) → ["BR", "GKS"]
  */
-const buildSkillSetList = (blocks: FilledBlockResult[]): string[] =>
+const buildSkillSetList = (blocks: BuiltBlockResult[]): string[] =>
   blocks.map((result) => result.block.skill);
 
 describe("templateInterpreter: interpretTemplate", () => {

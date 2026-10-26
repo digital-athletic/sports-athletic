@@ -3,9 +3,10 @@ import {
   generateFilledBranchesResult,
 } from "@test/factories/blockResult";
 import { generateEquipmentError } from "@test/factories/generatorError";
+import { generatePrescribedResult } from "@test/factories/strengthTestResult";
 import { catchThrownValue } from "@test/factories/thrownValue";
 import {
-  type FilledBlockResult,
+  type BuiltBlockResult,
   finishWorkout,
   SHORT_WORKOUT_FINISH_RULES,
   TRAINING_DAY_FINISH_RULES,
@@ -17,7 +18,7 @@ import {
  *
  * buildStubSetList([GKS with exercises "10" and "-1"]) → ["GKS 10"]
  */
-const buildStubSetList = (blocks: FilledBlockResult[]): string[] =>
+const buildStubSetList = (blocks: BuiltBlockResult[]): string[] =>
   blocks.flatMap((result) =>
     result.exercises
       .filter((exercise) => exercise.exerciseId !== "-1")
@@ -236,6 +237,117 @@ describe("workoutFinish: finishWorkout", () => {
     );
 
     expect(workout.setList).toEqual(["MOB 10", "MOB 11"]);
+  });
+
+  it("keeps a prescribed result between the filled ones of a short workout", () => {
+    const results = [
+      generateFilledBranchesResult("CD"),
+      generatePrescribedResult("TEST", ["25"]),
+      generateFilledBranchesResult("WU"),
+    ];
+
+    const workout = finishWorkout(
+      results,
+      SHORT_WORKOUT_FINISH_RULES,
+      buildStubSetList,
+    );
+
+    expect(workout.setList).toEqual(["CD 10", "TEST 25", "WU 10"]);
+  });
+
+  it("keeps a prescribed result in its template position while it sorts the filled blocks of a training day", () => {
+    const results = [
+      generateFilledBranchesResult("CD"),
+      generatePrescribedResult("TEST", ["25"]),
+      generateFilledBranchesResult("BR"),
+    ];
+
+    const workout = finishWorkout(
+      results,
+      TRAINING_DAY_FINISH_RULES,
+      buildStubSetList,
+    );
+
+    expect(workout.setList).toEqual(["BR 10", "TEST 25", "CD 10"]);
+  });
+
+  it("hands the builder the prescribed result as a block", () => {
+    const prescribed = generatePrescribedResult("TEST", ["25"]);
+
+    const workout = finishWorkout(
+      [prescribed],
+      SHORT_WORKOUT_FINISH_RULES,
+      buildStubSetList,
+    );
+
+    expect(workout.blocks).toEqual([prescribed]);
+  });
+
+  it("keeps every prescribed block of a skill on a training day", () => {
+    const results = [
+      generatePrescribedResult("TEST", ["25"]),
+      generatePrescribedResult("TEST", ["50"]),
+    ];
+
+    const workout = finishWorkout(
+      results,
+      TRAINING_DAY_FINISH_RULES,
+      buildStubSetList,
+    );
+
+    expect(workout.setList).toEqual(["TEST 25", "TEST 50"]);
+  });
+
+  it("keeps a prescribed block when a later block of its skill is filled or empty on a training day", () => {
+    const results = [
+      generatePrescribedResult("GKS", ["25"]),
+      generateFilledBranchesResult("GKS", "11"),
+      generatePrescribedResult("CD", ["50"]),
+      generateEmptyBranchesResult("CD", generateEquipmentError([])),
+    ];
+
+    const workout = finishWorkout(
+      results,
+      TRAINING_DAY_FINISH_RULES,
+      buildStubSetList,
+    );
+
+    expect(workout.setList).toEqual(["GKS 25", "GKS 11", "CD 50"]);
+  });
+
+  it("throws the reason of an empty block for requiredBlocks every, though other blocks build entries", () => {
+    const warmUpError = generateEquipmentError(["DUMBBELL"]);
+    const results = [
+      generateEmptyBranchesResult("WU", warmUpError),
+      generatePrescribedResult("TEST", ["25"]),
+    ];
+
+    expect(
+      catchThrownValue(() =>
+        finishWorkout(
+          results,
+          { ...SHORT_WORKOUT_FINISH_RULES, requiredBlocks: "every" },
+          buildStubSetList,
+        ),
+      ),
+    ).toBe(warmUpError);
+  });
+
+  it("throws a SKILL_TREE error naming the skill for requiredBlocks every when the empty block has no reason", () => {
+    const results = [
+      generateEmptyBranchesResult("WU", undefined),
+      generatePrescribedResult("TEST", ["25"]),
+    ];
+
+    expect(
+      catchThrownValue(() =>
+        finishWorkout(
+          results,
+          { ...SHORT_WORKOUT_FINISH_RULES, requiredBlocks: "every" },
+          buildStubSetList,
+        ),
+      ),
+    ).toEqual({ type: "NO_EXERCISES", subtype: "SKILL_TREE", params: ["WU"] });
   });
 
   it("leaves the given results unchanged", () => {

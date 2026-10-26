@@ -1,3 +1,4 @@
+import { loadExercises } from "@/data/loadExercises";
 import { isPauseExercise } from "@/features/training/models/IdTypes";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { Block } from "@/schemas/aiwl.schema";
@@ -8,6 +9,8 @@ import { generateSequenceRandom } from "@test/factories/sequenceRandom";
 import { describeSetListEntries } from "@test/factories/setListDescription";
 import { generateStrengthTestInput } from "@test/factories/strengthTestInput";
 import { generatePrescribedResult } from "@test/factories/strengthTestResult";
+import { generateStrengthTestWarmUpBlock } from "@test/factories/strengthTestWarmUp";
+import { generateBundledTestSets } from "@test/factories/testSets";
 import {
   generatePicksBlock,
   generateUntimedBranchesBlock,
@@ -19,6 +22,8 @@ import type { GenerationInput } from "../generationInput/generationInput";
 import { readSkillCatalogEntry } from "../generationInput/skillCatalogEntry";
 import { resolveBlockTiming } from "../setListBuilders/blockTiming";
 import type { PrescribedSetListBuilder } from "../setListBuilders/setListBuilder";
+import { createStrengthTestSetListBuilder } from "../setListBuilders/strengthTestSetListBuilder";
+import { loadStrengthTestLoadData } from "../strengthTestGeneration";
 import type { BlockResult } from "./blockWalk";
 import {
   createSetListBuilder,
@@ -55,11 +60,11 @@ const DEFAULT_INPUT = generateRuleFamilyInput({
   random: () => 0,
 });
 
-// A prescribed builder that reads no block setting and builds no entry.
-const NO_SETTINGS_BUILDER: PrescribedSetListBuilder = {
-  blockSettings: [],
-  build: () => [],
-};
+// The strength test builder bound to the authored test set loads and 1RM
+// shares, as the strength test source passes it.
+const STRENGTH_TEST_BUILDER = createStrengthTestSetListBuilder(
+  loadStrengthTestLoadData(),
+);
 
 /**
  * Lists the exercises of a set list in order of their first set.
@@ -605,18 +610,75 @@ describe("setListBuilding: short workout", () => {
 });
 
 describe("setListBuilding: strength test", () => {
-  it("keeps the list order of the prescribed exercises without pairing or ordering them", () => {
-    const results = [generatePrescribedResult("TEST", ["54", "25"])];
-    const listBuilder: PrescribedSetListBuilder = {
-      blockSettings: [],
-      build: (exercises, block) =>
-        exercises.map(({ exerciseId }) => ({
-          branchId: "-1",
+  it("builds a prescribed result of skill TEST through the strength test builder", () => {
+    const results = [
+      generatePrescribedResult("TEST", ["25"], {
+        testSets: generateBundledTestSets(),
+      }),
+    ];
+
+    const setList = createSetListBuilder(
+      {
+        ...generateStrengthTestInput({ level: "BEGINNER" }),
+        picksWorkout: createEmptyPicksWorkout(),
+      },
+      STRENGTH_TEST_SET_LIST_RULES,
+      { TEST: STRENGTH_TEST_BUILDER },
+    )(results, results);
+
+    expect(
+      setList
+        .filter((entry) => !isPauseExercise(entry.exerciseId))
+        .map(({ branchId, exerciseId, set, weight, repetition, skill }) => ({
+          branchId,
           exerciseId,
-          set: [1, 1],
-          skill: block.skill,
+          set,
+          weight,
+          repetition,
+          skill,
         })),
-    };
+    ).toEqual([
+      {
+        branchId: "-1",
+        exerciseId: "25",
+        set: [1, 4],
+        weight: 15,
+        repetition: 6,
+        skill: "TEST",
+      },
+      {
+        branchId: "-1",
+        exerciseId: "25",
+        set: [2, 4],
+        weight: 25,
+        repetition: 4,
+        skill: "TEST",
+      },
+      {
+        branchId: "-1",
+        exerciseId: "25",
+        set: [3, 4],
+        weight: 35,
+        repetition: 2,
+        skill: "TEST",
+      },
+      {
+        branchId: "-1",
+        exerciseId: "25",
+        set: [4, 4],
+        weight: 40,
+        repetition: -1,
+        skill: "TEST",
+      },
+    ]);
+  });
+
+  it("keeps the list order of the lifts without pairing or ordering them", () => {
+    const results = [
+      generatePrescribedResult("TEST", ["54", "25"], {
+        testSets: generateBundledTestSets(),
+      }),
+    ];
 
     const setList = createSetListBuilder(
       {
@@ -624,10 +686,70 @@ describe("setListBuilding: strength test", () => {
         picksWorkout: createEmptyPicksWorkout(),
       },
       TRAINING_DAY_SET_LIST_RULES,
-      { TEST: listBuilder },
+      { TEST: STRENGTH_TEST_BUILDER },
     )(results, results);
 
     expect(listExerciseOrder(setList)).toEqual(["54", "25"]);
+  });
+
+  it("drops the rest that closes the whole set list for STRENGTH_TEST_SET_LIST_RULES", () => {
+    const results = [
+      generatePrescribedResult("TEST", ["25", "54"], {
+        testSets: generateBundledTestSets(),
+      }),
+    ];
+
+    const setList = createSetListBuilder(
+      {
+        ...generateStrengthTestInput(),
+        picksWorkout: createEmptyPicksWorkout(),
+      },
+      STRENGTH_TEST_SET_LIST_RULES,
+      { TEST: STRENGTH_TEST_BUILDER },
+    )(results, results);
+
+    expect(describeSetListEntries(setList).slice(-3)).toEqual([
+      "54 3/4",
+      "pause 120",
+      "54 4/4",
+    ]);
+  });
+
+  it("keeps the template order of a warm up picks block before the prescribed block", () => {
+    const warmUp = generateFilledResultFromCatalog(
+      EXERCISE_CATALOG,
+      generateStrengthTestWarmUpBlock(),
+      ["e1"],
+    );
+    const results = [
+      warmUp,
+      generatePrescribedResult("TEST", ["25"], {
+        testSets: generateBundledTestSets(),
+      }),
+    ];
+
+    const setList = createSetListBuilder(
+      {
+        ...generateStrengthTestInput({
+          exerciseCatalog: [...EXERCISE_CATALOG, ...loadExercises()],
+        }),
+        picksWorkout: createEmptyPicksWorkout(),
+      },
+      STRENGTH_TEST_SET_LIST_RULES,
+      { TEST: STRENGTH_TEST_BUILDER },
+    )(results, results);
+
+    expect(describeSetListEntries(setList)).toEqual([
+      "e1 1/1",
+      "pause 30",
+      "25 1/4",
+      "pause 60",
+      "25 2/4",
+      "pause 60",
+      "25 3/4",
+      "pause 120",
+      "25 4/4",
+    ]);
   });
 
   it("throws an error naming the skill for a prescribed result whose skill has no strength test builder", () => {
@@ -658,9 +780,29 @@ describe("setListBuilding: strength test", () => {
     ).toThrow("TEST: the source passed no prescribed builder");
   });
 
+  it("accepts the testSets setting of a block for the strength test builder", () => {
+    const results = [
+      generatePrescribedResult("TEST", ["25"], {
+        testSets: generateBundledTestSets(),
+      }),
+    ];
+
+    expect(() =>
+      createSetListBuilder(
+        {
+          ...generateStrengthTestInput(),
+          picksWorkout: createEmptyPicksWorkout(),
+        },
+        STRENGTH_TEST_SET_LIST_RULES,
+        { TEST: STRENGTH_TEST_BUILDER },
+      )(results, results),
+    ).not.toThrow();
+  });
+
   it("throws for a block setting the strength test builder does not read", () => {
     const results = [
       generatePrescribedResult("TEST", ["25"], {
+        testSets: generateBundledTestSets(),
         sets: 9,
         rest: { betweenSets: 5 },
       }),
@@ -673,7 +815,7 @@ describe("setListBuilding: strength test", () => {
           picksWorkout: createEmptyPicksWorkout(),
         },
         STRENGTH_TEST_SET_LIST_RULES,
-        { TEST: NO_SETTINGS_BUILDER },
+        { TEST: STRENGTH_TEST_BUILDER },
       )(results, results),
     ).toThrow("TEST: its prescribed builder does not read sets, rest");
   });
@@ -688,7 +830,7 @@ describe("setListBuilding: strength test", () => {
           picksWorkout: createEmptyPicksWorkout(),
         },
         TRAINING_DAY_SET_LIST_RULES,
-        { MAX: NO_SETTINGS_BUILDER },
+        { MAX: STRENGTH_TEST_BUILDER },
       )(results, results),
     ).toThrow("MAX: its prescribed builder does not read sets");
   });
@@ -734,7 +876,7 @@ describe("setListBuilding: strength test", () => {
           picksWorkout: createEmptyPicksWorkout(),
         },
         STRENGTH_TEST_SET_LIST_RULES,
-        { TEST: NO_SETTINGS_BUILDER },
+        { TEST: STRENGTH_TEST_BUILDER },
       )(results, results),
     ).toThrow("TEST: its prescribed builder builds exercises blocks only");
   });

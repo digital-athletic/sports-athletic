@@ -42,16 +42,18 @@ The generator runs these workout sources:
 | Short workout (focus training, prevention training) | AIWL generator | Bundled template | `picks` and `branches`, alone or mixed |
 | Training day, AIWL generator flag on | AIWL generator | The generator runs the stored training day as a [stored day workout](./workout-generator-architecture.md#stored-workouts), which is no AIWL document | `branches`, one block per stored skill |
 | Training day, flag off (default) | Old training day path | none | none |
-| Strength test | Old path | none | none |
+| Strength test (app) | Old path | none | none |
+| Strength test source, inactive | AIWL generator | Bundled template `TEST.json`, outside the short workout templates | `picks` with the strength test warm-up rules, then `exercises` with `testSets` |
 | Trainer workout | none | No editor exists | `duration` (planned) |
 
-[ADR: Workout generator architecture](./workout-generator-architecture.md#stored-workouts) describes how a training day reads its stored branches and lists the compatibility exceptions.
+[ADR: Workout generator architecture](./workout-generator-architecture.md#stored-workouts) describes how a training day reads its stored branches and lists the compatibility exceptions. The [strength test source](./workout-generator-architecture.md#strength-test-source) authors the protocol of the old strength test in `TEST.json`, and the router does not call it yet.
 
-The schema accepts three parts the generator rejects with `OTHER/BLOCK_KIND` until a follow-up implements them:
+The schema accepts four parts a short workout rejects with `OTHER/BLOCK_KIND`:
 
-1. the `duration` block
-2. the `order` field of any block
-3. the `bodyParts` field of a picks block
+1. the `duration` block, until a follow-up implements it
+2. the `order` field of any block, until a follow-up implements it
+3. the `bodyParts` field of a picks block, until a follow-up implements it
+4. the `exercises` block, which only the strength test source runs
 
 A stored day workout holds none of them, so the check fires for short workouts only.
 
@@ -72,7 +74,16 @@ type Template = {
 type Block =
   | (BlockBase & { kind: "picks"; picks: Picks | { withWeights: Picks; withoutWeights: Picks }; bodyParts?: BodyParts })
   | (BlockBase & { kind: "duration"; duration: number; bodyParts?: BodyParts })
-  | (BlockBase & { kind: "branches"; branches: [BranchId, ...BranchId[]]; duration?: number });
+  | (BlockBase & { kind: "branches"; branches: [BranchId, ...BranchId[]]; duration?: number })
+  | (ExercisesBlockBase & { kind: "exercises"; exercises: [ExerciseId, ...ExerciseId[]]; testSets?: [TestSet, ...TestSet[]] });
+
+// An exercises block lists each exercise once. The builder its skill catalog
+// entry names accepts only the settings it reads; the strength test builder
+// reads testSets only.
+type ExercisesBlockBase = Pick<BlockBase, "skill" | "sets" | "setDuration" | "values" | "rest">;
+
+// share: part of the test set load, above 0 and at most 1.
+type TestSet = { share: number; repetitions: number | "amrap"; rest: number };
 
 type Picks = [Pick, ...Pick[]];
 type Pick = { tags: Tag[]; count: number };
@@ -102,22 +113,25 @@ type BlockBase = {
 type LocalizedText = { en: string } & Record<string, string>;
 ```
 
-`SkillCode`, `Tag`, `Muscle`, and `BranchId` are IDs from the app data and keep the app data's casing, for example `GKS` or `REGION_UPPER_BODY`. Every value AIWL defines itself uses camelCase. Every time value counts seconds: `duration`, `setDuration`, and the three `rest` values.
+`SkillCode`, `Tag`, `Muscle`, `BranchId`, and `ExerciseId` are IDs from the app data and keep the app data's casing, for example `GKS` or `REGION_UPPER_BODY`. Every value AIWL defines itself uses camelCase. Every time value counts seconds: `duration`, `setDuration`, and the three `rest` values.
 
 Every object is strict: the app rejects unknown keys. `kind` names the block type, and each kind allows these keys:
 
-| `kind` | `picks` | `duration` | `branches` |
-|---|---|---|---|
-| `picks` | required | not allowed | not allowed |
-| `duration` | not allowed | required | not allowed |
-| `branches` | not allowed | optional | required |
+| `kind` | `picks` | `duration` | `branches` | `exercises` |
+|---|---|---|---|---|
+| `picks` | required | not allowed | not allowed | not allowed |
+| `duration` | not allowed | required | not allowed | not allowed |
+| `branches` | not allowed | optional | required | not allowed |
+| `exercises` | not allowed | not allowed | not allowed | required |
+
+An exercises block also rejects `bodyParts`, `countBy`, `fallbackToWholeTree`, `order`, and `superset`: its list fixes selection and order, and each exercise trains alone.
 
 ### Template fields
 
 | Field | Required | Default | Meaning | Why the schema has it |
 |---|---|---|---|---|
 | `$schema` | no | none | URL of the AIWL JSON Schema. | Editors validate the file while an author writes it. |
-| `aiwl` | yes | | Format identifier and version. The app rejects a version it does not know. A new field or a new enum value raises the version. | An older app reads the version and rejects a newer template with a version error. |
+| `aiwl` | yes | | Format identifier and version. The app rejects a version it does not know. A change of meaning raises the version. An addition that leaves every existing template valid and unchanged in meaning keeps it, because the bundled templates ship with the app that reads them: the `exercises` block kind joined version 1. Only `StrengthTestTemplateSchema` accepts it; `TemplateSchema`, which short workouts and custom workouts read, stays without it. | An older app reads the version and rejects a newer template with a version error. |
 | `id` | yes | | Unique ID of the template, for example `GKS` for the bundled full-body stability training. | The app loads a bundled training by its ID, and validation errors start their path with it. |
 | `name` | yes | | Name of the workout, one text per language. `en` is required and serves as the fallback. | The app shows a name for every workout: bundled trainings, training days, and trainer workouts. The app ships German and English, so bundled templates carry `de` and `en`. |
 | `description` | no | none | One or two sentences on what the workout does, one text per language like `name`. | Template authors explain the workout in it, and trainer templates show it later. No bundled training sets it. |
@@ -131,7 +145,7 @@ The workout has no total time field. Its length is the sum of the block duration
 
 | Field | Required | Default | Meaning | Why the schema has it |
 |---|---|---|---|---|
-| `kind` | yes | | Block type: `picks`, `duration`, or `branches`. The generator runs `picks` and `branches` blocks, also mixed in one template, and rejects `duration` with `BLOCK_KIND`. | The app checks the block's keys against its type and reports a wrong key by name. |
+| `kind` | yes | | Block type: `picks`, `duration`, `branches`, or `exercises`. Short workouts run `picks` and `branches` blocks, also mixed in one template, and reject `duration` and `exercises` with `BLOCK_KIND`. The strength test source runs `picks` and `exercises`. | The app checks the block's keys against its type and reports a wrong key by name. |
 | `skill` | yes | | Skill code of the skill catalog. Selects skill tree, intensity, set list builder, and defaults. | A block trains one skill, and the skill code names it. The catalog supplies the values the block omits. |
 | `picks` | in a picks block | | Branches to draw from the skill tree, by tags and count. A list applies at every training place. `{ withWeights, withoutWeights }` gives a training place with weights and one without its own list, with the same keys as the catalog's `skillTree`. | All 13 bundled trainings draw by tags and counts. Full-body stability uses the two-list form: 4 entries with weights, 3 upper body + 2 full body entries without. |
 | `duration` | in a duration block; optional in a branches block | | Cardio duration block: the length the cardio builder fills. Any other duration block: the length whose minutes the [minutes table](#minutes-table) chooser reads. Branches block: the planned length, which the preview shows. | Plan creation stores minutes per skill, a trainer sets minutes per skill, and the cardio builder fills a length. |
@@ -140,6 +154,8 @@ The workout has no total time field. Its length is the sum of the block duration
 | `bodyParts.regions` | no | all | Body regions. `upperBody`, `lowerBody`, `core`, and `fullBody` stand for the region tags `REGION_UPPER_BODY`, `REGION_LOWER_BODY`, `REGION_CORE`, and `REGION_FULL_BODY`. | The trainer picks body regions. |
 | `bodyParts.muscles` | no | all | Muscles, for example glutes and hamstrings. | A trainer can build a block for single muscles. No bundled training sets it. |
 | `branches` | in a branches block | | The block trains these branches. With `order: "asDrawn"` they keep the listed order, with `muscleGroups` the block sorts them. | Plan creation stores the branches of a training day. A fixed list replays them. |
+| `exercises` | in an exercises block | | The block trains these catalog exercises, each once, in the listed order, whatever the athlete's fitness level, branch levels, or earlier blocks. No exercise resolves through a branch, and none moves branch progression. | The strength test measures five fixed lifts. A branch could lead to another exercise as the athlete progresses, so a branch list cannot prescribe them. |
+| `testSets` | for a strength test builder; not allowed in other blocks | | The sets of every exercise, in order. `share`: part of the test set load the set lifts. `repetitions`: a count, or `amrap` for the test set the athlete lifts as often as possible. `rest`: seconds after the set. | The strength test protocol ramps up in sets of fixed reps before the AMRAP test set. The template, not the builder, authors them. |
 | `countBy` | no | catalog | What one unit of a pick's `count` is. `exercises`: one exercise. `entries`: one exercise entry. A two sided exercise is one entry, a one sided exercise two entries (its left and its right execution). `pairs`: one superset pair. | The catalog default matches every bundled training. A template overrides it to count differently for the same skill. |
 | `fallbackToWholeTree` | no | catalog | `true`: when the picks find too few matching branches, the block draws the rest from its whole skill tree. `false`: the block stays short. | Same as `countBy`. |
 | `sets` | no | catalog | Sets per exercise. | Same as `countBy`. No bundled training overrides it. |
@@ -165,12 +181,15 @@ In the shoulder prevention example below, the warm-up pick names `SKILL_WU`, `SK
 
 ### Rules
 
-Rules 1 to 3 apply to duration and branches blocks. The generator rejects duration blocks until a follow-up implements them.
+Rules 1 to 3 apply to duration and branches blocks, rules 5 to 7 to exercises blocks. The generator rejects duration blocks until a follow-up implements them.
 
 1. A block whose skill starts with `CARDIO` is a duration block. `duration` sets its length.
 2. In any other duration block, `duration` / 60 is a minutes key of its [minutes table](#minutes-table) entry, `default` variant. For example, 600 seconds reads the key 10.
 3. A branches block lists branches of its skill tree only.
 4. The app rejects a template that breaks a rule and names the path of the error, for example `MOBGKS30.blocks[0].duration: 15 minutes is no key of MOB`.
+5. An exercises block fails the whole workout when one of its exercises is missing from the exercise catalog, listed twice, or needs equipment the training place lacks. A missing or repeated exercise is a template error that names the block path. Missing equipment throws `NO_EXERCISES/EQUIPMENT` with the missing equipment, the error the athlete already knows from other workouts. The generator never drops or replaces a listed exercise.
+6. Exercises blocks run in the strength test source only. The source passes the strength test builder for the skill of its lifts block, `TEST`, and a branch selecting block of a skill with a prescribed builder fails. A block that sets `sets`, `setDuration`, `values`, `rest` or `testSets` for a builder that does not read them fails, so the strength test never ignores an authored value. The strength test builder reads `testSets` only and fails without them.
+7. A training day keeps every exercises block, also two of the same skill; only its branch selecting blocks keep the last block per skill.
 
 ## Skill catalog
 
@@ -181,7 +200,7 @@ The skill catalog is a separate data file with one entry per skill code. Its fie
 
 A template has no skill properties of its own. The focus area, progression, pain regions, and intensity of a bundled training come from the catalog entry of the skill code, which equals the template ID for the 13 bundled trainings.
 
-The skill code also selects the set list builder: cardio, max strength, or the standard sets and rests.
+The skill code also selects the set list builder: cardio, max strength, or the standard sets and rests. The strength test skill `TEST` has no catalog entry; its source passes the builder.
 
 [ADR: Skill catalog](./skill-catalog.md) defines the entry type, every field, example entries, and the builders.
 

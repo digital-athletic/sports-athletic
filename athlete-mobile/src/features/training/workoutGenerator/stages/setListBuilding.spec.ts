@@ -6,6 +6,8 @@ import { generateResolvedPicksBlock } from "@test/factories/resolvedPicksBlock";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { generateSequenceRandom } from "@test/factories/sequenceRandom";
 import { describeSetListEntries } from "@test/factories/setListDescription";
+import { generateStrengthTestInput } from "@test/factories/strengthTestInput";
+import { generatePrescribedResult } from "@test/factories/strengthTestResult";
 import {
   generatePicksBlock,
   generateUntimedBranchesBlock,
@@ -16,12 +18,14 @@ import { createEmptyPicksWorkout } from "../blockHandlers/picks/picksWorkoutRule
 import type { GenerationInput } from "../generationInput/generationInput";
 import { readSkillCatalogEntry } from "../generationInput/skillCatalogEntry";
 import { resolveBlockTiming } from "../setListBuilders/blockTiming";
+import type { PrescribedSetListBuilder } from "../setListBuilders/setListBuilder";
 import type { BlockResult } from "./blockWalk";
 import {
   createSetListBuilder,
   readSkillSetListKind,
   SHORT_WORKOUT_SET_LIST_RULES,
   type SetListBuildingRules,
+  STRENGTH_TEST_SET_LIST_RULES,
   TRAINING_DAY_SET_LIST_RULES,
 } from "./setListBuilding";
 import type { FilledBlockResult } from "./workoutFinish";
@@ -50,6 +54,12 @@ const DEFAULT_INPUT = generateRuleFamilyInput({
   exerciseCatalog: EXERCISE_CATALOG,
   random: () => 0,
 });
+
+// A prescribed builder that reads no block setting and builds no entry.
+const NO_SETTINGS_BUILDER: PrescribedSetListBuilder = {
+  blockSettings: [],
+  build: () => [],
+};
 
 /**
  * Lists the exercises of a set list in order of their first set.
@@ -591,6 +601,142 @@ describe("setListBuilding: short workout", () => {
     ).toThrow(
       new Error("Workout setup resolved no picks block for skill PLYO"),
     );
+  });
+});
+
+describe("setListBuilding: strength test", () => {
+  it("keeps the list order of the prescribed exercises without pairing or ordering them", () => {
+    const results = [generatePrescribedResult("TEST", ["54", "25"])];
+    const listBuilder: PrescribedSetListBuilder = {
+      blockSettings: [],
+      build: (exercises, block) =>
+        exercises.map(({ exerciseId }) => ({
+          branchId: "-1",
+          exerciseId,
+          set: [1, 1],
+          skill: block.skill,
+        })),
+    };
+
+    const setList = createSetListBuilder(
+      {
+        ...generateStrengthTestInput({ random: () => 0 }),
+        picksWorkout: createEmptyPicksWorkout(),
+      },
+      TRAINING_DAY_SET_LIST_RULES,
+      { TEST: listBuilder },
+    )(results, results);
+
+    expect(listExerciseOrder(setList)).toEqual(["54", "25"]);
+  });
+
+  it("throws an error naming the skill for a prescribed result whose skill has no strength test builder", () => {
+    const results = [generatePrescribedResult("GKS", ["25"])];
+
+    expect(() =>
+      createSetListBuilder(
+        {
+          ...generateStrengthTestInput(),
+          picksWorkout: createEmptyPicksWorkout(),
+        },
+        STRENGTH_TEST_SET_LIST_RULES,
+      )(results, results),
+    ).toThrow(/GKS/);
+  });
+
+  it("throws for a prescribed result of skill TEST when the source passes no strength test builder", () => {
+    const results = [generatePrescribedResult("TEST", ["25"])];
+
+    expect(() =>
+      createSetListBuilder(
+        {
+          ...generateStrengthTestInput(),
+          picksWorkout: createEmptyPicksWorkout(),
+        },
+        STRENGTH_TEST_SET_LIST_RULES,
+      )(results, results),
+    ).toThrow("TEST: the source passed no prescribed builder");
+  });
+
+  it("throws for a block setting the strength test builder does not read", () => {
+    const results = [
+      generatePrescribedResult("TEST", ["25"], {
+        sets: 9,
+        rest: { betweenSets: 5 },
+      }),
+    ];
+
+    expect(() =>
+      createSetListBuilder(
+        {
+          ...generateStrengthTestInput(),
+          picksWorkout: createEmptyPicksWorkout(),
+        },
+        STRENGTH_TEST_SET_LIST_RULES,
+        { TEST: NO_SETTINGS_BUILDER },
+      )(results, results),
+    ).toThrow("TEST: its prescribed builder does not read sets, rest");
+  });
+
+  it("reads the builder of a prescribed result by its skill from the builders the source passes", () => {
+    const results = [generatePrescribedResult("MAX", ["25"], { sets: 9 })];
+
+    expect(() =>
+      createSetListBuilder(
+        {
+          ...generateStrengthTestInput(),
+          picksWorkout: createEmptyPicksWorkout(),
+        },
+        TRAINING_DAY_SET_LIST_RULES,
+        { MAX: NO_SETTINGS_BUILDER },
+      )(results, results),
+    ).toThrow("MAX: its prescribed builder does not read sets");
+  });
+
+  it("builds every block setting a prescribed builder reads", () => {
+    const results = [generatePrescribedResult("TEST", ["25"], { sets: 2 })];
+    const setsBuilder: PrescribedSetListBuilder = {
+      blockSettings: ["sets"],
+      build: (exercises, block) =>
+        exercises.map(({ exerciseId }) => ({
+          branchId: "-1",
+          exerciseId,
+          set: [1, block.sets ?? 1],
+          skill: block.skill,
+        })),
+    };
+
+    const setList = createSetListBuilder(
+      {
+        ...generateStrengthTestInput(),
+        picksWorkout: createEmptyPicksWorkout(),
+      },
+      STRENGTH_TEST_SET_LIST_RULES,
+      { TEST: setsBuilder },
+    )(results, results);
+
+    expect(describeSetListEntries(setList)).toEqual(["25 1/2"]);
+  });
+
+  it("throws for a filled block of a skill the source passes a prescribed builder for", () => {
+    const results = [
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generateUntimedBranchesBlock("TEST"),
+        ["e1"],
+      ),
+    ];
+
+    expect(() =>
+      createSetListBuilder(
+        {
+          ...generateStrengthTestInput({ exerciseCatalog: EXERCISE_CATALOG }),
+          picksWorkout: createEmptyPicksWorkout(),
+        },
+        STRENGTH_TEST_SET_LIST_RULES,
+        { TEST: NO_SETTINGS_BUILDER },
+      )(results, results),
+    ).toThrow("TEST: its prescribed builder builds exercises blocks only");
   });
 });
 

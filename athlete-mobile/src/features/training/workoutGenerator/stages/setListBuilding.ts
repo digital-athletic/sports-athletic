@@ -1,6 +1,7 @@
 import type { ExercisePair } from "@/features/training/models/ExerciseBranch";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { Block } from "@/schemas/aiwl.schema";
+import type { ExercisesBlock } from "@/schemas/strengthTestTemplate.schema";
 import { readResolvedPicksBlockTiming } from "../blockHandlers/picks/picksWorkoutRules";
 import type { GenerationInput } from "../generationInput/generationInput";
 import {
@@ -15,14 +16,21 @@ import { pairBranchExercises } from "../setListBuilders/exercisePairing";
 import { buildMaxStrengthSetList } from "../setListBuilders/maxStrengthSetListBuilder";
 import { readTrainingDayTimingDefaults } from "../setListBuilders/trainingDayTiming";
 import {
+  PRESCRIBED_BLOCK_KEYS,
+  type PrescribedSetListBuilder,
+  type PrescribedSetListBuilders,
   removeTrailingPause,
   type SetListBlock,
   type SkillSetListBuilder,
 } from "../setListBuilders/setListBuilder";
 import { buildStandardSetList } from "../setListBuilders/standardSetListBuilder";
-import type { BlockResult } from "./blockWalk";
+import type { BlockResult, BranchSelectingBlock } from "./blockWalk";
 import { orderExerciseUnits, readEndingExerciseId } from "./exerciseOrder";
-import type { FilledBlockResult, SetListBuilder } from "./workoutFinish";
+import type {
+  BuiltBlockResult,
+  FilledBlockResult,
+  SetListBuilder,
+} from "./workoutFinish";
 import type { WorkoutInput } from "./workoutSetup";
 
 export type SkillSetListKind = "cardio" | "maxStrength" | "standard";
@@ -63,6 +71,11 @@ export interface SetListBuildingRules {
   // "singles" trains every max strength exercise on its own; "bySuperset"
   // pairs it and trains the lead only.
   readonly maxStrengthPairing: "singles" | "bySuperset";
+  // "bySuperset" pairs every block but a drawOne cardio block by the rules
+  // above; "singlesAsDrawn" overrides maxStrengthPairing and the superset and
+  // trains every drawn exercise alone, in draw order, without its other side,
+  // as the old strength test warm-up does.
+  readonly branchPairing: "bySuperset" | "singlesAsDrawn";
   // "awayFromPreviousBlock" orders the pairs of every block but cardio so the
   // block opens away from the exercise that ended the block before, max
   // strength lower body first; "asPaired" keeps the order of the pairs.
@@ -76,6 +89,7 @@ export const TRAINING_DAY_SET_LIST_RULES: SetListBuildingRules = {
   blockTiming: "trainingDayDefaults",
   cardioPairing: "drawOne",
   maxStrengthPairing: "singles",
+  branchPairing: "bySuperset",
   exerciseOrder: "awayFromPreviousBlock",
   closingRest: "setListEnd",
 };
@@ -84,8 +98,20 @@ export const SHORT_WORKOUT_SET_LIST_RULES: SetListBuildingRules = {
   blockTiming: "workoutSetup",
   cardioPairing: "bySuperset",
   maxStrengthPairing: "bySuperset",
+  branchPairing: "bySuperset",
   exerciseOrder: "asPaired",
   closingRest: "lastTemplateBlock",
+};
+
+// The old strength test ends on the last test set, and its warm-up block
+// carries its own timing.
+export const STRENGTH_TEST_SET_LIST_RULES: SetListBuildingRules = {
+  blockTiming: "trainingDayDefaults",
+  cardioPairing: "bySuperset",
+  maxStrengthPairing: "bySuperset",
+  branchPairing: "singlesAsDrawn",
+  exerciseOrder: "asPaired",
+  closingRest: "setListEnd",
 };
 
 type SetListBuildingInput = GenerationInput &
@@ -94,7 +120,7 @@ type SetListBuildingInput = GenerationInput &
 // Workout setup resolves picks blocks only, so a branches block of a short
 // workout resolves against the training day defaults too.
 const readBlockTiming = (
-  block: Block,
+  block: BranchSelectingBlock,
   rules: SetListBuildingRules,
   input: SetListBuildingInput,
 ): ResolvedBlockTiming =>
@@ -113,6 +139,9 @@ const pairBlockExercises = (
 ): ExercisePair[] => {
   if (kind === "cardio" && rules.cardioPairing === "drawOne") {
     return drawCardioExercisePair(exercises, input.random);
+  }
+  if (rules.branchPairing === "singlesAsDrawn") {
+    return exercises.map((first) => ({ first }));
   }
   const singles =
     kind === "maxStrength" && rules.maxStrengthPairing === "singles";
@@ -149,25 +178,108 @@ const buildBlockSetList = (
 };
 
 const isLastTemplateBlock = (
-  block: FilledBlockResult,
+  block: BuiltBlockResult,
   results: readonly BlockResult[],
 ): boolean => block === results.at(-1);
+
+const closeBlockSetList = (
+  blockSetList: GeneratedSetListEntry[],
+  result: BuiltBlockResult,
+  results: readonly BlockResult[],
+  rules: SetListBuildingRules,
+): GeneratedSetListEntry[] =>
+  rules.closingRest === "lastTemplateBlock" &&
+  isLastTemplateBlock(result, results)
+    ? removeTrailingPause(blockSetList)
+    : blockSetList;
+
+/**
+ * Names the builder of a branch selecting block: the one its skill code
+ * selects. A skill the source passes a prescribed builder for throws.
+ *
+ * requireBranchSetListKind("MAX", {}) → "maxStrength"
+ */
+const requireBranchSetListKind = (
+  skill: string,
+  builders: PrescribedSetListBuilders,
+): SkillSetListKind => {
+  if (builders[skill]) {
+    throw new Error(
+      `${skill}: its prescribed builder builds exercises blocks only`,
+    );
+  }
+  return readSkillSetListKind(skill);
+};
+
+const listUnreadBlockSettings = (
+  block: ExercisesBlock,
+  builder: PrescribedSetListBuilder,
+): string[] =>
+  Object.entries(block)
+    .filter(
+      ([key, value]) =>
+        value !== undefined &&
+        ![...PRESCRIBED_BLOCK_KEYS, ...builder.blockSettings].some(
+          (accepted) => accepted === key,
+        ),
+    )
+    .map(([key]) => key);
+
+/**
+ * Resolves the builder of an exercises block: the prescribed builder the
+ * source passes for its skill. A skill without one, and a block setting the
+ * builder does not read, throw.
+ *
+ * resolvePrescribedSetListBuilder({ skill: "TEST", sets: 9, ... }, builders)
+ * → throws "TEST: its prescribed builder does not read sets"
+ */
+const resolvePrescribedSetListBuilder = (
+  block: ExercisesBlock,
+  builders: PrescribedSetListBuilders,
+): PrescribedSetListBuilder => {
+  const builder = builders[block.skill];
+  if (!builder) {
+    throw new Error(`${block.skill}: the source passed no prescribed builder`);
+  }
+  const unread = listUnreadBlockSettings(block, builder);
+  if (unread.length > 0) {
+    throw new Error(
+      `${block.skill}: its prescribed builder does not read ${unread.join(", ")}`,
+    );
+  }
+  return builder;
+};
 
 /**
  * Builds the set list of any workout source from its filled blocks in build
  * order. Each block reads its timing, pairs its exercises, orders the pairs
  * and runs the set list builder of its skill, as the rules of the source say.
- * The draws of one block run in that order, before the next block.
+ * The draws of one block run in that order, before the next block. An
+ * exercises block runs the prescribed builder of its skill from the builders
+ * the source passes.
  */
 export const createSetListBuilder =
   (
     input: SetListBuildingInput,
     rules: SetListBuildingRules,
+    prescribedBuilders: PrescribedSetListBuilders = {},
   ): SetListBuilder<GeneratedSetListEntry> =>
   (blocks, results) => {
     let previousExerciseId: string | undefined;
     const setList = blocks.flatMap((result) => {
-      const kind = readSkillSetListKind(result.block.skill);
+      if (result.status === "prescribed") {
+        const prescribedSetList = resolvePrescribedSetListBuilder(
+          result.block,
+          prescribedBuilders,
+        ).build(result.exercises, result.block, input);
+        previousExerciseId =
+          result.exercises.at(-1)?.exerciseId ?? previousExerciseId;
+        return closeBlockSetList(prescribedSetList, result, results, rules);
+      }
+      const kind = requireBranchSetListKind(
+        result.block.skill,
+        prescribedBuilders,
+      );
       const timing = readBlockTiming(result.block, rules, input);
       const pairs = pairBlockExercises(kind, result, timing.superset, {
         rules,
@@ -191,10 +303,7 @@ export const createSetListBuilder =
         { block: result.block, timing },
         input,
       );
-      return rules.closingRest === "lastTemplateBlock" &&
-        isLastTemplateBlock(result, results)
-        ? removeTrailingPause(blockSetList)
-        : blockSetList;
+      return closeBlockSetList(blockSetList, result, results, rules);
     });
     return rules.closingRest === "setListEnd"
       ? removeTrailingPause(setList)

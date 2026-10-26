@@ -19,6 +19,8 @@ export interface TemplateInterpreterOptions<TEntry> {
   createSetListBuilder: (input: WorkoutInput) => SetListBuilder<TEntry>;
   /** The skill trees picks blocks resolve from; the bundled trees when absent. */
   skillTrees?: Readonly<Record<string, SkillTreeType>>;
+  /** Replaces workout setup for a source with its own checks; setUpWorkout when absent. */
+  setUpWorkout?: typeof setUpWorkout;
 }
 
 /**
@@ -33,9 +35,10 @@ export const interpretTemplate = <TEntry>(
     finishRules,
     createSetListBuilder,
     skillTrees,
+    setUpWorkout: setUpSourceWorkout = setUpWorkout,
   }: TemplateInterpreterOptions<TEntry>,
 ): FinishedWorkout<TEntry> => {
-  const workoutInput = setUpWorkout(input, template, skillTrees);
+  const workoutInput = setUpSourceWorkout(input, template, skillTrees);
   return finishWorkout(
     walkTemplateBlocks(template, workoutInput, handlers),
     finishRules,

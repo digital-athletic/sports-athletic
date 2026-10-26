@@ -115,38 +115,38 @@ describe("<EmailVerificationScreen />", () => {
     jest.spyOn(Alert, "alert").mockImplementation(() => {});
   });
 
-  it("renders the confirmation title", () => {
-    const { getByText } = render(<EmailVerificationScreen />);
+  it("renders the confirmation title", async () => {
+    const { getByText } = await render(<EmailVerificationScreen />);
     expect(getByText("Confirm your email")).toBeTruthy();
   });
 
-  it("renders the confirmation message", () => {
-    const { getByText } = render(<EmailVerificationScreen />);
+  it("renders the confirmation message", async () => {
+    const { getByText } = await render(<EmailVerificationScreen />);
     expect(
       getByText("We sent you an email with a code. Look in your inbox."),
     ).toBeTruthy();
   });
 
-  it("displays the user email address", () => {
-    const { getByText } = render(<EmailVerificationScreen />);
+  it("displays the user email address", async () => {
+    const { getByText } = await render(<EmailVerificationScreen />);
     expect(getByText("user@example.com")).toBeTruthy();
   });
 
-  it("renders the resend email button", () => {
-    const { getByText } = render(<EmailVerificationScreen />);
+  it("renders the resend email button", async () => {
+    const { getByText } = await render(<EmailVerificationScreen />);
     expect(getByText("Send code again")).toBeTruthy();
   });
 
-  it("renders the back button", () => {
-    const { getByLabelText } = render(<EmailVerificationScreen />);
+  it("renders the back button", async () => {
+    const { getByLabelText } = await render(<EmailVerificationScreen />);
     expect(getByLabelText("Back")).toBeTruthy();
   });
 
   it("calls requestRegistrationOtp when resending in REGISTER mode", async () => {
-    const { getByText } = render(<EmailVerificationScreen />);
+    const { getByText } = await render(<EmailVerificationScreen />);
 
     await act(async () => {
-      fireEvent.press(getByText("Send code again"));
+      await fireEvent.press(getByText("Send code again"));
     });
 
     expect(mockRequestRegistrationOtp).toHaveBeenCalledWith(
@@ -157,10 +157,10 @@ describe("<EmailVerificationScreen />", () => {
 
   it("preserves analyticsAccepted=true from store when resending in REGISTER mode", async () => {
     mockPendingConsent = { analyticsAccepted: true, termsAccepted: false };
-    const { getByText } = render(<EmailVerificationScreen />);
+    const { getByText } = await render(<EmailVerificationScreen />);
 
     await act(async () => {
-      fireEvent.press(getByText("Send code again"));
+      await fireEvent.press(getByText("Send code again"));
     });
 
     expect(mockRequestRegistrationOtp).toHaveBeenCalledWith(
@@ -171,31 +171,33 @@ describe("<EmailVerificationScreen />", () => {
 
   it("calls requestLoginOtp when resending in LOGIN mode", async () => {
     mockSearchParams = { email: "user@example.com", mode: "LOGIN" };
-    const { getByText } = render(<EmailVerificationScreen />);
+    const { getByText } = await render(<EmailVerificationScreen />);
 
     await act(async () => {
-      fireEvent.press(getByText("Send code again"));
+      await fireEvent.press(getByText("Send code again"));
     });
 
     expect(mockRequestLoginOtp).toHaveBeenCalledWith("user@example.com");
   });
 
   it("shows success message after resending email", async () => {
-    const { getByText, queryByText } = render(<EmailVerificationScreen />);
+    const { getByText, queryByText } = await render(
+      <EmailVerificationScreen />,
+    );
 
     expect(queryByText("The app sent you a new code.")).toBeNull();
 
     await act(async () => {
-      fireEvent.press(getByText("Send code again"));
+      await fireEvent.press(getByText("Send code again"));
     });
 
     expect(getByText("The app sent you a new code.")).toBeTruthy();
   });
 
-  it("navigates to onboarding when back button is pressed", () => {
-    const { getByLabelText } = render(<EmailVerificationScreen />);
+  it("navigates to onboarding when back button is pressed", async () => {
+    const { getByLabelText } = await render(<EmailVerificationScreen />);
 
-    fireEvent.press(getByLabelText("Back"));
+    await fireEvent.press(getByLabelText("Back"));
 
     expect(mockReplace).toHaveBeenCalledWith("/onboarding");
   });
@@ -203,10 +205,12 @@ describe("<EmailVerificationScreen />", () => {
   it("shows error alert when resend fails", async () => {
     mockRequestRegistrationOtp.mockRejectedValue(new Error("Rate limited"));
 
-    const { getByText, queryByText } = render(<EmailVerificationScreen />);
+    const { getByText, queryByText } = await render(
+      <EmailVerificationScreen />,
+    );
 
     await act(async () => {
-      fireEvent.press(getByText("Send code again"));
+      await fireEvent.press(getByText("Send code again"));
     });
 
     expect(queryByText("The app sent you a new code.")).toBeNull();
@@ -216,18 +220,18 @@ describe("<EmailVerificationScreen />", () => {
   it("disables resend button during cooldown after successful resend", async () => {
     jest.useFakeTimers();
 
-    const { getByText } = render(<EmailVerificationScreen />);
+    const { getByText } = await render(<EmailVerificationScreen />);
 
     await act(async () => {
-      fireEvent.press(getByText("Send code again"));
+      await fireEvent.press(getByText("Send code again"));
     });
 
     expect(getByText(/Send code again \(\d+s\)/)).toBeTruthy();
 
-    fireEvent.press(getByText(/Send code again \(\d+s\)/));
+    await fireEvent.press(getByText(/Send code again \(\d+s\)/));
     expect(mockRequestRegistrationOtp).toHaveBeenCalledTimes(1);
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(61000);
     });
 
@@ -236,16 +240,16 @@ describe("<EmailVerificationScreen />", () => {
     jest.useRealTimers();
   });
 
-  it("renders the OTP code input", () => {
-    const { getByLabelText } = render(<EmailVerificationScreen />);
+  it("renders the OTP code input", async () => {
+    const { getByLabelText } = await render(<EmailVerificationScreen />);
     expect(getByLabelText("Verification code")).toBeTruthy();
   });
 
-  it("filters non-numeric characters from OTP input", () => {
-    const { getByLabelText } = render(<EmailVerificationScreen />);
+  it("filters non-numeric characters from OTP input", async () => {
+    const { getByLabelText } = await render(<EmailVerificationScreen />);
     const input = getByLabelText("Verification code");
 
-    fireEvent.changeText(input, "12ab34");
+    await fireEvent.changeText(input, "12ab34");
     expect(input.props.value).toBe("1234");
   });
 
@@ -257,12 +261,14 @@ describe("<EmailVerificationScreen />", () => {
       error: null,
     });
 
-    const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
+    const { getByLabelText, getByText } = await render(
+      <EmailVerificationScreen />,
+    );
 
-    fireEvent.changeText(getByLabelText("Verification code"), "123456");
+    await fireEvent.changeText(getByLabelText("Verification code"), "123456");
 
     await act(async () => {
-      fireEvent.press(getByText("Verify"));
+      await fireEvent.press(getByText("Verify"));
     });
 
     expect(mockVerifyOtp).toHaveBeenCalledWith({
@@ -280,12 +286,14 @@ describe("<EmailVerificationScreen />", () => {
       error: null,
     });
 
-    const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
+    const { getByLabelText, getByText } = await render(
+      <EmailVerificationScreen />,
+    );
 
-    fireEvent.changeText(getByLabelText("Verification code"), "123456");
+    await fireEvent.changeText(getByLabelText("Verification code"), "123456");
 
     await act(async () => {
-      fireEvent.press(getByText("Verify"));
+      await fireEvent.press(getByText("Verify"));
     });
 
     expect(mockInitializeFromSupabase).toHaveBeenCalled();
@@ -301,12 +309,14 @@ describe("<EmailVerificationScreen />", () => {
       error: null,
     });
 
-    const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
+    const { getByLabelText, getByText } = await render(
+      <EmailVerificationScreen />,
+    );
 
-    fireEvent.changeText(getByLabelText("Verification code"), "123456");
+    await fireEvent.changeText(getByLabelText("Verification code"), "123456");
 
     await act(async () => {
-      fireEvent.press(getByText("Verify"));
+      await fireEvent.press(getByText("Verify"));
     });
 
     expect(mockInitializeFromSupabase).toHaveBeenCalled();
@@ -319,16 +329,16 @@ describe("<EmailVerificationScreen />", () => {
       error: { message: "Invalid token" },
     });
 
-    const { getByLabelText, getByText, queryByText } = render(
+    const { getByLabelText, getByText, queryByText } = await render(
       <EmailVerificationScreen />,
     );
 
     expect(queryByText(/The code is wrong or has expired/)).toBeNull();
 
-    fireEvent.changeText(getByLabelText("Verification code"), "999999");
+    await fireEvent.changeText(getByLabelText("Verification code"), "999999");
 
     await act(async () => {
-      fireEvent.press(getByText("Verify"));
+      await fireEvent.press(getByText("Verify"));
     });
 
     expect(getByText(/The code is wrong or has expired/)).toBeTruthy();
@@ -341,19 +351,19 @@ describe("<EmailVerificationScreen />", () => {
       error: { message: "Invalid token" },
     });
 
-    const { getByLabelText, getByText, queryByText } = render(
+    const { getByLabelText, getByText, queryByText } = await render(
       <EmailVerificationScreen />,
     );
 
-    fireEvent.changeText(getByLabelText("Verification code"), "999999");
+    await fireEvent.changeText(getByLabelText("Verification code"), "999999");
 
     await act(async () => {
-      fireEvent.press(getByText("Verify"));
+      await fireEvent.press(getByText("Verify"));
     });
 
     expect(queryByText(/The code is wrong or has expired/)).toBeTruthy();
 
-    fireEvent.changeText(getByLabelText("Verification code"), "1");
+    await fireEvent.changeText(getByLabelText("Verification code"), "1");
 
     expect(queryByText(/The code is wrong or has expired/)).toBeNull();
   });
@@ -371,11 +381,13 @@ describe("<EmailVerificationScreen />", () => {
       error: null,
     });
 
-    const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
-    fireEvent.changeText(getByLabelText("Verification code"), "123456");
+    const { getByLabelText, getByText } = await render(
+      <EmailVerificationScreen />,
+    );
+    await fireEvent.changeText(getByLabelText("Verification code"), "123456");
 
     await act(async () => {
-      fireEvent.press(getByText("Verify"));
+      await fireEvent.press(getByText("Verify"));
     });
 
     expect(mockSaveConsentToProfile).toHaveBeenCalledWith({
@@ -396,11 +408,13 @@ describe("<EmailVerificationScreen />", () => {
       error: null,
     });
 
-    const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
-    fireEvent.changeText(getByLabelText("Verification code"), "123456");
+    const { getByLabelText, getByText } = await render(
+      <EmailVerificationScreen />,
+    );
+    await fireEvent.changeText(getByLabelText("Verification code"), "123456");
 
     await act(async () => {
-      fireEvent.press(getByText("Verify"));
+      await fireEvent.press(getByText("Verify"));
     });
 
     expect(mockAcceptConsent).toHaveBeenCalled();
@@ -416,11 +430,13 @@ describe("<EmailVerificationScreen />", () => {
       error: null,
     });
 
-    const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
-    fireEvent.changeText(getByLabelText("Verification code"), "123456");
+    const { getByLabelText, getByText } = await render(
+      <EmailVerificationScreen />,
+    );
+    await fireEvent.changeText(getByLabelText("Verification code"), "123456");
 
     await act(async () => {
-      fireEvent.press(getByText("Verify"));
+      await fireEvent.press(getByText("Verify"));
     });
 
     expect(mockSetConsentStatus).not.toHaveBeenCalled();
@@ -435,11 +451,13 @@ describe("<EmailVerificationScreen />", () => {
       error: null,
     });
 
-    const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
-    fireEvent.changeText(getByLabelText("Verification code"), "123456");
+    const { getByLabelText, getByText } = await render(
+      <EmailVerificationScreen />,
+    );
+    await fireEvent.changeText(getByLabelText("Verification code"), "123456");
 
     await act(async () => {
-      fireEvent.press(getByText("Verify"));
+      await fireEvent.press(getByText("Verify"));
     });
 
     // Fail closed: no server record means no access. Stack.Protected intercepts
@@ -458,11 +476,13 @@ describe("<EmailVerificationScreen />", () => {
       error: null,
     });
 
-    const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
-    fireEvent.changeText(getByLabelText("Verification code"), "123456");
+    const { getByLabelText, getByText } = await render(
+      <EmailVerificationScreen />,
+    );
+    await fireEvent.changeText(getByLabelText("Verification code"), "123456");
 
     await act(async () => {
-      fireEvent.press(getByText("Verify"));
+      await fireEvent.press(getByText("Verify"));
     });
 
     expect(mockSaveConsentToProfile).not.toHaveBeenCalled();
@@ -477,11 +497,13 @@ describe("<EmailVerificationScreen />", () => {
       error: null,
     });
 
-    const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
-    fireEvent.changeText(getByLabelText("Verification code"), "123456");
+    const { getByLabelText, getByText } = await render(
+      <EmailVerificationScreen />,
+    );
+    await fireEvent.changeText(getByLabelText("Verification code"), "123456");
 
     await act(async () => {
-      fireEvent.press(getByText("Verify"));
+      await fireEvent.press(getByText("Verify"));
     });
 
     expect(mockSaveConsentToProfile).toHaveBeenCalledWith({
@@ -491,12 +513,14 @@ describe("<EmailVerificationScreen />", () => {
   });
 
   it("does not call verifyOtp when code is incomplete", async () => {
-    const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
+    const { getByLabelText, getByText } = await render(
+      <EmailVerificationScreen />,
+    );
 
-    fireEvent.changeText(getByLabelText("Verification code"), "123");
+    await fireEvent.changeText(getByLabelText("Verification code"), "123");
 
     await act(async () => {
-      fireEvent.press(getByText("Verify"));
+      await fireEvent.press(getByText("Verify"));
     });
 
     expect(mockVerifyOtp).not.toHaveBeenCalled();
@@ -515,11 +539,13 @@ describe("<EmailVerificationScreen />", () => {
     });
 
     it("bypasses supabase and marks consent accepted for review user in REGISTER mode", async () => {
-      const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
-      fireEvent.changeText(getByLabelText("Verification code"), "654321");
+      const { getByLabelText, getByText } = await render(
+        <EmailVerificationScreen />,
+      );
+      await fireEvent.changeText(getByLabelText("Verification code"), "654321");
 
       await act(async () => {
-        fireEvent.press(getByText("Verify"));
+        await fireEvent.press(getByText("Verify"));
       });
 
       expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
@@ -528,11 +554,13 @@ describe("<EmailVerificationScreen />", () => {
     });
 
     it("navigates to anamnesis for review user in REGISTER mode", async () => {
-      const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
-      fireEvent.changeText(getByLabelText("Verification code"), "654321");
+      const { getByLabelText, getByText } = await render(
+        <EmailVerificationScreen />,
+      );
+      await fireEvent.changeText(getByLabelText("Verification code"), "654321");
 
       await act(async () => {
-        fireEvent.press(getByText("Verify"));
+        await fireEvent.press(getByText("Verify"));
       });
 
       expect(mockReplace).toHaveBeenCalledWith("/anamnesis");
@@ -540,11 +568,13 @@ describe("<EmailVerificationScreen />", () => {
 
     it("bypasses supabase and marks consent accepted for review user in LOGIN mode", async () => {
       mockSearchParams = { email: "reviewer@example.com", mode: "LOGIN" };
-      const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
-      fireEvent.changeText(getByLabelText("Verification code"), "654321");
+      const { getByLabelText, getByText } = await render(
+        <EmailVerificationScreen />,
+      );
+      await fireEvent.changeText(getByLabelText("Verification code"), "654321");
 
       await act(async () => {
-        fireEvent.press(getByText("Verify"));
+        await fireEvent.press(getByText("Verify"));
       });
 
       expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
@@ -554,11 +584,13 @@ describe("<EmailVerificationScreen />", () => {
     });
 
     it("falls through to supabase verifyOtp when OTP does not match review OTP", async () => {
-      const { getByLabelText, getByText } = render(<EmailVerificationScreen />);
-      fireEvent.changeText(getByLabelText("Verification code"), "000000");
+      const { getByLabelText, getByText } = await render(
+        <EmailVerificationScreen />,
+      );
+      await fireEvent.changeText(getByLabelText("Verification code"), "000000");
 
       await act(async () => {
-        fireEvent.press(getByText("Verify"));
+        await fireEvent.press(getByText("Verify"));
       });
 
       expect(mockVerifyOtp).toHaveBeenCalled();

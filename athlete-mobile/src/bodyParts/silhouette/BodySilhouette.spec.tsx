@@ -1,6 +1,5 @@
 import { type Side } from "@/bodyParts/types";
 import { fireEvent, render, screen } from "@/utils/testUtils";
-import { View } from "react-native";
 import { type ComponentProps } from "react";
 import { BodySilhouette } from "./BodySilhouette";
 import { BACK_REGION_IDS, FRONT_REGION_IDS } from "./regionMapping";
@@ -61,9 +60,18 @@ function renderSilhouette(overrides: BaseOverrides & HandlerOverrides = {}) {
   return render(<BodySilhouette {...base} />);
 }
 
+function wrapperView() {
+  const root = screen.root;
+  if (root === null) {
+    throw new Error("BodySilhouette rendered no host element");
+  }
+  expect(root.type).toBe("View");
+  return root;
+}
+
 describe("BodySilhouette: highlight color resolution", () => {
-  it("fills two highlight groups with their own colors", () => {
-    renderSilhouette({
+  it("fills two highlight groups with their own colors", async () => {
+    await renderSilhouette({
       side: "BACK",
       highlights: [
         { regions: ["GLUTES_LEFT"], color: "primary" },
@@ -78,8 +86,8 @@ describe("BodySilhouette: highlight color resolution", () => {
     ]);
   });
 
-  it("resolves an overlapping region to the first group's color", () => {
-    renderSilhouette({
+  it("resolves an overlapping region to the first group's color", async () => {
+    await renderSilhouette({
       side: "BACK",
       highlights: [
         { regions: ["GLUTES_LEFT"], color: "primary" },
@@ -92,10 +100,10 @@ describe("BodySilhouette: highlight color resolution", () => {
 });
 
 describe("BodySilhouette: accessibility surface", () => {
-  it("hides the subtree from assistive technology and touch when no handler is given", () => {
-    renderSilhouette();
+  it("hides the subtree from assistive technology and touch when no handler is given", async () => {
+    await renderSilhouette();
 
-    const wrapper = screen.UNSAFE_getByType(View);
+    const wrapper = wrapperView();
     expect(wrapper.props["aria-hidden"]).toBe(true);
     expect(wrapper.props.pointerEvents).toBe("none");
     expect(
@@ -103,8 +111,8 @@ describe("BodySilhouette: accessibility surface", () => {
     ).toHaveLength(0);
   });
 
-  it("labels every region when a handler is given", () => {
-    renderSilhouette({
+  it("labels every region when a handler is given", async () => {
+    await renderSilhouette({
       onRegionPress: jest.fn(),
       getRegionLabel: identityLabel,
     });
@@ -115,11 +123,11 @@ describe("BodySilhouette: accessibility surface", () => {
     expect(unlabelled).toEqual([]);
   });
 
-  it("calls back with the id of the pressed region", () => {
+  it("calls back with the id of the pressed region", async () => {
     const onRegionPress = jest.fn();
-    renderSilhouette({ onRegionPress, getRegionLabel: identityLabel });
+    await renderSilhouette({ onRegionPress, getRegionLabel: identityLabel });
 
-    fireEvent.press(screen.getByLabelText("CHEST"));
+    await fireEvent.press(screen.getByLabelText("CHEST"));
 
     expect(onRegionPress).toHaveBeenCalledTimes(1);
     expect(onRegionPress).toHaveBeenCalledWith("CHEST");
@@ -127,8 +135,8 @@ describe("BodySilhouette: accessibility surface", () => {
 });
 
 describe("BodySilhouette: region testID prefix", () => {
-  it("applies the region testID prefix in interactive mode", () => {
-    renderSilhouette({
+  it("applies the region testID prefix in interactive mode", async () => {
+    await renderSilhouette({
       testID: "interactive-silhouette",
       regionTestIDPrefix: "interactive-region-",
       onRegionPress: jest.fn(),
@@ -138,8 +146,8 @@ describe("BodySilhouette: region testID prefix", () => {
     expect(regionPathHosts("interactive-region-CHEST")).not.toHaveLength(0);
   });
 
-  it("applies the region testID prefix in read only mode", () => {
-    renderSilhouette({
+  it("applies the region testID prefix in read only mode", async () => {
+    await renderSilhouette({
       testID: "readonly-silhouette",
       regionTestIDPrefix: "readonly-region-",
     });
@@ -153,20 +161,20 @@ describe("BodySilhouette: region testID prefix", () => {
 });
 
 describe("BodySilhouette: sizing", () => {
-  it("applies a numeric size without an aspect ratio style", () => {
-    renderSilhouette({ width: 140, height: 200 });
+  it("applies a numeric size without an aspect ratio style", async () => {
+    await renderSilhouette({ width: 140, height: 200 });
 
-    const wrapper = screen.UNSAFE_getByType(View);
+    const wrapper = wrapperView();
     expect(wrapper.props.style).toEqual(
       expect.objectContaining({ width: 140, height: 200 }),
     );
     expect(wrapper.props.style.aspectRatio).toBeUndefined();
   });
 
-  it("applies a percentage size without an aspect ratio style", () => {
-    renderSilhouette({ width: "100%", height: "100%" });
+  it("applies a percentage size without an aspect ratio style", async () => {
+    await renderSilhouette({ width: "100%", height: "100%" });
 
-    const wrapper = screen.UNSAFE_getByType(View);
+    const wrapper = wrapperView();
     expect(wrapper.props.style).toEqual(
       expect.objectContaining({ width: "100%", height: "100%" }),
     );
@@ -184,8 +192,8 @@ describe("BodySilhouette: asset coverage", () => {
 
   it.each(combos)(
     "renders a path for every mapped region id in the %s %s asset",
-    (gender, side, ids) => {
-      renderSilhouette({
+    async (gender, side, ids) => {
+      await renderSilhouette({
         gender,
         side,
         testID: `${gender}-${side}-silhouette`,

@@ -22,8 +22,8 @@ describe("syncQueueStore", () => {
   });
 
   describe("initial state", () => {
-    it("has empty queue and no items to sync", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
+    it("has empty queue and no items to sync", async () => {
+      const { result } = await renderHook(() => useSyncQueueStore());
 
       expect(result.current.queue).toHaveLength(0);
       expect(result.current.hasItemsToSync(TEST_USER_ID)).toBe(false);
@@ -31,10 +31,10 @@ describe("syncQueueStore", () => {
   });
 
   describe("enqueue", () => {
-    it("stores the given owner", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
+    it("stores the given owner", async () => {
+      const { result } = await renderHook(() => useSyncQueueStore());
 
-      act(() => {
+      await act(() => {
         result.current.enqueue({
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
@@ -46,10 +46,10 @@ describe("syncQueueStore", () => {
       expect(result.current.queue[0].ownerUserId).toBe("user-a");
     });
 
-    it("stores a null owner", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
+    it("stores a null owner", async () => {
+      const { result } = await renderHook(() => useSyncQueueStore());
 
-      act(() => {
+      await act(() => {
         result.current.enqueue({
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
@@ -61,10 +61,10 @@ describe("syncQueueStore", () => {
       expect(result.current.queue[0].ownerUserId).toBeNull();
     });
 
-    it("adds item with correct defaults", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
+    it("adds item with correct defaults", async () => {
+      const { result } = await renderHook(() => useSyncQueueStore());
 
-      act(() => {
+      await act(() => {
         result.current.enqueue({
           type: "COMPLETED_WORKOUT",
           referenceId: "workout-1",
@@ -87,10 +87,10 @@ describe("syncQueueStore", () => {
       expect(typeof result.current.queue[0].createdAt).toBe("number");
     });
 
-    it("maintains FIFO order for multiple items", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
+    it("maintains FIFO order for multiple items", async () => {
+      const { result } = await renderHook(() => useSyncQueueStore());
 
-      act(() => {
+      await act(() => {
         result.current.enqueue({
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
@@ -117,10 +117,10 @@ describe("syncQueueStore", () => {
       expect(result.current.queue[2].referenceId).toBe("t1");
     });
 
-    it("drops the oldest items when queue is at max capacity", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
+    it("drops the oldest items when queue is at max capacity", async () => {
+      const { result } = await renderHook(() => useSyncQueueStore());
 
-      act(() => {
+      await act(() => {
         for (let i = 0; i < MAX_QUEUE_SIZE + 5; i++) {
           result.current.enqueue({
             type: "EXERCISE_DATA",
@@ -140,10 +140,10 @@ describe("syncQueueStore", () => {
   });
 
   describe("markInProgress", () => {
-    it("updates status and lastAttemptAt", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
+    it("updates status and lastAttemptAt", async () => {
+      const { result } = await renderHook(() => useSyncQueueStore());
 
-      act(() => {
+      await act(() => {
         result.current.enqueue({
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
@@ -154,7 +154,7 @@ describe("syncQueueStore", () => {
 
       const itemId = result.current.queue[0].id;
 
-      act(() => {
+      await act(() => {
         result.current.markInProgress(itemId);
       });
 
@@ -164,10 +164,10 @@ describe("syncQueueStore", () => {
   });
 
   describe("markCompleted", () => {
-    it("removes item from queue", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
+    it("removes item from queue", async () => {
+      const { result } = await renderHook(() => useSyncQueueStore());
 
-      act(() => {
+      await act(() => {
         result.current.enqueue({
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
@@ -184,7 +184,7 @@ describe("syncQueueStore", () => {
 
       const itemId = result.current.queue[0].id;
 
-      act(() => {
+      await act(() => {
         result.current.markCompleted(itemId);
       });
 
@@ -194,10 +194,10 @@ describe("syncQueueStore", () => {
   });
 
   describe("markFailed", () => {
-    it("updates status, error, and increments attemptCount", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
+    it("updates status, error, and increments attemptCount", async () => {
+      const { result } = await renderHook(() => useSyncQueueStore());
 
-      act(() => {
+      await act(() => {
         result.current.enqueue({
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
@@ -208,7 +208,7 @@ describe("syncQueueStore", () => {
 
       const itemId = result.current.queue[0].id;
 
-      act(() => {
+      await act(() => {
         result.current.markFailed(itemId, "Network error");
       });
 
@@ -224,10 +224,10 @@ describe("syncQueueStore", () => {
   });
 
   describe("resetStaleItems", () => {
-    it("resets IN_PROGRESS items to PENDING", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
+    it("resets IN_PROGRESS items to PENDING", async () => {
+      const { result } = await renderHook(() => useSyncQueueStore());
 
-      act(() => {
+      await act(() => {
         result.current.enqueue({
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
@@ -244,13 +244,13 @@ describe("syncQueueStore", () => {
 
       const firstId = result.current.queue[0].id;
 
-      act(() => {
+      await act(() => {
         result.current.markInProgress(firstId);
       });
 
       expect(result.current.queue[0].status).toBe("IN_PROGRESS");
 
-      act(() => {
+      await act(() => {
         result.current.resetStaleItems();
       });
 
@@ -260,10 +260,10 @@ describe("syncQueueStore", () => {
   });
 
   describe("getNextPending", () => {
-    it("returns first PENDING item", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
+    it("returns first PENDING item", async () => {
+      const { result } = await renderHook(() => useSyncQueueStore());
 
-      act(() => {
+      await act(() => {
         result.current.enqueue({
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
@@ -280,7 +280,7 @@ describe("syncQueueStore", () => {
 
       const firstId = result.current.queue[0].id;
 
-      act(() => {
+      await act(() => {
         result.current.markInProgress(firstId);
       });
 
@@ -288,15 +288,15 @@ describe("syncQueueStore", () => {
       expect(next?.referenceId).toBe("e1");
     });
 
-    it("returns undefined when queue is empty", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
+    it("returns undefined when queue is empty", async () => {
+      const { result } = await renderHook(() => useSyncQueueStore());
       expect(result.current.getNextPending(TEST_USER_ID)).toBeUndefined();
     });
 
-    it("skips items of another owner and returns unowned items", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
+    it("skips items of another owner and returns unowned items", async () => {
+      const { result } = await renderHook(() => useSyncQueueStore());
 
-      act(() => {
+      await act(() => {
         result.current.enqueue({
           type: "COMPLETED_WORKOUT",
           referenceId: "owned-by-a",
@@ -317,7 +317,7 @@ describe("syncQueueStore", () => {
       );
       expect(result.current.hasItemsToSync("b")).toBe(true);
 
-      act(() => {
+      await act(() => {
         result.current.claimItem(result.current.queue[1].id, "a");
       });
 
@@ -325,10 +325,10 @@ describe("syncQueueStore", () => {
       expect(result.current.hasItemsToSync("b")).toBe(false);
     });
 
-    it("skips items that exceeded max retry attempts", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
+    it("skips items that exceeded max retry attempts", async () => {
+      const { result } = await renderHook(() => useSyncQueueStore());
 
-      act(() => {
+      await act(() => {
         result.current.enqueue({
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
@@ -345,7 +345,7 @@ describe("syncQueueStore", () => {
 
       const firstId = result.current.queue[0].id;
 
-      act(() => {
+      await act(() => {
         for (let i = 0; i < MAX_RETRY_ATTEMPTS; i++) {
           result.current.markFailed(firstId, "error");
           // Reset to pending so it can be retried in the test
@@ -362,10 +362,10 @@ describe("syncQueueStore", () => {
   });
 
   describe("claimItem", () => {
-    it("sets the owner of an unowned item once", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
+    it("sets the owner of an unowned item once", async () => {
+      const { result } = await renderHook(() => useSyncQueueStore());
 
-      act(() => {
+      await act(() => {
         result.current.enqueue({
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
@@ -375,7 +375,7 @@ describe("syncQueueStore", () => {
       });
       const itemId = result.current.queue[0].id;
 
-      act(() => {
+      await act(() => {
         result.current.claimItem(itemId, "a");
         result.current.claimItem(itemId, "b");
       });
@@ -416,9 +416,9 @@ describe("syncQueueStore", () => {
   });
 
   describe("clearUserItems", () => {
-    function enqueueMixedOwners(): void {
+    async function enqueueMixedOwners(): Promise<void> {
       const { enqueue } = useSyncQueueStore.getState();
-      act(() => {
+      await act(() => {
         enqueue({
           type: "COMPLETED_WORKOUT",
           referenceId: "owned-by-a",
@@ -444,30 +444,30 @@ describe("syncQueueStore", () => {
       return useSyncQueueStore.getState().queue.map((i) => i.referenceId);
     }
 
-    it("removes the items of the user", () => {
-      enqueueMixedOwners();
+    it("removes the items of the user", async () => {
+      await enqueueMixedOwners();
 
-      act(() => {
+      await act(() => {
         useSyncQueueStore.getState().clearUserItems("a");
       });
 
       expect(referenceIds()).not.toContain("owned-by-a");
     });
 
-    it("removes unowned items", () => {
-      enqueueMixedOwners();
+    it("removes unowned items", async () => {
+      await enqueueMixedOwners();
 
-      act(() => {
+      await act(() => {
         useSyncQueueStore.getState().clearUserItems("a");
       });
 
       expect(referenceIds()).not.toContain("unowned");
     });
 
-    it("keeps the items of other owners", () => {
-      enqueueMixedOwners();
+    it("keeps the items of other owners", async () => {
+      await enqueueMixedOwners();
 
-      act(() => {
+      await act(() => {
         useSyncQueueStore.getState().clearUserItems("a");
       });
 
@@ -476,10 +476,10 @@ describe("syncQueueStore", () => {
   });
 
   describe("retrying failed items", () => {
-    it("getNextPending returns a failed item whose backoff window has long passed", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
+    it("getNextPending returns a failed item whose backoff window has long passed", async () => {
+      const { result } = await renderHook(() => useSyncQueueStore());
 
-      act(() => {
+      await act(() => {
         result.current.enqueue({
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
@@ -490,7 +490,7 @@ describe("syncQueueStore", () => {
 
       const itemId = result.current.queue[0].id;
 
-      act(() => {
+      await act(() => {
         result.current.markFailed(itemId, "Network error");
         backdateLastAttempt(itemId);
       });
@@ -501,10 +501,10 @@ describe("syncQueueStore", () => {
       expect(result.current.getNextPending(TEST_USER_ID)?.id).toBe(itemId);
     });
 
-    it("getNextPending and hasItemsToSync agree so triggered syncs make progress", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
+    it("getNextPending and hasItemsToSync agree so triggered syncs make progress", async () => {
+      const { result } = await renderHook(() => useSyncQueueStore());
 
-      act(() => {
+      await act(() => {
         result.current.enqueue({
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
@@ -515,7 +515,7 @@ describe("syncQueueStore", () => {
 
       const itemId = result.current.queue[0].id;
 
-      act(() => {
+      await act(() => {
         result.current.markFailed(itemId, "Network error");
         backdateLastAttempt(itemId);
       });
@@ -528,10 +528,10 @@ describe("syncQueueStore", () => {
   });
 
   describe("startup recovery of a wedged queue", () => {
-    it("makes a previously failed item processable again", () => {
-      const { result } = renderHook(() => useSyncQueueStore());
+    it("makes a previously failed item processable again", async () => {
+      const { result } = await renderHook(() => useSyncQueueStore());
 
-      act(() => {
+      await act(() => {
         result.current.enqueue({
           type: "COMPLETED_WORKOUT",
           referenceId: "w1",
@@ -542,12 +542,12 @@ describe("syncQueueStore", () => {
 
       const itemId = result.current.queue[0].id;
 
-      act(() => {
+      await act(() => {
         result.current.markFailed(itemId, "Network error");
         backdateLastAttempt(itemId);
       });
 
-      act(() => {
+      await act(() => {
         result.current.resetStaleItems();
       });
 

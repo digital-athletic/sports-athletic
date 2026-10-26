@@ -16,29 +16,29 @@ const mount = (
   );
 
 describe("PrivacyCheckbox: screen reader labels", () => {
-  it("names the checkbox for anonymised data use", () => {
-    const { getByLabelText } = mount("ANONYMISED_DATA_USE");
+  it("names the checkbox for anonymised data use", async () => {
+    const { getByLabelText } = await mount("ANONYMISED_DATA_USE");
     expect(
       getByLabelText("Agree: share usage data to improve the app"),
     ).toBeTruthy();
   });
 
-  it("names the checkbox for terms and privacy", () => {
-    const { getByLabelText } = mount("PRIVACY_FULL");
+  it("names the checkbox for terms and privacy", async () => {
+    const { getByLabelText } = await mount("PRIVACY_FULL");
     expect(
       getByLabelText("Agree: terms and conditions and privacy policy"),
     ).toBeTruthy();
   });
 
-  it("names the checkbox for privacy only", () => {
-    const { getByLabelText } = mount("PRIVACY_SIMPLE");
+  it("names the checkbox for privacy only", async () => {
+    const { getByLabelText } = await mount("PRIVACY_SIMPLE");
     expect(getByLabelText("Agree: privacy policy")).toBeTruthy();
   });
 
-  it("reports the checked change when the labelled checkbox is pressed", () => {
+  it("reports the checked change when the labelled checkbox is pressed", async () => {
     const onCheck = jest.fn();
-    const { getByLabelText } = mount("PRIVACY_SIMPLE", onCheck);
-    fireEvent.press(getByLabelText("Agree: privacy policy"));
+    const { getByLabelText } = await mount("PRIVACY_SIMPLE", onCheck);
+    await fireEvent.press(getByLabelText("Agree: privacy policy"));
     expect(onCheck).toHaveBeenCalledWith(true);
   });
 });

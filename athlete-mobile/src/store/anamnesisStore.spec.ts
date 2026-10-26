@@ -5,41 +5,41 @@ import { createInitialState, useAnamnesisStore } from "./anamnesisStore";
 const DEFAULT_STATE = createInitialState();
 
 describe("anamnesisStore", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     // Reset store state before each test
-    const { result } = renderHook(() => useAnamnesisStore());
-    act(() => {
+    const { result } = await renderHook(() => useAnamnesisStore());
+    await act(() => {
       result.current.resetAnamnesisData();
     });
   });
 
   describe("Initial State", () => {
-    it("matches default values object", () => {
-      const { result } = renderHook(() => useAnamnesisStore());
+    it("matches default values object", async () => {
+      const { result } = await renderHook(() => useAnamnesisStore());
       expect(result.current.values).toEqual(DEFAULT_STATE.values);
     });
 
-    it("matches default tags object", () => {
-      const { result } = renderHook(() => useAnamnesisStore());
+    it("matches default tags object", async () => {
+      const { result } = await renderHook(() => useAnamnesisStore());
       expect(result.current.tags).toEqual(DEFAULT_STATE.tags);
     });
   });
 
   describe("setValue", () => {
-    it("should set a value by path", () => {
-      const { result } = renderHook(() => useAnamnesisStore());
+    it("should set a value by path", async () => {
+      const { result } = await renderHook(() => useAnamnesisStore());
 
-      act(() => {
+      await act(() => {
         result.current.setValue("user.height", 180);
       });
 
       expect(result.current.values["user.height"]).toBe(180);
     });
 
-    it("should update existing value", () => {
-      const { result } = renderHook(() => useAnamnesisStore());
+    it("should update existing value", async () => {
+      const { result } = await renderHook(() => useAnamnesisStore());
 
-      act(() => {
+      await act(() => {
         result.current.setValue("user.weight", 70);
         result.current.setValue("user.weight", 75);
       });
@@ -47,10 +47,10 @@ describe("anamnesisStore", () => {
       expect(result.current.values["user.weight"]).toBe(75);
     });
 
-    it("should handle multiple values", () => {
-      const { result } = renderHook(() => useAnamnesisStore());
+    it("should handle multiple values", async () => {
+      const { result } = await renderHook(() => useAnamnesisStore());
 
-      act(() => {
+      await act(() => {
         result.current.setValue("user.height", 180);
         result.current.setValue("user.weight", 70);
         result.current.setValue("user.age", 25);
@@ -65,20 +65,20 @@ describe("anamnesisStore", () => {
   });
 
   describe("setTag", () => {
-    it("should set tag values", () => {
-      const { result } = renderHook(() => useAnamnesisStore());
+    it("should set tag values", async () => {
+      const { result } = await renderHook(() => useAnamnesisStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTag("injury", ["knee", "ankle"]);
       });
 
       expect(result.current.tags.injury).toEqual(["knee", "ankle"]);
     });
 
-    it("should update existing tag", () => {
-      const { result } = renderHook(() => useAnamnesisStore());
+    it("should update existing tag", async () => {
+      const { result } = await renderHook(() => useAnamnesisStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTag("injury", ["knee"]);
         result.current.setTag("injury", ["knee", "ankle"]);
       });
@@ -86,10 +86,10 @@ describe("anamnesisStore", () => {
       expect(result.current.tags.injury).toEqual(["knee", "ankle"]);
     });
 
-    it("should handle multiple tags", () => {
-      const { result } = renderHook(() => useAnamnesisStore());
+    it("should handle multiple tags", async () => {
+      const { result } = await renderHook(() => useAnamnesisStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTag("injury", ["knee"]);
         result.current.setTag("equipment", ["dumbbells", "barbell"]);
       });
@@ -100,10 +100,10 @@ describe("anamnesisStore", () => {
   });
 
   describe("resetAnamnesisData", () => {
-    it("should reset all state", () => {
-      const { result } = renderHook(() => useAnamnesisStore());
+    it("should reset all state", async () => {
+      const { result } = await renderHook(() => useAnamnesisStore());
 
-      act(() => {
+      await act(() => {
         result.current.setValue("user.height", 180);
         result.current.setTag("injury", ["knee"]);
         result.current.resetAnamnesisData();

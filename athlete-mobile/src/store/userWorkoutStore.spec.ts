@@ -3,16 +3,16 @@ import { formatDateToISO } from "@/utils/date";
 import { useUserWorkoutStore } from "./userWorkoutStore";
 
 describe("userWorkoutStore", () => {
-  beforeEach(() => {
-    const { result } = renderHook(() => useUserWorkoutStore());
-    act(() => {
+  beforeEach(async () => {
+    const { result } = await renderHook(() => useUserWorkoutStore());
+    await act(() => {
       result.current.resetUserWorkoutData();
     });
   });
 
   describe("initial state", () => {
-    it("has default workout data", () => {
-      const { result } = renderHook(() => useUserWorkoutStore());
+    it("has default workout data", async () => {
+      const { result } = await renderHook(() => useUserWorkoutStore());
       expect(result.current.workoutData.sport).toBe("OTHER_SPORT");
       expect(result.current.workoutData.tags).toEqual({
         POSITION: ["FIELD"],
@@ -20,17 +20,17 @@ describe("userWorkoutStore", () => {
       });
     });
 
-    it("has no training plan", () => {
-      const { result } = renderHook(() => useUserWorkoutStore());
+    it("has no training plan", async () => {
+      const { result } = await renderHook(() => useUserWorkoutStore());
       expect(result.current.trainingPlan).toBeNull();
     });
   });
 
   describe("setWorkoutData", () => {
-    it("merges partial data", () => {
-      const { result } = renderHook(() => useUserWorkoutStore());
+    it("merges partial data", async () => {
+      const { result } = await renderHook(() => useUserWorkoutStore());
 
-      act(() => {
+      await act(() => {
         result.current.setWorkoutData({ sport: "FOOTBALL_SPORT" });
       });
 
@@ -43,10 +43,10 @@ describe("userWorkoutStore", () => {
   });
 
   describe("setSport", () => {
-    it("updates sport field", () => {
-      const { result } = renderHook(() => useUserWorkoutStore());
+    it("updates sport field", async () => {
+      const { result } = await renderHook(() => useUserWorkoutStore());
 
-      act(() => {
+      await act(() => {
         result.current.setSport("HANDBALL_SPORT");
       });
 
@@ -55,10 +55,10 @@ describe("userWorkoutStore", () => {
   });
 
   describe("setTags", () => {
-    it("replaces tags with structured format", () => {
-      const { result } = renderHook(() => useUserWorkoutStore());
+    it("replaces tags with structured format", async () => {
+      const { result } = await renderHook(() => useUserWorkoutStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTags({ LEVEL: ["ADVANCED"], POSITION: ["GOAL"] });
       });
 
@@ -70,21 +70,21 @@ describe("userWorkoutStore", () => {
   });
 
   describe("setTrainingPlan", () => {
-    it("sets training plan", () => {
-      const { result } = renderHook(() => useUserWorkoutStore());
+    it("sets training plan", async () => {
+      const { result } = await renderHook(() => useUserWorkoutStore());
       const plan = { start: formatDateToISO(new Date()), sections: [] };
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingPlan(plan);
       });
 
       expect(result.current.trainingPlan).not.toBeNull();
     });
 
-    it("clears training plan with null", () => {
-      const { result } = renderHook(() => useUserWorkoutStore());
+    it("clears training plan with null", async () => {
+      const { result } = await renderHook(() => useUserWorkoutStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingPlan({
           start: formatDateToISO(new Date()),
           sections: [],
@@ -97,8 +97,8 @@ describe("userWorkoutStore", () => {
   });
 
   describe("saveMaxValues", () => {
-    it("updates maxValues in workoutData", () => {
-      const { result } = renderHook(() => useUserWorkoutStore());
+    it("updates maxValues in workoutData", async () => {
+      const { result } = await renderHook(() => useUserWorkoutStore());
       const newMaxValues = {
         testAt: new Date("2025-01-15").getTime(),
         verticalPush: { barbell: 100 },
@@ -110,7 +110,7 @@ describe("userWorkoutStore", () => {
         lowerBody: {},
       };
 
-      act(() => {
+      await act(() => {
         result.current.saveMaxValues(newMaxValues);
       });
 
@@ -121,10 +121,10 @@ describe("userWorkoutStore", () => {
   });
 
   describe("setSeasonPhase", () => {
-    it("updates season phase", () => {
-      const { result } = renderHook(() => useUserWorkoutStore());
+    it("updates season phase", async () => {
+      const { result } = await renderHook(() => useUserWorkoutStore());
 
-      act(() => {
+      await act(() => {
         result.current.setSeasonPhase({
           type: "COMPETITION",
           endDate: "2025-12-31",
@@ -136,10 +136,10 @@ describe("userWorkoutStore", () => {
   });
 
   describe("resetUserWorkoutData", () => {
-    it("resets to initial state", () => {
-      const { result } = renderHook(() => useUserWorkoutStore());
+    it("resets to initial state", async () => {
+      const { result } = await renderHook(() => useUserWorkoutStore());
 
-      act(() => {
+      await act(() => {
         result.current.setSport("FOOTBALL_SPORT");
         result.current.setTrainingPlan({
           start: formatDateToISO(new Date()),

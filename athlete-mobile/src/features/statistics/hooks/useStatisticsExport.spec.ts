@@ -67,25 +67,25 @@ const WORKOUT_HEADER_KEYS = [
 ];
 
 describe("useStatisticsExport: workouts", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
     jest.spyOn(Logger, "logError").mockResolvedValue(undefined);
-    act(() => {
+    await act(() => {
       useAuthStore.setState({ auth: { userId: "u1" } });
       useCompletedWorkoutsStore.getState().clearWorkoutHistory();
       useExerciseProgressStore.setState({ testHistory: [] });
     });
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     jest.restoreAllMocks();
-    act(() => {
+    await act(() => {
       useAuthStore.setState({ auth: null });
     });
   });
 
-  it("cannot export without rows", () => {
-    const { result } = renderHook(() =>
+  it("cannot export without rows", async () => {
+    const { result } = await renderHook(() =>
       useStatisticsExport({ kind: "workouts", scale: "total" }),
     );
 
@@ -94,10 +94,10 @@ describe("useStatisticsExport: workouts", () => {
 
   it("refuses without a logged in user", async () => {
     addWorkout("w1", Date.now() - DAY);
-    act(() => {
+    await act(() => {
       useAuthStore.setState({ auth: null });
     });
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useStatisticsExport({ kind: "workouts", scale: "total" }),
     );
 
@@ -113,7 +113,7 @@ describe("useStatisticsExport: workouts", () => {
     addWorkout("old", Date.now() - 60 * DAY);
     addWorkout("mid", Date.now() - 3 * DAY);
     addWorkout("new", Date.now() - DAY);
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useStatisticsExport({ kind: "workouts", scale: "week" }),
     );
 
@@ -141,7 +141,7 @@ describe("useStatisticsExport: workouts", () => {
   it("writes one row per performed set with exercise, reps and kg", async () => {
     addWorkout("w1", Date.now() - DAY);
     const exercise = getExerciseById(BENCH_PRESS_ID);
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useStatisticsExport({ kind: "workouts", scale: "total" }),
     );
 
@@ -167,7 +167,7 @@ describe("useStatisticsExport: workouts", () => {
     addWorkout("skipped", Date.now() - DAY, [
       { ...performedSet, skipped: true },
     ]);
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useStatisticsExport({ kind: "workouts", scale: "total" }),
     );
 
@@ -187,7 +187,7 @@ describe("useStatisticsExport: workouts", () => {
         finish = resolve;
       }),
     );
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useStatisticsExport({ kind: "workouts", scale: "total" }),
     );
 
@@ -207,7 +207,7 @@ describe("useStatisticsExport: workouts", () => {
   it("alerts with the common error when sharing fails", async () => {
     addWorkout("w1", Date.now() - DAY);
     mockShareCsv.mockRejectedValueOnce(new Error("boom"));
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useStatisticsExport({ kind: "workouts", scale: "total" }),
     );
 
@@ -221,9 +221,9 @@ describe("useStatisticsExport: workouts", () => {
 });
 
 describe("useStatisticsExport: strength tests", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
-    act(() => {
+    await act(() => {
       useAuthStore.setState({ auth: { userId: "u1" } });
       useCompletedWorkoutsStore.getState().clearWorkoutHistory();
       useExerciseProgressStore.setState({
@@ -243,15 +243,15 @@ describe("useStatisticsExport: strength tests", () => {
     });
   });
 
-  afterEach(() => {
-    act(() => {
+  afterEach(async () => {
+    await act(() => {
       useAuthStore.setState({ auth: null });
       useExerciseProgressStore.setState({ testHistory: [] });
     });
   });
 
   it("exports the strength tests of the range with empty cells for gaps", async () => {
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useStatisticsExport({ kind: "strength-tests", scale: "month" }),
     );
 
@@ -267,12 +267,12 @@ describe("useStatisticsExport: strength tests", () => {
     expect(lines[1]).toMatch(/,100,,,,$/);
   });
 
-  it("ignores workouts when the strength test tab is active", () => {
+  it("ignores workouts when the strength test tab is active", async () => {
     addWorkout("w1", Date.now() - DAY);
-    act(() => {
+    await act(() => {
       useExerciseProgressStore.setState({ testHistory: [] });
     });
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useStatisticsExport({ kind: "strength-tests", scale: "total" }),
     );
 

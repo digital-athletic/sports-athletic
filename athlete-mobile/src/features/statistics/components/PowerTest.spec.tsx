@@ -31,17 +31,20 @@ describe("PowerTest statistics: strength test entries", () => {
   it.each([
     WorkoutConstants.AGE_GROUPS.ADULT,
     WorkoutConstants.AGE_GROUPS.ADOLESCENT,
-  ])("offers the test and the manual entry to the age group %s", (age) => {
-    mockAgeGroup.mockReturnValue(age);
-    const { queryByTestId } = render(<PowerTest />);
+  ])(
+    "offers the test and the manual entry to the age group %s",
+    async (age) => {
+      mockAgeGroup.mockReturnValue(age);
+      const { queryByTestId } = await render(<PowerTest />);
 
-    expect(queryByTestId("power-test-start-button")).not.toBeNull();
-    expect(queryByTestId("power-test-manual-input-button")).not.toBeNull();
-  });
+      expect(queryByTestId("power-test-start-button")).not.toBeNull();
+      expect(queryByTestId("power-test-manual-input-button")).not.toBeNull();
+    },
+  );
 
-  it("offers neither the test nor the manual entry to a child", () => {
+  it("offers neither the test nor the manual entry to a child", async () => {
     mockAgeGroup.mockReturnValue(WorkoutConstants.AGE_GROUPS.CHILD);
-    const { queryByTestId } = render(<PowerTest />);
+    const { queryByTestId } = await render(<PowerTest />);
 
     expect(queryByTestId("power-test-start-button")).toBeNull();
     expect(queryByTestId("power-test-manual-input-button")).toBeNull();

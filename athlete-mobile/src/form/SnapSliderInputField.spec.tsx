@@ -10,9 +10,9 @@ describe("SnapSliderInputField", () => {
     { value: 3, label: "Three" },
   ];
 
-  it("renders labels and description", () => {
+  it("renders labels and description", async () => {
     const onChange = jest.fn();
-    const { getByText } = render(
+    const { getByText } = await render(
       <SnapSliderInputField
         startItem={1}
         sliderOptions={sliderOptions}
@@ -27,10 +27,10 @@ describe("SnapSliderInputField", () => {
     expect(getByText("Three")).toBeTruthy();
   });
 
-  it("calls onChange with correct value on sliding complete", () => {
+  it("calls onChange with correct value on sliding complete", async () => {
     const onChange = jest.fn();
 
-    const { getByLabelText } = render(
+    const { getByLabelText } = await render(
       <SnapSliderInputField
         startItem={0}
         sliderOptions={sliderOptions}

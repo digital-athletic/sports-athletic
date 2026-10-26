@@ -41,35 +41,35 @@ afterEach(async () => {
 });
 
 describe("OwnTrainingsList: empty state", () => {
-  it("shows the no workouts message when nothing is imported", () => {
-    const { getByText } = render(
+  it("shows the no workouts message when nothing is imported", async () => {
+    const { getByText } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
 
     expect(getByText(EMPTY_MESSAGE)).toBeTruthy();
   });
 
-  it("shows an import training button below the empty message", () => {
-    const { getByRole } = render(
+  it("shows an import training button below the empty message", async () => {
+    const { getByRole } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
 
     expect(getByRole("button", { name: IMPORT_LABEL })).toBeTruthy();
   });
 
-  it("calls onImport when the import training button is pressed", () => {
+  it("calls onImport when the import training button is pressed", async () => {
     const onImport = jest.fn();
-    const { getByRole } = render(
+    const { getByRole } = await render(
       <OwnTrainingsList onImport={onImport} importing={false} />,
     );
 
-    fireEvent.press(getByRole("button", { name: IMPORT_LABEL }));
+    await fireEvent.press(getByRole("button", { name: IMPORT_LABEL }));
 
     expect(onImport).toHaveBeenCalledTimes(1);
   });
 
-  it("marks the import training button as disabled while an import runs", () => {
-    const { getByRole } = render(
+  it("marks the import training button as disabled while an import runs", async () => {
+    const { getByRole } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing />,
     );
 
@@ -78,20 +78,20 @@ describe("OwnTrainingsList: empty state", () => {
     ).toMatchObject({ disabled: true });
   });
 
-  it("ignores presses on the import training button while an import runs", () => {
+  it("ignores presses on the import training button while an import runs", async () => {
     const onImport = jest.fn();
-    const { getByRole } = render(
+    const { getByRole } = await render(
       <OwnTrainingsList onImport={onImport} importing />,
     );
 
-    fireEvent.press(getByRole("button", { name: IMPORT_LABEL }));
+    await fireEvent.press(getByRole("button", { name: IMPORT_LABEL }));
 
     expect(onImport).not.toHaveBeenCalled();
   });
 });
 
 describe("OwnTrainingsList: entries", () => {
-  it("shows one row per imported training in import order", () => {
+  it("shows one row per imported training in import order", async () => {
     const { saveCustomWorkout } = useCustomWorkoutsStore.getState();
     jest.spyOn(Date, "now").mockReturnValueOnce(1).mockReturnValueOnce(2);
     saveCustomWorkout(
@@ -103,7 +103,7 @@ describe("OwnTrainingsList: entries", () => {
       null,
     );
 
-    const { getAllByRole } = render(
+    const { getAllByRole } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
 
@@ -113,12 +113,12 @@ describe("OwnTrainingsList: entries", () => {
     expect(labels).toEqual(["First", "Second"]);
   });
 
-  it("hides the empty message and the import link when entries exist", () => {
+  it("hides the empty message and the import link when entries exist", async () => {
     useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(generateCustomTemplate(), null);
 
-    const { queryByText, queryByRole, getByRole } = render(
+    const { queryByText, queryByRole, getByRole } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
 
@@ -127,12 +127,12 @@ describe("OwnTrainingsList: entries", () => {
     expect(queryByRole("button", { name: IMPORT_LABEL })).toBeNull();
   });
 
-  it("shows the english name in english", () => {
+  it("shows the english name in english", async () => {
     useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(generateCustomTemplate(), null);
 
-    const { getByRole } = render(
+    const { getByRole } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
 
@@ -145,7 +145,7 @@ describe("OwnTrainingsList: entries", () => {
       .getState()
       .saveCustomWorkout(generateCustomTemplate(), null);
 
-    const { getByRole } = render(
+    const { getByRole } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
 
@@ -161,14 +161,14 @@ describe("OwnTrainingsList: entries", () => {
         null,
       );
 
-    const { getByRole } = render(
+    const { getByRole } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
 
     expect(getByRole("button", { name: "Only english" })).toBeTruthy();
   });
 
-  it("does not list team entries", () => {
+  it("does not list team entries", async () => {
     useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(
@@ -176,7 +176,7 @@ describe("OwnTrainingsList: entries", () => {
         "team-1",
       );
 
-    const { queryByRole, getByText } = render(
+    const { queryByRole, getByText } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
 
@@ -186,13 +186,13 @@ describe("OwnTrainingsList: entries", () => {
 });
 
 describe("OwnTrainingsList: store updates", () => {
-  it("shows a row for a training saved after the first render", () => {
-    const { queryByRole, getByRole } = render(
+  it("shows a row for a training saved after the first render", async () => {
+    const { queryByRole, getByRole } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
     expect(queryByRole("button", { name: "My core" })).toBeNull();
 
-    act(() => {
+    await act(() => {
       useCustomWorkoutsStore
         .getState()
         .saveCustomWorkout(generateCustomTemplate(), null);
@@ -201,12 +201,12 @@ describe("OwnTrainingsList: store updates", () => {
     expect(getByRole("button", { name: "My core" })).toBeTruthy();
   });
 
-  it("replaces the empty message after a save", () => {
-    const { queryByText, getByRole } = render(
+  it("replaces the empty message after a save", async () => {
+    const { queryByText, getByRole } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
 
-    act(() => {
+    await act(() => {
       useCustomWorkoutsStore
         .getState()
         .saveCustomWorkout(generateCustomTemplate(), null);
@@ -218,15 +218,15 @@ describe("OwnTrainingsList: store updates", () => {
 });
 
 describe("OwnTrainingsList: navigation", () => {
-  it("navigates to the muscle soreness screen with the app id as type when a row is pressed", () => {
+  it("navigates to the muscle soreness screen with the app id as type when a row is pressed", async () => {
     const saved = useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(generateCustomTemplate(), null);
-    const { getByRole } = render(
+    const { getByRole } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
 
-    fireEvent.press(getByRole("button", { name: "My core" }));
+    await fireEvent.press(getByRole("button", { name: "My core" }));
 
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith({
@@ -244,50 +244,54 @@ describe("OwnTrainingsList: delete", () => {
     jest.useFakeTimers();
   });
 
-  afterEach(() => {
-    act(() => {
+  afterEach(async () => {
+    await act(() => {
       jest.runOnlyPendingTimers();
     });
     jest.useRealTimers();
   });
 
-  it("shows a delete button after a swipe to the left on a row", () => {
+  it("shows a delete button after a swipe to the left on a row", async () => {
     useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(generateCustomTemplate(), null);
-    const { getByTestId, getByRole } = render(
+    const { getByTestId, getByRole } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
     const row = getByTestId("swipe-to-delete-row");
 
-    fireEvent(row, "startShouldSetResponderCapture", {
+    await fireEvent(row, "startShouldSetResponderCapture", {
       nativeEvent: { pageX: 300, pageY: 0 },
     });
-    fireEvent(row, "responderMove", { nativeEvent: { pageX: 150, pageY: 0 } });
-    fireEvent(row, "responderRelease", {
+    await fireEvent(row, "responderMove", {
+      nativeEvent: { pageX: 150, pageY: 0 },
+    });
+    await fireEvent(row, "responderRelease", {
       nativeEvent: { pageX: 150, pageY: 0 },
     });
 
     expect(getByRole("button", { name: DELETE_LABEL })).toBeTruthy();
   });
 
-  it("asks for confirmation with the training name when the delete button is pressed", () => {
+  it("asks for confirmation with the training name when the delete button is pressed", async () => {
     useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(generateCustomTemplate(), null);
-    const { getByTestId, getByRole } = render(
+    const { getByTestId, getByRole } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
     const row = getByTestId("swipe-to-delete-row");
 
-    fireEvent(row, "startShouldSetResponderCapture", {
+    await fireEvent(row, "startShouldSetResponderCapture", {
       nativeEvent: { pageX: 300, pageY: 0 },
     });
-    fireEvent(row, "responderMove", { nativeEvent: { pageX: 150, pageY: 0 } });
-    fireEvent(row, "responderRelease", {
+    await fireEvent(row, "responderMove", {
       nativeEvent: { pageX: 150, pageY: 0 },
     });
-    fireEvent.press(getByRole("button", { name: DELETE_LABEL }));
+    await fireEvent(row, "responderRelease", {
+      nativeEvent: { pageX: 150, pageY: 0 },
+    });
+    await fireEvent.press(getByRole("button", { name: DELETE_LABEL }));
 
     expect(mockAlert).toHaveBeenCalledTimes(1);
     expect(mockAlert).toHaveBeenCalledWith(
@@ -304,11 +308,11 @@ describe("OwnTrainingsList: delete", () => {
     );
   });
 
-  it("offers a delete accessibility action on each row", () => {
+  it("offers a delete accessibility action on each row", async () => {
     useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(generateCustomTemplate(), null);
-    const { getByRole } = render(
+    const { getByRole } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
 
@@ -317,35 +321,43 @@ describe("OwnTrainingsList: delete", () => {
     ).toEqual([{ name: "delete", label: DELETE_LABEL }]);
   });
 
-  it("asks for confirmation when the delete accessibility action runs", () => {
+  it("asks for confirmation when the delete accessibility action runs", async () => {
     useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(generateCustomTemplate(), null);
-    const { getByRole } = render(
+    const { getByRole } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
 
-    fireEvent(getByRole("button", { name: "My core" }), "accessibilityAction", {
-      nativeEvent: { actionName: "delete" },
-    });
+    await fireEvent(
+      getByRole("button", { name: "My core" }),
+      "accessibilityAction",
+      {
+        nativeEvent: { actionName: "delete" },
+      },
+    );
 
     expect(mockAlert).toHaveBeenCalledTimes(1);
     expect(mockAlert.mock.calls[0][0]).toBe(DELETE_TITLE);
   });
 
-  it("removes the row and the stored training after the deletion is confirmed", () => {
+  it("removes the row and the stored training after the deletion is confirmed", async () => {
     const saved = useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(generateCustomTemplate(), null);
-    const { getByRole, queryByRole } = render(
+    const { getByRole, queryByRole } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
 
-    fireEvent(getByRole("button", { name: "My core" }), "accessibilityAction", {
-      nativeEvent: { actionName: "delete" },
-    });
+    await fireEvent(
+      getByRole("button", { name: "My core" }),
+      "accessibilityAction",
+      {
+        nativeEvent: { actionName: "delete" },
+      },
+    );
     const buttons: AlertButton[] = mockAlert.mock.calls[0][2];
-    act(() => {
+    await act(() => {
       buttons.find((button) => button.text === DELETE_LABEL)?.onPress?.();
     });
 
@@ -355,26 +367,30 @@ describe("OwnTrainingsList: delete", () => {
     ).toBe(false);
   });
 
-  it("shows the empty message after the last training is deleted", () => {
+  it("shows the empty message after the last training is deleted", async () => {
     useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(generateCustomTemplate(), null);
-    const { getByRole, getByText } = render(
+    const { getByRole, getByText } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
 
-    fireEvent(getByRole("button", { name: "My core" }), "accessibilityAction", {
-      nativeEvent: { actionName: "delete" },
-    });
+    await fireEvent(
+      getByRole("button", { name: "My core" }),
+      "accessibilityAction",
+      {
+        nativeEvent: { actionName: "delete" },
+      },
+    );
     const buttons: AlertButton[] = mockAlert.mock.calls[0][2];
-    act(() => {
+    await act(() => {
       buttons.find((button) => button.text === DELETE_LABEL)?.onPress?.();
     });
 
     expect(getByText(EMPTY_MESSAGE)).toBeTruthy();
   });
 
-  it("keeps the other trainings after one is deleted", () => {
+  it("keeps the other trainings after one is deleted", async () => {
     const { saveCustomWorkout } = useCustomWorkoutsStore.getState();
     jest.spyOn(Date, "now").mockReturnValueOnce(1).mockReturnValueOnce(2);
     saveCustomWorkout(
@@ -385,15 +401,19 @@ describe("OwnTrainingsList: delete", () => {
       generateCustomTemplate({ id: "SECOND", name: { en: "Second" } }),
       null,
     );
-    const { getByRole, getAllByRole } = render(
+    const { getByRole, getAllByRole } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
 
-    fireEvent(getByRole("button", { name: "First" }), "accessibilityAction", {
-      nativeEvent: { actionName: "delete" },
-    });
+    await fireEvent(
+      getByRole("button", { name: "First" }),
+      "accessibilityAction",
+      {
+        nativeEvent: { actionName: "delete" },
+      },
+    );
     const buttons: AlertButton[] = mockAlert.mock.calls[0][2];
-    act(() => {
+    await act(() => {
       buttons.find((button) => button.text === DELETE_LABEL)?.onPress?.();
     });
 
@@ -403,19 +423,23 @@ describe("OwnTrainingsList: delete", () => {
     expect(labels).toEqual(["Second"]);
   });
 
-  it("keeps the row and the stored training after the deletion is cancelled", () => {
+  it("keeps the row and the stored training after the deletion is cancelled", async () => {
     const saved = useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(generateCustomTemplate(), null);
-    const { getByRole } = render(
+    const { getByRole } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
 
-    fireEvent(getByRole("button", { name: "My core" }), "accessibilityAction", {
-      nativeEvent: { actionName: "delete" },
-    });
+    await fireEvent(
+      getByRole("button", { name: "My core" }),
+      "accessibilityAction",
+      {
+        nativeEvent: { actionName: "delete" },
+      },
+    );
     const buttons: AlertButton[] = mockAlert.mock.calls[0][2];
-    act(() => {
+    await act(() => {
       buttons.find((button) => button.text === "Cancel")?.onPress?.();
     });
 
@@ -430,11 +454,11 @@ describe("OwnTrainingsList: delete", () => {
     useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(generateCustomTemplate(), null);
-    const { getByRole } = render(
+    const { getByRole } = await render(
       <OwnTrainingsList onImport={jest.fn()} importing={false} />,
     );
 
-    fireEvent(
+    await fireEvent(
       getByRole("button", { name: "Mein Rumpf" }),
       "accessibilityAction",
       { nativeEvent: { actionName: "delete" } },

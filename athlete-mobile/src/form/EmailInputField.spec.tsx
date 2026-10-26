@@ -1,4 +1,3 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { fireEvent, render } from "../utils/testUtils";
 import { EmailInputField } from "./EmailInputField";
 
@@ -12,74 +11,77 @@ describe("<EmailInputField />", () => {
     jest.clearAllMocks();
   });
 
-  it("renders correctly", () => {
-    const { toJSON } = render(<EmailInputField {...defaultProps} />);
+  it("renders correctly", async () => {
+    const { toJSON } = await render(<EmailInputField {...defaultProps} />);
     expect(toJSON()).toMatchSnapshot();
   });
 
-  it("hides the email icon from screen readers", () => {
-    const { UNSAFE_getByType } = render(<EmailInputField {...defaultProps} />);
-    const icon = UNSAFE_getByType(Ionicons);
+  it("hides the email icon from screen readers", async () => {
+    const { container } = await render(<EmailInputField {...defaultProps} />);
+    const [icon] = container.queryAll((node) => node.type === "Ionicons");
     expect(icon.props.accessibilityElementsHidden).toBe(true);
   });
 
-  it("shows a visible label that also names the input", () => {
-    const { getByText, getByLabelText } = render(
+  it("shows a visible label that also names the input", async () => {
+    const { getByText, getByLabelText } = await render(
       <EmailInputField {...defaultProps} title="Email address" />,
     );
     expect(getByText("Email address")).toBeTruthy();
     expect(getByLabelText("Email address")).toBeTruthy();
   });
 
-  it("displays email placeholder", () => {
-    const { getByPlaceholderText } = render(
+  it("displays email placeholder", async () => {
+    const { getByPlaceholderText } = await render(
       <EmailInputField {...defaultProps} />,
     );
     expect(getByPlaceholderText("E-Mail")).toBeTruthy();
   });
 
-  it("displays the provided email value", () => {
-    const { getByDisplayValue } = render(
+  it("displays the provided email value", async () => {
+    const { getByDisplayValue } = await render(
       <EmailInputField {...defaultProps} email="test@example.com" />,
     );
     expect(getByDisplayValue("test@example.com")).toBeTruthy();
   });
 
-  it("calls onChange when email input changes", () => {
+  it("calls onChange when email input changes", async () => {
     const onChange = jest.fn();
-    const { getByPlaceholderText } = render(
+    const { getByPlaceholderText } = await render(
       <EmailInputField {...defaultProps} onChange={onChange} />,
     );
 
-    fireEvent.changeText(getByPlaceholderText("E-Mail"), "new@example.com");
+    await fireEvent.changeText(
+      getByPlaceholderText("E-Mail"),
+      "new@example.com",
+    );
 
     expect(onChange).toHaveBeenCalledWith("new@example.com");
     expect(onChange).toHaveBeenCalledTimes(1);
   });
 
-  it("has email-address keyboard type", () => {
-    const { getByPlaceholderText } = render(
+  it("has email-address keyboard type", async () => {
+    const { getByPlaceholderText } = await render(
       <EmailInputField {...defaultProps} />,
     );
     const input = getByPlaceholderText("E-Mail");
     expect(input.props.keyboardType).toBe("email-address");
   });
 
-  it("has autoCapitalize set to none", () => {
-    const { getByPlaceholderText } = render(
+  it("has autoCapitalize set to none", async () => {
+    const { getByPlaceholderText } = await render(
       <EmailInputField {...defaultProps} />,
     );
     const input = getByPlaceholderText("E-Mail");
     expect(input.props.autoCapitalize).toBe("none");
   });
 
-  it("calls onFocus when input is focused", () => {
+  it("calls onFocus when input is focused", async () => {
     const onFocus = jest.fn();
-    const { getByPlaceholderText } = render(
+    const { getByPlaceholderText } = await render(
       <EmailInputField {...defaultProps} onFocus={onFocus} />,
     );
 
-    fireEvent(getByPlaceholderText("E-Mail"), "focus");
+    await fireEvent(getByPlaceholderText("E-Mail"), "focus");
 
     expect(onFocus).toHaveBeenCalledTimes(1);
   });

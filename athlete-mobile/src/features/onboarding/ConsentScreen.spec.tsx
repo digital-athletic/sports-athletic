@@ -52,8 +52,8 @@ beforeEach(() => {
 });
 
 describe("ConsentScreen", () => {
-  it("renders the consent title and subtitle", () => {
-    render(<ConsentScreen />);
+  it("renders the consent title and subtitle", async () => {
+    await render(<ConsentScreen />);
 
     expect(screen.getByText("Data Protection")).toBeTruthy();
     expect(
@@ -63,16 +63,16 @@ describe("ConsentScreen", () => {
     ).toBeTruthy();
   });
 
-  it("renders a continue button", () => {
-    render(<ConsentScreen />);
+  it("renders a continue button", async () => {
+    await render(<ConsentScreen />);
 
     expect(screen.getByRole("button", { name: "Continue" })).toBeTruthy();
   });
 
   it("shows error when submitting without accepting privacy", async () => {
-    render(<ConsentScreen />);
+    await render(<ConsentScreen />);
 
-    fireEvent.press(screen.getByRole("button", { name: "Continue" }));
+    await fireEvent.press(screen.getByRole("button", { name: "Continue" }));
 
     await waitFor(() => {
       expect(mockSetConsentStatus).not.toHaveBeenCalled();
@@ -85,10 +85,10 @@ describe("ConsentScreen", () => {
   });
 
   it("shows error when submitting without accepting analytics", async () => {
-    render(<ConsentScreen />);
+    await render(<ConsentScreen />);
 
-    fireEvent.press(screen.getAllByRole("checkbox")[0]);
-    fireEvent.press(screen.getByRole("button", { name: "Continue" }));
+    await fireEvent.press(screen.getAllByRole("checkbox")[0]);
+    await fireEvent.press(screen.getByRole("button", { name: "Continue" }));
 
     await waitFor(() => {
       expect(mockSetConsentStatus).not.toHaveBeenCalled();
@@ -102,12 +102,12 @@ describe("ConsentScreen", () => {
 
   it("saves consent when both privacy and analytics are accepted", async () => {
     mockSaveConsentToProfile.mockResolvedValue(undefined);
-    render(<ConsentScreen />);
+    await render(<ConsentScreen />);
 
     const checkboxes = screen.getAllByRole("checkbox");
-    fireEvent.press(checkboxes[0]);
-    fireEvent.press(checkboxes[1]);
-    fireEvent.press(screen.getByRole("button", { name: "Continue" }));
+    await fireEvent.press(checkboxes[0]);
+    await fireEvent.press(checkboxes[1]);
+    await fireEvent.press(screen.getByRole("button", { name: "Continue" }));
 
     await waitFor(() => {
       expect(mockSaveConsentToProfile).toHaveBeenCalledWith({
@@ -122,12 +122,12 @@ describe("ConsentScreen", () => {
 
   it("shows save error and does not proceed when saveConsentToProfile fails", async () => {
     mockSaveConsentToProfile.mockRejectedValue(new Error("Network error"));
-    render(<ConsentScreen />);
+    await render(<ConsentScreen />);
 
     const checkboxes = screen.getAllByRole("checkbox");
-    fireEvent.press(checkboxes[0]);
-    fireEvent.press(checkboxes[1]);
-    fireEvent.press(screen.getByRole("button", { name: "Continue" }));
+    await fireEvent.press(checkboxes[0]);
+    await fireEvent.press(checkboxes[1]);
+    await fireEvent.press(screen.getByRole("button", { name: "Continue" }));
 
     await waitFor(() => {
       expect(mockSetConsentStatus).not.toHaveBeenCalled();
@@ -141,15 +141,17 @@ describe("ConsentScreen", () => {
 
   it("rapid double-press fires saveConsentToProfile exactly once", async () => {
     mockSaveConsentToProfile.mockImplementation(() => new Promise(() => {}));
-    render(<ConsentScreen />);
+    await render(<ConsentScreen />);
 
     const checkboxes = screen.getAllByRole("checkbox");
-    fireEvent.press(checkboxes[0]);
-    fireEvent.press(checkboxes[1]);
+    await fireEvent.press(checkboxes[0]);
+    await fireEvent.press(checkboxes[1]);
 
     const button = screen.getByRole("button", { name: "Continue" });
-    fireEvent.press(button);
-    fireEvent.press(button); // second press before re-render
+    // fireEvent resolves with the press handler's promise, which never settles here.
+    void fireEvent.press(button);
+    await waitFor(() => expect(button).toBeDisabled());
+    await fireEvent.press(button);
 
     await waitFor(() => {
       expect(mockSaveConsentToProfile).toHaveBeenCalledTimes(1);

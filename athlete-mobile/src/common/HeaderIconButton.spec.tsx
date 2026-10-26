@@ -2,8 +2,8 @@ import { fireEvent, render } from "../utils/testUtils";
 import { HeaderIconButton } from "./HeaderIconButton";
 
 describe("HeaderIconButton", () => {
-  it("renders with the supplied accessibility label", () => {
-    const { getByLabelText } = render(
+  it("renders with the supplied accessibility label", async () => {
+    const { getByLabelText } = await render(
       <HeaderIconButton
         iconName="close-circle"
         onPress={jest.fn()}
@@ -13,8 +13,8 @@ describe("HeaderIconButton", () => {
     expect(getByLabelText("Abort training")).toBeTruthy();
   });
 
-  it("exposes the button accessibility role", () => {
-    const { getByRole } = render(
+  it("exposes the button accessibility role", async () => {
+    const { getByRole } = await render(
       <HeaderIconButton
         iconName="close-circle"
         onPress={jest.fn()}
@@ -24,9 +24,9 @@ describe("HeaderIconButton", () => {
     expect(getByRole("button")).toBeTruthy();
   });
 
-  it("fires onPress when pressed", () => {
+  it("fires onPress when pressed", async () => {
     const onPress = jest.fn();
-    const { getByRole } = render(
+    const { getByRole } = await render(
       <HeaderIconButton
         iconName="close-circle"
         onPress={onPress}
@@ -37,9 +37,9 @@ describe("HeaderIconButton", () => {
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 
-  it("ignores presses when disabled", () => {
+  it("ignores presses when disabled", async () => {
     const onPress = jest.fn();
-    const { getByRole } = render(
+    const { getByRole } = await render(
       <HeaderIconButton
         iconName="close-circle"
         onPress={onPress}
@@ -51,8 +51,8 @@ describe("HeaderIconButton", () => {
     expect(onPress).not.toHaveBeenCalled();
   });
 
-  it("reports the disabled state to screen readers when disabled", () => {
-    const { getByRole } = render(
+  it("reports the disabled state to screen readers when disabled", async () => {
+    const { getByRole } = await render(
       <HeaderIconButton
         iconName="close-circle"
         onPress={jest.fn()}

@@ -24,13 +24,13 @@ describe("useNetworkState", () => {
     mockNetInfo.fetch.mockReturnValue(new Promise(() => {}) as never);
   });
 
-  it("returns true by default (optimistic initial state)", () => {
-    const { result } = renderHook(() => useNetworkState());
+  it("returns true by default (optimistic initial state)", async () => {
+    const { result } = await renderHook(() => useNetworkState());
     expect(result.current).toBe(true);
   });
 
   it("returns false when NetInfo reports isConnected=false", async () => {
-    const { result } = renderHook(() => useNetworkState());
+    const { result } = await renderHook(() => useNetworkState());
 
     await act(async () => {
       capturedListener?.({ isConnected: false, isInternetReachable: false });
@@ -40,7 +40,7 @@ describe("useNetworkState", () => {
   });
 
   it("returns true when NetInfo reports isConnected=true and isInternetReachable=true", async () => {
-    const { result } = renderHook(() => useNetworkState());
+    const { result } = await renderHook(() => useNetworkState());
 
     await act(async () => {
       capturedListener?.({ isConnected: true, isInternetReachable: true });
@@ -50,7 +50,7 @@ describe("useNetworkState", () => {
   });
 
   it("returns true when isInternetReachable=null (null treated as reachable)", async () => {
-    const { result } = renderHook(() => useNetworkState());
+    const { result } = await renderHook(() => useNetworkState());
 
     await act(async () => {
       capturedListener?.({ isConnected: true, isInternetReachable: null });
@@ -59,9 +59,9 @@ describe("useNetworkState", () => {
     expect(result.current).toBe(true);
   });
 
-  it("calls unsubscribe on unmount", () => {
-    const { unmount } = renderHook(() => useNetworkState());
-    unmount();
+  it("calls unsubscribe on unmount", async () => {
+    const { unmount } = await renderHook(() => useNetworkState());
+    await unmount();
     expect(mockUnsubscribe).toHaveBeenCalledTimes(1);
   });
 });

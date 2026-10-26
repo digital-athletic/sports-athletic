@@ -35,27 +35,27 @@ describe("useTrainingListCompletion: feedback and skipping", () => {
     });
   });
 
-  it("sends no feedback when the row is completed without one", () => {
-    const { result } = renderHook(() => useTrainingListCompletion());
+  it("sends no feedback when the row is completed without one", async () => {
+    const { result } = await renderHook(() => useTrainingListCompletion());
 
-    act(() => result.current.handleComplete(row));
+    await act(() => result.current.handleComplete(row));
 
     expect(mockHandleFeedback).not.toHaveBeenCalled();
     expect(mockSaveExerciseAndBranchData).toHaveBeenCalledWith(0);
   });
 
-  it("sends the chosen feedback before saving", () => {
-    const { result } = renderHook(() => useTrainingListCompletion());
+  it("sends the chosen feedback before saving", async () => {
+    const { result } = await renderHook(() => useTrainingListCompletion());
 
-    act(() => result.current.handleComplete(row, "SUCCEEDED"));
+    await act(() => result.current.handleComplete(row, "SUCCEEDED"));
 
     expect(mockHandleFeedback).toHaveBeenCalledWith(0, "SUCCEEDED");
   });
 
-  it("runs no progression for a skipped exercise", () => {
-    const { result } = renderHook(() => useTrainingListCompletion());
+  it("runs no progression for a skipped exercise", async () => {
+    const { result } = await renderHook(() => useTrainingListCompletion());
 
-    act(() => result.current.handleSkip(row));
+    await act(() => result.current.handleSkip(row));
 
     expect(mockHandleExerciseSkipped).toHaveBeenCalledWith(0);
     expect(mockSaveExerciseAndBranchData).not.toHaveBeenCalled();

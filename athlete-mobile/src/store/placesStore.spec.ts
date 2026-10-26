@@ -2,16 +2,16 @@ import { act, renderHook } from "@testing-library/react-native";
 import { usePlacesStore } from "./placesStore";
 
 describe("placesStore", () => {
-  beforeEach(() => {
-    const { result } = renderHook(() => usePlacesStore());
-    act(() => {
+  beforeEach(async () => {
+    const { result } = await renderHook(() => usePlacesStore());
+    await act(() => {
       result.current.resetPlaces();
     });
   });
 
   describe("initial state", () => {
-    it("has all four places defined", () => {
-      const { result } = renderHook(() => usePlacesStore());
+    it("has all four places defined", async () => {
+      const { result } = await renderHook(() => usePlacesStore());
       expect(Object.keys(result.current.places)).toEqual([
         "HOME",
         "STUDIO",
@@ -20,13 +20,13 @@ describe("placesStore", () => {
       ]);
     });
 
-    it("HOME has default equipment", () => {
-      const { result } = renderHook(() => usePlacesStore());
+    it("HOME has default equipment", async () => {
+      const { result } = await renderHook(() => usePlacesStore());
       expect(result.current.places.HOME.equipment.length).toBeGreaterThan(0);
     });
 
-    it("STUDIO has correct default equipment", () => {
-      const { result } = renderHook(() => usePlacesStore());
+    it("STUDIO has correct default equipment", async () => {
+      const { result } = await renderHook(() => usePlacesStore());
       expect(result.current.places.STUDIO.equipment).toEqual([
         "ADJUSTABLE_BENCH",
         "BARBELL",
@@ -47,8 +47,8 @@ describe("placesStore", () => {
       ]);
     });
 
-    it("HOME has correct default equipment", () => {
-      const { result } = renderHook(() => usePlacesStore());
+    it("HOME has correct default equipment", async () => {
+      const { result } = await renderHook(() => usePlacesStore());
       expect(result.current.places.HOME.equipment).toEqual([
         "BOTTLE",
         "CHAIR",
@@ -58,8 +58,8 @@ describe("placesStore", () => {
       ]);
     });
 
-    it("HALL has correct default equipment", () => {
-      const { result } = renderHook(() => usePlacesStore());
+    it("HALL has correct default equipment", async () => {
+      const { result } = await renderHook(() => usePlacesStore());
       expect(result.current.places.HALL.equipment).toEqual([
         "AREA_10",
         "AREA_20",
@@ -86,8 +86,8 @@ describe("placesStore", () => {
       ]);
     });
 
-    it("OUTSIDE has correct default equipment", () => {
-      const { result } = renderHook(() => usePlacesStore());
+    it("OUTSIDE has correct default equipment", async () => {
+      const { result } = await renderHook(() => usePlacesStore());
       expect(result.current.places.OUTSIDE.equipment).toEqual([
         "AREA_10",
         "AREA_20",
@@ -102,10 +102,10 @@ describe("placesStore", () => {
   });
 
   describe("setPlaceEquipment", () => {
-    it("replaces equipment for a place", () => {
-      const { result } = renderHook(() => usePlacesStore());
+    it("replaces equipment for a place", async () => {
+      const { result } = await renderHook(() => usePlacesStore());
 
-      act(() => {
+      await act(() => {
         result.current.setPlaceEquipment("HOME", ["DUMBBELL", "BENCH"]);
       });
 
@@ -117,10 +117,10 @@ describe("placesStore", () => {
   });
 
   describe("toggleEquipment", () => {
-    it("adds equipment if not present", () => {
-      const { result } = renderHook(() => usePlacesStore());
+    it("adds equipment if not present", async () => {
+      const { result } = await renderHook(() => usePlacesStore());
 
-      act(() => {
+      await act(() => {
         result.current.setPlaceEquipment("HOME", []);
         result.current.toggleEquipment("HOME", "BARBELL");
       });
@@ -128,10 +128,10 @@ describe("placesStore", () => {
       expect(result.current.places.HOME.equipment).toContain("BARBELL");
     });
 
-    it("removes equipment if present", () => {
-      const { result } = renderHook(() => usePlacesStore());
+    it("removes equipment if present", async () => {
+      const { result } = await renderHook(() => usePlacesStore());
 
-      act(() => {
+      await act(() => {
         result.current.setPlaceEquipment("HOME", ["BARBELL"]);
         result.current.toggleEquipment("HOME", "BARBELL");
       });
@@ -141,10 +141,10 @@ describe("placesStore", () => {
   });
 
   describe("getPlaceEquipment", () => {
-    it("returns equipment for specified place", () => {
-      const { result } = renderHook(() => usePlacesStore());
+    it("returns equipment for specified place", async () => {
+      const { result } = await renderHook(() => usePlacesStore());
 
-      act(() => {
+      await act(() => {
         result.current.setPlaceEquipment("STUDIO", ["TREADMILL"]);
       });
 

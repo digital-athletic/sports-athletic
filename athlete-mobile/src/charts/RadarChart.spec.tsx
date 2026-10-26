@@ -23,7 +23,7 @@ describe("RadarChart", () => {
   });
 
   describe("data transformation", () => {
-    it("adds centerOffset (10) to each percentage value", () => {
+    it("adds centerOffset (10) to each percentage value", async () => {
       const userSkills: UserSkills = {
         MOBILITY: 20,
         PREVENTION: 15,
@@ -33,12 +33,12 @@ describe("RadarChart", () => {
         SWR: 10,
       };
 
-      render(<RadarChart userSkills={userSkills} />);
+      await render(<RadarChart userSkills={userSkills} />);
 
       expect(capturedProps?.data).toEqual([30, 25, 20, 35, 30, 20]);
     });
 
-    it("caps values at maxValue (50) when percentage + offset exceeds it", () => {
+    it("caps values at maxValue (50) when percentage + offset exceeds it", async () => {
       const userSkills: UserSkills = {
         MOBILITY: 80,
         PREVENTION: 5,
@@ -48,13 +48,13 @@ describe("RadarChart", () => {
         SWR: 2,
       };
 
-      render(<RadarChart userSkills={userSkills} />);
+      await render(<RadarChart userSkills={userSkills} />);
 
       // MOBILITY: 80% + 10 = 90, capped at 50; others get +10 offset
       expect(capturedProps?.data).toEqual([50, 15, 15, 15, 13, 12]);
     });
 
-    it("handles zero values by applying only the centerOffset", () => {
+    it("handles zero values by applying only the centerOffset", async () => {
       const userSkills: UserSkills = {
         MOBILITY: 0,
         PREVENTION: 0,
@@ -64,14 +64,14 @@ describe("RadarChart", () => {
         SWR: 0,
       };
 
-      render(<RadarChart userSkills={userSkills} />);
+      await render(<RadarChart userSkills={userSkills} />);
 
       expect(capturedProps?.data).toEqual([10, 10, 10, 10, 10, 10]);
     });
   });
 
   describe("label generation", () => {
-    it("formats labels as skill name with percentage on new line", () => {
+    it("formats labels as skill name with percentage on new line", async () => {
       const userSkills: UserSkills = {
         MOBILITY: 30,
         PREVENTION: 25,
@@ -81,7 +81,7 @@ describe("RadarChart", () => {
         SWR: 8,
       };
 
-      render(<RadarChart userSkills={userSkills} />);
+      await render(<RadarChart userSkills={userSkills} />);
 
       expect(capturedProps?.labels).toEqual([
         "Mobility\n30%",
@@ -95,7 +95,7 @@ describe("RadarChart", () => {
   });
 
   describe("screen reader summary", () => {
-    it("labels the chart with every skill and its percentage", () => {
+    it("labels the chart with every skill and its percentage", async () => {
       const userSkills: UserSkills = {
         MOBILITY: 30,
         PREVENTION: 25,
@@ -105,7 +105,9 @@ describe("RadarChart", () => {
         SWR: 8,
       };
 
-      const { getByTestId } = render(<RadarChart userSkills={userSkills} />);
+      const { getByTestId } = await render(
+        <RadarChart userSkills={userSkills} />,
+      );
 
       expect(
         getByTestId("radar-chart-container").props.accessibilityLabel,
@@ -116,7 +118,7 @@ describe("RadarChart", () => {
   });
 
   describe("chart configuration", () => {
-    it("passes correct layout and styling configuration", () => {
+    it("passes correct layout and styling configuration", async () => {
       const userSkills: UserSkills = {
         MOBILITY: 20,
         PREVENTION: 15,
@@ -126,7 +128,7 @@ describe("RadarChart", () => {
         SWR: 10,
       };
 
-      render(<RadarChart userSkills={userSkills} />);
+      await render(<RadarChart userSkills={userSkills} />);
 
       expect(capturedProps).toMatchObject({
         circular: true,

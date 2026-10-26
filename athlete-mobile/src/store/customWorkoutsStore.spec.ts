@@ -21,9 +21,9 @@ const generateCustomTemplate = (
 });
 
 describe("customWorkoutsStore: imported trainings", () => {
-  beforeEach(() => {
-    const { result } = renderHook(() => useCustomWorkoutsStore());
-    act(() => {
+  beforeEach(async () => {
+    const { result } = await renderHook(() => useCustomWorkoutsStore());
+    await act(() => {
       result.current.clearCustomWorkouts();
     });
   });
@@ -33,15 +33,15 @@ describe("customWorkoutsStore: imported trainings", () => {
   });
 
   describe("saveCustomWorkout", () => {
-    it("returns an entry with a custom prefixed id, null team and the current time", () => {
+    it("returns an entry with a custom prefixed id, null team and the current time", async () => {
       jest.spyOn(Date, "now").mockReturnValue(1000);
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
       const template = generateCustomTemplate();
 
       let saved:
         | ReturnType<typeof result.current.saveCustomWorkout>
         | undefined;
-      act(() => {
+      await act(() => {
         saved = result.current.saveCustomWorkout(template, null);
       });
 
@@ -51,11 +51,11 @@ describe("customWorkoutsStore: imported trainings", () => {
       expect(saved?.template).toEqual(template);
     });
 
-    it("lists the saved entry for the own scope", () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+    it("lists the saved entry for the own scope", async () => {
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
       let savedId = "";
-      act(() => {
+      await act(() => {
         savedId = result.current.saveCustomWorkout(
           generateCustomTemplate(),
           null,
@@ -67,12 +67,12 @@ describe("customWorkoutsStore: imported trainings", () => {
       ).toEqual([savedId]);
     });
 
-    it("keeps the app id when the same template id is saved again for the same team", () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+    it("keeps the app id when the same template id is saved again for the same team", async () => {
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
       let firstId = "";
       let secondId = "";
-      act(() => {
+      await act(() => {
         firstId = result.current.saveCustomWorkout(
           generateCustomTemplate(),
           null,
@@ -87,10 +87,10 @@ describe("customWorkoutsStore: imported trainings", () => {
       expect(secondId).toBe(firstId);
     });
 
-    it("swaps the template and leaves one entry when the same template id is saved again", () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+    it("swaps the template and leaves one entry when the same template id is saved again", async () => {
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
-      act(() => {
+      await act(() => {
         result.current.saveCustomWorkout(generateCustomTemplate(), null);
         result.current.saveCustomWorkout(
           generateCustomTemplate({ name: { en: "Core v2" } }),
@@ -103,15 +103,15 @@ describe("customWorkoutsStore: imported trainings", () => {
       expect(entries[0].template.name.en).toBe("Core v2");
     });
 
-    it("sets importedAt to the re-import time when the same template id is saved again", () => {
+    it("sets importedAt to the re-import time when the same template id is saved again", async () => {
       const nowSpy = jest.spyOn(Date, "now").mockReturnValue(1);
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
-      act(() => {
+      await act(() => {
         result.current.saveCustomWorkout(generateCustomTemplate(), null);
       });
       nowSpy.mockReturnValue(5);
-      act(() => {
+      await act(() => {
         result.current.saveCustomWorkout(generateCustomTemplate(), null);
       });
 
@@ -120,25 +120,25 @@ describe("customWorkoutsStore: imported trainings", () => {
       ).toBe(5);
     });
 
-    it("moves a re-imported entry behind newer entries", () => {
+    it("moves a re-imported entry behind newer entries", async () => {
       const nowSpy = jest.spyOn(Date, "now").mockReturnValue(1);
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
-      act(() => {
+      await act(() => {
         result.current.saveCustomWorkout(
           generateCustomTemplate({ id: "A" }),
           null,
         );
       });
       nowSpy.mockReturnValue(2);
-      act(() => {
+      await act(() => {
         result.current.saveCustomWorkout(
           generateCustomTemplate({ id: "B" }),
           null,
         );
       });
       nowSpy.mockReturnValue(3);
-      act(() => {
+      await act(() => {
         result.current.saveCustomWorkout(
           generateCustomTemplate({ id: "A" }),
           null,
@@ -154,12 +154,12 @@ describe("customWorkoutsStore: imported trainings", () => {
   });
 
   describe("scope per team", () => {
-    it("stores the same template id twice with different app ids for own and team scope", () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+    it("stores the same template id twice with different app ids for own and team scope", async () => {
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
       let ownId = "";
       let teamEntryId = "";
-      act(() => {
+      await act(() => {
         ownId = result.current.saveCustomWorkout(
           generateCustomTemplate(),
           null,
@@ -174,11 +174,11 @@ describe("customWorkoutsStore: imported trainings", () => {
       expect(ownId).not.toBe(teamEntryId);
     });
 
-    it("returns only the own entry for a null team", () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+    it("returns only the own entry for a null team", async () => {
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
       let ownId = "";
-      act(() => {
+      await act(() => {
         ownId = result.current.saveCustomWorkout(
           generateCustomTemplate(),
           null,
@@ -191,11 +191,11 @@ describe("customWorkoutsStore: imported trainings", () => {
       ).toEqual([ownId]);
     });
 
-    it("returns only the team entry for its team id", () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+    it("returns only the team entry for its team id", async () => {
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
       let teamEntryId = "";
-      act(() => {
+      await act(() => {
         result.current.saveCustomWorkout(generateCustomTemplate(), null);
         teamEntryId = result.current.saveCustomWorkout(
           generateCustomTemplate(),
@@ -212,11 +212,11 @@ describe("customWorkoutsStore: imported trainings", () => {
   });
 
   describe("sorting", () => {
-    it("returns listWorkoutsForTeam entries oldest first", () => {
+    it("returns listWorkoutsForTeam entries oldest first", async () => {
       const nowSpy = jest.spyOn(Date, "now");
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
-      act(() => {
+      await act(() => {
         nowSpy.mockReturnValue(3);
         result.current.saveCustomWorkout(
           generateCustomTemplate({ id: "C" }),
@@ -243,12 +243,12 @@ describe("customWorkoutsStore: imported trainings", () => {
   });
 
   describe("findCustomTemplate", () => {
-    it("returns the template of an own entry by app id", () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+    it("returns the template of an own entry by app id", async () => {
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
       const template = generateCustomTemplate();
 
       let ownId = "";
-      act(() => {
+      await act(() => {
         ownId = result.current.saveCustomWorkout(template, null).id;
       });
 
@@ -257,12 +257,12 @@ describe("customWorkoutsStore: imported trainings", () => {
       );
     });
 
-    it("returns the template of a team entry by app id", () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+    it("returns the template of a team entry by app id", async () => {
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
       const template = generateCustomTemplate({ name: { en: "Team core" } });
 
       let teamEntryId = "";
-      act(() => {
+      await act(() => {
         teamEntryId = result.current.saveCustomWorkout(template, "team-1").id;
       });
 
@@ -271,10 +271,10 @@ describe("customWorkoutsStore: imported trainings", () => {
       ).toEqual(template);
     });
 
-    it("returns undefined for an unknown id when another entry is saved", () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+    it("returns undefined for an unknown id when another entry is saved", async () => {
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
-      act(() => {
+      await act(() => {
         result.current.saveCustomWorkout(generateCustomTemplate(), null);
       });
 
@@ -283,10 +283,10 @@ describe("customWorkoutsStore: imported trainings", () => {
       ).toBeUndefined();
     });
 
-    it("returns undefined for the file id of a saved entry that matches a bundled id", () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+    it("returns undefined for the file id of a saved entry that matches a bundled id", async () => {
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
-      act(() => {
+      await act(() => {
         result.current.saveCustomWorkout(
           generateCustomTemplate({ id: "PREV" }),
           null,
@@ -298,12 +298,12 @@ describe("customWorkoutsStore: imported trainings", () => {
       ).toBeUndefined();
     });
 
-    it("returns the saved template by app id when its file id matches a bundled id", () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+    it("returns the saved template by app id when its file id matches a bundled id", async () => {
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
       const template = generateCustomTemplate({ id: "PREV" });
 
       let savedId = "";
-      act(() => {
+      await act(() => {
         savedId = result.current.saveCustomWorkout(template, null).id;
       });
 
@@ -312,10 +312,10 @@ describe("customWorkoutsStore: imported trainings", () => {
       );
     });
 
-    it("returns undefined for an inherited object key when another entry is saved", () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+    it("returns undefined for an inherited object key when another entry is saved", async () => {
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
-      act(() => {
+      await act(() => {
         result.current.saveCustomWorkout(generateCustomTemplate(), null);
       });
 
@@ -326,14 +326,14 @@ describe("customWorkoutsStore: imported trainings", () => {
   });
 
   describe("clearCustomWorkouts", () => {
-    it("empties workoutsById", () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+    it("empties workoutsById", async () => {
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
-      act(() => {
+      await act(() => {
         result.current.saveCustomWorkout(generateCustomTemplate(), null);
       });
       expect(Object.keys(result.current.workoutsById)).toHaveLength(1);
-      act(() => {
+      await act(() => {
         result.current.clearCustomWorkouts();
       });
 
@@ -342,29 +342,29 @@ describe("customWorkoutsStore: imported trainings", () => {
   });
 
   describe("deleteOwnCustomWorkout", () => {
-    it("removes an own entry by app id", () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+    it("removes an own entry by app id", async () => {
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
       let ownId = "";
-      act(() => {
+      await act(() => {
         ownId = result.current.saveCustomWorkout(
           generateCustomTemplate(),
           null,
         ).id;
       });
-      act(() => {
+      await act(() => {
         result.current.deleteOwnCustomWorkout(ownId);
       });
 
       expect(result.current.workoutsById).toEqual({});
     });
 
-    it("keeps the other own entries", () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+    it("keeps the other own entries", async () => {
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
       let firstId = "";
       let secondId = "";
-      act(() => {
+      await act(() => {
         firstId = result.current.saveCustomWorkout(
           generateCustomTemplate({ id: "A" }),
           null,
@@ -374,38 +374,38 @@ describe("customWorkoutsStore: imported trainings", () => {
           null,
         ).id;
       });
-      act(() => {
+      await act(() => {
         result.current.deleteOwnCustomWorkout(firstId);
       });
 
       expect(Object.keys(result.current.workoutsById)).toEqual([secondId]);
     });
 
-    it("keeps a team entry with the given app id", () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+    it("keeps a team entry with the given app id", async () => {
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
       let teamEntryId = "";
-      act(() => {
+      await act(() => {
         teamEntryId = result.current.saveCustomWorkout(
           generateCustomTemplate(),
           "team-1",
         ).id;
       });
-      act(() => {
+      await act(() => {
         result.current.deleteOwnCustomWorkout(teamEntryId);
       });
 
       expect(Object.keys(result.current.workoutsById)).toEqual([teamEntryId]);
     });
 
-    it("leaves the store unchanged for an unknown app id", () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+    it("leaves the store unchanged for an unknown app id", async () => {
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
-      act(() => {
+      await act(() => {
         result.current.saveCustomWorkout(generateCustomTemplate(), null);
       });
       const before = result.current.workoutsById;
-      act(() => {
+      await act(() => {
         result.current.deleteOwnCustomWorkout("custom-unknown");
       });
 
@@ -413,16 +413,16 @@ describe("customWorkoutsStore: imported trainings", () => {
     });
 
     it("removes the entry from async storage", async () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
       let ownId = "";
-      act(() => {
+      await act(() => {
         ownId = result.current.saveCustomWorkout(
           generateCustomTemplate(),
           null,
         ).id;
       });
-      act(() => {
+      await act(() => {
         result.current.deleteOwnCustomWorkout(ownId);
       });
       await new Promise((resolve) => setTimeout(resolve, 50));
@@ -448,10 +448,10 @@ describe("customWorkoutsStore: imported trainings", () => {
 
   describe("persistence", () => {
     it("writes the entry and version 14 to async storage after a save", async () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
       let savedId = "";
-      act(() => {
+      await act(() => {
         savedId = result.current.saveCustomWorkout(
           generateCustomTemplate(),
           null,
@@ -476,9 +476,9 @@ describe("customWorkoutsStore: imported trainings", () => {
     });
 
     it("writes no hydration flag to async storage", async () => {
-      const { result } = renderHook(() => useCustomWorkoutsStore());
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
 
-      act(() => {
+      await act(() => {
         result.current.saveCustomWorkout(generateCustomTemplate(), null);
       });
       await new Promise((resolve) => setTimeout(resolve, 50));

@@ -8,7 +8,7 @@ type RenderedNode = { type: unknown; props: Record<string, unknown> };
 export function regionPathHosts(testID: string): RenderedNode[] {
   return screen
     .getByTestId(testID)
-    .findAll((node: RenderedNode) => node.type === "RNSVGPath");
+    .queryAll((node: RenderedNode) => node.type === "RNSVGPath");
 }
 
 export function regionFills(testID: string): unknown[] {

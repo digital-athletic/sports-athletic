@@ -55,7 +55,7 @@ const readOwnWorkouts = () =>
 // e.g. runImport({ status: "canceled" }) renders the hook and awaits one import of that picker result
 const runImport = async (picked: PickedCustomWorkoutFile) => {
   mockPickCustomWorkoutFile.mockResolvedValue(picked);
-  const { result } = renderHook(() => useImportCustomWorkout());
+  const { result } = await renderHook(() => useImportCustomWorkout());
   await act(async () => {
     await result.current.importCustomWorkout();
   });
@@ -188,7 +188,7 @@ describe("useImportCustomWorkout: failures", () => {
       status: "failed",
       reason: "READ_FAILED",
     });
-    const { result } = renderHook(() => useImportCustomWorkout());
+    const { result } = await renderHook(() => useImportCustomWorkout());
 
     await act(async () => {
       await result.current.importCustomWorkout();
@@ -199,7 +199,7 @@ describe("useImportCustomWorkout: failures", () => {
 
   it("reports importing as false after an invalid file", async () => {
     mockPickCustomWorkoutFile.mockResolvedValue(generatePicked("{ not json"));
-    const { result } = renderHook(() => useImportCustomWorkout());
+    const { result } = await renderHook(() => useImportCustomWorkout());
 
     await act(async () => {
       await result.current.importCustomWorkout();
@@ -232,11 +232,11 @@ describe("useImportCustomWorkout: running state", () => {
   });
 
   it("reports importing while the picker is pending and not after", async () => {
-    const { result } = renderHook(() => useImportCustomWorkout());
+    const { result } = await renderHook(() => useImportCustomWorkout());
     expect(result.current.importing).toBe(false);
 
     let running: Promise<void> = Promise.resolve();
-    act(() => {
+    await act(() => {
       running = result.current.importCustomWorkout();
     });
     expect(mockPickCustomWorkoutFile).toHaveBeenCalledTimes(1);
@@ -251,10 +251,10 @@ describe("useImportCustomWorkout: running state", () => {
   });
 
   it("opens the picker once when called twice while one import runs", async () => {
-    const { result } = renderHook(() => useImportCustomWorkout());
+    const { result } = await renderHook(() => useImportCustomWorkout());
 
     let running: Promise<void> = Promise.resolve();
-    act(() => {
+    await act(() => {
       running = result.current.importCustomWorkout();
       void result.current.importCustomWorkout();
     });
@@ -267,10 +267,10 @@ describe("useImportCustomWorkout: running state", () => {
   });
 
   it("opens the picker again after the first import finished", async () => {
-    const { result } = renderHook(() => useImportCustomWorkout());
+    const { result } = await renderHook(() => useImportCustomWorkout());
 
     let running: Promise<void> = Promise.resolve();
-    act(() => {
+    await act(() => {
       running = result.current.importCustomWorkout();
     });
     await act(async () => {
@@ -278,7 +278,7 @@ describe("useImportCustomWorkout: running state", () => {
       await running;
     });
 
-    act(() => {
+    await act(() => {
       void result.current.importCustomWorkout();
     });
 

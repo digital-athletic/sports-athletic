@@ -19,15 +19,15 @@ describe("useAgeGroup", () => {
   });
 
   describe("default behavior", () => {
-    it("returns CHILD for deafult store state", () => {
+    it("returns CHILD for deafult store state", async () => {
       useUserProfileStore.setState(DEFAULT_STATE);
 
-      const { result } = renderHook(() => useAgeGroup());
+      const { result } = await renderHook(() => useAgeGroup());
 
       expect(result.current).toBe(WorkoutConstants.AGE_GROUPS.CHILD);
     });
 
-    it("returns ADULT if birthday is falsy", () => {
+    it("returns ADULT if birthday is falsy", async () => {
       useUserProfileStore.setState({
         personalData: {
           ...DEFAULT_STATE.personalData,
@@ -35,14 +35,14 @@ describe("useAgeGroup", () => {
         },
       });
 
-      const { result } = renderHook(() => useAgeGroup());
+      const { result } = await renderHook(() => useAgeGroup());
 
       expect(result.current).toBe(WorkoutConstants.AGE_GROUPS.ADULT);
     });
   });
 
   describe("CHILD age group (age < 16)", () => {
-    it("returns CHILD for a 10-year-old", () => {
+    it("returns CHILD for a 10-year-old", async () => {
       // Born 2016-01-01 (exactly 10 years ago)
       useUserProfileStore.setState({
         personalData: {
@@ -51,12 +51,12 @@ describe("useAgeGroup", () => {
         },
       });
 
-      const { result } = renderHook(() => useAgeGroup());
+      const { result } = await renderHook(() => useAgeGroup());
 
       expect(result.current).toBe(WorkoutConstants.AGE_GROUPS.CHILD);
     });
 
-    it("returns CHILD for a 15-year-old", () => {
+    it("returns CHILD for a 15-year-old", async () => {
       // Born 2011-01-01 (exactly 15 years ago)
       useUserProfileStore.setState({
         personalData: {
@@ -65,12 +65,12 @@ describe("useAgeGroup", () => {
         },
       });
 
-      const { result } = renderHook(() => useAgeGroup());
+      const { result } = await renderHook(() => useAgeGroup());
 
       expect(result.current).toBe(WorkoutConstants.AGE_GROUPS.CHILD);
     });
 
-    it("returns CHILD for someone who is on the day before their 16th birthday", () => {
+    it("returns CHILD for someone who is on the day before their 16th birthday", async () => {
       // Born 2010-01-02 (1 day before 16th birthday)
       useUserProfileStore.setState({
         personalData: {
@@ -79,14 +79,14 @@ describe("useAgeGroup", () => {
         },
       });
 
-      const { result } = renderHook(() => useAgeGroup());
+      const { result } = await renderHook(() => useAgeGroup());
 
       expect(result.current).toBe(WorkoutConstants.AGE_GROUPS.CHILD);
     });
   });
 
   describe("ADOLESCENT age group (age 16-18)", () => {
-    it("returns ADOLESCENT for a 16-year-old", () => {
+    it("returns ADOLESCENT for a 16-year-old", async () => {
       // Born 2010-01-01 (exactly 16 years ago)
       useUserProfileStore.setState({
         personalData: {
@@ -95,12 +95,12 @@ describe("useAgeGroup", () => {
         },
       });
 
-      const { result } = renderHook(() => useAgeGroup());
+      const { result } = await renderHook(() => useAgeGroup());
 
       expect(result.current).toBe(WorkoutConstants.AGE_GROUPS.ADOLESCENT);
     });
 
-    it("returns ADOLESCENT for a 17-year-old", () => {
+    it("returns ADOLESCENT for a 17-year-old", async () => {
       // Born 2009-01-01 (exactly 17 years ago)
       useUserProfileStore.setState({
         personalData: {
@@ -109,12 +109,12 @@ describe("useAgeGroup", () => {
         },
       });
 
-      const { result } = renderHook(() => useAgeGroup());
+      const { result } = await renderHook(() => useAgeGroup());
 
       expect(result.current).toBe(WorkoutConstants.AGE_GROUPS.ADOLESCENT);
     });
 
-    it("returns ADOLESCENT for someone who just turned 16", () => {
+    it("returns ADOLESCENT for someone who just turned 16", async () => {
       // Born 2009-12-30 (16 years and 2 days ago)
       useUserProfileStore.setState({
         personalData: {
@@ -123,14 +123,14 @@ describe("useAgeGroup", () => {
         },
       });
 
-      const { result } = renderHook(() => useAgeGroup());
+      const { result } = await renderHook(() => useAgeGroup());
 
       expect(result.current).toBe(WorkoutConstants.AGE_GROUPS.ADOLESCENT);
     });
   });
 
   describe("ADULT age group (age > 18)", () => {
-    it("returns ADULT for an 18-year-old", () => {
+    it("returns ADULT for an 18-year-old", async () => {
       // Born 2008-01-01 (exactly 18 years ago)
       useUserProfileStore.setState({
         personalData: {
@@ -139,12 +139,12 @@ describe("useAgeGroup", () => {
         },
       });
 
-      const { result } = renderHook(() => useAgeGroup());
+      const { result } = await renderHook(() => useAgeGroup());
 
       expect(result.current).toBe(WorkoutConstants.AGE_GROUPS.ADULT);
     });
 
-    it("returns ADULT for a 25-year-old", () => {
+    it("returns ADULT for a 25-year-old", async () => {
       // Born 2001-01-01 (exactly 25 years ago)
       useUserProfileStore.setState({
         personalData: {
@@ -153,12 +153,12 @@ describe("useAgeGroup", () => {
         },
       });
 
-      const { result } = renderHook(() => useAgeGroup());
+      const { result } = await renderHook(() => useAgeGroup());
 
       expect(result.current).toBe(WorkoutConstants.AGE_GROUPS.ADULT);
     });
 
-    it("returns ADULT for a 50-year-old", () => {
+    it("returns ADULT for a 50-year-old", async () => {
       // Born 1976-01-01 (exactly 50 years ago)
       useUserProfileStore.setState({
         personalData: {
@@ -167,14 +167,14 @@ describe("useAgeGroup", () => {
         },
       });
 
-      const { result } = renderHook(() => useAgeGroup());
+      const { result } = await renderHook(() => useAgeGroup());
 
       expect(result.current).toBe(WorkoutConstants.AGE_GROUPS.ADULT);
     });
   });
 
   describe("edge cases at boundaries", () => {
-    it("returns CHILD for someone 1 day before their 16th birthday", () => {
+    it("returns CHILD for someone 1 day before their 16th birthday", async () => {
       // Born 2010-01-02 (still 15 years old)
       useUserProfileStore.setState({
         personalData: {
@@ -183,12 +183,12 @@ describe("useAgeGroup", () => {
         },
       });
 
-      const { result } = renderHook(() => useAgeGroup());
+      const { result } = await renderHook(() => useAgeGroup());
 
       expect(result.current).toBe(WorkoutConstants.AGE_GROUPS.CHILD);
     });
 
-    it("returns ADOLESCENT for someone 1 day before their 18th birthday", () => {
+    it("returns ADOLESCENT for someone 1 day before their 18th birthday", async () => {
       // Born 2008-01-02 (still 17 years old)
       useUserProfileStore.setState({
         personalData: {
@@ -197,7 +197,7 @@ describe("useAgeGroup", () => {
         },
       });
 
-      const { result } = renderHook(() => useAgeGroup());
+      const { result } = await renderHook(() => useAgeGroup());
 
       expect(result.current).toBe(WorkoutConstants.AGE_GROUPS.ADOLESCENT);
     });

@@ -12,16 +12,16 @@ jest.mock("expo-router", () => ({
 }));
 
 describe("GlossaryScreen: terms", () => {
-  it("renders the intro text", () => {
-    render(<GlossaryScreen />);
+  it("renders the intro text", async () => {
+    await render(<GlossaryScreen />);
 
     expect(
       screen.getByText("Here we explain words from the app in plain language."),
     ).toBeTruthy();
   });
 
-  it("renders a term with its explanation", () => {
-    render(<GlossaryScreen />);
+  it("renders a term with its explanation", async () => {
+    await render(<GlossaryScreen />);
 
     expect(screen.getByText("Anamnesis")).toBeTruthy();
     expect(
@@ -31,17 +31,19 @@ describe("GlossaryScreen: terms", () => {
     ).toBeTruthy();
   });
 
-  it("marks each term as a header", () => {
-    render(<GlossaryScreen />);
+  it("marks each term as a header", async () => {
+    await render(<GlossaryScreen />);
 
     expect(screen.getByRole("header", { name: "Anamnesis" })).toBeTruthy();
   });
 
-  it("renders the terms as a list", () => {
-    render(<GlossaryScreen />);
+  it("renders the terms as a list", async () => {
+    await render(<GlossaryScreen />);
 
     expect(
-      screen.UNSAFE_getAllByProps({ accessibilityRole: "list" }).length,
+      screen.container.queryAll(
+        (element) => element.props.accessibilityRole === "list",
+      ).length,
     ).toBeGreaterThan(0);
   });
 

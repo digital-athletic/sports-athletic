@@ -12,9 +12,9 @@ describe("useHardwareBackHandler", () => {
     Platform.OS = "ios";
   });
 
-  it("registers the handler for hardwareBackPress", () => {
+  it("registers the handler for hardwareBackPress", async () => {
     const handler = jest.fn().mockReturnValue(true);
-    renderHook(() => useHardwareBackHandler(handler));
+    await renderHook(() => useHardwareBackHandler(handler));
 
     expect(mockAddEventListener).toHaveBeenCalledWith(
       "hardwareBackPress",
@@ -22,20 +22,22 @@ describe("useHardwareBackHandler", () => {
     );
   });
 
-  it("removes the subscription on unmount", () => {
+  it("removes the subscription on unmount", async () => {
     const remove = jest.fn();
     mockAddEventListener.mockReturnValueOnce({ remove });
 
-    const { unmount } = renderHook(() => useHardwareBackHandler(() => true));
-    unmount();
+    const { unmount } = await renderHook(() =>
+      useHardwareBackHandler(() => true),
+    );
+    await unmount();
 
     expect(remove).toHaveBeenCalledTimes(1);
   });
 
-  it("does not register a listener on web", () => {
+  it("does not register a listener on web", async () => {
     Platform.OS = "web";
 
-    renderHook(() => useHardwareBackHandler(() => true));
+    await renderHook(() => useHardwareBackHandler(() => true));
 
     expect(mockAddEventListener).not.toHaveBeenCalled();
   });

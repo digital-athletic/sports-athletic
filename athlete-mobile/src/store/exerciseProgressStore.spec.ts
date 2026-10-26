@@ -152,16 +152,16 @@ describe("ExerciseTotals Types", () => {
 });
 
 describe("updateUserExerciseTotals", () => {
-  beforeEach(() => {
-    act(() => {
+  beforeEach(async () => {
+    await act(() => {
       useExerciseProgressStore.getState().resetProgress();
     });
   });
 
-  it("creates new totals for a new exercise", () => {
+  it("creates new totals for a new exercise", async () => {
     const { updateUserExerciseTotals } = useExerciseProgressStore.getState();
 
-    act(() => {
+    await act(() => {
       updateUserExerciseTotals("exercise-1", 100, 60, 10, 50);
     });
 
@@ -175,14 +175,14 @@ describe("updateUserExerciseTotals", () => {
     });
   });
 
-  it("accumulates values for existing exercise", () => {
+  it("accumulates values for existing exercise", async () => {
     const { updateUserExerciseTotals } = useExerciseProgressStore.getState();
 
-    act(() => {
+    await act(() => {
       updateUserExerciseTotals("exercise-1", 100, 60, 10, 50);
     });
 
-    act(() => {
+    await act(() => {
       updateUserExerciseTotals("exercise-1", 50, 30, 5, 10);
     });
 
@@ -196,10 +196,10 @@ describe("updateUserExerciseTotals", () => {
     });
   });
 
-  it("handles multiple exercises independently", () => {
+  it("handles multiple exercises independently", async () => {
     const { updateUserExerciseTotals } = useExerciseProgressStore.getState();
 
-    act(() => {
+    await act(() => {
       updateUserExerciseTotals("exercise-1", 100, 60, 10, 50);
       updateUserExerciseTotals("exercise-2", 200, 120, 20, 100);
     });
@@ -221,10 +221,10 @@ describe("updateUserExerciseTotals", () => {
     });
   });
 
-  it("handles partial parameters with defaults", () => {
+  it("handles partial parameters with defaults", async () => {
     const { updateUserExerciseTotals } = useExerciseProgressStore.getState();
 
-    act(() => {
+    await act(() => {
       updateUserExerciseTotals("exercise-1", 100);
     });
 
@@ -238,11 +238,11 @@ describe("updateUserExerciseTotals", () => {
     });
   });
 
-  it("getExerciseTotals returns totals for specific exercise", () => {
+  it("getExerciseTotals returns totals for specific exercise", async () => {
     const { updateUserExerciseTotals, getExerciseTotals } =
       useExerciseProgressStore.getState();
 
-    act(() => {
+    await act(() => {
       updateUserExerciseTotals("exercise-1", 100, 60, 10, 50);
     });
 
@@ -257,43 +257,43 @@ describe("updateUserExerciseTotals", () => {
 });
 
 describe("exerciseProgressStore", () => {
-  beforeEach(() => {
-    const { result } = renderHook(() => useExerciseProgressStore());
-    act(() => {
+  beforeEach(async () => {
+    const { result } = await renderHook(() => useExerciseProgressStore());
+    await act(() => {
       result.current.resetProgress();
     });
     jest.clearAllMocks();
   });
 
   describe("initial state", () => {
-    it("starts with zero xp and level 1", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("starts with zero xp and level 1", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
       expect(result.current.xp).toBe(0);
       expect(result.current.level).toBe(1);
     });
 
-    it("has empty exercise and branch data", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("has empty exercise and branch data", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
       expect(result.current.exerciseData).toEqual({});
       expect(result.current.branchData).toEqual({});
     });
   });
 
   describe("addXP", () => {
-    it("increments xp amount", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("increments xp amount", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.addXP(500);
       });
 
       expect(result.current.xp).toBe(500);
     });
 
-    it("calculates level from xp (1000 xp per level)", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("calculates level from xp (1000 xp per level)", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.addXP(2500);
       });
 
@@ -302,10 +302,10 @@ describe("exerciseProgressStore", () => {
   });
 
   describe("updateExercise", () => {
-    it("creates new exercise entry", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("creates new exercise entry", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.updateExercise("ex1", {
           exerciseId: "ex1",
           skill: "WU",
@@ -316,10 +316,10 @@ describe("exerciseProgressStore", () => {
       expect(result.current.exerciseData["ex1"]?.repetition).toBe(10);
     });
 
-    it("updates existing exercise", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("updates existing exercise", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.updateExercise("ex1", {
           exerciseId: "ex1",
           skill: "WU",
@@ -335,10 +335,10 @@ describe("exerciseProgressStore", () => {
       expect(result.current.exerciseData["ex1"]?.repetition).toBe(15);
     });
 
-    it("tracks feedback streak for same difficulty", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("tracks feedback streak for same difficulty", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.updateExercise("ex1", {
           exerciseId: "ex1",
           skill: "WU",
@@ -356,10 +356,10 @@ describe("exerciseProgressStore", () => {
       );
     });
 
-    it("notifies sync of exercise update", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("notifies sync of exercise update", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.updateExercise("ex1", {
           exerciseId: "ex1",
           skill: "WU",
@@ -377,10 +377,10 @@ describe("exerciseProgressStore", () => {
       );
     });
 
-    it("notifies sync for each update", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("notifies sync for each update", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.updateExercise("ex1", {
           exerciseId: "ex1",
           skill: "WU",
@@ -396,10 +396,10 @@ describe("exerciseProgressStore", () => {
       expect(syncManager.notifyExerciseUpdated).toHaveBeenCalledTimes(2);
     });
 
-    it("stores duration and branchId on new exercise", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("stores duration and branchId on new exercise", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.updateExercise("ex1", {
           exerciseId: "ex1",
           skill: "SWR1",
@@ -416,10 +416,10 @@ describe("exerciseProgressStore", () => {
       );
     });
 
-    it("updates duration and branchId on existing exercise", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("updates duration and branchId on existing exercise", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.updateExercise("ex1", {
           exerciseId: "ex1",
           skill: "SWR1",
@@ -442,10 +442,10 @@ describe("exerciseProgressStore", () => {
       );
     });
 
-    it("stores weight of zero", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("stores weight of zero", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.updateExercise("ex1", {
           exerciseId: "ex1",
           skill: "WU",
@@ -456,10 +456,10 @@ describe("exerciseProgressStore", () => {
       expect(result.current.exerciseData["ex1"]?.weight).toBe(0);
     });
 
-    it("stores skipped flag", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("stores skipped flag", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.updateExercise("ex1", {
           exerciseId: "ex1",
           skill: "WU",
@@ -470,10 +470,10 @@ describe("exerciseProgressStore", () => {
       expect(result.current.exerciseData["ex1"]?.skipped).toBe(true);
     });
 
-    it("includes workoutId in sync notification when provided", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("includes workoutId in sync notification when provided", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.updateExercise(
           "ex1",
           { exerciseId: "ex1", skill: "WU", repetition: 10 },
@@ -490,10 +490,10 @@ describe("exerciseProgressStore", () => {
       );
     });
 
-    it("omits workoutId from sync notification when not provided", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("omits workoutId from sync notification when not provided", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.updateExercise("ex1", {
           exerciseId: "ex1",
           skill: "WU",
@@ -508,10 +508,10 @@ describe("exerciseProgressStore", () => {
   });
 
   describe("resetExercise", () => {
-    it("keeps only exerciseId, skill and branchId and notifies sync", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("keeps only exerciseId, skill and branchId and notifies sync", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.updateExercise("ex1", {
           exerciseId: "ex1",
           skill: "MAX_STRENGTH",
@@ -526,7 +526,7 @@ describe("exerciseProgressStore", () => {
       });
       jest.clearAllMocks();
 
-      act(() => {
+      await act(() => {
         result.current.resetExercise(
           "ex1",
           { skill: "MAX_STRENGTH", branchId: "branch-1" },
@@ -549,20 +549,20 @@ describe("exerciseProgressStore", () => {
   });
 
   describe("setBranchLevel", () => {
-    it("creates branch with level", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("creates branch with level", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.setBranchLevel("branch1", 3, "301");
       });
 
       expect(result.current.branchData["branch1"]?.level).toBe(3);
     });
 
-    it("updates existing branch level", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("updates existing branch level", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.setBranchLevel("branch1", 2, "201");
         result.current.setBranchLevel("branch1", 5, "501");
       });
@@ -570,10 +570,10 @@ describe("exerciseProgressStore", () => {
       expect(result.current.branchData["branch1"]?.level).toBe(5);
     });
 
-    it("stores the exercise of the new level", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("stores the exercise of the new level", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.setBranchLevel("branch1", 2, "201");
         result.current.setBranchLevel("branch1", 5, "501");
       });
@@ -583,13 +583,13 @@ describe("exerciseProgressStore", () => {
   });
 
   describe("setBranchData", () => {
-    it("replaces the stored branch data", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("replaces the stored branch data", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
       const branchData = {
         branch2: { branchId: "branch2", level: 4, exerciseId: "401" },
       };
 
-      act(() => {
+      await act(() => {
         result.current.setBranchLevel("branch1", 2, "201");
         result.current.setBranchData(branchData);
       });
@@ -599,27 +599,27 @@ describe("exerciseProgressStore", () => {
   });
 
   describe("getBranchLevel", () => {
-    it("returns 0 for unknown branch", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("returns 0 for unknown branch", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
       expect(result.current.getBranchLevel("unknown")).toBe(0);
     });
   });
 
   describe("addTestResult", () => {
-    it("appends to test history", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("appends to test history", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.addTestResult(DEFAULT_MAX_VALUES);
       });
 
       expect(result.current.testHistory).toHaveLength(1);
     });
 
-    it("notifies sync of test result", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("notifies sync of test result", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.addTestResult(DEFAULT_MAX_VALUES);
       });
 
@@ -630,15 +630,15 @@ describe("exerciseProgressStore", () => {
   });
 
   describe("getLatestTestResult", () => {
-    it("returns undefined when no history", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("returns undefined when no history", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
       expect(result.current.getLatestTestResult()).toBeUndefined();
     });
 
-    it("returns most recent result", () => {
-      const { result } = renderHook(() => useExerciseProgressStore());
+    it("returns most recent result", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
 
-      act(() => {
+      await act(() => {
         result.current.addTestResult({ ...DEFAULT_MAX_VALUES, testAt: 1000 });
         result.current.addTestResult({ ...DEFAULT_MAX_VALUES, testAt: 2000 });
       });

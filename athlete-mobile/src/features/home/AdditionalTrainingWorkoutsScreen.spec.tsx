@@ -54,8 +54,8 @@ afterEach(() => {
 });
 
 describe("AdditionalTrainingWorkoutsScreen: header", () => {
-  it("sets the title search param as the header title", () => {
-    render(<AdditionalTrainingWorkoutsScreen />);
+  it("sets the title search param as the header title", async () => {
+    await render(<AdditionalTrainingWorkoutsScreen />);
 
     expect(mockStackScreen).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -64,10 +64,10 @@ describe("AdditionalTrainingWorkoutsScreen: header", () => {
     );
   });
 
-  it("falls back to the additional trainings title when the title param is missing", () => {
+  it("falls back to the additional trainings title when the title param is missing", async () => {
     mockUseLocalSearchParams.mockReturnValue({});
 
-    render(<AdditionalTrainingWorkoutsScreen />);
+    await render(<AdditionalTrainingWorkoutsScreen />);
 
     expect(mockStackScreen).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -78,14 +78,14 @@ describe("AdditionalTrainingWorkoutsScreen: header", () => {
 });
 
 describe("AdditionalTrainingWorkoutsScreen: empty state", () => {
-  it("shows the no workouts message", () => {
-    const { getByText } = render(<AdditionalTrainingWorkoutsScreen />);
+  it("shows the no workouts message", async () => {
+    const { getByText } = await render(<AdditionalTrainingWorkoutsScreen />);
 
     expect(getByText("Currently no workouts available")).toBeTruthy();
   });
 
-  it("marks the no workouts message as text for screen readers", () => {
-    const { getByRole } = render(<AdditionalTrainingWorkoutsScreen />);
+  it("marks the no workouts message as text for screen readers", async () => {
+    const { getByRole } = await render(<AdditionalTrainingWorkoutsScreen />);
 
     expect(
       getByRole("text", { name: "Currently no workouts available" }),
@@ -101,41 +101,41 @@ describe("AdditionalTrainingWorkoutsScreen: own source without entries", () => {
     });
   });
 
-  it("shows the no workouts message", () => {
-    const { getByText } = render(<AdditionalTrainingWorkoutsScreen />);
+  it("shows the no workouts message", async () => {
+    const { getByText } = await render(<AdditionalTrainingWorkoutsScreen />);
 
     expect(getByText("Currently no workouts available")).toBeTruthy();
   });
 
-  it("calls the import hook when the import training link is pressed", () => {
-    const { getByRole } = render(<AdditionalTrainingWorkoutsScreen />);
+  it("calls the import hook when the import training link is pressed", async () => {
+    const { getByRole } = await render(<AdditionalTrainingWorkoutsScreen />);
 
-    fireEvent.press(getByRole("button", { name: IMPORT_LABEL }));
+    await fireEvent.press(getByRole("button", { name: IMPORT_LABEL }));
 
     expect(mockImportCustomWorkout).toHaveBeenCalledTimes(1);
   });
 
-  it("sets no header right button", () => {
-    render(<AdditionalTrainingWorkoutsScreen />);
+  it("sets no header right button", async () => {
+    await render(<AdditionalTrainingWorkoutsScreen />);
 
     const options = mockStackScreen.mock.calls[0][0].options;
     expect(options.headerRight).toBeUndefined();
   });
 
-  it("marks the import training link as disabled while an import runs", () => {
+  it("marks the import training link as disabled while an import runs", async () => {
     mockImporting = true;
-    const { getByRole } = render(<AdditionalTrainingWorkoutsScreen />);
+    const { getByRole } = await render(<AdditionalTrainingWorkoutsScreen />);
 
     expect(
       getByRole("button", { name: IMPORT_LABEL }).props.accessibilityState,
     ).toMatchObject({ disabled: true });
   });
 
-  it("ignores presses on the import training link while an import runs", () => {
+  it("ignores presses on the import training link while an import runs", async () => {
     mockImporting = true;
-    const { getByRole } = render(<AdditionalTrainingWorkoutsScreen />);
+    const { getByRole } = await render(<AdditionalTrainingWorkoutsScreen />);
 
-    fireEvent.press(getByRole("button", { name: IMPORT_LABEL }));
+    await fireEvent.press(getByRole("button", { name: IMPORT_LABEL }));
 
     expect(mockImportCustomWorkout).not.toHaveBeenCalled();
   });
@@ -152,65 +152,67 @@ describe("AdditionalTrainingWorkoutsScreen: own source with entries", () => {
       .saveCustomWorkout(generateCustomTemplate(), null);
   });
 
-  it("lists the imported training by its localized name", () => {
-    const { getByRole } = render(<AdditionalTrainingWorkoutsScreen />);
+  it("lists the imported training by its localized name", async () => {
+    const { getByRole } = await render(<AdditionalTrainingWorkoutsScreen />);
 
     expect(getByRole("button", { name: "My core" })).toBeTruthy();
   });
 
-  it("hides the empty message", () => {
-    const { queryByText } = render(<AdditionalTrainingWorkoutsScreen />);
+  it("hides the empty message", async () => {
+    const { queryByText } = await render(<AdditionalTrainingWorkoutsScreen />);
 
     expect(queryByText("Currently no workouts available")).toBeNull();
   });
 
-  it("shows the import training button in the header instead of the empty state link", () => {
-    const { getAllByRole } = render(<AdditionalTrainingWorkoutsScreen />);
+  it("shows the import training button in the header instead of the empty state link", async () => {
+    const { getAllByRole } = await render(<AdditionalTrainingWorkoutsScreen />);
 
     const importButtons = getAllByRole("button", { name: IMPORT_LABEL });
     expect(importButtons).toHaveLength(1);
   });
 
-  it("calls the import hook when the header import button is pressed", () => {
-    const { getByRole } = render(<AdditionalTrainingWorkoutsScreen />);
+  it("calls the import hook when the header import button is pressed", async () => {
+    const { getByRole } = await render(<AdditionalTrainingWorkoutsScreen />);
 
-    fireEvent.press(getByRole("button", { name: IMPORT_LABEL }));
+    await fireEvent.press(getByRole("button", { name: IMPORT_LABEL }));
 
     expect(mockImportCustomWorkout).toHaveBeenCalledTimes(1);
   });
 
-  it("marks the header import button as disabled while an import runs", () => {
+  it("marks the header import button as disabled while an import runs", async () => {
     mockImporting = true;
-    const { getByRole } = render(<AdditionalTrainingWorkoutsScreen />);
+    const { getByRole } = await render(<AdditionalTrainingWorkoutsScreen />);
 
     expect(
       getByRole("button", { name: IMPORT_LABEL }).props.accessibilityState,
     ).toMatchObject({ disabled: true });
   });
 
-  it("ignores presses on the header import button while an import runs", () => {
+  it("ignores presses on the header import button while an import runs", async () => {
     mockImporting = true;
-    const { getByRole } = render(<AdditionalTrainingWorkoutsScreen />);
+    const { getByRole } = await render(<AdditionalTrainingWorkoutsScreen />);
 
-    fireEvent.press(getByRole("button", { name: IMPORT_LABEL }));
+    await fireEvent.press(getByRole("button", { name: IMPORT_LABEL }));
 
     expect(mockImportCustomWorkout).not.toHaveBeenCalled();
   });
 
-  it("renders the add circle icon in the header button", () => {
-    const { UNSAFE_getByProps } = render(<AdditionalTrainingWorkoutsScreen />);
+  it("renders the add circle icon in the header button", async () => {
+    const { container } = await render(<AdditionalTrainingWorkoutsScreen />);
 
-    expect(UNSAFE_getByProps({ name: "add-circle" })).toBeTruthy();
+    expect(
+      container.queryAll((node) => node.props.name === "add-circle"),
+    ).toHaveLength(1);
   });
 
-  it("shows the header button after a save on an empty list", () => {
+  it("shows the header button after a save on an empty list", async () => {
     useCustomWorkoutsStore.getState().clearCustomWorkouts();
-    const { queryByRole, getByRole } = render(
+    const { queryByRole, getByRole } = await render(
       <AdditionalTrainingWorkoutsScreen />,
     );
     expect(queryByRole("button", { name: "My core" })).toBeNull();
 
-    act(() => {
+    await act(() => {
       useCustomWorkoutsStore
         .getState()
         .saveCustomWorkout(generateCustomTemplate(), null);
@@ -220,10 +222,10 @@ describe("AdditionalTrainingWorkoutsScreen: own source with entries", () => {
     expect(getByRole("button", { name: IMPORT_LABEL })).toBeTruthy();
   });
 
-  it("navigates to the muscle soreness screen when a row is pressed", () => {
-    const { getByRole } = render(<AdditionalTrainingWorkoutsScreen />);
+  it("navigates to the muscle soreness screen when a row is pressed", async () => {
+    const { getByRole } = await render(<AdditionalTrainingWorkoutsScreen />);
 
-    fireEvent.press(getByRole("button", { name: "My core" }));
+    await fireEvent.press(getByRole("button", { name: "My core" }));
 
     expect(mockNavigate).toHaveBeenCalledWith({
       pathname: "/training/muscle-soreness",
@@ -240,14 +242,14 @@ describe("AdditionalTrainingWorkoutsScreen: missing source", () => {
       .saveCustomWorkout(generateCustomTemplate(), null);
   });
 
-  it("shows no import action even when own entries exist", () => {
-    const { queryByRole } = render(<AdditionalTrainingWorkoutsScreen />);
+  it("shows no import action even when own entries exist", async () => {
+    const { queryByRole } = await render(<AdditionalTrainingWorkoutsScreen />);
 
     expect(queryByRole("button", { name: IMPORT_LABEL })).toBeNull();
   });
 
-  it("sets no header right button even when own entries exist", () => {
-    render(<AdditionalTrainingWorkoutsScreen />);
+  it("sets no header right button even when own entries exist", async () => {
+    await render(<AdditionalTrainingWorkoutsScreen />);
 
     const options = mockStackScreen.mock.calls[0][0].options;
     expect(options.headerRight).toBeUndefined();
@@ -265,8 +267,8 @@ describe("AdditionalTrainingWorkoutsScreen: team source", () => {
       .saveCustomWorkout(generateCustomTemplate(), null);
   });
 
-  it("shows only the empty message even when own entries exist", () => {
-    const { getByText, queryByRole } = render(
+  it("shows only the empty message even when own entries exist", async () => {
+    const { getByText, queryByRole } = await render(
       <AdditionalTrainingWorkoutsScreen />,
     );
 
@@ -274,14 +276,14 @@ describe("AdditionalTrainingWorkoutsScreen: team source", () => {
     expect(queryByRole("button", { name: "My core" })).toBeNull();
   });
 
-  it("shows no import action", () => {
-    const { queryByRole } = render(<AdditionalTrainingWorkoutsScreen />);
+  it("shows no import action", async () => {
+    const { queryByRole } = await render(<AdditionalTrainingWorkoutsScreen />);
 
     expect(queryByRole("button", { name: IMPORT_LABEL })).toBeNull();
   });
 
-  it("sets no header right button", () => {
-    render(<AdditionalTrainingWorkoutsScreen />);
+  it("sets no header right button", async () => {
+    await render(<AdditionalTrainingWorkoutsScreen />);
 
     const options = mockStackScreen.mock.calls[0][0].options;
     expect(options.headerRight).toBeUndefined();

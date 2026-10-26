@@ -42,7 +42,7 @@ describe("usePendingPlanCheck", () => {
 
   it("regenerates a marked plan that is broken", async () => {
     markedPlan();
-    renderHook(() => usePendingPlanCheck());
+    await renderHook(() => usePendingPlanCheck());
     await checkFinished();
     expect(useUserWorkoutStore.getState().trainingPlan).toBe(regeneratedPlan);
   });
@@ -50,14 +50,14 @@ describe("usePendingPlanCheck", () => {
   it("keeps a marked plan that is not broken", async () => {
     isBroken.mockReturnValue(false);
     markedPlan();
-    renderHook(() => usePendingPlanCheck());
+    await renderHook(() => usePendingPlanCheck());
     await checkFinished();
     expect(generatePlan).not.toHaveBeenCalled();
   });
 
   it("regenerates a broken plan whose start date holds a time", async () => {
     markedPlan({ ...storedPlan, start: "2026-10-05T00:00:00.000Z" });
-    renderHook(() => usePendingPlanCheck());
+    await renderHook(() => usePendingPlanCheck());
     await checkFinished();
     expect(useUserWorkoutStore.getState().trainingPlan).toBe(regeneratedPlan);
   });
@@ -67,7 +67,7 @@ describe("usePendingPlanCheck", () => {
       throw new Error("plan creation failed");
     });
     markedPlan();
-    renderHook(() => usePendingPlanCheck());
+    await renderHook(() => usePendingPlanCheck());
     await checkFinished();
     expect(useUserWorkoutStore.getState().trainingPlan).toBe(storedPlan);
   });
@@ -77,7 +77,7 @@ describe("usePendingPlanCheck", () => {
       planCheckPending: false,
       trainingPlan: storedPlan,
     });
-    renderHook(() => usePendingPlanCheck());
+    await renderHook(() => usePendingPlanCheck());
     await waitFor(() =>
       expect(useUserWorkoutStore.persist.hasHydrated()).toBe(true),
     );
@@ -87,7 +87,7 @@ describe("usePendingPlanCheck", () => {
   it("waits for a signed in user before checking", async () => {
     useAuthStore.setState({ auth: null });
     markedPlan();
-    renderHook(() => usePendingPlanCheck());
+    await renderHook(() => usePendingPlanCheck());
     await waitFor(() =>
       expect(useUserWorkoutStore.persist.hasHydrated()).toBe(true),
     );

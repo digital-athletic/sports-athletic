@@ -3,8 +3,8 @@ import { useUserProfileStore } from "./userProfileStore";
 
 const store = () => useUserProfileStore.getState();
 
-beforeEach(() => {
-  act(() => store().resetProfile());
+beforeEach(async () => {
+  await act(() => store().resetProfile());
 });
 
 describe("userProfileStore", () => {
@@ -19,31 +19,31 @@ describe("userProfileStore", () => {
     ).toBeUndefined();
   });
 
-  it("stores height through its setter", () => {
-    act(() => store().setHeight(182));
+  it("stores height through its setter", async () => {
+    await act(() => store().setHeight(182));
     expect(store().personalData.height).toBe(182);
   });
 
-  it("stores weight through its setter", () => {
-    act(() => store().setWeight(78));
+  it("stores weight through its setter", async () => {
+    await act(() => store().setWeight(78));
     expect(store().personalData.weight).toBe(78);
   });
 
-  it("merges partial patches over existing data", () => {
-    act(() => store().setPersonalData({ gender: "FEMALE" }));
+  it("merges partial patches over existing data", async () => {
+    await act(() => store().setPersonalData({ gender: "FEMALE" }));
     expect(store().personalData.gender).toBe("FEMALE");
   });
 
-  it("clears measurements on reset", () => {
-    act(() => {
+  it("clears measurements on reset", async () => {
+    await act(() => {
       store().setWeight(90);
       store().resetProfile();
     });
     expect(store().personalData.weight).toBeUndefined();
   });
 
-  it("keeps the hydration flag across a reset", () => {
-    act(() => {
+  it("keeps the hydration flag across a reset", async () => {
+    await act(() => {
       store().setHasHydrated(true);
       store().resetProfile();
     });
@@ -54,33 +54,33 @@ describe("userProfileStore", () => {
     expect(store().warnings).toEqual({ painAlertSeen: false });
   });
 
-  it("marks a warning as seen through its setter", () => {
-    act(() => store().setWarningSeen("painAlertSeen", true));
+  it("marks a warning as seen through its setter", async () => {
+    await act(() => store().setWarningSeen("painAlertSeen", true));
     expect(store().warnings.painAlertSeen).toBe(true);
   });
 
-  it("marks a seen warning as unseen again", () => {
-    act(() => {
+  it("marks a seen warning as unseen again", async () => {
+    await act(() => {
       store().setWarningSeen("painAlertSeen", true);
       store().setWarningSeen("painAlertSeen", false);
     });
     expect(store().warnings.painAlertSeen).toBe(false);
   });
 
-  it("clears seen warnings on reset", () => {
-    act(() => {
+  it("clears seen warnings on reset", async () => {
+    await act(() => {
       store().setWarningSeen("painAlertSeen", true);
       store().resetProfile();
     });
     expect(store().warnings.painAlertSeen).toBe(false);
   });
 
-  it("derives age in whole years from the birthday", () => {
+  it("derives age in whole years from the birthday", async () => {
     const today = new Date();
     const year = today.getFullYear() - 28;
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const day = String(today.getDate()).padStart(2, "0");
-    act(() => store().setBirthday(`${year}-${month}-${day}`));
+    await act(() => store().setBirthday(`${year}-${month}-${day}`));
     expect(store().getAge()).toBe(28);
   });
 });

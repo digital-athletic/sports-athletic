@@ -7,8 +7,8 @@ import { render, screen } from "@/utils/testUtils";
 import { ExerciseWeightOrHeightDisplay } from "./ExerciseWeightOrHeightDisplay";
 
 describe("ExerciseWeightOrHeightDisplay: weight branch", () => {
-  it("renders the 2x prefix for a dumbbell exercise", () => {
-    render(
+  it("renders the 2x prefix for a dumbbell exercise", async () => {
+    await render(
       <ExerciseWeightOrHeightDisplay
         exercise={createExercise({ weight: 20, weightType: "weightAbsolute" })}
         exerciseData={createExerciseData({ tags: ["EQ_DUMBBELL"] })}
@@ -19,8 +19,8 @@ describe("ExerciseWeightOrHeightDisplay: weight branch", () => {
     expect(screen.getByText("Weight in kg")).toBeTruthy();
   });
 
-  it("renders the derived weight without a prefix for a non dumbbell exercise", () => {
-    render(
+  it("renders the derived weight without a prefix for a non dumbbell exercise", async () => {
+    await render(
       <ExerciseWeightOrHeightDisplay
         exercise={createExercise({ weight: 20, weightType: "weightAbsolute" })}
         exerciseData={createExerciseData({ tags: [] })}
@@ -31,8 +31,8 @@ describe("ExerciseWeightOrHeightDisplay: weight branch", () => {
     expect(screen.getByText("20")).toBeTruthy();
   });
 
-  it("renders a strength test load below the empty bar", () => {
-    render(
+  it("renders a strength test load below the empty bar", async () => {
+    await render(
       <ExerciseWeightOrHeightDisplay
         exercise={createExercise({
           weight: 12.5,
@@ -48,8 +48,8 @@ describe("ExerciseWeightOrHeightDisplay: weight branch", () => {
 });
 
 describe("ExerciseWeightOrHeightDisplay: height branch", () => {
-  it("renders the height value when no weight is present", () => {
-    render(
+  it("renders the height value when no weight is present", async () => {
+    await render(
       <ExerciseWeightOrHeightDisplay
         exercise={createExercise({ height: 30 })}
         exerciseData={createExerciseData()}
@@ -62,8 +62,8 @@ describe("ExerciseWeightOrHeightDisplay: height branch", () => {
 });
 
 describe("ExerciseWeightOrHeightDisplay: fallback branch", () => {
-  it("renders the no weights fallback when neither weight nor height is present", () => {
-    render(
+  it("renders the no weights fallback when neither weight nor height is present", async () => {
+    await render(
       <ExerciseWeightOrHeightDisplay
         exercise={createExercise()}
         exerciseData={createExerciseData()}
@@ -73,8 +73,8 @@ describe("ExerciseWeightOrHeightDisplay: fallback branch", () => {
     expect(screen.getByText("No weights")).toBeTruthy();
   });
 
-  it("renders nothing when exercise or exerciseData is undefined", () => {
-    const { toJSON } = render(
+  it("renders nothing when exercise or exerciseData is undefined", async () => {
+    const { toJSON } = await render(
       <ExerciseWeightOrHeightDisplay
         exercise={undefined}
         exerciseData={createExerciseData()}

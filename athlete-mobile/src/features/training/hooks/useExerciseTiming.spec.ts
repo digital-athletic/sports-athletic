@@ -17,16 +17,16 @@ afterEach(() => {
 });
 
 describe("useExerciseTiming: handlePauseToggled", () => {
-  it("resume adds the elapsed pause duration to exercise elapsed time", () => {
-    const { result } = renderHook(() => useExerciseTiming());
+  it("resume adds the elapsed pause duration to exercise elapsed time", async () => {
+    const { result } = await renderHook(() => useExerciseTiming());
 
-    act(() => {
+    await act(() => {
       result.current.handlePauseToggled(false); // pause
     });
 
     mockNow += 5_000; // 5s pass while paused
 
-    act(() => {
+    await act(() => {
       result.current.handlePauseToggled(true); // resume
     });
 
@@ -41,10 +41,10 @@ describe("useExerciseTiming: handlePauseToggled", () => {
 });
 
 describe("useExerciseTiming: markPauseStart and getPauseElapsed", () => {
-  it("returns the elapsed time since markPauseStart was called", () => {
-    const { result } = renderHook(() => useExerciseTiming());
+  it("returns the elapsed time since markPauseStart was called", async () => {
+    const { result } = await renderHook(() => useExerciseTiming());
 
-    act(() => {
+    await act(() => {
       result.current.markPauseStart();
     });
 
@@ -55,12 +55,12 @@ describe("useExerciseTiming: markPauseStart and getPauseElapsed", () => {
 });
 
 describe("useExerciseTiming: resetExerciseStart", () => {
-  it("zeroes exercise elapsed time at the controlled Date.now", () => {
-    const { result } = renderHook(() => useExerciseTiming());
+  it("zeroes exercise elapsed time at the controlled Date.now", async () => {
+    const { result } = await renderHook(() => useExerciseTiming());
 
     mockNow += 10_000;
 
-    act(() => {
+    await act(() => {
       result.current.resetExerciseStart();
     });
 
@@ -69,13 +69,13 @@ describe("useExerciseTiming: resetExerciseStart", () => {
 });
 
 describe("useExerciseTiming: training start timer reset", () => {
-  it("resets exercise elapsed time when activeTraining changes", () => {
-    const { result } = renderHook(() => useExerciseTiming());
+  it("resets exercise elapsed time when activeTraining changes", async () => {
+    const { result } = await renderHook(() => useExerciseTiming());
 
     mockNow += 4_000;
     expect(result.current.getExerciseElapsed()).toBe(4_000);
 
-    act(() => {
+    await act(() => {
       useTrainingStore.setState({
         activeTraining: { id: "training-1", type: "PLAN" },
       });

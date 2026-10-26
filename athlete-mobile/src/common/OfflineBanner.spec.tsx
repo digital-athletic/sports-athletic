@@ -12,17 +12,17 @@ const mockUseNetworkState = useNetworkState as jest.MockedFunction<
 >;
 
 describe("OfflineBanner", () => {
-  it("renders offline text when useNetworkState returns false", () => {
+  it("renders offline text when useNetworkState returns false", async () => {
     mockUseNetworkState.mockReturnValue(false);
-    render(<OfflineBanner />);
+    await render(<OfflineBanner />);
     expect(
       screen.getByText("Offline — some features unavailable"),
     ).toBeTruthy();
   });
 
-  it("renders nothing when useNetworkState returns true", () => {
+  it("renders nothing when useNetworkState returns true", async () => {
     mockUseNetworkState.mockReturnValue(true);
-    render(<OfflineBanner />);
+    await render(<OfflineBanner />);
     expect(
       screen.queryByText("Offline — some features unavailable"),
     ).toBeNull();

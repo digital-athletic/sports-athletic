@@ -32,18 +32,18 @@ describe("ListItem: external link", () => {
     jest.restoreAllMocks();
   });
 
-  it("opens the url", () => {
+  it("opens the url", async () => {
     const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(true);
-    const { getByRole } = renderItem("https://example.com");
-    fireEvent.press(getByRole("link"));
+    const { getByRole } = await renderItem("https://example.com");
+    await fireEvent.press(getByRole("link"));
     expect(openURL).toHaveBeenCalledWith("https://example.com");
     expect(Alert.alert).not.toHaveBeenCalled();
   });
 
   it("shows an alert when a web link does not open", async () => {
     jest.spyOn(Linking, "openURL").mockRejectedValue(new Error("no browser"));
-    const { getByRole } = renderItem("https://example.com");
-    fireEvent.press(getByRole("link"));
+    const { getByRole } = await renderItem("https://example.com");
+    await fireEvent.press(getByRole("link"));
     await waitFor(() => expect(Alert.alert).toHaveBeenCalledTimes(1));
     expect(Alert.alert).toHaveBeenCalledWith(
       expect.any(String),
@@ -53,8 +53,8 @@ describe("ListItem: external link", () => {
 
   it("shows the support address when the mail link does not open", async () => {
     jest.spyOn(Linking, "openURL").mockRejectedValue(new Error("no mail app"));
-    const { getByRole } = renderItem(`mailto:${SUPPORT_EMAIL}`);
-    fireEvent.press(getByRole("link"));
+    const { getByRole } = await renderItem(`mailto:${SUPPORT_EMAIL}`);
+    await fireEvent.press(getByRole("link"));
     await waitFor(() => expect(Alert.alert).toHaveBeenCalledTimes(1));
     expect(Alert.alert).toHaveBeenCalledWith(
       expect.any(String),

@@ -65,7 +65,7 @@ describe("useTrainingListRows: subtitle composition", () => {
     mockGetExerciseById.mockReset();
   });
 
-  it("joins set, reps, and absolute weight into one subtitle", () => {
+  it("joins set, reps, and absolute weight into one subtitle", async () => {
     mockGetExerciseById.mockReturnValue(
       createExerciseData({ id: "1", tags: [] }),
     );
@@ -80,14 +80,14 @@ describe("useTrainingListRows: subtitle composition", () => {
       ],
     });
 
-    const { result } = renderHook(() => useTrainingListRows());
+    const { result } = await renderHook(() => useTrainingListRows());
 
     expect(result.current.rows[0].setLabel).toBe(
       "1 of 3 · 10 repetitions · 20.00 kg",
     );
   });
 
-  it("prefixes the weight with the dumbbell each-hand qualifier", () => {
+  it("prefixes the weight with the dumbbell each-hand qualifier", async () => {
     mockGetExerciseById.mockReturnValue(
       createExerciseData({ id: "1", tags: ["EQ_DUMBBELL"] }),
     );
@@ -95,12 +95,12 @@ describe("useTrainingListRows: subtitle composition", () => {
       exerciseList: [createExercise({ exerciseId: "1", weight: 20 })],
     });
 
-    const { result } = renderHook(() => useTrainingListRows());
+    const { result } = await renderHook(() => useTrainingListRows());
 
     expect(result.current.rows[0].setLabel).toBe("each 20.00 kg");
   });
 
-  it("derives weight as a percentage of the user's max for weightFMax", () => {
+  it("derives weight as a percentage of the user's max for weightFMax", async () => {
     mockGetExerciseById.mockReturnValue(
       createExerciseData({ id: "1", tags: BARBELL_HIP_TAGS }),
     );
@@ -115,12 +115,12 @@ describe("useTrainingListRows: subtitle composition", () => {
       ],
     });
 
-    const { result } = renderHook(() => useTrainingListRows());
+    const { result } = await renderHook(() => useTrainingListRows());
 
     expect(result.current.rows[0].setLabel).toBe("40.00 kg");
   });
 
-  it("keeps a strength test barbell load below the empty bar", () => {
+  it("keeps a strength test barbell load below the empty bar", async () => {
     mockGetExerciseById.mockReturnValue(
       createExerciseData({ id: "1", tags: BARBELL_HIP_TAGS }),
     );
@@ -130,12 +130,12 @@ describe("useTrainingListRows: subtitle composition", () => {
       ],
     });
 
-    const { result } = renderHook(() => useTrainingListRows());
+    const { result } = await renderHook(() => useTrainingListRows());
 
     expect(result.current.rows[0].setLabel).toBe("12.50 kg");
   });
 
-  it("raises a training barbell load below the empty bar to 20 kg", () => {
+  it("raises a training barbell load below the empty bar to 20 kg", async () => {
     mockGetExerciseById.mockReturnValue(
       createExerciseData({ id: "1", tags: BARBELL_HIP_TAGS }),
     );
@@ -143,12 +143,12 @@ describe("useTrainingListRows: subtitle composition", () => {
       exerciseList: [createExercise({ exerciseId: "1", weight: 12.5 })],
     });
 
-    const { result } = renderHook(() => useTrainingListRows());
+    const { result } = await renderHook(() => useTrainingListRows());
 
     expect(result.current.rows[0].setLabel).toBe("20.00 kg");
   });
 
-  it("omits the reps segment for strength-test rows", () => {
+  it("omits the reps segment for strength-test rows", async () => {
     mockGetExerciseById.mockReturnValue(
       createExerciseData({ id: "1", tags: [] }),
     );
@@ -158,12 +158,12 @@ describe("useTrainingListRows: subtitle composition", () => {
       ],
     });
 
-    const { result } = renderHook(() => useTrainingListRows());
+    const { result } = await renderHook(() => useTrainingListRows());
 
     expect(result.current.rows[0].setLabel).toBe("20.00 kg");
   });
 
-  it("leaves the subtitle undefined when there is no set, reps, or weight info", () => {
+  it("leaves the subtitle undefined when there is no set, reps, or weight info", async () => {
     mockGetExerciseById.mockReturnValue(
       createExerciseData({ id: "1", tags: [] }),
     );
@@ -171,7 +171,7 @@ describe("useTrainingListRows: subtitle composition", () => {
       exerciseList: [createExercise({ exerciseId: "1" })],
     });
 
-    const { result } = renderHook(() => useTrainingListRows());
+    const { result } = await renderHook(() => useTrainingListRows());
 
     expect(result.current.rows[0].setLabel).toBeUndefined();
   });

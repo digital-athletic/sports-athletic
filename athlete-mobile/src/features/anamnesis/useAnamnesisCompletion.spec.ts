@@ -5,12 +5,18 @@ import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { useAnamnesisCompletion } from "./useAnamnesisCompletion";
 
 describe("useAnamnesisCompletion", () => {
-  beforeEach(() => {
-    const { result: anamnesisResult } = renderHook(() => useAnamnesisStore());
-    const { result: profileResult } = renderHook(() => useUserProfileStore());
-    const { result: workoutResult } = renderHook(() => useUserWorkoutStore());
+  beforeEach(async () => {
+    const { result: anamnesisResult } = await renderHook(() =>
+      useAnamnesisStore(),
+    );
+    const { result: profileResult } = await renderHook(() =>
+      useUserProfileStore(),
+    );
+    const { result: workoutResult } = await renderHook(() =>
+      useUserWorkoutStore(),
+    );
 
-    act(() => {
+    await act(() => {
       anamnesisResult.current.resetAnamnesisData();
       profileResult.current.resetProfile();
       workoutResult.current.resetUserWorkoutData();
@@ -18,49 +24,67 @@ describe("useAnamnesisCompletion", () => {
   });
 
   describe("saveAnamnesisData", () => {
-    it("saves height to userProfileStore.personalData", () => {
-      const { result: anamnesisResult } = renderHook(() => useAnamnesisStore());
-      const { result: profileResult } = renderHook(() => useUserProfileStore());
-      const { result: hookResult } = renderHook(() => useAnamnesisCompletion());
+    it("saves height to userProfileStore.personalData", async () => {
+      const { result: anamnesisResult } = await renderHook(() =>
+        useAnamnesisStore(),
+      );
+      const { result: profileResult } = await renderHook(() =>
+        useUserProfileStore(),
+      );
+      const { result: hookResult } = await renderHook(() =>
+        useAnamnesisCompletion(),
+      );
 
-      act(() => {
+      await act(() => {
         anamnesisResult.current.setValue("height", 180);
       });
 
-      act(() => {
+      await act(() => {
         hookResult.current.saveAnamnesisData();
       });
 
       expect(profileResult.current.personalData.height).toBe(180);
     });
 
-    it("saves weight to userProfileStore.personalData", () => {
-      const { result: anamnesisResult } = renderHook(() => useAnamnesisStore());
-      const { result: profileResult } = renderHook(() => useUserProfileStore());
-      const { result: hookResult } = renderHook(() => useAnamnesisCompletion());
+    it("saves weight to userProfileStore.personalData", async () => {
+      const { result: anamnesisResult } = await renderHook(() =>
+        useAnamnesisStore(),
+      );
+      const { result: profileResult } = await renderHook(() =>
+        useUserProfileStore(),
+      );
+      const { result: hookResult } = await renderHook(() =>
+        useAnamnesisCompletion(),
+      );
 
-      act(() => {
+      await act(() => {
         anamnesisResult.current.setValue("weight", 75);
       });
 
-      act(() => {
+      await act(() => {
         hookResult.current.saveAnamnesisData();
       });
 
       expect(profileResult.current.personalData.weight).toBe(75);
     });
 
-    it("saves tags to userWorkoutStore.workoutData in structured format", () => {
-      const { result: anamnesisResult } = renderHook(() => useAnamnesisStore());
-      const { result: workoutResult } = renderHook(() => useUserWorkoutStore());
-      const { result: hookResult } = renderHook(() => useAnamnesisCompletion());
+    it("saves tags to userWorkoutStore.workoutData in structured format", async () => {
+      const { result: anamnesisResult } = await renderHook(() =>
+        useAnamnesisStore(),
+      );
+      const { result: workoutResult } = await renderHook(() =>
+        useUserWorkoutStore(),
+      );
+      const { result: hookResult } = await renderHook(() =>
+        useAnamnesisCompletion(),
+      );
 
-      act(() => {
+      await act(() => {
         anamnesisResult.current.setTag("LEVEL", ["ADVANCED"]);
         anamnesisResult.current.setTag("POSITION", ["GOAL"]);
       });
 
-      act(() => {
+      await act(() => {
         hookResult.current.saveAnamnesisData();
       });
 
@@ -71,28 +95,36 @@ describe("useAnamnesisCompletion", () => {
       expect(workoutResult.current.workoutData.tags.POSITION).toEqual(["GOAL"]);
     });
 
-    it("resets the pain alert seen flag when the pains change", () => {
-      const { result: anamnesisResult } = renderHook(() => useAnamnesisStore());
-      const { result: hookResult } = renderHook(() => useAnamnesisCompletion());
+    it("resets the pain alert seen flag when the pains change", async () => {
+      const { result: anamnesisResult } = await renderHook(() =>
+        useAnamnesisStore(),
+      );
+      const { result: hookResult } = await renderHook(() =>
+        useAnamnesisCompletion(),
+      );
 
-      act(() => {
+      await act(() => {
         useUserWorkoutStore.getState().setTags({ PAIN: ["KNEE_LEFT"] });
         useUserProfileStore.getState().setWarningSeen("painAlertSeen", true);
         anamnesisResult.current.setTag("PAIN", ["KNEE_LEFT", "SPINE"]);
       });
 
-      act(() => {
+      await act(() => {
         hookResult.current.saveAnamnesisData();
       });
 
       expect(useUserProfileStore.getState().warnings.painAlertSeen).toBe(false);
     });
 
-    it("keeps the pain alert seen flag when the pains stay the same", () => {
-      const { result: anamnesisResult } = renderHook(() => useAnamnesisStore());
-      const { result: hookResult } = renderHook(() => useAnamnesisCompletion());
+    it("keeps the pain alert seen flag when the pains stay the same", async () => {
+      const { result: anamnesisResult } = await renderHook(() =>
+        useAnamnesisStore(),
+      );
+      const { result: hookResult } = await renderHook(() =>
+        useAnamnesisCompletion(),
+      );
 
-      act(() => {
+      await act(() => {
         useUserWorkoutStore
           .getState()
           .setTags({ PAIN: ["KNEE_LEFT", "SPINE"] });
@@ -100,29 +132,37 @@ describe("useAnamnesisCompletion", () => {
         anamnesisResult.current.setTag("PAIN", ["SPINE", "KNEE_LEFT"]);
       });
 
-      act(() => {
+      await act(() => {
         hookResult.current.saveAnamnesisData();
       });
 
       expect(useUserProfileStore.getState().warnings.painAlertSeen).toBe(true);
     });
 
-    it("handles undefined height gracefully", () => {
-      const { result: profileResult } = renderHook(() => useUserProfileStore());
-      const { result: hookResult } = renderHook(() => useAnamnesisCompletion());
+    it("handles undefined height gracefully", async () => {
+      const { result: profileResult } = await renderHook(() =>
+        useUserProfileStore(),
+      );
+      const { result: hookResult } = await renderHook(() =>
+        useAnamnesisCompletion(),
+      );
 
-      act(() => {
+      await act(() => {
         hookResult.current.saveAnamnesisData();
       });
 
       expect(profileResult.current.personalData.height).toBeUndefined();
     });
 
-    it("handles undefined weight gracefully", () => {
-      const { result: profileResult } = renderHook(() => useUserProfileStore());
-      const { result: hookResult } = renderHook(() => useAnamnesisCompletion());
+    it("handles undefined weight gracefully", async () => {
+      const { result: profileResult } = await renderHook(() =>
+        useUserProfileStore(),
+      );
+      const { result: hookResult } = await renderHook(() =>
+        useAnamnesisCompletion(),
+      );
 
-      act(() => {
+      await act(() => {
         hookResult.current.saveAnamnesisData();
       });
 

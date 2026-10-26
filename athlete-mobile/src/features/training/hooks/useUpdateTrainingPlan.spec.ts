@@ -24,10 +24,10 @@ describe("useUpdateTrainingPlan", () => {
     jest.restoreAllMocks();
   });
 
-  it("regenerates with the equipment saved in the same step", () => {
-    const { result } = renderHook(() => useUpdateTrainingPlan());
+  it("regenerates with the equipment saved in the same step", async () => {
+    const { result } = await renderHook(() => useUpdateTrainingPlan());
 
-    act(() => {
+    await act(() => {
       usePlacesStore
         .getState()
         .setPlaceEquipment("HOME", ["DUMBBELL", "KETTLEBELL"]);

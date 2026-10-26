@@ -4,11 +4,12 @@
  * Provides minimal test data builders so specs stay focused on
  * the behaviour under test rather than setup boilerplate.
  */
-import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
+import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
 import type { UserType } from "@/schemas/user.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
+import { addDays, formatDateToISO } from "@/utils/date";
 import {
   transformSkillTree,
   type RawSkillTree,
@@ -182,6 +183,39 @@ export function buildPlanUser(overrides: PlanUserOverrides): UserType {
 }
 
 /**
+ * Plan user with two sections whose Monday trainings differ only in warm up
+ * minutes: the first section started two weeks ago and runs two weeks, the
+ * second starts today.
+ *
+ * generateTwoSectionPlanUser()
+ * → user with section 0 lengths { WU: 5 } and section 1 lengths { WU: 7 }
+ */
+export function generateTwoSectionPlanUser(): UserType {
+  const section = (start: Date, numOfWeeks: number, minutes: number) => ({
+    start: formatDateToISO(start),
+    numOfWeeks,
+    type: "SWR1",
+    cardioType: "CARDIO_3",
+    trainings: [
+      {
+        weekday: 1,
+        skills: { WU: [wuBranch] },
+        lengths: { WU: minutes },
+        focus: "CARDIO",
+      },
+    ],
+  });
+  const firstStart = addDays(new Date(), -14);
+  return {
+    ...generateWarmUpOnlyPlanUser(),
+    trainingPlan: {
+      start: firstStart.toISOString(),
+      sections: [section(firstStart, 2, 5), section(new Date(), 3, 7)],
+    },
+  } as UserType;
+}
+
+/**
  * Plan user whose Monday training holds the default warm-up and nothing else.
  *
  * generateWarmUpOnlyPlanUser()
@@ -200,8 +234,8 @@ export interface PlanWorkoutOptions {
 
 /**
  * Generates the set list of the user's training of one weekday (default
- * Monday, 1) through `TrainingGenerator.generatePlanWorkout`, with no earlier
- * progress. Defaults: place HALL, no equipment, trees WU, CARDIO_4, CARDIO_5.
+ * Monday, 1) through the workout generator router, with no earlier progress.
+ * Defaults: place HALL, no equipment, trees WU, CARDIO_4, CARDIO_5.
  *
  * generatePlanWorkoutForWeekday(generateWarmUpOnlyPlanUser())
  * → [{ skill: "WU", branchId: "410", exerciseId: "431", set: [1, 2], ... }, ...]
@@ -210,16 +244,16 @@ export function generatePlanWorkoutForWeekday(
   user: UserType,
   options: PlanWorkoutOptions = {},
 ): GeneratedSetListEntry[] {
-  return new TrainingGenerator().generatePlanWorkout(
-    "PLAN",
+  return generateWorkout({
+    type: "PLAN",
     user,
-    options.place ?? "HALL",
-    realExercises,
-    options.skillTrees ?? importTrees("WU", "CARDIO_4", "CARDIO_5"),
-    options.weekday ?? 1,
-    options.equipment ?? [],
-    undefined,
-    0,
-    noExerciseData,
-  );
+    place: options.place ?? "HALL",
+    exercises: realExercises,
+    skillTrees: options.skillTrees ?? importTrees("WU", "CARDIO_4", "CARDIO_5"),
+    weekday: options.weekday ?? 1,
+    equipment: options.equipment ?? [],
+    givenSection: undefined,
+    daysSinceLastWorkout: 0,
+    userExerciseData: noExerciseData,
+  });
 }

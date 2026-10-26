@@ -1,48 +1,81 @@
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
 import type { GeneratorError } from "@/features/training/models/GeneratorError";
-import type { Block, Template } from "@/schemas/aiwl.schema";
+import type { Block } from "@/schemas/aiwl.schema";
+import type {
+  ExercisesBlock,
+  WorkoutBlock,
+} from "@/schemas/strengthTestTemplate.schema";
 import type { WorkoutInput } from "./workoutSetup";
 
-export type BlockKind = Block["kind"];
+export type BlockKind = WorkoutBlock["kind"];
 
 export type BranchesBlock = Extract<Block, { kind: "branches" }>;
 
+/** A block whose handler selects branches: every AIWL block kind. */
+export type BranchSelectingBlock = Block;
+
+/**
+ * An exercise a workout prescribes by catalog ID. It belongs to no branch, so
+ * it carries no branch tags and moves no branch progression.
+ */
+export type PrescribedExerciseReference = {
+  source: "exercise";
+  exerciseId: string;
+};
+
 /**
  * The part of a workout the interpreter runs: a workout document, which passed
- * TemplateSchema, or a stored day workout, which the language rules do not bind.
+ * TemplateSchema or StrengthTestTemplateSchema, or a stored day workout, which
+ * the language rules do not bind.
  */
-export type InterpretedWorkout = Pick<Template, "id" | "blocks">;
+export interface InterpretedWorkout {
+  readonly id: string;
+  readonly blocks: readonly WorkoutBlock[];
+}
 
 // A handler may return a changed block, for example a blocked cardio skill
 // swapped for CARDIO_5. "filled" means the block kept a branch; an exercise
 // ID of "-1" still counts, and the set list builder drops it. An empty block
 // has no reason where the old generator records no error for the skill.
 // usedBranchIds lists every branch a picks block drew, kept or not, and the
-// branches a branches block resolved.
+// branches a branches block resolved. "prescribed" holds the catalog exercises
+// an exercises block lists, in list order, and uses no branch.
 export type BlockResult =
   | {
       status: "filled";
-      block: Block;
+      block: BranchSelectingBlock;
       exercises: BranchExerciseReference[];
       usedBranchIds: string[];
       /** The skill of the stored block, set when a handler swapped the skill. */
       swappedFromSkill?: string;
     }
   | {
+      status: "prescribed";
+      block: ExercisesBlock;
+      exercises: PrescribedExerciseReference[];
+      usedBranchIds: string[];
+    }
+  | {
       status: "empty";
-      block: Block;
+      block: WorkoutBlock;
       reason: GeneratorError | undefined;
       usedBranchIds: string[];
     };
 
 // earlierResults holds the results of the blocks before this one, in template
-// order, for a rule that reads what an earlier block wrote. The walk always
-// passes it; a handler that ignores it may leave it out.
+// order, for a rule that reads what an earlier block wrote. blockPath,
+// "<template id>.blocks[<index>]", names the block in errors.
+export interface BlockWalkContext {
+  readonly earlierResults: readonly BlockResult[];
+  readonly blockPath: string;
+}
+
+// The walk always passes the context; a handler that ignores it may leave it out.
 export type BlockHandler<K extends BlockKind> = (
-  block: Extract<Block, { kind: K }>,
+  block: Extract<WorkoutBlock, { kind: K }>,
   input: WorkoutInput,
   usedBranches: ReadonlySet<string>,
-  earlierResults?: readonly BlockResult[],
+  walk?: BlockWalkContext,
 ) => BlockResult;
 
 // "workout" hands each block the branches every earlier block used, whatever
@@ -59,36 +92,23 @@ export type BlockHandlerRegistry = {
 interface BlockContext {
   input: WorkoutInput;
   usedBranches: ReadonlySet<string>;
-  earlierResults: readonly BlockResult[];
+  walk: BlockWalkContext;
 }
 
 const handleBlockByKind = (
-  block: Block,
+  block: WorkoutBlock,
   handlers: BlockHandlerRegistry,
-  { input, usedBranches, earlierResults }: BlockContext,
+  { input, usedBranches, walk }: BlockContext,
 ): BlockResult => {
   switch (block.kind) {
     case "picks":
-      return handlers.picks.handleBlock(
-        block,
-        input,
-        usedBranches,
-        earlierResults,
-      );
+      return handlers.picks.handleBlock(block, input, usedBranches, walk);
     case "branches":
-      return handlers.branches.handleBlock(
-        block,
-        input,
-        usedBranches,
-        earlierResults,
-      );
+      return handlers.branches.handleBlock(block, input, usedBranches, walk);
     case "duration":
-      return handlers.duration.handleBlock(
-        block,
-        input,
-        usedBranches,
-        earlierResults,
-      );
+      return handlers.duration.handleBlock(block, input, usedBranches, walk);
+    case "exercises":
+      return handlers.exercises.handleBlock(block, input, usedBranches, walk);
   }
 };
 
@@ -103,12 +123,15 @@ export const walkTemplateBlocks = (
 ): BlockResult[] => {
   let workoutUsedBranches: ReadonlySet<string> = new Set();
   const results: BlockResult[] = [];
-  for (const block of template.blocks) {
+  for (const [index, block] of template.blocks.entries()) {
     const isWorkoutScope = handlers[block.kind].usedBranchScope === "workout";
     const result = handleBlockByKind(block, handlers, {
       input,
       usedBranches: isWorkoutScope ? workoutUsedBranches : new Set(),
-      earlierResults: results,
+      walk: {
+        earlierResults: results,
+        blockPath: `${template.id}.blocks[${index}]`,
+      },
     });
     workoutUsedBranches = new Set([
       ...workoutUsedBranches,

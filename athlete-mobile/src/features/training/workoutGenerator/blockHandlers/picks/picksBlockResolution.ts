@@ -2,13 +2,9 @@ import { TagGroups } from "@/constants/tagGroups";
 import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import { hasWeights } from "@/features/training/utils/equipmentUtils";
 import { readLiteralSkillTree } from "@/features/training/utils/skillTreeUtils";
-import type {
-  Block,
-  BlockPicks,
-  CountBy,
-  PicksBlock,
-} from "@/schemas/aiwl.schema";
+import type { BlockPicks, CountBy, PicksBlock } from "@/schemas/aiwl.schema";
 import type { SkillCode } from "@/schemas/generator.schema";
+import type { WorkoutBlock } from "@/schemas/strengthTestTemplate.schema";
 import {
   hasSkillTree,
   type SkillCatalog,
@@ -144,7 +140,7 @@ const resolvePicksBlock = (
   };
 };
 
-export const isPicksBlock = (block: Block): block is PicksBlock =>
+export const isPicksBlock = (block: WorkoutBlock): block is PicksBlock =>
   block.kind === "picks";
 
 /**

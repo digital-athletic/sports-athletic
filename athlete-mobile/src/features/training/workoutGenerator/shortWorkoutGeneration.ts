@@ -20,12 +20,17 @@ const throwUnreachableShortWorkoutBlock = (): never => {
   throw new Error("A short workout runs picks and branches blocks only");
 };
 
+const UNREACHABLE_SHORT_WORKOUT_HANDLER = {
+  usedBranchScope: "workout",
+  handleBlock: throwUnreachableShortWorkoutBlock,
+} as const;
+
 const CATALOG_BRANCHES_HANDLER = createBranchesBlockHandler(
   lookUpStoredBranchInCatalog,
 );
 
-// requireSupportedTemplateBlocks rejects duration blocks first, so that
-// handler never runs.
+// requireSupportedTemplateBlocks rejects duration and exercises blocks first,
+// so those handlers never run.
 const SHORT_WORKOUT_HANDLERS: BlockHandlerRegistry = {
   picks: PICKS_BLOCK_HANDLER,
   branches: {
@@ -38,10 +43,8 @@ const SHORT_WORKOUT_HANDLERS: BlockHandlerRegistry = {
         earlierResults,
       ),
   },
-  duration: {
-    usedBranchScope: "workout",
-    handleBlock: throwUnreachableShortWorkoutBlock,
-  },
+  duration: UNREACHABLE_SHORT_WORKOUT_HANDLER,
+  exercises: UNREACHABLE_SHORT_WORKOUT_HANDLER,
 };
 
 /**

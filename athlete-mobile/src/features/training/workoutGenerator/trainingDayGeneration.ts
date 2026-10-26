@@ -19,22 +19,22 @@ const throwUnreachableTrainingDayBlock = (): never => {
   throw new Error("A training day runs branches blocks only");
 };
 
-// The stored day workout holds branches blocks only, so the other two
-// handlers never run.
+const UNREACHABLE_TRAINING_DAY_HANDLER = {
+  usedBranchScope: "workout",
+  handleBlock: throwUnreachableTrainingDayBlock,
+} as const;
+
+// The stored day workout holds branches blocks only, so the other handlers
+// never run.
 const createTrainingDayHandlers = (
   training: StoredTrainingDay,
 ): BlockHandlerRegistry => ({
-  picks: {
-    usedBranchScope: "workout",
-    handleBlock: throwUnreachableTrainingDayBlock,
-  },
+  picks: UNREACHABLE_TRAINING_DAY_HANDLER,
   branches: createBranchesBlockHandler(
     createStoredDayBranchLookup(training.skills),
   ),
-  duration: {
-    usedBranchScope: "workout",
-    handleBlock: throwUnreachableTrainingDayBlock,
-  },
+  duration: UNREACHABLE_TRAINING_DAY_HANDLER,
+  exercises: UNREACHABLE_TRAINING_DAY_HANDLER,
 });
 
 /**

@@ -1,4 +1,8 @@
 import { generateHandlerRegistry } from "@test/factories/blockHandlers";
+import {
+  generateExercisesBlock,
+  generatePrescribedBlockResult,
+} from "@test/factories/exercisesBlock";
 import { generateSequenceRandom } from "@test/factories/sequenceRandom";
 import { generateTreeBranch } from "@test/factories/skillTree";
 import {
@@ -55,6 +59,29 @@ describe("picksHandler: handlePicksBlock", () => {
       status: "filled",
       exercises: [{ branchId: "2", exerciseId: "e2" }],
       usedBranchIds: ["2"],
+    });
+  });
+
+  it("skips an exercise that an earlier prescribed result lists", () => {
+    const block = generateCountedPicksBlock("BAS", 2, "exercises");
+    const input = generateWorkoutInput({
+      template: generateShortTemplate([block]),
+      pickTrees: BAS_SKILL_TREES,
+      random: () => 0,
+    });
+    const earlierResults = [
+      generatePrescribedBlockResult(generateExercisesBlock(["e2"])),
+    ];
+
+    const result = handlePicksBlock(block, input, new Set(), {
+      earlierResults,
+      blockPath: "short.blocks[1]",
+    });
+
+    expect(result).toMatchObject({
+      status: "filled",
+      exercises: [{ branchId: "1", exerciseId: "e1x" }],
+      usedBranchIds: ["1"],
     });
   });
 

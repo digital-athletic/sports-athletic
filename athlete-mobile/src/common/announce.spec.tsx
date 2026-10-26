@@ -35,15 +35,15 @@ describe("announce: spoken status messages", () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it("announces again only when the message changes", () => {
+  it("announces again only when the message changes", async () => {
     Platform.OS = "ios";
-    const { rerender } = renderHook(
+    const { rerender } = await renderHook(
       ({ message }: { message: string | null }) => useAnnounce(message),
       { initialProps: { message: null as string | null } },
     );
-    rerender({ message: "Fehler" });
-    rerender({ message: "Fehler" });
-    rerender({ message: null });
+    await rerender({ message: "Fehler" });
+    await rerender({ message: "Fehler" });
+    await rerender({ message: null });
     expect(spy).toHaveBeenCalledTimes(1);
   });
 });

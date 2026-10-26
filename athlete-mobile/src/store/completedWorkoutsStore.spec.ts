@@ -24,39 +24,39 @@ const createMockWorkout = (
 });
 
 describe("completedWorkoutsStore", () => {
-  beforeEach(() => {
-    const { result } = renderHook(() => useCompletedWorkoutsStore());
-    act(() => {
+  beforeEach(async () => {
+    const { result } = await renderHook(() => useCompletedWorkoutsStore());
+    await act(() => {
       result.current.clearWorkoutHistory();
     });
     jest.clearAllMocks();
   });
 
   describe("initial state", () => {
-    it("has empty workouts and lists", () => {
-      const { result } = renderHook(() => useCompletedWorkoutsStore());
+    it("has empty workouts and lists", async () => {
+      const { result } = await renderHook(() => useCompletedWorkoutsStore());
       expect(result.current.workoutsList).toHaveLength(0);
       expect(Object.keys(result.current.workouts)).toHaveLength(0);
     });
   });
 
   describe("addCompletedWorkout", () => {
-    it("adds to workouts record", () => {
-      const { result } = renderHook(() => useCompletedWorkoutsStore());
+    it("adds to workouts record", async () => {
+      const { result } = await renderHook(() => useCompletedWorkoutsStore());
       const workout = createMockWorkout("w1", Date.now());
 
-      act(() => {
+      await act(() => {
         result.current.addCompletedWorkout(workout);
       });
 
       expect(result.current.workouts["w1"]).toBeDefined();
     });
 
-    it("adds entry to workoutsList", () => {
-      const { result } = renderHook(() => useCompletedWorkoutsStore());
+    it("adds entry to workoutsList", async () => {
+      const { result } = await renderHook(() => useCompletedWorkoutsStore());
       const workout = createMockWorkout("w1", Date.now());
 
-      act(() => {
+      await act(() => {
         result.current.addCompletedWorkout(workout);
       });
 
@@ -64,11 +64,11 @@ describe("completedWorkoutsStore", () => {
       expect(result.current.workoutsList[0].id).toBe("w1");
     });
 
-    it("notifies sync of completed workout", () => {
-      const { result } = renderHook(() => useCompletedWorkoutsStore());
+    it("notifies sync of completed workout", async () => {
+      const { result } = await renderHook(() => useCompletedWorkoutsStore());
       const workout = createMockWorkout("w1", Date.now());
 
-      act(() => {
+      await act(() => {
         result.current.addCompletedWorkout(workout);
       });
 
@@ -77,28 +77,28 @@ describe("completedWorkoutsStore", () => {
   });
 
   describe("getWorkoutById", () => {
-    it("returns workout if exists", () => {
-      const { result } = renderHook(() => useCompletedWorkoutsStore());
+    it("returns workout if exists", async () => {
+      const { result } = await renderHook(() => useCompletedWorkoutsStore());
       const workout = createMockWorkout("w1", Date.now());
 
-      act(() => {
+      await act(() => {
         result.current.addCompletedWorkout(workout);
       });
 
       expect(result.current.getWorkoutById("w1")?.id).toBe("w1");
     });
 
-    it("returns undefined if not found", () => {
-      const { result } = renderHook(() => useCompletedWorkoutsStore());
+    it("returns undefined if not found", async () => {
+      const { result } = await renderHook(() => useCompletedWorkoutsStore());
       expect(result.current.getWorkoutById("missing")).toBeUndefined();
     });
   });
 
   describe("getRecentWorkouts", () => {
-    it("returns workouts sorted by timestamp descending", () => {
-      const { result } = renderHook(() => useCompletedWorkoutsStore());
+    it("returns workouts sorted by timestamp descending", async () => {
+      const { result } = await renderHook(() => useCompletedWorkoutsStore());
 
-      act(() => {
+      await act(() => {
         result.current.addCompletedWorkout(createMockWorkout("w1", 1000));
         result.current.addCompletedWorkout(createMockWorkout("w2", 3000));
         result.current.addCompletedWorkout(createMockWorkout("w3", 2000));
@@ -108,10 +108,10 @@ describe("completedWorkoutsStore", () => {
       expect(recent[0].id).toBe("w2"); // most recent first
     });
 
-    it("limits to specified count", () => {
-      const { result } = renderHook(() => useCompletedWorkoutsStore());
+    it("limits to specified count", async () => {
+      const { result } = await renderHook(() => useCompletedWorkoutsStore());
 
-      act(() => {
+      await act(() => {
         result.current.addCompletedWorkout(createMockWorkout("w1", 1000));
         result.current.addCompletedWorkout(createMockWorkout("w2", 2000));
         result.current.addCompletedWorkout(createMockWorkout("w3", 3000));
@@ -122,10 +122,10 @@ describe("completedWorkoutsStore", () => {
   });
 
   describe("getTotalWorkouts", () => {
-    it("returns count of workouts", () => {
-      const { result } = renderHook(() => useCompletedWorkoutsStore());
+    it("returns count of workouts", async () => {
+      const { result } = await renderHook(() => useCompletedWorkoutsStore());
 
-      act(() => {
+      await act(() => {
         result.current.addCompletedWorkout(createMockWorkout("w1", 1000));
         result.current.addCompletedWorkout(createMockWorkout("w2", 2000));
       });
@@ -135,10 +135,10 @@ describe("completedWorkoutsStore", () => {
   });
 
   describe("getTotalTrainingTime", () => {
-    it("sums duration across all workouts", () => {
-      const { result } = renderHook(() => useCompletedWorkoutsStore());
+    it("sums duration across all workouts", async () => {
+      const { result } = await renderHook(() => useCompletedWorkoutsStore());
 
-      act(() => {
+      await act(() => {
         result.current.addCompletedWorkout({
           ...createMockWorkout("w1", 1000),
           duration: seconds(1800),
@@ -154,11 +154,11 @@ describe("completedWorkoutsStore", () => {
   });
 
   describe("addCompletedTrainingPlan", () => {
-    it("appends to trainingPlans array", () => {
-      const { result } = renderHook(() => useCompletedWorkoutsStore());
+    it("appends to trainingPlans array", async () => {
+      const { result } = await renderHook(() => useCompletedWorkoutsStore());
       const plan = { start: formatDateToISO(new Date()), sections: [] };
 
-      act(() => {
+      await act(() => {
         result.current.addCompletedTrainingPlan(plan);
       });
 

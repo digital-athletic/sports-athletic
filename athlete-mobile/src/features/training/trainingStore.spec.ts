@@ -77,40 +77,40 @@ describe("useTrainingStore", () => {
   // ============================================================================
 
   describe("setTrainingSelection", () => {
-    it("should set training selection to PLAN", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set training selection to PLAN", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingSelection("PLAN");
       });
 
       expect(result.current.selection).toBe("PLAN");
     });
 
-    it("should set training selection to PREV", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set training selection to PREV", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingSelection("PREV");
       });
 
       expect(result.current.selection).toBe("PREV");
     });
 
-    it("should set training selection to QUICK", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set training selection to QUICK", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingSelection("QUICK");
       });
 
       expect(result.current.selection).toBe("QUICK");
     });
 
-    it("should set selection to null", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set selection to null", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingSelection("PLAN");
         result.current.setTrainingSelection(null);
       });
@@ -118,20 +118,20 @@ describe("useTrainingStore", () => {
       expect(result.current.selection).toBeNull();
     });
 
-    it("should update selection multiple times", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should update selection multiple times", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingSelection("PLAN");
       });
       expect(result.current.selection).toBe("PLAN");
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingSelection("PREV");
       });
       expect(result.current.selection).toBe("PREV");
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingSelection("QUICK");
       });
       expect(result.current.selection).toBe("QUICK");
@@ -143,10 +143,10 @@ describe("useTrainingStore", () => {
   // ============================================================================
 
   describe("setExerciseList", () => {
-    it("should set exercise list", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set exercise list", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseList(mockExercises);
       });
 
@@ -155,8 +155,8 @@ describe("useTrainingStore", () => {
       expect(result.current.exerciseList?.length).toBe(3);
     });
 
-    it("should set exercise list to null", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set exercise list to null", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
       const mockExercises: UserExerciseDataType[] = [
         {
           skill: "SWR1",
@@ -166,7 +166,7 @@ describe("useTrainingStore", () => {
         },
       ];
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseList(mockExercises);
         result.current.setExerciseList(null);
       });
@@ -174,10 +174,10 @@ describe("useTrainingStore", () => {
       expect(result.current.exerciseList).toBeNull();
     });
 
-    it("should handle empty exercise list", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should handle empty exercise list", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseList([]);
       });
 
@@ -185,16 +185,16 @@ describe("useTrainingStore", () => {
       expect(result.current.exerciseList?.length).toBe(0);
     });
 
-    it("should replace exercise list entirely", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should replace exercise list entirely", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
       const [first, second] = mockExercises;
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseList([first]);
       });
       expect(result.current.exerciseList).toEqual([first]);
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseList([second]);
       });
       expect(result.current.exerciseList).toEqual([second]);
@@ -211,10 +211,10 @@ describe("useTrainingStore", () => {
       useTrainingStore.setState({ exerciseList: mockExercises });
     });
 
-    it("should set exercise feedback to SUCCEEDED", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set exercise feedback to SUCCEEDED", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseFeedback("10", "SUCCEEDED");
       });
 
@@ -223,10 +223,10 @@ describe("useTrainingStore", () => {
       );
     });
 
-    it("should set exercise feedback to TOO_EASY", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set exercise feedback to TOO_EASY", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseFeedback("20", "TOO_EASY");
       });
 
@@ -235,10 +235,10 @@ describe("useTrainingStore", () => {
       );
     });
 
-    it("should set exercise feedback to TOO_HARD", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set exercise feedback to TOO_HARD", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseFeedback("30", "TOO_HARD");
       });
 
@@ -247,10 +247,10 @@ describe("useTrainingStore", () => {
       );
     });
 
-    it("should update feedback without affecting other exercises", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should update feedback without affecting other exercises", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseFeedback("10", "SUCCEEDED");
         result.current.setExerciseFeedback("30", "TOO_EASY");
       });
@@ -264,17 +264,17 @@ describe("useTrainingStore", () => {
       );
     });
 
-    it("should overwrite previous feedback", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should overwrite previous feedback", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseFeedback("10", "SUCCEEDED");
       });
       expect(result.current.exerciseList?.[0]?.feedback?.difficulty).toBe(
         "SUCCEEDED",
       );
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseFeedback("10", "TOO_HARD");
       });
       expect(result.current.exerciseList?.[0]?.feedback?.difficulty).toBe(
@@ -282,11 +282,11 @@ describe("useTrainingStore", () => {
       );
     });
 
-    it("should handle feedback on null exercise list gracefully", () => {
+    it("should handle feedback on null exercise list gracefully", async () => {
       useTrainingStore.setState({ exerciseList: null });
-      const { result } = renderHook(() => useTrainingStore());
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseFeedback("10", "SUCCEEDED");
       });
 
@@ -303,20 +303,20 @@ describe("useTrainingStore", () => {
       useTrainingStore.setState({ exerciseList: mockExercises });
     });
 
-    it("should mark exercise as skipped", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should mark exercise as skipped", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseSkipped("10");
       });
 
       expect(result.current.exerciseList?.[0].skipped).toBe(true);
     });
 
-    it("should mark specific exercise as skipped without affecting others", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should mark specific exercise as skipped without affecting others", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseSkipped("20");
       });
 
@@ -325,10 +325,10 @@ describe("useTrainingStore", () => {
       expect(result.current.exerciseList?.[2].skipped).toBe(false);
     });
 
-    it("should mark multiple exercises as skipped", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should mark multiple exercises as skipped", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseSkipped("10");
         result.current.setExerciseSkipped("30");
       });
@@ -338,11 +338,11 @@ describe("useTrainingStore", () => {
       expect(result.current.exerciseList?.[2].skipped).toBe(true);
     });
 
-    it("should handle skipped on null exercise list gracefully", () => {
+    it("should handle skipped on null exercise list gracefully", async () => {
       useTrainingStore.setState({ exerciseList: null });
-      const { result } = renderHook(() => useTrainingStore());
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseSkipped("10");
       });
 
@@ -355,22 +355,22 @@ describe("useTrainingStore", () => {
   // ============================================================================
 
   describe("setProgressBefore", () => {
-    it("should set progress before training", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set progress before training", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
       const mockProgress = makeProgress(2, 1000);
 
-      act(() => {
+      await act(() => {
         result.current.setProgressBefore(mockProgress);
       });
 
       expect(result.current.progressBefore).toEqual(mockProgress);
     });
 
-    it("should set progress before to null", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set progress before to null", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
       const mockProgress = makeProgress(1);
 
-      act(() => {
+      await act(() => {
         result.current.setProgressBefore(mockProgress);
         result.current.setProgressBefore(null);
       });
@@ -378,17 +378,17 @@ describe("useTrainingStore", () => {
       expect(result.current.progressBefore).toBeNull();
     });
 
-    it("should update progress before multiple times", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should update progress before multiple times", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
       const firstProgress = makeProgress(1);
       const secondProgress = makeProgress(2);
 
-      act(() => {
+      await act(() => {
         result.current.setProgressBefore(firstProgress);
       });
       expect(result.current.progressBefore).toEqual(firstProgress);
 
-      act(() => {
+      await act(() => {
         result.current.setProgressBefore(secondProgress);
       });
       expect(result.current.progressBefore).toEqual(secondProgress);
@@ -400,48 +400,48 @@ describe("useTrainingStore", () => {
   // ============================================================================
 
   describe("setEquipment", () => {
-    it("should set equipment array", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set equipment array", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
       const equipment = ["dumbbells", "barbell", "kettlebell"];
 
-      act(() => {
+      await act(() => {
         result.current.setEquipment(equipment);
       });
 
       expect(result.current.equipment).toEqual(equipment);
     });
 
-    it("should set empty equipment array", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set empty equipment array", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setEquipment([]);
       });
 
       expect(result.current.equipment).toEqual([]);
     });
 
-    it("should replace equipment array entirely", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should replace equipment array entirely", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
       const firstEquipment = ["dumbbells"];
       const secondEquipment = ["barbell", "kettlebell"];
 
-      act(() => {
+      await act(() => {
         result.current.setEquipment(firstEquipment);
       });
       expect(result.current.equipment).toEqual(firstEquipment);
 
-      act(() => {
+      await act(() => {
         result.current.setEquipment(secondEquipment);
       });
       expect(result.current.equipment).toEqual(secondEquipment);
       expect(result.current.equipment.length).toBe(2);
     });
 
-    it("should handle single equipment", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should handle single equipment", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setEquipment(["mat"]);
       });
 
@@ -455,28 +455,28 @@ describe("useTrainingStore", () => {
   // ============================================================================
 
   describe("setActiveTraining", () => {
-    it("should set active training", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set active training", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
       const mockActiveTraining: ActiveTrainingType = {
         id: "workout-1",
         type: "PLAN",
       };
 
-      act(() => {
+      await act(() => {
         result.current.setActiveTraining(mockActiveTraining);
       });
 
       expect(result.current.activeTraining).toEqual(mockActiveTraining);
     });
 
-    it("should set active training to null", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set active training to null", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
       const mockActiveTraining: ActiveTrainingType = {
         id: "workout-1",
         type: "PLAN",
       };
 
-      act(() => {
+      await act(() => {
         result.current.setActiveTraining(mockActiveTraining);
         result.current.setActiveTraining(null);
       });
@@ -484,8 +484,8 @@ describe("useTrainingStore", () => {
       expect(result.current.activeTraining).toBeNull();
     });
 
-    it("should update active training", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should update active training", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
       const firstTraining: ActiveTrainingType = {
         id: "workout-1",
         type: "PLAN",
@@ -495,12 +495,12 @@ describe("useTrainingStore", () => {
         type: "PREV",
       };
 
-      act(() => {
+      await act(() => {
         result.current.setActiveTraining(firstTraining);
       });
       expect(result.current.activeTraining).toEqual(firstTraining);
 
-      act(() => {
+      await act(() => {
         result.current.setActiveTraining(secondTraining);
       });
       expect(result.current.activeTraining).toEqual(secondTraining);
@@ -512,49 +512,49 @@ describe("useTrainingStore", () => {
   // ============================================================================
 
   describe("setTrainingStartTime", () => {
-    it("should set training start time", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set training start time", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
       const startTime = 1234567890;
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingStartTime(startTime);
       });
 
       expect(result.current.time.start).toBe(startTime);
     });
 
-    it("should set start time to current timestamp", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set start time to current timestamp", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
       const now = Date.now();
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingStartTime(now);
       });
 
       expect(result.current.time.start).toBe(now);
     });
 
-    it("should update start time", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should update start time", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
       const firstTime = 1000;
       const secondTime = 2000;
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingStartTime(firstTime);
       });
       expect(result.current.time.start).toBe(firstTime);
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingStartTime(secondTime);
       });
       expect(result.current.time.start).toBe(secondTime);
     });
 
-    it("should not affect other time properties", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should not affect other time properties", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
       const startTime = 1000;
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingStartTime(startTime);
       });
 
@@ -565,23 +565,23 @@ describe("useTrainingStore", () => {
   });
 
   describe("setTrainingEndTime", () => {
-    it("should set training end time", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set training end time", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
       const endTime = 1234567900;
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingEndTime(endTime);
       });
 
       expect(result.current.time.end).toBe(endTime);
     });
 
-    it("should set end time after start time", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set end time after start time", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
       const startTime = 1000;
       const endTime = 5000;
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingStartTime(startTime);
         result.current.setTrainingEndTime(endTime);
       });
@@ -590,15 +590,15 @@ describe("useTrainingStore", () => {
       expect(result.current.time.end).toBe(endTime);
     });
 
-    it("should update end time", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should update end time", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingEndTime(2000);
       });
       expect(result.current.time.end).toBe(2000);
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingEndTime(3000);
       });
       expect(result.current.time.end).toBe(3000);
@@ -606,49 +606,49 @@ describe("useTrainingStore", () => {
   });
 
   describe("addPauseTime", () => {
-    it("should add pause time to accumulator", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should add pause time to accumulator", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.addPauseTime(5000);
       });
 
       expect(result.current.time.pause).toBe(5000);
     });
 
-    it("should accumulate pause time across multiple calls", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should accumulate pause time across multiple calls", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.addPauseTime(5000);
       });
       expect(result.current.time.pause).toBe(5000);
 
-      act(() => {
+      await act(() => {
         result.current.addPauseTime(3000);
       });
       expect(result.current.time.pause).toBe(8000);
 
-      act(() => {
+      await act(() => {
         result.current.addPauseTime(2000);
       });
       expect(result.current.time.pause).toBe(10000);
     });
 
-    it("should handle zero pause time", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should handle zero pause time", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.addPauseTime(0);
       });
 
       expect(result.current.time.pause).toBe(0);
     });
 
-    it("should not affect other time properties", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should not affect other time properties", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingStartTime(1000);
         result.current.addPauseTime(5000);
       });
@@ -660,89 +660,89 @@ describe("useTrainingStore", () => {
   });
 
   describe("addSkillTime", () => {
-    it("should add time to PREVENTION skill", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should add time to PREVENTION skill", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.addSkillTime("PREVENTION", 10000);
       });
 
       expect(result.current.time.skill.PREVENTION).toBe(10000);
     });
 
-    it("should add time to MOBILITY skill", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should add time to MOBILITY skill", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.addSkillTime("MOBILITY", 15000);
       });
 
       expect(result.current.time.skill.MOBILITY).toBe(15000);
     });
 
-    it("should add time to SWR skill", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should add time to SWR skill", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.addSkillTime("SWR", 30000);
       });
 
       expect(result.current.time.skill.SWR).toBe(30000);
     });
 
-    it("should add time to WARMUP skill", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should add time to WARMUP skill", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.addSkillTime("WARMUP", 5000);
       });
 
       expect(result.current.time.skill.WARMUP).toBe(5000);
     });
 
-    it("should add time to STABILITY skill", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should add time to STABILITY skill", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.addSkillTime("STABILITY", 20000);
       });
 
       expect(result.current.time.skill.STABILITY).toBe(20000);
     });
 
-    it("should add time to CARDIO skill", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should add time to CARDIO skill", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.addSkillTime("CARDIO", 25000);
       });
 
       expect(result.current.time.skill.CARDIO).toBe(25000);
     });
 
-    it("should accumulate skill time across multiple calls", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should accumulate skill time across multiple calls", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.addSkillTime("SWR", 10000);
       });
       expect(result.current.time.skill.SWR).toBe(10000);
 
-      act(() => {
+      await act(() => {
         result.current.addSkillTime("SWR", 5000);
       });
       expect(result.current.time.skill.SWR).toBe(15000);
 
-      act(() => {
+      await act(() => {
         result.current.addSkillTime("SWR", 8000);
       });
       expect(result.current.time.skill.SWR).toBe(23000);
     });
 
-    it("should track multiple skills independently", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should track multiple skills independently", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.addSkillTime("SWR", 10000);
         result.current.addSkillTime("WARMUP", 5000);
         result.current.addSkillTime("CARDIO", 15000);
@@ -756,10 +756,10 @@ describe("useTrainingStore", () => {
       expect(result.current.time.skill.STABILITY).toBe(0);
     });
 
-    it("should handle zero skill time", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should handle zero skill time", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.addSkillTime("SWR", 0);
       });
 
@@ -772,11 +772,11 @@ describe("useTrainingStore", () => {
   // ============================================================================
 
   describe("clearTraining", () => {
-    it("should reset all training state to defaults", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should reset all training state to defaults", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
       // Setup state
-      act(() => {
+      await act(() => {
         result.current.setTrainingSelection("PLAN");
         result.current.setExerciseList([
           {
@@ -805,7 +805,7 @@ describe("useTrainingStore", () => {
       expect(result.current.time.skill.SWR).toBe(30000);
 
       // Reset
-      act(() => {
+      await act(() => {
         result.current.clearTraining();
       });
 
@@ -821,10 +821,10 @@ describe("useTrainingStore", () => {
       expect(result.current.activeTraining).toBeNull();
     });
 
-    it("should preserve selection after reset", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should preserve selection after reset", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingSelection("QUICK");
         result.current.setTrainingStartTime(1000);
         result.current.clearTraining();
@@ -834,10 +834,10 @@ describe("useTrainingStore", () => {
       expect(result.current.time.start).toBeUndefined();
     });
 
-    it("should reset all skill times to zero", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should reset all skill times to zero", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.addSkillTime("PREVENTION", 5000);
         result.current.addSkillTime("MOBILITY", 10000);
         result.current.addSkillTime("SWR", 20000);
@@ -854,7 +854,7 @@ describe("useTrainingStore", () => {
       expect(result.current.time.skill.STABILITY).toBe(8000);
       expect(result.current.time.skill.CARDIO).toBe(15000);
 
-      act(() => {
+      await act(() => {
         result.current.clearTraining();
       });
 
@@ -867,10 +867,10 @@ describe("useTrainingStore", () => {
       expect(result.current.time.skill.CARDIO).toBe(0);
     });
 
-    it("should reset exercise list and active training", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should reset exercise list and active training", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseList([
           {
             exerciseId: "10",
@@ -885,7 +885,7 @@ describe("useTrainingStore", () => {
       expect(result.current.exerciseList).not.toBeNull();
       expect(result.current.activeTraining).not.toBeNull();
 
-      act(() => {
+      await act(() => {
         result.current.clearTraining();
       });
 
@@ -893,32 +893,32 @@ describe("useTrainingStore", () => {
       expect(result.current.activeTraining).toBeNull();
     });
 
-    it("should reset tempMaxValues", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should reset tempMaxValues", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTempMaxValues(DEFAULT_MAX_VALUES);
       });
 
       expect(result.current.tempMaxValues).toEqual(DEFAULT_MAX_VALUES);
 
-      act(() => {
+      await act(() => {
         result.current.clearTraining();
       });
 
       expect(result.current.tempMaxValues).toBeNull();
     });
 
-    it("should reset trainingViewMode", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should reset trainingViewMode", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingViewMode("LIST");
       });
 
       expect(result.current.trainingViewMode).toBe("LIST");
 
-      act(() => {
+      await act(() => {
         result.current.clearTraining();
       });
 
@@ -931,25 +931,25 @@ describe("useTrainingStore", () => {
   // ============================================================================
 
   describe("useTrainingStore: setTempMaxValues", () => {
-    it("should set a MaxValuesType value", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set a MaxValuesType value", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTempMaxValues(DEFAULT_MAX_VALUES);
       });
 
       expect(result.current.tempMaxValues).toEqual(DEFAULT_MAX_VALUES);
     });
 
-    it("should set tempMaxValues back to null", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set tempMaxValues back to null", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTempMaxValues(DEFAULT_MAX_VALUES);
       });
       expect(result.current.tempMaxValues).not.toBeNull();
 
-      act(() => {
+      await act(() => {
         result.current.setTempMaxValues(null);
       });
       expect(result.current.tempMaxValues).toBeNull();
@@ -961,36 +961,36 @@ describe("useTrainingStore", () => {
   // ============================================================================
 
   describe("setTrainingViewMode", () => {
-    it("should default to null", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should default to null", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
       expect(result.current.trainingViewMode).toBeNull();
     });
 
-    it("should set the mode to SEQUENTIAL", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set the mode to SEQUENTIAL", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingViewMode("SEQUENTIAL");
       });
 
       expect(result.current.trainingViewMode).toBe("SEQUENTIAL");
     });
 
-    it("should set the mode to LIST", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should set the mode to LIST", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingViewMode("LIST");
       });
 
       expect(result.current.trainingViewMode).toBe("LIST");
     });
 
-    it("should reset the mode to null", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should reset the mode to null", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingViewMode("LIST");
         result.current.setTrainingViewMode(null);
       });
@@ -1008,26 +1008,26 @@ describe("useTrainingStore", () => {
       useTrainingStore.setState({ exerciseList: mockExercises });
     });
 
-    it("should leave entries uncompleted by default", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should leave entries uncompleted by default", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
       expect(result.current.exerciseList?.[0]?.completed).toBeUndefined();
     });
 
-    it("should mark the exercise at the given index as completed", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should mark the exercise at the given index as completed", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.markExerciseCompleted(0);
       });
 
       expect(result.current.exerciseList?.[0]?.completed).toBe(true);
     });
 
-    it("should mark multiple indices independently of call order", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should mark multiple indices independently of call order", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.markExerciseCompleted(2);
         result.current.markExerciseCompleted(0);
       });
@@ -1037,10 +1037,10 @@ describe("useTrainingStore", () => {
       expect(result.current.exerciseList?.[2]?.completed).toBe(true);
     });
 
-    it("should be idempotent when marking the same index twice", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should be idempotent when marking the same index twice", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.markExerciseCompleted(1);
         result.current.markExerciseCompleted(1);
       });
@@ -1048,11 +1048,11 @@ describe("useTrainingStore", () => {
       expect(result.current.exerciseList?.[1]?.completed).toBe(true);
     });
 
-    it("should handle marking completed on a null exercise list gracefully", () => {
+    it("should handle marking completed on a null exercise list gracefully", async () => {
       useTrainingStore.setState({ exerciseList: null });
-      const { result } = renderHook(() => useTrainingStore());
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.markExerciseCompleted(0);
       });
 
@@ -1065,11 +1065,11 @@ describe("useTrainingStore", () => {
   // ============================================================================
 
   describe("Integration scenarios", () => {
-    it("should handle complete training session flow", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should handle complete training session flow", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
       // Start training session
-      act(() => {
+      await act(() => {
         result.current.setTrainingSelection("PLAN");
         result.current.setTrainingStartTime(1000);
       });
@@ -1093,14 +1093,14 @@ describe("useTrainingStore", () => {
         },
       ];
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseList(exercises);
       });
 
       expect(result.current.exerciseList?.length).toBe(2);
 
       // Track training activity
-      act(() => {
+      await act(() => {
         result.current.addSkillTime("SWR", 30000);
         result.current.addPauseTime(2000);
         result.current.setExerciseFeedback("10", "SUCCEEDED");
@@ -1113,18 +1113,18 @@ describe("useTrainingStore", () => {
       );
 
       // End training
-      act(() => {
+      await act(() => {
         result.current.setTrainingEndTime(31000);
       });
 
       expect(result.current.time.end).toBe(31000);
     });
 
-    it("should support multiple training sessions with reset", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should support multiple training sessions with reset", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
       // First session
-      act(() => {
+      await act(() => {
         result.current.setTrainingSelection("PLAN");
         result.current.setTrainingStartTime(1000);
         result.current.addSkillTime("SWR", 30000);
@@ -1134,7 +1134,7 @@ describe("useTrainingStore", () => {
       expect(result.current.time.skill.SWR).toBe(30000);
 
       // Reset for next session
-      act(() => {
+      await act(() => {
         result.current.clearTraining();
       });
 
@@ -1142,7 +1142,7 @@ describe("useTrainingStore", () => {
       expect(result.current.time.skill.SWR).toBe(0);
 
       // Second session
-      act(() => {
+      await act(() => {
         result.current.setTrainingStartTime(2000);
         result.current.addSkillTime("CARDIO", 20000);
       });
@@ -1152,22 +1152,22 @@ describe("useTrainingStore", () => {
       expect(result.current.time.skill.SWR).toBe(0);
     });
 
-    it("should accumulate data across different state updates", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should accumulate data across different state updates", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
       // Multiple state updates without reset
-      act(() => {
+      await act(() => {
         result.current.setTrainingSelection("PREV");
         result.current.setEquipment(["dumbbells"]);
         result.current.addSkillTime("PREVENTION", 5000);
       });
 
-      act(() => {
+      await act(() => {
         result.current.setEquipment(["dumbbells", "barbell"]);
         result.current.addSkillTime("PREVENTION", 3000);
       });
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingStartTime(1000);
         result.current.addSkillTime("PREVENTION", 2000);
       });
@@ -1178,18 +1178,18 @@ describe("useTrainingStore", () => {
       expect(result.current.time.start).toBe(1000);
     });
 
-    it("should maintain independent state for multiple hooks", () => {
-      const { result: hook1 } = renderHook(() => useTrainingStore());
-      const { result: hook2 } = renderHook(() => useTrainingStore());
+    it("should maintain independent state for multiple hooks", async () => {
+      const { result: hook1 } = await renderHook(() => useTrainingStore());
+      const { result: hook2 } = await renderHook(() => useTrainingStore());
 
       // Both hooks share same store
-      act(() => {
+      await act(() => {
         hook1.current.setTrainingSelection("PLAN");
       });
 
       expect(hook2.current.selection).toBe("PLAN");
 
-      act(() => {
+      await act(() => {
         hook2.current.addSkillTime("SWR", 10000);
       });
 
@@ -1202,21 +1202,21 @@ describe("useTrainingStore", () => {
   // ============================================================================
 
   describe("Edge cases", () => {
-    it("should handle very large time values", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should handle very large time values", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
       const largeTime = Number.MAX_SAFE_INTEGER;
 
-      act(() => {
+      await act(() => {
         result.current.setTrainingStartTime(largeTime);
       });
 
       expect(result.current.time.start).toBe(largeTime);
     });
 
-    it("should handle rapid successive updates", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should handle rapid successive updates", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         for (let i = 0; i < 100; i++) {
           result.current.addSkillTime("SWR", 1000);
         }
@@ -1225,10 +1225,10 @@ describe("useTrainingStore", () => {
       expect(result.current.time.skill.SWR).toBe(100000);
     });
 
-    it("should handle updating null exercise list without error", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should handle updating null exercise list without error", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseList(null);
         result.current.setExerciseFeedback("10", "SUCCEEDED");
         result.current.setExerciseSkipped("10");
@@ -1237,8 +1237,8 @@ describe("useTrainingStore", () => {
       expect(result.current.exerciseList).toBeNull();
     });
 
-    it("should handle unknown exercise ids", () => {
-      const { result } = renderHook(() => useTrainingStore());
+    it("should handle unknown exercise ids", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
       const exercises: UserExerciseDataType[] = [
         {
           exerciseId: "10",
@@ -1248,7 +1248,7 @@ describe("useTrainingStore", () => {
         },
       ];
 
-      act(() => {
+      await act(() => {
         result.current.setExerciseList(exercises);
         result.current.setExerciseFeedback("-1", "SUCCEEDED"); // Unknown exercise Id
       });

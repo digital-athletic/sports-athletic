@@ -2,30 +2,30 @@ import { act, renderHook } from "@testing-library/react-native";
 import { useUserSettingsStore } from "./userSettingsStore";
 
 describe("userSettingsStore", () => {
-  beforeEach(() => {
-    const { result } = renderHook(() => useUserSettingsStore());
-    act(() => {
+  beforeEach(async () => {
+    const { result } = await renderHook(() => useUserSettingsStore());
+    await act(() => {
       result.current.resetSettings();
     });
   });
 
   describe("initial state", () => {
-    it("has reviewStatus with hasReviewed false", () => {
-      const { result } = renderHook(() => useUserSettingsStore());
+    it("has reviewStatus with hasReviewed false", async () => {
+      const { result } = await renderHook(() => useUserSettingsStore());
       expect(result.current.reviewStatus.hasReviewed).toBe(false);
     });
 
-    it("has anonymisedDataUse false", () => {
-      const { result } = renderHook(() => useUserSettingsStore());
+    it("has anonymisedDataUse false", async () => {
+      const { result } = await renderHook(() => useUserSettingsStore());
       expect(result.current.anonymisedDataUse).toBe(false);
     });
   });
 
   describe("setReviewStatus", () => {
-    it("updates review status", () => {
-      const { result } = renderHook(() => useUserSettingsStore());
+    it("updates review status", async () => {
+      const { result } = await renderHook(() => useUserSettingsStore());
 
-      act(() => {
+      await act(() => {
         result.current.setReviewStatus({
           hasReviewed: true,
           lastPromptDate: "2025-01-15",
@@ -38,10 +38,10 @@ describe("userSettingsStore", () => {
   });
 
   describe("setAnonymisedDataUse", () => {
-    it("toggles consent flag", () => {
-      const { result } = renderHook(() => useUserSettingsStore());
+    it("toggles consent flag", async () => {
+      const { result } = await renderHook(() => useUserSettingsStore());
 
-      act(() => {
+      await act(() => {
         result.current.setAnonymisedDataUse(true);
       });
 
@@ -50,10 +50,10 @@ describe("userSettingsStore", () => {
   });
 
   describe("resetSettings", () => {
-    it("resets to initial state", () => {
-      const { result } = renderHook(() => useUserSettingsStore());
+    it("resets to initial state", async () => {
+      const { result } = await renderHook(() => useUserSettingsStore());
 
-      act(() => {
+      await act(() => {
         result.current.setAnonymisedDataUse(true);
         result.current.setReviewStatus({ hasReviewed: true });
         result.current.resetSettings();
@@ -65,20 +65,20 @@ describe("userSettingsStore", () => {
   });
 
   describe("acceptConsent", () => {
-    it("sets consentStatus to accepted", () => {
-      const { result } = renderHook(() => useUserSettingsStore());
+    it("sets consentStatus to accepted", async () => {
+      const { result } = await renderHook(() => useUserSettingsStore());
 
-      act(() => {
+      await act(() => {
         result.current.acceptConsent();
       });
 
       expect(result.current.consentStatus).toBe("accepted");
     });
 
-    it("does not modify anonymisedDataUse", () => {
-      const { result } = renderHook(() => useUserSettingsStore());
+    it("does not modify anonymisedDataUse", async () => {
+      const { result } = await renderHook(() => useUserSettingsStore());
 
-      act(() => {
+      await act(() => {
         result.current.setAnonymisedDataUse(true);
         result.current.acceptConsent();
       });

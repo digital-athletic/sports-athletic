@@ -10,18 +10,18 @@ const getFillWidth = () => {
 };
 
 describe("TrainingProgressBar: fill width", () => {
-  it("renders no fill width at progress 0", () => {
-    render(<TrainingProgressBar progress={0} />);
+  it("renders no fill width at progress 0", async () => {
+    await render(<TrainingProgressBar progress={0} />);
     expect(getFillWidth()).toBe("0%");
   });
 
-  it("renders a half fill width at progress 0.5", () => {
-    render(<TrainingProgressBar progress={0.5} />);
+  it("renders a half fill width at progress 0.5", async () => {
+    await render(<TrainingProgressBar progress={0.5} />);
     expect(getFillWidth()).toBe("50%");
   });
 
-  it("renders a full fill width at progress 1", () => {
-    render(<TrainingProgressBar progress={1} />);
+  it("renders a full fill width at progress 1", async () => {
+    await render(<TrainingProgressBar progress={1} />);
     expect(getFillWidth()).toBe("100%");
   });
 });

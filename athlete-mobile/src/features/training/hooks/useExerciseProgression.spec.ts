@@ -162,33 +162,33 @@ describe("useExerciseProgression: advanceToNextExercise pause time accounting", 
     jest.restoreAllMocks();
   });
 
-  it("commits addPauseTime with the elapsed pause duration", () => {
+  it("commits addPauseTime with the elapsed pause duration", async () => {
     const addPauseTimeSpy = spyOnAddPauseTime();
 
-    const { result } = renderHook(() => useExerciseProgression());
+    const { result } = await renderHook(() => useExerciseProgression());
 
     mockNow = 1_000_000 + 5_000;
-    act(() => {
+    await act(() => {
       result.current.advanceToNextExercise();
     });
 
     expect(addPauseTimeSpy).toHaveBeenCalledWith(5_000);
   });
 
-  it("marks the current exercise completed so the pointer derives past it", () => {
-    const { result } = renderHook(() => useExerciseProgression());
+  it("marks the current exercise completed so the pointer derives past it", async () => {
+    const { result } = await renderHook(() => useExerciseProgression());
 
-    act(() => {
+    await act(() => {
       result.current.advanceToNextExercise();
     });
 
     expect(useTrainingStore.getState().exerciseList?.[0]?.completed).toBe(true);
   });
 
-  it("saves exercise/branch data via useExerciseCompletion before advancing", () => {
-    const { result } = renderHook(() => useExerciseProgression());
+  it("saves exercise/branch data via useExerciseCompletion before advancing", async () => {
+    const { result } = await renderHook(() => useExerciseProgression());
 
-    act(() => {
+    await act(() => {
       result.current.advanceToNextExercise();
     });
 
@@ -219,13 +219,13 @@ describe("useExerciseProgression: advanceToNextExercise skill time accounting", 
     jest.restoreAllMocks();
   });
 
-  it("commits addSkillTime with the mapped focus area and elapsed duration for a non pause exercise", () => {
+  it("commits addSkillTime with the mapped focus area and elapsed duration for a non pause exercise", async () => {
     const addSkillTimeSpy = spyOnAddSkillTime();
 
-    const { result } = renderHook(() => useExerciseProgression());
+    const { result } = await renderHook(() => useExerciseProgression());
 
     mockNow = 2_000_000 + 3_000;
-    act(() => {
+    await act(() => {
       result.current.advanceToNextExercise();
     });
 
@@ -253,10 +253,10 @@ describe("useExerciseProgression: advanceToNextExercise training completion", ()
     jest.restoreAllMocks();
   });
 
-  it("calls finishTraining(false, maxValues) when advancing past the last exercise", () => {
-    const { result } = renderHook(() => useExerciseProgression());
+  it("calls finishTraining(false, maxValues) when advancing past the last exercise", async () => {
+    const { result } = await renderHook(() => useExerciseProgression());
 
-    act(() => {
+    await act(() => {
       result.current.advanceToNextExercise(BASELINE_MAX_VALUES);
     });
 
@@ -289,11 +289,11 @@ describe("useExerciseProgression: barbell alert", () => {
     jest.restoreAllMocks();
   });
 
-  it("shows the barbell weight calculation alert for a TEST_WORKOUT whose next exercise carries barbell equipment", () => {
+  it("shows the barbell weight calculation alert for a TEST_WORKOUT whose next exercise carries barbell equipment", async () => {
     buildState("TEST_WORKOUT");
-    const { result } = renderHook(() => useExerciseProgression());
+    const { result } = await renderHook(() => useExerciseProgression());
 
-    act(() => {
+    await act(() => {
       result.current.advanceToNextExercise();
     });
 
@@ -304,32 +304,32 @@ describe("useExerciseProgression: barbell alert", () => {
     );
   });
 
-  it("does not show the barbell alert for a non TEST_WORKOUT training type", () => {
+  it("does not show the barbell alert for a non TEST_WORKOUT training type", async () => {
     buildState("PLAN");
-    const { result } = renderHook(() => useExerciseProgression());
+    const { result } = await renderHook(() => useExerciseProgression());
 
-    act(() => {
+    await act(() => {
       result.current.advanceToNextExercise();
     });
 
     expect(Alert.alert).not.toHaveBeenCalled();
   });
 
-  it("one shot: suppresses the barbell alert on a second advance after acknowledging it (fresh instance)", () => {
+  it("one shot: suppresses the barbell alert on a second advance after acknowledging it (fresh instance)", async () => {
     buildState("TEST_WORKOUT");
-    const { result } = renderHook(() => useExerciseProgression());
+    const { result } = await renderHook(() => useExerciseProgression());
 
-    act(() => {
+    await act(() => {
       result.current.advanceToNextExercise();
     });
     expect(Alert.alert).toHaveBeenCalledTimes(1);
 
     const [, , buttons] = (Alert.alert as jest.Mock).mock.calls[0];
-    act(() => {
+    await act(() => {
       buttons[0].onPress();
     });
 
-    act(() => {
+    await act(() => {
       useTrainingStore.setState({
         exerciseList: [
           createExercise({ exerciseId: PAUSE_EXERCISE_ID }),
@@ -338,7 +338,7 @@ describe("useExerciseProgression: barbell alert", () => {
       });
     });
 
-    act(() => {
+    await act(() => {
       result.current.advanceToNextExercise();
     });
 
@@ -360,7 +360,7 @@ describe("useExerciseProgression: handleExerciseSkipped", () => {
     jest.restoreAllMocks();
   });
 
-  it("marks isSkipped and calls the completion hook's handleExerciseSkipped for the current index", () => {
+  it("marks isSkipped and calls the completion hook's handleExerciseSkipped for the current index", async () => {
     // Single-item list: skipping the last exercise finishes the training
     // instead of advancing the index, so exerciseId is stable and the
     // id-keyed reset effect does not immediately flip isSkipped back off.
@@ -370,10 +370,10 @@ describe("useExerciseProgression: handleExerciseSkipped", () => {
       activeTraining: { id: "training-1", type: "PLAN" },
     });
 
-    const { result } = renderHook(() => useExerciseProgression());
+    const { result } = await renderHook(() => useExerciseProgression());
     expect(result.current.isSkipped).toBe(false);
 
-    act(() => {
+    await act(() => {
       result.current.handleExerciseSkipped();
     });
 
@@ -381,7 +381,7 @@ describe("useExerciseProgression: handleExerciseSkipped", () => {
     expect(mockCompletionHandleExerciseSkipped).toHaveBeenCalledWith(0);
   });
 
-  it("marks the exercise completed so the pointer derives to the next one", () => {
+  it("marks the exercise completed so the pointer derives to the next one", async () => {
     useTrainingStore.setState(BASELINE_TRAINING_STATE);
     useTrainingStore.setState({
       exerciseList: [
@@ -391,9 +391,9 @@ describe("useExerciseProgression: handleExerciseSkipped", () => {
       activeTraining: { id: "training-1", type: "PLAN" },
     });
 
-    const { result } = renderHook(() => useExerciseProgression());
+    const { result } = await renderHook(() => useExerciseProgression());
 
-    act(() => {
+    await act(() => {
       result.current.handleExerciseSkipped();
     });
 
@@ -402,7 +402,7 @@ describe("useExerciseProgression: handleExerciseSkipped", () => {
     expect(mockSaveExerciseAndBranchData).not.toHaveBeenCalled();
   });
 
-  it("resets isSkipped back to false once skipping advances to a new exercise id", () => {
+  it("resets isSkipped back to false once skipping advances to a new exercise id", async () => {
     useTrainingStore.setState(BASELINE_TRAINING_STATE);
     useTrainingStore.setState({
       exerciseList: [
@@ -412,9 +412,9 @@ describe("useExerciseProgression: handleExerciseSkipped", () => {
       activeTraining: { id: "training-1", type: "PLAN" },
     });
 
-    const { result } = renderHook(() => useExerciseProgression());
+    const { result } = await renderHook(() => useExerciseProgression());
 
-    act(() => {
+    await act(() => {
       result.current.handleExerciseSkipped();
     });
 
@@ -442,10 +442,10 @@ describe("useExerciseProgression: handleAbortTraining", () => {
     jest.restoreAllMocks();
   });
 
-  it("shows a confirmation alert and calls finishTraining(true) when the user confirms", () => {
-    const { result } = renderHook(() => useExerciseProgression());
+  it("shows a confirmation alert and calls finishTraining(true) when the user confirms", async () => {
+    const { result } = await renderHook(() => useExerciseProgression());
 
-    act(() => {
+    await act(() => {
       result.current.handleAbortTraining();
     });
 
@@ -460,7 +460,7 @@ describe("useExerciseProgression: handleAbortTraining", () => {
       (button: { text: string }) => button.text === "common.yes",
     );
 
-    act(() => {
+    await act(() => {
       confirmButton.onPress();
     });
 
@@ -468,10 +468,10 @@ describe("useExerciseProgression: handleAbortTraining", () => {
     expect(result.current.isAborted).toBe(true);
   });
 
-  it("does not call finishTraining when the user declines", () => {
-    const { result } = renderHook(() => useExerciseProgression());
+  it("does not call finishTraining when the user declines", async () => {
+    const { result } = await renderHook(() => useExerciseProgression());
 
-    act(() => {
+    await act(() => {
       result.current.handleAbortTraining();
     });
 
@@ -498,7 +498,7 @@ describe("useExerciseProgression: interleaved call order in advanceToNextExercis
     jest.restoreAllMocks();
   });
 
-  it("orders save, then mark-completed, then pause commit, then alert checks for a pause exercise", () => {
+  it("orders save, then mark-completed, then pause commit, then alert checks for a pause exercise", async () => {
     useTrainingStore.setState(BASELINE_TRAINING_STATE);
     useTrainingStore.setState({
       exerciseList: [
@@ -512,9 +512,9 @@ describe("useExerciseProgression: interleaved call order in advanceToNextExercis
     const addPauseTimeSpy = spyOnAddPauseTime();
     const markExerciseCompletedSpy = spyOnMarkExerciseCompleted();
 
-    const { result } = renderHook(() => useExerciseProgression());
+    const { result } = await renderHook(() => useExerciseProgression());
 
-    act(() => {
+    await act(() => {
       result.current.advanceToNextExercise();
     });
 
@@ -529,7 +529,7 @@ describe("useExerciseProgression: interleaved call order in advanceToNextExercis
     expect(pauseOrder).toBeLessThan(alertOrder);
   });
 
-  it("orders save, then mark-completed, then skill commit for a non pause exercise", () => {
+  it("orders save, then mark-completed, then skill commit for a non pause exercise", async () => {
     useTrainingStore.setState(BASELINE_TRAINING_STATE);
     useTrainingStore.setState({
       exerciseList: [
@@ -543,9 +543,9 @@ describe("useExerciseProgression: interleaved call order in advanceToNextExercis
     const addSkillTimeSpy = spyOnAddSkillTime();
     const markExerciseCompletedSpy = spyOnMarkExerciseCompleted();
 
-    const { result } = renderHook(() => useExerciseProgression());
+    const { result } = await renderHook(() => useExerciseProgression());
 
-    act(() => {
+    await act(() => {
       result.current.advanceToNextExercise();
     });
 
@@ -584,17 +584,17 @@ describe("useExerciseProgression: pause timing after out-of-order completion", (
     jest.restoreAllMocks();
   });
 
-  it("starts the pause timer for the true next exercise, skipping an already completed entry", () => {
+  it("starts the pause timer for the true next exercise, skipping an already completed entry", async () => {
     const addPauseTimeSpy = spyOnAddPauseTime();
-    const { result } = renderHook(() => useExerciseProgression());
+    const { result } = await renderHook(() => useExerciseProgression());
 
     mockNow += 5_000;
-    act(() => {
+    await act(() => {
       result.current.advanceToNextExercise();
     });
 
     mockNow += 3_000;
-    act(() => {
+    await act(() => {
       result.current.advanceToNextExercise();
     });
 
@@ -625,10 +625,10 @@ describe("useExerciseProgression: advanceToNextExercise finish decision when the
     jest.restoreAllMocks();
   });
 
-  it("calls finishTraining instead of arming a timer when the only remaining incomplete exercise sits before the last array slot", () => {
-    const { result } = renderHook(() => useExerciseProgression());
+  it("calls finishTraining instead of arming a timer when the only remaining incomplete exercise sits before the last array slot", async () => {
+    const { result } = await renderHook(() => useExerciseProgression());
 
-    act(() => {
+    await act(() => {
       result.current.advanceToNextExercise();
     });
 

@@ -1,4 +1,3 @@
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { Platform } from "react-native";
 import { render } from "../utils/testUtils";
 import { DateInputField } from "./DateInputField";
@@ -8,8 +7,8 @@ describe("DateInputField: screen reader labels", () => {
     jest.restoreAllMocks();
   });
 
-  it("passes the label to the iOS picker", () => {
-    const { UNSAFE_getByType } = render(
+  it("passes the label to the iOS picker", async () => {
+    const { getByLabelText } = await render(
       <DateInputField
         type="date"
         dateTime="2000-01-31"
@@ -18,19 +17,17 @@ describe("DateInputField: screen reader labels", () => {
       />,
     );
 
-    expect(UNSAFE_getByType(DateTimePicker).props.accessibilityLabel).toBe(
-      "Birthday",
-    );
+    expect(getByLabelText("Birthday").type).toBe("RNDateTimePicker");
   });
 
-  it("names the Android picker button", () => {
+  it("names the Android picker button", async () => {
     jest
       .spyOn(Platform, "select")
       .mockImplementation((spec) =>
         "android" in spec ? spec.android : undefined,
       );
 
-    const { getByRole } = render(
+    const { getByRole } = await render(
       <DateInputField
         type="date"
         dateTime="2000-01-31"

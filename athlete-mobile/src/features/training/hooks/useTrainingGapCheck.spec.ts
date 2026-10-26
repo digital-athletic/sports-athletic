@@ -53,32 +53,32 @@ describe("useTrainingGapCheck", () => {
     jest.restoreAllMocks();
   });
 
-  it("saves the shifted plan after a gap of 8 to 21 days", () => {
+  it("saves the shifted plan after a gap of 8 to 21 days", async () => {
     lastWorkoutDaysAgo(14);
-    renderHook(() => useTrainingGapCheck(true));
+    await renderHook(() => useTrainingGapCheck(true));
     expect(useUserWorkoutStore.getState().trainingPlan?.sections[0].start).toBe(
       "2026-08-17",
     );
   });
 
-  it("shifts the plan only once for the same gap", () => {
+  it("shifts the plan only once for the same gap", async () => {
     lastWorkoutDaysAgo(14);
-    renderHook(() => useTrainingGapCheck(true));
-    renderHook(() => useTrainingGapCheck(true));
+    await renderHook(() => useTrainingGapCheck(true));
+    await renderHook(() => useTrainingGapCheck(true));
     expect(useUserWorkoutStore.getState().trainingPlan?.sections[0].start).toBe(
       "2026-08-17",
     );
   });
 
-  it("keeps the plan after a gap of a week", () => {
+  it("keeps the plan after a gap of a week", async () => {
     lastWorkoutDaysAgo(7);
-    renderHook(() => useTrainingGapCheck(true));
+    await renderHook(() => useTrainingGapCheck(true));
     expect(useUserWorkoutStore.getState().trainingPlan).toBe(plan);
   });
 
-  it("asks for a new plan after more than 21 days", () => {
+  it("asks for a new plan after more than 21 days", async () => {
     lastWorkoutDaysAgo(22);
-    renderHook(() => useTrainingGapCheck(true));
+    await renderHook(() => useTrainingGapCheck(true));
     expect(Alert.alert).toHaveBeenCalledWith(
       "training.selectTraining.trainingGap.title",
       "training.selectTraining.trainingGap.message",
@@ -86,10 +86,10 @@ describe("useTrainingGapCheck", () => {
     );
   });
 
-  it("opens plan creation when the athlete accepts", () => {
+  it("opens plan creation when the athlete accepts", async () => {
     lastWorkoutDaysAgo(22);
-    renderHook(() => useTrainingGapCheck(true));
-    act(() => {
+    await renderHook(() => useTrainingGapCheck(true));
+    await act(() => {
       promptButtons()
         .find((b) => b.text === "common.yes")
         ?.onPress?.();
@@ -97,10 +97,10 @@ describe("useTrainingGapCheck", () => {
     expect(mockPush).toHaveBeenCalledWith("/(more)/anamnesis/season-phase");
   });
 
-  it("keeps the existing plan when the athlete declines", () => {
+  it("keeps the existing plan when the athlete declines", async () => {
     lastWorkoutDaysAgo(22);
-    renderHook(() => useTrainingGapCheck(true));
-    act(() => {
+    await renderHook(() => useTrainingGapCheck(true));
+    await act(() => {
       promptButtons()
         .find((b) => b.text === "common.no")
         ?.onPress?.();
@@ -108,10 +108,10 @@ describe("useTrainingGapCheck", () => {
     expect(mockPush).not.toHaveBeenCalled();
   });
 
-  it("shifts the existing plan by the missed weeks when the athlete declines", () => {
+  it("shifts the existing plan by the missed weeks when the athlete declines", async () => {
     lastWorkoutDaysAgo(22);
-    renderHook(() => useTrainingGapCheck(true));
-    act(() => {
+    await renderHook(() => useTrainingGapCheck(true));
+    await act(() => {
       promptButtons()
         .find((b) => b.text === "common.no")
         ?.onPress?.();
@@ -121,9 +121,9 @@ describe("useTrainingGapCheck", () => {
     );
   });
 
-  it("checks nothing when disabled", () => {
+  it("checks nothing when disabled", async () => {
     lastWorkoutDaysAgo(22);
-    renderHook(() => useTrainingGapCheck(false));
+    await renderHook(() => useTrainingGapCheck(false));
     expect(Alert.alert).not.toHaveBeenCalled();
   });
 });

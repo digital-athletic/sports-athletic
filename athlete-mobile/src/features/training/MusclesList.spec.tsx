@@ -66,8 +66,8 @@ beforeEach(() => {
 });
 
 describe("MusclesList: silhouette highlighting", () => {
-  it("highlights both glute regions on the back silhouette for a glutes exercise", () => {
-    render(<MusclesList tags={["MUSCLE_GLUTES"]} />);
+  it("highlights both glute regions on the back silhouette for a glutes exercise", async () => {
+    await render(<MusclesList tags={["MUSCLE_GLUTES"]} />);
 
     expect(
       distinctFills("exercise-silhouette-back-region-GLUTES_LEFT"),
@@ -80,8 +80,8 @@ describe("MusclesList: silhouette highlighting", () => {
     ]);
   });
 
-  it("renders the silhouette pair above the primary legend", () => {
-    render(<MusclesList tags={["MUSCLE_GLUTES"]} />);
+  it("renders the silhouette pair above the primary legend", async () => {
+    await render(<MusclesList tags={["MUSCLE_GLUTES"]} />);
 
     const section = screen.getByTestId("muscles-trained-section");
     const pairIndex = directChildIndex(
@@ -100,8 +100,8 @@ describe("MusclesList: silhouette highlighting", () => {
 });
 
 describe("MusclesList: cardio only exercise", () => {
-  it("renders an unhighlighted pair for a cardio only exercise", () => {
-    render(<MusclesList tags={["MUSCLE_CARDIO"]} />);
+  it("renders an unhighlighted pair for a cardio only exercise", async () => {
+    await render(<MusclesList tags={["MUSCLE_CARDIO"]} />);
 
     const sides: ["front" | "back", readonly SilhouetteRegionId[]][] = [
       ["front", FRONT_REGION_IDS],
@@ -126,8 +126,8 @@ describe("MusclesList: cardio only exercise", () => {
 });
 
 describe("MusclesList: muscle chips", () => {
-  it("renders the muscle chips with unchanged labels and order", () => {
-    render(
+  it("renders the muscle chips with unchanged labels and order", async () => {
+    await render(
       <MusclesList
         tags={[
           "MUSCLE_GLUTES",
@@ -156,17 +156,17 @@ describe("MusclesList: muscle chips", () => {
 });
 
 describe("MusclesList: gender selection", () => {
-  it("renders the male silhouette artwork for a male profile", () => {
-    render(<MusclesList tags={["MUSCLE_CHEST"]} />);
+  it("renders the male silhouette artwork for a male profile", async () => {
+    await render(<MusclesList tags={["MUSCLE_CHEST"]} />);
 
     expect(renderedRegionPaths("front", "CHEST")).toEqual(
       regionPaths("MALE", "FRONT", "CHEST"),
     );
   });
 
-  it("renders the female silhouette artwork for a female profile", () => {
+  it("renders the female silhouette artwork for a female profile", async () => {
     setGender("FEMALE");
-    render(<MusclesList tags={["MUSCLE_CHEST"]} />);
+    await render(<MusclesList tags={["MUSCLE_CHEST"]} />);
 
     expect(renderedRegionPaths("front", "CHEST")).toEqual(
       regionPaths("FEMALE", "FRONT", "CHEST"),
@@ -175,8 +175,8 @@ describe("MusclesList: gender selection", () => {
 });
 
 describe("MusclesList: region testID isolation", () => {
-  it("gives the front and back silhouettes distinct region testIDs", () => {
-    render(<MusclesList tags={["MUSCLE_NECK"]} />);
+  it("gives the front and back silhouettes distinct region testIDs", async () => {
+    await render(<MusclesList tags={["MUSCLE_NECK"]} />);
 
     expect(renderedRegionPaths("front", "NECK")).toHaveLength(
       regionPaths("MALE", "FRONT", "NECK").length,

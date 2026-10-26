@@ -97,21 +97,21 @@ const stored = () =>
   useExerciseProgressStore.getState().exerciseData[EXERCISE_ID];
 
 describe("useExerciseCompletion: standard progression", () => {
-  it("drops the stored feedback when the athlete gives none", () => {
+  it("drops the stored feedback when the athlete gives none", async () => {
     seed({ repetition: 10 });
-    const { result } = renderHook(() => useExerciseCompletion());
+    const { result } = await renderHook(() => useExerciseCompletion());
 
-    act(() => result.current.saveExerciseAndBranchData(0));
+    await act(() => result.current.saveExerciseAndBranchData(0));
 
     expect(stored()?.feedback?.difficulty).toBeNull();
     expect(stored()?.repetition).toBe(10);
   });
 
-  it("keeps feedback given in the same tick as the save", () => {
+  it("keeps feedback given in the same tick as the save", async () => {
     seed({ repetition: 10 });
-    const { result } = renderHook(() => useExerciseCompletion());
+    const { result } = await renderHook(() => useExerciseCompletion());
 
-    act(() => {
+    await act(() => {
       result.current.handleFeedback(0, "SUCCEEDED");
       result.current.saveExerciseAndBranchData(0);
     });
@@ -119,11 +119,11 @@ describe("useExerciseCompletion: standard progression", () => {
     expect(stored()?.feedback?.difficulty).toBe("SUCCEEDED");
   });
 
-  it("raises the weight by one weight step after TOO_EASY at the rep target", () => {
+  it("raises the weight by one weight step after TOO_EASY at the rep target", async () => {
     seed({ repetition: 12, feedback: { difficulty: "TOO_EASY" } });
-    const { result } = renderHook(() => useExerciseCompletion());
+    const { result } = await renderHook(() => useExerciseCompletion());
 
-    act(() => result.current.saveExerciseAndBranchData(0));
+    await act(() => result.current.saveExerciseAndBranchData(0));
 
     // 70 % of 121 kg rounds to 85 kg, 85 kg x 1.025 rounds to 87.5 kg
     expect(stored()?.weight).toBeCloseTo(87.5 / 1.21);
@@ -131,22 +131,22 @@ describe("useExerciseCompletion: standard progression", () => {
     expect(stored()?.feedback?.difficulty).toBeNull();
   });
 
-  it("stores the forced load as the weight", () => {
+  it("stores the forced load as the weight", async () => {
     // 33.06 % of 121 kg is 40 kg, the next step of 2.5 % rounds to 40 kg again
     seed({
       repetition: 12,
       weight: 40 / 1.21,
       feedback: { difficulty: "TOO_EASY" },
     });
-    const { result } = renderHook(() => useExerciseCompletion());
+    const { result } = await renderHook(() => useExerciseCompletion());
 
-    act(() => result.current.saveExerciseAndBranchData(0));
+    await act(() => result.current.saveExerciseAndBranchData(0));
 
     expect(stored()?.weight).toBeCloseTo(42.5 / 1.21);
   });
 
   describe("consecutive too hard count", () => {
-    const completeWith = (
+    const completeWith = async (
       difficulty: "TOO_HARD" | "TOO_EASY" | null,
       previousCount: number,
     ) => {
@@ -156,31 +156,31 @@ describe("useExerciseCompletion: standard progression", () => {
         skill: "SWR2",
         tooHardCount: previousCount,
       });
-      const { result } = renderHook(() => useExerciseCompletion());
+      const { result } = await renderHook(() => useExerciseCompletion());
 
-      act(() => result.current.saveExerciseAndBranchData(0));
+      await act(() => result.current.saveExerciseAndBranchData(0));
     };
 
-    it("counts a too hard rating", () => {
-      completeWith("TOO_HARD", 1);
+    it("counts a too hard rating", async () => {
+      await completeWith("TOO_HARD", 1);
 
       expect(stored()?.tooHardCount).toBe(2);
     });
 
-    it("resets the count after another rating", () => {
-      completeWith("TOO_EASY", 1);
+    it("resets the count after another rating", async () => {
+      await completeWith("TOO_EASY", 1);
 
       expect(stored()?.tooHardCount).toBe(0);
     });
 
-    it("keeps the count when the athlete gives no rating", () => {
-      completeWith(null, 1);
+    it("keeps the count when the athlete gives no rating", async () => {
+      await completeWith(null, 1);
 
       expect(stored()?.tooHardCount).toBe(1);
     });
   });
 
-  it("resets the record when TOO_HARD at the lowest load levels down", () => {
+  it("resets the record when TOO_HARD at the lowest load levels down", async () => {
     seed({
       branchId: "77",
       repetition: 10,
@@ -188,9 +188,9 @@ describe("useExerciseCompletion: standard progression", () => {
       feedback: { difficulty: "TOO_HARD" },
     });
     storeValues();
-    const { result } = renderHook(() => useExerciseCompletion());
+    const { result } = await renderHook(() => useExerciseCompletion());
 
-    act(() => result.current.saveExerciseAndBranchData(0));
+    await act(() => result.current.saveExerciseAndBranchData(0));
 
     expect(useExerciseProgressStore.getState().getBranchLevel("77")).toBe(1);
     expect(stored()).toEqual({
@@ -200,11 +200,11 @@ describe("useExerciseCompletion: standard progression", () => {
     });
   });
 
-  it("keeps the values but clears the feedback when no easier exercise exists", () => {
+  it("keeps the values but clears the feedback when no easier exercise exists", async () => {
     seed({ repetition: 10, weight: 40, feedback: { difficulty: "TOO_HARD" } });
-    const { result } = renderHook(() => useExerciseCompletion());
+    const { result } = await renderHook(() => useExerciseCompletion());
 
-    act(() => result.current.saveExerciseAndBranchData(0));
+    await act(() => result.current.saveExerciseAndBranchData(0));
 
     expect(stored()?.weight).toBe(40);
     expect(stored()?.feedback?.difficulty).toBeNull();
@@ -219,13 +219,13 @@ describe("useExerciseCompletion: block values after a weight increase", () => {
     },
   };
 
-  const completeGksAt = (type: string, repetition: number) => {
+  const completeGksAt = async (type: string, repetition: number) => {
     mockExerciseValues = authored;
     seed({ skill: "GKS", repetition, feedback: { difficulty: "TOO_EASY" } });
     useTrainingStore.setState({ activeTraining: { id: "training-1", type } });
-    const { result } = renderHook(() => useExerciseCompletion());
+    const { result } = await renderHook(() => useExerciseCompletion());
 
-    act(() => result.current.saveExerciseAndBranchData(0));
+    await act(() => result.current.saveExerciseAndBranchData(0));
   };
 
   afterEach(() => {
@@ -233,14 +233,14 @@ describe("useExerciseCompletion: block values after a weight increase", () => {
     useCustomWorkoutsStore.getState().clearCustomWorkouts();
   });
 
-  it("resets the repetitions to the exercise start in a template block with values exercise", () => {
-    completeGksAt("GKS", 6);
+  it("resets the repetitions to the exercise start in a template block with values exercise", async () => {
+    await completeGksAt("GKS", 6);
 
     expect(stored()?.repetition).toBe(5);
   });
 
-  it("resets the repetitions to the exercise start in a plan workout too", () => {
-    completeGksAt("PLAN", 12);
+  it("resets the repetitions to the exercise start in a plan workout too", async () => {
+    await completeGksAt("PLAN", 12);
 
     expect(stored()?.repetition).toBe(5);
   });
@@ -264,18 +264,18 @@ describe("useExerciseCompletion: block values after a weight increase", () => {
         null,
       ).id;
 
-    it("resets the repetitions to the exercise start with values exercise", () => {
+    it("resets the repetitions to the exercise start with values exercise", async () => {
       const exerciseType = saveImportedGks("exercise", "MY_EXERCISE");
 
-      completeGksAt(exerciseType, 6);
+      await completeGksAt(exerciseType, 6);
 
       expect(stored()?.repetition).toBe(5);
     });
 
-    it("keeps the repetitions from the skill values with values skill", () => {
+    it("keeps the repetitions from the skill values with values skill", async () => {
       const skillType = saveImportedGks("skill", "MY_SKILL");
 
-      completeGksAt(skillType, 6);
+      await completeGksAt(skillType, 6);
 
       expect(stored()?.repetition).toBe(6);
     });
@@ -283,7 +283,7 @@ describe("useExerciseCompletion: block values after a weight increase", () => {
 });
 
 describe("useExerciseCompletion: max strength", () => {
-  it("resets the record when the final value switches to the harder exercise", () => {
+  it("resets the record when the final value switches to the harder exercise", async () => {
     seed({
       skill: "MAX_STRENGTH",
       branchId: "78",
@@ -295,9 +295,9 @@ describe("useExerciseCompletion: max strength", () => {
       ],
     });
     storeValues();
-    const { result } = renderHook(() => useExerciseCompletion());
+    const { result } = await renderHook(() => useExerciseCompletion());
 
-    act(() => result.current.saveExerciseAndBranchData(0));
+    await act(() => result.current.saveExerciseAndBranchData(0));
 
     expect(useExerciseProgressStore.getState().getBranchLevel("78")).toBe(3);
     expect(stored()).toEqual({
@@ -309,27 +309,27 @@ describe("useExerciseCompletion: max strength", () => {
 });
 
 describe("useExerciseCompletion: short workout branch level", () => {
-  it("saves the level of a branch from a skill tree the template lists", () => {
+  it("saves the level of a branch from a skill tree the template lists", async () => {
     seed({ skill: "PREVKNEE", branchId: "79", repetition: 10 });
-    const { result } = renderHook(() => useExerciseCompletion());
+    const { result } = await renderHook(() => useExerciseCompletion());
 
-    act(() => result.current.saveExerciseAndBranchData(0));
+    await act(() => result.current.saveExerciseAndBranchData(0));
 
     expect(useExerciseProgressStore.getState().getBranchLevel("79")).toBe(2);
   });
 
-  it("completes an exercise whose skill has no skill tree", () => {
+  it("completes an exercise whose skill has no skill tree", async () => {
     seed({ skill: "PREVHIP", branchId: "80", repetition: 10 });
-    const { result } = renderHook(() => useExerciseCompletion());
+    const { result } = await renderHook(() => useExerciseCompletion());
 
-    expect(() =>
+    await expect(
       act(() => result.current.saveExerciseAndBranchData(0)),
-    ).not.toThrow();
+    ).resolves.not.toThrow();
   });
 });
 
 describe("useExerciseCompletion: cardio", () => {
-  it("stores no interval count after the last cardio interval", () => {
+  it("stores no interval count after the last cardio interval", async () => {
     seed({
       skill: "CARDIO_2",
       branchId: "b1",
@@ -338,9 +338,9 @@ describe("useExerciseCompletion: cardio", () => {
       duration: 60,
       weight: undefined,
     });
-    const { result } = renderHook(() => useExerciseCompletion());
+    const { result } = await renderHook(() => useExerciseCompletion());
 
-    act(() => result.current.saveExerciseAndBranchData(0));
+    await act(() => result.current.saveExerciseAndBranchData(0));
 
     expect(stored()?.repetition).toBeUndefined();
     expect(stored()?.duration).toBeUndefined();

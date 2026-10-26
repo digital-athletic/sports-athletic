@@ -23,8 +23,8 @@ describe("SelectionInputField", () => {
     },
   ];
 
-  it("renders select button with default text when no items selected", () => {
-    const { getByText } = render(
+  it("renders select button with default text when no items selected", async () => {
+    const { getByText } = await render(
       <SelectionInputField
         items={mockItems}
         selectedItems={[]}
@@ -35,8 +35,8 @@ describe("SelectionInputField", () => {
     expect(getByText("Choose")).toBeTruthy();
   });
 
-  it("renders select button with single selected item text", () => {
-    const { getByText } = render(
+  it("renders select button with single selected item text", async () => {
+    const { getByText } = await render(
       <SelectionInputField
         items={mockItems}
         selectedItems={["sport1"]}
@@ -48,8 +48,8 @@ describe("SelectionInputField", () => {
     expect(getByText("Football")).toBeTruthy();
   });
 
-  it("renders select button with multi-selection count text (one item)", () => {
-    const { getByText } = render(
+  it("renders select button with multi-selection count text (one item)", async () => {
+    const { getByText } = await render(
       <SelectionInputField
         items={mockItems}
         selectedItems={["sport1"]}
@@ -61,8 +61,8 @@ describe("SelectionInputField", () => {
     expect(getByText("1 selected")).toBeTruthy();
   });
 
-  it("renders select button with multi-selection count text (multiple items)", () => {
-    const { getByText } = render(
+  it("renders select button with multi-selection count text (multiple items)", async () => {
+    const { getByText } = await render(
       <SelectionInputField
         items={mockItems}
         selectedItems={["sport1", "sport2"]}
@@ -74,8 +74,8 @@ describe("SelectionInputField", () => {
     expect(getByText("2 selected")).toBeTruthy();
   });
 
-  it("opens modal when select button is pressed", () => {
-    const { getByText, queryByText } = render(
+  it("opens modal when select button is pressed", async () => {
+    const { getByText, queryByText } = await render(
       <SelectionInputField
         items={mockItems}
         selectedItems={[]}
@@ -84,7 +84,7 @@ describe("SelectionInputField", () => {
     );
 
     const selectButton = getByText("Choose").parent?.parent!;
-    fireEvent.press(selectButton);
+    await fireEvent.press(selectButton);
 
     // Modal items should be visible
     expect(queryByText("Football")).toBeTruthy();
@@ -92,9 +92,9 @@ describe("SelectionInputField", () => {
     expect(queryByText("Tennis")).toBeTruthy();
   });
 
-  it("calls onChange when items are selected in modal", () => {
+  it("calls onChange when items are selected in modal", async () => {
     const onChange = jest.fn();
-    const { getByText } = render(
+    const { getByText } = await render(
       <SelectionInputField
         items={mockItems}
         selectedItems={[]}
@@ -104,22 +104,22 @@ describe("SelectionInputField", () => {
 
     // Open modal
     const selectButton = getByText("Choose").parent?.parent!;
-    fireEvent.press(selectButton);
+    await fireEvent.press(selectButton);
 
     // Select item
     const footballItem = getByText("Football").parent!;
-    fireEvent.press(footballItem);
+    await fireEvent.press(footballItem);
 
     // Confirm
     const okButton = getByText("OK");
-    fireEvent.press(okButton);
+    await fireEvent.press(okButton);
 
     expect(onChange).toHaveBeenCalledWith(["sport1"]);
   });
 
-  it("calls onToggle when modal is opened and closed", () => {
+  it("calls onToggle when modal is opened and closed", async () => {
     const onToggle = jest.fn();
-    const { getByLabelText, getAllByText } = render(
+    const { getByLabelText, getAllByText } = await render(
       <SelectionInputField
         items={mockItems}
         selectedItems={[]}
@@ -130,17 +130,17 @@ describe("SelectionInputField", () => {
 
     // Open modal
     const chooseButtons = getAllByText("Choose");
-    fireEvent.press(chooseButtons[0].parent?.parent!);
+    await fireEvent.press(chooseButtons[0].parent?.parent!);
     expect(onToggle).toHaveBeenCalledWith(true);
 
     const closeIcon = getByLabelText("Close");
-    fireEvent.press(closeIcon);
+    await fireEvent.press(closeIcon);
     expect(onToggle).toHaveBeenCalledWith(false);
   });
 
-  it("handles single selection mode correctly", () => {
+  it("handles single selection mode correctly", async () => {
     const onChange = jest.fn();
-    const { getByText } = render(
+    const { getByText } = await render(
       <SelectionInputField
         items={mockItems}
         selectedItems={[]}
@@ -151,22 +151,22 @@ describe("SelectionInputField", () => {
 
     // Open modal
     const selectButton = getByText("Choose").parent?.parent!;
-    fireEvent.press(selectButton);
+    await fireEvent.press(selectButton);
 
     // Select football
     const footballItem = getByText("Football").parent!;
-    fireEvent.press(footballItem);
+    await fireEvent.press(footballItem);
 
     // Confirm
     const okButton = getByText("OK");
-    fireEvent.press(okButton);
+    await fireEvent.press(okButton);
 
     expect(onChange).toHaveBeenCalledWith(["sport1"]);
   });
 
-  it("handles multi-selection mode correctly", () => {
+  it("handles multi-selection mode correctly", async () => {
     const onChange = jest.fn();
-    const { getByText } = render(
+    const { getByText } = await render(
       <SelectionInputField
         items={mockItems}
         selectedItems={[]}
@@ -177,23 +177,23 @@ describe("SelectionInputField", () => {
 
     // Open modal
     const selectButton = getByText("Choose").parent?.parent!;
-    fireEvent.press(selectButton);
+    await fireEvent.press(selectButton);
 
     // Select multiple items
     const footballItem = getByText("Football").parent!;
     const basketballItem = getByText("Basketball").parent!;
-    fireEvent.press(footballItem);
-    fireEvent.press(basketballItem);
+    await fireEvent.press(footballItem);
+    await fireEvent.press(basketballItem);
 
     // Confirm
     const okButton = getByText("OK");
-    fireEvent.press(okButton);
+    await fireEvent.press(okButton);
 
     expect(onChange).toHaveBeenCalledWith(["sport1", "sport2"]);
   });
 
-  it("uses localized display names based on current language", () => {
-    const { getByText } = render(
+  it("uses localized display names based on current language", async () => {
+    const { getByText } = await render(
       <SelectionInputField
         items={mockItems}
         selectedItems={[]}
@@ -203,7 +203,7 @@ describe("SelectionInputField", () => {
 
     // Open modal
     const selectButton = getByText("Choose").parent?.parent!;
-    fireEvent.press(selectButton);
+    await fireEvent.press(selectButton);
 
     // Should display localized name
     expect(getByText("Football")).toBeTruthy();

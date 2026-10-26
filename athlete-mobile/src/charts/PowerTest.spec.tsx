@@ -39,8 +39,8 @@ describe("PowerTest LineChart", () => {
   });
 
   describe("data transformation", () => {
-    it("passes primary data series with inline labels", () => {
-      render(<PowerTest />);
+    it("passes primary data series with inline labels", async () => {
+      await render(<PowerTest />);
 
       const data = capturedProps?.data as {
         value: number;
@@ -64,22 +64,22 @@ describe("PowerTest LineChart", () => {
       });
     });
 
-    it("does not pass xAxisLabelTexts prop (labels are inline)", () => {
-      render(<PowerTest />);
+    it("does not pass xAxisLabelTexts prop (labels are inline)", async () => {
+      await render(<PowerTest />);
 
       expect(capturedProps?.xAxisLabelTexts).toBeUndefined();
     });
 
-    it("passes secondary series without labels", () => {
-      render(<PowerTest />);
+    it("passes secondary series without labels", async () => {
+      await render(<PowerTest />);
 
       const data2 = capturedProps?.data2 as { value: number }[];
       expect(data2[1]).toEqual({ value: 70 });
       expect(data2[1]).not.toHaveProperty("label");
     });
 
-    it("passes all five data series with correct colors", () => {
-      render(<PowerTest />);
+    it("passes all five data series with correct colors", async () => {
+      await render(<PowerTest />);
 
       expect({
         color: capturedProps?.color,
@@ -98,8 +98,8 @@ describe("PowerTest LineChart", () => {
   });
 
   describe("chart configuration", () => {
-    it("passes correct Y-axis configuration", () => {
-      render(<PowerTest />);
+    it("passes correct Y-axis configuration", async () => {
+      await render(<PowerTest />);
 
       expect({
         maxValue: capturedProps?.maxValue,
@@ -110,8 +110,8 @@ describe("PowerTest LineChart", () => {
       });
     });
 
-    it("hides all data points to match design", () => {
-      render(<PowerTest />);
+    it("hides all data points to match design", async () => {
+      await render(<PowerTest />);
 
       expect({
         hideDataPoints: capturedProps?.hideDataPoints,
@@ -128,15 +128,15 @@ describe("PowerTest LineChart", () => {
       });
     });
 
-    it("disables vertical grid lines", () => {
-      render(<PowerTest />);
+    it("disables vertical grid lines", async () => {
+      await render(<PowerTest />);
 
       expect(capturedProps?.showVerticalLines).toBe(false);
     });
   });
 
   describe("empty data handling", () => {
-    it("returns null when chart data is empty", () => {
+    it("returns null when chart data is empty", async () => {
       mockUsePowerTestData.mockReturnValue({
         chartData: {
           dates: [],
@@ -149,12 +149,12 @@ describe("PowerTest LineChart", () => {
         hasChartData: false,
       });
 
-      const { queryByTestId } = render(<PowerTest />);
+      const { queryByTestId } = await render(<PowerTest />);
 
       expect(queryByTestId("power-test-line-chart")).toBeNull();
     });
 
-    it("does not render chart component when data is empty", () => {
+    it("does not render chart component when data is empty", async () => {
       mockUsePowerTestData.mockReturnValue({
         chartData: {
           dates: [],
@@ -167,7 +167,7 @@ describe("PowerTest LineChart", () => {
         hasChartData: false,
       });
 
-      render(<PowerTest />);
+      await render(<PowerTest />);
 
       expect(capturedProps).toBeNull();
     });

@@ -15,8 +15,8 @@ describe("TrainingListItemActions: accessible names", () => {
     testId: "row",
   };
 
-  it("names the check button of a pending row Finish exercise", () => {
-    const { getByLabelText, queryByLabelText } = render(
+  it("names the check button of a pending row Finish exercise", async () => {
+    const { getByLabelText, queryByLabelText } = await render(
       <TrainingListItemActions {...baseProps} />,
     );
 
@@ -24,8 +24,8 @@ describe("TrainingListItemActions: accessible names", () => {
     expect(queryByLabelText("Completed")).toBeNull();
   });
 
-  it("names the check button of a completed row Completed", () => {
-    const { getByLabelText, queryByLabelText } = render(
+  it("names the check button of a completed row Completed", async () => {
+    const { getByLabelText, queryByLabelText } = await render(
       <TrainingListItemActions {...baseProps} isCompleted />,
     );
 
@@ -33,8 +33,8 @@ describe("TrainingListItemActions: accessible names", () => {
     expect(queryByLabelText("Finish exercise")).toBeNull();
   });
 
-  it("names the check button of a row completed as too hard", () => {
-    const { getByLabelText } = render(
+  it("names the check button of a row completed as too hard", async () => {
+    const { getByLabelText } = await render(
       <TrainingListItemActions
         {...baseProps}
         isCompleted

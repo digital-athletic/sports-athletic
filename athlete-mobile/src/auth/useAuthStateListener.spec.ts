@@ -215,14 +215,14 @@ beforeEach(() => {
 });
 
 describe("useAuthStateListener", () => {
-  it("calls initializeFromSupabase on mount", () => {
-    renderHook(() => useAuthStateListener());
+  it("calls initializeFromSupabase on mount", async () => {
+    await renderHook(() => useAuthStateListener());
 
     expect(mockInitializeFromSupabase).toHaveBeenCalledTimes(1);
   });
 
-  it("calls initializeFromSupabase when NetInfo transitions from offline to online", () => {
-    renderHook(() => useAuthStateListener());
+  it("calls initializeFromSupabase when NetInfo transitions from offline to online", async () => {
+    await renderHook(() => useAuthStateListener());
     mockInitializeFromSupabase.mockClear();
 
     capturedNetInfoListener!({
@@ -234,8 +234,8 @@ describe("useAuthStateListener", () => {
     expect(mockInitializeFromSupabase).toHaveBeenCalledTimes(1);
   });
 
-  it("does NOT call initializeFromSupabase when already online and receiving another online event", () => {
-    renderHook(() => useAuthStateListener());
+  it("does NOT call initializeFromSupabase when already online and receiving another online event", async () => {
+    await renderHook(() => useAuthStateListener());
     mockInitializeFromSupabase.mockClear();
 
     capturedNetInfoListener!({ isConnected: true, isInternetReachable: true });
@@ -244,10 +244,10 @@ describe("useAuthStateListener", () => {
     expect(mockInitializeFromSupabase).not.toHaveBeenCalled();
   });
 
-  it("unsubscribes Supabase, NetInfo, and AppState listeners on unmount", () => {
-    const { unmount } = renderHook(() => useAuthStateListener());
+  it("unsubscribes Supabase, NetInfo, and AppState listeners on unmount", async () => {
+    const { unmount } = await renderHook(() => useAuthStateListener());
 
-    unmount();
+    await unmount();
 
     expect(mockUnsubscribeSupabase).toHaveBeenCalledTimes(1);
     expect(mockUnsubscribeNetInfo).toHaveBeenCalledTimes(1);
@@ -263,7 +263,7 @@ describe("useAuthStateListener — consent gate", () => {
       analyticsAccepted: true,
     });
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
       expect(mockSetAnonymisedDataUse).toHaveBeenCalledWith(true);
@@ -274,7 +274,7 @@ describe("useAuthStateListener — consent gate", () => {
   it("does not fetch consent after init when no auth", async () => {
     mockAuthValue = null;
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     await Promise.resolve();
 
@@ -292,7 +292,7 @@ describe("useAuthStateListener — consent gate", () => {
       analyticsAccepted: true,
     });
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
       expect(mockFetchConsentFromProfile).toHaveBeenCalled();
@@ -307,7 +307,7 @@ describe("useAuthStateListener — consent gate", () => {
       analyticsAccepted: true,
     });
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
       expect(mockFetchConsentFromProfile).toHaveBeenCalled();
@@ -318,7 +318,7 @@ describe("useAuthStateListener — consent gate", () => {
     mockAuthValue = { userId: "user-1" };
     mockFetchConsentFromProfile.mockResolvedValue(null);
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
       expect(mockSetConsentStatus).toHaveBeenCalledWith("missing");
@@ -332,7 +332,7 @@ describe("useAuthStateListener — consent gate", () => {
       analyticsAccepted: false,
     });
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
       expect(mockSetConsentStatus).toHaveBeenCalledWith("missing");
@@ -346,7 +346,7 @@ describe("useAuthStateListener — consent gate", () => {
       analyticsAccepted: true,
     });
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
       expect(mockSetAnonymisedDataUse).toHaveBeenCalledWith(true);
@@ -361,7 +361,7 @@ describe("useAuthStateListener — consent gate", () => {
       analyticsAccepted: false,
     });
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
       expect(mockSetConsentStatus).toHaveBeenCalledWith("missing");
@@ -376,7 +376,7 @@ describe("useAuthStateListener — consent gate", () => {
       analyticsAccepted: false,
     });
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
       expect(mockSetAnonymisedDataUse).toHaveBeenCalledWith(false);
@@ -390,7 +390,7 @@ describe("useAuthStateListener — consent gate", () => {
     mockAuthValue = { userId: "user-1" };
     mockFetchConsentFromProfile.mockResolvedValue(null);
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
       expect(mockSetAnonymisedDataUse).toHaveBeenCalledWith(false);
@@ -402,7 +402,7 @@ describe("useAuthStateListener — consent gate", () => {
     mockAuthValue = { userId: "user-1" };
     mockFetchConsentFromProfile.mockRejectedValue(new Error("Network error"));
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
       expect(mockSetConsentStatus).toHaveBeenCalledWith("missing");
@@ -415,7 +415,7 @@ describe("useAuthStateListener — consent gate", () => {
       analyticsAccepted: true,
     });
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     capturedAuthCallback!("SIGNED_IN", {
       user: { id: "user-2" },
@@ -430,7 +430,7 @@ describe("useAuthStateListener — consent gate", () => {
   });
 
   it("does not call checkAndSetConsent on TOKEN_REFRESHED", async () => {
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
     // Let the init .then() settle first (init finds no user → no consent check).
     // TOKEN_REFRESHED fires after, mirroring real Supabase event ordering.
     await Promise.resolve();
@@ -445,8 +445,8 @@ describe("useAuthStateListener — consent gate", () => {
     expect(mockFetchConsentFromProfile).not.toHaveBeenCalled();
   });
 
-  it("resets consentStatus to loading and clears auth on SIGNED_OUT", () => {
-    renderHook(() => useAuthStateListener());
+  it("resets consentStatus to loading and clears auth on SIGNED_OUT", async () => {
+    await renderHook(() => useAuthStateListener());
 
     capturedAuthCallback!("SIGNED_OUT", null);
 
@@ -462,7 +462,7 @@ describe("useAuthStateListener — consent gate", () => {
       analyticsAccepted: true,
     });
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
     await waitFor(() => {
       expect(mockFetchConsentFromProfile).toHaveBeenCalledTimes(1);
     });
@@ -483,7 +483,7 @@ describe("useAuthStateListener — consent gate", () => {
       analyticsAccepted: true,
     });
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
     // Startup always fetches once (lastVerifiedUserIdRef is null on cold start).
     await waitFor(() => {
       expect(mockFetchConsentFromProfile).toHaveBeenCalledTimes(1);
@@ -502,7 +502,7 @@ describe("useAuthStateListener — consent gate", () => {
     mockAuthValue = null;
     mockConsentStatus = "missing";
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
     await Promise.resolve();
 
     capturedAppStateListener!("active");
@@ -516,7 +516,7 @@ describe("useAuthStateListener — consent gate", () => {
     mockConsentStatus = "missing";
     mockFetchConsentFromProfile.mockResolvedValue(null);
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
     await waitFor(() => {
       expect(mockFetchConsentFromProfile).toHaveBeenCalledTimes(1);
     });
@@ -536,7 +536,7 @@ describe("useAuthStateListener — consent gate", () => {
       analyticsAccepted: true,
     });
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
     await waitFor(() => {
       expect(mockFetchConsentFromProfile).toHaveBeenCalledTimes(1);
     });
@@ -564,7 +564,7 @@ describe("useAuthStateListener — consent gate", () => {
       analyticsAccepted: true,
     });
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
     // Startup always fetches once (lastVerifiedUserIdRef is null on cold start).
     await waitFor(() => {
       expect(mockFetchConsentFromProfile).toHaveBeenCalledTimes(1);
@@ -596,7 +596,7 @@ describe("useAuthStateListener — consent gate", () => {
       analyticsAccepted: true,
     });
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     // Wait for the mandatory cold-start check (lastVerifiedUserIdRef was null)
     await waitFor(() => {
@@ -625,7 +625,7 @@ describe("useAuthStateListener — consent gate", () => {
       analyticsAccepted: true,
     });
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     // Wait for startup check to verify user-a and set lastVerifiedUserIdRef
     await waitFor(() => {
@@ -657,7 +657,7 @@ describe("useAuthStateListener — consent gate", () => {
       analyticsAccepted: true,
     });
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     // Cold-start check verifies user-a and sets lastVerifiedUserIdRef = "user-a".
     await waitFor(() => {
@@ -685,7 +685,7 @@ describe("useAuthStateListener — consent gate", () => {
     mockIsReviewUserId = true;
     mockAuthValue = { userId: "review-user" };
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
       expect(mockSetConsentStatus).toHaveBeenCalledWith("accepted");
@@ -725,7 +725,7 @@ describe("useAuthStateListener — consent gate", () => {
       .mockReturnValueOnce(promise2);
 
     // epoch 1: mount triggers first check
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
     await Promise.resolve();
     await Promise.resolve();
 
@@ -771,7 +771,7 @@ describe("useAuthStateListener — consent gate", () => {
     mockFetchConsentFromProfile.mockReturnValueOnce(promise);
 
     // Mount: init check starts (in flight)
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
     await Promise.resolve();
     await Promise.resolve();
 
@@ -801,7 +801,7 @@ describe("useAuthStateListener — consent gate", () => {
       analyticsAccepted: false,
     });
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
       expect(mockFetchConsentFromProfile).toHaveBeenCalled();
@@ -818,7 +818,7 @@ describe("useAuthStateListener — consent gate", () => {
     mockPendingConsent = { analyticsAccepted: true, termsAccepted: true };
     mockFetchConsentFromProfile.mockRejectedValue(new Error("network"));
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
       expect(mockFetchConsentFromProfile).toHaveBeenCalled();
@@ -856,7 +856,7 @@ describe("useAuthStateListener — consent gate", () => {
       .mockReturnValueOnce(promise2);
 
     // epoch 1: mount triggers first check
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
     await Promise.resolve();
     await Promise.resolve();
 
@@ -901,7 +901,7 @@ describe("useAuthStateListener — consent gate", () => {
 
     mockFetchConsentFromProfile.mockReturnValueOnce(promise);
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
     await Promise.resolve();
     await Promise.resolve();
 
@@ -937,7 +937,7 @@ describe("useAuthStateListener — consent gate", () => {
       analyticsAccepted: true,
     });
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     // Fails if the implementation reads authRef.current (null — no re-render).
     // Passes only when it calls useAuthStore.getState().auth (returns mockGetStateAuth).
@@ -954,7 +954,7 @@ describe("useAuthStateListener — display name sync", () => {
     });
     mockFetchDisplayName.mockResolvedValue("Alice");
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
       expect(mockFetchDisplayName).toHaveBeenCalled();
@@ -962,8 +962,8 @@ describe("useAuthStateListener — display name sync", () => {
     });
   });
 
-  it("calls restoreSnapshot with userId on SIGNED_IN", () => {
-    renderHook(() => useAuthStateListener());
+  it("calls restoreSnapshot with userId on SIGNED_IN", async () => {
+    await renderHook(() => useAuthStateListener());
 
     capturedAuthCallback!("SIGNED_IN", {
       user: { id: "user-1" },
@@ -982,7 +982,7 @@ describe("useAuthStateListener — display name sync", () => {
       analyticsAccepted: true,
     });
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     capturedAuthCallback!("SIGNED_IN", {
       user: { id: "user-1", user_metadata: { display_name: "Bob" } },
@@ -1003,7 +1003,7 @@ describe("useAuthStateListener — display name sync", () => {
     });
     mockFetchDisplayName.mockResolvedValue(null);
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
       expect(mockFetchDisplayName).toHaveBeenCalled();
@@ -1019,7 +1019,7 @@ describe("useAuthStateListener — display name sync", () => {
     });
     mockFetchDisplayName.mockRejectedValue(new Error("network failure"));
 
-    renderHook(() => useAuthStateListener());
+    await renderHook(() => useAuthStateListener());
 
     await waitFor(() => {
       expect(mockAcceptConsent).toHaveBeenCalled();
@@ -1027,8 +1027,8 @@ describe("useAuthStateListener — display name sync", () => {
     expect(mockSetUsername).not.toHaveBeenCalled();
   });
 
-  it("does not call setUsername on SIGNED_OUT", () => {
-    renderHook(() => useAuthStateListener());
+  it("does not call setUsername on SIGNED_OUT", async () => {
+    await renderHook(() => useAuthStateListener());
 
     capturedAuthCallback!("SIGNED_OUT", null);
 

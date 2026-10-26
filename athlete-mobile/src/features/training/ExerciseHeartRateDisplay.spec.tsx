@@ -6,8 +6,8 @@ const currentYear = new Date().getFullYear();
 const adultBirthday = `${currentYear - 30}-01-01`;
 
 describe("ExerciseHeartRateDisplay: cardio skill filter", () => {
-  it("renders the heart rate interval for a cardio skill tag", () => {
-    render(
+  it("renders the heart rate interval for a cardio skill tag", async () => {
+    await render(
       <ExerciseHeartRateDisplay
         exerciseData={createExerciseData({ tags: ["SKILL_CARDIO_2"] })}
         birthday={adultBirthday}
@@ -16,8 +16,8 @@ describe("ExerciseHeartRateDisplay: cardio skill filter", () => {
     expect(screen.getByText("Heart rate interval")).toBeTruthy();
   });
 
-  it("shows MAX. instead of a heart rate range for sprint intervals", () => {
-    render(
+  it("shows MAX. instead of a heart rate range for sprint intervals", async () => {
+    await render(
       <ExerciseHeartRateDisplay
         exerciseData={createExerciseData({ tags: ["SKILL_CARDIO_1_SHORT"] })}
         birthday={adultBirthday}
@@ -27,8 +27,8 @@ describe("ExerciseHeartRateDisplay: cardio skill filter", () => {
     expect(screen.getByText("Heart rate interval")).toBeTruthy();
   });
 
-  it("ignores the plain CARDIO tag itself and renders nothing without a specific cardio skill", () => {
-    const { toJSON } = render(
+  it("ignores the plain CARDIO tag itself and renders nothing without a specific cardio skill", async () => {
+    const { toJSON } = await render(
       <ExerciseHeartRateDisplay
         exerciseData={createExerciseData({ tags: ["SKILL_CARDIO"] })}
         birthday={adultBirthday}
@@ -39,8 +39,8 @@ describe("ExerciseHeartRateDisplay: cardio skill filter", () => {
 });
 
 describe("ExerciseHeartRateDisplay: undefined cardioSkill", () => {
-  it("renders nothing when no cardio skill tag is present", () => {
-    const { toJSON } = render(
+  it("renders nothing when no cardio skill tag is present", async () => {
+    const { toJSON } = await render(
       <ExerciseHeartRateDisplay
         exerciseData={createExerciseData({ tags: ["SKILL_STR"] })}
         birthday={adultBirthday}
@@ -49,8 +49,8 @@ describe("ExerciseHeartRateDisplay: undefined cardioSkill", () => {
     expect(toJSON()).toBeNull();
   });
 
-  it("renders nothing when exerciseData is undefined", () => {
-    const { toJSON } = render(
+  it("renders nothing when exerciseData is undefined", async () => {
+    const { toJSON } = await render(
       <ExerciseHeartRateDisplay
         exerciseData={undefined}
         birthday={adultBirthday}
@@ -67,8 +67,8 @@ describe("ExerciseHeartRateDisplay: missing or invalid birthday", () => {
     ["not a calendar date", "2010-13-45"],
   ])(
     "renders the interval for age 20 when the birthday is %s",
-    (_, birthday) => {
-      render(
+    async (_, birthday) => {
+      await render(
         <ExerciseHeartRateDisplay
           exerciseData={createExerciseData({ tags: ["SKILL_CARDIO_2"] })}
           birthday={birthday}

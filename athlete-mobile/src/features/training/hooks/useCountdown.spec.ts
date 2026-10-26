@@ -6,16 +6,16 @@ describe("useCountdown", () => {
     jest.useFakeTimers();
   });
 
-  afterEach(() => {
-    act(() => {
+  afterEach(async () => {
+    await act(() => {
       jest.runOnlyPendingTimers();
     });
     jest.useRealTimers();
   });
 
   describe("Initial State", () => {
-    it("initializes countdown as duration", () => {
-      const { result } = renderHook(() =>
+    it("initializes countdown as duration", async () => {
+      const { result } = await renderHook(() =>
         useCountdown({
           autoAdvance: false,
           duration: 10,
@@ -29,8 +29,8 @@ describe("useCountdown", () => {
   });
 
   describe("Countdown Behavior", () => {
-    it("starts countdown when isActive is true", () => {
-      const { result } = renderHook(() =>
+    it("starts countdown when isActive is true", async () => {
+      const { result } = await renderHook(() =>
         useCountdown({
           autoAdvance: false,
           duration: 5,
@@ -40,15 +40,15 @@ describe("useCountdown", () => {
         }),
       );
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
 
       expect(result.current).toBe(4);
     });
 
-    it("decrements countdown on each tick", () => {
-      const { result } = renderHook(() =>
+    it("decrements countdown on each tick", async () => {
+      const { result } = await renderHook(() =>
         useCountdown({
           autoAdvance: false,
           duration: 5,
@@ -58,19 +58,19 @@ describe("useCountdown", () => {
         }),
       );
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
       expect(result.current).toBe(4);
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
       expect(result.current).toBe(3);
     });
 
-    it("resets countdown on completion", () => {
-      const { result } = renderHook(() =>
+    it("resets countdown on completion", async () => {
+      const { result } = await renderHook(() =>
         useCountdown({
           autoAdvance: false,
           duration: 2,
@@ -80,18 +80,18 @@ describe("useCountdown", () => {
         }),
       );
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
       expect(result.current).toBe(1);
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
 
       expect(result.current).toBeUndefined();
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
 
@@ -100,8 +100,8 @@ describe("useCountdown", () => {
   });
 
   describe("Inactive State", () => {
-    it("does not start countdown if isActive is initially falsy", () => {
-      const { result } = renderHook(() =>
+    it("does not start countdown if isActive is initially falsy", async () => {
+      const { result } = await renderHook(() =>
         useCountdown({
           autoAdvance: false,
           duration: 5,
@@ -111,15 +111,15 @@ describe("useCountdown", () => {
         }),
       );
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(200);
       });
 
       expect(result.current).toBe(5);
     });
 
-    it("pauses countdown when isActive is falsy", () => {
-      const { result, rerender } = renderHook(
+    it("pauses countdown when isActive is falsy", async () => {
+      const { result, rerender } = await renderHook(
         ({ isActive }: { isActive: boolean }) =>
           useCountdown({
             autoAdvance: false,
@@ -131,22 +131,22 @@ describe("useCountdown", () => {
         { initialProps: { isActive: true } },
       );
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
       expect(result.current).toBe(4);
 
-      rerender({ isActive: false });
+      await rerender({ isActive: false });
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
 
       expect(result.current).toBe(4);
     });
 
-    it("resumes countdown following a pause", () => {
-      const { result, rerender } = renderHook(
+    it("resumes countdown following a pause", async () => {
+      const { result, rerender } = await renderHook(
         ({ isActive }: { isActive: boolean }) =>
           useCountdown({
             autoAdvance: false,
@@ -158,22 +158,22 @@ describe("useCountdown", () => {
         { initialProps: { isActive: true } },
       );
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
       expect(result.current).toBe(4);
 
-      rerender({ isActive: false });
+      await rerender({ isActive: false });
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
 
       expect(result.current).toBe(4);
 
-      rerender({ isActive: true });
+      await rerender({ isActive: true });
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
 
@@ -184,8 +184,8 @@ describe("useCountdown", () => {
   describe("Suspended app", () => {
     // iOS and Android suspend a backgrounded app, so no timer runs while time
     // passes. Moving the clock without running timers reproduces that.
-    it("accounts for time that passed while no tick fired", () => {
-      const { result } = renderHook(() =>
+    it("accounts for time that passed while no tick fired", async () => {
+      const { result } = await renderHook(() =>
         useCountdown({
           autoAdvance: false,
           duration: 10,
@@ -195,11 +195,11 @@ describe("useCountdown", () => {
         }),
       );
 
-      act(() => {
+      await act(() => {
         jest.setSystemTime(Date.now() + 500);
       });
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
 
@@ -207,8 +207,8 @@ describe("useCountdown", () => {
       expect(result.current).toBe(4);
     });
 
-    it("stays where it was when the app was suspended while paused", () => {
-      const { result, rerender } = renderHook(
+    it("stays where it was when the app was suspended while paused", async () => {
+      const { result, rerender } = await renderHook(
         ({ isActive }: { isActive: boolean }) =>
           useCountdown({
             autoAdvance: false,
@@ -220,18 +220,18 @@ describe("useCountdown", () => {
         { initialProps: { isActive: true } },
       );
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(200);
       });
       expect(result.current).toBe(8);
 
-      rerender({ isActive: false });
+      await rerender({ isActive: false });
 
-      act(() => {
+      await act(() => {
         jest.setSystemTime(Date.now() + 5000);
       });
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
 
@@ -240,10 +240,10 @@ describe("useCountdown", () => {
   });
 
   describe("Callbacks", () => {
-    it("fires 'complete' event when countdown reaches 0", () => {
+    it("fires 'complete' event when countdown reaches 0", async () => {
       const onEvent = jest.fn();
 
-      renderHook(() =>
+      await renderHook(() =>
         useCountdown({
           autoAdvance: false,
           duration: 2,
@@ -254,11 +254,11 @@ describe("useCountdown", () => {
         }),
       );
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
 
@@ -266,10 +266,10 @@ describe("useCountdown", () => {
       expect(onEvent).toHaveBeenCalledWith("complete");
     });
 
-    it("fires 'advance' event when countdown reaches 0 and autoAdvance is truthy", () => {
+    it("fires 'advance' event when countdown reaches 0 and autoAdvance is truthy", async () => {
       const onEvent = jest.fn();
 
-      renderHook(() =>
+      await renderHook(() =>
         useCountdown({
           autoAdvance: true,
           duration: 2,
@@ -280,11 +280,11 @@ describe("useCountdown", () => {
         }),
       );
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
 
@@ -293,10 +293,10 @@ describe("useCountdown", () => {
       expect(onEvent).toHaveBeenCalledWith("advance");
     });
 
-    it("does not fire 'advance' event when autoAdvance is falsy", () => {
+    it("does not fire 'advance' event when autoAdvance is falsy", async () => {
       const onEvent = jest.fn();
 
-      renderHook(() =>
+      await renderHook(() =>
         useCountdown({
           autoAdvance: false,
           duration: 2,
@@ -307,7 +307,7 @@ describe("useCountdown", () => {
         }),
       );
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(300);
       });
 
@@ -317,8 +317,8 @@ describe("useCountdown", () => {
   });
 
   describe("Duration Changes", () => {
-    it("resets countdown when exerciseId changes", () => {
-      const { result, rerender } = renderHook(
+    it("resets countdown when exerciseId changes", async () => {
+      const { result, rerender } = await renderHook(
         ({ exerciseId, duration }: { exerciseId: string; duration: number }) =>
           useCountdown({
             autoAdvance: false,
@@ -330,16 +330,16 @@ describe("useCountdown", () => {
         { initialProps: { exerciseId: "1", duration: 10 } },
       );
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(200);
       });
       expect(result.current).toBe(8);
 
-      rerender({ exerciseId: "2", duration: 10 });
+      await rerender({ exerciseId: "2", duration: 10 });
 
       expect(result.current).toBe(10);
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
 
@@ -348,8 +348,8 @@ describe("useCountdown", () => {
   });
 
   describe("Cleanup", () => {
-    it("clears interval on unmount", () => {
-      const { unmount } = renderHook(() =>
+    it("clears interval on unmount", async () => {
+      const { unmount } = await renderHook(() =>
         useCountdown({
           autoAdvance: false,
           duration: 10,
@@ -359,14 +359,14 @@ describe("useCountdown", () => {
         }),
       );
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
 
-      unmount();
+      await unmount();
 
       // Should not throw
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(100);
       });
     });

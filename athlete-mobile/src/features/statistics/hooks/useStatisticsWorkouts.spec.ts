@@ -4,24 +4,24 @@ import { seconds } from "@/features/training/models/TimeUnits";
 import { useStatisticsWorkouts } from "./useStatisticsWorkouts";
 
 describe("useStatisticsWorkouts", () => {
-  beforeEach(() => {
-    const { result } = renderHook(() => useCompletedWorkoutsStore());
-    act(() => {
+  beforeEach(async () => {
+    const { result } = await renderHook(() => useCompletedWorkoutsStore());
+    await act(() => {
       result.current.clearWorkoutHistory();
     });
   });
 
-  it("returns empty array when no workouts", () => {
-    const { result } = renderHook(() => useStatisticsWorkouts());
+  it("returns empty array when no workouts", async () => {
+    const { result } = await renderHook(() => useStatisticsWorkouts());
     expect(result.current).toEqual([]);
   });
 
-  it("returns workouts from store", () => {
-    const { result: storeResult } = renderHook(() =>
+  it("returns workouts from store", async () => {
+    const { result: storeResult } = await renderHook(() =>
       useCompletedWorkoutsStore(),
     );
 
-    act(() => {
+    await act(() => {
       storeResult.current.addCompletedWorkout({
         id: "w1",
         timestamp: 1000,
@@ -41,7 +41,7 @@ describe("useStatisticsWorkouts", () => {
       });
     });
 
-    const { result } = renderHook(() => useStatisticsWorkouts());
+    const { result } = await renderHook(() => useStatisticsWorkouts());
 
     expect(result.current).toHaveLength(1);
     expect(result.current[0]).toMatchObject({
@@ -54,12 +54,12 @@ describe("useStatisticsWorkouts", () => {
     });
   });
 
-  it("sorts workouts by timestamp descending", () => {
-    const { result: storeResult } = renderHook(() =>
+  it("sorts workouts by timestamp descending", async () => {
+    const { result: storeResult } = await renderHook(() =>
       useCompletedWorkoutsStore(),
     );
 
-    act(() => {
+    await act(() => {
       storeResult.current.addCompletedWorkout({
         id: "w1",
         timestamp: 1000,
@@ -74,7 +74,7 @@ describe("useStatisticsWorkouts", () => {
       });
     });
 
-    const { result } = renderHook(() => useStatisticsWorkouts());
+    const { result } = await renderHook(() => useStatisticsWorkouts());
 
     expect(result.current[0].id).toBe("w2");
     expect(result.current[1].id).toBe("w1");

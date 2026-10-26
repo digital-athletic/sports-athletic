@@ -2,41 +2,41 @@ import { act, renderHook } from "@testing-library/react-native";
 import { useTrainingScheduleStore } from "./trainingScheduleStore";
 
 describe("trainingScheduleStore", () => {
-  beforeEach(() => {
-    const { result } = renderHook(() => useTrainingScheduleStore());
-    act(() => {
+  beforeEach(async () => {
+    const { result } = await renderHook(() => useTrainingScheduleStore());
+    await act(() => {
       result.current.resetTrainingSchedule();
     });
   });
 
   describe("initial state", () => {
-    it("has 7 training days", () => {
-      const { result } = renderHook(() => useTrainingScheduleStore());
+    it("has 7 training days", async () => {
+      const { result } = await renderHook(() => useTrainingScheduleStore());
       expect(result.current.trainingDays).toHaveLength(7);
     });
 
-    it("all days are inactive by default", () => {
-      const { result } = renderHook(() => useTrainingScheduleStore());
+    it("all days are inactive by default", async () => {
+      const { result } = await renderHook(() => useTrainingScheduleStore());
       const activeDays = result.current.trainingDays.filter((d) => d.active);
       expect(activeDays).toHaveLength(0);
     });
   });
 
   describe("toggleDay", () => {
-    it("activates an inactive day", () => {
-      const { result } = renderHook(() => useTrainingScheduleStore());
+    it("activates an inactive day", async () => {
+      const { result } = await renderHook(() => useTrainingScheduleStore());
 
-      act(() => {
+      await act(() => {
         result.current.toggleDay(0); // Monday
       });
 
       expect(result.current.trainingDays[0].active).toBe(true);
     });
 
-    it("deactivates an active day", () => {
-      const { result } = renderHook(() => useTrainingScheduleStore());
+    it("deactivates an active day", async () => {
+      const { result } = await renderHook(() => useTrainingScheduleStore());
 
-      act(() => {
+      await act(() => {
         result.current.toggleDay(0);
         result.current.toggleDay(0);
       });
@@ -46,10 +46,10 @@ describe("trainingScheduleStore", () => {
   });
 
   describe("setDayPlace", () => {
-    it("updates place for a weekday", () => {
-      const { result } = renderHook(() => useTrainingScheduleStore());
+    it("updates place for a weekday", async () => {
+      const { result } = await renderHook(() => useTrainingScheduleStore());
 
-      act(() => {
+      await act(() => {
         result.current.setDayPlace(1, "HOME");
       });
 
@@ -58,10 +58,10 @@ describe("trainingScheduleStore", () => {
   });
 
   describe("setDayDuration", () => {
-    it("updates duration for a weekday", () => {
-      const { result } = renderHook(() => useTrainingScheduleStore());
+    it("updates duration for a weekday", async () => {
+      const { result } = await renderHook(() => useTrainingScheduleStore());
 
-      act(() => {
+      await act(() => {
         result.current.setDayDuration(2, 60);
       });
 
@@ -70,10 +70,10 @@ describe("trainingScheduleStore", () => {
   });
 
   describe("getActiveTrainingDays", () => {
-    it("returns only active days", () => {
-      const { result } = renderHook(() => useTrainingScheduleStore());
+    it("returns only active days", async () => {
+      const { result } = await renderHook(() => useTrainingScheduleStore());
 
-      act(() => {
+      await act(() => {
         result.current.toggleDay(0);
         result.current.toggleDay(2);
       });
@@ -83,10 +83,10 @@ describe("trainingScheduleStore", () => {
   });
 
   describe("getTotalActiveHours", () => {
-    it("calculates total hours from active days", () => {
-      const { result } = renderHook(() => useTrainingScheduleStore());
+    it("calculates total hours from active days", async () => {
+      const { result } = await renderHook(() => useTrainingScheduleStore());
 
-      act(() => {
+      await act(() => {
         result.current.toggleDay(0);
         result.current.setDayDuration(0, 60); // 1 hour
         result.current.toggleDay(1);

@@ -23,36 +23,36 @@ function setGender(gender: "MALE" | "FEMALE") {
 describe("MuscleSorenessSelector: region selection", () => {
   beforeEach(() => setGender("MALE"));
 
-  it("shows the coaching prompt", () => {
-    render(<MuscleSorenessSelector tags={[]} />);
+  it("shows the coaching prompt", async () => {
+    await render(<MuscleSorenessSelector tags={[]} />);
     expect(screen.getByText("Where are the aching muscles?")).toBeTruthy();
   });
 
-  it("emits the lateralized tag when a region is tapped", () => {
+  it("emits the lateralized tag when a region is tapped", async () => {
     const onChange = jest.fn();
-    render(<MuscleSorenessSelector tags={[]} onChange={onChange} />);
-    fireEvent.press(screen.getByLabelText("left front thigh"));
+    await render(<MuscleSorenessSelector tags={[]} onChange={onChange} />);
+    await fireEvent.press(screen.getByLabelText("left front thigh"));
     expect(onChange).toHaveBeenCalledWith(["QUADRICEPS_LEFT"]);
   });
 
-  it("removes the tag when the same region is tapped again", () => {
+  it("removes the tag when the same region is tapped again", async () => {
     const onChange = jest.fn();
-    render(
+    await render(
       <MuscleSorenessSelector tags={["QUADRICEPS_LEFT"]} onChange={onChange} />,
     );
-    fireEvent.press(screen.getByLabelText("left front thigh, selected"));
+    await fireEvent.press(screen.getByLabelText("left front thigh, selected"));
     expect(onChange).toHaveBeenCalledWith([]);
   });
 
-  it("exposes the selected state in the native accessible name", () => {
-    render(<MuscleSorenessSelector tags={["QUADRICEPS_LEFT"]} />);
+  it("exposes the selected state in the native accessible name", async () => {
+    await render(<MuscleSorenessSelector tags={["QUADRICEPS_LEFT"]} />);
     expect(screen.getByLabelText("left front thigh, selected")).toBeTruthy();
     expect(screen.getByLabelText("right front thigh")).toBeTruthy();
     expect(screen.queryByLabelText("right front thigh, selected")).toBeNull();
   });
 
-  it("highlights only the tapped side, not its lateral counterpart", () => {
-    render(<MuscleSorenessSelector tags={["QUADRICEPS_LEFT"]} />);
+  it("highlights only the tapped side, not its lateral counterpart", async () => {
+    await render(<MuscleSorenessSelector tags={["QUADRICEPS_LEFT"]} />);
     const left = regionFills("silhouette-region-QUADRICEPS_LEFT");
     const right = regionFills("silhouette-region-QUADRICEPS_RIGHT");
     expect(left.length).toBeGreaterThan(0);
@@ -61,10 +61,12 @@ describe("MuscleSorenessSelector: region selection", () => {
     expect(right[0]).toEqual(UNSELECTED_FILL);
   });
 
-  it("keeps unknown legacy tags in the emitted array", () => {
+  it("keeps unknown legacy tags in the emitted array", async () => {
     const onChange = jest.fn();
-    render(<MuscleSorenessSelector tags={["SPINE"]} onChange={onChange} />);
-    fireEvent.press(screen.getByLabelText("neck"));
+    await render(
+      <MuscleSorenessSelector tags={["SPINE"]} onChange={onChange} />,
+    );
+    await fireEvent.press(screen.getByLabelText("neck"));
     expect(onChange).toHaveBeenCalledWith(["SPINE", "NECK"]);
   });
 });
@@ -72,22 +74,22 @@ describe("MuscleSorenessSelector: region selection", () => {
 describe("MuscleSorenessSelector: front and back toggle", () => {
   beforeEach(() => setGender("MALE"));
 
-  it("starts on the front side and flips to the back", () => {
-    render(<MuscleSorenessSelector tags={[]} />);
+  it("starts on the front side and flips to the back", async () => {
+    await render(<MuscleSorenessSelector tags={[]} />);
     expect(screen.getByLabelText("left front thigh")).toBeTruthy();
 
-    fireEvent.press(screen.getByLabelText("Show back side"));
+    await fireEvent.press(screen.getByLabelText("Show back side"));
     expect(screen.getByLabelText("left back thigh")).toBeTruthy();
     expect(screen.getByLabelText("Show front side")).toBeTruthy();
   });
 
-  it("preserves the selection across flips without emitting changes", () => {
+  it("preserves the selection across flips without emitting changes", async () => {
     const onChange = jest.fn();
-    render(
+    await render(
       <MuscleSorenessSelector tags={["QUADRICEPS_LEFT"]} onChange={onChange} />,
     );
-    fireEvent.press(screen.getByLabelText("Show back side"));
-    fireEvent.press(screen.getByLabelText("Show front side"));
+    await fireEvent.press(screen.getByLabelText("Show back side"));
+    await fireEvent.press(screen.getByLabelText("Show front side"));
 
     expect(onChange).not.toHaveBeenCalled();
     const left = regionFills("silhouette-region-QUADRICEPS_LEFT");
@@ -95,16 +97,16 @@ describe("MuscleSorenessSelector: front and back toggle", () => {
     expect(left[0]).toEqual(SELECTED_FILL);
   });
 
-  it("emits orientation precise shoulder tags per view", () => {
+  it("emits orientation precise shoulder tags per view", async () => {
     const onChange = jest.fn();
-    render(<MuscleSorenessSelector tags={[]} onChange={onChange} />);
-    fireEvent.press(screen.getByLabelText("left front shoulder"));
+    await render(<MuscleSorenessSelector tags={[]} onChange={onChange} />);
+    await fireEvent.press(screen.getByLabelText("left front shoulder"));
     expect(onChange).toHaveBeenLastCalledWith(["SHOULDER_FRONT_LEFT"]);
   });
 
-  it("keeps a front shoulder selection off the rear shoulder view", () => {
-    render(<MuscleSorenessSelector tags={["SHOULDER_FRONT_LEFT"]} />);
-    fireEvent.press(screen.getByLabelText("Show back side"));
+  it("keeps a front shoulder selection off the rear shoulder view", async () => {
+    await render(<MuscleSorenessSelector tags={["SHOULDER_FRONT_LEFT"]} />);
+    await fireEvent.press(screen.getByLabelText("Show back side"));
 
     const backLeft = regionFills("silhouette-region-SHOULDER_LEFT");
     expect(backLeft.length).toBeGreaterThan(0);
@@ -112,9 +114,9 @@ describe("MuscleSorenessSelector: front and back toggle", () => {
     expect(screen.getByLabelText("left rear shoulder")).toBeTruthy();
   });
 
-  it("shows a cross side selection as selected on the back view too", () => {
-    render(<MuscleSorenessSelector tags={["ADDUCTORS_LEFT"]} />);
-    fireEvent.press(screen.getByLabelText("Show back side"));
+  it("shows a cross side selection as selected on the back view too", async () => {
+    await render(<MuscleSorenessSelector tags={["ADDUCTORS_LEFT"]} />);
+    await fireEvent.press(screen.getByLabelText("Show back side"));
 
     const backLeft = regionFills("silhouette-region-ADDUCTORS_LEFT");
     const backRight = regionFills("silhouette-region-ADDUCTORS_RIGHT");
@@ -127,23 +129,23 @@ describe("MuscleSorenessSelector: front and back toggle", () => {
 describe("MuscleSorenessSelector: chips summary", () => {
   beforeEach(() => setGender("MALE"));
 
-  it("lists selected tags as chips and removes a tag on chip press", () => {
+  it("lists selected tags as chips and removes a tag on chip press", async () => {
     const onChange = jest.fn();
     const tags: MuscleType[] = ["NECK", "GLUTES_LEFT"];
-    render(<MuscleSorenessSelector tags={tags} onChange={onChange} />);
+    await render(<MuscleSorenessSelector tags={tags} onChange={onChange} />);
 
     const chips = within(screen.getByTestId("selected-muscles"));
     expect(chips.getByText("left buttock")).toBeTruthy();
 
-    fireEvent.press(chips.getByLabelText("neck"));
+    await fireEvent.press(chips.getByLabelText("neck"));
     expect(onChange).toHaveBeenCalledWith(["GLUTES_LEFT"]);
   });
 });
 
 describe("MuscleSorenessSelector: gender awareness", () => {
-  it("renders the female artwork for a female profile", () => {
+  it("renders the female artwork for a female profile", async () => {
     setGender("FEMALE");
-    render(<MuscleSorenessSelector tags={[]} />);
+    await render(<MuscleSorenessSelector tags={[]} />);
     const neck = femaleFront.regions.find((region) => region.id === "NECK");
     const renderedNeckPaths = regionPathHosts("silhouette-region-NECK");
     expect(renderedNeckPaths.map((node) => node.props.d)).toEqual(neck?.paths);
@@ -159,16 +161,16 @@ describe("MuscleSorenessSelector: figure size", () => {
     Dimensions.set({ window: portrait, screen: portrait });
   });
 
-  it("sizes the figure by the longer screen side in both orientations", () => {
+  it("sizes the figure by the longer screen side in both orientations", async () => {
     setGender("MALE");
     Dimensions.set({ window: portrait, screen: portrait });
-    const first = render(<MuscleSorenessSelector tags={[]} />);
+    const first = await render(<MuscleSorenessSelector tags={[]} />);
     expect(first.getByTestId("soreness-figure")).toHaveStyle({ height: 800 });
-    first.unmount();
+    await first.unmount();
 
     Dimensions.set({ window: landscape, screen: landscape });
-    const second = render(<MuscleSorenessSelector tags={[]} />);
+    const second = await render(<MuscleSorenessSelector tags={[]} />);
     expect(second.getByTestId("soreness-figure")).toHaveStyle({ height: 600 });
-    second.unmount();
+    await second.unmount();
   });
 });

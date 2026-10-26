@@ -33,8 +33,8 @@ beforeEach(() => {
 });
 
 describe("ColumnList: prevention list rendering", () => {
-  it("renders a silhouette thumbnail for every row and no other artwork", () => {
-    render(<ColumnList listItems={PREVENTION_TILES} />);
+  it("renders a silhouette thumbnail for every row and no other artwork", async () => {
+    await render(<ColumnList listItems={PREVENTION_TILES} />);
 
     expect(queryThumbnails()).toHaveLength(5);
     expect(screen.queryAllByTestId("tile-thumbnail-image")).toHaveLength(0);
@@ -61,8 +61,8 @@ describe("ColumnList: thumbnail branch precedence", () => {
     navigate: { key: "/training/muscle-soreness", params: { type: "MOB" } },
   };
 
-  it("renders the silhouette thumbnail when both silhouette and picture are set", () => {
-    render(<ColumnList listItems={[silhouetteTile]} />);
+  it("renders the silhouette thumbnail when both silhouette and picture are set", async () => {
+    await render(<ColumnList listItems={[silhouetteTile]} />);
 
     expect(queryThumbnails()).toHaveLength(1);
     expect(screen.queryAllByTestId("tile-thumbnail-image")).toHaveLength(0);
@@ -71,8 +71,8 @@ describe("ColumnList: thumbnail branch precedence", () => {
     );
   });
 
-  it("renders a sized image when only a picture is set", () => {
-    render(<ColumnList listItems={[pictureTile]} />);
+  it("renders a sized image when only a picture is set", async () => {
+    await render(<ColumnList listItems={[pictureTile]} />);
 
     const image = screen.getByTestId("tile-thumbnail-image");
     expect(image.props.style).toEqual(
@@ -84,8 +84,8 @@ describe("ColumnList: thumbnail branch precedence", () => {
     );
   });
 
-  it("renders the placeholder when the tile has no artwork", () => {
-    render(<ColumnList listItems={[emptyTile]} />);
+  it("renders the placeholder when the tile has no artwork", async () => {
+    await render(<ColumnList listItems={[emptyTile]} />);
 
     expect(screen.getAllByTestId("tile-thumbnail-placeholder")).toHaveLength(1);
     expect(queryThumbnails()).toHaveLength(0);
@@ -94,8 +94,8 @@ describe("ColumnList: thumbnail branch precedence", () => {
 });
 
 describe("ColumnList: row accessibility", () => {
-  it("exposes exactly one button role per prevention row and no checkboxes", () => {
-    render(<ColumnList listItems={PREVENTION_TILES} />);
+  it("exposes exactly one button role per prevention row and no checkboxes", async () => {
+    await render(<ColumnList listItems={PREVENTION_TILES} />);
 
     expect(screen.getAllByRole("button")).toHaveLength(5);
     expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
@@ -103,10 +103,10 @@ describe("ColumnList: row accessibility", () => {
 });
 
 describe("ColumnList: navigation", () => {
-  it("navigates once with the pressed row's own type", () => {
-    render(<ColumnList listItems={PREVENTION_TILES} />);
+  it("navigates once with the pressed row's own type", async () => {
+    await render(<ColumnList listItems={PREVENTION_TILES} />);
 
-    fireEvent.press(screen.getAllByRole("button")[0]);
+    await fireEvent.press(screen.getAllByRole("button")[0]);
 
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith({
@@ -117,9 +117,9 @@ describe("ColumnList: navigation", () => {
 });
 
 describe("ColumnList: gender switch", () => {
-  it("passes the profile gender through to every thumbnail", () => {
+  it("passes the profile gender through to every thumbnail", async () => {
     setGender("FEMALE");
-    render(<ColumnList listItems={PREVENTION_TILES} />);
+    await render(<ColumnList listItems={PREVENTION_TILES} />);
 
     const expectedWidths = PREVENTION_TILES.map((tile) => {
       if (!tile.silhouette) {

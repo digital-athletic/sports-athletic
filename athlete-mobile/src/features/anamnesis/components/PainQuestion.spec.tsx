@@ -4,8 +4,8 @@ import { PainQuestion } from "./PainQuestion";
 const noop = jest.fn();
 
 describe("PainQuestion: stored pain tags", () => {
-  it("shows stored joint regions as selected and hides stale muscle values", () => {
-    render(
+  it("shows stored joint regions as selected and hides stale muscle values", async () => {
+    await render(
       <PainQuestion
         values={{}}
         tags={{ PAIN: ["KNEE_LEFT", "GLUTES"] }}
@@ -17,9 +17,9 @@ describe("PainQuestion: stored pain tags", () => {
     expect(screen.queryByLabelText("buttock")).toBeNull();
   });
 
-  it("drops stale muscle values from the next change", () => {
+  it("drops stale muscle values from the next change", async () => {
     const onChangeTag = jest.fn();
-    render(
+    await render(
       <PainQuestion
         values={{}}
         tags={{ PAIN: ["KNEE_LEFT", "GLUTES"] }}
@@ -27,7 +27,7 @@ describe("PainQuestion: stored pain tags", () => {
         onChangeTag={onChangeTag}
       />,
     );
-    fireEvent.press(screen.getByLabelText("right knee"));
+    await fireEvent.press(screen.getByLabelText("right knee"));
     expect(onChangeTag).toHaveBeenCalledWith("PAIN", [
       "KNEE_LEFT",
       "KNEE_RIGHT",

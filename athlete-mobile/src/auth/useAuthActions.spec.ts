@@ -198,7 +198,7 @@ const ALL_STORES_NOT_CALLED = Object.fromEntries(
 ) as typeof ALL_STORES_CALLED_ONCE;
 
 async function confirmLogout() {
-  const { result } = renderHook(() => useLogout());
+  const { result } = await renderHook(() => useLogout());
   await act(async () => {
     result.current.logout();
   });
@@ -211,7 +211,7 @@ async function confirmLogout() {
 }
 
 async function confirmDeleteAccount() {
-  const { result } = renderHook(() => useDeleteAccount());
+  const { result } = await renderHook(() => useDeleteAccount());
   await act(async () => {
     result.current.deleteAccount();
   });
@@ -233,7 +233,7 @@ describe("useLogout", () => {
 
   it("should show no-connection alert when offline", async () => {
     mockIsOnline = false;
-    const { result } = renderHook(() => useLogout());
+    const { result } = await renderHook(() => useLogout());
     await act(async () => {
       result.current.logout();
     });
@@ -246,7 +246,7 @@ describe("useLogout", () => {
 
   it("should not call supabaseLogout when offline", async () => {
     mockIsOnline = false;
-    const { result } = renderHook(() => useLogout());
+    const { result } = await renderHook(() => useLogout());
     await act(async () => {
       result.current.logout();
     });
@@ -255,7 +255,7 @@ describe("useLogout", () => {
   });
 
   it("should show confirmation dialog when online", async () => {
-    const { result } = renderHook(() => useLogout());
+    const { result } = await renderHook(() => useLogout());
     await act(async () => {
       result.current.logout();
     });
@@ -378,7 +378,7 @@ describe("useDeleteAccount", () => {
   });
 
   it("should show confirmation dialog when deleteAccount is called", async () => {
-    const { result } = renderHook(() => useDeleteAccount());
+    const { result } = await renderHook(() => useDeleteAccount());
     await act(async () => {
       result.current.deleteAccount();
     });
@@ -395,7 +395,7 @@ describe("useDeleteAccount", () => {
 
   it("should show no-connection alert when offline", async () => {
     mockIsOnline = false;
-    const { result } = renderHook(() => useDeleteAccount());
+    const { result } = await renderHook(() => useDeleteAccount());
     await act(async () => {
       result.current.deleteAccount();
     });
@@ -408,7 +408,7 @@ describe("useDeleteAccount", () => {
 
   it("should not call supabaseDeleteAccount when offline", async () => {
     mockIsOnline = false;
-    const { result } = renderHook(() => useDeleteAccount());
+    const { result } = await renderHook(() => useDeleteAccount());
     await act(async () => {
       result.current.deleteAccount();
     });

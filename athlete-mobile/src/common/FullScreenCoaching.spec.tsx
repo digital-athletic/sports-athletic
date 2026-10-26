@@ -1,4 +1,5 @@
 import { fireEvent, render } from "@/utils/testUtils";
+import { StyleSheet } from "react-native";
 import {
   FullScreenCoaching,
   FullScreenCoachingProps,
@@ -20,28 +21,30 @@ describe("FullScreenCoaching", () => {
     jest.clearAllMocks();
   });
 
-  it("renders component", () => {
-    const { getByText } = render(<FullScreenCoaching {...defaultProps} />);
+  it("renders component", async () => {
+    const { getByText } = await render(
+      <FullScreenCoaching {...defaultProps} />,
+    );
 
     expect(getByText("This is coaching text")).toBeTruthy();
     expect(getByText("Continue")).toBeTruthy();
   });
 
-  it("calls goOnFunction when Continue button is pressed", () => {
+  it("calls goOnFunction when Continue button is pressed", async () => {
     const goOnFn = jest.fn();
-    const { getByRole } = render(
+    const { getByRole } = await render(
       <FullScreenCoaching {...defaultProps} goOnFunction={goOnFn} />,
     );
 
     const button = getByRole("button");
-    fireEvent.press(button);
+    await fireEvent.press(button);
 
     expect(goOnFn).toHaveBeenCalledTimes(1);
   });
 
-  it("renders skip text and calls skipFunction when provided", () => {
+  it("renders skip text and calls skipFunction when provided", async () => {
     const skipFn = jest.fn();
-    const { getByText } = render(
+    const { getByText } = await render(
       <FullScreenCoaching
         {...defaultProps}
         skipText="Skip this"
@@ -52,41 +55,45 @@ describe("FullScreenCoaching", () => {
     const skipButton = getByText("Skip this");
     expect(skipButton).toBeTruthy();
 
-    fireEvent.press(skipButton);
+    await fireEvent.press(skipButton);
     expect(skipFn).toHaveBeenCalledTimes(1);
   });
 
-  it("does not render skip text when skipText is not provided", () => {
-    const { queryByText } = render(<FullScreenCoaching {...defaultProps} />);
+  it("does not render skip text when skipText is not provided", async () => {
+    const { queryByText } = await render(
+      <FullScreenCoaching {...defaultProps} />,
+    );
 
     expect(queryByText("Skip this")).toBeFalsy();
   });
 
-  it("does not render skip text when skipFunction is not provided", () => {
-    const { queryByText } = render(
+  it("does not render skip text when skipFunction is not provided", async () => {
+    const { queryByText } = await render(
       <FullScreenCoaching {...defaultProps} skipText="Skip this" />,
     );
 
     expect(queryByText("Skip this")).toBeFalsy();
   });
 
-  it("renders trainer image with accessibility label", () => {
-    const { getByLabelText } = render(<FullScreenCoaching {...defaultProps} />);
+  it("renders trainer image with accessibility label", async () => {
+    const { getByLabelText } = await render(
+      <FullScreenCoaching {...defaultProps} />,
+    );
 
     expect(getByLabelText("Coach face")).toBeTruthy();
   });
 
-  it("renders coach text in speech bubble", () => {
+  it("renders coach text in speech bubble", async () => {
     const coachingText = "Get ready for your power test!";
-    const { getByText } = render(
+    const { getByText } = await render(
       <FullScreenCoaching {...defaultProps} text={coachingText} />,
     );
 
     expect(getByText(coachingText)).toBeTruthy();
   });
 
-  it("has both goOn and skip buttons with correct text", () => {
-    const { getByText } = render(
+  it("has both goOn and skip buttons with correct text", async () => {
+    const { getByText } = await render(
       <FullScreenCoaching
         {...defaultProps}
         goOnText="Start Power Test"
@@ -99,8 +106,8 @@ describe("FullScreenCoaching", () => {
     expect(getByText("Skip for now")).toBeTruthy();
   });
 
-  it("button is accessible with correct role", () => {
-    const { getAllByRole } = render(
+  it("button is accessible with correct role", async () => {
+    const { getAllByRole } = await render(
       <FullScreenCoaching
         {...defaultProps}
         skipText="Skip"
@@ -112,21 +119,29 @@ describe("FullScreenCoaching", () => {
     expect(buttons.length).toBe(2); // goOn button + skip button
   });
 
-  it("renders trainer image from provided source", () => {
-    const { getByLabelText } = render(<FullScreenCoaching {...defaultProps} />);
+  it("renders trainer image from provided source", async () => {
+    const { getByLabelText } = await render(
+      <FullScreenCoaching {...defaultProps} />,
+    );
 
     const image = getByLabelText("Coach face");
     expect(image.props.source).toBe(defaultProps.trainerSource);
   });
 
-  it("supports responsive layout with proper flex values", () => {
-    const { root } = render(<FullScreenCoaching {...defaultProps} />);
+  it("supports responsive layout with proper flex values", async () => {
+    const { container } = await render(
+      <FullScreenCoaching {...defaultProps} />,
+    );
+    const findAllByFlex = (flex: number) =>
+      container.queryAll(
+        (node) => StyleSheet.flatten(node.props.style)?.flex === flex,
+      );
 
-    const mainContainer = root.findByProps({ flex: 1 });
+    const [mainContainer] = findAllByFlex(1);
     expect(mainContainer).toBeTruthy();
 
     // Should have content section (flex 5) and buttons section (flex 1)
-    const flexContainers = root.findAllByProps({ flex: 5 });
+    const flexContainers = findAllByFlex(5);
     expect(flexContainers.length).toBeGreaterThan(0);
   });
 });

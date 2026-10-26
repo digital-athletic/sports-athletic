@@ -36,9 +36,9 @@ function getThumbnailHostProps() {
 
 describe("SilhouetteThumbnail: crop window invariants", () => {
   for (const gender of ["MALE", "FEMALE"] as const) {
-    it(`renders a valid square crop window for every prevention tile for ${gender}`, () => {
+    it(`renders a valid square crop window for every prevention tile for ${gender}`, async () => {
       for (const config of tileConfigs) {
-        render(
+        await render(
           <SilhouetteThumbnail
             gender={gender}
             side={config.side}
@@ -63,8 +63,8 @@ describe("SilhouetteThumbnail: crop window invariants", () => {
 });
 
 describe("SilhouetteThumbnail: crop clamp", () => {
-  it("clamps to the bottom edge when the window would run past it", () => {
-    render(
+  it("clamps to the bottom edge when the window would run past it", async () => {
+    await render(
       <SilhouetteThumbnail
         gender="MALE"
         side="BACK"
@@ -79,8 +79,8 @@ describe("SilhouetteThumbnail: crop clamp", () => {
     expect(minY).toBeCloseTo(asset.minY + asset.height - asset.width);
   });
 
-  it("clamps to the top edge when the window would run past it", () => {
-    render(
+  it("clamps to the top edge when the window would run past it", async () => {
+    await render(
       <SilhouetteThumbnail
         gender="MALE"
         side="BACK"
@@ -96,11 +96,11 @@ describe("SilhouetteThumbnail: crop clamp", () => {
 });
 
 describe("SilhouetteThumbnail: golden crop value", () => {
-  it("crops the male spine window at the reviewed position", () => {
+  it("crops the male spine window at the reviewed position", async () => {
     if (!spineConfig) {
       throw new Error("Expected a spine tile in PREVENTION_TILES");
     }
-    render(
+    await render(
       <SilhouetteThumbnail
         gender="MALE"
         side={spineConfig.side}
@@ -119,8 +119,8 @@ describe("SilhouetteThumbnail: golden crop value", () => {
 
 describe("SilhouetteThumbnail: region fill partition", () => {
   for (const config of tileConfigs) {
-    it(`fills exactly the configured regions for ${config.title}`, () => {
-      render(
+    it(`fills exactly the configured regions for ${config.title}`, async () => {
+      await render(
         <SilhouetteThumbnail
           gender="MALE"
           side={config.side}
@@ -147,8 +147,8 @@ describe("SilhouetteThumbnail: region fill partition", () => {
 });
 
 describe("SilhouetteThumbnail: gender and asset switch", () => {
-  it("renders the female asset paths and viewBox width for female gender", () => {
-    render(
+  it("renders the female asset paths and viewBox width for female gender", async () => {
+    await render(
       <SilhouetteThumbnail
         gender="FEMALE"
         side="FRONT"
@@ -175,8 +175,8 @@ describe("SilhouetteThumbnail: gender and asset switch", () => {
 });
 
 describe("SilhouetteThumbnail: layout inset", () => {
-  it("insets the artwork inside the tile slot so whitespace surrounds it", () => {
-    render(
+  it("insets the artwork inside the tile slot so whitespace surrounds it", async () => {
+    await render(
       <SilhouetteThumbnail
         gender="MALE"
         side="BACK"
@@ -205,8 +205,8 @@ describe("SilhouetteThumbnail: layout inset", () => {
 });
 
 describe("SilhouetteThumbnail: accessibility surface", () => {
-  it("hides the whole subtree from assistive technology and touch", () => {
-    render(
+  it("hides the whole subtree from assistive technology and touch", async () => {
+    await render(
       <SilhouetteThumbnail
         gender="MALE"
         side="BACK"

@@ -2,27 +2,27 @@ import { fireEvent, render } from "../utils/testUtils";
 import { Loading } from "./Loading";
 
 describe("Loading", () => {
-  it("renders nothing while hidden", () => {
-    const { toJSON } = render(<Loading show={false} text="Loading" />);
+  it("renders nothing while hidden", async () => {
+    const { toJSON } = await render(<Loading show={false} text="Loading" />);
     expect(toJSON()).toBeNull();
   });
 
-  it("shows the supplied text when visible", () => {
-    const { getByText } = render(<Loading show text="Please wait" />);
+  it("shows the supplied text when visible", async () => {
+    const { getByText } = await render(<Loading show text="Please wait" />);
     expect(getByText("Please wait")).toBeTruthy();
   });
 
-  it("omits the cancel control without an onClose handler", () => {
-    const { queryByText } = render(<Loading show text="Please wait" />);
+  it("omits the cancel control without an onClose handler", async () => {
+    const { queryByText } = await render(<Loading show text="Please wait" />);
     expect(queryByText("Cancel")).toBeNull();
   });
 
-  it("invokes onClose when the cancel control is pressed", () => {
+  it("invokes onClose when the cancel control is pressed", async () => {
     const onClose = jest.fn();
-    const { getByText } = render(
+    const { getByText } = await render(
       <Loading show text="Please wait" onClose={onClose} />,
     );
-    fireEvent.press(getByText("Cancel"));
+    await fireEvent.press(getByText("Cancel"));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 });

@@ -31,8 +31,8 @@ const PERFORMED_SET: UserExerciseDataType = {
   completed: true,
 };
 
-const seedData = (): void => {
-  act(() => {
+const seedData = async (): Promise<void> => {
+  await act(() => {
     useAuthStore.setState({ auth: { userId: "u1" } });
     const workouts = useCompletedWorkoutsStore.getState();
     workouts.clearWorkoutHistory();
@@ -62,80 +62,80 @@ const seedData = (): void => {
 describe("StatisticsScreen: range selector", () => {
   beforeEach(seedData);
 
-  afterEach(() => {
-    act(() => {
+  afterEach(async () => {
+    await act(() => {
       useAuthStore.setState({ auth: null });
       useCompletedWorkoutsStore.getState().clearWorkoutHistory();
       useExerciseProgressStore.setState({ testHistory: [] });
     });
   });
 
-  it("shows the range buttons on both sub tabs", () => {
-    const { getByLabelText, getByTestId } = render(<StatisticsScreen />);
+  it("shows the range buttons on both sub tabs", async () => {
+    const { getByLabelText, getByTestId } = await render(<StatisticsScreen />);
 
     for (const scale of SCALES) {
       expect(getByLabelText(scaleLabel(scale))).toBeTruthy();
     }
 
-    fireEvent.press(getByTestId("statistics-tab-tests"));
+    await fireEvent.press(getByTestId("statistics-tab-tests"));
 
     for (const scale of SCALES) {
       expect(getByLabelText(scaleLabel(scale))).toBeTruthy();
     }
   });
 
-  it("filters the workout summary by the selected range", () => {
-    const { getByLabelText, getByTestId } = render(<StatisticsScreen />);
+  it("filters the workout summary by the selected range", async () => {
+    const { getByLabelText, getByTestId } = await render(<StatisticsScreen />);
     const summary = () => within(getByTestId("overall-summary"));
 
     expect(summary().queryByText("8")).not.toBeNull();
 
-    fireEvent.press(getByLabelText(scaleLabel("week")));
+    await fireEvent.press(getByLabelText(scaleLabel("week")));
 
     expect(summary().queryByText("5")).not.toBeNull();
     expect(summary().queryByText("8")).toBeNull();
   });
 
-  it("keeps the selected range across sub tab switches and filters strength tests", () => {
-    const { getByLabelText, getByTestId, queryByTestId } = render(
+  it("keeps the selected range across sub tab switches and filters strength tests", async () => {
+    const { getByLabelText, getByTestId, queryByTestId } = await render(
       <StatisticsScreen />,
     );
 
-    fireEvent.press(getByLabelText(scaleLabel("week")));
-    fireEvent.press(getByTestId("statistics-tab-tests"));
+    await fireEvent.press(getByLabelText(scaleLabel("week")));
+    await fireEvent.press(getByTestId("statistics-tab-tests"));
 
     expect(queryByTestId("power-test-entry-0")).not.toBeNull();
     expect(queryByTestId("power-test-entry-1")).toBeNull();
 
-    fireEvent.press(getByTestId("statistics-tab-workouts"));
+    await fireEvent.press(getByTestId("statistics-tab-workouts"));
 
     expect(
       within(getByTestId("overall-summary")).queryByText("5"),
     ).not.toBeNull();
 
-    fireEvent.press(getByLabelText(scaleLabel("total")));
-    fireEvent.press(getByTestId("statistics-tab-tests"));
+    await fireEvent.press(getByLabelText(scaleLabel("total")));
+    await fireEvent.press(getByTestId("statistics-tab-tests"));
 
     expect(queryByTestId("power-test-entry-1")).not.toBeNull();
   });
 });
 
 describe("StatisticsScreen: export button", () => {
-  afterEach(() => {
-    act(() => {
+  afterEach(async () => {
+    await act(() => {
       useAuthStore.setState({ auth: null });
       useCompletedWorkoutsStore.getState().clearWorkoutHistory();
       useExerciseProgressStore.setState({ testHistory: [] });
     });
   });
 
-  it("is present and disabled with empty stores", () => {
-    act(() => {
+  it("is present and disabled with empty stores", async () => {
+    await act(() => {
       useAuthStore.setState({ auth: { userId: "u1" } });
       useCompletedWorkoutsStore.getState().clearWorkoutHistory();
       useExerciseProgressStore.setState({ testHistory: [] });
     });
-    const { getByTestId } = render(<StatisticsScreen />);
+    const { getByTestId } = await render(<StatisticsScreen />);
 
     const button = getByTestId("statistics-export-button");
     expect(button.props.accessibilityState).toMatchObject({ disabled: true });
@@ -144,38 +144,38 @@ describe("StatisticsScreen: export button", () => {
     );
   });
 
-  it("is enabled when the workouts range holds rows", () => {
-    seedData();
-    const { getByTestId } = render(<StatisticsScreen />);
+  it("is enabled when the workouts range holds rows", async () => {
+    await seedData();
+    const { getByTestId } = await render(<StatisticsScreen />);
 
     expect(
       getByTestId("statistics-export-button").props.accessibilityState,
     ).toMatchObject({ disabled: false });
   });
 
-  it("follows the active sub tab and the range", () => {
-    seedData();
-    act(() => {
+  it("follows the active sub tab and the range", async () => {
+    await seedData();
+    await act(() => {
       useCompletedWorkoutsStore.getState().clearWorkoutHistory();
     });
-    const { getByTestId, getByLabelText } = render(<StatisticsScreen />);
+    const { getByTestId, getByLabelText } = await render(<StatisticsScreen />);
 
     expect(
       getByTestId("statistics-export-button").props.accessibilityState,
     ).toMatchObject({ disabled: true });
 
-    fireEvent.press(getByTestId("statistics-tab-tests"));
+    await fireEvent.press(getByTestId("statistics-tab-tests"));
 
     expect(
       getByTestId("statistics-export-button").props.accessibilityState,
     ).toMatchObject({ disabled: false });
 
-    act(() => {
+    await act(() => {
       useExerciseProgressStore.setState({
         testHistory: [{ ...DEFAULT_MAX_VALUES, testAt: Date.now() - 60 * DAY }],
       });
     });
-    fireEvent.press(getByLabelText(scaleLabel("week")));
+    await fireEvent.press(getByLabelText(scaleLabel("week")));
 
     expect(
       getByTestId("statistics-export-button").props.accessibilityState,

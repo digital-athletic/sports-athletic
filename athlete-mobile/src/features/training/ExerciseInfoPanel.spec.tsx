@@ -15,15 +15,15 @@ const defaultProps = {
 };
 
 describe("ExerciseInfoPanel: rendering", () => {
-  it("renders nothing when exercise is undefined", () => {
-    const { toJSON } = render(
+  it("renders nothing when exercise is undefined", async () => {
+    const { toJSON } = await render(
       <ExerciseInfoPanel {...defaultProps} exercise={undefined} />,
     );
     expect(toJSON()).toBeNull();
   });
 
-  it("renders the sets block when the exercise has a set tuple", () => {
-    render(
+  it("renders the sets block when the exercise has a set tuple", async () => {
+    await render(
       <ExerciseInfoPanel
         {...defaultProps}
         exercise={createExercise({ set: [2, 4] })}
@@ -33,13 +33,15 @@ describe("ExerciseInfoPanel: rendering", () => {
     expect(screen.getByText("Sets")).toBeTruthy();
   });
 
-  it("does not render the sets block when the exercise has no set tuple", () => {
-    render(<ExerciseInfoPanel {...defaultProps} exercise={createExercise()} />);
+  it("does not render the sets block when the exercise has no set tuple", async () => {
+    await render(
+      <ExerciseInfoPanel {...defaultProps} exercise={createExercise()} />,
+    );
     expect(screen.queryByText(/of/)).toBeNull();
   });
 
-  it("renders the formatted duration when duration is a number", () => {
-    render(
+  it("renders the formatted duration when duration is a number", async () => {
+    await render(
       <ExerciseInfoPanel
         {...defaultProps}
         exercise={createExercise({ duration: 95 })}
@@ -49,8 +51,8 @@ describe("ExerciseInfoPanel: rendering", () => {
     expect(screen.getByText("35 sec")).toBeTruthy();
   });
 
-  it("renders seconds only when the duration is under a minute", () => {
-    render(
+  it("renders seconds only when the duration is under a minute", async () => {
+    await render(
       <ExerciseInfoPanel
         {...defaultProps}
         exercise={createExercise({ duration: 45 })}
@@ -60,8 +62,8 @@ describe("ExerciseInfoPanel: rendering", () => {
     expect(screen.getByText("sec")).toBeTruthy();
   });
 
-  it("renders minutes only when the duration is an exact number of minutes", () => {
-    render(
+  it("renders minutes only when the duration is an exact number of minutes", async () => {
+    await render(
       <ExerciseInfoPanel
         {...defaultProps}
         exercise={createExercise({ duration: 120 })}
@@ -71,8 +73,8 @@ describe("ExerciseInfoPanel: rendering", () => {
     expect(screen.getByText("min")).toBeTruthy();
   });
 
-  it("renders max reps label when repetition is -1", () => {
-    render(
+  it("renders max reps label when repetition is -1", async () => {
+    await render(
       <ExerciseInfoPanel
         {...defaultProps}
         exercise={createExercise({ repetition: -1 })}
@@ -81,8 +83,8 @@ describe("ExerciseInfoPanel: rendering", () => {
     expect(screen.getByText("Max")).toBeTruthy();
   });
 
-  it("renders the repetition count when repetition is a positive number", () => {
-    render(
+  it("renders the repetition count when repetition is a positive number", async () => {
+    await render(
       <ExerciseInfoPanel
         {...defaultProps}
         exercise={createExercise({ repetition: 12 })}
@@ -92,8 +94,8 @@ describe("ExerciseInfoPanel: rendering", () => {
     expect(screen.getByText("Repetitions")).toBeTruthy();
   });
 
-  it("suppresses the reps display for a pause exercise", () => {
-    render(
+  it("suppresses the reps display for a pause exercise", async () => {
+    await render(
       <ExerciseInfoPanel
         {...defaultProps}
         exercise={createExercise({ repetition: 12 })}
@@ -104,8 +106,8 @@ describe("ExerciseInfoPanel: rendering", () => {
     expect(screen.queryByText("Repetitions")).toBeNull();
   });
 
-  it("renders the heart rate display for a cardio exercise", () => {
-    render(
+  it("renders the heart rate display for a cardio exercise", async () => {
+    await render(
       <ExerciseInfoPanel
         {...defaultProps}
         exercise={createExercise()}
@@ -116,8 +118,8 @@ describe("ExerciseInfoPanel: rendering", () => {
     expect(screen.getByText("Heart rate interval")).toBeTruthy();
   });
 
-  it("renders the weight or height display for a non cardio exercise", () => {
-    render(
+  it("renders the weight or height display for a non cardio exercise", async () => {
+    await render(
       <ExerciseInfoPanel
         {...defaultProps}
         exercise={createExercise({ height: 40 })}

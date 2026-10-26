@@ -24,18 +24,18 @@ describe("useTrainingAlerts: maybeShowPainAlert", () => {
     useUserProfileStore.setState({ warnings: { painAlertSeen: false } });
   });
 
-  const pressOk = (callIndex: number) => {
+  const pressOk = async (callIndex: number) => {
     const [, , buttons] = (Alert.alert as jest.Mock).mock.calls[callIndex];
-    act(() => {
+    await act(() => {
       buttons[0].onPress();
     });
   };
 
-  it("shows the pain alert and continues only on OK", () => {
+  it("shows the pain alert and continues only on OK", async () => {
     const onContinue = jest.fn();
-    const { result } = renderHook(() => useTrainingAlerts());
+    const { result } = await renderHook(() => useTrainingAlerts());
 
-    act(() => {
+    await act(() => {
       result.current.maybeShowPainAlert(
         "TEST_WORKOUT",
         [],
@@ -51,15 +51,15 @@ describe("useTrainingAlerts: maybeShowPainAlert", () => {
     );
     expect(onContinue).not.toHaveBeenCalled();
 
-    pressOk(0);
+    await pressOk(0);
     expect(onContinue).toHaveBeenCalledTimes(1);
   });
 
-  it("continues without an alert when the training does not qualify", () => {
+  it("continues without an alert when the training does not qualify", async () => {
     const onContinue = jest.fn();
-    const { result } = renderHook(() => useTrainingAlerts());
+    const { result } = await renderHook(() => useTrainingAlerts());
 
-    act(() => {
+    await act(() => {
       result.current.maybeShowPainAlert("BAS", [], kneePain, onContinue);
     });
 
@@ -67,10 +67,10 @@ describe("useTrainingAlerts: maybeShowPainAlert", () => {
     expect(onContinue).toHaveBeenCalledTimes(1);
   });
 
-  it("marks the pain alert as seen on OK", () => {
-    const { result } = renderHook(() => useTrainingAlerts());
+  it("marks the pain alert as seen on OK", async () => {
+    const { result } = await renderHook(() => useTrainingAlerts());
 
-    act(() => {
+    await act(() => {
       result.current.maybeShowPainAlert(
         "TEST_WORKOUT",
         [],
@@ -78,16 +78,16 @@ describe("useTrainingAlerts: maybeShowPainAlert", () => {
         jest.fn(),
       );
     });
-    pressOk(0);
+    await pressOk(0);
 
     expect(useUserProfileStore.getState().warnings.painAlertSeen).toBe(true);
   });
 
-  it("skips the alert on the next training once acknowledged", () => {
+  it("skips the alert on the next training once acknowledged", async () => {
     const onContinue = jest.fn();
-    const { result } = renderHook(() => useTrainingAlerts());
+    const { result } = await renderHook(() => useTrainingAlerts());
 
-    act(() => {
+    await act(() => {
       result.current.maybeShowPainAlert(
         "TEST_WORKOUT",
         [],
@@ -95,8 +95,8 @@ describe("useTrainingAlerts: maybeShowPainAlert", () => {
         jest.fn(),
       );
     });
-    pressOk(0);
-    act(() => {
+    await pressOk(0);
+    await act(() => {
       result.current.maybeShowPainAlert(
         "TEST_WORKOUT",
         [],
@@ -109,10 +109,10 @@ describe("useTrainingAlerts: maybeShowPainAlert", () => {
     expect(onContinue).toHaveBeenCalledTimes(1);
   });
 
-  it("shows the alert again once the seen flag was reset", () => {
-    const { result } = renderHook(() => useTrainingAlerts());
+  it("shows the alert again once the seen flag was reset", async () => {
+    const { result } = await renderHook(() => useTrainingAlerts());
 
-    act(() => {
+    await act(() => {
       result.current.maybeShowPainAlert(
         "TEST_WORKOUT",
         [],
@@ -120,9 +120,9 @@ describe("useTrainingAlerts: maybeShowPainAlert", () => {
         jest.fn(),
       );
     });
-    pressOk(0);
+    await pressOk(0);
     useUserProfileStore.getState().setWarningSeen("painAlertSeen", false);
-    act(() => {
+    await act(() => {
       result.current.maybeShowPainAlert(
         "TEST_WORKOUT",
         [],
@@ -136,10 +136,10 @@ describe("useTrainingAlerts: maybeShowPainAlert", () => {
 });
 
 describe("useTrainingAlerts: maybeShowBarbellAlert", () => {
-  it("shows the barbell alert for a TEST_WORKOUT whose next exercise carries barbell equipment", () => {
-    const { result } = renderHook(() => useTrainingAlerts());
+  it("shows the barbell alert for a TEST_WORKOUT whose next exercise carries barbell equipment", async () => {
+    const { result } = await renderHook(() => useTrainingAlerts());
 
-    act(() => {
+    await act(() => {
       result.current.maybeShowBarbellAlert(
         { tags: ["EQ_BARBELL"] },
         "TEST_WORKOUT",
@@ -153,20 +153,20 @@ describe("useTrainingAlerts: maybeShowBarbellAlert", () => {
     );
   });
 
-  it("does not show the barbell alert for a non TEST_WORKOUT training type", () => {
-    const { result } = renderHook(() => useTrainingAlerts());
+  it("does not show the barbell alert for a non TEST_WORKOUT training type", async () => {
+    const { result } = await renderHook(() => useTrainingAlerts());
 
-    act(() => {
+    await act(() => {
       result.current.maybeShowBarbellAlert({ tags: ["EQ_BARBELL"] }, "PLAN");
     });
 
     expect(Alert.alert).not.toHaveBeenCalled();
   });
 
-  it("does not show the barbell alert when the next exercise has no barbell equipment", () => {
-    const { result } = renderHook(() => useTrainingAlerts());
+  it("does not show the barbell alert when the next exercise has no barbell equipment", async () => {
+    const { result } = await renderHook(() => useTrainingAlerts());
 
-    act(() => {
+    await act(() => {
       result.current.maybeShowBarbellAlert(
         { tags: ["EQ_DUMBBELL"] },
         "TEST_WORKOUT",
@@ -176,10 +176,10 @@ describe("useTrainingAlerts: maybeShowBarbellAlert", () => {
     expect(Alert.alert).not.toHaveBeenCalled();
   });
 
-  it("one shot: suppresses the barbell alert after acknowledging it once", () => {
-    const { result } = renderHook(() => useTrainingAlerts());
+  it("one shot: suppresses the barbell alert after acknowledging it once", async () => {
+    const { result } = await renderHook(() => useTrainingAlerts());
 
-    act(() => {
+    await act(() => {
       result.current.maybeShowBarbellAlert(
         { tags: ["EQ_BARBELL"] },
         "TEST_WORKOUT",
@@ -188,11 +188,11 @@ describe("useTrainingAlerts: maybeShowBarbellAlert", () => {
     expect(Alert.alert).toHaveBeenCalledTimes(1);
 
     const [, , buttons] = (Alert.alert as jest.Mock).mock.calls[0];
-    act(() => {
+    await act(() => {
       buttons[0].onPress();
     });
 
-    act(() => {
+    await act(() => {
       result.current.maybeShowBarbellAlert(
         { tags: ["EQ_BARBELL"] },
         "TEST_WORKOUT",

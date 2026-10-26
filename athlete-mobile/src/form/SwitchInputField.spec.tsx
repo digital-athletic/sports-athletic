@@ -12,62 +12,64 @@ describe("<SwitchInputField />", () => {
     jest.clearAllMocks();
   });
 
-  it("renders correctly", () => {
-    const { toJSON } = render(<SwitchInputField {...defaultProps} />);
+  it("renders correctly", async () => {
+    const { toJSON } = await render(<SwitchInputField {...defaultProps} />);
     expect(toJSON()).toMatchSnapshot();
   });
 
-  it("displays the description text", () => {
-    const { getByText } = render(<SwitchInputField {...defaultProps} />);
+  it("displays the description text", async () => {
+    const { getByText } = await render(<SwitchInputField {...defaultProps} />);
     expect(getByText("Enable notifications")).toBeTruthy();
   });
 
-  it("renders switch with correct initial value", () => {
-    const { getByLabelText } = render(
+  it("renders switch with correct initial value", async () => {
+    const { getByLabelText } = await render(
       <SwitchInputField {...defaultProps} value={true} />,
     );
     const switchComponent = getByLabelText("Enable notifications");
     expect(switchComponent.props.value).toBe(true);
   });
 
-  it("calls onChange when switch is toggled", () => {
+  it("calls onChange when switch is toggled", async () => {
     const onChange = jest.fn();
-    const { getByLabelText } = render(
+    const { getByLabelText } = await render(
       <SwitchInputField {...defaultProps} onChange={onChange} />,
     );
     const switchComponent = getByLabelText("Enable notifications");
 
-    fireEvent(switchComponent, "valueChange", true);
+    await fireEvent(switchComponent, "valueChange", true);
 
     expect(onChange).toHaveBeenCalledWith(true);
     expect(onChange).toHaveBeenCalledTimes(1);
   });
 
-  it("toggles between true and false", () => {
+  it("toggles between true and false", async () => {
     const onChange = jest.fn();
-    const { getByLabelText } = render(
+    const { getByLabelText } = await render(
       <SwitchInputField {...defaultProps} onChange={onChange} />,
     );
     const switchComponent = getByLabelText("Enable notifications");
 
-    fireEvent(switchComponent, "valueChange", true);
+    await fireEvent(switchComponent, "valueChange", true);
     expect(onChange).toHaveBeenCalledWith(true);
 
-    fireEvent(switchComponent, "valueChange", false);
+    await fireEvent(switchComponent, "valueChange", false);
     expect(onChange).toHaveBeenCalledWith(false);
 
     expect(onChange).toHaveBeenCalledTimes(2);
   });
 
-  it("applies normal size by default", () => {
-    const { getByLabelText } = render(<SwitchInputField {...defaultProps} />);
+  it("applies normal size by default", async () => {
+    const { getByLabelText } = await render(
+      <SwitchInputField {...defaultProps} />,
+    );
     const switchComponent = getByLabelText("Enable notifications");
     // Style includes alignSelf for positioning
     expect(switchComponent.props.style).toBeDefined();
   });
 
-  it("applies small size styling when size is small", () => {
-    const { getByLabelText } = render(
+  it("applies small size styling when size is small", async () => {
+    const { getByLabelText } = await render(
       <SwitchInputField {...defaultProps} size="small" />,
     );
     const switchComponent = getByLabelText("Enable notifications");
@@ -80,8 +82,8 @@ describe("<SwitchInputField />", () => {
     expect(hasTransform).toBe(true);
   });
 
-  it("uses custom color when provided", () => {
-    const { getByLabelText } = render(
+  it("uses custom color when provided", async () => {
+    const { getByLabelText } = await render(
       <SwitchInputField {...defaultProps} color="#FF0000" />,
     );
     const switchComponent = getByLabelText("Enable notifications");
@@ -89,8 +91,8 @@ describe("<SwitchInputField />", () => {
     expect(switchComponent.props.onTintColor).toBe("#FF0000");
   });
 
-  it("uses custom thumbColor when provided", () => {
-    const { getByLabelText } = render(
+  it("uses custom thumbColor when provided", async () => {
+    const { getByLabelText } = await render(
       <SwitchInputField {...defaultProps} thumbColor="#00FF00" />,
     );
     const switchComponent = getByLabelText("Enable notifications");
@@ -98,10 +100,10 @@ describe("<SwitchInputField />", () => {
     expect(switchComponent.props.thumbTintColor).toBe("#00FF00");
   });
 
-  it("renders with long description text", () => {
+  it("renders with long description text", async () => {
     const longText =
       "This is a very long description text that explains what this switch does in detail";
-    const { getByText } = render(
+    const { getByText } = await render(
       <SwitchInputField {...defaultProps} descriptionText={longText} />,
     );
     expect(getByText(longText)).toBeTruthy();

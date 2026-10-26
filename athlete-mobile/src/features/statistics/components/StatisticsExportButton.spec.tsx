@@ -14,13 +14,15 @@ describe("StatisticsExportButton: states", () => {
     jest.clearAllMocks();
   });
 
-  it("passes the kind and range to the export hook", () => {
+  it("passes the kind and range to the export hook", async () => {
     mockUseStatisticsExport.mockReturnValue({
       canExport: true,
       exportCsv: mockExportCsv,
     });
 
-    render(<StatisticsExportButton kind="strength-tests" scale="month" />);
+    await render(
+      <StatisticsExportButton kind="strength-tests" scale="month" />,
+    );
 
     expect(mockUseStatisticsExport).toHaveBeenCalledWith({
       kind: "strength-tests",
@@ -28,12 +30,12 @@ describe("StatisticsExportButton: states", () => {
     });
   });
 
-  it("exposes an accessible label and exports on press", () => {
+  it("exposes an accessible label and exports on press", async () => {
     mockUseStatisticsExport.mockReturnValue({
       canExport: true,
       exportCsv: mockExportCsv,
     });
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText } = await render(
       <StatisticsExportButton kind="workouts" scale="total" />,
     );
 
@@ -44,24 +46,24 @@ describe("StatisticsExportButton: states", () => {
       i18n.t("statistics.export.label"),
     );
 
-    fireEvent.press(button);
+    await fireEvent.press(button);
 
     expect(mockExportCsv).toHaveBeenCalledTimes(1);
   });
 
-  it("is disabled and ignores presses when nothing can be exported", () => {
+  it("is disabled and ignores presses when nothing can be exported", async () => {
     mockUseStatisticsExport.mockReturnValue({
       canExport: false,
       exportCsv: mockExportCsv,
     });
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <StatisticsExportButton kind="workouts" scale="total" />,
     );
 
     const button = getByTestId("statistics-export-button");
     expect(button.props.accessibilityState).toMatchObject({ disabled: true });
 
-    fireEvent.press(button);
+    await fireEvent.press(button);
 
     expect(mockExportCsv).not.toHaveBeenCalled();
   });

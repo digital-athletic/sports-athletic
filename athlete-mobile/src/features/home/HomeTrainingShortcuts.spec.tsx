@@ -18,8 +18,8 @@ beforeEach(() => {
 });
 
 describe("HomeTrainingShortcuts: rendering", () => {
-  it("renders the focus and prevention button with title and subtitle", () => {
-    const { getByRole, getByText } = render(
+  it("renders the focus and prevention button with title and subtitle", async () => {
+    const { getByRole, getByText } = await render(
       <HomeTrainingShortcuts isLandscape={false} />,
     );
 
@@ -30,8 +30,8 @@ describe("HomeTrainingShortcuts: rendering", () => {
     expect(getByRole("button", { name: FOCUS_LABEL })).toBeTruthy();
   });
 
-  it("renders the additional trainings button with title and subtitle", () => {
-    const { getByRole, getByText } = render(
+  it("renders the additional trainings button with title and subtitle", async () => {
+    const { getByRole, getByText } = await render(
       <HomeTrainingShortcuts isLandscape={false} />,
     );
 
@@ -44,19 +44,23 @@ describe("HomeTrainingShortcuts: rendering", () => {
 });
 
 describe("HomeTrainingShortcuts: navigation", () => {
-  it("pushes /focus-trainings when the focus and prevention button is pressed", () => {
-    const { getByRole } = render(<HomeTrainingShortcuts isLandscape={false} />);
+  it("pushes /focus-trainings when the focus and prevention button is pressed", async () => {
+    const { getByRole } = await render(
+      <HomeTrainingShortcuts isLandscape={false} />,
+    );
 
-    fireEvent.press(getByRole("button", { name: FOCUS_LABEL }));
+    await fireEvent.press(getByRole("button", { name: FOCUS_LABEL }));
 
     expect(mockPush).toHaveBeenCalledTimes(1);
     expect(mockPush).toHaveBeenCalledWith("/focus-trainings");
   });
 
-  it("pushes /additional-trainings when the additional trainings button is pressed", () => {
-    const { getByRole } = render(<HomeTrainingShortcuts isLandscape={false} />);
+  it("pushes /additional-trainings when the additional trainings button is pressed", async () => {
+    const { getByRole } = await render(
+      <HomeTrainingShortcuts isLandscape={false} />,
+    );
 
-    fireEvent.press(getByRole("button", { name: ADDITIONAL_LABEL }));
+    await fireEvent.press(getByRole("button", { name: ADDITIONAL_LABEL }));
 
     expect(mockPush).toHaveBeenCalledTimes(1);
     expect(mockPush).toHaveBeenCalledWith("/additional-trainings");

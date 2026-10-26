@@ -15,33 +15,33 @@ const places = {
 const noDays = { HOME: [], STUDIO: [], HALL: [], OUTSIDE: [] };
 
 describe("PlaceSelection: place rows", () => {
-  it("renders one button per place", () => {
-    const { getAllByRole } = render(
+  it("renders one button per place", async () => {
+    const { getAllByRole } = await render(
       <PlaceSelection selectPlace={jest.fn()} places={places} />,
     );
     expect(getAllByRole("button")).toHaveLength(4);
   });
 
-  it("counts only active equipment in the row label", () => {
-    const { getByLabelText } = render(
+  it("counts only active equipment in the row label", async () => {
+    const { getByLabelText } = await render(
       <PlaceSelection selectPlace={jest.fn()} places={places} />,
     );
     const label = `${i18n.t("training.place.HOME")}, ${i18n.t("equipment.xPieces", { count: 1 })}`;
     expect(getByLabelText(label)).toBeTruthy();
   });
 
-  it("selects the pressed place", () => {
+  it("selects the pressed place", async () => {
     const selectPlace = jest.fn();
-    const { getByLabelText } = render(
+    const { getByLabelText } = await render(
       <PlaceSelection selectPlace={selectPlace} places={places} />,
     );
     const label = `${i18n.t("training.place.HALL")}, ${i18n.t("equipment.xPieces", { count: 0 })}`;
-    fireEvent.press(getByLabelText(label));
+    await fireEvent.press(getByLabelText(label));
     expect(selectPlace).toHaveBeenCalledWith("HALL");
   });
 
-  it("shows and announces the training days scheduled at a place", () => {
-    const { getByText, getByLabelText } = render(
+  it("shows and announces the training days scheduled at a place", async () => {
+    const { getByText, getByLabelText } = await render(
       <PlaceSelection
         selectPlace={jest.fn()}
         places={places}

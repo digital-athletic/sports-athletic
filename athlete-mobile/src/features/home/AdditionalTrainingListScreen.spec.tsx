@@ -37,7 +37,7 @@ describe("AdditionalTrainingListScreen: entries", () => {
   it("shows the own trainings entry first", async () => {
     mockGetUserTeams.mockResolvedValue([generateTeam({ name: "Team Alpha" })]);
 
-    const { findByText, getAllByRole } = render(
+    const { findByText, getAllByRole } = await render(
       <AdditionalTrainingListScreen />,
     );
     await findByText("Team Alpha");
@@ -53,7 +53,7 @@ describe("AdditionalTrainingListScreen: entries", () => {
       generateTeam({ id: "team-2", name: "Team Beta" }),
     ]);
 
-    const { findByText, getAllByRole } = render(
+    const { findByText, getAllByRole } = await render(
       <AdditionalTrainingListScreen />,
     );
     await findByText("Team Beta");
@@ -65,7 +65,7 @@ describe("AdditionalTrainingListScreen: entries", () => {
   });
 
   it("shows only the own trainings entry when getUserTeams resolves an empty list", async () => {
-    const { findByText, getAllByRole } = render(
+    const { findByText, getAllByRole } = await render(
       <AdditionalTrainingListScreen />,
     );
     await findByText(OWN_TRAININGS);
@@ -77,7 +77,7 @@ describe("AdditionalTrainingListScreen: entries", () => {
     const error = new Error("network down");
     mockGetUserTeams.mockRejectedValue(error);
 
-    render(<AdditionalTrainingListScreen />);
+    await render(<AdditionalTrainingListScreen />);
 
     await waitFor(() => {
       expect(Logger.logError).toHaveBeenCalledWith(error);
@@ -87,7 +87,7 @@ describe("AdditionalTrainingListScreen: entries", () => {
   it("shows only the own trainings entry when getUserTeams rejects", async () => {
     mockGetUserTeams.mockRejectedValue(new Error("network down"));
 
-    const { findByText, getAllByRole } = render(
+    const { findByText, getAllByRole } = await render(
       <AdditionalTrainingListScreen />,
     );
     await waitFor(() => {
@@ -100,10 +100,10 @@ describe("AdditionalTrainingListScreen: entries", () => {
 });
 
 describe("AdditionalTrainingListScreen: loading", () => {
-  it("shows the own trainings entry and a loading indicator while teams load", () => {
+  it("shows the own trainings entry and a loading indicator while teams load", async () => {
     mockGetUserTeams.mockReturnValue(new Promise(() => {}));
 
-    const { getByText, getByLabelText } = render(
+    const { getByText, getByLabelText } = await render(
       <AdditionalTrainingListScreen />,
     );
 
@@ -112,7 +112,7 @@ describe("AdditionalTrainingListScreen: loading", () => {
   });
 
   it("hides the loading indicator after the teams loaded", async () => {
-    const { findByText, queryByLabelText } = render(
+    const { findByText, queryByLabelText } = await render(
       <AdditionalTrainingListScreen />,
     );
     await findByText(OWN_TRAININGS);
@@ -125,9 +125,9 @@ describe("AdditionalTrainingListScreen: loading", () => {
 
 describe("AdditionalTrainingListScreen: navigation", () => {
   it("pushes the workouts screen with the own trainings title when the own entry is pressed", async () => {
-    const { findByText } = render(<AdditionalTrainingListScreen />);
+    const { findByText } = await render(<AdditionalTrainingListScreen />);
 
-    fireEvent.press(await findByText(OWN_TRAININGS));
+    await fireEvent.press(await findByText(OWN_TRAININGS));
 
     expect(mockPush).toHaveBeenCalledTimes(1);
     expect(mockPush).toHaveBeenCalledWith({
@@ -139,9 +139,9 @@ describe("AdditionalTrainingListScreen: navigation", () => {
   it("pushes the workouts screen with the team name when a team entry is pressed", async () => {
     mockGetUserTeams.mockResolvedValue([generateTeam({ name: "Team Alpha" })]);
 
-    const { findByText } = render(<AdditionalTrainingListScreen />);
+    const { findByText } = await render(<AdditionalTrainingListScreen />);
 
-    fireEvent.press(await findByText("Team Alpha"));
+    await fireEvent.press(await findByText("Team Alpha"));
 
     expect(mockPush).toHaveBeenCalledTimes(1);
     expect(mockPush).toHaveBeenCalledWith({

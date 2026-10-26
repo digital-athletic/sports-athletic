@@ -1,10 +1,4 @@
-import {
-  act,
-  fireEvent,
-  render,
-  renderAsync,
-  waitFor,
-} from "@testing-library/react-native";
+import { act, fireEvent, render, waitFor } from "@testing-library/react-native";
 import { Alert } from "@/common/Alert";
 import JoinTeamScreen from "./JoinTeamScreen";
 
@@ -108,7 +102,7 @@ describe("JoinTeamScreen: getUserTeams on mount", () => {
     // Never resolves during this test, keeps loading state
     mockGetUserTeams.mockReturnValue(new Promise(() => {}));
 
-    const { getByTestId } = render(<JoinTeamScreen />);
+    const { getByTestId } = await render(<JoinTeamScreen />);
 
     expect(getByTestId("teams-loading-indicator")).toBeTruthy();
   });
@@ -116,7 +110,7 @@ describe("JoinTeamScreen: getUserTeams on mount", () => {
   it("shows noTeams key when getUserTeams returns empty array", async () => {
     mockGetUserTeams.mockResolvedValue([]);
 
-    const { findByText } = await renderAsync(<JoinTeamScreen />);
+    const { findByText } = await render(<JoinTeamScreen />);
 
     expect(await findByText("more.joinTeam.noTeams")).toBeTruthy();
   });
@@ -127,7 +121,7 @@ describe("JoinTeamScreen: getUserTeams on mount", () => {
       makeTeam({ id: "team-2", name: "Team Beta", ownerId: "user-123" }),
     ]);
 
-    const { findByText } = await renderAsync(<JoinTeamScreen />);
+    const { findByText } = await render(<JoinTeamScreen />);
 
     expect(await findByText("Team Alpha")).toBeTruthy();
     expect(await findByText("Team Beta")).toBeTruthy();
@@ -138,7 +132,7 @@ describe("JoinTeamScreen: getUserTeams on mount", () => {
       makeTeam({ id: "team-1", ownerId: "other-user" }),
     ]);
 
-    const { findByText } = await renderAsync(<JoinTeamScreen />);
+    const { findByText } = await render(<JoinTeamScreen />);
 
     expect(await findByText("more.joinTeam.leave")).toBeTruthy();
   });
@@ -148,7 +142,7 @@ describe("JoinTeamScreen: getUserTeams on mount", () => {
       makeTeam({ id: "team-1", ownerId: "user-123" }),
     ]);
 
-    const { queryByText, findByText } = await renderAsync(<JoinTeamScreen />);
+    const { queryByText, findByText } = await render(<JoinTeamScreen />);
 
     await findByText(makeTeam({ ownerId: "user-123" }).name);
 
@@ -162,10 +156,10 @@ describe("JoinTeamScreen: Leave flow", () => {
       makeTeam({ id: "team-1", ownerId: "other-user" }),
     ]);
 
-    const { findByText } = await renderAsync(<JoinTeamScreen />);
+    const { findByText } = await render(<JoinTeamScreen />);
     const leaveButton = await findByText("more.joinTeam.leave");
 
-    fireEvent.press(leaveButton);
+    await fireEvent.press(leaveButton);
 
     expect(Alert.alert).toHaveBeenCalled();
   });
@@ -176,10 +170,10 @@ describe("JoinTeamScreen: Leave flow", () => {
     ]);
     mockLeaveTeam.mockResolvedValue(undefined);
 
-    const { findByText } = await renderAsync(<JoinTeamScreen />);
+    const { findByText } = await render(<JoinTeamScreen />);
     const leaveButton = await findByText("more.joinTeam.leave");
 
-    fireEvent.press(leaveButton);
+    await fireEvent.press(leaveButton);
 
     const alertCall = (Alert.alert as jest.Mock).mock.calls[0];
     const buttons: { onPress?: () => void }[] = alertCall[2];
@@ -198,10 +192,10 @@ describe("JoinTeamScreen: Leave flow", () => {
     ]);
     mockLeaveTeam.mockResolvedValue(undefined);
 
-    const { findByText, queryByText } = await renderAsync(<JoinTeamScreen />);
+    const { findByText, queryByText } = await render(<JoinTeamScreen />);
     const leaveButton = await findByText("more.joinTeam.leave");
 
-    fireEvent.press(leaveButton);
+    await fireEvent.press(leaveButton);
 
     const alertCall = (Alert.alert as jest.Mock).mock.calls[0];
     const buttons: { onPress?: () => void }[] = alertCall[2];
@@ -222,10 +216,10 @@ describe("JoinTeamScreen: Leave flow", () => {
     ]);
     mockLeaveTeam.mockRejectedValue(new Error("more.joinTeam.errorLeave"));
 
-    const { findByText } = await renderAsync(<JoinTeamScreen />);
+    const { findByText } = await render(<JoinTeamScreen />);
     const leaveButton = await findByText("more.joinTeam.leave");
 
-    fireEvent.press(leaveButton);
+    await fireEvent.press(leaveButton);
 
     const alertCall = (Alert.alert as jest.Mock).mock.calls[0];
     const buttons: { onPress?: () => void }[] = alertCall[2];
@@ -245,10 +239,10 @@ describe("JoinTeamScreen: Leave flow", () => {
     // Never resolves, keeps in-flight state
     mockLeaveTeam.mockReturnValue(new Promise(() => {}));
 
-    const { findByText } = await renderAsync(<JoinTeamScreen />);
+    const { findByText } = await render(<JoinTeamScreen />);
     const leaveButton = await findByText("more.joinTeam.leave");
 
-    fireEvent.press(leaveButton);
+    await fireEvent.press(leaveButton);
 
     const alertCall = (Alert.alert as jest.Mock).mock.calls[0];
     const buttons: { onPress?: () => void }[] = alertCall[2];
@@ -259,45 +253,37 @@ describe("JoinTeamScreen: Leave flow", () => {
     });
 
     await waitFor(() => {
-      expect(
-        leaveButton.parent?.parent?.props.accessibilityState?.disabled,
-      ).toBe(true);
+      expect(leaveButton.parent?.props.accessibilityState?.disabled).toBe(true);
     });
   });
 });
 
 describe("JoinTeamScreen: Join form input validation", () => {
   it("submit button is disabled when code is empty", async () => {
-    const { findByText } = await renderAsync(<JoinTeamScreen />);
+    const { findByText } = await render(<JoinTeamScreen />);
 
     const submitButton = await findByText("more.joinTeam.submit");
-    expect(
-      submitButton.parent?.parent?.props.accessibilityState?.disabled,
-    ).toBe(true);
+    expect(submitButton.parent?.props.accessibilityState?.disabled).toBe(true);
   });
 
   it("submit button is disabled when code has 5 characters", async () => {
-    const { getByTestId, findByText } = await renderAsync(<JoinTeamScreen />);
+    const { getByTestId, findByText } = await render(<JoinTeamScreen />);
 
     const input = getByTestId("invite-code-input");
-    fireEvent.changeText(input, "ABCDE");
+    await fireEvent.changeText(input, "ABCDE");
 
     const submitButton = await findByText("more.joinTeam.submit");
-    expect(
-      submitButton.parent?.parent?.props.accessibilityState?.disabled,
-    ).toBe(true);
+    expect(submitButton.parent?.props.accessibilityState?.disabled).toBe(true);
   });
 
   it("submit button is enabled when code has exactly 6 characters", async () => {
-    const { getByTestId, findByText } = await renderAsync(<JoinTeamScreen />);
+    const { getByTestId, findByText } = await render(<JoinTeamScreen />);
 
     const input = getByTestId("invite-code-input");
-    fireEvent.changeText(input, "ABCDEF");
+    await fireEvent.changeText(input, "ABCDEF");
 
     const submitButton = await findByText("more.joinTeam.submit");
-    expect(
-      submitButton.parent?.parent?.props.accessibilityState?.disabled,
-    ).toBe(false);
+    expect(submitButton.parent?.props.accessibilityState?.disabled).toBe(false);
   });
 });
 
@@ -309,12 +295,12 @@ describe("JoinTeamScreen: Join form submission", () => {
     });
     mockGetUserTeams.mockResolvedValue([]);
 
-    const { getByTestId, findByText } = await renderAsync(<JoinTeamScreen />);
+    const { getByTestId, findByText } = await render(<JoinTeamScreen />);
 
-    fireEvent.changeText(getByTestId("invite-code-input"), "abcdef");
+    await fireEvent.changeText(getByTestId("invite-code-input"), "abcdef");
 
     await act(async () => {
-      fireEvent.press(await findByText("more.joinTeam.submit"));
+      await fireEvent.press(await findByText("more.joinTeam.submit"));
     });
 
     expect(mockAcceptInvitation).toHaveBeenCalledWith("ABCDEF");
@@ -326,12 +312,12 @@ describe("JoinTeamScreen: Join form submission", () => {
       teamName: "Champions",
     });
 
-    const { getByTestId, findByText } = await renderAsync(<JoinTeamScreen />);
+    const { getByTestId, findByText } = await render(<JoinTeamScreen />);
 
-    fireEvent.changeText(getByTestId("invite-code-input"), "abc123");
+    await fireEvent.changeText(getByTestId("invite-code-input"), "abc123");
 
     await act(async () => {
-      fireEvent.press(await findByText("more.joinTeam.submit"));
+      await fireEvent.press(await findByText("more.joinTeam.submit"));
     });
 
     expect(
@@ -346,12 +332,12 @@ describe("JoinTeamScreen: Join form submission", () => {
     });
     mockGetUserTeams.mockResolvedValue([]);
 
-    const { getByTestId, findByText } = await renderAsync(<JoinTeamScreen />);
+    const { getByTestId, findByText } = await render(<JoinTeamScreen />);
 
-    fireEvent.changeText(getByTestId("invite-code-input"), "abc123");
+    await fireEvent.changeText(getByTestId("invite-code-input"), "abc123");
 
     await act(async () => {
-      fireEvent.press(await findByText("more.joinTeam.submit"));
+      await fireEvent.press(await findByText("more.joinTeam.submit"));
     });
 
     expect(await findByText("Champions")).toBeTruthy();
@@ -363,13 +349,13 @@ describe("JoinTeamScreen: Join form submission", () => {
       teamName: "Champions",
     });
 
-    const { getByTestId, findByText } = await renderAsync(<JoinTeamScreen />);
+    const { getByTestId, findByText } = await render(<JoinTeamScreen />);
     const input = getByTestId("invite-code-input");
 
-    fireEvent.changeText(input, "abc123");
+    await fireEvent.changeText(input, "abc123");
 
     await act(async () => {
-      fireEvent.press(await findByText("more.joinTeam.submit"));
+      await fireEvent.press(await findByText("more.joinTeam.submit"));
     });
 
     await waitFor(() => {
@@ -382,12 +368,12 @@ describe("JoinTeamScreen: Join form submission", () => {
       new Error("more.joinTeam.errorInvalidCode"),
     );
 
-    const { getByTestId, findByText } = await renderAsync(<JoinTeamScreen />);
+    const { getByTestId, findByText } = await render(<JoinTeamScreen />);
 
-    fireEvent.changeText(getByTestId("invite-code-input"), "bad123");
+    await fireEvent.changeText(getByTestId("invite-code-input"), "bad123");
 
     await act(async () => {
-      fireEvent.press(await findByText("more.joinTeam.submit"));
+      await fireEvent.press(await findByText("more.joinTeam.submit"));
     });
 
     expect(await findByText("more.joinTeam.errorInvalidCode")).toBeTruthy();
@@ -398,12 +384,12 @@ describe("JoinTeamScreen: Join form submission", () => {
       new Error("more.joinTeam.errorGeneric"),
     );
 
-    const { getByTestId, findByText } = await renderAsync(<JoinTeamScreen />);
+    const { getByTestId, findByText } = await render(<JoinTeamScreen />);
 
-    fireEvent.changeText(getByTestId("invite-code-input"), "gen123");
+    await fireEvent.changeText(getByTestId("invite-code-input"), "gen123");
 
     await act(async () => {
-      fireEvent.press(await findByText("more.joinTeam.submit"));
+      await fireEvent.press(await findByText("more.joinTeam.submit"));
     });
 
     expect(await findByText("more.joinTeam.errorGeneric")).toBeTruthy();
@@ -413,20 +399,19 @@ describe("JoinTeamScreen: Join form submission", () => {
     // Never resolves, keeps loading state
     mockAcceptInvitation.mockReturnValue(new Promise(() => {}));
 
-    const { getByTestId, findByText } = await renderAsync(<JoinTeamScreen />);
+    const { getByTestId, findByText } = await render(<JoinTeamScreen />);
 
-    fireEvent.changeText(getByTestId("invite-code-input"), "ABCDEF");
+    await fireEvent.changeText(getByTestId("invite-code-input"), "ABCDEF");
 
     const submitButton = await findByText("more.joinTeam.submit");
 
-    await act(async () => {
-      fireEvent.press(submitButton);
-    });
+    // fireEvent resolves with the press handler's promise, which never settles here.
+    void fireEvent.press(submitButton);
 
     await waitFor(() => {
-      expect(
-        submitButton.parent?.parent?.props.accessibilityState?.disabled,
-      ).toBe(true);
+      expect(submitButton.parent?.props.accessibilityState?.disabled).toBe(
+        true,
+      );
     });
   });
 });

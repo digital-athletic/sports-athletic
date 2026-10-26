@@ -5,16 +5,16 @@ import { useUserProfileStore } from "./userProfileStore";
 const profile = () => useUserProfileStore.getState();
 const backup = () => useUserDataBackupStore.getState();
 
-beforeEach(() => {
-  act(() => {
+beforeEach(async () => {
+  await act(() => {
     profile().resetProfile();
     backup().purgeSnapshot("user-1");
   });
 });
 
 describe("userDataBackupStore: warnings", () => {
-  it("restores seen warnings after a profile reset", () => {
-    act(() => {
+  it("restores seen warnings after a profile reset", async () => {
+    await act(() => {
       profile().setWarningSeen("painAlertSeen", true);
       backup().takeSnapshot("user-1");
       profile().resetProfile();
@@ -24,8 +24,8 @@ describe("userDataBackupStore: warnings", () => {
     expect(profile().warnings.painAlertSeen).toBe(true);
   });
 
-  it("keeps a newer flag when a later sign in restores again", () => {
-    act(() => {
+  it("keeps a newer flag when a later sign in restores again", async () => {
+    await act(() => {
       profile().setWarningSeen("painAlertSeen", true);
       backup().takeSnapshot("user-1");
       backup().restoreSnapshot("user-1");
@@ -36,8 +36,8 @@ describe("userDataBackupStore: warnings", () => {
     expect(profile().warnings.painAlertSeen).toBe(false);
   });
 
-  it("restores unseen warnings from a snapshot taken before they existed", () => {
-    act(() => {
+  it("restores unseen warnings from a snapshot taken before they existed", async () => {
+    await act(() => {
       profile().setWarningSeen("painAlertSeen", true);
       useUserDataBackupStore.setState({
         snapshots: {

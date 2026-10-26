@@ -34,10 +34,10 @@ describe("useTrainingScreenLifecycle: hardware back handling", () => {
     mockAddEventListener.mockClear();
   });
 
-  it("invokes onAbort and returns true when the hardware back button is pressed", () => {
+  it("invokes onAbort and returns true when the hardware back button is pressed", async () => {
     const onAbort = jest.fn();
 
-    renderHook(() => useTrainingScreenLifecycle({ onAbort }));
+    await renderHook(() => useTrainingScreenLifecycle({ onAbort }));
 
     const backPressHandler = mockAddEventListener.mock.calls.find(
       ([eventName]) => eventName === "hardwareBackPress",
@@ -46,7 +46,7 @@ describe("useTrainingScreenLifecycle: hardware back handling", () => {
     expect(backPressHandler).toBeDefined();
 
     let handledResult: boolean | null | undefined;
-    act(() => {
+    await act(() => {
       handledResult = backPressHandler?.({
         type: "hardwareBackPress",
         timeStamp: 0,
@@ -65,12 +65,12 @@ describe("useTrainingScreenLifecycle: training started logging", () => {
     mockAddEventListener.mockClear();
   });
 
-  it("logs training_started once for the active training", () => {
+  it("logs training_started once for the active training", async () => {
     useTrainingStore.setState({
       activeTraining: { id: "training-1", type: "PLAN" },
     });
 
-    renderHook(() => useTrainingScreenLifecycle({ onAbort: jest.fn() }));
+    await renderHook(() => useTrainingScreenLifecycle({ onAbort: jest.fn() }));
 
     expect(mockLogTrainingEvent).toHaveBeenCalledTimes(1);
     expect(mockLogTrainingEvent).toHaveBeenCalledWith(
@@ -87,8 +87,8 @@ describe("useTrainingScreenLifecycle: screen focus tracking", () => {
     mockAddEventListener.mockClear();
   });
 
-  it("reports the screen as focused once mounted", () => {
-    const { result } = renderHook(() =>
+  it("reports the screen as focused once mounted", async () => {
+    const { result } = await renderHook(() =>
       useTrainingScreenLifecycle({ onAbort: jest.fn() }),
     );
 

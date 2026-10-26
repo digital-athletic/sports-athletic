@@ -2,38 +2,38 @@ import { fireEvent, render } from "../utils/testUtils";
 import { BasicTextInput } from "./BasicTextInput";
 
 describe("BasicTextInput", () => {
-  it("matches the snapshot", () => {
-    const { toJSON } = render(
+  it("matches the snapshot", async () => {
+    const { toJSON } = await render(
       <BasicTextInput value="hello" onChangeText={jest.fn()} />,
     );
     expect(toJSON()).toMatchSnapshot();
   });
 
-  it("displays the current value", () => {
-    const { getByDisplayValue } = render(
+  it("displays the current value", async () => {
+    const { getByDisplayValue } = await render(
       <BasicTextInput value="hello" onChangeText={jest.fn()} />,
     );
     expect(getByDisplayValue("hello")).toBeTruthy();
   });
 
-  it("shows the placeholder", () => {
-    const { getByPlaceholderText } = render(
+  it("shows the placeholder", async () => {
+    const { getByPlaceholderText } = await render(
       <BasicTextInput placeholder="Name" onChangeText={jest.fn()} />,
     );
     expect(getByPlaceholderText("Name")).toBeTruthy();
   });
 
-  it("forwards edits to onChangeText", () => {
+  it("forwards edits to onChangeText", async () => {
     const onChangeText = jest.fn();
-    const { getByPlaceholderText } = render(
+    const { getByPlaceholderText } = await render(
       <BasicTextInput placeholder="Name" onChangeText={onChangeText} />,
     );
-    fireEvent.changeText(getByPlaceholderText("Name"), "world");
+    await fireEvent.changeText(getByPlaceholderText("Name"), "world");
     expect(onChangeText).toHaveBeenCalledWith("world");
   });
 
-  it("forwards native TextInput props such as secureTextEntry", () => {
-    const { getByPlaceholderText } = render(
+  it("forwards native TextInput props such as secureTextEntry", async () => {
+    const { getByPlaceholderText } = await render(
       <BasicTextInput
         placeholder="Password"
         secureTextEntry

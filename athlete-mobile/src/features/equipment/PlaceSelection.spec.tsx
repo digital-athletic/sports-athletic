@@ -36,7 +36,7 @@ describe("PlaceSelection: place rows", () => {
       <PlaceSelection selectPlace={selectPlace} places={places} />,
     );
     const label = `${i18n.t("training.place.HALL")}, ${i18n.t("equipment.xPieces", { count: 0 })}`;
-    fireEvent.press(getByLabelText(label));
+    await fireEvent.press(getByLabelText(label));
     expect(selectPlace).toHaveBeenCalledWith("HALL");
   });
 

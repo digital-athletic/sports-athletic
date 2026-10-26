@@ -22,7 +22,7 @@ describe("Loading", () => {
     const { getByText } = await render(
       <Loading show text="Please wait" onClose={onClose} />,
     );
-    fireEvent.press(getByText("Cancel"));
+    await fireEvent.press(getByText("Cancel"));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 });

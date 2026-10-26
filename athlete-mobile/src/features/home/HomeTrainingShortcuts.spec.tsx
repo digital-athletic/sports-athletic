@@ -49,7 +49,7 @@ describe("HomeTrainingShortcuts: navigation", () => {
       <HomeTrainingShortcuts isLandscape={false} />,
     );
 
-    fireEvent.press(getByRole("button", { name: FOCUS_LABEL }));
+    await fireEvent.press(getByRole("button", { name: FOCUS_LABEL }));
 
     expect(mockPush).toHaveBeenCalledTimes(1);
     expect(mockPush).toHaveBeenCalledWith("/focus-trainings");
@@ -60,7 +60,7 @@ describe("HomeTrainingShortcuts: navigation", () => {
       <HomeTrainingShortcuts isLandscape={false} />,
     );
 
-    fireEvent.press(getByRole("button", { name: ADDITIONAL_LABEL }));
+    await fireEvent.press(getByRole("button", { name: ADDITIONAL_LABEL }));
 
     expect(mockPush).toHaveBeenCalledTimes(1);
     expect(mockPush).toHaveBeenCalledWith("/additional-trainings");

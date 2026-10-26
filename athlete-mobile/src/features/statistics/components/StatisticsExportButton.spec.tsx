@@ -46,7 +46,7 @@ describe("StatisticsExportButton: states", () => {
       i18n.t("statistics.export.label"),
     );
 
-    fireEvent.press(button);
+    await fireEvent.press(button);
 
     expect(mockExportCsv).toHaveBeenCalledTimes(1);
   });
@@ -63,7 +63,7 @@ describe("StatisticsExportButton: states", () => {
     const button = getByTestId("statistics-export-button");
     expect(button.props.accessibilityState).toMatchObject({ disabled: true });
 
-    fireEvent.press(button);
+    await fireEvent.press(button);
 
     expect(mockExportCsv).not.toHaveBeenCalled();
   });

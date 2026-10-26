@@ -106,7 +106,7 @@ describe("ColumnList: navigation", () => {
   it("navigates once with the pressed row's own type", async () => {
     await render(<ColumnList listItems={PREVENTION_TILES} />);
 
-    fireEvent.press(screen.getAllByRole("button")[0]);
+    await fireEvent.press(screen.getAllByRole("button")[0]);
 
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith({

@@ -41,7 +41,7 @@ describe("SnapSliderInputField", () => {
 
     const slider = getByLabelText("slider");
     // Simulate sliding to index 1 (which corresponds to option value 2)
-    fireEvent(slider, "slidingComplete", 1);
+    await fireEvent(slider, "slidingComplete", 1);
 
     expect(onChange).toHaveBeenCalledWith(2);
   });

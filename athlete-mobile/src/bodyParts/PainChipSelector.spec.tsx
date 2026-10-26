@@ -24,7 +24,7 @@ describe("PainChipSelector: chip behavior", () => {
   it("adds the lateralized value when an unselected chip is tapped", async () => {
     const onChange = jest.fn();
     await render(<PainChipSelector tags={[]} onChange={onChange} />);
-    fireEvent.press(screen.getByLabelText("left knee"));
+    await fireEvent.press(screen.getByLabelText("left knee"));
     expect(onChange).toHaveBeenCalledWith(["KNEE_LEFT"]);
   });
 
@@ -32,7 +32,7 @@ describe("PainChipSelector: chip behavior", () => {
     const onChange = jest.fn();
     await render(<PainChipSelector tags={["KNEE_LEFT"]} onChange={onChange} />);
     expect(screen.getByLabelText("left knee")).toBeSelected();
-    fireEvent.press(screen.getByLabelText("left knee"));
+    await fireEvent.press(screen.getByLabelText("left knee"));
     expect(onChange).toHaveBeenCalledWith([]);
   });
 });
@@ -41,7 +41,7 @@ describe("PainChipSelector: hip chip", () => {
   it("stores both hip sides behind one chip", async () => {
     const onChange = jest.fn();
     await render(<PainChipSelector tags={["SPINE"]} onChange={onChange} />);
-    fireEvent.press(screen.getByLabelText("hip"));
+    await fireEvent.press(screen.getByLabelText("hip"));
     expect(onChange).toHaveBeenCalledWith(["SPINE", "HIP_LEFT", "HIP_RIGHT"]);
   });
 
@@ -58,7 +58,7 @@ describe("PainChipSelector: hip chip", () => {
         onChange={onChange}
       />,
     );
-    fireEvent.press(screen.getByLabelText("hip"));
+    await fireEvent.press(screen.getByLabelText("hip"));
     expect(onChange).toHaveBeenCalledWith(["SPINE"]);
   });
 });

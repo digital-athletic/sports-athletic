@@ -70,7 +70,7 @@ describe("FocusTrainingListScreen: starting a training", () => {
   it("selects QUICK when the focus entry is pressed", async () => {
     const { getByRole } = await render(<FocusTrainingListScreen />);
 
-    fireEvent.press(getByRole("button", { name: FOCUS_LABEL }));
+    await fireEvent.press(getByRole("button", { name: FOCUS_LABEL }));
 
     expect(mockSetTrainingSelection).toHaveBeenCalledTimes(1);
     expect(mockSetTrainingSelection).toHaveBeenCalledWith("QUICK");
@@ -79,7 +79,7 @@ describe("FocusTrainingListScreen: starting a training", () => {
   it("pushes /training with type QUICK when the focus entry is pressed", async () => {
     const { getByRole } = await render(<FocusTrainingListScreen />);
 
-    fireEvent.press(getByRole("button", { name: FOCUS_LABEL }));
+    await fireEvent.press(getByRole("button", { name: FOCUS_LABEL }));
 
     expect(mockPush).toHaveBeenCalledTimes(1);
     expect(mockPush).toHaveBeenCalledWith({
@@ -91,7 +91,7 @@ describe("FocusTrainingListScreen: starting a training", () => {
   it("selects PREV when the prevention entry is pressed", async () => {
     const { getByRole } = await render(<FocusTrainingListScreen />);
 
-    fireEvent.press(getByRole("button", { name: PREVENTION_LABEL }));
+    await fireEvent.press(getByRole("button", { name: PREVENTION_LABEL }));
 
     expect(mockSetTrainingSelection).toHaveBeenCalledTimes(1);
     expect(mockSetTrainingSelection).toHaveBeenCalledWith("PREV");
@@ -100,7 +100,7 @@ describe("FocusTrainingListScreen: starting a training", () => {
   it("pushes /training with type PREV when the prevention entry is pressed", async () => {
     const { getByRole } = await render(<FocusTrainingListScreen />);
 
-    fireEvent.press(getByRole("button", { name: PREVENTION_LABEL }));
+    await fireEvent.press(getByRole("button", { name: PREVENTION_LABEL }));
 
     expect(mockPush).toHaveBeenCalledTimes(1);
     expect(mockPush).toHaveBeenCalledWith({

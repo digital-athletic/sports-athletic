@@ -27,7 +27,7 @@ describe("PainQuestion: stored pain tags", () => {
         onChangeTag={onChangeTag}
       />,
     );
-    fireEvent.press(screen.getByLabelText("right knee"));
+    await fireEvent.press(screen.getByLabelText("right knee"));
     expect(onChangeTag).toHaveBeenCalledWith("PAIN", [
       "KNEE_LEFT",
       "KNEE_RIGHT",

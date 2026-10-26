@@ -40,7 +40,7 @@ describe("TrainingNavigation: checkmark path (duration undefined)", () => {
     await render(
       <TrainingNavigation {...defaultProps} duration={undefined} next={next} />,
     );
-    fireEvent.press(screen.getByLabelText("Finish exercise"));
+    await fireEvent.press(screen.getByLabelText("Finish exercise"));
     expect(next).toHaveBeenCalledTimes(1);
   });
 
@@ -77,7 +77,7 @@ describe("TrainingNavigation: checkmark path (duration undefined)", () => {
         feedback={feedback}
       />,
     );
-    fireEvent.press(screen.getByLabelText("Finish exercise"));
+    await fireEvent.press(screen.getByLabelText("Finish exercise"));
     expect(feedback).not.toHaveBeenCalled();
   });
 
@@ -91,7 +91,7 @@ describe("TrainingNavigation: checkmark path (duration undefined)", () => {
         isFeedbackSkill={true}
       />,
     );
-    fireEvent.press(screen.getByLabelText("Finish exercise"));
+    await fireEvent.press(screen.getByLabelText("Finish exercise"));
     expect(feedback).toHaveBeenCalledWith("SUCCEEDED");
   });
 });

@@ -11,7 +11,7 @@ describe("MediaSkeleton", () => {
   it("calls onRetry callback when retry button is pressed", async () => {
     const mockRetry = jest.fn();
     await render(<MediaSkeleton onRetry={mockRetry} />);
-    fireEvent.press(screen.getByRole("button"));
+    await fireEvent.press(screen.getByRole("button"));
     expect(mockRetry).toHaveBeenCalledTimes(1);
   });
 

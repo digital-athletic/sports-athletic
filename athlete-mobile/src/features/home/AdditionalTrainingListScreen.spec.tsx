@@ -127,7 +127,7 @@ describe("AdditionalTrainingListScreen: navigation", () => {
   it("pushes the workouts screen with the own trainings title when the own entry is pressed", async () => {
     const { findByText } = await render(<AdditionalTrainingListScreen />);
 
-    fireEvent.press(await findByText(OWN_TRAININGS));
+    await fireEvent.press(await findByText(OWN_TRAININGS));
 
     expect(mockPush).toHaveBeenCalledTimes(1);
     expect(mockPush).toHaveBeenCalledWith({
@@ -141,7 +141,7 @@ describe("AdditionalTrainingListScreen: navigation", () => {
 
     const { findByText } = await render(<AdditionalTrainingListScreen />);
 
-    fireEvent.press(await findByText("Team Alpha"));
+    await fireEvent.press(await findByText("Team Alpha"));
 
     expect(mockPush).toHaveBeenCalledTimes(1);
     expect(mockPush).toHaveBeenCalledWith({

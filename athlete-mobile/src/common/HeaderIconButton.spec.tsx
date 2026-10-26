@@ -33,7 +33,7 @@ describe("HeaderIconButton", () => {
         accessibilityLabel="Abort training"
       />,
     );
-    fireEvent.press(getByRole("button"));
+    await fireEvent.press(getByRole("button"));
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 
@@ -47,7 +47,7 @@ describe("HeaderIconButton", () => {
         disabled
       />,
     );
-    fireEvent.press(getByRole("button"));
+    await fireEvent.press(getByRole("button"));
     expect(onPress).not.toHaveBeenCalled();
   });
 

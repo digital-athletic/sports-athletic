@@ -28,7 +28,7 @@ describe("BasicTextInput", () => {
     const { getByPlaceholderText } = await render(
       <BasicTextInput placeholder="Name" onChangeText={onChangeText} />,
     );
-    fireEvent.changeText(getByPlaceholderText("Name"), "world");
+    await fireEvent.changeText(getByPlaceholderText("Name"), "world");
     expect(onChangeText).toHaveBeenCalledWith("world");
   });
 

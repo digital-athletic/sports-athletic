@@ -12,9 +12,9 @@ The workout generator turns a workout description into the set list for one athl
 - the exercise catalog
 - the athlete's exercise data
 
-AIWL defines three block kinds: picks, duration and branches. Short workouts use picks blocks and can mix in branches blocks, training days use branches blocks, and a trainer workout will use duration blocks. The specs give each kind its own athlete rules and its own way to select branches. The [current support](./athletic-intelligence-workout-language.md#current-support) section of the AIWL ADR lists which source runs through this generator today.
+AIWL defines four block kinds: picks, duration, branches and exercises. Short workouts use picks blocks and can mix in branches blocks, training days use branches blocks, the strength test source uses a picks block and an exercises block, and a trainer workout will use duration blocks. The specs give each kind its own athlete rules and its own way to select branches. The [current support](./athletic-intelligence-workout-language.md#current-support) section of the AIWL ADR lists which source runs through this generator today.
 
-Some rules in the specs span more than one block, for example [duplicate exercises](./duplicate-exercises.md), the skill boundary in [exercise order](./exercise-order.md), and the special warm-up in [Pain, Soreness, and Prevention](../specs/foundations/pain-soreness-and-prevention.md#pain-mappings). Cardio, max strength and the remaining skills each need their own set list builder. The [strength test](../specs/session/plan-independent-workouts.md#strength-test) has no template.
+Some rules in the specs span more than one block, for example [duplicate exercises](./duplicate-exercises.md), the skill boundary in [exercise order](./exercise-order.md), and the special warm-up in [Pain, Soreness, and Prevention](../specs/foundations/pain-soreness-and-prevention.md#pain-mappings). Cardio, max strength, the [strength test](../specs/session/plan-independent-workouts.md#strength-test) and the remaining skills each need their own set list builder.
 
 This ADR defines the structure the generator follows. The specs define the rules. This ADR uses the terms of the [Glossary](../specs/glossary.md) and the block kinds of the AIWL ADR.
 
@@ -52,9 +52,10 @@ flowchart TD
     walk -->|picks| picks[Picks handler]
     walk -->|branches| branches[Branches handler]
     walk -->|duration| duration[Duration handler]
-    picks & branches & duration --> finish[Workout finish<br/>rules across blocks]
+    walk -->|exercises| exercises[Exercises handler]
+    picks & branches & duration & exercises --> finish[Workout finish<br/>rules across blocks]
     finish --> builder{Set list builder by skill}
-    builder --> cardio[Cardio] & max[Max strength] & standard[Standard]
+    builder --> cardio[Cardio] & max[Max strength] & standard[Standard] & test[Strength test]
 ```
 
 ### Patterns
@@ -66,14 +67,14 @@ block-beta
     columns 2
     interpreter["Template interpreter (Interpreter)"]:2
     block:handlers
-        columns 3
-        handlersTitle["Block handlers (Strategy)"]:3
-        picks["Picks"] branches["Branches"] duration["Duration"]
+        columns 4
+        handlersTitle["Block handlers (Strategy)"]:4
+        picks["Picks"] branches["Branches"] duration["Duration"] exercises["Exercises"]
     end
     block:builders
-        columns 3
-        buildersTitle["Set list builders (Strategy, Builder)"]:3
-        cardio["Cardio"] maxStrength["Max strength"] standard["Standard"]
+        columns 4
+        buildersTitle["Set list builders (Strategy, Builder)"]:4
+        cardio["Cardio"] maxStrength["Max strength"] standard["Standard"] strengthTest["Strength test"]
     end
     block:rules
         columns 3
@@ -110,20 +111,24 @@ Each box in a layer implements the contract the layer title names. The code defi
    - The cardio builder follows the [Cardio Training System](../specs/session/cardio-training-system.md#building-the-block).
    - The max strength builder follows [Max Strength Training](../specs/progression/max-strength-progression.md), support exercises included.
    - The standard builder follows [Session Set Structure](../specs/session/session-set-structure.md) and [Standard Exercise Progression](../specs/progression/standard-exercise-progression.md).
+   - The strength test builder follows [Weight Calculation from Strength Tests](../specs/progression/weight-calculation-from-strength-tests.md#8-strength-test-reference-load-and-1rm-update). The strength test source passes it for the skill of its lifts block, and it builds exercises blocks only.
 
-The strength test enters through the same entry point. It skips the template stages and uses its own builder.
+An exercises block keeps its list through workout finish and set list building: section order sorts the filled blocks around it, `lastWins` keeps every exercises block, and no pairing or exercise order rule touches it. Its result has the status `prescribed` and holds catalog exercise references without a branch.
+
+Builders of exercises blocks share one contract, `PrescribedSetListBuilder`: a `build` function and the block settings the builder reads. A source passes its builders to `createSetListBuilder` by skill and binds the data each builder needs; the strength test source binds its test set loads and 1RM shares. The set list stage resolves the builder by the block's skill and fails on a block setting that builder does not read, so the stage holds no protocol data and reads no skill catalog field for it.
 
 ### Set list building rules
 
 One function, `createSetListBuilder`, builds the set list of every workout source. For each filled block it reads the timing, pairs the exercises, orders the pairs and calls the set list builder of the skill. Each source passes a rules object. The rules object names every intended difference between the sources:
 
-| Rule                 | Short workout                                                       | Training day                                                                                                 |
-| -------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `blockTiming`        | `workoutSetup`: the timing that workout setup resolved                   | `trainingDayDefaults`: the block's own values, then the training day defaults                                |
-| `cardioPairing`      | `bySuperset`: pairs cardio like every other block                   | `drawOne`: draws one cardio branch                                                                           |
-| `maxStrengthPairing` | `bySuperset`: pairs by the superset and trains the lead             | `singles`: trains every max strength exercise on its own                                                     |
-| `exerciseOrder`      | `asPaired`: keeps the order of the pairs                            | `awayFromPreviousBlock`: opens each block away from the block before, max strength lower body first, cardio as drawn |
-| `closingRest`        | `lastTemplateBlock`: drops the closing rest of a filled last block  | `setListEnd`: drops the rest that closes the set list                                                        |
+| Rule                 | Short workout                                                       | Training day                                                                                                 | Strength test |
+| -------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------- |
+| `blockTiming`        | `workoutSetup`: the timing that workout setup resolved                   | `trainingDayDefaults`: the block's own values, then the training day defaults                                | `trainingDayDefaults`: the warm-up block sets every value |
+| `cardioPairing`      | `bySuperset`: pairs cardio like every other block                   | `drawOne`: draws one cardio branch                                                                           | `bySuperset`, unused |
+| `maxStrengthPairing` | `bySuperset`: pairs by the superset and trains the lead             | `singles`: trains every max strength exercise on its own                                                     | `bySuperset`, unused |
+| `branchPairing`      | `bySuperset`: pairs by the block's superset                          | `bySuperset`                                                                                                 | `singlesAsDrawn`: trains every warm-up exercise alone, in draw order, one side only |
+| `exerciseOrder`      | `asPaired`: keeps the order of the pairs                            | `awayFromPreviousBlock`: opens each block away from the block before, max strength lower body first, cardio as drawn | `asPaired` |
+| `closingRest`        | `lastTemplateBlock`: drops the closing rest of a filled last block  | `setListEnd`: drops the rest that closes the set list                                                        | `setListEnd`: ends on the last test set |
 
 A new difference between sources adds a rule to this object. A fix to a step reaches every source.
 
@@ -145,7 +150,7 @@ The training day overrides keep stored plans as they were. They only hold the va
 
 ### Block handlers (Strategy)
 
-A handler is one function. It takes the block, the generation input and the set of used branches, and returns a block result: the resolved exercises, or the reason the block stayed empty. Handlers share library steps:
+A handler is one function. It takes the block, the generation input, the set of used branches and the walk context (the earlier block results and the block path for errors), and returns a block result: the resolved exercises, or the reason the block stayed empty. Handlers share library steps:
 
 - the rule chain runner
 - the [resolution of a branch](../specs/foundations/branches-exercises-and-levels.md#resolving-the-level-at-workout-start) to the exercise at the athlete's branch level
@@ -158,8 +163,11 @@ Resolution runs inside selection, because the specs drop a candidate whose exerc
 | Picks      | [Plan-Independent Workouts](../specs/session/plan-independent-workouts.md#short-workout)       | Whole workout                                                  |
 | Branches   | [Plan Workout Generation](../specs/session/plan-workout-generation.md#generating-the-session)  | One block, see [duplicate exercises](./duplicate-exercises.md) |
 | Duration   | The [minutes table](./athletic-intelligence-workout-language.md#minutes-table) of the AIWL ADR | Whole workout                                                  |
+| Exercises  | [AIWL rules 5 and 6](./athletic-intelligence-workout-language.md#rules): catalog lookup in list order, equipment check per exercise | Whole workout; uses no branch |
 
 A block of whole workout scope receives the branches every earlier block used, whatever the kind of that block. A block of one block scope starts with an empty set. One template can mix block kinds: a short workout runs picks and branches blocks in template order.
+
+A later picks block skips the exercises of an earlier exercises block, and an exercises block keeps an exercise an earlier block trained.
 
 A training day stores its cardio skill as a branches block. The branches handler applies the cardio rules from [Soreness and blocking](../specs/session/cardio-training-system.md#soreness-and-blocking). This ADR amends AIWL rule 1, so the rule applies to duration blocks only.
 
@@ -229,6 +237,19 @@ The old generator in `generators/` stays as it was before the AIWL generator wor
 
 The router selects the stored training day of the plan with its own copy of the old section and weekday selection, so the AIWL path imports nothing from `generators/`.
 
+### Strength test source
+
+`strengthTestGeneration.ts` runs the bundled template `templates/TEST.json`. `loadStrengthTestTemplate` loads it apart from the short workout templates, so no short workout resolves it. The template holds:
+
+1. a picks block of skill `WU` whose picks are the warm-up region quotas, timed as one 60 s set per exercise with 10 s rests and 30 s before the first lift
+2. an exercises block of skill `TEST` with the lifts in authored order and the `testSets`: 40, 60 and 85 % of the test set load for 6, 4 and 2 repetitions, then the AMRAP test set
+
+The builder binds the test set loads per lift, gender and fitness level from `strengthTest.json`, which the old path reads too and this source leaves unchanged, and the share of the last estimated 1RM a test set loads per fitness level from `oneRepMaxShares.json`. A lift without an estimated 1RM and without a test set load for the athlete's gender fails the builder instead of building at 0 kg. Lifts no longer vary by fitness level or gender in this source; the template lists them.
+
+Source checks run before any block. `checkStrengthTestTemplate` checks the template first and throws a configuration error naming the path: the warm-up picks block of skill `WU` comes first, the exercises block of lifts second and last, its `testSets` end on their one `amrap` set, and every lift has test set loads for both genders in `strengthTest.json`. The generic interpreter holds none of these rules. The athlete checks follow: workout data, no athlete under 16 (`NO_EXERCISES/AGE`), no muscle soreness (`TOO_MUCH_SORENESS/TEST_WORKOUT`). Workout setup skips the picks workout rules of short workouts. The picks handler of this source keeps the old warm-up rules: age group and gender filters only, region quotas with a fallback to every unused branch, no repeated branch or exercise. A lift missing from the catalog fails the whole test with a template error, missing lift equipment with `NO_EXERCISES/EQUIPMENT`. The source sets the finish rule `requiredBlocks: "every"`, so a warm-up that draws no exercise fails the test with `NO_EXERCISES/SKILL_TREE` and the skill `WU`. Lift entries keep the placeholder branch ID, so session storage, resume, completion, statistics and the estimated 1RM update read them as before and write no branch progression.
+
+The router still sends the strength test to the old generator. This source neither imports nor tests against the old generator, and it changes no module, schema or data file the old generator reads. Compared with the old path, it adds the age and equipment checks. Routing the strength test to this source is open work.
+
 ### Compatibility exceptions
 
 The generator deviates from the target architecture in these places, so that stored plans and existing set lists keep working:
@@ -248,7 +269,7 @@ The generator deviates from the target architecture in these places, so that sto
 2. The `order` field and the `bodyParts` filter.
 3. The stored plan migration.
 4. The AIWL generator flag on by default, and deletion of the old generator in `generators/`.
-5. The strength test through the template interpreter entry point.
+5. The router sends the strength test to the strength test source.
 
 ### Errors
 
@@ -270,6 +291,7 @@ The generator raises three classes of error:
   | `stages/`                 | Stages of the template interpreter       | workout setup, block walk, workout finish, exercise order, set list building              |
   | `blockHandlers/picks/`    | Picks handler                            | the handler, the picks workout rules, the picks draw                                      |
   | `blockHandlers/branches/` | Branches handler                         | the handler, its rule chain, duplicate branches, cardio replacement, stored branch lookup |
+  | `blockHandlers/exercises/` | Exercises handler                       | the handler                                                                               |
   | `blockHandlers/library/`  | Shared library steps                     | resolution, replacement of blocked branches                                               |
   | `ruleFamilies/`           | Rule chain                               | one module per rule family, plus the family contract                                      |
   | `setListBuilders/`        | Set list builders                        | the builder contract, one module per builder, their helpers                               |
@@ -287,7 +309,7 @@ The generator raises three classes of error:
 - Pro: the rules of a block kind read as one ordered chain inside one handler.
 - Pro: each handler, each rule family and each stage has its own spec.
 - Con: four stages apply rules: workout setup, the handlers, workout finish and the builders. A reader has to know which stage applies a rule.
-- Con: the builders, not the block handlers, select support exercises and the strength test exercises.
+- Con: the builders, not the block handlers, select support exercises.
 - Con: until the stored plan migration, a workout can mix saved planned branches with current replacement branches.
 - Con: once stored plans read the catalog, a catalog change that removes a branch ID drops that slot from every stored plan.
 - Con: the generation input grows with every new input a rule needs.

@@ -8,19 +8,18 @@ describe("TrainingListItemActions: accessible names", () => {
   const baseProps: TrainingListItemActionsProps = {
     isTest: false,
     isCompleted: false,
-    isFeedbackEligible: false,
     repsValue: 0,
-    onComplete: jest.fn(),
+    onStart: jest.fn(),
     onSkip: jest.fn(),
     testId: "row",
   };
 
-  it("names the check button of a pending row Finish exercise", async () => {
+  it("names the start button of a pending row Start exercise", async () => {
     const { getByLabelText, queryByLabelText } = await render(
       <TrainingListItemActions {...baseProps} />,
     );
 
-    expect(getByLabelText("Finish exercise")).toBeTruthy();
+    expect(getByLabelText("Start exercise")).toBeTruthy();
     expect(queryByLabelText("Completed")).toBeNull();
   });
 
@@ -30,7 +29,7 @@ describe("TrainingListItemActions: accessible names", () => {
     );
 
     expect(getByLabelText("Completed")).toBeTruthy();
-    expect(queryByLabelText("Finish exercise")).toBeNull();
+    expect(queryByLabelText("Start exercise")).toBeNull();
   });
 
   it("names the check button of a row completed as too hard", async () => {
@@ -43,5 +42,34 @@ describe("TrainingListItemActions: accessible names", () => {
     );
 
     expect(getByLabelText("Completed: too hard")).toBeTruthy();
+  });
+
+  it("hides the skip button for test rows", async () => {
+    const { queryByLabelText } = await render(
+      <TrainingListItemActions {...baseProps} isTest />,
+    );
+
+    expect(queryByLabelText("Skip exercise")).toBeNull();
+  });
+
+  it("hides the skip button once a row is completed", async () => {
+    const { queryByLabelText } = await render(
+      <TrainingListItemActions {...baseProps} isCompleted />,
+    );
+
+    expect(queryByLabelText("Skip exercise")).toBeNull();
+  });
+
+  it("shows the saved reps count for a completed test row", async () => {
+    const { getByText } = await render(
+      <TrainingListItemActions
+        {...baseProps}
+        isTest
+        isCompleted
+        repsValue={8}
+      />,
+    );
+
+    expect(getByText("8 repetitions")).toBeTruthy();
   });
 });

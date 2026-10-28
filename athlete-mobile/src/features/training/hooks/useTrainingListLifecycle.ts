@@ -30,7 +30,9 @@ export function useTrainingListLifecycle({
     );
   }, [onFinish, t]);
 
-  useTrainingScreenLifecycle({ onAbort: handleAbort });
+  const { isScreenFocused } = useTrainingScreenLifecycle({
+    onAbort: handleAbort,
+  });
 
-  return { handleAbort };
+  return { handleAbort, isScreenFocused };
 }

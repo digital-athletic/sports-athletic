@@ -15,6 +15,7 @@ test.describe("Training list: checklist session", () => {
       test.setTimeout(60000);
       await mockSupabaseAuth(page);
       await mockWakeLock(page);
+      await page.clock.install();
 
       const workoutPage = new WorkoutPage(page);
       const trainingOverviewPage = new TrainingOverviewPage(page);
@@ -37,6 +38,7 @@ test.describe("Training list: checklist session", () => {
       test.setTimeout(60000);
       await mockSupabaseAuth(page);
       await mockWakeLock(page);
+      await page.clock.install();
 
       const workoutPage = new WorkoutPage(page);
       const trainingOverviewPage = new TrainingOverviewPage(page);
@@ -67,6 +69,7 @@ test.describe("Training list: checklist session", () => {
       test.setTimeout(60000);
       await mockSupabaseAuth(page);
       await mockWakeLock(page);
+      await page.clock.install();
 
       const workoutPage = new WorkoutPage(page);
       const trainingOverviewPage = new TrainingOverviewPage(page);

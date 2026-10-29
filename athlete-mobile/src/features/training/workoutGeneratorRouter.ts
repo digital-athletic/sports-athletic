@@ -4,15 +4,14 @@ import TrainingGenerator from "@/features/training/generators/TrainingGenerator"
 import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { TrainingType } from "@/features/training/models/Training";
-import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { createGenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
 import { generateShortWorkoutFromTemplate } from "@/features/training/workoutGenerator/shortWorkoutGeneration";
 import { generateStrengthTest } from "@/features/training/workoutGenerator/strengthTestGeneration";
 import { generateTrainingDayFromStoredDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import type { ExerciseType } from "@/schemas/exercise.schema";
+import type { UserExerciseDataMapType } from "@/schemas/generator.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
-import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
 import { selectStoredTrainingDay } from "./storedTrainingDaySelection";
 
 export interface WorkoutGenerationRequest {
@@ -25,10 +24,7 @@ export interface WorkoutGenerationRequest {
   equipment: string[];
   givenSection: number | undefined;
   daysSinceLastWorkout: number;
-  userExerciseData: {
-    exerciseData: Record<string, UserExerciseDataType | undefined>;
-    branchData: Record<string, UserExerciseBranchDataType | undefined>;
-  };
+  userExerciseData: UserExerciseDataMapType;
 }
 
 const generateWithOldGenerator = (
@@ -44,7 +40,11 @@ const generateWithOldGenerator = (
     request.equipment,
     request.givenSection,
     request.daysSinceLastWorkout,
-    request.userExerciseData,
+    // The legacy generator reads the one record per exercise only.
+    {
+      exerciseData: request.userExerciseData.exerciseData,
+      branchData: request.userExerciseData.branchData,
+    },
   );
 
 const createInput = (request: WorkoutGenerationRequest) =>

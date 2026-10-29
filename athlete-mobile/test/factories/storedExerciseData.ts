@@ -1,7 +1,9 @@
 import type { ExerciseDifficultyType } from "@/constants/workoutConstants";
 import type {
-  ExerciseProgressMapType,
+  ExerciseDataMapType,
+  ExerciseProgressBySkillType,
   ExerciseProgressRecordType,
+  ExerciseProgressSourceType,
 } from "@/features/training/models/ExerciseProgress";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { SQUAT_EXERCISE_ID } from "./valueExercise";
@@ -35,29 +37,48 @@ export const generateFeedbackExerciseData = (
   generateStoredExerciseData({ feedback: { difficulty }, ...overrides });
 
 /**
- * Keys stored exercise records by exercise ID, as the exercise progress of the
- * athlete holds them.
+ * Keys stored exercise records by skill and exercise ID, as the exercise
+ * progress of the athlete holds them. The shared record per exercise stays empty.
  *
- * generateExerciseProgressMap(generateStoredExerciseData({ repetition: 10 }))
- * → { "1": { exerciseId: "1", skill: "SWR2", repetition: 10 } }
+ * generateStoredProgress(generateStoredExerciseData({ repetition: 10 }))
+ * → { exerciseProgress: { SWR2: { "1": { exerciseId: "1", skill: "SWR2", repetition: 10 } } },
+ *     exerciseData: {} }
  */
-export const generateExerciseProgressMap = (
+export const generateStoredProgress = (
   ...records: ExerciseProgressRecordType[]
-): ExerciseProgressMapType =>
+): ExerciseProgressSourceType => {
+  const exerciseProgress: ExerciseProgressBySkillType = {};
+  for (const record of records) {
+    (exerciseProgress[record.skill] ??= {})[record.exerciseId] = record;
+  }
+  return { exerciseProgress, exerciseData: {} };
+};
+
+/**
+ * Keys stored exercise records by exercise ID, as the shared record per
+ * exercise holds them: one record per exercise, from the skill that wrote it last.
+ *
+ * generateExerciseDataMap(generateStoredExerciseData({ skill: "SA", weight: 40 }))
+ * → { "1": { exerciseId: "1", skill: "SA", weight: 40 } }
+ */
+export const generateExerciseDataMap = (
+  ...records: ExerciseProgressRecordType[]
+): ExerciseDataMapType =>
   Object.fromEntries(records.map((record) => [record.exerciseId, record]));
 
 /**
  * Builds the stored data of the squat in the max strength skill, with the
  * feedback of the last workout.
  *
- * generateSquatExerciseData({ maxFRepetitions: [...] }, "SUCCEEDED")
- * → { "26": { exerciseId: "26", skill: "MAX_STRENGTH", maxFRepetitions: [...], feedback: { difficulty: "SUCCEEDED" } } }
+ * generateSquatStoredProgress({ maxFRepetitions: [...] }, "SUCCEEDED")
+ * → { exerciseProgress: { MAX_STRENGTH: { "26": { exerciseId: "26", skill: "MAX_STRENGTH",
+ *       maxFRepetitions: [...], feedback: { difficulty: "SUCCEEDED" } } } }, exerciseData: {} }
  */
-export const generateSquatExerciseData = (
+export const generateSquatStoredProgress = (
   overrides: Partial<UserExerciseDataType>,
   difficulty: ExerciseDifficultyType,
-): ExerciseProgressMapType =>
-  generateExerciseProgressMap(
+): ExerciseProgressSourceType =>
+  generateStoredProgress(
     generateFeedbackExerciseData(
       { exerciseId: SQUAT_EXERCISE_ID, skill: "MAX_STRENGTH", ...overrides },
       difficulty,

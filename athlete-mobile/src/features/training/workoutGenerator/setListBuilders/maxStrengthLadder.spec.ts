@@ -1,11 +1,11 @@
 import { generateAthleteWithMaxValues } from "@test/factories/athlete";
-import { generateSquatExerciseData } from "@test/factories/storedExerciseData";
+import { generateSquatStoredProgress } from "@test/factories/storedExerciseData";
 import { generateSquatExercise } from "@test/factories/valueExercise";
 import type {
   ExerciseDifficultyType,
   LevelTag,
 } from "@/constants/workoutConstants";
-import type { ExerciseProgressMapType } from "@/features/training/models/ExerciseProgress";
+import type { ExerciseProgressSourceType } from "@/features/training/models/ExerciseProgress";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import type {
   MaxTrainingRepsEntry,
@@ -27,7 +27,7 @@ import {
  */
 const readWorkingSets = (
   athlete: UserType,
-  exerciseData: ExerciseProgressMapType | null,
+  storedProgress: ExerciseProgressSourceType | null,
   skill: SkillCode = "MAX_STRENGTH",
 ): MaxTrainingRepsEntry[] =>
   readMaxTrainingRepetitions(
@@ -35,7 +35,7 @@ const readWorkingSets = (
     readMaxTrainingWeights(
       generateSquatExercise(),
       athlete,
-      exerciseData,
+      storedProgress,
       skill,
     ),
   ).filter((entry) => entry.level !== "WARMUP");
@@ -61,7 +61,7 @@ const describeNextSets = (
   difficulty: ExerciseDifficultyType,
 ) =>
   describeSets(
-    readWorkingSets(athlete, generateSquatExerciseData(values, difficulty)),
+    readWorkingSets(athlete, generateSquatStoredProgress(values, difficulty)),
   );
 
 // Stores a working set the way the completion of the last set does.
@@ -89,11 +89,11 @@ const runSessions = (
   difficulty: ExerciseDifficultyType,
 ): string[][] => {
   const rows: string[][] = [];
-  let exerciseData: ExerciseProgressMapType | null = null;
+  let storedProgress: ExerciseProgressSourceType | null = null;
   for (let session = 0; session < sessions; session++) {
-    const sets = readWorkingSets(athlete, exerciseData);
+    const sets = readWorkingSets(athlete, storedProgress);
     rows.push(describeSets(sets));
-    exerciseData = generateSquatExerciseData(
+    storedProgress = generateSquatStoredProgress(
       { maxFRepetitions: sets.map(convertToStoredSet) },
       difficulty,
     );
@@ -264,7 +264,7 @@ describe("maxStrengthLadder: feedback", () => {
     ];
     const sets = readWorkingSets(
       professional,
-      generateSquatExerciseData({ maxFRepetitions }, "TOO_HARD"),
+      generateSquatStoredProgress({ maxFRepetitions }, "TOO_HARD"),
     );
 
     expect(describeSets(sets)).toEqual(["72.5x5", "75x6", "77.5x6", "77.5x6"]);
@@ -364,7 +364,7 @@ describe("maxStrengthLadder: stored entries of another shape", () => {
       const weights = readMaxTrainingWeights(
         generateSquatExercise(),
         generateAthleteWithMaxValues({ level: "BEGINNER" }),
-        generateSquatExerciseData(
+        generateSquatStoredProgress(
           {
             nextWeightPercentage: 75,
             maxFRepetitions: [{ level: lastLevel, repetitions: 3 }],
@@ -385,13 +385,13 @@ describe("maxStrengthLadder: progress per skill", () => {
     const firstSession = readWorkingSets(advanced, null).map(
       convertToStoredSet,
     );
-    const exerciseData = generateSquatExerciseData(
+    const storedProgress = generateSquatStoredProgress(
       { maxFRepetitions: firstSession, nextWeightPercentage: 75 },
       "TOO_EASY",
     );
 
     expect(
-      describeSets(readWorkingSets(advanced, exerciseData, "MAX")),
+      describeSets(readWorkingSets(advanced, storedProgress, "MAX")),
     ).toEqual(["70x5", "72.5x2", "75x2"]);
   });
 });

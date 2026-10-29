@@ -25,7 +25,7 @@ Start/target values may depend on fitness level, gender, and age group unless th
 
 Warm-up, special warm-up, speed warm-up, cool-down, mobility, foam roller, and strength-test exercises do not use this progression and do not collect progression feedback. Speed warm-up durations follow [Speed warm-up](#speed-warm-up).
 
-Exercise-specific history is stored per athlete and survives plan regeneration. One feedback event must be consumed only once.
+Exercise progress is stored per athlete, skill and exercise (see [Progress per skill](#progress-per-skill)). It survives plan regeneration and training day moves. One feedback event must be consumed only once.
 
 ## Out of scope
 
@@ -242,7 +242,7 @@ For weighted hypertrophy, repetitions remain 8-12 and duration remains 30-50 s d
 
 **Fixed-kilogram weights:** exercises whose weight is authored in fixed kilograms (full-body stability, weighted prevention, U16 weighted exercises) have no lowest permitted load. The first `too hard` reduces the weight by one weight step. A second `too hard` in a row leads to a level down instead of another reduction. Any other feedback resets the count.
 
-**Bottom of the load range:** when no lower load exists, the first `too hard` leads to a level down, for every weighted exercise and regardless of the `too hard` count. Examples: 0 kg additional weight on a bodyweight exercise, the empty barbell, or the lowest permitted load. Above the bottom, the count adds an earlier exit: the second `too hard` in a row for fixed-kilogram weights, the third for loaded jumps. The count of consecutive `too hard` ratings is part of the stored exercise progress.
+**Bottom of the load range:** when no lower load exists, the first `too hard` leads to a level down, for every weighted exercise and regardless of the `too hard` count. Examples: 0 kg additional weight on a bodyweight exercise, the empty barbell, or the lowest permitted load. Above the bottom, the count adds an earlier exit: the second `too hard` in a row for fixed-kilogram weights, the third for loaded jumps. The count of consecutive `too hard` ratings is part of the stored exercise progress, so each skill counts its own `too hard` ratings of an exercise.
 
 Pure explosive exercises, for example loaded jumps, carry authored load limits in the exercise catalog. Those limits take priority over the skill's load range, so the explosive power floor of 50% F-Max does not apply to them. The exercise catalog must author these load limits for every loaded jump exercise and fitness level, as a share of the knee-direction 1RM converted to the equipment (see [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md)):
 
@@ -331,7 +331,7 @@ For weighted exercises, use the existing exercise-specific start and target weig
 
 ## Deferred feedback
 
-When progression is deferred to the next generation, stored feedback is applied exactly once using the feedback rules above. After application, the stored feedback is consumed. Feedback reaches the record only when the exercise is completed. Feedback given in a session that is skipped or aborted writes nothing.
+When progression is deferred to the next generation, stored feedback is applied exactly once using the feedback rules above. After application, the stored feedback is consumed. Feedback counts only once the exercise is completed; feedback in a skipped exercise or an aborted session is dropped.
 
 ## Worked example
 
@@ -359,7 +359,7 @@ The result is rounded using [Weight Calculation from Strength Tests](./weight-ca
 
 ## State and persistence
 
-Store per exercise, where applicable:
+Store per exercise and skill (see [Progress per skill](#progress-per-skill)), where applicable:
 
 - last prescribed/achieved repetitions,
 - last prescribed/achieved duration,
@@ -369,9 +369,7 @@ Store per exercise, where applicable:
 - pending feedback,
 - current progression position.
 
-Per-branch levels are stored separately.
-
-Each record names the skill that wrote it last and carries `updatedAt` (Unix seconds). The new workout generator reads a record as its own only when the record names the skill of the block. Otherwise it copies the load seed (weight and weight type, when the weight type matches) and starts everything else fresh; max strength steps never seed. The completion counts `too hard` ratings from the own record only. The old generator reads the record whatever its skill.
+Per-branch levels are stored separately and are shared across all skills and workouts.
 
 The rounded training weight is both the execution prescription and the source for future ±2.5% calculations. The app stores no unrounded weight.
 
@@ -381,7 +379,17 @@ Pending feedback is the handover token between session completion and next-gener
 
 After a level change:
 
-- previous exercise progression remains stored;
+- the branch level changes for every skill;
+- the progress of the left exercise resets only under the skill that changed the level; its progress under other skills stays;
 - the new exercise starts with its resolved start values; for hypertrophy repetitions/duration, use the global hypertrophy start values from this specification rather than exercise-specific authored repetition/duration values.
 
-This preserves history for a future manual exercise-swap feature.
+The progress under other skills preserves history for a future manual exercise-swap feature.
+
+### Progress per skill
+
+Each skill keeps its own progress of an exercise, in plan, short and custom workouts. Hypertrophy bench press continues from hypertrophy bench press, whatever workout or weekday it appears in. Prevention placeholders count as the athlete's body region skill. Variants keep separate progress: SWR1 and SWR2, SWR1KG and SWR2KG, GKS and GKSKG, MAX and MAX_STRENGTH, and each prevention skill.
+
+- A skill that meets an exercise for the first time starts at its start values, even when another skill trained the exercise.
+- Moving a training day or recreating a plan keeps all progress.
+
+Example: bench press trains under SWR1 at 50 kg × 15. A short workout then trains it under SA and starts at the SA start weight and start repetitions. The next SWR1 session continues at 50 kg × 15.

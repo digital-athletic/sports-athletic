@@ -4,7 +4,7 @@
  * Provides minimal test data builders so specs stay focused on
  * the behaviour under test rather than setup boilerplate.
  */
-import type { ExerciseProgressMapType } from "@/features/training/models/ExerciseProgress";
+import type { ExerciseProgressSourceType } from "@/features/training/models/ExerciseProgress";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
 import type { UserType } from "@/schemas/user.schema";
@@ -231,8 +231,8 @@ export interface PlanWorkoutOptions {
   place?: string;
   equipment?: string[];
   skillTrees?: Record<string, SkillTreeType>;
-  /** Earlier progress per exercise ID, default none. */
-  exerciseData?: ExerciseProgressMapType;
+  /** Earlier progress per skill and the shared record per exercise, default none. */
+  storedProgress?: ExerciseProgressSourceType;
 }
 
 /**
@@ -259,7 +259,7 @@ export function generatePlanWorkoutForWeekday(
     givenSection: undefined,
     daysSinceLastWorkout: 0,
     userExerciseData: {
-      exerciseData: options.exerciseData ?? {},
+      ...(options.storedProgress ?? { exerciseData: {} }),
       branchData: {},
     },
   });

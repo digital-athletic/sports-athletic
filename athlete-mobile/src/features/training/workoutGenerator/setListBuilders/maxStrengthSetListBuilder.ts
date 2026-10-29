@@ -95,7 +95,7 @@ const readMaxStrengthSets = (
   const ladder = readMaxTrainingWeights(
     exercise,
     input.athlete,
-    input.exerciseData.exerciseData,
+    input.exerciseData,
     skill,
   );
   const workingWeights = ladder.trainingWeights.map((weightPercentage) =>

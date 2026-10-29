@@ -2,7 +2,7 @@ import { syncManager } from "@/services/SyncManager";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { act, renderHook } from "@testing-library/react-native";
 import {
-  generateExerciseProgressMap,
+  generateExerciseDataMap,
   generateStoredExerciseData,
 } from "@test/factories/storedExerciseData";
 import { useExerciseProgressStore } from "./exerciseProgressStore";
@@ -155,7 +155,7 @@ describe("exerciseProgressStore: progress per skill", () => {
       await AsyncStorage.setItem(
         "exercise-progress-storage",
         JSON.stringify({
-          state: { exerciseData: generateExerciseProgressMap(older) },
+          state: { exerciseData: generateExerciseDataMap(older) },
           version: 19,
         }),
       );

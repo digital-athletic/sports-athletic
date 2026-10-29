@@ -2,7 +2,7 @@ import { generateAthleteWithMaxValues } from "@test/factories/athlete";
 import { generateExerciseStartValueSource } from "@test/factories/exerciseStartValueSource";
 import { generateCatalogWithProgression } from "@test/factories/skillCatalog";
 import {
-  generateExerciseProgressMap,
+  generateStoredProgress,
   generateFeedbackExerciseData,
   generateStoredExerciseData,
 } from "@test/factories/storedExerciseData";
@@ -172,7 +172,7 @@ describe("exerciseStartValues: feedback", () => {
         { skill: "SWR2KG" },
         generateValueExercise("repetition"),
         generateExerciseStartValueSource({
-          exerciseData: generateExerciseProgressMap(
+          storedProgress: generateStoredProgress(
             generateFeedbackExerciseData({ skill: "SWR2KG", repetition: 10 }),
           ),
         }),
@@ -186,7 +186,7 @@ describe("exerciseStartValues: feedback", () => {
         { skill: "WU" },
         generateValueExercise("repetition"),
         generateExerciseStartValueSource({
-          exerciseData: generateExerciseProgressMap(
+          storedProgress: generateStoredProgress(
             generateFeedbackExerciseData({ skill: "WU", repetition: 15 }),
           ),
         }),
@@ -201,7 +201,7 @@ describe("exerciseStartValues: feedback", () => {
         generateValueExercise("repetition"),
         generateExerciseStartValueSource({
           skillCatalog: generateCatalogWithProgression("WU", true),
-          exerciseData: generateExerciseProgressMap(
+          storedProgress: generateStoredProgress(
             generateFeedbackExerciseData({ skill: "WU", repetition: 15 }),
           ),
         }),
@@ -210,14 +210,14 @@ describe("exerciseStartValues: feedback", () => {
   });
 
   it("starts a stored weight in percent of F-Max one step lower on TOO_HARD", () => {
-    const exerciseData = generateExerciseProgressMap(
+    const storedProgress = generateStoredProgress(
       generateFeedbackExerciseData({ repetition: 10, weight: 70 }, "TOO_HARD"),
     );
 
     const values = readStartValues(
       { skill: "SWR2" },
       generateValueExercise("repetition", { withWeights: true }),
-      generateExerciseStartValueSource({ exerciseData }),
+      generateExerciseStartValueSource({ storedProgress }),
     );
 
     expect(values.weight).toBeCloseTo(68.25);
@@ -227,31 +227,31 @@ describe("exerciseStartValues: feedback", () => {
 });
 
 describe("exerciseStartValues: progress per skill", () => {
-  it("starts a new skill at the weight of another skill's record and the catalog start repetitions", () => {
-    const exercise = generateAuthoredUnitExercise("weightAbsolute");
-    const startRepetition = readStartValues(
-      { skill: "SWR2" },
-      exercise,
-    ).repetition;
-
+  it("starts a block at the record of its own skill", () => {
     const values = readStartValues(
       { skill: "SWR2" },
-      exercise,
+      generateAuthoredUnitExercise("weightAbsolute"),
       generateExerciseStartValueSource({
-        exerciseData: generateExerciseProgressMap(
+        storedProgress: generateStoredProgress(
+          generateStoredExerciseData({
+            skill: "SWR2",
+            weight: 50,
+            weightType: "weightAbsolute",
+            repetition: 12,
+            updatedAt: 100,
+          }),
           generateStoredExerciseData({
             skill: "SWR1",
-            weight: 40,
+            weight: 30,
             weightType: "weightAbsolute",
-            repetition: 17,
-            feedback: { difficulty: "TOO_EASY" },
+            repetition: 20,
+            updatedAt: 200,
           }),
         ),
       }),
     );
 
-    expect(values.weight).toBe(40);
-    expect(values.weightType).toBe("weightAbsolute");
-    expect(values.repetition).toBe(startRepetition);
+    expect(values.weight).toBe(50);
+    expect(values.repetition).toBe(12);
   });
 });

@@ -6,7 +6,8 @@ import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import {
-  generateExerciseProgressMap,
+  generateExerciseDataMap,
+  generateStoredProgress,
   generateStoredExerciseData,
 } from "./storedExerciseData";
 
@@ -40,7 +41,7 @@ export const generateSetRows = (
  * Without records, exercise 900 has one SWR2 record rated TOO_EASY.
  *
  * seedCompletionSession({ skill: "SA" }, [])
- * → session exercise 900 under SA, exerciseData is {}
+ * → session exercise 900 under SA, exerciseProgress and exerciseData are {}
  */
 export const seedCompletionSession = (
   entry: Partial<UserExerciseDataType>,
@@ -72,7 +73,10 @@ export const seedCompletionSession = (
     personalData: { username: "test", gender: "MALE", birthday: "1990-01-01" },
   });
   useExerciseProgressStore.getState().resetProgress();
+  // As the store leaves them: one record per skill, and per exercise the shared
+  // record of the skill that wrote it first.
   useExerciseProgressStore.setState({
-    exerciseData: generateExerciseProgressMap(...records),
+    exerciseProgress: generateStoredProgress(...records).exerciseProgress ?? {},
+    exerciseData: generateExerciseDataMap(...[...records].reverse()),
   });
 };

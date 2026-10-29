@@ -5,8 +5,8 @@ import {
 } from "@/features/training/models/ExerciseTotals";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
 import type {
+  ExerciseDataMapType,
   ExerciseProgressBySkillType,
-  ExerciseProgressMapType,
   ExerciseProgressRecordType,
 } from "@/features/training/models/ExerciseProgress";
 import { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
@@ -41,8 +41,9 @@ export type BranchDataMapType = Record<
 export type State = {
   // Exercise-level data, one record per skill
   exerciseProgress: ExerciseProgressBySkillType;
-  // One record per exercise, named after the skill that wrote it last
-  exerciseData: ExerciseProgressMapType;
+  // One record per exercise, named after the skill that wrote it last; only the
+  // legacy generator reads it
+  exerciseData: ExerciseDataMapType;
   branchData: BranchDataMapType;
 
   // Exercise totals (cumulative values)
@@ -122,7 +123,7 @@ const copyOthers = (
 
 /** Merges `data` into the record of the exercise and stamps the writer and the time. */
 const writeRecord = (
-  records: ExerciseProgressMapType,
+  records: ExerciseDataMapType,
   exerciseId: string,
   data: UserExerciseDataType,
   updatedAt: number,
@@ -328,8 +329,7 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
       },
 
       getExerciseProgress: (skill, exerciseId) =>
-        readOwnExerciseProgress(get().exerciseData, skill, exerciseId) ??
-        undefined,
+        readOwnExerciseProgress(get(), skill, exerciseId) ?? undefined,
 
       getBranchLevel: (branchId) => {
         const { branchData } = get();

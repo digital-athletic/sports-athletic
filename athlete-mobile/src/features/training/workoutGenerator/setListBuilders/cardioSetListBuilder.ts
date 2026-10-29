@@ -134,7 +134,7 @@ const readIntervalCount = (
     {
       skillCatalog: input.skillCatalog,
       athlete: input.athlete,
-      exerciseData: null,
+      storedProgress: null,
     },
     block,
     lead,

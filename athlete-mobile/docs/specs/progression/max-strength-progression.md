@@ -201,6 +201,7 @@ After the last working set of an exercise no supporting block follows. The pause
 - Rounding follows the general rules in [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md); max strength has no rounding rule of its own.
 - Further progression does not continue calculating with the rounded kg value, but based on the stored percentage step.
 - Warm-up weights are calculated from the displayed, rounded weight of the 1st working set and rounded in the same way.
+- MAX and MAX_STRENGTH keep their own ladder steps per exercise, see [Progress per skill](./standard-exercise-progression.md#progress-per-skill). A skill that meets the exercise for the first time starts at the first step.
 ## 9. Complete Examples (F-Max = 100 kg)
 
 Since F-Max = 100 kg, here: % = kg.

@@ -1,5 +1,5 @@
 import type { LevelTag } from "@/constants/workoutConstants";
-import type { ExerciseProgressMapType } from "@/features/training/models/ExerciseProgress";
+import type { ExerciseProgressSourceType } from "@/features/training/models/ExerciseProgress";
 import type { GenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import { generateGenerationInput } from "./generationInput";
@@ -11,7 +11,7 @@ export interface MaxStrengthInputOptions {
   level?: LevelTag;
   oneRepMax?: number;
   supportExercises?: ExerciseType[];
-  exerciseData?: ExerciseProgressMapType;
+  storedProgress?: ExerciseProgressSourceType;
   draws?: number[];
   /** Leaves out the workout data, as an athlete who skipped the anamnesis. */
   withoutWorkoutData?: boolean;
@@ -31,7 +31,7 @@ export const generateMaxStrengthInput = ({
   level,
   oneRepMax,
   supportExercises = [],
-  exerciseData,
+  storedProgress,
   draws = [],
   withoutWorkoutData,
 }: MaxStrengthInputOptions = {}): GenerationInput =>
@@ -46,6 +46,6 @@ export const generateMaxStrengthInput = ({
       findCatalogExerciseById(SQUAT_EXERCISE_ID),
       ...supportExercises,
     ],
-    exerciseData,
+    storedProgress,
     random: generateSequenceRandom(draws),
   });

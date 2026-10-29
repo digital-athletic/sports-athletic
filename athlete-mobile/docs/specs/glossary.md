@@ -75,7 +75,7 @@ Terms of the training model, with the meanings the coach uses. The glossary defi
 | Ladder | Leiter | | Fixed order in which the load increases, from light to heavy. Applies to every rated exercise. In max strength each working set has its own ladder of weight × repetitions with its own top weight. |
 | Step | Schritt | | One move along the ladder towards the heavier end. |
 | Progression | Fortschreibung | | How weights, repetitions and levels change from one session to the next. |
-| Load seed | Lastübernahme | | The weight and weight type a skill copies when the stored record of an exercise belongs to another skill and has the same weight type. Everything else starts fresh. |
+| Exercise progress | Übungsfortschritt | | What the athlete reached in one exercise under one skill: weight, weight type, repetitions, duration, feedback, "too hard" count and max strength steps. Each skill keeps its own. Details in [Standard Exercise Progression](./progression/standard-exercise-progression.md#progress-per-skill). |
 | Soft limit | Weiche Grenze | | A target share or quota the generator aims for. Filters and replacements may break it. |
 
 ## Weights and max strength
@@ -87,7 +87,7 @@ Terms of the training model, with the meanings the coach uses. The glossary defi
 | Movement direction | Bewegungsrichtung | | Family of a movement: knee, hip, horizontal push, horizontal pull, vertical push, vertical pull. The maximum is measured per direction, not per exercise. Vertical pull currently has no strength test. |
 | F-Max | F-Max | | The maximum for one specific exercise: the 1RM of its movement direction, converted to the equipment. The conversion is in [Weight Calculation from Strength Tests](./progression/weight-calculation-from-strength-tests.md). |
 | Weight type | Gewichtstyp | weightFMax, weightAbsolute | Whether an exercise sets its weight as a percentage of F-Max or in fixed kilograms. |
-| Start value, target value | Startwert, Zielwert | | Values stored per exercise, fitness level and gender. The exercise starts at the start value and counts as done when the target value is reached. |
+| Start value, target value | Startwert, Zielwert | | Values stored per exercise, fitness level and gender. The exercise starts at the start value and counts as done when the target value is reached. A skill without exercise progress starts at the start value, even when another skill trained the exercise (see Exercise progress). |
 | Rounding | Rundung | | Calculated weights are rounded to loadable increments, see [Weight Calculation from Strength Tests](./progression/weight-calculation-from-strength-tests.md). |
 | Buffer | Puffer | EASY, MEDIUM, HARD | Safety margin to the maximum in percent. A smaller buffer means more repetitions at the same weight. Values in [Max Strength Training](./progression/max-strength-progression.md). |
 | Floor | Boden | | Lowest share of F-Max a max strength set may drop to. Another "too hard" at the floor switches to the easier exercise. |

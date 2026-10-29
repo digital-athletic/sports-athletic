@@ -9,6 +9,7 @@ import { getAllExercises } from "@/data/exerciseRegistry";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { buildGeneratorErrorMessage } from "@/features/training/generators/generatorErrorUtils";
 import { useTrainingAlerts } from "@/features/training/hooks/useTrainingAlerts";
+import type { ExerciseProgressSourceType } from "@/features/training/models/ExerciseProgress";
 import { isGeneratorError } from "@/features/training/models/GeneratorError";
 import { TrainingType } from "@/features/training/models/Training";
 import { type TrainingDayType } from "@/features/training/models/TrainingDay";
@@ -62,9 +63,7 @@ type GenerationContext = {
   trainingPlan: ReturnType<typeof useUserWorkoutStore.getState>["trainingPlan"];
   exercises: ReturnType<typeof getAllExercises>;
   skillTrees: ReturnType<typeof getAllSkillTrees>;
-  exerciseData: ReturnType<
-    typeof useExerciseProgressStore.getState
-  >["exerciseData"];
+  storedProgress: ExerciseProgressSourceType;
   branchData: ReturnType<
     typeof useExerciseProgressStore.getState
   >["branchData"];
@@ -226,7 +225,7 @@ function generateExerciseList(
     equipment,
     givenSection: sectionIndex,
     daysSinceLastWorkout,
-    userExerciseData: { exerciseData: ctx.exerciseData, branchData },
+    userExerciseData: { ...ctx.storedProgress, branchData },
   });
 
   return saveGeneratedTraining(
@@ -255,7 +254,7 @@ function showGenerationError(e: unknown, t: TFunction, onDismiss: () => void) {
 function useGenerationContext(): GenerationContext {
   const skillTrees = getAllSkillTrees();
   const exercises = getAllExercises();
-  const { branchData, exerciseData, setBranchData } =
+  const { branchData, exerciseProgress, exerciseData, setBranchData } =
     useExerciseProgressStore();
   const { trainingDays } = useTrainingScheduleStore();
   const { places } = usePlacesStore();
@@ -277,7 +276,7 @@ function useGenerationContext(): GenerationContext {
     trainingPlan,
     exercises,
     skillTrees,
-    exerciseData,
+    storedProgress: { exerciseProgress, exerciseData },
     branchData,
     setBranchData,
     clearTraining,

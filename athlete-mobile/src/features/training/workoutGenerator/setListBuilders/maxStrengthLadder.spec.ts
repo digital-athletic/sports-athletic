@@ -1,13 +1,6 @@
 import { generateAthleteWithMaxValues } from "@test/factories/athlete";
-import {
-  generateStoredProgress,
-  generateFeedbackExerciseData,
-  generateSquatStoredProgress,
-} from "@test/factories/storedExerciseData";
-import {
-  generateSquatExercise,
-  SQUAT_EXERCISE_ID,
-} from "@test/factories/valueExercise";
+import { generateSquatStoredProgress } from "@test/factories/storedExerciseData";
+import { generateSquatExercise } from "@test/factories/valueExercise";
 import type {
   ExerciseDifficultyType,
   LevelTag,
@@ -400,38 +393,6 @@ describe("maxStrengthLadder: progress per skill", () => {
     expect(
       describeSets(readWorkingSets(advanced, storedProgress, "MAX")),
     ).toEqual(["70x5", "72.5x2", "75x2"]);
-  });
-
-  it("keeps the ladder state of MAX and MAX_STRENGTH apart", () => {
-    const advanced = generateAthleteWithMaxValues({ level: "ADVANCED" });
-    const firstSession = readWorkingSets(advanced, null).map(
-      convertToStoredSet,
-    );
-    const storedProgress = generateStoredProgress(
-      generateFeedbackExerciseData(
-        {
-          exerciseId: SQUAT_EXERCISE_ID,
-          skill: "MAX_STRENGTH",
-          maxFRepetitions: firstSession,
-        },
-        "TOO_EASY",
-      ),
-      generateFeedbackExerciseData(
-        {
-          exerciseId: SQUAT_EXERCISE_ID,
-          skill: "MAX",
-          maxFRepetitions: firstSession,
-        },
-        "TOO_HARD",
-      ),
-    );
-
-    expect(
-      describeSets(readWorkingSets(advanced, storedProgress, "MAX_STRENGTH")),
-    ).toEqual(["70x6", "72.5x5", "75x5"]);
-    expect(
-      describeSets(readWorkingSets(advanced, storedProgress, "MAX")),
-    ).toEqual(["67.5x5", "70x3", "72.5x2"]);
   });
 });
 

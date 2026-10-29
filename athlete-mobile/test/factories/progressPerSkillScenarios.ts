@@ -6,7 +6,6 @@ import type { GeneratedSetListEntry } from "@/features/training/models/SetListEn
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { toUserExerciseDataList } from "@/schemas/generator.schema";
 import { useAuthStore } from "@/store/authStore";
-import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { usePlacesStore } from "@/store/placesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
@@ -16,7 +15,6 @@ import {
   generateFrontSquatBranchData,
   generateFrontSquatPlanUser,
   generateFrontSquatRecord,
-  generateFrontSquatTemplate,
   generateStudioWorkoutRequest,
 } from "./frontSquatWorkout";
 import { generateStudioPlanInputs } from "./studioPlanInputs";
@@ -33,32 +31,6 @@ export const readStoredProgress = (): ExerciseProgressSourceType => {
   const { exerciseProgress, exerciseData } =
     useExerciseProgressStore.getState();
   return { exerciseProgress, exerciseData };
-};
-
-/**
- * Saves two short workouts of the SA skill and stores one SA front squat
- * record at 20 kg and 9 repetitions with a TOO_EASY feedback.
- *
- * seedSharedSkillWorkouts()
- * → { first: { id: "<uuid>" }, second: { id: "<uuid>" } }
- */
-export const seedSharedSkillWorkouts = () => {
-  const first = useCustomWorkoutsStore
-    .getState()
-    .saveCustomWorkout(generateFrontSquatTemplate("first", "SA"), null);
-  const second = useCustomWorkoutsStore
-    .getState()
-    .saveCustomWorkout(generateFrontSquatTemplate("second", "SA"), null);
-  useExerciseProgressStore.setState(
-    generateStoredProgress(
-      generateFrontSquatRecord("SA", {
-        weight: 20,
-        repetition: 9,
-        feedback: { difficulty: "TOO_EASY" },
-      }),
-    ),
-  );
-  return { first, second };
 };
 
 /**

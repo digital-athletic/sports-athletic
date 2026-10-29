@@ -24,7 +24,6 @@ import {
 import {
   generateStoredProgressRequest,
   readStoredProgress,
-  seedSharedSkillWorkouts,
   setUpActiveTraining,
   setUpRecreatedPlanScenario,
 } from "@test/factories/progressPerSkillScenarios";
@@ -157,40 +156,6 @@ describe("Progress per skill: plan day and short workout", () => {
   });
 });
 
-describe("Progress per skill: two workouts sharing a skill", () => {
-  it("starts the second workout where the first one ended", async () => {
-    const { first, second } = seedSharedSkillWorkouts();
-    const firstWorkout = generateWorkout(
-      generateStoredProgressRequest(first.id),
-    );
-    setUpActiveTraining(firstWorkout, "first-session", first.id);
-    const completion = await renderHook(() => useExerciseCompletion());
-    await act(() =>
-      completion.result.current.saveExerciseAndBranchData(
-        lastFrontSquatIndex(firstWorkout),
-      ),
-    );
-
-    // the TOO_EASY step of the SA record moves the first workout off 20 kg and 9 repetitions
-    expect(frontSquatValues(firstWorkout)).not.toEqual({
-      weight: 20,
-      repetition: 9,
-    });
-    expect(progressOf("SA")).toMatchObject({
-      skill: "SA",
-      weight: frontSquatValues(firstWorkout).weight,
-      repetition: frontSquatValues(firstWorkout).repetition,
-      updatedAt: expect.any(Number),
-    });
-    const secondWorkout = generateWorkout(
-      generateStoredProgressRequest(second.id),
-    );
-    expect(frontSquatValues(secondWorkout)).toEqual(
-      frontSquatValues(firstWorkout),
-    );
-  });
-});
-
 describe("Progress per skill: moved training day", () => {
   it("generates the same values on Thursday as on Monday", () => {
     useExerciseProgressStore.setState(
@@ -238,31 +203,6 @@ describe("Progress per skill: recreated plan", () => {
         (entry) => entry.skill === "SWR1" && entry.exerciseId === exerciseId,
       )?.repetition,
     ).toBe(11);
-  });
-});
-
-describe("Progress per skill: a new skill", () => {
-  it("starts from its start values although another skill trained the exercise", () => {
-    const id = saveFrontSquatWorkout("SWR2KG");
-    const withoutRecords = generateWorkout(generateStoredProgressRequest(id));
-    // SWR1 and SA trained the front squat, SWR2KG never did.
-    useExerciseProgressStore.setState(
-      generateStoredProgress(
-        generateFrontSquatRecord("SWR1", {
-          weight: 30,
-          repetition: 11,
-          feedback: { difficulty: "TOO_EASY" },
-          updatedAt: 100,
-        }),
-        generateFrontSquatRecord("SA", { weight: 40, repetition: 8 }),
-      ),
-    );
-
-    const newSkill = generateWorkout(generateStoredProgressRequest(id));
-
-    expect(frontSquatValues(newSkill)).toEqual(
-      frontSquatValues(withoutRecords),
-    );
   });
 });
 

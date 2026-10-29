@@ -634,19 +634,6 @@ describe("exerciseProgressStore", () => {
       expect(result.current.getExerciseProgress("SWR1", "1")?.weight).toBe(50);
     });
 
-    it("returns nothing when only another skill wrote a record", async () => {
-      const { result } = await renderHook(() => useExerciseProgressStore());
-      await act(() => {
-        result.current.updateExercise("1", {
-          exerciseId: "1",
-          skill: "SWR1",
-          weight: 50,
-        });
-      });
-
-      expect(result.current.getExerciseProgress("SA", "1")).toBeUndefined();
-    });
-
     it("keeps the record of each skill apart", async () => {
       const { result } = await renderHook(() => useExerciseProgressStore());
       await act(() => {

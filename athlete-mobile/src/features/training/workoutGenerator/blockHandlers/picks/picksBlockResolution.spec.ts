@@ -88,6 +88,43 @@ describe("picksBlockResolution: bundled templates", () => {
   });
 });
 
+describe("picksBlockResolution: hypertrophy and explosive power", () => {
+  it.each<{ skill: string; tag: string; equipment: string[]; tree: string }>([
+    { skill: "SWR1", tag: "SKILL_SWR", equipment: WEIGHTS, tree: "SWR1" },
+    { skill: "SWR2", tag: "SKILL_SWR", equipment: [], tree: "SWR1KG" },
+    {
+      skill: "SK",
+      tag: "SKILL_EXPLOSIVE_POWER",
+      equipment: WEIGHTS,
+      tree: "SK",
+    },
+    {
+      skill: "SKKG",
+      tag: "SKILL_EXPLOSIVE_POWER",
+      equipment: [],
+      tree: "SKKG",
+    },
+  ])(
+    "draws $skill from $tree with equipment $equipment",
+    ({ skill, tag, equipment, tree }) => {
+      const block = generatePicksBlock(skill, {
+        picks: [{ tags: [tag], count: 3 }],
+      });
+      const { blocks } = resolvePicksBlocks(
+        generateTemplate([block], { id: "SYN", name: { en: "SYN" } }),
+        { equipment, skillCatalog: loadSkillCatalog() },
+        getAllSkillTrees(),
+      );
+      const treeIds = Object.keys(getAllSkillTrees()[tree]);
+
+      expect(Object.keys(blocks[0].pool).length).toBeGreaterThan(0);
+      expect(treeIds).toEqual(
+        expect.arrayContaining(Object.keys(blocks[0].pool)),
+      );
+    },
+  );
+});
+
 describe("picksBlockResolution: block values", () => {
   it("reads the defaults from the given skill catalog", () => {
     expect(

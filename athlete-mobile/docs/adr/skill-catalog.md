@@ -63,8 +63,8 @@ type TimingEntry = TimingFields;
 
 A skill catalog entry either names a skill tree or is timing-only:
 
-- **With a skill tree.** The 14 skills of the bundled trainings. A picks block accepts only these skills; a picks block on any other skill fails with `NO_EXERCISES/SKILL_TREE`.
-- **Timing-only.** The 20 training day skills without a bundled training, for example `SWR1`, `SK`, `MAX`, and the cardio zones. Their skill trees stay with `getSkillTree`, which filters them per training place in ways no literal tree list expresses. A timing-only entry sets none of `skillTree`, `focusArea`, `progression`, `painRegions`, `countBy`, and `fallbackToWholeTree`.
+- **With a skill tree.** The 14 skills of the bundled trainings, plus hypertrophy (`SWR1`, `SWR1KG`, `SWR2`, `SWR2KG`) and explosive power (`SK`, `SKKG`). A picks block accepts only these 20 skills; a picks block on any other skill fails with `NO_EXERCISES/SKILL_TREE`. All four hypertrophy codes read `SWR1` with weights and `SWR1KG` without, both explosive power codes read `SK` and `SKKG`. These six entries set no `focusArea` and no `progression`, so the stats credit `SWR` and progression stays on, as on training days.
+- **Timing-only.** The 14 training day skills without a picks block, for example `SA`, `MAX`, and the cardio zones. Their skill trees stay with `getSkillTree`. A timing-only entry sets none of `skillTree`, `focusArea`, `progression`, `painRegions`, `countBy`, and `fallbackToWholeTree`.
 
 An entry defines `sets` and `rest` together or neither. The cardio and max strength entries leave both out, because their set list builders bring their own sets and rests.
 

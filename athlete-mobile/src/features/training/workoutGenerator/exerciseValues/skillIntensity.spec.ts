@@ -17,6 +17,7 @@ describe("skillIntensity: readSkillIntensity", () => {
     ["GKS", "bodyweight", "GKSKG"],
     ["PREVKNEE", "bodyweight", "PREV"],
     ["SK", "weighted", "SK"],
+    ["SK", "bodyweight", "SKKG"],
     ["MAX_STRENGTH", "weighted", "DEFAULT"],
     ["WU", "bodyweight", "DEFAULTKG"],
     ["constructor", "none", "DEFAULTKG"],

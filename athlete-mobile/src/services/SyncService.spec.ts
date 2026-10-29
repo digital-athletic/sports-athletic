@@ -229,8 +229,22 @@ describe("syncExerciseData", () => {
         max_f_repetitions: [{ level: "EASY", repetitions: 5 }],
         too_hard_count: 1,
       },
-      { onConflict: "user_id,exercise_id,workout_id" },
+      expect.any(Object),
     );
+  });
+
+  it("upserts on user, exercise, workout and skill", async () => {
+    const payload = {
+      exerciseId: "118",
+      skill: "SWR1" as const,
+      workoutId: "w-42",
+    };
+
+    await syncExerciseData(payload, TEST_USER_ID);
+
+    expect(mockUpsert).toHaveBeenCalledWith(expect.any(Object), {
+      onConflict: "user_id,exercise_id,workout_id,skill",
+    });
   });
 
   it("defaults workout_id to 'legacy' when workoutId is missing", async () => {
@@ -243,7 +257,7 @@ describe("syncExerciseData", () => {
 
     expect(mockUpsert).toHaveBeenCalledWith(
       expect.objectContaining({ workout_id: "legacy" }),
-      { onConflict: "user_id,exercise_id,workout_id" },
+      expect.any(Object),
     );
   });
 
@@ -279,7 +293,7 @@ describe("syncExerciseData", () => {
         max_f_repetitions: null,
         too_hard_count: null,
       },
-      { onConflict: "user_id,exercise_id,workout_id" },
+      expect.any(Object),
     );
   });
 });

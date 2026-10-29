@@ -176,7 +176,7 @@ export async function syncExerciseData(
 
   const { error } = await supabase
     .from("user_exercises")
-    .upsert(row, { onConflict: "user_id,exercise_id,workout_id" });
+    .upsert(row, { onConflict: "user_id,exercise_id,workout_id,skill" });
 
   if (error) {
     throw new Error(`Failed to sync exercise data: ${error.message}`);

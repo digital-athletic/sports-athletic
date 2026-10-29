@@ -8,6 +8,7 @@ import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { ActiveTrainingType } from "./models/ActiveTraining";
 import { type MaxValuesType } from "./models/MaxValues";
+import type { SkillCode } from "@/schemas/generator.schema";
 import type { FocusArea } from "@/schemas/sync.schema";
 import { TrainingSelectionType, TrainingTimeType } from "./models/Training";
 import { UserExerciseDataType } from "./models/UserExerciseData";
@@ -58,9 +59,10 @@ type Actions = {
   setExerciseList: (list: UserExerciseDataType[] | null) => void;
   setExerciseFeedback: (
     exerciseId: string,
+    skill: SkillCode,
     feedback: ExerciseDifficultyType,
   ) => void;
-  setExerciseSkipped: (exerciseId: string) => void;
+  setExerciseSkipped: (exerciseId: string, skill: SkillCode) => void;
   updateExerciseProgress: (
     exerciseId: string,
     weight?: number,
@@ -117,10 +119,10 @@ export const useTrainingStore = create<TrainingState>()(
         set((state) => {
           state.exerciseList = list;
         }),
-      setExerciseFeedback: (exerciseId, feedback) =>
+      setExerciseFeedback: (exerciseId, skill, feedback) =>
         set((state) => {
           const exercise = state.exerciseList?.findLast(
-            (item) => item.exerciseId === exerciseId,
+            (item) => item.exerciseId === exerciseId && item.skill === skill,
           );
           if (exercise) {
             if (exercise.feedback) {
@@ -130,10 +132,10 @@ export const useTrainingStore = create<TrainingState>()(
             }
           }
         }),
-      setExerciseSkipped: (exerciseId) =>
+      setExerciseSkipped: (exerciseId, skill) =>
         set((state) => {
           const exercise = state.exerciseList?.find(
-            (item) => item.exerciseId === exerciseId,
+            (item) => item.exerciseId === exerciseId && item.skill === skill,
           );
           if (exercise) {
             exercise.skipped = true;

@@ -331,7 +331,7 @@ For weighted exercises, use the existing exercise-specific start and target weig
 
 ## Deferred feedback
 
-When progression is deferred to the next generation, stored feedback is applied exactly once using the feedback rules above. After application, the stored feedback is consumed.
+When progression is deferred to the next generation, stored feedback is applied exactly once using the feedback rules above. After application, the stored feedback is consumed. Feedback reaches the record only when the exercise is completed. Feedback given in a session that is skipped or aborted writes nothing.
 
 ## Worked example
 

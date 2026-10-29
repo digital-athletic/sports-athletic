@@ -1,15 +1,14 @@
 import { useTrainingStore } from "@/features/training/trainingStore";
-import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
-import { BASELINE_TRAINING_STATE } from "@/features/training/utils/testFixtures";
-import { type UserExerciseDataType } from "@/schemas/sync.schema";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
-import { useUserProfileStore } from "@/store/userProfileStore";
-import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { act, renderHook } from "@testing-library/react-native";
+import {
+  COMPLETION_EXERCISE_ID as EXERCISE_ID,
+  generateSetRows,
+  seedCompletionSession,
+} from "@test/factories/completionSession";
+import { generateStoredExerciseData } from "@test/factories/storedExerciseData";
 import { useExerciseCompletion } from "./useExerciseCompletion";
-
-const EXERCISE_ID = "900";
 
 let mockExerciseValues: object = {};
 
@@ -44,45 +43,6 @@ jest.mock("@/data/skillTreeRegistry", () => {
   };
 });
 
-const seed = (entry: Partial<UserExerciseDataType>) => {
-  useTrainingStore.setState(BASELINE_TRAINING_STATE);
-  useTrainingStore.setState({
-    exerciseList: [
-      {
-        exerciseId: EXERCISE_ID,
-        skill: "SWR2",
-        branchId: "-1",
-        set: [3, 3],
-        weight: 70,
-        weightType: "weightFMax",
-        ...entry,
-      },
-    ],
-    activeTraining: { id: "training-1", type: "PLAN" },
-  });
-  useUserWorkoutStore.setState({
-    workoutData: {
-      sport: "OTHER_SPORT",
-      tags: { LEVEL: ["ADVANCED"] },
-      seasonPhase: { type: null, endDate: "2026-01-01" },
-      maxValues: {
-        ...DEFAULT_MAX_VALUES,
-        hipHinge: { ...DEFAULT_MAX_VALUES.hipHinge, barbell: 121 },
-      },
-    },
-  });
-  useUserProfileStore.setState({
-    personalData: { username: "test", gender: "MALE", birthday: "1990-01-01" },
-  });
-  const progress = useExerciseProgressStore.getState();
-  progress.resetProgress();
-  progress.updateExercise(EXERCISE_ID, {
-    exerciseId: EXERCISE_ID,
-    skill: "SWR2",
-    feedback: { difficulty: "TOO_EASY" },
-  });
-};
-
 const storeValues = () =>
   useExerciseProgressStore.getState().updateExercise(EXERCISE_ID, {
     exerciseId: EXERCISE_ID,
@@ -98,7 +58,7 @@ const stored = () =>
 
 describe("useExerciseCompletion: standard progression", () => {
   it("drops the stored feedback when the athlete gives none", async () => {
-    seed({ repetition: 10 });
+    seedCompletionSession({ repetition: 10 });
     const { result } = await renderHook(() => useExerciseCompletion());
 
     await act(() => result.current.saveExerciseAndBranchData(0));
@@ -108,7 +68,7 @@ describe("useExerciseCompletion: standard progression", () => {
   });
 
   it("keeps feedback given in the same tick as the save", async () => {
-    seed({ repetition: 10 });
+    seedCompletionSession({ repetition: 10 });
     const { result } = await renderHook(() => useExerciseCompletion());
 
     await act(() => {
@@ -120,7 +80,10 @@ describe("useExerciseCompletion: standard progression", () => {
   });
 
   it("raises the weight by one weight step after TOO_EASY at the rep target", async () => {
-    seed({ repetition: 12, feedback: { difficulty: "TOO_EASY" } });
+    seedCompletionSession({
+      repetition: 12,
+      feedback: { difficulty: "TOO_EASY" },
+    });
     const { result } = await renderHook(() => useExerciseCompletion());
 
     await act(() => result.current.saveExerciseAndBranchData(0));
@@ -133,7 +96,7 @@ describe("useExerciseCompletion: standard progression", () => {
 
   it("stores the forced load as the weight", async () => {
     // 33.06 % of 121 kg is 40 kg, the next step of 2.5 % rounds to 40 kg again
-    seed({
+    seedCompletionSession({
       repetition: 12,
       weight: 40 / 1.21,
       feedback: { difficulty: "TOO_EASY" },
@@ -150,7 +113,7 @@ describe("useExerciseCompletion: standard progression", () => {
       difficulty: "TOO_HARD" | "TOO_EASY" | null,
       previousCount: number,
     ) => {
-      seed({ repetition: 10, feedback: { difficulty } });
+      seedCompletionSession({ repetition: 10, feedback: { difficulty } });
       useExerciseProgressStore.getState().updateExercise(EXERCISE_ID, {
         exerciseId: EXERCISE_ID,
         skill: "SWR2",
@@ -181,7 +144,7 @@ describe("useExerciseCompletion: standard progression", () => {
   });
 
   it("resets the record when TOO_HARD at the lowest load levels down", async () => {
-    seed({
+    seedCompletionSession({
       branchId: "77",
       repetition: 10,
       weight: 40,
@@ -201,13 +164,102 @@ describe("useExerciseCompletion: standard progression", () => {
   });
 
   it("keeps the values but clears the feedback when no easier exercise exists", async () => {
-    seed({ repetition: 10, weight: 40, feedback: { difficulty: "TOO_HARD" } });
+    seedCompletionSession({
+      repetition: 10,
+      weight: 40,
+      feedback: { difficulty: "TOO_HARD" },
+    });
     const { result } = await renderHook(() => useExerciseCompletion());
 
     await act(() => result.current.saveExerciseAndBranchData(0));
 
     expect(stored()?.weight).toBe(40);
     expect(stored()?.feedback?.difficulty).toBeNull();
+  });
+});
+
+// Copy of the exercise data and branch levels, to compare before and after.
+// Exercise totals grow with every completed set row, so they stay out.
+const progressSnapshot = (): unknown => {
+  const { exerciseData, branchData } = useExerciseProgressStore.getState();
+  return JSON.parse(JSON.stringify({ exerciseData, branchData }));
+};
+
+describe("useExerciseCompletion: feedback on completion", () => {
+  it("writes nothing when only the feedback is given", async () => {
+    seedCompletionSession({ repetition: 10 });
+    const before = progressSnapshot();
+    const { result } = await renderHook(() => useExerciseCompletion());
+
+    await act(() => result.current.handleFeedback(0, "SUCCEEDED"));
+
+    expect(progressSnapshot()).toEqual(before);
+  });
+
+  it("writes the feedback once when the last set row completes before the earlier row", async () => {
+    seedCompletionSession({}, []);
+    useTrainingStore.setState({
+      exerciseList: generateSetRows(2, { repetition: 10 }),
+    });
+    const { result } = await renderHook(() => useExerciseCompletion());
+
+    await act(() => {
+      result.current.handleFeedback(1, "SUCCEEDED");
+      result.current.saveExerciseAndBranchData(1);
+    });
+    await act(() => result.current.saveExerciseAndBranchData(0));
+
+    expect(stored()?.feedback).toEqual({
+      difficulty: "SUCCEEDED",
+      streakCounter: 1,
+    });
+    expect(stored()?.set).toEqual([2, 2]);
+  });
+
+  it("writes nothing when the athlete skips the exercise", async () => {
+    seedCompletionSession({ repetition: 10 });
+    const before = progressSnapshot();
+    const { result } = await renderHook(() => useExerciseCompletion());
+
+    await act(() => result.current.handleExerciseSkipped(0));
+
+    expect(progressSnapshot()).toEqual(before);
+  });
+
+  it("leaves the progress unchanged when the athlete stops before the last set row", async () => {
+    // Sets 1 and 2 of 3 are completed. The athlete aborts before set 3.
+    seedCompletionSession({});
+    useTrainingStore.setState({
+      exerciseList: generateSetRows(3, { repetition: 10 }),
+    });
+    const before = progressSnapshot();
+    const { result } = await renderHook(() => useExerciseCompletion());
+
+    await act(() => result.current.handleFeedback(1, "SUCCEEDED"));
+    await act(() => result.current.saveExerciseAndBranchData(0));
+    await act(() => result.current.saveExerciseAndBranchData(1));
+
+    expect(progressSnapshot()).toEqual(before);
+  });
+
+  it("gives the feedback to the session row of its skill when one exercise runs under two skills", async () => {
+    // Session rows: [{ 900, SWR2, set 3 of 3 }, { 900, SA, set 3 of 3 }]
+    seedCompletionSession({});
+    useTrainingStore.setState({
+      exerciseList: [
+        ...generateSetRows(1, { skill: "SWR2", set: [3, 3], repetition: 10 }),
+        ...generateSetRows(1, { skill: "SA", set: [3, 3], repetition: 10 }),
+      ],
+    });
+    const { result } = await renderHook(() => useExerciseCompletion());
+
+    await act(() => result.current.handleFeedback(0, "TOO_HARD"));
+    await act(() => result.current.saveExerciseAndBranchData(0));
+
+    expect(stored()?.feedback?.difficulty).toBe("TOO_HARD");
+    expect(useTrainingStore.getState().exerciseList?.[1]?.feedback).toBe(
+      undefined,
+    );
   });
 });
 
@@ -221,7 +273,11 @@ describe("useExerciseCompletion: block values after a weight increase", () => {
 
   const completeGksAt = async (type: string, repetition: number) => {
     mockExerciseValues = authored;
-    seed({ skill: "GKS", repetition, feedback: { difficulty: "TOO_EASY" } });
+    seedCompletionSession({
+      skill: "GKS",
+      repetition,
+      feedback: { difficulty: "TOO_EASY" },
+    });
     useTrainingStore.setState({ activeTraining: { id: "training-1", type } });
     const { result } = await renderHook(() => useExerciseCompletion());
 
@@ -284,7 +340,7 @@ describe("useExerciseCompletion: block values after a weight increase", () => {
 
 describe("useExerciseCompletion: max strength", () => {
   it("resets the record when the final value switches to the harder exercise", async () => {
-    seed({
+    seedCompletionSession({
       skill: "MAX_STRENGTH",
       branchId: "78",
       feedback: { difficulty: "SUCCEEDED" },
@@ -306,11 +362,41 @@ describe("useExerciseCompletion: max strength", () => {
       branchId: "78",
     });
   });
+
+  it("stores no rating when a max strength session ends without one", async () => {
+    // The record holds SUCCEEDED from the last session. This session has no rating.
+    const ladder = [
+      { level: "HARD", repetitions: 6, weightPercentage: 70 },
+      { level: "HARD", repetitions: 5, weightPercentage: 75 },
+      { level: "HARD", repetitions: 3, weightPercentage: 80 },
+    ] as const;
+    seedCompletionSession(
+      { skill: "MAX_STRENGTH", maxFRepetitions: [...ladder] },
+      [
+        generateStoredExerciseData({
+          exerciseId: EXERCISE_ID,
+          skill: "MAX_STRENGTH",
+          maxFRepetitions: [...ladder],
+          feedback: { difficulty: "SUCCEEDED", streakCounter: 1 },
+        }),
+      ],
+    );
+    const { result } = await renderHook(() => useExerciseCompletion());
+
+    await act(() => result.current.saveExerciseAndBranchData(0));
+
+    expect(stored()?.feedback?.difficulty).toBeNull();
+    expect(stored()?.maxFRepetitions).toEqual([...ladder]);
+  });
 });
 
 describe("useExerciseCompletion: short workout branch level", () => {
   it("saves the level of a branch from a skill tree the template lists", async () => {
-    seed({ skill: "PREVKNEE", branchId: "79", repetition: 10 });
+    seedCompletionSession({
+      skill: "PREVKNEE",
+      branchId: "79",
+      repetition: 10,
+    });
     const { result } = await renderHook(() => useExerciseCompletion());
 
     await act(() => result.current.saveExerciseAndBranchData(0));
@@ -319,7 +405,7 @@ describe("useExerciseCompletion: short workout branch level", () => {
   });
 
   it("completes an exercise whose skill has no skill tree", async () => {
-    seed({ skill: "PREVHIP", branchId: "80", repetition: 10 });
+    seedCompletionSession({ skill: "PREVHIP", branchId: "80", repetition: 10 });
     const { result } = await renderHook(() => useExerciseCompletion());
 
     await expect(
@@ -330,7 +416,7 @@ describe("useExerciseCompletion: short workout branch level", () => {
 
 describe("useExerciseCompletion: cardio", () => {
   it("stores no interval count after the last cardio interval", async () => {
-    seed({
+    seedCompletionSession({
       skill: "CARDIO_2",
       branchId: "b1",
       set: [4, 4],

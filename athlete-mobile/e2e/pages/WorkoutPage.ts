@@ -13,6 +13,7 @@ const PersistedExerciseEntrySchema = v.object({
 const PersistedExerciseProgressStorageSchema = v.object({
   state: v.object({
     exerciseData: v.record(v.string(), PersistedExerciseEntrySchema),
+    exerciseTotals: v.optional(v.record(v.string(), v.unknown()), {}),
   }),
 });
 
@@ -126,9 +127,8 @@ export class WorkoutPage extends BasePage {
 
   /**
    * Waits for Zustand's persist middleware to flush exercise data to localStorage.
-   * Polls localStorage until exercise-progress-storage contains exerciseData with
-   * at least one exercise entry that has been fully saved by saveExerciseAndBranchData.
-   * Uses valibot to validate the persisted data shape in Node.js context.
+   * A completed exercise always adds totals, as its last write; a workout without
+   * progression or with a level up stores no progress values.
    */
   private async waitForExerciseDataPersisted(timeoutMs = 5000) {
     await expect
@@ -143,7 +143,9 @@ export class WorkoutPage extends BasePage {
             JSON.parse(raw),
           );
           if (!result.success) return false;
-          return Object.values(result.output.state.exerciseData).some(
+          const { exerciseData, exerciseTotals } = result.output.state;
+          if (Object.keys(exerciseTotals).length > 0) return true;
+          return Object.values(exerciseData).some(
             (ex) =>
               ex.weight !== undefined ||
               ex.repetition !== undefined ||

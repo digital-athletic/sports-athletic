@@ -215,7 +215,7 @@ describe("useTrainingStore", () => {
       const { result } = await renderHook(() => useTrainingStore());
 
       await act(() => {
-        result.current.setExerciseFeedback("10", "SUCCEEDED");
+        result.current.setExerciseFeedback("10", "SWR1", "SUCCEEDED");
       });
 
       expect(result.current.exerciseList?.[0]?.feedback?.difficulty).toBe(
@@ -227,7 +227,7 @@ describe("useTrainingStore", () => {
       const { result } = await renderHook(() => useTrainingStore());
 
       await act(() => {
-        result.current.setExerciseFeedback("20", "TOO_EASY");
+        result.current.setExerciseFeedback("20", "CARDIO_1", "TOO_EASY");
       });
 
       expect(result.current.exerciseList?.[1]?.feedback?.difficulty).toBe(
@@ -239,7 +239,7 @@ describe("useTrainingStore", () => {
       const { result } = await renderHook(() => useTrainingStore());
 
       await act(() => {
-        result.current.setExerciseFeedback("30", "TOO_HARD");
+        result.current.setExerciseFeedback("30", "WU", "TOO_HARD");
       });
 
       expect(result.current.exerciseList?.[2]?.feedback?.difficulty).toBe(
@@ -251,8 +251,8 @@ describe("useTrainingStore", () => {
       const { result } = await renderHook(() => useTrainingStore());
 
       await act(() => {
-        result.current.setExerciseFeedback("10", "SUCCEEDED");
-        result.current.setExerciseFeedback("30", "TOO_EASY");
+        result.current.setExerciseFeedback("10", "SWR1", "SUCCEEDED");
+        result.current.setExerciseFeedback("30", "WU", "TOO_EASY");
       });
 
       expect(result.current.exerciseList?.[0]?.feedback?.difficulty).toBe(
@@ -268,14 +268,14 @@ describe("useTrainingStore", () => {
       const { result } = await renderHook(() => useTrainingStore());
 
       await act(() => {
-        result.current.setExerciseFeedback("10", "SUCCEEDED");
+        result.current.setExerciseFeedback("10", "SWR1", "SUCCEEDED");
       });
       expect(result.current.exerciseList?.[0]?.feedback?.difficulty).toBe(
         "SUCCEEDED",
       );
 
       await act(() => {
-        result.current.setExerciseFeedback("10", "TOO_HARD");
+        result.current.setExerciseFeedback("10", "SWR1", "TOO_HARD");
       });
       expect(result.current.exerciseList?.[0]?.feedback?.difficulty).toBe(
         "TOO_HARD",
@@ -287,7 +287,7 @@ describe("useTrainingStore", () => {
       const { result } = await renderHook(() => useTrainingStore());
 
       await act(() => {
-        result.current.setExerciseFeedback("10", "SUCCEEDED");
+        result.current.setExerciseFeedback("10", "SWR1", "SUCCEEDED");
       });
 
       expect(result.current.exerciseList).toBeNull();
@@ -307,7 +307,7 @@ describe("useTrainingStore", () => {
       const { result } = await renderHook(() => useTrainingStore());
 
       await act(() => {
-        result.current.setExerciseSkipped("10");
+        result.current.setExerciseSkipped("10", "SWR1");
       });
 
       expect(result.current.exerciseList?.[0].skipped).toBe(true);
@@ -317,7 +317,7 @@ describe("useTrainingStore", () => {
       const { result } = await renderHook(() => useTrainingStore());
 
       await act(() => {
-        result.current.setExerciseSkipped("20");
+        result.current.setExerciseSkipped("20", "CARDIO_1");
       });
 
       expect(result.current.exerciseList?.[0].skipped).toBe(false);
@@ -329,8 +329,8 @@ describe("useTrainingStore", () => {
       const { result } = await renderHook(() => useTrainingStore());
 
       await act(() => {
-        result.current.setExerciseSkipped("10");
-        result.current.setExerciseSkipped("30");
+        result.current.setExerciseSkipped("10", "SWR1");
+        result.current.setExerciseSkipped("30", "WU");
       });
 
       expect(result.current.exerciseList?.[0].skipped).toBe(true);
@@ -343,10 +343,54 @@ describe("useTrainingStore", () => {
       const { result } = await renderHook(() => useTrainingStore());
 
       await act(() => {
-        result.current.setExerciseSkipped("10");
+        result.current.setExerciseSkipped("10", "SWR1");
       });
 
       expect(result.current.exerciseList).toBeNull();
+    });
+  });
+
+  describe("setExerciseFeedback and setExerciseSkipped: same exercise under two skills", () => {
+    // Exercise 900 appears under SWR2 and SA: [{ 900, SWR2 }, { 900, SA }]
+    const buildTwoSkillRows = (): UserExerciseDataType[] => [
+      {
+        skill: "SWR2",
+        exerciseId: "900",
+        feedback: { difficulty: null },
+        skipped: false,
+      },
+      {
+        skill: "SA",
+        exerciseId: "900",
+        feedback: { difficulty: null },
+        skipped: false,
+      },
+    ];
+
+    it("sets feedback only on the row of the given skill", async () => {
+      useTrainingStore.setState({ exerciseList: buildTwoSkillRows() });
+      const { result } = await renderHook(() => useTrainingStore());
+
+      await act(() => {
+        result.current.setExerciseFeedback("900", "SWR2", "TOO_HARD");
+      });
+
+      expect(result.current.exerciseList?.[0]?.feedback?.difficulty).toBe(
+        "TOO_HARD",
+      );
+      expect(result.current.exerciseList?.[1]?.feedback?.difficulty).toBeNull();
+    });
+
+    it("marks only the row of the given skill as skipped", async () => {
+      useTrainingStore.setState({ exerciseList: buildTwoSkillRows() });
+      const { result } = await renderHook(() => useTrainingStore());
+
+      await act(() => {
+        result.current.setExerciseSkipped("900", "SA");
+      });
+
+      expect(result.current.exerciseList?.[0]?.skipped).toBe(false);
+      expect(result.current.exerciseList?.[1]?.skipped).toBe(true);
     });
   });
 
@@ -1103,7 +1147,7 @@ describe("useTrainingStore", () => {
       await act(() => {
         result.current.addSkillTime("SWR", 30000);
         result.current.addPauseTime(2000);
-        result.current.setExerciseFeedback("10", "SUCCEEDED");
+        result.current.setExerciseFeedback("10", "SWR1", "SUCCEEDED");
       });
 
       expect(result.current.time.skill.SWR).toBe(30000);
@@ -1230,8 +1274,8 @@ describe("useTrainingStore", () => {
 
       await act(() => {
         result.current.setExerciseList(null);
-        result.current.setExerciseFeedback("10", "SUCCEEDED");
-        result.current.setExerciseSkipped("10");
+        result.current.setExerciseFeedback("10", "SWR1", "SUCCEEDED");
+        result.current.setExerciseSkipped("10", "SWR1");
       });
 
       expect(result.current.exerciseList).toBeNull();
@@ -1250,7 +1294,7 @@ describe("useTrainingStore", () => {
 
       await act(() => {
         result.current.setExerciseList(exercises);
-        result.current.setExerciseFeedback("-1", "SUCCEEDED"); // Unknown exercise Id
+        result.current.setExerciseFeedback("-1", "SWR1", "SUCCEEDED"); // Unknown exercise Id
       });
 
       expect(

@@ -128,7 +128,11 @@ export default function EquipmentDetailsScreen() {
           ),
         }}
       />
-      <ScrollBox flex={1} backgroundColor="white">
+      <ScrollBox
+        flex={1}
+        backgroundColor="white"
+        contentInsetAdjustmentBehavior="automatic"
+      >
         <Box padding="m">
           <Text variant="title" color="darkGrey3">
             {t(equipmentCountKey)}

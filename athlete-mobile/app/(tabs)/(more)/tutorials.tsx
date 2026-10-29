@@ -81,15 +81,18 @@ const TutorialsScreen: FC = () => {
         }}
       />
       <Box flex={1} backgroundColor="lightGrey2">
-        {loading && (
-          <Box padding="m" alignItems="center">
-            <Text variant="body">{t("more.loadingTutorials")}</Text>
-          </Box>
-        )}
         <FlatList
           data={tutorials}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <TutorialListItem item={item} />}
+          ListHeaderComponent={
+            loading ? (
+              <Box padding="m" alignItems="center">
+                <Text variant="body">{t("more.loadingTutorials")}</Text>
+              </Box>
+            ) : null
+          }
+          contentInsetAdjustmentBehavior="automatic"
           showsVerticalScrollIndicator={false}
           windowSize={3}
           maxToRenderPerBatch={2}

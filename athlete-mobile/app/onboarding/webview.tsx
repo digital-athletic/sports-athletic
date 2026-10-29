@@ -17,7 +17,12 @@ export default function OnboardingWebViewScreen() {
       <Stack.Screen
         options={{ headerShown: true, title: t("onboarding.webContent") }}
       />
-      {url && <WebView source={{ uri: url }} />}
+      {url && (
+        <WebView
+          source={{ uri: url }}
+          contentInsetAdjustmentBehavior="automatic"
+        />
+      )}
     </>
   );
 }

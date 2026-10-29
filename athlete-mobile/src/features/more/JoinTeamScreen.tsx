@@ -132,6 +132,7 @@ export default function JoinTeamScreen() {
       <ScrollBox
         flex={1}
         backgroundColor="lightGrey2"
+        contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ padding: 20 }}
       >
         <Box

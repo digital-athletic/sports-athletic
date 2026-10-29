@@ -314,7 +314,7 @@ export default function TrainingDays() {
         backgroundColor="lightGrey1"
         style={{ paddingBottom: insets.bottom }}
       >
-        <ScrollBox>
+        <ScrollBox contentInsetAdjustmentBehavior="automatic">
           <ProgressBar progress={progress} maximum={maxSteps} />
 
           {showCoaching && (

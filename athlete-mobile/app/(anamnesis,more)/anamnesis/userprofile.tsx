@@ -96,7 +96,11 @@ export default function UserProfileScreen() {
           headerLeft: () => <BackHeader />,
         }}
       />
-      <ScrollBox flex={1} backgroundColor="lightGrey1">
+      <ScrollBox
+        flex={1}
+        backgroundColor="lightGrey1"
+        contentInsetAdjustmentBehavior="automatic"
+      >
         <ProgressBar progress={currentStep} maximum={totalSteps} />
         <AnamnesisQuestionContainer
           title={{

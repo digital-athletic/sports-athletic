@@ -113,6 +113,7 @@ export default function SportScreen() {
       <ScrollBox
         flex={1}
         backgroundColor="lightGrey1"
+        contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ paddingBottom: insets.bottom }}
       >
         {renderSports()}

@@ -45,6 +45,7 @@ export default function MoreScreen() {
       <ScrollBox
         flex={1}
         backgroundColor="lightGrey2"
+        contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ marginTop: 10 }}
       >
         {hasTestAccess && (

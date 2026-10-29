@@ -179,32 +179,51 @@
     "rest": { "withinSuperset": 30, "betweenSets": 30, "afterExercise": 30 }
   },
   "SWR1": {
+    "skillTree": { "withWeights": ["SWR1"], "withoutWeights": ["SWR1KG"] },
+    "countBy": "exercises",
+    "fallbackToWholeTree": false,
     "superset": "muscles",
     "sets": 2,
     "rest": { "withinSuperset": 30, "betweenSets": 90, "afterExercise": 60 }
   },
   "SWR1KG": {
+    "skillTree": { "withWeights": ["SWR1"], "withoutWeights": ["SWR1KG"] },
+    "countBy": "exercises",
+    "fallbackToWholeTree": false,
     "superset": "muscles",
     "sets": 2,
     "rest": { "withinSuperset": 30, "betweenSets": 90, "afterExercise": 60 }
   },
   "SWR2": {
+    "skillTree": { "withWeights": ["SWR1"], "withoutWeights": ["SWR1KG"] },
+    "countBy": "exercises",
+    "fallbackToWholeTree": false,
     "superset": "muscles",
     "sets": 2,
     "rest": { "withinSuperset": 30, "betweenSets": 90, "afterExercise": 60 }
   },
   "SWR2KG": {
+    "skillTree": { "withWeights": ["SWR1"], "withoutWeights": ["SWR1KG"] },
+    "countBy": "exercises",
+    "fallbackToWholeTree": false,
     "superset": "muscles",
     "sets": 2,
     "rest": { "withinSuperset": 30, "betweenSets": 90, "afterExercise": 60 }
   },
   "SK": {
+    "skillTree": { "withWeights": ["SK"], "withoutWeights": ["SKKG"] },
+    "countBy": "exercises",
+    "fallbackToWholeTree": false,
     "intensity": "SK",
+    "intensityWithoutWeights": "SKKG",
     "superset": "muscles",
     "sets": 2,
     "rest": { "withinSuperset": 60, "betweenSets": 180, "afterExercise": 60 }
   },
   "SKKG": {
+    "skillTree": { "withWeights": ["SK"], "withoutWeights": ["SKKG"] },
+    "countBy": "exercises",
+    "fallbackToWholeTree": false,
     "intensity": "SKKG",
     "superset": "muscles",
     "sets": 2,

@@ -27,15 +27,18 @@ const TEMPLATE_IDS = [
   "PREVANKLE",
   "PREVSPINE",
 ];
-const TREE_CODES = [...TEMPLATE_IDS, "WUSPEZIAL"];
-const TIMING_CODES = [
-  "WUSKSA",
+const TREE_CODES = [
+  ...TEMPLATE_IDS,
+  "WUSPEZIAL",
   "SWR1",
   "SWR1KG",
   "SWR2",
   "SWR2KG",
   "SK",
   "SKKG",
+];
+const TIMING_CODES = [
+  "WUSKSA",
   "SA",
   "SAKG",
   "SAS",

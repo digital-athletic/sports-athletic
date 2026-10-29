@@ -5,7 +5,7 @@ import {
 } from "@/features/training/models/ExerciseTotals";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
 import type {
-  ExerciseProgressBySkillType,
+  ExerciseDataMapType,
   ExerciseProgressMapType,
   ExerciseProgressRecordType,
 } from "@/features/training/models/ExerciseProgress";
@@ -40,9 +40,11 @@ export type BranchDataMapType = Record<
 
 export type State = {
   // Exercise-level data, one record per skill
-  exerciseProgress: ExerciseProgressBySkillType;
-  // One record per exercise, named after the skill that wrote it last
-  exerciseData: ExerciseProgressMapType;
+  exerciseProgress: ExerciseProgressMapType;
+  // One record per exercise naming the skill that wrote it last; the legacy
+  // generator and the sync read it, and it holds the progress written before
+  // the records per skill existed
+  exerciseData: ExerciseDataMapType;
   branchData: BranchDataMapType;
 
   // Exercise totals (cumulative values)
@@ -120,15 +122,16 @@ const copyOthers = (
   if (data.set) target.set = data.set;
 };
 
-/** Merges `data` into the record of the exercise and stamps the writer and the time. */
+/** Merges `data` into the record of the exercise, names the writer and stamps the time. */
 const writeRecord = (
-  records: ExerciseProgressMapType,
+  records: ExerciseDataMapType,
   exerciseId: string,
   data: UserExerciseDataType,
   updatedAt: number,
 ): void => {
   const record = (records[exerciseId] ??= { exerciseId, skill: data.skill });
   mergeExerciseData(record, data);
+  // The record names its last writer, so readers know whose values it holds.
   record.skill = data.skill;
   record.updatedAt = updatedAt;
 };
@@ -328,8 +331,7 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
       },
 
       getExerciseProgress: (skill, exerciseId) =>
-        readOwnExerciseProgress(get().exerciseData, skill, exerciseId) ??
-        undefined,
+        readOwnExerciseProgress(get(), skill, exerciseId) ?? undefined,
 
       getBranchLevel: (branchId) => {
         const { branchData } = get();

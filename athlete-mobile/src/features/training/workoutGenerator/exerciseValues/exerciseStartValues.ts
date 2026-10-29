@@ -1,7 +1,7 @@
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
 import type { GenderTag } from "@/features/training/models/Intensity";
-import type { ExerciseProgressMapType } from "@/features/training/models/ExerciseProgress";
+import type { ExerciseProgressSourceType } from "@/features/training/models/ExerciseProgress";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
@@ -40,7 +40,7 @@ const DEFAULT_START_DURATION = 30;
 export interface ExerciseStartValueSource {
   readonly skillCatalog: SkillCatalog;
   readonly athlete: UserType;
-  readonly exerciseData: Readonly<ExerciseProgressMapType> | null;
+  readonly exerciseData: Readonly<ExerciseProgressSourceType> | null;
 }
 
 /** The block values start values read. */

@@ -6,6 +6,10 @@ import {
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import { syncManager } from "@/services/SyncManager";
 import { act, renderHook } from "@testing-library/react-native";
+import {
+  generateExerciseDataMap,
+  generateStoredExerciseData,
+} from "@test/factories/storedExerciseData";
 import { useExerciseProgressStore } from "./exerciseProgressStore";
 
 jest.mock("@/services/SyncManager", () => ({
@@ -634,7 +638,7 @@ describe("exerciseProgressStore", () => {
       expect(result.current.getExerciseProgress("SWR1", "1")?.weight).toBe(50);
     });
 
-    it("returns nothing when another skill wrote the record last", async () => {
+    it("returns nothing when only another skill wrote a record", async () => {
       const { result } = await renderHook(() => useExerciseProgressStore());
       await act(() => {
         result.current.updateExercise("1", {
@@ -647,7 +651,7 @@ describe("exerciseProgressStore", () => {
       expect(result.current.getExerciseProgress("SA", "1")).toBeUndefined();
     });
 
-    it("hands the merged record to the skill that wrote it last", async () => {
+    it("keeps the record of each skill apart", async () => {
       const { result } = await renderHook(() => useExerciseProgressStore());
       await act(() => {
         result.current.updateExercise("1", {
@@ -662,9 +666,26 @@ describe("exerciseProgressStore", () => {
         });
       });
 
-      expect(result.current.getExerciseProgress("SA", "1")).toEqual(
-        expect.objectContaining({ skill: "SA", weight: 50, repetition: 12 }),
-      );
+      expect(result.current.getExerciseProgress("SA", "1")).toEqual({
+        exerciseId: "1",
+        skill: "SA",
+        repetition: 12,
+        updatedAt: expect.any(Number),
+      });
+      expect(result.current.getExerciseProgress("SWR1", "1")?.weight).toBe(50);
+    });
+
+    it("falls back to the older record when its skill matches", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
+      const older = generateStoredExerciseData({ skill: "SA", weight: 40 });
+      await act(() => {
+        useExerciseProgressStore.setState({
+          exerciseData: generateExerciseDataMap(older),
+          exerciseProgress: {},
+        });
+      });
+
+      expect(result.current.getExerciseProgress("SA", "1")).toEqual(older);
       expect(result.current.getExerciseProgress("SWR1", "1")).toBeUndefined();
     });
   });

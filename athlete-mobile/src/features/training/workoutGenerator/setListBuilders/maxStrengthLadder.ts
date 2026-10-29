@@ -3,7 +3,7 @@ import {
   type LevelTag,
   WorkoutConstants,
 } from "@/constants/workoutConstants";
-import type { ExerciseProgressMapType } from "@/features/training/models/ExerciseProgress";
+import type { ExerciseProgressSourceType } from "@/features/training/models/ExerciseProgress";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
 import { readOwnExerciseProgress } from "@/features/training/utils/exerciseProgressLookup";
@@ -237,7 +237,7 @@ const readBufferTable = (athlete: UserType): BufferTable => {
 export const readMaxTrainingWeights = (
   exercise: ExerciseType,
   athlete: UserType,
-  exerciseData: Readonly<ExerciseProgressMapType> | null,
+  exerciseData: Readonly<ExerciseProgressSourceType> | null,
   skill: SkillCode,
 ): MaxTrainingWeightsResult => {
   const states = readNextSetStates(

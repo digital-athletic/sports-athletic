@@ -1,11 +1,8 @@
 import { syncManager } from "@/services/SyncManager";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { act, renderHook } from "@testing-library/react-native";
-import {
-  generateExerciseProgressMap,
-  generateStoredExerciseData,
-} from "@test/factories/storedExerciseData";
 import { useExerciseProgressStore } from "./exerciseProgressStore";
+import { STORE_VERSIONS } from "./storeVersions";
 
 jest.mock("@/services/SyncManager", () => ({
   syncManager: {
@@ -24,112 +21,121 @@ describe("exerciseProgressStore: progress per skill", () => {
   });
 
   describe("updateExercise", () => {
-    it("keeps the record of each skill apart", async () => {
+    it("creates one record per skill for the same exercise", async () => {
       const { result } = await renderHook(() => useExerciseProgressStore());
 
       await act(() => {
-        result.current.updateExercise("342", {
-          exerciseId: "342",
-          skill: "SA",
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SWR1",
           weight: 50,
         });
-        result.current.updateExercise("342", {
-          exerciseId: "342",
-          skill: "HYP",
-          repetition: 8,
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SA",
+          weight: 30,
         });
       });
 
-      expect(result.current.exerciseProgress).toEqual({
-        SA: {
-          "342": {
-            exerciseId: "342",
-            skill: "SA",
-            weight: 50,
-            updatedAt: expect.any(Number),
-          },
-        },
-        HYP: {
-          "342": {
-            exerciseId: "342",
-            skill: "HYP",
-            repetition: 8,
-            updatedAt: expect.any(Number),
-          },
-        },
-      });
+      expect(result.current.exerciseProgress["SWR1"]?.["1"]?.weight).toBe(50);
+      expect(result.current.exerciseProgress["SA"]?.["1"]?.weight).toBe(30);
     });
 
-    it("names the skill that wrote the shared record last", async () => {
+    it("keeps merging every write into the one record per exercise", async () => {
       const { result } = await renderHook(() => useExerciseProgressStore());
 
       await act(() => {
-        result.current.updateExercise("342", {
-          exerciseId: "342",
-          skill: "SA",
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SWR1",
           weight: 50,
-          repetition: 15,
         });
-        result.current.updateExercise("342", {
-          exerciseId: "342",
-          skill: "HYP",
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SA",
           repetition: 8,
         });
       });
 
-      expect(result.current.exerciseData["342"]).toEqual({
-        exerciseId: "342",
-        skill: "HYP",
+      expect(result.current.exerciseData["1"]).toEqual({
+        exerciseId: "1",
+        skill: "SA",
         weight: 50,
         repetition: 8,
         updatedAt: expect.any(Number),
       });
     });
 
-    it("sends the record of the writing skill to sync", async () => {
+    it("counts the feedback streak per skill", async () => {
       const { result } = await renderHook(() => useExerciseProgressStore());
 
       await act(() => {
-        result.current.updateExercise("342", {
-          exerciseId: "342",
-          skill: "SA",
-          weight: 50,
-          repetition: 15,
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SWR1",
+          feedback: { difficulty: "TOO_EASY" },
         });
-        result.current.updateExercise(
-          "342",
-          { exerciseId: "342", skill: "HYP", repetition: 8 },
-          "workout-42",
-        );
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SWR1",
+          feedback: { difficulty: "TOO_EASY" },
+        });
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SA",
+          feedback: { difficulty: "TOO_EASY" },
+        });
       });
 
-      expect(syncManager.notifyExerciseUpdated).toHaveBeenLastCalledWith(
-        "342",
-        {
-          exerciseId: "342",
-          skill: "HYP",
+      expect(
+        result.current.exerciseProgress["SWR1"]?.["1"]?.feedback?.streakCounter,
+      ).toBe(2);
+      expect(
+        result.current.exerciseProgress["SA"]?.["1"]?.feedback?.streakCounter,
+      ).toBe(1);
+    });
+
+    it("sends the merged record per exercise to sync once per write", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
+
+      await act(() => {
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SWR1",
+          weight: 50,
+        });
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SA",
           repetition: 8,
-          workoutId: "workout-42",
-        },
-      );
+        });
+      });
+
+      expect(syncManager.notifyExerciseUpdated).toHaveBeenCalledTimes(2);
+      expect(syncManager.notifyExerciseUpdated).toHaveBeenLastCalledWith("1", {
+        exerciseId: "1",
+        skill: "SA",
+        weight: 50,
+        repetition: 8,
+      });
     });
   });
 
   describe("resetExercise", () => {
-    it("resets the record of the given skill and the shared record, and leaves other skills", async () => {
+    it("replaces the record of the given skill and the record per exercise", async () => {
       const { result } = await renderHook(() => useExerciseProgressStore());
       await act(() => {
-        result.current.updateExercise("1", {
-          exerciseId: "1",
-          skill: "SA",
-          weight: 30,
-          repetition: 8,
-        });
         result.current.updateExercise("1", {
           exerciseId: "1",
           skill: "SWR1",
           weight: 50,
           repetition: 12,
+        });
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SA",
+          weight: 30,
+          repetition: 8,
         });
       });
       const saBefore = structuredClone(result.current.exerciseProgress["SA"]);
@@ -150,23 +156,21 @@ describe("exerciseProgressStore: progress per skill", () => {
   });
 
   describe("rehydration", () => {
-    it("moves the older record of a version 19 state to the skill it names", async () => {
-      const older = generateStoredExerciseData({ skill: "SWR1", weight: 26 });
+    it("loads a persisted state without records per skill and reads its older record", async () => {
+      const older = { exerciseId: "1", skill: "SWR1", weight: 26 };
       await AsyncStorage.setItem(
         "exercise-progress-storage",
         JSON.stringify({
-          state: { exerciseData: generateExerciseProgressMap(older) },
-          version: 19,
+          state: { exerciseData: { "1": older } },
+          version: STORE_VERSIONS.EXERCISE_PROGRESS,
         }),
       );
 
-      await act(async () => {
-        await useExerciseProgressStore.persist.rehydrate();
-      });
+      await useExerciseProgressStore.persist.rehydrate();
 
       const state = useExerciseProgressStore.getState();
-      expect(state.exerciseProgress).toEqual({ SWR1: { "1": older } });
-      expect(state.exerciseData["1"]).toEqual(older);
+      expect(state.exerciseProgress).toEqual({});
+      expect(state.getExerciseProgress("SWR1", "1")).toEqual(older);
     });
   });
 
@@ -186,6 +190,32 @@ describe("exerciseProgressStore: progress per skill", () => {
       });
 
       expect(result.current.exerciseProgress).toEqual({});
+    });
+  });
+
+  describe("updatedAt", () => {
+    beforeEach(() => {
+      jest.useFakeTimers().setSystemTime(1761550000999);
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it("stamps the record per skill in Unix seconds", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
+
+      await act(() => {
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SWR1",
+          weight: 50,
+        });
+      });
+
+      expect(result.current.exerciseProgress["SWR1"]?.["1"]?.updatedAt).toBe(
+        1761550000,
+      );
     });
   });
 });

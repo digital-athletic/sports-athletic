@@ -129,18 +129,16 @@ describe("maxStrengthSetListBuilder: set list", () => {
   it("rounds the warm-up sets from the displayed first working set", () => {
     const setList = buildSquatSetList({
       oneRepMax: 121,
-      exerciseData: {
-        [SQUAT_EXERCISE_ID]: {
-          exerciseId: SQUAT_EXERCISE_ID,
-          skill: "MAX_STRENGTH",
+      exerciseData: generateSquatExerciseData(
+        {
           maxFRepetitions: [
             { level: "MEDIUM", repetitions: 5, weightPercentage: 67.5 },
             { level: "EASY", repetitions: 3, weightPercentage: 70 },
             { level: "EASY", repetitions: 2, weightPercentage: 72.5 },
           ],
-          feedback: { difficulty: null },
         },
-      },
+        null,
+      ),
     });
 
     // 82.5 kg first working set: 41.25 and 61.875 kg round to 40 and 62.5 kg.

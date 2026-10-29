@@ -1,5 +1,5 @@
 import * as v from "valibot";
-import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
+import type { ExerciseProgressSourceType } from "@/features/training/models/ExerciseProgress";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
 import { CardioTypesSchema, SectionTypesSchema } from "./common.schema";
 
@@ -240,10 +240,11 @@ export const TransformSchema = v.array(
 
 /**
  * Parameter type for user exercise progress data passed to generator methods.
- * Contains both exercise-level data and branch-level progression data.
+ * Contains the exercise progress per skill, the older record per exercise and
+ * branch-level progression data. The AIWL generator reads the records per
+ * skill; the legacy generator reads `exerciseData` only.
  */
-export type UserExerciseDataMapType = {
-  exerciseData: Record<string, UserExerciseDataType | undefined>;
+export type UserExerciseDataMapType = ExerciseProgressSourceType & {
   branchData: Record<string, UserExerciseBranchDataType | undefined>;
 };
 

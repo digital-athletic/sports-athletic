@@ -63,7 +63,7 @@ The authored lift list in `assets/data/generator/strengthTest.json` names the li
 
 ## Structure
 
-These flows read the exercise catalog, the skill trees, and per-branch progress, and never the training plan. Their output is the same set list a plan workout produces, entering the same session store and persisting the same way, so a short workout survives an app restart and resumes where the athlete left it. A finished short workout writes per-exercise progress for the types that progress; [Standard Exercise Progression](../progression/standard-exercise-progression.md) names the ones that do not.
+These flows read the exercise catalog, the skill trees, and per-branch progress, and never the training plan. Their output is the same set list a plan workout produces, entering the same session store and persisting the same way, so a short workout survives an app restart and resumes where the athlete left it. A finished short workout writes exercise progress under the skill of each block, for the types that progress, and never overwrites the progress a plan workout stored under another skill (see [Progress per skill](../progression/standard-exercise-progression.md#progress-per-skill)); [Standard Exercise Progression](../progression/standard-exercise-progression.md) names the ones that do not.
 
 ## Open Questions
 

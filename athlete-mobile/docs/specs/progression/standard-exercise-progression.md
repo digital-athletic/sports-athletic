@@ -25,7 +25,7 @@ Start/target values may depend on fitness level, gender, and age group unless th
 
 Warm-up, special warm-up, speed warm-up, cool-down, mobility, foam roller, and strength-test exercises do not use this progression and do not collect progression feedback. Speed warm-up durations follow [Speed warm-up](#speed-warm-up).
 
-Exercise-specific history is stored per athlete and survives plan regeneration. One feedback event must be consumed only once.
+Exercise progress is stored per athlete, skill and exercise (see [Progress per skill](#progress-per-skill)). Every record survives plan regeneration and training day moves. One feedback event must be consumed only once.
 
 ## Out of scope
 
@@ -242,7 +242,7 @@ For weighted hypertrophy, repetitions remain 8-12 and duration remains 30-50 s d
 
 **Fixed-kilogram weights:** exercises whose weight is authored in fixed kilograms (full-body stability, weighted prevention, U16 weighted exercises) have no lowest permitted load. The first `too hard` reduces the weight by one weight step. A second `too hard` in a row leads to a level down instead of another reduction. Any other feedback resets the count.
 
-**Bottom of the load range:** when no lower load exists, the first `too hard` leads to a level down, for every weighted exercise and regardless of the `too hard` count. Examples: 0 kg additional weight on a bodyweight exercise, the empty barbell, or the lowest permitted load. Above the bottom, the count adds an earlier exit: the second `too hard` in a row for fixed-kilogram weights, the third for loaded jumps. The count of consecutive `too hard` ratings is part of the stored exercise progress.
+**Bottom of the load range:** when no lower load exists, the first `too hard` leads to a level down, for every weighted exercise and regardless of the `too hard` count. Examples: 0 kg additional weight on a bodyweight exercise, the empty barbell, or the lowest permitted load. Above the bottom, the count adds an earlier exit: the second `too hard` in a row for fixed-kilogram weights, the third for loaded jumps. The count of consecutive `too hard` ratings is part of the stored exercise progress, so each skill counts its own `too hard` ratings of an exercise.
 
 Pure explosive exercises, for example loaded jumps, carry authored load limits in the exercise catalog. Those limits take priority over the skill's load range, so the explosive power floor of 50% F-Max does not apply to them. The exercise catalog must author these load limits for every loaded jump exercise and fitness level, as a share of the knee-direction 1RM converted to the equipment (see [Weight Calculation from Strength Tests](./weight-calculation-from-strength-tests.md)):
 
@@ -369,9 +369,9 @@ Store per exercise, where applicable:
 - pending feedback,
 - current progression position.
 
-Per-branch levels are stored separately.
+Per-branch levels are stored separately and stay shared across all skills and workouts.
 
-Each record names the skill that wrote it last and carries `updatedAt` (Unix seconds). The new workout generator reads a record as its own only when the record names the skill of the block. Otherwise it copies the load seed (weight and weight type, when the weight type matches) and starts everything else fresh; max strength steps never seed. The completion counts `too hard` ratings from the own record only. The old generator reads the record whatever its skill.
+The new workout generator and the completion keep the progress per skill, see [Progress per skill](#progress-per-skill). The old generator reads one record per exercise whatever its skill.
 
 The rounded training weight is both the execution prescription and the source for future ±2.5% calculations. The app stores no unrounded weight.
 
@@ -381,7 +381,33 @@ Pending feedback is the handover token between session completion and next-gener
 
 After a level change:
 
-- previous exercise progression remains stored;
+- the branch level changes for every skill;
+- a level change resets the record of the left exercise only under the skill that changed the level, and the records of that exercise under other skills stay;
 - the new exercise starts with its resolved start values; for hypertrophy repetitions/duration, use the global hypertrophy start values from this specification rather than exercise-specific authored repetition/duration values.
 
-This preserves history for a future manual exercise-swap feature.
+The records under other skills preserve history for a future manual exercise-swap feature.
+
+### Progress per skill
+
+The app stores exercise progress as `exerciseProgress[skill][exerciseId]`. The new workout generator reads it for plan, short and custom workouts; a session writes the record of the skill its exercise trains under. Prevention placeholders resolve to body region skills (for example `PREVKNEE`) before the skill keys the record. Variants keep separate records: SWR1 and SWR2, SWR1KG and SWR2KG, GKS and GKSKG, MAX and MAX_STRENGTH, and each prevention skill.
+
+Rules:
+
+1. Every write sets `updatedAt` (Unix seconds). A record without `updatedAt` counts as the oldest.
+2. A skill that meets an exercise for the first time copies the load seed: weight and weight type from the newest record of that exercise under another skill with a matching weight type. Without a matching record, the usual start values apply.
+3. Repetitions, duration, height, feedback, `too hard` count and max strength steps start fresh. Max strength steps never seed.
+4. A skipped or aborted set writes nothing.
+5. Moving a training day or recreating a plan keeps every record.
+
+Example. Exercise 342 trains under SWR1 with 50 kg. A short workout then trains it under SA. The generator seeds 50 kg from SWR1 and starts the repetitions at the SA start value. The completion writes the SA record:
+
+```json
+{
+  "exerciseProgress": {
+    "SWR1": { "342": { "exerciseId": "342", "skill": "SWR1", "weight": 50, "weightType": "weightAbsolute", "repetition": 15, "updatedAt": 1761550000 } },
+    "SA":   { "342": { "exerciseId": "342", "skill": "SA", "weight": 50, "weightType": "weightAbsolute", "repetition": 12, "updatedAt": 1761640000 } }
+  }
+}
+```
+
+**Older record per exercise.** Before the records per skill, the store kept one record per exercise in `exerciseData`, naming the skill that wrote it last. The store keeps `exerciseData` and merges every write and reset into it as before, so the old generator and the sync see no change. No migration runs: an athlete updating the app keeps `exerciseData` and starts with an empty `exerciseProgress`. Until a skill has a record of its own, the new generator reads the older record as that skill's record when it names the skill, and as a load seed source otherwise. The first write of another skill takes over the older record, so the skill that wrote it before keeps only what its own record holds.

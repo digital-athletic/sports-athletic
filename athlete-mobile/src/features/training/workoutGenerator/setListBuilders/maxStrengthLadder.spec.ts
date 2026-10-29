@@ -1,11 +1,18 @@
 import { generateAthleteWithMaxValues } from "@test/factories/athlete";
-import { generateSquatExerciseData } from "@test/factories/storedExerciseData";
-import { generateSquatExercise } from "@test/factories/valueExercise";
+import {
+  generateExerciseProgressMap,
+  generateFeedbackExerciseData,
+  generateSquatExerciseData,
+} from "@test/factories/storedExerciseData";
+import {
+  generateSquatExercise,
+  SQUAT_EXERCISE_ID,
+} from "@test/factories/valueExercise";
 import type {
   ExerciseDifficultyType,
   LevelTag,
 } from "@/constants/workoutConstants";
-import type { ExerciseProgressMapType } from "@/features/training/models/ExerciseProgress";
+import type { ExerciseProgressSourceType } from "@/features/training/models/ExerciseProgress";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import type {
   MaxTrainingRepsEntry,
@@ -27,7 +34,7 @@ import {
  */
 const readWorkingSets = (
   athlete: UserType,
-  exerciseData: ExerciseProgressMapType | null,
+  exerciseData: ExerciseProgressSourceType | null,
   skill: SkillCode = "MAX_STRENGTH",
 ): MaxTrainingRepsEntry[] =>
   readMaxTrainingRepetitions(
@@ -89,7 +96,7 @@ const runSessions = (
   difficulty: ExerciseDifficultyType,
 ): string[][] => {
   const rows: string[][] = [];
-  let exerciseData: ExerciseProgressMapType | null = null;
+  let exerciseData: ExerciseProgressSourceType | null = null;
   for (let session = 0; session < sessions; session++) {
     const sets = readWorkingSets(athlete, exerciseData);
     rows.push(describeSets(sets));
@@ -393,6 +400,38 @@ describe("maxStrengthLadder: progress per skill", () => {
     expect(
       describeSets(readWorkingSets(advanced, exerciseData, "MAX")),
     ).toEqual(["70x5", "72.5x2", "75x2"]);
+  });
+
+  it("keeps the ladder state of MAX and MAX_STRENGTH apart", () => {
+    const advanced = generateAthleteWithMaxValues({ level: "ADVANCED" });
+    const firstSession = readWorkingSets(advanced, null).map(
+      convertToStoredSet,
+    );
+    const exerciseData = generateExerciseProgressMap(
+      generateFeedbackExerciseData(
+        {
+          exerciseId: SQUAT_EXERCISE_ID,
+          skill: "MAX_STRENGTH",
+          maxFRepetitions: firstSession,
+        },
+        "TOO_EASY",
+      ),
+      generateFeedbackExerciseData(
+        {
+          exerciseId: SQUAT_EXERCISE_ID,
+          skill: "MAX",
+          maxFRepetitions: firstSession,
+        },
+        "TOO_HARD",
+      ),
+    );
+
+    expect(
+      describeSets(readWorkingSets(advanced, exerciseData, "MAX_STRENGTH")),
+    ).toEqual(["70x6", "72.5x5", "75x5"]);
+    expect(
+      describeSets(readWorkingSets(advanced, exerciseData, "MAX")),
+    ).toEqual(["67.5x5", "70x3", "72.5x2"]);
   });
 });
 

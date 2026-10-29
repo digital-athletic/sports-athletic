@@ -227,6 +227,34 @@ describe("exerciseStartValues: feedback", () => {
 });
 
 describe("exerciseStartValues: progress per skill", () => {
+  it("starts a block at the record of its own skill and ignores another skill's record of the exercise", () => {
+    const values = readStartValues(
+      { skill: "SWR2" },
+      generateAuthoredUnitExercise("weightAbsolute"),
+      generateExerciseStartValueSource({
+        exerciseData: generateExerciseProgressMap(
+          generateStoredExerciseData({
+            skill: "SWR2",
+            weight: 50,
+            weightType: "weightAbsolute",
+            repetition: 12,
+            updatedAt: 100,
+          }),
+          generateStoredExerciseData({
+            skill: "SWR1",
+            weight: 30,
+            weightType: "weightAbsolute",
+            repetition: 20,
+            updatedAt: 200,
+          }),
+        ),
+      }),
+    );
+
+    expect(values.weight).toBe(50);
+    expect(values.repetition).toBe(12);
+  });
+
   it("starts a new skill at the weight of another skill's record and the catalog start repetitions", () => {
     const exercise = generateAuthoredUnitExercise("weightAbsolute");
     const startRepetition = readStartValues(

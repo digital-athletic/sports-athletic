@@ -1,4 +1,8 @@
 import type { ExerciseDifficultyType } from "@/constants/workoutConstants";
+import type {
+  ExerciseProgressMapType,
+  ExerciseProgressRecordType,
+} from "@/features/training/models/ExerciseProgress";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { SQUAT_EXERCISE_ID } from "./valueExercise";
 
@@ -10,8 +14,12 @@ import { SQUAT_EXERCISE_ID } from "./valueExercise";
  * → { exerciseId: "1", skill: "SWR2", repetition: 10 }
  */
 export const generateStoredExerciseData = (
-  overrides: Partial<UserExerciseDataType> = {},
-): UserExerciseDataType => ({ exerciseId: "1", skill: "SWR2", ...overrides });
+  overrides: Partial<ExerciseProgressRecordType> = {},
+): ExerciseProgressRecordType => ({
+  exerciseId: "1",
+  skill: "SWR2",
+  ...overrides,
+});
 
 /**
  * Builds the stored data of one exercise with the athlete's feedback, as a
@@ -27,16 +35,16 @@ export const generateFeedbackExerciseData = (
   generateStoredExerciseData({ feedback: { difficulty }, ...overrides });
 
 /**
- * Keys stored exercise data by exercise ID, as the exercise data map of the
- * athlete holds it.
+ * Keys stored exercise records by exercise ID, as the exercise progress of the
+ * athlete holds them.
  *
- * generateExerciseDataRecord(generateStoredExerciseData({ repetition: 10 }))
+ * generateExerciseProgressMap(generateStoredExerciseData({ repetition: 10 }))
  * → { "1": { exerciseId: "1", skill: "SWR2", repetition: 10 } }
  */
-export const generateExerciseDataRecord = (
-  ...entries: UserExerciseDataType[]
-): Record<string, UserExerciseDataType> =>
-  Object.fromEntries(entries.map((entry) => [entry.exerciseId, entry]));
+export const generateExerciseProgressMap = (
+  ...records: ExerciseProgressRecordType[]
+): ExerciseProgressMapType =>
+  Object.fromEntries(records.map((record) => [record.exerciseId, record]));
 
 /**
  * Builds the stored data of the squat in the max strength skill, with the
@@ -48,8 +56,8 @@ export const generateExerciseDataRecord = (
 export const generateSquatExerciseData = (
   overrides: Partial<UserExerciseDataType>,
   difficulty: ExerciseDifficultyType,
-): Record<string, UserExerciseDataType> =>
-  generateExerciseDataRecord(
+): ExerciseProgressMapType =>
+  generateExerciseProgressMap(
     generateFeedbackExerciseData(
       { exerciseId: SQUAT_EXERCISE_ID, skill: "MAX_STRENGTH", ...overrides },
       difficulty,

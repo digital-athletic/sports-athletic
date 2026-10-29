@@ -371,6 +371,8 @@ Store per exercise, where applicable:
 
 Per-branch levels are stored separately.
 
+Each record names the skill that wrote it last and carries `updatedAt` (Unix seconds). The new workout generator reads a record as its own only when the record names the skill of the block. Otherwise it copies the load seed (weight and weight type, when the weight type matches) and starts everything else fresh; max strength steps never seed. The completion counts `too hard` ratings from the own record only. The old generator reads the record whatever its skill.
+
 The rounded training weight is both the execution prescription and the source for future ±2.5% calculations. The app stores no unrounded weight.
 
 Stored repetitions and durations always stay within the currently resolved start and target values. Each session generation clamps them, for every training area, so a later change to authored or global values takes effect for athletes with existing progress.

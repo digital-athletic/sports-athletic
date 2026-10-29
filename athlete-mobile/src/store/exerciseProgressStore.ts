@@ -4,7 +4,16 @@ import {
   type ExerciseTotalsType,
 } from "@/features/training/models/ExerciseTotals";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
+import type {
+  ExerciseProgressMapType,
+  ExerciseProgressRecordType,
+} from "@/features/training/models/ExerciseProgress";
 import { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
+import {
+  readOwnExerciseProgress,
+  toUpdatedAt,
+} from "@/features/training/utils/exerciseProgressLookup";
+import type { SkillCode } from "@/schemas/generator.schema";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
@@ -29,8 +38,8 @@ export type BranchDataMapType = Record<
 >;
 
 export type State = {
-  // Exercise-level data
-  exerciseData: Record<string, UserExerciseDataType | undefined>;
+  // Exercise-level data; each record names the skill that wrote it last
+  exerciseData: ExerciseProgressMapType;
   branchData: BranchDataMapType;
 
   // Exercise totals (cumulative values)
@@ -42,7 +51,14 @@ export type State = {
   testHistory: MaxValuesType[];
 };
 
-const PROGRESS_KEYS = ["tooHardCount"] as const;
+const NUMBER_KEYS = [
+  "duration",
+  "height",
+  "nextWeightPercentage",
+  "repetition",
+  "weight",
+  "tooHardCount",
+] as const;
 
 const createInitialState = (): State => ({
   exerciseData: {},
@@ -52,6 +68,60 @@ const createInitialState = (): State => ({
   level: 1,
   testHistory: [],
 });
+
+/** Writes the set fields of `data` into `target`; a repeated difficulty extends the streak. */
+const mergeExerciseData = (
+  target: UserExerciseDataType,
+  data: UserExerciseDataType,
+): void => {
+  if (data.feedback) {
+    target.feedback = mergeFeedback(target.feedback, data.feedback);
+  }
+  copyNumbers(target, data);
+  copyOthers(target, data);
+};
+
+const mergeFeedback = (
+  prev: UserExerciseDataType["feedback"],
+  next: NonNullable<UserExerciseDataType["feedback"]>,
+): NonNullable<UserExerciseDataType["feedback"]> => {
+  const repeated = prev?.difficulty && prev.difficulty === next.difficulty;
+  return {
+    difficulty: next.difficulty,
+    streakCounter: repeated ? (prev.streakCounter ?? 0) + 1 : 1,
+  };
+};
+
+const copyNumbers = (
+  target: UserExerciseDataType,
+  data: UserExerciseDataType,
+): void => {
+  for (const key of NUMBER_KEYS) {
+    const value = data[key];
+    if (typeof value === "number") target[key] = value;
+  }
+};
+
+const copyOthers = (
+  target: UserExerciseDataType,
+  data: UserExerciseDataType,
+): void => {
+  if (typeof data.branchId === "string") target.branchId = data.branchId;
+  if (typeof data.skipped === "boolean") target.skipped = data.skipped;
+  if (typeof data.weightType === "string") target.weightType = data.weightType;
+  if (data.maxFLevelAdjustment) {
+    target.maxFLevelAdjustment = data.maxFLevelAdjustment;
+  }
+  if (data.maxFRepetitions) target.maxFRepetitions = data.maxFRepetitions;
+  if (data.set) target.set = data.set;
+};
+
+// The sync queue stores the record as the server knows it, without the local updatedAt.
+const toSyncPayload = (
+  { updatedAt: _updatedAt, ...record }: ExerciseProgressRecordType,
+  workoutId?: string,
+): UserExerciseDataType & { workoutId?: string } =>
+  workoutId ? { ...record, workoutId } : record;
 
 type Actions = {
   // Exercise Data
@@ -87,6 +157,10 @@ type Actions = {
 
 type Selectors = {
   getExerciseData: (exerciseId: string) => UserExerciseDataType | undefined;
+  getExerciseProgress: (
+    skill: SkillCode,
+    exerciseId: string,
+  ) => ExerciseProgressRecordType | undefined;
   getBranchLevel: (branchId: string) => number;
   getLatestTestResult: () => MaxValuesType | undefined;
   getExerciseTotals: (exerciseId: string) => ExerciseTotalsType | undefined;
@@ -129,123 +203,21 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
 
       updateExercise: (exerciseId, data, workoutId) => {
         set((state) => {
-          const existing = state.exerciseData[exerciseId];
-
-          if (!existing) {
-            // When creating new exercise, data must include required fields
-            const update: UserExerciseDataType = {
-              exerciseId,
-              skill: data.skill,
-            };
-
-            if (data.feedback) {
-              update.feedback = {
-                difficulty: data.feedback.difficulty || null,
-                streakCounter: 1,
-              };
-            }
-            if (typeof data.duration === "number") {
-              update.duration = data.duration;
-            }
-            if (typeof data.height === "number") {
-              update.height = data.height;
-            }
-            if (typeof data.branchId === "string") {
-              update.branchId = data.branchId;
-            }
-            if (data.maxFLevelAdjustment) {
-              update.maxFLevelAdjustment = data.maxFLevelAdjustment;
-            }
-            if (data.maxFRepetitions) {
-              update.maxFRepetitions = data.maxFRepetitions;
-            }
-            if (typeof data.nextWeightPercentage === "number") {
-              update.nextWeightPercentage = data.nextWeightPercentage;
-            }
-            if (typeof data.repetition === "number") {
-              update.repetition = data.repetition;
-            }
-            if (data.set) {
-              update.set = data.set;
-            }
-            if (typeof data.skipped === "boolean") {
-              update.skipped = data.skipped;
-            }
-            if (typeof data.weight === "number") {
-              update.weight = data.weight;
-            }
-            for (const key of PROGRESS_KEYS) {
-              const value = data[key];
-              if (typeof value === "number") update[key] = value;
-            }
-            if (typeof data.weightType === "string") {
-              update.weightType = data.weightType;
-            }
-
-            state.exerciseData[exerciseId] = update;
-            return;
-          }
-
-          if (data.feedback) {
-            const prevDifficulty = existing.feedback?.difficulty;
-
-            // Handle streak counter
-            if (prevDifficulty && prevDifficulty === data.feedback.difficulty) {
-              existing.feedback = {
-                difficulty: data.feedback.difficulty,
-                streakCounter: (existing.feedback?.streakCounter ?? 0) + 1,
-              };
-            } else {
-              existing.feedback = {
-                difficulty: data.feedback.difficulty,
-                streakCounter: 1,
-              };
-            }
-          }
-          if (typeof data.duration === "number") {
-            existing.duration = data.duration;
-          }
-          if (typeof data.height === "number") {
-            existing.height = data.height;
-          }
-          if (typeof data.branchId === "string") {
-            existing.branchId = data.branchId;
-          }
-          if (data.maxFLevelAdjustment) {
-            existing.maxFLevelAdjustment = data.maxFLevelAdjustment;
-          }
-          if (data.maxFRepetitions) {
-            existing.maxFRepetitions = data.maxFRepetitions;
-          }
-          if (typeof data.nextWeightPercentage === "number") {
-            existing.nextWeightPercentage = data.nextWeightPercentage;
-          }
-          if (typeof data.repetition === "number") {
-            existing.repetition = data.repetition;
-          }
-          if (data.set) {
-            existing.set = data.set;
-          }
-          if (typeof data.skipped === "boolean") {
-            existing.skipped = data.skipped;
-          }
-          if (typeof data.weight === "number") {
-            existing.weight = data.weight;
-          }
-          for (const key of PROGRESS_KEYS) {
-            const value = data[key];
-            if (typeof value === "number") existing[key] = value;
-          }
-          if (typeof data.weightType === "string") {
-            existing.weightType = data.weightType;
-          }
+          const record = (state.exerciseData[exerciseId] ??= {
+            exerciseId,
+            skill: data.skill,
+          });
+          mergeExerciseData(record, data);
+          // The record names its last writer, so readers know whose values it holds.
+          record.skill = data.skill;
+          record.updatedAt = toUpdatedAt(Date.now());
         });
         const updatedData = get().exerciseData[exerciseId];
         if (updatedData) {
-          const payload = workoutId
-            ? { ...updatedData, workoutId }
-            : updatedData;
-          syncManager.notifyExerciseUpdated(exerciseId, payload);
+          syncManager.notifyExerciseUpdated(
+            exerciseId,
+            toSyncPayload(updatedData, workoutId),
+          );
         }
       },
 
@@ -257,11 +229,14 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
           record.branchId = branchId;
         }
         set((state) => {
-          state.exerciseData[exerciseId] = record;
+          state.exerciseData[exerciseId] = {
+            ...record,
+            updatedAt: toUpdatedAt(Date.now()),
+          };
         });
         syncManager.notifyExerciseUpdated(
           exerciseId,
-          workoutId ? { ...record, workoutId } : record,
+          toSyncPayload(record, workoutId),
         );
       },
 
@@ -337,6 +312,10 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
         const { exerciseData } = get();
         return exerciseData[exerciseId];
       },
+
+      getExerciseProgress: (skill, exerciseId) =>
+        readOwnExerciseProgress(get().exerciseData, skill, exerciseId) ??
+        undefined,
 
       getBranchLevel: (branchId) => {
         const { branchData } = get();

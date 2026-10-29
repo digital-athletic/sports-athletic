@@ -3,8 +3,10 @@ import {
   type LevelTag,
   WorkoutConstants,
 } from "@/constants/workoutConstants";
+import type { ExerciseProgressMapType } from "@/features/training/models/ExerciseProgress";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
+import { readOwnExerciseProgress } from "@/features/training/utils/exerciseProgressLookup";
 import { getUserBirthday } from "@/features/training/utils/userDataUtils";
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import type { ExerciseType } from "@/schemas/exercise.schema";
@@ -12,6 +14,7 @@ import type {
   MaxStrengthBuffer,
   MaxTrainingRepsEntry,
   MaxTrainingWeightsResult,
+  SkillCode,
 } from "@/schemas/generator.schema";
 import type { MaxForceRepetitionsDataType } from "@/schemas/sync.schema";
 import type { UserType } from "@/schemas/user.schema";
@@ -229,19 +232,18 @@ const readBufferTable = (athlete: UserType): BufferTable => {
 /**
  * Reads the weight percentage and buffer of every max strength working set
  * for the next session. Each set follows its own ladder between its starting
- * and maximum weight.
+ * and maximum weight. Only a record the skill wrote last moves the ladder.
  */
 export const readMaxTrainingWeights = (
   exercise: ExerciseType,
   athlete: UserType,
-  exerciseData: Readonly<
-    Record<string, UserExerciseDataType | undefined>
-  > | null,
+  exerciseData: Readonly<ExerciseProgressMapType> | null,
+  skill: SkillCode,
 ): MaxTrainingWeightsResult => {
   const states = readNextSetStates(
     readBufferTable(athlete),
     getUserLevel(athlete),
-    exerciseData?.[exercise.id],
+    readOwnExerciseProgress(exerciseData, skill, exercise.id) ?? undefined,
   );
   return {
     trainingWeights: states.map((state) => state.weightPercentage),

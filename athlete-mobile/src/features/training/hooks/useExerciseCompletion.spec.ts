@@ -141,6 +141,29 @@ describe("useExerciseCompletion: standard progression", () => {
 
       expect(stored()?.tooHardCount).toBe(1);
     });
+
+    it("ignores the count of another skill", async () => {
+      // SA rated the exercise TOO_HARD last; now SWR2 rates it TOO_HARD.
+      seedCompletionSession(
+        { repetition: 10, feedback: { difficulty: "TOO_HARD" } },
+        [
+          generateStoredExerciseData({
+            exerciseId: EXERCISE_ID,
+            skill: "SA",
+            tooHardCount: 1,
+          }),
+        ],
+      );
+      const { result } = await renderHook(() => useExerciseCompletion());
+
+      await act(() => result.current.saveExerciseAndBranchData(0));
+
+      expect(
+        useExerciseProgressStore
+          .getState()
+          .getExerciseProgress("SWR2", EXERCISE_ID)?.tooHardCount,
+      ).toBe(1);
+    });
   });
 
   it("resets the record when TOO_HARD at the lowest load levels down", async () => {
@@ -160,6 +183,7 @@ describe("useExerciseCompletion: standard progression", () => {
       exerciseId: EXERCISE_ID,
       skill: "SWR2",
       branchId: "77",
+      updatedAt: expect.any(Number),
     });
   });
 
@@ -360,6 +384,7 @@ describe("useExerciseCompletion: max strength", () => {
       exerciseId: EXERCISE_ID,
       skill: "MAX_STRENGTH",
       branchId: "78",
+      updatedAt: expect.any(Number),
     });
   });
 

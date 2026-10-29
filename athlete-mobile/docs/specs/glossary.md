@@ -75,6 +75,7 @@ Terms of the training model, with the meanings the coach uses. The glossary defi
 | Ladder | Leiter | | Fixed order in which the load increases, from light to heavy. Applies to every rated exercise. In max strength each working set has its own ladder of weight × repetitions with its own top weight. |
 | Step | Schritt | | One move along the ladder towards the heavier end. |
 | Progression | Fortschreibung | | How weights, repetitions and levels change from one session to the next. |
+| Load seed | Lastübernahme | | The weight and weight type a skill copies when the stored record of an exercise belongs to another skill and has the same weight type. Everything else starts fresh. |
 | Soft limit | Weiche Grenze | | A target share or quota the generator aims for. Filters and replacements may break it. |
 
 ## Weights and max strength

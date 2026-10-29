@@ -1,4 +1,4 @@
-import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
+import type { ExerciseProgressMapType } from "@/features/training/models/ExerciseProgress";
 import { buildBranchLookupIndex } from "@/features/training/workoutGenerator/generationInput/branchLookupIndex";
 import {
   createGenerationInput,
@@ -16,7 +16,7 @@ export interface GenerationInputFactoryOptions extends AthleteOptions {
   /** The athlete's own level per branch ID, as stored branch data. */
   branchLevels?: Record<string, number>;
   /** The athlete's stored exercise data per exercise ID. */
-  exerciseData?: Record<string, UserExerciseDataType>;
+  exerciseData?: ExerciseProgressMapType;
   /** Limits the branch lookup index to these skill trees. */
   skillTrees?: Record<string, SkillTreeType>;
   random?: () => number;

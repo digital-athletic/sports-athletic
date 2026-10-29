@@ -90,12 +90,13 @@ const readWorkingWeight = (
 // set, so the warm-up sets match what the athlete sees.
 const readMaxStrengthSets = (
   exercise: ExerciseType,
-  { input, maxValues }: MaxStrengthContext,
+  { skill, input, maxValues }: MaxStrengthContext,
 ): MaxStrengthSets => {
   const ladder = readMaxTrainingWeights(
     exercise,
     input.athlete,
     input.exerciseData.exerciseData,
+    skill,
   );
   const workingWeights = ladder.trainingWeights.map((weightPercentage) =>
     readWorkingWeight(weightPercentage, exercise, maxValues),

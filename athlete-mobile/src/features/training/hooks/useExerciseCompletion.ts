@@ -388,7 +388,7 @@ export function useExerciseCompletion() {
 
             const feedback = currentExercise?.feedback?.difficulty ?? null;
             const previousTooHardCount =
-              useExerciseProgressStore.getState().exerciseData[id]
+              useExerciseProgressStore.getState().getExerciseProgress(skill, id)
                 ?.tooHardCount ?? 0;
             // A session without a rating keeps the count.
             const tooHardCount =

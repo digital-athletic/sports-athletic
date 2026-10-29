@@ -6,7 +6,7 @@ import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import {
-  generateExerciseDataRecord,
+  generateExerciseProgressMap,
   generateStoredExerciseData,
 } from "./storedExerciseData";
 
@@ -73,6 +73,6 @@ export const seedCompletionSession = (
   });
   useExerciseProgressStore.getState().resetProgress();
   useExerciseProgressStore.setState({
-    exerciseData: generateExerciseDataRecord(...records),
+    exerciseData: generateExerciseProgressMap(...records),
   });
 };

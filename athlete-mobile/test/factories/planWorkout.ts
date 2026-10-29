@@ -4,6 +4,7 @@
  * Provides minimal test data builders so specs stay focused on
  * the behaviour under test rather than setup boilerplate.
  */
+import type { ExerciseProgressMapType } from "@/features/training/models/ExerciseProgress";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
 import type { UserType } from "@/schemas/user.schema";
@@ -230,12 +231,15 @@ export interface PlanWorkoutOptions {
   place?: string;
   equipment?: string[];
   skillTrees?: Record<string, SkillTreeType>;
+  /** Earlier progress per exercise ID, default none. */
+  exerciseData?: ExerciseProgressMapType;
 }
 
 /**
  * Generates the set list of the user's training of one weekday (default
- * Monday, 1) through the workout generator router, with no earlier progress.
- * Defaults: place HALL, no equipment, trees WU, CARDIO_4, CARDIO_5.
+ * Monday, 1) through the workout generator router, with no earlier progress
+ * unless the options hold some. Defaults: place HALL, no equipment, trees WU,
+ * CARDIO_4, CARDIO_5.
  *
  * generatePlanWorkoutForWeekday(generateWarmUpOnlyPlanUser())
  * → [{ skill: "WU", branchId: "410", exerciseId: "431", set: [1, 2], ... }, ...]
@@ -254,6 +258,9 @@ export function generatePlanWorkoutForWeekday(
     equipment: options.equipment ?? [],
     givenSection: undefined,
     daysSinceLastWorkout: 0,
-    userExerciseData: noExerciseData,
+    userExerciseData: {
+      exerciseData: options.exerciseData ?? {},
+      branchData: {},
+    },
   });
 }

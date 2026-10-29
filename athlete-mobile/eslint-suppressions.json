@@ -487,11 +487,8 @@
     }
   },
   "src/store/exerciseProgressStore.ts": {
-    "complexity": {
-      "count": 1
-    },
     "max-lines-per-function": {
-      "count": 3
+      "count": 1
     },
     "max-params": {
       "count": 2

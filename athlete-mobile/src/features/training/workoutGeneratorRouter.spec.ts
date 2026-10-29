@@ -11,11 +11,18 @@ import { generateTrainingDayFromStoredDay } from "@/features/training/workoutGen
 import type * as TrainingDayGeneration from "@/features/training/workoutGenerator/trainingDayGeneration";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { setUpAiwlGeneratorFlag } from "@test/factories/aiwlGeneratorFlag";
+import type { UserType } from "@/schemas/user.schema";
 import {
   buildPlanUser,
+  generateKneePreventionBranches,
   generatePlanWorkoutForWeekday,
   generateWarmUpOnlyPlanUser,
+  importTrees,
 } from "@test/factories/planWorkout";
+import {
+  generateExerciseProgressMap,
+  generateStoredExerciseData,
+} from "@test/factories/storedExerciseData";
 import {
   generatePicksBlock,
   generateTemplate,
@@ -208,6 +215,48 @@ describe("generateWorkout: routing", () => {
         expect(generateTrainingDayFromStoredDay).not.toHaveBeenCalled();
       },
     );
+  });
+});
+
+describe("generateWorkout: progress per skill", () => {
+  setUpAiwlGeneratorFlag(true);
+
+  afterEach(jest.restoreAllMocks);
+
+  it("continues a plan day under the resolved prevention skill from its record", () => {
+    jest.spyOn(Math, "random").mockReturnValue(0);
+    // The plan stores the day under PREVKNEE, as the placeholder PREV resolves.
+    const user: UserType = {
+      ...buildPlanUser({
+        weekday: 1,
+        skills: { PREVKNEE: generateKneePreventionBranches("PREV", 1) },
+        lengths: { PREVKNEE: 10 },
+      }),
+      workoutData: { tags: { LEVEL: ["ADVANCED"], PAIN: ["KNEE_LEFT"] } },
+    };
+    const skillTrees = importTrees("WU", "PREV", "PREVKG");
+    const withoutRecords = generatePlanWorkoutForWeekday(user, { skillTrees });
+    const exerciseId = withoutRecords.find(
+      (entry) => entry.skill === "PREVKNEE",
+    )?.exerciseId;
+
+    // The exercise starts at 40 seconds; PREVKNEE holds it at 45 seconds.
+    const setList = generatePlanWorkoutForWeekday(user, {
+      skillTrees,
+      exerciseData: generateExerciseProgressMap(
+        generateStoredExerciseData({
+          exerciseId,
+          skill: "PREVKNEE",
+          duration: 45,
+        }),
+      ),
+    });
+
+    const entry = setList.find(
+      (candidate) =>
+        candidate.skill === "PREVKNEE" && candidate.exerciseId === exerciseId,
+    );
+    expect(entry?.duration).toBe(45);
   });
 });
 

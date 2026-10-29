@@ -217,6 +217,7 @@ export function simulateProgression(
       maxFRepetitions: getWorkingSetMaxFReps(
         toUserExerciseDataList(setList),
         exercise.id,
+        focus,
       ),
     };
     const levelBefore = currentEntry?.maxFRepetitions?.at(-1)?.level ?? "EASY";
@@ -229,22 +230,11 @@ export function simulateProgression(
       levelTag,
     });
 
-    // Same write order as the screen; the store's streak counter depends on it.
+    // One write on completion, carrying the feedback, as the screen does.
     updateExercise(exercise.id, {
       exerciseId: exercise.id,
       skill: focus,
-      feedback: { difficulty: feedbackGiven },
-    });
-    if (adjustment.feedbackOverride) {
-      updateExercise(exercise.id, {
-        exerciseId: exercise.id,
-        skill: focus,
-        feedback: adjustment.feedbackOverride,
-      });
-    }
-    updateExercise(exercise.id, {
-      exerciseId: exercise.id,
-      skill: focus,
+      feedback: adjustment.feedbackOverride ?? { difficulty: feedbackGiven },
       weight: lastEntry?.weight,
       maxFRepetitions: adjustment.maxFRepetitions,
       maxFLevelAdjustment: feedbackGiven,

@@ -1,3 +1,4 @@
+import type { SkillCode } from "@/schemas/generator.schema";
 import type { MaxForceRepetitionsDataType } from "@/schemas/sync.schema";
 
 /**
@@ -20,11 +21,13 @@ export const getLastMaxFRep = (
 export const getWorkingSetMaxFReps = (
   exerciseList: {
     exerciseId: string;
+    skill?: SkillCode;
     maxFRepetitions?: MaxForceRepetitionsDataType[];
   }[],
   exerciseId: string,
+  skill: SkillCode,
 ): MaxForceRepetitionsDataType[] =>
   exerciseList
-    .filter((entry) => entry.exerciseId === exerciseId)
+    .filter((entry) => entry.exerciseId === exerciseId && entry.skill === skill)
     .flatMap((entry) => entry.maxFRepetitions ?? [])
     .filter((entry) => entry.level !== "WARMUP");

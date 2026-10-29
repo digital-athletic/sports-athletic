@@ -104,10 +104,8 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
     isActive: isTimerActive,
   });
 
-  const isFeedbackEligible = row.isFeedbackSkill && row.isLastInSet;
-
   const handleContinue = () => {
-    if (isFeedbackEligible) {
+    if (row.isFeedbackSkill && row.isLastInSet) {
       setStep("feedback");
       return;
     }

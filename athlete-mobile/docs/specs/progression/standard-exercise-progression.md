@@ -388,7 +388,7 @@ The progress under other skills preserves history for a future manual exercise-s
 
 Each skill keeps its own progress of an exercise, in plan, short and custom workouts. Hypertrophy bench press continues from hypertrophy bench press, whatever workout or weekday it appears in. Prevention placeholders count as the athlete's body region skill. Variants keep separate progress: SWR1 and SWR2, SWR1KG and SWR2KG, GKS and GKSKG, MAX and MAX_STRENGTH, and each prevention skill.
 
-- A skill that meets an exercise for the first time takes over the load seed. Everything else, including the max strength steps, starts at the start values.
+- A skill that meets an exercise for the first time starts at its start values, even when another skill trained the exercise.
 - Moving a training day or recreating a plan keeps all progress.
 
-Example: bench press trains under SWR1 at 50 kg × 15. A short workout then trains it under SA and starts at 50 kg with the SA start repetitions. The next SWR1 session continues at 50 kg × 15.
+Example: bench press trains under SWR1 at 50 kg × 15. A short workout then trains it under SA and starts at the SA start weight and start repetitions. The next SWR1 session continues at 50 kg × 15.

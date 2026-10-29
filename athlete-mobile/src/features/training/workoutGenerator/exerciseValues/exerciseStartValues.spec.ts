@@ -255,12 +255,9 @@ describe("exerciseStartValues: progress per skill", () => {
     expect(values.repetition).toBe(12);
   });
 
-  it("starts a new skill at the weight of another skill's record and the catalog start repetitions", () => {
+  it("starts a new skill at its start values although another skill trained the exercise", () => {
     const exercise = generateAuthoredUnitExercise("weightAbsolute");
-    const startRepetition = readStartValues(
-      { skill: "SWR2" },
-      exercise,
-    ).repetition;
+    const startValues = readStartValues({ skill: "SWR2" }, exercise);
 
     const values = readStartValues(
       { skill: "SWR2" },
@@ -278,8 +275,6 @@ describe("exerciseStartValues: progress per skill", () => {
       }),
     );
 
-    expect(values.weight).toBe(40);
-    expect(values.weightType).toBe("weightAbsolute");
-    expect(values.repetition).toBe(startRepetition);
+    expect(values).toEqual(startValues);
   });
 });

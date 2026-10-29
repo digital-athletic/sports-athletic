@@ -241,11 +241,11 @@ describe("Progress per skill: recreated plan", () => {
   });
 });
 
-describe("Progress per skill: seeding a new skill", () => {
-  it("copies the load of the newest dated record and starts the repetitions fresh without a feedback step", () => {
+describe("Progress per skill: a new skill", () => {
+  it("starts from its start values although another skill trained the exercise", () => {
     const id = saveFrontSquatWorkout("SWR2KG");
     const withoutRecords = generateWorkout(generateStoredProgressRequest(id));
-    // SWR1 holds 30 kg and 11 repetitions dated 100, SA holds 40 kg without a date.
+    // SWR1 and SA trained the front squat, SWR2KG never did.
     useExerciseProgressStore.setState(
       generateStoredProgress(
         generateFrontSquatRecord("SWR1", {
@@ -258,17 +258,16 @@ describe("Progress per skill: seeding a new skill", () => {
       ),
     );
 
-    const seeded = generateWorkout(generateStoredProgressRequest(id));
+    const newSkill = generateWorkout(generateStoredProgressRequest(id));
 
-    expect(frontSquatValues(seeded)).toEqual({
-      weight: 30,
-      repetition: frontSquatValues(withoutRecords).repetition,
-    });
+    expect(frontSquatValues(newSkill)).toEqual(
+      frontSquatValues(withoutRecords),
+    );
   });
 });
 
 describe("Progress per skill: athlete with only the older record per exercise", () => {
-  it("continues the stored skill from the older record and seeds only the load into another skill", () => {
+  it("continues the stored skill from the older record and starts another skill from its start values", () => {
     const shortWorkoutId = saveFrontSquatWorkout("SA");
     const freshShortWorkout = generateWorkout(
       generateStoredProgressRequest(shortWorkoutId),
@@ -287,9 +286,8 @@ describe("Progress per skill: athlete with only the older record per exercise", 
     );
 
     expect(frontSquatValues(planDay)).toEqual({ weight: 26, repetition: 11 });
-    expect(frontSquatValues(shortWorkout)).toEqual({
-      weight: 26,
-      repetition: frontSquatValues(freshShortWorkout).repetition,
-    });
+    expect(frontSquatValues(shortWorkout)).toEqual(
+      frontSquatValues(freshShortWorkout),
+    );
   });
 });

@@ -5,10 +5,7 @@ import type { ExerciseProgressSourceType } from "@/features/training/models/Exer
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
-import {
-  readExerciseProgress,
-  readExpectedWeightType,
-} from "@/features/training/utils/exerciseProgressLookup";
+import { readOwnExerciseProgress } from "@/features/training/utils/exerciseProgressLookup";
 import {
   getUserBirthday,
   getUserGender,
@@ -144,11 +141,10 @@ export const readExerciseStartValues = (
     gender: readGenderTag(athlete),
     level: getUserLevel(athlete).toLowerCase(),
   };
-  const stored = readExerciseProgress(
+  const stored = readOwnExerciseProgress(
     storedProgress,
     block.skill,
     reference.exerciseId,
-    readExpectedWeightType(exercise, context.intensity),
   );
   const values = readExerciseValues(context, stored, skillCatalog, block.skill);
   const feedback = readFeedback(skillCatalog, block.skill, stored);

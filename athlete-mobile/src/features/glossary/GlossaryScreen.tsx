@@ -32,13 +32,16 @@ export function GlossaryScreen() {
     <>
       <Stack.Screen options={{ title: t("more.glossary.title") }} />
       <Box flex={1} backgroundColor="white">
-        <Text variant="body" color="darkGrey3" padding="l">
-          {t("more.glossary.intro")}
-        </Text>
         <FlatList
           data={GLOSSARY_TERM_IDS}
           keyExtractor={(id) => id}
           renderItem={({ item }) => <GlossaryListItem id={item} />}
+          ListHeaderComponent={
+            <Text variant="body" color="darkGrey3" padding="l">
+              {t("more.glossary.intro")}
+            </Text>
+          }
+          contentInsetAdjustmentBehavior="automatic"
           accessibilityRole="list"
           showsVerticalScrollIndicator={false}
         />

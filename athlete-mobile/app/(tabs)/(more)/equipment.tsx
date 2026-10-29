@@ -74,7 +74,11 @@ export default function EquipmentScreen() {
           headerLeft: () => <BackHeader />,
         }}
       />
-      <ScrollBox flex={1} backgroundColor="white">
+      <ScrollBox
+        flex={1}
+        backgroundColor="white"
+        contentInsetAdjustmentBehavior="automatic"
+      >
         <Box backgroundColor="white">
           <Box paddingTop="s" paddingHorizontal="m">
             <Coaching text={t("equipment.coachMessage")} />

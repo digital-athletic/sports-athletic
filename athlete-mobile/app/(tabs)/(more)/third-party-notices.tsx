@@ -43,13 +43,16 @@ export default function ThirdPartyNoticesScreen() {
         }}
       />
       <Box flex={1} backgroundColor="white">
-        <Text variant="body" color="darkGrey3" padding="l">
-          {t("more.thirdPartyNotices.intro")}
-        </Text>
         <FlatList
           data={NOTICES}
           keyExtractor={(item) => `${item.name}@${item.version}`}
           renderItem={({ item }) => <NoticeListItem item={item} />}
+          ListHeaderComponent={
+            <Text variant="body" color="darkGrey3" padding="l">
+              {t("more.thirdPartyNotices.intro")}
+            </Text>
+          }
+          contentInsetAdjustmentBehavior="automatic"
           showsVerticalScrollIndicator={false}
         />
       </Box>

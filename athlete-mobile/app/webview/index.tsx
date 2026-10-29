@@ -22,7 +22,12 @@ export default function WebViewScreen() {
           headerLeft: () => <BackHeader />,
         }}
       />
-      {url && <WebView source={{ uri: url }} />}
+      {url && (
+        <WebView
+          source={{ uri: url }}
+          contentInsetAdjustmentBehavior="automatic"
+        />
+      )}
     </>
   );
 }

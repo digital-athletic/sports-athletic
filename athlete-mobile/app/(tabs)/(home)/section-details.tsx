@@ -224,7 +224,11 @@ const SectionDetailsScreen: FC = () => {
           orientation: "portrait",
         }}
       />
-      <ScrollBox flex={1} backgroundColor="white">
+      <ScrollBox
+        flex={1}
+        backgroundColor="white"
+        contentInsetAdjustmentBehavior="automatic"
+      >
         <Box flex={1} minHeight={140} paddingTop="m" paddingHorizontal="m">
           <TrainingPlanStatusWidget
             trainingSections={trainingSections}

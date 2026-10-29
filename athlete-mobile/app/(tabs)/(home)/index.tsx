@@ -114,6 +114,7 @@ export default function HomeScreen() {
       <ScrollBox
         flex={1}
         backgroundColor="lightGrey1"
+        contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ flexGrow: 1 }}
       >
         <Box flex={1} flexDirection={isLandscape ? "row" : "column"}>

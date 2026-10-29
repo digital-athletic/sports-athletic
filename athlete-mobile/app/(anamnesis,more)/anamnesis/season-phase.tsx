@@ -180,7 +180,7 @@ export default function SeasonPhase() {
           backgroundColor="lightGrey1"
           style={{ paddingBottom: insets.bottom }}
         >
-          <ScrollBox>
+          <ScrollBox contentInsetAdjustmentBehavior="automatic">
             <ProgressBar progress={progress} maximum={maxSteps} />
             <AnamnesisQuestionContainer
               title={{ default: t("screens.seasonPhase.seasonPhaseLabel") }}

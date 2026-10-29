@@ -5,6 +5,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
+import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { Stack, useRouter } from "expo-router";
@@ -91,7 +92,11 @@ export default function NotificationsScreen() {
           title: t("more.notifications.settings"),
         }}
       />
-      <Box flex={1}>
+      <ScrollBox
+        flex={1}
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={{ flexGrow: 1 }}
+      >
         {notificationsAllowedOS ? (
           <Box flex={1} paddingHorizontal="l">
             <Box
@@ -134,7 +139,7 @@ export default function NotificationsScreen() {
             </Button>
           </Box>
         )}
-      </Box>
+      </ScrollBox>
     </>
   );
 }

@@ -14,7 +14,7 @@ export const BackHeader: FC<BackHeaderProps> = ({ onBack }) => {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const onPress = onBack ?? router.back;
+  const onPress = onBack ?? (() => router.back());
 
   return (
     <TouchableOpacity

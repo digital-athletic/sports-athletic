@@ -6,9 +6,9 @@ This file provides guidance to AI Agents for building high-quality React Native 
 - Be concise: no filler, no preamble, no restating the question. Answer completely in as few words as possible.
 
 ## Project Context
-- `react` version 19.2.3
-- `react-native` version 0.86.3
-- `expo` version 57.0.30
+- `react` version 19.3.0
+- `react-native` version 0.88.0
+- `expo` version 58.0.14
 - `typescript` version 6.0.3 for type safety
 - Follow React and React Native's official style guide and best practices
 

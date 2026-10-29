@@ -25,7 +25,7 @@ Start/target values may depend on fitness level, gender, and age group unless th
 
 Warm-up, special warm-up, speed warm-up, cool-down, mobility, foam roller, and strength-test exercises do not use this progression and do not collect progression feedback. Speed warm-up durations follow [Speed warm-up](#speed-warm-up).
 
-Exercise progress is stored per athlete, skill and exercise (see [Progress per skill](#progress-per-skill)). Every record survives plan regeneration and training day moves. One feedback event must be consumed only once.
+Exercise progress is stored per athlete, skill and exercise (see [Progress per skill](#progress-per-skill)). It survives plan regeneration and training day moves. One feedback event must be consumed only once.
 
 ## Out of scope
 
@@ -331,7 +331,7 @@ For weighted exercises, use the existing exercise-specific start and target weig
 
 ## Deferred feedback
 
-When progression is deferred to the next generation, stored feedback is applied exactly once using the feedback rules above. After application, the stored feedback is consumed. Feedback reaches the record only when the exercise is completed. Feedback given in a session that is skipped or aborted writes nothing.
+When progression is deferred to the next generation, stored feedback is applied exactly once using the feedback rules above. After application, the stored feedback is consumed. Feedback counts only once the exercise is completed; feedback in a skipped exercise or an aborted session is dropped.
 
 ## Worked example
 
@@ -359,7 +359,7 @@ The result is rounded using [Weight Calculation from Strength Tests](./weight-ca
 
 ## State and persistence
 
-Store per exercise, where applicable:
+Store per exercise and skill (see [Progress per skill](#progress-per-skill)), where applicable:
 
 - last prescribed/achieved repetitions,
 - last prescribed/achieved duration,
@@ -369,45 +369,26 @@ Store per exercise, where applicable:
 - pending feedback,
 - current progression position.
 
-Per-branch levels are stored separately and stay shared across all skills and workouts.
-
-The new workout generator and the completion keep the progress per skill, see [Progress per skill](#progress-per-skill). The old generator reads one record per exercise whatever its skill.
+Per-branch levels are stored separately and are shared across all skills and workouts.
 
 The rounded training weight is both the execution prescription and the source for future ±2.5% calculations. The app stores no unrounded weight.
 
 Stored repetitions and durations always stay within the currently resolved start and target values. Each session generation clamps them, for every training area, so a later change to authored or global values takes effect for athletes with existing progress.
 
 Pending feedback is the handover token between session completion and next-generation application.
-
 After a level change:
 
 - the branch level changes for every skill;
-- a level change resets the record of the left exercise only under the skill that changed the level, and the records of that exercise under other skills stay;
+- the progress of the left exercise resets only under the skill that changed the level; its progress under other skills stays;
 - the new exercise starts with its resolved start values; for hypertrophy repetitions/duration, use the global hypertrophy start values from this specification rather than exercise-specific authored repetition/duration values.
 
-The records under other skills preserve history for a future manual exercise-swap feature.
+The progress under other skills preserves history for a future manual exercise-swap feature.
 
 ### Progress per skill
 
-The app stores exercise progress as `exerciseProgress[skill][exerciseId]`. The new workout generator reads it for plan, short and custom workouts; a session writes the record of the skill its exercise trains under. Prevention placeholders resolve to body region skills (for example `PREVKNEE`) before the skill keys the record. Variants keep separate records: SWR1 and SWR2, SWR1KG and SWR2KG, GKS and GKSKG, MAX and MAX_STRENGTH, and each prevention skill.
+Each skill keeps its own progress of an exercise, in plan, short and custom workouts. Hypertrophy bench press continues from hypertrophy bench press, whatever workout or weekday it appears in. Prevention placeholders count as the athlete's body region skill. Variants keep separate progress: SWR1 and SWR2, SWR1KG and SWR2KG, GKS and GKSKG, MAX and MAX_STRENGTH, and each prevention skill.
 
-Rules:
+- A skill that meets an exercise for the first time takes over the load seed. Everything else, including the max strength steps, starts at the start values.
+- Moving a training day or recreating a plan keeps all progress.
 
-1. Every write sets `updatedAt` (Unix seconds). A record without `updatedAt` counts as the oldest.
-2. A skill that meets an exercise for the first time copies the load seed: weight and weight type from the newest record of that exercise under another skill with a matching weight type. Without a matching record, the usual start values apply.
-3. Repetitions, duration, height, feedback, `too hard` count and max strength steps start fresh. Max strength steps never seed.
-4. A skipped or aborted set writes nothing.
-5. Moving a training day or recreating a plan keeps every record.
-
-Example. Exercise 342 trains under SWR1 with 50 kg. A short workout then trains it under SA. The generator seeds 50 kg from SWR1 and starts the repetitions at the SA start value. The completion writes the SA record:
-
-```json
-{
-  "exerciseProgress": {
-    "SWR1": { "342": { "exerciseId": "342", "skill": "SWR1", "weight": 50, "weightType": "weightAbsolute", "repetition": 15, "updatedAt": 1761550000 } },
-    "SA":   { "342": { "exerciseId": "342", "skill": "SA", "weight": 50, "weightType": "weightAbsolute", "repetition": 12, "updatedAt": 1761640000 } }
-  }
-}
-```
-
-**Older record per exercise.** Before the records per skill, the store kept one record per exercise in `exerciseData`, naming the skill that wrote it last. The store keeps `exerciseData` and merges every write and reset into it as before, so the old generator and the sync see no change. No migration runs: an athlete updating the app keeps `exerciseData` and starts with an empty `exerciseProgress`. Until a skill has a record of its own, the new generator reads the older record as that skill's record when it names the skill, and as a load seed source otherwise. The first write of another skill takes over the older record, so the skill that wrote it before keeps only what its own record holds.
+Example: bench press trains under SWR1 at 50 kg × 15. A short workout then trains it under SA and starts at 50 kg with the SA start repetitions. The next SWR1 session continues at 50 kg × 15.

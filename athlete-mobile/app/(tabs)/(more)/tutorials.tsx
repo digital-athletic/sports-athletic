@@ -90,7 +90,7 @@ const TutorialsScreen: FC = () => {
               <Box padding="m" alignItems="center">
                 <Text variant="body">{t("more.loadingTutorials")}</Text>
               </Box>
-            ) : null
+            ) : undefined
           }
           contentInsetAdjustmentBehavior="automatic"
           showsVerticalScrollIndicator={false}

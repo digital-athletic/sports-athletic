@@ -231,7 +231,7 @@ export interface PlanWorkoutOptions {
   place?: string;
   equipment?: string[];
   skillTrees?: Record<string, SkillTreeType>;
-  /** Earlier progress per skill and the older record per exercise, default none. */
+  /** Earlier progress per skill and the shared record per exercise, default none. */
   storedProgress?: ExerciseProgressSourceType;
 }
 

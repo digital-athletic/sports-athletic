@@ -1,6 +1,6 @@
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import {
-  generateExerciseProgressMap,
+  generateExerciseDataMap,
   generateStoredExerciseData,
 } from "@test/factories/storedExerciseData";
 import type { State } from "../exerciseProgressStore";
@@ -203,7 +203,7 @@ describe("exerciseProgressStoreMigrations", () => {
       });
 
       const result = exerciseProgressStoreMigrations[19](
-        stateWith(generateExerciseProgressMap(squat, press)),
+        stateWith(generateExerciseDataMap(squat, press)),
       );
 
       expect(result.exerciseProgress).toEqual({
@@ -211,7 +211,7 @@ describe("exerciseProgressStoreMigrations", () => {
         SWR1: { "2": press },
       });
       expect(result.exerciseData).toEqual(
-        generateExerciseProgressMap(squat, press),
+        generateExerciseDataMap(squat, press),
       );
     });
 
@@ -219,11 +219,11 @@ describe("exerciseProgressStoreMigrations", () => {
       const own = generateStoredExerciseData({ skill: "SA", weight: 70 });
       const state = {
         ...stateWith(
-          generateExerciseProgressMap(
+          generateExerciseDataMap(
             generateStoredExerciseData({ skill: "SA", weight: 60 }),
           ),
         ),
-        exerciseProgress: { SA: generateExerciseProgressMap(own) },
+        exerciseProgress: { SA: generateExerciseDataMap(own) },
       };
 
       const result = exerciseProgressStoreMigrations[19](state);

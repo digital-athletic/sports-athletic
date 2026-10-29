@@ -15,7 +15,7 @@ export interface GenerationInputFactoryOptions extends AthleteOptions {
   exerciseCatalog?: ExerciseType[];
   /** The athlete's own level per branch ID, as stored branch data. */
   branchLevels?: Record<string, number>;
-  /** The athlete's stored exercise progress per skill and the older record per exercise. */
+  /** The athlete's stored exercise progress per skill and the shared record per exercise. */
   storedProgress?: ExerciseProgressSourceType;
   /** Limits the branch lookup index to these skill trees. */
   skillTrees?: Record<string, SkillTreeType>;

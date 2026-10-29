@@ -6,17 +6,10 @@ import type { SkillCode } from "@/schemas/generator.schema";
 
 export const toUpdatedAt = (nowMs: number): number => Math.floor(nowMs / 1000);
 
-/**
- * The record of the skill. Without one, the older record per exercise when
- * it names the skill, else null.
- */
+/** The record the skill wrote for the exercise, else null. */
 export const readOwnExerciseProgress = (
   progress: Readonly<ExerciseProgressSourceType> | null,
   skill: SkillCode,
   exerciseId: string,
-): ExerciseProgressRecordType | null => {
-  const own = progress?.exerciseProgress?.[skill]?.[exerciseId];
-  if (own) return own;
-  const older = progress?.exerciseData[exerciseId];
-  return older?.skill === skill ? older : null;
-};
+): ExerciseProgressRecordType | null =>
+  progress?.exerciseProgress?.[skill]?.[exerciseId] ?? null;

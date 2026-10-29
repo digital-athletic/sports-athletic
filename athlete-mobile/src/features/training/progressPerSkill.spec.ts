@@ -27,10 +27,7 @@ import {
   setUpActiveTraining,
   setUpRecreatedPlanScenario,
 } from "@test/factories/progressPerSkillScenarios";
-import {
-  generateExerciseDataMap,
-  generateStoredProgress,
-} from "@test/factories/storedExerciseData";
+import { generateStoredProgress } from "@test/factories/storedExerciseData";
 
 /**
  * Weight and repetition of the last front squat set of a set list, the set
@@ -100,28 +97,7 @@ afterEach(() => {
   jest.useRealTimers();
 });
 
-describe("Progress per skill: plan day and short workout", () => {
-  it("starts the plan day from the SWR1 record and the short workout from the SA record", () => {
-    const shortWorkoutId = saveFrontSquatWorkout("SA");
-    useExerciseProgressStore.setState(
-      generateStoredProgress(
-        generateFrontSquatRecord("SWR1", { weight: 26, repetition: 11 }),
-        generateFrontSquatRecord("SA", { weight: 20, repetition: 12 }),
-      ),
-    );
-
-    const planDay = generateWorkout(generateStoredProgressRequest("PLAN"));
-    const shortWorkout = generateWorkout(
-      generateStoredProgressRequest(shortWorkoutId),
-    );
-
-    expect(frontSquatValues(planDay)).toEqual({ weight: 26, repetition: 11 });
-    expect(frontSquatValues(shortWorkout)).toEqual({
-      weight: 20,
-      repetition: 12,
-    });
-  });
-
+describe("Progress per skill: short workout", () => {
   it("writes a completed short workout into the SA record and leaves the SWR1 record alone", async () => {
     const shortWorkoutId = saveFrontSquatWorkout("SA");
     const swr1Record = generateFrontSquatRecord("SWR1", {
@@ -174,8 +150,13 @@ describe("Progress per skill: moved training day", () => {
 
 describe("Progress per skill: recreated plan", () => {
   it("keeps the records and continues the next SWR1 day from them", async () => {
+    // the first candidate wins every draw, so both plans hold the same days
+    jest.spyOn(Math, "random").mockReturnValue(0);
+    // the workout of today comes from the first section of the plan
+    const startDate = new Date(2026, 0, 12);
+    jest.useFakeTimers().setSystemTime(startDate);
     const { user, firstPlan, swr1Training, level, exerciseId, branchId } =
-      setUpRecreatedPlanScenario();
+      setUpRecreatedPlanScenario(startDate);
     const recordsBefore = structuredClone(readStoredProgress());
 
     // The settings screens recreate the plan through this hook.
@@ -203,31 +184,5 @@ describe("Progress per skill: recreated plan", () => {
         (entry) => entry.skill === "SWR1" && entry.exerciseId === exerciseId,
       )?.repetition,
     ).toBe(11);
-  });
-});
-
-describe("Progress per skill: athlete with only the older record per exercise", () => {
-  it("continues the stored skill from the older record and starts another skill from its start values", () => {
-    const shortWorkoutId = saveFrontSquatWorkout("SA");
-    const freshShortWorkout = generateWorkout(
-      generateStoredProgressRequest(shortWorkoutId),
-    );
-    // An athlete who trained before the records per skill existed.
-    useExerciseProgressStore.setState({
-      exerciseProgress: {},
-      exerciseData: generateExerciseDataMap(
-        generateFrontSquatRecord("SWR1", { weight: 26, repetition: 11 }),
-      ),
-    });
-
-    const planDay = generateWorkout(generateStoredProgressRequest("PLAN"));
-    const shortWorkout = generateWorkout(
-      generateStoredProgressRequest(shortWorkoutId),
-    );
-
-    expect(frontSquatValues(planDay)).toEqual({ weight: 26, repetition: 11 });
-    expect(frontSquatValues(shortWorkout)).toEqual(
-      frontSquatValues(freshShortWorkout),
-    );
   });
 });

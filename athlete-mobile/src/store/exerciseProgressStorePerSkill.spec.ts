@@ -1,8 +1,11 @@
 import { syncManager } from "@/services/SyncManager";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { act, renderHook } from "@testing-library/react-native";
+import {
+  generateExerciseDataMap,
+  generateStoredExerciseData,
+} from "@test/factories/storedExerciseData";
 import { useExerciseProgressStore } from "./exerciseProgressStore";
-import { STORE_VERSIONS } from "./storeVersions";
 
 jest.mock("@/services/SyncManager", () => ({
   syncManager: {
@@ -21,7 +24,7 @@ describe("exerciseProgressStore: progress per skill", () => {
   });
 
   describe("updateExercise", () => {
-    it("leaves the shared record to the skill it names", async () => {
+    it("names the skill that wrote the shared record last", async () => {
       const { result } = await renderHook(() => useExerciseProgressStore());
 
       await act(() => {
@@ -34,56 +37,15 @@ describe("exerciseProgressStore: progress per skill", () => {
         result.current.updateExercise("342", {
           exerciseId: "342",
           skill: "HYP",
-          weight: 62.5,
           repetition: 8,
         });
       });
 
       expect(result.current.exerciseData["342"]).toEqual({
         exerciseId: "342",
-        skill: "SA",
-        weight: 50,
-        repetition: 15,
-        updatedAt: expect.any(Number),
-      });
-      expect(result.current.exerciseProgress["HYP"]?.["342"]).toEqual({
-        exerciseId: "342",
         skill: "HYP",
-        weight: 62.5,
+        weight: 50,
         repetition: 8,
-        updatedAt: expect.any(Number),
-      });
-    });
-
-    it("starts the first record of a skill from the older record that skill wrote", async () => {
-      const { result } = await renderHook(() => useExerciseProgressStore());
-      await act(() => {
-        useExerciseProgressStore.setState({
-          exerciseProgress: {},
-          exerciseData: {
-            "26": {
-              exerciseId: "26",
-              skill: "MAX_STRENGTH",
-              nextWeightPercentage: 75,
-              feedback: { difficulty: "TOO_EASY", streakCounter: 3 },
-            },
-          },
-        });
-      });
-
-      await act(() => {
-        result.current.updateExercise("26", {
-          exerciseId: "26",
-          skill: "MAX_STRENGTH",
-          feedback: { difficulty: "TOO_EASY" },
-        });
-      });
-
-      expect(result.current.exerciseProgress["MAX_STRENGTH"]?.["26"]).toEqual({
-        exerciseId: "26",
-        skill: "MAX_STRENGTH",
-        nextWeightPercentage: 75,
-        feedback: { difficulty: "TOO_EASY", streakCounter: 4 },
         updatedAt: expect.any(Number),
       });
     });
@@ -118,7 +80,7 @@ describe("exerciseProgressStore: progress per skill", () => {
   });
 
   describe("resetExercise", () => {
-    it("resets the record of the given skill and leaves the shared record of another skill", async () => {
+    it("resets the record of the given skill and the shared record, and leaves other skills", async () => {
       const { result } = await renderHook(() => useExerciseProgressStore());
       await act(() => {
         result.current.updateExercise("1", {
@@ -134,38 +96,40 @@ describe("exerciseProgressStore: progress per skill", () => {
           repetition: 12,
         });
       });
-      const sharedBefore = structuredClone(result.current.exerciseData["1"]);
       const saBefore = structuredClone(result.current.exerciseProgress["SA"]);
 
       await act(() => {
         result.current.resetExercise("1", { skill: "SWR1" });
       });
 
-      expect(result.current.exerciseProgress["SWR1"]?.["1"]).toEqual({
+      const reset = {
         exerciseId: "1",
         skill: "SWR1",
         updatedAt: expect.any(Number),
-      });
-      expect(result.current.exerciseData["1"]).toEqual(sharedBefore);
+      };
+      expect(result.current.exerciseProgress["SWR1"]?.["1"]).toEqual(reset);
+      expect(result.current.exerciseData["1"]).toEqual(reset);
       expect(result.current.exerciseProgress["SA"]).toEqual(saBefore);
     });
   });
 
   describe("rehydration", () => {
-    it("loads a persisted state without records per skill and keeps its older record", async () => {
-      const older = { exerciseId: "1", skill: "SWR1", weight: 26 };
+    it("moves the older record of a version 19 state to the skill it names", async () => {
+      const older = generateStoredExerciseData({ skill: "SWR1", weight: 26 });
       await AsyncStorage.setItem(
         "exercise-progress-storage",
         JSON.stringify({
-          state: { exerciseData: { "1": older } },
-          version: STORE_VERSIONS.EXERCISE_PROGRESS,
+          state: { exerciseData: generateExerciseDataMap(older) },
+          version: 19,
         }),
       );
 
-      await useExerciseProgressStore.persist.rehydrate();
+      await act(async () => {
+        await useExerciseProgressStore.persist.rehydrate();
+      });
 
       const state = useExerciseProgressStore.getState();
-      expect(state.exerciseProgress).toEqual({});
+      expect(state.exerciseProgress).toEqual({ SWR1: { "1": older } });
       expect(state.exerciseData["1"]).toEqual(older);
     });
   });

@@ -44,38 +44,13 @@ describe("exerciseProgressLookup: readOwnExerciseProgress", () => {
 
     expect(readOwnExerciseProgress(progress, "SA", "1")).toBe(null);
   });
-});
 
-describe("exerciseProgressLookup: older record per exercise", () => {
-  it("reads the older record as own when its skill matches and no per skill record exists", () => {
-    const older = generateStoredExerciseData({
-      skill: "SA",
-      weight: 40,
-      repetition: 12,
-    });
-    const progress = { exerciseData: generateExerciseDataMap(older) };
-
-    expect(readOwnExerciseProgress(progress, "SA", "1")).toBe(older);
-  });
-
-  it("prefers the per skill record over the older record of the same skill", () => {
-    const own = generateStoredExerciseData({ skill: "SA", repetition: 15 });
-    const older = generateStoredExerciseData({ skill: "SA", repetition: 9 });
+  it("ignores the shared record per exercise, even when it names the skill", () => {
+    const shared = generateStoredExerciseData({ skill: "SA", weight: 40 });
     const progress = {
-      ...generateStoredProgress(own),
-      exerciseData: generateExerciseDataMap(older),
+      exerciseProgress: {},
+      exerciseData: generateExerciseDataMap(shared),
     };
-
-    expect(readOwnExerciseProgress(progress, "SA", "1")).toBe(own);
-  });
-
-  it("returns null for an older record of another skill", () => {
-    const older = generateStoredExerciseData({
-      skill: "SWR1",
-      weight: 62.5,
-      repetition: 8,
-    });
-    const progress = { exerciseData: generateExerciseDataMap(older) };
 
     expect(readOwnExerciseProgress(progress, "SA", "1")).toBe(null);
   });

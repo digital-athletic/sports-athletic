@@ -22,7 +22,7 @@ import { generateStoredProgress } from "./storedExerciseData";
 
 /**
  * Reads the stored progress the generation hook hands to the generator: the
- * records per skill and the older record per exercise.
+ * records per skill and the shared record per exercise.
  *
  * readStoredProgress()
  * → { exerciseProgress: { SA: { "118": { ... } } }, exerciseData: {} }
@@ -66,19 +66,14 @@ export const setUpActiveTraining = (
 };
 
 /**
- * Prepares a generated plan, the SWR1 record of its first SWR1 exercise
- * (26 kg, 11 repetitions) and the stores that the plan update hook reads.
- * Fixes Math.random and the clock, so both plans hold the same days.
+ * Prepares a plan generated from `startDate`, the SWR1 record of its first
+ * SWR1 exercise (26 kg, 11 repetitions) and the stores that the plan update hook reads.
+ * The caller fixes Math.random and the clock first, so a recreated plan holds the same days.
  *
- * setUpRecreatedPlanScenario()
+ * setUpRecreatedPlanScenario(new Date(2026, 0, 12))
  * → { user, firstPlan, swr1Training, level: "1", exerciseId: "118", branchId: "22" }
  */
-export const setUpRecreatedPlanScenario = () => {
-  // the first candidate wins every draw, so both plans hold the same days
-  jest.spyOn(Math, "random").mockReturnValue(0);
-  // the workout of today comes from the first section of the plan
-  const startDate = new Date(2026, 0, 12);
-  jest.useFakeTimers().setSystemTime(startDate);
+export const setUpRecreatedPlanScenario = (startDate: Date) => {
   const { user, userTrainingDays, places } = generateStudioPlanInputs();
   const firstPlan = PlanGenerator.generatePlan(
     user,
@@ -93,7 +88,9 @@ export const setUpRecreatedPlanScenario = () => {
     (training) => training.skills.SWR1?.length,
   );
   const swr1Entry = swr1Training?.skills.SWR1?.[0];
-  const [level, { exerciseId }] = Object.entries(swr1Entry?.exercises ?? {})[0];
+  const firstLevel = Object.entries(swr1Entry?.exercises ?? {})[0];
+  if (!firstLevel) throw new Error("The first plan holds no SWR1 exercise");
+  const [level, { exerciseId }] = firstLevel;
   useExerciseProgressStore.setState(
     generateStoredProgress(
       generateFrontSquatRecord("SWR1", {

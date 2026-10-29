@@ -18,9 +18,8 @@ export type ExerciseProgressBySkillType = Partial<
 >;
 
 /**
- * Stored progress a reader sees: the records per skill and the older record
- * per exercise, which still holds the progress written before the per skill
- * records existed.
+ * Stored progress a reader sees: the records per skill, and one record per
+ * exercise from the skill that wrote it last, which only the legacy generator reads.
  */
 export type ExerciseProgressSourceType = {
   exerciseProgress?: ExerciseProgressBySkillType;

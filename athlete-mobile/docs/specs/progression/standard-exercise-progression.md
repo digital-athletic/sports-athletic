@@ -376,6 +376,7 @@ The rounded training weight is both the execution prescription and the source fo
 Stored repetitions and durations always stay within the currently resolved start and target values. Each session generation clamps them, for every training area, so a later change to authored or global values takes effect for athletes with existing progress.
 
 Pending feedback is the handover token between session completion and next-generation application.
+
 After a level change:
 
 - the branch level changes for every skill;

@@ -240,7 +240,7 @@ export const TransformSchema = v.array(
 
 /**
  * Parameter type for user exercise progress data passed to generator methods.
- * Contains the exercise progress per skill, the older record per exercise and
+ * Contains the exercise progress per skill, the shared record per exercise and
  * branch-level progression data. The AIWL generator reads the records per
  * skill; the legacy generator reads `exerciseData` only.
  */

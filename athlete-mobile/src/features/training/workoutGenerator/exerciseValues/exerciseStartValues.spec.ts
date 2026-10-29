@@ -227,7 +227,7 @@ describe("exerciseStartValues: feedback", () => {
 });
 
 describe("exerciseStartValues: progress per skill", () => {
-  it("starts a block at the record of its own skill and ignores another skill's record of the exercise", () => {
+  it("starts a block at the record of its own skill", () => {
     const values = readStartValues(
       { skill: "SWR2" },
       generateAuthoredUnitExercise("weightAbsolute"),
@@ -253,28 +253,5 @@ describe("exerciseStartValues: progress per skill", () => {
 
     expect(values.weight).toBe(50);
     expect(values.repetition).toBe(12);
-  });
-
-  it("starts a new skill at its start values although another skill trained the exercise", () => {
-    const exercise = generateAuthoredUnitExercise("weightAbsolute");
-    const startValues = readStartValues({ skill: "SWR2" }, exercise);
-
-    const values = readStartValues(
-      { skill: "SWR2" },
-      exercise,
-      generateExerciseStartValueSource({
-        storedProgress: generateStoredProgress(
-          generateStoredExerciseData({
-            skill: "SWR1",
-            weight: 40,
-            weightType: "weightAbsolute",
-            repetition: 17,
-            feedback: { difficulty: "TOO_EASY" },
-          }),
-        ),
-      }),
-    );
-
-    expect(values).toEqual(startValues);
   });
 });

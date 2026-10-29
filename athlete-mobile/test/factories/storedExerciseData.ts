@@ -38,7 +38,7 @@ export const generateFeedbackExerciseData = (
 
 /**
  * Keys stored exercise records by skill and exercise ID, as the exercise
- * progress of the athlete holds them. The older record per exercise stays empty.
+ * progress of the athlete holds them. The shared record per exercise stays empty.
  *
  * generateStoredProgress(generateStoredExerciseData({ repetition: 10 }))
  * → { exerciseProgress: { SWR2: { "1": { exerciseId: "1", skill: "SWR2", repetition: 10 } } },
@@ -55,9 +55,8 @@ export const generateStoredProgress = (
 };
 
 /**
- * Keys stored exercise records by exercise ID, as the older record per
- * exercise holds them: one record per exercise, written before the records
- * per skill existed.
+ * Keys stored exercise records by exercise ID, as the shared record per
+ * exercise holds them: one record per exercise, from the skill that wrote it last.
  *
  * generateExerciseDataMap(generateStoredExerciseData({ skill: "SA", weight: 40 }))
  * → { "1": { exerciseId: "1", skill: "SA", weight: 40 } }

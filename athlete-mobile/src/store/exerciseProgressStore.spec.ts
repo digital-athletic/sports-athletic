@@ -6,10 +6,6 @@ import {
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import { syncManager } from "@/services/SyncManager";
 import { act, renderHook } from "@testing-library/react-native";
-import {
-  generateExerciseDataMap,
-  generateStoredExerciseData,
-} from "@test/factories/storedExerciseData";
 import { useExerciseProgressStore } from "./exerciseProgressStore";
 
 jest.mock("@/services/SyncManager", () => ({
@@ -673,20 +669,6 @@ describe("exerciseProgressStore", () => {
         updatedAt: expect.any(Number),
       });
       expect(result.current.getExerciseProgress("SWR1", "1")?.weight).toBe(50);
-    });
-
-    it("falls back to the older record when its skill matches", async () => {
-      const { result } = await renderHook(() => useExerciseProgressStore());
-      const older = generateStoredExerciseData({ skill: "SA", weight: 40 });
-      await act(() => {
-        useExerciseProgressStore.setState({
-          exerciseData: generateExerciseDataMap(older),
-          exerciseProgress: {},
-        });
-      });
-
-      expect(result.current.getExerciseProgress("SA", "1")).toEqual(older);
-      expect(result.current.getExerciseProgress("SWR1", "1")).toBeUndefined();
     });
   });
 

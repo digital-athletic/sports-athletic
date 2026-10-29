@@ -1,6 +1,6 @@
 import {
   generateExerciseDataMap,
-  generateExerciseProgressMap,
+  generateStoredProgress,
   generateStoredExerciseData,
 } from "@test/factories/storedExerciseData";
 import { generateValueExercise } from "@test/factories/valueExercise";
@@ -31,7 +31,7 @@ describe("exerciseProgressLookup: readExerciseProgress own record", () => {
       weight: 60,
       updatedAt: 200,
     });
-    const progress = generateExerciseProgressMap(own, other);
+    const progress = generateStoredProgress(own, other);
 
     expect(readExerciseProgress(progress, "SA", "1", "weightAbsolute")).toEqual(
       own,
@@ -41,7 +41,7 @@ describe("exerciseProgressLookup: readExerciseProgress own record", () => {
   it("returns the own record when it holds no weight", () => {
     const own = generateStoredExerciseData({ skill: "SA", repetition: 9 });
     const other = generateStoredExerciseData({ skill: "SWR1", weight: 60 });
-    const progress = generateExerciseProgressMap(own, other);
+    const progress = generateStoredProgress(own, other);
 
     expect(readExerciseProgress(progress, "SA", "1", "weightAbsolute")).toEqual(
       own,
@@ -70,7 +70,7 @@ describe("exerciseProgressLookup: readExerciseProgress load seed", () => {
       feedback: { difficulty: "TOO_EASY", streakCounter: 2 },
       updatedAt: 100,
     });
-    const progress = generateExerciseProgressMap(source);
+    const progress = generateStoredProgress(source);
 
     expect(readExerciseProgress(progress, "SA", "1", "weightAbsolute")).toEqual(
       {
@@ -93,7 +93,7 @@ describe("exerciseProgressLookup: readExerciseProgress load seed", () => {
       weight: 55,
       updatedAt: 200,
     });
-    const progress = generateExerciseProgressMap(older, newer);
+    const progress = generateStoredProgress(older, newer);
 
     expect(
       readExerciseProgress(progress, "SA", "1", "weightAbsolute")?.weight,
@@ -107,7 +107,7 @@ describe("exerciseProgressLookup: readExerciseProgress load seed", () => {
       weight: 55,
       updatedAt: 1,
     });
-    const progress = generateExerciseProgressMap(undated, dated);
+    const progress = generateStoredProgress(undated, dated);
 
     expect(
       readExerciseProgress(progress, "SA", "1", "weightAbsolute")?.weight,
@@ -116,7 +116,7 @@ describe("exerciseProgressLookup: readExerciseProgress load seed", () => {
 
   it("seeds a load of 0 kg", () => {
     const source = generateStoredExerciseData({ skill: "SWR1", weight: 0 });
-    const progress = generateExerciseProgressMap(source);
+    const progress = generateStoredProgress(source);
 
     expect(
       readExerciseProgress(progress, "SA", "1", "weightAbsolute")?.weight,
@@ -125,7 +125,7 @@ describe("exerciseProgressLookup: readExerciseProgress load seed", () => {
 
   it("sets weightType weightAbsolute on the seed of a record without weightType", () => {
     const source = generateStoredExerciseData({ skill: "SWR1", weight: 30 });
-    const progress = generateExerciseProgressMap(source);
+    const progress = generateStoredProgress(source);
 
     expect(readExerciseProgress(progress, "SA", "1", "weightAbsolute")).toEqual(
       {
@@ -150,7 +150,7 @@ describe("exerciseProgressLookup: readExerciseProgress load seed", () => {
       weightType: "weightFMax",
       updatedAt: 200,
     });
-    const progress = generateExerciseProgressMap(older, newer);
+    const progress = generateStoredProgress(older, newer);
 
     expect(
       readExerciseProgress(progress, "SA", "1", "weightAbsolute")?.weight,
@@ -165,7 +165,7 @@ describe("exerciseProgressLookup: readExerciseProgress no match", () => {
       weight: 70,
       weightType: "weightFMax",
     });
-    const progress = generateExerciseProgressMap(source);
+    const progress = generateStoredProgress(source);
 
     expect(readExerciseProgress(progress, "SA", "1", "weightAbsolute")).toBe(
       null,
@@ -177,7 +177,7 @@ describe("exerciseProgressLookup: readExerciseProgress no match", () => {
       skill: "SWR1",
       repetition: 15,
     });
-    const progress = generateExerciseProgressMap(source);
+    const progress = generateStoredProgress(source);
 
     expect(readExerciseProgress(progress, "SA", "1", "weightAbsolute")).toBe(
       null,
@@ -190,43 +190,12 @@ describe("exerciseProgressLookup: readExerciseProgress no match", () => {
       skill: "SWR1",
       weight: 50,
     });
-    const progress = generateExerciseProgressMap(source);
+    const progress = generateStoredProgress(source);
 
     expect(readExerciseProgress(progress, "SA", "1", "weightAbsolute")).toBe(
       null,
     );
   });
-});
-
-describe("exerciseProgressLookup: example skill pairs", () => {
-  it.each([
-    ["SWR1KG", "SWR2KG"],
-    ["GKS", "GKSKG"],
-    ["MAX", "MAX_STRENGTH"],
-    ["PREVKNEE", "PREVSHOULDER"],
-  ] as const)(
-    "reads the own record of %s and %s",
-    (firstSkill, secondSkill) => {
-      const first = generateStoredExerciseData({
-        skill: firstSkill,
-        weight: 20,
-        repetition: 10,
-      });
-      const second = generateStoredExerciseData({
-        skill: secondSkill,
-        weight: 25,
-        repetition: 8,
-      });
-      const progress = generateExerciseProgressMap(first, second);
-
-      expect(
-        readExerciseProgress(progress, firstSkill, "1", "weightAbsolute"),
-      ).toBe(first);
-      expect(
-        readExerciseProgress(progress, secondSkill, "1", "weightAbsolute"),
-      ).toBe(second);
-    },
-  );
 });
 
 describe("exerciseProgressLookup: older record per exercise", () => {
@@ -247,7 +216,7 @@ describe("exerciseProgressLookup: older record per exercise", () => {
     const own = generateStoredExerciseData({ skill: "SA", repetition: 15 });
     const older = generateStoredExerciseData({ skill: "SA", repetition: 9 });
     const progress = {
-      ...generateExerciseProgressMap(own),
+      ...generateStoredProgress(own),
       exerciseData: generateExerciseDataMap(older),
     };
 
@@ -274,6 +243,27 @@ describe("exerciseProgressLookup: older record per exercise", () => {
     );
   });
 
+  it("seeds from the older record when it is newer than the per skill record of another skill", () => {
+    const older = generateStoredExerciseData({
+      skill: "SWR1",
+      weight: 70,
+      updatedAt: 200,
+    });
+    const perSkill = generateStoredExerciseData({
+      skill: "HYP",
+      weight: 60,
+      updatedAt: 100,
+    });
+    const progress = {
+      ...generateStoredProgress(perSkill),
+      exerciseData: generateExerciseDataMap(older),
+    };
+
+    expect(
+      readExerciseProgress(progress, "SA", "1", "weightAbsolute")?.weight,
+    ).toBe(70);
+  });
+
   it("lets an undated older record lose to a dated per skill record", () => {
     const older = generateStoredExerciseData({ skill: "SWR1", weight: 70 });
     const dated = generateStoredExerciseData({
@@ -282,7 +272,7 @@ describe("exerciseProgressLookup: older record per exercise", () => {
       updatedAt: 1,
     });
     const progress = {
-      ...generateExerciseProgressMap(dated),
+      ...generateStoredProgress(dated),
       exerciseData: generateExerciseDataMap(older),
     };
 
@@ -298,14 +288,14 @@ describe("exerciseProgressLookup: readOwnExerciseProgress", () => {
       skill: "MAX_STRENGTH",
       weight: 80,
     });
-    const progress = generateExerciseProgressMap(own);
+    const progress = generateStoredProgress(own);
 
     expect(readOwnExerciseProgress(progress, "MAX_STRENGTH", "1")).toBe(own);
   });
 
   it("returns null instead of seeding from another skill", () => {
     const other = generateStoredExerciseData({ skill: "MAX", weight: 80 });
-    const progress = generateExerciseProgressMap(other);
+    const progress = generateStoredProgress(other);
 
     expect(readOwnExerciseProgress(progress, "MAX_STRENGTH", "1")).toBe(null);
   });

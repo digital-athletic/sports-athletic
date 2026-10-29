@@ -237,13 +237,13 @@ const readBufferTable = (athlete: UserType): BufferTable => {
 export const readMaxTrainingWeights = (
   exercise: ExerciseType,
   athlete: UserType,
-  exerciseData: Readonly<ExerciseProgressSourceType> | null,
+  storedProgress: Readonly<ExerciseProgressSourceType> | null,
   skill: SkillCode,
 ): MaxTrainingWeightsResult => {
   const states = readNextSetStates(
     readBufferTable(athlete),
     getUserLevel(athlete),
-    readOwnExerciseProgress(exerciseData, skill, exercise.id) ?? undefined,
+    readOwnExerciseProgress(storedProgress, skill, exercise.id) ?? undefined,
   );
   return {
     trainingWeights: states.map((state) => state.weightPercentage),

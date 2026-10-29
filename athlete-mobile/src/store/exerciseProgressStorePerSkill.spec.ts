@@ -66,6 +66,39 @@ describe("exerciseProgressStore: progress per skill", () => {
       });
     });
 
+    it("starts the first record of a skill from the older record that skill wrote", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
+      await act(() => {
+        useExerciseProgressStore.setState({
+          exerciseProgress: {},
+          exerciseData: {
+            "26": {
+              exerciseId: "26",
+              skill: "MAX_STRENGTH",
+              nextWeightPercentage: 75,
+              feedback: { difficulty: "TOO_EASY", streakCounter: 3 },
+            },
+          },
+        });
+      });
+
+      await act(() => {
+        result.current.updateExercise("26", {
+          exerciseId: "26",
+          skill: "MAX_STRENGTH",
+          feedback: { difficulty: "TOO_EASY" },
+        });
+      });
+
+      expect(result.current.exerciseProgress["MAX_STRENGTH"]?.["26"]).toEqual({
+        exerciseId: "26",
+        skill: "MAX_STRENGTH",
+        nextWeightPercentage: 75,
+        feedback: { difficulty: "TOO_EASY", streakCounter: 4 },
+        updatedAt: expect.any(Number),
+      });
+    });
+
     it("counts the feedback streak per skill", async () => {
       const { result } = await renderHook(() => useExerciseProgressStore());
 

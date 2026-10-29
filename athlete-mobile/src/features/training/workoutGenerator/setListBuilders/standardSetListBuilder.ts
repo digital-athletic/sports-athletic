@@ -235,7 +235,7 @@ export const buildStandardSetList: SkillSetListBuilder = (
     source: {
       skillCatalog: input.skillCatalog,
       athlete: input.athlete,
-      exerciseData: input.exerciseData,
+      storedProgress: input.exerciseData,
     },
     exerciseMap: createExerciseMap(input.exerciseCatalog),
     catalogAfterBlock: readSkillCatalogEntry(input.skillCatalog, block.skill)

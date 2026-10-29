@@ -232,7 +232,7 @@ export interface PlanWorkoutOptions {
   equipment?: string[];
   skillTrees?: Record<string, SkillTreeType>;
   /** Earlier progress per skill and the older record per exercise, default none. */
-  exerciseData?: ExerciseProgressSourceType;
+  storedProgress?: ExerciseProgressSourceType;
 }
 
 /**
@@ -259,7 +259,7 @@ export function generatePlanWorkoutForWeekday(
     givenSection: undefined,
     daysSinceLastWorkout: 0,
     userExerciseData: {
-      ...(options.exerciseData ?? { exerciseData: {} }),
+      ...(options.storedProgress ?? { exerciseData: {} }),
       branchData: {},
     },
   });

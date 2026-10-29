@@ -7,7 +7,7 @@ import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import {
   generateExerciseDataMap,
-  generateExerciseProgressMap,
+  generateStoredProgress,
   generateStoredExerciseData,
 } from "./storedExerciseData";
 
@@ -75,8 +75,7 @@ export const seedCompletionSession = (
   useExerciseProgressStore.getState().resetProgress();
   // As the dual write leaves them: one record per skill, and per exercise the last one.
   useExerciseProgressStore.setState({
-    exerciseProgress:
-      generateExerciseProgressMap(...records).exerciseProgress ?? {},
+    exerciseProgress: generateStoredProgress(...records).exerciseProgress ?? {},
     exerciseData: generateExerciseDataMap(...records),
   });
 };

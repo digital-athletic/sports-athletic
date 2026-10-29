@@ -30,7 +30,7 @@ import {
 } from "@test/factories/progressPerSkillScenarios";
 import {
   generateExerciseDataMap,
-  generateExerciseProgressMap,
+  generateStoredProgress,
 } from "@test/factories/storedExerciseData";
 
 /**
@@ -105,7 +105,7 @@ describe("Progress per skill: plan day and short workout", () => {
   it("starts the plan day from the SWR1 record and the short workout from the SA record", () => {
     const shortWorkoutId = saveFrontSquatWorkout("SA");
     useExerciseProgressStore.setState(
-      generateExerciseProgressMap(
+      generateStoredProgress(
         generateFrontSquatRecord("SWR1", { weight: 26, repetition: 11 }),
         generateFrontSquatRecord("SA", { weight: 20, repetition: 12 }),
       ),
@@ -130,7 +130,7 @@ describe("Progress per skill: plan day and short workout", () => {
       repetition: 11,
     });
     useExerciseProgressStore.setState(
-      generateExerciseProgressMap(
+      generateStoredProgress(
         swr1Record,
         generateFrontSquatRecord("SA", { weight: 20, repetition: 12 }),
       ),
@@ -194,7 +194,7 @@ describe("Progress per skill: two workouts sharing a skill", () => {
 describe("Progress per skill: moved training day", () => {
   it("generates the same values on Thursday as on Monday", () => {
     useExerciseProgressStore.setState(
-      generateExerciseProgressMap(
+      generateStoredProgress(
         generateFrontSquatRecord("SWR1", { weight: 26, repetition: 11 }),
       ),
     );
@@ -247,7 +247,7 @@ describe("Progress per skill: seeding a new skill", () => {
     const withoutRecords = generateWorkout(generateStoredProgressRequest(id));
     // SWR1 holds 30 kg and 11 repetitions dated 100, SA holds 40 kg without a date.
     useExerciseProgressStore.setState(
-      generateExerciseProgressMap(
+      generateStoredProgress(
         generateFrontSquatRecord("SWR1", {
           weight: 30,
           repetition: 11,

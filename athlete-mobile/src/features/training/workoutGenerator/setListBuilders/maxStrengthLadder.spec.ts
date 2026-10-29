@@ -1,8 +1,8 @@
 import { generateAthleteWithMaxValues } from "@test/factories/athlete";
 import {
-  generateExerciseProgressMap,
+  generateStoredProgress,
   generateFeedbackExerciseData,
-  generateSquatExerciseData,
+  generateSquatStoredProgress,
 } from "@test/factories/storedExerciseData";
 import {
   generateSquatExercise,
@@ -34,7 +34,7 @@ import {
  */
 const readWorkingSets = (
   athlete: UserType,
-  exerciseData: ExerciseProgressSourceType | null,
+  storedProgress: ExerciseProgressSourceType | null,
   skill: SkillCode = "MAX_STRENGTH",
 ): MaxTrainingRepsEntry[] =>
   readMaxTrainingRepetitions(
@@ -42,7 +42,7 @@ const readWorkingSets = (
     readMaxTrainingWeights(
       generateSquatExercise(),
       athlete,
-      exerciseData,
+      storedProgress,
       skill,
     ),
   ).filter((entry) => entry.level !== "WARMUP");
@@ -68,7 +68,7 @@ const describeNextSets = (
   difficulty: ExerciseDifficultyType,
 ) =>
   describeSets(
-    readWorkingSets(athlete, generateSquatExerciseData(values, difficulty)),
+    readWorkingSets(athlete, generateSquatStoredProgress(values, difficulty)),
   );
 
 // Stores a working set the way the completion of the last set does.
@@ -96,11 +96,11 @@ const runSessions = (
   difficulty: ExerciseDifficultyType,
 ): string[][] => {
   const rows: string[][] = [];
-  let exerciseData: ExerciseProgressSourceType | null = null;
+  let storedProgress: ExerciseProgressSourceType | null = null;
   for (let session = 0; session < sessions; session++) {
-    const sets = readWorkingSets(athlete, exerciseData);
+    const sets = readWorkingSets(athlete, storedProgress);
     rows.push(describeSets(sets));
-    exerciseData = generateSquatExerciseData(
+    storedProgress = generateSquatStoredProgress(
       { maxFRepetitions: sets.map(convertToStoredSet) },
       difficulty,
     );
@@ -271,7 +271,7 @@ describe("maxStrengthLadder: feedback", () => {
     ];
     const sets = readWorkingSets(
       professional,
-      generateSquatExerciseData({ maxFRepetitions }, "TOO_HARD"),
+      generateSquatStoredProgress({ maxFRepetitions }, "TOO_HARD"),
     );
 
     expect(describeSets(sets)).toEqual(["72.5x5", "75x6", "77.5x6", "77.5x6"]);
@@ -371,7 +371,7 @@ describe("maxStrengthLadder: stored entries of another shape", () => {
       const weights = readMaxTrainingWeights(
         generateSquatExercise(),
         generateAthleteWithMaxValues({ level: "BEGINNER" }),
-        generateSquatExerciseData(
+        generateSquatStoredProgress(
           {
             nextWeightPercentage: 75,
             maxFRepetitions: [{ level: lastLevel, repetitions: 3 }],
@@ -392,13 +392,13 @@ describe("maxStrengthLadder: progress per skill", () => {
     const firstSession = readWorkingSets(advanced, null).map(
       convertToStoredSet,
     );
-    const exerciseData = generateSquatExerciseData(
+    const storedProgress = generateSquatStoredProgress(
       { maxFRepetitions: firstSession, nextWeightPercentage: 75 },
       "TOO_EASY",
     );
 
     expect(
-      describeSets(readWorkingSets(advanced, exerciseData, "MAX")),
+      describeSets(readWorkingSets(advanced, storedProgress, "MAX")),
     ).toEqual(["70x5", "72.5x2", "75x2"]);
   });
 
@@ -407,7 +407,7 @@ describe("maxStrengthLadder: progress per skill", () => {
     const firstSession = readWorkingSets(advanced, null).map(
       convertToStoredSet,
     );
-    const exerciseData = generateExerciseProgressMap(
+    const storedProgress = generateStoredProgress(
       generateFeedbackExerciseData(
         {
           exerciseId: SQUAT_EXERCISE_ID,
@@ -427,10 +427,10 @@ describe("maxStrengthLadder: progress per skill", () => {
     );
 
     expect(
-      describeSets(readWorkingSets(advanced, exerciseData, "MAX_STRENGTH")),
+      describeSets(readWorkingSets(advanced, storedProgress, "MAX_STRENGTH")),
     ).toEqual(["70x6", "72.5x5", "75x5"]);
     expect(
-      describeSets(readWorkingSets(advanced, exerciseData, "MAX")),
+      describeSets(readWorkingSets(advanced, storedProgress, "MAX")),
     ).toEqual(["67.5x5", "70x3", "72.5x2"]);
   });
 });

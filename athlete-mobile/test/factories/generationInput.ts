@@ -16,7 +16,7 @@ export interface GenerationInputFactoryOptions extends AthleteOptions {
   /** The athlete's own level per branch ID, as stored branch data. */
   branchLevels?: Record<string, number>;
   /** The athlete's stored exercise progress per skill and the older record per exercise. */
-  exerciseData?: ExerciseProgressSourceType;
+  storedProgress?: ExerciseProgressSourceType;
   /** Limits the branch lookup index to these skill trees. */
   skillTrees?: Record<string, SkillTreeType>;
   random?: () => number;
@@ -65,7 +65,7 @@ export const generateGenerationInput = ({
   equipment = [],
   exerciseCatalog = [],
   branchLevels = {},
-  exerciseData = { exerciseData: {} },
+  storedProgress = { exerciseData: {} },
   skillTrees,
   random,
   ...athleteOptions
@@ -77,7 +77,7 @@ export const generateGenerationInput = ({
     equipment,
     exerciseCatalog,
     exerciseData: {
-      ...exerciseData,
+      ...storedProgress,
       branchData: generateBranchData(branchLevels),
     },
     random,

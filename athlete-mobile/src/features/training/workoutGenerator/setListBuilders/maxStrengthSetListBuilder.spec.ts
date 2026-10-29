@@ -11,7 +11,7 @@ import {
   generateSetListBlock,
 } from "@test/factories/setListBlock";
 import { describeSetListEntries } from "@test/factories/setListDescription";
-import { generateSquatExerciseData } from "@test/factories/storedExerciseData";
+import { generateSquatStoredProgress } from "@test/factories/storedExerciseData";
 import { generateSupportExercise } from "@test/factories/supportExercise";
 import { catchThrownValue } from "@test/factories/thrownValue";
 import { SQUAT_EXERCISE_ID } from "@test/factories/valueExercise";
@@ -129,7 +129,7 @@ describe("maxStrengthSetListBuilder: set list", () => {
   it("rounds the warm-up sets from the displayed first working set", () => {
     const setList = buildSquatSetList({
       oneRepMax: 121,
-      exerciseData: generateSquatExerciseData(
+      storedProgress: generateSquatStoredProgress(
         {
           maxFRepetitions: [
             { level: "MEDIUM", repetitions: 5, weightPercentage: 67.5 },
@@ -263,7 +263,7 @@ describe("maxStrengthSetListBuilder: set list", () => {
       }),
       generateMaxStrengthInput({
         oneRepMax: 100,
-        exerciseData: generateSquatExerciseData(
+        storedProgress: generateSquatStoredProgress(
           {
             skill: "MAX",
             maxFRepetitions: [

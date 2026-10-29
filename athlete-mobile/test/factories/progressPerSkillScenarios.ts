@@ -20,7 +20,7 @@ import {
   generateStudioWorkoutRequest,
 } from "./frontSquatWorkout";
 import { generateStudioPlanInputs } from "./studioPlanInputs";
-import { generateExerciseProgressMap } from "./storedExerciseData";
+import { generateStoredProgress } from "./storedExerciseData";
 
 /**
  * Reads the stored progress the generation hook hands to the generator: the
@@ -50,7 +50,7 @@ export const seedSharedSkillWorkouts = () => {
     .getState()
     .saveCustomWorkout(generateFrontSquatTemplate("second", "SA"), null);
   useExerciseProgressStore.setState(
-    generateExerciseProgressMap(
+    generateStoredProgress(
       generateFrontSquatRecord("SA", {
         weight: 20,
         repetition: 9,
@@ -123,7 +123,7 @@ export const setUpRecreatedPlanScenario = () => {
   const swr1Entry = swr1Training?.skills.SWR1?.[0];
   const [level, { exerciseId }] = Object.entries(swr1Entry?.exercises ?? {})[0];
   useExerciseProgressStore.setState(
-    generateExerciseProgressMap(
+    generateStoredProgress(
       generateFrontSquatRecord("SWR1", {
         exerciseId,
         weight: 26,

@@ -40,7 +40,7 @@ const DEFAULT_START_DURATION = 30;
 export interface ExerciseStartValueSource {
   readonly skillCatalog: SkillCatalog;
   readonly athlete: UserType;
-  readonly exerciseData: Readonly<ExerciseProgressSourceType> | null;
+  readonly storedProgress: Readonly<ExerciseProgressSourceType> | null;
 }
 
 /** The block values start values read. */
@@ -134,7 +134,7 @@ export const readExerciseStartValues = (
   if (block.setDuration !== undefined) {
     return readTimedStartValues(reference, block.setDuration);
   }
-  const { athlete, skillCatalog, exerciseData } = source;
+  const { athlete, skillCatalog, storedProgress } = source;
   const context: ExerciseValueContext = {
     intensity: applyBlockValuesMode(
       readSkillIntensity(skillCatalog, block.skill, exercise),
@@ -145,7 +145,7 @@ export const readExerciseStartValues = (
     level: getUserLevel(athlete).toLowerCase(),
   };
   const stored = readExerciseProgress(
-    exerciseData,
+    storedProgress,
     block.skill,
     reference.exerciseId,
     readExpectedWeightType(exercise, context.intensity),

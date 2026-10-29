@@ -13,7 +13,7 @@ export type ExerciseDataMapType = Record<
 >;
 
 /** Progress records keyed by skill code, then by exercise ID. */
-export type ExerciseProgressMapType = Partial<
+export type ExerciseProgressBySkillType = Partial<
   Record<SkillCode, ExerciseDataMapType>
 >;
 
@@ -23,6 +23,6 @@ export type ExerciseProgressMapType = Partial<
  * records existed.
  */
 export type ExerciseProgressSourceType = {
-  exerciseProgress?: ExerciseProgressMapType;
+  exerciseProgress?: ExerciseProgressBySkillType;
   exerciseData: ExerciseDataMapType;
 };

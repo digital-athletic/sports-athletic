@@ -36,11 +36,7 @@ const hasWeightOfType = (
   typeof record?.weight === "number" &&
   (record.weightType ?? "weightAbsolute") === weightType;
 
-/**
- * Newest record with the weight type among the other skills and the older
- * record per exercise; the first one wins a tie, so records per skill win
- * over the older record.
- */
+/** Newest record with the weight type among the other skills and the older record per exercise. */
 const findNewestSeedRecord = (
   progress: Readonly<ExerciseProgressSourceType> | null,
   skill: SkillCode,

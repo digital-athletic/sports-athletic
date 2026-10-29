@@ -6,7 +6,7 @@ import {
 import { MaxValuesType } from "@/features/training/models/MaxValues";
 import type {
   ExerciseDataMapType,
-  ExerciseProgressMapType,
+  ExerciseProgressBySkillType,
   ExerciseProgressRecordType,
 } from "@/features/training/models/ExerciseProgress";
 import { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
@@ -15,6 +15,7 @@ import {
   toUpdatedAt,
 } from "@/features/training/utils/exerciseProgressLookup";
 import type { SkillCode } from "@/schemas/generator.schema";
+import { current } from "immer";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
@@ -40,7 +41,7 @@ export type BranchDataMapType = Record<
 
 export type State = {
   // Exercise-level data, one record per skill
-  exerciseProgress: ExerciseProgressMapType;
+  exerciseProgress: ExerciseProgressBySkillType;
   // One record per exercise naming the skill that wrote it last; the legacy
   // generator and the sync read it, and it holds the progress written before
   // the records per skill existed
@@ -225,6 +226,11 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
         set((state) => {
           const updatedAt = toUpdatedAt(Date.now());
           const bySkill = (state.exerciseProgress[data.skill] ??= {});
+          // The first record of a skill continues the older record that skill wrote.
+          const older = state.exerciseData[exerciseId];
+          if (!bySkill[exerciseId] && older?.skill === data.skill) {
+            bySkill[exerciseId] = structuredClone(current(older));
+          }
           writeRecord(bySkill, exerciseId, data, updatedAt);
           writeRecord(state.exerciseData, exerciseId, data, updatedAt);
         });

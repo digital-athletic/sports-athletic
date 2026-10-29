@@ -20,7 +20,7 @@ import {
   importTrees,
 } from "@test/factories/planWorkout";
 import {
-  generateExerciseProgressMap,
+  generateStoredProgress,
   generateStoredExerciseData,
 } from "@test/factories/storedExerciseData";
 import {
@@ -243,7 +243,7 @@ describe("generateWorkout: progress per skill", () => {
     // The exercise starts at 40 seconds; PREVKNEE holds it at 45 seconds.
     const setList = generatePlanWorkoutForWeekday(user, {
       skillTrees,
-      exerciseData: generateExerciseProgressMap(
+      storedProgress: generateStoredProgress(
         generateStoredExerciseData({
           exerciseId,
           skill: "PREVKNEE",

@@ -10,12 +10,13 @@ import {
   generateWorkoutInput,
   type WorkoutInputFactoryOptions,
 } from "@test/factories/workoutInput";
-import {
-  EXERCISES_BLOCK_HANDLER,
-  handleExercisesBlock,
-} from "./exercisesHandler";
+import { createExercisesBlockHandler } from "./exercisesHandler";
 
 const BLOCK_PATH = "TESTDAY.blocks[1]";
+
+const { handleBlock: handleExercisesBlock } = createExercisesBlockHandler({
+  equipment: "required",
+});
 
 // Catalog of two lifts: "25" needs a barbell and a power rack, "50" a barbell bench.
 const generateLiftCatalog = () => [
@@ -204,8 +205,29 @@ describe("exercisesHandler: handleExercisesBlock", () => {
     });
   });
 
+  it("prescribes an exercise the place cannot equip under the ignored equipment rule", () => {
+    const block = generateExercisesBlock(["25"]);
+    const input = generateWorkoutInput({
+      equipment: [],
+      exerciseCatalog: generateLiftCatalog(),
+    });
+
+    const result = createExercisesBlockHandler({
+      equipment: "ignored",
+    }).handleBlock(block, input, new Set(), {
+      earlierResults: [],
+      blockPath: BLOCK_PATH,
+    });
+
+    expect(result).toMatchObject({
+      status: "prescribed",
+      exercises: generatePrescribedReferences(["25"]),
+    });
+  });
+
   it("shares the used branches across the whole workout", () => {
-    expect(EXERCISES_BLOCK_HANDLER.usedBranchScope).toBe("workout");
-    expect(EXERCISES_BLOCK_HANDLER.handleBlock).toBe(handleExercisesBlock);
+    expect(
+      createExercisesBlockHandler({ equipment: "required" }).usedBranchScope,
+    ).toBe("workout");
   });
 });

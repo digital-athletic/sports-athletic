@@ -5,6 +5,8 @@ import type { TrainingType } from "@/features/training/models/Training";
 import { PICKS_BLOCK_HANDLER } from "@/features/training/workoutGenerator/blockHandlers/picks/picksHandler";
 import { generateShortWorkoutFromTemplate } from "@/features/training/workoutGenerator/shortWorkoutGeneration";
 import type * as ShortWorkoutGeneration from "@/features/training/workoutGenerator/shortWorkoutGeneration";
+import { generateStrengthTest } from "@/features/training/workoutGenerator/strengthTestGeneration";
+import type * as StrengthTestGeneration from "@/features/training/workoutGenerator/strengthTestGeneration";
 import { generateTrainingDayFromStoredDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import type * as TrainingDayGeneration from "@/features/training/workoutGenerator/trainingDayGeneration";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
@@ -40,6 +42,16 @@ jest.mock("@/features/training/workoutGenerator/trainingDayGeneration", () => {
     generateTrainingDayFromStoredDay: jest.fn(
       actual.generateTrainingDayFromStoredDay,
     ),
+  };
+});
+
+jest.mock("@/features/training/workoutGenerator/strengthTestGeneration", () => {
+  const actual = jest.requireActual<typeof StrengthTestGeneration>(
+    "@/features/training/workoutGenerator/strengthTestGeneration",
+  );
+  return {
+    ...actual,
+    generateStrengthTest: jest.fn(actual.generateStrengthTest),
   };
 });
 
@@ -81,6 +93,7 @@ describe("generateWorkout: routing", () => {
     jest.mocked(TrainingGenerator).mockClear();
     jest.mocked(generateTrainingDayFromStoredDay).mockClear();
     jest.mocked(generateShortWorkoutFromTemplate).mockClear();
+    jest.mocked(generateStrengthTest).mockClear();
   });
 
   afterEach(jest.restoreAllMocks);
@@ -94,19 +107,19 @@ describe("generateWorkout: routing", () => {
       expect(generateShortWorkoutFromTemplate).toHaveBeenCalledTimes(1);
       expect(TrainingGenerator).not.toHaveBeenCalled();
     });
+  });
+
+  describe("flag off", () => {
+    setUpAiwlGeneratorFlag(false);
 
     it("runs the strength test on the old generator", () => {
       const setList = generateWorkoutOf("TEST_WORKOUT");
 
       expect(setList.length).toBeGreaterThan(0);
       expect(TrainingGenerator).toHaveBeenCalledTimes(1);
+      expect(generateStrengthTest).not.toHaveBeenCalled();
       expect(generateShortWorkoutFromTemplate).not.toHaveBeenCalled();
-      expect(generateTrainingDayFromStoredDay).not.toHaveBeenCalled();
     });
-  });
-
-  describe("flag off", () => {
-    setUpAiwlGeneratorFlag(false);
 
     it("runs a plan training day on the old generator", () => {
       const result = generatePlanWorkoutForWeekday(
@@ -121,6 +134,15 @@ describe("generateWorkout: routing", () => {
 
   describe("flag on", () => {
     setUpAiwlGeneratorFlag(true);
+
+    it("runs the strength test on the AIWL generator", () => {
+      const setList = generateWorkoutOf("TEST_WORKOUT");
+
+      expect(setList.length).toBeGreaterThan(0);
+      expect(generateStrengthTest).toHaveBeenCalledTimes(1);
+      expect(TrainingGenerator).not.toHaveBeenCalled();
+      expect(generateShortWorkoutFromTemplate).not.toHaveBeenCalled();
+    });
 
     it("hands the stored day and the lengths to the AIWL generator", () => {
       const result = generatePlanWorkoutForWeekday(

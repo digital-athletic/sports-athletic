@@ -212,19 +212,21 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
       ]).toEqual(BUNDLED_LIFT_IDS);
     });
 
-    it("throws the missing equipment of the first lift for a place without a power rack", () => {
+    it("keeps every bundled lift for a place without the lift equipment", () => {
       const input = generateStrengthTestInput({
-        equipment: ["BARBELL", "BARBELL_BENCH"],
+        equipment: [],
         random: generateSeededRandom(7),
       });
 
-      expect(
-        catchThrownValue(() => generateStrengthTest(input, skillTrees)),
-      ).toEqual({
-        type: "NO_EXERCISES",
-        subtype: "EQUIPMENT",
-        params: ["POWER_RACK"],
-      });
+      const setList = generateStrengthTest(input, skillTrees);
+
+      expect([
+        ...new Set(
+          listTrainedExercises(
+            setList.filter((entry) => entry.skill === "TEST"),
+          ),
+        ),
+      ]).toEqual(BUNDLED_LIFT_IDS);
     });
 
     it("throws a template error for a template lift that is not in the catalog", () => {

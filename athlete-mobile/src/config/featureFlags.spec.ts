@@ -182,8 +182,8 @@ describe("featureFlags", () => {
   });
 
   describe("aiwlGeneratorEnabled", () => {
-    it("defaults to false when EXPO_PUBLIC_AIWL_GENERATOR_ENABLED is unset", () => {
-      expect(featureFlags.aiwlGeneratorEnabled).toBe(false);
+    it("defaults to true when EXPO_PUBLIC_AIWL_GENERATOR_ENABLED is unset", () => {
+      expect(featureFlags.aiwlGeneratorEnabled).toBe(true);
     });
 
     it("is false when EXPO_PUBLIC_AIWL_GENERATOR_ENABLED is 'false'", () => {

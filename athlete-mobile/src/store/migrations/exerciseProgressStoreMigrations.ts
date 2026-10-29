@@ -100,8 +100,7 @@ export const exerciseProgressStoreMigrations: MigrationMap<State> = {
   // Progress is kept per skill; each older record moves to the skill it names.
   19: (state) => {
     const exerciseProgress = { ...state.exerciseProgress };
-    const exerciseData = { ...state.exerciseData };
-    for (const [exerciseId, record] of Object.entries(exerciseData)) {
+    for (const [exerciseId, record] of Object.entries(state.exerciseData)) {
       if (!record) continue;
       const bySkill = { ...exerciseProgress[record.skill] };
       bySkill[exerciseId] ??= { ...record };

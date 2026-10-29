@@ -24,6 +24,42 @@ describe("exerciseProgressStore: progress per skill", () => {
   });
 
   describe("updateExercise", () => {
+    it("keeps the record of each skill apart", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
+
+      await act(() => {
+        result.current.updateExercise("342", {
+          exerciseId: "342",
+          skill: "SA",
+          weight: 50,
+        });
+        result.current.updateExercise("342", {
+          exerciseId: "342",
+          skill: "HYP",
+          repetition: 8,
+        });
+      });
+
+      expect(result.current.exerciseProgress).toEqual({
+        SA: {
+          "342": {
+            exerciseId: "342",
+            skill: "SA",
+            weight: 50,
+            updatedAt: expect.any(Number),
+          },
+        },
+        HYP: {
+          "342": {
+            exerciseId: "342",
+            skill: "HYP",
+            repetition: 8,
+            updatedAt: expect.any(Number),
+          },
+        },
+      });
+    });
+
     it("names the skill that wrote the shared record last", async () => {
       const { result } = await renderHook(() => useExerciseProgressStore());
 

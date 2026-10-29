@@ -220,7 +220,7 @@ describe("validateCustomWorkoutText: unsupported content", () => {
     expect(result).toEqual({ success: false, error: "UNSUPPORTED_CONTENT" });
   });
 
-  it("returns UNSUPPORTED_CONTENT for a duration block", () => {
+  it("returns UNSUPPORTED_CONTENT for a duration block of a skill other than a cardio zone", () => {
     const template = generateTemplateWithBlock({
       kind: "duration",
       skill: "GKS",
@@ -490,7 +490,7 @@ describe("isTemplateRunnable: weights variants", () => {
     expect(isTemplateRunnable(template, getAllSkillTrees())).toBe(false);
   });
 
-  it("returns false for a template with a duration block", () => {
+  it("returns false for a template with a duration block of a skill other than a cardio zone", () => {
     const template = generateTemplateWithBlock({
       kind: "duration",
       skill: "GKS",
@@ -498,5 +498,49 @@ describe("isTemplateRunnable: weights variants", () => {
     });
 
     expect(isTemplateRunnable(template, getAllSkillTrees())).toBe(false);
+  });
+});
+
+describe("isTemplateRunnable: cardio duration blocks", () => {
+  it("returns true for a template of one cardio duration block", () => {
+    const template = generateTemplateWithBlock({
+      kind: "duration",
+      skill: "CARDIO_2",
+      duration: 1200,
+    });
+
+    expect(isTemplateRunnable(template, getAllSkillTrees())).toBe(true);
+  });
+
+  it("returns true for a picks block followed by a cardio duration block", () => {
+    const template = generateCustomTemplate({
+      blocks: [
+        { kind: "picks", skill: "WU", picks: [{ tags: [], count: 5 }] },
+        { kind: "duration", skill: "CARDIO_4", duration: 1800 },
+      ],
+    });
+
+    expect(isTemplateRunnable(template, getAllSkillTrees())).toBe(true);
+  });
+
+  it("returns false for a cardio duration block with bodyParts", () => {
+    const template = generateTemplateWithBlock({
+      kind: "duration",
+      skill: "CARDIO_2",
+      duration: 1200,
+      bodyParts: { regions: ["lowerBody"] },
+    });
+
+    expect(isTemplateRunnable(template, getAllSkillTrees())).toBe(false);
+  });
+
+  it("returns false for a cardio zone without a tree", () => {
+    const template = generateTemplateWithBlock({
+      kind: "duration",
+      skill: "CARDIO_2",
+      duration: 1200,
+    });
+
+    expect(isTemplateRunnable(template, {})).toBe(false);
   });
 });

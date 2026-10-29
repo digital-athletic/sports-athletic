@@ -18,11 +18,40 @@ describe("templateBlockCheck: requireSupportedTemplateBlocks", () => {
     expect(() => requireSupportedTemplateBlocks(template)).not.toThrow();
   });
 
+  it("accepts a duration block of a cardio zone", () => {
+    const template = generateShortTemplate([
+      generatePicksBlock("WU"),
+      { kind: "duration", skill: "CARDIO_2", duration: 1200 },
+    ]);
+
+    expect(() => requireSupportedTemplateBlocks(template)).not.toThrow();
+  });
+
   it.each<{ behaviour: string; block: Block; what: string }>([
     {
-      behaviour: "a duration block",
+      behaviour: "a duration block of a skill other than a cardio zone",
       block: { kind: "duration", skill: "MOB", duration: 300 },
       what: "duration",
+    },
+    {
+      behaviour: "the field bodyParts on a cardio duration block",
+      block: {
+        kind: "duration",
+        skill: "CARDIO_2",
+        duration: 1200,
+        bodyParts: { regions: ["core"] },
+      },
+      what: "bodyParts",
+    },
+    {
+      behaviour: "the field order on a cardio duration block",
+      block: {
+        kind: "duration",
+        skill: "CARDIO_2",
+        duration: 1200,
+        order: "asDrawn",
+      },
+      what: "order",
     },
     {
       behaviour: "the field order on a picks block",

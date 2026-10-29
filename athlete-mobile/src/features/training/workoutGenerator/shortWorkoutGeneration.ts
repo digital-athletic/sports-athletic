@@ -3,6 +3,7 @@ import type { GeneratedSetListEntry } from "@/features/training/models/SetListEn
 import type { Template } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { createBranchesBlockHandler } from "./blockHandlers/branches/branchesHandler";
+import { createCardioDurationHandler } from "./blockHandlers/duration/cardioDurationHandler";
 import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
 import { restrictTemplateBranchesBlock } from "./blockHandlers/branches/templateBranchRestriction";
 import { PICKS_BLOCK_HANDLER } from "./blockHandlers/picks/picksHandler";
@@ -17,7 +18,7 @@ import { SHORT_WORKOUT_FINISH_RULES } from "./stages/workoutFinish";
 import { interpretTemplate } from "./templateInterpreter";
 
 const throwUnreachableShortWorkoutBlock = (): never => {
-  throw new Error("A short workout runs picks and branches blocks only");
+  throw new Error("A short workout runs no exercises blocks");
 };
 
 const UNREACHABLE_SHORT_WORKOUT_HANDLER = {
@@ -29,8 +30,8 @@ const CATALOG_BRANCHES_HANDLER = createBranchesBlockHandler(
   lookUpStoredBranchInCatalog,
 );
 
-// requireSupportedTemplateBlocks rejects duration and exercises blocks first,
-// so those handlers never run.
+// requireSupportedTemplateBlocks rejects exercises blocks and duration blocks
+// of other skills than the cardio zones first, so those never reach a handler.
 const SHORT_WORKOUT_HANDLERS: BlockHandlerRegistry = {
   picks: PICKS_BLOCK_HANDLER,
   branches: {
@@ -43,16 +44,17 @@ const SHORT_WORKOUT_HANDLERS: BlockHandlerRegistry = {
         earlierResults,
       ),
   },
-  duration: UNREACHABLE_SHORT_WORKOUT_HANDLER,
+  duration: createCardioDurationHandler(CATALOG_BRANCHES_HANDLER),
   exercises: UNREACHABLE_SHORT_WORKOUT_HANDLER,
 };
 
 /**
  * Generates a short workout from its template. A template without blocks
  * throws the pain error of an empty pool, whatever the athlete's pains. A
- * duration block, an `order` field or picks `bodyParts` throws
- * OTHER/BLOCK_KIND before any picks workout rule runs. Picks and branches
- * blocks then run in template order, and an empty block adds nothing.
+ * duration block of a skill other than a cardio zone, an `order` field or
+ * `bodyParts` throws OTHER/BLOCK_KIND before any picks workout rule runs.
+ * Picks, branches and cardio duration blocks then run in template order, and
+ * an empty block adds nothing.
  *
  * generateShortWorkoutFromTemplate(mobilityTemplate, input, getAllSkillTrees())
  * → [{ branchId: "2", exerciseId: "21", skill: "MOB", ... }, ...]

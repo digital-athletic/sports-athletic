@@ -9,6 +9,7 @@ import { BottomSheet, RNHostView } from "@expo/ui";
 import { type FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FeedbackIconButton } from "./FeedbackIconButton";
+import { TrainingExerciseStats } from "./TrainingExerciseStats";
 import { TrainingRepetitionInput } from "./TrainingRepetitionInput";
 
 export type TrainingExerciseSheetProps = {
@@ -63,14 +64,18 @@ const TrainingExerciseFeedbackChoice: FC<{
   );
 };
 
-const SheetHeading: FC<{ title: string; seconds: number }> = ({
-  title,
+const SheetHeading: FC<{ row: ListRow; seconds: number }> = ({
+  row,
   seconds,
 }) => (
   <>
     <Text variant="title" textAlign="center">
-      {title}
+      {row.displayName}
     </Text>
+    <TrainingExerciseStats
+      targetReps={row.targetReps}
+      targetWeight={row.targetWeight}
+    />
     <Text fontSize={32} fontWeight="300" textAlign="center">
       {secondsToMMSS(seconds)}
     </Text>
@@ -114,7 +119,7 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
 
   return (
     <Box padding="l" gap="m">
-      <SheetHeading title={row.displayName} seconds={displayedSeconds} />
+      <SheetHeading row={row} seconds={displayedSeconds} />
 
       {row.isTest ? (
         <TrainingRepetitionInput
@@ -148,8 +153,8 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
 
 /**
  * Bottom sheet opened from a checklist row's Start button: shows the
- * exercise name, a countdown (timed exercises) or stopwatch (open-ended
- * ones), and a Continue step that either closes the sheet, reveals the
+ * exercise name, target reps and weight, a countdown (timed exercises) or
+ * stopwatch (open-ended ones), and a Continue step that either closes the sheet, reveals the
  * too-easy/succeeded/too-hard choice, or (strength tests) the reps input.
  */
 export const TrainingExerciseSheet: FC<TrainingExerciseSheetProps> = ({

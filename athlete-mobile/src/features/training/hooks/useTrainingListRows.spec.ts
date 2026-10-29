@@ -85,6 +85,11 @@ describe("useTrainingListRows: subtitle composition", () => {
     expect(result.current.rows[0].setLabel).toBe(
       "1 of 3 · 10 repetitions · 20.00 kg",
     );
+    expect(result.current.rows[0].targetReps).toBe(10);
+    expect(result.current.rows[0].targetWeight).toEqual({
+      kilos: 20,
+      isPerHand: false,
+    });
   });
 
   it("prefixes the weight with the dumbbell each-hand qualifier", async () => {
@@ -98,6 +103,10 @@ describe("useTrainingListRows: subtitle composition", () => {
     const { result } = await renderHook(() => useTrainingListRows());
 
     expect(result.current.rows[0].setLabel).toBe("each 20.00 kg");
+    expect(result.current.rows[0].targetWeight).toEqual({
+      kilos: 20,
+      isPerHand: true,
+    });
   });
 
   it("derives weight as a percentage of the user's max for weightFMax", async () => {
@@ -161,6 +170,7 @@ describe("useTrainingListRows: subtitle composition", () => {
     const { result } = await renderHook(() => useTrainingListRows());
 
     expect(result.current.rows[0].setLabel).toBe("20.00 kg");
+    expect(result.current.rows[0].targetReps).toBeUndefined();
   });
 
   it("leaves the subtitle undefined when there is no set, reps, or weight info", async () => {

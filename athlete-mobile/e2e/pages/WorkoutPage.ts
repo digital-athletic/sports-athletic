@@ -37,6 +37,9 @@ const GeneratedExerciseListStorageSchema = v.object({
 });
 
 export class WorkoutPage extends BasePage {
+  // A workout whose exercises were all skipped stores no exercise data.
+  private finishedAnySet = false;
+
   private get skipButton() {
     return this.page.getByRole("button", { name: "Skip exercise" }).first();
   }
@@ -187,6 +190,7 @@ export class WorkoutPage extends BasePage {
         } else {
           await this.checkmarkButton.click({ force: true });
         }
+        this.finishedAnySet = true;
         // A second click during the set transition would confirm the next set too.
         await expect
           .poll(() => this.stepSignature(), { intervals: [50] })
@@ -240,7 +244,8 @@ export class WorkoutPage extends BasePage {
     // Wait for all exercise data to be persisted to localStorage before navigating away.
     // Zustand's persist middleware writes asynchronously, and on slower CI environments
     // the write may not complete before the page transitions.
-    await this.waitForExerciseDataPersisted();
+    if (this.finishedAnySet) await this.waitForExerciseDataPersisted();
+    this.finishedAnySet = false;
     await this.goOnButton.click();
     await this.expectLoggedIn();
   }

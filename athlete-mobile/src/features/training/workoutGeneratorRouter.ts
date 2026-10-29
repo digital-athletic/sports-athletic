@@ -7,6 +7,7 @@ import type { TrainingType } from "@/features/training/models/Training";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { createGenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
 import { generateShortWorkoutFromTemplate } from "@/features/training/workoutGenerator/shortWorkoutGeneration";
+import { generateStrengthTest } from "@/features/training/workoutGenerator/strengthTestGeneration";
 import { generateTrainingDayFromStoredDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
@@ -77,20 +78,20 @@ const generateShortWorkout = (
 
 /**
  * Picks the generator per training type. Short workouts run on the AIWL
- * generator, the strength test on the old one, and plan training days on the
- * AIWL generator only while the flag is on.
+ * generator. The strength test and plan training days run on the AIWL
+ * generator unless the flag turns it off.
  */
 export const generateWorkout = (
   request: WorkoutGenerationRequest,
 ): GeneratedSetListEntry[] => {
-  if (request.type === "TEST_WORKOUT") {
-    return generateWithOldGenerator(request);
-  }
-  if (request.type !== "PLAN") {
+  if (request.type !== "PLAN" && request.type !== "TEST_WORKOUT") {
     return generateShortWorkout(request);
   }
   if (!featureFlags.aiwlGeneratorEnabled) {
     return generateWithOldGenerator(request);
+  }
+  if (request.type === "TEST_WORKOUT") {
+    return generateStrengthTest(createInput(request), request.skillTrees);
   }
   return generateTrainingDayFromStoredDay(
     selectStoredTrainingDay(

@@ -13,7 +13,10 @@ import {
 } from "@/features/training/utils/userDataUtils";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
-import { EXERCISES_BLOCK_HANDLER } from "./blockHandlers/exercises/exercisesHandler";
+import {
+  createExercisesBlockHandler,
+  type ExercisesBlockRules,
+} from "./blockHandlers/exercises/exercisesHandler";
 import { createStrengthTestWarmUpHandler } from "./blockHandlers/picks/strengthTestWarmUpHandler";
 import type { GenerationInput } from "./generationInput/generationInput";
 import {
@@ -41,6 +44,11 @@ const STRENGTH_TEST_FINISH_RULES: WorkoutFinishRules = {
   sameSkillBlocks: "keepAll",
 };
 
+// The athlete picks no place for the test; it runs on the fixed STUDIO equipment.
+const STRENGTH_TEST_EXERCISES_RULES: ExercisesBlockRules = {
+  equipment: "ignored",
+};
+
 const throwUnreachableStrengthTestBlock = (): never => {
   throw new Error("A strength test runs picks and exercises blocks only");
 };
@@ -56,7 +64,7 @@ const createStrengthTestHandlers = (
   picks: createStrengthTestWarmUpHandler(skillTrees),
   branches: UNREACHABLE_STRENGTH_TEST_HANDLER,
   duration: UNREACHABLE_STRENGTH_TEST_HANDLER,
-  exercises: EXERCISES_BLOCK_HANDLER,
+  exercises: createExercisesBlockHandler(STRENGTH_TEST_EXERCISES_RULES),
 });
 
 // The source checks run before any block. The old path checks workout data
@@ -89,9 +97,9 @@ export const loadStrengthTestLoadData = (): StrengthTestLoadData => ({
 /**
  * Generates the strength test template through the template interpreter: its
  * warm-up picks block, then its exercises block of lifts. Athletes under 16
- * and athletes with muscle soreness get no test. Every lift and its equipment
- * must be available; otherwise the generator throws NO_EXERCISES/EQUIPMENT
- * and returns no partial test. The set list ends on the last test set.
+ * and athletes with muscle soreness get no test. Every lift must be in the
+ * catalog; the place's equipment does not block a lift. The set list ends on
+ * the last test set.
  *
  * generateStrengthTest(input, getAllSkillTrees())
  * → [WU 432 1/1, pause 10, ..., pause 30, 25 1/4, pause 60, ..., 54 4/4]

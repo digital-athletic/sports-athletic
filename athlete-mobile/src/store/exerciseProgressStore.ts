@@ -5,6 +5,7 @@ import {
 } from "@/features/training/models/ExerciseTotals";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
 import type {
+  ExerciseProgressBySkillType,
   ExerciseProgressMapType,
   ExerciseProgressRecordType,
 } from "@/features/training/models/ExerciseProgress";
@@ -38,7 +39,9 @@ export type BranchDataMapType = Record<
 >;
 
 export type State = {
-  // Exercise-level data; each record names the skill that wrote it last
+  // Exercise-level data, one record per skill
+  exerciseProgress: ExerciseProgressBySkillType;
+  // One record per exercise, named after the skill that wrote it last
   exerciseData: ExerciseProgressMapType;
   branchData: BranchDataMapType;
 
@@ -61,6 +64,7 @@ const NUMBER_KEYS = [
 ] as const;
 
 const createInitialState = (): State => ({
+  exerciseProgress: {},
   exerciseData: {},
   branchData: {},
   exerciseTotals: {},
@@ -114,6 +118,19 @@ const copyOthers = (
   }
   if (data.maxFRepetitions) target.maxFRepetitions = data.maxFRepetitions;
   if (data.set) target.set = data.set;
+};
+
+/** Merges `data` into the record of the exercise and stamps the writer and the time. */
+const writeRecord = (
+  records: ExerciseProgressMapType,
+  exerciseId: string,
+  data: UserExerciseDataType,
+  updatedAt: number,
+): void => {
+  const record = (records[exerciseId] ??= { exerciseId, skill: data.skill });
+  mergeExerciseData(record, data);
+  record.skill = data.skill;
+  record.updatedAt = updatedAt;
 };
 
 // The sync queue stores the record as the server knows it, without the local updatedAt.
@@ -203,20 +220,16 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
 
       updateExercise: (exerciseId, data, workoutId) => {
         set((state) => {
-          const record = (state.exerciseData[exerciseId] ??= {
-            exerciseId,
-            skill: data.skill,
-          });
-          mergeExerciseData(record, data);
-          // The record names its last writer, so readers know whose values it holds.
-          record.skill = data.skill;
-          record.updatedAt = toUpdatedAt(Date.now());
+          const updatedAt = toUpdatedAt(Date.now());
+          const bySkill = (state.exerciseProgress[data.skill] ??= {});
+          writeRecord(bySkill, exerciseId, data, updatedAt);
+          writeRecord(state.exerciseData, exerciseId, data, updatedAt);
         });
-        const updatedData = get().exerciseData[exerciseId];
-        if (updatedData) {
+        const record = get().exerciseProgress[data.skill]?.[exerciseId];
+        if (record) {
           syncManager.notifyExerciseUpdated(
             exerciseId,
-            toSyncPayload(updatedData, workoutId),
+            toSyncPayload(record, workoutId),
           );
         }
       },
@@ -229,10 +242,10 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
           record.branchId = branchId;
         }
         set((state) => {
-          state.exerciseData[exerciseId] = {
-            ...record,
-            updatedAt: toUpdatedAt(Date.now()),
-          };
+          const updatedAt = toUpdatedAt(Date.now());
+          const bySkill = (state.exerciseProgress[skill] ??= {});
+          bySkill[exerciseId] = { ...record, updatedAt };
+          state.exerciseData[exerciseId] = { ...record, updatedAt };
         });
         syncManager.notifyExerciseUpdated(
           exerciseId,
@@ -300,6 +313,7 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
       resetProgress: () =>
         set((state) => {
           const initialState = createInitialState();
+          state.exerciseProgress = initialState.exerciseProgress;
           state.exerciseData = initialState.exerciseData;
           state.branchData = initialState.branchData;
           state.exerciseTotals = initialState.exerciseTotals;

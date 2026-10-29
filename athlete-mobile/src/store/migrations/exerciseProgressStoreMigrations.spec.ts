@@ -1,4 +1,8 @@
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
+import {
+  generateExerciseProgressMap,
+  generateStoredExerciseData,
+} from "@test/factories/storedExerciseData";
 import type { State } from "../exerciseProgressStore";
 import { exerciseProgressStoreMigrations } from "./exerciseProgressStoreMigrations";
 
@@ -15,6 +19,7 @@ const stateWith = (
   exerciseData: State["exerciseData"],
   branchData: State["branchData"] = {},
 ): State => ({
+  exerciseProgress: {},
   exerciseData,
   branchData,
   exerciseTotals: {},
@@ -185,6 +190,45 @@ describe("exerciseProgressStoreMigrations", () => {
       const result = exerciseProgressStoreMigrations[18](state);
 
       expect(result).toEqual({ ...state, branchData: {} });
+    });
+  });
+
+  describe("v19 to v20: keeps each older record as the progress of the skill it names", () => {
+    it("moves each older record to the skill it names", () => {
+      const squat = generateStoredExerciseData({ skill: "SA", weight: 60 });
+      const press = generateStoredExerciseData({
+        exerciseId: "2",
+        skill: "SWR1",
+        repetition: 10,
+      });
+
+      const result = exerciseProgressStoreMigrations[19](
+        stateWith(generateExerciseProgressMap(squat, press)),
+      );
+
+      expect(result.exerciseProgress).toEqual({
+        SA: { "1": squat },
+        SWR1: { "2": press },
+      });
+      expect(result.exerciseData).toEqual(
+        generateExerciseProgressMap(squat, press),
+      );
+    });
+
+    it("keeps a record the skill already holds", () => {
+      const own = generateStoredExerciseData({ skill: "SA", weight: 70 });
+      const state = {
+        ...stateWith(
+          generateExerciseProgressMap(
+            generateStoredExerciseData({ skill: "SA", weight: 60 }),
+          ),
+        ),
+        exerciseProgress: { SA: generateExerciseProgressMap(own) },
+      };
+
+      const result = exerciseProgressStoreMigrations[19](state);
+
+      expect(result.exerciseProgress).toEqual({ SA: { "1": own } });
     });
   });
 });

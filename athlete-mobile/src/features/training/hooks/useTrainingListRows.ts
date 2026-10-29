@@ -13,24 +13,34 @@ import { getTagValues } from "@/utils/tagUtils";
 import { type TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
+/** Target load in kilos; isPerHand marks dumbbell exercises (one weight per hand). */
+export type RowWeight = { kilos: number; isPerHand: boolean };
+
 export type ListRow = {
   index: number;
   exerciseId: string;
   displayName: string;
   setLabel?: string;
+  targetReps?: number;
+  targetWeight?: RowWeight;
   isTest: boolean;
   isLastInSet: boolean;
   isFeedbackSkill: boolean;
   completed: boolean;
 };
 
-/** Target weight for the row, e.g. "20.00 kg" or "each 20.00 kg" for dumbbell exercises. */
-function buildWeightPart(
+// Strength tests mark reps as -1, which this check also excludes.
+function deriveRowReps(exercise: UserExerciseDataType): number | undefined {
+  return typeof exercise.repetition === "number" && exercise.repetition > 0
+    ? exercise.repetition
+    : undefined;
+}
+
+function deriveRowWeight(
   exercise: UserExerciseDataType,
   exerciseData: ExerciseType | undefined,
   maxValues: MaxValuesType,
-  t: TFunction,
-): string | undefined {
+): RowWeight | undefined {
   if (!exercise.weight || !exerciseData) return undefined;
 
   const derivedWeight = deriveEntryWeight(
@@ -44,20 +54,18 @@ function buildWeightPart(
   );
   if (typeof derivedWeight !== "number") return undefined;
 
-  const isDumbbellExercise = getTagValues(
+  const isPerHand = getTagValues(
     exerciseData.tags,
     TagGroups.EQUIPMENT,
   ).includes(WorkoutConstants.EQUIPMENT.DUMBBELL);
-  const kilos = t("training.overview.kilos", {
-    weight: derivedWeight.toFixed(2),
-  });
-  return isDumbbellExercise ? `${t("training.active.2x")}${kilos}` : kilos;
+  return { kilos: derivedWeight, isPerHand };
 }
 
+/** Subtitle such as "Set 1/3 · 10 repetitions · each 20.00 kg". */
 function buildSetLabel(
   exercise: UserExerciseDataType,
-  exerciseData: ExerciseType | undefined,
-  maxValues: MaxValuesType,
+  reps: number | undefined,
+  weight: RowWeight | undefined,
   t: TFunction,
 ): string | undefined {
   const setPart =
@@ -68,13 +76,17 @@ function buildSetLabel(
         })
       : undefined;
 
-  // Strength tests mark reps as -1, which this check also excludes.
   const repsPart =
-    typeof exercise.repetition === "number" && exercise.repetition > 0
-      ? t("training.overview.repetitions", { count: exercise.repetition })
+    reps !== undefined
+      ? t("training.overview.repetitions", { count: reps })
       : undefined;
 
-  const weightPart = buildWeightPart(exercise, exerciseData, maxValues, t);
+  const weightPart = weight
+    ? `${weight.isPerHand ? t("training.active.2x") : ""}${t(
+        "training.overview.kilos",
+        { weight: weight.kilos.toFixed(2) },
+      )}`
+    : undefined;
 
   return (
     [setPart, repsPart, weightPart].filter(Boolean).join(" · ") || undefined
@@ -93,6 +105,8 @@ export function useTrainingListRows() {
       if (checkIsPauseExercise(exercise.exerciseId)) return acc;
 
       const exerciseData = getExerciseById(exercise.exerciseId);
+      const targetReps = deriveRowReps(exercise);
+      const targetWeight = deriveRowWeight(exercise, exerciseData, maxValues);
 
       acc.push({
         index,
@@ -101,7 +115,9 @@ export function useTrainingListRows() {
           exerciseData?.displayName ??
           exerciseData?.name ??
           exercise.exerciseId,
-        setLabel: buildSetLabel(exercise, exerciseData, maxValues, t),
+        setLabel: buildSetLabel(exercise, targetReps, targetWeight, t),
+        targetReps,
+        targetWeight,
         isTest: exercise.repetition === -1,
         isLastInSet: exercise.set?.[0] === exercise.set?.[1],
         isFeedbackSkill: isFeedbackEligibleSkill(

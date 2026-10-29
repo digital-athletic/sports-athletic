@@ -436,6 +436,7 @@
       "skipExercise": "Skip exercise",
       "startExercise": "Start exercise",
       "continueExercise": "Continue",
+      "weightUnit": "kg",
       "finishTraining": "Finish Training"
     },
     "active": {

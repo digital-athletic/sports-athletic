@@ -68,7 +68,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider theme={theme}>
-      <KeyboardProvider>
+      <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
         {/* Rotation follows the system; screens that do not hold up in
             landscape mark themselves portrait. */}
         <Stack screenOptions={{ headerShown: false, orientation: "default" }}>

@@ -6,7 +6,7 @@ export type ExerciseProgressRecordType = UserExerciseDataType & {
   updatedAt?: number;
 };
 
-/** One record per exercise ID; each record names the skill that wrote it last. */
+/** One record per exercise ID, each naming the skill it holds. */
 export type ExerciseDataMapType = Record<
   string,
   ExerciseProgressRecordType | undefined

@@ -621,7 +621,7 @@ describe("exerciseProgressStore", () => {
   });
 
   describe("getExerciseProgress", () => {
-    it("returns the record when the skill wrote it last", async () => {
+    it("returns the record of the skill", async () => {
       const { result } = await renderHook(() => useExerciseProgressStore());
       await act(() => {
         result.current.updateExercise("1", {

@@ -21,26 +21,35 @@ describe("exerciseProgressStore: progress per skill", () => {
   });
 
   describe("updateExercise", () => {
-    it("keeps merging every write into the one record per exercise", async () => {
+    it("leaves the shared record to the skill it names", async () => {
       const { result } = await renderHook(() => useExerciseProgressStore());
 
       await act(() => {
-        result.current.updateExercise("1", {
-          exerciseId: "1",
-          skill: "SWR1",
-          weight: 50,
-        });
-        result.current.updateExercise("1", {
-          exerciseId: "1",
+        result.current.updateExercise("342", {
+          exerciseId: "342",
           skill: "SA",
+          weight: 50,
+          repetition: 15,
+        });
+        result.current.updateExercise("342", {
+          exerciseId: "342",
+          skill: "HYP",
+          weight: 62.5,
           repetition: 8,
         });
       });
 
-      expect(result.current.exerciseData["1"]).toEqual({
-        exerciseId: "1",
+      expect(result.current.exerciseData["342"]).toEqual({
+        exerciseId: "342",
         skill: "SA",
         weight: 50,
+        repetition: 15,
+        updatedAt: expect.any(Number),
+      });
+      expect(result.current.exerciseProgress["HYP"]?.["342"]).toEqual({
+        exerciseId: "342",
+        skill: "HYP",
+        weight: 62.5,
         repetition: 8,
         updatedAt: expect.any(Number),
       });
@@ -79,62 +88,65 @@ describe("exerciseProgressStore: progress per skill", () => {
       });
     });
 
-    it("sends the merged record per exercise to sync once per write", async () => {
+    it("sends the record of the writing skill to sync", async () => {
       const { result } = await renderHook(() => useExerciseProgressStore());
 
       await act(() => {
-        result.current.updateExercise("1", {
-          exerciseId: "1",
-          skill: "SWR1",
-          weight: 50,
-        });
-        result.current.updateExercise("1", {
-          exerciseId: "1",
+        result.current.updateExercise("342", {
+          exerciseId: "342",
           skill: "SA",
-          repetition: 8,
+          weight: 50,
+          repetition: 15,
         });
+        result.current.updateExercise(
+          "342",
+          { exerciseId: "342", skill: "HYP", repetition: 8 },
+          "workout-42",
+        );
       });
 
-      expect(syncManager.notifyExerciseUpdated).toHaveBeenCalledTimes(2);
-      expect(syncManager.notifyExerciseUpdated).toHaveBeenLastCalledWith("1", {
-        exerciseId: "1",
-        skill: "SA",
-        weight: 50,
-        repetition: 8,
-      });
+      expect(syncManager.notifyExerciseUpdated).toHaveBeenLastCalledWith(
+        "342",
+        {
+          exerciseId: "342",
+          skill: "HYP",
+          repetition: 8,
+          workoutId: "workout-42",
+        },
+      );
     });
   });
 
   describe("resetExercise", () => {
-    it("replaces the record of the given skill and the record per exercise", async () => {
+    it("resets the record of the given skill and leaves the shared record of another skill", async () => {
       const { result } = await renderHook(() => useExerciseProgressStore());
       await act(() => {
-        result.current.updateExercise("1", {
-          exerciseId: "1",
-          skill: "SWR1",
-          weight: 50,
-          repetition: 12,
-        });
         result.current.updateExercise("1", {
           exerciseId: "1",
           skill: "SA",
           weight: 30,
           repetition: 8,
         });
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SWR1",
+          weight: 50,
+          repetition: 12,
+        });
       });
+      const sharedBefore = structuredClone(result.current.exerciseData["1"]);
       const saBefore = structuredClone(result.current.exerciseProgress["SA"]);
 
       await act(() => {
         result.current.resetExercise("1", { skill: "SWR1" });
       });
 
-      const reset = {
+      expect(result.current.exerciseProgress["SWR1"]?.["1"]).toEqual({
         exerciseId: "1",
         skill: "SWR1",
         updatedAt: expect.any(Number),
-      };
-      expect(result.current.exerciseProgress["SWR1"]?.["1"]).toEqual(reset);
-      expect(result.current.exerciseData["1"]).toEqual(reset);
+      });
+      expect(result.current.exerciseData["1"]).toEqual(sharedBefore);
       expect(result.current.exerciseProgress["SA"]).toEqual(saBefore);
     });
   });

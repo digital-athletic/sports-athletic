@@ -1,4 +1,5 @@
 import { useTrainingStore } from "@/features/training/trainingStore";
+import type { SkillCode } from "@/schemas/generator.schema";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { act, renderHook } from "@testing-library/react-native";
@@ -43,18 +44,18 @@ jest.mock("@/data/skillTreeRegistry", () => {
   };
 });
 
-const storeValues = () =>
+const storeValues = (skill: SkillCode = "SWR2") =>
   useExerciseProgressStore.getState().updateExercise(EXERCISE_ID, {
     exerciseId: EXERCISE_ID,
-    skill: "SWR2",
+    skill,
     weight: 50,
     repetition: 9,
     nextWeightPercentage: 40,
     maxFRepetitions: [{ level: "HARD", repetitions: 3 }],
   });
 
-const stored = () =>
-  useExerciseProgressStore.getState().exerciseData[EXERCISE_ID];
+const stored = (skill: SkillCode = "SWR2") =>
+  useExerciseProgressStore.getState().getExerciseProgress(skill, EXERCISE_ID);
 
 describe("useExerciseCompletion: standard progression", () => {
   it("drops the stored feedback when the athlete gives none", async () => {
@@ -316,13 +317,13 @@ describe("useExerciseCompletion: block values after a weight increase", () => {
   it("resets the repetitions to the exercise start in a template block with values exercise", async () => {
     await completeGksAt("GKS", 6);
 
-    expect(stored()?.repetition).toBe(5);
+    expect(stored("GKS")?.repetition).toBe(5);
   });
 
   it("resets the repetitions to the exercise start in a plan workout too", async () => {
     await completeGksAt("PLAN", 12);
 
-    expect(stored()?.repetition).toBe(5);
+    expect(stored("GKS")?.repetition).toBe(5);
   });
 
   describe("in an imported template", () => {
@@ -349,7 +350,7 @@ describe("useExerciseCompletion: block values after a weight increase", () => {
 
       await completeGksAt(exerciseType, 6);
 
-      expect(stored()?.repetition).toBe(5);
+      expect(stored("GKS")?.repetition).toBe(5);
     });
 
     it("keeps the repetitions from the skill values with values skill", async () => {
@@ -357,7 +358,7 @@ describe("useExerciseCompletion: block values after a weight increase", () => {
 
       await completeGksAt(skillType, 6);
 
-      expect(stored()?.repetition).toBe(6);
+      expect(stored("GKS")?.repetition).toBe(6);
     });
   });
 });
@@ -374,13 +375,13 @@ describe("useExerciseCompletion: max strength", () => {
         { level: "HARD", repetitions: 3, weightPercentage: 80 },
       ],
     });
-    storeValues();
+    storeValues("MAX_STRENGTH");
     const { result } = await renderHook(() => useExerciseCompletion());
 
     await act(() => result.current.saveExerciseAndBranchData(0));
 
     expect(useExerciseProgressStore.getState().getBranchLevel("78")).toBe(3);
-    expect(stored()).toEqual({
+    expect(stored("MAX_STRENGTH")).toEqual({
       exerciseId: EXERCISE_ID,
       skill: "MAX_STRENGTH",
       branchId: "78",
@@ -410,8 +411,8 @@ describe("useExerciseCompletion: max strength", () => {
 
     await act(() => result.current.saveExerciseAndBranchData(0));
 
-    expect(stored()?.feedback?.difficulty).toBeNull();
-    expect(stored()?.maxFRepetitions).toEqual([...ladder]);
+    expect(stored("MAX_STRENGTH")?.feedback?.difficulty).toBeNull();
+    expect(stored("MAX_STRENGTH")?.maxFRepetitions).toEqual([...ladder]);
   });
 });
 

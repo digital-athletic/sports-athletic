@@ -8,7 +8,7 @@ export const toUpdatedAt = (nowMs: number): number => Math.floor(nowMs / 1000);
 
 /**
  * The record of the skill. Without one, the older record per exercise when
- * the skill wrote it last, else null.
+ * it names the skill, else null.
  */
 export const readOwnExerciseProgress = (
   progress: Readonly<ExerciseProgressSourceType> | null,

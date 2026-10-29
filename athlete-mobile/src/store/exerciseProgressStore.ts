@@ -42,9 +42,9 @@ export type BranchDataMapType = Record<
 export type State = {
   // Exercise-level data, one record per skill
   exerciseProgress: ExerciseProgressBySkillType;
-  // One record per exercise naming the skill that wrote it last; the legacy
-  // generator and the sync read it, and it holds the progress written before
-  // the records per skill existed
+  // One record per exercise, kept current only by the skill it names; the legacy
+  // generator reads it, and it holds the progress written before the records
+  // per skill existed
   exerciseData: ExerciseDataMapType;
   branchData: BranchDataMapType;
 
@@ -123,7 +123,7 @@ const copyOthers = (
   if (data.set) target.set = data.set;
 };
 
-/** Merges `data` into the record of the exercise, names the writer and stamps the time. */
+/** Merges `data` into the record of the exercise and stamps the time. */
 const writeRecord = (
   records: ExerciseDataMapType,
   exerciseId: string,
@@ -132,10 +132,15 @@ const writeRecord = (
 ): void => {
   const record = (records[exerciseId] ??= { exerciseId, skill: data.skill });
   mergeExerciseData(record, data);
-  // The record names its last writer, so readers know whose values it holds.
-  record.skill = data.skill;
   record.updatedAt = updatedAt;
 };
+
+// The shared record follows only the skill it names; a missing one goes to the first writer.
+const ownsSharedRecord = (
+  exerciseData: ExerciseDataMapType,
+  exerciseId: string,
+  skill: SkillCode,
+): boolean => (exerciseData[exerciseId]?.skill ?? skill) === skill;
 
 // The sync queue stores the record as the server knows it, without the local updatedAt.
 const toSyncPayload = (
@@ -232,7 +237,9 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
             bySkill[exerciseId] = structuredClone(current(older));
           }
           writeRecord(bySkill, exerciseId, data, updatedAt);
-          writeRecord(state.exerciseData, exerciseId, data, updatedAt);
+          if (ownsSharedRecord(state.exerciseData, exerciseId, data.skill)) {
+            writeRecord(state.exerciseData, exerciseId, data, updatedAt);
+          }
         });
         const record = get().exerciseProgress[data.skill]?.[exerciseId];
         if (record) {
@@ -254,7 +261,9 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
           const updatedAt = toUpdatedAt(Date.now());
           const bySkill = (state.exerciseProgress[skill] ??= {});
           bySkill[exerciseId] = { ...record, updatedAt };
-          state.exerciseData[exerciseId] = { ...record, updatedAt };
+          if (ownsSharedRecord(state.exerciseData, exerciseId, skill)) {
+            state.exerciseData[exerciseId] = { ...record, updatedAt };
+          }
         });
         syncManager.notifyExerciseUpdated(
           exerciseId,

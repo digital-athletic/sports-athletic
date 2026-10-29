@@ -73,9 +73,10 @@ export const seedCompletionSession = (
     personalData: { username: "test", gender: "MALE", birthday: "1990-01-01" },
   });
   useExerciseProgressStore.getState().resetProgress();
-  // As the dual write leaves them: one record per skill, and per exercise the last one.
+  // As the store leaves them: one record per skill, and per exercise the shared
+  // record of the skill that wrote it first.
   useExerciseProgressStore.setState({
     exerciseProgress: generateStoredProgress(...records).exerciseProgress ?? {},
-    exerciseData: generateExerciseDataMap(...records),
+    exerciseData: generateExerciseDataMap(...[...records].reverse()),
   });
 };

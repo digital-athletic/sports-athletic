@@ -2,6 +2,7 @@ import * as v from "valibot";
 
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { resolveTemplatePlan } from "@/features/training/generators/resolveTemplate";
+import { readSkillSetListKind } from "@/features/training/workoutGenerator/stages/setListBuilding";
 import {
   TemplateSchema,
   type Block,
@@ -152,20 +153,48 @@ const checkTagPicksOfBlock = (
     ),
   );
 
-/** True when the generator can resolve every block and every tag pick with and without weights. */
+// A cardio zone tree holds the same branches at every training place.
+const isRunnableCardioBlock = (
+  block: Block,
+  skillTrees: Record<string, SkillTreeType>,
+): boolean =>
+  block.kind === "duration" &&
+  readSkillSetListKind(block.skill) === "cardio" &&
+  block.bodyParts === undefined &&
+  block.order === undefined &&
+  Object.hasOwn(skillTrees, block.skill) &&
+  Object.keys(skillTrees[block.skill]).length > 0;
+
+/**
+ * True when the generator can run every block: each cardio duration block
+ * draws from a tree with branches, and every picks block and tag pick resolves
+ * with and without weights.
+ */
 export const isTemplateRunnable = (
   template: Template,
   skillTrees: Record<string, SkillTreeType>,
 ): boolean => {
-  const blocks = template.blocks;
-  if (!blocks.every(isSupportedPicksBlock)) return false;
+  if (
+    !template.blocks.every(
+      (block) =>
+        isSupportedPicksBlock(block) ||
+        isRunnableCardioBlock(block, skillTrees),
+    )
+  ) {
+    return false;
+  }
+  const picksTemplate = {
+    ...template,
+    blocks: template.blocks.filter(isSupportedPicksBlock),
+  };
+  if (picksTemplate.blocks.length === 0) return true;
   const resolvesEveryVariant = EQUIPMENT_VARIANTS.every(({ equipment }) =>
-    resolvesWithEquipment(template, skillTrees, equipment),
+    resolvesWithEquipment(picksTemplate, skillTrees, equipment),
   );
   return (
     resolvesEveryVariant &&
-    blocks.every((block, index) =>
-      checkTagPicksOfBlock(template, index, block, skillTrees),
+    picksTemplate.blocks.every((block, index) =>
+      checkTagPicksOfBlock(picksTemplate, index, block, skillTrees),
     )
   );
 };

@@ -303,6 +303,116 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     expect([...new Set(listTrainedSkills(setList))]).toEqual(["CARDIO_5"]);
   });
 
+  it("runs a cardio duration block on the one branch the place's equipment allows", () => {
+    // Without equipment, only treadmill branch 582 stays: the treadmill counts as available everywhere
+    const template = generateShortTemplate([
+      { kind: "duration", skill: "CARDIO_2", duration: 1200 },
+    ]);
+
+    const setList = generateShortWorkoutFromTemplate(
+      template,
+      generateRuleFamilyInput({
+        exerciseCatalog: loadExercises(),
+        random: () => 0.99,
+      }),
+      getAllSkillTrees(),
+    );
+
+    expect([...new Set(listTrainedSkills(setList))]).toEqual(["CARDIO_2"]);
+    expect(listTrainedExercises(setList)).toContain("42");
+  });
+
+  it("never draws a cardio branch the athlete's pain blocks", () => {
+    const template = generateShortTemplate([
+      { kind: "duration", skill: "CARDIO_2", duration: 1200 },
+    ]);
+
+    const setList = generateShortWorkoutFromTemplate(
+      template,
+      generateRuleFamilyInput({
+        exerciseCatalog: loadExercises(),
+        equipment: ["AREA_5", "AREA_10", "AREA_20", "MARKERS", "TRACK_20"],
+        pains: ["KNEE_LEFT"],
+        random: () => 0.99,
+      }),
+      getAllSkillTrees(),
+    );
+
+    expect(listTrainedExercises(setList)).toContain("763");
+    expect(listTrainedExercises(setList)).not.toContain("764");
+  });
+
+  it("swaps a cardio duration block for the CARDIO_5 run with lower body soreness", () => {
+    const template = generateShortTemplate([
+      { kind: "duration", skill: "CARDIO_2", duration: 1200 },
+    ]);
+
+    const setList = generateShortWorkoutFromTemplate(
+      template,
+      generateRuleFamilyInput({
+        exerciseCatalog: loadExercises(),
+        soreMuscles: ["QUADRICEPS_LEFT"],
+      }),
+      getAllSkillTrees(),
+    );
+
+    expect([...new Set(listTrainedSkills(setList))]).toEqual(["CARDIO_5"]);
+  });
+
+  it("fills the length of a cardio duration block", () => {
+    const generateCardioSeconds = (duration: number): number =>
+      generateShortWorkoutFromTemplate(
+        generateShortTemplate([
+          { kind: "duration", skill: "CARDIO_2", duration },
+        ]),
+        generateRuleFamilyInput({
+          exerciseCatalog: loadExercises(),
+          equipment: ["TREADMILL"],
+        }),
+        getAllSkillTrees(),
+      ).reduce((seconds, entry) => seconds + (entry.duration ?? 0), 0);
+
+    expect(generateCardioSeconds(2400)).toBeGreaterThan(
+      generateCardioSeconds(1200),
+    );
+  });
+
+  // Pins the whole set list of a cardio duration block against the bundled
+  // exercises and skill trees: a data change fails it without a logic regression.
+  it("generates a 20 minute zone 2 interval workout from a cardio duration block", () => {
+    const template = generateShortTemplate([
+      { kind: "duration", skill: "CARDIO_2", duration: 1200 },
+    ]);
+
+    const setList = generateShortWorkoutFromTemplate(
+      template,
+      generateRuleFamilyInput({
+        exerciseCatalog: loadExercises(),
+        random: () => 0,
+      }),
+      getAllSkillTrees(),
+    );
+
+    // Treadmill: 38 runs zone 4, 42 runs zone 2 fast, 39 runs zone 5 to recover
+    expect(
+      setList.map(
+        ({ skill, exerciseId, duration }) =>
+          `${skill} ${exerciseId} ${duration}`,
+      ),
+    ).toEqual([
+      "CARDIO_2 38 300",
+      "CARDIO_2 42 60",
+      "CARDIO_2 39 60",
+      "CARDIO_2 42 60",
+      "CARDIO_2 39 60",
+      "CARDIO_2 42 60",
+      "CARDIO_2 39 60",
+      "CARDIO_2 42 60",
+      "CARDIO_2 39 60",
+      "CARDIO_2 38 420",
+    ]);
+  });
+
   it("runs a template of branches blocks only in template order", () => {
     const template = generateShortTemplate([
       generateUntimedBranchesBlock("CD", { branches: ["4"] }),

@@ -5,8 +5,12 @@ import type {
   ExerciseDifficultyType,
   LevelTag,
 } from "@/constants/workoutConstants";
+import type { ExerciseProgressMapType } from "@/features/training/models/ExerciseProgress";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
-import type { MaxTrainingRepsEntry } from "@/schemas/generator.schema";
+import type {
+  MaxTrainingRepsEntry,
+  SkillCode,
+} from "@/schemas/generator.schema";
 import type { MaxForceRepetitionsDataType } from "@/schemas/sync.schema";
 import type { UserType } from "@/schemas/user.schema";
 import {
@@ -15,18 +19,25 @@ import {
 } from "./maxStrengthLadder";
 
 /**
- * Reads the working sets of the squat, without the warm-up sets.
+ * Reads the working sets of the squat in the given skill, without the
+ * warm-up sets.
  *
  * readWorkingSets(generateAthleteWithMaxValues({ level: "ADVANCED" }), null)
  * → [{ level: "MEDIUM", repetitions: 5, weightPercentage: 70 }, ...]
  */
 const readWorkingSets = (
   athlete: UserType,
-  exerciseData: Record<string, UserExerciseDataType> | null,
+  exerciseData: ExerciseProgressMapType | null,
+  skill: SkillCode = "MAX_STRENGTH",
 ): MaxTrainingRepsEntry[] =>
   readMaxTrainingRepetitions(
     athlete,
-    readMaxTrainingWeights(generateSquatExercise(), athlete, exerciseData),
+    readMaxTrainingWeights(
+      generateSquatExercise(),
+      athlete,
+      exerciseData,
+      skill,
+    ),
   ).filter((entry) => entry.level !== "WARMUP");
 
 /**
@@ -78,7 +89,7 @@ const runSessions = (
   difficulty: ExerciseDifficultyType,
 ): string[][] => {
   const rows: string[][] = [];
-  let exerciseData: Record<string, UserExerciseDataType> | null = null;
+  let exerciseData: ExerciseProgressMapType | null = null;
   for (let session = 0; session < sessions; session++) {
     const sets = readWorkingSets(athlete, exerciseData);
     rows.push(describeSets(sets));
@@ -132,6 +143,7 @@ describe("maxStrengthLadder: first session", () => {
         generateSquatExercise(),
         generateAthleteWithMaxValues({ level: "ADVANCED" }),
         null,
+        "MAX_STRENGTH",
       ),
     );
 
@@ -359,11 +371,29 @@ describe("maxStrengthLadder: stored entries of another shape", () => {
           },
           difficulty,
         ),
+        "MAX_STRENGTH",
       );
 
       expect(weights.levels.at(-1)).toBe(expected);
     },
   );
+});
+
+describe("maxStrengthLadder: progress per skill", () => {
+  it("starts a MAX block at the first step when MAX_STRENGTH wrote the record", () => {
+    const advanced = generateAthleteWithMaxValues({ level: "ADVANCED" });
+    const firstSession = readWorkingSets(advanced, null).map(
+      convertToStoredSet,
+    );
+    const exerciseData = generateSquatExerciseData(
+      { maxFRepetitions: firstSession, nextWeightPercentage: 75 },
+      "TOO_EASY",
+    );
+
+    expect(
+      describeSets(readWorkingSets(advanced, exerciseData, "MAX")),
+    ).toEqual(["70x5", "72.5x2", "75x2"]);
+  });
 });
 
 describe("maxStrengthLadder: buffer table", () => {

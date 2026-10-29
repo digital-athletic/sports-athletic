@@ -6,8 +6,12 @@ import {
   generateMaxStrengthInput,
   type MaxStrengthInputOptions,
 } from "@test/factories/maxStrengthInput";
-import { generateMaxStrengthBlock } from "@test/factories/setListBlock";
+import {
+  generateMaxStrengthBlock,
+  generateSetListBlock,
+} from "@test/factories/setListBlock";
 import { describeSetListEntries } from "@test/factories/setListDescription";
+import { generateSquatExerciseData } from "@test/factories/storedExerciseData";
 import { generateSupportExercise } from "@test/factories/supportExercise";
 import { catchThrownValue } from "@test/factories/thrownValue";
 import { SQUAT_EXERCISE_ID } from "@test/factories/valueExercise";
@@ -249,6 +253,37 @@ describe("maxStrengthSetListBuilder: set list", () => {
     );
 
     expect(setList).toEqual([]);
+  });
+
+  it("moves the ladder of a MAX block with the record MAX wrote", () => {
+    const setList = buildMaxStrengthSetList(
+      [generateLeadPair("b1", SQUAT_EXERCISE_ID)],
+      generateSetListBlock("MAX", {
+        minutes: 0,
+        sets: 4,
+        rest: { withinSuperset: 0, betweenSets: 180, afterExercise: 120 },
+      }),
+      generateMaxStrengthInput({
+        oneRepMax: 100,
+        exerciseData: generateSquatExerciseData(
+          {
+            skill: "MAX",
+            maxFRepetitions: [
+              { level: "MEDIUM", repetitions: 5, weightPercentage: 67.5 },
+              { level: "EASY", repetitions: 3, weightPercentage: 70 },
+              { level: "EASY", repetitions: 2, weightPercentage: 72.5 },
+            ],
+          },
+          null,
+        ),
+      }),
+    );
+
+    expect(describeSquatSets(setList).slice(2)).toEqual([
+      "67.5x5",
+      "70x3",
+      "72.5x2",
+    ]);
   });
 
   it("throws for an athlete without workout data, even without pairs", () => {

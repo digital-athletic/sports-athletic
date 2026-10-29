@@ -538,6 +538,7 @@ describe("exerciseProgressStore", () => {
         exerciseId: "ex1",
         skill: "MAX_STRENGTH",
         branchId: "branch-1",
+        updatedAt: expect.any(Number),
       });
       expect(syncManager.notifyExerciseUpdated).toHaveBeenCalledWith("ex1", {
         exerciseId: "ex1",
@@ -545,6 +546,126 @@ describe("exerciseProgressStore", () => {
         branchId: "branch-1",
         workoutId: "workout-42",
       });
+    });
+  });
+
+  describe("updatedAt", () => {
+    beforeEach(() => {
+      jest.useFakeTimers().setSystemTime(1761550000999);
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it("sets updatedAt in Unix seconds when a record is created", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
+
+      await act(() => {
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SWR1",
+          weight: 50,
+        });
+      });
+
+      expect(result.current.exerciseData["1"]?.updatedAt).toBe(1761550000);
+    });
+
+    it("moves updatedAt forward when a record is merged", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
+      await act(() => {
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SWR1",
+          weight: 50,
+        });
+      });
+
+      jest.setSystemTime(1761550060000);
+      await act(() => {
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SWR1",
+          repetition: 12,
+        });
+      });
+
+      expect(result.current.exerciseData["1"]?.updatedAt).toBe(1761550060);
+    });
+
+    it("sends the merged record to sync without updatedAt", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
+
+      await act(() => {
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SWR1",
+          repetition: 5,
+        });
+        result.current.updateExercise(
+          "1",
+          { exerciseId: "1", skill: "SWR1", weight: 20 },
+          "workout-42",
+        );
+      });
+
+      expect(syncManager.notifyExerciseUpdated).toHaveBeenLastCalledWith("1", {
+        exerciseId: "1",
+        skill: "SWR1",
+        repetition: 5,
+        weight: 20,
+        workoutId: "workout-42",
+      });
+    });
+  });
+
+  describe("getExerciseProgress", () => {
+    it("returns the record when the skill wrote it last", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
+      await act(() => {
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SWR1",
+          weight: 50,
+        });
+      });
+
+      expect(result.current.getExerciseProgress("SWR1", "1")?.weight).toBe(50);
+    });
+
+    it("returns nothing when another skill wrote the record last", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
+      await act(() => {
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SWR1",
+          weight: 50,
+        });
+      });
+
+      expect(result.current.getExerciseProgress("SA", "1")).toBeUndefined();
+    });
+
+    it("hands the merged record to the skill that wrote it last", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
+      await act(() => {
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SWR1",
+          weight: 50,
+        });
+        result.current.updateExercise("1", {
+          exerciseId: "1",
+          skill: "SA",
+          repetition: 12,
+        });
+      });
+
+      expect(result.current.getExerciseProgress("SA", "1")).toEqual(
+        expect.objectContaining({ skill: "SA", weight: 50, repetition: 12 }),
+      );
+      expect(result.current.getExerciseProgress("SWR1", "1")).toBeUndefined();
     });
   });
 

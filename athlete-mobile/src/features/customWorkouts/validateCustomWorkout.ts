@@ -1,7 +1,8 @@
 import * as v from "valibot";
 
 import { WorkoutConstants } from "@/constants/workoutConstants";
-import { resolveTemplatePlan } from "@/features/training/generators/resolveTemplate";
+import { loadSkillCatalog } from "@/data/loadSkillCatalog";
+import { resolvePicksBlocks } from "@/features/training/workoutGenerator/blockHandlers/picks/picksBlockResolution";
 import { readSkillSetListKind } from "@/features/training/workoutGenerator/stages/setListBuilding";
 import {
   TemplateSchema,
@@ -101,13 +102,19 @@ const isSupportedPicksBlock = (block: Block): block is PicksBlock =>
   block.bodyParts === undefined &&
   block.order === undefined;
 
+// Resolves the pools the AIWL generator draws from, so an import passes only
+// what the generator runs.
 const resolvesWithEquipment = (
   template: Template,
   skillTrees: Record<string, SkillTreeType>,
   equipment: string[],
 ): boolean => {
   try {
-    resolveTemplatePlan(template, skillTrees, equipment);
+    resolvePicksBlocks(
+      template,
+      { equipment, skillCatalog: loadSkillCatalog() },
+      skillTrees,
+    );
     return true;
   } catch {
     return false;

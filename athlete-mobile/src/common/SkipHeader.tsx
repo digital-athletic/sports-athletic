@@ -1,10 +1,11 @@
+import { Alert } from "@/common/Alert";
 import { I18nKey } from "@/i18n";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { Text } from "@/theme/Text";
 import { useRouter } from "expo-router";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 
 interface SkipHeaderProps {
   alertTitle: I18nKey;

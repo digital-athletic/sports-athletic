@@ -1,4 +1,5 @@
 import { PowerTest as Chart } from "@/charts/PowerTest";
+import { Alert } from "@/common/Alert";
 import { Coaching } from "@/common/Coaching";
 import { Ionicon } from "@/common/Ionicon";
 import { useAgeGroup } from "@/features/anamnesis/useAgeGroup";
@@ -12,7 +13,7 @@ import { formatDateForDisplay } from "@/utils/date";
 import { useRouter } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, FlatList, TouchableOpacity } from "react-native";
+import { FlatList, TouchableOpacity } from "react-native";
 import { usePowerTestData } from "../hooks/usePowerTestData";
 
 interface PowerTestProps {

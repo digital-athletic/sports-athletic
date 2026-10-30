@@ -1,3 +1,4 @@
+import { Alert } from "@/common/Alert";
 import { BackHeader } from "@/common/BackHeader";
 import { Loading } from "@/common/Loading";
 import { ProgressBar } from "@/common/ProgressBar";
@@ -17,7 +18,6 @@ import { formatDateToISO, getDateOneYearFromNow } from "@/utils/date";
 import { RoutePath, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useEffectEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const TWELVE_WEEKS_IN_MS = SharedConstants.TIME_IN_MS.WEEK * 12;

@@ -4,7 +4,7 @@
  */
 
 import { act, fireEvent, render } from "../../utils/testUtils";
-import { Alert } from "react-native";
+import { Alert } from "@/common/Alert";
 import { EmailVerificationScreen } from "./EmailVerificationScreen";
 
 // Mock expo-router

@@ -128,6 +128,46 @@ describe("TrainingExerciseSheet", () => {
     expect(onDismiss).toHaveBeenCalled();
   });
 
+  it("shows a large timer for a timed row and a small one for an open-ended row", async () => {
+    const { getByTestId, rerender } = await render(
+      <TrainingExerciseSheet
+        row={generateChecklistRow()}
+        isPresented
+        sessionKey={1}
+        duration={30}
+        isScreenFocused
+        repsValue={0}
+        onChangeReps={jest.fn()}
+        onSubmitReps={jest.fn()}
+        onComplete={jest.fn()}
+        onDismiss={jest.fn()}
+      />,
+    );
+
+    expect(getByTestId("training-list-sheet-timer")).toHaveStyle({
+      fontSize: 32,
+    });
+
+    await rerender(
+      <TrainingExerciseSheet
+        row={generateChecklistRow()}
+        isPresented
+        sessionKey={2}
+        duration={undefined}
+        isScreenFocused
+        repsValue={0}
+        onChangeReps={jest.fn()}
+        onSubmitReps={jest.fn()}
+        onComplete={jest.fn()}
+        onDismiss={jest.fn()}
+      />,
+    );
+
+    expect(getByTestId("training-list-sheet-timer")).toHaveStyle({
+      fontSize: 16,
+    });
+  });
+
   it("shows the reps input for a strength-test row and saves through onSubmitReps", async () => {
     const onSubmitReps = jest.fn();
     const onDismiss = jest.fn();

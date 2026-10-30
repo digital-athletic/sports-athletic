@@ -63,15 +63,23 @@ const TrainingExerciseFeedbackChoice: FC<{
   );
 };
 
-const SheetHeading: FC<{ title: string; seconds: number }> = ({
-  title,
-  seconds,
-}) => (
+// An open-ended exercise's stopwatch is secondary info, so it stays small.
+const SheetHeading: FC<{
+  title: string;
+  seconds: number;
+  isTimed: boolean;
+}> = ({ title, seconds, isTimed }) => (
   <>
     <Text variant="title" textAlign="center">
       {title}
     </Text>
-    <Text fontSize={32} fontWeight="300" textAlign="center">
+    <Text
+      fontSize={isTimed ? 32 : 16}
+      fontWeight="300"
+      color={isTimed ? "darkGrey3" : "darkGrey2"}
+      textAlign="center"
+      testID="training-list-sheet-timer"
+    >
       {secondsToMMSS(seconds)}
     </Text>
   </>
@@ -96,10 +104,8 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
     isActive: isTimerActive,
   });
 
-  const isFeedbackEligible = row.isFeedbackSkill && row.isLastInSet;
-
   const handleContinue = () => {
-    if (isFeedbackEligible) {
+    if (row.isFeedbackSkill && row.isLastInSet) {
       setStep("feedback");
       return;
     }
@@ -114,7 +120,11 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
 
   return (
     <Box padding="l" gap="m">
-      <SheetHeading title={row.displayName} seconds={displayedSeconds} />
+      <SheetHeading
+        title={row.displayName}
+        seconds={displayedSeconds}
+        isTimed={typeof duration === "number"}
+      />
 
       {row.isTest ? (
         <TrainingRepetitionInput

@@ -204,6 +204,21 @@ describe("validateCustomWorkoutText: unsupported content", () => {
     expect(result).toEqual({ success: false, error: "UNSUPPORTED_CONTENT" });
   });
 
+  it("returns UNSUPPORTED_CONTENT for a plyometric pick that names another intensity", () => {
+    const template = generateTemplateWithBlock({
+      kind: "picks",
+      skill: "PLYO_HIGH",
+      picks: [{ tags: ["SKILL_PLYO_MEDIUM"], count: 2 }],
+    });
+
+    const result = validateCustomWorkoutText(
+      JSON.stringify(template),
+      getAllSkillTrees(),
+    );
+
+    expect(result).toEqual({ success: false, error: "UNSUPPORTED_CONTENT" });
+  });
+
   it("returns UNSUPPORTED_CONTENT for an unknown tag when the block falls back to the whole tree", () => {
     const template = generateTemplateWithBlock({
       kind: "picks",

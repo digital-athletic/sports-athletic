@@ -2,6 +2,7 @@ import { loadSkillCatalogEntry } from "@/data/loadSkillCatalog";
 import { lookupTemplate } from "@/features/customWorkouts/lookupTemplate";
 import type { TrainingType } from "@/features/training/models/Training";
 import { hasWeights as hasWeightEquipment } from "@/features/training/utils/equipmentUtils";
+import { keepPlyometricIntensity } from "@/features/training/utils/plyometricIntensity";
 import {
   getSkillTree,
   readLiteralSkillTree,
@@ -151,8 +152,10 @@ const picksFor = (block: PicksBlock, hasWeights: boolean): BlockPicks => {
   return hasWeights ? block.picks.withWeights : block.picks.withoutWeights;
 };
 
+// A plyometric skill keeps the branches of its intensity, as the AIWL
+// generator's picks pool does, so an import never passes a pool it rejects.
 const poolFor = (
-  entry: SkillTreeCatalogEntry,
+  { skill, entry }: { skill: SkillCode; entry: SkillTreeCatalogEntry },
   picks: BlockPicks,
   fallbackToWholeTree: boolean,
   { skillTrees, hasWeights, preventionSkills }: BlockContext,
@@ -160,13 +163,14 @@ const poolFor = (
   const names = hasWeights
     ? entry.skillTree.withWeights
     : entry.skillTree.withoutWeights;
-  const union: SkillTreeType = {};
+  const trees: SkillTreeType = {};
   for (const name of names) {
     Object.assign(
-      union,
+      trees,
       readBlockSkillTree(skillTrees, name, preventionSkills, hasWeights),
     );
   }
+  const union = keepPlyometricIntensity(trees, skill);
   if (fallbackToWholeTree) return union;
   const matching = new Set(
     picks.flatMap(({ tags }) => Object.keys(filterByTags(union, tags))),
@@ -189,7 +193,12 @@ const resolveBlock = (
   const timing = timingDefaultsOf(path, block, entry);
   const pickDefaults = pickDefaultsOf(path, block, entry);
   const picks = picksFor(block, context.hasWeights);
-  const pool = poolFor(entry, picks, pickDefaults.fallbackToWholeTree, context);
+  const pool = poolFor(
+    { skill: block.skill, entry },
+    picks,
+    pickDefaults.fallbackToWholeTree,
+    context,
+  );
   if (Object.keys(pool).length === 0) throw skillError(block.skill);
   return {
     skill: block.skill,

@@ -4,6 +4,10 @@ import {
   areaToRegion,
   getAreasFor,
 } from "@/features/training/utils/exerciseUtils";
+import {
+  isPlyometricIntensity,
+  keepPlyometricIntensity,
+} from "@/features/training/utils/plyometricIntensity";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { getTagValues } from "@/utils/tagUtils";
 import type { BranchLookupIndex } from "../../generationInput/branchLookupIndex";
@@ -34,13 +38,6 @@ const TREE_NAMES_BY_SKILL: Readonly<Record<string, readonly [string, string]>> =
     PREVENTION: ["PREV", "PREVKG"],
     SUPPORT: ["SUPPORT", "SUPPORT"],
   };
-
-// Plyometric intensities are tags inside the PLYO tree; medium and low are one category
-const PLYO_TAGS_BY_SKILL: Readonly<Record<string, readonly string[]>> = {
-  PLYO_HIGH: ["SKILL_PLYO_HIGH"],
-  PLYO_MEDIUM: ["SKILL_PLYO_MEDIUM", "SKILL_PLYO_LOW"],
-  PLYO_LOW: ["SKILL_PLYO_MEDIUM", "SKILL_PLYO_LOW"],
-};
 
 const PREVENTION_SKILLS = [
   "PREVKNEE",
@@ -193,11 +190,8 @@ const selectSkillTree = (
       input,
     );
   }
-  if (Object.hasOwn(PLYO_TAGS_BY_SKILL, skill)) {
-    const intensityTags = PLYO_TAGS_BY_SKILL[skill];
-    return keepBranches(readSkillTree(skillTrees, "PLYO"), ({ tags }) =>
-      tags.some((tag) => intensityTags.includes(tag)),
-    );
+  if (isPlyometricIntensity(skill)) {
+    return keepPlyometricIntensity(readSkillTree(skillTrees, "PLYO"), skill);
   }
   if (skill === "ALL") return Object.assign({}, ...Object.values(skillTrees));
   if (Object.hasOwn(TREE_NAMES_BY_SKILL, skill)) {

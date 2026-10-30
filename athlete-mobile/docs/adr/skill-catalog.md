@@ -63,10 +63,17 @@ type TimingEntry = TimingFields;
 
 A skill catalog entry either names a skill tree or is timing-only:
 
-- **With a skill tree.** The 14 skills of the bundled trainings, plus hypertrophy (`SWR1`, `SWR1KG`, `SWR2`, `SWR2KG`) and explosive power (`SK`, `SKKG`). A picks block accepts only these 20 skills; a picks block on any other skill fails with `NO_EXERCISES/SKILL_TREE`. All four hypertrophy codes read `SWR1` with weights and `SWR1KG` without, both explosive power codes read `SK` and `SKKG`. These six entries set no `focusArea` and no `progression`, so the stats credit `SWR` and progression stays on, as on training days.
-- **Timing-only.** The 14 training day skills without a picks block, for example `SA`, `MAX`, and the cardio zones. Their skill trees stay with `getSkillTree`. A timing-only entry sets none of `skillTree`, `focusArea`, `progression`, `painRegions`, `countBy`, and `fallbackToWholeTree`.
+- **With a skill tree.** The 14 skills of the bundled trainings, plus these training day skills:
+  - hypertrophy (`SWR1`, `SWR1KG`, `SWR2`, `SWR2KG`): all four read `SWR1` with weights and `SWR1KG` without
+  - explosive power (`SK`, `SKKG`): both read `SK` and `SKKG`
+  - speed warm-up (`WUSKSA`): reads `WUSKSA`
+  - max strength (`MAX`, `MAX_STRENGTH`): both read `MAX`
+  - plyometrics (`PLYO_HIGH`, `PLYO_MEDIUM`): both read `PLYO`, and the picks pool keeps the branches tagged with the skill's intensity. `PLYO_HIGH` keeps `SKILL_PLYO_HIGH`, `PLYO_MEDIUM` keeps `SKILL_PLYO_MEDIUM` and `SKILL_PLYO_LOW`, which form one category.
 
-An entry defines `sets` and `rest` together or neither. The cardio and max strength entries leave both out, because their set list builders bring their own sets and rests.
+  A picks block accepts only these 25 skills; a picks block on any other skill fails with `NO_EXERCISES/SKILL_TREE`. The 11 training day entries set no `focusArea` and no `progression`, so the stats credit the area of `mapSkillCodeToFocusArea` and progression stays on, as on training days. Plyometrics credit no area, as `PLYO` on training days.
+- **Timing-only.** The 11 training day skills without a picks block: power endurance (`SA`, `SAKG`, `SAS`, `SASKG`), `GKSKG`, and the six cardio zones. Their skill trees stay with `getSkillTree`. A timing-only entry sets none of `skillTree`, `focusArea`, `progression`, `painRegions`, `countBy`, and `fallbackToWholeTree`.
+
+An entry defines `sets` and `rest` together or neither. The cardio entries leave both out, because their set list builder brings its own sets and rests. The max strength builder ignores both as well, but `MAX` and `MAX_STRENGTH` set the training day values, 4 sets and rests of 10, 10 and 180 s, because a picks block resolves its timing from the catalog. The plyometric entries set the training day values of `PLYO`, which the plan generator stores under that code: 2 sets, superset by muscles, rests of 60, 180 and 60 s.
 
 ### Skill properties
 
@@ -75,7 +82,7 @@ A template cannot set these fields.
 | Field | Content |
 |---|---|
 | `skillTree` | The tree names the skill draws from at a training place with weights (`withWeights`) and without (`withoutWeights`). The names are literal: `STABILITY` without weights reads `GKS`. A name without a tree reads as an empty tree. |
-| `intensity`, `intensityWithoutWeights` | Intensity configuration. An exercise tagged as bodyweight uses `intensityWithoutWeights`. Without either, the skill reads `DEFAULTKG`. Hypertrophy (`SWR*`) and plyometrics keep a code rule that picks the configuration by the exercise. |
+| `intensity`, `intensityWithoutWeights` | Intensity configuration. An exercise tagged as bodyweight uses `intensityWithoutWeights`. Without either, the skill reads `DEFAULTKG`. Hypertrophy (`SWR*`) and plyometrics keep a code rule that picks the configuration by the exercise, so `PLYO_HIGH` and `PLYO_MEDIUM` set no intensity and read `PLYO`. |
 | `startRepetitions`, `startDuration` | Repetitions and seconds an exercise starts with when it advances by repetitions or by duration. Unset means 8 repetitions and 30 s. The cardio zones set 3 repetitions and their zone's duration. |
 | `focusArea` | The area the stats credit the training time to |
 | `progression` | `false`: exercises keep their values and ask for no feedback. Unset means on. |

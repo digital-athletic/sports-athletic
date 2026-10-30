@@ -125,6 +125,58 @@ describe("picksBlockResolution: hypertrophy and explosive power", () => {
   );
 });
 
+describe("picksBlockResolution: speed warm-up, max strength and plyometrics", () => {
+  it.each<{ skill: string; equipment: string[]; tree: string }>([
+    { skill: "WUSKSA", equipment: [], tree: "WUSKSA" },
+    { skill: "MAX", equipment: WEIGHTS, tree: "MAX" },
+    { skill: "MAX_STRENGTH", equipment: [], tree: "MAX" },
+    { skill: "PLYO_HIGH", equipment: [], tree: "PLYO" },
+    { skill: "PLYO_MEDIUM", equipment: WEIGHTS, tree: "PLYO" },
+  ])(
+    "draws $skill from $tree with equipment $equipment",
+    ({ skill, equipment, tree }) => {
+      const block = generatePicksBlock(skill, {
+        picks: [{ tags: [], count: 2 }],
+      });
+      const { blocks } = resolvePicksBlocks(
+        generateTemplate([block], { id: "SYN", name: { en: "SYN" } }),
+        { equipment, skillCatalog: loadSkillCatalog() },
+        getAllSkillTrees(),
+      );
+      const treeIds = Object.keys(getAllSkillTrees()[tree]);
+
+      expect(Object.keys(blocks[0].pool).length).toBeGreaterThan(0);
+      expect(treeIds).toEqual(
+        expect.arrayContaining(Object.keys(blocks[0].pool)),
+      );
+    },
+  );
+
+  it.each([
+    ["PLYO_HIGH", ["1"]],
+    ["PLYO_MEDIUM", ["2", "3"]],
+  ])(
+    "keeps the PLYO branches of the %s intensity for a pick without tags",
+    (skill, expected) => {
+      const { blocks } = resolveCustomTemplate(
+        [generatePicksBlock(skill, { picks: [{ tags: [], count: 2 }] })],
+        {
+          skillCatalog: loadSkillCatalog(),
+          skillTrees: {
+            PLYO: generateTaggedBranches({
+              1: ["SKILL_PLYO_HIGH"],
+              2: ["SKILL_PLYO_MEDIUM"],
+              3: ["SKILL_PLYO_LOW"],
+            }),
+          },
+        },
+      );
+
+      expect(Object.keys(blocks[0].pool)).toEqual(expected);
+    },
+  );
+});
+
 describe("picksBlockResolution: block values", () => {
   it("reads the defaults from the given skill catalog", () => {
     expect(

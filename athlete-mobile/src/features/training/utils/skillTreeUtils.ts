@@ -1,6 +1,7 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { loadSkillCatalogEntry } from "@/data/loadSkillCatalog";
 import { areaToRegion } from "./exerciseUtils";
+import { keepPlyometricIntensity } from "./plyometricIntensity";
 import { getRegionsForPreventionSkills } from "./preventionUtils";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { SkillTreesState } from "@/data/skillTreeRegistry";
@@ -52,21 +53,11 @@ export function getSkillTree(
       result = skillTrees["PLYO"];
       break;
 
-    // plyometric intensities are tags inside the PLYO tree; medium and low are one category
     case "PLYO_HIGH":
     case "PLYO_MEDIUM":
-    case "PLYO_LOW": {
-      const intensityTags =
-        skill === "PLYO_HIGH"
-          ? ["SKILL_PLYO_HIGH"]
-          : ["SKILL_PLYO_MEDIUM", "SKILL_PLYO_LOW"];
-      result = Object.fromEntries(
-        Object.entries(skillTrees["PLYO"] ?? {}).filter(([, branch]) =>
-          branch.tags.some((tag) => intensityTags.includes(tag)),
-        ),
-      );
+    case "PLYO_LOW":
+      result = keepPlyometricIntensity(skillTrees["PLYO"] ?? {}, skill);
       break;
-    }
 
     case "PREVKNEE":
     case "PREVSHOULDER":

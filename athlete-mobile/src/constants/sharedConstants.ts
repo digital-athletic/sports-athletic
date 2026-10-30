@@ -25,9 +25,6 @@ export type GeneratorErrorParamTypes =
   | "MISSING_EQUIPMENT"
   | "OTHER";
 
-const LINK_AGB = "https://www.sports-athletic.com/agb";
-const LINK_PRIVACY = "https://www.sports-athletic.com/datenschutz";
-
 const CONNECTION_TIMOUT_MS = 1000 * 45; // 45 seconds
 
 export const SharedConstants = {
@@ -36,7 +33,5 @@ export const SharedConstants = {
   FILE_PATH_EXERCISES,
   FILE_PATH_NOTIFICATIONS_DATA,
   FILE_PATH_SKILL_TREES,
-  LINK_AGB,
-  LINK_PRIVACY,
   TIME_IN_MS,
 };

@@ -1,7 +1,7 @@
+import { Alert } from "@/common/Alert";
 import { useTrainingScreenLifecycle } from "@/features/training/hooks/useTrainingScreenLifecycle";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert } from "react-native";
 
 type UseTrainingListLifecycleParams = {
   onFinish: (aborted: boolean) => void;

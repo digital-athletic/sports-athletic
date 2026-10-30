@@ -21,7 +21,7 @@ import { getUserTagValue } from "@/utils/tagUtils";
 import { RoutePath, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert } from "react-native";
+import { Alert } from "@/common/Alert";
 
 const DAY_KEYS = [
   "monday",

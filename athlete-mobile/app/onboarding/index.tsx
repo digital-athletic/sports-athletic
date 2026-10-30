@@ -1,3 +1,4 @@
+import { Alert } from "@/common/Alert";
 import { LoginScreen } from "@/features/onboarding/LoginScreen";
 import { RegistrationScreen } from "@/features/onboarding/RegisterScreen";
 import { Box } from "@/theme/Box";
@@ -7,12 +8,7 @@ import { supportMessage } from "@/utils/supportMessage";
 import { useRouter } from "expo-router";
 import { useReducer } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Alert,
-  Keyboard,
-  Platform,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { Keyboard, Platform, TouchableWithoutFeedback } from "react-native";
 import {
   requestLoginOtp,
   requestRegistrationOtp,

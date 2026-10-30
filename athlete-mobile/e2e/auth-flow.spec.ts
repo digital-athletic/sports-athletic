@@ -45,6 +45,18 @@ test.describe("Auth Flow: signed out user", () => {
       },
     );
   });
+
+  test("sees an error dialog for an invalid email address", async ({
+    page,
+  }) => {
+    await mockSupabaseAuth(page);
+
+    await page.goto("/");
+    await page.getByPlaceholder("E-Mail").fill("max.mustermann");
+    await page.getByRole("button", { name: "Send code" }).click();
+
+    await expect(page.getByText("E-mail address not valid")).toBeVisible();
+  });
 });
 
 test.describe("Auth Flow: signed in user", () => {

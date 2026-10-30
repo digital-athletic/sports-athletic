@@ -16,13 +16,8 @@ import { useTheme } from "@/theme/theme";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Alert,
-  Keyboard,
-  Pressable,
-  StyleSheet,
-  TextInput,
-} from "react-native";
+import { Alert } from "@/common/Alert";
+import { Keyboard, Pressable, StyleSheet, TextInput } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackHeader } from "@/common/BackHeader";
 import { liveRegionProps, useAnnounce } from "@/common/announce";

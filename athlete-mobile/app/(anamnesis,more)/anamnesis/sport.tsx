@@ -1,8 +1,8 @@
 import { RoutePath, Stack, router, useLocalSearchParams } from "expo-router";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert } from "react-native";
 
+import { Alert } from "@/common/Alert";
 import { BackHeader } from "@/common/BackHeader";
 import { SkipHeader } from "@/common/SkipHeader";
 import { WorkoutConstants } from "@/constants/workoutConstants";

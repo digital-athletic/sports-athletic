@@ -1,3 +1,4 @@
+import { Alert } from "@/common/Alert";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { logTrainingEvent } from "@/features/training/utils/trainingEventUtils";
@@ -7,7 +8,6 @@ import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { useRouter } from "expo-router";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert } from "react-native";
 
 /**
  * Finalizes a training session (sequential or list-view) and navigates to

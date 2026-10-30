@@ -1,7 +1,8 @@
+import { Alert } from "@/common/Alert";
 import { useForegroundEffect } from "@/utils/useForegroundEffect";
 import * as Updates from "expo-updates";
 import { useCallback, useEffect } from "react";
-import { Alert, Platform } from "react-native";
+import { Platform } from "react-native";
 import { Logger } from "./Logger";
 
 export const useOTAService = () => {

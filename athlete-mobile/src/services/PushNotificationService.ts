@@ -1,6 +1,7 @@
+import { Alert } from "@/common/Alert";
 import { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { TrainingSectionType } from "@/features/training/models/TrainingSection";
-import { Alert, Linking, Platform } from "react-native";
+import { Linking, Platform } from "react-native";
 import { AsyncStorageService } from "./AsyncStorageService";
 
 // TODO: Migrate to a modern notification library (e.g., expo-notifications or react-native-push-notification)

@@ -2,7 +2,7 @@ import { WorkoutConstants } from "@/constants/workoutConstants";
 import {
   estimateExerciseSeconds,
   estimateMaxStrengthExerciseSeconds,
-  estimateSkillSeconds,
+  readSkillEstimate,
 } from "./durationEstimate";
 
 describe("durationEstimate: max strength", () => {
@@ -29,21 +29,12 @@ describe("durationEstimate: max strength", () => {
   });
 
   it("counts each max strength exercise of a skill in full", () => {
-    const single = estimateSkillSeconds({
-      skill: "MAX",
-      level: WorkoutConstants.LEVELS.PROFESSIONAL,
-      exerciseCount: 1,
-      minutes: 15,
-    });
+    const estimate = readSkillEstimate(
+      "MAX",
+      WorkoutConstants.LEVELS.PROFESSIONAL,
+    );
 
-    expect(
-      estimateSkillSeconds({
-        skill: "MAX",
-        level: WorkoutConstants.LEVELS.PROFESSIONAL,
-        exerciseCount: 2,
-        minutes: 15,
-      }),
-    ).toBeCloseTo(2 * single);
+    expect(estimate(2)).toBeCloseTo(2 * estimate(1));
   });
 });
 
@@ -79,14 +70,7 @@ describe("durationEstimate: standard skill", () => {
   it("counts the longer start of the weighted and the bodyweight intensity config", () => {
     // GKS and GKSKG both start at 8 reps x 4 s = 32 s, longer than 30 s.
     // 2 sets x 32 s + 1 rest of 90 s + closing rest of 90 s = 244 s, x 1.1 = 268.4 s
-    expect(
-      estimateSkillSeconds({
-        skill: "GKS",
-        level: advanced,
-        exerciseCount: 1,
-        minutes: 10,
-      }),
-    ).toBeCloseTo(268.4);
+    expect(readSkillEstimate("GKS", advanced)(1)).toBeCloseTo(268.4);
   });
 
   it("counts the start value of a prevention pair and ignores its target value", () => {
@@ -94,27 +78,19 @@ describe("durationEstimate: standard skill", () => {
     // A round: 40 s + 30 s within superset + 40 s = 110 s.
     // 2 rounds with 1 rest of 30 s and a closing rest of 60 s:
     // (220 + 30 + 60) s = 310 s, x 1.1 = 341 s
-    expect(
-      estimateSkillSeconds({
-        skill: "PREVKNEE",
-        level: advanced,
-        exerciseCount: 2,
-        minutes: 10,
-      }),
-    ).toBeCloseTo(341);
+    expect(readSkillEstimate("PREVKNEE", advanced)(2)).toBeCloseTo(341);
   });
 
   it("adds no warm up set to WUSKSA", () => {
     // WUSKSA starts at 12 reps x 4 s = 48 s in 1 set with a closing rest of 30 s.
     // (48 + 30) s = 78 s, x 1.1 = 85.8 s
-    expect(
-      estimateSkillSeconds({
-        skill: "WUSKSA",
-        level: advanced,
-        exerciseCount: 1,
-        minutes: 10,
-      }),
-    ).toBeCloseTo(85.8);
+    expect(readSkillEstimate("WUSKSA", advanced)(1)).toBeCloseTo(85.8);
+  });
+
+  it("adds no warm up set to a bodyweight KG skill", () => {
+    // SWR1KG start: 8 reps x 4 s = 32 s, no warm up set.
+    // 2 sets x 32 s + 1 rest of 90 s + closing rest of 90 s = 244 s, x 1.1 = 268.4 s
+    expect(readSkillEstimate("SWR1KG", advanced)(1)).toBeCloseTo(268.4);
   });
 
   it("counts a 60 second rest after the warm up set of a single hypertrophy exercise", () => {
@@ -122,42 +98,21 @@ describe("durationEstimate: standard skill", () => {
     // Warm up set: 32 s + 60 s rest. Set 1: 32 s + 90 s rest.
     // Set 2: 32 s + closing rest of 90 s.
     // (92 + 122 + 122) s = 336 s, x 1.1 = 369.6 s
-    expect(
-      estimateSkillSeconds({
-        skill: "SWR2",
-        level: advanced,
-        exerciseCount: 1,
-        minutes: 10,
-      }),
-    ).toBeCloseTo(369.6);
+    expect(readSkillEstimate("SWR2", advanced)(1)).toBeCloseTo(369.6);
   });
 
   it("counts the rest between sets after the warm up set of a single explosive power exercise", () => {
     // SK start: 4 reps x 4 s = 16 s. Warm up set: 16 s + 180 s rest.
     // Set 1: 16 s + 180 s rest. Set 2: 16 s + closing rest of 180 s.
     // (196 + 196 + 196) s = 588 s, x 1.1 = 646.8 s
-    expect(
-      estimateSkillSeconds({
-        skill: "SK",
-        level: advanced,
-        exerciseCount: 1,
-        minutes: 10,
-      }),
-    ).toBeCloseTo(646.8);
+    expect(readSkillEstimate("SK", advanced)(1)).toBeCloseTo(646.8);
   });
 
   it("adds the warm up set as one more round of a superset pair", () => {
     // SWR2 start: 32 s. A round: 32 s + 30 s within superset + 32 s = 94 s.
     // 3 rounds (warm up set and 2 sets) with 2 rests of 30 s and a closing
     // rest of 90 s: (282 + 60 + 90) s = 432 s, x 1.1 = 475.2 s
-    expect(
-      estimateSkillSeconds({
-        skill: "SWR2",
-        level: advanced,
-        exerciseCount: 2,
-        minutes: 10,
-      }),
-    ).toBeCloseTo(475.2);
+    expect(readSkillEstimate("SWR2", advanced)(2)).toBeCloseTo(475.2);
   });
 
   it("adds the afterBlock of the catalog once for a block of several exercises", () => {
@@ -165,66 +120,24 @@ describe("durationEstimate: standard skill", () => {
     // Pair: (50 + 10 + 50 + 10) s = 120 s. Single: (50 + 10) s = 60 s.
     // Block closing: (30 - 10) s = 20 s.
     // (120 + 60 + 20) s = 200 s, x 1.1 = 220 s
-    expect(
-      estimateSkillSeconds({
-        skill: "WUSPEZIAL",
-        level: advanced,
-        exerciseCount: 3,
-        minutes: 3,
-      }),
-    ).toBeCloseTo(220);
+    expect(readSkillEstimate("WUSPEZIAL", advanced)(3)).toBeCloseTo(220);
   });
 
   it("ends the last exercise with the catalog afterBlock rest when that rest is longer", () => {
     // WUSPEZIAL: 50 s start set, rests of 10 s, afterBlock of 30 s.
     // (50 + 30) s = 80 s, x 1.1 = 88 s
-    expect(
-      estimateSkillSeconds({
-        skill: "WUSPEZIAL",
-        level: advanced,
-        exerciseCount: 1,
-        minutes: 3,
-      }),
-    ).toBeCloseTo(88);
+    expect(readSkillEstimate("WUSPEZIAL", advanced)(1)).toBeCloseTo(88);
   });
 
   it("pairs an even exercise count into supersets of two", () => {
     // MOB has no progression and starts at 50 s like the default intensity config.
     // MOB pair: 50 s + 10 s within superset + 50 s + closing rest of 10 s = 120 s
     // 2 pairs x 120 s = 240 s, x 1.1 = 264 s
-    expect(
-      estimateSkillSeconds({
-        skill: "MOB",
-        level: advanced,
-        exerciseCount: 4,
-        minutes: 10,
-      }),
-    ).toBeCloseTo(264);
+    expect(readSkillEstimate("MOB", advanced)(4)).toBeCloseTo(264);
   });
 
   it("counts the last exercise of an odd exercise count as a single", () => {
     // 1 pair of 120 s + 1 single of (50 + 10) s = 180 s, x 1.1 = 198 s
-    expect(
-      estimateSkillSeconds({
-        skill: "MOB",
-        level: advanced,
-        exerciseCount: 3,
-        minutes: 10,
-      }),
-    ).toBeCloseTo(198);
-  });
-});
-
-describe("durationEstimate: cardio", () => {
-  it("returns the minutes of a cardio skill as seconds without transition overhead", () => {
-    // 12 min x 60 s = 720 s
-    expect(
-      estimateSkillSeconds({
-        skill: "CARDIO_2",
-        level: WorkoutConstants.LEVELS.ADVANCED,
-        exerciseCount: 1,
-        minutes: 12,
-      }),
-    ).toBe(720);
+    expect(readSkillEstimate("MOB", advanced)(3)).toBeCloseTo(198);
   });
 });

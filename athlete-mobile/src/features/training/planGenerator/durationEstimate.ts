@@ -146,76 +146,63 @@ const readSkillSetSeconds = (skill: string, level: LevelTag): number => {
 };
 
 // Only a skill with a catalog skill tree draws weighted exercises; WUSKSA
-// trains its own bodyweight tree.
+// trains its own bodyweight tree and a KG skill trains bodyweight exercises.
 const hasWarmUpSet = (skill: string): boolean =>
   opensWeightedPairWithWarmUpSet(skill) &&
+  !skill.endsWith("KG") &&
   readSkillCatalogEntry(loadSkillCatalog(), skill)?.skillTree !== undefined;
 
-// A single exercise rests after its warm up set as the set list builder does.
-const estimateSingleWarmUpSeconds = (
-  skill: string,
-  setSeconds: number,
-  betweenSets: number,
-): number => {
-  if (!hasWarmUpSet(skill)) return 0;
-  const rest = isExplosivePowerSkill(skill)
-    ? betweenSets
-    : HYPERTROPHY_WARM_UP_REST;
-  return (setSeconds + rest) * TRANSITION_OVERHEAD;
-};
-
-const estimateStandardSkillSeconds = (
+const readStandardSkillEstimate = (
   skill: string,
   level: LevelTag,
-  exerciseCount: number,
-): number => {
-  if (exerciseCount <= 0) return 0;
+): SkillEstimate => {
   const skillCatalog = loadSkillCatalog();
   const { sets, superset, rest } = readTrainingDayTimingDefaults(
     skill,
     skillCatalog,
   );
   const setSeconds = readSkillSetSeconds(skill, level);
+  const warmUpSet = hasWarmUpSet(skill);
   const closingRestSeconds = Math.max(rest.betweenSets, rest.afterExercise);
+  // A single exercise rests after its warm up set as the set list builder does.
+  const warmUpRest = isExplosivePowerSkill(skill)
+    ? rest.betweenSets
+    : HYPERTROPHY_WARM_UP_REST;
   const single =
     estimateExerciseSeconds({
       sets,
       closingRestSeconds,
       restBetweenSetsSeconds: rest.betweenSets,
       work: { durationSeconds: setSeconds },
-    }) + estimateSingleWarmUpSeconds(skill, setSeconds, rest.betweenSets);
+    }) + (warmUpSet ? (setSeconds + warmUpRest) * TRANSITION_OVERHEAD : 0);
   const afterBlock =
     readSkillCatalogEntry(skillCatalog, skill)?.rest?.afterBlock ?? 0;
   const blockClosing =
     Math.max(0, afterBlock - closingRestSeconds) * TRANSITION_OVERHEAD;
-  if (superset === "none") return exerciseCount * single + blockClosing;
+  if (superset === "none") {
+    return (exerciseCount) => exerciseCount * single + blockClosing;
+  }
   // A superset round alternates both exercises with a rest within the superset
   // after each, so the estimate counts a pair as one exercise with that round.
   const pair = estimateExerciseSeconds({
-    sets: sets + (hasWarmUpSet(skill) ? 1 : 0),
+    sets: sets + (warmUpSet ? 1 : 0),
     closingRestSeconds,
     restBetweenSetsSeconds: rest.withinSuperset,
     work: { durationSeconds: 2 * setSeconds + rest.withinSuperset },
   });
-  return (
+  return (exerciseCount) =>
     Math.floor(exerciseCount / 2) * pair +
     (exerciseCount % 2) * single +
-    blockClosing
-  );
+    blockClosing;
 };
 
-/** A skill of a training day with its level, exercise count and minutes. */
-interface SkillEstimateInput {
-  skill: string;
-  level: LevelTag;
-  exerciseCount: number;
-  minutes: number;
-}
+/** The estimated seconds of a skill for an exercise count of at least 1. */
+export type SkillEstimate = (exerciseCount: number) => number;
 
 /**
- * Estimates the seconds of a skill's exercises in a training day:
+ * Returns the estimate of a skill's exercises in a training day. Cardio has no
+ * exercise count and no estimate.
  *
- * - Cardio takes its minutes.
  * - Max strength takes the seconds of its ladder per exercise.
  * - Every other skill takes its sets and rests, and pairs its exercises when
  *   it trains supersets.
@@ -224,18 +211,15 @@ interface SkillEstimateInput {
  * after the exercise. The last exercise ends with the catalog `afterBlock`
  * when that rest is longer.
  *
- * estimateSkillSeconds({ skill: "MAX", level: "PROFESSIONAL", exerciseCount: 2, minutes: 30 }) → 2323.2
+ * readSkillEstimate("MAX", "PROFESSIONAL")(2) → 2323.2
  */
-export const estimateSkillSeconds = ({
-  skill,
-  level,
-  exerciseCount,
-  minutes,
-}: SkillEstimateInput): number => {
-  const kind = readSkillSetListKind(skill);
-  if (kind === "cardio") return minutes * 60;
-  if (kind === "maxStrength") {
-    return exerciseCount * estimateMaxStrengthExerciseSeconds(level);
+export const readSkillEstimate = (
+  skill: string,
+  level: LevelTag,
+): SkillEstimate => {
+  if (readSkillSetListKind(skill) === "maxStrength") {
+    const exerciseSeconds = estimateMaxStrengthExerciseSeconds(level);
+    return (exerciseCount) => exerciseCount * exerciseSeconds;
   }
-  return estimateStandardSkillSeconds(skill, level, exerciseCount);
+  return readStandardSkillEstimate(skill, level);
 };

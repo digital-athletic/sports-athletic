@@ -1,128 +1,83 @@
-import { generateSkillSteps } from "@test/factories/skillSteps";
-import { drawTrainingDay, type SkillSecondsEstimate } from "./trainingDayDraw";
+import { drawTrainingDay } from "./trainingDayDraw";
 
-// 600 s (10 min) per exercise, so the estimate of a step equals its table minutes.
-const estimate: SkillSecondsEstimate = (_skill, exerciseCount) =>
-  exerciseCount * 600;
+describe("trainingDayDraw: share allocation", () => {
+  it("gives every skill its start share when the start shares fill the budget", () => {
+    const shares = drawTrainingDay({
+      skills: [
+        { skill: "A", startSeconds: 600, capSeconds: 1800 },
+        { skill: "B", startSeconds: 600, capSeconds: 1800 },
+      ],
+      budgetSeconds: 1200,
+    });
 
-describe("trainingDayDraw: minute allocation", () => {
-  it("gives every skill its smallest step when the smallest steps fill the budget", () => {
-    const draw = drawTrainingDay(
-      {
-        skills: [
-          generateSkillSteps({ skill: "A" }),
-          generateSkillSteps({ skill: "B" }),
-        ],
-        budgetMinutes: 20,
-      },
-      estimate,
-    );
-
-    expect(draw).toEqual([
-      { skill: "A", stepIndex: 0, stepMinutes: 10 },
-      { skill: "B", stepIndex: 0, stepMinutes: 10 },
+    expect(shares).toEqual([
+      { skill: "A", seconds: 600 },
+      { skill: "B", seconds: 600 },
     ]);
   });
 
-  it("gives the leftover minutes to the fillFirst skill up to its cap before the other skills", () => {
-    // Smallest steps use 20 of 40 minutes. B takes the 20 leftover minutes up
-    // to its cap of 30, so A keeps 10 minutes.
-    const draw = drawTrainingDay(
-      {
-        skills: [
-          generateSkillSteps({ skill: "A" }),
-          generateSkillSteps({ skill: "B" }),
-        ],
-        budgetMinutes: 40,
-        fillFirst: "B",
-      },
-      estimate,
-    );
+  it("gives the leftover seconds to the fillFirst skill up to its cap before the other skills", () => {
+    // Start shares use 1200 of 2400 s. B takes all 1200 s up to its cap of 1800 s.
+    const shares = drawTrainingDay({
+      skills: [
+        { skill: "A", startSeconds: 600, capSeconds: 1800 },
+        { skill: "B", startSeconds: 600, capSeconds: 1800 },
+      ],
+      budgetSeconds: 2400,
+      fillFirst: "B",
+    });
 
-    expect(draw.map(({ skill, stepIndex }) => [skill, stepIndex])).toEqual([
-      ["A", 0],
-      ["B", 2],
+    expect(shares).toEqual([
+      { skill: "A", seconds: 600 },
+      { skill: "B", seconds: 1800 },
     ]);
   });
 
-  it("gives the leftover minutes to the first skill in priority order up to its cap before the next skill", () => {
-    // Smallest steps use 20 of 40 minutes. A takes the 20 leftover minutes up
-    // to its cap of 30, so B keeps 10 minutes.
-    const draw = drawTrainingDay(
-      {
-        skills: [
-          generateSkillSteps({ skill: "A" }),
-          generateSkillSteps({ skill: "B" }),
-        ],
-        budgetMinutes: 40,
-      },
-      estimate,
-    );
+  it("gives the leftover seconds to the first skill in priority order up to its cap before the next skill", () => {
+    // Start shares use 1200 of 2700 s. A takes 1200 s up to its cap, B the last 300 s.
+    const shares = drawTrainingDay({
+      skills: [
+        { skill: "A", startSeconds: 600, capSeconds: 1800 },
+        { skill: "B", startSeconds: 600, capSeconds: 1800 },
+      ],
+      budgetSeconds: 2700,
+    });
 
-    expect(draw.map(({ skill, stepIndex }) => [skill, stepIndex])).toEqual([
-      ["A", 2],
-      ["B", 0],
+    expect(shares).toEqual([
+      { skill: "A", seconds: 1800 },
+      { skill: "B", seconds: 900 },
     ]);
   });
 
-  it("takes the step nearest to the minutes of a skill even when the day ends above the budget", () => {
-    // A takes 20 leftover minutes up to its cap of 30, B the last 6: 16 minutes
-    // lie nearest to the 20 minute step, so the day ends at 50 of 46 minutes.
-    const draw = drawTrainingDay(
-      {
-        skills: [
-          generateSkillSteps({ skill: "A" }),
-          generateSkillSteps({ skill: "B" }),
-        ],
-        budgetMinutes: 46,
-      },
-      estimate,
-    );
+  it("gives no seconds back when a start share lies above its cap", () => {
+    // A starts at 220 s above its cap of 180 s and keeps 220 s; B takes only
+    // the 80 s leftover of the 900 s budget.
+    const shares = drawTrainingDay({
+      skills: [
+        { skill: "A", startSeconds: 220, capSeconds: 180 },
+        { skill: "B", startSeconds: 600, capSeconds: 1800 },
+      ],
+      budgetSeconds: 900,
+    });
 
-    expect(draw.map(({ skill, stepIndex }) => [skill, stepIndex])).toEqual([
-      ["A", 2],
-      ["B", 1],
+    expect(shares).toEqual([
+      { skill: "A", seconds: 220 },
+      { skill: "B", seconds: 680 },
     ]);
   });
 
-  it("takes the smaller step when the minutes of a skill lie halfway between two steps", () => {
-    const draw = drawTrainingDay(
-      { skills: [generateSkillSteps({ skill: "A" })], budgetMinutes: 15 },
-      estimate,
-    );
+  it("gives every skill its start share when the start shares exceed the budget", () => {
+    const shares = drawTrainingDay({
+      skills: [
+        { skill: "A", startSeconds: 600, capSeconds: 1800 },
+        { skill: "B", startSeconds: 600, capSeconds: 1800 },
+      ],
+      budgetSeconds: 300,
+    });
 
-    expect(draw).toEqual([{ skill: "A", stepIndex: 0, stepMinutes: 10 }]);
-  });
-
-  it("compares the cap with the estimated minutes of a skill", () => {
-    // 900 s (15 min) per exercise: A gets 15 + 5 minutes up to its cap of 20,
-    // which lie nearer to the 15 minute estimate than to the 30 minute one.
-    const draw = drawTrainingDay(
-      {
-        skills: [generateSkillSteps({ skill: "A", maxMinutes: 20 })],
-        budgetMinutes: 100,
-      },
-      (_skill, exerciseCount) => exerciseCount * 900,
-    );
-
-    expect(draw).toEqual([{ skill: "A", stepIndex: 0, stepMinutes: 10 }]);
-  });
-
-  it("gives every skill its smallest step when the smallest steps exceed the budget", () => {
-    const draw = drawTrainingDay(
-      {
-        skills: [
-          generateSkillSteps({ skill: "A" }),
-          generateSkillSteps({ skill: "B" }),
-        ],
-        budgetMinutes: 5,
-      },
-      estimate,
-    );
-
-    expect(draw).toEqual([
-      { skill: "A", stepIndex: 0, stepMinutes: 10 },
-      { skill: "B", stepIndex: 0, stepMinutes: 10 },
+    expect(shares).toEqual([
+      { skill: "A", seconds: 600 },
+      { skill: "B", seconds: 600 },
     ]);
   });
 });

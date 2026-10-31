@@ -1,86 +1,53 @@
-/** Estimates the seconds of a skill for an exercise count and its table minutes. */
-export type SkillSecondsEstimate = (
-  skill: string,
-  exerciseCount: number,
-  minutes: number,
-) => number;
-
-/** The steps of one skill in ascending order, and its cap. */
-export interface SkillSteps {
+/** The start share and the cap of one skill, in seconds. */
+export interface SkillShareFrame {
   skill: string;
-  steps: { minutes: number; exerciseCount: number }[];
-  maxMinutes: number;
+  startSeconds: number;
+  capSeconds: number;
 }
 
-/** The step the draw gives a skill and the minutes of that step. */
-export interface SkillDraw {
+/** The seconds the draw gives a skill. */
+export interface SkillShare {
   skill: string;
-  stepIndex: number;
-  stepMinutes: number;
+  seconds: number;
 }
-
-// Ties go to the smaller step, as in the old minute allocation.
-const findNearestStep = (stepSeconds: number[], seconds: number): number =>
-  stepSeconds.reduce(
-    (nearest, candidate, index) =>
-      Math.abs(candidate - seconds) < Math.abs(stepSeconds[nearest] - seconds)
-        ? index
-        : nearest,
-    0,
-  );
 
 /**
- * Shares out the minutes of a training day like the old minute allocation of
- * `PlanGenerator`, in estimated minutes instead of table minutes:
+ * Shares out the seconds of a training day like the old minute allocation of
+ * `PlanGenerator`, in estimated seconds instead of table minutes:
  *
- * 1. Every skill gets the estimate of its smallest step.
- * 2. The `fillFirst` skill gets the leftover minutes up to its cap.
- * 3. Each skill in priority order gets the leftover minutes up to its cap.
- * 4. Every skill takes the step whose estimate lies nearest to its minutes,
- *    so the day can end above the budget.
+ * 1. Every skill gets its start share.
+ * 2. The `fillFirst` skill gets the leftover seconds up to its cap.
+ * 3. Each skill in priority order gets the leftover seconds up to its cap.
  *
- * drawTrainingDay({ skills: [{ skill: "MAX", steps: [{ minutes: 10, exerciseCount: 1 }], maxMinutes: 10 }], budgetMinutes: 30 }, estimate)
- * → [{ skill: "MAX", stepIndex: 0, stepMinutes: 10 }]
+ * A skill whose start share lies above its cap keeps its start share and takes
+ * no leftover seconds.
+ *
+ * drawTrainingDay({ skills: [{ skill: "MAX", startSeconds: 600, capSeconds: 1200 }], budgetSeconds: 1800 })
+ * → [{ skill: "MAX", seconds: 1200 }]
  */
-export const drawTrainingDay = (
-  {
-    skills,
-    budgetMinutes,
-    fillFirst,
-  }: { skills: SkillSteps[]; budgetMinutes: number; fillFirst?: string },
-  estimate: SkillSecondsEstimate,
-): SkillDraw[] => {
-  const drawable = skills.filter(({ steps }) => steps.length > 0);
-  const stepSeconds = drawable.map(({ skill, steps }) =>
-    steps.map(({ minutes, exerciseCount }) =>
-      estimate(skill, exerciseCount, minutes),
-    ),
-  );
-  const skillSeconds = stepSeconds.map(([smallest]) => smallest);
-  let leftSeconds =
-    budgetMinutes * 60 - skillSeconds.reduce((total, s) => total + s, 0);
+export const drawTrainingDay = ({
+  skills,
+  budgetSeconds,
+  fillFirst,
+}: {
+  skills: SkillShareFrame[];
+  budgetSeconds: number;
+  fillFirst?: string;
+}): SkillShare[] => {
+  const shares = skills.map(({ startSeconds }) => startSeconds);
+  let leftSeconds = budgetSeconds - shares.reduce((total, s) => total + s, 0);
   const addLeftover = (index: number) => {
-    const added = Math.min(
-      leftSeconds,
-      drawable[index].maxMinutes * 60 - skillSeconds[index],
+    const added = Math.max(
+      0,
+      Math.min(leftSeconds, skills[index].capSeconds - shares[index]),
     );
-    skillSeconds[index] += added;
+    shares[index] += added;
     leftSeconds -= added;
   };
 
-  if (leftSeconds > 0) {
-    const fillFirstIndex = drawable.findIndex(
-      ({ skill }) => skill === fillFirst,
-    );
-    if (fillFirstIndex >= 0) addLeftover(fillFirstIndex);
-    for (const index of drawable.keys()) {
-      if (leftSeconds <= 0) break;
-      addLeftover(index);
-    }
-  }
+  const fillFirstIndex = skills.findIndex(({ skill }) => skill === fillFirst);
+  if (fillFirstIndex >= 0) addLeftover(fillFirstIndex);
+  skills.forEach((_, index) => addLeftover(index));
 
-  return drawable.map(({ skill, steps }, index) => {
-    const stepIndex = findNearestStep(stepSeconds[index], skillSeconds[index]);
-    return { skill, stepIndex, stepMinutes: steps[stepIndex].minutes };
-  });
+  return skills.map(({ skill }, index) => ({ skill, seconds: shares[index] }));
 };

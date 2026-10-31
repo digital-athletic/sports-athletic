@@ -22,7 +22,7 @@ import { readSkillCatalogEntry } from "../generationInput/skillCatalogEntry";
 
 // The exercise ID of a branch that resolved to no exercise.
 const UNRESOLVED_EXERCISE_ID = "-1";
-const HYPERTROPHY_WARM_UP_REST = 60;
+export const HYPERTROPHY_WARM_UP_REST = 60;
 
 interface StandardSetListContext {
   block: SetListBlock;
@@ -137,9 +137,16 @@ const buildPause = (
 const isWeightedEntry = (entry: ExerciseStartValues | undefined): boolean =>
   !!entry && getTagValues(entry.tags, TagGroups.EQ_TYPE).includes("WEIGHTS");
 
-// Power endurance and explosive power open a weighted pair with a warm-up set.
+/** True for power endurance and explosive power: both add a warm up set before a weighted pair. */
+export const opensWeightedPairWithWarmUpSet = (skill: string): boolean =>
+  skill.includes("SWR") || skill.includes("SK");
+
+/** True for explosive power: its single warm up set rests the rest between sets, not HYPERTROPHY_WARM_UP_REST. */
+export const isExplosivePowerSkill = (skill: string): boolean =>
+  skill.includes("SK");
+
 const hasWarmUpSet = (skill: string, values: StartValuePair): boolean =>
-  (skill.includes("SWR") || skill.includes("SK")) &&
+  opensWeightedPairWithWarmUpSet(skill) &&
   (isWeightedEntry(values.first) || isWeightedEntry(values.second));
 
 const buildWarmUpSet = (
@@ -147,7 +154,7 @@ const buildWarmUpSet = (
   { skill, rest }: SetListBlock,
   set: SetTuple,
 ): GeneratedSetListEntry[] => {
-  const isExplosivePower = skill.includes("SK");
+  const isExplosivePower = isExplosivePowerSkill(skill);
   const weightFactor = isExplosivePower ? 0.65 : 0.7;
   const pause = values.second
     ? rest.withinSuperset

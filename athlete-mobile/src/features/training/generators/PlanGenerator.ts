@@ -57,6 +57,7 @@ import {
   getUserGender,
 } from "@/features/training/utils/userDataUtils";
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
+import { planTrainingDay } from "@/features/training/planGenerator/planTrainingDay";
 import {
   ExerciseBranchArraySchema,
   FallbackSectionSchema,
@@ -353,7 +354,7 @@ export default class PlanGenerator {
           (a, b) => +a - +b,
         );
         let prevDurationKey: number | null = null;
-        const tagsPerSkill: Record<string, readonly RegionTagEntry[]> = {};
+        let tagsPerSkill: Record<string, readonly RegionTagEntry[]> = {};
         let timePerSkill: Record<string, number> = {};
 
         if (PlanGenerator.DEBUG) {
@@ -622,6 +623,13 @@ export default class PlanGenerator {
             tagsPerSkill[skill] = tagObj[Number(keyToUse)];
           }
         }
+        ({ tagsPerSkill, timePerSkill } = planTrainingDay({
+          skills: Object.keys(tagsPerSkill),
+          durationMinutes: duration,
+          level,
+          ageGroup,
+          fillFirst: duration > 45 ? fillPriorities[1] : undefined,
+        }));
 
         if (PlanGenerator.DEBUG)
           console.log(

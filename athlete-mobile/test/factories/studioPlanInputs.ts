@@ -44,3 +44,43 @@ export const generateStudioPlanInputs = (): {
     places: { STUDIO: { equipment: studioEquipment } } as PlacesData,
   };
 };
+
+/** The minutes of each training day of `generateProfessionalKneePainPlanInputs`. */
+const PROFESSIONAL_KNEE_PAIN_TRAINING_MINUTES = 75;
+
+/**
+ * Builds the plan generator inputs of a professional field player with left
+ * knee pain in the preparatory season phase. The player trains in a studio on
+ * Monday, Wednesday and Friday for `PROFESSIONAL_KNEE_PAIN_TRAINING_MINUTES`
+ * each.
+ *
+ * generateProfessionalKneePainPlanInputs()
+ * → { user: { workoutData: { tags: { LEVEL: ["PROFESSIONAL"], PAIN: ["KNEE_LEFT"], ... } } }, userTrainingDays: [{ weekday: 1, duration: 75, ... }, ...], places: { STUDIO: ... } }
+ */
+export const generateProfessionalKneePainPlanInputs = (): {
+  user: UserType;
+  userTrainingDays: TrainingDayType[];
+  places: PlacesData;
+} => {
+  const { user, places } = generateStudioPlanInputs();
+  return {
+    user: {
+      ...user,
+      workoutData: {
+        ...user.workoutData,
+        tags: {
+          LEVEL: [WorkoutConstants.LEVELS.PROFESSIONAL],
+          POSITION: ["FIELD"],
+          PAIN: ["KNEE_LEFT"],
+        },
+      },
+    },
+    userTrainingDays: [0, 1, 2, 3, 4, 5, 6].map((weekday) => ({
+      active: weekday === 1 || weekday === 3 || weekday === 5,
+      weekday,
+      duration: minutes(PROFESSIONAL_KNEE_PAIN_TRAINING_MINUTES),
+      place: "STUDIO",
+    })),
+    places,
+  };
+};

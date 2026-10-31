@@ -377,6 +377,41 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     );
   });
 
+  it.each([
+    "CARDIO_1_SHORT",
+    "CARDIO_1_LAKTAT",
+    "CARDIO_2",
+    "CARDIO_3",
+    "CARDIO_4",
+    "CARDIO_5",
+  ])("runs a %s duration block", (skill) => {
+    const setList = generateShortWorkoutFromTemplate(
+      generateShortTemplate([{ kind: "duration", skill, duration: 1200 }]),
+      generateRuleFamilyInput({ exerciseCatalog: loadExercises() }),
+      getAllSkillTrees(),
+    );
+
+    expect([...new Set(listTrainedSkills(setList))]).toEqual([skill]);
+  });
+
+  it("builds a max strength picks block with the max strength ladder", () => {
+    const setList = generateShortWorkoutFromTemplate(
+      generateShortTemplate([
+        generatePicksBlock("MAX", { picks: [{ tags: [], count: 1 }] }),
+      ]),
+      generateRuleFamilyInput({
+        exerciseCatalog: loadExercises(),
+        equipment: ["BARBELL", "DUMBBELL", "RACK", "BENCH"],
+        random: () => 0,
+      }),
+      getAllSkillTrees(),
+    );
+
+    expect(setList.some((entry) => entry.repetitionMAX !== undefined)).toBe(
+      true,
+    );
+  });
+
   // Pins the whole set list of a cardio duration block against the bundled
   // exercises and skill trees: a data change fails it without a logic regression.
   it("generates a 20 minute zone 2 interval workout from a cardio duration block", () => {

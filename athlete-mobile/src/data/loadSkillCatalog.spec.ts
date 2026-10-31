@@ -36,16 +36,18 @@ const TREE_CODES = [
   "SWR2KG",
   "SK",
   "SKKG",
+  "WUSKSA",
+  "MAX",
+  "MAX_STRENGTH",
+  "PLYO_HIGH",
+  "PLYO_MEDIUM",
 ];
 const TIMING_CODES = [
-  "WUSKSA",
   "SA",
   "SAKG",
   "SAS",
   "SASKG",
   "GKSKG",
-  "MAX",
-  "MAX_STRENGTH",
   "CARDIO_1_SHORT",
   "CARDIO_1_LAKTAT",
   "CARDIO_2",
@@ -54,9 +56,13 @@ const TIMING_CODES = [
   "CARDIO_5",
 ];
 const CODES = [...TREE_CODES, ...TIMING_CODES];
+// The plan generator names both plyometric intensities PLYO.
+const PLAN_CODES: Record<string, string> = {
+  PLYO_HIGH: "PLYO",
+  PLYO_MEDIUM: "PLYO",
+};
+const planCodeOf = (code: string): string => PLAN_CODES[code] ?? code;
 const WITHOUT_TIMING = [
-  "MAX",
-  "MAX_STRENGTH",
   "CARDIO_1_SHORT",
   "CARDIO_1_LAKTAT",
   "CARDIO_2",
@@ -159,8 +165,20 @@ const TIMING: Record<string, Timing> = {
     superset: "none",
     intensity: "DEFAULTKG",
   },
-  MAX: { superset: "none", intensity: "DEFAULT" },
-  MAX_STRENGTH: { superset: "none", intensity: "DEFAULT" },
+  MAX: {
+    sets: 4,
+    rest: [10, 10, 180],
+    superset: "none",
+    intensity: "DEFAULT",
+  },
+  MAX_STRENGTH: {
+    sets: 4,
+    rest: [10, 10, 180],
+    superset: "none",
+    intensity: "DEFAULT",
+  },
+  PLYO_HIGH: { sets: 2, rest: [60, 180, 60], superset: "muscles" },
+  PLYO_MEDIUM: { sets: 2, rest: [60, 180, 60], superset: "muscles" },
   CARDIO_1_SHORT: {
     intensity: "CARDIO_1_SHORT",
     startRepetitions: 3,
@@ -257,7 +275,7 @@ const treeNamesOf = (entry: SkillCatalogEntry): string[] => {
 };
 
 describe("loadSkillCatalog: real file", () => {
-  it("lists the 34 skill codes", () => {
+  it("lists the 36 skill codes", () => {
     expect(Object.keys(loadSkillCatalog()).sort()).toEqual([...CODES].sort());
   });
 
@@ -360,26 +378,29 @@ describe("loadSkillCatalog: parity with the plan workout defaults", () => {
   it.each(
     withSets.flatMap((code) => FITNESS_LEVELS.map((level) => [code, level])),
   )("matches the plan set count for %s at %s", (code, level) => {
-    expect(entryOf(code).sets).toBe(generator.getSetCountBySkill(code, level));
+    expect(entryOf(code).sets).toBe(
+      generator.getSetCountBySkill(planCodeOf(code), level),
+    );
   });
 
   it.each(withSuperset)("matches the plan superset for %s", (code) => {
     expect(entryOf(code).superset).toBe(
-      generator.isSuperset(code) ? "muscles" : "none",
+      generator.isSuperset(planCodeOf(code)) ? "muscles" : "none",
     );
   });
 
   it.each(withSets)("matches the plan rest times for %s", (code) => {
     const rest = entryOf(code).rest;
+    const planCode = planCodeOf(code);
 
     expect({
       withinSuperset: rest?.withinSuperset,
       betweenSets: rest?.betweenSets,
       afterExercise: rest?.afterExercise,
     }).toEqual({
-      withinSuperset: generator.getInSetPauseBySkill(code),
-      betweenSets: generator.getSingleExerciseRestBySkill(code),
-      afterExercise: generator.getAfterSetPauseBySkill(code),
+      withinSuperset: generator.getInSetPauseBySkill(planCode),
+      betweenSets: generator.getSingleExerciseRestBySkill(planCode),
+      afterExercise: generator.getAfterSetPauseBySkill(planCode),
     });
   });
 

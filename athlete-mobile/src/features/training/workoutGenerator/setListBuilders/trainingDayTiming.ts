@@ -19,8 +19,7 @@ interface TrainingDayTimingOverride {
 
 /**
  * The values stored training plans need where the skill catalog sets none:
- * max strength sets and rests, cardio intervals and PLYO, which has no
- * catalog entry.
+ * cardio intervals and PLYO, which has no catalog entry of its own.
  */
 const TRAINING_DAY_TIMING_OVERRIDES = new Map<
   string,
@@ -60,8 +59,6 @@ const TRAINING_DAY_TIMING_OVERRIDES = new Map<
   ],
   ["CARDIO_4", { sets: 1, superset: "none" }],
   ["CARDIO_5", { sets: 1, superset: "none" }],
-  ["MAX", { sets: 4, rest: { afterExercise: 180 } }],
-  ["MAX_STRENGTH", { sets: 4, rest: { afterExercise: 180 } }],
   [
     "PLYO",
     {

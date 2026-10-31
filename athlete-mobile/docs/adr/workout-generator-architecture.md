@@ -144,9 +144,8 @@ The block's own values come first. The two sources differ in where their default
 
 The training day overrides keep stored plans as they were. They only hold the values the catalog lacks:
 
-- the sets and the rest after an exercise for MAX and MAX_STRENGTH
 - the sets, superset and rests of the cardio skills
-- the PLYO skill, which has no catalog entry
+- the PLYO skill, which has no catalog entry. The catalog entries `PLYO_HIGH` and `PLYO_MEDIUM` carry the same values for picks blocks.
 
 ### Block handlers (Strategy)
 
@@ -257,7 +256,7 @@ The generator deviates from the target architecture in these places, so that sto
 |---|---|---|
 | Training days store branch entries and minutes instead of a template | Stored plans predate AIWL | Stored plan migration |
 | Planned branches read the saved branch entries, replacements read the catalog | No catalog update changes a planned workout without a migration | Stored plan migration |
-| Training day overrides for MAX, MAX_STRENGTH, the cardio skills and PLYO | The skill catalog lacks these values | The catalog holds the values |
+| Training day overrides for the cardio skills and PLYO | The skill catalog lacks these values | The catalog holds the values |
 | The set list rules differ by source | Each source keeps the set lists of its old path | A decision unifies or keeps each rule |
 | Training days store cardio as a branches block | Plan creation stores cardio branches, so this ADR amends AIWL rule 1 | Plan creation writes duration blocks |
 | The router sends training days to the old generator while the AIWL generator flag is off | The flag lets the team compare both paths | The flag defaults to on and the old generator is deleted |

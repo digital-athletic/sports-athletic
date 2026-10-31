@@ -46,6 +46,20 @@ The generator runs these workout sources:
 | Strength test source, inactive | AIWL generator | Bundled template `TEST.json`, outside the short workout templates | `picks` with the strength test warm-up rules, then `exercises` with `testSets` |
 | Trainer workout | none | No editor exists | `duration` (planned) |
 
+A template configures these training day skills:
+
+| Training | Skill codes | Block kind |
+|---|---|---|
+| Speed warm-up | `WUSKSA` | `picks` |
+| Plyometrics, low and medium intensity | `PLYO_MEDIUM` | `picks` |
+| Plyometrics, high intensity | `PLYO_HIGH` | `picks` |
+| Explosive power | `SK`, `SKKG` | `picks` |
+| Hypertrophy | `SWR1`, `SWR1KG`, `SWR2`, `SWR2KG` | `picks` |
+| Max strength | `MAX`, `MAX_STRENGTH` | `picks`, built by the max strength builder |
+| Cardio, zones 1 short, 1 lactate and 2 to 5 | `CARDIO_1_SHORT`, `CARDIO_1_LAKTAT`, `CARDIO_2` to `CARDIO_5` | `duration` |
+
+Power endurance (`SA`, `SAKG`, `SAS`) has no picks block yet. The [skill catalog](./skill-catalog.md) lists the trees each code reads.
+
 [ADR: Workout generator architecture](./workout-generator-architecture.md#stored-workouts) describes how a training day reads its stored branches and lists the compatibility exceptions. The [strength test source](./workout-generator-architecture.md#strength-test-source) authors the protocol of the old strength test in `TEST.json`, and the router does not call it yet.
 
 The schema accepts four parts a short workout rejects with `OTHER/BLOCK_KIND`:

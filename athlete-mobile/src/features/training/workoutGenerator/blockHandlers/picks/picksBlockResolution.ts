@@ -1,6 +1,7 @@
 import { TagGroups } from "@/constants/tagGroups";
 import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import { hasWeights } from "@/features/training/utils/equipmentUtils";
+import { keepPlyometricIntensity } from "@/features/training/utils/plyometricIntensity";
 import { readLiteralSkillTree } from "@/features/training/utils/skillTreeUtils";
 import type { BlockPicks, CountBy, PicksBlock } from "@/schemas/aiwl.schema";
 import type { SkillCode } from "@/schemas/generator.schema";
@@ -85,8 +86,10 @@ const readPlacePicks = (
   return withWeights ? block.picks.withWeights : block.picks.withoutWeights;
 };
 
+// A plyometric skill keeps the branches of its intensity, so a pick without
+// an intensity tag never draws another intensity.
 const buildBlockPool = (
-  entry: SkillTreeCatalogEntry,
+  { skill, entry }: { skill: SkillCode; entry: SkillTreeCatalogEntry },
   picks: BlockPicks,
   fallbackToWholeTree: boolean,
   source: PicksPoolSource,
@@ -94,15 +97,16 @@ const buildBlockPool = (
   const names = source.hasWeights
     ? entry.skillTree.withWeights
     : entry.skillTree.withoutWeights;
-  const union: SkillTreeType = {};
+  const trees: SkillTreeType = {};
   for (const name of names) {
     Object.assign(
-      union,
+      trees,
       name === SPECIAL_WARM_UP_TREE
         ? readSpecialWarmUpTree(source)
         : readLiteralSkillTree(source.skillTrees, name),
     );
   }
+  const union = keepPlyometricIntensity(trees, skill);
   if (fallbackToWholeTree) return union;
   const matchingIds = new Set(
     picks.flatMap(({ tags }) => Object.keys(filterBranchesByTags(union, tags))),
@@ -128,7 +132,12 @@ const resolvePicksBlock = (
     entry.fallbackToWholeTree,
   );
   const picks = readPlacePicks(block, source.hasWeights);
-  const pool = buildBlockPool(entry, picks, fallbackToWholeTree, source);
+  const pool = buildBlockPool(
+    { skill: block.skill, entry },
+    picks,
+    fallbackToWholeTree,
+    source,
+  );
   if (Object.keys(pool).length === 0) throw createSkillTreeError(block.skill);
   return {
     ...timing,

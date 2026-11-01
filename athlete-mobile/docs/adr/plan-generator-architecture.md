@@ -223,7 +223,7 @@ The new generator raises the typed generator error in three classes:
   1. A block for `planGenerator/**` mirrors the block for `workoutGenerator/**`: the new generator imports nothing from `generators/`.
   2. The workout generator block forbids imports from `planGenerator/`.
   3. A new block for `generators/**` forbids imports from `planGenerator/`, `workoutGenerator/` and both routers, so the old generator never depends on new code. The block adds import rules only and changes no file in `generators/`.
-- **Module layout.** The top level of the `planGenerator` folder holds the entry and the input builder. The entry delegates to one subfolder per component of the patterns diagram:
+- **Module layout.** The top level of the `planGenerator` folder holds the entry. The entry delegates to one subfolder per component of the patterns diagram:
 
   | Folder | Component | Modules |
   | --- | --- | --- |
@@ -248,7 +248,12 @@ The new generator raises the typed generator error in three classes:
 
 ## Open questions
 
-1. **Priority 2 prefill.** The spec owner checks whether spec section 4, rule 4 gains the priority 2 prefill of the old generator for sessions longer than 45 minutes. Without the prefill, a 60-minute COMBINED day gets strength 40 and cardio 10 minutes instead of 20 and 30, cardio days with pain get 5 minutes of prevention instead of 15, and phase days get 5 minutes of mobility instead of 10.
+1. **Priority 2 prefill.** The spec owner checks whether spec section 4, rule 4 gains the priority 2 prefill of the old generator for sessions longer than 45 minutes. A simulation of 10 common personas with 20 seeds each measured the effect without the prefill:
+   - A 60-minute COMBINED day gets strength 40 and cardio 10 minutes instead of 20 and 30.
+   - A 60-minute PHASE day gets mobility 5 minutes instead of 10, and the phase skill gains the 5 minutes.
+   - A day with pain gets prevention (PREVKNEE, PREVANKLE, PREVWRIST) 5 minutes instead of 15, so about 1 prevention exercise instead of 3 to 4.
+
+   The missing prefill causes almost all remaining minute differences against the old generator.
 
 ## More information
 

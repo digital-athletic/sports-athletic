@@ -160,6 +160,7 @@ The new generator follows the spec. In these places the old code differs, and th
 | A 0 in the maximum minutes table means no time. A missing entry raises a configuration error. | Section 4, table | [Maximum minutes](../../src/features/training/generators/PlanGenerator.ts#L932-L934) |
 | A PROFESSIONAL child resolves branches at ADVANCED, the level every other stage uses. | Section 1, Level | [Branch level](../../src/features/training/generators/PlanGenerator.ts#L1270) |
 | A season phase without a type or an end date raises the input error NO_ANAMNESIS/MISSING_WORKOUT_DATA. | Section 1, Season phase | [Season phase fallback](../../src/features/training/generators/PlanGenerator.ts#L1084-L1086) |
+| The goalkeeper exclusion treats a branch as a goalkeeper exercise when the branch or the exercise of any level carries POSITION_GOAL. The old code lists the exercises 661, 662, 767, 768 and 769. The tag also marks 989, 990, 992, 993 and 994, so field players lose those exercises too. | Section 1, Position | [Goalkeeper exercises](../../src/features/training/generators/PlanGenerator.ts#L2311-L2326) |
 
 ### Verification
 

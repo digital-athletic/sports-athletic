@@ -2,19 +2,24 @@
 
 Spec: `docs/specs/planning/training-plan-creation-from-anamnesis.md`
 (section 3, day grouping and focus).
-Generate from: `PlanGenerator.getTrainingDayGroupsFocuses`, a directly
-callable static. `case`, `athlete`, and `schedule` echo the inputs; `focus
-per day` is the returned `FocusType[][]` flattened back onto the weekdays.
-The rules are fully deterministic, so no fixture crafting is needed; branch
-selection stays out of scope because it draws at random.
+Checked by: `src/features/training/planGenerator/stages/dayGroupingAndFocus.golden.spec.ts`.
+The test reads `athlete` and `schedule` of every case through
+`test/simulation/planning/dayFocusTable.ts`, runs `assignTrainingDayFocus`
+and compares the result, Monday first, with `focus per day`. The rules are
+fully deterministic, so no fixture crafting is needed; branch selection stays
+out of scope because it draws at random.
 
 Header prefixes: `in:` marks scripted or echoed inputs, `out:` marks
 values read from the implementation; unprefixed columns are row
 identifiers.
 
-**Status: hand-derived spec targets; the comparison test is not wired yet.**
-Do not regenerate with `UPDATE_GOLDEN=1` until a hand-check confirms the
-computed table.
+**Status: hand-derived spec targets.** The test never writes this table, so a
+failing case means the stage or the derivation is wrong; decide which by
+hand.
+
+Schedule notation: `<weekday> <place> <minutes> min run equipment` or
+`... no run equipment`. Run equipment belongs to the training place, so all
+days at one place in a case must agree.
 
 ## Cases: `day-focus.md`
 
@@ -33,6 +38,14 @@ and the group size selects the adult rule.
   equipment (Tue); the home day without run equipment takes STABILITY. The
   guarantee is satisfied, nothing converts.
 - `child`: children always get PHASE, regardless of grouping and equipment.
+- `Sunday into Monday`: Sun and Mon form one group of two, because grouping
+  wraps across the week boundary. PHASE goes to the studio day (Mon); Sun is
+  outside with run equipment and gets CARDIO, so the guarantee is satisfied.
+  Without the wrap, both days would be one-day groups with PHASE, and the
+  guarantee would turn Mon into COMBINED.
+- `four days`: Mon to Thu form one group of four, which cycles PHASE, CARDIO,
+  STABILITY in weekday order regardless of place, so Thu starts the next
+  cycle with PHASE. Tue holds CARDIO, so the guarantee converts nothing.
 
 Derivation note: the spec's per-group day counts are read as the size of the
 consecutive-day group, not the weekly total; a Mon plus Wed schedule would be

@@ -1,5 +1,6 @@
 import type { PlanGenerationInput } from "@/features/training/planGenerator/planGenerationInput/planGenerationInput";
 import type { SkillSelectionRequest } from "@/features/training/planGenerator/stages/branchSelection";
+import type { SelectionDay } from "@/features/training/planGenerator/stages/tagEntryPool";
 import type {
   DirectionEntry,
   DirectionsByRegion,
@@ -102,6 +103,25 @@ export const generateSelectionBranches = (
       generateTreeBranch([id], tags),
     ]),
   );
+
+/**
+ * Builds the day a skill selection reads: no used branches, no prevention
+ * skill and the plain lower body directions unless overridden.
+ *
+ * generateSelectionDay("HALL", { preventionSkills: ["PREVSPINE"] })
+ * → { place: "HALL", usedBranchIds: [], preventionSkills: ["PREVSPINE"],
+ *     lowerBodyDirections: "LOWER_BODY" }
+ */
+export const generateSelectionDay = (
+  place: SelectionDay["place"],
+  overrides: Partial<Omit<SelectionDay, "place">> = {},
+): SelectionDay => ({
+  place,
+  usedBranchIds: [],
+  preventionSkills: [],
+  lowerBodyDirections: "LOWER_BODY",
+  ...overrides,
+});
 
 /**
  * Builds the request of one skill with one tag entry.

@@ -166,18 +166,13 @@ describe("featureFlags", () => {
   });
 
   describe("trainingListViewEnabled", () => {
-    it("defaults to false when EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED is unset", () => {
-      expect(featureFlags.trainingListViewEnabled).toBe(false);
+    it("defaults to true when EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED is unset", () => {
+      expect(featureFlags.trainingListViewEnabled).toBe(true);
     });
 
     it("is false when EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED is 'false'", () => {
       process.env.EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED = "false";
       expect(featureFlags.trainingListViewEnabled).toBe(false);
-    });
-
-    it("is true when EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED is 'true'", () => {
-      process.env.EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED = "true";
-      expect(featureFlags.trainingListViewEnabled).toBe(true);
     });
   });
 

@@ -1,5 +1,6 @@
 import { type ListRow } from "@/features/training/hooks/useTrainingListRows";
 import { useExerciseCompletion } from "@/features/training/hooks/useExerciseCompletion";
+import { isRowCompleted } from "@/features/training/hooks/useTrainingListCompletion";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { useState } from "react";
 
@@ -20,7 +21,7 @@ export function useTrainingListReps() {
   };
 
   const handleSubmitReps = (row: ListRow) => {
-    if (row.completed) return;
+    if (isRowCompleted(row.index)) return;
 
     saveRepsInput(row.index, repsDraft[row.index] ?? 0);
     saveExerciseAndBranchData(row.index);

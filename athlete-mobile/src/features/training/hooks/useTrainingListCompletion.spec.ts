@@ -1,7 +1,7 @@
-import { type ListRow } from "@/features/training/hooks/useTrainingListRows";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { BASELINE_TRAINING_STATE } from "@/features/training/utils/testFixtures";
 import { act, renderHook } from "@testing-library/react-native";
+import { generateChecklistRow } from "@test/factories/checklistRow";
 import { useTrainingListCompletion } from "./useTrainingListCompletion";
 
 const mockSaveExerciseAndBranchData = jest.fn();
@@ -16,15 +16,7 @@ jest.mock("@/features/training/hooks/useExerciseCompletion", () => ({
   }),
 }));
 
-const row: ListRow = {
-  index: 0,
-  exerciseId: "1",
-  displayName: "Test Exercise",
-  isTest: false,
-  isLastInSet: true,
-  isFeedbackSkill: true,
-  completed: false,
-};
+const row = generateChecklistRow({ isFeedbackSkill: true });
 
 describe("useTrainingListCompletion: feedback and skipping", () => {
   beforeEach(() => {
@@ -50,6 +42,17 @@ describe("useTrainingListCompletion: feedback and skipping", () => {
     await act(() => result.current.handleComplete(row, "SUCCEEDED"));
 
     expect(mockHandleFeedback).toHaveBeenCalledWith(0, "SUCCEEDED");
+  });
+
+  it("saves the exercise once when completion fires twice before re-render", async () => {
+    const { result } = await renderHook(() => useTrainingListCompletion());
+
+    await act(() => {
+      result.current.handleComplete(row);
+      result.current.handleComplete(row);
+    });
+
+    expect(mockSaveExerciseAndBranchData).toHaveBeenCalledTimes(1);
   });
 
   it("runs no progression for a skipped exercise", async () => {

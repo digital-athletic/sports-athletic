@@ -2,6 +2,7 @@ import { type ListRow } from "@/features/training/hooks/useTrainingListRows";
 import { useTrainingListSheet } from "@/features/training/hooks/useTrainingListSheet";
 import { type TrainingListTiming } from "@/features/training/hooks/useTrainingListTiming";
 import { type UserExerciseDataType } from "@/features/training/models/UserExerciseData";
+import { isEnduranceSkill } from "@/features/training/utils/exerciseDataUtils";
 import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 
 type Args = {
@@ -41,13 +42,18 @@ export function useTrainingExerciseSheetProps({
     closeSheet();
   };
 
+  const shownExercise = shownRow ? exerciseList?.[shownRow.index] : undefined;
+  const countdownDuration = isEnduranceSkill(shownExercise?.skill)
+    ? undefined
+    : shownExercise?.duration;
+
   // shownRow outlives activeRow while the sheet animates closed; actions
   // below still check activeRow so nothing fires during that animation.
   const sheetProps = {
     row: shownRow,
     isPresented: activeRow !== null,
     sessionKey: session,
-    duration: shownRow ? exerciseList?.[shownRow.index]?.duration : undefined,
+    duration: countdownDuration,
     repsValue: shownRow ? (repsDraft[shownRow.index] ?? 0) : 0,
     onChangeReps: (value: string) => {
       if (activeRow) onChangeReps(activeRow.index, value);

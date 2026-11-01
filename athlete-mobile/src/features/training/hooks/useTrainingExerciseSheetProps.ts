@@ -1,5 +1,8 @@
 import { useChecklistRest } from "@/features/training/hooks/useChecklistRest";
-import { type ListRow } from "@/features/training/hooks/useTrainingListRows";
+import {
+  type ChecklistEntry,
+  type ListRow,
+} from "@/features/training/hooks/useTrainingListRows";
 import { useTrainingListSheet } from "@/features/training/hooks/useTrainingListSheet";
 import { type TrainingListTiming } from "@/features/training/hooks/useTrainingListTiming";
 import { type UserExerciseDataType } from "@/features/training/models/UserExerciseData";
@@ -54,6 +57,18 @@ const buildRestControl = (
   };
 };
 
+// Start opens the first open set of the exercise entry; a done entry opens nothing.
+const startFirstOpenSet = (
+  { firstOpenSetIndex: index }: ChecklistEntry,
+  exerciseList: UserExerciseDataType[] | null,
+  timing: Args["timing"],
+  openSheet: (index: number) => void,
+) => {
+  if (index === null) return;
+  timing.startExercise(exerciseList?.[index]?.skill);
+  openSheet(index);
+};
+
 /**
  * Builds TrainingExerciseSheet's props from whichever checklist row is
  * currently active, routing its Continue/feedback/reps/skip/rest actions back
@@ -74,10 +89,8 @@ export function useTrainingExerciseSheetProps({
     useTrainingListSheet(rows);
   const restTracker = useChecklistRest({ timing, onRestEnd });
 
-  const handleStart = (row: ListRow) => {
-    timing.startExercise(exerciseList?.[row.index]?.skill);
-    openSheet(row.index);
-  };
+  const handleStart = (entry: ChecklistEntry) =>
+    startFirstOpenSet(entry, exerciseList, timing, openSheet);
 
   const handleDismiss = () => {
     restTracker.endRest(true);

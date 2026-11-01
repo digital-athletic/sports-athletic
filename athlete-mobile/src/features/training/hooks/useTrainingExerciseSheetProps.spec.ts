@@ -2,8 +2,18 @@ import { type ListRow } from "@/features/training/hooks/useTrainingListRows";
 import { PAUSE_EXERCISE_ID } from "@/features/training/models/IdTypes";
 import { createExercise } from "@/features/training/utils/testFixtures";
 import { act, renderHook } from "@testing-library/react-native";
+import { generateChecklistEntry } from "@test/factories/checklistEntry";
 import { generateChecklistRow } from "@test/factories/checklistRow";
 import { useTrainingExerciseSheetProps } from "./useTrainingExerciseSheetProps";
+
+// The entry whose first open set is the row, e.g. row index 2 gives
+// { key: 2, firstOpenSetIndex: 2 }, so Start opens that row's set.
+const generateEntryStartingAt = (row: ListRow) =>
+  generateChecklistEntry({
+    key: row.index,
+    exerciseId: row.exerciseId,
+    firstOpenSetIndex: row.index,
+  });
 
 const startRowWithSkill = async (skill: string) => {
   const rows = [generateChecklistRow()];
@@ -23,10 +33,76 @@ const startRowWithSkill = async (skill: string) => {
     }),
   );
   await act(() => {
-    result.current.handleStart(rows[0]);
+    result.current.handleStart(generateEntryStartingAt(rows[0]));
   });
   return result.current.sheetProps;
 };
+
+describe("useTrainingExerciseSheetProps: start", () => {
+  it("opens the first open set of the entry with the skill of that set", async () => {
+    const startExercise = jest.fn();
+    const rows = [
+      generateChecklistRow({ index: 0, exerciseId: "squat" }),
+      generateChecklistRow({ index: 2, exerciseId: "squat" }),
+    ];
+    const { result } = await renderHook(() =>
+      useTrainingExerciseSheetProps({
+        rows,
+        exerciseList: [
+          createExercise({ exerciseId: "squat", completed: true }),
+          createExercise({ exerciseId: PAUSE_EXERCISE_ID }),
+          createExercise({ exerciseId: "squat", skill: "SWR2" }),
+        ],
+        repsDraft: {},
+        timing: { startExercise, endExercise: jest.fn() },
+        onChangeReps: jest.fn(),
+        onSubmitReps: jest.fn(),
+        onComplete: jest.fn(),
+        onRestEnd: jest.fn(),
+        onSkip: jest.fn(),
+      }),
+    );
+
+    await act(() => {
+      result.current.handleStart(
+        generateChecklistEntry({
+          key: 0,
+          exerciseId: "squat",
+          firstOpenSetIndex: 2,
+        }),
+      );
+    });
+
+    expect(result.current.sheetProps.row?.index).toBe(2);
+    expect(startExercise).toHaveBeenCalledWith("SWR2");
+  });
+
+  it("opens nothing when the entry has no open set", async () => {
+    const startExercise = jest.fn();
+    const { result } = await renderHook(() =>
+      useTrainingExerciseSheetProps({
+        rows: [generateChecklistRow()],
+        exerciseList: [createExercise({ completed: true })],
+        repsDraft: {},
+        timing: { startExercise, endExercise: jest.fn() },
+        onChangeReps: jest.fn(),
+        onSubmitReps: jest.fn(),
+        onComplete: jest.fn(),
+        onRestEnd: jest.fn(),
+        onSkip: jest.fn(),
+      }),
+    );
+
+    await act(() => {
+      result.current.handleStart(
+        generateChecklistEntry({ completed: true, firstOpenSetIndex: null }),
+      );
+    });
+
+    expect(result.current.sheetProps.isPresented).toBe(false);
+    expect(startExercise).not.toHaveBeenCalled();
+  });
+});
 
 describe("useTrainingExerciseSheetProps: skip", () => {
   it("skips the row whose sheet is open", async () => {
@@ -51,7 +127,7 @@ describe("useTrainingExerciseSheetProps: skip", () => {
       }),
     );
     await act(() => {
-      result.current.handleStart(rows[1]);
+      result.current.handleStart(generateEntryStartingAt(rows[1]));
     });
     await act(() => {
       result.current.sheetProps.onSkip();
@@ -78,7 +154,7 @@ describe("useTrainingExerciseSheetProps: skip", () => {
       }),
     );
     await act(() => {
-      result.current.handleStart(rows[0]);
+      result.current.handleStart(generateEntryStartingAt(rows[0]));
     });
     await act(() => {
       result.current.sheetProps.onDismiss();
@@ -114,7 +190,7 @@ describe("useTrainingExerciseSheetProps: other sheet actions", () => {
       }),
     );
     await act(() => {
-      result.current.handleStart(rows[0]);
+      result.current.handleStart(generateEntryStartingAt(rows[0]));
     });
     await act(() => {
       result.current.sheetProps.onChangeReps("9");
@@ -181,7 +257,7 @@ describe("useTrainingExerciseSheetProps: rest after a set", () => {
       }),
     );
     await act(() => {
-      result.current.handleStart(row);
+      result.current.handleStart(generateEntryStartingAt(row));
     });
     return { result, timing, onRestEnd };
   };

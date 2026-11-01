@@ -24,7 +24,7 @@ const TrainingList: FC<TrainingListProps> = () => {
     hasHydrated,
     exerciseList,
     repsDraft,
-    rows,
+    blocks,
     allCompleted,
     isFinishing,
     handleFinish,
@@ -47,7 +47,7 @@ const TrainingList: FC<TrainingListProps> = () => {
         style={{ paddingBottom: insets.bottom }}
       >
         <TrainingListRows
-          rows={rows}
+          blocks={blocks}
           exerciseList={exerciseList}
           repsDraft={repsDraft}
           onStart={handleStart}

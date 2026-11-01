@@ -205,11 +205,30 @@ export class TrainingListPage extends BasePage {
     await expect(this.restSkipButton).toBeVisible();
   }
 
+  /**
+   * Completes an exercise entry set by set until its last set asks for
+   * feedback, then picks the given feedback. Each Start opens the entry's
+   * next open set, and the sheet closes after each set.
+   */
   async selectFeedbackInRow(row: Locator, feedback: "too_easy" | "too_hard") {
-    await row.getByRole("button", { name: "Start exercise" }).click({
-      timeout: 3000,
-    });
-    await this.continueActiveSheet({ feedback });
+    const feedbackButton = this.sheetFeedbackButtonFor(feedback);
+    for (let i = 0; i < 10; i++) {
+      await row.getByRole("button", { name: "Start exercise" }).click({
+        timeout: 3000,
+      });
+      await this.waitOutCountdown();
+      await this.sheetContinueButton.click({ timeout: 3000 });
+      const asksFeedback = await feedbackButton
+        .waitFor({ state: "visible", timeout: 1000 })
+        .then(
+          () => true,
+          () => false,
+        );
+      if (asksFeedback) await feedbackButton.click({ timeout: 3000 });
+      await this.closeSheetSkippingRest();
+      if (asksFeedback) return;
+    }
+    throw new Error("The entry never asked for feedback");
   }
 
   /**

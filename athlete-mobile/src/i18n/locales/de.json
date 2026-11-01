@@ -439,6 +439,9 @@
       "setKilos": "{{weight}} kg",
       "setSeconds": "{{count}} s",
       "setReps": "{{count}} Wdh.",
+      "a11y": {
+        "nextExercise": "Nächste Übung"
+      },
       "finishTraining": "Training beenden",
       "rest": {
         "skip": "Pause überspringen",

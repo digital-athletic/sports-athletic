@@ -1,5 +1,9 @@
 import { TagGroups } from "@/constants/tagGroups";
-import { requireWorkoutData } from "@/features/training/utils/userDataUtils";
+import { ageGroupFor } from "@/features/training/utils/ageUtils";
+import {
+  getUserBirthday,
+  requireWorkoutData,
+} from "@/features/training/utils/userDataUtils";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { getTagValues } from "@/utils/tagUtils";
 import { filterBranchesByAgeGroup } from "../../ruleFamilies/ageGroupRule";
@@ -18,11 +22,20 @@ import { selectReplacementSkillTree } from "./replacementSkillTree";
 // reaches a blocked exercise
 const REPLACEMENT_RULE_CHAIN: readonly RuleFamily[] = [
   filterBranchesByMuscleSoreness,
-  filterBranchesByEquipment,
+  (branches, input) => filterBranchesByEquipment(branches, input.equipment),
   filterBranchesByFitnessLevel,
-  filterBranchesByAgeGroup,
-  filterBranchesByGender,
-  filterBranchesByPainOnEveryLevel,
+  (branches, input) =>
+    filterBranchesByAgeGroup(
+      branches,
+      ageGroupFor(getUserBirthday(input.athlete)),
+    ),
+  (branches, input) => filterBranchesByGender(branches, input.athlete),
+  (branches, input) =>
+    filterBranchesByPainOnEveryLevel(
+      branches,
+      input.athlete,
+      input.exerciseCatalog,
+    ),
 ];
 
 export interface BranchReplacementRequest {

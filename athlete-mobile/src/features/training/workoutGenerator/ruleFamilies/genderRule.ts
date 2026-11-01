@@ -1,11 +1,10 @@
 import { TagGroups } from "@/constants/tagGroups";
-import { getUserGender } from "@/features/training/utils/userDataUtils";
 import { getTagValues } from "@/utils/tagUtils";
-import type { GenerationInput } from "../generationInput/generationInput";
 import {
   type CandidateBranch,
   keepBranches,
   listBranchRemovals,
+  type RuleFamilyAthlete,
   type RuleFamilyResult,
 } from "./ruleFamily";
 
@@ -15,9 +14,9 @@ import {
  */
 export const filterBranchesByGender = <T extends CandidateBranch>(
   branches: Record<string, T>,
-  { athlete }: GenerationInput,
+  athlete: RuleFamilyAthlete,
 ): RuleFamilyResult<T> => {
-  const gender = getUserGender(athlete);
+  const gender = athlete.personalData?.gender ?? "FEMALE";
   const keep = keepBranches(branches, (branch) => {
     const branchGenderTags = getTagValues(branch.tags ?? [], TagGroups.GENDER);
     return branchGenderTags.length === 0 || branchGenderTags.includes(gender);

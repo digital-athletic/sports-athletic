@@ -14,7 +14,7 @@ describe("equipmentRule: filterBranchesByEquipment", () => {
     const input = generateRuleFamilyInput({ equipment: ["DUMBBELL"] });
     const branches = generateSkillTreeBranches("GKS", ["510", "523"]);
 
-    const result = filterBranchesByEquipment(branches, input);
+    const result = filterBranchesByEquipment(branches, input.equipment);
 
     expect(Object.keys(result.keep)).toEqual(["510"]);
     expect(result.removals).toEqual([
@@ -27,7 +27,7 @@ describe("equipmentRule: filterBranchesByEquipment", () => {
     const input = generateRuleFamilyInput();
     const branches = generateSkillTreeBranches("GKS", ["510", "523"]);
 
-    const result = filterBranchesByEquipment(branches, input);
+    const result = filterBranchesByEquipment(branches, input.equipment);
 
     expect(result.keep).toEqual({});
     expect(result.removals).toEqual([
@@ -42,7 +42,7 @@ describe("equipmentRule: filterBranchesByEquipment", () => {
 
     const result = filterBranchesByEquipment(
       branches,
-      generateRuleFamilyInput(),
+      generateRuleFamilyInput().equipment,
     );
 
     expect(result.keep).toEqual({});
@@ -58,7 +58,9 @@ describe("equipmentRule: filterBranchesByEquipment", () => {
       "1": ["EQ_DUMBBELL", "EQ_MEDICINE_BALL"],
     });
 
-    expect(filterBranchesByEquipment(branches, input).keep).toEqual(branches);
+    expect(filterBranchesByEquipment(branches, input.equipment).keep).toEqual(
+      branches,
+    );
   });
 
   it("reads the exercising bench exercises of a stored branch", () => {
@@ -70,7 +72,7 @@ describe("equipmentRule: filterBranchesByEquipment", () => {
         "1": generateStoredBranch("1", benchTags, "1").branch,
         "2": generateStoredBranch("2", benchTags, "209").branch,
       },
-      input,
+      input.equipment,
     );
 
     expect(Object.keys(result.keep)).toEqual(["1"]);
@@ -90,7 +92,7 @@ describe("equipmentRule: listMissingEquipment", () => {
       "3": ["EQ_TUBE"],
     });
 
-    const { removals } = filterBranchesByEquipment(branches, input);
+    const { removals } = filterBranchesByEquipment(branches, input.equipment);
 
     expect(listMissingEquipment(removals)).toEqual([
       "BARBELL",

@@ -11,7 +11,7 @@ describe("genderRule: filterBranchesByGender", () => {
 
     const result = filterBranchesByGender(
       branches,
-      generateRuleFamilyInput({ gender: "MALE" }),
+      generateRuleFamilyInput({ gender: "MALE" }).athlete,
     );
 
     expect(Object.keys(result.keep)).toEqual(["1", "3"]);
@@ -29,7 +29,7 @@ describe("genderRule: filterBranchesByGender", () => {
 
     const result = filterBranchesByGender(
       branches,
-      generateRuleFamilyInput({ gender: "FEMALE" }),
+      generateRuleFamilyInput({ gender: "FEMALE" }).athlete,
     );
 
     expect(Object.keys(result.keep)).toEqual(["2", "3"]);
@@ -43,11 +43,11 @@ describe("genderRule: filterBranchesByGender", () => {
       { "1": ["GENDER_MALE"], "2": ["GENDER_FEMALE"] },
       {},
     );
-    const inputWithoutGender = generateRuleFamilyInput({
+    const athleteWithoutGender = generateRuleFamilyInput({
       withoutPersonalData: true,
-    });
+    }).athlete;
 
-    const result = filterBranchesByGender(branches, inputWithoutGender);
+    const result = filterBranchesByGender(branches, athleteWithoutGender);
 
     expect(Object.keys(result.keep)).toEqual(["2"]);
     expect(result.removals).toEqual([

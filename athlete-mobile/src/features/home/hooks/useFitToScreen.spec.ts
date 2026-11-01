@@ -1,5 +1,6 @@
 import { act, renderHook } from "@testing-library/react-native";
 import { generateLayoutEvent } from "@test/factories/layoutEvent";
+import { Platform } from "react-native";
 import { useFitToScreen } from "./useFitToScreen";
 
 // iPhone 17: status bar plus navigation bar.
@@ -25,6 +26,20 @@ describe("useFitToScreen", () => {
       top: HEADER_HEIGHT,
     });
   });
+
+  it.each(["android", "web"] as const)(
+    "leaves no header room on %s, where the header is opaque",
+    async (os) => {
+      jest.replaceProperty(Platform, "OS", os);
+
+      const { result } = await renderHook(() => useFitToScreen());
+
+      expect(result.current.contentContainerStyle).toEqual({
+        flexGrow: 1,
+        paddingTop: 0,
+      });
+    },
+  );
 
   it("keeps the regular layout while the content fits the screen", async () => {
     const { result } = await renderHook(() => useFitToScreen());

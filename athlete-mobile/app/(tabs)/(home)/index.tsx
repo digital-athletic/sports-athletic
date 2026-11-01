@@ -123,8 +123,8 @@ export default function HomeScreen() {
       <ScrollBox
         flex={1}
         backgroundColor="lightGrey1"
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={fit.contentContainerStyle}
+        scrollIndicatorInsets={fit.scrollIndicatorInsets}
         onLayout={fit.onLayout}
         onContentSizeChange={fit.onContentSizeChange}
       >

@@ -1,3 +1,4 @@
+import { useHeaderHeight } from "expo-router/react-navigation";
 import { useRef, useState } from "react";
 import { type LayoutChangeEvent } from "react-native";
 
@@ -7,12 +8,14 @@ type Size = { width: number; height: number };
 const TOLERANCE = 1;
 
 /**
- * Answers whether a scroll screen needs its compact layout: true once the
- * content measured at the current frame width is taller than the frame. The
- * answer holds until the frame width changes, e.g. on rotation. Assumes opaque
- * bars: under a translucent header the frame is taller than the visible area.
+ * Fits a scroll screen below the translucent iOS header. The header room is
+ * padding inside the content: an automatic content inset would add it on top
+ * of a full height content and make the screen scroll by the header height.
+ * compact turns true once the content measured at the current frame width is
+ * taller than the frame, and holds until the frame width changes.
  */
 export const useFitToScreen = () => {
+  const headerHeight = useHeaderHeight();
   const frame = useRef<Size>({ width: 0, height: 0 });
   const content = useRef<Size>({ width: 0, height: 0 });
   const [frameWidth, setFrameWidth] = useState(0);
@@ -43,6 +46,8 @@ export const useFitToScreen = () => {
 
   return {
     compact: compactWidth !== null && compactWidth === frameWidth,
+    contentContainerStyle: { flexGrow: 1, paddingTop: headerHeight },
+    scrollIndicatorInsets: { top: headerHeight },
     onLayout,
     onContentSizeChange,
   };

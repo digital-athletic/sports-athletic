@@ -46,7 +46,12 @@ export default function AdditionalTrainingListScreen() {
           headerShown: true,
         }}
       />
-      <ScrollBox flex={1} backgroundColor="lightGrey1">
+      <ScrollBox
+        flex={1}
+        backgroundColor="lightGrey1"
+        contentInsetAdjustmentBehavior="automatic"
+        testID="additional-training-list"
+      >
         <ColumnListRow
           title={ownTrainingsTitle}
           onPress={() => openWorkouts(ownTrainingsTitle, "own")}

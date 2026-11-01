@@ -66,6 +66,16 @@ describe("FocusTrainingListScreen: entries", () => {
   });
 });
 
+describe("FocusTrainingListScreen: layout", () => {
+  it("insets the list below the translucent iOS header", async () => {
+    const { getByTestId } = await render(<FocusTrainingListScreen />);
+
+    expect(
+      getByTestId("focus-training-list").props.contentInsetAdjustmentBehavior,
+    ).toBe("automatic");
+  });
+});
+
 describe("FocusTrainingListScreen: starting a training", () => {
   it("selects QUICK when the focus entry is pressed", async () => {
     const { getByRole } = await render(<FocusTrainingListScreen />);

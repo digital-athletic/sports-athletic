@@ -45,6 +45,38 @@ const EmptyOwnTrainings: FC<OwnTrainingsListProps> = ({
   );
 };
 
+type OwnTrainingRowProps = {
+  workoutId: string;
+  name: string;
+  deleteLabel: string;
+  onDelete: () => void;
+};
+
+const OwnTrainingRow: FC<OwnTrainingRowProps> = ({
+  workoutId,
+  name,
+  deleteLabel,
+  onDelete,
+}) => (
+  <SwipeToDeleteRow deleteLabel={deleteLabel} onDelete={onDelete}>
+    <ColumnListRow
+      title={name}
+      onPress={() =>
+        router.navigate({
+          pathname: "/training/muscle-soreness",
+          params: { type: workoutId },
+        })
+      }
+      accessibilityActions={[{ name: "delete", label: deleteLabel }]}
+      onAccessibilityAction={({ nativeEvent }) => {
+        if (nativeEvent.actionName === "delete") {
+          onDelete();
+        }
+      }}
+    />
+  </SwipeToDeleteRow>
+);
+
 export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
   onImport,
   importing,
@@ -76,34 +108,25 @@ export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
     );
 
   return (
-    <ScrollBox flex={1} backgroundColor="lightGrey1">
+    <ScrollBox
+      flex={1}
+      backgroundColor="lightGrey1"
+      contentInsetAdjustmentBehavior="automatic"
+      testID="own-trainings-list"
+    >
       {workouts.map((workout) => {
         const name = readLocalizedTemplateName(
           workout.template.name,
           i18n.language,
         );
         return (
-          <SwipeToDeleteRow
+          <OwnTrainingRow
             key={workout.id}
+            workoutId={workout.id}
+            name={name}
             deleteLabel={deleteLabel}
             onDelete={() => confirmDeleteTraining(workout.id, name)}
-          >
-            <ColumnListRow
-              title={name}
-              onPress={() =>
-                router.navigate({
-                  pathname: "/training/muscle-soreness",
-                  params: { type: workout.id },
-                })
-              }
-              accessibilityActions={[{ name: "delete", label: deleteLabel }]}
-              onAccessibilityAction={({ nativeEvent }) => {
-                if (nativeEvent.actionName === "delete") {
-                  confirmDeleteTraining(workout.id, name);
-                }
-              }}
-            />
-          </SwipeToDeleteRow>
+          />
         );
       })}
     </ScrollBox>

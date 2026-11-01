@@ -241,12 +241,6 @@ test.describe("Training list: checklist session", () => {
       do {
         await trainingListPage.expectNextButton();
         shownSets.push(await trainingListPage.currentSheetSet());
-        if (shownSets.length === 3) {
-          await page.screenshot({
-            path: "playwright/screenshots/training-list-superset.png",
-            fullPage: true,
-          });
-        }
       } while (!(await trainingListPage.completeSheetSet({ rest: "wait" })));
 
       expect(shownSets).toEqual([

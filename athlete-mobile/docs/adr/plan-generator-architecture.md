@@ -155,6 +155,7 @@ The new generator follows the spec. In these places the old code differs, and th
 
 | Rule in the new generator | Spec | Old code |
 |---|---|---|
+| Day groups come in order of their first weekday. The weekly cardio guarantee picks the first of equally long days in that order. | Section 3, rules 1 and 3 | [Day grouping](../../src/features/training/generators/PlanGenerator.ts#L724-L753) |
 | Every exercise slot applies the 70/30 split of complex and isolated exercises, the core region included. | Section 5, rule 4 | [Involvement draw](../../src/features/training/generators/PlanGenerator.ts#L1734-L1752) |
 | Leftover minutes fill by priority, with no priority 2 prefill for sessions longer than 45 minutes. | Section 4, rule 4 | [Leftover distribution](../../src/features/training/generators/PlanGenerator.ts#L830-L843) |
 | A 0 in the maximum minutes table means no time. A missing entry raises a configuration error. | Section 4, table | [Maximum minutes](../../src/features/training/generators/PlanGenerator.ts#L932-L934) |

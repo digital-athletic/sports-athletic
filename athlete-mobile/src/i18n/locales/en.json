@@ -436,6 +436,9 @@
       "skipExercise": "Skip exercise",
       "startExercise": "Start exercise",
       "continueExercise": "Continue",
+      "setKilos": "{{weight}} kg",
+      "setSeconds": "{{count}} s",
+      "setReps": "{{count}} reps",
       "finishTraining": "Finish Training",
       "rest": {
         "skip": "Skip rest",

@@ -436,6 +436,9 @@
       "skipExercise": "Übung überspringen",
       "startExercise": "Übung starten",
       "continueExercise": "Weiter",
+      "setKilos": "{{weight}} kg",
+      "setSeconds": "{{count}} s",
+      "setReps": "{{count}} Wdh.",
       "finishTraining": "Training beenden",
       "rest": {
         "skip": "Pause überspringen",

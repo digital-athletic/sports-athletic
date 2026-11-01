@@ -350,9 +350,9 @@ describe("useTrainingListRows: one entry per exercise", () => {
 
     const { result } = await renderHook(() => useTrainingListRows());
 
-    expect(result.current.blocks[0].entries[0].sets.map((s) => s.label)).toEqual(
-      ["20 kg", "40 kg"],
-    );
+    expect(
+      result.current.blocks[0].entries[0].sets.map((s) => s.label),
+    ).toEqual(["20 kg", "40 kg"]);
   });
 
   it("keeps the fraction of a weight that the rounding leaves", async () => {
@@ -381,9 +381,9 @@ describe("useTrainingListRows: one entry per exercise", () => {
 
     const { result } = await renderHook(() => useTrainingListRows());
 
-    expect(result.current.blocks[0].entries[0].sets.map((s) => s.label)).toEqual(
-      ["20 s", "25 s"],
-    );
+    expect(
+      result.current.blocks[0].entries[0].sets.map((s) => s.label),
+    ).toEqual(["20 s", "25 s"]);
   });
 
   it("labels the sets of an endurance skill with the repetitions", async () => {
@@ -412,9 +412,9 @@ describe("useTrainingListRows: one entry per exercise", () => {
 
     const { result } = await renderHook(() => useTrainingListRows());
 
-    expect(result.current.blocks[0].entries[0].sets.map((s) => s.label)).toEqual(
-      ["10 reps", "12 reps"],
-    );
+    expect(
+      result.current.blocks[0].entries[0].sets.map((s) => s.label),
+    ).toEqual(["10 reps", "12 reps"]);
   });
 
   it("gives a strength test set no label and marks the entry as a test", async () => {
@@ -463,7 +463,10 @@ describe("useTrainingListRows: one entry per exercise", () => {
     const { result } = await renderHook(() => useTrainingListRows());
 
     expect(
-      result.current.blocks[0].entries[0].sets.map((s) => [s.index, s.completed]),
+      result.current.blocks[0].entries[0].sets.map((s) => [
+        s.index,
+        s.completed,
+      ]),
     ).toEqual([
       [0, true],
       [2, false],

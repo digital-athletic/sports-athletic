@@ -176,7 +176,12 @@ function buildEntry(
   const exerciseData = getExerciseById(group.exerciseId);
   const sets = group.setIndices.map((index) => ({
     index,
-    label: buildSetSummaryLabel(exerciseList[index], exerciseData, maxValues, t),
+    label: buildSetSummaryLabel(
+      exerciseList[index],
+      exerciseData,
+      maxValues,
+      t,
+    ),
     completed: Boolean(exerciseList[index].completed),
   }));
   const firstRow = rowsByIndex.get(group.key);
@@ -212,7 +217,8 @@ function buildEntryBlocks(
       .sort((a, b) => a - b);
     const nextSetIndex = findFirstOpenSetIndex(exerciseList, blockSetIndices);
     const nextEntry = block.entries.find(
-      (group) => nextSetIndex !== null && group.setIndices.includes(nextSetIndex),
+      (group) =>
+        nextSetIndex !== null && group.setIndices.includes(nextSetIndex),
     );
 
     return {

@@ -38,7 +38,8 @@ export function groupChecklistEntries(
 
     const block = blocks.at(-1);
     const continued = block?.entries.find(
-      (group) => group.exerciseId === exercise.exerciseId && isUnfinished(group),
+      (group) =>
+        group.exerciseId === exercise.exerciseId && isUnfinished(group),
     );
     if (continued) {
       continued.setIndices.push(index);

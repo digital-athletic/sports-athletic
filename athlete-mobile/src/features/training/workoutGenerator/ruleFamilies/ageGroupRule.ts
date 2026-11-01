@@ -1,9 +1,9 @@
 import { TagGroups } from "@/constants/tagGroups";
-import { WorkoutConstants } from "@/constants/workoutConstants";
-import { ageGroupFor } from "@/features/training/utils/ageUtils";
-import { getUserBirthday } from "@/features/training/utils/userDataUtils";
+import {
+  type AgeGroupTag,
+  WorkoutConstants,
+} from "@/constants/workoutConstants";
 import { getTagValues } from "@/utils/tagUtils";
-import type { GenerationInput } from "../generationInput/generationInput";
 import {
   type CandidateBranch,
   keepBranches,
@@ -12,15 +12,13 @@ import {
 } from "./ruleFamily";
 
 /**
- * Removes the branches tagged only for the other age group. Adolescents and
- * athletes without a birthday follow the adult rules. Removal details hold the
- * athlete's age group.
+ * Removes the branches tagged only for the other age group. Adolescents follow
+ * the adult rules. Removal details hold the athlete's age group.
  */
 export const filterBranchesByAgeGroup = <T extends CandidateBranch>(
   branches: Record<string, T>,
-  { athlete }: GenerationInput,
+  ageGroup: AgeGroupTag,
 ): RuleFamilyResult<T> => {
-  const ageGroup = ageGroupFor(getUserBirthday(athlete));
   const ageTag =
     ageGroup === WorkoutConstants.AGE_GROUPS.CHILD
       ? WorkoutConstants.AGE_GROUPS.CHILD

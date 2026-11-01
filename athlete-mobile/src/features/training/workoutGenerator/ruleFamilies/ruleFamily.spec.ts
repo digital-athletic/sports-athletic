@@ -98,7 +98,7 @@ describe("ruleFamily: families chained in the training day order of main", () =>
     });
     const trainingDayFamilies: RuleFamily[] = [
       filterBranchesByMuscleSoreness,
-      filterBranchesByEquipment,
+      (candidates) => filterBranchesByEquipment(candidates, input.equipment),
       filterBranchesByFitnessLevel,
     ];
     let branches = generateSkillTreeBranches("GKS", ["510", "523"]);
@@ -123,7 +123,10 @@ describe("ruleFamily: families chained in the training day order of main", () =>
       "GKS",
     );
 
-    const { removals } = filterBranchesByEquipment(sorenessResult.keep, input);
+    const { removals } = filterBranchesByEquipment(
+      sorenessResult.keep,
+      input.equipment,
+    );
 
     expect(listMissingEquipment(removals)).toEqual(["BARBELL"]);
   });
@@ -136,10 +139,10 @@ describe("ruleFamily: the picks families as one RuleFamily chain", () => {
       pains: ["KNEE_LEFT"],
     });
     const picksFamilies: RuleFamily[] = [
-      filterBranchesByPain,
-      filterBranchesByEquipment,
-      filterBranchesByAgeGroup,
-      filterBranchesByGender,
+      (candidates) => filterBranchesByPain(candidates, input.athlete),
+      (candidates) => filterBranchesByEquipment(candidates, input.equipment),
+      (candidates) => filterBranchesByAgeGroup(candidates, "ADULT"),
+      (candidates) => filterBranchesByGender(candidates, input.athlete),
     ];
     let branches = {
       ...generateSkillTreeBranches("GKS", ["510", "523"]),

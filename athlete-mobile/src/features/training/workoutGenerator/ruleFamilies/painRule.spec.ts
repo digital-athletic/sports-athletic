@@ -17,7 +17,7 @@ describe("painRule: filterBranchesByPain", () => {
     const input = generateRuleFamilyInput({ pains: ["KNEE_LEFT"] });
     const branches = generateSkillTreeBranches("GKS", ["510", "523"]);
 
-    const result = filterBranchesByPain(branches, input);
+    const result = filterBranchesByPain(branches, input.athlete);
 
     expect(Object.keys(result.keep)).toEqual(["510"]);
     expect(result.removals).toEqual([
@@ -33,7 +33,7 @@ describe("painRule: filterBranchesByPain", () => {
       {},
     );
 
-    const result = filterBranchesByPain(branches, input);
+    const result = filterBranchesByPain(branches, input.athlete);
 
     expect(result.keep).toEqual({});
     expect(result.removals.map((removal) => removal.details)).toEqual([
@@ -45,7 +45,10 @@ describe("painRule: filterBranchesByPain", () => {
   it("keeps every branch for an athlete without pains", () => {
     const branches = generateSkillTreeBranches("GKS", ["510", "523"]);
 
-    const result = filterBranchesByPain(branches, generateRuleFamilyInput());
+    const result = filterBranchesByPain(
+      branches,
+      generateRuleFamilyInput().athlete,
+    );
 
     expect(result.keep).toEqual(branches);
     expect(result.removals).toEqual([]);
@@ -58,7 +61,9 @@ describe("painRule: filterBranchesByPain", () => {
     });
     const branches = { "1": generateTreeBranch(["901"]) };
 
-    expect(filterBranchesByPain(branches, input).keep).toEqual(branches);
+    expect(filterBranchesByPain(branches, input.athlete).keep).toEqual(
+      branches,
+    );
   });
 });
 
@@ -77,7 +82,11 @@ describe("painRule: filterBranchesByPainOnEveryLevel", () => {
       "3": generateTreeBranch(["900"], ["BLOCK_KNEE"]),
     };
 
-    const result = filterBranchesByPainOnEveryLevel(branches, input);
+    const result = filterBranchesByPainOnEveryLevel(
+      branches,
+      input.athlete,
+      input.exerciseCatalog,
+    );
 
     expect(Object.keys(result.keep)).toEqual(["1"]);
     expect(result.removals).toEqual([
@@ -96,7 +105,13 @@ describe("painRule: filterBranchesByPainOnEveryLevel", () => {
       "2": { tags: [], exercises: { 1: { exerciseId: "901" } } },
     };
 
-    expect(filterBranchesByPainOnEveryLevel(branches, input).keep).toEqual({});
+    expect(
+      filterBranchesByPainOnEveryLevel(
+        branches,
+        input.athlete,
+        input.exerciseCatalog,
+      ).keep,
+    ).toEqual({});
   });
 
   it("reads a level without an exercise ID as a level without block tags", () => {
@@ -109,7 +124,11 @@ describe("painRule: filterBranchesByPainOnEveryLevel", () => {
       "2": { tags: [], levels: { 1: {}, 2: { exerciseId: "901" } } },
     };
 
-    const result = filterBranchesByPainOnEveryLevel(branches, input);
+    const result = filterBranchesByPainOnEveryLevel(
+      branches,
+      input.athlete,
+      input.exerciseCatalog,
+    );
 
     expect(Object.keys(result.keep)).toEqual(["1"]);
   });
@@ -118,9 +137,13 @@ describe("painRule: filterBranchesByPainOnEveryLevel", () => {
     const input = generateRuleFamilyInput({ pains: ["KNEE_LEFT"] });
     const branches = { "1": generateTreeBranch(["999"]) };
 
-    expect(filterBranchesByPainOnEveryLevel(branches, input).keep).toEqual(
-      branches,
-    );
+    expect(
+      filterBranchesByPainOnEveryLevel(
+        branches,
+        input.athlete,
+        input.exerciseCatalog,
+      ).keep,
+    ).toEqual(branches);
   });
 
   it("names only the regions that block the removed branch", () => {
@@ -130,7 +153,11 @@ describe("painRule: filterBranchesByPainOnEveryLevel", () => {
     });
     const branches = { "1": generateTreeBranch(["901"]) };
 
-    const result = filterBranchesByPainOnEveryLevel(branches, input);
+    const result = filterBranchesByPainOnEveryLevel(
+      branches,
+      input.athlete,
+      input.exerciseCatalog,
+    );
 
     expect(result.removals).toEqual([
       { branchId: "1", family: "pain", details: ["KNEE"] },

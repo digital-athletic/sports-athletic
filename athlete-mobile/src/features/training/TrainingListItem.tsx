@@ -14,7 +14,6 @@ export type TrainingListItemProps = {
   completedFeedback?: DifficultyFeedbackType | null;
   repsValue: number;
   onStart: () => void;
-  onSkip: () => void;
   onShowInfo: () => void;
   /** Base identifier for this row, used to derive per-control testIDs (e2e). */
   testId: string;
@@ -22,7 +21,7 @@ export type TrainingListItemProps = {
 
 /**
  * A single row in the list-view training checklist: exercise name plus
- * skip/start controls. Starting opens the TrainingExerciseSheet, which
+ * a start control. Starting opens the TrainingExerciseSheet, which
  * carries the timer, reps input, and feedback flow for this row.
  */
 export const TrainingListItem: FC<TrainingListItemProps> = ({
@@ -33,7 +32,6 @@ export const TrainingListItem: FC<TrainingListItemProps> = ({
   completedFeedback,
   repsValue,
   onStart,
-  onSkip,
   onShowInfo,
   testId,
 }) => {
@@ -62,7 +60,6 @@ export const TrainingListItem: FC<TrainingListItemProps> = ({
           completedFeedback={completedFeedback}
           repsValue={repsValue}
           onStart={onStart}
-          onSkip={onSkip}
           testId={testId}
         />
       </Box>

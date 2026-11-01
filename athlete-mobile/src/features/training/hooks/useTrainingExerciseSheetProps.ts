@@ -20,6 +20,7 @@ type Args = {
   onSubmitReps: (row: ListRow) => void;
   onComplete: (row: ListRow, feedback?: DifficultyFeedbackType) => void;
   onRestEnd: (restIndex: number, skipped: boolean) => void;
+  onSkip: (row: ListRow) => void;
 };
 
 // The athlete tracks long endurance exercises elsewhere, so they get no countdown.
@@ -55,7 +56,7 @@ const buildRestControl = (
 
 /**
  * Builds TrainingExerciseSheet's props from whichever checklist row is
- * currently active, routing its Continue/feedback/reps/rest actions back
+ * currently active, routing its Continue/feedback/reps/skip/rest actions back
  * through the same handlers the row itself used to call directly.
  */
 export function useTrainingExerciseSheetProps({
@@ -67,6 +68,7 @@ export function useTrainingExerciseSheetProps({
   onSubmitReps,
   onComplete,
   onRestEnd,
+  onSkip,
 }: Args) {
   const { activeRow, shownRow, session, openSheet, closeSheet } =
     useTrainingListSheet(rows);
@@ -104,6 +106,9 @@ export function useTrainingExerciseSheetProps({
     },
     onComplete: (feedback?: DifficultyFeedbackType) => {
       if (activeRow) onComplete(activeRow, feedback);
+    },
+    onSkip: () => {
+      if (activeRow) onSkip(activeRow);
     },
     onDismiss: handleDismiss,
   };

@@ -58,7 +58,7 @@ test.describe("Training list: checklist session", () => {
       await trainingListPage.expectVisible();
 
       // Assumes row 0 of the Tuesday plan is a skippable exercise, not a
-      // strength test row (which has no skip control).
+      // strength test row (whose sheet has no skip control).
       await trainingListPage.skipRow("training-list-row-0");
       await trainingListPage.completeAll();
 

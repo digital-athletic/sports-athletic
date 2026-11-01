@@ -10,7 +10,6 @@ export type TrainingListRowsProps = {
   exerciseList: UserExerciseDataType[] | null;
   repsDraft: Record<number, number>;
   onStart: (row: ListRow) => void;
-  onSkip: (row: ListRow) => void;
   onShowInfo: (exerciseId: string) => void;
 };
 
@@ -20,7 +19,6 @@ export const TrainingListRows: FC<TrainingListRowsProps> = ({
   exerciseList,
   repsDraft,
   onStart,
-  onSkip,
   onShowInfo,
 }) => (
   <ScrollView keyboardShouldPersistTaps="handled">
@@ -36,7 +34,6 @@ export const TrainingListRows: FC<TrainingListRowsProps> = ({
           completedFeedback={exerciseList?.[row.index]?.feedback?.difficulty}
           repsValue={repsDraft[row.index] ?? 0}
           onStart={() => onStart(row)}
-          onSkip={() => onSkip(row)}
           onShowInfo={() => onShowInfo(row.exerciseId)}
         />
       ))}

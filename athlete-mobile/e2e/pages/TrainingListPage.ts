@@ -83,16 +83,19 @@ export class TrainingListPage extends BasePage {
     return this.page.getByTestId(`${testId}-start`);
   }
 
-  private skipFor(testId: string) {
-    return this.page.getByTestId(`${testId}-skip`);
+  private get sheetSkipButton() {
+    return this.page.getByTestId("training-list-sheet-skip");
   }
 
   async expectVisible() {
     await expect(this.title).toBeVisible();
   }
 
+  /** Opens a row's exercise sheet and skips it without waiting out the countdown. */
   async skipRow(testId: string) {
-    await this.skipFor(testId).click({ timeout: 3000 });
+    await this.startFor(testId).click({ timeout: 3000 });
+    await this.sheetSkipButton.click({ timeout: 3000 });
+    await this.waitForSheetClosed();
   }
 
   /**

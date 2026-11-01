@@ -24,6 +24,7 @@ export type TrainingExerciseSheetProps = {
   onChangeReps: (value: string) => void;
   onSubmitReps: () => void;
   onComplete: (feedback?: DifficultyFeedbackType) => void;
+  onSkip: () => void;
   onDismiss: () => void;
 };
 
@@ -66,22 +67,33 @@ const TrainingExerciseFeedbackChoice: FC<{
   );
 };
 
-const ContinueButton: FC<{ isCountingDown: boolean; onPress: () => void }> = ({
-  isCountingDown,
-  onPress,
-}) => {
+const TrainingExerciseTimerActions: FC<{
+  isCountingDown: boolean;
+  onContinue: () => void;
+  onSkip: () => void;
+}> = ({ isCountingDown, onContinue, onSkip }) => {
   const { t } = useTranslation();
 
   return (
-    <Button
-      variant="primary"
-      onPress={onPress}
-      disabled={isCountingDown}
-      style={{ opacity: isCountingDown ? 0.5 : 1 }}
-      testID="training-list-sheet-continue"
-    >
-      {t("training.list.continueExercise")}
-    </Button>
+    <>
+      <Button
+        variant="primary"
+        onPress={onContinue}
+        disabled={isCountingDown}
+        style={{ opacity: isCountingDown ? 0.5 : 1 }}
+        testID="training-list-sheet-continue"
+      >
+        {t("training.list.continueExercise")}
+      </Button>
+      <Button
+        variant="secondary"
+        onPress={onSkip}
+        accessibilityLabel={t("training.list.skipExercise")}
+        testID="training-list-sheet-skip"
+      >
+        {t("training.list.skipExercise")}
+      </Button>
+    </>
   );
 };
 
@@ -91,7 +103,8 @@ const SheetSetActions: FC<{
   isCountingDown: boolean;
   steps: ReturnType<typeof useExerciseSheetSteps>;
   onChangeReps: (value: string) => void;
-}> = ({ row, repsValue, isCountingDown, steps, onChangeReps }) => {
+  onSkip: () => void;
+}> = ({ row, repsValue, isCountingDown, steps, onChangeReps, onSkip }) => {
   if (row.isTest) {
     return (
       <TrainingRepetitionInput
@@ -111,9 +124,10 @@ const SheetSetActions: FC<{
     );
   }
   return (
-    <ContinueButton
+    <TrainingExerciseTimerActions
       isCountingDown={isCountingDown}
-      onPress={steps.handleContinue}
+      onContinue={steps.handleContinue}
+      onSkip={onSkip}
     />
   );
 };
@@ -127,6 +141,7 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
   onChangeReps,
   onSubmitReps,
   onComplete,
+  onSkip,
   onDismiss,
 }) => {
   const steps = useExerciseSheetSteps({
@@ -155,6 +170,12 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
     );
   }
 
+  // A skipped set never starts its rest; the rest counts as completed at finish.
+  const handleSkip = () => {
+    onSkip();
+    onDismiss();
+  };
+
   return (
     <Box padding="l" gap="m">
       <TrainingSheetHeading
@@ -170,6 +191,7 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
         isCountingDown={isCountingDown}
         steps={steps}
         onChangeReps={onChangeReps}
+        onSkip={handleSkip}
       />
     </Box>
   );
@@ -181,6 +203,7 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
  * ones), and a Continue step that either closes the sheet, reveals the
  * too-easy/succeeded/too-hard choice, or (strength tests) the reps input.
  * A set with a planned rest after it switches the sheet to the rest screen.
+ * Skip stays enabled during the countdown, so an athlete can drop an exercise mid-way.
  */
 export const TrainingExerciseSheet: FC<TrainingExerciseSheetProps> = ({
   row,

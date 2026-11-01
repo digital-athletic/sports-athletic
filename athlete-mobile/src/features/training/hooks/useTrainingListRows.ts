@@ -115,5 +115,8 @@ export function useTrainingListRows() {
     [],
   );
 
-  return { rows };
+  // The athlete still taps the finish button, unlike in the step-by-step view.
+  const allCompleted = rows.length > 0 && rows.every((row) => row.completed);
+
+  return { rows, allCompleted };
 }

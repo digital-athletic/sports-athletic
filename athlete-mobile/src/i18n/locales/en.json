@@ -436,7 +436,10 @@
       "skipExercise": "Skip exercise",
       "startExercise": "Start exercise",
       "continueExercise": "Continue",
-      "finishTraining": "Finish Training"
+      "finishTraining": "Finish Training",
+      "rest": {
+        "skip": "Skip rest"
+      }
     },
     "active": {
       "title": {

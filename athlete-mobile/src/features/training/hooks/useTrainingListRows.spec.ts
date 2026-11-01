@@ -176,3 +176,40 @@ describe("useTrainingListRows: subtitle composition", () => {
     expect(result.current.rows[0].setLabel).toBeUndefined();
   });
 });
+
+describe("useTrainingListRows: all rows completed", () => {
+  beforeEach(() => {
+    useTrainingStore.setState(BASELINE);
+    seedMaxValues();
+    mockGetExerciseById.mockReturnValue(
+      createExerciseData({ id: "1", tags: [] }),
+    );
+  });
+
+  afterEach(() => {
+    mockGetExerciseById.mockReset();
+  });
+
+  it("ignores an open rest when every set is completed", async () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1", completed: true }),
+        createExercise({ exerciseId: "999999", duration: 60 }),
+      ],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.allCompleted).toBe(true);
+  });
+
+  it("stays false while a set is open", async () => {
+    useTrainingStore.setState({
+      exerciseList: [createExercise({ exerciseId: "1" })],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.allCompleted).toBe(false);
+  });
+});

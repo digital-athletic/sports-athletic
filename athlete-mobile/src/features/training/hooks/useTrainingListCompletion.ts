@@ -1,6 +1,10 @@
 import { type ListRow } from "@/features/training/hooks/useTrainingListRows";
 import { useExerciseCompletion } from "@/features/training/hooks/useExerciseCompletion";
-import { isPauseExercise } from "@/features/training/models/IdTypes";
+import {
+  isPauseExercise,
+  PAUSE_EXERCISE_ID,
+} from "@/features/training/models/IdTypes";
+import { Logger } from "@/services/Logger";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 
@@ -17,6 +21,7 @@ export function useTrainingListCompletion() {
   const markExerciseCompleted = useTrainingStore(
     (s) => s.markExerciseCompleted,
   );
+  const markExerciseSkipped = useTrainingStore((s) => s.markExerciseSkipped);
   const { saveExerciseAndBranchData, handleFeedback, handleExerciseSkipped } =
     useExerciseCompletion();
 
@@ -37,12 +42,22 @@ export function useTrainingListCompletion() {
     markExerciseCompleted(row.index);
   };
 
-  // The checklist has no rest timer, so rest rows count as completed.
+  // Rests the athlete never started, e.g. after a skipped set, count as completed.
   const completeRestRows = () => {
     useTrainingStore.getState().exerciseList?.forEach((exercise, index) => {
       if (isPauseExercise(exercise.exerciseId)) markExerciseCompleted(index);
     });
   };
 
-  return { handleComplete, handleSkip, completeRestRows };
+  const handleRestEnd = (restIndex: number, skipped: boolean) => {
+    if (isRowCompleted(restIndex)) return;
+
+    if (skipped) {
+      markExerciseSkipped(restIndex);
+      Logger.logEvent("exercise_skipped", { exerciseId: PAUSE_EXERCISE_ID });
+    }
+    markExerciseCompleted(restIndex);
+  };
+
+  return { handleComplete, handleSkip, handleRestEnd, completeRestRows };
 }

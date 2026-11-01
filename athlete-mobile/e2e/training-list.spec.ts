@@ -66,6 +66,49 @@ test.describe("Training list: checklist session", () => {
     });
   });
 
+  test.describe("Rest after a set", () => {
+    test.use({ profile: createCompletedProfile(), signedIn: true });
+
+    test("athlete sees the rest countdown, skips the rest and returns to the list", async ({
+      page,
+    }) => {
+      test.setTimeout(60000);
+      await mockSupabaseAuth(page);
+      await mockWakeLock(page);
+      await page.clock.install();
+
+      const workoutPage = new WorkoutPage(page);
+      const trainingOverviewPage = new TrainingOverviewPage(page);
+      const trainingListPage = new TrainingListPage(page);
+
+      await page.goto("/");
+      await workoutPage.expectLoggedIn();
+      await workoutPage.startWorkout("Tuesday");
+      await trainingOverviewPage.startAsChecklist();
+      await trainingListPage.expectVisible();
+
+      const { rowId, restIndex } =
+        await trainingListPage.firstRowFollowedByRest();
+      await trainingListPage.continueRowIntoRest(rowId);
+      await expect(trainingListPage.restTimer).toBeVisible();
+
+      await trainingListPage.skipRest();
+      await trainingListPage.expectRowCompleted(rowId);
+      await expect
+        .poll(
+          async () =>
+            (await getTrainingStorageState(page))?.exerciseList?.[restIndex],
+        )
+        .toEqual(
+          expect.objectContaining({
+            exerciseId: "999999",
+            completed: true,
+            skipped: true,
+          }),
+        );
+    });
+  });
+
   test.describe("Parity with the step-by-step view", () => {
     test.use({ profile: createCompletedProfile(), signedIn: true });
 

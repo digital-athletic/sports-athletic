@@ -4,6 +4,7 @@ import {
   generateFocusedTrainingDay,
   generateMaximumMinutesTable,
   generateMaximumMinutesTableWithoutGroup,
+  generateRegionConfigsWithMinuteKeys,
   generateSkillBudgetContext,
   generateSkillPrioritiesWithAdultPainPhase,
 } from "@test/factories/skillBudget";
@@ -284,6 +285,25 @@ describe("budgetSectionDays", () => {
         { skill: "MOB", minutes: 10 },
         { skill: "WU", minutes: 10 },
       ]);
+    });
+
+    it("reads the minimum of hypertrophy stage 2 from the hypertrophy stage 1 region configuration", () => {
+      const context = generateSkillBudgetContext({
+        section: { type: "SWR2", numOfWeeks: 3, cardioType: "CARDIO_3" },
+        authoredData: {
+          ...loadPlanAuthoredData(),
+          regionConfigs: generateRegionConfigsWithMinuteKeys({
+            SWR1: [20, 40],
+            SWR2: [30],
+          }),
+        },
+      });
+
+      const [budget] = budgetSectionDays(context, [
+        generateFocusedTrainingDay({ duration: 20 }),
+      ]);
+
+      expect(budget.skills[0]).toEqual({ skill: "SWR2", minutes: 20 });
     });
 
     it("raises a configuration error for a missing maximum minutes entry", () => {

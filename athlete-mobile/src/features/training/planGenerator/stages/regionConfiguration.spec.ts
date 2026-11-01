@@ -12,10 +12,7 @@ const adult = generateDerivedProfile();
 describe("selectRegionConfiguration", () => {
   it("returns the tag entries of the key that matches the minutes", () => {
     expect(selectRegionConfiguration("SWR1", 30, adult, regionConfigs)).toEqual(
-      {
-        minutes: 30,
-        tagEntries: [generateRegionTagEntry("REGION_UPPER_BODY", 3)],
-      },
+      { tagEntries: [generateRegionTagEntry("REGION_UPPER_BODY", 3)] },
     );
   });
 
@@ -29,28 +26,21 @@ describe("selectRegionConfiguration", () => {
       expect(
         selectRegionConfiguration("SWR1", minutes, adult, regionConfigs),
       ).toEqual({
-        minutes,
         tagEntries: [generateRegionTagEntry("REGION_UPPER_BODY", count)],
       });
     },
   );
 
-  it("keeps the minutes below the smallest key and reads the smallest key", () => {
+  it("reads the smallest key for minutes below it", () => {
     expect(selectRegionConfiguration("SWR1", 10, adult, regionConfigs)).toEqual(
-      {
-        minutes: 10,
-        tagEntries: [generateRegionTagEntry("REGION_UPPER_BODY", 2)],
-      },
+      { tagEntries: [generateRegionTagEntry("REGION_UPPER_BODY", 2)] },
     );
   });
 
-  it("gives a skill no minutes above the largest key", () => {
-    expect(selectRegionConfiguration("SWR1", 55, adult, regionConfigs)).toEqual(
-      {
-        minutes: 40,
-        tagEntries: [generateRegionTagEntry("REGION_UPPER_BODY", 4)],
-      },
-    );
+  it("reads the largest key for minutes above it and returns no minutes", () => {
+    expect(
+      selectRegionConfiguration("CARDIO_3", 45, adult, regionConfigs),
+    ).toEqual({ tagEntries: [{ tags: [], count: 1 }] });
   });
 
   it.each([
@@ -95,15 +85,21 @@ describe("selectRegionConfiguration", () => {
     expect(tagEntries[0].tags).toEqual(tags);
   });
 
+  it("reads the SWR1 configuration for SWR2", () => {
+    expect(selectRegionConfiguration("SWR2", 30, adult, regionConfigs)).toEqual(
+      { tagEntries: [generateRegionTagEntry("REGION_UPPER_BODY", 3)] },
+    );
+  });
+
   it("raises a configuration error for a skill without a region configuration", () => {
     expect(
       catchThrownValue(() =>
-        selectRegionConfiguration("SWR2", 30, adult, regionConfigs),
+        selectRegionConfiguration("UNKNOWN", 30, adult, regionConfigs),
       ),
     ).toEqual({
       type: "OTHER",
       subtype: "OTHER",
-      params: ["regionConfiguration", "SWR2"],
+      params: ["regionConfiguration", "UNKNOWN"],
     });
   });
 });

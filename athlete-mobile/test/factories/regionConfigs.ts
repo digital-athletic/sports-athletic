@@ -14,8 +14,8 @@ export const generateRegionTagEntry = (
 /**
  * Builds the region configurations of the region configuration spec.
  * Hypertrophy stage 1 (SWR1) holds the keys 20, 30 and 40 in its default
- * variant, plus a child and a professional variant. Cardio and max strength
- * (MAX) hold one key each.
+ * variant, plus a child and a professional variant. Hypertrophy stage 2
+ * (SWR2), cardio and max strength (MAX) hold one key each.
  *
  * generateRegionConfigs().SWR1.default["30"] → [{ tags: ["REGION_UPPER_BODY"], count: 3 }]
  */
@@ -28,6 +28,9 @@ export const generateRegionConfigs = (): PlanAuthoredData["regionConfigs"] => ({
     },
     child: { "20": [generateRegionTagEntry("REGION_CORE", 1)] },
     professional: { "20": [generateRegionTagEntry("REGION_LOWER_BODY", 2)] },
+  },
+  SWR2: {
+    default: { "30": [generateRegionTagEntry("EXERCISE_NAME_SQUAT", 3)] },
   },
   CARDIO: { default: { "10": [{ tags: [], count: 1 }] } },
   MAX: {

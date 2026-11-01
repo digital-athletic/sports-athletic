@@ -8,18 +8,20 @@ import type {
 } from "@/schemas/generator.schema";
 import type { DerivedProfile } from "./profileDerivation";
 
-/** The minutes a skill keeps and the tag entries branch selection fills. */
+/** The tag entries branch selection fills. */
 export interface RegionConfiguration {
-  readonly minutes: number;
   readonly tagEntries: readonly RegionTagEntry[];
 }
 
 const { AGE_GROUPS, LEVELS } = WorkoutConstants;
 
 // Every cardio skill and both max strength skills share one configuration.
+// SWR2 reads the SWR1 configuration, as the old generator does:
+// src/features/training/generators/PlanGenerator.ts#L2063-L2066
 const readRegionConfigurationName = (skill: string): string => {
   if (skill.startsWith("CARDIO")) return "CARDIO";
   if (skill === "MAX_STRENGTH") return "MAX";
+  if (skill === "SWR2") return "SWR1";
   return skill;
 };
 
@@ -52,12 +54,12 @@ const findNearestKey = (keys: readonly number[], minutes: number): number =>
  * Selects the region configuration of spec section 5, rule 1. The skill reads
  * its authored configuration: the child variant for a child, the professional
  * variant for a professional, otherwise the default. The minutes pick the
- * nearest key, the smaller one on a tie. A skill keeps no minutes above the
- * largest key. A skill without a configuration raises the configuration error
- * OTHER/OTHER.
+ * nearest key, the smaller one on a tie. The selection leaves the skill's
+ * minutes unchanged. A skill without a configuration raises the configuration
+ * error OTHER/OTHER.
  *
  * selectRegionConfiguration("SWR1", 60, advancedAdult, regionConfigs)
- * → { minutes: 55, tagEntries: [{ tags: ["REGION_UPPER_BODY"], count: 4 },
+ * → { tagEntries: [{ tags: ["REGION_UPPER_BODY"], count: 4 },
  *     { tags: ["REGION_LOWER_BODY"], count: 4 }, { tags: ["REGION_CORE"], count: 4 }] }
  */
 export const selectRegionConfiguration = (
@@ -75,11 +77,7 @@ export const selectRegionConfiguration = (
     .map(Number)
     .sort((a, b) => a - b);
   if (keys.length === 0) return throwMissingRegionConfiguration(skill);
-  // The old generator caps only the minutes it looks up and stores the uncapped
-  // minutes: src/features/training/generators/PlanGenerator.ts#L590-L591
-  const cappedMinutes = Math.min(minutes, keys[keys.length - 1]);
-  return {
-    minutes: cappedMinutes,
-    tagEntries: variant[String(findNearestKey(keys, cappedMinutes))],
-  };
+  // The lookup uses the nearest key at or below the largest one, and the skill
+  // keeps its minutes: src/features/training/generators/PlanGenerator.ts#L576-L590
+  return { tagEntries: variant[String(findNearestKey(keys, minutes))] };
 };

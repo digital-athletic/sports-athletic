@@ -156,7 +156,7 @@ The new generator follows the spec. In these places the old code differs, and th
 | Rule in the new generator | Spec | Old code |
 |---|---|---|
 | Every exercise slot applies the 70/30 split of complex and isolated exercises, the core region included. | Section 5, rule 4 | [Involvement draw](../../src/features/training/generators/PlanGenerator.ts#L1734-L1752) |
-| Leftover minutes fill by priority, with no priority 2 prefill for sessions longer than 45 minutes. | Section 4, rule 4 | [Leftover distribution](../../src/features/training/generators/PlanGenerator.ts#L830-L843) |
+| Leftover minutes fill by priority up to the maximum minutes, as the spec defines. The old generator first fills the priority 2 skill to its maximum in sessions longer than 45 minutes, so a 60-minute COMBINED day gets strength 40 and cardio 10 minutes in the new generator instead of 20 and 30 (see [Open questions](#open-questions)). | Section 4, rule 4 | [Leftover distribution](../../src/features/training/generators/PlanGenerator.ts#L830-L843) |
 | A 0 in the maximum minutes table means no time. A missing entry raises a configuration error. | Section 4, table | [Maximum minutes](../../src/features/training/generators/PlanGenerator.ts#L932-L934) |
 | A skill gets no minutes above the largest key of its region configuration. | Section 5, rule 1 | [Overflow](../../src/features/training/generators/PlanGenerator.ts#L590-L591) |
 | A PROFESSIONAL child resolves branches at ADVANCED, the level every other stage uses. | Section 1, Level | [Branch level](../../src/features/training/generators/PlanGenerator.ts#L1270) |
@@ -245,6 +245,10 @@ The new generator raises the typed generator error in three classes:
 - Con: until the old generator is deleted, the app holds two plan generators.
 - Con: stored plans carry no marker, so a bug report on a plan does not say which generator wrote it.
 - Con: the new generator writes branch copies until the stored plan migration.
+
+## Open questions
+
+1. **Priority 2 prefill.** The spec owner checks whether spec section 4, rule 4 gains the priority 2 prefill of the old generator for sessions longer than 45 minutes. Without the prefill, a 60-minute COMBINED day gets strength 40 and cardio 10 minutes instead of 20 and 30, cardio days with pain get 5 minutes of prevention instead of 15, and phase days get 5 minutes of mobility instead of 10.
 
 ## More information
 

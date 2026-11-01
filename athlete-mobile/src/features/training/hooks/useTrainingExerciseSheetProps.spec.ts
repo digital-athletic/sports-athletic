@@ -50,7 +50,9 @@ type HookArgs = Parameters<typeof useTrainingExerciseSheetProps>[0];
 
 // Hook arguments for the superset above with completion writing to the store,
 // e.g. generateSheetHookArgs({ repsDraft: { 2: 8 } }) adds a reps draft.
-const generateSheetHookArgs = (overrides: Partial<HookArgs> = {}): HookArgs => ({
+const generateSheetHookArgs = (
+  overrides: Partial<HookArgs> = {},
+): HookArgs => ({
   rows: generateSupersetRows(),
   exerciseList: generateSupersetList(),
   repsDraft: {},
@@ -116,7 +118,11 @@ describe("useTrainingExerciseSheetProps: rest after a set", () => {
     createExercise({ exerciseId: "squat", set: [2, 2], repetition: 10 }),
   ];
   const rows = [
-    generateChecklistRow({ index: 0, exerciseId: "squat", displayName: "Squat" }),
+    generateChecklistRow({
+      index: 0,
+      exerciseId: "squat",
+      displayName: "Squat",
+    }),
     generateChecklistRow({
       index: 2,
       exerciseId: "squat",
@@ -161,7 +167,11 @@ describe("useTrainingExerciseSheetProps: rest after a set", () => {
     );
     await act(() =>
       result.current.handleStart(
-        generateChecklistEntry({ key: 0, exerciseId: "squat", firstOpenSetIndex: 2 }),
+        generateChecklistEntry({
+          key: 0,
+          exerciseId: "squat",
+          firstOpenSetIndex: 2,
+        }),
       ),
     );
 
@@ -172,7 +182,11 @@ describe("useTrainingExerciseSheetProps: rest after a set", () => {
     const timing = { startExercise: jest.fn(), endExercise: jest.fn() };
     const { result } = await renderHook(() =>
       useTrainingExerciseSheetProps(
-        generateSheetHookArgs({ rows, exerciseList: generateRestList(), timing }),
+        generateSheetHookArgs({
+          rows,
+          exerciseList: generateRestList(),
+          timing,
+        }),
       ),
     );
     await act(() => result.current.handleStart(firstSetEntry));
@@ -186,7 +200,11 @@ describe("useTrainingExerciseSheetProps: rest after a set", () => {
     const onRestEnd = jest.fn();
     const { result } = await renderHook(() =>
       useTrainingExerciseSheetProps(
-        generateSheetHookArgs({ rows, exerciseList: generateRestList(), onRestEnd }),
+        generateSheetHookArgs({
+          rows,
+          exerciseList: generateRestList(),
+          onRestEnd,
+        }),
       ),
     );
     await act(() => result.current.handleStart(firstSetEntry));
@@ -211,7 +229,11 @@ describe("useTrainingExerciseSheetProps: rest after a set", () => {
     const onRestEnd = jest.fn();
     const { result } = await renderHook(() =>
       useTrainingExerciseSheetProps(
-        generateSheetHookArgs({ rows, exerciseList: generateRestList(), onRestEnd }),
+        generateSheetHookArgs({
+          rows,
+          exerciseList: generateRestList(),
+          onRestEnd,
+        }),
       ),
     );
     await act(() => result.current.handleStart(firstSetEntry));
@@ -226,7 +248,11 @@ describe("useTrainingExerciseSheetProps: rest after a set", () => {
     const onRestEnd = jest.fn();
     const { result } = await renderHook(() =>
       useTrainingExerciseSheetProps(
-        generateSheetHookArgs({ rows, exerciseList: generateRestList(), onRestEnd }),
+        generateSheetHookArgs({
+          rows,
+          exerciseList: generateRestList(),
+          onRestEnd,
+        }),
       ),
     );
     await act(() => result.current.handleStart(firstSetEntry));
@@ -241,7 +267,11 @@ describe("useTrainingExerciseSheetProps: rest after a set", () => {
     const onRestEnd = jest.fn();
     const { result } = await renderHook(() =>
       useTrainingExerciseSheetProps(
-        generateSheetHookArgs({ rows, exerciseList: generateRestList(), onRestEnd }),
+        generateSheetHookArgs({
+          rows,
+          exerciseList: generateRestList(),
+          onRestEnd,
+        }),
       ),
     );
     await act(() => result.current.handleStart(firstSetEntry));
@@ -260,7 +290,11 @@ describe("useTrainingExerciseSheetProps: start", () => {
 
     await act(() =>
       result.current.handleStart(
-        generateChecklistEntry({ key: 2, exerciseId: "lunge", firstOpenSetIndex: 6 }),
+        generateChecklistEntry({
+          key: 2,
+          exerciseId: "lunge",
+          firstOpenSetIndex: 6,
+        }),
       ),
     );
 
@@ -280,7 +314,11 @@ describe("useTrainingExerciseSheetProps: start", () => {
 
     await act(() =>
       result.current.handleStart(
-        generateChecklistEntry({ key: 2, exerciseId: "lunge", firstOpenSetIndex: 2 }),
+        generateChecklistEntry({
+          key: 2,
+          exerciseId: "lunge",
+          firstOpenSetIndex: 2,
+        }),
       ),
     );
 
@@ -333,7 +371,11 @@ describe("useTrainingExerciseSheetProps: next", () => {
     );
     await act(() =>
       result.current.handleStart(
-        generateChecklistEntry({ key: 2, exerciseId: "lunge", firstOpenSetIndex: 2 }),
+        generateChecklistEntry({
+          key: 2,
+          exerciseId: "lunge",
+          firstOpenSetIndex: 2,
+        }),
       ),
     );
 
@@ -414,7 +456,11 @@ describe("useTrainingExerciseSheetProps: next", () => {
     );
     await act(() =>
       result.current.handleStart(
-        generateChecklistEntry({ key: 2, exerciseId: "lunge", firstOpenSetIndex: 6 }),
+        generateChecklistEntry({
+          key: 2,
+          exerciseId: "lunge",
+          firstOpenSetIndex: 6,
+        }),
       ),
     );
     startExercise.mockClear();
@@ -451,7 +497,11 @@ describe("useTrainingExerciseSheetProps: reps and dismiss", () => {
     );
     await act(() =>
       result.current.handleStart(
-        generateChecklistEntry({ key: 2, exerciseId: "lunge", firstOpenSetIndex: 2 }),
+        generateChecklistEntry({
+          key: 2,
+          exerciseId: "lunge",
+          firstOpenSetIndex: 2,
+        }),
       ),
     );
 

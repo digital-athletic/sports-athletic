@@ -173,7 +173,9 @@ export class TrainingListPage extends BasePage {
     await this.waitOutCountdown();
     await this.sheetNextButton.click({ timeout: 3000 });
 
-    await expect(this.restSkipButton.or(this.sheetSucceededButton)).toBeVisible();
+    await expect(
+      this.restSkipButton.or(this.sheetSucceededButton),
+    ).toBeVisible();
     if (await this.sheetSucceededButton.isVisible()) {
       await this.sheetSucceededButton.click({ timeout: 3000 });
     }
@@ -193,7 +195,10 @@ export class TrainingListPage extends BasePage {
   async completeSheetSet({
     feedbackFor,
     rest = "skip",
-  }: { feedbackFor?: ExerciseFeedback; rest?: "skip" | "wait" } = {}): Promise<boolean> {
+  }: {
+    feedbackFor?: ExerciseFeedback;
+    rest?: "skip" | "wait";
+  } = {}): Promise<boolean> {
     const setBefore = await this.currentSheetSet();
     if (await this.sheetRepsInput.isVisible().catch(() => false)) {
       if (!(await this.sheetRepsInput.inputValue().catch(() => ""))) {

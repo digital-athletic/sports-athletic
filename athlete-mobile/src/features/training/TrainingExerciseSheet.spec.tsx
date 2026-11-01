@@ -191,7 +191,10 @@ describe("TrainingExerciseSheet: feedback", () => {
     const { getByTestId, queryByTestId } = await render(
       <TrainingExerciseSheet
         {...generateSheetProps({
-          row: generateChecklistRow({ isFeedbackSkill: true, isLastInSet: false }),
+          row: generateChecklistRow({
+            isFeedbackSkill: true,
+            isLastInSet: false,
+          }),
           onComplete,
           onNext,
         })}

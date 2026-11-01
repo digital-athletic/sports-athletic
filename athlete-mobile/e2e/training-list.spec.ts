@@ -225,12 +225,8 @@ test.describe("Training list: checklist session", () => {
 
       const superset = trainingListPage.superset(2);
       await expect(superset).toBeVisible();
-      await expect(
-        superset.getByTestId("training-list-row-2"),
-      ).toBeVisible();
-      await expect(
-        superset.getByTestId("training-list-row-4"),
-      ).toBeVisible();
+      await expect(superset.getByTestId("training-list-row-2")).toBeVisible();
+      await expect(superset.getByTestId("training-list-row-4")).toBeVisible();
       // The drawn warm up exercise varies, its timed set always shows seconds
       await expect(trainingListPage.entry("training-list-row-0")).toContainText(
         /\d+ s/,
@@ -251,8 +247,12 @@ test.describe("Training list: checklist session", () => {
         "training-list-sheet-set-8",
       ]);
       await trainingListPage.expectFinishEnabled();
-      await expect(trainingListPage.nextArrow("training-list-row-2")).toHaveCount(0);
-      await expect(trainingListPage.nextArrow("training-list-row-4")).toHaveCount(0);
+      await expect(
+        trainingListPage.nextArrow("training-list-row-2"),
+      ).toHaveCount(0);
+      await expect(
+        trainingListPage.nextArrow("training-list-row-4"),
+      ).toHaveCount(0);
     });
   });
 

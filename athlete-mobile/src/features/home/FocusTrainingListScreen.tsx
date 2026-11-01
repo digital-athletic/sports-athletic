@@ -44,7 +44,12 @@ export default function FocusTrainingListScreen() {
           headerShown: true,
         }}
       />
-      <ScrollBox flex={1} backgroundColor="lightGrey1">
+      <ScrollBox
+        flex={1}
+        backgroundColor="lightGrey1"
+        contentInsetAdjustmentBehavior="automatic"
+        testID="focus-training-list"
+      >
         <ColumnListRow
           thumbnail={<IconThumbnail name="scan-outline" />}
           title={t("screens.home.focusTraining.title")}

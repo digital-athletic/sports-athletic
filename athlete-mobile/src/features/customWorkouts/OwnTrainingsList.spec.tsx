@@ -91,6 +91,20 @@ describe("OwnTrainingsList: empty state", () => {
 });
 
 describe("OwnTrainingsList: entries", () => {
+  it("insets the list below the translucent iOS header", async () => {
+    useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(generateCustomTemplate(), null);
+
+    const { getByTestId } = await render(
+      <OwnTrainingsList onImport={jest.fn()} importing={false} />,
+    );
+
+    expect(
+      getByTestId("own-trainings-list").props.contentInsetAdjustmentBehavior,
+    ).toBe("automatic");
+  });
+
   it("shows one row per imported training in import order", async () => {
     const { saveCustomWorkout } = useCustomWorkoutsStore.getState();
     jest.spyOn(Date, "now").mockReturnValueOnce(1).mockReturnValueOnce(2);

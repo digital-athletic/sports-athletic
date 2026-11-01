@@ -123,6 +123,17 @@ describe("AdditionalTrainingListScreen: loading", () => {
   });
 });
 
+describe("AdditionalTrainingListScreen: layout", () => {
+  it("insets the list below the translucent iOS header", async () => {
+    const { findByTestId } = await render(<AdditionalTrainingListScreen />);
+
+    expect(
+      (await findByTestId("additional-training-list")).props
+        .contentInsetAdjustmentBehavior,
+    ).toBe("automatic");
+  });
+});
+
 describe("AdditionalTrainingListScreen: navigation", () => {
   it("pushes the workouts screen with the own trainings title when the own entry is pressed", async () => {
     const { findByText } = await render(<AdditionalTrainingListScreen />);

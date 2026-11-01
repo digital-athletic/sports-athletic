@@ -252,7 +252,12 @@ The new generator raises the typed generator error in three classes:
 ## Open questions
 
 1. Untraced new-only picks in strength sections. A simulation of 10 common personas with 20 seeds each found that SWR1 and SWR2 phase days in the new generator pick, across many seeds, branches the old generator never picked: 71, 74, 75, 681, 686, 814, 858, 997 and 1016. The candidate pools of both generators match. The selection step causes the difference: either the muscle filter ([Behaviour](#behaviour) row "muscle filter") or the weighted/bodyweight quota per skill ([Behaviour](#behaviour) row "weighted/bodyweight quota"). Someone traces which rule causes the picks and decides whether they are acceptable.
-2. **Priority 2 prefill.** The spec owner checks whether spec section 4, rule 4 gains the priority 2 prefill of the old generator for sessions longer than 45 minutes. Without the prefill, a 60-minute COMBINED day gets strength 40 and cardio 10 minutes instead of 20 and 30, cardio days with pain get 5 minutes of prevention instead of 15, and phase days get 5 minutes of mobility instead of 10.
+2. **Priority 2 prefill.** The spec owner checks whether spec section 4, rule 4 gains the priority 2 prefill of the old generator for sessions longer than 45 minutes. A simulation of 10 common personas with 20 seeds each measured the effect without the prefill:
+   - A 60-minute COMBINED day gets strength 40 and cardio 10 minutes instead of 20 and 30.
+   - A 60-minute PHASE day gets mobility 5 minutes instead of 10, and the phase skill gains the 5 minutes.
+   - A day with pain gets prevention (PREVKNEE, PREVANKLE, PREVWRIST) 5 minutes instead of 15, so about 1 prevention exercise instead of 3 to 4.
+
+   The missing prefill causes almost all remaining minute differences against the old generator.
 
 ## More information
 

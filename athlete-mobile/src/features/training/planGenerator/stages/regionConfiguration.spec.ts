@@ -85,15 +85,21 @@ describe("selectRegionConfiguration", () => {
     expect(tagEntries[0].tags).toEqual(tags);
   });
 
+  it("reads the SWR1 configuration for SWR2", () => {
+    expect(selectRegionConfiguration("SWR2", 30, adult, regionConfigs)).toEqual(
+      { tagEntries: [generateRegionTagEntry("REGION_UPPER_BODY", 3)] },
+    );
+  });
+
   it("raises a configuration error for a skill without a region configuration", () => {
     expect(
       catchThrownValue(() =>
-        selectRegionConfiguration("SWR2", 30, adult, regionConfigs),
+        selectRegionConfiguration("UNKNOWN", 30, adult, regionConfigs),
       ),
     ).toEqual({
       type: "OTHER",
       subtype: "OTHER",
-      params: ["regionConfiguration", "SWR2"],
+      params: ["regionConfiguration", "UNKNOWN"],
     });
   });
 });

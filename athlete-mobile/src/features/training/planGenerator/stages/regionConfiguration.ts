@@ -16,9 +16,12 @@ export interface RegionConfiguration {
 const { AGE_GROUPS, LEVELS } = WorkoutConstants;
 
 // Every cardio skill and both max strength skills share one configuration.
+// SWR2 reads the SWR1 configuration, as the old generator does:
+// src/features/training/generators/PlanGenerator.ts#L2063-L2066
 const readRegionConfigurationName = (skill: string): string => {
   if (skill.startsWith("CARDIO")) return "CARDIO";
   if (skill === "MAX_STRENGTH") return "MAX";
+  if (skill === "SWR2") return "SWR1";
   return skill;
 };
 

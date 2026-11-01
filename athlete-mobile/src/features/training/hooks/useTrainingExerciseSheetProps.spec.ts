@@ -65,7 +65,11 @@ describe("useTrainingExerciseSheetProps: start", () => {
 
     await act(() => {
       result.current.handleStart(
-        generateChecklistEntry({ key: 0, exerciseId: "squat", firstOpenSetIndex: 2 }),
+        generateChecklistEntry({
+          key: 0,
+          exerciseId: "squat",
+          firstOpenSetIndex: 2,
+        }),
       );
     });
 

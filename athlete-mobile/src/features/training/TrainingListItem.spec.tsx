@@ -70,8 +70,9 @@ describe("TrainingListItem: set summary", () => {
       />,
     );
 
-    expect(getByTestId("training-list-row-0-set-0").props.accessibilityState)
-      .toMatchObject({ checked: true });
+    expect(
+      getByTestId("training-list-row-0-set-0").props.accessibilityState,
+    ).toMatchObject({ checked: true });
   });
 
   it("marks an open set as not checked", async () => {
@@ -86,8 +87,9 @@ describe("TrainingListItem: set summary", () => {
       />,
     );
 
-    expect(getByTestId("training-list-row-0-set-2").props.accessibilityState)
-      .toMatchObject({ checked: false });
+    expect(
+      getByTestId("training-list-row-0-set-2").props.accessibilityState,
+    ).toMatchObject({ checked: false });
   });
 });
 

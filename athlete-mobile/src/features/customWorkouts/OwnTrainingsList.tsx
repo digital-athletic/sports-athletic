@@ -45,14 +45,14 @@ const EmptyOwnTrainings: FC<OwnTrainingsListProps> = ({
   );
 };
 
-type OwnTrainingRowProps = {
+type CustomWorkoutRowProps = {
   workoutId: string;
   name: string;
   deleteLabel: string;
   onDelete: () => void;
 };
 
-const OwnTrainingRow: FC<OwnTrainingRowProps> = ({
+const CustomWorkoutRow: FC<CustomWorkoutRowProps> = ({
   workoutId,
   name,
   deleteLabel,
@@ -120,7 +120,7 @@ export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
           i18n.language,
         );
         return (
-          <OwnTrainingRow
+          <CustomWorkoutRow
             key={workout.id}
             workoutId={workout.id}
             name={name}

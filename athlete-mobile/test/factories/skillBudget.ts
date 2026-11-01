@@ -4,6 +4,7 @@ import { minutes } from "@/features/training/models/TimeUnits";
 import type { FocusedTrainingDay } from "@/features/training/planGenerator/stages/dayGroupingAndFocus";
 import type {
   MaximumMinutesTable,
+  PriorityStructure,
   SkillBudgetContext,
 } from "@/features/training/planGenerator/stages/skillBudget";
 import type {
@@ -13,8 +14,6 @@ import type {
 import type { PlacesData } from "@/store/placesStore";
 import { generateDerivedProfile } from "./derivedProfile";
 import { generateTrainingPlaces } from "./weeklySchedule";
-
-type PriorityStructure = NonNullable<SkillPriorities["ADULT"]["pain"]["phase"]>;
 
 interface FocusedTrainingDayOptions {
   readonly weekday?: number;

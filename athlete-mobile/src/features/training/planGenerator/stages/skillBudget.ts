@@ -57,7 +57,10 @@ export interface TrainingDayBudgetStep {
   readonly nextRotationCursor: number;
 }
 
-type PriorityStructure = NonNullable<SkillPriorities["ADULT"]["pain"]["phase"]>;
+/** Minute thresholds mapped to the skill slots that apply from there on. */
+export type PriorityStructure = NonNullable<
+  SkillPriorities["ADULT"]["pain"]["phase"]
+>;
 type PrioritySlot = PriorityStructure[string][number];
 type StructureKey = keyof SkillPriorities["ADULT"]["pain"];
 
@@ -88,6 +91,9 @@ const BODYWEIGHT_SECTION_TYPES: Readonly<Record<SectionType, SkillCode>> = {
   SA: "SAKG",
   SAKG: "SAKG",
 };
+// The glossary gives the speed warm-up to every explosive power and power
+// endurance section. The old code gives it to SA and SK only:
+// generators/PlanGenerator.ts#L1225-L1228
 const SPEED_WARM_UP_SECTION_TYPES: readonly SectionType[] = [
   "SA",
   "SAKG",
@@ -165,7 +171,12 @@ const resolvePlaceholder = (
 
 // The first prevention slot of the day takes the prevention skill at the
 // cursor; further prevention slots drop. Without a prevention skill the day
-// drops the special warm-up and leaves the cursor where it is.
+// drops the special warm-up and leaves the cursor where it is. The old code
+// advances the cursor for a prevention or special warm-up slot at any
+// threshold, also one the session never reaches, and gives a child without
+// a prevention skill stability for PREV2 and PREV3:
+// generators/PlanGenerator.ts#L383-L404
+// generators/PlanGenerator.ts#L1007-L1019
 const resolveSlots = (
   slots: readonly PrioritySlot[],
   { section, profile }: SkillBudgetContext,
@@ -193,12 +204,12 @@ const resolveSlots = (
   };
 };
 
-const regionConfigNameOf = (skill: SkillCode): string => {
+const findRegionConfigName = (skill: SkillCode): string => {
   if (isCardioType(skill)) return "CARDIO";
   return skill === "MAX_STRENGTH" ? "MAX" : skill;
 };
 
-const durationEntriesOf = (
+const pickDurationEntries = (
   regionConfig: RegionConfig,
   { ageGroup, fitnessLevel }: DerivedProfile,
 ): RegionConfig["default"] => {
@@ -212,21 +223,21 @@ const durationEntriesOf = (
 };
 
 // The smallest minute key of the skill's region configuration.
-const minimumMinutesOf = (
+const readMinimumMinutes = (
   skill: SkillCode,
   { profile, authoredData }: SkillBudgetContext,
 ): number => {
-  const name = regionConfigNameOf(skill);
+  const name = findRegionConfigName(skill);
   const regionConfig =
     authoredData.regionConfigs[name] ??
     throwConfigurationError("regionConfig", name);
-  const keys = Object.keys(durationEntriesOf(regionConfig, profile));
+  const keys = Object.keys(pickDurationEntries(regionConfig, profile));
   return keys.length > 0
     ? Math.min(...keys.map(Number))
     : throwConfigurationError("regionConfig", name);
 };
 
-const maximumMinutesGroupOf = (skill: SkillCode): MaxMinutesGroup => {
+const findMaximumMinutesGroup = (skill: SkillCode): MaxMinutesGroup => {
   if (isCardioType(skill)) return "CARDIO";
   if (skill.startsWith("PREV")) return "PREV";
   return MAXIMUM_MINUTES_GROUPS[skill] ?? "DEFAULT";
@@ -235,11 +246,11 @@ const maximumMinutesGroupOf = (skill: SkillCode): MaxMinutesGroup => {
 // A 0 means the skill gets no leftover minutes, and a missing entry raises a
 // configuration error. The old code reads both as 200 minutes:
 // generators/PlanGenerator.ts#L932-L934
-const maximumMinutesOf = (
+const readMaximumMinutes = (
   skill: SkillCode,
   { profile, authoredData }: SkillBudgetContext,
 ): number => {
-  const group = maximumMinutesGroupOf(skill);
+  const group = findMaximumMinutesGroup(skill);
   const level = profile.fitnessLevel;
   return (
     authoredData.maxMinutes[group]?.[level] ??
@@ -257,10 +268,10 @@ const distributeMinutes = (
   duration: number,
   context: SkillBudgetContext,
 ): SkillMinuteBudget[] => {
-  const minimums = skills.map((skill) => minimumMinutesOf(skill, context));
+  const minimums = skills.map((skill) => readMinimumMinutes(skill, context));
   let leftover = duration - minimums.reduce((sum, value) => sum + value, 0);
   return skills.map((skill, index) => {
-    const room = maximumMinutesOf(skill, context) - minimums[index];
+    const room = readMaximumMinutes(skill, context) - minimums[index];
     const added = Math.max(0, Math.min(leftover, room));
     leftover -= added;
     return { skill, minutes: minutes(minimums[index] + added) };

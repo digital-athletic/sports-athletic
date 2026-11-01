@@ -17,6 +17,7 @@ import { loadDirections } from "./loadDirections";
 import { loadMaxMinutes } from "./loadMaxMinutes";
 import { parseRegionConfig } from "./loadRegionConfig";
 import { parseSectionTemplate } from "./loadSectionTemplates";
+import { loadSkillCatalog } from "./loadSkillCatalog";
 import { loadSkillPriorities } from "./loadSkillPriorities";
 import { getAllSkillTrees } from "./skillTreeRegistry";
 
@@ -35,6 +36,8 @@ export interface PlanAuthoredData {
   readonly maxMinutes: MaxMinutes;
   readonly regionConfigs: Readonly<Record<string, RegionConfig>>;
   readonly movementDirections: DirectionsByRegion;
+  /** The pain regions each prevention skill covers, by skill code. */
+  readonly preventionRegions: Readonly<Record<string, readonly string[]>>;
   readonly skillTrees: Readonly<Record<string, SkillTreeType>>;
   readonly exerciseCatalog: readonly ExerciseType[];
 }
@@ -58,6 +61,14 @@ const mapValues = <T, R>(
     Object.entries(record).map(([key, value]) => [key, map(value, key)]),
   );
 
+// Only prevention skills name pain regions in the skill catalog.
+const collectPreventionRegions = (): Record<string, readonly string[]> =>
+  Object.fromEntries(
+    Object.entries(loadSkillCatalog()).flatMap(([skill, entry]) =>
+      entry.painRegions ? [[skill, [...entry.painRegions]]] : [],
+    ),
+  );
+
 const parseSectionTemplates = (): SectionTemplates =>
   mapValues(SECTION_TEMPLATE_FILES, (ageGroups, seasonPhase) =>
     mapValues(ageGroups, (levels, ageGroup) =>
@@ -75,6 +86,7 @@ const loadPlanConfigurations = createDataLoader(
     maxMinutes: loadMaxMinutes(),
     regionConfigs: mapValues(REGION_CONFIG_FILE, parseRegionConfig),
     movementDirections: loadDirections(),
+    preventionRegions: collectPreventionRegions(),
   }),
   "frozen",
 );

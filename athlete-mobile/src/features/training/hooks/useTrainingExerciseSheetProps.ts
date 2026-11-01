@@ -69,14 +69,14 @@ export function useTrainingExerciseSheetProps({
   onRestEnd,
   onSkip,
 }: Args) {
-  const { activeRow, shownRow, session, handleStart, handleNext, handleDismiss } =
+  const { activeRow, shownRow, session, ...actions } =
     useTrainingListSetNavigation({ rows, exerciseList, timing });
   const restTracker = useChecklistRest({ timing, onRestEnd });
 
   // A swipe during the rest ends the rest as skipped.
   const handleSheetDismiss = () => {
     restTracker.endRest(true);
-    handleDismiss();
+    actions.handleDismiss();
   };
 
   // shownRow outlives activeRow while the sheet animates closed; actions
@@ -104,9 +104,9 @@ export function useTrainingExerciseSheetProps({
     onSkip: () => {
       if (activeRow) onSkip(activeRow);
     },
-    onNext: handleNext,
+    onNext: actions.handleNext,
     onDismiss: handleSheetDismiss,
   };
 
-  return { handleStart, sheetProps };
+  return { handleStart: actions.handleStart, sheetProps };
 }

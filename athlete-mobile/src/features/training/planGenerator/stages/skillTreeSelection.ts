@@ -1,4 +1,5 @@
 import type { PlanAuthoredData } from "@/data/loadPlanAuthoredData";
+import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import {
   isPlyometricIntensity,
   keepPlyometricIntensity,
@@ -30,10 +31,18 @@ const TREE_NAMES_BY_SKILL: Readonly<Record<string, string>> = {
   MAX_STRENGTH: "MAX",
 };
 
+// A skill tree the authored data lacks raises the configuration error OTHER/OTHER.
 const readTree = (
   skillTrees: PlanAuthoredData["skillTrees"],
   name: string,
-): SkillTreeType => (Object.hasOwn(skillTrees, name) ? skillTrees[name] : {});
+): SkillTreeType => {
+  if (Object.hasOwn(skillTrees, name)) return skillTrees[name];
+  throw {
+    type: "OTHER",
+    subtype: "OTHER",
+    params: ["skillTree", name],
+  } satisfies GeneratorError;
+};
 
 /**
  * Selects the skill tree a skill or skill tag reads. A skill trainable with

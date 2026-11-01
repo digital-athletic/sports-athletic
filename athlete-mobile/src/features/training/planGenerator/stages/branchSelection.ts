@@ -179,15 +179,21 @@ const fillSlot = (
   };
 };
 
+/** The picks of a skill so far and the weighted/bodyweight quotas it has left. */
+interface SkillState {
+  readonly picks: readonly SlotCandidate[];
+  readonly quotas: Quotas | null;
+}
+
 /**
- * Fills the slots of one tag entry. A candidate that resolves to an exercise
- * the skill already holds is skipped.
+ * Fills the slots of one tag entry from the skill's remaining quotas. A
+ * candidate that resolves to an exercise the skill already holds is skipped.
  */
 const fillTagEntry = (
   entry: RegionTagEntry,
-  heldPicks: readonly SlotCandidate[],
+  { picks: heldPicks, quotas }: SkillState,
   context: SkillContext,
-): readonly SlotCandidate[] => {
+): SkillState => {
   const { candidates, region } = readEntryPool(entry, context);
   const slotCount = Math.min(entry.count, candidates.length);
   let state: EntryState = {
@@ -199,7 +205,7 @@ const fillTagEntry = (
         )
       : [],
     untrainedBigMuscles: region ? BIG_MUSCLES_BY_REGION[region] : [],
-    quotas: createQuotas(readWeightedShare(context), slotCount),
+    quotas,
     filledSlots: 0,
     picks: [],
   };
@@ -213,7 +219,7 @@ const fillTagEntry = (
     if (open.length === 0) break;
     state = fillSlot({ ...state, candidates: open }, slotCount, context);
   }
-  return state.picks;
+  return { picks: [...heldPicks, ...state.picks], quotas: state.quotas };
 };
 
 const toSelectedBranch = ({
@@ -247,20 +253,22 @@ export const selectSkillBranches = (
   profile: DerivedProfile,
   input: PlanGenerationInput,
 ): SkillSelectionStep => {
-  const picks = tagEntries.reduce<readonly SlotCandidate[]>(
-    (heldPicks, entry) => [
-      ...heldPicks,
-      ...fillTagEntry(entry, heldPicks, {
-        skill,
+  const skillContext: SkillContext = { skill, day, profile, input };
+  // The share is a quota over all slots of the skill, Plan Workout Generation.
+  const slotCount = tagEntries.reduce((sum, { count }) => sum + count, 0);
+  const { picks } = tagEntries.reduce<SkillState>(
+    (state, entry) =>
+      fillTagEntry(entry, state, {
+        ...skillContext,
         day: {
           place: day.place,
-          usedBranchIds: [...day.usedBranchIds, ...listBranchIds(heldPicks)],
+          usedBranchIds: [...day.usedBranchIds, ...listBranchIds(state.picks)],
         },
-        profile,
-        input,
       }),
-    ],
-    [],
+    {
+      picks: [],
+      quotas: createQuotas(readWeightedShare(skillContext), slotCount),
+    },
   );
   return {
     selection:

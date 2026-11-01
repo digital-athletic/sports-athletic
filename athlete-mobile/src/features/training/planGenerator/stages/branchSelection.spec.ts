@@ -295,6 +295,39 @@ describe("branchSelection: selectSkillBranches", () => {
     ).toEqual(["a", "c"]);
   });
 
+  it("counts the weighted quota over the slots of the whole skill, across its tag entries", () => {
+    const input = generateBranchSelectionInput({
+      skillTrees: {
+        GKS: generateSelectionBranches({ a: ["EQ_DUMBBELL"] }),
+        GKSKG: generateSelectionBranches({ c: [] }),
+      },
+      trainingPlaces: { HOME: { equipment: ["DUMBBELL"] } },
+      // bodyweight, involvement, pick; then the weighted quota alone is open
+      draws: [0.99, COMPLEX, FIRST, COMPLEX, FIRST],
+    });
+    const request = generateMultiEntryRequest("GKS", [
+      { tags: [], count: 1 },
+      { tags: [], count: 1 },
+    ]);
+
+    expect(
+      selectBranchIds(input, request, { place: "HOME", usedBranchIds: [] }),
+    ).toEqual(["c", "a"]);
+  });
+
+  it("raises the configuration error OTHER/OTHER for a skill tree the authored data lacks", () => {
+    const input = generateBranchSelectionInput({ skillTrees: {}, draws: [] });
+    const request = generateSkillSelectionRequest("BAS", [], 1);
+
+    expect(() => selectBranchIds(input, request)).toThrow(
+      expect.objectContaining({
+        type: "OTHER",
+        subtype: "OTHER",
+        params: ["skillTree", "BAS"],
+      }),
+    );
+  });
+
   it("skips a branch when nothing resolves at or below the athlete's level", () => {
     const input = generateBranchSelectionInput({
       skillTrees: {

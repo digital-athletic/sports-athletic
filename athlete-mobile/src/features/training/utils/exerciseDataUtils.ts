@@ -83,6 +83,14 @@ export function shouldProcessExerciseValues(
 }
 
 /**
+ * Endurance exercises show a checkmark instead of a countdown timer. The app
+ * defers detailed endurance tracking to dedicated apps.
+ */
+export function isEnduranceSkill(skill: string | undefined): boolean {
+  return skill === "CARDIO_4" || skill === "CARDIO_5";
+}
+
+/**
  * Determines whether an exercise should show "too easy"/"too hard" feedback
  * controls: PLAN workouts key off the exercise's own skill, other workout
  * types key off the workout type itself.

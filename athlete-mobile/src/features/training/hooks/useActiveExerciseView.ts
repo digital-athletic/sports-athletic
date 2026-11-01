@@ -3,6 +3,7 @@ import { lookupTemplateName } from "@/features/customWorkouts/lookupTemplate";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import {
   deriveActiveExerciseIndex,
+  isEnduranceSkill,
   isFeedbackEligibleSkill,
 } from "@/features/training/utils/exerciseDataUtils";
 import { isPauseExercise as checkIsPauseExercise } from "@/features/training/models/IdTypes";
@@ -93,11 +94,7 @@ function buildActiveExerciseView(
   const progress = safeExerciseIndex / (exerciseList?.length ?? 1);
   const isTestExercise = currentExercise?.repetition === -1;
   const isCardioExercise = currentExercise?.skill?.includes("CARDIO") ?? false;
-  // Endurance exercises show a checkmark instead of a countdown timer. This app focuses on
-  // strength training, so we defer detailed endurance tracking to dedicated apps.
-  const isEnduranceExercise =
-    currentExercise?.skill === "CARDIO_4" ||
-    currentExercise?.skill === "CARDIO_5";
+  const isEnduranceExercise = isEnduranceSkill(currentExercise?.skill);
   const isLastInSet = currentExercise?.set?.[0] === currentExercise?.set?.[1];
 
   // During a pause exercise the screen displays the upcoming exercise instead.

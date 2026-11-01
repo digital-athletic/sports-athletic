@@ -43,6 +43,69 @@ export async function getExerciseProgressStorage(page: Page) {
   }
 }
 
+export const TRAINING_STORAGE_KEY = "training-storage";
+export const USER_PROFILE_STORAGE_KEY = "user-profile-storage";
+
+async function readPersistedState(page: Page, key: string) {
+  const raw = await page.evaluate((k) => localStorage.getItem(k), key);
+  if (!raw) return null;
+
+  try {
+    return JSON.parse(raw)?.state ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Reads the persisted state of the training store (the active session).
+ */
+export async function getTrainingStorageState(page: Page) {
+  return readPersistedState(page, TRAINING_STORAGE_KEY);
+}
+
+/**
+ * Reads the persisted state of the user profile store.
+ */
+export async function getUserProfileStorageState(page: Page) {
+  return readPersistedState(page, USER_PROFILE_STORAGE_KEY);
+}
+
+/**
+ * Returns the single completed workout without its top-level id, timestamp
+ * and duration, so two runs of the same plan compare equal. Rest rows keep
+ * `completed` only: the step-by-step view adds `skipped` when the athlete
+ * skips a rest, the checklist only marks rests completed.
+ */
+export async function getComparableCompletedWorkout(page: Page) {
+  const [workout] = await getCompletedWorkoutsData(page);
+  if (!workout) return null;
+
+  const comparable: Record<string, unknown> & {
+    exercises: Record<string, unknown>[];
+    userSkills?: Record<string, number>;
+  } = JSON.parse(JSON.stringify(workout));
+  for (const field of ["id", "timestamp", "duration"]) delete comparable[field];
+  // userSkills.SWR derives from wall-clock time spent, so it differs per run.
+  delete comparable.userSkills?.SWR;
+  for (const exercise of comparable.exercises) {
+    if (exercise.exerciseId === "999999") delete exercise.skipped;
+  }
+  return comparable;
+}
+
+/**
+ * Returns the exercise progress storage state without `updatedAt` stamps.
+ */
+export async function getComparableExerciseProgress(page: Page) {
+  const storage = await getExerciseProgressStorage(page);
+  return JSON.parse(
+    JSON.stringify(storage?.state ?? null, (key, value) =>
+      key === "updatedAt" ? undefined : value,
+    ),
+  );
+}
+
 interface WaitOptions {
   timeoutMs?: number;
   minCount?: number;

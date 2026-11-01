@@ -18,11 +18,10 @@ export function useTrainingListScreen() {
   const router = useRouter();
   const exerciseList = useTrainingStore((s) => s.exerciseList);
   const hasHydrated = useTrainingStore((s) => s._hasHydrated);
-  const tempMaxValues = useTrainingStore((s) => s.tempMaxValues);
   const { finishTraining } = useFinishTraining();
 
   const { rows } = useTrainingListRows();
-  const { handleComplete, handleSkip } = useTrainingListCompletion();
+  const completion = useTrainingListCompletion();
   const { repsDraft, setRepsForRow, handleSubmitReps } = useTrainingListReps();
   const { handleAbort, isScreenFocused } = useTrainingListLifecycle({
     onFinish: finishTraining,
@@ -35,7 +34,7 @@ export function useTrainingListScreen() {
     timing,
     onChangeReps: setRepsForRow,
     onSubmitReps: handleSubmitReps,
-    onComplete: handleComplete,
+    onComplete: completion.handleComplete,
   });
   const [isFinishing, setIsFinishing] = useState(false);
 
@@ -49,7 +48,8 @@ export function useTrainingListScreen() {
     // duplicate invocations, this just disables the button after the first tap.
     setIsFinishing(true);
     timing.endPause();
-    finishTraining(false, tempMaxValues);
+    completion.completeRestRows();
+    finishTraining(false, useTrainingStore.getState().tempMaxValues);
   };
 
   const handleShowInfo = (exerciseId: string) => {
@@ -67,7 +67,7 @@ export function useTrainingListScreen() {
     allCompleted,
     isFinishing,
     handleFinish,
-    handleSkip,
+    handleSkip: completion.handleSkip,
     handleShowInfo,
     handleStart,
     handleAbort,

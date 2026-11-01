@@ -556,4 +556,33 @@ describe("branchSelection: selectDayBranches", () => {
 
     expect(selections[0]).toMatchObject({ branches: [{ branchId: "b" }] });
   });
+
+  it("follows the GKS lower body directions on a day whose GKS trains the full body", () => {
+    const input = generateBranchSelectionInput({
+      skillTrees: {
+        GKSKG: generateSelectionBranches({ g: ["REGION_FULL_BODY"] }),
+        SWR1KG: generateSelectionBranches({
+          a: ["REGION_LOWER_BODY", "EXERCISE_DIRECTION_HIP", "SIDE_BOTH"],
+          b: ["REGION_LOWER_BODY", "EXERCISE_DIRECTION_KNEE", "SIDE_BOTH"],
+        }),
+      },
+      movementDirections: {
+        LOWER_BODY: generateDirectionSequence(1, ["HIP"]),
+        LOWER_BODY_GKS: generateDirectionSequence(1, ["KNEE"]),
+      },
+      draws: [COMPLEX, FIRST, COMPLEX, FIRST],
+    });
+
+    const { selections } = selectDayBranches(
+      [
+        generateSkillSelectionRequest("GKS", ["REGION_FULL_BODY"], 1),
+        generateSkillSelectionRequest("SWR1", ["REGION_LOWER_BODY"], 1),
+      ],
+      "HALL",
+      advancedAthlete,
+      input,
+    );
+
+    expect(selections[1]).toMatchObject({ branches: [{ branchId: "b" }] });
+  });
 });

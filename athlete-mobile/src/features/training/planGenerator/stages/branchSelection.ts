@@ -200,7 +200,9 @@ const fillTagEntry = (
     candidates,
     directions: region
       ? readDirectionSequence(
-          context.input.authoredData.movementDirections[region],
+          context.input.authoredData.movementDirections[
+            region === "LOWER_BODY" ? context.day.lowerBodyDirections : region
+          ],
           entry.count,
         )
       : [],
@@ -279,11 +281,21 @@ export const selectSkillBranches = (
   };
 };
 
+// A GKS tag entry for the full body switches the lower body of the whole day
+// to the GKS directions, as the old generator does:
+// generators/PlanGenerator.ts#L643-L658
+const hasFullBodyGks = (requests: readonly SkillSelectionRequest[]) =>
+  requests.some(
+    ({ skill, tagEntries }) =>
+      skill === "GKS" &&
+      tagEntries.some(({ tags }) => tags.includes("REGION_FULL_BODY")),
+  );
+
 /**
  * Selects the branches of every skill of one training day as a fold: each
  * skill starts from the used branches of the skills before it. An empty
  * skill leaves the other skills of the day as they are. Every skill reads
- * the prevention skills of the day.
+ * the prevention skills and the lower body directions of the day.
  *
  * selectDayBranches([warmUp, hypertrophy], "STUDIO", profile, input)
  * → { selections: [{ type: "BRANCHES", skill: "WU", ... }, { type: "EMPTY_SKILL", skill: "SWR1" }],
@@ -303,7 +315,9 @@ export const selectDayBranches = (
       .filter((skill) =>
         Object.hasOwn(input.authoredData.preventionRegions, skill),
       ),
-    lowerBodyDirections: "LOWER_BODY",
+    lowerBodyDirections: hasFullBodyGks(requests)
+      ? "LOWER_BODY_GKS"
+      : "LOWER_BODY",
   };
   return requests.reduce<DayBranchSelection>(
     ({ selections, usedBranchIds }, request) => {

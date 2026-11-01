@@ -161,6 +161,7 @@ The new generator follows the spec. In these places the old code differs, and th
 | A PROFESSIONAL child resolves branches at ADVANCED, the level every other stage uses. | Section 1, Level | [Branch level](../../src/features/training/generators/PlanGenerator.ts#L1270) |
 | A season phase without a type or an end date raises the input error NO_ANAMNESIS/MISSING_WORKOUT_DATA. | Section 1, Season phase | [Season phase fallback](../../src/features/training/generators/PlanGenerator.ts#L1084-L1086) |
 | The goalkeeper exclusion treats a branch as a goalkeeper exercise when the branch or the exercise of any level carries POSITION_GOAL. The old code lists the exercises 661, 662, 767, 768 and 769. The tag also marks 989, 990, 992, 993 and 994, so field players lose those exercises too. | Section 1, Position | [Goalkeeper exercises](../../src/features/training/generators/PlanGenerator.ts#L2311-L2326) |
+| The rule chain checks the equipment tags of the branch, as workout generation does, so the plan holds only branches the workout generator keeps at session start. The old code checks the equipment tags of the exercise at the athlete's level. The GKS branches 544 and 546 carry EQ_TOWEL and leave the pool of a studio without a towel. | Section 5, rule 2 | [Equipment check](../../src/features/training/generators/PlanGenerator.ts#L2339-L2373) |
 
 ### Verification
 

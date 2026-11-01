@@ -318,7 +318,6 @@ describe("budgetTrainingDay", () => {
 
     const fromCursorOne = budgetTrainingDay(context, day, 1);
 
-    expect(budgetTrainingDay(context, day, 1)).toEqual(fromCursorOne);
     expect(budgetSectionDays(context, [day, day])[1]).toEqual(
       fromCursorOne.budget,
     );

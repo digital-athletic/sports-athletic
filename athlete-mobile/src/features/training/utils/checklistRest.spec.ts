@@ -40,10 +40,11 @@ describe("findNextSetRow: the set to preview during a rest", () => {
     expect(findNextSetRow(rows, 0)?.index).toBe(4);
   });
 
-  it("wraps around to an open row before the finished one", () => {
+  it("returns an earlier open row before a later one, as Next opens the first open set", () => {
     const rows = [
       generateChecklistRow({ index: 0 }),
       generateChecklistRow({ index: 2 }),
+      generateChecklistRow({ index: 4 }),
     ];
 
     expect(findNextSetRow(rows, 2)?.index).toBe(0);

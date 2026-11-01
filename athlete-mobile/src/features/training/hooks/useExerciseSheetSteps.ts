@@ -8,31 +8,36 @@ type Args = {
   rest: SheetRestControl | undefined;
   onSubmitReps: () => void;
   onComplete: (feedback?: DifficultyFeedbackType) => void;
+  onNext: () => void;
   onDismiss: () => void;
 };
+
+type RunningRest = { control: SheetRestControl; onDone: () => void };
 
 /**
  * Steps of the checklist sheet: timer, then the feedback choice for a
  * feedback set, then the rest when the set list plans one after the set.
+ * A completed set moves on to the next set; saved reps close the sheet.
  */
 export function useExerciseSheetSteps({
   row,
   rest,
   onSubmitReps,
   onComplete,
+  onNext,
   onDismiss,
 }: Args) {
   const [isChoosingFeedback, setIsChoosingFeedback] = useState(false);
   // The rest prop turns undefined once the store records the rest, so the step keeps its own copy.
-  const [runningRest, setRunningRest] = useState<SheetRestControl | null>(null);
+  const [runningRest, setRunningRest] = useState<RunningRest | null>(null);
 
-  const finishSet = () => {
+  const finishSet = (onDone: () => void) => {
     if (rest) {
-      setRunningRest(rest);
+      setRunningRest({ control: rest, onDone });
       rest.onStart();
       return;
     }
-    onDismiss();
+    onDone();
   };
 
   const handleContinue = () => {
@@ -41,27 +46,27 @@ export function useExerciseSheetSteps({
       return;
     }
     onComplete();
-    finishSet();
+    finishSet(onNext);
   };
 
   const handleFeedbackSelect = (feedback: DifficultyFeedbackType) => {
     onComplete(feedback);
-    finishSet();
+    finishSet(onNext);
   };
 
   const handleSaveReps = () => {
     onSubmitReps();
-    finishSet();
+    finishSet(onDismiss);
   };
 
   const handleRestEnd = (skipped: boolean) => {
-    runningRest?.onEnd(skipped);
-    onDismiss();
+    runningRest?.control.onEnd(skipped);
+    runningRest?.onDone();
   };
 
   return {
     isChoosingFeedback,
-    runningRest,
+    runningRest: runningRest?.control ?? null,
     handleContinue,
     handleFeedbackSelect,
     handleSaveReps,

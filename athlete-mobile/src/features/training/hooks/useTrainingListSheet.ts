@@ -16,12 +16,14 @@ export function useTrainingListSheet(rows: ListRow[]) {
     : null;
   const activeRow = sheet?.isOpen ? shownRow : null;
 
+  // A second Next tap from the same render asks for the set already open;
+  // keeping its session keeps its timer running.
   const openSheet = (index: number) =>
-    setSheet((prev) => ({
-      index,
-      session: (prev?.session ?? 0) + 1,
-      isOpen: true,
-    }));
+    setSheet((prev) =>
+      prev?.isOpen && prev.index === index
+        ? prev
+        : { index, session: (prev?.session ?? 0) + 1, isOpen: true },
+    );
   const closeSheet = () =>
     setSheet((prev) => (prev ? { ...prev, isOpen: false } : prev));
 

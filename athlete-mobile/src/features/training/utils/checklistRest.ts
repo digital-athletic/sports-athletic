@@ -31,15 +31,12 @@ export const findRestAfter = (
   return duration > 0 ? { index, duration } : null;
 };
 
-/** The next open row after the finished row, else the first open row before it. */
+/**
+ * The set Next opens after the finished row: the first open row of the
+ * workout, as in the step-by-step view.
+ */
 export const findNextSetRow = (
   rows: readonly ListRow[],
   finishedIndex: number,
-): ListRow | null => {
-  const openRows = rows.filter(
-    (row) => !row.completed && row.index !== finishedIndex,
-  );
-  return (
-    openRows.find((row) => row.index > finishedIndex) ?? openRows[0] ?? null
-  );
-};
+): ListRow | null =>
+  rows.find((row) => !row.completed && row.index !== finishedIndex) ?? null;

@@ -25,6 +25,7 @@ export type TrainingExerciseSheetProps = {
   onSubmitReps: () => void;
   onComplete: (feedback?: DifficultyFeedbackType) => void;
   onSkip: () => void;
+  onNext: () => void;
   onDismiss: () => void;
 };
 
@@ -69,21 +70,21 @@ const TrainingExerciseFeedbackChoice: FC<{
 
 const TrainingExerciseTimerActions: FC<{
   isCountingDown: boolean;
-  onContinue: () => void;
+  onNext: () => void;
   onSkip: () => void;
-}> = ({ isCountingDown, onContinue, onSkip }) => {
+}> = ({ isCountingDown, onNext, onSkip }) => {
   const { t } = useTranslation();
 
   return (
     <>
       <Button
         variant="primary"
-        onPress={onContinue}
+        onPress={onNext}
         disabled={isCountingDown}
         style={{ opacity: isCountingDown ? 0.5 : 1 }}
-        testID="training-list-sheet-continue"
+        testID="training-list-sheet-next"
       >
-        {t("training.list.continueExercise")}
+        {t("training.list.nextSet")}
       </Button>
       <Button
         variant="secondary"
@@ -126,7 +127,7 @@ const SheetSetActions: FC<{
   return (
     <TrainingExerciseTimerActions
       isCountingDown={isCountingDown}
-      onContinue={steps.handleContinue}
+      onNext={steps.handleContinue}
       onSkip={onSkip}
     />
   );
@@ -142,6 +143,7 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
   onSubmitReps,
   onComplete,
   onSkip,
+  onNext,
   onDismiss,
 }) => {
   const steps = useExerciseSheetSteps({
@@ -149,6 +151,7 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
     rest,
     onSubmitReps,
     onComplete,
+    onNext,
     onDismiss,
   });
 
@@ -170,16 +173,18 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
     );
   }
 
-  // A skipped set never starts its rest; the rest counts as completed at finish.
+  // A skipped set never starts its rest; the rest counts as completed at
+  // finish. Like the step-by-step view, Skip moves on to the next set.
   const handleSkip = () => {
     onSkip();
-    onDismiss();
+    onNext();
   };
 
   return (
-    <Box padding="l" gap="m">
+    <Box padding="l" gap="m" testID={`training-list-sheet-set-${row.index}`}>
       <TrainingSheetHeading
         title={row.displayName}
+        subtitle={row.setLabel}
         seconds={displayedSeconds}
         isTimed={typeof duration === "number"}
         timerTestID="training-list-sheet-timer"
@@ -198,12 +203,12 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
 };
 
 /**
- * Bottom sheet opened from a checklist row's Start button: shows the
- * exercise name, a countdown (timed exercises) or stopwatch (open-ended
- * ones), and a Continue step that either closes the sheet, reveals the
- * too-easy/succeeded/too-hard choice, or (strength tests) the reps input.
- * A set with a planned rest after it switches the sheet to the rest screen.
- * Skip stays enabled during the countdown, so an athlete can drop an exercise mid-way.
+ * Bottom sheet for one set of the checklist: shows the exercise name, the set,
+ * a countdown (timed exercises) or stopwatch (open-ended ones), and a Next
+ * step that completes the set, or first reveals the too-easy/succeeded/too-hard
+ * choice. A planned rest after the set runs before Next opens the next set.
+ * Skip stays enabled during the countdown, so an athlete can drop a set mid-way.
+ * A strength test shows the reps input instead.
  */
 export const TrainingExerciseSheet: FC<TrainingExerciseSheetProps> = ({
   row,

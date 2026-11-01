@@ -435,7 +435,7 @@
       "title": "Trainings-Checkliste",
       "skipExercise": "Übung überspringen",
       "startExercise": "Übung starten",
-      "continueExercise": "Weiter",
+      "nextSet": "Weiter",
       "setKilos": "{{weight}} kg",
       "setSeconds": "{{count}} s",
       "setReps": "{{count}} Wdh.",

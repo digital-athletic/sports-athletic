@@ -1,0 +1,22 @@
+{
+  "aiwl": 1,
+  "id": "CHECKLIST_SUPERSET",
+  "name": { "en": "Superset check", "de": "Supersatz Check" },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "WU",
+      "picks": [{ "tags": [], "count": 1 }],
+      "superset": "none",
+      "rest": { "afterExercise": 10 }
+    },
+    {
+      "kind": "picks",
+      "skill": "GKS",
+      "picks": [{ "tags": [], "count": 2 }],
+      "superset": "drawOrder",
+      "sets": 2,
+      "rest": { "withinSuperset": 15, "betweenSets": 30, "afterExercise": 30 }
+    }
+  ]
+}

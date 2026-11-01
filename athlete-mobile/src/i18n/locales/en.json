@@ -435,7 +435,7 @@
       "title": "Training Checklist",
       "skipExercise": "Skip exercise",
       "startExercise": "Start exercise",
-      "continueExercise": "Continue",
+      "nextSet": "Next",
       "setKilos": "{{weight}} kg",
       "setSeconds": "{{count}} s",
       "setReps": "{{count}} reps",

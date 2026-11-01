@@ -4,6 +4,7 @@ import { type FC } from "react";
 
 type Props = {
   title: string;
+  subtitle?: string;
   seconds: number;
   isTimed: boolean;
   timerTestID: string;
@@ -12,6 +13,7 @@ type Props = {
 // An open-ended exercise's stopwatch is secondary info, so it stays small.
 export const TrainingSheetHeading: FC<Props> = ({
   title,
+  subtitle,
   seconds,
   isTimed,
   timerTestID,
@@ -20,6 +22,11 @@ export const TrainingSheetHeading: FC<Props> = ({
     <Text variant="title" textAlign="center">
       {title}
     </Text>
+    {subtitle && (
+      <Text variant="small" color="darkGrey1" textAlign="center">
+        {subtitle}
+      </Text>
+    )}
     <Text
       fontSize={isTimed ? 32 : 16}
       fontWeight="300"

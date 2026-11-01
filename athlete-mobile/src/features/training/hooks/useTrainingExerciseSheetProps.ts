@@ -1,9 +1,6 @@
 import { useChecklistRest } from "@/features/training/hooks/useChecklistRest";
-import {
-  type ChecklistEntry,
-  type ListRow,
-} from "@/features/training/hooks/useTrainingListRows";
-import { useTrainingListSheet } from "@/features/training/hooks/useTrainingListSheet";
+import { type ListRow } from "@/features/training/hooks/useTrainingListRows";
+import { useTrainingListSetNavigation } from "@/features/training/hooks/useTrainingListSetNavigation";
 import { type TrainingListTiming } from "@/features/training/hooks/useTrainingListTiming";
 import { type UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import {
@@ -57,22 +54,9 @@ const buildRestControl = (
   };
 };
 
-// Start opens the first open set of the exercise entry; a done entry opens nothing.
-const startFirstOpenSet = (
-  { firstOpenSetIndex: index }: ChecklistEntry,
-  exerciseList: UserExerciseDataType[] | null,
-  timing: Args["timing"],
-  openSheet: (index: number) => void,
-) => {
-  if (index === null) return;
-  timing.startExercise(exerciseList?.[index]?.skill);
-  openSheet(index);
-};
-
 /**
- * Builds TrainingExerciseSheet's props from whichever checklist row is
- * currently active, routing its Continue/feedback/reps/skip/rest actions back
- * through the same handlers the row itself used to call directly.
+ * Builds TrainingExerciseSheet's props from the set the sheet shows, routing
+ * its Next/feedback/reps/skip/rest actions to the handlers of that set.
  */
 export function useTrainingExerciseSheetProps({
   rows,
@@ -85,17 +69,14 @@ export function useTrainingExerciseSheetProps({
   onRestEnd,
   onSkip,
 }: Args) {
-  const { activeRow, shownRow, session, openSheet, closeSheet } =
-    useTrainingListSheet(rows);
+  const { activeRow, shownRow, session, handleStart, handleNext, handleDismiss } =
+    useTrainingListSetNavigation({ rows, exerciseList, timing });
   const restTracker = useChecklistRest({ timing, onRestEnd });
 
-  const handleStart = (entry: ChecklistEntry) =>
-    startFirstOpenSet(entry, exerciseList, timing, openSheet);
-
-  const handleDismiss = () => {
+  // A swipe during the rest ends the rest as skipped.
+  const handleSheetDismiss = () => {
     restTracker.endRest(true);
-    timing.endExercise();
-    closeSheet();
+    handleDismiss();
   };
 
   // shownRow outlives activeRow while the sheet animates closed; actions
@@ -123,7 +104,8 @@ export function useTrainingExerciseSheetProps({
     onSkip: () => {
       if (activeRow) onSkip(activeRow);
     },
-    onDismiss: handleDismiss,
+    onNext: handleNext,
+    onDismiss: handleSheetDismiss,
   };
 
   return { handleStart, sheetProps };

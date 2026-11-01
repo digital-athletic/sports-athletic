@@ -20,6 +20,7 @@ describe("planGenerationInputBuilder: buildPlanGenerationInput", () => {
     jest.useRealTimers();
   });
 
+  // The stores hold a sore muscle, so the exact match also proves the input holds no muscle soreness.
   it("holds the stores, the authored data, the plan start date and the reference date of the clock", () => {
     const input = buildPlanGenerationInput({
       planStartDate: new Date(2026, 10, 4),
@@ -41,17 +42,6 @@ describe("planGenerationInputBuilder: buildPlanGenerationInput", () => {
       referenceDate: "2026-11-01",
       random,
     });
-  });
-
-  it("holds no muscle soreness", () => {
-    const input = buildPlanGenerationInput({
-      planStartDate: new Date(2026, 10, 4),
-      random,
-      authoredData,
-    });
-
-    expect(input.athlete).not.toHaveProperty("temporalData");
-    expect(input).not.toHaveProperty("muscleSoreness");
   });
 
   it("loads the authored data when the caller passes none", () => {

@@ -23,7 +23,10 @@ export interface PlanAthlete {
  */
 export interface PlanGenerationInput {
   readonly athlete: PlanAthlete;
-  /** The season phase with its end date; its type is null before the anamnesis sets it. */
+  /**
+   * The season phase with its end date; its type is null before the anamnesis
+   * sets it. Stages read this field, not the copy in the athlete's workout data.
+   */
   readonly seasonPhase: SeasonPhaseType;
   /** One training day per weekday, Monday first, active or not. */
   readonly weeklySchedule: readonly TrainingDayType[];

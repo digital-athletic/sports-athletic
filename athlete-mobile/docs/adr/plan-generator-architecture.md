@@ -8,8 +8,9 @@ The plan generator turns the anamnesis into the [training plan](../specs/glossar
 - the season phase and its end date
 - the weekly schedule: active weekdays, duration and training place per day
 - the training places and their equipment
-- the authored data: section templates, skill priorities, maximum minutes, region configurations, skill trees and the exercise catalog
+- the authored data: section templates, skill priorities, maximum minutes, region configurations, movement direction configurations, skill trees and the exercise catalog
 - the athlete's exercise data
+- the plan start date the caller picks
 
 The old plan generator in `generators/` mixes all spec sections in one class, loads authored data inline, draws from a global random source and shares state between days. It cannot be tested stage by stage. The [workout generator](./workout-generator-architecture.md) already follows a structure with an injected random source, pure rule families and a lint boundary against `generators/`. This ADR applies that structure to plan creation.
 
@@ -88,13 +89,13 @@ Each layer uses the layers below it:
 
 Each stage implements one section of the spec:
 
-1. **Profile derivation** reads the anamnesis and returns the age group, the fitness level, the pain status, the prevention skills, the playing position group, the season phase with its week count, and whether any active training place has weights. A missing season phase raises an input error. Spec section [1](../specs/planning/training-plan-creation-from-anamnesis.md#1-profile-derivation).
-2. **Section layout** picks the section template, appends the repeat list for phases longer than 20 weeks, and applies the max strength and goalkeeper substitutions. It returns the ordered sections without start dates, because the caller sets the plan start. Spec section [2](../specs/planning/training-plan-creation-from-anamnesis.md#2-section-layout-periodization).
+1. **Profile derivation** reads the anamnesis and returns the age group, derived once from the birth date and the reference date of the input, the fitness level, the pain status, the prevention skills, the playing position group, the season phase with its week count, and whether any active training place has weights. A missing season phase raises an input error. Spec section [1](../specs/planning/training-plan-creation-from-anamnesis.md#1-profile-derivation).
+2. **Section layout** picks the section template, appends the repeat list for phases longer than 20 weeks, and applies the max strength and goalkeeper substitutions. It returns the ordered sections without start dates. Plan assembly dates them. Spec section [2](../specs/planning/training-plan-creation-from-anamnesis.md#2-section-layout-periodization).
 3. **Day grouping and focus** groups the active weekdays, gives each day a focus and applies the weekly cardio guarantee. The stage runs once per plan, because the focus depends on the schedule and the training places only. Every section reads the same focus per weekday. Spec section [3](../specs/planning/training-plan-creation-from-anamnesis.md#3-day-grouping-and-focus).
 4. **Skill budget** runs per section and per day. It picks the skill priority structure, resolves the placeholders, places the prevention skill, gives each skill its minimum and distributes the leftover minutes by priority up to the maximum minutes. Spec section [4](../specs/planning/training-plan-creation-from-anamnesis.md#4-skill-selection-and-time-budgeting-per-day).
 5. **Region configuration** reads the region configuration of each skill for its minutes and returns the tag entries branch selection fills. A skill gets at most the minutes of the largest key its configuration holds. Spec section [5](../specs/planning/training-plan-creation-from-anamnesis.md#5-branch-selection-per-skill), rule 1.
-6. **Branch selection** fills each tag entry from the skill tree. It filters candidates through the rule chain, applies the cascading filters and draws the final pick through the random source. Spec section [5](../specs/planning/training-plan-creation-from-anamnesis.md#5-branch-selection-per-skill), rules 2 to 5.
-7. **Plan assembly** writes the sections, training days, branch copies and minutes per skill in today's stored plan shape.
+6. **Branch selection** fills each tag entry from the skill tree. It filters candidates through the rule chain, applies the cascading filters with the movement direction priorities and draws the final pick through the random source. Spec section [5](../specs/planning/training-plan-creation-from-anamnesis.md#5-branch-selection-per-skill), rules 2 to 5.
+7. **Plan assembly** writes the sections, training days, branch copies and minutes per skill in today's stored plan shape. It sets the plan start to the plan start date and dates the sections in order: the first section starts on the first Monday on or after the plan start, and each later section starts after the weeks of the sections before it.
 
 ### State across days
 
@@ -115,11 +116,13 @@ One read-only object holds every input the stages read:
 - the season phase and its end date
 - the weekly schedule
 - the training places with their equipment
-- the authored data: section templates, skill priorities, maximum minutes, region configurations, skill trees and the exercise catalog
+- the authored data: section templates, skill priorities, maximum minutes, region configurations, movement direction configurations, skill trees and the exercise catalog
 - the athlete's exercise data
+- the plan start date
+- the reference date for the athlete's age
 - the random source
 
-One input builder reads the stores and the authored data once and builds the object for both callers. No stage loads data or reads a store, and no stage changes the object.
+One input builder reads the stores and the authored data once and builds the object for both callers. The builder reads the clock once for the reference date, so the same input and random sequence always yield the same plan. No stage loads data, reads a store or reads the clock, and no stage changes the object.
 
 ### Reuse of the workout generator
 
@@ -127,7 +130,7 @@ The new generator imports leaf modules of the workout generator. It imports neit
 
 | Part | Use |
 |---|---|
-| Pain, equipment, age group and gender rule families | Reused as they are |
+| Pain, equipment, age group and gender rule families | Reused with a narrowed input. Today each family takes the whole workout generation input, which holds one place and the muscle soreness. Each family changes to take only the fields it reads: the athlete, the equipment of one place, or the derived age group. The age group family then no longer reads the clock. The workout generator passes the same fields from its own input, and its specs stay green. |
 | Branch resolution | Reused as it is, for the check that a branch resolves at or below the athlete's level |
 | Generator error type | Reused as it is |
 | Generation input | Not reused. The plan generation input is a plan variant with the schedule, the training places and the plan's authored data, and without muscle soreness. |
@@ -153,7 +156,7 @@ The new generator follows the spec. In these places the old code differs, and th
 | Rule in the new generator | Spec | Old code |
 |---|---|---|
 | Every exercise slot applies the 70/30 split of complex and isolated exercises, the core region included. | Section 5, rule 4 | [Involvement draw](../../src/features/training/generators/PlanGenerator.ts#L1734-L1752) |
-| Leftover minutes fill by priority, with no exception by session length. | Section 4, rule 4 | [Leftover distribution](../../src/features/training/generators/PlanGenerator.ts#L830-L843) |
+| Leftover minutes fill by priority, with no priority 2 prefill for sessions longer than 45 minutes. | Section 4, rule 4 | [Leftover distribution](../../src/features/training/generators/PlanGenerator.ts#L830-L843) |
 | A 0 in the maximum minutes table means no time. A missing entry raises a configuration error. | Section 4, table | [Maximum minutes](../../src/features/training/generators/PlanGenerator.ts#L932-L934) |
 | A skill gets no minutes above the largest key of its region configuration. | Section 5, rule 1 | [Overflow](../../src/features/training/generators/PlanGenerator.ts#L590-L591) |
 
@@ -179,7 +182,7 @@ A stored plan stays as it is when the flag flips. The next plan creation or rege
 
 The callers stay responsible for:
 
-- the plan start date and the gap handling
+- the choice of the plan start date and the gap handling
 - store reads and writes
 - the merge that keeps unchanged training days
 - the choice to redraw every day

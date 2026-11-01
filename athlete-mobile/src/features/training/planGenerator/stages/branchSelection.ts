@@ -9,7 +9,6 @@ import type {
 import type { SkillBranchType } from "@/schemas/skillTree.schema";
 import { getTagValues } from "@/utils/tagUtils";
 import type { PlanGenerationInput } from "../planGenerationInput/planGenerationInput";
-import type { BranchRuleChainDay } from "../ruleFamilies/branchRuleChain";
 import {
   filterSlotCandidates,
   isOneSided,
@@ -22,6 +21,7 @@ import {
   isPlaceWeighted,
   type MovementRegion,
   readEntryPool,
+  type SelectionDay,
   type SkillContext,
 } from "./tagEntryPool";
 
@@ -249,7 +249,7 @@ const listBranchIds = (picks: readonly SlotCandidate[]): string[] =>
  */
 export const selectSkillBranches = (
   { skill, tagEntries }: SkillSelectionRequest,
-  day: BranchRuleChainDay,
+  day: SelectionDay,
   profile: DerivedProfile,
   input: PlanGenerationInput,
 ): SkillSelectionStep => {
@@ -261,7 +261,7 @@ export const selectSkillBranches = (
       fillTagEntry(entry, state, {
         ...skillContext,
         day: {
-          place: day.place,
+          ...day,
           usedBranchIds: [...day.usedBranchIds, ...listBranchIds(state.picks)],
         },
       }),
@@ -282,7 +282,8 @@ export const selectSkillBranches = (
 /**
  * Selects the branches of every skill of one training day as a fold: each
  * skill starts from the used branches of the skills before it. An empty
- * skill leaves the other skills of the day as they are.
+ * skill leaves the other skills of the day as they are. Every skill reads
+ * the prevention skills of the day.
  *
  * selectDayBranches([warmUp, hypertrophy], "STUDIO", profile, input)
  * → { selections: [{ type: "BRANCHES", skill: "WU", ... }, { type: "EMPTY_SKILL", skill: "SWR1" }],
@@ -293,12 +294,22 @@ export const selectDayBranches = (
   place: TrainingDayType["place"],
   profile: DerivedProfile,
   input: PlanGenerationInput,
-): DayBranchSelection =>
-  requests.reduce<DayBranchSelection>(
+): DayBranchSelection => {
+  const day: SelectionDay = {
+    place,
+    usedBranchIds: [],
+    preventionSkills: requests
+      .map(({ skill }) => skill)
+      .filter((skill) =>
+        Object.hasOwn(input.authoredData.preventionRegions, skill),
+      ),
+    lowerBodyDirections: "LOWER_BODY",
+  };
+  return requests.reduce<DayBranchSelection>(
     ({ selections, usedBranchIds }, request) => {
       const step = selectSkillBranches(
         request,
-        { place, usedBranchIds },
+        { ...day, usedBranchIds },
         profile,
         input,
       );
@@ -309,3 +320,4 @@ export const selectDayBranches = (
     },
     { selections: [], usedBranchIds: [] },
   );
+};

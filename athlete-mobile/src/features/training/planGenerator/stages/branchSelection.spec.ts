@@ -3,6 +3,7 @@ import {
   generateDirectionSequence,
   generateMultiEntryRequest,
   generateSelectionBranches,
+  generateSelectionDay,
   generateSkillSelectionRequest,
 } from "@test/factories/branchSelection";
 import { generateDerivedProfile } from "@test/factories/derivedProfile";
@@ -12,15 +13,15 @@ import {
   generateTreeBranch,
 } from "@test/factories/skillTree";
 import type { PlanGenerationInput } from "../planGenerationInput/planGenerationInput";
-import type { BranchRuleChainDay } from "../ruleFamilies/branchRuleChain";
 import {
   selectDayBranches,
   selectSkillBranches,
   type SkillSelectionRequest,
 } from "./branchSelection";
+import type { SelectionDay } from "./tagEntryPool";
 
 const advancedAthlete = generateDerivedProfile();
-const hallDay: BranchRuleChainDay = { place: "HALL", usedBranchIds: [] };
+const hallDay = generateSelectionDay("HALL");
 
 // One slot without a type draw takes two draws: involvement, then the pick.
 const COMPLEX = 0.5;
@@ -31,7 +32,7 @@ const LAST = 0.99;
 const selectBranchIds = (
   input: PlanGenerationInput,
   request: SkillSelectionRequest,
-  day: BranchRuleChainDay = hallDay,
+  day: SelectionDay = hallDay,
   profile = advancedAthlete,
 ): string[] => {
   const { selection } = selectSkillBranches(request, day, profile, input);
@@ -271,7 +272,7 @@ describe("branchSelection: selectSkillBranches", () => {
     );
 
     expect(
-      selectBranchIds(input, request, { place: "STUDIO", usedBranchIds: [] }),
+      selectBranchIds(input, request, generateSelectionDay("STUDIO")),
     ).toEqual(["145"]);
   });
 
@@ -310,7 +311,7 @@ describe("branchSelection: selectSkillBranches", () => {
     const request = generateSkillSelectionRequest("GKS", [], 2);
 
     expect(
-      selectBranchIds(input, request, { place: "HOME", usedBranchIds: [] }),
+      selectBranchIds(input, request, generateSelectionDay("HOME")),
     ).toEqual(["a", "c"]);
   });
 
@@ -330,8 +331,40 @@ describe("branchSelection: selectSkillBranches", () => {
     ]);
 
     expect(
-      selectBranchIds(input, request, { place: "HOME", usedBranchIds: [] }),
+      selectBranchIds(input, request, generateSelectionDay("HOME")),
     ).toEqual(["c", "a"]);
+  });
+
+  describe("prevention region", () => {
+    it("draws knee prevention from the knee and hip prevention branches only", () => {
+      const input = generateBranchSelectionInput({
+        skillTrees: {
+          PREVKG: generateSelectionBranches({
+            a: ["PREVENTION_SHOULDER"],
+            b: ["PREVENTION_HIP"],
+          }),
+        },
+        draws: [COMPLEX, FIRST],
+      });
+      const request = generateSkillSelectionRequest("PREVKNEE", [], 1);
+
+      expect(selectBranchIds(input, request)).toEqual(["b"]);
+    });
+
+    it("draws from the whole prevention tree when no branch covers the skill's regions", () => {
+      const input = generateBranchSelectionInput({
+        skillTrees: {
+          PREVKG: generateSelectionBranches({
+            a: ["PREVENTION_SHOULDER"],
+            b: ["PREVENTION_SPINE"],
+          }),
+        },
+        draws: [COMPLEX, LAST],
+      });
+      const request = generateSkillSelectionRequest("PREVKNEE", [], 1);
+
+      expect(selectBranchIds(input, request)).toEqual(["b"]);
+    });
   });
 
   it("raises the configuration error OTHER/OTHER for a skill tree the authored data lacks", () => {
@@ -444,7 +477,7 @@ describe("branchSelection: selectSkillBranches", () => {
 
     const { usedBranchIds } = selectSkillBranches(
       request,
-      { place: "HALL", usedBranchIds: ["a", "z"] },
+      generateSelectionDay("HALL", { usedBranchIds: ["a", "z"] }),
       advancedAthlete,
       input,
     );
@@ -497,5 +530,30 @@ describe("branchSelection: selectDayBranches", () => {
     );
 
     expect(result.usedBranchIds).toEqual(["a", "b"]);
+  });
+
+  it("draws the special warm-up from the pain branches of the day's prevention skill", () => {
+    const input = generateBranchSelectionInput({
+      skillTrees: {
+        WUSPEZIAL: generateSelectionBranches({
+          a: ["PAIN_KNEE"],
+          b: ["PAIN_SPINE"],
+        }),
+        PREVKG: generateSelectionBranches({ p: ["PREVENTION_SPINE"] }),
+      },
+      draws: [COMPLEX, FIRST, COMPLEX, FIRST],
+    });
+
+    const { selections } = selectDayBranches(
+      [
+        generateSkillSelectionRequest("WUSPEZIAL", [], 1),
+        generateSkillSelectionRequest("PREVSPINE", [], 1),
+      ],
+      "HALL",
+      advancedAthlete,
+      input,
+    );
+
+    expect(selections[0]).toMatchObject({ branches: [{ branchId: "b" }] });
   });
 });

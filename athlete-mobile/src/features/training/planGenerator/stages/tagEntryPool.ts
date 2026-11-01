@@ -14,11 +14,19 @@ import type { SlotCandidate } from "./branchSlotFilters";
 import type { DerivedProfile } from "./profileDerivation";
 import { selectSkillTree } from "./skillTreeSelection";
 
+/** The day a skill selection reads, besides the skill's own request. */
+export interface SelectionDay extends BranchRuleChainDay {
+  /** The prevention skills of the day, whose regions the special warm-up reads. */
+  readonly preventionSkills: readonly string[];
+  /** The movement direction configuration the lower body follows. */
+  readonly lowerBodyDirections: "LOWER_BODY" | "LOWER_BODY_GKS";
+}
+
 /** Everything a tag entry of one skill reads besides its own tags. */
 export interface SkillContext {
   readonly skill: string;
-  /** The day's place and the branches the day holds so far. */
-  readonly day: BranchRuleChainDay;
+  /** The day's place, prevention skills, lower body directions and the branches the day holds so far. */
+  readonly day: SelectionDay;
   readonly profile: DerivedProfile;
   readonly input: PlanGenerationInput;
 }
@@ -77,6 +85,51 @@ const keepRegion = (tree: SkillTreeType, region: string): SkillTreeType =>
     ),
   );
 
+const SPECIAL_WARM_UP = "WUSPEZIAL";
+
+interface PainRegionTarget {
+  readonly group: TagGroups;
+  readonly regions: readonly string[];
+}
+
+// A prevention skill reads its own region group, pain spec "Each prevention
+// skill draws from the region group it covers". The special warm-up reads the
+// regions of the day's prevention skills, as the old generator does:
+// utils/skillTreeUtils.ts#L213-L231
+const readPainRegionTarget = (
+  name: string,
+  { day, input }: SkillContext,
+): PainRegionTarget | null => {
+  const { preventionRegions } = input.authoredData;
+  if (Object.hasOwn(preventionRegions, name)) {
+    return { group: TagGroups.PREVENTION, regions: preventionRegions[name] };
+  }
+  if (name !== SPECIAL_WARM_UP) return null;
+  return {
+    group: TagGroups.PAIN,
+    regions: day.preventionSkills.flatMap((skill) => preventionRegions[skill]),
+  };
+};
+
+// Keeps the whole tree when no branch matches, as the old generator does:
+// utils/skillTreeUtils.ts#L135-L156, #L213-L231
+const keepPainRegions = (
+  tree: SkillTreeType,
+  name: string,
+  context: SkillContext,
+): SkillTreeType => {
+  const target = readPainRegionTarget(name, context);
+  if (target === null) return tree;
+  const kept = Object.fromEntries(
+    Object.entries(tree).filter(([, { tags }]) =>
+      getTagValues(tags, target.group).some((region) =>
+        target.regions.includes(region),
+      ),
+    ),
+  );
+  return Object.keys(kept).length > 0 ? kept : tree;
+};
+
 // The max strength rowing name maps to branch 141, which MAX.json keeps empty;
 // the old generator reads branch 142 instead:
 // generators/PlanGenerator.ts#L1467-L1470, #L1508-L1521
@@ -127,7 +180,11 @@ export const readEntryPool = (
   const skillTags = getTagValues(tags, TagGroups.SKILL);
   const names = getTagValues(tags, TagGroups.EXERCISE_NAME);
   const readTree = (name: string) =>
-    selectSkillTree(name, placeHasWeights, input.authoredData.skillTrees);
+    keepPainRegions(
+      selectSkillTree(name, placeHasWeights, input.authoredData.skillTrees),
+      name,
+      context,
+    );
   if (regions.length > 0) {
     const region =
       regions.length > 1 ? drawItem(regions, input.random) : regions[0];

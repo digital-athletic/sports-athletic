@@ -275,6 +275,25 @@ describe("branchSelection: selectSkillBranches", () => {
     ).toEqual(["145"]);
   });
 
+  it("reads branch 142 for the max strength rowing name, since branch 141 holds no exercise", () => {
+    const input = generateBranchSelectionInput({
+      skillTrees: {
+        MAX: {
+          "141": generateSkillBranch([], {}),
+          ...generateSelectionBranches({ "142": [] }),
+        },
+      },
+      draws: [COMPLEX, FIRST],
+    });
+    const request = generateSkillSelectionRequest(
+      "MAX",
+      ["EXERCISE_NAME_ROWING"],
+      1,
+    );
+
+    expect(selectBranchIds(input, request)).toEqual(["142"]);
+  });
+
   it("fills the weighted share as a quota over the slots, drawing the type while both quotas are open", () => {
     const input = generateBranchSelectionInput({
       skillTrees: {

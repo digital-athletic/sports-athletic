@@ -77,6 +77,16 @@ const keepRegion = (tree: SkillTreeType, region: string): SkillTreeType =>
     ),
   );
 
+// The max strength rowing name maps to branch 141, which MAX.json keeps empty;
+// the old generator reads branch 142 instead:
+// generators/PlanGenerator.ts#L1467-L1470, #L1508-L1521
+const STAND_IN_BRANCH_IDS: Readonly<Record<string, string>> = { "141": "142" };
+
+const replaceStandIn = (branchId: string): string =>
+  Object.hasOwn(STAND_IN_BRANCH_IDS, branchId)
+    ? STAND_IN_BRANCH_IDS[branchId]
+    : branchId;
+
 // Named branches may sit in any skill tree.
 const readNamedBranches = (
   names: readonly string[],
@@ -88,6 +98,7 @@ const readNamedBranches = (
   );
   return Object.fromEntries(
     getBranchIdsByNames([...names], skill)
+      .map(replaceStandIn)
       .filter((branchId) => Object.hasOwn(allBranches, branchId))
       .map((branchId) => [branchId, allBranches[branchId]]),
   );

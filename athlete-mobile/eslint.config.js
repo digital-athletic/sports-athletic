@@ -81,9 +81,60 @@ const PATH_FIELD_BY_IMPORT_SYNTAX = {
 const OLD_GENERATOR_MESSAGE =
   "The new generator imports nothing of the old one.";
 const OLD_UTILS_MESSAGE =
-  "Old generator logic: rewrite it in workoutGenerator/ instead.";
+  "Old generator logic: rewrite it in the new generator instead.";
 const OLD_MODULE_MESSAGE =
   "The new generator loads no module of the old generator or its utils.";
+
+// New generator code. ESLint matches import regexes case-insensitively by
+// default, which would ban the old "generators/PlanGenerator" module too, so
+// these patterns set caseSensitive.
+const PLAN_GENERATOR_PATH = "(^|/)planGenerator(/|$)";
+const WORKOUT_GENERATOR_PATH = "(^|/)workoutGenerator(/|$)";
+const ROUTER_PATH = "(^|/)(workout|plan)GeneratorRouter(\\.ts|/index)?$";
+const NEW_CODE_PATH = `(${PLAN_GENERATOR_PATH})|(${WORKOUT_GENERATOR_PATH})|(${ROUTER_PATH})`;
+const PLAN_GENERATOR_MESSAGE =
+  "The workout generator imports nothing of the plan generator.";
+const NEW_CODE_MESSAGE =
+  "The old generator imports no new generator and no router.";
+
+const OLD_GENERATOR_IMPORT_PATTERNS = [
+  { regex: OLD_GENERATOR_PATH, message: OLD_GENERATOR_MESSAGE },
+  {
+    regex: matchOldUtilsPath(BANNED_UTILS_MODULES),
+    message: OLD_UTILS_MESSAGE,
+  },
+  ...Object.entries(ALLOWED_NAMES_BY_MIXED_UTILS_MODULE).map(
+    ([moduleName, allowImportNames]) => ({
+      regex: matchOldUtilsPath([moduleName]),
+      allowImportNames,
+      message: OLD_UTILS_MESSAGE,
+    }),
+  ),
+];
+
+// Bans the paths for require, jest.requireActual, import() and import types.
+const restrictModuleLoads = (pathRegex, message) =>
+  Object.entries(PATH_FIELD_BY_IMPORT_SYNTAX).map(([syntax, pathField]) => ({
+    selector: `${syntax}[${pathField}=/${pathRegex.replaceAll("/", "\\/")}/]`,
+    message,
+  }));
+
+// A new generator imports no code of the old generator, plus the given paths.
+const createNewGeneratorBlock = (folder, extraPatterns, extraLoads) => ({
+  files: [`src/features/training/${folder}/**`],
+  rules: {
+    "@typescript-eslint/no-require-imports": "error",
+    "no-restricted-imports": [
+      "error",
+      { patterns: [...OLD_GENERATOR_IMPORT_PATTERNS, ...extraPatterns] },
+    ],
+    "no-restricted-syntax": [
+      "error",
+      ...restrictModuleLoads(OLD_MODULE_PATH, OLD_MODULE_MESSAGE),
+      ...extraLoads,
+    ],
+  },
+});
 
 module.exports = defineConfig([
   expoConfig,
@@ -141,42 +192,41 @@ module.exports = defineConfig([
       ],
     },
   },
-  // The new workout generator is a full rewrite and imports no code of the old
-  // generator. See the constants above the config for the banned paths.
+  // The new workout and plan generators are full rewrites and import no code
+  // of the old generator. The workout generator imports nothing of the plan
+  // generator either. See the constants above the config for the banned paths.
+  createNewGeneratorBlock(
+    "workoutGenerator",
+    [
+      {
+        regex: PLAN_GENERATOR_PATH,
+        caseSensitive: true,
+        message: PLAN_GENERATOR_MESSAGE,
+      },
+    ],
+    restrictModuleLoads(PLAN_GENERATOR_PATH, PLAN_GENERATOR_MESSAGE),
+  ),
+  createNewGeneratorBlock("planGenerator", [], []),
+  // The old generator stays as it is until its deletion and never depends on
+  // new code. This block adds import rules only.
   {
-    files: ["src/features/training/workoutGenerator/**"],
+    files: ["src/features/training/generators/**"],
     rules: {
-      "@typescript-eslint/no-require-imports": "error",
       "no-restricted-imports": [
         "error",
         {
           patterns: [
             {
-              regex: OLD_GENERATOR_PATH,
-              message: OLD_GENERATOR_MESSAGE,
+              regex: NEW_CODE_PATH,
+              caseSensitive: true,
+              message: NEW_CODE_MESSAGE,
             },
-            {
-              regex: matchOldUtilsPath(BANNED_UTILS_MODULES),
-              message: OLD_UTILS_MESSAGE,
-            },
-            ...Object.entries(ALLOWED_NAMES_BY_MIXED_UTILS_MODULE).map(
-              ([moduleName, allowImportNames]) => ({
-                regex: matchOldUtilsPath([moduleName]),
-                allowImportNames,
-                message: OLD_UTILS_MESSAGE,
-              }),
-            ),
           ],
         },
       ],
       "no-restricted-syntax": [
         "error",
-        ...Object.entries(PATH_FIELD_BY_IMPORT_SYNTAX).map(
-          ([syntax, pathField]) => ({
-            selector: `${syntax}[${pathField}=/${OLD_MODULE_PATH.replaceAll("/", "\\/")}/]`,
-            message: OLD_MODULE_MESSAGE,
-          }),
-        ),
+        ...restrictModuleLoads(NEW_CODE_PATH, NEW_CODE_MESSAGE),
       ],
     },
   },

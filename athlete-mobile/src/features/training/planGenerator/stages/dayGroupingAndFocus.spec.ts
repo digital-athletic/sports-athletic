@@ -19,16 +19,16 @@ const weekdaysPerGroup = (groups: readonly TrainingDayGroup[]): number[][] =>
 
 describe("assignTrainingDayFocus", () => {
   describe("day grouping", () => {
-    it("groups consecutive active weekdays and breaks groups at rest days", () => {
+    it("starts the groups after the first rest day and wraps through the week", () => {
       const input = generateScheduledPlanGenerationInput([
         { weekday: MON, place: "HOME", duration: 30 },
         { weekday: TUE, place: "HOME", duration: 30 },
-        { weekday: THU, place: "HOME", duration: 30 },
+        { weekday: FRI, place: "HOME", duration: 30 },
       ]);
 
       const groups = assignTrainingDayFocus(input, adult);
 
-      expect(weekdaysPerGroup(groups)).toEqual([[MON, TUE], [THU]]);
+      expect(weekdaysPerGroup(groups)).toEqual([[FRI], [MON, TUE]]);
     });
 
     it("wraps a group from Sunday into Monday", () => {
@@ -309,6 +309,21 @@ describe("assignTrainingDayFocus", () => {
         });
       },
     );
+
+    it("converts the first day in group order when two PHASE days are equally long", () => {
+      const input = generateScheduledPlanGenerationInput(
+        [
+          { weekday: MON, place: "STUDIO", duration: 60 },
+          { weekday: FRI, place: "STUDIO", duration: 60 },
+        ],
+        ["STUDIO"],
+      );
+
+      expect(focusPerWeekday(assignTrainingDayFocus(input, adult))).toEqual({
+        [MON]: "PHASE",
+        [FRI]: "COMBINED",
+      });
+    });
 
     it("skips a home day without run equipment", () => {
       const input = generateScheduledPlanGenerationInput(

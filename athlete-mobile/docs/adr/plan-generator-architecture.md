@@ -155,7 +155,6 @@ The new generator follows the spec. In these places the old code differs, and th
 
 | Rule in the new generator | Spec | Old code |
 |---|---|---|
-| Day groups come in order of their first weekday. The weekly cardio guarantee picks the first of equally long days in that order. | Section 3, rules 1 and 3 | [Day grouping](../../src/features/training/generators/PlanGenerator.ts#L724-L753) |
 | Every exercise slot applies the 70/30 split of complex and isolated exercises, the core region included. | Section 5, rule 4 | [Involvement draw](../../src/features/training/generators/PlanGenerator.ts#L1734-L1752) |
 | The muscle filter keeps the branches that train a big muscle no earlier slot of the tag entry trained, and every candidate when none does. A pick marks all its big muscles as trained. The old code falls back from untrained big muscles to any big muscle, then to small muscles, and marks one muscle per pick. | Section 5, rule 4 | [Muscle filter](../../src/features/training/generators/PlanGenerator.ts#L1701-L1729), [trained muscle](../../src/features/training/generators/PlanGenerator.ts#L1824-L1834) |
 | The weighted/bodyweight quota counts over all slots of a skill, as "Each skill enforces the share as a quota over its slots" defines. The old code counts the quota per tag entry. | Section 5, rule 3; Plan Workout Generation, weighted vs bodyweight ratio | [Weighted share](../../src/features/training/generators/PlanGenerator.ts#L1546-L1566) |

@@ -439,6 +439,9 @@
       "setKilos": "{{weight}} kg",
       "setSeconds": "{{count}} s",
       "setReps": "{{count}} reps",
+      "a11y": {
+        "nextExercise": "Next exercise"
+      },
       "finishTraining": "Finish Training",
       "rest": {
         "skip": "Skip rest",

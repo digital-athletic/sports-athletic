@@ -11,8 +11,8 @@ import { useState } from "react";
 
 /**
  * Composes the list-view (checklist) screen's logic from its focused
- * sub-hooks: row building, per-row completion, reps drafts, the exercise
- * sheet, and screen lifecycle.
+ * sub-hooks: entries per exercise, per-set completion, reps drafts, the
+ * exercise sheet, and screen lifecycle.
  */
 export function useTrainingListScreen() {
   const router = useRouter();
@@ -20,7 +20,7 @@ export function useTrainingListScreen() {
   const hasHydrated = useTrainingStore((s) => s._hasHydrated);
   const { finishTraining } = useFinishTraining();
 
-  const { rows, allCompleted } = useTrainingListRows();
+  const { rows, blocks, allCompleted } = useTrainingListRows();
   const completion = useTrainingListCompletion();
   const { repsDraft, setRepsForRow, handleSubmitReps } = useTrainingListReps();
   const { handleAbort, isScreenFocused } = useTrainingListLifecycle({
@@ -60,7 +60,7 @@ export function useTrainingListScreen() {
     hasHydrated,
     exerciseList,
     repsDraft,
-    rows,
+    blocks,
     allCompleted,
     isFinishing,
     handleFinish,

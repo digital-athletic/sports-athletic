@@ -198,7 +198,7 @@ test.describe("Training list: checklist session", () => {
       await trainingOverviewPage.startAsChecklist();
       await trainingListPage.expectVisible();
 
-      // Rows follow generator order, so the last matching row is the working set
+      // One entry holds the warm up and working sets; feedback follows the last set
       const maxRow = trainingListPage.lastRowByExerciseName(
         "KH-Bankdrücken (Max-K)",
       );

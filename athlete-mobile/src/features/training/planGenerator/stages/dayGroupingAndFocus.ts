@@ -29,10 +29,9 @@ type RunEquipmentCheck = (place: PlaceType) => boolean;
 const COMBINED_MIN_DURATION = 45;
 const THREE_DAY_FOCUSES: readonly Focus[] = ["PHASE", "CARDIO", "STABILITY"];
 
-// Starts after a rest day, so a group that runs from Sunday into Monday stays
-// whole. Groups are ordered by their first weekday; a group that wraps into
-// Monday starts late in the week and comes last. The old code orders groups
-// from the first rest day instead:
+// Starts after the first rest day and wraps through the week, so a group that
+// runs from Sunday into Monday stays whole. The groups come in that walk
+// order, as in the old generator:
 // src/features/training/generators/PlanGenerator.ts#L724-L753
 const groupActiveDays = (
   schedule: readonly TrainingDayType[],
@@ -50,7 +49,7 @@ const groupActiveDays = (
       group = [];
     }
   }
-  return groups.sort((first, second) => first[0].weekday - second[0].weekday);
+  return groups;
 };
 
 const withFocus = (
@@ -195,7 +194,9 @@ const applyWeeklyCardioGuarantee = (
  * once a week without a CARDIO day gets one PHASE day converted to COMBINED
  * or CARDIO. The focus depends on the schedule and the training places only,
  * so the stage runs once per plan and every section reads the same focus per
- * weekday. The groups come in order of their first weekday.
+ * weekday. The groups start after the first rest day and wrap through the
+ * week; the days inside a group keep training order. The group order decides
+ * which day wins a tie in the weekly cardio guarantee.
  *
  * // The studio has a treadmill, the home has no run equipment.
  * assignTrainingDayFocus(mondayStudio60AndTuesdayHome45, adult)

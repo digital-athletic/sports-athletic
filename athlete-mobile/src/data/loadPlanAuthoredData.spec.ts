@@ -1,4 +1,5 @@
 import { getAllExercises } from "./exerciseRegistry";
+import { getRegionsForPreventionSkills } from "@/features/training/utils/preventionUtils";
 import { loadDirections } from "./loadDirections";
 import { loadMaxMinutes } from "./loadMaxMinutes";
 import { loadPlanAuthoredData } from "./loadPlanAuthoredData";
@@ -28,6 +29,14 @@ describe("loadPlanAuthoredData", () => {
     expect(regionConfigs.SWR2KG).toEqual(loadRegionConfig("SWR2KG"));
   });
 
+  it("holds the pain regions each prevention skill covers", () => {
+    const { preventionRegions } = loadPlanAuthoredData();
+
+    expect(preventionRegions.PREVKNEE).toEqual(
+      getRegionsForPreventionSkills(["PREVKNEE"]),
+    );
+  });
+
   it("holds the movement direction configurations, skill priorities and maximum minutes", () => {
     const data = loadPlanAuthoredData();
 
@@ -50,5 +59,6 @@ describe("loadPlanAuthoredData", () => {
     expect(second.sectionTemplates).toBe(first.sectionTemplates);
     expect(Object.isFrozen(first.movementDirections)).toBe(true);
     expect(Object.isFrozen(first.regionConfigs.SWR1)).toBe(true);
+    expect(Object.isFrozen(first.preventionRegions)).toBe(true);
   });
 });

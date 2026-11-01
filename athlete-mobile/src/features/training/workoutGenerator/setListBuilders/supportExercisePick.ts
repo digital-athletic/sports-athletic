@@ -20,8 +20,8 @@ import { readGenderTag } from "../exerciseValues/exerciseStartValues";
 import type { GenerationInput } from "../generationInput/generationInput";
 import { readGenderLevelValue } from "../exerciseValues/startAndTargetValues";
 
-const SUPPORT_SET_SECONDS = 30;
-const SUPPORT_SET_REPETITIONS = 8;
+export const SUPPORT_SET_SECONDS = 30;
+export const SUPPORT_SET_REPETITIONS = 8;
 
 type SupportExerciseType = "weighted" | "bodyweight";
 

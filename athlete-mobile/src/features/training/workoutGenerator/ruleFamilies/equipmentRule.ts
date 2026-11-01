@@ -1,7 +1,6 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { getTagValues } from "@/utils/tagUtils";
 import { isEquipmentPartAvailable } from "./equipmentAvailability";
-import type { GenerationInput } from "../generationInput/generationInput";
 import {
   type BranchRemoval,
   type CandidateBranch,
@@ -21,7 +20,7 @@ const listBranchExerciseIds = (levels: CandidateLevels): string[] => [
 const listMissingBranchEquipment = (
   tags: string[],
   levels: CandidateLevels,
-  equipment: string[],
+  equipment: readonly string[],
 ): string[] => {
   const branchParts = getTagValues(tags, TagGroups.EQUIPMENT);
   const exerciseIds = listBranchExerciseIds(levels);
@@ -35,11 +34,12 @@ const listMissingBranchEquipment = (
  * Removes the branches that need equipment the place lacks, with one region
  * request each, and the branches without levels, with no request. A branch
  * without levels gets empty removal details: it names no equipment, so
- * listMissingEquipment adds nothing for it.
+ * listMissingEquipment adds nothing for it. The equipment is the equipment of
+ * one training place.
  */
 export const filterBranchesByEquipment = <T extends CandidateBranch>(
   branches: Record<string, T>,
-  { equipment }: GenerationInput,
+  equipment: readonly string[],
 ): RuleFamilyResult<T> => {
   const keep: Record<string, T> = {};
   const removals: BranchRemoval[] = [];

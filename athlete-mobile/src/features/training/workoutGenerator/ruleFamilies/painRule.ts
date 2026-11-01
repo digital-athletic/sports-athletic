@@ -2,15 +2,15 @@ import { TagGroups } from "@/constants/tagGroups";
 import { getBlocksFromPains } from "@/features/training/utils/painUtils";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import { getTagValues, getUserTagValues } from "@/utils/tagUtils";
-import type { GenerationInput } from "../generationInput/generationInput";
 import {
   type CandidateBranch,
   keepBranches,
   listBranchRemovals,
+  type RuleFamilyAthlete,
   type RuleFamilyResult,
 } from "./ruleFamily";
 
-const listBlockedRegions = ({ athlete }: GenerationInput): string[] =>
+const listBlockedRegions = (athlete: RuleFamilyAthlete): string[] =>
   getBlocksFromPains(
     getUserTagValues(athlete.workoutData?.tags, TagGroups.PAIN),
   );
@@ -65,9 +65,9 @@ const listRegionsBlockedOnAnyLevel = (
  */
 export const filterBranchesByPain = <T extends CandidateBranch>(
   branches: Record<string, T>,
-  input: GenerationInput,
+  athlete: RuleFamilyAthlete,
 ): RuleFamilyResult<T> => {
-  const blockedRegions = listBlockedRegions(input);
+  const blockedRegions = listBlockedRegions(athlete);
   const keep = keepBranches(
     branches,
     (branch) =>
@@ -89,11 +89,12 @@ export const filterBranchesByPain = <T extends CandidateBranch>(
  */
 export const filterBranchesByPainOnEveryLevel = <T extends CandidateBranch>(
   branches: Record<string, T>,
-  input: GenerationInput,
+  athlete: RuleFamilyAthlete,
+  exerciseCatalog: readonly Pick<ExerciseType, "id" | "tags">[],
 ): RuleFamilyResult<T> => {
-  const blockedRegions = listBlockedRegions(input);
+  const blockedRegions = listBlockedRegions(athlete);
   const listBranchBlockingRegions = (branch: T): string[] =>
-    listRegionsBlockedOnAnyLevel(branch, input.exerciseCatalog, blockedRegions);
+    listRegionsBlockedOnAnyLevel(branch, exerciseCatalog, blockedRegions);
   const keep = keepBranches(
     branches,
     (branch) => listBranchBlockingRegions(branch).length === 0,

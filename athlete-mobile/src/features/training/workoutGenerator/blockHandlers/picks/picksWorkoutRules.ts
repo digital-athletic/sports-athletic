@@ -1,4 +1,6 @@
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
+import { ageGroupFor } from "@/features/training/utils/ageUtils";
+import { getUserBirthday } from "@/features/training/utils/userDataUtils";
 import type { Block } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { filterBranchesByAgeGroup } from "../../ruleFamilies/ageGroupRule";
@@ -49,13 +51,16 @@ export const filterPoolByPicksWorkoutRules = (
   pool: SkillTreeType,
   input: GenerationInput,
 ): SkillTreeType => {
-  const painResult = filterBranchesByPain(pool, input);
+  const painResult = filterBranchesByPain(pool, input.athlete);
   throwWhenPoolEmpty(
     painResult.keep,
     "PAIN",
     painResult.removals.flatMap((removal) => removal.details),
   );
-  const equipmentResult = filterBranchesByEquipment(painResult.keep, input);
+  const equipmentResult = filterBranchesByEquipment(
+    painResult.keep,
+    input.equipment,
+  );
   throwWhenPoolEmpty(
     equipmentResult.keep,
     "EQUIPMENT",
@@ -63,10 +68,10 @@ export const filterPoolByPicksWorkoutRules = (
   );
   const ageGroupKeep = filterBranchesByAgeGroup(
     equipmentResult.keep,
-    input,
+    ageGroupFor(getUserBirthday(input.athlete)),
   ).keep;
   throwWhenPoolEmpty(ageGroupKeep, "AGE", []);
-  const genderKeep = filterBranchesByGender(ageGroupKeep, input).keep;
+  const genderKeep = filterBranchesByGender(ageGroupKeep, input.athlete).keep;
   throwWhenPoolEmpty(genderKeep, "GENDER", []);
   return genderKeep;
 };

@@ -1,5 +1,7 @@
 import { TagGroups } from "@/constants/tagGroups";
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
+import { ageGroupFor } from "@/features/training/utils/ageUtils";
+import { getUserBirthday } from "@/features/training/utils/userDataUtils";
 import type { BlockPick, BlockPicks } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { getTagValues } from "@/utils/tagUtils";
@@ -100,8 +102,11 @@ export const createStrengthTestWarmUpHandler = (
     const tree = skillTrees[block.skill] ?? {};
     const draw: WarmUpDraw = {
       pool: filterBranchesByGender(
-        filterBranchesByAgeGroup(tree, input).keep,
-        input,
+        filterBranchesByAgeGroup(
+          tree,
+          ageGroupFor(getUserBirthday(input.athlete)),
+        ).keep,
+        input.athlete,
       ).keep,
       input,
       usedBranchIds: [],

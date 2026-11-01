@@ -16,7 +16,7 @@ import type { StoredBranch } from "./storedBranchLookup";
 // A training day runs muscle soreness first, then equipment, then fitness level
 const BRANCHES_RULE_CHAIN: readonly RuleFamily[] = [
   filterBranchesByMuscleSoreness,
-  filterBranchesByEquipment,
+  (branches, input) => filterBranchesByEquipment(branches, input.equipment),
   filterBranchesByFitnessLevel,
 ];
 

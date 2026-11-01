@@ -438,7 +438,8 @@
       "continueExercise": "Continue",
       "finishTraining": "Finish Training",
       "rest": {
-        "skip": "Skip rest"
+        "skip": "Skip rest",
+        "nextSet": "Next set"
       }
     },
     "active": {

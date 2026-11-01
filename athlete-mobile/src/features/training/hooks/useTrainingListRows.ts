@@ -18,6 +18,7 @@ export type ListRow = {
   exerciseId: string;
   displayName: string;
   setLabel?: string;
+  nextSetLabel?: string;
   isTest: boolean;
   isLastInSet: boolean;
   isFeedbackSkill: boolean;
@@ -54,12 +55,19 @@ function buildWeightPart(
   return isDumbbellExercise ? `${t("training.active.2x")}${kilos}` : kilos;
 }
 
-function buildSetLabel(
+const joinParts = (parts: (string | undefined)[]) =>
+  parts.filter(Boolean).join(" · ") || undefined;
+
+/**
+ * Labels of a row: setLabel for the row itself, nextSetLabel for the rest
+ * screen preview, which adds the duration of a timed set.
+ */
+function buildSetLabels(
   exercise: UserExerciseDataType,
   exerciseData: ExerciseType | undefined,
   maxValues: MaxValuesType,
   t: TFunction,
-): string | undefined {
+) {
   const setPart =
     exercise.set && exercise.set[1] > 1
       ? t("training.active.set", {
@@ -74,11 +82,16 @@ function buildSetLabel(
       ? t("training.overview.repetitions", { count: exercise.repetition })
       : undefined;
 
+  const durationPart = exercise.duration
+    ? t("training.overview.seconds", { count: exercise.duration })
+    : undefined;
+
   const weightPart = buildWeightPart(exercise, exerciseData, maxValues, t);
 
-  return (
-    [setPart, repsPart, weightPart].filter(Boolean).join(" · ") || undefined
-  );
+  return {
+    setLabel: joinParts([setPart, repsPart, weightPart]),
+    nextSetLabel: joinParts([setPart, repsPart ?? durationPart, weightPart]),
+  };
 }
 
 /** Builds the visible checklist rows (pause exercises excluded) for the list view. */
@@ -101,7 +114,7 @@ export function useTrainingListRows() {
           exerciseData?.displayName ??
           exerciseData?.name ??
           exercise.exerciseId,
-        setLabel: buildSetLabel(exercise, exerciseData, maxValues, t),
+        ...buildSetLabels(exercise, exerciseData, maxValues, t),
         isTest: exercise.repetition === -1,
         isLastInSet: exercise.set?.[0] === exercise.set?.[1],
         isFeedbackSkill: isFeedbackEligibleSkill(

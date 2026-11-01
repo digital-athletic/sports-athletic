@@ -438,7 +438,8 @@
       "continueExercise": "Weiter",
       "finishTraining": "Training beenden",
       "rest": {
-        "skip": "Pause überspringen"
+        "skip": "Pause überspringen",
+        "nextSet": "Nächster Satz"
       }
     },
     "active": {

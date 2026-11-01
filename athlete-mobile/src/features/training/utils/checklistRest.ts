@@ -1,11 +1,13 @@
+import { type ListRow } from "@/features/training/hooks/useTrainingListRows";
 import { isPauseExercise } from "@/features/training/models/IdTypes";
 import { type UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 
 type PlannedRest = { index: number; duration: number };
 
-/** What the rest screen shows: the rest length. */
+/** What the rest screen shows: the rest length and, if a set is still open, the next set. */
 export type SheetRest = {
   duration: number;
+  nextSet?: { exerciseId: string; displayName: string; label?: string };
 };
 
 /** The rest after the sheet's set, with the callbacks that record it. */
@@ -27,4 +29,17 @@ export const findRestAfter = (
   }
   const duration = entry.duration ?? 0;
   return duration > 0 ? { index, duration } : null;
+};
+
+/** The next open row after the finished row, else the first open row before it. */
+export const findNextSetRow = (
+  rows: readonly ListRow[],
+  finishedIndex: number,
+): ListRow | null => {
+  const openRows = rows.filter(
+    (row) => !row.completed && row.index !== finishedIndex,
+  );
+  return (
+    openRows.find((row) => row.index > finishedIndex) ?? openRows[0] ?? null
+  );
 };

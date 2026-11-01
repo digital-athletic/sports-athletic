@@ -19,19 +19,15 @@ jest.mock("@/data/exerciseRegistry", () => ({
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, options?: Record<string, unknown>) => {
-      switch (key) {
-        case "training.active.set":
-          return `${options?.current} of ${options?.total}`;
-        case "training.overview.repetitions":
-          return `${options?.count} repetitions`;
-        case "training.overview.kilos":
-          return `${options?.weight} kg`;
-        case "training.active.2x":
-          return "each ";
-        default:
-          return key;
-      }
+    t: (key: string, options: Record<string, unknown> = {}) => {
+      const translations: Record<string, string> = {
+        "training.active.set": `${options.current} of ${options.total}`,
+        "training.overview.repetitions": `${options.count} repetitions`,
+        "training.overview.seconds": `${options.count} seconds`,
+        "training.overview.kilos": `${options.weight} kg`,
+        "training.active.2x": "each ",
+      };
+      return translations[key] ?? key;
     },
   }),
 }));
@@ -174,6 +170,65 @@ describe("useTrainingListRows: subtitle composition", () => {
     const { result } = await renderHook(() => useTrainingListRows());
 
     expect(result.current.rows[0].setLabel).toBeUndefined();
+  });
+});
+
+describe("useTrainingListRows: next set preview label", () => {
+  beforeEach(() => {
+    useTrainingStore.setState(BASELINE);
+    seedMaxValues();
+  });
+
+  afterEach(() => {
+    mockGetExerciseById.mockReset();
+  });
+
+  it("shows set number and repetitions", async () => {
+    mockGetExerciseById.mockReturnValue(
+      createExerciseData({ id: "1", tags: [] }),
+    );
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1", set: [2, 3], repetition: 10 }),
+      ],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.rows[0].nextSetLabel).toBe("2 of 3 · 10 repetitions");
+  });
+
+  it("shows the duration when the set has no repetitions", async () => {
+    mockGetExerciseById.mockReturnValue(
+      createExerciseData({ id: "1", tags: [] }),
+    );
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1", set: [1, 2], duration: 30 }),
+      ],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.rows[0].nextSetLabel).toBe("1 of 2 · 30 seconds");
+    expect(result.current.rows[0].setLabel).toBe("1 of 2");
+  });
+
+  it("prefixes the weight of a dumbbell exercise", async () => {
+    mockGetExerciseById.mockReturnValue(
+      createExerciseData({ id: "1", tags: ["EQ_DUMBBELL"] }),
+    );
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1", repetition: 8, weight: 20 }),
+      ],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.rows[0].nextSetLabel).toBe(
+      "8 repetitions · each 20.00 kg",
+    );
   });
 });
 

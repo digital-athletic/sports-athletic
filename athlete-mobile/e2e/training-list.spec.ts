@@ -69,7 +69,7 @@ test.describe("Training list: checklist session", () => {
   test.describe("Rest after a set", () => {
     test.use({ profile: createCompletedProfile(), signedIn: true });
 
-    test("athlete sees the rest countdown, skips the rest and returns to the list", async ({
+    test("athlete sees the next set while resting, skips the rest and returns to the list", async ({
       page,
     }) => {
       test.setTimeout(60000);
@@ -87,10 +87,12 @@ test.describe("Training list: checklist session", () => {
       await trainingOverviewPage.startAsChecklist();
       await trainingListPage.expectVisible();
 
-      const { rowId, restIndex } =
+      const { rowId, restIndex, nextExerciseName } =
         await trainingListPage.firstRowFollowedByRest();
       await trainingListPage.continueRowIntoRest(rowId);
-      await expect(trainingListPage.restTimer).toBeVisible();
+      await expect(trainingListPage.nextSetPreview).toContainText(
+        nextExerciseName,
+      );
 
       await trainingListPage.skipRest();
       await trainingListPage.expectRowCompleted(rowId);

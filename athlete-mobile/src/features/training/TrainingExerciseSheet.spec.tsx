@@ -231,9 +231,15 @@ describe("TrainingExerciseSheet", () => {
   });
 });
 
-// A planned 60 second rest, e.g. { duration: 60 }.
+// A 60 second rest before the second of three bench press sets, e.g.
+// { duration: 60, nextSet: { displayName: "Bench Press", label: "2 of 3 · each 20.00 kg" } }.
 const generateSheetRest = (overrides: Partial<SheetRest> = {}): SheetRest => ({
   duration: 60,
+  nextSet: {
+    exerciseId: "bench",
+    displayName: "Bench Press",
+    label: "2 of 3 · each 20.00 kg",
+  },
   ...overrides,
 });
 
@@ -339,6 +345,29 @@ describe("TrainingExerciseSheet: rest after a set", () => {
 
     expect(onRestEnd).toHaveBeenCalledWith(false);
     expect(onDismiss).toHaveBeenCalled();
+  });
+
+  it("previews the next set with its name and set details", async () => {
+    const { getByTestId } = await renderSheetWithRest();
+
+    await fireEvent.press(getByTestId("training-list-sheet-continue"));
+
+    const preview = getByTestId("training-list-sheet-next-set");
+    expect(preview).toHaveTextContent(/Bench Press/);
+    expect(preview).toHaveTextContent(/2 of 3 · each 20\.00 kg/);
+  });
+
+  it("shows the rest without a preview after the last set of the session", async () => {
+    const { getByTestId, queryByTestId } = await renderSheetWithRest({
+      rest: generateRestControl({
+        plan: generateSheetRest({ nextSet: undefined }),
+      }),
+    });
+
+    await fireEvent.press(getByTestId("training-list-sheet-continue"));
+
+    expect(getByTestId("training-list-sheet-rest")).toBeTruthy();
+    expect(queryByTestId("training-list-sheet-next-set")).toBeNull();
   });
 
   it("shows the rest after the athlete picks a feedback", async () => {

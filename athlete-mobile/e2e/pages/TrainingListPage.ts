@@ -31,8 +31,8 @@ export class TrainingListPage extends BasePage {
     return this.page.getByTestId("training-list-sheet-rest-skip");
   }
 
-  get restTimer() {
-    return this.page.getByTestId("training-list-sheet-rest-timer");
+  get nextSetPreview() {
+    return this.page.getByTestId("training-list-sheet-next-set");
   }
 
   async skipRest() {
@@ -150,7 +150,7 @@ export class TrainingListPage extends BasePage {
   /**
    * Row ids carry the set list index and rests get no row, so a gap of one
    * index marks a set followed by a rest, e.g. rows 3 and 5 with the rest at 4.
-   * Returns that set's row id and the rest's index.
+   * Returns that set's row id, the rest's index and the next row's exercise name.
    */
   async firstRowFollowedByRest() {
     const rowIndices = await this.page
@@ -169,9 +169,13 @@ export class TrainingListPage extends BasePage {
     }
 
     const setIndex = rowIndices[position];
+    const nextRowText = await this.page
+      .getByTestId(`training-list-row-${rowIndices[position + 1]}`)
+      .innerText();
     return {
       rowId: `training-list-row-${setIndex}`,
       restIndex: setIndex + 1,
+      nextExerciseName: nextRowText.split("\n")[0].trim(),
     };
   }
 

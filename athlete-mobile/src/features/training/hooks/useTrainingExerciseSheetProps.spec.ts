@@ -53,7 +53,12 @@ describe("useTrainingExerciseSheetProps: rest after a set", () => {
   ];
   const rows = [
     generateChecklistRow({ index: 0, displayName: "Squat" }),
-    generateChecklistRow({ index: 2, displayName: "Squat" }),
+    generateChecklistRow({
+      index: 2,
+      exerciseId: "squat",
+      displayName: "Squat",
+      nextSetLabel: "2 of 2 · 10 repetitions",
+    }),
   ];
 
   const startSet = async (row: ListRow) => {
@@ -77,10 +82,17 @@ describe("useTrainingExerciseSheetProps: rest after a set", () => {
     return { result, timing, onRestEnd };
   };
 
-  it("passes the planned rest to the sheet", async () => {
+  it("passes the planned rest and the next set to the sheet", async () => {
     const { result } = await startSet(rows[0]);
 
-    expect(result.current.sheetProps.rest?.plan).toEqual({ duration: 45 });
+    expect(result.current.sheetProps.rest?.plan).toEqual({
+      duration: 45,
+      nextSet: {
+        exerciseId: "squat",
+        displayName: "Squat",
+        label: "2 of 2 · 10 repetitions",
+      },
+    });
   });
 
   it("passes no rest for a set without a rest after it", async () => {

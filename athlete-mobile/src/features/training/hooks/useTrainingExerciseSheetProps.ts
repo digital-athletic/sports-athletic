@@ -4,6 +4,7 @@ import { useTrainingListSheet } from "@/features/training/hooks/useTrainingListS
 import { type TrainingListTiming } from "@/features/training/hooks/useTrainingListTiming";
 import { type UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import {
+  findNextSetRow,
   findRestAfter,
   type SheetRestControl,
 } from "@/features/training/utils/checklistRest";
@@ -28,14 +29,25 @@ const countdownDurationOf = (exercise: UserExerciseDataType | undefined) =>
 // The one place that decides whether a rest follows the row's set.
 const buildRestControl = (
   row: ListRow,
+  rows: ListRow[],
   exerciseList: UserExerciseDataType[] | null,
   tracker: ReturnType<typeof useChecklistRest>,
 ): SheetRestControl | undefined => {
   const rest = findRestAfter(exerciseList, row.index);
   if (!rest) return undefined;
 
+  const nextRow = findNextSetRow(rows, row.index);
   return {
-    plan: { duration: rest.duration },
+    plan: {
+      duration: rest.duration,
+      nextSet: nextRow
+        ? {
+            exerciseId: nextRow.exerciseId,
+            displayName: nextRow.displayName,
+            label: nextRow.nextSetLabel,
+          }
+        : undefined,
+    },
     onStart: () => tracker.startRest(rest.index),
     onEnd: tracker.endRest,
   };
@@ -82,7 +94,7 @@ export function useTrainingExerciseSheetProps({
       : undefined,
     repsValue: shownRow ? (repsDraft[shownRow.index] ?? 0) : 0,
     rest: activeRow
-      ? buildRestControl(activeRow, exerciseList, restTracker)
+      ? buildRestControl(activeRow, rows, exerciseList, restTracker)
       : undefined,
     onChangeReps: (value: string) => {
       if (activeRow) onChangeReps(activeRow.index, value);

@@ -36,6 +36,7 @@ export function useTrainingListScreen() {
     onSubmitReps: handleSubmitReps,
     onComplete: completion.handleComplete,
     onRestEnd: completion.handleRestEnd,
+    onSkip: completion.handleSkip,
   });
   const [isFinishing, setIsFinishing] = useState(false);
 
@@ -63,7 +64,6 @@ export function useTrainingListScreen() {
     allCompleted,
     isFinishing,
     handleFinish,
-    handleSkip: completion.handleSkip,
     handleShowInfo,
     handleStart,
     handleAbort,

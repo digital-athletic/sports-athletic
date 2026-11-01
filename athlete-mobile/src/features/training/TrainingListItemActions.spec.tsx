@@ -10,7 +10,6 @@ describe("TrainingListItemActions: accessible names", () => {
     isCompleted: false,
     repsValue: 0,
     onStart: jest.fn(),
-    onSkip: jest.fn(),
     testId: "row",
   };
 
@@ -44,17 +43,9 @@ describe("TrainingListItemActions: accessible names", () => {
     expect(getByLabelText("Completed: too hard")).toBeTruthy();
   });
 
-  it("hides the skip button for test rows", async () => {
+  it("shows no skip button on a pending row", async () => {
     const { queryByLabelText } = await render(
-      <TrainingListItemActions {...baseProps} isTest />,
-    );
-
-    expect(queryByLabelText("Skip exercise")).toBeNull();
-  });
-
-  it("hides the skip button once a row is completed", async () => {
-    const { queryByLabelText } = await render(
-      <TrainingListItemActions {...baseProps} isCompleted />,
+      <TrainingListItemActions {...baseProps} />,
     );
 
     expect(queryByLabelText("Skip exercise")).toBeNull();

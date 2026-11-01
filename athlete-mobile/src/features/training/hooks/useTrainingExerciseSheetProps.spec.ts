@@ -19,6 +19,7 @@ const startRowWithSkill = async (skill: string) => {
       onSubmitReps: jest.fn(),
       onComplete: jest.fn(),
       onRestEnd: jest.fn(),
+      onSkip: jest.fn(),
     }),
   );
   await act(() => {
@@ -26,6 +27,108 @@ const startRowWithSkill = async (skill: string) => {
   });
   return result.current.sheetProps;
 };
+
+describe("useTrainingExerciseSheetProps: skip", () => {
+  it("skips the row whose sheet is open", async () => {
+    const onSkip = jest.fn();
+    const rows = [
+      generateChecklistRow(),
+      generateChecklistRow({ index: 1, exerciseId: "lunge" }),
+    ];
+    const exerciseList = [createExercise(), createExercise()];
+
+    const { result } = await renderHook(() =>
+      useTrainingExerciseSheetProps({
+        rows,
+        exerciseList,
+        repsDraft: {},
+        timing: { startExercise: jest.fn(), endExercise: jest.fn() },
+        onChangeReps: jest.fn(),
+        onSubmitReps: jest.fn(),
+        onComplete: jest.fn(),
+        onRestEnd: jest.fn(),
+        onSkip,
+      }),
+    );
+    await act(() => {
+      result.current.handleStart(rows[1]);
+    });
+    await act(() => {
+      result.current.sheetProps.onSkip();
+    });
+
+    expect(onSkip).toHaveBeenCalledWith(rows[1]);
+  });
+
+  it("skips nothing once the sheet is closing", async () => {
+    const onSkip = jest.fn();
+    const rows = [generateChecklistRow()];
+
+    const { result } = await renderHook(() =>
+      useTrainingExerciseSheetProps({
+        rows,
+        exerciseList: [createExercise()],
+        repsDraft: {},
+        timing: { startExercise: jest.fn(), endExercise: jest.fn() },
+        onChangeReps: jest.fn(),
+        onSubmitReps: jest.fn(),
+        onComplete: jest.fn(),
+        onRestEnd: jest.fn(),
+        onSkip,
+      }),
+    );
+    await act(() => {
+      result.current.handleStart(rows[0]);
+    });
+    await act(() => {
+      result.current.sheetProps.onDismiss();
+    });
+    await act(() => {
+      result.current.sheetProps.onSkip();
+    });
+
+    expect(onSkip).not.toHaveBeenCalled();
+  });
+});
+
+describe("useTrainingExerciseSheetProps: other sheet actions", () => {
+  it("routes reps, completion, and dismiss to the row whose sheet is open", async () => {
+    const onChangeReps = jest.fn();
+    const onSubmitReps = jest.fn();
+    const onComplete = jest.fn();
+    const endExercise = jest.fn();
+    const rows = [generateChecklistRow()];
+    const exerciseList = [createExercise()];
+
+    const { result } = await renderHook(() =>
+      useTrainingExerciseSheetProps({
+        rows,
+        exerciseList,
+        repsDraft: { 0: 8 },
+        timing: { startExercise: jest.fn(), endExercise },
+        onChangeReps,
+        onSubmitReps,
+        onComplete,
+        onRestEnd: jest.fn(),
+        onSkip: jest.fn(),
+      }),
+    );
+    await act(() => {
+      result.current.handleStart(rows[0]);
+    });
+    await act(() => {
+      result.current.sheetProps.onChangeReps("9");
+      result.current.sheetProps.onSubmitReps();
+      result.current.sheetProps.onComplete("TOO_EASY");
+      result.current.sheetProps.onDismiss();
+    });
+
+    expect(onChangeReps).toHaveBeenCalledWith(0, "9");
+    expect(onSubmitReps).toHaveBeenCalledWith(rows[0]);
+    expect(onComplete).toHaveBeenCalledWith(rows[0], "TOO_EASY");
+    expect(endExercise).toHaveBeenCalled();
+  });
+});
 
 describe("useTrainingExerciseSheetProps: countdown duration", () => {
   it("keeps the duration for a timed row", async () => {
@@ -74,6 +177,7 @@ describe("useTrainingExerciseSheetProps: rest after a set", () => {
         onSubmitReps: jest.fn(),
         onComplete: jest.fn(),
         onRestEnd,
+        onSkip: jest.fn(),
       }),
     );
     await act(() => {

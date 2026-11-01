@@ -43,6 +43,7 @@ describe("TrainingExerciseSheet", () => {
         sessionKey={1}
         duration={undefined}
         isScreenFocused
+        onSkip={jest.fn()}
         repsValue={0}
         onChangeReps={jest.fn()}
         onSubmitReps={jest.fn()}
@@ -62,6 +63,7 @@ describe("TrainingExerciseSheet", () => {
         sessionKey={1}
         duration={undefined}
         isScreenFocused
+        onSkip={jest.fn()}
         repsValue={0}
         onChangeReps={jest.fn()}
         onSubmitReps={jest.fn()}
@@ -84,6 +86,7 @@ describe("TrainingExerciseSheet", () => {
         sessionKey={1}
         duration={2}
         isScreenFocused
+        onSkip={jest.fn()}
         repsValue={0}
         onChangeReps={jest.fn()}
         onSubmitReps={jest.fn()}
@@ -118,6 +121,7 @@ describe("TrainingExerciseSheet", () => {
         sessionKey={1}
         duration={undefined}
         isScreenFocused
+        onSkip={jest.fn()}
         repsValue={0}
         onChangeReps={jest.fn()}
         onSubmitReps={jest.fn()}
@@ -140,6 +144,7 @@ describe("TrainingExerciseSheet", () => {
         sessionKey={1}
         duration={30}
         isScreenFocused
+        onSkip={jest.fn()}
         repsValue={0}
         onChangeReps={jest.fn()}
         onSubmitReps={jest.fn()}
@@ -159,6 +164,7 @@ describe("TrainingExerciseSheet", () => {
         sessionKey={2}
         duration={undefined}
         isScreenFocused
+        onSkip={jest.fn()}
         repsValue={0}
         onChangeReps={jest.fn()}
         onSubmitReps={jest.fn()}
@@ -183,6 +189,7 @@ describe("TrainingExerciseSheet", () => {
         sessionKey={1}
         duration={undefined}
         isScreenFocused
+        onSkip={jest.fn()}
         repsValue={8}
         onChangeReps={jest.fn()}
         onSubmitReps={onSubmitReps}
@@ -213,6 +220,7 @@ describe("TrainingExerciseSheet", () => {
         sessionKey={1}
         duration={undefined}
         isScreenFocused
+        onSkip={jest.fn()}
         repsValue={0}
         onChangeReps={jest.fn()}
         onSubmitReps={jest.fn()}
@@ -273,6 +281,7 @@ describe("TrainingExerciseSheet: rest after a set", () => {
         sessionKey={1}
         duration={undefined}
         isScreenFocused
+        onSkip={jest.fn()}
         repsValue={0}
         rest={generateRestControl()}
         onChangeReps={jest.fn()}
@@ -396,5 +405,132 @@ describe("TrainingExerciseSheet: rest after a set", () => {
 
     expect(onDismiss).not.toHaveBeenCalled();
     expect(getByTestId("training-list-sheet-rest")).toBeTruthy();
+  });
+
+  it("closes the sheet without starting the rest when the athlete skips the set", async () => {
+    const onStart = jest.fn();
+    const onSkip = jest.fn();
+    const onDismiss = jest.fn();
+    const { getByLabelText, queryByTestId } = await renderSheetWithRest({
+      rest: generateRestControl({ onStart }),
+      onSkip,
+      onDismiss,
+    });
+
+    await fireEvent.press(getByLabelText("Skip exercise"));
+
+    expect(onSkip).toHaveBeenCalled();
+    expect(onDismiss).toHaveBeenCalled();
+    expect(onStart).not.toHaveBeenCalled();
+    expect(queryByTestId("training-list-sheet-rest")).toBeNull();
+  });
+});
+
+describe("TrainingExerciseSheet: skip button", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it("shows the skip button below the continue button", async () => {
+    const { getAllByRole } = await render(
+      <TrainingExerciseSheet
+        row={generateChecklistRow()}
+        isPresented
+        sessionKey={1}
+        duration={undefined}
+        isScreenFocused
+        onSkip={jest.fn()}
+        repsValue={0}
+        onChangeReps={jest.fn()}
+        onSubmitReps={jest.fn()}
+        onComplete={jest.fn()}
+        onDismiss={jest.fn()}
+      />,
+    );
+
+    const buttonIds = getAllByRole("button").map(
+      (button) => button.props.testID,
+    );
+
+    expect(buttonIds).toEqual([
+      "training-list-sheet-continue",
+      "training-list-sheet-skip",
+    ]);
+  });
+
+  it("skips and closes the sheet while the countdown still runs", async () => {
+    const onSkip = jest.fn();
+    const onComplete = jest.fn();
+    const onDismiss = jest.fn();
+
+    const { getByTestId, getByLabelText } = await render(
+      <TrainingExerciseSheet
+        row={generateChecklistRow()}
+        isPresented
+        sessionKey={1}
+        duration={30}
+        isScreenFocused
+        onSkip={onSkip}
+        repsValue={0}
+        onChangeReps={jest.fn()}
+        onSubmitReps={jest.fn()}
+        onComplete={onComplete}
+        onDismiss={onDismiss}
+      />,
+    );
+
+    expect(getByTestId("training-list-sheet-continue")).toBeDisabled();
+
+    await fireEvent.press(getByLabelText("Skip exercise"));
+
+    expect(onSkip).toHaveBeenCalled();
+    expect(onDismiss).toHaveBeenCalled();
+    expect(onComplete).not.toHaveBeenCalled();
+  });
+
+  it("shows no skip button on the feedback step", async () => {
+    const { getByTestId, queryByLabelText } = await render(
+      <TrainingExerciseSheet
+        row={generateChecklistRow({ isFeedbackSkill: true })}
+        isPresented
+        sessionKey={1}
+        duration={undefined}
+        isScreenFocused
+        onSkip={jest.fn()}
+        repsValue={0}
+        onChangeReps={jest.fn()}
+        onSubmitReps={jest.fn()}
+        onComplete={jest.fn()}
+        onDismiss={jest.fn()}
+      />,
+    );
+
+    await fireEvent.press(getByTestId("training-list-sheet-continue"));
+
+    expect(queryByLabelText("Skip exercise")).toBeNull();
+  });
+
+  it("shows no skip button for a strength test row", async () => {
+    const { queryByLabelText } = await render(
+      <TrainingExerciseSheet
+        row={generateChecklistRow({ isTest: true })}
+        isPresented
+        sessionKey={1}
+        duration={undefined}
+        isScreenFocused
+        onSkip={jest.fn()}
+        repsValue={0}
+        onChangeReps={jest.fn()}
+        onSubmitReps={jest.fn()}
+        onComplete={jest.fn()}
+        onDismiss={jest.fn()}
+      />,
+    );
+
+    expect(queryByLabelText("Skip exercise")).toBeNull();
   });
 });

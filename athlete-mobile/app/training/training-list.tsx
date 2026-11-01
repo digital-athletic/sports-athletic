@@ -28,7 +28,6 @@ const TrainingList: FC<TrainingListProps> = () => {
     allCompleted,
     isFinishing,
     handleFinish,
-    handleSkip,
     handleShowInfo,
     handleStart,
     handleAbort,
@@ -52,7 +51,6 @@ const TrainingList: FC<TrainingListProps> = () => {
           exerciseList={exerciseList}
           repsDraft={repsDraft}
           onStart={handleStart}
-          onSkip={handleSkip}
           onShowInfo={handleShowInfo}
         />
         <Box

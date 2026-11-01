@@ -6,10 +6,6 @@ jest.mock("expo-router", () => ({
   router: { push: (...args: unknown[]) => mockPush(...args) },
 }));
 
-jest.mock("react-native-safe-area-context", () => ({
-  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
-}));
-
 const FOCUS_LABEL = "Focus & Prevention";
 const ADDITIONAL_LABEL = "Additional trainings";
 
@@ -40,6 +36,21 @@ describe("HomeTrainingShortcuts: rendering", () => {
       getByText("My trainings or trainings created by the coaching team"),
     ).toBeTruthy();
     expect(getByRole("button", { name: ADDITIONAL_LABEL })).toBeTruthy();
+  });
+
+  it("shows both buttons without subtitles in the compact layout", async () => {
+    const { getByRole, queryByText } = await render(
+      <HomeTrainingShortcuts isLandscape={false} compact />,
+    );
+
+    expect(getByRole("button", { name: FOCUS_LABEL })).toBeTruthy();
+    expect(getByRole("button", { name: ADDITIONAL_LABEL })).toBeTruthy();
+    expect(
+      queryByText("Targeted trainings for stability, mobility and prevention"),
+    ).toBeNull();
+    expect(
+      queryByText("My trainings or trainings created by the coaching team"),
+    ).toBeNull();
   });
 });
 

@@ -5,13 +5,13 @@ import { useTheme } from "@/theme/theme";
 import { router } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, StyleSheet, TouchableOpacity } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { StyleSheet, TouchableOpacity } from "react-native";
 
 type ShortcutButtonProps = {
   iconName: IoniconName;
   title: string;
   subtitle: string;
+  compact: boolean;
   onPress: () => void;
 };
 
@@ -19,6 +19,7 @@ const ShortcutButton: FC<ShortcutButtonProps> = ({
   iconName,
   title,
   subtitle,
+  compact,
   onPress,
 }) => {
   const { colors } = useTheme();
@@ -35,26 +36,34 @@ const ShortcutButton: FC<ShortcutButtonProps> = ({
         <Text variant="cardTitle" textAlign="center" fontSize={14}>
           {title}
         </Text>
-        <Text
-          variant="description"
-          textAlign="center"
-          fontSize={12}
-          color="darkGrey1"
-        >
-          {subtitle}
-        </Text>
+        {!compact && (
+          <Text
+            variant="description"
+            textAlign="center"
+            fontSize={12}
+            color="darkGrey1"
+          >
+            {subtitle}
+          </Text>
+        )}
       </Box>
     </TouchableOpacity>
   );
 };
 
-export const HomeTrainingShortcuts: FC<{ isLandscape: boolean }> = ({
+type HomeTrainingShortcutsProps = {
+  isLandscape: boolean;
+  /** Hides the subtitles, for screens where the regular tiles do not fit. */
+  compact?: boolean;
+};
+
+export const HomeTrainingShortcuts: FC<HomeTrainingShortcutsProps> = ({
   isLandscape,
+  compact = false,
 }) => {
   const { t } = useTranslation();
-  const { spacing } = useTheme();
-  const insets = useSafeAreaInsets();
 
+  // The tab bar below already keeps clear of the home indicator.
   return (
     <Box
       flex={isLandscape ? 1 : undefined}
@@ -62,10 +71,8 @@ export const HomeTrainingShortcuts: FC<{ isLandscape: boolean }> = ({
       paddingHorizontal="l"
       paddingTop={isLandscape ? "l" : "none"}
       paddingLeft={isLandscape ? "none" : "l"}
+      paddingBottom="l"
       gap="m"
-      style={{
-        paddingBottom: Platform.OS === "ios" ? insets.bottom : spacing.l,
-      }}
     >
       <ShortcutButton
         iconName="radio-button-on-outline"
@@ -73,6 +80,7 @@ export const HomeTrainingShortcuts: FC<{ isLandscape: boolean }> = ({
         subtitle={t(
           "screens.home.trainingShortcuts.focusAndPrevention.subtitle",
         )}
+        compact={compact}
         onPress={() => router.push("/focus-trainings")}
       />
       <ShortcutButton
@@ -81,6 +89,7 @@ export const HomeTrainingShortcuts: FC<{ isLandscape: boolean }> = ({
         subtitle={t(
           "screens.home.trainingShortcuts.additionalTrainings.subtitle",
         )}
+        compact={compact}
         onPress={() => router.push("/additional-trainings")}
       />
     </Box>

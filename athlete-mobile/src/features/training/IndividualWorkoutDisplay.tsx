@@ -25,6 +25,8 @@ interface IndividualWorkoutDisplayProps {
   goToAnamnesis: () => void;
   goToSeasonPhase: () => void;
   goToSectionDetails: (index: number) => void;
+  /** Smaller title, for screens where the regular card does not fit. */
+  compact?: boolean;
 }
 
 // Determine plan state
@@ -64,6 +66,7 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
   goToAnamnesis,
   goToSeasonPhase,
   goToSectionDetails,
+  compact = false,
 }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -135,7 +138,7 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
   return (
     <Box flex={1} justifyContent="space-between">
       <Text
-        variant={isLandscape ? "cardTitle" : "title"}
+        variant={isLandscape || compact ? "cardTitle" : "title"}
         paddingHorizontal="m"
         paddingTop="m"
       >

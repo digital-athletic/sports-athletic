@@ -1,5 +1,6 @@
 import { featureFlags } from "@/config/featureFlags";
 import { HomeTrainingShortcuts } from "@/features/home/HomeTrainingShortcuts";
+import { useFitToScreen } from "@/features/home/hooks/useFitToScreen";
 import { IndividualWorkoutDisplay } from "@/features/training/IndividualWorkoutDisplay";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import {
@@ -18,6 +19,11 @@ import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useWindowDimensions } from "react-native";
 
+// The plan card's parts stretch, so they have no height of their own in a scroll
+// view; these minimums hold its content with the regular and the compact title.
+const PLAN_CARD_MIN_HEIGHT = 400;
+const COMPACT_PLAN_CARD_MIN_HEIGHT = 340;
+
 export default function HomeScreen() {
   const { t } = useTranslation();
   const { personalData, anamnesisCompleted, _hasHydrated } =
@@ -33,6 +39,9 @@ export default function HomeScreen() {
   const username = personalData?.username || "Mr. Anderson";
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
+  // Landscape scrolls by design; portrait switches to compact before it scrolls.
+  const fit = useFitToScreen();
+  const compact = fit.compact && !isLandscape;
 
   useEffect(() => {
     Logger.logEvent("home_opened");
@@ -116,11 +125,20 @@ export default function HomeScreen() {
         backgroundColor="lightGrey1"
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ flexGrow: 1 }}
+        onLayout={fit.onLayout}
+        onContentSizeChange={fit.onContentSizeChange}
       >
         <Box flex={1} flexDirection={isLandscape ? "row" : "column"}>
           <Box flex={isLandscape ? 2 : 1} padding="l">
-            <Card variant="elevated" flex={1} minHeight={400}>
+            <Card
+              variant="elevated"
+              flex={1}
+              minHeight={
+                compact ? COMPACT_PLAN_CARD_MIN_HEIGHT : PLAN_CARD_MIN_HEIGHT
+              }
+            >
               <IndividualWorkoutDisplay
+                compact={compact}
                 goToTraining={goToTraining}
                 goToAnamnesis={goToAnamnesis}
                 goToSeasonPhase={goToSeasonPhase}
@@ -129,7 +147,7 @@ export default function HomeScreen() {
             </Card>
           </Box>
 
-          <HomeTrainingShortcuts isLandscape={isLandscape} />
+          <HomeTrainingShortcuts isLandscape={isLandscape} compact={compact} />
         </Box>
       </ScrollBox>
     </>

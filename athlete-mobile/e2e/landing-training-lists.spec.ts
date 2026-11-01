@@ -90,3 +90,34 @@ test.describe("Home: training lists", () => {
     });
   });
 });
+
+test.describe("Home: small iPhone screen", () => {
+  // iPhone SE, the smallest supported screen; larger phones get more room.
+  test.use({
+    profile: createCompletedProfile(),
+    signedIn: true,
+    viewport: { width: 375, height: 667 },
+  });
+
+  test("athlete sees the start button and both shortcut tiles without scrolling", async ({
+    page,
+  }) => {
+    await mockSupabaseAuth(page);
+    await page.goto("/");
+    await new BasePage(page).expectLoggedIn();
+
+    // A ratio below 1 absorbs subpixel rounding at the tile edge.
+    await expect(
+      page.getByRole("button", { name: "Start Training" }),
+    ).toBeInViewport({ ratio: 0.99 });
+    await expect(
+      page.getByRole("button", { name: "Focus & Prevention" }),
+    ).toBeInViewport({ ratio: 0.99 });
+    await expect(
+      page.getByRole("button", { name: "Additional trainings" }),
+    ).toBeInViewport({ ratio: 0.99 });
+    await page.screenshot({
+      path: "playwright/screenshots/home-small-iphone-screen.png",
+    });
+  });
+});

@@ -9,6 +9,7 @@ import type {
 } from "@/features/training/planGenerator/stages/skillBudget";
 import type {
   MaxMinutesGroup,
+  RegionConfig,
   SkillPriorities,
 } from "@/schemas/generator.schema";
 import type { PlacesData } from "@/store/placesStore";
@@ -108,6 +109,25 @@ export const generateMaximumMinutesTable = (
   const { maxMinutes } = loadPlanAuthoredData();
   return { ...maxMinutes, [group]: { ...maxMinutes[group], ...levelMinutes } };
 };
+
+/**
+ * Builds the real region configurations with stub configurations for the
+ * given regions. Each stub holds the given minute keys without entries.
+ *
+ * generateRegionConfigsWithMinuteKeys({ SWR1: [20, 40], SWR2: [30] })
+ * → { ..., SWR1: { default: { "20": [], "40": [] } }, SWR2: { default: { "30": [] } }, ... }
+ */
+export const generateRegionConfigsWithMinuteKeys = (
+  minuteKeysByRegion: Readonly<Record<string, readonly number[]>>,
+): Readonly<Record<string, RegionConfig>> => ({
+  ...loadPlanAuthoredData().regionConfigs,
+  ...Object.fromEntries(
+    Object.entries(minuteKeysByRegion).map(([region, minuteKeys]) => [
+      region,
+      { default: Object.fromEntries(minuteKeys.map((key) => [key, []])) },
+    ]),
+  ),
+});
 
 /**
  * Builds the real maximum minutes table without the entry of one group.

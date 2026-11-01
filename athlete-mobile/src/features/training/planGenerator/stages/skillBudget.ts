@@ -204,8 +204,11 @@ const resolveSlots = (
   };
 };
 
+// The old code has no SWR2 case and reads the SWR1 configuration for SWR2:
+// generators/PlanGenerator.ts#L2063-L2066
 const findRegionConfigName = (skill: SkillCode): string => {
   if (isCardioType(skill)) return "CARDIO";
+  if (skill === "SWR2") return "SWR1";
   return skill === "MAX_STRENGTH" ? "MAX" : skill;
 };
 

@@ -159,6 +159,8 @@ The new generator follows the spec. In these places the old code differs, and th
 | Leftover minutes fill by priority, with no priority 2 prefill for sessions longer than 45 minutes. | Section 4, rule 4 | [Leftover distribution](../../src/features/training/generators/PlanGenerator.ts#L830-L843) |
 | A 0 in the maximum minutes table means no time. A missing entry raises a configuration error. | Section 4, table | [Maximum minutes](../../src/features/training/generators/PlanGenerator.ts#L932-L934) |
 | A skill gets no minutes above the largest key of its region configuration. | Section 5, rule 1 | [Overflow](../../src/features/training/generators/PlanGenerator.ts#L590-L591) |
+| A PROFESSIONAL child resolves branches at ADVANCED, the level every other stage uses. | Section 1, Level | [Branch level](../../src/features/training/generators/PlanGenerator.ts#L1270) |
+| A season phase without a type or an end date raises the input error NO_ANAMNESIS/MISSING_WORKOUT_DATA. | Section 1, Season phase | [Season phase fallback](../../src/features/training/generators/PlanGenerator.ts#L1084-L1086) |
 
 ### Verification
 

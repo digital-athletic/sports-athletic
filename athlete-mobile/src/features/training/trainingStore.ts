@@ -83,6 +83,7 @@ type Actions = {
   setHasHydrated: (hydrated: boolean) => void;
   setTrainingViewMode: (mode: TrainingViewMode | null) => void;
   markExerciseCompleted: (index: number) => void;
+  markExerciseSkipped: (index: number) => void;
 };
 
 export type TrainingState = State & Actions;
@@ -219,6 +220,14 @@ export const useTrainingStore = create<TrainingState>()(
           const exercise = state.exerciseList?.[index];
           if (exercise) {
             exercise.completed = true;
+          }
+        }),
+      // Rests share exerciseId and skill, so only the index finds the right one.
+      markExerciseSkipped: (index) =>
+        set((state) => {
+          const exercise = state.exerciseList?.[index];
+          if (exercise) {
+            exercise.skipped = true;
           }
         }),
     })),

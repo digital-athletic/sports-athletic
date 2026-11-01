@@ -1,15 +1,17 @@
+import { useExerciseSheetSteps } from "@/features/training/hooks/useExerciseSheetSteps";
 import { useExerciseSheetTimer } from "@/features/training/hooks/useExerciseSheetTimer";
 import { type ListRow } from "@/features/training/hooks/useTrainingListRows";
+import { type SheetRestControl } from "@/features/training/utils/checklistRest";
 import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
-import { Text } from "@/theme/Text";
-import { secondsToMMSS } from "@/utils/date";
 import { BottomSheet, RNHostView } from "@expo/ui";
-import { type FC, useState } from "react";
+import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { FeedbackIconButton } from "./FeedbackIconButton";
 import { TrainingRepetitionInput } from "./TrainingRepetitionInput";
+import { TrainingRestStep } from "./TrainingRestStep";
+import { TrainingSheetHeading } from "./TrainingSheetHeading";
 
 export type TrainingExerciseSheetProps = {
   row: ListRow | null;
@@ -18,6 +20,7 @@ export type TrainingExerciseSheetProps = {
   duration: number | undefined;
   isScreenFocused: boolean;
   repsValue: number;
+  rest?: SheetRestControl;
   onChangeReps: (value: string) => void;
   onSubmitReps: () => void;
   onComplete: (feedback?: DifficultyFeedbackType) => void;
@@ -63,95 +66,111 @@ const TrainingExerciseFeedbackChoice: FC<{
   );
 };
 
-// An open-ended exercise's stopwatch is secondary info, so it stays small.
-const SheetHeading: FC<{
-  title: string;
-  seconds: number;
-  isTimed: boolean;
-}> = ({ title, seconds, isTimed }) => (
-  <>
-    <Text variant="title" textAlign="center">
-      {title}
-    </Text>
-    <Text
-      fontSize={isTimed ? 32 : 16}
-      fontWeight="300"
-      color={isTimed ? "darkGrey3" : "darkGrey2"}
-      textAlign="center"
-      testID="training-list-sheet-timer"
+const ContinueButton: FC<{ isCountingDown: boolean; onPress: () => void }> = ({
+  isCountingDown,
+  onPress,
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <Button
+      variant="primary"
+      onPress={onPress}
+      disabled={isCountingDown}
+      style={{ opacity: isCountingDown ? 0.5 : 1 }}
+      testID="training-list-sheet-continue"
     >
-      {secondsToMMSS(seconds)}
-    </Text>
-  </>
-);
+      {t("training.list.continueExercise")}
+    </Button>
+  );
+};
+
+const SheetSetActions: FC<{
+  row: ListRow;
+  repsValue: number;
+  isCountingDown: boolean;
+  steps: ReturnType<typeof useExerciseSheetSteps>;
+  onChangeReps: (value: string) => void;
+}> = ({ row, repsValue, isCountingDown, steps, onChangeReps }) => {
+  if (row.isTest) {
+    return (
+      <TrainingRepetitionInput
+        compact
+        exerciseName={row.displayName}
+        repsValue={repsValue}
+        changeReps={onChangeReps}
+        saveRepsInput={steps.handleSaveReps}
+        inputTestID="training-list-sheet-reps-input"
+        saveTestID="training-list-sheet-reps-save"
+      />
+    );
+  }
+  if (steps.isChoosingFeedback) {
+    return (
+      <TrainingExerciseFeedbackChoice onSelect={steps.handleFeedbackSelect} />
+    );
+  }
+  return (
+    <ContinueButton
+      isCountingDown={isCountingDown}
+      onPress={steps.handleContinue}
+    />
+  );
+};
 
 const TrainingExerciseSheetContent: FC<ContentProps> = ({
   row,
   duration,
   isTimerActive,
   repsValue,
+  rest,
   onChangeReps,
   onSubmitReps,
   onComplete,
   onDismiss,
 }) => {
-  const { t } = useTranslation();
-  const [step, setStep] = useState<"timer" | "feedback">("timer");
+  const steps = useExerciseSheetSteps({
+    row,
+    rest,
+    onSubmitReps,
+    onComplete,
+    onDismiss,
+  });
 
   const { displayedSeconds, isCountingDown } = useExerciseSheetTimer({
     exerciseId: row.exerciseId,
     duration,
-    isActive: isTimerActive,
+    isActive: isTimerActive && !steps.runningRest,
   });
 
-  const handleContinue = () => {
-    if (row.isFeedbackSkill && row.isLastInSet) {
-      setStep("feedback");
-      return;
-    }
-    onComplete();
-    onDismiss();
-  };
-
-  const handleFeedbackSelect = (feedback: DifficultyFeedbackType) => {
-    onComplete(feedback);
-    onDismiss();
-  };
+  if (steps.runningRest) {
+    return (
+      <Box padding="l">
+        <TrainingRestStep
+          rest={steps.runningRest.plan}
+          isActive={isTimerActive}
+          onEnd={steps.handleRestEnd}
+        />
+      </Box>
+    );
+  }
 
   return (
     <Box padding="l" gap="m">
-      <SheetHeading
+      <TrainingSheetHeading
         title={row.displayName}
         seconds={displayedSeconds}
         isTimed={typeof duration === "number"}
+        timerTestID="training-list-sheet-timer"
       />
 
-      {row.isTest ? (
-        <TrainingRepetitionInput
-          compact
-          exerciseName={row.displayName}
-          repsValue={repsValue}
-          changeReps={onChangeReps}
-          saveRepsInput={() => {
-            onSubmitReps();
-            onDismiss();
-          }}
-          inputTestID="training-list-sheet-reps-input"
-          saveTestID="training-list-sheet-reps-save"
-        />
-      ) : step === "timer" ? (
-        <Button
-          variant="primary"
-          onPress={handleContinue}
-          disabled={isCountingDown}
-          style={{ opacity: isCountingDown ? 0.5 : 1 }}
-          testID="training-list-sheet-continue"
-        >
-          {t("training.list.continueExercise")}
-        </Button>
-      ) : (
-        <TrainingExerciseFeedbackChoice onSelect={handleFeedbackSelect} />
-      )}
+      <SheetSetActions
+        row={row}
+        repsValue={repsValue}
+        isCountingDown={isCountingDown}
+        steps={steps}
+        onChangeReps={onChangeReps}
+      />
     </Box>
   );
 };
@@ -161,6 +180,7 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
  * exercise name, a countdown (timed exercises) or stopwatch (open-ended
  * ones), and a Continue step that either closes the sheet, reveals the
  * too-easy/succeeded/too-hard choice, or (strength tests) the reps input.
+ * A set with a planned rest after it switches the sheet to the rest screen.
  */
 export const TrainingExerciseSheet: FC<TrainingExerciseSheetProps> = ({
   row,

@@ -74,8 +74,8 @@ export async function getUserProfileStorageState(page: Page) {
 /**
  * Returns the single completed workout without its top-level id, timestamp
  * and duration, so two runs of the same plan compare equal. Rest rows keep
- * `completed` only: the step-by-step view adds `skipped` when the athlete
- * skips a rest, the checklist only marks rests completed.
+ * `completed` only: the step-by-step view marks the first rest of the skill
+ * as skipped, the checklist marks the rest the athlete skipped.
  */
 export async function getComparableCompletedWorkout(page: Page) {
   const [workout] = await getCompletedWorkoutsData(page);

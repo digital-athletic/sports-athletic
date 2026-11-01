@@ -20,7 +20,7 @@ export function useTrainingListScreen() {
   const hasHydrated = useTrainingStore((s) => s._hasHydrated);
   const { finishTraining } = useFinishTraining();
 
-  const { rows } = useTrainingListRows();
+  const { rows, allCompleted } = useTrainingListRows();
   const completion = useTrainingListCompletion();
   const { repsDraft, setRepsForRow, handleSubmitReps } = useTrainingListReps();
   const { handleAbort, isScreenFocused } = useTrainingListLifecycle({
@@ -35,13 +35,9 @@ export function useTrainingListScreen() {
     onChangeReps: setRepsForRow,
     onSubmitReps: handleSubmitReps,
     onComplete: completion.handleComplete,
+    onRestEnd: completion.handleRestEnd,
   });
   const [isFinishing, setIsFinishing] = useState(false);
-
-  // All visible rows completed -> enable the finish button, mirroring the
-  // last exercise in the sequential flow, but requiring an explicit tap
-  // instead of auto-navigating.
-  const allCompleted = rows.length > 0 && rows.every((row) => row.completed);
 
   const handleFinish = () => {
     // Visible feedback only — useFinishTraining itself guards against

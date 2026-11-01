@@ -27,6 +27,31 @@ export class TrainingListPage extends BasePage {
     await expect(this.sheet).toBeHidden();
   }
 
+  private get restSkipButton() {
+    return this.page.getByTestId("training-list-sheet-rest-skip");
+  }
+
+  get restTimer() {
+    return this.page.getByTestId("training-list-sheet-rest-timer");
+  }
+
+  async skipRest() {
+    await this.restSkipButton.click({ timeout: 3000 });
+    await this.waitForSheetClosed();
+  }
+
+  // A set followed by a rest keeps the sheet open on the rest screen.
+  private async closeSheetSkippingRest() {
+    await Promise.race([
+      this.restSkipButton.waitFor({ state: "visible" }).catch(() => {}),
+      this.sheet.waitFor({ state: "hidden" }).catch(() => {}),
+    ]);
+    if (await this.restSkipButton.isVisible().catch(() => false)) {
+      await this.restSkipButton.click({ timeout: 3000 });
+    }
+    await this.waitForSheetClosed();
+  }
+
   // Needs page.clock.install() before navigating. Jumps past a timed
   // exercise's countdown instead of waiting it out in real time.
   private async waitOutCountdown() {
@@ -107,7 +132,7 @@ export class TrainingListPage extends BasePage {
     if (typeof options?.reps === "number") {
       await this.sheetRepsInput.fill(String(options.reps));
       await this.sheetRepsSaveButton.click({ timeout: 3000 });
-      await this.waitForSheetClosed();
+      await this.closeSheetSkippingRest();
       return;
     }
 
@@ -119,7 +144,58 @@ export class TrainingListPage extends BasePage {
         timeout: 3000,
       });
     }
-    await this.waitForSheetClosed();
+    await this.closeSheetSkippingRest();
+  }
+
+  /**
+   * Row ids carry the set list index and rests get no row, so a gap of one
+   * index marks a set followed by a rest, e.g. rows 3 and 5 with the rest at 4.
+   * Returns that set's row id and the rest's index.
+   */
+  async firstRowFollowedByRest() {
+    const rowIndices = await this.page
+      .locator('[data-testid^="training-list-row-"]')
+      .evaluateAll((elements) =>
+        elements
+          .map((element) => element.getAttribute("data-testid") ?? "")
+          .filter((id) => /^training-list-row-\d+$/.test(id))
+          .map((id) => Number(id.replace("training-list-row-", ""))),
+      );
+    const position = rowIndices.findIndex(
+      (index, i) => rowIndices[i + 1] === index + 2,
+    );
+    if (position === -1) {
+      throw new Error("No checklist row is followed by a rest");
+    }
+
+    const setIndex = rowIndices[position];
+    return {
+      rowId: `training-list-row-${setIndex}`,
+      restIndex: setIndex + 1,
+    };
+  }
+
+  async expectRowCompleted(testId: string) {
+    await expect(this.startFor(testId)).toBeHidden();
+  }
+
+  /**
+   * Starts a row and presses Continue, leaving the sheet on its rest screen.
+   * A feedback row first asks for feedback, which this answers with succeeded.
+   */
+  async continueRowIntoRest(testId: string) {
+    await this.startFor(testId).click({ timeout: 3000 });
+    await this.waitOutCountdown();
+    await this.sheetContinueButton.click({ timeout: 3000 });
+
+    const succeededButton = this.page.getByTestId(
+      "training-list-sheet-checkmark",
+    );
+    await expect(this.restSkipButton.or(succeededButton)).toBeVisible();
+    if (await succeededButton.isVisible()) {
+      await succeededButton.click({ timeout: 3000 });
+    }
+    await expect(this.restSkipButton).toBeVisible();
   }
 
   async selectFeedbackInRow(row: Locator, feedback: "too_easy" | "too_hard") {
@@ -170,7 +246,7 @@ export class TrainingListPage extends BasePage {
         await this.sheetRepsInput.fill("10");
       }
       await this.sheetRepsSaveButton.click({ timeout: 3000 });
-      await this.waitForSheetClosed();
+      await this.closeSheetSkippingRest();
       return;
     }
 
@@ -183,6 +259,6 @@ export class TrainingListPage extends BasePage {
     if (await succeededButton.isVisible().catch(() => false)) {
       await succeededButton.click({ timeout: 3000 });
     }
-    await this.waitForSheetClosed();
+    await this.closeSheetSkippingRest();
   }
 }

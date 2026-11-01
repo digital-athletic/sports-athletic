@@ -1,7 +1,11 @@
 import { type ReactNode } from "react";
 import { act, fireEvent, render } from "../../utils/testUtils";
 import { type ListRow } from "./hooks/useTrainingListRows";
-import { TrainingExerciseSheet } from "./TrainingExerciseSheet";
+import {
+  TrainingExerciseSheet,
+  type TrainingExerciseSheetProps,
+} from "./TrainingExerciseSheet";
+import { type SheetRest, type SheetRestControl } from "./utils/checklistRest";
 
 // A real sheet keeps its children while it animates closed, so the mock
 // renders them regardless of isPresented.
@@ -224,5 +228,144 @@ describe("TrainingExerciseSheet", () => {
 
     expect(onComplete).toHaveBeenCalledWith("TOO_HARD");
     expect(onDismiss).toHaveBeenCalled();
+  });
+});
+
+// A planned 60 second rest, e.g. { duration: 60 }.
+const generateSheetRest = (overrides: Partial<SheetRest> = {}): SheetRest => ({
+  duration: 60,
+  ...overrides,
+});
+
+// The rest control the props hook hands to the sheet, e.g.
+// { plan: generateSheetRest(), onStart: jest.fn(), onEnd: jest.fn() }.
+const generateRestControl = (
+  overrides: Partial<SheetRestControl> = {},
+): SheetRestControl => ({
+  plan: generateSheetRest(),
+  onStart: jest.fn(),
+  onEnd: jest.fn(),
+  ...overrides,
+});
+
+describe("TrainingExerciseSheet: rest after a set", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  const renderSheetWithRest = (
+    overrides: Partial<TrainingExerciseSheetProps> = {},
+  ) =>
+    render(
+      <TrainingExerciseSheet
+        row={generateChecklistRow()}
+        isPresented
+        sessionKey={1}
+        duration={undefined}
+        isScreenFocused
+        repsValue={0}
+        rest={generateRestControl()}
+        onChangeReps={jest.fn()}
+        onSubmitReps={jest.fn()}
+        onComplete={jest.fn()}
+        onDismiss={jest.fn()}
+        {...overrides}
+      />,
+    );
+
+  it("shows the planned rest after Continue and keeps the sheet open", async () => {
+    const onComplete = jest.fn();
+    const onDismiss = jest.fn();
+    const onStart = jest.fn();
+    const { getByTestId, getByText } = await renderSheetWithRest({
+      rest: generateRestControl({ onStart }),
+      onComplete,
+      onDismiss,
+    });
+
+    await fireEvent.press(getByTestId("training-list-sheet-continue"));
+
+    expect(onComplete).toHaveBeenCalledWith();
+    expect(onStart).toHaveBeenCalledTimes(1);
+    expect(onDismiss).not.toHaveBeenCalled();
+    expect(getByTestId("training-list-sheet-rest")).toBeTruthy();
+    expect(getByText("01:00")).toBeTruthy();
+  });
+
+  it("counts the rest down", async () => {
+    const { getByTestId } = await renderSheetWithRest();
+
+    await fireEvent.press(getByTestId("training-list-sheet-continue"));
+    await act(() => {
+      jest.advanceTimersByTime(10000);
+    });
+
+    expect(getByTestId("training-list-sheet-rest-timer")).toHaveTextContent(
+      "00:50",
+    );
+  });
+
+  it("ends the rest as skipped and closes the sheet on skip", async () => {
+    const onRestEnd = jest.fn();
+    const onDismiss = jest.fn();
+    const { getByTestId } = await renderSheetWithRest({
+      rest: generateRestControl({ onEnd: onRestEnd }),
+      onDismiss,
+    });
+
+    await fireEvent.press(getByTestId("training-list-sheet-continue"));
+    await fireEvent.press(getByTestId("training-list-sheet-rest-skip"));
+
+    expect(onRestEnd).toHaveBeenCalledWith(true);
+    expect(onDismiss).toHaveBeenCalled();
+  });
+
+  it("ends the rest as completed and closes the sheet when the countdown runs out", async () => {
+    const onRestEnd = jest.fn();
+    const onDismiss = jest.fn();
+    const { getByTestId } = await renderSheetWithRest({
+      rest: generateRestControl({ onEnd: onRestEnd }),
+      onDismiss,
+    });
+
+    await fireEvent.press(getByTestId("training-list-sheet-continue"));
+    await act(() => {
+      jest.advanceTimersByTime(60000);
+    });
+
+    expect(onRestEnd).toHaveBeenCalledWith(false);
+    expect(onDismiss).toHaveBeenCalled();
+  });
+
+  it("shows the rest after the athlete picks a feedback", async () => {
+    const onDismiss = jest.fn();
+    const { getByTestId } = await renderSheetWithRest({
+      row: generateChecklistRow({ isFeedbackSkill: true, isLastInSet: true }),
+      onDismiss,
+    });
+
+    await fireEvent.press(getByTestId("training-list-sheet-continue"));
+    await fireEvent.press(getByTestId("training-list-sheet-checkmark"));
+
+    expect(onDismiss).not.toHaveBeenCalled();
+    expect(getByTestId("training-list-sheet-rest")).toBeTruthy();
+  });
+
+  it("shows the rest after the athlete saves the reps of a strength test set", async () => {
+    const onDismiss = jest.fn();
+    const { getByTestId } = await renderSheetWithRest({
+      row: generateChecklistRow({ isTest: true }),
+      repsValue: 8,
+      onDismiss,
+    });
+
+    await fireEvent.press(getByTestId("training-list-sheet-reps-save"));
+
+    expect(onDismiss).not.toHaveBeenCalled();
+    expect(getByTestId("training-list-sheet-rest")).toBeTruthy();
   });
 });

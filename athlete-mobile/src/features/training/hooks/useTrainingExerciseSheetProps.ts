@@ -1,7 +1,12 @@
+import { useChecklistRest } from "@/features/training/hooks/useChecklistRest";
 import { type ListRow } from "@/features/training/hooks/useTrainingListRows";
 import { useTrainingListSheet } from "@/features/training/hooks/useTrainingListSheet";
 import { type TrainingListTiming } from "@/features/training/hooks/useTrainingListTiming";
 import { type UserExerciseDataType } from "@/features/training/models/UserExerciseData";
+import {
+  findRestAfter,
+  type SheetRestControl,
+} from "@/features/training/utils/checklistRest";
 import { isEnduranceSkill } from "@/features/training/utils/exerciseDataUtils";
 import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 
@@ -13,12 +18,33 @@ type Args = {
   onChangeReps: (index: number, value: string) => void;
   onSubmitReps: (row: ListRow) => void;
   onComplete: (row: ListRow, feedback?: DifficultyFeedbackType) => void;
+  onRestEnd: (restIndex: number, skipped: boolean) => void;
+};
+
+// The athlete tracks long endurance exercises elsewhere, so they get no countdown.
+const countdownDurationOf = (exercise: UserExerciseDataType | undefined) =>
+  isEnduranceSkill(exercise?.skill) ? undefined : exercise?.duration;
+
+// The one place that decides whether a rest follows the row's set.
+const buildRestControl = (
+  row: ListRow,
+  exerciseList: UserExerciseDataType[] | null,
+  tracker: ReturnType<typeof useChecklistRest>,
+): SheetRestControl | undefined => {
+  const rest = findRestAfter(exerciseList, row.index);
+  if (!rest) return undefined;
+
+  return {
+    plan: { duration: rest.duration },
+    onStart: () => tracker.startRest(rest.index),
+    onEnd: tracker.endRest,
+  };
 };
 
 /**
  * Builds TrainingExerciseSheet's props from whichever checklist row is
- * currently active, routing its Continue/feedback/reps actions back through
- * the same handlers the row itself used to call directly.
+ * currently active, routing its Continue/feedback/reps/rest actions back
+ * through the same handlers the row itself used to call directly.
  */
 export function useTrainingExerciseSheetProps({
   rows,
@@ -28,9 +54,11 @@ export function useTrainingExerciseSheetProps({
   onChangeReps,
   onSubmitReps,
   onComplete,
+  onRestEnd,
 }: Args) {
   const { activeRow, shownRow, session, openSheet, closeSheet } =
     useTrainingListSheet(rows);
+  const restTracker = useChecklistRest({ timing, onRestEnd });
 
   const handleStart = (row: ListRow) => {
     timing.startExercise(exerciseList?.[row.index]?.skill);
@@ -38,14 +66,10 @@ export function useTrainingExerciseSheetProps({
   };
 
   const handleDismiss = () => {
+    restTracker.endRest(true);
     timing.endExercise();
     closeSheet();
   };
-
-  const shownExercise = shownRow ? exerciseList?.[shownRow.index] : undefined;
-  const countdownDuration = isEnduranceSkill(shownExercise?.skill)
-    ? undefined
-    : shownExercise?.duration;
 
   // shownRow outlives activeRow while the sheet animates closed; actions
   // below still check activeRow so nothing fires during that animation.
@@ -53,8 +77,13 @@ export function useTrainingExerciseSheetProps({
     row: shownRow,
     isPresented: activeRow !== null,
     sessionKey: session,
-    duration: countdownDuration,
+    duration: shownRow
+      ? countdownDurationOf(exerciseList?.[shownRow.index])
+      : undefined,
     repsValue: shownRow ? (repsDraft[shownRow.index] ?? 0) : 0,
+    rest: activeRow
+      ? buildRestControl(activeRow, exerciseList, restTracker)
+      : undefined,
     onChangeReps: (value: string) => {
       if (activeRow) onChangeReps(activeRow.index, value);
     },

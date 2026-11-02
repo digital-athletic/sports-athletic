@@ -1,4 +1,3 @@
-import { type ListRow } from "@/features/training/hooks/useTrainingListRows";
 import { isPauseExercise } from "@/features/training/models/IdTypes";
 import { type UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 
@@ -30,13 +29,3 @@ export const findRestAfter = (
   const duration = entry.duration ?? 0;
   return duration > 0 ? { index, duration } : null;
 };
-
-/**
- * The set Next opens after the finished row: the first open row of the
- * workout, as in the step-by-step view.
- */
-export const findNextSetRow = (
-  rows: readonly ListRow[],
-  finishedIndex: number,
-): ListRow | null =>
-  rows.find((row) => !row.completed && row.index !== finishedIndex) ?? null;

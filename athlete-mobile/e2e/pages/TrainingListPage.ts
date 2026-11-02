@@ -90,6 +90,15 @@ export class TrainingListPage extends BasePage {
     return this.page.getByTestId(`training-list-superset-${key}`);
   }
 
+  /** The skill titles of the checklist, top to bottom. */
+  get skillTitles() {
+    return this.page.locator('[data-testid^="training-list-skill-"]');
+  }
+
+  skillTitle(key: number) {
+    return this.page.getByTestId(`training-list-skill-${key}`);
+  }
+
   nextArrow(testId: string) {
     return this.page.getByTestId(`${testId}-next-arrow`);
   }

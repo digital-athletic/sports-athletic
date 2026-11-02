@@ -3,9 +3,10 @@ import {
   type ChecklistEntryBlock,
 } from "@/features/training/hooks/useTrainingListRows";
 import { type UserExerciseDataType } from "@/features/training/models/UserExerciseData";
+import { SkillTitle } from "@/features/training/SkillTitle";
 import { TrainingListItem } from "@/features/training/TrainingListItem";
 import { Box } from "@/theme/Box";
-import { type FC } from "react";
+import { type FC, Fragment } from "react";
 import { ScrollView } from "react-native";
 
 export type TrainingListRowsProps = {
@@ -48,10 +49,39 @@ const Entry: FC<EntryProps> = ({
   );
 };
 
+type BlockProps = Omit<TrainingListRowsProps, "blocks"> & {
+  block: ChecklistEntryBlock;
+};
+
+const Block: FC<BlockProps> = ({ block, ...entryProps }) =>
+  block.isSuperset ? (
+    <Box
+      testID={`training-list-superset-${block.key}`}
+      borderWidth={1}
+      borderColor="lightGrey3"
+      borderRadius="m"
+      paddingHorizontal="m"
+      marginVertical="s"
+    >
+      {block.entries.map((entry) => (
+        <Entry
+          key={entry.key}
+          entry={entry}
+          isNext={entry.key === block.nextEntryKey}
+          {...entryProps}
+        />
+      ))}
+    </Box>
+  ) : (
+    block.entries.map((entry) => (
+      <Entry key={entry.key} entry={entry} isNext={false} {...entryProps} />
+    ))
+  );
+
 /**
- * Scrollable body of the checklist: one TrainingListItem per exercise. The
- * exercises of a superset share a framed box, and an arrow marks the one
- * whose set comes next.
+ * Scrollable body of the checklist: one TrainingListItem per exercise. As in
+ * the overview, a skill title starts wherever the skill changes. A superset
+ * shares a framed box, and an arrow marks the exercise whose set comes next.
  */
 export const TrainingListRows: FC<TrainingListRowsProps> = ({
   blocks,
@@ -59,37 +89,22 @@ export const TrainingListRows: FC<TrainingListRowsProps> = ({
 }) => (
   <ScrollView keyboardShouldPersistTaps="handled">
     <Box padding="l">
-      {blocks.map((block) =>
-        block.isSuperset ? (
-          <Box
-            key={block.key}
-            testID={`training-list-superset-${block.key}`}
-            borderWidth={1}
-            borderColor="lightGrey3"
-            borderRadius="m"
-            paddingHorizontal="m"
-            marginVertical="s"
-          >
-            {block.entries.map((entry) => (
-              <Entry
-                key={entry.key}
-                entry={entry}
-                isNext={entry.key === block.nextEntryKey}
-                {...entryProps}
-              />
-            ))}
-          </Box>
-        ) : (
-          block.entries.map((entry) => (
-            <Entry
-              key={entry.key}
-              entry={entry}
-              isNext={false}
-              {...entryProps}
-            />
-          ))
-        ),
-      )}
+      {blocks.map((block, index) => {
+        const previousSkill = blocks[index - 1]?.skill;
+        return (
+          <Fragment key={block.key}>
+            {block.skill !== previousSkill && (
+              <Box marginTop={index > 0 ? "l" : undefined}>
+                <SkillTitle
+                  skill={block.skill}
+                  testID={`training-list-skill-${block.key}`}
+                />
+              </Box>
+            )}
+            <Block block={block} {...entryProps} />
+          </Fragment>
+        );
+      })}
     </Box>
   </ScrollView>
 );

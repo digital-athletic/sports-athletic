@@ -27,12 +27,14 @@ const generateEntry = (
 });
 
 // A block of entries, e.g. generateBlock([squatEntry, lungeEntry], 0) is a
-// superset block keyed by its first entry whose next entry is the squat.
+// warm-up superset block keyed by its first entry whose next entry is the squat.
 const generateBlock = (
   entries: ChecklistEntry[],
   nextEntryKey: number | null,
+  skill = "WU",
 ): ChecklistEntryBlock => ({
   key: entries[0].key,
+  skill,
   isSuperset: entries.length > 1,
   entries,
   nextEntryKey,
@@ -112,6 +114,70 @@ describe("TrainingListRows: entries", () => {
     await fireEvent.press(getByText("Squat"));
 
     expect(onShowInfo).toHaveBeenCalledWith("squat");
+  });
+});
+
+describe("TrainingListRows: skill titles", () => {
+  it("shows the skill name above the first block of each skill", async () => {
+    const blocks = [
+      generateBlock([generateEntry(0, "jog", "Jog")], 0, "WU"),
+      generateBlock([generateEntry(2, "hop", "Hop")], 2, "WU"),
+      generateBlock([generateEntry(4, "stretch", "Stretch")], 4, "MOB"),
+    ];
+
+    const { getByTestId, queryByTestId } = await render(
+      <TrainingListRows {...generateRowsProps({ blocks })} />,
+    );
+
+    expect(getByTestId("training-list-skill-0")).toHaveTextContent("Warm-Up");
+    expect(queryByTestId("training-list-skill-2")).toBeNull();
+    expect(getByTestId("training-list-skill-4")).toHaveTextContent("Mobility");
+  });
+
+  it("shows the skill name again when the skill returns after another one", async () => {
+    const blocks = [
+      generateBlock([generateEntry(0, "jog", "Jog")], 0, "WU"),
+      generateBlock([generateEntry(2, "stretch", "Stretch")], 2, "MOB"),
+      generateBlock([generateEntry(4, "hop", "Hop")], 4, "WU"),
+    ];
+
+    const { getAllByText } = await render(
+      <TrainingListRows {...generateRowsProps({ blocks })} />,
+    );
+
+    expect(getAllByText("Warm-Up")).toHaveLength(2);
+  });
+
+  it("shows the skill name above a superset", async () => {
+    const blocks = [
+      generateBlock(
+        [generateEntry(0, "plank", "Plank"), generateEntry(2, "bird", "Bird")],
+        0,
+        "GKS",
+      ),
+    ];
+
+    const { getByTestId } = await render(
+      <TrainingListRows {...generateRowsProps({ blocks })} />,
+    );
+
+    expect(getByTestId("training-list-skill-0")).toHaveTextContent(
+      "Full body stability",
+    );
+  });
+
+  it("shows the skill code when the skill has no translation", async () => {
+    const blocks = [
+      generateBlock([generateEntry(0, "jog", "Jog")], 0, "CUSTOM_SKILL"),
+    ];
+
+    const { getByTestId } = await render(
+      <TrainingListRows {...generateRowsProps({ blocks })} />,
+    );
+
+    expect(getByTestId("training-list-skill-0")).toHaveTextContent(
+      "CUSTOM_SKILL",
+    );
   });
 });
 

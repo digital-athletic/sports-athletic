@@ -4,10 +4,10 @@ import { useTrainingListSetNavigation } from "@/features/training/hooks/useTrain
 import { type TrainingListTiming } from "@/features/training/hooks/useTrainingListTiming";
 import { type UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import {
-  findNextSetRow,
   findRestAfter,
   type SheetRestControl,
 } from "@/features/training/utils/checklistRest";
+import { findNextOpenSetIndex } from "@/features/training/utils/checklistEntries";
 import { isEnduranceSkill } from "@/features/training/utils/exerciseDataUtils";
 import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 
@@ -37,7 +37,8 @@ const buildRestControl = (
   const rest = findRestAfter(exerciseList, row.index);
   if (!rest) return undefined;
 
-  const nextRow = findNextSetRow(rows, row.index);
+  const nextIndex = findNextOpenSetIndex(exerciseList ?? [], row.index);
+  const nextRow = rows.find((candidate) => candidate.index === nextIndex);
   return {
     plan: {
       duration: rest.duration,

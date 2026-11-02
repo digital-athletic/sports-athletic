@@ -7,7 +7,7 @@ import {
 import { act, renderHook } from "@testing-library/react-native";
 import { generateChecklistEntry } from "@test/factories/checklistEntry";
 import { generateChecklistRow } from "@test/factories/checklistRow";
-import { type ListRow } from "./useTrainingListRows";
+import { type ListRow, useTrainingListRows } from "./useTrainingListRows";
 import { useTrainingExerciseSheetProps } from "./useTrainingExerciseSheetProps";
 
 // A superset of two exercises with rests between, e.g. at list indices
@@ -365,7 +365,7 @@ describe("useTrainingExerciseSheetProps: next", () => {
     expect(visitedIndices).toEqual([0, 2, 4, 6]);
   });
 
-  it("opens the first open set of the workout, as the step by step view does", async () => {
+  it("opens the next set below the selected entry without returning to earlier sets", async () => {
     const { result } = await renderHook(() =>
       useTrainingExerciseSheetProps(generateSheetHookArgs()),
     );
@@ -384,7 +384,7 @@ describe("useTrainingExerciseSheetProps: next", () => {
       result.current.sheetProps.onNext();
     });
 
-    expect(result.current.sheetProps.row?.index).toBe(0);
+    expect(result.current.sheetProps.row?.index).toBe(4);
   });
 
   it("ends the current exercise and starts the next one with its skill", async () => {
@@ -549,5 +549,85 @@ describe("useTrainingExerciseSheetProps: reps and dismiss", () => {
     expect(onChangeReps).not.toHaveBeenCalled();
     expect(onSubmitReps).not.toHaveBeenCalled();
     expect(onSkip).not.toHaveBeenCalled();
+  });
+});
+
+describe("useTrainingExerciseSheetProps: forward playback through the list", () => {
+  it("guides from exercise five to the end and leaves earlier exercises for later", async () => {
+    const exerciseList = Array.from({ length: 8 }, (_, index) => [
+      createExercise({ exerciseId: `exercise${index + 1}`, set: [1, 1] }),
+      createExercise({ exerciseId: PAUSE_EXERCISE_ID, duration: 45 }),
+    ]).flat();
+    useTrainingStore.setState({ exerciseList });
+    const { result } = await renderHook(() => {
+      const latestList = useTrainingStore((state) => state.exerciseList);
+      const { rows, blocks, allCompleted } = useTrainingListRows();
+      const sheet = useTrainingExerciseSheetProps(
+        generateSheetHookArgs({
+          rows,
+          exerciseList: latestList,
+          onSkip: completeSetInStore,
+          onRestEnd: (index) =>
+            useTrainingStore.getState().markExerciseCompleted(index),
+        }),
+      );
+      return { ...sheet, blocks, allCompleted };
+    });
+    await act(() =>
+      result.current.handleStart(result.current.blocks[4].entries[0]),
+    );
+    const visited = [];
+
+    for (let exercise = 5; exercise <= 8; exercise += 1) {
+      visited.push(result.current.sheetProps.row?.exerciseId);
+      const expectedNext = exercise < 8 ? `exercise${exercise + 1}` : undefined;
+      expect(result.current.sheetProps.rest?.plan.nextSet?.exerciseId).toBe(
+        expectedNext,
+      );
+      const { onComplete, onSkip, onNext, rest } = result.current.sheetProps;
+      await act(() => {
+        if (exercise === 6) {
+          onSkip();
+          onNext();
+        } else {
+          onComplete();
+          rest?.onStart();
+        }
+      });
+      if (exercise !== 6) {
+        await act(() => {
+          rest?.onEnd(false);
+          onNext();
+        });
+      }
+    }
+
+    expect(visited).toEqual([
+      "exercise5",
+      "exercise6",
+      "exercise7",
+      "exercise8",
+    ]);
+    expect(result.current.sheetProps.isPresented).toBe(false);
+    expect(result.current.allCompleted).toBe(false);
+    expect(useTrainingStore.getState().exerciseList?.[0].completed).not.toBe(
+      true,
+    );
+
+    await act(() =>
+      result.current.handleStart(result.current.blocks[0].entries[0]),
+    );
+    for (let exercise = 1; exercise <= 4; exercise += 1) {
+      expect(result.current.sheetProps.row?.exerciseId).toBe(
+        `exercise${exercise}`,
+      );
+      await act(() => {
+        result.current.sheetProps.onComplete();
+        result.current.sheetProps.onNext();
+      });
+    }
+
+    expect(result.current.sheetProps.isPresented).toBe(false);
+    expect(result.current.allCompleted).toBe(true);
   });
 });

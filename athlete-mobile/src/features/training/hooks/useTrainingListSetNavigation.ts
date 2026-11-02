@@ -6,7 +6,7 @@ import { useTrainingListSheet } from "@/features/training/hooks/useTrainingListS
 import { type TrainingListTiming } from "@/features/training/hooks/useTrainingListTiming";
 import { type UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { useTrainingStore } from "@/features/training/trainingStore";
-import { findFirstOpenSetIndex } from "@/features/training/utils/checklistEntries";
+import { findNextOpenSetIndex } from "@/features/training/utils/checklistEntries";
 
 type Args = {
   rows: ListRow[];
@@ -16,9 +16,8 @@ type Args = {
 
 /**
  * Moves the checklist sheet between sets: Start opens an entry's first open
- * set, Next opens the first open set of the workout, as the step-by-step view
- * does, and closes the sheet after the last one. Each move restarts the
- * exercise timing.
+ * set, Next opens the next open set below it, and reaching the end closes the
+ * sheet even if earlier sets remain open. Each move restarts exercise timing.
  */
 export function useTrainingListSetNavigation({
   rows,
@@ -44,7 +43,7 @@ export function useTrainingListSetNavigation({
   const handleNext = () => {
     if (!activeRow) return;
     const latestList = useTrainingStore.getState().exerciseList ?? [];
-    const nextIndex = findFirstOpenSetIndex(latestList);
+    const nextIndex = findNextOpenSetIndex(latestList, activeRow.index);
     if (nextIndex === null) {
       handleDismiss();
       return;

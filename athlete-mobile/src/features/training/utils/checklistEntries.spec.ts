@@ -3,6 +3,7 @@ import { createExercise } from "@/features/training/utils/testFixtures";
 import { type UserExerciseDataType } from "@/schemas/sync.schema";
 import {
   findFirstOpenSetIndex,
+  findNextOpenSetIndex,
   groupChecklistEntries,
 } from "./checklistEntries";
 
@@ -152,6 +153,70 @@ describe("groupChecklistEntries: supersets", () => {
   });
 });
 
+describe("groupChecklistEntries: MAX support sets", () => {
+  it.each([false, true])(
+    "keeps later exercises separate with one sided support: %s",
+    (oneSided) => {
+      const exerciseList = [
+        generateSetEntry("squat", 1, 4),
+        generateRestEntry(),
+        generateSetEntry("squat", 2, 4),
+        generateRestEntry(),
+        generateSetEntry("squat", 3, 4),
+        generateRestEntry(),
+        generateSetEntry("support", 3, 4),
+        generateRestEntry(),
+        generateSetEntry(oneSided ? "otherSide" : "support", 3, 4),
+        generateRestEntry(),
+        generateSetEntry("squat", 4, 4),
+        generateRestEntry(),
+        generateSetEntry("press", 1, 2),
+        generateSetEntry("press", 2, 2),
+        generateSetEntry("stretch", 1, 1),
+      ];
+
+      const blocks = groupChecklistEntries(exerciseList);
+
+      expect(blocks).toHaveLength(3);
+      expect(blocks[0].isSuperset).toBe(true);
+      expect(blocks[0].entries).toEqual([
+        { key: 0, exerciseId: "squat", setIndices: [0, 2, 4, 10] },
+        ...(oneSided
+          ? [
+              { key: 6, exerciseId: "support", setIndices: [6] },
+              { key: 8, exerciseId: "otherSide", setIndices: [8] },
+            ]
+          : [{ key: 6, exerciseId: "support", setIndices: [6, 8] }]),
+      ]);
+      expect(blocks[1]).toEqual({
+        isSuperset: false,
+        entries: [{ key: 12, exerciseId: "press", setIndices: [12, 13] }],
+      });
+      expect(blocks[2].entries[0].exerciseId).toBe("stretch");
+    },
+  );
+
+  it("keeps a later occurrence of the same support exercise in its own block", () => {
+    const exerciseList = [
+      generateSetEntry("squat", 1, 4),
+      generateSetEntry("squat", 2, 4),
+      generateSetEntry("squat", 3, 4),
+      generateSetEntry("support", 3, 4),
+      generateSetEntry("support", 3, 4),
+      generateSetEntry("squat", 4, 4),
+      generateSetEntry("support", 1, 2),
+      generateSetEntry("support", 2, 2),
+    ];
+
+    const blocks = groupChecklistEntries(exerciseList);
+
+    expect(blocks).toHaveLength(2);
+    expect(blocks[1].entries).toEqual([
+      { key: 6, exerciseId: "support", setIndices: [6, 7] },
+    ]);
+  });
+});
+
 describe("groupChecklistEntries: entries without set data", () => {
   it("treats a missing set as a single set", () => {
     const exerciseList = [
@@ -247,5 +312,30 @@ describe("findFirstOpenSetIndex: first open set of the whole list", () => {
     ];
 
     expect(findFirstOpenSetIndex(exerciseList)).toBeNull();
+  });
+});
+
+describe("findNextOpenSetIndex: forward playback", () => {
+  it("skips earlier open sets, rests and later completed sets", () => {
+    const exerciseList = [
+      generateSetEntry("squat", 1, 1),
+      generateSetEntry("press", 1, 1),
+      generateRestEntry(),
+      generateSetEntry("lunge", 1, 1, { completed: true }),
+      generateSetEntry("stretch", 1, 1),
+    ];
+
+    expect(findNextOpenSetIndex(exerciseList, 1)).toBe(4);
+  });
+
+  it("returns null at the end even when earlier sets remain open", () => {
+    const exerciseList = [
+      generateSetEntry("squat", 1, 1),
+      generateSetEntry("press", 1, 1),
+      generateRestEntry(),
+    ];
+
+    expect(findNextOpenSetIndex(exerciseList, 1)).toBeNull();
+    expect(exerciseList[0].completed).not.toBe(true);
   });
 });

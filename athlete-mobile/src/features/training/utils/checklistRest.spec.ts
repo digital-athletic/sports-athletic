@@ -1,7 +1,6 @@
 import { PAUSE_EXERCISE_ID } from "@/features/training/models/IdTypes";
 import { createExercise } from "@/features/training/utils/testFixtures";
-import { generateChecklistRow } from "@test/factories/checklistRow";
-import { findNextSetRow, findRestAfter } from "./checklistRest";
+import { findRestAfter } from "./checklistRest";
 
 // A planned rest of the set list, e.g. { exerciseId: "999999", duration: 60 }.
 const generateRestEntry = (duration: number, completed = false) =>
@@ -26,36 +25,5 @@ describe("findRestAfter: the rest that follows a set", () => {
     ["there is no set list", null, 0],
   ])("returns null when %s", (_case, exerciseList, setIndex) => {
     expect(findRestAfter(exerciseList, setIndex)).toBeNull();
-  });
-});
-
-describe("findNextSetRow: the set to preview during a rest", () => {
-  it("returns the first open row after the finished one", () => {
-    const rows = [
-      generateChecklistRow({ index: 0 }),
-      generateChecklistRow({ index: 2, completed: true }),
-      generateChecklistRow({ index: 4 }),
-    ];
-
-    expect(findNextSetRow(rows, 0)?.index).toBe(4);
-  });
-
-  it("returns an earlier open row before a later one, as Next opens the first open set", () => {
-    const rows = [
-      generateChecklistRow({ index: 0 }),
-      generateChecklistRow({ index: 2 }),
-      generateChecklistRow({ index: 4 }),
-    ];
-
-    expect(findNextSetRow(rows, 2)?.index).toBe(0);
-  });
-
-  it("returns null when the finished row is the last open one", () => {
-    const rows = [
-      generateChecklistRow({ index: 0, completed: true }),
-      generateChecklistRow({ index: 2 }),
-    ];
-
-    expect(findNextSetRow(rows, 2)).toBeNull();
   });
 });

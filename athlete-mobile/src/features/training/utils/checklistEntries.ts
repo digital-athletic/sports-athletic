@@ -14,62 +14,98 @@ export type ChecklistBlock = {
   isSuperset: boolean;
 };
 
-const totalSets = (exercise: UserExerciseDataType): number =>
-  exercise.set?.[1] ?? 1;
-
 const isOpenSet = (exercise: UserExerciseDataType | undefined): boolean =>
   !!exercise && !isPauseExercise(exercise.exerciseId) && !exercise.completed;
 
+function collectEntryGroups(exerciseList: UserExerciseDataType[]) {
+  const groups: ChecklistEntryGroup[] = [];
+  const latestGroups = new Map<string, ChecklistEntryGroup>();
+
+  exerciseList.forEach((exercise, index) => {
+    if (isPauseExercise(exercise.exerciseId)) return;
+
+    const identity = JSON.stringify([
+      exercise.exerciseId,
+      exercise.skill,
+      exercise.branchId,
+    ]);
+    const previousGroup = latestGroups.get(identity);
+    const previousSet = previousGroup
+      ? exerciseList[
+          previousGroup.setIndices[previousGroup.setIndices.length - 1]
+        ].set
+      : undefined;
+    const set = exercise.set;
+    // Support sets can repeat the main lift's set number. A reset starts a new entry.
+    const continues =
+      previousSet &&
+      set &&
+      set[1] === previousSet[1] &&
+      previousSet[0] < previousSet[1] &&
+      set[0] > 1 &&
+      set[0] >= previousSet[0];
+
+    if (previousGroup && continues) {
+      previousGroup.setIndices.push(index);
+      return;
+    }
+
+    const group: ChecklistEntryGroup = {
+      key: index,
+      exerciseId: exercise.exerciseId,
+      setIndices: [index],
+    };
+    groups.push(group);
+    latestGroups.set(identity, group);
+  });
+
+  return groups;
+}
+
 /**
- * Groups the sets of the exercise list into one entry per exercise. The list
- * marks no superset, so an exercise that starts while another one still has
- * sets to go joins that exercise's block: A 1/2, B 1/2, A 2/2, B 2/2.
+ * Groups exercises whose actual set ranges overlap into a superset. MAX
+ * support sets inherit the lift's set tuple, so its total is not their count.
  */
 export function groupChecklistEntries(
   exerciseList: UserExerciseDataType[],
 ): ChecklistBlock[] {
   const blocks: ChecklistBlock[] = [];
-  const setTotals = new Map<ChecklistEntryGroup, number>();
-  const isUnfinished = (group: ChecklistEntryGroup) =>
-    group.setIndices.length < (setTotals.get(group) ?? 1);
+  let blockEnd = -1;
 
-  exerciseList.forEach((exercise, index) => {
-    if (isPauseExercise(exercise.exerciseId)) return;
-
+  for (const group of collectEntryGroups(exerciseList)) {
     const block = blocks.at(-1);
-    const continued = block?.entries.find(
-      (group) =>
-        group.exerciseId === exercise.exerciseId && isUnfinished(group),
-    );
-    if (continued) {
-      continued.setIndices.push(index);
-      return;
-    }
-
-    const group = {
-      key: index,
-      exerciseId: exercise.exerciseId,
-      setIndices: [index],
-    };
-    setTotals.set(group, totalSets(exercise));
-    if (block?.entries.some(isUnfinished)) {
+    const lastIndex = group.setIndices[group.setIndices.length - 1];
+    if (block && group.key <= blockEnd) {
       block.entries.push(group);
       block.isSuperset = true;
+      blockEnd = Math.max(blockEnd, lastIndex);
     } else {
       blocks.push({ entries: [group], isSuperset: false });
+      blockEnd = lastIndex;
     }
-  });
+  }
 
   return blocks;
 }
 
 /**
  * The first open set among the given list indices, or among all sets when
- * none are given: the set the step-by-step view runs next.
+ * none are given.
  */
 export function findFirstOpenSetIndex(
   exerciseList: UserExerciseDataType[],
   setIndices: number[] = exerciseList.map((_, index) => index),
 ): number | null {
   return setIndices.find((index) => isOpenSet(exerciseList[index])) ?? null;
+}
+
+/** The next open set after the current one, without wrapping to earlier sets. */
+export function findNextOpenSetIndex(
+  exerciseList: readonly UserExerciseDataType[],
+  finishedIndex: number,
+): number | null {
+  for (let index = finishedIndex + 1; index < exerciseList.length; index += 1) {
+    if (isOpenSet(exerciseList[index])) return index;
+  }
+  return null;
 }

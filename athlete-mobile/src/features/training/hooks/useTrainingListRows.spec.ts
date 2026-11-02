@@ -610,3 +610,50 @@ describe("useTrainingListRows: superset blocks", () => {
     expect(result.current.blocks[0].nextEntryKey).toBeNull();
   });
 });
+
+describe("useTrainingListRows: skill of a block", () => {
+  beforeEach(() => {
+    useTrainingStore.setState(BASELINE);
+    seedMaxValues();
+    mockGetExerciseById.mockImplementation((id: string) =>
+      createExerciseData({ id, displayName: `Exercise ${id}`, tags: [] }),
+    );
+  });
+
+  afterEach(() => {
+    mockGetExerciseById.mockReset();
+  });
+
+  it("gives each block the skill of its exercise", async () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        generateSetEntry("1", 1, 1, { skill: "WU" }),
+        generateRestEntry(),
+        generateSetEntry("2", 1, 1, { skill: "MOB" }),
+      ],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.blocks.map((block) => block.skill)).toEqual([
+      "WU",
+      "MOB",
+    ]);
+  });
+
+  it("gives a superset the skill of its first exercise", async () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        generateSetEntry("1", 1, 2, { skill: "GKS" }),
+        generateSetEntry("2", 1, 2, { skill: "SK" }),
+        generateSetEntry("1", 2, 2, { skill: "GKS" }),
+        generateSetEntry("2", 2, 2, { skill: "SK" }),
+      ],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.blocks).toHaveLength(1);
+    expect(result.current.blocks[0].skill).toBe("GKS");
+  });
+});

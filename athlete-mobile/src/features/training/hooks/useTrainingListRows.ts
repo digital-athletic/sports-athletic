@@ -51,6 +51,8 @@ export type ChecklistEntry = {
 
 export type ChecklistEntryBlock = {
   key: number;
+  /** Skill of the block's first exercise. */
+  skill: string;
   isSuperset: boolean;
   entries: ChecklistEntry[];
   nextEntryKey: number | null;
@@ -221,8 +223,10 @@ function buildEntryBlocks(
         nextSetIndex !== null && group.setIndices.includes(nextSetIndex),
     );
 
+    const key = block.entries[0].key;
     return {
-      key: block.entries[0].key,
+      key,
+      skill: exerciseList[key].skill,
       isSuperset: block.isSuperset,
       entries,
       nextEntryKey: nextEntry?.key ?? null,

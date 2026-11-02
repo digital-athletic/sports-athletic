@@ -5,6 +5,7 @@ import { WorkoutConstants } from "@/constants/workoutConstants";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
+import { SkillTitle } from "@/features/training/SkillTitle";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { getEquipmentList } from "@/features/training/trainingUtils";
 import { deriveEntryWeight } from "@/features/training/utils/workoutUtils";
@@ -309,17 +310,11 @@ const SkillGroupItem: FC<SkillGroupItemProps> = ({
   exercises,
   onShowExerciseInfo,
 }) => {
-  const { t } = useTranslation();
-
   const isMaxSkill = skillGroup.skill.includes("MAX");
 
   return (
     <Box marginBottom="l">
-      <Text variant="subtitle" marginBottom="m">
-        {t(`training.skill.${skillGroup.skill}`, {
-          defaultValue: skillGroup.skill,
-        })}
-      </Text>
+      <SkillTitle skill={skillGroup.skill} />
       {skillGroup.sets.map((set, setIndex) => (
         <ExerciseSetItem
           key={`set-${setIndex}`}

@@ -223,6 +223,15 @@ test.describe("Training list: checklist session", () => {
       await trainingOverviewPage.startAsChecklist();
       await trainingListPage.expectVisible();
 
+      // The checklist names the skills in the order of the overview, and the
+      // superset starts the full body stability skill.
+      await expect(trainingListPage.skillTitles).toHaveText([
+        "Warm-Up",
+        "Full body stability",
+      ]);
+      await expect(trainingListPage.skillTitle(2)).toHaveText(
+        "Full body stability",
+      );
       const superset = trainingListPage.superset(2);
       await expect(superset).toBeVisible();
       await expect(superset.getByTestId("training-list-row-2")).toBeVisible();

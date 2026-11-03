@@ -32,6 +32,12 @@ const THREE_DAY_FOCUSES: readonly Focus[] = ["PHASE", "CARDIO", "STABILITY"];
 /** The day of a two-day group that gets PHASE when no rule picks one. */
 const FIRST_DAY_INDEX = 0;
 
+/** The groups the walk closed so far and the group it is filling. */
+interface GroupWalk {
+  readonly groups: TrainingDayType[][];
+  readonly open: TrainingDayType[];
+}
+
 /**
  * Starts after the first rest day and wraps through the week, so a group that
  * runs from Sunday into Monday stays whole. The groups come in that walk
@@ -44,18 +50,19 @@ const groupActiveDays = (
 ): TrainingDayType[][] => {
   const firstRestDay = schedule.findIndex((day) => !day.active);
   if (firstRestDay < 0) return schedule.length > 0 ? [[...schedule]] : [];
-  const groups: TrainingDayType[][] = [];
-  let group: TrainingDayType[] = [];
-  for (let offset = 1; offset <= schedule.length; offset++) {
-    const day = schedule[(firstRestDay + offset) % schedule.length];
-    if (day.active) {
-      group.push(day);
-    } else if (group.length > 0) {
-      groups.push(group);
-      group = [];
-    }
-  }
-  return groups;
+  // The walk ends on the first rest day, which closes the last group.
+  const walk = schedule.map(
+    (_, offset) => schedule[(firstRestDay + offset + 1) % schedule.length],
+  );
+  return walk.reduce<GroupWalk>(
+    ({ groups, open }, day) => {
+      if (day.active) return { groups, open: [...open, day] };
+      return open.length > 0
+        ? { groups: [...groups, open], open: [] }
+        : { groups, open };
+    },
+    { groups: [], open: [] },
+  ).groups;
 };
 
 const withFocus = (

@@ -286,7 +286,7 @@ export const selectSkillBranches = (
 
 // A GKS tag entry for the full body switches the lower body of the whole day
 // to the GKS directions, as the old generator does:
-// generators/PlanGenerator.ts#L643-L658
+// generators/PlanGenerator.ts, PlanGenerator.createSection
 const hasFullBodyGks = (requests: readonly SkillSelectionRequest[]) =>
   requests.some(
     ({ skill, tagEntries }) =>

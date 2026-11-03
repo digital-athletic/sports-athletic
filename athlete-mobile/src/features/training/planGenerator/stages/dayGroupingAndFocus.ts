@@ -32,7 +32,8 @@ const THREE_DAY_FOCUSES: readonly Focus[] = ["PHASE", "CARDIO", "STABILITY"];
 // Starts after the first rest day and wraps through the week, so a group that
 // runs from Sunday into Monday stays whole. The groups come in that walk
 // order, as in the old generator:
-// src/features/training/generators/PlanGenerator.ts#L724-L753
+// src/features/training/generators/PlanGenerator.ts,
+// PlanGenerator.getTrainingDayGroups
 const groupActiveDays = (
   schedule: readonly TrainingDayType[],
 ): TrainingDayType[][] => {

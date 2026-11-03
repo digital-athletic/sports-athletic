@@ -150,7 +150,7 @@ export const filterSlotCandidates = (
     when(preferences.isLastSlot, keepTwoSided),
     keepUntrainedBigMuscles(preferences.untrainedBigMuscles),
     // The old generator skips this draw for the core region:
-    // generators/PlanGenerator.ts#L1734-L1752
+    // generators/PlanGenerator.ts, PlanGenerator.getBranchesForWorkout
     keepInvolvement(preferences.involvement),
     when(preferences.prefersBarbell, keepBarbell),
     keepWeightType(preferences.weightType),

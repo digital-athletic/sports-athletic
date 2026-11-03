@@ -94,7 +94,7 @@ const BODYWEIGHT_SECTION_TYPES: Readonly<Record<SectionType, SkillCode>> = {
 };
 // The glossary gives the speed warm-up to every explosive power and power
 // endurance section. The old code gives it to SA and SK only:
-// generators/PlanGenerator.ts#L1225-L1228
+// generators/PlanGenerator.ts, PlanGenerator.getSkillTrainingplan
 const SPEED_WARM_UP_SECTION_TYPES: readonly SectionType[] = [
   "SA",
   "SAKG",
@@ -176,8 +176,8 @@ const resolvePlaceholder = (
 // advances the cursor for a prevention or special warm-up slot at any
 // threshold, also one the session never reaches, and gives a child without
 // a prevention skill stability for PREV2 and PREV3:
-// generators/PlanGenerator.ts#L383-L404
-// generators/PlanGenerator.ts#L1007-L1019
+// generators/PlanGenerator.ts, PlanGenerator.createSection and
+// PlanGenerator.replaceUserSpecificSkill
 const resolveSlots = (
   slots: readonly PrioritySlot[],
   { section, profile }: SkillBudgetContext,
@@ -206,7 +206,7 @@ const resolveSlots = (
 };
 
 // The old code has no SWR2 case and reads the SWR1 configuration for SWR2:
-// generators/PlanGenerator.ts#L2063-L2066
+// generators/PlanGenerator.ts, PlanGenerator.getTagsForSkill
 const findRegionConfigName = (skill: SkillCode): string => {
   if (isCardioType(skill)) return "CARDIO";
   if (skill === "SWR2") return "SWR1";
@@ -249,7 +249,7 @@ const findMaximumMinutesGroup = (skill: SkillCode): MaxMinutesGroup => {
 
 // A 0 means the skill gets no leftover minutes, and a missing entry raises a
 // configuration error. The old code reads both as 200 minutes:
-// generators/PlanGenerator.ts#L932-L934
+// generators/PlanGenerator.ts, PlanGenerator.getMaxTimeForSkillAndLevel
 const readMaximumMinutes = (
   skill: SkillCode,
   { profile, authoredData }: SkillBudgetContext,
@@ -266,7 +266,7 @@ const readMaximumMinutes = (
 // priority order up to their maximum minutes. Minutes no skill can take stay
 // unused. The old code first fills the priority 2 skill to its maximum in
 // sessions longer than 45 minutes:
-// generators/PlanGenerator.ts#L830-L843
+// generators/PlanGenerator.ts, PlanGenerator.addTimeLeftToSkills
 const distributeMinutes = (
   skills: readonly SkillCode[],
   duration: number,

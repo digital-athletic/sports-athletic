@@ -9,6 +9,7 @@ import {
   listBranchRemovals,
   type RuleFamilyResult,
 } from "@/features/training/workoutGenerator/ruleFamilies/ruleFamily";
+import { filterRecord } from "@/utils/functional";
 import type { PlanGenerationInput } from "../planGenerationInput/planGenerationInput";
 import type { DerivedProfile } from "../stages/profileDerivation";
 import { filterBranchesByGoalkeeperExclusion } from "./goalkeeperRule";
@@ -32,10 +33,9 @@ type ChainStep = <T extends CandidateBranch>(
 const filterUsedBranches =
   (usedBranchIds: readonly string[]): ChainStep =>
   (branches) => {
-    const keep = Object.fromEntries(
-      Object.entries(branches).filter(
-        ([branchId]) => !usedBranchIds.includes(branchId),
-      ),
+    const keep = filterRecord(
+      branches,
+      (_, branchId) => !usedBranchIds.includes(branchId),
     );
     return {
       keep,

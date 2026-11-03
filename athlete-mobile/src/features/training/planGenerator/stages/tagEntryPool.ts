@@ -4,7 +4,7 @@ import { getBranchIdsByNames } from "@/features/training/utils/skillTreeUtils";
 import { resolveBranchExercise } from "@/features/training/workoutGenerator/blockHandlers/library/branchResolution";
 import type { RegionTagEntry } from "@/schemas/generator.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
-import { pipe, type Step } from "@/utils/functional";
+import { filterRecord, pipe, type Step } from "@/utils/functional";
 import { getTagValues } from "@/utils/tagUtils";
 import type { PlanGenerationInput } from "../planGenerationInput/planGenerationInput";
 import {
@@ -84,10 +84,8 @@ type TreeFilter = Step<SkillTreeType>;
 const keepRegion =
   (region: string): TreeFilter =>
   (tree) =>
-    Object.fromEntries(
-      Object.entries(tree).filter(([, { tags }]) =>
-        getTagValues(tags, TagGroups.REGION).includes(region),
-      ),
+    filterRecord(tree, ({ tags }) =>
+      getTagValues(tags, TagGroups.REGION).includes(region),
     );
 
 const SPECIAL_WARM_UP = "WUSPEZIAL";
@@ -123,11 +121,9 @@ const keepPainRegions =
   (tree) => {
     const target = readPainRegionTarget(name, context);
     if (target === null) return tree;
-    const kept = Object.fromEntries(
-      Object.entries(tree).filter(([, { tags }]) =>
-        getTagValues(tags, target.group).some((region) =>
-          target.regions.includes(region),
-        ),
+    const kept = filterRecord(tree, ({ tags }) =>
+      getTagValues(tags, target.group).some((region) =>
+        target.regions.includes(region),
       ),
     );
     return Object.keys(kept).length > 0 ? kept : tree;

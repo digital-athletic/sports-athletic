@@ -14,6 +14,7 @@ import type {
   SkillPriorities,
 } from "@/schemas/generator.schema";
 import type { PlacesData } from "@/store/placesStore";
+import { mapReduce } from "@/utils/functional";
 import type { Focus, FocusedTrainingDay } from "./dayGroupingAndFocus";
 import type { DerivedProfile } from "./profileDerivation";
 import type { PlanSection, SectionType } from "./sectionLayout";
@@ -330,14 +331,10 @@ export const budgetTrainingDay = (
 export const budgetSectionDays = (
   context: SkillBudgetContext,
   days: readonly FocusedTrainingDay[],
-): readonly TrainingDayBudget[] =>
-  days.reduce<{ budgets: TrainingDayBudget[]; rotationCursor: number }>(
-    ({ budgets, rotationCursor }, day) => {
-      const step = budgetTrainingDay(context, day, rotationCursor);
-      return {
-        budgets: [...budgets, step.budget],
-        rotationCursor: step.nextRotationCursor,
-      };
-    },
-    { budgets: [], rotationCursor: 0 },
-  ).budgets;
+): readonly TrainingDayBudget[] => {
+  const [budgets] = mapReduce(days, 0, (day, rotationCursor) => {
+    const step = budgetTrainingDay(context, day, rotationCursor);
+    return [step.budget, step.nextRotationCursor] as const;
+  });
+  return budgets;
+};

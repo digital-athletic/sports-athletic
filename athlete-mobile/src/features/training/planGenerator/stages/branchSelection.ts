@@ -7,6 +7,7 @@ import type {
   RegionTagEntry,
 } from "@/schemas/generator.schema";
 import type { SkillBranchType } from "@/schemas/skillTree.schema";
+import { mapReduce } from "@/utils/functional";
 import { getTagValues } from "@/utils/tagUtils";
 import type { PlanGenerationInput } from "../planGenerationInput/planGenerationInput";
 import {
@@ -130,6 +131,14 @@ const drawWeightType = (
   return quotas.WEIGHTED > 0 ? "WEIGHTED" : "BODYWEIGHT";
 };
 
+const takeQuota = (
+  quotas: Quotas | null,
+  weightType: WeightType | null,
+): Quotas | null =>
+  quotas && weightType
+    ? { ...quotas, [weightType]: quotas[weightType] - 1 }
+    : quotas;
+
 interface EntryState {
   readonly candidates: readonly SlotCandidate[];
   readonly directions: readonly DirectionEntry[];
@@ -166,13 +175,7 @@ const fillSlot = (
     untrainedBigMuscles: state.untrainedBigMuscles.filter(
       (muscle) => !pickMuscles.includes(muscle),
     ),
-    quotas:
-      state.quotas && result.weightType
-        ? {
-            ...state.quotas,
-            [result.weightType]: state.quotas[result.weightType] - 1,
-          }
-        : state.quotas,
+    quotas: takeQuota(state.quotas, result.weightType),
     // The workout lists a one-sided exercise for each side, which takes two slots.
     filledSlots: state.filledSlots + (isOneSided(pick) ? 2 : 1),
     picks: [...state.picks, pick],
@@ -196,7 +199,19 @@ const fillTagEntry = (
 ): SkillState => {
   const { candidates, region } = readEntryPool(entry, context);
   const slotCount = Math.min(entry.count, candidates.length);
-  let state: EntryState = {
+  const fillOpenSlots = (state: EntryState): EntryState => {
+    const heldExerciseIds = [...heldPicks, ...state.picks].map(
+      ({ exercise }) => exercise.id,
+    );
+    const open = state.candidates.filter(
+      ({ exercise }) => !heldExerciseIds.includes(exercise.id),
+    );
+    if (state.filledSlots >= slotCount || open.length === 0) return state;
+    return fillOpenSlots(
+      fillSlot({ ...state, candidates: open }, slotCount, context),
+    );
+  };
+  const { picks, quotas: remainingQuotas } = fillOpenSlots({
     candidates,
     directions: region
       ? readDirectionSequence(
@@ -210,18 +225,8 @@ const fillTagEntry = (
     quotas,
     filledSlots: 0,
     picks: [],
-  };
-  while (state.filledSlots < slotCount) {
-    const heldExerciseIds = [...heldPicks, ...state.picks].map(
-      ({ exercise }) => exercise.id,
-    );
-    const open = state.candidates.filter(
-      ({ exercise }) => !heldExerciseIds.includes(exercise.id),
-    );
-    if (open.length === 0) break;
-    state = fillSlot({ ...state, candidates: open }, slotCount, context);
-  }
-  return { picks: [...heldPicks, ...state.picks], quotas: state.quotas };
+  });
+  return { picks: [...heldPicks, ...picks], quotas: remainingQuotas };
 };
 
 const toSelectedBranch = ({
@@ -233,8 +238,10 @@ const toSelectedBranch = ({
   levels: branch.levels,
 });
 
-const listBranchIds = (picks: readonly SlotCandidate[]): string[] =>
-  picks.map(({ branchId }) => branchId);
+const addUsedBranches = (
+  usedBranchIds: readonly string[],
+  picks: readonly SlotCandidate[],
+): string[] => [...usedBranchIds, ...picks.map(({ branchId }) => branchId)];
 
 /**
  * Selects the branches of one skill on one day, as spec section 5, rules 2 to
@@ -264,7 +271,7 @@ export const selectSkillBranches = (
         ...skillContext,
         day: {
           ...day,
-          usedBranchIds: [...day.usedBranchIds, ...listBranchIds(state.picks)],
+          usedBranchIds: addUsedBranches(day.usedBranchIds, state.picks),
         },
       }),
     {
@@ -277,7 +284,7 @@ export const selectSkillBranches = (
       picks.length > 0
         ? { type: "BRANCHES", skill, branches: picks.map(toSelectedBranch) }
         : { type: "EMPTY_SKILL", skill },
-    usedBranchIds: [...day.usedBranchIds, ...listBranchIds(picks)],
+    usedBranchIds: addUsedBranches(day.usedBranchIds, picks),
   };
 };
 
@@ -319,19 +326,18 @@ export const selectDayBranches = (
       ? "LOWER_BODY_GKS"
       : "LOWER_BODY",
   };
-  return requests.reduce<DayBranchSelection>(
-    ({ selections, usedBranchIds }, request) => {
+  const [selections, usedBranchIds] = mapReduce(
+    requests,
+    day.usedBranchIds,
+    (request, usedBranchIds) => {
       const step = selectSkillBranches(
         request,
         { ...day, usedBranchIds },
         profile,
         input,
       );
-      return {
-        selections: [...selections, step.selection],
-        usedBranchIds: step.usedBranchIds,
-      };
+      return [step.selection, step.usedBranchIds] as const;
     },
-    { selections: [], usedBranchIds: [] },
   );
+  return { selections, usedBranchIds };
 };

@@ -122,7 +122,7 @@ One read-only object holds every input the stages read:
 - the reference date for the athlete's age
 - the random source
 
-One input builder reads the stores and the authored data once and builds the object for both callers. The builder reads the clock once for the reference date, so the same input and random sequence always yield the same plan. No stage loads data, reads a store or reads the clock, and no stage changes the object.
+One input builder in `planGenerationInput/` reads the stores and the authored data once and builds the object for both callers. The builder reads the clock once for the reference date, so the same input and random sequence always yield the same plan. No stage loads data, reads a store or reads the clock, and no stage changes the object.
 
 ### Reuse of the workout generator
 
@@ -156,6 +156,8 @@ The new generator follows the spec. In these places the old code differs, and th
 | Rule in the new generator | Spec | Old code |
 |---|---|---|
 | Every exercise slot applies the 70/30 split of complex and isolated exercises, the core region included. | Section 5, rule 4 | [Involvement draw](../../src/features/training/generators/PlanGenerator.ts#L1734-L1752) |
+| The muscle filter keeps the branches that train a big muscle no earlier slot of the tag entry trained, and every candidate when none does. A pick marks all its big muscles as trained. The old code falls back from untrained big muscles to any big muscle, then to small muscles, and marks one muscle per pick. | Section 5, rule 4 | [Muscle filter](../../src/features/training/generators/PlanGenerator.ts#L1701-L1729), [trained muscle](../../src/features/training/generators/PlanGenerator.ts#L1824-L1834) |
+| The weighted/bodyweight quota counts over all slots of a skill, as "Each skill enforces the share as a quota over its slots" defines. The old code counts the quota per tag entry. | Section 5, rule 3; Plan Workout Generation, weighted vs bodyweight ratio | [Weighted share](../../src/features/training/generators/PlanGenerator.ts#L1546-L1566) |
 | Leftover minutes fill by priority, with no priority 2 prefill for sessions longer than 45 minutes. | Section 4, rule 4 | [Leftover distribution](../../src/features/training/generators/PlanGenerator.ts#L830-L843) |
 | A 0 in the maximum minutes table means no time. A missing entry raises a configuration error. | Section 4, table | [Maximum minutes](../../src/features/training/generators/PlanGenerator.ts#L932-L934) |
 | A PROFESSIONAL child resolves branches at ADVANCED, the level every other stage uses. | Section 1, Level | [Branch level](../../src/features/training/generators/PlanGenerator.ts#L1270) |
@@ -224,7 +226,7 @@ The new generator raises the typed generator error in three classes:
   1. A block for `planGenerator/**` mirrors the block for `workoutGenerator/**`: the new generator imports nothing from `generators/`.
   2. The workout generator block forbids imports from `planGenerator/`.
   3. A new block for `generators/**` forbids imports from `planGenerator/`, `workoutGenerator/` and both routers, so the old generator never depends on new code. The block adds import rules only and changes no file in `generators/`.
-- **Module layout.** The top level of the `planGenerator` folder holds the entry and the input builder. The entry delegates to one subfolder per component of the patterns diagram:
+- **Module layout.** The top level of the `planGenerator` folder holds the entry. The entry delegates to one subfolder per component of the patterns diagram:
 
   | Folder | Component | Modules |
   | --- | --- | --- |
@@ -246,6 +248,10 @@ The new generator raises the typed generator error in three classes:
 - Con: until the old generator is deleted, the app holds two plan generators.
 - Con: stored plans carry no marker, so a bug report on a plan does not say which generator wrote it.
 - Con: the new generator writes branch copies until the stored plan migration.
+
+## Open questions
+
+1. Untraced new-only picks in strength sections. A simulation of 10 common personas with 20 seeds each found that SWR1 and SWR2 phase days in the new generator pick, across many seeds, branches the old generator never picked: 71, 74, 75, 681, 686, 814, 858, 997 and 1016. The candidate pools of both generators match. The selection step causes the difference: either the muscle filter ([Behaviour](#behaviour) row "muscle filter") or the weighted/bodyweight quota per skill ([Behaviour](#behaviour) row "weighted/bodyweight quota"). Someone traces which rule causes the picks and decides whether they are acceptable.
 
 ## More information
 

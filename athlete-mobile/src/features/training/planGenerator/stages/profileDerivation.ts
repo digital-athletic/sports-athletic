@@ -10,7 +10,12 @@ import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import type { SeasonPhaseType } from "@/features/training/models/SeasonPhase";
 import { hasWeights } from "@/features/training/utils/equipmentUtils";
 import { getPreventionsFromPains } from "@/features/training/utils/painUtils";
-import { type ISODateString, isISODate } from "@/utils/date";
+import {
+  dateOfAge,
+  daysBetweenISODates,
+  type ISODateString,
+  isISODate,
+} from "@/utils/date";
 import { getUserTagValue, getUserTagValues } from "@/utils/tagUtils";
 import type { PlanGenerationInput } from "../planGenerationInput/planGenerationInput";
 
@@ -39,19 +44,14 @@ export interface DerivedProfile {
 }
 
 const { AGE_GROUPS, AGE_GROUPS_MAX_AGE, LEVELS } = WorkoutConstants;
-const DAY_IN_MS = 24 * 60 * 60 * 1000;
 const DAYS_PER_WEEK = 7;
-
-// The date on which an athlete born on the birthday turns the given age.
-// Both dates are ISO strings, so they compare in calendar order.
-const dateOfAge = (birthday: ISODateString, age: number): ISODateString =>
-  `${Number(birthday.slice(0, 4)) + age}${birthday.slice(4)}`;
 
 const deriveAgeGroup = (
   birthday: string,
   referenceDate: ISODateString,
 ): AgeGroupTag => {
   if (!isISODate(birthday)) return AGE_GROUPS.ADULT;
+  // ISO date strings compare in calendar order
   if (referenceDate < dateOfAge(birthday, AGE_GROUPS_MAX_AGE.CHILD)) {
     return AGE_GROUPS.CHILD;
   }
@@ -71,11 +71,6 @@ const deriveFitnessLevel = (
     : level;
 };
 
-const toUtcDay = (date: ISODateString): number => {
-  const [year, month, day] = date.split("-").map(Number);
-  return Date.UTC(year, month - 1, day) / DAY_IN_MS;
-};
-
 const deriveSeasonPhase = (
   { type, endDate }: SeasonPhaseType,
   planStartDate: ISODateString,
@@ -87,7 +82,7 @@ const deriveSeasonPhase = (
       params: ["seasonPhase"],
     } satisfies GeneratorError;
   }
-  const days = toUtcDay(endDate) - toUtcDay(planStartDate);
+  const days = daysBetweenISODates(planStartDate, endDate);
   return { type, weekCount: Math.max(1, Math.floor(days / DAYS_PER_WEEK)) };
 };
 

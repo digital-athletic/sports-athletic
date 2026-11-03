@@ -208,8 +208,10 @@ module.exports = defineConfig([
     restrictModuleLoads(PLAN_GENERATOR_PATH, PLAN_GENERATOR_MESSAGE),
   ),
   createNewGeneratorBlock("planGenerator", [], []),
-  // The comment system of the athlete app, see eslint-rules/commentSystem.js.
-  // The rest of the app follows in a later issue.
+  // The comment convention of the Google TypeScript style guide, checked in the
+  // plan generator only: doc comments (/** */) document declarations and type
+  // members, line comments (//) explain function bodies, and plain block
+  // comments appear only in JSX. See eslint-rules/commentSystem.js.
   {
     files: ["src/features/training/planGenerator/**"],
     plugins: { local: { rules: { "comment-system": commentSystem } } },

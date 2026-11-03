@@ -19,54 +19,74 @@ ruleTester.run("comment-system", commentSystem, {
     "export const days = 3;",
     "const days = 3;",
     "/** Training days per week. */\nexport const days = 3;",
-    "// The old code counts rest days too.\nconst days = 3;",
+    "/** The old code counts rest days too. */\nconst days = 3;",
     "export interface Plan {\n  /** Training days per week. */\n  readonly days: number;\n}",
-    "const count = () => {\n  // Rest days never count.\n  return 3;\n};",
+    "interface Plan {\n  readonly days: number; // per week\n}",
+    "// Section banner.\n\nconst days = 3;",
     "const days = 3; // per week",
+    "const count = () => {\n  // Rest days never count.\n  return 3;\n};",
+    "function count() {\n  type Day = {\n    // Rest days never count.\n    rest: boolean;\n  };\n  return 3;\n}",
     { code: "const View = () => <div>{/* empty */}</div>;", ...jsxOptions },
   ],
   invalid: [
     {
       code: "// Training days per week.\nexport const days = 3;",
       output: "/** Training days per week. */\nexport const days = 3;",
-      errors: [{ messageId: "exportedNeedsDoc" }],
+      errors: [{ messageId: "declarationNeedsDoc" }],
     },
     {
-      code: "// Training days\n// per week.\nexport const days = 3;",
-      output:
-        "/**\n * Training days\n * per week.\n */\nexport const days = 3;",
-      errors: [{ messageId: "exportedNeedsDoc" }],
+      code: "// The old code counts rest days too.\nconst days = 3;",
+      output: "/** The old code counts rest days too. */\nconst days = 3;",
+      errors: [{ messageId: "declarationNeedsDoc" }],
+    },
+    {
+      code: "// Steps:\n//   1. warm up\nconst days = 3;",
+      output: "/**\n * Steps:\n *   1. warm up\n */\nconst days = 3;",
+      errors: [{ messageId: "declarationNeedsDoc" }],
     },
     {
       code: "/* Training days per week. */\nexport const days = 3;",
       output: "/** Training days per week. */\nexport const days = 3;",
-      errors: [{ messageId: "exportedNeedsDoc" }],
+      errors: [{ messageId: "declarationNeedsDoc" }],
     },
     {
-      code: "export interface Plan {\n  // Training days per week.\n  readonly days: number;\n}",
+      code: "/** Training days per week. */\n// generators/PlanGenerator.ts, PlanGenerator.getDays\nconst days = 3;",
       output:
-        "export interface Plan {\n  /** Training days per week. */\n  readonly days: number;\n}",
-      errors: [{ messageId: "memberNeedsDoc" }],
+        "/**\n * Training days per week.\n * generators/PlanGenerator.ts, PlanGenerator.getDays\n */\nconst days = 3;",
+      errors: [{ messageId: "declarationNeedsDoc" }],
     },
     {
-      code: "/** The old code counts rest days too. */\nconst days = 3;",
-      output: "// The old code counts rest days too.\nconst days = 3;",
-      errors: [{ messageId: "privateNeedsLine" }],
+      code: "// Closes */ early.\nconst days = 3;",
+      output: null,
+      errors: [{ messageId: "declarationNeedsDoc" }],
     },
     {
-      code: "/**\n * The old code counts\n * rest days too.\n */\nconst days = 3;",
-      output: "// The old code counts\n// rest days too.\nconst days = 3;",
-      errors: [{ messageId: "privateNeedsLine" }],
-    },
-    {
-      code: "/* The old code counts rest days too. */\nconst days = 3;",
-      output: "// The old code counts rest days too.\nconst days = 3;",
-      errors: [{ messageId: "privateNeedsLine" }],
-    },
-    {
-      code: "const count = () => {\n  /* Rest days never count. */\n  return 3;\n};",
+      code: "interface Plan {\n  // Training days per week.\n  readonly days: number;\n}",
       output:
-        "const count = () => {\n  // Rest days never count.\n  return 3;\n};",
+        "interface Plan {\n  /** Training days per week. */\n  readonly days: number;\n}",
+      errors: [{ messageId: "declarationNeedsDoc" }],
+    },
+    {
+      code: "function count() {\n  /** Rest days never count. */\n  const rest = 0;\n  return rest;\n}",
+      output:
+        "function count() {\n  // Rest days never count.\n  const rest = 0;\n  return rest;\n}",
+      errors: [{ messageId: "docInFunctionBody" }],
+    },
+    {
+      code: "const count = () => {\n  /**\n   * Steps:\n   *   1. warm up\n   */\n  return 3;\n};",
+      output:
+        "const count = () => {\n  // Steps:\n  //   1. warm up\n  return 3;\n};",
+      errors: [{ messageId: "docInFunctionBody" }],
+    },
+    {
+      code: "const count = () => {\n  /*\n    Steps:\n      1. warm up\n  */\n  return 3;\n};",
+      output:
+        "const count = () => {\n  // Steps:\n  //   1. warm up\n  return 3;\n};",
+      errors: [{ messageId: "blockOutsideJsx" }],
+    },
+    {
+      code: "/* Section banner. */\n\nconst days = 3;",
+      output: "// Section banner.\n\nconst days = 3;",
       errors: [{ messageId: "blockOutsideJsx" }],
     },
     {

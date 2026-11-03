@@ -55,7 +55,7 @@ const readBranchTags = ({ branch }: SlotCandidate, group: TagGroups) =>
 export const isOneSided = ({ exercise }: SlotCandidate): boolean =>
   getTagValues(exercise.tags, TagGroups.SIDE).includes("ONE");
 
-export const isWeighted = (candidate: SlotCandidate): boolean =>
+const isWeighted = (candidate: SlotCandidate): boolean =>
   hasWeights(readBranchTags(candidate, TagGroups.EQUIPMENT));
 
 const matchesDirection =
@@ -149,8 +149,6 @@ export const filterSlotCandidates = (
     keepFirstDirection(preferences.directions),
     when(preferences.isLastSlot, keepTwoSided),
     keepUntrainedBigMuscles(preferences.untrainedBigMuscles),
-    // The old generator skips this draw for the core region:
-    // generators/PlanGenerator.ts, PlanGenerator.getBranchesForWorkout
     keepInvolvement(preferences.involvement),
     when(preferences.prefersBarbell, keepBarbell),
     keepWeightType(preferences.weightType),

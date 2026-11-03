@@ -1,10 +1,10 @@
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { SectionTemplates } from "@/data/loadPlanAuthoredData";
-import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import type {
   SectionEntry,
   TrainingSectionsMap,
 } from "@/schemas/generator.schema";
+import { throwConfigurationError } from "./configurationError";
 import type { DerivedProfile } from "./profileDerivation";
 
 /** One section of the plan: type, week count and cardio type, without a start date. */
@@ -25,13 +25,8 @@ const GOALKEEPER_CARDIO_TYPES: Partial<Record<CardioType, CardioType>> = {
   CARDIO_1_LAKTAT: "CARDIO_1_SHORT",
 };
 
-const throwMissingTemplate = (templateKey: string, weeks: number): never => {
-  throw {
-    type: "OTHER",
-    subtype: "OTHER",
-    params: ["sectionTemplate", templateKey, String(weeks)],
-  } satisfies GeneratorError;
-};
+const throwMissingTemplate = (templateKey: string, weeks: number): never =>
+  throwConfigurationError("sectionTemplate", templateKey, String(weeks));
 
 interface FoundTemplate {
   readonly key: string;

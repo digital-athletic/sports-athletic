@@ -1,11 +1,11 @@
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { PlanAuthoredData } from "@/data/loadPlanAuthoredData";
-import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import type {
   DurationTagMap,
   RegionConfig,
   RegionTagEntry,
 } from "@/schemas/generator.schema";
+import { throwConfigurationError } from "./configurationError";
 import type { DerivedProfile } from "./profileDerivation";
 
 /** The tag entries branch selection fills. */
@@ -28,13 +28,8 @@ const readRegionConfigurationName = (skill: string): string => {
   return skill;
 };
 
-const throwMissingRegionConfiguration = (skill: string): never => {
-  throw {
-    type: "OTHER",
-    subtype: "OTHER",
-    params: ["regionConfiguration", skill],
-  } satisfies GeneratorError;
-};
+const throwMissingRegionConfiguration = (skill: string): never =>
+  throwConfigurationError("regionConfiguration", skill);
 
 const pickVariant = (
   config: RegionConfig,

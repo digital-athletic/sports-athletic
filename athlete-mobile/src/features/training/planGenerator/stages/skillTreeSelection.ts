@@ -1,10 +1,10 @@
 import type { PlanAuthoredData } from "@/data/loadPlanAuthoredData";
-import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import {
   isPlyometricIntensity,
   keepPlyometricIntensity,
 } from "@/features/training/utils/plyometricIntensity";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
+import { throwConfigurationError } from "./configurationError";
 
 /** The weighted tree and the bodyweight tree of a skill trainable both ways. */
 const TREE_PAIRS_BY_SKILL: Readonly<Record<string, readonly [string, string]>> =
@@ -35,14 +35,10 @@ const TREE_NAMES_BY_SKILL: Readonly<Record<string, string>> = {
 const readTree = (
   skillTrees: PlanAuthoredData["skillTrees"],
   name: string,
-): SkillTreeType => {
-  if (Object.hasOwn(skillTrees, name)) return skillTrees[name];
-  throw {
-    type: "OTHER",
-    subtype: "OTHER",
-    params: ["skillTree", name],
-  } satisfies GeneratorError;
-};
+): SkillTreeType =>
+  Object.hasOwn(skillTrees, name)
+    ? skillTrees[name]
+    : throwConfigurationError("skillTree", name);
 
 /**
  * Selects the skill tree a skill or skill tag reads. A skill trainable with

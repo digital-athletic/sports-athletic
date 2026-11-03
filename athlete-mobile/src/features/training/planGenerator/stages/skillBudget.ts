@@ -1,6 +1,5 @@
 import { type LevelTag, WorkoutConstants } from "@/constants/workoutConstants";
 import type { PlanAuthoredData } from "@/data/loadPlanAuthoredData";
-import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import {
   type DurationMinutes,
   minutes,
@@ -15,6 +14,7 @@ import type {
 } from "@/schemas/generator.schema";
 import type { PlacesData } from "@/store/placesStore";
 import { mapReduce } from "@/utils/functional";
+import { throwConfigurationError } from "./configurationError";
 import type { Focus, FocusedTrainingDay } from "./dayGroupingAndFocus";
 import type { DerivedProfile } from "./profileDerivation";
 import type { PlanSection, SectionType } from "./sectionLayout";
@@ -120,10 +120,6 @@ const MAXIMUM_MINUTES_GROUPS: Readonly<
   SWR2: "SWR",
   SWR2KG: "SWR",
   WUSPEZIAL: "WUSPEZIAL",
-};
-
-const throwConfigurationError = (...params: string[]): never => {
-  throw { type: "OTHER", subtype: "OTHER", params } satisfies GeneratorError;
 };
 
 const isCardioType = (skill: SkillCode): boolean =>

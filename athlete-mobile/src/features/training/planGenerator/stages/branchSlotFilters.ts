@@ -26,16 +26,19 @@ export interface SlotPreferences {
   readonly isLastSlot: boolean;
   readonly involvement: Involvement;
   readonly prefersBarbell: boolean;
-  /** Null when the weighted/bodyweight share does not apply. */
-  readonly weightType: WeightType | null;
 }
 
 export interface SlotFilterResult {
   readonly survivors: readonly SlotCandidate[];
   /** The index of the direction that matched, or null when none did. */
   readonly directionIndex: number | null;
-  /** The type the survivors have, or null when the share does not apply. */
-  readonly weightType: WeightType | null;
+}
+
+/** The survivors of the weight type filter and the type they have. */
+export interface WeightTypeFilterResult {
+  readonly survivors: readonly SlotCandidate[];
+  /** The drawn type, or the other type when no survivor has the drawn one. */
+  readonly weightType: WeightType;
 }
 
 type CandidateCheck = (candidate: SlotCandidate) => boolean;
@@ -108,48 +111,56 @@ const keepBarbell = keepWhereAny((candidate) =>
   ),
 );
 
-/** The drawn type first, then the other type, then every candidate. */
-const keepWeightType =
-  (weightType: WeightType | null): SlotStep =>
-  (result) => {
-    if (weightType === null) return result;
-    const otherType: WeightType =
-      weightType === "WEIGHTED" ? "BODYWEIGHT" : "WEIGHTED";
-    for (const type of [weightType, otherType]) {
-      const kept = result.survivors.filter(
-        (candidate) => isWeighted(candidate) === (type === "WEIGHTED"),
-      );
-      if (kept.length > 0) {
-        return { ...result, survivors: kept, weightType: type };
-      }
-    }
-    return result;
-  };
+const hasWeightType =
+  (type: WeightType): CandidateCheck =>
+  (candidate) =>
+    isWeighted(candidate) === (type === "WEIGHTED");
 
 /**
  * Applies the cascading filters of spec section 5, rule 4 to the candidates
  * of one exercise slot, in this order: movement direction, side, muscle,
- * involvement, equipment, weighted/bodyweight share. Each filter falls back
- * to the candidates before it when it would keep none.
+ * involvement, equipment. Each filter falls back to the candidates before it
+ * when it would keep none. The weighted/bodyweight share follows in
+ * filterWeightType.
  *
  * filterSlotCandidates([<a VERTICAL_PULL>, <b HORIZONTAL_PUSH>],
  *   { directions: [{ direction: "HORIZONTAL_PUSH", side: "BOTH" }], ... })
- * → { survivors: [<b>], directionIndex: 0, weightType: null }
+ * → { survivors: [<b>], directionIndex: 0 }
  */
 export const filterSlotCandidates = (
   candidates: readonly SlotCandidate[],
   preferences: SlotPreferences,
 ): SlotFilterResult =>
   pipe(
-    {
-      survivors: candidates,
-      directionIndex: null,
-      weightType: preferences.weightType,
-    },
+    { survivors: candidates, directionIndex: null },
     keepFirstDirection(preferences.directions),
     when(preferences.isLastSlot, keepTwoSided),
     keepUntrainedBigMuscles(preferences.untrainedBigMuscles),
     keepInvolvement(preferences.involvement),
     when(preferences.prefersBarbell, keepBarbell),
-    keepWeightType(preferences.weightType),
   );
+
+/**
+ * The last cascading filter, for a slot under a weighted-draw share: keeps
+ * the survivors of the drawn type, else those of the other type, else every
+ * survivor.
+ *
+ * filterWeightType([<a dumbbell>, <b bodyweight>], "BODYWEIGHT")
+ * → { survivors: [<b>], weightType: "BODYWEIGHT" }
+ */
+export const filterWeightType = (
+  survivors: readonly SlotCandidate[],
+  weightType: WeightType,
+): WeightTypeFilterResult => {
+  const otherType: WeightType =
+    weightType === "WEIGHTED" ? "BODYWEIGHT" : "WEIGHTED";
+  const keptType = [weightType, otherType].find((type) =>
+    survivors.some(hasWeightType(type)),
+  );
+  return keptType
+    ? {
+        survivors: survivors.filter(hasWeightType(keptType)),
+        weightType: keptType,
+      }
+    : { survivors, weightType };
+};

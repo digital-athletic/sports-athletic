@@ -3,6 +3,10 @@ import {
   generatePlanGenerationInput,
 } from "@test/factories/planGenerationInput";
 import { generateSeededRandom } from "@test/factories/seededRandom";
+import {
+  generateTrainingPlaces,
+  generateWeeklySchedule,
+} from "@test/factories/weeklySchedule";
 import type { PlanGenerationInput } from "./planGenerationInput/planGenerationInput";
 import {
   type SkillBranchSelection,
@@ -97,6 +101,17 @@ const CASES: readonly (readonly [string, Partial<PlanGenerationInput>])[] = [
         tags: { LEVEL: ["ADVANCED"], POSITION: ["GOALKEEPER"] },
       }),
       seasonPhase: { type: "COMPETITION", endDate: "2027-01-25" },
+    },
+  ],
+  [
+    "an advanced adult with two studio days and a hall day",
+    {
+      weeklySchedule: generateWeeklySchedule([
+        { weekday: 0, place: "STUDIO", duration: 60 },
+        { weekday: 2, place: "STUDIO", duration: 75 },
+        { weekday: 4, place: "HALL", duration: 45 },
+      ]),
+      trainingPlaces: generateTrainingPlaces(["HALL"]),
     },
   ],
   [

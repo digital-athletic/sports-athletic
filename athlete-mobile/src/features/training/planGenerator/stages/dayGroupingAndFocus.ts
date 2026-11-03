@@ -29,6 +29,8 @@ type RunEquipmentCheck = (place: PlaceType) => boolean;
 
 const COMBINED_MIN_DURATION = 45;
 const THREE_DAY_FOCUSES: readonly Focus[] = ["PHASE", "CARDIO", "STABILITY"];
+// The day of a two-day group that gets PHASE when no rule picks one.
+const FIRST_DAY_INDEX = 0;
 
 /**
  * Starts after the first rest day and wraps through the week, so a group that
@@ -80,7 +82,7 @@ const findTwoDayPhaseIndex = ([
   if (first.duration !== second.duration) {
     return first.duration > second.duration ? 0 : 1;
   }
-  return onlyIndexWhere((day) => day.place !== "HOME") ?? 0;
+  return onlyIndexWhere((day) => day.place !== "HOME") ?? FIRST_DAY_INDEX;
 };
 
 const assignTwoDayFocus = (
@@ -107,22 +109,10 @@ const fitFocusToPlace = (
   focus: Focus,
   place: PlaceType,
   hasRunEquipmentAt: RunEquipmentCheck,
-): Focus => {
-  switch (focus) {
-    case "CARDIO":
-      return place === "HOME" && !hasRunEquipmentAt(place)
-        ? "STABILITY"
-        : "CARDIO";
-    case "PHASE":
-    case "STABILITY":
-    case "COMBINED":
-      return focus;
-    default: {
-      const unknownFocus: never = focus;
-      return unknownFocus;
-    }
-  }
-};
+): Focus =>
+  focus === "CARDIO" && place === "HOME" && !hasRunEquipmentAt(place)
+    ? "STABILITY"
+    : focus;
 
 /**
  * Ranks studio days, then other non-home days, then home days, the longer day

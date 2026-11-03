@@ -2,6 +2,7 @@
 const { defineConfig } = require("eslint/config");
 const expoConfig = require("eslint-config-expo/flat");
 const eslintConfigPrettier = require("eslint-config-prettier/flat");
+const commentSystem = require("./eslint-rules/commentSystem");
 
 // Old generator code that the new workout generator must not import. The
 // regexes anchor on the path segment, so they match the alias and every
@@ -207,6 +208,13 @@ module.exports = defineConfig([
     restrictModuleLoads(PLAN_GENERATOR_PATH, PLAN_GENERATOR_MESSAGE),
   ),
   createNewGeneratorBlock("planGenerator", [], []),
+  // The comment system of the athlete app, see eslint-rules/commentSystem.js.
+  // The rest of the app follows in a later issue.
+  {
+    files: ["src/features/training/planGenerator/**"],
+    plugins: { local: { rules: { "comment-system": commentSystem } } },
+    rules: { "local/comment-system": "error" },
+  },
   // The old generator stays as it is until its deletion and never depends on
   // new code. This block adds import rules only.
   {

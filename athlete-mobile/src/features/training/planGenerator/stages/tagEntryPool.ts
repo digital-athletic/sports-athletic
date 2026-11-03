@@ -62,7 +62,7 @@ export const drawItem = <T>(items: readonly T[], random: () => number): T =>
 export const isPlaceWeighted = ({ day, input }: SkillContext): boolean =>
   hasWeights([...(input.trainingPlaces[day.place]?.equipment ?? [])]);
 
-/** Filters a tree through the rule chain and drops branches that resolve to nothing. */
+// Filters a tree through the rule chain and drops branches that resolve to nothing.
 const listUsableCandidates = (
   tree: SkillTreeType,
   { day, profile, input }: SkillContext,

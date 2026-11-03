@@ -82,10 +82,8 @@ const STRENGTH_SKILLS = [
 const ISOLATED_SHARE = 0.3;
 const WEIGHTED_DRAW_SHARE = 0.5;
 
-/**
- * The weighted share of Plan Workout Generation, or null when it does not
- * apply: at a place without weights, and for max strength.
- */
+// The weighted share of Plan Workout Generation, or null when it does not
+// apply: at a place without weights, and for max strength.
 const readWeightedShare = (context: SkillContext): number | null => {
   const { skill, day, profile } = context;
   if (MAX_STRENGTH_SKILLS.includes(skill)) return null;
@@ -148,7 +146,7 @@ interface EntryState {
   readonly picks: readonly SlotCandidate[];
 }
 
-/** Fills one slot: draws the weight type, the involvement and the pick, in this order. */
+// Fills one slot: draws the weight type, the involvement and the pick, in this order.
 const fillSlot = (
   state: EntryState,
   slotCount: number,
@@ -182,16 +180,14 @@ const fillSlot = (
   };
 };
 
-/** The picks of a skill so far and the weighted/bodyweight quotas it has left. */
+// The picks of a skill so far and the weighted/bodyweight quotas it has left.
 interface SkillState {
   readonly picks: readonly SlotCandidate[];
   readonly quotas: Quotas | null;
 }
 
-/**
- * Fills the slots of one tag entry from the skill's remaining quotas. A
- * candidate that resolves to an exercise the skill already holds is skipped.
- */
+// Fills the slots of one tag entry from the skill's remaining quotas. A
+// candidate that resolves to an exercise the skill already holds is skipped.
 const fillTagEntry = (
   entry: RegionTagEntry,
   { picks: heldPicks, quotas }: SkillState,

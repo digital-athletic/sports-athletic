@@ -5,6 +5,8 @@ import {
   formatDateForDisplay,
   addDays,
   calculateAgeFromBirthday,
+  dateOfAge,
+  daysBetweenISODates,
   dateToHHMM,
   HHMMToDate,
   getDateOneYearFromNow,
@@ -207,6 +209,46 @@ describe("date utils", () => {
       expect(calculateAgeFromBirthday("2010-13-45")).toBeNull();
       expect(calculateAgeFromBirthday("1990-02-31")).toBeNull();
     });
+  });
+
+  describe("dateOfAge", () => {
+    it("returns the birthday in the year the athlete reaches the age", () => {
+      expect(dateOfAge("2010-06-15", 16)).toBe("2026-06-15");
+    });
+
+    it("keeps 29 February when the athlete reaches the age in a leap year", () => {
+      expect(dateOfAge("2012-02-29", 16)).toBe("2028-02-29");
+    });
+
+    it("moves 29 February to 1 March when the athlete reaches the age in a common year", () => {
+      expect(dateOfAge("2012-02-29", 14)).toBe("2026-03-01");
+    });
+  });
+
+  describe("daysBetweenISODates", () => {
+    it("counts the calendar days from the first date to the second", () => {
+      expect(daysBetweenISODates("2026-11-02", "2027-03-07")).toBe(125);
+    });
+
+    it("returns a negative count when the second date comes first", () => {
+      expect(daysBetweenISODates("2026-11-02", "2026-10-01")).toBe(-32);
+    });
+
+    it("returns zero for the same date", () => {
+      expect(daysBetweenISODates("2026-11-02", "2026-11-02")).toBe(0);
+    });
+
+    // The daylight saving changes of Europe/Berlin, which shorten and lengthen
+    // the local day; under a timezone without daylight saving the days last 24 hours
+    it.each([
+      ["2027-03-28", "2027-03-29"],
+      ["2027-10-31", "2027-11-01"],
+    ])(
+      "counts the day from %s to %s across a daylight saving change as one day",
+      (from, to) => {
+        expect(daysBetweenISODates(from, to)).toBe(1);
+      },
+    );
   });
 
   describe("dateToHHMM", () => {

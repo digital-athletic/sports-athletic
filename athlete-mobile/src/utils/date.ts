@@ -13,6 +13,8 @@
  * in the user's local context.
  */
 
+import { SharedConstants } from "@/constants/sharedConstants";
+
 /** ISO 8601 date string format (YYYY-MM-DD) */
 export type ISODateString = string;
 
@@ -104,6 +106,34 @@ export const calculateAgeFromBirthday = (
 
   return age;
 };
+
+/**
+ * Returns the date on which an athlete born on the birthday reaches the age.
+ * A 29 February birthday falls on 1 March in a common year.
+ */
+export const dateOfAge = (
+  birthday: ISODateString,
+  age: number,
+): ISODateString => {
+  const date = ISODateToDate(birthday);
+  // setFullYear rolls an impossible 29 February over to 1 March
+  date.setFullYear(date.getFullYear() + age);
+  return formatDateToISO(date);
+};
+
+/**
+ * Counts the calendar days from one date to another, negative when the second
+ * date comes first.
+ */
+export const daysBetweenISODates = (
+  from: ISODateString,
+  to: ISODateString,
+): number =>
+  // A local day across a daylight saving change lasts 23 or 25 hours, so round to whole days
+  Math.round(
+    (ISODateToDate(to).getTime() - ISODateToDate(from).getTime()) /
+      SharedConstants.TIME_IN_MS.DAY,
+  );
 
 /**
  * Converts a Date to HH:mm format (24-hour).

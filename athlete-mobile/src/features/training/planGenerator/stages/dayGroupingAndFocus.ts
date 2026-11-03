@@ -29,11 +29,13 @@ type RunEquipmentCheck = (place: PlaceType) => boolean;
 const COMBINED_MIN_DURATION = 45;
 const THREE_DAY_FOCUSES: readonly Focus[] = ["PHASE", "CARDIO", "STABILITY"];
 
-// Starts after the first rest day and wraps through the week, so a group that
-// runs from Sunday into Monday stays whole. The groups come in that walk
-// order, as in the old generator:
-// src/features/training/generators/PlanGenerator.ts,
-// PlanGenerator.getTrainingDayGroups
+/**
+ * Starts after the first rest day and wraps through the week, so a group that
+ * runs from Sunday into Monday stays whole. The groups come in that walk
+ * order, as in the old generator:
+ * src/features/training/generators/PlanGenerator.ts,
+ * PlanGenerator.getTrainingDayGroups
+ */
 const groupActiveDays = (
   schedule: readonly TrainingDayType[],
 ): TrainingDayType[][] => {
@@ -58,8 +60,10 @@ const withFocus = (
   focus: Focus,
 ): FocusedTrainingDay => ({ weekday, duration, place, focus });
 
-// PHASE goes to the only studio day, else the longer day, else the only
-// non-home day, else the first day.
+/**
+ * PHASE goes to the only studio day, else the longer day, else the only
+ * non-home day, else the first day.
+ */
 const findTwoDayPhaseIndex = ([
   first,
   second,
@@ -97,7 +101,7 @@ const placeRank = (place: PlaceType): number => {
   return place === "HOME" ? 2 : 1;
 };
 
-// A home day without run equipment cannot hold a cardio session.
+/** A home day without run equipment cannot hold a cardio session. */
 const fitFocusToPlace = (
   focus: Focus,
   place: PlaceType,
@@ -119,8 +123,10 @@ const fitFocusToPlace = (
   }
 };
 
-// Ranks studio days, then other non-home days, then home days, the longer day
-// first within each place; the sort keeps training order on ties.
+/**
+ * Ranks studio days, then other non-home days, then home days, the longer day
+ * first within each place; the sort keeps training order on ties.
+ */
 const assignThreeDayFocus = (
   days: readonly TrainingDayType[],
   hasRunEquipmentAt: RunEquipmentCheck,
@@ -158,8 +164,10 @@ const assignGroupFocus = (
   );
 };
 
-// Converts the longest PHASE day, except a home day without run equipment,
-// when the week holds more than one training day and no CARDIO day.
+/**
+ * Converts the longest PHASE day, except a home day without run equipment,
+ * when the week holds more than one training day and no CARDIO day.
+ */
 const applyWeeklyCardioGuarantee = (
   groups: readonly TrainingDayGroup[],
   hasRunEquipmentAt: RunEquipmentCheck,

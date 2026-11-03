@@ -82,8 +82,10 @@ const STRENGTH_SKILLS = [
 const ISOLATED_SHARE = 0.3;
 const WEIGHTED_DRAW_SHARE = 0.5;
 
-// The weighted share of Plan Workout Generation, or null when it does not
-// apply: at a place without weights, and for max strength.
+/**
+ * The weighted share of Plan Workout Generation, or null when it does not
+ * apply: at a place without weights, and for max strength.
+ */
 const readWeightedShare = (context: SkillContext): number | null => {
   const { skill, day, profile } = context;
   if (MAX_STRENGTH_SKILLS.includes(skill)) return null;
@@ -93,7 +95,7 @@ const readWeightedShare = (context: SkillContext): number | null => {
   return STRENGTH_SKILLS.includes(skill) ? 0.8 : 0.6;
 };
 
-// Keys count exercises; a larger count reads the largest key.
+/** Keys count exercises; a larger count reads the largest key. */
 const readDirectionSequence = (
   directions: DirectionsMap,
   count: number,
@@ -117,7 +119,7 @@ const createQuotas = (
   return { WEIGHTED: weighted, BODYWEIGHT: slotCount - weighted };
 };
 
-// A slot draws its type while both quotas are open, then takes the open one.
+/** A slot draws its type while both quotas are open, then takes the open one. */
 const drawWeightType = (
   quotas: Quotas | null,
   random: () => number,
@@ -146,7 +148,7 @@ interface EntryState {
   readonly picks: readonly SlotCandidate[];
 }
 
-// Fills one slot: draws the weight type, the involvement and the pick, in this order.
+/** Fills one slot: draws the weight type, the involvement and the pick, in this order. */
 const fillSlot = (
   state: EntryState,
   slotCount: number,
@@ -180,14 +182,16 @@ const fillSlot = (
   };
 };
 
-// The picks of a skill so far and the weighted/bodyweight quotas it has left.
+/** The picks of a skill so far and the weighted/bodyweight quotas it has left. */
 interface SkillState {
   readonly picks: readonly SlotCandidate[];
   readonly quotas: Quotas | null;
 }
 
-// Fills the slots of one tag entry from the skill's remaining quotas. A
-// candidate that resolves to an exercise the skill already holds is skipped.
+/**
+ * Fills the slots of one tag entry from the skill's remaining quotas. A
+ * candidate that resolves to an exercise the skill already holds is skipped.
+ */
 const fillTagEntry = (
   entry: RegionTagEntry,
   { picks: heldPicks, quotas }: SkillState,
@@ -284,9 +288,11 @@ export const selectSkillBranches = (
   };
 };
 
-// A GKS tag entry for the full body switches the lower body of the whole day
-// to the GKS directions, as the old generator does:
-// generators/PlanGenerator.ts, PlanGenerator.createSection
+/**
+ * A GKS tag entry for the full body switches the lower body of the whole day
+ * to the GKS directions, as the old generator does:
+ * generators/PlanGenerator.ts, PlanGenerator.createSection
+ */
 const hasFullBodyGks = (requests: readonly SkillSelectionRequest[]) =>
   requests.some(
     ({ skill, tagEntries }) =>

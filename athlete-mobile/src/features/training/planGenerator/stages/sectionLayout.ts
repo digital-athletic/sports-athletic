@@ -46,7 +46,7 @@ const readTemplate = (
   return sectionTemplates[seasonPhase]?.[ageGroup]?.[level];
 };
 
-// Templates are authored in lower case; adolescents train like adults.
+/** Templates are authored in lower case; adolescents train like adults. */
 const findSectionTemplate = (
   { ageGroup, fitnessLevel, seasonPhase }: DerivedProfile,
   sectionTemplates: SectionTemplates,
@@ -68,9 +68,11 @@ const readTemplateSections = (
 ): readonly SectionEntry[] =>
   template[String(weeks)] ?? throwMissingTemplate(key, weeks);
 
-// Appends repeat sections cyclically until the extra weeks are used up. The
-// last appended section takes only the weeks left. A section with the type and
-// cardio type of the one before it extends that section instead.
+/**
+ * Appends repeat sections in a cycle until the extra weeks are used up. The
+ * last appended section takes only the weeks left. A section with the type and
+ * cardio type of the one before it extends that section instead.
+ */
 const appendRepeatSections = (
   sections: readonly SectionEntry[],
   repeat: readonly SectionEntry[],

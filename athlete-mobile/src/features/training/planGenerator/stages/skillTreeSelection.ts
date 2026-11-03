@@ -6,7 +6,7 @@ import {
 } from "@/features/training/utils/plyometricIntensity";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 
-// The weighted tree and the bodyweight tree of a skill trainable both ways
+/** The weighted tree and the bodyweight tree of a skill trainable both ways. */
 const TREE_PAIRS_BY_SKILL: Readonly<Record<string, readonly [string, string]>> =
   {
     GKS: ["GKS", "GKSKG"],
@@ -26,12 +26,12 @@ const TREE_PAIRS_BY_SKILL: Readonly<Record<string, readonly [string, string]>> =
     PREVWRIST: ["PREV", "PREVKG"],
   };
 
-// Both max strength skills read one tree.
+/** Both max strength skills read one tree. */
 const TREE_NAMES_BY_SKILL: Readonly<Record<string, string>> = {
   MAX_STRENGTH: "MAX",
 };
 
-// A skill tree the authored data lacks raises the configuration error OTHER/OTHER.
+/** A skill tree the authored data lacks raises the configuration error OTHER/OTHER. */
 const readTree = (
   skillTrees: PlanAuthoredData["skillTrees"],
   name: string,

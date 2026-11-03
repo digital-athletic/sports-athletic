@@ -11,6 +11,7 @@ import {
 } from "@/features/training/workoutGenerator/ruleFamilies/ruleFamily";
 import { filterRecord } from "@/utils/functional";
 import type { PlanGenerationInput } from "../planGenerationInput/planGenerationInput";
+import { readPlaceEquipment } from "../stages/placeEquipment";
 import type { DerivedProfile } from "../stages/profileDerivation";
 import { filterBranchesByGoalkeeperExclusion } from "./goalkeeperRule";
 
@@ -69,7 +70,7 @@ export const applyBranchRuleChain = <T extends CandidateBranch>(
     (branches) =>
       filterBranchesByEquipment(
         branches,
-        trainingPlaces[day.place]?.equipment ?? [],
+        readPlaceEquipment(trainingPlaces, day.place),
       ),
     (branches) =>
       filterBranchesByPainOnEveryLevel(

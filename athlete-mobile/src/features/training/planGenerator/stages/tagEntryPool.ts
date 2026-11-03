@@ -12,6 +12,7 @@ import {
   type BranchRuleChainDay,
 } from "../ruleFamilies/branchRuleChain";
 import type { SlotCandidate } from "./branchSlotFilters";
+import { readPlaceEquipment } from "./placeEquipment";
 import type { DerivedProfile } from "./profileDerivation";
 import { SPECIAL_WARM_UP } from "./skillCodes";
 import { selectSkillTree } from "./skillTreeSelection";
@@ -61,7 +62,7 @@ export const drawItem = <T>(items: readonly T[], random: () => number): T =>
 
 /** Checks whether the training place of the day has weights. */
 export const isPlaceWeighted = ({ day, input }: SkillContext): boolean =>
-  hasWeights([...(input.trainingPlaces[day.place]?.equipment ?? [])]);
+  hasWeights(readPlaceEquipment(input.trainingPlaces, day.place));
 
 /** Filters a tree through the rule chain and drops branches that resolve to nothing. */
 const listUsableCandidates = (

@@ -14,6 +14,7 @@ import type { PlacesData } from "@/store/placesStore";
 import { mapReduce } from "@/utils/functional";
 import { throwConfigurationError } from "./configurationError";
 import type { Focus, FocusedTrainingDay } from "./dayGroupingAndFocus";
+import { readPlaceEquipment } from "./placeEquipment";
 import type { DerivedProfile } from "./profileDerivation";
 import { readRegionConfigurationVariant } from "./regionConfiguration";
 import type { PlanSection, SectionType } from "./sectionLayout";
@@ -288,7 +289,7 @@ export const budgetTrainingDay = (
   const { skills, nextRotationCursor } = resolveSlots(
     collectSlots(structure, day.duration),
     context,
-    hasWeights(context.trainingPlaces[day.place]?.equipment ?? []),
+    hasWeights(readPlaceEquipment(context.trainingPlaces, day.place)),
     rotationCursor,
   );
   return {

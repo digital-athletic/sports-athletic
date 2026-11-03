@@ -7,6 +7,7 @@ import type { DurationMinutes } from "@/features/training/models/TimeUnits";
 import type { TrainingDayType } from "@/features/training/models/TrainingDay";
 import { hasRunEquipment } from "@/features/training/utils/equipmentUtils";
 import type { PlanGenerationInput } from "../planGenerationInput/planGenerationInput";
+import { readPlaceEquipment } from "./placeEquipment";
 import type { DerivedProfile } from "./profileDerivation";
 
 /** The orientation of a training day, as the glossary defines it. */
@@ -221,7 +222,7 @@ export const assignTrainingDayFocus = (
     return groups.map((days) => days.map((day) => withFocus(day, "PHASE")));
   }
   const hasRunEquipmentAt: RunEquipmentCheck = (place) =>
-    hasRunEquipment(trainingPlaces[place]?.equipment ?? []);
+    hasRunEquipment(readPlaceEquipment(trainingPlaces, place));
   return applyWeeklyCardioGuarantee(
     groups.map((days) => assignGroupFocus(days, hasRunEquipmentAt)),
     hasRunEquipmentAt,

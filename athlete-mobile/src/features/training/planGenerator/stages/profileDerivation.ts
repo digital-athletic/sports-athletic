@@ -18,6 +18,7 @@ import {
 } from "@/utils/date";
 import { getUserTagValue, getUserTagValues } from "@/utils/tagUtils";
 import type { PlanGenerationInput } from "../planGenerationInput/planGenerationInput";
+import { readPlaceEquipment } from "./placeEquipment";
 
 export type SeasonPhaseName = NonNullable<SeasonPhaseType["type"]>;
 
@@ -92,7 +93,7 @@ const hasWeightsOnActiveDay = ({
 }: PlanGenerationInput): boolean =>
   weeklySchedule.some(
     (day) =>
-      day.active && hasWeights(trainingPlaces[day.place]?.equipment ?? []),
+      day.active && hasWeights(readPlaceEquipment(trainingPlaces, day.place)),
   );
 
 /**

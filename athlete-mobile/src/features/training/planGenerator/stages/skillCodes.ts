@@ -5,7 +5,10 @@ import type { SkillCode } from "@/schemas/generator.schema";
 export const SPECIAL_WARM_UP = "WUSPEZIAL";
 
 /** Both max strength skills, which share one skill tree and region configuration. */
-export const MAX_STRENGTH_SKILLS: readonly SkillCode[] = ["MAX", "MAX_STRENGTH"];
+export const MAX_STRENGTH_SKILLS: readonly SkillCode[] = [
+  "MAX",
+  "MAX_STRENGTH",
+];
 
 /** The hypertrophy, max strength, explosive power and power endurance skills. */
 export const STRENGTH_SKILLS: readonly SkillCode[] = [

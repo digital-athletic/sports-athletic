@@ -212,7 +212,11 @@ const readMinimumMinutes = (
 ): number =>
   Math.min(
     ...Object.keys(
-      readRegionConfigurationVariant(skill, profile, authoredData.regionConfigs),
+      readRegionConfigurationVariant(
+        skill,
+        profile,
+        authoredData.regionConfigs,
+      ),
     ).map(Number),
   );
 
@@ -251,14 +255,27 @@ const distributeMinutes = (
   duration: number,
   context: SkillBudgetContext,
 ): SkillMinuteBudget[] => {
-  const minimums = skills.map((skill) => readMinimumMinutes(skill, context));
-  let leftover = duration - minimums.reduce((sum, value) => sum + value, 0);
-  return skills.map((skill, index) => {
-    const room = readMaximumMinutes(skill, context) - minimums[index];
-    const added = Math.max(0, Math.min(leftover, room));
-    leftover -= added;
-    return { skill, minutes: minutes(minimums[index] + added) };
-  });
+  const minimums = skills.map((skill) => ({
+    skill,
+    minimum: readMinimumMinutes(skill, context),
+  }));
+  const leftover = minimums.reduce(
+    (rest, { minimum }) => rest - minimum,
+    duration,
+  );
+  const [budgets] = mapReduce(
+    minimums,
+    leftover,
+    ({ skill, minimum }, rest) => {
+      const room = readMaximumMinutes(skill, context) - minimum;
+      const added = Math.max(0, Math.min(rest, room));
+      return [
+        { skill, minutes: minutes(minimum + added) },
+        rest - added,
+      ] as const;
+    },
+  );
+  return budgets;
 };
 
 /**

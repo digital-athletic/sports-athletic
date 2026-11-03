@@ -4,6 +4,7 @@ import { getBranchIdsByNames } from "@/features/training/utils/skillTreeUtils";
 import { resolveBranchExercise } from "@/features/training/workoutGenerator/blockHandlers/library/branchResolution";
 import type { RegionTagEntry } from "@/schemas/generator.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
+import { pipe, type Step } from "@/utils/functional";
 import { getTagValues } from "@/utils/tagUtils";
 import type { PlanGenerationInput } from "../planGenerationInput/planGenerationInput";
 import {
@@ -78,12 +79,16 @@ const listUsableCandidates = (
     },
   );
 
-const keepRegion = (tree: SkillTreeType, region: string): SkillTreeType =>
-  Object.fromEntries(
-    Object.entries(tree).filter(([, { tags }]) =>
-      getTagValues(tags, TagGroups.REGION).includes(region),
-    ),
-  );
+type TreeFilter = Step<SkillTreeType>;
+
+const keepRegion =
+  (region: string): TreeFilter =>
+  (tree) =>
+    Object.fromEntries(
+      Object.entries(tree).filter(([, { tags }]) =>
+        getTagValues(tags, TagGroups.REGION).includes(region),
+      ),
+    );
 
 const SPECIAL_WARM_UP = "WUSPEZIAL";
 
@@ -113,22 +118,20 @@ const readPainRegionTarget = (
 
 // Keeps the whole tree when no branch matches, as the old generator does:
 // utils/skillTreeUtils.ts#L135-L156, #L213-L231
-const keepPainRegions = (
-  tree: SkillTreeType,
-  name: string,
-  context: SkillContext,
-): SkillTreeType => {
-  const target = readPainRegionTarget(name, context);
-  if (target === null) return tree;
-  const kept = Object.fromEntries(
-    Object.entries(tree).filter(([, { tags }]) =>
-      getTagValues(tags, target.group).some((region) =>
-        target.regions.includes(region),
+const keepPainRegions =
+  (name: string, context: SkillContext): TreeFilter =>
+  (tree) => {
+    const target = readPainRegionTarget(name, context);
+    if (target === null) return tree;
+    const kept = Object.fromEntries(
+      Object.entries(tree).filter(([, { tags }]) =>
+        getTagValues(tags, target.group).some((region) =>
+          target.regions.includes(region),
+        ),
       ),
-    ),
-  );
-  return Object.keys(kept).length > 0 ? kept : tree;
-};
+    );
+    return Object.keys(kept).length > 0 ? kept : tree;
+  };
 
 // The max strength rowing name maps to branch 141, which MAX.json keeps empty;
 // the old generator reads branch 142 instead:
@@ -179,18 +182,18 @@ export const readEntryPool = (
   const regions = getTagValues(tags, TagGroups.REGION);
   const skillTags = getTagValues(tags, TagGroups.SKILL);
   const names = getTagValues(tags, TagGroups.EXERCISE_NAME);
-  const readTree = (name: string) =>
-    keepPainRegions(
+  const readTree = (name: string, ...filters: readonly TreeFilter[]) =>
+    pipe(
       selectSkillTree(name, placeHasWeights, input.authoredData.skillTrees),
-      name,
-      context,
+      keepPainRegions(name, context),
+      ...filters,
     );
   if (regions.length > 0) {
     const region =
       regions.length > 1 ? drawItem(regions, input.random) : regions[0];
     return {
       candidates: listUsableCandidates(
-        keepRegion(readTree(skill), region),
+        readTree(skill, keepRegion(region)),
         context,
       ),
       region: isMovementRegion(region) ? region : null,

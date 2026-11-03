@@ -4,6 +4,7 @@ import { hasWeights } from "@/features/training/utils/equipmentUtils";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { DirectionEntry } from "@/schemas/generator.schema";
 import type { SkillBranchType } from "@/schemas/skillTree.schema";
+import { pipe, type Step, when } from "@/utils/functional";
 import { getTagValues } from "@/utils/tagUtils";
 
 /** A branch that passed the rule chain, with the exercise it resolves to. */
@@ -66,74 +67,64 @@ const matchesDirection =
       )) &&
     readBranchTags(candidate, TagGroups.SIDE).includes(side);
 
+type SlotStep = Step<SlotFilterResult>;
+
+const keepWhereAny =
+  (isKept: CandidateCheck): SlotStep =>
+  (result) => ({ ...result, survivors: narrow(result.survivors, isKept) });
+
 // Walks the priority sequence and takes the first direction any candidate has.
-const filterByDirection = (
-  candidates: readonly SlotCandidate[],
-  directions: readonly DirectionEntry[],
-): Pick<SlotFilterResult, "survivors" | "directionIndex"> => {
-  for (const [index, entry] of directions.entries()) {
-    const kept = candidates.filter(matchesDirection(entry));
-    if (kept.length > 0) return { survivors: kept, directionIndex: index };
-  }
-  return { survivors: candidates, directionIndex: null };
-};
+const keepFirstDirection =
+  (directions: readonly DirectionEntry[]): SlotStep =>
+  (result) => {
+    for (const [index, entry] of directions.entries()) {
+      const kept = result.survivors.filter(matchesDirection(entry));
+      if (kept.length > 0) {
+        return { ...result, survivors: kept, directionIndex: index };
+      }
+    }
+    return result;
+  };
 
-const filterBySide = (
-  candidates: readonly SlotCandidate[],
-  isLastSlot: boolean,
-): readonly SlotCandidate[] =>
-  isLastSlot
-    ? narrow(candidates, (candidate) => !isOneSided(candidate))
-    : candidates;
+const keepTwoSided = keepWhereAny((candidate) => !isOneSided(candidate));
 
-const filterByMuscle = (
-  candidates: readonly SlotCandidate[],
-  untrainedBigMuscles: readonly string[],
-): readonly SlotCandidate[] =>
-  narrow(candidates, (candidate) =>
+const keepUntrainedBigMuscles = (muscles: readonly string[]): SlotStep =>
+  keepWhereAny((candidate) =>
     readBranchTags(candidate, TagGroups.MUSCLE).some((muscle) =>
-      untrainedBigMuscles.includes(muscle),
+      muscles.includes(muscle),
     ),
   );
 
 // A branch without an involvement tag fits both draws.
-const filterByInvolvement = (
-  candidates: readonly SlotCandidate[],
-  involvement: Involvement,
-): readonly SlotCandidate[] =>
-  narrow(candidates, (candidate) => {
+const keepInvolvement = (involvement: Involvement): SlotStep =>
+  keepWhereAny((candidate) => {
     const tags = readBranchTags(candidate, TagGroups.MUSCLE_INVOLVEMENT);
     return tags.length === 0 || tags.includes(involvement);
   });
 
-const filterByEquipment = (
-  candidates: readonly SlotCandidate[],
-  prefersBarbell: boolean,
-): readonly SlotCandidate[] =>
-  prefersBarbell
-    ? narrow(candidates, (candidate) =>
-        readBranchTags(candidate, TagGroups.EQUIPMENT).includes(
-          WorkoutConstants.EQUIPMENT.BARBELL,
-        ),
-      )
-    : candidates;
+const keepBarbell = keepWhereAny((candidate) =>
+  readBranchTags(candidate, TagGroups.EQUIPMENT).includes(
+    WorkoutConstants.EQUIPMENT.BARBELL,
+  ),
+);
 
 // The drawn type first, then the other type, then every candidate.
-const filterByWeightType = (
-  candidates: readonly SlotCandidate[],
-  weightType: WeightType | null,
-): Pick<SlotFilterResult, "survivors" | "weightType"> => {
-  if (weightType === null) return { survivors: candidates, weightType };
-  const otherType: WeightType =
-    weightType === "WEIGHTED" ? "BODYWEIGHT" : "WEIGHTED";
-  for (const type of [weightType, otherType]) {
-    const kept = candidates.filter(
-      (candidate) => isWeighted(candidate) === (type === "WEIGHTED"),
-    );
-    if (kept.length > 0) return { survivors: kept, weightType: type };
-  }
-  return { survivors: candidates, weightType };
-};
+const keepWeightType =
+  (weightType: WeightType | null): SlotStep =>
+  (result) => {
+    if (weightType === null) return result;
+    const otherType: WeightType =
+      weightType === "WEIGHTED" ? "BODYWEIGHT" : "WEIGHTED";
+    for (const type of [weightType, otherType]) {
+      const kept = result.survivors.filter(
+        (candidate) => isWeighted(candidate) === (type === "WEIGHTED"),
+      );
+      if (kept.length > 0) {
+        return { ...result, survivors: kept, weightType: type };
+      }
+    }
+    return result;
+  };
 
 /**
  * Applies the cascading filters of spec section 5, rule 4 to the candidates
@@ -148,22 +139,19 @@ const filterByWeightType = (
 export const filterSlotCandidates = (
   candidates: readonly SlotCandidate[],
   preferences: SlotPreferences,
-): SlotFilterResult => {
-  const { survivors: byDirection, directionIndex } = filterByDirection(
-    candidates,
-    preferences.directions,
+): SlotFilterResult =>
+  pipe(
+    {
+      survivors: candidates,
+      directionIndex: null,
+      weightType: preferences.weightType,
+    },
+    keepFirstDirection(preferences.directions),
+    when(preferences.isLastSlot, keepTwoSided),
+    keepUntrainedBigMuscles(preferences.untrainedBigMuscles),
+    // The old generator skips this draw for the core region:
+    // generators/PlanGenerator.ts#L1734-L1752
+    keepInvolvement(preferences.involvement),
+    when(preferences.prefersBarbell, keepBarbell),
+    keepWeightType(preferences.weightType),
   );
-  const bySide = filterBySide(byDirection, preferences.isLastSlot);
-  const byMuscle = filterByMuscle(bySide, preferences.untrainedBigMuscles);
-  // The old generator skips this draw for the core region:
-  // generators/PlanGenerator.ts#L1734-L1752
-  const byInvolvement = filterByInvolvement(byMuscle, preferences.involvement);
-  const byEquipment = filterByEquipment(
-    byInvolvement,
-    preferences.prefersBarbell,
-  );
-  return {
-    ...filterByWeightType(byEquipment, preferences.weightType),
-    directionIndex,
-  };
-};

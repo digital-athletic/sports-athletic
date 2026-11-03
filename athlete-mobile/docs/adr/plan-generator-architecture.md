@@ -108,6 +108,22 @@ Two values pass from one step to the next:
 
 With a fold, each step stays a pure function and the steps run in a fixed order, so the draw order stays fixed and a test can start a step from any state.
 
+### Stage and filter composition
+
+The entry runs the stages as one ordered list through `pipe` from `src/utils/functional.ts`:
+
+```ts
+pipe({ input }, addProfile, addSections, addDayFocus, addSkillBudgets, addBranchSelections, addPlan);
+```
+
+- Every list entry takes and returns one plan generation context: the input plus the results of the stages before it.
+- Each stage keeps its own function and spec. An adapter next to the stage reads the fields the stage needs from the context and adds the stage's result.
+- Region configuration and branch selection share one adapter, because region configuration runs per skill and hands its tag entries straight to branch selection.
+- The list order fixes the draw order.
+- The context fields of later stages are optional. Each adapter fails when a field it reads is missing, and one spec runs the whole list.
+
+Filter chains inside a stage take the same shape. The stage lists its filters as steps of one type and passes them through `pipe`. `when` adds a filter that runs only under a condition. The branch slot filters and the tree filters of a tag entry pool follow this shape. The rule chain keeps its fold: each family also reports removals, and a pipe adds code there without making the chain easier to read.
+
 ### Plan generation input (Context Object)
 
 One read-only object holds every input the stages read:

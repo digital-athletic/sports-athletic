@@ -140,6 +140,37 @@ describe("layOutSections", () => {
         }),
       ]);
     });
+
+    it("leaves the template sections unchanged when it extends one", () => {
+      const lastSection = generateSectionEntry({ type: "SK", numOfWeeks: 20 });
+      const templates = generateSectionTemplates({
+        "preparatory/adult/advanced": generateSectionTemplate({
+          sectionsByWeeks: { 20: [lastSection] },
+          repeat: [generateSectionEntry({ type: "SK", numOfWeeks: 3 })],
+        }),
+      });
+      const profile = generateDerivedProfile({
+        seasonPhase: { type: "PREPARATORY", weekCount: 23 },
+      });
+
+      layOutSections(profile, templates);
+
+      expect(lastSection.numOfWeeks).toBe(20);
+    });
+
+    it("keeps the 20-week entry when the template has no repeat list", () => {
+      const twentyWeeks = [generateSectionEntry({ numOfWeeks: 20 })];
+      const templates = generateSectionTemplates({
+        "preparatory/adult/advanced": generateSectionTemplate({
+          sectionsByWeeks: { 20: twentyWeeks },
+        }),
+      });
+      const profile = generateDerivedProfile({
+        seasonPhase: { type: "PREPARATORY", weekCount: 25 },
+      });
+
+      expect(layOutSections(profile, templates)).toEqual(twentyWeeks);
+    });
   });
 
   describe("max strength substitution", () => {

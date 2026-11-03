@@ -17,6 +17,7 @@ import {
   type WeightType,
 } from "./branchSlotFilters";
 import type { DerivedProfile } from "./profileDerivation";
+import { MAX_STRENGTH_SKILLS, STRENGTH_SKILLS } from "./skillCodes";
 import {
   drawItem,
   isPlaceWeighted,
@@ -67,18 +68,6 @@ const BIG_MUSCLES_BY_REGION: Readonly<Record<MovementRegion, string[]>> = {
   FULL_BODY: ["GLUTES", "QUADRICEPS", "CHEST", "LATISSIMUS"],
 };
 
-const MAX_STRENGTH_SKILLS = ["MAX", "MAX_STRENGTH"];
-const STRENGTH_SKILLS = [
-  "SWR1",
-  "SWR2",
-  "SWR1KG",
-  "SWR2KG",
-  ...MAX_STRENGTH_SKILLS,
-  "SK",
-  "SKKG",
-  "SA",
-  "SAKG",
-];
 const ISOLATED_SHARE = 0.3;
 const WEIGHTED_DRAW_SHARE = 0.5;
 

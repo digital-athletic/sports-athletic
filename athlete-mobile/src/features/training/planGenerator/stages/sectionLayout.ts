@@ -6,6 +6,7 @@ import type {
 } from "@/schemas/generator.schema";
 import { throwConfigurationError } from "./configurationError";
 import type { DerivedProfile } from "./profileDerivation";
+import { MAX_STRENGTH_SKILLS } from "./skillCodes";
 
 /** One section of the plan: type, week count and cardio type, without a start date. */
 export type PlanSection = Readonly<SectionEntry>;
@@ -16,7 +17,6 @@ const { AGE_GROUPS, LEVELS } = WorkoutConstants;
 const TEMPLATE_WEEK_LIMIT = 20;
 const FALLBACK_TEMPLATE_KEY = "preparatory/adult/advanced";
 
-const MAX_STRENGTH_TYPES: readonly SectionType[] = ["MAX", "MAX_STRENGTH"];
 const GOALKEEPER_SECTION_TYPES: Partial<Record<SectionType, SectionType>> = {
   SA: "SK",
   SAKG: "SKKG",
@@ -116,7 +116,7 @@ const substituteSection = (
     ageGroup === AGE_GROUPS.CHILD;
   const isGoalkeeper = playingPositionGroup === "GOALKEEPER";
   let { type, cardioType } = section;
-  if (replacesMaxStrength && MAX_STRENGTH_TYPES.includes(type)) type = "SWR2";
+  if (replacesMaxStrength && MAX_STRENGTH_SKILLS.includes(type)) type = "SWR2";
   if (isGoalkeeper) {
     type = GOALKEEPER_SECTION_TYPES[type] ?? type;
     cardioType = GOALKEEPER_CARDIO_TYPES[cardioType] ?? cardioType;

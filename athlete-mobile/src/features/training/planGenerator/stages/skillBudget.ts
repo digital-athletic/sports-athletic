@@ -17,7 +17,7 @@ import type { Focus, FocusedTrainingDay } from "./dayGroupingAndFocus";
 import type { DerivedProfile } from "./profileDerivation";
 import { readRegionConfigurationVariant } from "./regionConfiguration";
 import type { PlanSection, SectionType } from "./sectionLayout";
-import { isCardioSkill } from "./skillCodes";
+import { isCardioSkill, SPECIAL_WARM_UP } from "./skillCodes";
 
 /**
  * Maximum minutes per skill group and fitness level. The authored table holds
@@ -79,7 +79,6 @@ const PREVENTION_SLOTS: readonly PrioritySlot[] = [
   "PREV2",
   "PREV3",
 ];
-const SPECIAL_WARM_UP = "WUSPEZIAL";
 const BODYWEIGHT_SECTION_TYPES: Readonly<Record<SectionType, SkillCode>> = {
   SWR1: "SWR1KG",
   SWR1KG: "SWR1KG",
@@ -119,7 +118,7 @@ const MAXIMUM_MINUTES_GROUPS: Readonly<
   SWR1KG: "SWR",
   SWR2: "SWR",
   SWR2KG: "SWR",
-  WUSPEZIAL: "WUSPEZIAL",
+  [SPECIAL_WARM_UP]: "WUSPEZIAL",
 };
 
 const isPreventionSlot = (slot: PrioritySlot): boolean =>

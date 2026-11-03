@@ -13,6 +13,7 @@ import {
 } from "../ruleFamilies/branchRuleChain";
 import type { SlotCandidate } from "./branchSlotFilters";
 import type { DerivedProfile } from "./profileDerivation";
+import { SPECIAL_WARM_UP } from "./skillCodes";
 import { selectSkillTree } from "./skillTreeSelection";
 
 /** The day a skill selection reads, besides the skill's own request. */
@@ -87,8 +88,6 @@ const keepRegion =
     filterRecord(tree, ({ tags }) =>
       getTagValues(tags, TagGroups.REGION).includes(region),
     );
-
-const SPECIAL_WARM_UP = "WUSPEZIAL";
 
 interface PainRegionTarget {
   readonly group: TagGroups;

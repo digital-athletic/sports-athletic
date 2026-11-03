@@ -1,5 +1,6 @@
 import { TagGroups } from "@/constants/tagGroups";
 import type { GeneratorError } from "@/features/training/models/GeneratorError";
+import type { TagsByGroup } from "@/features/training/models/Tags";
 import { getTagValues } from "@/utils/tagUtils";
 import type { GenerationInput } from "../generationInput/generationInput";
 
@@ -13,13 +14,25 @@ export interface CandidateBranch {
   exercises?: CandidateLevels;
 }
 
+/**
+ * The athlete fields the pain and gender families read. The athlete of the
+ * workout generation input and the athlete of plan creation both fit.
+ */
+export interface RuleFamilyAthlete {
+  readonly personalData?: { readonly gender?: "MALE" | "FEMALE" };
+  readonly workoutData?: { readonly tags?: TagsByGroup };
+}
+
+/** The families of both generators; plan creation adds used branches and goalkeeper exclusion. */
 export type RuleFamilyName =
   | "pain"
   | "muscleSoreness"
   | "equipment"
   | "fitnessLevel"
   | "ageGroup"
-  | "gender";
+  | "gender"
+  | "usedBranch"
+  | "goalkeeper";
 
 /** A branch a rule family removed, with the athlete or place values that removed it. */
 export interface BranchRemoval {

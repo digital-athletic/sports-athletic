@@ -1,26 +1,14 @@
-import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { generateTaggedBranches } from "@test/factories/skillTree";
 import { filterBranchesByAgeGroup } from "./ageGroupRule";
 
 describe("ageGroupRule: filterBranchesByAgeGroup", () => {
-  beforeAll(() => {
-    jest.useFakeTimers({ now: new Date("2026-10-24T12:00:00Z") });
-  });
-
-  afterAll(() => {
-    jest.useRealTimers();
-  });
-
   it("keeps the branches of an adult and the untagged ones", () => {
     const branches = generateTaggedBranches(
       { "1": ["AGE_ADULT"], "2": ["AGE_CHILD"], "3": [] },
       {},
     );
 
-    const result = filterBranchesByAgeGroup(
-      branches,
-      generateRuleFamilyInput({ birthday: "1990-06-15" }),
-    );
+    const result = filterBranchesByAgeGroup(branches, "ADULT");
 
     expect(Object.keys(result.keep)).toEqual(["1", "3"]);
     expect(result.removals).toEqual([
@@ -35,10 +23,7 @@ describe("ageGroupRule: filterBranchesByAgeGroup", () => {
       {},
     );
 
-    const result = filterBranchesByAgeGroup(
-      branches,
-      generateRuleFamilyInput({ birthday: "2016-01-01" }),
-    );
+    const result = filterBranchesByAgeGroup(branches, "CHILD");
 
     expect(Object.keys(result.keep)).toEqual(["2", "3"]);
     expect(result.removals).toEqual([
@@ -52,31 +37,11 @@ describe("ageGroupRule: filterBranchesByAgeGroup", () => {
       {},
     );
 
-    const result = filterBranchesByAgeGroup(
-      branches,
-      generateRuleFamilyInput({ birthday: "2009-01-01" }),
-    );
+    const result = filterBranchesByAgeGroup(branches, "ADOLESCENT");
 
     expect(Object.keys(result.keep)).toEqual(["1"]);
     expect(result.removals).toEqual([
       { branchId: "2", family: "ageGroup", details: ["ADOLESCENT"] },
-    ]);
-  });
-
-  it("follows the adult rules for an athlete without a birthday", () => {
-    const branches = generateTaggedBranches(
-      { "1": ["AGE_ADULT"], "2": ["AGE_CHILD"] },
-      {},
-    );
-
-    const result = filterBranchesByAgeGroup(
-      branches,
-      generateRuleFamilyInput({ birthday: "" }),
-    );
-
-    expect(Object.keys(result.keep)).toEqual(["1"]);
-    expect(result.removals).toEqual([
-      { branchId: "2", family: "ageGroup", details: ["ADULT"] },
     ]);
   });
 
@@ -86,10 +51,7 @@ describe("ageGroupRule: filterBranchesByAgeGroup", () => {
       {},
     );
 
-    const result = filterBranchesByAgeGroup(
-      branches,
-      generateRuleFamilyInput({ birthday: "2016-01-01" }),
-    );
+    const result = filterBranchesByAgeGroup(branches, "CHILD");
 
     expect(result.keep).toEqual(branches);
     expect(result.removals).toEqual([]);

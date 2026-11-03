@@ -1,3 +1,5 @@
+import { ageGroupFor } from "@/features/training/utils/ageUtils";
+import { getUserBirthday } from "@/features/training/utils/userDataUtils";
 import type { GenerationInput } from "../../generationInput/generationInput";
 import { filterBranchesByAgeGroup } from "../../ruleFamilies/ageGroupRule";
 import { filterBranchesByGender } from "../../ruleFamilies/genderRule";
@@ -29,15 +31,18 @@ export const restrictTemplateBranchesBlock = (
     if (branch) listed[branchId] = branch;
   }
   if (Object.keys(listed).length === 0) return block;
-  const painResult = filterBranchesByPain(listed, input);
+  const painResult = filterBranchesByPain(listed, input.athlete);
   throwWhenPoolEmpty(
     painResult.keep,
     "PAIN",
     painResult.removals.flatMap((removal) => removal.details),
   );
-  const ageGroupKeep = filterBranchesByAgeGroup(painResult.keep, input).keep;
+  const ageGroupKeep = filterBranchesByAgeGroup(
+    painResult.keep,
+    ageGroupFor(getUserBirthday(input.athlete)),
+  ).keep;
   throwWhenPoolEmpty(ageGroupKeep, "AGE", []);
-  const genderKeep = filterBranchesByGender(ageGroupKeep, input).keep;
+  const genderKeep = filterBranchesByGender(ageGroupKeep, input.athlete).keep;
   throwWhenPoolEmpty(genderKeep, "GENDER", []);
   const [first, ...rest] = block.branches.filter(
     (branchId) =>

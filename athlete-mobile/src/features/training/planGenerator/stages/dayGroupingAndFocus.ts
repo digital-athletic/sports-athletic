@@ -29,7 +29,7 @@ type RunEquipmentCheck = (place: PlaceType) => boolean;
 
 const COMBINED_MIN_DURATION = 45;
 const THREE_DAY_FOCUSES: readonly Focus[] = ["PHASE", "CARDIO", "STABILITY"];
-// The day of a two-day group that gets PHASE when no rule picks one.
+/** The day of a two-day group that gets PHASE when no rule picks one. */
 const FIRST_DAY_INDEX = 0;
 
 /**

@@ -69,9 +69,9 @@ const BIG_MUSCLES_BY_REGION: Readonly<Record<MovementRegion, string[]>> = {
 };
 
 const ISOLATED_SHARE = 0.3;
-// The chance a slot draws weighted while both quotas are open.
+/** The chance a slot draws weighted while both quotas are open. */
 const WEIGHTED_DRAW_SHARE = 0.5;
-// The share of weighted slots per athlete group, Plan Workout Generation.
+/** The share of weighted slots per athlete group, Plan Workout Generation. */
 const WEIGHTED_SHARES = {
   CHILD: 0.3,
   NON_STUDIO: 0.5,

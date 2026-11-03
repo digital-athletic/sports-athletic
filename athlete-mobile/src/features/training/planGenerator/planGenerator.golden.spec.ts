@@ -20,7 +20,7 @@ import { budgetSectionDays } from "./stages/skillBudget";
 
 const SEED = 20261102;
 
-// Formats one skill of a day as "<skill> <minutes> min: <branch ids>".
+/** Formats one skill of a day as "<skill> <minutes> min: <branch ids>". */
 const formatSelection = (
   selection: SkillBranchSelection,
   skillMinutes: number,
@@ -32,8 +32,10 @@ const formatSelection = (
   return `${selection.skill} ${skillMinutes} min: ${branchIds}`;
 };
 
-// Runs every stage in plan order and lists each section with the skills,
-// minutes and branches of each of its days.
+/**
+ * Runs every stage in plan order and lists each section with the skills,
+ * minutes and branches of each of its days.
+ */
 const generatePlanOutline = (input: PlanGenerationInput): string[] => {
   const profile = deriveAthleteProfile(input);
   const days = assignTrainingDayFocus(input, profile).flat();

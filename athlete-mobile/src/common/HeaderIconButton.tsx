@@ -8,6 +8,7 @@ interface HeaderIconButtonProps {
   onPress: () => void;
   accessibilityLabel: string;
   disabled?: boolean;
+  testID?: string;
 }
 
 const HIT_SLOP = { top: 4, bottom: 4, left: 4, right: 4 };
@@ -17,6 +18,7 @@ export const HeaderIconButton: FC<HeaderIconButtonProps> = ({
   onPress,
   accessibilityLabel,
   disabled = false,
+  testID,
 }) => {
   const theme = useTheme();
 
@@ -32,6 +34,7 @@ export const HeaderIconButton: FC<HeaderIconButtonProps> = ({
       justifyContent="center"
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
+      testID={testID}
     >
       <Ionicon
         name={iconName}

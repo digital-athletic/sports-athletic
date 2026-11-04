@@ -446,6 +446,10 @@
       "rest": {
         "skip": "Pause überspringen",
         "nextSet": "Nächster Satz"
+      },
+      "timer": {
+        "hold": "Anhalten",
+        "resume": "Fortsetzen"
       }
     },
     "active": {

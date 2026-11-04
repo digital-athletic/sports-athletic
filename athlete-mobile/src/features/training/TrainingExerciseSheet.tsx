@@ -6,7 +6,7 @@ import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { BottomSheet, RNHostView } from "@expo/ui";
-import { type FC } from "react";
+import { type FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FeedbackIconButton } from "./FeedbackIconButton";
 import { TrainingRepetitionInput } from "./TrainingRepetitionInput";
@@ -25,6 +25,8 @@ export type TrainingExerciseSheetProps = {
   onSubmitReps: () => void;
   onComplete: (feedback?: DifficultyFeedbackType) => void;
   onSkip: () => void;
+  onPause: () => void;
+  onResume: () => void;
   onNext: () => void;
   onDismiss: () => void;
 };
@@ -143,9 +145,12 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
   onSubmitReps,
   onComplete,
   onSkip,
+  onPause,
+  onResume,
   onNext,
   onDismiss,
 }) => {
+  const [isPaused, setIsPaused] = useState(false);
   const steps = useExerciseSheetSteps({
     row,
     rest,
@@ -158,7 +163,7 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
   const { displayedSeconds, isCountingDown } = useExerciseSheetTimer({
     exerciseId: row.exerciseId,
     duration,
-    isActive: isTimerActive && !steps.runningRest,
+    isActive: isTimerActive && !steps.runningRest && !isPaused,
   });
 
   if (steps.runningRest) {
@@ -180,6 +185,12 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
     onNext();
   };
 
+  const handleTogglePause = () => {
+    if (isPaused) onResume();
+    else onPause();
+    setIsPaused(!isPaused);
+  };
+
   return (
     <Box padding="l" gap="m" testID={`training-list-sheet-set-${row.index}`}>
       <TrainingSheetHeading
@@ -188,6 +199,9 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
         seconds={displayedSeconds}
         isTimed={typeof duration === "number"}
         timerTestID="training-list-sheet-timer"
+        pause={
+          row.isTest ? undefined : { isPaused, onToggle: handleTogglePause }
+        }
       />
 
       <SheetSetActions
@@ -208,7 +222,8 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
  * step that completes the set, or first reveals the too-easy/succeeded/too-hard
  * choice. A planned rest after the set runs before Next opens the next set.
  * Skip stays enabled during the countdown, so an athlete can drop a set mid-way.
- * A strength test shows the reps input instead.
+ * A pause button next to the timer freezes it until resumed; closing the sheet
+ * drops the pause with the timer. A strength test shows the reps input instead.
  */
 export const TrainingExerciseSheet: FC<TrainingExerciseSheetProps> = ({
   row,

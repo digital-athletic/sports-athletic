@@ -15,7 +15,10 @@ type Args = {
   rows: ListRow[];
   exerciseList: UserExerciseDataType[] | null;
   repsDraft: Record<number, number>;
-  timing: Pick<TrainingListTiming, "startExercise" | "endExercise">;
+  timing: Pick<
+    TrainingListTiming,
+    "startExercise" | "pauseExercise" | "resumeExercise" | "endExercise"
+  >;
   onChangeReps: (index: number, value: string) => void;
   onSubmitReps: (row: ListRow) => void;
   onComplete: (row: ListRow, feedback?: DifficultyFeedbackType) => void;
@@ -104,6 +107,12 @@ export function useTrainingExerciseSheetProps({
     },
     onSkip: () => {
       if (activeRow) onSkip(activeRow);
+    },
+    onPause: () => {
+      if (activeRow) timing.pauseExercise();
+    },
+    onResume: () => {
+      if (activeRow) timing.resumeExercise();
     },
     onNext: actions.handleNext,
     onDismiss: handleSheetDismiss,

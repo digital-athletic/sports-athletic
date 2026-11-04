@@ -446,6 +446,10 @@
       "rest": {
         "skip": "Skip rest",
         "nextSet": "Next set"
+      },
+      "timer": {
+        "hold": "Hold",
+        "resume": "Resume"
       }
     },
     "active": {

@@ -1,13 +1,38 @@
+import { HeaderIconButton } from "@/common/HeaderIconButton";
+import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { secondsToMMSS } from "@/utils/date";
 import { type FC } from "react";
+import { useTranslation } from "react-i18next";
 
+type PauseControl = { isPaused: boolean; onToggle: () => void };
 type Props = {
   title: string;
   subtitle?: string;
   seconds: number;
   isTimed: boolean;
   timerTestID: string;
+  pause?: PauseControl;
+};
+
+// alignSelf keeps the stretched column from widening the tap area.
+const PauseToggle: FC<PauseControl> = ({ isPaused, onToggle }) => {
+  const { t } = useTranslation();
+
+  return (
+    <Box alignSelf="center">
+      <HeaderIconButton
+        iconName={isPaused ? "play-circle-outline" : "pause-circle-outline"}
+        onPress={onToggle}
+        accessibilityLabel={
+          isPaused
+            ? t("training.list.timer.resume")
+            : t("training.list.timer.hold")
+        }
+        testID="training-list-sheet-pause"
+      />
+    </Box>
+  );
 };
 
 // An open-ended exercise's stopwatch is secondary info, so it stays small.
@@ -17,6 +42,7 @@ export const TrainingSheetHeading: FC<Props> = ({
   seconds,
   isTimed,
   timerTestID,
+  pause,
 }) => (
   <>
     <Text variant="title" textAlign="center">
@@ -36,5 +62,6 @@ export const TrainingSheetHeading: FC<Props> = ({
     >
       {secondsToMMSS(seconds)}
     </Text>
+    {pause && <PauseToggle {...pause} />}
   </>
 );

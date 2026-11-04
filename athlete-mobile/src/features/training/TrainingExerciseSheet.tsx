@@ -1,3 +1,4 @@
+import { useExerciseSheetPause } from "@/features/training/hooks/useExerciseSheetPause";
 import { useExerciseSheetSteps } from "@/features/training/hooks/useExerciseSheetSteps";
 import { useExerciseSheetTimer } from "@/features/training/hooks/useExerciseSheetTimer";
 import { type ListRow } from "@/features/training/hooks/useTrainingListRows";
@@ -6,7 +7,7 @@ import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { BottomSheet, RNHostView } from "@expo/ui";
-import { type FC, useState } from "react";
+import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { FeedbackIconButton } from "./FeedbackIconButton";
 import { TrainingRepetitionInput } from "./TrainingRepetitionInput";
@@ -150,7 +151,7 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
   onNext,
   onDismiss,
 }) => {
-  const [isPaused, setIsPaused] = useState(false);
+  const pause = useExerciseSheetPause({ onPause, onResume });
   const steps = useExerciseSheetSteps({
     row,
     rest,
@@ -163,7 +164,7 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
   const { displayedSeconds, isCountingDown } = useExerciseSheetTimer({
     exerciseId: row.exerciseId,
     duration,
-    isActive: isTimerActive && !steps.runningRest && !isPaused,
+    isActive: isTimerActive && !steps.runningRest && !pause.isPaused,
   });
 
   if (steps.runningRest) {
@@ -185,12 +186,6 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
     onNext();
   };
 
-  const handleTogglePause = () => {
-    if (isPaused) onResume();
-    else onPause();
-    setIsPaused(!isPaused);
-  };
-
   return (
     <Box padding="l" gap="m" testID={`training-list-sheet-set-${row.index}`}>
       <TrainingSheetHeading
@@ -199,9 +194,7 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
         seconds={displayedSeconds}
         isTimed={typeof duration === "number"}
         timerTestID="training-list-sheet-timer"
-        pause={
-          row.isTest ? undefined : { isPaused, onToggle: handleTogglePause }
-        }
+        pause={row.isTest ? undefined : pause}
       />
 
       <SheetSetActions

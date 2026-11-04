@@ -443,6 +443,7 @@ describe("TrainingExerciseSheet: skip button", () => {
     );
 
     expect(buttonIds).toEqual([
+      "training-list-sheet-pause",
       "training-list-sheet-next",
       "training-list-sheet-skip",
     ]);
@@ -590,9 +591,7 @@ describe("TrainingExerciseSheet: pause", () => {
       />,
     );
 
-    expect(getByTestId("training-list-sheet-timer")).toHaveTextContent(
-      "00:30",
-    );
+    expect(getByTestId("training-list-sheet-timer")).toHaveTextContent("00:30");
     expect(getByLabelText("Hold")).toBeTruthy();
   });
 

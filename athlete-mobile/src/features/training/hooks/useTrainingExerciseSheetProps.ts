@@ -58,6 +58,40 @@ const buildRestControl = (
   };
 };
 
+// Actions of the open set; they do nothing once the sheet closes.
+const buildOpenSetActions = (
+  activeRow: ListRow | null,
+  {
+    timing,
+    onChangeReps,
+    onSubmitReps,
+    onComplete,
+    onSkip,
+  }: Pick<
+    Args,
+    "timing" | "onChangeReps" | "onSubmitReps" | "onComplete" | "onSkip"
+  >,
+) => ({
+  onChangeReps: (value: string) => {
+    if (activeRow) onChangeReps(activeRow.index, value);
+  },
+  onSubmitReps: () => {
+    if (activeRow) onSubmitReps(activeRow);
+  },
+  onComplete: (feedback?: DifficultyFeedbackType) => {
+    if (activeRow) onComplete(activeRow, feedback);
+  },
+  onSkip: () => {
+    if (activeRow) onSkip(activeRow);
+  },
+  onPause: () => {
+    if (activeRow) timing.pauseExercise();
+  },
+  onResume: () => {
+    if (activeRow) timing.resumeExercise();
+  },
+});
+
 /**
  * Builds TrainingExerciseSheet's props from the set the sheet shows, routing
  * its Next/feedback/reps/skip/rest actions to the handlers of that set.
@@ -83,8 +117,8 @@ export function useTrainingExerciseSheetProps({
     actions.handleDismiss();
   };
 
-  // shownRow outlives activeRow while the sheet animates closed; actions
-  // below still check activeRow so nothing fires during that animation.
+  // shownRow outlives activeRow while the sheet animates closed; the open set
+  // actions still check activeRow so nothing fires during that animation.
   const sheetProps = {
     row: shownRow,
     isPresented: activeRow !== null,
@@ -96,24 +130,13 @@ export function useTrainingExerciseSheetProps({
     rest: activeRow
       ? buildRestControl(activeRow, rows, exerciseList, restTracker)
       : undefined,
-    onChangeReps: (value: string) => {
-      if (activeRow) onChangeReps(activeRow.index, value);
-    },
-    onSubmitReps: () => {
-      if (activeRow) onSubmitReps(activeRow);
-    },
-    onComplete: (feedback?: DifficultyFeedbackType) => {
-      if (activeRow) onComplete(activeRow, feedback);
-    },
-    onSkip: () => {
-      if (activeRow) onSkip(activeRow);
-    },
-    onPause: () => {
-      if (activeRow) timing.pauseExercise();
-    },
-    onResume: () => {
-      if (activeRow) timing.resumeExercise();
-    },
+    ...buildOpenSetActions(activeRow, {
+      timing,
+      onChangeReps,
+      onSubmitReps,
+      onComplete,
+      onSkip,
+    }),
     onNext: actions.handleNext,
     onDismiss: handleSheetDismiss,
   };

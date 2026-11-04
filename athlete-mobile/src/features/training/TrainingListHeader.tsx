@@ -1,16 +1,14 @@
-import { HeaderIconButton } from "@/common/HeaderIconButton";
+import { BackHeader } from "@/common/BackHeader";
 import { Stack } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 
 export type TrainingListHeaderProps = {
-  onAbort: () => void;
+  onBack: () => void;
 };
 
-/** Header for the list-view training screen: title plus an abort control. */
-export const TrainingListHeader: FC<TrainingListHeaderProps> = ({
-  onAbort,
-}) => {
+/** Header for the list-view training screen: title plus a discarding back control. */
+export const TrainingListHeader: FC<TrainingListHeaderProps> = ({ onBack }) => {
   const { t } = useTranslation();
 
   return (
@@ -18,12 +16,8 @@ export const TrainingListHeader: FC<TrainingListHeaderProps> = ({
       options={{
         title: t("training.list.title"),
         headerBackVisible: false,
-        headerRight: () => (
-          <HeaderIconButton
-            iconName="close-circle"
-            onPress={onAbort}
-            accessibilityLabel={t("training.active.a11y.abortTraining")}
-          />
+        headerLeft: () => (
+          <BackHeader onBack={onBack} testID="training-list-back-button" />
         ),
       }}
     />

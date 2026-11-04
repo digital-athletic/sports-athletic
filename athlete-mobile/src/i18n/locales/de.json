@@ -450,6 +450,14 @@
       "timer": {
         "hold": "Anhalten",
         "resume": "Fortsetzen"
+      },
+      "discard": {
+        "question": "Training verwerfen?",
+        "explanation": "Das Training endet ohne Ergebnis und wird nicht in deinem Verlauf gespeichert."
+      },
+      "finishEarly": {
+        "question": "Training vorzeitig beenden?",
+        "explanation": "Noch nicht alle Sätze sind erledigt. Das Training endet unvollständig."
       }
     },
     "active": {

@@ -450,6 +450,14 @@
       "timer": {
         "hold": "Hold",
         "resume": "Resume"
+      },
+      "discard": {
+        "question": "Discard training?",
+        "explanation": "The training ends without a result and is not added to your history."
+      },
+      "finishEarly": {
+        "question": "Finish training early?",
+        "explanation": "Not all sets are done. The training ends incomplete."
       }
     },
     "active": {

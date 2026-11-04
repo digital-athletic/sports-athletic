@@ -970,6 +970,44 @@ describe("useTrainingStore", () => {
     });
   });
 
+  describe("useTrainingStore: discardTrainingSession", () => {
+    it("resets the session and keeps the generated plan", async () => {
+      const { result } = await renderHook(() => useTrainingStore());
+      const activeTraining = { id: "workout-test", type: "PLAN" };
+
+      await act(() => {
+        result.current.setExerciseList([
+          { exerciseId: "10", skill: "SWR1", repetition: 8 },
+          { exerciseId: "11", skill: "SWR1", repetition: 10 },
+        ]);
+        result.current.setActiveTraining(activeTraining);
+        result.current.setEquipment(["dumbbells"]);
+        result.current.setTrainingViewMode("LIST");
+        result.current.setTrainingStartTime(1000);
+        result.current.addPauseTime(500);
+        result.current.setTempMaxValues(DEFAULT_MAX_VALUES);
+        result.current.markExerciseCompleted(0);
+        result.current.setExerciseFeedback("10", "SWR1", "TOO_EASY");
+        result.current.markExerciseSkipped(1);
+      });
+
+      await act(() => {
+        result.current.discardTrainingSession();
+      });
+
+      expect(result.current.exerciseList).toEqual([
+        { exerciseId: "10", skill: "SWR1", repetition: 8 },
+        { exerciseId: "11", skill: "SWR1", repetition: 10 },
+      ]);
+      expect(result.current.activeTraining).toEqual(activeTraining);
+      expect(result.current.equipment).toEqual(["dumbbells"]);
+      expect(result.current.time.start).toBeUndefined();
+      expect(result.current.time.pause).toBe(0);
+      expect(result.current.tempMaxValues).toBeNull();
+      expect(result.current.trainingViewMode).toBeNull();
+    });
+  });
+
   // ============================================================================
   // Temp Max Values Tests
   // ============================================================================

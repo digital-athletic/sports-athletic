@@ -8,11 +8,27 @@ import {
 import { type SheetRest, type SheetRestControl } from "./utils/checklistRest";
 
 // A real sheet keeps its children while it animates closed, so the mock
-// renders them regardless of isPresented.
-jest.mock("@expo/ui", () => ({
-  BottomSheet: ({ children }: { children?: ReactNode }) => children,
-  RNHostView: ({ children }: { children: ReactNode }) => children,
-}));
+// renders them regardless of isPresented. Native layout and text map to
+// their React Native counterparts.
+jest.mock("@expo/ui", () => {
+  const { createElement } = jest.requireActual("react");
+  const { Text, View } = jest.requireActual("react-native");
+  const Layout = ({
+    children,
+    testID,
+  }: {
+    children?: ReactNode;
+    testID?: string;
+  }) => createElement(View, { testID }, children);
+  return {
+    BottomSheet: ({ children }: { children?: ReactNode }) => children,
+    RNHostView: ({ children }: { children: ReactNode }) => children,
+    Host: Layout,
+    Row: Layout,
+    Text: ({ children }: { children?: string }) =>
+      createElement(Text, null, children),
+  };
+});
 
 // Props of an open sheet on an open ended squat set, e.g.
 // generateSheetProps({ duration: 30 }) shows a 30 second countdown.
@@ -67,12 +83,54 @@ describe("TrainingExerciseSheet: heading", () => {
     const { getByText } = await render(
       <TrainingExerciseSheet
         {...generateSheetProps({
-          row: generateChecklistRow({ setLabel: "2 of 3 · 10 repetitions" }),
+          row: generateChecklistRow({ setLabel: "2 of 3" }),
         })}
       />,
     );
 
-    expect(getByText("2 of 3 · 10 repetitions")).toBeTruthy();
+    expect(getByText("2 of 3")).toBeTruthy();
+  });
+
+  it("shows the target reps and weight as tiles", async () => {
+    const { getByTestId, getByText } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({
+          row: generateChecklistRow({
+            targetReps: 10,
+            targetWeight: { kilos: 20, isPerHand: false },
+          }),
+        })}
+      />,
+    );
+
+    expect(getByTestId("training-list-sheet-reps")).toBeTruthy();
+    expect(getByText("10")).toBeTruthy();
+    expect(getByTestId("training-list-sheet-weight")).toBeTruthy();
+    expect(getByText("20.00")).toBeTruthy();
+    expect(getByText("kg")).toBeTruthy();
+  });
+
+  it("marks a dumbbell weight as per hand", async () => {
+    const { getByText } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({
+          row: generateChecklistRow({
+            targetWeight: { kilos: 12.5, isPerHand: true },
+          }),
+        })}
+      />,
+    );
+
+    expect(getByText("each 12.50")).toBeTruthy();
+  });
+
+  it("shows no tiles for a row without reps or weight", async () => {
+    const { queryByTestId } = await render(
+      <TrainingExerciseSheet {...generateSheetProps()} />,
+    );
+
+    expect(queryByTestId("training-list-sheet-reps")).toBeNull();
+    expect(queryByTestId("training-list-sheet-weight")).toBeNull();
   });
 
   it("shows a large timer for a timed row and a small one for an open ended row", async () => {

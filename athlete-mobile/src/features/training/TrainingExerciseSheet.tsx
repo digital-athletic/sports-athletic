@@ -10,9 +10,13 @@ import { BottomSheet, RNHostView } from "@expo/ui";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { FeedbackIconButton } from "./FeedbackIconButton";
+import { TrainingExerciseStats } from "./TrainingExerciseStats";
 import { TrainingRepetitionInput } from "./TrainingRepetitionInput";
 import { TrainingRestStep } from "./TrainingRestStep";
-import { TrainingSheetHeading } from "./TrainingSheetHeading";
+import {
+  type PauseControl,
+  TrainingSheetHeading,
+} from "./TrainingSheetHeading";
 
 export type TrainingExerciseSheetProps = {
   row: ListRow | null;
@@ -136,6 +140,27 @@ const SheetSetActions: FC<{
   );
 };
 
+const SheetSetHeading: FC<{
+  row: ListRow;
+  seconds: number;
+  isTimed: boolean;
+  pause?: PauseControl;
+}> = ({ row, seconds, isTimed, pause }) => (
+  <TrainingSheetHeading
+    title={row.displayName}
+    subtitle={row.setLabel}
+    seconds={seconds}
+    isTimed={isTimed}
+    timerTestID="training-list-sheet-timer"
+    pause={pause}
+  >
+    <TrainingExerciseStats
+      targetReps={row.targetReps}
+      targetWeight={row.targetWeight}
+    />
+  </TrainingSheetHeading>
+);
+
 const TrainingExerciseSheetContent: FC<ContentProps> = ({
   row,
   duration,
@@ -188,12 +213,10 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
 
   return (
     <Box padding="l" gap="m" testID={`training-list-sheet-set-${row.index}`}>
-      <TrainingSheetHeading
-        title={row.displayName}
-        subtitle={row.setLabel}
+      <SheetSetHeading
+        row={row}
         seconds={displayedSeconds}
         isTimed={typeof duration === "number"}
-        timerTestID="training-list-sheet-timer"
         pause={row.isTest ? undefined : pause}
       />
 
@@ -211,7 +234,7 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
 
 /**
  * Bottom sheet for one set of the checklist: shows the exercise name, the set,
- * a countdown (timed exercises) or stopwatch (open-ended ones), and a Next
+ * target reps and weight, a countdown (timed exercises) or stopwatch (open-ended ones), and a Next
  * step that completes the set, or first reveals the too-easy/succeeded/too-hard
  * choice. A planned rest after the set runs before Next opens the next set.
  * Skip stays enabled during the countdown, so an athlete can drop a set mid-way.

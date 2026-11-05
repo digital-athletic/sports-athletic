@@ -9,12 +9,12 @@ import { immer } from "zustand/middleware/immer";
 import { ActiveTrainingType } from "./models/ActiveTraining";
 import { type MaxValuesType } from "./models/MaxValues";
 import type { SkillCode } from "@/schemas/generator.schema";
-import type { FocusArea } from "@/schemas/sync.schema";
+import type { FocusArea, TrainingViewMode } from "@/schemas/sync.schema";
 import { TrainingSelectionType, TrainingTimeType } from "./models/Training";
 import { UserExerciseDataType } from "./models/UserExerciseData";
 import { UserProgressType } from "./models/UserProgress";
 
-export type TrainingViewMode = "SEQUENTIAL" | "LIST";
+export type { TrainingViewMode };
 
 export type State = {
   selection: TrainingSelectionType | null;

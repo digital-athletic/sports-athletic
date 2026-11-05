@@ -9,11 +9,12 @@ import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { act, fireEvent, render } from "../../utils/testUtils";
 
 const mockReplace = jest.fn();
+let mockSearchParams: { aborted?: string } = {};
 
 jest.mock("expo-router", () => ({
   Stack: { Screen: () => null },
   useRouter: () => ({ replace: mockReplace }),
-  useLocalSearchParams: () => ({ aborted: "true" }),
+  useLocalSearchParams: () => mockSearchParams,
 }));
 
 jest.mock("react-native-safe-area-context", () => ({
@@ -28,6 +29,7 @@ jest.mock("@/features/statistics/components/PowerTest", () => ({
 describe("TrainingSuccessScreen: aborted training", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockSearchParams = { aborted: "true" };
     useTrainingStore.setState(BASELINE_TRAINING_STATE);
     useTrainingStore.setState({
       exerciseList: [
@@ -54,5 +56,54 @@ describe("TrainingSuccessScreen: aborted training", () => {
     expect(useCompletedWorkoutsStore.getState().workoutsList).toEqual([]);
     expect(useTrainingStore.getState().exerciseList).toBeNull();
     expect(mockReplace).toHaveBeenCalledWith("/(tabs)/(home)");
+  });
+});
+
+describe("TrainingSuccessScreen: workout view", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockSearchParams = {};
+    useTrainingStore.setState(BASELINE_TRAINING_STATE);
+    useTrainingStore.setState({
+      time: {
+        ...BASELINE_TRAINING_STATE.time,
+        start: 1_000,
+        end: 601_000,
+      },
+    });
+    useCompletedWorkoutsStore.getState().clearWorkoutHistory();
+  });
+
+  it.each(["LIST", "SEQUENTIAL"] as const)(
+    "stores a finished workout started in the %s view with that view",
+    async (viewMode) => {
+      useTrainingStore.setState({
+        trainingViewMode: viewMode,
+        exerciseList: [
+          createExercise({ completed: true, set: [1, 1], repetition: 10 }),
+        ],
+      });
+
+      await render(<TrainingSuccessScreen />);
+
+      const workouts = Object.values(
+        useCompletedWorkoutsStore.getState().workouts,
+      );
+      expect(workouts).toHaveLength(1);
+      expect(workouts[0].viewMode).toBe(viewMode);
+    },
+  );
+
+  it("stores no workout for a strength test started in the LIST view", async () => {
+    useTrainingStore.setState({
+      trainingViewMode: "LIST",
+      exerciseList: [
+        createExercise({ completed: true, set: [1, 1], repetition: -1 }),
+      ],
+    });
+
+    await render(<TrainingSuccessScreen />);
+
+    expect(useCompletedWorkoutsStore.getState().workoutsList).toEqual([]);
   });
 });

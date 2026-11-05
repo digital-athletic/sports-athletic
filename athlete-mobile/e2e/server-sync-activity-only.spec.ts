@@ -1,8 +1,23 @@
+import { type Page, type Request } from "@playwright/test";
 import { expect, test } from "./fixtures";
 import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
 import { mockWakeLock } from "./mocks/wakeLock";
-import { WorkoutPage } from "./pages";
+import { TrainingListPage, TrainingOverviewPage, WorkoutPage } from "./pages";
+
+// Register before the workout so no request is missed
+const waitForWorkoutSyncRequest = (page: Page): Promise<Request> =>
+  page.waitForRequest(
+    (req) =>
+      req.url().includes("/rest/v1/user_completed_workouts") &&
+      req.method() === "POST",
+    { timeout: 15000 },
+  );
+
+const parseSyncedRow = (request: Request): Record<string, unknown> => {
+  const raw = JSON.parse(request.postData() ?? "{}") as unknown;
+  return (Array.isArray(raw) ? raw[0] : raw) as Record<string, unknown>;
+};
 
 /**
  * Guards against the bug where EXERCISE_DATA items queued during training
@@ -26,13 +41,7 @@ test.describe("Server sync: activity-only mode", () => {
     await workoutPage.expectLoggedIn();
     await workoutPage.startWorkout("Tuesday");
 
-    // Register before the workout so no request is missed
-    const workoutSyncRequest = page.waitForRequest(
-      (req) =>
-        req.url().includes("/rest/v1/user_completed_workouts") &&
-        req.method() === "POST",
-      { timeout: 15000 },
-    );
+    const workoutSyncRequest = waitForWorkoutSyncRequest(page);
     let exerciseSyncAttempted = false;
     page.on("request", (req) => {
       if (
@@ -47,18 +56,16 @@ test.describe("Server sync: activity-only mode", () => {
     await workoutPage.completeWorkout();
 
     // Resolves only if the sync reached Supabase; times out if EXERCISE_DATA blocked the queue
-    const request = await workoutSyncRequest;
+    const row = parseSyncedRow(await workoutSyncRequest);
 
-    const raw = JSON.parse(request.postData() ?? "{}") as unknown;
-    const row = (Array.isArray(raw) ? raw[0] : raw) as Record<string, unknown>;
-
-    // Activity-only: sensitive data stripped, activity counts preserved
+    // Activity-only: sensitive data stripped, activity counts and the view preserved
     expect(row).toMatchObject({
       exercises: null,
       xp_earned: null,
       moved_weight: null,
       exercise_count: expect.any(Number),
       duration: expect.any(Number),
+      view_mode: "SEQUENTIAL",
     });
 
     // The queue is FIFO and EXERCISE_DATA items precede the workout item, so an
@@ -75,5 +82,31 @@ test.describe("Server sync: activity-only mode", () => {
       )
       .toBe(0);
     expect(exerciseSyncAttempted).toBe(false);
+  });
+
+  test("athlete completes a checklist workout and the synced workout records the checklist view", async ({
+    page,
+  }) => {
+    test.setTimeout(60000);
+    await mockSupabaseAuth(page);
+    await mockWakeLock(page);
+    await page.clock.install();
+
+    const workoutPage = new WorkoutPage(page);
+    const trainingOverviewPage = new TrainingOverviewPage(page);
+    const trainingListPage = new TrainingListPage(page);
+
+    await page.goto("/");
+    await workoutPage.expectLoggedIn();
+    await workoutPage.startWorkout("Tuesday");
+
+    const workoutSyncRequest = waitForWorkoutSyncRequest(page);
+
+    await trainingOverviewPage.startAsChecklist();
+    await trainingListPage.expectVisible();
+    await trainingListPage.completeAll();
+
+    const row = parseSyncedRow(await workoutSyncRequest);
+    expect(row).toMatchObject({ exercises: null, view_mode: "LIST" });
   });
 });

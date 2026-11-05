@@ -83,6 +83,7 @@ describe("syncCompletedWorkout", () => {
       movedWeight: 5000.5,
       exerciseCount: 12,
       userSkills: { PUSH: 3, PULL: 2 },
+      viewMode: "LIST",
     };
 
     await syncCompletedWorkout(payload, TEST_USER_ID);
@@ -99,6 +100,7 @@ describe("syncCompletedWorkout", () => {
         moved_weight: 5000.5,
         exercises: [{ exerciseId: "ex-1", skill: "SWR1" }],
         user_skills: { PUSH: 3, PULL: 2 },
+        view_mode: "LIST",
       },
       { onConflict: "user_id,workout_id" },
     );
@@ -120,6 +122,7 @@ describe("syncCompletedWorkout", () => {
         xp_earned: null,
         moved_weight: null,
         user_skills: null,
+        view_mode: null,
       }),
       expect.any(Object),
     );
@@ -363,6 +366,24 @@ describe("processSingleItem", () => {
     expect(useSyncQueueStore.getState().queue).toHaveLength(0);
   });
 
+  it("syncs a workout queued before the view was recorded with an empty view", async () => {
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "w1",
+      payload: { id: "w1", timestamp: 1000, exercises: [], duration: 100 },
+      ownerUserId: TEST_USER_ID,
+    });
+
+    const queueItem = useSyncQueueStore.getState().queue[0];
+    await processSingleItem(queueItem, TEST_USER_ID);
+
+    expect(mockUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({ workout_id: "w1", view_mode: null }),
+      expect.any(Object),
+    );
+    expect(useSyncQueueStore.getState().queue).toHaveLength(0);
+  });
+
   it("marks failed on error", async () => {
     mockUpsert.mockResolvedValueOnce({
       error: { message: "DB error" },
@@ -472,6 +493,23 @@ describe("activity-only mode", () => {
         exercise_count: 12,
         duration: 1800,
       }),
+      expect.any(Object),
+    );
+  });
+
+  it("keeps the view of a COMPLETED_WORKOUT", async () => {
+    const payload: CompleteWorkoutType = {
+      id: "workout-1",
+      timestamp: 1700000000,
+      exercises: [{ exerciseId: "ex-1", skill: "SWR1" }],
+      duration: 1800,
+      viewMode: "SEQUENTIAL",
+    };
+
+    await syncCompletedWorkout(payload, TEST_USER_ID);
+
+    expect(mockUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({ exercises: null, view_mode: "SEQUENTIAL" }),
       expect.any(Object),
     );
   });

@@ -54,6 +54,9 @@ export const FocusAreaSchema = v.picklist([
 ]);
 export type FocusArea = v.InferOutput<typeof FocusAreaSchema>;
 
+export const TrainingViewModeSchema = v.picklist(["SEQUENTIAL", "LIST"]);
+export type TrainingViewMode = v.InferOutput<typeof TrainingViewModeSchema>;
+
 export const CompleteWorkoutSchema = v.looseObject({
   id: v.string(),
   timestamp: v.number(),
@@ -63,5 +66,7 @@ export const CompleteWorkoutSchema = v.looseObject({
   movedWeight: v.optional(v.number()),
   exerciseCount: v.optional(v.number()),
   userSkills: v.optional(v.record(v.string(), v.number())),
+  /** View the workout started in; missing in workouts stored before it was recorded. */
+  viewMode: v.optional(TrainingViewModeSchema),
 });
 export type CompleteWorkoutType = v.InferOutput<typeof CompleteWorkoutSchema>;

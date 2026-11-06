@@ -93,7 +93,7 @@ const TrainingSuccessScreen: FC = () => {
         movedWeight: totals.weight,
         exerciseCount: totals.count,
         userSkills: skills,
-        viewMode: trainingViewMode ?? undefined,
+        viewMode: trainingViewMode,
       });
       workoutSaved.current = true;
     }

@@ -384,6 +384,30 @@ describe("processSingleItem", () => {
     expect(useSyncQueueStore.getState().queue).toHaveLength(0);
   });
 
+  it("syncs a workout with an unknown view from a newer app version with an empty view", async () => {
+    useSyncQueueStore.getState().enqueue({
+      type: "COMPLETED_WORKOUT",
+      referenceId: "w1",
+      payload: {
+        id: "w1",
+        timestamp: 1000,
+        exercises: [],
+        duration: 100,
+        viewMode: "GRID",
+      },
+      ownerUserId: TEST_USER_ID,
+    });
+
+    const queueItem = useSyncQueueStore.getState().queue[0];
+    await processSingleItem(queueItem, TEST_USER_ID);
+
+    expect(mockUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({ workout_id: "w1", view_mode: null }),
+      expect.any(Object),
+    );
+    expect(useSyncQueueStore.getState().queue).toHaveLength(0);
+  });
+
   it("marks failed on error", async () => {
     mockUpsert.mockResolvedValueOnce({
       error: { message: "DB error" },

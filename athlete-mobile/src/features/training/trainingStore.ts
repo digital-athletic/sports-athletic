@@ -14,8 +14,6 @@ import { TrainingSelectionType, TrainingTimeType } from "./models/Training";
 import { UserExerciseDataType } from "./models/UserExerciseData";
 import { UserProgressType } from "./models/UserProgress";
 
-export type { TrainingViewMode };
-
 export type State = {
   selection: TrainingSelectionType | null;
   exerciseList: UserExerciseDataType[] | null;

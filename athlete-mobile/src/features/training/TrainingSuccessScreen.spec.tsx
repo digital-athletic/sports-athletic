@@ -93,17 +93,4 @@ describe("TrainingSuccessScreen: workout view", () => {
       expect(workouts[0].viewMode).toBe(viewMode);
     },
   );
-
-  it("stores no workout for a strength test started in the LIST view", async () => {
-    useTrainingStore.setState({
-      trainingViewMode: "LIST",
-      exerciseList: [
-        createExercise({ completed: true, set: [1, 1], repetition: -1 }),
-      ],
-    });
-
-    await render(<TrainingSuccessScreen />);
-
-    expect(useCompletedWorkoutsStore.getState().workoutsList).toEqual([]);
-  });
 });

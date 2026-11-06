@@ -66,7 +66,10 @@ export const CompleteWorkoutSchema = v.looseObject({
   movedWeight: v.optional(v.number()),
   exerciseCount: v.optional(v.number()),
   userSkills: v.optional(v.record(v.string(), v.number())),
-  /** View the workout started in; missing in workouts stored before it was recorded. */
-  viewMode: v.optional(TrainingViewModeSchema),
+  /**
+   * View the workout started in; missing in workouts stored before it was recorded.
+   * An unknown view from a newer app version becomes null so the workout still syncs.
+   */
+  viewMode: v.fallback(v.nullish(TrainingViewModeSchema), null),
 });
 export type CompleteWorkoutType = v.InferOutput<typeof CompleteWorkoutSchema>;

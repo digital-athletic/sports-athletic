@@ -3,4 +3,4 @@
 -- The column is nullable, so rows from older app versions stay valid.
 
 ALTER TABLE user_completed_workouts
-  ADD COLUMN view_mode TEXT;
+  ADD COLUMN view_mode TEXT CHECK (view_mode IN ('SEQUENTIAL', 'LIST'));

@@ -159,6 +159,15 @@ export class AnamnesisPage extends BasePage {
     await this.goOnButton.click();
   }
 
+  /** Keeps the season phase, end date and training days the app fills in. */
+  async acceptSuggestedPlanValues() {
+    await expect(this.seasonPhaseHeading).toBeVisible();
+    await this.goOnButton.click();
+    await expect(this.trainingDaysHeading).toBeVisible();
+    await this.goOnButton.click();
+    await this.expectGeneratingTrainingPlan();
+  }
+
   private async expectGeneratingTrainingPlan() {
     await expect(this.page.getByText(/thank you for your/i)).toBeVisible();
     await expect(
@@ -186,6 +195,16 @@ export class AnamnesisPage extends BasePage {
       if (!state) return null;
 
       return state.workoutData?.seasonPhase ?? null;
+    });
+  }
+
+  async getStoredTrainingPlan(): Promise<{
+    sections: { start: string; numOfWeeks: number }[];
+  } | null> {
+    return await this.page.evaluate(() => {
+      const workoutStorage = localStorage.getItem("user-workout-storage");
+      if (!workoutStorage) return null;
+      return JSON.parse(workoutStorage)?.state?.trainingPlan ?? null;
     });
   }
 

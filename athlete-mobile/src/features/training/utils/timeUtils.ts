@@ -27,7 +27,7 @@ const sectionEndMs = ({ start, numOfWeeks }: SectionDates): number =>
  * @returns End date in ISO 8601 format (YYYY-MM-DD)
  */
 export const deriveSeasonPhaseEndDate = (args: SectionDates | undefined) => {
-  // Fallback to 12 weeks from now if no training plan exists
+  // Fallback to 12 weeks from now without a running training plan
   if (!args) {
     const twelveWeeksInMs = SharedConstants.TIME_IN_MS.WEEK * 12;
     const futureEndDateMs = Date.now() + twelveWeeksInMs;

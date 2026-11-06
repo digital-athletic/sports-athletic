@@ -24,8 +24,6 @@ interface IndividualWorkoutDisplayProps {
   goToAnamnesis: () => void;
   goToSeasonPhase: () => void;
   goToSectionDetails: (index: number) => void;
-  /** Smaller title, for screens where the regular card does not fit. */
-  compact?: boolean;
 }
 
 const getPlanState = (
@@ -47,7 +45,6 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
   goToAnamnesis,
   goToSeasonPhase,
   goToSectionDetails,
-  compact = false,
 }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -65,12 +62,12 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
 
   const renderRunningPlan = () => {
     return (
-      <Box flex={1} gap="m">
+      <Box flexGrow={1} gap="m">
         {/* In a short landscape window the plan section tiles are taller than
             the screen. The start button goes on top, so it stays in view
             without scrolling. */}
         {isShortLandscape && startButton}
-        <Box marginBottom={isShortLandscape ? "none" : "l"} flex={1}>
+        <Box flexGrow={1}>
           {trainingPlan && (
             <TrainingPlanStatusWidget
               trainingSections={trainingPlan.sections}
@@ -92,7 +89,7 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
 
     return (
       <TouchableBox
-        flex={1}
+        flexGrow={1}
         justifyContent="center"
         alignItems="center"
         paddingHorizontal="m"
@@ -117,14 +114,8 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
   };
 
   return (
-    <Box flex={1} justifyContent="space-between">
-      <Text
-        variant={isShortLandscape || compact ? "cardTitle" : "title"}
-        paddingHorizontal="m"
-        paddingTop="m"
-      >
-        {t("screens.home.workoutWithOwnPlan")}
-      </Text>
+    <Box flexGrow={1} justifyContent="space-between">
+      <Text variant="sectionTitle">{t("screens.home.workoutWithOwnPlan")}</Text>
       {planState === PLAN_STATES.RUNNING ? renderRunningPlan() : renderNoPlan()}
     </Box>
   );

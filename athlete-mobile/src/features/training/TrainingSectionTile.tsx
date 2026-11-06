@@ -9,6 +9,8 @@ import { getPassedWeeksSinceDate } from "./utils/timeUtils";
 import { getIntensityForSection } from "./utils/trainingSectionUtils";
 
 const SECTION_TILE_WIDTH = 120;
+// The bars and the label split the tile height, so the tile needs its own.
+const SECTION_TILE_HEIGHT = 140;
 
 interface TrainingSectionTileProps {
   section: TrainingSectionType;
@@ -32,6 +34,7 @@ export const TrainingSectionTile: FC<TrainingSectionTileProps> = ({
   return (
     <TouchableBox
       width={SECTION_TILE_WIDTH}
+      height={SECTION_TILE_HEIGHT}
       justifyContent="center"
       alignItems="center"
       padding="s"

@@ -91,33 +91,91 @@ test.describe("Home: training lists", () => {
   });
 });
 
-test.describe("Home: small iPhone screen", () => {
-  // iPhone SE, the smallest supported screen; larger phones get more room.
-  test.use({
-    profile: createCompletedProfile(),
-    signedIn: true,
-    viewport: { width: 375, height: 667 },
-  });
+// The web build draws a 63pt header and no safe areas. The portrait heights
+// subtract the room the taller iOS header and the home indicator take on each
+// phone; the landscape widths subtract the side safe areas.
+const PHONE_SCREENS = [
+  { name: "small android", width: 360, height: 640 },
+  { name: "iphone se", width: 375, height: 667 },
+  { name: "iphone mini", width: 375, height: 737 },
+  { name: "iphone 17", width: 402, height: 787 },
+  { name: "iphone pro max", width: 440, height: 869 },
+];
 
-  test("athlete sees the start button and both shortcut tiles without scrolling", async ({
-    page,
-  }) => {
-    await mockSupabaseAuth(page);
-    await page.goto("/");
-    await new BasePage(page).expectLoggedIn();
+const LANDSCAPE_PHONE_SCREENS = [
+  { name: "iphone se", width: 667, height: 375 },
+  { name: "iphone 17", width: 750, height: 402 },
+];
 
-    // A ratio below 1 absorbs subpixel rounding at the tile edge.
-    await expect(
-      page.getByRole("button", { name: "Start Training" }),
-    ).toBeInViewport({ ratio: 0.99 });
-    await expect(
-      page.getByRole("button", { name: "Focus & Prevention" }),
-    ).toBeInViewport({ ratio: 0.99 });
-    await expect(
-      page.getByRole("button", { name: "Additional trainings" }),
-    ).toBeInViewport({ ratio: 0.99 });
-    await page.screenshot({
-      path: "playwright/screenshots/home-small-iphone-screen.png",
+for (const screen of LANDSCAPE_PHONE_SCREENS) {
+  test.describe(`Home: ${screen.name} landscape screen`, () => {
+    test.use({
+      profile: createCompletedProfile(),
+      signedIn: true,
+      viewport: { width: screen.width, height: screen.height },
+    });
+
+    test("athlete sees the start button first and scrolls to the shortcut tiles", async ({
+      page,
+    }) => {
+      await mockSupabaseAuth(page);
+      await page.goto("/");
+      await new BasePage(page).expectLoggedIn();
+
+      await expect(
+        page.getByRole("button", { name: "Start Training" }),
+      ).toBeInViewport({ ratio: 0.99 });
+      await page.screenshot({
+        path: `playwright/screenshots/home-${screen.name.replaceAll(" ", "-")}-landscape.png`,
+      });
+
+      const additionalButton = page.getByRole("button", {
+        name: "Additional trainings",
+      });
+      await additionalButton.scrollIntoViewIfNeeded();
+      await expect(additionalButton).toBeInViewport({ ratio: 0.99 });
+      await expect(
+        page.getByText(
+          "My trainings or trainings created by the coaching team",
+        ),
+      ).toBeInViewport();
     });
   });
-});
+}
+
+for (const screen of PHONE_SCREENS) {
+  test.describe(`Home: ${screen.name} screen`, () => {
+    test.use({
+      profile: createCompletedProfile(),
+      signedIn: true,
+      viewport: { width: screen.width, height: screen.height },
+    });
+
+    test("athlete sees the start button and both shortcut tiles without scrolling", async ({
+      page,
+    }) => {
+      await mockSupabaseAuth(page);
+      await page.goto("/");
+      await new BasePage(page).expectLoggedIn();
+
+      // A ratio below 1 absorbs subpixel rounding at the tile edge.
+      await expect(
+        page.getByRole("button", { name: "Start Training" }),
+      ).toBeInViewport({ ratio: 0.99 });
+      await expect(
+        page.getByRole("button", { name: "Focus & Prevention" }),
+      ).toBeInViewport({ ratio: 0.99 });
+      await expect(
+        page.getByRole("button", { name: "Additional trainings" }),
+      ).toBeInViewport({ ratio: 0.99 });
+      await expect(
+        page.getByText(
+          "Targeted trainings for stability, mobility and prevention",
+        ),
+      ).toBeInViewport();
+      await page.screenshot({
+        path: `playwright/screenshots/home-${screen.name.replaceAll(" ", "-")}.png`,
+      });
+    });
+  });
+}

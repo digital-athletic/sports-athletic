@@ -11,7 +11,6 @@ type ShortcutButtonProps = {
   iconName: IoniconName;
   title: string;
   subtitle: string;
-  compact: boolean;
   onPress: () => void;
 };
 
@@ -19,7 +18,6 @@ const ShortcutButton: FC<ShortcutButtonProps> = ({
   iconName,
   title,
   subtitle,
-  compact,
   onPress,
 }) => {
   const { colors } = useTheme();
@@ -32,20 +30,13 @@ const ShortcutButton: FC<ShortcutButtonProps> = ({
       accessibilityLabel={title}
     >
       <Box alignItems="center" justifyContent="space-between" gap="s">
-        <Ionicon name={iconName} size={48} color={colors.primary} decorative />
+        <Ionicon name={iconName} size={32} color={colors.primary} decorative />
         <Text variant="cardTitle" textAlign="center" fontSize={14}>
           {title}
         </Text>
-        {!compact && (
-          <Text
-            variant="description"
-            textAlign="center"
-            fontSize={12}
-            color="darkGrey1"
-          >
-            {subtitle}
-          </Text>
-        )}
+        <Text variant="xSmall" textAlign="center" color="darkGrey1">
+          {subtitle}
+        </Text>
       </Box>
     </TouchableOpacity>
   );
@@ -54,13 +45,10 @@ const ShortcutButton: FC<ShortcutButtonProps> = ({
 type HomeTrainingShortcutsProps = {
   /** Places the tiles below each other, in a column next to the plan card. */
   stacked: boolean;
-  /** Hides the subtitles, for screens where the regular tiles do not fit. */
-  compact?: boolean;
 };
 
 export const HomeTrainingShortcuts: FC<HomeTrainingShortcutsProps> = ({
   stacked,
-  compact = false,
 }) => {
   const { t } = useTranslation();
 
@@ -85,7 +73,6 @@ export const HomeTrainingShortcuts: FC<HomeTrainingShortcutsProps> = ({
         subtitle={t(
           "screens.home.trainingShortcuts.focusAndPrevention.subtitle",
         )}
-        compact={compact}
         onPress={() => router.push("/focus-trainings")}
       />
       <ShortcutButton
@@ -94,7 +81,6 @@ export const HomeTrainingShortcuts: FC<HomeTrainingShortcutsProps> = ({
         subtitle={t(
           "screens.home.trainingShortcuts.additionalTrainings.subtitle",
         )}
-        compact={compact}
         onPress={() => router.push("/additional-trainings")}
       />
     </Box>

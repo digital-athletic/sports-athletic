@@ -66,7 +66,7 @@ export const TrainingPlanStatusWidget: FC<TrainingPlanStatusWidgetProps> = ({
 
   return (
     <ScrollBox
-      flex={1}
+      flexGrow={1}
       contentContainerStyle={{ paddingVertical: 5 }}
       horizontal
       showsHorizontalScrollIndicator={false}

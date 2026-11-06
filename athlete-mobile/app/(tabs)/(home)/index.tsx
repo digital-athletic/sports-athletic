@@ -1,6 +1,6 @@
 import { featureFlags } from "@/config/featureFlags";
 import { HomeTrainingShortcuts } from "@/features/home/HomeTrainingShortcuts";
-import { useFitToScreen } from "@/features/home/hooks/useFitToScreen";
+import { useHeaderRoom } from "@/features/home/hooks/useHeaderRoom";
 import { IndividualWorkoutDisplay } from "@/features/training/IndividualWorkoutDisplay";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import {
@@ -19,11 +19,6 @@ import { Stack, router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-// The plan card's parts stretch, so they have no height of their own in a scroll
-// view; these minimums hold its content with the regular and the compact title.
-const PLAN_CARD_MIN_HEIGHT = 400;
-const COMPACT_PLAN_CARD_MIN_HEIGHT = 340;
-
 export default function HomeScreen() {
   const { t } = useTranslation();
   const { personalData, anamnesisCompleted, _hasHydrated } =
@@ -39,9 +34,7 @@ export default function HomeScreen() {
   const username = personalData?.username || "Mr. Anderson";
   const windowClass = useWindowClass();
   const isShortLandscape = windowClass === "shortLandscape";
-  // Landscape scrolls by design; portrait switches to compact before it scrolls.
-  const fit = useFitToScreen();
-  const compact = fit.compact && windowClass === "portrait";
+  const headerRoom = useHeaderRoom();
 
   useEffect(() => {
     Logger.logEvent("home_opened");
@@ -123,10 +116,8 @@ export default function HomeScreen() {
       <ScrollBox
         flex={1}
         backgroundColor="lightGrey1"
-        contentContainerStyle={fit.contentContainerStyle}
-        scrollIndicatorInsets={fit.scrollIndicatorInsets}
-        onLayout={fit.onLayout}
-        onContentSizeChange={fit.onContentSizeChange}
+        contentContainerStyle={headerRoom.contentContainerStyle}
+        scrollIndicatorInsets={headerRoom.scrollIndicatorInsets}
         testID="home-scroll"
       >
         <Box
@@ -134,16 +125,9 @@ export default function HomeScreen() {
           flexDirection={isShortLandscape ? "row" : "column"}
           testID="home-content"
         >
-          <Box flex={isShortLandscape ? 2 : 1} padding="l">
-            <Card
-              variant="elevated"
-              flex={1}
-              minHeight={
-                compact ? COMPACT_PLAN_CARD_MIN_HEIGHT : PLAN_CARD_MIN_HEIGHT
-              }
-            >
+          <Box flex={isShortLandscape ? 2 : undefined} padding="l">
+            <Card variant="elevated" flexGrow={1}>
               <IndividualWorkoutDisplay
-                compact={compact}
                 goToTraining={goToTraining}
                 goToAnamnesis={goToAnamnesis}
                 goToSeasonPhase={goToSeasonPhase}
@@ -152,7 +136,7 @@ export default function HomeScreen() {
             </Card>
           </Box>
 
-          <HomeTrainingShortcuts stacked={isShortLandscape} compact={compact} />
+          <HomeTrainingShortcuts stacked={isShortLandscape} />
         </Box>
       </ScrollBox>
     </>

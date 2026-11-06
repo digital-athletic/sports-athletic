@@ -20,7 +20,10 @@ export class BasePage {
     await expect(
       this.page.getByText("Confirm your email", { exact: true }),
     ).toBeVisible({ timeout: 5000 });
-    await this.page.getByRole("textbox").fill("123456");
+    // Click and type like a user. fill() sets the value without a click, so it
+    // would not notice when the click removes the focus from the field.
+    await this.page.getByRole("textbox").click();
+    await this.page.keyboard.type("123456");
     await this.page.getByRole("button", { name: "Verify" }).click();
   }
 

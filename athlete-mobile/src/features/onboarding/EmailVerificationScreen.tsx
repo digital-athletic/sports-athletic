@@ -16,15 +16,10 @@ import { useTheme } from "@/theme/theme";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Alert,
-  Keyboard,
-  Pressable,
-  StyleSheet,
-  TextInput,
-} from "react-native";
+import { Alert, StyleSheet, TextInput } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackHeader } from "@/common/BackHeader";
+import { KeyboardDismissArea } from "@/common/KeyboardDismissArea";
 import { liveRegionProps, useAnnounce } from "@/common/announce";
 
 const RESEND_COOLDOWN_SECONDS = 60;
@@ -184,7 +179,7 @@ export function EmailVerificationScreen() {
   };
 
   return (
-    <Pressable style={{ flex: 1 }} onPress={Keyboard.dismiss}>
+    <KeyboardDismissArea>
       <Box
         flex={1}
         backgroundColor="white"
@@ -296,7 +291,7 @@ export function EmailVerificationScreen() {
           </Button>
         </Box>
       </Box>
-    </Pressable>
+    </KeyboardDismissArea>
   );
 }
 

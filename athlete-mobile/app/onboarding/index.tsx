@@ -1,3 +1,4 @@
+import { KeyboardDismissArea } from "@/common/KeyboardDismissArea";
 import { LoginScreen } from "@/features/onboarding/LoginScreen";
 import { RegistrationScreen } from "@/features/onboarding/RegisterScreen";
 import { Box } from "@/theme/Box";
@@ -7,12 +8,7 @@ import { supportMessage } from "@/utils/supportMessage";
 import { useRouter } from "expo-router";
 import { useReducer } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Alert,
-  Keyboard,
-  Platform,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { Alert, Keyboard } from "react-native";
 import {
   requestLoginOtp,
   requestRegistrationOtp,
@@ -284,25 +280,8 @@ export default function OnboardingScreen() {
     );
   };
 
-  if (Platform.OS === "web") {
-    return (
-      <Box
-        flex={1}
-        justifyContent="space-between"
-        alignItems="stretch"
-        backgroundColor="white"
-      >
-        {renderContent()}
-      </Box>
-    );
-  }
-
   return (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        Keyboard.dismiss();
-      }}
-    >
+    <KeyboardDismissArea>
       <Box
         flex={1}
         justifyContent="space-between"
@@ -311,6 +290,6 @@ export default function OnboardingScreen() {
       >
         {renderContent()}
       </Box>
-    </TouchableWithoutFeedback>
+    </KeyboardDismissArea>
   );
 }

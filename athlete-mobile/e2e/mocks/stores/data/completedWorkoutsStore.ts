@@ -56,17 +56,19 @@ export function createSampleWorkout(
 
 export interface CompletedWorkoutsStoreOptions {
   workouts?: Record<string, CompletedWorkout>;
+  workoutsList?: CompletedWorkoutsState["workoutsList"];
 }
 
 export function createCompletedWorkoutsStore(
   options: CompletedWorkoutsStoreOptions = {},
 ): StoreState<CompletedWorkoutsState> {
-  const { workouts = {} } = options;
+  const { workouts = {}, workoutsList } = options;
 
   return {
     version: 14,
     state: {
       workouts,
+      ...(workoutsList && { workoutsList }),
     },
   };
 }

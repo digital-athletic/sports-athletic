@@ -198,16 +198,6 @@ export class AnamnesisPage extends BasePage {
     });
   }
 
-  async getStoredTrainingPlan(): Promise<{
-    sections: { start: string; numOfWeeks: number }[];
-  } | null> {
-    return await this.page.evaluate(() => {
-      const workoutStorage = localStorage.getItem("user-workout-storage");
-      if (!workoutStorage) return null;
-      return JSON.parse(workoutStorage)?.state?.trainingPlan ?? null;
-    });
-  }
-
   /**
    * Debug helper: Returns all localStorage keys and their values.
    * Useful for understanding what data is actually stored.

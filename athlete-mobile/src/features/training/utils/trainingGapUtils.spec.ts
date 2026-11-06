@@ -55,6 +55,22 @@ describe("daysSinceLastTraining", () => {
     const shifted = { ...plan, gapShiftedOn: "2026-09-01" };
     expect(daysSinceLastTraining([daysAgo(2)], shifted, today)).toBe(2);
   });
+
+  it("counts from the plan start when the last workout was before it", () => {
+    const newPlan = { ...plan, start: "2026-10-05" };
+    expect(daysSinceLastTraining([daysAgo(30)], newPlan, today)).toBe(7);
+  });
+
+  it("counts from the start of an older plan that stores the start with a time", () => {
+    const newPlan = { ...plan, start: "2026-10-05T00:00:00.000Z" };
+    expect(daysSinceLastTraining([daysAgo(30)], newPlan, today)).toBe(7);
+  });
+
+  it("finds no gap before the plan starts", () => {
+    const newPlan = { ...plan, start: "2026-10-16" };
+    const days = daysSinceLastTraining([daysAgo(30)], newPlan, today);
+    expect(getTrainingGapAction(days)).toBe("NONE");
+  });
 });
 
 describe("shiftPlanForTrainingGap", () => {

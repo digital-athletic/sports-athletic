@@ -105,7 +105,7 @@ A plan has ended when its last section ended before today. The home screen then 
 | Trigger | Start date | Old plan |
 |---|---|---|
 | Anamnesis completed (first plan) | Next Monday from today | none |
-| Anamnesis re-run, same season phase type, plan still running | Preserved from existing plan | Overwritten |
+| Anamnesis re-run, same season phase type, plan not ended | Preserved from existing plan | Overwritten |
 | Anamnesis re-run, season phase changed | Next Monday from today | Overwritten |
 | New plan accepted after a training gap of more than 21 days | Next Monday from today | Overwritten |
 | New plan after the plan ended | Next Monday from today | Overwritten |
@@ -120,7 +120,7 @@ Regeneration with a preserved start date keeps unaffected days. The app runs the
 
 Example: the athlete adds a kettlebell at home. The home days get new exercises, and the gym days keep theirs. Per-branch progress survives both cases, since it lives outside the plan. A changed fitness level, pain, or age group changes the skill lists, so the affected days redraw by rule 1.
 
-The active section on any given day is computed from weeks elapsed since the plan start, so the passage of time never triggers regeneration. Training gaps, measured at workout start as days since the last completed workout:
+The active section on any given day is computed from weeks elapsed since the plan start, so the passage of time never triggers regeneration. Training gaps, measured at workout start as days since the last completed workout or since the plan start, whichever is later:
 
 | Gap | Action |
 |---|---|

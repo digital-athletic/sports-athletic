@@ -17,7 +17,10 @@ export const getTrainingGapAction = (days: number): TrainingGapAction => {
 const startOfDay = (time: number) =>
   ISODateToDate(formatDateToISO(new Date(time))).getTime();
 
-/** A saved shift already covers the gap up to its day, so counting restarts there. */
+/**
+ * A saved shift already covers the gap up to its day, so counting restarts there.
+ * Counting also restarts at the start of a new plan.
+ */
 export const daysSinceLastTraining = (
   workoutTimestamps: number[],
   plan: TrainingPlanType,
@@ -29,7 +32,9 @@ export const daysSinceLastTraining = (
   const lastShift = plan.gapShiftedOn
     ? ISODateToDate(plan.gapShiftedOn).getTime()
     : 0;
-  const since = Math.max(lastWorkout, lastShift);
+  // older plans store the start with a time
+  const planStart = ISODateToDate(plan.start.split("T")[0]).getTime();
+  const since = Math.max(lastWorkout, lastShift, planStart);
 
   return Math.round(
     (startOfDay(today.getTime()) - since) / SharedConstants.TIME_IN_MS.DAY,

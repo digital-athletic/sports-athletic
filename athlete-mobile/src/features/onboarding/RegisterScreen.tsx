@@ -3,13 +3,13 @@ import { featureFlags } from "@/config/featureFlags";
 import { LINK_AGB, LINK_PRIVACY } from "@/constants/AppConstants";
 import { DividerWithText } from "@/features/onboarding/DividerWithText";
 import { PrivacyCheckbox } from "@/features/onboarding/PrivacyCheckbox";
+import { useOpenLegalLink } from "@/features/onboarding/useOpenLegalLink";
 import { EmailInputField } from "@/form/EmailInputField";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
-import { useRouter } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, TouchableOpacity } from "react-native";
@@ -51,18 +51,13 @@ export const RegistrationScreen: FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const router = useRouter();
+  const { openLegalLink } = useOpenLegalLink("/onboarding/webview");
   const insets = useSafeAreaInsets();
 
   useAnnounce(registrationError);
 
-  const handlePrivacyPress = () => {
-    router.push(`/onboarding/webview?url=${encodeURIComponent(LINK_PRIVACY)}`);
-  };
-
-  const handleAgbPress = () => {
-    router.push(`/onboarding/webview?url=${encodeURIComponent(LINK_AGB)}`);
-  };
+  const handlePrivacyPress = () => openLegalLink(LINK_PRIVACY);
+  const handleAgbPress = () => openLegalLink(LINK_AGB);
 
   return (
     <Box

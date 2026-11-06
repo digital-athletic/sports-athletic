@@ -14,10 +14,10 @@ import { useUserProfileStore } from "@/store/userProfileStore";
 import { Box } from "@/theme/Box";
 import { Card } from "@/theme/Card";
 import { ScrollBox } from "@/theme/ScrollBox";
+import { useWindowClass } from "@/theme/useWindowClass";
 import { Stack, router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useWindowDimensions } from "react-native";
 
 // The plan card's parts stretch, so they have no height of their own in a scroll
 // view; these minimums hold its content with the regular and the compact title.
@@ -37,11 +37,11 @@ export default function HomeScreen() {
   const clearTraining = useTrainingStore((s) => s.clearTraining);
 
   const username = personalData?.username || "Mr. Anderson";
-  const { width, height } = useWindowDimensions();
-  const isLandscape = width > height;
-  // Landscape scrolls by design; portrait switches to compact before it scrolls.
+  const isShortLandscape = useWindowClass() === "shortLandscape";
+  // A short landscape window scrolls by design.
+  // Every other window switches to compact before it scrolls.
   const fit = useFitToScreen();
-  const compact = fit.compact && !isLandscape;
+  const compact = fit.compact && !isShortLandscape;
 
   useEffect(() => {
     Logger.logEvent("home_opened");
@@ -127,9 +127,14 @@ export default function HomeScreen() {
         scrollIndicatorInsets={fit.scrollIndicatorInsets}
         onLayout={fit.onLayout}
         onContentSizeChange={fit.onContentSizeChange}
+        testID="home-scroll"
       >
-        <Box flex={1} flexDirection={isLandscape ? "row" : "column"}>
-          <Box flex={isLandscape ? 2 : 1} padding="l">
+        <Box
+          flex={1}
+          flexDirection={isShortLandscape ? "row" : "column"}
+          testID="home-content"
+        >
+          <Box flex={isShortLandscape ? 2 : 1} padding="l">
             <Card
               variant="elevated"
               flex={1}
@@ -147,7 +152,7 @@ export default function HomeScreen() {
             </Card>
           </Box>
 
-          <HomeTrainingShortcuts isLandscape={isLandscape} compact={compact} />
+          <HomeTrainingShortcuts stacked={isShortLandscape} compact={compact} />
         </Box>
       </ScrollBox>
     </>

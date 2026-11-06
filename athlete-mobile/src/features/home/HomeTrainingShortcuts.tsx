@@ -52,13 +52,14 @@ const ShortcutButton: FC<ShortcutButtonProps> = ({
 };
 
 type HomeTrainingShortcutsProps = {
-  isLandscape: boolean;
+  /** Places the tiles below each other, in a column next to the plan card. */
+  stacked: boolean;
   /** Hides the subtitles, for screens where the regular tiles do not fit. */
   compact?: boolean;
 };
 
 export const HomeTrainingShortcuts: FC<HomeTrainingShortcutsProps> = ({
-  isLandscape,
+  stacked,
   compact = false,
 }) => {
   const { t } = useTranslation();
@@ -66,13 +67,14 @@ export const HomeTrainingShortcuts: FC<HomeTrainingShortcutsProps> = ({
   // The tab bar below already keeps clear of the home indicator.
   return (
     <Box
-      flex={isLandscape ? 1 : undefined}
-      flexDirection={isLandscape ? "column" : "row"}
+      flex={stacked ? 1 : undefined}
+      flexDirection={stacked ? "column" : "row"}
       paddingHorizontal="l"
-      paddingTop={isLandscape ? "l" : "none"}
-      paddingLeft={isLandscape ? "none" : "l"}
+      paddingTop={stacked ? "l" : "none"}
+      paddingLeft={stacked ? "none" : "l"}
       paddingBottom="l"
       gap="m"
+      testID="home-shortcuts"
     >
       <ShortcutButton
         iconName="radio-button-on-outline"

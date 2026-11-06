@@ -7,10 +7,10 @@ import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { useTheme } from "@/theme/theme";
+import { useWindowClass } from "@/theme/useWindowClass";
 import { ISODateToDate } from "@/utils/date";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { useWindowDimensions } from "react-native";
 import { TrainingPlanStatusWidget } from "./TrainingPlanStatusWidget";
 import { TrainingPlanType } from "./models/TrainingPlan";
 
@@ -71,8 +71,7 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
   const { t } = useTranslation();
   const { colors } = useTheme();
   const { trainingPlan } = useUserWorkoutStore();
-  const { width, height } = useWindowDimensions();
-  const isLandscape = width > height;
+  const isShortLandscape = useWindowClass() === "shortLandscape";
   const { anamnesisCompleted } = useUserProfileStore();
 
   const planState = getPlanState(anamnesisCompleted, trainingPlan);
@@ -86,10 +85,11 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
   const renderRunningPlan = () => {
     return (
       <Box flex={1} gap="m">
-        {/* In landscape the tiles are taller than the screen, so the button
-            goes on top to stay in view without scrolling. */}
-        {isLandscape && startButton}
-        <Box marginBottom={isLandscape ? "none" : "l"} flex={1}>
+        {/* In a short landscape window the plan section tiles are taller than
+            the screen. The start button goes on top, so it stays in view
+            without scrolling. */}
+        {isShortLandscape && startButton}
+        <Box marginBottom={isShortLandscape ? "none" : "l"} flex={1}>
           {trainingPlan && (
             <TrainingPlanStatusWidget
               trainingSections={trainingPlan.sections}
@@ -97,7 +97,7 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
             />
           )}
         </Box>
-        {!isLandscape && startButton}
+        {!isShortLandscape && startButton}
       </Box>
     );
   };
@@ -138,7 +138,7 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
   return (
     <Box flex={1} justifyContent="space-between">
       <Text
-        variant={isLandscape || compact ? "cardTitle" : "title"}
+        variant={isShortLandscape || compact ? "cardTitle" : "title"}
         paddingHorizontal="m"
         paddingTop="m"
       >

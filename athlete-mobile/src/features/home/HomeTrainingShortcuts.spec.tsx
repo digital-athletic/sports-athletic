@@ -16,7 +16,7 @@ beforeEach(() => {
 describe("HomeTrainingShortcuts: rendering", () => {
   it("renders the focus and prevention button with title and subtitle", async () => {
     const { getByRole, getByText } = await render(
-      <HomeTrainingShortcuts isLandscape={false} />,
+      <HomeTrainingShortcuts stacked={false} />,
     );
 
     expect(getByText("Focus & Prevention")).toBeTruthy();
@@ -28,7 +28,7 @@ describe("HomeTrainingShortcuts: rendering", () => {
 
   it("renders the additional trainings button with title and subtitle", async () => {
     const { getByRole, getByText } = await render(
-      <HomeTrainingShortcuts isLandscape={false} />,
+      <HomeTrainingShortcuts stacked={false} />,
     );
 
     expect(getByText("Additional trainings")).toBeTruthy();
@@ -40,7 +40,7 @@ describe("HomeTrainingShortcuts: rendering", () => {
 
   it("shows both buttons without subtitles in the compact layout", async () => {
     const { getByRole, queryByText } = await render(
-      <HomeTrainingShortcuts isLandscape={false} compact />,
+      <HomeTrainingShortcuts stacked={false} compact />,
     );
 
     expect(getByRole("button", { name: FOCUS_LABEL })).toBeTruthy();
@@ -57,7 +57,7 @@ describe("HomeTrainingShortcuts: rendering", () => {
 describe("HomeTrainingShortcuts: navigation", () => {
   it("pushes /focus-trainings when the focus and prevention button is pressed", async () => {
     const { getByRole } = await render(
-      <HomeTrainingShortcuts isLandscape={false} />,
+      <HomeTrainingShortcuts stacked={false} />,
     );
 
     await fireEvent.press(getByRole("button", { name: FOCUS_LABEL }));
@@ -68,7 +68,7 @@ describe("HomeTrainingShortcuts: navigation", () => {
 
   it("pushes /additional-trainings when the additional trainings button is pressed", async () => {
     const { getByRole } = await render(
-      <HomeTrainingShortcuts isLandscape={false} />,
+      <HomeTrainingShortcuts stacked={false} />,
     );
 
     await fireEvent.press(getByRole("button", { name: ADDITIONAL_LABEL }));

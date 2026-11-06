@@ -85,7 +85,9 @@ export async function getComparableCompletedWorkout(page: Page) {
     exercises: Record<string, unknown>[];
     userSkills?: Record<string, number>;
   } = JSON.parse(JSON.stringify(workout));
-  for (const field of ["id", "timestamp", "duration"]) delete comparable[field];
+  // viewMode records the view itself, so it differs between the two views.
+  for (const field of ["id", "timestamp", "duration", "viewMode"])
+    delete comparable[field];
   // userSkills.SWR derives from wall-clock time spent, so it differs per run.
   delete comparable.userSkills?.SWR;
   for (const exercise of comparable.exercises) {

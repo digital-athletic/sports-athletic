@@ -34,8 +34,13 @@ const TrainingSuccessScreen: FC = () => {
   const router = useRouter();
   const params = useLocalSearchParams<{ aborted?: string }>();
   const aborted = parseBooleanParam(params.aborted);
-  const { exerciseList, time, activeTraining, clearTraining } =
-    useTrainingStore();
+  const {
+    exerciseList,
+    time,
+    activeTraining,
+    trainingViewMode,
+    clearTraining,
+  } = useTrainingStore();
   const exercises = getAllExercises();
   const { workoutData } = useUserWorkoutStore();
   const maxValues = workoutData.maxValues;
@@ -88,6 +93,7 @@ const TrainingSuccessScreen: FC = () => {
         movedWeight: totals.weight,
         exerciseCount: totals.count,
         userSkills: skills,
+        viewMode: trainingViewMode,
       });
       workoutSaved.current = true;
     }
@@ -99,6 +105,7 @@ const TrainingSuccessScreen: FC = () => {
     isTestWorkout,
     addCompletedWorkout,
     activeTraining?.id,
+    trainingViewMode,
   ]);
 
   const handleGoOn = () => {

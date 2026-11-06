@@ -131,6 +131,8 @@ export async function syncCompletedWorkout(
     moved_weight: activityOnly ? null : (payload.movedWeight ?? null),
     exercises: activityOnly ? null : payload.exercises,
     user_skills: payload.userSkills ?? null,
+    // Usage metric, so kept in activity-only mode
+    view_mode: payload.viewMode ?? null,
   };
 
   const { error } = await supabase
@@ -145,6 +147,7 @@ export async function syncCompletedWorkout(
     workoutId: payload.id,
     duration: payload.duration,
     exerciseCount: payload.exerciseCount,
+    viewMode: payload.viewMode,
   });
 }
 

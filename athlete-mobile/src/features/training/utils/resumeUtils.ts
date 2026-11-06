@@ -1,6 +1,6 @@
 import type { ActiveTrainingType } from "../models/ActiveTraining";
 import type { TrainingTimeType } from "../models/Training";
-import type { TrainingViewMode } from "../trainingStore";
+import type { TrainingViewMode } from "@/schemas/sync.schema";
 
 /**
  * Returns true when a training session can be resumed:

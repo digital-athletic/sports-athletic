@@ -19,7 +19,7 @@ const startOfDay = (time: number) =>
 
 /**
  * A saved shift already covers the gap up to its day, so counting restarts there.
- * Counting also restarts at the start of a new plan.
+ * Counting also restarts on the first Monday of a new plan.
  */
 export const daysSinceLastTraining = (
   workoutTimestamps: number[],
@@ -32,8 +32,10 @@ export const daysSinceLastTraining = (
   const lastShift = plan.gapShiftedOn
     ? ISODateToDate(plan.gapShiftedOn).getTime()
     : 0;
-  // older plans store the start with a time
-  const planStart = ISODateToDate(plan.start.split("T")[0]).getTime();
+  const firstSection = plan.sections.at(0);
+  const planStart = firstSection
+    ? ISODateToDate(firstSection.start).getTime()
+    : 0;
   const since = Math.max(lastWorkout, lastShift, planStart);
 
   return Math.round(

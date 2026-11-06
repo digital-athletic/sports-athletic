@@ -42,6 +42,21 @@ describe("preservesPlanStart", () => {
     ).toBe(true);
   });
 
+  it("is true for a new plan although the last workout is older than 21 days", () => {
+    const newPlan = {
+      start: "2026-10-05",
+      sections: [{ start: "2026-10-05", numOfWeeks: 12 }],
+    } as unknown as TrainingPlanType;
+    expect(
+      preservesPlanStart({
+        trainingPlan: newPlan,
+        sameSeasonPhase: true,
+        workoutTimestamps: workoutDaysAgo(30),
+        today,
+      }),
+    ).toBe(true);
+  });
+
   it("is false for a changed season phase, even on the day the old plan started", () => {
     expect(
       preservesPlanStart({

@@ -56,20 +56,28 @@ describe("daysSinceLastTraining", () => {
     expect(daysSinceLastTraining([daysAgo(2)], shifted, today)).toBe(2);
   });
 
-  it("counts from the plan start when the last workout was before it", () => {
-    const newPlan = { ...plan, start: "2026-10-05" };
+  it("counts from the first Monday of a new plan, not from the day it was created", () => {
+    const newPlan = {
+      ...plan,
+      start: "2026-09-29",
+      sections: [{ ...plan.sections[0], start: "2026-10-05" }],
+    };
     expect(daysSinceLastTraining([daysAgo(30)], newPlan, today)).toBe(7);
   });
 
-  it("counts from the start of an older plan that stores the start with a time", () => {
-    const newPlan = { ...plan, start: "2026-10-05T00:00:00.000Z" };
-    expect(daysSinceLastTraining([daysAgo(30)], newPlan, today)).toBe(7);
-  });
-
-  it("finds no gap before the plan starts", () => {
-    const newPlan = { ...plan, start: "2026-10-16" };
+  it("finds no gap before the first Monday of a new plan", () => {
+    const newPlan = {
+      ...plan,
+      start: "2026-10-09",
+      sections: [{ ...plan.sections[0], start: "2026-10-19" }],
+    };
     const days = daysSinceLastTraining([daysAgo(30)], newPlan, today);
     expect(getTrainingGapAction(days)).toBe("NONE");
+  });
+
+  it("counts from the last workout for a plan without sections", () => {
+    const emptyPlan = { ...plan, sections: [] };
+    expect(daysSinceLastTraining([daysAgo(10)], emptyPlan, today)).toBe(10);
   });
 });
 

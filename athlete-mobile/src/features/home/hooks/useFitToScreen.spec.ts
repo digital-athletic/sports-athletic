@@ -90,4 +90,47 @@ describe("useFitToScreen", () => {
 
     expect(result.current.compact).toBe(false);
   });
+
+  it("shows the regular layout after turning back when the content fits", async () => {
+    const { result } = await renderHook(() => useFitToScreen());
+
+    await act(() => {
+      result.current.onLayout(generateLayoutEvent(375, 554));
+      result.current.onContentSizeChange(375, 662);
+    });
+    await act(() => {
+      result.current.onLayout(generateLayoutEvent(667, 300));
+      result.current.onContentSizeChange(667, 300);
+    });
+    await act(() => {
+      result.current.onContentSizeChange(375, 554);
+      result.current.onLayout(generateLayoutEvent(375, 554));
+    });
+
+    expect(result.current.compact).toBe(false);
+  });
+
+  it("keeps the regular layout when the frame shrinks before the content after turning back", async () => {
+    const { result } = await renderHook(() => useFitToScreen());
+
+    // Sizes logged on an iPhone 17 simulator while turning it once around.
+    await act(() => {
+      result.current.onLayout(generateLayoutEvent(402, 791));
+      result.current.onContentSizeChange(402, 791);
+    });
+    await act(() => {
+      result.current.onLayout(generateLayoutEvent(874, 319));
+      result.current.onContentSizeChange(874, 556);
+    });
+    await act(() => {
+      result.current.onLayout(generateLayoutEvent(402, 822));
+      result.current.onContentSizeChange(402, 822);
+    });
+    await act(() => {
+      result.current.onLayout(generateLayoutEvent(402, 791));
+      result.current.onContentSizeChange(402, 791);
+    });
+
+    expect(result.current.compact).toBe(false);
+  });
 });

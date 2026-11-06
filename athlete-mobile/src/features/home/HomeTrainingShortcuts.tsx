@@ -65,8 +65,11 @@ export const HomeTrainingShortcuts: FC<HomeTrainingShortcutsProps> = ({
   const { t } = useTranslation();
 
   // The tab bar below already keeps clear of the home indicator.
+  // iOS keeps layout values of the other arrangement after a rotation and lets
+  // the tiles run past the screen edge; a fresh mount per arrangement avoids it.
   return (
     <Box
+      key={stacked ? "stacked" : "row"}
       flex={stacked ? 1 : undefined}
       flexDirection={stacked ? "column" : "row"}
       paddingHorizontal="l"

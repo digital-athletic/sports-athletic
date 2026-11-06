@@ -12,7 +12,7 @@ const TOLERANCE = 1;
  * its room is padding inside the content, because an automatic content inset
  * would add it on top of a full height content and make the screen scroll.
  * compact turns true once the content measured at the current frame width is
- * taller than the frame, and holds until the frame width changes.
+ * taller than the frame. A new frame width clears it and measures again.
  */
 export const useFitToScreen = () => {
   const headerHeight = useHeaderHeight();
@@ -35,9 +35,15 @@ export const useFitToScreen = () => {
 
   const onLayout = (event: LayoutChangeEvent) => {
     const { width, height } = event.nativeEvent.layout;
+    const widthChanged = width !== frame.current.width;
     frame.current = { width, height };
     setFrameWidth(width);
-    checkOverflow();
+    // A new width measures afresh. A new height alone waits for the content,
+    // which stretches with the frame and still has the previous height here.
+    if (widthChanged) {
+      setCompactWidth(null);
+      checkOverflow();
+    }
   };
 
   const onContentSizeChange = (width: number, height: number) => {

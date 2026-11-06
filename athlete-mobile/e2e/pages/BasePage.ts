@@ -34,6 +34,16 @@ export class BasePage {
     await expect(this.page.getByText("Your Training Plan")).toBeVisible();
   }
 
+  async expectLinkOpensNewTab(linkText: string, url: RegExp) {
+    const tabPromise = this.page
+      .context()
+      .waitForEvent("page", { timeout: 5000 });
+    await this.page.getByText(linkText, { exact: true }).click();
+    const tab = await tabPromise;
+    await expect(tab).toHaveURL(url);
+    await tab.close();
+  }
+
   async skipMuscleSoreness() {
     await expect(
       this.page.getByRole("heading", { name: "Muscle soreness" }),

@@ -8,6 +8,7 @@ import { RegistrationPage } from "./pages";
  * Tests the passwordless OTP registration:
  * 1. Inline validation errors for missing/invalid fields
  * 2. Successful registration with OTP code verification
+ * 3. Terms and privacy policy open in a new browser tab
  */
 
 test.describe("Registration Flow", () => {
@@ -55,5 +56,17 @@ test.describe("Registration Flow", () => {
     await registration.expectEmailVerificationScreen(email);
     await registration.enterOtpCode("123456");
     await registration.expectAnamnesisScreen();
+  });
+
+  test("opens the terms and the privacy policy in a new tab", async ({
+    page,
+  }) => {
+    const registration = new RegistrationPage(page);
+    await registration.goToRegistration();
+
+    await registration.expectLinkOpensNewTab("terms and conditions", /\/agb$/);
+    await registration.expectLinkOpensNewTab("privacy policy", /\/privacy$/);
+
+    await expect(page.getByText("Registration", { exact: true })).toBeVisible();
   });
 });

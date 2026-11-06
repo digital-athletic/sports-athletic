@@ -58,7 +58,7 @@ const seedMaxValues = (overrides: Partial<MaxValuesType> = {}) => {
   });
 };
 
-describe("useTrainingListRows: subtitle composition", () => {
+describe("useTrainingListRows: target values", () => {
   beforeEach(() => {
     useTrainingStore.setState(BASELINE);
     seedMaxValues();
@@ -68,7 +68,7 @@ describe("useTrainingListRows: subtitle composition", () => {
     mockGetExerciseById.mockReset();
   });
 
-  it("joins set, reps, and absolute weight into one subtitle", async () => {
+  it("keeps only the set number in the subtitle and exposes reps and weight", async () => {
     mockGetExerciseById.mockReturnValue(
       createExerciseData({ id: "1", tags: [] }),
     );
@@ -85,12 +85,15 @@ describe("useTrainingListRows: subtitle composition", () => {
 
     const { result } = await renderHook(() => useTrainingListRows());
 
-    expect(result.current.rows[0].setLabel).toBe(
-      "1 of 3 · 10 repetitions · 20.00 kg",
-    );
+    expect(result.current.rows[0].setLabel).toBe("1 of 3");
+    expect(result.current.rows[0].targetReps).toBe(10);
+    expect(result.current.rows[0].targetWeight).toEqual({
+      kilos: 20,
+      isPerHand: false,
+    });
   });
 
-  it("prefixes the weight with the dumbbell each-hand qualifier", async () => {
+  it("marks a dumbbell weight as per hand", async () => {
     mockGetExerciseById.mockReturnValue(
       createExerciseData({ id: "1", tags: ["EQ_DUMBBELL"] }),
     );
@@ -100,7 +103,10 @@ describe("useTrainingListRows: subtitle composition", () => {
 
     const { result } = await renderHook(() => useTrainingListRows());
 
-    expect(result.current.rows[0].setLabel).toBe("each 20.00 kg");
+    expect(result.current.rows[0].targetWeight).toEqual({
+      kilos: 20,
+      isPerHand: true,
+    });
   });
 
   it("derives weight as a percentage of the user's max for weightFMax", async () => {
@@ -120,7 +126,7 @@ describe("useTrainingListRows: subtitle composition", () => {
 
     const { result } = await renderHook(() => useTrainingListRows());
 
-    expect(result.current.rows[0].setLabel).toBe("40.00 kg");
+    expect(result.current.rows[0].targetWeight?.kilos).toBe(40);
   });
 
   it("keeps a strength test barbell load below the empty bar", async () => {
@@ -135,7 +141,7 @@ describe("useTrainingListRows: subtitle composition", () => {
 
     const { result } = await renderHook(() => useTrainingListRows());
 
-    expect(result.current.rows[0].setLabel).toBe("12.50 kg");
+    expect(result.current.rows[0].targetWeight?.kilos).toBe(12.5);
   });
 
   it("raises a training barbell load below the empty bar to 20 kg", async () => {
@@ -148,10 +154,10 @@ describe("useTrainingListRows: subtitle composition", () => {
 
     const { result } = await renderHook(() => useTrainingListRows());
 
-    expect(result.current.rows[0].setLabel).toBe("20.00 kg");
+    expect(result.current.rows[0].targetWeight?.kilos).toBe(20);
   });
 
-  it("omits the reps segment for strength-test rows", async () => {
+  it("gives strength test rows no target reps", async () => {
     mockGetExerciseById.mockReturnValue(
       createExerciseData({ id: "1", tags: [] }),
     );
@@ -163,10 +169,11 @@ describe("useTrainingListRows: subtitle composition", () => {
 
     const { result } = await renderHook(() => useTrainingListRows());
 
-    expect(result.current.rows[0].setLabel).toBe("20.00 kg");
+    expect(result.current.rows[0].targetReps).toBeUndefined();
+    expect(result.current.rows[0].targetWeight?.kilos).toBe(20);
   });
 
-  it("leaves the subtitle undefined when there is no set, reps, or weight info", async () => {
+  it("leaves subtitle and targets undefined when there is no set, reps, or weight info", async () => {
     mockGetExerciseById.mockReturnValue(
       createExerciseData({ id: "1", tags: [] }),
     );
@@ -177,6 +184,8 @@ describe("useTrainingListRows: subtitle composition", () => {
     const { result } = await renderHook(() => useTrainingListRows());
 
     expect(result.current.rows[0].setLabel).toBeUndefined();
+    expect(result.current.rows[0].targetReps).toBeUndefined();
+    expect(result.current.rows[0].targetWeight).toBeUndefined();
   });
 });
 

@@ -437,6 +437,7 @@
       "startExercise": "Start exercise",
       "nextSet": "Next",
       "setKilos": "{{weight}} kg",
+      "weightUnit": "kg",
       "setSeconds": "{{count}} s",
       "setReps": "{{count}} reps",
       "a11y": {

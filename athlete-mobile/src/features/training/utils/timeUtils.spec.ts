@@ -1,4 +1,8 @@
-import { deriveSeasonPhaseEndDate, getPassedWeeksSinceDate } from "./timeUtils";
+import {
+  deriveSeasonPhaseEndDate,
+  getPassedWeeksSinceDate,
+  isPlanEnded,
+} from "./timeUtils";
 
 describe("timeUtils", () => {
   beforeEach(() => {
@@ -93,6 +97,41 @@ describe("timeUtils", () => {
         // Start: Dec 25 + 2 weeks (14 days) = Jan 8, 2026
         expect(result).toBe("2026-01-08");
       });
+    });
+  });
+
+  // The section starts on Monday 3 August and lasts four weeks, so Sunday 30 August is its last day.
+  describe("isPlanEnded", () => {
+    it("is true on the Monday after the last section", () => {
+      const plan = { sections: [{ start: "2026-08-03", numOfWeeks: 4 }] };
+      expect(isPlanEnded(plan, new Date(2026, 7, 31, 10))).toBe(true);
+    });
+
+    it("is false on the last day of the last section", () => {
+      const plan = { sections: [{ start: "2026-08-03", numOfWeeks: 4 }] };
+      expect(isPlanEnded(plan, new Date(2026, 7, 30, 10))).toBe(false);
+    });
+
+    it("is false before the plan has started", () => {
+      const plan = { sections: [{ start: "2026-08-03", numOfWeeks: 4 }] };
+      expect(isPlanEnded(plan, new Date(2026, 7, 1, 10))).toBe(false);
+    });
+
+    it("is false while a later section still runs", () => {
+      const plan = {
+        sections: [
+          { start: "2026-08-03", numOfWeeks: 4 },
+          { start: "2026-08-31", numOfWeeks: 4 },
+        ],
+      };
+      expect(isPlanEnded(plan, new Date(2026, 7, 31, 10))).toBe(false);
+    });
+
+    it("is false without sections or without a plan", () => {
+      const today = new Date(2026, 7, 31, 10);
+      expect(isPlanEnded({ sections: [] }, today)).toBe(false);
+      expect(isPlanEnded(null, today)).toBe(false);
+      expect(isPlanEnded(undefined, today)).toBe(false);
     });
   });
 });

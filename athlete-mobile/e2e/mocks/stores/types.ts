@@ -123,6 +123,7 @@ export interface AnamnesisState {
  */
 export interface CompletedWorkoutsState {
   workouts: Record<string, CompletedWorkout>;
+  workoutsList?: { id: string; timestamp: number; summary: string }[];
 }
 
 /**

@@ -45,6 +45,7 @@ export async function getExerciseProgressStorage(page: Page) {
 
 export const TRAINING_STORAGE_KEY = "training-storage";
 export const USER_PROFILE_STORAGE_KEY = "user-profile-storage";
+export const USER_WORKOUT_STORAGE_KEY = "user-workout-storage";
 
 async function readPersistedState(page: Page, key: string) {
   const raw = await page.evaluate((k) => localStorage.getItem(k), key);
@@ -69,6 +70,13 @@ export async function getTrainingStorageState(page: Page) {
  */
 export async function getUserProfileStorageState(page: Page) {
   return readPersistedState(page, USER_PROFILE_STORAGE_KEY);
+}
+
+/**
+ * Reads the persisted state of the user workout store (season phase and training plan).
+ */
+export async function getUserWorkoutStorageState(page: Page) {
+  return readPersistedState(page, USER_WORKOUT_STORAGE_KEY);
 }
 
 /**

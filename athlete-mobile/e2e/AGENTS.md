@@ -60,6 +60,7 @@ State changes during the test (completing workouts, saving progress) persist cor
 | `createCompletedProfileWithoutTestHistory()` | Completed profile without test history |
 | `createBranchThresholdProfile()` | User at max threshold, ready for branch level up |
 | `createFreshAnamnesisProfile()` | Completed anamnesis but no strength test |
+| `createEndedPlanProfile()` | Training plan with its last day on 27 September 2026, fixed dates |
 | `createIncompleteAnamnesisProfile()` | Authenticated but anamnesis not completed |
 | `createWorkoutsProfile(count)` | Pre-completed workouts for statistics tests |
 | `createZeroXpWorkoutsProfile(count)` | Workouts with 0 XP (edge case testing) |

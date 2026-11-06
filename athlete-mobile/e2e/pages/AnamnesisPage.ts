@@ -159,6 +159,15 @@ export class AnamnesisPage extends BasePage {
     await this.goOnButton.click();
   }
 
+  /** Keeps the season phase, end date and training days the app fills in. */
+  async acceptSuggestedPlanValues() {
+    await expect(this.seasonPhaseHeading).toBeVisible();
+    await this.goOnButton.click();
+    await expect(this.trainingDaysHeading).toBeVisible();
+    await this.goOnButton.click();
+    await this.expectGeneratingTrainingPlan();
+  }
+
   private async expectGeneratingTrainingPlan() {
     await expect(this.page.getByText(/thank you for your/i)).toBeVisible();
     await expect(

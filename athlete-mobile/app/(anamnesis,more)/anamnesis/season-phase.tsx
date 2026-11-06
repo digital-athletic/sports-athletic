@@ -5,7 +5,10 @@ import { SkipHeader } from "@/common/SkipHeader";
 import { SharedConstants } from "@/constants/sharedConstants";
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
 import { SeasonPhase as SeasonPhaseEnum } from "@/features/training/models/SeasonPhase";
-import { deriveSeasonPhaseEndDate } from "@/features/training/utils/timeUtils";
+import {
+  deriveSeasonPhaseEndDate,
+  isPlanEnded,
+} from "@/features/training/utils/timeUtils";
 import { DateInputField } from "@/form/DateInputField";
 import { SelectionInputField } from "@/form/SelectionInputField";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
@@ -34,9 +37,9 @@ export default function SeasonPhase() {
   const hasPhaseType = Boolean(seasonPhase?.type);
 
   const readInitialSeasonPhase = useEffectEvent(() => {
-    const lastSectionInPlan = trainingPlan?.sections
-      ? trainingPlan.sections[trainingPlan.sections.length - 1]
-      : undefined;
+    const lastSectionInPlan = isPlanEnded(trainingPlan, new Date())
+      ? undefined
+      : trainingPlan?.sections.at(-1);
 
     return {
       type: workoutData.seasonPhase?.type ?? null,

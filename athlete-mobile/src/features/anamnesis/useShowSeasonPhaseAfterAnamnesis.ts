@@ -1,9 +1,10 @@
+import { isPlanEnded } from "@/features/training/utils/timeUtils";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 
 export const useShowSeasonPhaseAfterAnamnesis = () => {
   const { trainingDays } = useTrainingScheduleStore();
-  const { workoutData } = useUserWorkoutStore();
+  const { workoutData, trainingPlan } = useUserWorkoutStore();
 
   let hasActiveTrainingDay = false;
   for (let day = 0; day < trainingDays.length; day++) {
@@ -16,6 +17,7 @@ export const useShowSeasonPhaseAfterAnamnesis = () => {
   return !(
     hasActiveTrainingDay &&
     workoutData?.seasonPhase?.endDate &&
-    workoutData?.seasonPhase?.type
+    workoutData?.seasonPhase?.type &&
+    !isPlanEnded(trainingPlan, new Date())
   );
 };

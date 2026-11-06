@@ -10,7 +10,7 @@ const plan = {
   sections: [],
 } as unknown as TrainingPlanType;
 
-// generatePlanWithWeeks(8) starts on 3 August and ends on 28 September, before today.
+// generatePlanWithWeeks(8) starts on 3 August and its last day is 27 September, before today.
 const generatePlanWithWeeks = (numOfWeeks: number) =>
   ({
     start: "2026-08-03",

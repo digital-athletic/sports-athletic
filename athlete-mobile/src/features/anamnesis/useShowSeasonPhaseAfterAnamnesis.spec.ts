@@ -6,7 +6,7 @@ import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { renderHook } from "@testing-library/react-native";
 import { useShowSeasonPhaseAfterAnamnesis } from "./useShowSeasonPhaseAfterAnamnesis";
 
-// generatePlanWithWeeks(8) starts on 3 August and ends on 28 September, before the test day.
+// generatePlanWithWeeks(8) starts on 3 August and its last day is 27 September, before the test day.
 const generatePlanWithWeeks = (numOfWeeks: number) =>
   ({
     start: "2026-08-03",

@@ -66,6 +66,23 @@ test.describe("Consent Gate: missing consent at app start", () => {
       page.getByRole("button", { name: "Send code" }),
     ).not.toBeVisible({ timeout: 3000 });
   });
+
+  test("opens the terms and the privacy policy in a new tab", async ({
+    page,
+  }) => {
+    await mockSupabaseAuth(page);
+    await mockMissingConsentUserProfile(page);
+    const consentTitle = page.getByText("Data Protection");
+    const basePage = new BasePage(page);
+
+    await page.goto("/");
+    await expect(consentTitle).toBeVisible({ timeout: 5000 });
+
+    await basePage.expectLinkOpensNewTab("terms and conditions", /\/agb$/);
+    await basePage.expectLinkOpensNewTab("privacy policy", /\/privacy$/);
+
+    await expect(consentTitle).toBeVisible();
+  });
 });
 
 test.describe("Consent Gate: accepted consent", () => {

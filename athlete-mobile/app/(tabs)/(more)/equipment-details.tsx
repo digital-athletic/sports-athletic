@@ -1,3 +1,4 @@
+import { Alert } from "@/common/Alert";
 import { BackHeader } from "@/common/BackHeader";
 import { Ionicon } from "@/common/Ionicon";
 import { PlaceType, WorkoutConstants } from "@/constants/workoutConstants";
@@ -14,7 +15,7 @@ import { useTheme } from "@/theme/theme";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 
 export default function EquipmentDetailsScreen() {
   const { t } = useTranslation();

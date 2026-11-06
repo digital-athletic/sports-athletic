@@ -1,5 +1,5 @@
 import { act, renderHook } from "@testing-library/react-native";
-import { Alert } from "react-native";
+import { Alert } from "@/common/Alert";
 import { useTrainingListLifecycle } from "./useTrainingListLifecycle";
 
 jest.mock("@/features/training/hooks/useTrainingScreenLifecycle", () => ({

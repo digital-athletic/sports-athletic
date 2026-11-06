@@ -1,3 +1,4 @@
+import { Alert } from "@/common/Alert";
 import { BackHeader } from "@/common/BackHeader";
 import { Coaching } from "@/common/Coaching";
 import { Loading } from "@/common/Loading";
@@ -23,7 +24,7 @@ import { getUserTagValue } from "@/utils/tagUtils";
 import { RoutePath, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const DAY_KEYS = [

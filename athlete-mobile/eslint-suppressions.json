@@ -78,11 +78,6 @@
       "count": 2
     }
   },
-  "app/training/exercise-information.tsx": {
-    "complexity": {
-      "count": 1
-    }
-  },
   "app/training/index.tsx": {
     "complexity": {
       "count": 1

@@ -1,3 +1,4 @@
+import { useExerciseSheetPause } from "@/features/training/hooks/useExerciseSheetPause";
 import { useExerciseSheetSteps } from "@/features/training/hooks/useExerciseSheetSteps";
 import { useExerciseSheetTimer } from "@/features/training/hooks/useExerciseSheetTimer";
 import { type ListRow } from "@/features/training/hooks/useTrainingListRows";
@@ -25,6 +26,8 @@ export type TrainingExerciseSheetProps = {
   onSubmitReps: () => void;
   onComplete: (feedback?: DifficultyFeedbackType) => void;
   onSkip: () => void;
+  onPause: () => void;
+  onResume: () => void;
   onNext: () => void;
   onDismiss: () => void;
 };
@@ -143,9 +146,12 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
   onSubmitReps,
   onComplete,
   onSkip,
+  onPause,
+  onResume,
   onNext,
   onDismiss,
 }) => {
+  const pause = useExerciseSheetPause({ onPause, onResume });
   const steps = useExerciseSheetSteps({
     row,
     rest,
@@ -158,7 +164,7 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
   const { displayedSeconds, isCountingDown } = useExerciseSheetTimer({
     exerciseId: row.exerciseId,
     duration,
-    isActive: isTimerActive && !steps.runningRest,
+    isActive: isTimerActive && !steps.runningRest && !pause.isPaused,
   });
 
   if (steps.runningRest) {
@@ -188,6 +194,7 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
         seconds={displayedSeconds}
         isTimed={typeof duration === "number"}
         timerTestID="training-list-sheet-timer"
+        pause={row.isTest ? undefined : pause}
       />
 
       <SheetSetActions
@@ -208,7 +215,8 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
  * step that completes the set, or first reveals the too-easy/succeeded/too-hard
  * choice. A planned rest after the set runs before Next opens the next set.
  * Skip stays enabled during the countdown, so an athlete can drop a set mid-way.
- * A strength test shows the reps input instead.
+ * A pause button next to the timer freezes it until resumed; closing the sheet
+ * drops the pause with the timer. A strength test shows the reps input instead.
  */
 export const TrainingExerciseSheet: FC<TrainingExerciseSheetProps> = ({
   row,

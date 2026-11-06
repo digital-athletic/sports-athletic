@@ -1,3 +1,4 @@
+import { type Page } from "@playwright/test";
 import path from "node:path";
 import { expect, test } from "./fixtures";
 import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile";
@@ -23,6 +24,31 @@ const SUPERSET_WORKOUT_FILE = path.join(
   "files",
   "checklist-superset-workout.json",
 );
+
+// Imports the superset workout file and opens it as a checklist. The file
+// plans a timed warm up (list index 0), then a superset of two timed
+// exercises with two sets each: indices 2 and 6, 4 and 8.
+const openSupersetChecklist = async (page: Page) => {
+  const basePage = new BasePage(page);
+  const trainingOverviewPage = new TrainingOverviewPage(page);
+  const trainingListPage = new TrainingListPage(page);
+
+  await page.goto("/");
+  await basePage.expectLoggedIn();
+  await page.getByRole("button", { name: "Additional trainings" }).click();
+  await page.getByRole("button", { name: "Your trainings" }).click();
+  const chooserPromise = page.waitForEvent("filechooser");
+  await page.getByRole("button", { name: "Import training" }).click();
+  await (await chooserPromise).setFiles(SUPERSET_WORKOUT_FILE);
+  await page.getByRole("button", { name: "Superset check" }).click();
+  await page.getByRole("button", { name: /^At home, \d+ pieces$/ }).click();
+  await expect(
+    page.getByRole("heading", { name: "Training Overview" }),
+  ).toBeVisible({ timeout: 15000 });
+  await trainingOverviewPage.startAsChecklist();
+  await trainingListPage.expectVisible();
+  return trainingListPage;
+};
 
 test.describe("Training list: checklist session", () => {
   test.describe("Standard progression", () => {
@@ -202,26 +228,7 @@ test.describe("Training list: checklist session", () => {
       await mockWakeLock(page);
       await page.clock.install();
 
-      const basePage = new BasePage(page);
-      const trainingOverviewPage = new TrainingOverviewPage(page);
-      const trainingListPage = new TrainingListPage(page);
-
-      await page.goto("/");
-      await basePage.expectLoggedIn();
-      // The file plans a timed warm up (list index 0), then a superset of two
-      // timed exercises with two sets each: indices 2 and 6, 4 and 8.
-      await page.getByRole("button", { name: "Additional trainings" }).click();
-      await page.getByRole("button", { name: "Your trainings" }).click();
-      const chooserPromise = page.waitForEvent("filechooser");
-      await page.getByRole("button", { name: "Import training" }).click();
-      await (await chooserPromise).setFiles(SUPERSET_WORKOUT_FILE);
-      await page.getByRole("button", { name: "Superset check" }).click();
-      await page.getByRole("button", { name: /^At home, \d+ pieces$/ }).click();
-      await expect(
-        page.getByRole("heading", { name: "Training Overview" }),
-      ).toBeVisible({ timeout: 15000 });
-      await trainingOverviewPage.startAsChecklist();
-      await trainingListPage.expectVisible();
+      const trainingListPage = await openSupersetChecklist(page);
 
       // The checklist names the skills in the order of the overview, and the
       // superset starts the full body stability skill.
@@ -262,6 +269,31 @@ test.describe("Training list: checklist session", () => {
       await expect(
         trainingListPage.nextArrow("training-list-row-4"),
       ).toHaveCount(0);
+    });
+
+    test("athlete holds a timed set, the countdown stands still, then resumes and completes it with Next", async ({
+      page,
+    }) => {
+      test.setTimeout(60000);
+      await mockSupabaseAuth(page);
+      await mockWakeLock(page);
+      await page.clock.install();
+
+      const trainingListPage = await openSupersetChecklist(page);
+      await trainingListPage.startRow("training-list-row-0");
+      await trainingListPage.holdTimer();
+      const heldTime = await trainingListPage.sheetTimer.textContent();
+      await page.clock.fastForward("00:30");
+
+      await expect(trainingListPage.sheetTimer).toHaveText(heldTime ?? "");
+      await trainingListPage.expectNextDisabled();
+
+      await trainingListPage.resumeTimer();
+      await trainingListPage.completeSheetSet();
+
+      expect(await trainingListPage.currentSheetSet()).toBe(
+        "training-list-sheet-set-2",
+      );
     });
   });
 

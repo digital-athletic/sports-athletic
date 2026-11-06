@@ -48,15 +48,27 @@ const completeSetInStore = (row: ListRow) => {
 
 type HookArgs = Parameters<typeof useTrainingExerciseSheetProps>[0];
 
+type HookArgOverrides = Partial<Omit<HookArgs, "timing">> & {
+  timing?: Partial<HookArgs["timing"]>;
+};
+
 // Hook arguments for the superset above with completion writing to the store,
-// e.g. generateSheetHookArgs({ repsDraft: { 2: 8 } }) adds a reps draft.
-const generateSheetHookArgs = (
-  overrides: Partial<HookArgs> = {},
-): HookArgs => ({
+// e.g. generateSheetHookArgs({ repsDraft: { 2: 8 } }) adds a reps draft. Timing
+// functions left out of overrides.timing are mocks.
+const generateSheetHookArgs = ({
+  timing,
+  ...overrides
+}: HookArgOverrides = {}): HookArgs => ({
   rows: generateSupersetRows(),
   exerciseList: generateSupersetList(),
   repsDraft: {},
-  timing: { startExercise: jest.fn(), endExercise: jest.fn() },
+  timing: {
+    startExercise: jest.fn(),
+    pauseExercise: jest.fn(),
+    resumeExercise: jest.fn(),
+    endExercise: jest.fn(),
+    ...timing,
+  },
   onChangeReps: jest.fn(),
   onSubmitReps: jest.fn(),
   onComplete: completeSetInStore,
@@ -519,15 +531,34 @@ describe("useTrainingExerciseSheetProps: reps and dismiss", () => {
     expect(onSkip).toHaveBeenCalledWith(rows[1]);
   });
 
+  it("routes pause and resume to the exercise timing", async () => {
+    const pauseExercise = jest.fn();
+    const resumeExercise = jest.fn();
+    const { result } = await renderHook(() =>
+      useTrainingExerciseSheetProps(
+        generateSheetHookArgs({ timing: { pauseExercise, resumeExercise } }),
+      ),
+    );
+    await act(() => result.current.handleStart(squatEntry));
+
+    await act(() => result.current.sheetProps.onPause());
+    await act(() => result.current.sheetProps.onResume());
+
+    expect(pauseExercise).toHaveBeenCalledTimes(1);
+    expect(resumeExercise).toHaveBeenCalledTimes(1);
+  });
+
   it("ignores sheet actions after the sheet is dismissed", async () => {
     const onChangeReps = jest.fn();
     const onSubmitReps = jest.fn();
     const onSkip = jest.fn();
     const endExercise = jest.fn();
+    const pauseExercise = jest.fn();
+    const resumeExercise = jest.fn();
     const { result } = await renderHook(() =>
       useTrainingExerciseSheetProps(
         generateSheetHookArgs({
-          timing: { startExercise: jest.fn(), endExercise },
+          timing: { endExercise, pauseExercise, resumeExercise },
           onChangeReps,
           onSubmitReps,
           onSkip,
@@ -541,11 +572,15 @@ describe("useTrainingExerciseSheetProps: reps and dismiss", () => {
       result.current.sheetProps.onChangeReps("12");
       result.current.sheetProps.onSubmitReps();
       result.current.sheetProps.onSkip();
+      result.current.sheetProps.onPause();
+      result.current.sheetProps.onResume();
       result.current.sheetProps.onNext();
     });
 
     expect(result.current.sheetProps.isPresented).toBe(false);
     expect(endExercise).toHaveBeenCalledTimes(1);
+    expect(pauseExercise).not.toHaveBeenCalled();
+    expect(resumeExercise).not.toHaveBeenCalled();
     expect(onChangeReps).not.toHaveBeenCalled();
     expect(onSubmitReps).not.toHaveBeenCalled();
     expect(onSkip).not.toHaveBeenCalled();

@@ -68,6 +68,29 @@ export class TrainingListPage extends BasePage {
     return this.page.getByTestId("training-list-sheet-skip");
   }
 
+  private get sheetPauseButton() {
+    return this.page.getByTestId("training-list-sheet-pause");
+  }
+
+  get sheetTimer() {
+    return this.page.getByTestId("training-list-sheet-timer");
+  }
+
+  /** Holds the set timer and waits until the button offers Resume. */
+  async holdTimer() {
+    await this.sheetPauseButton.click({ timeout: 3000 });
+    await expect(this.sheetPauseButton).toHaveAccessibleName("Resume");
+  }
+
+  async resumeTimer() {
+    await this.sheetPauseButton.click({ timeout: 3000 });
+    await expect(this.sheetPauseButton).toHaveAccessibleName("Hold");
+  }
+
+  async expectNextDisabled() {
+    await expect(this.sheetNextButton).toBeDisabled();
+  }
+
   // Needs page.clock.install() before navigating. Jumps past a timed
   // exercise's countdown instead of waiting it out in real time.
   private async waitOutCountdown() {

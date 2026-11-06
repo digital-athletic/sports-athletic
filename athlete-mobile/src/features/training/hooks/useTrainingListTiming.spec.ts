@@ -78,4 +78,75 @@ describe("useTrainingListTiming", () => {
     expect(time.pause).toBe(6000);
     expect(time.skill.SWR).toBe(30000);
   });
+
+  it("counts only the time the set timer runs toward the focus area", async () => {
+    const { result } = await renderHook(() => useTrainingListTiming());
+
+    await act(() => {
+      result.current.startExercise("SWR1");
+    });
+    advanceClock(10000);
+    await act(() => {
+      result.current.pauseExercise();
+    });
+    advanceClock(20000);
+    await act(() => {
+      result.current.resumeExercise();
+    });
+    advanceClock(5000);
+    await act(() => {
+      result.current.endExercise();
+    });
+
+    const { time } = useTrainingStore.getState();
+    expect(time.skill.SWR).toBe(15000);
+    expect(time.pause).toBe(0);
+  });
+
+  it("counts only the time before the pause when the sheet closes while paused", async () => {
+    const { result } = await renderHook(() => useTrainingListTiming());
+
+    await act(() => {
+      result.current.startExercise("SWR1");
+    });
+    advanceClock(10000);
+    await act(() => {
+      result.current.pauseExercise();
+    });
+    advanceClock(20000);
+    await act(() => {
+      result.current.endExercise();
+    });
+
+    const { time } = useTrainingStore.getState();
+    expect(time.skill.SWR).toBe(10000);
+    expect(time.pause).toBe(0);
+  });
+
+  it("ignores a second pause and a second resume", async () => {
+    const { result } = await renderHook(() => useTrainingListTiming());
+
+    await act(() => {
+      result.current.startExercise("SWR1");
+    });
+    advanceClock(10000);
+    await act(() => {
+      result.current.pauseExercise();
+    });
+    advanceClock(20000);
+    await act(() => {
+      result.current.pauseExercise();
+      result.current.resumeExercise();
+    });
+    advanceClock(5000);
+    await act(() => {
+      result.current.resumeExercise();
+    });
+    advanceClock(5000);
+    await act(() => {
+      result.current.endExercise();
+    });
+
+    expect(useTrainingStore.getState().time.skill.SWR).toBe(20000);
+  });
 });

@@ -29,6 +29,8 @@ const generateSheetProps = (
   onSubmitReps: jest.fn(),
   onComplete: jest.fn(),
   onSkip: jest.fn(),
+  onPause: jest.fn(),
+  onResume: jest.fn(),
   onNext: jest.fn(),
   onDismiss: jest.fn(),
   ...overrides,
@@ -441,6 +443,7 @@ describe("TrainingExerciseSheet: skip button", () => {
     );
 
     expect(buttonIds).toEqual([
+      "training-list-sheet-pause",
       "training-list-sheet-next",
       "training-list-sheet-skip",
     ]);
@@ -497,5 +500,121 @@ describe("TrainingExerciseSheet: skip button", () => {
     );
 
     expect(queryByLabelText("Skip exercise")).toBeNull();
+  });
+});
+
+describe("TrainingExerciseSheet: pause", () => {
+  it("freezes the countdown of a timed set and continues it on resume", async () => {
+    const onPause = jest.fn();
+    const onResume = jest.fn();
+    const { getByTestId, getByLabelText } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({ duration: 30, onPause, onResume })}
+      />,
+    );
+    const timer = getByTestId("training-list-sheet-timer");
+
+    await act(() => {
+      jest.advanceTimersByTime(5000);
+    });
+    await fireEvent.press(getByLabelText("Hold"));
+    await act(() => {
+      jest.advanceTimersByTime(10000);
+    });
+
+    expect(timer).toHaveTextContent("00:25");
+    expect(onPause).toHaveBeenCalledTimes(1);
+
+    await fireEvent.press(getByLabelText("Resume"));
+    await act(() => {
+      jest.advanceTimersByTime(5000);
+    });
+
+    expect(timer).toHaveTextContent("00:20");
+    expect(onResume).toHaveBeenCalledTimes(1);
+  });
+
+  it("freezes the stopwatch of a set of repetitions and continues it on resume", async () => {
+    const { getByTestId, getByLabelText } = await render(
+      <TrainingExerciseSheet {...generateSheetProps()} />,
+    );
+    const timer = getByTestId("training-list-sheet-timer");
+
+    await act(() => {
+      jest.advanceTimersByTime(5000);
+    });
+    await fireEvent.press(getByLabelText("Hold"));
+    await act(() => {
+      jest.advanceTimersByTime(10000);
+    });
+
+    expect(timer).toHaveTextContent("00:05");
+
+    await fireEvent.press(getByLabelText("Resume"));
+    await act(() => {
+      jest.advanceTimersByTime(3000);
+    });
+
+    expect(timer).toHaveTextContent("00:08");
+  });
+
+  it("keeps Next disabled while a paused countdown has time left", async () => {
+    const onComplete = jest.fn();
+    const { getByTestId, getByLabelText } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({ duration: 2, onComplete })}
+      />,
+    );
+
+    await fireEvent.press(getByLabelText("Hold"));
+    await act(() => {
+      jest.advanceTimersByTime(5000);
+    });
+    await fireEvent.press(getByTestId("training-list-sheet-next"));
+
+    expect(getByTestId("training-list-sheet-next")).toBeDisabled();
+    expect(onComplete).not.toHaveBeenCalled();
+  });
+
+  it("starts the timer unpaused from the beginning when the sheet opens again", async () => {
+    const { getByTestId, getByLabelText, rerender } = await render(
+      <TrainingExerciseSheet {...generateSheetProps({ duration: 30 })} />,
+    );
+    await act(() => {
+      jest.advanceTimersByTime(5000);
+    });
+    await fireEvent.press(getByLabelText("Hold"));
+
+    await rerender(
+      <TrainingExerciseSheet
+        {...generateSheetProps({ duration: 30, sessionKey: 2 })}
+      />,
+    );
+
+    expect(getByTestId("training-list-sheet-timer")).toHaveTextContent("00:30");
+    expect(getByLabelText("Hold")).toBeTruthy();
+  });
+
+  it("shows no pause button for a strength test row", async () => {
+    const { queryByTestId } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({ row: generateChecklistRow({ isTest: true }) })}
+      />,
+    );
+
+    expect(queryByTestId("training-list-sheet-pause")).toBeNull();
+  });
+
+  it("shows no pause button during the rest", async () => {
+    const { getByTestId, queryByTestId } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({ rest: generateRestControl() })}
+      />,
+    );
+
+    await fireEvent.press(getByTestId("training-list-sheet-next"));
+
+    expect(getByTestId("training-list-sheet-rest")).toBeTruthy();
+    expect(queryByTestId("training-list-sheet-pause")).toBeNull();
   });
 });

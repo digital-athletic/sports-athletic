@@ -3,8 +3,6 @@ import { Dimensions } from "react-native";
 import { VideoPlayer } from "./VideoPlayer";
 
 const mockPlayer = {
-  playing: false,
-  pause: jest.fn(),
   replaceAsync: jest.fn().mockResolvedValue(undefined),
 };
 
@@ -18,7 +16,6 @@ jest.mock("expo", () => ({
 }));
 jest.mock("@/services/StorageService", () => ({
   getExerciseVideoUrl: (filename: string) => `https://test/${filename}`,
-  getTutorialVideoUrl: (filename: string) => `https://test/${filename}`,
 }));
 
 const tabletLandscape = { width: 1280, height: 800, scale: 2, fontScale: 2 };
@@ -52,6 +49,18 @@ describe("VideoPlayer: frame size", () => {
 
     expect(screen.getByTestId("video-frame")).toHaveStyle({
       aspectRatio: 16 / 9,
+    });
+  });
+
+  it("fills the column with the error message when the video fails to load", async () => {
+    Dimensions.set({ window: tabletLandscape, screen: tabletLandscape });
+    mockPlayer.replaceAsync.mockRejectedValueOnce(new Error("no network"));
+
+    await render(<VideoPlayer source="clip.mp4" fillColumnInTallLandscape />);
+
+    await screen.findByRole("alert");
+    expect(screen.getByTestId("video-frame")).toHaveStyle({
+      position: "absolute",
     });
   });
 });

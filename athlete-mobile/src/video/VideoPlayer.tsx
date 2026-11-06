@@ -26,7 +26,7 @@ const loadParamsChanged = (prev: LoadParams, next: LoadParams) =>
 const FIXED_FRAME = { aspectRatio: 16 / 9 } as const;
 
 // The video scales to fit inside this frame. A 9:16 video uses the whole column
-// height, and a 16:9 video sits in the middle with dark bars above and below.
+// height. A 16:9 video sits in the middle with dark bars above and below.
 const COLUMN_FRAME = {
   position: "absolute",
   top: 0,
@@ -217,5 +217,9 @@ export const VideoPlayer: FC<Props> = ({
 const styles = StyleSheet.create({
   videoView: {
     flex: 1,
+    // A browser otherwise sizes the video element by the video format. The
+    // element then grows out of its frame and covers the text next to it.
+    width: "100%",
+    minHeight: 0,
   },
 });

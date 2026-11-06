@@ -1,5 +1,10 @@
 [
   {
+    "name": "@expo/ui",
+    "version": "58.0.22",
+    "license": "MIT"
+  },
+  {
     "name": "@expo/vector-icons",
     "version": "15.1.1",
     "license": "MIT"
@@ -11,7 +16,7 @@
   },
   {
     "name": "@react-native-community/datetimepicker",
-    "version": "9.1.0",
+    "version": "9.2.1",
     "license": "MIT"
   },
   {
@@ -21,7 +26,7 @@
   },
   {
     "name": "@react-native-community/slider",
-    "version": "5.2.0",
+    "version": "5.2.1",
     "license": "MIT"
   },
   {
@@ -36,97 +41,102 @@
   },
   {
     "name": "expo",
-    "version": "57.0.28",
+    "version": "58.0.14",
     "license": "MIT"
   },
   {
     "name": "expo-asset",
-    "version": "57.0.19",
+    "version": "58.0.16",
     "license": "MIT"
   },
   {
     "name": "expo-audio",
-    "version": "57.0.5",
+    "version": "58.0.9",
     "license": "MIT"
   },
   {
     "name": "expo-constants",
-    "version": "57.0.21",
+    "version": "58.0.12",
     "license": "MIT"
   },
   {
     "name": "expo-dev-client",
-    "version": "57.0.20",
+    "version": "58.0.14",
+    "license": "MIT"
+  },
+  {
+    "name": "expo-document-picker",
+    "version": "58.0.4",
     "license": "MIT"
   },
   {
     "name": "expo-file-system",
-    "version": "57.0.7",
+    "version": "58.0.9",
     "license": "MIT"
   },
   {
     "name": "expo-font",
-    "version": "57.0.4",
+    "version": "58.0.8",
     "license": "MIT"
   },
   {
     "name": "expo-image",
-    "version": "57.0.5",
+    "version": "58.0.15",
     "license": "MIT"
   },
   {
     "name": "expo-keep-awake",
-    "version": "57.0.2",
+    "version": "58.0.3",
     "license": "MIT"
   },
   {
     "name": "expo-linear-gradient",
-    "version": "57.0.2",
+    "version": "58.0.3",
     "license": "MIT"
   },
   {
     "name": "expo-linking",
-    "version": "57.0.12",
+    "version": "58.0.13",
     "license": "MIT"
   },
   {
     "name": "expo-localization",
-    "version": "57.0.2",
+    "version": "58.0.4",
     "license": "MIT"
   },
   {
     "name": "expo-router",
-    "version": "57.0.26",
+    "version": "58.0.23",
     "license": "MIT"
   },
   {
     "name": "expo-sharing",
-    "version": "57.0.23",
+    "version": "58.0.19",
     "license": "MIT"
   },
   {
     "name": "expo-splash-screen",
-    "version": "57.0.10",
+    "version": "58.0.10",
     "license": "MIT"
   },
   {
     "name": "expo-status-bar",
-    "version": "57.0.1",
+    "version": "58.0.3",
     "license": "MIT"
   },
   {
     "name": "expo-system-ui",
-    "version": "57.0.4",
+    "version": "58.0.6",
     "license": "MIT"
   },
   {
     "name": "expo-updates",
-    "version": "57.0.26",
+    "version": "58.0.17",
     "license": "MIT"
   },
   {
     "name": "expo-video",
-    "version": "57.0.5",
+    "version": "58.0.11",
     "license": "MIT"
   },
   {
@@ -151,12 +161,12 @@
   },
   {
     "name": "react",
-    "version": "19.2.3",
+    "version": "19.3.0",
     "license": "MIT"
   },
   {
     "name": "react-dom",
-    "version": "19.2.3",
+    "version": "19.3.0",
     "license": "MIT"
   },
   {
@@ -166,7 +176,7 @@
   },
   {
     "name": "react-native",
-    "version": "0.86.3",
+    "version": "0.88.0",
     "license": "MIT"
   },
   {
@@ -176,27 +186,27 @@
   },
   {
     "name": "react-native-keyboard-controller",
-    "version": "1.21.9",
+    "version": "1.22.7",
     "license": "MIT"
   },
   {
     "name": "react-native-reanimated",
-    "version": "4.5.1",
+    "version": "4.7.1",
     "license": "MIT"
   },
   {
     "name": "react-native-safe-area-context",
-    "version": "5.7.0",
+    "version": "5.10.1",
     "license": "MIT"
   },
   {
     "name": "react-native-screens",
-    "version": "4.26.2",
+    "version": "4.30.0",
     "license": "MIT"
   },
   {
     "name": "react-native-svg",
-    "version": "15.15.4",
+    "version": "15.16.0",
     "license": "MIT"
   },
   {
@@ -206,17 +216,17 @@
   },
   {
     "name": "react-native-web",
-    "version": "0.21.2",
+    "version": "0.21.4",
     "license": "MIT"
   },
   {
     "name": "react-native-webview",
-    "version": "13.16.1",
+    "version": "14.0.1",
     "license": "MIT"
   },
   {
     "name": "react-native-worklets",
-    "version": "0.10.1",
+    "version": "0.13.0",
     "license": "MIT"
   },
   {

@@ -25,12 +25,11 @@ const TrainingList: FC<TrainingListProps> = () => {
     exerciseList,
     repsDraft,
     blocks,
-    allCompleted,
     isFinishing,
     handleFinish,
     handleShowInfo,
     handleStart,
-    handleAbort,
+    handleDiscard,
     sheetProps,
   } = useTrainingListScreen();
 
@@ -40,7 +39,7 @@ const TrainingList: FC<TrainingListProps> = () => {
 
   return (
     <>
-      <TrainingListHeader onAbort={handleAbort} />
+      <TrainingListHeader onBack={handleDiscard} />
       <Box
         flex={1}
         backgroundColor="white"
@@ -61,8 +60,8 @@ const TrainingList: FC<TrainingListProps> = () => {
         >
           <Button
             onPress={handleFinish}
-            disabled={!allCompleted || isFinishing}
-            style={{ opacity: allCompleted && !isFinishing ? 1 : 0.5 }}
+            disabled={isFinishing}
+            style={{ opacity: isFinishing ? 0.5 : 1 }}
             testID="training-list-finish-button"
           >
             {t("training.list.finishTraining")}

@@ -1,3 +1,4 @@
+import { Alert } from "@/common/Alert";
 import { PAUSE_EXERCISE_ID } from "@/features/training/models/IdTypes";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import {
@@ -18,12 +19,16 @@ jest.mock("@/features/training/hooks/useTrainingScreenLifecycle", () => ({
 }));
 
 jest.mock("expo-router", () => ({
-  useRouter: () => ({ push: jest.fn() }),
+  useRouter: () => ({ push: jest.fn(), dismissTo: jest.fn() }),
+  useLocalSearchParams: () => ({}),
+  usePreventRemove: jest.fn(),
 }));
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
+
+const alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
 
 describe("useTrainingListScreen: finishing", () => {
   beforeEach(() => {
@@ -53,5 +58,43 @@ describe("useTrainingListScreen: finishing", () => {
     });
 
     expect(restRowsAtFinish).toEqual([{ skipped: undefined, completed: true }]);
+  });
+
+  it("finishes without a confirmation when every set is done", async () => {
+    const { result } = await renderHook(() => useTrainingListScreen());
+
+    await act(() => {
+      result.current.handleFinish();
+    });
+
+    expect(alertSpy).not.toHaveBeenCalled();
+    expect(mockFinishTraining).toHaveBeenCalledWith(false, null);
+  });
+
+  it("ends the training as aborted after the athlete confirms finishing with open sets", async () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1", completed: true }),
+        createExercise({ exerciseId: "2" }),
+      ],
+    });
+    const { result } = await renderHook(() => useTrainingListScreen());
+
+    await act(() => {
+      result.current.handleFinish();
+    });
+    expect(mockFinishTraining).not.toHaveBeenCalled();
+    const buttons = alertSpy.mock.calls[0]?.[2];
+    await act(() => {
+      buttons?.find((b) => b.text === "common.yes")?.onPress?.();
+    });
+
+    expect(alertSpy).toHaveBeenCalledWith(
+      "training.list.finishEarly.question",
+      "training.list.finishEarly.explanation",
+      expect.any(Array),
+    );
+    expect(mockFinishTraining).toHaveBeenCalledWith(true);
+    expect(result.current.isFinishing).toBe(true);
   });
 });

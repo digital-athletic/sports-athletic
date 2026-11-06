@@ -99,6 +99,17 @@ export function findFirstOpenSetIndex(
   return setIndices.find((index) => isOpenSet(exerciseList[index])) ?? null;
 }
 
+/** True once a completed, unskipped set has saved its progression. */
+export const hasSavedProgress = (
+  exerciseList: readonly UserExerciseDataType[],
+): boolean =>
+  exerciseList.some(
+    (exercise) =>
+      exercise.completed &&
+      !exercise.skipped &&
+      !isPauseExercise(exercise.exerciseId),
+  );
+
 /** The next open set after the current one, without wrapping to earlier sets. */
 export function findNextOpenSetIndex(
   exerciseList: readonly UserExerciseDataType[],

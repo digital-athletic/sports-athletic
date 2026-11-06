@@ -80,6 +80,7 @@ type Actions = {
   addPauseTime: (pauseTime: number) => void;
   addSkillTime: (focusArea: FocusArea, skillTime: number) => void;
   clearTraining: () => void;
+  discardTrainingSession: () => void;
   setHasHydrated: (hydrated: boolean) => void;
   setTrainingViewMode: (mode: TrainingViewMode | null) => void;
   markExerciseCompleted: (index: number) => void;
@@ -206,6 +207,18 @@ export const useTrainingStore = create<TrainingState>()(
           state.activeTraining = initialState.activeTraining;
           state.tempMaxValues = initialState.tempMaxValues;
           state.trainingViewMode = initialState.trainingViewMode;
+        }),
+      // Keeps the generated plan so the overview shows it again unstarted.
+      discardTrainingSession: () =>
+        set((state) => {
+          state.exerciseList?.forEach((exercise) => {
+            delete exercise.completed;
+            delete exercise.skipped;
+            delete exercise.feedback;
+          });
+          state.time = createInitialTrainingTime();
+          state.tempMaxValues = null;
+          state.trainingViewMode = null;
         }),
       setHasHydrated: (hydrated) =>
         set((state) => {

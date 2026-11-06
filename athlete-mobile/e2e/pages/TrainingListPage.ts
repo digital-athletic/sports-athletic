@@ -309,10 +309,10 @@ export class TrainingListPage extends BasePage {
   }
 
   /**
-   * Completes every remaining set, then presses the finish button (enabled
-   * only once every set is done) to navigate to training-success. Sets
-   * already skipped by the caller are left alone. Strength test sets fall
-   * back to 10 reps, and feedback-eligible sets default to SUCCEEDED.
+   * Completes every remaining set, then presses the finish button to navigate
+   * to training-success. Sets already skipped by the caller are left alone.
+   * Strength test sets fall back to 10 reps, and feedback-eligible sets
+   * default to SUCCEEDED.
    */
   async completeAll() {
     for (let i = 0; i < 60; i++) {
@@ -326,15 +326,16 @@ export class TrainingListPage extends BasePage {
         continue;
       }
 
-      if (await this.finishButton.isEnabled().catch(() => false)) {
-        await this.finishButton.click({ timeout: 3000 });
-        await expect(this.goOnButton).toBeVisible();
-        continue;
-      }
-
       if (await this.firstStartButton.isVisible().catch(() => false)) {
         await this.firstStartButton.click({ timeout: 3000 });
         await this.completeSheet();
+        continue;
+      }
+
+      // Finish stays enabled with open sets, so it is pressed only once no row is left.
+      if (await this.finishButton.isEnabled().catch(() => false)) {
+        await this.finishButton.click({ timeout: 3000 });
+        await expect(this.goOnButton).toBeVisible();
         continue;
       }
 
@@ -347,7 +348,32 @@ export class TrainingListPage extends BasePage {
     await expect(this.goOnButton).toBeVisible();
   }
 
-  async expectFinishEnabled() {
-    await expect(this.finishButton).toBeEnabled();
+  /** Presses back and confirms the "Discard training?" dialog. */
+  async discard() {
+    await this.confirmBack("Discard training?");
+  }
+
+  /** Presses back after a completed set and confirms the "Abort training?" dialog. */
+  async abort() {
+    await this.confirmBack("Abort training?");
+  }
+
+  private async confirmBack(question: string) {
+    await this.page
+      .getByTestId("training-list-back-button")
+      .click({ timeout: 3000 });
+    await expect(this.page.getByText(question)).toBeVisible();
+    await this.page.getByText("Yes", { exact: true }).click();
+  }
+
+  /** Presses finish with open sets and confirms the "Finish training early?" dialog. */
+  async finishEarly() {
+    await this.finishButton.click({ timeout: 3000 });
+    await expect(this.page.getByText("Finish training early?")).toBeVisible();
+    await this.page.getByText("Yes", { exact: true }).click();
+  }
+
+  async expectAllRowsCompleted() {
+    await expect(this.startButtons).toHaveCount(0);
   }
 }

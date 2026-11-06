@@ -7,9 +7,10 @@ import { Ionicon } from "./Ionicon";
 
 interface BackHeaderProps {
   onBack?: () => void;
+  testID?: string;
 }
 
-export const BackHeader: FC<BackHeaderProps> = ({ onBack }) => {
+export const BackHeader: FC<BackHeaderProps> = ({ onBack, testID }) => {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
@@ -21,6 +22,7 @@ export const BackHeader: FC<BackHeaderProps> = ({ onBack }) => {
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={t("common.back")}
+      testID={testID}
     >
       <Ionicon
         name="arrow-back"

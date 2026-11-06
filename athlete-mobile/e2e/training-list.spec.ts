@@ -14,6 +14,7 @@ import {
 import {
   getComparableCompletedWorkout,
   getComparableExerciseProgress,
+  getCompletedWorkouts,
   getTrainingStorageState,
   getUserProfileStorageState,
 } from "./utils/storage";
@@ -262,7 +263,7 @@ test.describe("Training list: checklist session", () => {
         "training-list-sheet-set-6",
         "training-list-sheet-set-8",
       ]);
-      await trainingListPage.expectFinishEnabled();
+      await trainingListPage.expectAllRowsCompleted();
       await expect(
         trainingListPage.nextArrow("training-list-row-2"),
       ).toHaveCount(0);
@@ -335,6 +336,144 @@ test.describe("Training list: checklist session", () => {
       expect(await workoutPage.getLastMaxRepetition("8")).toEqual(
         expect.objectContaining({ weightPercentage: 75, repetitions: 5 }),
       );
+    });
+  });
+
+  test.describe("Leaving before the last set", () => {
+    test.use({ profile: createCompletedProfile(), signedIn: true });
+
+    test("athlete discards the training with back and lands on the overview without a result", async ({
+      page,
+    }) => {
+      test.setTimeout(60000);
+      await mockSupabaseAuth(page);
+      await mockWakeLock(page);
+      await page.clock.install();
+
+      const workoutPage = new WorkoutPage(page);
+      const trainingOverviewPage = new TrainingOverviewPage(page);
+      const trainingListPage = new TrainingListPage(page);
+
+      await page.goto("/");
+      await workoutPage.expectLoggedIn();
+      const workoutsBefore = await getCompletedWorkouts(page);
+      await workoutPage.startWorkout("Tuesday");
+      await trainingOverviewPage.startAsChecklist();
+      await trainingListPage.expectVisible();
+
+      await trainingListPage.discard();
+
+      await trainingOverviewPage.expectVisible();
+      await expect(page.getByText("Training evaluation")).toBeHidden();
+      // A cleared start keeps home from resuming the discarded session.
+      await expect
+        .poll(async () => {
+          const state = await getTrainingStorageState(page);
+          return {
+            start: state?.time?.start,
+            viewMode: state?.trainingViewMode,
+          };
+        })
+        .toEqual({ start: undefined, viewMode: null });
+      expect(await getCompletedWorkouts(page)).toBe(workoutsBefore);
+    });
+
+    test("athlete aborts the training with back after a completed set and starts it again from the weekday selection", async ({
+      page,
+    }) => {
+      test.setTimeout(60000);
+      await mockSupabaseAuth(page);
+      await mockWakeLock(page);
+      await page.clock.install();
+
+      const workoutPage = new WorkoutPage(page);
+      const trainingOverviewPage = new TrainingOverviewPage(page);
+      const trainingListPage = new TrainingListPage(page);
+
+      await page.goto("/");
+      await workoutPage.expectLoggedIn();
+      const workoutsBefore = await getCompletedWorkouts(page);
+      await workoutPage.startWorkout("Tuesday");
+      await trainingOverviewPage.startAsChecklist();
+      await trainingListPage.expectVisible();
+
+      await trainingListPage.startRow("training-list-row-0");
+      await trainingListPage.completeSheet();
+      await trainingListPage.abort();
+
+      await expect(
+        page.getByRole("heading", { name: /Start.*training/i }),
+      ).toBeVisible();
+      await expect
+        .poll(async () => (await getTrainingStorageState(page))?.exerciseList)
+        .toBeNull();
+      expect(await getCompletedWorkouts(page)).toBe(workoutsBefore);
+
+      // The weekday selection generates a fresh list for the new levels.
+      await page.getByRole("button", { name: /Tuesday/i }).click();
+      await workoutPage.skipMuscleSoreness();
+      await trainingOverviewPage.expectVisible();
+    });
+
+    test("athlete reopens the app during a checklist session and aborts the resumed training with back", async ({
+      page,
+    }) => {
+      test.setTimeout(60000);
+      await mockSupabaseAuth(page);
+      await mockWakeLock(page);
+      await page.clock.install();
+
+      const workoutPage = new WorkoutPage(page);
+      const trainingOverviewPage = new TrainingOverviewPage(page);
+      const trainingListPage = new TrainingListPage(page);
+
+      await page.goto("/");
+      await workoutPage.expectLoggedIn();
+      await workoutPage.startWorkout("Tuesday");
+      await trainingOverviewPage.startAsChecklist();
+      await trainingListPage.expectVisible();
+      await trainingListPage.startRow("training-list-row-0");
+      await trainingListPage.completeSheet();
+
+      // Home replaces itself with the checklist, so no screen lies below it.
+      await page.goto("/");
+      await trainingListPage.expectVisible();
+      await trainingListPage.abort();
+
+      await expect(
+        page.getByRole("heading", { name: /Start.*training/i }),
+      ).toBeVisible();
+      await expect
+        .poll(async () => (await getTrainingStorageState(page))?.exerciseList)
+        .toBeNull();
+    });
+
+    test("athlete finishes early with open sets and sees the result of an aborted training", async ({
+      page,
+    }) => {
+      test.setTimeout(60000);
+      await mockSupabaseAuth(page);
+      await mockWakeLock(page);
+      await page.clock.install();
+
+      const workoutPage = new WorkoutPage(page);
+      const trainingOverviewPage = new TrainingOverviewPage(page);
+      const trainingListPage = new TrainingListPage(page);
+
+      await page.goto("/");
+      await workoutPage.expectLoggedIn();
+      const workoutsBefore = await getCompletedWorkouts(page);
+      await workoutPage.startWorkout("Tuesday");
+      await trainingOverviewPage.startAsChecklist();
+      await trainingListPage.expectVisible();
+
+      await trainingListPage.finishEarly();
+
+      await expect(page.getByText("Training evaluation")).toBeVisible();
+      // An aborted training is not added to the history.
+      await workoutPage.returnToHome();
+      await workoutPage.expectLoggedIn();
+      expect(await getCompletedWorkouts(page)).toBe(workoutsBefore);
     });
   });
 });

@@ -1,13 +1,12 @@
-import { useFinishTraining } from "@/features/training/hooks/useFinishTraining";
 import { useTrainingExerciseSheetProps } from "@/features/training/hooks/useTrainingExerciseSheetProps";
 import { useTrainingListCompletion } from "@/features/training/hooks/useTrainingListCompletion";
+import { useTrainingListFinish } from "@/features/training/hooks/useTrainingListFinish";
 import { useTrainingListLifecycle } from "@/features/training/hooks/useTrainingListLifecycle";
 import { useTrainingListReps } from "@/features/training/hooks/useTrainingListReps";
 import { useTrainingListRows } from "@/features/training/hooks/useTrainingListRows";
 import { useTrainingListTiming } from "@/features/training/hooks/useTrainingListTiming";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { useRouter } from "expo-router";
-import { useState } from "react";
 
 /**
  * Composes the list-view (checklist) screen's logic from its focused
@@ -18,15 +17,19 @@ export function useTrainingListScreen() {
   const router = useRouter();
   const exerciseList = useTrainingStore((s) => s.exerciseList);
   const hasHydrated = useTrainingStore((s) => s._hasHydrated);
-  const { finishTraining } = useFinishTraining();
 
   const { rows, blocks, allCompleted } = useTrainingListRows();
   const completion = useTrainingListCompletion();
   const { repsDraft, setRepsForRow, handleSubmitReps } = useTrainingListReps();
-  const { handleAbort, isScreenFocused } = useTrainingListLifecycle({
-    onFinish: finishTraining,
-  });
   const timing = useTrainingListTiming();
+  const { isFinishing, handleFinish } = useTrainingListFinish({
+    allCompleted,
+    endPause: timing.endPause,
+    completeRestRows: completion.completeRestRows,
+  });
+  const { handleDiscard, isScreenFocused } = useTrainingListLifecycle({
+    isEnding: isFinishing,
+  });
   const { handleStart, sheetProps } = useTrainingExerciseSheetProps({
     rows,
     exerciseList,
@@ -38,16 +41,6 @@ export function useTrainingListScreen() {
     onRestEnd: completion.handleRestEnd,
     onSkip: completion.handleSkip,
   });
-  const [isFinishing, setIsFinishing] = useState(false);
-
-  const handleFinish = () => {
-    // Visible feedback only — useFinishTraining itself guards against
-    // duplicate invocations, this just disables the button after the first tap.
-    setIsFinishing(true);
-    timing.endPause();
-    completion.completeRestRows();
-    finishTraining(false, useTrainingStore.getState().tempMaxValues);
-  };
 
   const handleShowInfo = (exerciseId: string) => {
     router.push({
@@ -61,12 +54,11 @@ export function useTrainingListScreen() {
     exerciseList,
     repsDraft,
     blocks,
-    allCompleted,
     isFinishing,
     handleFinish,
     handleShowInfo,
     handleStart,
-    handleAbort,
+    handleDiscard,
     sheetProps: { ...sheetProps, isScreenFocused },
   };
 }

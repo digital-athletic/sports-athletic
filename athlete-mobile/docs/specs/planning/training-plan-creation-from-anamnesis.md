@@ -100,13 +100,18 @@ The [Glossary](../glossary.md) lists the section type and cardio zone codes.
 
 ### 6. Lifecycle and regeneration
 
+A plan has ended when its last section ended before today. The home screen then offers a new plan.
+
 | Trigger | Start date | Old plan |
 |---|---|---|
 | Anamnesis completed (first plan) | Next Monday from today | none |
-| Anamnesis re-run, same season phase type | Preserved from existing plan | Overwritten |
+| Anamnesis re-run, same season phase type, plan still running | Preserved from existing plan | Overwritten |
 | Anamnesis re-run, season phase changed | Next Monday from today | Overwritten |
 | New plan accepted after a training gap of more than 21 days | Next Monday from today | Overwritten |
+| New plan after the plan ended | Next Monday from today | Overwritten |
 | Equipment change at a location used by an active training day | Preserved | Overwritten |
+
+After a plan has ended, the anamnesis asks for the season phase again, also when the athlete only edits the profile. The season phase step suggests an end date 12 weeks from today, as it does for a first plan.
 
 Regeneration with a preserved start date keeps unaffected days. The app runs the full pipeline, then compares each training day of each section with the old plan:
 

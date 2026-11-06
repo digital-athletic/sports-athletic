@@ -6,12 +6,13 @@ import {
   dateToHHMM,
   ISODateToDate,
   HHMMToDate,
+  isISODate,
 } from "@/utils/date";
 import DateTimePicker, {
   DateTimePickerAndroid,
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { type FC } from "react";
+import { type FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Platform, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicon } from "../common/Ionicon";
@@ -31,6 +32,60 @@ interface DateInputFieldProps {
  * making earlier birthdays unselectable. Providing a real floor avoids this.
  */
 const DEFAULT_MIN_DATE = new Date(1920, 0, 1);
+
+interface WebDateInputProps
+  extends Pick<
+    DateInputFieldProps,
+    "type" | "onChange" | "accessibilityLabel"
+  > {
+  value?: string;
+  min?: string;
+  max?: string;
+}
+
+/**
+ * Only a complete value inside min and max reaches onChange, because the
+ * browser reports "" for an incomplete date and does not stop typed dates
+ * outside the limits. On blur the field shows the last valid value again.
+ */
+const WebDateInput: FC<WebDateInputProps> = ({
+  type,
+  value,
+  min,
+  max,
+  onChange,
+  accessibilityLabel,
+}) => {
+  const { colors, textVariants } = useTheme();
+  const [draft, setDraft] = useState<string | null>(null);
+
+  const handleChange = (newValue: string) => {
+    setDraft(newValue);
+    const isComplete = type === "date" ? isISODate(newValue) : newValue !== "";
+    const isInsideLimits =
+      (!min || newValue >= min) && (!max || newValue <= max);
+    if (isComplete && isInsideLimits) onChange(newValue);
+  };
+
+  return (
+    <input
+      type={type}
+      value={draft ?? value ?? ""}
+      min={min}
+      max={max}
+      aria-label={accessibilityLabel}
+      onChange={(event) => handleChange(event.target.value)}
+      onBlur={() => setDraft(null)}
+      style={{
+        border: "none",
+        background: "transparent",
+        color: colors.darkGrey3,
+        fontFamily: "system-ui",
+        fontSize: textVariants.body.fontSize,
+      }}
+    />
+  );
+};
 
 /**
  * Date/Time picker input field
@@ -131,6 +186,25 @@ export const DateInputField: FC<DateInputFieldProps> = ({
                 {dateTime || t("common.choose")}
               </Text>
             </TouchableOpacity>
+          </Box>
+        ),
+        web: (
+          <Box
+            backgroundColor="lightGrey2"
+            paddingHorizontal="s"
+            paddingVertical="xs"
+            borderRadius="m"
+          >
+            <WebDateInput
+              type={type}
+              value={dateTime}
+              min={
+                effectiveMinimumDate && formatDateToISO(effectiveMinimumDate)
+              }
+              max={maximumDate && formatDateToISO(maximumDate)}
+              onChange={onChange}
+              accessibilityLabel={accessibilityLabel}
+            />
           </Box>
         ),
       })}

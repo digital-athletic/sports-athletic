@@ -5,8 +5,9 @@ import { type ListRow } from "@/features/training/hooks/useTrainingListRows";
  * replace any field.
  *
  * generateChecklistRow({ isTest: true })
- * → { index: 0, exerciseId: "1", displayName: "Test Exercise", isTest: true,
- *     isLastInSet: true, isFeedbackSkill: false, completed: false }
+ * → { index: 0, exerciseId: "1", displayName: "Test Exercise",
+ *     pictureUrl: null, valueKind: null, isTest: true, isLastInSet: true,
+ *     isFeedbackSkill: false, completed: false }
  */
 export const generateChecklistRow = (
   overrides: Partial<ListRow> = {},
@@ -14,6 +15,8 @@ export const generateChecklistRow = (
   index: 0,
   exerciseId: "1",
   displayName: "Test Exercise",
+  pictureUrl: null,
+  valueKind: null,
   isTest: false,
   isLastInSet: true,
   isFeedbackSkill: false,

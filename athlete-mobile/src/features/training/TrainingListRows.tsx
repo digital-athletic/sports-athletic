@@ -37,6 +37,8 @@ const Entry: FC<EntryProps> = ({
     <TrainingListItem
       testId={`training-list-row-${entry.key}`}
       displayName={entry.displayName}
+      pictureUrl={entry.pictureUrl}
+      valueKind={entry.valueKind}
       sets={entry.sets}
       isNext={isNext}
       isTest={entry.isTest}

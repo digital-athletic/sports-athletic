@@ -8,6 +8,7 @@ import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { BottomSheet, RNHostView } from "@expo/ui";
 import { type FC } from "react";
+import { useWindowDimensions } from "react-native";
 import { useTranslation } from "react-i18next";
 import { FeedbackIconButton } from "./FeedbackIconButton";
 import { TrainingExerciseStats } from "./TrainingExerciseStats";
@@ -17,6 +18,10 @@ import {
   type PauseControl,
   TrainingSheetHeading,
 } from "./TrainingSheetHeading";
+
+// The set step needs about 450pt without the picture, so short phones such as
+// a 667pt iPhone SE and phones in landscape skip it.
+const SHEET_PICTURE_MIN_WINDOW_HEIGHT = 700;
 
 export type TrainingExerciseSheetProps = {
   row: ListRow | null;
@@ -145,21 +150,30 @@ const SheetSetHeading: FC<{
   seconds: number;
   isTimed: boolean;
   pause?: PauseControl;
-}> = ({ row, seconds, isTimed, pause }) => (
-  <TrainingSheetHeading
-    title={row.displayName}
-    subtitle={row.setLabel}
-    seconds={seconds}
-    isTimed={isTimed}
-    timerTestID="training-list-sheet-timer"
-    pause={pause}
-  >
-    <TrainingExerciseStats
-      targetReps={row.targetReps}
-      targetWeight={row.targetWeight}
-    />
-  </TrainingSheetHeading>
-);
+}> = ({ row, seconds, isTimed, pause }) => {
+  const { height } = useWindowDimensions();
+
+  return (
+    <TrainingSheetHeading
+      title={row.displayName}
+      subtitle={row.setLabel}
+      picture={
+        height >= SHEET_PICTURE_MIN_WINDOW_HEIGHT
+          ? { url: row.pictureUrl, valueKind: row.valueKind }
+          : undefined
+      }
+      seconds={seconds}
+      isTimed={isTimed}
+      timerTestID="training-list-sheet-timer"
+      pause={pause}
+    >
+      <TrainingExerciseStats
+        targetReps={row.targetReps}
+        targetWeight={row.targetWeight}
+      />
+    </TrainingSheetHeading>
+  );
+};
 
 const TrainingExerciseSheetContent: FC<ContentProps> = ({
   row,

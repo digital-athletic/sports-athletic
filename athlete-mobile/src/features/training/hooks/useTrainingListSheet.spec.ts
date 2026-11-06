@@ -1,18 +1,6 @@
 import { act, renderHook } from "@testing-library/react-native";
-import { type ListRow } from "./useTrainingListRows";
+import { generateChecklistRow } from "@test/factories/checklistRow";
 import { useTrainingListSheet } from "./useTrainingListSheet";
-
-// A minimal pending, non-test checklist row, e.g. a squat at index 0.
-const generateChecklistRow = (overrides: Partial<ListRow> = {}): ListRow => ({
-  index: 0,
-  exerciseId: "squat",
-  displayName: "Squat",
-  isTest: false,
-  isLastInSet: true,
-  isFeedbackSkill: false,
-  completed: false,
-  ...overrides,
-});
 
 describe("useTrainingListSheet", () => {
   it("starts with no active row", async () => {
@@ -39,7 +27,7 @@ describe("useTrainingListSheet", () => {
   });
 
   it("closes the sheet, clearing the active row but keeping the shown row", async () => {
-    const rows = [generateChecklistRow()];
+    const rows = [generateChecklistRow({ exerciseId: "squat" })];
 
     const { result } = await renderHook(() => useTrainingListSheet(rows));
 

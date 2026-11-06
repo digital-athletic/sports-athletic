@@ -12,6 +12,7 @@ import {
   isEnduranceSkill,
   isFeedbackEligibleSkill,
 } from "@/features/training/utils/exerciseDataUtils";
+import { getExercisePictureSource } from "@/features/training/utils/exercisePicture";
 import { deriveEntryWeight } from "@/features/training/utils/workoutUtils";
 import { isPauseExercise as checkIsPauseExercise } from "@/features/training/models/IdTypes";
 import { type ExerciseType } from "@/schemas/exercise.schema";
@@ -28,6 +29,8 @@ export type ListRow = {
   index: number;
   exerciseId: string;
   displayName: string;
+  pictureUrl: string | null;
+  valueKind: ValueKind | null;
   /** Set number only, e.g. "2 of 3"; reps and weight are shown as tiles. */
   setLabel?: string;
   nextSetLabel?: string;
@@ -45,10 +48,15 @@ export type ChecklistSetSummary = {
   completed: boolean;
 };
 
+/** The main value of an exercise, which its placeholder icon tells. */
+export type ValueKind = "weight" | "time" | "reps";
+
 export type ChecklistEntry = {
   key: number;
   exerciseId: string;
   displayName: string;
+  pictureUrl: string | null;
+  valueKind: ValueKind | null;
   isTest: boolean;
   sets: ChecklistSetSummary[];
   completed: boolean;
@@ -149,31 +157,56 @@ function buildSetLabels(
   };
 }
 
+type SetValue = { kind: ValueKind; amount: number };
+
 /**
- * The main value of a set for the entry summary: the weight, else the
- * duration of a timed set, else the repetitions. A strength test gets none.
+ * The main value of a set: the weight, else the duration of a timed set, else
+ * the repetitions. A strength test has none.
  */
-function buildSetSummaryLabel(
+function deriveSetValue(
   exercise: UserExerciseDataType,
   exerciseData: ExerciseType | undefined,
   maxValues: MaxValuesType,
-  t: TFunction,
-): string | undefined {
+): SetValue | undefined {
   const weight = deriveSetWeight(exercise, exerciseData, maxValues);
-  if (weight !== undefined) {
-    return t("training.list.setKilos", { weight: Number(weight.toFixed(2)) });
-  }
+  if (weight !== undefined) return { kind: "weight", amount: weight };
   if (
     typeof exercise.duration === "number" &&
     exercise.duration > 0 &&
     !isEnduranceSkill(exercise.skill)
   ) {
-    return t("training.list.setSeconds", { count: exercise.duration });
+    return { kind: "time", amount: exercise.duration };
   }
   if (typeof exercise.repetition === "number" && exercise.repetition > 0) {
-    return t("training.list.setReps", { count: exercise.repetition });
+    return { kind: "reps", amount: exercise.repetition };
   }
   return undefined;
+}
+
+function deriveSetValueKind(
+  exercise: UserExerciseDataType,
+  exerciseData: ExerciseType | undefined,
+  maxValues: MaxValuesType,
+): ValueKind | null {
+  return deriveSetValue(exercise, exerciseData, maxValues)?.kind ?? null;
+}
+
+function buildSetSummaryLabel(
+  value: SetValue | undefined,
+  t: TFunction,
+): string | undefined {
+  switch (value?.kind) {
+    case "weight":
+      return t("training.list.setKilos", {
+        weight: Number(value.amount.toFixed(2)),
+      });
+    case "time":
+      return t("training.list.setSeconds", { count: value.amount });
+    case "reps":
+      return t("training.list.setReps", { count: value.amount });
+    default:
+      return undefined;
+  }
 }
 
 type EntryContext = {
@@ -188,14 +221,12 @@ function buildEntry(
   { exerciseList, rowsByIndex, maxValues, t }: EntryContext,
 ): ChecklistEntry {
   const exerciseData = getExerciseById(group.exerciseId);
-  const sets = group.setIndices.map((index) => ({
+  const values = group.setIndices.map((index) =>
+    deriveSetValue(exerciseList[index], exerciseData, maxValues),
+  );
+  const sets = group.setIndices.map((index, position) => ({
     index,
-    label: buildSetSummaryLabel(
-      exerciseList[index],
-      exerciseData,
-      maxValues,
-      t,
-    ),
+    label: buildSetSummaryLabel(values[position], t),
     completed: Boolean(exerciseList[index].completed),
   }));
   const firstRow = rowsByIndex.get(group.key);
@@ -203,6 +234,8 @@ function buildEntry(
     key: group.key,
     exerciseId: group.exerciseId,
     displayName: firstRow?.displayName ?? group.exerciseId,
+    pictureUrl: firstRow?.pictureUrl ?? null,
+    valueKind: firstRow?.valueKind ?? null,
     isTest: firstRow?.isTest ?? false,
     sets,
     completed: sets.every((set) => set.completed),
@@ -268,6 +301,8 @@ export function useTrainingListRows() {
           exerciseData?.displayName ??
           exerciseData?.name ??
           exercise.exerciseId,
+        pictureUrl: getExercisePictureSource(exerciseData?.picture),
+        valueKind: deriveSetValueKind(exercise, exerciseData, maxValues),
         ...buildSetLabels(exercise, targetReps, targetWeight, t),
         targetReps,
         targetWeight,

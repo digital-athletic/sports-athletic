@@ -8,9 +8,9 @@ import type { UserExerciseDataType } from "@/features/training/models/UserExerci
 import { SkillTitle } from "@/features/training/SkillTitle";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { getEquipmentList } from "@/features/training/trainingUtils";
+import { getExercisePictureSource } from "@/features/training/utils/exercisePicture";
 import { deriveEntryWeight } from "@/features/training/utils/workoutUtils";
 import { MediaSkeleton } from "@/media/MediaSkeleton";
-import { getExercisePictureUrl } from "@/services/StorageService";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
@@ -437,10 +437,7 @@ const ExerciseItem: FC<ExerciseItemProps> = ({
 }) => {
   const exerciseData = exercises.find((e) => e.id === exercise.exerciseId);
 
-  const pictureFilename = exerciseData?.picture?.split("/").pop() ?? "";
-  const imageUrl = pictureFilename
-    ? getExercisePictureUrl(pictureFilename)
-    : null;
+  const imageUrl = getExercisePictureSource(exerciseData?.picture);
 
   if (!exerciseData) return null;
 

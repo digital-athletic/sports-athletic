@@ -1,14 +1,18 @@
 import { HeaderIconButton } from "@/common/HeaderIconButton";
+import { type ValueKind } from "@/features/training/hooks/useTrainingListRows";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { secondsToMMSS } from "@/utils/date";
 import { type FC, type PropsWithChildren } from "react";
 import { useTranslation } from "react-i18next";
+import { ExerciseThumbnail } from "./ExerciseThumbnail";
 
 export type PauseControl = { isPaused: boolean; onToggle: () => void };
 type Props = PropsWithChildren<{
   title: string;
   subtitle?: string;
+  /** The set step passes it; the rest step shows no picture slot. */
+  picture?: { url: string | null; valueKind: ValueKind | null };
   seconds: number;
   isTimed: boolean;
   timerTestID: string;
@@ -40,6 +44,7 @@ const PauseToggle: FC<PauseControl> = ({ isPaused, onToggle }) => {
 export const TrainingSheetHeading: FC<Props> = ({
   title,
   subtitle,
+  picture,
   seconds,
   isTimed,
   timerTestID,
@@ -47,6 +52,17 @@ export const TrainingSheetHeading: FC<Props> = ({
   children,
 }) => (
   <>
+    {picture && (
+      <Box alignSelf="center">
+        <ExerciseThumbnail
+          pictureUrl={picture.url}
+          valueKind={picture.valueKind}
+          size={120}
+          round
+          testID="training-list-sheet-picture"
+        />
+      </Box>
+    )}
     <Box>
       <Text variant="title" textAlign="center">
         {title}

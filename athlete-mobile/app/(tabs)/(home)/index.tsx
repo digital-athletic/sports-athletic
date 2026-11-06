@@ -37,11 +37,11 @@ export default function HomeScreen() {
   const clearTraining = useTrainingStore((s) => s.clearTraining);
 
   const username = personalData?.username || "Mr. Anderson";
-  const isShortLandscape = useWindowClass() === "shortLandscape";
-  // A short landscape window scrolls by design.
-  // Every other window switches to compact before it scrolls.
+  const windowClass = useWindowClass();
+  const isShortLandscape = windowClass === "shortLandscape";
+  // Landscape scrolls by design; portrait switches to compact before it scrolls.
   const fit = useFitToScreen();
-  const compact = fit.compact && !isShortLandscape;
+  const compact = fit.compact && windowClass === "portrait";
 
   useEffect(() => {
     Logger.logEvent("home_opened");

@@ -85,27 +85,23 @@ describe("HomeScreen: layout by window size", () => {
 });
 
 describe("HomeScreen: content taller than the screen", () => {
-  it("hides the shortcut subtitles on a tablet in landscape", async () => {
-    const size = { width: 1280, height: 800, scale: 2, fontScale: 2 };
-    Dimensions.set({ window: size, screen: size });
+  it.each([
+    { name: "a phone in portrait", width: 411, height: 800, subtitles: 0 },
+    { name: "a tablet in portrait", width: 800, height: 1280, subtitles: 0 },
+    { name: "a phone in landscape", width: 800, height: 411, subtitles: 1 },
+    { name: "a tablet in landscape", width: 1280, height: 800, subtitles: 1 },
+  ])(
+    "shows $subtitles focus subtitles on $name",
+    async ({ width, height, subtitles }) => {
+      const size = { width, height, scale: 2, fontScale: 2 };
+      Dimensions.set({ window: size, screen: size });
 
-    const { getByTestId, queryByText } = await render(<HomeScreen />);
-    const scrollView = getByTestId("home-scroll");
-    await fireEvent(scrollView, "layout", generateLayoutEvent(1280, 630));
-    await fireEvent(scrollView, "contentSizeChange", 1280, 637);
+      const { getByTestId, queryAllByText } = await render(<HomeScreen />);
+      const scrollView = getByTestId("home-scroll");
+      await fireEvent(scrollView, "layout", generateLayoutEvent(width, 300));
+      await fireEvent(scrollView, "contentSizeChange", width, 400);
 
-    expect(queryByText(FOCUS_SUBTITLE)).toBeNull();
-  });
-
-  it("keeps the shortcut subtitles on a phone in landscape", async () => {
-    const size = { width: 800, height: 411, scale: 2, fontScale: 2 };
-    Dimensions.set({ window: size, screen: size });
-
-    const { getByTestId, queryByText } = await render(<HomeScreen />);
-    const scrollView = getByTestId("home-scroll");
-    await fireEvent(scrollView, "layout", generateLayoutEvent(800, 250));
-    await fireEvent(scrollView, "contentSizeChange", 800, 500);
-
-    expect(queryByText(FOCUS_SUBTITLE)).toBeTruthy();
-  });
+      expect(queryAllByText(FOCUS_SUBTITLE)).toHaveLength(subtitles);
+    },
+  );
 });

@@ -1,5 +1,6 @@
 import { CenteredLoading } from "@/common/CenteredLoading";
 import { HeaderIconButton } from "@/common/HeaderIconButton";
+import { TallLandscapeColumns } from "@/common/TallLandscapeColumns";
 import { ExerciseInfoPanel } from "@/features/training/ExerciseInfoPanel";
 import {
   FOOTER_HEIGHT,
@@ -145,54 +146,56 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
             {/* Progress bar */}
             <TrainingProgressBar progress={progress} />
 
-            {/* Video/Exercise container */}
-            <Box backgroundColor="lightGrey2">
-              {!!video && (
-                <VideoPlayer
-                  title={name ?? ""}
-                  source={video}
-                  setIsFullScreen={setIsFullScreen}
-                  setIsVideoPlaying={setVideoIsPlaying}
-                  disabled={isAborted || !isScreenFocused}
+            <TallLandscapeColumns
+              first={
+                !!video && (
+                  <VideoPlayer
+                    title={name ?? ""}
+                    source={video}
+                    setIsFullScreen={setIsFullScreen}
+                    setIsVideoPlaying={setVideoIsPlaying}
+                    disabled={isAborted || !isScreenFocused}
+                    fillColumnInTallLandscape
+                  />
+                )
+              }
+            >
+              {/* Exercise information */}
+              <ExerciseInfoPanel
+                exercise={currentExercise}
+                exerciseData={currentExerciseData}
+                isPauseExercise={isPauseExercise}
+                isCardioExercise={isCardioExercise}
+                maxValues={workoutData.maxValues}
+                birthday={personalData.birthday}
+              />
+
+              {/* Training Navigation or Fallback Controls */}
+              {currentExercise && (
+                <TrainingNavigation
+                  exerciseId={exerciseId}
+                  exerciseName={name}
+                  nextExerciseId={nextExercise?.exerciseId}
+                  duration={
+                    // undefined shows the checkmark, a number starts a countdown.
+                    // The athlete tracks long endurance exercises elsewhere, so they
+                    // get no timer.
+                    isEnduranceExercise ? undefined : currentExercise.duration
+                  }
+                  next={advanceToNextExercise}
+                  feedback={handleFeedback}
+                  isCountdownActive={isCountdownActive}
+                  isFirstDurationInTraining={safeExerciseIndex === 0}
+                  isLastInSet={isLastInSet}
+                  isFeedbackSkill={isFeedbackSkill && !isEnduranceExercise}
+                  isCardioExercise={isCardioExercise}
+                  isLastCardioExercise={isCardioExercise && !hasNextExercise}
+                  isTest={isTestExercise}
+                  onSubmitReps={saveRepsForCurrentExercise}
+                  pauseToggled={handlePauseToggled}
                 />
               )}
-            </Box>
-
-            {/* Exercise information */}
-            <ExerciseInfoPanel
-              exercise={currentExercise}
-              exerciseData={currentExerciseData}
-              isPauseExercise={isPauseExercise}
-              isCardioExercise={isCardioExercise}
-              maxValues={workoutData.maxValues}
-              birthday={personalData.birthday}
-            />
-
-            {/* Training Navigation or Fallback Controls */}
-            {currentExercise && (
-              <TrainingNavigation
-                exerciseId={exerciseId}
-                exerciseName={name}
-                nextExerciseId={nextExercise?.exerciseId}
-                duration={
-                  // undefined shows the checkmark, a number starts a countdown.
-                  // The athlete tracks long endurance exercises elsewhere, so they
-                  // get no timer.
-                  isEnduranceExercise ? undefined : currentExercise.duration
-                }
-                next={advanceToNextExercise}
-                feedback={handleFeedback}
-                isCountdownActive={isCountdownActive}
-                isFirstDurationInTraining={safeExerciseIndex === 0}
-                isLastInSet={isLastInSet}
-                isFeedbackSkill={isFeedbackSkill && !isEnduranceExercise}
-                isCardioExercise={isCardioExercise}
-                isLastCardioExercise={isCardioExercise && !hasNextExercise}
-                isTest={isTestExercise}
-                onSubmitReps={saveRepsForCurrentExercise}
-                pauseToggled={handlePauseToggled}
-              />
-            )}
+            </TallLandscapeColumns>
 
             {/* Avoids content being hidden behind TrainingFooter */}
             <Box height={footerHeight} />

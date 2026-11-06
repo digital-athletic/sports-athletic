@@ -178,7 +178,7 @@ const SectionDetailsScreen: FC = () => {
         <Text variant="body" marginBottom="s">
           {valueString}
         </Text>
-        {description && <Text variant="body">{description}</Text>}
+        {!!description && <Text variant="body">{description}</Text>}
       </Box>
     );
   };

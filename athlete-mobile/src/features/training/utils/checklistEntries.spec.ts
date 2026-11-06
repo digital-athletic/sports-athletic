@@ -5,6 +5,7 @@ import {
   findFirstOpenSetIndex,
   findNextOpenSetIndex,
   groupChecklistEntries,
+  hasSavedProgress,
 } from "./checklistEntries";
 
 // One set of an exercise, e.g. generateSetEntry("squat", 2, 3) is
@@ -337,5 +338,43 @@ describe("findNextOpenSetIndex: forward playback", () => {
 
     expect(findNextOpenSetIndex(exerciseList, 1)).toBeNull();
     expect(exerciseList[0].completed).not.toBe(true);
+  });
+});
+
+describe("hasSavedProgress: a completed set saved progression", () => {
+  it("returns true for a completed set", () => {
+    const exerciseList = [
+      generateSetEntry("squat", 1, 2, { completed: true }),
+      generateSetEntry("squat", 2, 2),
+    ];
+
+    expect(hasSavedProgress(exerciseList)).toBe(true);
+  });
+
+  it("returns false for a skipped set", () => {
+    const exerciseList = [
+      generateSetEntry("squat", 1, 1, { completed: true, skipped: true }),
+    ];
+
+    expect(hasSavedProgress(exerciseList)).toBe(false);
+  });
+
+  it("returns false for a finished rest", () => {
+    const exerciseList = [
+      generateSetEntry("squat", 1, 1),
+      { ...generateRestEntry(), completed: true },
+    ];
+
+    expect(hasSavedProgress(exerciseList)).toBe(false);
+  });
+
+  it("returns false for a set the athlete has not finished", () => {
+    const exerciseList = [generateSetEntry("squat", 1, 1)];
+
+    expect(hasSavedProgress(exerciseList)).toBe(false);
+  });
+
+  it("returns false for an empty list", () => {
+    expect(hasSavedProgress([])).toBe(false);
   });
 });

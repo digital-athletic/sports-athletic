@@ -20,6 +20,7 @@ jest.mock("@/features/training/hooks/useTrainingScreenLifecycle", () => ({
 
 jest.mock("expo-router", () => ({
   useRouter: () => ({ push: jest.fn(), dismissTo: jest.fn() }),
+  useLocalSearchParams: () => ({}),
   usePreventRemove: jest.fn(),
 }));
 

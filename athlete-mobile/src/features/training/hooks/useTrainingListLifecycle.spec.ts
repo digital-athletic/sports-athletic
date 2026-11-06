@@ -1,4 +1,5 @@
 import { Alert } from "@/common/Alert";
+import { PAUSE_EXERCISE_ID } from "@/features/training/models/IdTypes";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import {
   BASELINE_TRAINING_STATE,
@@ -21,6 +22,7 @@ jest.mock("@/features/training/hooks/useTrainingScreenLifecycle", () => ({
 
 jest.mock("expo-router", () => ({
   useRouter: () => ({ dismissTo: mockDismissTo }),
+  useLocalSearchParams: () => ({ weekday: "2", place: "STUDIO" }),
   usePreventRemove: (prevent: boolean, callback: () => void) =>
     mockUsePreventRemove(prevent, callback),
 }));
@@ -39,15 +41,27 @@ const pressAlertButton = async (text: string) => {
   });
 };
 
-describe("useTrainingListLifecycle: discard", () => {
+// A started checklist session without exercises, e.g.
+// { activeTraining: { id: "workout-1", type: "PLAN" }, time.start: 1000, trainingViewMode: "LIST" }.
+const startListTraining = () => {
+  useTrainingStore.setState(BASELINE_TRAINING_STATE);
+  useTrainingStore.setState({
+    activeTraining: { id: "workout-1", type: "PLAN" },
+    time: { ...BASELINE_TRAINING_STATE.time, start: 1000 },
+    trainingViewMode: "LIST",
+  });
+};
+
+describe("useTrainingListLifecycle: back before a completed set", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    useTrainingStore.setState(BASELINE_TRAINING_STATE);
+    startListTraining();
     useTrainingStore.setState({
-      activeTraining: { id: "workout-1", type: "PLAN" },
-      time: { ...BASELINE_TRAINING_STATE.time, start: 1000 },
-      trainingViewMode: "LIST",
-      exerciseList: [createExercise({ exerciseId: "1", completed: true })],
+      exerciseList: [
+        createExercise({ exerciseId: "1", completed: true, skipped: true }),
+        createExercise({ exerciseId: PAUSE_EXERCISE_ID, completed: true }),
+        createExercise({ exerciseId: "2" }),
+      ],
     });
   });
 
@@ -72,7 +86,11 @@ describe("useTrainingListLifecycle: discard", () => {
       "training_aborted",
       expect.anything(),
     );
-    expect(mockDismissTo).toHaveBeenCalledWith("/training/training-overview");
+    expect(mockDismissTo).toHaveBeenCalledTimes(1);
+    expect(mockDismissTo).toHaveBeenCalledWith({
+      pathname: "/training/training-overview",
+      params: { weekday: "2", place: "STUDIO" },
+    });
     expect(mockUsePreventRemove).toHaveBeenLastCalledWith(
       false,
       expect.any(Function),
@@ -116,5 +134,72 @@ describe("useTrainingListLifecycle: discard", () => {
       false,
       expect.any(Function),
     );
+  });
+});
+
+describe("useTrainingListLifecycle: back after a completed set", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    startListTraining();
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1", completed: true }),
+        createExercise({ exerciseId: "2" }),
+      ],
+    });
+  });
+
+  it("asks to abort the training", async () => {
+    const { result } = await renderHook(() =>
+      useTrainingListLifecycle({ isEnding: false }),
+    );
+
+    await act(() => {
+      result.current.handleDiscard();
+    });
+
+    expect(alertSpy).toHaveBeenCalledWith(
+      "training.active.abort.question",
+      "training.active.abort.explanation",
+      expect.any(Array),
+    );
+  });
+
+  it("clears the training and returns to the training selection when the athlete confirms", async () => {
+    const { result } = await renderHook(() =>
+      useTrainingListLifecycle({ isEnding: false }),
+    );
+
+    await act(() => {
+      result.current.handleDiscard();
+    });
+    await pressAlertButton("common.yes");
+
+    const state = useTrainingStore.getState();
+    expect(state.exerciseList).toBeNull();
+    expect(state.activeTraining).toBeNull();
+    expect(logEventSpy).toHaveBeenCalledWith("training_discarded", {
+      type: "PLAN",
+    });
+    expect(mockDismissTo).toHaveBeenCalledTimes(1);
+    expect(mockDismissTo).toHaveBeenCalledWith("/training");
+    expect(mockUsePreventRemove).toHaveBeenLastCalledWith(
+      false,
+      expect.any(Function),
+    );
+  });
+
+  it("keeps the session when the athlete cancels", async () => {
+    const { result } = await renderHook(() =>
+      useTrainingListLifecycle({ isEnding: false }),
+    );
+
+    await act(() => {
+      result.current.handleDiscard();
+    });
+    await pressAlertButton("common.no");
+
+    expect(useTrainingStore.getState().exerciseList?.[0]?.completed).toBe(true);
+    expect(mockDismissTo).not.toHaveBeenCalled();
   });
 });

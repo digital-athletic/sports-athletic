@@ -350,10 +350,19 @@ export class TrainingListPage extends BasePage {
 
   /** Presses back and confirms the "Discard training?" dialog. */
   async discard() {
+    await this.confirmBack("Discard training?");
+  }
+
+  /** Presses back after a completed set and confirms the "Abort training?" dialog. */
+  async abort() {
+    await this.confirmBack("Abort training?");
+  }
+
+  private async confirmBack(question: string) {
     await this.page
       .getByTestId("training-list-back-button")
       .click({ timeout: 3000 });
-    await expect(this.page.getByText("Discard training?")).toBeVisible();
+    await expect(this.page.getByText(question)).toBeVisible();
     await this.page.getByText("Yes", { exact: true }).click();
   }
 

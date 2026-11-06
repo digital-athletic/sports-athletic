@@ -1,4 +1,5 @@
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
+import { isPlanEnded } from "@/features/training/utils/timeUtils";
 import {
   daysSinceLastTraining,
   getTrainingGapAction,
@@ -13,8 +14,8 @@ export interface PlanStartInput {
 }
 
 /**
- * A rerun with the same season phase keeps the plan start, unless the training
- * gap asks for a new plan.
+ * A rerun with the same season phase keeps the plan start, unless the plan has
+ * ended or the training gap asks for a new plan.
  */
 export const preservesPlanStart = ({
   trainingPlan,
@@ -22,7 +23,13 @@ export const preservesPlanStart = ({
   workoutTimestamps,
   today,
 }: PlanStartInput): boolean => {
-  if (!trainingPlan?.start || !sameSeasonPhase) return false;
+  if (
+    !trainingPlan?.start ||
+    !sameSeasonPhase ||
+    isPlanEnded(trainingPlan, today)
+  ) {
+    return false;
+  }
   const gapDays = daysSinceLastTraining(workoutTimestamps, trainingPlan, today);
   return getTrainingGapAction(gapDays) !== "PROMPT_NEW_PLAN";
 };

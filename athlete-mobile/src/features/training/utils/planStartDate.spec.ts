@@ -10,9 +10,38 @@ const plan = {
   sections: [],
 } as unknown as TrainingPlanType;
 
+// generatePlanWithWeeks(8) starts on 3 August and ends on 28 September, before today.
+const generatePlanWithWeeks = (numOfWeeks: number) =>
+  ({
+    start: "2026-08-03",
+    sections: [{ start: "2026-08-03", numOfWeeks }],
+  }) as unknown as TrainingPlanType;
+
 const workoutDaysAgo = (days: number) => [today.getTime() - days * DAY];
 
 describe("preservesPlanStart", () => {
+  it("is false for the same season phase after the plan has ended", () => {
+    expect(
+      preservesPlanStart({
+        trainingPlan: generatePlanWithWeeks(8),
+        sameSeasonPhase: true,
+        workoutTimestamps: workoutDaysAgo(3),
+        today,
+      }),
+    ).toBe(false);
+  });
+
+  it("is true for the same season phase while the plan still runs", () => {
+    expect(
+      preservesPlanStart({
+        trainingPlan: generatePlanWithWeeks(12),
+        sameSeasonPhase: true,
+        workoutTimestamps: workoutDaysAgo(3),
+        today,
+      }),
+    ).toBe(true);
+  });
+
   it("is false for a changed season phase, even on the day the old plan started", () => {
     expect(
       preservesPlanStart({
@@ -61,6 +90,16 @@ describe("planStartDateFor", () => {
     const start = planStartDateFor({
       trainingPlan: plan,
       sameSeasonPhase: false,
+      workoutTimestamps: workoutDaysAgo(3),
+      today,
+    });
+    expect(start).toEqual(today);
+  });
+
+  it("starts from today for the same season phase after the plan has ended", () => {
+    const start = planStartDateFor({
+      trainingPlan: generatePlanWithWeeks(8),
+      sameSeasonPhase: true,
       workoutTimestamps: workoutDaysAgo(3),
       today,
     });

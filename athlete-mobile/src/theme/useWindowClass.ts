@@ -2,9 +2,9 @@ import { useWindowDimensions } from "react-native";
 
 // Android counts a screen as a tablet from 600 dp on its shorter side.
 // In landscape the height is the shorter side.
-const TABLET_MIN_SHORTER_SIDE = 600;
+const TALL_WINDOW_MIN_HEIGHT = 600;
 
-type WindowClass = "portrait" | "shortLandscape" | "wideLandscape";
+type WindowClass = "portrait" | "shortLandscape" | "tallLandscape";
 
 export const useWindowClass = (): WindowClass => {
   const { width, height } = useWindowDimensions();
@@ -12,5 +12,5 @@ export const useWindowClass = (): WindowClass => {
   if (width <= height) {
     return "portrait";
   }
-  return height < TABLET_MIN_SHORTER_SIDE ? "shortLandscape" : "wideLandscape";
+  return height < TALL_WINDOW_MIN_HEIGHT ? "shortLandscape" : "tallLandscape";
 };

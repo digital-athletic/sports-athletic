@@ -20,13 +20,13 @@ describe("useWindowClass", () => {
       name: "tablet in landscape",
       width: 1280,
       height: 800,
-      expected: "wideLandscape",
+      expected: "tallLandscape",
     },
     {
       name: "window exactly at the limit",
       width: 960,
       height: 600,
-      expected: "wideLandscape",
+      expected: "tallLandscape",
     },
     {
       name: "tablet in portrait",
@@ -35,9 +35,15 @@ describe("useWindowClass", () => {
       expected: "portrait",
     },
     {
-      name: "narrow portrait window",
+      name: "short portrait window",
       width: 360,
       height: 400,
+      expected: "portrait",
+    },
+    {
+      name: "square window",
+      width: 800,
+      height: 800,
       expected: "portrait",
     },
   ])("classifies a $name as $expected", async ({ width, height, expected }) => {

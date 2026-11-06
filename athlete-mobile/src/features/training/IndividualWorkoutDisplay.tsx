@@ -1,5 +1,4 @@
 import { Ionicon } from "@/common/Ionicon";
-import { SharedConstants } from "@/constants/sharedConstants";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
@@ -8,11 +7,11 @@ import { Text } from "@/theme/Text";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { useTheme } from "@/theme/theme";
 import { useWindowClass } from "@/theme/useWindowClass";
-import { ISODateToDate } from "@/utils/date";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { TrainingPlanStatusWidget } from "./TrainingPlanStatusWidget";
 import { TrainingPlanType } from "./models/TrainingPlan";
+import { isPlanEnded } from "./utils/timeUtils";
 
 const PLAN_STATES = {
   NO_ANAMNESIS: 0,
@@ -29,32 +28,14 @@ interface IndividualWorkoutDisplayProps {
   compact?: boolean;
 }
 
-// Determine plan state
 const getPlanState = (
   anamnesisCompleted: boolean,
   trainingPlan: TrainingPlanType | null,
 ): number => {
-  let planState = PLAN_STATES.NO_ANAMNESIS;
-
-  // Check if anamnesis is completed and training plan exists
-  if (anamnesisCompleted && trainingPlan) {
-    planState = PLAN_STATES.RUNNING;
-
-    // Check if plan has ended
-    // ISODateToDate expects ISO 8601 format (YYYY-MM-DD) only
-    if (trainingPlan.sections && trainingPlan.sections.length > 0) {
-      const lastSection =
-        trainingPlan.sections[trainingPlan.sections.length - 1];
-      const sectionEnd =
-        ISODateToDate(lastSection.start).getTime() +
-        lastSection.numOfWeeks * SharedConstants.TIME_IN_MS.WEEK;
-      if (sectionEnd < Date.now()) {
-        planState = PLAN_STATES.ENDED;
-      }
-    }
-  }
-
-  return planState;
+  if (!anamnesisCompleted || !trainingPlan) return PLAN_STATES.NO_ANAMNESIS;
+  return isPlanEnded(trainingPlan, new Date())
+    ? PLAN_STATES.ENDED
+    : PLAN_STATES.RUNNING;
 };
 
 /**

@@ -13,19 +13,20 @@ export const getPassedWeeksSinceDate = (start: string): number => {
   );
 };
 
-type DeriveSeasonPhaseEndDateArgs = {
+type SectionDates = {
   /** Start date in ISO 8601 format (YYYY-MM-DD) */
   start: string;
   numOfWeeks: number;
 };
 
+const sectionEndMs = ({ start, numOfWeeks }: SectionDates): number =>
+  ISODateToDate(start).getTime() + SharedConstants.TIME_IN_MS.WEEK * numOfWeeks;
+
 /**
  * Derive end date for a season phase
  * @returns End date in ISO 8601 format (YYYY-MM-DD)
  */
-export const deriveSeasonPhaseEndDate = (
-  args: DeriveSeasonPhaseEndDateArgs | undefined,
-) => {
+export const deriveSeasonPhaseEndDate = (args: SectionDates | undefined) => {
   // Fallback to 12 weeks from now if no training plan exists
   if (!args) {
     const twelveWeeksInMs = SharedConstants.TIME_IN_MS.WEEK * 12;
@@ -33,8 +34,15 @@ export const deriveSeasonPhaseEndDate = (
     return formatDateToISO(new Date(futureEndDateMs));
   }
 
-  const sectionStartMs = ISODateToDate(args.start).getTime();
-  const sectionEndMs =
-    sectionStartMs + SharedConstants.TIME_IN_MS.WEEK * args.numOfWeeks;
-  return formatDateToISO(new Date(sectionEndMs));
+  return formatDateToISO(new Date(sectionEndMs(args)));
+};
+
+export const isPlanEnded = (
+  plan: { sections: SectionDates[] } | null | undefined,
+  today: Date,
+): boolean => {
+  const lastSection = plan?.sections.at(-1);
+  return (
+    lastSection !== undefined && sectionEndMs(lastSection) < today.getTime()
+  );
 };

@@ -1,4 +1,5 @@
 import { Hint } from "@/common/Hint";
+import { TallLandscapeColumns } from "@/common/TallLandscapeColumns";
 import { TrainingPlanStatusWidget } from "@/features/training/TrainingPlanStatusWidget";
 import type { TrainingSectionType } from "@/features/training/models/TrainingSection";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
@@ -177,13 +178,18 @@ const SectionDetailsScreen: FC = () => {
         <Text variant="body" marginBottom="s">
           {valueString}
         </Text>
-        {description && <Text variant="body">{description}</Text>}
+        {!!description && <Text variant="body">{description}</Text>}
       </Box>
     );
   };
 
-  const renderSectionDetails = () => {
-    if (!trainingSections[activeSection]) {
+  const activeTrainingSection = trainingSections[activeSection];
+  const activePrefix = activeTrainingSection
+    ? getSectionPrefix(activeTrainingSection.type)
+    : undefined;
+
+  const renderSectionVideo = () => {
+    if (!activePrefix) {
       return (
         <Box padding="m" justifyContent="center" alignItems="center">
           <Text variant="body">
@@ -193,20 +199,24 @@ const SectionDetailsScreen: FC = () => {
       );
     }
 
-    const prefix = getSectionPrefix(trainingSections[activeSection].type);
-
     return (
-      <Box flex={1}>
+      <>
         <Text variant="title" padding="m" fontSize={titleFontSize}>
-          {t(`training.sectionDetails.sectionTitles.${prefix}`)}
+          {t(`training.sectionDetails.sectionTitles.${activePrefix}`)}
         </Text>
-        {renderVideo(prefix)}
-        {renderTarget(prefix)}
-        {renderCaption(prefix)}
-        {renderSpeed(prefix)}
-      </Box>
+        {renderVideo(activePrefix)}
+      </>
     );
   };
+
+  const renderSectionTexts = () =>
+    activePrefix && (
+      <>
+        {renderTarget(activePrefix)}
+        {renderCaption(activePrefix)}
+        {renderSpeed(activePrefix)}
+      </>
+    );
 
   const handleBack = () => {
     router.back();
@@ -214,9 +224,10 @@ const SectionDetailsScreen: FC = () => {
 
   return (
     <>
-      {/* Locked to portrait: a full width 16:9 video would be taller than a
+      {/* Phones stay in portrait: a full width 16:9 video would be taller than a
           landscape screen. To watch in landscape, open the player's fullscreen
-          and turn the device. */}
+          and turn the device. Android 16 ignores this lock on tablets, so there
+          the video moves next to the text. */}
       <Stack.Screen
         options={{
           title: t("training.sectionDetails.title"),
@@ -229,19 +240,30 @@ const SectionDetailsScreen: FC = () => {
         backgroundColor="white"
         contentInsetAdjustmentBehavior="automatic"
       >
-        <Box flex={1} minHeight={140} paddingTop="m" paddingHorizontal="m">
-          <TrainingPlanStatusWidget
-            trainingSections={trainingSections}
-            goToSectionDetails={setActiveSection}
-            activeSection={activeSection}
-          />
-        </Box>
-
-        {renderSectionDetails()}
-
-        <Box padding="m" paddingBottom="xl">
-          <Button onPress={handleBack}>{t("common.back")}</Button>
-        </Box>
+        <TallLandscapeColumns
+          first={
+            <>
+              <Box
+                flex={1}
+                minHeight={140}
+                paddingTop="m"
+                paddingHorizontal="m"
+              >
+                <TrainingPlanStatusWidget
+                  trainingSections={trainingSections}
+                  goToSectionDetails={setActiveSection}
+                  activeSection={activeSection}
+                />
+              </Box>
+              {renderSectionVideo()}
+            </>
+          }
+        >
+          {renderSectionTexts()}
+          <Box padding="m" paddingBottom="xl">
+            <Button onPress={handleBack}>{t("common.back")}</Button>
+          </Box>
+        </TallLandscapeColumns>
       </ScrollBox>
     </>
   );

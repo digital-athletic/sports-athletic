@@ -1,3 +1,4 @@
+import { TallLandscapeColumns } from "@/common/TallLandscapeColumns";
 import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { getExerciseById } from "@/data/exerciseRegistry";
@@ -46,19 +47,28 @@ export default function ExerciseInformationScreen() {
       />
 
       <Box flex={1} style={{ paddingBottom: insets.bottom }}>
-        {exercise && video && (
-          <VideoPlayer title={displayName} source={video} />
-        )}
-
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {exercise && (
-            <>
-              <EquipmentList tags={exercise.tags} />
-              <DescriptionsList description={exercise.description} />
-              <MusclesList tags={exercise.tags} />
-            </>
-          )}
-        </ScrollView>
+        <TallLandscapeColumns
+          fillHeight
+          first={
+            !!video && (
+              <VideoPlayer
+                title={displayName}
+                source={video}
+                fillColumnInTallLandscape
+              />
+            )
+          }
+        >
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {exercise && (
+              <>
+                <EquipmentList tags={exercise.tags} />
+                <DescriptionsList description={exercise.description} />
+                <MusclesList tags={exercise.tags} />
+              </>
+            )}
+          </ScrollView>
+        </TallLandscapeColumns>
       </Box>
     </>
   );

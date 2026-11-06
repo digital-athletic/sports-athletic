@@ -1,6 +1,7 @@
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
+import { useWindowClass } from "@/theme/useWindowClass";
 import { VideoPlayer } from "@/video/VideoPlayer";
 import { Stack } from "expo-router";
 import { type FC, useEffect, useMemo, useState } from "react";
@@ -43,12 +44,15 @@ const useTutorials = () => {
 
 const TutorialListItem: FC<{
   item: MappedTutorial;
-}> = ({ item }) => {
+  width: "50%" | "100%";
+}> = ({ item, width }) => {
   const { colors } = useTheme();
   return (
     <Box
+      testID="tutorial-item"
       backgroundColor="white"
       alignSelf="stretch"
+      width={width}
       borderTopWidth={1}
       borderBottomWidth={1}
       borderColor="lightGrey3"
@@ -68,12 +72,16 @@ const TutorialListItem: FC<{
 const TutorialsScreen: FC = () => {
   const { t } = useTranslation();
   const { tutorials, loading } = useTutorials();
+  const isTallLandscape = useWindowClass() === "tallLandscape";
+  const numColumns = isTallLandscape ? 2 : 1;
+  const itemWidth = isTallLandscape ? "50%" : "100%";
 
   return (
     <>
-      {/* Locked to portrait: a full width 16:9 video would be taller than a
+      {/* Phones stay in portrait: a full width 16:9 video would be taller than a
           landscape screen. To watch in landscape, open the player's fullscreen
-          and turn the device. */}
+          and turn the device. Android 16 ignores this lock on tablets, so there
+          the videos show in two columns. */}
       <Stack.Screen
         options={{
           title: t("more.technicalVideos"),
@@ -82,9 +90,15 @@ const TutorialsScreen: FC = () => {
       />
       <Box flex={1} backgroundColor="lightGrey2">
         <FlatList
+          // FlatList cannot change numColumns while it is mounted. The new key
+          // rebuilds the list, so a playing video stops when the device rotates.
+          key={numColumns}
+          numColumns={numColumns}
           data={tutorials}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <TutorialListItem item={item} />}
+          renderItem={({ item }) => (
+            <TutorialListItem item={item} width={itemWidth} />
+          )}
           ListHeaderComponent={
             loading ? (
               <Box padding="m" alignItems="center">

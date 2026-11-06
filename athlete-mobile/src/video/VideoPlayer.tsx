@@ -5,6 +5,7 @@ import {
 } from "@/services/StorageService";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
+import { useWindowClass } from "@/theme/useWindowClass";
 import { useEvent } from "expo";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { FC, useEffect, useState } from "react";
@@ -22,6 +23,26 @@ const loadParamsChanged = (prev: LoadParams, next: LoadParams) =>
   prev.isTutorial !== next.isTutorial ||
   prev.retryCount !== next.retryCount;
 
+const FIXED_FRAME = { aspectRatio: 16 / 9 } as const;
+
+// The video scales to fit inside this frame. A 9:16 video uses the whole column
+// height. A 16:9 video sits in the middle with dark bars above and below.
+const COLUMN_FRAME = {
+  position: "absolute",
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0,
+  backgroundColor: "black",
+} as const;
+
+const useVideoFrame = (fillColumnInTallLandscape: boolean | undefined) => {
+  const isTallLandscape = useWindowClass() === "tallLandscape";
+  return fillColumnInTallLandscape && isTallLandscape
+    ? COLUMN_FRAME
+    : FIXED_FRAME;
+};
+
 type Props = {
   title?: string;
   source: string;
@@ -32,6 +53,8 @@ type Props = {
   /** Use tutorial_videos bucket instead of exercise_videos bucket */
   isTutorial?: boolean;
   disabled?: boolean;
+  /** In tall landscape, fill the column of TallLandscapeColumns instead of a 16:9 box */
+  fillColumnInTallLandscape?: boolean;
 };
 
 export const VideoPlayer: FC<Props> = ({
@@ -43,8 +66,10 @@ export const VideoPlayer: FC<Props> = ({
   controlsDisabled,
   isTutorial,
   disabled = false,
+  fillColumnInTallLandscape,
 }) => {
   const { t } = useTranslation();
+  const frame = useVideoFrame(fillColumnInTallLandscape);
   const [videoUrl, setVideoUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -110,7 +135,8 @@ export const VideoPlayer: FC<Props> = ({
   if (error) {
     return (
       <Box
-        aspectRatio={16 / 9}
+        testID="video-frame"
+        {...frame}
         backgroundColor="darkGrey3"
         justifyContent="center"
         alignItems="center"
@@ -145,7 +171,8 @@ export const VideoPlayer: FC<Props> = ({
   if (loading && !videoUrl) {
     return (
       <Box
-        aspectRatio={16 / 9}
+        testID="video-frame"
+        {...frame}
         justifyContent="center"
         alignItems="center"
         backgroundColor="darkGrey3"
@@ -156,7 +183,7 @@ export const VideoPlayer: FC<Props> = ({
   }
 
   return (
-    <Box aspectRatio={16 / 9}>
+    <Box testID="video-frame" {...frame}>
       <VideoView
         fullscreenOptions={{ enable: !fullScreenDisabled }}
         onFullscreenEnter={() => {
@@ -190,5 +217,9 @@ export const VideoPlayer: FC<Props> = ({
 const styles = StyleSheet.create({
   videoView: {
     flex: 1,
+    // A browser otherwise sizes the video element by the video format. The
+    // element then grows out of its frame and covers the text next to it.
+    width: "100%",
+    minHeight: 0,
   },
 });

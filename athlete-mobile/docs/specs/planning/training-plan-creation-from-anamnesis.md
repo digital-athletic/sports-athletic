@@ -111,7 +111,7 @@ A plan has ended when its last section ended before today. The home screen then 
 | New plan after the plan ended | Next Monday from today | Overwritten |
 | Equipment change at a location used by an active training day | Preserved | Overwritten |
 
-After a plan has ended, the anamnesis asks for the season phase again, also when the athlete only edits the profile. The season phase step suggests an end date 12 weeks from today, as it does for a first plan.
+After a plan has ended, an anamnesis re-run asks for the season phase again and suggests an end date 12 weeks from today, as for a first plan.
 
 Regeneration with a preserved start date keeps unaffected days. The app runs the full pipeline, then compares each training day of each section with the old plan:
 
@@ -127,6 +127,8 @@ The active section on any given day is computed from weeks elapsed since the pla
 | Up to 7 days | None |
 | 8 to 21 days | Shift section starts forward by the missed weeks |
 | More than 21 days | Ask: "You have not trained for more than three weeks. Do you want to create a new training plan?" Accepting opens plan creation, declining shifts section starts forward by the missed weeks. |
+
+An athlete who has not completed any workout yet has no training gap.
 
 The shift lets the athlete resume where they left off instead of skipping ahead in the periodization. The app never deletes a plan for inactivity. Plans are stored on the device only, and a replaced plan is overwritten without an archive.
 

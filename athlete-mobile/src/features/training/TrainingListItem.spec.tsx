@@ -153,16 +153,74 @@ describe("TrainingListItem: exercise picture", () => {
     ).toBeNull();
   });
 
-  it("shows no placeholder when the exercise has a picture", async () => {
-    const { queryByTestId } = await render(
+  it("draws the picture over the placeholder, which shows while the picture loads", async () => {
+    const { getByTestId } = await render(
       <TrainingListItem {...generateItemProps({ pictureUrl: PICTURE_URL })} />,
     );
 
+    const placeholder = getByTestId("training-list-row-0-picture-placeholder", {
+      includeHiddenElements: true,
+    });
+    const picture = getByTestId("training-list-row-0-picture", {
+      includeHiddenElements: true,
+    });
+    expect(picture.parent).toBe(placeholder);
+  });
+
+  it("shows the placeholder with the value icon when the picture fails to load", async () => {
+    const { getByTestId, queryByTestId, container } = await render(
+      <TrainingListItem
+        {...generateItemProps({ pictureUrl: PICTURE_URL, valueKind: "time" })}
+      />,
+    );
+
+    await fireEvent(
+      getByTestId("training-list-row-0-picture", {
+        includeHiddenElements: true,
+      }),
+      "error",
+    );
+
     expect(
-      queryByTestId("training-list-row-0-picture-placeholder", {
+      queryByTestId("training-list-row-0-picture", {
         includeHiddenElements: true,
       }),
     ).toBeNull();
+    expect(
+      getByTestId("training-list-row-0-picture-placeholder", {
+        includeHiddenElements: true,
+      }),
+    ).toBeTruthy();
+    expect(
+      container
+        .queryAll((node) => node.type === "Ionicons")
+        .map((icon) => icon.props.name),
+    ).toContain("timer-outline");
+  });
+
+  it("tries a new picture URL again after a failed one", async () => {
+    const otherPictureUrl = "https://pictures.test/exercise_pictures/lunge.jpg";
+    const { getByTestId, rerender } = await render(
+      <TrainingListItem {...generateItemProps({ pictureUrl: PICTURE_URL })} />,
+    );
+    await fireEvent(
+      getByTestId("training-list-row-0-picture", {
+        includeHiddenElements: true,
+      }),
+      "error",
+    );
+
+    await rerender(
+      <TrainingListItem
+        {...generateItemProps({ pictureUrl: otherPictureUrl })}
+      />,
+    );
+
+    expect(
+      getByTestId("training-list-row-0-picture", {
+        includeHiddenElements: true,
+      }).props.source,
+    ).toEqual({ uri: otherPictureUrl });
   });
 
   it("hides the picture from screen readers", async () => {
@@ -226,23 +284,23 @@ describe("TrainingListItem: exercise picture", () => {
   });
 
   it.each([
-    ["a picture", PICTURE_URL, "training-list-row-0-picture"],
-    ["a placeholder", null, "training-list-row-0-picture-placeholder"],
+    ["a picture", PICTURE_URL],
+    ["no picture", null],
   ])(
-    "renders %s before the next arrow of a next row",
-    async (_label, pictureUrl, pictureTestId) => {
+    "renders the picture slot before the next arrow of a next row with %s",
+    async (_label, pictureUrl) => {
       const { getByTestId } = await render(
         <TrainingListItem
           {...generateItemProps({ pictureUrl, isNext: true })}
         />,
       );
 
-      const picture = getByTestId(pictureTestId, {
+      const slot = getByTestId("training-list-row-0-picture-placeholder", {
         includeHiddenElements: true,
       });
       const arrow = getByTestId("training-list-row-0-next-arrow");
       const rowChildren = arrow.parent?.children ?? [];
-      const pictureAt = rowChildren.indexOf(picture.parent!);
+      const pictureAt = rowChildren.indexOf(slot.parent!);
       const arrowAt = rowChildren.indexOf(arrow);
       expect(pictureAt).toBeGreaterThanOrEqual(0);
       expect(arrowAt).toBeGreaterThan(pictureAt);
@@ -256,10 +314,10 @@ describe("TrainingListItem: exercise picture", () => {
       />,
     );
 
-    const picture = getByTestId("training-list-row-0-picture", {
+    const slot = getByTestId("training-list-row-0-picture-placeholder", {
       includeHiddenElements: true,
     });
-    expect(StyleSheet.flatten(picture.parent?.props.style).opacity).toBe(0.5);
+    expect(StyleSheet.flatten(slot.parent?.props.style).opacity).toBe(0.5);
   });
 
   it("keeps the next arrow at full opacity on a completed next row", async () => {
@@ -313,14 +371,14 @@ describe("TrainingListItem: placeholder icon", () => {
     expect(findValueIconNames(container)).toEqual([]);
   });
 
-  it("shows no value icon when the exercise has a picture", async () => {
+  it("keeps the value icon behind a picture that is still loading", async () => {
     const { container } = await render(
       <TrainingListItem
         {...generateItemProps({ pictureUrl: PICTURE_URL, valueKind: "weight" })}
       />,
     );
 
-    expect(findValueIconNames(container)).toEqual([]);
+    expect(findValueIconNames(container)).toEqual(["barbell-outline"]);
   });
 });
 

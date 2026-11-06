@@ -11,7 +11,7 @@ export type PauseControl = { isPaused: boolean; onToggle: () => void };
 type Props = PropsWithChildren<{
   title: string;
   subtitle?: string;
-  /** The set step passes it; the rest step shows no picture slot. */
+  /** Left out on the rest step and on screens too short for the picture. */
   picture?: { url: string | null; valueKind: ValueKind | null };
   seconds: number;
   isTimed: boolean;

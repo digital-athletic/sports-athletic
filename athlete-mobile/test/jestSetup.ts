@@ -11,6 +11,7 @@ process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
 delete process.env.EXPO_PUBLIC_SERVER_SYNC_ENABLED;
 delete process.env.EXPO_PUBLIC_REVIEW_EMAIL;
 delete process.env.EXPO_PUBLIC_REVIEW_OTP;
+delete process.env.EXPO_PUBLIC_PLAN_GENERATOR_ENABLED;
 
 // Mock AsyncStorage for testing
 jest.mock("@react-native-async-storage/async-storage", () =>

@@ -3,8 +3,8 @@ import { Loading } from "@/common/Loading";
 import { SpeechBubble } from "@/common/SpeechBubble";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
-import PlanGenerator from "@/features/training/generators/PlanGenerator";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
+import { generatePlan } from "@/features/training/planGeneratorRouter";
 import { keepUnchangedTrainingDays } from "@/features/training/utils/planRegeneration";
 import {
   type PlanStartInput,
@@ -148,7 +148,7 @@ export default function Generating() {
       };
 
       // Generate training plan
-      const plan = PlanGenerator.generatePlan(
+      const plan = generatePlan({
         user,
         exercises,
         skillTrees,
@@ -156,7 +156,7 @@ export default function Generating() {
         trainingDays,
         places,
         startDate,
-      );
+      });
 
       savePlan(plan, startInput);
 

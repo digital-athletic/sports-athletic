@@ -1,6 +1,6 @@
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { UserType } from "@/schemas/user.schema";
-import { setUpAiwlGeneratorFlag } from "@test/factories/aiwlGeneratorFlag";
+import { setUpAiwlGeneratorFlag } from "@test/factories/generatorFlags";
 import {
   buildPlanUser,
   generatePlanWorkoutForWeekday,

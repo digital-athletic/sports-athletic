@@ -10,7 +10,7 @@ import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { act, renderHook } from "@testing-library/react-native";
-import { setUpAiwlGeneratorFlag } from "@test/factories/aiwlGeneratorFlag";
+import { setUpAiwlGeneratorFlag } from "@test/factories/generatorFlags";
 import {
   generateAdultMalePersonalData,
   generateAdvancedWorkoutData,

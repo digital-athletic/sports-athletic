@@ -37,7 +37,7 @@ import {
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import type { FeedbackScript } from "./feedbackScripts";
-import { personaToUser, type LegacyPersona } from "./personaAdapter";
+import { personaToUser, type Persona } from "./personaAdapter";
 
 const SIMULATED_BRANCH_ID = "progression-simulator-branch";
 
@@ -150,7 +150,7 @@ function toSetSnapshots(
  * data-only extension (add a branch, not a harness rewrite).
  */
 export function simulateProgression(
-  persona: LegacyPersona,
+  persona: Persona,
   exercise: ExerciseType,
   focus: SkillCode,
   opts: SimulateOptions,

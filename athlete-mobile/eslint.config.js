@@ -2,7 +2,27 @@
 const { defineConfig } = require("eslint/config");
 const expoConfig = require("eslint-config-expo/flat");
 const eslintConfigPrettier = require("eslint-config-prettier/flat");
-const commentSystem = require("./eslint-rules/commentSystem");
+const jsdoc = require("eslint-plugin-jsdoc");
+
+// The declarations whose leading comment must be a doc comment. Only top-level
+// declarations count, so a comment above a variable in a function body stays a
+// line comment.
+const TOP_LEVEL_DECLARATIONS = [
+  "FunctionDeclaration",
+  "VariableDeclaration",
+  "ClassDeclaration",
+  "TSDeclareFunction",
+  "TSTypeAliasDeclaration",
+  "TSInterfaceDeclaration",
+  "TSEnumDeclaration",
+];
+const DOC_COMMENT_CONTEXTS = [
+  ...TOP_LEVEL_DECLARATIONS.map((declaration) => `Program > ${declaration}`),
+  "Program > ExportNamedDeclaration",
+  "Program > ExportDefaultDeclaration",
+  "TSPropertySignature",
+  "TSMethodSignature",
+];
 
 // Old generator code that the new workout generator must not import. The
 // regexes anchor on the path segment, so they match the alias and every
@@ -208,14 +228,26 @@ module.exports = defineConfig([
     restrictModuleLoads(PLAN_GENERATOR_PATH, PLAN_GENERATOR_MESSAGE),
   ),
   createNewGeneratorBlock("planGenerator", [], []),
-  // The comment convention of the Google TypeScript style guide, checked in the
-  // plan generator only: doc comments (/** */) document declarations and type
-  // members, line comments (//) explain function bodies, and plain block
-  // comments appear only in JSX. See eslint-rules/commentSystem.js.
+  // Comment convention, checked in the plan generator only: a doc comment
+  // (/** */) documents a top-level declaration or a type member, and a line
+  // comment (//) explains the implementation. Lint never demands a comment.
   {
     files: ["src/features/training/planGenerator/**"],
-    plugins: { local: { rules: { "comment-system": commentSystem } } },
-    rules: { "local/comment-system": "error" },
+    plugins: { jsdoc },
+    settings: { jsdoc: { mode: "typescript" } },
+    rules: {
+      "jsdoc/convert-to-jsdoc-comments": [
+        "error",
+        {
+          contexts: DOC_COMMENT_CONTEXTS,
+          contextsBeforeAndAfter: [],
+        },
+      ],
+      "jsdoc/no-bad-blocks": "error",
+      "jsdoc/no-types": "error",
+      "jsdoc/check-tag-names": ["error", { typed: true }],
+      "jsdoc/check-param-names": "error",
+    },
   },
   // The old generator stays as it is until its deletion and never depends on
   // new code. This block adds import rules only.

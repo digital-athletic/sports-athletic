@@ -19,7 +19,7 @@ module.exports = {
     "node_modules/(?!(?:.pnpm/)?((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg|zustand|immer))",
   ],
   rootDir: ".",
-  roots: ["<rootDir>/src", "<rootDir>/app", "<rootDir>/eslint-rules"],
+  roots: ["<rootDir>/src", "<rootDir>/app"],
   setupFiles: ["<rootDir>/test/jestSetup.ts"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",

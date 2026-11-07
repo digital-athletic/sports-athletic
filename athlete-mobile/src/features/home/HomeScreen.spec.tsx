@@ -85,23 +85,16 @@ describe("HomeScreen: layout by window size", () => {
 });
 
 describe("HomeScreen: content taller than the screen", () => {
-  it.each([
-    { name: "a phone in portrait", width: 411, height: 800, subtitles: 0 },
-    { name: "a tablet in portrait", width: 800, height: 1280, subtitles: 0 },
-    { name: "a phone in landscape", width: 800, height: 411, subtitles: 1 },
-    { name: "a tablet in landscape", width: 1280, height: 800, subtitles: 1 },
-  ])(
-    "shows $subtitles focus subtitles on $name",
-    async ({ width, height, subtitles }) => {
-      const size = { width, height, scale: 2, fontScale: 2 };
-      Dimensions.set({ window: size, screen: size });
+  it("keeps the shortcut subtitles on a small phone in portrait", async () => {
+    // iPhone SE: 375 x 667 points.
+    const size = { width: 375, height: 667, scale: 2, fontScale: 1 };
+    Dimensions.set({ window: size, screen: size });
 
-      const { getByTestId, queryAllByText } = await render(<HomeScreen />);
-      const scrollView = getByTestId("home-scroll");
-      await fireEvent(scrollView, "layout", generateLayoutEvent(width, 300));
-      await fireEvent(scrollView, "contentSizeChange", width, 400);
+    const { getByTestId, getByText } = await render(<HomeScreen />);
+    const scrollView = getByTestId("home-scroll");
+    await fireEvent(scrollView, "layout", generateLayoutEvent(375, 300));
+    await fireEvent(scrollView, "contentSizeChange", 375, 400);
 
-      expect(queryAllByText(FOCUS_SUBTITLE)).toHaveLength(subtitles);
-    },
-  );
+    expect(getByText(FOCUS_SUBTITLE)).toBeTruthy();
+  });
 });

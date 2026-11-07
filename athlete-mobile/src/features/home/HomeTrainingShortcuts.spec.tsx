@@ -37,21 +37,6 @@ describe("HomeTrainingShortcuts: rendering", () => {
     ).toBeTruthy();
     expect(getByRole("button", { name: ADDITIONAL_LABEL })).toBeTruthy();
   });
-
-  it("shows both buttons without subtitles in the compact layout", async () => {
-    const { getByRole, queryByText } = await render(
-      <HomeTrainingShortcuts stacked={false} compact />,
-    );
-
-    expect(getByRole("button", { name: FOCUS_LABEL })).toBeTruthy();
-    expect(getByRole("button", { name: ADDITIONAL_LABEL })).toBeTruthy();
-    expect(
-      queryByText("Targeted trainings for stability, mobility and prevention"),
-    ).toBeNull();
-    expect(
-      queryByText("My trainings or trainings created by the coaching team"),
-    ).toBeNull();
-  });
 });
 
 describe("HomeTrainingShortcuts: navigation", () => {

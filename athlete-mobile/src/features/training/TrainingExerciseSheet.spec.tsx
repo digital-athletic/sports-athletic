@@ -187,14 +187,14 @@ describe("TrainingExerciseSheet: exercise picture", () => {
       />,
     );
 
-    const picture = getByTestId("training-list-sheet-picture", {
+    const slot = getByTestId("training-list-sheet-picture-placeholder", {
       includeHiddenElements: true,
     });
     const title = getByText("Squat");
     const siblings = title.parent?.parent?.children ?? [];
-    expect(siblings.indexOf(picture.parent!)).toBeGreaterThanOrEqual(0);
+    expect(siblings.indexOf(slot.parent!)).toBeGreaterThanOrEqual(0);
     expect(siblings.indexOf(title.parent!)).toBeGreaterThan(
-      siblings.indexOf(picture.parent!),
+      siblings.indexOf(slot.parent!),
     );
   });
 

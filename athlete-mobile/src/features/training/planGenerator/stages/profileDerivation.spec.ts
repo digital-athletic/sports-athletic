@@ -24,6 +24,21 @@ describe("deriveAthleteProfile", () => {
       },
     );
 
+    it.each([
+      ["2030-02-28", "ADOLESCENT"],
+      ["2030-03-01", "ADULT"],
+    ])(
+      "derives the age group on %s from the birthday 2012-02-29 as %s",
+      (referenceDate, ageGroup) => {
+        const input = generatePlanGenerationInput({
+          athlete: generatePlanAthlete({ birthday: "2012-02-29" }),
+          referenceDate,
+        });
+
+        expect(deriveAthleteProfile(input).ageGroup).toBe(ageGroup);
+      },
+    );
+
     it("counts a missing birthday as ADULT", () => {
       const input = generatePlanGenerationInput({
         athlete: generatePlanAthlete({ birthday: "" }),
@@ -120,6 +135,17 @@ describe("deriveAthleteProfile", () => {
         type: "COMPETITION",
         weekCount: 17,
       });
+    });
+
+    // The phase spans the switch to daylight saving time in Europe/Berlin,
+    // which shortens the local span by one hour
+    it("counts the full weeks of a phase across a daylight saving change", () => {
+      const input = generatePlanGenerationInput({
+        planStartDate: "2027-03-01",
+        seasonPhase: { type: "PREPARATORY", endDate: "2027-06-28" },
+      });
+
+      expect(deriveAthleteProfile(input).seasonPhase.weekCount).toBe(17);
     });
 
     it("counts at least one week when the phase ends before the plan start", () => {

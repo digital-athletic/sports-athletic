@@ -125,7 +125,9 @@ export const TrainingListItem: FC<TrainingListItemProps> = ({
           </Box>
           {isNext && <NextArrow testId={testId} />}
           <Box flex={1} opacity={dimOpacity}>
-            <Text variant="body">{displayName}</Text>
+            <Text variant="body" testID={`${testId}-name`}>
+              {displayName}
+            </Text>
             <SetSummary sets={sets} testId={testId} />
           </Box>
         </TouchableBox>

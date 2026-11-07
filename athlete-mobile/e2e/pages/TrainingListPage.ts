@@ -182,13 +182,13 @@ export class TrainingListPage extends BasePage {
     }
 
     const setIndex = rowIndices[position];
-    const nextRowText = await this.page
-      .getByTestId(`training-list-row-${rowIndices[position + 1]}`)
+    const nextExerciseName = await this.page
+      .getByTestId(`training-list-row-${rowIndices[position + 1]}-name`)
       .innerText();
     return {
       rowId: `training-list-row-${setIndex}`,
       restIndex: setIndex + 1,
-      nextExerciseName: nextRowText.split("\n")[0].trim(),
+      nextExerciseName: nextExerciseName.trim(),
     };
   }
 

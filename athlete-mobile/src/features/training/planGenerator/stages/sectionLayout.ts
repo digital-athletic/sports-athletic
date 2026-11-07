@@ -64,33 +64,42 @@ const readTemplateSections = (
   template[String(weeks)] ?? throwMissingTemplate(key, weeks);
 
 /**
- * Appends repeat sections in a cycle until the extra weeks are used up. The
- * last appended section takes only the weeks left. A section with the type and
- * cardio type of the one before it extends that section instead.
+ * Cuts the repeat list in a cycle until the extra weeks are used up. The last
+ * cut section takes only the weeks left.
  */
+const cutRepeatSections = (
+  repeat: readonly SectionEntry[],
+  extraWeeks: number,
+): readonly SectionEntry[] => {
+  if (extraWeeks <= 0 || repeat.length === 0) return [];
+  const [next, ...rest] = repeat;
+  const weeks = Math.min(next.numOfWeeks, extraWeeks);
+  return [
+    { ...next, numOfWeeks: weeks },
+    ...cutRepeatSections([...rest, next], extraWeeks - weeks),
+  ];
+};
+
+/** A section with the type and cardio type of the one before it extends that section. */
+const appendSection = (
+  sections: readonly SectionEntry[],
+  next: SectionEntry,
+): readonly SectionEntry[] => {
+  const previous = sections.at(-1);
+  return previous?.type === next.type && previous.cardioType === next.cardioType
+    ? [
+        ...sections.slice(0, -1),
+        { ...previous, numOfWeeks: previous.numOfWeeks + next.numOfWeeks },
+      ]
+    : [...sections, next];
+};
+
 const appendRepeatSections = (
   sections: readonly SectionEntry[],
   repeat: readonly SectionEntry[],
   extraWeeks: number,
-): SectionEntry[] => {
-  const result = sections.map((section) => ({ ...section }));
-  let remainingWeeks = extraWeeks;
-  for (let index = 0; remainingWeeks > 0 && repeat.length > 0; index++) {
-    const next = repeat[index % repeat.length];
-    const weeks = Math.min(next.numOfWeeks, remainingWeeks);
-    remainingWeeks -= weeks;
-    const previous = result.at(-1);
-    if (
-      previous?.type === next.type &&
-      previous.cardioType === next.cardioType
-    ) {
-      previous.numOfWeeks += weeks;
-    } else {
-      result.push({ ...next, numOfWeeks: weeks });
-    }
-  }
-  return result;
-};
+): readonly SectionEntry[] =>
+  cutRepeatSections(repeat, extraWeeks).reduce(appendSection, sections);
 
 const pickTemplateSections = (
   found: FoundTemplate,

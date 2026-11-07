@@ -12,6 +12,7 @@ import { getTagValues } from "@/utils/tagUtils";
 import type { PlanGenerationInput } from "../planGenerationInput/planGenerationInput";
 import {
   filterSlotCandidates,
+  filterWeightType,
   isOneSided,
   type SlotCandidate,
   type WeightType,
@@ -111,40 +112,75 @@ const readDirectionSequence = (
 
 type Quotas = Readonly<Record<WeightType, number>>;
 
-const createQuotas = (
-  share: number | null,
-  slotCount: number,
-): Quotas | null => {
-  if (share === null) return null;
+const createQuotas = (share: number, slotCount: number): Quotas => {
   const weighted = Math.ceil(share * slotCount);
   return { WEIGHTED: weighted, BODYWEIGHT: slotCount - weighted };
 };
 
 /** A slot draws its type while both quotas are open, then takes the open one. */
-const drawWeightType = (
-  quotas: Quotas | null,
-  random: () => number,
-): WeightType | null => {
-  if (quotas === null) return null;
+const drawWeightType = (quotas: Quotas, random: () => number): WeightType => {
   if (quotas.WEIGHTED > 0 && quotas.BODYWEIGHT > 0) {
     return random() < WEIGHTED_DRAW_SHARE ? "WEIGHTED" : "BODYWEIGHT";
   }
   return quotas.WEIGHTED > 0 ? "WEIGHTED" : "BODYWEIGHT";
 };
 
-const takeQuota = (
-  quotas: Quotas | null,
-  weightType: WeightType | null,
-): Quotas | null =>
-  quotas && weightType
-    ? { ...quotas, [weightType]: quotas[weightType] - 1 }
-    : quotas;
+const takeQuota = (quotas: Quotas, weightType: WeightType): Quotas => ({
+  ...quotas,
+  [weightType]: quotas[weightType] - 1,
+});
+
+/** The survivors of one slot after the share, and the share left for the next slot. */
+interface SharedSlot {
+  readonly survivors: readonly SlotCandidate[];
+  readonly share: SkillShare;
+}
+
+/**
+ * The weighted share of a skill over its slots. A slot draws its type before
+ * the involvement and narrows its survivors after the cascading filters, so
+ * the draws keep their order.
+ */
+interface SkillShare {
+  readonly drawSlot: (
+    random: () => number,
+  ) => (survivors: readonly SlotCandidate[]) => SharedSlot;
+}
+
+/** A skill without a weighted-draw share draws no type and keeps every survivor. */
+const NO_SHARE: SkillShare = {
+  drawSlot: () => (survivors) => ({ survivors, share: NO_SHARE }),
+};
+
+const shareByQuotas = (quotas: Quotas): SkillShare => ({
+  drawSlot: (random) => {
+    const drawnType = drawWeightType(quotas, random);
+    return (survivors) => {
+      const result = filterWeightType(survivors, drawnType);
+      return {
+        survivors: result.survivors,
+        share: shareByQuotas(takeQuota(quotas, result.weightType)),
+      };
+    };
+  },
+});
+
+/** The share is a quota over all slots of the skill, Plan Workout Generation. */
+const createSkillShare = (
+  context: SkillContext,
+  slotCount: number,
+): SkillShare => {
+  const weightedShare = readWeightedShare(context);
+  return weightedShare === null
+    ? NO_SHARE
+    : shareByQuotas(createQuotas(weightedShare, slotCount));
+};
 
 interface EntryState {
   readonly candidates: readonly SlotCandidate[];
   readonly directions: readonly DirectionEntry[];
   readonly untrainedBigMuscles: readonly string[];
-  readonly quotas: Quotas | null;
+  readonly share: SkillShare;
   readonly filledSlots: number;
   readonly picks: readonly SlotCandidate[];
 }
@@ -156,7 +192,7 @@ const fillSlot = (
   context: SkillContext,
 ): EntryState => {
   const { random } = context.input;
-  const weightType = drawWeightType(state.quotas, random);
+  const applyShare = state.share.drawSlot(random);
   const involvement = random() < ISOLATED_SHARE ? "ISOLATED" : "COMPLEX";
   const result = filterSlotCandidates(state.candidates, {
     directions: state.directions,
@@ -164,9 +200,9 @@ const fillSlot = (
     isLastSlot: state.filledSlots === slotCount - 1,
     involvement,
     prefersBarbell: MAX_STRENGTH_SKILLS.includes(context.skill),
-    weightType,
   });
-  const pick = drawItem(result.survivors, random);
+  const { survivors, share } = applyShare(result.survivors);
+  const pick = drawItem(survivors, random);
   const pickMuscles = getTagValues(pick.branch.tags, TagGroups.MUSCLE);
   return {
     candidates: state.candidates.filter((candidate) => candidate !== pick),
@@ -176,26 +212,26 @@ const fillSlot = (
     untrainedBigMuscles: state.untrainedBigMuscles.filter(
       (muscle) => !pickMuscles.includes(muscle),
     ),
-    quotas: takeQuota(state.quotas, result.weightType),
+    share,
     // The workout lists a one-sided exercise for each side, which takes two slots.
     filledSlots: state.filledSlots + (isOneSided(pick) ? 2 : 1),
     picks: [...state.picks, pick],
   };
 };
 
-/** The picks of a skill so far and the weighted/bodyweight quotas it has left. */
+/** The picks of a skill so far and the weighted share it has left. */
 interface SkillState {
   readonly picks: readonly SlotCandidate[];
-  readonly quotas: Quotas | null;
+  readonly share: SkillShare;
 }
 
 /**
- * Fills the slots of one tag entry from the skill's remaining quotas. A
+ * Fills the slots of one tag entry from the skill's remaining share. A
  * candidate that resolves to an exercise the skill already holds is skipped.
  */
 const fillTagEntry = (
   entry: RegionTagEntry,
-  { picks: heldPicks, quotas }: SkillState,
+  { picks: heldPicks, share }: SkillState,
   context: SkillContext,
 ): SkillState => {
   const { candidates, region } = readEntryPool(entry, context);
@@ -212,7 +248,7 @@ const fillTagEntry = (
       fillSlot({ ...state, candidates: open }, slotCount, context),
     );
   };
-  const { picks, quotas: remainingQuotas } = fillOpenSlots({
+  const { picks, share: remainingShare } = fillOpenSlots({
     candidates,
     directions: region
       ? readDirectionSequence(
@@ -223,11 +259,11 @@ const fillTagEntry = (
         )
       : [],
     untrainedBigMuscles: region ? BIG_MUSCLES_BY_REGION[region] : [],
-    quotas,
+    share,
     filledSlots: 0,
     picks: [],
   });
-  return { picks: [...heldPicks, ...picks], quotas: remainingQuotas };
+  return { picks: [...heldPicks, ...picks], share: remainingShare };
 };
 
 const toSelectedBranch = ({
@@ -264,7 +300,6 @@ export const selectSkillBranches = (
   input: PlanGenerationInput,
 ): SkillSelectionStep => {
   const skillContext: SkillContext = { skill, day, profile, input };
-  // The share is a quota over all slots of the skill, Plan Workout Generation.
   const slotCount = tagEntries.reduce((sum, { count }) => sum + count, 0);
   const { picks } = tagEntries.reduce<SkillState>(
     (state, entry) =>
@@ -277,7 +312,7 @@ export const selectSkillBranches = (
       }),
     {
       picks: [],
-      quotas: createQuotas(readWeightedShare(skillContext), slotCount),
+      share: createSkillShare(skillContext, slotCount),
     },
   );
   return {

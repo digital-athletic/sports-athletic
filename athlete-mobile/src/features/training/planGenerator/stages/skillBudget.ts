@@ -92,9 +92,12 @@ const BODYWEIGHT_SECTION_TYPES: Readonly<Record<SectionType, SkillCode>> = {
   SA: "SAKG",
   SAKG: "SAKG",
 };
-// The glossary gives the speed warm-up to every explosive power and power
-// endurance section. The old code gives it to SA and SK only:
-// generators/PlanGenerator.ts#L1225-L1228
+
+/**
+ * The glossary gives the speed warm-up to every explosive power and power
+ * endurance section. The old code gives it to SA and SK only:
+ * generators/PlanGenerator.ts, PlanGenerator.getSkillTrainingplan
+ */
 const SPEED_WARM_UP_SECTION_TYPES: readonly SectionType[] = [
   "SA",
   "SAKG",
@@ -143,8 +146,10 @@ const pickPriorityStructure = (
   );
 };
 
-// A slot list applies to sessions longer than its minute threshold, as in the
-// old block loop, so a 60-minute session gets no slot from the 60 entry.
+/**
+ * A slot list applies to sessions longer than its minute threshold, as in the
+ * old block loop, so a 60-minute session gets no slot from the 60 entry.
+ */
 const collectSlots = (
   structure: PriorityStructure,
   duration: number,
@@ -170,14 +175,16 @@ const resolvePlaceholder = (
   return slot;
 };
 
-// The first prevention slot of the day takes the prevention skill at the
-// cursor; further prevention slots drop. Without a prevention skill the day
-// drops the special warm-up and leaves the cursor where it is. The old code
-// advances the cursor for a prevention or special warm-up slot at any
-// threshold, also one the session never reaches, and gives a child without
-// a prevention skill stability for PREV2 and PREV3:
-// generators/PlanGenerator.ts#L383-L404
-// generators/PlanGenerator.ts#L1007-L1019
+/**
+ * The first prevention slot of the day takes the prevention skill at the
+ * cursor; further prevention slots drop. Without a prevention skill the day
+ * drops the special warm-up and leaves the cursor where it is. The old code
+ * advances the cursor for a prevention or special warm-up slot at any
+ * threshold, including one the session never reaches, and gives a child without
+ * a prevention skill stability for PREV2 and PREV3:
+ * generators/PlanGenerator.ts, PlanGenerator.createSection and
+ * PlanGenerator.replaceUserSpecificSkill
+ */
 const resolveSlots = (
   slots: readonly PrioritySlot[],
   { section, profile }: SkillBudgetContext,
@@ -205,8 +212,10 @@ const resolveSlots = (
   };
 };
 
-// The old code has no SWR2 case and reads the SWR1 configuration for SWR2:
-// generators/PlanGenerator.ts#L2063-L2066
+/**
+ * The old code has no SWR2 case and reads the SWR1 configuration for SWR2:
+ * generators/PlanGenerator.ts, PlanGenerator.getTagsForSkill
+ */
 const findRegionConfigName = (skill: SkillCode): string => {
   if (isCardioType(skill)) return "CARDIO";
   if (skill === "SWR2") return "SWR1";
@@ -226,7 +235,7 @@ const pickDurationEntries = (
   return regionConfig.default;
 };
 
-// The smallest minute key of the skill's region configuration.
+/** The smallest minute key of the skill's region configuration. */
 const readMinimumMinutes = (
   skill: SkillCode,
   { profile, authoredData }: SkillBudgetContext,
@@ -247,9 +256,11 @@ const findMaximumMinutesGroup = (skill: SkillCode): MaxMinutesGroup => {
   return MAXIMUM_MINUTES_GROUPS[skill] ?? "DEFAULT";
 };
 
-// A 0 means the skill gets no leftover minutes, and a missing entry raises a
-// configuration error. The old code reads both as 200 minutes:
-// generators/PlanGenerator.ts#L932-L934
+/**
+ * A 0 means the skill gets no leftover minutes, and a missing entry raises a
+ * configuration error. The old code reads both as 200 minutes:
+ * generators/PlanGenerator.ts, PlanGenerator.getMaxTimeForSkillAndLevel
+ */
 const readMaximumMinutes = (
   skill: SkillCode,
   { profile, authoredData }: SkillBudgetContext,
@@ -262,11 +273,13 @@ const readMaximumMinutes = (
   );
 };
 
-// Each skill gets its minimum, and the leftover minutes fill the skills in
-// priority order up to their maximum minutes. Minutes no skill can take stay
-// unused. The old code first fills the priority 2 skill to its maximum in
-// sessions longer than 45 minutes:
-// generators/PlanGenerator.ts#L830-L843
+/**
+ * Each skill gets its minimum, and the leftover minutes fill the skills in
+ * priority order up to their maximum minutes. Minutes no skill can take stay
+ * unused. The old code first fills the priority 2 skill to its maximum in
+ * sessions longer than 45 minutes:
+ * generators/PlanGenerator.ts, PlanGenerator.addTimeLeftToSkills
+ */
 const distributeMinutes = (
   skills: readonly SkillCode[],
   duration: number,

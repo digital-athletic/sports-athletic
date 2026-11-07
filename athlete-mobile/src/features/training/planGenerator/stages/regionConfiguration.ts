@@ -15,9 +15,12 @@ export interface RegionConfiguration {
 
 const { AGE_GROUPS, LEVELS } = WorkoutConstants;
 
-// Every cardio skill and both max strength skills share one configuration.
-// SWR2 reads the SWR1 configuration, as the old generator does:
-// src/features/training/generators/PlanGenerator.ts#L2063-L2066
+/**
+ * Every cardio skill and both max strength skills share one configuration.
+ * SWR2 reads the SWR1 configuration, as the old generator does:
+ * src/features/training/generators/PlanGenerator.ts,
+ * PlanGenerator.getTagsForSkill
+ */
 const readRegionConfigurationName = (skill: string): string => {
   if (skill.startsWith("CARDIO")) return "CARDIO";
   if (skill === "MAX_STRENGTH") return "MAX";
@@ -44,7 +47,7 @@ const pickVariant = (
   return config.default;
 };
 
-// Keys ascend, so a tie between two keys goes to the smaller one.
+/** Keys ascend, so a tie between two keys goes to the smaller one. */
 const findNearestKey = (keys: readonly number[], minutes: number): number =>
   keys.reduce((nearest, key) =>
     Math.abs(key - minutes) < Math.abs(nearest - minutes) ? key : nearest,
@@ -78,6 +81,7 @@ export const selectRegionConfiguration = (
     .sort((a, b) => a - b);
   if (keys.length === 0) return throwMissingRegionConfiguration(skill);
   // The lookup uses the nearest key at or below the largest one, and the skill
-  // keeps its minutes: src/features/training/generators/PlanGenerator.ts#L576-L590
+  // keeps its minutes: src/features/training/generators/PlanGenerator.ts,
+  // PlanGenerator.createSection
   return { tagEntries: variant[String(findNearestKey(keys, minutes))] };
 };

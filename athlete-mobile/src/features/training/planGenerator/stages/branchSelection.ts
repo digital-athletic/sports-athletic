@@ -95,7 +95,7 @@ const readWeightedShare = (context: SkillContext): number | null => {
   return STRENGTH_SKILLS.includes(skill) ? 0.8 : 0.6;
 };
 
-// Keys count exercises; a larger count reads the largest key.
+/** Keys count exercises; a larger count reads the largest key. */
 const readDirectionSequence = (
   directions: DirectionsMap,
   count: number,
@@ -119,7 +119,7 @@ const createQuotas = (
   return { WEIGHTED: weighted, BODYWEIGHT: slotCount - weighted };
 };
 
-// A slot draws its type while both quotas are open, then takes the open one.
+/** A slot draws its type while both quotas are open, then takes the open one. */
 const drawWeightType = (
   quotas: Quotas | null,
   random: () => number,
@@ -288,9 +288,11 @@ export const selectSkillBranches = (
   };
 };
 
-// A GKS tag entry for the full body switches the lower body of the whole day
-// to the GKS directions, as the old generator does:
-// generators/PlanGenerator.ts#L643-L658
+/**
+ * A GKS tag entry for the full body switches the lower body of the whole day
+ * to the GKS directions, as the old generator does:
+ * generators/PlanGenerator.ts, PlanGenerator.createSection
+ */
 const hasFullBodyGks = (requests: readonly SkillSelectionRequest[]) =>
   requests.some(
     ({ skill, tagEntries }) =>

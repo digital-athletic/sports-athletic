@@ -11,8 +11,12 @@ import type { PlayingPositionGroup } from "../stages/profileDerivation";
 
 const GOALKEEPER_POSITION = "GOAL";
 
-// The old generator lists five goalkeeper exercises by ID. The catalog tags
-// those five and five more POSITION_GOAL: src/features/training/generators/PlanGenerator.ts#L2311-L2326
+/**
+ * The old generator lists five goalkeeper exercises by ID. The catalog tags
+ * those five and five more POSITION_GOAL:
+ * src/features/training/generators/PlanGenerator.ts,
+ * PlanGenerator.addToSkillTree
+ */
 const isGoalkeeperBranch = (
   branch: CandidateBranch,
   exerciseCatalog: readonly Pick<ExerciseType, "id" | "tags">[],

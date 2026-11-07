@@ -23,7 +23,7 @@ import type { SelectionDay } from "./tagEntryPool";
 const advancedAthlete = generateDerivedProfile();
 const hallDay = generateSelectionDay("HALL");
 
-// One slot without a type draw takes two draws: involvement, then the pick.
+/** One slot without a type draw takes two draws: involvement, then the pick. */
 const COMPLEX = 0.5;
 const ISOLATED = 0.1;
 const FIRST = 0;

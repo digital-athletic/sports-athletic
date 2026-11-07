@@ -95,10 +95,12 @@ interface PainRegionTarget {
   readonly regions: readonly string[];
 }
 
-// A prevention skill reads its own region group, pain spec "Each prevention
-// skill draws from the region group it covers". The special warm-up reads the
-// regions of the day's prevention skills, as the old generator does:
-// utils/skillTreeUtils.ts#L213-L231
+/**
+ * A prevention skill reads its own region group, pain spec "Each prevention
+ * skill draws from the region group it covers". The special warm-up reads the
+ * regions of the day's prevention skills, as the old generator does:
+ * utils/skillTreeUtils.ts, getSkillTree
+ */
 const readPainRegionTarget = (
   name: string,
   { day, input }: SkillContext,
@@ -114,8 +116,10 @@ const readPainRegionTarget = (
   };
 };
 
-// Keeps the whole tree when no branch matches, as the old generator does:
-// utils/skillTreeUtils.ts#L135-L156, #L213-L231
+/**
+ * Keeps the whole tree when no branch matches, as the old generator does:
+ * utils/skillTreeUtils.ts, getSkillTree
+ */
 const keepPainRegions =
   (name: string, context: SkillContext): TreeFilter =>
   (tree) => {
@@ -129,9 +133,11 @@ const keepPainRegions =
     return Object.keys(kept).length > 0 ? kept : tree;
   };
 
-// The max strength rowing name maps to branch 141, which MAX.json keeps empty;
-// the old generator reads branch 142 instead:
-// generators/PlanGenerator.ts#L1467-L1470, #L1508-L1521
+/**
+ * The max strength rowing name maps to branch 141, which MAX.json keeps empty;
+ * the old generator reads branch 142 instead:
+ * generators/PlanGenerator.ts, PlanGenerator.getBranchesForWorkout
+ */
 const STAND_IN_BRANCH_IDS: Readonly<Record<string, string>> = { "141": "142" };
 
 const replaceStandIn = (branchId: string): string =>
@@ -139,7 +145,7 @@ const replaceStandIn = (branchId: string): string =>
     ? STAND_IN_BRANCH_IDS[branchId]
     : branchId;
 
-// Named branches may sit in any skill tree.
+/** A named branch can belong to any skill tree, so the lookup reads all trees. */
 const readNamedBranches = (
   names: readonly string[],
   { skill, input }: SkillContext,

@@ -40,7 +40,7 @@ export interface SlotFilterResult {
 
 type CandidateCheck = (candidate: SlotCandidate) => boolean;
 
-// Keeps the candidates the check accepts, or all of them when none passes.
+/** Keeps the candidates the check accepts, or all of them when none passes. */
 const narrow = (
   candidates: readonly SlotCandidate[],
   isKept: CandidateCheck,
@@ -73,7 +73,7 @@ const keepWhereAny =
   (isKept: CandidateCheck): SlotStep =>
   (result) => ({ ...result, survivors: narrow(result.survivors, isKept) });
 
-// Walks the priority sequence and takes the first direction any candidate has.
+/** Walks the priority sequence and takes the first direction any candidate has. */
 const keepFirstDirection =
   (directions: readonly DirectionEntry[]): SlotStep =>
   (result) => {
@@ -95,7 +95,7 @@ const keepUntrainedBigMuscles = (muscles: readonly string[]): SlotStep =>
     ),
   );
 
-// A branch without an involvement tag fits both draws.
+/** A branch without an involvement tag fits both draws. */
 const keepInvolvement = (involvement: Involvement): SlotStep =>
   keepWhereAny((candidate) => {
     const tags = readBranchTags(candidate, TagGroups.MUSCLE_INVOLVEMENT);
@@ -108,7 +108,7 @@ const keepBarbell = keepWhereAny((candidate) =>
   ),
 );
 
-// The drawn type first, then the other type, then every candidate.
+/** The drawn type first, then the other type, then every candidate. */
 const keepWeightType =
   (weightType: WeightType | null): SlotStep =>
   (result) => {
@@ -150,7 +150,7 @@ export const filterSlotCandidates = (
     when(preferences.isLastSlot, keepTwoSided),
     keepUntrainedBigMuscles(preferences.untrainedBigMuscles),
     // The old generator skips this draw for the core region:
-    // generators/PlanGenerator.ts#L1734-L1752
+    // generators/PlanGenerator.ts, PlanGenerator.getBranchesForWorkout
     keepInvolvement(preferences.involvement),
     when(preferences.prefersBarbell, keepBarbell),
     keepWeightType(preferences.weightType),

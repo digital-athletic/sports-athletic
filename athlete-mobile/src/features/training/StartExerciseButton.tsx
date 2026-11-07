@@ -28,7 +28,7 @@ export const StartExerciseButton: FC<StartExerciseButtonProps> = ({
       accessibilityLabel={t("training.list.startExercise")}
       testID={testId}
     >
-      <Ionicon name="play-circle" size={28} color={colors.primary} decorative />
+      <Ionicon name="play-circle" size={32} color={colors.primary} decorative />
     </TouchableBox>
   );
 };

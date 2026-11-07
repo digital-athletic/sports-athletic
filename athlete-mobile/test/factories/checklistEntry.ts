@@ -5,8 +5,8 @@ import { type ChecklistEntry } from "@/features/training/hooks/useTrainingListRo
  * exercise "1". The overrides replace any field.
  *
  * generateChecklistEntry({ key: 2, firstOpenSetIndex: 2 })
- * → { key: 2, exerciseId: "1", displayName: "Test Exercise", isTest: false,
- *     sets: [{ index: 0, label: undefined, completed: false }],
+ * → { key: 2, exerciseId: "1", displayName: "Test Exercise", pictureUrl: null,
+ *     valueKind: null, isTest: false, sets: [{ index: 0, label: undefined, completed: false }],
  *     completed: false, firstOpenSetIndex: 2 }
  */
 export const generateChecklistEntry = (
@@ -15,6 +15,8 @@ export const generateChecklistEntry = (
   key: 0,
   exerciseId: "1",
   displayName: "Test Exercise",
+  pictureUrl: null,
+  valueKind: null,
   isTest: false,
   sets: [{ index: 0, label: undefined, completed: false }],
   completed: false,

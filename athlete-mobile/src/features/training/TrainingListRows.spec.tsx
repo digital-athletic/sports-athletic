@@ -19,6 +19,8 @@ const generateEntry = (
   key,
   exerciseId,
   displayName,
+  pictureUrl: null,
+  valueKind: "reps",
   isTest: false,
   sets: [{ index: key, label: "10 reps", completed: false }],
   completed: false,

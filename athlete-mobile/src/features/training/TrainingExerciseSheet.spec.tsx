@@ -1,5 +1,6 @@
 import { generateChecklistRow } from "@test/factories/checklistRow";
 import { type ReactNode } from "react";
+import { Dimensions, StyleSheet } from "react-native";
 import { act, fireEvent, render } from "../../utils/testUtils";
 import {
   TrainingExerciseSheet,
@@ -29,6 +30,12 @@ jest.mock("@expo/ui", () => {
       createElement(Text, null, children),
   };
 });
+
+jest.mock("expo-image", () => ({
+  Image: "Image",
+}));
+
+const PICTURE_URL = "https://pictures.test/exercise_pictures/squat.jpg";
 
 // Props of an open sheet on an open ended squat set, e.g.
 // generateSheetProps({ duration: 30 }) shows a 30 second countdown.
@@ -150,6 +157,216 @@ describe("TrainingExerciseSheet: heading", () => {
       fontSize: 16,
     });
   });
+});
+
+describe("TrainingExerciseSheet: exercise picture", () => {
+  it("shows the picture of the row exercise on the set step", async () => {
+    const { getByTestId } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({
+          row: generateChecklistRow({ pictureUrl: PICTURE_URL }),
+        })}
+      />,
+    );
+
+    const picture = getByTestId("training-list-sheet-picture", {
+      includeHiddenElements: true,
+    });
+    expect(picture.props.source).toEqual({ uri: PICTURE_URL });
+  });
+
+  it("renders the picture above the exercise name", async () => {
+    const { getByTestId, getByText } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({
+          row: generateChecklistRow({
+            displayName: "Squat",
+            pictureUrl: PICTURE_URL,
+          }),
+        })}
+      />,
+    );
+
+    const picture = getByTestId("training-list-sheet-picture", {
+      includeHiddenElements: true,
+    });
+    const title = getByText("Squat");
+    const siblings = title.parent?.parent?.children ?? [];
+    expect(siblings.indexOf(picture.parent!)).toBeGreaterThanOrEqual(0);
+    expect(siblings.indexOf(title.parent!)).toBeGreaterThan(
+      siblings.indexOf(picture.parent!),
+    );
+  });
+
+  it("cuts the picture round", async () => {
+    const { getByTestId } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({
+          row: generateChecklistRow({ pictureUrl: PICTURE_URL }),
+        })}
+      />,
+    );
+
+    const { width, height, borderRadius } = StyleSheet.flatten(
+      getByTestId("training-list-sheet-picture", {
+        includeHiddenElements: true,
+      }).props.style,
+    );
+    expect(width).toBe(height);
+    expect(borderRadius).toBe(width / 2);
+  });
+
+  it("hides the picture from screen readers", async () => {
+    const { getByTestId, queryByTestId } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({
+          row: generateChecklistRow({ pictureUrl: PICTURE_URL }),
+        })}
+      />,
+    );
+
+    expect(
+      getByTestId("training-list-sheet-picture", {
+        includeHiddenElements: true,
+      }),
+    ).toBeTruthy();
+    expect(queryByTestId("training-list-sheet-picture")).toBeNull();
+  });
+
+  it("shows a round placeholder instead of the picture when the row has no picture", async () => {
+    const { getByTestId, queryByTestId } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({
+          row: generateChecklistRow({ pictureUrl: null }),
+        })}
+      />,
+    );
+
+    const { width, height, borderRadius } = StyleSheet.flatten(
+      getByTestId("training-list-sheet-picture-placeholder", {
+        includeHiddenElements: true,
+      }).props.style,
+    );
+    expect(width).toBe(height);
+    expect(borderRadius).toBe(width / 2);
+    expect(
+      queryByTestId("training-list-sheet-picture", {
+        includeHiddenElements: true,
+      }),
+    ).toBeNull();
+  });
+
+  it.each([
+    ["weight", "barbell-outline"],
+    ["time", "timer-outline"],
+    ["reps", "repeat-outline"],
+  ] as const)(
+    "shows the %s icon in the placeholder",
+    async (valueKind, iconName) => {
+      const { container } = await render(
+        <TrainingExerciseSheet
+          {...generateSheetProps({
+            row: generateChecklistRow({ pictureUrl: null, valueKind }),
+          })}
+        />,
+      );
+
+      const iconNames = container
+        .queryAll((node) => node.type === "Ionicons")
+        .map((icon) => icon.props.name);
+      expect(iconNames).toContain(iconName);
+    },
+  );
+
+  it("shows no placeholder on the rest step", async () => {
+    const { getByTestId, queryByTestId } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({
+          row: generateChecklistRow({ pictureUrl: null }),
+          rest: generateRestControl(),
+        })}
+      />,
+    );
+
+    await fireEvent.press(getByTestId("training-list-sheet-next"));
+
+    expect(
+      queryByTestId("training-list-sheet-picture-placeholder", {
+        includeHiddenElements: true,
+      }),
+    ).toBeNull();
+  });
+
+  it("shows no picture on the rest step", async () => {
+    const { getByTestId, queryByTestId } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({
+          row: generateChecklistRow({ pictureUrl: PICTURE_URL }),
+          rest: generateRestControl(),
+        })}
+      />,
+    );
+
+    await fireEvent.press(getByTestId("training-list-sheet-next"));
+
+    expect(getByTestId("training-list-sheet-rest")).toBeTruthy();
+    expect(
+      queryByTestId("training-list-sheet-picture", {
+        includeHiddenElements: true,
+      }),
+    ).toBeNull();
+  });
+});
+
+describe("TrainingExerciseSheet: picture needs room", () => {
+  const DEFAULT_WINDOW = Dimensions.get("window");
+
+  const setWindowHeight = (height: number) => {
+    const size = { ...DEFAULT_WINDOW, height };
+    Dimensions.set({ window: size, screen: size });
+  };
+
+  afterEach(() => {
+    setWindowHeight(DEFAULT_WINDOW.height);
+  });
+
+  it.each([
+    ["pictureUrl", PICTURE_URL, "training-list-sheet-picture"],
+    ["no pictureUrl", null, "training-list-sheet-picture-placeholder"],
+  ])(
+    "hides the picture slot below 700 window height with %s",
+    async (_label, pictureUrl, testId) => {
+      setWindowHeight(699);
+      const { queryByTestId } = await render(
+        <TrainingExerciseSheet
+          {...generateSheetProps({
+            row: generateChecklistRow({ pictureUrl }),
+          })}
+        />,
+      );
+
+      expect(queryByTestId(testId, { includeHiddenElements: true })).toBeNull();
+    },
+  );
+
+  it.each([
+    ["pictureUrl", PICTURE_URL, "training-list-sheet-picture"],
+    ["no pictureUrl", null, "training-list-sheet-picture-placeholder"],
+  ])(
+    "shows the picture slot at 700 window height with %s",
+    async (_label, pictureUrl, testId) => {
+      setWindowHeight(700);
+      const { getByTestId } = await render(
+        <TrainingExerciseSheet
+          {...generateSheetProps({
+            row: generateChecklistRow({ pictureUrl }),
+          })}
+        />,
+      );
+
+      expect(getByTestId(testId, { includeHiddenElements: true })).toBeTruthy();
+    },
+  );
 });
 
 describe("TrainingExerciseSheet: Next", () => {

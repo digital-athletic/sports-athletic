@@ -19,6 +19,11 @@ jest.mock("@/data/exerciseRegistry", () => ({
   getExerciseById: jest.fn(),
 }));
 
+jest.mock("@/services/StorageService", () => ({
+  getExercisePictureUrl: (fileName: string) =>
+    `https://pictures.test/exercise_pictures/${fileName}`,
+}));
+
 jest.mock("react-i18next", () => {
   type MockOptions = Record<string, unknown> | undefined;
   const translations: Record<string, (options: MockOptions) => string> = {
@@ -458,6 +463,98 @@ describe("useTrainingListRows: one entry per exercise", () => {
     expect(result.current.blocks[0].entries[0].sets[0].label).toBe("8 reps");
   });
 
+  it("gives a weighted exercise the value kind weight", async () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        generateSetEntry("1", 1, 1, {
+          weight: 20,
+          duration: 30,
+          repetition: 8,
+        }),
+      ],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.blocks[0].entries[0].valueKind).toBe("weight");
+  });
+
+  it("gives a timed exercise the value kind time", async () => {
+    useTrainingStore.setState({
+      exerciseList: [generateSetEntry("1", 1, 1, { duration: 30 })],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.blocks[0].entries[0].valueKind).toBe("time");
+  });
+
+  it("gives an endurance exercise the value kind reps", async () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        generateSetEntry("1", 1, 1, {
+          skill: "CARDIO_4",
+          duration: 600,
+          repetition: 1,
+        }),
+      ],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.blocks[0].entries[0].valueKind).toBe("reps");
+  });
+
+  it("gives an exercise with repetitions the value kind reps", async () => {
+    useTrainingStore.setState({
+      exerciseList: [generateSetEntry("1", 1, 1, { repetition: 10 })],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.blocks[0].entries[0].valueKind).toBe("reps");
+  });
+
+  it("gives a strength test set no value kind", async () => {
+    useTrainingStore.setState({
+      exerciseList: [createExercise({ exerciseId: "1", repetition: -1 })],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.blocks[0].entries[0].valueKind).toBeNull();
+  });
+
+  it("gives a row the value kind weight, time or reps of its set", async () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        generateSetEntry("1", 1, 3, { weight: 20, repetition: 8 }),
+        generateRestEntry(),
+        generateSetEntry("1", 2, 3, { duration: 30 }),
+        generateRestEntry(),
+        generateSetEntry("1", 3, 3, { repetition: 10 }),
+      ],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.rows.map((row) => row.valueKind)).toEqual([
+      "weight",
+      "time",
+      "reps",
+    ]);
+  });
+
+  it("gives a strength test row no value kind", async () => {
+    useTrainingStore.setState({
+      exerciseList: [createExercise({ exerciseId: "1", repetition: -1 })],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.rows[0].valueKind).toBeNull();
+  });
+
   it("marks each set completed or open", async () => {
     useTrainingStore.setState({
       exerciseList: [
@@ -617,6 +714,100 @@ describe("useTrainingListRows: superset blocks", () => {
     const { result } = await renderHook(() => useTrainingListRows());
 
     expect(result.current.blocks[0].nextEntryKey).toBeNull();
+  });
+});
+
+describe("useTrainingListRows: exercise pictures", () => {
+  const PICTURE_URL = "https://pictures.test/exercise_pictures/1-picture-x.jpg";
+
+  beforeEach(() => {
+    useTrainingStore.setState(BASELINE);
+    seedMaxValues();
+  });
+
+  afterEach(() => {
+    mockGetExerciseById.mockReset();
+  });
+
+  it("gives a row the picture URL of an exercise with a picture", async () => {
+    mockGetExerciseById.mockReturnValue(
+      createExerciseData({
+        id: "1",
+        picture: "exercisePictures/1-picture-x.jpg",
+      }),
+    );
+    useTrainingStore.setState({
+      exerciseList: [generateSetEntry("1", 1, 1)],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.rows[0].pictureUrl).toBe(PICTURE_URL);
+  });
+
+  it("gives a row no picture URL for an exercise without a picture", async () => {
+    mockGetExerciseById.mockReturnValue(
+      createExerciseData({ id: "1", picture: null }),
+    );
+    useTrainingStore.setState({
+      exerciseList: [generateSetEntry("1", 1, 1)],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.rows[0].pictureUrl).toBeNull();
+  });
+
+  it("gives an entry the picture URL of an exercise with a picture", async () => {
+    mockGetExerciseById.mockReturnValue(
+      createExerciseData({
+        id: "1",
+        picture: "exercisePictures/1-picture-x.jpg",
+      }),
+    );
+    useTrainingStore.setState({
+      exerciseList: [generateSetEntry("1", 1, 1)],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.blocks[0].entries[0].pictureUrl).toBe(PICTURE_URL);
+  });
+
+  it("gives an entry no picture URL for an exercise without a picture", async () => {
+    mockGetExerciseById.mockReturnValue(
+      createExerciseData({ id: "1", picture: null }),
+    );
+    useTrainingStore.setState({
+      exerciseList: [generateSetEntry("1", 1, 1)],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.blocks[0].entries[0].pictureUrl).toBeNull();
+  });
+
+  it("gives each entry of a superset the picture of its own exercise", async () => {
+    mockGetExerciseById.mockImplementation((id: string) =>
+      createExerciseData({
+        id,
+        picture: id === "1" ? "exercisePictures/1-picture-x.jpg" : null,
+      }),
+    );
+    useTrainingStore.setState({
+      exerciseList: [
+        generateSetEntry("1", 1, 2),
+        generateSetEntry("2", 1, 2),
+        generateSetEntry("1", 2, 2),
+        generateSetEntry("2", 2, 2),
+      ],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(
+      result.current.blocks[0].entries.map((entry) => entry.pictureUrl),
+    ).toEqual([PICTURE_URL, null]);
   });
 });
 

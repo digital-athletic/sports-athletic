@@ -1,5 +1,8 @@
 import { Ionicon } from "@/common/Ionicon";
-import { type ChecklistSetSummary } from "@/features/training/hooks/useTrainingListRows";
+import {
+  type ChecklistSetSummary,
+  type ValueKind,
+} from "@/features/training/hooks/useTrainingListRows";
 import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
@@ -7,10 +10,13 @@ import { useTheme } from "@/theme/theme";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { Fragment, type FC } from "react";
 import { useTranslation } from "react-i18next";
+import { ExerciseThumbnail } from "./ExerciseThumbnail";
 import { TrainingListItemActions } from "./TrainingListItemActions";
 
 export type TrainingListItemProps = {
   displayName: string;
+  pictureUrl: string | null;
+  valueKind: ValueKind | null;
   sets: ChecklistSetSummary[];
   /** True for the entry of a superset whose set comes next. */
   isNext: boolean;
@@ -59,7 +65,6 @@ const NextArrow: FC<{ testId: string }> = ({ testId }) => {
 
   return (
     <Box
-      marginRight="s"
       accessible
       accessibilityLabel={t("training.list.a11y.nextExercise")}
       testID={`${testId}-next-arrow`}
@@ -81,6 +86,8 @@ const NextArrow: FC<{ testId: string }> = ({ testId }) => {
  */
 export const TrainingListItem: FC<TrainingListItemProps> = ({
   displayName,
+  pictureUrl,
+  valueKind,
   sets,
   isNext,
   isTest,
@@ -90,30 +97,48 @@ export const TrainingListItem: FC<TrainingListItemProps> = ({
   onStart,
   onShowInfo,
   testId,
-}) => (
-  <Box
-    testID={testId}
-    borderBottomWidth={1}
-    borderBottomColor="lightGrey2"
-    paddingVertical="m"
-  >
-    <Box flexDirection="row" alignItems="center">
-      {isNext && <NextArrow testId={testId} />}
-      <TouchableBox flex={1} onPress={onShowInfo}>
-        <Box opacity={isCompleted ? 0.5 : 1}>
-          <Text variant="body">{displayName}</Text>
-          <SetSummary sets={sets} testId={testId} />
-        </Box>
-      </TouchableBox>
+}) => {
+  const dimOpacity = isCompleted ? 0.5 : 1;
 
-      <TrainingListItemActions
-        isTest={isTest}
-        isCompleted={isCompleted}
-        completedFeedback={completedFeedback}
-        repsValue={repsValue}
-        onStart={onStart}
-        testId={testId}
-      />
+  return (
+    <Box
+      testID={testId}
+      borderBottomWidth={1}
+      borderBottomColor="lightGrey2"
+      paddingVertical="m"
+    >
+      <Box flexDirection="row" alignItems="center">
+        <TouchableBox
+          flex={1}
+          flexDirection="row"
+          alignItems="center"
+          gap="s"
+          onPress={onShowInfo}
+        >
+          <Box opacity={dimOpacity}>
+            <ExerciseThumbnail
+              pictureUrl={pictureUrl}
+              valueKind={valueKind}
+              size={48}
+              testID={`${testId}-picture`}
+            />
+          </Box>
+          {isNext && <NextArrow testId={testId} />}
+          <Box flex={1} opacity={dimOpacity}>
+            <Text variant="body">{displayName}</Text>
+            <SetSummary sets={sets} testId={testId} />
+          </Box>
+        </TouchableBox>
+
+        <TrainingListItemActions
+          isTest={isTest}
+          isCompleted={isCompleted}
+          completedFeedback={completedFeedback}
+          repsValue={repsValue}
+          onStart={onStart}
+          testId={testId}
+        />
+      </Box>
     </Box>
-  </Box>
-);
+  );
+};

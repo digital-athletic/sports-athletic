@@ -17,6 +17,7 @@ import {
   type WeightType,
 } from "./branchSlotFilters";
 import type { DerivedProfile } from "./profileDerivation";
+import { MAX_STRENGTH_SKILLS, STRENGTH_SKILLS } from "./skillCodes";
 import {
   drawItem,
   isPlaceWeighted,
@@ -67,20 +68,16 @@ const BIG_MUSCLES_BY_REGION: Readonly<Record<MovementRegion, string[]>> = {
   FULL_BODY: ["GLUTES", "QUADRICEPS", "CHEST", "LATISSIMUS"],
 };
 
-const MAX_STRENGTH_SKILLS = ["MAX", "MAX_STRENGTH"];
-const STRENGTH_SKILLS = [
-  "SWR1",
-  "SWR2",
-  "SWR1KG",
-  "SWR2KG",
-  ...MAX_STRENGTH_SKILLS,
-  "SK",
-  "SKKG",
-  "SA",
-  "SAKG",
-];
 const ISOLATED_SHARE = 0.3;
+/** The chance a slot draws weighted while both quotas are open. */
 const WEIGHTED_DRAW_SHARE = 0.5;
+/** The share of weighted slots per athlete group, Plan Workout Generation. */
+const WEIGHTED_SHARES = {
+  CHILD: 0.3,
+  NON_STUDIO: 0.5,
+  STUDIO_STRENGTH: 0.8,
+  STUDIO_OTHER: 0.6,
+} as const;
 
 /**
  * The weighted share of Plan Workout Generation, or null when it does not
@@ -90,9 +87,13 @@ const readWeightedShare = (context: SkillContext): number | null => {
   const { skill, day, profile } = context;
   if (MAX_STRENGTH_SKILLS.includes(skill)) return null;
   if (!isPlaceWeighted(context)) return null;
-  if (profile.ageGroup === WorkoutConstants.AGE_GROUPS.CHILD) return 0.3;
-  if (day.place !== "STUDIO") return 0.5;
-  return STRENGTH_SKILLS.includes(skill) ? 0.8 : 0.6;
+  if (profile.ageGroup === WorkoutConstants.AGE_GROUPS.CHILD) {
+    return WEIGHTED_SHARES.CHILD;
+  }
+  if (day.place !== "STUDIO") return WEIGHTED_SHARES.NON_STUDIO;
+  return STRENGTH_SKILLS.includes(skill)
+    ? WEIGHTED_SHARES.STUDIO_STRENGTH
+    : WEIGHTED_SHARES.STUDIO_OTHER;
 };
 
 /** Keys count exercises; a larger count reads the largest key. */

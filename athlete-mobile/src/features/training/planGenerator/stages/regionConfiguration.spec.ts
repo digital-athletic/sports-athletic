@@ -3,8 +3,12 @@ import {
   generateRegionConfigs,
   generateRegionTagEntry,
 } from "@test/factories/regionConfigs";
+import { generateRegionConfigsWithMinuteKeys } from "@test/factories/skillBudget";
 import { catchThrownValue } from "@test/factories/thrownValue";
-import { selectRegionConfiguration } from "./regionConfiguration";
+import {
+  readRegionConfigurationVariant,
+  selectRegionConfiguration,
+} from "./regionConfiguration";
 
 const regionConfigs = generateRegionConfigs();
 const adult = generateDerivedProfile();
@@ -100,6 +104,32 @@ describe("selectRegionConfiguration", () => {
       type: "OTHER",
       subtype: "OTHER",
       params: ["regionConfiguration", "UNKNOWN"],
+    });
+  });
+});
+
+describe("readRegionConfigurationVariant", () => {
+  it("reads the default variant for a child when the configuration has no child variant", () => {
+    const child = generateDerivedProfile({ ageGroup: "CHILD" });
+    const configs = generateRegionConfigsWithMinuteKeys({ SWR1: [20, 40] });
+
+    expect(readRegionConfigurationVariant("SWR2", child, configs)).toEqual({
+      "20": [],
+      "40": [],
+    });
+  });
+
+  it("raises a configuration error for a variant without minute keys", () => {
+    const configs = generateRegionConfigsWithMinuteKeys({ SWR1: [] });
+
+    expect(
+      catchThrownValue(() =>
+        readRegionConfigurationVariant("SWR1", adult, configs),
+      ),
+    ).toEqual({
+      type: "OTHER",
+      subtype: "OTHER",
+      params: ["regionConfiguration", "SWR1"],
     });
   });
 });

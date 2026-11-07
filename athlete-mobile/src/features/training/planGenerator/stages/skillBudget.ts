@@ -1,23 +1,24 @@
 import { type LevelTag, WorkoutConstants } from "@/constants/workoutConstants";
 import type { PlanAuthoredData } from "@/data/loadPlanAuthoredData";
-import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import {
   type DurationMinutes,
   minutes,
 } from "@/features/training/models/TimeUnits";
 import { hasWeights } from "@/features/training/utils/equipmentUtils";
-import { CardioTypesSchema } from "@/schemas/common.schema";
 import type {
   MaxMinutesGroup,
-  RegionConfig,
   SkillCode,
   SkillPriorities,
 } from "@/schemas/generator.schema";
 import type { PlacesData } from "@/store/placesStore";
 import { mapReduce } from "@/utils/functional";
+import { throwConfigurationError } from "./configurationError";
 import type { Focus, FocusedTrainingDay } from "./dayGroupingAndFocus";
+import { readPlaceEquipment } from "./placeEquipment";
 import type { DerivedProfile } from "./profileDerivation";
+import { readRegionConfigurationVariant } from "./regionConfiguration";
 import type { PlanSection, SectionType } from "./sectionLayout";
+import { isCardioSkill, SPECIAL_WARM_UP } from "./skillCodes";
 
 /**
  * Maximum minutes per skill group and fitness level. The authored table holds
@@ -65,7 +66,7 @@ export type PriorityStructure = NonNullable<
 type PrioritySlot = PriorityStructure[string][number];
 type StructureKey = keyof SkillPriorities["ADULT"]["pain"];
 
-const { AGE_GROUPS, LEVELS } = WorkoutConstants;
+const { AGE_GROUPS } = WorkoutConstants;
 
 const STRUCTURE_KEYS: Readonly<Record<Focus, StructureKey>> = {
   PHASE: "phase",
@@ -79,7 +80,6 @@ const PREVENTION_SLOTS: readonly PrioritySlot[] = [
   "PREV2",
   "PREV3",
 ];
-const SPECIAL_WARM_UP = "WUSPEZIAL";
 const BODYWEIGHT_SECTION_TYPES: Readonly<Record<SectionType, SkillCode>> = {
   SWR1: "SWR1KG",
   SWR1KG: "SWR1KG",
@@ -119,15 +119,8 @@ const MAXIMUM_MINUTES_GROUPS: Readonly<
   SWR1KG: "SWR",
   SWR2: "SWR",
   SWR2KG: "SWR",
-  WUSPEZIAL: "WUSPEZIAL",
+  [SPECIAL_WARM_UP]: "WUSPEZIAL",
 };
-
-const throwConfigurationError = (...params: string[]): never => {
-  throw { type: "OTHER", subtype: "OTHER", params } satisfies GeneratorError;
-};
-
-const isCardioType = (skill: SkillCode): boolean =>
-  CardioTypesSchema.options.some((cardioType) => cardioType === skill);
 
 const isPreventionSlot = (slot: PrioritySlot): boolean =>
   PREVENTION_SLOTS.includes(slot);
@@ -212,46 +205,23 @@ const resolveSlots = (
   };
 };
 
-/**
- * The old code has no SWR2 case and reads the SWR1 configuration for SWR2:
- * generators/PlanGenerator.ts, PlanGenerator.getTagsForSkill
- */
-const findRegionConfigName = (skill: SkillCode): string => {
-  if (isCardioType(skill)) return "CARDIO";
-  if (skill === "SWR2") return "SWR1";
-  return skill === "MAX_STRENGTH" ? "MAX" : skill;
-};
-
-const pickDurationEntries = (
-  regionConfig: RegionConfig,
-  { ageGroup, fitnessLevel }: DerivedProfile,
-): RegionConfig["default"] => {
-  if (ageGroup === AGE_GROUPS.CHILD) {
-    return regionConfig.child ?? regionConfig.default;
-  }
-  if (fitnessLevel === LEVELS.PROFESSIONAL) {
-    return regionConfig.professional ?? regionConfig.default;
-  }
-  return regionConfig.default;
-};
-
 /** The smallest minute key of the skill's region configuration. */
 const readMinimumMinutes = (
   skill: SkillCode,
   { profile, authoredData }: SkillBudgetContext,
-): number => {
-  const name = findRegionConfigName(skill);
-  const regionConfig =
-    authoredData.regionConfigs[name] ??
-    throwConfigurationError("regionConfig", name);
-  const keys = Object.keys(pickDurationEntries(regionConfig, profile));
-  return keys.length > 0
-    ? Math.min(...keys.map(Number))
-    : throwConfigurationError("regionConfig", name);
-};
+): number =>
+  Math.min(
+    ...Object.keys(
+      readRegionConfigurationVariant(
+        skill,
+        profile,
+        authoredData.regionConfigs,
+      ),
+    ).map(Number),
+  );
 
 const findMaximumMinutesGroup = (skill: SkillCode): MaxMinutesGroup => {
-  if (isCardioType(skill)) return "CARDIO";
+  if (isCardioSkill(skill)) return "CARDIO";
   if (skill.startsWith("PREV")) return "PREV";
   return MAXIMUM_MINUTES_GROUPS[skill] ?? "DEFAULT";
 };
@@ -285,14 +255,27 @@ const distributeMinutes = (
   duration: number,
   context: SkillBudgetContext,
 ): SkillMinuteBudget[] => {
-  const minimums = skills.map((skill) => readMinimumMinutes(skill, context));
-  let leftover = duration - minimums.reduce((sum, value) => sum + value, 0);
-  return skills.map((skill, index) => {
-    const room = readMaximumMinutes(skill, context) - minimums[index];
-    const added = Math.max(0, Math.min(leftover, room));
-    leftover -= added;
-    return { skill, minutes: minutes(minimums[index] + added) };
-  });
+  const minimums = skills.map((skill) => ({
+    skill,
+    minimum: readMinimumMinutes(skill, context),
+  }));
+  const leftover = minimums.reduce(
+    (rest, { minimum }) => rest - minimum,
+    duration,
+  );
+  const [budgets] = mapReduce(
+    minimums,
+    leftover,
+    ({ skill, minimum }, rest) => {
+      const room = readMaximumMinutes(skill, context) - minimum;
+      const added = Math.max(0, Math.min(rest, room));
+      return [
+        { skill, minutes: minutes(minimum + added) },
+        rest - added,
+      ] as const;
+    },
+  );
+  return budgets;
 };
 
 /**
@@ -323,7 +306,7 @@ export const budgetTrainingDay = (
   const { skills, nextRotationCursor } = resolveSlots(
     collectSlots(structure, day.duration),
     context,
-    hasWeights(context.trainingPlaces[day.place]?.equipment ?? []),
+    hasWeights(readPlaceEquipment(context.trainingPlaces, day.place)),
     rotationCursor,
   );
   return {

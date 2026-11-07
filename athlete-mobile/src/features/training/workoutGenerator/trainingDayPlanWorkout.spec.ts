@@ -1,7 +1,7 @@
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
-import { setUpAiwlGeneratorFlag } from "@test/factories/aiwlGeneratorFlag";
+import { setUpAiwlGeneratorFlag } from "@test/factories/generatorFlags";
 import { deepFreeze } from "@test/factories/deepFreeze";
 import {
   buildPlanUser,

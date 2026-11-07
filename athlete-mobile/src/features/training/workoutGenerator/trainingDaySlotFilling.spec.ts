@@ -1,4 +1,4 @@
-import { setUpAiwlGeneratorFlag } from "@test/factories/aiwlGeneratorFlag";
+import { setUpAiwlGeneratorFlag } from "@test/factories/generatorFlags";
 import {
   buildPlanUser,
   generateBottleBranch,

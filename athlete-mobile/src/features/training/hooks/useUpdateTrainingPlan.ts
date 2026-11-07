@@ -1,6 +1,6 @@
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
-import PlanGenerator from "@/features/training/generators/PlanGenerator";
+import { generatePlan } from "@/features/training/planGeneratorRouter";
 import { keepUnchangedTrainingDays } from "@/features/training/utils/planRegeneration";
 import { useAuthStore } from "@/store/authStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
@@ -42,16 +42,16 @@ export function useUpdateTrainingPlan() {
       const exercises = getAllExercises();
       const skillTrees = getAllSkillTrees();
 
-      const plan = PlanGenerator.generatePlan(
+      const plan = generatePlan({
         user,
         exercises,
         skillTrees,
         branchData,
         trainingDays,
         // callers save equipment right before, so read it fresh, not from the render
-        usePlacesStore.getState().places,
-        ISODateToDate(oldStartDate),
-      );
+        places: usePlacesStore.getState().places,
+        startDate: ISODateToDate(oldStartDate),
+      });
 
       setTrainingPlan(
         redrawAllDays ? plan : keepUnchangedTrainingDays(trainingPlan, plan),

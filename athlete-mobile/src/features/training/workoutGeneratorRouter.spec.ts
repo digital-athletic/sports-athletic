@@ -10,7 +10,7 @@ import type * as StrengthTestGeneration from "@/features/training/workoutGenerat
 import { generateTrainingDayFromStoredDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import type * as TrainingDayGeneration from "@/features/training/workoutGenerator/trainingDayGeneration";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
-import { setUpAiwlGeneratorFlag } from "@test/factories/aiwlGeneratorFlag";
+import { setUpAiwlGeneratorFlag } from "@test/factories/generatorFlags";
 import type { UserType } from "@/schemas/user.schema";
 import {
   buildPlanUser,

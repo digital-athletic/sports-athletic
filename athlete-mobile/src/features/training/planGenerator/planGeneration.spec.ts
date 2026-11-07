@@ -4,7 +4,7 @@ import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { selectStoredTrainingDay } from "@/features/training/storedTrainingDaySelection";
 import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
 import type { UserType } from "@/schemas/user.schema";
-import { setUpAiwlGeneratorFlag } from "@test/factories/aiwlGeneratorFlag";
+import { setUpAiwlGeneratorFlag } from "@test/factories/generatorFlags";
 import { generatePlanGenerationInput } from "@test/factories/planGenerationInput";
 import { generateSeededRandom } from "@test/factories/seededRandom";
 import { catchThrownValue } from "@test/factories/thrownValue";

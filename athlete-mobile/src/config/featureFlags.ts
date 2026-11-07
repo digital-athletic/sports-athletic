@@ -52,6 +52,14 @@ export const featureFlags = {
   get aiwlGeneratorEnabled(): boolean {
     return process.env.EXPO_PUBLIC_AIWL_GENERATOR_ENABLED !== "false";
   },
+  /**
+   * Plan creation and regeneration run on the new plan generator only when set
+   * to "true"; otherwise they run on the old plan generator.
+   * Env var: EXPO_PUBLIC_PLAN_GENERATOR_ENABLED
+   */
+  get planGeneratorEnabled(): boolean {
+    return process.env.EXPO_PUBLIC_PLAN_GENERATOR_ENABLED === "true";
+  },
   get reviewEmail(): string | null {
     return process.env.EXPO_PUBLIC_REVIEW_EMAIL ?? null;
   },

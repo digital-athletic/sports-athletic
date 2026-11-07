@@ -7,7 +7,7 @@ import { minutes } from "@/features/training/models/TimeUnits";
 import type { TrainingDayType } from "@/features/training/models/TrainingDay";
 import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
 import type { PlacesData } from "@/store/placesStore";
-import { setUpAiwlGeneratorFlag } from "@test/factories/aiwlGeneratorFlag";
+import { setUpAiwlGeneratorFlag } from "@test/factories/generatorFlags";
 
 const TRAINING_WEEKDAYS = [1, 3];
 const STUDIO_EQUIPMENT = ["BARBELL", "DUMBBELL", "BENCH", "MAT"];

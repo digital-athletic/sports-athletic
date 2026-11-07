@@ -1,3 +1,4 @@
+import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import {
   generatePlanAthlete,
   generatePlanGenerationInput,
@@ -7,71 +8,10 @@ import {
   generateTrainingPlaces,
   generateWeeklySchedule,
 } from "@test/factories/weeklySchedule";
+import { generateTrainingPlan } from "./planGeneration";
 import type { PlanGenerationInput } from "./planGenerationInput/planGenerationInput";
-import {
-  type SkillBranchSelection,
-  selectDayBranches,
-} from "./stages/branchSelection";
-import { assignTrainingDayFocus } from "./stages/dayGroupingAndFocus";
-import { deriveAthleteProfile } from "./stages/profileDerivation";
-import { selectRegionConfiguration } from "./stages/regionConfiguration";
-import { layOutSections } from "./stages/sectionLayout";
-import { budgetSectionDays } from "./stages/skillBudget";
 
 const SEED = 20261102;
-
-/** Formats one skill of a day as "<skill> <minutes> min: <branch ids>". */
-const formatSelection = (
-  selection: SkillBranchSelection,
-  skillMinutes: number,
-): string => {
-  const branchIds =
-    selection.type === "BRANCHES"
-      ? selection.branches.map(({ branchId }) => branchId).join(",")
-      : "empty";
-  return `${selection.skill} ${skillMinutes} min: ${branchIds}`;
-};
-
-/**
- * Runs every stage in plan order and lists each section with the skills,
- * minutes and branches of each of its days.
- */
-const generatePlanOutline = (input: PlanGenerationInput): string[] => {
-  const profile = deriveAthleteProfile(input);
-  const days = assignTrainingDayFocus(input, profile).flat();
-  const { authoredData, trainingPlaces } = input;
-  return layOutSections(profile, authoredData.sectionTemplates).flatMap(
-    (section) => [
-      `${section.type} ${section.numOfWeeks} weeks ${section.cardioType}`,
-      ...budgetSectionDays(
-        { section, profile, trainingPlaces, authoredData },
-        days,
-      ).flatMap(({ day, skills }) => {
-        const { selections } = selectDayBranches(
-          skills.map(({ skill, minutes }) => ({
-            skill,
-            tagEntries: selectRegionConfiguration(
-              skill,
-              minutes,
-              profile,
-              authoredData.regionConfigs,
-            ).tagEntries,
-          })),
-          day.place,
-          profile,
-          input,
-        );
-        return [
-          `  day ${day.weekday} ${day.place} ${day.duration} min ${day.focus}`,
-          ...selections.map(
-            (selection, index) =>
-              `    ${formatSelection(selection, skills[index].minutes)}`,
-          ),
-        ];
-      }),
-    ],
-  );
-};
 
 const CASES: readonly (readonly [string, Partial<PlanGenerationInput>])[] = [
   ["an advanced adult field player", {}],
@@ -117,7 +57,7 @@ const CASES: readonly (readonly [string, Partial<PlanGenerationInput>])[] = [
     },
   ],
   [
-    "a professional adult over a 26-week preparatory phase",
+    "a professional adult over a 26 week preparatory phase",
     {
       athlete: generatePlanAthlete({ tags: { LEVEL: ["PROFESSIONAL"] } }),
       seasonPhase: { type: "PREPARATORY", endDate: "2027-05-03" },
@@ -125,13 +65,43 @@ const CASES: readonly (readonly [string, Partial<PlanGenerationInput>])[] = [
   ],
 ];
 
-describe("the plan generator stages for a seeded random source", () => {
-  it.each(CASES)("generate the same plan for %s", (_, overrides) => {
+/**
+ * Lists each section of a stored plan with its start, then each training day
+ * with the minutes and branch IDs per skill. The level maps of the branch
+ * copies repeat the skill trees, so the outline leaves them out.
+ *
+ * outlineTrainingPlan(plan)
+ * → ["plan 2026-11-02", "2026-11-02 SWR1 4 weeks CARDIO_3", "  day 3 PHASE BARBELL",
+ *    "    SWR1 35 min: 1009,69,63,66,78", ...]
+ */
+const outlineTrainingPlan = (plan: TrainingPlanType): string[] => [
+  `plan ${plan.start}`,
+  ...plan.sections.flatMap((section) => [
+    `${section.start} ${section.type} ${section.numOfWeeks} weeks ${section.cardioType}`,
+    ...section.trainings.flatMap((training) => {
+      const branchesBySkill = new Map(Object.entries(training.skills));
+      return [
+        `  day ${training.weekday} ${training.focus} ${training.equipment?.join(",")}`,
+        ...Object.entries(training.lengths).map(([skill, minutes]) => {
+          const branchIds =
+            branchesBySkill
+              .get(skill)
+              ?.map(({ branchId }) => branchId)
+              .join(",") ?? "empty";
+          return `    ${skill} ${minutes} min: ${branchIds}`;
+        }),
+      ];
+    }),
+  ]),
+];
+
+describe("generateTrainingPlan: seeded random source", () => {
+  it.each(CASES)("generates the same plan for %s", (_, overrides) => {
     const input = generatePlanGenerationInput({
       ...overrides,
       random: generateSeededRandom(SEED),
     });
 
-    expect(generatePlanOutline(input)).toMatchSnapshot();
+    expect(outlineTrainingPlan(generateTrainingPlan(input))).toMatchSnapshot();
   });
 });

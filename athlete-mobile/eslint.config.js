@@ -167,7 +167,6 @@ module.exports = defineConfig([
       "legacy/*",
       "trainer-dashboard/*",
       "supabase/*",
-      "test/fixtures/personas/*",
     ],
   },
   {

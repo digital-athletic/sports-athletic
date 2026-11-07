@@ -56,7 +56,7 @@ session: `tooEasy`, `succeeded` ("passt"), or `tooHard`.
 
 ## Generation inputs
 
-All runs: persona p2 (tagged `LEVEL_ADVANCED`, matching the spec's restriction
+All runs: persona `male-advanced` (level ADVANCED, matching the spec's restriction
 of max strength training to Advanced/Pro), squat (id 26), 4 sessions, seeded
 squat 1RM 121 kg. Weights are percentages of that F-Max, rounded to the
 nearest 2.5 kg (barbell; exact ties round down): 65% → 77.5, 67.5% → 82.5,
@@ -75,11 +75,11 @@ They differ only by the feedback reported each session:
 
 | Files | Feedback | What it shows |
 | --- | --- | --- |
-| `p2-max-strength.tooEasy.*` | always "zu leicht" | every set advances 2 ladder steps per session, capped at its final step |
-| `p2-max-strength.succeeded.*` | always "passt" | every set advances 1 ladder step per session; set 1 parks at 70% × 6 |
-| `p2-max-strength.tooHard.*` | always "zu schwer" | all sets drop 2.5 percentage points per session, floored at 65%, keeping their buffer column |
+| `male-advanced-max-strength.tooEasy.*` | always "zu leicht" | every set advances 2 ladder steps per session, capped at its final step |
+| `male-advanced-max-strength.succeeded.*` | always "passt" | every set advances 1 ladder step per session; set 1 parks at 70% × 6 |
+| `male-advanced-max-strength.tooHard.*` | always "zu schwer" | all sets drop 2.5 percentage points per session, floored at 65%, keeping their buffer column |
 
-## Standard progression: `p2-hypertrophy.mixed.progression.md`
+## Standard progression: `male-advanced-hypertrophy.mixed.progression.md`
 
 Spec: `docs/specs/progression/standard-exercise-progression.md`.
 Generate from: `simulateProgression` once it drives a hypertrophy focus; every
@@ -90,7 +90,7 @@ simulator does not drive this focus yet, so there is no comparison test to
 skip. Unlike the max-strength runs, the script varies the achieved reps per
 session to walk the spec's worked example.
 
-Inputs: persona p2 (MALE, ADVANCED), one weighted advance-by-reps hypertrophy
+Inputs: persona `male-advanced` (MALE, ADVANCED), one weighted advance-by-reps hypertrophy
 exercise (SWR2) with the spec's ranges: 8 to 12 reps, 70% up to 77.5% of
 F-Max, lowest permitted load 65%. Ladder steps: succeeded +1, too easy +2,
 too hard -2 reps. A weight step multiplies the underlying percentage by 1.025

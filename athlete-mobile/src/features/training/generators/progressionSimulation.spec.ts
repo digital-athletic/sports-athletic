@@ -1,5 +1,6 @@
 /**
- * Example test for the persona-driven progression simulator (p2 × MAX_STRENGTH).
+ * Example test for the persona-driven progression simulator
+ * (male-advanced × MAX_STRENGTH).
  * It proves the framework runs end-to-end against the real generator and
  * asserts the intra-session invariants.
  *
@@ -27,20 +28,17 @@ import {
   serializeProgression,
   serializeSets,
 } from "../../../../test/simulation/progression/goldenTable";
-import { type LegacyPersona } from "../../../../test/simulation/progression/personaAdapter";
+import { type Persona } from "../../../../test/simulation/progression/personaAdapter";
 import {
   simulateProgression,
   type SessionSnapshot,
 } from "../../../../test/simulation/progression/progressionSimulator";
 
-// Legacy persona fixtures are untyped `.js`; cast at the boundary. p2 is tagged
-// LEVEL_ADVANCED, matching the spec's restriction of max strength training to
-// the Advanced/Pro levels.
-const personaP2 = (
-  require("../../../../test/fixtures/personas/p2.js") as {
-    default: LegacyPersona;
-  }
-).default;
+// JSON imports widen `level` to string; cast at the boundary. The persona is
+// ADVANCED, matching the spec's restriction of max strength training to the
+// Advanced/Pro levels.
+const maleAdvanced =
+  require("../../../../test/fixtures/personas/male-advanced.json") as Persona;
 
 const exerciseById = (id: string): ExerciseType => {
   const found = getExerciseById(id);
@@ -72,7 +70,7 @@ const RUNS: { name: string; feedback: FeedbackScript }[] = [
 const exercisePool = [squat, exerciseById("137")];
 
 function run(feedback: FeedbackScript): SessionSnapshot[] {
-  return simulateProgression(personaP2, squat, "MAX_STRENGTH", {
+  return simulateProgression(maleAdvanced, squat, "MAX_STRENGTH", {
     sessions: 4,
     feedback,
     maxValues,
@@ -80,7 +78,7 @@ function run(feedback: FeedbackScript): SessionSnapshot[] {
   });
 }
 
-describe("progressionSimulation: p2 × MAX_STRENGTH", () => {
+describe("progressionSimulation: male advanced × MAX_STRENGTH", () => {
   const results = new Map<string, SessionSnapshot[]>();
 
   beforeAll(() => {
@@ -89,12 +87,12 @@ describe("progressionSimulation: p2 × MAX_STRENGTH", () => {
 
   const assertProgressionGolden = ({ name }: { name: string }) =>
     progressionGoldens.assertMatches(
-      `p2-max-strength.${name}.progression.md`,
+      `male-advanced-max-strength.${name}.progression.md`,
       serializeProgression(results.get(name)!),
     );
   const assertSetsGolden = ({ name }: { name: string }) =>
     progressionGoldens.assertMatches(
-      `p2-max-strength.${name}.sets.md`,
+      `male-advanced-max-strength.${name}.sets.md`,
       serializeSets(results.get(name)!),
     );
 
@@ -132,7 +130,7 @@ describe("progressionSimulation: p2 × MAX_STRENGTH", () => {
   );
 
   // INV1 held only for ADVANCED personas; BEGINNER reps fell through to a
-  // weight-based fallback that made reps rise with weight. With p2 (ADVANCED)
+  // weight-based fallback that made reps rise with weight. With an ADVANCED persona
   // the rep table applies, so this is a plain regression guard.
   // First session only: later sessions let reps rise across sets again.
   it("INV1 working set reps never increase across the first session", () => {

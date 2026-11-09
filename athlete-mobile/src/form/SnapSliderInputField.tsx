@@ -1,8 +1,9 @@
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
-import Slider from "@react-native-community/slider";
-import React, { type FC, useState } from "react";
+import { Slider } from "@expo/ui/community/slider";
+import { type FC, useState } from "react";
+import { Pressable } from "react-native";
 
 type Option = { value: number; label: string };
 
@@ -14,6 +15,8 @@ type Props = {
   startItem: number;
   step?: number;
 };
+
+const LABEL_HIT_SLOP = 12;
 
 export const SnapSliderInputField: FC<Props> = ({
   accessibilityLabel,
@@ -27,17 +30,18 @@ export const SnapSliderInputField: FC<Props> = ({
 
   const [selectedIndex, setSelectedIndex] = useState<number>(startItem ?? 0);
 
-  const handleComplete = (value: number) => {
-    // value is the actual numeric slider value; map it to the closest option index
-    // Our slider will be configured so that value corresponds to index
-    const index = Math.round(value);
+  const selectIndex = (index: number) => {
+    if (index === selectedIndex) {
+      return;
+    }
     setSelectedIndex(index);
     onChange(sliderOptions[index].value);
   };
 
-  // slider min/max based on options length; step=1 ensures snapping to indices
-  const minimumValue = 0;
-  const maximumValue = Math.max(0, sliderOptions.length - 1);
+  // onValueChange fires on every drag frame, so only a new index counts.
+  const handleValueChange = (value: number) => {
+    selectIndex(Math.round(value));
+  };
 
   return (
     <Box>
@@ -45,21 +49,31 @@ export const SnapSliderInputField: FC<Props> = ({
       <Box marginTop="s" paddingHorizontal="m">
         <Slider
           accessibilityLabel={accessibilityLabel}
-          maximumValue={maximumValue}
+          maximumValue={Math.max(0, sliderOptions.length - 1)}
           minimumTrackTintColor={colors.primary}
-          minimumValue={minimumValue}
-          onSlidingComplete={handleComplete}
+          minimumValue={0}
+          onValueChange={handleValueChange}
           step={step}
-          tapToSeek
           thumbTintColor={colors.primary}
           value={selectedIndex}
         />
         <Box flexDirection="row" justifyContent="space-between" marginTop="s">
-          {sliderOptions.map((opt, idx) => (
-            <Text key={opt.label + idx} variant="small">
-              {opt.label}
-            </Text>
-          ))}
+          {sliderOptions.map((opt, idx) => {
+            const selected = idx === selectedIndex;
+            return (
+              <Pressable
+                key={opt.label + idx}
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+                hitSlop={LABEL_HIT_SLOP}
+                onPress={() => selectIndex(idx)}
+              >
+                <Text variant="small" color={selected ? "primary" : undefined}>
+                  {opt.label}
+                </Text>
+              </Pressable>
+            );
+          })}
         </Box>
       </Box>
     </Box>

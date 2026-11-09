@@ -441,7 +441,8 @@
       "setSeconds": "{{count}} s",
       "setReps": "{{count}} reps",
       "a11y": {
-        "nextExercise": "Next exercise"
+        "nextExercise": "Next exercise",
+        "hideExerciseInfo": "Back to set"
       },
       "finishTraining": "Finish Training",
       "rest": {

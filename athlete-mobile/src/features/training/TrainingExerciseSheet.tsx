@@ -1,3 +1,4 @@
+import { getExerciseById } from "@/data/exerciseRegistry";
 import { useExerciseSheetPause } from "@/features/training/hooks/useExerciseSheetPause";
 import { useExerciseSheetSteps } from "@/features/training/hooks/useExerciseSheetSteps";
 import { useExerciseSheetTimer } from "@/features/training/hooks/useExerciseSheetTimer";
@@ -7,10 +8,15 @@ import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { BottomSheet, RNHostView } from "@expo/ui";
-import { type FC } from "react";
-import { useWindowDimensions } from "react-native";
+import { type FC, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useWindowDimensions } from "react-native";
+import { ExerciseInfoButton } from "./ExerciseInfoButton";
 import { FeedbackIconButton } from "./FeedbackIconButton";
+import {
+  INFO_SNAP_POINTS,
+  TrainingExerciseInfoView,
+} from "./TrainingExerciseInfoView";
 import { TrainingExerciseStats } from "./TrainingExerciseStats";
 import { TrainingRepetitionInput } from "./TrainingRepetitionInput";
 import { TrainingRestStep } from "./TrainingRestStep";
@@ -44,7 +50,12 @@ export type TrainingExerciseSheetProps = {
 type ContentProps = Omit<
   TrainingExerciseSheetProps,
   "row" | "isPresented" | "sessionKey" | "isScreenFocused"
-> & { row: ListRow; isTimerActive: boolean };
+> & {
+  row: ListRow;
+  isTimerActive: boolean;
+  isShowingInfo: boolean;
+  onToggleInfo: (isShowing: boolean) => void;
+};
 
 const TrainingExerciseFeedbackChoice: FC<{
   onSelect: (feedback: DifficultyFeedbackType) => void;
@@ -150,7 +161,9 @@ const SheetSetHeading: FC<{
   seconds: number;
   isTimed: boolean;
   pause?: PauseControl;
-}> = ({ row, seconds, isTimed, pause }) => {
+  onShowInfo?: () => void;
+}> = ({ row, seconds, isTimed, pause, onShowInfo }) => {
+  const { t } = useTranslation();
   const { height } = useWindowDimensions();
 
   return (
@@ -166,6 +179,15 @@ const SheetSetHeading: FC<{
       isTimed={isTimed}
       timerTestID="training-list-sheet-timer"
       pause={pause}
+      accessory={
+        onShowInfo && (
+          <ExerciseInfoButton
+            onPress={onShowInfo}
+            accessibilityLabel={t("training.active.a11y.showExerciseInfo")}
+            testID="training-list-sheet-info"
+          />
+        )
+      }
     >
       <TrainingExerciseStats
         targetReps={row.targetReps}
@@ -189,6 +211,8 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
   onResume,
   onNext,
   onDismiss,
+  isShowingInfo,
+  onToggleInfo,
 }) => {
   const pause = useExerciseSheetPause({ onPause, onResume });
   const steps = useExerciseSheetSteps({
@@ -218,6 +242,58 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
     );
   }
 
+  // Rendered after the hooks above, so the timer keeps running behind the info.
+  const exercise = getExerciseById(row.exerciseId);
+  if (isShowingInfo && exercise) {
+    return (
+      <TrainingExerciseInfoView
+        exercise={exercise}
+        title={row.displayName}
+        isTimerActive={isTimerActive}
+        onBack={() => onToggleInfo(false)}
+      />
+    );
+  }
+
+  return (
+    <SheetSetView
+      row={row}
+      steps={steps}
+      seconds={displayedSeconds}
+      isTimed={typeof duration === "number"}
+      isCountingDown={isCountingDown}
+      repsValue={repsValue}
+      pause={row.isTest ? undefined : pause}
+      onShowInfo={exercise ? () => onToggleInfo(true) : undefined}
+      onChangeReps={onChangeReps}
+      onSkip={onSkip}
+      onNext={onNext}
+    />
+  );
+};
+
+const SheetSetView: FC<{
+  row: ListRow;
+  steps: ReturnType<typeof useExerciseSheetSteps>;
+  seconds: number;
+  isTimed: boolean;
+  isCountingDown: boolean;
+  repsValue: number;
+  pause?: PauseControl;
+  onShowInfo?: () => void;
+  onChangeReps: (value: string) => void;
+  onSkip: () => void;
+  onNext: () => void;
+}> = ({
+  row,
+  seconds,
+  isTimed,
+  pause,
+  onShowInfo,
+  onSkip,
+  onNext,
+  ...actions
+}) => {
   // A skipped set never starts its rest; the rest counts as completed at
   // finish. Like the step-by-step view, Skip moves on to the next set.
   const handleSkip = () => {
@@ -229,19 +305,12 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
     <Box padding="l" gap="m" testID={`training-list-sheet-set-${row.index}`}>
       <SheetSetHeading
         row={row}
-        seconds={displayedSeconds}
-        isTimed={typeof duration === "number"}
-        pause={row.isTest ? undefined : pause}
+        seconds={seconds}
+        isTimed={isTimed}
+        pause={pause}
+        onShowInfo={onShowInfo}
       />
-
-      <SheetSetActions
-        row={row}
-        repsValue={repsValue}
-        isCountingDown={isCountingDown}
-        steps={steps}
-        onChangeReps={onChangeReps}
-        onSkip={handleSkip}
-      />
+      <SheetSetActions row={row} onSkip={handleSkip} {...actions} />
     </Box>
   );
 };
@@ -254,6 +323,8 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
  * Skip stays enabled during the countdown, so an athlete can drop a set mid-way.
  * A pause button next to the timer freezes it until resumed; closing the sheet
  * drops the pause with the timer. A strength test shows the reps input instead.
+ * The info button swaps in the exercise's video, equipment, hints and muscles
+ * without leaving the set.
  */
 export const TrainingExerciseSheet: FC<TrainingExerciseSheetProps> = ({
   row,
@@ -261,22 +332,33 @@ export const TrainingExerciseSheet: FC<TrainingExerciseSheetProps> = ({
   sessionKey,
   isScreenFocused,
   ...contentProps
-}) => (
-  <BottomSheet
-    isPresented={isPresented}
-    onDismiss={contentProps.onDismiss}
-    contentPadding={0}
-    testID="training-list-sheet"
-  >
-    {row && (
-      <RNHostView matchContents={{ vertical: true }}>
-        <TrainingExerciseSheetContent
-          key={sessionKey}
-          row={row}
-          isTimerActive={isPresented && isScreenFocused}
-          {...contentProps}
-        />
-      </RNHostView>
-    )}
-  </BottomSheet>
-);
+}) => {
+  // Keyed by session, so every newly opened set starts on the set view.
+  const [infoSession, setInfoSession] = useState<number | null>(null);
+  const isShowingInfo = infoSession === sessionKey;
+
+  return (
+    <BottomSheet
+      isPresented={isPresented}
+      onDismiss={contentProps.onDismiss}
+      contentPadding={0}
+      snapPoints={isShowingInfo ? INFO_SNAP_POINTS : undefined}
+      testID="training-list-sheet"
+    >
+      {row && (
+        <RNHostView matchContents={{ vertical: true }}>
+          <TrainingExerciseSheetContent
+            key={sessionKey}
+            row={row}
+            isTimerActive={isPresented && isScreenFocused}
+            isShowingInfo={isShowingInfo}
+            onToggleInfo={(isShowing) =>
+              setInfoSession(isShowing ? sessionKey : null)
+            }
+            {...contentProps}
+          />
+        </RNHostView>
+      )}
+    </BottomSheet>
+  );
+};

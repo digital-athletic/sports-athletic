@@ -3,7 +3,7 @@ import { type ValueKind } from "@/features/training/hooks/useTrainingListRows";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { secondsToMMSS } from "@/utils/date";
-import { type FC, type PropsWithChildren } from "react";
+import { type FC, type PropsWithChildren, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { ExerciseThumbnail } from "./ExerciseThumbnail";
 
@@ -17,6 +17,8 @@ type Props = PropsWithChildren<{
   isTimed: boolean;
   timerTestID: string;
   pause?: PauseControl;
+  /** Shown at the top right of the title, e.g. an info button. */
+  accessory?: ReactNode;
 }>;
 
 // alignSelf keeps the stretched column from widening the tap area.
@@ -49,6 +51,7 @@ export const TrainingSheetHeading: FC<Props> = ({
   isTimed,
   timerTestID,
   pause,
+  accessory,
   children,
 }) => (
   <>
@@ -63,7 +66,7 @@ export const TrainingSheetHeading: FC<Props> = ({
         />
       </Box>
     )}
-    <Box>
+    <Box paddingHorizontal={accessory ? "xl" : "none"}>
       <Text variant="title" textAlign="center">
         {title}
       </Text>
@@ -71,6 +74,11 @@ export const TrainingSheetHeading: FC<Props> = ({
         <Text variant="small" color="darkGrey1" textAlign="center">
           {subtitle}
         </Text>
+      )}
+      {accessory && (
+        <Box position="absolute" top={0} right={0}>
+          {accessory}
+        </Box>
       )}
     </Box>
     {children}

@@ -104,6 +104,34 @@ test.describe("Training list: checklist session", () => {
 
       await workoutPage.returnToHome();
     });
+
+    test("athlete reads the exercise info from the open sheet and returns to the same set", async ({
+      page,
+    }) => {
+      test.setTimeout(60000);
+      await mockSupabaseAuth(page);
+      await mockWakeLock(page);
+      await page.clock.install();
+
+      const workoutPage = new WorkoutPage(page);
+      const trainingOverviewPage = new TrainingOverviewPage(page);
+      const trainingListPage = new TrainingListPage(page);
+
+      await page.goto("/");
+      await workoutPage.expectLoggedIn();
+      await workoutPage.startWorkout("Tuesday");
+
+      await trainingOverviewPage.startAsChecklist();
+      await trainingListPage.expectVisible();
+      await trainingListPage.startRow("training-list-row-0");
+      const setBefore = await trainingListPage.currentSheetSet();
+
+      await trainingListPage.openSheetInfo();
+      await trainingListPage.closeSheetInfo();
+
+      expect(await trainingListPage.currentSheetSet()).toBe(setBefore);
+      await trainingListPage.expectNextButton();
+    });
   });
 
   test.describe("Rest after a set", () => {

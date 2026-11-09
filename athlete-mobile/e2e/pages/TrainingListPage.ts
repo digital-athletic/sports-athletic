@@ -91,6 +91,27 @@ export class TrainingListPage extends BasePage {
     await expect(this.sheetNextButton).toBeDisabled();
   }
 
+  private get sheetInfoView() {
+    return this.page.getByTestId("training-list-sheet-info-view");
+  }
+
+  /** Swaps the open sheet's set for the exercise info. */
+  async openSheetInfo() {
+    await this.page
+      .getByTestId("training-list-sheet-info")
+      .click({ timeout: 3000 });
+    await expect(this.sheetInfoView).toBeVisible();
+    await expect(this.sheetNextButton).toBeHidden();
+  }
+
+  /** Returns from the exercise info to the set it was opened from. */
+  async closeSheetInfo() {
+    await this.page
+      .getByTestId("training-list-sheet-info-back")
+      .click({ timeout: 3000 });
+    await expect(this.sheetInfoView).toBeHidden();
+  }
+
   // Needs page.clock.install() before navigating. Jumps past a timed
   // exercise's countdown instead of waiting it out in real time.
   private async waitOutCountdown() {

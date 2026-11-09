@@ -441,7 +441,8 @@
       "setSeconds": "{{count}} s",
       "setReps": "{{count}} Wdh.",
       "a11y": {
-        "nextExercise": "Nächste Übung"
+        "nextExercise": "Nächste Übung",
+        "hideExerciseInfo": "Zurück zum Satz"
       },
       "finishTraining": "Training beenden",
       "rest": {

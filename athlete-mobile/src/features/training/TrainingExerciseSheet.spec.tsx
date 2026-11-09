@@ -1,3 +1,4 @@
+import { getExerciseById } from "@/data/exerciseRegistry";
 import { generateChecklistRow } from "@test/factories/checklistRow";
 import { type ReactNode } from "react";
 import { Dimensions, StyleSheet } from "react-native";
@@ -7,13 +8,14 @@ import {
   type TrainingExerciseSheetProps,
 } from "./TrainingExerciseSheet";
 import { type SheetRest, type SheetRestControl } from "./utils/checklistRest";
+import { createExerciseData } from "./utils/testFixtures";
 
 // A real sheet keeps its children while it animates closed, so the mock
-// renders them regardless of isPresented. Native layout and text map to
-// their React Native counterparts.
+// renders them regardless of isPresented. Native layout, text and buttons map
+// to their React Native counterparts.
 jest.mock("@expo/ui", () => {
   const { createElement } = jest.requireActual("react");
-  const { Text, View } = jest.requireActual("react-native");
+  const { Pressable, Text, View } = jest.requireActual("react-native");
   const Layout = ({
     children,
     testID,
@@ -28,6 +30,16 @@ jest.mock("@expo/ui", () => {
     Row: Layout,
     Text: ({ children }: { children?: string }) =>
       createElement(Text, null, children),
+    Button: ({
+      children,
+      onPress,
+      testID,
+    }: {
+      children?: ReactNode;
+      onPress: () => void;
+      testID?: string;
+    }) => createElement(Pressable, { onPress, testID }, children),
+    Icon: () => null,
   };
 });
 
@@ -36,6 +48,16 @@ jest.mock("expo-image", () => ({
 }));
 
 const PICTURE_URL = "https://pictures.test/exercise_pictures/squat.jpg";
+
+jest.mock("@expo/ui/swift-ui/modifiers", () => ({
+  accessibilityLabel: (label: string) => ({ accessibilityLabel: label }),
+}));
+
+jest.mock("@/data/exerciseRegistry", () => ({
+  getExerciseById: jest.fn(),
+}));
+
+const mockGetExerciseById = getExerciseById as jest.Mock;
 
 // Props of an open sheet on an open ended squat set, e.g.
 // generateSheetProps({ duration: 30 }) shows a 30 second countdown.
@@ -61,6 +83,7 @@ const generateSheetProps = (
 
 beforeEach(() => {
   jest.useFakeTimers();
+  mockGetExerciseById.mockReturnValue(undefined);
 });
 
 afterEach(() => {
@@ -891,5 +914,85 @@ describe("TrainingExerciseSheet: pause", () => {
 
     expect(getByTestId("training-list-sheet-rest")).toBeTruthy();
     expect(queryByTestId("training-list-sheet-pause")).toBeNull();
+  });
+});
+
+describe("TrainingExerciseSheet: exercise info", () => {
+  beforeEach(() => {
+    mockGetExerciseById.mockReturnValue(
+      createExerciseData({ description: "Keep your back straight" }),
+    );
+  });
+
+  it("shows the exercise hints instead of the set after tapping info", async () => {
+    const { getByTestId, getByText, queryByTestId } = await render(
+      <TrainingExerciseSheet {...generateSheetProps()} />,
+    );
+
+    await fireEvent.press(getByTestId("training-list-sheet-info"));
+
+    expect(getByText("• Keep your back straight")).toBeTruthy();
+    expect(queryByTestId("training-list-sheet-next")).toBeNull();
+  });
+
+  it("returns to the set from the info", async () => {
+    const { getByTestId, getByLabelText, queryByText } = await render(
+      <TrainingExerciseSheet {...generateSheetProps()} />,
+    );
+
+    await fireEvent.press(getByTestId("training-list-sheet-info"));
+    await fireEvent.press(getByLabelText("Back to set"));
+
+    expect(getByTestId("training-list-sheet-next")).toBeTruthy();
+    expect(queryByText("• Keep your back straight")).toBeNull();
+  });
+
+  it("keeps the countdown running while the info shows", async () => {
+    const { getByTestId } = await render(
+      <TrainingExerciseSheet {...generateSheetProps({ duration: 30 })} />,
+    );
+
+    await fireEvent.press(getByTestId("training-list-sheet-info"));
+    await act(() => {
+      jest.advanceTimersByTime(10000);
+    });
+    await fireEvent.press(getByTestId("training-list-sheet-info-back"));
+
+    expect(getByTestId("training-list-sheet-timer")).toHaveTextContent("00:20");
+  });
+
+  it("opens the next set on the set view", async () => {
+    const { getByTestId, rerender } = await render(
+      <TrainingExerciseSheet {...generateSheetProps()} />,
+    );
+
+    await fireEvent.press(getByTestId("training-list-sheet-info"));
+    await rerender(
+      <TrainingExerciseSheet {...generateSheetProps({ sessionKey: 2 })} />,
+    );
+
+    expect(getByTestId("training-list-sheet-next")).toBeTruthy();
+  });
+
+  it("shows no info button for an exercise missing from the catalog", async () => {
+    mockGetExerciseById.mockReturnValue(undefined);
+    const { queryByTestId } = await render(
+      <TrainingExerciseSheet {...generateSheetProps()} />,
+    );
+
+    expect(queryByTestId("training-list-sheet-info")).toBeNull();
+  });
+
+  it("shows no info button during the rest", async () => {
+    const { getByTestId, queryByTestId } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({ rest: generateRestControl() })}
+      />,
+    );
+
+    await fireEvent.press(getByTestId("training-list-sheet-next"));
+
+    expect(getByTestId("training-list-sheet-rest")).toBeTruthy();
+    expect(queryByTestId("training-list-sheet-info")).toBeNull();
   });
 });

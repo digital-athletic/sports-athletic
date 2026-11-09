@@ -1,10 +1,10 @@
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
-import { useTheme } from "@/theme/theme";
-import { type FC } from "react";
-import { type KeyboardTypeOptions } from "react-native";
-import { Ionicon, type IoniconName } from "../common/Ionicon";
+import { type FC, useState } from "react";
+import { type KeyboardTypeOptions, StyleSheet } from "react-native";
+import { type IoniconName } from "../common/Ionicon";
 import { BasicTextInput } from "./BasicTextInput";
+import { FieldShell } from "./FieldShell";
 
 interface TextInputFieldProps {
   onChange: (value: string) => void;
@@ -35,7 +35,17 @@ export const TextInputField: FC<TextInputFieldProps> = ({
   onBlur,
   testID,
 }) => {
-  const { colors } = useTheme();
+  const [focused, setFocused] = useState(false);
+
+  const handleFocus = () => {
+    setFocused(true);
+    onFocus?.();
+  };
+
+  const handleBlur = () => {
+    setFocused(false);
+    onBlur?.();
+  };
 
   return (
     <Box>
@@ -44,31 +54,7 @@ export const TextInputField: FC<TextInputFieldProps> = ({
           {title}
         </Text>
       ) : null}
-      <Box
-        flexDirection="row"
-        alignItems="center"
-        backgroundColor="lightGrey2"
-        borderRadius="m"
-        height={56}
-      >
-        <Box
-          width={56}
-          height={56}
-          justifyContent="center"
-          alignItems="center"
-          backgroundColor="lightGrey1"
-          borderTopLeftRadius="m"
-          borderBottomLeftRadius="m"
-        >
-          {iconName && (
-            <Ionicon
-              name={iconName}
-              size={24}
-              color={colors.lightGrey3}
-              decorative
-            />
-          )}
-        </Box>
+      <FieldShell iconName={iconName} focused={focused}>
         <BasicTextInput
           onChangeText={onChange}
           placeholder={placeholder}
@@ -76,11 +62,23 @@ export const TextInputField: FC<TextInputFieldProps> = ({
           keyboardType={keyboardType}
           autoCapitalize="none"
           value={value}
-          onFocus={onFocus}
-          onBlur={onBlur}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           testID={testID}
+          style={styles.input}
         />
-      </Box>
+      </FieldShell>
     </Box>
   );
 };
+
+// The frame shows the focus, so the browser outline on web would double it.
+// A solid outline of width 0 replaces the browser default, which ignores width.
+const styles = StyleSheet.create({
+  input: {
+    alignSelf: "stretch",
+    fontSize: 17,
+    outlineStyle: "solid",
+    outlineWidth: 0,
+  },
+});

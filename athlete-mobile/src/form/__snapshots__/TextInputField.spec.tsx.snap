@@ -13,42 +13,31 @@ exports[`<TextInputField /> renders correctly with Ionicon 1`] = `
       [
         {
           "alignItems": "center",
-          "backgroundColor": "#E8E8E8",
-          "borderRadius": 8,
+          "backgroundColor": "#FFF",
+          "borderColor": "#E8E8E8",
+          "borderRadius": 16,
+          "borderWidth": 1.5,
           "flexDirection": "row",
-          "height": 56,
+          "minHeight": 56,
+          "paddingLeft": 15,
         },
       ]
     }
   >
-    <View
-      style={
-        [
-          {
-            "alignItems": "center",
-            "backgroundColor": "#FAFAFA",
-            "borderBottomLeftRadius": 8,
-            "borderTopLeftRadius": 8,
-            "height": 56,
-            "justifyContent": "center",
-            "width": 56,
-          },
-        ]
-      }
-    >
-      <Ionicons
-        accessibilityElementsHidden={true}
-        accessible={false}
-        color="#AAAAAA"
-        importantForAccessibility="no-hide-descendants"
-        name="person"
-        size={24}
-      />
-    </View>
+    <Ionicons
+      accessibilityElementsHidden={true}
+      accessible={false}
+      color="#767676"
+      importantForAccessibility="no-hide-descendants"
+      name="person"
+      size={22}
+    />
     <TextInput
       autoCapitalize="none"
       keyboardType="default"
+      onBlur={[Function]}
       onChangeText={[MockFunction]}
+      onFocus={[Function]}
       placeholder="Enter text"
       placeholderTextColor="#555555"
       style={
@@ -63,7 +52,12 @@ exports[`<TextInputField /> renders correctly with Ionicon 1`] = `
             "color": "#333333",
             "paddingHorizontal": 15,
           },
-          undefined,
+          {
+            "alignSelf": "stretch",
+            "fontSize": 17,
+            "outlineStyle": "solid",
+            "outlineWidth": 0,
+          },
         ]
       }
       value=""

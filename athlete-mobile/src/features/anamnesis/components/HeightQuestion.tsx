@@ -19,7 +19,8 @@ export function HeightQuestion({
       <TextInputField
         value={value}
         placeholder={t("anamnesisQuestions.height.placeholder")}
-        iconName="resize"
+        iconName="resize-outline"
+        keyboardType="number-pad"
         accessibilityLabel={t("anamnesisQuestions.height.title")}
         onChange={(value) => onChangeValue("height", value)}
       />

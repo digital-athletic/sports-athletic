@@ -1,8 +1,7 @@
-import { liveRegionProps, useAnnounce } from "@/common/announce";
-import { Loading } from "@/common/Loading";
-import { SpeechBubble } from "@/common/SpeechBubble";
+import { useAnnounce } from "@/common/announce";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
+import { GeneratingStages } from "@/features/anamnesis/components/GeneratingStages";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { generatePlan } from "@/features/training/planGeneratorRouter";
 import { keepUnchangedTrainingDays } from "@/features/training/utils/planRegeneration";
@@ -226,23 +225,14 @@ export default function Generating() {
     }
   }, [stagesEnded, generatingEnded]);
 
-  const getStageText = () => {
-    switch (stage) {
-      case 0:
-        return t("screens.generating.stage1");
-      case 1:
-        return t("screens.generating.stage2");
-      case 2:
-        return t("screens.generating.stage3");
-      case 3:
-        return t("screens.generating.stage4");
-      default:
-        return t("screens.generating.stage1");
-    }
-  };
+  const stages = [
+    t("screens.generating.stage1"),
+    t("screens.generating.stage2"),
+    t("screens.generating.stage3"),
+    t("screens.generating.stage4"),
+  ];
 
-  const stageText = getStageText();
-  useAnnounce(stageText);
+  useAnnounce(stages[stage]);
 
   return (
     <>
@@ -252,28 +242,43 @@ export default function Generating() {
           headerShown: false,
         }}
       />
-      <Box flex={1} backgroundColor="lightGrey1" padding="m">
-        <Box flex={1} justifyContent="center" alignItems="center">
-          <SpeechBubble text={t("screens.generating.thanksMessage")} centered />
-
-          <Image
-            style={styles.coach}
-            source={require("../../../assets/img/coach/face.png")}
-            resizeMode="contain"
-            accessibilityLabel={t("screens.welcome.coachImageAlt")}
-          />
-
-          <Text
-            variant="body"
-            marginTop="m"
-            textAlign="center"
-            {...liveRegionProps}
+      <Box
+        flex={1}
+        backgroundColor="white"
+        padding="l"
+        justifyContent="center"
+        alignItems="center"
+        gap="xl"
+      >
+        <Box alignItems="center" gap="m">
+          <Box
+            width={104}
+            height={104}
+            borderRadius="round"
+            backgroundColor="primaryTint"
+            justifyContent="center"
+            alignItems="center"
           >
-            {stageText}
+            <Image
+              style={styles.coach}
+              source={require("../../../assets/img/coach/face.png")}
+              resizeMode="contain"
+              accessibilityLabel={t("screens.welcome.coachImageAlt")}
+            />
+          </Box>
+          <Text variant="eyebrow" color="primary">
+            {t("common.generatingTrainingPlan")}
+          </Text>
+          <Text
+            variant="display"
+            fontSize={24}
+            lineHeight={30}
+            textAlign="center"
+          >
+            {t("screens.generating.thanksMessage")}
           </Text>
         </Box>
-
-        <Loading show text={t("common.generatingTrainingPlan")} />
+        <GeneratingStages stages={stages} activeIndex={stage} />
       </Box>
     </>
   );
@@ -281,8 +286,7 @@ export default function Generating() {
 
 const styles = StyleSheet.create({
   coach: {
-    width: 80,
-    height: 80,
-    marginTop: 20,
+    width: 76,
+    height: 76,
   },
 });

@@ -1,24 +1,21 @@
-import { RoutePath, Stack, router, useLocalSearchParams } from "expo-router";
+import { RoutePath, router, useLocalSearchParams } from "expo-router";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
 
-import { BackHeader } from "@/common/BackHeader";
 import { SkipHeader } from "@/common/SkipHeader";
 import { WorkoutConstants } from "@/constants/workoutConstants";
-import { SportListItem } from "@/features/anamnesis/SportListItem";
+import { AnamnesisScreen } from "@/features/anamnesis/components/AnamnesisScreen";
+import { SportTile } from "@/features/anamnesis/SportTile";
 import { useHardwareBackHandler } from "@/hooks/useHardwareBackHandler";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
-import { Button } from "@/theme/Button";
-import { ScrollBox } from "@/theme/ScrollBox";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Box } from "@/theme/Box";
 
 export default function SportScreen() {
   const { t } = useTranslation();
   const params = useLocalSearchParams<{ originPath?: RoutePath }>();
   const originPath = params.originPath;
-  const insets = useSafeAreaInsets();
 
   const { workoutData, setSport } = useUserWorkoutStore();
   const { anamnesisCompleted } = useUserProfileStore();
@@ -78,7 +75,7 @@ export default function SportScreen() {
       const isSelected = sportValue === currentSport;
 
       return (
-        <SportListItem
+        <SportTile
           key={sportKey}
           sportKey={sportKey}
           isSelected={isSelected}
@@ -88,41 +85,35 @@ export default function SportScreen() {
     });
   };
 
+  const isOnboarding = originPath === "/(anamnesis)/anamnesis";
+
   return (
-    <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: t("screens.sport.title"),
-          headerLeft: () => (
-            <BackHeader
-              onBack={
-                originPath === "/(anamnesis)/anamnesis" ? showClosePopup : back
-              }
-            />
-          ),
-          headerRight: () =>
-            originPath === "/(anamnesis)/anamnesis" ? (
-              <SkipHeader
-                alertTitle="screens.sport.abortAnamnesisQuestion"
-                alertMessage="screens.sport.abortAnamnesisIncomplete"
-              />
-            ) : null,
-        }}
-      />
-      <ScrollBox
-        flex={1}
-        backgroundColor="lightGrey1"
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{ paddingBottom: insets.bottom }}
+    <AnamnesisScreen
+      title={t("screens.sport.title")}
+      heading={t("screens.sport.question")}
+      onBack={isOnboarding ? showClosePopup : back}
+      headerRight={
+        isOnboarding ? (
+          <SkipHeader
+            alertTitle="screens.sport.abortAnamnesisQuestion"
+            alertMessage="screens.sport.abortAnamnesisIncomplete"
+          />
+        ) : null
+      }
+      action={
+        isOnboarding
+          ? { label: t("screens.sport.goOn"), onPress: goOn }
+          : undefined
+      }
+    >
+      <Box
+        flexDirection="row"
+        flexWrap="wrap"
+        justifyContent="space-between"
+        rowGap="s"
       >
         {renderSports()}
-        {originPath === "/(anamnesis)/anamnesis" && (
-          <Button onPress={goOn} margin="m">
-            {t("screens.sport.goOn")}
-          </Button>
-        )}
-      </ScrollBox>
-    </>
+      </Box>
+    </AnamnesisScreen>
   );
 }

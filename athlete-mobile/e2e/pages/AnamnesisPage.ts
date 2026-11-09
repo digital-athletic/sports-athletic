@@ -49,7 +49,9 @@ export class AnamnesisPage extends BasePage {
   }
 
   private get trainingDaysHeading() {
-    return this.page.getByRole("heading", { name: "Training Days" });
+    return this.page.getByRole("heading", {
+      name: "On what days do you want to workout?",
+    });
   }
 
   private get nameInput() {
@@ -64,12 +66,8 @@ export class AnamnesisPage extends BasePage {
     return this.page.getByPlaceholder("75", { exact: true });
   }
 
-  private get chooseButton() {
-    return this.page.getByText("Choose").first();
-  }
-
-  private get okButton() {
-    return this.page.getByText("OK").last();
+  private choice(name: string) {
+    return this.page.getByRole("radio", { name, exact: true });
   }
 
   async selectSport(sportName: string) {
@@ -96,8 +94,7 @@ export class AnamnesisPage extends BasePage {
     }
 
     if (params.gender) {
-      await this.page.getByText(params.gender).first().click();
-      await this.okButton.click();
+      await this.choice(params.gender).click();
     }
 
     await this.goOnButton.click();
@@ -121,9 +118,7 @@ export class AnamnesisPage extends BasePage {
     await expect(this.positionFitnessHeading).toBeVisible();
 
     if (params.position) {
-      await this.chooseButton.click();
-      await this.page.getByText(params.position).click();
-      await this.okButton.click();
+      await this.choice(params.position).click();
     }
 
     await this.goOnButton.click();
@@ -138,9 +133,7 @@ export class AnamnesisPage extends BasePage {
     phase: "Preparation" | "Competitive" | "Transition",
   ) {
     await expect(this.seasonPhaseHeading).toBeVisible();
-    await this.chooseButton.click();
-    await this.page.getByText(phase).click();
-    await this.okButton.click();
+    await this.choice(phase).click();
 
     // Note: The @react-native-community/datetimepicker doesn't render on web,
     // so the end date is auto-calculated by the app (12 weeks from now).

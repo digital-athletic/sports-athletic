@@ -1013,11 +1013,18 @@
       "scalesLabel": "Time range",
       "noWorkoutYet": "No trainings yet",
       "recentWorkouts": "Recent workouts",
+      "workoutTitle": "{{date}} · {{time}}",
+      "workoutLine": {
+        "exercises_one": "{{count}} exercise",
+        "exercises_other": "{{count}} exercises",
+        "points": "{{count}} pts",
+        "summary": "{{duration}}, {{exercises}}, {{points}}, {{weight}}"
+      },
       "testWorkout": "Power test",
       "summary": {
         "duration": "Duration",
         "durationAlt": "Duration icon",
-        "count": "Exercise count",
+        "count": "Exercises",
         "countAlt": "Exercise count icon",
         "xp": "Points",
         "xpAlt": "Points icon",

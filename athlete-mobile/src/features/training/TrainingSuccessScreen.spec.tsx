@@ -94,3 +94,34 @@ describe("TrainingSuccessScreen: workout view", () => {
     },
   );
 });
+
+describe("TrainingSuccessScreen: summary cards", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockSearchParams = {};
+    useTrainingStore.setState(BASELINE_TRAINING_STATE);
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ completed: true, set: [1, 1], repetition: 10 }),
+      ],
+      time: {
+        ...BASELINE_TRAINING_STATE.time,
+        start: 1_000,
+        end: 601_000,
+      },
+    });
+    useCompletedWorkoutsStore.getState().clearWorkoutHistory();
+  });
+
+  it("shows the exercise count of the finished workout in its own card", async () => {
+    const { getByTestId, getByLabelText } = await render(
+      <TrainingSuccessScreen />,
+    );
+
+    expect(getByTestId("training-success-summary-count")).toHaveTextContent(
+      "1",
+    );
+    expect(getByLabelText("Exercises: 1")).toBeTruthy();
+    expect(getByLabelText(/^Duration: /)).toBeTruthy();
+  });
+});

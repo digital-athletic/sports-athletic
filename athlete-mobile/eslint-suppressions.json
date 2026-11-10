@@ -219,16 +219,6 @@
       "count": 2
     }
   },
-  "src/features/statistics/components/TrainingSummary.tsx": {
-    "max-lines-per-function": {
-      "count": 1
-    }
-  },
-  "src/features/statistics/components/Workouts.tsx": {
-    "max-lines-per-function": {
-      "count": 1
-    }
-  },
   "src/features/statistics/hooks/useWorkoutsData.ts": {
     "complexity": {
       "count": 1

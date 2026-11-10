@@ -1013,11 +1013,18 @@
       "scalesLabel": "Zeitraum",
       "noWorkoutYet": "Keine Trainings bisher",
       "recentWorkouts": "Letzte Trainings",
+      "workoutTitle": "{{date}} · {{time}}",
+      "workoutLine": {
+        "exercises_one": "{{count}} Übung",
+        "exercises_other": "{{count}} Übungen",
+        "points": "{{count}} Pkt.",
+        "summary": "{{duration}}, {{exercises}}, {{points}}, {{weight}}"
+      },
       "testWorkout": "Krafttest",
       "summary": {
         "duration": "Dauer",
         "durationAlt": "Dauer-Symbol",
-        "count": "Übungszahl",
+        "count": "Übungen",
         "countAlt": "Übungszahl-Symbol",
         "xp": "Punkte",
         "xpAlt": "Punkte-Symbol",

@@ -1,7 +1,7 @@
-import { RadarChart } from "@/charts/RadarChart";
 import { SUPPORT_EMAIL } from "@/constants/AppConstants";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { PowerTest } from "@/features/statistics/components/PowerTest";
+import { RadarChartCard } from "@/features/statistics/components/RadarChartCard";
 import { TrainingSummary } from "@/features/statistics/components/TrainingSummary";
 import { seconds } from "@/features/training/models/TimeUnits";
 import { useTrainingStore } from "@/features/training/trainingStore";
@@ -131,29 +131,15 @@ const TrainingSuccessScreen: FC = () => {
               <PowerTest isSuccessScreen={true} />
             </Box>
           ) : hasWorkoutData ? (
-            <Box flex={1}>
-              <Box
-                flex={2}
-                padding="l"
-                justifyContent="center"
-                alignItems="center"
-              >
-                <RadarChart userSkills={skills} />
-              </Box>
-              <Box
-                flex={1}
-                padding="l"
-                borderTopWidth={2}
-                borderTopColor="lightGrey2"
-                backgroundColor="lightGrey1"
-              >
-                <TrainingSummary
-                  duration={getTimeString(totals.duration)}
-                  count={totals.count.toString()}
-                  xp={totals.xp.toString()}
-                  weight={getWeightString(totals.weight)}
-                />
-              </Box>
+            <Box flex={1} paddingHorizontal="m" paddingTop="l" gap="m">
+              <RadarChartCard userSkills={skills} />
+              <TrainingSummary
+                duration={getTimeString(totals.duration)}
+                count={totals.count.toString()}
+                xp={totals.xp.toString()}
+                weight={getWeightString(totals.weight)}
+                testID="training-success-summary"
+              />
             </Box>
           ) : (
             <Box flex={1} padding="l" justifyContent="center">

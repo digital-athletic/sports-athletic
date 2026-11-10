@@ -32,6 +32,9 @@ export interface SummaryExpectations {
   exerciseCount?: number;
 }
 
+/** Value suffixes of the summary testIDs, e.g. "overall-summary-xp". */
+type SummaryValueType = "duration" | "count" | "xp" | "weight";
+
 export class StatisticsPage extends BasePage {
   /**
    * Opens the app with a seeded signed in session and navigates to Statistics.
@@ -43,44 +46,31 @@ export class StatisticsPage extends BasePage {
   }
 
   /**
-   * Extracts text value from a summary section by label.
-   * The TrainingSummary component shows label and value in a column layout.
-   * Uses parent traversal to find the value element adjacent to the label.
+   * Reads one value of a summary by its testID suffix, e.g. "overall-summary-duration".
+   * Summary cards and the one line of a workout card both tag each value this way.
    */
-  private async getSummaryValueFromContainer(
-    container: ReturnType<Page["locator"]>,
-    label: string,
+  private async getSummaryValueByTestId(
+    summaryTestId: string,
+    type: SummaryValueType,
   ): Promise<string> {
-    const section = container
-      .locator(`text=${label}`)
-      .locator("..")
-      .locator("..");
-    const valueLocator = section.locator(
-      "text=/^[0-9]|^\\d+\\s*(s|min|h|kg|t)/",
-    );
-    const text = await valueLocator.first().textContent();
+    const text = await this.page
+      .getByTestId(`${summaryTestId}-${type}`)
+      .textContent();
     return text?.trim() ?? "0";
   }
 
   /**
-   * Gets the overall summary container using testID.
+   * Extracts text value from the overall summary.
    */
-  private getOverallSummary() {
-    return this.page.getByTestId("overall-summary");
-  }
-
-  /**
-   * Extracts text value from the overall summary by label.
-   */
-  async getSummaryValue(label: string): Promise<string> {
-    return this.getSummaryValueFromContainer(this.getOverallSummary(), label);
+  async getSummaryValue(type: SummaryValueType): Promise<string> {
+    return this.getSummaryValueByTestId("overall-summary", type);
   }
 
   /**
    * Gets duration from summary as numeric seconds.
    */
   async getDurationSeconds(): Promise<number> {
-    const text = await this.getSummaryValue("Duration");
+    const text = await this.getSummaryValue("duration");
     return parseTimeString(text);
   }
 
@@ -88,7 +78,7 @@ export class StatisticsPage extends BasePage {
    * Gets exercise count from summary.
    */
   async getExerciseCount(): Promise<number> {
-    const text = await this.getSummaryValue("Exercise count");
+    const text = await this.getSummaryValue("count");
     return parseInt(text.match(/(\d+)/)?.[1] ?? "0", 10);
   }
 
@@ -96,7 +86,7 @@ export class StatisticsPage extends BasePage {
    * Gets XP from summary.
    */
   async getXp(): Promise<number> {
-    const text = await this.getSummaryValue("Points");
+    const text = await this.getSummaryValue("xp");
     return parseInt(text.match(/(\d+)/)?.[1] ?? "0", 10);
   }
 
@@ -104,7 +94,7 @@ export class StatisticsPage extends BasePage {
    * Gets moved weight from summary as numeric kg.
    */
   async getMovedWeightKg(): Promise<number> {
-    const text = await this.getSummaryValue("Moved weight");
+    const text = await this.getSummaryValue("weight");
     return parseWeightString(text);
   }
 
@@ -334,7 +324,7 @@ export class StatisticsPage extends BasePage {
    */
   getWorkoutRows() {
     return this.page.locator(
-      '[data-testid^="workout-row-"]:not([data-testid$="-summary"]):not([data-testid$="-test-label"])',
+      '[data-testid^="workout-row-"]:not([data-testid*="-summary"]):not([data-testid$="-title"]):not([data-testid$="-test-label"])',
     );
   }
 
@@ -384,11 +374,12 @@ export class StatisticsPage extends BasePage {
     }
 
     // Extract values from the summary
+    const summaryTestId = `workout-row-${workoutId}-summary`;
     return {
-      duration: await this.getSummaryValueFromContainer(summary, "Duration"),
-      count: await this.getSummaryValueFromContainer(summary, "Exercise count"),
-      xp: await this.getSummaryValueFromContainer(summary, "Points"),
-      weight: await this.getSummaryValueFromContainer(summary, "Moved weight"),
+      duration: await this.getSummaryValueByTestId(summaryTestId, "duration"),
+      count: await this.getSummaryValueByTestId(summaryTestId, "count"),
+      xp: await this.getSummaryValueByTestId(summaryTestId, "xp"),
+      weight: await this.getSummaryValueByTestId(summaryTestId, "weight"),
     };
   }
 

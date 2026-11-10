@@ -126,7 +126,7 @@ export default function TrainingOverviewScreen() {
       ? (trainingDays[weekdayNumber]?.place ?? "HOME")
       : "HOME");
 
-  const { canSwap, swapExercise, commitSwaps } = useExerciseSwap(
+  const { canSwap, swapExercise } = useExerciseSwap(
     params,
     isPlaceType(place) ? place : "HOME",
   );
@@ -148,7 +148,6 @@ export default function TrainingOverviewScreen() {
   );
 
   const handleStartTraining = () => {
-    commitSwaps();
     setTrainingStartTime(Date.now());
     setTrainingViewMode("SEQUENTIAL");
     router.push({
@@ -158,7 +157,6 @@ export default function TrainingOverviewScreen() {
   };
 
   const handleStartTrainingAsChecklist = () => {
-    commitSwaps();
     setTrainingStartTime(Date.now());
     setTrainingViewMode("LIST");
     router.push({

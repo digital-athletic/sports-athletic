@@ -140,14 +140,13 @@ An athlete with the fitness level "Advanced" has a default entry level of 2.
 
 ### Manual exercise swap
 
-On the training overview of a plan training, each exercise with at least one eligible alternative shows a swap button. A tap replaces the exercise in place with the next alternative branch; after the last alternative the next tap returns to the original. The athlete sees no picker list, and difficulty stays at the athlete's normal level.
+The training overview of a plan training shows a swap button next to each exercise that has an alternative. Each tap replaces the exercise with the next alternative. After the last alternative, the next tap brings back the original.
 
-- **Candidates**: branches of the same skill tree that the replacement of a blocked branch accepts (muscle soreness, equipment, fitness level, age, gender, pain on every level), with an exercise at the athlete's level, the same side setting as the original, and no branch or exercise the session already holds. A side change is excluded in both directions, so both sides of a one-sided exercise swap together and the set structure stays.
-- **Ranking**: candidates rank by similarity to the original with the factors of branch substitution, 0.5 for a different body region and 0.8 for a different movement direction; ties keep catalog order. At most three alternatives are offered, computed once from the session as generated, so cycling is predictable.
-- **Start level**: the target level rule of [branch substitution](#target-level-for-branch-substitution): the higher of the fitness-level entry level and the stored level of the new branch. The old level does not transfer, and the old branch keeps its stored level.
-- **Values**: repetitions, duration and weight are recomputed for the new exercise by generating the training day with the new branch; the session keeps its set positions.
-- **Plan edit**: when the athlete starts the training, every exercise not cycled back to its original rewrites the plan's training day of that weekday in the current section, so later weeks of the section show the new exercise, and feedback and branch substitution act on the new branch. A training that is abandoned before the start leaves the plan unchanged. No dislike is stored; a plan rebuild may bring the old exercise back.
-- **Scope**: plan trainings on the AIWL workout generator only. Making an exercise harder or easier by hand, a list of all alternatives, swapping during a running training and syncing the swap to the backend stay out of scope.
+- **One workout only**: the swap changes the current workout and nothing else. The training plan keeps the original branch, so the next workout on that weekday shows the original exercise again.
+- **Alternatives**: up to three branches from the same skill tree. They pass the same filters as workout generation (muscle soreness, equipment, fitness level, age, gender, pain), have the same side setting as the original (one-sided or both-sided), and are not already in the workout. Branches from the same body region come first, then branches with the same movement direction.
+- **Level**: the alternative starts at the higher of the athlete's entry level and their stored level for that branch, as in [branch substitution](#target-level-for-branch-substitution). The swap writes no level. Feedback on the alternative changes its level like on any other branch.
+- **Values**: repetitions, duration and weight are calculated for the alternative. A one-sided exercise swaps both sides together.
+- **Scope**: plan trainings on the AIWL workout generator. Out of scope: picking from a list, swapping during a running training, and syncing the swap to the backend.
 
 ### Example: bodyweight squat lane
 
@@ -166,7 +165,7 @@ Explosive power (Schnellkraft, code SK) has the trees SK and SKKG; training at h
 ## Structure
 
 - Skill trees, branches, and the exercise catalog are bundled static data, read-only at runtime.
-- The device-local training plan holds branch references per skill per weekday. Substitution is its only progression-driven mutation; a manual exercise swap is the only athlete-driven one.
+- The device-local training plan holds branch references per skill per weekday. Substitution is its only progression-driven mutation.
 - A persisted progress store holds branch progress and per-exercise history, including branches no longer in the plan. Generation reads it, resolution corrects it, the post-set completion flow writes it.
 - The owning progression specification emits the level-change direction. This specification resolves that direction into one of three outcomes: same-branch level change, branch substitution, or no change, and then persists the resulting branch progress.
 

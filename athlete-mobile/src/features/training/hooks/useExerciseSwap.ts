@@ -3,7 +3,6 @@ import type { PlaceType } from "@/constants/workoutConstants";
 import { listSwapAlternatives } from "@/features/training/exerciseSwap/swapAlternatives";
 import { nextSwapPosition } from "@/features/training/exerciseSwap/swapCycle";
 import {
-  collectPlanSwaps,
   type ExerciseSwapState,
   toExerciseBranch,
 } from "@/features/training/exerciseSwap/swapPlan";
@@ -25,14 +24,11 @@ import {
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { locateStoredTrainingDay } from "@/features/training/storedTrainingDaySelection";
 import { useTrainingStore } from "@/features/training/trainingStore";
-import { getRaisedSubstituteLevel } from "@/features/training/utils/substitutionLevelUtils";
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import { createGenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
 import { setUpWorkout } from "@/features/training/workoutGenerator/stages/workoutSetup";
 import { generateTrainingDayFromStoredDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import { Logger } from "@/services/Logger";
-import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
-import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { parseIntParam } from "@/utils/router";
 import { useState } from "react";
 
@@ -187,42 +183,6 @@ const findNextSwap = (
   return null;
 };
 
-interface PlanWriters {
-  setBranchLevel: (branchId: string, level: number, exerciseId: string) => void;
-  replaceBranchInTrainingPlan: ReturnType<
-    typeof useUserWorkoutStore.getState
-  >["replaceBranchInTrainingPlan"];
-}
-
-/** Writes the swapped Branches into the plan day the training came from. */
-const commitPlanSwaps = (
-  request: SwapRequest,
-  swaps: Readonly<Record<string, ExerciseSwapState>>,
-  writers: PlanWriters,
-) => {
-  const planSwaps = collectPlanSwaps(swaps);
-  if (planSwaps.length === 0) return;
-  const { user, locate } = createRequestInput(request);
-  const { sectionIndex, weekday } = locate();
-  for (const { skill, originalBranchId, branch } of planSwaps) {
-    const raised = getRaisedSubstituteLevel(
-      branch,
-      request.ctx.branchData,
-      getUserLevel(user),
-    );
-    if (raised) {
-      writers.setBranchLevel(raised.branchId, raised.level, raised.exerciseId);
-    }
-    writers.replaceBranchInTrainingPlan(
-      sectionIndex,
-      weekday,
-      skill,
-      originalBranchId,
-      [branch],
-    );
-  }
-};
-
 /**
  * Lists the alternatives of every exercise once the session exists and swaps
  * are enabled, and tracks each exercise's position in its cycle.
@@ -243,28 +203,19 @@ const useSwapState = (request: SwapRequest, enabled: boolean) => {
       { ...swap, position: positions[branchId] ?? 0 },
     ]),
   );
-  // After a commit the plan holds the session, so cycles start over from it
-  const reset = () => {
-    setAlternatives(null);
-    setPositions({});
-  };
-  return { swaps, setPositions, reset };
+  return { swaps, setPositions };
 };
 
 /**
  * Swap state of a plan training overview. Each tap on an exercise moves it to
- * the next alternative Branch, the fourth back to the original. The plan
- * changes only on `commitSwaps`, when the athlete starts the training.
+ * the next alternative Branch, the fourth back to the original. A swap changes
+ * only the current workout; the training plan keeps the original Branch.
  */
 export function useExerciseSwap(params: SwapParams, fallbackPlace: PlaceType) {
   const ctx = useGenerationContext();
   const setExerciseList = useTrainingStore((s) => s.setExerciseList);
-  const replaceBranchInTrainingPlan = useUserWorkoutStore(
-    (s) => s.replaceBranchInTrainingPlan,
-  );
-  const setBranchLevel = useExerciseProgressStore((s) => s.setBranchLevel);
   const request: SwapRequest = { params, ctx, place: fallbackPlace };
-  const { swaps, setPositions, reset } = useSwapState(
+  const { swaps, setPositions } = useSwapState(
     request,
     params.type === "PLAN" &&
       featureFlags.aiwlGeneratorEnabled &&
@@ -290,13 +241,5 @@ export function useExerciseSwap(params: SwapParams, fallbackPlace: PlaceType) {
     }
   };
 
-  const commitSwaps = () => {
-    commitPlanSwaps(request, swaps, {
-      setBranchLevel,
-      replaceBranchInTrainingPlan,
-    });
-    reset();
-  };
-
-  return { canSwap, swapExercise, commitSwaps };
+  return { canSwap, swapExercise };
 }

@@ -8,12 +8,6 @@ export interface ExerciseSwapState {
   alternatives: readonly StoredBranch[];
 }
 
-export interface PlanSwap {
-  skill: string;
-  originalBranchId: string;
-  branch: ExerciseBranchType;
-}
-
 /** Writes a catalog branch in the form the training plan stores. */
 export const toExerciseBranch = ({
   branchId,
@@ -28,19 +22,3 @@ export const toExerciseBranch = ({
     ),
   ),
 });
-
-/** The plan rewrites for every exercise not cycled back to its original. */
-export const collectPlanSwaps = (
-  swaps: Readonly<Record<string, ExerciseSwapState>>,
-): PlanSwap[] =>
-  Object.entries(swaps).flatMap(([originalBranchId, swap]) =>
-    swap.position === 0
-      ? []
-      : [
-          {
-            skill: swap.skill,
-            originalBranchId,
-            branch: toExerciseBranch(swap.alternatives[swap.position - 1]),
-          },
-        ],
-  );

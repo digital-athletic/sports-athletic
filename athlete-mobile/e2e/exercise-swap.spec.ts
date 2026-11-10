@@ -48,16 +48,10 @@ async function readTuesdayBranchIds(page: Page): Promise<string[][]> {
   });
 }
 
-/** Indexes of the sections whose Tuesday branches differ. */
-const changedSections = (before: string[][], after: string[][]): number[] =>
-  after.flatMap((ids, index) =>
-    ids.join() === before[index]?.join() ? [] : [index],
-  );
-
 test.describe("Training overview: swap an exercise", () => {
   test.use({ profile: createCompletedProfile(), signedIn: true });
 
-  test("athlete cycles through alternatives and keeps the chosen exercise in the plan", async ({
+  test("athlete swaps an exercise for one workout and the plan keeps the original", async ({
     page,
   }) => {
     test.setTimeout(120000);
@@ -93,19 +87,11 @@ test.describe("Training overview: swap an exercise", () => {
 
     await workoutPage.beginWorkout();
     await expect(page).toHaveURL(/training-active/);
+    expect(await readTuesdayBranchIds(page)).toEqual(branchesBefore);
 
-    await expect
-      .poll(async () =>
-        changedSections(branchesBefore, await readTuesdayBranchIds(page)),
-      )
-      .toHaveLength(1);
-    const branchesAfter = await readTuesdayBranchIds(page);
-    const [section] = changedSections(branchesBefore, branchesAfter);
-    expect(branchesAfter[section]).toHaveLength(branchesBefore[section].length);
-    expect(
-      branchesAfter[section].filter(
-        (id) => !branchesBefore[section].includes(id),
-      ),
-    ).toHaveLength(1);
+    await workoutPage.completeWorkout();
+    await workoutPage.returnToHome();
+    await workoutPage.startWorkout("Tuesday");
+    expect((await readSwappableNames(page))[0]).toBe(original);
   });
 });

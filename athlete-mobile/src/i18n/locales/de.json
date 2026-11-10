@@ -102,7 +102,8 @@
         }
       },
       "focusTrainings": {
-        "title": "Fokus & Prävention"
+        "title": "Fokus & Prävention",
+        "subtitle": "Kurze Trainings neben deinem Plan. Wähle, was du heute brauchst."
       },
       "workoutWithOwnPlan": "Dein Trainingsplan",
       "startTraining": "Training starten",

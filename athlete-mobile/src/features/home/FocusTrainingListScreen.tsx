@@ -1,31 +1,11 @@
-import { Ionicon, type IoniconName } from "@/common/Ionicon";
+import { HeadlineScreen } from "@/common/HeadlineScreen";
+import { TrainingTile } from "@/common/TrainingTile";
 import { useTrainingStore } from "@/features/training/trainingStore";
-import { ColumnListRow } from "@/features/training/ColumnListRow";
 import { Box } from "@/theme/Box";
-import { ScrollBox } from "@/theme/ScrollBox";
-import { useTheme } from "@/theme/theme";
-import { useResponsiveProp } from "@shopify/restyle";
-import { Stack, router } from "expo-router";
-import { type FC } from "react";
+import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 
-const IconThumbnail: FC<{ name: IoniconName }> = ({ name }) => {
-  const { colors } = useTheme();
-  // Same size and web fallback as the ColumnList thumbnails.
-  const size = useResponsiveProp({ phone: 96, tablet: 140 }) ?? 96;
-
-  return (
-    <Box
-      width={size}
-      height={size}
-      backgroundColor="white"
-      justifyContent="center"
-      alignItems="center"
-    >
-      <Ionicon name={name} size={48} color={colors.primary} decorative />
-    </Box>
-  );
-};
+const FOCUS_TRAINING_IMAGE = require("../../../assets/img/shortTrainings/mobility.jpg");
 
 export default function FocusTrainingListScreen() {
   const { t } = useTranslation();
@@ -37,32 +17,29 @@ export default function FocusTrainingListScreen() {
   };
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: t("screens.home.focusTrainings.title"),
-          headerShown: true,
-        }}
-      />
-      <ScrollBox
-        flex={1}
-        backgroundColor="lightGrey1"
-        contentInsetAdjustmentBehavior="automatic"
-        testID="focus-training-list"
-      >
-        <ColumnListRow
-          thumbnail={<IconThumbnail name="scan-outline" />}
+    <HeadlineScreen
+      title={t("screens.home.focusTrainings.title")}
+      heading={t("screens.home.focusTrainings.title")}
+      description={t("screens.home.focusTrainings.subtitle")}
+    >
+      <Box gap="l">
+        <TrainingTile
+          size="full"
+          image={FOCUS_TRAINING_IMAGE}
           title={t("screens.home.focusTraining.title")}
           description={t("screens.home.focusTraining.subtitle")}
           onPress={() => startTraining("QUICK")}
+          testID="focus-training-tile"
         />
-        <ColumnListRow
-          thumbnail={<IconThumbnail name="calendar-outline" />}
+        <TrainingTile
+          size="full"
+          iconName="medkit-outline"
           title={t("screens.home.preventionTraining.title")}
           description={t("screens.home.preventionTraining.subtitle")}
           onPress={() => startTraining("PREV")}
+          testID="prevention-training-tile"
         />
-      </ScrollBox>
-    </>
+      </Box>
+    </HeadlineScreen>
   );
 }

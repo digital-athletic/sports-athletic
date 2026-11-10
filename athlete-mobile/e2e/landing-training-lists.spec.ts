@@ -112,6 +112,40 @@ test.describe("Home: focus and prevention choice", () => {
   });
 });
 
+test.describe("Prevention training: body part cards", () => {
+  test.use({ profile: createCompletedProfile(), signedIn: true });
+
+  test("athlete starts the knee and hip training from the cards", async ({
+    page,
+  }) => {
+    await mockSupabaseAuth(page);
+    await page.goto("/");
+    await new BasePage(page).expectLoggedIn();
+
+    await page.getByRole("button", { name: "Focus & Prevention" }).click();
+    await page.getByRole("button", { name: /^Imminent Pains/ }).click();
+
+    await expect(
+      page.getByRole("heading", { name: "Where do you feel pain?" }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Pick the body part. The training targets it."),
+    ).toBeVisible();
+    await expect(page.getByTestId("silhouette-thumbnail")).toHaveCount(5);
+
+    await page.getByRole("button", { name: "Knee & Hip" }).click();
+
+    // Prevention trainings skip the soreness check and ask for the place.
+    await expect(
+      page.getByRole("heading", { name: "Place & Equipment" }),
+    ).toBeVisible();
+    await page.getByRole("button", { name: /^At home, \d+ pieces$/ }).click();
+    await expect(
+      page.getByRole("heading", { name: "Training Overview" }),
+    ).toBeVisible({ timeout: 15000 });
+  });
+});
+
 // The web build draws a 63pt header and no safe areas. The portrait heights
 // subtract the room the taller iOS header and the home indicator take on each
 // phone; the landscape widths subtract the side safe areas.

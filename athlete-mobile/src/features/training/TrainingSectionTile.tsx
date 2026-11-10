@@ -54,12 +54,7 @@ export const TrainingSectionTile: FC<TrainingSectionTileProps> = ({
           intensity={intensity}
         />
       </Box>
-      <Box
-        flex={1}
-        justifyContent="center"
-        alignSelf="stretch"
-        paddingTop="xs"
-      >
+      <Box flex={1} justifyContent="center" alignSelf="stretch" paddingTop="xs">
         <Text
           variant="xSmall"
           textAlign="center"

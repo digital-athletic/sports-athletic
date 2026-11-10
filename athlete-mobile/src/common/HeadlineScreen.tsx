@@ -15,12 +15,16 @@ type Step = { current: number; total: number };
 
 type Action = { label: string; onPress: () => void; disabled?: boolean };
 
-type AnamnesisScreenProps = PropsWithChildren<{
+type HeadlineScreenProps = PropsWithChildren<{
   /** Name of the screen for the navigator and the browser tab. */
   title: string;
   heading: string;
   description?: string;
+  /** Small text above the heading. A step counter takes its place. */
+  eyebrow?: string;
   step?: Step;
+  /** Shows the stack header with the back arrow. Defaults to true. */
+  headerShown?: boolean;
   onBack?: () => void;
   headerRight?: ReactNode;
   /** Main button, pinned to the bottom. Without it the screen has no footer. */
@@ -48,14 +52,16 @@ const Footer: FC<{ action: Action }> = ({ action }) => {
 };
 
 /**
- * Frame of every anamnesis step: a quiet header with the step progress, a
- * large headline, the scrolling questions and the main button at the bottom.
+ * Screen frame with a quiet header (back arrow, optional step progress), a
+ * large headline, the scrolling content and the main button at the bottom.
  */
-export const AnamnesisScreen: FC<AnamnesisScreenProps> = ({
+export const HeadlineScreen: FC<HeadlineScreenProps> = ({
   title,
   heading,
   description,
+  eyebrow,
   step,
+  headerShown = true,
   onBack,
   headerRight,
   action,
@@ -63,12 +69,13 @@ export const AnamnesisScreen: FC<AnamnesisScreenProps> = ({
 }) => {
   const { t } = useTranslation();
   const { colors, spacing } = useTheme();
+  const eyebrowText = step ? t("common.stepOf", step) : eyebrow;
 
   return (
     <>
       <Stack.Screen
         options={{
-          headerShown: true,
+          headerShown,
           title,
           headerTitle: () => (step ? <StepProgress {...step} /> : null),
           headerTitleAlign: "center",
@@ -86,7 +93,7 @@ export const AnamnesisScreen: FC<AnamnesisScreenProps> = ({
           contentContainerStyle={{ padding: spacing.l, gap: spacing.xl }}
         >
           <Box gap="s">
-            {step && <Text variant="eyebrow">{t("common.stepOf", step)}</Text>}
+            {eyebrowText ? <Text variant="eyebrow">{eyebrowText}</Text> : null}
             <Text variant="display" accessibilityRole="header">
               {heading}
             </Text>

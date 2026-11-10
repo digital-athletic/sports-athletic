@@ -2,7 +2,7 @@ import { Loading } from "@/common/Loading";
 import { SkipHeader } from "@/common/SkipHeader";
 import { SharedConstants } from "@/constants/sharedConstants";
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
-import { AnamnesisScreen } from "@/features/anamnesis/components/AnamnesisScreen";
+import { HeadlineScreen } from "@/common/HeadlineScreen";
 import { SeasonPhase as SeasonPhaseEnum } from "@/features/training/models/SeasonPhase";
 import {
   deriveSeasonPhaseEndDate,
@@ -143,7 +143,7 @@ export default function SeasonPhase() {
   }
 
   return (
-    <AnamnesisScreen
+    <HeadlineScreen
       title={t("screens.seasonPhase.title")}
       heading={t("screens.seasonPhase.seasonPhaseLabel")}
       description={t("screens.seasonPhase.seasonPhaseDescription")}
@@ -183,6 +183,6 @@ export default function SeasonPhase() {
           }
         />
       </AnamnesisQuestionContainer>
-    </AnamnesisScreen>
+    </HeadlineScreen>
   );
 }

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { SkipHeader } from "@/common/SkipHeader";
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
-import { AnamnesisScreen } from "@/features/anamnesis/components/AnamnesisScreen";
+import { HeadlineScreen } from "@/common/HeadlineScreen";
 import { useShowSeasonPhaseAfterAnamnesis } from "@/features/anamnesis/useShowSeasonPhaseAfterAnamnesis";
 import { DateInputField } from "@/form/DateInputField";
 import { ChoiceCards } from "@/form/ChoiceCards";
@@ -87,7 +87,7 @@ export default function UserProfileScreen() {
   ] as const;
 
   return (
-    <AnamnesisScreen
+    <HeadlineScreen
       title={t("screens.userProfile.title")}
       heading={t("screens.userProfile.title")}
       step={{ current: currentStep, total: totalSteps }}
@@ -143,6 +143,6 @@ export default function UserProfileScreen() {
           accessibilityLabel={t("screens.userProfile.birthdayTitle")}
         />
       </AnamnesisQuestionContainer>
-    </AnamnesisScreen>
+    </HeadlineScreen>
   );
 }

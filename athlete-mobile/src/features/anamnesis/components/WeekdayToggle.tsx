@@ -29,7 +29,8 @@ export const WeekdayToggle: FC<WeekdayToggleProps> = ({
       ]}
       accessibilityRole="button"
       accessibilityLabel={label}
-      accessibilityState={{ selected: active }}
+      // react-native-web 0.21 maps only the aria props, not accessibilityState.
+      aria-selected={active}
     >
       <Text
         variant="body"

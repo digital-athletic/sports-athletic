@@ -21,7 +21,7 @@ Selection operates on branches (one exercise progression lane, authored levels 1
 - Plan creation from the anamnesis, training gaps, and per-skill maximum minutes: [Training Plan Creation](../planning/training-plan-creation-from-anamnesis.md); this spec starts from an existing plan
 - On-demand short workouts and the strength test: [Plan-Independent Workouts](./plan-independent-workouts.md)
 - Weight, repetition, and duration computation, feedback-based progression, and intensity tables: [Weight Calculation from Strength Tests](../progression/weight-calculation-from-strength-tests.md) and [Standard Exercise Progression](../progression/standard-exercise-progression.md)
-- Exercise swapping or skipping after the set list is shown
+- Exercise swapping or skipping during a running training; the swap on the training overview is defined in [Manual exercise swap](../foundations/branches-exercises-and-levels.md#manual-exercise-swap)
 - The soreness and place selection UI preceding generation
 - Persistence of the finished workout
 - Future work: a full list of antagonistic muscle groups for the superset rules

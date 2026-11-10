@@ -13,6 +13,9 @@ interface StatisticsExportButtonProps {
   scale: ScaleType;
 }
 
+// The compact chip row leaves little room, so the touch area reaches past the button.
+const HIT_SLOP = { top: 10, bottom: 10, left: 8, right: 8 };
+
 /** Header button that downloads the active sub tab and range as CSV. */
 export const StatisticsExportButton: FC<StatisticsExportButtonProps> = ({
   kind,
@@ -34,9 +37,10 @@ export const StatisticsExportButton: FC<StatisticsExportButtonProps> = ({
       flexDirection="row"
       alignItems="center"
       paddingVertical="xs"
+      hitSlop={HIT_SLOP}
     >
-      <Ionicon name="download-outline" size={18} color={colors[color]} />
-      <Text variant="small" color={color} marginLeft="xs">
+      <Ionicon name="download-outline" size={16} color={colors[color]} />
+      <Text variant="small" fontWeight="700" color={color} marginLeft="xs">
         {t("statistics.export.button")}
       </Text>
     </TouchableBox>

@@ -120,6 +120,53 @@ describe("StatisticsScreen: range selector", () => {
   });
 });
 
+describe("StatisticsScreen: header", () => {
+  afterEach(async () => {
+    await act(() => i18n.changeLanguage("en"));
+  });
+
+  it("shows the headline as a header", async () => {
+    const { getByRole } = await render(<StatisticsScreen />);
+
+    expect(getByRole("header", { name: "Statistics" })).toBeTruthy();
+  });
+
+  it("marks the active side of the toggle", async () => {
+    const { getByRole } = await render(<StatisticsScreen />);
+
+    expect(getByRole("tab", { name: "Training" })).toBeSelected();
+    expect(getByRole("tab", { name: "Power test" })).not.toBeSelected();
+
+    await fireEvent.press(getByRole("tab", { name: "Power test" }));
+
+    expect(getByRole("tab", { name: "Power test" })).toBeSelected();
+    expect(getByRole("tab", { name: "Training" })).not.toBeSelected();
+  });
+
+  it("shows short range chips that read the full range", async () => {
+    const { getByRole, queryByText } = await render(<StatisticsScreen />);
+
+    const week = getByRole("radio", { name: "Last week" });
+    expect(within(week).getByText("Week")).toBeTruthy();
+    expect(queryByText("Last week")).toBeNull();
+    expect(getByRole("radio", { name: "Total" })).toBeChecked();
+
+    await fireEvent.press(week);
+
+    expect(getByRole("radio", { name: "Last week" })).toBeChecked();
+  });
+
+  it("shows the german texts in german", async () => {
+    await act(() => i18n.changeLanguage("de"));
+    const { getByRole } = await render(<StatisticsScreen />);
+
+    expect(getByRole("header", { name: "Auswertung" })).toBeTruthy();
+    expect(getByRole("tab", { name: "Krafttest" })).toBeTruthy();
+    const week = getByRole("radio", { name: "Letzte Woche" });
+    expect(within(week).getByText("Woche")).toBeTruthy();
+  });
+});
+
 describe("StatisticsScreen: export button", () => {
   afterEach(async () => {
     await act(() => {

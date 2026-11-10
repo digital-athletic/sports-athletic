@@ -173,21 +173,34 @@ export class StatisticsPage extends BasePage {
   }
 
   /**
-   * Selects a time scale filter button in the screen header.
+   * Gets a time scale chip by its accessible name; the visible text is shorter ("Week").
    */
-  async selectTimeScale(scale: TimeScale): Promise<void> {
-    await this.getHeader().getByText(scale, { exact: true }).click();
+  private getTimeScaleChip(scale: TimeScale) {
+    return this.getHeader().getByRole("radio", { name: scale, exact: true });
   }
 
   /**
-   * Verifies all time scale buttons are visible in the screen header.
+   * Selects a time scale chip in the screen header and waits until it is checked.
+   */
+  async selectTimeScale(scale: TimeScale): Promise<void> {
+    const chip = this.getTimeScaleChip(scale);
+    await chip.click();
+    await expect(chip).toBeChecked();
+  }
+
+  /**
+   * Verifies all time scale chips are visible in the screen header.
    */
   async expectTimeScaleButtonsVisible(): Promise<void> {
-    const header = this.getHeader();
-    await expect(header.getByText("Last week", { exact: true })).toBeVisible();
-    await expect(header.getByText("Last month", { exact: true })).toBeVisible();
-    await expect(header.getByText("Last year", { exact: true })).toBeVisible();
-    await expect(header.getByText("Total", { exact: true })).toBeVisible();
+    const scales: TimeScale[] = [
+      "Last week",
+      "Last month",
+      "Last year",
+      "Total",
+    ];
+    for (const scale of scales) {
+      await expect(this.getTimeScaleChip(scale)).toBeVisible();
+    }
   }
 
   /**

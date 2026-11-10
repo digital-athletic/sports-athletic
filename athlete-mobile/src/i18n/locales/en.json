@@ -933,14 +933,15 @@
     }
   },
   "statistics": {
-    "screenTitle": "Evaluation",
+    "screenTitle": "Statistics",
     "tabs": {
       "workouts": "Training",
-      "powerTest": "Power test"
+      "powerTest": "Power test",
+      "label": "Statistics view"
     },
     "export": {
       "label": "Download statistics as CSV",
-      "button": "Export CSV",
+      "button": "CSV",
       "headers": {
         "workoutId": "Workout ID",
         "date": "Date",
@@ -1003,6 +1004,13 @@
         "year": "Last year",
         "total": "Total"
       },
+      "scalesShort": {
+        "week": "Week",
+        "month": "Month",
+        "year": "Year",
+        "total": "Total"
+      },
+      "scalesLabel": "Time range",
       "noWorkoutYet": "No trainings yet",
       "recentWorkouts": "Recent workouts",
       "testWorkout": "Power test",

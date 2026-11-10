@@ -936,11 +936,12 @@
     "screenTitle": "Auswertung",
     "tabs": {
       "workouts": "Training",
-      "powerTest": "Krafttest"
+      "powerTest": "Krafttest",
+      "label": "Ansicht der Auswertung"
     },
     "export": {
       "label": "Auswertung als CSV herunterladen",
-      "button": "CSV exportieren",
+      "button": "CSV",
       "headers": {
         "workoutId": "Workout-ID",
         "date": "Datum",
@@ -1003,6 +1004,13 @@
         "year": "Letztes Jahr",
         "total": "Gesamt"
       },
+      "scalesShort": {
+        "week": "Woche",
+        "month": "Monat",
+        "year": "Jahr",
+        "total": "Gesamt"
+      },
+      "scalesLabel": "Zeitraum",
       "noWorkoutYet": "Keine Trainings bisher",
       "recentWorkouts": "Letzte Trainings",
       "testWorkout": "Krafttest",

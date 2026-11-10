@@ -8,6 +8,8 @@ import { Pressable, StyleSheet } from "react-native";
 export type ChoiceOption = {
   value: string;
   label: string;
+  /** Screen reader name when the visible label is a short form of it. */
+  accessibilityLabel?: string;
   description?: string;
   iconName?: IoniconName;
 };
@@ -60,7 +62,7 @@ const ChoiceCard: FC<ChoiceCardProps> = ({
   return (
     <Pressable
       accessibilityRole="radio"
-      accessibilityLabel={option.label}
+      accessibilityLabel={option.accessibilityLabel ?? option.label}
       accessibilityHint={option.description}
       // react-native-web 0.21 maps only the aria props, not accessibilityState.
       aria-checked={selected}

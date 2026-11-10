@@ -244,7 +244,7 @@ const ManualStrengthTestScreen: FC = () => {
         />
         <Box flex={1} backgroundColor="white">
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            <Box flex={1} padding="m">
+            <Box flex={1} paddingVertical="m">
               <PowerTest isSuccessScreen={true} />
             </Box>
           </ScrollView>

@@ -52,5 +52,4 @@ export const BASELINE_TRAINING_STATE = {
   },
   activeTraining: null,
   tempMaxValues: null,
-  swapStartLevels: [],
 };

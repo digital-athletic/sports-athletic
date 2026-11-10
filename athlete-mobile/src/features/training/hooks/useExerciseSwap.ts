@@ -29,6 +29,7 @@ import { setUpWorkout } from "@/features/training/workoutGenerator/stages/workou
 import type { StoredBranch } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import { generateTrainingDayFromStoredDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import { Logger } from "@/services/Logger";
+import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { parseIntParam } from "@/utils/router";
 import { useEffect, useEffectEvent, useState } from "react";
 
@@ -192,7 +193,7 @@ const useSwapState = (request: SwapRequest) => {
 export function useExerciseSwap(params: SwapParams, fallbackPlace: PlaceType) {
   const ctx = useGenerationContext();
   const setExerciseList = useTrainingStore((s) => s.setExerciseList);
-  const setSwapStartLevels = useTrainingStore((s) => s.setSwapStartLevels);
+  const setBranchLevel = useExerciseProgressStore((s) => s.setBranchLevel);
   const request: SwapRequest = { params, ctx, place: fallbackPlace };
   const { swaps, setSwaps } = useSwapState(request);
 
@@ -224,15 +225,15 @@ export function useExerciseSwap(params: SwapParams, fallbackPlace: PlaceType) {
     onSwap: swapExercise,
   };
 
-  /** Stores the start levels of the swapped in Branches for their first save. */
+  /** Stores the start level of each swapped in Branch when the training starts. */
   const startWithSwaps = () => {
-    setSwapStartLevels(
-      listSwapStartLevels(
-        listSwappedInBranches(Object.values(swaps)),
-        ctx.branchData,
-        getUserLevel(buildUser(params, ctx)),
-      ),
-    );
+    for (const { branchId, level, exerciseId } of listSwapStartLevels(
+      listSwappedInBranches(Object.values(swaps)),
+      ctx.branchData,
+      getUserLevel(buildUser(params, ctx)),
+    )) {
+      setBranchLevel(branchId, level, exerciseId);
+    }
   };
 
   return { swapControls, startWithSwaps };

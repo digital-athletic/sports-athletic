@@ -1342,40 +1342,6 @@ describe("useTrainingStore", () => {
   });
 });
 
-describe("useTrainingStore: swap start levels", () => {
-  const startLevel = { branchId: "20", level: 2, exerciseId: "20x2" };
-
-  beforeEach(() => {
-    useTrainingStore.getState().clearTraining();
-  });
-
-  it("hands out the start level of a branch once", () => {
-    useTrainingStore.getState().setSwapStartLevels([startLevel]);
-
-    const first = useTrainingStore.getState().takeSwapStartLevel("20");
-    const second = useTrainingStore.getState().takeSwapStartLevel("20");
-
-    expect([first, second]).toEqual([startLevel, null]);
-  });
-
-  it("keeps the start levels of other branches", () => {
-    const other = { branchId: "30", level: 3, exerciseId: "30x3" };
-    useTrainingStore.getState().setSwapStartLevels([startLevel, other]);
-
-    useTrainingStore.getState().takeSwapStartLevel("20");
-
-    expect(useTrainingStore.getState().swapStartLevels).toEqual([other]);
-  });
-
-  it("drops the start levels when the training is cleared", () => {
-    useTrainingStore.getState().setSwapStartLevels([startLevel]);
-
-    useTrainingStore.getState().clearTraining();
-
-    expect(useTrainingStore.getState().swapStartLevels).toEqual([]);
-  });
-});
-
 describe("migrateTrainingStore: legacy version bridge", () => {
   const migratedFixture = {
     selection: "QUICK",
@@ -1417,21 +1383,13 @@ describe("migrateTrainingStore: legacy version bridge", () => {
   it("preserves user data persisted at legacy version 0", () => {
     const result = migrateTrainingStore(persistedAtVersionZero, 0);
 
-    expect(result).toEqual({
-      ...migratedFixture,
-      trainingViewMode: null,
-      swapStartLevels: [],
-    });
+    expect(result).toEqual({ ...migratedFixture, trainingViewMode: null });
   });
 
-  it("applies the v14 -> v17 migrations when persisted at v14", () => {
+  it("applies the v14 -> v16 migrations when persisted at v14", () => {
     const result = migrateTrainingStore(persistedAtVersionZero, 14);
 
-    expect(result).toEqual({
-      ...migratedFixture,
-      trainingViewMode: null,
-      swapStartLevels: [],
-    });
+    expect(result).toEqual({ ...migratedFixture, trainingViewMode: null });
   });
 
   it("folds completedExerciseIndices persisted at v15 into per-entry marks", () => {
@@ -1449,23 +1407,13 @@ describe("migrateTrainingStore: legacy version bridge", () => {
     expect(result).not.toHaveProperty("activeExerciseIndex");
   });
 
-  it("adds empty swap start levels to state persisted at v16", () => {
-    const result = migrateTrainingStore(
-      { ...migratedFixture, trainingViewMode: null },
-      16,
-    );
-
-    expect(result.swapStartLevels).toEqual([]);
-  });
-
   it("returns state unchanged when already at the registered version", () => {
     const persistedAtCurrentVersion = {
       ...migratedFixture,
       trainingViewMode: null,
-      swapStartLevels: [],
     };
 
-    const result = migrateTrainingStore(persistedAtCurrentVersion, 17);
+    const result = migrateTrainingStore(persistedAtCurrentVersion, 16);
 
     expect(result).toEqual(persistedAtCurrentVersion);
   });

@@ -458,18 +458,3 @@ describe("useExerciseCompletion: cardio", () => {
     expect(stored()?.duration).toBeUndefined();
   });
 });
-
-describe("useExerciseCompletion: swapped in branch", () => {
-  it("stores the start level of a swapped in branch on its first save", async () => {
-    seedCompletionSession({ branchId: "77", repetition: 10 });
-    useExerciseProgressStore.getState().setBranchLevel("77", 1, "899");
-    useTrainingStore
-      .getState()
-      .setSwapStartLevels([{ branchId: "77", level: 2, exerciseId: "900" }]);
-    const { result } = await renderHook(() => useExerciseCompletion());
-
-    await act(() => result.current.saveExerciseAndBranchData(0));
-
-    expect(useExerciseProgressStore.getState().getBranchLevel("77")).toBe(2);
-  });
-});

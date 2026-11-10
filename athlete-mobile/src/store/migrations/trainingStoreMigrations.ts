@@ -32,9 +32,4 @@ export const trainingStoreMigrations: MigrationMap<State> = {
         : legacy.exerciseList,
     };
   },
-  // v16 -> v17: added swapStartLevels for exercises swapped on the overview.
-  16: (state) => ({
-    ...state,
-    swapStartLevels: [],
-  }),
 };

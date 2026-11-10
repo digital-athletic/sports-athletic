@@ -507,6 +507,12 @@
       "finishEarly": {
         "question": "Finish training early?",
         "explanation": "Not all sets are done. The training ends incomplete."
+      },
+      "share": {
+        "label": "Share the workout as text",
+        "copied": "The workout is copied. You can paste it into your notes.",
+        "setNumber": "Set {{number}}",
+        "title": "Workout"
       }
     },
     "active": {

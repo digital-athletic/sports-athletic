@@ -170,6 +170,12 @@ export class TrainingListPage extends BasePage {
     await expect(this.title).toBeVisible();
   }
 
+  async shareWorkout() {
+    await this.page
+      .getByRole("button", { name: "Share the workout as text" })
+      .click({ timeout: 15000 });
+  }
+
   entry(testId: string) {
     return this.page.getByTestId(testId);
   }

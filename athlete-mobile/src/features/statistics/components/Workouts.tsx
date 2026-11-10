@@ -1,7 +1,7 @@
-import { RadarChart } from "@/charts/RadarChart";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import type { CompleteWorkoutType } from "@/store/completedWorkoutsStore";
 import { Box } from "@/theme/Box";
+import { Card } from "@/theme/Card";
 import { Text } from "@/theme/Text";
 import { formatDateForDisplay, dateToHHMM } from "@/utils/date";
 import { getTimeString, getWeightString } from "@/utils/formatters";
@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { useStatisticsWorkouts } from "../hooks/useStatisticsWorkouts";
 import { useWorkoutsData } from "../hooks/useWorkoutsData";
 import type { ScaleType } from "../models/WorkoutsData";
-import { StatisticsCard } from "./StatisticsCard";
+import { RadarChartCard } from "./RadarChartCard";
 import { TrainingSummary } from "./TrainingSummary";
 
 interface WorkoutsProps {
@@ -56,7 +56,8 @@ const WorkoutCard: FC<{ workout: CompleteWorkoutType }> = ({ workout }) => {
   ] as const;
 
   return (
-    <StatisticsCard
+    <Card
+      variant="outlined"
       paddingHorizontal="m"
       paddingVertical="s"
       gap="xs"
@@ -81,7 +82,7 @@ const WorkoutCard: FC<{ workout: CompleteWorkoutType }> = ({ workout }) => {
           </Text>
         ))}
       </Text>
-    </StatisticsCard>
+    </Card>
   );
 };
 
@@ -103,13 +104,7 @@ export const Workouts: FC<WorkoutsProps> = ({
 
   return (
     <Box paddingHorizontal="m" paddingBottom="l" gap="m">
-      <StatisticsCard
-        backgroundColor="lightGrey1"
-        alignItems="center"
-        paddingVertical="s"
-      >
-        <RadarChart userSkills={userSkills} />
-      </StatisticsCard>
+      <RadarChartCard userSkills={userSkills} />
       <TrainingSummary
         duration={getTimeString(summaryData.duration)}
         count={String(summaryData.count)}
@@ -125,12 +120,7 @@ export const Workouts: FC<WorkoutsProps> = ({
         </Box>
       ) : (
         <Box gap="s" testID="workouts-list-container">
-          <Text
-            variant="body"
-            fontWeight="bold"
-            accessibilityRole="header"
-            marginTop="s"
-          >
+          <Text variant="sectionLabel" accessibilityRole="header" marginTop="s">
             {t("statistics.workouts.recentWorkouts")}
           </Text>
           <Box gap="s" testID="workouts-list">

@@ -1,8 +1,7 @@
-import { RadarChart } from "@/charts/RadarChart";
 import { SUPPORT_EMAIL } from "@/constants/AppConstants";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { PowerTest } from "@/features/statistics/components/PowerTest";
-import { StatisticsCard } from "@/features/statistics/components/StatisticsCard";
+import { RadarChartCard } from "@/features/statistics/components/RadarChartCard";
 import { TrainingSummary } from "@/features/statistics/components/TrainingSummary";
 import { seconds } from "@/features/training/models/TimeUnits";
 import { useTrainingStore } from "@/features/training/trainingStore";
@@ -133,13 +132,7 @@ const TrainingSuccessScreen: FC = () => {
             </Box>
           ) : hasWorkoutData ? (
             <Box flex={1} paddingHorizontal="m" paddingTop="l" gap="m">
-              <StatisticsCard
-                backgroundColor="lightGrey1"
-                alignItems="center"
-                paddingVertical="s"
-              >
-                <RadarChart userSkills={skills} />
-              </StatisticsCard>
+              <RadarChartCard userSkills={skills} />
               <TrainingSummary
                 duration={getTimeString(totals.duration)}
                 count={totals.count.toString()}

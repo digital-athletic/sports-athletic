@@ -1,10 +1,10 @@
 import { Ionicon, type IoniconName } from "@/common/Ionicon";
 import { Box } from "@/theme/Box";
+import { Card } from "@/theme/Card";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { StatisticsCard } from "./StatisticsCard";
 
 interface TrainingSummaryProps {
   duration: string;
@@ -43,7 +43,8 @@ const SummaryCard: FC<SummaryCardProps> = ({ type, value, testID }) => {
   const label = t(`statistics.workouts.summary.${type}`);
 
   return (
-    <StatisticsCard
+    <Card
+      variant="outlined"
       flex={1}
       flexDirection="row"
       alignItems="center"
@@ -80,7 +81,7 @@ const SummaryCard: FC<SummaryCardProps> = ({ type, value, testID }) => {
           {label}
         </Text>
       </Box>
-    </StatisticsCard>
+    </Card>
   );
 };
 

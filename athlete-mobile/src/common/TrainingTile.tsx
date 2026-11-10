@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     width: "48%",
     aspectRatio: 1.1,
   },
-  // Explicit size: on web a bundled image keeps its pixel size otherwise.
+  // Explicit size: on web a bundled image renders at its pixel size otherwise.
   fill: {
     position: "absolute",
     width: "100%",

@@ -19,7 +19,8 @@ export function WeightQuestion({
       <TextInputField
         value={value}
         placeholder={t("anamnesisQuestions.weight.placeholder")}
-        iconName="scale"
+        iconName="scale-outline"
+        keyboardType="decimal-pad"
         accessibilityLabel={t("anamnesisQuestions.weight.title")}
         onChange={(value) => onChangeValue("weight", value)}
       />

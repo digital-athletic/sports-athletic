@@ -18,7 +18,7 @@ const ButtonContainer = createRestyleComponent<
 >([createVariant({ themeKey: "buttonVariants" }), spacing], Pressable);
 
 export type ButtonProps = PropsWithChildren<{
-  variant?: "primary" | "secondary" | "success" | "quickAction";
+  variant?: "primary" | "secondary" | "success" | "quickAction" | "cta";
 }> &
   SpacingProps<Theme> &
   Omit<PressableProps, "children">;
@@ -27,7 +27,7 @@ export type ButtonProps = PropsWithChildren<{
  * Button Component
  *
  * A themed button component using Restyle variants.
- * Supports primary, secondary, success, and quickAction variants.
+ * Supports primary, secondary, success, quickAction, and cta variants.
  *
  * @example
  * <Button>Primary Action</Button>

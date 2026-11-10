@@ -26,8 +26,9 @@ const restyleFunctions = composeRestyleFunctions<Theme, RestyleProps>([
   spacing,
 ]);
 
+// useRestyle already merges the passed style after the theme style.
 export const ScrollBox: FC<ScrollViewProps & RestyleProps> = (props) => {
   const stylingProps = useRestyle(restyleFunctions, props);
 
-  return <ScrollView {...stylingProps} {...props} />;
+  return <ScrollView {...stylingProps} />;
 };

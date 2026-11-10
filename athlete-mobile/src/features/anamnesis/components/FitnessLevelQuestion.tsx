@@ -1,8 +1,14 @@
 import { TagGroups } from "@/constants/tagGroups";
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
-import { SnapSliderInputField } from "@/form/SnapSliderInputField";
+import { ChoiceCards } from "@/form/ChoiceCards";
 import { useTranslation } from "react-i18next";
 import { type AnamnesisQuestionProps } from "./AnamnesisQuestionProps";
+
+const LEVELS = [
+  { value: "BEGINNER", key: "beginner" },
+  { value: "ADVANCED", key: "advanced" },
+  { value: "PROFESSIONAL", key: "professional" },
+] as const;
 
 export function FitnessLevelQuestion({
   tags,
@@ -10,30 +16,16 @@ export function FitnessLevelQuestion({
 }: AnamnesisQuestionProps) {
   const { t } = useTranslation();
 
-  const value = tags[TagGroups.LEVEL] || [];
+  // Without a stored level the plan uses beginner, so the cards show it too.
+  const value = tags[TagGroups.LEVEL]?.[0] ?? LEVELS[0].value;
 
-  const options = [
-    {
-      value: "BEGINNER",
-      displayName: t("anamnesisQuestions.fitnessLevel.options.beginner"),
-    },
-    {
-      value: "ADVANCED",
-      displayName: t("anamnesisQuestions.fitnessLevel.options.advanced"),
-    },
-    {
-      value: "PROFESSIONAL",
-      displayName: t("anamnesisQuestions.fitnessLevel.options.professional"),
-    },
-  ];
-
-  let valueIndex = 0;
-  const items = options.map((entry, index) => {
-    if (entry.value === value[0]) {
-      valueIndex = index;
-    }
-    return { value: index, label: entry.displayName };
-  });
+  const options = LEVELS.map((level) => ({
+    value: level.value,
+    label: t(`anamnesisQuestions.fitnessLevel.options.${level.key}`),
+    description: t(
+      `anamnesisQuestions.fitnessLevel.optionDescriptions.${level.key}`,
+    ),
+  }));
 
   return (
     <AnamnesisQuestionContainer
@@ -42,17 +34,11 @@ export function FitnessLevelQuestion({
         default: t("anamnesisQuestions.fitnessLevel.description"),
       }}
     >
-      <SnapSliderInputField
-        startItem={valueIndex}
-        sliderOptions={items}
-        descriptionText=""
+      <ChoiceCards
         accessibilityLabel={t("anamnesisQuestions.fitnessLevel.title")}
-        onChange={(value) => {
-          const selectedValue = options[value as number]?.value;
-          if (selectedValue) {
-            onChangeTag(TagGroups.LEVEL, [selectedValue]);
-          }
-        }}
+        options={options}
+        value={value}
+        onChange={(level) => onChangeTag(TagGroups.LEVEL, [level])}
       />
     </AnamnesisQuestionContainer>
   );

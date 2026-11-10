@@ -56,7 +56,8 @@
       "congratulations": "Glückwunsch!",
       "level": "Level {{level}}",
       "close": "Schließen"
-    }
+    },
+    "stepOf": "Schritt {{current}} von {{total}}"
   },
   "screens": {
     "start": {
@@ -1063,11 +1064,16 @@
     },
     "fitnessLevel": {
       "title": "Fitnesslevel",
-      "description": "Wie oft machst du Krafttraining zusätzlich zum Mannschaftstraining?\n\nAnfänger: selten\n\nFortgeschrittener: seit über 6 Monaten mindestens 1-mal pro Woche\n\nProfi: seit 1,5 Jahren mindestens 2-mal pro Woche",
+      "description": "Wie oft machst du Krafttraining zusätzlich zum Mannschaftstraining?",
       "options": {
         "beginner": "Anfänger",
         "advanced": "Fortgeschrittener",
         "professional": "Profi"
+      },
+      "optionDescriptions": {
+        "beginner": "Selten",
+        "advanced": "Seit über 6 Monaten mindestens 1-mal pro Woche",
+        "professional": "Seit 1,5 Jahren mindestens 2-mal pro Woche"
       }
     },
     "pain": {

@@ -72,6 +72,10 @@ export class AnamnesisPage extends BasePage {
     return this.page.getByText("OK").last();
   }
 
+  private choice(name: string) {
+    return this.page.getByRole("radio", { name, exact: true });
+  }
+
   async selectSport(sportName: string) {
     await expect(this.sportHeading).toBeVisible();
     await this.page.getByRole("button", { name: sportName }).click();
@@ -96,8 +100,7 @@ export class AnamnesisPage extends BasePage {
     }
 
     if (params.gender) {
-      await this.page.getByText(params.gender).first().click();
-      await this.okButton.click();
+      await this.choice(params.gender).click();
     }
 
     await this.goOnButton.click();
@@ -121,9 +124,7 @@ export class AnamnesisPage extends BasePage {
     await expect(this.positionFitnessHeading).toBeVisible();
 
     if (params.position) {
-      await this.chooseButton.click();
-      await this.page.getByText(params.position).click();
-      await this.okButton.click();
+      await this.choice(params.position).click();
     }
 
     await this.goOnButton.click();

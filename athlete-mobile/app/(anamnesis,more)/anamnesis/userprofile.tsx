@@ -1,13 +1,12 @@
-import { RoutePath, router, Stack, useLocalSearchParams } from "expo-router";
+import { RoutePath, router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 
-import { BackHeader } from "@/common/BackHeader";
-import { ProgressBar } from "@/common/ProgressBar";
 import { SkipHeader } from "@/common/SkipHeader";
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
+import { AnamnesisScreen } from "@/features/anamnesis/components/AnamnesisScreen";
 import { useShowSeasonPhaseAfterAnamnesis } from "@/features/anamnesis/useShowSeasonPhaseAfterAnamnesis";
 import { DateInputField } from "@/form/DateInputField";
-import { SelectionInputField } from "@/form/SelectionInputField";
+import { ChoiceCards } from "@/form/ChoiceCards";
 import { TextInputField } from "@/form/TextInputField";
 import {
   saveDisplayName,
@@ -15,8 +14,6 @@ import {
 } from "@/services/AuthService";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
-import { Button } from "@/theme/Button";
-import { ScrollBox } from "@/theme/ScrollBox";
 
 /**
  * UserProfile Component
@@ -61,9 +58,9 @@ export default function UserProfileScreen() {
     }
   };
 
-  const handleGenderChange = (values: string[]) => {
-    if (values[0] === "MALE" || values[0] === "FEMALE") {
-      setGender(values[0]);
+  const handleGenderChange = (value: string) => {
+    if (value === "MALE" || value === "FEMALE") {
+      setGender(value);
     }
   };
 
@@ -76,100 +73,76 @@ export default function UserProfileScreen() {
   const totalSteps = showSeasonPhaseAfterAnamnesis ? 6 : 4;
   const currentStep = 1;
 
+  const genderOptions = [
+    {
+      value: "MALE",
+      label: t("screens.userProfile.male"),
+      iconName: "male-outline",
+    },
+    {
+      value: "FEMALE",
+      label: t("screens.userProfile.female"),
+      iconName: "female-outline",
+    },
+  ] as const;
+
   return (
-    <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: t("screens.userProfile.title"),
-          headerRight: () =>
-            originPath === "/(anamnesis)/anamnesis/sport" ? (
-              <SkipHeader
-                alertTitle="screens.userProfile.abortAnamnesisQuestion"
-                alertMessage={
-                  anamnesisCompleted
-                    ? "screens.userProfile.abortAnamnesisExplanation"
-                    : "screens.userProfile.abortAnamnesisIncomplete"
-                }
-              />
-            ) : null,
-          headerLeft: () => <BackHeader />,
-        }}
-      />
-      <ScrollBox
-        flex={1}
-        backgroundColor="lightGrey1"
-        contentInsetAdjustmentBehavior="automatic"
+    <AnamnesisScreen
+      title={t("screens.userProfile.title")}
+      heading={t("screens.userProfile.title")}
+      step={{ current: currentStep, total: totalSteps }}
+      headerRight={
+        originPath === "/(anamnesis)/anamnesis/sport" ? (
+          <SkipHeader
+            alertTitle="screens.userProfile.abortAnamnesisQuestion"
+            alertMessage={
+              anamnesisCompleted
+                ? "screens.userProfile.abortAnamnesisExplanation"
+                : "screens.userProfile.abortAnamnesisIncomplete"
+            }
+          />
+        ) : null
+      }
+      action={{ label: t("screens.userProfile.goOn"), onPress: goOn }}
+    >
+      <AnamnesisQuestionContainer
+        title={{ default: t("screens.userProfile.usernameTitle") }}
+        description={{ default: t("screens.userProfile.usernameDescription") }}
       >
-        <ProgressBar progress={currentStep} maximum={totalSteps} />
-        <AnamnesisQuestionContainer
-          title={{
-            default: t("screens.userProfile.usernameTitle"),
-          }}
-          description={{
-            default: t("screens.userProfile.usernameDescription"),
-          }}
-        >
-          <TextInputField
-            value={username}
-            placeholder={t("screens.userProfile.usernamePlaceholder")}
-            iconName="person"
-            accessibilityLabel={t("screens.userProfile.usernameTitle")}
-            onChange={handleNameChange}
-          />
-        </AnamnesisQuestionContainer>
+        <TextInputField
+          value={username}
+          placeholder={t("screens.userProfile.usernamePlaceholder")}
+          iconName="person-outline"
+          accessibilityLabel={t("screens.userProfile.usernameTitle")}
+          onChange={handleNameChange}
+        />
+      </AnamnesisQuestionContainer>
 
-        <AnamnesisQuestionContainer
-          title={{
-            default: t("screens.userProfile.genderTitle"),
-          }}
-          description={{
-            default: t("screens.userProfile.genderDescription"),
-          }}
-        >
-          <SelectionInputField
-            onChange={handleGenderChange}
-            iconName="people"
-            selectedItems={[gender]}
-            items={[
-              {
-                value: "MALE",
-                displayName: {
-                  default: t("screens.userProfile.male"),
-                },
-              },
-              {
-                value: "FEMALE",
-                displayName: {
-                  default: t("screens.userProfile.female"),
-                },
-              },
-            ]}
-            singleSelection={true}
-          />
-        </AnamnesisQuestionContainer>
+      <AnamnesisQuestionContainer
+        title={{ default: t("screens.userProfile.genderTitle") }}
+        description={{ default: t("screens.userProfile.genderDescription") }}
+      >
+        <ChoiceCards
+          accessibilityLabel={t("screens.userProfile.genderTitle")}
+          direction="row"
+          options={genderOptions}
+          value={gender}
+          onChange={handleGenderChange}
+        />
+      </AnamnesisQuestionContainer>
 
-        <AnamnesisQuestionContainer
-          title={{
-            default: t("screens.userProfile.birthdayTitle"),
-          }}
-          description={{
-            default: t("screens.userProfile.birthdayDescription"),
-          }}
-        >
-          <DateInputField
-            type="date"
-            dateTime={birthday}
-            onChange={handleBirthdayChange}
-            maximumDate={new Date()}
-            accessibilityLabel={t("screens.userProfile.birthdayTitle")}
-          />
-        </AnamnesisQuestionContainer>
-
-        <Button onPress={goOn} margin="m">
-          {t("screens.userProfile.goOn")}
-        </Button>
-      </ScrollBox>
-    </>
+      <AnamnesisQuestionContainer
+        title={{ default: t("screens.userProfile.birthdayTitle") }}
+        description={{ default: t("screens.userProfile.birthdayDescription") }}
+      >
+        <DateInputField
+          type="date"
+          dateTime={birthday}
+          onChange={handleBirthdayChange}
+          maximumDate={new Date()}
+          accessibilityLabel={t("screens.userProfile.birthdayTitle")}
+        />
+      </AnamnesisQuestionContainer>
+    </AnamnesisScreen>
   );
 }

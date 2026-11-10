@@ -56,7 +56,8 @@
       "congratulations": "Congratulations!",
       "level": "Level {{level}}",
       "close": "Close"
-    }
+    },
+    "stepOf": "Step {{current}} of {{total}}"
   },
   "screens": {
     "start": {
@@ -1063,11 +1064,16 @@
     },
     "fitnessLevel": {
       "title": "Fitness Level",
-      "description": "How often do you do weight training on top of team trainings?\n\nBeginner: rarely\n\nAdvanced: for over 6 months, at least once a week\n\nProfessional: for 18 months, at least twice a week",
+      "description": "How often do you do weight training on top of team trainings?",
       "options": {
         "beginner": "Beginner",
         "advanced": "Advanced",
         "professional": "Professional"
+      },
+      "optionDescriptions": {
+        "beginner": "Rarely",
+        "advanced": "For over 6 months, at least once a week",
+        "professional": "For 18 months, at least twice a week"
       }
     },
     "pain": {

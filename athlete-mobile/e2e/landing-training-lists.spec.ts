@@ -31,7 +31,7 @@ async function mockTwoUserTeams(page: Page) {
 test.describe("Home: training lists", () => {
   test.use({ profile: createCompletedProfile(), signedIn: true });
 
-  test("athlete opens the focus and additional training lists", async ({
+  test("athlete sees the shortcuts and opens the additional training list", async ({
     page,
   }) => {
     test.setTimeout(60000);
@@ -52,24 +52,6 @@ test.describe("Home: training lists", () => {
       fullPage: true,
     });
 
-    await focusButton.click();
-    await expect(
-      page.getByRole("button", { name: "Focus-Trainings" }),
-    ).toBeVisible();
-    await page.screenshot({
-      path: "playwright/screenshots/focus-training-list.png",
-      fullPage: true,
-    });
-
-    await page.getByRole("button", { name: "Imminent Pains" }).click();
-    await expect(page.getByText("Shoulder").first()).toBeVisible();
-    await page.screenshot({
-      path: "playwright/screenshots/prevention-training-tiles.png",
-      fullPage: true,
-    });
-
-    await page.goto("/");
-    await basePage.expectLoggedIn();
     await page.getByRole("button", { name: "Additional trainings" }).click();
     await expect(page.getByText("First Team")).toBeVisible();
     await page.screenshot({
@@ -87,6 +69,55 @@ test.describe("Home: training lists", () => {
     await page.screenshot({
       path: "playwright/screenshots/additional-training-workouts-empty.png",
       fullPage: true,
+    });
+  });
+});
+
+test.describe("Home: focus and prevention choice", () => {
+  test.use({ profile: createCompletedProfile(), signedIn: true });
+
+  test("athlete opens the choice from home and starts a prevention training", async ({
+    page,
+  }) => {
+    test.setTimeout(60000);
+    await mockSupabaseAuth(page);
+
+    const basePage = new BasePage(page);
+    await page.goto("/");
+    await basePage.expectLoggedIn();
+
+    await page.getByRole("button", { name: "Focus & Prevention" }).click();
+    await expect(
+      page.getByRole("heading", { name: "Focus & Prevention" }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        "Short trainings next to your plan. Pick what you need today.",
+      ),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /^Focus-Trainings/ }),
+    ).toBeVisible();
+    await page.screenshot({
+      path: "playwright/screenshots/focus-prevention-choice.png",
+      fullPage: true,
+    });
+
+    await page.getByRole("button", { name: /^Imminent Pains/ }).click();
+    await expect(page.getByText("Shoulder").first()).toBeVisible();
+    await page.screenshot({
+      path: "playwright/screenshots/prevention-training-tiles.png",
+      fullPage: true,
+    });
+
+    await page.getByText("Shoulder").first().click();
+    await expect(
+      page.getByRole("heading", { name: "Place & Equipment" }),
+    ).toBeVisible({ timeout: 10000 });
+
+    await page.getByRole("button", { name: /^At home, \d+ pieces$/ }).click();
+    await expect(page.getByText("Training Overview")).toBeVisible({
+      timeout: 15000,
     });
   });
 });

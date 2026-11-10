@@ -2,6 +2,7 @@ import { CenteredLoading } from "@/common/CenteredLoading";
 import { TrainingExerciseSheet } from "@/features/training/TrainingExerciseSheet";
 import { TrainingListHeader } from "@/features/training/TrainingListHeader";
 import { TrainingListRows } from "@/features/training/TrainingListRows";
+import { TrainingProgressBar } from "@/features/training/TrainingProgressBar";
 import { useTrainingListScreen } from "@/features/training/hooks/useTrainingListScreen";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
@@ -25,6 +26,7 @@ const TrainingList: FC<TrainingListProps> = () => {
     exerciseList,
     repsDraft,
     blocks,
+    progress,
     isFinishing,
     handleFinish,
     handleShowInfo,
@@ -60,6 +62,9 @@ const TrainingList: FC<TrainingListProps> = () => {
           borderTopWidth={1}
           borderTopColor="lightGrey1"
         >
+          <Box marginBottom="m" borderRadius="round" overflow="hidden">
+            <TrainingProgressBar progress={progress} />
+          </Box>
           <Button
             onPress={handleFinish}
             disabled={isFinishing}

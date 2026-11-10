@@ -321,7 +321,9 @@ export function useTrainingListRows() {
 
   // The athlete still taps the finish button, unlike in the step-by-step view.
   const allCompleted = rows.length > 0 && rows.every((row) => row.completed);
+  const completedCount = rows.filter((row) => row.completed).length;
+  const progress = rows.length > 0 ? completedCount / rows.length : 0;
   const blocks = buildEntryBlocks(exerciseList ?? [], rows, maxValues, t);
 
-  return { rows, blocks, allCompleted };
+  return { rows, blocks, allCompleted, progress };
 }

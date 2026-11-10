@@ -18,7 +18,7 @@ export function useTrainingListScreen() {
   const exerciseList = useTrainingStore((s) => s.exerciseList);
   const hasHydrated = useTrainingStore((s) => s._hasHydrated);
 
-  const { rows, blocks, allCompleted } = useTrainingListRows();
+  const { rows, blocks, allCompleted, progress } = useTrainingListRows();
   const completion = useTrainingListCompletion();
   const { repsDraft, setRepsForRow, handleSubmitReps } = useTrainingListReps();
   const timing = useTrainingListTiming();
@@ -55,6 +55,7 @@ export function useTrainingListScreen() {
     exerciseList,
     repsDraft,
     blocks,
+    progress,
     isFinishing,
     handleFinish,
     handleShowInfo,

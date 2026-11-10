@@ -59,6 +59,18 @@ export const theme = createTheme({
       padding: "l",
       borderRadius: "m",
     },
+
+    // Bordered card of the redesigned screens, matching the choice cards.
+    // The defaults add padding and a shadow, so this variant resets both.
+    outlined: {
+      backgroundColor: "white",
+      padding: "none",
+      borderWidth: 1.5,
+      borderColor: "lightGrey2",
+      borderRadius: "xl",
+      shadowOpacity: 0,
+      elevation: 0,
+    },
   },
 
   buttonVariants: {

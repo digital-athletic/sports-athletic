@@ -301,7 +301,12 @@
       "PREVENTION_TILE_KNEE": "Knie & Hüfte",
       "PREVENTION_TILE_SPINE": "Wirbelsäule",
       "PREVENTION_TILE_SHOULDER": "Schulter",
-      "PREVENTION_TILE_WRIST": "Handgelenk & Ellbogen"
+      "PREVENTION_TILE_WRIST": "Handgelenk & Ellbogen",
+      "selection": {
+        "eyebrow": "Präventionstraining",
+        "heading": "Wo hast du Beschwerden?",
+        "description": "Wähle die Körperstelle. Das Training zielt darauf."
+      }
     },
     "generator": {
       "errorMsgOther": "Die App konnte das Training nicht erstellen. Versuche es noch einmal.",

@@ -301,7 +301,12 @@
       "PREVENTION_TILE_KNEE": "Knee & Hip",
       "PREVENTION_TILE_SPINE": "Spine",
       "PREVENTION_TILE_SHOULDER": "Shoulder",
-      "PREVENTION_TILE_WRIST": "Wrist & Elbow"
+      "PREVENTION_TILE_WRIST": "Wrist & Elbow",
+      "selection": {
+        "eyebrow": "Prevention training",
+        "heading": "Where do you feel pain?",
+        "description": "Pick the body part. The training targets it."
+      }
     },
     "generator": {
       "errorMsgOther": "The app could not create the workout. Try again.",

@@ -9,6 +9,7 @@ import { getAllExercises } from "@/data/exerciseRegistry";
 import { useAgeGroup } from "@/features/anamnesis/useAgeGroup";
 import { ColumnList } from "@/features/training/ColumnList";
 import { FocusTrainingGrid } from "@/features/training/FocusTrainingGrid";
+import { PreventionBodyPartScreen } from "@/features/training/PreventionBodyPartScreen";
 import { useTrainingGapCheck } from "@/features/training/hooks/useTrainingGapCheck";
 import type { TrainingSelectionType } from "@/features/training/models/Training";
 import { useTrainingStore } from "@/features/training/trainingStore";
@@ -198,18 +199,11 @@ export default function SelectTraining() {
     ageGroup,
   ]);
 
-  // Tile data for the current selection
-  const tiles = useMemo<TileData[]>(() => {
-    switch (selection) {
-      case "PLAN":
-        return getTrainingDays();
-      case "PREV":
-        return WorkoutConstants.PREVENTION_TILES;
-      default:
-        // probably just passing through when entering TrainingStack
-        return [];
-    }
-  }, [getTrainingDays, selection]);
+  // Focus and prevention have their own screens, so only the plan uses the list.
+  const tiles = useMemo<TileData[]>(
+    () => (selection === "PLAN" ? getTrainingDays() : []),
+    [getTrainingDays, selection],
+  );
 
   const startPowerTest = () => {
     setTrainingSelection(null);
@@ -226,23 +220,9 @@ export default function SelectTraining() {
   };
 
   const renderTiles = () => {
-    let listItems = tiles;
-    if (selection === "PREV") {
-      const sequence = [
-        "PREVENTION_TILE_SHOULDER",
-        "PREVENTION_TILE_SPINE",
-        "PREVENTION_TILE_WRIST",
-        "PREVENTION_TILE_KNEE",
-        "PREVENTION_TILE_ANKLE",
-      ];
-      listItems = sequence
-        .map((key) => listItems.find((item) => item.title.includes(key)))
-        .filter((item) => !!item);
-    }
-
     return (
       <Box marginBottom="s" flex={1}>
-        <ColumnList listItems={listItems} />
+        <ColumnList listItems={tiles} />
       </Box>
     );
   };
@@ -262,6 +242,10 @@ export default function SelectTraining() {
 
   if (screenState === "SELECT" && selection === "QUICK") {
     return <FocusTrainingGrid title={title} onBack={handleBack} />;
+  }
+
+  if (selection === "PREV") {
+    return <PreventionBodyPartScreen title={title} onBack={handleBack} />;
   }
 
   return (

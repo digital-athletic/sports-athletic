@@ -96,7 +96,7 @@ export class ManualStrengthTestPage extends BasePage {
       .last();
     await expect(successContainer).toBeVisible();
     await expect(
-      successContainer.getByText("Your Test Results", { exact: true }),
+      successContainer.getByText("Your test results", { exact: true }),
     ).toBeVisible();
     await expect(this.goOnButton).toBeVisible();
   }

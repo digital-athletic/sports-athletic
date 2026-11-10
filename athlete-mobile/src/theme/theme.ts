@@ -91,6 +91,18 @@ export const theme = createTheme({
       justifyContent: "center",
     },
 
+    // Second action next to a cta
+    ctaOutline: {
+      backgroundColor: "white",
+      paddingHorizontal: "l",
+      minHeight: 56,
+      borderRadius: "round",
+      borderWidth: 1.5,
+      borderColor: "primary",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+
     secondary: {
       backgroundColor: "white",
       padding: "m",

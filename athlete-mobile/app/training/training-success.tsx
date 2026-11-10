@@ -127,7 +127,7 @@ const TrainingSuccessScreen: FC = () => {
       <Box flex={1} backgroundColor="white">
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           {isTestWorkout ? (
-            <Box flex={1} padding="m">
+            <Box flex={1} paddingVertical="m">
               <PowerTest isSuccessScreen={true} />
             </Box>
           ) : hasWorkoutData ? (

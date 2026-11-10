@@ -78,7 +78,7 @@ test.describe("Strength Test: workout and results", () => {
     // Verify results page
     await expect(page.getByText("Training evaluation")).toBeVisible();
     await expect(
-      page.getByText("Your Test Results", { exact: true }),
+      page.getByText("Your test results", { exact: true }),
     ).toBeVisible();
 
     // Verify exercise tabs are shown

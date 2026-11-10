@@ -1,5 +1,25 @@
 import { generateLowerBodyBranch } from "@test/factories/skillTree";
-import { toExerciseBranch } from "./swapPlan";
+import { listSwapStartLevels, toExerciseBranch } from "./swapPlan";
+
+/**
+ * Builds a swap of the original branch "10" whose one alternative is branch
+ * "20" with the exercises 20x1 to 20x3 at levels 1 to 3, e.g.
+ * { skill: "SK", position: 1, alternatives: [{ branchId: "20", branch }] }.
+ */
+const generateSwapToBranch20 = (position: number) => ({
+  skill: "SK",
+  position,
+  alternatives: [
+    {
+      branchId: "20",
+      branch: generateLowerBodyBranch({
+        1: { exerciseId: "20x1" },
+        2: { exerciseId: "20x2" },
+        3: { exerciseId: "20x3" },
+      }),
+    },
+  ],
+});
 
 describe("swapPlan: toExerciseBranch", () => {
   it("names the catalog levels as plan exercises", () => {
@@ -10,5 +30,43 @@ describe("swapPlan: toExerciseBranch", () => {
       tags: branch.tags,
       exercises: { 1: { exerciseId: "e1" } },
     });
+  });
+});
+
+describe("swapPlan: listSwapStartLevels", () => {
+  it("raises a stored level below the entry level to the entry level", () => {
+    expect(
+      listSwapStartLevels(
+        { "10": generateSwapToBranch20(1) },
+        { "20": { branchId: "20", level: 1, exerciseId: "20x1" } },
+        "ADVANCED",
+      ),
+    ).toEqual([{ branchId: "20", level: 2, exerciseId: "20x2" }]);
+  });
+
+  it("keeps a stored level above the entry level", () => {
+    expect(
+      listSwapStartLevels(
+        { "10": generateSwapToBranch20(1) },
+        { "20": { branchId: "20", level: 3, exerciseId: "20x3" } },
+        "ADVANCED",
+      ),
+    ).toEqual([]);
+  });
+
+  it("stores nothing for a branch without a stored level", () => {
+    expect(
+      listSwapStartLevels({ "10": generateSwapToBranch20(1) }, {}, "ADVANCED"),
+    ).toEqual([]);
+  });
+
+  it("stores nothing for an exercise cycled back to its original", () => {
+    expect(
+      listSwapStartLevels(
+        { "10": generateSwapToBranch20(0) },
+        { "20": { branchId: "20", level: 1, exerciseId: "20x1" } },
+        "ADVANCED",
+      ),
+    ).toEqual([]);
   });
 });

@@ -4,6 +4,7 @@ import { listSwapAlternatives } from "@/features/training/exerciseSwap/swapAlter
 import { nextSwapPosition } from "@/features/training/exerciseSwap/swapCycle";
 import {
   type ExerciseSwapState,
+  listSwapStartLevels,
   toExerciseBranch,
 } from "@/features/training/exerciseSwap/swapPlan";
 import {
@@ -29,6 +30,7 @@ import { createGenerationInput } from "@/features/training/workoutGenerator/gene
 import { setUpWorkout } from "@/features/training/workoutGenerator/stages/workoutSetup";
 import { generateTrainingDayFromStoredDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import { Logger } from "@/services/Logger";
+import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { parseIntParam } from "@/utils/router";
 import { useState } from "react";
 
@@ -210,10 +212,12 @@ const useSwapState = (request: SwapRequest, enabled: boolean) => {
  * Swap state of a plan training overview. Each tap on an exercise moves it to
  * the next alternative Branch, the fourth back to the original. A swap changes
  * only the current workout; the training plan keeps the original Branch.
+ * `startWithSwaps` stores the start level of the swapped in Branches.
  */
 export function useExerciseSwap(params: SwapParams, fallbackPlace: PlaceType) {
   const ctx = useGenerationContext();
   const setExerciseList = useTrainingStore((s) => s.setExerciseList);
+  const setBranchLevel = useExerciseProgressStore((s) => s.setBranchLevel);
   const request: SwapRequest = { params, ctx, place: fallbackPlace };
   const { swaps, setPositions } = useSwapState(
     request,
@@ -241,5 +245,17 @@ export function useExerciseSwap(params: SwapParams, fallbackPlace: PlaceType) {
     }
   };
 
-  return { canSwap, swapExercise };
+  /** Stores the start level of each swapped in Branch; the plan stays. */
+  const startWithSwaps = () => {
+    const fitnessLevel = getUserLevel(buildUser(params, ctx));
+    for (const { branchId, level, exerciseId } of listSwapStartLevels(
+      swaps,
+      ctx.branchData,
+      fitnessLevel,
+    )) {
+      setBranchLevel(branchId, level, exerciseId);
+    }
+  };
+
+  return { canSwap, swapExercise, startWithSwaps };
 }

@@ -121,10 +121,10 @@
     "sport": {
       "title": "Sportart",
       "goOn": "Weiter",
-      "sportSelected": "Ausgewählt",
       "abortAnamnesisQuestion": "Fragebogen abbrechen?",
       "abortAnamnesisIncomplete": "Dein Profil ist noch nicht vollständig.",
-      "abortAnamnesisExplanation": "Alle deine Änderungen gehen verloren."
+      "abortAnamnesisExplanation": "Alle deine Änderungen gehen verloren.",
+      "question": "Welche Sportart machst du?"
     },
     "userProfile": {
       "title": "Persönliche Daten",

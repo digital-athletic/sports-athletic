@@ -1,6 +1,7 @@
 import { I18nKey } from "@/i18n";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { Text } from "@/theme/Text";
+import { type ThemeColor } from "@/theme/theme";
 import { useRouter } from "expo-router";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,6 +12,8 @@ interface SkipHeaderProps {
   alertMessage: I18nKey;
   confirmText?: I18nKey;
   cancelText?: I18nKey;
+  /** Text color, for a header that sits on a colored background. */
+  color?: ThemeColor;
 }
 
 export const SkipHeader: FC<SkipHeaderProps> = ({
@@ -18,6 +21,7 @@ export const SkipHeader: FC<SkipHeaderProps> = ({
   alertMessage,
   confirmText,
   cancelText,
+  color,
 }) => {
   const router = useRouter();
   const { t } = useTranslation();
@@ -50,7 +54,9 @@ export const SkipHeader: FC<SkipHeaderProps> = ({
         paddingHorizontal: 8,
       }}
     >
-      <Text variant="skip">{t("common.skip")}</Text>
+      <Text variant="skip" color={color}>
+        {t("common.skip")}
+      </Text>
     </TouchableOpacity>
   );
 };

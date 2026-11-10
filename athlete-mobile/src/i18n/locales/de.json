@@ -474,6 +474,11 @@
         "question": "Training verwerfen?",
         "explanation": "Das Training endet ohne Ergebnis und wird nicht in deinem Verlauf gespeichert."
       },
+      "feedback": {
+        "tooHard": "Zu schwer",
+        "succeeded": "Geschafft",
+        "tooEasy": "Zu einfach"
+      },
       "finishEarly": {
         "question": "Training vorzeitig beenden?",
         "explanation": "Noch nicht alle Sätze sind erledigt. Das Training endet unvollständig."

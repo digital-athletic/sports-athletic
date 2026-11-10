@@ -1,13 +1,14 @@
 import { Ionicon } from "@/common/Ionicon";
 import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
+import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { type FC } from "react";
 
 const FEEDBACK_ICON = {
   TOO_EASY: {
-    outline: "arrow-down-circle-outline",
-    filled: "arrow-down-circle",
+    outline: "arrow-up-circle-outline",
+    filled: "arrow-up-circle",
     color: "info",
   },
   SUCCEEDED: {
@@ -16,8 +17,8 @@ const FEEDBACK_ICON = {
     color: "darkGrey2",
   },
   TOO_HARD: {
-    outline: "arrow-up-circle-outline",
-    filled: "arrow-up-circle",
+    outline: "arrow-down-circle-outline",
+    filled: "arrow-down-circle",
     color: "error",
   },
 } as const;
@@ -27,20 +28,24 @@ export type FeedbackIconButtonProps = {
   onPress: () => void;
   disabled?: boolean;
   accessibilityLabel?: string;
+  /** Visible text above the icon. Names the button and wins over accessibilityLabel. */
+  label?: string;
+  size?: number;
   testId: string;
 };
 
 /**
- * A single tappable feedback icon (too-easy / succeeded / too-hard), filled
- * when disabled (already chosen) and outlined when still selectable. Shared
- * by the completed-checkmark, feedback-row, and plain-checkmark states in
- * TrainingListItemActions so that markup isn't duplicated per state.
+ * A single tappable feedback icon (too easy, succeeded, too hard), filled when
+ * disabled (already chosen) and outlined when still selectable. The arrow
+ * points the way the next session moves: up for too easy, down for too hard.
  */
 export const FeedbackIconButton: FC<FeedbackIconButtonProps> = ({
   feedback,
   onPress,
   disabled,
   accessibilityLabel,
+  label,
+  size = 32,
   testId,
 }) => {
   const { colors } = useTheme();
@@ -50,17 +55,23 @@ export const FeedbackIconButton: FC<FeedbackIconButtonProps> = ({
     <TouchableBox
       onPress={onPress}
       disabled={disabled}
-      minWidth={36}
-      minHeight={36}
+      minWidth={size + 4}
+      minHeight={size + 4}
       justifyContent="center"
       alignItems="center"
+      gap="xs"
       accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel}
+      accessibilityLabel={label ?? accessibilityLabel}
       testID={testId}
     >
+      {label && (
+        <Text variant="small" color="darkGrey1">
+          {label}
+        </Text>
+      )}
       <Ionicon
         name={disabled ? icon.filled : icon.outline}
-        size={32}
+        size={size}
         color={colors[icon.color]}
         decorative
       />

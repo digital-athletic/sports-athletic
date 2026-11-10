@@ -474,6 +474,11 @@
         "question": "Discard training?",
         "explanation": "The training ends without a result and is not added to your history."
       },
+      "feedback": {
+        "tooHard": "Too hard",
+        "succeeded": "Succeeded",
+        "tooEasy": "Too easy"
+      },
       "finishEarly": {
         "question": "Finish training early?",
         "explanation": "Not all sets are done. The training ends incomplete."

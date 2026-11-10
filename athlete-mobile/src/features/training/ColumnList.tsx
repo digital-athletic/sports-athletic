@@ -3,8 +3,9 @@ import { TileData } from "@/constants/workoutConstants";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { Box } from "@/theme/Box";
 import { useResponsiveProp } from "@shopify/restyle";
-import { type Href, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { ColumnListRow } from "./ColumnListRow";
+import { tileHref } from "./tileHref";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, Image, ListRenderItem } from "react-native";
@@ -71,18 +72,11 @@ export const ColumnList: FC<ColumnListProps> = ({ listItems }) => {
       tablet: 140,
     }) ?? 96;
 
-  const handleNavigate = (item: TileData) => {
-    const { key, params } = item.navigate;
-    // Typed routes reject a dynamic `pathname` in the object form, so assert
-    // the correlated pathname/params object as Href. key is a valid Route.
-    router.navigate({ pathname: key, params } as Href);
-  };
-
   const renderItem: ListRenderItem<TileData> = ({ item }) => {
     const { description } = item;
     const params = description?.params || {};
     const hasDescription = description !== undefined;
-    const onPress = () => handleNavigate(item);
+    const onPress = () => router.navigate(tileHref(item));
 
     return (
       <ColumnListRow

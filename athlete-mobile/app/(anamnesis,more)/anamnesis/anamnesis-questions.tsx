@@ -4,7 +4,7 @@ import { TagGroups } from "@/constants/tagGroups";
 import { AnamnesisGroup1 } from "@/features/anamnesis/AnamnesisGroup1";
 import { AnamnesisGroup2 } from "@/features/anamnesis/AnamnesisGroup2";
 import { AnamnesisGroup3 } from "@/features/anamnesis/AnamnesisGroup3";
-import { AnamnesisScreen } from "@/features/anamnesis/components/AnamnesisScreen";
+import { HeadlineScreen } from "@/common/HeadlineScreen";
 import { useAnamnesisCompletion } from "@/features/anamnesis/useAnamnesisCompletion";
 import { useShowSeasonPhaseAfterAnamnesis } from "@/features/anamnesis/useShowSeasonPhaseAfterAnamnesis";
 import { useHardwareBackHandler } from "@/hooks/useHardwareBackHandler";
@@ -138,7 +138,7 @@ export default function AnamnesisQuestions() {
 
   return (
     <>
-      <AnamnesisScreen
+      <HeadlineScreen
         title={title}
         heading={title}
         step={{ current: progress, total: maxSteps }}
@@ -162,7 +162,7 @@ export default function AnamnesisQuestions() {
             {groupIndex === 2 && <AnamnesisGroup3 {...questionProps} />}
           </>
         )}
-      </AnamnesisScreen>
+      </HeadlineScreen>
       <Loading text={t("common.saving")} show={loading} />
     </>
   );

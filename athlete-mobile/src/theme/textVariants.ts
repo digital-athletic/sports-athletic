@@ -55,6 +55,13 @@ export const textVariants = {
     marginBottom: "s",
   },
 
+  // Small heading above a group of cards
+  sectionLabel: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "darkGrey3",
+  },
+
   // Card titles
   cardTitle: {
     fontSize: 18,

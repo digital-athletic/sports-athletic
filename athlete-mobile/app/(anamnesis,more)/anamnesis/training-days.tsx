@@ -5,7 +5,7 @@ import {
   type LevelTag,
   WorkoutConstants,
 } from "@/constants/workoutConstants";
-import { AnamnesisScreen } from "@/features/anamnesis/components/AnamnesisScreen";
+import { HeadlineScreen } from "@/common/HeadlineScreen";
 import { CoachTip } from "@/features/anamnesis/components/CoachTip";
 import { TrainingDayCard } from "@/features/anamnesis/components/TrainingDayCard";
 import { WeekdayToggle } from "@/features/anamnesis/components/WeekdayToggle";
@@ -173,7 +173,7 @@ export default function TrainingDays() {
 
   return (
     <>
-      <AnamnesisScreen
+      <HeadlineScreen
         title={t("screens.trainingDays.title")}
         heading={t("screens.trainingDays.subtitle")}
         description={
@@ -225,7 +225,7 @@ export default function TrainingDays() {
               }
             />
           ))}
-      </AnamnesisScreen>
+      </HeadlineScreen>
       <Loading show={isLoading} text={t("common.generatingTrainingPlan")} />
     </>
   );

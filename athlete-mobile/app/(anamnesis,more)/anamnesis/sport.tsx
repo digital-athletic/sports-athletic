@@ -5,7 +5,7 @@ import { Alert } from "react-native";
 
 import { SkipHeader } from "@/common/SkipHeader";
 import { WorkoutConstants } from "@/constants/workoutConstants";
-import { AnamnesisScreen } from "@/features/anamnesis/components/AnamnesisScreen";
+import { HeadlineScreen } from "@/common/HeadlineScreen";
 import { SportTile } from "@/features/anamnesis/SportTile";
 import { useHardwareBackHandler } from "@/hooks/useHardwareBackHandler";
 import { useUserProfileStore } from "@/store/userProfileStore";
@@ -88,7 +88,7 @@ export default function SportScreen() {
   const isOnboarding = originPath === "/(anamnesis)/anamnesis";
 
   return (
-    <AnamnesisScreen
+    <HeadlineScreen
       title={t("screens.sport.title")}
       heading={t("screens.sport.question")}
       onBack={isOnboarding ? showClosePopup : back}
@@ -114,6 +114,6 @@ export default function SportScreen() {
       >
         {renderSports()}
       </Box>
-    </AnamnesisScreen>
+    </HeadlineScreen>
   );
 }

@@ -1,6 +1,7 @@
+import i18n from "@/i18n";
 import { Logger } from "@/services/Logger";
 import { type UserTeam } from "@/services/TeamService";
-import { fireEvent, render, waitFor, within } from "@/utils/testUtils";
+import { act, fireEvent, render, waitFor, within } from "@/utils/testUtils";
 import AdditionalTrainingListScreen from "./AdditionalTrainingListScreen";
 
 const mockGetUserTeams = jest.fn();
@@ -9,9 +10,20 @@ jest.mock("@/services/TeamService", () => ({
 }));
 
 const mockPush = jest.fn();
+const mockStackScreen = jest.fn();
 jest.mock("expo-router", () => ({
   router: { push: (...args: unknown[]) => mockPush(...args) },
-  Stack: { Screen: () => null },
+  useRouter: () => ({ back: jest.fn() }),
+  Stack: {
+    Screen: (props: { options: { title?: string } }) => {
+      mockStackScreen(props);
+      return null;
+    },
+  },
+}));
+
+jest.mock("react-native-safe-area-context", () => ({
+  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
 
 jest.mock("@/services/Logger", () => ({
@@ -31,6 +43,88 @@ const OWN_TRAININGS = "Your trainings";
 beforeEach(() => {
   jest.clearAllMocks();
   mockGetUserTeams.mockResolvedValue([]);
+});
+
+afterEach(async () => {
+  await act(() => i18n.changeLanguage("en"));
+});
+
+describe("AdditionalTrainingListScreen: headline", () => {
+  it("sets the additional trainings screen title", async () => {
+    const { findByText } = await render(<AdditionalTrainingListScreen />);
+    await findByText(OWN_TRAININGS);
+
+    expect(mockStackScreen).toHaveBeenCalledWith(
+      expect.objectContaining({
+        options: expect.objectContaining({ title: "Additional trainings" }),
+      }),
+    );
+  });
+
+  it("shows the headline as a header", async () => {
+    const { findByRole } = await render(<AdditionalTrainingListScreen />);
+
+    expect(
+      await findByRole("header", { name: "Additional trainings" }),
+    ).toBeTruthy();
+  });
+
+  it("shows the subtitle in English", async () => {
+    const { findByText } = await render(<AdditionalTrainingListScreen />);
+
+    expect(
+      await findByText("Your own trainings and the trainings of your teams."),
+    ).toBeTruthy();
+  });
+
+  it("shows the subtitle in German", async () => {
+    await act(() => i18n.changeLanguage("de"));
+    const { findByText } = await render(<AdditionalTrainingListScreen />);
+
+    expect(
+      await findByText(
+        "Deine eigenen Trainings und die Trainings deiner Teams.",
+      ),
+    ).toBeTruthy();
+  });
+});
+
+describe("AdditionalTrainingListScreen: tiles", () => {
+  it("shows the entries in a two column card grid", async () => {
+    mockGetUserTeams.mockResolvedValue([generateTeam({ name: "Team Alpha" })]);
+
+    const { findByText, getByTestId } = await render(
+      <AdditionalTrainingListScreen />,
+    );
+    await findByText("Team Alpha");
+
+    const grid = getByTestId("additional-training-grid");
+    expect(within(grid).getAllByRole("button")).toHaveLength(2);
+  });
+
+  it("shows a single person icon on the own trainings tile", async () => {
+    const { findByRole } = await render(<AdditionalTrainingListScreen />);
+
+    const tile = await findByRole("button", { name: OWN_TRAININGS });
+    const iconNames = tile
+      .queryAll((node) => node.type === "Ionicons")
+      .map((icon) => icon.props.name);
+    expect(iconNames).toContain("person-outline");
+    expect(iconNames).not.toContain("people-outline");
+  });
+
+  it("shows a group icon on a team tile", async () => {
+    mockGetUserTeams.mockResolvedValue([generateTeam({ name: "Team Alpha" })]);
+
+    const { findByRole } = await render(<AdditionalTrainingListScreen />);
+
+    const tile = await findByRole("button", { name: "Team Alpha" });
+    const iconNames = tile
+      .queryAll((node) => node.type === "Ionicons")
+      .map((icon) => icon.props.name);
+    expect(iconNames).toContain("people-outline");
+    expect(iconNames).not.toContain("person-outline");
+  });
 });
 
 describe("AdditionalTrainingListScreen: entries", () => {
@@ -120,17 +214,6 @@ describe("AdditionalTrainingListScreen: loading", () => {
     await waitFor(() => {
       expect(queryByLabelText("Loading teams")).toBeNull();
     });
-  });
-});
-
-describe("AdditionalTrainingListScreen: layout", () => {
-  it("insets the list below the translucent iOS header", async () => {
-    const { findByTestId } = await render(<AdditionalTrainingListScreen />);
-
-    expect(
-      (await findByTestId("additional-training-list")).props
-        .contentInsetAdjustmentBehavior,
-    ).toBe("automatic");
   });
 });
 

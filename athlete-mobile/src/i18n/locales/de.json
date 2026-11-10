@@ -88,6 +88,7 @@
       },
       "additionalTrainings": {
         "title": "Zusatztrainings",
+        "subtitle": "Deine eigenen Trainings und die Trainings deiner Teams.",
         "ownTrainings": "Deine Trainings",
         "loadingTeams": "Teams werden geladen",
         "noWorkouts": "Aktuell sind keine Workouts verfügbar",

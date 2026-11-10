@@ -4,6 +4,7 @@ import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
+import { StatisticsCard } from "./StatisticsCard";
 
 interface TrainingSummaryProps {
   duration: string;
@@ -13,67 +14,52 @@ interface TrainingSummaryProps {
   testID?: string;
 }
 
-type SummaryType = "DURATION" | "COUNT" | "XP" | "WEIGHT";
+type SummaryType = "duration" | "count" | "xp" | "weight";
 
-const ICON_SIZE = 32;
+const ICON_CIRCLE_SIZE = 36;
+const ICON_SIZE = 18;
 
 const SUMMARY_ICONS: Record<SummaryType, IoniconName> = {
-  DURATION: "time-outline",
-  COUNT: "keypad-outline",
-  XP: "trophy-outline",
-  WEIGHT: "barbell-outline",
+  duration: "time-outline",
+  count: "keypad-outline",
+  xp: "trophy-outline",
+  weight: "barbell-outline",
 };
 
-/**
- * Training Summary Component
- * Displays duration, count, XP, and weight statistics for a workout.
- */
-export const TrainingSummary: FC<TrainingSummaryProps> = ({
-  duration,
-  count,
-  xp,
-  weight,
-  testID,
-}) => {
+const ROWS: readonly (readonly [SummaryType, SummaryType])[] = [
+  ["duration", "count"],
+  ["xp", "weight"],
+];
+
+interface SummaryCardProps {
+  type: SummaryType;
+  value: string;
+  testID?: string;
+}
+
+const SummaryCard: FC<SummaryCardProps> = ({ type, value, testID }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
+  const label = t(`statistics.workouts.summary.${type}`);
 
-  const labels: Record<SummaryType, { title: string; alt: string }> = {
-    DURATION: {
-      title: t("statistics.workouts.summary.duration"),
-      alt: t("statistics.workouts.summary.durationAlt"),
-    },
-    COUNT: {
-      title: t("statistics.workouts.summary.count"),
-      alt: t("statistics.workouts.summary.countAlt"),
-    },
-    XP: {
-      title: t("statistics.workouts.summary.xp"),
-      alt: t("statistics.workouts.summary.xpAlt"),
-    },
-    WEIGHT: {
-      title: t("statistics.workouts.summary.weight"),
-      alt: t("statistics.workouts.summary.weightAlt"),
-    },
-  };
-
-  const values: Record<SummaryType, string> = {
-    DURATION: duration,
-    COUNT: count,
-    XP: xp,
-    WEIGHT: weight,
-  };
-
-  const renderEntry = (type: SummaryType) => (
-    <Box
-      key={`summary_${type}`}
-      flexDirection="column"
+  return (
+    <StatisticsCard
       flex={1}
-      justifyContent="space-between"
+      flexDirection="row"
       alignItems="center"
-      paddingVertical="m"
+      gap="s"
+      padding="s"
+      accessible
+      accessibilityLabel={`${label}: ${value}`}
     >
-      <Box flex={1} justifyContent="center" alignItems="center">
+      <Box
+        width={ICON_CIRCLE_SIZE}
+        height={ICON_CIRCLE_SIZE}
+        borderRadius="round"
+        backgroundColor="primaryTint"
+        alignItems="center"
+        justifyContent="center"
+      >
         <Ionicon
           name={SUMMARY_ICONS[type]}
           size={ICON_SIZE}
@@ -81,40 +67,52 @@ export const TrainingSummary: FC<TrainingSummaryProps> = ({
           decorative
         />
       </Box>
-      <Box flex={1} justifyContent="center" alignItems="center">
+      <Box flex={1}>
         <Text
-          variant="small"
-          textAlign="center"
-          style={{ color: colors.darkGrey2 }}
+          fontSize={18}
+          fontWeight="bold"
+          numberOfLines={1}
+          testID={testID ? `${testID}-${type}` : undefined}
         >
-          {labels[type].title}
+          {value}
+        </Text>
+        <Text variant="xSmall" color="darkGrey1">
+          {label}
         </Text>
       </Box>
-      <Box flex={1} justifyContent="center" alignItems="center">
-        <Text
-          variant="body"
-          textAlign="center"
-          style={{ color: colors.darkGrey3 }}
-        >
-          {values[type]}
-        </Text>
-      </Box>
-    </Box>
+    </StatisticsCard>
   );
+};
+
+/** Duration, exercise count, points and moved weight as a two by two grid of cards. */
+export const TrainingSummary: FC<TrainingSummaryProps> = ({
+  duration,
+  count,
+  xp,
+  weight,
+  testID,
+}) => {
+  const values: Record<SummaryType, string> = {
+    duration,
+    count,
+    xp,
+    weight,
+  };
 
   return (
-    <Box
-      flex={1}
-      flexDirection="row"
-      justifyContent="space-between"
-      alignItems="center"
-      alignSelf="stretch"
-      testID={testID}
-    >
-      {renderEntry("DURATION")}
-      {renderEntry("COUNT")}
-      {renderEntry("XP")}
-      {renderEntry("WEIGHT")}
+    <Box alignSelf="stretch" gap="s" testID={testID}>
+      {ROWS.map((row) => (
+        <Box key={row.join("-")} flexDirection="row" gap="s">
+          {row.map((type) => (
+            <SummaryCard
+              key={type}
+              type={type}
+              value={values[type]}
+              testID={testID}
+            />
+          ))}
+        </Box>
+      ))}
     </Box>
   );
 };

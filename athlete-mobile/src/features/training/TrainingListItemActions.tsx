@@ -12,6 +12,7 @@ export type TrainingListItemActionsProps = {
   isCompleted: boolean;
   completedFeedback?: DifficultyFeedbackType | null;
   repsValue: number;
+  resumeSeconds?: number;
   onStart: () => void;
   testId: string;
 };
@@ -37,6 +38,7 @@ export const TrainingListItemActions: FC<TrainingListItemActionsProps> = ({
   isCompleted,
   completedFeedback,
   repsValue,
+  resumeSeconds,
   onStart,
   testId,
 }) => {
@@ -59,7 +61,11 @@ export const TrainingListItemActions: FC<TrainingListItemActionsProps> = ({
           testId={`${testId}-checkmark`}
         />
       ) : (
-        <StartExerciseButton onPress={onStart} testId={`${testId}-start`} />
+        <StartExerciseButton
+          onPress={onStart}
+          resumeSeconds={resumeSeconds}
+          testId={`${testId}-start`}
+        />
       )}
     </Box>
   );

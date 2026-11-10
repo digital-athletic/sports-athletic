@@ -49,6 +49,7 @@ const generateRowsProps = (
   blocks: [],
   exerciseList: [],
   repsDraft: {},
+  resumeSecondsOf: () => undefined,
   onStart: jest.fn(),
   onShowInfo: jest.fn(),
   ...overrides,
@@ -104,6 +105,27 @@ describe("TrainingListRows: entries", () => {
     await fireEvent.press(getByTestId("training-list-row-0-start"));
 
     expect(onStart).toHaveBeenCalledWith(squat);
+  });
+
+  it("shows the saved time of the first open set of an entry", async () => {
+    const blocks = [
+      generateBlock([generateEntry(0, "squat", "Squat")], 0),
+      generateBlock([generateEntry(4, "plank", "Plank")], 4),
+    ];
+
+    const { getByTestId, queryByTestId } = await render(
+      <TrainingListRows
+        {...generateRowsProps({
+          blocks,
+          resumeSecondsOf: (setIndex) => (setIndex === 4 ? 42 : undefined),
+        })}
+      />,
+    );
+
+    expect(
+      getByTestId("training-list-row-4-start-resume-time"),
+    ).toHaveTextContent("00:42");
+    expect(queryByTestId("training-list-row-0-start-resume-time")).toBeNull();
   });
 
   it("opens the exercise information with the exercise id of the entry", async () => {

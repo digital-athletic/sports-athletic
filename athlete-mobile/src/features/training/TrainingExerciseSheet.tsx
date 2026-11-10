@@ -28,6 +28,8 @@ export type TrainingExerciseSheetProps = {
   isPresented: boolean;
   sessionKey: number;
   duration: number | undefined;
+  /** Running time a resumed set continues from. */
+  startElapsedMs: number;
   isScreenFocused: boolean;
   repsValue: number;
   rest?: SheetRestControl;
@@ -39,6 +41,7 @@ export type TrainingExerciseSheetProps = {
   onResume: () => void;
   onNext: () => void;
   onDismiss: () => void;
+  onTimerStop: (index: number, elapsedMs: number) => void;
 };
 
 type ContentProps = Omit<
@@ -117,7 +120,16 @@ const SheetSetActions: FC<{
   steps: ReturnType<typeof useExerciseSheetSteps>;
   onChangeReps: (value: string) => void;
   onSkip: () => void;
-}> = ({ row, repsValue, isCountingDown, steps, onChangeReps, onSkip }) => {
+  onNext: () => void;
+}> = ({
+  row,
+  repsValue,
+  isCountingDown,
+  steps,
+  onChangeReps,
+  onSkip,
+  onNext,
+}) => {
   if (row.isTest) {
     return (
       <TrainingRepetitionInput
@@ -136,11 +148,18 @@ const SheetSetActions: FC<{
       <TrainingExerciseFeedbackChoice onSelect={steps.handleFeedbackSelect} />
     );
   }
+  // A skipped set never starts its rest; the rest counts as completed at
+  // finish. Like the step-by-step view, Skip moves on to the next set.
+  const handleSkip = () => {
+    onSkip();
+    onNext();
+  };
+
   return (
     <TrainingExerciseTimerActions
       isCountingDown={isCountingDown}
       onNext={steps.handleContinue}
-      onSkip={onSkip}
+      onSkip={handleSkip}
     />
   );
 };
@@ -178,6 +197,7 @@ const SheetSetHeading: FC<{
 const TrainingExerciseSheetContent: FC<ContentProps> = ({
   row,
   duration,
+  startElapsedMs,
   isTimerActive,
   repsValue,
   rest,
@@ -189,6 +209,7 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
   onResume,
   onNext,
   onDismiss,
+  onTimerStop,
 }) => {
   const pause = useExerciseSheetPause({ onPause, onResume });
   const steps = useExerciseSheetSteps({
@@ -204,6 +225,8 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
     exerciseId: row.exerciseId,
     duration,
     isActive: isTimerActive && !steps.runningRest && !pause.isPaused,
+    initialElapsedMs: startElapsedMs,
+    onStop: (elapsedMs) => onTimerStop(row.index, elapsedMs),
   });
 
   if (steps.runningRest) {
@@ -217,13 +240,6 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
       </Box>
     );
   }
-
-  // A skipped set never starts its rest; the rest counts as completed at
-  // finish. Like the step-by-step view, Skip moves on to the next set.
-  const handleSkip = () => {
-    onSkip();
-    onNext();
-  };
 
   return (
     <Box padding="l" gap="m" testID={`training-list-sheet-set-${row.index}`}>
@@ -240,7 +256,8 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
         isCountingDown={isCountingDown}
         steps={steps}
         onChangeReps={onChangeReps}
-        onSkip={handleSkip}
+        onSkip={onSkip}
+        onNext={onNext}
       />
     </Box>
   );
@@ -252,8 +269,9 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
  * step that completes the set, or first reveals the too-easy/succeeded/too-hard
  * choice. A planned rest after the set runs before Next opens the next set.
  * Skip stays enabled during the countdown, so an athlete can drop a set mid-way.
- * A pause button next to the timer freezes it until resumed; closing the sheet
- * drops the pause with the timer. A strength test shows the reps input instead.
+ * A pause button next to the timer freezes it until resumed. A set reopened
+ * after enough running time continues its timer from startElapsedMs, unpaused.
+ * A strength test shows the reps input instead.
  */
 export const TrainingExerciseSheet: FC<TrainingExerciseSheetProps> = ({
   row,

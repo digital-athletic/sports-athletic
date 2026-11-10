@@ -25,6 +25,7 @@ export type TrainingListItemProps = {
   /** Which feedback (if any) was chosen when this row was completed. */
   completedFeedback?: DifficultyFeedbackType | null;
   repsValue: number;
+  resumeSeconds?: number;
   onStart: () => void;
   onShowInfo: () => void;
   /** Base identifier for this row, used to derive per-control testIDs (e2e). */
@@ -94,6 +95,7 @@ export const TrainingListItem: FC<TrainingListItemProps> = ({
   isCompleted,
   completedFeedback,
   repsValue,
+  resumeSeconds,
   onStart,
   onShowInfo,
   testId,
@@ -137,6 +139,7 @@ export const TrainingListItem: FC<TrainingListItemProps> = ({
           isCompleted={isCompleted}
           completedFeedback={completedFeedback}
           repsValue={repsValue}
+          resumeSeconds={resumeSeconds}
           onStart={onStart}
           testId={testId}
         />

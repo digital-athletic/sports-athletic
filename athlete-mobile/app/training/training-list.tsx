@@ -30,6 +30,7 @@ const TrainingList: FC<TrainingListProps> = () => {
     handleShowInfo,
     handleStart,
     handleDiscard,
+    resumeSecondsOf,
     sheetProps,
   } = useTrainingListScreen();
 
@@ -49,6 +50,7 @@ const TrainingList: FC<TrainingListProps> = () => {
           blocks={blocks}
           exerciseList={exerciseList}
           repsDraft={repsDraft}
+          resumeSecondsOf={resumeSecondsOf}
           onStart={handleStart}
           onShowInfo={handleShowInfo}
         />

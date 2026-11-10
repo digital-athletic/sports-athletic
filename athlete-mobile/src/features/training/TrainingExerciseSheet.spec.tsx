@@ -46,6 +46,7 @@ const generateSheetProps = (
   isPresented: true,
   sessionKey: 1,
   duration: undefined,
+  startElapsedMs: 0,
   isScreenFocused: true,
   repsValue: 0,
   onChangeReps: jest.fn(),
@@ -56,6 +57,7 @@ const generateSheetProps = (
   onResume: jest.fn(),
   onNext: jest.fn(),
   onDismiss: jest.fn(),
+  onTimerStop: jest.fn(),
   ...overrides,
 });
 
@@ -868,6 +870,82 @@ describe("TrainingExerciseSheet: pause", () => {
 
     expect(getByTestId("training-list-sheet-timer")).toHaveTextContent("00:30");
     expect(getByLabelText("Hold")).toBeTruthy();
+  });
+
+  it("continues a resumed countdown unpaused from its saved running time", async () => {
+    const { getByTestId, getByLabelText, rerender } = await render(
+      <TrainingExerciseSheet {...generateSheetProps({ duration: 30 })} />,
+    );
+    await fireEvent.press(getByLabelText("Hold"));
+
+    await rerender(
+      <TrainingExerciseSheet
+        {...generateSheetProps({
+          duration: 30,
+          sessionKey: 2,
+          startElapsedMs: 12000,
+        })}
+      />,
+    );
+    const timer = getByTestId("training-list-sheet-timer");
+    expect(timer).toHaveTextContent("00:18");
+
+    await act(() => {
+      jest.advanceTimersByTime(3000);
+    });
+
+    expect(timer).toHaveTextContent("00:15");
+    expect(getByLabelText("Hold")).toBeTruthy();
+  });
+
+  it("reports the running time of the set when the sheet closes", async () => {
+    const onTimerStop = jest.fn();
+    const { rerender } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({ duration: 30, onTimerStop })}
+      />,
+    );
+    await act(() => {
+      jest.advanceTimersByTime(12000);
+    });
+
+    await rerender(
+      <TrainingExerciseSheet
+        {...generateSheetProps({
+          duration: 30,
+          onTimerStop,
+          isPresented: false,
+        })}
+      />,
+    );
+
+    expect(onTimerStop).toHaveBeenLastCalledWith(0, 12000);
+  });
+
+  it("reports the running time when the sheet closes and drops its content in one render", async () => {
+    const onTimerStop = jest.fn();
+    const { rerender } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({ duration: 30, onTimerStop })}
+      />,
+    );
+    await act(() => {
+      jest.advanceTimersByTime(12000);
+    });
+
+    await rerender(
+      <TrainingExerciseSheet
+        {...generateSheetProps({
+          duration: 30,
+          onTimerStop,
+          row: null,
+          isPresented: false,
+        })}
+      />,
+    );
+
+    expect(onTimerStop).toHaveBeenCalledTimes(1);
+    expect(onTimerStop).toHaveBeenCalledWith(0, 12000);
   });
 
   it("shows no pause button for a strength test row", async () => {

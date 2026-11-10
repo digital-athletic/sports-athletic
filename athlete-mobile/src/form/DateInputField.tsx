@@ -14,7 +14,7 @@ import DateTimePicker, {
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Platform, StyleSheet, TouchableOpacity } from "react-native";
-import { Ionicon } from "../common/Ionicon";
+import { FieldShell } from "./FieldShell";
 
 interface DateInputFieldProps {
   type: "date" | "time";
@@ -82,64 +82,62 @@ export const DateInputField: FC<DateInputFieldProps> = ({
     });
   };
 
-  return (
-    <Box flexDirection="row" alignItems="center" borderRadius="m">
-      <Box
-        width={56}
-        height={56}
-        justifyContent="center"
-        alignItems="center"
-        backgroundColor="lightGrey1"
-        borderTopLeftRadius="m"
-        borderBottomLeftRadius="m"
-      >
-        <Ionicon
-          name={iconName}
-          size={24}
-          color={colors.lightGrey3}
-          decorative
-        />
-      </Box>
+  const getDisplayValue = (): string => {
+    if (!dateTime) return t("common.choose");
+    if (type === "time") return dateTime;
 
-      {Platform.select({
-        ios: (
-          <DateTimePicker
-            accentColor={colors.primary}
-            value={getCurrentDate()}
-            mode={type}
-            onChange={handleChange}
-            locale={i18n.language}
-            maximumDate={maximumDate}
-            minimumDate={effectiveMinimumDate}
-            accessibilityLabel={accessibilityLabel}
-          />
-        ),
-        android: (
-          <Box
-            backgroundColor="lightGrey2"
-            paddingHorizontal="s"
-            paddingVertical="xs"
-            borderRadius="m"
-          >
+    return ISODateToDate(dateTime).toLocaleDateString(i18n.language, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const displayValue = (
+    <Text variant="body" color="darkGrey3">
+      {getDisplayValue()}
+    </Text>
+  );
+
+  // The native pickers do not exist on web, so web shows the value only.
+  return (
+    <FieldShell iconName={iconName}>
+      <Box flex={1} paddingHorizontal="s" alignItems="flex-start">
+        {Platform.select({
+          ios: (
+            <DateTimePicker
+              accentColor={colors.primary}
+              value={getCurrentDate()}
+              mode={type}
+              onChange={handleChange}
+              locale={i18n.language}
+              maximumDate={maximumDate}
+              minimumDate={effectiveMinimumDate}
+              accessibilityLabel={accessibilityLabel}
+            />
+          ),
+          android: (
             <TouchableOpacity
               style={styles.datePicker}
               onPress={openAndroidPicker}
               accessibilityRole="button"
               accessibilityLabel={accessibilityLabel}
             >
-              <Text variant="body" color="darkGrey3">
-                {dateTime || t("common.choose")}
-              </Text>
+              {displayValue}
             </TouchableOpacity>
-          </Box>
-        ),
-      })}
-    </Box>
+          ),
+          default: <Box paddingHorizontal="xs">{displayValue}</Box>,
+        })}
+      </Box>
+    </FieldShell>
   );
 };
 
 const styles = StyleSheet.create({
   datePicker: {
+    alignSelf: "stretch",
     justifyContent: "center",
+    minHeight: 52,
+    paddingHorizontal: 5,
   },
 });

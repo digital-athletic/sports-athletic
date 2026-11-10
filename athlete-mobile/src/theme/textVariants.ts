@@ -22,6 +22,31 @@ export const textVariants = {
     marginBottom: "xs",
   },
 
+  // Screen headline of a guided flow
+  display: {
+    fontSize: 30,
+    lineHeight: 36,
+    fontWeight: "800",
+    letterSpacing: -0.5,
+    color: "darkGrey3",
+  },
+
+  // Small uppercase line above a headline
+  eyebrow: {
+    fontSize: 12,
+    fontWeight: "700",
+    letterSpacing: 1,
+    textTransform: "uppercase",
+    color: "darkGrey1",
+  },
+
+  // Visible label of a form field
+  fieldLabel: {
+    fontSize: 17,
+    fontWeight: "700",
+    color: "darkGrey3",
+  },
+
   // Section titles
   sectionTitle: {
     fontSize: 20,

@@ -69,6 +69,16 @@ export const theme = createTheme({
       alignItems: "center",
     },
 
+    // Main action of a guided flow
+    cta: {
+      backgroundColor: "primary",
+      paddingHorizontal: "l",
+      minHeight: 56,
+      borderRadius: "round",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+
     secondary: {
       backgroundColor: "white",
       padding: "m",

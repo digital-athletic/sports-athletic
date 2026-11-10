@@ -20,14 +20,14 @@ export const Chip: FC<ChipProps> = ({
   role = "button",
 }) => {
   const { colors } = useTheme();
-  const accessibilityState =
-    role === "radio" ? { checked: selected } : { selected };
 
   return (
     <Pressable
       accessibilityRole={role}
       accessibilityLabel={label}
-      accessibilityState={accessibilityState}
+      // react-native-web 0.21 maps only the aria props, not accessibilityState.
+      aria-checked={role === "radio" ? selected : undefined}
+      aria-selected={role === "button" ? selected : undefined}
       onPress={onPress}
       style={[
         styles.chip,

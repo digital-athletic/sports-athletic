@@ -62,7 +62,8 @@ const ChoiceCard: FC<ChoiceCardProps> = ({
       accessibilityRole="radio"
       accessibilityLabel={option.label}
       accessibilityHint={option.description}
-      accessibilityState={{ checked: selected }}
+      // react-native-web 0.21 maps only the aria props, not accessibilityState.
+      aria-checked={selected}
       onPress={onPress}
       style={[
         styles.card,

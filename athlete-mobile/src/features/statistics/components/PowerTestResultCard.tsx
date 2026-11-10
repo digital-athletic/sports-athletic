@@ -1,6 +1,8 @@
 import { Ionicon } from "@/common/Ionicon";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
+import { POWER_TEST_EXERCISES } from "@/features/statistics/models/powerTestExercises";
 import { Box } from "@/theme/Box";
+import { Card } from "@/theme/Card";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { formatDateForDisplay } from "@/utils/date";
@@ -42,42 +44,15 @@ const WeightRow: FC<{ label: string; weight: string; color: string }> = ({
 const ResultWeights: FC<{ result: MaxValuesType }> = ({ result }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const weights = [
-    {
-      label: t("statistics.powerTest.squad"),
-      value: result.kneeDominant.barbell,
-      color: colors.squad,
-    },
-    {
-      label: t("statistics.powerTest.deadlift"),
-      value: result.hipHinge.barbell,
-      color: colors.deadlift,
-    },
-    {
-      label: t("statistics.powerTest.benchPress"),
-      value: result.horizontalPush.barbell,
-      color: colors.benchPress,
-    },
-    {
-      label: t("statistics.powerTest.rowing"),
-      value: result.horizontalPull.barbell,
-      color: colors.rowing,
-    },
-    {
-      label: t("statistics.powerTest.shoulderPress"),
-      value: result.verticalPush.barbell,
-      color: colors.shoulderPress,
-    },
-  ];
 
   return (
     <>
-      {weights.map((weight) => (
+      {POWER_TEST_EXERCISES.map((exercise) => (
         <WeightRow
-          key={weight.label}
-          label={weight.label}
-          weight={formatWeight(weight.value)}
-          color={weight.color}
+          key={exercise.direction}
+          label={t(exercise.resultKey)}
+          weight={formatWeight(result[exercise.direction].barbell)}
+          color={colors[exercise.color]}
         />
       ))}
     </>
@@ -96,13 +71,7 @@ export const PowerTestResultCard: FC<PowerTestResultCardProps> = ({
   const date = formatDateForDisplay(new Date(result.testAt));
 
   return (
-    <Box
-      backgroundColor="white"
-      borderWidth={1.5}
-      borderColor="lightGrey2"
-      borderRadius="xl"
-      testID={testID}
-    >
+    <Card variant="outlined" testID={testID}>
       <Pressable
         onPress={onToggle}
         style={{
@@ -139,6 +108,6 @@ export const PowerTestResultCard: FC<PowerTestResultCardProps> = ({
           <ResultWeights result={result} />
         </Box>
       )}
-    </Box>
+    </Card>
   );
 };

@@ -1,7 +1,9 @@
 import { PowerTest as Chart } from "@/charts/PowerTest";
 import { Coaching } from "@/common/Coaching";
 import type { ScaleType } from "@/features/statistics/models/WorkoutsData";
+import { POWER_TEST_EXERCISES } from "@/features/statistics/models/powerTestExercises";
 import { Box } from "@/theme/Box";
+import { Card } from "@/theme/Card";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
@@ -39,20 +41,6 @@ const Legend: FC = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
-  const items = [
-    { label: t("statistics.powerTest.legendSquad"), color: colors.squad },
-    { label: t("statistics.powerTest.legendDeadlift"), color: colors.deadlift },
-    {
-      label: t("statistics.powerTest.legendBenchPress"),
-      color: colors.benchPress,
-    },
-    { label: t("statistics.powerTest.legendRowing"), color: colors.rowing },
-    {
-      label: t("statistics.powerTest.legendShoulderPress"),
-      color: colors.shoulderPress,
-    },
-  ];
-
   return (
     <Box
       flexDirection="row"
@@ -61,8 +49,12 @@ const Legend: FC = () => {
       paddingHorizontal="m"
       testID="power-test-legend"
     >
-      {items.map((item) => (
-        <LegendPill key={item.label} label={item.label} color={item.color} />
+      {POWER_TEST_EXERCISES.map((exercise) => (
+        <LegendPill
+          key={exercise.direction}
+          label={t(exercise.legendKey)}
+          color={colors[exercise.color]}
+        />
       ))}
     </Box>
   );
@@ -80,17 +72,14 @@ export const PowerTestChartCard: FC<PowerTestChartCardProps> = ({
   }
 
   return (
-    <Box
-      backgroundColor="white"
-      borderWidth={1.5}
-      borderColor="lightGrey2"
-      borderRadius="xl"
+    <Card
+      variant="outlined"
       paddingBottom="m"
       overflow="hidden"
       testID="power-test-chart-card"
     >
       <Chart scale={scale} />
       <Legend />
-    </Box>
+    </Card>
   );
 };

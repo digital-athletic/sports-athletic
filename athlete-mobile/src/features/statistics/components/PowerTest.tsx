@@ -45,7 +45,7 @@ const PowerTestResults: FC<PowerTestResultsProps> = ({
 
   return (
     <Box gap="s" testID="power-test-results-container">
-      <Text variant="body" fontWeight="700" accessibilityRole="header">
+      <Text variant="sectionLabel" accessibilityRole="header">
         {t("statistics.powerTest.yourResults")}
       </Text>
       <Box gap="s" testID="power-test-results-list">

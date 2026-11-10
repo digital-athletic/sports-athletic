@@ -8,9 +8,9 @@ import { SectionWeekBars } from "./SectionWeekBars";
 import { getPassedWeeksSinceDate } from "./utils/timeUtils";
 import { getIntensityForSection } from "./utils/trainingSectionUtils";
 
-const SECTION_TILE_WIDTH = 120;
+export const SECTION_TILE_WIDTH = 132;
 // The bars and the label split the tile height, so the tile needs its own.
-const SECTION_TILE_HEIGHT = 140;
+const SECTION_TILE_HEIGHT = 160;
 
 interface TrainingSectionTileProps {
   section: TrainingSectionType;
@@ -37,7 +37,9 @@ export const TrainingSectionTile: FC<TrainingSectionTileProps> = ({
       height={SECTION_TILE_HEIGHT}
       justifyContent="center"
       alignItems="center"
-      padding="s"
+      paddingHorizontal="m"
+      paddingTop="m"
+      paddingBottom="xs"
       marginRight="m"
       onPress={onPress}
       backgroundColor={isActive ? "primaryTint" : "white"}

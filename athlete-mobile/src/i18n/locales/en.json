@@ -292,7 +292,9 @@
       "QUICKSTART_WARM_UP": "Warm-up",
       "QUICKSTART_WARM_UP_DESC": "Prepare your body for training",
       "QUICKSTART_COOL_DOWN": "Cool Down",
-      "QUICKSTART_COOL_DOWN_DESC": "Recovery and stretching"
+      "QUICKSTART_COOL_DOWN_DESC": "Recovery and stretching",
+      "gridEyebrow": "Focus training · 10-20 min",
+      "gridHeading": "What do you want to train?"
     },
     "prevention": {
       "PREVENTION_TILE_ANKLE": "Ankle",

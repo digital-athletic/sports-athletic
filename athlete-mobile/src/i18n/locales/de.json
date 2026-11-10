@@ -292,7 +292,9 @@
       "QUICKSTART_WARM_UP": "Warm-up",
       "QUICKSTART_WARM_UP_DESC": "Bereite deinen Körper auf das Training vor",
       "QUICKSTART_COOL_DOWN": "Cool-down",
-      "QUICKSTART_COOL_DOWN_DESC": "Erholung und Dehnung"
+      "QUICKSTART_COOL_DOWN_DESC": "Erholung und Dehnung",
+      "gridEyebrow": "Fokus-Training · 10-20 Min",
+      "gridHeading": "Was möchtest du trainieren?"
     },
     "prevention": {
       "PREVENTION_TILE_ANKLE": "Knöchel",

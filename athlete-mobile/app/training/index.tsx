@@ -8,6 +8,7 @@ import {
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { useAgeGroup } from "@/features/anamnesis/useAgeGroup";
 import { ColumnList } from "@/features/training/ColumnList";
+import { FocusTrainingGrid } from "@/features/training/FocusTrainingGrid";
 import { useTrainingGapCheck } from "@/features/training/hooks/useTrainingGapCheck";
 import type { TrainingSelectionType } from "@/features/training/models/Training";
 import { useTrainingStore } from "@/features/training/trainingStore";
@@ -204,8 +205,6 @@ export default function SelectTraining() {
         return getTrainingDays();
       case "PREV":
         return WorkoutConstants.PREVENTION_TILES;
-      case "QUICK":
-        return WorkoutConstants.QUICKSTART_TILES;
       default:
         // probably just passing through when entering TrainingStack
         return [];
@@ -260,6 +259,10 @@ export default function SelectTraining() {
       />
     );
   };
+
+  if (screenState === "SELECT" && selection === "QUICK") {
+    return <FocusTrainingGrid title={title} onBack={handleBack} />;
+  }
 
   return (
     <>

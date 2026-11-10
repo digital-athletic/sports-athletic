@@ -49,7 +49,9 @@ export class AnamnesisPage extends BasePage {
   }
 
   private get trainingDaysHeading() {
-    return this.page.getByRole("heading", { name: "Training Days" });
+    return this.page.getByRole("heading", {
+      name: "On what days do you want to workout?",
+    });
   }
 
   private get nameInput() {

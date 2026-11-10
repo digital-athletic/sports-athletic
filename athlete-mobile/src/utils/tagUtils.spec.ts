@@ -4,6 +4,7 @@ import {
   getTagValues,
   getUserTagValue,
   getUserTagValues,
+  hasOnlyPositionTags,
   isTagInGroup,
   TAG_GROUP_SUBGROUPS,
 } from "./tagUtils";
@@ -145,6 +146,26 @@ describe("tagUtils", () => {
 
     it("returns undefined for undefined tags", () => {
       expect(getUserTagValue(undefined, "LEVEL")).toBeUndefined();
+    });
+  });
+
+  describe("hasOnlyPositionTags", () => {
+    it("returns true when the goalkeeper tag is the only tag", () => {
+      expect(hasOnlyPositionTags(["POSITION_GOAL"])).toBe(true);
+    });
+
+    it("returns false when another tag goes with the goalkeeper tag", () => {
+      expect(
+        hasOnlyPositionTags(["POSITION_GOAL", "SKILL_EXPLOSIVE_POWER"]),
+      ).toBe(false);
+    });
+
+    it("returns false without a position tag", () => {
+      expect(hasOnlyPositionTags(["REGION_LOWER_BODY"])).toBe(false);
+    });
+
+    it("returns false without tags", () => {
+      expect(hasOnlyPositionTags([])).toBe(false);
     });
   });
 });

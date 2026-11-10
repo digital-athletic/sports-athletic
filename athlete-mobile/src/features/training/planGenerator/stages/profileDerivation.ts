@@ -1,4 +1,3 @@
-import { isGoalkeeperPosition } from "@/constants/sportPositions";
 import { TagGroups } from "@/constants/tagGroups";
 import {
   type AgeGroupTag,
@@ -22,9 +21,6 @@ import { readPlaceEquipment } from "./placeEquipment";
 
 export type SeasonPhaseName = NonNullable<SeasonPhaseType["type"]>;
 
-/** Goalkeepers form one group; every other position, or none, is a field player. */
-export type PlayingPositionGroup = "GOALKEEPER" | "FIELD_PLAYER";
-
 export interface DerivedSeasonPhase {
   readonly type: SeasonPhaseName;
   /** Full weeks from the plan start to the phase end, at least 1. */
@@ -38,7 +34,6 @@ export interface DerivedProfile {
   /** True when a pain tag maps to a prevention skill. */
   readonly hasPain: boolean;
   readonly preventionSkills: readonly string[];
-  readonly playingPositionGroup: PlayingPositionGroup;
   readonly seasonPhase: DerivedSeasonPhase;
   /** True when the training place of any active day has weights. */
   readonly hasWeights: boolean;
@@ -103,9 +98,9 @@ const hasWeightsOnActiveDay = ({
  * A season phase without a type or end date raises the input error
  * NO_ANAMNESIS/MISSING_WORKOUT_DATA.
  *
- * deriveAthleteProfile(inputOfAProfessionalChildGoalkeeperWithKneePain)
+ * deriveAthleteProfile(inputOfAProfessionalChildWithKneePain)
  * → { ageGroup: "CHILD", fitnessLevel: "ADVANCED", hasPain: true,
- *     preventionSkills: ["PREVKNEE"], playingPositionGroup: "GOALKEEPER",
+ *     preventionSkills: ["PREVKNEE"],
  *     seasonPhase: { type: "PREPARATORY", weekCount: 17 }, hasWeights: true }
  */
 export const deriveAthleteProfile = (
@@ -125,11 +120,6 @@ export const deriveAthleteProfile = (
     ),
     hasPain: preventionSkills.length > 0,
     preventionSkills,
-    playingPositionGroup: isGoalkeeperPosition(
-      getUserTagValue(tags, TagGroups.POSITION),
-    )
-      ? "GOALKEEPER"
-      : "FIELD_PLAYER",
     seasonPhase: deriveSeasonPhase(input.seasonPhase, input.planStartDate),
     hasWeights: hasWeightsOnActiveDay(input),
   };

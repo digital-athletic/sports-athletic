@@ -100,30 +100,6 @@ describe("deriveAthleteProfile", () => {
     });
   });
 
-  describe("playing position group", () => {
-    it.each([
-      ["GOAL", "GOALKEEPER"],
-      ["GOALKEEPER", "GOALKEEPER"],
-      ["FIELD", "FIELD_PLAYER"],
-    ])("puts the position %s into the group %s", (position, group) => {
-      const input = generatePlanGenerationInput({
-        athlete: generatePlanAthlete({ tags: { POSITION: [position] } }),
-      });
-
-      expect(deriveAthleteProfile(input).playingPositionGroup).toBe(group);
-    });
-
-    it("counts a missing position as FIELD_PLAYER", () => {
-      const input = generatePlanGenerationInput({
-        athlete: generatePlanAthlete({ tags: {} }),
-      });
-
-      expect(deriveAthleteProfile(input).playingPositionGroup).toBe(
-        "FIELD_PLAYER",
-      );
-    });
-  });
-
   describe("season phase", () => {
     it("counts the full weeks from the plan start to the phase end", () => {
       const input = generatePlanGenerationInput({

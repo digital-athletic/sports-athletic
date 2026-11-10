@@ -11,19 +11,10 @@ import { MAX_STRENGTH_SKILLS } from "./skillCodes";
 /** One section of the plan: type, week count and cardio type, without a start date. */
 export type PlanSection = Readonly<SectionEntry>;
 export type SectionType = SectionEntry["type"];
-export type CardioType = SectionEntry["cardioType"];
 
 const { AGE_GROUPS, LEVELS } = WorkoutConstants;
 const TEMPLATE_WEEK_LIMIT = 20;
 const FALLBACK_TEMPLATE_KEY = "preparatory/adult/advanced";
-
-const GOALKEEPER_SECTION_TYPES: Partial<Record<SectionType, SectionType>> = {
-  SA: "SK",
-  SAKG: "SKKG",
-};
-const GOALKEEPER_CARDIO_TYPES: Partial<Record<CardioType, CardioType>> = {
-  CARDIO_1_LAKTAT: "CARDIO_1_SHORT",
-};
 
 const throwMissingTemplate = (templateKey: string, weeks: number): never =>
   throwConfigurationError("sectionTemplate", templateKey, String(weeks));
@@ -117,20 +108,15 @@ const pickTemplateSections = (
 
 const substituteSection = (
   section: SectionEntry,
-  { ageGroup, fitnessLevel, hasWeights, playingPositionGroup }: DerivedProfile,
+  { ageGroup, fitnessLevel, hasWeights }: DerivedProfile,
 ): PlanSection => {
   const replacesMaxStrength =
     !hasWeights ||
     fitnessLevel === LEVELS.BEGINNER ||
     ageGroup === AGE_GROUPS.CHILD;
-  const isGoalkeeper = playingPositionGroup === "GOALKEEPER";
-  let { type, cardioType } = section;
-  if (replacesMaxStrength && MAX_STRENGTH_SKILLS.includes(type)) type = "SWR2";
-  if (isGoalkeeper) {
-    type = GOALKEEPER_SECTION_TYPES[type] ?? type;
-    cardioType = GOALKEEPER_CARDIO_TYPES[cardioType] ?? cardioType;
-  }
-  return { ...section, type, cardioType };
+  return replacesMaxStrength && MAX_STRENGTH_SKILLS.includes(section.type)
+    ? { ...section, type: "SWR2" }
+    : section;
 };
 
 /**
@@ -138,10 +124,9 @@ const substituteSection = (
  * season phase, age group and fitness level, with the preparatory adult
  * advanced template as fallback. Phases longer than 20 weeks append from the
  * template's repeat list. Without weights, for beginners and for children max
- * strength becomes hypertrophy stage 2. Goalkeepers get explosive power
- * instead of power endurance and sprint intervals instead of lactate
- * intervals. The sections carry no start date; plan assembly dates them. A
- * missing template raises the configuration error OTHER/OTHER.
+ * strength becomes hypertrophy stage 2. The sections carry no start date;
+ * plan assembly dates them. A missing template raises the configuration error
+ * OTHER/OTHER.
  *
  * layOutSections(beginnerWithEightPreparatoryWeeks, sectionTemplates)
  * → [{ type: "SWR1", numOfWeeks: 3, cardioType: "CARDIO_3" },

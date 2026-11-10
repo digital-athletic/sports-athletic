@@ -71,7 +71,7 @@ block-beta
     block:rules:2
         columns 5
         rulesTitle["Rule chain (Pipes and Filters)"]:5
-        pain["Pain"] equipment["Equipment"] ageGroup["Age group"] gender["Gender"] goalkeeper["Goalkeeper"]
+        pain["Pain"] equipment["Equipment"] ageGroup["Age group"] gender["Gender"] positionTag["Position tag"]
     end
     block:context:2
         columns 2
@@ -89,8 +89,8 @@ Each layer uses the layers below it:
 
 Each stage implements one section of the spec:
 
-1. **Profile derivation** reads the anamnesis and returns the age group, derived once from the birth date and the reference date of the input, the fitness level, the pain status, the prevention skills, the playing position group, the season phase with its week count, and whether any active training place has weights. A missing season phase raises an input error. Spec section [1](../specs/planning/training-plan-creation-from-anamnesis.md#1-profile-derivation).
-2. **Section layout** picks the section template, appends the repeat list for phases longer than 20 weeks, and applies the max strength and goalkeeper substitutions. It returns the ordered sections without start dates. Plan assembly dates them. Spec section [2](../specs/planning/training-plan-creation-from-anamnesis.md#2-section-layout-periodization).
+1. **Profile derivation** reads the anamnesis and returns the age group, derived once from the birth date and the reference date of the input, the fitness level, the pain status, the prevention skills, the season phase with its week count, and whether any active training place has weights. A missing season phase raises an input error. Spec section [1](../specs/planning/training-plan-creation-from-anamnesis.md#1-profile-derivation).
+2. **Section layout** picks the section template, appends the repeat list for phases longer than 20 weeks, and applies the max strength substitution. It returns the ordered sections without start dates. Plan assembly dates them. Spec section [2](../specs/planning/training-plan-creation-from-anamnesis.md#2-section-layout-periodization).
 3. **Day grouping and focus** groups the active weekdays, gives each day a focus and applies the weekly cardio guarantee. The stage runs once per plan, because the focus depends on the schedule and the training places only. Every section reads the same focus per weekday. Spec section [3](../specs/planning/training-plan-creation-from-anamnesis.md#3-day-grouping-and-focus).
 4. **Skill budget** runs per section and per day. It picks the skill priority structure, resolves the placeholders, places the prevention skill, gives each skill its minimum and distributes the leftover minutes by priority up to the maximum minutes. Spec section [4](../specs/planning/training-plan-creation-from-anamnesis.md#4-skill-selection-and-time-budgeting-per-day).
 5. **Region configuration** reads the region configuration of each skill for its minutes and returns the tag entries branch selection fills. Spec section [5](../specs/planning/training-plan-creation-from-anamnesis.md#5-branch-selection-per-skill), rule 1.
@@ -150,7 +150,7 @@ The new generator imports leaf modules of the workout generator. It imports neit
 | Branch resolution | Reused as it is, for the check that a branch resolves at or below the athlete's level |
 | Generator error type | Reused as it is |
 | Generation input | Not reused. The plan generation input is a plan variant with the schedule, the training places and the plan's authored data, and without muscle soreness. |
-| Goalkeeper exclusion | New rule family for the goalkeeper exercises |
+| Position tag | New rule family that drops a branch whose only tags are position tags, since selection reads no position tag |
 | Branch draw of picks blocks | Not used. Plan creation draws per tag entry through the cascading filters of the spec. |
 | Muscle soreness and fitness level rule families | Not used. Plan creation reads no soreness, and the fitness level selects authored data instead of filtering branches. |
 
@@ -163,7 +163,7 @@ Each rule family is a pure filter. A family takes candidate branches and returns
 3. gender
 4. equipment of the day's training place
 5. pain
-6. goalkeeper exclusion
+6. position tag
 
 ### Behaviour
 
@@ -178,7 +178,6 @@ The new generator follows the spec. In these places the old code differs, and th
 | A 0 in the maximum minutes table means no time. A missing entry raises a configuration error. | Section 4, table | [Maximum minutes](../../src/features/training/generators/PlanGenerator.ts#L932-L934) |
 | A PROFESSIONAL child resolves branches at ADVANCED, the level every other stage uses. | Section 1, Level | [Branch level](../../src/features/training/generators/PlanGenerator.ts#L1270) |
 | A season phase without a type or an end date raises the input error NO_ANAMNESIS/MISSING_WORKOUT_DATA. | Section 1, Season phase | [Season phase fallback](../../src/features/training/generators/PlanGenerator.ts#L1084-L1086) |
-| The goalkeeper exclusion treats a branch as a goalkeeper exercise when the branch or the exercise of any level carries POSITION_GOAL. The old code lists the exercises 661, 662, 767, 768 and 769. The tag also marks 989, 990, 992, 993 and 994, so field players lose those exercises too. | Section 1, Position | [Goalkeeper exercises](../../src/features/training/generators/PlanGenerator.ts#L2311-L2326) |
 | The rule chain checks the equipment tags of the branch, as workout generation does, so the plan holds only branches the workout generator keeps at session start. The old code checks the equipment tags of the exercise at the athlete's level. The GKS branches 544 and 546 carry EQ_TOWEL and leave the pool of a studio without a towel. | Section 5, rule 2 | [Equipment check](../../src/features/training/generators/PlanGenerator.ts#L2339-L2373) |
 
 ### Verification
@@ -247,7 +246,7 @@ The new generator raises the typed generator error in three classes:
   | Folder | Component | Modules |
   | --- | --- | --- |
   | `stages/` | Stages of the pipeline | one module per stage |
-  | `ruleFamilies/` | Goalkeeper exclusion | the goalkeeper family; the other families come from the workout generator |
+  | `ruleFamilies/` | Position tag | the position tag family; the other families come from the workout generator |
   | `planGenerationInput/` | Plan generation input | the input and its builder |
 
   The router sits next to the workout generator router. Each module has its spec next to it. No index file only re-exports other modules.

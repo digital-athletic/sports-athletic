@@ -23,7 +23,7 @@ export interface RuleFamilyAthlete {
   readonly workoutData?: { readonly tags?: TagsByGroup };
 }
 
-/** The families of both generators; plan creation adds used branches and goalkeeper exclusion. */
+/** The families of both generators; plan creation adds used branches and position tags. */
 export type RuleFamilyName =
   | "pain"
   | "muscleSoreness"
@@ -32,7 +32,7 @@ export type RuleFamilyName =
   | "ageGroup"
   | "gender"
   | "usedBranch"
-  | "goalkeeper";
+  | "positionTagOnly";
 
 /** A branch a rule family removed, with the athlete or place values that removed it. */
 export interface BranchRemoval {

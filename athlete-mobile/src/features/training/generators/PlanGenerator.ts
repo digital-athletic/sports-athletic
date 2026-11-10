@@ -1,4 +1,3 @@
-import { isGoalkeeperPosition } from "@/constants/sportPositions";
 import { TagGroups } from "@/constants/tagGroups";
 import {
   WorkoutConstants,
@@ -80,8 +79,8 @@ import { cloneWithValidation } from "@/utils/cloneWithValidation";
 import { addDays, formatDateToISO, ISODateToDate } from "@/utils/date";
 import {
   getTagValues,
-  getUserTagValue,
   getUserTagValues,
+  hasOnlyPositionTags,
 } from "@/utils/tagUtils";
 
 // Strength skills per the section types: hypertrophy, max strength,
@@ -160,8 +159,6 @@ export default class PlanGenerator {
     }
     if (PlanGenerator.DEBUG) console.log("Level: ", level);
     const tags = workoutData.tags ?? {};
-    const position = getUserTagValue(tags, TagGroups.POSITION); // there should always be just one POSITION tag
-    if (PlanGenerator.DEBUG) console.log("Position: ", position);
     const seasonPhase = workoutData.seasonPhase;
     if (!seasonPhase) {
       throw new Error("seasonPhase is required for plan generation");
@@ -199,7 +196,6 @@ export default class PlanGenerator {
       level,
       hasWeightsAvailable,
       startDate,
-      isGoalkeeperPosition(position),
     );
     if (PlanGenerator.DEBUG) console.log("InitializedPlan: ", initialPlan);
 
@@ -1039,7 +1035,6 @@ export default class PlanGenerator {
     level: LevelTag,
     hasWeights: boolean,
     startDate: Date,
-    isGoalkeeper: boolean,
   ): TrainingPlanInitialType => {
     //defines type and numOfWeeks for each section
     const sectionConfigs = PlanGenerator.getWeightedSections(
@@ -1047,7 +1042,6 @@ export default class PlanGenerator {
       ageGroup,
       level,
       hasWeights,
-      isGoalkeeper,
     );
 
     const startDateStr = formatDateToISO(startDate);
@@ -1079,7 +1073,6 @@ export default class PlanGenerator {
     ageGroup: AgeGroupTag,
     level: LevelTag,
     hasWeights: boolean,
-    isGoalkeeper: boolean,
   ): SectionEntry[] => {
     const numOfWeeks = seasonPhase.numOfWeeks ?? 0;
     const phaseType = (seasonPhase.type ??
@@ -1091,7 +1084,6 @@ export default class PlanGenerator {
         level,
         numOfWeeks,
         hasWeights,
-        isGoalkeeper,
       );
     // DEV check selected sections
     return sections;
@@ -1274,10 +1266,6 @@ export default class PlanGenerator {
     if (PlanGenerator.DEBUG && pains.length > 0) {
       console.log("filter pains ", pains);
     }
-    const position = getUserTagValue(
-      user.workoutData?.tags,
-      TagGroups.POSITION,
-    );
 
     //filter branches
     if (PlanGenerator.DEBUG) console.log("full skillTree", fullSkillTree);
@@ -1294,7 +1282,6 @@ export default class PlanGenerator {
         exerciseBranchData,
         exercises,
         branchIdsInUse,
-        position,
       );
     let skillTree: SkillTreeType = filterTree(fullSkillTree);
 
@@ -1324,7 +1311,6 @@ export default class PlanGenerator {
         exerciseBranchData,
         exercises,
         branchIdsInUse,
-        position,
       );
       if (PlanGenerator.DEBUG)
         console.log(
@@ -2084,7 +2070,7 @@ export default class PlanGenerator {
   /**
    * Selects appropriate training section templates based on season phase, age group, and level.
    * Handles plans longer than 20 weeks by repeating sections. Adjusts MAX to SWR2 for beginners
-   * or users without weights, and converts SA to SK for keepers.
+   * or users without weights.
    */
   static getSectionsBySeasonPhaseAgeGroupLevelNumOfWeeks = (
     seasonPhase: SeasonPhase,
@@ -2092,7 +2078,6 @@ export default class PlanGenerator {
     level: LevelTag,
     numOfWeeks: number,
     hasWeights: boolean,
-    isGoalkeeper: boolean,
   ): SectionEntry[] => {
     if (PlanGenerator.DEBUG) {
       console.log(
@@ -2159,18 +2144,6 @@ export default class PlanGenerator {
       for (let i = 0; i < sections.length; i++) {
         if (sections[i].type === "MAX" || sections[i].type === "MAX_STRENGTH") {
           sections[i].type = "SWR2";
-        }
-      }
-    }
-    // goalkeepers, children included, get SK for SA and sprint for lactate intervals
-    if (isGoalkeeper) {
-      if (PlanGenerator.DEBUG) console.log("Adjusting sections for keepers");
-      for (let i = 0; i < sections.length; i++) {
-        if (sections[i].type === "SA") {
-          sections[i].type = "SK";
-        }
-        if (sections[i].cardioType === "CARDIO_1_LAKTAT") {
-          sections[i].cardioType = "CARDIO_1_SHORT";
         }
       }
     }
@@ -2306,29 +2279,15 @@ export default class PlanGenerator {
     exerciseBranchData: BranchDataMapType,
     exercises: ExerciseType[],
     branchIdsInUse: string[],
-    position?: string,
   ): SkillTreeType => {
-    // goalkeeper exercises only for goalkeepers
-    const goalExercises = ["661", "662", "767", "768", "769"];
-    const isGoalkeeper = isGoalkeeperPosition(position);
     for (let id in additionalSkillTree) {
       if (additionalSkillTree.hasOwnProperty(id) && additionalSkillTree[id]) {
-        if (
-          !isGoalkeeper &&
-          Object.keys(additionalSkillTree[id].levels).some(
-            (levelKey) =>
-              goalExercises.indexOf(
-                additionalSkillTree[id].levels[Number(levelKey)].exerciseId,
-              ) > -1,
-          )
-        ) {
-          continue;
-        }
         // isSet
         // possibly also check for exercise ids > -1
         const isSet =
           additionalSkillTree[id].tags &&
-          additionalSkillTree[id].tags.length > 0;
+          additionalSkillTree[id].tags.length > 0 &&
+          !hasOnlyPositionTags(additionalSkillTree[id].tags);
         //  already in use
         const inUse =
           branchIdsInUse.includes(id) ||

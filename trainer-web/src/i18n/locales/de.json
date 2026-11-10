@@ -93,6 +93,17 @@
       "confirmTitle": "Team löschen?",
       "confirmMessage": "Sind Sie sicher, dass Sie dieses Team dauerhaft löschen möchten? Alle Mitglieder werden entfernt. Dies kann nicht rückgängig gemacht werden.",
       "success": "Team wurde gelöscht"
+    },
+    "guidance": {
+      "title": "Hinweise für Athleten",
+      "description": "Athleten sehen das auf der Teamseite in der App.",
+      "guidanceLabel": "Hinweise (optional)",
+      "guidancePlaceholder": "Zum Beispiel: Teamtraining Mo und Do 18:00. Ergänzen Sie einen eigenen Krafttag.",
+      "characterCount": "{{count}} / {{max}} Zeichen",
+      "weeklyTargetLabel": "Wochenziel (optional)",
+      "weeklyTargetHint": "Trainingstage pro Woche, 1 bis 7. Leer lassen für kein Ziel.",
+      "saved": "Gespeichert",
+      "error": "Speichern fehlgeschlagen. Bitte erneut versuchen."
     }
   },
   "errors": {
@@ -111,6 +122,8 @@
     "TEAM_NOT_FOUND": "Team nicht gefunden",
     "MEMBER_USER_ID_REQUIRED": "Mitglieder-Benutzer-ID ist erforderlich",
     "NOT_TEAM_OWNER": "Nur der Teameigentümer kann diese Aktion durchführen",
+    "GUIDANCE_TOO_LONG": "Die Hinweise dürfen höchstens 1.000 Zeichen lang sein.",
+    "WEEKLY_TARGET_OUT_OF_RANGE": "Das Wochenziel muss eine ganze Zahl von 1 bis 7 sein.",
     "NOT_A_TRAINER": "Sie sind nicht berechtigt, Gruppen zu erstellen. Bitte kontaktieren Sie das Sports Athletic Team.",
     "NOT_AN_ADMIN": "Sie haben keinen Admin-Zugang.",
     "USER_NOT_FOUND": "Kein Benutzer mit dieser E-Mail-Adresse gefunden.",

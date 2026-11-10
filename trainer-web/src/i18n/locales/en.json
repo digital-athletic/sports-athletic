@@ -93,6 +93,17 @@
       "confirmTitle": "Delete Team?",
       "confirmMessage": "Are you sure you want to permanently delete this team? All members will be removed. This cannot be undone.",
       "success": "Team has been deleted"
+    },
+    "guidance": {
+      "title": "Guidance for athletes",
+      "description": "Athletes see this on the team page in the app.",
+      "guidanceLabel": "Guidance (optional)",
+      "guidancePlaceholder": "For example: Team sessions Mon and Thu 18:00. Add one strength day on your own.",
+      "characterCount": "{{count}} / {{max}} characters",
+      "weeklyTargetLabel": "Weekly target (optional)",
+      "weeklyTargetHint": "Training days per week, 1 to 7. Leave empty for no target.",
+      "saved": "Saved",
+      "error": "Saving failed. Please try again."
     }
   },
   "errors": {
@@ -111,6 +122,8 @@
     "TEAM_NOT_FOUND": "Team not found",
     "MEMBER_USER_ID_REQUIRED": "Member user ID is required",
     "NOT_TEAM_OWNER": "Only the team owner can perform this action",
+    "GUIDANCE_TOO_LONG": "The guidance can be at most 1,000 characters long.",
+    "WEEKLY_TARGET_OUT_OF_RANGE": "The weekly target must be a whole number from 1 to 7.",
     "NOT_A_TRAINER": "You are not authorized to create groups. Please contact the Sports Athletic team.",
     "NOT_AN_ADMIN": "You do not have admin access.",
     "USER_NOT_FOUND": "No user found with that email address.",

@@ -1,17 +1,20 @@
 import { SilhouetteThumbnail } from "@/bodyParts/silhouette/SilhouetteThumbnail";
 import { HeadlineScreen } from "@/common/HeadlineScreen";
+import { TileGrid } from "@/common/TileGrid";
 import { Ionicon } from "@/common/Ionicon";
 import { type TileData, WorkoutConstants } from "@/constants/workoutConstants";
 import { type I18nKey } from "@/i18n";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { Box } from "@/theme/Box";
+import { Card } from "@/theme/Card";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { useResponsiveProp } from "@shopify/restyle";
-import { type Href, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet } from "react-native";
+import { tileHref } from "./tileHref";
 
 const BODY_PART_ORDER: readonly I18nKey[] = [
   "training.prevention.PREVENTION_TILE_SHOULDER",
@@ -49,14 +52,7 @@ const BodyPartCard: FC<BodyPartCardProps> = ({
       accessibilityRole="button"
       accessibilityLabel={name}
     >
-      <Box
-        flex={1}
-        backgroundColor="white"
-        borderWidth={1.5}
-        borderColor="lightGrey2"
-        borderRadius="xl"
-        overflow="hidden"
-      >
+      <Card variant="outlined" flex={1} overflow="hidden">
         <Box
           backgroundColor="lightGrey1"
           alignItems="center"
@@ -90,7 +86,7 @@ const BodyPartCard: FC<BodyPartCardProps> = ({
             decorative
           />
         </Box>
-      </Box>
+      </Card>
     </Pressable>
   );
 };
@@ -111,12 +107,6 @@ export const PreventionBodyPartScreen: FC<PreventionBodyPartScreenProps> = ({
   // useResponsiveProp can briefly return undefined on web.
   const silhouetteSize = useResponsiveProp({ phone: 96, tablet: 128 }) ?? 96;
 
-  const openTraining = (tile: TileData) => {
-    const { key, params } = tile.navigate;
-    // Typed routes reject a dynamic pathname in the object form; key is a valid Route.
-    router.navigate({ pathname: key, params } as Href);
-  };
-
   return (
     <HeadlineScreen
       title={title}
@@ -125,30 +115,21 @@ export const PreventionBodyPartScreen: FC<PreventionBodyPartScreenProps> = ({
       description={t("training.prevention.selection.description")}
       onBack={onBack}
     >
-      <Box style={styles.grid}>
+      <TileGrid>
         {BODY_PART_TILES.map((tile) => (
           <BodyPartCard
             key={tile.title}
             tile={tile}
             silhouetteSize={silhouetteSize}
-            onPress={() => openTraining(tile)}
+            onPress={() => router.navigate(tileHref(tile))}
           />
         ))}
-      </Box>
+      </TileGrid>
     </HeadlineScreen>
   );
 };
 
 const styles = StyleSheet.create({
-  // The width cap keeps the cards at phone size on a tablet.
-  grid: {
-    width: "100%",
-    maxWidth: 560,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    rowGap: 12,
-  },
   card: {
     width: "48%",
   },

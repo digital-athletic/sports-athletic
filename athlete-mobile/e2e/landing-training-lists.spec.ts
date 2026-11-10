@@ -53,7 +53,18 @@ test.describe("Home: training lists", () => {
     });
 
     await page.getByRole("button", { name: "Additional trainings" }).click();
-    await expect(page.getByText("First Team")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Additional trainings" }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Your own trainings and the trainings of your teams."),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Your trainings" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "First Team" }),
+    ).toBeVisible();
     await page.screenshot({
       path: "playwright/screenshots/additional-training-list.png",
       fullPage: true,

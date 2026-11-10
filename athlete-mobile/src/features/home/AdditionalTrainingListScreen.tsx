@@ -1,11 +1,74 @@
+import { HeadlineScreen } from "@/common/HeadlineScreen";
+import { Ionicon, type IoniconName } from "@/common/Ionicon";
+import { TileGrid } from "@/common/TileGrid";
 import { Logger } from "@/services/Logger";
 import { type UserTeam, getUserTeams } from "@/services/TeamService";
-import { ScrollBox } from "@/theme/ScrollBox";
-import { Stack, router } from "expo-router";
-import { useEffect, useState } from "react";
+import { Box } from "@/theme/Box";
+import { Card } from "@/theme/Card";
+import { Text } from "@/theme/Text";
+import { useTheme } from "@/theme/theme";
+import { router } from "expo-router";
+import { type FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator } from "react-native";
-import { ColumnListRow } from "@/features/training/ColumnListRow";
+import { ActivityIndicator, Pressable, StyleSheet } from "react-native";
+
+type TrainingSourceCardProps = {
+  title: string;
+  iconName: IoniconName;
+  onPress: () => void;
+};
+
+/** Card in the style of the body part cards, with an icon above the name. */
+const TrainingSourceCard: FC<TrainingSourceCardProps> = ({
+  title,
+  iconName,
+  onPress,
+}) => {
+  const { colors } = useTheme();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+      accessibilityRole="button"
+      accessibilityLabel={title}
+    >
+      <Card variant="outlined" flex={1} overflow="hidden">
+        <Box
+          backgroundColor="lightGrey1"
+          alignItems="center"
+          justifyContent="center"
+          height={112}
+        >
+          <Ionicon
+            name={iconName}
+            size={48}
+            color={colors.primary}
+            decorative
+          />
+        </Box>
+        <Box
+          flexDirection="row"
+          alignItems="center"
+          justifyContent="space-between"
+          paddingHorizontal="m"
+          paddingVertical="m"
+          gap="xs"
+        >
+          <Text variant="body" fontSize={15} fontWeight="700" flexShrink={1}>
+            {title}
+          </Text>
+          <Ionicon
+            name="chevron-forward"
+            size={14}
+            color={colors.lightGrey3}
+            decorative
+          />
+        </Box>
+      </Card>
+    </Pressable>
+  );
+};
 
 export default function AdditionalTrainingListScreen() {
   const { t } = useTranslation();
@@ -39,23 +102,27 @@ export default function AdditionalTrainingListScreen() {
   const ownTrainingsTitle = t("screens.home.additionalTrainings.ownTrainings");
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: t("screens.home.additionalTrainings.title"),
-          headerShown: true,
-        }}
-      />
-      <ScrollBox
-        flex={1}
-        backgroundColor="lightGrey1"
-        contentInsetAdjustmentBehavior="automatic"
-        testID="additional-training-list"
-      >
-        <ColumnListRow
-          title={ownTrainingsTitle}
-          onPress={() => openWorkouts(ownTrainingsTitle, "own")}
-        />
+    <HeadlineScreen
+      title={t("screens.home.additionalTrainings.title")}
+      heading={t("screens.home.additionalTrainings.title")}
+      description={t("screens.home.additionalTrainings.subtitle")}
+    >
+      <Box gap="l">
+        <TileGrid testID="additional-training-grid">
+          <TrainingSourceCard
+            iconName="person-outline"
+            title={ownTrainingsTitle}
+            onPress={() => openWorkouts(ownTrainingsTitle, "own")}
+          />
+          {teams.map((team) => (
+            <TrainingSourceCard
+              key={team.id}
+              iconName="people-outline"
+              title={team.name}
+              onPress={() => openWorkouts(team.name, "team")}
+            />
+          ))}
+        </TileGrid>
         {teamsLoading && (
           <ActivityIndicator
             accessibilityLabel={t(
@@ -63,14 +130,16 @@ export default function AdditionalTrainingListScreen() {
             )}
           />
         )}
-        {teams.map((team) => (
-          <ColumnListRow
-            key={team.id}
-            title={team.name}
-            onPress={() => openWorkouts(team.name, "team")}
-          />
-        ))}
-      </ScrollBox>
-    </>
+      </Box>
+    </HeadlineScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    width: "48%",
+  },
+  pressed: {
+    opacity: 0.7,
+  },
+});

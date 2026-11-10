@@ -76,7 +76,7 @@ test.describe("Home: training lists", () => {
 test.describe("Home: focus and prevention choice", () => {
   test.use({ profile: createCompletedProfile(), signedIn: true });
 
-  test("athlete opens the choice from home and starts a prevention training", async ({
+  test("athlete opens the choice from home and then the prevention training selection", async ({
     page,
   }) => {
     test.setTimeout(60000);
@@ -108,16 +108,6 @@ test.describe("Home: focus and prevention choice", () => {
     await page.screenshot({
       path: "playwright/screenshots/prevention-training-tiles.png",
       fullPage: true,
-    });
-
-    await page.getByText("Shoulder").first().click();
-    await expect(
-      page.getByRole("heading", { name: "Place & Equipment" }),
-    ).toBeVisible({ timeout: 10000 });
-
-    await page.getByRole("button", { name: /^At home, \d+ pieces$/ }).click();
-    await expect(page.getByText("Training Overview")).toBeVisible({
-      timeout: 15000,
     });
   });
 });

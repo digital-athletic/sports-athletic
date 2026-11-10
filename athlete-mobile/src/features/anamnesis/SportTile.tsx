@@ -56,7 +56,8 @@ export const SportTile: FC<SportTileProps> = ({
       ]}
       accessibilityLabel={sportName}
       accessibilityRole="button"
-      accessibilityState={{ selected: isSelected }}
+      // react-native-web 0.21 maps only the aria props, not accessibilityState.
+      aria-selected={isSelected}
     >
       <Box
         flex={1}

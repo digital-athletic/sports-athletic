@@ -13,7 +13,9 @@ export class ProfilePage extends BasePage {
   }
 
   private get trainingDaysHeading() {
-    return this.page.getByRole("heading", { name: "Training Days" });
+    return this.page.getByRole("heading", {
+      name: "On what days do you want to workout?",
+    });
   }
 
   private get myTrainingDataButton() {
@@ -36,10 +38,14 @@ export class ProfilePage extends BasePage {
     await expect(this.seasonPhaseHeading).toBeVisible({ timeout: 10000 });
   }
 
+  private phaseCard(name: string) {
+    return this.page.getByRole("radio", { name, exact: true });
+  }
+
   async changeSeasonPhase(from: string, to: string) {
-    await this.page.getByText(from).click();
-    await this.page.getByText(to).click();
-    await this.page.getByText("OK").last().click();
+    await expect(this.phaseCard(from)).toBeChecked();
+    await this.phaseCard(to).click();
+    await expect(this.phaseCard(to)).toBeChecked();
   }
 
   async proceedToTrainingDays() {

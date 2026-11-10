@@ -448,16 +448,6 @@
       "count": 1
     }
   },
-  "src/form/SelectionInputField.tsx": {
-    "max-lines-per-function": {
-      "count": 1
-    }
-  },
-  "src/form/SelectionModal.tsx": {
-    "max-lines-per-function": {
-      "count": 1
-    }
-  },
   "src/schemas/generator.schema.ts": {
     "max-lines": {
       "count": 1

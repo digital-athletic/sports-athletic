@@ -66,14 +66,6 @@ export class AnamnesisPage extends BasePage {
     return this.page.getByPlaceholder("75", { exact: true });
   }
 
-  private get chooseButton() {
-    return this.page.getByText("Choose").first();
-  }
-
-  private get okButton() {
-    return this.page.getByText("OK").last();
-  }
-
   private choice(name: string) {
     return this.page.getByRole("radio", { name, exact: true });
   }
@@ -141,9 +133,7 @@ export class AnamnesisPage extends BasePage {
     phase: "Preparation" | "Competitive" | "Transition",
   ) {
     await expect(this.seasonPhaseHeading).toBeVisible();
-    await this.chooseButton.click();
-    await this.page.getByText(phase).click();
-    await this.okButton.click();
+    await this.choice(phase).click();
 
     // Note: The @react-native-community/datetimepicker doesn't render on web,
     // so the end date is auto-calculated by the app (12 weeks from now).

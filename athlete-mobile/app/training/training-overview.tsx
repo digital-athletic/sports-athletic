@@ -129,7 +129,7 @@ export default function TrainingOverviewScreen() {
       ? (trainingDays[weekdayNumber]?.place ?? "HOME")
       : "HOME");
 
-  const { swapControls, startWithSwaps } = useExerciseSwap(
+  const { swapControls } = useExerciseSwap(
     params,
     isPlaceType(place) ? place : "HOME",
   );
@@ -150,7 +150,6 @@ export default function TrainingOverviewScreen() {
   );
 
   const handleStartTraining = () => {
-    startWithSwaps();
     setTrainingStartTime(Date.now());
     setTrainingViewMode("SEQUENTIAL");
     router.push({
@@ -160,7 +159,6 @@ export default function TrainingOverviewScreen() {
   };
 
   const handleStartTrainingAsChecklist = () => {
-    startWithSwaps();
     setTrainingStartTime(Date.now());
     setTrainingViewMode("LIST");
     router.push({

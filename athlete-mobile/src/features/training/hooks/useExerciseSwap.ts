@@ -6,8 +6,6 @@ import {
   type ExerciseSwapState,
   findNextSwap,
   listSwappableBranches,
-  listSwappedInBranches,
-  listSwapStartLevels,
   swapBranchInStoredDay,
   toExerciseBranch,
 } from "@/features/training/exerciseSwap/exerciseSwap";
@@ -23,13 +21,11 @@ import type { UserExerciseDataType } from "@/features/training/models/UserExerci
 import { selectStoredTrainingDay } from "@/features/training/storedTrainingDaySelection";
 import type { SwapControls } from "@/features/training/SwapExerciseButton";
 import { useTrainingStore } from "@/features/training/trainingStore";
-import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import { createGenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
 import { setUpWorkout } from "@/features/training/workoutGenerator/stages/workoutSetup";
 import type { StoredBranch } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import { generateTrainingDayFromStoredDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import { Logger } from "@/services/Logger";
-import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { parseIntParam } from "@/utils/router";
 import { useEffect, useEffectEvent, useState } from "react";
 
@@ -54,37 +50,31 @@ const createSwapBasis = ({ params, ctx, place }: SwapRequest) => {
     weekday,
     ctx.trainingDays,
   );
-  const createInput = (branchData: GenerationContext["branchData"]) =>
-    createGenerationInput({
-      athlete: user,
-      place: selectedPlace,
-      equipment: ctx.places[selectedPlace]?.equipment ?? [],
-      exerciseCatalog: ctx.exercises,
-      exerciseData: { ...ctx.storedProgress, branchData },
-      random: FIXED_RANDOM,
-    });
+  const input = createGenerationInput({
+    athlete: user,
+    place: selectedPlace,
+    equipment: ctx.places[selectedPlace]?.equipment ?? [],
+    exerciseCatalog: ctx.exercises,
+    exerciseData: { ...ctx.storedProgress, branchData: ctx.branchData },
+    random: FIXED_RANDOM,
+  });
   const day = selectStoredTrainingDay(
     user,
     weekday,
     parseIntParam(params.sectionIndex),
     calculateDaysSinceLastWorkout(params.type, ctx),
   );
-  return {
-    day,
-    createInput,
-    branchData: ctx.branchData,
-    fitnessLevel: getUserLevel(user),
-  };
+  return { day, input };
 };
 
 const listAllAlternatives = (
   request: SwapRequest,
   session: readonly UserExerciseDataType[],
 ): Record<string, ExerciseSwapState> => {
-  const { day, createInput } = createSwapBasis(request);
-  const input = setUpWorkout(createInput(request.ctx.branchData));
+  const basis = createSwapBasis(request);
+  const input = setUpWorkout(basis.input);
   const swaps: Record<string, ExerciseSwapState> = {};
-  for (const { branchId, skill } of listSwappableBranches(session, day)) {
+  for (const { branchId, skill } of listSwappableBranches(session, basis.day)) {
     const others = session.filter((entry) => entry.branchId !== branchId);
     try {
       const alternatives = listSwapAlternatives(
@@ -117,34 +107,17 @@ const listAllAlternatives = (
   return swaps;
 };
 
-/**
- * Generates the plan day with the alternative in place of the original
- * branch, starting the alternative from its raised level.
- */
+/** Generates the plan day with the alternative in place of the original. */
 const generateSwappedDay = (
-  {
-    day,
-    createInput,
-    branchData,
-    fitnessLevel,
-  }: ReturnType<typeof createSwapBasis>,
+  { day, input }: ReturnType<typeof createSwapBasis>,
   skill: string,
   original: string,
   alternative: StoredBranch,
-) => {
-  const startLevels = listSwapStartLevels(
-    [alternative],
-    branchData,
-    fitnessLevel,
-  );
-  return generateTrainingDayFromStoredDay(
+) =>
+  generateTrainingDayFromStoredDay(
     swapBranchInStoredDay(day, skill, original, toExerciseBranch(alternative)),
-    createInput({
-      ...branchData,
-      ...Object.fromEntries(startLevels.map((l) => [l.branchId, l])),
-    }),
+    input,
   );
-};
 
 /** The original branch whose swap shows the given branch. */
 const findOriginalBranchId = (
@@ -193,7 +166,6 @@ const useSwapState = (request: SwapRequest) => {
 export function useExerciseSwap(params: SwapParams, fallbackPlace: PlaceType) {
   const ctx = useGenerationContext();
   const setExerciseList = useTrainingStore((s) => s.setExerciseList);
-  const setBranchLevel = useExerciseProgressStore((s) => s.setBranchLevel);
   const request: SwapRequest = { params, ctx, place: fallbackPlace };
   const { swaps, setSwaps } = useSwapState(request);
 
@@ -225,16 +197,5 @@ export function useExerciseSwap(params: SwapParams, fallbackPlace: PlaceType) {
     onSwap: swapExercise,
   };
 
-  /** Stores the start level of each swapped in Branch when the training starts. */
-  const startWithSwaps = () => {
-    for (const { branchId, level, exerciseId } of listSwapStartLevels(
-      listSwappedInBranches(Object.values(swaps)),
-      ctx.branchData,
-      getUserLevel(buildUser(params, ctx)),
-    )) {
-      setBranchLevel(branchId, level, exerciseId);
-    }
-  };
-
-  return { swapControls, startWithSwaps };
+  return { swapControls };
 }

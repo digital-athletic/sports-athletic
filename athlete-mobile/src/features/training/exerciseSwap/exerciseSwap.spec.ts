@@ -6,8 +6,6 @@ import { generateStoredTrainingDay } from "@test/factories/storedTrainingDay";
 import {
   findNextSwap,
   listSwappableBranches,
-  listSwappedInBranches,
-  listSwapStartLevels,
   swapBranchInStoredDay,
   toExerciseBranch,
 } from "./exerciseSwap";
@@ -91,30 +89,6 @@ describe("exerciseSwap: toExerciseBranch", () => {
       tags: branch.tags,
       exercises: { 1: { exerciseId: "e1" } },
     });
-  });
-});
-
-describe("exerciseSwap: listSwappedInBranches", () => {
-  it("lists the alternative an exercise shows", () => {
-    const swap = generateSwap(1);
-
-    expect(listSwappedInBranches([swap])).toEqual(swap.alternatives);
-  });
-
-  it("lists nothing for an exercise cycled back to its original", () => {
-    expect(listSwappedInBranches([generateSwap(0)])).toEqual([]);
-  });
-});
-
-describe("exerciseSwap: listSwapStartLevels", () => {
-  it("lists the raised start level of a swapped in branch", () => {
-    expect(
-      listSwapStartLevels(
-        [generateAlternative("20")],
-        { "20": { branchId: "20", level: 1, exerciseId: "20x1" } },
-        "ADVANCED",
-      ),
-    ).toEqual([{ branchId: "20", level: 2, exerciseId: "20x2" }]);
   });
 });
 

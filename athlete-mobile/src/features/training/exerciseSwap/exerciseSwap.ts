@@ -1,13 +1,8 @@
 import { toUserExerciseData } from "@/schemas/generator.schema";
-import type { BranchDataMapType } from "@/store/exerciseProgressStore";
 import type { ExerciseBranchType } from "../models/ExerciseBranch";
 import { isPlaceholderBranch } from "../models/IdTypes";
 import type { GeneratedSetListEntry } from "../models/SetListEntry";
 import type { UserExerciseDataType } from "../models/UserExerciseData";
-import {
-  getRaisedSubstituteLevel,
-  type SubstituteLevel,
-} from "../utils/substitutionLevelUtils";
 import type { StoredBranch } from "../workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import type { StoredTrainingDay } from "../workoutGenerator/storedDayWorkout";
 
@@ -34,32 +29,6 @@ export const toExerciseBranch = ({
     ),
   ),
 });
-
-/** The alternatives the exercises show; an original branch adds none. */
-export const listSwappedInBranches = (
-  swaps: readonly ExerciseSwapState[],
-): StoredBranch[] =>
-  swaps.flatMap(({ position, alternatives }) =>
-    position === 0 ? [] : [alternatives[position - 1]],
-  );
-
-/**
- * The start levels of swapped in branches: a stored level below the entry
- * level rises to it. A branch without a raised level adds none.
- */
-export const listSwapStartLevels = (
-  branches: readonly StoredBranch[],
-  branchData: BranchDataMapType,
-  fitnessLevel: string,
-): SubstituteLevel[] =>
-  branches.flatMap(
-    (branch) =>
-      getRaisedSubstituteLevel(
-        toExerciseBranch(branch),
-        branchData,
-        fitnessLevel,
-      ) ?? [],
-  );
 
 /**
  * Returns a copy of the stored day with the new branch in place of the old one

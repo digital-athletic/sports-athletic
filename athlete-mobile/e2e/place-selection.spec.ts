@@ -23,7 +23,7 @@ test.describe("Place Selection: training location list", () => {
 
     await page.goto("/training/muscle-soreness?type=MOB");
     await expect(
-      page.getByRole("heading", { name: "Place & Equipment" }),
+      page.getByRole("heading", { name: "Where do you train today?" }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: /^At home, \d+ pieces$/ }),

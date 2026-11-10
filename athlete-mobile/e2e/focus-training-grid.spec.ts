@@ -37,7 +37,7 @@ test.describe("Focus trainings: photo grid", () => {
     // Mobility asks no soreness, so its muscle soreness step opens on the place.
     await expect(page).toHaveURL(/\/training\/muscle-soreness\?type=MOB/);
     await expect(
-      page.getByRole("heading", { name: "Place & Equipment" }),
+      page.getByRole("heading", { name: "Where do you train today?" }),
     ).toBeVisible();
   });
 });

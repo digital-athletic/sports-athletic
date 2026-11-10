@@ -40,12 +40,8 @@ export const TrainingSectionTile: FC<TrainingSectionTileProps> = ({
       padding="s"
       marginRight="m"
       onPress={onPress}
-      backgroundColor="white"
-      shadowColor="black"
-      shadowOffset={{ width: 0, height: 2 }}
-      shadowOpacity={0.1}
-      shadowRadius={4}
-      elevation={3}
+      backgroundColor={isActive ? "primaryTint" : "white"}
+      borderRadius="l"
     >
       <Box flex={3} justifyContent="center" alignSelf="stretch">
         <SectionWeekBars
@@ -61,10 +57,14 @@ export const TrainingSectionTile: FC<TrainingSectionTileProps> = ({
         justifyContent="center"
         alignSelf="stretch"
         paddingVertical="s"
-        borderBottomColor={isActive ? "primary" : undefined}
-        borderBottomWidth={2}
       >
-        <Text variant="xSmall" textAlign="center" mt="s">
+        <Text
+          variant="xSmall"
+          textAlign="center"
+          mt="s"
+          fontWeight={isActive ? "700" : "400"}
+          color={isActive ? "primary" : "darkGrey3"}
+        >
           {t(`training.sections.${section.type}`)}
         </Text>
       </Box>

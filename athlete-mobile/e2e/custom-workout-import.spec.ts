@@ -95,7 +95,7 @@ test.describe("Custom workouts: import of own trainings", () => {
 
     await page.getByRole("button", { name: "My core v2" }).click();
     await expect(
-      page.getByRole("heading", { name: "Place & Equipment" }),
+      page.getByRole("heading", { name: "Where do you train today?" }),
     ).toBeVisible();
     await page.getByRole("button", { name: /^At home, \d+ pieces$/ }).click();
     await expect(

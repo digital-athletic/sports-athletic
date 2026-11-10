@@ -1,17 +1,11 @@
-import { Ionicon } from "@/common/Ionicon";
+import { SegmentedControl } from "@/form/SegmentedControl";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { Box } from "@/theme/Box";
-import { Text } from "@/theme/Text";
-import { useTheme } from "@/theme/theme";
+import { Card } from "@/theme/Card";
 import { type TFunction } from "i18next";
 import { type FC, type ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Platform,
-  ScrollView,
-  TouchableOpacity,
-  useWindowDimensions,
-} from "react-native";
+import { Platform, useWindowDimensions } from "react-native";
 import { BodyPartsTagChips } from "./BodyPartsTagChips";
 import { BodySilhouette } from "./silhouette/BodySilhouette";
 import { regionsForTag, toMuscleTag } from "./silhouette/regionMapping";
@@ -21,39 +15,6 @@ import { type MuscleType, type Side } from "./types";
 type MuscleSorenessSelectorProps = {
   tags: MuscleType[];
   onChange?: (tags: MuscleType[]) => void;
-};
-
-type FlipSideButtonProps = {
-  side: Side;
-  onFlip: () => void;
-};
-
-// The accessible name sits on the touchable: the icon would otherwise expose
-// its glyph name ("sync") as its own label.
-const FlipSideButton: FC<FlipSideButtonProps> = ({ side, onFlip }) => {
-  const { t } = useTranslation();
-  const theme = useTheme();
-  const label =
-    side === "FRONT"
-      ? t("common.bodyParts.flipToBack")
-      : t("common.bodyParts.flipToFront");
-
-  return (
-    <TouchableOpacity
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      onPress={onFlip}
-    >
-      <Box padding="s">
-        <Ionicon
-          name="sync"
-          size={28}
-          color={theme.colors.darkGrey1}
-          decorative
-        />
-      </Box>
-    </TouchableOpacity>
-  );
 };
 
 // Web conveys the state via aria-checked; native react-native-svg drops
@@ -74,60 +35,31 @@ type SelectorLayoutProps = {
   isLandscape: boolean;
   silhouetteHeight: number;
   figure: ReactNode;
-  flipButton: ReactNode;
-  prompt: ReactNode;
+  sideToggle: ReactNode;
   chips: ReactNode;
 };
 
-// One ScrollView around everything in portrait, so the figure keeps its size
-// when many chips are selected. In landscape the figure is taller than the
-// screen, so it gets a scrolling column of its own.
+// The screen around the selector scrolls, so the figure keeps its size when
+// many chips are selected. In landscape the chips sit beside the figure.
 const SelectorLayout: FC<SelectorLayoutProps> = ({
   isLandscape,
   silhouetteHeight,
   figure,
-  flipButton,
-  prompt,
+  sideToggle,
   chips,
-}) => {
-  // Placed over the figure. In a row beside the figure, the button would push
-  // the figure off the screen center by half the button's width. It comes
-  // first in the tree so screen readers reach it before the regions.
-  const pinnedFlipButton = (
-    <Box position="absolute" top={0} left={0} zIndex={1}>
-      {flipButton}
-    </Box>
-  );
-  return isLandscape ? (
-    <Box flex={1} flexDirection="row" paddingVertical="s">
-      <Box flex={1}>
-        {pinnedFlipButton}
-        <ScrollView>
-          <Box height={silhouetteHeight} testID="soreness-figure">
-            {figure}
-          </Box>
-        </ScrollView>
-      </Box>
-      <Box flex={1} paddingLeft="m">
-        <ScrollView>
-          {prompt}
-          {chips}
-        </ScrollView>
-      </Box>
-    </Box>
-  ) : (
-    <Box flex={1} paddingVertical="s">
-      <ScrollView>
-        {prompt}
-        <Box height={silhouetteHeight} testID="soreness-figure">
-          {pinnedFlipButton}
+}) => (
+  <Box flexDirection={isLandscape ? "row" : "column"} gap="m">
+    <Box flex={isLandscape ? 1 : undefined} gap="m">
+      {sideToggle}
+      <Card variant="outlined" backgroundColor="lightGrey1" overflow="hidden">
+        <Box height={silhouetteHeight} padding="m" testID="soreness-figure">
           {figure}
         </Box>
-        {chips}
-      </ScrollView>
+      </Card>
     </Box>
-  );
-};
+    <Box flex={isLandscape ? 1 : undefined}>{chips}</Box>
+  </Box>
+);
 
 /**
  * Soreness selection on a touchable, gender-aware body silhouette with a
@@ -145,10 +77,9 @@ export const MuscleSorenessSelector: FC<MuscleSorenessSelectorProps> = ({
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
 
-  // 60% of the longer screen side, so the regions stay as large in landscape
-  // as in portrait. In portrait this leaves the first rows of chips visible
-  // below the figure.
-  const silhouetteHeight = Math.round(Math.max(width, height) * 0.6);
+  // Half of the longer screen side, so the regions stay as large in landscape
+  // as in portrait.
+  const silhouetteHeight = Math.round(Math.max(width, height) * 0.5);
 
   const selectedRegions = tags.flatMap((tag) => regionsForTag(tag, side));
 
@@ -175,16 +106,16 @@ export const MuscleSorenessSelector: FC<MuscleSorenessSelectorProps> = ({
       }
     />
   );
-  const flipButton = (
-    <FlipSideButton
-      side={side}
-      onFlip={() => setSide(side === "FRONT" ? "BACK" : "FRONT")}
+  const sideToggle = (
+    <SegmentedControl<Side>
+      accessibilityLabel={t("common.bodyParts.side")}
+      value={side}
+      onChange={setSide}
+      options={[
+        { value: "FRONT", label: t("common.bodyParts.front") },
+        { value: "BACK", label: t("common.bodyParts.back") },
+      ]}
     />
-  );
-  const prompt = (
-    <Text variant="body" marginBottom="s">
-      {t("common.bodyParts.whereAreAchingMuscles")}
-    </Text>
   );
   const chips = (
     <Box testID="selected-muscles">
@@ -200,8 +131,7 @@ export const MuscleSorenessSelector: FC<MuscleSorenessSelectorProps> = ({
       isLandscape={isLandscape}
       silhouetteHeight={silhouetteHeight}
       figure={figure}
-      flipButton={flipButton}
-      prompt={prompt}
+      sideToggle={sideToggle}
       chips={chips}
     />
   );

@@ -12,11 +12,11 @@
     },
     "back": "Back",
     "bodyParts": {
-      "flipToBack": "Show back side",
-      "flipToFront": "Show front side",
       "selected": "selected",
       "selectHurtingParts": "Select the areas that hurt",
-      "whereAreAchingMuscles": "Where are the aching muscles?"
+      "side": "Body side",
+      "front": "Front",
+      "back": "Back"
     },
     "cancel": "Cancel",
     "choose": "Choose",
@@ -339,7 +339,10 @@
         "title": "Welcome back",
         "message": "You have not trained for more than three weeks. Do you want to create a new training plan?"
       },
-      "timeAndPlace": "{{focus}}, {{time}} minutes"
+      "eyebrow": "Your plan · {{phase}}",
+      "heading": "Which workout do you start?",
+      "description": "Your training days this week. Pick the one you train today.",
+      "dayDetails": "{{focus}} · {{time}} min · {{place}}"
     },
     "powerTest": {
       "title": "Power test",
@@ -373,7 +376,12 @@
       "loading": "preparing training",
       "title": "Muscle soreness",
       "placeAndEquipment": "Place & Equipment",
-      "continue": "Go on"
+      "continue": "Go on",
+      "eyebrow": "Before your workout",
+      "heading": "Where are your muscles sore?",
+      "description": "Tap the sore muscles. Your workout spares them.",
+      "placeHeading": "Where do you train today?",
+      "placeDescription": "The workout uses the equipment of the place."
     },
     "status": {
       "week": "Week",

@@ -24,7 +24,10 @@ const ShortcutButton: FC<ShortcutButtonProps> = ({
 
   return (
     <TouchableOpacity
-      style={[styles.quickstartButton, { backgroundColor: colors.white }]}
+      style={[
+        styles.quickstartButton,
+        { backgroundColor: colors.lightGrey1, borderColor: colors.lightGrey2 },
+      ]}
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={title}
@@ -91,11 +94,7 @@ const styles = StyleSheet.create({
   quickstartButton: {
     flex: 1,
     padding: 16,
-    borderRadius: 12,
-    shadowColor: "#333",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    borderRadius: 16,
+    borderWidth: 1.5,
   },
 });

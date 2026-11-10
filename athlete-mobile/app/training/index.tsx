@@ -7,9 +7,10 @@ import {
 } from "@/constants/workoutConstants";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { useAgeGroup } from "@/features/anamnesis/useAgeGroup";
-import { ColumnList } from "@/features/training/ColumnList";
 import { FocusTrainingGrid } from "@/features/training/FocusTrainingGrid";
+import { PlanDayScreen } from "@/features/training/PlanDayScreen";
 import { PreventionBodyPartScreen } from "@/features/training/PreventionBodyPartScreen";
+import { useActiveSectionIndex } from "@/features/training/hooks";
 import { useTrainingGapCheck } from "@/features/training/hooks/useTrainingGapCheck";
 import type { TrainingSelectionType } from "@/features/training/models/Training";
 import { useTrainingStore } from "@/features/training/trainingStore";
@@ -22,7 +23,6 @@ import { Logger } from "@/services/Logger";
 import { usePlacesStore } from "@/store/placesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
-import { Box } from "@/theme/Box";
 import { router, Stack } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -59,6 +59,9 @@ export default function SelectTraining() {
   const ageGroup = useAgeGroup();
 
   const [screenState, setScreenState] = useState<ScreenState>("SELECT");
+  const activeSectionIndex = useActiveSectionIndex(
+    trainingPlan?.sections ?? [],
+  );
 
   useTrainingGapCheck(selection === "PLAN");
 
@@ -157,7 +160,7 @@ export default function SelectTraining() {
           title:
             WorkoutConstants.WEEKDAY_TRAINING_KEYS[userTrainingDay.weekday],
           description: {
-            text: "training.selectTraining.timeAndPlace",
+            text: "training.selectTraining.dayDetails",
             params: {
               time: userTrainingDay.duration,
               place: t(`training.place.${userTrainingDay.place}`),
@@ -205,6 +208,12 @@ export default function SelectTraining() {
     [getTrainingDays, selection],
   );
 
+  const activeSection = trainingPlan?.sections[activeSectionIndex];
+  const currentPhase =
+    selection === "PLAN" && activeSection
+      ? t(`training.sections.${activeSection.type}`)
+      : undefined;
+
   const startPowerTest = () => {
     setTrainingSelection(null);
     Logger.logEvent("test_coaching_selected_start");
@@ -217,14 +226,6 @@ export default function SelectTraining() {
   const skipPowerTest = () => {
     Logger.logEvent("test_coaching_selected_skip");
     setScreenState("SELECT");
-  };
-
-  const renderTiles = () => {
-    return (
-      <Box marginBottom="s" flex={1}>
-        <ColumnList listItems={tiles} />
-      </Box>
-    );
   };
 
   const renderTestCoaching = () => {
@@ -248,6 +249,17 @@ export default function SelectTraining() {
     return <PreventionBodyPartScreen title={title} onBack={handleBack} />;
   }
 
+  if (screenState === "SELECT") {
+    return (
+      <PlanDayScreen
+        title={title}
+        phase={currentPhase}
+        days={tiles}
+        onBack={handleBack}
+      />
+    );
+  }
+
   return (
     <>
       <Stack.Screen
@@ -256,13 +268,7 @@ export default function SelectTraining() {
           headerLeft: () => <BackHeader onBack={handleBack} />,
         }}
       />
-      {screenState === "SELECT" ? (
-        <Box flex={1} backgroundColor="lightGrey1">
-          {renderTiles()}
-        </Box>
-      ) : (
-        renderTestCoaching()
-      )}
+      {renderTestCoaching()}
     </>
   );
 }

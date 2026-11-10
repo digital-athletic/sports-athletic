@@ -23,11 +23,6 @@ function setGender(gender: "MALE" | "FEMALE") {
 describe("MuscleSorenessSelector: region selection", () => {
   beforeEach(() => setGender("MALE"));
 
-  it("shows the coaching prompt", async () => {
-    await render(<MuscleSorenessSelector tags={[]} />);
-    expect(screen.getByText("Where are the aching muscles?")).toBeTruthy();
-  });
-
   it("emits the lateralized tag when a region is tapped", async () => {
     const onChange = jest.fn();
     await render(<MuscleSorenessSelector tags={[]} onChange={onChange} />);
@@ -78,9 +73,11 @@ describe("MuscleSorenessSelector: front and back toggle", () => {
     await render(<MuscleSorenessSelector tags={[]} />);
     expect(screen.getByLabelText("left front thigh")).toBeTruthy();
 
-    await fireEvent.press(screen.getByLabelText("Show back side"));
+    await fireEvent.press(screen.getByRole("tab", { name: "Back" }));
     expect(screen.getByLabelText("left back thigh")).toBeTruthy();
-    expect(screen.getByLabelText("Show front side")).toBeTruthy();
+    expect(
+      screen.getByRole("tab", { name: "Back", selected: true }),
+    ).toBeTruthy();
   });
 
   it("preserves the selection across flips without emitting changes", async () => {
@@ -88,8 +85,8 @@ describe("MuscleSorenessSelector: front and back toggle", () => {
     await render(
       <MuscleSorenessSelector tags={["QUADRICEPS_LEFT"]} onChange={onChange} />,
     );
-    await fireEvent.press(screen.getByLabelText("Show back side"));
-    await fireEvent.press(screen.getByLabelText("Show front side"));
+    await fireEvent.press(screen.getByRole("tab", { name: "Back" }));
+    await fireEvent.press(screen.getByRole("tab", { name: "Front" }));
 
     expect(onChange).not.toHaveBeenCalled();
     const left = regionFills("silhouette-region-QUADRICEPS_LEFT");
@@ -106,7 +103,7 @@ describe("MuscleSorenessSelector: front and back toggle", () => {
 
   it("keeps a front shoulder selection off the rear shoulder view", async () => {
     await render(<MuscleSorenessSelector tags={["SHOULDER_FRONT_LEFT"]} />);
-    await fireEvent.press(screen.getByLabelText("Show back side"));
+    await fireEvent.press(screen.getByRole("tab", { name: "Back" }));
 
     const backLeft = regionFills("silhouette-region-SHOULDER_LEFT");
     expect(backLeft.length).toBeGreaterThan(0);
@@ -116,7 +113,7 @@ describe("MuscleSorenessSelector: front and back toggle", () => {
 
   it("shows a cross side selection as selected on the back view too", async () => {
     await render(<MuscleSorenessSelector tags={["ADDUCTORS_LEFT"]} />);
-    await fireEvent.press(screen.getByLabelText("Show back side"));
+    await fireEvent.press(screen.getByRole("tab", { name: "Back" }));
 
     const backLeft = regionFills("silhouette-region-ADDUCTORS_LEFT");
     const backRight = regionFills("silhouette-region-ADDUCTORS_RIGHT");
@@ -165,12 +162,12 @@ describe("MuscleSorenessSelector: figure size", () => {
     setGender("MALE");
     Dimensions.set({ window: portrait, screen: portrait });
     const first = await render(<MuscleSorenessSelector tags={[]} />);
-    expect(first.getByTestId("soreness-figure")).toHaveStyle({ height: 800 });
+    expect(first.getByTestId("soreness-figure")).toHaveStyle({ height: 667 });
     await first.unmount();
 
     Dimensions.set({ window: landscape, screen: landscape });
     const second = await render(<MuscleSorenessSelector tags={[]} />);
-    expect(second.getByTestId("soreness-figure")).toHaveStyle({ height: 600 });
+    expect(second.getByTestId("soreness-figure")).toHaveStyle({ height: 500 });
     await second.unmount();
   });
 });

@@ -10,8 +10,8 @@ type Props = {
 };
 
 /**
- * Container component for anamnesis questionnaire sections.
- * Displays a title, optional description, and children with consistent padding.
+ * One question of an anamnesis screen: a visible label, an optional hint and
+ * the input below.
  */
 export const AnamnesisQuestionContainer: FC<PropsWithChildren<Props>> = ({
   title,
@@ -29,17 +29,17 @@ export const AnamnesisQuestionContainer: FC<PropsWithChildren<Props>> = ({
   };
 
   return (
-    <Box paddingHorizontal="m" paddingVertical="s">
-      <Box marginBottom="xs">
-        <Text variant="title" accessibilityRole="header">
+    <Box gap="s">
+      <Box gap="xs">
+        <Text variant="fieldLabel" accessibilityRole="header">
           {getLocalizedText(title)}
         </Text>
+        {description && (
+          <Text variant="small" color="darkGrey1">
+            {getLocalizedText(description)}
+          </Text>
+        )}
       </Box>
-      {description && (
-        <Box marginBottom="s">
-          <Text variant="body">{getLocalizedText(description)}</Text>
-        </Box>
-      )}
       {children}
     </Box>
   );

@@ -1,25 +1,20 @@
-import { BackHeader } from "@/common/BackHeader";
 import { Loading } from "@/common/Loading";
-import { ProgressBar } from "@/common/ProgressBar";
 import { SkipHeader } from "@/common/SkipHeader";
 import { TagGroups } from "@/constants/tagGroups";
 import { AnamnesisGroup1 } from "@/features/anamnesis/AnamnesisGroup1";
 import { AnamnesisGroup2 } from "@/features/anamnesis/AnamnesisGroup2";
 import { AnamnesisGroup3 } from "@/features/anamnesis/AnamnesisGroup3";
+import { AnamnesisScreen } from "@/features/anamnesis/components/AnamnesisScreen";
 import { useAnamnesisCompletion } from "@/features/anamnesis/useAnamnesisCompletion";
 import { useShowSeasonPhaseAfterAnamnesis } from "@/features/anamnesis/useShowSeasonPhaseAfterAnamnesis";
 import { useHardwareBackHandler } from "@/hooks/useHardwareBackHandler";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
-import { Box } from "@/theme/Box";
-import { ScrollBox } from "@/theme/ScrollBox";
-import { Stack, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTrainingScheduleStore } from "../../../src/store/trainingScheduleStore";
 import { useUserProfileStore } from "../../../src/store/userProfileStore";
 import { useUserWorkoutStore } from "../../../src/store/userWorkoutStore";
-import { Button } from "../../../src/theme/Button";
 
 /**
  * Anamnesis Component
@@ -141,47 +136,34 @@ export default function AnamnesisQuestions() {
     onChangeTag,
   };
 
-  const insets = useSafeAreaInsets();
-
   return (
     <>
-      <Stack.Screen
-        options={{
-          title,
-          headerLeft: () => <BackHeader onBack={onBack} />,
-          headerRight: () => (
-            <SkipHeader
-              alertTitle="screens.anamnesis.abortQuestion"
-              alertMessage={
-                anamnesisCompleted
-                  ? "screens.anamnesis.abortExplanation"
-                  : "screens.anamnesis.abortIncomplete"
-              }
-            />
-          ),
-        }}
-      />
-      <Box
-        flex={1}
-        justifyContent="space-between"
-        backgroundColor="lightGrey1"
-        style={{ paddingBottom: insets.bottom }}
+      <AnamnesisScreen
+        title={title}
+        heading={title}
+        step={{ current: progress, total: maxSteps }}
+        onBack={onBack}
+        headerRight={
+          <SkipHeader
+            alertTitle="screens.anamnesis.abortQuestion"
+            alertMessage={
+              anamnesisCompleted
+                ? "screens.anamnesis.abortExplanation"
+                : "screens.anamnesis.abortIncomplete"
+            }
+          />
+        }
+        action={{ label: t("common.goOn"), onPress: goOn, disabled: loading }}
       >
-        <ScrollBox flex={1}>
-          <ProgressBar progress={progress} maximum={maxSteps} />
-          {!loading && (
-            <>
-              {groupIndex === 0 && <AnamnesisGroup1 {...questionProps} />}
-              {groupIndex === 1 && <AnamnesisGroup2 {...questionProps} />}
-              {groupIndex === 2 && <AnamnesisGroup3 {...questionProps} />}
-            </>
-          )}
-        </ScrollBox>
-        <Button onPress={goOn} margin="m">
-          {t("common.goOn")}
-        </Button>
-        <Loading text={t("common.saving")} show={loading} />
-      </Box>
+        {!loading && (
+          <>
+            {groupIndex === 0 && <AnamnesisGroup1 {...questionProps} />}
+            {groupIndex === 1 && <AnamnesisGroup2 {...questionProps} />}
+            {groupIndex === 2 && <AnamnesisGroup3 {...questionProps} />}
+          </>
+        )}
+      </AnamnesisScreen>
+      <Loading text={t("common.saving")} show={loading} />
     </>
   );
 }

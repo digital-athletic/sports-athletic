@@ -5,7 +5,7 @@ import {
   shouldShowPositionQuestion,
 } from "@/constants/sportPositions";
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
-import { SelectionInputField } from "@/form/SelectionInputField";
+import { ChoiceChips } from "@/form/ChoiceChips";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { useEffect, useEffectEvent } from "react";
 import { useTranslation } from "react-i18next";
@@ -58,11 +58,9 @@ export function PositionQuestion({
     return null;
   }
 
-  const items = (sportPositions ?? []).map((pos) => ({
+  const options = (sportPositions ?? []).map((pos) => ({
     value: pos.value,
-    displayName: {
-      default: t(pos.translationKey) as string,
-    },
+    label: t(pos.translationKey) as string,
   }));
 
   return (
@@ -70,12 +68,11 @@ export function PositionQuestion({
       title={{ default: t("anamnesisQuestions.position.title") }}
       description={{ default: t("anamnesisQuestions.position.description") }}
     >
-      <SelectionInputField
-        onChange={(value) => onChangeTag(TagGroups.POSITION, value as string[])}
-        iconName="locate"
-        selectedItems={currentPositions}
-        items={items}
-        singleSelection={true}
+      <ChoiceChips
+        accessibilityLabel={t("anamnesisQuestions.position.title")}
+        options={options}
+        value={currentPositions[0]}
+        onChange={(value) => onChangeTag(TagGroups.POSITION, [value])}
       />
     </AnamnesisQuestionContainer>
   );

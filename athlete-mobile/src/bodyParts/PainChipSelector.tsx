@@ -1,10 +1,9 @@
 import { type PainRegion } from "@/features/training/utils/painUtils";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
-import { useTheme } from "@/theme/theme";
+import { Chip } from "@/form/Chip";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { TouchableOpacity } from "react-native";
 
 type PainChip = {
   key: PainRegion | "HIP";
@@ -43,7 +42,6 @@ export const PainChipSelector: FC<PainChipSelectorProps> = ({
   onChange,
 }) => {
   const { t } = useTranslation();
-  const theme = useTheme();
 
   const isSelected = (chip: PainChip) =>
     chip.regions.every((region) => tags.includes(region));
@@ -56,38 +54,19 @@ export const PainChipSelector: FC<PainChipSelectorProps> = ({
   };
 
   return (
-    <Box paddingVertical="l">
-      <Text variant="body" marginBottom="m">
+    <Box gap="m">
+      <Text variant="subtitle" color="darkGrey1">
         {t("common.bodyParts.selectHurtingParts")}
       </Text>
-      <Box flexDirection="row" flexWrap="wrap">
-        {PAIN_CHIPS.map((chip) => {
-          const selected = isSelected(chip);
-          const label = t(`muscles.${chip.key}`);
-          return (
-            <TouchableOpacity
-              key={chip.key}
-              accessibilityRole="button"
-              accessibilityLabel={label}
-              accessibilityState={{ selected }}
-              onPress={() => toggle(chip)}
-              style={{
-                backgroundColor: selected
-                  ? theme.colors.primary
-                  : theme.colors.lightGrey2,
-                paddingHorizontal: theme.spacing.l,
-                paddingVertical: theme.spacing.s,
-                marginRight: theme.spacing.s,
-                marginBottom: theme.spacing.s,
-                borderRadius: theme.borderRadii.l,
-              }}
-            >
-              <Text variant="body" color={selected ? "white" : "darkGrey3"}>
-                {label}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
+      <Box flexDirection="row" flexWrap="wrap" gap="s">
+        {PAIN_CHIPS.map((chip) => (
+          <Chip
+            key={chip.key}
+            label={t(`muscles.${chip.key}`)}
+            selected={isSelected(chip)}
+            onPress={() => toggle(chip)}
+          />
+        ))}
       </Box>
     </Box>
   );

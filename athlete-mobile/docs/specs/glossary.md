@@ -32,6 +32,14 @@ Terms of the training model, with the meanings the coach uses. The glossary defi
 | Pick | Pick | | Picks a number of exercises by tags at random, for example 3 shoulder prevention exercises. |
 | Picks block | Picks-Block | | Part of a short workout made of one or more picks, for example 3 shoulder and then 2 knee prevention exercises. |
 
+## Teams
+
+| Term | German | Code | Meaning |
+|---|---|---|---|
+| Team | Team | | Group of athletes around one trainer, joined with an invite code. Listed under More, Team Management. |
+| Team guidance | Hinweise | guidance | Free text the team owner writes for the team, for example the team training days. Shown on the team info page. |
+| Weekly target | Wochenziel | weekly_training_days | Number of training days per week, 1 to 7, the team owner expects. Shown on the team info page only. It is independent of the training plan: the app neither adds nor removes training days because of it. |
+
 ## Training session
 
 | Term | German | Code | Meaning |

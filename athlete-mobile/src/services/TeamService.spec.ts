@@ -1,4 +1,9 @@
-import { acceptInvitation, getUserTeams, leaveTeam } from "./TeamService";
+import {
+  acceptInvitation,
+  getTeamInfo,
+  getUserTeams,
+  leaveTeam,
+} from "./TeamService";
 
 function makeRpcError(code: string) {
   return { message: code };
@@ -404,6 +409,88 @@ describe("leaveTeam", () => {
 
     await expect(leaveTeam("team-1")).rejects.toThrow(
       "more.joinTeam.errorGeneric",
+    );
+  });
+});
+
+describe("getTeamInfo", () => {
+  const mockMaybeSingle = jest.fn();
+  const mockInfoEq = jest.fn(() => ({ maybeSingle: mockMaybeSingle }));
+  const mockInfoSelect = jest.fn(() => ({ eq: mockInfoEq }));
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockGetSession.mockResolvedValue({
+      data: { session: { user: { id: "user-1" }, access_token: "tok" } },
+    });
+    mockFrom.mockReturnValue({ select: mockInfoSelect });
+  });
+
+  it("reads the team by its id", async () => {
+    mockMaybeSingle.mockResolvedValue({
+      data: {
+        id: "team-1",
+        name: "U19 Keepers",
+        guidance: null,
+        weekly_training_days: null,
+      },
+      error: null,
+    });
+
+    await getTeamInfo("team-1");
+
+    expect(mockFrom).toHaveBeenCalledWith("teams");
+    expect(mockInfoSelect).toHaveBeenCalledWith(
+      "id, name, guidance, weekly_training_days",
+    );
+    expect(mockInfoEq).toHaveBeenCalledWith("id", "team-1");
+  });
+
+  it("maps guidance and weekly target to the team info", async () => {
+    mockMaybeSingle.mockResolvedValue({
+      data: {
+        id: "team-1",
+        name: "U19 Keepers",
+        guidance: "Team sessions Mon and Thu 18:00.",
+        weekly_training_days: 3,
+      },
+      error: null,
+    });
+
+    const result = await getTeamInfo("team-1");
+
+    expect(result).toEqual({
+      id: "team-1",
+      name: "U19 Keepers",
+      guidance: "Team sessions Mon and Thu 18:00.",
+      weeklyTrainingDays: 3,
+    });
+  });
+
+  it("returns null when the athlete can no longer see the team", async () => {
+    mockMaybeSingle.mockResolvedValue({ data: null, error: null });
+
+    const result = await getTeamInfo("team-1");
+
+    expect(result).toBeNull();
+  });
+
+  it("throws when the read fails", async () => {
+    mockMaybeSingle.mockResolvedValue({
+      data: null,
+      error: { message: "network down" },
+    });
+
+    await expect(getTeamInfo("team-1")).rejects.toThrow(
+      "more.teamInfo.loadError",
+    );
+  });
+
+  it("throws without a session instead of reporting a missing team", async () => {
+    mockGetSession.mockResolvedValue({ data: { session: null } });
+
+    await expect(getTeamInfo("team-1")).rejects.toThrow(
+      "more.teamInfo.loadError",
     );
   });
 });

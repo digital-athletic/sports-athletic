@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
-import { ActivityIndicator, StyleSheet, TextInput } from "react-native";
-import { Stack } from "expo-router";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
+import { Stack, useRouter } from "expo-router";
 import { type TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/store/authStore";
@@ -13,6 +18,7 @@ import { useTheme } from "@/theme/theme";
 import { Alert } from "@/common/Alert";
 import { liveRegionProps, useAnnounce } from "@/common/announce";
 import { ListDivider } from "@/common/ListDivider";
+import { Ionicon } from "@/common/Ionicon";
 import { Logger } from "@/services/Logger";
 import {
   type UserTeam,
@@ -47,6 +53,7 @@ function translateOrNull(key: I18nKey | null, t: TFunction): string | null {
 export default function JoinTeamScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
+  const router = useRouter();
   const auth = useAuthStore((s) => s.auth);
   const userId = auth?.userId ?? "";
 
@@ -155,9 +162,30 @@ export default function JoinTeamScreen() {
                   justifyContent="space-between"
                   paddingVertical="s"
                 >
-                  <Text variant="body" flex={1}>
-                    {team.name}
-                  </Text>
+                  {/* A sibling of Leave, so tapping Leave never opens the page. */}
+                  <TouchableOpacity
+                    testID={`team-row-${team.id}`}
+                    accessibilityRole="button"
+                    accessibilityLabel={team.name}
+                    accessibilityHint={t("more.teamInfo.openHint")}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/team/[teamId]",
+                        params: { teamId: team.id },
+                      })
+                    }
+                    style={styles.teamRow}
+                  >
+                    <Text variant="body" flex={1}>
+                      {team.name}
+                    </Text>
+                    <Ionicon
+                      name="chevron-forward"
+                      size={18}
+                      color={colors.darkGrey2}
+                      decorative
+                    />
+                  </TouchableOpacity>
                   {team.ownerId !== userId && (
                     <Button
                       variant="secondary"
@@ -252,6 +280,13 @@ export default function JoinTeamScreen() {
 }
 
 const styles = StyleSheet.create({
+  teamRow: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    minHeight: 44,
+    marginRight: 12,
+  },
   codeInput: {
     borderRadius: 8,
     padding: 15,

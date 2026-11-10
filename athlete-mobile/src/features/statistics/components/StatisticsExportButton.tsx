@@ -13,7 +13,7 @@ interface StatisticsExportButtonProps {
   scale: ScaleType;
 }
 
-// The button sits in the compact chip row, so the touch area reaches past it.
+// The compact chip row leaves little room, so the touch area reaches past the button.
 const HIT_SLOP = { top: 10, bottom: 10, left: 8, right: 8 };
 
 /** Header button that downloads the active sub tab and range as CSV. */

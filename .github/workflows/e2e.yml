@@ -12,6 +12,11 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    container:
+      # Browsers and system deps ship in the image. The tag must match the
+      # pinned @playwright/test version in package.json; bump both together.
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
+      options: --user 1001
     if: contains(github.event.pull_request.labels.*.name, 'app-mobile-app-athlete')
     defaults:
       run:
@@ -28,21 +33,6 @@ jobs:
           cache-dependency-path: athlete-mobile/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Read Playwright version
-        id: playwright
-        run: echo "version=$(pnpm exec playwright --version)" >> "$GITHUB_OUTPUT"
-      - name: Cache Playwright browsers
-        id: playwright-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-webkit-${{ runner.os }}-${{ steps.playwright.outputs.version }}
-      - name: Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install webkit --with-deps
-      - name: Install Playwright system dependencies
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: pnpm exec playwright install-deps webkit
       - name: Run E2E tests
         run: pnpm test:e2e
         env:
@@ -63,6 +53,12 @@ jobs:
 
   e2e-trainer-web:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container:
+      # Browsers and system deps ship in the image. The tag must match the
+      # pinned @playwright/test version in package.json; bump both together.
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
+      options: --user 1001
     if: contains(github.event.pull_request.labels.*.name, 'web-trainer-dashboard')
     defaults:
       run:
@@ -79,8 +75,6 @@ jobs:
           cache-dependency-path: trainer-web/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install chromium --with-deps
       - name: Run E2E tests
         run: pnpm test:e2e
         env:

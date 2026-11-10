@@ -13,6 +13,7 @@ import type { FocusArea, TrainingViewMode } from "@/schemas/sync.schema";
 import { TrainingSelectionType, TrainingTimeType } from "./models/Training";
 import { UserExerciseDataType } from "./models/UserExerciseData";
 import { UserProgressType } from "./models/UserProgress";
+import type { SubstituteLevel } from "./utils/substitutionLevelUtils";
 
 export type State = {
   selection: TrainingSelectionType | null;
@@ -24,6 +25,8 @@ export type State = {
   tempMaxValues: MaxValuesType | null;
   _hasHydrated: boolean;
   trainingViewMode: TrainingViewMode | null;
+  /** Levels of swapped in branches, stored at the first save of each. */
+  swapStartLevels: SubstituteLevel[];
 };
 
 const createInitialTrainingTime = (): TrainingTimeType => ({
@@ -50,6 +53,7 @@ const createInitialState = (): State => ({
   tempMaxValues: null,
   _hasHydrated: false,
   trainingViewMode: null,
+  swapStartLevels: [],
 });
 
 type Actions = {
@@ -78,6 +82,9 @@ type Actions = {
   addPauseTime: (pauseTime: number) => void;
   addSkillTime: (focusArea: FocusArea, skillTime: number) => void;
   clearTraining: () => void;
+  setSwapStartLevels: (levels: SubstituteLevel[]) => void;
+  /** Returns the start level of a swapped in branch once, then drops it. */
+  takeSwapStartLevel: (branchId: string) => SubstituteLevel | null;
   discardTrainingSession: () => void;
   setHasHydrated: (hydrated: boolean) => void;
   setTrainingViewMode: (mode: TrainingViewMode | null) => void;
@@ -108,7 +115,7 @@ export const migrateTrainingStore = (
 
 export const useTrainingStore = create<TrainingState>()(
   persist(
-    immer((set) => ({
+    immer((set, get) => ({
       ...createInitialState(),
 
       setTrainingSelection: (selection) =>
@@ -205,7 +212,24 @@ export const useTrainingStore = create<TrainingState>()(
           state.activeTraining = initialState.activeTraining;
           state.tempMaxValues = initialState.tempMaxValues;
           state.trainingViewMode = initialState.trainingViewMode;
+          state.swapStartLevels = initialState.swapStartLevels;
         }),
+      setSwapStartLevels: (levels) =>
+        set((state) => {
+          state.swapStartLevels = levels;
+        }),
+      takeSwapStartLevel: (branchId) => {
+        const level = get().swapStartLevels.find(
+          (entry) => entry.branchId === branchId,
+        );
+        if (!level) return null;
+        set((state) => {
+          state.swapStartLevels = state.swapStartLevels.filter(
+            (entry) => entry.branchId !== branchId,
+          );
+        });
+        return level;
+      },
       // Keeps the generated plan so the overview shows it again unstarted.
       discardTrainingSession: () =>
         set((state) => {

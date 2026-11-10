@@ -9,6 +9,7 @@ import { listSwapStartLevels, toExerciseBranch } from "./swapPlan";
 const generateSwapToBranch20 = (position: number) => ({
   skill: "SK",
   position,
+  originalEntries: [],
   alternatives: [
     {
       branchId: "20",
@@ -37,7 +38,7 @@ describe("swapPlan: listSwapStartLevels", () => {
   it("raises a stored level below the entry level to the entry level", () => {
     expect(
       listSwapStartLevels(
-        { "10": generateSwapToBranch20(1) },
+        [generateSwapToBranch20(1)],
         { "20": { branchId: "20", level: 1, exerciseId: "20x1" } },
         "ADVANCED",
       ),
@@ -47,7 +48,7 @@ describe("swapPlan: listSwapStartLevels", () => {
   it("keeps a stored level above the entry level", () => {
     expect(
       listSwapStartLevels(
-        { "10": generateSwapToBranch20(1) },
+        [generateSwapToBranch20(1)],
         { "20": { branchId: "20", level: 3, exerciseId: "20x3" } },
         "ADVANCED",
       ),
@@ -56,14 +57,14 @@ describe("swapPlan: listSwapStartLevels", () => {
 
   it("stores nothing for a branch without a stored level", () => {
     expect(
-      listSwapStartLevels({ "10": generateSwapToBranch20(1) }, {}, "ADVANCED"),
+      listSwapStartLevels([generateSwapToBranch20(1)], {}, "ADVANCED"),
     ).toEqual([]);
   });
 
   it("stores nothing for an exercise cycled back to its original", () => {
     expect(
       listSwapStartLevels(
-        { "10": generateSwapToBranch20(0) },
+        [generateSwapToBranch20(0)],
         { "20": { branchId: "20", level: 1, exerciseId: "20x1" } },
         "ADVANCED",
       ),

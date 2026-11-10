@@ -3,9 +3,9 @@ import type { GeneratedSetListEntry } from "@/features/training/models/SetListEn
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { generateStoredTrainingDay } from "@test/factories/storedTrainingDay";
 import {
+  findNextSwap,
   holdsExerciseTwice,
   listSwappableBranches,
-  raiseSwapStartLevel,
   replaceSessionBranch,
   swapBranchInStoredDay,
 } from "./swapSession";
@@ -96,50 +96,6 @@ describe("swapSession: swapBranchInStoredDay", () => {
   });
 });
 
-describe("swapSession: raiseSwapStartLevel", () => {
-  it("starts an untrained branch at the entry level of the fitness level", () => {
-    const branchData = raiseSwapStartLevel(
-      {},
-      generateSwapBranch("20"),
-      "ADVANCED",
-    );
-
-    expect(branchData["20"]).toBeUndefined();
-  });
-
-  it("raises a stored level below the entry level to the entry level", () => {
-    const branchData = raiseSwapStartLevel(
-      { "20": { branchId: "20", level: 1, exerciseId: "20x1" } },
-      generateSwapBranch("20"),
-      "ADVANCED",
-    );
-
-    expect(branchData["20"]?.level).toBe(2);
-  });
-
-  it("keeps a stored level above the entry level", () => {
-    const branchData = raiseSwapStartLevel(
-      { "20": { branchId: "20", level: 3, exerciseId: "20x3" } },
-      generateSwapBranch("20"),
-      "BEGINNER",
-    );
-
-    expect(branchData["20"]?.level).toBe(3);
-  });
-
-  it("keeps the level of the other branches", () => {
-    const stored = { "10": { branchId: "10", level: 4, exerciseId: "10x4" } };
-
-    const branchData = raiseSwapStartLevel(
-      stored,
-      generateSwapBranch("20"),
-      "ADVANCED",
-    );
-
-    expect(branchData["10"]).toEqual(stored["10"]);
-  });
-});
-
 describe("swapSession: replaceSessionBranch", () => {
   it("replaces each entry of the old branch in place with the new values", () => {
     const session = [
@@ -148,26 +104,26 @@ describe("swapSession: replaceSessionBranch", () => {
       generateSessionEntry("10", "e10", [2, 2]),
       generateSessionEntry("6", "e6", [1, 1]),
     ];
-    const generated = [
-      generateGeneratedEntry("20", "e20", [1, 2]),
-      generateGeneratedEntry("20", "e20", [2, 2]),
+    const replacements = [
+      generateSessionEntry("20", "e20", [1, 2]),
+      generateSessionEntry("20", "e20", [2, 2]),
     ];
 
-    expect(replaceSessionBranch(session, "10", generated, "20")).toEqual([
+    expect(replaceSessionBranch(session, "10", replacements)).toEqual([
       session[0],
       {
         branchId: "20",
         exerciseId: "e20",
         skill: "SK",
         set: [1, 2],
-        duration: 30,
+        repetition: 8,
       },
       {
         branchId: "20",
         exerciseId: "e20",
         skill: "SK",
         set: [2, 2],
-        duration: 30,
+        repetition: 8,
       },
       session[3],
     ]);
@@ -178,13 +134,13 @@ describe("swapSession: replaceSessionBranch", () => {
       generateSessionEntry("10", "e10l", [1, 1]),
       generateSessionEntry("10", "e10r", [1, 1]),
     ];
-    const generated = [
-      generateGeneratedEntry("20", "e20l", [1, 1]),
-      generateGeneratedEntry("20", "e20r", [1, 1]),
+    const replacements = [
+      generateSessionEntry("20", "e20l", [1, 1]),
+      generateSessionEntry("20", "e20r", [1, 1]),
     ];
 
     expect(
-      replaceSessionBranch(session, "10", generated, "20")?.map(
+      replaceSessionBranch(session, "10", replacements)?.map(
         ({ exerciseId }) => exerciseId,
       ),
     ).toEqual(["e20l", "e20r"]);
@@ -196,13 +152,13 @@ describe("swapSession: replaceSessionBranch", () => {
       generateSessionEntry("6", "e6", [1, 2]),
       generateSessionEntry("10", "e10", [2, 2]),
     ];
-    const generated = [
-      generateGeneratedEntry("20", "e20", [1, 2]),
-      generateGeneratedEntry("20", "e20", [2, 2]),
+    const replacements = [
+      generateSessionEntry("20", "e20", [1, 2]),
+      generateSessionEntry("20", "e20", [2, 2]),
     ];
 
     expect(
-      replaceSessionBranch(session, "10", generated, "20")?.map(
+      replaceSessionBranch(session, "10", replacements)?.map(
         ({ exerciseId, set }) => [exerciseId, set],
       ),
     ).toEqual([
@@ -216,11 +172,11 @@ describe("swapSession: replaceSessionBranch", () => {
     const session = [
       generateSessionEntry("10", "e10", [1, 1], { repetition: 8, weight: 20 }),
     ];
-    const generated = [
-      generateGeneratedEntry("20", "e20", [1, 1], { duration: 45 }),
+    const replacements = [
+      generateSessionEntry("20", "e20", [1, 3], { duration: 45 }),
     ];
 
-    const [entry] = replaceSessionBranch(session, "10", generated, "20") ?? [];
+    const [entry] = replaceSessionBranch(session, "10", replacements) ?? [];
 
     expect(entry).toEqual({
       branchId: "20",
@@ -233,19 +189,18 @@ describe("swapSession: replaceSessionBranch", () => {
 
   it("returns null when the entry counts differ", () => {
     const session = [generateSessionEntry("10", "e10", [1, 1])];
-    const generated = [
-      generateGeneratedEntry("20", "e20", [1, 2]),
-      generateGeneratedEntry("20", "e20", [2, 2]),
+    const replacements = [
+      generateSessionEntry("20", "e20", [1, 2]),
+      generateSessionEntry("20", "e20", [2, 2]),
     ];
 
-    expect(replaceSessionBranch(session, "10", generated, "20")).toBeNull();
+    expect(replaceSessionBranch(session, "10", replacements)).toBeNull();
   });
 
-  it("returns null when the generated list lacks the new branch", () => {
+  it("returns null without replacements", () => {
     const session = [generateSessionEntry("10", "e10", [1, 1])];
-    const generated = [generateGeneratedEntry("30", "e30", [1, 1])];
 
-    expect(replaceSessionBranch(session, "10", generated, "20")).toBeNull();
+    expect(replaceSessionBranch(session, "10", [])).toBeNull();
   });
 });
 
@@ -271,14 +226,15 @@ describe("swapSession: holdsExerciseTwice", () => {
 });
 
 describe("swapSession: listSwappableBranches", () => {
-  it("lists each branch once with its skill", () => {
+  it("lists each plan branch once with its skill", () => {
     const session = [
       generateSessionEntry("10", "e1", [1, 2]),
       generateSessionEntry("10", "e1", [2, 2]),
       { ...generateSessionEntry("20", "e2", [1, 1]), skill: "WU" as const },
     ];
+    const day = generateStoredTrainingDay({ SK: ["10"], WU: ["20"] });
 
-    expect(listSwappableBranches(session)).toEqual([
+    expect(listSwappableBranches(session, day)).toEqual([
       { branchId: "10", skill: "SK" },
       { branchId: "20", skill: "WU" },
     ]);
@@ -289,13 +245,163 @@ describe("swapSession: listSwappableBranches", () => {
       generateSessionEntry("10", "e1", [1, 1]),
       { ...generateSessionEntry("10", "e1", [1, 1]), skill: "WU" as const },
     ];
+    const day = generateStoredTrainingDay({ SK: ["10"], WU: ["10"] });
 
-    expect(listSwappableBranches(session)).toEqual([]);
+    expect(listSwappableBranches(session, day)).toEqual([]);
   });
 
   it("leaves out placeholder entries", () => {
     const session = [generateSessionEntry("-1", "999999", [1, 1])];
+    const day = generateStoredTrainingDay({ SK: ["-1"] });
 
-    expect(listSwappableBranches(session)).toEqual([]);
+    expect(listSwappableBranches(session, day)).toEqual([]);
+  });
+
+  it("leaves out a branch the plan day does not hold under its skill", () => {
+    const session = [
+      generateSessionEntry("10", "e1", [1, 1]),
+      generateSessionEntry("30", "e3", [1, 1]),
+    ];
+    const day = generateStoredTrainingDay({ SK: ["10"], WU: ["30"] });
+
+    expect(listSwappableBranches(session, day)).toEqual([
+      { branchId: "10", skill: "SK" },
+    ]);
+  });
+});
+
+/**
+ * Builds a catalog alternative, e.g. branch "20" with exercise 20x1 at level 1:
+ * { branchId: "20", branch: { tags: ["SIDE_BOTH"], levels: { 1: { exerciseId: "20x1" } } } }
+ */
+const generateAlternative = (branchId: string) => ({
+  branchId,
+  branch: {
+    tags: ["SIDE_BOTH"],
+    levels: { 1: { exerciseId: `${branchId}x1` } },
+  },
+});
+
+describe("swapSession: findNextSwap", () => {
+  const originalEntries = [generateSessionEntry("10", "e10", [1, 1])];
+
+  it("moves to the first alternative with its generated entries", () => {
+    const session = [
+      ...originalEntries,
+      generateSessionEntry("5", "e5", [1, 1]),
+    ];
+    const swap = {
+      skill: "SK",
+      position: 0,
+      alternatives: [generateAlternative("20")],
+      originalEntries,
+    };
+
+    const next = findNextSwap({
+      session,
+      original: "10",
+      swap,
+      generateWith: () => [generateGeneratedEntry("20", "e20", [1, 1])],
+    });
+
+    expect(next).toEqual({
+      position: 1,
+      session: [
+        {
+          branchId: "20",
+          exerciseId: "e20",
+          skill: "SK",
+          set: [1, 1],
+          duration: 30,
+        },
+        session[1],
+      ],
+    });
+  });
+
+  it("restores the original entries without generating again", () => {
+    const session = [generateSessionEntry("20", "e20", [1, 1])];
+    const generateWith = jest.fn(() => []);
+    const swap = {
+      skill: "SK",
+      position: 1,
+      alternatives: [generateAlternative("20")],
+      originalEntries,
+    };
+
+    const next = findNextSwap({ session, original: "10", swap, generateWith });
+
+    expect([next, generateWith.mock.calls.length]).toEqual([
+      { position: 0, session: originalEntries },
+      0,
+    ]);
+  });
+
+  it("skips an alternative whose branch the session already holds", () => {
+    const session = [
+      ...originalEntries,
+      generateSessionEntry("20", "e5", [1, 1]),
+    ];
+    const swap = {
+      skill: "SK",
+      position: 0,
+      alternatives: [generateAlternative("20"), generateAlternative("30")],
+      originalEntries,
+    };
+
+    const next = findNextSwap({
+      session,
+      original: "10",
+      swap,
+      generateWith: () => [generateGeneratedEntry("30", "e30", [1, 1])],
+    });
+
+    expect(next?.position).toBe(2);
+  });
+
+  it("skips an alternative that repeats an exercise of another branch", () => {
+    const session = [
+      ...originalEntries,
+      generateSessionEntry("5", "e5", [1, 1]),
+    ];
+    const swap = {
+      skill: "SK",
+      position: 0,
+      alternatives: [generateAlternative("20"), generateAlternative("30")],
+      originalEntries,
+    };
+
+    const next = findNextSwap({
+      session,
+      original: "10",
+      swap,
+      generateWith: ({ branchId }) => [
+        generateGeneratedEntry(
+          branchId,
+          branchId === "20" ? "e5" : "e30",
+          [1, 1],
+        ),
+      ],
+    });
+
+    expect(next?.position).toBe(2);
+  });
+
+  it("stays on the original when no alternative fits", () => {
+    const swap = {
+      skill: "SK",
+      position: 0,
+      alternatives: [generateAlternative("20")],
+      originalEntries,
+    };
+
+    const next = findNextSwap({
+      session: originalEntries,
+      original: "10",
+      swap,
+      generateWith: () => [],
+    });
+
+    expect(next).toEqual({ position: 0, session: originalEntries });
   });
 });

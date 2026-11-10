@@ -15,34 +15,26 @@ import type { StoredTrainingDay } from "@/features/training/workoutGenerator/sto
 const MIN_DAYS_TO_EXTEND = 7;
 const MAX_DAYS_TO_EXTEND = 21;
 
-/** A stored training day with the plan section and weekday it came from. */
-export interface LocatedTrainingDay {
-  day: StoredTrainingDay;
-  sectionIndex: number;
-  weekday: number;
-}
-
 /**
- * Locates the stored training day of a weekday in the athlete's plan, as the
+ * Selects the stored training day of a weekday from the athlete's plan, as the
  * old generator does: the given section or the section of today, extended for
  * missed weeks, then the weekday's training or the section's first one.
  *
- * locateStoredTrainingDay(user, 3, undefined, 0)
- * → { day: { skills: { WU: [...] }, lengths: { WU: 5 } }, sectionIndex: 0, weekday: 1 }
+ * selectStoredTrainingDay(user, 1, undefined, 0)
+ * → { skills: { WU: [{ branchId: "410", ... }] }, lengths: { WU: 5 } }
  */
-export const locateStoredTrainingDay = (
+export const selectStoredTrainingDay = (
   user: UserType,
   weekday: number,
   givenSection: number | undefined,
   daysSinceLastWorkout: number,
-): LocatedTrainingDay => {
+): StoredTrainingDay => {
   requireWorkoutData(user);
   const trainingPlan = requireTrainingPlan(user);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // Extension shifts the starts only, so indexes match the stored plan.
   const sections =
     daysSinceLastWorkout > MIN_DAYS_TO_EXTEND &&
     daysSinceLastWorkout <= MAX_DAYS_TO_EXTEND
@@ -53,46 +45,24 @@ export const locateStoredTrainingDay = (
       : trainingPlan.sections;
 
   // A given section 0 reads as no section, as in the old generator.
-  const sectionIndex = givenSection
-    ? givenSection
-    : sections.indexOf(
-        getSectionForDate(
-          sections as Parameters<typeof getSectionForDate>[0],
-          today.getTime(),
-        ),
+  const section = givenSection
+    ? sections[givenSection]
+    : getSectionForDate(
+        sections as Parameters<typeof getSectionForDate>[0],
+        today.getTime(),
       );
 
   // The schema types skills loosely; the model names each skill key.
-  const trainings = sections[sectionIndex].trainings as UserTrainingType[];
+  const trainings = section.trainings as UserTrainingType[];
   const training =
     trainings.find((entry) => entry.weekday === weekday) ?? trainings[0];
 
   return {
-    day: {
-      skills: cloneWithValidation(
-        training.skills,
-        SkillBranchesSchema,
-        "currTraining.skills",
-      ),
-      lengths: { ...training.lengths },
-    },
-    sectionIndex,
-    weekday: training.weekday,
+    skills: cloneWithValidation(
+      training.skills,
+      SkillBranchesSchema,
+      "currTraining.skills",
+    ),
+    lengths: { ...training.lengths },
   };
 };
-
-/**
- * Selects the stored training day of a weekday from the athlete's plan; see
- * locateStoredTrainingDay.
- *
- * selectStoredTrainingDay(user, 1, undefined, 0)
- * → { skills: { WU: [{ branchId: "410", ... }] }, lengths: { WU: 5 } }
- */
-export const selectStoredTrainingDay = (
-  user: UserType,
-  weekday: number,
-  givenSection: number | undefined,
-  daysSinceLastWorkout: number,
-): StoredTrainingDay =>
-  locateStoredTrainingDay(user, weekday, givenSection, daysSinceLastWorkout)
-    .day;

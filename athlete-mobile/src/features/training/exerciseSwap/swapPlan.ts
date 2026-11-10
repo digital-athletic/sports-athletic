@@ -4,6 +4,7 @@ import {
   type SubstituteLevel,
 } from "../utils/substitutionLevelUtils";
 import type { ExerciseBranchType } from "../models/ExerciseBranch";
+import type { UserExerciseDataType } from "../models/UserExerciseData";
 import type { StoredBranch } from "../workoutGenerator/blockHandlers/branches/storedBranchLookup";
 
 export interface ExerciseSwapState {
@@ -11,6 +12,8 @@ export interface ExerciseSwapState {
   /** 0 is the original branch, 1 to n the alternatives. */
   position: number;
   alternatives: readonly StoredBranch[];
+  /** The session entries of the original branch, restored at position 0. */
+  originalEntries: readonly UserExerciseDataType[];
 }
 
 /** Writes a catalog branch in the form the training plan stores. */
@@ -29,16 +32,15 @@ export const toExerciseBranch = ({
 });
 
 /**
- * The levels to store for the swapped in branches when the training starts:
- * a stored level below the entry level rises to it, so feedback starts from
- * the level the athlete trains. Original branches keep their level.
+ * The start levels of the swapped in branches: a stored level below the entry
+ * level rises to it. Original branches keep their level.
  */
 export const listSwapStartLevels = (
-  swaps: Readonly<Record<string, ExerciseSwapState>>,
+  swaps: readonly ExerciseSwapState[],
   branchData: BranchDataMapType,
   fitnessLevel: string,
 ): SubstituteLevel[] =>
-  Object.values(swaps).flatMap(({ position, alternatives }) =>
+  swaps.flatMap(({ position, alternatives }) =>
     position === 0
       ? []
       : (getRaisedSubstituteLevel(

@@ -1,11 +1,11 @@
 import { toUserExerciseData } from "@/schemas/generator.schema";
-import type { BranchDataMapType } from "@/store/exerciseProgressStore";
 import type { ExerciseBranchType } from "../models/ExerciseBranch";
 import { isPlaceholderBranch } from "../models/IdTypes";
 import type { GeneratedSetListEntry } from "../models/SetListEntry";
 import type { UserExerciseDataType } from "../models/UserExerciseData";
-import { getRaisedSubstituteLevel } from "../utils/substitutionLevelUtils";
+import type { StoredBranch } from "../workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import type { StoredTrainingDay } from "../workoutGenerator/storedDayWorkout";
+import type { ExerciseSwapState } from "./swapPlan";
 
 /**
  * Returns a copy of the stored day whose skill holds the new branch in place
@@ -27,34 +27,15 @@ export const swapBranchInStoredDay = (
 });
 
 /**
- * Applies the start level rule of branch substitution to a swapped in branch:
- * a stored level below the entry level rises to it. Without a stored level
- * resolution starts at the entry level anyway.
- */
-export const raiseSwapStartLevel = (
-  branchData: BranchDataMapType,
-  branch: ExerciseBranchType,
-  fitnessLevel: string,
-): BranchDataMapType => {
-  const raised = getRaisedSubstituteLevel(branch, branchData, fitnessLevel);
-  return raised ? { ...branchData, [raised.branchId]: raised } : branchData;
-};
-
-/**
  * Replaces the session entries of a branch, in place and in order, with the
- * generated entries of the new branch. The session keeps its set positions.
- * Returns null when the generated entries do not match the session entries
- * one to one.
+ * given entries. The session keeps its set positions. Returns null when the
+ * entries do not match the session entries one to one.
  */
 export const replaceSessionBranch = (
   session: readonly UserExerciseDataType[],
   branchId: string,
-  generated: readonly GeneratedSetListEntry[],
-  newBranchId: string,
+  replacements: readonly UserExerciseDataType[],
 ): UserExerciseDataType[] | null => {
-  const replacements = generated.filter(
-    (entry) => entry.branchId === newBranchId,
-  );
   const oldCount = session.filter(
     (entry) => entry.branchId === branchId,
   ).length;
@@ -62,11 +43,11 @@ export const replaceSessionBranch = (
     return null;
   }
   let next = 0;
-  return session.map((entry) => {
-    if (entry.branchId !== branchId) return entry;
-    const replacement = toUserExerciseData(replacements[next++]);
-    return { ...replacement, set: entry.set };
-  });
+  return session.map((entry) =>
+    entry.branchId === branchId
+      ? { ...replacements[next++], set: entry.set }
+      : entry,
+  );
 };
 
 /** Whether an exercise of the branch also appears under another branch. */
@@ -91,12 +72,13 @@ export interface SwappableBranch {
 }
 
 /**
- * The branches of a session a swap can address: each real branch once with
- * its skill. A branch under two skills drops out, as one swap cannot keep
- * both plan entries apart.
+ * The branches of a session a swap can address: each branch the plan day
+ * stores under its skill, once. A branch under two skills drops out, as one
+ * swap cannot keep both plan entries apart.
  */
 export const listSwappableBranches = (
   session: readonly UserExerciseDataType[],
+  day: StoredTrainingDay,
 ): SwappableBranch[] => {
   const skillsByBranch = new Map<string, Set<SwappableBranch["skill"]>>();
   for (const { branchId, skill } of session) {
@@ -105,7 +87,64 @@ export const listSwappableBranches = (
     skills.add(skill);
     skillsByBranch.set(branchId, skills);
   }
-  return [...skillsByBranch].flatMap(([branchId, skills]) =>
-    skills.size === 1 ? [{ branchId, skill: [...skills][0] }] : [],
-  );
+  return [...skillsByBranch].flatMap(([branchId, skills]) => {
+    const [skill] = [...skills];
+    const inPlan = day.skills[skill]?.some(
+      (entry) => entry.branchId === branchId,
+    );
+    return skills.size === 1 && inPlan ? [{ branchId, skill }] : [];
+  });
+};
+
+const branchIdAt = (swap: ExerciseSwapState, original: string) =>
+  swap.position === 0
+    ? original
+    : swap.alternatives[swap.position - 1].branchId;
+
+export interface SwapStepRequest {
+  session: readonly UserExerciseDataType[];
+  original: string;
+  swap: ExerciseSwapState;
+  /** Generates the training day with the alternative in the original's place. */
+  generateWith: (alternative: StoredBranch) => GeneratedSetListEntry[];
+}
+
+const entriesAt = (
+  { swap, original, generateWith }: SwapStepRequest,
+  position: number,
+): readonly UserExerciseDataType[] => {
+  if (position === 0) return swap.originalEntries;
+  const alternative = swap.alternatives[position - 1];
+  return generateWith(alternative)
+    .filter((entry) => entry.branchId === alternative.branchId)
+    .map(toUserExerciseData);
+};
+
+/**
+ * Walks the cycle to the next branch whose entries fit the session without
+ * repeating a branch or an exercise it holds. Position 0 restores the
+ * original entries; a full cycle without a fit ends there too.
+ */
+export const findNextSwap = (
+  request: SwapStepRequest,
+): { session: UserExerciseDataType[]; position: number } | null => {
+  const { session, original, swap } = request;
+  const current = branchIdAt(swap, original);
+  let position = swap.position;
+  for (let tries = 0; tries <= swap.alternatives.length; tries++) {
+    position = (position + 1) % (swap.alternatives.length + 1);
+    const target = branchIdAt({ ...swap, position }, original);
+    if (position > 0 && session.some((entry) => entry.branchId === target)) {
+      continue;
+    }
+    const next = replaceSessionBranch(
+      session,
+      current,
+      entriesAt(request, position),
+    );
+    if (next && !holdsExerciseTwice(next, target)) {
+      return { session: next, position };
+    }
+  }
+  return null;
 };

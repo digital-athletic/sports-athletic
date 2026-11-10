@@ -8,7 +8,10 @@ import type { UserExerciseDataType } from "@/features/training/models/UserExerci
 import { useExerciseSwap } from "@/features/training/hooks/useExerciseSwap";
 import type { TrainingGenerationParams } from "@/features/training/hooks/useTrainingGeneration";
 import { SkillTitle } from "@/features/training/SkillTitle";
-import { SwapExerciseButton } from "@/features/training/SwapExerciseButton";
+import {
+  SwapControlsContext,
+  SwapExerciseSlot,
+} from "@/features/training/SwapExerciseButton";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { getEquipmentList } from "@/features/training/trainingUtils";
 import { getExercisePictureSource } from "@/features/training/utils/exercisePicture";
@@ -126,11 +129,10 @@ export default function TrainingOverviewScreen() {
       ? (trainingDays[weekdayNumber]?.place ?? "HOME")
       : "HOME");
 
-  const { canSwap, swapExercise, startWithSwaps } = useExerciseSwap(
+  const { swapControls, startWithSwaps } = useExerciseSwap(
     params,
     isPlaceType(place) ? place : "HOME",
   );
-  const swapControls: SwapControls = { canSwap, onSwap: swapExercise };
 
   const handleBack = () => {
     router.back();
@@ -205,12 +207,13 @@ export default function TrainingOverviewScreen() {
         <ScrollView>
           <Box padding="l">
             <EquipmentSection equipment={trainingEquipment} />
-            <ExercisesSection
-              exList={trainingExerciseList}
-              exercises={exercises}
-              onShowExerciseInfo={handleShowExerciseInfo}
-              swapControls={swapControls}
-            />
+            <SwapControlsContext value={swapControls}>
+              <ExercisesSection
+                exList={trainingExerciseList}
+                exercises={exercises}
+                onShowExerciseInfo={handleShowExerciseInfo}
+              />
+            </SwapControlsContext>
           </Box>
         </ScrollView>
 
@@ -237,11 +240,6 @@ export default function TrainingOverviewScreen() {
     </>
   );
 }
-
-type SwapControls = {
-  canSwap: (branchId: string | undefined) => boolean;
-  onSwap: (branchId: string | undefined) => void;
-};
 
 type ExerciseSet = {
   length: number;
@@ -289,7 +287,6 @@ const EquipmentSection: FC<EquipmentSectionProps> = ({ equipment }) => {
 };
 
 type ExercisesSectionProps = {
-  swapControls: SwapControls;
   exList: SkillGroup[];
   exercises: ExerciseType[];
   onShowExerciseInfo: (exerciseId: string) => void;
@@ -299,7 +296,6 @@ const ExercisesSection: FC<ExercisesSectionProps> = ({
   exList,
   exercises,
   onShowExerciseInfo,
-  swapControls,
 }) => {
   const { t } = useTranslation();
 
@@ -314,7 +310,6 @@ const ExercisesSection: FC<ExercisesSectionProps> = ({
           skillGroup={skillGroup}
           exercises={exercises}
           onShowExerciseInfo={onShowExerciseInfo}
-          swapControls={swapControls}
         />
       ))}
     </Box>
@@ -322,7 +317,6 @@ const ExercisesSection: FC<ExercisesSectionProps> = ({
 };
 
 type SkillGroupItemProps = {
-  swapControls: SwapControls;
   skillGroup: SkillGroup;
   exercises: ExerciseType[];
   onShowExerciseInfo: (exerciseId: string) => void;
@@ -332,7 +326,6 @@ const SkillGroupItem: FC<SkillGroupItemProps> = ({
   skillGroup,
   exercises,
   onShowExerciseInfo,
-  swapControls,
 }) => {
   const isMaxSkill = skillGroup.skill.includes("MAX");
 
@@ -346,7 +339,6 @@ const SkillGroupItem: FC<SkillGroupItemProps> = ({
           exercises={exercises}
           isMaxSkill={isMaxSkill}
           onShowExerciseInfo={onShowExerciseInfo}
-          swapControls={swapControls}
         />
       ))}
     </Box>
@@ -354,7 +346,6 @@ const SkillGroupItem: FC<SkillGroupItemProps> = ({
 };
 
 type ExerciseSetItemProps = {
-  swapControls: SwapControls;
   set: ExerciseSet;
   exercises: ExerciseType[];
   isMaxSkill: boolean;
@@ -366,7 +357,6 @@ const ExerciseSetItem: FC<ExerciseSetItemProps> = ({
   exercises,
   isMaxSkill,
   onShowExerciseInfo,
-  swapControls,
 }) => {
   const { t } = useTranslation();
 
@@ -382,7 +372,6 @@ const ExerciseSetItem: FC<ExerciseSetItemProps> = ({
         exercises={exercises}
         setLabel={String(setLabel)}
         onShowExerciseInfo={onShowExerciseInfo}
-        swapControls={swapControls}
       />
     );
   }
@@ -397,7 +386,6 @@ const ExerciseSetItem: FC<ExerciseSetItemProps> = ({
           key={`exercise-${exIndex}`}
           exercise={exercise}
           exercises={exercises}
-          swapControls={swapControls}
           onPress={() => onShowExerciseInfo(exercise.exerciseId)}
         />
       ))}
@@ -406,7 +394,6 @@ const ExerciseSetItem: FC<ExerciseSetItemProps> = ({
 };
 
 type MaxSetContentProps = {
-  swapControls: SwapControls;
   set: ExerciseSet;
   exercises: ExerciseType[];
   setLabel: string;
@@ -418,7 +405,6 @@ const MaxSetContent: FC<MaxSetContentProps> = ({
   exercises,
   setLabel,
   onShowExerciseInfo,
-  swapControls,
 }) => {
   const { t } = useTranslation();
 
@@ -434,7 +420,6 @@ const MaxSetContent: FC<MaxSetContentProps> = ({
       <ExerciseItem
         exercise={maxExercise}
         exercises={exercises}
-        swapControls={swapControls}
         onPress={() => onShowExerciseInfo(maxExercise.exerciseId)}
       />
       {supportExercises.length > 0 && (
@@ -447,7 +432,6 @@ const MaxSetContent: FC<MaxSetContentProps> = ({
               key={`support-${exIndex}`}
               exercise={exercise}
               exercises={exercises}
-              swapControls={swapControls}
               onPress={() => onShowExerciseInfo(exercise.exerciseId)}
             />
           ))}
@@ -458,7 +442,6 @@ const MaxSetContent: FC<MaxSetContentProps> = ({
 };
 
 type ExerciseItemProps = {
-  swapControls: SwapControls;
   exercise: UserExerciseDataType;
   exercises: ExerciseType[];
   onPress: () => void;
@@ -468,7 +451,6 @@ const ExerciseItem: FC<ExerciseItemProps> = ({
   exercise,
   exercises,
   onPress,
-  swapControls,
 }) => {
   const exerciseData = exercises.find((e) => e.id === exercise.exerciseId);
 
@@ -477,44 +459,45 @@ const ExerciseItem: FC<ExerciseItemProps> = ({
   if (!exerciseData) return null;
 
   return (
-    <Pressable onPress={onPress}>
-      <Box flexDirection="row" marginBottom="m">
-        {exerciseData.picture && (
-          <Box
-            borderRadius={"s"}
-            width={120}
-            marginRight={"s"}
-            overflow="hidden"
-          >
-            {imageUrl ? (
-              <Image
-                source={imageUrl}
-                style={{
-                  width: 120,
-                  aspectRatio: 1,
-                }}
-                cachePolicy="disk"
-                accessibilityLabel={exerciseData.displayName ?? undefined}
-              />
-            ) : (
-              <MediaSkeleton width={120} aspectRatio={1} showRetry={false} />
-            )}
+    <Box flexDirection="row" marginBottom="m">
+      {/* The swap button sits beside the row press so screen readers reach it. */}
+      <Pressable onPress={onPress} style={{ flex: 1 }}>
+        <Box flexDirection="row">
+          {exerciseData.picture && (
+            <Box
+              borderRadius={"s"}
+              width={120}
+              marginRight={"s"}
+              overflow="hidden"
+            >
+              {imageUrl ? (
+                <Image
+                  source={imageUrl}
+                  style={{
+                    width: 120,
+                    aspectRatio: 1,
+                  }}
+                  cachePolicy="disk"
+                  accessibilityLabel={exerciseData.displayName ?? undefined}
+                />
+              ) : (
+                <MediaSkeleton width={120} aspectRatio={1} showRetry={false} />
+              )}
+            </Box>
+          )}
+          <Box flex={1} justifyContent="center">
+            <Text variant="body">{exerciseData.displayName}</Text>
+            <ExerciseValues exercise={exercise} exerciseData={exerciseData} />
           </Box>
-        )}
-        <Box flex={1} justifyContent="center">
-          <Text variant="body">{exerciseData.displayName}</Text>
-          <ExerciseValues exercise={exercise} exerciseData={exerciseData} />
         </Box>
-        {swapControls.canSwap(exercise.branchId) && (
-          <Box justifyContent="center">
-            <SwapExerciseButton
-              exerciseName={exerciseData.displayName ?? ""}
-              onPress={() => swapControls.onSwap(exercise.branchId)}
-            />
-          </Box>
-        )}
+      </Pressable>
+      <Box justifyContent="center">
+        <SwapExerciseSlot
+          branchId={exercise.branchId}
+          exerciseName={exerciseData.displayName ?? ""}
+        />
       </Box>
-    </Pressable>
+    </Box>
   );
 };
 

@@ -134,6 +134,14 @@ export function useExerciseCompletion() {
     }
   };
 
+  // Feedback on a swapped in branch starts from the level the athlete trained.
+  const storeSwapStartLevel = (branchId: string) => {
+    const startLevel = useTrainingStore.getState().takeSwapStartLevel(branchId);
+    if (startLevel) {
+      setBranchLevel(branchId, startLevel.level, startLevel.exerciseId);
+    }
+  };
+
   /** Returns true when the athlete moves off `exerciseId`. */
   const updateBranchLevel = (
     levelUp: boolean,
@@ -144,7 +152,8 @@ export function useExerciseCompletion() {
   ): boolean => {
     const context: BranchLevelContext = {
       skillTrees,
-      branchData,
+      // The rendered branch data misses a start level stored in this save.
+      branchData: useExerciseProgressStore.getState().branchData,
       equipment,
       gender: personalData.gender,
       exerciseList,
@@ -241,6 +250,7 @@ export function useExerciseCompletion() {
     const currentExerciseData = getExerciseById(id);
 
     if (skill && typeof branchId === "string" && !isPauseExercise) {
+      storeSwapStartLevel(branchId);
       saveBranchData(skill, branchId, exerciseId);
     }
 

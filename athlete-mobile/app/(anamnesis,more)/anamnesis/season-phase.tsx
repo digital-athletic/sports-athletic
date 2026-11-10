@@ -1,27 +1,22 @@
-import { BackHeader } from "@/common/BackHeader";
 import { Loading } from "@/common/Loading";
-import { ProgressBar } from "@/common/ProgressBar";
 import { SkipHeader } from "@/common/SkipHeader";
 import { SharedConstants } from "@/constants/sharedConstants";
 import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
+import { AnamnesisScreen } from "@/features/anamnesis/components/AnamnesisScreen";
 import { SeasonPhase as SeasonPhaseEnum } from "@/features/training/models/SeasonPhase";
 import {
   deriveSeasonPhaseEndDate,
   isPlanEnded,
 } from "@/features/training/utils/timeUtils";
 import { DateInputField } from "@/form/DateInputField";
-import { SelectionInputField } from "@/form/SelectionInputField";
+import { ChoiceCards } from "@/form/ChoiceCards";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
-import { Box } from "@/theme/Box";
-import { Button } from "@/theme/Button";
-import { ScrollBox } from "@/theme/ScrollBox";
 import { formatDateToISO, getDateOneYearFromNow } from "@/utils/date";
-import { RoutePath, Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { RoutePath, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useEffectEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const TWELVE_WEEKS_IN_MS = SharedConstants.TIME_IN_MS.WEEK * 12;
 
@@ -104,16 +99,14 @@ export default function SeasonPhase() {
     }
   };
 
-  const handlePhaseTypeChange = (values: string[]) => {
-    if (values.length > 0) {
-      const futureEndDateMs = Date.now() + TWELVE_WEEKS_IN_MS;
-      const futureEndDate = formatDateToISO(new Date(futureEndDateMs));
+  const handlePhaseTypeChange = (value: string) => {
+    const futureEndDateMs = Date.now() + TWELVE_WEEKS_IN_MS;
+    const futureEndDate = formatDateToISO(new Date(futureEndDateMs));
 
-      setSeasonPhase({
-        type: values[0] as SeasonPhaseEnum,
-        endDate: seasonPhase?.endDate ?? futureEndDate,
-      });
-    }
+    setSeasonPhase({
+      type: value as SeasonPhaseEnum,
+      endDate: seasonPhase?.endDate ?? futureEndDate,
+    });
   };
 
   const handlePhaseEndChange = (value: string) => {
@@ -123,109 +116,73 @@ export default function SeasonPhase() {
     });
   };
 
-  const phaseItems = [
+  const phaseOptions = [
     {
       value: SeasonPhaseEnum.PAUSE,
-      displayName: {
-        default: t("screens.seasonPhase.phases.PAUSE"),
-        en: "Transition",
-        de: "Trainingsfrei",
-      },
+      label: t("screens.seasonPhase.phases.PAUSE"),
+      iconName: "bed-outline",
     },
     {
       value: SeasonPhaseEnum.PREPARATORY,
-      displayName: {
-        default: t("screens.seasonPhase.phases.PREPARATORY"),
-        en: "Preparatory",
-        de: "Vorbereitung",
-      },
+      label: t("screens.seasonPhase.phases.PREPARATORY"),
+      iconName: "barbell-outline",
     },
     {
       value: SeasonPhaseEnum.COMPETITION,
-      displayName: {
-        default: t("screens.seasonPhase.phases.COMPETITION"),
-        en: "Competitive",
-        de: "Spielsaison",
-      },
+      label: t("screens.seasonPhase.phases.COMPETITION"),
+      iconName: "trophy-outline",
     },
-  ];
+  ] as const;
 
   // Calculate progress for progress bar
   const maxSteps = (originPath === "/more" ? 2 : 3) + 3;
   const progress = (originPath === "/more" ? 1 : 2) + 3;
 
-  const insets = useSafeAreaInsets();
+  if (isLoading) {
+    return <Loading show text={t("common.loading")} />;
+  }
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: t("screens.seasonPhase.title"),
-          headerLeft: () => <BackHeader />,
-          headerRight: () => (
-            <SkipHeader
-              alertTitle="screens.seasonPhase.abortQuestion"
-              alertMessage={
-                hasPhaseType
-                  ? "screens.seasonPhase.abortExplanation"
-                  : "screens.seasonPhase.abortIncomplete"
-              }
-            />
-          ),
-        }}
+    <AnamnesisScreen
+      title={t("screens.seasonPhase.title")}
+      heading={t("screens.seasonPhase.seasonPhaseLabel")}
+      description={t("screens.seasonPhase.seasonPhaseDescription")}
+      step={{ current: progress, total: maxSteps }}
+      headerRight={
+        <SkipHeader
+          alertTitle="screens.seasonPhase.abortQuestion"
+          alertMessage={
+            hasPhaseType
+              ? "screens.seasonPhase.abortExplanation"
+              : "screens.seasonPhase.abortIncomplete"
+          }
+        />
+      }
+      action={{ label: t("common.goOn"), onPress: handleGoOn }}
+    >
+      <ChoiceCards
+        accessibilityLabel={t("screens.seasonPhase.seasonPhaseLabel")}
+        options={phaseOptions}
+        value={seasonPhase?.type}
+        onChange={handlePhaseTypeChange}
       />
-      {isLoading ? (
-        <Loading show={isLoading} text={t("common.loading")} />
-      ) : (
-        <Box
-          flex={1}
-          backgroundColor="lightGrey1"
-          style={{ paddingBottom: insets.bottom }}
-        >
-          <ScrollBox contentInsetAdjustmentBehavior="automatic">
-            <ProgressBar progress={progress} maximum={maxSteps} />
-            <AnamnesisQuestionContainer
-              title={{ default: t("screens.seasonPhase.seasonPhaseLabel") }}
-              description={{
-                default: t("screens.seasonPhase.seasonPhaseDescription"),
-              }}
-            >
-              <SelectionInputField
-                onChange={handlePhaseTypeChange}
-                iconName="grid"
-                selectedItems={seasonPhase?.type ? [seasonPhase.type] : []}
-                items={phaseItems}
-                singleSelection={true}
-              />
-            </AnamnesisQuestionContainer>
 
-            <AnamnesisQuestionContainer
-              title={{
-                default: t("screens.seasonPhase.endOfSeasonPhaseLabel"),
-              }}
-              description={{
-                default: t("screens.seasonPhase.endOfSeasonPhaseDescription"),
-              }}
-            >
-              <DateInputField
-                type="date"
-                dateTime={seasonPhase?.endDate}
-                onChange={handlePhaseEndChange}
-                accessibilityLabel={t(
-                  "screens.seasonPhase.endOfSeasonPhaseLabel",
-                )}
-                maximumDate={
-                  seasonPhase?.endDate ? getDateOneYearFromNow() : undefined
-                }
-              />
-            </AnamnesisQuestionContainer>
-          </ScrollBox>
-          <Button onPress={handleGoOn} margin="m">
-            {t("common.goOn")}
-          </Button>
-        </Box>
-      )}
-    </>
+      <AnamnesisQuestionContainer
+        title={{ default: t("screens.seasonPhase.endOfSeasonPhaseLabel") }}
+        description={{
+          default: t("screens.seasonPhase.endOfSeasonPhaseDescription"),
+        }}
+      >
+        <DateInputField
+          type="date"
+          dateTime={seasonPhase?.endDate}
+          onChange={handlePhaseEndChange}
+          accessibilityLabel={t("screens.seasonPhase.endOfSeasonPhaseLabel")}
+          maximumDate={
+            seasonPhase?.endDate ? getDateOneYearFromNow() : undefined
+          }
+        />
+      </AnamnesisQuestionContainer>
+    </AnamnesisScreen>
   );
 }

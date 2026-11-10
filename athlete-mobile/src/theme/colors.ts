@@ -12,6 +12,8 @@ export const colors = {
   transparent: "transparent",
   overlay: "rgba(0, 0, 0, 0.8)",
   lightGrey1: "#FAFAFA",
+  // Track of a pill toggle, between lightGrey1 and lightGrey2
+  surfaceSubtle: "#F2F2F2",
   lightGrey2: "#E8E8E8",
   lightGrey3: "#AAAAAA",
   darkGrey1: "#767676",

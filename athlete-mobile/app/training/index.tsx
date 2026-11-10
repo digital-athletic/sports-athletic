@@ -205,8 +205,6 @@ export default function SelectTraining() {
         return getTrainingDays();
       case "PREV":
         return WorkoutConstants.PREVENTION_TILES;
-      case "QUICK":
-        return WorkoutConstants.QUICKSTART_TILES;
       default:
         // probably just passing through when entering TrainingStack
         return [];

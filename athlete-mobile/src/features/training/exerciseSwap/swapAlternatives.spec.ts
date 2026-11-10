@@ -149,27 +149,8 @@ describe("swapAlternatives: listSwapAlternatives", () => {
     ).toEqual(["4"]);
   });
 
-  it("skips branches tagged for the other gender", () => {
-    const input = generateSwapInput({
-      skillTrees: {
-        BAS: {
-          "1": generateLowerBodyBranch({ 1: { exerciseId: "e1" } }),
-          "2": generateLowerBodyBranch({ 1: { exerciseId: "e2" } }, [
-            "SIDE_BOTH",
-            "GENDER_FEMALE",
-          ]),
-        },
-      },
-    });
-
-    expect(
-      listIds(
-        { skill: "BAS", branchId: "1", usedBranchIds: [], usedExerciseIds: [] },
-        input,
-      ),
-    ).toEqual([]);
-  });
-
+  // The other replacement filters run through filterReplacementBranches,
+  // whose cases branchReplacement.spec.ts tests.
   it("skips branches blocked by the athlete's pain", () => {
     const input = generateSwapInput({
       skillTrees: {

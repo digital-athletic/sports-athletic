@@ -4,22 +4,35 @@ import { TouchableBox } from "@/theme/TouchableBox";
 import { createContext, type FC, use } from "react";
 import { useTranslation } from "react-i18next";
 
-export interface SwapExerciseButtonProps {
-  exerciseName: string;
-  onPress: () => void;
+export interface SwapControls {
+  canSwap: (branchId: string | undefined) => boolean;
+  onSwap: (branchId: string | undefined) => void;
 }
 
-/** Replaces an exercise of the training overview with the next alternative. */
+/** Swap controls of the training overview; without a provider nothing swaps. */
+export const SwapControlsContext = createContext<SwapControls>({
+  canSwap: () => false,
+  onSwap: () => undefined,
+});
+
+export interface SwapExerciseButtonProps {
+  branchId: string | undefined;
+  exerciseName: string;
+}
+
+/** Replaces an exercise with its next alternative when its branch has one. */
 export const SwapExerciseButton: FC<SwapExerciseButtonProps> = ({
+  branchId,
   exerciseName,
-  onPress,
 }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
+  const { canSwap, onSwap } = use(SwapControlsContext);
+  if (!canSwap(branchId)) return null;
 
   return (
     <TouchableBox
-      onPress={onPress}
+      onPress={() => onSwap(branchId)}
       minWidth={44}
       minHeight={44}
       justifyContent="center"
@@ -32,36 +45,5 @@ export const SwapExerciseButton: FC<SwapExerciseButtonProps> = ({
     >
       <Ionicon name="swap-horizontal" size={24} color={colors.darkGrey2} />
     </TouchableBox>
-  );
-};
-
-export interface SwapControls {
-  canSwap: (branchId: string | undefined) => boolean;
-  onSwap: (branchId: string | undefined) => void;
-}
-
-/** Swap controls of the training overview; without a provider nothing swaps. */
-export const SwapControlsContext = createContext<SwapControls>({
-  canSwap: () => false,
-  onSwap: () => undefined,
-});
-
-export interface SwapExerciseSlotProps {
-  branchId: string | undefined;
-  exerciseName: string;
-}
-
-/** The swap button of an exercise when its branch has alternatives. */
-export const SwapExerciseSlot: FC<SwapExerciseSlotProps> = ({
-  branchId,
-  exerciseName,
-}) => {
-  const { canSwap, onSwap } = use(SwapControlsContext);
-  if (!canSwap(branchId)) return null;
-  return (
-    <SwapExerciseButton
-      exerciseName={exerciseName}
-      onPress={() => onSwap(branchId)}
-    />
   );
 };

@@ -2,17 +2,15 @@ import { featureFlags } from "@/config/featureFlags";
 import type { PlaceType } from "@/constants/workoutConstants";
 import { listSwapAlternatives } from "@/features/training/exerciseSwap/swapAlternatives";
 import {
-  type ExerciseSwapState,
-  listSwappedInBranches,
-  listSwapStartLevels,
-  toExerciseBranch,
-} from "@/features/training/exerciseSwap/swapPlan";
-import {
   branchIdAt,
+  type ExerciseSwapState,
   findNextSwap,
   listSwappableBranches,
+  listSwappedInBranches,
+  listSwapStartLevels,
   swapBranchInStoredDay,
-} from "@/features/training/exerciseSwap/swapSession";
+  toExerciseBranch,
+} from "@/features/training/exerciseSwap/exerciseSwap";
 import {
   buildUser,
   calculateDaysSinceLastWorkout,
@@ -158,7 +156,7 @@ const findOriginalBranchId = (
 
 /**
  * Lists the alternatives of every exercise once the session exists, after the
- * overview has rendered, and tracks each exercise's position in its cycle.
+ * overview has rendered. Each swap state tracks its position in the cycle.
  */
 const useSwapState = (request: SwapRequest) => {
   const enabled =
@@ -166,16 +164,14 @@ const useSwapState = (request: SwapRequest) => {
     featureFlags.aiwlGeneratorEnabled &&
     request.ctx.trainingPlan !== null;
   const hasSession = useTrainingStore((s) => s.exerciseList !== null);
-  const [alternatives, setAlternatives] = useState<Record<
-    string,
-    ExerciseSwapState
-  > | null>(null);
-  const [positions, setPositions] = useState<Record<string, number>>({});
+  const [swaps, setSwaps] = useState<Record<string, ExerciseSwapState> | null>(
+    null,
+  );
 
   const listAlternatives = useEffectEvent(() => {
     const session = useTrainingStore.getState().exerciseList;
-    if (alternatives === null && session) {
-      setAlternatives(listAllAlternatives(request, session));
+    if (swaps === null && session) {
+      setSwaps(listAllAlternatives(request, session));
     }
   });
   useEffect(() => {
@@ -185,13 +181,7 @@ const useSwapState = (request: SwapRequest) => {
     return () => clearTimeout(timeout);
   }, [enabled, hasSession]);
 
-  const swaps: Record<string, ExerciseSwapState> = Object.fromEntries(
-    Object.entries(alternatives ?? {}).map(([branchId, swap]) => [
-      branchId,
-      { ...swap, position: positions[branchId] ?? 0 },
-    ]),
-  );
-  return { swaps, setPositions };
+  return { swaps: swaps ?? {}, setSwaps };
 };
 
 /**
@@ -204,38 +194,33 @@ export function useExerciseSwap(params: SwapParams, fallbackPlace: PlaceType) {
   const setExerciseList = useTrainingStore((s) => s.setExerciseList);
   const setSwapStartLevels = useTrainingStore((s) => s.setSwapStartLevels);
   const request: SwapRequest = { params, ctx, place: fallbackPlace };
-  const { swaps, setPositions } = useSwapState(request);
-  const originalBranchIdOf = (branchId: string) =>
-    findOriginalBranchId(swaps, branchId);
+  const { swaps, setSwaps } = useSwapState(request);
 
   const swapExercise = (branchId: string | undefined) => {
-    const original = branchId && originalBranchIdOf(branchId);
+    const original = branchId && findOriginalBranchId(swaps, branchId);
     const session = useTrainingStore.getState().exerciseList;
     if (!original || !session) return;
     const swap = swaps[original];
+    const basis = createSwapBasis(request);
     const result = findNextSwap({
       session,
       original,
       swap,
       generateWith: (alternative) =>
-        generateSwappedDay(
-          createSwapBasis(request),
-          swap.skill,
-          original,
-          alternative,
-        ),
+        generateSwappedDay(basis, swap.skill, original, alternative),
     });
     if (!result || result.position === swap.position) {
       Logger.logEvent("exercise_swap_not_possible", { branchId: original });
       return;
     }
     setExerciseList(result.session);
-    setPositions((all) => ({ ...all, [original]: result.position }));
+    setSwaps({ ...swaps, [original]: { ...swap, position: result.position } });
   };
 
   const swapControls: SwapControls = {
     canSwap: (branchId) =>
-      branchId !== undefined && originalBranchIdOf(branchId) !== undefined,
+      branchId !== undefined &&
+      findOriginalBranchId(swaps, branchId) !== undefined,
     onSwap: swapExercise,
   };
 

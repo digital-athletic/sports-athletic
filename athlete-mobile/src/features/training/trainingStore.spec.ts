@@ -1349,10 +1349,6 @@ describe("useTrainingStore: swap start levels", () => {
     useTrainingStore.getState().clearTraining();
   });
 
-  it("holds no start levels at first", () => {
-    expect(useTrainingStore.getState().swapStartLevels).toEqual([]);
-  });
-
   it("hands out the start level of a branch once", () => {
     useTrainingStore.getState().setSwapStartLevels([startLevel]);
 

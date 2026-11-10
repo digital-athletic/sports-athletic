@@ -10,7 +10,7 @@ import type { TrainingGenerationParams } from "@/features/training/hooks/useTrai
 import { SkillTitle } from "@/features/training/SkillTitle";
 import {
   SwapControlsContext,
-  SwapExerciseSlot,
+  SwapExerciseButton,
 } from "@/features/training/SwapExerciseButton";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { getEquipmentList } from "@/features/training/trainingUtils";
@@ -492,7 +492,7 @@ const ExerciseItem: FC<ExerciseItemProps> = ({
         </Box>
       </Pressable>
       <Box justifyContent="center">
-        <SwapExerciseSlot
+        <SwapExerciseButton
           branchId={exercise.branchId}
           exerciseName={exerciseData.displayName ?? ""}
         />

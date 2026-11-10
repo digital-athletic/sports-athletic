@@ -13,7 +13,12 @@ export const SectionLegend: FC = () => {
         {t("training.status.week")}
       </Text>
       <Box alignSelf="stretch" marginBottom="l" style={styles.rotatedText}>
-        <Text variant="xSmall" textAlign="center" padding="s" color="transparent">
+        <Text
+          variant="xSmall"
+          textAlign="center"
+          padding="s"
+          color="transparent"
+        >
           {t("training.status.intensity")}
         </Text>
       </Box>

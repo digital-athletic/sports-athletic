@@ -1,30 +1,27 @@
-import { BackHeader } from "@/common/BackHeader";
-import { Coaching } from "@/common/Coaching";
 import { Loading } from "@/common/Loading";
-import { ProgressBar } from "@/common/ProgressBar";
 import { SkipHeader } from "@/common/SkipHeader";
-import { isPlaceType, WorkoutConstants } from "@/constants/workoutConstants";
-import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuestionContainer";
+import {
+  isPlaceType,
+  type LevelTag,
+  WorkoutConstants,
+} from "@/constants/workoutConstants";
+import { AnamnesisScreen } from "@/features/anamnesis/components/AnamnesisScreen";
+import { CoachTip } from "@/features/anamnesis/components/CoachTip";
+import { TrainingDayCard } from "@/features/anamnesis/components/TrainingDayCard";
+import { WeekdayToggle } from "@/features/anamnesis/components/WeekdayToggle";
 import { useAgeGroup } from "@/features/anamnesis/useAgeGroup";
 import { validateDaySelection } from "@/features/anamnesis/utils/trainingDays";
 import { SeasonPhase } from "@/features/training/models/SeasonPhase";
-import { SelectionInputField } from "@/form/SelectionInputField";
-import { SnapSliderInputField } from "@/form/SnapSliderInputField";
 import { useAnamnesisStore } from "@/store/anamnesisStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
-import { Button } from "@/theme/Button";
-import { ScrollBox } from "@/theme/ScrollBox";
-import { Text } from "@/theme/Text";
-import { useTheme } from "@/theme/theme";
 import { getUserTagValue } from "@/utils/tagUtils";
-import { RoutePath, Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { RoutePath, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Pressable, StyleSheet, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Alert } from "react-native";
 
 const DAY_KEYS = [
   "monday",
@@ -38,7 +35,6 @@ const DAY_KEYS = [
 
 export default function TrainingDays() {
   const { t } = useTranslation();
-  const { colors } = useTheme();
   const router = useRouter();
   const params = useLocalSearchParams<{ originPath?: RoutePath }>();
   const originPath = params.originPath;
@@ -128,117 +124,13 @@ export default function TrainingDays() {
     toggleDay(weekday);
   };
 
-  const renderDayButton = (weekday: number) => {
-    const day = trainingDays[weekday];
-    const dayKey = DAY_KEYS[weekday];
-    const label = t(`common.days.${dayKey}`);
+  const userLevel = (getUserTagValue(tags, "LEVEL") ||
+    WorkoutConstants.LEVELS.BEGINNER) as LevelTag;
 
-    const isActive = day.active;
-    const bgColor = isActive ? colors.primary : colors.lightGrey1;
-    const textColor = isActive ? "white" : "primary";
-    const borderColor = colors.primary;
-
-    return (
-      <Pressable
-        key={weekday}
-        onPress={() => handleToggleDay(weekday)}
-        style={[
-          styles.dayButton,
-          {
-            backgroundColor: bgColor,
-            borderColor: borderColor,
-          },
-        ]}
-        accessibilityRole="button"
-        accessibilityLabel={label}
-        accessibilityState={{ selected: isActive }}
-      >
-        <Text style={[styles.dayButtonText]} color={textColor}>
-          {label}
-        </Text>
-      </Pressable>
-    );
-  };
-
-  const getDayTitle = (weekday: number): string => {
-    return t(WorkoutConstants.WEEKDAY_TRAINING_KEYS[weekday]);
-  };
-
-  const handleChangeLocation = (weekday: number, selectedValues: string[]) => {
-    if (selectedValues.length > 0) {
-      const location = selectedValues[0];
-      if (isPlaceType(location)) {
-        setDayPlace(weekday, location);
-      }
+  const handleChangeLocation = (weekday: number, location: string) => {
+    if (isPlaceType(location)) {
+      setDayPlace(weekday, location);
     }
-  };
-
-  const handleChangeDuration = (weekday: number, durationMinutes: number) => {
-    setDayDuration(weekday, durationMinutes);
-  };
-
-  const renderDayDetails = (weekday: number) => {
-    const day = trainingDays[weekday];
-
-    if (!day.active) {
-      return null;
-    }
-
-    // Get duration options based on user level and age group
-    const userLevel = (getUserTagValue(tags, "LEVEL") ||
-      WorkoutConstants.LEVELS.BEGINNER) as
-      | "BEGINNER"
-      | "ADVANCED"
-      | "PROFESSIONAL";
-
-    // Treat adolescents as adults for duration options
-    const durationOptionsRaw =
-      WorkoutConstants.DURATION_OPTIONS[userLevel]?.[
-        ageGroup === "ADOLESCENT" ? "ADULT" : ageGroup
-      ] || WorkoutConstants.DEFAULT_DURATION_OPTIONS;
-
-    // Convert numeric labels to strings for SnapSliderInputField
-    const durationOptions = durationOptionsRaw.map((opt) => ({
-      value: opt.value,
-      label: opt.label.toString(),
-    }));
-
-    // Find current duration index
-    const currentDuration = day.duration ? day.duration : null;
-    const currentIndex = currentDuration
-      ? durationOptions.findIndex((opt) => opt.value === currentDuration)
-      : 0;
-    const startIndex = currentIndex >= 0 ? currentIndex : 0;
-
-    return (
-      <Box key={`day_details_${weekday}`}>
-        <AnamnesisQuestionContainer
-          title={{ default: getDayTitle(weekday) }}
-          description={{
-            default: t("screens.trainingDays.whereDoYouWorkOut"),
-          }}
-        >
-          <SelectionInputField
-            onChange={(values) => handleChangeLocation(weekday, values)}
-            iconName="home"
-            selectedItems={day.place ? [day.place] : []}
-            items={WorkoutConstants.TRAINING_PLACES}
-            singleSelection={true}
-          />
-          <View style={styles.timeSelectionContainer}>
-            <View style={styles.innerContainer}>
-              <SnapSliderInputField
-                startItem={startIndex}
-                onChange={(value) => handleChangeDuration(weekday, value)}
-                sliderOptions={durationOptions}
-                descriptionText={t("screens.trainingDays.howManyMinutes")}
-                accessibilityLabel={t("screens.trainingDays.howManyMinutes")}
-              />
-            </View>
-          </View>
-        </AnamnesisQuestionContainer>
-      </Box>
-    );
   };
 
   const renderTooltip = () => {
@@ -247,13 +139,6 @@ export default function TrainingDays() {
     if (seasonPhase?.type) {
       phase = t(`screens.seasonPhase.phases.${seasonPhase.type}`);
     }
-
-    // Get recommendations from constants based on level and age group
-    const userLevel = (getUserTagValue(tags, "LEVEL") ||
-      WorkoutConstants.LEVELS.BEGINNER) as
-      | "BEGINNER"
-      | "ADVANCED"
-      | "PROFESSIONAL";
 
     const seasonType = seasonPhase?.type || SeasonPhase.PAUSE;
 
@@ -268,15 +153,13 @@ export default function TrainingDays() {
       WorkoutConstants.RECOMMENDATIONS_TRAINING_MINUTES.BEGINNER.CHILD.PAUSE;
 
     return (
-      <Box padding="m">
-        <Text variant="body" textAlign="center">
-          {t("screens.trainingDays.tooltipRecommendation", {
-            phase,
-            days: recommendedDays,
-            minutes: recommendedMinutes,
-          })}
-        </Text>
-      </Box>
+      <CoachTip
+        text={t("screens.trainingDays.tooltipRecommendation", {
+          phase,
+          days: recommendedDays,
+          minutes: recommendedMinutes,
+        })}
+      />
     );
   };
 
@@ -288,105 +171,62 @@ export default function TrainingDays() {
   const maxSteps = originPath === "/more" ? 2 : 3 + 3;
   const progress = originPath === "/more" ? 2 : 3 + 3;
 
-  const insets = useSafeAreaInsets();
-
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: t("screens.trainingDays.title"),
-          headerLeft: () => <BackHeader onBack={handleBack} />,
-          headerRight: () => (
-            <SkipHeader
-              alertTitle="screens.trainingDays.abortQuestion"
-              alertMessage={
-                hasActiveDay
-                  ? "screens.trainingDays.abortExplanation"
-                  : "screens.trainingDays.abortIncomplete"
+      <AnamnesisScreen
+        title={t("screens.trainingDays.title")}
+        heading={t("screens.trainingDays.subtitle")}
+        description={
+          showCoaching ? t("screens.trainingDays.coachingMessage") : undefined
+        }
+        step={{ current: progress, total: maxSteps }}
+        onBack={handleBack}
+        headerRight={
+          <SkipHeader
+            alertTitle="screens.trainingDays.abortQuestion"
+            alertMessage={
+              hasActiveDay
+                ? "screens.trainingDays.abortExplanation"
+                : "screens.trainingDays.abortIncomplete"
+            }
+          />
+        }
+        action={{
+          label: t("common.goOn"),
+          onPress: handleGoOn,
+          disabled: isLoading,
+        }}
+      >
+        <Box flexDirection="row" gap="xs">
+          {trainingDays.map((day) => (
+            <WeekdayToggle
+              key={day.weekday}
+              label={t(`common.days.${DAY_KEYS[day.weekday]}`)}
+              active={day.active}
+              onPress={() => handleToggleDay(day.weekday)}
+            />
+          ))}
+        </Box>
+
+        {!hasActiveDay && renderTooltip()}
+        {trainingDays
+          .filter((day) => day.active)
+          .map((day) => (
+            <TrainingDayCard
+              key={day.weekday}
+              day={day}
+              userLevel={userLevel}
+              ageGroup={ageGroup}
+              onChangePlace={(place) =>
+                handleChangeLocation(day.weekday, place)
+              }
+              onChangeDuration={(duration) =>
+                setDayDuration(day.weekday, duration)
               }
             />
-          ),
-        }}
-      />
-      <Box
-        flex={1}
-        backgroundColor="lightGrey1"
-        style={{ paddingBottom: insets.bottom }}
-      >
-        <ScrollBox contentInsetAdjustmentBehavior="automatic">
-          <ProgressBar progress={progress} maximum={maxSteps} />
-
-          {showCoaching && (
-            <Box paddingHorizontal="m" paddingTop="s">
-              <Coaching text={t("screens.trainingDays.coachingMessage")} />
-            </Box>
-          )}
-
-          <Box paddingHorizontal="m" paddingVertical="s">
-            <Text variant="title" marginBottom="s">
-              {t("screens.trainingDays.subtitle")}
-            </Text>
-          </Box>
-
-          <Box
-            flexDirection="row"
-            justifyContent="space-evenly"
-            paddingHorizontal="m"
-            paddingVertical="m"
-          >
-            {[0, 1, 2, 3, 4, 5, 6].map((weekday) => renderDayButton(weekday))}
-          </Box>
-
-          {trainingDays.some((day) => day.active) ? (
-            <Box>
-              {renderDayDetails(0)}
-              {renderDayDetails(1)}
-              {renderDayDetails(2)}
-              {renderDayDetails(3)}
-              {renderDayDetails(4)}
-              {renderDayDetails(5)}
-              {renderDayDetails(6)}
-            </Box>
-          ) : (
-            renderTooltip()
-          )}
-        </ScrollBox>
-
-        <Button onPress={handleGoOn} margin="m" disabled={isLoading}>
-          {t("common.goOn")}
-        </Button>
-
-        <Loading show={isLoading} text={t("common.generatingTrainingPlan")} />
-      </Box>
+          ))}
+      </AnamnesisScreen>
+      <Loading show={isLoading} text={t("common.generatingTrainingPlan")} />
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  dayButton: {
-    height: 46,
-    width: 46,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 23,
-    borderWidth: 1,
-  },
-  dayButtonText: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  timeSelectionContainer: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  innerContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "stretch",
-    alignSelf: "stretch",
-    paddingVertical: 16,
-  },
-});

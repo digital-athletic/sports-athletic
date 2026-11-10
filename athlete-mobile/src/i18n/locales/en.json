@@ -121,10 +121,10 @@
     "sport": {
       "title": "Sport",
       "goOn": "Go On",
-      "sportSelected": "Selected",
       "abortAnamnesisQuestion": "Abort questionnaire?",
       "abortAnamnesisIncomplete": "Your profile is incomplete.",
-      "abortAnamnesisExplanation": "All your changes will be lost."
+      "abortAnamnesisExplanation": "All your changes will be lost.",
+      "question": "Which sport do you play?"
     },
     "userProfile": {
       "title": "Personal Data",

@@ -1,17 +1,59 @@
 import { SkipHeader } from "@/common/SkipHeader";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
+import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
+import { LinearGradient } from "expo-linear-gradient";
 import { RoutePath, router, Stack } from "expo-router";
+import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { SpeechBubble } from "../../src/common/SpeechBubble";
 import { useUserProfileStore } from "../../src/store/userProfileStore";
+
+type WelcomeSheetProps = {
+  headline: string;
+  text: string;
+  startLabel: string;
+  onStart: () => void;
+};
+
+/** White sheet over the hero with the greeting of the coach and the start. */
+const WelcomeSheet: FC<WelcomeSheetProps> = ({
+  headline,
+  text,
+  startLabel,
+  onStart,
+}) => {
+  const { spacing } = useTheme();
+  const insets = useSafeAreaInsets();
+
+  return (
+    <Box
+      backgroundColor="white"
+      padding="l"
+      gap="m"
+      style={[
+        styles.sheet,
+        { paddingBottom: Math.max(insets.bottom, spacing.l) },
+      ]}
+    >
+      <Text variant="display" accessibilityRole="header">
+        {headline}
+      </Text>
+      <Text variant="subtitle" fontSize={17} lineHeight={25}>
+        {text}
+      </Text>
+      <Button variant="cta" marginTop="s" onPress={onStart}>
+        {startLabel}
+      </Button>
+    </Box>
+  );
+};
 
 export default function WelcomeScreen() {
   const { t } = useTranslation();
-  const { spacing } = useTheme();
+  const { colors } = useTheme();
   const { anamnesisCompleted } = useUserProfileStore();
   const insets = useSafeAreaInsets();
 
@@ -22,13 +64,20 @@ export default function WelcomeScreen() {
     });
   };
 
+  const [headline, ...greeting] = t("screens.welcome.greeting").split("\n");
+
   return (
     <>
       <Stack.Screen
         options={{
           title: t("screens.welcome.title"),
+          headerTitle: () => null,
+          headerTransparent: true,
+          headerShadowVisible: false,
+          headerStyle: { backgroundColor: colors.transparent },
           headerRight: () => (
             <SkipHeader
+              color="white"
               alertTitle="screens.welcome.abortQuestion"
               alertMessage={
                 anamnesisCompleted
@@ -39,35 +88,43 @@ export default function WelcomeScreen() {
           ),
         }}
       />
-      <Box flex={1} padding="l" style={{ paddingBottom: insets.bottom }}>
-        <SpeechBubble text={t("screens.welcome.greeting")} centered />
-        <Box flex={3} width="100%" justifyContent="center" alignItems="center">
+      <Box flex={1} backgroundColor="primaryDark">
+        <LinearGradient
+          colors={[colors.primary, colors.primaryDark]}
+          style={[styles.hero, { paddingTop: insets.top + HEADER_HEIGHT }]}
+        >
           <Image
             source={require("../../assets/img/coach/welcome/trainer.png")}
             resizeMode="contain"
             style={styles.trainer}
             accessibilityLabel={t("screens.welcome.coachImageAlt")}
           />
-        </Box>
-      </Box>
-      <Box
-        position="absolute"
-        bottom={spacing.l}
-        left={spacing.l}
-        right={spacing.l}
-        style={{ paddingBottom: insets.bottom }}
-      >
-        <Button onPress={handleStartAnamnesis}>
-          {t("screens.welcome.letsGo")}
-        </Button>
+        </LinearGradient>
+        <WelcomeSheet
+          headline={headline}
+          text={greeting.join("\n")}
+          startLabel={t("screens.welcome.letsGo")}
+          onStart={handleStartAnamnesis}
+        />
       </Box>
     </>
   );
 }
 
+const HEADER_HEIGHT = 56;
+
 const styles = StyleSheet.create({
+  hero: {
+    flex: 1,
+  },
   trainer: {
     width: "100%",
     height: "100%",
+  },
+  sheet: {
+    marginTop: -28,
+    paddingTop: 28,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
   },
 });

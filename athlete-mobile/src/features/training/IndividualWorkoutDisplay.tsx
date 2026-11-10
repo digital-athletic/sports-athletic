@@ -55,7 +55,7 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
   const planState = getPlanState(anamnesisCompleted, trainingPlan);
 
   const startButton = (
-    <Button onPress={() => goToTraining("PLAN")}>
+    <Button variant="cta" onPress={() => goToTraining("PLAN")}>
       {t("screens.home.startTraining")}
     </Button>
   );
@@ -115,7 +115,9 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
 
   return (
     <Box flexGrow={1} justifyContent="space-between">
-      <Text variant="sectionTitle">{t("screens.home.workoutWithOwnPlan")}</Text>
+      <Text variant="sectionLabel" accessibilityRole="header" marginBottom="m">
+        {t("screens.home.workoutWithOwnPlan")}
+      </Text>
       {planState === PLAN_STATES.RUNNING ? renderRunningPlan() : renderNoPlan()}
     </Box>
   );

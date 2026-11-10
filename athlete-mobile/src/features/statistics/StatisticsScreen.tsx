@@ -19,7 +19,11 @@ export const StatisticsScreen: FC = () => {
   const { top } = useSafeAreaInsets();
 
   return (
-    <ScrollBox flex={1} backgroundColor="white" style={{ marginTop: top }}>
+    <ScrollBox
+      flex={1}
+      backgroundColor="white"
+      contentContainerStyle={{ paddingTop: top }}
+    >
       <StatisticsHeader
         kind={kind}
         onKindChange={setKind}

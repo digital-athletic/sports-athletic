@@ -8,7 +8,7 @@ import { SectionWeekBars } from "./SectionWeekBars";
 import { getPassedWeeksSinceDate } from "./utils/timeUtils";
 import { getIntensityForSection } from "./utils/trainingSectionUtils";
 
-const SECTION_TILE_WIDTH = 120;
+export const SECTION_TILE_WIDTH = 132;
 // The bars and the label split the tile height, so the tile needs its own.
 const SECTION_TILE_HEIGHT = 140;
 
@@ -37,15 +37,13 @@ export const TrainingSectionTile: FC<TrainingSectionTileProps> = ({
       height={SECTION_TILE_HEIGHT}
       justifyContent="center"
       alignItems="center"
-      padding="s"
+      paddingHorizontal="m"
+      paddingTop="m"
+      paddingBottom="xs"
       marginRight="m"
       onPress={onPress}
-      backgroundColor="white"
-      shadowColor="black"
-      shadowOffset={{ width: 0, height: 2 }}
-      shadowOpacity={0.1}
-      shadowRadius={4}
-      elevation={3}
+      backgroundColor={isActive ? "primaryTint" : "white"}
+      borderRadius="l"
     >
       <Box flex={3} justifyContent="center" alignSelf="stretch">
         <SectionWeekBars
@@ -56,15 +54,13 @@ export const TrainingSectionTile: FC<TrainingSectionTileProps> = ({
           intensity={intensity}
         />
       </Box>
-      <Box
-        flex={1}
-        justifyContent="center"
-        alignSelf="stretch"
-        paddingVertical="s"
-        borderBottomColor={isActive ? "primary" : undefined}
-        borderBottomWidth={2}
-      >
-        <Text variant="xSmall" textAlign="center" mt="s">
+      <Box flex={1} justifyContent="center" alignSelf="stretch" paddingTop="xs">
+        <Text
+          variant="xSmall"
+          textAlign="center"
+          fontWeight={isActive ? "700" : "400"}
+          color={isActive ? "primary" : "darkGrey3"}
+        >
           {t(`training.sections.${section.type}`)}
         </Text>
       </Box>

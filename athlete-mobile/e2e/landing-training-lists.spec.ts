@@ -137,7 +137,7 @@ test.describe("Prevention training: body part cards", () => {
 
     // Prevention trainings skip the soreness check and ask for the place.
     await expect(
-      page.getByRole("heading", { name: "Place & Equipment" }),
+      page.getByRole("heading", { name: "Where do you train today?" }),
     ).toBeVisible();
     await page.getByRole("button", { name: /^At home, \d+ pieces$/ }).click();
     await expect(

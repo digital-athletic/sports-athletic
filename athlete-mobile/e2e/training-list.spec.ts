@@ -402,7 +402,7 @@ test.describe("Training list: checklist session", () => {
       await trainingListPage.abort();
 
       await expect(
-        page.getByRole("heading", { name: /Start.*training/i }),
+        page.getByRole("heading", { name: "Which workout do you start?" }),
       ).toBeVisible();
       await expect
         .poll(async () => (await getTrainingStorageState(page))?.exerciseList)
@@ -441,7 +441,7 @@ test.describe("Training list: checklist session", () => {
       await trainingListPage.abort();
 
       await expect(
-        page.getByRole("heading", { name: /Start.*training/i }),
+        page.getByRole("heading", { name: "Which workout do you start?" }),
       ).toBeVisible();
       await expect
         .poll(async () => (await getTrainingStorageState(page))?.exerciseList)

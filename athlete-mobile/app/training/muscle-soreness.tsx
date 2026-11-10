@@ -1,6 +1,7 @@
 import { MuscleSorenessSelector } from "@/bodyParts/MuscleSorenessSelector";
 import { MuscleType } from "@/bodyParts/types";
 import { BackHeader } from "@/common/BackHeader";
+import { HeadlineScreen } from "@/common/HeadlineScreen";
 import { Loading } from "@/common/Loading";
 import { PlaceSelection } from "@/features/equipment/PlaceSelection";
 import {
@@ -16,16 +17,11 @@ import {
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { usePlacesStore } from "@/store/placesStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
-import { Box } from "@/theme/Box";
-import { Button } from "@/theme/Button";
-import { ScrollBox } from "@/theme/ScrollBox";
-import { useTheme } from "@/theme/theme";
-import { Text } from "@/theme/Text";
+import { Card } from "@/theme/Card";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { BackHandler } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type ScreenState = "SORENESS" | "PLACE";
 
@@ -58,18 +54,14 @@ export default function MuscleSorenessScreen() {
   const router = useRouter();
 
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
-  const { spacing } = useTheme();
 
   const screenState = screenStateFor(params.type);
-  // List rows carry their own inset, so only the soreness step pads the sides.
-  const sidePadding = screenState === "PLACE" ? 0 : spacing.m;
 
-  const hasDroppedExpiredMarksRef = useRef<true | null>(null);
-  if (hasDroppedExpiredMarksRef.current == null) {
-    hasDroppedExpiredMarksRef.current = true;
+  // A store update during render breaks React's render rules, so expired
+  // marks are dropped once after the first render.
+  useEffect(() => {
     dropStoredExpiredMarks();
-  }
+  }, []);
 
   const { places } = usePlacesStore();
   const { temporalData, setTemporalData } = useUserWorkoutStore();
@@ -100,61 +92,51 @@ export default function MuscleSorenessScreen() {
   };
 
   const title = t(titleKeyFor(screenState));
+  const isLoading = generating || !customWorkoutsHydrated;
+
+  if (isLoading) {
+    return (
+      <>
+        <Stack.Screen
+          options={{
+            title,
+            headerLeft: () => <BackHeader onBack={handleBack} />,
+          }}
+        />
+        <Loading show text={t("training.muscleSoreness.loading")} />
+      </>
+    );
+  }
+
+  if (screenState === "PLACE") {
+    return (
+      <HeadlineScreen
+        title={title}
+        eyebrow={t("training.muscleSoreness.placeAndEquipment")}
+        heading={t("training.muscleSoreness.placeHeading")}
+        description={t("training.muscleSoreness.placeDescription")}
+        onBack={handleBack}
+      >
+        <Card variant="outlined" overflow="hidden">
+          <PlaceSelection selectPlace={generateTraining} places={places} />
+        </Card>
+      </HeadlineScreen>
+    );
+  }
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title,
-          headerLeft: () => <BackHeader onBack={handleBack} />,
-        }}
-      />
-      <Box
-        flex={1}
-        justifyContent="center"
-        alignItems="stretch"
-        style={{
-          paddingBottom: insets.bottom,
-          paddingLeft: Math.max(sidePadding, insets.left),
-          paddingRight: Math.max(sidePadding, insets.right),
-        }}
-      >
-        {generating || !customWorkoutsHydrated ? (
-          <Loading show text={t("training.muscleSoreness.loading")} />
-        ) : (
-          <>
-            <Box flex={1} justifyContent="center" alignItems="stretch">
-              {screenState === "SORENESS" ? (
-                <Box flex={1} paddingTop="s">
-                  {params.type === "PLAN" ? (
-                    <Text variant="title">
-                      {t("training.muscleSoreness.title")}
-                    </Text>
-                  ) : null}
-                  <MuscleSorenessSelector
-                    tags={muscleTags}
-                    onChange={setMuscles}
-                  />
-                </Box>
-              ) : (
-                <ScrollBox backgroundColor="white">
-                  <PlaceSelection
-                    selectPlace={generateTraining}
-                    places={places}
-                  />
-                </ScrollBox>
-              )}
-            </Box>
-            {screenState === "SORENESS" ? (
-              <Button onPress={() => generateTraining("STUDIO")}>
-                {t("training.muscleSoreness.continue")}
-              </Button>
-            ) : (
-              <Box />
-            )}
-          </>
-        )}
-      </Box>
-    </>
+    <HeadlineScreen
+      title={title}
+      eyebrow={t("training.muscleSoreness.eyebrow")}
+      heading={t("training.muscleSoreness.heading")}
+      description={t("training.muscleSoreness.description")}
+      onBack={handleBack}
+      action={{
+        label: t("training.muscleSoreness.continue"),
+        onPress: () => generateTraining("STUDIO"),
+      }}
+    >
+      <MuscleSorenessSelector tags={muscleTags} onChange={setMuscles} />
+    </HeadlineScreen>
   );
 }

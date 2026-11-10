@@ -40,16 +40,17 @@ export default function MoreScreen() {
       <Stack.Screen
         options={{
           title: t("screens.more.title"),
+          headerShadowVisible: false,
+          headerStyle: { backgroundColor: colors.white },
         }}
       />
       <ScrollBox
         flex={1}
-        backgroundColor="lightGrey2"
+        backgroundColor="white"
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{ marginTop: 10 }}
       >
         {hasTestAccess && (
-          <Box backgroundColor="white" marginBottom="s" paddingVertical="s">
+          <Box backgroundColor="white" paddingVertical="s">
             <ListItem
               title={t("more.testPersonas")}
               navPath="/test"
@@ -60,7 +61,7 @@ export default function MoreScreen() {
           </Box>
         )}
 
-        <Box backgroundColor="white" marginBottom="s" paddingVertical="s">
+        <Box backgroundColor="white" paddingVertical="s">
           <ListItem
             title={t("more.myProfile")}
             navPath="/(more)/anamnesis/userprofile"
@@ -106,6 +107,9 @@ export default function MoreScreen() {
             isLast
           />
         </Box>
+
+        {/* Separates the account actions from the menu above. */}
+        <Box height={10} backgroundColor="lightGrey2" />
 
         <Box backgroundColor="white" paddingVertical="s">
           <InfoMenuItems />

@@ -16,13 +16,13 @@ async function navigateToMuscleSoreness(page: Page) {
     .getByRole("button", { name: "Start Training" })
     .click({ timeout: 15000 });
   await expect(
-    page.getByRole("heading", { name: /Start.*training/i }),
+    page.getByRole("heading", { name: "Which workout do you start?" }),
   ).toBeVisible();
 
   await page.getByRole("button", { name: /Tuesday/i }).click();
 
   await expect(
-    page.getByRole("heading", { name: "Muscle soreness" }),
+    page.getByRole("heading", { name: "Where are your muscles sore?" }),
   ).toBeVisible({ timeout: 10000 });
 }
 
@@ -98,7 +98,7 @@ test.describe("Muscle Soreness: selection", () => {
       "true",
     );
 
-    await page.getByRole("button", { name: "Show back side" }).click();
+    await page.getByRole("tab", { name: "Back" }).click();
     await clickRegion(page, "left back thigh");
 
     const chips = selectedChips(page);

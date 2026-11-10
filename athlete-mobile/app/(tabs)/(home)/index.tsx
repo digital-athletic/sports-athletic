@@ -1,6 +1,5 @@
 import { featureFlags } from "@/config/featureFlags";
 import { HomeTrainingShortcuts } from "@/features/home/HomeTrainingShortcuts";
-import { useHeaderRoom } from "@/features/home/hooks/useHeaderRoom";
 import { IndividualWorkoutDisplay } from "@/features/training/IndividualWorkoutDisplay";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import {
@@ -14,13 +13,15 @@ import { useUserProfileStore } from "@/store/userProfileStore";
 import { Box } from "@/theme/Box";
 import { Card } from "@/theme/Card";
 import { ScrollBox } from "@/theme/ScrollBox";
+import { Text } from "@/theme/Text";
 import { useWindowClass } from "@/theme/useWindowClass";
 import { Stack, router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { personalData, anamnesisCompleted, _hasHydrated } =
     useUserProfileStore();
   const { isSkipped } = useAnamnesisStore();
@@ -34,7 +35,7 @@ export default function HomeScreen() {
   const username = personalData?.username || "Mr. Anderson";
   const windowClass = useWindowClass();
   const isShortLandscape = windowClass === "shortLandscape";
-  const headerRoom = useHeaderRoom();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     Logger.logEvent("home_opened");
@@ -105,28 +106,44 @@ export default function HomeScreen() {
     });
   };
 
+  const today = new Date().toLocaleDateString(i18n.language, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+
   return (
     <>
       <Stack.Screen
         options={{
           title: t("screens.home.greeting", { name: username }),
-          headerShown: true,
+          headerShown: false,
         }}
       />
       <ScrollBox
         flex={1}
-        backgroundColor="lightGrey1"
-        contentContainerStyle={headerRoom.contentContainerStyle}
-        scrollIndicatorInsets={headerRoom.scrollIndicatorInsets}
+        backgroundColor="white"
+        contentContainerStyle={{ flexGrow: 1, paddingTop: insets.top }}
         testID="home-scroll"
       >
+        <Box gap="s" paddingHorizontal="l" paddingTop="l">
+          <Text variant="eyebrow">{today}</Text>
+          <Text variant="display" accessibilityRole="header">
+            {t("screens.home.greeting", { name: username })}
+          </Text>
+        </Box>
         <Box
           flex={1}
           flexDirection={isShortLandscape ? "row" : "column"}
           testID="home-content"
         >
           <Box flex={isShortLandscape ? 2 : undefined} padding="l">
-            <Card variant="elevated" flexGrow={1}>
+            <Card
+              variant="outlined"
+              backgroundColor="lightGrey1"
+              padding="l"
+              flexGrow={1}
+            >
               <IndividualWorkoutDisplay
                 goToTraining={goToTraining}
                 goToAnamnesis={goToAnamnesis}

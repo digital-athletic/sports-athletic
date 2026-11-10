@@ -92,7 +92,7 @@ export class WorkoutPage extends BasePage {
   async startWorkout(weekday: string) {
     await this.startTrainingButton.click({ timeout: 15000 });
     await expect(
-      this.page.getByRole("heading", { name: /Start.*training/i }),
+      this.page.getByRole("heading", { name: "Which workout do you start?" }),
     ).toBeVisible();
     await this.page
       .getByRole("button", { name: new RegExp(weekday, "i") })

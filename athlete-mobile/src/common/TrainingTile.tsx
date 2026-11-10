@@ -95,7 +95,15 @@ export const TrainingTile: FC<TrainingTileProps> = ({
       <Box flex={1} borderRadius="xl" overflow="hidden">
         <TileBackground image={image} iconName={iconName} size={size} />
         <Box flex={1} justifyContent="flex-end" padding="m">
-          <Text variant="body" fontSize={17} fontWeight="700" color="white">
+          {/* Long German compounds carry soft hyphens in the translation, so
+              they break between syllables in a half width tile. */}
+          <Text
+            variant="body"
+            fontSize={17}
+            fontWeight="700"
+            color="white"
+            android_hyphenationFrequency="normal"
+          >
             {title}
           </Text>
           {description && (

@@ -31,38 +31,38 @@ export const BodyPartsTagChips: FC<BodyPartsTagChipsProps> = ({
       <Box
         flexDirection="row"
         alignItems="center"
-        paddingHorizontal="l"
-        paddingVertical="s"
+        gap="xs"
+        minHeight={36}
+        paddingLeft="m"
+        paddingRight={onClick ? "s" : "m"}
         marginRight="s"
         marginBottom="s"
-        borderRadius="l"
-        backgroundColor="lightGrey2"
+        borderRadius="round"
+        borderWidth={1.5}
+        borderColor={onClick ? "primary" : "lightGrey2"}
+        backgroundColor={onClick ? "primaryTint" : "white"}
       >
-        <Box>
-          <Text variant="body">{t(`muscles.${tag}`)}</Text>
-        </Box>
+        <Text
+          variant="small"
+          fontWeight="600"
+          color={onClick ? "primary" : "darkGrey3"}
+        >
+          {t(`muscles.${tag}`)}
+        </Text>
         {onClick && (
-          <Box
-            marginLeft="l"
-            justifyContent="center"
-            alignItems="center"
-            width={24}
-            height={24}
-          >
-            <Ionicon
-              name="close-circle"
-              size={20}
-              color={theme.colors.darkGrey1}
-              decorative
-            />
-          </Box>
+          <Ionicon
+            name="close-circle"
+            size={18}
+            color={theme.colors.primary}
+            decorative
+          />
         )}
       </Box>
     </TouchableWithoutFeedback>
   );
 
   return tags.length > 0 ? (
-    <Box flexDirection="row" flexWrap="wrap" paddingVertical="l">
+    <Box flexDirection="row" flexWrap="wrap" paddingVertical="s">
       {tags.map(renderTag)}
     </Box>
   ) : null;

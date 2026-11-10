@@ -39,7 +39,7 @@ export class BasePage {
 
   async skipMuscleSoreness() {
     await expect(
-      this.page.getByRole("heading", { name: "Muscle soreness" }),
+      this.page.getByRole("heading", { name: "Where are your muscles sore?" }),
     ).toBeVisible();
     await this.goOnButton.click();
   }

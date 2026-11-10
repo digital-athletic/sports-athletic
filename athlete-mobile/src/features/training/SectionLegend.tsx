@@ -9,11 +9,16 @@ export const SectionLegend: FC = () => {
 
   return (
     <Box justifyContent="space-between" flexDirection="column">
-      <Text variant="xSmall" textAlign="center" padding="s" color="white">
+      <Text variant="xSmall" textAlign="center" padding="s" color="transparent">
         {t("training.status.week")}
       </Text>
       <Box alignSelf="stretch" marginBottom="l" style={styles.rotatedText}>
-        <Text variant="xSmall" textAlign="center" padding="s" color="white">
+        <Text
+          variant="xSmall"
+          textAlign="center"
+          padding="s"
+          color="transparent"
+        >
           {t("training.status.intensity")}
         </Text>
       </Box>

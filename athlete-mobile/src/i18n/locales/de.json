@@ -12,11 +12,11 @@
     },
     "back": "Zurück",
     "bodyParts": {
-      "flipToBack": "Rückseite anzeigen",
-      "flipToFront": "Vorderseite anzeigen",
       "selected": "ausgewählt",
       "selectHurtingParts": "Wähle die Bereiche, die dir weh tun",
-      "whereAreAchingMuscles": "Wo sind die schmerzenden Muskeln?"
+      "side": "Körperseite",
+      "front": "Vorne",
+      "back": "Hinten"
     },
     "cancel": "Abbrechen",
     "choose": "Auswählen",
@@ -281,9 +281,9 @@
       "weightIcon": "Gewicht-Symbol"
     },
     "quickstart": {
-      "STABILITY_TILE_BAS": "Beinachsenstabilität",
+      "STABILITY_TILE_BAS": "Beinachsen­stabilität",
       "QUICKSTART_BAS_DESC": "Baue Stabilität in deinem Unterkörper auf",
-      "STABILITY_TILE_GKS": "Ganzkörperstabilität",
+      "STABILITY_TILE_GKS": "Ganzkörper­stabilität",
       "QUICKSTART_GKS_DESC": "Stärke deinen ganzen Körper",
       "QUICKSTART_MOBILITY": "Mobilität",
       "QUICKSTART_MOBILITY_DESC": "Verbessere deinen Bewegungsumfang",
@@ -339,7 +339,10 @@
         "title": "Willkommen zurück",
         "message": "Du hast seit mehr als drei Wochen nicht trainiert. Möchtest du einen neuen Trainingsplan erstellen?"
       },
-      "timeAndPlace": "{{focus}}, {{time}} Minuten"
+      "eyebrow": "Dein Plan · {{phase}}",
+      "heading": "Welches Training startest du?",
+      "description": "Deine Trainingstage dieser Woche. Wähle den, an dem du heute trainierst.",
+      "dayDetails": "{{focus}} · {{time}} Min · {{place}}"
     },
     "powerTest": {
       "title": "Krafttest",
@@ -373,7 +376,12 @@
       "loading": "Training wird vorbereitet",
       "title": "Muskelkater",
       "placeAndEquipment": "Trainingsort & Ausrüstung",
-      "continue": "Weiter"
+      "continue": "Weiter",
+      "eyebrow": "Vor deinem Training",
+      "heading": "Wo hast du Muskelkater?",
+      "description": "Tippe die betroffenen Muskeln an. Dein Training schont sie.",
+      "placeHeading": "Wo trainierst du heute?",
+      "placeDescription": "Das Training nutzt die Ausstattung dieses Ortes."
     },
     "status": {
       "week": "Woche",

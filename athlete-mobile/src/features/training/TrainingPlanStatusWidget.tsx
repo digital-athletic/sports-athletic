@@ -6,10 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useActiveSectionIndex } from "./hooks";
 import { type TrainingSectionType } from "./models/TrainingSection";
 import { SectionLegend } from "./SectionLegend";
-import { TrainingSectionTile } from "./TrainingSectionTile";
-
-// Design constants from legacy - match original dimensions
-const SECTION_TILE_WIDTH = 120; // Matches DesignConstants.SIZES.SECTION_TILE_WIDTH for narrow screens
+import { SECTION_TILE_WIDTH, TrainingSectionTile } from "./TrainingSectionTile";
 
 interface TrainingPlanStatusWidgetProps {
   trainingSections: TrainingSectionType[];

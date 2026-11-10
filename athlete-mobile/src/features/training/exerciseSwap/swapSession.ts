@@ -8,8 +8,8 @@ import type { StoredTrainingDay } from "../workoutGenerator/storedDayWorkout";
 import type { ExerciseSwapState } from "./swapPlan";
 
 /**
- * Returns a copy of the stored day whose skill holds the new branch in place
- * of the old one.
+ * Returns a copy of the stored day with the new branch in place of the old one
+ * under the skill.
  */
 export const swapBranchInStoredDay = (
   day: StoredTrainingDay,
@@ -28,8 +28,8 @@ export const swapBranchInStoredDay = (
 
 /**
  * Replaces the session entries of a branch, in place and in order, with the
- * given entries. The session keeps its set positions. Returns null when the
- * entries do not match the session entries one to one.
+ * given entries. Set positions are unchanged. Returns null when the entry
+ * counts differ or no entries are given.
  */
 export const replaceSessionBranch = (
   session: readonly UserExerciseDataType[],
@@ -96,7 +96,8 @@ export const listSwappableBranches = (
   });
 };
 
-const branchIdAt = (swap: ExerciseSwapState, original: string) =>
+/** The branch an exercise shows at the position of its swap. */
+export const branchIdAt = (swap: ExerciseSwapState, original: string) =>
   swap.position === 0
     ? original
     : swap.alternatives[swap.position - 1].branchId;
@@ -122,8 +123,8 @@ const entriesAt = (
 
 /**
  * Walks the cycle to the next branch whose entries fit the session without
- * repeating a branch or an exercise it holds. Position 0 restores the
- * original entries; a full cycle without a fit ends there too.
+ * repeating a branch or an exercise already in the session. Position 0
+ * restores the original entries, so a cycle without a fit ends there.
  */
 export const findNextSwap = (
   request: SwapStepRequest,

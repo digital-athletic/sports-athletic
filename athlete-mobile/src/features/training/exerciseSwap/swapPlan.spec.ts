@@ -1,5 +1,9 @@
 import { generateLowerBodyBranch } from "@test/factories/skillTree";
-import { listSwapStartLevels, toExerciseBranch } from "./swapPlan";
+import {
+  listSwappedInBranches,
+  listSwapStartLevels,
+  toExerciseBranch,
+} from "./swapPlan";
 
 /**
  * Builds a swap of the original branch "10" whose one alternative is branch
@@ -38,7 +42,7 @@ describe("swapPlan: listSwapStartLevels", () => {
   it("raises a stored level below the entry level to the entry level", () => {
     expect(
       listSwapStartLevels(
-        [generateSwapToBranch20(1)],
+        generateSwapToBranch20(1).alternatives,
         { "20": { branchId: "20", level: 1, exerciseId: "20x1" } },
         "ADVANCED",
       ),
@@ -48,7 +52,7 @@ describe("swapPlan: listSwapStartLevels", () => {
   it("keeps a stored level above the entry level", () => {
     expect(
       listSwapStartLevels(
-        [generateSwapToBranch20(1)],
+        generateSwapToBranch20(1).alternatives,
         { "20": { branchId: "20", level: 3, exerciseId: "20x3" } },
         "ADVANCED",
       ),
@@ -57,17 +61,23 @@ describe("swapPlan: listSwapStartLevels", () => {
 
   it("stores nothing for a branch without a stored level", () => {
     expect(
-      listSwapStartLevels([generateSwapToBranch20(1)], {}, "ADVANCED"),
-    ).toEqual([]);
-  });
-
-  it("stores nothing for an exercise cycled back to its original", () => {
-    expect(
       listSwapStartLevels(
-        [generateSwapToBranch20(0)],
-        { "20": { branchId: "20", level: 1, exerciseId: "20x1" } },
+        generateSwapToBranch20(1).alternatives,
+        {},
         "ADVANCED",
       ),
     ).toEqual([]);
+  });
+});
+
+describe("swapPlan: listSwappedInBranches", () => {
+  it("lists the alternative an exercise shows", () => {
+    const swap = generateSwapToBranch20(1);
+
+    expect(listSwappedInBranches([swap])).toEqual(swap.alternatives);
+  });
+
+  it("lists nothing for an exercise cycled back to its original", () => {
+    expect(listSwappedInBranches([generateSwapToBranch20(0)])).toEqual([]);
   });
 });

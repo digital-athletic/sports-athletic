@@ -47,7 +47,7 @@ const readSides = (tags: string[]): string =>
 /**
  * Lists up to three branches that may replace a branch of a plan training:
  * branches of the same skill tree that pass the replacement filters, keep the
- * side setting and bring no branch or exercise the session already holds.
+ * side setting and add no branch or exercise that is already in the session.
  * The closest branch by body region and movement direction comes first.
  */
 export const listSwapAlternatives = (

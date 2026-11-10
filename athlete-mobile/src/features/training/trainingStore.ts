@@ -83,7 +83,7 @@ type Actions = {
   addSkillTime: (focusArea: FocusArea, skillTime: number) => void;
   clearTraining: () => void;
   setSwapStartLevels: (levels: SubstituteLevel[]) => void;
-  /** Returns the start level of a swapped in branch once, then drops it. */
+  /** Returns the start level of a swapped in branch once, then removes it. */
   takeSwapStartLevel: (branchId: string) => SubstituteLevel | null;
   discardTrainingSession: () => void;
   setHasHydrated: (hydrated: boolean) => void;

@@ -3,10 +3,12 @@ import type { PlaceType } from "@/constants/workoutConstants";
 import { listSwapAlternatives } from "@/features/training/exerciseSwap/swapAlternatives";
 import {
   type ExerciseSwapState,
+  listSwappedInBranches,
   listSwapStartLevels,
   toExerciseBranch,
 } from "@/features/training/exerciseSwap/swapPlan";
 import {
+  branchIdAt,
   findNextSwap,
   listSwappableBranches,
   swapBranchInStoredDay,
@@ -40,7 +42,7 @@ interface SwapRequest {
   place: PlaceType;
 }
 
-// A fixed draw keeps the regenerated day stable, so a cycle repeats itself
+// A fixed random draw makes each regeneration of a day return the same entries
 const FIXED_RANDOM = () => 0;
 
 /** The plan day and generation input of a swap, built once per request. */
@@ -108,7 +110,8 @@ const listAllAlternatives = (
         };
       }
     } catch (e) {
-      // muscle soreness in two regions throws; the exercise keeps no button
+      // Muscle soreness in two regions makes the listing throw. That exercise
+      // gets no swap button.
       if (e instanceof Error) Logger.logError(e);
     }
   }
@@ -126,22 +129,17 @@ const generateSwappedDay = (
     branchData,
     fitnessLevel,
   }: ReturnType<typeof createSwapBasis>,
-  swap: ExerciseSwapState,
+  skill: string,
   original: string,
   alternative: StoredBranch,
 ) => {
   const startLevels = listSwapStartLevels(
-    [{ ...swap, position: 1, alternatives: [alternative] }],
+    [alternative],
     branchData,
     fitnessLevel,
   );
   return generateTrainingDayFromStoredDay(
-    swapBranchInStoredDay(
-      day,
-      swap.skill,
-      original,
-      toExerciseBranch(alternative),
-    ),
+    swapBranchInStoredDay(day, skill, original, toExerciseBranch(alternative)),
     createInput({
       ...branchData,
       ...Object.fromEntries(startLevels.map((l) => [l.branchId, l])),
@@ -149,12 +147,7 @@ const generateSwappedDay = (
   );
 };
 
-const branchIdAt = (swap: ExerciseSwapState, original: string) =>
-  swap.position === 0
-    ? original
-    : swap.alternatives[swap.position - 1].branchId;
-
-/** The original branch whose swap currently shows the given branch. */
+/** The original branch whose swap shows the given branch. */
 const findOriginalBranchId = (
   swaps: Record<string, ExerciseSwapState>,
   branchId: string,
@@ -204,7 +197,7 @@ const useSwapState = (request: SwapRequest) => {
 /**
  * Swap state of a plan training overview. Each tap on an exercise moves it to
  * the next alternative Branch, the fourth back to the original. A swap changes
- * only the current workout; the training plan keeps the original Branch.
+ * only the current workout; the training plan is unchanged.
  */
 export function useExerciseSwap(params: SwapParams, fallbackPlace: PlaceType) {
   const ctx = useGenerationContext();
@@ -227,7 +220,7 @@ export function useExerciseSwap(params: SwapParams, fallbackPlace: PlaceType) {
       generateWith: (alternative) =>
         generateSwappedDay(
           createSwapBasis(request),
-          swap,
+          swap.skill,
           original,
           alternative,
         ),
@@ -246,11 +239,11 @@ export function useExerciseSwap(params: SwapParams, fallbackPlace: PlaceType) {
     onSwap: swapExercise,
   };
 
-  /** Keeps the start levels of the swapped in Branches for their first save. */
+  /** Stores the start levels of the swapped in Branches for their first save. */
   const startWithSwaps = () => {
     setSwapStartLevels(
       listSwapStartLevels(
-        Object.values(swaps),
+        listSwappedInBranches(Object.values(swaps)),
         ctx.branchData,
         getUserLevel(buildUser(params, ctx)),
       ),

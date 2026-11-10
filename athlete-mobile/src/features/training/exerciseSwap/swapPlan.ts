@@ -31,21 +31,28 @@ export const toExerciseBranch = ({
   ),
 });
 
+/** The alternatives the exercises show; an original branch adds none. */
+export const listSwappedInBranches = (
+  swaps: readonly ExerciseSwapState[],
+): StoredBranch[] =>
+  swaps.flatMap(({ position, alternatives }) =>
+    position === 0 ? [] : [alternatives[position - 1]],
+  );
+
 /**
- * The start levels of the swapped in branches: a stored level below the entry
- * level rises to it. Original branches keep their level.
+ * The start levels of swapped in branches: a stored level below the entry
+ * level rises to it. A branch without a raised level adds none.
  */
 export const listSwapStartLevels = (
-  swaps: readonly ExerciseSwapState[],
+  branches: readonly StoredBranch[],
   branchData: BranchDataMapType,
   fitnessLevel: string,
 ): SubstituteLevel[] =>
-  swaps.flatMap(({ position, alternatives }) =>
-    position === 0
-      ? []
-      : (getRaisedSubstituteLevel(
-          toExerciseBranch(alternatives[position - 1]),
-          branchData,
-          fitnessLevel,
-        ) ?? []),
+  branches.flatMap(
+    (branch) =>
+      getRaisedSubstituteLevel(
+        toExerciseBranch(branch),
+        branchData,
+        fitnessLevel,
+      ) ?? [],
   );

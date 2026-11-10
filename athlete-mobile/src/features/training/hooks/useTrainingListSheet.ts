@@ -1,12 +1,17 @@
 import { type ListRow } from "@/features/training/hooks/useTrainingListRows";
 import { useState } from "react";
 
-type SheetState = { index: number; session: number; isOpen: boolean };
+type SheetState = {
+  index: number;
+  session: number;
+  isOpen: boolean;
+  startElapsedMs: number;
+};
 
 /**
  * Tracks which checklist row's exercise sheet is open. The last opened row
  * stays available as shownRow while the sheet animates closed, and session
- * counts the opens so each one can start fresh.
+ * counts the opens so each one can start fresh, or from startElapsedMs.
  */
 export function useTrainingListSheet(rows: ListRow[]) {
   const [sheet, setSheet] = useState<SheetState | null>(null);
@@ -18,11 +23,16 @@ export function useTrainingListSheet(rows: ListRow[]) {
 
   // A second Next tap from the same render asks for the set already open;
   // keeping its session keeps its timer running.
-  const openSheet = (index: number) =>
+  const openSheet = (index: number, startElapsedMs = 0) =>
     setSheet((prev) =>
       prev?.isOpen && prev.index === index
         ? prev
-        : { index, session: (prev?.session ?? 0) + 1, isOpen: true },
+        : {
+            index,
+            session: (prev?.session ?? 0) + 1,
+            isOpen: true,
+            startElapsedMs,
+          },
     );
   const closeSheet = () =>
     setSheet((prev) => (prev ? { ...prev, isOpen: false } : prev));
@@ -31,6 +41,7 @@ export function useTrainingListSheet(rows: ListRow[]) {
     activeRow,
     shownRow,
     session: sheet?.session ?? 0,
+    startElapsedMs: sheet?.startElapsedMs ?? 0,
     openSheet,
     closeSheet,
   };

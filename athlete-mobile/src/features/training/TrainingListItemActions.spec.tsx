@@ -22,6 +22,23 @@ describe("TrainingListItemActions: accessible names", () => {
     expect(queryByLabelText("Completed")).toBeNull();
   });
 
+  it("shows the saved time and names the button Continue for a set that resumes", async () => {
+    const { getByLabelText, getByTestId } = await render(
+      <TrainingListItemActions {...baseProps} resumeSeconds={42} />,
+    );
+
+    expect(getByTestId("row-start-resume-time")).toHaveTextContent("00:42");
+    expect(getByLabelText("Continue exercise at 00:42")).toBeTruthy();
+  });
+
+  it("shows no saved time for a set that starts over", async () => {
+    const { queryByTestId } = await render(
+      <TrainingListItemActions {...baseProps} />,
+    );
+
+    expect(queryByTestId("row-start-resume-time")).toBeNull();
+  });
+
   it("names the check button of a completed row Completed", async () => {
     const { getByLabelText, queryByLabelText } = await render(
       <TrainingListItemActions {...baseProps} isCompleted />,

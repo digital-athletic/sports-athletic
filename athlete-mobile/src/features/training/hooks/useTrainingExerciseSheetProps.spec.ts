@@ -587,6 +587,88 @@ describe("useTrainingExerciseSheetProps: reps and dismiss", () => {
   });
 });
 
+describe("useTrainingExerciseSheetProps: resume after closing", () => {
+  // The lunge entry of the superset, with its first set open.
+  const lungeEntry = generateChecklistEntry({
+    key: 2,
+    exerciseId: "lunge",
+    firstOpenSetIndex: 2,
+  });
+
+  it("starts a set over when it ran less than 10 seconds", async () => {
+    const { result } = await renderHook(() =>
+      useTrainingExerciseSheetProps(generateSheetHookArgs()),
+    );
+    await act(() => result.current.handleStart(squatEntry));
+
+    await act(() => {
+      result.current.sheetProps.onTimerStop(0, 9000);
+      result.current.sheetProps.onDismiss();
+    });
+    await act(() => result.current.handleStart(squatEntry));
+
+    expect(result.current.sheetProps.startElapsedMs).toBe(0);
+    expect(result.current.resumeSecondsOf(0)).toBeUndefined();
+  });
+
+  it("continues a set from its running time after 10 seconds", async () => {
+    const { result } = await renderHook(() =>
+      useTrainingExerciseSheetProps(generateSheetHookArgs()),
+    );
+    await act(() => result.current.handleStart(squatEntry));
+
+    await act(() => {
+      result.current.sheetProps.onTimerStop(0, 12000);
+      result.current.sheetProps.onDismiss();
+    });
+    await act(() => result.current.handleStart(squatEntry));
+
+    expect(result.current.sheetProps.startElapsedMs).toBe(12000);
+  });
+
+  it("keeps the saved time of each set while other sets open", async () => {
+    const { result } = await renderHook(() =>
+      useTrainingExerciseSheetProps(generateSheetHookArgs()),
+    );
+    await act(() => result.current.handleStart(squatEntry));
+    await act(() => {
+      result.current.sheetProps.onTimerStop(0, 15000);
+      result.current.sheetProps.onDismiss();
+    });
+    await act(() => result.current.handleStart(lungeEntry));
+    await act(() => {
+      result.current.sheetProps.onTimerStop(2, 20000);
+      result.current.sheetProps.onDismiss();
+    });
+
+    await act(() => result.current.handleStart(squatEntry));
+
+    expect(result.current.sheetProps.startElapsedMs).toBe(15000);
+    expect(result.current.resumeSecondsOf(2)).toBe(20);
+  });
+
+  it("shows the time left of a timed set and the time run of an open set", async () => {
+    const { result } = await renderHook(() =>
+      useTrainingExerciseSheetProps(
+        generateSheetHookArgs({
+          exerciseList: [
+            createExercise({ skill: "SWR1", duration: 60 }),
+            createExercise({ skill: "SWR1" }),
+          ],
+        }),
+      ),
+    );
+
+    await act(() => {
+      result.current.sheetProps.onTimerStop(0, 42500);
+      result.current.sheetProps.onTimerStop(1, 42500);
+    });
+
+    expect(result.current.resumeSecondsOf(0)).toBe(18);
+    expect(result.current.resumeSecondsOf(1)).toBe(42);
+  });
+});
+
 describe("useTrainingExerciseSheetProps: forward playback through the list", () => {
   it("guides from exercise five to the end and leaves earlier exercises for later", async () => {
     const exerciseList = Array.from({ length: 8 }, (_, index) => [

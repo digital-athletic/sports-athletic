@@ -7,6 +7,10 @@ import { type TrainingListTiming } from "@/features/training/hooks/useTrainingLi
 import { type UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { findNextOpenSetIndex } from "@/features/training/utils/checklistEntries";
+import { useState } from "react";
+
+/** A set that ran shorter than this starts over when reopened. */
+export const RESUME_MIN_RUN_MS = 10_000;
 
 type Args = {
   rows: ListRow[];
@@ -18,6 +22,7 @@ type Args = {
  * Moves the checklist sheet between sets: Start opens an entry's first open
  * set, Next opens the next open set below it, and reaching the end closes the
  * sheet even if earlier sets remain open. Each move restarts exercise timing.
+ * A set reopened after RESUME_MIN_RUN_MS of running time continues from it.
  */
 export function useTrainingListSetNavigation({
   rows,
@@ -26,11 +31,20 @@ export function useTrainingListSetNavigation({
 }: Args) {
   const sheet = useTrainingListSheet(rows);
   const { activeRow, openSheet, closeSheet } = sheet;
+  const [savedRunMs, setSavedRunMs] = useState<Record<number, number>>({});
+
+  const saveSetTime = (index: number, elapsedMs: number) =>
+    setSavedRunMs((prev) => ({ ...prev, [index]: elapsedMs }));
+
+  const resumeRunMsOf = (index: number) => {
+    const runMs = savedRunMs[index] ?? 0;
+    return runMs >= RESUME_MIN_RUN_MS ? runMs : 0;
+  };
 
   const handleStart = (entry: ChecklistEntry) => {
     if (entry.firstOpenSetIndex === null) return;
     timing.startExercise(exerciseList?.[entry.firstOpenSetIndex]?.skill);
-    openSheet(entry.firstOpenSetIndex);
+    openSheet(entry.firstOpenSetIndex, resumeRunMsOf(entry.firstOpenSetIndex));
   };
 
   const handleDismiss = () => {
@@ -50,8 +64,15 @@ export function useTrainingListSetNavigation({
     }
     timing.endExercise();
     timing.startExercise(latestList[nextIndex]?.skill);
-    openSheet(nextIndex);
+    openSheet(nextIndex, resumeRunMsOf(nextIndex));
   };
 
-  return { ...sheet, handleStart, handleNext, handleDismiss };
+  return {
+    ...sheet,
+    handleStart,
+    handleNext,
+    handleDismiss,
+    saveSetTime,
+    resumeRunMsOf,
+  };
 }

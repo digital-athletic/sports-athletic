@@ -13,6 +13,8 @@ export type TrainingListRowsProps = {
   blocks: ChecklistEntryBlock[];
   exerciseList: UserExerciseDataType[] | null;
   repsDraft: Record<number, number>;
+  /** Saved timer value of a set that resumes when opened. */
+  resumeSecondsOf: (setIndex: number) => number | undefined;
   onStart: (entry: ChecklistEntry) => void;
   onShowInfo: (exerciseId: string) => void;
 };
@@ -27,6 +29,7 @@ const Entry: FC<EntryProps> = ({
   isNext,
   exerciseList,
   repsDraft,
+  resumeSecondsOf,
   onStart,
   onShowInfo,
 }) => {
@@ -45,6 +48,11 @@ const Entry: FC<EntryProps> = ({
       isCompleted={entry.completed}
       completedFeedback={exerciseList?.[lastSetIndex]?.feedback?.difficulty}
       repsValue={repsDraft[entry.key] ?? 0}
+      resumeSeconds={
+        entry.firstOpenSetIndex === null
+          ? undefined
+          : resumeSecondsOf(entry.firstOpenSetIndex)
+      }
       onStart={() => onStart(entry)}
       onShowInfo={() => onShowInfo(entry.exerciseId)}
     />

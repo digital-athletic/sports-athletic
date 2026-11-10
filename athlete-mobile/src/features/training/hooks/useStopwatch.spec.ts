@@ -150,6 +150,104 @@ describe("useStopwatch", () => {
     });
   });
 
+  describe("Resume", () => {
+    it("starts from initialElapsedMs and counts on from there", async () => {
+      const { result } = await renderHook(() =>
+        useStopwatch({
+          exerciseId: "1",
+          isActive: true,
+          initialElapsedMs: 1200,
+          timeoutMs: 100,
+        }),
+      );
+
+      expect(result.current).toBe(12);
+
+      await act(() => {
+        jest.advanceTimersByTime(100);
+      });
+      expect(result.current).toBe(13);
+    });
+
+    it("reports the running time without pauses each time it stops", async () => {
+      const onStop = jest.fn();
+      const { rerender } = await renderHook(
+        ({ isActive }: { isActive: boolean }) =>
+          useStopwatch({
+            exerciseId: "1",
+            isActive,
+            initialElapsedMs: 1000,
+            onStop,
+            timeoutMs: 100,
+          }),
+        { initialProps: { isActive: true } },
+      );
+
+      await act(() => {
+        jest.advanceTimersByTime(300);
+      });
+      await rerender({ isActive: false });
+      expect(onStop).toHaveBeenLastCalledWith(1300);
+
+      await act(() => {
+        jest.advanceTimersByTime(5000);
+      });
+      await rerender({ isActive: true });
+      await act(() => {
+        jest.advanceTimersByTime(200);
+      });
+      await rerender({ isActive: false });
+      expect(onStop).toHaveBeenLastCalledWith(1500);
+    });
+
+    it("reports the running time when it unmounts while running", async () => {
+      const onStop = jest.fn();
+      const { unmount } = await renderHook(() =>
+        useStopwatch({
+          exerciseId: "1",
+          isActive: true,
+          onStop,
+          timeoutMs: 100,
+        }),
+      );
+      await act(() => {
+        jest.advanceTimersByTime(1200);
+      });
+
+      await unmount();
+
+      expect(onStop).toHaveBeenCalledTimes(1);
+      expect(onStop).toHaveBeenCalledWith(1200);
+    });
+
+    it("does not report again when it unmounts after it stopped", async () => {
+      const onStop = jest.fn();
+      const { rerender, unmount } = await renderHook(
+        ({ isActive }: { isActive: boolean }) =>
+          useStopwatch({ exerciseId: "1", isActive, onStop, timeoutMs: 100 }),
+        { initialProps: { isActive: true } },
+      );
+      await act(() => {
+        jest.advanceTimersByTime(500);
+      });
+      await rerender({ isActive: false });
+
+      await unmount();
+
+      expect(onStop).toHaveBeenCalledTimes(1);
+      expect(onStop).toHaveBeenCalledWith(500);
+    });
+
+    it("does not report before it ever ran", async () => {
+      const onStop = jest.fn();
+      await renderHook(() =>
+        useStopwatch({ exerciseId: "1", isActive: false, onStop }),
+      );
+
+      expect(onStop).not.toHaveBeenCalled();
+    });
+  });
+
   describe("Cleanup", () => {
     it("clears interval on unmount", async () => {
       const { unmount } = await renderHook(() =>

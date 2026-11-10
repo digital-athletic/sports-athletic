@@ -1,4 +1,5 @@
 import { useChecklistRest } from "@/features/training/hooks/useChecklistRest";
+import { sheetTimerDisplay } from "@/features/training/hooks/useExerciseSheetTimer";
 import { type ListRow } from "@/features/training/hooks/useTrainingListRows";
 import { useTrainingListSetNavigation } from "@/features/training/hooks/useTrainingListSetNavigation";
 import { type TrainingListTiming } from "@/features/training/hooks/useTrainingListTiming";
@@ -92,6 +93,17 @@ const buildOpenSetActions = (
   },
 });
 
+// What the sheet timer will show when the set resumes, or undefined when the
+// set starts over.
+const resumeSecondsFor = (
+  runMs: number,
+  exercise: UserExerciseDataType | undefined,
+) =>
+  runMs === 0
+    ? undefined
+    : sheetTimerDisplay(countdownDurationOf(exercise), Math.floor(runMs / 1000))
+        .displayedSeconds;
+
 /**
  * Builds TrainingExerciseSheet's props from the set the sheet shows, routing
  * its Next/feedback/reps/skip/rest actions to the handlers of that set.
@@ -107,7 +119,7 @@ export function useTrainingExerciseSheetProps({
   onRestEnd,
   onSkip,
 }: Args) {
-  const { activeRow, shownRow, session, ...actions } =
+  const { activeRow, shownRow, session, startElapsedMs, ...actions } =
     useTrainingListSetNavigation({ rows, exerciseList, timing });
   const restTracker = useChecklistRest({ timing, onRestEnd });
 
@@ -126,6 +138,7 @@ export function useTrainingExerciseSheetProps({
     duration: shownRow
       ? countdownDurationOf(exerciseList?.[shownRow.index])
       : undefined,
+    startElapsedMs,
     repsValue: shownRow ? (repsDraft[shownRow.index] ?? 0) : 0,
     rest: activeRow
       ? buildRestControl(activeRow, rows, exerciseList, restTracker)
@@ -139,7 +152,11 @@ export function useTrainingExerciseSheetProps({
     }),
     onNext: actions.handleNext,
     onDismiss: handleSheetDismiss,
+    onTimerStop: actions.saveSetTime,
   };
 
-  return { handleStart: actions.handleStart, sheetProps };
+  const resumeSecondsOf = (setIndex: number) =>
+    resumeSecondsFor(actions.resumeRunMsOf(setIndex), exerciseList?.[setIndex]);
+
+  return { handleStart: actions.handleStart, sheetProps, resumeSecondsOf };
 }

@@ -298,6 +298,68 @@ test.describe("Training list: checklist session", () => {
     });
   });
 
+  test.describe("Resuming a set after closing the sheet", () => {
+    test.use({ profile: createCompletedProfile(), signedIn: true });
+
+    // "01:05" → 65
+    const toSeconds = (time: string | null) => {
+      const [minutes, seconds] = (time ?? "").split(":").map(Number);
+      return minutes * 60 + seconds;
+    };
+
+    test("athlete closes a held set after 15 seconds and continues it from the list", async ({
+      page,
+    }) => {
+      test.setTimeout(60000);
+      await mockSupabaseAuth(page);
+      await mockWakeLock(page);
+      await page.clock.install();
+
+      const trainingListPage = await openSupersetChecklist(page);
+      await trainingListPage.startRow("training-list-row-0");
+      await page.clock.fastForward("00:15");
+      await trainingListPage.holdTimer();
+      const heldTime = await trainingListPage.sheetTimer.textContent();
+      await trainingListPage.dismissSheet();
+
+      await expect(
+        trainingListPage.resumeTimeFor("training-list-row-0"),
+      ).toHaveText(heldTime ?? "");
+
+      await trainingListPage.startRow("training-list-row-0");
+      const resumedTime = await trainingListPage.sheetTimer.textContent();
+      expect(
+        Math.abs(toSeconds(resumedTime) - toSeconds(heldTime)),
+      ).toBeLessThanOrEqual(1);
+      await trainingListPage.expectTimerRunning();
+    });
+
+    test("athlete closes a set after 5 seconds and starts it over", async ({
+      page,
+    }) => {
+      test.setTimeout(60000);
+      await mockSupabaseAuth(page);
+      await mockWakeLock(page);
+      await page.clock.install();
+
+      const trainingListPage = await openSupersetChecklist(page);
+      await trainingListPage.startRow("training-list-row-0");
+      const startTime = await trainingListPage.sheetTimer.textContent();
+      await page.clock.fastForward("00:05");
+      await trainingListPage.dismissSheet();
+
+      await expect(
+        trainingListPage.resumeTimeFor("training-list-row-0"),
+      ).toHaveCount(0);
+
+      await trainingListPage.startRow("training-list-row-0");
+      const restartedTime = await trainingListPage.sheetTimer.textContent();
+      expect(
+        Math.abs(toSeconds(restartedTime) - toSeconds(startTime)),
+      ).toBeLessThanOrEqual(1);
+    });
+  });
+
   test.describe("MAX exercise feedback via checklist", () => {
     test.use({ profile: createMaxExerciseProfile(), signedIn: true });
 

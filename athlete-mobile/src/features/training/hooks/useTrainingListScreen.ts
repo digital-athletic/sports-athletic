@@ -30,17 +30,18 @@ export function useTrainingListScreen() {
   const { handleDiscard, isScreenFocused } = useTrainingListLifecycle({
     isEnding: isFinishing,
   });
-  const { handleStart, sheetProps } = useTrainingExerciseSheetProps({
-    rows,
-    exerciseList,
-    repsDraft,
-    timing,
-    onChangeReps: setRepsForRow,
-    onSubmitReps: handleSubmitReps,
-    onComplete: completion.handleComplete,
-    onRestEnd: completion.handleRestEnd,
-    onSkip: completion.handleSkip,
-  });
+  const { handleStart, sheetProps, resumeSecondsOf } =
+    useTrainingExerciseSheetProps({
+      rows,
+      exerciseList,
+      repsDraft,
+      timing,
+      onChangeReps: setRepsForRow,
+      onSubmitReps: handleSubmitReps,
+      onComplete: completion.handleComplete,
+      onRestEnd: completion.handleRestEnd,
+      onSkip: completion.handleSkip,
+    });
 
   const handleShowInfo = (exerciseId: string) => {
     router.push({
@@ -59,6 +60,7 @@ export function useTrainingListScreen() {
     handleShowInfo,
     handleStart,
     handleDiscard,
+    resumeSecondsOf,
     sheetProps: { ...sheetProps, isScreenFocused },
   };
 }

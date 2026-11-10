@@ -82,6 +82,23 @@ export class TrainingListPage extends BasePage {
     await expect(this.sheetPauseButton).toHaveAccessibleName("Resume");
   }
 
+  async expectTimerRunning() {
+    await expect(this.sheetPauseButton).toHaveAccessibleName("Hold");
+  }
+
+  /** Closes the sheet with a tap on the dimmed list above it. */
+  async dismissSheet() {
+    await this.page
+      .getByTestId("expo-ui-bottom-sheet-overlay")
+      .click({ position: { x: 10, y: 10 }, timeout: 3000 });
+    await expect(this.sheet).toBeHidden();
+  }
+
+  /** Saved timer value a row shows when its set resumes. */
+  resumeTimeFor(testId: string) {
+    return this.page.getByTestId(`${testId}-start-resume-time`);
+  }
+
   async resumeTimer() {
     await this.sheetPauseButton.click({ timeout: 3000 });
     await expect(this.sheetPauseButton).toHaveAccessibleName("Hold");

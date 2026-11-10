@@ -7,10 +7,10 @@ import { generateTaggedBranches } from "@test/factories/skillTree";
 import { applyBranchRuleChain } from "./branchRuleChain";
 
 const ownExercise = { 1: { exerciseId: "e1" } };
-const fieldPlayer = generateDerivedProfile();
+const profile = generateDerivedProfile();
 
 describe("branchRuleChain: applyBranchRuleChain", () => {
-  it("filters by used branches, age group, gender, equipment, pain and goalkeeper exclusion in this order", () => {
+  it("filters by used branches, age group, gender, equipment, pain and position tags in this order", () => {
     const input = generatePlanGenerationInput({
       athlete: generatePlanAthlete({
         tags: { LEVEL: ["ADVANCED"], PAIN: ["KNEE_LEFT"] },
@@ -25,6 +25,7 @@ describe("branchRuleChain: applyBranchRuleChain", () => {
         "5": ["AGE_CHILD", "GENDER_FEMALE"],
         "6": ["AGE_CHILD"],
         "7": [],
+        "8": ["POSITION_GOAL", "REGION_LOWER_BODY"],
       },
       ownExercise,
     );
@@ -32,11 +33,11 @@ describe("branchRuleChain: applyBranchRuleChain", () => {
     const result = applyBranchRuleChain(
       candidates,
       { place: "HOME", usedBranchIds: ["6"] },
-      fieldPlayer,
+      profile,
       input,
     );
 
-    expect(Object.keys(result.keep)).toEqual(["7"]);
+    expect(Object.keys(result.keep)).toEqual(["7", "8"]);
     expect(
       result.removals.map(({ branchId, family }) => [branchId, family]),
     ).toEqual([
@@ -45,7 +46,7 @@ describe("branchRuleChain: applyBranchRuleChain", () => {
       ["4", "gender"],
       ["3", "equipment"],
       ["2", "pain"],
-      ["1", "goalkeeper"],
+      ["1", "positionTagOnly"],
     ]);
   });
 
@@ -60,7 +61,7 @@ describe("branchRuleChain: applyBranchRuleChain", () => {
         applyBranchRuleChain(
           candidates,
           { place, usedBranchIds: [] },
-          fieldPlayer,
+          profile,
           input,
         ).keep,
       );

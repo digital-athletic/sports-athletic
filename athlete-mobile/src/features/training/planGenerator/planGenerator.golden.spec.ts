@@ -105,3 +105,22 @@ describe("generateTrainingPlan: seeded random source", () => {
     expect(outlineTrainingPlan(generateTrainingPlan(input))).toMatchSnapshot();
   });
 });
+
+describe("generateTrainingPlan: playing position", () => {
+  it("generates the same plan for a goalkeeper and a field player with the same answers", () => {
+    const planFor = (position: string) =>
+      outlineTrainingPlan(
+        generateTrainingPlan(
+          generatePlanGenerationInput({
+            athlete: generatePlanAthlete({
+              tags: { LEVEL: ["ADVANCED"], POSITION: [position] },
+            }),
+            seasonPhase: { type: "COMPETITION", endDate: "2027-01-25" },
+            random: generateSeededRandom(SEED),
+          }),
+        ),
+      );
+
+    expect(planFor("GOALKEEPER")).toEqual(planFor("FIELD"));
+  });
+});

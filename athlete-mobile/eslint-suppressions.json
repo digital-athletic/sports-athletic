@@ -279,7 +279,7 @@
       "count": 11
     },
     "max-params": {
-      "count": 10
+      "count": 9
     }
   },
   "src/features/training/generators/TrainingGenerator.ts": {

@@ -59,6 +59,17 @@ export function isTagInGroup(tag: string, tagGroup: string): boolean {
 }
 
 /**
+ * Returns true when every tag is a position tag. Exercise selection reads no
+ * position tag, so a branch with only position tags matches no selection.
+ */
+export function hasOnlyPositionTags(tags: readonly string[]): boolean {
+  return (
+    tags.length > 0 &&
+    tags.every((tag) => isTagInGroup(tag, TagGroups.POSITION))
+  );
+}
+
+/**
  * Extract tag values by tag group from a tags array.
  * Filters tags that start with a specific prefix and returns the suffix values.
  * Automatically excludes tags that belong to sub-groups of the requested group.

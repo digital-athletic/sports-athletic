@@ -314,11 +314,11 @@ describe("PlanGenerator", () => {
         levels: { 1: { exerciseId: "661" } },
       },
     };
-    const branchIdsFor = (position: string | undefined) =>
+    const branchIdsFor = (tree: SkillTreeType) =>
       Object.keys(
         PlanGenerator.addToSkillTree(
           {},
-          goalkeeperBranch,
+          tree,
           [],
           WorkoutConstants.AGE_GROUPS.ADULT,
           "MALE",
@@ -328,23 +328,23 @@ describe("PlanGenerator", () => {
           {},
           loadExercises(),
           [],
-          position,
         ),
       );
 
-    it.each(["GOAL", "GOALKEEPER"])(
-      "keeps a goalkeeper exercise for position %s",
-      (position) => {
-        expect(branchIdsFor(position)).toEqual(["900"]);
-      },
-    );
+    it("keeps a goalkeeper exercise that carries other tags", () => {
+      expect(branchIdsFor(goalkeeperBranch)).toEqual(["900"]);
+    });
 
-    it.each(["FIELD", undefined])(
-      "drops a goalkeeper exercise for position %s",
-      (position) => {
-        expect(branchIdsFor(position)).toEqual([]);
-      },
-    );
+    it("drops a branch whose only tag is the goalkeeper tag", () => {
+      const goalkeeperOnlyBranch: SkillTreeType = {
+        "901": {
+          tags: ["POSITION_GOAL"],
+          levels: { 1: { exerciseId: "661" } },
+        },
+      };
+
+      expect(branchIdsFor(goalkeeperOnlyBranch)).toEqual([]);
+    });
   });
 
   describe("addToSkillTree: pain exclusion", () => {
@@ -534,7 +534,6 @@ describe("PlanGenerator", () => {
         WorkoutConstants.AGE_GROUPS.ADULT,
         WorkoutConstants.LEVELS.ADVANCED,
         true,
-        false,
       );
 
       expect(result).toHaveLength(3);
@@ -567,7 +566,6 @@ describe("PlanGenerator", () => {
         WorkoutConstants.AGE_GROUPS.CHILD,
         WorkoutConstants.LEVELS.BEGINNER,
         false,
-        false,
       );
 
       expect(result).toHaveLength(3);
@@ -585,34 +583,6 @@ describe("PlanGenerator", () => {
         type: "SWR1",
         numOfWeeks: 2,
         cardioType: "CARDIO_1_SHORT",
-      });
-    });
-
-    it("should return sections without SA for keepers", () => {
-      const seasonPhase: SeasonPhaseType = {
-        type: SeasonPhase.PAUSE,
-        numOfWeeks: 4,
-        endDate: "2025-02-01",
-      };
-
-      const result = PlanGenerator.getWeightedSections(
-        seasonPhase,
-        WorkoutConstants.AGE_GROUPS.ADULT,
-        WorkoutConstants.LEVELS.PROFESSIONAL,
-        true,
-        true,
-      );
-
-      expect(result).toHaveLength(2);
-      expect(result[0]).toMatchObject({
-        type: "SWR1",
-        numOfWeeks: 2,
-        cardioType: "CARDIO_4",
-      });
-      expect(result[1]).toMatchObject({
-        type: "SWR2",
-        numOfWeeks: 2,
-        cardioType: "CARDIO_4",
       });
     });
   });
@@ -970,7 +940,6 @@ describe("PlanGenerator", () => {
         WorkoutConstants.LEVELS.ADVANCED,
         true,
         startDate,
-        false,
       );
 
       // The start field should be in YYYY-MM-DD format, NOT full ISO datetime
@@ -990,7 +959,6 @@ describe("PlanGenerator", () => {
           WorkoutConstants.LEVELS.ADVANCED,
           true,
           new Date(2025, 0, 6),
-          true,
         );
         const types = result.sections.map((section) => section.type);
 
@@ -1013,7 +981,6 @@ describe("PlanGenerator", () => {
         WorkoutConstants.LEVELS.ADVANCED,
         true,
         startDate,
-        false,
       );
 
       expect(result.start).toBe("2025-01-06");
@@ -1049,7 +1016,6 @@ describe("PlanGenerator", () => {
         WorkoutConstants.LEVELS.BEGINNER,
         false,
         startDate,
-        false,
       );
 
       expect(result.start).toBe("2025-02-03");
@@ -1069,30 +1035,6 @@ describe("PlanGenerator", () => {
         numOfWeeks: 2,
         start: "2025-03-03",
       });
-    });
-
-    it("should create plan without SA sections for keepers", () => {
-      const seasonPhase: SeasonPhaseType = {
-        type: SeasonPhase.COMPETITION,
-        numOfWeeks: 10,
-        endDate: "2025-05-19",
-      };
-      const startDate = new Date(2025, 2, 10); // Monday, Mar 10, 2025
-
-      const result = PlanGenerator.initializeTrainingPlan(
-        seasonPhase,
-        WorkoutConstants.AGE_GROUPS.ADULT,
-        WorkoutConstants.LEVELS.ADVANCED,
-        true,
-        startDate,
-        true,
-      );
-
-      expect(result.start).toBe("2025-03-10");
-      expect(result.sections).toHaveLength(3);
-      const sectionTypes = result.sections.map((s) => s.type);
-      expect(sectionTypes).not.toContain("SA");
-      expect(sectionTypes).toEqual(["SWR2", "MAX", "SK"]);
     });
   });
 
@@ -1470,18 +1412,7 @@ describe("PlanGenerator", () => {
         };
       };
 
-      it.each(["GOAL", "GOALKEEPER"])(
-        "gives goalkeeper %s explosive power and sprint intervals",
-        (position) => {
-          const { sectionTypes, cardioTypes } = typesFor([position]);
-          expect(sectionTypes).not.toContain("SA");
-          expect(sectionTypes).toContain("SK");
-          expect(cardioTypes).not.toContain("CARDIO_1_LAKTAT");
-          expect(cardioTypes).toContain("CARDIO_1_SHORT");
-        },
-      );
-
-      it.each(["FIELD", "BACKCOURT", "REFEREE"])(
+      it.each(["GOAL", "GOALKEEPER", "FIELD", "BACKCOURT", "REFEREE"])(
         "gives position %s power endurance and lactate intervals",
         (position) => {
           const { sectionTypes, cardioTypes } = typesFor([position]);
@@ -1490,19 +1421,16 @@ describe("PlanGenerator", () => {
         },
       );
 
-      it("treats an athlete without a position like a field player", () => {
-        expect(typesFor(undefined)).toEqual(typesFor(["FIELD"]));
+      it("gives a goalkeeper and a field player the same sections", () => {
+        expect(typesFor(["GOAL"])).toEqual(typesFor(["FIELD"]));
       });
 
-      it("splits children by position as well", () => {
+      it("gives a goalkeeper child and a field player child the same sections", () => {
         const childBirthday = "2020-01-01";
-        const field = typesFor(["FIELD"], childBirthday);
-        const keeper = typesFor(["GOAL"], childBirthday);
 
-        expect(field.sectionTypes).toContain("SA");
-        expect(field.cardioTypes).toContain("CARDIO_1_LAKTAT");
-        expect(keeper.sectionTypes).not.toContain("SA");
-        expect(keeper.cardioTypes).not.toContain("CARDIO_1_LAKTAT");
+        expect(typesFor(["GOAL"], childBirthday)).toEqual(
+          typesFor(["FIELD"], childBirthday),
+        );
       });
     });
 
@@ -1960,7 +1888,7 @@ describe("PlanGenerator", () => {
   /**
    * Selects appropriate training section templates based on season phase, age group, and level.
    * Handles plans longer than 20 weeks by repeating sections, and adjusts MAX to SWR2 for
-   * beginners or users without weights. For keepers, converts SA sections to SK.
+   * beginners or users without weights.
    */
   describe("getSectionsBySeasonPhaseAgeGroupLevelNumOfWeeks", () => {
     it("should return correct sections for competition adult advanced 8 weeks", () => {
@@ -1971,7 +1899,6 @@ describe("PlanGenerator", () => {
           WorkoutConstants.LEVELS.ADVANCED,
           8,
           true,
-          false,
         );
 
       expect(result).toHaveLength(3);
@@ -2002,7 +1929,6 @@ describe("PlanGenerator", () => {
           WorkoutConstants.LEVELS.BEGINNER,
           6,
           true,
-          false,
         );
 
       expect(result).toHaveLength(2);
@@ -2028,7 +1954,6 @@ describe("PlanGenerator", () => {
           WorkoutConstants.LEVELS.PROFESSIONAL,
           12,
           false, // no weights - should convert MAX to SWR2
-          false,
         );
 
       expect(result).toHaveLength(4);

@@ -13,7 +13,7 @@ import { filterRecord } from "@/utils/functional";
 import type { PlanGenerationInput } from "../planGenerationInput/planGenerationInput";
 import { readPlaceEquipment } from "../stages/placeEquipment";
 import type { DerivedProfile } from "../stages/profileDerivation";
-import { filterBranchesByGoalkeeperExclusion } from "./goalkeeperRule";
+import { filterPositionTagOnlyBranches } from "./positionTagRule";
 
 /** The training day a skill fills: its training place and the branches it already holds. */
 export interface BranchRuleChainDay {
@@ -48,7 +48,7 @@ const filterUsedBranches =
 /**
  * Filters the candidate branches of one skill as spec section 5, rule 2
  * defines, in this order: used branches of the day, age group, gender,
- * equipment of the day's training place, pain, goalkeeper exclusion. Each
+ * equipment of the day's training place, pain, position tags. Each
  * family sees only the branches the families before it kept. The pain family
  * reads the exercise of every level, so a level change never reaches a
  * blocked exercise.
@@ -78,12 +78,7 @@ export const applyBranchRuleChain = <T extends CandidateBranch>(
         athlete,
         authoredData.exerciseCatalog,
       ),
-    (branches) =>
-      filterBranchesByGoalkeeperExclusion(
-        branches,
-        profile.playingPositionGroup,
-        authoredData.exerciseCatalog,
-      ),
+    (branches) => filterPositionTagOnlyBranches(branches),
   ];
   return chain.reduce<BranchRuleChainResult<T>>(
     ({ keep, removals }, filterBranches) => {

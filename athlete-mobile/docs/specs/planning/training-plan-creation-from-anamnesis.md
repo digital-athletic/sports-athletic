@@ -40,7 +40,6 @@ The anamnesis answers are stored as tag groups and copied into the workout confi
 | Level | LEVEL tag | BEGINNER, ADVANCED, or PROFESSIONAL. A PROFESSIONAL child is downgraded to ADVANCED. |
 | Pain status | PAIN tags | Any pain tag sets the pain variant of the skill priorities. |
 | Prevention skills | PAIN tags | Mapping in [Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md). |
-| Position | POSITION tag | Two groups: goalkeeper (GOAL in football, ice hockey and hockey, GOALKEEPER in handball) and everyone else, including a missing position. The plan generator applies this rule to section types, cardio zones and goalkeeper-specific exercises. |
 | Season phase | Anamnesis season phase step | PAUSE, PREPARATORY, or COMPETITION, with a week count to the phase end date (minimum 1). Required; generation fails without it. |
 | Weights available | Equipment of active locations | True if any active training day's location has weights. |
 
@@ -53,7 +52,6 @@ The terms and conditions restrict the fitness area to users aged 16 and older. T
 3. Phases longer than 20 weeks start from the 20-week entry and append from the template's repeat list cyclically; an appended section merges into the previous one when type and cardio type match.
 4. Substitutions after template selection:
    - No weights available, level BEGINNER, or age group CHILD: every **max strength** section becomes hypertrophy stage 2. Explosive power stays in the child templates as authored.
-   - Goalkeeper: power endurance becomes explosive power, and lactate intervals become sprint intervals.
 5. The plan start snaps forward to the next Monday; each section starts where the previous one ends, giving strictly sequential blocks.
 
 The [Glossary](../glossary.md) lists the section type and cardio zone codes.
@@ -93,7 +91,7 @@ The [Glossary](../glossary.md) lists the section type and cardio zone codes.
 ### 5. Branch selection per skill
 
 1. The skill and its allotted minutes select an authored region configuration: how many exercises, and which region or movement tags (upper body, lower body, core, or named barbell lifts for max strength).
-2. Candidate branches come from the skill's skill tree, filtered by: not already in use that day, age tag, gender tag, equipment present at the day's location, and the pain exclusion described in [Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md). Children may receive every branch their age tag allows, weighted ones included.
+2. Candidate branches come from the skill's skill tree, filtered by: not already in use that day, age tag, gender tag, equipment present at the day's location, and the pain exclusion described in [Pain, Soreness, and Prevention](../foundations/pain-soreness-and-prevention.md). A branch whose only tags are position tags is dropped, since selection reads no position tag. Children may receive every branch their age tag allows, weighted ones included.
 3. When weights are available, the weighted vs bodyweight share follows [Plan Workout Generation](../session/plan-workout-generation.md).
 4. Each exercise slot applies cascading filters, each falling back to the previous candidate set when it would empty: movement direction (from an authored priority sequence), side (the last slot avoids one-sided exercises), muscle (prefer untrained big muscles), involvement (70% complex, 30% isolated), equipment (max strength prefers barbell), and the weighted/bodyweight share. The final pick is random among the survivors.
 5. Branches resolve to an exercise by the resolution rule in [Branches, Exercises, and Levels](../foundations/branches-exercises-and-levels.md). A branch is skipped only when nothing resolves at or below the athlete's level. Only a skill left with zero usable branches after this check is removed from the day. Chosen branches are excluded for the rest of the day to avoid duplicates. A candidate branch that resolves to an exercise the skill already holds that day is skipped as well; session generation repeats this check, because branches can converge later through level changes ([Plan Workout Generation](../session/plan-workout-generation.md)).

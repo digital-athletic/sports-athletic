@@ -209,41 +209,26 @@ describe("layOutSections", () => {
     });
   });
 
-  describe("goalkeeper substitution", () => {
-    const powerEnduranceTemplates = generateSectionTemplates({
-      "preparatory/adult/advanced": generateSectionTemplate({
-        sectionsByWeeks: {
-          8: [
-            generateSectionEntry({
-              type: "SA",
-              numOfWeeks: 4,
-              cardioType: "CARDIO_1_LAKTAT",
-            }),
-            generateSectionEntry({ type: "SAKG", numOfWeeks: 4 }),
-          ],
-        },
-      }),
-    });
-
-    it("gives goalkeepers explosive power and sprint intervals", () => {
-      const profile = generateDerivedProfile({
-        playingPositionGroup: "GOALKEEPER",
+  describe("power endurance and lactate intervals", () => {
+    it("keeps them for an athlete with any playing position", () => {
+      const powerEnduranceTemplates = generateSectionTemplates({
+        "preparatory/adult/advanced": generateSectionTemplate({
+          sectionsByWeeks: {
+            8: [
+              generateSectionEntry({
+                type: "SA",
+                numOfWeeks: 4,
+                cardioType: "CARDIO_1_LAKTAT",
+              }),
+              generateSectionEntry({ type: "SAKG", numOfWeeks: 4 }),
+            ],
+          },
+        }),
       });
 
-      expect(layOutSections(profile, powerEnduranceTemplates)).toEqual([
-        generateSectionEntry({
-          type: "SK",
-          numOfWeeks: 4,
-          cardioType: "CARDIO_1_SHORT",
-        }),
-        generateSectionEntry({ type: "SKKG", numOfWeeks: 4 }),
-      ]);
-    });
-
-    it("keeps power endurance and lactate intervals for field players", () => {
-      const profile = generateDerivedProfile();
-
-      expect(layOutSections(profile, powerEnduranceTemplates)).toEqual([
+      expect(
+        layOutSections(generateDerivedProfile(), powerEnduranceTemplates),
+      ).toEqual([
         generateSectionEntry({
           type: "SA",
           numOfWeeks: 4,

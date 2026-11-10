@@ -55,8 +55,6 @@ The heart-rate bands are fractions of the age-based maximum heart rate from the 
 
 CARDIO_1_SHORT displays **MAX.** instead of a heart-rate range because the 10-second work interval is too short for heart rate to rise quickly enough to make a conventional heart-rate range useful.
 
-The section templates contain CARDIO_1_LAKTAT. The plan generator replaces it with CARDIO_1_SHORT for goalkeepers (position GOAL or GOALKEEPER).
-
 ### Building the block
 
 Input: the zone, its minute budget, the selected cardio exercise, the athlete's fitness level, and today's soreness.

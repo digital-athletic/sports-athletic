@@ -19,7 +19,7 @@ import { usePlacesStore } from "@/store/placesStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Card } from "@/theme/Card";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { BackHandler } from "react-native";
 
@@ -57,11 +57,11 @@ export default function MuscleSorenessScreen() {
 
   const screenState = screenStateFor(params.type);
 
-  const hasDroppedExpiredMarksRef = useRef<true | null>(null);
-  if (hasDroppedExpiredMarksRef.current == null) {
-    hasDroppedExpiredMarksRef.current = true;
+  // A store update during render breaks React's render rules, so expired
+  // marks are dropped once after the first render.
+  useEffect(() => {
     dropStoredExpiredMarks();
-  }
+  }, []);
 
   const { places } = usePlacesStore();
   const { temporalData, setTemporalData } = useUserWorkoutStore();

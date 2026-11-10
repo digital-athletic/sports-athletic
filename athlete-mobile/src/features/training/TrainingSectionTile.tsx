@@ -10,7 +10,7 @@ import { getIntensityForSection } from "./utils/trainingSectionUtils";
 
 export const SECTION_TILE_WIDTH = 132;
 // The bars and the label split the tile height, so the tile needs its own.
-const SECTION_TILE_HEIGHT = 160;
+const SECTION_TILE_HEIGHT = 140;
 
 interface TrainingSectionTileProps {
   section: TrainingSectionType;
@@ -58,12 +58,11 @@ export const TrainingSectionTile: FC<TrainingSectionTileProps> = ({
         flex={1}
         justifyContent="center"
         alignSelf="stretch"
-        paddingVertical="s"
+        paddingTop="xs"
       >
         <Text
           variant="xSmall"
           textAlign="center"
-          mt="s"
           fontWeight={isActive ? "700" : "400"}
           color={isActive ? "primary" : "darkGrey3"}
         >

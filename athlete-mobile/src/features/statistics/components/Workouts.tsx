@@ -3,15 +3,14 @@ import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import type { CompleteWorkoutType } from "@/store/completedWorkoutsStore";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
-import { useTheme } from "@/theme/theme";
 import { formatDateForDisplay, dateToHHMM } from "@/utils/date";
 import { getTimeString, getWeightString } from "@/utils/formatters";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList } from "react-native";
 import { useStatisticsWorkouts } from "../hooks/useStatisticsWorkouts";
 import { useWorkoutsData } from "../hooks/useWorkoutsData";
 import type { ScaleType } from "../models/WorkoutsData";
+import { StatisticsCard } from "./StatisticsCard";
 import { TrainingSummary } from "./TrainingSummary";
 
 interface WorkoutsProps {
@@ -20,9 +19,75 @@ interface WorkoutsProps {
   trainingPlan?: TrainingPlanType | null;
 }
 
+const SEPARATOR = " · ";
+
+const hasValues = (workout: CompleteWorkoutType): boolean =>
+  Boolean(
+    workout.duration ||
+      workout.exerciseCount ||
+      workout.xpEarned ||
+      workout.movedWeight,
+  );
+
+/** One recent workout: date and time as title, all values in one line. */
+const WorkoutCard: FC<{ workout: CompleteWorkoutType }> = ({ workout }) => {
+  const { t } = useTranslation();
+  const date = new Date(workout.timestamp);
+  const testID = `workout-row-${workout.id}`;
+  const title = t("statistics.workouts.workoutTitle", {
+    date: formatDateForDisplay(date),
+    time: dateToHHMM(date),
+  });
+  const values = [
+    ["duration", getTimeString(workout.duration)],
+    [
+      "count",
+      t("statistics.workouts.workoutLine.exercises", {
+        count: workout.exerciseCount ?? 0,
+      }),
+    ],
+    [
+      "xp",
+      t("statistics.workouts.workoutLine.points", {
+        count: workout.xpEarned ?? 0,
+      }),
+    ],
+    ["weight", getWeightString(workout.movedWeight ?? 0)],
+  ] as const;
+
+  return (
+    <StatisticsCard
+      paddingHorizontal="m"
+      paddingVertical="s"
+      gap="xs"
+      accessible
+      accessibilityLabel={`${title}, ${values.map(([, value]) => value).join(", ")}`}
+      testID={testID}
+    >
+      <Text variant="body" fontWeight="600" testID={`${testID}-title`}>
+        {title}
+      </Text>
+      <Text
+        variant="small"
+        color="darkGrey1"
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        testID={`${testID}-summary`}
+      >
+        {values.map(([type, value], index) => (
+          <Text key={type}>
+            {index > 0 && SEPARATOR}
+            <Text testID={`${testID}-summary-${type}`}>{value}</Text>
+          </Text>
+        ))}
+      </Text>
+    </StatisticsCard>
+  );
+};
+
 /**
  * Workouts Statistics Component
- * Displays workout history with radar chart, summary, and workouts list.
+ * Displays the radar chart, the summary cards and one card per recent workout.
  */
 export const Workouts: FC<WorkoutsProps> = ({
   scale,
@@ -32,109 +97,47 @@ export const Workouts: FC<WorkoutsProps> = ({
   const hookWorkouts = useStatisticsWorkouts();
   const workouts = propWorkouts ?? hookWorkouts;
   const { t } = useTranslation();
-  const { colors } = useTheme();
 
   const { summaryData, userSkills, sortedWorkouts, hasWorkouts } =
     useWorkoutsData({ workouts, trainingPlan, scale });
 
-  const renderListItem = ({ item }: { item: CompleteWorkoutType }) => {
-    if (
-      !item.duration &&
-      !item.exerciseCount &&
-      !item.xpEarned &&
-      !item.movedWeight
-    ) {
-      return null;
-    }
-
-    const date = new Date(item.timestamp);
-    const formattedDate = `${formatDateForDisplay(date)} - ${dateToHHMM(date)}`;
-
-    return (
-      <Box
-        flexDirection="row"
-        alignItems="stretch"
-        borderBottomWidth={1}
-        borderColor="darkGrey1"
-        testID={`workout-row-${item.id}`}
-      >
-        <Box width="100%" justifyContent="center" alignItems="center">
-          <Text
-            variant="body"
-            flex={1}
-            alignSelf="stretch"
-            paddingHorizontal="l"
-            paddingTop="s"
-            style={{ color: colors.darkGrey2 }}
-          >
-            {formattedDate}
-          </Text>
-          <TrainingSummary
-            duration={getTimeString(item.duration)}
-            count={String(item.exerciseCount ?? 0)}
-            xp={String(item.xpEarned ?? 0)}
-            weight={getWeightString(item.movedWeight ?? 0)}
-            testID={`workout-row-${item.id}-summary`}
-          />
-        </Box>
-      </Box>
-    );
-  };
-
   return (
-    <Box flex={1} justifyContent="flex-start" alignItems="center">
-      <Box alignSelf="stretch" alignItems="center">
+    <Box paddingHorizontal="m" paddingBottom="l" gap="m">
+      <StatisticsCard
+        backgroundColor="lightGrey1"
+        alignItems="center"
+        paddingVertical="s"
+      >
         <RadarChart userSkills={userSkills} />
-        <TrainingSummary
-          duration={getTimeString(summaryData.duration)}
-          count={String(summaryData.count)}
-          xp={String(summaryData.xp)}
-          weight={getWeightString(summaryData.weight)}
-          testID="overall-summary"
-        />
-      </Box>
+      </StatisticsCard>
+      <TrainingSummary
+        duration={getTimeString(summaryData.duration)}
+        count={String(summaryData.count)}
+        xp={String(summaryData.xp)}
+        weight={getWeightString(summaryData.weight)}
+        testID="overall-summary"
+      />
       {!hasWorkouts ? (
-        <Box
-          width="100%"
-          justifyContent="center"
-          alignItems="center"
-          testID="no-workouts-message"
-        >
-          <Text variant="title" padding="l" style={{ color: colors.darkGrey2 }}>
+        <Box alignItems="center" testID="no-workouts-message">
+          <Text variant="title" padding="l" color="darkGrey2">
             {t("statistics.workouts.noWorkoutYet")}
           </Text>
         </Box>
       ) : (
-        <Box
-          flex={1}
-          alignSelf="stretch"
-          justifyContent="center"
-          alignItems="center"
-          backgroundColor="lightGrey1"
-          marginTop="m"
-          testID="workouts-list-container"
-        >
+        <Box gap="s" testID="workouts-list-container">
           <Text
-            variant="title"
-            flex={1}
-            alignSelf="stretch"
-            paddingHorizontal="l"
-            paddingTop="s"
-            style={{ color: colors.darkGrey3 }}
+            variant="body"
+            fontWeight="bold"
+            accessibilityRole="header"
+            marginTop="s"
           >
             {t("statistics.workouts.recentWorkouts")}
           </Text>
-          <FlatList
-            // TODO: rethink screen nesting in regards to outer scrollbox in the statistics index screen
-            scrollEnabled={false}
-            disableVirtualization
-            data={sortedWorkouts}
-            renderItem={renderListItem}
-            keyExtractor={(item) => item.id}
-            initialNumToRender={10}
-            style={{ width: "100%" }}
-            testID="workouts-list"
-          />
+          <Box gap="s" testID="workouts-list">
+            {sortedWorkouts.filter(hasValues).map((workout) => (
+              <WorkoutCard key={workout.id} workout={workout} />
+            ))}
+          </Box>
         </Box>
       )}
     </Box>

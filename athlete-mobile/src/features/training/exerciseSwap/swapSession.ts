@@ -1,6 +1,7 @@
 import { toUserExerciseData } from "@/schemas/generator.schema";
 import type { BranchDataMapType } from "@/store/exerciseProgressStore";
 import type { ExerciseBranchType } from "../models/ExerciseBranch";
+import { isPlaceholderBranch } from "../models/IdTypes";
 import type { GeneratedSetListEntry } from "../models/SetListEntry";
 import type { UserExerciseDataType } from "../models/UserExerciseData";
 import { getRaisedSubstituteLevel } from "../utils/substitutionLevelUtils";
@@ -66,4 +67,45 @@ export const replaceSessionBranch = (
     const replacement = toUserExerciseData(replacements[next++]);
     return { ...replacement, set: entry.set };
   });
+};
+
+/** Whether an exercise of the branch also appears under another branch. */
+export const holdsExerciseTwice = (
+  session: readonly UserExerciseDataType[],
+  branchId: string,
+): boolean => {
+  const otherExerciseIds = new Set(
+    session
+      .filter((entry) => entry.branchId !== branchId)
+      .map(({ exerciseId }) => exerciseId),
+  );
+  return session.some(
+    (entry) =>
+      entry.branchId === branchId && otherExerciseIds.has(entry.exerciseId),
+  );
+};
+
+export interface SwappableBranch {
+  branchId: string;
+  skill: UserExerciseDataType["skill"];
+}
+
+/**
+ * The branches of a session a swap can address: each real branch once with
+ * its skill. A branch under two skills drops out, as one swap cannot keep
+ * both plan entries apart.
+ */
+export const listSwappableBranches = (
+  session: readonly UserExerciseDataType[],
+): SwappableBranch[] => {
+  const skillsByBranch = new Map<string, Set<SwappableBranch["skill"]>>();
+  for (const { branchId, skill } of session) {
+    if (!branchId || isPlaceholderBranch(branchId)) continue;
+    const skills = skillsByBranch.get(branchId) ?? new Set();
+    skills.add(skill);
+    skillsByBranch.set(branchId, skills);
+  }
+  return [...skillsByBranch].flatMap(([branchId, skills]) =>
+    skills.size === 1 ? [{ branchId, skill: [...skills][0] }] : [],
+  );
 };

@@ -1,6 +1,4 @@
-import { getSectionForDate } from "../trainingUtils";
 import type { ExerciseBranchType } from "../models/ExerciseBranch";
-import type { TrainingPlanType } from "../models/TrainingPlan";
 import type { StoredBranch } from "../workoutGenerator/blockHandlers/branches/storedBranchLookup";
 
 export interface ExerciseSwapState {
@@ -46,16 +44,3 @@ export const collectPlanSwaps = (
           },
         ],
   );
-
-/**
- * The plan section a training reads: the given one, else the section of
- * today. A given section 0 reads as none, as in workout generation.
- */
-export const resolvePlanSectionIndex = (
-  plan: TrainingPlanType,
-  givenSection: number | undefined,
-  today: Date,
-): number =>
-  givenSection
-    ? givenSection
-    : plan.sections.indexOf(getSectionForDate(plan.sections, today.getTime()));

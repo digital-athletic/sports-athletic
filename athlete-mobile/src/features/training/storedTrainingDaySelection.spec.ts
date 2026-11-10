@@ -2,7 +2,10 @@ import {
   generateTwoSectionPlanUser,
   generateWarmUpOnlyPlanUser,
 } from "@test/factories/planWorkout";
-import { selectStoredTrainingDay } from "./storedTrainingDaySelection";
+import {
+  locateStoredTrainingDay,
+  selectStoredTrainingDay,
+} from "./storedTrainingDaySelection";
 
 describe("selectStoredTrainingDay: section", () => {
   it("selects the section that started last before today", () => {
@@ -76,5 +79,51 @@ describe("selectStoredTrainingDay: training", () => {
     const user = { ...generateWarmUpOnlyPlanUser(), workoutData: undefined };
 
     expect(() => selectStoredTrainingDay(user, 1, undefined, 0)).toThrow();
+  });
+});
+
+describe("locateStoredTrainingDay: plan position", () => {
+  it("names the section of today and the weekday of the training", () => {
+    const located = locateStoredTrainingDay(
+      generateTwoSectionPlanUser(),
+      1,
+      undefined,
+      0,
+    );
+
+    expect([located.sectionIndex, located.weekday]).toEqual([1, 1]);
+  });
+
+  it("names the section the missed weeks shift today into", () => {
+    const located = locateStoredTrainingDay(
+      generateTwoSectionPlanUser(),
+      1,
+      undefined,
+      14,
+    );
+
+    expect(located.sectionIndex).toBe(0);
+  });
+
+  it("names the given section", () => {
+    const located = locateStoredTrainingDay(
+      generateTwoSectionPlanUser(),
+      1,
+      1,
+      14,
+    );
+
+    expect(located.sectionIndex).toBe(1);
+  });
+
+  it("names the weekday of the fallback training", () => {
+    const located = locateStoredTrainingDay(
+      generateWarmUpOnlyPlanUser(),
+      3,
+      undefined,
+      0,
+    );
+
+    expect(located.weekday).toBe(1);
   });
 });

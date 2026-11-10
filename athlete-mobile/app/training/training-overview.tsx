@@ -1,7 +1,7 @@
 import { BackHeader } from "@/common/BackHeader";
 import { CenteredLoading } from "@/common/CenteredLoading";
 import { featureFlags } from "@/config/featureFlags";
-import { WorkoutConstants } from "@/constants/workoutConstants";
+import { isPlaceType, WorkoutConstants } from "@/constants/workoutConstants";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
@@ -22,7 +22,6 @@ import { Text } from "@/theme/Text";
 import { Image } from "expo-image";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { type FC } from "react";
-import type { PlaceType } from "@/constants/workoutConstants";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -129,7 +128,7 @@ export default function TrainingOverviewScreen() {
 
   const { canSwap, swapExercise, commitSwaps } = useExerciseSwap(
     params,
-    place as PlaceType,
+    isPlaceType(place) ? place : "HOME",
   );
   const swapControls: SwapControls = { canSwap, onSwap: swapExercise };
 

@@ -5,10 +5,11 @@ import { nextSwapPosition } from "@/features/training/exerciseSwap/swapCycle";
 import {
   collectPlanSwaps,
   type ExerciseSwapState,
-  resolvePlanSectionIndex,
   toExerciseBranch,
 } from "@/features/training/exerciseSwap/swapPlan";
 import {
+  holdsExerciseTwice,
+  listSwappableBranches,
   raiseSwapStartLevel,
   replaceSessionBranch,
   swapBranchInStoredDay,
@@ -21,9 +22,8 @@ import {
   type TrainingGenerationParams,
   useGenerationContext,
 } from "@/features/training/hooks/useTrainingGeneration";
-import { isPlaceholderBranch } from "@/features/training/models/IdTypes";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
-import { selectStoredTrainingDay } from "@/features/training/storedTrainingDaySelection";
+import { locateStoredTrainingDay } from "@/features/training/storedTrainingDaySelection";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { getRaisedSubstituteLevel } from "@/features/training/utils/substitutionLevelUtils";
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
@@ -44,6 +44,9 @@ interface SwapRequest {
   place: PlaceType;
 }
 
+// A fixed draw keeps the regenerated day stable, so a cycle repeats itself
+const FIXED_RANDOM = () => 0;
+
 const createRequestInput = ({ params, ctx, place }: SwapRequest) => {
   const user = buildUser(params, ctx);
   const weekday = parseIntParam(params.weekday) ?? 0;
@@ -60,17 +63,17 @@ const createRequestInput = ({ params, ctx, place }: SwapRequest) => {
       equipment: ctx.places[selectedPlace]?.equipment ?? [],
       exerciseCatalog: ctx.exercises,
       exerciseData: { ...ctx.storedProgress, branchData },
+      random: FIXED_RANDOM,
     });
-  return { user, weekday, createInput };
+  const locate = () =>
+    locateStoredTrainingDay(
+      user,
+      weekday,
+      parseIntParam(params.sectionIndex),
+      calculateDaysSinceLastWorkout(params.type, ctx),
+    );
+  return { user, createInput, locate };
 };
-
-const listBranchIds = (list: readonly UserExerciseDataType[]): string[] => [
-  ...new Set(
-    list.flatMap(({ branchId }) =>
-      branchId && !isPlaceholderBranch(branchId) ? [branchId] : [],
-    ),
-  ),
-];
 
 const listAllAlternatives = (
   request: SwapRequest,
@@ -79,21 +82,22 @@ const listAllAlternatives = (
   const { createInput } = createRequestInput(request);
   const input = setUpWorkout(createInput(request.ctx.branchData));
   const swaps: Record<string, ExerciseSwapState> = {};
-  for (const branchId of listBranchIds(session)) {
-    const own = session.filter((entry) => entry.branchId === branchId);
+  for (const { branchId, skill } of listSwappableBranches(session)) {
     const others = session.filter((entry) => entry.branchId !== branchId);
     try {
       const alternatives = listSwapAlternatives(
         {
-          skill: own[0].skill,
+          skill,
           branchId,
-          usedBranchIds: listBranchIds(others),
+          usedBranchIds: listSwappableBranches(others).map(
+            (other) => other.branchId,
+          ),
           usedExerciseIds: others.map(({ exerciseId }) => exerciseId),
         },
         input,
       );
       if (alternatives.length > 0) {
-        swaps[branchId] = { skill: own[0].skill, position: 0, alternatives };
+        swaps[branchId] = { skill, position: 0, alternatives };
       }
     } catch (e) {
       // muscle soreness in two regions throws; the exercise keeps no button
@@ -127,24 +131,19 @@ const trySwap = ({
   current,
   target,
 }: SwapAttempt): UserExerciseDataType[] | null => {
-  const { params, ctx } = request;
-  const { user, weekday, createInput } = createRequestInput(request);
-  const day = selectStoredTrainingDay(
-    user,
-    weekday,
-    parseIntParam(params.sectionIndex),
-    calculateDaysSinceLastWorkout(params.type, ctx),
-  );
+  const { user, createInput, locate } = createRequestInput(request);
+  const { day } = locate();
   const branch =
     target.position > 0
       ? toExerciseBranch(target.alternatives[target.position - 1])
       : null;
+  const { branchData } = request.ctx;
   const generated = generateTrainingDayFromStoredDay(
     branch ? swapBranchInStoredDay(day, target.skill, original, branch) : day,
     createInput(
       branch
-        ? raiseSwapStartLevel(ctx.branchData, branch, getUserLevel(user))
-        : ctx.branchData,
+        ? raiseSwapStartLevel(branchData, branch, getUserLevel(user))
+        : branchData,
     ),
   );
   return replaceSessionBranch(
@@ -157,7 +156,7 @@ const trySwap = ({
 
 /**
  * Walks the cycle from the current position to the next Branch whose entries
- * fit the session, skipping Branches the session already holds.
+ * fit the session without repeating a Branch or an exercise it holds.
  */
 const findNextSwap = (
   request: SwapRequest,
@@ -165,17 +164,15 @@ const findNextSwap = (
   original: string,
   swap: ExerciseSwapState,
 ): { session: UserExerciseDataType[]; position: number } | null => {
-  const sessionBranchIds = listBranchIds(session);
+  const sessionBranchIds = listSwappableBranches(session).map(
+    ({ branchId }) => branchId,
+  );
   let position = swap.position;
   for (let tries = 0; tries <= swap.alternatives.length; tries++) {
     position = nextSwapPosition(position, swap.alternatives.length);
     const target = { ...swap, position };
-    if (
-      position > 0 &&
-      sessionBranchIds.includes(branchIdAt(target, original))
-    ) {
-      continue;
-    }
+    const targetBranchId = branchIdAt(target, original);
+    if (position > 0 && sessionBranchIds.includes(targetBranchId)) continue;
     const next = trySwap({
       request,
       session,
@@ -183,7 +180,9 @@ const findNextSwap = (
       current: branchIdAt(swap, original),
       target,
     });
-    if (next) return { session: next, position };
+    if (next && !holdsExerciseTwice(next, targetBranchId)) {
+      return { session: next, position };
+    }
   }
   return null;
 };
@@ -195,27 +194,21 @@ interface PlanWriters {
   >["replaceBranchInTrainingPlan"];
 }
 
-/** Writes the swapped Branches into the plan for the training's weekday. */
+/** Writes the swapped Branches into the plan day the training came from. */
 const commitPlanSwaps = (
-  { params, ctx }: SwapRequest,
+  request: SwapRequest,
   swaps: Readonly<Record<string, ExerciseSwapState>>,
   writers: PlanWriters,
 ) => {
-  const plan = useUserWorkoutStore.getState().trainingPlan;
   const planSwaps = collectPlanSwaps(swaps);
-  if (!plan || planSwaps.length === 0) return;
-  const sectionIndex = resolvePlanSectionIndex(
-    plan,
-    parseIntParam(params.sectionIndex),
-    new Date(),
-  );
-  const weekday = parseIntParam(params.weekday) ?? 0;
-  const fitnessLevel = getUserLevel(buildUser(params, ctx));
+  if (planSwaps.length === 0) return;
+  const { user, locate } = createRequestInput(request);
+  const { sectionIndex, weekday } = locate();
   for (const { skill, originalBranchId, branch } of planSwaps) {
     const raised = getRaisedSubstituteLevel(
       branch,
-      ctx.branchData,
-      fitnessLevel,
+      request.ctx.branchData,
+      getUserLevel(user),
     );
     if (raised) {
       writers.setBranchLevel(raised.branchId, raised.level, raised.exerciseId);
@@ -231,8 +224,8 @@ const commitPlanSwaps = (
 };
 
 /**
- * Lists the alternatives of every exercise once the session exists, and
- * tracks each exercise's position in its cycle.
+ * Lists the alternatives of every exercise once the session exists and swaps
+ * are enabled, and tracks each exercise's position in its cycle.
  */
 const useSwapState = (request: SwapRequest, enabled: boolean) => {
   const exerciseList = useTrainingStore((s) => s.exerciseList);
@@ -240,8 +233,8 @@ const useSwapState = (request: SwapRequest, enabled: boolean) => {
     string,
     ExerciseSwapState
   > | null>(null);
-  if (alternatives === null && exerciseList) {
-    setAlternatives(enabled ? listAllAlternatives(request, exerciseList) : {});
+  if (alternatives === null && enabled && exerciseList) {
+    setAlternatives(listAllAlternatives(request, exerciseList));
   }
   const [positions, setPositions] = useState<Record<string, number>>({});
   const swaps: Record<string, ExerciseSwapState> = Object.fromEntries(
@@ -250,7 +243,12 @@ const useSwapState = (request: SwapRequest, enabled: boolean) => {
       { ...swap, position: positions[branchId] ?? 0 },
     ]),
   );
-  return { swaps, setPositions };
+  // After a commit the plan holds the session, so cycles start over from it
+  const reset = () => {
+    setAlternatives(null);
+    setPositions({});
+  };
+  return { swaps, setPositions, reset };
 };
 
 /**
@@ -266,7 +264,7 @@ export function useExerciseSwap(params: SwapParams, fallbackPlace: PlaceType) {
   );
   const setBranchLevel = useExerciseProgressStore((s) => s.setBranchLevel);
   const request: SwapRequest = { params, ctx, place: fallbackPlace };
-  const { swaps, setPositions } = useSwapState(
+  const { swaps, setPositions, reset } = useSwapState(
     request,
     params.type === "PLAN" &&
       featureFlags.aiwlGeneratorEnabled &&
@@ -292,11 +290,13 @@ export function useExerciseSwap(params: SwapParams, fallbackPlace: PlaceType) {
     }
   };
 
-  const commitSwaps = () =>
+  const commitSwaps = () => {
     commitPlanSwaps(request, swaps, {
       setBranchLevel,
       replaceBranchInTrainingPlan,
     });
+    reset();
+  };
 
   return { canSwap, swapExercise, commitSwaps };
 }

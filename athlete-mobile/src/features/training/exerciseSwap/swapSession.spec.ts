@@ -3,6 +3,8 @@ import type { GeneratedSetListEntry } from "@/features/training/models/SetListEn
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { generateStoredTrainingDay } from "@test/factories/storedTrainingDay";
 import {
+  holdsExerciseTwice,
+  listSwappableBranches,
   raiseSwapStartLevel,
   replaceSessionBranch,
   swapBranchInStoredDay,
@@ -244,5 +246,56 @@ describe("swapSession: replaceSessionBranch", () => {
     const generated = [generateGeneratedEntry("30", "e30", [1, 1])];
 
     expect(replaceSessionBranch(session, "10", generated, "20")).toBeNull();
+  });
+});
+
+describe("swapSession: holdsExerciseTwice", () => {
+  it("finds an exercise of the branch under another branch", () => {
+    const session = [
+      generateSessionEntry("10", "e1", [1, 1]),
+      generateSessionEntry("20", "e1", [1, 1]),
+    ];
+
+    expect(holdsExerciseTwice(session, "20")).toBe(true);
+  });
+
+  it("allows the repeated sets of one branch", () => {
+    const session = [
+      generateSessionEntry("20", "e1", [1, 2]),
+      generateSessionEntry("20", "e1", [2, 2]),
+      generateSessionEntry("10", "e2", [1, 1]),
+    ];
+
+    expect(holdsExerciseTwice(session, "20")).toBe(false);
+  });
+});
+
+describe("swapSession: listSwappableBranches", () => {
+  it("lists each branch once with its skill", () => {
+    const session = [
+      generateSessionEntry("10", "e1", [1, 2]),
+      generateSessionEntry("10", "e1", [2, 2]),
+      { ...generateSessionEntry("20", "e2", [1, 1]), skill: "WU" as const },
+    ];
+
+    expect(listSwappableBranches(session)).toEqual([
+      { branchId: "10", skill: "SK" },
+      { branchId: "20", skill: "WU" },
+    ]);
+  });
+
+  it("leaves out a branch held under two skills", () => {
+    const session = [
+      generateSessionEntry("10", "e1", [1, 1]),
+      { ...generateSessionEntry("10", "e1", [1, 1]), skill: "WU" as const },
+    ];
+
+    expect(listSwappableBranches(session)).toEqual([]);
+  });
+
+  it("leaves out placeholder entries", () => {
+    const session = [generateSessionEntry("-1", "999999", [1, 1])];
+
+    expect(listSwappableBranches(session)).toEqual([]);
   });
 });

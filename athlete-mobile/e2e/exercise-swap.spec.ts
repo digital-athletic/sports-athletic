@@ -29,24 +29,30 @@ async function swap(page: Page, name: string): Promise<string> {
   return after[index];
 }
 
-/** Branch IDs of the stored Tuesday training of every plan section. */
-async function readStoredBranchIds(page: Page): Promise<string[]> {
+/** Branch IDs of the stored Tuesday training, one list per plan section. */
+async function readTuesdayBranchIds(page: Page): Promise<string[][]> {
   return page.evaluate(() => {
     const raw = localStorage.getItem("user-workout-storage");
     const plan = raw ? JSON.parse(raw).state.trainingPlan : null;
-    const ids: string[] = [];
-    for (const section of plan?.sections ?? []) {
-      for (const training of section.trainings) {
-        for (const branches of Object.values(training.skills)) {
-          for (const branch of branches as { branchId: string }[]) {
-            ids.push(branch.branchId);
-          }
-        }
-      }
-    }
-    return ids;
+    return (plan?.sections ?? []).map(
+      (section: {
+        trainings: {
+          weekday: number;
+          skills: Record<string, { branchId: string }[]>;
+        }[];
+      }) =>
+        Object.values(
+          section.trainings.find(({ weekday }) => weekday === 1)?.skills ?? {},
+        ).flatMap((branches) => branches.map(({ branchId }) => branchId)),
+    );
   });
 }
+
+/** Indexes of the sections whose Tuesday branches differ. */
+const changedSections = (before: string[][], after: string[][]): number[] =>
+  after.flatMap((ids, index) =>
+    ids.join() === before[index]?.join() ? [] : [index],
+  );
 
 test.describe("Training overview: swap an exercise", () => {
   test.use({ profile: createCompletedProfile(), signedIn: true });
@@ -83,13 +89,23 @@ test.describe("Training overview: swap an exercise", () => {
 
     const chosen = await swap(page, original);
     expect(chosen).toBe(seen[1]);
-    const branchesBefore = await readStoredBranchIds(page);
+    const branchesBefore = await readTuesdayBranchIds(page);
 
     await workoutPage.beginWorkout();
     await expect(page).toHaveURL(/training-active/);
 
     await expect
-      .poll(() => readStoredBranchIds(page))
-      .not.toEqual(branchesBefore);
+      .poll(async () =>
+        changedSections(branchesBefore, await readTuesdayBranchIds(page)),
+      )
+      .toHaveLength(1);
+    const branchesAfter = await readTuesdayBranchIds(page);
+    const [section] = changedSections(branchesBefore, branchesAfter);
+    expect(branchesAfter[section]).toHaveLength(branchesBefore[section].length);
+    expect(
+      branchesAfter[section].filter(
+        (id) => !branchesBefore[section].includes(id),
+      ),
+    ).toHaveLength(1);
   });
 });
